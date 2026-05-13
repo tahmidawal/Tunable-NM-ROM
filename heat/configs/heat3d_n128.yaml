@@ -1,0 +1,24 @@
+# Heat-3D N=128 — ACC variant (val_rel_l2=4.33e-2, speedup=112x).
+# FAST variant: gn_max_iters=4-6 reaches ~191x at val_rel_l2=4.75e-2.
+N: 128
+spatial_dim: 3
+patch_size: 16
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 40
+rank: 512
+hidden_dim: 256
+num_epochs: 30000
+batch_size: 4
+peak_lr: 5.0e-4
+weight_decay: 5.0e-4
+warmup_frac: 0.1
+seed: 0
+n_train: 100
+n_val: 10
+gn_max_iters: 12
+gn_rel_tol: 1.0e-3
+n_eq_samples: 16
+min_eq_points: 256
+num_rom_steps: 50

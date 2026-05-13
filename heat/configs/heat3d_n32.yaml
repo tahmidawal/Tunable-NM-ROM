@@ -1,0 +1,23 @@
+# Heat-3D N=32 — BEST single Pareto-optimal point (val_rel_l2=9.30e-2, speedup=176x).
+N: 32
+spatial_dim: 3
+patch_size: 8
+embed_dim: 96
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 32
+rank: 512
+hidden_dim: 256
+num_epochs: 80000
+batch_size: 32
+peak_lr: 2.0e-3
+weight_decay: 5.0e-4
+warmup_frac: 0.1
+seed: 0
+n_train: 500
+n_val: 50
+gn_max_iters: 3
+gn_rel_tol: 1.0e-3
+n_eq_samples: 16
+min_eq_points: 64
+num_rom_steps: 50

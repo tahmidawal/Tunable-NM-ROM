@@ -1,0 +1,23 @@
+# Heat-2D N=128 — ACC variant.
+N: 128
+spatial_dim: 2
+patch_size: 8
+embed_dim: 96
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 64
+rank: 256
+hidden_dim: 256
+num_epochs: 150000
+batch_size: 16
+peak_lr: 1.0e-3
+weight_decay: 2.0e-3
+warmup_frac: 0.1
+seed: 0
+n_train: 500
+n_val: 50
+gn_max_iters: 12
+gn_rel_tol: 5.0e-3
+n_eq_samples: 100
+min_eq_points: 128
+num_rom_steps: 50

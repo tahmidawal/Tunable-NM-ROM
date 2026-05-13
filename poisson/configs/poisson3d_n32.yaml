@@ -1,0 +1,24 @@
+# Poisson-3D N=32 — best accuracy (val_rel_l2=1.11e-2, speedup=84x).
+# FAST variant: gn_max_iters=3 -> ~117x at rel-L2=2.95e-2.
+N: 32
+spatial_dim: 3
+patch_size: 8
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 16
+rank: 512
+hidden_dim: 256
+num_epochs: 80000
+batch_size: 32
+peak_lr: 1.0e-3
+weight_decay: 2.0e-3
+warmup_frac: 0.05
+seed: 42
+n_train: 700
+n_val: 140
+data_source: analytical
+gn_max_iters: 25
+gn_rel_tol: 1.0e-3
+n_eq_samples: 200
+min_eq_points: 2000

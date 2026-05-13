@@ -1,0 +1,23 @@
+# Poisson-3D N=128 — FAST variant (val_rel_l2=1.07e-2, speedup=120x). Rank=768 breakthrough.
+N: 128
+spatial_dim: 3
+patch_size: 8
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 16
+rank: 768
+hidden_dim: 256
+num_epochs: 100000
+batch_size: 32
+peak_lr: 1.0e-3
+weight_decay: 2.0e-3
+warmup_frac: 0.05
+seed: 42
+n_train: 700
+n_val: 140
+data_source: analytical
+gn_max_iters: 12
+gn_rel_tol: 5.0e-2
+n_eq_samples: 200
+min_eq_points: 2000

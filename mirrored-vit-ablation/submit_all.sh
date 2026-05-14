@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
 # Submit all sweep configs for Heat-3D N=64 and Poisson-3D N=64 to SLURM.
 # Captures the submitted job IDs so the status report can list them.
+#
+# Usage:
+#   bash submit_all.sh                 # standalone, no dependency
+#   bash submit_all.sh <smoke_jobid>   # gate every training on smoke_jobid completing OK
+#
+# The second form lets you submit the full sweep RIGHT AFTER the smoke
+# test is queued, without waiting for it to finish. SLURM will release
+# each training job only if smoke exits 0.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 mkdir -p "$ROOT/runs"
 SUBMITTED="$ROOT/runs/submitted_$(date +%Y%m%d_%H%M%S).txt"
+
+DEP_JOB="${1:-}"
+DEP_ARGS=""
+if [[ -n "$DEP_JOB" ]]; then
+    DEP_ARGS="--dependency=afterok:$DEP_JOB"
+    echo "Gating all training jobs on smoke job $DEP_JOB (afterok)"
+fi
 
 submit_one() {
     local pkg="$1"
@@ -15,7 +30,7 @@ submit_one() {
     cd "$cwd"
     mkdir -p runs
     local jobid
-    jobid=$(sbatch --parsable --job-name="${pkg}_${config}" "$script" "$config" all)
+    jobid=$(sbatch --parsable $DEP_ARGS --job-name="${pkg}_${config}" "$script" "$config" all)
     echo "submitted $pkg/$config -> job $jobid"
     echo "$pkg $config $jobid" >> "$SUBMITTED"
 }

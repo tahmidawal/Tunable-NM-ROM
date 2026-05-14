@@ -17,7 +17,7 @@
 
 This is direct experimental evidence for the paper's "ViT decoder fails because per-node locality is required" claim, with one twist beyond the paper: even the *reconstruction-quality issue* alone isn't what kills the ROM — it's the **decoder Jacobian geometry at z = 0**. C_wider's autoencoder *trains better than LinearCP*, and the solver still fails. The skip restores `dU/dz|_0 ≠ 0` (its purpose) but the descent direction doesn't lead to a useful solution.
 
-Heat sweep (3 jobs) is still running — datagen is slow because it's a serial Python loop over 550 trajectories with non-jitted CG per step (~2h elapsed, ~3–5h to finish + ~1h train + ROM).
+Heat sweep first attempt all failed at training-time with `CUDA_ERROR_ILLEGAL_ADDRESS` — the symmetric-ViT activations during `jax.jit(eval_loss)` over the full 2550-snapshot val set blew A100 VRAM (CP decoder's activations are tiny, ViT's are 100× bigger). Fixed by chunking the val-loss eval into `batch_size`-sized batches (commit `a32fc7c`). Re-submitted as jobs **778655–778657**; data files are cached on disk so they skip the slow datagen and go straight to training.
 
 ## What was built
 

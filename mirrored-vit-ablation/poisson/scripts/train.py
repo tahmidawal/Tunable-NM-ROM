@@ -36,7 +36,7 @@ def main():
         dec_num_heads=cfg.dec_num_heads,
         dec_num_layers=cfg.dec_num_layers,
     )
-    print(f"Training AE: {U_train.shape[0]} train, {U_val.shape[0]} val")
+    print(f"Training AE: {U_train.shape[0]} train, {U_val.shape[0]} val, lap_weight={cfg.lap_weight}")
     params, meta = train_autoencoder(
         model,
         U_train,
@@ -47,6 +47,9 @@ def main():
         weight_decay=cfg.weight_decay,
         warmup_frac=cfg.warmup_frac,
         seed=cfg.seed,
+        lap_weight=cfg.lap_weight,
+        N=cfg.N,
+        spatial_dim=cfg.spatial_dim,
     )
     save_checkpoint(args.out, params, cfg.to_dict(), meta)
     print(f"Saved checkpoint to {args.out} (best val: {meta['best_val']:.4e})")

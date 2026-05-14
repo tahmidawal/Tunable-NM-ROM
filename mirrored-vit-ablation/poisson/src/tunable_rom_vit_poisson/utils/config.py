@@ -31,6 +31,10 @@ class ExperimentConfig:
     weight_decay: float = 2e-3
     warmup_frac: float = 0.05
     seed: int = 42
+    # Laplacian-aware loss weight; 0 to disable. Needed for ViT decoder
+    # to keep the patch-boundary Laplacian content from corrupting the
+    # NM-ROM residual.
+    lap_weight: float = 0.0
     # Data
     n_train: int = 700
     n_val: int = 140

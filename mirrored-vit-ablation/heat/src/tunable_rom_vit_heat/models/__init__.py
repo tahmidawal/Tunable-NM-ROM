@@ -1,5 +1,5 @@
 from .encoder import ViTEncoder
-from .decoder import CPDecoder
-from .autoencoder import ViTCPAutoencoder
+from .decoder import ViTDecoder
+from .autoencoder import ViTViTAutoencoder
 
-__all__ = ["ViTEncoder", "CPDecoder", "ViTCPAutoencoder"]
+__all__ = ["ViTEncoder", "ViTDecoder", "ViTViTAutoencoder"]

@@ -45,12 +45,29 @@ class NMROMSolver:
         self.stencil_w = 2 * d + 1
         self.w_eq = jnp.asarray(self.eq_weights)
         self.stencil_flat = jnp.asarray(self.stencil_indices.reshape(-1))
+        # Boundary mask on the FULL grid: 1 on interior, 0 on Dirichlet boundary.
+        # The ViT decoder has no structural constraint that boundary values are
+        # zero. Without masking, GN can find a "low-residual" z whose decoded
+        # field has nonzero boundary, drifting away from the physical solution.
+        # Apply the same FOM mask the CP decoder gets for free via its
+        # axis-factor structure (factors learned ~0 on boundary indices).
+        N, d = self.N, self.spatial_dim
+        if d == 2:
+            m = np.ones((N, N), dtype=np.float32)
+            m[0, :] = m[-1, :] = m[:, 0] = m[:, -1] = 0.0
+        else:
+            m = np.ones((N, N, N), dtype=np.float32)
+            m[0, :, :] = m[-1, :, :] = 0.0
+            m[:, 0, :] = m[:, -1, :] = 0.0
+            m[:, :, 0] = m[:, :, -1] = 0.0
+        self.bmask = jnp.asarray(m.reshape(-1))
 
     def _decode_full(self, z):
-        """Evaluate the ViT decoder on the FULL grid, flat."""
-        return self.autoencoder.apply(
+        """Evaluate the ViT decoder on the FULL grid, flat, masked to zero on boundary."""
+        u = self.autoencoder.apply(
             {"params": self.params}, z, method=self.autoencoder.decode
         )
+        return u * self.bmask
 
     def u_at_stencil(self, z):
         u_full = self._decode_full(z)
@@ -99,6 +116,7 @@ class NMROMSolver:
         return z_f, gnorm_f, iters
 
     def decode(self, z):
-        return self.autoencoder.apply(
+        u = self.autoencoder.apply(
             {"params": self.params}, z, method=self.autoencoder.decode
         )
+        return u * self.bmask

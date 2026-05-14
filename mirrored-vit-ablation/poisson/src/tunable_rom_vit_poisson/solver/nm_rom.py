@@ -49,7 +49,7 @@ class NMROMSolver:
     def _decode_full(self, z):
         """Evaluate the ViT decoder on the FULL grid, flat."""
         return self.autoencoder.apply(
-            {"params": self.params}, z, method=lambda mod, zz: mod.decoder(zz).reshape(-1)
+            {"params": self.params}, z, method=self.autoencoder.decode
         )
 
     def u_at_stencil(self, z):

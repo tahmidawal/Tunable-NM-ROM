@@ -58,6 +58,10 @@ class ViTViTAutoencoder(nn.Module):
         u = self.decoder(z) * scale
         return u.reshape(-1)
 
+    def decode_unit(self, z):
+        """Unit-scale decoder output (no amplitude scale), flat. Used by the solver."""
+        return self.decoder(z).reshape(-1)
+
     def __call__(self, u_flat):
         z, scale = self.encode(u_flat)
         return self.decode(z, scale)

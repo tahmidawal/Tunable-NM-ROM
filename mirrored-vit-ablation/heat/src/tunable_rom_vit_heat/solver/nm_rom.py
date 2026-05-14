@@ -64,10 +64,9 @@ class NMROMSolver:
 
     def _decode_unit(self, z):
         """Evaluate the ViT decoder on the FULL grid, unit-scale, flat."""
-        u = self.autoencoder.apply(
-            {"params": self.params}, z, method=lambda mod, zz: mod.decoder(zz).reshape(-1)
+        return self.autoencoder.apply(
+            {"params": self.params}, z, method=self.autoencoder.decode_unit
         )
-        return u
 
     def f_norm_eq(self, z, kappa):
         """Unit-scale Heat update at EQ centres: u_c + dt*kappa*lap_neg(u)."""

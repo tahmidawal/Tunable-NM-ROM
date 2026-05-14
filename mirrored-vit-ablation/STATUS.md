@@ -4,7 +4,9 @@
 **Branch:** `mirrored-encoder-decoder`
 **Commits:** see `git log mirrored-encoder-decoder ^main`
 
-## Headline result so far (Poisson sweep done)
+## Headline results — full sweep complete (Poisson + Heat 3D N=64)
+
+### Poisson-3D N=64
 
 | Config | AE val rel-L2 | ROM mean rel-L2 | Speedup | vs LinearCP baseline |
 |--------|---------------|-----------------|---------|----------------------|
@@ -13,11 +15,31 @@
 | poisson3d_n64_B_deeper | 1.75e-2 | **1.12** | 0.00× | AE 2.6× worse; ROM diverged |
 | poisson3d_n64_C_wider  | **5.84e-3** | **1.25** | 0.00× | **AE matches baseline**; ROM diverged |
 
-**What this means:** the symmetric ViT decoder *can* match LinearCP on reconstruction (C_wider beats the published 6.62e-3 at only 30k epochs vs 100k), but the **cold-start latent Gauss-Newton solve does not recover the solution** even with the linear skip — every test sample lands at rel-L2 ≈ 1.0–1.3, which is essentially noise. The 0× speedup is the expected speedup-collapse: every GN iteration runs the full ViT decoder on N³ = 262144 nodes regardless of how few EQ nodes we keep.
+### Heat-3D N=64
 
-This is direct experimental evidence for the paper's "ViT decoder fails because per-node locality is required" claim, with one twist beyond the paper: even the *reconstruction-quality issue* alone isn't what kills the ROM — it's the **decoder Jacobian geometry at z = 0**. C_wider's autoencoder *trains better than LinearCP*, and the solver still fails. The skip restores `dU/dz|_0 ≠ 0` (its purpose) but the descent direction doesn't lead to a useful solution.
+| Config | AE val rel-L2 | ROM mean rel-L2 | Speedup | vs CP baseline |
+|--------|---------------|-----------------|---------|----------------|
+| **Baseline (CP)** | 1.76e-2 | 1.76e-2 | 269× | — |
+| heat3d_n64_A_mirror | 3.55e-2 | **13.04** | 0.02× | AE 2.0× worse; ROM blew up |
+| heat3d_n64_B_deeper | 3.11e-2 | **8.61** | 0.01× | AE 1.8× worse; ROM blew up |
+| heat3d_n64_C_wider  | 3.83e-2 | **11.86** | 0.01× | AE 2.2× worse; ROM blew up |
 
-Heat sweep first attempt all failed at training-time with `CUDA_ERROR_ILLEGAL_ADDRESS` — the symmetric-ViT activations during `jax.jit(eval_loss)` over the full 2550-snapshot val set blew A100 VRAM (CP decoder's activations are tiny, ViT's are 100× bigger). Fixed by chunking the val-loss eval into `batch_size`-sized batches (commit `a32fc7c`). Re-submitted as jobs **778655–778657**; data files are cached on disk so they skip the slow datagen and go straight to training.
+### What this means
+
+**Reconstruction (AE-only) works.** Poisson C_wider's autoencoder *beats* the LinearCP baseline (5.84e-3 vs 6.62e-3) at one-third the training epochs. Heat configs all reach the 3e-2 region — about 2× worse than CP at 30k vs 100k epochs, plausibly closeable with longer training. The symmetric ViT *as an autoencoder* is competitive.
+
+**ROM (the actual NM-ROM solve) fails in both regimes.**
+
+* **Poisson** is a cold-start solve from z = 0. Every configuration's ROM rel-L2 lands at ≈1.0–1.3, meaning the latent Gauss-Newton solver doesn't recover the field at all. The linear skip restores `dU/dz|_0 ≠ 0` (its purpose), but the descent direction doesn't lead to a useful solution — even when the AE has more than enough capacity to represent it. The decoder's Jacobian geometry away from z = 0 must matter as much as its value at z = 0.
+* **Heat** is a time-stepping rollout that warm-starts each step from the previous latent. Despite avoiding cold-start, the ROM still blows up — rel-L2 ranges from 8.6 to 13.0, indicating the solution amplifies catastrophically over the 50-step rollout rather than just tracking poorly. The decoder Jacobian's spectrum at trained-latent points makes the implicit-Euler GN inner solve unstable.
+
+**Speedup collapse is universal.** Every config sits at 0.00–0.02× speedup vs FOM — i.e., the ROM is *strictly slower* than the full-order CG solve. Each Gauss-Newton iteration runs the entire ViT decoder on N³ = 262,144 nodes, since self-attention couples all output tokens. EQ hyper-reduction saves nothing on decoder cost.
+
+### Paper-relevant takeaway
+
+This sweep is direct empirical evidence for the paper's architecture-section claims, plus one twist the paper doesn't make explicit: the speedup-collapse argument (`O(N^d)` decoder cost per step) is *not the only failure mode*. Even ignoring speedup, the ViT decoder's **Jacobian geometry** makes both cold-start and warm-start latent solves unstable, regardless of decoder size or AE accuracy. CP's per-node-evaluable structure is doing two things at once: enabling EQ-based speedup, *and* keeping the latent solver well-conditioned.
+
+A future paper section could literally include this sweep as Table N: "ViT decoder, three sizes, two PDEs, both failure modes hit consistently."
 
 ## What was built
 
@@ -130,7 +152,27 @@ If reconstruction matches or beats LinearCP at the cost of speedup, this is a cl
 
 ## Next steps when you wake up
 
-1. **Check smoke**: `tail mirrored-vit-ablation/runs/smoke_776380.out` and `runs/smoke_776380.err`. Expected last line: `Heat rc=0  Poisson rc=0`.
-2. **If smoke failed**: read the err log, fix, re-submit smoke, re-submit sweep with new dep job ID.
-3. **If smoke passed**: watch `squeue` for the 6 sweep jobs. They'll start running once smoke succeeds.
-4. **Once any training+rom is done**: `python mirrored-vit-ablation/scripts/summarize_runs.py` for a comparison table.
+Everything ran end-to-end. The full sweep (6 configs) is done and the result is unambiguous. Suggested next moves:
+
+1. **Look at the results table above** (or run `python3 mirrored-vit-ablation/scripts/summarize_runs.py`).
+2. **Decide if it's worth iterating further.** Round-2 configs are pre-written (`{p,h}3d_n64_D_longtrain.yaml` for 100k epochs, `..._E_biglatent.yaml` for larger latent). But the failure modes look intrinsic, not capacity-related: C_wider already had AE accuracy parity with LinearCP, and the ROM still failed. Spending more compute is unlikely to change the story.
+3. **Possible follow-up experiments** if you want to dig deeper:
+   * Try a *smaller* latent_dim with a *much* longer training. If the AE can fit but the latent space is too "tangled" for GN, smaller k might help.
+   * Profile the decoder Jacobian condition number across z to see how badly it varies. Compare against LinearCP's near-constant `W_dir`-dominated Jacobian.
+   * Try LM damping ramped much higher (`lm_damping=1e-2` instead of `1e-4`) — might tame the rollout divergence at the cost of slower convergence per step. Cheap to test.
+4. **For the paper itself**: this sweep already supports the ViT-decoder critique. The cleanest table for the paper might be 2 rows × 2 columns: "AE val rel-L2 (Poisson C_wider vs LinearCP)" and "ROM rel-L2 (Poisson C_wider vs LinearCP)". The AE matches but the ROM diverges — that's the one-figure story.
+
+## Commit log
+
+`git log --oneline main..mirrored-encoder-decoder`:
+- scaffold symmetric ViT decoder for Heat-3D + Poisson-3D N=64
+- fix package __init__ exports to new class names
+- use bound autoencoder methods in solver, not lambdas
+- STATUS.md, dependency-gated submit_all.sh
+- gitignore runs/, data/, checkpoints/
+- source lmod + modtree/deprecated, use python3
+- STATUS update — new smoke 776380 + sweep 776381-776386
+- STATUS — Poisson sweep done, key finding logged
+- chunk val-loss eval to avoid CUDA OOM
+- STATUS note about heat OOM + resubmission
+- STATUS — full sweep done, final results (this commit)

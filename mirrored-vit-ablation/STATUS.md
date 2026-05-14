@@ -4,6 +4,21 @@
 **Branch:** `mirrored-encoder-decoder`
 **Commits:** see `git log mirrored-encoder-decoder ^main`
 
+## Headline result so far (Poisson sweep done)
+
+| Config | AE val rel-L2 | ROM mean rel-L2 | Speedup | vs LinearCP baseline |
+|--------|---------------|-----------------|---------|----------------------|
+| **Baseline (LinearCP)** | 6.62e-3 | 6.62e-3 | 111× | — |
+| poisson3d_n64_A_mirror | 1.46e-2 | **1.17** | 0.00× | AE 2.2× worse; ROM diverged |
+| poisson3d_n64_B_deeper | 1.75e-2 | **1.12** | 0.00× | AE 2.6× worse; ROM diverged |
+| poisson3d_n64_C_wider  | **5.84e-3** | **1.25** | 0.00× | **AE matches baseline**; ROM diverged |
+
+**What this means:** the symmetric ViT decoder *can* match LinearCP on reconstruction (C_wider beats the published 6.62e-3 at only 30k epochs vs 100k), but the **cold-start latent Gauss-Newton solve does not recover the solution** even with the linear skip — every test sample lands at rel-L2 ≈ 1.0–1.3, which is essentially noise. The 0× speedup is the expected speedup-collapse: every GN iteration runs the full ViT decoder on N³ = 262144 nodes regardless of how few EQ nodes we keep.
+
+This is direct experimental evidence for the paper's "ViT decoder fails because per-node locality is required" claim, with one twist beyond the paper: even the *reconstruction-quality issue* alone isn't what kills the ROM — it's the **decoder Jacobian geometry at z = 0**. C_wider's autoencoder *trains better than LinearCP*, and the solver still fails. The skip restores `dU/dz|_0 ≠ 0` (its purpose) but the descent direction doesn't lead to a useful solution.
+
+Heat sweep (3 jobs) is still running — datagen is slow because it's a serial Python loop over 550 trajectories with non-jitted CG per step (~2h elapsed, ~3–5h to finish + ~1h train + ROM).
+
 ## What was built
 
 A standalone ablation environment under `mirrored-vit-ablation/` with two pip packages (`tunable-rom-vit-heat`, `tunable-rom-vit-poisson`) — stripped-down copies of the public-release packages with the LinearCP/CP decoder swapped for a symmetric ViT decoder (MAE-style un-patchify mirror of the ViT encoder). Heat uses a plain mirror (no skip), Poisson keeps a linear skip routed through un-patchify onto the full grid (load-bearing for cold-start Gauss–Newton).

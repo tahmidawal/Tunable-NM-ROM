@@ -35,15 +35,17 @@ mirrored-vit-ablation/
 
 ## SLURM jobs submitted
 
+First smoke job (776147) failed instantly — incorrect module names. The Tufts cluster moved `python/3.10.4`, `cuda/12.2`, `cudnn/8.9.7-12.x` under `modtree/deprecated`, and the binary is `python3` (not `python`). Fixed in run_smoke.slurm and both per-package run_experiment.slurm; previous dependent jobs (776207–776212) were canceled and the sweep was re-submitted.
+
 | Job ID | Name | State | Depends on | Stage |
 |--------|------|-------|------------|-------|
-| 776147 | mirvit_smoke | PENDING (Backfill) | — | pytest smoke gate |
-| 776207 | poisson_poisson3d_n64_A_mirror | PENDING | afterok:776147 | data + train + rom |
-| 776208 | poisson_poisson3d_n64_B_deeper | PENDING | afterok:776147 | data + train + rom |
-| 776209 | poisson_poisson3d_n64_C_wider | PENDING | afterok:776147 | data + train + rom |
-| 776210 | heat_heat3d_n64_A_mirror | PENDING | afterok:776147 | data + train + rom |
-| 776211 | heat_heat3d_n64_B_deeper | PENDING | afterok:776147 | data + train + rom |
-| 776212 | heat_heat3d_n64_C_wider | PENDING | afterok:776147 | data + train + rom |
+| 776380 | mirvit_smoke | PENDING (Backfill) | — | pytest smoke gate |
+| 776381 | poisson_poisson3d_n64_A_mirror | PENDING | afterok:776380 | data + train + rom |
+| 776382 | poisson_poisson3d_n64_B_deeper | PENDING | afterok:776380 | data + train + rom |
+| 776383 | poisson_poisson3d_n64_C_wider | PENDING | afterok:776380 | data + train + rom |
+| 776384 | heat_heat3d_n64_A_mirror | PENDING | afterok:776380 | data + train + rom |
+| 776385 | heat_heat3d_n64_B_deeper | PENDING | afterok:776380 | data + train + rom |
+| 776386 | heat_heat3d_n64_C_wider | PENDING | afterok:776380 | data + train + rom |
 
 Smoke job estimated start: ~2026-05-14T02:11 EDT (Backfill priority). Each training job: 8h wall-clock budget, A100, 160G RAM, expected ~1–3h actual.
 
@@ -87,7 +89,7 @@ Submit by hand once first-round results are in: `cd mirrored-vit-ablation && sba
 squeue -u $USER
 
 # once smoke runs, check it
-tail -100 mirrored-vit-ablation/runs/smoke_776147.out
+tail -100 mirrored-vit-ablation/runs/smoke_776380.out
 
 # once training jobs land
 python mirrored-vit-ablation/scripts/summarize_runs.py
@@ -113,7 +115,7 @@ If reconstruction matches or beats LinearCP at the cost of speedup, this is a cl
 
 ## Next steps when you wake up
 
-1. **Check smoke**: `tail mirrored-vit-ablation/runs/smoke_776147.out` and `runs/smoke_776147.err`. Expected last line: `Heat rc=0  Poisson rc=0`.
+1. **Check smoke**: `tail mirrored-vit-ablation/runs/smoke_776380.out` and `runs/smoke_776380.err`. Expected last line: `Heat rc=0  Poisson rc=0`.
 2. **If smoke failed**: read the err log, fix, re-submit smoke, re-submit sweep with new dep job ID.
 3. **If smoke passed**: watch `squeue` for the 6 sweep jobs. They'll start running once smoke succeeds.
 4. **Once any training+rom is done**: `python mirrored-vit-ablation/scripts/summarize_runs.py` for a comparison table.

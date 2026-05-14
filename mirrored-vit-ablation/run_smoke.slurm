@@ -14,10 +14,13 @@
 
 set -uo pipefail   # don't -e: we want both packages' pytest to run
 
+source /etc/profile.d/z00_lmod.sh 2>/dev/null || source /etc/profile.d/modules.sh 2>/dev/null || true
+module load modtree/deprecated
 module load python/3.10.4 cuda/12.2 cudnn/8.9.7-12.x
 export PYTHONPATH=/cluster/tufts/paralab/tawal01/python310_libs/lib/python3.10/site-packages:${PYTHONPATH:-}
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export XLA_PYTHON_CLIENT_ALLOCATOR=platform
+PY=python3   # python/3.10.4 module exposes python3, not python
 
 ROOT="/cluster/tufts/paralab/tawal01/NMROM-Apr8/20260423-NEURIPS/Tunable-ROM/mirrored-vit-ablation"
 mkdir -p "$ROOT/runs"
@@ -34,7 +37,7 @@ P_RC=0
 cd "$ROOT/heat"
 export PYTHONPATH="$ROOT/heat/src:$PYTHONPATH"
 echo "[heat] running pytest tests/test_smoke.py"
-python -m pytest -x -v tests/test_smoke.py
+$PY -m pytest -x -v tests/test_smoke.py
 H_RC=$?
 echo "[heat] pytest rc=$H_RC"
 
@@ -43,7 +46,7 @@ export PYTHONPATH=/cluster/tufts/paralab/tawal01/python310_libs/lib/python3.10/s
 cd "$ROOT/poisson"
 export PYTHONPATH="$ROOT/poisson/src:$PYTHONPATH"
 echo "[poisson] running pytest tests/test_smoke.py"
-python -m pytest -x -v tests/test_smoke.py
+$PY -m pytest -x -v tests/test_smoke.py
 P_RC=$?
 echo "[poisson] pytest rc=$P_RC"
 

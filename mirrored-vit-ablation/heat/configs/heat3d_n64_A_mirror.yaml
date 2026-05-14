@@ -1,0 +1,27 @@
+# Heat-3D N=64 — symmetric ViT, decoder mirrors encoder exactly.
+# Baseline target (LinearCP): val_rel_l2 = 1.76e-2, speedup = 269x.
+N: 64
+spatial_dim: 3
+patch_size: 8
+embed_dim: 96
+num_heads: 4
+num_enc_layers: 6
+latent_dim: 40
+# Decoder fields = null -> mirror encoder.
+dec_patch_size: null
+dec_embed_dim: null
+dec_num_heads: null
+dec_num_layers: null
+num_epochs: 30000
+batch_size: 32
+peak_lr: 2.0e-3
+weight_decay: 5.0e-4
+warmup_frac: 0.1
+seed: 0
+n_train: 500
+n_val: 50
+gn_max_iters: 2
+gn_rel_tol: 1.0e-2
+n_eq_samples: 32
+min_eq_points: 128
+num_rom_steps: 50

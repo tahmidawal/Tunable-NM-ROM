@@ -1,22 +1,19 @@
 """Symmetric ViT decoder with linear skip for the Poisson NM-ROM ablation.
 
-  u(z) = unpatchify( W_dir @ z reshaped ) + ViTDecoder(z) + bias
+Zero-anchored mirror: u(z) = unpatchify(W_dir @ z) + (ViT(z) - ViT(0))
 
-The ViT branch is the mirror image of the encoder: latent -> learned
-query tokens -> L transformer blocks -> per-token linear head ->
-un-patchify -> (N,)*d field.
+The CP decoder gets `decoder(0) ≈ 0` for free from its multiplicative
+tensor-factor structure: all output values are sums of products of
+trained factors, and with k=0 all those products vanish. The ViT
+decoder has no such structural guarantee; the pos_embed plus
+transformer biases give a non-trivial output at z=0, and the network
+quickly learns to put the "mean field" in this z-independent component.
+Result: the encoder produces near-zero latents and the decoder
+encodes everything in its biases — Gauss-Newton has no useful
+direction to descend in.
 
-The linear-skip branch maps z directly to the full grid through a
-single Dense layer reshaped to (N,)*d. This is load-bearing for
-cold-start Gauss-Newton: each Poisson solve starts from z = 0, so
-dU/dz |_{z=0} has to be a well-conditioned map for the first step to
-descend. Without it, the ViT branch's Jacobian is essentially zero
-near z = 0 (every transformer block multiplies the propagated
-quantity), GN's gradient direction is undefined, and the latent solve
-diverges on a fraction of test cases.
-
-The skip mirrors the role of W_direct in LinearCPDecoder, just routed
-through an un-patchify instead of a CP contraction.
+Subtracting `ViT(0)` from `ViT(z)` enforces `decoder(0) = 0` by
+construction, forcing the encoder to use the latent space.
 """
 from __future__ import annotations
 
@@ -43,32 +40,23 @@ class TransformerBlock(nn.Module):
         return x + h
 
 
-class LinearSkipViTDecoder(nn.Module):
-    """Symmetric ViT decoder with a linear skip onto the full grid."""
-
+class ViTBranch(nn.Module):
+    """The ViT branch only: latent -> tokens -> transformer -> un-patchify field."""
     N: int
-    spatial_dim: int  # 2 or 3
+    spatial_dim: int
     patch_size: int
     embed_dim: int
     num_heads: int
     num_layers: int
-    latent_dim: int
 
     def setup(self):
-        assert self.N % self.patch_size == 0, "patch_size must divide N"
+        assert self.N % self.patch_size == 0
         self.n_per_side = self.N // self.patch_size
         self.num_patches = self.n_per_side ** self.spatial_dim
         self.patch_features = self.patch_size ** self.spatial_dim
-        self.num_nodes = self.N ** self.spatial_dim
 
     @nn.compact
     def __call__(self, z):
-        # Linear skip: latent -> full grid, single Dense.
-        u_lin = nn.Dense(self.num_nodes, name="W_direct", use_bias=False)(z).reshape(
-            (self.N,) * self.spatial_dim
-        )
-
-        # ViT branch.
         tokens = nn.Dense(
             self.num_patches * self.embed_dim, name="latent_to_tokens"
         )(z).reshape(self.num_patches, self.embed_dim)
@@ -87,20 +75,47 @@ class LinearSkipViTDecoder(nn.Module):
         tokens = nn.LayerNorm()(tokens)
         patches = nn.Dense(self.patch_features, name="patch_head")(tokens)
 
-        # Un-patchify.
         d = self.spatial_dim
         n = self.n_per_side
         p = self.patch_size
         if d == 2:
-            u_nl = patches.reshape(n, n, p, p).transpose(0, 2, 1, 3).reshape(self.N, self.N)
+            return patches.reshape(n, n, p, p).transpose(0, 2, 1, 3).reshape(self.N, self.N)
         elif d == 3:
-            u_nl = (
+            return (
                 patches.reshape(n, n, n, p, p, p)
                 .transpose(0, 3, 1, 4, 2, 5)
                 .reshape(self.N, self.N, self.N)
             )
-        else:
-            raise ValueError(f"spatial_dim must be 2 or 3, got {d}")
+        raise ValueError(f"spatial_dim must be 2 or 3, got {d}")
 
-        bias = self.param("bias", nn.initializers.zeros, ())
-        return u_lin + u_nl + bias
+
+class LinearSkipViTDecoder(nn.Module):
+    """Zero-anchored symmetric ViT decoder with linear skip."""
+
+    N: int
+    spatial_dim: int  # 2 or 3
+    patch_size: int
+    embed_dim: int
+    num_heads: int
+    num_layers: int
+    latent_dim: int
+
+    def setup(self):
+        self.num_nodes = self.N ** self.spatial_dim
+        self.W_direct = nn.Dense(self.num_nodes, name="W_direct", use_bias=False)
+        self.vit = ViTBranch(
+            N=self.N,
+            spatial_dim=self.spatial_dim,
+            patch_size=self.patch_size,
+            embed_dim=self.embed_dim,
+            num_heads=self.num_heads,
+            num_layers=self.num_layers,
+            name="vit",
+        )
+
+    def __call__(self, z):
+        u_lin = self.W_direct(z).reshape((self.N,) * self.spatial_dim)
+        u_vit_z = self.vit(z)
+        u_vit_0 = self.vit(jnp.zeros_like(z))
+        u_nl = u_vit_z - u_vit_0
+        return u_lin + u_nl

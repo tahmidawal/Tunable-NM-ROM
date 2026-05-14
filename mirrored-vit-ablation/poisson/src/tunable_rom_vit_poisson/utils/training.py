@@ -56,8 +56,20 @@ def train_autoencoder(
         return optax.apply_updates(params, updates), opt_state, loss
 
     @jax.jit
-    def eval_loss(params, val):
-        return _batched_loss(params, model, val)
+    def eval_loss_chunk(params, val_chunk):
+        return _batched_loss(params, model, val_chunk)
+
+    val_eval_chunk = max(1, batch_size)
+
+    def eval_loss(params, val_array):
+        # Chunked eval to keep VRAM bounded for the symmetric ViT decoder.
+        nv = val_array.shape[0]
+        total = 0.0
+        for start in range(0, nv, val_eval_chunk):
+            end = min(start + val_eval_chunk, nv)
+            chunk = jnp.asarray(val_array[start:end])
+            total += float(eval_loss_chunk(params, chunk)) * (end - start)
+        return total / nv
 
     np_rng = np.random.default_rng(seed)
     M = U_train.shape[0]
@@ -71,7 +83,7 @@ def train_autoencoder(
         batch = jnp.asarray(U_train[idx])
         params, opt_state, loss = step(params, opt_state, batch)
         if epoch % log_every == 0:
-            v = float(eval_loss(params, jnp.asarray(U_val)))
+            v = eval_loss(params, U_val)
             history.append((epoch, float(loss), v))
             if v < best_val:
                 best_val = v

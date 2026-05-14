@@ -63,8 +63,23 @@ def train_autoencoder(
         return params, opt_state, loss
 
     @jax.jit
-    def eval_loss(params, val):
-        return _batched_loss(params, model, val)
+    def eval_loss_chunk(params, val_chunk):
+        # Single chunk of val data — keeps a fixed-size XLA program.
+        return _batched_loss(params, model, val_chunk)
+
+    val_eval_chunk = max(1, batch_size)
+
+    def eval_loss(params, val_array):
+        # Evaluate val in batch_size-sized chunks to keep VRAM bounded.
+        # The symmetric ViT decoder's intermediate activations dwarf the
+        # CP decoder's; we cannot evaluate the full val set in one shot.
+        nv = val_array.shape[0]
+        total = 0.0
+        for start in range(0, nv, val_eval_chunk):
+            end = min(start + val_eval_chunk, nv)
+            chunk = jnp.asarray(val_array[start:end])
+            total += float(eval_loss_chunk(params, chunk)) * (end - start)
+        return total / nv
 
     np_rng = np.random.default_rng(seed)
     M = snapshots_train.shape[0]
@@ -78,7 +93,7 @@ def train_autoencoder(
         batch = jnp.asarray(snapshots_train[idx])
         params, opt_state, loss = step(params, opt_state, batch)
         if epoch % log_every == 0:
-            v = float(eval_loss(params, jnp.asarray(snapshots_val)))
+            v = eval_loss(params, snapshots_val)
             history.append((epoch, float(loss), v))
             if v < best_val:
                 best_val = v

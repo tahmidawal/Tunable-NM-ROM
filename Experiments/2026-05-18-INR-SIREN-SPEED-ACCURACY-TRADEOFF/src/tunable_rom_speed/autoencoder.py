@@ -23,9 +23,10 @@ import jax.numpy as jnp
 from .encoder import ViTEncoder
 from .decoders.modulated_siren import ModulatedSIREN
 from .decoders.cross_attn_inr import CrossAttnINR
+from .decoders.affine_z import AffineZDecoder
 
 
-DecoderKind = Literal["siren", "xattn"]
+DecoderKind = Literal["siren", "xattn", "affine_z"]
 
 
 class INRAutoencoder(nn.Module):
@@ -83,6 +84,16 @@ class INRAutoencoder(nn.Module):
                 num_layers=self.xattn_num_layers,
                 fourier_scale=self.fourier_scale,
             )
+        elif self.decoder_kind == "affine_z":
+            self.decoder = AffineZDecoder(
+                coord_dim=self.coord_dim,
+                latent_dim=self.latent_dim,
+                hidden_dim=self.hidden_dim,
+                num_layers=self.siren_num_layers,
+                omega_0=self.omega_0,
+                omega=self.omega,
+                modulator_hidden=self.modulator_hidden,
+            )
         else:
             raise ValueError(f"unknown decoder_kind: {self.decoder_kind!r}")
 
@@ -94,7 +105,7 @@ class INRAutoencoder(nn.Module):
     # ---- decoder convenience ----
     def decode_one(self, z, tokens, x):
         """Single-coord decode. Used by tests and vmap callsites."""
-        if self.decoder_kind == "siren":
+        if self.decoder_kind in ("siren", "affine_z"):
             return self.decoder(z, x)
         else:
             state = self.decoder.prepare(z, tokens)
@@ -108,9 +119,10 @@ class INRAutoencoder(nn.Module):
 
         x_query: (M, coord_dim)  ->  u: (M,)
         """
-        if self.decoder_kind == "siren":
-            # SIREN has no per-snapshot precompute beyond the modulator MLP,
-            # which is consumed inside the decoder's __call__ — vmap handles it.
+        if self.decoder_kind in ("siren", "affine_z"):
+            # SIREN/affine have no per-snapshot precompute beyond the
+            # modulator/coef MLP, which is consumed inside the decoder's
+            # __call__ — vmap handles it.
             return jax.vmap(lambda x: self.decoder(z, x))(x_query)
         else:
             state = self.decoder.prepare(z, tokens)

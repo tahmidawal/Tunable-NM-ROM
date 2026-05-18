@@ -1,0 +1,41 @@
+# Lever D iter 1: affine-in-z decoder.  u(x;z) = Phi(x) @ A(z) + b(x).
+# Phi is a 4-layer SIREN MLP (same width as modulated SIREN).
+# A is a 2-layer MLP from latent -> coefficient vector R^hidden.
+# Training uses iter-2 anchor recipe so cold-start works.
+decoder_kind: affine_z
+
+N: 128
+spatial_dim: 2
+n_train: 700
+n_val: 140
+seed: 42
+
+patch_size: 16
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 16
+
+# Phi trunk shape (siren_num_layers -> Phi depth; siren_hidden_dim -> feature dim h).
+siren_num_layers: 4
+siren_hidden_dim: 384
+omega_0: 30.0
+omega: 1.0
+# A(z) MLP hidden width.
+modulator_hidden: 192
+
+num_epochs: 50000
+batch_size: 24
+points_per_sample_train: 1024
+points_per_sample_val: 4096
+on_grid_frac_train: 0.5
+peak_lr: 1.0e-3
+weight_decay: 1.0e-5
+warmup_steps: 500
+log_every: 500
+
+# Same regularizers as iter-2 SIREN anchor so cold-start carries over.
+lambda_z: 1.0e-1
+lambda_z_warmup_steps: 5000
+lambda_anchor: 1.0
+lambda_anchor_warmup_steps: 2000

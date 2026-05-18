@@ -1,0 +1,40 @@
+# linaff v5: push v4 hardest. 200k epochs, larger Phi, careful lap weight schedule.
+# Aim: rel-L2 median <= 1e-2 with p90 <= 1.5e-2.
+decoder_kind: linear_affine_z
+
+N: 128
+spatial_dim: 2
+n_train: 700
+n_val: 140
+seed: 42
+
+patch_size: 16
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 24                     # 1.5x of v4 (in between 16 and 32)
+
+siren_num_layers: 5
+siren_hidden_dim: 768               # 1.5x of v4 (was 512)
+omega_0: 30.0
+omega: 1.0
+modulator_hidden: 384
+affine_bias_hidden: 384
+
+num_epochs: 150000                 # 1.5x of v4
+batch_size: 24
+points_per_sample_train: 1024
+points_per_sample_val: 4096
+on_grid_frac_train: 0.5
+peak_lr: 1.0e-3
+weight_decay: 1.0e-5
+warmup_steps: 1000
+log_every: 1000
+
+lambda_z: 1.0e-3
+lambda_z_warmup_steps: 5000
+lambda_anchor: 0.0
+lambda_anchor_warmup_steps: 1
+lambda_lap: 1.5e-1                 # slightly between v2 (0.1) and v4 (0.2)
+lambda_lap_warmup_steps: 8000      # slower warmup so rec gets a head-start
+M_lap: 384

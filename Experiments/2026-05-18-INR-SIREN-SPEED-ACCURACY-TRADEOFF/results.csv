@@ -13,3 +13,5 @@ HEAD,linaff_v1_eq500,270.59,2.53e-1,5.02e-1,0.0,0.0,1.01,273.5,3,0,LinearAffineZ
 HEAD,linaff_v1_eq8000,110.62,2.53e-1,5.02e-1,0.0,0.0,2.48,273.5,3,0,linaff_v1 at eq=8000.
 HEAD,linaff_v2_eq500,320.75,1.81e-2,3.16e-2,0.12,0.00,0.85,272.0,2,0,LinearAffine + Laplacian residual loss. rel-L2 1.81e-2 median p90 3.16e-2 with 320x FOM speedup. iters_med=2. p90 < 4e-2 — usable. Lap loss aligned encoder z with residual-min z; ROM rel-L2 now BETTER than oracle (uses FOM operator directly). NEW PARETO TIER.
 HEAD,linaff_v2_eq8000,148.89,1.81e-2,3.16e-2,0.12,0.00,1.84,272.0,2,0,linaff_v2 at eq=8000.
+HEAD,linaff_v4_eq500,273.94,1.31e-2,1.99e-2,0.22,0.01,1.00,272.4,2,0,LinAff + Lap loss + 100k epochs (2x v2) + lambda_lap=0.2 (2x). Best val 8.62e-3 ROM rel-L2 1.31e-2 p90 1.99e-2. NEW SOTA fast tier — 274x FOM at rel-L2 ~1.3e-2. Confirms v2 was training-time-limited not capacity-limited.
+HEAD,linaff_v4_eq8000,103.55,1.31e-2,1.99e-2,0.22,0.01,2.63,272.4,2,0,linaff_v4 at eq=8000.

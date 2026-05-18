@@ -15,3 +15,5 @@ HEAD,linaff_v2_eq500,320.75,1.81e-2,3.16e-2,0.12,0.00,0.85,272.0,2,0,LinearAffin
 HEAD,linaff_v2_eq8000,148.89,1.81e-2,3.16e-2,0.12,0.00,1.84,272.0,2,0,linaff_v2 at eq=8000.
 HEAD,linaff_v4_eq500,273.94,1.31e-2,1.99e-2,0.22,0.01,1.00,272.4,2,0,LinAff + Lap loss + 100k epochs (2x v2) + lambda_lap=0.2 (2x). Best val 8.62e-3 ROM rel-L2 1.31e-2 p90 1.99e-2. NEW SOTA fast tier — 274x FOM at rel-L2 ~1.3e-2. Confirms v2 was training-time-limited not capacity-limited.
 HEAD,linaff_v4_eq8000,103.55,1.31e-2,1.99e-2,0.22,0.01,2.63,272.4,2,0,linaff_v4 at eq=8000.
+HEAD,linaff_v3_eq500,246.57,1.14e-2,1.81e-2,0.34,0.00,1.11,273.7,2,0,LinAff + Lap + 100k ep + bigger Phi (640w/6L) + lambda_lap=0.05. Best val 9.59e-3 ROM rel-L2 1.14e-2 p90 1.81e-2. 246x FOM. CLOSE TO 1e-2 — frac<1e-2=0.34.
+HEAD,linaff_v3_eq8000,92.98,1.14e-2,1.81e-2,0.34,0.00,2.94,273.7,2,0,linaff_v3 at eq=8000.

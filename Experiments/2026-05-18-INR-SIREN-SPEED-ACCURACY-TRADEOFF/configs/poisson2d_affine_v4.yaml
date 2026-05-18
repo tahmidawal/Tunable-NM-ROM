@@ -1,0 +1,40 @@
+# Lever D iter 4: no anchor + very weak L2(z). v2 architecture (which fits well)
+# but trust the encoder to spread z away from 0. Cold-start may fail differently
+# but the diag showed v2 manifold IS rich (oracle 1e-2), the issue is GN can't
+# reach those z's. Train so the Jacobian at z=0 points in a useful direction.
+decoder_kind: affine_z
+
+N: 128
+spatial_dim: 2
+n_train: 700
+n_val: 140
+seed: 42
+
+patch_size: 16
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 16
+
+siren_num_layers: 5
+siren_hidden_dim: 512
+omega_0: 30.0
+omega: 1.0
+modulator_hidden: 256
+affine_bias_hidden: 256
+
+num_epochs: 50000
+batch_size: 24
+points_per_sample_train: 1024
+points_per_sample_val: 4096
+on_grid_frac_train: 0.5
+peak_lr: 1.0e-3
+weight_decay: 1.0e-5
+warmup_steps: 500
+log_every: 500
+
+# No anchor (lambda_anchor=0), very weak L2(z).
+lambda_z: 1.0e-4
+lambda_z_warmup_steps: 5000
+lambda_anchor: 0.0
+lambda_anchor_warmup_steps: 1

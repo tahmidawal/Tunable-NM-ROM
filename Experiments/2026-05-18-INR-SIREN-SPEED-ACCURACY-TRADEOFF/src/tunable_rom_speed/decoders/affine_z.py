@@ -57,6 +57,7 @@ class AffineZDecoder(nn.Module):
     omega_0: float = 30.0
     omega: float = 1.0
     modulator_hidden: int = 128
+    bias_hidden: int = 128       # b(x) SIREN width
 
     def setup(self):
         # Phi(x) SIREN trunk parameters.
@@ -76,12 +77,28 @@ class AffineZDecoder(nn.Module):
             self.param(f"phi_b_{l}", nn.initializers.zeros, (self.hidden_dim,))
             for l in range(1, self.num_layers)
         ]
-        # b(x) trunk: single linear from x to scalar.
-        self._b_W = self.param(
-            "bias_W", nn.initializers.zeros, (self.coord_dim, 1),
+        # b(x) trunk: small SIREN MLP from x to scalar.
+        # Shape: (coord_dim, bias_hidden) -> (bias_hidden, bias_hidden) -> (bias_hidden, 1)
+        self._b_W_in = self.param(
+            "bias_W_in", _first_layer_init(self.coord_dim),
+            (self.coord_dim, self.bias_hidden),
         )
-        self._b_b = self.param(
-            "bias_b", nn.initializers.zeros, (1,),
+        self._b_b_in = self.param(
+            "bias_b_in", nn.initializers.zeros, (self.bias_hidden,),
+        )
+        self._b_W_mid = self.param(
+            "bias_W_mid", _siren_init(self.omega),
+            (self.bias_hidden, self.bias_hidden),
+        )
+        self._b_b_mid = self.param(
+            "bias_b_mid", nn.initializers.zeros, (self.bias_hidden,),
+        )
+        self._b_W_out = self.param(
+            "bias_W_out", _siren_init(self.omega),
+            (self.bias_hidden, 1),
+        )
+        self._b_b_out = self.param(
+            "bias_b_out", nn.initializers.zeros, (1,),
         )
         # A(z) coefficient MLP: latent -> modulator_hidden -> hidden_dim.
         self._A_W0 = self.param(
@@ -108,8 +125,11 @@ class AffineZDecoder(nn.Module):
         return h
 
     def bias(self, x):
-        """Learnable scalar bias field b(x). Helps zero-mean centering."""
-        return (x @ self._b_W + self._b_b).squeeze(-1)
+        """Learnable scalar bias field b(x): a 2-hidden-layer SIREN."""
+        a = self.omega_0 * (x @ self._b_W_in + self._b_b_in)
+        h = jnp.sin(a)
+        h = jnp.sin(self.omega * (h @ self._b_W_mid + self._b_b_mid))
+        return (h @ self._b_W_out + self._b_b_out).squeeze(-1)
 
     def coef(self, z):
         """A(z) in R^hidden_dim."""

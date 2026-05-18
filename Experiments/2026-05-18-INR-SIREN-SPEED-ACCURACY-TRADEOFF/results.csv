@@ -1,3 +1,5 @@
 commit,label,speedup_vs_fom,rel_l2_median,rel_l2_p90,frac_le_1e-2,frac_le_5e-3,rom_time_ms,fom_time_ms,iters_coarse_med,iters_fine_med,change_description
 8b2dc44,baseline_iter7_500_to_8000,0.50,2.88e-3,6.61e-3,0.9375,0.85,551,274,30,5,decoder-explorer SOTA: anchor coarse 500 + lap fine 8000, both capped at 30 iters
 8b2dc44,baseline_iter7_500_to_8000_timed,0.128,2.88e-3,6.61e-3,0.9375,0.85,2152,276,30,5,re-timed iter-7 with proper warmup: actual median is 2152ms not 551ms; fine_full=1996ms median (jacfwd_fine=54ms x 30 iters cap)
+HEAD,affine_v1_eq500,194.21,1.95e-1,5.88e-1,0.025,0.012,1.42,275.6,5,0,affine-in-z decoder + AffineNMROMSolver (Phi_st precomputed) at eq=500 / 30 iters cap. SPEED CEILING demo: 194x FOM. ACCURACY MISS: 20% rel-L2 median. Training: anchor-style only, hidden=384, Phi depth 4. Manifold expressivity too low; bias b(x) is just linear from x.
+HEAD,affine_v1_eq8000,80.36,1.95e-1,5.88e-1,0.025,0.012,3.43,275.6,5,0,same affine_v1 ckpt but eq=8000 (more residual points): rel-L2 unchanged (manifold limited not eq limited). Confirms speed scales linearly with n_eq for affine.

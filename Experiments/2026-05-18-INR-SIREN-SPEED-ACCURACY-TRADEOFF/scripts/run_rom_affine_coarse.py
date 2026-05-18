@@ -41,6 +41,7 @@ def _build_model(cfg: dict) -> INRAutoencoder:
         num_fourier=cfg.get("num_fourier", 16),
         xattn_num_layers=cfg.get("xattn_num_layers", 3),
         fourier_scale=cfg.get("fourier_scale", 4.0),
+        affine_bias_hidden=cfg.get("affine_bias_hidden", 128),
     )
 
 

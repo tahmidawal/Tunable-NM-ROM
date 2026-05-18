@@ -39,6 +39,9 @@ class ExperimentConfig:
     xattn_hidden_dim: int = 256
     fourier_scale: float = 4.0
 
+    # Decoder — Affine-z specific.
+    affine_bias_hidden: int = 128
+
     # Training.
     num_epochs: int = 50_000
     batch_size: int = 24

@@ -48,6 +48,7 @@ def main():
         d_attn=cfg.d_attn, num_fourier=cfg.num_fourier,
         xattn_num_layers=cfg.xattn_num_layers,
         fourier_scale=cfg.fourier_scale,
+        affine_bias_hidden=cfg.affine_bias_hidden,
     )
 
     params, meta = train_anchor(

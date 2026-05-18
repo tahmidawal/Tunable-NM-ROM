@@ -52,6 +52,8 @@ class INRAutoencoder(nn.Module):
     num_fourier: int = 16
     xattn_num_layers: int = 3
     fourier_scale: float = 4.0
+    # Affine-z specific.
+    affine_bias_hidden: int = 128
 
     def setup(self):
         self.encoder = ViTEncoder(
@@ -93,6 +95,7 @@ class INRAutoencoder(nn.Module):
                 omega_0=self.omega_0,
                 omega=self.omega,
                 modulator_hidden=self.modulator_hidden,
+                bias_hidden=self.affine_bias_hidden,
             )
         else:
             raise ValueError(f"unknown decoder_kind: {self.decoder_kind!r}")

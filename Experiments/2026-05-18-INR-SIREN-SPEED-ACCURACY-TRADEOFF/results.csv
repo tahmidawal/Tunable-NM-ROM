@@ -5,3 +5,7 @@ HEAD,affine_v1_eq500,194.21,1.95e-1,5.88e-1,0.025,0.012,1.42,275.6,5,0,affine-in
 HEAD,affine_v1_eq8000,80.36,1.95e-1,5.88e-1,0.025,0.012,3.43,275.6,5,0,same affine_v1 ckpt but eq=8000 (more residual points): rel-L2 unchanged (manifold limited not eq limited). Confirms speed scales linearly with n_eq for affine.
 HEAD,affine_v2_eq500,149.03,3.35e-1,8.03e-1,0.0,0.0,1.82,271.6,4,0,affine v2 (hidden 512 depth 5 SIREN bias 256) trained anchor recipe. WORSE than v1 (0.33 vs 0.20). Bigger Phi reduces capacity to escape manifold near z=0 cold-start. Best val 1.84e-2 but ROM rel-L2 0.33 — solver converges to wrong z.
 HEAD,affine_v2_eq8000,69.62,3.35e-1,8.03e-1,0.0,0.0,3.96,275.4,4,0,affine_v2 at eq=8000 — same rel-L2 confirms bottleneck is the manifold not the EQ.
+HEAD,affine_v3_eq500,199.11,2.33e-1,5.92e-1,0.0,0.0,1.37,272.7,5,0,affine v3 (latent_dim 32). Best val 2.30e-2 (WORSE than v1's 1.55e-2). ROM rel-L2 0.23. Doubling latent dim doesn't help — manifold capacity not the bottleneck.
+HEAD,affine_v3_eq2000,139.94,2.33e-1,5.92e-1,0.0,0.0,1.95,272.7,5,0,affine v3 at eq=2000.
+HEAD,affine_v4_eq500,67.58,7.56e-1,1.12e+0,0.0,0.0,4.06,274.4,14,0,affine v4 (no anchor lambda_z=1e-4). Best val 2.05e-2 (worse). z_enc 0.3-1.1 (spread); z_rom 0.2-0.4 (basin). 14 iters median. WORSE than v2 — removing anchor lets encoder spread z but GN still can't reach those z's.
+HEAD,affine_v4_eq2000,48.75,7.56e-1,1.12e+0,0.0,0.0,5.62,274.4,14,0,affine v4 at eq=2000.

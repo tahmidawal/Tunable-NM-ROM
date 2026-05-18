@@ -1,0 +1,43 @@
+# Lever D iter 5: LinearAffineZDecoder. A(z) is LINEAR in z, so dR/dz is
+# CONSTANT at training-end. GN should converge in 1 step.
+#
+# This is structurally the CP decoder (basis V(x) = Phi(x) @ W_A,
+# linear coefficient z). The training jointly learns the basis and
+# coefficient map; CP uses POD then learns coefficients on top.
+decoder_kind: linear_affine_z
+
+N: 128
+spatial_dim: 2
+n_train: 700
+n_val: 140
+seed: 42
+
+patch_size: 16
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 16
+
+siren_num_layers: 5
+siren_hidden_dim: 512
+omega_0: 30.0
+omega: 1.0
+modulator_hidden: 256        # ignored by linear_affine_z but kept for consistency
+affine_bias_hidden: 256
+
+num_epochs: 50000
+batch_size: 24
+points_per_sample_train: 1024
+points_per_sample_val: 4096
+on_grid_frac_train: 0.5
+peak_lr: 1.0e-3
+weight_decay: 1.0e-5
+warmup_steps: 500
+log_every: 500
+
+# Mild L2(z), no anchor — since the Jacobian is constant, anchor is
+# unnecessary. The encoder is free to put z wherever it wants.
+lambda_z: 1.0e-3
+lambda_z_warmup_steps: 5000
+lambda_anchor: 0.0
+lambda_anchor_warmup_steps: 1

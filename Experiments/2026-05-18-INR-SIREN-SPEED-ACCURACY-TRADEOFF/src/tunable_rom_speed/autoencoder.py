@@ -24,9 +24,10 @@ from .encoder import ViTEncoder
 from .decoders.modulated_siren import ModulatedSIREN
 from .decoders.cross_attn_inr import CrossAttnINR
 from .decoders.affine_z import AffineZDecoder
+from .decoders.linear_affine_z import LinearAffineZDecoder
 
 
-DecoderKind = Literal["siren", "xattn", "affine_z"]
+DecoderKind = Literal["siren", "xattn", "affine_z", "linear_affine_z"]
 
 
 class INRAutoencoder(nn.Module):
@@ -97,6 +98,16 @@ class INRAutoencoder(nn.Module):
                 modulator_hidden=self.modulator_hidden,
                 bias_hidden=self.affine_bias_hidden,
             )
+        elif self.decoder_kind == "linear_affine_z":
+            self.decoder = LinearAffineZDecoder(
+                coord_dim=self.coord_dim,
+                latent_dim=self.latent_dim,
+                hidden_dim=self.hidden_dim,
+                num_layers=self.siren_num_layers,
+                omega_0=self.omega_0,
+                omega=self.omega,
+                bias_hidden=self.affine_bias_hidden,
+            )
         else:
             raise ValueError(f"unknown decoder_kind: {self.decoder_kind!r}")
 
@@ -108,7 +119,7 @@ class INRAutoencoder(nn.Module):
     # ---- decoder convenience ----
     def decode_one(self, z, tokens, x):
         """Single-coord decode. Used by tests and vmap callsites."""
-        if self.decoder_kind in ("siren", "affine_z"):
+        if self.decoder_kind in ("siren", "affine_z", "linear_affine_z"):
             return self.decoder(z, x)
         else:
             state = self.decoder.prepare(z, tokens)
@@ -122,7 +133,7 @@ class INRAutoencoder(nn.Module):
 
         x_query: (M, coord_dim)  ->  u: (M,)
         """
-        if self.decoder_kind in ("siren", "affine_z"):
+        if self.decoder_kind in ("siren", "affine_z", "linear_affine_z"):
             # SIREN/affine have no per-snapshot precompute beyond the
             # modulator/coef MLP, which is consumed inside the decoder's
             # __call__ — vmap handles it.

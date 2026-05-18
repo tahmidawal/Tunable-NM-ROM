@@ -59,7 +59,7 @@ class ExperimentConfig:
     @property
     def hidden_dim(self) -> int:
         """Decoder hidden width selected by decoder_kind."""
-        if self.decoder_kind in ("siren", "affine_z"):
+        if self.decoder_kind in ("siren", "affine_z", "linear_affine_z"):
             return self.siren_hidden_dim
         return self.xattn_hidden_dim
 

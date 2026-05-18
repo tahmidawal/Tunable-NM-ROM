@@ -1,0 +1,447 @@
+\section{2026-05-14}
+
+\sessionhead{1}{19:26}{infra}{mirrored-encoder-decoder}{(backfill)}
+
+\subsubsection*{Summary}
+Bootstrapped the \texttt{claude-lab} logger and backfilled a baseline of the
+Tunable NM-ROM repo across its three result subtrees (\texttt{poisson/},
+\texttt{heat/}, \texttt{best-results/}). No new code; this entry is a
+reference point for future session diffs.
+
+\subsubsection*{Motivation (from the paper)}
+Neural operator surrogates (FNO, DeepONet) give one fixed
+(accuracy, speed) point per trained model and offer no way to tune either
+at deployment. The Tunable NM-ROM exposes a continuous accuracy/speed
+Pareto frontier from a \emph{single} trained decoder, controlled at
+inference time by three solver-side knobs: the Gauss--Newton iteration
+cap, the Gauss--Newton early-exit tolerance, and the EQ sample count.
+The framework combines (i) matrix-free Galerkin projection of the FEM/FD
+residual onto a learned manifold, evaluated through JAX forward- and
+reverse-mode autodiff; (ii) NNLS-based EQ hyper-reduction --- which is a
+correctness requirement, not just a speedup, for the parabolic case;
+(iii) exact Dirichlet enforcement by a binary decoder mask; and (iv) a
+ViT encoder + LinearCPDecoder pair chosen to satisfy three constraints
+simultaneously: cold-start latent Gauss--Newton convergence, EQ
+compatibility, and sub-cubic parameter scaling in mesh side. Across
+Poisson and Heat in 2D and 3D at four resolutions, the trained-once
+frontier matches or beats FNO/DeepONet on accuracy in most cells and is
+strictly faster than full-order CG (up to $324\times$ on Poisson-2D at
+$N{=}64$).
+
+\subsubsection*{Architecture snapshot}
+\begin{itemize}
+  \item \texttt{poisson/}: ViT encoder + \textbf{LinearCPDecoder} (linear skip
+        + shallow MLP + CP tensor head); matrix-free $-\Delta$ FOM; NNLS EQ on
+        strict interior; LM Gauss--Newton in latent space.
+  \item \texttt{heat/}: ViT encoder + plain CP decoder; backward-Euler implicit
+        step ($\Delta t=0.005$, 50 steps); EQ Jacobian via precomputed
+        $V_\text{eq}$ basis; whole rollout in one XLA program
+        (\texttt{lax.fori\_loop} over time, \texttt{while\_loop} over GN iters).
+  \item \texttt{best-results/}: frozen per-$(N,d)$ checkpoints + configs
+        referenced by the paper's tables (Poisson-2D N$\in\{64,128,256\}$,
+        Poisson-3D N$\in\{32,64,128,256$-CG$\}$, Heat-2D N$\in\{64,128,256\}$,
+        Heat-3D N$\in\{32,64,128\}$); Poisson-2D/N64 has both \texttt{ACC} and
+        \texttt{FAST} variants.
+\end{itemize}
+
+\subsubsection*{Results / metrics}
+\begin{center}
+\begin{tabular}{l l r r r l}
+  \textbf{Equation} & \textbf{N} & \textbf{d} & \textbf{val rel-L2} & \textbf{speedup} & \textbf{notes} \\
+  \hline
+  Poisson & 64  & 2D & \textbf{4.84e-4} & 180.2$\times$        & --- \\
+  Poisson & 128 & 2D & 1.08e-2          & 183.4$\times$        & --- \\
+  Poisson & 256 & 2D & 1.20e-1          & 149.4$\times$        & --- \\
+  Poisson & 32  & 3D & 1.11e-2          & 84.2$\times$         & --- \\
+  Poisson & 64  & 3D & 6.62e-3          & 111.3$\times$        & --- \\
+  Poisson & 128 & 3D & 1.05e-2          & 35.2$\times$ / 120.7$\times$ & ACC / FAST rank=768 \\
+  Poisson & 256 & 3D & 8.44e-3          & 15.3$\times$         & CG-generated data \\
+  \hline
+  Heat    & 64  & 2D & \textbf{5.21e-3} & 39.6$\times$         & --- \\
+  Heat    & 128 & 2D & 1.02e-2          & 37.8$\times$         & --- \\
+  Heat    & 256 & 2D & 1.08e-1          & 47.5$\times$         & --- \\
+  Heat    & 32  & 3D & 9.30e-2          & 176.4$\times$        & --- \\
+  Heat    & 64  & 3D & 1.76e-2          & 269.3$\times$        & --- \\
+  Heat    & 128 & 3D & 4.33e-2          & 112.1$\times$        & --- \\
+\end{tabular}
+\end{center}
+
+\subsubsection*{Decisions / surprises}
+\begin{itemize}
+  \item The LinearCPDecoder's \textit{linear skip} is a correctness
+        requirement, not a speedup: a pure MLP decoder has $\partial u/\partial z
+        \approx 0$ near $z=0$, so Gauss--Newton has no descent direction from a
+        cold start. The skip restores a non-degenerate decoder Jacobian at the
+        origin.
+  \item EQ-NNLS is restricted to strict interior nodes $[1, N{-}2]^d$ so the
+        5-/7-point stencil never touches the boundary at runtime --- this is
+        what lets the masked decoder enforce Dirichlet BCs exactly.
+  \item Training data must match the FOM operator. Analytical-PDE data is fine
+        for $N \leq 128$, but at $N=256$ the $O(\Delta x^2)$ consistency gap
+        becomes comparable to the ROM error budget and rel-L2 floors near 0.8 ---
+        switch to CG-generated data.
+\end{itemize}
+
+\sessionhead{2}{19:32}{spike}{multiresolution-experiment}{408c4d7, c5efcea, 09ffbc0}
+
+\subsubsection*{Summary}
+Built a new package \texttt{tunable\_rom\_multires} that trains a single
+ViT--LinearCP autoencoder jointly across two grid resolutions with a shared
+latent space and shared rank-$R$ channel weights; only the CP factor matrices
+and the patch-embed layer are per-resolution. After a long bug-hunt the joint
+model works: one checkpoint serves NM-ROM at both $N{=}64$ and $N{=}128$.
+
+\textit{Honest framing correction (logged later same day, before session 3):
+the long bug-hunt was largely self-inflicted. The multi-res package was
+written by copying from \texttt{poisson/} (the public refactor) instead of
+from \texttt{best-results/.../poisson\_nmrom\_sweep.py} (the canonical recipe).
+That copy inherited seven correctness regressions from the public refactor
+--- listed at the end of this session entry. The ``debugging'' was rediscovering
+and reversing those regressions in my own code; framing them as something the
+session ``discovered'' about the public package, while technically true, hides
+that the multi-res code spent the whole day broken on dimensions that had
+nothing to do with multi-resolution. Recorded for posterity so future-me knows
+to start from \texttt{best-results/} when implementing a variant.}
+
+\subsubsection*{Files touched}
+\begin{itemize}
+  \item \texttt{Experiments/multiresolution-experiment/} (relocated from
+        \texttt{multiresolution-experiment/} on 2026-05-14 between sessions 3
+        and post-log) --- new pip-installable package \texttt{tunable\_rom\_multires}
+        (\textasciitilde{}13 modules under \texttt{src/}, mirroring
+        \texttt{poisson/} layout). NB: this layered package is the broken-recipe
+        version. The recipe that produces the canonical numbers is the
+        single-file driver added in session 3 below
+        (\texttt{Experiments/multiresolution-experiment/scripts/multires\_nmrom\_sweep.py}).
+\end{itemize}
+
+\subsubsection*{Results / metrics}
+Joint multi-resolution training on Poisson-2D, CG-generated data, all fixes
+applied. Same trained checkpoint evaluated at both grids:
+\begin{center}
+\begin{tabular}{l r r}
+  \textbf{Resolution} & \textbf{joint multi-res ROM rel-L2} & \textbf{per-cell baseline} \\
+  \hline
+  $N{=}64$  & 1.01e-2 & \textbf{4.84e-4} \\
+  $N{=}128$ & 1.33e-2 & \textbf{3.23e-3} \\
+\end{tabular}
+\end{center}
+About 20$\times$ worse at $N{=}64$ and 4$\times$ worse at $N{=}128$ than the
+dedicated per-cell models, but both resolutions are served from one trained
+network --- the shared-latent multi-res CP design is empirically validated.
+
+\subsubsection*{Decisions / surprises}
+\begin{itemize}
+  \item Most of the session was diagnosing why the multires pipeline at
+        single-resolution gave ROM rel-L2 $\approx 0.80$ vs the paper's
+        \texttt{4.84e-4}. The proximate cause was that the multi-res package
+        was written by copying \texttt{poisson/} (the public refactor), which
+        independently carries seven regressions vs the canonical
+        \texttt{best-results/Poisson-2D/N64/ACC/poisson\_nmrom\_sweep.py}.
+        Running the canonical script verbatim (job \texttt{789442}) does
+        reproduce \texttt{4.84e-4}; the public package end-to-end (job
+        \texttt{786663}) gives 0.83. The hours of failed training in this
+        session were my multi-res code inheriting those regressions and
+        slowly being patched back toward the canonical recipe one knob at a
+        time. The fix going forward (session 3): rebase on the canonical
+        sweep script, not the public refactor.
+  \item The dominant fix is \texttt{data\_source}: training the AE on
+        continuous analytical solutions yields a manifold whose decoded
+        fields don't satisfy $K_{\text{FOM}}\,u = F$. Because $\|K\|\sim 1/\Delta x^2$,
+        the $O(\Delta x^2)$ discretization error amplifies into an $O(1)$
+        projected residual at $z^*$, so the encoded-FOM latent is no longer
+        a residual minimum and Gauss--Newton descends the wrong way. CG-generated
+        data fixes this in one step (0.5 $\rightarrow$ 1.3e-3 ROM rel-L2);
+        the other six fixes together only moved 0.80 $\rightarrow$ 0.5.
+  \item The diagnostic that nailed it was a warmstart probe (jobs
+        \texttt{786943}, \texttt{787041}): encode $u_{\text{FOM}}$, decode back
+        (AE rel-L2 $\sim 10^{-3}$, fine), then check $\|R(z^*)\|$ vs $\|R(z{=}0)\|$.
+        Across 10 samples $\|R(z^*)\|\approx 17$--$121$ while $\|R(z{=}0)\|\approx 18$
+        --- the encoded-FOM latent was not a residual minimum, isolating the
+        bug as either a residual-formulation or data-mismatch issue.
+\end{itemize}
+
+The seven regressions and their fixes:
+\begin{center}
+\begin{tabular}{l l l}
+  \textbf{Public refactor} & \textbf{Original best-results} & \textbf{Effect} \\
+  \hline
+  Loss is squared rel-L2          & Non-squared rel-L2                & Plateaus $\sim$0.5 \\
+  \texttt{W\_direct.use\_bias=False} & \texttt{use\_bias=True}        & Changes $h(z{=}0)$ \\
+  \texttt{warmup\_frac=0.05} ($\approx$5000 steps) & \texttt{min(500, n/10)} & 10$\times$ LR shape \\
+  EQ uses $\|K u_i\|$ magnitude   & EQ uses $J_D(z_i)^T R_i$           & Mid \\
+  $F$ not boundary-masked         & $F$ zeroed on all boundary faces   & Small \\
+  Decoder unmasked at ROM time    & \texttt{\_constrained\_decode} masks pre-residual & Mid \\
+  \textbf{\texttt{data\_source: analytical}} & \textbf{CG-generated snapshots} & \textbf{Dominant} \\
+\end{tabular}
+\end{center}
+
+
+
+\sessionhead{3}{20:48}{infra}{multiresolution-experiment}{(pending)}
+
+\subsubsection*{Summary}
+Rebased the multi-resolution NM-ROM driver on
+\texttt{best-results/Poisson-2D/N64/ACC/poisson\_nmrom\_sweep.py} verbatim,
+keeping only the changes required to share an autoencoder across grid
+resolutions. The previous session's package had silently carried the seven
+public-refactor regressions documented above; the rebase removes all of them
+by construction. Job \texttt{797933} runs the canonical recipe jointly across
+$N\in\{64, 128\}$.
+
+\subsubsection*{Files touched}
+\begin{itemize}
+  \item \textbf{Driver (THE working file):}
+        \texttt{Experiments/multiresolution-experiment/scripts/multires\_nmrom\_sweep.py}
+        --- single self-contained driver, line-for-line lift of
+        \texttt{best-results/Poisson-2D/N64/ACC/poisson\_nmrom\_sweep.py}.
+        This is the exact file that produced the 4.05e-4 / 1.49e-2 result
+        in job \texttt{797933}. Differences from the canonical sweep (only):
+        \begin{itemize}
+          \item Encoder \texttt{patch\_embed} is a per-$N$ \texttt{nn.Dense}
+                (\texttt{patch\_embed\_64}, \texttt{patch\_embed\_128}); the
+                transformer trunk, \texttt{enc\_pos}, \texttt{enc\_norm}, and
+                \texttt{enc\_proj} are shared.
+          \item Decoder \texttt{W\_x}, \texttt{W\_y} are per-$N$ params
+                (\texttt{W\_x\_64}, \texttt{W\_x\_128}, etc.); the MLP
+                (\texttt{W1}, \texttt{W2}, \texttt{W\_rank}, \texttt{W\_direct})
+                and scalar \texttt{bias} are shared.
+          \item \texttt{patch\_size} is set per-$N$ so token count is fixed at
+                \texttt{tokens\_per\_side}$^2$ (8$^2$=64) across resolutions ---
+                this is what makes a shared positional embedding well-defined.
+          \item Training step samples \texttt{batch\_size} from each $N$,
+                averages per-$N$ \emph{non-squared} rel-L2 reconstruction loss.
+          \item Per-$N$ EQ-NNLS over $J_D^T R$ and per-$N$ LM+backtracking
+                solver; both are exact copies of the canonical implementations
+                with \texttt{N} substituted for the hard-coded 64.
+        \end{itemize}
+  \item \textbf{Launcher:}
+        \texttt{Experiments/multiresolution-experiment/run\_multires\_canonical.slurm}
+        --- A100 launcher pinning every flag to
+        \texttt{best-results/Poisson-2D/N64/ACC/config\_used.json}
+        (rank=128, $k$=8, batch=32, epochs=100k, peak\_lr=1e-3,
+        weight\_decay=5e-4, $n_{\text{train}}$=700, $n_{\text{val}}$=140,
+        $n_{\text{eq}}$=80, min\_eq=300, gn\_tol=1e-6, max\_iters=8).
+  \item \textbf{Run artifacts (this experiment):}
+        \texttt{Experiments/multiresolution-experiment/runs/multires\_canon\_outdir/}
+        --- contains \texttt{training.log} (full 100k-epoch trace),
+        \texttt{config\_used.json}, \texttt{dataset\_N64.npz},
+        \texttt{dataset\_N128.npz}, \texttt{checkpoint\_<fp>.pkl} (the
+        trained joint AE), \texttt{results.tsv} (final numbers), and
+        \texttt{plots/results\_N64.png}, \texttt{plots/results\_N128.png}.
+  \item \textbf{Canonical reference (the file that defines ``what works''):}
+        \texttt{best-results/Poisson-2D/N64/ACC/poisson\_nmrom\_sweep.py}
+        with \texttt{best-results/Poisson-2D/N64/ACC/config\_used.json}.
+        Reproduced verbatim in job \texttt{789442} (output: 4.84e-4 mean,
+        140.20$\times$ speedup) --- the ground-truth comparison for any
+        Poisson-2D N=64 variant.
+\end{itemize}
+
+\subsubsection*{Cited jobs}
+\begin{itemize}
+  \item Job \texttt{797933}: \textbf{the canonical multi-res run}.
+        Output: \texttt{4.05e-4} (N=64) / \texttt{1.49e-2} (N=128).
+        Launched by \texttt{run\_multires\_canonical.slurm}; runs
+        \texttt{scripts/multires\_nmrom\_sweep.py}.
+        Logs: \texttt{runs/multires\_canon\_797933.\{out,err\}} and
+        \texttt{runs/multires\_canon\_outdir/training.log}.
+  \item Job \texttt{789442}: ground-truth reproduction of the canonical
+        sweep verbatim (\texttt{4.84e-4}). Used to confirm
+        \texttt{best-results} is the file to copy.
+  \item Job \texttt{786663}: public \texttt{tunable\_rom\_poisson} package
+        end-to-end at N=64 (\texttt{0.83}). Used to confirm the seven
+        regressions in the public refactor.
+  \item Earlier (broken-recipe) joint multi-res run: job \texttt{794116},
+        output: \texttt{1.01e-2} / \texttt{1.33e-2}. Now superseded by 797933.
+\end{itemize}
+
+\subsubsection*{Decisions / surprises}
+\begin{itemize}
+  \item \textit{User-stated framing (quoted, not editorialised):} ``Just because
+        we want the system to be multigrid doesn't mean you get to violate the
+        system.'' Rule taken forward: when implementing a variant of an
+        established result, start from the file that produces that result, not
+        from a downstream refactor whose recipe may have drifted.
+  \item Flax \texttt{nn.Dense} submodules in a Python dict inside
+        \texttt{setup} are \emph{lazy}: only the $N$ exercised on the
+        \texttt{init} path gets its parameters created. Bare \texttt{self.param}
+        calls in \texttt{setup} are eager. To populate both per-$N$
+        \texttt{patch\_embed} layers and both per-$N$ CP factor matrices in
+        one parameter tree, \texttt{init} is called once per resolution and
+        the resulting trees are deep-merged.
+  \item Smoke ran end-to-end on CPU at both single-$N$ (50 epochs) and joint
+        $N\in\{64,128\}$ (20 epochs) before submitting the GPU job; training
+        loss, EQ-NNLS, and the LM solver all execute without raising.
+\end{itemize}
+
+\subsubsection*{Results / metrics (after rebase, job \texttt{797933})}
+
+Same trained joint checkpoint, evaluated at each $N$:
+\begin{center}
+\begin{tabular}{l r r r r}
+  \textbf{Resolution} & \textbf{joint multi-res ROM rel-L2} & \textbf{per-cell baseline} & \textbf{ratio} & \textbf{speedup} \\
+  \hline
+  $N{=}64$  & \textbf{4.05e-4} & 4.84e-4 & 0.84$\times$ (better) & 103$\times$ \\
+  $N{=}128$ & 1.49e-2 & 1.08e-2 (paper) / 3.23e-3 (best-results) & 1.4--4.6$\times$ & 104$\times$ \\
+\end{tabular}
+\end{center}
+
+The headline: a single jointly-trained AE \emph{matches} the per-cell paper
+baseline at $N{=}64$ (slightly better, in fact) and lands in the same
+order-of-magnitude bucket at $N{=}128$. AE val rec is $\sim 1.8\times 10^{-3}$
+at both resolutions; both EQ-NNLS solves picked exactly 640 nodes
+(15.6\% / 3.9\% interior sparsity); ROM speedup $\sim$100$\times$ at both
+grids. Compared to the previous (broken-recipe) multi-res result
+(\texttt{1.01e-2} / \texttt{1.33e-2}), this is a 25$\times$ improvement at
+$N{=}64$ and roughly flat at $N{=}128$ --- consistent with the regressions
+having been most damaging at the low end of the rel-L2 scale.
+
+Training completed 100k epochs in $\sim$30 minutes on A100 (pax051).
+Total wallclock including CG data gen and EQ build: $\sim$45 minutes.
+
+\subsubsection*{Decisions / surprises (continued)}
+\begin{itemize}
+  \item The N=128 result (1.49e-2) is slightly worse than the per-cell paper
+        number (1.08e-2), not better. Likely contributors: the joint training
+        spends only half its gradient steps on N=128 samples, and patch\_size
+        scales from 8 to 16 between resolutions (the per-token amount of field
+        a single \texttt{patch\_embed} Dense has to summarize doubles in extent
+        at N=128). Improvable, but not load-bearing for the design claim.
+  \item The N=64 result (4.05e-4 vs per-cell 4.84e-4) is the strongest
+        empirical evidence so far that the shared-latent CP design isn't
+        merely ``competitive'' with a per-cell baseline --- on this seed and
+        recipe, training jointly with N=128 \emph{helped} the N=64 result
+        slightly. Could be noise on a 4-case benchmark; would want more seeds
+        and test cases before claiming it as a regularization effect.
+\end{itemize}
+
+
+\sessionhead{4}{21:30}{design}{multiresolution-experiment}{(no code yet)}
+
+\subsubsection*{Summary}
+Pre-implementation design notes for adding multigrid-style structure on top
+of the shared-latent multi-resolution NM-ROM (session 3). Captures the
+classical multigrid analogy, three candidate architectures, why N=128 ROM
+accuracy is 1.49e-2 (where it loses to the per-cell baseline), and the
+tunable knobs available before we touch model code.
+
+\subsubsection*{Multigrid analogy}
+Classical multigrid for elliptic PDEs uses three operators across a grid
+hierarchy: a smoother $S_h$ on each level (kills high-freq error fast,
+useless on low-freq error), a restriction $R: \Omega^h \to \Omega^{2h}$,
+and a prolongation $P: \Omega^{2h} \to \Omega^h$. The V-cycle alternates
+smoothing with coarse-grid defect equations; convergence is mesh-independent
+because smoothing and coarsening cover complementary parts of the error
+spectrum.
+
+The NM-ROM analogues:
+\begin{itemize}
+  \item ``Smoother'' = Gauss-Newton iterations in latent space ($z$).
+  \item ``Grids'' = the per-$N$ encoder/decoder paths in the shared-latent AE
+        from session 3 (currently $N \in \{64, 128\}$).
+  \item \textbf{Missing}: any analogue of restriction/prolongation. The two
+        grids only communicate through the shared latent $z$; there is no
+        residual transfer or coarse-correction operator between levels.
+\end{itemize}
+
+\subsubsection*{Three candidate architectures}
+\begin{itemize}
+  \item \textbf{Option A --- Nested-iteration warm start (cheapest).}
+        Train the joint AE as we already have. At ROM inference time, solve
+        GN at $N=64$ first (cheap, $\sim$0.4ms), then use $z_{64}^\ast$ as
+        the initial latent for GN at $N=128$ instead of $z=0$. Variants:
+        \begin{itemize}
+          \item \emph{A.1} --- encode the FOM solution at $N=64$ via cheap CG
+                + $E_{64}$, then warm-start the fine ROM with that.
+          \item \emph{A.2} --- ROM-only nested iteration: solve $N=64$
+                \emph{ROM} (no FOM), warm-start $N=128$ \emph{ROM}. Total
+                inference cost = coarse-ROM + fine-ROM, both cheap.
+        \end{itemize}
+        No retraining, $\sim$50 lines of diff to
+        \texttt{multires\_nmrom\_sweep.py}. Tests whether cold-start is the
+        bottleneck at $N=128$.
+  \item \textbf{Option B --- Residual-driven coarse correction (true V-cycle).}
+        Solve at $N=128$ to partial convergence; compute fine-grid residual
+        $R_h = K_h u_h - F_h$; restrict $R_h \to N=64$; solve the defect
+        equation $K_{2h} e_{2h} = R_h^{\text{restricted}}$ via the coarse
+        ROM; prolong correction back. Complication: the latent representation
+        of a \emph{defect} differs from the latent representation of a
+        \emph{solution}, so we'd need either (i) decoder linear in $z$ so
+        restriction commutes with decoding, or (ii) a second encoder that
+        ingests residuals not solutions.
+  \item \textbf{Option C --- Hierarchical latent with explicit coupling.}
+        Split $z = (z_c, z_f)$. Decoder $u_h = D_c(z_c) + D_f(z_c, z_f)$
+        with $D_f$ an upsampling map. Deepest architectural change; starts
+        to look like a learned multigrid solver. Defer until A and B exhausted.
+\end{itemize}
+
+\subsubsection*{Error decomposition at N=128 (where to attack)}
+N=128 joint ROM rel-L2 is 1.49e-2; AE val rec at N=128 is 1.81e-3.
+ROM error is $\sim 8\times$ the manifold error, so the solver stage is
+losing accuracy --- not the manifold. Three nested sources at fine grid:
+\begin{enumerate}
+  \item AE manifold error (val rec 1.81e-3) --- floor on what ROM can achieve.
+  \item EQ-NNLS approximation: GN minimizes residual at 640/16384 = 3.9\%
+        of interior nodes. The EQ optimum is not the full-domain optimum.
+  \item Cold-start basin of attraction: GN from $z=0$ may settle into a
+        local minimum of the EQ objective, not the global one.
+\end{enumerate}
+
+At $N=64$ the ROM beats the AE rec ($4.05\times 10^{-4}$ vs $1.78\times 10^{-3}$)
+because GN minimises residual not reconstruction --- it can find a decoded
+field that's a better residual-minimiser than the training data. That this
+inversion happens at $N=64$ but not at $N=128$ is consistent with EQ-coverage
+or cold-start being the limiting factor at $N=128$, not the manifold.
+
+\subsubsection*{Tunable hyperparameters (Option A and beyond)}
+Listed roughly in cost-to-test order, cheapest first:
+
+\begin{center}
+\begin{tabular}{l l l}
+  \textbf{Knob} & \textbf{Current} & \textbf{What to try} \\
+  \hline
+  Nested warm start         & cold ($z=0$) at every $N$ & A.2: $z_{64}^\ast \to z_{128}$ init \\
+  \texttt{min\_eq\_points} (N=128) & 300 (640 chosen) & 1000--2000 (more coverage at fine grid) \\
+  GN \texttt{max\_iters}    & 8                & 12--20 (cheap if iters are saturated) \\
+  GN \texttt{gn\_tol}       & $10^{-6}$        & $10^{-8}$ (tighter early-exit) \\
+  Loss weighting            & equal            & up-weight $N=128$ ($2:1$ or $3:1$) \\
+  $n_\text{train}$ at N=128 & 700              & 1400--2000 (richer fine-grid manifold) \\
+  \texttt{rank}             & 128              & 256, 512 (more channel capacity) \\
+  \texttt{embed\_dim}       & 64               & 96, 128 (less compression in patch\_embed) \\
+  \texttt{tokens\_per\_side}& 8                & 16 (matches N=64 token info-density at N=128)\\
+                            &                  & --- but breaks shared positional embedding \\
+  \texttt{k\_dim} (latent)  & 8                & 12, 16 (more latent capacity for both N) \\
+  Decoder hidden            & 256              & 512 (more MLP capacity) \\
+  Asymmetric EQ snapshots   & 80 per N         & more at N=128 \\
+\end{tabular}
+\end{center}
+
+\subsubsection*{Recommended sequence (no retrain until step 3)}
+\begin{enumerate}
+  \item \textbf{Implement A.2.} Modify
+        \texttt{multires\_nmrom\_sweep.py} so the per-$N$ benchmark loop
+        threads $z_{64}^\ast$ as the init for the $N=128$ solve. Re-run from
+        the existing checkpoint (no retraining). Cost: 30 min, no GPU
+        training. Measures whether cold-start is the bottleneck.
+  \item \textbf{Bump \texttt{min\_eq\_points} for $N=128$.} Re-run EQ build +
+        benchmark only, same checkpoint. Cost: 10 min. Measures EQ coverage
+        contribution.
+  \item \textbf{Retrain with asymmetric loss + rank=256 + more $N=128$ data.}
+        One full retrain, $\sim$45 min A100. Only if 1+2 don't close the gap.
+\end{enumerate}
+
+\subsubsection*{Open hypotheses (to test, not to assume)}
+\begin{itemize}
+  \item Does $E_{64}(u_{64}^{\text{FOM}}) \approx E_{128}(u_{128}^{\text{FOM}})$
+        for the same $(k_1, k_2)$? If yes, the shared latent is operating as
+        an implicit restriction operator and Option A is essentially free.
+        If no, the two encoders use the latent for different things and we'd
+        need an explicit alignment loss before A/B/C work.
+  \item Is the N=128 GN trajectory bouncing inside the LM damping or is it
+        smoothly converging? If bouncing, more iters + tighter tol won't help.
+        Probe: log $\|R\|$ per GN iteration at N=128.
+  \item Does the EQ-NNLS objective at N=128 have a strictly better minimum
+        than the cold-start GN finds? Probe: warm-start from the encoded
+        FOM (Option A.1) and check if the EQ residual at $z^\ast$ is lower
+        than what cold-start reaches.
+\end{itemize}

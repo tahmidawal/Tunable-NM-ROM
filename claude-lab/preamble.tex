@@ -1,0 +1,74 @@
+% claude-lab/preamble.tex
+% Shared packages, macros, and unicode mappings for the daily session log.
+% Daily session files under sessions/ are pure content fragments that get
+% \input-ed by main.tex. Do NOT add \documentclass or \begin{document} here.
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{float}          % H placement specifier
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  urlcolor=blue!60!black,
+  citecolor=blue!50!black,
+}
+\usepackage{microtype}
+\usepackage{parskip}        % blank-line paragraphs, no indent
+
+\graphicspath{{figures/}}
+
+% --- Unicode passthrough for symbols that show up in pasted output ----------
+\DeclareUnicodeCharacter{03B1}{$\alpha$}
+\DeclareUnicodeCharacter{03B2}{$\beta$}
+\DeclareUnicodeCharacter{03B3}{$\gamma$}
+\DeclareUnicodeCharacter{03B4}{$\delta$}
+\DeclareUnicodeCharacter{03BB}{$\lambda$}
+\DeclareUnicodeCharacter{03BC}{$\mu$}
+\DeclareUnicodeCharacter{03C0}{$\pi$}
+\DeclareUnicodeCharacter{03C3}{$\sigma$}
+\DeclareUnicodeCharacter{03C6}{$\varphi$}
+\DeclareUnicodeCharacter{2014}{---}
+\DeclareUnicodeCharacter{2013}{--}
+\DeclareUnicodeCharacter{2018}{`}
+\DeclareUnicodeCharacter{2019}{'}
+\DeclareUnicodeCharacter{201C}{``}
+\DeclareUnicodeCharacter{201D}{''}
+\DeclareUnicodeCharacter{2026}{\ldots}
+\DeclareUnicodeCharacter{00B1}{$\pm$}
+\DeclareUnicodeCharacter{00D7}{$\times$}
+\DeclareUnicodeCharacter{00B2}{$^{2}$}
+\DeclareUnicodeCharacter{00B3}{$^{3}$}
+\DeclareUnicodeCharacter{2248}{$\approx$}
+\DeclareUnicodeCharacter{2192}{$\rightarrow$}
+\DeclareUnicodeCharacter{2190}{$\leftarrow$}
+\DeclareUnicodeCharacter{2264}{$\leq$}
+\DeclareUnicodeCharacter{2265}{$\geq$}
+\DeclareUnicodeCharacter{2260}{$\neq$}
+
+% --- Session header ---------------------------------------------------------
+% \sessionhead{N}{HH:MM}{type}{branch}{commits-line}
+\newcommand{\sessionhead}[5]{%
+  \subsection*{Session #1 \textnormal{\,---\,\small #2\,\textbar\ \textit{#3}\,\textbar\ branch \texttt{#4}\,\textbar\ commits #5}}%
+}
+
+% --- Figure inclusion ------------------------------------------------------
+% \labfig{name-without-extension}{caption}
+% - [H] placement: figure stays exactly where you put it
+% - capped at 0.92\linewidth and 0.6\textheight with keepaspectratio
+\newcommand{\labfig}[2]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth,height=0.6\textheight,keepaspectratio]{#1}
+    \caption*{#2}
+  \end{figure}%
+}

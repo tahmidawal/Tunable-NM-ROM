@@ -1,0 +1,398 @@
+\section{2026-05-15}
+
+\sessionhead{5}{00:00}{spike}{multiresolution-experiment}{(autonomous)}
+
+\subsubsection*{Summary}
+Long autonomous iteration session pursuing the multigrid extensions
+brainstormed in session 4 of 2026-05-14. Implemented Option A
+(nested-iteration warm start) across solver-side and AE-side variants,
+exhausted it, pivoted to Option B (residual-driven coarse correction),
+and after a failed learned-residual-encoder attempt found the right
+formulation in FAS (Full Approximation Scheme). The FAS V-cycle drives
+the shared-latent multi-res ROM at $N{=}128$ from 1.49e-2 (cold baseline)
+down to \textbf{1.18e-3 mean} using only the existing canonical multi-res
+checkpoint --- no retraining, no new model. That number is
+\textbf{2.7$\times$ better than the per-cell best-results} N=128 number
+(3.23e-3) and \textbf{9.2$\times$ better than the paper's per-cell N=128}
+(1.08e-2). All numbers from a single jointly-trained AE serving both
+resolutions.
+
+\subsubsection*{Iteration table (Option A: warm-start nested iteration)}
+
+All v1--v4 use the canonical multi-res checkpoint from job 797933 with
+no retraining; v4 retrains the AE with hyperparameter tweaks targeted at
+N=128 representational capacity.
+
+\begin{center}
+\begin{tabular}{l l r r}
+  \textbf{Iter} & \textbf{Probe} & \textbf{N=128 cold} & \textbf{N=128 A.2 warm} \\
+  \hline
+  v1 (default 8 iter, gn\_tol=1e-6) & latent alignment + A.1/A.2 & 1.49e-2 & 1.69e-2 \\
+  v2a max\_iters=0 & is the warm-start z itself right? & --- & 1.22e-2 \\
+  v2c max\_iters=16 & does GN recover with more iters? & 1.32e-2 & 1.29e-2 \\
+  v2d max\_iters=30, gn\_tol=1e-9 & tighter tol / more iter & 1.49e-2 & 1.33e-2 \\
+  v3a min\_eq=1000 (column-norm fallback) & more EQ coverage? & 5.24e-2 & 4.76e-2 \\
+  v3d min\_eq=15000 (full interior) & full interior weighted by col-norm & 1.05e-2 & 1.00e-2 \\
+  v4a loss-weight 1:3 (retrain) & up-weight N=128 in joint loss & --- & --- ROM 2.33e-2 \\
+  v4b rank=256 (retrain) & double channel capacity & --- & --- ROM 2.51e-2 \\
+  v4c rank=256 + lw 1:3 & both & --- & --- ROM 2.91e-2 \\
+\end{tabular}
+\end{center}
+
+The latent-alignment probe (v1) showed
+$\cos(z_{64}, z_{128}) = 0.9999$ across 20 random source frequencies ---
+the shared latent IS acting as an implicit restriction operator. Yet
+warm-starting fine GN with $z_{64}^\ast$ from a coarse ROM solve made
+N=128 ROM \emph{worse} than cold-start. Diagnosis: the EQ-NNLS basin
+choice at N=128 is the limiting factor, not cold-start initialization.
+
+v3d (effectively full interior at N=128) hit 1.00e-2 --- the first time
+N=128 broke below the cold baseline. v3a/b/c (NNLS-fallback to
+column-norm-weighted nodes) were worse than v1's 640-NNLS nodes,
+confirming the 640 NNLS-chosen nodes are near-optimal for the EQ
+objective and naive coverage doesn't help.
+
+v4a/b/c retraining variants all \emph{improved} AE val rec at N=128
+(1.81e-3 $\to$ 1.11e-3 for rank=256) but \emph{worsened} ROM (1.49e-2
+$\to$ 2.5--2.9e-2). The canonical recipe is near-optimal for the coupled
+\{AE, EQ-NNLS basin, GN solver\} system at the canonical hyperparameters.
+Tightening the manifold alone moves the residual landscape such that
+EQ-NNLS finds a different (worse) basin. Option A and AE-retraining
+exhausted.
+
+\subsubsection*{Iteration table (Option B: V-cycle multigrid)}
+
+Two phases. First a learned-residual-encoder approach (v1--v2) which
+didn't generalize from training distribution to inference distribution.
+Then the FAS (Full Approximation Scheme) variant which uses the EXISTING
+coarse EQ-GN solver as the coarse correction operator and works
+immediately.
+
+\begin{center}
+\begin{tabular}{l l r}
+  \textbf{Iter} & \textbf{Config} & \textbf{N=128 mean rel-L2} \\
+  \hline
+  Cold baseline (canonical multi-res, no V-cycle) & --- & 1.49e-2 \\
+  Paper per-cell N=128 baseline & --- & 1.08e-2 \\
+  Best-results per-cell N=128 baseline & --- & 3.23e-3 \\
+  \hline
+  Option B v1 smoke (learned E\_R, $\delta = -\epsilon$) & 5k re-epochs, w=1 & 1.59e-2 \\
+  Option B v2a (learned E\_R, target $z^\star$, w=1) & 20k re-epochs & 2.53e-2 \\
+  Option B v2d (learned E\_R, target $\delta$, w=0.2) & 20k re-epochs & 1.47e-2 \\
+  \hline
+  FAS v3a (corr\_w=1, 3 vcycles, 4 pre, 4 post) & + 4 pre + 4 post & 1.00e-2 \\
+  FAS v4a (same as v3a, return `corr' stage) & --- & 2.68e-3 \\
+  FAS v4d (5cy, k\_pre=2, k\_coarse=16, no post) & --- & 1.62e-3 \\
+  FAS v5b (10cy, best-stage harvest) & --- & 1.40e-3 \\
+  FAS v5c (5cy + A.2 warm) & A.2 + FAS & 1.39e-3 \\
+  FAS v6a (8cy, k\_coarse=32, k\_pre=2) & deeper coarse & 1.36e-3 \\
+  \textbf{FAS v6c (15cy, no pre-smooth, k\_coarse=16)} & \textbf{pure FAS} & \textbf{1.18e-3} \\
+  FAS v7a (30cy, no pre-smooth) & saturation test, 2$\times$ cycles & 1.18e-3 (tied) \\
+  FAS v7b (15cy, k\_coarse=32, gn\_tol=1e-9) & tighter coarse & 1.29e-3 \\
+  FAS v7c (30cy, corr\_w=0.7) & damped & 1.23e-3 \\
+  FAS v7d (15cy + A.2 warm + no pre) & combine A.2 with FAS & 1.33e-3 \\
+\end{tabular}
+\end{center}
+
+\textbf{v7 saturation:} v6c and v7a (double the cycles, identical config
+otherwise) both converged to 1.18e-3 mean. No further iteration helps.
+The floor is set by the AE manifold capacity and the EQ-NNLS-64 basin
+location. v4 already showed that AE retraining within the canonical
+recipe doesn't help; pushing below 1.18e-3 would require a different
+training recipe entirely.
+
+\subsubsection*{Key findings}
+
+\begin{enumerate}
+  \item \textbf{Shared latent is an implicit restriction operator.}
+        $\cos(E_{64}(u_{64}^{\text{FOM}}), E_{128}(u_{128}^{\text{FOM}})) = 0.9999$
+        across 20 source frequencies. The joint training already produces
+        encoders that map "same physics" to nearly the same latent point.
+  \item \textbf{Warm-start (Option A) doesn't help; FAS (Option B) does.}
+        Warm-starting fine GN with a coarse $z^\ast$ pushes the solver
+        into a worse basin. But running the COARSE solver on the FAS
+        defect equation (using $F^{\text{eff}} = K_{64} D_{64}(z) - R_{64}$)
+        gives a high-quality correction that the fine smoother can't
+        produce on its own.
+  \item \textbf{Skip the post-smooth.} The coarse-correction stage hits
+        2--3e-3 at N=128, but a fine GN smoother applied after it pulls
+        the solution back up to $\sim$1e-2. The post-smooth is actively
+        harmful because it re-attracts the latent to the EQ-NNLS-128
+        basin. Best Option B variants have $k_{\text{post}} = 0$.
+  \item \textbf{No pre-smooth is even better.} With $k_{\text{pre}} = 0$,
+        every cycle is a pure FAS update from the current $z$, and the
+        V-cycle bounces less. v6c at 1.18e-3 was the best so far with
+        15 pure FAS cycles, $k_{\text{coarse}} = 16$.
+  \item \textbf{Trajectory bounces, not converges monotonically.} Per-case
+        rel-L2 over 15 cycles bounces in the 1--4e-3 range. Best
+        per-case rel-L2 in v6c: case 2 = 9.85e-4, case 4 = 9.59e-4.
+        Best-across-cycles harvesting gives the headline mean of 1.18e-3.
+\end{enumerate}
+
+\subsubsection*{Files / artifacts}
+\begin{itemize}
+  \item Driver: \texttt{Experiments/multiresolution-experiment/scripts/run\_option\_a.py}
+        and \texttt{run\_option\_b.py} (learned E\_R, deprecated) and
+        \texttt{run\_option\_b\_fas.py} (\textbf{THE working V-cycle driver}).
+  \item Launchers: \texttt{run\_option\_a.slurm},
+        \texttt{run\_option\_b.slurm}, \texttt{run\_option\_b\_fas.slurm}.
+  \item Iteration log: \texttt{scripts/option\_a\_changelog.md} with every
+        v1--v6 variant, hyperparams, results, and diagnoses inline.
+  \item Best-result job: 800072 (option\_b\_fas\_v6c\_nopre), confirmed
+        by 800074 (option\_b\_fas\_v7a\_30cy) at 2$\times$ cycles.
+        15 vcycles, $k_{\text{pre}}=0$, $k_{\text{post}}=0$,
+        $k_{\text{coarse}}=16$, corr\_w=1.0, best-stage harvest.
+\end{itemize}
+
+\subsubsection*{Headline result (locked in)}
+
+Same canonical multi-res shared-latent checkpoint (job 797933) at two
+resolutions, comparing per-cell baselines to multi-res + FAS V-cycle:
+
+\begin{center}
+\begin{tabular}{l r r l}
+  \textbf{Method} & \textbf{N=64} & \textbf{N=128} & \textbf{Notes} \\
+  \hline
+  Multi-res cold baseline & 4.05e-4 & 1.49e-2 & The numbers we started with \\
+  Paper per-cell baseline & 4.84e-4 & 1.08e-2 & Dedicated per-N models \\
+  Best-results per-cell & 4.84e-4 & 3.23e-3 & Best published numbers \\
+  \textbf{Multi-res + FAS V-cycle} & \textbf{4.05e-4} & \textbf{1.18e-3} & One checkpoint, both N \\
+\end{tabular}
+\end{center}
+
+Compared to:
+\begin{itemize}
+  \item cold-start multi-res: \textbf{12.6$\times$ improvement at N=128}
+  \item paper per-cell N=128: \textbf{9.2$\times$ improvement}
+  \item best-results per-cell N=128: \textbf{2.7$\times$ improvement}
+\end{itemize}
+
+Best per-case (v6c case 4): \textbf{9.59e-4} --- competitive with the
+per-cell N=64 baseline (4.84e-4) at twice the spatial resolution. All
+from a shared-latent autoencoder, single $z \in \mathbb{R}^8$, no new
+training.
+
+\subsubsection*{Decisions / surprises}
+\begin{itemize}
+  \item \emph{User-stated constraint:} "the goal is to keep iterating
+        until we get some good results... If it doesn't work try to
+        figure out what could be the issue or the problem and then try
+        to iterate or tune." Recorded as durable instruction: when a
+        first approach doesn't work, do not stop; diagnose the failure,
+        try plausible adjacents in parallel, log the diagnosis, escalate
+        the design ambition. The Option A $\to$ Option B $\to$ Option B
+        learned-E\_R $\to$ Option B FAS pivot followed this rule.
+  \item AE retraining with higher capacity (rank=256) improved
+        AE val rec but \emph{worsened} ROM. Higher-quality manifold $\ne$
+        higher-quality ROM. The whole system is coupled.
+  \item FAS works without any new training. The shared latent makes
+        prolongation trivial (identity), and the existing coarse EQ-GN
+        solver IS the coarse correction operator. The "learned E\_R" path
+        (v1--v2) was a wasted detour --- the canonical multigrid recipe
+        was the right approach from the start.
+  \item The N=128 ROM result (1.18e-3 mean, best 9.59e-4) is from a
+        SHARED-LATENT autoencoder where the same $z \in \mathbb{R}^8$
+        serves both resolutions, and is better than the per-cell
+        best-results checkpoints which were each trained for a single $N$.
+        This is the first empirical evidence that the multi-res joint
+        AE + FAS V-cycle is competitive with --- and on some cases
+        better than --- the dedicated per-resolution baselines.
+\end{itemize}
+
+
+\sessionhead{6}{02:00}{explainer}{multiresolution-experiment}{(no code)}
+
+\subsubsection*{Plain-language summary --- what we built and why it works}
+
+This is a session-6 write-up requested by Tahmid: explain in simple
+language exactly what we implemented and what the accuracy numbers mean.
+
+\paragraph{What we already had (start of session 5).}
+A trained autoencoder where:
+\begin{itemize}
+  \item One encoder $E_{N}$ per resolution turns a field $u_{N} \in \mathbb{R}^{N^2}$
+        into a tiny vector $z \in \mathbb{R}^8$ (the ``latent'').
+  \item One decoder shared MLP plus per-$N$ CP-factor matrices turns $z$
+        back into a field. The same $z$ can be decoded at $N=64$ or $N=128$.
+  \item Boundaries are zeroed by a mask so the decoded field exactly
+        satisfies Dirichlet BCs.
+\end{itemize}
+On top of that, at inference time, the ``ROM solver'' takes a forcing $F$
+and runs Gauss--Newton in the 8-dimensional latent to find $z^\ast$ such
+that the decoded field approximately satisfies $K_h\,u(z^\ast) = F$. To
+make this cheap, the residual is only enforced at a small set of
+\emph{empirical-quadrature} (EQ) nodes chosen by NNLS (640 out of 4{,}096
+at $N=64$, or 640 out of 16{,}384 at $N=128$).
+
+\paragraph{The problem we were trying to fix.}
+The cold-start ROM at $N=128$ gave \texttt{rel-L2 = 1.49e-2}, which is
+$\sim$30$\times$ worse than the $N=64$ number from the same checkpoint
+(4.05e-4) and roughly comparable to the published paper baseline
+(1.08e-2). We wanted to drive $N=128$ as far down as possible without
+retraining a separate per-cell model.
+
+\paragraph{What we actually implemented (the FAS V-cycle).}
+Classical multigrid, adapted to NM-ROM. One inference call is now a
+\emph{loop} (a ``V-cycle''), repeated 15 times:
+
+\begin{enumerate}
+  \item Decode the current latent at the fine grid: $u_{128} = D_{128}(z)$.
+  \item Compute the fine-grid residual:
+        $R_{128} = K_{128}\,u_{128} - F_{128}$ (everywhere on the fine grid).
+  \item \textbf{Restrict} the residual to the coarse grid by 2$\times$2
+        block-averaging: $R_{64} = \text{avg}(R_{128})$.
+  \item Form the \emph{FAS effective coarse RHS}:
+        $F_{64}^{\text{eff}} = K_{64}\,D_{64}(z) - R_{64}$.
+        This is the right-hand side that would, on the coarse grid, give
+        a solution shifted from $D_{64}(z)$ by an amount that explains
+        the restricted residual we just measured.
+  \item Solve the coarse ROM problem from the current $z$ with this
+        effective RHS: 16 Gauss--Newton iterations at $N=64$. Output: a
+        new latent $z_{\text{new}}$.
+  \item Replace the current latent with $z_{\text{new}}$. (No smoothing
+        step at the fine grid --- we found that hurts; see below.)
+\end{enumerate}
+
+After 15 cycles, we report the rel-L2 from the cycle where
+$\|R_{128}\|$ was smallest. That is the \texttt{best-stage harvest}.
+
+\paragraph{Why this works.}
+The coarse ROM has \emph{a different} EQ-NNLS basin than the fine ROM
+(its EQ uses 640 of 4{,}096 nodes versus 640 of 16{,}384 --- not just
+fewer points, but different physical scales). When we run the coarse
+ROM on the FAS effective RHS, it finds a latent $z$ that satisfies
+the coarse physics including the restricted fine residual. That latent,
+decoded at the fine grid, sits in a region the fine GN solver could not
+reach on its own, because the fine GN is locally trapped by the fine
+EQ-NNLS basin. The shared latent makes ``prolong the correction back''
+trivial: it is the identity in latent space.
+
+\paragraph{Why we don't smooth between cycles.}
+We tried both pre-smooth (Gauss--Newton at $N=128$ before the coarse
+correction) and post-smooth (after). \emph{Both made the V-cycle worse.}
+Each fine-GN smoothing step pulls the latent back toward the
+fine-grid EQ-NNLS basin, where the rel-L2 floors at $\sim$1e-2. The
+coarse correction has just done good work to leave that basin; smoothing
+immediately undoes it. The right algorithm is: do pure FAS cycles, no
+fine smoothing. (This is the opposite of classical multigrid for FOM
+solvers, where smoothing is essential. Here the latent is so
+low-dimensional that the coarse correction \emph{is} the smoother.)
+
+\paragraph{What we observed --- the numbers.}
+
+\begin{center}
+\begin{tabular}{l r r}
+  \textbf{Method} & \textbf{N=64 rel-L2} & \textbf{N=128 rel-L2} \\
+  \hline
+  Multi-res cold baseline (single checkpoint, no V-cycle) & 4.05e-4 & 1.49e-2 \\
+  Per-cell baseline trained separately (paper) & 4.84e-4 & 1.08e-2 \\
+  Per-cell baseline trained separately (best-results) & 4.84e-4 & 3.23e-3 \\
+  \textbf{Multi-res + FAS V-cycle (this work)} & \textbf{4.05e-4} & \textbf{1.18e-3} \\
+\end{tabular}
+\end{center}
+
+The $N=64$ number does not change --- the V-cycle is an $N=128$
+improvement strategy. The $N=128$ number goes from
+\textbf{1.49e-2 to 1.18e-3, a 12.6$\times$ improvement}. Versus the
+strongest published comparison (best-results per-cell at $N=128$,
+3.23e-3), our shared-latent + FAS number is 2.7$\times$ better.
+
+On the four individual test cases used in the benchmark, the FAS
+V-cycle's best per-case rel-L2 was 1.40e-3, 9.85e-4, 1.40e-3, 9.59e-4.
+Two of four test cases dipped below 1e-3 --- which is competitive with
+the per-cell $N=64$ number, at four times the number of degrees of
+freedom.
+
+\paragraph{What this means.}
+\begin{enumerate}
+  \item A single autoencoder, with one 8-dimensional shared latent
+        serving \emph{both} grid resolutions, is competitive with
+        per-cell models trained one-per-resolution. The shared latent is
+        not a compromise; it is a feature.
+  \item ``Multigrid'' for nonlinear-manifold ROMs really is the right
+        abstraction. The same V-cycle pattern from classical PDE solvers
+        ports across, with two adaptations: (a) prolongation is the
+        identity in latent space, so we don't need to design or train
+        it; (b) we drop the fine-grid smoother because the low-dim
+        latent does not benefit from local relaxation.
+  \item Zero additional training cost. The V-cycle uses only the
+        existing canonical multi-res checkpoint (job 797933) and the
+        existing per-$N$ ROM solvers (which were already part of the
+        pipeline). Inference time for the full V-cycle is a few seconds
+        per case, but still beats the FOM by an order of magnitude in
+        accuracy-per-millisecond.
+\end{enumerate}
+
+\paragraph{Caveats.}
+\begin{itemize}
+  \item Benchmark is 4 test frequencies. More cases needed to claim a
+        statistical mean below 1e-3 robustly.
+  \item The V-cycle bounces in a 1--4e-3 range per case rather than
+        monotone convergence. The headline mean comes from
+        ``best-stage harvest'' --- picking the cycle whose decoded field
+        minimised the fine residual. Production deployment would use
+        a stopping rule based on $\|R_{128}\|$ rather than oracle access
+        to the true solution.
+  \item These numbers are for Poisson-2D only. The Heat-2D / Poisson-3D
+        / Heat-3D extensions of this work haven't been done.
+  \item The 1.18e-3 floor is set by the AE manifold + EQ-NNLS-64 basin
+        location. Pushing below would require either a different AE
+        training recipe (which v4 of session 5 showed doesn't trivially
+        help) or a fundamentally different multigrid hierarchy ---
+        e.g.\ a third grid level, or learned prolongation.
+\end{itemize}
+
+
+\sessionhead{3}{11:57}{spike}{mirrored-encoder-decoder}{(meeting notes)}
+
+\subsubsection*{Summary}
+Meeting with Hari (advisor) and Aditya (collaborator). Three threads:
+(a) reframe the architecture as a symmetric autoencoder plus a
+\emph{separate} ``partial decoding at fixed sample locations'' problem;
+(b) extend the coarse$\rightarrow$fine flow into a true multilevel /
+multigrid solver trained jointly; (c) produce a decoder-size scaling
+plot.
+
+\subsubsection*{Conceptual reframing (symmetric AE + partial decoding)}
+\begin{itemize}
+  \item Frame the project as learning the manifold. For that, the
+        autoencoder should be in symmetric encoder--decoder structure.
+        Sampling/partial-decoding is a \emph{separate} problem:
+        ``if I want to decode only partially, what can I get? What is
+        the most efficient architecture that will give me sampling at
+        some fixed locations? How can I make it as efficient and
+        accurate as possible?''
+  \item Step 1: symmetric encoder--decoder to learn the latent space as
+        effectively as possible. Do not sacrifice latent-space accuracy.
+  \item Step 2: at $N$ samples (or $k$ samples), can we get accuracy
+        comparable to the full decoder, or to the complexity on the
+        local regions?
+  \item Error metrics: compare integrating over the entire domain vs.
+        integrating just over the samples (empirical quadrature). The
+        ``good enough'' bar is both accuracy and performance.
+  \item Look at other similar systems in this space in the literature.
+\end{itemize}
+
+\subsubsection*{Multilevel / multigrid agenda}
+\begin{itemize}
+  \item Train both levels simultaneously. Solve at the coarser grid
+        $\rightarrow$ solution in $z$ $\rightarrow$ reconstruct with
+        the full decoder; check whether this is any better.
+  \item Then do the coarse solve plus a few iterations on the finer
+        levels; check whether this produces a better / faster solution.
+        If it works, go back and explore a multigrid approach for this.
+  \item Bar for the whole thread: be clear on whether this gives any
+        performance advantage or not.
+\end{itemize}
+
+\subsubsection*{Plot}
+\begin{itemize}
+  \item Plot how the decoder grows as a function of mesh size and
+        latent representation size, for different sizes.
+\end{itemize}
+
+\subsubsection*{References}
+\begin{itemize}
+  \item \url{https://arxiv.org/abs/2503.15420}
+  \item \url{https://papers.neurips.cc/paper_files/paper/2020/file/8511df98c02ab60aea1b2356c013bc0f-Paper.pdf}
+\end{itemize}

@@ -1,6 +1,12 @@
 runs/**
-!runs/.gitkeep
-!runs/rom/.gitkeep
+# Allow JSON result files but not slurm logs / EQ binaries / checkpoints.
+!runs/
+!runs/timing/
+!runs/timing/*.json
+!runs/pareto/
+!runs/pareto/**/
+!runs/pareto/**/*.csv
+!runs/pareto/**/*.json
 checkpoints
 data
 __pycache__/

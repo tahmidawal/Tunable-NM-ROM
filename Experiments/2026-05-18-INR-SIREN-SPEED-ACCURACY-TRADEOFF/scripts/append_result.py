@@ -41,7 +41,7 @@ def main() -> None:
     with open(args.csv, "a", newline="") as f:
         csv.DictWriter(f, fieldnames=cols).writerow(row)
     print(f"appended: {row['label']}  rel_l2={row['rel_l2_median']}  "
-          f"speedup={row['speedup_vs_fom']}  desc={row['desc' if False else 'change_description']}")
+          f"speedup={row['speedup_vs_fom']}  desc={row['change_description']}")
 
 
 if __name__ == "__main__":

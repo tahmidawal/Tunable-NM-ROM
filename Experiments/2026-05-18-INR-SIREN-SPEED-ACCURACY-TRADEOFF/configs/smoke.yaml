@@ -1,0 +1,36 @@
+# Tiny smoke config — used by tests and the smoke SLURM job.
+decoder_kind: siren
+
+N: 64
+spatial_dim: 2
+n_train: 32
+n_val: 8
+seed: 0
+
+patch_size: 8
+embed_dim: 32
+num_heads: 2
+num_enc_layers: 2
+latent_dim: 8
+
+siren_num_layers: 3
+siren_hidden_dim: 64
+omega_0: 30.0
+omega: 1.0
+modulator_hidden: 32
+
+d_attn: 32
+num_fourier: 8
+xattn_num_layers: 2
+xattn_hidden_dim: 64
+fourier_scale: 4.0
+
+num_epochs: 50
+batch_size: 4
+points_per_sample_train: 64
+points_per_sample_val: 64
+on_grid_frac_train: 0.5
+peak_lr: 1.0e-3
+weight_decay: 1.0e-5
+warmup_steps: 5
+log_every: 10

@@ -261,79 +261,6 @@ the inherited decoder (\texttt{ModulatedSIREN}), and a decoder-side
 speedup (\texttt{LinearAffineZDecoder}) reached by first failing with
 \texttt{AffineZDecoder}.
 
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    >={Stealth[length=2mm]},
-    node distance=4mm and 6mm,
-    box/.style={draw, rounded corners=2pt, minimum height=7mm, minimum width=14mm, align=center, font=\small},
-    fixed/.style={box, fill=blue!8},
-    learned/.style={box, fill=orange!12},
-    output/.style={box, fill=green!10},
-    zlatent/.style={circle, draw, fill=red!12, minimum size=6mm, inner sep=0pt, font=\small},
-    flow/.style={->, thick},
-  ]
-    % ===== Column 1: ModulatedSIREN =====
-    \node[font=\small\bfseries] (t1) at (0,0) {ModulatedSIREN};
-    \node[zlatent, below=4mm of t1] (z1) {$z$};
-    \node[learned, below=5mm of z1] (mod1) {Modulator\\MLP};
-    \node[learned, below=4mm of mod1] (trunk1) {SIREN trunk\\$\sin(W h{+}b{+}\beta)$};
-    \node[font=\small, left=5mm of trunk1] (x1) {$x$};
-    \node[output, below=4mm of trunk1] (u1) {$u(x)$};
-    \draw[flow] (z1) -- (mod1);
-    \draw[flow] (mod1) -- node[right, font=\scriptsize] {$\beta(z)$} (trunk1);
-    \draw[flow] (x1) -- (trunk1);
-    \draw[flow] (trunk1) -- (u1);
-    \node[below=2mm of u1, font=\scriptsize, align=center, text width=42mm] (c1)
-      {$\partial u/\partial z$: nonlinear, dense.\\
-       Per-iter: jacfwd ($d_z$ fwds)\\
-       or vmap(jacrev) (1 fwd $+$ 1 bwd / pt).};
-
-    % ===== Column 2: AffineZDecoder =====
-    \node[font=\small\bfseries, right=22mm of t1] (t2) {AffineZDecoder (failed)};
-    \node[zlatent, below=4mm of t2] (z2) {$z$};
-    \node[learned, below=5mm of z2] (Anl) {Nonlinear\\$A(z)$ MLP};
-    \node[font=\small, left=14mm of Anl] (x2) {$x$};
-    \node[learned] (phi2) at (x2 |- Anl) {$\Phi(x)$\\trunk};
-    \node[learned, below=4mm of phi2] (b2) {$b(x)$\\trunk};
-    \node[output] (u2) at ($(Anl)!0.5!(b2) + (0,-10mm)$) {$u(x){=}\Phi(x){\cdot}A(z){+}b(x)$};
-    \draw[flow] (z2) -- (Anl);
-    \draw[flow] (x2) -- (phi2);
-    \draw[flow] (x2.south) |- (b2.west);
-    \draw[flow] (phi2) -- (u2);
-    \draw[flow] (Anl) -- (u2);
-    \draw[flow] (b2) -- (u2);
-    \node[below=2mm of u2, font=\scriptsize, align=center, text width=46mm] (c2)
-      {$\partial u/\partial z = \Phi(x)\cdot \partial A/\partial z$,\\
-       non-constant in $z$ --- basin near $z{=}0$.};
-
-    % ===== Column 3: LinearAffineZDecoder =====
-    \node[font=\small\bfseries, right=26mm of t2] (t3) {LinearAffineZDecoder (fix)};
-    \node[zlatent, below=4mm of t3] (z3) {$z$};
-    \node[fixed, below=5mm of z3] (Alin) {Linear\\$A(z){=}W_A\,z$};
-    \node[font=\small, left=14mm of Alin] (x3) {$x$};
-    \node[learned] (phi3) at (x3 |- Alin) {$\Phi(x)$\\trunk};
-    \node[learned, below=4mm of phi3] (b3) {$b(x)$\\trunk};
-    \node[fixed] (V3) at ($(phi3)!0.5!(Alin) + (0,-10mm)$) {$V(x){=}\Phi(x)\,W_A$\\(precomputed)};
-    \node[output, below=4mm of V3] (u3) {$u(x){=}V(x){\cdot}z{+}b(x)$};
-    \draw[flow] (z3) -- (Alin);
-    \draw[flow] (x3) -- (phi3);
-    \draw[flow] (x3.south) |- (b3.west);
-    \draw[flow] (phi3) -- (V3);
-    \draw[flow] (Alin) -- (V3);
-    \draw[flow] (V3) -- (u3);
-    \draw[flow] (b3.east) -| (u3.north);
-    \node[below=2mm of u3, font=\scriptsize, align=center, text width=46mm] (c3)
-      {$\partial u/\partial z = V(x)$, constant in $z$\\
-       --- GN converges in 1--2 iters.};
-  \end{tikzpicture}
-  \caption*{\small Three decoder architectures contrasted. Red = latent $z$.
-  Orange = MLPs whose output depends on $z$ (must be re-evaluated each GN
-  iter). Blue = computations independent of $z$ (precomputable once per
-  solve). Green = decoded scalar $u(x)$.
-  The Jacobian $\partial u/\partial z$ rank/structure is annotated below each.}
-\end{figure}
-
 \paragraph{\texttt{FastINRNMROMSolver}.}
 A drop-in subclass of \texttt{INRNMROMSolver} that changes only how the
 Gauss--Newton Jacobian is built. The baseline used
@@ -355,6 +282,34 @@ J_{\text{fast}}[i,:] \;=\; \mathtt{jacrev}\!\bigl(u_\theta(\cdot,z)\bigr)\!(x_i)
 $\text{per-iter cost: } \mathrm{latent\_dim}\times r\text{-eval} \;\to\; 2\times r\text{-eval}$;
 measured fine-stage Jacobian time $54$\,ms $\to$ $17$\,ms.
 
+\begin{figure}[H]
+  \centering
+  \resizebox{0.85\linewidth}{!}{%
+  \begin{tikzpicture}[
+    >={Stealth[length=2mm]},
+    box/.style={draw, rounded corners=2pt, minimum height=8mm, minimum width=20mm, align=center, font=\small},
+    fixed/.style={box, fill=blue!8},
+    learned/.style={box, fill=orange!12},
+    output/.style={box, fill=green!10},
+    zlatent/.style={circle, draw, fill=red!12, minimum size=7mm, inner sep=0pt, font=\small},
+    coord/.style={font=\small},
+    flow/.style={->, thick},
+  ]
+    %% ModulatedSIREN — linear left-to-right; z+modulator sit above the trunk
+    \node[coord] (x1) at (0, 0) {$x$};
+    \node[learned, right=10mm of x1] (trunk1) {SIREN trunk\\$\sin(W h + b + \beta)$};
+    \node[output, right=12mm of trunk1] (u1) {$u(x)$};
+    \node[zlatent, above=12mm of trunk1, xshift=-12mm] (zc1) {$z$};
+    \node[learned, right=8mm of zc1] (mod1) {Modulator MLP};
+    \draw[flow] (x1) -- (trunk1);
+    \draw[flow] (trunk1) -- (u1);
+    \draw[flow] (zc1) -- (mod1);
+    \draw[flow] (mod1.east) to[out=0, in=90] node[right, font=\scriptsize] {$\beta(z)$} (trunk1.north);
+  \end{tikzpicture}%
+  }
+  \caption*{\small Modulated SIREN: latent $z$ controls per-layer biases $\beta(z)$ that nonlinearly modulate the sine basis. $\partial u/\partial z$ is dense and non-constant.}
+\end{figure}
+
 \paragraph{\texttt{ModulatedSIREN} decoder (reference).}
 Inherited from Session 1 and unchanged today, but worth a paragraph
 because the linear-affine decoder below is best understood as its
@@ -371,6 +326,37 @@ The dependence on $z$ enters \emph{inside} the sines, so the map is
 nonlinear in $z$ and $\partial u / \partial z$ varies with $z$ ---
 which is why every GN step needs a fresh Jacobian.
 
+\begin{figure}[H]
+  \centering
+  \resizebox{0.85\linewidth}{!}{%
+  \begin{tikzpicture}[
+    >={Stealth[length=2mm]},
+    box/.style={draw, rounded corners=2pt, minimum height=8mm, minimum width=20mm, align=center, font=\small},
+    fixed/.style={box, fill=blue!8},
+    learned/.style={box, fill=orange!12},
+    output/.style={box, fill=green!10},
+    zlatent/.style={circle, draw, fill=red!12, minimum size=7mm, inner sep=0pt, font=\small},
+    coord/.style={font=\small},
+    flow/.style={->, thick},
+  ]
+    %% AffineZDecoder (failed) — x branches into Phi and b trunks; z goes through nonlinear A(z); all three fan into u
+    \node[coord] (x2) at (0, 0) {$x$};
+    \node[learned, right=10mm of x2, yshift=8mm] (phi2) {$\Phi(x)$ trunk};
+    \node[learned, right=10mm of x2, yshift=-8mm] (b2) {$b(x)$ trunk};
+    \node[zlatent, below=14mm of b2, xshift=-6mm] (zc2) {$z$};
+    \node[learned, right=8mm of zc2] (Anl2) {Nonlinear $A(z)$ MLP};
+    \node[output, right=18mm of phi2, yshift=-8mm] (u2) {$u(x) = \Phi(x)\cdot A(z) + b(x)$};
+    \draw[flow] (x2) -- (phi2.west);
+    \draw[flow] (x2) -- (b2.west);
+    \draw[flow] (zc2) -- (Anl2);
+    \draw[flow] (phi2.east) -- (u2.west);
+    \draw[flow] (b2.east) -- (u2.west);
+    \draw[flow] (Anl2.east) -| (u2.south);
+  \end{tikzpicture}%
+  }
+  \caption*{\small AffineZDecoder (\emph{failed}): $u(x{;}z) = \Phi(x)\cdot A(z) + b(x)$ with \emph{nonlinear} $A(z)$ MLP. Jacobian $\partial u/\partial z = \Phi(x)\cdot \partial A/\partial z$ depends on $z$, so cold-start GN at $z{=}0$ gets stuck in a basin (rel-L$^2$ 0.2-0.8).}
+\end{figure}
+
 \paragraph{\texttt{AffineZDecoder} (the failed first attempt).}
 First try at making the Jacobian cheap: write
 $u(x;z) = \Phi(x) \cdot A(z) + b(x)$ where $\Phi$ is a fixed SIREN
@@ -386,6 +372,41 @@ is valid only in a small basin around $z{=}0$, and cold-start GN
 walked out of that basin before converging. Widening hidden\_dim,
 bumping latent to 32, and dropping the anchor loss none of them
 escaped the basin --- the problem is structural, not a tuning issue.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.85\linewidth}{!}{%
+  \begin{tikzpicture}[
+    >={Stealth[length=2mm]},
+    box/.style={draw, rounded corners=2pt, minimum height=8mm, minimum width=20mm, align=center, font=\small},
+    fixed/.style={box, fill=blue!8},
+    learned/.style={box, fill=orange!12},
+    output/.style={box, fill=green!10},
+    zlatent/.style={circle, draw, fill=red!12, minimum size=7mm, inner sep=0pt, font=\small},
+    coord/.style={font=\small},
+    flow/.style={->, thick},
+  ]
+    %% LinearAffineZDecoder (fix) — same skeleton as diagram 2, but A(z) is replaced by a fixed linear W_A,
+    %% and Phi(x)*W_A is precomputed as V(x). z only ever enters via multiplication with V(x).
+    \node[coord] (x3) at (0, 0) {$x$};
+    \node[learned, right=10mm of x3, yshift=10mm] (phi3) {$\Phi(x)$ trunk};
+    \node[learned, right=10mm of x3, yshift=-10mm] (b3) {$b(x)$ trunk};
+    \node[zlatent, below=16mm of b3, xshift=-4mm] (zc3) {$z$};
+    \node[fixed, right=10mm of zc3] (WA3) {$W_A$ (linear)};
+    \node[fixed, right=12mm of phi3, yshift=-10mm] (V3) {$V(x) = \Phi(x) W_A$\\(precomputed)};
+    \node[output, right=12mm of V3, yshift=-6mm] (u3) {$u(x) = V(x)\cdot z + b(x)$};
+    \draw[flow] (x3) -- (phi3.west);
+    \draw[flow] (x3) -- (b3.west);
+    \draw[flow] (zc3) -- (WA3);
+    \draw[flow] (phi3.east) -| (V3.north);
+    \draw[flow] (WA3.east) -| (V3.south);
+    \draw[flow] (V3.east) -- (u3.west);
+    \draw[flow] (b3.east) -| (u3.north);
+    \draw[flow] (zc3.east) to[out=0, in=240] (u3.south);
+  \end{tikzpicture}%
+  }
+  \caption*{\small LinearAffineZDecoder (\emph{fix}): replace the nonlinear $A(z)$ MLP with a single matrix multiply $W_A z$. Then $V(x) = \Phi(x) W_A$ can be \emph{precomputed once per solve}, and $\partial u/\partial z = V(x)$ is constant in $z$. GN converges in 1-2 iters; this is the CP-decoder structure with a learned basis.}
+\end{figure}
 
 \paragraph{\texttt{LinearAffineZDecoder} (the fix).}
 Replace $A(z)$ with a single linear map $A(z) = W_A \, z + b_A$. Then

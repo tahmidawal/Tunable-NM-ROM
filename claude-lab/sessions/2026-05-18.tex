@@ -261,6 +261,79 @@ the inherited decoder (\texttt{ModulatedSIREN}), and a decoder-side
 speedup (\texttt{LinearAffineZDecoder}) reached by first failing with
 \texttt{AffineZDecoder}.
 
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    >={Stealth[length=2mm]},
+    node distance=4mm and 6mm,
+    box/.style={draw, rounded corners=2pt, minimum height=7mm, minimum width=14mm, align=center, font=\small},
+    fixed/.style={box, fill=blue!8},
+    learned/.style={box, fill=orange!12},
+    output/.style={box, fill=green!10},
+    zlatent/.style={circle, draw, fill=red!12, minimum size=6mm, inner sep=0pt, font=\small},
+    flow/.style={->, thick},
+  ]
+    % ===== Column 1: ModulatedSIREN =====
+    \node[font=\small\bfseries] (t1) at (0,0) {ModulatedSIREN};
+    \node[zlatent, below=4mm of t1] (z1) {$z$};
+    \node[learned, below=5mm of z1] (mod1) {Modulator\\MLP};
+    \node[learned, below=4mm of mod1] (trunk1) {SIREN trunk\\$\sin(W h{+}b{+}\beta)$};
+    \node[font=\small, left=5mm of trunk1] (x1) {$x$};
+    \node[output, below=4mm of trunk1] (u1) {$u(x)$};
+    \draw[flow] (z1) -- (mod1);
+    \draw[flow] (mod1) -- node[right, font=\scriptsize] {$\beta(z)$} (trunk1);
+    \draw[flow] (x1) -- (trunk1);
+    \draw[flow] (trunk1) -- (u1);
+    \node[below=2mm of u1, font=\scriptsize, align=center, text width=42mm] (c1)
+      {$\partial u/\partial z$: nonlinear, dense.\\
+       Per-iter: jacfwd ($d_z$ fwds)\\
+       or vmap(jacrev) (1 fwd $+$ 1 bwd / pt).};
+
+    % ===== Column 2: AffineZDecoder =====
+    \node[font=\small\bfseries, right=22mm of t1] (t2) {AffineZDecoder (failed)};
+    \node[zlatent, below=4mm of t2] (z2) {$z$};
+    \node[learned, below=5mm of z2] (Anl) {Nonlinear\\$A(z)$ MLP};
+    \node[font=\small, left=14mm of Anl] (x2) {$x$};
+    \node[learned] (phi2) at (x2 |- Anl) {$\Phi(x)$\\trunk};
+    \node[learned, below=4mm of phi2] (b2) {$b(x)$\\trunk};
+    \node[output] (u2) at ($(Anl)!0.5!(b2) + (0,-10mm)$) {$u(x){=}\Phi(x){\cdot}A(z){+}b(x)$};
+    \draw[flow] (z2) -- (Anl);
+    \draw[flow] (x2) -- (phi2);
+    \draw[flow] (x2.south) |- (b2.west);
+    \draw[flow] (phi2) -- (u2);
+    \draw[flow] (Anl) -- (u2);
+    \draw[flow] (b2) -- (u2);
+    \node[below=2mm of u2, font=\scriptsize, align=center, text width=46mm] (c2)
+      {$\partial u/\partial z = \Phi(x)\cdot \partial A/\partial z$,\\
+       non-constant in $z$ --- basin near $z{=}0$.};
+
+    % ===== Column 3: LinearAffineZDecoder =====
+    \node[font=\small\bfseries, right=26mm of t2] (t3) {LinearAffineZDecoder (fix)};
+    \node[zlatent, below=4mm of t3] (z3) {$z$};
+    \node[fixed, below=5mm of z3] (Alin) {Linear\\$A(z){=}W_A\,z$};
+    \node[font=\small, left=14mm of Alin] (x3) {$x$};
+    \node[learned] (phi3) at (x3 |- Alin) {$\Phi(x)$\\trunk};
+    \node[learned, below=4mm of phi3] (b3) {$b(x)$\\trunk};
+    \node[fixed] (V3) at ($(phi3)!0.5!(Alin) + (0,-10mm)$) {$V(x){=}\Phi(x)\,W_A$\\(precomputed)};
+    \node[output, below=4mm of V3] (u3) {$u(x){=}V(x){\cdot}z{+}b(x)$};
+    \draw[flow] (z3) -- (Alin);
+    \draw[flow] (x3) -- (phi3);
+    \draw[flow] (x3.south) |- (b3.west);
+    \draw[flow] (phi3) -- (V3);
+    \draw[flow] (Alin) -- (V3);
+    \draw[flow] (V3) -- (u3);
+    \draw[flow] (b3.east) -| (u3.north);
+    \node[below=2mm of u3, font=\scriptsize, align=center, text width=46mm] (c3)
+      {$\partial u/\partial z = V(x)$, constant in $z$\\
+       --- GN converges in 1--2 iters.};
+  \end{tikzpicture}
+  \caption*{\small Three decoder architectures contrasted. Red = latent $z$.
+  Orange = MLPs whose output depends on $z$ (must be re-evaluated each GN
+  iter). Blue = computations independent of $z$ (precomputable once per
+  solve). Green = decoded scalar $u(x)$.
+  The Jacobian $\partial u/\partial z$ rank/structure is annotated below each.}
+\end{figure}
+
 \paragraph{\texttt{FastINRNMROMSolver}.}
 A drop-in subclass of \texttt{INRNMROMSolver} that changes only how the
 Gauss--Newton Jacobian is built. The baseline used

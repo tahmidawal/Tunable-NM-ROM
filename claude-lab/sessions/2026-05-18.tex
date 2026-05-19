@@ -252,3 +252,101 @@ LinAff training-curve scaling (winner in bold):
 \end{tabular}
 \end{center}
 
+\subsubsection*{Architecture appendix}
+
+This appendix explains the four modules built today in enough detail that
+the design choices make sense without re-reading the source. Read it as
+two pairs: a solver-side speedup (\texttt{FastINRNMROMSolver}) on top of
+the inherited decoder (\texttt{ModulatedSIREN}), and a decoder-side
+speedup (\texttt{LinearAffineZDecoder}) reached by first failing with
+\texttt{AffineZDecoder}.
+
+\paragraph{\texttt{FastINRNMROMSolver}.}
+A drop-in subclass of \texttt{INRNMROMSolver} that changes only how the
+Gauss--Newton Jacobian is built. The baseline used
+\texttt{jax.jacfwd(residual\_vec)(z)}, which runs \emph{latent\_dim}
+parallel forward passes of the full $(n_{\text{eq}},)$-output residual
+to fill one column per latent component. The fast version pushes the
+Jacobian inside the per-point loop: each EQ stencil point has a scalar
+decoder output, so \texttt{jacrev} costs one forward $+$ one backward
+per point, and \texttt{vmap} reuses the kernel across the
+$n_{\text{eq}}$ points. Math is unchanged --- the finite-difference
+stencil combination after the per-point Jacobians is identical --- and
+correctness was checked to $\|z_{\text{fast}}-z_{\text{base}}\| /
+\|z_{\text{base}}\| \le 6.7$e-9.
+
+\[
+J_{\text{base}} \;=\; \mathtt{jacfwd}(r)(z)\,, \qquad
+J_{\text{fast}}[i,:] \;=\; \mathtt{jacrev}\!\bigl(u_\theta(\cdot,z)\bigr)\!(x_i)\,,
+\]
+$\text{per-iter cost: } \mathrm{latent\_dim}\times r\text{-eval} \;\to\; 2\times r\text{-eval}$;
+measured fine-stage Jacobian time $54$\,ms $\to$ $17$\,ms.
+
+\paragraph{\texttt{ModulatedSIREN} decoder (reference).}
+Inherited from Session 1 and unchanged today, but worth a paragraph
+because the linear-affine decoder below is best understood as its
+contrast. The decoder is a SIREN multi-layer perceptron with sine
+activations, $L{=}5$ layers and hidden width $h{=}384$, taking a 2-D
+coordinate $x$ and returning a scalar $u(x)$. A small modulator MLP
+(\texttt{mod\_in} $\to$ ReLU $\to$ \texttt{mod\_out}) maps the latent
+$z$ to a stack of per-layer bias offsets $\beta_l \in \mathbb{R}^h$, so
+each sine layer is
+\[
+h_{l+1} \;=\; \sin\!\bigl(\omega \cdot (W_l \, h_l + b_l + \beta_l(z))\bigr).
+\]
+The dependence on $z$ enters \emph{inside} the sines, so the map is
+nonlinear in $z$ and $\partial u / \partial z$ varies with $z$ ---
+which is why every GN step needs a fresh Jacobian.
+
+\paragraph{\texttt{AffineZDecoder} (the failed first attempt).}
+First try at making the Jacobian cheap: write
+$u(x;z) = \Phi(x) \cdot A(z) + b(x)$ where $\Phi$ is a fixed SIREN
+feature trunk (same depth/width as ModulatedSIREN), $A(z)$ is a small
+ReLU MLP \texttt{latent} $\to$ \texttt{hidden\_dim}, and $b(x)$ is a
+learned scalar mean field. $\Phi(x_{\text{eq}})$ can be precomputed
+once per solve, so each GN iteration only needs $A(z)$ and
+$\mathtt{jacrev}(A)(z)$ --- both tiny MLP calls, total wall $\sim$1\,ms
+per iter. Per-sample reconstruction hit $\sim$1e-2 in training, but
+ROM rel-L$^2$ stayed at $0.2$--$0.8$: $A$ is nonlinear, so the
+Jacobian $\partial u / \partial z = \Phi(x) \cdot \mathrm{d}A/\mathrm{d}z$
+is valid only in a small basin around $z{=}0$, and cold-start GN
+walked out of that basin before converging. Widening hidden\_dim,
+bumping latent to 32, and dropping the anchor loss none of them
+escaped the basin --- the problem is structural, not a tuning issue.
+
+\paragraph{\texttt{LinearAffineZDecoder} (the fix).}
+Replace $A(z)$ with a single linear map $A(z) = W_A \, z + b_A$. Then
+$u$ becomes linear in $z$ with $z$-independent coefficients:
+\[
+u(x; z) \;=\; \underbrace{\bigl(\Phi(x)\,W_A\bigr)}_{V(x)} \, z \;+\; \Phi(x)\,b_A \;+\; b(x),
+\qquad \frac{\partial u}{\partial z} \;=\; V(x) \;\;\text{(constant in } z\text{)}.
+\]
+Structurally this is a Compact-POD decoder: $V(x)$ is the reduced
+basis, $z$ is the coefficient vector, $b(x)$ is the mean field. The
+difference vs classical CP is that $V$ is learned end-to-end with the
+ViT encoder (rather than computed by SVD on snapshots) and $b$ is
+learned (rather than the training-set mean). Because the Jacobian is
+constant, the NM-ROM residual (nonlinear in $u$, but linear in $z$
+through this decoder) reduces to one linear least-squares step per GN
+iter; in practice GN converges in 2 iters. Paired with
+\texttt{AffineNMROMSolver}, which precomputes $V(x_{\text{eq}})$ and
+$b(x_{\text{eq}})$ once per solve. Trained with a Laplacian residual
+loss $\lambda_{\text{lap}} \cdot \|K \cdot \mathrm{decode}(z) - F\|^2$
+evaluated at random interior 5-point stencils per batch; without it
+the encoder finds a good $z$ but the ROM-residual minimum is in a
+different direction (rel-L$^2$ 0.25); with it the encoder-vs-ROM $\|z\|$
+agreement is within 1\% and ROM rel-L$^2$ drops to $\sim$1e-2.
+
+\paragraph{Jacobian behavior at a glance.}
+
+\begin{center}
+\begin{tabular}{l l l r}
+  \textbf{Decoder} & \textbf{$\partial u / \partial z$} & \textbf{Per-iter Jacobian cost} & \textbf{Cold-start ROM} \\
+  \hline
+  ModulatedSIREN (jacfwd)       & nonlinear in $z$ & $\mathrm{latent\_dim} \times r$-eval & 2.88e-3 (with composite recipe) \\
+  ModulatedSIREN (vmap jacrev)  & nonlinear in $z$ & $\sim 2 \times r$-eval              & 2.88e-3 (3.2$\times$ faster Jac)    \\
+  AffineZDecoder                & nonlinear in $z$ & tiny MLP $+$ jacrev                  & 0.2--0.8 (basin trap)               \\
+  LinearAffineZDecoder          & \emph{constant} $V(x)$ & one precompute, then free       & 9.81e-3 (with $\lambda_{\text{lap}}$) \\
+\end{tabular}
+\end{center}
+

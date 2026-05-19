@@ -17,3 +17,6 @@ HEAD,linaff_v4_eq500,273.94,1.31e-2,1.99e-2,0.22,0.01,1.00,272.4,2,0,LinAff + La
 HEAD,linaff_v4_eq8000,103.55,1.31e-2,1.99e-2,0.22,0.01,2.63,272.4,2,0,linaff_v4 at eq=8000.
 HEAD,linaff_v3_eq500,246.57,1.14e-2,1.81e-2,0.34,0.00,1.11,273.7,2,0,LinAff + Lap + 100k ep + bigger Phi (640w/6L) + lambda_lap=0.05. Best val 9.59e-3 ROM rel-L2 1.14e-2 p90 1.81e-2. 246x FOM. CLOSE TO 1e-2 — frac<1e-2=0.34.
 HEAD,linaff_v3_eq8000,92.98,1.14e-2,1.81e-2,0.34,0.00,2.94,273.7,2,0,linaff_v3 at eq=8000.
+HEAD,linaff_v5_eq500,139.04,9.81e-3,1.42e-2,0.53,0.00,1.97,273.7,2,0,LinAff + Lap + 150k epochs + bigger arch (Phi 768w/5L latent 24). Best val 4.21e-3 ROM rel-L2 9.81e-3 p90 1.42e-2. CROSSED 1e-2 THRESHOLD. frac<1e-2=0.53. Speedup 139x (slower than v3/v4 due to bigger Phi).
+HEAD,linaff_v5_eq2000,175.59,9.81e-3,1.42e-2,0.53,0.00,1.56,273.7,2,0,linaff_v5 at eq=2000.
+HEAD,linaff_v5_eq8000,89.76,9.81e-3,1.42e-2,0.53,0.00,3.05,273.7,2,0,linaff_v5 at eq=8000.

@@ -28,6 +28,8 @@ def main():
     lambda_anchor_warmup = int(raw.pop("lambda_anchor_warmup_steps", 2000))
     lambda_lap = float(raw.pop("lambda_lap", 1.0e-1))
     lambda_lap_warmup = int(raw.pop("lambda_lap_warmup_steps", 5000))
+    lambda_lap_anneal_start_frac = float(raw.pop("lambda_lap_anneal_start_frac", 1.0))
+    lambda_lap_anneal_factor = float(raw.pop("lambda_lap_anneal_factor", 1.0))
     M_lap = int(raw.pop("M_lap", 256))
 
     cfg = ExperimentConfig(**raw)
@@ -71,6 +73,8 @@ def main():
         lambda_anchor_warmup_steps=lambda_anchor_warmup,
         lambda_lap=lambda_lap,
         lambda_lap_warmup_steps=lambda_lap_warmup,
+        lambda_lap_anneal_start_frac=lambda_lap_anneal_start_frac,
+        lambda_lap_anneal_factor=lambda_lap_anneal_factor,
         seed=cfg.seed,
         log_every=cfg.log_every,
     )
@@ -80,6 +84,8 @@ def main():
         "lambda_z": lambda_z, "lambda_z_warmup_steps": lambda_z_warmup,
         "lambda_anchor": lambda_anchor, "lambda_anchor_warmup_steps": lambda_anchor_warmup,
         "lambda_lap": lambda_lap, "lambda_lap_warmup_steps": lambda_lap_warmup,
+        "lambda_lap_anneal_start_frac": lambda_lap_anneal_start_frac,
+        "lambda_lap_anneal_factor": lambda_lap_anneal_factor,
         "M_lap": M_lap,
     })
     save_lap_checkpoint(args.out, params, out_cfg, meta)

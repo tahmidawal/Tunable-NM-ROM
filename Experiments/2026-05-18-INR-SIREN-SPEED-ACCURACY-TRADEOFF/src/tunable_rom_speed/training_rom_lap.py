@@ -115,6 +115,8 @@ def train_lap(
     lambda_lap_warmup_steps: int,
     seed: int,
     log_every: int = 500,
+    lambda_lap_anneal_start_frac: float = 1.0,  # 1.0 = no anneal
+    lambda_lap_anneal_factor: float = 1.0,      # 1.0 = no anneal
 ):
     n_train = U_train.shape[0]
     rng = np.random.default_rng(seed)
@@ -235,6 +237,15 @@ def train_lap(
         lam_z_t = float(lambda_z * min(1.0, epoch / max(lambda_z_warmup_steps, 1)))
         lam_a_t = float(lambda_anchor * min(1.0, epoch / max(lambda_anchor_warmup_steps, 1)))
         lam_L_t = float(lambda_lap * min(1.0, epoch / max(lambda_lap_warmup_steps, 1)))
+        # Anneal: linearly decay from lambda_lap to lambda_lap*anneal_factor
+        # over [anneal_start_frac, 1.0] of total epochs. Default 1.0 / 1.0 = no-op.
+        if lambda_lap_anneal_start_frac < 1.0 and lambda_lap_anneal_factor != 1.0:
+            frac = epoch / max(num_epochs - 1, 1)
+            if frac >= lambda_lap_anneal_start_frac:
+                span = max(1.0 - lambda_lap_anneal_start_frac, 1e-12)
+                t = min(1.0, (frac - lambda_lap_anneal_start_frac) / span)
+                anneal_scale = (1.0 - t) + t * lambda_lap_anneal_factor
+                lam_L_t = float(lambda_lap * anneal_scale)
         params, opt_state, loss, rec, zn, an, lap = step(
             params, opt_state,
             jnp.asarray(U_b_np), jnp.asarray(x_np),
@@ -267,6 +278,8 @@ def train_lap(
         "lambda_z": lambda_z, "lambda_z_warmup_steps": lambda_z_warmup_steps,
         "lambda_anchor": lambda_anchor, "lambda_anchor_warmup_steps": lambda_anchor_warmup_steps,
         "lambda_lap": lambda_lap, "lambda_lap_warmup_steps": lambda_lap_warmup_steps,
+        "lambda_lap_anneal_start_frac": lambda_lap_anneal_start_frac,
+        "lambda_lap_anneal_factor": lambda_lap_anneal_factor,
         "M_lap": M_lap,
     }
 

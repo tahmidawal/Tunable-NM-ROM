@@ -1,0 +1,44 @@
+# linaff v6: v5 arch + 200k epochs + rec-emphasis anneal.
+# v5 plateau was around val=4.2e-3 with rec still descending. Anneal lambda_lap
+# from 0.2 -> 0.02 over the last 20% of training so the rec loss can drive the
+# final descent without the lap regularizer holding it back.
+decoder_kind: linear_affine_z
+
+N: 128
+spatial_dim: 2
+n_train: 700
+n_val: 140
+seed: 42
+
+patch_size: 16
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 24
+
+siren_num_layers: 5
+siren_hidden_dim: 768
+omega_0: 30.0
+omega: 1.0
+modulator_hidden: 384
+affine_bias_hidden: 384
+
+num_epochs: 200000
+batch_size: 24
+points_per_sample_train: 1024
+points_per_sample_val: 4096
+on_grid_frac_train: 0.5
+peak_lr: 1.0e-3
+weight_decay: 1.0e-5
+warmup_steps: 1000
+log_every: 1000
+
+lambda_z: 1.0e-3
+lambda_z_warmup_steps: 5000
+lambda_anchor: 0.0
+lambda_anchor_warmup_steps: 1
+lambda_lap: 2.0e-1
+lambda_lap_warmup_steps: 8000
+lambda_lap_anneal_start_frac: 0.8
+lambda_lap_anneal_factor: 0.1
+M_lap: 384

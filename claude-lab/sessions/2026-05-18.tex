@@ -178,148 +178,77 @@ parameter, $n_{\text{eq}}{=}500$, 30 GN iters cap):
 \end{tabular}
 \end{center}
 
-\sessionhead{2}{14:51}{deep dive}{inr-siren-speed-accuracy}{23}
+\sessionhead{2}{14:51}{spike}{inr-siren-speed-accuracy}{b3c9325, 3fb4c16, 312ee5d, a3a5320, 474359e, 1ab8ddd}
 
-\subsubsection*{Context --- session 2 framing}
-After session 1 produced a working cold-start SIREN composite at
-rel-L$^2 \approx 2.88$e$-3$, we noticed the wall-clock was
-\emph{2152 ms vs FOM CG 276 ms} (= $0.13\times$ FOM, \emph{not} the
-$0.50\times$ that the iter-7 JSON claimed --- iter-7's number was timed
-under a previously-warmed JIT and undercounted the cost). The user asked:
-``how fast can we get this and how accurate can we get it, no cheating''.
+\subsubsection*{Summary}
+Pushed cold-start NM-ROM from 0.13$\times$ FOM at rel-L$^2$ 2.88e-3 to a
+three-tier Pareto curve spanning 3.4$\times$--320$\times$ FOM by replacing
+\texttt{jax.jacfwd} with \texttt{vmap(jacrev)} and introducing a
+linear-affine decoder $u(x;z) = V(x){\cdot}z + b(x)$ trained with a
+Laplacian residual loss.
 
-\subsubsection*{What we built}
-
-\textbf{New experiment dir:}
-\texttt{Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/} on
-branch \texttt{inr-siren-speed-accuracy} (pushed to origin), 23 commits.
-
-\textbf{Levers explored (in order):}
-
+\subsubsection*{Files touched}
 \begin{itemize}
-  \item \textbf{Lever A$'$ --- custom Jacobian-emitting forward.}
-    \texttt{src/.../solver/nm\_rom\_fast.py:FastINRNMROMSolver}.
-    Replaces \texttt{jax.jacfwd(residual\_vec)} (= \texttt{latent\_dim}
-    parallel forwards through all $n_{eq}$ points) with
-    \texttt{vmap(jacrev(decoder\_scalar))} per point (= 1 fwd + 1 bwd).
-    Verified against baseline to z-agreement \textbf{6.7e$-$9}.
-    Per-iter speedup: \textbf{3.2$\times$} on fine stage (54~ms $\to$
-    17~ms for one Jacobian).
-
-  \item \textbf{Lever B --- coarse $n_{eq}$ tapering.}
-    Built EQ files at $n_{eq} \in \{50,100,200,250,500,1000,2000,4000,8000\}$.
-    NNLS floor for this dataset is $\sim$200 (50/100 targets both yielded
-    actual $n_{eq}=200$). All Pareto-optimal SIREN points used
-    \texttt{coarse\_neq=200}.
-
-  \item \textbf{Lever C --- Pareto sweep.} \texttt{scripts/pareto\_sweep.py}
-    and \texttt{pareto\_sweep\_fast.py}. Grid over
-    \texttt{(coarse\_neq, fine\_neq, coarse\_iters, fine\_iters)}.
-    Baseline-solver sweep 90 cells, fast-solver sweep 240 cells, both
-    complete. Revealed iter-7's \texttt{fine\_neq=8000, 30/30 iters} was
-    a bad point on the curve: the same accuracy is reachable at
-    \texttt{fine\_neq=500, ic20/if10} (\textbf{60$\times$ fewer EQ
-    evaluations per iter}).
-
-  \item \textbf{Lever D --- affine-in-$z$ decoders.}
-    Two new decoders, both with a precomputable basis trunk:
-    \begin{itemize}
-      \item \texttt{AffineZDecoder} (nonlinear $A(z)$ MLP):
-        \texttt{src/.../decoders/affine\_z.py}. Failed: cold-start GN
-        trapped in basin near $z=0$ because the Jacobian is non-constant.
-      \item \texttt{LinearAffineZDecoder} (\textbf{linear} $A(z) = W_A z$):
-        \texttt{src/.../decoders/linear\_affine\_z.py}. Jacobian
-        $\partial u/\partial z = V(x) = \Phi(x) W_A$ is constant. GN
-        converges in 2 iterations.
-    \end{itemize}
-    Specialized solver: \texttt{src/.../solver/nm\_rom\_affine.py:
-    AffineNMROMSolver} that precomputes $V(x_{eq})$ once per solve.
-
-  \item \textbf{Training upgrade --- Laplacian residual loss applied to
-    linaff.} Reused \texttt{scripts/train\_rom\_lap.py} (iter-5 from
-    session 1, ported to the linear-affine arch via
-    \texttt{affine\_bias\_hidden} config plumbing). Lap loss closed the
-    encoder/ROM consistency gap: $\|z_{enc}\| \approx \|z_{rom}\|$
-    within 1\% on every diagnostic sample.
+  \item \texttt{Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/src/tunable\_rom\_speed/solver/nm\_rom\_fast.py}
+        --- \texttt{FastINRNMROMSolver}: per-iter Jacobian via
+        \texttt{vmap(jacrev)} instead of \texttt{jacfwd}.
+  \item \texttt{Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/src/tunable\_rom\_speed/decoders/linear\_affine\_z.py}
+        --- \texttt{LinearAffineZDecoder}: $u(x;z) = V(x){\cdot}z + b(x)$
+        with constant Jacobian in $z$.
+  \item \texttt{Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/src/tunable\_rom\_speed/solver/nm\_rom\_affine.py}
+        --- \texttt{AffineNMROMSolver}: precomputes $V(x_{\text{eq}})$
+        once per solve.
+  \item \texttt{Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/scripts/timing\_harness.py}
+        --- per-phase millisecond decomposition.
+  \item \texttt{Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/scripts/diagnose\_affine\_manifold.py}
+        --- oracle-vs-ROM rel-L$^2$ split for the affine decoder.
 \end{itemize}
 
-\textbf{Diagnostics built:}
+\subsubsection*{Decisions / surprises}
 \begin{itemize}
-  \item \texttt{scripts/timing\_harness.py}: per-phase median ms
-    (residual, jacfwd, lm-step, encode, decode, coarse-full, fine-full,
-    composite-full) so we can attribute wall-clock to specific JAX ops.
-  \item \texttt{scripts/diagnose\_affine\_manifold.py}: side-by-side
-    oracle (encode$\to$decode) vs ROM rel-L$^2$. This is what diagnosed
-    the encoder/ROM consistency gap in linaff\_v1.
-  \item \texttt{scripts/pareto\_frontier.py}: extracts non-dominated
-    cells from a results CSV.
-  \item \texttt{scripts/verify\_fast\_solver.py}: A$'$ vs baseline solver
-    bitwise check.
+  \item \textbf{Iter-7 baseline was 0.13$\times$ FOM, not 0.50$\times$.}
+        Prior timing was JIT-warmed and undercounted; the honest cold
+        wall is 2152 ms.
+  \item \textbf{Nonlinear $A(z)$ in the affine decoder failed
+        (rel-L$^2$ 0.2--0.8)} because cold-start GN got trapped in a
+        basin near $z{=}0$. Switching to linear $A(z)$ (constant
+        Jacobian) fixed it.
+  \item \textbf{LinearAffine alone solved the manifold but left an
+        encoder-vs-ROM consistency gap} (oracle 1e-2 but ROM 0.25).
+        Adding a Laplacian residual loss during training closed it
+        ($\|z_{\text{enc}}\| \approx \|z_{\text{rom}}\|$ within 1\%).
+  \item \textbf{Iter-7's $n_{\text{eq}}{=}8000$ was load-bearing for the
+        bad speedup.} $n_{\text{eq}}{=}500$ with 10--20 GN iters gives
+        identical accuracy at $\sim$1/8 the per-iter cost.
 \end{itemize}
 
-\subsubsection*{Final cold-start Pareto curve (no cheating)}
+\subsubsection*{Results / metrics}
+
+Cold-start Pareto curve on the 160-sample test set:
 
 \begin{center}
 \begin{tabular}{l l r r r r}
-  \textbf{Tier} & \textbf{Decoder} & \textbf{median rel-L$^2$} & \textbf{p90} & \textbf{frac$<$1e$-$2} & \textbf{Speedup vs FOM} \\
+  \textbf{Tier} & \textbf{Decoder} & \textbf{median rel-L$^2$} & \textbf{p90} & \textbf{speedup vs FOM} & \textbf{wall (ms)} \\
   \hline
-  iter-7 baseline (re-timed)    & SIREN composite     & 2.88e$-$3 & 6.61e$-$3 & 0.94 & 0.13$\times$ \\
-  Accurate                      & Fast SIREN ic30/if20 & 2.88e$-$3 & 6.66e$-$3 & 0.94 & 3.44$\times$ \\
-  Balanced                      & Fast SIREN ic20/if10 & 2.89e$-$3 & 9.87e$-$3 & 0.91 & 3.78$\times$ \\
-  Balanced$^+$                  & Fast SIREN ic10/if20 & 3.02e$-$3 & 1.00e$-$2 & 0.89 & 4.17$\times$ \\
-  \textbf{Sub-1\% LinAff}       & \textbf{linaff\_v5} & \textbf{9.81e$-$3} & \textbf{1.42e$-$2} & \textbf{0.53} & \textbf{139$\times$} \\
-  Fast LinAff                   & linaff\_v3          & 1.14e$-$2 & 1.81e$-$2 & 0.34 & 247$\times$ \\
-  Faster LinAff                 & linaff\_v4          & 1.31e$-$2 & 1.99e$-$2 & 0.22 & 274$\times$ \\
-  Fastest LinAff                & linaff\_v2          & 1.81e$-$2 & 3.16e$-$2 & 0.12 & 320$\times$ \\
+  iter-7 baseline (re-timed) & SIREN composite       & 2.88e-3 & 6.61e-3 & 0.13$\times$ & 2152 \\
+  Accurate                   & Fast SIREN ic30/if20  & 2.88e-3 & 6.66e-3 & 3.44$\times$ & 80   \\
+  Balanced                   & Fast SIREN ic20/if10  & 2.89e-3 & 9.87e-3 & 3.78$\times$ & 72   \\
+  Sub-1\%                    & linaff\_v5            & 9.81e-3 & 1.42e-2 & 139$\times$  & 1.97 \\
+  Speed-first                & linaff\_v2            & 1.81e-2 & 3.16e-2 & 320$\times$  & 0.85 \\
 \end{tabular}
 \end{center}
 
-\subsubsection*{Linaff training-curve scaling (lever D)}
+LinAff training-curve scaling (winner in bold):
 
 \begin{center}
-\begin{tabular}{l l l r r r r}
-  \textbf{Config} & \textbf{Phi}     & \textbf{$z$-dim} & \textbf{epochs} & \textbf{$\lambda_{lap}$} & \textbf{val rel-L$^2$} & \textbf{ROM rel-L$^2$} \\
+\begin{tabular}{l l r r r r r}
+  \textbf{Config} & \textbf{$\Phi$} & \textbf{$z$-dim} & \textbf{epochs} & \textbf{$\lambda_{\text{lap}}$} & \textbf{val rel-L$^2$} & \textbf{ROM rel-L$^2$} \\
   \hline
-  linaff\_v1      & 384w/4L          & 16  & 50k  & 0     & 1.0e$-$2 & 0.25 (no lap) \\
-  linaff\_v2      & 512w/5L          & 16  & 50k  & 0.1   & 5.5e$-$2 & 1.81e$-$2 \\
-  linaff\_v4      & 512w/5L          & 16  & 100k & 0.2   & 8.6e$-$3 & 1.31e$-$2 \\
-  linaff\_v3      & 640w/6L          & 16  & 100k & 0.05  & 9.6e$-$3 & 1.14e$-$2 \\
-  \textbf{linaff\_v5} & \textbf{768w/5L} & \textbf{24} & \textbf{150k} & \textbf{0.15} & \textbf{4.2e$-$3} & \textbf{9.81e$-$3} \\
+  linaff\_v1 & 384w/4L & 16 & 50k  & 0     & 1.0e-2  & 0.25    \\
+  linaff\_v2 & 512w/5L & 16 & 50k  & 0.1   & 5.5e-2  & 1.81e-2 \\
+  linaff\_v4 & 512w/5L & 16 & 100k & 0.2   & 8.6e-3  & 1.31e-2 \\
+  linaff\_v3 & 640w/6L & 16 & 100k & 0.05  & 9.6e-3  & 1.14e-2 \\
+  \textbf{linaff\_v5 (winner)} & \textbf{768w/5L} & \textbf{24} & \textbf{150k} & \textbf{0.15} & \textbf{4.2e-3} & \textbf{9.81e-3} \\
 \end{tabular}
 \end{center}
 
-\subsubsection*{Headline numbers}
-\begin{itemize}
-  \item Same rel-L$^2$ as iter-7 (2.88e$-$3): \textbf{27$\times$ faster}
-    wall-clock (2152~ms $\to$ 80~ms) via lever A$'$ + Pareto-frontier
-    config choice.
-  \item Sub-1\% rel-L$^2$ at \textbf{139$\times$ FOM} via linaff\_v5
-    (1.97~ms).
-  \item rel-L$^2 \sim 2\%$ at \textbf{320$\times$ FOM} via linaff\_v2
-    (0.85~ms).
-\end{itemize}
-
-\subsubsection*{Key insights and surprises}
-\begin{itemize}
-  \item The iter-7 ``0.50$\times$ FOM'' number from session 1 was wrong:
-    proper-warmup timing gives 0.13$\times$. The timing harness is now
-    the source of truth.
-  \item iter-7's choice of \texttt{fine\_neq=8000} was load-bearing for
-    the bad number; the Pareto sweep showed essentially identical
-    accuracy at \texttt{fine\_neq=500} with 1/8 the wall-clock per iter.
-  \item Nonlinear $A(z)$ MLPs in the affine head create a basin near
-    $z=0$ from which cold-start GN cannot escape (rel-L$^2$ 0.2--0.8
-    even with rich Phi, big latent, no anchor). The cure is making
-    $A(z)$ \emph{linear} --- which is exactly the CP-decoder structure.
-  \item Once $A$ is linear, the encoder/ROM consistency gap appears
-    (linaff\_v1: oracle $\approx 1$e$-$2 but ROM $\approx 0.25$). The
-    cure is the Laplacian-residual training loss, which forces the
-    encoder to embed parameters \emph{at the residual-minimum $z$}.
-\end{itemize}
-
-\subsubsection*{Status}
-Branch \texttt{inr-siren-speed-accuracy} pushed to origin
-(\url{https://github.com/tahmidawal/Tunable-NM-ROM/pull/new/inr-siren-speed-accuracy}).
-linaff\_v6 (rec-emphasis schedule) is the obvious next step --- val
-loss was still descending at end of v5, and the network's rec floor is
-$<$2e$-$3.

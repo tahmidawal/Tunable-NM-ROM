@@ -1,0 +1,17 @@
+jax_backend=gpu
+jax_backend=gpu
+N=16 (256 nodes x 51 times), film 120000 steps / grid-tied 40000, n_train=512 traj, n_freq=7 (Nyquist-capped), t_freq=8
+  FOM: 576 trajectories (50 implicit steps each) in 1s, spot rel residual 9.22e-11
+  POD: 6656 snapshots, top-64 ortho dev 5.7e-13
+  POD floors: r1=6.331e-01  r2=5.044e-01  r4=2.901e-01  r6=1.993e-01  r8=1.431e-01  r12=9.675e-02  r16=6.894e-02  r24=4.196e-02  r32=2.784e-02  r48=1.403e-02  r64=7.972e-03
+  grid-tied (21272 params, 40000 steps, 129s): 1.138e-01
+  film params: 442561
+  step       0  val 1.066e+00  [6s]
+  step   20000  val 1.391e-02  [101s]
+  step   40000  val 9.374e-04  [195s]
+  step   60000  val 5.585e-04  [290s]
+  step   80000  val 1.942e-04  [385s]
+  step  100000  val 2.185e-04  [480s]
+  trained 120000 steps in 574s (best val loss 1.841e-04)
+RESULT N=16  film-coord=7.587e-03  grid-tied=1.138e-01  POD-6=1.993e-01  POD-24=4.196e-02
+wrote results + checkpoints

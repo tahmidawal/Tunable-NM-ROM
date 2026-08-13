@@ -17,6 +17,17 @@ All errors are mean relative L2 over held-out validation parameters, seed 0,
 single seed. Every GPU run verified `jax_backend=gpu` and used
 `JAX_DEFAULT_MATMUL_PRECISION=highest`.
 
+> **Metric caveat (added after adversarial review):** the "POD-R" rows are the
+> validation error of the *train-fitted SVD basis*. SVD optimality is for
+> train-set absolute (Frobenius) error, so these values are strong reference
+> baselines but not certified lower bounds for the reported metric (val-set
+> mean per-sample relative L2); the production decoder also carries a scalar
+> bias, making its image an affine set of dimension ≤ R+1, not exactly R.
+> Neither gap approaches the 7–30× margins reported, but "optimal linear" in
+> the tables should be read as "SVD-optimal train basis". "Mesh transfer" means
+> interpolation-free native evaluation at a new resolution, not a claim of
+> zero transfer penalty.
+
 ## Headline results
 
 ### 1D Poisson (local GB10) — proof of concept
@@ -39,8 +50,10 @@ operation does not even exist for the grid-tied decoder.
 
 Convergence vs a near-continuum N=8192 reference
 (`poisson1d_convergence.py`, `results_convergence.json`): coord-net error
-descends monotonically with training N until its fit floor (~9e-3), then holds
-flat. It never rises.
+descends with training N (2.5e-1 → 8.8e-3) into its fit floor (~9e-3), then
+holds flat with single-seed noise (N=128→256 wiggles 8.8e-3 → 9.6e-3). The
+descent-then-flat shape needs multi-seed replication before being called
+monotone.
 
 ### 2D Poisson (Tufts A100s) — the decisive test
 
@@ -81,11 +94,17 @@ sampling, 120k steps. Evaluated against a common N=512 CG reference
 | 128     | 2.5e-4                            | 1.09e-2                     |
 | 256     | 7.0e-5                            | **6.26e-3**                 |
 
-**The loss goes down as resolution increases — 11× across the sweep — and then
-flattens at the capacity floor. It never rises.** Data-limited at N=16,
+**The loss falls 11× across the sweep (7.2e-2 → 6.3e-3) into the capacity
+floor — but the curve is NOT monotone cell-to-cell: N=64→128 rises 9.79e-3 →
+1.09e-2 (11%), within single-seed noise.** Data-limited at N=16,
 capacity-limited from N≥32. The push moved the floor 5–9× (3.9e-2 → 6e-3);
-the net now beats POD-24 by ~12× and POD-64 by ~4×. The plateau is an
-engineering ceiling (movable, demonstrated), unlike POD's mathematical floor.
+the net beats POD-24 by ~12× and POD-64 by ~4×. Two caveats on this sweep
+(flagged in adversarial review): the Nyquist cap means the N=16/32 cells have
+a narrower feature width (fewer params) than N≥64, and per-step sampled points
+are min(8192, N²) — so architecture/budget are not held exactly fixed across
+resolutions; a fixed-bandwidth control ablation and multi-seed replication are
+required before claiming a clean convergence law. The plateau remains an
+engineering ceiling (movable, demonstrated), unlike the linear-subspace bound.
 
 Canonical numbers: `film/film_convergence_fixed.json` (see landmine below).
 

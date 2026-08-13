@@ -21,7 +21,7 @@ Three arms per training resolution N, all in one cluster job
 (linear yardstick), a grid-tied CP-style decoder with MLP(z,t) coefficients
 over learned rank-24 spatial factors (disease control), and the FiLM coord-net.
 Errors are mean relative L2 over 64 held-out val trajectories and all 51 time
-slices, f64 evaluation, seed 0, single seed.
+slices; f32 network inference with norms/references in f64; seed 0, single seed.
 
 ## Headline result 1 — in-resolution head-to-head (Tufts A100s, 120k steps)
 
@@ -33,9 +33,16 @@ slices, f64 evaluation, seed 0, single seed.
 | 128 | 1.98e-1                  | 4.50e-2 | 9.93e-2             | **6.29e-3**    |
 | 256 | 1.98e-1                  | 4.53e-2 | 8.96e-2             | 7.13e-3        |
 
-- The solution manifold over (z, t) is 6-dimensional; POD-6 is the best any
-  equal-dimension linear model can do. The coord-net beats it **~30x**, beats
-  POD-24 ~6.5x, and roughly matches POD-64 (~7-8e-3 in-res) from 6 inputs.
+- The solution manifold over (z, t) is 6-dimensional; POD-6 is the
+  train-fitted SVD basis of that dimension — a strong linear baseline, though
+  not a certified floor for this metric (SVD optimality is train-set absolute
+  error, the table reports val-set mean relative L2; see the metric caveat in
+  the Poisson testbed README). The coord-net beats it **~30x**, beats POD-24
+  ~6.5x, and roughly matches POD-64 (~7-8e-3 in-res) from 6 inputs. One known
+  mismatch (adversarial review): POD rows are fitted AND evaluated on every
+  4th time slice (POD_TIME_STRIDE=4) while the neural columns average all 51
+  slices — the POD numbers should be recomputed on all slices for an exact
+  apples-to-apples table.
 - The grid-tied control repeats the disease **more cleanly than in Poisson**:
   stuck at 0.09-0.11, 2-2.5x ABOVE the POD-24 floor its own rank permits, flat
   in N while its parameter count grows with the grid.
@@ -45,7 +52,7 @@ slices, f64 evaluation, seed 0, single seed.
 
 ## Headline result 2 — convergence + mesh transfer vs the N=512 reference
 
-Each net evaluated NATIVELY on the 512x512 grid (65,536x more points than the
+Each net evaluated NATIVELY on the 512x512 grid (1,024x more points than the
 N=16 training grid; zero retraining, zero interpolation) at time slices
 t-index {0,10,20,30,40,50}, against f64 reference trajectories with the same
 dt (so the comparison isolates spatial error). `sweep/heat2d_convergence.json`:
@@ -58,9 +65,16 @@ dt (so the comparison isolates spatial error). `sweep/heat2d_convergence.json`:
 | 128     | 2.79e-3                           | 9.55e-3               |
 | 256     | 1.42e-3                           | **9.53e-3**           |
 
-**Error falls monotonically with training resolution — 4.8x across the sweep —
-then flattens at the capacity floor (~9.5e-3). It never rises.** Same shape as
-the Poisson curve: data-limited at coarse N (the 16-grid can't resolve w=0.05
+**The six-time aggregate error falls monotonically with training resolution —
+4.8x across the sweep — then flattens at the capacity floor (~9.5e-3).**
+Honest caveats (from adversarial review): the final N=128->256 step improves
+only 0.2%, and per-time errors at t-index 20/30/40/50 individually WORSEN
+7-16% on that step while t=0/10 improve — only the aggregate is monotone.
+The Nyquist cap also means N=16/32 cells have narrower feature widths (442k
+vs 468k params) and per-step sampled points are min(8192, N^2), so
+architecture/budget are not exactly fixed across resolutions; a
+fixed-bandwidth control and multi-seed replication are needed before calling
+this a clean convergence law. Same overall shape as the Poisson curve: data-limited at coarse N (the 16-grid can't resolve w=0.05
 blobs), capacity-limited from N~128. A net trained on a 32x32 grid, evaluated
 on 512x512, lands at 2.17e-2 — 2x its own training data's discretization bound.
 
@@ -69,7 +83,8 @@ on 512x512, lands at 2.17e-2 — 2x its own training data's discretization bound
 The repo's wall — error refusing to improve (or rising) with resolution — is
 reproduced by the grid-tied arm and absent in the coordinate decoder, now in a
 time-dependent setting: the coord-net's in-resolution error is flat ~6-7e-3
-across a 256x range of grid sizes with identical parameter count, and its
+across a 256x range of grid sizes with near-constant parameter count
+(442k-468k, varying only via the Nyquist-capped feature width), and its
 error against the continuum *descends* as the training data improves. Adding
 time as a network input (rather than a grid axis) worked on the first try;
 nothing about the time dimension broke the architecture.
@@ -101,7 +116,7 @@ heat benchmark; t=0 (sharp IC) remains the hardest slice at every N.
   throughout; data regenerated from seed 0 inside each job.
 - Convergence eval ran locally on the GB10 (`jax_backend=gpu`).
 - Config: 120k FiLM steps / 40k grid-tied steps, n_train=512 trajectories,
-  n_val=64, batch 32, 8192 sampled points per step (half importance-sampled
+  n_val=64, batch 32, min(8192, N^2) sampled points per step (half importance-sampled
   around the diffusion-widened blob, std 2*sqrt(w^2+2*kappa*t)), POD Gram in
   f64 (ortho dev ~1e-11), CG tol 1e-10.
 

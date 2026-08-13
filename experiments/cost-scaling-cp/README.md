@@ -2,7 +2,14 @@
 
 Hari's question: when the ROM solves a PDE, does the online work depend on the
 mesh size n, or only on the latent dimension k? Answer, measured two ways on
-one A100: **only on k.** The figure is `cost_scaling.png` / `.pdf`.
+one A100: **the hyperreduced GN iteration kernel is n-free — at fixed EQ
+count m, rank, and iteration count, its cost rides on k only.** (Scope
+caveats, per adversarial review: this is the per-iteration kernel; the
+one-shot final decode is O(rank*n) outside the loop, EQ setup is offline, and
+whether the REQUIRED m or iteration count grows with n at fixed accuracy is
+the follow-up tolerance study, not this measurement. Repo configs do co-vary
+rank/m with N — e.g. poisson2d_n256 raises them — so the end-to-end trained
+ROM claim needs the integration experiment.) The figure is `cost_scaling.png` / `.pdf`.
 
 Two arms, both timed on the same GPU (pax106, A100 80GB PCIe):
 
@@ -27,9 +34,11 @@ in node count — at every k in {2,4,8,16,32}. Meanwhile the FOM CG solve grows
 **Compiler FLOPs (the stronger form):** XLA `cost_analysis()` FLOPs per
 compiled GN iteration are bit-identical across all N at every fixed k, in both
 arms. n appears in no online tensor shape, so the compiled program cannot do
-n-dependent work. (Footnote: the CP arm's FLOP counts at k=2 vs k=4 are
-non-monotone — 3.12e5 vs 1.67e5 — an XLA fusion-accounting artifact; wall
-time is monotone in k. Coord-net FLOPs are monotone: 8.4e8 -> 8.9e9.)
+n-dependent work. (Footnote: BOTH arms' k=4 FLOP counts are anomalously low — CP 1.67e5 vs
+3.12e5 at k=2; coord-net 6.2e7 at k=4 vs 8.4e8 at k=2 — an XLA
+fusion-accounting artifact at k=4. Wall time is monotone in k in both arms;
+the across-N bit-identity of FLOPs at every fixed k is unaffected and is the
+load-bearing check.)
 
 **k-dependence (N=512):** per-iteration time grows k^0.12 (CP) / k^0.48
 (coord-net) over k = 2 -> 32. Exponents are shallow because at these sizes an
@@ -41,9 +50,13 @@ the cost curve rides on k while n never enters.
 | ViT-CP ROM | 155 | 168 | 178 | 191 | 219 |
 | coord-net ROM | 220 | 257 | 342 | 502 | 842 |
 
-CP absolute times are lower because its online decoder is an MLP + tiny gather
-against precomputed factors (m=640, rank=128); the coord-net evaluates a 5x256
-FiLM trunk at 5m points (m=100). Both are 4-6 orders below the FOM at N=512.
+Cross-arm absolute times are NOT directly comparable (different m, decoder
+size, solver details: CP uses the real weighted LM loop with line search at
+m=640; the coord-net skeleton uses unweighted normal equations, no line
+search, m=100) — only each arm's own flatness across N is the claim. For
+scale: at N=512, a 10-iteration solve kernel is ~1.8 ms (CP) / ~3.4 ms
+(coord-net) vs 31 ms for one FOM CG solve (~17x / ~9x), a gap that widens
+with n since the FOM grows ~n^0.94 and the kernels are flat.
 
 ## Protocol (defensibility)
 

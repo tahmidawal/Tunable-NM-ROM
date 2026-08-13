@@ -122,8 +122,9 @@ ax2.text(0.02, 0.97,
          "FLOPs grow with k while N never enters",
          transform=ax2.transAxes, fontsize=8.5, color=INK2, va="top")
 
-fig.suptitle("ROM online cost depends only on k — the mesh (n) is not in the "
-             "formula", fontsize=12.5, color=INK, x=0.02, ha="left", y=0.99)
+fig.suptitle("The hyperreduced GN kernel's cost rides on k — the mesh (n) "
+             "never enters   (fixed m, rank, 10 iterations)",
+             fontsize=12.5, color=INK, x=0.02, ha="left", y=0.99)
 fig.tight_layout(rect=(0, 0, 1, 0.94))
 for ext in ("png", "pdf"):
     fig.savefig(os.path.join(HERE, f"cost_scaling.{ext}"),

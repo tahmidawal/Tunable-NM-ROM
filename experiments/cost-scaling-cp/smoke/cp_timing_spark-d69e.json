@@ -1,0 +1,74 @@
+{
+  "arm": "cp",
+  "gpu": "NVIDIA GB10",
+  "backend": "gpu",
+  "hostname": "spark-d69e",
+  "gn_iters": 10,
+  "m_eq": 640,
+  "rank": 128,
+  "hidden": 256,
+  "seed": 0,
+  "jax": "0.10.1",
+  "cells": [
+    {
+      "N": 32,
+      "k": 4,
+      "m_eq": 640,
+      "median_s_per_gn_iter": 0.00044964663684368136,
+      "iqr_s": [
+        0.00044345461064949633,
+        0.00047365077771246435
+      ],
+      "solve_median_s": 0.004496466368436813,
+      "flops_per_gn_iter": 217060.7,
+      "decode_median_s": 0.0002454090863466263,
+      "repeats": 10,
+      "fom_median_s": 0.0009597958996891975
+    },
+    {
+      "N": 32,
+      "k": 8,
+      "m_eq": 640,
+      "median_s_per_gn_iter": 0.0004485522396862507,
+      "iqr_s": [
+        0.0004098216420970857,
+        0.00047142269322648646
+      ],
+      "solve_median_s": 0.004485522396862507,
+      "flops_per_gn_iter": 226019.5,
+      "decode_median_s": 0.0015579510945826769,
+      "repeats": 10,
+      "fom_median_s": null
+    },
+    {
+      "N": 64,
+      "k": 4,
+      "m_eq": 640,
+      "median_s_per_gn_iter": 0.0003580797929316759,
+      "iqr_s": [
+        0.0003543586819432676,
+        0.0003590078791603446
+      ],
+      "solve_median_s": 0.003580797929316759,
+      "flops_per_gn_iter": 217060.7,
+      "decode_median_s": 0.0004131295718252659,
+      "repeats": 10,
+      "fom_median_s": 0.0012042452581226826
+    },
+    {
+      "N": 64,
+      "k": 8,
+      "m_eq": 640,
+      "median_s_per_gn_iter": 0.00043919221498072146,
+      "iqr_s": [
+        0.0004272893071174622,
+        0.0004644762957468629
+      ],
+      "solve_median_s": 0.004391922149807215,
+      "flops_per_gn_iter": 226019.5,
+      "decode_median_s": 0.0002558573614805937,
+      "repeats": 10,
+      "fom_median_s": null
+    }
+  ]
+}

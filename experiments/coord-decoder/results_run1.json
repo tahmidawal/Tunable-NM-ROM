@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "rank": 24,
+    "steps": 15000,
+    "batch": 32,
+    "n_train": 256,
+    "n_val": 64,
+    "seed": 0,
+    "peak_lr": 0.002,
+    "weight_decay": 0.0005
+  },
+  "64": {
+    "pod_rank24": 1.4599152462849504e-15,
+    "grid_tied": 0.00147677546979288,
+    "coord_net": 0.007102924516089241,
+    "params_grid": 7385,
+    "params_coord": 9601,
+    "seconds": 122.5
+  },
+  "256": {
+    "pod_rank24": 1.6702291942204282e-15,
+    "grid_tied": 0.0014684660676882154,
+    "coord_net": 0.0069443711230012485,
+    "params_grid": 11993,
+    "params_coord": 9601,
+    "seconds": 123.2
+  },
+  "1024": {
+    "pod_rank24": 1.997362491515713e-15,
+    "grid_tied": 0.0016018321815259823,
+    "coord_net": 0.006896960926998716,
+    "params_grid": 30425,
+    "params_coord": 9601,
+    "seconds": 211.1
+  },
+  "4096": {
+    "pod_rank24": 2.796526601117021e-15,
+    "grid_tied": 0.0014493481804059647,
+    "coord_net": 0.006885044238950004,
+    "params_grid": 104153,
+    "params_coord": 9601,
+    "seconds": 301.3
+  },
+  "mesh_transfer": {
+    "train_N": 64,
+    "eval_N": 4096,
+    "rel_l2": 0.006860148319521484
+  }
+}

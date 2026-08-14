@@ -212,26 +212,29 @@ def pod_floors(U_tr, U_va):
     """
     S = U_tr[:, ::POD_TIME_STRIDE].reshape(-1, U_tr.shape[-1])
     Y = U_va[:, ::POD_TIME_STRIDE].reshape(-1, U_va.shape[-1])
-    S_d, Y_d = jnp.asarray(S), jnp.asarray(Y)
+    # host f64: with all-slice fitting the 26112^2 Gram + cuSOLVER eigh
+    # workspace OOM an 80 GB A100 at N>=128
+    S_d = np.asarray(S, dtype=np.float64)
+    Y_d = np.asarray(Y, dtype=np.float64)
     G = S_d @ S_d.T                                                   # f64 Gram
-    evals, evecs = jnp.linalg.eigh(G)
-    order = jnp.argsort(evals)[::-1]
+    evals, evecs = np.linalg.eigh(G)
+    order = np.argsort(evals)[::-1]
     evals, evecs = evals[order], evecs[:, order]
     r_max = min(max(POD_RANKS), S.shape[0])
-    V = (S_d.T @ evecs[:, :r_max]) / jnp.sqrt(jnp.maximum(evals[:r_max], 1e-300))
-    ortho_dev = float(jnp.max(jnp.abs(V.T @ V - jnp.eye(r_max))))
+    V = (S_d.T @ evecs[:, :r_max]) / np.sqrt(np.maximum(evals[:r_max], 1e-300))
+    ortho_dev = float(np.max(np.abs(V.T @ V - np.eye(r_max))))
     print(f"  POD: {S.shape[0]} snapshots (stride {POD_TIME_STRIDE}), "
           f"top-{r_max} ortho dev {ortho_dev:.1e}", flush=True)
-    Y_norm = jnp.linalg.norm(Y_d, axis=1)
+    Y_norm = np.linalg.norm(Y_d, axis=1)
     C = Y_d @ V
     floors = {}
     for r in POD_RANKS:
         if r > r_max:
             continue
         recon = C[:, :r] @ V[:, :r].T
-        rel = jnp.linalg.norm(recon - Y_d, axis=1) / Y_norm
-        floors[r] = float(jnp.mean(rel))
-    sv = np.sqrt(np.maximum(np.asarray(evals[:r_max]), 0.0))
+        rel = np.linalg.norm(recon - Y_d, axis=1) / Y_norm
+        floors[r] = float(np.mean(rel))
+    sv = np.sqrt(np.maximum(evals[:r_max], 0.0))
     return floors, ortho_dev, sv[:32].tolist()
 
 

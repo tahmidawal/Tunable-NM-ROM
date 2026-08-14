@@ -242,32 +242,35 @@ def pod_floors(U_tr, U_va, rms_va):
     n_val, n_t = U_va.shape[:2]
     S = U_tr[:, ::POD_TIME_STRIDE].reshape(-1, U_tr.shape[-1])
     Y = U_va.reshape(-1, U_va.shape[-1])                  # ALL slices
-    S_d, Y_d = jnp.asarray(S), jnp.asarray(Y)
+    # host f64: with all-slice fitting the 26112^2 Gram + cuSOLVER eigh
+    # workspace OOM an 80 GB A100 at N>=128
+    S_d = np.asarray(S, dtype=np.float64)
+    Y_d = np.asarray(Y, dtype=np.float64)
     G = S_d @ S_d.T                                       # f64 Gram
-    evals, evecs = jnp.linalg.eigh(G)
-    order = jnp.argsort(evals)[::-1]
+    evals, evecs = np.linalg.eigh(G)
+    order = np.argsort(evals)[::-1]
     evals, evecs = evals[order], evecs[:, order]
     # cap by numerical rank so near-null Gram modes (possible at smoke scale,
     # where interior-node count < max rank) don't pollute V / the ortho check
-    num_rank = int(jnp.sum(evals > 1e-12 * evals[0]))
+    num_rank = int(np.sum(evals > 1e-12 * evals[0]))
     r_max = min(max(POD_RANKS), S.shape[0], num_rank)
-    V = (S_d.T @ evecs[:, :r_max]) / jnp.sqrt(jnp.maximum(evals[:r_max], 1e-300))
-    ortho_dev = float(jnp.max(jnp.abs(V.T @ V - jnp.eye(r_max))))
+    V = (S_d.T @ evecs[:, :r_max]) / np.sqrt(np.maximum(evals[:r_max], 1e-300))
+    ortho_dev = float(np.max(np.abs(V.T @ V - np.eye(r_max))))
     print(f"  POD: {S.shape[0]} snapshots (fit stride {POD_TIME_STRIDE}), "
           f"top-{r_max} ortho dev {ortho_dev:.1e}", flush=True)
-    sv = np.sqrt(np.maximum(np.asarray(evals[:r_max]), 0.0))
-    del S_d, G, evecs, evals
-    Y_norm = jnp.linalg.norm(Y_d, axis=1)                 # (n_val*(T+1),)
-    rms_rep = jnp.asarray(np.repeat(rms_va, n_t))
+    sv = np.sqrt(np.maximum(evals[:r_max], 0.0))
+    del G, evecs
+    Y_norm = np.linalg.norm(Y_d, axis=1)                  # (n_val*(T+1),)
+    rms_rep = np.repeat(rms_va, n_t)
     C = Y_d @ V
     floors_traj, floors_snap = {}, {}
     for r in POD_RANKS:
         if r > r_max:
             continue
         recon = C[:, :r] @ V[:, :r].T
-        diff = jnp.linalg.norm(recon - Y_d, axis=1)
-        floors_traj[r] = float(jnp.mean(diff / rms_rep))
-        floors_snap[r] = float(jnp.mean(diff / jnp.maximum(Y_norm, 1e-300)))
+        diff = np.linalg.norm(recon - Y_d, axis=1)
+        floors_traj[r] = float(np.mean(diff / rms_rep))
+        floors_snap[r] = float(np.mean(diff / np.maximum(Y_norm, 1e-300)))
     return floors_traj, floors_snap, ortho_dev, sv[:32].tolist()
 
 

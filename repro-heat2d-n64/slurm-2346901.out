@@ -1,0 +1,15 @@
+jax_backend=gpu
+Generating 500 train + 50 val trajectories at N=64, d=2
+Saved data/heat2d_n64.npz (401.2 MB)
+Training AE: 25500 train, 2550 val
+Saved checkpoint to checkpoints/heat2d_n64.pkl (best val: 7.8864e-03)
+Computing EQ weights via NNLS
+  EQ nodes selected: 100
+  traj 0: kappa=0.0179  rel_l2=7.7489e-03  speedup=0.13x
+  traj 1: kappa=0.0510  rel_l2=3.2152e-02  speedup=0.17x
+  traj 2: kappa=0.0317  rel_l2=2.2372e-02  speedup=0.15x
+  traj 3: kappa=0.1097  rel_l2=2.0235e-02  speedup=0.32x
+  traj 4: kappa=0.2007  rel_l2=5.9171e-02  speedup=0.36x
+
+Mean rel_l2: 2.8336e-02
+Median speedup: 0.17x

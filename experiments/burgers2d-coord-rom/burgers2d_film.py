@@ -124,13 +124,20 @@ def make_rollout(n):
         return R.reshape(-1)
 
     def newton_step(u_prev, nu):
+        u_scale = jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
         def body(u, _):
             r = residual(u, u_prev, nu)
             Jv = lambda v: jax.jvp(
                 lambda uu: residual(uu, u_prev, nu), (u,), (v,))[1]
             du, _ = jax.scipy.sparse.linalg.bicgstab(
                 Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER)
-            return u + du, 0.0
+            # guard the fixed-length Newton scan: once converged, BiCGStab is
+            # fed a ~zero residual and its rho/omega inner products can under-
+            # flow to a NaN step (observed: sudden NaN at machine-eps residual,
+            # non-deterministic across runs/GPUs); also reject any non-finite
+            # step from a genuine breakdown
+            ok = (jnp.linalg.norm(r) > 1e-12 * u_scale) & jnp.isfinite(du).all()
+            return u + jnp.where(ok, du, 0.0), 0.0
         u_new, _ = jax.lax.scan(body, u_prev, None, length=NEWTON_ITERS)
         rel = (jnp.linalg.norm(residual(u_new, u_prev, nu))
                / jnp.maximum(jnp.linalg.norm(u_prev), 1e-300))

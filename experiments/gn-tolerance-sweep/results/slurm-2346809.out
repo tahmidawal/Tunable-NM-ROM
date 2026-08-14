@@ -1,0 +1,9 @@
+jax_backend=gpu
+Generating 840 Poisson-2D snapshots at N=64 using data_source='analytical'
+Saved data/p.npz (12.1 MB)
+Training AE: 700 train, 140 val
+Saved checkpoint to ckpt/p.pkl (best val: 2.5716e-05)
+jax_backend=gpu
+  sample 0 iters per tol: [16, 16, 18]
+VALIDATION OK (poisson, 140 solves x 3 tolerances, probe=30)
+wrote gn_poisson_N64.json  (rel_l2_per_tol={'0.01': 0.8941013627818652, '0.001': 0.9027622686965125, '0.0001': 0.9052470035851001}, n_eq=640, validation_ok=True)

@@ -1,0 +1,9 @@
+jax_backend=gpu
+Generating 500 train + 50 val trajectories at N=64, d=2
+Saved data/h.npz (401.2 MB)
+Training AE: 25500 train, 2550 val
+Saved checkpoint to ckpt/h.pkl (best val: 7.6206e-03)
+jax_backend=gpu
+  note: 2 jit-vs-eager step-0 count discrepancies (fp near threshold; recorded, not a failure)
+VALIDATION OK (heat, 50 trajectories x 3 tolerances, 50 steps, probe=30)
+wrote gn_heat_N64.json  (rel_l2_per_tol={'0.01': 0.05007431306876242, '0.001': 0.051008887970820066, '0.0001': 0.05165515433996916}, n_eq=100, validation_ok=True)

@@ -1,0 +1,24 @@
+# Poisson-2D N=32 — gn-tolerance-sweep cell (copy of n64 with N: 32; patch_size 8 divides 32).
+# For FAST variant: gn_max_iters=4 -> speedup~324x at rel-L2=2.0e-2.
+N: 32
+spatial_dim: 2
+patch_size: 8
+embed_dim: 64
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 8
+rank: 128
+hidden_dim: 256
+num_epochs: 500
+batch_size: 32
+peak_lr: 1.0e-3
+weight_decay: 5.0e-4
+warmup_frac: 0.05
+seed: 42
+n_train: 50
+n_val: 8
+data_source: analytical
+gn_max_iters: 8
+gn_rel_tol: 1.0e-3
+n_eq_samples: 200
+min_eq_points: 640

@@ -1,0 +1,23 @@
+# Heat-2D N=32 — gn-tolerance-sweep cell (copy of n64 with N: 32; patch_size 8 divides 32).
+N: 32
+spatial_dim: 2
+patch_size: 8
+embed_dim: 96
+num_heads: 4
+num_enc_layers: 4
+latent_dim: 64
+rank: 256
+hidden_dim: 256
+num_epochs: 500
+batch_size: 32
+peak_lr: 2.0e-3
+weight_decay: 5.0e-4
+warmup_frac: 0.1
+seed: 0
+n_train: 50
+n_val: 8
+gn_max_iters: 12
+gn_rel_tol: 1.0e-3
+n_eq_samples: 100
+min_eq_points: 64
+num_rom_steps: 50

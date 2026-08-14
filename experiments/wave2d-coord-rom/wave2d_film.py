@@ -247,7 +247,10 @@ def pod_floors(U_tr, U_va, rms_va):
     evals, evecs = jnp.linalg.eigh(G)
     order = jnp.argsort(evals)[::-1]
     evals, evecs = evals[order], evecs[:, order]
-    r_max = min(max(POD_RANKS), S.shape[0])
+    # cap by numerical rank so near-null Gram modes (possible at smoke scale,
+    # where interior-node count < max rank) don't pollute V / the ortho check
+    num_rank = int(jnp.sum(evals > 1e-12 * evals[0]))
+    r_max = min(max(POD_RANKS), S.shape[0], num_rank)
     V = (S_d.T @ evecs[:, :r_max]) / jnp.sqrt(jnp.maximum(evals[:r_max], 1e-300))
     ortho_dev = float(jnp.max(jnp.abs(V.T @ V - jnp.eye(r_max))))
     print(f"  POD: {S.shape[0]} snapshots (fit stride {POD_TIME_STRIDE}), "

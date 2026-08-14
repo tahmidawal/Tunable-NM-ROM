@@ -126,3 +126,54 @@ an 80 GB A100 but not much smaller; if an OOM appears, set POD_TIME_STRIDE=2
 jax_backend=gpu; energy drift 4.1e-15; POD ortho dev 1.4e-12 (rank-capped);
 all three arms train with finite losses; results JSON + checkpoints written.
 Numbers at this scale are meaningless by design.
+
+## Results (2026-08-14, Tufts A100 sweep, seed 0, jobs 2357973-75 / 2358517-18 / 2357978)
+
+### In-resolution head-to-head (traj-RMS metric, 120k steps)
+
+| N   | POD-6 (equal-dim linear) | POD-24  | grid-tied (rank 24) | FiLM coord-net |
+|-----|--------------------------|---------|---------------------|----------------|
+| 16  | 4.407e-1                 | 1.591e-1 | 3.579e-1           | 2.801e-2       |
+| 32  | 4.466e-1                 | 1.773e-1 | 3.739e-1           | 3.059e-2       |
+| 64  | 4.497e-1                 | 1.847e-1 | 3.726e-1           | 2.850e-2       |
+| 128 | 4.513e-1                 | 1.885e-1 | 3.730e-1           | 3.052e-2       |
+| 256 | 4.520e-1                 | 1.904e-1 | 3.757e-1           | 3.507e-2       |
+
+- The coord-net beats equal-dimension POD-6 ~13-16x and POD-24 ~5.4-6.5x.
+  POD floors are ~4x worse than heat's at the same ranks (POD-24 1.6-1.9e-1
+  vs heat 4.2-4.5e-2): the dissipation-free transport problem has the slow
+  Kolmogorov decay the coordinate-decoder program predicts.
+- The grid-tied control is stuck ~2x ABOVE its own POD-24 ceiling at every N —
+  the same disease signature as Poisson/heat/Burgers, now on a hyperbolic PDE.
+- Per-snapshot-normalized variants (`*_snap` keys in the JSONs) tell the same
+  story ~10% higher (snapshot norms pass near zero during energy exchange).
+
+### Convergence + mesh transfer vs the N=512 reference (native 512^2 eval)
+
+| train N | data-floor (discretization bound) | FiLM net vs reference |
+|---------|-----------------------------------|-----------------------|
+| 16      | 2.134e-1                          | 2.332e-1              |
+| 32      | 1.045e-1                          | 1.173e-1              |
+| 64      | 5.631e-2                          | 6.785e-2              |
+| 128     | 3.708e-2                          | 4.984e-2              |
+| 256     | 2.578e-2                          | 4.368e-2              |
+
+- **Strictly monotone, 5.3x across the sweep — no non-monotone step** (cleaner
+  than heat's aggregate or Poisson's wiggle). The net tracks its data floor
+  within 9-20% through N=64 and opens to ~1.7x at N=256 (capacity beginning to
+  bind); the in-res uptick at N=256 (3.5e-2) is metric wiggle, not regression —
+  against the fixed reference N=256 is the best cell.
+- Wave data floors are ~20x heat's at matched N (2.6e-2 vs 1.4e-3 at N=256):
+  without dissipation, sharp features never smooth out, so wave error is
+  data-limited nearly everywhere in this sweep.
+- Caveats (inherited from the heat round's adversarial review, unresolved
+  here too): single seed; Nyquist cap varies feature width across N cells
+  (n_freq 7/15/31/32/32); per-step sampled points min(8192, N^2); POD rows are
+  train-fitted SVD bases, not certified floors for this val metric.
+
+Provenance: commits `de11ee4`..`509df59` + CPU-POD/audit fixes; A100 80GB,
+jax_backend=gpu in every log; JAX_DEFAULT_MATMUL_PRECISION=highest; data
+regenerated from seed 0 on-cluster in every cell; isolated job dirs; cluster
+dirs deleted after checksummed pull. Local artifacts: `sweep/` (results JSONs,
+film+grid-tied checkpoints, logs, `wave2d_convergence.json`), `ref512_val.npz`
+(untracked, 769M — regenerate via wave2d_refgen.py).

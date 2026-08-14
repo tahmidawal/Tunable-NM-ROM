@@ -191,7 +191,11 @@ def build_trajectories(n, chunk=64):
                        for i in range(s, e)])
         snaps, res = rollout(jnp.asarray(U0), jnp.asarray(nu[s:e]))
         U[s:e] = np.asarray(snaps).transpose(1, 0, 2)
-        res_max = max(res_max, float(jnp.max(res)))
+        cm = float(jnp.max(res))
+        # NaN-propagating accumulate: builtin max(x, nan) keeps x and would
+        # mask a diverged chunk (this bug hid the N=128 blowup once)
+        if not np.isfinite(cm) or cm > res_max:
+            res_max = cm
     print(f"  FOM: {m} trajectories ({NUM_STEPS} Newton-implicit steps each) "
           f"in {time.time()-t0:.0f}s, max Newton rel residual {res_max:.2e}",
           flush=True)

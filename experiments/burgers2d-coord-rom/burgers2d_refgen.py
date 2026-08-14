@@ -51,7 +51,11 @@ for s in range(0, bf.N_VAL, CHUNK):
                    for i in range(s, e)])
     snaps, res = rollout(jnp.asarray(U0), jnp.asarray(nu[s:e]))
     U_ref[s:e] = np.asarray(snaps)[bf.EVAL_TIMES].transpose(1, 0, 2)
-    res_max = max(res_max, float(jnp.max(res)))
+    cm = float(jnp.max(res))
+    # NaN-propagating accumulate: builtin max(x, nan) keeps x and would
+    # mask a diverged chunk
+    if not np.isfinite(cm) or cm > res_max:
+        res_max = cm
     print(f"  {e}/{bf.N_VAL} trajectories [{time.time()-t0:.0f}s] "
           f"(max Newton rel res so far {res_max:.2e})", flush=True)
 

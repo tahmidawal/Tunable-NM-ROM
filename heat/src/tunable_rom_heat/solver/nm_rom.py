@@ -88,6 +88,13 @@ class NMROMSolver:
         # Implicit-Euler update at center: u_c + dt*kappa*lap
         return u_st[:, 0] + DT * kappa * lap
 
+    def u_center_eq(self, z):
+        """Normalised decoded STATE at the EQ centre nodes (no implicit operator)."""
+        h = self._mlp_apply(z)
+        u_st = (h @ self.v_eq_st + self.b_scalar)
+        u_st = u_st.reshape(self.n_eq, self.stencil_w) * self.mask_st
+        return u_st[:, 0]
+
     def residual(self, z, scale, u_prev_eq, kappa):
         """R = scale * f_norm(z, kappa) - u_prev_eq, at EQ centres."""
         return scale * self.f_norm_eq(z, kappa) - u_prev_eq
@@ -150,8 +157,11 @@ class NMROMSolver:
         def body(i, carry):
             z, s, u_prev_eq, iters_buf = carry
             z_new, s_new, it = self._step(z, s, u_prev_eq, kappa)
-            # New u_prev at EQ centres for the next step.
-            u_new_eq = s_new * self.f_norm_eq(z_new, kappa)
+            # New u_prev at EQ centres for the next step: the decoded STATE,
+            # not f_norm_eq (the implicit operator applied to it) — that value
+            # equals u_prev_eq at convergence and freezes the rollout after
+            # the first step (every later solve starts at residual zero).
+            u_new_eq = s_new * self.u_center_eq(z_new)
             iters_buf = iters_buf.at[i].set(it)
             return (z_new, s_new, u_new_eq, iters_buf)
 

@@ -217,7 +217,11 @@ def build_trajectories(n, chunk=64):
         U[s:e] = np.asarray(snaps).transpose(1, 0, 2)
         ens = np.asarray(ens)                       # (T+1, B)
         drift = np.max(np.abs(ens - ens[0]) / np.maximum(ens[0], 1e-300))
-        drift_max = max(drift_max, float(drift))
+        dm = float(drift)
+        # NaN-propagating accumulate: builtin max(x, nan) keeps x and would
+        # mask a diverged chunk
+        if not np.isfinite(dm) or dm > drift_max:
+            drift_max = dm
     print(f"  FOM: {m} trajectories ({NUM_STEPS}x{SUBSTEPS} CN substeps, "
           f"dt={DT_SUB:g}) in {time.time()-t0:.0f}s, "
           f"max rel energy drift {drift_max:.2e}", flush=True)

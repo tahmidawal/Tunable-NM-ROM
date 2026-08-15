@@ -1,35 +1,43 @@
-"""Experiment D: multi-stage-precision AUTO-DECODER + Gauss-Newton ROM (Poisson 2D).
+"""Experiment (2): multi-stage-precision AUTO-DECODER + Levenberg-Marquardt
+Gauss-Newton ROM on Poisson 2D.
 
-The user's question: can an autoencoder-style decoder be trained multi-stage
-(Wang & Lai) to high precision and then used to SOLVE the PDE as a ROM — and
-how much of the decoder precision survives the solve?
+Question: can an autoencoder-style decoder be trained multi-stage (Wang & Lai)
+to high precision and then used to SOLVE the PDE as a ROM — how much decoder
+precision survives the solve?  Staging needs a FIXED target, so the encoder is
+never live: auto-decoder (DeepSDF-style learned per-snapshot latents).
 
-Staging needs a FIXED target, so the encoder is never live during staging.
-Auto-decoder formulation (DeepSDF-style latents), three phases:
+  (A) Base FiLM decoder D0(x; z_i), latents z_i (dim K_LAT) learned jointly
+      (lazy per-row Adam), f64, inverse-energy sample weights.  Reported:
+      TRAIN fit at the learned latents (both metrics), and the held-out
+      "finite-budget inferred-latent error": the SAME LM solver as the ROM,
+      applied to the DATA-MISFIT residual dec(z)-u at all grid nodes,
+      multi-start (mean train latent / nearest-in-source-parameter training
+      latent), same attempt budget as the ROM arms.  Not a lower bound.
+  (B) FREEZE the train latents; Wang-Lai stages over (x; z), frequency
+      schedule in half-cycle units from the radial-mean spectrum probe
+      (ms_parametric.freq_schedule).  Val error with (i) the stage-0 inferred
+      latents held fixed and (ii) latents re-inferred through the full staged
+      decoder (LM, same budget).
+  (C) ROM on the held-out val sources: online the solver knows ONLY the source
+      f and the decoder.  Residual = ghost-zero-Dirichlet 5-point FD operator
+      applied to the decoded INTERIOR field minus f (boundary rows DROPPED;
+      == the FOM operator, so a perfect decoder at some z zeros it exactly);
+      the boundary block ||dec(z, boundary)|| is recorded separately.
+      Collocation: full interior, and an m-node EQ-style random subset
+      (stencil neighbours on the wall contribute 0).  LM with tolerance, NaN
+      guard, budget accounting; inits: mean latent, nearest-source-parameter
+      training latent, and a STAGED solve (stage-0 decoder for half the
+      budget, then the full sum for the other half).  Per arm we record
+      ||r(z_LM)||, ||r(z_oracle)||, ||f|| (restricted), field error at the
+      oracle latent, latent norms and nearest-training-latent distances.
 
-  (A) Base: FiLM decoder D0(x; z_i) with LEARNED per-snapshot latents z_i
-      (dim K_LAT, family has 4 true params), latents + weights jointly
-      optimized (Adam, f64) on target U/eps0.  Manifold/representation floor
-      = train fit error at the learned latents.  Val latents come from
-      auto-decoder INFERENCE (Adam on z only against the val field).
-  (B) FREEZE the train latents; Wang-Lai stages over (x; z): stage j fits
-      r_j(x; z_i) = U_i - sum_{l<j} eps_l D_l(x; z_i), normalized by RMS,
-      fresh FiLM net with Fourier bandwidth from the residual's dominant
-      frequency.  Val error reported with (i) stage-0-inferred latents held
-      fixed and (ii) latents re-inferred through the full staged decoder
-      (the "oracle-latent" floor the ROM is measured against).
-  (C) ROM on the held-out val sources: only the source f(x; cx,cy,w,a) and the
-      decoder are known online.  min_z ||discrete FD residual(D(x; z))|| via
-      Levenberg-Marquardt Gauss-Newton (adaptive damping, accept/reject) on
-      the K_LAT-dim latent, full-interior collocation and an m-point EQ-style
-      random subset.  Latent init: mean train latent (cold) and the latent of
-      the nearest training sample in SOURCE-parameter space (the ROM knows f,
-      hence its parameters).  Also a STAGED solve: stage-0 decoder first, then
-      refine with the full sum.  All decoders/algebra f64.
+Provenance: report + pkl carry the config manifest; the phase-B report is
+written before phase C starts; `complete` flag at the end; the held-out-derived
+val latents live in a separate tainted file (never in the deployable pkl).
 
-Usage: [K_LAT=4] [N=64] [N_TRAIN=512] [N_VAL=64] [N_STAGES=3] [STEPS=25000]
-       [N_TEST=16] python ms_autodecoder.py [outdir]
-Reuses family / FOM / FiLM building blocks from ms_parametric.py.
+Usage: [K_LAT=4] [N=64] [N_TRAIN=512] [N_VAL=64] [N_STAGES=3] [STEPS=20000]
+       [P_SUB=1024] [N_TEST=16] [GN_ITERS=60] [M_EQ=512] [Z_FF=0]
+       python ms_autodecoder.py [outdir]
 """
 from __future__ import annotations
 
@@ -50,342 +58,367 @@ import optax
 import ms_parametric as mp
 
 K_LAT = int(os.environ.get("K_LAT", "4"))
-N = mp.N
-N_TRAIN, N_VAL = mp.N_TRAIN, mp.N_VAL
+N, N_TRAIN, N_VAL = mp.N, mp.N_TRAIN, mp.N_VAL
 N_STAGES = int(os.environ.get("N_STAGES", "3"))
-STEPS = int(os.environ.get("STEPS", "25000"))
-BATCH = mp.BATCH
-HIDDEN, N_LAYERS = mp.HIDDEN, mp.N_LAYERS
-PEAK_LR = mp.PEAK_LR
-P_SUB = mp.P_SUB
+STEPS = mp.STEPS
 LAT_LR = float(os.environ.get("LAT_LR", "5e-3"))
 LAT_REG = float(os.environ.get("LAT_REG", "1e-4"))
-INFER_STEPS = int(os.environ.get("INFER_STEPS", "1500"))
+ADAM_INFER_STEPS = int(os.environ.get("ADAM_INFER_STEPS", "1500"))
 N_TEST = int(os.environ.get("N_TEST", "16"))
 GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
 M_EQ = int(os.environ.get("M_EQ", "512"))
-SEED = int(os.environ.get("SEED", "0"))
+Z_FF = mp.Z_FF
+SEED = mp.SEED
 OUTDIR = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(
     os.path.abspath(__file__))
 F64 = jnp.float64
+CONFIG = dict(mp.CONFIG, K_LAT=K_LAT, n_stages=N_STAGES, lat_lr=LAT_LR,
+              lat_reg=LAT_REG, adam_infer_steps=ADAM_INFER_STEPS, n_test=N_TEST,
+              gn_iters=GN_ITERS, m_eq=M_EQ)
 
 
-# ------------------------- FiLM net with K_LAT latent input -------------------------
+# --------------------------- Levenberg-Marquardt ---------------------------
 
-def init_film_net(key, n_freq):
-    d_in = 2 * (2 * n_freq + 1)
-    keys = jax.random.split(key, N_LAYERS + 4)
-    trunk = [mp.init_dense(keys[0], d_in, HIDDEN)]
-    for i in range(1, N_LAYERS):
-        trunk.append(mp.init_dense(keys[i], HIDDEN, HIDDEN))
-    out = mp.init_dense(keys[N_LAYERS], HIDDEN, 1)
-    z_embed = mp.init_dense(keys[N_LAYERS + 1], K_LAT, 64)
-    film = mp.init_dense(keys[N_LAYERS + 2], 64, N_LAYERS * 2 * HIDDEN)
-    film["W"] = film["W"] * 0.01
-    return {"trunk": trunk, "out": out, "z_embed": z_embed, "film": film}
-
-
-film_apply = mp.film_apply          # generic in the latent dim
-combined_apply = mp.combined_apply
-
-
-def train_stage(key, np_rng, coords, target, n_freq, z_tr, learn_latents,
-                tag):
-    """Fit one FiLM stage to `target` (n_train, n^2), RMS ~ 1.
-    learn_latents=True -> joint (weights, latents) Adam (phase A);
-    False -> weights only, latents frozen (phase B)."""
-    params = init_film_net(key, n_freq)
-    sched = optax.warmup_cosine_decay_schedule(
-        0.0, PEAK_LR, max(1, STEPS // 20), STEPS, end_value=1e-9)
-    opt = optax.adamw(sched, weight_decay=1e-6)
-    state = opt.init(params)
-    lat_sched = optax.warmup_cosine_decay_schedule(
-        0.0, LAT_LR, max(1, STEPS // 20), STEPS, end_value=1e-9)
-    lat_opt = optax.adam(lat_sched)
-    lat_state = lat_opt.init(z_tr)
-
-    def loss_fn(ps, z_b, t_b, pidx):
-        pred = jax.vmap(lambda zi: film_apply(ps, zi, coords[pidx], n_freq))(z_b)
-        return jnp.mean((pred - t_b[:, pidx]) ** 2)
-
-    @jax.jit
-    def step_w(ps, st, z_b, t_b, pidx):
-        val, g = jax.value_and_grad(loss_fn)(ps, z_b, t_b, pidx)
-        up, st = opt.update(g, st, ps)
-        return optax.apply_updates(ps, up), st, val
-
-    @jax.jit
-    def step_wz(ps, st, z_all, lst, bi, t_b, pidx):
-        z_b = z_all[bi]
-        def lz(ps_, z_b_):
-            return loss_fn(ps_, z_b_, t_b, pidx) + LAT_REG * jnp.mean(z_b_ ** 2)
-        val, (gp, gz) = jax.value_and_grad(lz, argnums=(0, 1))(ps, z_b)
-        up, st = opt.update(gp, st, ps)
-        ps = optax.apply_updates(ps, up)
-        gz_full = jnp.zeros_like(z_all).at[bi].set(gz)
-        upz, lst = lat_opt.update(gz_full, lst, z_all)
-        z_all = optax.apply_updates(z_all, upz)
-        return ps, st, z_all, lst, val
-
-    n_pts = coords.shape[0]
-    t0 = time.time()
-    for it in range(STEPS):
-        bi = np_rng.choice(N_TRAIN, size=BATCH, replace=False)
-        pidx = (jnp.arange(n_pts) if P_SUB <= 0 else
-                jnp.asarray(np_rng.choice(n_pts, size=P_SUB, replace=False)))
-        if learn_latents:
-            params, state, z_tr, lat_state, val = step_wz(
-                params, state, z_tr, lat_state, jnp.asarray(bi), target[bi], pidx)
+def lm_solve(rJ, rnorm, z0, budget, lam0=1e-6):
+    """LM on min_z ||r(z)||^2.  budget = attempts (each = 1 residual eval;
+    accepted attempts add 1 Jacobian eval).  Returns z, ||r||, accounting."""
+    z = z0
+    lam = lam0
+    r, J = rJ(z)
+    n_r, n_J = 1, 1
+    rn = float(jnp.linalg.norm(r))
+    acc = rej = 0
+    reason = "budget"
+    if not np.isfinite(rn):
+        return z, rn, dict(accepted=0, rejected=0, n_resid_evals=1,
+                           n_jac_evals=1, final_lambda=lam, reason="nan_at_init",
+                           attempts=0)
+    for attempt in range(1, budget + 1):
+        H = J.T @ J
+        g = J.T @ r
+        D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(H.shape[0], dtype=F64)
+        dz = jnp.linalg.solve(H + lam * D, -g)
+        if not bool(jnp.all(jnp.isfinite(dz))):
+            lam = min(lam * 10.0, 1e12); rej += 1
+            if lam >= 1e12:
+                reason = "nan_step_lambda_max"; break
+            continue
+        z_new = z + dz
+        rn_new = float(rnorm(z_new)); n_r += 1
+        if np.isfinite(rn_new) and rn_new < rn:
+            rel_dec = (rn - rn_new) / rn
+            step = float(jnp.linalg.norm(dz)) / (1.0 + float(jnp.linalg.norm(z)))
+            z, rn = z_new, rn_new
+            r, J = rJ(z); n_J += 1; n_r += 1
+            lam = max(lam / 3.0, 1e-12); acc += 1
+            if rel_dec < 1e-12 or step < 1e-13:
+                reason = "converged"; break
         else:
-            params, state, val = step_w(params, state, z_tr[bi], target[bi], pidx)
-        if it % 5000 == 0:
-            print(f"  [{tag}] step {it:6d}  loss {float(val):.3e}  "
-                  f"[{time.time()-t0:.0f}s]", flush=True)
-    print(f"  [{tag}] trained {STEPS} steps in {time.time()-t0:.0f}s "
-          f"(final batch loss {float(val):.3e})", flush=True)
-    return params, z_tr
+            lam = min(lam * 10.0, 1e12); rej += 1
+            if lam >= 1e12:
+                reason = "lambda_max"; break
+    return z, rn, dict(accepted=acc, rejected=rej, n_resid_evals=n_r,
+                       n_jac_evals=n_J, final_lambda=float(lam), reason=reason,
+                       attempts=attempt)
 
 
-def infer_latents(stages, coords, U_target, z_init, steps=INFER_STEPS,
-                  lr=2e-2):
-    """Auto-decoder inference: Adam on latents only, decoder frozen, batched
-    over samples.  Returns latents and per-sample rel-L2."""
-    def one_loss(z, u):
-        pred = combined_apply(stages, z, coords)
-        return jnp.mean((pred - u) ** 2)
-    total = lambda Z: jnp.sum(jax.vmap(one_loss)(Z, U_target))
-    sched = optax.cosine_decay_schedule(lr, steps, alpha=1e-4)
-    opt = optax.adam(sched)
-    st = opt.init(z_init)
+def make_data_misfit(stages, coords):
+    dec = lambda z, u: mp.combined_apply(stages, z, coords) - u
+    rJ = jax.jit(lambda z, u: (dec(z, u), jax.jacfwd(dec)(z, u)))
+    rn = jax.jit(lambda z, u: jnp.linalg.norm(dec(z, u)))
+    return rJ, rn
 
+
+def infer_latents_lm(stages, coords, U_target, inits, budget):
+    """Finite-budget latent inference by LM on the data misfit; inits: dict
+    name -> (n, K) starting latents.  Returns per-start results + best-of."""
+    rJ, rn = make_data_misfit(stages, coords)
+    out = {}
+    for name, Z0 in inits.items():
+        Z, rels, accs = [], [], []
+        for i in range(U_target.shape[0]):
+            u = U_target[i]
+            z, r, info = lm_solve(lambda zz: rJ(zz, u), lambda zz: rn(zz, u),
+                                  Z0[i], budget)
+            Z.append(np.asarray(z))
+            rels.append(r / float(jnp.linalg.norm(u)))
+            accs.append(info["accepted"])
+        out[name] = {"Z": np.stack(Z), "rel": np.asarray(rels),
+                     "acc_med": float(np.median(accs))}
+    names = list(out)
+    best_rel = np.min(np.stack([out[n]["rel"] for n in names]), axis=0)
+    best_pick = np.argmin(np.stack([out[n]["rel"] for n in names]), axis=0)
+    Zbest = np.stack([out[names[b]]["Z"][i] for i, b in enumerate(best_pick)])
+    out["best"] = {"Z": Zbest, "rel": best_rel}
+    return out
+
+
+def infer_latents_adam(stages, coords, U_target, Z0, steps=ADAM_INFER_STEPS,
+                       lr=2e-2):
+    """Secondary: Adam on latents only, per-sample RELATIVE loss (normalized)."""
+    msq = jnp.mean(U_target ** 2, axis=1)
+    def total(Z):
+        pred = jax.vmap(lambda z: mp.combined_apply(stages, z, coords))(Z)
+        return jnp.sum(jnp.mean((pred - U_target) ** 2, axis=1) / msq)
+    opt = optax.adam(optax.cosine_decay_schedule(lr, steps, alpha=1e-4))
+    st = opt.init(Z0)
     @jax.jit
     def step(Z, st):
         val, g = jax.value_and_grad(total)(Z)
         up, st = opt.update(g, st, Z)
         return optax.apply_updates(Z, up), st, val
-
-    Z = z_init
+    Z = Z0
     for _ in range(steps):
         Z, st, _ = step(Z, st)
-    pred = jax.vmap(lambda z: combined_apply(stages, z, coords))(Z)
-    rel = jnp.linalg.norm(pred - U_target, axis=1) / jnp.linalg.norm(
-        U_target, axis=1)
-    return Z, np.asarray(rel)
+    pred = jax.vmap(lambda z: mp.combined_apply(stages, z, coords))(Z)
+    _, m_rel, per = mp.rel_metrics(pred, U_target)
+    return np.asarray(Z), per
 
 
 def main():
     print(f"jax_backend={jax.default_backend()}  x64={jax.config.jax_enable_x64}"
           f"  K_LAT={K_LAT}", flush=True)
-    nyq = (N - 1) // 2
-    U, z_true_all, coords = mp.build_snapshots(N)
+    print("CONFIG " + json.dumps(CONFIG), flush=True)
+    os.makedirs(OUTDIR, exist_ok=True)
+    tag = f"K{K_LAT}"
+    U, z_true_all, coords, fom_res = mp.build_snapshots(N)
     U_tr, U_va = U[:N_TRAIN], U[N_TRAIN:]
-    z_true_va = np.asarray(z_true_all[N_TRAIN:])
-    u_norm_tr = float(jnp.sqrt(jnp.mean(U_tr ** 2)))
-    va_norms = np.asarray(jnp.linalg.norm(U_va, axis=1))
+    zt_all = np.asarray(z_true_all)
+    zt_tr, zt_va = zt_all[:N_TRAIN], zt_all[N_TRAIN:]
+    w_tr = mp.sample_weights(U_tr)
     np_rng = np.random.default_rng(SEED)
+    coll_rng = np.random.default_rng(SEED + 12345)     # collocation subsets only
     key = jax.random.PRNGKey(SEED + 100 + K_LAT)
-    report = {"K_LAT": K_LAT, "N": N, "n_train": N_TRAIN, "n_val": N_VAL,
-              "steps": STEPS, "p_sub": P_SUB, "hidden": HIDDEN, "n_layers": N_LAYERS,
-              "lat_lr": LAT_LR, "lat_reg": LAT_REG, "seed": SEED,
-              "stages": [], "rom": []}
+    report = {"config": CONFIG, "fom_max_rel_residual": fom_res, "stages": [],
+              "rom": [], "complete": False}
+    # nearest training sample in SOURCE-parameter space (known to the ROM)
+    nn_idx = np.argmin(((zt_va[:, None, :] - zt_tr[None, :, :]) ** 2).sum(-1), axis=1)
 
-    def train_resid(stages, z_tr):
-        preds = []
-        for s in range(0, N_TRAIN, 64):
-            e = min(s + 64, N_TRAIN)
-            preds.append(jax.vmap(
-                lambda zi: combined_apply(stages, zi, coords))(z_tr[s:e]))
-        return U_tr - jnp.concatenate(preds, axis=0)
+    def save(phase):
+        with open(os.path.join(OUTDIR, f"ms_autodecoder_{tag}_report.json"), "w") as f:
+            json.dump(dict(report, phase=phase), f, indent=2)
 
     # ---------------- (A) auto-decoder stage 0 ----------------
     key, k0, kz = jax.random.split(key, 3)
-    z_tr = 0.1 * jax.random.normal(kz, (N_TRAIN, K_LAT), dtype=F64)
+    Z_tr = 0.1 * jax.random.normal(kz, (N_TRAIN, K_LAT), dtype=F64)
     eps0 = float(jnp.sqrt(jnp.mean(U_tr ** 2)))
-    n_freq = 16
-    print(f"stage 0 (auto-decoder, joint latents): eps={eps0:.3e} "
-          f"n_freq={n_freq}", flush=True)
-    params0, z_tr = train_stage(k0, np_rng, coords, U_tr / eps0, n_freq, z_tr,
-                                True, "A")
-    stages = [{"params": params0, "n_freq": n_freq, "eps": eps0}]
-    e_tr = train_resid(stages, z_tr)
-    fit_rel = float(jnp.sqrt(jnp.mean(e_tr ** 2))) / u_norm_tr
-    z_mean = jnp.mean(z_tr, axis=0)
-    # val latents by inference through stage 0
-    Zva0, rel_va0 = infer_latents(stages, coords, U_va,
-                                  jnp.tile(z_mean, (N_VAL, 1)))
-    lat_stats = {"z_tr_rms": float(jnp.sqrt(jnp.mean(z_tr ** 2))),
-                 "z_tr_absmax": float(jnp.max(jnp.abs(z_tr)))}
-    print(f"  after stage 0: TRAIN fit rel {fit_rel:.3e} (manifold floor, "
-          f"K={K_LAT})  VAL inferred-latent rel-L2 {rel_va0.mean():.3e}  "
-          f"latent rms {lat_stats['z_tr_rms']:.2f}", flush=True)
-    report["stages"].append({"stage": 0, "eps_in": eps0, "n_freq": n_freq,
-                             "train_fit_rel_rms": fit_rel,
-                             "val_rel_l2_stage0_latents": float(rel_va0.mean()),
-                             "val_rel_l2_reinferred": float(rel_va0.mean()),
-                             **lat_stats})
+    n_freq = mp.freq_schedule(mp.dominant_radial_freq(U_tr, N), 0, N)
+    print(f"stage 0 (auto-decoder, joint latents): eps={eps0:.3e} n_freq={n_freq}",
+          flush=True)
+    params0, Z_tr, adam_loss, secs = mp.fit_stage(
+        k0, np_rng, coords, U_tr / eps0, w_tr, n_freq, Z_tr, k_lat=K_LAT,
+        z_ff=Z_FF, learn_latents=True, lat_lr=LAT_LR, lat_reg=LAT_REG, tag="A")
+    stages = [{"params": params0, "n_freq": n_freq, "eps": eps0, "z_ff": Z_FF}]
+    z_mean = jnp.mean(Z_tr, axis=0)
+    Z_tr_np = np.asarray(Z_tr)
+
+    def eval_stage(k, e_tr_prev=None):
+        pred_tr = mp.predict_all(stages, Z_tr, coords)
+        e_tr = U_tr - pred_tr
+        g_tr, m_tr, _ = mp.rel_metrics(pred_tr, U_tr)
+        return e_tr, g_tr, m_tr
+
+    e_tr, g_tr, m_tr = eval_stage(0)
+    inits = {"mean": np.tile(np.asarray(z_mean), (N_VAL, 1)),
+             "nearest": Z_tr_np[nn_idx]}
+    inf0 = infer_latents_lm(stages, coords, U_va, inits, GN_ITERS)
+    Zva0 = inf0["best"]["Z"]
+    Za, per_adam = infer_latents_adam(stages, coords, U_va,
+                                      jnp.asarray(inits["mean"]))
+    row = {"stage": 0, "eps_in": eps0, "n_freq": n_freq,
+           "adam_final_batch_loss": adam_loss, "secs": secs,
+           "train_global_rel": g_tr, "train_mean_rel_l2": m_tr,
+           "val_lm_inferred_mean_rel_l2": {n: float(inf0[n]["rel"].mean())
+                                           for n in inf0},
+           "val_lm_inferred_by_amp_quartile": mp.quartile_errors(
+               inf0["best"]["rel"], U_va),
+           "val_adam_inferred_mean_rel_l2": float(per_adam.mean()),
+           "val_fixed_stage0_latents_mean_rel_l2": float(inf0["best"]["rel"].mean()),
+           "latent_rms": float(jnp.sqrt(jnp.mean(Z_tr ** 2))),
+           "latent_absmax": float(jnp.max(jnp.abs(Z_tr)))}
+    report["stages"].append(row)
+    print(f"  after stage 0: TRAIN global {g_tr:.3e} / mean-rel {m_tr:.3e}  "
+          f"VAL LM-inferred best {row['val_lm_inferred_mean_rel_l2']['best']:.3e} "
+          f"(mean-start {row['val_lm_inferred_mean_rel_l2']['mean']:.3e}, "
+          f"nearest-start {row['val_lm_inferred_mean_rel_l2']['nearest']:.3e}); "
+          f"Adam-inferred {per_adam.mean():.3e}; latent rms {row['latent_rms']:.2f}",
+          flush=True)
+    save("A")
 
     # ---------------- (B) frozen-latent staging ----------------
-    Zva_fixed = Zva0
     for k in range(1, N_STAGES):
         eps = float(jnp.sqrt(jnp.mean(e_tr ** 2)))
-        f_d = mp.dominant_radial_freq(e_tr[:32], N)
-        n_freq = int(min(max(np.ceil(1.5 * f_d) + 4, n_freq), nyq))
-        print(f"stage {k}: eps={eps:.3e}  f_d~{f_d:.0f}  n_freq={n_freq}",
+        f_d = mp.dominant_radial_freq(e_tr, N)
+        n_freq = mp.freq_schedule(f_d, n_freq, N)
+        print(f"stage {k}: eps={eps:.3e}  f_d~{f_d:.1f} cyc/unit  n_freq={n_freq}",
               flush=True)
         key, sub = jax.random.split(key)
-        params, _ = train_stage(sub, np_rng, coords, e_tr / eps, n_freq, z_tr,
-                                False, f"B{k}")
-        stages.append({"params": params, "n_freq": n_freq, "eps": eps})
-        e_tr = train_resid(stages, z_tr)
-        fit_rel = float(jnp.sqrt(jnp.mean(e_tr ** 2))) / u_norm_tr
-        # val (i): stage-0 latents held fixed
-        pred = jax.vmap(lambda z: combined_apply(stages, z, coords))(Zva_fixed)
-        rel_fixed = np.asarray(jnp.linalg.norm(pred - U_va, axis=1)) / va_norms
-        # val (ii): re-infer latents through the full staged decoder
-        Zva_re, rel_re = infer_latents(stages, coords, U_va, Zva_fixed)
-        print(f"  after stage {k}: TRAIN fit rel {fit_rel:.3e}   VAL fixed-lat "
-              f"{rel_fixed.mean():.3e}   VAL re-inferred {rel_re.mean():.3e}",
-              flush=True)
-        report["stages"].append({"stage": k, "eps_in": eps, "f_d": f_d,
-                                 "n_freq": n_freq, "train_fit_rel_rms": fit_rel,
-                                 "val_rel_l2_stage0_latents": float(rel_fixed.mean()),
-                                 "val_rel_l2_reinferred": float(rel_re.mean())})
+        params, _, adam_loss, secs = mp.fit_stage(
+            sub, np_rng, coords, e_tr / eps, w_tr, n_freq, Z_tr, k_lat=K_LAT,
+            z_ff=Z_FF, learn_latents=False, tag=f"B{k}")
+        stages.append({"params": params, "n_freq": n_freq, "eps": eps, "z_ff": Z_FF})
+        e_tr, g_tr, m_tr = eval_stage(k)
+        pred_fix = mp.predict_all(stages, jnp.asarray(Zva0), coords)
+        g_fix, m_fix, per_fix = mp.rel_metrics(pred_fix, U_va)
+        infk = infer_latents_lm(stages, coords, U_va,
+                                {"mean": inits["mean"], "nearest": inits["nearest"],
+                                 "stage0lat": Zva0}, GN_ITERS)
+        row = {"stage": k, "eps_in": eps, "f_d_cyc": f_d, "n_freq": n_freq,
+               "adam_final_batch_loss": adam_loss, "secs": secs,
+               "train_global_rel": g_tr, "train_mean_rel_l2": m_tr,
+               "val_fixed_stage0_latents_global_rel": g_fix,
+               "val_fixed_stage0_latents_mean_rel_l2": m_fix,
+               "val_lm_inferred_mean_rel_l2": {n: float(infk[n]["rel"].mean())
+                                               for n in infk},
+               "val_lm_inferred_by_amp_quartile": mp.quartile_errors(
+                   infk["best"]["rel"], U_va)}
+        report["stages"].append(row)
+        print(f"  after stage {k}: TRAIN global {g_tr:.3e} / mean-rel {m_tr:.3e}   "
+              f"VAL fixed-lat {m_fix:.3e}   VAL LM re-inferred best "
+              f"{row['val_lm_inferred_mean_rel_l2']['best']:.3e}", flush=True)
+        with open(os.path.join(OUTDIR, f"ms_autodecoder_{tag}_stages.pkl"), "wb") as f:
+            pickle.dump({"config": CONFIG, "stages": mp.stages_to_np(stages),
+                         "z_tr": Z_tr_np}, f)
+        save("B")
+    with open(os.path.join(OUTDIR, f"ms_autodecoder_{tag}_stages.pkl"), "wb") as f:
+        pickle.dump({"config": CONFIG, "stages": mp.stages_to_np(stages),
+                     "z_tr": Z_tr_np}, f)
+    with open(os.path.join(OUTDIR, f"ms_autodecoder_{tag}_val_latents_TAINTED.pkl"), "wb") as f:
+        pickle.dump({"config": CONFIG, "z_va0_lm_best": Zva0,
+                     "note": "derived from held-out fields; never use in ROM"}, f)
+    save("B-done")
 
-    os.makedirs(OUTDIR, exist_ok=True)
-    with open(os.path.join(OUTDIR, f"ms_autodecoder_K{K_LAT}_stages.pkl"), "wb") as f:
-        pickle.dump({"stages": [{"params": jax.tree_util.tree_map(np.asarray, s["params"]),
-                                 "n_freq": s["n_freq"], "eps": s["eps"]}
-                                for s in stages],
-                     "z_tr": np.asarray(z_tr), "z_va0": np.asarray(Zva0)}, f)
-
-    # ---------------- (C) ROM: LM Gauss-Newton on held-out sources ----------------
+    # ---------------- (C) ROM on held-out sources ----------------
     cx, cy, w, a, _ = mp.sample_params()
     sl = slice(N_TRAIN, N_TRAIN + N_TEST)
     cx, cy, w, a = cx[sl], cy[sl], w[sl], a[sl]
-    cx_tr, cy_tr, w_tr, a_tr = (v[:N_TRAIN] for v in mp.sample_params()[:4])
     U_test = np.asarray(U_va[:N_TEST])
-    test_norms = va_norms[:N_TEST]
+    test_norms = np.linalg.norm(U_test, axis=1)
     dx = 1.0 / (N - 1)
     x = np.linspace(0.0, 1.0, N)
     X, Y = np.meshgrid(x, x, indexing="ij")
-
-    def stencil_pts(ix, iy):
-        px, py = ix * dx, iy * dx
-        return np.stack([np.stack([px, py], axis=1),
-                         np.stack([px + dx, py], axis=1),
-                         np.stack([px - dx, py], axis=1),
-                         np.stack([px, py + dx], axis=1),
-                         np.stack([px, py - dx], axis=1)])
-    ii, jj = np.meshgrid(np.arange(1, N - 1), np.arange(1, N - 1), indexing="ij")
-    ix_full, iy_full = ii.reshape(-1), jj.reshape(-1)
-    sub = np_rng.choice(len(ix_full), size=min(M_EQ, len(ix_full)), replace=False)
-    colls = {"full": (ix_full, iy_full), f"m{M_EQ}": (ix_full[sub], iy_full[sub])}
     bmask = np.zeros((N, N), dtype=bool)
     bmask[0, :] = bmask[-1, :] = bmask[:, 0] = bmask[:, -1] = True
     bpts = jnp.asarray(np.stack([X[bmask], Y[bmask]], axis=1))
-    bw = 1.0 / dx ** 2
 
-    # nearest-training-source init (source params are known to the ROM)
-    ztrue_all = np.asarray(z_true_all)
-    zt_tr, zt_te = ztrue_all[:N_TRAIN], ztrue_all[N_TRAIN:N_TRAIN + N_TEST]
-    nn_idx = np.argmin(((zt_te[:, None, :] - zt_tr[None, :, :]) ** 2).sum(-1), axis=1)
-    z_tr_np = np.asarray(z_tr)
+    def stencil(ix, iy):
+        """5 point sets (centre, +x, -x, +y, -y) and a 0/1 mask that zeroes
+        neighbours lying ON the wall (ghost-zero Dirichlet)."""
+        offs = [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)]
+        pts, keep = [], []
+        for ox, oy in offs:
+            jx, jy = ix + ox, iy + oy
+            pts.append(np.stack([jx * dx, jy * dx], axis=1))
+            keep.append(~((jx == 0) | (jx == N - 1) | (jy == 0) | (jy == N - 1)))
+        return jnp.asarray(np.stack(pts)), jnp.asarray(np.stack(keep).astype(float))
 
-    def make_solver(n_stages, pts, f_vals):
+    ii, jj = np.meshgrid(np.arange(1, N - 1), np.arange(1, N - 1), indexing="ij")
+    ix_full, iy_full = ii.reshape(-1), jj.reshape(-1)
+    sub = coll_rng.choice(len(ix_full), size=min(M_EQ, len(ix_full)), replace=False)
+    colls = {"full": (ix_full, iy_full), f"m{M_EQ}": (ix_full[sub], iy_full[sub])}
+
+    def make_solver(n_stages, pts, keep):
         st = stages[:n_stages]
-        dec = lambda z, xy: combined_apply(st, z, xy)
+        dec = lambda z, xy: mp.combined_apply(st, z, xy)
 
-        def residual(z):
-            u = dec(z, pts.reshape(-1, 2)).reshape(5, -1)
+        def residual(z, f_vals):
+            u = dec(z, pts.reshape(-1, 2)).reshape(5, -1) * keep
             lap = (u[1] + u[2] + u[3] + u[4] - 4.0 * u[0]) / (dx * dx)
-            return jnp.concatenate([-lap - f_vals, bw * dec(z, bpts)])
+            return -lap - f_vals
 
-        @jax.jit
-        def rJ(z):
-            return residual(z), jax.jacfwd(residual)(z)
+        rJ = jax.jit(lambda z, f: (residual(z, f), jax.jacfwd(residual)(z, f)))
+        rn = jax.jit(lambda z, f: jnp.linalg.norm(residual(z, f)))
+        bnorm = jax.jit(lambda z: jnp.linalg.norm(dec(z, bpts)))
+        dec_full = jax.jit(lambda z: dec(z, coords))
+        return rJ, rn, bnorm, dec_full
 
-        @jax.jit
-        def rnorm(z):
-            return jnp.linalg.norm(residual(z))
-
-        def solve(z0, iters):
-            """Levenberg-Marquardt: adaptive lambda, accept/reject."""
-            z = z0
-            lam = 1e-6
-            r, J = rJ(z)
-            rn = float(jnp.linalg.norm(r))
-            n_acc = 0
-            for _ in range(iters):
-                H = J.T @ J
-                g = J.T @ r
-                D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(H.shape[0], dtype=F64)
-                dz = jnp.linalg.solve(H + lam * D, -g)
-                z_new = z + dz
-                rn_new = float(rnorm(z_new))
-                if rn_new < rn:
-                    z, rn = z_new, rn_new
-                    r, J = rJ(z)
-                    lam = max(lam / 3.0, 1e-12)
-                    n_acc += 1
-                else:
-                    lam = min(lam * 10.0, 1e12)
-                if lam >= 1e12:
-                    break
-            return z, rn, n_acc
-
-        return solve, dec
-
-    # oracle-latent floors on the test subset for each n_stages (re-inference)
+    # oracle (finite-budget inferred latents) on the test subset per n_stages,
+    # same LM solver / same budget, multi-start
     oracle = {}
     for n_stages in range(1, len(stages) + 1):
-        _, rel = infer_latents(stages[:n_stages], coords, U_va[:N_TEST],
-                               Zva0[:N_TEST])
-        oracle[n_stages] = float(rel.mean())
+        o = infer_latents_lm(stages[:n_stages], coords, U_va[:N_TEST],
+                             {"mean": inits["mean"][:N_TEST],
+                              "nearest": inits["nearest"][:N_TEST]}, GN_ITERS)
+        oracle[n_stages] = o
 
     for cname, (ix, iy) in colls.items():
-        pts = jnp.asarray(stencil_pts(ix, iy))
+        pts, keep = stencil(ix, iy)
+        F_rows = [jnp.asarray(a[i] * np.exp(-((ix * dx - cx[i]) ** 2
+                                              + (iy * dx - cy[i]) ** 2)
+                                            / (2 * w[i] ** 2)))
+                  for i in range(N_TEST)]
+        solvers = {ns: make_solver(ns, pts, keep) for ns in range(1, len(stages) + 1)}
         for n_stages in range(1, len(stages) + 1):
+            rJ, rn, bnorm, dec_full = solvers[n_stages]
             for init_name in ("mean", "nearest", "staged"):
                 if init_name == "staged" and n_stages == 1:
                     continue
-                errs, rns, accs = [], [], []
+                per = {"err": [], "err_oracle": [], "r_lm": [], "r_oracle": [],
+                       "f_norm": [], "b_lm": [], "acc": [], "rej": [], "reason": [],
+                       "lam": [], "z_norm": [], "z_nn_dist": [], "z_norm_oracle": []}
                 t0 = time.time()
                 for i in range(N_TEST):
-                    f_vals = jnp.asarray(a[i] * np.exp(
-                        -((ix * dx - cx[i]) ** 2 + (iy * dx - cy[i]) ** 2)
-                        / (2 * w[i] ** 2)))
-                    solve, dec = make_solver(n_stages, pts, f_vals)
+                    f = F_rows[i]
                     if init_name == "mean":
-                        z0 = z_mean
+                        z0 = z_mean; budget = GN_ITERS
                     elif init_name == "nearest":
-                        z0 = jnp.asarray(z_tr_np[nn_idx[i]])
-                    else:                       # staged: stage-0 solve first
-                        s1, _ = make_solver(1, pts, f_vals)
-                        z0, _, _ = s1(jnp.asarray(z_tr_np[nn_idx[i]]), GN_ITERS)
-                    z, rn, n_acc = solve(z0, GN_ITERS)
-                    pred = np.asarray(dec(z, coords))
-                    errs.append(np.linalg.norm(pred - U_test[i]) / test_norms[i])
-                    rns.append(rn)
-                    accs.append(n_acc)
+                        z0 = jnp.asarray(Z_tr_np[nn_idx[i]]); budget = GN_ITERS
+                    else:                    # staged: half budget on stage-0
+                        rJ1, rn1, _, _ = solvers[1]
+                        z0, _, _ = lm_solve(lambda zz: rJ1(zz, f), lambda zz: rn1(zz, f),
+                                            jnp.asarray(Z_tr_np[nn_idx[i]]), GN_ITERS // 2)
+                        budget = GN_ITERS - GN_ITERS // 2
+                    z, r_lm, info = lm_solve(lambda zz: rJ(zz, f), lambda zz: rn(zz, f),
+                                             z0, budget)
+                    pred = np.asarray(dec_full(z))
+                    # oracle latent for the matching start (equal budget arms)
+                    oname = "nearest" if init_name != "mean" else "mean"
+                    z_or = jnp.asarray(oracle[n_stages][oname]["Z"][i])
+                    per["err"].append(np.linalg.norm(pred - U_test[i]) / test_norms[i])
+                    per["err_oracle"].append(float(oracle[n_stages][oname]["rel"][i]))
+                    per["r_lm"].append(r_lm)
+                    per["r_oracle"].append(float(rn(z_or, f)))
+                    per["f_norm"].append(float(jnp.linalg.norm(f)))
+                    per["b_lm"].append(float(bnorm(z)))
+                    per["acc"].append(info["accepted"]); per["rej"].append(info["rejected"])
+                    per["reason"].append(info["reason"]); per["lam"].append(info["final_lambda"])
+                    zn = np.asarray(z)
+                    per["z_norm"].append(float(np.linalg.norm(zn)))
+                    per["z_nn_dist"].append(float(np.min(np.linalg.norm(Z_tr_np - zn, axis=1))))
+                    per["z_norm_oracle"].append(float(jnp.linalg.norm(z_or)))
+                e = np.asarray(per["err"])
                 row = {"colloc": cname, "n_stages": n_stages, "init": init_name,
-                       "rom_rel_l2_mean": float(np.mean(errs)),
-                       "rom_rel_l2_med": float(np.median(errs)),
-                       "rom_rel_l2_max": float(np.max(errs)),
-                       "oracle_latent_rel_l2": oracle[n_stages],
-                       "gn_resid_med": float(np.median(rns)),
-                       "gn_accepted_med": float(np.median(accs)),
+                       "budget_attempts": GN_ITERS,
+                       "rom_rel_l2_mean": float(e.mean()), "rom_rel_l2_med": float(np.median(e)),
+                       "rom_rel_l2_max": float(e.max()),
+                       "oracle_start_used": "nearest" if init_name != "mean" else "mean",
+                       "oracle_rel_l2_mean": float(np.mean(per["err_oracle"])),
+                       "oracle_best_of_starts_rel_l2_mean": float(oracle[n_stages]["best"]["rel"].mean()),
+                       "resid_lm_med": float(np.median(per["r_lm"])),
+                       "resid_oracle_med": float(np.median(per["r_oracle"])),
+                       "f_norm_med": float(np.median(per["f_norm"])),
+                       "boundary_block_lm_med": float(np.median(per["b_lm"])),
+                       "lm_accepted_med": float(np.median(per["acc"])),
+                       "lm_rejected_med": float(np.median(per["rej"])),
+                       "lm_final_lambda_med": float(np.median(per["lam"])),
+                       "lm_reasons": {r: per["reason"].count(r) for r in set(per["reason"])},
+                       "z_norm_med": float(np.median(per["z_norm"])),
+                       "z_nn_dist_med": float(np.median(per["z_nn_dist"])),
+                       "z_norm_oracle_med": float(np.median(per["z_norm_oracle"])),
+                       "per_sample_rom_rel_l2": [float(v) for v in e],
                        "secs": time.time() - t0}
                 report["rom"].append(row)
-                print(f"RESULT K={K_LAT} colloc={cname:5s} stages={n_stages} "
-                      f"init={init_name:7s}  ROM rel-L2 mean {row['rom_rel_l2_mean']:.3e} "
-                      f"(med {row['rom_rel_l2_med']:.3e}, max {row['rom_rel_l2_max']:.3e})  "
-                      f"oracle-latent {oracle[n_stages]:.3e}  "
-                      f"acc {row['gn_accepted_med']:.0f}/{GN_ITERS}", flush=True)
-            with open(os.path.join(OUTDIR, f"ms_autodecoder_K{K_LAT}_report.json"), "w") as f:
-                json.dump(report, f, indent=2)
-
-    with open(os.path.join(OUTDIR, f"ms_autodecoder_K{K_LAT}_report.json"), "w") as f:
-        json.dump(report, f, indent=2)
+                print(f"RESULT {tag} colloc={cname:5s} stages={n_stages} init={init_name:7s}  "
+                      f"ROM {row['rom_rel_l2_mean']:.3e} (med {row['rom_rel_l2_med']:.3e}, "
+                      f"max {row['rom_rel_l2_max']:.3e})  oracle({row['oracle_start_used']}) "
+                      f"{row['oracle_rel_l2_mean']:.3e}  ||r||: lm {row['resid_lm_med']:.2e} "
+                      f"oracle {row['resid_oracle_med']:.2e} f {row['f_norm_med']:.2e}  "
+                      f"bnd {row['boundary_block_lm_med']:.1e}  acc/rej "
+                      f"{row['lm_accepted_med']:.0f}/{row['lm_rejected_med']:.0f} "
+                      f"{row['lm_reasons']}", flush=True)
+                save("C")
+    report["complete"] = True
+    save("done")
     print("DONE", flush=True)
 
 

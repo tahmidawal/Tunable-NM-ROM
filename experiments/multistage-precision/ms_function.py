@@ -154,6 +154,7 @@ def train_stage(key, coords, target, n_freq, tag):
     for it in range(ADAM_STEPS):
         layers, state, val = astep(layers, state)
     adam_loss = float(val)
+    adam_layers = layers                     # snapshot for the non-finite fallback
 
     lopt = optax.lbfgs()
     lstate = lopt.init(layers)
@@ -170,7 +171,7 @@ def train_stage(key, coords, target, n_freq, tag):
         if not np.isfinite(float(val)):
             print(f"  [{tag}] L-BFGS went non-finite at iter {it}; "
                   f"keeping Adam result", flush=True)
-            return layers, adam_loss, adam_loss, time.time() - t0
+            return adam_layers, adam_loss, adam_loss, time.time() - t0
     print(f"  [{tag}] adam loss {adam_loss:.3e} -> lbfgs loss {float(val):.3e} "
           f"[{time.time()-t0:.0f}s]", flush=True)
     return layers, adam_loss, float(val), time.time() - t0

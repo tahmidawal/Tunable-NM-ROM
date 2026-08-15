@@ -174,7 +174,7 @@ Local artifacts: `sweep/` (results JSONs, film+grid-tied checkpoints, logs,
 `burgers2d_convergence.json`), `ref512_val.npz` (untracked, 0.81G —
 regenerate via burgers2d_refgen.py).
 
-## ViT-CP arm (pending)
+## ViT-CP arm
 
 `burgers2d_vitcp.py` trains the repo's PUBLISHED CP decoders (imported
 verbatim from heat/src CPDecoder and poisson/src LinearCPDecoder, flax) as
@@ -204,3 +204,27 @@ deployment decodes only m EQ points per GN iteration (n-free — see the
 cost-scaling branches), which is Phase 3's measurement. (ii) batch-1 latency
 favors neither side; net throughput batches trivially. (iii) the 13-15 ms
 floor at N<=64 is kernel-launch latency (51 sequential dispatches).
+
+## ViT-CP arm results (2026-08-15, published decoder, rank 256; jobs 2379696-2379700 + n256)
+
+The repo's published CP/LinearCP decoders (imported verbatim from heat/src +
+poisson/src, conditioned on (z, tau) at latent-dim 6, 120k steps — see
+burgers2d_vitcp.py docstring for the documented deviations):
+
+| N   | ViT-CP (rank 256) | ViT-LinearCP | FiLM coord-net | FiLM advantage |
+|-----|-------------------|--------------|----------------|----------------|
+| 16  | 3.914e-2          | 3.995e-2     | 2.985e-3       | 13.1x          |
+| 32  | 4.153e-2          | 4.095e-2     | 2.528e-3       | 16.4x          |
+| 64  | 4.269e-2          | 4.395e-2     | 3.192e-3       | 13.4x          |
+| 128 | 5.547e-2          | 5.910e-2     | 2.833e-3       | 19.6x          |
+| 256 | 6.501e-2          | 6.422e-2     | 3.568e-3       | 18.2x          |
+
+- **The published architecture reproduces the resolution wall on Burgers**:
+  error WORSENS monotonically with N (3.9e-2 -> 6.5e-2) while the coord-net
+  stays flat at ~3e-3 — the trainability disease at rank 256 (its own linear
+  ceiling, POD-256, is far below these numbers; it cannot even hold POD-24's
+  5.2-6.9e-2 at fine N).
+- LinearCP's skip connection changes nothing (within a few %) — consistent
+  with the disease being in the grid-anchored factor optimization, not the
+  coefficient map.
+- Artifacts: vitcp/ (results JSONs, cp+lincp checkpoints, logs).

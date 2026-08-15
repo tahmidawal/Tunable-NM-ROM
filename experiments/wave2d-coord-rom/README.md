@@ -177,3 +177,13 @@ regenerated from seed 0 on-cluster in every cell; isolated job dirs; cluster
 dirs deleted after checksummed pull. Local artifacts: `sweep/` (results JSONs,
 film+grid-tied checkpoints, logs, `wave2d_convergence.json`), `ref512_val.npz`
 (untracked, 769M — regenerate via wave2d_refgen.py).
+
+## ViT-CP arm (pending)
+
+`wave2d_vitcp.py` trains the repo's PUBLISHED CP decoders (imported verbatim
+from heat/src CPDecoder and poisson/src LinearCPDecoder, flax) as
+(z,t)-conditioned arms on the same data, reporting both testbed metrics —
+the literal published baseline next to the simplified grid-tied control.
+Note: the published per-sample relative loss up-weights near-silent wave
+snapshots (kept as published; documented in the script docstring). Cluster
+cells not yet run. `N=$N STEPS=120000 python wave2d_vitcp.py <outdir>`

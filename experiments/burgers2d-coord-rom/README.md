@@ -114,3 +114,62 @@ res 5.2e-14) + convergence eval ran end-to-end; smoke JSONs committed under
       jaxrun /home/tahmid/Dev/.venv/bin/python burgers2d_film.py smoke
 
 Smoke validates interfaces and end-to-end execution, not converged accuracy.
+
+## Results (2026-08-14, Tufts A100 sweep, seed 0, jobs 2357967-69 / 2358516 / 2360592-93)
+
+### In-resolution head-to-head (mean rel-L2, 120k steps)
+
+| N   | POD-6 (equal-dim linear) | POD-24  | grid-tied (rank 24) | FiLM coord-net |
+|-----|--------------------------|---------|---------------------|----------------|
+| 16  | 2.638e-1                 | 5.165e-2 | 7.873e-2           | 2.985e-3       |
+| 32  | 2.751e-1                 | 5.857e-2 | 7.988e-2           | 2.528e-3       |
+| 64  | 2.833e-1                 | 6.376e-2 | 8.610e-2           | 3.192e-3       |
+| 128 | 2.884e-1                 | 6.717e-2 | 8.499e-2           | 2.833e-3       |
+| 256 | 2.912e-1                 | 6.917e-2 | 8.641e-2           | 3.568e-3       |
+
+- The coord-net beats equal-dimension POD-6 by **~90-110x** — the widest gap of
+  the four PDEs studied (heat ~30x, wave ~13-16x, Poisson ~7.5x): nonlinear
+  advection steepens fronts that linear bases cannot track, while the FiLM
+  decoder barely notices them.
+- The grid-tied control is stuck ~1.3x ABOVE its own POD-24 ceiling at every N
+  (7.9-8.6e-2 vs 5.2-6.9e-2) — the disease signature, now on a nonlinear PDE.
+
+### Convergence + mesh transfer vs the N=512 reference (native 512^2 eval)
+
+| train N | data-floor (discretization bound) | FiLM net vs reference |
+|---------|-----------------------------------|-----------------------|
+| 16      | 1.469e-1                          | 1.413e-1              |
+| 32      | 7.588e-2                          | 7.427e-2              |
+| 64      | 3.809e-2                          | 3.986e-2              |
+| 128     | 1.761e-2                          | 1.924e-2              |
+| 256     | 6.487e-3                          | 8.713e-3              |
+
+- **Strictly monotone, 16x across the sweep** — the largest and cleanest
+  convergence range of the program. The net tracks its data floor within a few
+  percent through N=128 (slightly BELOW it at N=16/32: the net's smoothness
+  partially cancels first-order upwind error in the coarse training data) and
+  opens to only 1.34x at N=256 — Burgers error is data-limited everywhere in
+  this sweep; no capacity plateau reached yet.
+- Caveats: single seed; Nyquist cap varies feature width across N cells
+  (n_freq 7/15/31/32/32); min(8192, N^2) points/step; POD rows are
+  train-fitted SVD bases, not certified floors for this val metric; the
+  data floor reflects the first-order upwind scheme (order ~1-1.6 observed).
+
+### Solver-robustness postmortem (this round's bug find)
+
+The original run corrupted the N=128 cell and the first 512^2 reference with
+non-deterministic NaNs: the fixed-length Newton scan kept calling BiCGStab
+after convergence, and on a ~machine-eps residual its rho/omega inner products
+can underflow to a NaN step (environment/rounding dependent — the identical
+replay came back clean). Masked by a `max(x, NaN) == x` audit bug. Both fixed
+(`burgers2d: guard Newton scan...`, `burgers2d: NaN-propagating residual
+audit...`); all shipped data was regenerated or proven clean (finite POD Gram
+== finite training data). N in {16,32,64,256} cells ran pre-guard but their
+data is verified clean; N=128 and the reference are post-guard reruns.
+
+Provenance: A100 80GB, jax_backend=gpu in every log;
+JAX_DEFAULT_MATMUL_PRECISION=highest; data regenerated from seed 0 on-cluster
+per cell; isolated job dirs; cluster tree deleted after checksummed pull.
+Local artifacts: `sweep/` (results JSONs, film+grid-tied checkpoints, logs,
+`burgers2d_convergence.json`), `ref512_val.npz` (untracked, 0.81G —
+regenerate via burgers2d_refgen.py).

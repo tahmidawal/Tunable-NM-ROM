@@ -40,6 +40,9 @@ N_VAL = int(os.environ.get("N_VAL", "64"))
 N_STAGES = int(os.environ.get("N_STAGES", "3"))
 STEPS = int(os.environ.get("STEPS", "25000"))
 BATCH = int(os.environ.get("BATCH", "32"))
+# points per sample per step (random subset of the n^2 grid; 0 = all).  f64 on
+# the GB10 is ~140 ms/step at full 64^2 grids -> subsample for the local budget
+P_SUB = int(os.environ.get("P_SUB", "0"))
 HIDDEN = int(os.environ.get("HIDDEN", "128"))
 N_LAYERS = 4
 PEAK_LR = float(os.environ.get("PEAK_LR", "2e-3"))
@@ -219,20 +222,23 @@ def main():
         opt = optax.adamw(sched, weight_decay=1e-6)
         state = opt.init(params)
 
-        def loss_fn(ps, z_b, t_b):
-            pred = jax.vmap(lambda zi: film_apply(ps, zi, coords, n_freq))(z_b)
-            return jnp.mean((pred - t_b) ** 2)
+        def loss_fn(ps, z_b, t_b, pidx):
+            pred = jax.vmap(lambda zi: film_apply(ps, zi, coords[pidx], n_freq))(z_b)
+            return jnp.mean((pred - t_b[:, pidx]) ** 2)
 
         @jax.jit
-        def step(ps, st, z_b, t_b):
-            val, g = jax.value_and_grad(loss_fn)(ps, z_b, t_b)
+        def step(ps, st, z_b, t_b, pidx):
+            val, g = jax.value_and_grad(loss_fn)(ps, z_b, t_b, pidx)
             up, st = opt.update(g, st, ps)
             return optax.apply_updates(ps, up), st, val
 
+        n_pts = coords.shape[0]
         t0 = time.time()
         for it in range(STEPS):
             bi = np_rng.choice(N_TRAIN, size=BATCH, replace=False)
-            params, state, val = step(params, state, z_tr[bi], target[bi])
+            pidx = (jnp.arange(n_pts) if P_SUB <= 0 else
+                    jnp.asarray(np_rng.choice(n_pts, size=P_SUB, replace=False)))
+            params, state, val = step(params, state, z_tr[bi], target[bi], pidx)
             if it % 5000 == 0:
                 print(f"  step {it:6d}  loss {float(val):.3e}  "
                       f"[{time.time()-t0:.0f}s]", flush=True)
@@ -251,6 +257,7 @@ def main():
     os.makedirs(OUTDIR, exist_ok=True)
     with open(os.path.join(OUTDIR, "ms_parametric_report.json"), "w") as f:
         json.dump({"N": N, "n_train": N_TRAIN, "n_val": N_VAL, "steps": STEPS,
+                   "p_sub": P_SUB,
                    "hidden": HIDDEN, "n_layers": N_LAYERS, "seed": SEED,
                    "stages": report}, f, indent=2)
     with open(os.path.join(OUTDIR, "ms_parametric_stages.pkl"), "wb") as f:

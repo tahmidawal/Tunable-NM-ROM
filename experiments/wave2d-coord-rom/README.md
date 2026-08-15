@@ -178,7 +178,7 @@ dirs deleted after checksummed pull. Local artifacts: `sweep/` (results JSONs,
 film+grid-tied checkpoints, logs, `wave2d_convergence.json`), `ref512_val.npz`
 (untracked, 769M — regenerate via wave2d_refgen.py).
 
-## ViT-CP arm (pending)
+## ViT-CP arm
 
 `wave2d_vitcp.py` trains the repo's PUBLISHED CP decoders (imported verbatim
 from heat/src CPDecoder and poisson/src LinearCPDecoder, flax) as
@@ -208,3 +208,22 @@ for this architecture rests on (i) EQ-point-only decoding inside the ROM
 solve (n-free per-iteration work — cost-scaling branches; Phase 3 measures it
 end-to-end) and (ii) batched/many-query settings. Caveats as in the Burgers
 timing section (batch-1 latency floor ~13 ms).
+
+## ViT-CP arm results (2026-08-15, published decoder, rank 256; jobs 2379701-03/05/06)
+
+Published CP/LinearCP decoders on the wave testbed (traj-RMS metric; snap
+variants in the JSONs; wave2d_vitcp.py docstring lists deviations):
+
+| N   | ViT-CP (rank 256) | ViT-LinearCP | FiLM coord-net | FiLM advantage |
+|-----|-------------------|--------------|----------------|----------------|
+| 16  | 2.402e-1          | 2.344e-1     | 2.801e-2       | 8.6x           |
+| 32  | 2.546e-1          | 2.510e-1     | 3.059e-2       | 8.3x           |
+| 64  | 2.555e-1          | 2.574e-1     | 2.850e-2       | 9.0x           |
+| 128 | 3.154e-1          | 3.137e-1     | 3.052e-2       | 10.3x          |
+| 256 | 3.456e-1          | 3.414e-1     | 3.507e-2       | 9.9x           |
+
+- Same wall, hyperbolic edition: worsens with N (2.4e-1 -> 3.5e-1), sits
+  ABOVE the POD-24 floor (1.6-1.9e-1) at every N despite rank 256, and lands
+  in the same band as the simplified grid-tied control (3.6-3.8e-1) — the
+  ViT-CP coefficient machinery does not rescue the grid-anchored factors.
+- Artifacts: vitcp/ (results JSONs, cp+lincp checkpoints, logs).

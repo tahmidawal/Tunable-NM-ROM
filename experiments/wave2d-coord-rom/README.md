@@ -187,3 +187,24 @@ the literal published baseline next to the simplified grid-tied control.
 Note: the published per-sample relative loss up-weights near-silent wave
 snapshots (kept as published; documented in the script docstring). Cluster
 cells not yet run. `N=$N STEPS=120000 python wave2d_vitcp.py <outdir>`
+
+## Online timing vs the FOM (2026-08-15, one A100, batch 1, median of 5; job 2379727)
+
+| N | FOM rollout /traj | FiLM full-field /traj (native) | speedup |
+|---|---|---|---|
+| 16 | 271 ms | 13.1 ms | 20.7x |
+| 32 | 268 ms | 13.3 ms | 20.1x |
+| 64 | 270 ms | 15.1 ms | 17.8x |
+| 128 | 490 ms | 53.5 ms | 9.1x |
+| 256 | 426 ms | 198 ms | 2.2x |
+| 512 | 628 ms | 731-786 ms (net on 512^2) | **0.80-0.86x — SLOWER** |
+
+Protocol: FOM = Crank-Nicolson/CG rollout (80 substeps x 50 stored), f64,
+batch 1; net = 51-slice full-field reconstruction, f32 (`pde_timing.py`,
+timing/timing.json). The honest headline: the wave FOM is CHEAP (SPD CG,
+~0.6 s even at 512^2), so full-field surrogate decoding does NOT pay at fine
+resolution — same finding as the fixed heat ROM's 0.17x. The speedup argument
+for this architecture rests on (i) EQ-point-only decoding inside the ROM
+solve (n-free per-iteration work — cost-scaling branches; Phase 3 measures it
+end-to-end) and (ii) batched/many-query settings. Caveats as in the Burgers
+timing section (batch-1 latency floor ~13 ms).

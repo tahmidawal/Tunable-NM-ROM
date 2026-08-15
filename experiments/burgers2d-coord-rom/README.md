@@ -173,3 +173,13 @@ per cell; isolated job dirs; cluster tree deleted after checksummed pull.
 Local artifacts: `sweep/` (results JSONs, film+grid-tied checkpoints, logs,
 `burgers2d_convergence.json`), `ref512_val.npz` (untracked, 0.81G —
 regenerate via burgers2d_refgen.py).
+
+## ViT-CP arm (pending)
+
+`burgers2d_vitcp.py` trains the repo's PUBLISHED CP decoders (imported
+verbatim from heat/src CPDecoder and poisson/src LinearCPDecoder, flax) as
+(z,t)-conditioned arms on the same data/metrics — the literal published
+baseline next to the simplified grid-tied control. Published rank=256/
+hidden=256/per-N optimizer settings; latent input = concat(z, 2*tau-1)
+(latent_dim 6, no encoder — testbed protocol). Cluster cells not yet run.
+`N=$N STEPS=120000 python burgers2d_vitcp.py <outdir>`

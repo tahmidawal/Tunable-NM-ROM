@@ -183,3 +183,24 @@ baseline next to the simplified grid-tied control. Published rank=256/
 hidden=256/per-N optimizer settings; latent input = concat(z, 2*tau-1)
 (latent_dim 6, no encoder — testbed protocol). Cluster cells not yet run.
 `N=$N STEPS=120000 python burgers2d_vitcp.py <outdir>`
+
+## Online timing vs the FOM (2026-08-15, one A100, batch 1, median of 5; job 2379562)
+
+| N | FOM rollout /traj | FiLM full-field /traj (native) | speedup |
+|---|---|---|---|
+| 16 | 93 ms | 13.0 ms | 7.2x |
+| 32 | 128 ms | 13.1 ms | 9.8x |
+| 64 | 197 ms | 14.9 ms | 13.3x |
+| 128 | 574 ms | 52.5 ms | 10.9x |
+| 256 | 1035 ms | 195 ms | 5.3x |
+| 512 | 2993 ms | 696-786 ms (net on 512^2) | 3.9-4.3x |
+
+Protocol: FOM = full implicit Newton/BiCGStab rollout, f64, batch 1; net =
+51-slice full-field reconstruction, f32, per-slice jitted calls
+(`pde_timing.py`, timing/timing.json). Interpretation caveats: (i) this is
+SURROGATE-INFERENCE speedup — the decoder conditioned on the true z decodes
+EVERY grid point at EVERY slice, the most pessimistic online mode; the ROM
+deployment decodes only m EQ points per GN iteration (n-free — see the
+cost-scaling branches), which is Phase 3's measurement. (ii) batch-1 latency
+favors neither side; net throughput batches trivially. (iii) the 13-15 ms
+floor at N<=64 is kernel-launch latency (51 sequential dispatches).

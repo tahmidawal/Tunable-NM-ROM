@@ -1,0 +1,19 @@
+jax_backend=gpu  x64=True
+  FOM: 576 CG solves in 6s, spot rel residual 2.10e-13
+stage 0: eps=2.360e-03  f_d~2  n_freq=16
+  step      0  loss 1.132e+00  [25s]
+  step   5000  loss 2.612e-04  [377s]
+  step  10000  loss 9.079e-05  [729s]
+  step  15000  loss 1.584e-05  [1081s]
+  stage 0 trained 20000 steps in 1433s (final batch loss 8.349e-06)
+  after stage 0: TRAIN fit rel 2.653e-03   VAL rel-L2 7.761e-03
+stage 1: eps=6.260e-06  f_d~6  n_freq=16
+  step      0  loss 9.225e-01  [3s]
+  step   5000  loss 3.118e-01  [355s]
+  step  10000  loss 1.908e-01  [708s]
+  step  15000  loss 1.595e-01  [1060s]
+  stage 1 trained 20000 steps in 1412s (final batch loss 1.554e-01)
+  after stage 1: TRAIN fit rel 1.030e-03   VAL rel-L2 6.487e-03
+stage 2: eps=2.431e-06  f_d~12  n_freq=22
+  step      0  loss 1.050e+00  [10s]
+  step   5000  loss 6.815e-01  [362s]

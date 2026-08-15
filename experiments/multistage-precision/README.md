@@ -34,3 +34,30 @@ Scripts:
   sources (phases A/B/C).
 - `ms_rom_solve.py`  — GN skeleton for the true-z decoder (superseded by the
   LM solver inside ms_autodecoder.py for the auto-decoder arms).
+
+## Status 2026-08-15 — IMPLEMENTATION READY FOR REVIEW (full run NOT launched)
+
+Control (1), partial (killed at the review gate during stage 2; log in
+`runs/parametric/log.txt`; N=64, n_train 512, 20k Adam steps/stage, P_SUB=1024,
+hidden 128x4, true z given):
+
+| stage | n_freq | eps_in (abs RMS) | TRAIN fit rel-RMS | VAL rel-L2 | stage-final batch loss (normalized) |
+|---|---|---|---|---|---|
+| 0 | 16 | 2.36e-3 | 2.65e-3 | 7.76e-3 | 8.3e-6 |
+| 1 | 16 | 6.26e-6 | 1.03e-3 | 6.49e-3 | 1.55e-1 |
+| 2 | 22 | 2.43e-6 | (killed @5k/20k) | — | 6.8e-1 @5k |
+
+Early read (to be confirmed by the full run + `ms_diag.py`): the per-stage
+gain collapses from ~100x (single function, `ms_function_report.json`:
+3.1e-4 -> 2.6e-6 -> 1.4e-8 -> 3.3e-11) to ~2.6x on the family, and stage
+losses plateau at 0.15-0.7 of the normalized residual variance — a fresh
+z-conditioned net cannot represent the family residual. Hypothesis: the
+stage-0 error is ROUGH in the z direction (each sample's error is
+idiosyncratic), so no smooth function of (x, z) fits it; `ms_diag.py`
+quantifies this via nearest-neighbour-in-z residual correlation vs field
+correlation. VAL barely moves (7.8e-3 -> 6.5e-3): the generalization floor
+at n_train=512 binds first.
+
+Auto-decoder pipeline (`ms_autodecoder.py`) smoke: N=32, n_train 64, 2
+stages x 300 steps, 2 held-out ROM solves — runs end-to-end, finite,
+`smoke/ms_autodecoder_K4_report.json` (numbers meaningless by design).

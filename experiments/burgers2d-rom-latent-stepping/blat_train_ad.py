@@ -54,7 +54,7 @@ def main():
         f"t_smooth={T_SMOOTH} bc={bc.BC_MODE} hidden={bc.AD_HIDDEN}x{bc.AD_LAYERS}")
     d = bc.build_data(N)
     U = d["U"]
-    U_tr = U[:bc.N_TRAIN]
+    U_tr = U[:bc.N_TRAIN]                          # TEST split (TEST_SEED) untouched here
     fp = bc.data_fingerprint(U)
     log(f"  data fingerprint {fp}")
     n2 = N * N
@@ -133,8 +133,9 @@ def main():
     all_pts = jnp.arange(n2)
     t0 = time.time()
     hist = []
+    assert AD_BATCH % 2 == 0 and AD_BATCH >= 2 and Bh <= n_tr
     for it in range(AD_STEPS):
-        ti = rng.integers(0, n_tr, Bh)
+        ti = rng.choice(n_tr, Bh, replace=False)      # distinct trajectories -> unique rows
         tn = rng.integers(0, T1 - 1, Bh)
         rows = np.concatenate([ti * T1 + tn, ti * T1 + tn + 1])
         pidx = (all_pts if P_SUB <= 0 or P_SUB >= n2 else

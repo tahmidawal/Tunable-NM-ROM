@@ -111,10 +111,51 @@ def interior_indices(n):
     return (ii * n + jj).reshape(-1)
 
 
-def build_data(n=N):
-    """Regenerated from seed (identical draw to the sweep).  Returns dict."""
+TEST_SEED = int(os.environ.get("TEST_SEED", str(SEED + 1)))
+
+
+def max_rel_residual(U, nu, n, chunk=64):
+    """Max over trajectories/steps of ||R(u_{k+1}, u_k)|| / ||u_k|| through the
+    FOM's own residual (independent check that the data is a converged
+    implicit solution; NaN-propagating)."""
+    _, res = bf.make_rollout(n)
+    f = jax.jit(jax.vmap(lambda u1, u0, nu_: jnp.linalg.norm(res(u1, u0, nu_))
+                         / jnp.linalg.norm(u0)))
+    worst = 0.0
+    for s in range(0, U.shape[0], chunk):
+        e = min(s + chunk, U.shape[0])
+        for k in range(NUM_STEPS):
+            r = float(jnp.max(f(jnp.asarray(U[s:e, k + 1]), jnp.asarray(U[s:e, k]),
+                                jnp.asarray(nu[s:e]))))
+            if not np.isfinite(r) or r > worst:
+                worst = r
+    return worst
+
+
+def build_data(n=N, check=True):
+    """TRAIN/VAL: regenerated from SEED (identical draw to the sweep; the sweep
+    checkpoints were model-selected on VAL, so VAL is NOT used as a test set
+    here).  TEST: N_TEST fresh trajectories from TEST_SEED (= SEED+1), never
+    seen by any training or model selection.  Aborts if any trajectory's FOM
+    residual exceeds 1e-8 (unconverged Newton would otherwise be 'truth')."""
     U, z, cx, cy, w, a, nu = bf.build_trajectories(n)
-    return dict(U=U, z=z, cx=cx, cy=cy, w=w, a=a, nu=nu)
+    cxt, cyt, wt, at, nut, zt = bf.sample_params(seed=TEST_SEED, m=N_TEST)
+    rollout, _ = bf.make_rollout(n)
+    U0 = np.stack([bf.blob_ic(n, cxt[i], cyt[i], wt[i], at[i]) for i in range(N_TEST)])
+    snaps, res = rollout(jnp.asarray(U0), jnp.asarray(nut))
+    Ut = np.asarray(snaps).transpose(1, 0, 2)
+    rt = float(jnp.max(res))
+    if not np.isfinite(rt) or rt > 1e-8:
+        raise SystemExit(f"TEST FOM Newton residual {rt:.2e} > 1e-8")
+    d = dict(U=U, z=z, cx=cx, cy=cy, w=w, a=a, nu=nu, U_test=Ut, z_test=zt,
+             nu_test=nut, cx_test=cxt, cy_test=cyt, w_test=wt, a_test=at)
+    if check:
+        worst = max(max_rel_residual(U, nu, n), max_rel_residual(Ut, nut, n))
+        log(f"  data check: max FOM rel residual over all trajectories {worst:.2e}")
+        if not np.isfinite(worst) or worst > 1e-8:
+            raise SystemExit(f"FOM residual {worst:.2e} > 1e-8: data not converged")
+        d["max_fom_rel_residual"] = worst
+    return d
 
 
 def data_fingerprint(U):
@@ -283,8 +324,8 @@ def make_collocation(name, n, rng, data_row=None):
         m = min(int(name[6:]), interior.size)
         u0 = np.asarray(data_row["u0"]).reshape(n, n)[1:-1, 1:-1].reshape(-1)
         p = u0 / u0.sum()
-        # blend: 0.5 uniform + 0.5 IC-weighted (dilated by a box blur to cover
-        # the advected front which moves ~a/2 per axis over T)
+        # blend: 0.5 uniform + 0.5 IC-weighted (the uniform half covers the
+        # advected front, which moves ~a/2 per axis over T)
         pu = np.full_like(p, 1.0 / p.size)
         P = 0.5 * pu + 0.5 * p
         pick = rng.choice(interior.size, m, replace=False, p=P)
@@ -294,6 +335,260 @@ def make_collocation(name, n, rng, data_row=None):
         xy = rng.uniform(1.0 / (n - 1), 1.0 - 1.0 / (n - 1), size=(m, 2))
         return dict(kind="offgrid", xy=xy)
     raise ValueError(name)
+
+
+# --------------------------- WEAK-form Galerkin (Agent A recipe) ---------------------------
+#
+# Test modes phi_i = discrete sine modes on the interior grid (exact eigenvectors of
+# the FOM's ghost-zero 5-point Laplacian, -L phi_i = lam_i phi_i).  Weak BE residual:
+#   R_i(z) = w_i [ phi_i^T (u - u_n) + dt ( phi_i^T N(u) + nu lam_i phi_i^T u ) ]
+# with u = D(z) on the interior, N = the FOM's upwind advection ('weak', exact FOM
+# operator; needs u at the 5-point stencils of the quadrature nodes) or, for the
+# meshfree variant 'weakc', the continuum advection integrated by parts,
+#   phi_i^T N(u) -> -1/2 sum_q om_q u_q^2 (dphi_i/dx + dphi_i/dy)(x_q),  lam_i^c = pi^2(kx^2+ky^2)
+# (no decoder derivatives, points anywhere; it targets the continuum PDE, not the
+# FOM's upwind discretization -- O(h) apart at N=64).  Weighting w_i =
+# (1 + dt nu lam_i)^-alpha (alpha=WEAK_ALPHA, default 1).  Hyper-reduction: quadrature
+# weights om_q on m nodes from capped Lawson-Hanson NNLS fitted to reproduce the mode
+# projections of DECODER-OUTPUT snapshots (u and N(u) at training latents).
+
+WEAK_ALPHA = float(os.environ.get("WEAK_ALPHA", "1.0"))
+EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
+EQ_POOL = int(os.environ.get("EQ_POOL", "4096"))       # meshfree candidate pool size
+
+
+def test_modes(n, M):
+    """M lowest discrete sine modes on the interior (n-2)^2 grid.  Returns
+    kx, ky (M,), Phi (n_i^2, M) unit-2-norm columns, lam_disc (M,), lam_cont (M,)."""
+    dx = 1.0 / (n - 1)
+    kk = np.arange(1, n - 1)
+    KX, KY = np.meshgrid(kk, kk, indexing="ij")
+    lam = (4.0 / dx**2) * (np.sin(np.pi * KX / (2 * (n - 1)))**2
+                           + np.sin(np.pi * KY / (2 * (n - 1)))**2)
+    order = np.argsort(lam.reshape(-1), kind="stable")[:M]
+    kx, ky = KX.reshape(-1)[order], KY.reshape(-1)[order]
+    xi = kk / (n - 1)
+    Sx = np.sin(np.pi * np.outer(xi, kx))            # (n_i, M)
+    Sy = np.sin(np.pi * np.outer(xi, ky))
+    Phi = (Sx[:, None, :] * Sy[None, :, :]).reshape(-1, M)   # interior flat i*(n-2)+j
+    Phi = Phi / np.linalg.norm(Phi, axis=0, keepdims=True)
+    return kx, ky, Phi, lam.reshape(-1)[order], (np.pi**2) * (kx**2 + ky**2)
+
+
+def modes_at(xy, kx, ky, n):
+    """Continuous sine modes at points xy (m,2) with the SAME normalisation as
+    the grid columns (unit 2-norm over the interior grid): values (m,M) and
+    gradients (m,M,2)."""
+    nrm = np.sqrt(((n - 1) / 2.0) ** 2)      # ||sin(pi k x_i)||_2^2 over i=1..n-2 = (n-1)/2
+    x, y = xy[:, 0:1], xy[:, 1:2]
+    sx, sy = jnp.sin(jnp.pi * kx * x), jnp.sin(jnp.pi * ky * y)
+    cx, cy = jnp.cos(jnp.pi * kx * x), jnp.cos(jnp.pi * ky * y)
+    val = sx * sy / nrm
+    gx = jnp.pi * kx * cx * sy / nrm
+    gy = jnp.pi * ky * sx * cy / nrm
+    return val, jnp.stack([gx, gy], axis=-1)
+
+
+def upwind_adv_field(u_int, n):
+    """N(u) = u (u_x + u_y) with the FOM's sign-upwind stencil on the interior
+    field u_int (n_i^2,), ghost zeros on the walls."""
+    ni = n - 2
+    dx = 1.0 / (n - 1)
+    U = jnp.pad(u_int.reshape(ni, ni), 1)
+    c = U[1:-1, 1:-1]
+    ux = jnp.where(c > 0, (c - U[:-2, 1:-1]) / dx, (U[2:, 1:-1] - c) / dx)
+    uy = jnp.where(c > 0, (c - U[1:-1, :-2]) / dx, (U[1:-1, 2:] - c) / dx)
+    return (c * (ux + uy)).reshape(-1)
+
+
+def nnls_capped(G, b, max_support, tol=1e-10, inner_max=200):
+    """Lawson-Hanson active-set NNLS min_{w>=0} ||G w - b|| that STOPS when the
+    support reaches max_support (ECSW-style) or at optimality (copied from the
+    Poisson study's pro_common.nnls_capped).  Returns (w, ||Gw-b||, n_outer)."""
+    n = G.shape[1]
+    w = np.zeros(n)
+    P = np.zeros(n, bool)
+    r = b - G @ w
+    outer = 0
+    while outer < 5 * max_support + 10:
+        grad = G.T @ r
+        cand = np.where(~P)[0]
+        if cand.size == 0 or P.sum() >= max_support:
+            break
+        j = cand[np.argmax(grad[cand])]
+        if grad[j] <= tol * (np.linalg.norm(b) + 1e-300):
+            break
+        P[j] = True
+        outer += 1
+        for _ in range(inner_max):
+            idx = np.where(P)[0]
+            s_, *_ = np.linalg.lstsq(G[:, idx], b, rcond=None)
+            if np.all(s_ > 0):
+                w[:] = 0.0; w[idx] = s_
+                break
+            neg = s_ <= 0
+            alpha = np.min(w[idx][neg] / (w[idx][neg] - s_[neg] + 1e-300))
+            w[idx] = w[idx] + alpha * (s_ - w[idx])
+            P[idx[w[idx] <= 1e-14]] = False
+            w[~P] = 0.0
+        r = b - G @ w
+    return w, float(np.linalg.norm(r)), outer
+
+
+def fit_eq_weights(dec, n, M, m, Z_snap, kind="weak", pool="grid", rng=None):
+    """NNLS-EQ quadrature for the weak form.  Candidates: interior grid nodes
+    (pool='grid') or EQ_POOL random interior points (pool='off', 'weakc' only).
+    Snapshots: decoder outputs u_s (and the upwind field N(u_s) for 'weak',
+    u_s^2 for 'weakc') at the latents Z_snap (K x n_snap).  Targets: exact
+    full-grid projections (grid rule).  Returns dict(idx|xy, w (m,), info)."""
+    rng = rng or np.random.default_rng(0)
+    t0 = time.time()
+    kx, ky, Phi, lam, lamc = test_modes(n, M)
+    coords = jnp.asarray(grid_coords(n))
+    interior = interior_indices(n)
+    xy_int = coords[jnp.asarray(interior)]
+    n_i2 = interior.size
+    kxj, kyj = jnp.asarray(kx, dtype=F64), jnp.asarray(ky, dtype=F64)
+    if pool == "grid":
+        cand_xy = xy_int
+        Phi_c = jnp.asarray(Phi)                                    # (n_c, M)
+        dPhi_c = modes_at(xy_int, kxj, kyj, n)[1] if kind == "weakc" else None
+    else:
+        assert kind == "weakc", "the FOM upwind stencil needs grid nodes"
+        cand_xy = jnp.asarray(rng.uniform(1.0 / (n - 1), 1.0 - 1.0 / (n - 1), size=(EQ_POOL, 2)))
+        Phi_c, dPhi_c = modes_at(cand_xy, kxj, kyj, n)
+    n_c = cand_xy.shape[0]
+    u_full = jax.jit(lambda z: dec(z, xy_int) if dec.kind == "coord" else dec.rows(z, jnp.asarray(interior)))
+    u_cand = jax.jit(lambda z: dec(z, cand_xy)) if pool == "off" else u_full
+    Gs, bs = [], []
+    Phi_np = np.asarray(Phi)
+    for z in Z_snap:
+        z = jnp.asarray(z, dtype=F64)
+        uf = u_full(z)                                              # (n_i2,)
+        uc = u_cand(z)                                              # (n_c,)
+        if kind == "weak":
+            Nf = upwind_adv_field(uf, n)
+            for v_f, v_c in ((np.asarray(uf), np.asarray(uc)), (np.asarray(Nf), np.asarray(Nf))):
+                bs.append(Phi_np.T @ v_f)                           # (M,)
+                Gs.append(np.asarray(Phi_c).T * v_c[None, :])       # (M, n_c)
+        else:
+            gsum = np.asarray(dPhi_c[..., 0] + dPhi_c[..., 1])      # (n_c, M)
+            dPhi_f = np.asarray(modes_at(xy_int, kxj, kyj, n)[1])
+            gsum_f = dPhi_f[..., 0] + dPhi_f[..., 1]
+            uf_np, uc_np = np.asarray(uf), np.asarray(uc)
+            bs.append(Phi_np.T @ uf_np);          Gs.append(np.asarray(Phi_c).T * uc_np[None, :])
+            bs.append(gsum_f.T @ (uf_np ** 2));    Gs.append(gsum.T * (uc_np ** 2)[None, :])
+    G = np.concatenate(Gs, axis=0)                                  # (rows, n_c)
+    b = np.concatenate(bs)
+    sc = np.linalg.norm(G, axis=1) + 1e-300
+    G, b = G / sc[:, None], b / sc
+    wts, rnorm, n_outer = nnls_capped(G, b, max_support=m)
+    supp = np.nonzero(wts > 0)[0]
+    padded = 0
+    if len(supp) >= m:
+        keep = supp[np.argsort(-wts[supp])[:m]]
+    else:
+        rest = np.setdiff1d(np.arange(n_c), supp)
+        score = np.abs(G).mean(0)
+        pad = rest[np.argsort(-score[rest])[:m - len(supp)]]
+        keep = np.concatenate([supp, pad]); padded = len(pad)
+    wq, rnorm_final, _ = nnls_capped(G[:, keep], b, max_support=len(keep))
+    wq = np.where(wq > 0, wq, 1e-8 * max(wq.max(), 1e-300))
+    rnorm_final = float(np.linalg.norm(G[:, keep] @ wq - b))
+    info = dict(support=int(len(supp)), padded=int(padded), rnorm_capped=float(rnorm),
+                rnorm_final=rnorm_final, b_norm=float(np.linalg.norm(b)),
+                rel_fit=rnorm_final / float(np.linalg.norm(b)), n_rows=int(G.shape[0]),
+                n_cand=int(n_c), secs=time.time() - t0, M=int(M), m=int(len(keep)),
+                kind=kind, pool=pool)
+    log(f"  NNLS-EQ {kind}/{pool} M={M} m={m}: support {len(supp)} (+{padded} pad), "
+        f"rel fit {info['rel_fit']:.2e} [{info['secs']:.0f}s]")
+    out = dict(kind="grid" if pool == "grid" else "offgrid", w=wq, info=info)
+    if pool == "grid":
+        out["idx"] = interior[keep]
+    else:
+        out["xy"] = np.asarray(cand_xy)[keep]
+    return out
+
+
+def make_weak_ops(dec, n, colloc, kind="weak", M=64, alpha=WEAK_ALPHA, solver="lspg"):
+    """Weak-form step operators.  colloc: dict(kind='grid', idx, w) or
+    dict(kind='offgrid', xy, w) (weights w = quadrature weights; for the full
+    grid pass idx=interior and w=None -> ones = exact grid sums)."""
+    kx, ky, Phi, lam, lamc = test_modes(n, M)
+    coords = jnp.asarray(grid_coords(n))
+    interior = interior_indices(n)
+    kxj, kyj = jnp.asarray(kx, dtype=F64), jnp.asarray(ky, dtype=F64)
+    lam_j = jnp.asarray(lam if kind == "weak" else lamc, dtype=F64)
+    if colloc["kind"] == "grid":
+        idx = np.asarray(colloc["idx"])
+        m = idx.size
+        w = jnp.asarray(colloc.get("w") if colloc.get("w") is not None else np.ones(m), dtype=F64)
+        pos = np.searchsorted(interior, idx)
+        assert np.all(interior[pos] == idx), "weak grid collocation must be interior nodes"
+        Phi_q = jnp.asarray(Phi[pos]) * w[:, None]                  # (m, M) weighted
+        xy_q = coords[jnp.asarray(idx)]
+        if kind == "weak":
+            st = jnp.asarray(stencil_indices(idx, n))               # (m,5)
+            xy_st = coords[st.reshape(-1)]
+            if dec.kind == "coord":
+                vals_st = lambda z: dec(z, xy_st).reshape(m, 5)
+            else:
+                vals_st = lambda z: dec.rows(z, st.reshape(-1)).reshape(m, 5)
+            def u_and_N(z):
+                us = vals_st(z)
+                c, xp, xm, yp, ym = us[:, 0], us[:, 1], us[:, 2], us[:, 3], us[:, 4]
+                dx = 1.0 / (n - 1)
+                ux = jnp.where(c > 0.0, (c - xm) / dx, (xp - c) / dx)
+                uy = jnp.where(c > 0.0, (c - ym) / dx, (yp - c) / dx)
+                return c, c * (ux + uy)
+            def prev_of(z):
+                return vals_st(z)[:, 0]
+        else:
+            gsum_q = (modes_at(xy_q, kxj, kyj, n)[1].sum(-1)) * w[:, None]   # (m,M)
+            if dec.kind == "coord":
+                u_q = lambda z: dec(z, xy_q)
+            else:
+                u_q = lambda z: dec.rows(z, jnp.asarray(idx))
+            prev_of = u_q
+    else:
+        assert kind == "weakc" and dec.kind == "coord"
+        xy_q = jnp.asarray(colloc["xy"])
+        m = xy_q.shape[0]
+        w = jnp.asarray(colloc["w"], dtype=F64)
+        val, grad = modes_at(xy_q, kxj, kyj, n)
+        Phi_q = val * w[:, None]
+        gsum_q = grad.sum(-1) * w[:, None]
+        u_q = lambda z: dec(z, xy_q)
+        prev_of = u_q
+
+    def r_w(z, prev_c, nu):
+        wt = (1.0 + DT * nu * lam_j) ** (-alpha)
+        if kind == "weak":
+            u, Nu = u_and_N(z)
+            adv = Phi_q.T @ Nu
+        else:
+            u = u_q(z)
+            adv = -0.5 * (gsum_q.T @ (u ** 2))
+        pu = Phi_q.T @ u
+        return wt * (Phi_q.T @ (u - prev_c) + DT * (adv + nu * lam_j * pu))
+
+    def d_c(z):
+        return u_and_N(z)[0] if kind == "weak" else u_q(z)
+
+    def rJ(z, prev_c, nu):
+        # Galerkin variant: test functions = mode projections of the tangent
+        # basis, JD_M = Phi_q^T dD/dz (M x K)  ->  root of JD_M^T r_w = 0
+        return (r_w(z, prev_c, nu), jax.jacfwd(r_w)(z, prev_c, nu),
+                Phi_q.T @ jax.jacfwd(d_c)(z))
+
+    def full(z):
+        return dec(z, coords) if dec.kind == "coord" else dec.V @ z
+
+    ops = _finish_ops(rJ, r_w, prev_of, full, m, solver)
+    ops["M"] = M
+    ops["tol_scale"] = float(np.sqrt(interior.size))   # mode projections of a field of RMS rho: |phi^T v| <= rho*sqrt(n_i^2)
+    ops["colloc_info"] = colloc.get("info")
+    return ops
 
 
 # --------------------------- ROM step operators ---------------------------
@@ -306,6 +601,9 @@ def make_step_ops(dec, n, colloc, objective="fd", solver="lspg"):
     prev_of(z) -> prev_c [decoder at the collocation centers], full(z) -> grid
     field, m)."""
     coords = jnp.asarray(grid_coords(n))
+    if objective != "fd" and not (colloc["kind"] == "grid"
+                                  and colloc["idx"].size == (n - 2) ** 2):
+        raise ValueError(f"objective {objective} needs colloc=full")
     obj = make_objective(objective, n, interior_indices(n))
     needs_nu = getattr(obj, "needs_nu", False)
     if colloc["kind"] == "grid":
@@ -358,6 +656,11 @@ def make_step_ops(dec, n, colloc, objective="fd", solver="lspg"):
             return dec(z, coords)
         return dec.V @ z
 
+    return _finish_ops(rJ, r_w, prev_of, full, m, solver)
+
+
+def _finish_ops(rJ, r_w, prev_of, full, m, solver):
+    """Shared: jitted closures + on-device LM step / scan rollout."""
     rn_fn = lambda z, p, nu: jnp.linalg.norm(r_w(z, p, nu))
     rJ_lspg = lambda z, p, nu: (r_w(z, p, nu), jax.jacfwd(r_w)(z, p, nu))
 
@@ -368,9 +671,10 @@ def make_step_ops(dec, n, colloc, objective="fd", solver="lspg"):
         r0, J0 = rJ_lspg(z0, prev_c, nu)
         rn0 = jnp.linalg.norm(r0)
         K = z0.shape[0]
+        init_reason = jnp.where(~jnp.isfinite(rn0), jnp.int32(5),
+                                jnp.where(rn0 <= tol_abs, jnp.int32(4), jnp.int32(0)))
         init = (z0, r0, J0, rn0, jnp.asarray(1e-6, F64), jnp.int32(0),
-                jnp.int32(0), jnp.int32(1), jnp.int32(0),
-                jnp.where(rn0 <= tol_abs, jnp.int32(4), jnp.int32(0)))
+                jnp.int32(0), jnp.int32(1), jnp.int32(0), init_reason)
 
         def cond(s):
             return (s[9] == 0) & (s[5] < budget)
@@ -382,6 +686,7 @@ def make_step_ops(dec, n, colloc, objective="fd", solver="lspg"):
             D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
             dz = jnp.linalg.solve(H + lam * D, -g)
             finite = jnp.all(jnp.isfinite(dz))
+            tiny = finite & (jnp.linalg.norm(dz) <= 1e-12 * (1.0 + jnp.linalg.norm(z)))
             z_new = z + jnp.where(finite, dz, 0.0)
             rn_new = rn_fn(z_new, prev_c, nu)
             accept = finite & jnp.isfinite(rn_new) & (rn_new < rn)
@@ -395,22 +700,22 @@ def make_step_ops(dec, n, colloc, objective="fd", solver="lspg"):
             acc = acc + accept.astype(jnp.int32)
             nJ = nJ + accept.astype(jnp.int32)
             reason = jnp.where(accept & (rn <= tol_abs), 1,
-                      jnp.where(accept & (rel_dec < 1e-12), 2,
+                      jnp.where((accept & (rel_dec < 1e-12)) | tiny, 2,
                        jnp.where((~accept) & (lam >= 1e12), 3, 0))).astype(jnp.int32)
             return (z, r2, J2, rn, lam, att + 1, acc, nJ, jnp.int32(0), reason)
 
         z, r, J, rn, lam, att, acc, nJ, _, reason = jax.lax.while_loop(cond, body, init)
-        return z, rn, nJ, acc, reason
+        return z, rn, nJ, acc, reason, att
 
     step_jit = jax.jit(lm_step_jit, static_argnums=(4,))
 
     def rollout_jit_fn(z0, nu, u_scales, budget):
         """Fully on-device rollout (lax.scan over the 50 steps).  u_scales
-        (NUM_STEPS,) = tolerance scales per step (we use ||u0|| for all steps
-        so the scan has no data dependence on the decoded field)."""
+        (NUM_STEPS,) = ABSOLUTE residual tolerances per step (the caller passes
+        GN_TOL * rms(u0) * sqrt(m), the same rule as rollout())."""
         def body(carry, us):
             z, prev_c = carry
-            z2, rn, nJ, acc, reason = lm_step_jit(z, prev_c, nu, GN_TOL * us, budget)
+            z2, rn, nJ, acc, reason, att = lm_step_jit(z, prev_c, nu, us, budget)
             return (z2, prev_of(z2)), (z2, rn, nJ, reason)
         (zT, _), (Z, rns, nJs, reasons) = jax.lax.scan(
             body, (z0, prev_of(z0)), u_scales)
@@ -451,6 +756,8 @@ def solve_step(ops, z0, prev_c, nu, u_scale, budget=GN_BUDGET, tol=GN_TOL,
                 if lam >= 1e12:
                     reason = "nan_step"; break
                 continue
+            if float(jnp.linalg.norm(dz)) <= 1e-12 * (1.0 + float(jnp.linalg.norm(z))):
+                reason = "stalled"; break
             z_new = z + dz
             rn_new = float(ops["rn"](z_new, prev_c, nu)); n_r += 1
             if np.isfinite(rn_new) and rn_new < rn:
@@ -527,35 +834,45 @@ def fit_ic(dec, n, u0, inits, budget=IC_BUDGET, coords=None):
     return best
 
 
-def rollout(dec, n, ops, z0, nu, U_true=None, u_scale=None, budget=GN_BUDGET,
+def rollout(dec, n, ops, z0, nu, u_scale, U_true=None, budget=GN_BUDGET,
             tol=GN_TOL):
-    """Latent time stepping.  Returns dict with latents, per-time rel-L2 (if
-    U_true given), iteration counts, residual norms, wall time per step."""
+    """Latent time stepping.  u_scale = RMS of the known u0 over the interior
+    (tolerance scale).  Returns dict with latents, per-time rel-L2 (if U_true
+    given), iteration counts, residual norms, wall time per step; a blow-up
+    truncates the rollout (n_done < NUM_STEPS) and traj_rel is NaN."""
     z = jnp.asarray(z0, dtype=F64)
     Z = [np.asarray(z)]
     prev_c = ops["prev_of"](z)
     fields = [np.asarray(ops["full"](z))]
     iters, ress, reasons, times = [], [], [], []
-    REASONS = {0: "budget", 1: "tol", 2: "stalled", 3: "lambda_max", 4: "tol_at_init"}
+    REASONS = {0: "budget", 1: "tol", 2: "stalled", 3: "lambda_max", 4: "tol_at_init",
+               5: "nan_at_init"}
+    attempts = []
     for k in range(NUM_STEPS):
-        us = float(jnp.linalg.norm(fields[-1])) if u_scale is None else u_scale
+        # stopping rule: RMS residual over the m collocation points <= tol * RMS(u0)
+        # (u_scale = rms of the known IC over the interior); ||r|| <= tol*rms*sqrt(m)
+        # (weak form: mode projections, scale sqrt(n_i^2) -- see make_weak_ops)
+        us = u_scale * ops.get("tol_scale", np.sqrt(ops["m"]))
         t0 = time.perf_counter()
         if ops["solver"] == "lspg":
-            z, rn_, nJ, acc, reason = ops["step_jit"](z, prev_c, nu, tol * us, budget)
+            z, rn_, nJ, acc, reason, att = ops["step_jit"](z, prev_c, nu, tol * us, budget)
             info = dict(rn=float(rn_), n_jac=int(nJ), accepted=int(acc),
-                        reason=REASONS[int(reason)])
+                        reason=REASONS[int(reason)], attempts=int(att))
         else:
             z, info = solve_step(ops, z, prev_c, nu, us, budget=budget, tol=tol)
+            info["attempts"] = info.get("accepted", 0) + info.get("rejected", 0)
         prev_c = ops["prev_of"](z)
         prev_c.block_until_ready()
         times.append(time.perf_counter() - t0)
         Z.append(np.asarray(z))
         fields.append(np.asarray(ops["full"](z)))
         iters.append(info["n_jac"]); ress.append(info["rn"]); reasons.append(info["reason"])
-        if not np.all(np.isfinite(fields[-1])):
+        attempts.append(info["attempts"])
+        if not np.all(np.isfinite(fields[-1])) or info["reason"] == "nan_at_init":
             reasons[-1] = "blowup"
+            fields.pop(); Z.pop()
             break
-    out = dict(Z=np.stack(Z), iters=iters, res=ress, reasons=reasons,
+    out = dict(Z=np.stack(Z), iters=iters, attempts=attempts, res=ress, reasons=reasons,
                step_time=times, n_done=len(fields) - 1)
     F = np.stack(fields)
     if U_true is not None:

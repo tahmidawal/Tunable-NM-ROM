@@ -4,13 +4,17 @@ the burgers2d sweep (burgers2d_film_N{N}.pkl, 5-dim true-parameter latent).
 The ROM knows u0, nu and the PDE; it never sees the held-out trajectory.  We
 solve for the 5-dim z by LM on:
   (a) ic     : misfit of u(.,0;z) to u0                       [IC-fit control]
-  (b) resid  : the BE residual over all 50 steps, the decoder supplying both
-               u(.,t_{n+1};z) and u(.,t_n;z)                  [space-time residual]
+  (b) resid  : the BE residual over all 50 steps (interior + FOM boundary
+               rows), the decoder supplying both u(.,t_{n+1};z) and u(.,t_n;z)
+               -- a PDE-CONSISTENCY ABLATION, not a ROM (it never sees u0, so
+               the low-amplitude branch of the family is an attractor)
   (c) both   : (a) and (b) stacked (IC block weighted by IC_W)
 and report trajectory rel-L2 vs the FOM, next to the ORACLE (true z) error and
 the latent error |z - z_true|.  Inits: family mean and the z of the training
-trajectory whose IC is nearest to u0 (legit: u0 known); best-of on the
-objective (never on the held-out error).
+trajectory whose IC is nearest to u0 (legit: u0 known), both with the
+viscosity coordinate set from the KNOWN nu; best-of on the objective (never on
+the held-out error).  Test trajectories come from TEST_SEED (the sweep
+checkpoint was model-selected on the VAL split, so VAL is not used here).
 
 Usage: N=64 python blat_stage1.py <ckpt.pkl> <outdir>
 """
@@ -33,7 +37,9 @@ CKPT = sys.argv[1]
 OUTDIR = sys.argv[2] if len(sys.argv) > 2 else "."
 N = bc.N
 T1 = bc.NUM_STEPS + 1
-IC_W = float(os.environ.get("IC_W", "1.0"))
+# IC block weight: sqrt(NUM_STEPS) makes the single IC slice count like one
+# residual slice per step (RMS-balanced); IC_W=1 reported as a sensitivity arm
+IC_W = float(os.environ.get("IC_W", str(np.sqrt(50.0))))
 BUDGET = int(os.environ.get("S1_BUDGET", "100"))
 
 
@@ -42,17 +48,28 @@ def main():
     with open(CKPT, "rb") as f:
         params = jax.tree_util.tree_map(lambda a: jnp.asarray(a, dtype=F64),
                                         pickle.load(f))
+    # checkpoint manifest check (the sweep's results JSON sits next to the pkl)
+    rj = os.path.join(os.path.dirname(CKPT), f"burgers2d_results_N{N}.json")
+    if os.path.exists(rj):
+        with open(rj) as f:
+            rmeta = json.load(f)
+        for k_, v_ in (("N", N), ("n_freq", bf.N_FREQ), ("t_freq", bf.T_FREQ),
+                       ("hidden", bf.HIDDEN), ("n_train", bf.N_TRAIN), ("seed", bf.SEED)):
+            if rmeta.get(k_) != v_:
+                raise SystemExit(f"checkpoint manifest mismatch {k_}: {rmeta.get(k_)} vs {v_}")
+    else:
+        log(f"  WARNING: no results JSON next to {CKPT}; architecture unverified")
     d = bc.build_data(N)
-    U, z_all, nu_all = d["U"], d["z"].astype(np.float64), d["nu"]
-    U_te = U[bc.N_TRAIN:bc.N_TRAIN + bc.N_TEST]
-    z_te = z_all[bc.N_TRAIN:bc.N_TRAIN + bc.N_TEST]
-    nu_te = nu_all[bc.N_TRAIN:bc.N_TRAIN + bc.N_TEST]
+    U, z_all = d["U"], d["z"].astype(np.float64)
+    U_te, z_te, nu_te = d["U_test"], d["z_test"].astype(np.float64), d["nu_test"]
     z_tr = z_all[:bc.N_TRAIN]
     U_tr0 = U[:bc.N_TRAIN, 0]
     coords = jnp.asarray(bc.grid_coords(N))
     interior = jnp.asarray(bc.interior_indices(N))
+    bnd = jnp.asarray(np.setdiff1d(np.arange(N * N), np.asarray(interior)))
     st = jnp.asarray(bc.stencil_indices(np.asarray(interior), N))
     taus = jnp.asarray(np.arange(T1) / bc.NUM_STEPS)
+    _, fom_residual = bf.make_rollout(N)
 
     def field(z, tau):
         return bf.film_apply(params, z, tau, coords)
@@ -64,9 +81,14 @@ def main():
         return field(z, 0.0) - u0
 
     def r_res(z, nu):
+        """BE residual over all 50 steps INCLUDING the FOM's boundary rows
+        (R = u on the walls: the sweep decoder is not hard-BC, so its wall
+        values must be penalized exactly as the FOM does)."""
         Uz = traj(z)
         def one(n):
-            return bc.be_residual_from_stencil(Uz[n + 1][st], Uz[n][interior], nu, N)
+            return jnp.concatenate([
+                bc.be_residual_from_stencil(Uz[n + 1][st], Uz[n][interior], nu, N),
+                Uz[n + 1][bnd]])
         return jax.vmap(one)(jnp.arange(bc.NUM_STEPS)).reshape(-1)
 
     def r_both(z, u0, nu):
@@ -96,12 +118,17 @@ def main():
     report["oracle_true_z"] = dict(traj_rel_mean=float(np.mean(orc)),
                                    traj_rel_max=float(np.max(orc)))
     log(f"  ORACLE (true z) traj rel mean {np.mean(orc):.3e}")
-    # residual of the FOM trajectory through the same residual (sanity ~1e-13)
+    # residual of the FOM trajectory through the FOM's OWN residual, all rows
+    # (independent sanity ~1e-13), and through ours (must agree)
     Uz = jnp.asarray(U_te[0])
-    rr = jax.vmap(lambda n: bc.be_residual_from_stencil(Uz[n + 1][st], Uz[n][interior],
-                                                        float(nu_te[0]), N))(
+    rr = jax.vmap(lambda n: fom_residual(Uz[n + 1], Uz[n], float(nu_te[0])))(
         jnp.arange(bc.NUM_STEPS))
     report["fom_traj_rel_res"] = float(jnp.linalg.norm(rr) / jnp.linalg.norm(Uz))
+    r_ours = jax.vmap(lambda n: jnp.concatenate([
+        bc.be_residual_from_stencil(Uz[n + 1][st], Uz[n][interior], float(nu_te[0]), N),
+        Uz[n + 1][bnd]]))(jnp.arange(bc.NUM_STEPS))
+    report["ours_vs_fom_traj_res_maxabs_diff"] = float(
+        jnp.max(jnp.abs(jnp.sort(jnp.abs(rr), axis=1) - jnp.sort(jnp.abs(r_ours), axis=1))))
     # residual value at the true z (the decoder's own PDE inconsistency)
     rt = [float(objs["resid"][1](jnp.asarray(z_te[i]), jnp.asarray(U_te[i, 0]), float(nu_te[i]))
                 / np.linalg.norm(U_te[i])) for i in range(bc.N_TEST)]
@@ -115,8 +142,11 @@ def main():
         for i in range(bc.N_TEST):
             u0 = jnp.asarray(U_te[i, 0]); nu = float(nu_te[i])
             j = int(np.argmin(np.linalg.norm(U_tr0 - U_te[i, 0], axis=1)))
+            z_nu = (np.log(nu) - np.log(np.sqrt(0.001))) / (0.5 * np.log(10.0))  # known nu
+            z0_mean = zmean.copy(); z0_mean[4] = z_nu
+            z0_near = z_tr[j].copy(); z0_near[4] = z_nu
             best = None
-            for iname, z0 in (("mean", zmean), ("nearest_ic", z_tr[j])):
+            for iname, z0 in (("mean", z0_mean), ("nearest_ic", z0_near)):
                 z, r, info = lm_solve(lambda zz: rJ(zz, u0, nu), lambda zz: rn(zz, u0, nu),
                                       jnp.asarray(z0), BUDGET)
                 if best is None or r < best[1]:

@@ -1,0 +1,20 @@
+jax_backend=gpu
+jax_backend=gpu  x64=True
+CONFIG {"N": 64, "n_train": 256, "n_val": 16, "n_stages": 2, "steps": 20000, "batch": 256, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 30, "seed": 0}
+  FOM: 272 CG solves in 4s, max rel residual over all samples 4.10e-13
+stage 0: eps=2.389e-03  f_d~1.0 cyc/unit  n_freq=32 (half-cycle idx)
+  [s0] step      0  loss 4.905e-02  [5s]
+  [s0] step   5000  loss 4.401e-06  [75s]
+  [s0] step  10000  loss 1.438e-06  [145s]
+  [s0] step  15000  loss 3.599e-07  [216s]
+  [s0] Adam 20000 steps in 286s (final batch loss 2.245e-07)
+  after stage 0: TRAIN global 2.138e-03 / mean-rel 2.125e-03   VAL global 3.837e-03 / mean-rel 5.789e-03   val by amp quartile ['1.31e-02', '4.18e-03', '2.71e-03', '3.15e-03']
+stage 1: eps=5.106e-06  f_d~1.0 cyc/unit  n_freq=32 (half-cycle idx)
+  [s1] step      0  loss 5.017e-02  [1s]
+  [s1] step   5000  loss 8.819e-03  [71s]
+  [s1] step  10000  loss 6.810e-03  [142s]
+  [s1] step  15000  loss 5.739e-03  [212s]
+  [s1] Adam 20000 steps in 283s (final batch loss 5.490e-03)
+  after stage 1: TRAIN global 7.012e-04 / mean-rel 7.192e-04   VAL global 3.706e-03 / mean-rel 5.699e-03   val by amp quartile ['1.33e-02', '4.08e-03', '2.39e-03', '3.08e-03']
+RESULT s0: train=2.14e-03/2.13e-03 val=3.84e-03/5.79e-03  s1: train=7.01e-04/7.19e-04 val=3.71e-03/5.70e-03
+@@@ MSPREC c256_bw DONE @@@

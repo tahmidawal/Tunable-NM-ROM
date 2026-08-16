@@ -1,0 +1,59 @@
+{
+  "config": {
+    "N": 64,
+    "n_train": 512,
+    "n_val": 64,
+    "n_stages": 2,
+    "steps": 20000,
+    "batch": 32,
+    "p_sub": 1024,
+    "hidden": 128,
+    "n_layers": 4,
+    "peak_lr": 0.002,
+    "const_lr": 0,
+    "lbfgs_steps": 0,
+    "z_ff": 4,
+    "freq_margin": 4,
+    "seed": 0
+  },
+  "fom_max_rel_residual": 4.286116736461677e-13,
+  "stages": [
+    {
+      "stage": 0,
+      "eps_in": 0.0023595950971842788,
+      "f_d_cyc": 1.0,
+      "n_freq": 6,
+      "adam_final_batch_loss": 8.078517561882896e-07,
+      "secs": 77.61301612854004,
+      "train_global_rel": 0.0051658953539225755,
+      "train_mean_rel_l2": 0.004782024080209314,
+      "val_global_rel": 0.030786307730774017,
+      "val_mean_rel_l2": 0.029836264065434943,
+      "val_rel_l2_by_amp_quartile": [
+        0.038431775838924306,
+        0.029595901286937613,
+        0.02841904054944948,
+        0.022898338586428375
+      ]
+    },
+    {
+      "stage": 1,
+      "eps_in": 1.2189421349682754e-05,
+      "f_d_cyc": 1.0,
+      "n_freq": 6,
+      "adam_final_batch_loss": 0.0037568457124441896,
+      "secs": 74.73528623580933,
+      "train_global_rel": 0.0017501644473646694,
+      "train_mean_rel_l2": 0.0017220464910909991,
+      "val_global_rel": 0.031623448442914294,
+      "val_mean_rel_l2": 0.030773032978211528,
+      "val_rel_l2_by_amp_quartile": [
+        0.039197969239844,
+        0.030258680289217306,
+        0.0297263996425479,
+        0.023909082741236896
+      ]
+    }
+  ],
+  "complete": true
+}

@@ -1,0 +1,22 @@
+jax_backend=gpu
+jax_backend=gpu  x64=True
+CONFIG {"N": 64, "n_train": 64, "n_val": 16, "n_stages": 2, "steps": 20000, "batch": 64, "p_sub": 0, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 300, "z_ff": 0, "freq_margin": 4, "seed": 0}
+  FOM: 80 CG solves in 2s, max rel residual over all samples 3.95e-13
+stage 0: eps=2.632e-03  f_d~1.0 cyc/unit  n_freq=6 (half-cycle idx)
+  [s0] step      0  loss 5.020e-02  [5s]
+  [s0] step   5000  loss 7.799e-06  [69s]
+  [s0] step  10000  loss 2.107e-06  [135s]
+  [s0] step  15000  loss 2.882e-07  [200s]
+  [s0] Adam 20000 steps in 266s (final batch loss 1.987e-07)
+  [s0] L-BFGS 300 its: full loss 1.987e-07 -> 1.797e-07 [29s]
+  after stage 0: TRAIN global 1.795e-03 / mean-rel 1.860e-03   VAL global 1.112e-01 / mean-rel 1.105e-01   val by amp quartile ['1.93e-01', '8.40e-02', '1.06e-01', '5.91e-02']
+stage 1: eps=4.724e-06  f_d~6.0 cyc/unit  n_freq=16 (half-cycle idx)
+  [s1] step      0  loss 5.731e-02  [2s]
+  [s1] step   5000  loss 1.160e-03  [67s]
+  [s1] step  10000  loss 4.806e-04  [133s]
+  [s1] step  15000  loss 3.112e-04  [199s]
+  [s1] Adam 20000 steps in 265s (final batch loss 2.579e-04)
+  [s1] L-BFGS 300 its: full loss 2.579e-04 -> 2.257e-04 [27s]
+  after stage 1: TRAIN global 1.283e-04 / mean-rel 1.186e-04   VAL global 1.121e-01 / mean-rel 1.110e-01   val by amp quartile ['1.94e-01', '8.45e-02', '1.06e-01', '5.96e-02']
+RESULT s0: train=1.80e-03/1.86e-03 val=1.11e-01/1.11e-01  s1: train=1.28e-04/1.19e-04 val=1.12e-01/1.11e-01
+@@@ MSPREC c64_lbfgs DONE @@@

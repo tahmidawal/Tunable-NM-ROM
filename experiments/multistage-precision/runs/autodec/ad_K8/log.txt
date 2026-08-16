@@ -1,0 +1,43 @@
+jax_backend=gpu
+jax_backend=gpu  x64=True  K_LAT=8
+CONFIG {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 3, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 8, "lat_lr": 0.005, "lat_reg": 0.0001, "adam_infer_steps": 1500, "n_test": 16, "gn_iters": 60, "m_eq": 512}
+  FOM: 576 CG solves in 7s, max rel residual over all samples 4.29e-13
+stage 0 (auto-decoder, joint latents): eps=2.360e-03 n_freq=6
+  [A] step      0  loss 4.235e-02  [4s]
+  [A] step   5000  loss 5.858e-05  [20s]
+  [A] step  10000  loss 2.006e-05  [35s]
+  [A] step  15000  loss 7.089e-06  [51s]
+  [A] Adam 20000 steps in 67s (final batch loss 8.271e-06)
+  after stage 0: TRAIN global 1.167e-02 / mean-rel 9.402e-03  VAL LM-inferred best 8.262e-03 (mean-start 1.276e-02, nearest-start 8.262e-03); Adam-inferred 1.076e-02; latent rms 0.17
+stage 1: eps=2.755e-05  f_d~2.0 cyc/unit  n_freq=8
+  [B1] step      0  loss 2.493e-02  [2s]
+  [B1] step   5000  loss 6.285e-03  [20s]
+  [B1] step  10000  loss 3.584e-03  [38s]
+  [B1] step  15000  loss 2.754e-03  [57s]
+  [B1] Adam 20000 steps in 75s (final batch loss 2.671e-03)
+  after stage 1: TRAIN global 3.391e-03 / mean-rel 3.164e-03   VAL fixed-lat 1.210e-02   VAL LM re-inferred best 8.595e-03
+stage 2: eps=8.001e-06  f_d~4.0 cyc/unit  n_freq=12
+  [B2] step      0  loss 3.173e-02  [2s]
+  [B2] step   5000  loss 1.784e-02  [21s]
+  [B2] step  10000  loss 1.527e-02  [40s]
+  [B2] step  15000  loss 1.608e-02  [58s]
+  [B2] Adam 20000 steps in 77s (final batch loss 1.376e-02)
+  after stage 2: TRAIN global 2.103e-03 / mean-rel 2.156e-03   VAL fixed-lat 1.200e-02   VAL LM re-inferred best 8.382e-03
+RESULT K8 colloc=full  stages=1 init=mean     ROM 2.198e-01 (med 6.444e-02, max 9.353e-01)  oracle(mean) 2.577e-02  ||r||: lm 9.87e-01 oracle 1.01e+00 f 5.13e+00  bnd 8.8e-05  acc/rej 34/9 {'budget': 5, 'converged': 11}
+RESULT K8 colloc=full  stages=1 init=nearest  ROM 6.248e-02 (med 5.064e-02, max 1.630e-01)  oracle(nearest) 7.777e-03  ||r||: lm 8.16e-01 oracle 1.01e+00 f 5.13e+00  bnd 7.9e-05  acc/rej 24/0 {'budget': 1, 'converged': 15}
+RESULT K8 colloc=full  stages=2 init=mean     ROM 3.015e-01 (med 1.165e-01, max 9.497e-01)  oracle(mean) 8.074e-03  ||r||: lm 1.83e+00 oracle 1.19e+00 f 5.13e+00  bnd 7.1e-05  acc/rej 60/0 {'budget': 16}
+RESULT K8 colloc=full  stages=2 init=nearest  ROM 7.659e-02 (med 6.309e-02, max 1.987e-01)  oracle(nearest) 8.223e-03  ||r||: lm 1.06e+00 oracle 1.27e+00 f 5.13e+00  bnd 6.8e-05  acc/rej 58/0 {'budget': 10, 'converged': 6}
+RESULT K8 colloc=full  stages=2 init=staged   ROM 8.845e-02 (med 6.640e-02, max 2.690e-01)  oracle(nearest) 8.223e-03  ||r||: lm 1.12e+00 oracle 1.27e+00 f 5.13e+00  bnd 6.5e-05  acc/rej 30/0 {'budget': 16}
+RESULT K8 colloc=full  stages=3 init=mean     ROM 3.940e-01 (med 2.021e-01, max 9.499e-01)  oracle(mean) 7.941e-03  ||r||: lm 2.48e+00 oracle 1.21e+00 f 5.13e+00  bnd 5.5e-05  acc/rej 60/0 {'budget': 16}
+RESULT K8 colloc=full  stages=3 init=nearest  ROM 8.554e-02 (med 5.913e-02, max 2.349e-01)  oracle(nearest) 8.029e-03  ||r||: lm 1.04e+00 oracle 1.30e+00 f 5.13e+00  bnd 5.4e-05  acc/rej 60/0 {'budget': 14, 'converged': 2}
+RESULT K8 colloc=full  stages=3 init=staged   ROM 1.001e-01 (med 6.700e-02, max 2.744e-01)  oracle(nearest) 8.029e-03  ||r||: lm 1.14e+00 oracle 1.30e+00 f 5.13e+00  bnd 5.6e-05  acc/rej 30/0 {'budget': 16}
+RESULT K8 colloc=m512  stages=1 init=mean     ROM 3.843e-01 (med 1.773e-01, max 9.750e-01)  oracle(mean) 2.577e-02  ||r||: lm 8.38e-01 oracle 3.52e-01 f 1.74e+00  bnd 9.5e-05  acc/rej 35/10 {'budget': 8, 'converged': 8}
+RESULT K8 colloc=m512  stages=1 init=nearest  ROM 9.647e-02 (med 9.140e-02, max 2.004e-01)  oracle(nearest) 7.777e-03  ||r||: lm 2.46e-01 oracle 3.52e-01 f 1.74e+00  bnd 8.5e-05  acc/rej 24/0 {'budget': 2, 'converged': 14}
+RESULT K8 colloc=m512  stages=2 init=mean     ROM 4.663e-01 (med 4.049e-01, max 9.849e-01)  oracle(mean) 8.074e-03  ||r||: lm 1.04e+00 oracle 4.75e-01 f 1.74e+00  bnd 8.2e-05  acc/rej 38/14 {'budget': 14, 'converged': 2}
+RESULT K8 colloc=m512  stages=2 init=nearest  ROM 1.175e-01 (med 9.671e-02, max 3.578e-01)  oracle(nearest) 8.223e-03  ||r||: lm 3.59e-01 oracle 4.64e-01 f 1.74e+00  bnd 7.1e-05  acc/rej 50/0 {'budget': 11, 'converged': 5}
+RESULT K8 colloc=m512  stages=2 init=staged   ROM 1.565e-01 (med 1.244e-01, max 3.428e-01)  oracle(nearest) 8.223e-03  ||r||: lm 3.34e-01 oracle 4.64e-01 f 1.74e+00  bnd 7.0e-05  acc/rej 30/0 {'budget': 15, 'converged': 1}
+RESULT K8 colloc=m512  stages=3 init=mean     ROM 4.310e-01 (med 3.435e-01, max 9.206e-01)  oracle(mean) 7.941e-03  ||r||: lm 1.05e+00 oracle 4.78e-01 f 1.74e+00  bnd 7.7e-05  acc/rej 38/20 {'budget': 14, 'converged': 2}
+RESULT K8 colloc=m512  stages=3 init=nearest  ROM 1.281e-01 (med 1.122e-01, max 3.469e-01)  oracle(nearest) 8.029e-03  ||r||: lm 3.54e-01 oracle 5.00e-01 f 1.74e+00  bnd 5.2e-05  acc/rej 40/0 {'budget': 6, 'converged': 10}
+RESULT K8 colloc=m512  stages=3 init=staged   ROM 1.613e-01 (med 1.398e-01, max 3.348e-01)  oracle(nearest) 8.029e-03  ||r||: lm 3.40e-01 oracle 5.00e-01 f 1.74e+00  bnd 6.7e-05  acc/rej 30/0 {'budget': 15, 'converged': 1}
+DONE
+@@@ MSPREC ad_K8 DONE @@@

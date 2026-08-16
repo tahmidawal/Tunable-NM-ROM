@@ -1,0 +1,8 @@
+jax_backend=gpu  N=16  n_freq=7 t_freq=8
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 7s, max Newton rel residual 1.00e-12
+  ORACLE (true z) traj rel mean 6.870e-03
+  FOM traj rel residual 2.57e-13; decoder residual at true z (rel) 2.502e-03
+  ic    : traj rel mean 3.066e-01 (med 3.066e-01, max 5.544e-01)  |z-z*| 6.197e-01  [40s]
+  resid : traj rel mean 1.009e+00 (med 1.009e+00, max 1.143e+00)  |z-z*| 1.253e+00  [44s]
+  both  : traj rel mean 6.524e-03 (med 6.524e-03, max 1.140e-02)  |z-z*| 2.400e-02  [56s]
+wrote stage1 json

@@ -66,12 +66,19 @@ SEED = mp.SEED
 # ------------------------------ checkpoints ------------------------------
 
 def load_pkl(path):
+    """Load a multistage-format auto-decoder pkl; asserts the env family config
+    matches; the hard-BC flag is taken FROM THE PKL (env HARD_BC, if set, must
+    agree — a silent mismatch would change every prediction)."""
     d = pickle.load(open(path, "rb"))
     cfg = d["config"]
     for k in ("N", "n_train", "n_val", "seed", "hidden", "n_layers"):
         assert cfg[k] == mp.CONFIG[k], f"env/pkl config mismatch on {k}: {cfg[k]} vs {mp.CONFIG[k]}"
+    hb = int(cfg.get("hard_bc", 0))
+    env_hb = os.environ.get("HARD_BC")
+    if env_hb is not None and int(env_hb) != hb:
+        raise ValueError(f"HARD_BC env={env_hb} conflicts with pkl hard_bc={hb}")
     stages = mp.stages_from_np(d["stages"])
-    return d, cfg, stages, np.asarray(d["z_tr"])
+    return d, cfg, stages, np.asarray(d["z_tr"]), hb
 
 
 def make_decoder(stages, hard_bc=False):
@@ -124,11 +131,16 @@ class Grid:
         return self.S @ C2d @ self.S.T
 
     def mode_mask(self, M):
-        """0/1 mask keeping the M lowest eigenmodes (M=None or >= n_i^2: all)."""
+        """0/1 mask keeping the M lowest eigenmodes, COMPLETE eigenshells (ties
+        at the cutoff are kept, so the retained count can exceed M; use
+        n_modes(M) for the actual count).  M=None or >= n_i^2: all."""
         if M is None or M >= self.n_i ** 2:
             return jnp.ones_like(self.lam)
         thr = self.lam_sorted[M - 1]
         return (self.lam <= thr).astype(F64)
+
+    def n_modes(self, M):
+        return int(np.asarray(self.mode_mask(M)).sum())
 
     def stencil(self, ix, iy):
         """5 point sets (centre,+x,-x,+y,-y) and a 0/1 keep-mask that zeroes
@@ -149,11 +161,13 @@ def source_at(cx, cy, w, a, xs, ys):
 
 # ------------------------------ generic LM ------------------------------
 
-def lm_generic(HgV, V, z0, budget, lam0=1e-6):
+def lm_generic(HgV, V, z0, budget, lam0=1e-6, use_rel_dec=True):
     """Levenberg-Marquardt on a generic objective given (H, g, val) at z and a
     cheap val(z).  Same damping schedule / acceptance / stopping / accounting
     as ms_autodecoder.lm_solve (for residual objectives H=J^T J, g=J^T r,
-    val=||r|| it IS that solver)."""
+    val=||r|| it IS that solver).  use_rel_dec=False disables the relative-
+    decrease stop (needed for objectives with an unknown additive constant,
+    e.g. the Ritz energy) — then only the step-size stop / budget apply."""
     z = z0
     lam = lam0
     H, g, val = HgV(z)
@@ -181,7 +195,7 @@ def lm_generic(HgV, V, z0, budget, lam0=1e-6):
             z, val = z_new, val_new
             H, g, _ = HgV(z); n_J += 1; n_r += 1
             lam = max(lam / 3.0, 1e-12); acc += 1
-            if rel_dec < 1e-12 or step < 1e-13:
+            if (use_rel_dec and rel_dec < 1e-12) or step < 1e-13:
                 reason = "converged"; break
         else:
             lam = min(lam * 10.0, 1e12); rej += 1
@@ -232,11 +246,19 @@ def make_full_objective(dec, grid, spec):
             sig = spec["sigma"] * grid.dx
             W = jnp.exp(-0.5 * sig ** 2 * grid.lam)
             wres = lambda z, f2d: (W * grid.spec(fd_res(z, f2d))).reshape(-1)
-        else:                                       # cg K
-            K = spec["K"]
+        else:                                       # cg K: EXPLICITLY unrolled K CG steps
+            K = spec["K"]                           # (jax.scipy cg would use implicit diff = wrong J)
+            def cg_unrolled(b):
+                x = jnp.zeros_like(b); r = b; p = b; rs = jnp.sum(r * r)
+                for _ in range(K):
+                    Ap = grid.op(p)
+                    alpha = rs / jnp.sum(p * Ap)
+                    x = x + alpha * p; r = r - alpha * Ap
+                    rs_new = jnp.sum(r * r)
+                    p = r + (rs_new / rs) * p; rs = rs_new
+                return x
             def wres(z, f2d):
-                r = fd_res(z, f2d)
-                return jax.scipy.sparse.linalg.cg(grid.op, r, tol=0.0, maxiter=K)[0].reshape(-1)
+                return cg_unrolled(fd_res(z, f2d)).reshape(-1)
 
         def HgV(z, f2d):
             r = wres(z, f2d)
@@ -267,75 +289,132 @@ def make_full_objective(dec, grid, spec):
 
 # ------------------------------ objectives on COLLOCATION subsets ------------------------------
 
-def make_colloc_objective(dec, grid, spec, pts_kind, pts, wq, keep=None, M=None):
-    """Objective from residual values at m collocation points.
+def colloc_mode_table(grid, spec, pts_kind, centre_np):
+    """(PhiT (M',m), Wl (M',)) for a spectral collocation objective at the given
+    centre points.  on-grid -> discrete sine eigenpairs of A (exact full-grid
+    limit); off-grid -> TRUNCATED CONTINUUM modes 2 sin(i pi x) sin(j pi y),
+    i,j <= N-2 (same count as the discrete basis), lam = pi^2(i^2+j^2).  Both
+    keep COMPLETE eigenshells (all modes with lam <= the M-th smallest), so
+    M' >= M; the off-grid limit m->inf is a continuum strong-form objective,
+    NOT the discrete FD one (labelled as such in reports)."""
+    alpha, M = spec["alpha"], spec["M"]
+    if pts_kind == "grid":
+        mask = np.asarray(grid.mode_mask(M)).astype(bool)
+        I, Jm = np.nonzero(mask)
+        lam = np.asarray(grid.lam)[I, Jm]
+        S = np.asarray(grid.S)
+        px = np.rint(centre_np[:, 0] / grid.dx).astype(int) - 1
+        py = np.rint(centre_np[:, 1] / grid.dx).astype(int) - 1
+        PhiT = (S[px][:, I] * S[py][:, Jm]).T
+    else:
+        kk = np.arange(1, grid.N - 1)
+        II, JJ = np.meshgrid(kk, kk, indexing="ij")
+        lam_c = (np.pi ** 2) * (II ** 2 + JJ ** 2)
+        lam_flat = lam_c.reshape(-1)
+        M_eff = min(M if M is not None else lam_flat.size, lam_flat.size)
+        thr = np.sort(lam_flat)[M_eff - 1]
+        sel = lam_flat <= thr
+        I, Jm = II.reshape(-1)[sel], JJ.reshape(-1)[sel]
+        lam = lam_flat[sel]
+        xs, ys = centre_np[:, 0], centre_np[:, 1]
+        PhiT = 2.0 * np.sin(np.pi * np.outer(I, xs)) * np.sin(np.pi * np.outer(Jm, ys))
+    return jnp.asarray(PhiT), jnp.asarray(lam ** (-alpha))
 
-    pts_kind 'grid': pts = stencil point sets (5, m, 2) with keep mask (5, m);
-                     residual = FD stencil at the m nodes (exactly the FOM rows).
+
+def boundary_points(m_b, rng):
+    """m_b points uniformly on the perimeter of the unit square (for the
+    off-grid soft-BC penalty)."""
+    t = rng.uniform(0.0, 4.0, size=m_b)
+    x = np.where(t < 1, t, np.where(t < 2, 1.0, np.where(t < 3, 3.0 - t, 0.0)))
+    y = np.where(t < 1, 0.0, np.where(t < 2, t - 1.0, np.where(t < 3, 1.0, 4.0 - t)))
+    return np.stack([x, y], 1)
+
+
+def make_colloc_objective(dec, grid, spec, pts_kind, bc_beta=0.0):
+    """Objective from residual values at m collocation points; ONE jit per
+    (objective, pts_kind, m) — points/weights/mode tables are ARGUMENTS.
+
+    pts_kind 'grid': pts = stencil point sets (5, m, 2), keep (5, m) 0/1 mask;
+                     residual = FD stencil at the m nodes (exactly FOM rows;
+                     the ghost-zero stencil enforces the Dirichlet BC).
     pts_kind 'offgrid': pts = (m, 2) interior points; residual = strong-form
-                     -Laplace(dec)(x) - f(x) via autodiff (meshfree).
-    wq: (m,) quadrature weights approximating the integral / grid sum
-        (uniform: |Omega|/m for offgrid, n_i^2/m for grid nodes).
-    spec: 'fd'  -> ||sqrt(wq) * r_S||  (weighted LSPG on the subset; with
-                    uniform weights == plain subset residual up to a constant)
-          'spec_a{alpha}_M{M}' -> || Lambda_M^{-alpha} Phi_M^T_quad r ||, with
-                    Phi_M^T_quad r = sum_p wq_p phi_i(x_p) r_p over the M
-                    lowest continuous modes phi_ij(x,y) = 2 sin(i pi x) sin(j pi y)
-                    (continuous eigenvalues pi^2(i^2+j^2); on-grid we use the
-                    discrete sine eigenpairs so the full-grid limit is exact).
-    f_at: callable giving f at the centre points (m,) — passed at solve time.
-    """
+                     -Laplace(dec)(x) - f(x) via autodiff (meshfree).  Since
+                     point collocation alone cannot see harmonic components,
+                     a soft-BC penalty block sqrt(bc_beta * 4/m_b) * u(z, x_b)
+                     over m_b perimeter points (`keep` carries them, (m_b,2))
+                     is APPENDED unless bc_beta == 0 (hard-BC decoders).
+    wq: (m,) quadrature weights approximating the grid sum / integral.
+    spec 'fd'   : || sqrt(wq) * r_S ||   (weighted LSPG on the subset)
+    spec 'spec' : || Wl * (PhiT @ (wq * r_S)) ||  with (PhiT, Wl) from
+                  colloc_mode_table (pass zeros-shaped dummies for 'fd').
+    Returns (HgV, V) with signature (z, pts, keep, wq, PhiT, Wl, f_m)."""
     kind = spec["kind"]
     if pts_kind == "grid":
-        centre = pts[0]
-        def r_pts(z, f_m):
+        def r_pts(z, pts, keep, f_m):
             u = dec(z, pts.reshape(-1, 2)).reshape(5, -1) * keep
             lap = (u[1] + u[2] + u[3] + u[4] - 4.0 * u[0]) / (grid.dx ** 2)
             return -lap - f_m
     else:
-        centre = pts
         def lap_one(z, x):
-            h = jax.hessian(lambda xx: dec(z, xx[None, :])[0])(x)
-            return jnp.trace(h)
-        def r_pts(z, f_m):
-            lap = jax.vmap(lambda x: lap_one(z, x))(centre)
-            return -lap - f_m
+            return jnp.trace(jax.hessian(lambda xx: dec(z, xx[None, :])[0])(x))
+        def r_pts(z, pts, keep, f_m):
+            return -jax.vmap(lambda x: lap_one(z, x))(pts) - f_m
 
     if kind == "fd":
-        wres = lambda z, f_m: jnp.sqrt(wq) * r_pts(z, f_m)
+        core = lambda z, pts, keep, wq, PhiT, Wl, f_m: jnp.sqrt(wq) * r_pts(z, pts, keep, f_m)
     elif kind == "spec":
-        alpha, M = spec["alpha"], spec["M"]
-        # continuous mode table for the M lowest modes
-        n_i = grid.n_i
-        if pts_kind == "grid":
-            # discrete eigenpairs at the collocation nodes: phi_ij(p) = S[px,i] S[py,j]
-            mask = np.asarray(grid.mode_mask(M)).astype(bool)
-            I, Jm = np.nonzero(mask)
-            lam = np.asarray(grid.lam)[I, Jm]
-            S = np.asarray(grid.S)
-            px = np.rint(np.asarray(centre[:, 0]) / grid.dx).astype(int) - 1
-            py = np.rint(np.asarray(centre[:, 1]) / grid.dx).astype(int) - 1
-            PhiT = jnp.asarray(S[px][:, I] * S[py][:, Jm]).T          # (M, m)
-        else:
-            kk = np.arange(1, 64)
-            II, JJ = np.meshgrid(kk, kk, indexing="ij")
-            lam_c = (np.pi ** 2) * (II ** 2 + JJ ** 2)
-            order = np.argsort(lam_c.reshape(-1))[:M]
-            I, Jm = II.reshape(-1)[order], JJ.reshape(-1)[order]
-            lam = lam_c.reshape(-1)[order]
-            xs, ys = np.asarray(centre[:, 0]), np.asarray(centre[:, 1])
-            PhiT = jnp.asarray(2.0 * np.sin(np.pi * np.outer(I, xs)) * np.sin(np.pi * np.outer(Jm, ys)))
-        Wl = jnp.asarray(lam) ** (-alpha)
-        wres = lambda z, f_m: Wl * (PhiT @ (wq * r_pts(z, f_m)))
+        core = lambda z, pts, keep, wq, PhiT, Wl, f_m: Wl * (PhiT @ (wq * r_pts(z, pts, keep, f_m)))
     else:
         raise ValueError("collocation objectives: fd or spec only")
+    if pts_kind == "offgrid" and bc_beta > 0:
+        def wres(z, pts, keep, wq, PhiT, Wl, f_m):
+            ub = dec(z, keep) * jnp.sqrt(bc_beta * 4.0 / keep.shape[0])
+            return jnp.concatenate([core(z, pts, keep, wq, PhiT, Wl, f_m), ub])
+    else:
+        wres = core
 
-    def HgV(z, f_m):
-        r = wres(z, f_m)
-        J = jax.jacfwd(wres)(z, f_m)
+    def HgV(z, pts, keep, wq, PhiT, Wl, f_m):
+        r = wres(z, pts, keep, wq, PhiT, Wl, f_m)
+        J = jax.jacfwd(wres)(z, pts, keep, wq, PhiT, Wl, f_m)
         return J.T @ J, J.T @ r, jnp.linalg.norm(r)
-    V = lambda z, f_m: jnp.linalg.norm(wres(z, f_m))
-    return jax.jit(HgV), jax.jit(V), centre
+    V = lambda z, pts, keep, wq, PhiT, Wl, f_m: jnp.linalg.norm(wres(z, pts, keep, wq, PhiT, Wl, f_m))
+    return jax.jit(HgV), jax.jit(V)
+
+
+# ------------------------------ capped Lawson-Hanson NNLS (EQ weights) ------------------------------
+
+def nnls_capped(G, b, max_support, tol=1e-10, inner_max=200):
+    """Lawson-Hanson active-set NNLS  min_{w>=0} ||G w - b||  that STOPS when the
+    support reaches max_support (ECSW-style early termination) or at
+    optimality.  Returns (w, ||Gw-b||, n_outer)."""
+    n = G.shape[1]
+    w = np.zeros(n)
+    P = np.zeros(n, bool)
+    r = b - G @ w
+    outer = 0
+    while outer < 5 * max_support + 10:            # safety cap on outer iterations
+        grad = G.T @ r
+        cand = np.where(~P)[0]
+        if cand.size == 0 or P.sum() >= max_support:
+            break
+        j = cand[np.argmax(grad[cand])]
+        if grad[j] <= tol * (np.linalg.norm(b) + 1e-300):
+            break
+        P[j] = True
+        outer += 1
+        for _ in range(inner_max):
+            idx = np.where(P)[0]
+            s, *_ = np.linalg.lstsq(G[:, idx], b, rcond=None)
+            if np.all(s > 0):
+                w[:] = 0.0; w[idx] = s
+                break
+            neg = s <= 0
+            alpha = np.min(w[idx][neg] / (w[idx][neg] - s[neg] + 1e-300))
+            w[idx] = w[idx] + alpha * (s - w[idx])
+            P[idx[w[idx] <= 1e-14]] = False
+            w[~P] = 0.0
+        r = b - G @ w
+    return w, float(np.linalg.norm(r)), outer
 
 
 # ------------------------------ encoder E(f) -> z ------------------------------
@@ -366,7 +445,7 @@ def fit_encoder(key, F_lat_tr, Z_tr, steps=3000, hidden=256, layers=3, lr=1e-3):
         return h @ p["out"]["W"] + p["out"]["b"]
 
     loss = lambda p: jnp.mean((apply(p, X) - Y) ** 2)
-    opt = optax.adamw(optax.warmup_cosine_decay_schedule(0, lr, 100, steps, 1e-6), 1e-5)
+    opt = optax.adamw(optax.warmup_cosine_decay_schedule(0, lr, max(1, min(100, steps // 10)), steps, 1e-6), 1e-5)
     st = opt.init(params)
 
     @jax.jit

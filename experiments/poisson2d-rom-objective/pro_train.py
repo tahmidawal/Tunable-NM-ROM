@@ -2,8 +2,8 @@
 ms_autodecoder phase A: joint lazy-Adam latents, inverse-energy weights,
 warmup-cosine AdamW, f64) — optionally with a HARD-BC multiplier
 b(x,y) = 16 x(1-x) y(1-y) on the output — and write a multistage-format pkl
-consumable by pro_objective.py / pro_colloc.py (HARD_BC=1 must be passed to
-those when the pkl was trained with it; the pkl config records it).
+consumable by pro_objective.py / pro_colloc.py (the pkl config records
+hard_bc; consumers read it from there and reject a conflicting HARD_BC env).
 
 Reports the training fit and the held-out finite-budget inferred-latent error
 (LM on the data misfit, mean/nearest inits, GN_ITERS budget) so the new
@@ -74,7 +74,7 @@ def main():
                   val_lm_inferred_mean_rel_l2={k: float(v.mean()) for k, v in inf.items()} | {"best": float(best.mean())},
                   boundary_block_train_med=bnd, latent_rms=float(np.sqrt(np.mean(Z_tr ** 2))),
                   complete=True)
-    tag = f"K{K_LAT}_N{N}" + ("_hbc" if HARD_BC else "")
+    tag = f"K{K_LAT}_N{N}" + ("_hbc" if HARD_BC else "")  # cfg['hard_bc'] is authoritative for consumers
     with open(os.path.join(OUTDIR, f"autodec_{tag}_stages.pkl"), "wb") as f:
         pickle.dump({"config": cfg, "stages": pc.stages_to_np(stages), "z_tr": Z_tr}, f)
     json.dump(report, open(os.path.join(OUTDIR, f"autodec_{tag}_report.json"), "w"), indent=1)

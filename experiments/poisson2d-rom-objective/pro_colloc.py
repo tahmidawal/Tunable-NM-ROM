@@ -12,7 +12,7 @@ latents, +/- small latent perturbations) are reproduced by the subset.
 Off-grid: wq = 1/m (unit area), continuous sine test modes.
 
 Usage:
-  PKL=<pkl> [NS=1] [N_TEST=16] [GN_ITERS=60] [OBJECTIVES=fd,spec_a1_M256]
+  PKL=<pkl> [NS=1] [N_TEST=16] [GN_ITERS=60] [OBJECTIVES=fd,spec_a1_M256] [BC_BETA=auto]
   [MS=128,256,512,1024] [SCHEMES=uniform,biased,nnls,offgrid] [INITS=nearest,mean]
   [EQ_SNAPS=64] [EQ_PERTURB=3] python pro_colloc.py <out.json>
 """
@@ -28,7 +28,6 @@ import jax
 
 jax.config.update("jax_enable_x64", True)
 import jax.numpy as jnp
-from scipy.optimize import nnls
 
 import pro_common as pc
 from pro_common import mp
@@ -38,7 +37,7 @@ OUT = sys.argv[1]
 NS = int(os.environ.get("NS", "1"))
 N_TEST = int(os.environ.get("N_TEST", "16"))
 GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
-HARD_BC = int(os.environ.get("HARD_BC", "0"))
+BC_BETA = os.environ.get("BC_BETA", "auto")   # off-grid soft-BC penalty; auto = 1/dx^2 (0 for hard-BC pkls)
 OBJECTIVES = os.environ.get("OBJECTIVES", "fd,spec_a1_M256").split(",")
 MS = [int(v) for v in os.environ.get("MS", "128,256,512,1024").split(",")]
 SCHEMES = os.environ.get("SCHEMES", "uniform,biased,nnls,offgrid").split(",")
@@ -46,20 +45,23 @@ INITS = os.environ.get("INITS", "nearest,mean").split(",")
 EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
 EQ_PERTURB = int(os.environ.get("EQ_PERTURB", "3"))
 EQ_MODES = int(os.environ.get("EQ_MODES", "64"))
+EQ_ROWS = int(os.environ.get("EQ_ROWS", "4096"))
 
 
 def main():
     print(f"jax_backend={jax.default_backend()} x64={jax.config.jax_enable_x64}", flush=True)
-    d, cfg, stages_all, Z_tr = pc.load_pkl(PKL)
+    d, cfg, stages_all, Z_tr, HARD_BC = pc.load_pkl(PKL)
     K = cfg["K_LAT"]; N = mp.N; N_TRAIN = mp.N_TRAIN
+    assert 1 <= NS <= len(stages_all) and 1 <= N_TEST <= mp.N_VAL
     stages = stages_all[:NS]
     dec = pc.make_decoder(stages, hard_bc=bool(HARD_BC))
     grid = pc.Grid(N)
     n_i2 = grid.n_i ** 2
+    bc_beta = 0.0 if HARD_BC else (1.0 / grid.dx ** 2 if BC_BETA == "auto" else float(BC_BETA))
     manifest = dict(pkl=os.path.basename(PKL), pkl_config=cfg, ns=NS, n_test=N_TEST,
                     gn_iters=GN_ITERS, hard_bc=HARD_BC, objectives=OBJECTIVES, ms=MS,
                     schemes=SCHEMES, inits=INITS, eq_snaps=EQ_SNAPS, eq_perturb=EQ_PERTURB,
-                    eq_modes=EQ_MODES, backend=jax.default_backend())
+                    eq_modes=EQ_MODES, eq_rows=EQ_ROWS, bc_beta=bc_beta, backend=jax.default_backend())
     print("MANIFEST " + json.dumps(manifest), flush=True)
 
     U, z_true_all, coords, fom_res = mp.build_snapshots(N)
@@ -118,35 +120,49 @@ def main():
         # normalize rows
         sc = np.linalg.norm(G, axis=1) + 1e-300
         G, b = G / sc[:, None], b / sc
-        # NNLS via Lawson-Hanson on a random row subset sized to give support ~m,
-        # then pad/truncate to exactly m by weight magnitude (rebuttal protocol).
-        rows = rng.choice(G.shape[0], size=min(G.shape[0], max(m, 8)), replace=False)
-        wts, rnorm = nnls(G[rows], b[rows], maxiter=50 * n_i2)
+        # capped Lawson-Hanson NNLS on (up to) EQ_ROWS rows: support grows one
+        # node per outer iteration and stops at m (ECSW-style early stop);
+        # if it stops earlier (optimal), pad with the top-|residual| nodes.
+        rows = rng.choice(G.shape[0], size=min(G.shape[0], EQ_ROWS), replace=False)
+        wts, rnorm, n_outer = pc.nnls_capped(G[rows], b[rows], max_support=m)
         supp = np.nonzero(wts > 0)[0]
         if len(supp) >= m:
             keep = supp[np.argsort(-wts[supp])[:m]]
+            padded = 0
         else:
             rest = np.setdiff1d(np.arange(n_i2), supp)
-            # pad with nodes of largest mean |residual| (top-ranked remaining)
             score = np.abs(R).mean(0)
             pad = rest[np.argsort(-score[rest])[:m - len(supp)]]
-            keep = np.concatenate([supp, pad])
-            wts = wts.copy(); wts[pad] = n_i2 / m * 0.5   # padded nodes get a nominal weight
-        wq = wts[keep]
-        # rescale so total weight equals the grid count (exact for constants)
-        wq = wq * (n_i2 / max(wq.sum(), 1e-300))
-        eq_cache[m] = (keep, wq, dict(support=int(len(supp)), rnorm=float(rnorm),
-                                      secs=time.time() - t0, n_rows=int(len(rows))))
-        print(f"  NNLS-EQ m={m}: support {len(supp)} rows {len(rows)} rnorm {rnorm:.2e} [{time.time()-t0:.0f}s]", flush=True)
+            keep = np.concatenate([supp, pad]); padded = len(pad)
+            wts = wts.copy(); wts[pad] = np.median(wts[supp]) if len(supp) else 1.0
+        # refit nonnegative weights on the FINAL support (all rows), report its residual
+        Gk = G[:, keep]
+        wq, rnorm_final, _ = pc.nnls_capped(Gk, b, max_support=len(keep))
+        if np.any(wq <= 0):        # nodes NNLS zeroed out keep a tiny nominal weight (still m nodes)
+            wq = np.where(wq > 0, wq, 1e-8 * max(wq.max(), 1e-300))
+        rnorm_final = float(np.linalg.norm(Gk @ wq - b))
+        rnorm_full = float(np.linalg.norm(G @ np.ones(n_i2) - b))   # == 0 by construction (sanity)
+        eq_cache[m] = (keep, wq, dict(support=int(len(supp)), padded=int(padded), rnorm_capped=float(rnorm),
+                                      rnorm_final=rnorm_final, rnorm_fullgrid=rnorm_full, b_norm=float(np.linalg.norm(b)),
+                                      n_outer=int(n_outer), secs=time.time() - t0, n_rows=int(len(rows))))
+        print(f"  NNLS-EQ m={m}: support {len(supp)} (+{padded} padded) rows {len(rows)} rnorm capped {rnorm:.2e} "
+              f"final(all rows) {rnorm_final:.2e} / ||b|| {np.linalg.norm(b):.2e} [{time.time()-t0:.0f}s]", flush=True)
         return eq_cache[m]
 
-    def biased_nodes(m, i):
-        """Importance sampling ∝ 0.5*uniform + 0.5*Gaussian(width 3w) around the source
-        of test case i (the ROM knows f).  Weights 1/(m q_p) with q normalized on the grid."""
+    def biased_nodes(m, i, r):
+        """Importance sampling WITH replacement, proposal q = 0.5*uniform + 0.5*Gaussian
+        (width 3w) around the source of test case i (the ROM knows f); unbiased
+        weights 1/(m q_p) (with-replacement PPS)."""
         g = np.exp(-((Xi[:, 0] - cx[i]) ** 2 + (Xi[:, 1] - cy[i]) ** 2) / (2 * (3 * w[i]) ** 2))
         q = 0.5 / n_i2 + 0.5 * g / g.sum()
-        sel = rng.choice(n_i2, size=m, replace=False, p=q)
+        sel = r.choice(n_i2, size=m, replace=True, p=q)
         return sel, 1.0 / (m * q[sel])
+
+    SCHEME_ID = {"uniform": 1, "biased": 2, "nnls": 3, "offgrid": 4, "full": 0}
+    def case_rng(scheme, m, i):
+        """Paired sampling: the SAME node set for a given (scheme, m, test case)
+        across every objective and init."""
+        return np.random.default_rng(mp.SEED + 7919 * SCHEME_ID[scheme] + 104729 * (m or 0) + i)
 
     report = dict(manifest=manifest, fom_max_rel_residual=fom_res,
                   oracle={k: float(v.mean()) for k, v in oracle.items()}, rows=[], complete=False)
@@ -157,34 +173,39 @@ def main():
         spec = pc.parse_objective(oname)
         for scheme in SCHEMES:
             for m in ([None] if scheme == "full" else MS):
+                pts_kind = "offgrid" if scheme == "offgrid" else "grid"
+                HgV, V = pc.make_colloc_objective(dec, grid, spec, pts_kind, bc_beta=bc_beta)
                 for iname, Z0 in inits.items():
                     per = {k: [] for k in ("err", "err_or", "obj", "acc", "rej", "att", "reason", "bnd")}
                     t0 = time.time()
                     for i in range(N_TEST):
                         gi = N_TRAIN + i
-                        if scheme in ("uniform", "biased", "nnls", "full"):
+                        r_i = case_rng(scheme, m, i)
+                        if pts_kind == "grid":
                             if scheme == "uniform":
-                                sel = rng.choice(n_i2, size=m, replace=False); wq = np.full(m, n_i2 / m)
+                                sel = r_i.choice(n_i2, size=m, replace=False); wq = np.full(m, n_i2 / m)
                             elif scheme == "biased":
-                                sel, wq = biased_nodes(m, gi)
+                                sel, wq = biased_nodes(m, gi, r_i)
                             elif scheme == "nnls":
                                 sel, wq, _ = eq_weights(m)
                             else:
                                 sel = np.arange(n_i2); wq = np.ones(n_i2)
                             ix, iy = grid.ix_full[sel], grid.iy_full[sel]
                             pts, keep = grid.stencil(ix, iy)
-                            HgV, V, centre = pc.make_colloc_objective(dec, grid, spec, "grid", pts,
-                                                                       jnp.asarray(wq), keep=keep)
-                            f_m = jnp.asarray(pc.source_at(cx[gi], cy[gi], w[gi], a[gi],
-                                                           ix * grid.dx, iy * grid.dx))
-                        else:                                   # offgrid
-                            P = jnp.asarray(rng.uniform(0.0, 1.0, size=(m, 2)))
+                            centre_np = np.stack([ix * grid.dx, iy * grid.dx], 1)
+                            f_m = pc.source_at(cx[gi], cy[gi], w[gi], a[gi], centre_np[:, 0], centre_np[:, 1])
+                        else:
+                            centre_np = r_i.uniform(0.0, 1.0, size=(m, 2))
+                            pts = jnp.asarray(centre_np)
+                            keep = jnp.asarray(pc.boundary_points(max(16, 4 * int(np.sqrt(m))), r_i))
                             wq = np.full(m, 1.0 / m)
-                            HgV, V, centre = pc.make_colloc_objective(dec, grid, spec, "offgrid", P,
-                                                                       jnp.asarray(wq))
-                            f_m = jnp.asarray(pc.source_at(cx[gi], cy[gi], w[gi], a[gi],
-                                                           np.asarray(P[:, 0]), np.asarray(P[:, 1])))
-                        z, val, info = pc.lm_generic(lambda zz: HgV(zz, f_m), lambda zz: V(zz, f_m),
+                            f_m = pc.source_at(cx[gi], cy[gi], w[gi], a[gi], centre_np[:, 0], centre_np[:, 1])
+                        if spec["kind"] == "spec":
+                            PhiT, Wl = pc.colloc_mode_table(grid, spec, pts_kind, centre_np)
+                        else:
+                            PhiT, Wl = jnp.zeros((1, 1)), jnp.zeros((1,))
+                        args = (pts, keep, jnp.asarray(wq), PhiT, Wl, jnp.asarray(f_m))
+                        z, val, info = pc.lm_generic(lambda zz: HgV(zz, *args), lambda zz: V(zz, *args),
                                                      jnp.asarray(Z0[i]), GN_ITERS)
                         per["err"].append(float(np.linalg.norm(np.asarray(dec_full(z)) - U_test[i]) / tn[i]))
                         per["err_or"].append(float(oracle[iname][i]))
@@ -193,7 +214,9 @@ def main():
                         per["att"].append(info["attempts"]); per["reason"].append(info["reason"])
                         per["bnd"].append(float(jnp.linalg.norm(dec(z, grid.bpts))))
                     e = np.asarray(per["err"])
+                    n_modes = int(PhiT.shape[0]) if spec["kind"] == "spec" else None
                     row = dict(objective=oname, scheme=scheme, m=m if m else n_i2, init=iname, ns=NS,
+                               n_modes_retained=n_modes, bc_beta=(bc_beta if pts_kind == "offgrid" else None),
                                budget=GN_ITERS, rom_rel_l2_mean=float(e.mean()),
                                rom_rel_l2_med=float(np.median(e)), rom_rel_l2_max=float(e.max()),
                                oracle_rel_l2_mean=float(np.mean(per["err_or"])),

@@ -8,9 +8,15 @@ the data misfit — the finite-budget inferred-latent floor).  Per arm we log
 the objective value AND the plain FD residual norm at both z_LM and z_oracle:
     obj(z_LM) <  obj(z_or) with err(z_LM) >> err(z_or)  => OBJECTIVE floor
     obj(z_LM) >  obj(z_or)                              => SOLVER floor (local min / budget)
+Note: 'spec_a1_Mall' is the INTERIOR data misfit ||u_int(z) - u*_int|| (the
+oracle/reported error also include the decoder's boundary values, whose norm is
+recorded as boundary_block — ~1e-4 here, negligible; hard-BC decoders make the
+two identical).  The 'nearest' init uses the source parameters (cx,cy,w,a) of
+the test source — legitimate online input for this family (the source f IS the
+input); the 'encoder' init is the opaque-f alternative.
 
 Usage:
-  PKL=<stages.pkl> [NS=1] [N_TEST=16] [GN_ITERS=60] [HARD_BC=0]
+  PKL=<stages.pkl> [NS=1] [N_TEST=16] [GN_ITERS=60]   (hard-BC flag comes from the pkl)
   [OBJECTIVES=fd,spec_a0_M64,...] [INITS=mean,nearest,encoder] [ENC_STEPS=3000]
   python pro_objective.py <out.json>
 Env N/N_TRAIN/N_VAL/HIDDEN/N_LAYERS/SEED must match the pkl (asserted).
@@ -36,7 +42,6 @@ OUT = sys.argv[1]
 NS = int(os.environ.get("NS", "1"))
 N_TEST = int(os.environ.get("N_TEST", "16"))
 GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
-HARD_BC = int(os.environ.get("HARD_BC", "0"))
 ENC_STEPS = int(os.environ.get("ENC_STEPS", "3000"))
 DEFAULT_OBJ = ("fd,"
                "spec_a0_M64,spec_a0_M256,spec_a0_M1024,"
@@ -49,8 +54,10 @@ INITS = os.environ.get("INITS", "mean,nearest,encoder").split(",")
 
 def main():
     print(f"jax_backend={jax.default_backend()} x64={jax.config.jax_enable_x64}", flush=True)
-    d, cfg, stages_all, Z_tr = pc.load_pkl(PKL)
+    d, cfg, stages_all, Z_tr, HARD_BC = pc.load_pkl(PKL)
     K = cfg["K_LAT"]; N = mp.N; N_TRAIN = mp.N_TRAIN
+    assert 1 <= NS <= len(stages_all), f"NS={NS} but pkl has {len(stages_all)} stages"
+    assert 1 <= N_TEST <= mp.N_VAL
     stages = stages_all[:NS]
     dec = pc.make_decoder(stages, hard_bc=bool(HARD_BC))
     grid = pc.Grid(N)
@@ -135,7 +142,8 @@ def main():
             for i in range(N_TEST):
                 f2d = F2d[i]
                 z, val, info = pc.lm_generic(lambda zz: HgV(zz, f2d), lambda zz: V(zz, f2d),
-                                             jnp.asarray(Z0[i]), GN_ITERS)
+                                             jnp.asarray(Z0[i]), GN_ITERS,
+                                             use_rel_dec=(spec["kind"] != "ritz"))
                 zo = jnp.asarray(oracle[iname]["Z"][i])
                 fd_lm, obj_lm = diag(z, f2d); fd_or, obj_or = diag(zo, f2d)
                 per["err"].append(float(np.linalg.norm(np.asarray(dec_full(z)) - U_test[i]) / tn[i]))
@@ -153,7 +161,8 @@ def main():
                 per["z_or_dist"].append(float(np.linalg.norm(zn - np.asarray(zo))))
             e = np.asarray(per["err"])
             obj_better = int(np.sum(np.asarray(per["obj_lm"]) <= np.asarray(per["obj_or"])))
-            row = dict(objective=oname, init=iname, ns=NS, budget=GN_ITERS,
+            n_modes = grid.n_modes(spec.get("M")) if spec["kind"] == "spec" else None
+            row = dict(objective=oname, init=iname, ns=NS, budget=GN_ITERS, n_modes_retained=n_modes,
                        rom_rel_l2_mean=float(e.mean()), rom_rel_l2_med=float(np.median(e)),
                        rom_rel_l2_max=float(e.max()),
                        oracle_rel_l2_mean=float(np.mean(per["err_or"])),

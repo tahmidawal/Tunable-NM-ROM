@@ -68,3 +68,14 @@ mk hbc_K8 10:00:00 "K_LAT=8 HARD_BC=1 \$PY pro_train.py ../out && PKL=../out/aut
 for NN in 32 64 128; do
   mk nlad_N$NN 08:00:00 "N=$NN K_LAT=8 HARD_BC=0 \$PY pro_train.py ../out && N=$NN PKL=../out/autodec_K8_N${NN}_stages.pkl NS=1 GN_ITERS=60 OBJECTIVES=$COMPACT \$PY pro_objective.py ../out/obj_nlad_N$NN.json"
 done
+
+# ---- round 2 (after the strong-form collocation results): WEAK-FORM hyper-reduction ----
+# weak_a{alpha}_M{M}: Phi^T A u = Lambda Phi^T u -> quadrature of the SMOOTH decoder output only;
+# NNLS-EQ fitted on decoder-output snapshots (on-grid nodes: nnls; meshfree candidate pool: nnlsoff).
+WEAK="weak_a1_M64,weak_a1_M256,weak_a0.5_M64,weak_a0.5_M256"
+mk colloc_weak_K8 12:00:00 "PKL=$K8 NS=1 GN_ITERS=60 OBJECTIVES=$WEAK MS=64,128,256,512 SCHEMES=nnls,nnlsoff,uniform,biased,offgrid INITS=nearest,mean EQ_SNAPS=64 EQ_PERTURB=3 EQ_ROWS=3072 \$PY pro_colloc.py ../out/colloc_weak_K8.json"
+mk colloc_weak_hbc 12:00:00 "K_LAT=8 HARD_BC=1 \$PY pro_train.py ../out && PKL=../out/autodec_K8_N64_hbc_stages.pkl NS=1 GN_ITERS=60 OBJECTIVES=$WEAK MS=64,128,256,512 SCHEMES=nnls,nnlsoff,uniform,offgrid INITS=nearest,mean EQ_SNAPS=64 EQ_PERTURB=3 EQ_ROWS=3072 \$PY pro_colloc.py ../out/colloc_weak_hbc.json"
+# weak-form N ladder at fixed (k=8, m=256 nnlsoff, M=64/256): retrain per N then colloc
+for NN in 32 128; do
+  mk colloc_weak_N$NN 12:00:00 "N=$NN K_LAT=8 HARD_BC=0 \$PY pro_train.py ../out && N=$NN PKL=../out/autodec_K8_N${NN}_stages.pkl NS=1 GN_ITERS=60 OBJECTIVES=weak_a1_M64,weak_a1_M256 MS=128,256,512 SCHEMES=nnls,nnlsoff INITS=nearest,mean EQ_SNAPS=64 EQ_PERTURB=3 EQ_ROWS=3072 \$PY pro_colloc.py ../out/colloc_weak_N$NN.json"
+done

@@ -216,6 +216,9 @@ def parse_objective(name):
     if name.startswith("spec_a"):
         a_s, m_s = name[len("spec_a"):].split("_M")
         return dict(kind="spec", alpha=float(a_s), M=None if m_s == "all" else int(m_s))
+    if name.startswith("weak_a"):
+        a_s, m_s = name[len("weak_a"):].split("_M")
+        return dict(kind="weak", alpha=float(a_s), M=None if m_s == "all" else int(m_s))
     if name.startswith("cg"):
         return dict(kind="cg", K=int(name[2:]))
     if name.startswith("lowpass"):
@@ -318,7 +321,37 @@ def colloc_mode_table(grid, spec, pts_kind, centre_np):
         lam = lam_flat[sel]
         xs, ys = centre_np[:, 0], centre_np[:, 1]
         PhiT = 2.0 * np.sin(np.pi * np.outer(I, xs)) * np.sin(np.pi * np.outer(Jm, ys))
+    if spec["kind"] == "weak":
+        # weak form: Phi^T A u = Lambda Phi^T u  ->  weight Lambda^{1-alpha} on the
+        # quadrature of the SMOOTH decoder output; the source side Lambda^{-alpha} Phi^T f
+        # is precomputed once per query (see weak_source_term).
+        return jnp.asarray(PhiT), jnp.asarray(lam ** (1.0 - alpha))
     return jnp.asarray(PhiT), jnp.asarray(lam ** (-alpha))
+
+
+def weak_source_term(grid, spec, pts_kind, f_int2d):
+    """Lambda^{-alpha} Phi^T f for the M lowest modes (same shell policy as
+    colloc_mode_table).  on-grid: exact discrete projection of the interior
+    source; off-grid: continuum modes integrated with the grid's dx^2 rule."""
+    alpha, M = spec["alpha"], spec["M"]
+    if pts_kind == "grid":
+        mask = np.asarray(grid.mode_mask(M)).astype(bool)
+        C = np.asarray(grid.spec(jnp.asarray(f_int2d)))
+        I, Jm = np.nonzero(mask)
+        lam = np.asarray(grid.lam)[I, Jm]
+        return jnp.asarray(C[I, Jm] * lam ** (-alpha))
+    kk = np.arange(1, grid.N - 1)
+    II, JJ = np.meshgrid(kk, kk, indexing="ij")
+    lam_c = (np.pi ** 2) * (II ** 2 + JJ ** 2)
+    lam_flat = lam_c.reshape(-1)
+    M_eff = min(M if M is not None else lam_flat.size, lam_flat.size)
+    thr = np.sort(lam_flat)[M_eff - 1]
+    sel = lam_flat <= thr
+    I, Jm = II.reshape(-1)[sel], JJ.reshape(-1)[sel]
+    lam = lam_flat[sel]
+    X = np.asarray(grid.coords_int)
+    Phi = 2.0 * np.sin(np.pi * np.outer(I, X[:, 0])) * np.sin(np.pi * np.outer(Jm, X[:, 1]))  # (M, n_i^2)
+    return jnp.asarray((Phi @ np.asarray(f_int2d).reshape(-1)) * grid.dx ** 2 * lam ** (-alpha))
 
 
 def boundary_points(m_b, rng):
@@ -364,9 +397,13 @@ def make_colloc_objective(dec, grid, spec, pts_kind, bc_beta=0.0):
         core = lambda z, pts, keep, wq, PhiT, Wl, f_m: jnp.sqrt(wq) * r_pts(z, pts, keep, f_m)
     elif kind == "spec":
         core = lambda z, pts, keep, wq, PhiT, Wl, f_m: Wl * (PhiT @ (wq * r_pts(z, pts, keep, f_m)))
+    elif kind == "weak":
+        # WEAK FORM: || Lambda^{1-a} Phi^T_quad u(z) - Lambda^{-a} Phi^T f ||; pts = (m,2)
+        # centre points only (no stencil, no decoder derivatives); f_m = weak_source_term.
+        core = lambda z, pts, keep, wq, PhiT, Wl, f_m: Wl * (PhiT @ (wq * dec(z, pts))) - f_m
     else:
-        raise ValueError("collocation objectives: fd or spec only")
-    if pts_kind == "offgrid" and bc_beta > 0:
+        raise ValueError("collocation objectives: fd, spec or weak")
+    if pts_kind == "offgrid" and bc_beta > 0 and kind != "weak":
         def wres(z, pts, keep, wq, PhiT, Wl, f_m):
             ub = dec(z, keep) * jnp.sqrt(bc_beta * 4.0 / keep.shape[0])
             return jnp.concatenate([core(z, pts, keep, wq, PhiT, Wl, f_m), ub])

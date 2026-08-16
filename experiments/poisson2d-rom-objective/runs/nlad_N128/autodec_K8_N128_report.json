@@ -1,0 +1,38 @@
+{
+ "config": {
+  "N": 128,
+  "n_train": 512,
+  "n_val": 64,
+  "n_stages": 1,
+  "steps": 20000,
+  "batch": 32,
+  "p_sub": 1024,
+  "hidden": 128,
+  "n_layers": 4,
+  "peak_lr": 0.002,
+  "const_lr": 0,
+  "lbfgs_steps": 0,
+  "z_ff": 0,
+  "freq_margin": 4,
+  "seed": 0,
+  "K_LAT": 8,
+  "lat_lr": 0.005,
+  "lat_reg": 0.0001,
+  "hard_bc": 0,
+  "gn_iters": 60
+ },
+ "fom_max_rel_residual": 2.4561379775638876e-12,
+ "eps0": 0.002377588578664504,
+ "n_freq": 6,
+ "adam_final_batch_loss": 5.390429966576136e-06,
+ "train_global_rel": 0.009310130914892502,
+ "train_mean_rel_l2": 0.00879205733962149,
+ "val_lm_inferred_mean_rel_l2": {
+  "mean": 0.010899765413269709,
+  "nearest": 0.008017288601690514,
+  "best": 0.008012419014811433
+ },
+ "boundary_block_train_med": 0.00013197476217160427,
+ "latent_rms": 0.17208835893429913,
+ "complete": true
+}

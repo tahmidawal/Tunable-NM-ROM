@@ -14,3 +14,7 @@ stage 1: eps=3.009e-06  f_d~9.0 cyc/unit  n_freq=22 (half-cycle idx)
   [s1] step   5000  loss 2.017e-04  [189s]
   [s1] step  10000  loss 1.139e-04  [368s]
   [s1] step  15000  loss 2.019e-05  [547s]
+  [s1] Adam 20000 steps in 732s (final batch loss 1.334e-05)
+  [s1] L-BFGS 300 its: full loss 1.312e-05 -> 1.033e-05 [87s]
+  after stage 1: TRAIN global 1.653e-05 / mean-rel 1.617e-05   VAL global 6.275e-01 / mean-rel 5.141e-01   val by amp quartile ['4.24e-01', '4.06e-01', '6.62e-01', '5.65e-01']
+RESULT s0: train=8.87e-04/9.97e-04 val=6.28e-01/5.14e-01  s1: train=1.65e-05/1.62e-05 val=6.27e-01/5.14e-01

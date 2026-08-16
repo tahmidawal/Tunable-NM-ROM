@@ -20,7 +20,7 @@ multistage phase C (`ms_autodecoder.lm_solve`; `pro_common.lm_generic` is the sa
 generalised to `(H, g, value)`). Field error = mean rel-L2 at all grid nodes vs the FD
 solution. Cluster: Tufts `gpu` partition, A100 (pax106/pax142), `jax_backend=gpu` in every
 log, `JAX_DEFAULT_MATMUL_PRECISION=highest`, one isolated job dir per cell, dirs deleted after
-checksummed pull. Code commit `70829fa` (round 1), `b8c…` (round 2, weak form).
+checksummed pull. Code commit `70829fa` (round 1), `80f3bc3` (round 2, weak form).
 
 ## Objectives (all on the full interior grid unless stated)
 
@@ -158,7 +158,36 @@ meshfree NNLS m=128 → 1.34e-2; uniform / biased / off-grid random m=512 → 2.
 2.8e-1 (a localized bump family is hopeless for Monte-Carlo quadrature); strong-form NNLS
 m=128 → 4.3e-1.
 
-*(Cluster tables to be inserted when jobs 2467196–2467200 land — see `runs/colloc_weak_*`.)*
+Cluster results, K=8 soft-BC decoder (`runs/colloc_weak_K8`, job 2467196; 16 sources, 60
+attempts, oracle 7.78e-3 nearest / 2.58e-2 mean), ROM mean rel-L2, nearest init (mean init
+in parentheses where it differs):
+
+| objective | scheme | m=64 | 128 | 256 | 512 | full grid |
+|---|---|---|---|---|---|---|
+| `weak_a1_M64` | NNLS-EQ, grid nodes | 5.5e-2 | 1.35e-2 | **8.9e-3** | **8.5e-3** | 8.5e-3 |
+| `weak_a1_M64` | NNLS-EQ, **meshfree** pool | 5.6e-2 | 1.9e-2 | **9.4e-3** | **8.6e-3** | |
+| `weak_a1_M64` | uniform / biased / off-grid random | 4.5e-1 | 4.1e-1 | 3.1e-1 | 2.9e-1 / 1.5e-1 / 2.8e-1 | |
+| `weak_a1_M256` | NNLS-EQ, grid nodes | 1.5e-1 | 4.7e-2 | 1.6e-2 | **7.9e-3** (2.6e-2) | 7.8e-3 |
+| `weak_a1_M256` | NNLS-EQ, meshfree | 1.7e-1 | 5.7e-2 | 1.4e-2 | **8.1e-3** | |
+| `weak_a0.5_M64` (energy) | NNLS-EQ, grid | 9.4e-2 | 1.9e-2 | 9.4e-3 | 8.8e-3 | 8.8e-3 |
+| `weak_a0.5_M64` | NNLS-EQ, meshfree | 1.0e-1 | 3.2e-2 | 1.0e-2 | 9.0e-3 | |
+| `weak_a0.5_M256` | NNLS-EQ, grid / meshfree | 7.8e-1 | 4.8e-1 | 9.6e-2 / 8.7e-2 | 9.8e-3 / 1.1e-2 | 9.6e-3 |
+| any `weak` | uniform / biased / off-grid random | ≥0.45 | ≥0.32 | ≥0.26 | ≥0.15 | |
+
+- **EQ on the weak form recovers the full-grid number with m ≈ 4M points**: 64 modes ×
+  256 nodes → 8.9e-3 (grid) / 9.4e-3 (meshfree) vs 8.5e-3 full / 7.8e-3 oracle; the same holds
+  from the mean init (init-free), and the meshfree candidate pool is as good as grid nodes —
+  the ROM never touches the mesh online. Fit quality tracks the result: NNLS residual falls
+  from 13% (m=64) to 0.03% (m=512) of the target for M=64.
+- **Random quadrature of any kind fails** (0.15–0.99) — a family of localized bumps cannot be
+  integrated by Monte-Carlo with hundreds of points; importance sampling helps only 2x. EQ is
+  not optional.
+- Hard-BC decoder (`runs/colloc_weak_hbc`, job 2467197; oracle 7.1e-3): M=64 m=256 → 8.0e-3
+  (grid) / 8.5e-3 (meshfree), m=512 → 7.7e-3 / 8.3e-3; M=256 m=512 → 7.5e-3 / 7.7e-3.
+- **N ladder at fixed (k=8, M=64, m=512, meshfree EQ)** (`runs/colloc_weak_N{32,128}` jobs
+  2467199/2467200 + the K8 cell): ROM 1.15e-2 / 8.6e-3 / 1.05e-2 for N=32/64/128 against
+  oracles 9.0e-3 / 7.8e-3 / 8.5e-3 — flat, and by construction the online cost is N-free
+  (m point evaluations of the decoder + an M×m matvec + a k×k solve per iteration).
 
 ## Verdict
 

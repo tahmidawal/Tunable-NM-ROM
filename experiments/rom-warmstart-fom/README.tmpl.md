@@ -176,9 +176,12 @@ wsf_util.py       timing protocol, provenance stamp, the counting CG + its refer
 wsf_poisson.py    the Poisson arm
 wsf_burgers.py    the Burgers arm (counting BiCGStab + the 3-arm implicit chain)
 wsf_summarize.py  runs/hybrid_points.json (the flat output schema) + SUMMARY_TABLES.md
+wsf_facts.py      every number the README quotes, derived from the JSONs
+wsf_render_readme.py  README.md = README.tmpl.md + those facts (unknown placeholder = error)
 wsf_figs.py       the figures (reports-pipeline style, PNG + PDF)
 wsf_style.py      a copy of the frozen reports figure style
-cluster/          make_cell.sh / launch.sh / pull.sh  (namespace wsfom/, one job per dir)
+cluster/          make_cell.sh / cells.sh / launch.sh / pull.sh (namespace wsfom/,
+                  one job per dir) and CANCELLING.md (explicit job IDs only)
 in/               the two checkpoints (git-ignored; sha256 recorded below)
 runs/             pulled cluster output, logs, and the generated hybrid_points.json
 ```
@@ -353,6 +356,19 @@ buy, not about this ROM.
 - **`N = 1024` was not run.** The measured crossover at `N = {{p_crossover}}` is the answer
   to the question as posed (`N` up to 512); an extrapolated break-even is given in
   `SUMMARY_TABLES.md` P4b and is an extrapolation, not a measurement.
+
+## Figures
+
+| file | what it shows |
+|---|---|
+| `wsfom_poisson_total_vs_tau` | **the headline**: total hybrid time vs the ROM's own stopping tolerance, one line per `N`, with the flat pure-FOM baseline dashed in the same colour, one panel per `tau_FOM` |
+| `wsfom_poisson_crossover` | where the hybrid starts to win: cost vs mesh for the pure FOM, the best hybrid, the ROM stage alone and the exact direct solve; plus the speedup vs `N` against the break-even line |
+| `wsfom_poisson_iters` | CG iterations saved vs the ROM tolerance, and the same saving plotted against the ROM's A-norm error ratio — the mechanism |
+| `wsfom_burgers_per_step` | Newton and inner BiCGStab iterations **per time step** for all three arms, beside the ROM's own per-step error |
+| `wsfom_burgers_cost_vs_N` | Burgers cost vs mesh for all three arms, and total Newton iterations per trajectory |
+
+PNG + PDF in `figs/`, copied to `/home/tahmid/Dev/pod-ae-nmrom/Plots/`. All cross-`N`
+wall-clock series are drawn only from the consolidated runs.
 
 <!-- RESULTS -->
 

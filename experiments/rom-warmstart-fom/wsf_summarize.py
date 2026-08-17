@@ -316,6 +316,36 @@ def main():
                       "iter saving", "ROM A-norm err ratio", "ROM rel resid"],
                      {"iters_from_baseline": ".1f", "iters_from_rom": ".1f",
                       "iter_saving_frac": ".4f"}), ""]
+        md += ["### P3b. The classical alternatives, at the tightest tolerance "
+               f"(tau_FOM = {min(fts):g})", "",
+               "> The FD Poisson system on a square with Dirichlet walls is diagonalised "
+               "EXACTLY by the same discrete sine basis the ROM uses for its test modes, so "
+               "an exact direct solve is available and is timed here. This is the strongest "
+               "form of the reviewers' \"a direct solver beats you\" objection and it is "
+               "reported, not avoided.", ""]
+        rows = [r for r in P if r["fom_tau"] == min(fts)]
+        seen_n = set(); drows = []
+        for r in sorted(rows, key=lambda r: r["N"]):
+            if r["N"] in seen_n:
+                continue
+            seen_n.add(r["N"])
+            drows.append(dict(N=r["N"], n_dof=r["n_dof"],
+                              t_fom_baseline_ms=r["t_fom_baseline_ms"],
+                              t_fom_baseline_native_ms=r.get("t_fom_baseline_native_ms"),
+                              t_fom_baseline_unpaired_ms=r.get("t_fom_baseline_unpaired_ms"),
+                              t_fom_direct_ms=r.get("t_fom_direct_ms"),
+                              direct_rel_err=r.get("direct_rel_err"),
+                              cg_over_direct=(r["t_fom_baseline_ms"]
+                                              / r["t_fom_direct_ms"]) if r.get("t_fom_direct_ms") else None))
+        md += [table(drows, ["N", "n_dof", "t_fom_baseline_ms", "t_fom_baseline_native_ms",
+                             "t_fom_baseline_unpaired_ms", "t_fom_direct_ms",
+                             "direct_rel_err", "cg_over_direct"],
+                     ["N", "DOF", "CG (paired, ms)", "jax.scipy CG (ms)",
+                      "CG (unpaired diag., ms)", "direct solve (ms)", "direct rel err",
+                      "CG / direct"],
+                     {"t_fom_baseline_ms": ".4g", "t_fom_baseline_native_ms": ".4g",
+                      "t_fom_baseline_unpaired_ms": ".4g", "t_fom_direct_ms": ".4g",
+                      "cg_over_direct": ".1f"}), ""]
         md += ["### P4b. EXTRAPOLATED break-even mesh (not measured -- an extrapolation "
                "of the fitted FOM cost law past the ladder)", ""]
         be = [b for b in (breakeven(Pcons, ft) for ft in fts) if b]
@@ -375,6 +405,19 @@ def main():
                                          "t_fom_ms", "t_rom_ic_ms", "t_rom_rollout_ms",
                                          "t_decode_ms", "t_total_ms")}
                      | {"speedup_vs_fom": ".3f"}), ""]
+        md += ["### B2b. The tolerance-based FOM vs the testbed's own fixed-8-Newton "
+               "rollout", "",
+               "> `burgers2d_film` runs a FIXED 8 Newton iterations per step with no "
+               "tolerance test.  Stopping at the tolerance instead is the honest baseline "
+               "and is much cheaper, so any speedup quoted against the fixed-8 rollout is "
+               "measured against an over-converged solver.", ""]
+        md += [table(crows if crows else rows,
+                     ["fom_tau", "N", "t_fom_baseline_ms", "t_fom_testbed_ms",
+                      "iters_from_baseline"],
+                     ["tau_FOM", "N", "FOM at tolerance (ms)",
+                      "testbed fixed-8 rollout (ms)", "Newton iters at tolerance"],
+                     {"t_fom_baseline_ms": ".4g", "t_fom_testbed_ms": ".4g",
+                      "iters_from_baseline": ".1f"}), ""]
         md += ["### B3. Accuracy and solver health", ""]
         md += [table(rows, ["fom_tau", "N", "err_rel_l2_rom", "err_final",
                             "err_final_baseline", "bicgstab_breakdowns",

@@ -78,6 +78,12 @@ INIT = os.environ.get("INIT", "mean")
 CG_MAXITER = int(os.environ.get("CG_MAXITER", "40000"))
 REF_TAU = float(os.environ.get("REF_TAU", "1e-13"))   # tolerance of the reference solution
 POOL = os.environ.get("POOL", "offgrid")
+# "panel"        : one N per job, fanned out across GPUs.  Accuracy, iteration counts
+#                  and the WITHIN-N timing breakdown are valid (one panel = one job =
+#                  one GPU); its wall clock may NEVER be placed on a cross-N axis.
+# "consolidated" : every N measured SEQUENTIALLY IN ONE JOB ON ONE GPU.  The ONLY
+#                  timing source the cross-N figures and the crossover-N claim may use.
+RUN_ROLE = os.environ.get("RUN_ROLE", "consolidated")
 
 REASONS = {0: "budget", 1: "converged", 2: "abs_tol", 3: "lambda_max",
            5: "nan_at_init", 6: "rom_tau"}
@@ -170,7 +176,7 @@ def main():
                     rom_taus=ROM_TAUS, fom_taus=FOM_TAUS, gn_iters=GN_ITERS,
                     n_test=N_TEST, n_time=N_TIME, init=INIT, seed=mp.SEED,
                     time_reps=TIME_REPS, time_warm=TIME_WARM, cg_maxiter=CG_MAXITER,
-                    ref_tau=REF_TAU,
+                    ref_tau=REF_TAU, run_role=RUN_ROLE,
                     rom_tau_definition="V(z) <= rom_tau * V(z0), V = weak-form "
                                        "objective ||Wl*(PhiT@(wq*dec(z,pts))) - f_m||_2, "
                                        "z0 = initial latent; rom_tau=0 -> reference LM stops"),
@@ -185,6 +191,7 @@ def main():
         n_i = grid.n_i
         op = lambda v: mp.neg_lap_interior(v, n)
         cg = wu.make_cg(op, maxiter=CG_MAXITER)
+        cg_err = wu.make_cg_to_err(op, maxiter=CG_MAXITER)   # oracle diagnostic
         Fs = sources(n, cx, cy, w, a, N_TRAIN, N_TEST)
         Fj = [jnp.asarray(Fs[i]) for i in range(N_TEST)]
         zero = jnp.zeros((n_i, n_i), F64)
@@ -318,10 +325,17 @@ def main():
             a_rom = [a_norm(U_rom[i] - U_ref[i]) / max(a_norm(U_ref[i]), 1e-300)
                      for i in range(N_TEST)]
             obj_red = [vals[i] / max(v0s[i], 1e-300) for i in range(N_TEST)]
+            # ORACLE DIAGNOSTIC (never timed, never on the hybrid's path): how many
+            # plain CG iterations from a zero start reach the ROM's own field accuracy?
+            # This is the "what is the ROM's answer worth, in CG iterations" number.
+            eq_it = []
+            for i in range(N_TEST):
+                k_, e_ = cg_err(Fj[i], jnp.asarray(U_ref[i]), err_rom[i])
+                eq_it.append(int(k_))
             print(f"   ROM tau={rt:g}: {np.mean(nJs):.1f} LM iters, {t_rom_ms:.2f} ms, "
                   f"obj red {np.mean(obj_red):.2e}, field err {np.mean(err_rom):.3e}, "
                   f"rel resid {np.mean(res_rom):.2e}, A-norm err ratio "
-                  f"{np.mean(a_rom):.2e}, reasons "
+                  f"{np.mean(a_rom):.2e}, worth {np.mean(eq_it):.1f} CG iters, reasons "
                   f"{ {REASONS[r]: rsn.count(r) for r in set(rsn)} }", flush=True)
 
             for ft in FOM_TAUS:
@@ -350,12 +364,18 @@ def main():
                     t_fom_baseline_ms=t_base_ms,
                     iters_from_rom=float(np.mean(it)),
                     iters_from_baseline=float(np.mean(base[ft]["iters"])),
+                    # the wall clock is the mean over the FIRST N_TIME cases, so the
+                    # iteration counts over exactly that subset are reported next to it
+                    # (the headline iteration columns use all N_TEST cases)
+                    iters_from_rom_timed=float(np.mean(it[:N_TIME])),
+                    iters_from_baseline_timed=float(np.mean(base[ft]["iters"][:N_TIME])),
                     iters_from_rom_all=it, iters_from_baseline_all=base[ft]["iters"],
                     iter_saving_frac=1.0 - float(np.mean(it))
                                      / max(float(np.mean(base[ft]["iters"])), 1e-30),
                     err_rel_l2_rom=float(np.mean(err_rom)),
                     rom_rel_residual=float(np.mean(res_rom)),
                     rom_err_Anorm_ratio=float(np.mean(a_rom)),
+                    cg_iters_equivalent_to_rom=float(np.mean(eq_it)),
                     rom_obj_reduction=float(np.mean(obj_red)),
                     rom_lm_iters=float(np.mean(nJs)),
                     rom_lm_attempts=float(np.mean(atts)),
@@ -369,7 +389,7 @@ def main():
                     t_fom_direct_ms=direct_ms,
                     direct_rel_err=float(np.mean(d_err)),
                     speedup_vs_direct=direct_ms / t_total_ms,
-                    n_test=N_TEST, n_time=N_TIME, seed=mp.SEED,
+                    n_test=N_TEST, n_time=N_TIME, seed=mp.SEED, run_role=RUN_ROLE,
                     gpu=prov["gpu"], gpu_kind=prov["gpu_kind"],
                     jax_backend=prov["jax_backend"], commit=prov["commit"],
                     slurm_job_id=prov["slurm_job_id"])

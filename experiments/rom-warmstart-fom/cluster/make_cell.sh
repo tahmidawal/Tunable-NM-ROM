@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
-# make_cell.sh <cell-name> <mem> <hours> "<env assignments>" "<command line...>"
+# make_cell.sh <cell-name> <mem> <hours> "<env assignments>" "<command line...>" [gputype]
 #
 # Emits cluster/stage/<cell>/ with a MIRROR of the experiments/ tree (so every
 # reference harness resolves its own deps exactly as it does locally), the
 # checkpoints, and run.sbatch for /cluster/tufts/paralab/tawal01/wsfom/<cell>/.
 # ONE JOB PER DIRECTORY.
 set -euo pipefail
-cell="$1"; mem="$2"; hours="$3"; envs="$4"; cmd="$5"
+cell="$1"; mem="$2"; hours="$3"; envs="$4"; cmd="$5"; gputype="${6:-a100}"
+# every job in a fan-out asks for the SAME GPU TYPE so that within-panel
+# breakdowns are at least drawn from identical hardware; cross-N wall clock
+# still comes only from the single consolidation job.
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(dirname "$HERE")"                       # experiments/rom-warmstart-fom
 EXPS="$(dirname "$EXP")"                       # experiments/
@@ -40,7 +43,7 @@ cat > "$STAGE/run.sbatch" <<EOF
 #!/bin/bash
 #SBATCH -J $cell
 #SBATCH -p gpu
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:$gputype:1
 #SBATCH -c 8
 #SBATCH --mem=$mem
 #SBATCH -t $hours:00:00

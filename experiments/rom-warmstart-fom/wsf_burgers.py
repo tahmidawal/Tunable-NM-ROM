@@ -83,6 +83,8 @@ LIN_TOL = float(os.environ.get("LIN_TOL", str(bc.bf.LIN_TOL)))
 LIN_MAXITER = int(os.environ.get("LIN_MAXITER", str(bc.bf.LIN_MAXITER)))
 FOM_RES_TOL = float(os.environ.get("FOM_RES_TOL", "1e-8"))
 EQ_RNG_SEED = 4321
+# see wsf_poisson.py for the panel / consolidated contract
+RUN_ROLE = os.environ.get("RUN_ROLE", "consolidated")
 ARMS = ("prev", "extrap", "rom")
 ARM_ID = {"prev": 0, "extrap": 1, "rom": 2}
 T = bc.NUM_STEPS
@@ -294,6 +296,7 @@ def main():
                               max_newton=MAX_NEWTON, lin_tol=LIN_TOL,
                               lin_maxiter=LIN_MAXITER, test_idx=TEST_IDX,
                               test_seed=bc.TEST_SEED, num_steps=T, dt=bc.DT,
+                              run_role=RUN_ROLE,
                               newton_tau_definition="||R(u,u_prev,nu)||_2 <= tau * ||u_prev||_2, "
                                                     "the testbed's own Newton convergence metric"),
                   provenance=prov, rows=[], checks=[], per_step=[])
@@ -396,6 +399,10 @@ def main():
                 lin = np.array([p["lin"] for p in per_traj], float)
                 arm_out[arm] = dict(
                     t_ms=med * 1e3, t_all=all_,
+                    # the wall clock is trajectory 0 only, so its own counts are kept
+                    # beside the mean over all N_TEST_TRAJ trajectories
+                    newton_total_timed_traj=float(newton[0].sum()),
+                    lin_total_timed_traj=float(lin[0].sum()),
                     newton_total=float(newton.sum(1).mean()),
                     lin_total=float(lin.sum(1).mean()),
                     newton_per_step=newton.mean(0).tolist(),
@@ -425,6 +432,11 @@ def main():
                 t_fom_baseline_ms=arm_out["prev"]["t_ms"],
                 t_fom_extrap_ms=arm_out["extrap"]["t_ms"],
                 iters_from_rom=arm_out["rom"]["newton_total"],
+                iters_from_rom_timed=arm_out["rom"]["newton_total_timed_traj"],
+                iters_from_baseline_timed=arm_out["prev"]["newton_total_timed_traj"],
+                iters_from_extrap_timed=arm_out["extrap"]["newton_total_timed_traj"],
+                lin_iters_from_rom_timed=arm_out["rom"]["lin_total_timed_traj"],
+                lin_iters_from_baseline_timed=arm_out["prev"]["lin_total_timed_traj"],
                 iters_from_baseline=arm_out["prev"]["newton_total"],
                 iters_from_extrap=arm_out["extrap"]["newton_total"],
                 lin_iters_from_rom=arm_out["rom"]["lin_total"],
@@ -440,12 +452,13 @@ def main():
                 bicgstab_breakdowns=sum(arm_out[a]["breakdowns"] for a in ARMS),
                 newton_flags_nonzero=sum(arm_out[a]["flags_nonzero"] for a in ARMS),
                 m=int(ops["m"]), variant=VARIANT, n_traj=N_TEST_TRAJ,
+                run_role=RUN_ROLE,
                 seed=bc.SEED, gpu=prov["gpu"], gpu_kind=prov["gpu_kind"],
                 jax_backend=prov["jax_backend"], commit=prov["commit"],
                 slurm_job_id=prov["slurm_job_id"])
             report["rows"].append(row)
             report["per_step"].append(dict(
-                N=n, fom_tau=tau,
+                N=n, fom_tau=tau, run_role=RUN_ROLE,
                 newton_per_step={a: arm_out[a]["newton_per_step"] for a in ARMS},
                 lin_per_step={a: arm_out[a]["lin_per_step"] for a in ARMS},
                 rom_err_per_step=np.mean([r["rom_err"] for r in rom_per_traj],

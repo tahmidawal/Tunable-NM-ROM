@@ -123,6 +123,44 @@ def make_cg(op, maxiter=20000):
     return jax.jit(cg)
 
 
+def make_cg_to_err(op, maxiter=20000):
+    """ORACLE DIAGNOSTIC ONLY -- never timed, never used to produce a delivered
+    answer, and never on the hybrid's critical path.
+
+    Identical CG recursion to `make_cg`, but stopped on the FIELD ERROR against a
+    supplied reference solution: ||x_k - u_ref|| <= tol_err * ||u_ref||.  It answers
+    one question the paper needs a number for: *how many plain CG iterations is the
+    ROM's answer actually worth?*  Because it reads `u_ref`, it is quarantined in
+    its own function so that no timed path can call it by accident.
+
+    Returns (iters, achieved_rel_err)."""
+    def cg(b, u_ref, tol_err):
+        un = jnp.linalg.norm(u_ref)
+        thr = tol_err * un
+        x = jnp.zeros_like(b)
+        r = b
+        p = r
+        rs = jnp.sum(r * r)
+
+        def cond(s):
+            x, r, p, rs, k = s
+            return (jnp.linalg.norm(x - u_ref) > thr) & (k < maxiter)
+
+        def body(s):
+            x, r, p, rs, k = s
+            Ap = op(p)
+            alpha = rs / jnp.sum(p * Ap)
+            x = x + alpha * p
+            r = r - alpha * Ap
+            rs_new = jnp.sum(r * r)
+            p = r + (rs_new / rs) * p
+            return (x, r, p, rs_new, k + 1)
+
+        x, r, p, rs, k = jax.lax.while_loop(cond, body, (x, r, p, rs, jnp.int32(0)))
+        return k, jnp.linalg.norm(x - u_ref) / jnp.maximum(un, 1e-300)
+    return jax.jit(cg)
+
+
 def cg_reference_check(op, b, tau, cg_jit, ref_tol=1e-13, ref_maxiter=100_000):
     """Cross-check the counting CG against the testbed's own
     `jax.scipy.sparse.linalg.cg` (the function that produced the reference data).

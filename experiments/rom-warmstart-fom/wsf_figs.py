@@ -88,10 +88,12 @@ def fig_poisson_total_vs_tau(P, paths):
 def fig_poisson_crossover(P, paths):
     if not P:
         return
-    Ns = sorted({r["N"] for r in P})
     fts = sorted({r["fom_tau"] for r in P}, reverse=True)
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.4, 3.4))
     ftm = min(fts)
+    Ns = sorted({r["N"] for r in P if r["fom_tau"] == ftm})
+    if not Ns:
+        return
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.4, 3.4))
     fom = [np.mean([r["t_fom_baseline_ms"] for r in P if r["N"] == n and r["fom_tau"] == ftm])
            for n in Ns]
     best = [min([r["t_total_ms"] for r in P if r["N"] == n and r["fom_tau"] == ftm])
@@ -112,9 +114,11 @@ def fig_poisson_crossover(P, paths):
     a1.legend(); st.clean(a1)
 
     for ci, ft in enumerate(fts):
+        nn = sorted({r["N"] for r in P if r["fom_tau"] == ft})
         sp = [max([r["speedup_vs_fom"] for r in P if r["N"] == n and r["fom_tau"] == ft],
-                  default=np.nan) for n in Ns]
-        a2.plot(Ns, sp, "-o", color=NCOL[ci % len(NCOL)], label=f"$\\tau_{{FOM}}$={ft:g}")
+                  default=np.nan) for n in nn]
+        if nn:
+            a2.plot(nn, sp, "-o", color=NCOL[ci % len(NCOL)], label=f"$\\tau_{{FOM}}$={ft:g}")
     a2.axhline(1.0, color=st.INK2, lw=1.0, ls="--")
     a2.text(Ns[0], 1.03, "hybrid wins above this line", fontsize=7.5, color=st.MUTED)
     a2.set_xscale("log", base=2); a2.set_yscale("log")
@@ -128,11 +132,13 @@ def fig_poisson_crossover(P, paths):
 def fig_poisson_iters(P, paths):
     if not P:
         return
-    Ns = sorted({r["N"] for r in P})
     fts = sorted({r["fom_tau"] for r in P}, reverse=True)
-    rts = sorted({r["rom_tau"] for r in P}, reverse=True)
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.4, 3.4))
     ftm = min(fts)
+    Ns = sorted({r["N"] for r in P if r["fom_tau"] == ftm})
+    rts = sorted({r["rom_tau"] for r in P}, reverse=True)
+    if not Ns:
+        return
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.4, 3.4))
     x = np.arange(len(rts))
     for ci, n in enumerate(Ns):
         sub = {r["rom_tau"]: r for r in P if r["N"] == n and r["fom_tau"] == ftm}
@@ -166,6 +172,14 @@ def fig_burgers_per_step(reps, paths):
     ps = []
     for d in reps:
         ps += d.get("per_step", [])
+    # iteration counts are hardware-independent, so panels are fine here; prefer them
+    if any((p.get("run_role") or "consolidated") == "panel" for p in ps):
+        seen = {}
+        for p in ps:
+            k = (p["N"], p["fom_tau"])
+            if k not in seen or (p.get("run_role") or "consolidated") == "panel":
+                seen[k] = p
+        ps = list(seen.values())
     if not ps:
         return
     Ns = sorted({p["N"] for p in ps})
@@ -236,12 +250,27 @@ def fig_burgers_cost(B, paths):
 def main():
     st.use()
     pts, reps = load()
-    P = [r for r in pts if r["pde"] == "poisson2d"]
-    B = [r for r in pts if r["pde"] == "burgers2d"]
+    # CROSS-N WALL CLOCK MAY ONLY COME FROM THE CONSOLIDATED RUN (every N measured
+    # sequentially in one job on one GPU).  Panel rows are fanned out across GPUs and
+    # their wall clock is not comparable across N; they are used only for the
+    # iteration-count panel, which is hardware-independent.
+    role = lambda r: r.get("run_role") or "consolidated"   # the script default
+    P = [r for r in pts if r["pde"] == "poisson2d" and role(r) == "consolidated"]
+    B = [r for r in pts if r["pde"] == "burgers2d" and role(r) == "consolidated"]
+    Piter = {}
+    for r in [q for q in pts if q["pde"] == "poisson2d"]:
+        k = (r["N"], r["rom_tau"], r["fom_tau"])
+        if k not in Piter or role(r) == "panel":
+            Piter[k] = r
+    Piter = list(Piter.values())
+    if not P:
+        print("WARNING: no consolidated Poisson rows -- cross-N figures skipped")
+    if not B:
+        print("WARNING: no consolidated Burgers rows -- cross-N figures skipped")
     paths = []
     fig_poisson_total_vs_tau(P, paths)
     fig_poisson_crossover(P, paths)
-    fig_poisson_iters(P, paths)
+    fig_poisson_iters(Piter, paths)
     fig_burgers_per_step(reps, paths)
     fig_burgers_cost(B, paths)
     for p in paths:

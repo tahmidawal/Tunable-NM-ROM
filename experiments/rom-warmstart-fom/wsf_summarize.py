@@ -70,6 +70,39 @@ def taulabel(t):
     return "converged" if not t else f"{t:g}"
 
 
+def split_roles(rows, key):
+    """(consolidated, merged) where `consolidated` holds ONLY the rows measured
+    sequentially in one job on one GPU -- the only legitimate source for any
+    CROSS-N wall-clock statement -- and `merged` prefers the fanned-out panel row
+    for each configuration (identical iteration counts, more test cases) and falls
+    back to the consolidated row when a panel is missing."""
+    role = lambda r: r.get("run_role") or "consolidated"   # the script default
+    cons = [r for r in rows if role(r) == "consolidated"]
+    pan = [r for r in rows if role(r) == "panel"]
+    merged = {key(r): r for r in cons}
+    merged.update({key(r): r for r in pan})
+    return cons, list(merged.values())
+
+
+def role_consistency(rows, key, fields):
+    """Panel and consolidated runs use the same seed and the same deterministic
+    solvers, so every ITERATION COUNT must agree exactly.  Any disagreement means
+    the two runs are not measuring the same thing and the fan-out cannot be
+    trusted; it is reported rather than hidden."""
+    role = lambda r: r.get("run_role") or "consolidated"
+    cons = {key(r): r for r in rows if role(r) == "consolidated"}
+    pan = {key(r): r for r in rows if role(r) == "panel"}
+    out = []
+    for k in sorted(set(cons) & set(pan), key=str):
+        for f in fields:
+            a, b = cons[k].get(f), pan[k].get(f)
+            if a is None or b is None:
+                continue
+            out.append(dict(key=str(k), field=f, consolidated=a, panel=b,
+                            abs_diff=abs(a - b)))
+    return out
+
+
 def main():
     reports = load_reports()
     pts = flat_points(reports)
@@ -79,19 +112,29 @@ def main():
     print(f"wrote {os.path.join(RUNS, 'hybrid_points.json')} ({len(pts)} rows from "
           f"{len(reports)} reports)")
 
-    P = [r for r in pts if r["pde"] == "poisson2d"]
-    B = [r for r in pts if r["pde"] == "burgers2d"]
+    Pall = [r for r in pts if r["pde"] == "poisson2d"]
+    Ball = [r for r in pts if r["pde"] == "burgers2d"]
+    pkey = lambda r: (r["N"], r["rom_tau"], r["fom_tau"])
+    bkey = lambda r: (r["N"], r["fom_tau"])
+    Pcons, P = split_roles(Pall, pkey)
+    Bcons, B = split_roles(Ball, bkey)
     md = ["# Generated tables -- ROM-warm-started FOM",
           "",
           "Every number below is produced by `wsf_summarize.py` from the JSONs in "
           "`runs/`.  Do not edit by hand.", ""]
 
-    if P:
+    if Pall:
+        md += ["## Poisson-2D", "",
+               "> WALL-CLOCK tables (P1-P3) use ONLY the `consolidated` run -- every N "
+               "measured sequentially in one job on one GPU.  Iteration counts and "
+               "accuracy (P4) come from the fanned-out per-N panels where available; "
+               "P5 checks that the two agree.", ""]
+    if Pcons:
+        P = Pcons
         Ns = sorted({r["N"] for r in P})
         fts = sorted({r["fom_tau"] for r in P}, reverse=True)
         rts = sorted({r["rom_tau"] for r in P}, reverse=True)
-        md += ["## Poisson-2D", "",
-               "### P1. Total hybrid time vs the pure-FOM baseline (ms)", ""]
+        md += ["### P1. Total hybrid time vs the pure-FOM baseline (ms), consolidated run", ""]
         for ft in fts:
             md += [f"**tau_FOM = {ft:g}**", ""]
             hdr = ["N", "FOM baseline"] + [f"rom_tau={taulabel(t)}" for t in rts]
@@ -143,7 +186,13 @@ def main():
                       "ROM rel resid", "ROM A-norm err", "final err"],
                      {k: ".4g" for k in ("t_pre_ms", "t_rom_ms", "t_decode_ms",
                                          "t_fom_ms", "t_total_ms", "t_fom_baseline_ms")}), ""]
-        md += ["### P4. CG iterations, warm start vs zero start", ""]
+        P = [r for r in Pall if True]
+        P = split_roles(Pall, pkey)[1]
+        Ns = sorted({r["N"] for r in P})
+        fts = sorted({r["fom_tau"] for r in P}, reverse=True)
+        rts = sorted({r["rom_tau"] for r in P}, reverse=True)
+        md += ["### P4. CG iterations, warm start vs zero start "
+               "(panel runs where available; hardware-independent)", ""]
         rows = []
         for ft in fts:
             for n in Ns:
@@ -160,12 +209,24 @@ def main():
                       "iter saving", "ROM A-norm err ratio", "ROM rel resid"],
                      {"iters_from_baseline": ".1f", "iters_from_rom": ".1f",
                       "iter_saving_frac": ".4f"}), ""]
+        cc = role_consistency(Pall, pkey, ["iters_from_rom", "iters_from_baseline",
+                                           "err_rel_l2_rom", "err_final"])
+        bad = [c for c in cc if c["abs_diff"] > 1e-12 * max(abs(c["consolidated"]), 1.0)]
+        md += ["### P5. Panel vs consolidated consistency "
+               f"({len(cc)} compared, {len(bad)} disagreements)", ""]
+        md += [table(bad[:40] if bad else
+                     [dict(key="all compared quantities", field="-", consolidated="-",
+                           panel="-", abs_diff=0.0)],
+                     ["key", "field", "consolidated", "panel", "abs_diff"]), ""]
 
+    if Ball:
+        md += ["## Burgers-2D", "",
+               "> Wall-clock rows (B2) use ONLY the `consolidated` run; iteration counts "
+               "(B1) and solver health (B3) come from the per-N panels where available.", ""]
     if B:
         Ns = sorted({r["N"] for r in B})
         fts = sorted({r["fom_tau"] for r in B}, reverse=True)
-        md += ["## Burgers-2D", "",
-               "### B1. Newton and BiCGStab iterations per 50-step trajectory", ""]
+        md += ["### B1. Newton and BiCGStab iterations per 50-step trajectory", ""]
         rows = []
         for ft in fts:
             for n in Ns:
@@ -179,8 +240,14 @@ def main():
                       "BiCGStab (prev)", "BiCGStab (extrap)", "BiCGStab (ROM)"],
                      {k: ".1f" for k in ("iters_from_baseline", "iters_from_extrap",
                                          "iters_from_rom")}), ""]
-        md += ["### B2. Wall clock (ms) and the hybrid total", ""]
-        md += [table(rows, ["fom_tau", "N", "t_fom_baseline_ms", "t_fom_extrap_ms",
+        crows = []
+        for ft in sorted({r["fom_tau"] for r in Bcons}, reverse=True):
+            for n in sorted({r["N"] for r in Bcons}):
+                sub = [r for r in Bcons if r["N"] == n and r["fom_tau"] == ft]
+                if sub:
+                    crows.append(sub[0])
+        md += ["### B2. Wall clock (ms) and the hybrid total, consolidated run", ""]
+        md += [table(crows, ["fom_tau", "N", "t_fom_baseline_ms", "t_fom_extrap_ms",
                             "t_fom_ms", "t_rom_ic_ms", "t_rom_rollout_ms",
                             "t_decode_ms", "t_total_ms", "speedup_vs_fom"],
                      ["tau_FOM", "N", "FOM (prev)", "FOM (extrap)", "FOM (from ROM)",
@@ -202,12 +269,12 @@ def main():
     print(f"wrote {os.path.join(HERE, 'SUMMARY_TABLES.md')}")
 
     # ---- headline numbers, printed so the README prose can be checked against them
-    if P:
-        print("\nPOISSON headline:")
-        for ft in sorted({r['fom_tau'] for r in P}, reverse=True):
+    if Pcons:
+        print("\nPOISSON headline (consolidated run, one GPU):")
+        for ft in sorted({r['fom_tau'] for r in Pcons}, reverse=True):
             best = {}
-            for n in sorted({r["N"] for r in P}):
-                sub = [r for r in P if r["N"] == n and r["fom_tau"] == ft]
+            for n in sorted({r["N"] for r in Pcons}):
+                sub = [r for r in Pcons if r["N"] == n and r["fom_tau"] == ft]
                 if sub:
                     b = min(sub, key=lambda r: r["t_total_ms"])
                     best[n] = b
@@ -217,9 +284,9 @@ def main():
                   + "  ".join(f"N{n}:{b['speedup_vs_fom']:.2f}x"
                               f"@rom_tau={taulabel(b['rom_tau'])}"
                               for n, b in best.items()))
-    if B:
-        print("\nBURGERS headline:")
-        for r in sorted(B, key=lambda r: (-r["fom_tau"], r["N"])):
+    if Bcons:
+        print("\nBURGERS headline (consolidated run, one GPU):")
+        for r in sorted(Bcons, key=lambda r: (-r["fom_tau"], r["N"])):
             print(f"  tau={r['fom_tau']:g} N={r['N']}: Newton "
                   f"{r['iters_from_baseline']:.1f} (prev) / "
                   f"{r['iters_from_extrap']:.1f} (extrap) / "

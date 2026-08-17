@@ -293,29 +293,6 @@ def main():
                       "ROM rel resid", "ROM A-norm err", "final err"],
                      {k: ".4g" for k in ("t_pre_ms", "t_rom_ms", "t_decode_ms",
                                          "t_fom_ms", "t_total_ms", "t_fom_baseline_ms")}), ""]
-        P = [r for r in Pall if True]
-        P = split_roles(Pall, pkey)[1]
-        Ns = sorted({r["N"] for r in P})
-        fts = sorted({r["fom_tau"] for r in P}, reverse=True)
-        rts = sorted({r["rom_tau"] for r in P}, reverse=True)
-        md += ["### P4. CG iterations, warm start vs zero start "
-               "(panel runs where available; hardware-independent)", ""]
-        rows = []
-        for ft in fts:
-            for n in Ns:
-                for t in rts:
-                    s = [r for r in P if r["N"] == n and r["fom_tau"] == ft
-                         and r["rom_tau"] == t]
-                    if s:
-                        r = dict(s[0]); r["rom_tau_lbl"] = taulabel(t)
-                        rows.append(r)
-        md += [table(rows, ["fom_tau", "N", "rom_tau_lbl", "iters_from_baseline",
-                            "iters_from_rom", "iter_saving_frac",
-                            "rom_err_Anorm_ratio", "rom_rel_residual"],
-                     ["tau_FOM", "N", "rom_tau", "CG iters (zero)", "CG iters (ROM)",
-                      "iter saving", "ROM A-norm err ratio", "ROM rel resid"],
-                     {"iters_from_baseline": ".1f", "iters_from_rom": ".1f",
-                      "iter_saving_frac": ".4f"}), ""]
         md += ["### P3b. The classical alternatives, at the tightest tolerance "
                f"(tau_FOM = {min(fts):g})", "",
                "> The FD Poisson system on a square with Dirichlet walls is diagonalised "
@@ -381,6 +358,29 @@ def main():
                      {"t_fom_testbed_ms": ".4g", "fom_testbed_iters": ".0f",
                       "t_native": ".4g", "iters_tol": ".0f", "factor": ".2f",
                       "mult_time": ".3f", "mult_iters": ".3f"}), ""]
+        P = [r for r in Pall if True]
+        P = split_roles(Pall, pkey)[1]
+        Ns = sorted({r["N"] for r in P})
+        fts = sorted({r["fom_tau"] for r in P}, reverse=True)
+        rts = sorted({r["rom_tau"] for r in P}, reverse=True)
+        md += ["### P4. CG iterations, warm start vs zero start "
+               "(panel runs where available; hardware-independent)", ""]
+        rows = []
+        for ft in fts:
+            for n in Ns:
+                for t in rts:
+                    s = [r for r in P if r["N"] == n and r["fom_tau"] == ft
+                         and r["rom_tau"] == t]
+                    if s:
+                        r = dict(s[0]); r["rom_tau_lbl"] = taulabel(t)
+                        rows.append(r)
+        md += [table(rows, ["fom_tau", "N", "rom_tau_lbl", "iters_from_baseline",
+                            "iters_from_rom", "iter_saving_frac",
+                            "rom_err_Anorm_ratio", "rom_rel_residual"],
+                     ["tau_FOM", "N", "rom_tau", "CG iters (zero)", "CG iters (ROM)",
+                      "iter saving", "ROM A-norm err ratio", "ROM rel resid"],
+                     {"iters_from_baseline": ".1f", "iters_from_rom": ".1f",
+                      "iter_saving_frac": ".4f"}), ""]
         md += ["### P4b. EXTRAPOLATED break-even mesh (not measured -- an extrapolation "
                "of the fitted FOM cost law past the ladder)", ""]
         be = [b for b in (breakeven(Pcons, ft) for ft in fts) if b]

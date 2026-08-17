@@ -88,6 +88,30 @@ Every number below is produced by `wsf_summarize.py` from the JSONs in `runs/`. 
 | 512 | 0.001 | 0.1477 | 8.126 | 4.555 | 80.55 | 93.38 | 82.13 | 0.00886 | 0.207 | 0.0491 | 2.96e-12 |
 | 512 | ref. stops | 0.1477 | 8.191 | 4.555 | 80.07 | 92.97 | 81.67 | 0.00886 | 0.207 | 0.0491 | 2.96e-12 |
 
+### P3b. The classical alternatives, at the tightest tolerance (tau_FOM = 1e-10)
+
+> The FD Poisson system on a square with Dirichlet walls is diagonalised EXACTLY by the same discrete sine basis the ROM uses for its test modes, so an exact direct solve is available and is timed here. This is the strongest form of the reviewers' "a direct solver beats you" objection and it is reported, not avoided.
+
+| N | DOF | CG (paired, ms) | jax.scipy CG (ms) | CG (unpaired diag., ms) | direct solve (ms) | direct rel err | CG / direct |
+|---|---|---|---|---|---|---|---|
+| 32 | 900 | 3.223 | 3.069 | 3.245 | 0.06328 | 5.97e-14 | 50.9 |
+| 64 | 3844 | 6.549 | 6.171 | 6.586 | 0.06475 | 5.14e-14 | 101.1 |
+| 128 | 15876 | 13.33 | 12.72 | 12.97 | 0.08418 | 3.87e-14 | 158.4 |
+| 256 | 64516 | 26.54 | 25.55 | 26.7 | 0.09318 | 2.87e-14 | 284.8 |
+| 512 | 260100 | 82.13 | 80.28 | 81.96 | 0.1663 | 2.13e-14 | 494.0 |
+
+### P3c. Over-convergence of the ARCHIVED Poisson FOM baseline
+
+> The reference cell times `jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL)` with `CG_TOL = 1e-13` -- the tolerance used to MANUFACTURE the truth data. Both columns below are jax.scipy CG, differing only in tolerance, so the factor is like-for-like in the SOLVER.  It is NOT accuracy-matched: compare 'achieved res' against 'rung achieves' -- the archived baseline is tighter than this cell's tightest rung at every mesh, so these are ENGINEERING factors (cost at a tolerance a deployment would ask for, vs cost at 1e-13). An accuracy-matched factor would be smaller, and at coarse N close to 1.
+
+| N | CG at CG_TOL (ms) | iters | achieved res | CG at 1e-10 (ms) | iters | rung achieves | ENGINEERING factor | multiplier (time) | multiplier (iters) |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 3.548 | 122 | 8.86e-14 | 3.069 | 105 | 9.75e-11 | 1.16 | 0.865 | 0.862 |
+| 64 | 7.125 | 248 | 7.57e-14 | 6.171 | 214 | 9.96e-11 | 1.15 | 0.866 | 0.860 |
+| 128 | 14.86 | 506 | 9.75e-14 | 12.72 | 433 | 9.97e-11 | 1.17 | 0.856 | 0.856 |
+| 256 | 29.61 | 1034 | 4.56e-13 | 25.55 | 876 | 9.99e-11 | 1.16 | 0.863 | 0.848 |
+| 512 | 93.07 | 2244 | 3.94e-12 | 80.28 | 1772 | 9.99e-11 | 1.16 | 0.863 | 0.790 |
+
 ### P4. CG iterations, warm start vs zero start (panel runs where available; hardware-independent)
 
 | tau_FOM | N | rom_tau | CG iters (zero) | CG iters (ROM) | iter saving | ROM A-norm err ratio | ROM rel resid |
@@ -167,30 +191,6 @@ Every number below is produced by `wsf_summarize.py` from the JSONs in `runs/`. 
 | 1e-10 | 512 | 0.01 | 1772.4 | 1749.8 | 0.0128 | 0.0536 | 0.211 |
 | 1e-10 | 512 | 0.001 | 1772.4 | 1733.2 | 0.0221 | 0.0491 | 0.207 |
 | 1e-10 | 512 | ref. stops | 1772.4 | 1733.2 | 0.0221 | 0.0491 | 0.207 |
-
-### P3b. The classical alternatives, at the tightest tolerance (tau_FOM = 1e-10)
-
-> The FD Poisson system on a square with Dirichlet walls is diagonalised EXACTLY by the same discrete sine basis the ROM uses for its test modes, so an exact direct solve is available and is timed here. This is the strongest form of the reviewers' "a direct solver beats you" objection and it is reported, not avoided.
-
-| N | DOF | CG (paired, ms) | jax.scipy CG (ms) | CG (unpaired diag., ms) | direct solve (ms) | direct rel err | CG / direct |
-|---|---|---|---|---|---|---|---|
-| 32 | 900 | 3.225 | 3.054 | 3.191 | 0.06257 | 5.97e-14 | 51.5 |
-| 64 | 3844 | 6.497 | 6.141 | 6.531 | 0.0658 | 5.14e-14 | 98.7 |
-| 128 | 15876 | 13.41 | 12.76 | 13.01 | 0.07753 | 3.87e-14 | 173.0 |
-| 256 | 64516 | 26.29 | 25.54 | 26.37 | 0.08507 | 2.87e-14 | 309.0 |
-| 512 | 260100 | 81.64 | 80.28 | 81.3 | 0.1637 | 2.13e-14 | 498.7 |
-
-### P3c. Over-convergence of the ARCHIVED Poisson FOM baseline
-
-> The reference cell times `jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL)` with `CG_TOL = 1e-13` -- the tolerance used to MANUFACTURE the truth data. Both columns below are jax.scipy CG, differing only in tolerance, so the factor is like-for-like in the SOLVER.  It is NOT accuracy-matched: compare 'achieved res' against 'rung achieves' -- the archived baseline is tighter than this cell's tightest rung at every mesh, so these are ENGINEERING factors (cost at a tolerance a deployment would ask for, vs cost at 1e-13). An accuracy-matched factor would be smaller, and at coarse N close to 1.
-
-| N | CG at CG_TOL (ms) | iters | achieved res | CG at 1e-10 (ms) | iters | rung achieves | ENGINEERING factor | multiplier (time) | multiplier (iters) |
-|---|---|---|---|---|---|---|---|---|---|
-| 32 | 3.527 | 122 | 8.86e-14 | 3.054 | 105 | 9.75e-11 | 1.15 | 0.866 | 0.862 |
-| 64 | 7.105 | 248 | 7.57e-14 | 6.141 | 214 | 9.96e-11 | 1.16 | 0.864 | 0.860 |
-| 128 | 14.71 | 506 | 9.75e-14 | 12.76 | 433 | 9.97e-11 | 1.15 | 0.867 | 0.856 |
-| 256 | 29.46 | 1034 | 4.56e-13 | 25.54 | 876 | 9.99e-11 | 1.15 | 0.867 | 0.848 |
-| 512 | 92.33 | 2244 | 3.94e-12 | 80.28 | 1772 | 9.99e-11 | 1.15 | 0.870 | 0.790 |
 
 ### P4b. EXTRAPOLATED break-even mesh (not measured -- an extrapolation of the fitted FOM cost law past the ladder)
 

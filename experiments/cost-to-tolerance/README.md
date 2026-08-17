@@ -209,15 +209,41 @@ has a known sign: after interpolation this cell should read **slightly low**. A 
 few percent in that direction is expected; a materially larger one, or one in the other
 direction, is the signal worth chasing.
 
-Pre-registered targets (peer's `tau`=1e-6, mean over 4 held-out trajectories, A100 80GB, job
-2511371, burn-in on, paired timing), recorded **before** this cell's Burgers panels landed:
+**Pinned at `tau`=1e-6, and only there.** The peer's per-step Newton count *rises with tighter
+tolerance* — 1.97 at `tau`=1e-6 but up to 2.40 across its full ladder. The interpolation below
+may only be evaluated at the `tau`=1e-6 counts, because those are the counts at which the quoted
+times were measured. Reusing this interpolation against any other rung of their ladder would
+evaluate this cell's cost model at a step count that does not correspond to the time it is
+being compared against.
+
+Pre-registered targets (peer's `tau`=1e-6, mean over 4 held-out trajectories, A100 80GB PCIe,
+Slurm job 2511371, burn-in on, paired timing, median of 7 with 2 warm-ups), recorded **before**
+this cell's Burgers panels landed:
 
 | N | peer ms | peer steps/step | peer achieved residual |
 |---|---|---|---|
-| 32 | 47.6 | 1.97 | 9.71e-07 |
-| 64 | 85.6 | 1.97 | 9.83e-07 |
+| 32 | 47.62 | 1.97 | 9.71e-07 |
+| 64 | 85.56 | 1.97 | 9.83e-07 |
 | 128 | 228.1 | 1.98 | 9.94e-07 |
 | 256 | 449.9 | 1.99 | 9.57e-07 |
+
+**The expected sign is only valid if neither cell carries per-step Python overhead — checked in
+advance, not assumed.** A Python-side per-step cost on this side would push these numbers
+*high*, which is the same direction as a genuine disagreement and the opposite of the
+residual-test effect, so it could mask effect 2 or flip the sign outright. Confirmed by reading
+the code before the panels ran:
+
+* the peer's chain is a single jitted `lax.scan`, timed median-of-7 with a burn-in;
+* this cell's rungs call `burgers2d_film.make_rollout`'s `@jax.jit` `rollout`, whose body is
+  `jax.lax.scan(body, U0_b, None, length=NUM_STEPS)` — the **whole 50-step chain is one jitted
+  call**, and the timed lambda is a single invocation with a single `block_until_ready`;
+* the only Python loop is over **sources**, entirely outside the timed region.
+
+So per-step Python overhead is zero on both sides, effect 2 is the only asymmetry left, and the
+expected reading is *slightly low*. Two residual differences are recorded rather than corrected
+for: the peer takes the **mean** over 4 trajectories while this cell reports mean and median over
+16 (the comparison below uses the **mean**, matching theirs), and the burn-in is 3 s there
+against 1.5 s here.
 
 <!-- BEGIN GENERATED: burgers_denominator -->
 <!-- END GENERATED: burgers_denominator -->

@@ -546,7 +546,8 @@ def build_blocks(data, pts):
             rungs = rungs_by_N.get(N, [])
             t_i, a_, b_, r2 = interp_newton_ladder(rungs, ref["steps_per_step"])
             r2rung = next((r for r in rungs if r["fom_newton_iters"] == 2), None)
-            t2 = r2rung["fom_rollout_s"] * 1e3 if r2rung else None
+            t2 = (r2rung.get("fom_rollout_s_mean") or r2rung["fom_rollout_s"]) * 1e3 \
+                if r2rung else None
             dev = (100 * (t_i - ref["t_ms"]) / ref["t_ms"]) if t_i else None
             rows.append([N, fmt(ref["t_ms"], ".1f"), ref["steps_per_step"],
                          fmt(t2, ".1f") if t2 else "--",
@@ -555,12 +556,16 @@ def build_blocks(data, pts):
                          fmt(r2, ".4f") if r2 is not None else "--",
                          fmt(b_, ".2f") if b_ is not None else "--",
                          fmt(ref["achieved"], ".2e"),
-                         fmt(r2rung.get("achieved_rel_residual"), ".2e") if r2rung else "--"])
+                         fmt(r2rung.get("achieved_rel_residual"), ".2e") if r2rung else "--",
+                         ("expected: low by a few %" if dev is None else
+                          "CONSISTENT (low, small)" if -6.0 <= dev < 0 else
+                          "INVESTIGATE (high)" if dev >= 0 else
+                          "INVESTIGATE (low by a lot)")])
     B["burgers_denominator"] = md_table(
         ["N", "peer tau=1e-6 ms", "peer steps/step", "this cell NEWTON_ITERS=2 ms",
          "this cell interpolated to peer steps", "deviation %", "ladder fit R2",
-         "marginal ms per Newton step", "peer achieved res", "this cell achieved res"],
-        rows) if rows else \
+         "marginal ms per Newton step", "peer achieved res", "this cell achieved res",
+         "read by SIGN"], rows) if rows else \
         "_(the Burgers panels have not landed yet; this cross-check is pre-registered "\
         "against the peer values recorded in ctol_tables.PEER_BURGERS_TAU1EM6)_"
 
@@ -645,15 +650,32 @@ PEER_RETIMED_MS = {("poisson2d", 32): 3.548, ("poisson2d", 64): 7.124,
                    ("poisson2d", 512): 93.070}
 
 
-# The rom-warmstart-fom cell's tolerance-based Burgers FOM at tau=1e-6 (mean over 4
-# held-out trajectories, A100 80GB, job 2511371, burn-in on, paired timing).  Recorded
-# BEFORE this cell's Burgers panels landed, so the cross-check is pre-registered.
+# The rom-warmstart-fom cell's tolerance-based Burgers FOM, PINNED AT tau=1e-6.
+# Its per-step Newton count RISES with tighter tau (1.97-2.40 across its full ladder);
+# only the tau=1e-6 counts below may be used for the interpolation, because those are
+# the ones these timings were measured at.  Using the wider range would interpolate
+# this cell's ladder to a step count that does not correspond to the quoted time.
+#   mean over 4 held-out trajectories, A100 80GB PCIe, Slurm job 2511371,
+#   burn-in on, paired timing, median of 7 with 2 warm-ups.
+# Recorded BEFORE this cell's Burgers panels landed, so the cross-check is
+# pre-registered and cannot be fitted after the fact.
 PEER_BURGERS_TAU1EM6 = {
-    32:  dict(t_ms=47.6,  steps_per_step=1.97, achieved=9.71e-07),
-    64:  dict(t_ms=85.6,  steps_per_step=1.97, achieved=9.83e-07),
+    32:  dict(t_ms=47.62, steps_per_step=1.97, achieved=9.71e-07),
+    64:  dict(t_ms=85.56, steps_per_step=1.97, achieved=9.83e-07),
     128: dict(t_ms=228.1, steps_per_step=1.98, achieved=9.94e-07),
     256: dict(t_ms=449.9, steps_per_step=1.99, achieved=9.57e-07),
 }
+# Timing-protocol equivalence, checked rather than assumed (their point 3): both cells
+# time ONE jitted lax.scan over the whole 50-step chain -- this cell calls
+# burgers2d_film.make_rollout's @jax.jit rollout, whose body is
+# `jax.lax.scan(..., length=NUM_STEPS)`, and the only Python loop is over SOURCES,
+# outside the timed region.  So there is no per-step Python overhead on either side,
+# which would otherwise push this cell HIGH and mask or flip the sign of effect 2.
+# Residual differences, both small and both recorded rather than corrected for:
+#   * across-source statistic -- they take the MEAN over 4 trajectories, this cell
+#     reports both the mean and the median over 16.  The comparison below uses the
+#     MEAN, to match theirs.
+#   * burn-in length -- 3 s there, 1.5 s here.
 
 
 def interp_newton_ladder(rungs, target_steps):
@@ -666,7 +688,9 @@ def interp_newton_ladder(rungs, target_steps):
     cost model t(k) = a + b*k -- `a` the fixed per-rollout overhead, `b` the marginal
     cost of one Newton step per time step -- which can be evaluated at their exact
     count instead.  Returns (t_at_target_ms, a_ms, b_ms, r2)."""
-    pts = sorted((r["fom_newton_iters"], r["fom_rollout_s"] * 1e3) for r in rungs
+    key = "fom_rollout_s_mean" if all(r.get("fom_rollout_s_mean") for r in rungs) \
+        else "fom_rollout_s"
+    pts = sorted((r["fom_newton_iters"], r[key] * 1e3) for r in rungs
                  if r.get("fom_newton_iters") is not None)
     if len(pts) < 2:
         return None, None, None, None

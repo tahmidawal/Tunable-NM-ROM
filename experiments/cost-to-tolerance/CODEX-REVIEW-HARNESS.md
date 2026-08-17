@@ -1,3 +1,62 @@
+# Codex adversarial review of the harness (before the fan-out)
+
+`codex exec` in read-only mode, 2026-08-17, against commit `f777d5b` of this cell.  Its
+verbatim report follows the triage.  Every MUST item was either APPLIED (commit `c1e41cd`)
+or REJECTED with a reason recorded here; nothing was silently ignored.
+
+## Triage
+
+| # | MUST item | disposition |
+|---|---|---|
+| 1 | censored rows admitted to the Pareto / target-reaching / consolidation selection | **APPLIED** -- `usable_points()` requires `censored == false` and `n_blowup == 0`; the strict frontier is primary and the *as-deployed* frontier (censored included) is tabulated and drawn dashed beside it, so the accurate-but-censored operating points are still visible |
+| 2 | incomplete result files accepted | **APPLIED** -- `ctol_tables.audit()` refuses to build tables unless every panel is `complete`, ran on GPU in f64 at matmul precision `highest`, and every cell of the *specified* grid (not the union of what arrived) is present exactly once; `--allow-incomplete` stamps the problems into the README's integrity block |
+| 3 | "restore one full-grid job per PDE" | **REJECTED** -- see below |
+| 4 | Burgers POD saw 128 training trajectories vs the coordinate arm's 512 | **APPLIED** -- POD is built from all 512, retaining every 4th time slice (3.5 GB instead of 13.7 GB at N=256); the nearest-IC candidate set is the same 512 for both arms; the POD projection floor on the held-out set is reported per mesh |
+| 5 | blow-ups silently dropped from the mean | **APPLIED** -- any blow-up makes the primary `err_rel_l2` non-finite and the cell censored; `err_rel_l2_finite_only` is kept as a labelled diagnostic |
+| 6 | nearest-training-IC search outside the timed region | **APPLIED** -- moved inside the jitted, timed cold start and onto the m EQ nodes: `O(N_train m)`, mesh independent, deployable |
+| 7 | Poisson preprocessing charged the full dense sine transform | **APPLIED** -- timed as the deployable selected-mode contraction `O(M' N^2)`, asserted equal to `pro_common.weak_source_term` to 1e-10 relative; the full-transform cost is recorded alongside |
+| 8 | FOM timed on source 0 only | **APPLIED** -- every test source, same warm-up/median-of-7, same across-source statistic as the ROM |
+| 9 | tau never tested at the initial guess | **APPLIED** -- both solvers now emit reason 2 when `tau > 0` and `||r(z0)|| <= tau ||r(z0)||`, mirroring `lm_step_jit`'s reason 4 |
+| 10 | recorded commit does not identify the executed bundle | **APPLIED** -- every panel records all four source-worktree commits and dirty markers, the sha256 of every module and checkpoint it actually loaded, and the staged manifest hash; `MANIFEST.sha256` is copied into `out/` so it is pulled with the results |
+
+SHOULD items applied: one timed pipeline per cell instead of a sum of independently
+measured medians; an isolator arm at fixed `k`=8 carrying the `k >= 32` `(M, m)` change, and
+both `k`=32 arms admitted to the Pareto; a genuine **uncapped**-pool control for both methods
+and both PDEs (Codex correctly noted the documented one did not exist); the reference's EQ
+support-padding rule restored and the latent perturbation made coordinate-whitened rather
+than globally RMS-scaled; `launch.sh`'s GPU flag removed (it conflicted with the batch file's
+`--gres`); explicit checkpoint paths instead of `find | head -1`; the reason-code
+documentation corrected.
+
+Not applied: a tau=0 agreement assertion for the *cold-start* solver (only the Poisson solver
+is checked). `lm_tau_generic` is a line-for-line copy of `fu_common.lm_jit_solver` plus the
+tau test, and the Poisson check exercises the identical tau machinery; this is recorded as a
+gap rather than closed.
+
+## Why MUST #3 was rejected
+
+Codex asked for one full-grid job per PDE, sequential over every `N`, `k`, method and `tau` on
+one GPU. It did not have the operating constraint this cell was launched under, which is to
+use the idle A100 pool rather than serialise the whole grid into one job. The decomposition
+actually used keeps the protocol intact where it matters:
+
+* **Dominance is computed WITHIN a (PDE, N) panel.** A panel is one job on one GPU, so every
+  timing that a Pareto frontier compares was measured on the same device, in one process, with
+  the same warm-up and median protocol. The per-panel frontier is valid exactly as Codex would
+  require.
+* **Accuracy is GPU-independent.** Errors, censoring rates, achieved residuals, EQ fit quality
+  and iteration counts do not depend on which A100 produced them.
+* **Cross-`N` timing is the one thing that does not survive the fan-out**, and it is the only
+  thing the scaling figure needs. It is served by a separate **single-GPU consolidation job**
+  that re-times the *whole* per-panel non-dominated frontier (not just the argmin) across every
+  mesh in one process. The README states which figures come from panel timings and which from
+  the consolidation run, and a generated table puts the two side by side for the same
+  configurations.
+* All panels request the same GPU type (`--gres=gpu:a100:1`), and every row records the GPU
+  model and the node.
+
+---
+
 ## MUST FIX
 
 - [ctol_tables.py:133](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-17-cost-to-tolerance/experiments/cost-to-tolerance/ctol_tables.py:133), [ctol_pick_configs.py:41](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-17-cost-to-tolerance/experiments/cost-to-tolerance/ctol_pick_configs.py:41): `nondominated`, `cheapest_reaching`, and consolidation selection admit censored rows. A row that stopped on stall, step size, lambda saturation, or budget can therefore define the “cost at tau” frontier—the exact previous-round defect this experiment is meant to remove. Keep censored cells in raw output/censor tables, but require `censored == false`, `censored_frac == 0`, and `n_blowup == 0` for Pareto, target-reaching, ownership, and consolidation selection.

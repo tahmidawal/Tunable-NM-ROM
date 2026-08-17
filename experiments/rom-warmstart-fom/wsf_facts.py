@@ -99,9 +99,9 @@ def build(runs=None):
         conv = [r for r in Pc if r["rom_tau"] == 0 and r["fom_tau"] == ftm]
         if conv:
             c0 = conv[0]
-            f["p_rom_err"] = g(np.mean([r["err_rel_l2_rom"] for r in conv]), ".3g")
-            f["p_rom_resid"] = g(np.mean([r["rom_rel_residual"] for r in conv]), ".3g")
-            f["p_rom_anorm"] = g(np.mean([r["rom_err_Anorm_ratio"] for r in conv]), ".3g")
+            f["p_rom_err"] = g(np.mean([r["err_rel_l2_rom"] for r in conv]), ".2e")
+            f["p_rom_resid"] = g(np.mean([r["rom_rel_residual"] for r in conv]), ".2e")
+            f["p_rom_anorm"] = g(np.mean([r["rom_err_Anorm_ratio"] for r in conv]), ".2e")
         for n in Ns:
             s2 = [r for r in Pc if r["N"] == n and r["rom_tau"] == 0 and r["fom_tau"] == ftm]
             if s2:
@@ -109,7 +109,7 @@ def build(runs=None):
                 f[f"p_baseiters_N{n}"] = g(s2[0]["iters_from_baseline"], ".0f")
         # negative-saving evidence
         neg = [r for r in Pc if r.get("iter_saving_frac", 0) < 0]
-        f["p_n_negative"] = str(len(neg))
+        f["p_n_negative"] = f"{len(neg)} of {len(Pc)}"
         if neg:
             w = min(neg, key=lambda r: r["iter_saving_frac"])
             f["p_worst_negative"] = g(100 * w["iter_saving_frac"], ".3g")

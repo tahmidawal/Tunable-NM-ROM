@@ -253,9 +253,9 @@ At `tau_FOM = 1e-10`, best over the ROM tolerance ladder:
 
 ### Why the saving is small — the mechanism
 
-The converged ROM reaches a held-out field error of **0.00927**, but that field has a
-relative *discrete residual* of **0.193** and, decisively, a relative **A-norm
-error of 0.0497**. CG's convergence is governed by the A-norm error, so the warm
+The converged ROM reaches a held-out field error of **9.27e-03**, but that field has a
+relative *discrete residual* of **1.93e-01** and, decisively, a relative **A-norm
+error of 4.97e-02**. CG's convergence is governed by the A-norm error, so the warm
 start only removes the fraction of the error the ROM actually resolves in that norm. The
 result is a **single-digit percentage** of the iterations, and it *shrinks as the tolerance
 tightens* — at `N = 512` the best saving is 7.73% at `1e-6`,
@@ -269,12 +269,12 @@ against the reference solution in the **relative L2 field error**; it never stop
 the reference — shows that plain CG needs **582 iterations** at `N = 512` before
 it is as accurate as the ROM, out of 1772 for the full solve. Yet
 warm-starting from that same field saves only 2.21% of them. Being *as
-accurate as* CG's 582th iterate in L2 is not the same as *being* CG's
-582th iterate: what CG contracts monotonically is the **A-norm**, in which the
-ROM's error is only 0.0497 of the initial one, and the part the ROM never resolved
+accurate as* CG's iterate number 582 in L2 is not the same as *being* that
+iterate: what CG contracts monotonically is the **A-norm**, in which the
+ROM's error is only 4.97e-02 of the initial one, and the part the ROM never resolved
 still has to be removed from scratch.
 
-**A bad guess is worse than no guess.** 30 of the measured configurations
+**A bad guess is worse than no guess.** 30 of 75 measured configurations
 needed *more* CG iterations from the ROM start than from zero, the worst by
 -6.71% (N=128, rom_tau=0.5, tau_FOM=1e-06). Loosening the ROM tolerance to make the
 ROM cheap does not help: it makes the guess actively harmful.

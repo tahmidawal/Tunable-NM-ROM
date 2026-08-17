@@ -269,12 +269,12 @@ against the reference solution in the **relative L2 field error**; it never stop
 the reference — shows that plain CG needs **{{p_worth_N512}} iterations** at `N = 512` before
 it is as accurate as the ROM, out of {{p_baseiters_N512}} for the full solve. Yet
 warm-starting from that same field saves only {{p_maxsave_1em10_N512}}% of them. Being *as
-accurate as* CG's {{p_worth_N512}}th iterate in L2 is not the same as *being* CG's
-{{p_worth_N512}}th iterate: what CG contracts monotonically is the **A-norm**, in which the
+accurate as* CG's iterate number {{p_worth_N512}} in L2 is not the same as *being* that
+iterate: what CG contracts monotonically is the **A-norm**, in which the
 ROM's error is only {{p_rom_anorm}} of the initial one, and the part the ROM never resolved
 still has to be removed from scratch.
 
-**A bad guess is worse than no guess.** {{p_n_negative}} of the measured configurations
+**A bad guess is worse than no guess.** {{p_n_negative}} measured configurations
 needed *more* CG iterations from the ROM start than from zero, the worst by
 {{p_worst_negative}}% ({{p_worst_negative_where}}). Loosening the ROM tolerance to make the
 ROM cheap does not help: it makes the guess actively harmful.

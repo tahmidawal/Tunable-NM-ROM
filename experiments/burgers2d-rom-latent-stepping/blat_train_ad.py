@@ -43,6 +43,9 @@ LAT_REG = float(os.environ.get("LAT_REG", "1e-4"))
 LAT_LR = float(os.environ.get("LAT_LR", "5e-3"))
 PEAK_LR = float(os.environ.get("PEAK_LR", "2e-3"))
 POD_KMAX = int(os.environ.get("POD_KMAX", "64"))
+# training seed (net init + batch sampling); default = the data seed -> identical to the
+# original runs.  The DATA draw always uses bc.SEED (multi-seed = training randomness only).
+TRAIN_SEED = int(os.environ.get("TRAIN_SEED", str(bc.SEED)))
 K = bc.K_LAT
 N = bc.N
 T1 = bc.NUM_STEPS + 1
@@ -87,7 +90,7 @@ def main():
     coords = jnp.asarray(bc.grid_coords(N))
     bfac = bc.bc_factor(coords)
     n_freq = (N - 1) // 2
-    key = jax.random.PRNGKey(bc.SEED)
+    key = jax.random.PRNGKey(TRAIN_SEED)
     params = mp.init_film_net(key, n_freq, K, 0)
     n_par = sum(int(np.prod(p.shape)) for p in jax.tree_util.tree_leaves(params))
     log(f"  film params {n_par}, n_freq {n_freq}, eps {eps:.4e}")
@@ -129,7 +132,7 @@ def main():
 
     m_ = jnp.zeros_like(Z); v_ = jnp.zeros_like(Z)
     cnt = jnp.zeros((n_rows,), dtype=F64)
-    rng = np.random.default_rng(bc.SEED + 7)
+    rng = np.random.default_rng(TRAIN_SEED + 7)
     all_pts = jnp.arange(n2)
     t0 = time.time()
     hist = []
@@ -170,7 +173,7 @@ def main():
     tag = f"N{N}_K{K}"
     ck = dict(params=jax.tree_util.tree_map(np.asarray, params), n_freq=n_freq,
               eps=eps, k_lat=K, Z_train=Zn, V=V, sv=sv, pod_floors=floors,
-              config=dict(bc.CONFIG, ad_steps=AD_STEPS, ad_batch=AD_BATCH,
+              config=dict(bc.CONFIG, train_seed=TRAIN_SEED, ad_steps=AD_STEPS, ad_batch=AD_BATCH,
                           p_sub=P_SUB, t_smooth=T_SMOOTH, lat_reg=LAT_REG,
                           lat_lr=LAT_LR, peak_lr=PEAK_LR, n_params=n_par),
               data_fingerprint=fp, train_rel_mean=float(rels.mean()),

@@ -93,6 +93,7 @@ FOM_NEWTON_LADDER = [int(v) for v in os.environ.get(
 FOM_ONLY = int(os.environ.get("FOM_ONLY", "0"))
 DO_CEILING = int(os.environ.get("DO_CEILING", "1"))
 CEIL_STRIDE = int(os.environ.get("CEIL_STRIDE", "10"))
+CEIL_BUDGET = int(os.environ.get("CEIL_BUDGET", "300"))   # the ceiling LM must converge
 BURN_IN_S = float(os.environ.get("BURN_IN_S", "1.5"))
 DO_SUPP = int(os.environ.get("DO_SUPP", "1"))
 N_TEST = int(os.environ.get("CTOL_N_TEST", str(bc.N_TEST)))
@@ -243,20 +244,31 @@ def fom_newton_ladder(n, U_te, nut, time_fn_, gen_chunk):
     return out
 
 
-def oracle_ceiling_burgers(dec, coords, U_te, k, budget, stride):
+def oracle_ceiling_burgers(dec, coords, U_te, k, budget, stride, Ztr):
     """The DECODER'S OWN ceiling at this k: LM on the data misfit to held-out
     snapshots (an oracle).  Reported next to the ROM error so non-monotone accuracy
-    in k is measured rather than merely caveated.  Every `stride`-th slice."""
+    in k is measured rather than merely caveated.  Every `stride`-th slice.
+
+    BEST OF TWO INITS -- the mean training latent AT THAT TIME INDEX, and the latent
+    of the nearest training snapshot -- matching `blat_rom.py`'s floor computation.
+    A zero init stalls at large k and yields a 'ceiling' the ROM then beats, which
+    diagnoses the ceiling solve rather than the decoder."""
     f = lambda z, u: dec(z, coords) - u
     rJ = jax.jit(lambda z, u: (f(z, u), jax.jacfwd(f)(z, u)))
     rn = jax.jit(lambda z, u: jnp.linalg.norm(f(z, u)))
-    z0 = jnp.zeros((k,), F64)
+    zmean_t = Ztr.mean(axis=0)                    # (T1, k)
     rels = []
     for i in range(U_te.shape[0]):
         for t in range(0, U_te.shape[1], stride):
             u = jnp.asarray(U_te[i, t])
-            z, r, _ = bc.lm_solve(lambda zz: rJ(zz, u), lambda zz: rn(zz, u), z0, budget)
-            rels.append(float(r) / float(jnp.linalg.norm(u)))
+            best = None
+            for z0 in (jnp.asarray(zmean_t[min(t, zmean_t.shape[0] - 1)]),
+                       jnp.asarray(Ztr[i % Ztr.shape[0], min(t, Ztr.shape[1] - 1)])):
+                z, r, _ = bc.lm_solve(lambda zz: rJ(zz, u), lambda zz: rn(zz, u),
+                                      z0, budget)
+                rel = float(r) / float(jnp.linalg.norm(u))
+                best = rel if best is None else min(best, rel)
+            rels.append(best)
     return float(np.mean(rels)), float(np.max(rels))
 
 
@@ -635,9 +647,18 @@ def main():
                     f"fomres {r['fom_residual_rel_mean']:.2e}  "
                     f"cens {r['censored_frac']*100:4.1f}%  blowups {blowups}")
             if DO_CEILING and method == "coord" and arm_tag == "primary":
-                cm, cx_ = oracle_ceiling_burgers(dec, coords, U_te, k, bc.IC_BUDGET,
-                                                 CEIL_STRIDE)
+                cm, cx_ = oracle_ceiling_burgers(dec, coords, U_te, k,
+                                                 max(bc.IC_BUDGET, CEIL_BUDGET),
+                                                 CEIL_STRIDE, ck[k]["Ztr"])
+                best_rom = min((r["err_rel_l2"] for r in rows
+                                if np.isfinite(r["err_rel_l2"])), default=float("inf"))
+                if best_rom < cm:
+                    log(f"   WARNING ceiling N={n} k={k}: the ROM ({best_rom:.3e}) BEAT "
+                        f"the oracle ceiling ({cm:.3e}); the ceiling LM did not converge "
+                        f"and this cell's ceiling is not a valid bound")
                 report["supplementary"].append(dict(
+                    rom_beat_ceiling=bool(best_rom < cm), best_rom_err=best_rom,
+                    budget=max(bc.IC_BUDGET, CEIL_BUDGET),
                     pde="burgers2d", method="oracle_ceiling", N=n, k=k, M=M,
                     m=int(len(wq)), tau=None, arm="ceiling", err_rel_l2=cm,
                     err_rel_l2_max=cx_, slice_stride=CEIL_STRIDE, n_sources=N_TEST,

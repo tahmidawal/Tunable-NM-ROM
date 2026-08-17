@@ -516,10 +516,18 @@ def build_blocks(data, pts):
                 rows.append([f"ROM tau={tau:.0e}", N]
                             + [fmt(cells[k]["err_rel_l2"]) if k in cells else "--"
                                for k in ks])
-            rows.append(["ROM / ceiling (tau=1e-3)", N]
-                        + [fmt(cells[k]["err_rel_l2"] / cl[k]["err_rel_l2"], ".2f")
-                           if (k in cells and k in cl and cl[k]["err_rel_l2"]) else "--"
+            tau_t = min(d["config"]["taus"])
+            tight = {p["k"]: p for p in primary
+                     if p["pde"] == pde and p["method"] == "coord"
+                     and p["N"] == N and p["tau"] == tau_t}
+            rows.append([f"ROM / ceiling (tau={tau_t:.0e})", N]
+                        + [fmt(tight[k]["err_rel_l2"] / cl[k]["err_rel_l2"], ".2f")
+                           if (k in tight and k in cl and cl[k]["err_rel_l2"]
+                               and math.isfinite(tight[k]["err_rel_l2"])) else "--"
                            for k in ks])
+            rows.append(["ceiling valid (ROM did not beat it)", N]
+                        + [("no" if cl[k].get("rom_beat_ceiling") else "yes")
+                           if k in cl else "--" for k in ks])
         B[f"ceiling_{pde}"] = (md_table(["quantity", "N"] + [f"k={k}" for k in ks], rows)
                                if rows else "_(no ceiling arm in this run)_")
 

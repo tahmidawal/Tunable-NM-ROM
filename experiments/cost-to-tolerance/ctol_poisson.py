@@ -104,6 +104,7 @@ FOM_LADDER = sorted({float(v) for v in os.environ.get(
 FOM_ONLY = int(os.environ.get("FOM_ONLY", "0"))
 DO_CEILING = int(os.environ.get("DO_CEILING", "1"))
 BURN_IN_S = float(os.environ.get("BURN_IN_S", "1.5"))
+CEIL_BUDGET = int(os.environ.get("CEIL_BUDGET", "300"))   # the ceiling LM must converge
 # The ARCHIVED Poisson baseline, transcribed from
 # poisson2d-rom-objective/runs/followup/pt_n/timing_n.json (rows[*].fom_cg_s and
 # .fom_max_rel_residual).  Re-timing the SAME function and reproducing that number is
@@ -318,22 +319,34 @@ def fom_ladder(n, Fs, U_ref, tn, fn_, time_fn_):
     return out
 
 
-def oracle_ceiling(dec, grid, Z_tr, U_int, tn, n_i, budget):
+def oracle_ceiling(dec, grid, Z_tr, U_int, tn, n_i, budget, nn_idx):
     """The DECODER'S OWN ceiling at this k: LM on the data misfit to the held-out
     field (an oracle -- the ROM never sees it).  Reported next to the ROM error so
     that non-monotone accuracy in k is a MEASURED property of the separately
-    trained checkpoints rather than a caveat about them."""
+    trained checkpoints rather than a caveat about them.
+
+    BEST OF TWO INITS (mean training latent, and the latent of the nearest training
+    sample in PARAMETER space), exactly as `pro_colloc.py`/`pro_train.py` compute
+    their floors.  A single mean init is not enough at large k -- the LM stalls in
+    the higher-dimensional latent space and reports a 'ceiling' the ROM then beats,
+    which is a diagnostic of the ceiling solve rather than of the decoder."""
     coords_int = grid.coords_int
     f = lambda z, u: dec(z, coords_int) - u
     rJ = jax.jit(lambda z, u: (f(z, u), jax.jacfwd(f)(z, u)))
     rn = jax.jit(lambda z, u: jnp.linalg.norm(f(z, u)))
-    z0 = jnp.asarray(Z_tr.mean(0))
-    rels = []
+    z_mean = jnp.asarray(Z_tr.mean(0))
+    rels, which = [], []
     for i in range(U_int.shape[0]):
         u = jnp.asarray(U_int[i].reshape(-1))
-        z, r, _ = pc.lm_solve(lambda zz: rJ(zz, u), lambda zz: rn(zz, u), z0, budget)
-        rels.append(float(r) / tn[i])
-    return float(np.mean(rels)), float(np.max(rels))
+        best = None
+        for name, z0 in (("mean", z_mean), ("nearest", jnp.asarray(Z_tr[nn_idx[i]]))):
+            z, r, _ = pc.lm_solve(lambda zz: rJ(zz, u), lambda zz: rn(zz, u), z0, budget)
+            rel = float(r) / tn[i]
+            if best is None or rel < best[0]:
+                best = (rel, name)
+        rels.append(best[0]); which.append(best[1])
+    return (float(np.mean(rels)), float(np.max(rels)),
+            {w: which.count(w) for w in set(which)})
 
 
 def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid, n_i):
@@ -395,6 +408,11 @@ def main():
 
     cx, cy, w, a, _z = mp.sample_params()
     N_TRAIN = mp.N_TRAIN
+    _zt = np.asarray(_z)
+    # nearest TRAINING sample in parameter space for each held-out test sample --
+    # the second init of the oracle-ceiling solve, exactly as pro_colloc.py does it
+    nn_idx = np.argmin(((_zt[N_TRAIN:N_TRAIN + N_TEST, None, :]
+                         - _zt[None, :N_TRAIN, :]) ** 2).sum(-1), axis=1)
     report = dict(
         config=dict(pde="poisson2d", ks=KS, ns=NS, taus=TAUS, M=M_MODES, m=MQ,
                     M_big=M_BIG, k_big=K_BIG, m_4M=MQ_4M, do_supp=DO_SUPP,
@@ -707,16 +725,27 @@ def main():
                         f"err {np.mean(errs):.3e} cond {np.linalg.cond(A_):.1e}")
                     save()
                 if DO_CEILING and method == "coord" and arm_tag == "primary":
-                    cm, cx_ = oracle_ceiling(dec_k, grid, ck[k]["Z_tr"], U_int, tn,
-                                             n_i, GN_ITERS)
+                    cm, cx_, cinit = oracle_ceiling(
+                        dec_k, grid, ck[k]["Z_tr"], U_int, tn, n_i,
+                        max(GN_ITERS, CEIL_BUDGET), nn_idx)
+                    best_rom = min((r["err_rel_l2"] for r in report["rows"]
+                                    if r["N"] == n and r["k"] == k
+                                    and r["method"] == "coord"
+                                    and r["arm"] == "primary"), default=float("inf"))
+                    if best_rom < cm:
+                        log(f"   WARNING ceiling N={n} k={k}: the ROM ({best_rom:.3e}) "
+                            f"BEAT the oracle ceiling ({cm:.3e}); the ceiling LM did not "
+                            f"converge and this cell's ceiling is not a valid bound")
                     report["supplementary"].append(dict(
                         pde="poisson2d", method="oracle_ceiling", N=n, k=k, M=M,
                         m=int(len(wq)), tau=None, arm="ceiling",
-                        err_rel_l2=cm, err_rel_l2_max=cx_, n_sources=N_TEST,
-                        seed=SEED, gpu=gpu_name, node=NODE,
+                        err_rel_l2=cm, err_rel_l2_max=cx_, init_used=cinit,
+                        budget=max(GN_ITERS, CEIL_BUDGET),
+                        rom_beat_ceiling=bool(best_rom < cm), best_rom_err=best_rom,
+                        n_sources=N_TEST, seed=SEED, gpu=gpu_name, node=NODE,
                         jax_backend=dev.platform, commit=commit))
                     log(f"   ceiling  N={n:4d} k={k:2d}: oracle inferred-latent "
-                        f"{cm:.3e} (max {cx_:.3e})")
+                        f"{cm:.3e} (max {cx_:.3e}, inits {cinit})")
                 log(f"   [cell {method} N={n} k={k} M={M} m={m}: {time.time()-t_cell:.0f}s]")
 
         # ---- control arms -----------------------------------------------------

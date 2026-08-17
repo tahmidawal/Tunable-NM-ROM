@@ -223,8 +223,8 @@ one GPU.
 `tau_FOM = 1e-6`, N = {{p_cross_1em08}} at `1e-8` and N = {{p_cross_1em10}} at `1e-10`.
 
 **Burgers.** {{b_headline}} The mechanism is the inner linear work: the ROM start costs
-**more BiCGStab iterations in all {{b_lin_total_configs}} configurations**, including the
-{{b_newton_wins}} where it *improves* the Newton count — a guess that is 1–2% wrong in a
+**more BiCGStab iterations in all {{b_lin_total_configs}} configurations**, including those
+where it *improves* the Newton count — a guess that is 1–2% wrong in a
 different direction from `u_{n-1}` makes each linear solve harder, and that outweighs the
 saved outer iteration.
 

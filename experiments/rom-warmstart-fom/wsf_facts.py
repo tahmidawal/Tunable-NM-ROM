@@ -52,7 +52,7 @@ def build(runs=None):
         fts = sorted({r["fom_tau"] for r in Pc}, reverse=True)
         f["p_meshes"] = ", ".join(str(n) for n in Ns)
         f["p_fom_taus"] = ", ".join(f"{t:g}" for t in fts)
-        f["p_gpu"] = str(Pprov["gpu"])
+        f["p_gpu"] = str(Pc[0].get("gpu_kind") or Pprov["gpu"])
         f["p_job"] = str(Pprov["slurm_job_id"])
         # per-tolerance best hybrid and crossover
         for ft in fts:
@@ -162,7 +162,7 @@ def build(runs=None):
         Ns = sorted({r["N"] for r in Bc})
         fts = sorted({r["fom_tau"] for r in Bc}, reverse=True)
         f["b_meshes"] = ", ".join(str(n) for n in Ns)
-        f["b_gpu"] = str(Bprov["gpu"])
+        f["b_gpu"] = str(Bc[0].get("gpu_kind") or Bprov["gpu"])
         f["b_job"] = str(Bprov["slurm_job_id"])
         f["b_variant"] = str(Bc[0].get("variant"))
         f["b_m"] = str(Bc[0].get("m"))

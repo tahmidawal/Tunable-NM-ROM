@@ -462,15 +462,33 @@ S_corrected(N, tau) = S_old(N) x m(N, tau),    m(N, tau) = t_tolerance(N, tau) /
 so **multiply the old number by `m`**. Two versions of `m` are given and they do not agree
 exactly; which to use depends on what you can establish about the hardware.
 
-- The **time** multiplier is a ratio of two wall clocks measured together on one GPU here.
-  **Use this one when the archived baseline is reproduced** — the anchoring check above shows
-  it is, to a few percent — because it correctly carries the fixed per-solve overhead that the
-  archived timing also paid.
+- The **time** multiplier is a ratio of two wall clocks measured together on one GPU here. It
+  is licensed **only where the per-mesh anchor is tight** (single-digit %), because only then
+  has the archived environment been shown to reproduce. Where it applies it is the better
+  choice, since it carries the fixed per-solve overhead the archived timing also paid.
 - The **iteration** multiplier (400 fixed Newton steps against the measured
-  tolerance-based count) is a pure work count that needs no hardware assumption, but it
-  *ignores* fixed overhead and so is the more aggressive of the two. Use it as the fallback
-  when hardware comparability cannot be established, and read it as a lower bound on the
-  corrected speedup.
+  tolerance-based count) is a pure work count needing no hardware assumption, but it *ignores*
+  fixed overhead and is the more aggressive of the two. **Use it wherever the anchor is
+  loose**, and read it as a lower bound on the corrected speedup.
+
+**The anchor is not uniform across `N`, so the choice is per-mesh, not global.** The tables
+below publish the anchor spread and the resulting recommendation on every row, so a reader can
+see which regime they are in instead of taking the choice on trust.
+
+> **Coarse meshes are where this correction is weakest — do not take an `N = 32` number at
+> face value.** On Poisson at `N = 32` the anchor is **37% — a clear
+> failure**: the archived run took 5.591 ms for the same function this cell
+> measures at 3.548 ms. A coarse solve is dominated by per-iteration kernel
+> launch overhead, which does not transfer between environments. And independently, at
+> `N = 32` the archived Poisson solve genuinely reaches 8.86e-14, so by the
+> *accuracy-matched* definition the over-convergence factor there is essentially unity. **Both
+> instruments are weakest at the same mesh**: the factor is ~1 by one definition, and the
+> multiplier one would otherwise prefer is the one the anchor does not support. Use the
+> iteration multiplier at `N = 32`, or treat that mesh as uncorrected.
+>
+> The Burgers anchors are tight at every mesh (0.21%, 6.8%,
+> 0.13%, 0.53%), so the time multiplier is licensed
+> throughout there — which matters, because Burgers is where the correction is large.
 
 On the Burgers side the time multiplier additionally compares the testbed's own rollout
 against **this cell's** Newton driver, so it carries an implementation difference as well as a
@@ -478,12 +496,12 @@ tolerance difference (the two agree to 2.6e-16 on a representative linear solve,
 reproduces the archived rollout to 0.13% at `N = 128`, but the outer loops
 are not the same code). Old values read from `../burgers2d-rom-latent-stepping/runs/followup/bt_n/timing_n.json`:
 
-| N | old FOM (ms) | old rollout speedup | old end-to-end | m (time) | m (iterations) | corrected rollout | corrected end-to-end |
-|---|---|---|---|---|---|---|---|
-| 32 | 196.9 | 0.76x | 0.72x | 0.267 | 0.262 | 0.20x | 0.19x |
-| 64 | 442.2 | 1.70x | 1.57x | 0.230 | 0.281 | 0.39x | 0.36x |
-| 128 | 1215 | 4.61x | 4.46x | 0.209 | 0.297 | 0.96x | 0.93x |
-| 256 | 2148 | 8.32x | 7.96x | 0.230 | 0.301 | 1.91x | 1.83x |
+| N | old FOM (ms) | old rollout speedup | old end-to-end | anchor | use | m (time) | m (iterations) | corrected rollout | corrected end-to-end |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 196.9 | 0.76x | 0.72x | 0.21% tight | time | 0.267 | 0.262 | 0.20x | 0.19x |
+| 64 | 442.2 | 1.70x | 1.57x | 6.8% tight | time | 0.230 | 0.281 | 0.39x | 0.36x |
+| 128 | 1215 | 4.61x | 4.46x | 0.13% tight | time | 0.209 | 0.297 | 0.96x | 0.93x |
+| 256 | 2148 | 8.32x | 7.96x | 0.53% tight | time | 0.230 | 0.301 | 1.91x | 1.83x |
 
 **The headline numbers `exp/2026-08-16-burgers2d-rom-latent-stepping`, the consolidated report
 and `HANDOFF.md` all quote — the 8.0x end-to-end at `N = 256` and the
@@ -540,13 +558,13 @@ these three rungs.
 
 Applying the multiplier to the archived Poisson ladder in `../poisson2d-rom-objective/runs/followup/pt_n/timing_n.json`:
 
-| N | old FOM (ms) | old solve-only speedup | old end-to-end | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
-|---|---|---|---|---|---|---|---|
-| 32 | 5.591 | 0.28x | 0.28x | 0.865 | 0.862 | 0.24x | 0.24x |
-| 64 | 7.786 | 0.39x | 0.39x | 0.865 | 0.860 | 0.34x | 0.34x |
-| 128 | 15.14 | 0.76x | 0.74x | 0.869 | 0.856 | 0.66x | 0.64x |
-| 256 | 31.13 | 1.56x | 1.40x | 0.863 | 0.848 | 1.35x | 1.21x |
-| 512 | 96.01 | 4.87x | 3.56x | 0.862 | 0.790 | 4.20x | 3.07x |
+| N | old FOM (ms) | old solve-only speedup | old end-to-end | anchor | use | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 5.591 | 0.28x | 0.28x | 37% **LOOSE** | **iterations** | 0.865 | 0.862 | 0.24x | 0.24x |
+| 64 | 7.786 | 0.39x | 0.39x | 8.5% tight | time | 0.865 | 0.860 | 0.34x | 0.34x |
+| 128 | 15.14 | 0.76x | 0.74x | 1.9% tight | time | 0.869 | 0.856 | 0.66x | 0.64x |
+| 256 | 31.13 | 1.56x | 1.40x | 4.9% tight | time | 0.863 | 0.848 | 1.35x | 1.21x |
+| 512 | 96.01 | 4.87x | 3.56x | 3.1% tight | time | 0.862 | 0.790 | 4.20x | 3.07x |
 
 ### What to do with this
 
@@ -560,10 +578,10 @@ Applying the multiplier to the archived Poisson ladder in `../poisson2d-rom-obje
    (0.856–0.880, 2.75% spread), so a single scalar
    there is a fair approximation — the blanket "never use a scalar" rule holds for Burgers,
    not for Poisson, and it is worth saying so rather than over-warning.
-2b. Use the **time** multiplier where the anchoring check holds (it does here, to a few
-   percent), since it carries the fixed per-solve overhead the archived timing also paid. Fall
-   back to the **iteration** multiplier only when hardware comparability cannot be shown, and
-   treat it as a lower bound on the corrected speedup.
+2b. Choose the multiplier **per mesh** from the anchor column: time where the anchor is
+   single-digit %, iterations where it is not. On Poisson at `N = 32` the anchor fails at
+   37% and that mesh should be treated as uncorrected. On Burgers every
+   anchor is tight, so use the time multiplier throughout.
 3. The ROM-side numbers are unaffected. Nothing about the ROM's cost or accuracy changes;
    only the denominator does.
 4. This does not, by itself, overturn the qualitative Burgers conclusion that the latent solve

@@ -462,15 +462,33 @@ S_corrected(N, tau) = S_old(N) x m(N, tau),    m(N, tau) = t_tolerance(N, tau) /
 so **multiply the old number by `m`**. Two versions of `m` are given and they do not agree
 exactly; which to use depends on what you can establish about the hardware.
 
-- The **time** multiplier is a ratio of two wall clocks measured together on one GPU here.
-  **Use this one when the archived baseline is reproduced** — the anchoring check above shows
-  it is, to a few percent — because it correctly carries the fixed per-solve overhead that the
-  archived timing also paid.
+- The **time** multiplier is a ratio of two wall clocks measured together on one GPU here. It
+  is licensed **only where the per-mesh anchor is tight** (single-digit %), because only then
+  has the archived environment been shown to reproduce. Where it applies it is the better
+  choice, since it carries the fixed per-solve overhead the archived timing also paid.
 - The **iteration** multiplier ({{oc_b_newton_fixed}} fixed Newton steps against the measured
-  tolerance-based count) is a pure work count that needs no hardware assumption, but it
-  *ignores* fixed overhead and so is the more aggressive of the two. Use it as the fallback
-  when hardware comparability cannot be established, and read it as a lower bound on the
-  corrected speedup.
+  tolerance-based count) is a pure work count needing no hardware assumption, but it *ignores*
+  fixed overhead and is the more aggressive of the two. **Use it wherever the anchor is
+  loose**, and read it as a lower bound on the corrected speedup.
+
+**The anchor is not uniform across `N`, so the choice is per-mesh, not global.** The tables
+below publish the anchor spread and the resulting recommendation on every row, so a reader can
+see which regime they are in instead of taking the choice on trust.
+
+> **Coarse meshes are where this correction is weakest — do not take an `N = 32` number at
+> face value.** On Poisson at `N = 32` the anchor is **{{oc_p_archcheck_N32}}% — a clear
+> failure**: the archived run took {{oc_p_old_fom_N32}} ms for the same function this cell
+> measures at {{oc_p_t_fixed_N32}} ms. A coarse solve is dominated by per-iteration kernel
+> launch overhead, which does not transfer between environments. And independently, at
+> `N = 32` the archived Poisson solve genuinely reaches {{oc_p_resid_N32}}, so by the
+> *accuracy-matched* definition the over-convergence factor there is essentially unity. **Both
+> instruments are weakest at the same mesh**: the factor is ~1 by one definition, and the
+> multiplier one would otherwise prefer is the one the anchor does not support. Use the
+> iteration multiplier at `N = 32`, or treat that mesh as uncorrected.
+>
+> The Burgers anchors are tight at every mesh ({{oc_b_archcheck_N32}}%, {{oc_b_archcheck_N64}}%,
+> {{oc_b_archcheck_N128}}%, {{oc_b_archcheck_N256}}%), so the time multiplier is licensed
+> throughout there — which matters, because Burgers is where the correction is large.
 
 On the Burgers side the time multiplier additionally compares the testbed's own rollout
 against **this cell's** Newton driver, so it carries an implementation difference as well as a
@@ -478,12 +496,12 @@ tolerance difference (the two agree to 2.6e-16 on a representative linear solve,
 reproduces the archived rollout to {{oc_b_archcheck_N128}}% at `N = 128`, but the outer loops
 are not the same code). Old values read from `{{oc_b_old_json}}`:
 
-| N | old FOM (ms) | old rollout speedup | old end-to-end | m (time) | m (iterations) | corrected rollout | corrected end-to-end |
-|---|---|---|---|---|---|---|---|
-| 32 | {{oc_b_old_fom_N32}} | {{oc_b_old_speed_N32}}x | {{oc_b_old_e2e_N32}}x | {{oc_b_mult_1em10_N32}} | {{oc_b_multit_1em10_N32}} | {{oc_b_new_speed_1em10_N32}}x | {{oc_b_new_e2e_1em10_N32}}x |
-| 64 | {{oc_b_old_fom_N64}} | {{oc_b_old_speed_N64}}x | {{oc_b_old_e2e_N64}}x | {{oc_b_mult_1em10_N64}} | {{oc_b_multit_1em10_N64}} | {{oc_b_new_speed_1em10_N64}}x | {{oc_b_new_e2e_1em10_N64}}x |
-| 128 | {{oc_b_old_fom_N128}} | {{oc_b_old_speed_N128}}x | {{oc_b_old_e2e_N128}}x | {{oc_b_mult_1em10_N128}} | {{oc_b_multit_1em10_N128}} | {{oc_b_new_speed_1em10_N128}}x | {{oc_b_new_e2e_1em10_N128}}x |
-| 256 | {{oc_b_old_fom_N256}} | {{oc_b_old_speed_N256}}x | {{oc_b_old_e2e_N256}}x | {{oc_b_mult_1em10_N256}} | {{oc_b_multit_1em10_N256}} | {{oc_b_new_speed_1em10_N256}}x | {{oc_b_new_e2e_1em10_N256}}x |
+| N | old FOM (ms) | old rollout speedup | old end-to-end | anchor | use | m (time) | m (iterations) | corrected rollout | corrected end-to-end |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | {{oc_b_old_fom_N32}} | {{oc_b_old_speed_N32}}x | {{oc_b_old_e2e_N32}}x | {{oc_b_archcheck_N32}}% {{oc_b_anchor_N32}} | {{oc_b_use_N32}} | {{oc_b_mult_1em10_N32}} | {{oc_b_multit_1em10_N32}} | {{oc_b_new_speed_1em10_N32}}x | {{oc_b_new_e2e_1em10_N32}}x |
+| 64 | {{oc_b_old_fom_N64}} | {{oc_b_old_speed_N64}}x | {{oc_b_old_e2e_N64}}x | {{oc_b_archcheck_N64}}% {{oc_b_anchor_N64}} | {{oc_b_use_N64}} | {{oc_b_mult_1em10_N64}} | {{oc_b_multit_1em10_N64}} | {{oc_b_new_speed_1em10_N64}}x | {{oc_b_new_e2e_1em10_N64}}x |
+| 128 | {{oc_b_old_fom_N128}} | {{oc_b_old_speed_N128}}x | {{oc_b_old_e2e_N128}}x | {{oc_b_archcheck_N128}}% {{oc_b_anchor_N128}} | {{oc_b_use_N128}} | {{oc_b_mult_1em10_N128}} | {{oc_b_multit_1em10_N128}} | {{oc_b_new_speed_1em10_N128}}x | {{oc_b_new_e2e_1em10_N128}}x |
+| 256 | {{oc_b_old_fom_N256}} | {{oc_b_old_speed_N256}}x | {{oc_b_old_e2e_N256}}x | {{oc_b_archcheck_N256}}% {{oc_b_anchor_N256}} | {{oc_b_use_N256}} | {{oc_b_mult_1em10_N256}} | {{oc_b_multit_1em10_N256}} | {{oc_b_new_speed_1em10_N256}}x | {{oc_b_new_e2e_1em10_N256}}x |
 
 **The headline numbers `exp/2026-08-16-burgers2d-rom-latent-stepping`, the consolidated report
 and `HANDOFF.md` all quote — the 8.0x end-to-end at `N = 256` and the
@@ -540,13 +558,13 @@ these three rungs.
 
 Applying the multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
 
-| N | old FOM (ms) | old solve-only speedup | old end-to-end | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
-|---|---|---|---|---|---|---|---|
-| 32 | {{oc_p_old_fom_N32}} | {{oc_p_old_speed_N32}}x | {{oc_p_old_e2e_N32}}x | {{oc_p_mult_1em10_N32}} | {{oc_p_multit_1em10_N32}} | {{oc_p_new_speed_1em10_N32}}x | {{oc_p_new_e2e_1em10_N32}}x |
-| 64 | {{oc_p_old_fom_N64}} | {{oc_p_old_speed_N64}}x | {{oc_p_old_e2e_N64}}x | {{oc_p_mult_1em10_N64}} | {{oc_p_multit_1em10_N64}} | {{oc_p_new_speed_1em10_N64}}x | {{oc_p_new_e2e_1em10_N64}}x |
-| 128 | {{oc_p_old_fom_N128}} | {{oc_p_old_speed_N128}}x | {{oc_p_old_e2e_N128}}x | {{oc_p_mult_1em10_N128}} | {{oc_p_multit_1em10_N128}} | {{oc_p_new_speed_1em10_N128}}x | {{oc_p_new_e2e_1em10_N128}}x |
-| 256 | {{oc_p_old_fom_N256}} | {{oc_p_old_speed_N256}}x | {{oc_p_old_e2e_N256}}x | {{oc_p_mult_1em10_N256}} | {{oc_p_multit_1em10_N256}} | {{oc_p_new_speed_1em10_N256}}x | {{oc_p_new_e2e_1em10_N256}}x |
-| 512 | {{oc_p_old_fom_N512}} | {{oc_p_old_speed_N512}}x | {{oc_p_old_e2e_N512}}x | {{oc_p_mult_1em10_N512}} | {{oc_p_multit_1em10_N512}} | {{oc_p_new_speed_1em10_N512}}x | {{oc_p_new_e2e_1em10_N512}}x |
+| N | old FOM (ms) | old solve-only speedup | old end-to-end | anchor | use | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | {{oc_p_old_fom_N32}} | {{oc_p_old_speed_N32}}x | {{oc_p_old_e2e_N32}}x | {{oc_p_archcheck_N32}}% {{oc_p_anchor_N32}} | {{oc_p_use_N32}} | {{oc_p_mult_1em10_N32}} | {{oc_p_multit_1em10_N32}} | {{oc_p_new_speed_1em10_N32}}x | {{oc_p_new_e2e_1em10_N32}}x |
+| 64 | {{oc_p_old_fom_N64}} | {{oc_p_old_speed_N64}}x | {{oc_p_old_e2e_N64}}x | {{oc_p_archcheck_N64}}% {{oc_p_anchor_N64}} | {{oc_p_use_N64}} | {{oc_p_mult_1em10_N64}} | {{oc_p_multit_1em10_N64}} | {{oc_p_new_speed_1em10_N64}}x | {{oc_p_new_e2e_1em10_N64}}x |
+| 128 | {{oc_p_old_fom_N128}} | {{oc_p_old_speed_N128}}x | {{oc_p_old_e2e_N128}}x | {{oc_p_archcheck_N128}}% {{oc_p_anchor_N128}} | {{oc_p_use_N128}} | {{oc_p_mult_1em10_N128}} | {{oc_p_multit_1em10_N128}} | {{oc_p_new_speed_1em10_N128}}x | {{oc_p_new_e2e_1em10_N128}}x |
+| 256 | {{oc_p_old_fom_N256}} | {{oc_p_old_speed_N256}}x | {{oc_p_old_e2e_N256}}x | {{oc_p_archcheck_N256}}% {{oc_p_anchor_N256}} | {{oc_p_use_N256}} | {{oc_p_mult_1em10_N256}} | {{oc_p_multit_1em10_N256}} | {{oc_p_new_speed_1em10_N256}}x | {{oc_p_new_e2e_1em10_N256}}x |
+| 512 | {{oc_p_old_fom_N512}} | {{oc_p_old_speed_N512}}x | {{oc_p_old_e2e_N512}}x | {{oc_p_archcheck_N512}}% {{oc_p_anchor_N512}} | {{oc_p_use_N512}} | {{oc_p_mult_1em10_N512}} | {{oc_p_multit_1em10_N512}} | {{oc_p_new_speed_1em10_N512}}x | {{oc_p_new_e2e_1em10_N512}}x |
 
 ### What to do with this
 
@@ -560,10 +578,10 @@ Applying the multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
    ({{oc_p_mult_min}}–{{oc_p_mult_max}}, {{oc_p_mult_spread}}% spread), so a single scalar
    there is a fair approximation — the blanket "never use a scalar" rule holds for Burgers,
    not for Poisson, and it is worth saying so rather than over-warning.
-2b. Use the **time** multiplier where the anchoring check holds (it does here, to a few
-   percent), since it carries the fixed per-solve overhead the archived timing also paid. Fall
-   back to the **iteration** multiplier only when hardware comparability cannot be shown, and
-   treat it as a lower bound on the corrected speedup.
+2b. Choose the multiplier **per mesh** from the anchor column: time where the anchor is
+   single-digit %, iterations where it is not. On Poisson at `N = 32` the anchor fails at
+   {{oc_p_archcheck_N32}}% and that mesh should be treated as uncorrected. On Burgers every
+   anchor is tight, so use the time multiplier throughout.
 3. The ROM-side numbers are unaffected. Nothing about the ROM's cost or accuracy changes;
    only the denominator does.
 4. This does not, by itself, overturn the qualitative Burgers conclusion that the latent solve

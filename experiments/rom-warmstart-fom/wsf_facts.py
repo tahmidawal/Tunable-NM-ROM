@@ -282,8 +282,13 @@ def build(runs=None):
             # anchored to the same denominator the archived speedups actually used.
             mine = [r.get("t_fom_testbed_ms") for r in Bc if r["N"] == n]
             if mine and mine[0]:
-                f[f"oc_b_archcheck_N{n}"] = g(
-                    100.0 * abs(mine[0] / (orow["fom_rollout_s"] * 1e3) - 1.0), ".2g")
+                d_ = 100.0 * abs(mine[0] / (orow["fom_rollout_s"] * 1e3) - 1.0)
+                f[f"oc_b_archcheck_N{n}"] = g(d_, ".2g")
+                # The time multiplier is only licensed where the anchor is TIGHT.  At a
+                # coarse mesh the solve is dominated by per-iteration launch overhead,
+                # which does not transfer between environments, and the anchor can fail.
+                f[f"oc_b_anchor_N{n}"] = "tight" if d_ < 10.0 else "**LOOSE**"
+                f[f"oc_b_use_N{n}"] = "time" if d_ < 10.0 else "**iterations**"
             for r in Bc:
                 if r["N"] != n:
                     continue
@@ -332,8 +337,10 @@ def build(runs=None):
             f[f"oc_p_old_fom_N{n}"] = g(orow["fom_cg_s"] * 1e3, ".4g")
             mine = [r.get("t_fom_testbed_ms") for r in Pc if r["N"] == n]
             if mine and mine[0]:
-                f[f"oc_p_archcheck_N{n}"] = g(
-                    100.0 * abs(mine[0] / (orow["fom_cg_s"] * 1e3) - 1.0), ".2g")
+                d_ = 100.0 * abs(mine[0] / (orow["fom_cg_s"] * 1e3) - 1.0)
+                f[f"oc_p_archcheck_N{n}"] = g(d_, ".2g")
+                f[f"oc_p_anchor_N{n}"] = "tight" if d_ < 10.0 else "**LOOSE**"
+                f[f"oc_p_use_N{n}"] = "time" if d_ < 10.0 else "**iterations**"
             for r in Pc:
                 if r["N"] != n:
                     continue

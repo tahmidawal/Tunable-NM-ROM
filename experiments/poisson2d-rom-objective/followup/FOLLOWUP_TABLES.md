@@ -30,11 +30,94 @@ Solver work at each k (median over the 16 test sources, LM budget 60): k=2: 10 a
 
 The POD control is a deterministic function of the training snapshots, so it carries no training-seed variance; its row is constant by construction.
 
+### m ladder at fixed (K=8, M=64) — NNLS-EQ on grid nodes vs a meshfree pool
+
+| scheme | m=64 | m=128 | m=256 | m=512 | m=1024 | full grid |
+|---|---|---|---|---|---|---|
+| NNLS-EQ, grid nodes | 5.48e-02 | 1.80e-02 | 8.66e-03 | 7.68e-03 | 7.65e-03 | 7.65e-03 |
+| ↳ ms per solve (median of 7, one GPU) | 11.1 | 13.9 | 15.1 | 15.2 | 18.9 | 35.6 |
+| ↳ NNLS relative fit residual | 1.4e-01 | 1.6e-02 | 2.4e-03 | 2.4e-04 | 1.6e-05 | 0 |
+| NNLS-EQ, meshfree pool | 5.23e-02 | 1.92e-02 | 8.98e-03 | 7.84e-03 | 7.80e-03 | 7.65e-03 |
+| ↳ ms per solve (median of 7, one GPU) | 12.9 | 14.0 | 11.5 | 15.3 | 18.5 | 35.6 |
+| ↳ NNLS relative fit residual | 1.2e-01 | 1.7e-02 | 2.6e-03 | 2.7e-04 | 2.4e-05 | 0 |
+
+Oracle (finite-budget inferred latent) on the same test set: 7.11e-03.
+
 ### M ladder at m ≈ 4M (K=8)
 
-| M (requested) | modes retained M' | m | full grid | NNLS-EQ grid | NNLS-EQ meshfree |
-|---|---|---|---|---|---|
-| 16 | 17 | 64 | 1.49e-02 | 3.03e-02 | 3.79e-02 |
-| 32 | 32 | 128 | 9.53e-03 | 1.34e-02 | 1.44e-02 |
-| 64 | 64 | 256 | 7.65e-03 | 8.66e-03 | 8.98e-03 |
+| M (requested) | modes retained M' | m | full grid | NNLS-EQ grid | NNLS-EQ meshfree | ms/solve full | ms/solve EQ (meshfree) |
+|---|---|---|---|---|---|---|---|
+| 16 | 17 | 64 | 1.49e-02 | 3.03e-02 | 3.79e-02 | 20.1 | 6.7 |
+| 32 | 32 | 128 | 9.53e-03 | 1.34e-02 | 1.44e-02 | 45.3 | 14.8 |
+| 64 | 64 | 256 | 7.65e-03 | 8.66e-03 | 8.98e-03 | 35.6 | 11.5 |
+| 128 | 129 | 512 | 7.17e-03 | 7.28e-03 | 7.42e-03 | 38.1 | 16.6 |
+| 256 | 257 | 1024 | 7.13e-03 | 7.13e-03 | 7.25e-03 | 47.4 | 23.9 |
+
+### Online cost vs N on ONE GPU (cuda:0, all N sequential in one process; k=8, M=64, m=256, meshfree NNLS-EQ REFIT ON EACH N's GRID, median of 7 after 2 warm-ups, `block_until_ready`)
+
+| N | interior DOF | FOM (CG, f64) | ROM latent solve | ROM iters | ms / iteration | input projection Λ⁻¹Φᵀf | full-field decode | speedup (solve) | speedup (end to end) | ROM rel-L2 vs FD at this N |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 32 | 900 | 5.59 ms | 19.86 ms | 27.8 | 0.602 | 0.07 ms | 0.13 ms | **0.3x** | 0.3x | 1.08e-02 |
+| 64 | 3844 | 7.79 ms | 19.77 ms | 27.8 | 0.599 | 0.07 ms | 0.23 ms | **0.4x** | 0.4x | 8.94e-03 |
+| 128 | 15876 | 15.14 ms | 19.87 ms | 27.8 | 0.602 | 0.08 ms | 0.47 ms | **0.8x** | 0.7x | 8.86e-03 |
+| 256 | 64516 | 31.13 ms | 19.98 ms | 27.8 | 0.605 | 0.10 ms | 2.20 ms | **1.6x** | 1.4x | 8.86e-03 |
+| 512 | 260100 | 96.01 ms | 19.71 ms | 27.8 | 0.597 | 0.19 ms | 7.04 ms | **4.9x** | 3.6x | 8.86e-03 |
+
+The mode table Φ is a per-mesh constant and is built offline (N=32: 3 ms, N=64: 9 ms, N=128: 28 ms, N=256: 115 ms, N=512: 506 ms); the online projection above is the one (M'×n) matvec, verified equal to `pro_common.weak_source_term` to 9e-19 absolute.
+
+### Per-iteration cost and iterations vs k on ONE GPU (cuda:0, N=64, M=64, m=256, meshfree EQ; FOM CG 7.85 ms). The reference LM has no absolute residual tolerance, so these are iterations to TERMINATION (reason histogram in the JSON); the POD ROM is linear, so its online solve is one precomputed pseudo-inverse matvec.
+
+| manifold | k | ROM solve | Jacobian evals | LM attempts | ms / iteration | speedup vs FOM | rel-L2 (cross-check) |
+|---|---|---|---|---|---|---|---|
+| coordinate | 2 | 6.51 ms | 23.1 | 32.2 | 0.434 | 1.21x | 3.86e-01 |
+| coordinate | 4 | 7.41 ms | 16.3 | 19.3 | 0.529 | 1.06x | 1.74e-02 |
+| coordinate | 6 | 16.59 ms | 26.0 | 31.7 | 0.535 | 0.47x | 7.00e-02 |
+| coordinate | 8 | 20.15 ms | 27.8 | 32.9 | 0.611 | 0.39x | 8.94e-03 |
+| coordinate | 12 | 16.09 ms | 31.6 | 41.0 | 0.555 | 0.49x | 3.15e-02 |
+| coordinate | 16 | 15.91 ms | 32.1 | 40.8 | 0.723 | 0.49x | 6.15e-03 |
+| coordinate | 24 | 21.15 ms | 34.9 | 44.6 | 0.661 | 0.37x | 1.41e-02 |
+| coordinate | 32 | 24.57 ms | 39.7 | 58.4 | 0.910 | 0.32x | 5.98e-02 |
+| POD | 2 | 52 us | 1 (direct) | — | — | 151x | 4.57e-01 |
+| POD | 4 | 52 us | 1 (direct) | — | — | 152x | 2.91e-01 |
+| POD | 6 | 53 us | 1 (direct) | — | — | 147x | 2.20e-01 |
+| POD | 8 | 51 us | 1 (direct) | — | — | 153x | 1.77e-01 |
+| POD | 12 | 54 us | 1 (direct) | — | — | 145x | 1.29e-01 |
+| POD | 16 | 51 us | 1 (direct) | — | — | 155x | 1.01e-01 |
+| POD | 24 | 52 us | 1 (direct) | — | — | 151x | 6.68e-02 |
+| POD | 32 | 73 us | 1 (direct) | — | — | 108x | 5.11e-02 |
+| POD | 48 | 73 us | 1 (direct) | — | — | 107x | 3.54e-02 |
+| POD (square) | 64 | 52 us | 1 (direct) | — | — | 150x | 4.89e-02 |
+
+The POD solve is a single small matvec and is dispatch-bound, so its time is a floor on the measurement, not a property of the method.
+
+### Complexity ladder — NB independent bump sources (intrinsic dimension 4·NB)
+
+NB=1 is the main study's family (`ms_parametric.sample_params` verbatim). Same training recipe and budget at every (NB, k); coordinate ROM = `weak_a1_M64`, nearest init; POD rows are the exact minimisers of the same full-grid objectives.
+
+| NB (intrinsic dim) | k | coord train | coord ORACLE | coord ROM full | coord ROM EQ m=256 | coord FD-LSPG | POD proj | POD weak |
+|---|---|---|---|---|---|---|---|---|
+| 1 (4) | 2 | 5.46e-02 | 1.31e-01 | 1.31e-01 | 1.31e-01 | 2.99e-01 | 4.57e-01 | 4.57e-01 |
+| 1 (4) | 4 | 1.23e-02 | 1.55e-02 | 1.57e-02 | 1.59e-02 | 9.08e-02 | 2.91e-01 | 2.91e-01 |
+| 1 (4) | 6 | 8.49e-03 | 9.34e-03 | 9.69e-03 | 9.95e-03 | 6.13e-02 | 2.20e-01 | 2.20e-01 |
+| 1 (4) | 8 | 7.04e-03 | 7.11e-03 | 7.65e-03 | 8.98e-03 | 4.63e-02 | 1.77e-01 | 1.77e-01 |
+| 1 (4) | 12 | 6.11e-03 | 6.24e-03 | 7.28e-03 | 8.35e-03 | 3.14e-02 | 1.29e-01 | 1.29e-01 |
+| 1 (4) | 16 | 5.23e-03 | 4.13e-03 | 5.22e-03 | 6.99e-03 | 2.55e-02 | 1.01e-01 | 1.01e-01 |
+| 1 (4) | 24 | 5.15e-03 | 3.98e-03 | 5.47e-03 | 6.77e-03 | 4.01e-02 | 6.68e-02 | 6.68e-02 |
+| 1 (4) | 32 | 4.56e-03 | 3.43e-03 | 5.34e-03 | 7.67e-03 | 1.89e-01 | 5.10e-02 | 5.11e-02 |
+| 2 (8) | 2 | 8.37e-02 | 4.11e-01 | 4.11e-01 | 4.11e-01 | 6.71e-01 | 4.21e-01 | 4.21e-01 |
+| 2 (8) | 4 | 2.03e-02 | 1.52e-01 | 1.52e-01 | 1.52e-01 | 5.21e-01 | 2.50e-01 | 2.50e-01 |
+| 2 (8) | 6 | 1.49e-02 | 1.23e-01 | 1.26e-01 | 1.26e-01 | 3.72e-01 | 1.84e-01 | 1.84e-01 |
+| 2 (8) | 8 | 1.39e-02 | 1.09e-01 | 1.10e-01 | 1.10e-01 | 3.08e-01 | 1.49e-01 | 1.49e-01 |
+| 2 (8) | 12 | 1.22e-02 | 7.03e-02 | 7.35e-02 | 7.08e-02 | 2.30e-01 | 1.01e-01 | 1.01e-01 |
+| 2 (8) | 16 | 1.15e-02 | 4.95e-02 | 5.05e-02 | 5.32e-02 | 2.27e-01 | 7.68e-02 | 7.68e-02 |
+| 2 (8) | 24 | 1.08e-02 | 2.92e-02 | 2.94e-02 | 2.97e-02 | 1.66e-01 | 5.08e-02 | 5.08e-02 |
+| 2 (8) | 32 | 1.00e-02 | 2.06e-02 | 2.81e-02 | 3.05e-02 | 1.43e-01 | 3.89e-02 | 3.89e-02 |
+| 3 (12) | 2 | 8.47e-02 | 4.03e-01 | 4.03e-01 | 4.03e-01 | 6.14e-01 | 3.15e-01 | 3.15e-01 |
+| 3 (12) | 4 | 1.93e-02 | 1.79e-01 | 1.79e-01 | 1.79e-01 | 6.00e-01 | 2.03e-01 | 2.03e-01 |
+| 3 (12) | 6 | 1.49e-02 | 1.34e-01 | 1.34e-01 | 1.32e-01 | 3.75e-01 | 1.43e-01 | 1.43e-01 |
+| 3 (12) | 8 | 1.29e-02 | 9.44e-02 | 1.06e-01 | 9.92e-02 | 3.40e-01 | 1.13e-01 | 1.13e-01 |
+| 3 (12) | 12 | 1.19e-02 | 8.48e-02 | 8.51e-02 | 8.48e-02 | 3.75e-01 | 7.46e-02 | 7.46e-02 |
+| 3 (12) | 16 | 1.12e-02 | 5.16e-02 | 5.24e-02 | 5.24e-02 | 2.92e-01 | 5.59e-02 | 5.59e-02 |
+| 3 (12) | 24 | 1.09e-02 | 3.34e-02 | 4.19e-02 | 4.17e-02 | 1.67e-01 | 3.61e-02 | 3.62e-02 |
+| 3 (12) | 32 | 9.85e-03 | 2.18e-02 | 2.64e-02 | 2.80e-02 | 1.03e-01 | 2.67e-02 | 2.67e-02 |
 

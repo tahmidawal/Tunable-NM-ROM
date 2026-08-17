@@ -216,6 +216,79 @@ def build(runs=None):
             max(r["max_rel_newton_residual"].values()) / r["fom_tau"] for r in Bc
             if isinstance(r.get("max_rel_newton_residual"), dict)), ".3g")
 
+    # ---------------- OVER-CONVERGENCE AUDIT ----------------
+    # Both of this project's previously reported speedup families divide by a FOM
+    # baseline that was run far past any stated tolerance.  Correct the record by
+    # combining the archived timing JSONs (read here, not retyped) with the
+    # tolerance-based baselines measured in this cell.
+    OLD_B = os.path.join(HERE, "..", "burgers2d-rom-latent-stepping",
+                         "runs", "followup", "bt_n", "timing_n.json")
+    OLD_P = os.path.join(HERE, "..", "poisson2d-rom-objective",
+                         "runs", "followup", "pt_n", "timing_n.json")
+    tg = lambda t: f"{t:g}".replace("-", "m").replace("+", "").replace(".", "")
+
+    if Bc and os.path.isfile(OLD_B):
+        old = json.load(open(OLD_B))
+        f["oc_b_old_json"] = os.path.relpath(OLD_B, HERE)
+        f["oc_b_newton_fixed"] = g(Bc[0].get("fom_testbed_newton_iters"), ".0f")
+        for r in Bc:
+            k = f"{tg(r['fom_tau'])}_N{r['N']}"
+            f[f"oc_b_resid_N{r['N']}"] = g(r.get("fom_testbed_rel_newton_residual"), ".2e")
+            f[f"oc_b_t_fixed_N{r['N']}"] = g(r.get("t_fom_testbed_ms"), ".4g")
+            f[f"oc_b_t_tol_{k}"] = g(r["t_fom_baseline_ms"], ".4g")
+            f[f"oc_b_newton_tol_{k}"] = g(r["iters_from_baseline"], ".0f")
+            fac = r.get("overconvergence_factor")
+            f[f"oc_b_factor_{k}"] = g(fac, ".2f")
+            f[f"oc_b_mult_{k}"] = g(1.0 / fac if fac else None, ".3f")
+        for orow in old["rows"]:
+            v = orow["rom"].get("lspg:eq256:weak64")
+            if not v:
+                continue
+            n = orow["N"]
+            f[f"oc_b_old_speed_N{n}"] = g(v["speedup_rollout_only"], ".2f")
+            e = v.get("rollout_from_eq_start") or {}
+            if e.get("speedup_end_to_end_no_decode"):
+                f[f"oc_b_old_e2e_N{n}"] = g(e["speedup_end_to_end_no_decode"], ".2f")
+            f[f"oc_b_old_fom_N{n}"] = g(orow["fom_rollout_s"] * 1e3, ".4g")
+            for r in Bc:
+                if r["N"] != n:
+                    continue
+                k = f"{tg(r['fom_tau'])}_N{n}"
+                fac = r.get("overconvergence_factor")
+                if fac:
+                    f[f"oc_b_new_speed_{k}"] = g(v["speedup_rollout_only"] / fac, ".2f")
+                    if e.get("speedup_end_to_end_no_decode"):
+                        f[f"oc_b_new_e2e_{k}"] = g(
+                            e["speedup_end_to_end_no_decode"] / fac, ".2f")
+
+    if Pc and os.path.isfile(OLD_P):
+        oldp = json.load(open(OLD_P))
+        f["oc_p_old_json"] = os.path.relpath(OLD_P, HERE)
+        f["oc_p_cg_tol"] = g(Pc[0].get("fom_testbed_cg_tol"), ".0e")
+        for r in Pc:
+            k = f"{tg(r['fom_tau'])}_N{r['N']}"
+            f[f"oc_p_t_fixed_N{r['N']}"] = g(r.get("t_fom_testbed_ms"), ".4g")
+            f[f"oc_p_iters_fixed_N{r['N']}"] = g(r.get("fom_testbed_iters"), ".0f")
+            f[f"oc_p_resid_N{r['N']}"] = g(r.get("fom_testbed_true_rel_res"), ".2e")
+            f[f"oc_p_t_tol_{k}"] = g(r["t_fom_baseline_ms"], ".4g")
+            f[f"oc_p_iters_tol_{k}"] = g(r["iters_from_baseline"], ".0f")
+            fac = r.get("overconvergence_factor")
+            f[f"oc_p_factor_{k}"] = g(fac, ".2f")
+            f[f"oc_p_mult_{k}"] = g(1.0 / fac if fac else None, ".3f")
+        for orow in oldp["rows"]:
+            n = orow["N"]
+            f[f"oc_p_old_speed_N{n}"] = g(orow["speedup_solve_only"], ".2f")
+            f[f"oc_p_old_e2e_N{n}"] = g(orow["speedup_end_to_end"], ".2f")
+            f[f"oc_p_old_fom_N{n}"] = g(orow["fom_cg_s"] * 1e3, ".4g")
+            for r in Pc:
+                if r["N"] != n:
+                    continue
+                k = f"{tg(r['fom_tau'])}_N{n}"
+                fac = r.get("overconvergence_factor")
+                if fac:
+                    f[f"oc_p_new_speed_{k}"] = g(orow["speedup_solve_only"] / fac, ".2f")
+                    f[f"oc_p_new_e2e_{k}"] = g(orow["speedup_end_to_end"] / fac, ".2f")
+
     # ---------------- consistency ----------------
     from wsf_summarize import role_consistency
     cc = ws.role_consistency(P, pkey, ["iters_from_rom", "iters_from_baseline",

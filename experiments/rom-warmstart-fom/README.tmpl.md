@@ -306,14 +306,108 @@ state is already an excellent guess, so a guess that is 1–2% wrong in a *diffe
 the first linear solve harder rather than easier. The extra BiCGStab iterations, not the
 Newton count, are where the ROM loses.
 
-### An incidental finding about this project's own FOM baseline
+## CORRECTION TO THE RECORD: both FOM baselines in this project are over-converged
 
-`burgers2d_film` runs a **fixed 8 Newton iterations per step with no tolerance test**.
-Stopping at a tolerance instead needs far fewer: at `N = 256`, `tau = 1e-8`, the
-tolerance-based FOM takes {{b_fom_1em08_N256}} ms against {{b_testbed_1em08_N256}} ms for the
-testbed's own fixed-8 rollout. **Speedups this project has previously quoted against that
-fixed-8 rollout are measured against an over-converged solver** and should be restated
-against the tolerance-based one.
+This section is not a caveat about this cell. It is a correction that applies to results
+already written on other branches, and the numbers below are what is needed to fix them
+without rerunning anything.
+
+**Are the previously reported speedups wrong, or merely conservative?** They are **wrong, in
+the flattering direction** — every one of them divides by a denominator that did more work
+than the stated accuracy required. They are not conservative. The corrected values are
+smaller, by the multipliers tabulated below.
+
+### Burgers: a fixed 8 Newton iterations per step, with no tolerance test
+
+`burgers2d_film.make_rollout` runs `NEWTON_ITERS = 8` Newton steps per time step inside a
+`lax.scan`, with **no convergence test**. Over a 50-step rollout that is
+**{{oc_b_newton_fixed}} Newton steps and {{oc_b_newton_fixed}} inner BiCGStab solves,
+regardless of need.** The accuracy it lands on is far past anything asked for: its worst
+per-step relative Newton residual is {{oc_b_resid_N256}} at `N = 256`.
+
+A Newton solve that simply stops at a tolerance needs far fewer iterations for the same
+accuracy class:
+
+| N | fixed-8 rollout (ms) | Newton steps | achieved residual | at `tau=1e-10` (ms) | Newton steps | over-convergence factor |
+|---|---|---|---|---|---|---|
+| 32 | {{oc_b_t_fixed_N32}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N32}} | {{oc_b_t_tol_1em10_N32}} | {{oc_b_newton_tol_1em10_N32}} | {{oc_b_factor_1em10_N32}}x |
+| 64 | {{oc_b_t_fixed_N64}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N64}} | {{oc_b_t_tol_1em10_N64}} | {{oc_b_newton_tol_1em10_N64}} | {{oc_b_factor_1em10_N64}}x |
+| 128 | {{oc_b_t_fixed_N128}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N128}} | {{oc_b_t_tol_1em10_N128}} | {{oc_b_newton_tol_1em10_N128}} | {{oc_b_factor_1em10_N128}}x |
+| 256 | {{oc_b_t_fixed_N256}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N256}} | {{oc_b_t_tol_1em10_N256}} | {{oc_b_newton_tol_1em10_N256}} | {{oc_b_factor_1em10_N256}}x |
+
+`tau = 1e-10` is the closest match to what the fixed-8 scan actually reaches, so those columns
+are a **like-for-like** comparison. At the looser and more realistic `tau = 1e-8` the
+tolerance-based FOM costs {{oc_b_t_tol_1em08_N256}} ms at `N = 256`
+({{oc_b_factor_1em08_N256}}x over-convergence).
+
+### Burgers: the correction to apply
+
+The previously reported speedup is `S_old(N) = t_fixed8(N) / t_ROM(N)`. The corrected one at a
+stated Newton tolerance is
+
+```
+S_corrected(N, tau) = S_old(N) x m(N, tau),    m(N, tau) = t_tolerance(N, tau) / t_fixed8(N)
+```
+
+so **multiply the old number by `m`**. Read from `{{oc_b_old_json}}` and this cell's
+measurements:
+
+| N | old FOM (ms) | old rollout speedup | old end-to-end | m at `tau=1e-10` | corrected rollout | corrected end-to-end |
+|---|---|---|---|---|---|---|
+| 32 | {{oc_b_old_fom_N32}} | {{oc_b_old_speed_N32}}x | {{oc_b_old_e2e_N32}}x | {{oc_b_mult_1em10_N32}} | {{oc_b_new_speed_1em10_N32}}x | {{oc_b_new_e2e_1em10_N32}}x |
+| 64 | {{oc_b_old_fom_N64}} | {{oc_b_old_speed_N64}}x | {{oc_b_old_e2e_N64}}x | {{oc_b_mult_1em10_N64}} | {{oc_b_new_speed_1em10_N64}}x | {{oc_b_new_e2e_1em10_N64}}x |
+| 128 | {{oc_b_old_fom_N128}} | {{oc_b_old_speed_N128}}x | {{oc_b_old_e2e_N128}}x | {{oc_b_mult_1em10_N128}} | {{oc_b_new_speed_1em10_N128}}x | {{oc_b_new_e2e_1em10_N128}}x |
+| 256 | {{oc_b_old_fom_N256}} | {{oc_b_old_speed_N256}}x | {{oc_b_old_e2e_N256}}x | {{oc_b_mult_1em10_N256}} | {{oc_b_new_speed_1em10_N256}}x | {{oc_b_new_e2e_1em10_N256}}x |
+
+**The headline numbers `exp/2026-08-16-burgers2d-rom-latent-stepping`, the consolidated report
+and `HANDOFF.md` all quote — the 8.0x end-to-end at `N = 256` and the
+0.72x -> 7.96x N-ladder — become {{oc_b_new_e2e_1em10_N32}}x -> {{oc_b_new_e2e_1em10_N256}}x
+once the denominator is a converged solver rather than a fixed-8 one.**
+
+The multiplier is **N-dependent**: it is {{oc_b_mult_1em10_N32}} at `N = 32` and
+{{oc_b_mult_1em10_N256}} at `N = 256`. It cannot be applied as a single constant, and the
+N-ladder's *shape* — the claim that the advantage grows with mesh — changes with it.
+
+### Poisson: NOT a clean negative — the same problem, from a fixed tolerance
+
+The question was whether the Poisson CG baseline shares the defect. **It does.**
+`poisson2d-rom-objective/followup/fu_timing.fom_solve` times
+`jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL, maxiter=mp.CG_MAXITER)` with
+`CG_TOL = {{oc_p_cg_tol}}` — the tolerance used to **manufacture the truth data**, not a
+tolerance any consumer of the solution would request. A fixed, very tight tolerance has
+exactly the same effect as a fixed iteration count.
+
+| N | CG at `CG_TOL` (ms) | iterations | achieved residual | at `tau=1e-10` (ms) | iterations | over-convergence factor |
+|---|---|---|---|---|---|---|
+| 32 | {{oc_p_t_fixed_N32}} | {{oc_p_iters_fixed_N32}} | {{oc_p_resid_N32}} | {{oc_p_t_tol_1em10_N32}} | {{oc_p_iters_tol_1em10_N32}} | {{oc_p_factor_1em10_N32}}x |
+| 64 | {{oc_p_t_fixed_N64}} | {{oc_p_iters_fixed_N64}} | {{oc_p_resid_N64}} | {{oc_p_t_tol_1em10_N64}} | {{oc_p_iters_tol_1em10_N64}} | {{oc_p_factor_1em10_N64}}x |
+| 128 | {{oc_p_t_fixed_N128}} | {{oc_p_iters_fixed_N128}} | {{oc_p_resid_N128}} | {{oc_p_t_tol_1em10_N128}} | {{oc_p_iters_tol_1em10_N128}} | {{oc_p_factor_1em10_N128}}x |
+| 256 | {{oc_p_t_fixed_N256}} | {{oc_p_iters_fixed_N256}} | {{oc_p_resid_N256}} | {{oc_p_t_tol_1em10_N256}} | {{oc_p_iters_tol_1em10_N256}} | {{oc_p_factor_1em10_N256}}x |
+| 512 | {{oc_p_t_fixed_N512}} | {{oc_p_iters_fixed_N512}} | {{oc_p_resid_N512}} | {{oc_p_t_tol_1em10_N512}} | {{oc_p_iters_tol_1em10_N512}} | {{oc_p_factor_1em10_N512}}x |
+
+Applying the same multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
+
+| N | old FOM (ms) | old solve-only speedup | old end-to-end | m at `tau=1e-10` | corrected solve-only | corrected end-to-end |
+|---|---|---|---|---|---|---|
+| 32 | {{oc_p_old_fom_N32}} | {{oc_p_old_speed_N32}}x | {{oc_p_old_e2e_N32}}x | {{oc_p_mult_1em10_N32}} | {{oc_p_new_speed_1em10_N32}}x | {{oc_p_new_e2e_1em10_N32}}x |
+| 64 | {{oc_p_old_fom_N64}} | {{oc_p_old_speed_N64}}x | {{oc_p_old_e2e_N64}}x | {{oc_p_mult_1em10_N64}} | {{oc_p_new_speed_1em10_N64}}x | {{oc_p_new_e2e_1em10_N64}}x |
+| 128 | {{oc_p_old_fom_N128}} | {{oc_p_old_speed_N128}}x | {{oc_p_old_e2e_N128}}x | {{oc_p_mult_1em10_N128}} | {{oc_p_new_speed_1em10_N128}}x | {{oc_p_new_e2e_1em10_N128}}x |
+| 256 | {{oc_p_old_fom_N256}} | {{oc_p_old_speed_N256}}x | {{oc_p_old_e2e_N256}}x | {{oc_p_mult_1em10_N256}} | {{oc_p_new_speed_1em10_N256}}x | {{oc_p_new_e2e_1em10_N256}}x |
+| 512 | {{oc_p_old_fom_N512}} | {{oc_p_old_speed_N512}}x | {{oc_p_old_e2e_N512}}x | {{oc_p_mult_1em10_N512}} | {{oc_p_new_speed_1em10_N512}}x | {{oc_p_new_e2e_1em10_N512}}x |
+
+### What to do with this
+
+1. Restate every Burgers and Poisson speedup against a **tolerance-based** FOM, with the
+   tolerance named. `tau = 1e-10` is the like-for-like choice against what the old baselines
+   actually reached; `1e-8` is the more defensible engineering choice and makes the
+   correction larger still.
+2. Do **not** apply a single scalar — the multiplier depends on `N`, and it changes the slope
+   of the N-ladders, not just their level.
+3. The ROM-side numbers are unaffected. Nothing about the ROM's cost or accuracy changes;
+   only the denominator does.
+4. This does not, by itself, overturn the qualitative Burgers conclusion that the latent solve
+   is mesh-independent while the FOM is not — that is a statement about *scaling*, and both
+   baselines scale similarly. It does change every *absolute* speedup that has been quoted.
 
 ### Verdict
 

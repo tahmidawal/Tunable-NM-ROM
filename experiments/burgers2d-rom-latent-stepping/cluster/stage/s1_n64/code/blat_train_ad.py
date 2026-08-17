@@ -153,11 +153,10 @@ def main():
     dec = bc.CoordDecoder(params, n_freq, eps, K)
     pred_fn = jax.jit(lambda z: dec(z, coords))
     rels = []
-    CH = 32                                         # 512 rows x 16384 pts OOM'd a 40 GB A100
-    for r in range(0, n_rows, CH):
-        P = jax.vmap(pred_fn)(Z[r:r + CH])
-        rels.append(np.asarray(jnp.linalg.norm(P - jnp.asarray(S[r:r + CH]), axis=1)
-                               / jnp.linalg.norm(jnp.asarray(S[r:r + CH]), axis=1)))
+    for r in range(0, n_rows, 512):
+        P = jax.vmap(pred_fn)(Z[r:r + 512])
+        rels.append(np.asarray(jnp.linalg.norm(P - jnp.asarray(S[r:r + 512]), axis=1)
+                               / jnp.linalg.norm(jnp.asarray(S[r:r + 512]), axis=1)))
     rels = np.concatenate(rels)
     Zn = np.asarray(Z).reshape(n_tr, T1, K)
     dz = np.linalg.norm(np.diff(Zn, axis=1), axis=2)

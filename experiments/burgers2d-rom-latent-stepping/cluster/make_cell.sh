@@ -44,7 +44,8 @@ sys.exit(0 if d.platform == "gpu" else 42)
 PRE
 export $envs
 $cmd
-echo "ALL-DONE"
+rc=\$?
+[[ \$rc -eq 0 ]] && echo "ALL-DONE" || { echo "FAILED rc=\$rc"; exit \$rc; }
 EOF
 (cd "$STAGE" && find . -type f -not -name MANIFEST.sha256 -exec sha256sum {} \; | sort > MANIFEST.sha256)
 echo "$STAGE"

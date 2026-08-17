@@ -306,6 +306,55 @@ state is already an excellent guess, so a guess that is 1–2% wrong in a *diffe
 the first linear solve harder rather than easier. The extra BiCGStab iterations, not the
 Newton count, are where the ROM loses.
 
+### Verdict
+
+The hybrid does what it was meant to do — the delivered field is FOM-exact, so every accuracy
+objection is answered — and it is **not worth its cost** on either problem at the meshes
+tested. {{p_verdict}}, against an iterative FOM that a direct solver already beats by
+{{p_cgdirect_N512}}x. {{b_verdict}}.
+
+Separately, and reaching beyond this cell: measuring a *tolerance-based* FOM exposed that
+**both of this project's FOM baselines are over-converged** — the Burgers rollout by a fixed
+iteration count, the Poisson CG by a fixed 1e-13 tolerance. Every previously reported speedup
+in either family is inflated. The correction is quantified below.
+
+The useful result is the **mechanism**, and it generalises beyond this cell: an approximate
+solution is a good initial guess only in proportion to the error it removes *in the norm the
+outer solver contracts*, and a nonlinear-manifold ROM trained to minimise a field error does
+not concentrate its accuracy there. That is a statement about what warm-starting can ever
+buy, not about this ROM.
+
+### Caveats
+
+- **Measured, not assumed, and both stated risks landed.** Risk (a) — the ROM costs more than
+  a small-`N` FOM — is why the crossover sits at `N = {{p_crossover}}`. Risk (b) — the
+  Burgers FOM already warm-starts — is why that arm loses.
+- **`dt` is not varied.** The Burgers testbed hard-codes `dt = 0.005`, where the previous
+  state is a very good guess. The ROM's advantage should grow with `dt`, but changing `dt`
+  changes the FOM, the training snapshots and the ROM together; that is a different
+  experiment. Everything here is at the testbed's `dt`.
+- **The Poisson CG is unpreconditioned**, as in the testbed. A preconditioner would cut
+  iterations in both arms and shrink the absolute saving a warm start can buy.
+- **The direct-solve comparison is specific to a separable operator** on a square. It does not
+  transfer to a general geometry or a variable coefficient — but the reviewers' objection was
+  raised about exactly this kind of model problem.
+- **`err_final` at the tightest tolerance is limited by the reference solution's own
+  accuracy** (relative residual {{p_ref_res_N512}} at `N = 512`, an f64 floor of the FD
+  operator that grows with `N`). The correctness gate is reference-free: every row asserts the
+  delivered iterate's true relative residual is at most `tau`, and the largest ratio observed
+  was {{p_max_final_resid_ratio}}x `tau` on Poisson and {{b_max_resid_ratio}}x on Burgers.
+- **Solver health.** {{b_breakdowns}} BiCGStab breakdowns, {{b_flags}} non-zero Newton flags
+  and {{b_warnings}} health warnings across every Burgers configuration; the known NaN
+  landmine did not fire, and had it fired it would have been reported, not dropped.
+- **The best-per-`N` hybrid is post-selected** — it minimises over the ROM tolerance ladder
+  using the same timing samples it reports. The full ladder is the primary table (P1).
+- **Panel/consolidated agreement**: {{consistency_checked}} hardware-independent quantities
+  compared between the fanned-out per-mesh jobs and the single-GPU consolidation runs,
+  {{consistency_bad}} disagreements.
+- **`N = 1024` was not run.** The measured crossover at `N = {{p_crossover}}` is the answer
+  to the question as posed (`N` up to 512); an extrapolated break-even is given in
+  `SUMMARY_TABLES.md` P4b and is an extrapolation, not a measurement.
+
 ## CORRECTION TO THE RECORD: both FOM baselines in this project are over-converged
 
 This section is not a caveat about this cell. It is a correction that applies to results
@@ -349,15 +398,20 @@ stated Newton tolerance is
 S_corrected(N, tau) = S_old(N) x m(N, tau),    m(N, tau) = t_tolerance(N, tau) / t_fixed8(N)
 ```
 
-so **multiply the old number by `m`**. Read from `{{oc_b_old_json}}` and this cell's
-measurements:
+so **multiply the old number by `m`**. Two versions of `m` are given. The **time** multiplier
+is a ratio of two wall clocks measured together on one GPU in this cell; applying it to a
+speedup measured on a *different* GPU assumes that ratio is machine-independent. The
+**iteration** multiplier — Newton steps actually performed, {{oc_b_newton_fixed}} for the
+fixed-8 scan against the measured tolerance-based count — is a pure work count and carries
+across machines with no assumption. They should agree; where they differ, the iteration
+multiplier is the safer one to quote. Old values read from `{{oc_b_old_json}}`:
 
-| N | old FOM (ms) | old rollout speedup | old end-to-end | m at `tau=1e-10` | corrected rollout | corrected end-to-end |
-|---|---|---|---|---|---|---|
-| 32 | {{oc_b_old_fom_N32}} | {{oc_b_old_speed_N32}}x | {{oc_b_old_e2e_N32}}x | {{oc_b_mult_1em10_N32}} | {{oc_b_new_speed_1em10_N32}}x | {{oc_b_new_e2e_1em10_N32}}x |
-| 64 | {{oc_b_old_fom_N64}} | {{oc_b_old_speed_N64}}x | {{oc_b_old_e2e_N64}}x | {{oc_b_mult_1em10_N64}} | {{oc_b_new_speed_1em10_N64}}x | {{oc_b_new_e2e_1em10_N64}}x |
-| 128 | {{oc_b_old_fom_N128}} | {{oc_b_old_speed_N128}}x | {{oc_b_old_e2e_N128}}x | {{oc_b_mult_1em10_N128}} | {{oc_b_new_speed_1em10_N128}}x | {{oc_b_new_e2e_1em10_N128}}x |
-| 256 | {{oc_b_old_fom_N256}} | {{oc_b_old_speed_N256}}x | {{oc_b_old_e2e_N256}}x | {{oc_b_mult_1em10_N256}} | {{oc_b_new_speed_1em10_N256}}x | {{oc_b_new_e2e_1em10_N256}}x |
+| N | old FOM (ms) | old rollout speedup | old end-to-end | m (time) | m (iterations) | corrected rollout | corrected end-to-end |
+|---|---|---|---|---|---|---|---|
+| 32 | {{oc_b_old_fom_N32}} | {{oc_b_old_speed_N32}}x | {{oc_b_old_e2e_N32}}x | {{oc_b_mult_1em10_N32}} | {{oc_b_multit_1em10_N32}} | {{oc_b_new_speed_1em10_N32}}x | {{oc_b_new_e2e_1em10_N32}}x |
+| 64 | {{oc_b_old_fom_N64}} | {{oc_b_old_speed_N64}}x | {{oc_b_old_e2e_N64}}x | {{oc_b_mult_1em10_N64}} | {{oc_b_multit_1em10_N64}} | {{oc_b_new_speed_1em10_N64}}x | {{oc_b_new_e2e_1em10_N64}}x |
+| 128 | {{oc_b_old_fom_N128}} | {{oc_b_old_speed_N128}}x | {{oc_b_old_e2e_N128}}x | {{oc_b_mult_1em10_N128}} | {{oc_b_multit_1em10_N128}} | {{oc_b_new_speed_1em10_N128}}x | {{oc_b_new_e2e_1em10_N128}}x |
+| 256 | {{oc_b_old_fom_N256}} | {{oc_b_old_speed_N256}}x | {{oc_b_old_e2e_N256}}x | {{oc_b_mult_1em10_N256}} | {{oc_b_multit_1em10_N256}} | {{oc_b_new_speed_1em10_N256}}x | {{oc_b_new_e2e_1em10_N256}}x |
 
 **The headline numbers `exp/2026-08-16-burgers2d-rom-latent-stepping`, the consolidated report
 and `HANDOFF.md` all quote — the 8.0x end-to-end at `N = 256` and the
@@ -387,13 +441,13 @@ exactly the same effect as a fixed iteration count.
 
 Applying the same multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
 
-| N | old FOM (ms) | old solve-only speedup | old end-to-end | m at `tau=1e-10` | corrected solve-only | corrected end-to-end |
-|---|---|---|---|---|---|---|
-| 32 | {{oc_p_old_fom_N32}} | {{oc_p_old_speed_N32}}x | {{oc_p_old_e2e_N32}}x | {{oc_p_mult_1em10_N32}} | {{oc_p_new_speed_1em10_N32}}x | {{oc_p_new_e2e_1em10_N32}}x |
-| 64 | {{oc_p_old_fom_N64}} | {{oc_p_old_speed_N64}}x | {{oc_p_old_e2e_N64}}x | {{oc_p_mult_1em10_N64}} | {{oc_p_new_speed_1em10_N64}}x | {{oc_p_new_e2e_1em10_N64}}x |
-| 128 | {{oc_p_old_fom_N128}} | {{oc_p_old_speed_N128}}x | {{oc_p_old_e2e_N128}}x | {{oc_p_mult_1em10_N128}} | {{oc_p_new_speed_1em10_N128}}x | {{oc_p_new_e2e_1em10_N128}}x |
-| 256 | {{oc_p_old_fom_N256}} | {{oc_p_old_speed_N256}}x | {{oc_p_old_e2e_N256}}x | {{oc_p_mult_1em10_N256}} | {{oc_p_new_speed_1em10_N256}}x | {{oc_p_new_e2e_1em10_N256}}x |
-| 512 | {{oc_p_old_fom_N512}} | {{oc_p_old_speed_N512}}x | {{oc_p_old_e2e_N512}}x | {{oc_p_mult_1em10_N512}} | {{oc_p_new_speed_1em10_N512}}x | {{oc_p_new_e2e_1em10_N512}}x |
+| N | old FOM (ms) | old solve-only speedup | old end-to-end | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
+|---|---|---|---|---|---|---|---|
+| 32 | {{oc_p_old_fom_N32}} | {{oc_p_old_speed_N32}}x | {{oc_p_old_e2e_N32}}x | {{oc_p_mult_1em10_N32}} | {{oc_p_multit_1em10_N32}} | {{oc_p_new_speed_1em10_N32}}x | {{oc_p_new_e2e_1em10_N32}}x |
+| 64 | {{oc_p_old_fom_N64}} | {{oc_p_old_speed_N64}}x | {{oc_p_old_e2e_N64}}x | {{oc_p_mult_1em10_N64}} | {{oc_p_multit_1em10_N64}} | {{oc_p_new_speed_1em10_N64}}x | {{oc_p_new_e2e_1em10_N64}}x |
+| 128 | {{oc_p_old_fom_N128}} | {{oc_p_old_speed_N128}}x | {{oc_p_old_e2e_N128}}x | {{oc_p_mult_1em10_N128}} | {{oc_p_multit_1em10_N128}} | {{oc_p_new_speed_1em10_N128}}x | {{oc_p_new_e2e_1em10_N128}}x |
+| 256 | {{oc_p_old_fom_N256}} | {{oc_p_old_speed_N256}}x | {{oc_p_old_e2e_N256}}x | {{oc_p_mult_1em10_N256}} | {{oc_p_multit_1em10_N256}} | {{oc_p_new_speed_1em10_N256}}x | {{oc_p_new_e2e_1em10_N256}}x |
+| 512 | {{oc_p_old_fom_N512}} | {{oc_p_old_speed_N512}}x | {{oc_p_old_e2e_N512}}x | {{oc_p_mult_1em10_N512}} | {{oc_p_multit_1em10_N512}} | {{oc_p_new_speed_1em10_N512}}x | {{oc_p_new_e2e_1em10_N512}}x |
 
 ### What to do with this
 
@@ -403,55 +457,13 @@ Applying the same multiplier to the archived Poisson ladder in `{{oc_p_old_json}
    correction larger still.
 2. Do **not** apply a single scalar — the multiplier depends on `N`, and it changes the slope
    of the N-ladders, not just their level.
+2b. Prefer the **iteration** multiplier when correcting a number measured on other hardware;
+   the time multiplier assumes the fixed-vs-tolerance work ratio transfers between GPUs.
 3. The ROM-side numbers are unaffected. Nothing about the ROM's cost or accuracy changes;
    only the denominator does.
 4. This does not, by itself, overturn the qualitative Burgers conclusion that the latent solve
    is mesh-independent while the FOM is not — that is a statement about *scaling*, and both
    baselines scale similarly. It does change every *absolute* speedup that has been quoted.
-
-### Verdict
-
-The hybrid does what it was meant to do — the delivered field is FOM-exact, so every accuracy
-objection is answered — and it is **not worth its cost** on either problem at the meshes
-tested. {{p_verdict}}, against an iterative FOM that a direct solver already beats by
-{{p_cgdirect_N512}}x. {{b_verdict}}.
-
-The useful result is the **mechanism**, and it generalises beyond this cell: an approximate
-solution is a good initial guess only in proportion to the error it removes *in the norm the
-outer solver contracts*, and a nonlinear-manifold ROM trained to minimise a field error does
-not concentrate its accuracy there. That is a statement about what warm-starting can ever
-buy, not about this ROM.
-
-### Caveats
-
-- **Measured, not assumed, and both stated risks landed.** Risk (a) — the ROM costs more than
-  a small-`N` FOM — is why the crossover sits at `N = {{p_crossover}}`. Risk (b) — the
-  Burgers FOM already warm-starts — is why that arm loses.
-- **`dt` is not varied.** The Burgers testbed hard-codes `dt = 0.005`, where the previous
-  state is a very good guess. The ROM's advantage should grow with `dt`, but changing `dt`
-  changes the FOM, the training snapshots and the ROM together; that is a different
-  experiment. Everything here is at the testbed's `dt`.
-- **The Poisson CG is unpreconditioned**, as in the testbed. A preconditioner would cut
-  iterations in both arms and shrink the absolute saving a warm start can buy.
-- **The direct-solve comparison is specific to a separable operator** on a square. It does not
-  transfer to a general geometry or a variable coefficient — but the reviewers' objection was
-  raised about exactly this kind of model problem.
-- **`err_final` at the tightest tolerance is limited by the reference solution's own
-  accuracy** (relative residual {{p_ref_res_N512}} at `N = 512`, an f64 floor of the FD
-  operator that grows with `N`). The correctness gate is reference-free: every row asserts the
-  delivered iterate's true relative residual is at most `tau`, and the largest ratio observed
-  was {{p_max_final_resid_ratio}}x `tau` on Poisson and {{b_max_resid_ratio}}x on Burgers.
-- **Solver health.** {{b_breakdowns}} BiCGStab breakdowns, {{b_flags}} non-zero Newton flags
-  and {{b_warnings}} health warnings across every Burgers configuration; the known NaN
-  landmine did not fire, and had it fired it would have been reported, not dropped.
-- **The best-per-`N` hybrid is post-selected** — it minimises over the ROM tolerance ladder
-  using the same timing samples it reports. The full ladder is the primary table (P1).
-- **Panel/consolidated agreement**: {{consistency_checked}} hardware-independent quantities
-  compared between the fanned-out per-mesh jobs and the single-GPU consolidation runs,
-  {{consistency_bad}} disagreements.
-- **`N = 1024` was not run.** The measured crossover at `N = {{p_crossover}}` is the answer
-  to the question as posed (`N` up to 512); an extrapolated break-even is given in
-  `SUMMARY_TABLES.md` P4b and is an extrapolation, not a measurement.
 
 ## Figures
 

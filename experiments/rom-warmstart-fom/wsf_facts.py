@@ -240,6 +240,11 @@ def build(runs=None):
             fac = r.get("overconvergence_factor")
             f[f"oc_b_factor_{k}"] = g(fac, ".2f")
             f[f"oc_b_mult_{k}"] = g(1.0 / fac if fac else None, ".3f")
+            # HARDWARE-FREE multiplier: the ratio of Newton steps actually performed.
+            # The time-based multiplier is a ratio measured on ONE gpu; this one is a
+            # pure work count and carries across machines.
+            nf = r.get("fom_testbed_newton_iters")
+            f[f"oc_b_multit_{k}"] = g(r["iters_from_baseline"] / nf if nf else None, ".3f")
         for orow in old["rows"]:
             v = orow["rom"].get("lspg:eq256:weak64")
             if not v:
@@ -275,6 +280,8 @@ def build(runs=None):
             fac = r.get("overconvergence_factor")
             f[f"oc_p_factor_{k}"] = g(fac, ".2f")
             f[f"oc_p_mult_{k}"] = g(1.0 / fac if fac else None, ".3f")
+            nf = r.get("fom_testbed_iters")
+            f[f"oc_p_multit_{k}"] = g(r["iters_from_baseline"] / nf if nf else None, ".3f")
         for orow in oldp["rows"]:
             n = orow["N"]
             f[f"oc_p_old_speed_N{n}"] = g(orow["speedup_solve_only"], ".2f")

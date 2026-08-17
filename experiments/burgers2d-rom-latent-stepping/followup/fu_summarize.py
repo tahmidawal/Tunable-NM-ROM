@@ -337,6 +337,13 @@ def fig_kladder(D):
         ax.plot(pk, pwk, "v--", color=fs.C["orange"], alpha=0.7, label="POD, same weak objective", zorder=4)
     ax.plot(pk, ppr, ":", color=fs.C["orange"], lw=1.4, alpha=0.6, label="POD projection floor", zorder=3)
     ax.axvline(6, color=fs.MUTED, lw=0.9, ls=(0, (2, 3)), zorder=1)
+    # guide at the coordinate ROM's best value: POD's crossover is where its curve meets it
+    fin_c = [v for v in full if v is not None and np.isfinite(v)]
+    if fin_c:
+        best = min(fin_c); kbest = ks[full.index(best)]
+        ax.axhline(best, color=fs.C["blue"], lw=0.8, ls=(0, (1, 2)), alpha=0.8, zorder=1)
+        ax.annotate(f"coord. ROM best (K={kbest})", (ks[-1], best), xytext=(-2, 5),
+                    textcoords="offset points", ha="right", fontsize=7.5, color=fs.C["blue"])
     ax.set_xscale("log", base=2); ax.set_yscale("log")
     tk = sorted(set(ks) | set(pk))
     ax.set_xticks(tk); ax.set_xticklabels([str(k) for k in tk])

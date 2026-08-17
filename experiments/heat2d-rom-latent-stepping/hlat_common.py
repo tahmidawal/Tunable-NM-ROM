@@ -83,8 +83,8 @@ import heat2d_film as hf                       # noqa: E402  (reads env at impor
 import blat_common as bc                       # noqa: E402  (burgers2d_film + ms_parametric)
 from blat_common import (                      # noqa: E402,F401  PDE-agnostic, reused verbatim
     mp, lm_solve, F64, log, grid_coords, interior_indices, stencil_indices, pod_basis,
-    bc_factor, CoordDecoder, PODDecoder, test_modes, modes_at, nnls_capped, _finish_ops,
-    solve_step, fit_ic, rollout, time_fn, data_fingerprint, make_collocation,
+    bc_factor, CoordDecoder, PODDecoder, test_modes, modes_at, nnls_capped,
+    fit_ic, time_fn, data_fingerprint, make_collocation,
     WEAK_ALPHA, EQ_SNAPS, EQ_POOL, K_LAT, N_TEST, GN_BUDGET, GN_TOL, IC_BUDGET, BC_MODE,
     AD_HIDDEN, AD_LAYERS, TEST_SEED)
 
@@ -137,18 +137,32 @@ def max_rel_residual(U, kap, n, chunk=64):
     return worst
 
 
-def build_data(n=N, check=True):
+def build_data(n=N, check=True, with_test=True):
     """TRAIN/VAL regenerated from SEED (identical draw to the heat sweep; the sweep
     checkpoints were model-selected on VAL, so VAL is not a test set here); TEST =
     N_TEST fresh trajectories from TEST_SEED.  Aborts if any FOM residual > 1e-8
     (CG tol is 1e-10 relative)."""
+    assert TEST_SEED != SEED, f"TEST_SEED must differ from the data SEED ({SEED})"
     U, z, cx, cy, w, a, kap = hf.build_trajectories(n)
+    d = dict(U=U, z=z, cx=cx, cy=cy, w=w, a=a, kappa=kap)
+    if not with_test:                       # training path: TEST is never generated
+        if check:
+            worst = max_rel_residual(U, kap, n)
+            log(f"  data check (train/val only): max FOM rel residual {worst:.2e}")
+            if not np.isfinite(worst) or worst > 1e-8:
+                raise SystemExit(f"FOM residual {worst:.2e} > 1e-8: data not converged")
+            d["max_fom_rel_residual"] = worst
+        return d
     cxt, cyt, wt, at, kapt, zt = hf.sample_params(seed=TEST_SEED, m=N_TEST)
     rollout_, _ = make_fom(n)
     U0 = np.stack([blob_ic(n, cxt[i], cyt[i], wt[i], at[i]) for i in range(N_TEST)])
     Ut = np.asarray(rollout_(jnp.asarray(U0), jnp.asarray(kapt))).transpose(1, 0, 2)
-    d = dict(U=U, z=z, cx=cx, cy=cy, w=w, a=a, kappa=kap, U_test=Ut, z_test=zt,
-             kappa_test=kapt, cx_test=cxt, cy_test=cyt, w_test=wt, a_test=at)
+    # TEST must be a genuinely disjoint parameter draw
+    dup = int(np.sum(np.min(np.linalg.norm(z[None, :, :] - zt[:, None, :], axis=2), axis=1)
+                     < 1e-12))
+    assert dup == 0, f"{dup} TEST parameter rows coincide with TRAIN/VAL rows"
+    d.update(U_test=Ut, z_test=zt, kappa_test=kapt, cx_test=cxt, cy_test=cyt,
+             w_test=wt, a_test=at, n_test_train_param_collisions=dup)
     if check:
         worst = max(max_rel_residual(U, kap, n), max_rel_residual(Ut, kapt, n))
         log(f"  data check: max FOM rel residual over all trajectories {worst:.2e}")
@@ -228,9 +242,12 @@ def fit_eq_weights(dec, n, M, m, Z_snap, kind="weak", pool="grid", rng=None):
         keep = np.concatenate([supp, pad]); padded = len(pad)
     wq, _, _ = nnls_capped(G[:, keep], b, max_support=len(keep))
     wq = np.where(wq > 0, wq, 1e-8 * max(wq.max(), 1e-300))
+    if not np.all(np.isfinite(wq)):
+        raise SystemExit(f"NNLS-EQ produced non-finite weights ({kind}/{pool} M={M} m={m})")
     rnorm_final = float(np.linalg.norm(G[:, keep] @ wq - b))
     info = dict(support=int(len(supp)), padded=int(padded), rnorm_capped=float(rnorm),
                 rnorm_final=rnorm_final, b_norm=float(np.linalg.norm(b)),
+                rel_fit_insample_scaled=rnorm_final / float(np.linalg.norm(b)),
                 rel_fit=rnorm_final / float(np.linalg.norm(b)), n_rows=int(G.shape[0]),
                 n_cand=int(n_c), secs=time.time() - t0, M=int(M), m=int(len(keep)),
                 kind=kind, pool=pool)
@@ -349,9 +366,8 @@ def parse_objective(objective, n, default_alpha=WEAK_ALPHA):
     body = objective[len("weak"):]
     alpha = default_alpha
     if body.startswith("all"):
-        rest = body[3:]
-        alpha = float(rest[1:]) if rest.startswith("a") else 0.0
-        return "weak", (n - 2) ** 2, alpha
+        assert body == "all", "weakall takes no alpha suffix (the identity needs alpha=0)"
+        return "weak", (n - 2) ** 2, 0.0
     kind = "weak"
     if body.startswith("c"):
         kind, body = "weakc", body[1:]
@@ -409,3 +425,225 @@ def make_ic_solver_jit(dec, n, coords=None):
         return z, rn, nJ, acc, reason, att
 
     return jax.jit(solve, static_argnums=(2,))
+
+
+# --------------------------- solver (heat-specific tolerance rule) ---------------------------
+#
+# The Burgers reference stops a step at an ABSOLUTE residual `GN_TOL * rms(u0) * tol_scale`.
+# Heat DECAYS strongly (kappa up to 0.5 over T=0.25, ||u_50||/||u_0|| can be <1e-3), so a
+# tolerance pinned to u0 is ~1/decay times looser in relative terms at late times, and it is
+# also not comparable across M (an M-mode projection of an isotropic residual carries only
+# sqrt(M/(n-2)^2) of its norm).  We therefore stop on
+#       ||r|| <= max( GN_RTOL * ||r(z_n)|| , GN_TOL * rms(u0) * tol_scale )
+# i.e. a relative reduction of the residual AT THE WARM START (scale-free, M-invariant,
+# decay-adaptive) with the old absolute value as a floor so a converged step can exit at once.
+# Both ||r|| and ||r||/||r(z_n)|| are reported per step.  Everything else (LM acceptance,
+# damping, counting) is copied from blat_common._finish_ops / solve_step unchanged.
+
+GN_RTOL = float(os.environ.get("GN_RTOL", "1e-6"))
+CONFIG["gn_rtol"] = GN_RTOL
+
+REASONS = {0: "budget", 1: "tol", 2: "stalled", 3: "lambda_max", 4: "tol_at_init",
+           5: "nan_at_init", 6: "nan_step"}
+
+
+def _finish_ops(rJ, r_w, prev_of, full, m, solver):
+    """Jitted closures + on-device LM step / scan rollout (rtol stopping rule)."""
+    rn_fn = lambda z, p, kap: jnp.linalg.norm(r_w(z, p, kap))
+    rJ_lspg = lambda z, p, kap: (r_w(z, p, kap), jax.jacfwd(r_w)(z, p, kap))
+
+    def lm_step_jit(z0, prev_c, kap, tol_floor, budget):
+        r0, J0 = rJ_lspg(z0, prev_c, kap)
+        rn0 = jnp.linalg.norm(r0)
+        tol_abs = jnp.maximum(GN_RTOL * rn0, tol_floor)
+        K = z0.shape[0]
+        init_reason = jnp.where(~jnp.isfinite(rn0), jnp.int32(5),
+                                jnp.where(rn0 <= tol_abs, jnp.int32(4), jnp.int32(0)))
+        init = (z0, r0, J0, rn0, jnp.asarray(1e-6, F64), jnp.int32(0),
+                jnp.int32(0), jnp.int32(1), init_reason)
+
+        def cond(s):
+            return (s[8] == 0) & (s[5] < budget)
+
+        def body(s):
+            z, r, J, rn, lam, att, acc, nJ, _ = s
+            H = J.T @ J
+            g = J.T @ r
+            D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
+            dz = jnp.linalg.solve(H + lam * D, -g)
+            finite = jnp.all(jnp.isfinite(dz))
+            tiny = finite & (jnp.linalg.norm(dz) <= 1e-12 * (1.0 + jnp.linalg.norm(z)))
+            z_new = z + jnp.where(finite, dz, 0.0)
+            rn_new = rn_fn(z_new, prev_c, kap)
+            accept = finite & jnp.isfinite(rn_new) & (rn_new < rn)
+            r2, J2 = jax.lax.cond(accept, lambda: rJ_lspg(z_new, prev_c, kap),
+                                  lambda: (r, J))
+            rel_dec = jnp.where(accept, (rn - rn_new) / rn, 1.0)
+            z = jnp.where(accept, z_new, z)
+            rn = jnp.where(accept, rn_new, rn)
+            lam = jnp.where(accept, jnp.maximum(lam / 3.0, 1e-12),
+                            jnp.minimum(lam * 10.0, 1e12))
+            acc = acc + accept.astype(jnp.int32)
+            nJ = nJ + accept.astype(jnp.int32)
+            # reason 6 = the LM step itself went non-finite (distinct from lambda_max)
+            reason = jnp.where(accept & (rn <= tol_abs), 1,
+                      jnp.where((accept & (rel_dec < 1e-12)) | tiny, 2,
+                       jnp.where((~finite) & (lam >= 1e12), 6,
+                        jnp.where((~accept) & (lam >= 1e12), 3, 0)))).astype(jnp.int32)
+            return (z, r2, J2, rn, lam, att + 1, acc, nJ, reason)
+
+        z, r, J, rn, lam, att, acc, nJ, reason = jax.lax.while_loop(cond, body, init)
+        return z, rn, rn0, nJ, acc, reason, att
+
+    step_jit = jax.jit(lm_step_jit, static_argnums=(4,))
+
+    def rollout_jit_fn(z0, kap, tol_floors, budget):
+        """Fully on-device rollout (lax.scan over NUM_STEPS)."""
+        def body(carry, tf):
+            z, prev_c = carry
+            z2, rn, rn0, nJ, acc, reason, att = lm_step_jit(z, prev_c, kap, tf, budget)
+            return (z2, prev_of(z2)), (z2, rn, rn0, nJ, reason)
+        (zT, _), out = jax.lax.scan(body, (z0, prev_of(z0)), tol_floors)
+        return out                              # (Z, rns, rn0s, nJs, reasons)
+
+    return dict(rJ=jax.jit(rJ), rn=jax.jit(rn_fn), prev_of=jax.jit(prev_of),
+                full=jax.jit(full), m=m, solver=solver, step_jit=step_jit,
+                rollout_jit=jax.jit(rollout_jit_fn, static_argnums=(3,)))
+
+
+def solve_step(ops, z0, prev_c, kap, tol_floor, budget=GN_BUDGET):
+    """Galerkin root step: damped Newton on g = JD^T r = 0, Gauss-Newton Jacobian
+    JD^T J, backtracking on ||g||.  Stops on a RELATIVE reduction of ||g|| (the root
+    carries decoder-tangent units, so an absolute threshold is not the same rule for
+    POD and for the auto-decoder) or on the same residual rule as LSPG."""
+    z = z0
+    r, J, JD = ops["rJ"](z, prev_c, kap)
+    rn = float(jnp.linalg.norm(r))
+    rn0 = rn
+    n_J, n_r, lam, acc, rej = 1, 1, 1e-6, 0, 0
+    reason = "budget"
+    tol_abs = max(GN_RTOL * rn0, float(tol_floor))
+    if not np.isfinite(rn):
+        return z, dict(rn=rn, rn0=rn0, reason="nan_at_init", n_jac=1, accepted=0, attempts=0)
+    if rn <= tol_abs:
+        return z, dict(rn=rn, rn0=rn0, reason="tol_at_init", n_jac=1, accepted=0, attempts=0)
+    g = JD.T @ r
+    gn = float(jnp.linalg.norm(g))
+    gn0 = gn
+    for _ in range(budget):
+        A = JD.T @ J
+        dz = jnp.linalg.solve(A + lam * jnp.eye(A.shape[0], dtype=F64), -g)
+        if not bool(jnp.all(jnp.isfinite(dz))):
+            lam = min(lam * 10.0, 1e12); rej += 1
+            if lam >= 1e12:
+                reason = "nan_step"; break
+            continue
+        alpha, ok = 1.0, False
+        for _ in range(8):
+            z_new = z + alpha * dz
+            r2, J2, JD2 = ops["rJ"](z_new, prev_c, kap); n_J += 1; n_r += 1
+            g2 = JD2.T @ r2
+            gn2 = float(jnp.linalg.norm(g2))
+            if np.isfinite(gn2) and gn2 < gn:
+                ok = True
+                break
+            alpha *= 0.5
+        if not ok:
+            lam = min(max(lam, 1e-8) * 10.0, 1e12); rej += 1
+            if lam >= 1e12:
+                reason = "no_descent"; break
+            continue
+        rel_dec = (gn - gn2) / gn
+        z, r, J, JD, g, gn = z_new, r2, J2, JD2, g2, gn2
+        rn = float(jnp.linalg.norm(r)); acc += 1
+        lam = max(lam / 3.0, 0.0)
+        if gn <= GN_RTOL * gn0 or rn <= tol_abs:
+            reason = "tol"; break
+        if rel_dec < 1e-12:
+            reason = "stalled"; break
+    return z, dict(rn=rn, rn0=rn0, gn=gn, gn0=gn0, reason=reason, n_jac=n_J,
+                   accepted=acc, rejected=rej, attempts=acc + rej)
+
+
+def rollout(dec, n, ops, z0, kap, u_scale, U_true=None, budget=GN_BUDGET, tol=GN_TOL):
+    """Latent time stepping.  u_scale = RMS of the KNOWN u0 over the interior (the
+    absolute tolerance FLOOR scale); the binding criterion is the relative one in
+    _finish_ops / solve_step.  A blow-up or a NaN-step termination truncates the
+    rollout (n_done < NUM_STEPS) and traj_rel is NaN."""
+    z = jnp.asarray(z0, dtype=F64)
+    Z = [np.asarray(z)]
+    prev_c = ops["prev_of"](z)
+    fields = [np.asarray(ops["full"](z))]
+    iters, ress, res0s, reasons, times, attempts = [], [], [], [], [], []
+    tol_floor = tol * u_scale * ops.get("tol_scale", np.sqrt(ops["m"]))
+    for k in range(NUM_STEPS):
+        t0 = time.perf_counter()
+        if ops["solver"] == "lspg":
+            z, rn_, rn0_, nJ, acc, reason, att = ops["step_jit"](z, prev_c, kap,
+                                                                 tol_floor, budget)
+            info = dict(rn=float(rn_), rn0=float(rn0_), n_jac=int(nJ),
+                        accepted=int(acc), reason=REASONS[int(reason)], attempts=int(att))
+        else:
+            z, info = solve_step(ops, z, prev_c, kap, tol_floor, budget=budget)
+        prev_c = ops["prev_of"](z)
+        prev_c.block_until_ready()
+        times.append(time.perf_counter() - t0)
+        Z.append(np.asarray(z))
+        fields.append(np.asarray(ops["full"](z)))
+        iters.append(info["n_jac"]); ress.append(info["rn"]); res0s.append(info["rn0"])
+        reasons.append(info["reason"]); attempts.append(info["attempts"])
+        if (not np.all(np.isfinite(fields[-1])) or not np.isfinite(info["rn"])
+                or info["reason"] in ("nan_at_init", "nan_step")):
+            reasons[-1] = "blowup"
+            fields.pop(); Z.pop()
+            break
+    out = dict(Z=np.stack(Z), iters=iters, attempts=attempts, res=ress, res_init=res0s,
+               reasons=reasons, step_time=times, n_done=len(fields) - 1)
+    F = np.stack(fields)
+    if U_true is not None:
+        T = F.shape[0]
+        Ut = np.asarray(U_true)[:T]
+        per = np.linalg.norm(F - Ut, axis=1) / np.linalg.norm(Ut, axis=1)
+        if T < NUM_STEPS + 1:
+            per = np.concatenate([per, np.full(NUM_STEPS + 1 - T, np.nan)])
+        out["per_time"] = per
+        out["traj_rel"] = float(np.nanmean(per)) if T == NUM_STEPS + 1 else float("nan")
+    out["fields"] = F
+    return out
+
+
+def eq_validate(dec, n, M, colloc, Z_val):
+    """Out-of-fit quadrature diagnostics: relative error of the EQ-quadratured mode
+    projections vs the exact grid sums, at latents NOT used in the NNLS fit."""
+    kx, ky, Phi, lam, lamc = test_modes(n, M)
+    coords = jnp.asarray(grid_coords(n))
+    interior = interior_indices(n)
+    xy_int = coords[jnp.asarray(interior)]
+    u_full = jax.jit(lambda z: dec(z, xy_int) if dec.kind == "coord"
+                     else dec.rows(z, jnp.asarray(interior)))
+    w = np.asarray(colloc["w"])
+    if colloc["kind"] == "grid":
+        idx = np.asarray(colloc["idx"])
+        pos = np.searchsorted(interior, idx)
+        Phi_q = np.asarray(Phi)[pos] * w[:, None]
+        u_q = jax.jit(lambda z: dec(z, coords[jnp.asarray(idx)]) if dec.kind == "coord"
+                      else dec.rows(z, jnp.asarray(idx)))
+    else:
+        xy_q = jnp.asarray(colloc["xy"])
+        Phi_q = np.asarray(modes_at(xy_q, jnp.asarray(kx, dtype=F64),
+                                    jnp.asarray(ky, dtype=F64), n)[0]) * w[:, None]
+        u_q = jax.jit(lambda z: dec(z, xy_q))
+    Phi_np = np.asarray(Phi)
+    num = den = 0.0
+    worst = 0.0
+    for z in Z_val:
+        z = jnp.asarray(z, dtype=F64)
+        b = Phi_np.T @ np.asarray(u_full(z))
+        p = Phi_q.T @ np.asarray(u_q(z))
+        e = float(np.linalg.norm(p - b)); nb = float(np.linalg.norm(b))
+        num += e ** 2; den += nb ** 2
+        worst = max(worst, e / max(nb, 1e-300))
+    return dict(val_rel_proj_err=float(np.sqrt(num / max(den, 1e-300))),
+                val_rel_proj_err_max=float(worst), n_val_latents=int(len(Z_val)),
+                w_sum=float(w.sum()), w_min=float(w.min()), w_max=float(w.max()),
+                w_finite=bool(np.all(np.isfinite(w))))

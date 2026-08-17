@@ -50,15 +50,18 @@ def main():
                                         pickle.load(f))
     # checkpoint manifest check (the sweep's results JSON sits next to the pkl)
     rj = os.path.join(os.path.dirname(CKPT), f"heat2d_results_N{N}.json")
-    if os.path.exists(rj):
-        with open(rj) as f:
-            rmeta = json.load(f)
-        for k_, v_ in (("N", N), ("n_freq", hf.N_FREQ), ("t_freq", hf.T_FREQ),
-                       ("hidden", hf.HIDDEN), ("n_train", hf.N_TRAIN), ("seed", hf.SEED)):
-            if rmeta.get(k_) != v_:
-                raise SystemExit(f"checkpoint manifest mismatch {k_}: {rmeta.get(k_)} vs {v_}")
-    else:
-        log(f"  WARNING: no results JSON next to {CKPT}; architecture unverified")
+    if not os.path.exists(rj):
+        raise SystemExit(f"missing checkpoint manifest {rj}: architecture unverifiable")
+    with open(rj) as f:
+        rmeta = json.load(f)
+    for k_, v_ in (("N", N), ("n_freq", hf.N_FREQ), ("t_freq", hf.T_FREQ),
+                   ("hidden", hf.HIDDEN), ("n_train", hf.N_TRAIN), ("seed", hf.SEED)):
+        if rmeta.get(k_) != v_:
+            raise SystemExit(f"checkpoint manifest mismatch {k_}: {rmeta.get(k_)} vs {v_}")
+    n_feats = 2 * (2 * hf.N_FREQ + 1) + (2 * hf.T_FREQ + 1)
+    got = params["trunk"][0]["W"].shape[0]
+    if got != n_feats:
+        raise SystemExit(f"checkpoint trunk input width {got} != coord features {n_feats}")
     d = bc.build_data(N)
     U, z_all = d["U"], d["z"].astype(np.float64)
     U_te, z_te, kap_te = d["U_test"], d["z_test"].astype(np.float64), d["kappa_test"]
@@ -89,7 +92,7 @@ def main():
         def one(n):
             return jnp.concatenate([
                 bc.be_residual_from_stencil(Uz[n + 1][st], Uz[n][interior], kap, N),
-                Uz[n + 1][bnd]])
+                Uz[n + 1][bnd] - Uz[n][bnd]])
         return jax.vmap(one)(jnp.arange(bc.NUM_STEPS)).reshape(-1)
 
     def r_both(z, u0, kap):
@@ -125,11 +128,32 @@ def main():
     rr = jax.vmap(lambda n: fom_residual(Uz[n + 1], Uz[n], float(kap_te[0])))(
         jnp.arange(bc.NUM_STEPS))
     report["fom_traj_rel_res"] = float(jnp.linalg.norm(rr) / jnp.linalg.norm(Uz))
-    r_ours = jax.vmap(lambda n: jnp.concatenate([
-        bc.be_residual_from_stencil(Uz[n + 1][st], Uz[n][interior], float(kap_te[0]), N),
-        Uz[n + 1][bnd]]))(jnp.arange(bc.NUM_STEPS))
-    report["ours_vs_fom_traj_res_maxabs_diff"] = float(
-        jnp.max(jnp.abs(jnp.sort(jnp.abs(rr), axis=1) - jnp.sort(jnp.abs(r_ours), axis=1))))
+    # scatter our interior+boundary rows back into the n^2 layout and compare ROW BY ROW
+    def scatter(n):
+        v = jnp.zeros(N * N, dtype=F64)
+        v = v.at[interior].set(bc.be_residual_from_stencil(
+            Uz[n + 1][st], Uz[n][interior], float(kap_te[0]), N))
+        return v.at[bnd].set(Uz[n + 1][bnd] - Uz[n][bnd])
+    r_ours = jax.vmap(scatter)(jnp.arange(bc.NUM_STEPS))
+    report["ours_vs_fom_traj_res_maxabs_diff"] = float(jnp.max(jnp.abs(rr - r_ours)))
+    if report["ours_vs_fom_traj_res_maxabs_diff"] > 1e-10 * float(jnp.max(jnp.abs(Uz))):
+        raise SystemExit("stage-1 residual does not reproduce the FOM residual row by row")
+    # the trajectory above has exactly-zero walls, so it cannot exercise the boundary
+    # rows: repeat on a RANDOM pair of fields with non-zero walls (the sweep decoder is
+    # not hard-BC, so its wall rows really do enter the objective)
+    rg = np.random.default_rng(7)
+    ua, ub = (jnp.asarray(rg.normal(size=N * N)), jnp.asarray(rg.normal(size=N * N)))
+    r_fom_rand = fom_residual(ua, ub, float(kap_te[0]))
+    r_our_rand = (jnp.zeros(N * N, dtype=F64)
+                  .at[interior].set(bc.be_residual_from_stencil(
+                      ua[st], ub[interior], float(kap_te[0]), N))
+                  .at[bnd].set(ua[bnd] - ub[bnd]))
+    report["ours_vs_fom_random_field_maxabs_diff"] = float(
+        jnp.max(jnp.abs(r_fom_rand - r_our_rand)))
+    if report["ours_vs_fom_random_field_maxabs_diff"] > 1e-9 * float(jnp.max(jnp.abs(r_fom_rand))):
+        raise SystemExit("stage-1 residual differs from the FOM residual on a random field")
+    log(f"  residual identity: FOM-trajectory {report['ours_vs_fom_traj_res_maxabs_diff']:.1e}, "
+        f"random-field {report['ours_vs_fom_random_field_maxabs_diff']:.1e}")
     # residual value at the true z (the decoder's own PDE inconsistency)
     rt = [float(objs["resid"][1](jnp.asarray(z_te[i]), jnp.asarray(U_te[i, 0]), float(kap_te[i]))
                 / np.linalg.norm(U_te[i])) for i in range(bc.N_TEST)]

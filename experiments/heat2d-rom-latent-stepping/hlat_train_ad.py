@@ -55,9 +55,9 @@ def main():
     log(f"jax_backend={jax.default_backend()}  x64={jax.config.jax_enable_x64}  "
         f"N={N} K={K} steps={AD_STEPS} batch={AD_BATCH} p_sub={P_SUB} "
         f"t_smooth={T_SMOOTH} bc={bc.BC_MODE} hidden={bc.AD_HIDDEN}x{bc.AD_LAYERS}")
-    d = bc.build_data(N)
+    d = bc.build_data(N, with_test=False)           # TEST is never even generated here
     U = d["U"]
-    U_tr = U[:bc.N_TRAIN]                          # TEST split (TEST_SEED) untouched here
+    U_tr = U[:bc.N_TRAIN]
     fp = bc.data_fingerprint(U)
     log(f"  data fingerprint {fp}")
     n2 = N * N

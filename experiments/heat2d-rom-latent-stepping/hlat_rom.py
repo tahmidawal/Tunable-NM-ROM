@@ -90,6 +90,9 @@ def summarize(runs):
                attempts_warm_mean=float(at[:, 1:].mean()) if at.size else float("nan"),
                res_step_mean=float(np.mean([np.mean(r["res"]) for r in runs])),
                res_final_mean=float(np.mean([r["res"][-1] for r in runs])),
+               res_over_res_init_mean=float(np.mean([
+                   np.mean(np.asarray(r["res"]) / np.maximum(np.asarray(r["res_init"]), 1e-300))
+                   for r in runs])),
                reasons=reasons,
                step_time_ms_median=float(1e3 * np.median(np.concatenate(
                    [r["step_time"] for r in runs]))),
@@ -105,9 +108,15 @@ def main():
         ck = pickle.load(f)
     K = ck["k_lat"]
     for key_, val_ in (("bc_mode", bc.BC_MODE), ("N", N), ("ad_hidden", bc.AD_HIDDEN),
-                       ("ad_layers", bc.AD_LAYERS), ("n_train", bc.N_TRAIN), ("seed", bc.SEED)):
+                       ("ad_layers", bc.AD_LAYERS), ("n_train", bc.N_TRAIN), ("seed", bc.SEED),
+                       ("k_lat", bc.K_LAT)):
         if ck["config"][key_] != val_:
             raise SystemExit(f"checkpoint/config mismatch on {key_}: {ck['config'][key_]} vs {val_}")
+    if K != bc.K_LAT or ck["Z_train"].shape[-1] != K or ck["V"].shape[0] != N * N:
+        raise SystemExit(f"checkpoint shape mismatch: k_lat {K}/{bc.K_LAT}, "
+                         f"Z {ck['Z_train'].shape}, V {ck['V'].shape}, N={N}")
+    if not all(np.all(np.isfinite(a)) for a in jax.tree_util.tree_leaves(ck["params"])):
+        raise SystemExit("checkpoint contains non-finite parameters")
     dec = bc.CoordDecoder(jax.tree_util.tree_map(jnp.asarray, ck["params"]),
                           ck["n_freq"], ck["eps"], K)
     Ztr = ck["Z_train"]                                   # (n_tr, T1, K)
@@ -156,7 +165,7 @@ def main():
     ops_wa_chk = bc.make_weak_ops(dec, N, dict(kind="grid", idx=interior, w=None),
                                   kind="weak", M=(N - 2) ** 2, alpha=0.0, solver="lspg")
     rngc = np.random.default_rng(99)
-    devs, devs_g = [], []
+    devs, devs_g, devs_l, devs_h = [], [], [], []
     for _ in range(3):
         zc = jnp.asarray(rngc.normal(size=K) * float(np.std(Ztr)), dtype=F64)
         prev = jnp.asarray(rngc.normal(size=(N - 2) ** 2) * 1e-2)
@@ -170,11 +179,32 @@ def main():
         g_fd = JD_fd_.T @ r_fd_
         g_wa = JD_wa_.T @ r_wa_
         devs_g.append(float(jnp.linalg.norm(g_fd - g_wa) / jnp.linalg.norm(g_fd)))
+        # LSPG normal equations: J^T r and J^T J must match too
+        jr_fd, jr_wa = J_fd_.T @ r_fd_, J_wa_.T @ r_wa_
+        H_fd, H_wa = J_fd_.T @ J_fd_, J_wa_.T @ J_wa_
+        devs_l.append(float(jnp.linalg.norm(jr_fd - jr_wa) / jnp.linalg.norm(jr_fd)))
+        devs_h.append(float(jnp.linalg.norm(H_fd - H_wa) / jnp.linalg.norm(H_fd)))
     chk["weakall_vs_fd_resnorm_reldev"] = float(max(devs))
     chk["weakall_vs_fd_galerkin_grad_reldev"] = float(max(devs_g))
+    chk["weakall_vs_fd_lspg_grad_reldev"] = float(max(devs_l))
+    chk["weakall_vs_fd_lspg_hess_reldev"] = float(max(devs_h))
     del ops_fd_chk, ops_wa_chk
+    # the hard-BC factor must be EXACTLY zero on the wall nodes (the ghost-zero
+    # assumption behind -L phi = lam phi)
+    wall = np.setdiff1d(np.arange(n2), interior)
+    zc = jnp.asarray(np.random.default_rng(5).normal(size=K), dtype=F64)
+    chk["decoder_wall_maxabs"] = float(jnp.max(jnp.abs(dec(zc, coords[jnp.asarray(wall)]))))
     log(f"  checks: {chk}")
     report["checks"] = chk
+    bad = [k_ for k_, tolk in (("local_vs_fom_maxabs", 1e-12),
+                               ("weakall_vs_fd_resnorm_reldev", 1e-10),
+                               ("weakall_vs_fd_galerkin_grad_reldev", 1e-8),
+                               ("weakall_vs_fd_lspg_grad_reldev", 1e-8),
+                               ("weakall_vs_fd_lspg_hess_reldev", 1e-8),
+                               ("decoder_wall_maxabs", 1e-300))
+           if not np.isfinite(chk[k_]) or chk[k_] > tolk]
+    if bad:
+        raise SystemExit(f"identity checks FAILED: {[(k_, chk[k_]) for k_ in bad]}")
 
     # ---------------- floors on the test trajectories ----------------
     # (a) POD projection floors (linear ceiling of the control)
@@ -214,41 +244,118 @@ def main():
         f"{orc.mean():.3e} [{time.time()-t0:.0f}s]")
 
     # ---------------- cold starts from the KNOWN u0 ----------------
+    # Two starts: the mean training latent at t=0, and the latent of the training
+    # trajectory whose IC is nearest to u0 (legitimate: u0 is known online).  The
+    # SAME algorithm is used for the accuracy run and for the timed pipeline: the
+    # jitted residual/Jacobian closures are built ONCE here (bc.fit_ic rebuilds them
+    # per call, which would charge the Python-LM timing with a recompile each time).
     Utr0 = U_tr[:, 0]
-    ics = []
+    Utr0_j = jnp.asarray(Utr0)
+    Ztr_t0 = jnp.asarray(Ztr[:, 0], dtype=F64)
+    zmean0 = jnp.asarray(zmean_t[0], dtype=F64)
+    nearest_jit = jax.jit(lambda u0: jnp.argmin(jnp.sum((Utr0_j - u0) ** 2, axis=1)))
+    f_ic = lambda z, u: dec(z, coords) - u
+    rJ_ic = jax.jit(lambda z, u: (f_ic(z, u), jax.jacfwd(f_ic)(z, u)))
+    rn_ic = jax.jit(lambda z, u: jnp.linalg.norm(f_ic(z, u)))
+
+    def fit_ic_py(u0j, inits):
+        """Python-loop LM on the u0 misfit, best of the given starts (prebuilt jits)."""
+        best = None
+        for name, z0 in inits:
+            z, r, info = lm_solve(lambda zz: rJ_ic(zz, u0j), lambda zz: rn_ic(zz, u0j),
+                                  jnp.asarray(z0, dtype=F64), bc.IC_BUDGET)
+            if best is None or r < best[1]:
+                best = (z, r, name)
+        return best
+
+    ic_jit = bc.make_ic_solver_jit(dec, N, coords=coords)
+
+    def ic_pipeline_jit(u0j):
+        """The whole cold start on device: nearest-training-IC search + two jitted LM
+        solves + best-of on the misfit.  This is the realizable online path."""
+        j = nearest_jit(u0j)
+        zA, rA, _, _, _, _ = ic_jit(zmean0, u0j, bc.IC_BUDGET)
+        zB, rB, _, _, _, _ = ic_jit(Ztr_t0[j], u0j, bc.IC_BUDGET)
+        return jnp.where(rA <= rB, zA, zB), jnp.minimum(rA, rB)
+
+    ic_pipeline_jit = jax.jit(ic_pipeline_jit)
+
+    ics, ics_jit = [], []
     for i in range(bc.N_TEST):
-        j = int(np.argmin(np.linalg.norm(Utr0 - U_te[i, 0], axis=1)))   # legit: u0 known
-        z0, rel, info = bc.fit_ic(dec, N, U_te[i, 0],
-                                  {"mean_t0": zmean_t[0], "nearest_ic": Ztr[j, 0]},
-                                  coords=coords)
-        ics.append((np.asarray(z0), rel, info.get("init", "?")))
+        u0j = jnp.asarray(U_te[i, 0])
+        nu0 = float(jnp.linalg.norm(u0j))
+        j = int(nearest_jit(u0j))                               # legit: u0 known
+        z0, r, name = fit_ic_py(u0j, (("mean_t0", zmean_t[0]), ("nearest_ic", Ztr[j, 0])))
+        ics.append((np.asarray(z0), r / nu0, name))
+        zj, rj = ic_pipeline_jit(u0j)
+        ics_jit.append((np.asarray(zj), float(rj) / nu0))
     report["ic_fit"] = dict(rel_mean=float(np.mean([r for _, r, _ in ics])),
                             rel_max=float(np.max([r for _, r, _ in ics])))
-    log(f"  IC fit (u0 misfit): mean {report['ic_fit']['rel_mean']:.3e}")
-    # jitted on-device IC solve: same LM rule, same two starts, best-of on the misfit
-    ic_jit = bc.make_ic_solver_jit(dec, N, coords=coords)
-    ics_jit = []
-    for i in range(bc.N_TEST):
-        j = int(np.argmin(np.linalg.norm(Utr0 - U_te[i, 0], axis=1)))
-        u0j = jnp.asarray(U_te[i, 0])
-        best = None
-        for zz in (zmean_t[0], Ztr[j, 0]):
-            z, rn_, nJ, acc, reason, att = ic_jit(jnp.asarray(zz, dtype=F64), u0j, bc.IC_BUDGET)
-            rel = float(rn_) / float(jnp.linalg.norm(u0j))
-            if best is None or rel < best[1]:
-                best = (np.asarray(z), rel, int(nJ), int(reason))
-        ics_jit.append(best)
-    report["ic_fit_jit"] = dict(rel_mean=float(np.mean([r for _, r, _, _ in ics_jit])),
-                                rel_max=float(np.max([r for _, r, _, _ in ics_jit])),
-                                mean_abs_diff_vs_python=float(np.mean(
-                                    [abs(a[1] - b[1]) for a, b in zip(ics, ics_jit)])))
-    log(f"  IC fit JIT (u0 misfit): mean {report['ic_fit_jit']['rel_mean']:.3e} "
-        f"(|diff| vs python {report['ic_fit_jit']['mean_abs_diff_vs_python']:.1e})")
+    report["ic_fit_jit"] = dict(
+        rel_mean=float(np.mean([r for _, r in ics_jit])),
+        rel_max=float(np.max([r for _, r in ics_jit])),
+        mean_abs_diff_vs_python=float(np.mean([abs(a[1] - b[1])
+                                               for a, b in zip(ics, ics_jit)])))
+    log(f"  IC fit (u0 misfit): python {report['ic_fit']['rel_mean']:.3e}  "
+        f"jit {report['ic_fit_jit']['rel_mean']:.3e} "
+        f"(|diff| {report['ic_fit_jit']['mean_abs_diff_vs_python']:.1e})")
+
+    # ---------------- timing helpers ----------------
+    # Every reported ROM time is a REALIZABLE online pipeline measured end to end on the
+    # same device in the same process: cold start (nearest-training-IC search + LM on the
+    # u0 misfit) -> latent rollout -> decode all 51 slices -> block.  The FOM baseline is
+    # the same jitted implicit CG solver at batch 1, which also produces 51 slices.
+    dec_all_coord = jax.jit(lambda ZZ: jax.vmap(lambda zz: dec(zz, coords))(ZZ))
+
+    def time_variant(var, ops, solver, dec_all, ic_pipe_jit, ic_py_fn, z0_fixed, us0,
+                     kap, u0j):
+        tf = jnp.full((bc.NUM_STEPS,),
+                      bc.GN_TOL * us0 * ops.get("tol_scale", np.sqrt(ops["m"])))
+        out = {}
+        if solver == "lspg":
+            def roll_once():
+                o = ops["rollout_jit"](z0_fixed, kap, tf, bc.GN_BUDGET)
+                o[0].block_until_ready()
+            med, ts = bc.time_fn(roll_once, reps=TIME_REPS, warm=2)
+            o = ops["rollout_jit"](z0_fixed, kap, tf, bc.GN_BUDGET)
+            out["iters_total"] = int(jnp.sum(o[3]))
+            out["impl"] = "device_scan"
+
+            def e2e_jit():
+                z0_, _ = ic_pipe_jit(u0j)
+                C = ops["rollout_jit"](z0_, kap, tf, bc.GN_BUDGET)[0]
+                dec_all(jnp.concatenate([z0_[None], C], axis=0)).block_until_ready()
+            e2e_j, _ = bc.time_fn(e2e_jit, reps=TIME_REPS, warm=2)
+
+            def e2e_py():
+                z0_ = jnp.asarray(ic_py_fn(u0j)[0], dtype=F64)
+                C = ops["rollout_jit"](z0_, kap, tf, bc.GN_BUDGET)[0]
+                dec_all(jnp.concatenate([z0_[None], C], axis=0)).block_until_ready()
+            e2e_p, _ = bc.time_fn(e2e_py, reps=3, warm=1)
+            out.update(rollout_s_median=med, all=ts, end_to_end_jit_ic_s=e2e_j,
+                       end_to_end_py_ic_s=e2e_p)
+        else:
+            # the Galerkin root solver is a Python loop and bc.rollout ALREADY decodes
+            # every slice, so its rollout time is not comparable to the device-scan LSPG
+            # number and must NOT be charged for decoding a second time.
+            def roll_once():
+                bc.rollout(dec, N, ops, z0_fixed, kap, us0)
+            med, ts = bc.time_fn(roll_once, reps=3, warm=1)
+
+            def e2e_py():
+                z0_ = jnp.asarray(ic_py_fn(u0j)[0], dtype=F64)
+                bc.rollout(dec, N, ops, z0_, kap, us0)
+            e2e_p, _ = bc.time_fn(e2e_py, reps=3, warm=1)
+            out.update(rollout_s_median=med, all=ts, impl="python_loop_incl_decode",
+                       end_to_end_py_ic_s=e2e_p, iters_total=None)
+        return out
 
     # ---------------- ROM variants (coord decoder) ----------------
     eq_cache = {}
-    Z_snap = Ztr.reshape(-1, K)[np.random.default_rng(EQ_RNG_SEED).choice(
-        Ztr.shape[0] * T1, bc.EQ_SNAPS, replace=False)]
+    _perm = np.random.default_rng(EQ_RNG_SEED).permutation(Ztr.shape[0] * T1)
+    fit_rows, val_rows = _perm[:bc.EQ_SNAPS], _perm[bc.EQ_SNAPS:2 * bc.EQ_SNAPS]
+    Z_snap = Ztr.reshape(-1, K)[fit_rows]
+    Z_snap_val = Ztr.reshape(-1, K)[val_rows]
 
     def build_ops(decoder, var, i, cache):
         solver, colloc_name, objective = var.split(":")
@@ -264,11 +371,18 @@ def main():
                 key = (decoder.kind, decoder.k, kind, M, m, pool)  # alpha-free: EQ fits u only
                 if key not in cache:
                     zs = Z_snap if decoder.kind == "coord" else (
-                        (U_tr.reshape(-1, n2) @ np.asarray(decoder.V))[
-                            np.random.default_rng(EQ_RNG_SEED).choice(
-                                Ztr.shape[0] * T1, bc.EQ_SNAPS, replace=False)])
-                    cache[key] = bc.fit_eq_weights(decoder, N, M, m, zs, kind=kind, pool=pool,
-                                                   rng=np.random.default_rng(EQ_RNG_SEED))
+                        (U_tr.reshape(-1, n2) @ np.asarray(decoder.V))[fit_rows])
+                    col_ = bc.fit_eq_weights(decoder, N, M, m, zs, kind=kind, pool=pool,
+                                             rng=np.random.default_rng(EQ_RNG_SEED))
+                    # out-of-fit check: quadratured mode projections vs exact grid sums
+                    # at EQ_SNAPS training latents NOT used in the NNLS fit
+                    zv = (Z_snap_val if decoder.kind == "coord" else
+                          (U_tr.reshape(-1, n2) @ np.asarray(decoder.V))[val_rows])
+                    col_["info"].update(bc.eq_validate(decoder, N, M, col_, zv))
+                    log(f"    EQ out-of-fit proj err {col_['info']['val_rel_proj_err']:.2e} "
+                        f"(max {col_['info']['val_rel_proj_err_max']:.2e}), "
+                        f"w in [{col_['info']['w_min']:.2e}, {col_['info']['w_max']:.2e}]")
+                    cache[key] = col_
                 col = cache[key]
             return bc.make_weak_ops(decoder, N, col, kind=kind, M=M, alpha=alpha,
                                     solver=solver)
@@ -302,46 +416,12 @@ def main():
             f"warm {s['iters_warm_mean']:.2f}  step {s['step_time_ms_median']:.1f} ms  "
             f"[{s['secs']:.0f}s]")
         if DO_TIMING:
-            i = 0
-            if colloc_name.startswith("biased"):     # rebuild for test case 0
-                ops = build_ops(dec, var, 0, eq_cache)
-            z0 = jnp.asarray(ics[i][0]); us0 = float(u0_rms[i])
-            if solver == "lspg":
-                usc = jnp.full((bc.NUM_STEPS,), bc.GN_TOL * us0 * np.sqrt(ops["m"]))
-                def run_once():
-                    Z_, rn_, nj_, re_ = ops["rollout_jit"](z0, float(kap_te[i]), usc, bc.GN_BUDGET)
-                    Z_.block_until_ready()
-                Z_, rn_, nj_, re_ = ops["rollout_jit"](z0, float(kap_te[i]), usc, bc.GN_BUDGET)
-                nj_total = int(jnp.sum(nj_))
-                impl = "device_scan"
-            else:
-                def run_once():
-                    bc.rollout(dec, N, ops, z0, float(kap_te[i]), us0)
-                nj_total = None
-                impl = "python_loop"
-            med, ts = bc.time_fn(run_once, reps=TIME_REPS, warm=2)
-            # online IC solve -- python LM on the u0 misfit (as in the Burgers round)
-            # AND the jitted on-device LM (same rule, 2 starts) -- and full-field
-            # decode of all 51 slices, timed separately so the reader can compose them
-            j0 = int(np.argmin(np.linalg.norm(Utr0 - U_te[i, 0], axis=1)))
-            def ic_once():
-                bc.fit_ic(dec, N, U_te[i, 0], {"mean_t0": zmean_t[0], "nearest_ic": Ztr[j0, 0]},
-                          coords=coords)
-            ic_med, _ = bc.time_fn(ic_once, reps=3, warm=1)
-            u0j = jnp.asarray(U_te[i, 0])
-            def ic_jit_once():
-                for zz in (zmean_t[0], Ztr[j0, 0]):
-                    out = ic_jit(jnp.asarray(zz, dtype=F64), u0j, bc.IC_BUDGET)
-                    out[0].block_until_ready()
-            ic_jit_med, _ = bc.time_fn(ic_jit_once, reps=TIME_REPS, warm=2)
-            Zt = jnp.asarray(np.stack([ics[i][0]] * (bc.NUM_STEPS + 1)))
-            dec_all = jax.jit(lambda ZZ: jax.vmap(lambda zz: dec(zz, coords))(ZZ))
-            def dec_once():
-                dec_all(Zt).block_until_ready()
-            dec_med, _ = bc.time_fn(dec_once, reps=TIME_REPS, warm=2)
-            timing[var] = dict(rollout_s_median=med, all=ts, impl=impl, iters_total=nj_total,
-                               ic_fit_s=ic_med, ic_fit_jit_s=ic_jit_med,
-                               decode_all_slices_s=dec_med)
+            timing[var] = time_variant(var, ops, solver, dec_all_coord, ic_pipeline_jit,
+                                       lambda u0j: fit_ic_py(
+                                           u0j, (("mean_t0", zmean_t[0]),
+                                                 ("nearest_ic", Ztr[int(nearest_jit(u0j)), 0]))),
+                                       jnp.asarray(ics[0][0]), float(u0_rms[0]),
+                                       float(kap_te[0]), jnp.asarray(U_te[0, 0]))
     report["rom"] = results
 
     # ---------------- POD control (same solver) ----------------
@@ -368,36 +448,108 @@ def main():
             log(f"  POD k={k:3d} {var:20s} traj rel mean {s['traj_rel_mean']:.3e} "
                 f"(med {s['traj_rel_median']:.3e}) blowups {s['n_blowup']} "
                 f"iters warm {s['iters_warm_mean']:.2f} step {s['step_time_ms_median']:.1f} ms")
-            if DO_TIMING and var == POD_VARIANTS[0]:
-                z0 = jnp.asarray(bc.fit_ic(pdec, N, U_te[0, 0], {})[0])
-                usc = jnp.full((bc.NUM_STEPS,), bc.GN_TOL * float(u0_rms[0]) * np.sqrt(ops["m"]))
-                def pod_once():
-                    Z_, rn_, nj_, re_ = ops["rollout_jit"](z0, float(kap_te[0]), usc, bc.GN_BUDGET)
-                    Z_.block_until_ready()
-                med, ts = bc.time_fn(pod_once, reps=TIME_REPS, warm=2)
-                timing[f"pod_k{k}:{var}"] = dict(rollout_s_median=med, all=ts, impl="device_scan")
+            if DO_TIMING and solver == "lspg":
+                Vk = jnp.asarray(V[:, :k], dtype=F64)
+                tf = jnp.full((bc.NUM_STEPS,),
+                              bc.GN_TOL * float(u0_rms[0])
+                              * ops.get("tol_scale", np.sqrt(ops["m"])))
+                kap0 = float(kap_te[0]); u0j0 = jnp.asarray(U_te[0, 0])
+                z0 = Vk.T @ u0j0
+                def pod_roll():
+                    out = ops["rollout_jit"](z0, kap0, tf, bc.GN_BUDGET)
+                    out[0].block_until_ready()
+                med, ts = bc.time_fn(pod_roll, reps=TIME_REPS, warm=2)
+                def pod_e2e():                       # project u0 -> step -> reconstruct
+                    c0 = Vk.T @ u0j0
+                    C = ops["rollout_jit"](c0, kap0, tf, bc.GN_BUDGET)[0]
+                    F_ = jnp.concatenate([c0[None], C], axis=0) @ Vk.T
+                    F_.block_until_ready()
+                e2e, _ = bc.time_fn(pod_e2e, reps=TIME_REPS, warm=2)
+                timing[f"pod_k{k}:{var}"] = dict(rollout_s_median=med, all=ts,
+                                                 impl="device_scan", end_to_end_s=e2e)
     report["pod_rom"] = podres
+
+    # ---------------- direct reduced POD-Galerkin (production linear ROM) -------------
+    # The same-solver POD arm above isolates the REPRESENTATION (it runs the nonlinear
+    # LM/Newton machinery on a linear subspace).  For a linear PDE a real POD ROM would
+    # never do that: V^T A_kappa V is a k x k matrix, so the whole rollout is 50 k x k
+    # solves.  This arm is that ROM -- the honest linear competitor on speed.
+    _, impl_op = bc.make_fom(N)
+    poddirect = {}
+    for k in POD_KS:
+        Vk = jnp.asarray(V[:, :k], dtype=F64)
+        AV1 = jax.vmap(lambda v: impl_op(v, 1.0), in_axes=1, out_axes=1)(Vk)
+        Lr = Vk.T @ ((Vk - AV1) / bc.DT)                 # V^T lap V (ghost-zero walls)
+
+        def make_run(Vk=Vk, Lr=Lr, k=k):
+            Ik = jnp.eye(k, dtype=F64)
+            @jax.jit
+            def run(u0, kap):
+                Ar = Ik - bc.DT * kap * Lr
+                c0 = Vk.T @ u0
+                def body(c, _):
+                    c2 = jnp.linalg.solve(Ar, c)
+                    return c2, c2
+                _, C = jax.lax.scan(body, c0, None, length=bc.NUM_STEPS)
+                return jnp.concatenate([c0[None], C], axis=0) @ Vk.T
+            return run
+        run = make_run()
+        errs = []
+        for i in range(bc.N_TEST):
+            F_ = np.asarray(run(jnp.asarray(U_te[i, 0]), float(kap_te[i])))
+            errs.append(float(np.mean(np.linalg.norm(F_ - U_te[i], axis=1)
+                                      / np.linalg.norm(U_te[i], axis=1))))
+        errs = np.array(errs)
+        poddirect[f"k{k}"] = dict(traj_rel_mean=float(errs.mean()),
+                                  traj_rel_median=float(np.median(errs)),
+                                  traj_rel_max=float(errs.max()))
+        log(f"  POD-direct (reduced BE Galerkin) k={k:3d}: traj rel mean {errs.mean():.3e} "
+            f"(med {np.median(errs):.3e})")
+        if DO_TIMING:
+            u0j0 = jnp.asarray(U_te[0, 0]); kap0 = float(kap_te[0])
+            def pd_once():
+                run(u0j0, kap0).block_until_ready()
+            med_, ts_ = bc.time_fn(pd_once, reps=TIME_REPS, warm=2)
+            timing[f"pod_direct_k{k}"] = dict(rollout_s_median=med_, all=ts_,
+                                              end_to_end_s=med_, impl="device_scan_kxk")
+    report["pod_direct"] = poddirect
 
     # ---------------- FOM timing (same jitted solver, batch 1) ----------------
     if DO_TIMING:
+        # the cold-start solvers alone (variant-independent), for the cost breakdown
+        u0j0 = jnp.asarray(U_te[0, 0])
+        def ic_jit_once():
+            ic_pipeline_jit(u0j0)[0].block_until_ready()
+        timing["ic_solve_jit"] = dict(rollout_s_median=bc.time_fn(
+            ic_jit_once, reps=TIME_REPS, warm=2)[0], impl="device_while_loop")
+        def ic_py_once():
+            fit_ic_py(u0j0, (("mean_t0", zmean_t[0]),
+                             ("nearest_ic", Ztr[int(nearest_jit(u0j0)), 0])))
+        timing["ic_solve_py"] = dict(rollout_s_median=bc.time_fn(
+            ic_py_once, reps=3, warm=1)[0], impl="python_loop")
+        Zt = jnp.asarray(np.stack([ics[0][0]] * T1))
+        def dec_once():
+            dec_all_coord(Zt).block_until_ready()
+        timing["decode_all_slices"] = dict(rollout_s_median=bc.time_fn(
+            dec_once, reps=TIME_REPS, warm=2)[0], impl="device_vmap")
+
         roll, _ = bc.make_fom(N)
         U0 = jnp.asarray(U_te[0, 0])[None]
         kap1 = jnp.asarray([kap_te[0]])
         def fom_once():
-            s = roll(U0, kap1)
-            s.block_until_ready()
+            roll(U0, kap1).block_until_ready()
         med, ts = bc.time_fn(fom_once, reps=TIME_REPS, warm=2)
         timing["fom_rollout"] = dict(rollout_s_median=med, all=ts)
         for kk, v in timing.items():
-            if kk != "fom_rollout":
-                v["speedup_vs_fom_rollout_only"] = med / v["rollout_s_median"]
-                if "ic_fit_s" in v:
-                    v["speedup_vs_fom_end_to_end"] = med / (
-                        v["rollout_s_median"] + v["ic_fit_s"] + v["decode_all_slices_s"])
-                    v["speedup_vs_fom_end_to_end_jit_ic"] = med / (
-                        v["rollout_s_median"] + v["ic_fit_jit_s"] + v["decode_all_slices_s"])
-        log("  timing: " + "  ".join(f"{k}={v['rollout_s_median']*1e3:.0f}ms"
-                                    for k, v in timing.items()))
+            if kk in ("fom_rollout", "ic_solve_jit", "ic_solve_py", "decode_all_slices"):
+                continue
+            v["speedup_vs_fom_rollout_only"] = med / v["rollout_s_median"]
+            for lbl in ("end_to_end_jit_ic_s", "end_to_end_py_ic_s", "end_to_end_s"):
+                if lbl in v:
+                    v["speedup_" + lbl[:-2]] = med / v[lbl]
+        log("  timing: FOM %.0f ms; " % (med * 1e3) + "  ".join(
+            f"{k}={v['rollout_s_median']*1e3:.0f}ms" for k, v in timing.items()
+            if k != "fom_rollout"))
     report["timing"] = timing
 
     os.makedirs(OUTDIR, exist_ok=True)

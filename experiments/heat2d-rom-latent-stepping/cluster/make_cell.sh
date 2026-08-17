@@ -4,6 +4,7 @@
 # for /cluster/tufts/paralab/tawal01/hlat/<cell>/ (one job per dir).
 set -euo pipefail
 cell="$1"; mem="$2"; hours="$3"; envs="$4"; cmd="$5"
+[[ "$cell" =~ ^[a-z0-9_]+$ ]] || { echo "bad cell name '$cell' (need ^[a-z0-9_]+\$)" >&2; exit 1; }
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(dirname "$HERE")"
 WT="$(cd "$EXP/../../.." && pwd)"
@@ -36,7 +37,7 @@ export JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 echo "host=\$(hostname)  gpu=\$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
-echo "git_commit=$(git -C "$EXP" rev-parse HEAD 2>/dev/null || echo unknown)"
+echo "git_commit=$(git -C "$EXP" rev-parse HEAD 2>/dev/null || echo unknown) dirty=$(git -C "$EXP" status --porcelain -- . | wc -l)"
 \$PY - <<'PRE' || { echo "GPU PREFLIGHT FAILED"; exit 42; }
 import sys, jax
 d = jax.devices()[0]
@@ -49,4 +50,5 @@ rc=\$?
 [[ \$rc -eq 0 ]] && echo "ALL-DONE" || { echo "FAILED rc=\$rc"; exit \$rc; }
 EOS
 (cd "$STAGE" && find . -type f -not -name MANIFEST.sha256 -exec sha256sum {} \; | sort > MANIFEST.sha256)
+echo "manifest=$(cd "$STAGE" && sha256sum MANIFEST.sha256 | cut -d' ' -f1)" >&2
 echo "$STAGE"

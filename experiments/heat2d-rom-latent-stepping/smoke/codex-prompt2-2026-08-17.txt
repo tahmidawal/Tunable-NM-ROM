@@ -1,0 +1,108 @@
+READ-ONLY FACT-CHECK AND OVERREACH AUDIT of a finished numerical experiment's write-up.
+Do NOT modify, create, delete, move or rename ANY file anywhere (no AGENTS.md, no notes, no
+patches, no git writes). Do NOT run GPU work, sbatch, ssh, or install anything. You MAY read
+files and run cheap read-only commands, including `python3 -c` / short read-only python scripts
+that only LOAD the JSON files and print numbers (they are plain JSON; numpy is available at
+/home/tahmid/Dev/.venv/bin/python if you want it, but plain `json` is enough). Report findings
+only, in your final message.
+
+TARGET DIRECTORY (everything is here):
+/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-16-heat2d-rom-latent-stepping/experiments/heat2d-rom-latent-stepping/
+
+  README.md                      <- the write-up under audit (design + results + verdict + caveats)
+  SUMMARY_TABLES.md              <- machine-generated tables (from hlat_summarize.py)
+  runs/s1_n64/{icw_sqrt50,icw1}/hlat_stage1_N64.json   + 2482867.out
+  runs/ad_n64_k4/hlat_rom_N64_K4.json    + hlat_ad_N64_K4_report.json  + 2482870.out
+  runs/ad_n64_k8/hlat_rom_N64_K8.json    + ...                          + 2482872.out
+  runs/ad_n64_k16/hlat_rom_N64_K16.json  + ...                          + 2482874.out
+  runs/ad_n128_k8/hlat_rom_N128_K8.json  + ...                          + 2482880.out
+  hlat_common.py hlat_rom.py hlat_stage1.py hlat_train_ad.py hlat_summarize.py
+  CODEX-REVIEW-2026-08-16.md     <- the earlier pre-run review of this harness and its triage
+
+WHAT THE EXPERIMENT IS (short): heat 2D, u_t = kappa lap u, u=0 walls, backward Euler
+dt=0.005 x 50, CG per implicit step. A hard-BC FiLM coordinate auto-decoder u(x;z) is the
+nonlinear manifold; per implicit step the latent z is solved by warm-started damped
+Levenberg-Marquardt (LSPG) or damped Newton on the Galerkin root, on the FOM's own discrete
+backward-Euler residual. The "recipe" under test projects that residual onto the M lowest
+DISCRETE sine modes (exact eigenvectors of the FOM Laplacian, so the weak form is exact for
+this linear PDE) with weight (1+dt*kappa*lam_i)^-alpha, and hyper-reduces the mode projections
+to m quadrature points with non-negative capped-NNLS ("EQ") weights on grid nodes (eq<m>) or a
+meshfree random pool (eqoff<m>). Controls: strong-form full-grid residual (fd), POD with the
+SAME solver, a direct reduced POD-Galerkin (k x k solve per step), and an "oracle" floor from
+latents fitted to the held-out fields.
+
+YOUR JOB, in this order:
+
+1. NUMBER-BY-NUMBER VERIFICATION. Every numeric claim in README.md must be traceable to the
+   JSONs (or to a log line). Load the JSONs and check. In particular verify:
+   - the identity-check table (`report["checks"]` per cell);
+   - the Stage-1 table against runs/s1_n64/*/hlat_stage1_N64.json;
+   - the big Stage-2 K=4/K=8/K=16 table (every cell of it) against `report["rom"][variant]
+     ["traj_rel_mean"]`, `report["oracle_inferred_latent_test"]["traj_rel_mean"]`,
+     `report["train_rel_mean"]`, `report["ic_fit"]["rel_mean"]`,
+     `report["oracle_pod_projection_floor_test"]`, `report["pod_rom"]`;
+   - the per-time table against `per_time_mean`;
+   - the N-flatness table (N=64 K=8 vs N=128 K=8) against both JSONs' `timing` and `rom`;
+   - the timing table and every "x speedup" number against `report["timing"]` raw medians
+     (`rollout_s_median`, `end_to_end_jit_ic_s`, `end_to_end_py_ic_s`, `ic_solve_jit`,
+     `ic_solve_py`, `decode_all_slices`, `fom_rollout`, `pod_direct_k*`). Recompute the
+     speedups yourself; do not trust the stated ones.
+   - the "zero blow-ups" claim: check n_blowup / n_completed / n_total for EVERY variant in
+     EVERY cell including the POD arms;
+   - the claim that `lspg:full:weakall` reproduces `lspg:full:fd` and `galerkin:full:weakall`
+     reproduces `galerkin:full:fd` "to all printed digits of the trajectory error AND of the
+     iteration counts" in every cell;
+   - the claim that "795/800 steps at K=8 terminate on the stall criterion, 5 on budget"
+     against `report["rom"][...]["reasons"]`;
+   - GPU / node / job-id / commit provenance against the `*.out` logs (including that both
+     ad_n64_k8 and ad_n128_k8 really ran on the same node and same GPU model, which the
+     N-flatness claim depends on).
+   Report EVERY mismatch, including rounding that flatters the result, and say which direction
+   it errs.
+
+2. OVERREACHING CLAIMS. Be hostile to the prose, not just the arithmetic. For each of these
+   README claims, say whether the data supports it, supports it only weakly, or does not:
+   - "the weak form beats the exact discrete residual ... 1.8x better at K=8" and the causal
+     story offered for it ("projecting onto M low smooth modes discards precisely the
+     high-frequency part of the residual the K-dimensional tangent space cannot fix"). Is the
+     causal mechanism demonstrated or merely asserted? Is there an alternative explanation
+     (e.g. the weighting, the different effective stopping point, the iteration counts, the
+     conditioning of the projected Jacobian) that the data cannot rule out?
+   - "best M grows with K, roughly M ~ 16K" from three K values. Is that an over-fit claim?
+   - "M >= 4K is a hard requirement" from two failure points.
+   - "hyper-reduction is essentially free" (5% accuracy at 5x less per-step cost).
+   - "the meshfree pool matches the grid pool" — check the actual numbers and the EQ
+     out-of-fit diagnostics in `eq_info`.
+   - "Galerkin and LSPG coincide once the residual is projected."
+   - "the nonlinear manifold buys ~7x in latent dimension" / "POD needs k ~ 40".
+   - the N-flatness claim "online cost is independent of the FOM dimension (1.008x for a 4x
+     refinement)" — from exactly TWO mesh sizes, one GPU, one variant. How strong is this
+     really, and is the rollout-only-vs-end-to-end distinction handled honestly in the prose?
+   - "beaten on accuracy at exactly the same speedup" versus the cited published number
+     (rel_l2 2.83e-2 at 0.17x speedup for heat2d_n64, from a different branch of this project,
+     which is NOT re-run here). Is comparing to a number produced by different code, possibly a
+     different test set and a different timing protocol, presented with adequate hedging?
+   - the negative verdict ("no neural ROM beats this FOM on wall clock; the direct reduced
+     POD-Galerkin is 5.5-38x faster"). Is the negative stated as strongly as the data warrants,
+     or is it softened anywhere?
+   - the caveats section: is anything material MISSING from it? Think about what a hostile
+     referee would ask that the README does not pre-empt.
+
+3. STATISTICAL HONESTY. n_test = 16 trajectories. Differences like 1.867e-2 vs 1.902e-2
+   (weak64 vs weak128) are presented as meaningful ordering. Check the per-trajectory spread
+   (`rows` / `traj_rel_max` / median vs mean) and say which of the README's orderings are
+   within noise for n=16 and should be described as ties. Is the choice of "mean over 51 slices,
+   then mean over 16 trajectories" ever mixed with medians in a way that flatters an arm?
+
+4. LEAKAGE / SELECTION, one more time, now that results exist. The README says "no variant was
+   selected on TEST". But the headline claims quote the BEST variant per K. Does the write-up
+   handle that honestly? Is the oracle floor correctly labelled everywhere it is used as a
+   comparator?
+
+OUTPUT: markdown, exactly three sections:
+  ## FACTUAL ERRORS      — numbers in README.md that disagree with the JSONs/logs (with the
+                           correct value, the source key, and which way the error flatters).
+  ## OVERREACH           — claims to weaken or hedge, with the specific wording you would change.
+  ## SOUND               — what you checked and found correct/adequately hedged (be specific,
+                           so I know the coverage).
+If a section is empty, say so explicitly. Do not restate the science back to me.

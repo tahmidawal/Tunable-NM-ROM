@@ -81,15 +81,25 @@ within a cell are).
 | FOM trajectory residual through the FOM's own residual | 7.6e-11 | 7.6e-11 | 7.6e-11 | 9.7e-11 |
 
 The `weakall` identity also holds *end to end*: `lspg:full:weakall` reproduces `lspg:full:fd`
-and `galerkin:full:weakall` reproduces `galerkin:full:fd` to **all printed digits of the
-trajectory error and of the iteration counts** in every cell (e.g. K=8: 3.348e-02 / 22.1 cold /
-8.48 warm for both). The FOM residual floor here is 1e-10, not the 1e-13 of the Newton-based
-Burgers FOM — it is set by this testbed's CG tolerance (`CG_TOL=1e-10`).
+and `galerkin:full:weakall` reproduces `galerkin:full:fd` in the **trajectory error to every
+stored digit** (K=4 5.973434e-2, K=8 3.347507e-2, K=16 1.578082e-2 for LSPG; 5.093544e-2 /
+2.503714e-2 / 1.104884e-2 for Galerkin) and in the termination-reason histograms exactly. The
+LSPG **iteration counts** agree to within one accepted step in one of the 16 cold starts
+(K=4 11.2500 vs 11.3125 cold, 5.51403 vs 5.50128 warm; K=8 22.1250 vs 22.0625 cold, warm
+identical; K=16 cold identical, warm 9.88520 vs 9.89413) — the two objectives differ only by an
+orthogonal rotation, so their LM iterates differ in the last bits and can cross an acceptance
+threshold differently. Galerkin agrees exactly in both. `weakall` was not run at N=128 (a dense
+15876 x 15876 `Phi` would need ~2 GB), so the end-to-end identity is verified at N=64 only.
 
-**Zero blow-ups anywhere**: 0/16 in every one of the 19 coordinate variants x 3 K values, the
-11 variants at N=128, and all 20 POD variants per cell. Every step terminates on the stall
-criterion (795/800 steps at K=8; 5 on budget), i.e. at the decoder's own residual floor
-(mean `||r||/||r(z_n)||` = 4.5e-2) — the tolerance never binds.
+The FOM residual floor here is 1e-10, not the 1e-13 of the Newton-based Burgers FOM — it is set
+by this testbed's CG tolerance (`CG_TOL=1e-10`).
+
+**Zero blow-ups anywhere**, verified across all 68 coordinate arms and all 80 POD arms:
+`n_blowup = 0`, `n_completed = n_total = 16` in every one. Termination differs by solver: the
+**LSPG** arms stop on the stall criterion (K=8 `weak64`: 795 stalled / 5 budget; mean
+`||r||/||r(z_n)||` = 4.5e-2), i.e. at the decoder's own residual floor, and the residual
+tolerance never binds; the **Galerkin** arms stop on their relative root criterion
+`||g|| <= 1e-6 ||g_0||` (`tol`: 796–800 of 800). Neither ever hits `lambda_max` or a NaN step.
 
 ### Stage 1 — space-time LSPG on the existing (z,t) sweep decoder (N=64, 16 fresh test trajectories)
 
@@ -116,71 +126,90 @@ Trajectory rel-L2 = mean over the 51 slices, mean over the 16 test trajectories.
 |---|---|---|---|
 | auto-decoder TRAIN recon at learned latents | 7.35e-3 | 6.20e-3 | 5.90e-3 |
 | **ORACLE held-out inferred latents** (per snapshot, budget 40) | 2.04e-2 | **1.16e-2** | **6.71e-3** |
-| IC fit (cold start from the known u0; = the ROM at t=0) | 7.06e-2 | 4.14e-2 | 2.32e-2 |
+| IC fit (cold start from the known u0; = the ROM at t=0) | 7.06e-2 | 4.14e-2 | 2.31e-2 |
 | `lspg:full:fd` (strong FD residual, full grid) | 5.97e-2 | 3.35e-2 | 1.58e-2 |
-| `galerkin:full:fd` | 5.09e-2 | 2.50e-2 | 1.11e-2 |
+| `galerkin:full:fd` | 5.09e-2 | 2.50e-2 | 1.10e-2 |
 | `lspg:full:weak16` | **3.30e-2** | 2.50e-2 | 9.04e-2 ⚠ |
-| `lspg:full:weak32` | 3.67e-2 | 2.05e-2 | 2.07e-2 |
+| `lspg:full:weak32` | 3.67e-2 | 2.05e-2 | 2.06e-2 |
 | **`lspg:full:weak64`** | 3.96e-2 | **1.87e-2** | 1.07e-2 |
 | `lspg:full:weak128` | 4.19e-2 | 1.90e-2 | 9.86e-3 |
 | `lspg:full:weak256` | 4.31e-2 | 2.15e-2 | **9.73e-3** |
 | `lspg:full:weak64a0` (alpha = 0) | 4.24e-2 | 1.95e-2 | 1.10e-2 |
 | `galerkin:full:weak64` | 3.96e-2 | 1.87e-2 | 1.07e-2 |
-| `lspg:eq256:weak64` (NNLS-EQ, 256 grid nodes) | 3.93e-2 | 1.96e-2 | 1.14e-2 |
+| `lspg:eq256:weak64` (NNLS-EQ, 256 grid nodes) | 3.93e-2 | 1.96e-2 | 1.13e-2 |
 | `lspg:eq512:weak64` | 3.96e-2 | 1.92e-2 | 1.05e-2 |
 | `lspg:eqoff256:weak64` (**meshfree** pool, 256 pts) | 3.94e-2 | 1.97e-2 | 1.10e-2 |
 | `lspg:eqoff512:weak64` | 3.95e-2 | 1.88e-2 | 1.07e-2 |
 | `lspg:eq512:weak256` / `eq1024:weak256` | 4.29e-2 / 4.30e-2 | 2.19e-2 / 1.97e-2 | 9.79e-3 / 9.75e-3 |
 | `lspg:full:weakc64` (continuum eigenvalues) | 3.97e-2 | 1.87e-2 | 1.06e-2 |
 | `lspg:full:weakall` = `lspg:full:fd` (exactness check) | 5.97e-2 | 3.35e-2 | 1.58e-2 |
-| POD same-solver, `lspg:full:weak64`, k = 6/8/16/32/64 | 1.81e-1 / 1.29e-1 / 6.17e-2 / 2.32e-2 / 1.42e-1 ⚠ | (same) | (same) |
+| POD same-solver, `lspg:full:weak64`, k = 6/8/16/32/64 | 1.81e-1 / 1.29e-1 / 6.17e-2 / 2.32e-2 / 5.20e-2 ⚠ | (same) | (same) |
 | POD same-solver, `lspg:full:fd`, k = 6/8/16/32/64 | 1.88e-1 / 1.37e-1 / 6.79e-2 / 2.58e-2 / 7.30e-3 | (same) | (same) |
 | POD projection floor (test), k = 6/8/16/32/64 | 1.81e-1 / 1.29e-1 / 6.13e-2 / 2.26e-2 / 6.33e-3 | | |
 
 Five things this says:
 
-1. **The weak form beats the exact discrete residual.** At K=8, `weak64` (1.87e-2) is **1.8x
-   better** than `weakall` = the exact full-grid strong-form residual (3.35e-2) — same manifold,
-   same solver, same stopping rule, and (by the asserted identity) literally the same residual
-   vector up to an orthogonal rotation and the `alpha` weighting. Against the *best* strong-form
-   arm, `galerkin:full:fd`, the margin is smaller: 1.34x at K=8 (1.87e-2 vs 2.50e-2), 1.54x at
-   K=4, and only **1.14x at K=16** (9.73e-3 vs 1.10e-2). The effect is consistent in mean,
-   median and max at every K, and it cannot be a discretisation artefact, because on this linear
-   PDE the weak form is *exact*.
+1. **The weak form beats the exact discrete residual.** At K=8, `weak64` (1.867e-2) is **1.79x
+   better** than `weakall` = the exact full-grid strong-form residual (3.348e-2) — same manifold,
+   same solver, same stopping rule. Against the *best* strong-form arm, `galerkin:full:fd`, the
+   margin is much smaller: 1.34x at K=8 (vs 2.504e-2), 1.28x at K=4, and only **1.14x at K=16**
+   (9.728e-3 vs 1.105e-2, where `weak256` also has the *worse* median: 1.047e-2 vs 9.972e-3).
+   Read as "weak-M vs the same-solver exact residual" the win is large and consistent in mean,
+   median and max at all three K; read as "weak-M vs the best strong-form arm" it shrinks with K
+   and at K=16 is a tie.
    **What we did not show:** the causal story usually offered — "the low-mode projection discards
    the high-frequency residual the K-dimensional tangent space cannot fix" — is *consistent with*
-   these numbers but is **not demonstrated** by them. Two other explanations survive: the
-   `alpha`-weighting changes the metric (though `weak64a0` at alpha=0 keeps most of the gain, so
-   this is at most a small part), and the projected Jacobian `Phi^T J` is far better conditioned
-   at M=64 than the full `J`, which changes the LM trajectory and where it stalls (warm iteration
-   counts drop from 8.5 to 6.3 at K=8). Separating those would need a residual-spectrum
-   diagnostic that this study does not have.
+   these numbers but is **not demonstrated** by them. `weak64` is a truncated *and* reweighted
+   64-component objective, not merely a rotation of the 3844-component residual, and three
+   explanations remain entangled: (i) spectral truncation, (ii) the `alpha` weighting (`weak64a0`
+   at alpha=0 keeps most of the gain, so this is at most a small part of it), and (iii) a
+   different solver path and stopping point — `weak64` uses 6.30 warm Jacobian evaluations and
+   ends 795 stalled / 5 budget, `weakall` uses 8.48 and ends 781 / 19. We did **not** measure
+   condition numbers or the residual spectrum, so we cannot separate these. The one thing ruled
+   out is a discretisation artefact: on this linear PDE the weak form is exact.
 2. **M must comfortably exceed K, and the best M grows with K.** The argmin moves M=16 (K=4) ->
    M=64 (K=8) -> M=128–256 (K=16), with the error monotone in M on either side of the argmin at
-   every K. **Three K values are not a scaling law** — read this as a trend and a sizing rule of
-   thumb (M of order 10K), not as `M ~ 16K`. ⚠ The two entries marked above are the failure mode:
-   `weak16` at K=16 (M = K, 9.0e-2) and POD `weak64` at k=64 (M = k, 1.42e-1) — when the
+   every K. But the minima sit on **broad, statistically unresolved plateaus** (K=4: weak16 vs
+   weak32 differ by 11%; K=8: weak64 vs weak128 by 2%; K=16: weak128 vs weak256 by 1.4%) and the
+   argmins were read off TEST. **Three K values are not a scaling law** — read this as "the
+   tested minimum moves toward larger M as K grows", a sizing rule of thumb of order M ~ 10K, not
+   as `M ~ 16K`. ⚠ The two entries marked above are the failure mode:
+   `weak16` at K=16 (M = K, 9.04e-2, worst trajectory 6.4e-1) and POD `weak64` at k=64
+   (M = k, 5.20e-2 against a 6.33e-3 projection floor) — when the
    number of test modes equals the number of unknowns the Petrov–Galerkin system becomes
    square, the least-squares regularisation disappears, and the step can chase an exact root of
-   a rank-deficient projection. **Use M >= 4K.**
-3. **Hyper-reduction is essentially free.** `eq256` (256 of 3844 interior nodes, 15x fewer)
-   costs 5% of accuracy at K=8 and is 5x cheaper per step (3.2 vs 16.0 ms). The **meshfree**
-   pool matches the grid pool to within 1% (1.97e-2 vs 1.96e-2 at m=256) — and unlike Burgers,
-   where the upwind operator forced meshfree quadrature onto the *continuum* residual, heat's
-   weak form needs no stencil, so the meshfree rule quadratures the **exact FOM operator**.
-   Out-of-fit EQ diagnostics (disjoint training latents): relative mode-projection error
-   9.4e-4 to 3.4e-3, all weights positive and finite.
-4. **Galerkin and LSPG coincide once the residual is projected.** In the strong form Galerkin
-   is clearly better (K=8: 2.50e-2 vs 3.35e-2; K=16: 1.11e-2 vs 1.58e-2; N=128: 2.01e-2 vs
-   3.78e-2), but with `weak64` the two agree to 3 digits at every K and at N=128. The low-mode
-   projection already performs the filtering that the Galerkin test space performs.
-5. **The nonlinear manifold buys ~7x in latent dimension.** At equal latent size k=8 the
-   coordinate ROM is 1.87e-2 against POD's 1.29e-1 — **6.9x better**. POD needs k ≈ 40 to
-   reach the coordinate ROM's K=8 accuracy. Note the honest other side: POD at k=64 reaches
-   6.8e-3, better than the coordinate ROM at K=16, and same-solver POD essentially attains its
-   own projection floor at every k (so the POD arm is not being handicapped by the solver).
-   `alpha = 1` (the `A^-1`-weighted / state-error metric) beats `alpha = 0` consistently but
-   only by 3–7%.
+   a rank-deficient projection. Practical rule: **do not set M = K**; the required oversampling
+   factor is not measured here (the M = 2K arms — `weak16` at K=8, `weak32` at K=16 — completed
+   cleanly, and we have no data between M = K and M = 2K).
+3. **Hyper-reduction is cheap, and quantifiably so.** `eq256` (256 of 3844 interior nodes, 15x
+   fewer; 62x fewer at N=128) reduces the K=8 per-step median by **4.93x** (15.99 -> 3.24 ms)
+   and changes the aggregate mean error by **−0.9% (K=4), +5.0% (K=8), +6.3% (K=16), +4.8%
+   (N=128)** — a small, mostly-positive penalty, not a free lunch and not a tie. The
+   **meshfree** pool lands within 3% of the grid pool at equal m with inconsistent sign (+0.3%
+   at K=4, +0.2% at K=8, **−2.9%** at K=16, −1.8% at N=128), i.e. a tie at n=16 from a single
+   pool seed. Unlike Burgers — where the upwind operator forced meshfree quadrature onto the
+   *continuum* residual — heat's weak form needs no stencil, so the meshfree rule targets the
+   **same exact discrete** weak residual; it still introduces fitted quadrature error. Out-of-fit
+   EQ diagnostics on disjoint training latents: relative mode-projection error 7.4e-4 to 3.4e-3
+   across all EQ arms (worst single latent 1.04e-2), every weight strictly positive and finite.
+4. **Galerkin and LSPG become indistinguishable once the residual is projected.** In the strong
+   form Galerkin is better (K=8: 2.50e-2 vs 3.35e-2; K=16: 1.10e-2 vs 1.58e-2; N=128: 2.01e-2 vs
+   3.78e-2 — a consistent direction, though at K=8 the median gap is only 14% and so does not
+   clear the noise bar below), but with `weak64` the two aggregates agree to within 0.31% at
+   every K and to 4 digits at N=128, on quite different iteration counts (6.30 vs 4.46 warm
+   Jacobian evaluations at K=8). That the *aggregates* agree is measured; that the low-mode
+   projection is doing the same filtering the Galerkin test space does is a plausible reading,
+   not a demonstrated one — no state-by-state comparison was archived.
+5. **At equal latent size the nonlinear manifold is 6.9x more accurate.** k=8: coordinate ROM
+   1.867e-2 vs POD 1.294e-1 (**6.93x**). The POD rank that would *match* the coordinate ROM at
+   K=8 was not run — it lies between the tested ranks 32 (2.32e-2) and 64 (7.30e-3), so the
+   dimension advantage is somewhere in 4–8x, not a measured 7x. The honest other side: POD at
+   k=64 with the strong-form residual reaches 7.30e-3, better than the coordinate ROM at K=16.
+   Same-solver POD tracks its own projection floor closely at k = 6/8/16/32 (within 0.6–2.8%
+   with `weak64`) but **not** at k=64, where `weak64` gives 5.20e-2 against a 6.33e-3 floor
+   (8.2x) because M = k there; even `fd` at k=64 sits 15% above the floor. `alpha = 1` (the
+   `A^-1`-weighted / state-error metric) beats `alpha = 0` at all three K but only by 3–7%,
+   which is within noise at n=16.
 
 Per-time trajectory error (t-index 0/10/20/30/40/50), K=8:
 
@@ -204,28 +233,41 @@ oracle floor at t=T and the gap is flat in time.
 | FOM dof | 4 096 | 16 384 | 4x |
 | FOM rollout (jitted CG, batch 1, 50 steps) | 49 ms | 121 ms | **2.5x** |
 | `lspg:full:weak64` (all 3844 / 15876 interior nodes) step | 16.0 ms | 62.6 ms | 3.9x |
-| **`lspg:eq256:weak64` step** | 3.2 ms | 3.5 ms | **1.09x** |
-| **`lspg:eq256:weak64` rollout** | 119 ms | 120 ms | **1.008x** |
-| `lspg:eq256:weak64` traj rel-L2 | 1.96e-2 | 1.83e-2 | 0.93x |
-| oracle inferred-latent floor | 1.16e-2 | 1.20e-2 | 1.03x |
+| **`lspg:eq256:weak64` step** | 3.24 ms | 3.49 ms | **1.08x** |
+| **`lspg:eq256:weak64` rollout** (device `lax.scan`, 50 steps) | 119.2 ms | 120.4 ms | **1.010x** |
+| `lspg:eq256:weak64` traj rel-L2 | 1.96e-2 | 1.82e-2 | 0.93x |
+| inferred-latent oracle estimate (budget 40) | 1.16e-2 | 1.20e-2 | 1.04x |
 | rollout-only speedup vs FOM | 0.41x | **1.01x** | |
 
 This is the cleanest result in the study: with the weak form hyper-reduced to m=256 quadrature
-points the online cost is **independent of the FOM dimension** (1.008x for a 4x refinement)
+points the **rollout** cost is independent of the FOM dimension (1.010x for a 4x refinement)
 while the accuracy is unchanged, and the FOM cost grows — so the rollout crosses break-even at
 N=128. The non-hyper-reduced weak form scales with n, as expected (3.9x).
 
-### Timing and the honest speed verdict (N=64, K=8, A100 80GB; median of 7 after 2 warm-ups, `block_until_ready`)
+Two mesh sizes, one variant, one GPU and **two separately trained decoders** are evidence for
+the *mechanism* — nothing in a hyper-reduced step touches n: m=256 decoder evaluations and one
+M x K least-squares solve — not a measured scaling curve. And it is the rollout only: the cold
+start and the 51-slice decode both scale with n (156 -> 640 ms and 10 -> 42 ms), so the
+end-to-end pipeline is **not** flat (0.17x -> 0.15x).
+
+### Timing and the honest speed verdict (N=64, K=8, A100 80GB PCIe, test trajectory 0)
+
+Protocol: `block_until_ready` on the final array, median of **7** repetitions after **2**
+warm-ups for every device-only path (FOM, jitted cold start, rollout, decode, POD-direct,
+end-to-end-with-jitted-IC); the two Python-loop paths (the Python-LM cold start and the Galerkin
+rollout) use median of **3** after **1** warm-up because each repetition costs seconds. Compile
+time is excluded by the warm-ups; process start, model load and host<->device transfer of the
+inputs are **not** counted for either the ROM or the FOM.
 
 | stage | time | note |
 |---|---|---|
 | FOM: same jitted implicit CG solver, batch 1, 50 steps, 51 output slices | **49 ms** | ~1 ms/step on 4096 dof |
 | ROM cold start, jitted on-device LM (nearest-train-IC search + 2 LM solves, best-of) | 156 ms | **dominates** |
 | ROM cold start, Python-loop LM (same rule, prebuilt jits) | 236 ms | only 1.5x slower — the cost is real device work, not Python overhead |
-| ROM rollout, `eq256:weak64`, device `lax.scan` | 119 ms | 3.2 ms/step |
+| ROM rollout, `eq256:weak64`, device `lax.scan` | 119 ms | 2.38 ms/step amortised (the per-step median measured during the accuracy run, with a host sync per step, is 3.24 ms) |
 | ROM decode of all 51 slices | 10 ms | |
-| **ROM end to end** (cold start + rollout + decode, one realizable pipeline) | **287 ms** | **0.17x vs FOM** |
-| direct reduced POD-Galerkin, k=8 (50 k x k solves) | **3.5 ms** | **14.3x vs FOM**, at 1.31e-1 |
+| **ROM end to end** (cold start + rollout + decode, timed as ONE pipeline) | **294 ms** | **0.168x vs FOM** |
+| direct reduced POD-Galerkin, k=8 (50 k x k solves) | **3.5 ms** | **14.3x vs FOM**, at 1.30e-1 |
 | direct reduced POD-Galerkin, k=64 | 9.0 ms | **5.5x vs FOM**, at 6.8e-3 |
 
 At N=128 the same ladder is FOM 121 ms, ROM end-to-end 0.15x, POD-direct k=8 **35x** / k=64
@@ -233,10 +275,12 @@ At N=128 the same ladder is FOM 121 ms, ROM end-to-end 0.15x, POD-direct k=8 **3
 
 **Verdict.** The recipe *transfers* on every axis except speed:
 
-- **Accuracy**: yes. The weak-form Galerkin objective with M ~ 16K low sine modes beats the
-  exact discrete residual by 1.8x, hyper-reduces to m ~ 4M points for a 5% accuracy cost, works
-  meshfree, is insensitive to discrete-vs-continuum eigenvalues, never blows up, and lands
-  1.5x (K=8) to 1.6x (K=16) above the held-out oracle floor of its own manifold.
+- **Accuracy**: yes. The weak-form Galerkin objective with M of order 10K low sine modes beats
+  the same-solver exact discrete residual by 1.79x at K=8 (and the *best* strong-form arm by
+  1.34x at K=8, 1.14x at K=16), hyper-reduces to m ~ 4M points for a −0.9% to +6.3% change in
+  aggregate error, works meshfree, is indistinguishable with continuum instead of discrete
+  eigenvalues, never blows up in 148 arms, and lands 1.62x (K=4), 1.62x (K=8) and 1.45x (K=16)
+  above the held-out inferred-latent oracle estimate for its own manifold.
 - **vs the published heat ROM** (`fix/heat-rollout-warm-start`, rel_l2 **2.83e-2 at 0.17x**):
   beaten on accuracy at *exactly* the same speedup — `lspg:eq256:weak64` at K=8 gives
   **1.96e-2 at 0.17x** (1.4x better), and `lspg:full:weak64` at K=8 gives **1.87e-2** (1.5x
@@ -244,11 +288,12 @@ At N=128 the same ladder is FOM 121 ms, ROM end-to-end 0.15x, POD-direct k=8 **3
   rollout is frozen after step 1 (a real bug), so only the FOM is reused from the public
   package here.
 - **Cost scaling**: yes, and this is the strongest single number — hyper-reduced online cost is
-  flat in n (1.008x for 4x the dof), *for the rollout*. Two mesh sizes on one GPU with one
-  variant is evidence of the mechanism (nothing in the hyper-reduced step touches n: m=256
-  decoder evaluations and an M x K least-squares solve), not a measured scaling curve; and the
-  **end-to-end** pipeline is not flat, because the cold start still scales with n (156 ms ->
-  640 ms). The flatness claim applies to the rollout only, and the prose above says so.
+  flat in n (**1.010x** for 4x the dof), *for the rollout*. Two mesh sizes on one GPU with one
+  variant and two separately trained decoders is evidence of the mechanism (nothing in the
+  hyper-reduced step touches n: m=256 decoder evaluations and an M x K least-squares solve), not
+  a measured scaling curve; and the **end-to-end** pipeline is not flat, because the cold start
+  (156 -> 640 ms) and the 51-slice decode (10 -> 42 ms) both scale with n. The flatness claim
+  applies to the hyper-reduced rollout only, and every statement of it above says so.
 - **Wall-clock speedup vs this FOM**: **no, and it should not be expected to be.** Heat 2D is
   linear, so the correct ROM is the `k x k` reduced operator `V^T A_kappa V`, which is 5.5–38x
   faster than the FOM and at k=64 is also *more accurate* than the nonlinear ROM at K=16. A
@@ -311,10 +356,11 @@ median **and** max in the same direction should be read as real. On that standar
   same speedup" should be read as "in the same ballpark on both axes, better on accuracy", not
   as a controlled head-to-head. Re-running that branch's ROM inside this harness would be
   required for a real comparison.
-- **`M >= 4K` is a rule of thumb inferred from two failure points** (`weak16` at K=16, POD
+- **"Avoid M = K" is a rule of thumb inferred from two failure points** (`weak16` at K=16, POD
   `weak64` at k=64), both of which have M exactly equal to the number of unknowns. The
   *mechanism* (a square Petrov–Galerkin system loses the least-squares regularisation) is clear;
-  the specific factor 4 is not measured — we have no data between M=K and M=2K.
+  no rank or conditioning diagnostic was run to confirm it, and no oversampling factor was
+  measured — the M = 2K arms completed cleanly.
 - Stage 1's gap to the oracle is limited by the sweep decoder's own PDE inconsistency
   (residual 2.4e-2 at the true z), not by the solver.
 - The FOM residual floor is 1e-10 (this testbed's CG tolerance), so "converged data" here means

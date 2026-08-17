@@ -57,6 +57,14 @@ def finite(x):
     return x is not None and isinstance(x, (int, float)) and math.isfinite(x)
 
 
+def positive(x):
+    # `time_ms_solve` is DERIVED (timed pipeline minus the separately measured
+    # preprocess/decode medians), so for a cell whose solve is far smaller than its
+    # decode it can come out at or below zero.  Such a point cannot go on a log axis
+    # and is dropped from the cost(k) figure; the raw components stay in the JSON.
+    return finite(x) and x > 0
+
+
 def sel(pts, **kw):
     out = pts
     for k, v in kw.items():
@@ -77,12 +85,12 @@ def fig_cost_vs_k(pts, pde, taus, ns, ks, out, extra):
             for i, N in enumerate(ns):
                 for meth, ls in (("coord", "-"), ("pod", "--")):
                     d = {p["k"]: p for p in sel(prim, N=N, tau=tau, method=meth)}
-                    xs = [k for k in ks if k in d and finite(d[k].get("time_ms_solve"))]
+                    xs = [k for k in ks if k in d and positive(d[k].get("time_ms_solve"))]
                     if not xs:
                         continue
                     ys = np.array([d[k]["time_ms_solve"] for k in xs], float)
                     if norm:
-                        if 8 not in d or not finite(d[8].get("time_ms_solve")):
+                        if 8 not in d or not positive(d[8].get("time_ms_solve")):
                             continue
                         ys = ys / d[8]["time_ms_solve"]
                     ax.plot(xs, ys, ls, color=N_COLOR[i % len(N_COLOR)],

@@ -83,7 +83,18 @@ if INIT != "mean":
                      "PER-QUERY lookup that would also have to be timed and charged "
                      "to the hybrid total; it is not part of this benchmark.")
 CG_MAXITER = int(os.environ.get("CG_MAXITER", "40000"))
-REF_TAU = float(os.environ.get("REF_TAU", "1e-13"))   # tolerance of the reference solution
+REF_TAU = float(os.environ.get("REF_TAU", "1e-12"))   # tolerance of the reference solution
+# The reference solution only has to be far more accurate than the tightest REPORTED
+# tolerance so that error grading is meaningful.  Below ~1e-12 the achievable relative
+# residual is limited by f64 rounding in the FD operator itself and grows with N
+# (measured: 1.0e-13 at N=128, 5.7e-13 at N=256), so demanding REF_TAU exactly would
+# abort on a floating-point floor rather than on a real defect.  The requirement is
+# therefore "at least REF_MARGIN times tighter than min(FOM_TAUS)".
+REF_MARGIN = float(os.environ.get("REF_MARGIN", "10"))
+# NOTE for the README: because of that floor, `err_final` at the tightest tau is
+# bounded below by the REFERENCE solution's own accuracy.  The actual correctness
+# gate is reference-free -- the TRUE relative residual of the delivered iterate must
+# be <= tau, and every row asserts that for both arms.
 POOL = os.environ.get("POOL", "offgrid")
 # "panel"        : one N per job, fanned out across GPUs.  Accuracy, iteration counts
 #                  and the WITHIN-N timing breakdown are valid (one panel = one job =
@@ -219,22 +230,33 @@ def main():
         # validate a replacement solver (Codex).
         native = {}
         subchecks = []
+        ref_accept = min(FOM_TAUS) / REF_MARGIN
         for tt in sorted(set(FOM_TAUS + [REF_TAU])):
+            # a REPORTED tolerance must be met exactly; the reference tolerance only has
+            # to clear the f64 floor by REF_MARGIN (see the note at REF_TAU above)
+            acc = tt if tt in FOM_TAUS else max(tt, ref_accept)
             for i in range(min(N_CHECK, N_TEST)):
                 ref_fn, c = wu.cg_reference_check(op, Fj[i], tt, cg)
-                c["case"] = i
+                c["case"] = i; c["accept_threshold"] = acc
                 subchecks.append(c)
-                if c["counting_cg_flag"] != 0 or c["counting_cg_true_rel_res"] > tt:
+                if c["counting_cg_true_rel_res"] > acc:
+                    raise SystemExit(f"N={n} tau={tt}: counting CG true res "
+                                     f"{c['counting_cg_true_rel_res']:.2e} > {acc:.2e}")
+                if tt in FOM_TAUS and c["counting_cg_flag"] != 0:
                     raise SystemExit(f"N={n} tau={tt}: counting CG flag "
-                                     f"{c['counting_cg_flag']} true res "
-                                     f"{c['counting_cg_true_rel_res']:.2e} > {tt:.0e}")
+                                     f"{c['counting_cg_flag']}")
                 if c["rel_diff_vs_jax_scipy_cg"] > 1e-6:
                     raise SystemExit(f"N={n} tau={tt} case {i}: counting CG disagrees "
                                      f"with the testbed CG by "
                                      f"{c['rel_diff_vs_jax_scipy_cg']:.2e}")
             if tt in FOM_TAUS:
                 native[tt] = ref_fn
-        chk = dict(N=n, subchecks=subchecks,
+        if np.max(ref_res) > ref_accept:
+            raise SystemExit(f"N={n}: the REFERENCE solutions only reached a true relative "
+                             f"residual of {np.max(ref_res):.2e}, which is not "
+                             f"{REF_MARGIN:g}x tighter than the tightest reported tolerance "
+                             f"{min(FOM_TAUS):.0e} -- error grading would not be meaningful")
+        chk = dict(N=n, subchecks=subchecks, ref_accept_threshold=ref_accept,
                    ref_iters_max=int(np.max(ref_iters)),
                    ref_true_rel_res_max=float(np.max(ref_res)),
                    ref_flags=sorted(set(ref_flag)),
@@ -438,6 +460,7 @@ def main():
                     err_final=float(np.mean(errf)),
                     err_final_baseline=float(np.mean(base[ft]["err"])),
                     final_rel_residual=float(np.max(res)),
+                    reference_true_rel_residual=float(np.max(ref_res)),
                     final_rel_residual_baseline=float(np.max(base[ft]["true_rel_res"])),
                     speedup_vs_fom=t_base_ms / t_total_ms,
                     speedup_fom_stage_only=t_base_ms / t_fom_ms,

@@ -37,6 +37,7 @@ export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 echo "host=\$(hostname)  gpu=\$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
 echo "git_commit=$(git -C "$EXP" rev-parse HEAD 2>/dev/null || echo unknown)"
+echo "git_dirty=$(git -C "$EXP" status --porcelain -- . 2>/dev/null | sha256sum | cut -c1-12) (dirty marker: 'e3b0c442' when clean)"
 \$PY - <<'PRE' || { echo "GPU PREFLIGHT FAILED"; exit 42; }
 import sys, jax
 d = jax.devices()[0]

@@ -334,7 +334,8 @@ def main():
     report["timing"] = timing
 
     os.makedirs(OUTDIR, exist_ok=True)
-    tag = f"N{N}_K{K}"
+    ts = ck["config"].get("train_seed", bc.SEED)
+    tag = f"N{N}_K{K}" + (f"_S{ts}" if ts != bc.SEED else "")
     with open(os.path.join(OUTDIR, f"blat_rom_{tag}.json"), "w") as f:
         json.dump(report, f, indent=2, default=float)
     log(f"wrote blat_rom_{tag}.json")

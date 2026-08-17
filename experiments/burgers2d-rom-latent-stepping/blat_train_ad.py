@@ -43,8 +43,12 @@ LAT_REG = float(os.environ.get("LAT_REG", "1e-4"))
 LAT_LR = float(os.environ.get("LAT_LR", "5e-3"))
 PEAK_LR = float(os.environ.get("PEAK_LR", "2e-3"))
 POD_KMAX = int(os.environ.get("POD_KMAX", "64"))
-# training seed (net init + batch sampling); default = the data seed -> identical to the
-# original runs.  The DATA draw always uses bc.SEED (multi-seed = training randomness only).
+# TRAINING seed.  It controls the FiLM network initialisation and the minibatch /
+# collocation-point sampling ONLY -- the per-snapshot latents are initialised
+# DETERMINISTICALLY from the top-K POD coefficients (see below), so the multi-seed
+# sweep here is "net init + batch order", not "latent init".  Default = the data seed
+# bc.SEED, which reproduces the frozen runs' weights and latents exactly.  The DATA
+# draw, the train/val split and the TEST_SEED test set never see this variable.
 TRAIN_SEED = int(os.environ.get("TRAIN_SEED", str(bc.SEED)))
 K = bc.K_LAT
 N = bc.N
@@ -170,7 +174,9 @@ def main():
         f"{dz.mean():.3e} [{train_secs:.0f}s]")
 
     os.makedirs(OUTDIR, exist_ok=True)
-    tag = f"N{N}_K{K}"
+    # non-default training seeds get their own file name so two multi-seed cells
+    # can never overwrite or read each other's checkpoint after a pull
+    tag = f"N{N}_K{K}" + (f"_S{TRAIN_SEED}" if TRAIN_SEED != bc.SEED else "")
     ck = dict(params=jax.tree_util.tree_map(np.asarray, params), n_freq=n_freq,
               eps=eps, k_lat=K, Z_train=Zn, V=V, sv=sv, pod_floors=floors,
               config=dict(bc.CONFIG, train_seed=TRAIN_SEED, ad_steps=AD_STEPS, ad_batch=AD_BATCH,

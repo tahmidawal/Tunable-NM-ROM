@@ -494,14 +494,20 @@ def fit_eq_weights(dec, n, M, m, Z_snap, kind="weak", pool="grid", rng=None):
         keep = np.concatenate([supp, pad]); padded = len(pad)
     wq, rnorm_final, _ = nnls_capped(G[:, keep], b, max_support=len(keep))
     wq = np.where(wq > 0, wq, 1e-8 * max(wq.max(), 1e-300))
-    rnorm_final = float(np.linalg.norm(G[:, keep] @ wq - b))
+    resid_rows = G[:, keep] @ wq - b
+    rnorm_final = float(np.linalg.norm(resid_rows))
+    # PER-ROW diagnostics: a global norm can hide a single badly-fitted mode
+    rel_rows = np.abs(resid_rows) / (np.abs(b) + 1e-300)
     info = dict(support=int(len(supp)), padded=int(padded), rnorm_capped=float(rnorm),
                 rnorm_final=rnorm_final, b_norm=float(np.linalg.norm(b)),
                 rel_fit=rnorm_final / float(np.linalg.norm(b)), n_rows=int(G.shape[0]),
+                row_rel_median=float(np.median(rel_rows)), row_rel_p95=float(np.quantile(rel_rows, 0.95)),
+                row_rel_max=float(np.max(rel_rows)),
                 n_cand=int(n_c), secs=time.time() - t0, M=int(M), m=int(len(keep)),
                 kind=kind, pool=pool)
     log(f"  NNLS-EQ {kind}/{pool} M={M} m={m}: support {len(supp)} (+{padded} pad), "
-        f"rel fit {info['rel_fit']:.2e} [{info['secs']:.0f}s]")
+        f"rel fit {info['rel_fit']:.2e} (per-row median {info['row_rel_median']:.1e}, "
+        f"p95 {info['row_rel_p95']:.1e}, max {info['row_rel_max']:.1e}) [{info['secs']:.0f}s]")
     out = dict(kind="grid" if pool == "grid" else "offgrid", w=wq, info=info)
     if pool == "grid":
         out["idx"] = interior[keep]

@@ -504,26 +504,25 @@ def build_blocks(data, pts):
         for b_ in d.get("fom_baseline", []):
             an = b_.get("anchor_vs_archived") or {}
             pct = 100 * an["rel_diff"] if an.get("rel_diff") is not None else None
-            peer = PEER_ANCHOR_PCT.get((pde, b_["N"]))
-            v = anchor_verdict(pct)
-            # a mesh where BOTH instruments are weak is uncorrected, not corrected by
-            # a number neither supports
+            pms = PEER_RETIMED_MS.get((pde, b_["N"]))
+            arch = an.get("archived_ms")
+            mine = an.get("retimed_ms")
+            peer = (100 * abs(pms - arch) / arch) if (pms and arch) else None
+            cross = (100 * abs(mine - pms) / pms) if (pms and mine) else None
             oc_ach = b_.get("overconvergence_factor")
-            if v == "iterations" and oc_ach is not None and abs(oc_ach - 1.0) < 1e-9:
-                v = "UNCORRECTED (anchor fails AND the achieved-residual factor is 1.00)"
+            v = anchor_verdict(pct, cross, oc_ach)
             eng = (b_.get("overconvergence_engineering") or {})
             eng_s = "  ".join(f"{kk}:{vv['factor']:.2f}x" for kk, vv in sorted(eng.items()))
-            rows.append([pde, b_["N"], fmt(an.get("archived_ms"), ".2f"),
-                         fmt(an.get("retimed_ms"), ".2f"),
+            rows.append([pde, b_["N"], fmt(arch, ".2f"), fmt(mine, ".2f"),
+                         fmt(pms, ".2f") if pms else "--",
                          fmt(pct, ".1f") if pct is not None else "--",
                          fmt(peer, ".1f") if peer is not None else "--",
-                         fmt(an.get("archived_true_rel_res"), ".1e"),
-                         fmt(an.get("retimed_true_rel_res"), ".1e"),
+                         fmt(cross, ".1f") if cross is not None else "--",
                          fmt(oc_ach, ".2f"), eng_s or "--", v])
     B["anchor"] = md_table(
-        ["pde", "N", "archived ms", "re-timed ms", "this cell %", "peer cell %",
-         "archived true res", "re-timed true res", "over-conv (achieved)",
-         "over-conv (engineering)", "multiplier to use"], rows) if rows else \
+        ["pde", "N", "archived ms", "re-timed (this cell)", "re-timed (peer cell)",
+         "vs archive: this %", "vs archive: peer %", "CROSS-INSTRUMENT %",
+         "over-conv (achieved)", "over-conv (engineering)", "verdict"], rows) if rows else \
         "_(no FOM anchor recorded in this run)_"
 
     # ---- decoder ceiling per (N, k): the checkpoint's own oracle ------------
@@ -598,18 +597,43 @@ TARGETS = {"poisson2d": [2e-2, 1e-2], "burgers2d": [5e-2, 2e-2]}
 # Note the two re-timings agree with EACH OTHER at N=64 to 0.3% while both sit ~8%
 # below the archive: at that mesh the archive is the outlier, not the re-timings.
 ANCHOR_OK_PCT = 10.0          # "single-digit percent" per the shared rule
-PEER_ANCHOR_PCT = {("poisson2d", 32): 37.0, ("poisson2d", 64): 8.5,
-                   ("poisson2d", 128): 1.9, ("poisson2d", 256): 4.9,
-                   ("poisson2d", 512): 3.1,
-                   ("burgers2d", 32): 0.21, ("burgers2d", 64): 6.8,
-                   ("burgers2d", 128): 0.13, ("burgers2d", 256): 0.53}
+# The rom-warmstart-fom cell's own re-timing of the SAME archived function, in ms.
+# Having a SECOND instrument is what separates "the archive is stale" from "nobody
+# has a trustworthy number": those two look identical if you only compare against
+# the archive.
+PEER_RETIMED_MS = {("poisson2d", 32): 3.548, ("poisson2d", 64): 7.124,
+                   ("poisson2d", 128): 14.860, ("poisson2d", 256): 29.610,
+                   ("poisson2d", 512): 93.070}
 
 
-def anchor_verdict(pct):
-    """time | iterations | uncorrected -- the shared rule with rom-warmstart-fom."""
+def anchor_verdict(pct, cross_pct, overconv_achieved):
+    """THREE states, not two.
+
+    A two-state rule (anchor tight -> time, else iterations) cannot tell a STALE
+    ARCHIVE from an UNMEASURABLE MESH, because both present as a large archive
+    disagreement.  The discriminator is whether a second, independent re-timing
+    agrees with ours:
+
+      anchor tight                          -> "time"
+      anchor loose, re-timings AGREE        -> the archive is stale; the re-timed
+                                               value is the better baseline and the
+                                               "correction" is a re-measurement
+      anchor loose, re-timings DISAGREE     -> "uncorrected"
+
+    Overlaid on all three: where the achieved-residual over-convergence factor is
+    exactly 1.00 there is nothing to correct in the first place."""
     if pct is None or not math.isfinite(pct):
         return "unknown"
-    return "time" if pct < ANCHOR_OK_PCT else "iterations"
+    nothing = (overconv_achieved is not None
+               and math.isfinite(overconv_achieved)
+               and abs(overconv_achieved - 1.0) < 1e-9)
+    if pct < ANCHOR_OK_PCT:
+        base = "time"
+    elif cross_pct is not None and math.isfinite(cross_pct) and cross_pct < ANCHOR_OK_PCT:
+        base = "archive stale -> use the re-timed baseline"
+    else:
+        base = "UNCORRECTED (no instrument agrees)"
+    return base + (" [nothing to correct: over-conv 1.00]" if nothing else "")
 
 
 def rewrite(readme, blocks):

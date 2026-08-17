@@ -60,6 +60,30 @@ range (FOM 5.6 → 96.0 ms); Burgers rollout 258–264 ms across 64× DOF (FOM 1
 end-to-end 8.0× at N=256) — but only after hyper-reducing the **cold start** as well as the
 stepping.
 
+> ### ⚠ EVERY SPEEDUP NUMBER ON THIS PAGE IS UNDER CORRECTION (opened 2026-08-17)
+>
+> **Do not quote a speedup from this tree until `exp/2026-08-17-rom-warmstart-fom` lands.**
+> Accuracy numbers are unaffected — only the denominators are wrong, and they are wrong in the
+> direction that flatters us.
+>
+> - **Burgers:** the FOM baseline is a *fixed-8-Newton* rollout (8 × 50 = 400 Newton steps and
+>   400 BiCGStab solves per rollout, by construction), roughly **4× over-converged**. It does far
+>   more work than the stated accuracy requires.
+> - **Poisson:** the FOM baseline is CG at `tol=1e-13` — the tolerance used to *manufacture the
+>   truth data*, not one a deployment would ask for. A fixed very-tight tolerance inflates the
+>   baseline exactly as a fixed iteration count does. The archived run does not even reach it
+>   (achieved 7.0e-11 at N=512), which makes the cost harder to justify, not easier.
+>
+> Affected: the Burgers 8.0× end-to-end and the 0.72× → 7.96× N-ladder; the Poisson 0.3× → 4.9×
+> solve-only and 3.6× end-to-end ladders. **The correction multiplier is N-dependent, so it
+> changes the SLOPE of the N-ladders, not just their level — never apply it as a single scalar.**
+> Prefer the hardware-free multiplier (ratio of Newton/CG iterations actually performed against
+> the fixed count) over the wall-clock ratio when correcting numbers measured on other GPUs.
+>
+> What survives: all ROM-side numbers (only the denominator changes), every accuracy and
+> ceiling result, and the qualitative mesh-independence claim, which is about scaling — both
+> baselines scale similarly, so the slope argument holds even as the levels move.
+
 **Where it does not pay.** Heat: accurate but a direct reduced POD-Galerkin solve is
 13–38× faster than the FOM, so nothing iterative competes on a linear parabolic problem.
 Wave: fails structurally (below). Richer families: the advantage collapses (23× → 1.1×

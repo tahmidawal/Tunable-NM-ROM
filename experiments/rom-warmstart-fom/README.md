@@ -145,6 +145,27 @@ in/               the two checkpoints (git-ignored; sha256 recorded below)
 runs/             pulled cluster output, logs, and the generated hybrid_points.json
 ```
 
+## Jobs
+
+Eleven Slurm jobs, each in its own directory under `/cluster/tufts/paralab/tawal01/wsfom/`,
+all on `--gres=gpu:a100:1`, `-p gpu`, submitted simultaneously.
+
+| job dir | role | what it produces |
+|---|---|---|
+| `wsp_n{32,64,128,256,512}` | panel | Poisson: EQ refit at that mesh, ROM accuracy, CG iteration counts from both starts, solver cross-checks, and the within-mesh cost breakdown |
+| `wsb_n{32,64,128,256}` | panel | Burgers: EQ refit, ROM rollout accuracy, per-step Newton and BiCGStab counts for all three arms, NaN-guard checks |
+| `wsp_cons` | consolidated | Poisson: the whole `(rom_tau x N)` grid and the pure-FOM baseline at every mesh, **sequentially in one job on one GPU** |
+| `wsb_cons` | consolidated | Burgers: the whole 50-step rollout from all three starts at every mesh, **sequentially in one job on one GPU** |
+
+**Which numbers come from where.** Iteration counts, accuracy and solver-health fields are
+hardware-independent and are taken from the fanned-out panels; table P5 checks that the panel
+and consolidated runs agree on them exactly. **Every cross-`N` wall-clock number — the
+headline total-time figure, the crossover result and the Burgers cost curve — comes only from
+the consolidated runs**, and `wsf_summarize.select_consolidated` enforces that by pooling
+consolidated rows by (source file, Slurm job id, GPU, commit, harness source hash) and using
+a single group. Within one panel, the cost breakdown is valid because one panel is one job on
+one GPU.
+
 <!-- RESULTS -->
 
 ---

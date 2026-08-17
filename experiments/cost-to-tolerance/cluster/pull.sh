@@ -22,9 +22,9 @@ for c in "${cells[@]}"; do
   mkdir -p "$DEST/$c"
   scp -q -r "tufts-login:$REMOTE_ROOT/$c/out/." "$DEST/$c/" 2>/dev/null
   scp -q "tufts-login:$REMOTE_ROOT/$c/logs/"* "$DEST/$c/" 2>/dev/null
-  rem=$(ssh tufts-login "cd $REMOTE_ROOT/$c && find out -type f -exec sha256sum {} + 2>/dev/null | awk '{n=split(\$2,p,\"/\"); print p[n], \$1}' | sort")
+  rem=$(ssh tufts-login "cd $REMOTE_ROOT/$c && find out -type f -exec sha256sum {} + 2>/dev/null | awk '{n=split(\$2,p,\"/\"); print p[n], \$1}' | LC_ALL=C sort")
   names=$(awk '{print $1}' <<<"$rem")
-  loc=$(cd "$DEST/$c" && for f in $names; do [[ -f "$f" ]] && echo "$f $(sha256sum "$f" | cut -d' ' -f1)"; done | sort)
+  loc=$(cd "$DEST/$c" && for f in $names; do [[ -f "$f" ]] && echo "$f $(sha256sum "$f" | cut -d' ' -f1)"; done | LC_ALL=C sort)
   if [[ -z "$rem" || "$rem" != "$loc" ]]; then
     echo "$c: PAYLOAD CHECKSUM MISMATCH -- keeping the cluster copy" >&2
     diff <(echo "$rem") <(echo "$loc") | head -6

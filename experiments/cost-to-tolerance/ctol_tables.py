@@ -117,15 +117,26 @@ def to_points(data):
             o["arm"] = "consolidated"
             o["node"] = r.get("node")
             pts.append(o)
+        # Each FOM entry is one rung of the ISO-ACCURACY ladder and carries its own
+        # achieved error, so the FOM is a CURVE on the same axes as the ROMs rather
+        # than a single exact point.  The rung that manufactured the truth has
+        # err = 0 by construction and keeps the "price of exactness" vertical-line
+        # role.
         for f, tag in ([(x, "fom") for x in d.get("fom", [])]
                        + [(x, "fom_consolidated") for x in d.get("consolidated_fom", [])]):
             t = f.get("fom_cg_s", f.get("fom_rollout_s"))
             pts.append(dict(pde=pde, method="fom", N=f["N"], k=None, M=None, m=None,
-                            tau=None, time_ms=t * 1e3, err_rel_l2=0.0, iters=None,
+                            tau=None, time_ms=t * 1e3,
+                            err_rel_l2=f.get("err_rel_l2", 0.0), iters=None,
                             jac_evals=None, censored=False, n_sources=f["n_sources"],
                             seed=cfg["seed"], gpu=f.get("gpu"),
                             jax_backend=f.get("jax_backend"), commit=f.get("commit"),
                             arm=tag, node=f.get("node"), time_ms_solve=t * 1e3,
+                            fom_tol=f.get("fom_tol"),
+                            fom_newton_iters=f.get("fom_newton_iters"),
+                            fom_rule=f.get("fom_rule"),
+                            exact_reference=f.get("exact_reference"),
+                            achieved_rel_residual=f.get("achieved_rel_residual"),
                             fom_max_rel_residual=f.get("fom_max_rel_residual")))
     return pts
 
@@ -234,11 +245,17 @@ def build_blocks(data, pts):
     # ---- FOM baseline -----------------------------------------------------
     rows = []
     for pde, d in sorted(data.items()):
-        for f in d.get("fom", []):
+        for f in sorted(d.get("fom", []), key=lambda x: (x["N"], -x.get("fom_cg_s", 0)
+                                                         - x.get("fom_rollout_s", 0))):
             t = f.get("fom_cg_s", f.get("fom_rollout_s"))
-            rows.append([pde, f["N"], f["n_dof"], fmt(t * 1e3, ".2f"),
-                         fmt(f.get("fom_max_rel_residual"), ".1e")])
-    B["fom"] = md_table(["pde", "N", "interior DOF", "FOM ms", "FOM rel residual"], rows)
+            knob = (f"tol={f['fom_tol']:.0e}" if f.get("fom_tol") is not None
+                    else f"Newton={f.get('fom_newton_iters')}")
+            rows.append([pde, f["N"], f["n_dof"], knob, fmt(t * 1e3, ".2f"),
+                         fmt(f.get("err_rel_l2"), ".3e"),
+                         fmt(f.get("achieved_rel_residual"), ".1e"),
+                         "yes" if f.get("exact_reference") else ""])
+    B["fom"] = md_table(["pde", "N", "interior DOF", "accuracy knob", "FOM ms",
+                         "err vs exact", "achieved residual", "truth-manufacturing"], rows)
 
     # ---- cost vs k, per N (latent solve only) -----------------------------
     for pde, d in sorted(data.items()):
@@ -402,13 +419,26 @@ def build_blocks(data, pts):
                     t = cons.get(key, best)["time_ms"]
                     r.append(f"{t:.2f} (k={best['k']}, tau={best['tau']:.0e}"
                              + ("" if key in cons else ", PANEL TIME") + ")")
-                fom = cons_fom.get(N) or next(
-                    (p for p in primary if p["pde"] == pde and p["method"] == "fom"
-                     and p["N"] == N), None)
-                r.append(fmt(fom["time_ms"], ".2f") if fom else "--")
+                # ISO-ACCURACY FOM: the cheapest CG tolerance / Newton length that
+                # actually reaches the same target.  The exact rung is reported next
+                # to it so the price of exactness stays visible.
+                fsel = [p for p in pts if p["pde"] == pde and p["method"] == "fom"
+                        and p["N"] == N and p.get("arm") in ("fom", "fom_consolidated")]
+                fb = cheapest_reaching(fsel, target, require_uncensored=False)
+                fex = next((p for p in fsel if p.get("exact_reference")), None)
+                r.append(fmt(fb["time_ms"], ".2f") if fb else "unreached")
+                r.append(fmt(fex["time_ms"], ".2f") if fex else "--")
+                best_rom = min([x for x in (
+                    cheapest_reaching([p for p in primary if p["pde"] == pde
+                                       and p["method"] == mm and p["N"] == N], target)
+                    for mm in ("coord", "pod")) if x], key=lambda p: p["time_ms"],
+                    default=None)
+                r.append(fmt(fb["time_ms"] / best_rom["time_ms"], ".2f")
+                         if (fb and best_rom) else "--")
                 rows.append(r)
         B[f"scaling_{pde}"] = (f"_timing source: {src}_\n\n" + md_table(
-            ["target rel-L2", "N", "coord ms", "pod ms", "FOM ms"], rows))
+            ["target rel-L2", "N", "coord ms", "pod ms", "FOM ms (iso-accuracy)",
+             "FOM ms (exact)", "best ROM speedup vs iso-accuracy FOM"], rows))
 
     # ---- consolidation cross-check: panel time vs single-GPU time -----------
     rows = []
@@ -464,6 +494,34 @@ def build_blocks(data, pts):
                 rows.append([method, N] + [fmt(cells[k].get("eq_rel_fit"), ".2e")
                                            if k in cells else "--" for k in ks])
         B[f"eqfit_{pde}"] = md_table(["method", "N"] + [f"k={k}" for k in ks], rows)
+
+    # ---- decoder ceiling per (N, k): the checkpoint's own oracle ------------
+    # Accuracy is NON-MONOTONE in k because each k is a SEPARATELY TRAINED
+    # checkpoint.  Reporting each checkpoint's own oracle inferred-latent error next
+    # to the ROM error turns that confound into a measured quantity.
+    for pde, d in sorted(data.items()):
+        ks = d["config"]["ks"]
+        rows = []
+        for N in d["config"]["ns"]:
+            cl = {c["k"]: c for c in d.get("supplementary", [])
+                  if c.get("method") == "oracle_ceiling" and c.get("N") == N}
+            if not cl:
+                continue
+            rows.append(["ceiling", N] + [fmt(cl[k]["err_rel_l2"]) if k in cl else "--"
+                                          for k in ks])
+            for tau in d["config"]["taus"]:
+                cells = {p["k"]: p for p in primary
+                         if p["pde"] == pde and p["method"] == "coord"
+                         and p["N"] == N and p["tau"] == tau}
+                rows.append([f"ROM tau={tau:.0e}", N]
+                            + [fmt(cells[k]["err_rel_l2"]) if k in cells else "--"
+                               for k in ks])
+            rows.append(["ROM / ceiling (tau=1e-3)", N]
+                        + [fmt(cells[k]["err_rel_l2"] / cl[k]["err_rel_l2"], ".2f")
+                           if (k in cells and k in cl and cl[k]["err_rel_l2"]) else "--"
+                           for k in ks])
+        B[f"ceiling_{pde}"] = (md_table(["quantity", "N"] + [f"k={k}" for k in ks], rows)
+                               if rows else "_(no ceiling arm in this run)_")
 
     # ---- POD projection floor (oracle bound on the POD arm) ----------------
     rows = []
@@ -551,6 +609,7 @@ def audit(data, allow_incomplete=False):
             problems.append(f"{pde}: {len(dup)} duplicated cells, e.g. {dup[:3]}")
         cfg = d["config"]
         kb, mb, mq = cfg["k_big"], cfg["M_big"], cfg["m"]
+        m4m = cfg.get("mq_4m", 4 * mb)
         exp = EXPECTED.get(pde, dict(ns=cfg["ns"], ks=cfg["ks"], taus=cfg["taus"]))
         for miss in sorted(set(exp["ns"]) - set(cfg["ns"])):
             problems.append(f"{pde}: mesh N={miss} is missing entirely (no panel landed)")
@@ -559,11 +618,12 @@ def audit(data, allow_incomplete=False):
         for N in sorted(set(cfg["ns"]) & set(exp["ns"])):
             for k in exp["ks"]:
                 M = mb if k >= kb else cfg["M"]
+                mexp = m4m if k >= kb else mq
                 for method in ("coord", "pod"):
                     for tau in exp["taus"]:
-                        if (N, k, M, mq, method, tau, "primary") not in seen:
+                        if (N, k, M, mexp, method, tau, "primary") not in seen:
                             problems.append(f"{pde}: missing primary cell "
-                                            f"N={N} k={k} M={M} m={mq} {method} "
+                                            f"N={N} k={k} M={M} m={mexp} {method} "
                                             f"tau={tau:.0e}")
     if problems:
         head = f"{len(problems)} surface-integrity problem(s):\n  " + "\n  ".join(problems[:40])

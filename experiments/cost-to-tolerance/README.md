@@ -98,6 +98,43 @@ schema is that number, because it is what the FOM baseline delivers:
   decode. The FOM baseline is the testbed's own jitted implicit rollout at batch 1, likewise
   timed on every test trajectory.
 
+### The FOM denominator is a ladder, not a point
+
+The archived Poisson baseline is `cg(..., tol=mp.CG_TOL)` with `CG_TOL = 1e-13`, and the
+archived Burgers baseline is a **fixed 8-iteration Newton scan** — in both cases *the setting
+that manufactured the truth data*, not one any consumer of the solution would ask for. A
+"speedup vs the FOM" against those numbers divides a 1e-2-accurate ROM by a fully converged
+solve: two different questions, with an over-convergence factor that is itself mesh dependent,
+so it changes the **slope** of an N-ladder and not merely its level.
+
+So the FOM is measured as an **iso-accuracy ladder** on the same axes as the ROMs:
+
+* Poisson: the same `jax.scipy.sparse.linalg.cg` from `x0 = 0` at tolerances
+  1e-2 … 1e-13 (the archived 1e-13 is always a rung). Each rung's **true** residual
+  `||Au-f||/||f||` is recomputed and recorded, never the recursive one.
+* Burgers: the testbed's own implicit rollout at Newton scan lengths 1, 2, 3, 4, 6, 8 — its own
+  module-level knob, so the operator is untouched.
+
+Every rung is graded against the exact rung and timed with the ROM's own protocol, so the FOM
+appears as a **curve** in the Pareto figure; the exact rung keeps the vertical-line "price of
+exactness" role. Every ROM row carries `fom_iso_accuracy_ms` (the cheapest FOM rung that
+actually reaches that row's error) alongside the exact-rung speedup, and each mesh reports an
+`overconvergence_factor`. The **iso-accuracy rung is the headline denominator**; the 1e-13
+number is kept as a clearly labelled secondary.
+
+Field names (`t_fom_testbed_ms`, `fom_testbed_cg_tol`, `fom_testbed_true_rel_res`,
+`t_fom_baseline_native_ms`, `overconvergence_factor`) and the matched-tolerance rule — pick the
+cheapest rung that actually *delivers* at least what the archived baseline *achieved*, rather
+than what it nominally asked for — are shared verbatim with the `rom-warmstart-fom` cell, so
+the two cells cannot publish two different Poisson denominators. Both compare
+`jax.scipy`-at-`CG_TOL` against `jax.scipy`-at-tau (like-for-like in the solver); an
+instrumented CG is ~15% cheaper per iteration and mixing the two understates the correction.
+
+**GPU clock ramp.** The NNLS-EQ fits run on the host for minutes, and a device coming out of
+that idle stretch is still ramping — the `rom-warmstart-fom` cell measured a 17% swing at N=512
+between identical work timed early versus late, in both an instrumented and a library solver.
+Every timed block here is preceded by a short GPU burn-in (`ctol_tol.burn_in`).
+
 The preprocess and decode stages are also measured in isolation. They are value-independent and
 `k`-independent, so `time_ms_solve` — the latent-solve component the cost(`k`) question asks
 about — is **derived** by subtracting them from the timed pipeline, and every row records that
@@ -116,19 +153,23 @@ the selected-mode result is asserted equal to `pro_common.weak_source_term` to 1
 the weak form collapses when `M <= k` (heat `M`=16,`K`=16 gave 9.0e-2 against a 6.3e-3
 ceiling; Burgers POD `k`=64,`M`=64 diverged).
 
-That exception means the `k`=32 column is **not a pure `k` step**: it also quadruples the
-number of test modes. Two supplementary arms make the confound measurable rather than hidden:
+**Correction to the grid spec.** The brief said `M`=256 whenever `k` >= 32 *while holding
+`m`=256*. That lands exactly on the `m` = `M` corner and violates this project's own operating
+rule that `m ~ 4M` is the knee (HANDOFF rule 4). It is a spec error, and the measurement below
+shows it is a large one: at `k`=8 with `M` raised to 256 and `m` held at 256, the NNLS-EQ fit
+degrades from 1.5e-3 to **7.5e-2** — a 50x worse quadrature — and the solve blows up to 22.5 ms.
+The fixed-`k` isolator reproduces that collapse with `k` frozen, so the "k=32 cliff" is the
+hyper-reduction corner, **not** the latent dimension.
 
-* an **isolator** at fixed `k`=8 with `M`=256 and `m` held at 256 — exactly the change the
-  primary grid makes at `k`=32, with `k` frozen, so the two effects separate;
-* `m`=512 at `k`=32, so the `m` = `M` = 256 corner is not the only `m` measured there.
+Accordingly the `m ~ 4M` setting (`m`=1024 at `M`=256) is **primary** at `k` >= 32, and the
+`m` = `M` = 256 run is kept as `artefact_m_eq_M`, labelled as an artefact of the original spec.
+A spec error of ours must not masquerade as a property of the method at high `k`. Two
+supplementary arms keep the decomposition measurable:
 
-Both are valid configurations and both enter the Pareto scatter and frontier; the cost(`k`)
-tables report the spec'd primary grid. `m` is deliberately *not* pushed to the `m ~ 4M` knee
-(1024) for these: the ECSW refit is solved on every row and its cost grows as `m^3`, so one
-`M`=256, `m`=1024 Poisson fit is ~60 min — more than ten times the entire primary grid — for a
-supplementary arm. That was measured on the first submission and the arms were retuned before
-the run (see §10).
+* `artefact_m_eq_M` at `k` >= 32 — the original spec's corner;
+* an **isolator** at fixed `k`=8 with (`M`, `m`) = (256, 256) — the same change with `k` frozen.
+
+All of these are valid configurations and all enter the Pareto scatter and frontier.
 
 <!-- BEGIN GENERATED: configuration -->
 <!-- END GENERATED: configuration -->
@@ -295,6 +336,21 @@ At the other two tolerances:
 <!-- END GENERATED: iters_k_burgers2d_1e-03 -->
 
 ### 6.3 The knob -> accuracy map: field error actually achieved at each tau
+
+**Accuracy is non-monotone in `k`, and that is the checkpoints, not the solver.** Each `k` is a
+*separately trained* decoder, so decoder quality varies along the `k` axis independently of
+anything the ROM does (at N=64, `k`=6 and `k`=12 are worse than `k`=4 and `k`=8). Rather than
+caveat this, each checkpoint's own **oracle ceiling** — the error of the best latent obtainable
+by LM on the data misfit to the held-out field, which no solver can beat — is measured at every
+(N, `k`) and reported next to the ROM error, together with the ROM/ceiling ratio. Read the
+ratio, not the raw error, when judging the solver along `k`.
+
+<!-- BEGIN GENERATED: ceiling_poisson2d -->
+<!-- END GENERATED: ceiling_poisson2d -->
+
+<!-- BEGIN GENERATED: ceiling_burgers2d -->
+<!-- END GENERATED: ceiling_burgers2d -->
+
 
 <!-- BEGIN GENERATED: err_k_poisson2d_1e-01 -->
 <!-- END GENERATED: err_k_poisson2d_1e-01 -->

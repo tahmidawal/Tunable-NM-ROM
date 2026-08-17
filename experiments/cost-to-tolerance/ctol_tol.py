@@ -229,6 +229,26 @@ def rollout_tau_burgers(ops, num_steps, budget):
 
 
 # --------------------------------------------------------------------------
+# GPU clock ramp guard
+# --------------------------------------------------------------------------
+def burn_in(seconds=1.0, n=1024):
+    """Spin the GPU before a timing block.
+
+    A device that has been idle through a CPU-bound stretch (the NNLS-EQ fits here
+    run on the host for minutes) is still ramping its clocks when the next kernel
+    lands, which biases whichever arm is timed FIRST.  The rom-warmstart-fom cell
+    measured a 17% swing at N=512 between identical work timed early vs late, in
+    both an instrumented and a library solver, so it is the device and not the
+    code.  A short burn-in before each timed block removes it."""
+    import time as _t
+    a = jnp.ones((n, n), F64)
+    t0 = _t.perf_counter()
+    while _t.perf_counter() - t0 < seconds:
+        a = (a @ a) / jnp.float64(n)
+    a.block_until_ready()
+
+
+# --------------------------------------------------------------------------
 # provenance
 # --------------------------------------------------------------------------
 def sha256_of(paths):

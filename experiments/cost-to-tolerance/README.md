@@ -388,6 +388,7 @@ comes from it.
 
 ```bash
 cd experiments/cost-to-tolerance
+./cluster/preflight.sh panels          # MANDATORY: run the real code path locally first
 ./cluster/make_cells.sh panels && for c in ctol_p_n32 ... ctol_b_n256; do ./cluster/launch.sh $c; done
 ./cluster/pull.sh
 python ctol_pick_configs.py
@@ -395,6 +396,19 @@ python ctol_pick_configs.py
 ./cluster/pull.sh
 python ctol_tables.py && python ctol_figs.py
 ```
+
+### Preflight — exercise the code path before submitting
+
+Two cluster jobs in this cell died to defects a 30-second local run would have caught, and
+**neither was in the measurement**: an unchunked `jacfwd` in the ceiling that OOMed at 16.87 GiB
+50 minutes in, and a `dict() got multiple values for keyword argument 'k'` that killed a job
+after 24 s having done all of its arithmetic correctly. Both were in the bookkeeping *around*
+the measurement — which is where every defect in this cell has been.
+
+`cluster/preflight.sh <panels|fom|ceiling|recover>` therefore runs the mode's real code path
+end-to-end locally at N=32 with 2 sources, and **fails loudly if the JSON is absent, unparseable,
+or contains no record of the kind that mode is supposed to write**. Checking that the arithmetic
+is right never reaches the record-append path; this does. Run it before every submission.
 
 ### Surface integrity
 

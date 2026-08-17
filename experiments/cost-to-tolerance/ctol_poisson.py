@@ -412,7 +412,7 @@ def oracle_ceiling(dec, grid, Z_tr, U_int, tn, n_i, budget, nn_idx, chunk):
             dict(jac_cond_median=float(np.median(conds)),
                  jac_cond_max=float(np.max(conds)),
                  jac_numerical_rank_median=float(np.median(ranks)),
-                 k=int(len(med_spec)), jac_svals_median=med_spec))
+                 jac_spectrum_len=int(len(med_spec)), jac_svals_median=med_spec))
 
 
 def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid, n_i):
@@ -621,14 +621,14 @@ def main():
                 cm, cx_, cinit, jinfo = oracle_ceiling(
                     ck[k]["dec"], grid, ck[k]["Z_tr"], U_int, tn, n_i,
                     max(GN_ITERS, CEIL_BUDGET), nn_idx, CEIL_CHUNK)
-                report["supplementary"].append(dict(
+                report["supplementary"].append({**dict(
                     pde="poisson2d", method="oracle_ceiling", N=n, k=k,
                     M=(M_BIG if k >= K_BIG else M_MODES), m=None, tau=None,
                     arm="ceiling", err_rel_l2=cm, err_rel_l2_max=cx_,
-                    init_used=cinit, budget=max(GN_ITERS, CEIL_BUDGET), **jinfo,
+                    init_used=cinit, budget=max(GN_ITERS, CEIL_BUDGET),
                     ceil_chunk=CEIL_CHUNK, n_sources=N_TEST, seed=SEED,
                     gpu=gpu_name, node=NODE, jax_backend=dev.platform,
-                    commit=commit))
+                    commit=commit), **jinfo})
                 log(f"   ceiling  N={n:4d} k={k:2d}: {cm:.3e} (max {cx_:.3e}, "
                     f"inits {cinit}, jac cond {jinfo['jac_cond_median']:.2e}, "
                     f"rank {jinfo['jac_numerical_rank_median']:.0f}/{k}) "
@@ -824,14 +824,14 @@ def main():
                         log(f"   WARNING ceiling N={n} k={k}: the ROM ({best_rom:.3e}) "
                             f"BEAT the oracle ceiling ({cm:.3e}); the ceiling LM did not "
                             f"converge and this cell's ceiling is not a valid bound")
-                    report["supplementary"].append(dict(
+                    report["supplementary"].append({**dict(
                         pde="poisson2d", method="oracle_ceiling", N=n, k=k, M=M,
                         m=int(len(wq)), tau=None, arm="ceiling",
                         err_rel_l2=cm, err_rel_l2_max=cx_, init_used=cinit,
-                        budget=max(GN_ITERS, CEIL_BUDGET), **jinfo,
+                        budget=max(GN_ITERS, CEIL_BUDGET),
                         rom_beat_ceiling=bool(best_rom < cm), best_rom_err=best_rom,
                         n_sources=N_TEST, seed=SEED, gpu=gpu_name, node=NODE,
-                        jax_backend=dev.platform, commit=commit))
+                        jax_backend=dev.platform, commit=commit), **jinfo})
                     log(f"   ceiling  N={n:4d} k={k:2d}: oracle inferred-latent "
                         f"{cm:.3e} (max {cx_:.3e}, inits {cinit})")
                 log(f"   [cell {method} N={n} k={k} M={M} m={m}: {time.time()-t_cell:.0f}s]")

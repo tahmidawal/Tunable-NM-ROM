@@ -59,6 +59,25 @@ def time_fn(fn, reps=7, warm=2):
     return float(np.median(ts)), [float(t) for t in ts]
 
 
+def gpu_burn(fn, seconds=3.0):
+    """Run `fn` (which must block) for `seconds` to bring the GPU to a steady
+    clock before any measurement.
+
+    Why this exists: on an A100 at N=512 the FIRST timed arm measured 0.0468 ms
+    per CG iteration and a later arm measured 0.0399 ms for identical work -- a
+    17% systematic bias, in the direction that flatters whichever arm is timed
+    LAST.  Both the instrumented and the library solver showed it, so it is the
+    device ramping up after a long CPU-bound phase (the NNLS-EQ fit), not a code
+    difference.  A bias of that size is larger than the entire effect this
+    experiment is trying to measure, so every mesh burns in first AND times the
+    two arms back to back (see wsf_poisson)."""
+    t0 = time.perf_counter()
+    n = 0
+    while time.perf_counter() - t0 < seconds:
+        fn(); n += 1
+    return n
+
+
 # ------------------------------------------------------------------ provenance
 def source_hashes(here=None, patterns=("wsf_*.py",)):
     """sha256 of every harness source actually present, so a DIRTY tree cannot

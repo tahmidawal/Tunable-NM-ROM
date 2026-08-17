@@ -91,6 +91,7 @@ REF_TAU = float(os.environ.get("REF_TAU", "1e-12"))   # tolerance of the referen
 # abort on a floating-point floor rather than on a real defect.  The requirement is
 # therefore "at least REF_MARGIN times tighter than min(FOM_TAUS)".
 REF_MARGIN = float(os.environ.get("REF_MARGIN", "10"))
+BURN_S = float(os.environ.get("BURN_S", "3"))   # GPU clock burn-in before timing
 # NOTE for the README: because of that floor, `err_final` at the tightest tau is
 # bounded below by the REFERENCE solution's own accuracy.  The actual correctness
 # gate is reference-free -- the TRUE relative residual of the delivered iterate must
@@ -307,6 +308,12 @@ def main():
         decfull_med, _ = wu.time_fn(lambda: dec_full(z_init).block_until_ready(),
                                     TIME_REPS, TIME_WARM)
 
+        # ---- GPU BURN-IN: bring the device to a steady clock before ANY timing at
+        # this mesh (see wsf_util.gpu_burn for the 17% bias this removes).
+        burn_n = wu.gpu_burn(lambda: cg(Fj[0], zero, FOM_TAUS[0])[0].block_until_ready(),
+                             BURN_S)
+        print(f"   burn-in: {burn_n} CG solves in {BURN_S:.0f}s", flush=True)
+
         # ---- DIRECT-SOLVER baseline (the reviewers' "a direct solver beats you").
         # The FD system on a square with Dirichlet walls is diagonalised EXACTLY by
         # the same discrete sine basis the ROM uses as test modes, so u = S ((S^T f S)
@@ -338,21 +345,18 @@ def main():
                 if int(fl) != 0:
                     raise SystemExit(f"N={n} tau={ft}: baseline CG flag {int(fl)}")
                 if i < N_TIME:
+                    # UNPAIRED timing, kept only as a diagnostic.  The authoritative
+                    # baseline time is measured BACK TO BACK with the warm arm inside
+                    # the ROM ladder below, because a device-clock drift between two
+                    # separated measurement blocks is larger than the effect under test.
                     m_, _a = wu.time_fn(
                         lambda ii=i: cg(Fj[ii], zero, ft)[0].block_until_ready(),
                         TIME_REPS, TIME_WARM)
                     tms.append(m_)
-            # SENSITIVITY BASELINE: the testbed's own jax.scipy CG (which cannot count
-            # iterations, hence the counting kernel above) timed at the same tolerance
-            # with x0 supplied at runtime -- so the production library solver appears
-            # next to the instrumented one and neither can hide behind the other.
-            ntm = [wu.time_fn(lambda ii=i: native[ft](Fj[ii], zero).block_until_ready(),
-                              TIME_REPS, TIME_WARM)[0] for i in range(N_TIME)]
             base[ft] = dict(iters=it, true_rel_res=res, t_s=tms,
-                            t_ms=float(np.mean(tms)) * 1e3, err=err,
-                            t_native_ms=float(np.mean(ntm)) * 1e3)
+                            t_ms_unpaired=float(np.mean(tms)) * 1e3, err=err)
             print(f"   FOM baseline tau={ft:.0e}: {np.mean(it):.1f} iters, "
-                  f"{np.mean(tms)*1e3:.2f} ms (jax.scipy CG {np.mean(ntm)*1e3:.2f} ms), "
+                  f"{np.mean(tms)*1e3:.2f} ms (unpaired diagnostic), "
                   f"err {np.mean(err):.2e}", flush=True)
 
         # ---- POST-HOC ORACLE DIAGNOSTIC (never timed, never on the hybrid path):
@@ -409,6 +413,7 @@ def main():
 
             for ft in FOM_TAUS:
                 it, res, tms, errf, flg = [], [], [], [], []
+                btms, ntw, ntb = [], [], []
                 for i in range(N_TEST):
                     x0 = jnp.asarray(U_rom[i])
                     x, k, rr, fl = cg(Fj[i], x0, ft)
@@ -416,10 +421,21 @@ def main():
                     res.append(float(jnp.linalg.norm(op(x) - Fj[i]) / jnp.linalg.norm(Fj[i])))
                     errf.append(float(np.linalg.norm(np.asarray(x) - U_ref[i]) / ref_norm[i]))
                     if i < N_TIME:
+                        # PAIRED: warm and zero start measured back to back on the same
+                        # case, so any device-clock drift hits both arms equally.
                         m_, _a = wu.time_fn(
                             lambda ii=i, xx=x0: cg(Fj[ii], xx, ft)[0].block_until_ready(),
                             TIME_REPS, TIME_WARM)
-                        tms.append(m_)
+                        b_, _b = wu.time_fn(
+                            lambda ii=i: cg(Fj[ii], zero, ft)[0].block_until_ready(),
+                            TIME_REPS, TIME_WARM)
+                        nw_, _c = wu.time_fn(
+                            lambda ii=i, xx=x0: native[ft](Fj[ii], xx).block_until_ready(),
+                            TIME_REPS, TIME_WARM)
+                        nb_, _d = wu.time_fn(
+                            lambda ii=i: native[ft](Fj[ii], zero).block_until_ready(),
+                            TIME_REPS, TIME_WARM)
+                        tms.append(m_); btms.append(b_); ntw.append(nw_); ntb.append(nb_)
                 if max(flg) != 0:
                     raise SystemExit(f"N={n} rom_tau={rt} fom_tau={ft}: warm CG flag {max(flg)}")
                 if max(res) > ft:
@@ -430,7 +446,7 @@ def main():
                        TIME_REPS, TIME_WARM)[0] for i in range(N_TIME)]
                 t_fom_ms = float(np.mean(tms)) * 1e3
                 t_total_ms = pre_med * 1e3 + t_rom_ms + dec_med * 1e3 + t_fom_ms
-                t_base_ms = base[ft]["t_ms"]
+                t_base_ms = float(np.mean(btms)) * 1e3      # PAIRED baseline
                 row = dict(
                     pde="poisson2d", N=n, n_dof=n_i ** 2, rom_tau=rt, fom_tau=ft,
                     t_rom_ms=t_rom_ms, t_pre_ms=pre_med * 1e3, t_decode_ms=dec_med * 1e3,
@@ -466,8 +482,9 @@ def main():
                     speedup_fom_stage_only=t_base_ms / t_fom_ms,
                     t_fom_direct_ms=direct_ms,
                     t_fom_native_ms=float(np.mean(ntw)) * 1e3,
-                    t_fom_baseline_native_ms=base[ft]["t_native_ms"],
-                    speedup_vs_fom_native=base[ft]["t_native_ms"] / (
+                    t_fom_baseline_native_ms=float(np.mean(ntb)) * 1e3,
+                    t_fom_baseline_unpaired_ms=base[ft]["t_ms_unpaired"],
+                    speedup_vs_fom_native=(float(np.mean(ntb)) * 1e3) / (
                         pre_med * 1e3 + t_rom_ms + dec_med * 1e3
                         + float(np.mean(ntw)) * 1e3),
                     direct_rel_err=float(np.mean(d_err)),

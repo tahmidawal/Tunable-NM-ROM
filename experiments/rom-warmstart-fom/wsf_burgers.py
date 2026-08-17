@@ -84,6 +84,7 @@ MAX_NEWTON = int(os.environ.get("MAX_NEWTON", "25"))
 # would make the decode cost depend on which card the job landed on.  Chunking
 # bounds the working set and makes the measurement hardware-independent.
 DEC_CHUNK = int(os.environ.get("DEC_CHUNK", "8"))
+BURN_S = float(os.environ.get("BURN_S", "3"))   # GPU clock burn-in before timing
 LIN_TOL = float(os.environ.get("LIN_TOL", str(bc.bf.LIN_TOL)))
 LIN_MAXITER = int(os.environ.get("LIN_MAXITER", str(bc.bf.LIN_MAXITER)))
 FOM_RES_TOL = float(os.environ.get("FOM_RES_TOL", "1e-8"))
@@ -504,6 +505,11 @@ def main():
                 raise SystemExit(f"N={n}: the counting BiCGStab left a relative linear "
                                  f"residual {chk['linear_solver']['ours_rel_lin_residual']:.2e}")
 
+            # GPU burn-in before the arm loop: the three arms are already timed back
+            # to back, but the preceding NNLS-EQ fit is a long CPU-bound phase during
+            # which the device idles and drops clocks (see wsf_util.gpu_burn).
+            wu.gpu_burn(lambda: chain(u0j, r0["nu"], jnp.zeros((T, n2), F64),
+                                      jnp.int32(0))[0].block_until_ready(), BURN_S)
             arm_out = {}
             for arm in ARMS:
                 mode = jnp.int32(ARM_ID[arm])

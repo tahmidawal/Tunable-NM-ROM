@@ -177,6 +177,8 @@ wsf_poisson.py    the Poisson arm
 wsf_burgers.py    the Burgers arm (counting BiCGStab + the 3-arm implicit chain)
 wsf_summarize.py  runs/hybrid_points.json (the flat output schema) + SUMMARY_TABLES.md
 wsf_facts.py      every number the README quotes, derived from the JSONs
+wsf_verify.py     independent re-derivation of the headline claims from the raw JSONs,
+                  checked against the rendered README ({{verify_checks}} checks)
 wsf_render_readme.py  README.md = README.tmpl.md + those facts (unknown placeholder = error)
 wsf_figs.py       the figures (reports-pipeline style, PNG + PDF)
 wsf_style.py      a copy of the frozen reports figure style

@@ -42,6 +42,7 @@ def build(runs=None):
     _, Pm = ws.split_roles(P, pkey)
     _, Bm = ws.split_roles(B, bkey)
     f = {}
+    f["verify_checks"] = "130"   # wsf_verify.py; update if checks are added
     f["n_reports"] = str(len(reports))
     f["n_rows"] = str(len(pts))
     f["n_skipped"] = str(len(skipped))

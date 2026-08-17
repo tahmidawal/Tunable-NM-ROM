@@ -398,7 +398,10 @@ def build(runs=None):
     # EXTERNALLY REPORTED, relayed from the cost-to-tolerance cell (agent
     # a25b45872e6e0bec4) via the coordinator -- NOT measured here.  Kept in the fact
     # table so it carries its provenance wherever it is quoted.
-    XA = {32: 4.74, 64: 7.144, 128: 14.795}      # sister cell's re-timing, burn-in on
+    # Sister cell's re-timing of the SAME archived function, full panel config with
+    # burn-in (an earlier relayed 4.74 ms at N=32 came from a smoke run and was
+    # retracted; the panel value is 3.66 ms).  Relayed, not measured here.
+    XA = {32: 3.66, 64: 7.144, 128: 14.795}
     f["xagent_p_arch_N128"] = "15.145"
     f["xagent_p_mine_N128"] = "14.86"
     f["xagent_p_theirs_N128"] = "14.795"
@@ -427,6 +430,10 @@ def build(runs=None):
                 v, use = "**unresolved**", "**iterations**"
             f[f"oc_p_anchor3_N{n}"] = v
             f[f"oc_p_use3_N{n}"] = use
+            # a second independent instrument is strictly more information than the
+            # archive alone, so it overrides the two-state verdict for this mesh
+            f[f"oc_p_anchor_N{n}"] = v
+            f[f"oc_p_use_N{n}"] = use
 
     # ---------------- consistency ----------------
     from wsf_summarize import role_consistency

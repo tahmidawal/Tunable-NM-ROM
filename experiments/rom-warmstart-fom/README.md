@@ -437,7 +437,16 @@ per step is then whatever convergence requires (capped at 25). The sister
 cells' Burgers denominators are therefore defined differently — they are not interchangeable
 rung-for-rung.**
 
-They do reconcile, because a tolerance-based solve reports how many steps it actually took:
+**This reconciliation is an OUTSTANDING CROSS-CHECK, not a settled result.** The sister cell
+has *pre-registered* the timings this bridge predicts for its own `NEWTON_ITERS = 2` rung —
+47.62 / 85.56 / 228.1 /
+449.9 ms at `N = 32/64/128/256` with an achieved residual band of about
+9.6e-7–9.9e-7 — before its Burgers panels ran. Because it was registered in advance it cannot
+be fitted afterwards: agreement confirms the two denominators are the same quantity seen from
+two directions; disagreement means one of the two ladders is not measuring what it claims.
+Until those panels land, **treat the Burgers denominator as corroborated from one side only.**
+
+They do reconcile in principle, because a tolerance-based solve reports how many steps it took:
 across every mesh and tolerance measured here it converges in **1.97–2.40
 Newton steps per time step**, against the testbed's fixed 8. So this cell's rungs correspond
 to roughly the `NEWTON_ITERS = 2` end of the sister cell's ladder, and the ~4x
@@ -500,40 +509,46 @@ measured here) the verdict separates them:
 
 | N | archive | this cell | sister cell | instruments differ | verdict | use |
 |---|---|---|---|---|---|---|
-| 32 | 5.591 | 3.548 | 4.74 | 25% | **unresolved** | **iterations** |
+| 32 | 5.591 | 3.548 | 3.66 | 3.1% | **archive-stale** | time (instruments agree) |
 | 64 | 7.786 | 7.125 | 7.144 | 0.27% | **archive-stale** | time (instruments agree) |
 | 128 | 15.14 | 14.86 | 14.79 | 0.44% | tight | time |
 
-At `N = 64` the two instruments agree with each other to 0.27% while both
-sit ~8.5% below the archive **in the same direction** — that is evidence
-the *archive* is stale at that mesh, not that our measurement is unreliable, and the time
-multiplier is still the right choice. A two-state tight/loose rule reads that row as "just
-inside tolerance, proceed" for the wrong reason. At `N = 32` the two instruments differ from
-*each other* by 25%, so nobody has a trustworthy value there.
+Every mesh with a second instrument comes out **archive-stale or tight, and none is
+unmeasurable**. At `N = 64` the two instruments agree to 0.27% while both sit
+~8.5% below the archive **in the same direction**; at `N = 32` they agree to
+3.1% while both sit far below an archive value of 5.591 ms.
+In both cases the evidence points at the *archive* being stale, not at our measurements being
+unreliable, so the time multiplier is the right choice throughout. A two-state tight/loose
+rule would have read `N = 32` as "anchor failed, fall back to iterations" — the wrong
+conclusion from the right observation, because it cannot distinguish "our number is bad" from
+"their number is old".
 
-> **Coarse meshes are where this correction is weakest — do not take an `N = 32` number at
-> face value.** On Poisson at `N = 32` the anchor is **37% — a clear
-> failure**: the archived run took 5.591 ms for the same function this cell
-> measures at 3.548 ms. A coarse solve is dominated by per-iteration kernel
-> launch overhead, which does not transfer between environments. And independently, at
-> `N = 32` the archived Poisson solve genuinely reaches 8.86e-14, so by the
-> *accuracy-matched* definition the over-convergence factor there is essentially unity. **Both
-> instruments are weakest at the same mesh**: the factor is ~1 by one definition, and the
-> multiplier one would otherwise prefer is the one the anchor does not support. Use the
-> iteration multiplier at `N = 32`, or treat that mesh as uncorrected.
+> **`N = 32` needs care, but for one reason rather than two.** The archive disagrees sharply
+> there — it records 5.591 ms for the same function this cell measures at
+> 3.548 ms, a 37% gap, and a coarse solve is dominated by
+> per-iteration kernel launch overhead that does not transfer between environments. But a
+> *second independent instrument* lands within 3.1% of this cell, so the
+> stale value is the archived one and the time multiplier stands. `N = 32` is corrected like
+> every other mesh.
+>
+> What does remain specific to `N = 32` is the **accuracy-matched** point: the archived Poisson
+> solve genuinely reaches 8.86e-14 there, so by that definition its over-convergence
+> factor is essentially unity and there is little to correct. The engineering factor
+> (1.16x) is the one that applies, and a reader should know which question
+> they are answering before quoting it.
 >
 > This cell's `N = 32` figure **was** burn-in protected — 1216 CG solves immediately precede
-> it in the log — so its disagreement with the archive is not the clock-ramp artefact
-> described above. The sister cell reports its own `N = 32` re-timing moving
-> 3.60 → 4.74 ms purely from adding a burn-in, a swing of the same order as
-> the anchor gap itself; coarse meshes are launch-overhead dominated in both arms, which makes
-> `N = 32` the least informative point on the ladder rather than the most.
+> it in the log — so the 37% gap to the archive is a real difference in
+> the archived environment, not a clock-ramp artefact in ours. It is independently
+> corroborated: the sister cell re-times the same function at 3.66 ms,
+> 3.1% from this cell's 3.548 ms, and reports that adding
+> burn-in moved its own figure by under 2%.
 >
-> **A caution that applies to both cells:** two multipliers computed *inside one run* share
-> exactly the environment the anchor failure is about, so their agreeing with each other is
-> **not** evidence either is correct. At `N = 32` this cell's time and iteration multipliers
-> agree to under half a percent (0.865 vs 0.862) and that
-> agreement licenses nothing.
+> **A caution that still applies to both cells:** two multipliers computed *inside one run*
+> share the environment, so their agreeing with each other is **not** evidence either is
+> correct. At `N = 32` this cell's time and iteration multipliers agree to under half a
+> percent (0.865 vs 0.862); what licenses the choice
+> there is the *second instrument*, not that self-agreement.
 >
 > The Burgers anchors are tight at every mesh (0.21%, 6.8%,
 > 0.13%, 0.53%), so the time multiplier is licensed
@@ -609,8 +624,8 @@ Applying the multiplier to the archived Poisson ladder in `../poisson2d-rom-obje
 
 | N | old FOM (ms) | old solve-only speedup | old end-to-end | anchor | use | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
 |---|---|---|---|---|---|---|---|---|---|
-| 32 | 5.591 | 0.28x | 0.28x | 37% **LOOSE** | **iterations** | 0.865 | 0.862 | 0.24x | 0.24x |
-| 64 | 7.786 | 0.39x | 0.39x | 8.5% tight | time | 0.865 | 0.860 | 0.34x | 0.34x |
+| 32 | 5.591 | 0.28x | 0.28x | 37% **archive-stale** | time (instruments agree) | 0.865 | 0.862 | 0.24x | 0.24x |
+| 64 | 7.786 | 0.39x | 0.39x | 8.5% **archive-stale** | time (instruments agree) | 0.865 | 0.860 | 0.34x | 0.34x |
 | 128 | 15.14 | 0.76x | 0.74x | 1.9% tight | time | 0.869 | 0.856 | 0.66x | 0.64x |
 | 256 | 31.13 | 1.56x | 1.40x | 4.9% tight | time | 0.863 | 0.848 | 1.35x | 1.21x |
 | 512 | 96.01 | 4.87x | 3.56x | 3.1% tight | time | 0.862 | 0.790 | 4.20x | 3.07x |
@@ -627,10 +642,10 @@ Applying the multiplier to the archived Poisson ladder in `../poisson2d-rom-obje
    (0.856–0.880, 2.75% spread), so a single scalar
    there is a fair approximation — the blanket "never use a scalar" rule holds for Burgers,
    not for Poisson, and it is worth saying so rather than over-warning.
-2b. Choose the multiplier **per mesh** from the anchor column: time where the anchor is
-   single-digit %, iterations where it is not. On Poisson at `N = 32` the anchor fails at
-   37% and that mesh should be treated as uncorrected. On Burgers every
-   anchor is tight, so use the time multiplier throughout.
+2b. Choose the multiplier **per mesh** from the anchor column. Where a second independent
+   re-timing exists, agreement *between instruments* is the discriminator, not agreement with
+   the archive: on Poisson all five meshes come out tight or archive-stale, so the **time**
+   multiplier applies throughout. On Burgers every anchor is tight, likewise.
 3. The ROM-side numbers are unaffected. Nothing about the ROM's cost or accuracy changes;
    only the denominator does.
 4. This does not, by itself, overturn the qualitative Burgers conclusion that the latent solve

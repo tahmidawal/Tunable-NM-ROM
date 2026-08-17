@@ -101,10 +101,42 @@ The open problem is **structure-preserving latent stepping**, not tuning.
 ## State as of 2026-08-17
 
 - All four cells complete, committed, pushed, cluster dirs deleted, results checksum-verified.
-- **One job still running:** `wad_n128_k8` (Slurm 2481538, wave N=128 K=8, ~12 h elapsed,
-  15 of 16 arms logged and all consistent with N=64). When it lands: pull with checksums,
-  fold the N-flatness row into the wave README/SUMMARY_TABLES, re-audit only the changed
-  numbers, delete `/cluster/tufts/paralab/tawal01/wlat/wad_n128_k8`.
+- `wad_n128_k8` (Slurm 2481538) **finished 2026-08-17** — COMPLETED, exit 0:0, 13:47:03. Pulled
+  with matching sha256 manifests, folded into the wave README and SUMMARY_TABLES on both
+  `exp/2026-08-16-wave2d-rom-latent-stepping` and this branch, cluster dir deleted. The cell now
+  has all 16 coordinate variants, 15 POD control arms and the timing block; zero blow-ups across
+  all 31 arms. New reading: hyper-reduction's mesh-independence **is** confirmed on wave — the
+  coordinate/POD per-step ratio falls 5.39x -> 4.64x (k=8) and 2.56x -> 1.66x (k=64) from N=64 to
+  N=128, and the coordinate speedup vs the FOM rises 0.158x -> 0.204x while POD k=64's falls
+  0.404x -> 0.339x. Accuracy is flat in N on both arms, so the wave failure is not a resolution
+  artefact. NOTE: those cells ran on different A100s, so only **within-cell ratios** are
+  admissible across them; raw cross-cell milliseconds are not.
+
+### Running now (2026-08-17)
+
+Two experiments launched off this branch, one agent each, both Poisson-2D + Burgers-2D:
+
+- `exp/2026-08-17-cost-to-tolerance` — the k x N cost surface and the ISO-ERROR PARETO. Stops on
+  relative reduction of the weak-form objective, tau in {1e-1,1e-2,1e-3}; cost and accuracy from
+  the same invocation. Cluster namespace `ctol/`.
+- `exp/2026-08-17-rom-warmstart-fom` — ROM solution as the FOM's initial guess, finish to FOM
+  accuracy; total cost vs ROM tolerance vs N. Cluster namespace `wsfom/`.
+
+Two things learned the hard way on 2026-08-17, both now guarded:
+
+1. **`scancel` is shared-account dangerous.** A `scancel --name=<comma,separated,list>` matched
+   nothing, degraded to an empty selector, and cancelled EVERY job on the account — both agents'
+   fleets at once. Only ever cancel an explicit list of numeric job IDs you submitted; check
+   `squeue -u tawal01 -o '%.10i %.20j'` first. `cost-to-tolerance/cluster/cancel.sh` enforces this.
+2. **A pinned batch env var silently undid a fix.** `N_POD_TRAJ=128` in the job environment
+   overrode the driver default and would have re-imposed the POD training-set handicap that the
+   Codex audit had just removed — an unfair-to-baseline result with nothing in the output to show
+   it. Check that batch env blocks do not shadow the values you just corrected.
+
+Early partial signal (Poisson, N<=256): cost(k) looks genuinely mesh-independent (normalised at
+k=8 the curve is 2.67/1.13/1.21/1.00 at N=32 vs 2.38/1.09/1.11/1.00 at N=64), and tau=1e-3 is
+largely unreachable because the objective's own floor is ~5e-3 relative reduction. Provisional
+until the full grid lands.
 - Every run: `jax_backend=gpu`, f64, `JAX_DEFAULT_MATMUL_PRECISION=highest`, one job per
   directory, data regenerated on the cluster from seed.
 - Two Codex audits per cell (harness before the fan-out, results after). The results pass
@@ -115,10 +147,10 @@ The open problem is **structure-preserving latent stepping**, not tuning.
 
 ## Next, in the order I would run it
 
-1. **Iso-error cost comparison (the important one).** At equal `k` we are far more accurate,
-   but POD's *per-step* cost is 4–8× lower (Burgers N=64: POD 35–73 ms vs coordinate
-   260–277 ms). We have accuracy-vs-`k` and cost-vs-`N` but **no matched-accuracy Pareto
-   curve**, and POD-64 may dominate us at N=64. This must exist before any speed claim.
+1. ~~**Iso-error cost comparison (the important one).**~~ **IN FLIGHT** — this is
+   `exp/2026-08-17-cost-to-tolerance`, above. At equal `k` we are far more accurate, but POD's
+   *per-step* cost is 4–8× lower (Burgers N=64: POD 35–73 ms vs coordinate 260–277 ms), so
+   POD-64 may dominate us at N=64. No speed claim may be made until that cell lands.
 2. **Training-set-size ladder** on the 2- and 3-bump Poisson families, to separate the
    generalisation limit from an architectural one.
 3. **Structure-preserving latent stepping** for wave (symplectic / energy-projected).

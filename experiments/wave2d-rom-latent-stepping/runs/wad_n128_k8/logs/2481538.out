@@ -1,0 +1,125 @@
+host=pax106  gpu=NVIDIA A100 80GB PCIe
+git_commit=ad575708e8cb064d6997d5527a7979673a3479b4
+cell=wad_n128_k8
+jax_backend=gpu cuda:0
+jax_backend=gpu  N=128  RS=20  RS_LIST=[1, 2, 4, 8, 20, 80]
+  V4 FOM energy drift 1.37e-11  [1s]
+  V5 RS=  1 (dt=2.00e-02,    50 steps): traj rel vs FOM 8.744e-02 (max 1.551e-01), E-drift 5.3e-12  [1s]
+  V5 RS=  2 (dt=1.00e-02,   100 steps): traj rel vs FOM 4.411e-02 (max 6.875e-02), E-drift 1.2e-11  [1s]
+  V5 RS=  4 (dt=5.00e-03,   200 steps): traj rel vs FOM 2.282e-02 (max 4.212e-02), E-drift 3.9e-11  [1s]
+  V5 RS=  8 (dt=2.50e-03,   400 steps): traj rel vs FOM 8.551e-03 (max 1.733e-02), E-drift 3.0e-10  [1s]
+  V5 RS= 20 (dt=1.00e-03,  1000 steps): traj rel vs FOM 1.377e-03 (max 2.837e-03), E-drift 4.8e-10  [1s]
+  V5 RS= 80 (dt=2.50e-04,  4000 steps): traj rel vs FOM 4.556e-08 (max 8.439e-08), E-drift 2.5e-08  [2s]
+  V1 Newmark(RS=80) == CN FOM: 4.56e-08 OK
+  V2 residual-operator checks {'strong_full': 6.572937753745525e-16, 'strong_rand': 2.6195306736645476e-16, 'weak_full': 4.208714909887368e-16, 'weak_nonsolution': 2.6239055516865553e-05}
+  V2b FOM-state residual (rel) 2.25e-15
+  V3 ||weak_allmodes|| 1.166170e+00 vs ||strong_full|| 1.166170e+00  rel diff 2.09e-15
+  V4b Newmark(RS=80) energy drift 2.46e-09
+  TRAIN/VAL FOM: 576 trajectories, max rel energy drift 3.40e-11
+  TEST FOM: 16 trajectories, max rel energy drift 1.37e-12
+  V6 POD val floors: r4=5.477e-01  r6=4.513e-01  r8=3.787e-01  r16=2.491e-01  r32=1.506e-01  r64=8.759e-02   ortho dev 1.3e-15
+  V7 exact-trajectory calibration (RS=20): kinematic drift 4.43e-10, dynamic drift 7.13e-10, v-defect 1.38e-09
+  FOM: 576 trajectories (50x80 CN substeps, dt=0.00025) in 14s, max rel energy drift 3.40e-11
+  V8 train_trajectories vs frozen wf.build_trajectories: max|diff| 0.00e+00
+wrote wlat_verify_N128.json  all_ok=True
+jax_backend=gpu  x64=True  N=128 K=8 steps=80000 batch=128 p_sub=2048 t_smooth=0.01 bc=poly hidden=256x5
+  TRAIN/VAL FOM: 576 trajectories, max rel energy drift 3.40e-11
+  TEST FOM: 16 trajectories, max rel energy drift 1.37e-12
+  data fingerprint {'sum': 2000737.3343879832, 'sumsq': 421427739.09317684, 'shape': [576, 51, 16384], 'sha256': '3312c0cec75507e06c8cae53ccd175767a54280053fa0fd8d8592b5644f18be8', 'traj_sumsq_first8': [156802.67075927934, 230999.60051814164, 1623639.4801370134, 16049.681064776443, 140845.26058323568, 1055928.9661529416, 398478.3429311962, 368205.31670698256]}
+  POD: 26112 snapshots, top-64 ortho dev 1.9e-15 [152s]
+  POD val floors (traj-RMS metric): r4=5.477e-01  r6=4.513e-01  r8=3.787e-01  r16=2.491e-01  r32=1.506e-01  r64=8.759e-02
+  film params 495681, n_freq 63, eps 9.2825e-01
+  step      0  loss 1.520e-01  data 1.488e-01  [5s]
+  step   2000  loss 2.787e-02  data 2.420e-02  [97s]
+  step   4000  loss 2.104e-02  data 1.812e-02  [190s]
+  step   6000  loss 1.272e-02  data 8.839e-03  [283s]
+  step   8000  loss 1.200e-02  data 8.080e-03  [377s]
+  step  10000  loss 1.201e-02  data 8.950e-03  [470s]
+  step  12000  loss 9.693e-03  data 6.260e-03  [564s]
+  step  14000  loss 8.036e-03  data 5.209e-03  [657s]
+  step  16000  loss 8.639e-03  data 5.257e-03  [751s]
+  step  18000  loss 7.250e-03  data 4.005e-03  [844s]
+  step  20000  loss 7.735e-03  data 4.168e-03  [937s]
+  step  22000  loss 6.178e-03  data 4.111e-03  [1031s]
+  step  24000  loss 4.986e-03  data 3.189e-03  [1124s]
+  step  26000  loss 5.335e-03  data 3.094e-03  [1218s]
+  step  28000  loss 7.015e-03  data 3.001e-03  [1311s]
+  step  30000  loss 5.364e-03  data 1.910e-03  [1405s]
+  step  32000  loss 5.045e-03  data 2.350e-03  [1498s]
+  step  34000  loss 4.910e-03  data 1.880e-03  [1592s]
+  step  36000  loss 4.098e-03  data 1.708e-03  [1685s]
+  step  38000  loss 4.547e-03  data 1.903e-03  [1779s]
+  step  40000  loss 5.399e-03  data 2.215e-03  [1872s]
+  step  42000  loss 4.490e-03  data 1.951e-03  [1966s]
+  step  44000  loss 4.997e-03  data 1.749e-03  [2059s]
+  step  46000  loss 4.240e-03  data 1.901e-03  [2152s]
+  step  48000  loss 5.748e-03  data 1.521e-03  [2246s]
+  step  50000  loss 3.452e-03  data 1.544e-03  [2339s]
+  step  52000  loss 3.695e-03  data 1.170e-03  [2433s]
+  step  54000  loss 3.514e-03  data 1.207e-03  [2526s]
+  step  56000  loss 2.806e-03  data 1.147e-03  [2620s]
+  step  58000  loss 3.378e-03  data 1.150e-03  [2713s]
+  step  60000  loss 2.633e-03  data 1.051e-03  [2806s]
+  step  62000  loss 3.196e-03  data 1.016e-03  [2900s]
+  step  64000  loss 3.773e-03  data 1.090e-03  [2993s]
+  step  66000  loss 2.923e-03  data 8.077e-04  [3087s]
+  step  68000  loss 3.333e-03  data 7.724e-04  [3180s]
+  step  70000  loss 3.706e-03  data 1.207e-03  [3274s]
+  step  72000  loss 3.066e-03  data 8.966e-04  [3367s]
+  step  74000  loss 4.129e-03  data 1.001e-03  [3461s]
+  step  76000  loss 3.168e-03  data 8.736e-04  [3554s]
+  step  78000  loss 4.044e-03  data 9.465e-04  [3647s]
+  step  79999  loss 3.365e-03  data 9.882e-04  [3741s]
+  TRAIN recon at learned latents: snap-rel mean 7.990e-02 (median 6.973e-02, max 5.578e-01); traj-RMS metric 7.445e-02; latent RMS 0.917, mean |dz| per step 3.986e-01 [3741s]
+wrote N128_K8
+jax_backend=gpu  N=128  RS=20 dt=0.001  variants=['lspg:eq256:weak64', 'galerkin:eq256:weak64', 'lspg:eq576:weak144', 'lspg:eq1024:weak256', 'galerkin:eq1024:weak256', 'lspg:eqoff256:weak64', 'lspg:full:weak64', 'galerkin:full:weak64', 'lspg:full:weaku64', 'lspg:full:weakl64', 'lspg:full:weak144', 'lspg:full:weak256', 'lspg:full:fd', 'galerkin:full:fd', 'lspg:rand512:fd', 'lspg:offgrid512:fd']
+  TRAIN/VAL FOM: 576 trajectories, max rel energy drift 3.40e-11
+  TEST FOM: 16 trajectories, max rel energy drift 1.37e-12
+  residual-operator checks (identity decoder on exact Newmark states): {'strong_full': 1.2322718698248072e-14, 'strong_rand': 1.22718515100466e-14, 'weak_full': 4.524093707254474e-15, 'weak_nonsolution': 0.0001834759790123226}
+  same-dt Newmark FOM (RS=20) vs 80-substep FOM: traj rel 1.081e-02 (max 3.840e-02), energy drift 3.2e-09
+  POD projection floors (test, traj metric): k6=4.304e-01 k8=3.446e-01 k16=2.220e-01 k32=1.440e-01 k64=9.009e-02
+  ORACLE inferred-latent floor (held-out, budget 60): traj 1.749e-01 snap 1.841e-01 [580s]
+  IC fit (u0 misfit, jitted LM): mean 1.068e-01
+  NNLS-EQ grid M=64 m=256: support 256 (+0 pad), rel fit 1.11e-02 [14s]
+  lspg:eq256:weak64        m=  256  traj rel 8.783e-01 (med 8.804e-01, max 1.209e+00; vs same-dt FOM 8.783e-01) blowups 0  E-drift 8.32e-01  iters cold 3.9 warm 5.20  2.48 ms/step  [88s]
+  galerkin:eq256:weak64    m=  256  traj rel 8.783e-01 (med 8.804e-01, max 1.209e+00; vs same-dt FOM 8.783e-01) blowups 0  E-drift 8.32e-01  iters cold 4.8 warm 6.35  4.83 ms/step  [106s]
+  NNLS-EQ grid M=144 m=576: support 576 (+0 pad), rel fit 4.51e-03 [100s]
+  lspg:eq576:weak144       m=  576  traj rel 8.855e-01 (med 8.554e-01, max 1.214e+00; vs same-dt FOM 8.855e-01) blowups 0  E-drift 8.12e-01  iters cold 3.9 warm 5.17  3.33 ms/step  [184s]
+  NNLS-EQ grid M=256 m=1024: support 1024 (+0 pad), rel fit 2.21e-03 [672s]
+  lspg:eq1024:weak256      m= 1024  traj rel 8.680e-01 (med 8.588e-01, max 1.167e+00; vs same-dt FOM 8.680e-01) blowups 0  E-drift 7.99e-01  iters cold 4.0 warm 5.20  4.82 ms/step  [780s]
+  galerkin:eq1024:weak256  m= 1024  traj rel 8.680e-01 (med 8.588e-01, max 1.167e+00; vs same-dt FOM 8.680e-01) blowups 0  E-drift 7.99e-01  iters cold 5.0 warm 6.35  11.47 ms/step  [210s]
+  NNLS-EQ off M=64 m=256: support 256 (+0 pad), rel fit 1.14e-02 [12s]
+  lspg:eqoff256:weak64     m=  256  traj rel 8.779e-01 (med 8.508e-01, max 1.148e+00; vs same-dt FOM 8.779e-01) blowups 0  E-drift 8.10e-01  iters cold 3.8 warm 5.18  2.46 ms/step  [80s]
+  lspg:full:weak64         m=15876  traj rel 9.008e-01 (med 8.672e-01, max 1.220e+00; vs same-dt FOM 9.008e-01) blowups 0  E-drift 7.04e-01  iters cold 3.9 warm 5.17  53.06 ms/step  [876s]
+  galerkin:full:weak64     m=15876  traj rel 9.008e-01 (med 8.672e-01, max 1.220e+00; vs same-dt FOM 9.008e-01) blowups 0  E-drift 7.04e-01  iters cold 4.6 warm 6.29  148.58 ms/step  [2395s]
+  lspg:full:weaku64        m=15876  traj rel 9.025e-01 (med 8.793e-01, max 1.224e+00; vs same-dt FOM 9.025e-01) blowups 0  E-drift 7.03e-01  iters cold 3.8 warm 5.18  53.29 ms/step  [875s]
+  lspg:full:weakl64        m=15876  traj rel 8.406e-01 (med 8.575e-01, max 1.118e+00; vs same-dt FOM 8.406e-01) blowups 0  E-drift 1.05e+00  iters cold 3.9 warm 5.36  54.80 ms/step  [903s]
+  lspg:full:weak144        m=15876  traj rel 8.703e-01 (med 8.601e-01, max 1.135e+00; vs same-dt FOM 8.703e-01) blowups 0  E-drift 7.75e-01  iters cold 3.8 warm 5.17  53.29 ms/step  [876s]
+  lspg:full:weak256        m=15876  traj rel 8.812e-01 (med 8.680e-01, max 1.223e+00; vs same-dt FOM 8.812e-01) blowups 0  E-drift 7.79e-01  iters cold 4.0 warm 5.20  53.45 ms/step  [885s]
+  lspg:full:fd             m=15876  traj rel 8.637e-01 (med 8.394e-01, max 1.259e+00; vs same-dt FOM 8.637e-01) blowups 0  E-drift 8.55e-01  iters cold 4.4 warm 5.20  263.75 ms/step  [4206s]
+  galerkin:full:fd         m=15876  traj rel 8.638e-01 (med 8.482e-01, max 1.258e+00; vs same-dt FOM 8.638e-01) blowups 0  E-drift 8.54e-01  iters cold 5.5 warm 6.38  758.19 ms/step  [12039s]
+  lspg:rand512:fd          m=  512  traj rel 8.822e-01 (med 8.617e-01, max 1.143e+00; vs same-dt FOM 8.822e-01) blowups 0  E-drift 7.99e-01  iters cold 4.2 warm 5.25  9.57 ms/step  [184s]
+  lspg:offgrid512:fd       m=  512  traj rel 9.539e-01 (med 8.992e-01, max 1.465e+00; vs same-dt FOM 9.539e-01) blowups 0  E-drift 8.41e-01  iters cold 5.8 warm 5.41  15.57 ms/step  [292s]
+  pod_k6:lspg:full:fd             m=15876  traj rel 4.311e-01 (med 3.747e-01, max 8.301e-01; vs same-dt FOM 4.311e-01) blowups 0  E-drift 7.92e-06  iters cold 3.4 warm 3.50  0.50 ms/step  [22s]
+  pod_k6:lspg:full:weak256        m=15876  traj rel 4.311e-01 (med 3.746e-01, max 8.301e-01; vs same-dt FOM 4.311e-01) blowups 0  E-drift 5.61e-04  iters cold 3.4 warm 3.50  0.86 ms/step  [31s]
+  NNLS-EQ grid M=256 m=1024: support 1024 (+0 pad), rel fit 2.03e-05 [836s]
+  pod_k6:lspg:eq1024:weak256      m= 1024  traj rel 4.311e-01 (med 3.746e-01, max 8.301e-01; vs same-dt FOM 4.311e-01) blowups 0  E-drift 5.61e-04  iters cold 3.4 warm 3.50  0.46 ms/step  [857s]
+  pod_k8:lspg:full:fd             m=15876  traj rel 3.453e-01 (med 2.986e-01, max 8.251e-01; vs same-dt FOM 3.453e-01) blowups 0  E-drift 7.11e-06  iters cold 3.4 warm 3.50  0.53 ms/step  [22s]
+  pod_k8:lspg:full:weak256        m=15876  traj rel 3.453e-01 (med 2.986e-01, max 8.251e-01; vs same-dt FOM 3.453e-01) blowups 0  E-drift 5.06e-04  iters cold 3.4 warm 3.50  0.86 ms/step  [31s]
+  NNLS-EQ grid M=256 m=1024: support 1024 (+0 pad), rel fit 4.56e-05 [797s]
+  pod_k8:lspg:eq1024:weak256      m= 1024  traj rel 3.453e-01 (med 2.986e-01, max 8.251e-01; vs same-dt FOM 3.453e-01) blowups 0  E-drift 5.05e-04  iters cold 3.6 warm 3.49  0.47 ms/step  [819s]
+  pod_k16:lspg:full:fd             m=15876  traj rel 2.233e-01 (med 1.655e-01, max 6.420e-01; vs same-dt FOM 2.233e-01) blowups 0  E-drift 8.79e-06  iters cold 3.4 warm 3.49  0.68 ms/step  [25s]
+  pod_k16:lspg:full:weak256        m=15876  traj rel 2.233e-01 (med 1.655e-01, max 6.420e-01; vs same-dt FOM 2.233e-01) blowups 0  E-drift 6.20e-04  iters cold 3.8 warm 3.51  0.95 ms/step  [33s]
+  NNLS-EQ grid M=256 m=1024: support 1024 (+0 pad), rel fit 1.29e-04 [745s]
+  pod_k16:lspg:eq1024:weak256      m= 1024  traj rel 2.233e-01 (med 1.655e-01, max 6.420e-01; vs same-dt FOM 2.233e-01) blowups 0  E-drift 6.16e-04  iters cold 3.4 warm 3.50  0.53 ms/step  [767s]
+  pod_k32:lspg:full:fd             m=15876  traj rel 1.468e-01 (med 1.150e-01, max 4.669e-01; vs same-dt FOM 1.468e-01) blowups 0  E-drift 1.42e-05  iters cold 3.4 warm 3.50  0.93 ms/step  [30s]
+  pod_k32:lspg:full:weak256        m=15876  traj rel 1.467e-01 (med 1.149e-01, max 4.664e-01; vs same-dt FOM 1.467e-01) blowups 0  E-drift 1.05e-03  iters cold 3.4 warm 3.49  1.11 ms/step  [36s]
+  NNLS-EQ grid M=256 m=1024: support 1024 (+0 pad), rel fit 2.64e-04 [790s]
+  pod_k32:lspg:eq1024:weak256      m= 1024  traj rel 1.467e-01 (med 1.149e-01, max 4.664e-01; vs same-dt FOM 1.467e-01) blowups 0  E-drift 1.05e-03  iters cold 3.4 warm 3.50  0.63 ms/step  [815s]
+  pod_k64:lspg:full:fd             m=15876  traj rel 9.501e-02 (med 7.763e-02, max 2.958e-01; vs same-dt FOM 9.510e-02) blowups 0  E-drift 7.25e-05  iters cold 3.3 warm 3.49  1.48 ms/step  [42s]
+  pod_k64:lspg:full:weak256        m=15876  traj rel 9.257e-02 (med 7.380e-02, max 2.917e-01; vs same-dt FOM 9.257e-02) blowups 0  E-drift 6.92e-03  iters cold 3.6 warm 3.50  1.43 ms/step  [42s]
+  NNLS-EQ grid M=256 m=1024: support 1024 (+0 pad), rel fit 5.23e-04 [851s]
+  pod_k64:lspg:eq1024:weak256      m= 1024  traj rel 9.256e-02 (med 7.378e-02, max 2.917e-01; vs same-dt FOM 9.257e-02) blowups 0  E-drift 7.27e-03  iters cold 3.4 warm 3.50  0.83 ms/step  [879s]
+  timing: lspg:eq256:weak64=2451ms  galerkin:eq256:weak64=4813ms  lspg:eq576:weak144=3336ms  lspg:eq1024:weak256=4729ms  galerkin:eq1024:weak256=11174ms  lspg:eqoff256:weak64=2432ms  lspg:full:weak64=53190ms  galerkin:full:weak64=151326ms  lspg:full:weaku64=53747ms  lspg:full:weakl64=55773ms  lspg:full:weak144=53346ms  lspg:full:weak256=53508ms  lspg:full:fd=260836ms  galerkin:full:fd=745089ms  lspg:rand512:fd=9601ms  lspg:offgrid512:fd=15275ms  pod_k6:lspg:full:fd=498ms  pod_k8:lspg:full:fd=528ms  pod_k16:lspg:full:fd=672ms  pod_k32:lspg:full:fd=927ms  pod_k64:lspg:full:fd=1475ms  fom_rollout_cn80=500ms  fom_rollout_newmark_rs20=195ms
+wrote wlat_rom_N128_K8.json
+ALL-DONE

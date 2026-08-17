@@ -77,10 +77,10 @@ the cluster's to 5.9e-16 in the global moments; the sha256 differs because CG it
 the last bits across GPU/JAX builds, so its absolute errors should be read against **its own**
 oracle column (which is what the reported "excess" does).
 
-`wad_n128_k8` was still running when this document was written.  Its JSON is written
-incrementally after every variant, so the 13 coordinate variants quoted below are auditable in
-`runs/wad_n128_k8/out/wlat_rom_N128_K8.json` (`"finished"` is absent — the POD control arms and
-the timing block for that cell are **not** in this document).
+`wad_n128_k8` has since **completed** (Slurm 2481538, `COMPLETED`, exit 0:0, 13:47:03 elapsed;
+pulled 2026-08-17 with matching sha256 manifests).  `"finished": true`, all 16 coordinate
+variants, all 15 POD control arms and the full timing block are in
+`runs/wad_n128_k8/out/wlat_rom_N128_K8.json`, and every table below is regenerated from it.
 
 ## Verification results
 
@@ -174,8 +174,8 @@ Two candidate explanations, **neither directly measured here**:
 
 traj-RMS against the 80-substep FOM, mean over 16 held-out trajectories, `RS=20` unless stated.
 **Zero blow-ups anywhere**: all 93 main N=64 variants (48 coordinate, 45 POD) plus the 8 RS-arm
-variants report `n_blowup=0`, `n_completed=16`, `n_total=16`; so do the 13 N=128 coordinate
-variants and all 32 step-diagnostic cases.  Warm Gauss-Newton takes 4.94 / 5.19 / 5.38 Jacobian
+variants report `n_blowup=0`, `n_completed=16`, `n_total=16`; so do all 31 N=128 variants
+(16 coordinate, 15 POD) and all 32 step-diagnostic cases.  Warm Gauss-Newton takes 4.94 / 5.19 / 5.38 Jacobian
 evaluations per step at K=4/8/16 and cold starts 3.56 / 4.13 / 4.00.
 
 ### Floors and headline numbers (N=64)
@@ -342,14 +342,43 @@ are.
 | `lspg:full:weakl64` | 8.408e-1 | 8.406e-1 |
 | `lspg:full:fd` | 8.767e-1 | 8.637e-1 |
 | **ROM / oracle floor** | **5.11x** | **5.02x** |
-| ms per latent step, `eq256:weak64` | 2.44 | 2.48 |
+| ms per latent step, `eq256:weak64` | 2.443 | 2.451 |
 | POD projection floors (test) k=6/8/64 | 4.282e-1 / 3.417e-1 / 8.201e-2 | 4.304e-1 / 3.446e-1 / 9.009e-2 |
+| POD **ROM** `lspg:full:fd` k=6 | 4.2899e-1 | 4.3115e-1 |
+| POD **ROM** `lspg:full:fd` k=8 | 3.4238e-1 | 3.4530e-1 |
+| POD **ROM** `lspg:full:fd` k=16 | 2.1875e-1 | 2.2331e-1 |
+| POD **ROM** `lspg:full:fd` k=32 | 1.4080e-1 | 1.4684e-1 |
+| POD **ROM** `lspg:full:fd` k=64 | 8.3778e-2 | 9.5010e-2 |
+| ms per step, POD k=8 / k=64 `full:fd` | 0.453 / 0.954 | 0.528 / 1.475 |
+| FOM Newmark `RS=20` rollout (s) | 0.1607 | 0.1945 |
 
 `eq256:weak64` is **identical to five significant figures at N=64 and N=128**, the ROM/floor
-ratio moves 5.11 -> 5.02, and the per-step cost is flat (2.44 -> 2.48 ms) while the number of
-grid points quadruples — the n-free per-step cost of the hyper-reduced coordinate ROM is
-confirmed on wave.  It buys nothing here, because the failure mode is resolution-independent too.
-(The N=128 POD control arms and timing block had not finished when this was written.)
+ratio moves 5.11 -> 5.02, and the per-step cost is flat (2.443 -> 2.451 ms, +0.3%) while the
+number of grid points quadruples — the n-free per-step cost of the hyper-reduced coordinate ROM
+is confirmed on wave.  It buys nothing here, because the failure mode is resolution-independent
+too: every POD ROM arm is likewise flat in N (k=8: 3.4238e-1 -> 3.4530e-1, +0.9%) and stays
+2.5x more accurate than the coordinate ROM at the same k.
+
+The completed cell adds one comparison the N=64 cell alone could not make: **the coordinate
+ROM's cost scales better in N than POD's.**  The N=64 and N=128 cells ran on different A100s, so
+raw millisecond ratios across them are not admissible; what *is* admissible is a **within-cell
+ratio**, where the card's speed cancels, compared between cells.  Those ratios move the right
+way for the hyper-reduced arm:
+
+| within-cell ratio | N=64 | N=128 |
+|---|---|---|
+| coordinate `eq256:weak64` step / POD k=8 `full:fd` step | 5.39x | 4.64x |
+| coordinate `eq256:weak64` step / POD k=64 `full:fd` step | 2.56x | 1.66x |
+| coordinate `eq256:weak64` speedup vs the FOM rollout | 0.158x | 0.204x |
+| POD k=6 `full:fd` speedup vs the FOM rollout | 0.871x | 1.004x |
+| POD k=64 `full:fd` speedup vs the FOM rollout | 0.404x | 0.339x |
+
+POD LSPG runs on the full grid, so its work grows with n; the hyper-reduced coordinate step does
+not.  Accordingly the coordinate arm closes ground on POD (5.39x -> 4.64x at k=8, 2.56x -> 1.66x
+at k=64) and improves against the FOM (0.158x -> 0.204x) over the same 4x in grid points that
+*degrades* POD k=64 (0.404x -> 0.339x).  So hyper-reduction delivers its mesh-independence
+promise here — the half of the recipe that works — while the accuracy failure is untouched by
+resolution, and the coordinate arm is still 4.9x below break-even at N=128.
 
 ## The published wave-ROM comparison, and why it is not a like-for-like number
 
@@ -452,8 +481,10 @@ models trained here, so this is not obviously the lever.
 - K=4, K=8 and K=16 are three **separately trained** models, so the trend in the ROM/floor ratio
   cannot be attributed to latent dimension alone.
 - The `dt` sweep is one latent dimension, one variant, one decoder, three non-asymptotic points.
-- The N=128 cell had not finished; its POD control arms and timing block are not reported, and its
-  JSON is marked unfinished.  Its 13 coordinate variants are complete and auditable.
+- The N=128 cell is complete (`"finished": true`); its POD control arms and timing block are now
+  reported.  Cross-cell **absolute** times remain incomparable (different A100s); the flat-in-N
+  claims above are within-cell ratios plus the N=64/N=128 comparison of *relative* growth, which
+  is the weaker but valid reading.
 - Strong LSPG and the weighted weak form are least-squares (normal-equation) schemes; the
   structural argument in "Finding 1" is a derivation about a *fixed* subspace, and the reduced
   LSPG operator is **not** `VᵀLV` (that is the Galerkin operator).  The evidence for the

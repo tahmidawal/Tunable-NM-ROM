@@ -234,6 +234,16 @@ def build(runs=None):
         for r in Bc:
             k = f"{tg(r['fom_tau'])}_N{r['N']}"
             f[f"oc_b_resid_N{r['N']}"] = g(r.get("fom_testbed_rel_newton_residual"), ".2e")
+            # Is this rung ACCURACY-MATCHED to the archived baseline, or merely the
+            # tightest rung measured?  Two different over-convergence questions hang on
+            # this and they give different multipliers (see the README).
+            mr = r.get("max_rel_newton_residual")
+            ach = mr.get("prev") if isinstance(mr, dict) else None
+            arch = r.get("fom_testbed_rel_newton_residual")
+            f[f"oc_b_ladder_ach_{k}"] = g(ach, ".2e")
+            if ach and arch:
+                f[f"oc_b_looser_{k}"] = g(ach / arch, ".0f")
+                f[f"oc_b_matched_{k}"] = "yes" if ach <= arch else "no"
             f[f"oc_b_t_fixed_N{r['N']}"] = g(r.get("t_fom_testbed_ms"), ".4g")
             f[f"oc_b_t_tol_{k}"] = g(r["t_fom_baseline_ms"], ".4g")
             f[f"oc_b_newton_tol_{k}"] = g(r["iters_from_baseline"], ".0f")
@@ -282,6 +292,12 @@ def build(runs=None):
             f[f"oc_p_t_fixed_N{r['N']}"] = g(r.get("t_fom_testbed_ms"), ".4g")
             f[f"oc_p_iters_fixed_N{r['N']}"] = g(r.get("fom_testbed_iters"), ".0f")
             f[f"oc_p_resid_N{r['N']}"] = g(r.get("fom_testbed_true_rel_res"), ".2e")
+            ach = r.get("final_rel_residual_baseline")
+            arch = r.get("fom_testbed_true_rel_res")
+            f[f"oc_p_ladder_ach_{k}"] = g(ach, ".2e")
+            if ach and arch:
+                f[f"oc_p_looser_{k}"] = g(ach / arch, ".0f")
+                f[f"oc_p_matched_{k}"] = "yes" if ach <= arch else "no"
             f[f"oc_p_t_tol_{k}"] = g(r["t_fom_baseline_ms"], ".4g")
             f[f"oc_p_t_tol_native_{k}"] = g(r.get("t_fom_baseline_native_ms"), ".4g")
             f[f"oc_p_iters_tol_{k}"] = g(r["iters_from_baseline"], ".0f")
@@ -315,6 +331,32 @@ def build(runs=None):
                 if facn:
                     f[f"oc_p_new_speed_{k}"] = g(orow["speedup_solve_only"] / facn, ".2f")
                     f[f"oc_p_new_e2e_{k}"] = g(orow["speedup_end_to_end"] / facn, ".2f")
+
+    # Does ANY rung in this cell's ladder reach what the archived baselines achieved?
+    for tagp, C, key in (("p", Pc, "final_rel_residual_baseline"),
+                         ("b", Bc, None)):
+        if not C:
+            continue
+        anym = False
+        for r in C:
+            if tagp == "p":
+                ach, arch = r.get(key), r.get("fom_testbed_true_rel_res")
+            else:
+                mr = r.get("max_rel_newton_residual")
+                ach = mr.get("prev") if isinstance(mr, dict) else None
+                arch = r.get("fom_testbed_rel_newton_residual")
+            if ach and arch and ach <= arch:
+                anym = True
+        f[f"oc_{tagp}_any_matched_rung"] = "yes" if anym else "no"
+        f[f"oc_{tagp}_factor_kind"] = ("accuracy-matched" if anym else "engineering")
+
+    # EXTERNALLY REPORTED, relayed from the cost-to-tolerance cell (agent
+    # a25b45872e6e0bec4) via the coordinator -- NOT measured here.  Kept in the fact
+    # table so it carries its provenance wherever it is quoted.
+    f["xagent_p_arch_N128"] = "15.145"
+    f["xagent_p_mine_N128"] = "14.86"
+    f["xagent_p_theirs_N128"] = "14.795"
+    f["xagent_p_spread_N128"] = "2.3"
 
     # ---------------- consistency ----------------
     from wsf_summarize import role_consistency

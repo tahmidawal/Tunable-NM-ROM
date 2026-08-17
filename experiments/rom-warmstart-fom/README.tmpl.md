@@ -362,9 +362,39 @@ already written on other branches, and the numbers below are what is needed to f
 without rerunning anything.
 
 **Are the previously reported speedups wrong, or merely conservative?** They are **wrong, in
-the flattering direction** — every one of them divides by a denominator that did more work
-than the stated accuracy required. They are not conservative. The corrected values are
+the flattering direction** — every one of them divides by a denominator that did far more work
+than any deployment would ask for. They are not conservative. The corrected values are
 smaller, by the multipliers tabulated below.
+
+### Which over-convergence question these numbers answer
+
+There are **two** distinct questions, and they give different multipliers. Naming which one is
+in play is not pedantry: applying the wrong one over-corrects.
+
+1. **Accuracy-matched.** *Did the baseline do more work than its own achieved accuracy
+   required?* Compare against a rung that lands on the same residual the archived baseline
+   actually reached.
+2. **Engineering.** *Did the baseline do more work than a user of the solution would ask
+   for?* Compare against the tolerance a deployment would actually request (1e-6, 1e-8).
+
+**Every factor in this section is the ENGINEERING one ({{oc_p_factor_kind}} on Poisson,
+{{oc_b_factor_kind}} on Burgers).** This cell's ladder stops at `tau = 1e-10`, and the
+archived baselines are *tighter than that at every mesh* — on Poisson the ladder's tightest
+rung lands {{oc_p_looser_1em10_N256}}x looser than the archived solve at `N = 256`, and on
+Burgers about {{oc_b_looser_1em10_N256}}x looser. So no rung here is accuracy-matched
+(`oc_*_any_matched_rung` = {{oc_p_any_matched_rung}} / {{oc_b_any_matched_rung}}), and an
+accuracy-matched factor would be **smaller** than the ones tabulated below.
+
+This matters most at **coarse meshes**, and it is a second, independent reason the correction
+cannot be a single scalar — separate from the slope argument later in this section. At
+`N = 32` the archived Poisson solve genuinely reaches {{oc_p_resid_N32}}, i.e. it delivers
+what its 1e-13 tolerance promises; by the *accuracy-matched* definition there is little or
+nothing to correct there. It is over-converged only in the *engineering* sense — nobody needs
+1e-13. At `N = 512` the archived solve reaches only {{oc_p_resid_N512}} despite the same
+nominal tolerance, so there the two definitions converge and the criticism bites on both.
+
+A reader applying a multiplier from this section at coarse `N` should know they are applying
+the engineering correction, not an accuracy-matched one.
 
 ### Burgers: a fixed 8 Newton iterations per step, with no tolerance test
 
@@ -377,17 +407,18 @@ per-step relative Newton residual is {{oc_b_resid_N256}} at `N = 256`.
 A Newton solve that simply stops at a tolerance needs far fewer iterations for the same
 accuracy class:
 
-| N | fixed-8 rollout (ms) | Newton steps | achieved residual | at `tau=1e-10` (ms) | Newton steps | over-convergence factor |
+| N | fixed-8 rollout (ms) | Newton steps | achieved residual | at `tau=1e-10` (ms) | Newton steps | rung achieves | engineering factor |
 |---|---|---|---|---|---|---|
-| 32 | {{oc_b_t_fixed_N32}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N32}} | {{oc_b_t_tol_1em10_N32}} | {{oc_b_newton_tol_1em10_N32}} | {{oc_b_factor_1em10_N32}}x |
-| 64 | {{oc_b_t_fixed_N64}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N64}} | {{oc_b_t_tol_1em10_N64}} | {{oc_b_newton_tol_1em10_N64}} | {{oc_b_factor_1em10_N64}}x |
-| 128 | {{oc_b_t_fixed_N128}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N128}} | {{oc_b_t_tol_1em10_N128}} | {{oc_b_newton_tol_1em10_N128}} | {{oc_b_factor_1em10_N128}}x |
-| 256 | {{oc_b_t_fixed_N256}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N256}} | {{oc_b_t_tol_1em10_N256}} | {{oc_b_newton_tol_1em10_N256}} | {{oc_b_factor_1em10_N256}}x |
+| 32 | {{oc_b_t_fixed_N32}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N32}} | {{oc_b_t_tol_1em10_N32}} | {{oc_b_newton_tol_1em10_N32}} | {{oc_b_ladder_ach_1em10_N32}} | {{oc_b_factor_1em10_N32}}x |
+| 64 | {{oc_b_t_fixed_N64}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N64}} | {{oc_b_t_tol_1em10_N64}} | {{oc_b_newton_tol_1em10_N64}} | {{oc_b_ladder_ach_1em10_N64}} | {{oc_b_factor_1em10_N64}}x |
+| 128 | {{oc_b_t_fixed_N128}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N128}} | {{oc_b_t_tol_1em10_N128}} | {{oc_b_newton_tol_1em10_N128}} | {{oc_b_ladder_ach_1em10_N128}} | {{oc_b_factor_1em10_N128}}x |
+| 256 | {{oc_b_t_fixed_N256}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N256}} | {{oc_b_t_tol_1em10_N256}} | {{oc_b_newton_tol_1em10_N256}} | {{oc_b_ladder_ach_1em10_N256}} | {{oc_b_factor_1em10_N256}}x |
 
-`tau = 1e-10` is the closest match to what the fixed-8 scan actually reaches, so those columns
-are a **like-for-like** comparison. At the looser and more realistic `tau = 1e-8` the
-tolerance-based FOM costs {{oc_b_t_tol_1em08_N256}} ms at `N = 256`
-({{oc_b_factor_1em08_N256}}x over-convergence).
+`tau = 1e-10` is the **tightest rung measured here**, not an accuracy match: the fixed-8 scan
+reaches {{oc_b_resid_N256}} at `N = 256` while this rung lands at {{oc_b_ladder_ach_1em10_N256}},
+about {{oc_b_looser_1em10_N256}}x looser. Treat the factor as an engineering one. At the more
+realistic `tau = 1e-8` the tolerance-based FOM costs {{oc_b_t_tol_1em08_N256}} ms at `N = 256`
+({{oc_b_factor_1em08_N256}}x).
 
 **The instrument is anchored to the archived baseline.** This cell does not model the old
 denominator, it re-times *the same function*: `burgers2d_film.make_rollout(n)` at batch 1.
@@ -458,19 +489,32 @@ baseline against the instrumented one would conflate "tighter tolerance" with "d
 implementation". That mixed ratio is recorded as `oc_p_factor_mixed_*` and is **not** what is
 quoted here.)
 
-| N | jax.scipy CG at `CG_TOL` (ms) | iterations | achieved residual | jax.scipy CG at `tau=1e-10` (ms) | iterations | over-convergence factor |
+| N | jax.scipy CG at `CG_TOL` (ms) | iterations | achieved residual | jax.scipy CG at `tau=1e-10` (ms) | iterations | rung achieves | engineering factor |
 |---|---|---|---|---|---|---|
-| 32 | {{oc_p_t_fixed_N32}} | {{oc_p_iters_fixed_N32}} | {{oc_p_resid_N32}} | {{oc_p_t_tol_native_1em10_N32}} | {{oc_p_iters_tol_1em10_N32}} | {{oc_p_factor_1em10_N32}}x |
-| 64 | {{oc_p_t_fixed_N64}} | {{oc_p_iters_fixed_N64}} | {{oc_p_resid_N64}} | {{oc_p_t_tol_native_1em10_N64}} | {{oc_p_iters_tol_1em10_N64}} | {{oc_p_factor_1em10_N64}}x |
-| 128 | {{oc_p_t_fixed_N128}} | {{oc_p_iters_fixed_N128}} | {{oc_p_resid_N128}} | {{oc_p_t_tol_native_1em10_N128}} | {{oc_p_iters_tol_1em10_N128}} | {{oc_p_factor_1em10_N128}}x |
-| 256 | {{oc_p_t_fixed_N256}} | {{oc_p_iters_fixed_N256}} | {{oc_p_resid_N256}} | {{oc_p_t_tol_native_1em10_N256}} | {{oc_p_iters_tol_1em10_N256}} | {{oc_p_factor_1em10_N256}}x |
-| 512 | {{oc_p_t_fixed_N512}} | {{oc_p_iters_fixed_N512}} | {{oc_p_resid_N512}} | {{oc_p_t_tol_native_1em10_N512}} | {{oc_p_iters_tol_1em10_N512}} | {{oc_p_factor_1em10_N512}}x |
+| 32 | {{oc_p_t_fixed_N32}} | {{oc_p_iters_fixed_N32}} | {{oc_p_resid_N32}} | {{oc_p_t_tol_native_1em10_N32}} | {{oc_p_iters_tol_1em10_N32}} | {{oc_p_ladder_ach_1em10_N32}} | {{oc_p_factor_1em10_N32}}x |
+| 64 | {{oc_p_t_fixed_N64}} | {{oc_p_iters_fixed_N64}} | {{oc_p_resid_N64}} | {{oc_p_t_tol_native_1em10_N64}} | {{oc_p_iters_tol_1em10_N64}} | {{oc_p_ladder_ach_1em10_N64}} | {{oc_p_factor_1em10_N64}}x |
+| 128 | {{oc_p_t_fixed_N128}} | {{oc_p_iters_fixed_N128}} | {{oc_p_resid_N128}} | {{oc_p_t_tol_native_1em10_N128}} | {{oc_p_iters_tol_1em10_N128}} | {{oc_p_ladder_ach_1em10_N128}} | {{oc_p_factor_1em10_N128}}x |
+| 256 | {{oc_p_t_fixed_N256}} | {{oc_p_iters_fixed_N256}} | {{oc_p_resid_N256}} | {{oc_p_t_tol_native_1em10_N256}} | {{oc_p_iters_tol_1em10_N256}} | {{oc_p_ladder_ach_1em10_N256}} | {{oc_p_factor_1em10_N256}}x |
+| 512 | {{oc_p_t_fixed_N512}} | {{oc_p_iters_fixed_N512}} | {{oc_p_resid_N512}} | {{oc_p_t_tol_native_1em10_N512}} | {{oc_p_iters_tol_1em10_N512}} | {{oc_p_ladder_ach_1em10_N512}} | {{oc_p_factor_1em10_N512}}x |
 
 The same anchoring check on the Poisson side — this cell re-times
 `jax.scipy.sparse.linalg.cg(op, F, tol=CG_TOL)`, the archived baseline function — gives
 agreement of {{oc_p_archcheck_N32}}% at `N = 32`, {{oc_p_archcheck_N64}}% at `N = 64`,
 {{oc_p_archcheck_N128}}% at `N = 128`, {{oc_p_archcheck_N256}}% at `N = 256` and
 {{oc_p_archcheck_N512}}% at `N = 512`.
+
+**The anchor is now cross-agent, not self-reported.** At `N = 128` three independent
+measurements of the same archived function agree: the archived run itself at
+{{xagent_p_arch_N128}} ms, this cell at {{xagent_p_mine_N128}} ms, and the sister
+`cost-to-tolerance` cell at {{xagent_p_theirs_N128}} ms — a {{xagent_p_spread_N128}}% spread.
+(Those last two figures are relayed, not measured here.) Independent reproduction by a
+separate agent on separate jobs is a stronger licence for the time multiplier than either
+cell's own check.
+
+Note also that the sister cell ladders Poisson CG from 3e-1 down to 1e-13 with the true
+residual recomputed per rung. **This cell's `{1e-6, 1e-8, 1e-10}` is a strict subset of that
+ladder**, so the two are compatible — but shared prose should not describe *the* ladder as
+these three rungs.
 
 Applying the multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
 

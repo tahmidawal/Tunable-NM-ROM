@@ -21,3 +21,15 @@ jax_backend=gpu device=cuda:0 commit=72b44d4 NS=[512] rom_taus=[0.5, 0.1, 0.01, 
    ROM tau=0.01: 11.2 LM iters, 2.74 ms, obj red 7.87e-03, field err 1.205e-02, rel resid 2.11e-01, A-norm err ratio 5.36e-02, worth 549.5 CG iters, reasons {'converged': 2, 'rom_tau': 14}
      tau_FOM=1e-06: CG 1261.5 vs 1341.5 iters  total 65.83 ms vs FOM 61.66 ms  (0.94x)  err_final 4.26e-08
      tau_FOM=1e-08: CG 1513.8 vs 1573.2 iters  total 77.63 ms vs FOM 72.28 ms  (0.93x)  err_final 3.73e-10
+     tau_FOM=1e-10: CG 1749.8 vs 1772.4 iters  total 87.82 ms vs FOM 80.79 ms  (0.92x)  err_final 2.54e-12
+   ROM tau=0.001: 27.8 LM iters, 8.12 ms, obj red 5.19e-03, field err 8.863e-03, rel resid 2.07e-01, A-norm err ratio 4.91e-02, worth 582.2 CG iters, reasons {'converged': 16}
+     tau_FOM=1e-06: CG 1237.8 vs 1341.5 iters  total 70.02 ms vs FOM 61.17 ms  (0.87x)  err_final 4.37e-08
+     tau_FOM=1e-08: CG 1486.5 vs 1573.2 iters  total 81.01 ms vs FOM 71.73 ms  (0.89x)  err_final 4.16e-10
+     tau_FOM=1e-10: CG 1733.2 vs 1772.4 iters  total 92.25 ms vs FOM 81.06 ms  (0.88x)  err_final 2.96e-12
+   ROM tau=0: 27.8 LM iters, 8.12 ms, obj red 5.19e-03, field err 8.863e-03, rel resid 2.07e-01, A-norm err ratio 4.91e-02, worth 582.2 CG iters, reasons {'converged': 16}
+     tau_FOM=1e-06: CG 1237.8 vs 1341.5 iters  total 69.92 ms vs FOM 61.12 ms  (0.87x)  err_final 4.37e-08
+     tau_FOM=1e-08: CG 1486.5 vs 1573.2 iters  total 81.23 ms vs FOM 71.95 ms  (0.89x)  err_final 4.16e-10
+     tau_FOM=1e-10: CG 1733.2 vs 1772.4 iters  total 92.69 ms vs FOM 81.52 ms  (0.88x)  err_final 2.96e-12
+== N=512 done [476s]
+DONE
+ALL-DONE

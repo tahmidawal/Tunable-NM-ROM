@@ -350,7 +350,11 @@ def main():
                "> The reference cell times `jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL)` "
                "with `CG_TOL = 1e-13` -- the tolerance used to MANUFACTURE the truth data. "
                "Both columns below are jax.scipy CG, differing only in tolerance, so the "
-               "factor is like-for-like in the solver.", ""]
+               "factor is like-for-like in the SOLVER.  It is NOT accuracy-matched: compare "
+               "'achieved res' against 'rung achieves' -- the archived baseline is tighter "
+               "than this cell's tightest rung at every mesh, so these are ENGINEERING "
+               "factors (cost at a tolerance a deployment would ask for, vs cost at 1e-13). "
+               "An accuracy-matched factor would be smaller, and at coarse N close to 1.", ""]
         orows = []
         seen_n = set()
         for r in sorted([q for q in P if q["fom_tau"] == min(fts)], key=lambda q: q["N"]):
@@ -363,16 +367,17 @@ def main():
                 fom_testbed_iters=r.get("fom_testbed_iters"),
                 fom_testbed_true_rel_res=r.get("fom_testbed_true_rel_res"),
                 t_native=tn, iters_tol=r["iters_from_baseline"],
+                ladder_ach=r.get("final_rel_residual_baseline"),
                 factor=(r["t_fom_testbed_ms"] / tn) if tn else None,
                 mult_time=(tn / r["t_fom_testbed_ms"]) if tn else None,
                 mult_iters=(r["iters_from_baseline"] / r["fom_testbed_iters"]
                             if r.get("fom_testbed_iters") else None)))
         md += [table(orows, ["N", "t_fom_testbed_ms", "fom_testbed_iters",
                              "fom_testbed_true_rel_res", "t_native", "iters_tol",
-                             "factor", "mult_time", "mult_iters"],
+                             "ladder_ach", "factor", "mult_time", "mult_iters"],
                      ["N", "CG at CG_TOL (ms)", "iters", "achieved res",
-                      f"CG at {min(fts):g} (ms)", "iters", "over-conv factor",
-                      "multiplier (time)", "multiplier (iters)"],
+                      f"CG at {min(fts):g} (ms)", "iters", "rung achieves",
+                      "ENGINEERING factor", "multiplier (time)", "multiplier (iters)"],
                      {"t_fom_testbed_ms": ".4g", "fom_testbed_iters": ".0f",
                       "t_native": ".4g", "iters_tol": ".0f", "factor": ".2f",
                       "mult_time": ".3f", "mult_iters": ".3f"}), ""]
@@ -440,7 +445,9 @@ def main():
                "> `burgers2d_film` runs a FIXED 8 Newton iterations per step with no "
                "tolerance test.  Stopping at the tolerance instead is the honest baseline "
                "and is much cheaper, so any speedup quoted against the fixed-8 rollout is "
-               "measured against an over-converged solver.", ""]
+               "measured against an over-converged solver.  As on the Poisson side these "
+               "are ENGINEERING factors: the fixed-8 scan reaches ~1e-12 per step while the "
+               "tightest rung here lands near 1e-10, so no rung is accuracy-matched.", ""]
         for r in (crows if crows else rows):
             nf = r.get("fom_testbed_newton_iters")
             r["mult_iters"] = (r["iters_from_baseline"] / nf) if nf else None

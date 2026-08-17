@@ -489,13 +489,52 @@ At the other two tolerances:
 
 ### 6.3 The knob -> accuracy map: field error actually achieved at each tau
 
-**Accuracy is non-monotone in `k`, and that is the checkpoints, not the solver.** Each `k` is a
-*separately trained* decoder, so decoder quality varies along the `k` axis independently of
-anything the ROM does (at N=64, `k`=6 and `k`=12 are worse than `k`=4 and `k`=8). Rather than
-caveat this, each checkpoint's own **oracle ceiling** — the error of the best latent obtainable
-by LM on the data misfit to the held-out field, which no solver can beat — is measured at every
-(N, `k`) and reported next to the ROM error, together with the ROM/ceiling ratio. Read the
-ratio, not the raw error, when judging the solver along `k`.
+**Accuracy is non-monotone in `k` — and the ceiling arm shows it is NOT the checkpoints.**
+Each `k` is a *separately trained* decoder, so the natural first reading is that decoder quality
+varies along the `k` axis. **The measurement rejects that.** Each checkpoint's own **oracle
+ceiling** — the error of the best latent obtainable by LM on the data misfit to the held-out
+field, which no solver can beat — is *cleanly monotone decreasing* in `k` at every mesh
+(N=64: 1.24e-1 → 3.28e-3 from `k`=2 to 32, no reversals). The decoders get uniformly better.
+
+What oscillates is the **ROM/ceiling ratio** (N=64, `tau`=1e-3: 1.1 at `k`=4, 6.6 at `k`=6,
+1.2 at `k`=8, 7.7 at `k`=12, 1.6 at `k`=16). So the latent solve, not the decoder, is what
+fails at particular `k`. Two further candidates are ruled out by the same table:
+
+* **not hyper-reduction quality** — the NNLS-EQ fit is flat at ~1.3–1.7e-3 across all of them,
+  and `k`=32's fit is the *best* of the set while its ratio is the *worst*;
+* **not `M`/`k` headroom** — among the `M`=64 rows, `k`=6 has `M/k` = 10.7 and fails (6.6) while
+  `k`=16 has `M/k` = 4.0 and works (1.6). More test modes per latent dimension is not the
+  discriminator, despite "`M` > `k` comfortably" being a standing project rule.
+
+**Two live hypotheses remain, and this cell does not yet decide between them.** A monotone
+ceiling establishes that the decoder can *represent* the field at every `k`; it says nothing
+about whether the manifold parameterisation is well *conditioned* there. So either:
+
+1. **conditioning** — a checkpoint with near-degenerate or unused latent directions gives
+   exactly this signature (good ceiling, ill-conditioned Gauss–Newton, high ratio). This is
+   checkpoint-specific but is *not* "checkpoint quality" in the sense rejected above; it would
+   be a training/architecture finding.
+2. **a defect in the weak-form solve** at those dimensions — a solver finding.
+
+The decoder-Jacobian spectrum at the ceiling latent (condition number and numerical rank per
+(N, `k`), recorded free from the `H` = `Jᵀ J` the chunked ceiling already accumulates)
+discriminates them, and is reported below. Whichever it is, this is a limitation of **our
+method**, not of the approach, and it belongs in the verdict as such.
+
+**The `k`=32 row is not a pure `k` step.** Under the promoted grid it runs at (`M`, `m`) =
+(256, 1024) while `k` ∈ {2…24} run at (64, 256), so its ratio confounds the latent dimension
+with a 4× change in both test modes and quadrature size. The isolator and artefact arms give
+the comparison at **identical** (`M`, `m`) = (256, 256), and it survives: `k`=32 is ~7× worse
+than `k`=8 at matched settings, consistently at every mesh (ratio 14.1 / 16.1 / 15.6 / 18.0 at
+N=32/64/128/256, against 3.5 / 2.1 / 2.5 / 2.2 for `k`=8). So the `k`=32 degradation is real
+and about `k`, not an artefact of the (`M`, `m`) change — but the raw ratio table's `k`=32
+entry must still be read as measured under different settings.
+
+<!-- BEGIN GENERATED: matched_Mm -->
+<!-- END GENERATED: matched_Mm -->
+
+<!-- BEGIN GENERATED: jaccond_poisson2d -->
+<!-- END GENERATED: jaccond_poisson2d -->
 
 <!-- BEGIN GENERATED: ceiling_poisson2d -->
 <!-- END GENERATED: ceiling_poisson2d -->

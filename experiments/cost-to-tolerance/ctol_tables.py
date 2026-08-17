@@ -595,6 +595,11 @@ def build_blocks(data, pts):
                   if c.get("method") == "oracle_ceiling" and c.get("N") == N}
             if not cl:
                 continue
+            kb2, mb2 = d["config"]["k_big"], d["config"]["M_big"]
+            m4 = d["config"].get("mq_4m", 4 * mb2)
+            rows.append(["(M, m) measured at", N]
+                        + [f"({mb2},{min(m4,(N-2)**2)})" if k >= kb2
+                           else f"({d['config']['M']},{d['config']['m']})" for k in ks])
             rows.append(["ceiling", N] + [fmt(cl[k]["err_rel_l2"]) if k in cl else "--"
                                           for k in ks])
             for tau in d["config"]["taus"]:
@@ -618,6 +623,52 @@ def build_blocks(data, pts):
                            if k in cl else "--" for k in ks])
         B[f"ceiling_{pde}"] = (md_table(["quantity", "N"] + [f"k={k}" for k in ks], rows)
                                if rows else "_(no ceiling arm in this run)_")
+
+    # ---- k=32 at MATCHED (M, m): separating the k step from the (M, m) step -
+    # The promoted grid runs k=32 at (M=256, m=1024) while k in {2..24} run at
+    # (M=64, m=256), so the k=32 ROM/ceiling ratio in the table above confounds the
+    # latent dimension with BOTH a 4x change in test modes and a 4x change in
+    # quadrature size.  The fixed-k=8 isolator and the k=32 artefact arm are both at
+    # (M=256, m=256), so this table compares them at IDENTICAL (M, m).
+    rows = []
+    for pde, d in sorted(data.items()):
+        for N in d["config"]["ns"]:
+            cl = {c["k"]: c for c in d.get("supplementary", [])
+                  if c.get("method") == "oracle_ceiling" and c.get("N") == N}
+            tau_t = min(d["config"]["taus"])
+            for arm, k in (("supp_M256", 8), ("artefact_m_eq_M", 32)):
+                r = [x for x in pts if x["pde"] == pde and x.get("arm") == arm
+                     and x["method"] == "coord" and x["N"] == N and x["k"] == k
+                     and x["tau"] == tau_t]
+                if not r or k not in cl:
+                    continue
+                r = r[0]
+                c = cl[k]["err_rel_l2"]
+                rows.append([pde, N, k, r["M"], r["m"], fmt(r["err_rel_l2"]), fmt(c),
+                             fmt(r["err_rel_l2"] / c, ".1f") if c else "--",
+                             fmt(r.get("eq_rel_fit"), ".2e")])
+    B["matched_Mm"] = md_table(
+        ["pde", "N", "k", "M", "m", "ROM err", "ceiling", "ROM/ceiling", "EQ rel fit"],
+        rows) if rows else "_(no matched-(M,m) arms in this run)_"
+
+    # ---- decoder-Jacobian conditioning at the ceiling latent ----------------
+    for pde, d in sorted(data.items()):
+        ks = d["config"]["ks"]
+        rows = []
+        for N in d["config"]["ns"]:
+            cl = {c["k"]: c for c in d.get("supplementary", [])
+                  if c.get("method") == "oracle_ceiling" and c.get("N") == N}
+            if not cl or not any("jac_cond_median" in c for c in cl.values()):
+                continue
+            rows.append(["cond(J) median", N]
+                        + [fmt(cl[k].get("jac_cond_median"), ".2e") if k in cl else "--"
+                           for k in ks])
+            rows.append(["numerical rank / k", N]
+                        + [(f"{cl[k].get('jac_numerical_rank_median'):.0f}/{k}"
+                            if k in cl and cl[k].get("jac_numerical_rank_median")
+                            is not None else "--") for k in ks])
+        B[f"jaccond_{pde}"] = md_table(["quantity", "N"] + [f"k={k}" for k in ks], rows) \
+            if rows else "_(no Jacobian spectrum recorded in this run)_"
 
     # ---- POD projection floor (oracle bound on the POD arm) ----------------
     rows = []

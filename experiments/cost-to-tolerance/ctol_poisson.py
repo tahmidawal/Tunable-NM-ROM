@@ -379,7 +379,7 @@ def oracle_ceiling(dec, grid, Z_tr, U_int, tn, n_i, budget, nn_idx, chunk):
         return jnp.sqrt(ss)
 
     z_mean = jnp.asarray(Z_tr.mean(0))
-    rels, which = [], []
+    rels, which, conds, ranks, spectra = [], [], [], [], []
     for i in range(U_int.shape[0]):
         u = jnp.asarray(U_int[i].reshape(-1))
         best = None
@@ -388,10 +388,31 @@ def oracle_ceiling(dec, grid, Z_tr, U_int, tn, n_i, budget, nn_idx, chunk):
                                       z0, budget)
             rel = float(val) / tn[i]
             if best is None or rel < best[0]:
-                best = (rel, name)
+                best = (rel, name, z)
         rels.append(best[0]); which.append(best[1])
+        # DECODER-JACOBIAN SPECTRUM at the ceiling latent, essentially free: the
+        # chunked solve already accumulates H = J^T J, whose eigenvalues are the
+        # squared singular values of J.  A monotone ceiling says the decoder can
+        # REPRESENT the field at this k; it says nothing about whether the manifold
+        # parameterisation is well CONDITIONED there.  A checkpoint with
+        # near-degenerate or unused latent directions gives exactly the observed
+        # signature -- good ceiling, ill-conditioned Gauss-Newton, high ROM/ceiling
+        # ratio -- and that is a different cause from a defect in the weak-form solve.
+        H, _g, _v = HgV(best[2], u)
+        ev = np.sort(np.abs(np.asarray(np.linalg.eigvalsh(np.asarray(H)))))[::-1]
+        sv = np.sqrt(np.maximum(ev, 0.0))
+        smax = float(sv[0]) if sv.size else float("nan")
+        smin = float(sv[-1]) if sv.size else float("nan")
+        conds.append(smax / smin if smin > 0 else float("inf"))
+        ranks.append(int(np.sum(sv > sv[0] * 1e-10)) if sv.size else 0)
+        spectra.append([float(x) for x in sv])
+    med_spec = np.median(np.asarray(spectra), axis=0).tolist() if spectra else []
     return (float(np.mean(rels)), float(np.max(rels)),
-            {w: which.count(w) for w in set(which)})
+            {w: which.count(w) for w in set(which)},
+            dict(jac_cond_median=float(np.median(conds)),
+                 jac_cond_max=float(np.max(conds)),
+                 jac_numerical_rank_median=float(np.median(ranks)),
+                 k=int(len(med_spec)), jac_svals_median=med_spec))
 
 
 def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid, n_i):
@@ -597,19 +618,21 @@ def main():
             # normal equations.  Skips the POD basis and every ROM cell.
             for k in ks_used:
                 t0c = time.time()
-                cm, cx_, cinit = oracle_ceiling(
+                cm, cx_, cinit, jinfo = oracle_ceiling(
                     ck[k]["dec"], grid, ck[k]["Z_tr"], U_int, tn, n_i,
                     max(GN_ITERS, CEIL_BUDGET), nn_idx, CEIL_CHUNK)
                 report["supplementary"].append(dict(
                     pde="poisson2d", method="oracle_ceiling", N=n, k=k,
                     M=(M_BIG if k >= K_BIG else M_MODES), m=None, tau=None,
                     arm="ceiling", err_rel_l2=cm, err_rel_l2_max=cx_,
-                    init_used=cinit, budget=max(GN_ITERS, CEIL_BUDGET),
+                    init_used=cinit, budget=max(GN_ITERS, CEIL_BUDGET), **jinfo,
                     ceil_chunk=CEIL_CHUNK, n_sources=N_TEST, seed=SEED,
                     gpu=gpu_name, node=NODE, jax_backend=dev.platform,
                     commit=commit))
                 log(f"   ceiling  N={n:4d} k={k:2d}: {cm:.3e} (max {cx_:.3e}, "
-                    f"inits {cinit}) [{time.time()-t0c:.0f}s]")
+                    f"inits {cinit}, jac cond {jinfo['jac_cond_median']:.2e}, "
+                    f"rank {jinfo['jac_numerical_rank_median']:.0f}/{k}) "
+                    f"[{time.time()-t0c:.0f}s]")
                 save()
             continue
 
@@ -790,7 +813,7 @@ def main():
                         f"err {np.mean(errs):.3e} cond {np.linalg.cond(A_):.1e}")
                     save()
                 if DO_CEILING and method == "coord" and arm_tag == "primary":
-                    cm, cx_, cinit = oracle_ceiling(
+                    cm, cx_, cinit, jinfo = oracle_ceiling(
                         dec_k, grid, ck[k]["Z_tr"], U_int, tn, n_i,
                         max(GN_ITERS, CEIL_BUDGET), nn_idx, CEIL_CHUNK)
                     best_rom = min((r["err_rel_l2"] for r in report["rows"]
@@ -805,7 +828,7 @@ def main():
                         pde="poisson2d", method="oracle_ceiling", N=n, k=k, M=M,
                         m=int(len(wq)), tau=None, arm="ceiling",
                         err_rel_l2=cm, err_rel_l2_max=cx_, init_used=cinit,
-                        budget=max(GN_ITERS, CEIL_BUDGET),
+                        budget=max(GN_ITERS, CEIL_BUDGET), **jinfo,
                         rom_beat_ceiling=bool(best_rom < cm), best_rom_err=best_rom,
                         n_sources=N_TEST, seed=SEED, gpu=gpu_name, node=NODE,
                         jax_backend=dev.platform, commit=commit))

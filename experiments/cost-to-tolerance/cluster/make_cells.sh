@@ -170,6 +170,14 @@ elif [[ "$MODE" == "recover" ]]; then
       "$PGRID NS=512 CEILING_ONLY=1 CEIL_CHUNK=16384 DO_SUPP=0 POOL_CONTROL=0 CAP_CONTROL=0" \
       "\$PY -u ctol_poisson.py ../out/ctol_poisson_n512_ceiling.json")
   stage_poisson "$d"; seal "$d"
+  # ALL-MESH ceiling on ONE GPU, now also recording the decoder-Jacobian spectrum at
+  # the ceiling latent (free: the chunked solve already accumulates H = J^T J).  This
+  # supersedes the per-panel ceilings, which were measured on different GPUs and
+  # without the spectrum.
+  d=$(mk ctol_ceil_all 8 192G \
+      "$PGRID NS=32,64,128,256,512 CEILING_ONLY=1 CEIL_CHUNK=16384 DO_SUPP=0 POOL_CONTROL=0 CAP_CONTROL=0" \
+      "\$PY -u ctol_poisson.py ../out/ctol_poisson_ceiling_all.json")
+  stage_poisson "$d"; seal "$d"
 elif [[ "$MODE" == "consolidate" ]]; then
   CFG="$HERE/stage/consolidate_configs.json"
   [[ -f "$CFG" ]] || { echo "missing $CFG -- run ctol_pick_configs.py first" >&2; exit 1; }

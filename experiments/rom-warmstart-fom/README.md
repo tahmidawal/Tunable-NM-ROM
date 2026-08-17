@@ -67,16 +67,33 @@ baseline                                =  the SAME CG from a ZERO start
   This is the identical definition used by the sister `cost-to-tolerance` cell, so the two
   compose. A tolerance on `‖Au−f‖/‖f‖` is *unreachable*: at the weak-form solution that sits
   near 2e-1 while the field error is ~8e-3.
-  Ladder: `0.5, 1e-1, 1e-2, 1e-3, converged`.
+  Ladder: `0.5, 1e-1, 1e-2, 1e-3, 0`. The three middle values are the ones the sister
+  `cost-to-tolerance` cell also runs; `0.5` probes the very loose end and `0` the
+  reference solver's own stopping rules (reported as `ref. stops`, **not** as
+  "converged" — the reference LM may stop on budget or lambda saturation).
 
 - **`tau_FOM` ∈ {1e-6, 1e-8, 1e-10}**, on the relative discrete residual `‖Au−f‖_2/‖f‖_2`.
 
 - **One CG kernel for both arms.** `wsf_util.make_cg` is a jitted, iteration-counting CG in
   which `x0` and `tau` are *runtime arguments*. The warm-started arm and the zero-start arm
   therefore execute the same compiled code with the same stopping test; the only difference
-  is the value of `x0`. The testbed's own `jax.scipy.sparse.linalg.cg` cannot report an
-  iteration count, so it is retained as the **correctness reference** — every `N` asserts
-  that the counting CG lands on the same solution — rather than as the timed baseline.
+  is the value of `x0`. It is an **outer true-residual loop** around the textbook inner
+  recursion: the returned iterate provably satisfies `‖b−Ax‖/‖b‖ ≤ tau` on the *recomputed*
+  residual, not merely on the recursively updated one, because recursive-residual drift
+  depends on the trajectory and would otherwise make "FOM-exact to tolerance" an
+  initial-guess-dependent property. The testbed's own `jax.scipy.sparse.linalg.cg` cannot
+  report an iteration count, so it is retained as the **correctness reference** (checked at
+  every reported tolerance on several right-hand sides) and is additionally **timed with a
+  runtime `x0` for both arms** as a baseline sensitivity check, rather than being the timed
+  baseline itself.
+
+- **What "FOM-exact" is checked against.** The correctness gate is *reference-free*: every
+  row asserts that the delivered iterate's true relative residual is `≤ tau` in **both**
+  arms. The reported `err_final` (against a reference solution computed by CG at 1e-13) is a
+  secondary check, and at the tightest `tau` it is bounded below by the reference's own
+  accuracy — the achievable relative residual of the reference grows with `N` (measured
+  1.0e-13 at `N=128`, 5.7e-13 at `N=256`), an f64 floor of the FD operator, so the reference
+  is only required to be 10x tighter than the tightest reported tolerance.
 
 - **`N ∈ {32, 64, 128, 256, 512}`.** The coordinate decoder is meshfree, so the same `N=64`
   `K=8` hard-BC checkpoint is used at every `N` and the NNLS-EQ weights are **refit on each
@@ -107,7 +124,14 @@ third arm    = the SAME implicit chain warm-started from 2u_{n-1} − u_{n-2}
   step. Here the Newton loop exits on its tolerance test before that can happen, and the
   counting BiCGStab still detects underflow of `rho`, `rhat^T v` or `t^T t` and any
   non-finite iterate, freezes on the last good state, and **reports** the occurrence
-  (`bicgstab_breakdowns`, `newton_flags_nonzero`). Breakdowns are counted, never dropped.
+  (`bicgstab_breakdowns`, `newton_flags_nonzero`, `health_warning`). Breakdowns are counted,
+  never dropped. The solver also includes the **alpha half-step convergence test**: without
+  it, an exactly converged `s = r − alpha A p` gives `t·t = 0` and a naive implementation
+  declares a breakdown and discards a converged iterate.
+
+- **Solver-health gate.** A Burgers configuration is published only if every step of every
+  arm met the Newton tolerance with finite arithmetic; otherwise the job aborts. A cheap
+  *failed* warm solve must never be able to contribute a headline speedup.
 - **`N ∈ {32, 64, 128, 256}`**, EQ weights refit per `N`, variant `lspg:eq256:weak64` with
   the hyper-reduced (EQ-node) cold start — the reference cell's headline configuration.
 

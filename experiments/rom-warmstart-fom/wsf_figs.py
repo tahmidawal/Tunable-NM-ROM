@@ -49,7 +49,9 @@ def load():
 
 
 def taulab(t):
-    return "conv." if not t else f"{t:g}"
+    # matches SUMMARY_TABLES/README: rom_tau=0 DISABLES the objective test, so the
+    # reference LM's own rules stop it -- that is not the same as "converged"
+    return "ref." if not t else f"{t:g}"
 
 
 # --------------------------------------------------------------- Poisson headline
@@ -79,7 +81,7 @@ def fig_poisson_total_vs_tau(P, paths):
         ax.set_title(f"$\\tau_{{FOM}}$ = {ft:g}")
         st.clean(ax)
     axes[0].set_ylabel("total time (ms)")
-    axes[0].legend(ncol=2, loc="upper left", fontsize=7.5)
+    axes[0].legend(ncol=3, loc="lower left", fontsize=7.5)
     axes[-1].text(0.98, 0.03, "dashed = pure FOM (CG from zero)", transform=axes[-1].transAxes,
                   ha="right", va="bottom", fontsize=7.5, color=st.MUTED)
     fig.suptitle("Poisson-2D: hybrid total cost vs the ROM's own stopping tolerance",

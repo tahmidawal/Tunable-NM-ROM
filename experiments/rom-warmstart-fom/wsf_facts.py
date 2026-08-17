@@ -344,6 +344,28 @@ def build(runs=None):
                     f[f"oc_p_new_speed_{k}"] = g(orow["speedup_solve_only"] / facn, ".2f")
                     f[f"oc_p_new_e2e_{k}"] = g(orow["speedup_end_to_end"] / facn, ".2f")
 
+    # How much does the multiplier actually VARY with N?  Claiming "N-dependent, never a
+    # scalar" is only warranted where the spread is real; on one PDE it is not.
+    for tagp, C, kind in (("p", Pc, "p"), ("b", Bc, "b")):
+        if not C:
+            continue
+        ms = []
+        for r in C:
+            if r["fom_tau"] != min(x["fom_tau"] for x in C):
+                continue
+            if kind == "p":
+                tn, tb = r.get("t_fom_baseline_native_ms"), r.get("t_fom_testbed_ms")
+                m = (tn / tb) if (tn and tb) else None
+            else:
+                fac = r.get("overconvergence_factor")
+                m = (1.0 / fac) if fac else None
+            if m:
+                ms.append(m)
+        if ms:
+            f[f"oc_{tagp}_mult_min"] = g(min(ms), ".3f")
+            f[f"oc_{tagp}_mult_max"] = g(max(ms), ".3f")
+            f[f"oc_{tagp}_mult_spread"] = g(100.0 * (max(ms) / min(ms) - 1.0), ".3g")
+
     # Does ANY rung in this cell's ladder reach what the archived baselines achieved?
     for tagp, C, key in (("p", Pc, "final_rel_residual_baseline"),
                          ("b", Bc, None)):

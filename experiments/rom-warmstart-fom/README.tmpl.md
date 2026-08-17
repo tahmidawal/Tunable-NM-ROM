@@ -398,8 +398,8 @@ in play is not pedantry: applying the wrong one over-corrects.
 2. **Engineering.** *Did the baseline do more work than a user of the solution would ask
    for?* Compare against the tolerance a deployment would actually request (1e-6, 1e-8).
 
-**Every factor in this section is the ENGINEERING one ({{oc_p_factor_kind}} on Poisson,
-{{oc_b_factor_kind}} on Burgers).** This cell's ladder stops at `tau = 1e-10`, and the
+**Every factor in this section is the ENGINEERING one** — on both PDEs, verified from the
+data rather than assumed. This cell's ladder stops at `tau = 1e-10`, and the
 archived baselines are *tighter than that at every mesh* — on Poisson the ladder's tightest
 rung lands {{oc_p_looser_1em10_N256}}x looser than the archived solve at `N = 256`, and on
 Burgers about {{oc_b_looser_1em10_N256}}x looser. So no rung here is accuracy-matched
@@ -429,7 +429,7 @@ A Newton solve that simply stops at a tolerance needs far fewer iterations for t
 accuracy class:
 
 | N | fixed-8 rollout (ms) | Newton steps | achieved residual | at `tau=1e-10` (ms) | Newton steps | rung achieves | engineering factor |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | 32 | {{oc_b_t_fixed_N32}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N32}} | {{oc_b_t_tol_1em10_N32}} | {{oc_b_newton_tol_1em10_N32}} | {{oc_b_ladder_ach_1em10_N32}} | {{oc_b_factor_1em10_N32}}x |
 | 64 | {{oc_b_t_fixed_N64}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N64}} | {{oc_b_t_tol_1em10_N64}} | {{oc_b_newton_tol_1em10_N64}} | {{oc_b_ladder_ach_1em10_N64}} | {{oc_b_factor_1em10_N64}}x |
 | 128 | {{oc_b_t_fixed_N128}} | {{oc_b_newton_fixed}} | {{oc_b_resid_N128}} | {{oc_b_t_tol_1em10_N128}} | {{oc_b_newton_tol_1em10_N128}} | {{oc_b_ladder_ach_1em10_N128}} | {{oc_b_factor_1em10_N128}}x |
@@ -490,9 +490,10 @@ and `HANDOFF.md` all quote — the 8.0x end-to-end at `N = 256` and the
 0.72x -> 7.96x N-ladder — become {{oc_b_new_e2e_1em10_N32}}x -> {{oc_b_new_e2e_1em10_N256}}x
 once the denominator is a converged solver rather than a fixed-8 one.**
 
-The multiplier is **N-dependent**: it is {{oc_b_mult_1em10_N32}} at `N = 32` and
-{{oc_b_mult_1em10_N256}} at `N = 256`. It cannot be applied as a single constant, and the
-N-ladder's *shape* — the claim that the advantage grows with mesh — changes with it.
+The Burgers multiplier is genuinely **N-dependent**: it ranges {{oc_b_mult_min}} to
+{{oc_b_mult_max}} across the ladder, a {{oc_b_mult_spread}}% spread. Applying a single
+constant would misstate the ladder's *shape* — the claim that the advantage grows with mesh —
+not just its level.
 
 ### Poisson: NOT a clean negative — the same problem, from a fixed tolerance
 
@@ -511,7 +512,7 @@ implementation". That mixed ratio is recorded as `oc_p_factor_mixed_*` and is **
 quoted here.)
 
 | N | jax.scipy CG at `CG_TOL` (ms) | iterations | achieved residual | jax.scipy CG at `tau=1e-10` (ms) | iterations | rung achieves | engineering factor |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | 32 | {{oc_p_t_fixed_N32}} | {{oc_p_iters_fixed_N32}} | {{oc_p_resid_N32}} | {{oc_p_t_tol_native_1em10_N32}} | {{oc_p_iters_tol_1em10_N32}} | {{oc_p_ladder_ach_1em10_N32}} | {{oc_p_factor_1em10_N32}}x |
 | 64 | {{oc_p_t_fixed_N64}} | {{oc_p_iters_fixed_N64}} | {{oc_p_resid_N64}} | {{oc_p_t_tol_native_1em10_N64}} | {{oc_p_iters_tol_1em10_N64}} | {{oc_p_ladder_ach_1em10_N64}} | {{oc_p_factor_1em10_N64}}x |
 | 128 | {{oc_p_t_fixed_N128}} | {{oc_p_iters_fixed_N128}} | {{oc_p_resid_N128}} | {{oc_p_t_tol_native_1em10_N128}} | {{oc_p_iters_tol_1em10_N128}} | {{oc_p_ladder_ach_1em10_N128}} | {{oc_p_factor_1em10_N128}}x |
@@ -553,8 +554,12 @@ Applying the multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
    tolerance named. `tau = 1e-10` is the like-for-like choice against what the old baselines
    actually reached; `1e-8` is the more defensible engineering choice and makes the
    correction larger still.
-2. Do **not** apply a single scalar — the multiplier depends on `N`, and it changes the slope
-   of the N-ladders, not just their level.
+2. On **Burgers**, do not apply a single scalar: the multiplier ranges {{oc_b_mult_min}} to
+   {{oc_b_mult_max}} ({{oc_b_mult_spread}}% spread) and changes the ladder's slope as well as
+   its level. On **Poisson** the multiplier is close to constant
+   ({{oc_p_mult_min}}–{{oc_p_mult_max}}, {{oc_p_mult_spread}}% spread), so a single scalar
+   there is a fair approximation — the blanket "never use a scalar" rule holds for Burgers,
+   not for Poisson, and it is worth saying so rather than over-warning.
 2b. Use the **time** multiplier where the anchoring check holds (it does here, to a few
    percent), since it carries the fixed per-solve overhead the archived timing also paid. Fall
    back to the **iteration** multiplier only when hardware comparability cannot be shown, and

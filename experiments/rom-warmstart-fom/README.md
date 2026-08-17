@@ -348,8 +348,8 @@ buy, not about this ROM.
 ### Caveats
 
 - **Measured, not assumed, and both stated risks landed.** Risk (a) — the ROM costs more than
-  a small-`N` FOM — is why the crossover sits at `N = none in the ladder`. Risk (b) — the
-  Burgers FOM already warm-starts — is why that arm loses.
+  a small-`N` FOM — is why the hybrid loses worst at coarse meshes and why the crossover is
+  none in the ladder. Risk (b) — the Burgers FOM already warm-starts — is why that arm loses.
 - **`dt` is not varied.** The Burgers testbed hard-codes `dt = 0.005`, where the previous
   state is a very good guess. The ROM's advantage should grow with `dt`, but changing `dt`
   changes the FOM, the training snapshots and the ROM together; that is a different
@@ -369,11 +369,14 @@ buy, not about this ROM.
   landmine did not fire, and had it fired it would have been reported, not dropped.
 - **The best-per-`N` hybrid is post-selected** — it minimises over the ROM tolerance ladder
   using the same timing samples it reports. The full ladder is the primary table (P1).
-- **Panel/consolidated agreement**: 261 hardware-independent quantities
-  compared between the fanned-out per-mesh jobs and the single-GPU consolidation runs,
-  1 disagreements.
-- **`N = 1024` was not run.** The measured crossover at `N = none in the ladder` is the answer
-  to the question as posed (`N` up to 512); an extrapolated break-even is given in
+- **Panel/consolidated agreement is complete, not partial**: all eleven jobs finished, so
+  261 hardware-independent quantities were compared between the fanned-out
+  per-mesh jobs and the single-GPU consolidation runs. 1 disagreed, the
+  largest by 0.0625 (iters_from_rom at (512, 0.5, 1e-10)) — one CG iteration on
+  one of sixteen test cases, i.e. GPU reduction-order non-determinism, not a discrepancy of
+  method.
+- **`N = 1024` was not run.** The question as posed covers `N` up to 512, and over that range
+  the answer is unambiguous: none in the ladder. An extrapolated break-even mesh is given in
   `SUMMARY_TABLES.md` P4b and is an extrapolation, not a measurement.
 
 ## CORRECTION TO THE RECORD: both FOM baselines in this project are over-converged

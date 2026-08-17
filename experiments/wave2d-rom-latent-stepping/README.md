@@ -103,9 +103,12 @@ The u-only Newmark FOM at the ROM's own `dt`, measured against the 80-substep FO
 | 40 | 5.0e-4 | 2000 | 2.32e-4 | 9.17e-4 |
 | 80 | 2.5e-4 | 4000 | 2.78e-8 | 8.08e-8 |
 
-Second order asymptotically (ratio 2.5 -> 3.0 -> 3.9 -> 4.0 as `dt` halves).  `RS=20` was
-chosen for the primary cells: 1.16e-3 is roughly 10x below the manifold floor, so the ROM's
-own time discretisation cannot explain any of the errors below.  Every ROM number is
+Second order asymptotically (ratio 2.5 -> 3.0 -> 3.9 -> 4.0 as `dt` halves).  This table is a
+6-trajectory sample and the spread is wide (max 4x mean); the Stage-2 cells recompute the
+same quantity on all **16 test trajectories** and report `RS=20` -> **2.39e-3**, `RS=8` ->
+1.39e-2, `RS=40` -> 4.80e-4, which are the numbers used in the comparisons.  `RS=20` was
+chosen for the primary cells: 2.4e-3 is ~70x below the ROM errors and ~30x below the
+manifold floor, so the ROM's own time discretisation cannot explain any of the errors below.  Every ROM number is
 nevertheless reported against **both** the 80-substep FOM and the same-`dt` Newmark FOM
 (they agree to 4 digits everywhere, confirming this).
 
@@ -152,11 +155,12 @@ converges in ~5 Jacobian evaluations per step, cold starts in ~4.
 | | K=4 | K=8 | K=16 |
 |---|---|---|---|
 | auto-decoder TRAIN recon at learned latents | 1.31e-1 | 7.03e-2 | 5.99e-2 |
-| **ORACLE held-out inferred latents** (per snapshot, budget 60) | 3.11e-1 | 1.72e-1 | (see tables) |
-| IC fit (cold start from the known `u0`) | 1.86e-1 | 1.13e-1 | |
+| **ORACLE held-out inferred latents** (per snapshot, budget 60) | 3.11e-1 | 1.72e-1 | 1.11e-1 |
+| IC fit (cold start from the known `u0`) | 1.86e-1 | 1.13e-1 | 7.52e-2 |
 | ROM `lspg:eq256:weak64` (the recipe) | 1.02e0 | 8.78e-1 | 6.80e-1 |
-| **ROM / its own oracle floor** | **3.3x** | **5.1x** | |
-| kinematic energy `E_T/E_0` | 0.27 | 0.27 | 0.61 |
+| best coordinate variant at that K | 9.45e-1 (`full:weakl64`) | 8.41e-1 (`full:weakl64`) | 5.92e-1 (`full:weakl64`) |
+| **ROM / its own oracle floor** | **3.3x** | **5.1x** | **6.2x** |
+| kinematic energy `E_T/E_0` (`eq256:weak64`) | 0.27 | 0.27 | 0.40 |
 | POD-LSPG k=6 / 8 / 16 / 32 / 64 (same solver) | 4.29e-1 / 3.42e-1 / 2.19e-1 / 1.41e-1 / **8.38e-2** | same | same |
 | POD projection floors k=6 / 8 / 16 / 32 / 64 (test) | 4.28e-1 / 3.42e-1 / 2.17e-1 / 1.38e-1 / 8.20e-2 | | |
 | **POD-LSPG / its own projection floor** | **1.002 / 1.002 / 1.006 / 1.020 / 1.022** | | |
@@ -175,6 +179,16 @@ not energy-consistent.  The coordinate ROM dissipates 61–84% of the energy and
 (K=4) / 5.1x (K=8) above **its own** oracle floor.  The manifold's better approximation power
 at matched dimension (K=8 oracle floor 1.72e-1 vs POD-8 3.42e-1, 2.0x better) is entirely
 destroyed by the stepping, and on this problem the *linear* ROM wins outright.
+
+**The gap widens as the manifold improves.**  Tripling the latent dimension from K=4 to K=16
+improves the oracle floor 2.8x (3.11e-1 -> 1.11e-1) but the ROM only 1.5x (1.02 -> 6.80e-1),
+so the ROM/floor ratio *grows* 3.3x -> 5.1x -> 6.2x.  The ROM error is not manifold-limited;
+it is limited by the amplification mechanism below, and a better manifold does not help much.
+(One suggestive exception: the `lam^-1/2` energy-weighted weak form `weakl64` is the best
+coordinate arm at every K -- 9.45e-1 / 8.41e-1 / 5.92e-1 -- and it is the only arm whose
+energy *grows* rather than decays (`E_T/E_0` = 0.58 / 1.17 / 6.26).  That the best arm is the
+one that fights the numerical dissipation is a hint that an explicitly energy- or
+symplectic-constrained latent step is the thing to try next; it is not tested here.)
 
 This is the mirror image of the Burgers result, where the same solver, same residual and same
 collocation gave the coordinate manifold a 12.6x advantage over POD at matched dimension.

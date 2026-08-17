@@ -68,7 +68,8 @@ def load(runs):
             print(f"  (no {pat} under {runs})", file=sys.stderr)
             continue
         d = dict(config=None, panels=[], rows=[], fom=[], supplementary=[],
-                 consolidated_rows=[], consolidated_fom=[], files=[], complete=True)
+                 consolidated_rows=[], consolidated_fom=[], fom_baseline=[],
+                 files=[], complete=True)
         ks, ns, taus = set(), set(), set()
         for f in files:
             j = json.load(open(f))
@@ -83,6 +84,8 @@ def load(runs):
             for fo in j.get("fom", []):
                 (d["consolidated_fom"] if consolidated else d["fom"]).append(fo)
             d["supplementary"] += j.get("supplementary", [])
+            if not consolidated:
+                d["fom_baseline"] += j.get("fom_baseline", [])
             if not consolidated:
                 ks |= set(cfg["ks"]); ns |= set(cfg.get("ns_measured") or cfg["ns"])
                 taus |= set(cfg["taus"])

@@ -278,27 +278,38 @@ Nearest init, `weak_a1_M64`, mean rel-L2 over the 16 held-out sources:
    perfect, the manifold is not big enough).
 2. **POD never catches it in range.** With the *same* objective, the *same* test
    modes and the *same* training snapshots, POD at k=8 is 1.77e-1 — **23x** the
-   coordinate ROM — and POD at k=64 (2.54e-2) is still 3.3x worse than the coordinate
-   ROM at k=8.  Extrapolating the POD line (≈ k^-1.2 here) it would need k ≈ 250 to
-   reach 7.7e-3, i.e. **more than 30x the latent dimension** for the same accuracy.
-   There is no crossover inside any k a ROM would use.
-3. **POD sits exactly on its own projection floor** (Galerkin, the weak objective and
-   the projection agree to <1% at every k ≤ 48): the linear-subspace ceiling, not the
-   solver, is what limits it.  The one exception is k=64 with M′=64 modes, where the
-   Petrov–Galerkin system is square (4.89e-2 vs a 2.54e-2 floor) — flagged in the JSON
-   as `square_or_underdetermined` and excluded from the figure.
-4. **Hyper-reduction costs little across the whole ladder**: NNLS-EQ with m = 4M = 256
-   meshfree points is within 17% of the full grid at every k ≤ 24 (8.98e-3 vs 7.65e-3
-   at k=8), and the meshfree pool matches the grid nodes.
-5. **The FD-LSPG control gets *worse* with k** (4.6e-2 at k=8, 1.9e-1 at k=32): more
-   latent directions give the FD residual more room to trade grid-scale error against
-   the solution, which is the amplification mechanism of round 1 seen from a new angle.
-6. **Init independence is a K=8 property, not a universal one.** From the *mean*
-   latent the weak objective still lands on the nearest-init number at k=4, 8 and 16,
-   but at k=6, 12, 24 and 32 one or two of the sixteen sources fall into a second basin
-   (means 6.7e-2, 4.9e-2, 1.3e-2, 5.1e-2 against medians 5–9e-3).  Higher-dimensional
-   latent spaces have more basins; the nearest-source init (legitimate online
-   information — the ROM is given the source) removes them.
+   coordinate ROM.  The largest k at which that weak objective is still well-posed is
+   k=48 (M′=64 test modes; at k=64 the Petrov–Galerkin system is square, 4.89e-2,
+   flagged `square_or_underdetermined` in the JSON and excluded from every figure), and
+   there POD is 3.54e-2 — still **4.6x** worse than the coordinate ROM at k=8.  POD's
+   *projection floor*, the best any linear subspace of that size can do, reaches 2.54e-2
+   at k=64: still 3.3x above the coordinate ROM at k=8.  A log-log fit of that projection
+   floor over the measured k = 8…64 gives ≈ k^−0.94, which would need **k ≈ 240** to reach
+   7.7e-3 — an extrapolation ~4x beyond the measured range, quoted as such.  There is no
+   crossover inside any k a ROM would use.
+3. **POD sits on its own projection floor** — Galerkin, the weak objective and the
+   projection agree to within 2% at every k ≤ 48 (worst case 1.93%, at k=48) — so the
+   linear-subspace ceiling, not the solver, is what limits it.
+4. **Hyper-reduction costs little, but not uniformly little**: NNLS-EQ with m = 4M = 256
+   meshfree points is within 17% of the full grid for k ≤ 12 (8.98e-3 vs 7.65e-3 at k=8)
+   and degrades to 34% at k=16 and 24% at k=24 — a bigger latent space needs more
+   quadrature — while the meshfree pool matches grid nodes at every k.
+5. **The FD-LSPG control never becomes competitive, and its mean degrades with k**
+   (4.6e-2 at k=8, 1.9e-1 at k=32) — but that mean is tail-driven: at k=32 its median is
+   2.71e-2 and its maximum 1.48, so its median is actually *better* than its k=8 median
+   (3.85e-2).  What is robust is that the FD residual stays 5–7x above the weak form at
+   every k in the mean, and that its LM hits the 60-attempt budget far more often (12/16
+   sources at k=32 against 5/16 for the weak form).  The amplification *mechanism* was
+   measured in round 1, not here.
+6. **Init independence is not universal.** From the *mean* latent the weak objective lands
+   within 1% of the nearest-init number at k=8 and k=16, is 10% off at k=4 (1.72e-2 vs
+   1.57e-2), and at k=2, 6, 12, 24 and 32 one or two of the sixteen sources fall into a
+   second basin (means 4.9e-1, 6.7e-2, 4.9e-2, 1.3e-2, 5.1e-2 against medians 5–9e-3 for
+   k ≥ 6).  Higher-dimensional latent spaces have more basins; the nearest-source init
+   (legitimate online information — the ROM is given the source) removes them.  **Every
+   accuracy number in this section is the nearest-init one**, and every cost number in the
+   two timing sections below is the mean-init, single-source protocol of the timing
+   cells — the two are never mixed inside a claim.
 
 ### Multi-seed (K=8, three training seeds)
 
@@ -331,28 +342,39 @@ finite-budget inferred-latent floor is 7.11e-3.  Figure: `followup/figs/poisson_
 | NNLS-EQ, meshfree pool | 5.23e-2 | 1.92e-2 | 8.98e-3 | 7.84e-3 | 7.80e-3 | — |
 | NNLS relative fit residual (grid / meshfree) | 1.4e-1 / 1.2e-1 | 1.6e-2 / 1.7e-2 | 2.4e-3 / 2.6e-3 | 2.4e-4 / 2.7e-4 | 1.6e-5 / 2.4e-5 | 0 |
 
-**The NNLS fit residual is a usable a-priori diagnostic**: it falls five orders of magnitude
-across the ladder and the ROM error follows it, saturating at the full-grid value exactly
-where the fit residual drops below ~1e-4 (m=512, 13% of the grid).  m = 4M = 256 costs 13%
-accuracy for a 15x reduction in quadrature points; m = 8M = 512 costs nothing measurable.
-The meshfree candidate pool is indistinguishable from grid nodes at every m — the online
-ROM never touches the mesh.
+**The NNLS fit residual tracks the ROM error**: it falls 3.9 orders of magnitude across the
+ladder (grid 1.4e-1 → 1.6e-5, meshfree 1.2e-1 → 2.4e-5) and the ROM error saturates at the
+full-grid value where the fit residual reaches a few times 1e-4 (m=512: 2.4e-4 grid,
+2.7e-4 meshfree — 13% of the grid).  m = 4M = 256 costs 13% accuracy for a 15x reduction in
+quadrature points; m = 8M = 512 costs nothing measurable.  The meshfree candidate pool is
+indistinguishable from grid nodes at every m — the online ROM never touches the mesh.
+The correlation is established on this one m ladder, at one k and one M; treat it as a
+plausible offline screen, not as a validated predictor for a new decoder or a new M.
 
 | M (requested) | 16 | 32 | 64 | 128 | 256 |
 |---|---|---|---|---|---|
-| modes actually retained M′ | 17 | 32 | 64 | 129 | 256 |
+| modes retained M′ (grid, meshfree) | 17, 17 | 32, 33 | 64, 64 | 129, 129 | 257, 257 |
 | m = 4M | 64 | 128 | 256 | 512 | 1024 |
-| full grid | 1.49e-2 | 9.53e-3 | 7.65e-3 | 7.24e-3 | 7.06e-3 |
-| NNLS-EQ, grid, m=4M | 3.03e-2 | 1.34e-2 | 8.66e-3 | 7.33e-3 | 7.07e-3 |
-| NNLS-EQ, meshfree, m=4M | 3.79e-2 | 1.44e-2 | 8.98e-3 | 7.40e-3 | 7.18e-3 |
+| full grid | 1.49e-2 | 9.53e-3 | 7.65e-3 | 7.17e-3 | 7.13e-3 |
+| NNLS-EQ, grid, m=4M | 3.03e-2 | 1.34e-2 | 8.66e-3 | 7.28e-3 | 7.13e-3 |
+| NNLS-EQ, meshfree, m=4M | 3.79e-2 | 1.44e-2 | 8.98e-3 | 7.42e-3 | 7.25e-3 |
 | ms per solve, full grid | 20.1 | 45.3 | 35.6 | 38.1 | 47.4 |
 | ms per solve, EQ m=4M (meshfree) | 6.7 | 14.8 | 11.5 | 16.6 | 23.9 |
 
-More test modes monotonically help and monotonically cost: M=16 is genuinely
-under-resolved (1.5e-2 even on the full grid), M=64 is within 8% of M=256, and M=256 sits
-on the inferred-latent floor (7.06e-3 vs 7.11e-3).  The `m ≈ 4M` rule holds across the
-whole range: at every M the EQ number is within 5% of that M's full-grid number once
-M ≥ 32, at 2–3x lower cost per solve.
+(Accuracy rows: nearest init, 16 sources, from the `pM_M*` cells.  Cost rows: the `pt_m`
+cell, mean init, timed on source 0.  M′ differs between the on-grid arm, which uses the
+discrete FD eigenvalues, and the meshfree arm, which uses the continuum ones, because the
+two have different degeneracy patterns.)
+
+More test modes help monotonically: M=16 is genuinely under-resolved (1.49e-2 even on the
+full grid), M=64 is within 7% of M=256, and M=256 sits on the inferred-latent floor
+(7.13e-3 vs 7.11e-3).  **The `m ≈ 4M` rule is not uniform**: the EQ arms are 41%/51%
+(grid/meshfree) above the full grid at M=32 and 13%/17% at M=64, and only reach the 2–4%
+agreement one would want from M=128 on.  The cost of the full-grid arm is *not* monotone in
+M either (20.1, 45.3, 35.6, 38.1, 47.4 ms) — at M=16 the whole solve is short enough that
+compilation-independent noise and iteration-count differences dominate — whereas the EQ arm
+is monotone (6.7 → 23.9 ms) because its work is O(m) = O(4M) by construction and is 2–3x
+below the full grid at every M.
 
 ### Online cost vs N — the latent solve does not see the mesh
 
@@ -371,9 +393,11 @@ the EQ quadrature is refit.  Figure: `followup/figs/poisson_cost_vs_N.png`.
 | 512 | 260100 | 96.01 ms | 19.71 ms | 27.8 | 0.597 | 0.19 ms | 7.04 ms | **4.9x** | **3.6x** | 8.86e-3 |
 
 The latent solve is **19.71–19.98 ms across a 289x range of degrees of freedom** (±0.7%),
-with the same 27.8 iterations and the same 0.60 ms per iteration, while the FOM grows 17x;
-the ROM error is flat too (8.86e-3 from N=64 up).  The crossover is at N ≈ 180
-(n ≈ 3·10⁴ DOF).
+with the same 0.60 ms per iteration, while the FOM grows 17x; the ROM error is flat too
+(8.94e-3 at N=64, then 8.86e-3 from N=128 on).  The crossover is at N ≈ 180 (n ≈ 3·10⁴
+DOF).  Protocol note: `iters` is the 16-source mean, while `ms/iteration` is the timed
+source's own solve divided by *its* iteration count (source 0, mean init — 33 iterations at
+N=32 against the 27.8 mean); the accuracy column is the 16-source mean.
 
 Two honest caveats, both visible in the table:
 
@@ -381,8 +405,8 @@ Two honest caveats, both visible in the table:
   rebuilds its (M′ × n_i²) continuum-mode table on every call.  Timing that as "online"
   charges O(M′n) *sine evaluations* per query to the online path — 508 ms at N=512, which
   swamped the 19.7 ms solve and made the end-to-end speedup read 0.2x.  The mode table is a
-  per-mesh constant, so `fu_eq.weak_source_projector` builds it offline (0.9 ms at N=32 …
-  1.0 s at N=512, reported separately in the JSON) and the online cost is the single matvec
+  per-mesh constant, so `fu_eq.weak_source_projector` builds it offline (2.5 ms at N=32 …
+  0.51 s at N=512, reported separately in the JSON) and the online cost is the single matvec
   above, verified equal to `pro_common.weak_source_term` to 1e-17 absolute in every row.
   **The first `pt_n` run used the unsplit version and is not what is tabulated here**; the
   table is job 2482319, the rerun.
@@ -407,11 +431,14 @@ The POD ROM is linear, so its exact online solve is one precomputed pseudo-inver
 | POD online solve | 52 µs | 52 µs | 53 µs | 51 µs | 54 µs | 51 µs | 52 µs | 73 µs |
 
 Cost grows mildly and smoothly with k — 2.1x in per-iteration time and 1.7x in iteration
-count from k=2 to k=32 — so the accuracy gained between k=4 and k=8 (2x) is bought at
-2.7x the solve time, and nothing beyond k=8 pays for itself.  The POD solve is a single
-small matvec, dispatch-bound at ~50 µs; that is a floor on the measurement, not a property
-of the method.  (The error column of this cell uses the *mean* init and is a cross-check
-only; the accuracy statistics are the nearest-init `pk_K*` numbers above.)
+count from k=2 to k=32 — so the 2x accuracy gained between k=4 and k=8 costs 2.7x the solve
+time.  Beyond k=8 the trade stays roughly flat rather than turning bad: k=16 buys another
+1.5x in accuracy (7.65e-3 → 5.22e-3, nearest init) for 0.8x the solve time of k=8 in this
+cell (15.9 vs 20.2 ms — the iteration count rises but the per-iteration cost and the
+per-source variation swamp it at these sizes).  Two protocols meet here and must not be
+blended: the accuracy figures are nearest-init means over 16 sources (`pk_K*`), the times
+are mean-init, source-0 medians (`pt_k`).  The POD solve is a single small matvec,
+dispatch-bound at ~50 µs; that is a floor on the measurement, not a property of the method.
 
 ### Complexity ladder — the manifold's advantage is a property of the DATA, not the method
 
@@ -428,33 +455,45 @@ held-out sources.  Figure: `followup/figs/poisson_complexity_ladder.png`.
 | NB=2 (intrinsic 8) | 1.52e-1 | 1.10e-1 | 5.05e-2 | 2.81e-2 | 1.50e-1 | 3.89e-2 | **1.4x** |
 | NB=3 (intrinsic 12) | 1.79e-1 | 1.06e-1 | 5.24e-2 | 2.65e-2 | 1.13e-1 | 2.67e-2 | **1.1x** |
 
-**The answer to the question is: no, and the reason is generalization, not the ROM.**  At
-NB=1 the coordinate manifold's knee sits at the intrinsic dimension and it beats POD by
-23x.  At NB=2 and NB=3 it does not saturate anywhere below k=32 and its advantage over POD
-collapses to 1.1–1.4x.  The ROM is *not* at fault: at every (NB, k) it sits on its own
-finite-budget inferred-latent floor (NB=2, k=8: ROM 1.096e-1 vs oracle 1.092e-1; NB=3,
-k=16: 5.24e-2 vs 5.16e-2), and the FD-LSPG control stays 3–6x worse everywhere, so the
-objective story of round 1 holds at every complexity.  What degrades is the *decoder's
-held-out quality*: its training reconstruction only worsens from 7.0e-3 to 1.4e-2 between
-NB=1 and NB=2 at k=8, but its held-out inferred-latent floor worsens from 7.1e-3 to
-1.09e-1 — a 15x train/test gap.  With 512 training sources, 512^(1/4) ≈ 4.8 samples per
-parameter covers a 4-dimensional family and 512^(1/12) ≈ 1.7 does not cover a
-12-dimensional one.
+**The answer to the question, at this training-set size and budget, is: no — and what
+changes is the decoder, not the ROM.**  At NB=1 the coordinate manifold's knee sits at the
+intrinsic dimension and it beats POD by 23x.  At NB=2 and NB=3 it does not saturate anywhere
+below k=32 and its advantage over POD collapses to 1.1–1.4x.  The ROM machinery is not at
+fault: it stays close to its own finite-budget inferred-latent floor at every (NB, k) —
+ratio 1.00–1.16 for k ≤ 16 (NB=2, k=8: 1.096e-1 vs 1.092e-1; NB=3, k=16: 5.24e-2 vs
+5.16e-2) and 1.2–1.6 at k=32, where the LM increasingly ends on its budget (14–15 of 16
+sources at NB=3, k=32) — and the FD-LSPG control stays worse everywhere, by 1.5x to 35x
+depending on (NB, k), so round 1's objective story holds at every complexity.
+
+What degrades is the decoder's **held-out** quality.  At k=8 its training reconstruction
+worsens only from 7.0e-3 (NB=1) to 1.4e-2 (NB=2) — a factor 2 — while its held-out
+inferred-latent floor worsens from 7.1e-3 to 1.09e-1, a factor **15.4**; equivalently the
+within-arm test/train ratio goes from 1.01 at NB=1 to **7.9** at NB=2.  With 512 training
+sources, 512^(1/4) ≈ 4.8 samples per parameter covers a 4-dimensional family and
+512^(1/12) ≈ 1.7 does not cover a 12-dimensional one.
 
 The practical statement is therefore: **the nonlinear manifold buys an order of magnitude
-in k when the training set actually covers the family's intrinsic dimension, and nothing
-when it does not** — and the diagnostic that tells you which regime you are in is the gap
-between the decoder's training reconstruction and its held-out inferred-latent floor, both
-of which are computable offline without ever running the ROM.  Whether more training
-sources or a longer budget restores the NB=2/3 advantage is a separate experiment (not
-run): only the sample count was held fixed here, so this is a statement about *this*
-budget, not about the method's asymptotics.
+in k when the training set covers the family's intrinsic dimension, and little when it does
+not** — and a diagnostic that separates the two regimes is the gap between the decoder's
+training reconstruction and its held-out inferred-latent floor, both computable offline
+without ever running the ROM.  This is a hypothesis *consistent with* the data, not an
+isolated cause: sample count, model capacity and optimisation budget were all held fixed
+together, so whether more sources, a bigger net or a longer budget restores the NB=2/3
+advantage is a separate experiment (not run).  The "knee at the intrinsic dimension"
+statement for NB=1 is likewise a description of one ladder, not a measured causal law.
 
 ### Caveats
 
-- Single test set of 16 held-out sources; means carry heavy tails (medians are in the
-  JSONs and in `FOLLOWUP_TABLES.md`).  The k-ladder means from the *mean* init are
-  outlier-dominated at k=6, 12, 24 and 32 — see the init-independence note above.
+- Single test set of 16 held-out sources; means carry heavy tails.  Medians are printed
+  beside every mean in `followup/FOLLOWUP_TABLES.md` and the per-sample arrays are in the
+  JSONs.  The k-ladder means from the *mean* init are outlier-dominated at k=6, 12, 24 and
+  32 — see the init-independence note above.
+- Solves that end on the LM budget rather than converging are **included** in every mean
+  (nothing is dropped); their counts per cell are printed in `FOLLOWUP_TABLES.md`.  They are
+  rare at k ≤ 16 (0–2 of 16) and common at k=32 (5–10 of 16, and 12 of 16 for the FD
+  control), which is part of why the k=32 means are noisy.
+- "Reproducible to 3.6%" is the sample coefficient of variation of three training seeds on
+  one fixed test set, not a confidence interval.
 - The multi-seed arm varies training randomness only, and its cells were not pinned to one
   GPU model; that is sound because only *errors* are compared there (f64, hardware
   independent).  No timing is taken from those cells.

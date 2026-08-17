@@ -97,7 +97,12 @@ def tab_kladder(D, out):
     pod = D["pod"]
     prow = {r["k"]: r for r in pod["rows"]} if pod else {}
     out.append("### k ladder — coordinate ROM vs POD at the same k "
-               "(N=64, hard-BC, weak_a1_M64, NNLS-EQ grid m=256, nearest init)\n")
+               "(N=64, hard-BC, weak_a1_M64, NNLS-EQ m=256)\n")
+    out.append("ACCURACY protocol: nearest init, mean rel-L2 over the 16 held-out sources, LM "
+               "budget 60.  The POD columns are FULL-GRID objectives (exact minimisers, the "
+               "problem being quadratic in the POD coefficients) and are therefore comparable to "
+               "the coordinate ROM's full-grid column; the coordinate EQ columns use a "
+               "hyper-reduced quadrature.\n")
     out.append("| k | coord train recon | coord ORACLE (inferred latent, val) | coord ROM full grid | coord ROM EQ m=256 (grid) | coord ROM EQ m=256 (meshfree) | coord FD-LSPG control | POD proj floor | POD Galerkin | POD weak_a1_M64 | POD FD-LSPG |")
     out.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for e in D["kladder"]:
@@ -121,6 +126,27 @@ def tab_kladder(D, out):
             fmt(p["weak_a1_M64"]["mean"]) if p else "—",
             fmt(p["fd"]["mean"]) if p else "—"))
     out.append("")
+    out.append("Medians over the 16 sources (the means above carry heavy tails): "
+               + ", ".join(
+                   "k={}: full {} / EQ-grid {} / EQ-meshfree {}".format(
+                       e["K"],
+                       fmt(pick(e["rom"]["rows"], scheme="full", init="nearest")["rom_rel_l2_med"]),
+                       fmt(pick(e["rom"]["rows"], scheme="nnls", init="nearest")["rom_rel_l2_med"]),
+                       fmt(pick(e["rom"]["rows"], scheme="nnlsoff", init="nearest")["rom_rel_l2_med"]))
+                   for e in D["kladder"]
+                   if pick(e["rom"]["rows"], scheme="full", init="nearest")) + ".\n")
+    out.append("Solves that ended on the LM BUDGET rather than converging (out of 16, full grid / "
+               "EQ grid / EQ meshfree / FD control): " + ", ".join(
+                   "k={}: {}/{}/{}/{}".format(
+                       e["K"],
+                       pick(e["rom"]["rows"], scheme="full", init="nearest")["lm_reasons"].get("budget", 0),
+                       pick(e["rom"]["rows"], scheme="nnls", init="nearest")["lm_reasons"].get("budget", 0),
+                       pick(e["rom"]["rows"], scheme="nnlsoff", init="nearest")["lm_reasons"].get("budget", 0),
+                       (pick(e["fd"]["rows"], scheme="full", init="nearest")["lm_reasons"].get("budget", 0)
+                        if e["fd"] else "-"))
+                   for e in D["kladder"]
+                   if pick(e["rom"]["rows"], scheme="full", init="nearest")) +
+               ".  Budget terminations are INCLUDED in the means above (nothing is dropped).\n")
     out.append("Solver work at each k (median over the 16 test sources, LM budget 60): "
                + ", ".join(f"k={e['K']}: {pick(e['rom']['rows'], scheme='nnls', init='nearest')['lm_accepted_med']:.0f} accepted / "
                            f"{pick(e['rom']['rows'], scheme='nnls', init='nearest')['lm_rejected_med']:.0f} rejected"
@@ -185,22 +211,26 @@ def tab_ladders(D, out):
                    f"{fmt(full['oracle_rel_l2_mean']) if full else '—'}.\n")
     if D["Mladder"]:
         out.append("### M ladder at m ≈ 4M (K=8)\n")
-        out.append("| M (requested) | modes retained M' | m | full grid | NNLS-EQ grid | NNLS-EQ meshfree | ms/solve full | ms/solve EQ (meshfree) |")
+        out.append("Accuracy columns: nearest init, mean over the 16 held-out sources (medians in "
+                   "brackets).  Cost columns: the `pt_m` cell, mean init, timed on source 0.  The "
+                   "retained mode count M' differs between the on-grid (discrete eigenvalues) and "
+                   "meshfree (continuum eigenvalues) arms because their degeneracy patterns differ, "
+                   "so it is listed per arm.\n")
+        out.append("| M (requested) | M' (full/grid, meshfree) | m | full grid | NNLS-EQ grid | NNLS-EQ meshfree | ms/solve full | ms/solve EQ (meshfree) |")
         out.append("|---|---|---|---|---|---|---|---|")
         for e in D["Mladder"]:
             rows = e["rom"]["rows"]
             f_ = pick(rows, scheme="full", init="nearest")
             g_ = pick(rows, scheme="nnls", init="nearest")
             o_ = pick(rows, scheme="nnlsoff", init="nearest")
-            out.append(f"| {e['M']} | {f_['n_modes_retained'] if f_ else '—'} | {g_['m'] if g_ else '—'} | "
-                       f"{fmt(f_['rom_rel_l2_mean']) if f_ else '—'} | {fmt(g_['rom_rel_l2_mean']) if g_ else '—'} | "
-                       f"{fmt(o_['rom_rel_l2_mean']) if o_ else '—'} | "
-                       f"{cost_m(D, e['M'], None, 'full')['rom_solve_s']*1e3:.1f} | "
-                       f"{cost_m(D, e['M'], 4*e['M'], 'offgrid')['rom_solve_s']*1e3:.1f} |"
-                       if cost_m(D, e["M"], None, "full") and cost_m(D, e["M"], 4 * e["M"], "offgrid")
-                       else f"{fmt(f_['rom_rel_l2_mean']) if f_ else '—'} | "
-                            f"{fmt(g_['rom_rel_l2_mean']) if g_ else '—'} | "
-                            f"{fmt(o_['rom_rel_l2_mean']) if o_ else '—'} | — | — |")
+            mm = f"{f_['n_modes_retained']}, {o_['n_modes_retained']}" if (f_ and o_) else "—"
+            cf = cost_m(D, e["M"], None, "full"); ce = cost_m(D, e["M"], 4 * e["M"], "offgrid")
+            def cell_(r_):
+                return (f"{fmt(r_['rom_rel_l2_mean'])} [{fmt(r_['rom_rel_l2_med'])}]" if r_ else "—")
+            tf = f"{cf['rom_solve_s']*1e3:.1f}" if cf else "—"
+            te = f"{ce['rom_solve_s']*1e3:.1f}" if ce else "—"
+            out.append(f"| {e['M']} | {mm} | {g_['m'] if g_ else '—'} | {cell_(f_)} | {cell_(g_)} | "
+                       f"{cell_(o_)} | {tf} | {te} |")
         out.append("")
 
 
@@ -278,6 +308,12 @@ def tab_timing(D, out):
                    f"{r['preprocess_s']*1e3:.2f} ms | {r['decode_full_field_s']*1e3:.2f} ms | "
                    f"**{r['speedup_solve_only']:.1f}x** | {r['speedup_end_to_end']:.1f}x | "
                    f"{fmt(r['rom_rel_l2_mean'])} |")
+    out.append("Protocol split: `ROM iters` is the mean over the 16 sources, while `ms/iteration` "
+               "is the TIMED source's own solve divided by ITS iteration count (source 0, mean "
+               "init) -- e.g. at N=32 the timed source took "
+               f"{t['rows'][0]['rom_solve_s']/t['rows'][0]['rom_s_per_iter']:.0f} iterations against "
+               f"a 16-source mean of {t['rows'][0]['rom_iters_mean']:.1f}.  Accuracy in the last "
+               "column is the 16-source mean.\n")
     tbl = ", ".join(f"N={r['N']}: {r['preprocess_offline_table_s']*1e3:.0f} ms" for r in t["rows"])
     agree = max(r["preprocess_vs_reference_maxabs"] for r in t["rows"])
     out.append(f"\nThe mode table Phi is a per-mesh constant and is built offline ({tbl}); the online "
@@ -443,7 +479,7 @@ def fig_timing(D):
     ax.set_xscale("log", base=2); ax.set_yscale("log")
     ax.set_xticks(N); ax.set_xticklabels([str(n) for n in N])
     ax.set_xlabel("mesh N (interior DOF $(N-2)^2$)"); ax.set_ylabel("wall time (ms)")
-    ax.set_title("Poisson 2D — online cost is independent of the mesh", loc="left")
+    ax.set_title("Poisson 2D — the latent solve does not see the mesh", loc="left")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2)
     return fs.save(fig, FIGS, "poisson_cost_vs_N", (PLOTS,))
 
@@ -523,8 +559,8 @@ def fig_family(D):
     h, l = axes[0].get_legend_handles_labels()
     fig.legend(h, l, loc="lower center", ncol=4, fontsize=8, bbox_to_anchor=(0.5, -0.03))
     fig.suptitle("Poisson 2D — the nonlinear manifold's advantage shrinks as the family's "
-                 "intrinsic dimension grows\n(512 training sources and one training budget "
-                 "at every point; the ROM sits on its own inferred-latent floor throughout)",
+                 "intrinsic dimension grows\n(512 training sources and one training budget at "
+                 "every point; the ROM stays within 1.0-1.6x of its own inferred-latent floor)",
                  x=0.005, ha="left", fontsize=9.5, color=fs.INK)
     fig.tight_layout(rect=(0, 0.06, 1, 1))
     return fs.save(fig, FIGS, "poisson_complexity_ladder", (PLOTS,))

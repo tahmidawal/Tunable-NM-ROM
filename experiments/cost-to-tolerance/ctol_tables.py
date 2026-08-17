@@ -786,7 +786,10 @@ def audit(data, allow_incomplete=False):
         for N in sorted(set(cfg["ns"]) & set(exp["ns"])):
             for k in exp["ks"]:
                 M = mb if k >= kb else cfg["M"]
-                mexp = m4m if k >= kb else mq
+                # m is capped by the interior itself: at N=32 there are only 900
+                # interior nodes, so an m=1024 request yields m=900 and the cell is
+                # present, not missing.
+                mexp = min(m4m if k >= kb else mq, (N - 2) ** 2)
                 for method in ("coord", "pod"):
                     for tau in exp["taus"]:
                         if (N, k, M, mexp, method, tau, "primary") not in seen:

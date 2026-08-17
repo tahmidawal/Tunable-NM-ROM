@@ -170,6 +170,11 @@ def build(runs=None):
         T_ = 50
         sp = [r["iters_from_baseline"] / T_ for r in Bc]
         f["b_steps_min"] = g(min(sp), ".2f"); f["b_steps_max"] = g(max(sp), ".2f")
+        # the pre-registered cross-check is at tau=1e-6 specifically, where the counts
+        # sit just under 2; quoting the all-tolerance range there would overstate it
+        sp6 = [r["iters_from_baseline"] / T_ for r in Bc if r["fom_tau"] == 1e-6]
+        if sp6:
+            f["b_steps6_min"] = g(min(sp6), ".2f"); f["b_steps6_max"] = g(max(sp6), ".2f")
         for r in Bc:
             tg = f"{r['fom_tau']:g}".replace("-", "m").replace("+", "").replace(".", "")
             k = f"{tg}_N{r['N']}"

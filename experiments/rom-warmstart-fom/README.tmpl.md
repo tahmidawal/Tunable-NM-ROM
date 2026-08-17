@@ -337,7 +337,10 @@ is of limited interest anyway. {{b_verdict}}.
 Separately, and reaching beyond this cell: measuring a *tolerance-based* FOM exposed that
 **both of this project's FOM baselines are over-converged** — the Burgers rollout by a fixed
 iteration count, the Poisson CG by a fixed 1e-13 tolerance. Every previously reported speedup
-in either family is inflated. The correction is quantified below.
+in either family is inflated. The correction is quantified below. The Poisson side is settled
+(~{{oc_p_factor_1em10_N512}}x, corroborated by two independent re-timings at three meshes); the
+**Burgers side is formally open** pending a pre-registered cross-check, and is the one claim
+here a third party could still overturn.
 
 The useful result is the **mechanism**, and it generalises beyond this cell: an approximate
 solution is a good initial guess only in proportion to the error it removes *in the norm the
@@ -437,14 +440,41 @@ per step is then whatever convergence requires (capped at {{b_max_newton}}). The
 cells' Burgers denominators are therefore defined differently — they are not interchangeable
 rung-for-rung.**
 
-**This reconciliation is an OUTSTANDING CROSS-CHECK, not a settled result.** The sister cell
-has *pre-registered* the timings this bridge predicts for its own `NEWTON_ITERS = 2` rung —
+**The Burgers denominator is formally OPEN — this is the one claim in this cell a third party
+could still overturn.** The reconciliation above is a *pre-registered* cross-check whose result
+is not yet in.
+
+The sister cell has recorded this cell's four `tau = 1e-6` timings —
 {{oc_b_t_tol_1em06_N32}} / {{oc_b_t_tol_1em06_N64}} / {{oc_b_t_tol_1em06_N128}} /
-{{oc_b_t_tol_1em06_N256}} ms at `N = 32/64/128/256` with an achieved residual band of about
-9.6e-7–9.9e-7 — before its Burgers panels ran. Because it was registered in advance it cannot
-be fitted afterwards: agreement confirms the two denominators are the same quantity seen from
-two directions; disagreement means one of the two ladders is not measuring what it claims.
-Until those panels land, **treat the Burgers denominator as corroborated from one side only.**
+{{oc_b_t_tol_1em06_N256}} ms at `N = 32/64/128/256`, with the per-step Newton counts and the
+achieved-residual band — in code and in its README *before* its own Burgers panels ran, so the
+comparison cannot be fitted afterwards.
+
+**Read the outcome by SIGN, not by magnitude.** Two effects separate the two loops and they
+push opposite ways, so a naive comparison could let them cancel and manufacture an agreement:
+
+1. At `tau = 1e-6` this cell converges in {{b_steps6_min}}–{{b_steps6_max}} Newton steps per
+   time step, *just under* the integer 2, so a literal `NEWTON_ITERS = 2` rung does 1–3%
+   **more** work. (Across the full tolerance ladder the count runs
+   {{b_steps_min}}–{{b_steps_max}}; the cross-check is pinned at `1e-6`.) The
+   sister cell removes this by fitting a linear cost model `t(k) = a + b k` across its whole
+   {1, 2, 3, 4, 6, 8} ladder and evaluating it at this cell's *exact measured* step counts
+   rather than at the integer.
+2. This cell's loop performs an **outer tolerance test** — a residual evaluation per time step
+   — that a fixed-length loop does not. That work has no counterpart in its rung.
+
+Effect 1 is removed by the interpolation; effect 2 remains and has a **known sign**. So after
+interpolation the sister cell should read **slightly LOW relative to these numbers**:
+
+- **low by a few percent — expected**, and confirms the two denominators are the same quantity
+  seen from two directions;
+- **high in any amount, or low by a lot — a problem**, meaning one of the two ladders is not
+  measuring what it claims.
+
+Its table also reports the ladder fit's `R^2`; if the linear cost model does not hold, the
+interpolation is untrustworthy and the comparison should not be made at all. That is a
+self-check on its instrument as well as on this one. Until those panels land, treat the
+Burgers denominator as **corroborated from one side only**.
 
 They do reconcile in principle, because a tolerance-based solve reports how many steps it took:
 across every mesh and tolerance measured here it converges in **{{b_steps_min}}–{{b_steps_max}}

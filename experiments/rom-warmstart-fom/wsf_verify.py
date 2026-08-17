@@ -75,6 +75,19 @@ for r in B:
 for r in P:
     chk(f"poisson residual<=tau N={r['N']}", r["final_rel_residual"] <= r["fom_tau"])
 
+# 6b. the ERODED-not-diluted claim: the absolute saving must FALL as tau tightens.
+#     (An earlier draft asserted the opposite; this check exists so that cannot recur.)
+nmax = max(r["N"] for r in P)
+abs_by_tau = {}
+for ft in sorted({r["fom_tau"] for r in P}, reverse=True):
+    sub = [r for r in P if r["N"] == nmax and r["fom_tau"] == ft]
+    b = max(sub, key=lambda r: r["iter_saving_frac"])
+    abs_by_tau[ft] = b["iters_from_baseline"] - b["iters_from_rom"]
+seq = [abs_by_tau[t] for t in sorted(abs_by_tau, reverse=True)]
+chk("absolute saving falls as tau tightens", all(a > b for a, b in zip(seq, seq[1:])),
+    f"{seq}")
+chk("absolute savings quoted in README", infile(f"{seq[0]:.3g} iterations out of"))
+
 # 7. every row is A100 and gpu backend
 for k, d in raw.items():
     chk(f"{k} gpu", d["provenance"]["jax_backend"] == "gpu")

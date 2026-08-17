@@ -6,6 +6,12 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(dirname "$HERE")"
 REMOTE="/cluster/tufts/paralab/tawal01/wlat/$cell"
 DEST="$EXP/runs/$cell"
+# refuse to snapshot a job that has not finished cleanly (Codex SHOULD)
+if [[ "${ALLOW_INCOMPLETE:-0}" != "1" ]]; then
+  ssh tufts-login "grep -lq ALL-DONE $REMOTE/logs/*.out 2>/dev/null" || {
+    echo "no ALL-DONE in $REMOTE/logs -- job unfinished or failed; " \
+         "set ALLOW_INCOMPLETE=1 to pull anyway" >&2; exit 4; }
+fi
 mkdir -p "$DEST"
 ssh tufts-login "cd $REMOTE && find out logs -type f -exec sha256sum {} \; | sort" > "$DEST/.remote.sha256"
 scp -q -r "tufts-login:$REMOTE/out" "tufts-login:$REMOTE/logs" "$DEST/"

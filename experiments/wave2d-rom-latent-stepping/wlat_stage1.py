@@ -8,7 +8,11 @@ the held-out trajectory.  We solve for the 5-dim z by LM on:
                horizon at dt = DT_SNAP/S1_RS (interior rows + the FOM's
                boundary rows, since the sweep decoder is not hard-BC), the
                decoder supplying u(., t; z) at every time level -- a
-               PDE-CONSISTENCY ABLATION, not a ROM (never sees u0)
+               PDE-CONSISTENCY ABLATION: "no IC term in the OBJECTIVE".  Note
+               (Codex SHOULD) that u0 still enters through the nearest-IC
+               INITIALISATION, as it does in every arm; u0 is allowed
+               information, so this is an objective ablation, not a
+               u0-blind test.
   (c) both   : (a) and (b) stacked, IC block weight IC_W (default 1; the
                Burgers round found IC_W=1 best; sqrt(S) as a sensitivity arm)
 and report the traj-RMS error vs the FOM next to the ORACLE (true z) error and

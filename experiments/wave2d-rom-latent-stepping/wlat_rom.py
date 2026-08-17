@@ -69,19 +69,28 @@ def summarize(runs):
     for r in runs:
         for k_, v_ in r["reasons"].items():
             reasons[k_] = reasons.get(k_, 0) + v_
-    ed = np.array([r.get("energy_drift_max", np.nan) for r in ok]) if ok else np.array([np.nan])
-    ef = np.array([r.get("energy_final_ratio", np.nan) for r in ok]) if ok else np.array([np.nan])
+    def col(key):
+        return np.array([r.get(key, np.nan) for r in ok]) if ok else np.array([np.nan])
+    ed, ef = col("energy_drift_max"), col("energy_final_ratio")
+    edd, edf = col("energy_dyn_drift_max"), col("energy_dyn_final_ratio")
+    vdef = col("v_kin_dyn_defect_max")
     return dict(n_total=len(runs), n_completed=len(ok), n_blowup=len(runs) - len(ok),
                 traj_rel_mean=float(np.mean(tr)), traj_rel_median=float(np.median(tr)),
                 traj_rel_max=float(np.max(tr)), snap_rel_mean=float(np.mean(sn)),
                 traj_rel_vs_samedt_fom_mean=float(np.mean(trd)),
                 per_time_mean=np.nanmean(per, axis=0).tolist(),
                 per_time_survivors=np.sum(np.isfinite(per), axis=0).tolist(),
-                energy_drift_max_mean=float(np.nanmean(ed)), energy_drift_max_max=float(np.nanmax(ed)),
-                energy_final_ratio_mean=float(np.nanmean(ef)),
+                energy_drift_max_mean=float(np.mean(ed)), energy_drift_max_max=float(np.max(ed)),
+                energy_final_ratio_mean=float(np.mean(ef)),
+                energy_dyn_drift_max_mean=float(np.mean(edd)),
+                energy_dyn_final_ratio_mean=float(np.mean(edf)),
+                v_kin_dyn_defect_max_mean=float(np.mean(vdef)),
+                n_energy=int(np.sum(np.isfinite(ed))),
                 iters_cold_step0=float(np.nanmean([r["iters_cold"] for r in runs])),
                 iters_warm_mean=float(np.nanmean([r["iters_warm_mean"] for r in runs])),
                 iters_warm_max=float(np.nanmax([r["iters_warm_max"] for r in runs])),
+                lm_attempts_warm_mean=float(np.nanmean([r["lm_attempts_warm_mean"] for r in runs])),
+                n_done_frac_mean=float(np.mean([r["n_done"] / r["n_steps"] for r in runs])),
                 res_step_mean=float(np.nanmean([np.mean(r["res"]) if r["res"] else np.nan for r in runs])),
                 reasons=reasons,
                 step_time_ms_median=float(np.median([r["step_time_ms"] for r in runs])),
@@ -205,8 +214,13 @@ def main():
     def build_ops(decoder, var, i, cache):
         solver, colloc_name, objective = var.split(":")
         if objective.startswith("weak"):
+            # weak<M>  : w_i = (1 + a lam_i)^-WEAK_ALPHA  (default alpha 1 -- a WEIGHTED
+            #            least-squares/Galerkin problem, disclosed as such)
+            # weaku<M> : alpha = 0, the plain unweighted weak form (the standard comparison)
+            # weakl<M> : additionally beta = 1, a lam^-1/2 energy-type weighting
             beta = 1.0 if objective.startswith("weakl") else wc.WEAK_BETA
-            M = int(objective[5:] if objective.startswith("weakl") else objective[4:])
+            alpha_w = 0.0 if objective.startswith("weaku") else wc.WEAK_ALPHA
+            M = int(objective[5:] if objective[4] in "lu" else objective[4:])
             if colloc_name == "full":
                 col = dict(kind="grid", idx=interior, w=None)
             else:
@@ -220,7 +234,8 @@ def main():
                     cache[key] = wc.fit_eq_weights(decoder, N, M, m, zs, pool=pool,
                                                    rng=np.random.default_rng(EQ_RNG_SEED))
                 col = cache[key]
-            return wc.make_weak_ops(decoder, N, col, M=M, solver=solver, beta=beta)
+            return wc.make_weak_ops(decoder, N, col, M=M, solver=solver, beta=beta,
+                                    alpha_w=alpha_w)
         col = wc.make_collocation(colloc_name, N, np.random.default_rng(1234 + i), u0=U_te[i, 0])
         return wc.make_strong_ops(decoder, N, col, solver=solver)
 
@@ -242,9 +257,25 @@ def main():
                     r["traj_rel_samedt"] = wc.traj_metrics(r["fields"], U_te_dt[i])[2]
                 else:
                     r["traj_rel_samedt"] = float("nan")
-                del r["fields"]; r.pop("Z_snap", None); r.pop("energy", None)
+                del r["fields"]; r.pop("Z_snap", None)
+                r.pop("energy_kin", None); r.pop("energy_dyn", None)
                 runs.append(r)
             s = summarize(runs); s["m"] = int(ops["m"]); s["M"] = ops.get("M"); s["secs"] = time.time() - t0
+            s["weak_alpha"] = ops.get("weak_alpha"); s["weak_beta"] = ops.get("weak_beta")
+            # Codex CONSIDER: nothing guarantees the M x k Petrov-Galerkin system has
+            # rank k.  Report the residual Jacobian's singular values at the cold start
+            # of test trajectory 0 so a rank-deficient variant is visible, not silent.
+            try:
+                z0d = jnp.asarray(ics_[0][0])
+                S0d = ops["state_of"](z0d)
+                Jd = jax.jacfwd(lambda zz: ops["r_w"](zz, jnp.stack([S0d, S0d]),
+                                                      float(c_te[0])))(z0d)
+                sd = np.asarray(jnp.linalg.svd(Jd, compute_uv=False))
+                s["jac_svals"] = dict(smax=float(sd[0]), smin=float(sd[-1]),
+                                      cond=float(sd[0] / max(sd[-1], 1e-300)),
+                                      n_rows=int(Jd.shape[0]), k=int(Jd.shape[1]))
+            except Exception as ex:                                    # noqa: BLE001
+                s["jac_svals"] = dict(error=str(ex))
             s["eq_info"] = ops.get("colloc_info")
             res_dict[f"{label}{var}"] = s
             log(f"  {label}{var:24s} m={ops['m']:5d}  traj rel {s['traj_rel_mean']:.3e} "
@@ -260,12 +291,14 @@ def main():
                 tol_abs = wc.GN_TOL * float(u0_rms[0]) * ops["tol_scale"]
                 n_steps = wc.NUM_STEPS * wc.RS
                 def run_once():
-                    Z_, rn_, nj_, re_ = ops["rollout_jit"](z0, float(c_te[0]), tol_abs, wc.GN_BUDGET, n_steps)
-                    Z_.block_until_ready()
-                Z_, rn_, nj_, re_ = ops["rollout_jit"](z0, float(c_te[0]), tol_abs, wc.GN_BUDGET, n_steps)
+                    out_ = ops["rollout_jit"](z0, float(c_te[0]), tol_abs, wc.GN_BUDGET, n_steps)
+                    out_[0].block_until_ready()
+                Z_, rn_, nj_, re_, at_ = ops["rollout_jit"](
+                    z0, float(c_te[0]), tol_abs, wc.GN_BUDGET, n_steps)
                 nj_total = int(jnp.sum(nj_))
                 med, ts = wc.time_fn(run_once, reps=TIME_REPS, warm=2)
-                ent = dict(rollout_s_median=med, all=ts, iters_total=nj_total, n_steps=n_steps,
+                ent = dict(rollout_s_median=med, all=ts, iters_total=nj_total,
+                           lm_attempts_total=int(jnp.sum(at_)), n_steps=n_steps,
                            ms_per_step=1e3 * med / n_steps)
                 if decoder.kind == "coord":
                     j0 = int(np.argmin(np.linalg.norm(Utr0 - U_te[0, 0], axis=1)))
@@ -317,7 +350,7 @@ def main():
                 v["speedup_vs_fom_rollout_only"] = med / v["rollout_s_median"]
                 v["speedup_vs_samedt_fom_rollout_only"] = med2 / v["rollout_s_median"]
                 if "ic_fit_s" in v:
-                    v["speedup_vs_fom_end_to_end"] = med / (
+                    v["speedup_vs_fom_online_field_prediction"] = med / (
                         v["rollout_s_median"] + v["ic_fit_s"] + v["decode_all_slices_s"])
         log("  timing: " + "  ".join(f"{k}={v['rollout_s_median']*1e3:.0f}ms" for k, v in timing.items()))
     report["timing"] = timing

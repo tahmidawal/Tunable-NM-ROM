@@ -59,6 +59,7 @@ ms_parametric = the auto-decoder architecture AD_HIDDEN x AD_LAYERS).
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import sys
 import time
@@ -179,12 +180,41 @@ def blob_ic(n, cx, cy, w, a):
     return (a * np.exp(-((X - cx) ** 2 + (Y - cy) ** 2) / (2 * w ** 2)) * mask).reshape(-1)
 
 
+def train_trajectories(n, chunk=64):
+    """The wave2d sweep's TRAIN/VAL draw, reproduced verbatim from
+    wave2d_film.build_trajectories but RETURNING the per-chunk max relative
+    energy drift (the frozen function only prints it, so build_data could not
+    threshold it -- Codex MUST).  wlat_verify asserts this reproduces
+    wf.build_trajectories bit-for-bit."""
+    cx, cy, w, a, c, z = wf.sample_params()
+    m = len(cx)
+    rollout, _ = wf.make_rollout(n)
+    U = np.zeros((m, NUM_STEPS + 1, n * n))
+    drift_max = 0.0
+    for s_ in range(0, m, chunk):
+        e_ = min(s_ + chunk, m)
+        U0 = np.stack([blob_ic(n, cx[i], cy[i], w[i], a[i]) for i in range(s_, e_)])
+        snaps, ens = rollout(jnp.asarray(U0), jnp.asarray(c[s_:e_]))
+        U[s_:e_] = np.asarray(snaps).transpose(1, 0, 2)
+        ens = np.asarray(ens)
+        dm = float(np.max(np.abs(ens - ens[0]) / np.maximum(ens[0], 1e-300)))
+        if not np.isfinite(dm) or dm > drift_max:      # NaN-propagating accumulate
+            drift_max = dm
+    return U, z, cx, cy, w, a, c, drift_max
+
+
 def build_data(n=N):
     """TRAIN/VAL from SEED (identical draw to the wave2d sweep; the sweep
     checkpoints were model-selected on VAL, so VAL is NOT a test set).  TEST =
-    N_TEST fresh trajectories from TEST_SEED.  Aborts if the FOM's energy drift
-    exceeds 1e-9 anywhere (a diverged CN/CG solve would otherwise be 'truth')."""
-    U, z, cx, cy, w, a, c = wf.build_trajectories(n)
+    N_TEST fresh trajectories from TEST_SEED.  ABORTS if the FOM's relative
+    energy drift exceeds 1e-9 on EITHER split, or if anything is non-finite
+    (a diverged CN/CG solve would otherwise silently become 'truth')."""
+    U, z, cx, cy, w, a, c, drift_tr = train_trajectories(n)
+    log(f"  TRAIN/VAL FOM: {U.shape[0]} trajectories, max rel energy drift {drift_tr:.2e}")
+    if not np.isfinite(drift_tr) or drift_tr > 1e-9:
+        raise SystemExit(f"TRAIN FOM energy drift {drift_tr:.2e} > 1e-9")
+    if not np.all(np.isfinite(U)):
+        raise SystemExit("non-finite training data")
     cxt, cyt, wt, at, ct, zt = wf.sample_params(seed=TEST_SEED, m=N_TEST)
     rollout, _ = wf.make_rollout(n)
     U0 = np.stack([blob_ic(n, cxt[i], cyt[i], wt[i], at[i]) for i in range(N_TEST)])
@@ -196,16 +226,21 @@ def build_data(n=N):
     log(f"  TEST FOM: {N_TEST} trajectories, max rel energy drift {dm:.2e}")
     if not np.isfinite(dm) or dm > 1e-9:
         raise SystemExit(f"TEST FOM energy drift {dm:.2e} > 1e-9")
-    # train energy drift is printed by wf.build_trajectories; recheck the max on
-    # a NaN-propagating basis
-    if not np.all(np.isfinite(U)):
-        raise SystemExit("non-finite training data")
+    if not np.all(np.isfinite(Ut)):
+        raise SystemExit("non-finite test data")
     return dict(U=U, z=z, cx=cx, cy=cy, w=w, a=a, c=c, U_test=Ut, z_test=zt, c_test=ct,
-                cx_test=cxt, cy_test=cyt, w_test=wt, a_test=at, test_energy_drift=dm)
+                cx_test=cxt, cy_test=cyt, w_test=wt, a_test=at, test_energy_drift=dm,
+                train_energy_drift=drift_tr)
 
 
 def data_fingerprint(U):
-    return dict(sum=float(np.sum(U)), sumsq=float(np.sum(U * U)), shape=list(U.shape))
+    """Global moments PLUS a sha256 of the exact bytes and per-trajectory
+    checksums (Codex SHOULD: two global moments at 1e-6 could pass a local
+    corruption).  The sha256 is bit-exact and is the check that actually binds."""
+    A = np.ascontiguousarray(np.asarray(U, dtype=np.float64))
+    return dict(sum=float(np.sum(A)), sumsq=float(np.sum(A * A)), shape=list(A.shape),
+                sha256=hashlib.sha256(A.tobytes()).hexdigest(),
+                traj_sumsq_first8=[float(x) for x in np.sum(A[:8] ** 2, axis=(1, 2))])
 
 
 # --------------------------- u-only Newmark FOM (same-dt reference + verification) ---------------------------
@@ -263,6 +298,16 @@ def make_newmark_fom(n, rs):
 
 # --------------------------- weak-form pieces (wave: linear) ---------------------------
 
+def check_M(n, M):
+    """blat_common.test_modes silently returns fewer than M modes when
+    M > (n-2)^2, while the report would still say M (Codex MUST).  Fail loudly."""
+    avail = (n - 2) ** 2
+    if not (1 <= M <= avail):
+        raise SystemExit(f"weak form asks for M={M} test modes but only {avail} "
+                         f"exist on the interior of the N={n} grid")
+    return M
+
+
 def weak_weights(lam, c, alpha_w=WEAK_ALPHA, beta=WEAK_BETA):
     a = (0.5 * DT * c) ** 2
     w = (1.0 + a * lam) ** (-alpha_w)
@@ -278,6 +323,7 @@ def fit_eq_weights(dec, n, M, m, Z_snap, pool="grid", rng=None):
     interior points = meshfree).  Returns dict(kind, idx|xy, w, info)."""
     rng = rng or np.random.default_rng(0)
     t0 = time.time()
+    check_M(n, M)
     kx, ky, Phi, lam, _ = test_modes(n, M)
     coords = jnp.asarray(grid_coords(n))
     interior = interior_indices(n)
@@ -429,13 +475,14 @@ def _device_solvers(r_w, r_w0, state_of):
             prev = jnp.stack([Sn, Snm])
             z2, rn, nJ, acc, re, att = _lm_while(r_w, z, (prev, c), tol_abs, budget)
             S2 = state_of(z2)
-            return (z2, S2, Sn), (z2, rn, nJ, re)
+            return (z2, S2, Sn), (z2, rn, nJ, re, att)
 
-        (_, _, _), (Z, rns, nJs, res) = jax.lax.scan(body, (z1, S1, S0), None, length=n_steps - 1)
+        (_, _, _), (Z, rns, nJs, res, atts) = jax.lax.scan(body, (z1, S1, S0), None,
+                                                           length=n_steps - 1)
         Z = jnp.concatenate([z0[None], z1[None], Z], axis=0)
         rns = jnp.concatenate([rn1[None], rns]); nJs = jnp.concatenate([nJ1[None], nJs])
-        res = jnp.concatenate([re1[None], res])
-        return Z, rns, nJs, res
+        res = jnp.concatenate([re1[None], res]); atts = jnp.concatenate([att1[None], atts])
+        return Z, rns, nJs, res, atts
 
     return dict(step_gen=step_gen_j, step_first=step_first_j,
                 rollout_jit=jax.jit(rollout_fn, static_argnums=(3, 4)))
@@ -506,17 +553,20 @@ def make_strong_ops(dec, n, colloc, solver="lspg"):
     return _make_ops_from(r_gen, r_first, state_of, full, m, solver, float(np.sqrt(m)))
 
 
-def make_weak_ops(dec, n, colloc, M=64, solver="lspg", beta=None):
+def make_weak_ops(dec, n, colloc, M=64, solver="lspg", beta=None, alpha_w=None):
     """Weak-form Galerkin against M discrete sine modes.  colloc: full grid
     (idx=interior, w=None -> exact grid sums), 'grid' with NNLS weights, or
     'offgrid' meshfree points with NNLS weights.  Carried state = the M mode
     projections of the decoded field."""
+    check_M(n, M)
     kx, ky, Phi, lam, _ = test_modes(n, M)
+    assert Phi.shape[1] == M, f"test_modes returned {Phi.shape[1]} of {M} modes"
     coords = jnp.asarray(grid_coords(n))
     interior = interior_indices(n)
     lam_j = jnp.asarray(lam, dtype=F64)
     kxj, kyj = jnp.asarray(kx, dtype=F64), jnp.asarray(ky, dtype=F64)
     beta = WEAK_BETA if beta is None else beta
+    alpha_w = WEAK_ALPHA if alpha_w is None else alpha_w
     if colloc["kind"] == "grid":
         idx = np.asarray(colloc["idx"])
         m = idx.size
@@ -542,14 +592,14 @@ def make_weak_ops(dec, n, colloc, M=64, solver="lspg", beta=None):
 
     def r_gen(z, pn, pnm, c):
         a = (0.5 * DT * c) ** 2
-        wt = weak_weights(lam_j, c, WEAK_ALPHA, beta)
+        wt = weak_weights(lam_j, c, alpha_w, beta)
         p = state_of(z)
         # phi^T[(u - 2u_n + u_{n-1}) - a L (u + 2u_n + u_{n-1})], phi^T L v = -lam phi^T v
         return wt * ((1.0 + a * lam_j) * (p + pnm) - 2.0 * (1.0 - a * lam_j) * pn)
 
     def r_first(z, p0, c):
         a = (0.5 * DT * c) ** 2
-        wt = weak_weights(lam_j, c, WEAK_ALPHA, beta)
+        wt = weak_weights(lam_j, c, alpha_w, beta)
         p = state_of(z)
         return wt * ((1.0 + a * lam_j) * p - (1.0 - a * lam_j) * p0)
 
@@ -560,6 +610,8 @@ def make_weak_ops(dec, n, colloc, M=64, solver="lspg", beta=None):
                          colloc_info=colloc.get("info"), M=M)
     ops["Phi_q"] = Phi_q
     ops["u_q"] = jax.jit(u_q)
+    ops["weak_alpha"] = float(alpha_w)
+    ops["weak_beta"] = float(beta)
     return ops
 
 
@@ -681,105 +733,183 @@ def make_ic_solver(dec, n):
 
 # --------------------------- rollout (python driver) ---------------------------
 
+def energy_curves(Uall, c, n, rs):
+    """Two energy estimates for a decoded sub-step trajectory Uall (n_steps+1, n^2).
+
+    KINEMATIC: v_k = 2(u_k - u_{k-1})/dt - v_{k-1}, v_0 = 0 -- the CN trapezoidal
+      relation.  Exact for an exact CN trajectory, but the recursion has a (-1)^k
+      mode: a state error e injected at one step leaves a persistent O(e/dt)
+      alternating velocity, and random per-step decoder error accumulates like
+      sqrt(k)/dt.  So on a ROM trajectory it measures the decoder's grid-scale
+      noise as much as the ROM's dynamics (Codex MUST).
+    DYNAMIC:  v_k = v_{k-1} + (dt c^2 / 2)(L u_{k-1} + L u_k) -- the FOM's own
+      velocity update.  This one integrates the error rather than differentiating
+      it, so it is the fair long-horizon stability diagnostic; the DEFECT between
+      the two velocities is reported as the consistency measure.
+
+    Returns dict with both energy curves at the stored snapshots, their drifts,
+    and the max relative kinematic-vs-dynamic velocity defect.
+    """
+    dt = DT_SNAP / rs
+    e_fn = jax.jit(lambda u, v: energy_full(u, v, float(c), n))
+    lap_j = jax.jit(lambda u: lap_full_field(u, n))
+    v_kin = jnp.zeros((n * n,), F64)
+    v_dyn = jnp.zeros((n * n,), F64)
+    u_prev = jnp.asarray(Uall[0])
+    Lp = lap_j(u_prev)
+    Ek = [float(e_fn(u_prev, v_kin))]
+    Ed = [float(e_fn(u_prev, v_dyn))]
+    defect = 0.0
+    vscale = 0.0
+    for k in range(1, Uall.shape[0]):
+        u = jnp.asarray(Uall[k])
+        Lu = lap_j(u)
+        v_kin = 2.0 * (u - u_prev) / dt - v_kin
+        v_dyn = v_dyn + 0.5 * dt * float(c) ** 2 * (Lp + Lu)
+        if k % rs == 0:
+            Ek.append(float(e_fn(u, v_kin)))
+            Ed.append(float(e_fn(u, v_dyn)))
+            d = float(jnp.linalg.norm(v_kin - v_dyn))
+            sc = float(jnp.linalg.norm(v_dyn))
+            defect = max(defect, d / max(sc, 1e-300))
+            vscale = max(vscale, sc)
+        u_prev, Lp = u, Lu
+    Ek = np.asarray(Ek); Ed = np.asarray(Ed)
+    out = dict(energy_kin=Ek.tolist(), energy_dyn=Ed.tolist(),
+               energy_drift_max=float(np.max(np.abs(Ek - Ek[0]) / Ek[0])),
+               energy_final_ratio=float(Ek[-1] / Ek[0]),
+               energy_dyn_drift_max=float(np.max(np.abs(Ed - Ed[0]) / Ed[0])),
+               energy_dyn_final_ratio=float(Ed[-1] / Ed[0]),
+               v_kin_dyn_defect_max=float(defect))
+    if not all(np.isfinite(x) for x in (out["energy_drift_max"], out["energy_dyn_drift_max"])):
+        out["energy_nonfinite"] = True
+    return out
+
+
 REASONS = {0: "budget", 1: "tol", 2: "stalled", 3: "lambda_max", 4: "tol_at_init", 5: "nan_at_init"}
 
 
 def rollout(dec, n, ops, z0, c, u0_rms, U_true=None, budget=GN_BUDGET, tol=GN_TOL,
             energies=True):
-    """Latent time stepping over NUM_STEPS*RS Newmark steps.  Returns latents at
-    the stored snapshots, per-snapshot errors (traj + snap metric), iteration
-    counts, residual norms, per-step wall time (lspg: device rollout, timed as
-    a whole; galerkin: python loop), energy drift.  Blow-up -> truncated, NaN error."""
+    """Latent time stepping over NUM_STEPS*RS Newmark steps.
+
+    A run counts as COMPLETE only if every step finished (n_done == n_steps), every
+    snapshot latent is finite, the decoded fields are finite, and -- when energies
+    were requested -- the energy curves are finite (Codex MUST: `complete` used to
+    depend on the snapshot latents alone, so a step that returned its warm start
+    unchanged after a NaN could enter the headline averages).  Incomplete runs get
+    NaN errors and are counted, never averaged.
+    """
     z0 = jnp.asarray(z0, dtype=F64)
     n_steps = NUM_STEPS * RS
     tol_abs = tol * float(u0_rms) * ops["tol_scale"]
-    coords = jnp.asarray(grid_coords(n))
     t0 = time.perf_counter()
+    n_attempted = n_steps
     if ops["solver"] == "lspg":
-        Z, rns, nJs, res = ops["rollout_jit"](z0, float(c), tol_abs, budget, n_steps)
+        Z, rns, nJs, res, atts = ops["rollout_jit"](z0, float(c), tol_abs, budget, n_steps)
         Z.block_until_ready()
         wall = time.perf_counter() - t0
-        Z = np.asarray(Z); rns = np.asarray(rns); nJs = np.asarray(nJs); res = np.asarray(res)
+        Z = np.asarray(Z); rns = np.asarray(rns); nJs = np.asarray(nJs)
+        res = np.asarray(res); atts = np.asarray(atts)
         reasons = [REASONS[int(r)] for r in res]
     else:
         z = z0
         S0 = ops["state_of"](z)
         prev = jnp.stack([S0, S0])
-        Zl, rns, nJs, reasons = [np.asarray(z)], [], [], []
+        Zl, rns, nJs, atts, reasons = [np.asarray(z)], [], [], [], []
         Sn, Snm = S0, S0
+        n_attempted = 0
         for k in range(n_steps):
             z, info = galerkin_step(ops, z, prev, float(c), k == 0, tol_abs, budget)
+            n_attempted += 1
             S2 = ops["state_of"](z)
             Snm, Sn = Sn, S2
             prev = jnp.stack([Sn, Snm])
             Zl.append(np.asarray(z)); rns.append(info["rn"]); nJs.append(info["n_jac"])
-            reasons.append(info["reason"])
+            atts.append(info["accepted"] + info["rejected"]); reasons.append(info["reason"])
             if not np.all(np.isfinite(Zl[-1])):
                 reasons[-1] = "blowup"; break
         wall = time.perf_counter() - t0
-        Z = np.stack(Zl); rns = np.asarray(rns, dtype=float); nJs = np.asarray(nJs, dtype=float)
+        Z = np.stack(Zl)
+        rns = np.asarray(rns, dtype=float); nJs = np.asarray(nJs, dtype=float)
+        atts = np.asarray(atts, dtype=float)
         res = np.array([5 if r_ in ("blowup", "nan_step") else 0 for r_ in reasons])
         if Z.shape[0] < n_steps + 1:                  # truncated: pad with NaN
             Z = np.concatenate([Z, np.full((n_steps + 1 - Z.shape[0], Z.shape[1]), np.nan)])
             pad = n_steps - rns.size
-            rns = np.concatenate([rns, np.full(pad, np.nan)]); nJs = np.concatenate([nJs, np.full(pad, np.nan)])
+            rns = np.concatenate([rns, np.full(pad, np.nan)])
+            nJs = np.concatenate([nJs, np.full(pad, np.nan)])
+            atts = np.concatenate([atts, np.full(pad, np.nan)])
             res = np.concatenate([res, np.full(pad, 5)])
             reasons = reasons + ["blowup"] * pad
     # a step "failed" if its residual is non-finite or the LM saw NaN at init
     bad = (~np.isfinite(rns)) | (res == 5) | (~np.all(np.isfinite(Z[1:]), axis=1))
     n_done = int(np.argmax(bad)) if bad.any() else n_steps
-    out = dict(n_done=n_done, n_steps=n_steps, iters=nJs[: max(n_done, 0)].tolist(),
-               res=rns[: max(n_done, 0)].tolist(), wall_s=wall,
-               step_time_ms=1e3 * wall / max(n_steps, 1),
+    out = dict(n_done=n_done, n_steps=n_steps, n_attempted=int(n_attempted),
+               iters=nJs[: max(n_done, 0)].tolist(), res=rns[: max(n_done, 0)].tolist(),
+               wall_s=wall,
+               # Codex MUST: divide by the steps actually ATTEMPTED, not requested
+               step_time_ms=1e3 * wall / max(n_attempted if ops["solver"] != "lspg" else n_steps, 1),
                reasons={r: int(sum(1 for x in reasons[:n_done] if x == r)) for r in set(reasons[:n_done])})
     out["iters_cold"] = float(nJs[0]) if n_done >= 1 else float("nan")
     out["iters_warm_mean"] = float(np.mean(nJs[1:n_done])) if n_done >= 2 else float("nan")
     out["iters_warm_max"] = float(np.max(nJs[1:n_done])) if n_done >= 2 else float("nan")
+    out["lm_attempts_warm_mean"] = float(np.mean(atts[1:n_done])) if n_done >= 2 else float("nan")
     # decoded fields at the stored snapshots (every RS-th latent)
     idx_snap = np.arange(0, n_steps + 1, RS)
     Zs = Z[idx_snap]
-    ok = np.all(np.isfinite(Zs), axis=1)
+    ok = np.all(np.isfinite(Zs), axis=1) & (idx_snap <= n_done)
     F = np.full((NUM_STEPS + 1, n * n), np.nan)
     dec_all = ops["full_batch"]
     if ok.any():
         F[ok] = np.asarray(dec_all(jnp.asarray(Zs[ok])))
     out["Z_snap"] = Zs
+    complete = bool(n_done == n_steps) and bool(ok.all()) and bool(np.all(np.isfinite(F)))
     if U_true is not None:
         Ut = np.asarray(U_true)
         per_t, per_s, tr, sn = traj_metrics(F, Ut)
         per_t = np.where(ok, per_t, np.nan); per_s = np.where(ok, per_s, np.nan)
+        complete = complete and bool(np.all(np.isfinite(per_t)))
         out["per_time"] = per_t.tolist(); out["per_time_snap"] = per_s.tolist()
-        complete = bool(ok.all())
         out["traj_rel"] = float(np.mean(per_t)) if complete else float("nan")
         out["snap_rel"] = float(np.mean(per_s)) if complete else float("nan")
-        out["complete"] = complete
-    if energies and n_done == n_steps:
-        # v by the trapezoidal recursion on the decoded fields at EVERY sub-step
-        # (full-grid decode of all n_steps+1 latents, chunked)
-        E = []
-        v = jnp.zeros((n * n,), F64)
-        u_prev = None
+    if energies and complete:
         CH = 256
-        Uall = []
-        for s in range(0, n_steps + 1, CH):
-            Uall.append(np.asarray(dec_all(jnp.asarray(Z[s:s + CH]))))
-        Uall = np.concatenate(Uall)
-        e_fn = jax.jit(lambda u, v: energy_full(u, v, float(c), n))
-        E.append(float(e_fn(jnp.asarray(Uall[0]), v)))
-        for k in range(1, n_steps + 1):
-            u = jnp.asarray(Uall[k]); up = jnp.asarray(Uall[k - 1])
-            v = 2.0 * (u - up) / DT - v
-            if k % RS == 0:
-                E.append(float(e_fn(u, v)))
-        E = np.asarray(E)
-        out["energy"] = E.tolist()
-        out["energy_drift_max"] = float(np.max(np.abs(E - E[0]) / E[0]))
-        out["energy_final_ratio"] = float(E[-1] / E[0])
+        Uall = np.concatenate([np.asarray(dec_all(jnp.asarray(Z[s_:s_ + CH])))
+                               for s_ in range(0, n_steps + 1, CH)])
+        if np.all(np.isfinite(Uall)):
+            out.update(energy_curves(Uall, c, n, RS))
+        if out.pop("energy_nonfinite", False) or "energy_drift_max" not in out:
+            complete = False                      # Codex MUST: never hide an energy NaN
+            out["traj_rel"] = float("nan"); out["snap_rel"] = float("nan")
+    out["complete"] = complete
     out["fields"] = F
     return out
 
 
 # --------------------------- residual verification ---------------------------
+
+def newmark_substeps(n, rs, u0, c, n_steps=None):
+    """EVERY u-only Newmark sub-step (n_steps+1, n^2) at dt = DT_SNAP/rs, CG tol
+    1e-13 -- the exact-trajectory calibration input for energy_curves."""
+    n_steps = NUM_STEPS * rs if n_steps is None else n_steps
+    mask = wf.boundary_mask(n).reshape(-1)
+    dt = DT_SNAP / rs
+    alpha = (0.5 * dt * c) ** 2
+    lap = lambda u: lap_full_field(u, n)
+    A = lambda v: jnp.where(mask > 0, v - alpha * lap(v), v)
+    solve = jax.jit(lambda rhs, x0: jax.scipy.sparse.linalg.cg(
+        A, rhs, x0=x0, tol=1e-13, maxiter=50000)[0] * mask)
+    u0 = jnp.asarray(u0, F64)
+    u = solve(u0 + alpha * lap(u0), u0)
+    um = u0
+    out = [np.asarray(u0), np.asarray(u)]
+    for _ in range(n_steps - 1):
+        up = solve(2.0 * u - um + alpha * lap(2.0 * u + um), 2.0 * u - um)
+        um, u = u, up
+        out.append(np.asarray(u))
+    return np.stack(out)
+
 
 def newmark_first_states(n, rs, u0, c, k=3):
     """The first k+1 u-only Newmark states (u0, u1, ..., uk) at dt = DT_SNAP/rs

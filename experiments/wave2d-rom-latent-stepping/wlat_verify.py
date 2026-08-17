@@ -33,7 +33,8 @@ import wlat_common as wc
 from wlat_common import wf, F64, log
 
 OUTDIR = sys.argv[1] if len(sys.argv) > 1 else "."
-RS_LIST = [int(s) for s in os.environ.get("RS_LIST", "1,2,4,8,20,80").split(",") if s]
+RS_LIST = sorted(set([int(s) for s in os.environ.get("RS_LIST", "1,2,4,8,20,80").split(",") if s]
+                     + [wc.FOM_SUBSTEPS, wc.RS]))   # RS=80 is MANDATORY (V1 gates on it)
 N_V = int(os.environ.get("N_VERIFY", "4"))          # trajectories used for the RS sweep
 N = wc.N
 
@@ -93,8 +94,9 @@ def main():
     rep["V2_ok"] = bool(max(chk["strong_full"], chk["strong_rand"], chk["weak_full"]) < 1e-9
                         and chk["weak_nonsolution"] > 1e-12)
 
-    # --- V2b: the FOM's own stored trajectory through the ROM operator ------
-    # (only meaningful at RS = FOM_SUBSTEPS: the stored snapshots are 80 substeps apart)
+    # --- V2b: NEWMARK SELF-CONSISTENCY (not an independent FOM check; V1 is) --
+    # states produced by the same u-only Newmark implementation, fed back through
+    # the residual FORMULA used by Stage 1 (Codex SHOULD: relabelled)
     nm_states = wc.newmark_first_states(N, wc.FOM_SUBSTEPS, U0[0], float(ct[0]), 3)
     a = (0.5 * (wc.DT_SNAP / wc.FOM_SUBSTEPS) * float(ct[0])) ** 2
     Ls = [np.asarray(wc.lap_full_field(jnp.asarray(u), N)) for u in nm_states]
@@ -142,6 +144,9 @@ def main():
 
     # --- V6: POD floors on the training/val split (traj-RMS metric) ---------
     d = wc.build_data(N)
+    rep["train_energy_drift"] = d["train_energy_drift"]
+    rep["test_energy_drift"] = d["test_energy_drift"]
+    rep["data_fingerprint"] = wc.data_fingerprint(d["U"])
     U = d["U"]
     S = U[:wc.N_TRAIN].reshape(-1, N * N)
     V, sv, dev = wc.pod_basis(S, kmax=64)
@@ -159,7 +164,31 @@ def main():
     log("  V6 POD val floors: " + "  ".join(f"r{r}={e:.3e}" for r, e in floors.items())
         + f"   ortho dev {dev:.1e}")
 
-    rep["all_ok"] = bool(rep.get("V1_ok", True) and rep["V2_ok"] and rep["V3_ok"])
+    # --- V7: calibrate BOTH energy estimators on an exact Newmark trajectory --
+    Uall = wc.newmark_substeps(N, wc.RS, U0[0], float(ct[0]))
+    ec = wc.energy_curves(Uall, float(ct[0]), N, wc.RS)
+    rep["V7_energy_estimators_on_exact_trajectory"] = {
+        k: v for k, v in ec.items() if not k.startswith("energy_kin") and not k.startswith("energy_dyn_r")
+        and k not in ("energy_dyn",)}
+    log(f"  V7 exact-trajectory calibration (RS={wc.RS}): kinematic drift "
+        f"{ec['energy_drift_max']:.2e}, dynamic drift {ec['energy_dyn_drift_max']:.2e}, "
+        f"v-defect {ec['v_kin_dyn_defect_max']:.2e}")
+
+    # --- V8: our train_trajectories reproduces the frozen wf.build_trajectories --
+    Uw, zw = wf.build_trajectories(N)[:2]
+    Uo = wc.train_trajectories(N)[0]
+    rep["V8_train_trajectories_maxabs_diff"] = float(np.max(np.abs(Uw - Uo)))
+    rep["V8_ok"] = bool(rep["V8_train_trajectories_maxabs_diff"] == 0.0)
+    log(f"  V8 train_trajectories vs frozen wf.build_trajectories: max|diff| "
+        f"{rep['V8_train_trajectories_maxabs_diff']:.2e}")
+
+    # V1 is MANDATORY (Codex MUST: a missing V1 used to default to success) and
+    # gates on the MAX over trajectories, not the mean
+    if "V1_ok" not in rep:
+        raise SystemExit("V1 (RS=80 vs the CN FOM) did not run -- refusing to pass")
+    v1max = rs_tab[80]["traj_rel_vs_fom_max"]
+    rep["V1_ok"] = bool(rep["V1_ok"] and np.isfinite(v1max) and v1max < 1e-6)
+    rep["all_ok"] = bool(rep["V1_ok"] and rep["V2_ok"] and rep["V3_ok"] and rep["V8_ok"])
     os.makedirs(OUTDIR, exist_ok=True)
     with open(os.path.join(OUTDIR, f"wlat_verify_N{N}.json"), "w") as f:
         json.dump(rep, f, indent=2, default=float)

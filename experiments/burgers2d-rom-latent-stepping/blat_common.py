@@ -594,6 +594,7 @@ def make_weak_ops(dec, n, colloc, kind="weak", M=64, alpha=WEAK_ALPHA, solver="l
     ops["M"] = M
     ops["tol_scale"] = float(np.sqrt(interior.size))   # mode projections of a field of RMS rho: |phi^T v| <= rho*sqrt(n_i^2)
     ops["colloc_info"] = colloc.get("info")
+    ops["colloc_used"] = colloc          # node set + quadrature weights, for a hyper-reduced IC fit
     return ops
 
 

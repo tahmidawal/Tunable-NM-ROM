@@ -222,7 +222,34 @@ def main():
             row["rom"] = {}
             for var in VARIANTS:
                 ops = build_ops(dec, n, var, Z_snap, cache)
+                # HYPER-REDUCED cold start on this variant's own EQ nodes: the full-grid
+                # IC fit above is the one online step that is still O(n); fitting the
+                # latent on the same m quadrature nodes makes the cold start n-free too.
+                col = ops.get("colloc_used")
+                if col is not None and col.get("kind") == "grid":
+                    fit_eq = fu.make_fit_ic_jit(dec, n, bc.IC_BUDGET, coords=coords,
+                                                idx=col["idx"], w=col.get("w"))
+
+                    def ic_eq():
+                        z, rel, nJ, b, att = fit_eq(u0j, Z0); z.block_until_ready()
+                        return z, rel, nJ, b, att
+                    z_e, rel_e, nJ_e, b_e, att_e = ic_eq()
+                    ic_eq_med, _ = bc.time_fn(lambda: ic_eq(), reps=TIME_REPS, warm=WARM)
+                    fullrel = float(jnp.linalg.norm(dec(z_e, coords) - u0j)
+                                    / jnp.linalg.norm(u0j))
+                    ic_eq_info = dict(s=ic_eq_med, m=int(len(col["idx"])),
+                                      rel_on_eq_nodes=float(rel_e), rel_on_full_grid=fullrel,
+                                      iters=int(nJ_e), attempts=int(att_e),
+                                      z_rel_diff_vs_full=float(
+                                          jnp.linalg.norm(z_e - z_j)
+                                          / (1.0 + jnp.linalg.norm(z_j))))
+                else:
+                    ic_eq_med, ic_eq_info = None, None
                 r = time_rom(dec, n, ops, z_j, nu, u0_rms, U_true=U)
+                r["ic_fit_eq_nodes"] = ic_eq_info
+                if ic_eq_med is not None:
+                    r["speedup_end_to_end_eq_ic"] = med / (r["rollout_s_median"] + ic_eq_med + dmed)
+                    r["speedup_end_to_end_eq_ic_no_decode"] = med / (r["rollout_s_median"] + ic_eq_med)
                 r["speedup_rollout_only"] = med / r["rollout_s_median"]
                 r["speedup_end_to_end_jit_ic"] = med / (r["rollout_s_median"] + ic_jit_med + dmed)
                 # composing the PYTHON IC time with a rollout started from the JITTED IC

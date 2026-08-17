@@ -87,22 +87,50 @@ def lm_jit_solver(f, K, budget):
     return jax.jit(lm)
 
 
-def make_fit_ic_jit(dec, n, budget, coords=None):
+def make_fit_ic_jit(dec, n, budget, coords=None, idx=None, w=None):
     """Jitted cold start: LM on the data misfit to the KNOWN u0 from S inits at
     once (vmap), best-of by the smallest final ||r|| -- the same selection rule
-    as blat_common.fit_ic.  Returns fit(u0 (n^2,), Z0 (S,K)) ->
-    (z, rel_misfit, n_jac_total, best_index, attempts_total)."""
+    as blat_common.fit_ic.
+
+    idx=None (default): the misfit is taken over the FULL grid, exactly as
+    blat_common.fit_ic does.  That costs O(n) per iteration, so the cold start is
+    the one piece of the online path that is NOT n-free.
+
+    idx=(m,) interior flat indices with quadrature weights w=(m,): the SAME
+    hyper-reduction as the rollout -- the misfit is the weighted least squares
+    sum_q w_q (u(z, x_q) - u0(x_q))^2 over the m EQ nodes, so the cold start
+    becomes n-free too.  u0 is still supplied on the grid (the ROM is given the
+    initial condition); only the m sampled values are used.
+
+    Returns fit(u0 (n^2,), Z0 (S,K)) ->
+    (z, rel_misfit_on_the_fitted_points, n_jac_total, best_index, attempts_total)."""
     coords = jnp.asarray(bc.grid_coords(n)) if coords is None else coords
     K = dec.k
+    if idx is None:
+        pts = coords
+        sel = None
+        sw = None
+    else:
+        sel = jnp.asarray(np.asarray(idx))
+        pts = coords[sel]
+        sw = jnp.sqrt(jnp.asarray(np.asarray(w) if w is not None else np.ones(len(idx)), F64))
 
-    def one(u0, z0):
-        f = lambda z: dec(z, coords) - u0
+    def one(u0q, z0):
+        if sw is None:
+            f = lambda z: dec(z, pts) - u0q
+        else:
+            f = lambda z: sw * (dec(z, pts) - u0q)
         return lm_jit_solver(f, K, budget)(z0)
 
     def fit(u0, Z0):
-        zs, rns, nJs, nrs, accs, rejs, atts, reasons = jax.vmap(lambda z0: one(u0, z0))(Z0)
+        u0q = u0 if sel is None else u0[sel]
+        if sw is not None:
+            u0n = jnp.linalg.norm(sw * u0q)
+        else:
+            u0n = jnp.linalg.norm(u0q)
+        zs, rns, nJs, nrs, accs, rejs, atts, reasons = jax.vmap(lambda z0: one(u0q, z0))(Z0)
         b = jnp.argmin(rns)
-        return zs[b], rns[b] / jnp.linalg.norm(u0), jnp.sum(nJs), b, jnp.sum(atts)
+        return zs[b], rns[b] / u0n, jnp.sum(nJs), b, jnp.sum(atts)
 
     return jax.jit(fit)
 

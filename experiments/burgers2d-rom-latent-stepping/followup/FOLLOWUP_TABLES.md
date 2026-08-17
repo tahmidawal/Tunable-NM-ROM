@@ -4,16 +4,85 @@
 
 | K | train recon | ORACLE inferred latent | IC fit (t=0) | `full:fd` | `full:weak64` | `eq256:weak64` | `eq512:weak64` | blow-ups | warm iters/step |
 |---|---|---|---|---|---|---|---|---|---|
+| 2 | 5.39e-02 | 1.97e-01 | 3.09e-01 | 4.48e-01 | 4.47e-01 | 4.48e-01 | 4.53e-01 | 0 | 7.28 |
 | 4 | 6.37e-03 | 5.24e-02 | 8.09e-02 | 8.90e-02 | 7.74e-02 | 7.74e-02 | 7.75e-02 | 0 | 5.82 |
+| 6 | 3.67e-03 | 1.41e-02 | 2.60e-02 | 2.37e-02 | 1.73e-02 | 1.81e-02 | 1.75e-02 | 0 | 5.47 |
 | 8 | 3.52e-03 | 1.15e-02 | 2.31e-02 | 2.01e-02 | 1.65e-02 | 1.74e-02 | 1.68e-02 | 0 | 5.71 |
+| 12 | 3.65e-03 | 8.61e-03 | 1.98e-02 | 1.35e-02 | 1.13e-02 | 1.22e-02 | 1.16e-02 | 0 | 6.02 |
 | 16 | 3.95e-03 | 7.40e-03 | 1.75e-02 | 1.11e-02 | 9.62e-03 | 1.10e-02 | 9.91e-03 | 0 | 6.74 |
+| 24 | 4.30e-03 | 6.35e-03 | 1.51e-02 | 1.02e-02 | 1.02e-02 | 1.21e-02 | 1.97e-02 | 0 | 9.53 |
+| 32 | 4.58e-03 | 5.79e-03 | 1.30e-02 | 1.11e-02 | 1.47e-02 | 1.85e-02 | 1.50e-02 | 0 | 15.69 |
 
 POD-LSPG control (same solver, same objective, same TRAIN snapshots; the basis does not depend on K, so it is computed once):
 
 | POD k | projection floor | `full:fd` | `full:weak64` | `eq256:weak64` |
 |---|---|---|---|---|
-| 8 | 1.96e-01 | 2.09e-01 | 2.09e-01 | — |
-| 16 | 8.90e-02 | 9.73e-02 | 9.50e-02 | — |
-| 32 | 3.79e-02 | 4.32e-02 | 4.06e-02 | — |
-| 64 | 1.22e-02 | 1.40e-02 | 1.66e+00 | — |
+| 2 | 6.02e-01 | 6.06e-01 | 6.06e-01 | 6.06e-01 |
+| 4 | 3.75e-01 | 3.92e-01 | 3.93e-01 | 3.93e-01 |
+| 6 | 2.57e-01 | 2.70e-01 | 2.70e-01 | 2.70e-01 |
+| 8 | 1.96e-01 | 2.09e-01 | 2.09e-01 | 2.09e-01 |
+| 12 | 1.27e-01 | 1.38e-01 | 1.36e-01 | 1.36e-01 |
+| 16 | 8.90e-02 | 9.73e-02 | 9.50e-02 | 9.50e-02 |
+| 24 | 5.39e-02 | 6.03e-02 | 5.74e-02 | 5.73e-02 |
+| 32 | 3.79e-02 | 4.32e-02 | 4.06e-02 | 4.06e-02 |
+| 64 | 1.22e-02 | 1.40e-02 | 1.66e+00 | 1.11e+00 |
+
+### Multi-seed (K=8, N=64; TRAIN_SEED changes the net init, the latent init and the batch order only — the data draw, the split and the TEST_SEED test set are fixed)
+
+| quantity | seed 0 | seed 1 | seed 2 | mean ± std |
+|---|---|---|---|---|
+| train recon (learned latents) | 3.52e-03 | 3.55e-03 | 3.48e-03 | 3.52e-03 ± 3.3e-05 |
+| ORACLE inferred-latent floor (held out) | 1.15e-02 | 1.24e-02 | 1.11e-02 | 1.17e-02 ± 6.3e-04 |
+| IC fit at t=0 | 2.31e-02 | 2.15e-02 | 2.09e-02 | 2.18e-02 ± 1.1e-03 |
+| ROM `full:weak64` | 1.65e-02 | 1.57e-02 | 1.46e-02 | 1.56e-02 ± 9.6e-04 |
+| ROM `eq256:weak64` | 1.74e-02 | 1.61e-02 | 1.52e-02 | 1.62e-02 ± 1.1e-03 |
+| ROM `eq512:weak64` | 1.68e-02 | 1.58e-02 | 1.47e-02 | 1.58e-02 ± 1.1e-03 |
+| ROM `full:fd` | 2.01e-02 | 1.91e-02 | 1.93e-02 | 1.95e-02 ± 4.9e-04 |
+| POD control k8:galerkin:full:fd | 2.10e-01 | 2.10e-01 ± 0.0e+00 |
+| POD control k8:lspg:eq512:weak64 | 2.09e-01 | 2.09e-01 ± 0.0e+00 |
+| POD control k8:lspg:full:fd | 2.09e-01 | 2.09e-01 | 2.09e-01 | 2.09e-01 ± 4.4e-12 |
+| POD control k8:lspg:full:weak64 | 2.09e-01 | 2.09e-01 ± 0.0e+00 |
+
+The POD basis is a deterministic function of the TRAIN snapshots, so the POD control carries no training-seed variance (any spread in its row is solver non-determinism only).
+
+### m ladder at fixed (K=8, M=64) — NNLS-EQ nodes, grid vs meshfree pool
+
+Per-step times in parentheses are the python-loop wall clock from the accuracy cell (they include host overhead); unparenthesised values are the median-of-7 device-synced rollout from the `bt_m` cost cell divided by the 50 steps.
+
+| objective / pool | m=64 | m=128 | m=256 | m=512 | m=1024 | full grid |
+|---|---|---|---|---|---|---|
+| `weak64` (exact FOM operator), grid EQ | 6.54e-02 | 1.95e-02 | 1.74e-02 | 1.68e-02 | 1.67e-02 | 1.65e-02 |
+| ↳ ms per ROM step (median of 7, device sync) | 2.37 | 3.56 | 5.50 | 9.03 | 17.55 | 61.52 |
+| ↳ NNLS relative fit | 2.1e-01 | 4.9e-02 | 6.2e-03 | 1.0e-03 | 1.5e-04 | 0 |
+| `weakc64` (continuum), grid EQ | 1.11e-01 | 5.53e-02 | 4.47e-02 | 4.51e-02 | 4.55e-02 | 4.56e-02 |
+| ↳ ms per ROM step (median of 7, device sync) | (2.6) | (2.8) | (3.3) | (4.1) | (5.8) | 12.87 |
+| ↳ NNLS relative fit | 1.7e-01 | 2.9e-02 | 1.5e-03 | 2.0e-04 | 2.7e-05 | 0 |
+| `weakc64` (continuum), meshfree pool | 1.20e-01 | 5.41e-02 | 4.49e-02 | 4.53e-02 | 4.55e-02 | 4.56e-02 |
+| ↳ ms per ROM step (median of 7, device sync) | 1.50 | 1.82 | 2.33 | 3.09 | 4.71 | 12.87 |
+| ↳ NNLS relative fit | 1.6e-01 | 2.8e-02 | 1.4e-03 | 2.1e-04 | 3.5e-05 | 0 |
+
+Oracle inferred-latent floor on this cell: 1.15e-02; blow-ups: 0 in 17 x 16 rollouts.
+
+### M ladder at m ≈ 4M (K=8, grid EQ)
+
+| M | full grid | NNLS-EQ m=4M | ms/step, full (median of 7) | ms/step, EQ (median of 7) |
+|---|---|---|---|---|
+| 16 | 1.88e-02 | 2.86e-02 | 59.39 | 2.40 |
+| 32 | 1.68e-02 | 1.83e-02 | 61.61 | 3.72 |
+| 64 | 1.65e-02 | 1.74e-02 | 61.52 | 5.50 |
+| 128 | 1.66e-02 | 1.67e-02 | 62.02 | 9.09 |
+| 256 | 1.67e-02 | 1.68e-02 | 62.30 | 17.72 |
+
+### Online cost vs N on ONE GPU (cuda:0, all N sequential in one process; K=8, M=64, m=256, median of 7 after 2 warm-ups, `block_until_ready`; the coordinate decoder is meshfree so the SAME N=64 checkpoint is used at every N, EQ weights refit per N)
+
+| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / ROM step | ms / Jacobian eval | IC fit (python LM) | IC fit (jitted LM) | decode 51 slices | end-to-end speedup (jitted IC) |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 208 ms | 280 ms | **0.74x** | 5.61 | 1.09 | 918 ms | 34.6 ms | 4.3 ms | 0.65x |
+| 64 | 426 ms | 289 ms | **1.48x** | 5.77 | 1.11 | 1015 ms | 106.1 ms | 11.5 ms | 1.05x |
+| 128 | 1162 ms | 274 ms | **4.24x** | 5.49 | 1.08 | 1384 ms | 417.6 ms | 46.1 ms | 1.57x |
+| 256 | 2227 ms | 274 ms | **8.13x** | 5.48 | 1.08 | 3384 ms | 1696.7 ms | 188.3 ms | 1.03x |
+
+Other variants (rollout ms / speedup): N=32: `eq512:weak64` 483/0.43x, `full:weak64` 847/0.25x, `eqoff512:weakc64` 148/1.40x; N=64: `eq512:weak64` 486/0.88x, `full:weak64` 3477/0.12x, `eqoff512:weakc64` 152/2.80x; N=128: `eq512:weak64` 485/2.40x, `full:weak64` 14238/0.08x, `eqoff512:weakc64` 157/7.42x; N=256: `eq512:weak64` 488/4.56x, `full:weak64` 57322/0.04x, `eqoff512:weakc64` 154/14.48x.
+
+Accuracy of the N=64-trained ROM against the FOM at each N (test trajectory 0, single trajectory — a transfer check, not the cell's error statistic): N=32: 1.15e-02; N=64: 1.19e-02; N=128: 1.03e-02; N=256: 1.07e-02.
 

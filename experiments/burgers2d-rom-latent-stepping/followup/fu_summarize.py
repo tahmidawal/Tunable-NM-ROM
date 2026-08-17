@@ -68,7 +68,7 @@ def get(rep, path, default=None):
 
 # ------------------------------------------------------------------ gather
 def gather():
-    D = dict(kladder=[], seeds=[], mlad=None, Mlad=None, tn=None, tk=None)
+    D = dict(kladder=[], seeds=[], mlad=None, Mlad=None, tn=None, tk=None, tm=None)
     for K in KS:
         rep = first(os.path.join(FU, f"bk_K{K}", f"blat_rom_N64_K{K}.json"),
                     os.path.join(RUNS, f"ad_n64_k{K}", f"blat_rom_N64_K{K}.json"))
@@ -89,6 +89,7 @@ def gather():
     D["Mlad"] = first(os.path.join(FU, "bm_M", "blat_rom_N64_K8.json"))
     D["tn"] = first(os.path.join(FU, "bt_n", "timing_n.json"))
     D["tk"] = first(os.path.join(FU, "bt_k", "timing_k.json"))
+    D["tm"] = first(os.path.join(FU, "bt_m", "timing_m.json"))
     return D
 
 
@@ -188,10 +189,25 @@ def _mrows(rep, kind):
     return out
 
 
+def cost_of(D, var):
+    """Median-of-7, device-synced rollout time of a variant from the bt_m cost cell
+    (one GPU, one process); None if that cell has not been pulled."""
+    t = D.get("tm")
+    if not t:
+        return None
+    for r in t["rows"]:
+        if r.get("kind") == "coord" and var in r["rom"]:
+            return r["rom"][var]
+    return None
+
+
 def tab_ladders(D, out):
     if D["mlad"]:
         rep = D["mlad"]
         out.append("### m ladder at fixed (K=8, M=64) — NNLS-EQ nodes, grid vs meshfree pool\n")
+        out.append("Per-step times in parentheses are the python-loop wall clock from the accuracy "
+                   "cell (they include host overhead); unparenthesised values are the median-of-7 "
+                   "device-synced rollout from the `bt_m` cost cell divided by the 50 steps.\n")
         out.append("| objective / pool | " + " | ".join(f"m={m}" for m in (64, 128, 256, 512, 1024)) + " | full grid |")
         out.append("|" + "---|" * 7)
         for kind, pool, label in (("weak", "grid", "`weak64` (exact FOM operator), grid EQ"),
@@ -203,9 +219,15 @@ def tab_ladders(D, out):
             fullv = rows.get(("full", "grid"))
             out.append(f"| {label} | " + " | ".join(fmt(v["traj_rel_mean"]) if v else "—" for v in vals)
                        + f" | {fmt(fullv['traj_rel_mean']) if fullv else '—'} |")
-            out.append("| ↳ ms per ROM step | " + " | ".join(
-                f"{v['step_time_ms_median']:.1f}" if v else "—" for v in vals)
-                + (f" | {fullv['step_time_ms_median']:.1f} |" if fullv else " | — |"))
+            obj = f"weak{64}" if kind == "weak" else "weakc64"
+            pre = "eqoff" if pool == "meshfree" else "eq"
+            cost = [cost_of(D, f"lspg:{pre}{m}:{obj}") for m in (64, 128, 256, 512, 1024)]
+            cfull = cost_of(D, f"lspg:full:{obj}")
+            out.append("| ↳ ms per ROM step (median of 7, device sync) | " + " | ".join(
+                f"{c['rollout_s_median']*1e3/50:.2f}" if c else
+                (f"({v['step_time_ms_median']:.1f})" if v else "—") for c, v in zip(cost, vals))
+                + (f" | {cfull['rollout_s_median']*1e3/50:.2f} |" if cfull else
+                   (f" | ({fullv['step_time_ms_median']:.1f}) |" if fullv else " | — |")))
             out.append("| ↳ NNLS relative fit | " + " | ".join(
                 (f"{v['eq_info']['rel_fit']:.1e}" if v and v.get("eq_info") else "—") for v in vals) + " | 0 |")
         out.append(f"\nOracle inferred-latent floor on this cell: "
@@ -215,14 +237,16 @@ def tab_ladders(D, out):
     if D["Mlad"]:
         rep = D["Mlad"]
         out.append("### M ladder at m ≈ 4M (K=8, grid EQ)\n")
-        out.append("| M | full grid | NNLS-EQ m=4M | ms/step (full) | ms/step (EQ) |")
+        out.append("| M | full grid | NNLS-EQ m=4M | ms/step, full (median of 7) | ms/step, EQ (median of 7) |")
         out.append("|---|---|---|---|---|")
         for M in (16, 32, 64, 128, 256):
             f_ = get(rep, ["rom", f"lspg:full:weak{M}"]) or {}
             e_ = get(rep, ["rom", f"lspg:eq{4*M}:weak{M}"]) or {}
+            cf = cost_of(D, f"lspg:full:weak{M}"); ce = cost_of(D, f"lspg:eq{4*M}:weak{M}")
+            ms = lambda c, v: (f"{c['rollout_s_median']*1e3/50:.2f}" if c else
+                               (f"({v.get('step_time_ms_median', float('nan')):.1f})" if v else "—"))
             out.append(f"| {M} | {fmt(f_.get('traj_rel_mean'))} | {fmt(e_.get('traj_rel_mean'))} | "
-                       f"{f_.get('step_time_ms_median', float('nan')):.1f} | "
-                       f"{e_.get('step_time_ms_median', float('nan')):.1f} |")
+                       f"{ms(cf, f_)} | {ms(ce, e_)} |")
         out.append("")
 
 

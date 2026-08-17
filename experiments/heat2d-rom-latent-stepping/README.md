@@ -140,14 +140,25 @@ Trajectory rel-L2 = mean over the 51 slices, mean over the 16 test trajectories.
 Five things this says:
 
 1. **The weak form beats the exact discrete residual.** At K=8, `weak64` (1.87e-2) is **1.8x
-   better** than `weakall` = the exact full-grid strong-form residual (3.35e-2), on the same
-   manifold with the same solver. Projecting onto M low smooth modes discards precisely the
-   high-frequency part of the residual that the K-dimensional tangent space cannot fix, and
-   which otherwise drags the LM solution off the accurate state. This is the Poisson/Burgers
-   recipe reproducing on a linear PDE, where the weak form is *exact* rather than an
-   approximation, so the effect cannot be a discretisation artefact.
-2. **M must comfortably exceed K, and the best M grows with K** (K=4 -> M=16, K=8 -> M=64,
-   K=16 -> M=128–256; roughly M ~ 16K). ⚠ The two entries marked above are the failure mode:
+   better** than `weakall` = the exact full-grid strong-form residual (3.35e-2) — same manifold,
+   same solver, same stopping rule, and (by the asserted identity) literally the same residual
+   vector up to an orthogonal rotation and the `alpha` weighting. Against the *best* strong-form
+   arm, `galerkin:full:fd`, the margin is smaller: 1.34x at K=8 (1.87e-2 vs 2.50e-2), 1.54x at
+   K=4, and only **1.14x at K=16** (9.73e-3 vs 1.10e-2). The effect is consistent in mean,
+   median and max at every K, and it cannot be a discretisation artefact, because on this linear
+   PDE the weak form is *exact*.
+   **What we did not show:** the causal story usually offered — "the low-mode projection discards
+   the high-frequency residual the K-dimensional tangent space cannot fix" — is *consistent with*
+   these numbers but is **not demonstrated** by them. Two other explanations survive: the
+   `alpha`-weighting changes the metric (though `weak64a0` at alpha=0 keeps most of the gain, so
+   this is at most a small part), and the projected Jacobian `Phi^T J` is far better conditioned
+   at M=64 than the full `J`, which changes the LM trajectory and where it stalls (warm iteration
+   counts drop from 8.5 to 6.3 at K=8). Separating those would need a residual-spectrum
+   diagnostic that this study does not have.
+2. **M must comfortably exceed K, and the best M grows with K.** The argmin moves M=16 (K=4) ->
+   M=64 (K=8) -> M=128–256 (K=16), with the error monotone in M on either side of the argmin at
+   every K. **Three K values are not a scaling law** — read this as a trend and a sizing rule of
+   thumb (M of order 10K), not as `M ~ 16K`. ⚠ The two entries marked above are the failure mode:
    `weak16` at K=16 (M = K, 9.0e-2) and POD `weak64` at k=64 (M = k, 1.42e-1) — when the
    number of test modes equals the number of unknowns the Petrov–Galerkin system becomes
    square, the least-squares regularisation disappears, and the step can chase an exact root of
@@ -233,7 +244,11 @@ At N=128 the same ladder is FOM 121 ms, ROM end-to-end 0.15x, POD-direct k=8 **3
   rollout is frozen after step 1 (a real bug), so only the FOM is reused from the public
   package here.
 - **Cost scaling**: yes, and this is the strongest single number — hyper-reduced online cost is
-  flat in n (1.008x for 4x the dof).
+  flat in n (1.008x for 4x the dof), *for the rollout*. Two mesh sizes on one GPU with one
+  variant is evidence of the mechanism (nothing in the hyper-reduced step touches n: m=256
+  decoder evaluations and an M x K least-squares solve), not a measured scaling curve; and the
+  **end-to-end** pipeline is not flat, because the cold start still scales with n (156 ms ->
+  640 ms). The flatness claim applies to the rollout only, and the prose above says so.
 - **Wall-clock speedup vs this FOM**: **no, and it should not be expected to be.** Heat 2D is
   linear, so the correct ROM is the `k x k` reduced operator `V^T A_kappa V`, which is 5.5–38x
   faster than the FOM and at k=64 is also *more accurate* than the nonlinear ROM at K=16. A
@@ -241,6 +256,29 @@ At N=128 the same ladder is FOM 121 ms, ROM end-to-end 0.15x, POD-direct k=8 **3
   more than a 64x64 reduced solve. The nonlinear manifold's value on this problem is purely
   **accuracy per latent dimension** (6.9x at equal k), which matters when the latent has to be
   small (control, inverse problems, downstream conditioning) — not throughput.
+
+### Statistical honesty (n_test = 16)
+
+The per-trajectory distribution is heavy-tailed (K=8, `weak64`: mean 1.867e-2, median 1.461e-2,
+max 4.96e-2), so with 16 trajectories only differences of roughly 20% or more that move mean,
+median **and** max in the same direction should be read as real. On that standard:
+
+- **Real**: weak-M vs `weakall`/`fd` (1.8x, all three statistics); the `M = K` collapse
+  (9.0e-2 with a 6.4e-1 worst case at K=16); Galerkin vs LSPG in the **strong** form; the
+  coordinate ROM vs POD at equal k (6.9x); the K-ladder (2.04e-2 -> 1.16e-2 -> 6.71e-3 floors
+  and 3.30e-2 -> 1.87e-2 -> 9.73e-3 ROM).
+- **Ties, and described as such**: `weak64` vs `weak128` at K=8 (1.867e-2 vs 1.902e-2, 2%);
+  `weak128` vs `weak256` at K=16; LSPG vs Galerkin under `weak64` (0.3%); `eq` vs `eqoff` at
+  equal m (<1%); discrete vs continuum eigenvalues (<0.2%); alpha=1 vs alpha=0 (3–7% — a
+  consistent sign at all three K, but each individually within noise).
+- The `eq256` penalty over the full grid (5%) is at the edge; it is consistent in sign at all
+  three K and at N=128, which is why it is stated as "about 5%" rather than as a tie.
+- All tables use the same statistic throughout (mean over 51 slices, then mean over 16
+  trajectories) with the median shown alongside; no arm is quoted on a median where another is
+  quoted on a mean.
+- **Limitation**: `hlat_rom.py` stores only the aggregates per variant, not the 16
+  per-trajectory values, so *paired* significance tests cannot be recomputed from the archived
+  JSONs. The judgements above are from the mean/median/max triple.
 
 ### Caveats
 
@@ -258,10 +296,25 @@ At N=128 the same ladder is FOM 121 ms, ROM end-to-end 0.15x, POD-direct k=8 **3
 - **Absolute times are comparable only within a cell.** `ad_n64_k8` and `ad_n128_k8` shared one
   node (pax007, A100 80GB PCIe), so the N-flatness table is like-for-like; the K=4 and K=16
   cells ran on 40 GB A100s.
-- **No variant was selected on TEST.** The full 19-variant x 3-K grid is reported. Any later
-  claim that picks the best cell of these tables *would* be using TEST for model selection; a
-  headline configuration should be locked on VAL first.
-- **`M >= 4K` is a hard requirement**, not a tuning preference (see the two ⚠ entries).
+- **No variant was selected on TEST — but the headline numbers quote the best variant per K,
+  which is the same thing done informally.** The full 19-variant x 3-K grid is reported so the
+  reader can see the whole surface, and the *qualitative* conclusions (weak > strong, M >> K,
+  hyper-reduction cheap, meshfree == grid, Galerkin == LSPG under projection) hold across the
+  whole grid rather than at one point. But "best ROM 1.87e-2 at K=8" is a maximum over 19
+  correlated arms evaluated on the same 16 trajectories and is therefore optimistically biased.
+  A publishable headline needs the configuration locked on VAL and re-measured once on TEST;
+  this study did not do that.
+- **The comparison to the published `2.83e-2 @ 0.17x` is cross-code, not a re-run.** That
+  number comes from `fix/heat-rollout-warm-start` — different code, its own `heat2d_n64`
+  configuration and test split, and its own timing protocol on unknown hardware. It is quoted
+  as the target because it is the project's best published heat ROM, but "beaten at exactly the
+  same speedup" should be read as "in the same ballpark on both axes, better on accuracy", not
+  as a controlled head-to-head. Re-running that branch's ROM inside this harness would be
+  required for a real comparison.
+- **`M >= 4K` is a rule of thumb inferred from two failure points** (`weak16` at K=16, POD
+  `weak64` at k=64), both of which have M exactly equal to the number of unknowns. The
+  *mechanism* (a square Petrov–Galerkin system loses the least-squares regularisation) is clear;
+  the specific factor 4 is not measured — we have no data between M=K and M=2K.
 - Stage 1's gap to the oracle is limited by the sweep decoder's own PDE inconsistency
   (residual 2.4e-2 at the true z), not by the solver.
 - The FOM residual floor is 1e-10 (this testbed's CG tolerance), so "converged data" here means

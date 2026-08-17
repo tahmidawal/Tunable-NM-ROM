@@ -65,8 +65,21 @@ def main():
     Ztr = ck["Z_train"]
     d = wc.build_data(N)
     fp = wc.data_fingerprint(d["U"])
-    if fp["sha256"] != ck["data_fingerprint"].get("sha256", fp["sha256"]):
-        raise SystemExit("data fingerprint mismatch")
+    ckfp = ck["data_fingerprint"]
+    # The sha256 is bit-exact and therefore MACHINE-SPECIFIC: the same seed run on a
+    # different GPU / JAX build gives last-bit-different CG iterates.  Treat a sha
+    # match as proof of identity; otherwise fall back to the moment check with an
+    # explicit tolerance and RECORD that the data were regenerated elsewhere.
+    same_bytes = fp["sha256"] == ckfp.get("sha256")
+    rel = max(abs(fp["sum"] - ckfp["sum"]) / abs(ckfp["sum"]),
+              abs(fp["sumsq"] - ckfp["sumsq"]) / ckfp["sumsq"])
+    if list(fp["shape"]) != list(ckfp["shape"]) or rel > 1e-9:
+        raise SystemExit(f"data fingerprint mismatch (shape or moments, rel {rel:.2e})")
+    report_fp = dict(fingerprint=fp, checkpoint_fingerprint_sha256=ckfp.get("sha256"),
+                     bitwise_identical_to_checkpoint=bool(same_bytes),
+                     moment_rel_diff=float(rel))
+    log(f"  data fingerprint: bitwise identical to the training run: {same_bytes}; "
+        f"moment rel diff {rel:.2e}")
     U_te, c_te = d["U_test"], d["c_test"]
     interior = wc.interior_indices(N)
     coords = jnp.asarray(wc.grid_coords(N))
@@ -76,7 +89,7 @@ def main():
     report = dict(config=dict(wc.CONFIG, starts=STARTS, hs=HS, sd_n_test=n_test,
                               variants=VARIANTS, fit_budget=FIT_BUDGET, tag=TAG,
                               ad_pkl=os.path.basename(AD_PKL), ad_config=ck["config"]),
-                  backend=jax.default_backend(), data_fingerprint=fp,
+                  backend=jax.default_backend(), data_fingerprint=report_fp,
                   train_traj_rel_mean=ck.get("train_traj_rel_mean"))
 
     # ---- ORACLE latent fit on an arbitrary field (uses the held-out data) ----

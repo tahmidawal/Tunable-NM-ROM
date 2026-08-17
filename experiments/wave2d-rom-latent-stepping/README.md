@@ -52,3 +52,91 @@ Files: `wlat_common.py` (all machinery), `wlat_verify.py`, `wlat_train_ad.py`,
 | V7 | both energy estimators calibrated on an exact Newmark trajectory |
 | V8 | `train_trajectories` reproduces the frozen `wf.build_trajectories` bit-for-bit |
 
+## Cluster runs
+
+| cell | job | GPU | what |
+|---|---|---|---|
+| `wverify_n64` | 2478633 | A100 80GB | verification + the `RS` time-step table at N=64 |
+| `ws1_n64_icw1` | 2480278 | A100 80GB | Stage 1, N=64, `IC_W=1` |
+| `ws1_n64_icwsqrt50` | 2480282 | A100 80GB | Stage 1, `IC_W=sqrt(50)` |
+| `ws1_n64_diag` | 2481931 | A100 80GB | Stage 1 oracle-init / multistart diagnostic |
+| `wad_n64_k4` | 2481531 | A100 80GB | auto-decoder K=4 (80k steps, batch 128, P_SUB 2048) + the full ROM study |
+| `wad_n64_k8` | 2481533 | A100 80GB | K=8, plus the `RS in {8,20,40}` ROM-time-step arm |
+| `wad_n64_k16` | 2481537 | A100 80GB | K=16 |
+| `wad_n128_k8` | 2481538 | A100 80GB | K=8 at N=128 (flat-in-N check at fixed k, M, m) |
+
+Every cell: `jax_backend=gpu`, `JAX_DEFAULT_MATMUL_PRECISION=highest`, f64, data regenerated
+from seed 0 on the cluster (train and test FOM energy drift 3.2e-11 / 1.2e-11, both
+thresholded at 1e-9), isolated job directories created atomically, sha256-verified staging
+and pull, cluster directories deleted afterwards.  The per-interval step diagnostic
+(`wlat_stepdiag.py`) was run on the local GB10 against the pulled K=8 checkpoint (the data it
+regenerates agree with the cluster's to 5.9e-16 in the global moments; the sha256 differs
+because CG iterates differ in the last bits across GPU/JAX builds).
+
+## Verification results (N=64, job 2478633)
+
+- FOM energy drift **1.6e-12**; the u-only Newmark rollout's **2.3e-9**.
+- **V1** u-only Newmark at RS=80 vs the (u,v) CN FOM: **2.8e-8** (max 8.1e-8) — CG-tolerance
+  limited (the FOM uses tol 1e-10, ours 1e-12, over 4000 steps). **The v-elimination is exact.**
+- **V2** residual operators on exact Newmark states: strong-full 2.1e-16, strong-subset
+  1.7e-16, weak 2.1e-16; a NON-solution gives 2.6e-4.
+- **V2b** Newmark self-consistency of the Stage-1 residual formula: 2.9e-17.
+- **V3** weak form with all 3844 modes, `alpha=0`, vs the strong full-grid residual:
+  3.095926e-01 vs 3.095926e-01, **relative difference 3.6e-16**.
+- **V7** both energy estimators on an exact Newmark trajectory: kinematic drift 1.5e-12,
+  dynamic drift 5.4e-12, kinematic-vs-dynamic velocity defect 9.1e-12.
+- **V8** `train_trajectories` reproduces the frozen `wf.build_trajectories`: max |diff| **0.0**.
+
+### The ROM time-step floor (`RS`), N=64
+
+The u-only Newmark FOM at the ROM's own `dt`, measured against the 80-substep FOM
+(traj-RMS, mean over 6 trajectories):
+
+| `RS` | `dt` | latent steps | traj-RMS vs the FOM | max |
+|---|---|---|---|---|
+| 1 | 2.0e-2 | 50 | 1.33e-1 | 2.39e-1 |
+| 2 | 1.0e-2 | 100 | 5.40e-2 | 1.26e-1 |
+| 4 | 5.0e-3 | 200 | 2.17e-2 | 7.44e-2 |
+| 8 | 2.5e-3 | 400 | 7.22e-3 | 2.84e-2 |
+| 16 | 1.25e-3 | 800 | 1.85e-3 | 7.28e-3 |
+| **20** | **1.0e-3** | **1000** | **1.16e-3** | 4.57e-3 |
+| 40 | 5.0e-4 | 2000 | 2.32e-4 | 9.17e-4 |
+| 80 | 2.5e-4 | 4000 | 2.78e-8 | 8.08e-8 |
+
+Second order asymptotically (ratio 2.5 -> 3.0 -> 3.9 -> 4.0 as `dt` halves).  `RS=20` was
+chosen for the primary cells: 1.16e-3 is roughly 10x below the manifold floor, so the ROM's
+own time discretisation cannot explain any of the errors below.  Every ROM number is
+nevertheless reported against **both** the 80-substep FOM and the same-`dt` Newmark FOM
+(they agree to 4 digits everywhere, confirming this).
+
+## Stage 1 — space-time LSPG on the (z,t) sweep decoder (N=64, 16 fresh test trajectories)
+
+| arm | traj-RMS mean | median | max | mean \|z − z*\| | obj(found)/obj(z*) |
+|---|---|---|---|---|---|
+| oracle (true z) | **3.18e-2** | — | 8.37e-2 | 0 | 1 |
+| `ic` (IC misfit only) | 8.83e-1 | 9.40e-1 | 1.36 | 0.428 | 0.728 (16/16 below) |
+| `resid` (no IC term in the objective) | 1.04 | 9.56e-1 | 1.70 | 1.59 | 0.171 (16/16 below) |
+| `both`, `IC_W=1` | 6.34e-1 | 7.31e-1 | 1.35 | 0.269 | 0.808 (16/16 below) |
+| `both`, `IC_W=sqrt(50)` | 6.07e-1 | **2.11e-1** | 1.35 | 0.301 | — |
+| `both_oracleinit` (LM started AT the true z — ORACLE diagnostic) | 5.93e-1 | 6.14e-1 | 1.35 | 0.256 | 0.817 (16/16 below) |
+
+**Stage 1 does not transfer from Burgers, and the reason is not optimisation.**  On Burgers
+`both` reached the oracle (7.3e-3 vs 3.8e-3).  Here it lands 19x above it, and the
+oracle-initialised arm settles the question: started exactly at the true parameter vector,
+LM *walks away* from it to `|z − z*| = 0.26` and finds an objective **18% lower** than the
+objective at the truth, on **16 of 16** trajectories.  The residual + IC-misfit objective's
+minimiser genuinely is not the true parameter.
+
+Two things cause this, and both are wave-specific:
+
+1. The sweep decoder's own PDE inconsistency at the true `z` is 5.6e-3 relative — comparable
+   to the objective's variation across the latent space, so the objective can be lowered by
+   moving to latents whose (wrong) fields happen to be more Newmark-consistent.  `resid`
+   alone drives the objective to 0.171 of its value at the truth while `|z − z*|` reaches
+   1.59: with no dissipation and no data term, a smoother, lower-amplitude field is always
+   more PDE-consistent.
+2. Even a *good* parameter estimate does not buy a good trajectory. `both` fits `u0`
+   essentially perfectly (per-time error 1.1e-2 at t=0 — the oracle's own level) and then
+   grows monotonically to ~0.94 by T=1.  Nothing damps a phase error: `|δz| ≈ 0.27` out of a
+   ~[-1,1]^5 range already dephases the wave by O(1) over one crossing time.
+

@@ -784,6 +784,37 @@ EXPECTED = {
 }
 
 
+def audit_tolerance_labels(readme, blocks):
+    """An over-convergence factor is MEANINGLESS without its reference tolerance.
+
+    Quoting one tolerance's factor as "the" factor is exactly what produced a
+    spurious disagreement between this cell and rom-warmstart-fom: 1.16x (at
+    tau=1e-10) and 1.56x (at tau=1e-6) are the same measurement of the same
+    quantity, 1.34x apart, and only the label distinguishes them.  The Poisson
+    factor also carries a SIGN CHANGE between those columns at N=256, so the
+    label is not a nicety.
+
+    Fails if any 'Nx' over-convergence figure appears in the README's hand-written
+    prose without a tolerance named within the same sentence."""
+    if not os.path.isfile(readme):
+        return []
+    txt = open(readme).read()
+    for name in blocks:                      # strip generated blocks: they carry
+        txt = re.sub(r"<!-- BEGIN GENERATED: " + re.escape(name)  # their own labels
+                     + r" -->.*?<!-- END GENERATED: " + re.escape(name) + r" -->",
+                     "", txt, flags=re.S)
+    bad = []
+    for sent in re.split(r"(?<=[.!?])\s+|\n\n", txt):
+        if not re.search(r"\b\d\.\d{1,2}x\b", sent):
+            continue
+        if not re.search(r"over-?conv|factor", sent, re.I):
+            continue
+        if re.search(r"tau|1e-\d|tolerance|iso-accuracy|archived|speedup|ratio", sent, re.I):
+            continue
+        bad.append(" ".join(sent.split())[:150])
+    return bad
+
+
 def audit(data, allow_incomplete=False):
     """Refuse to build tables from a partial surface.
 
@@ -877,6 +908,23 @@ def main():
                            "**PROVISIONAL -- the surface is incomplete:**\n\n"
                            + "\n".join(f"* {t}" for t in problems[:40]))
     rewrite(args.readme, blocks)
+    unlabelled = audit_tolerance_labels(args.readme, blocks)
+    if unlabelled:
+        raise SystemExit(
+            "over-convergence factor(s) stated WITHOUT a reference tolerance -- this is the "
+            "exact mislabelling that made 1.16x and 1.56x look like a disagreement when they "
+            "are the same measurement 1.34x apart:\n  " + "\n  ".join(unlabelled))
+    # the anchor table must expose EVERY tolerance, so no single rung can be
+    # headlined as "the" factor
+    eng_cols = set()
+    for pde, d in data.items():
+        for b_ in d.get("fom_baseline", []) + d.get("fom_baseline_1gpu", []):
+            eng_cols |= set((b_.get("overconvergence_engineering") or {}).keys())
+    if eng_cols and len(eng_cols) < 2:
+        raise SystemExit(f"only one reference tolerance ({eng_cols}) in the "
+                         f"over-convergence record; at least two are required so the factor "
+                         f"cannot be quoted unqualified")
+    print(f"  tolerance-label audit: clean ({len(eng_cols)} reference tolerances recorded)")
 
 
 if __name__ == "__main__":

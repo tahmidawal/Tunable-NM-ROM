@@ -169,18 +169,44 @@ that bites.
 If you are correcting an archived table, the most useful thing here is **not** either
 over-convergence factor on its own; it is that the two PDEs behave differently:
 
-> **Poisson: a single scalar is defensible.** The factor is ~1.16x and nearly constant across
-> the mesh ladder (per-mesh multipliers 0.856–0.880, a 2.8% spread). Multiplying a whole
-> archived Poisson ladder by one number changes its level and leaves its **slope** essentially
-> intact.
+> **Poisson: a single scalar is defensible — but only per assumed tolerance.** The factor is
+> nearly constant across the mesh ladder (a 2.8% spread), so one number per tolerance changes an
+> archived ladder's level and leaves its **slope** intact. It is *not* constant across
+> tolerances: it varies by 1.34x from end to end.
 >
-> **Burgers: a single scalar is not.** The factor is 3.75–4.79x with a 28% spread and is
-> genuinely N-dependent (multipliers 0.209–0.267). A scalar there bends the slope of the
-> N-ladder — which is the very quantity a mesh-independence claim rests on — so Burgers must be
-> corrected per mesh, or not at all.
+> **Burgers: a single scalar is not defensible at all.** The factor has a 28% spread across N
+> and is genuinely mesh-dependent, so a scalar bends the slope of the N-ladder — the very
+> quantity a mesh-independence claim rests on. Correct per mesh, or not at all.
 
-The asymmetry also sets the stakes for reconciling definitions between cells: a mismatched
-Burgers denominator lands on a ~4x correction, a mismatched Poisson one on a ~1.16x correction.
+**Always name the reference tolerance next to a Poisson factor.** Measured, at every rung
+(`rom-warmstart-fom`'s consolidated run, corroborated by this cell at N=64/128):
+
+| N | vs `tau`=1e-6 | vs `tau`=1e-8 | vs `tau`=1e-10 |
+|---|---|---|---|
+| 32 | 1.56x | 1.32x | 1.16x |
+| 64 | 1.56x | 1.32x | 1.16x |
+| 128 | 1.57x | 1.31x | 1.15x |
+| 256 | 1.53x | 1.31x | 1.16x |
+| 512 | 1.53x | 1.31x | 1.16x |
+
+This cell independently measures **1.56x at N=64 and 1.57x at N=128 against `tau`=1e-6**, on the
+nose. An unqualified "the Poisson factor is 1.16x" is the `tau`=1e-10 column quoted as though it
+were the whole story — the tightest rung, and the one that flatters the archived numbers most.
+That mislabelling is what produced an apparent disagreement between the two cells when there was
+never a measurement discrepancy at all. **1e-6 is the column to quote for a deployment**, and it
+carries a sign change rather than a rescaling: at 1e-6 the archived Poisson ROM no longer beats
+the FOM at N=256 (0.91x, against 1.20x as previously published at 1e-10).
+
+**This cell's factor is a FLOOR, not a point estimate.** The `rom-warmstart-fom` `tau` is a
+continuous stopping test on the recomputed true residual, so its 1e-6 solve lands within 1.01x
+of target. This cell's ladder must pick the cheapest *rung* clearing a target, which necessarily
+overshoots — so the FOM is charged for a little more accuracy than the comparison needs, and the
+resulting factor is an underestimate. The half-decade refinement (§ above) shrinks the overshoot
+but cannot remove it.
+
+The asymmetry sets the stakes for reconciling definitions between cells: a mismatched Burgers
+denominator lands on a ~4x correction, a mismatched Poisson one on a 1.16–1.57x correction
+*depending entirely on which tolerance is meant*.
 
 ### Cross-checking the two Burgers ladders
 

@@ -105,6 +105,18 @@ def build(runs=None):
                 bb = max(sub, key=lambda r: r["iter_saving_frac"])
                 f[f"p_maxsave_{tg}_Nmax"] = g(100 * bb["iter_saving_frac"], ".3g")
         f["p_nmax"] = str(nmax)
+        # ABSOLUTE iterations saved, not just the fraction.  Checking this refuted an
+        # earlier "a fixed head start buys a fixed number of iterations" claim: the
+        # absolute saving COLLAPSES as the tolerance tightens, so the head start is
+        # eroded, not merely diluted by a bigger denominator.
+        for ft in fts:
+            tg = f"{ft:g}".replace("-", "m").replace("+", "").replace(".", "")
+            sub = [r for r in Pc if r["N"] == nmax and r["fom_tau"] == ft]
+            if sub:
+                bb = max(sub, key=lambda r: r["iter_saving_frac"])
+                f[f"p_abssave_{tg}_Nmax"] = g(bb["iters_from_baseline"]
+                                              - bb["iters_from_rom"], ".3g")
+                f[f"p_totiters_{tg}_Nmax"] = g(bb["iters_from_baseline"], ".4g")
         # ROM quality at the converged end
         conv = [r for r in Pc if r["rom_tau"] == 0 and r["fom_tau"] == ftm]
         if conv:

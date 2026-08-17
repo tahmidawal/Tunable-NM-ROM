@@ -261,9 +261,17 @@ error of {{p_rom_anorm}}**. CG's convergence is governed by the A-norm error, so
 start only removes the fraction of the error the ROM actually resolves in that norm. The
 result is a **single-digit percentage** of the iterations, and it *shrinks as the tolerance
 tightens* — at `N = {{p_nmax}}` the best saving is {{p_maxsave_1em06_Nmax}}% at `1e-6`,
-{{p_maxsave_1em08_Nmax}}% at `1e-8` and {{p_maxsave_1em10_Nmax}}% at `1e-10` — because a
-fixed head start buys a fixed number of iterations out of a total that grows with the number
-of digits demanded.
+{{p_maxsave_1em08_Nmax}}% at `1e-8` and {{p_maxsave_1em10_Nmax}}% at `1e-10`.
+
+The obvious explanation — that a fixed head start is simply being divided by a larger total —
+is **wrong, and the data refutes it**. The saving shrinks in *absolute* iterations too, and
+faster than the totals grow: at `N = {{p_nmax}}` the warm start saves
+{{p_abssave_1em06_Nmax}} iterations out of {{p_totiters_1em06_Nmax}} at `1e-6`, but only
+{{p_abssave_1em10_Nmax}} out of {{p_totiters_1em10_Nmax}} at `1e-10`. The head start is
+**eroded, not diluted**: CG's iterate is optimal over the whole Krylov space it has built, so
+an initial guess whose error is spread broadly across the spectrum stops conferring an
+advantage once the iteration enters its slow asymptotic phase — the regime that a tight
+tolerance forces it into.
 
 The gap between what the ROM's answer *looks* worth and what it *is* worth is the striking
 part. A post-hoc diagnostic — plain CG from a zero start, with its saved iterates graded

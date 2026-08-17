@@ -193,10 +193,22 @@ def build(runs=None):
         f["b_newton_wins"] = f"{len(wins)} of {len(Bc)}"
         lwins = [r for r in Bc if r["lin_iters_from_rom"] < r["lin_iters_from_baseline"]]
         f["b_lin_wins"] = f"{len(lwins)} of {len(Bc)}"
+        f["b_lin_total_configs"] = str(len(Bc))
         twins = [r for r in Bc if r["speedup_vs_fom"] > 1.0]
         f["b_time_wins"] = f"{len(twins)} of {len(Bc)}"
         ewins = [r for r in Bc if r["iters_from_extrap"] < r["iters_from_baseline"]]
         f["b_extrap_wins"] = f"{len(ewins)} of {len(Bc)}"
+        elin = [r for r in Bc if r["lin_iters_from_extrap"] < r["lin_iters_from_baseline"]]
+        f["b_extrap_lin_wins"] = f"{len(elin)} of {len(Bc)}"
+        # The FOM STAGE alone (excluding the ROM stage) beating the previous-step start
+        # is a different, weaker claim than the hybrid TOTAL winning.  Report it, and
+        # name the exceptions rather than averaging them away.
+        fs = [r for r in Bc if r["t_fom_ms"] < r["t_fom_baseline_ms"]]
+        f["b_fomstage_wins"] = f"{len(fs)} of {len(Bc)}"
+        f["b_fomstage_where"] = ("; ".join(f"N={r['N']}, tau_FOM={r['fom_tau']:g} "
+                                           f"({r['t_fom_ms']:.1f} vs "
+                                           f"{r['t_fom_baseline_ms']:.1f} ms)" for r in fs)
+                                 if fs else "none")
         nb = len(Bc)
         nw = len([r for r in Bc if r["speedup_vs_fom"] > 1.0])
         ni = len([r for r in Bc if r["iters_from_rom"] < r["iters_from_baseline"]])
@@ -365,6 +377,11 @@ def build(runs=None):
     cb = ws.role_consistency(B, bkey, ["iters_from_rom", "iters_from_baseline",
                                        "iters_from_extrap"])
     f["consistency_checked"] = str(len(cc) + len(cb))
+    allc = cc + cb
+    if allc:
+        w = max(allc, key=lambda c: c["abs_diff"])
+        f["consistency_worst_diff"] = g(w["abs_diff"], ".3g")
+        f["consistency_worst_where"] = f"{w['field']} at {w['key']}"
     bad = [c for c in cc + cb
            if c["abs_diff"] > 1e-9 * max(abs(c["consolidated"]), 1.0)]
     f["consistency_bad"] = str(len(bad))

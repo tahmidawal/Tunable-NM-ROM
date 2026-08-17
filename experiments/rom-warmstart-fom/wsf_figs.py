@@ -130,7 +130,11 @@ def fig_poisson_crossover(P, paths):
     a2.set_xticks(Ns)                     # axis there produces unreadable minor ticks
     a2.set_xticklabels([str(n) for n in Ns])
     a2.set_xlabel("N"); a2.set_ylabel("best hybrid speedup over the FOM")
-    a2.set_title("Where does the hybrid start to win?")
+    # title states the ANSWER, not the question: leaving "where does it win?" over a
+    # curve that never crosses 1.0 invites the reader to assume it does somewhere.
+    best = max((r["speedup_vs_fom"] for r in P), default=float("nan"))
+    a2.set_title("Does the hybrid ever win?  No: best %.3fx" % best
+                 if best <= 1.0 else "Where does the hybrid start to win?")
     a2.legend(); st.clean(a2)
     paths += st.save(fig, FIGS, "wsfom_poisson_crossover", (EXTRA,))
 

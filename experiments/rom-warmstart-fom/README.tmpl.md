@@ -222,9 +222,22 @@ one GPU.
 **Poisson.** {{p_headline}} Per tolerance the crossover mesh is N = {{p_cross_1em06}} at
 `tau_FOM = 1e-6`, N = {{p_cross_1em08}} at `1e-8` and N = {{p_cross_1em10}} at `1e-10`.
 
-**Burgers.** {{b_headline}} Linear extrapolation `2u_{n-1} - u_{n-2}` — one line of code, no
-ROM — beat the previous-step start in {{b_extrap_wins}} configurations, so the ROM does not
-even clear the cheapest classical alternative.
+**Burgers.** {{b_headline}} The mechanism is the inner linear work: the ROM start costs
+**more BiCGStab iterations in all {{b_lin_total_configs}} configurations**, including the
+{{b_newton_wins}} where it *improves* the Newton count — a guess that is 1–2% wrong in a
+different direction from `u_{n-1}` makes each linear solve harder, and that outweighs the
+saved outer iteration.
+
+Meanwhile linear extrapolation `2u_{n-1} - u_{n-2}` — one line of code, no ROM, no training —
+beats the previous-step start in {{b_extrap_wins}} configurations on Newton iterations and
+{{b_extrap_lin_wins}} on BiCGStab iterations. **A one-line heuristic outperforms the learned
+manifold at this task.** That sentence is the finding.
+
+*The single exception, not averaged away:* the FOM stage alone (excluding the ROM stage that
+produced the guess) is faster from the ROM start than from `u_{n-1}` in
+{{b_fomstage_wins}} configurations — {{b_fomstage_where}}. It is the one place the effect
+goes the intended direction. It does not rescue the hybrid, because the ROM stage costs far
+more than the time saved.
 
 ### Poisson: the numbers
 
@@ -310,8 +323,16 @@ Newton count, are where the ROM loses.
 
 The hybrid does what it was meant to do — the delivered field is FOM-exact, so every accuracy
 objection is answered — and it is **not worth its cost** on either problem at the meshes
-tested. {{p_verdict}}, against an iterative FOM that a direct solver already beats by
-{{p_cgdirect_N512}}x. {{b_verdict}}.
+tested.
+
+**The crossover mesh on Poisson is: there is none.** Across `N` in {32, 64, 128, 256, 512},
+at every `tau_FOM` in {1e-6, 1e-8, 1e-10} and every ROM tolerance, the hybrid is slower than
+simply running the FOM. Its best result anywhere is {{p_best_overall}}x
+({{p_best_overall_where}}) — still a loss. The trend is monotone in `N`
+({{p_best_1em10_N32}}x → {{p_best_1em10_N512}}x at `tau_FOM = 1e-10`), so a crossover plausibly
+exists beyond `N = 512`, but **we did not measure one and do not claim one.** Against an
+iterative FOM that a direct solver already beats by {{p_cgdirect_N512}}x, that extrapolation
+is of limited interest anyway. {{b_verdict}}.
 
 Separately, and reaching beyond this cell: measuring a *tolerance-based* FOM exposed that
 **both of this project's FOM baselines are over-converged** — the Burgers rollout by a fixed
@@ -543,6 +564,22 @@ Applying the multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
 4. This does not, by itself, overturn the qualitative Burgers conclusion that the latent solve
    is mesh-independent while the FOM is not — that is a statement about *scaling*, and both
    baselines scale similarly. It does change every *absolute* speedup that has been quoted.
+
+### What this correction does NOT touch
+
+Only **denominators** moved. Specifically unaffected:
+
+- **Every accuracy result.** Held-out rel-L2 errors, the decoder ceilings, the oracle
+  inferred-latent floors, the POD comparisons at matched `k`, the objective/collocation
+  ablations — none of these involve a FOM *timing*.
+- **The ROM-side timings themselves.** Latent-solve cost, its mesh-independence, the EQ
+  hyper-reduction knobs, the cold-start cost: all measured on the ROM path and unchanged.
+- **The wave negative result**, which is structural (energy behaviour on a nonlinear
+  manifold) and has nothing to do with baseline tolerances.
+- **The qualitative scaling claims**, as in point 4 above.
+
+Read the correction as "the speedup ratios were divided by too large a number", not as
+"the ROM work was wrong".
 
 ## Figures
 

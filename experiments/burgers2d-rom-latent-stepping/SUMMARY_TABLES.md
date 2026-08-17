@@ -1,5 +1,53 @@
 ## Stage 2 — latent-stepping ROM (held-out TEST_SEED trajectories, 16 each)
 
+### N=128, K=8  (NVIDIA A100 80GB PCIe; job 2470764)
+
+auto-decoder TRAIN recon 3.77e-03 · ORACLE inferred-latent floor (held-out) 1.28e-02 · IC-fit misfit (u0, cold start) 2.41e-02 · max FOM rel residual 1.0e-12 · FOM rollout 1160 ms
+
+| variant (solver:colloc:objective) | m | traj rel-L2 mean | median | max | blow-ups | iters cold / warm | step ms | rollout ms | speedup (rollout) | end-to-end* |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `lspg:full:fd` | 15876 | 2.24e-02 | 2.40e-02 | 4.46e-02 | 0/16 | 18.7 / 7.5 | 296.7 | 17016 | 0.07x | 0.06x |
+| `galerkin:full:fd` | 15876 | 1.84e-02 | 1.93e-02 | 3.81e-02 | 0/16 | 26.4 / 7.3 | 271.8 | 14275 | 0.08x | 0.07x |
+| `lspg:rand512:fd` | 512 | 2.76e-02 | 2.48e-02 | 4.86e-02 | 0/16 | 17.6 / 7.8 | 12.3 | 591 | 1.96x | 0.59x |
+| `lspg:offgrid512:fd` | 512 | 2.52e-01 | 1.35e-01 | 1.00e+00 | 0/16 | 16.2 / 13.0 | 66.4 | 4054 | 0.29x | 0.21x |
+| `lspg:full:weak64` | 15876 | 1.90e-02 | 1.61e-02 | 5.88e-02 | 0/16 | 7.9 / 5.8 | 296.5 | 13428 | 0.09x | 0.08x |
+| `lspg:eq256:weak64` | 256 | 1.89e-02 | 1.67e-02 | 5.12e-02 | 0/16 | 8.1 / 5.8 | 6.5 | 269 | 4.31x | 0.70x |
+| `lspg:eq512:weak64` | 512 | 1.94e-02 | 1.62e-02 | 6.33e-02 | 0/16 | 9.2 / 5.8 | 11.3 | 477 | 2.43x | 0.64x |
+| `lspg:full:weak256` | 15876 | 1.66e-02 | 1.58e-02 | 2.90e-02 | 0/16 | 7.4 / 5.8 | 295.8 | 13113 | 0.09x | 0.08x |
+| `lspg:eq512:weak256` | 512 | 1.72e-02 | 1.66e-02 | 3.13e-02 | 0/16 | 8.9 / 5.8 | 11.1 | 469 | 2.47x | 0.63x |
+| `lspg:eq1024:weak256` | 1024 | 1.67e-02 | 1.59e-02 | 2.95e-02 | 0/16 | 9.8 / 5.9 | 21.2 | 914 | 1.27x | 0.50x |
+| `galerkin:full:weak64` | 15876 | 1.91e-02 | 1.61e-02 | 5.84e-02 | 0/16 | 9.2 / 6.1 | 274.7 | 12364 | 0.09x | 0.08x |
+| `lspg:full:weakc64` | 15876 | 3.03e-02 | 2.66e-02 | 5.59e-02 | 0/16 | 7.5 / 5.9 | 61.5 | 2671 | 0.43x | 0.29x |
+| `lspg:eq512:weakc64` | 512 | 2.97e-02 | 2.65e-02 | 5.48e-02 | 0/16 | 7.9 / 5.9 | 4.2 | 167 | 6.93x | 0.76x |
+| `lspg:eqoff512:weakc64` | 512 | 2.98e-02 | 2.67e-02 | 5.51e-02 | 0/16 | 7.9 / 5.9 | 4.2 | 161 | 7.21x | 0.77x |
+
+POD control (same solver), projection floors k8=2.01e-01, k16=9.27e-02, k32=4.04e-02, k64=1.40e-02:
+
+| k | variant | traj rel-L2 mean | median | iters warm | step ms | rollout ms | speedup |
+|---|---|---|---|---|---|---|---|
+| 8 | `lspg:full:fd` | 2.16e-01 | 1.71e-01 | 3.9 | 1.3 | 50 | 23.10x |
+| 8 | `galerkin:full:fd` | 2.16e-01 | 1.68e-01 | 3.0 | 3.8 | nan | nanx |
+| 8 | `lspg:full:weak64` | 2.15e-01 | 1.67e-01 | 3.9 | 1.6 | nan | nanx |
+| 8 | `lspg:eq512:weak64` | 2.15e-01 | 1.67e-01 | 3.9 | 1.3 | nan | nanx |
+| 16 | `lspg:full:fd` | 1.05e-01 | 7.52e-02 | 4.0 | 1.5 | 53 | 21.75x |
+| 16 | `galerkin:full:fd` | 1.02e-01 | 7.10e-02 | 3.0 | 3.8 | nan | nanx |
+| 16 | `lspg:full:weak64` | 9.93e-02 | 6.77e-02 | 4.0 | 1.8 | nan | nanx |
+| 16 | `lspg:eq512:weak64` | 9.93e-02 | 6.77e-02 | 4.0 | 1.4 | nan | nanx |
+| 32 | `lspg:full:fd` | 4.98e-02 | 3.57e-02 | 4.0 | 1.7 | 68 | 17.13x |
+| 32 | `galerkin:full:fd` | 4.58e-02 | 3.17e-02 | 3.1 | 3.8 | nan | nanx |
+| 32 | `lspg:full:weak64` | 4.34e-02 | 2.82e-02 | 4.0 | 2.1 | nan | nanx |
+| 32 | `lspg:eq512:weak64` | 4.34e-02 | 2.82e-02 | 4.0 | 1.5 | nan | nanx |
+| 64 | `lspg:full:fd` | 1.78e-02 | 1.19e-02 | 4.1 | 2.3 | 101 | 11.45x |
+| 64 | `galerkin:full:fd` | 1.60e-02 | 9.53e-03 | 3.2 | 4.6 | nan | nanx |
+| 64 | `lspg:full:weak64` | 8.26e+01 | 9.68e-01 | 8.5 | 3.3 | nan | nanx |
+| 64 | `lspg:eq512:weak64` | 1.13e+02 | 2.80e+00 | 10.3 | 2.1 | nan | nanx |
+
+per-time (t-index 0/10/20/30/40/50): oracle 2.32e-02 / 1.49e-02 / 1.28e-02 / 1.11e-02 / 1.02e-02 / 1.01e-02
+; `lspg:full:fd` 2.41e-02 / 2.22e-02 / 2.22e-02 / 2.22e-02 / 2.24e-02 / 2.28e-02
+; `lspg:full:weak64` 2.41e-02 / 2.26e-02 / 1.90e-02 / 1.73e-02 / 1.66e-02 / 1.66e-02
+; `lspg:eq256:weak64` 2.41e-02 / 2.27e-02 / 1.87e-02 / 1.71e-02 / 1.62e-02 / 1.63e-02
+; `lspg:full:weakc64` 2.41e-02 / 2.70e-02 / 2.89e-02 / 3.19e-02 / 3.46e-02 / 3.66e-02
+
 ### N=64, K=16  (NVIDIA A100-PCIE-40GB; job 2468412)
 
 auto-decoder TRAIN recon 3.95e-03 · ORACLE inferred-latent floor (held-out) 7.40e-03 · IC-fit misfit (u0, cold start) 1.75e-02 · max FOM rel residual 1.0e-12 · FOM rollout 424 ms

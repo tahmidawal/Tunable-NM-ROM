@@ -124,7 +124,35 @@ within a cell are like-for-like, absolute times across cells are not):
 K=16 (A100-40GB): FOM 424 ms, `eq256:weak64` 466 ms (0.91x), `eq512` 823 ms, `eqoff512:weakc64`
 235 ms (1.8x); K=4 (A100-80GB): FOM 420 ms, `eq256` 185 ms (2.3x).
 
-### N=128, K=8 (flat-in-N check at fixed k, M, m) — see below (job 2470764).
+### N=128, K=8 — flat in N at fixed (k=8, M, m) (job 2470764, A100-40GB)
+
+| | N=64 (H100) | N=128 (A100-40GB) |
+|---|---|---|
+| auto-decoder TRAIN recon | 3.52e-3 | 3.77e-3 |
+| ORACLE held-out inferred latents | 1.15e-2 | 1.28e-2 |
+| IC fit | 2.31e-2 | 2.41e-2 |
+| `lspg:full:fd` / `galerkin:full:fd` | 2.01e-2 / 1.80e-2 | 2.24e-2 / 1.84e-2 |
+| `lspg:rand512:fd` | 2.30e-2 | 2.76e-2 |
+| `lspg:full:weak64` / `eq256` / `eq512` | 1.65e-2 / 1.74e-2 / 1.68e-2 | 1.90e-2 / 1.89e-2 / 1.94e-2 |
+| `lspg:full:weak256` / `eq512` / `eq1024` | 1.67e-2 / 1.70e-2 / 1.68e-2 | 1.66e-2 / 1.72e-2 / 1.67e-2 |
+| `lspg:*:weakc64` (continuum weak form) | 4.5e-2 | 3.0e-2 |
+| POD-LSPG k=8 / 16 / 32 / 64 | 2.09e-1 / 9.7e-2 / 4.3e-2 / 1.40e-2 | 2.16e-1 / 1.05e-1 / 5.0e-2 / 1.78e-2 |
+| ROM (`eq256:weak64`) / oracle | 1.51x | 1.48x |
+| FOM rollout | 321 ms | 1160 ms |
+| coord `eq256:weak64` rollout (speedup) | 196 ms (1.64x) | 269 ms (**4.3x**) |
+| coord `eq512:weak64` | 341 ms (0.94x) | 477 ms (2.4x) |
+| coord `eqoff512:weakc64` | 114 ms (2.8x) | 161 ms (7.2x) |
+| POD k=8 / k=64 | 33 / 56 ms (9.6x / 5.7x) | 50 / 101 ms (23x / 11x) |
+| ms per ROM step, `eq256:weak64` | 4.7 | 6.5 |
+
+At fixed (k, M, m) the ROM error is flat in N (the ROM/oracle ratio 1.51 -> 1.48; the
+`weak256` numbers are identical to 3 digits), the per-step ROM cost is flat up to the GPU
+change (H100 -> A100-40GB) while the FOM's grows 3.6x, so the speedup grows from 1.6x to
+4.3x (m=256) — the n-free-cost claim, live in an end-to-end nonlinear ROM.  The
+continuum-weak-form gap to the upwind FOM shrinks 4.5e-2 -> 3.0e-2 as h halves, consistent
+with it targeting the continuum PDE (the FOM's own O(h) error shrinks 3.8e-2 -> 1.8e-2 vs the
+512^2 reference).  POD k=64 with `weak64` (square Petrov-Galerkin) again unstable, as at N=64.
+
 
 ## Reading the results
 

@@ -434,3 +434,24 @@ figs/                PNG + PDF (also copied to /home/tahmid/Dev/pod-ae-nmrom/Plo
 CODEX-REVIEW-HARNESS.md   adversarial review of the harness, before the fan-out
 CODEX-REVIEW-RESULTS.md   audit of every table and figure against the JSONs, after
 ```
+
+## 10. Status
+
+The nine panel jobs (`ctol_p_n{32,64,128,256,512}`, `ctol_b_n{32,64,128,256}`) were submitted
+together on 2026-08-17, one per directory under `/cluster/tufts/paralab/tawal01/ctol/`, all on
+`--gres=gpu:a100:1`. To finish the cell:
+
+```bash
+./cluster/pull.sh                        # checksummed pull, deletes finished cluster dirs
+python ctol_pick_configs.py              # frontier + target-reaching configs for consolidation
+./cluster/make_cells.sh consolidate
+./cluster/launch.sh ctol_consol_p && ./cluster/launch.sh ctol_consol_b
+./cluster/pull.sh
+python ctol_tables.py                    # aborts unless the surface is complete
+python ctol_figs.py
+```
+
+`ctol_tables.py` will refuse to build the tables until every panel is complete, so a partial
+surface cannot silently become a result. Sections 7 (Verdict) and 8 (Caveats) are written from
+the generated tables once the surface is complete, and audited by a second Codex pass against
+the JSONs (archived as `CODEX-REVIEW-RESULTS.md`).

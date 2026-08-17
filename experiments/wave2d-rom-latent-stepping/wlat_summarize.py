@@ -113,18 +113,24 @@ def main():
         tag = f"{cell_of(f)}" + (f" / {c['tag']}" if c.get("tag") else "")
         print(f"\n**{tag}** — N={c['N']}, K={c['k_lat']}, RS={c['rom_substeps']}, "
               f"{c['n_test']} test trajectories, backend={r['backend']}\n")
-        print("| variant | m | M | traj-RMS | median | max | vs same-dt FOM | blow-ups | "
-              "E-drift (mean) | E_T/E_0 | iters cold/warm | ms/step | EQ rel fit |")
-        print("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+        if not r.get("finished"):
+            print("> **incomplete run** (the cell had not written its final JSON yet; the "
+                  "variants below did finish)\n")
+        print("| variant | m | M | traj-RMS | median | max | vs same-dt FOM | incomplete | "
+              "E-drift dyn | E-drift kin | E_T/E_0 (dyn) | v defect | iters cold/warm | "
+              "ms/step | EQ rel fit | cond(J) |")
+        print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
         for label, s in list(r.get("rom", {}).items()) + list(r.get("pod_rom", {}).items()):
-            ei = s.get("eq_info")
+            ei = s.get("eq_info"); js = s.get("jac_svals") or {}
             print(f"| `{label}` | {s.get('m', '-')} | {s.get('M') or '-'} | **{e(s['traj_rel_mean'])}** | "
                   f"{e(s['traj_rel_median'])} | {e(s['traj_rel_max'])} | "
                   f"{e(s.get('traj_rel_vs_samedt_fom_mean'))} | {s['n_blowup']}/{s['n_total']} | "
-                  f"{e(s.get('energy_drift_max_mean'))} | "
-                  f"{s.get('energy_final_ratio_mean', float('nan')):.4f} | "
+                  f"{e(s.get('energy_dyn_drift_max_mean'))} | {e(s.get('energy_drift_max_mean'))} | "
+                  f"{s.get('energy_dyn_final_ratio_mean', float('nan')):.4f} | "
+                  f"{e(s.get('v_kin_dyn_defect_max_mean'))} | "
                   f"{s['iters_cold_step0']:.1f}/{s['iters_warm_mean']:.2f} | "
-                  f"{s['step_time_ms_median']:.2f} | {e(ei['rel_fit']) if ei else '-'} |")
+                  f"{s['step_time_ms_median']:.2f} | {e(ei['rel_fit']) if ei else '-'} | "
+                  f"{js.get('cond', float('nan')):.1e} |")
 
     print("\n### Per-time error (snapshot indices 0/10/20/30/40/50)\n")
     for f, r in rom.items():

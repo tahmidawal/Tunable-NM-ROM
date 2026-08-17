@@ -99,6 +99,18 @@ def summarize(runs):
                 n_done_min=int(min(r["n_done"] for r in runs)))
 
 
+OUT_JSON = [None]
+
+
+def flush(report):
+    if OUT_JSON[0] is None:
+        return
+    tmp = OUT_JSON[0] + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(report, f, indent=2, default=float)
+    os.replace(tmp, OUT_JSON[0])
+
+
 def main():
     log(f"jax_backend={jax.default_backend()}  N={N}  RS={wc.RS} dt={wc.DT:g}  variants={VARIANTS}")
     with open(AD_PKL, "rb") as f:
@@ -126,6 +138,8 @@ def main():
     u0_rms = np.sqrt(np.mean(U_te[:, 0][:, interior] ** 2, axis=1))
     n2 = N * N
     coords = jnp.asarray(wc.grid_coords(N))
+    os.makedirs(OUTDIR, exist_ok=True)
+    OUT_JSON[0] = os.path.join(OUTDIR, f"wlat_rom_N{N}_K{K}" + (f"_{TAG}" if TAG else "") + ".json")
     report = dict(config=dict(wc.CONFIG, variants=VARIANTS, pod_ks=POD_KS, pod_variants=POD_VARIANTS,
                               floor_budget=FLOOR_BUDGET, ad_pkl=os.path.basename(AD_PKL),
                               ad_config=ck["config"], tag=TAG),
@@ -163,6 +177,7 @@ def main():
         rec = (Ute @ V[:, :k]) @ V[:, :k].T
         pf[k] = float(np.mean(np.linalg.norm(rec - Ute, axis=1) / rms_te))
     report["oracle_pod_projection_floor_test"] = pf
+    flush(report)
     log("  POD projection floors (test, traj metric): " + " ".join(f"k{k}={v:.3e}" for k, v in pf.items()))
     # ORACLE per-snapshot inferred latents (LM on the held-out field; NOT available to the ROM)
     zmean_t = Ztr.mean(axis=0)
@@ -205,6 +220,7 @@ def main():
                             init_used={"mean_t0": sum(w == 0 for _, _, w in ics),
                                        "nearest_ic": sum(w == 1 for _, _, w in ics)})
     log(f"  IC fit (u0 misfit, jitted LM): mean {report['ic_fit']['rel_mean']:.3e}")
+    flush(report)
 
     # ---------------- ROM variants ----------------
     eq_cache = {}
@@ -238,6 +254,8 @@ def main():
                                     alpha_w=alpha_w)
         col = wc.make_collocation(colloc_name, N, np.random.default_rng(1234 + i), u0=U_te[i, 0])
         return wc.make_strong_ops(decoder, N, col, solver=solver)
+
+    report_ref = [report]
 
     def run_variants(decoder, variants, ics_, label, res_dict, timing, time_key):
         for var in variants:
@@ -278,12 +296,13 @@ def main():
                 s["jac_svals"] = dict(error=str(ex))
             s["eq_info"] = ops.get("colloc_info")
             res_dict[f"{label}{var}"] = s
+            flush(report_ref[0])
             log(f"  {label}{var:24s} m={ops['m']:5d}  traj rel {s['traj_rel_mean']:.3e} "
                 f"(med {s['traj_rel_median']:.3e}, max {s['traj_rel_max']:.3e}; vs same-dt FOM "
                 f"{s['traj_rel_vs_samedt_fom_mean']:.3e}) blowups {s['n_blowup']}  E-drift "
                 f"{s['energy_drift_max_mean']:.2e}  iters cold {s['iters_cold_step0']:.1f} warm "
                 f"{s['iters_warm_mean']:.2f}  {s['step_time_ms_median']:.2f} ms/step  [{s['secs']:.0f}s]")
-            if DO_TIMING and solver == "lspg" and (time_key is None or var == time_key):
+            if DO_TIMING and (time_key is None or var == time_key):
                 i = 0
                 if colloc_name.startswith("biased"):
                     ops = build_ops(decoder, var, 0, eq_cache)
@@ -314,11 +333,13 @@ def main():
                 timing[f"{label}{var}"] = ent
 
     results, timing = {}, {}
-    run_variants(dec, VARIANTS, ics, "", results, timing, None)
     report["rom"] = results
+    report["timing"] = timing
+    run_variants(dec, VARIANTS, ics, "", results, timing, None)
 
     # ---------------- POD control (same solver) ----------------
     podres = {}
+    report["pod_rom"] = podres
     for k in POD_KS:
         pdec = wc.PODDecoder(V[:, :k])
         pfit = wc.make_ic_solver(pdec, N)
@@ -327,7 +348,6 @@ def main():
             z0, rel, _ = pfit(jnp.asarray(U_te[i, 0]), jnp.zeros((1, k)))
             pics.append((np.asarray(z0), float(rel), -1))
         run_variants(pdec, POD_VARIANTS, pics, f"pod_k{k}:", podres, timing, POD_VARIANTS[0])
-    report["pod_rom"] = podres
 
     # ---------------- FOM timing ----------------
     if DO_TIMING:
@@ -353,13 +373,9 @@ def main():
                     v["speedup_vs_fom_online_field_prediction"] = med / (
                         v["rollout_s_median"] + v["ic_fit_s"] + v["decode_all_slices_s"])
         log("  timing: " + "  ".join(f"{k}={v['rollout_s_median']*1e3:.0f}ms" for k, v in timing.items()))
-    report["timing"] = timing
-
-    os.makedirs(OUTDIR, exist_ok=True)
-    tag = f"N{N}_K{K}" + (f"_{TAG}" if TAG else "")
-    with open(os.path.join(OUTDIR, f"wlat_rom_{tag}.json"), "w") as f:
-        json.dump(report, f, indent=2, default=float)
-    log(f"wrote wlat_rom_{tag}.json")
+    report["finished"] = True
+    flush(report)
+    log(f"wrote {os.path.basename(OUT_JSON[0])}")
 
 
 if __name__ == "__main__":

@@ -15,10 +15,12 @@ SWEEP="$WT/2026-08-14-wave2d-coord-rom/experiments/wave2d-coord-rom/sweep"
 RS=20
 BASE="N_TEST=16 GN_BUDGET=30 IC_BUDGET=100 FLOOR_BUDGET=60 EQ_SNAPS=64 EQ_POOL=4096"
 # the recipe (weak Galerkin + NNLS-EQ at m ~ 4M), the M sweep, and the controls
-VAR="lspg:eq256:weak64,lspg:eq576:weak144,lspg:eq1024:weak256,lspg:eqoff256:weak64"
-VAR="$VAR,galerkin:eq256:weak64,lspg:full:weak64,lspg:full:weak144,lspg:full:weak256"
-VAR="$VAR,galerkin:full:weak64,lspg:full:weakl64,lspg:full:fd,galerkin:full:fd"
-VAR="$VAR,lspg:rand512:fd,lspg:offgrid512:fd"
+# ordered CHEAP FIRST: wlat_rom flushes its JSON after every variant, so a cell
+# that runs out of wall clock still yields the recipe arms
+VAR="lspg:eq256:weak64,galerkin:eq256:weak64,lspg:eq576:weak144,lspg:eq1024:weak256"
+VAR="$VAR,galerkin:eq1024:weak256,lspg:eqoff256:weak64,lspg:full:weak64,galerkin:full:weak64"
+VAR="$VAR,lspg:full:weaku64,lspg:full:weakl64,lspg:full:weak144,lspg:full:weak256"
+VAR="$VAR,lspg:full:fd,galerkin:full:fd,lspg:rand512:fd,lspg:offgrid512:fd"
 PODV="lspg:full:fd,lspg:full:weak256,lspg:eq1024:weak256"
 # the RS (ROM time-step) convergence arm: cheap variants only
 RSVAR="lspg:eq256:weak64,galerkin:eq256:weak64,lspg:full:weak64"

@@ -50,7 +50,8 @@ F32 = jnp.float32
 
 def main():
     log(f"jax_backend={jax.default_backend()}  N={N}  n_freq={wf.N_FREQ} t_freq={wf.T_FREQ}  "
-        f"S1_RS={S1_RS} dt={DT1:g} IC_W={IC_W} budget={BUDGET}")
+        f"S1_RS={S1_RS} dt={DT1:g} IC_W={IC_W} budget={BUDGET} "
+        f"lev_chunk={os.environ.get('S1_LEV_CHUNK', '8')}")
     with open(CKPT, "rb") as f:
         params = jax.tree_util.tree_map(lambda a: jnp.asarray(a, dtype=F32), pickle.load(f))
     rj = os.path.join(os.path.dirname(CKPT), f"wave2d_results_N{N}.json")
@@ -78,14 +79,21 @@ def main():
     taus = jnp.asarray(np.arange(n_lev) / (n_lev - 1), dtype=F32)     # physical t in [0,1]
     taus_snap = jnp.asarray(np.arange(T1) / wc.NUM_STEPS, dtype=F32)
 
+    # vmapping all n_lev time levels at once materialises n_lev x n^2 x HIDDEN
+    # activations, and forward-mode AD over the 5 latents multiplies that by 6:
+    # 25 GiB at N=64, S1_RS=10 (OOM'd job 2479742).  lax.map with a batch size
+    # turns it into a scan over chunks, so peak memory is per-chunk and the
+    # residual is unchanged.
+    LEV_CHUNK = int(os.environ.get("S1_LEV_CHUNK", "8"))
+
     def field(z, tau):
         return wf.film_apply(params, jnp.asarray(z, F32), tau, coords).astype(F64)
 
     def traj_lev(z):
-        return jax.vmap(lambda t: field(z, t))(taus)                    # (n_lev, n^2) f64
+        return jax.lax.map(lambda t: field(z, t), taus, batch_size=LEV_CHUNK)
 
     def traj_snap(z):
-        return jax.vmap(lambda t: field(z, t))(taus_snap)
+        return jax.lax.map(lambda t: field(z, t), taus_snap, batch_size=LEV_CHUNK)
 
     def r_ic(z, u0):
         return field(z, 0.0) - u0
@@ -95,7 +103,7 @@ def main():
         stencil at dt = DT1) + boundary rows (u = 0 on the walls at every level)."""
         Uz = traj_lev(z)
         a = (0.5 * DT1 * c) ** 2
-        L = jax.vmap(lambda u: wc.lap_full_field(u, N))(Uz)              # (n_lev, n^2)
+        L = jax.lax.map(lambda u: wc.lap_full_field(u, N), Uz, batch_size=LEV_CHUNK)
         first = (Uz[1] - Uz[0]) - a * (L[1] + L[0])
         gen = (Uz[2:] - 2.0 * Uz[1:-1] + Uz[:-2]) - a * (L[2:] + 2.0 * L[1:-1] + L[:-2])
         R = jnp.concatenate([first[None], gen], axis=0)[:, jnp.asarray(interior)]

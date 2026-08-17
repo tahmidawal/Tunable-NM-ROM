@@ -392,7 +392,8 @@ def fit_eq_weights(dec, n, M, m, Z_snap, pool="grid", rng=None):
 #   uses prev[0] only.
 #   full(z), m, M, tol_scale, step_jit, rollout_jit, solver
 
-def _make_ops_from(r_gen, r_first, state_of, full, m, solver, tol_scale, colloc_info=None, M=None):
+def _make_ops_from(r_gen, r_first, state_of, full, m, solver, tol_scale, colloc_info=None,
+                   M=None, tan_of=None):
     def r_w(z, prev, c):
         return r_gen(z, prev[0], prev[1], c)
 
@@ -402,7 +403,9 @@ def _make_ops_from(r_gen, r_first, state_of, full, m, solver, tol_scale, colloc_
     ops = dict(r_w=jax.jit(r_w), r_w0=jax.jit(r_w0), state_of=jax.jit(state_of),
                full=jax.jit(full), full_batch=jax.jit(jax.vmap(full)), m=m, M=M,
                solver=solver, tol_scale=tol_scale, colloc_info=colloc_info)
-    ops.update(_device_solvers(r_w, r_w0, state_of))
+    tan_fn = None if tan_of is None else jax.jit(tan_of)
+    ops["tangent"] = tan_fn
+    ops.update(_device_solvers(r_w, r_w0, state_of, tan_fn, solver))
     return ops
 
 
@@ -452,12 +455,80 @@ def _lm_while(res_fn, z0, args, tol_abs, budget):
     return z, rn, nJ, acc, reason, att
 
 
-def _device_solvers(r_w, r_w0, state_of):
+
+def _gn_while(res_fn, tan_fn, z0, args, tol_abs, budget):
+    """On-device damped Newton on the GALERKIN system g(z) = J_D^T r_w(z) = 0,
+    Gauss-Newton matrix A = J_D^T J_r with Levenberg damping lam*I, acceptance on
+    ||g||.  J_D = the Jacobian of the carried state = the test-space projection of
+    the decoder tangent: Phi_q^T dD/dz for the weak form, the tangent at the
+    residual rows (stencil CENTRES) for the strong form.
+
+    Same signature and return tuple as _lm_while so the rollout scan is shared.
+    This is the Python `galerkin_step` moved on device: in a Python loop it cost
+    ~3 s per latent step, i.e. ~13 h per variant at 1000 steps x 16 trajectories.
+    Reasons: 0 budget, 1 tol, 2 stalled, 3 lambda_max, 4 tol_at_init, 5 nan_at_init.
+    """
+    K = z0.shape[0]
+    I = jnp.eye(K, dtype=F64)
+
+    def rgA(z):
+        r = res_fn(z, *args)
+        J = jax.jacfwd(lambda zz: res_fn(zz, *args))(z)
+        JD = tan_fn(z)
+        return r, JD.T @ r, JD.T @ J
+
+    def gnorm(z):
+        return jnp.linalg.norm(tan_fn(z).T @ res_fn(z, *args))
+
+    r0, g0, A0 = rgA(z0)
+    gn0 = jnp.linalg.norm(g0)
+    rn0 = jnp.linalg.norm(r0)
+    init_reason = jnp.where(~jnp.isfinite(gn0) | ~jnp.isfinite(rn0), jnp.int32(5),
+                            jnp.where(rn0 <= tol_abs, jnp.int32(4), jnp.int32(0)))
+    init = (z0, r0, g0, A0, gn0, rn0, jnp.asarray(1e-6, F64), jnp.int32(0),
+            jnp.int32(1), init_reason)
+
+    def cond(s):
+        return (s[9] == 0) & (s[7] < budget)
+
+    def body(s):
+        z, r, g, A, gn, rn, lam, att, nJ, _ = s
+        dz = jnp.linalg.solve(A + lam * I, -g)
+        finite = jnp.all(jnp.isfinite(dz))
+        tiny = finite & (jnp.linalg.norm(dz) <= 1e-12 * (1.0 + jnp.linalg.norm(z)))
+        z_new = z + jnp.where(finite, dz, 0.0)
+        gn_new = gnorm(z_new)
+        accept = finite & jnp.isfinite(gn_new) & (gn_new < gn)
+        r2, g2, A2 = jax.lax.cond(accept, lambda: rgA(z_new), lambda: (r, g, A))
+        rel_dec = jnp.where(accept, (gn - gn_new) / gn, 1.0)
+        z = jnp.where(accept, z_new, z)
+        gn = jnp.where(accept, gn_new, gn)
+        rn = jnp.where(accept, jnp.linalg.norm(r2), rn)
+        lam = jnp.where(accept, jnp.maximum(lam / 3.0, 1e-12), jnp.minimum(lam * 10.0, 1e12))
+        nJ = nJ + accept.astype(jnp.int32)
+        reason = jnp.where(accept & (rn <= tol_abs), 1,
+                  jnp.where((accept & (rel_dec < 1e-12)) | tiny, 2,
+                   jnp.where((~accept) & (lam >= 1e12), 3, 0))).astype(jnp.int32)
+        return (z, r2, g2, A2, gn, rn, lam, att + 1, nJ, reason)
+
+    z, r, g, A, gn, rn, lam, att, nJ, reason = jax.lax.while_loop(cond, body, init)
+    return z, rn, nJ, nJ, reason, att
+
+
+def _device_solvers(r_w, r_w0, state_of, tan_fn=None, solver="lspg"):
+    if solver == "galerkin":
+        assert tan_fn is not None, "galerkin needs the test-space tangent"
+        inner_gen = lambda z, a, t, b: _gn_while(r_w, tan_fn, z, a, t, b)
+        inner_first = lambda z, a, t, b: _gn_while(r_w0, tan_fn, z, a, t, b)
+    else:
+        inner_gen = lambda z, a, t, b: _lm_while(r_w, z, a, t, b)
+        inner_first = lambda z, a, t, b: _lm_while(r_w0, z, a, t, b)
+
     def step_gen(z0, prev, c, tol_abs, budget):
-        return _lm_while(r_w, z0, (prev, c), tol_abs, budget)
+        return inner_gen(z0, (prev, c), tol_abs, budget)
 
     def step_first(z0, prev, c, tol_abs, budget):
-        return _lm_while(r_w0, z0, (prev, c), tol_abs, budget)
+        return inner_first(z0, (prev, c), tol_abs, budget)
 
     step_gen_j = jax.jit(step_gen, static_argnums=(4,))
     step_first_j = jax.jit(step_first, static_argnums=(4,))
@@ -467,13 +538,13 @@ def _device_solvers(r_w, r_w0, state_of):
         steps (lax.scan).  Returns latents (n_steps+1, K) incl. z0, rn, nJ, reason."""
         S0 = state_of(z0)
         prev0 = jnp.stack([S0, S0])
-        z1, rn1, nJ1, acc1, re1, att1 = _lm_while(r_w0, z0, (prev0, c), tol_abs, budget)
+        z1, rn1, nJ1, acc1, re1, att1 = inner_first(z0, (prev0, c), tol_abs, budget)
         S1 = state_of(z1)
 
         def body(carry, _):
             z, Sn, Snm = carry
             prev = jnp.stack([Sn, Snm])
-            z2, rn, nJ, acc, re, att = _lm_while(r_w, z, (prev, c), tol_abs, budget)
+            z2, rn, nJ, acc, re, att = inner_gen(z, (prev, c), tol_abs, budget)
             S2 = state_of(z2)
             return (z2, S2, Sn), (z2, rn, nJ, re, att)
 
@@ -550,7 +621,13 @@ def make_strong_ops(dec, n, colloc, solver="lspg"):
     def full(z):
         return dec(z, coords) if dec.kind == "coord" else dec.V @ z
 
-    return _make_ops_from(r_gen, r_first, state_of, full, m, solver, float(np.sqrt(m)))
+    # Galerkin test space for the strong form: the decoder tangent AT THE RESIDUAL
+    # ROWS -- the stencil CENTRES / the point values, i.e. column 0 of the state.
+    def tan_of(z):
+        return jax.jacfwd(lambda zz: state_of(zz)[:, 0])(z)              # (m, K)
+
+    return _make_ops_from(r_gen, r_first, state_of, full, m, solver, float(np.sqrt(m)),
+                          tan_of=tan_of)
 
 
 def make_weak_ops(dec, n, colloc, M=64, solver="lspg", beta=None, alpha_w=None):
@@ -606,8 +683,12 @@ def make_weak_ops(dec, n, colloc, M=64, solver="lspg", beta=None, alpha_w=None):
     def full(z):
         return dec(z, coords) if dec.kind == "coord" else dec.V @ z
 
+    # Galerkin test space for the weak form: the mode-projected decoder tangent
+    def tan_of(z):
+        return jax.jacfwd(state_of)(z)                                   # (M, K)
+
     ops = _make_ops_from(r_gen, r_first, state_of, full, m, solver, float(np.sqrt(interior.size)),
-                         colloc_info=colloc.get("info"), M=M)
+                         colloc_info=colloc.get("info"), M=M, tan_of=tan_of)
     ops["Phi_q"] = Phi_q
     ops["u_q"] = jax.jit(u_q)
     ops["weak_alpha"] = float(alpha_w)
@@ -805,43 +886,16 @@ def rollout(dec, n, ops, z0, c, u0_rms, U_true=None, budget=GN_BUDGET, tol=GN_TO
     tol_abs = tol * float(u0_rms) * ops["tol_scale"]
     t0 = time.perf_counter()
     n_attempted = n_steps
-    if ops["solver"] == "lspg":
-        Z, rns, nJs, res, atts = ops["rollout_jit"](z0, float(c), tol_abs, budget, n_steps)
-        Z.block_until_ready()
-        wall = time.perf_counter() - t0
-        Z = np.asarray(Z); rns = np.asarray(rns); nJs = np.asarray(nJs)
-        res = np.asarray(res); atts = np.asarray(atts)
-        reasons = [REASONS[int(r)] for r in res]
-    else:
-        z = z0
-        S0 = ops["state_of"](z)
-        prev = jnp.stack([S0, S0])
-        Zl, rns, nJs, atts, reasons = [np.asarray(z)], [], [], [], []
-        Sn, Snm = S0, S0
-        n_attempted = 0
-        for k in range(n_steps):
-            z, info = galerkin_step(ops, z, prev, float(c), k == 0, tol_abs, budget)
-            n_attempted += 1
-            S2 = ops["state_of"](z)
-            Snm, Sn = Sn, S2
-            prev = jnp.stack([Sn, Snm])
-            Zl.append(np.asarray(z)); rns.append(info["rn"]); nJs.append(info["n_jac"])
-            atts.append(info["accepted"] + info["rejected"]); reasons.append(info["reason"])
-            if not np.all(np.isfinite(Zl[-1])):
-                reasons[-1] = "blowup"; break
-        wall = time.perf_counter() - t0
-        Z = np.stack(Zl)
-        rns = np.asarray(rns, dtype=float); nJs = np.asarray(nJs, dtype=float)
-        atts = np.asarray(atts, dtype=float)
-        res = np.array([5 if r_ in ("blowup", "nan_step") else 0 for r_ in reasons])
-        if Z.shape[0] < n_steps + 1:                  # truncated: pad with NaN
-            Z = np.concatenate([Z, np.full((n_steps + 1 - Z.shape[0], Z.shape[1]), np.nan)])
-            pad = n_steps - rns.size
-            rns = np.concatenate([rns, np.full(pad, np.nan)])
-            nJs = np.concatenate([nJs, np.full(pad, np.nan)])
-            atts = np.concatenate([atts, np.full(pad, np.nan)])
-            res = np.concatenate([res, np.full(pad, 5)])
-            reasons = reasons + ["blowup"] * pad
+    # BOTH solvers run entirely on device (lax.while_loop step inside a lax.scan
+    # rollout); `galerkin` differs only in the inner Newton system, so the two
+    # arms are timed like-for-like and the Python `galerkin_step` below is kept
+    # only as the readable reference implementation.
+    Z, rns, nJs, res, atts = ops["rollout_jit"](z0, float(c), tol_abs, budget, n_steps)
+    Z.block_until_ready()
+    wall = time.perf_counter() - t0
+    Z = np.asarray(Z); rns = np.asarray(rns); nJs = np.asarray(nJs)
+    res = np.asarray(res); atts = np.asarray(atts)
+    reasons = [REASONS[int(r)] for r in res]
     # a step "failed" if its residual is non-finite or the LM saw NaN at init
     bad = (~np.isfinite(rns)) | (res == 5) | (~np.all(np.isfinite(Z[1:]), axis=1))
     n_done = int(np.argmax(bad)) if bad.any() else n_steps
@@ -849,7 +903,7 @@ def rollout(dec, n, ops, z0, c, u0_rms, U_true=None, budget=GN_BUDGET, tol=GN_TO
                iters=nJs[: max(n_done, 0)].tolist(), res=rns[: max(n_done, 0)].tolist(),
                wall_s=wall,
                # Codex MUST: divide by the steps actually ATTEMPTED, not requested
-               step_time_ms=1e3 * wall / max(n_attempted if ops["solver"] != "lspg" else n_steps, 1),
+               step_time_ms=1e3 * wall / max(n_steps, 1),
                reasons={r: int(sum(1 for x in reasons[:n_done] if x == r)) for r in set(reasons[:n_done])})
     out["iters_cold"] = float(nJs[0]) if n_done >= 1 else float("nan")
     out["iters_warm_mean"] = float(np.mean(nJs[1:n_done])) if n_done >= 2 else float("nan")
@@ -874,7 +928,9 @@ def rollout(dec, n, ops, z0, c, u0_rms, U_true=None, budget=GN_BUDGET, tol=GN_TO
         out["traj_rel"] = float(np.mean(per_t)) if complete else float("nan")
         out["snap_rel"] = float(np.mean(per_s)) if complete else float("nan")
     if energies and complete:
-        CH = 256
+        # chunk by POINTS, not rows: 256 rows x 16384 points of f64 FiLM activations
+        # OOMs at N=128 (the burgers2d landmine)
+        CH = int(max(8, min(256, (1 << 20) // (n * n))))
         Uall = np.concatenate([np.asarray(dec_all(jnp.asarray(Z[s_:s_ + CH])))
                                for s_ in range(0, n_steps + 1, CH)])
         if np.all(np.isfinite(Uall)):

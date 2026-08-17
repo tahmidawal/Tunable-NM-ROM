@@ -272,3 +272,115 @@ own timing conclusion ("the wave FOM is CHEAP, so full-field surrogate decoding 
 at fine resolution").  The n-free per-step cost is real — `eq256` costs the same 2.4 ms per
 step at N=64 and N=128 — but the FOM's cost grows too slowly for it to matter at these sizes.
 
+### Flat in N (K=8, `RS=20`, fixed `M`, `m`)
+
+| | N=64 | N=128 |
+|---|---|---|
+| ROM `lspg:eq256:weak64` | 8.783e-1 | 8.783e-1 |
+| `galerkin:eq256:weak64` | 8.783e-1 | 8.783e-1 |
+| `lspg:eq1024:weak256` | 8.846e-1 | 8.680e-1 |
+| `lspg:eqoff256:weak64` | 8.791e-1 | 8.779e-1 |
+| `lspg:full:weak64` | 8.952e-1 | 9.008e-1 |
+| `lspg:full:fd` | 8.767e-1 | 8.637e-1 |
+| ms per latent step, `eq256:weak64` | 2.44 | 2.48 |
+
+The `eq256:weak64` number is **identical to four significant figures at N=64 and N=128**, and
+the per-step cost is flat (2.44 -> 2.48 ms) while the number of grid points quadruples — the
+n-free-cost property of the hyper-reduced coordinate ROM is confirmed on wave.  It just does
+not buy anything here, because the failure mode is resolution-independent too.
+
+## The published wave-ROM comparison, and why it is not a like-for-like number
+
+The paper rebuttal's wave results were a **frozen POD basis with a damped LSPG rollout**:
+4.71e-3 at 0.7x speedup (N=64), 4.94e-3 at 1.6x (N=128), 1.63e-2 at 3.3x (N=256).
+
+**These cannot be reproduced or contradicted by this experiment, and the README does not claim
+either.**  The problem here is a 5-parameter family (`cx, cy, w, a, log c`, `c` spanning a
+factor of 4) with a *global* basis fitted to 512 training trajectories and evaluated on 16
+trajectories from a fresh seed.  On that problem the **POD projection floor itself** — the
+best any frozen linear basis can do, before any ROM — is 4.28e-1 at k=6, 8.20e-2 at k=64, and
+POD-LSPG achieves 8.38e-2 at k=64, i.e. it is *at* its floor.  A frozen-basis wave ROM
+reaching 4.7e-3 is therefore reporting on a substantially narrower problem (a much smaller
+parameter range, a per-trajectory or per-regime basis, a shorter horizon, or a higher rank);
+the rebuttal number and the 8.38e-2 here are measurements of different things.
+
+What this experiment *does* say about that claim is structural and transfers: on a
+dissipation-free PDE a frozen-basis LSPG ROM sits essentially exactly at its own projection
+floor and conserves energy to four digits (ratio 1.00–1.02, `E_T/E_0` = 1.0000 at every rank
+from 6 to 64), so a good frozen-basis wave ROM number is a statement about the basis, not
+about the rollout.  The speedup side is consistent with the rebuttal's: 0.4–0.9x at N=64
+here for POD at `RS=20` (2.1x at `RS=8`), against a 0.7x reported there.
+
+## Reading the results
+
+1. **The recipe ports, the machinery is right, and the ROM does not work on wave.**  Every
+   verification passes at machine precision (the v-elimination is exact, the residual
+   operators vanish on exact Newmark states, the weak form with all modes reproduces the
+   strong one to 4e-16).  Every one of 3 x 16 coordinate variants and 3 x 15 POD variants
+   completes 16/16 rollouts with no blow-up.  And the coordinate ROM lands at 0.59–1.02
+   traj-RMS against a FOM it should be tracking — 3.3–6.2x above its own held-out floor.
+2. **The mechanism is amplification, not injection.**  One snapshot interval of latent
+   stepping from an oracle start costs +8.7e-3 (4% of the floor, 11x better than freezing the
+   latent); the excess then grows like `H^1.7`, and refining the ROM time step by 5x makes the
+   final error 8% *worse*.  There is nothing to damp the error the manifold injects.
+3. **On this PDE the linear ROM is the better ROM, for a structural reason.**  A linear
+   subspace turns the linear Newmark residual back into a Newmark scheme on `Vᵀ L V` —
+   conservative and unconditionally stable by construction — and POD-LSPG duly sits at its
+   projection floor with `E_T/E_0` = 1.0000.  A nonlinear manifold has no such structure.
+   This is the exact converse of the Burgers finding, and the pair of results is the honest
+   statement: **the nonlinear-manifold advantage is contingent on the PDE damping the
+   error the ROM injects.**
+4. **The hyper-reduction half of the recipe is nevertheless validated on wave.**  NNLS-EQ
+   quadrature with `m = 4M = 256` nodes reproduces the full 3844-node grid answer to within
+   2% at 1/5 of the per-step cost, from a meshfree pool as well as from grid nodes, at both
+   N=64 and N=128, with an n-free per-step cost (2.44 -> 2.48 ms as `n` quadruples).  That
+   part is problem-independent and carries forward.
+5. **Stage 1 is a separate negative with a separate cause.**  Solving for a global parameter
+   vector by minimising the space-time residual plus the IC misfit fails here because the
+   objective's minimiser is not the true parameter — proven by starting LM at the truth and
+   watching it walk away to an 18% lower objective on 16/16 trajectories.  The precondition
+   the Burgers round satisfied silently (the decoder's own PDE residual at the truth being
+   small compared to the objective's variation over the latent space) does not hold for an
+   undamped, broadband solution.
+6. **Cost.**  No coordinate ROM pays at these resolutions: the wave FOM is 4000 SPD CG solves
+   at 0.096 ms each, and one f64 FiLM evaluation with its Gauss-Newton Jacobian at 256
+   quadrature nodes costs 25x that.  The jitted IC solve (78–97 ms) is no longer the
+   bottleneck it was in the Burgers round.
+
+## What would have to change
+
+Not tested here, listed because the diagnosis points at them: (i) an energy- or
+symplectic-constrained latent step (the best coordinate arm at every K is the one whose
+weighting fights the numerical dissipation); (ii) a manifold trained with a *rollout* loss
+rather than a per-snapshot reconstruction loss, so the injected error is penalised; (iii) a
+decoder accurate enough that the amplified error stays small over the horizon — but the
+ROM/floor ratio *grows* with K here, so this looks like the weakest of the three.
+
+## Caveats
+
+- **Single training seed**, 16 test trajectories per cell, one training budget per K (80k
+  steps, batch 128, 2048 points/row/step).  The auto-decoder floors here (7.0e-2 at K=8) are
+  20x above the Burgers round's (3.5e-3) — some of that gap is the problem (undamped,
+  broadband) and some is very likely under-training; **the ROM/oracle ratio, not the absolute
+  error, is the quantity this experiment measures reliably.**
+- The 5x256 FiLM architecture and `n_freq` cap were inherited from the Burgers/heat rounds
+  without a wave-specific capacity search.  A larger or differently-parameterised decoder
+  would lower the floors; whether it would change the *amplification* result is exactly the
+  open question, and the step diagnostic is the instrument for answering it.
+- `RS=20` is the primary configuration.  The `RS` arm covers only K=8.
+- Test split = 16 trajectories from `TEST_SEED=1`; the Stage-1 sweep checkpoints were
+  model-selected on VAL, so VAL is not used as a test set anywhere.
+- The step diagnostic ran on the local GB10 rather than the cluster (queue quota); its data
+  agree with the cluster's to 5.9e-16 in the global moments but are not bit-identical, so its
+  absolute numbers should be read against its own oracle column, which is what the "excess"
+  quantity does.
+- POD's cold start is an exact least-squares projection while the coordinate decoder's is a
+  budgeted best-of-two LM fit.  That favours POD at t=0; both IC misfits are reported so the
+  reader can separate it from the rollout.
+- The EQ supports/weights are fitted per decoder (coordinate and each POD rank get their own),
+  so "the same collocation" means the same *rule and budget*, not literally the same nodes.
+- Both energy estimators are reported.  On a trajectory this far from the FOM neither is a
+  clean invariant, and their disagreement (the kinematic-vs-dynamic velocity defect) is itself
+  part of the diagnosis; both are calibrated to ~1e-12 on an exact trajectory (V7).
+- Two-reviewer gate: the Codex adversarial review (`CODEX-REVIEW-2026-08-16.md`, all MUST
+  items applied) plus self-review; a second independent model reviewer could not be spawned.

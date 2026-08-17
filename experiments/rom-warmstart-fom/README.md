@@ -178,7 +178,7 @@ wsf_burgers.py    the Burgers arm (counting BiCGStab + the 3-arm implicit chain)
 wsf_summarize.py  runs/hybrid_points.json (the flat output schema) + SUMMARY_TABLES.md
 wsf_facts.py      every number the README quotes, derived from the JSONs
 wsf_verify.py     independent re-derivation of the headline claims from the raw JSONs,
-                  checked against the rendered README (141 checks)
+                  checked against the rendered README (146 checks)
 wsf_render_readme.py  README.md = README.tmpl.md + those facts (unknown placeholder = error)
 wsf_figs.py       the figures (reports-pipeline style, PNG + PDF)
 wsf_style.py      a copy of the frozen reports figure style
@@ -356,8 +356,9 @@ is of limited interest anyway. Burgers loses outright, to a baseline the FOM alr
 Separately, and reaching beyond this cell: measuring a *tolerance-based* FOM exposed that
 **both of this project's FOM baselines are over-converged** — the Burgers rollout by a fixed
 iteration count, the Poisson CG by a fixed 1e-13 tolerance. Every previously reported speedup
-in either family is inflated. The correction is quantified below. The Poisson side is settled
-(~1.16x, corroborated by two independent re-timings at three meshes); the
+in either family is inflated. The correction is quantified below. The Poisson side is corroborated by two
+independent re-timings at three meshes, but its magnitude depends on the consumer tolerance
+assumed — 1.55x at `1e-6` down to 1.16x at `1e-10`; the
 **Burgers side is formally open** pending a pre-registered cross-check, and is the one claim
 here a third party could still overturn.
 
@@ -656,6 +657,34 @@ not just its level.
 
 ### Poisson: NOT a clean negative — the same problem, from a fixed tolerance
 
+> **ERRATUM (raised by the `cost-to-tolerance` cell, corrected here).** An earlier version of
+> this section headlined the Poisson over-convergence factor as **~1.16x**
+> and called the Poisson correction settled on that basis. That is the factor at
+> `tau = 1e-10`, the **tightest** rung measured — the one that flatters the archived numbers
+> most. The engineering factor depends on the consumer tolerance assumed, and at a realistic
+> `1e-6` it is **1.53-1.57x**. The sister cell measured
+> 1.55x independently at a `1e-6` target; **the two cells agree once the
+> reference tolerance is matched — there was never a measurement discrepancy, only a
+> misleading choice of headline on my part.** Every corrected Poisson number below is now
+> given at all three tolerances, and the `1e-6` column is the one to quote for a deployment.
+
+**The factor is a function of the tolerance you assume a user needs:**
+
+| assumed consumer tolerance | factor across meshes | mean | multiplier to apply |
+|---|---|---|---|
+| `1e-6` | 1.53-1.57x | 1.55x | 0.65 |
+| `1e-8` | 1.31-1.32x | 1.31x | 0.76 |
+| `1e-10` | 1.15-1.16x | 1.16x | 0.86 |
+
+It is near-constant **across meshes** at every tolerance (hence a single scalar per assumed
+tolerance is defensible), but it varies by a factor of 1.34 **across
+tolerances** — so the tolerance must be named whenever the factor is quoted.
+
+These denominators do **not** overshoot: this cell's `tau` is a continuous stopping test on
+the recomputed true residual, so the `1e-6` solve delivers 9.93e-07–9.99e-07,
+i.e. within 1.01x of its target. A *rung-based* ladder that must pick the cheapest
+rung clearing a target will overshoot it and so understate its own factor.
+
 The question was whether the Poisson CG baseline shares the defect. **It does.**
 `poisson2d-rom-objective/followup/fu_timing.fom_solve` times
 `jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL, maxiter=mp.CG_MAXITER)` with
@@ -701,13 +730,30 @@ these three rungs.
 
 Applying the multiplier to the archived Poisson ladder in `../poisson2d-rom-objective/runs/followup/pt_n/timing_n.json`:
 
+Corrected **end-to-end** speedups at each assumed tolerance (old value x multiplier):
+
+| N | archived | at `1e-6` | at `1e-8` | at `1e-10` |
+|---|---|---|---|---|
+| 32 | 0.28x | 0.18x | 0.21x | 0.24x |
+| 64 | 0.39x | 0.25x | 0.29x | 0.34x |
+| 128 | 0.74x | 0.47x | 0.57x | 0.64x |
+| 256 | 1.40x | 0.91x | 1.07x | 1.20x |
+| 512 | 3.56x | 2.33x | 2.73x | 3.08x |
+
+**At a `1e-6` consumer tolerance the archived Poisson ROM no longer beats the FOM at
+`N = 256`** (0.91x, against the 1.40x published and the
+1.20x this section previously reported) — a sign change, not just a
+rescaling.
+
+Detail at `tau = 1e-10` (retained for continuity with the anchor analysis above):
+
 | N | old FOM (ms) | old solve-only speedup | old end-to-end | anchor | use | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
 |---|---|---|---|---|---|---|---|---|---|
 | 32 | 5.591 | 0.28x | 0.28x | 37% **archive-stale** | time (instruments agree) | 0.865 | 0.862 | 0.24x | 0.24x |
 | 64 | 7.786 | 0.39x | 0.39x | 8.5% **archive-stale** | time (instruments agree) | 0.865 | 0.860 | 0.34x | 0.34x |
 | 128 | 15.14 | 0.76x | 0.74x | 1.9% tight | time | 0.869 | 0.856 | 0.66x | 0.64x |
-| 256 | 31.13 | 1.56x | 1.40x | 4.9% tight | time | 0.861 | 0.848 | 1.35x | 1.21x |
-| 512 | 96.01 | 4.87x | 3.56x | 3.1% tight | time | 0.863 | 0.790 | 4.20x | 3.07x |
+| 256 | 31.13 | 1.56x | 1.40x | 4.9% tight | time | 0.861 | 0.848 | 1.34x | 1.20x |
+| 512 | 96.01 | 4.87x | 3.56x | 3.1% tight | time | 0.863 | 0.790 | 4.20x | 3.08x |
 
 ### What to do with this
 

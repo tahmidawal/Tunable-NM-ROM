@@ -131,6 +131,29 @@ if wrap_commit:
         except Exception as e:
             chk(f"{fn} recoverable at wrapper commit", False, str(e))
 
+# 4d. THE ENGINEERING FACTOR DEPENDS ON THE ASSUMED TOLERANCE, and the README must show
+#     all three.  A version of this README headlined only the tightest (1e-10) factor,
+#     understating the correction by ~34%; this check stops that recurring.
+facs = {}
+for ft in sorted({r["fom_tau"] for r in P}, reverse=True):
+    vals = []
+    for n in sorted({r["N"] for r in P}):
+        grp = [r for r in P if r["N"] == n and r["fom_tau"] == ft
+               and r.get("t_fom_baseline_native_ms")]
+        if grp:
+            tn = sum(r["t_fom_baseline_native_ms"] for r in grp) / len(grp)
+            vals.append(grp[0]["t_fom_testbed_ms"] / tn)
+    if vals:
+        facs[ft] = (min(vals), max(vals), sum(vals) / len(vals))
+chk("factor grows as the assumed tolerance loosens",
+    facs[1e-6][2] > facs[1e-8][2] > facs[1e-10][2],
+    str({k: round(v[2], 3) for k, v in facs.items()}))
+for ft, (lo, hi, mn) in facs.items():
+    chk(f"factor range at tau={ft:g} quoted in README", infile(f"{lo:.2f}-{hi:.2f}x"),
+        f"{lo:.2f}-{hi:.2f}x")
+chk("the consumer-tolerance (1e-6) factor appears, not only the tightest",
+    infile(f"{facs[1e-6][2]:.2f}x"))
+
 # 7. every row is A100 and gpu backend
 for k, d in raw.items():
     chk(f"{k} gpu", d["provenance"]["jax_backend"] == "gpu")

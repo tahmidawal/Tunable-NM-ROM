@@ -42,7 +42,7 @@ def build(runs=None):
     _, Pm = ws.split_roles(P, pkey)
     _, Bm = ws.split_roles(B, bkey)
     f = {}
-    f["verify_checks"] = "141"   # wsf_verify.py; update if checks are added
+    f["verify_checks"] = "146"   # wsf_verify.py; update if checks are added
     # per-cell job provenance table, built from the reports themselves
     import glob as _g
     import re as _re
@@ -135,6 +135,28 @@ def build(runs=None):
                 f[f"p_maxsave_{tg}_Nmax"] = g(100 * bb["iter_saving_frac"], ".3g")
         f["p_nmax"] = str(nmax)
         f["p_ref_tau"] = g(Pc[0].get("ref_tau") or 1e-12, ".0e")
+        # THE ENGINEERING FACTOR DEPENDS ON THE ASSUMED CONSUMER TOLERANCE.  Publishing
+        # only the tightest rung's factor understates the correction; report all three.
+        for ft in fts:
+            tg = f"{ft:g}".replace("-", "m").replace("+", "").replace(".", "")
+            fs_ = []
+            for n in Ns:
+                grp = [x for x in Pc if x["N"] == n and x["fom_tau"] == ft
+                       and x.get("t_fom_baseline_native_ms")]
+                if grp:
+                    tn = sum(x["t_fom_baseline_native_ms"] for x in grp) / len(grp)
+                    fs_.append(grp[0]["t_fom_testbed_ms"] / tn)
+            if fs_:
+                f[f"oc_p_facrange_{tg}"] = f"{min(fs_):.2f}-{max(fs_):.2f}"
+                f[f"oc_p_facmean_{tg}"] = g(sum(fs_) / len(fs_), ".2f")
+                f[f"oc_p_multmean_{tg}"] = g(len(fs_) / sum(fs_), ".2f")
+        _f6 = [float(x) for x in f.get("oc_p_facrange_1em06", "0-0").split("-")]
+        _f10 = [float(x) for x in f.get("oc_p_facrange_1em10", "1-1").split("-")]
+        f["oc_p_tolratio"] = g(sum(_f6) / sum(_f10), ".2f")
+        _a6 = [r["final_rel_residual_baseline"] for r in Pc if r["fom_tau"] == 1e-6]
+        if _a6:
+            f["oc_p_ach6_lo"] = g(min(_a6), ".2e"); f["oc_p_ach6_hi"] = g(max(_a6), ".2e")
+            f["oc_p_over6"] = g(1e-6 / min(_a6), ".2f")
         rr = [r["t_fom_baseline_ms"] / r["t_fom_baseline_native_ms"] for r in Pc
               if r.get("t_fom_baseline_native_ms")]
         if rr:
@@ -422,7 +444,10 @@ def build(runs=None):
                 if r["N"] != n:
                     continue
                 k = f"{tg(r['fom_tau'])}_N{n}"
-                tn = r.get("t_fom_baseline_native_ms"); tb = r.get("t_fom_testbed_ms")
+                grp2 = [x for x in Pc if x["N"] == n and x["fom_tau"] == r["fom_tau"]
+                        and x.get("t_fom_baseline_native_ms")]
+                tn = (sum(x["t_fom_baseline_native_ms"] for x in grp2) / len(grp2)) if grp2 else None
+                tb = r.get("t_fom_testbed_ms")
                 facn = (tb / tn) if (tb and tn) else None
                 if facn:
                     f[f"oc_p_new_speed_{k}"] = g(orow["speedup_solve_only"] / facn, ".2f")

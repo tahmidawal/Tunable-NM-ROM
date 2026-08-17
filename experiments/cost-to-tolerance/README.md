@@ -190,21 +190,42 @@ rather than glossed: this cell varies the testbed's own fixed-length `NEWTON_ITE
 `tau` in `||R(u, u_prev, nu)|| <= tau*||u_prev||`. They are not comparable rung-for-rung.
 
 They do reconcile, because a tolerance-based solve reports how many steps it actually took: that
-cell measures **1.97–2.40 Newton steps per time step** across every mesh and tolerance, against
-the testbed's fixed 8. So its rungs sit at approximately this cell's `NEWTON_ITERS=2` rung, and
-the ~4x over-convergence is the same fact seen from two directions. The predicted cross-check,
-recorded before the Burgers panels landed so it cannot be fitted after the fact:
+cell measures **1.97–1.99 Newton steps per time step** at `tau`=1e-6, against the testbed's fixed
+8. So the ~4x over-convergence is one fact seen from two directions.
 
-| N | peer `tau`=1e-6 arm | this cell's `NEWTON_ITERS`=2 rung should be near |
-|---|---|---|
-| 32 | 47.6 ms | ~47.6 ms |
-| 64 | 85.6 ms | ~85.6 ms |
-| 128 | 228.1 ms | ~228.1 ms |
-| 256 | 449.9 ms | ~449.9 ms |
+Comparing their time against this cell's integer `NEWTON_ITERS`=2 rung would be sloppy, because
+**two known biases act in opposite directions** and would silently partly cancel:
 
-with achieved residual in the 9.6e-7 to 9.9e-7 band. Agreement confirms the two denominators
-are the same quantity; disagreement means one of the two ladders is not measuring what it
-claims, and that would need resolving before either Burgers speedup is quoted.
+* their solve takes 1.97–1.99 steps per time step, **not** 2.00, so an integer-2 rung here does
+  1–3% more work than theirs;
+* their loop performs an **outer tolerance test** — one residual evaluation per time step — that
+  a fixed-length loop does not, so a few percent of their time has no counterpart here.
+
+Rather than net these into a vague band, the first is *removed* and the second is *reported*.
+This cell's ladder {1,2,3,4,6,8} pins a linear cost model `t(k) = a + b·k` (`a` the fixed
+per-rollout overhead, `b` the marginal cost of one Newton step per time step), which is evaluated
+at their **exact measured step count** instead of at 2. The residual-evaluation asymmetry then
+has a known sign: after interpolation this cell should read **slightly low**. A deviation of a
+few percent in that direction is expected; a materially larger one, or one in the other
+direction, is the signal worth chasing.
+
+Pre-registered targets (peer's `tau`=1e-6, mean over 4 held-out trajectories, A100 80GB, job
+2511371, burn-in on, paired timing), recorded **before** this cell's Burgers panels landed:
+
+| N | peer ms | peer steps/step | peer achieved residual |
+|---|---|---|---|
+| 32 | 47.6 | 1.97 | 9.71e-07 |
+| 64 | 85.6 | 1.97 | 9.83e-07 |
+| 128 | 228.1 | 1.98 | 9.94e-07 |
+| 256 | 449.9 | 1.99 | 9.57e-07 |
+
+<!-- BEGIN GENERATED: burgers_denominator -->
+<!-- END GENERATED: burgers_denominator -->
+
+Agreement confirms the two denominators are the same quantity; disagreement means one of the two
+ladders is not measuring what it claims, and that must be resolved before either Burgers speedup
+is quoted. The generated table also reports the ladder fit `R2` — if the linear cost model does
+not hold, the interpolation is not trustworthy either and the comparison should not be made.
 
 <!-- BEGIN GENERATED: anchor -->
 <!-- END GENERATED: anchor -->

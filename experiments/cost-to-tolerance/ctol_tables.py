@@ -525,6 +525,45 @@ def build_blocks(data, pts):
          "over-conv (achieved)", "over-conv (engineering)", "verdict"], rows) if rows else \
         "_(no FOM anchor recorded in this run)_"
 
+    # ---- Burgers denominator cross-check against rom-warmstart-fom ---------
+    # The two cells ladder DIFFERENT knobs (fixed-length NEWTON_ITERS here, a
+    # tolerance-based Newton loop there), so they are reconciled through the peer's
+    # MEASURED per-step count rather than compared rung-for-rung.  Two known biases
+    # act in OPPOSITE directions and are reported separately rather than netted:
+    #   (a) their solve takes 1.97-1.99 steps/step, not 2.00, so an integer-2 rung
+    #       here would be 1-3% too slow  -> removed by interpolating the ladder;
+    #   (b) their loop performs an outer tolerance test (one residual evaluation per
+    #       time step) that a fixed-length loop does not  -> their time carries a few
+    #       percent with no counterpart here, so this cell should read slightly LOW.
+    rows = []
+    d = data.get("burgers2d")
+    if d:
+        rungs_by_N = {}
+        for f in d.get("fom", []):
+            if f.get("fom_newton_iters") is not None:
+                rungs_by_N.setdefault(f["N"], []).append(f)
+        for N, ref in sorted(PEER_BURGERS_TAU1EM6.items()):
+            rungs = rungs_by_N.get(N, [])
+            t_i, a_, b_, r2 = interp_newton_ladder(rungs, ref["steps_per_step"])
+            r2rung = next((r for r in rungs if r["fom_newton_iters"] == 2), None)
+            t2 = r2rung["fom_rollout_s"] * 1e3 if r2rung else None
+            dev = (100 * (t_i - ref["t_ms"]) / ref["t_ms"]) if t_i else None
+            rows.append([N, fmt(ref["t_ms"], ".1f"), ref["steps_per_step"],
+                         fmt(t2, ".1f") if t2 else "--",
+                         fmt(t_i, ".1f") if t_i else "--",
+                         fmt(dev, "+.1f") if dev is not None else "--",
+                         fmt(r2, ".4f") if r2 is not None else "--",
+                         fmt(b_, ".2f") if b_ is not None else "--",
+                         fmt(ref["achieved"], ".2e"),
+                         fmt(r2rung.get("achieved_rel_residual"), ".2e") if r2rung else "--"])
+    B["burgers_denominator"] = md_table(
+        ["N", "peer tau=1e-6 ms", "peer steps/step", "this cell NEWTON_ITERS=2 ms",
+         "this cell interpolated to peer steps", "deviation %", "ladder fit R2",
+         "marginal ms per Newton step", "peer achieved res", "this cell achieved res"],
+        rows) if rows else \
+        "_(the Burgers panels have not landed yet; this cross-check is pre-registered "\
+        "against the peer values recorded in ctol_tables.PEER_BURGERS_TAU1EM6)_"
+
     # ---- decoder ceiling per (N, k): the checkpoint's own oracle ------------
     # Accuracy is NON-MONOTONE in k because each k is a SEPARATELY TRAINED
     # checkpoint.  Reporting each checkpoint's own oracle inferred-latent error next
@@ -604,6 +643,46 @@ ANCHOR_OK_PCT = 10.0          # "single-digit percent" per the shared rule
 PEER_RETIMED_MS = {("poisson2d", 32): 3.548, ("poisson2d", 64): 7.124,
                    ("poisson2d", 128): 14.860, ("poisson2d", 256): 29.610,
                    ("poisson2d", 512): 93.070}
+
+
+# The rom-warmstart-fom cell's tolerance-based Burgers FOM at tau=1e-6 (mean over 4
+# held-out trajectories, A100 80GB, job 2511371, burn-in on, paired timing).  Recorded
+# BEFORE this cell's Burgers panels landed, so the cross-check is pre-registered.
+PEER_BURGERS_TAU1EM6 = {
+    32:  dict(t_ms=47.6,  steps_per_step=1.97, achieved=9.71e-07),
+    64:  dict(t_ms=85.6,  steps_per_step=1.97, achieved=9.83e-07),
+    128: dict(t_ms=228.1, steps_per_step=1.98, achieved=9.94e-07),
+    256: dict(t_ms=449.9, steps_per_step=1.99, achieved=9.57e-07),
+}
+
+
+def interp_newton_ladder(rungs, target_steps):
+    """Interpolate this cell's fixed-length Newton ladder to a FRACTIONAL per-step
+    count.
+
+    The peer's tolerance solve converges in 1.97-1.99 Newton steps per time step,
+    not 2.00, so comparing their time against this cell's integer NEWTON_ITERS=2
+    rung carries a systematic 1-3% bias.  The ladder {1,2,3,4,6,8} pins a linear
+    cost model t(k) = a + b*k -- `a` the fixed per-rollout overhead, `b` the marginal
+    cost of one Newton step per time step -- which can be evaluated at their exact
+    count instead.  Returns (t_at_target_ms, a_ms, b_ms, r2)."""
+    pts = sorted((r["fom_newton_iters"], r["fom_rollout_s"] * 1e3) for r in rungs
+                 if r.get("fom_newton_iters") is not None)
+    if len(pts) < 2:
+        return None, None, None, None
+    xs = [float(x) for x, _ in pts]
+    ys = [float(y) for _, y in pts]
+    n = len(xs)
+    mx, my = sum(xs) / n, sum(ys) / n
+    sxx = sum((x - mx) ** 2 for x in xs)
+    if sxx == 0:
+        return None, None, None, None
+    b = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx
+    a = my - b * mx
+    ss_res = sum((y - (a + b * x)) ** 2 for x, y in zip(xs, ys))
+    ss_tot = sum((y - my) ** 2 for y in ys)
+    r2 = 1.0 - ss_res / ss_tot if ss_tot else float("nan")
+    return a + b * target_steps, a, b, r2
 
 
 def anchor_verdict(pct, cross_pct, overconv_achieved):

@@ -140,7 +140,21 @@ third arm    = the SAME implicit chain warm-started from 2u_{n-1} − u_{n-2}
 Every ladder point is measured **sequentially in one process on one GPU** — cross-`N` timings
 from different GPUs are invalid and have burned this project before. Warm-up 2, median of 7,
 `block_until_ready`, f64, `JAX_DEFAULT_MATMUL_PRECISION=highest`, `jax_backend=gpu` asserted
-before any work. One job for Poisson, one for Burgers, each in its own cluster directory.
+before any work.
+
+Two further precautions were added **because a first round of results needed them**, and both
+matter more than the effect being measured:
+
+- **GPU burn-in.** In the first round the Poisson baseline at `N=512` measured **0.0468 ms per
+  CG iteration** and the warm arm **0.0399 ms** for the same work — a **17% systematic bias**
+  in favour of whichever arm was timed later, i.e. in favour of the hybrid. Both the
+  instrumented and the library solver showed it, so it is the A100 ramping up after the long
+  CPU-bound NNLS-EQ fit, not a code difference. Every mesh now burns the device in for 3 s
+  before any measurement.
+- **Paired arms.** The zero-start baseline is timed **back to back with the warm arm on the
+  same right-hand side**, inside the ROM ladder, so any residual clock drift hits both arms
+  equally. The old separated measurement is retained as `t_fom_baseline_unpaired_ms`. All
+  first-round Poisson results were discarded and the jobs relaunched.
 
 ### What is deliberately *not* varied
 

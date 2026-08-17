@@ -121,6 +121,38 @@ def build(runs=None):
             f[f"p_break_{tg}"] = ("already wins" if b.get("already_wins")
                                   else g(b.get("breakeven_N"), ".0f"))
             f[f"p_exponent_{tg}"] = g(b.get("exponent"), ".2f")
+        # ---- generated verdict sentences: a hand-written "the hybrid only just wins"
+        # would silently become false if the data changed, so the claim itself is derived.
+        ftm = min(fts)
+        tagm = f"{ftm:g}".replace("-", "m").replace("+", "").replace(".", "")
+        crossed = [ft for ft in fts
+                   if f[f"p_cross_{f'{ft:g}'.replace('-', 'm').replace('+', '').replace('.', '')}"]
+                   != "none in the ladder"]
+        bestall = max(Pc, key=lambda r: r["speedup_vs_fom"])
+        f["p_best_overall"] = g(bestall["speedup_vs_fom"], ".3f")
+        f["p_best_overall_where"] = (f"N={bestall['N']}, rom_tau="
+                                     + ("ref. stops" if not bestall["rom_tau"]
+                                        else f"{bestall['rom_tau']:g}")
+                                     + f", tau_FOM={bestall['fom_tau']:g}")
+        if crossed:
+            cn = min(int(f[f"p_cross_{f'{ft:g}'.replace('-', 'm').replace('+', '').replace('.', '')}"])
+                     for ft in crossed)
+            f["p_headline"] = (f"The hybrid first breaks even at **N = {cn}**, and the best "
+                               f"speedup anywhere in the ladder is "
+                               f"**{f['p_best_overall']}x** ({f['p_best_overall_where']}). "
+                               f"So an FOM-exact hybrid pays only just, and only at the "
+                               f"largest meshes tested.")
+            f["p_verdict"] = (f"Poisson breaks even only at N = {cn} and only by "
+                              f"{f['p_best_overall']}x")
+            f["p_crossover"] = str(cn)
+        else:
+            f["p_headline"] = ("The hybrid **never breaks even** anywhere in the ladder: "
+                               f"its best result is {f['p_best_overall']}x "
+                               f"({f['p_best_overall_where']}), i.e. it is always slower "
+                               f"than simply running the FOM.")
+            f["p_verdict"] = (f"Poisson never breaks even (best {f['p_best_overall']}x)")
+            f["p_crossover"] = "none in the ladder"
+
         # health
         f["p_max_final_resid_ratio"] = g(max(
             r["final_rel_residual"] / r["fom_tau"] for r in Pc), ".3g")
@@ -165,6 +197,21 @@ def build(runs=None):
         f["b_time_wins"] = f"{len(twins)} of {len(Bc)}"
         ewins = [r for r in Bc if r["iters_from_extrap"] < r["iters_from_baseline"]]
         f["b_extrap_wins"] = f"{len(ewins)} of {len(Bc)}"
+        nb = len(Bc)
+        nw = len([r for r in Bc if r["speedup_vs_fom"] > 1.0])
+        ni = len([r for r in Bc if r["iters_from_rom"] < r["iters_from_baseline"]])
+        nl = len([r for r in Bc if r["lin_iters_from_rom"] < r["lin_iters_from_baseline"]])
+        if nw == 0:
+            f["b_headline"] = ("The ROM warm start **loses in every configuration measured**: "
+                               f"it beat the previous-step start on Newton iterations in "
+                               f"{ni} of {nb}, on inner BiCGStab iterations in {nl} of {nb}, "
+                               f"and on wall clock in 0 of {nb}.")
+            f["b_verdict"] = "Burgers loses outright, to a baseline the FOM already had for free"
+        else:
+            f["b_headline"] = (f"The ROM warm start beats the previous-step start on wall "
+                               f"clock in {nw} of {nb} configurations (Newton iterations "
+                               f"{ni} of {nb}, inner BiCGStab iterations {nl} of {nb}).")
+            f["b_verdict"] = f"Burgers wins in {nw} of {nb} configurations"
         f["b_max_resid_ratio"] = g(max(
             max(r["max_rel_newton_residual"].values()) / r["fom_tau"] for r in Bc
             if isinstance(r.get("max_rel_newton_residual"), dict)), ".3g")

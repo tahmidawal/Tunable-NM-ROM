@@ -216,17 +216,12 @@ one GPU.
 
 ### The answer
 
-**Poisson.** The hybrid first breaks even at **N = {{p_cross_1em10}}** (at `tau_FOM = 1e-10`;
-at `1e-6` the crossover is at N = {{p_cross_1em06}} and at `1e-8` at N = {{p_cross_1em08}}).
-The best speedup anywhere in the ladder is **{{p_best_1em10_N512}}x** at `N = 512`. So the
-answer to "does an FOM-exact hybrid pay?" is: **only just, and only at the largest mesh
-tested.**
+**Poisson.** {{p_headline}} Per tolerance the crossover mesh is N = {{p_cross_1em06}} at
+`tau_FOM = 1e-6`, N = {{p_cross_1em08}} at `1e-8` and N = {{p_cross_1em10}} at `1e-10`.
 
-**Burgers.** The ROM warm start **loses**, everywhere: it beat the previous-step start on
-Newton iterations in {{b_newton_wins}} configurations, on inner BiCGStab iterations in
-{{b_lin_wins}}, and on wall clock in {{b_time_wins}}. Linear extrapolation
-`2u_{n-1} - u_{n-2}` — one line of code, no ROM — beat the previous-step start in
-{{b_extrap_wins}} configurations.
+**Burgers.** {{b_headline}} Linear extrapolation `2u_{n-1} - u_{n-2}` — one line of code, no
+ROM — beat the previous-step start in {{b_extrap_wins}} configurations, so the ROM does not
+even clear the cheapest classical alternative.
 
 ### Poisson: the numbers
 
@@ -319,9 +314,8 @@ against the tolerance-based one.
 
 The hybrid does what it was meant to do — the delivered field is FOM-exact, so every accuracy
 objection is answered — and it is **not worth its cost** on either problem at the meshes
-tested. Poisson breaks even only at `N = {{p_cross_1em10}}` and only by
-{{p_best_1em10_N512}}x, against an iterative FOM that a direct solver already beats by
-{{p_cgdirect_N512}}x. Burgers loses outright, to a baseline the FOM already had for free.
+tested. {{p_verdict}}, against an iterative FOM that a direct solver already beats by
+{{p_cgdirect_N512}}x. {{b_verdict}}.
 
 The useful result is the **mechanism**, and it generalises beyond this cell: an approximate
 solution is a good initial guess only in proportion to the error it removes *in the norm the
@@ -332,7 +326,7 @@ buy, not about this ROM.
 ### Caveats
 
 - **Measured, not assumed, and both stated risks landed.** Risk (a) — the ROM costs more than
-  a small-`N` FOM — is why the crossover sits at `N = {{p_cross_1em10}}`. Risk (b) — the
+  a small-`N` FOM — is why the crossover sits at `N = {{p_crossover}}`. Risk (b) — the
   Burgers FOM already warm-starts — is why that arm loses.
 - **`dt` is not varied.** The Burgers testbed hard-codes `dt = 0.005`, where the previous
   state is a very good guess. The ROM's advantage should grow with `dt`, but changing `dt`
@@ -356,7 +350,7 @@ buy, not about this ROM.
 - **Panel/consolidated agreement**: {{consistency_checked}} hardware-independent quantities
   compared between the fanned-out per-mesh jobs and the single-GPU consolidation runs,
   {{consistency_bad}} disagreements.
-- **`N = 1024` was not run.** The measured crossover at `N = {{p_cross_1em10}}` is the answer
+- **`N = 1024` was not run.** The measured crossover at `N = {{p_crossover}}` is the answer
   to the question as posed (`N` up to 512); an extrapolated break-even is given in
   `SUMMARY_TABLES.md` P4b and is an extrapolation, not a measurement.
 

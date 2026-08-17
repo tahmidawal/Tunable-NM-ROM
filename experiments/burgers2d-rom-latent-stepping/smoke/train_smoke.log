@@ -1,0 +1,11 @@
+jax_backend=gpu  x64=True  N=16 K=4 steps=300 batch=32 p_sub=0 t_smooth=0.01 bc=poly hidden=256x5
+  FOM: 32 trajectories (50 Newton-implicit steps each) in 1s, max Newton rel residual 9.93e-13
+  data check: max FOM rel residual over all trajectories 9.96e-13
+  data fingerprint {'sum': 47347.9642191401, 'sumsq': 25161.40444646099, 'shape': [32, 51, 256]}
+  POD: 1224 snapshots, top-64 ortho dev 2.0e-15 [0s]
+  POD val floors: r4=3.526e-01  r6=2.287e-01  r8=1.745e-01  r16=1.025e-01  r32=4.573e-02  r64=1.648e-02
+  film params 438081, n_freq 7, eps 2.4396e-01
+  step      0  loss 2.149e-01  data 2.147e-01  [28s]
+  step    299  loss 6.456e-03  data 6.263e-03  [69s]
+  TRAIN recon at learned latents: mean rel 1.165e-01 (median 9.984e-02, max 5.074e-01); latent RMS 1.203, mean |dz| per step 3.987e-02 [69s]
+wrote N16_K4

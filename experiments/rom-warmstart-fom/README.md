@@ -151,4 +151,28 @@ runs/             pulled cluster output, logs, and the generated hybrid_points.j
 
 ## Provenance
 
+### Inputs (git-ignored because of their size; sha256 recorded here)
+
+| file | sha256 | origin |
+|---|---|---|
+| `in/autodec_K8_N64_hbc_stages.pkl` | `45b5ff291216981a…` | `poisson2d-rom-objective/runs/hbc_K8/` — the hard-BC `K=8`, `N=64` FiLM auto-decoder the reference cell's headline used |
+| `in/blat_ad_N64_K8.pkl` | `aa07cd4a1471c59a…` | `exp/2026-08-16-burgers2d-rom-latent-stepping` `runs/ad_n64_k8/` — the `K=8`, `N=64` Burgers auto-decoder + POD basis |
+
+### Reference harness sources imported unchanged
+
+| file | sha256 |
+|---|---|
+| `poisson2d-rom-objective/pro_common.py` | `044d1c3aaf4727bc…` |
+| `poisson2d-rom-objective/followup/fu_eq.py` | `92717e93c8c04c93…` |
+| `burgers2d-rom-latent-stepping/blat_common.py` | `4fecfe2f87a25327…` |
+| `burgers2d-rom-latent-stepping/followup/fu_common.py` | `35c5693d05cdad62…` |
+
+plus `ms_parametric.py` / `ms_autodecoder.py` (from `exp/2026-08-14-multistage-precision`) and
+`burgers2d_film.py` (from `exp/2026-08-14-burgers2d-coord-rom`), staged into the job's `deps/`
+by `cluster/make_cell.sh` and checksummed into `MANIFEST.sha256` before every `scp`.
+
+Every result row additionally carries `commit`, a **sha256 of every `wsf_*.py`** (so a dirty
+tree cannot publish two different codes under one commit hash), `gpu`, `gpu_kind`,
+`jax_backend`, `slurm_job_id`, `seed`, and `run_role`.
+
 <!-- PROVENANCE -->

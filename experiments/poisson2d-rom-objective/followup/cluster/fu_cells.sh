@@ -59,6 +59,16 @@ EOS
 ROM="NS=1 GN_ITERS=60 OBJECTIVES=weak_a1_M64 MS=256 SCHEMES=full,nnls,nnlsoff INITS=nearest,mean EQ_SNAPS=64 EQ_PERTURB=3 EQ_ROWS=3072 EQ_FIXED_SNAPS=1"
 FDC="NS=1 GN_ITERS=60 OBJECTIVES=fd MS=256 SCHEMES=full INITS=nearest"
 
+if [[ "$WAVE" == "wave3" ]]; then
+  # ---- COMPLEXITY ladder: NB independent bump sources (intrinsic dimension 4*NB),
+  # a full k ladder per family, coordinate ROM vs POD.  NB=1 is the main study's family.
+  for NB in 1 2 3; do
+    mk pc_nb$NB 12:00:00 64G "NB=$NB KS=2,4,6,8,12,16,24,32 M=64 MQ=256 N_TEST=16 GN_ITERS=60 POD_KS=2,4,6,8,12,16,24,32,48,64 EQ_SNAPS=64 EQ_PERTURB=3 EQ_ROWS=3072 \$PY -u followup/fu_family.py ../out"
+  done
+  echo "cells built under $ROOT"
+  exit 0
+fi
+
 if [[ "$WAVE" == "wave2" ]]; then
   # ---- timing vs k on ONE GPU, all k sequential in ONE process (+ the linear POD control,
   # whose online solve is one precomputed pseudo-inverse matvec).  Needs the wave-1

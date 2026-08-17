@@ -248,8 +248,21 @@ def main():
                 r = time_rom(dec, n, ops, z_j, nu, u0_rms, U_true=U)
                 r["ic_fit_eq_nodes"] = ic_eq_info
                 if ic_eq_med is not None:
-                    r["speedup_end_to_end_eq_ic"] = med / (r["rollout_s_median"] + ic_eq_med + dmed)
-                    r["speedup_end_to_end_eq_ic_no_decode"] = med / (r["rollout_s_median"] + ic_eq_med)
+                    # the end-to-end number must be MEASURED, not composed: time and grade the
+                    # rollout started from the EQ-node latent z_e, not from the full-grid z_j
+                    r_e = time_rom(dec, n, ops, z_e, nu, u0_rms, U_true=U)
+                    r["rollout_from_eq_start"] = dict(
+                        rollout_s_median=r_e["rollout_s_median"], all=r_e["all"],
+                        iters_total=r_e["iters_total"], attempts_total=r_e["attempts_total"],
+                        s_per_jacobian_eval=r_e["s_per_jacobian_eval"],
+                        traj_rel_vs_fom_at_this_N=r_e.get("traj_rel_vs_fom_at_this_N"),
+                        speedup_rollout_only=med / r_e["rollout_s_median"],
+                        speedup_end_to_end=med / (r_e["rollout_s_median"] + ic_eq_med + dmed),
+                        speedup_end_to_end_no_decode=med / (r_e["rollout_s_median"] + ic_eq_med))
+                    log(f"    ^ from the EQ-node cold start: rollout "
+                        f"{r_e['rollout_s_median']*1e3:.0f} ms, err "
+                        f"{r_e.get('traj_rel_vs_fom_at_this_N', float('nan')):.3e}, e2e "
+                        f"{r['rollout_from_eq_start']['speedup_end_to_end_no_decode']:.2f}x")
                 r["speedup_rollout_only"] = med / r["rollout_s_median"]
                 r["speedup_end_to_end_jit_ic"] = med / (r["rollout_s_median"] + ic_jit_med + dmed)
                 # composing the PYTHON IC time with a rollout started from the JITTED IC

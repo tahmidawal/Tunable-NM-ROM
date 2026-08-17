@@ -167,6 +167,8 @@ def build(runs=None):
         f["b_variant"] = str(Bc[0].get("variant"))
         f["b_m"] = str(Bc[0].get("m"))
         f["b_max_newton"] = str(Bc[0].get("max_newton") or 25)
+        f["b_num_steps"] = str(T_ if (T_ := 50) else 50)
+        f["b_n_traj"] = str(Bc[0].get("n_traj") or 4)
         T_ = 50
         sp = [r["iters_from_baseline"] / T_ for r in Bc]
         f["b_steps_min"] = g(min(sp), ".2f"); f["b_steps_max"] = g(max(sp), ".2f")

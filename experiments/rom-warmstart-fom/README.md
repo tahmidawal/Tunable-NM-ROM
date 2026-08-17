@@ -471,10 +471,26 @@ interpolation the sister cell should read **slightly LOW relative to these numbe
 - **high in any amount, or low by a lot — a problem**, meaning one of the two ladders is not
   measuring what it claims.
 
-Its table also reports the ladder fit's `R^2`; if the linear cost model does not hold, the
-interpolation is untrustworthy and the comparison should not be made at all. That is a
-self-check on its instrument as well as on this one. Until those panels land, treat the
-Burgers denominator as **corroborated from one side only**.
+**The timing structure is confirmed symmetric, so no band-widening is needed.** A third
+candidate asymmetry — per-step Python overhead — was checked by reading the sister cell's code
+rather than assumed away: its Burgers rungs call a `@jax.jit` rollout whose body is a single
+`lax.scan` over all 50 steps, timed as one invocation with one
+`block_until_ready`, exactly as here. Zero per-step Python overhead on either side. Effect 2
+is therefore the only asymmetry left and the expected sign stands unhedged.
+
+Two differences are **recorded rather than corrected for**: this cell averages over
+4 held-out trajectories while the sister cell reports mean and median over 16 (its
+comparison uses the mean, matching this one), and the GPU burn-in is 3 s here against 1.5 s
+there.
+
+**The test points at both denominators, not just this one.** Its table encodes the verdict
+mechanically — `CONSISTENT (low, small)` for a deviation in `[-6%, 0)`, `INVESTIGATE (high)`
+or `INVESTIGATE (low by a lot)` otherwise — so a later reader cannot quietly reinterpret a
+high reading as agreement. And its ladder-fit `R^2` is the discriminator between the two ways
+the check can fail: a poor fit means *its* linear cost model is wrong and the interpolation
+should not be used at all; a good fit with a deviation of the wrong sign means the two
+denominators genuinely differ. Until those panels land, treat the Burgers denominator as
+**corroborated from one side only**.
 
 They do reconcile in principle, because a tolerance-based solve reports how many steps it took:
 across every mesh and tolerance measured here it converges in **1.97–2.40

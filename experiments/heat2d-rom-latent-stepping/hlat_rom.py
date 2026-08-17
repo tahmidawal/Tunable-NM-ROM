@@ -368,7 +368,10 @@ def main():
                 m = int(colloc_name[5:] if pool == "off" else colloc_name[2:])
                 if pool == "off" and decoder.kind != "coord":
                     return None                       # meshfree pool undefined for POD rows
-                key = (decoder.kind, decoder.k, kind, M, m, pool)  # alpha-free: EQ fits u only
+                # the heat EQ fit reproduces phi_i^T u only, so it depends on
+                # (decoder, M, m, pool) -- NOT on alpha nor on which eigenvalues
+                # ('weak' vs 'weakc') the residual then multiplies them by.
+                key = (decoder.kind, decoder.k, M, m, pool)
                 if key not in cache:
                     zs = Z_snap if decoder.kind == "coord" else (
                         (U_tr.reshape(-1, n2) @ np.asarray(decoder.V))[fit_rows])
@@ -474,7 +477,7 @@ def main():
     # LM/Newton machinery on a linear subspace).  For a linear PDE a real POD ROM would
     # never do that: V^T A_kappa V is a k x k matrix, so the whole rollout is 50 k x k
     # solves.  This arm is that ROM -- the honest linear competitor on speed.
-    _, impl_op = bc.make_fom(N)
+    _, impl_op = bc.hf.make_rollout(N)          # (rollout, implicit_op) from the FOM itself
     poddirect = {}
     for k in POD_KS:
         Vk = jnp.asarray(V[:, :k], dtype=F64)

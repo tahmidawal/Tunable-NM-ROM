@@ -59,7 +59,8 @@ def fig_poisson_total_vs_tau(P, paths):
     fts = sorted({r["fom_tau"] for r in P}, reverse=True)
     Ns = sorted({r["N"] for r in P})
     rts = sorted({r["rom_tau"] for r in P}, reverse=True)
-    fig, axes = plt.subplots(1, len(fts), figsize=(3.5 * len(fts), 3.4), sharey=True)
+    fig, axes = plt.subplots(1, len(fts), figsize=(3.7 * len(fts), 3.6),
+                             sharey=True, layout="constrained")
     axes = np.atleast_1d(axes)
     x = np.arange(len(rts))
     for ax, ft in zip(axes, fts):
@@ -78,11 +79,11 @@ def fig_poisson_total_vs_tau(P, paths):
         ax.set_title(f"$\\tau_{{FOM}}$ = {ft:g}")
         st.clean(ax)
     axes[0].set_ylabel("total time (ms)")
-    axes[0].legend(ncol=2, loc="best")
+    axes[0].legend(ncol=2, loc="upper left", fontsize=7.5)
     axes[-1].text(0.98, 0.03, "dashed = pure FOM (CG from zero)", transform=axes[-1].transAxes,
                   ha="right", va="bottom", fontsize=7.5, color=st.MUTED)
     fig.suptitle("Poisson-2D: hybrid total cost vs the ROM's own stopping tolerance",
-                 fontsize=10, color=st.INK, y=1.02)
+                 fontsize=10, color=st.INK)
     paths += st.save(fig, FIGS, "wsfom_poisson_total_vs_tau", (EXTRA,))
 
 
@@ -94,7 +95,7 @@ def fig_poisson_crossover(P, paths):
     Ns = sorted({r["N"] for r in P if r["fom_tau"] == ftm})
     if not Ns:
         return
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.4, 3.4))
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(9.4, 3.6), layout="constrained")
     fom = [np.mean([r["t_fom_baseline_ms"] for r in P if r["N"] == n and r["fom_tau"] == ftm])
            for n in Ns]
     best = [min([r["t_total_ms"] for r in P if r["N"] == n and r["fom_tau"] == ftm])
@@ -105,14 +106,16 @@ def fig_poisson_crossover(P, paths):
                        if r["N"] == n and r["fom_tau"] == ftm]) for n in Ns]
     a1.plot(Ns, fom, "-o", color=st.C["blue"], label="pure FOM (CG, zero start)")
     a1.plot(Ns, best, "-s", color=st.C["orange"], label="best hybrid (ROM + CG)")
-    a1.plot(Ns, romonly, "--^", color=st.C["aqua"], label="ROM stage alone")
+    a1.plot(Ns, romonly, "--^", color=st.C["violet"],
+            label="ROM stage alone (solve + decode)")
     if np.isfinite(direct).any():
-        a1.plot(Ns, direct, ":d", color=st.C["green"], label="direct solve (exact, DST)")
+        a1.plot(Ns, direct, ":d", color=st.C["green"],
+                label="direct solve (exact, sine diagonalisation)")
     a1.set_xscale("log", base=2); a1.set_yscale("log")
     a1.set_xlabel("N"); a1.set_ylabel("time (ms)")
     a1.set_title(f"Poisson-2D cost vs mesh ($\\tau_{{FOM}}$={ftm:g})")
     a1.set_xticks(Ns); a1.set_xticklabels([str(n) for n in Ns])
-    a1.legend(); st.clean(a1)
+    a1.legend(loc="upper left", fontsize=7.5); st.clean(a1)
 
     for ci, ft in enumerate(fts):
         nn = sorted({r["N"] for r in P if r["fom_tau"] == ft})
@@ -121,9 +124,11 @@ def fig_poisson_crossover(P, paths):
         if nn:
             a2.plot(nn, sp, "-o", color=NCOL[ci % len(NCOL)], label=f"$\\tau_{{FOM}}$={ft:g}")
     a2.axhline(1.0, color=st.INK2, lw=1.0, ls="--")
-    a2.text(Ns[0], 1.03, "hybrid wins above this line", fontsize=7.5, color=st.MUTED)
-    a2.set_xscale("log", base=2); a2.set_yscale("log")
-    a2.set_xticks(Ns); a2.set_xticklabels([str(n) for n in Ns])
+    a2.text(0.02, 0.90, "hybrid wins above this line", transform=a2.transAxes,
+            fontsize=7.5, color=st.MUTED, va="top")
+    a2.set_xscale("log", base=2)          # linear y: the range is ~0.5-1.1 and a log
+    a2.set_xticks(Ns)                     # axis there produces unreadable minor ticks
+    a2.set_xticklabels([str(n) for n in Ns])
     a2.set_xlabel("N"); a2.set_ylabel("best hybrid speedup over the FOM")
     a2.set_title("Where does the hybrid start to win?")
     a2.legend(); st.clean(a2)
@@ -139,7 +144,7 @@ def fig_poisson_iters(P, paths):
     rts = sorted({r["rom_tau"] for r in P}, reverse=True)
     if not Ns:
         return
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.4, 3.4))
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(9.4, 3.6), layout="constrained")
     x = np.arange(len(rts))
     for ci, n in enumerate(Ns):
         sub = {r["rom_tau"]: r for r in P if r["N"] == n and r["fom_tau"] == ftm}
@@ -191,7 +196,7 @@ def fig_burgers_per_step(reps, paths):
     if not sel:
         return
     p = sel[0]
-    fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(11.4, 3.4))
+    fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(12.0, 3.6), layout="constrained")
     steps = np.arange(1, len(p["newton_per_step"]["prev"]) + 1)
     for arm in ("prev", "extrap", "rom"):
         a1.plot(steps, p["newton_per_step"][arm], "-", color=ARMC[arm], label=ARML[arm])
@@ -219,7 +224,7 @@ def fig_burgers_cost(B, paths):
     rows = {n: [r for r in B if r["N"] == n and r["fom_tau"] == ftm][0]
             for n in Ns if [r for r in B if r["N"] == n and r["fom_tau"] == ftm]}
     Ns = sorted(rows)
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.4, 3.4))
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(9.4, 3.6), layout="constrained")
     a1.plot(Ns, [rows[n]["t_fom_baseline_ms"] for n in Ns], "-o", color=ARMC["prev"],
             label="pure FOM (" + ARML["prev"] + ")")
     a1.plot(Ns, [rows[n]["t_fom_extrap_ms"] for n in Ns], "-^", color=ARMC["extrap"],

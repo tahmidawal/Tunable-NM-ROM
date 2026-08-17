@@ -1,0 +1,101 @@
+{
+ "manifest": {
+  "pkl": "autodec_K8_N64_hbc_stages.pkl",
+  "pkl_config": {
+   "N": 64,
+   "n_train": 512,
+   "n_val": 64,
+   "n_stages": 1,
+   "steps": 20000,
+   "batch": 32,
+   "p_sub": 1024,
+   "hidden": 128,
+   "n_layers": 4,
+   "peak_lr": 0.002,
+   "const_lr": 0,
+   "lbfgs_steps": 0,
+   "z_ff": 0,
+   "freq_margin": 4,
+   "seed": 0,
+   "K_LAT": 8,
+   "lat_lr": 0.005,
+   "lat_reg": 0.0001,
+   "hard_bc": 1,
+   "gn_iters": 60,
+   "train_seed": 0
+  },
+  "ns": 1,
+  "n_test": 16,
+  "gn_iters": 60,
+  "hard_bc": 1,
+  "objectives": [
+   "fd"
+  ],
+  "ms": [
+   256
+  ],
+  "schemes": [
+   "full"
+  ],
+  "inits": [
+   "nearest"
+  ],
+  "eq_snaps": 64,
+  "eq_perturb": 3,
+  "eq_modes": 64,
+  "eq_rows": 4096,
+  "eq_fixed_snaps": 0,
+  "bc_beta": 0.0,
+  "backend": "gpu"
+ },
+ "fom_max_rel_residual": 4.286116736461677e-13,
+ "oracle": {
+  "nearest": 0.007109310899388483
+ },
+ "rows": [
+  {
+   "objective": "fd",
+   "scheme": "full",
+   "m": 3844,
+   "init": "nearest",
+   "ns": 1,
+   "n_modes_retained": null,
+   "bc_beta": null,
+   "budget": 60,
+   "rom_rel_l2_mean": 0.046326292015397334,
+   "rom_rel_l2_med": 0.03847370591382405,
+   "rom_rel_l2_max": 0.10365442963108834,
+   "oracle_rel_l2_mean": 0.007109310899388483,
+   "obj_med": 0.6158729534023695,
+   "lm_accepted_med": 24.5,
+   "lm_rejected_med": 1.0,
+   "lm_attempts_med": 29.0,
+   "lm_reasons": {
+    "converged": 13,
+    "budget": 3
+   },
+   "boundary_block_med": 0.0,
+   "eq_info": null,
+   "per_sample_rom_rel_l2": [
+    0.020998602727167904,
+    0.07308315352946698,
+    0.04269412027709155,
+    0.03135737805896423,
+    0.03425329155055654,
+    0.09271315529096556,
+    0.013512142484234898,
+    0.029006547686208674,
+    0.012750002802128443,
+    0.043533884418214194,
+    0.01735368595588683,
+    0.06421177991269525,
+    0.04406276235862695,
+    0.030357171160596268,
+    0.10365442963108834,
+    0.08767856440246476
+   ],
+   "secs": 7.7210693359375
+  }
+ ],
+ "complete": true
+}

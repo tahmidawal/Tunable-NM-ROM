@@ -154,3 +154,48 @@ def make_lm_jit(dec, K, pts, wq, PhiT, Wl, budget, rel_tol=0.0):
     return jax.jit(lm)
 
 
+
+
+def weak_source_projector(grid, spec, pts_kind):
+    """Split `pro_common.weak_source_term` into its OFFLINE and ONLINE halves.
+
+    The weak-form source term is  f_m = Lambda^{-alpha} Phi_M^T f, a projection of
+    the query's source onto M' fixed test modes.  The mode table Phi_M (M' x n_i^2)
+    and the eigenvalue weights depend only on the MESH, not on the query, so they
+    are built once per mesh (offline); the per-query work is one (M' x n_i^2)
+    matvec.  `pro_common.weak_source_term` rebuilds the table on every call, which
+    is correct but makes a naive timing of it O(M' n) *sin evaluations* per query
+    instead of O(M' n) flops -- at N=512 that is 500 ms of offline work charged to
+    the online path.
+
+    Returns (apply, build_secs) where apply(f_int2d) -> f_m is jitted and
+    numerically identical to pro_common.weak_source_term(grid, spec, pts_kind, f)."""
+    t0 = time.time()
+    alpha, M = spec["alpha"], spec["M"]
+    if pts_kind == "grid":
+        mask = np.asarray(grid.mode_mask(M)).astype(bool)
+        I, Jm = np.nonzero(mask)
+        lam = np.asarray(grid.lam)[I, Jm]
+        S = jnp.asarray(grid.S)
+        Ij, Jj = jnp.asarray(I), jnp.asarray(Jm)
+        wgt = jnp.asarray(lam ** (-alpha))
+
+        def apply(f_int2d):                       # fast sine transform, then gather
+            C = S.T @ jnp.asarray(f_int2d) @ S
+            return C[Ij, Jj] * wgt
+    else:
+        kk = np.arange(1, grid.N - 1)
+        II, JJ = np.meshgrid(kk, kk, indexing="ij")
+        lam_flat = ((np.pi ** 2) * (II ** 2 + JJ ** 2)).reshape(-1)
+        M_eff = min(M if M is not None else lam_flat.size, lam_flat.size)
+        sel = lam_flat <= np.sort(lam_flat)[M_eff - 1]
+        I, Jm = II.reshape(-1)[sel], JJ.reshape(-1)[sel]
+        lam = lam_flat[sel]
+        X = np.asarray(grid.coords_int)
+        Phi = jnp.asarray(2.0 * np.sin(np.pi * np.outer(I, X[:, 0]))
+                          * np.sin(np.pi * np.outer(Jm, X[:, 1])))      # (M', n_i^2)
+        wgt = jnp.asarray(grid.dx ** 2 * lam ** (-alpha))
+
+        def apply(f_int2d):
+            return (Phi @ jnp.asarray(f_int2d).reshape(-1)) * wgt
+    return jax.jit(apply), time.time() - t0

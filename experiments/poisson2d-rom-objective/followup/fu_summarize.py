@@ -227,9 +227,11 @@ def fig_kladder(D):
     ax.plot(ks, coord, "o-", color=fs.C["blue"], label="coordinate ROM (full grid)", zorder=5)
     ax.plot(ks, coord_eq, "s--", color=fs.C["blue"], alpha=0.75, label="coordinate ROM (NNLS-EQ, m=256)", zorder=4)
     ax.plot(ks, orac, ":", color=fs.MUTED, lw=1.6, label="coord. inferred-latent floor (oracle)", zorder=3)
+    # POD-Galerkin and the same weak objective agree to <1% with the projection floor at
+    # every k (POD sits ON its linear ceiling), so one solid POD line + the floor is plotted;
+    # all three are in the table.
     ax.plot(ks, podw, "^-", color=fs.C["orange"], label="POD, same weak objective", zorder=5)
-    ax.plot(ks, podg, "v--", color=fs.C["orange"], alpha=0.75, label="POD-Galerkin", zorder=4)
-    ax.plot(ks, podp, ":", color=fs.C["orange"], lw=1.4, alpha=0.6, label="POD projection floor", zorder=3)
+    ax.plot(ks, podp, ":", color=fs.C["orange"], lw=1.4, alpha=0.7, label="POD projection floor", zorder=3)
     ax.axvline(4, color=fs.MUTED, lw=0.9, ls=(0, (2, 3)), zorder=1)
     ax.set_xscale("log", base=2); ax.set_yscale("log")
     ax.set_xticks(ks); ax.set_xticklabels([str(k) for k in ks])
@@ -241,6 +243,16 @@ def fig_kladder(D):
     ax.set_xlabel("latent dimension k"); ax.set_ylabel("held-out rel-L2 error")
     ax.set_title("Poisson 2D — where the nonlinear manifold stops paying", loc="left")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=2)
+    # the headline gap, stated on the figure rather than left to the reader
+    try:
+        i8 = ks.index(8)
+        ax.annotate(f"{podw[i8] / coord[i8]:.0f}x", xy=(8, np.sqrt(podw[i8] * coord[i8])),
+                    xytext=(11, np.sqrt(podw[i8] * coord[i8])), color=fs.INK2, fontsize=8,
+                    va="center", arrowprops=dict(arrowstyle="-", lw=0.7, color=fs.MUTED))
+        ax.annotate("", xy=(8, podw[i8]), xytext=(8, coord[i8]),
+                    arrowprops=dict(arrowstyle="<->", lw=0.9, color=fs.MUTED))
+    except (ValueError, TypeError):
+        pass
     return fs.save(fig, FIGS, "poisson_k_ladder", (PLOTS,))
 
 

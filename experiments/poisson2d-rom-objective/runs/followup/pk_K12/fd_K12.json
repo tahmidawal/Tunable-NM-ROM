@@ -1,0 +1,101 @@
+{
+ "manifest": {
+  "pkl": "autodec_K12_N64_hbc_stages.pkl",
+  "pkl_config": {
+   "N": 64,
+   "n_train": 512,
+   "n_val": 64,
+   "n_stages": 1,
+   "steps": 20000,
+   "batch": 32,
+   "p_sub": 1024,
+   "hidden": 128,
+   "n_layers": 4,
+   "peak_lr": 0.002,
+   "const_lr": 0,
+   "lbfgs_steps": 0,
+   "z_ff": 0,
+   "freq_margin": 4,
+   "seed": 0,
+   "K_LAT": 12,
+   "lat_lr": 0.005,
+   "lat_reg": 0.0001,
+   "hard_bc": 1,
+   "gn_iters": 60,
+   "train_seed": 0
+  },
+  "ns": 1,
+  "n_test": 16,
+  "gn_iters": 60,
+  "hard_bc": 1,
+  "objectives": [
+   "fd"
+  ],
+  "ms": [
+   256
+  ],
+  "schemes": [
+   "full"
+  ],
+  "inits": [
+   "nearest"
+  ],
+  "eq_snaps": 64,
+  "eq_perturb": 3,
+  "eq_modes": 64,
+  "eq_rows": 4096,
+  "eq_fixed_snaps": 0,
+  "bc_beta": 0.0,
+  "backend": "gpu"
+ },
+ "fom_max_rel_residual": 4.286116736461677e-13,
+ "oracle": {
+  "nearest": 0.006235505988143214
+ },
+ "rows": [
+  {
+   "objective": "fd",
+   "scheme": "full",
+   "m": 3844,
+   "init": "nearest",
+   "ns": 1,
+   "n_modes_retained": null,
+   "bc_beta": null,
+   "budget": 60,
+   "rom_rel_l2_mean": 0.031361610053297614,
+   "rom_rel_l2_med": 0.026673482940721978,
+   "rom_rel_l2_max": 0.08550158195463146,
+   "oracle_rel_l2_mean": 0.006235505988143214,
+   "obj_med": 0.47608314206485247,
+   "lm_accepted_med": 34.0,
+   "lm_rejected_med": 1.5,
+   "lm_attempts_med": 35.5,
+   "lm_reasons": {
+    "converged": 13,
+    "budget": 3
+   },
+   "boundary_block_med": 0.0,
+   "eq_info": null,
+   "per_sample_rom_rel_l2": [
+    0.03259819091211916,
+    0.05267211962462019,
+    0.016622841645245953,
+    0.028615760527551673,
+    0.024731205353892286,
+    0.03705975135242013,
+    0.021839418925201776,
+    0.031303832266987616,
+    0.009143983409443827,
+    0.016591373509824762,
+    0.0066604748265231,
+    0.08550158195463146,
+    0.048646208800243625,
+    0.01779780975374918,
+    0.049057126652051974,
+    0.022944081338255037
+   ],
+   "secs": 8.727545022964478
+  }
+ ],
+ "complete": true
+}

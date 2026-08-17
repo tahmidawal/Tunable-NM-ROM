@@ -1,0 +1,101 @@
+{
+ "manifest": {
+  "pkl": "autodec_K16_N64_hbc_stages.pkl",
+  "pkl_config": {
+   "N": 64,
+   "n_train": 512,
+   "n_val": 64,
+   "n_stages": 1,
+   "steps": 20000,
+   "batch": 32,
+   "p_sub": 1024,
+   "hidden": 128,
+   "n_layers": 4,
+   "peak_lr": 0.002,
+   "const_lr": 0,
+   "lbfgs_steps": 0,
+   "z_ff": 0,
+   "freq_margin": 4,
+   "seed": 0,
+   "K_LAT": 16,
+   "lat_lr": 0.005,
+   "lat_reg": 0.0001,
+   "hard_bc": 1,
+   "gn_iters": 60,
+   "train_seed": 0
+  },
+  "ns": 1,
+  "n_test": 16,
+  "gn_iters": 60,
+  "hard_bc": 1,
+  "objectives": [
+   "fd"
+  ],
+  "ms": [
+   256
+  ],
+  "schemes": [
+   "full"
+  ],
+  "inits": [
+   "nearest"
+  ],
+  "eq_snaps": 64,
+  "eq_perturb": 3,
+  "eq_modes": 64,
+  "eq_rows": 4096,
+  "eq_fixed_snaps": 0,
+  "bc_beta": 0.0,
+  "backend": "gpu"
+ },
+ "fom_max_rel_residual": 4.286116736461677e-13,
+ "oracle": {
+  "nearest": 0.004133049643049876
+ },
+ "rows": [
+  {
+   "objective": "fd",
+   "scheme": "full",
+   "m": 3844,
+   "init": "nearest",
+   "ns": 1,
+   "n_modes_retained": null,
+   "bc_beta": null,
+   "budget": 60,
+   "rom_rel_l2_mean": 0.0254849705052614,
+   "rom_rel_l2_med": 0.02124534790174788,
+   "rom_rel_l2_max": 0.06824300728145517,
+   "oracle_rel_l2_mean": 0.004133049643049876,
+   "obj_med": 0.3564000025408949,
+   "lm_accepted_med": 33.5,
+   "lm_rejected_med": 4.0,
+   "lm_attempts_med": 38.0,
+   "lm_reasons": {
+    "budget": 3,
+    "converged": 13
+   },
+   "boundary_block_med": 0.0,
+   "eq_info": null,
+   "per_sample_rom_rel_l2": [
+    0.0163737682236606,
+    0.026464127541010025,
+    0.021598118004975325,
+    0.025917117144267646,
+    0.026316653703905627,
+    0.025975105833113094,
+    0.01128867421410616,
+    0.019907255427526423,
+    0.014903002966998329,
+    0.01139006904864581,
+    0.006732584889532515,
+    0.052977453558778906,
+    0.0488033402543464,
+    0.009976672193339956,
+    0.06824300728145517,
+    0.020892577798520433
+   ],
+   "secs": 9.236852884292603
+  }
+ ],
+ "complete": true
+}

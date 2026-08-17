@@ -1,0 +1,101 @@
+{
+ "manifest": {
+  "pkl": "autodec_K8_N64_hbc_S1_stages.pkl",
+  "pkl_config": {
+   "N": 64,
+   "n_train": 512,
+   "n_val": 64,
+   "n_stages": 1,
+   "steps": 20000,
+   "batch": 32,
+   "p_sub": 1024,
+   "hidden": 128,
+   "n_layers": 4,
+   "peak_lr": 0.002,
+   "const_lr": 0,
+   "lbfgs_steps": 0,
+   "z_ff": 0,
+   "freq_margin": 4,
+   "seed": 0,
+   "K_LAT": 8,
+   "lat_lr": 0.005,
+   "lat_reg": 0.0001,
+   "hard_bc": 1,
+   "gn_iters": 60,
+   "train_seed": 1
+  },
+  "ns": 1,
+  "n_test": 16,
+  "gn_iters": 60,
+  "hard_bc": 1,
+  "objectives": [
+   "fd"
+  ],
+  "ms": [
+   256
+  ],
+  "schemes": [
+   "full"
+  ],
+  "inits": [
+   "nearest"
+  ],
+  "eq_snaps": 64,
+  "eq_perturb": 3,
+  "eq_modes": 64,
+  "eq_rows": 4096,
+  "eq_fixed_snaps": 0,
+  "bc_beta": 0.0,
+  "backend": "gpu"
+ },
+ "fom_max_rel_residual": 4.286116736461677e-13,
+ "oracle": {
+  "nearest": 0.007672756266185297
+ },
+ "rows": [
+  {
+   "objective": "fd",
+   "scheme": "full",
+   "m": 3844,
+   "init": "nearest",
+   "ns": 1,
+   "n_modes_retained": null,
+   "bc_beta": null,
+   "budget": 60,
+   "rom_rel_l2_mean": 0.06140622790431855,
+   "rom_rel_l2_med": 0.04799059367078931,
+   "rom_rel_l2_max": 0.16466138151011359,
+   "oracle_rel_l2_mean": 0.007672756266185297,
+   "obj_med": 0.7283304884334558,
+   "lm_accepted_med": 22.0,
+   "lm_rejected_med": 1.5,
+   "lm_attempts_med": 23.5,
+   "lm_reasons": {
+    "converged": 13,
+    "budget": 3
+   },
+   "boundary_block_med": 0.0,
+   "eq_info": null,
+   "per_sample_rom_rel_l2": [
+    0.02457314005443994,
+    0.1384527744080101,
+    0.04861034684934643,
+    0.012795722071869521,
+    0.04737084049223219,
+    0.07263449502436145,
+    0.019126866668913018,
+    0.06070863427699564,
+    0.026210988456568413,
+    0.05107347665002935,
+    0.017601643239893515,
+    0.10076978585001056,
+    0.11968725558066125,
+    0.04497030385911358,
+    0.16466138151011359,
+    0.033251991476538276
+   ],
+   "secs": 6.294692277908325
+  }
+ ],
+ "complete": true
+}

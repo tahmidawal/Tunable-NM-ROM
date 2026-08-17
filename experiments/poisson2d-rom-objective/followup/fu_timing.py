@@ -51,7 +51,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 import pro_common as pc  # noqa: E402
 from pro_common import mp, F64  # noqa: E402
 sys.path.insert(0, HERE)
-from fu_eq import eq_fit, make_lm_jit  # noqa: E402  (one implementation, shared with fu_family.py)
+from fu_eq import eq_fit, make_lm_jit, weak_source_projector  # noqa: E402  (shared with fu_family.py)
 
 MODE = os.environ.get("MODE", "n")
 OUT = sys.argv[1]
@@ -186,12 +186,20 @@ def main():
             spec = dict(kind="weak", alpha=1.0, M=M_MODES)
             arm = rom_arm(dec, grid, K, Z_tr, M_MODES, MQ, "offgrid", Fs, U_int, z_init,
                           f"N{n}")
-            # input preprocessing (Lambda^-1 Phi^T f) and full-field decode, same protocol
-            pre_med, _ = time_fn(lambda: np.asarray(pc.weak_source_term(grid, spec, "offgrid", Fs[0])))
+            # input preprocessing (Lambda^-1 Phi^T f) and full-field decode, same protocol.
+            # The mode table is a per-MESH constant, so it is built offline (timed
+            # separately); the per-query cost is the one (M' x n_i^2) matvec.
+            pre_apply, pre_build_s = weak_source_projector(grid, spec, "offgrid")
+            f0 = jnp.asarray(Fs[0])
+            chk = float(jnp.max(jnp.abs(pre_apply(f0)
+                                        - pc.weak_source_term(grid, spec, "offgrid", Fs[0]))))
+            pre_med, _ = time_fn(lambda: pre_apply(f0).block_until_ready())
             dec_full = jax.jit(lambda z: dec(z, grid.coords))
             dec_med, _ = time_fn(lambda: dec_full(z_init).block_until_ready())
             row = dict(N=n, n_dof=(n - 2) ** 2, fom_cg_s=fom_med, fom_all=fom_all,
-                       fom_max_rel_residual=res, preprocess_s=pre_med, decode_full_field_s=dec_med,
+                       fom_max_rel_residual=res, preprocess_s=pre_med,
+                       preprocess_offline_table_s=pre_build_s, preprocess_vs_reference_maxabs=chk,
+                       decode_full_field_s=dec_med,
                        speedup_solve_only=fom_med / arm["rom_solve_s"],
                        speedup_with_preprocess=fom_med / (arm["rom_solve_s"] + pre_med),
                        speedup_end_to_end=fom_med / (arm["rom_solve_s"] + pre_med + dec_med),

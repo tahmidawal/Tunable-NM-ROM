@@ -1,0 +1,17 @@
+jax_backend=gpu  N=16  variants=['lspg:full:weak64', 'galerkin:full:fd', 'lspg:eqoff256:weak64']
+  FOM: 32 trajectories (50 implicit steps each) in 1s, spot rel residual 3.52e-12
+  data check: max FOM rel residual over all trajectories 9.97e-11
+  checks: {'local_vs_fom_maxabs': 7.771561172376096e-16, 'fom_traj_step1_rel_res': 6.384380658120453e-11, 'weakall_vs_fd_resnorm_reldev': 2.322652558395774e-16, 'weakall_vs_fd_galerkin_grad_reldev': 3.365274968661191e-16, 'weakall_vs_fd_lspg_grad_reldev': 3.8412891879699436e-16, 'weakall_vs_fd_lspg_hess_reldev': 7.307071021895551e-16, 'decoder_wall_maxabs': 0.0}
+  ORACLE inferred-latent floor (held-out, budget 10): 5.453e-01 [43s]
+  IC fit (u0 misfit): python 6.812e-01  jit 6.812e-01 (|diff| 5.6e-17)
+  lspg:full:weak64         m=  196  traj rel mean 5.472e-01 (med 5.472e-01, max 7.023e-01) blowups 0  iters cold 7.0 warm 5.29  step 34.9 ms  [9s]
+  galerkin:full:fd         m=  196  traj rel mean 5.473e-01 (med 5.473e-01, max 7.025e-01) blowups 0  iters cold 6.5 warm 4.28  step 107.3 ms  [16s]
+  NNLS-EQ weak/off M=64 m=256: support 230 (+26 pad), rel fit 2.71e-03 [23s]
+    EQ out-of-fit proj err 1.56e-02 (max 2.28e-02), w in [2.74e-08, 2.74e+00]
+  lspg:eqoff256:weak64     m=  256  traj rel mean 5.479e-01 (med 5.479e-01, max 7.023e-01) blowups 0  iters cold 7.0 warm 5.31  step 39.3 ms  [32s]
+  POD k=  6 lspg:full:weak64     traj rel mean 6.860e-01 (med 6.860e-01) blowups 0 iters warm 3.55 step 6.3 ms
+  POD k= 16 lspg:full:weak64     traj rel mean 2.176e-01 (med 2.176e-01) blowups 0 iters warm 3.54 step 7.6 ms
+  POD-direct (reduced BE Galerkin) k=  6: traj rel mean 6.862e-01 (med 6.862e-01)
+  POD-direct (reduced BE Galerkin) k= 16: traj rel mean 2.181e-01 (med 2.181e-01)
+  timing: FOM 16 ms; lspg:full:weak64=1364ms  galerkin:full:fd=6701ms  lspg:eqoff256:weak64=1696ms  pod_k6:lspg:full:weak64=47ms  pod_k16:lspg:full:weak64=58ms  pod_direct_k6=8ms  pod_direct_k16=9ms  ic_solve_jit=171ms  ic_solve_py=383ms  decode_all_slices=49ms
+wrote hlat_rom_N16_K4.json

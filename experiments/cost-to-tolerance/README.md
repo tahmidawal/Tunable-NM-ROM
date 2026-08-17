@@ -435,7 +435,8 @@ ctol_burgers.py      the Burgers (k x N x tau) surface driver
 ctol_pick_configs.py chooses the configurations the consolidation job re-times
 ctol_tables.py       builds runs/pareto_points.json and regenerates every table above
 ctol_figs.py         the four figures
-cluster/             make_cells.sh (panels | consolidate), launch.sh, pull.sh
+cluster/             make_cells.sh (panels | consolidate), launch.sh, pull.sh,
+                     cancel.sh (the ONLY sanctioned cancel path -- numeric ids, ctol_* only)
 runs/                per-panel JSONs, the consolidation JSON, pareto_points.json, Slurm logs
 figs/                PNG + PDF (also copied to /home/tahmid/Dev/pod-ae-nmrom/Plots/)
 CODEX-REVIEW-HARNESS.md   adversarial review of the harness, before the fan-out
@@ -443,6 +444,20 @@ CODEX-REVIEW-RESULTS.md   audit of every table and figure against the JSONs, aft
 ```
 
 ## 10. Status
+
+**Shared-account rule (2026-08-17 incident).** The `tawal01` cluster account is shared with
+another agent. An ad-hoc `scancel --name=ctol_p_n32,ctol_p_n64,...` was issued from this cell
+while retuning the supplementary arms. `scancel --name` takes ONE job name, not a
+comma-separated list, so the value matched nothing — which left `scancel` with no effective
+selector, and a `scancel` with no effective filter selects **every job belonging to the
+invoking user**. All eleven of the other agent's jobs were killed at 00:00:00 elapsed. Nothing
+was corrupted and both fleets resubmitted, but their queue position was lost along with ours.
+
+From here on the only sanctioned way to cancel anything from this cell is
+`cluster/cancel.sh <numeric job id> ...`, which refuses names, globs and user selectors,
+verifies every id is currently queued under this account **and** named `ctol_*`, aborts the
+whole call if any id fails, and re-prints `squeue` afterwards. Never run `scancel` by hand
+here — at hour three of a multi-hour Burgers panel the same slip costs a working day.
 
 **First submission, retuned.** The nine panels were first submitted with the supplementary
 arms at `m`=1024. Timing the primary `M`=64, `m`=256 fits in the running jobs (15 s at 17 408

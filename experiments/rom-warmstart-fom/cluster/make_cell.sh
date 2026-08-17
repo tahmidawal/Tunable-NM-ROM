@@ -6,7 +6,10 @@
 # checkpoints, and run.sbatch for /cluster/tufts/paralab/tawal01/wsfom/<cell>/.
 # ONE JOB PER DIRECTORY.
 set -euo pipefail
-cell="$1"; mem="$2"; hours="$3"; envs="$4"; cmd="$5"; gputype="${6:-a100}"
+# `walltime` is a full Slurm HH:MM:SS string: tight walltimes backfill far better,
+# and with fairshare exhausted backfill is the only thing that starts a job.
+cell="$1"; mem="$2"; walltime="$3"; envs="$4"; cmd="$5"; gputype="${6:-a100}"
+hours="$walltime"
 # every job in a fan-out asks for the SAME GPU TYPE so that within-panel
 # breakdowns are at least drawn from identical hardware; cross-N wall clock
 # still comes only from the single consolidation job.
@@ -46,7 +49,7 @@ cat > "$STAGE/run.sbatch" <<EOF
 #SBATCH --gres=gpu:$gputype:1
 #SBATCH -c 8
 #SBATCH --mem=$mem
-#SBATCH -t $hours:00:00
+#SBATCH -t $hours
 #SBATCH -o $REMOTE/logs/%j.out
 #SBATCH -e $REMOTE/logs/%j.err
 set -euo pipefail

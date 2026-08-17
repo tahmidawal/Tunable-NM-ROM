@@ -428,6 +428,22 @@ the engineering correction, not an accuracy-matched one.
 regardless of need.** The accuracy it lands on is far past anything asked for: its worst
 per-step relative Newton residual is {{oc_b_resid_N256}} at `N = 256`.
 
+**Which knob this ladder varies, because the sister cell varies a different one.** This cell
+replaces the fixed-length scan with a **tolerance-based Newton loop** and ladders the
+*stopping tolerance* `tau` in `||R(u, u_prev, nu)|| <= tau ||u_prev||`; the iteration count
+per step is then whatever convergence requires (capped at {{b_max_newton}}). The sister
+`cost-to-tolerance` cell instead ladders the testbed's own **`NEWTON_ITERS`** over
+{1, 2, 3, 4, 6, 8}, leaving the loop fixed-length. **These are different knobs and the two
+cells' Burgers denominators are therefore defined differently — they are not interchangeable
+rung-for-rung.**
+
+They do reconcile, because a tolerance-based solve reports how many steps it actually took:
+across every mesh and tolerance measured here it converges in **{{b_steps_min}}–{{b_steps_max}}
+Newton steps per time step**, against the testbed's fixed 8. So this cell's rungs correspond
+to roughly the `NEWTON_ITERS = 2` end of the sister cell's ladder, and the ~4x
+over-convergence factor below is the same fact both cells are measuring. Quote one definition
+or the other, not a mixture.
+
 A Newton solve that simply stops at a tolerance needs far fewer iterations for the same
 accuracy class:
 
@@ -478,6 +494,23 @@ exactly; which to use depends on what you can establish about the hardware.
 below publish the anchor spread and the resulting recommendation on every row, so a reader can
 see which regime they are in instead of taking the choice on trust.
 
+**Three states, not two.** Comparing only against the archive conflates two different
+situations. Where a *second, independent* re-timing exists (the sister cell's, relayed — not
+measured here) the verdict separates them:
+
+| N | archive | this cell | sister cell | instruments differ | verdict | use |
+|---|---|---|---|---|---|---|
+| 32 | {{oc_p_old_fom_N32}} | {{oc_p_t_fixed_N32}} | {{xagent_p_theirs_N32}} | {{xagent_p_instr_N32}}% | {{oc_p_anchor3_N32}} | {{oc_p_use3_N32}} |
+| 64 | {{oc_p_old_fom_N64}} | {{oc_p_t_fixed_N64}} | {{xagent_p_theirs_N64}} | {{xagent_p_instr_N64}}% | {{oc_p_anchor3_N64}} | {{oc_p_use3_N64}} |
+| 128 | {{oc_p_old_fom_N128}} | {{oc_p_t_fixed_N128}} | {{xagent_p_theirs_N128}} | {{xagent_p_instr_N128}}% | {{oc_p_anchor3_N128}} | {{oc_p_use3_N128}} |
+
+At `N = 64` the two instruments agree with each other to {{xagent_p_instr_N64}}% while both
+sit ~{{oc_p_archcheck_N64}}% below the archive **in the same direction** — that is evidence
+the *archive* is stale at that mesh, not that our measurement is unreliable, and the time
+multiplier is still the right choice. A two-state tight/loose rule reads that row as "just
+inside tolerance, proceed" for the wrong reason. At `N = 32` the two instruments differ from
+*each other* by {{xagent_p_instr_N32}}%, so nobody has a trustworthy value there.
+
 > **Coarse meshes are where this correction is weakest — do not take an `N = 32` number at
 > face value.** On Poisson at `N = 32` the anchor is **{{oc_p_archcheck_N32}}% — a clear
 > failure**: the archived run took {{oc_p_old_fom_N32}} ms for the same function this cell
@@ -488,6 +521,19 @@ see which regime they are in instead of taking the choice on trust.
 > instruments are weakest at the same mesh**: the factor is ~1 by one definition, and the
 > multiplier one would otherwise prefer is the one the anchor does not support. Use the
 > iteration multiplier at `N = 32`, or treat that mesh as uncorrected.
+>
+> This cell's `N = 32` figure **was** burn-in protected — 1216 CG solves immediately precede
+> it in the log — so its disagreement with the archive is not the clock-ramp artefact
+> described above. The sister cell reports its own `N = 32` re-timing moving
+> 3.60 → {{xagent_p_theirs_N32}} ms purely from adding a burn-in, a swing of the same order as
+> the anchor gap itself; coarse meshes are launch-overhead dominated in both arms, which makes
+> `N = 32` the least informative point on the ladder rather than the most.
+>
+> **A caution that applies to both cells:** two multipliers computed *inside one run* share
+> exactly the environment the anchor failure is about, so their agreeing with each other is
+> **not** evidence either is correct. At `N = 32` this cell's time and iteration multipliers
+> agree to under half a percent ({{oc_p_mult_1em10_N32}} vs {{oc_p_multit_1em10_N32}}) and that
+> agreement licenses nothing.
 >
 > The Burgers anchors are tight at every mesh ({{oc_b_archcheck_N32}}%, {{oc_b_archcheck_N64}}%,
 > {{oc_b_archcheck_N128}}%, {{oc_b_archcheck_N256}}%), so the time multiplier is licensed

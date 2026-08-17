@@ -166,6 +166,10 @@ def build(runs=None):
         f["b_job"] = str(Bprov["slurm_job_id"])
         f["b_variant"] = str(Bc[0].get("variant"))
         f["b_m"] = str(Bc[0].get("m"))
+        f["b_max_newton"] = str(Bc[0].get("max_newton") or 25)
+        T_ = 50
+        sp = [r["iters_from_baseline"] / T_ for r in Bc]
+        f["b_steps_min"] = g(min(sp), ".2f"); f["b_steps_max"] = g(max(sp), ".2f")
         for r in Bc:
             tg = f"{r['fom_tau']:g}".replace("-", "m").replace("+", "").replace(".", "")
             k = f"{tg}_N{r['N']}"
@@ -394,10 +398,35 @@ def build(runs=None):
     # EXTERNALLY REPORTED, relayed from the cost-to-tolerance cell (agent
     # a25b45872e6e0bec4) via the coordinator -- NOT measured here.  Kept in the fact
     # table so it carries its provenance wherever it is quoted.
+    XA = {32: 4.74, 64: 7.144, 128: 14.795}      # sister cell's re-timing, burn-in on
     f["xagent_p_arch_N128"] = "15.145"
     f["xagent_p_mine_N128"] = "14.86"
     f["xagent_p_theirs_N128"] = "14.795"
     f["xagent_p_spread_N128"] = "2.3"
+    if Pc:
+        for n, theirs in XA.items():
+            mine = next((r.get("t_fom_testbed_ms") for r in Pc if r["N"] == n), None)
+            arch = next((o["fom_cg_s"] * 1e3 for o in
+                         (json.load(open(OLD_P))["rows"] if os.path.isfile(OLD_P) else [])
+                         if o["N"] == n), None)
+            if not (mine and arch):
+                continue
+            inst = abs(mine / theirs - 1.0)          # do the two INSTRUMENTS agree?
+            varc = abs(mine / arch - 1.0)            # do we agree with the ARCHIVE?
+            f[f"xagent_p_theirs_N{n}"] = g(theirs, ".4g")
+            f[f"xagent_p_instr_N{n}"] = g(100.0 * inst, ".2g")
+            # THREE states, not two.  "Two instruments agree with each other but both
+            # differ from the archive" is evidence the ARCHIVE is stale -- a different
+            # situation from "the instruments disagree and nobody has a good value",
+            # and a two-state tight/loose rule mislabels the first as the second.
+            if inst < 0.05 and varc < 0.05:
+                v, use = "tight", "time"
+            elif inst < 0.05:
+                v, use = "**archive-stale**", "time (instruments agree)"
+            else:
+                v, use = "**unresolved**", "**iterations**"
+            f[f"oc_p_anchor3_N{n}"] = v
+            f[f"oc_p_use3_N{n}"] = use
 
     # ---------------- consistency ----------------
     from wsf_summarize import role_consistency

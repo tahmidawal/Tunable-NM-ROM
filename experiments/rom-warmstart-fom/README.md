@@ -178,7 +178,7 @@ wsf_burgers.py    the Burgers arm (counting BiCGStab + the 3-arm implicit chain)
 wsf_summarize.py  runs/hybrid_points.json (the flat output schema) + SUMMARY_TABLES.md
 wsf_facts.py      every number the README quotes, derived from the JSONs
 wsf_verify.py     independent re-derivation of the headline claims from the raw JSONs,
-                  checked against the rendered README (138 checks)
+                  checked against the rendered README (141 checks)
 wsf_render_readme.py  README.md = README.tmpl.md + those facts (unknown placeholder = error)
 wsf_figs.py       the figures (reports-pipeline style, PNG + PDF)
 wsf_style.py      a copy of the frozen reports figure style
@@ -799,9 +799,15 @@ cannot publish two different codes under one commit hash), plus `gpu`, `gpu_kind
 > repository (`/cluster/tufts/paralab/tawal01/.git`) and returned its HEAD, along with a large
 > unrelated "dirty" listing. **The authoritative commit is `63de48bdd5dd…`**,
 > stamped into every sbatch log by `cluster/make_cell.sh` from the staging machine, and that
-> is what the table below reports. The numerical code is independently identifiable regardless:
-> the recorded `source_sha256` of `wsf_poisson.py`, `wsf_burgers.py` and `wsf_util.py` match
-> the solver files. `provenance()` now takes the commit from a `WSF_COMMIT` environment
+> is what the table below reports.
+>
+> **No published number is affected — this is a metadata defect, and the data is pinned by
+> content.** The `source_sha256` recorded at run time for `wsf_poisson.py`, `wsf_burgers.py`
+> and `wsf_util.py` equals those files exactly as they stand at wrapper commit
+> `63de48bdd5dd…`, so the code that produced every number is identified by hash
+> independently of the broken git field. (Those hashes deliberately do **not** match the
+> current working tree, which carries the post-audit fixes; `wsf_verify.py` checks them
+> against git history, not against the checkout.) `provenance()` now takes the commit from a `WSF_COMMIT` environment
 > variable and refuses to trust git discovery that cannot be shown to describe this file.
 
 ### Jobs, as run

@@ -76,8 +76,9 @@ for lg in _g.glob("runs/*/logs/*.out"):
     if m:
         wrap.add(m.group(1))
 chk("one wrapper commit across all logs", len(wrap) == 1, str(wrap))
+wrap_commit = sorted(wrap)[0] if len(wrap) == 1 else None
 if wrap:
-    w = wrap.pop()
+    w = sorted(wrap)[0]
     chk("wrapper commit in README", infile(w[:12]))
     bogus = raw["wsp_cons"]["provenance"]["commit"]
     chk("bogus discovered commit is named as invalid, not as the run commit",
@@ -111,6 +112,24 @@ seq = [abs_by_tau[t] for t in sorted(abs_by_tau, reverse=True)]
 chk("absolute saving falls as tau tightens", all(a > b for a, b in zip(seq, seq[1:])),
     f"{seq}")
 chk("absolute savings quoted in README", infile(f"{seq[0]:.3g} iterations out of"))
+
+# 4c. THE PROVENANCE DEFECT IS METADATA ONLY: prove it by content hash rather than by
+#     trusting the (broken) git-discovery field.  The per-file sha256 recorded at RUN TIME
+#     on the cluster must equal the files as they stand at the wrapper commit from the log.
+#     Note the current working-tree files DIFFER -- they carry post-run audit fixes -- so
+#     this must be checked against git history, not against the checkout.
+import hashlib as _h, subprocess as _sp
+_recs = raw["wsp_cons"]["provenance"]["source_sha256"]
+if wrap_commit:
+    for fn in ("wsf_poisson.py", "wsf_burgers.py", "wsf_util.py"):
+        try:
+            blob = _sp.check_output(
+                ["git", "show", f"{wrap_commit}:experiments/rom-warmstart-fom/{fn}"],
+                stderr=_sp.DEVNULL)
+            chk(f"{fn} that RAN == wrapper commit",
+                _h.sha256(blob).hexdigest()[:16] == _recs[fn])
+        except Exception as e:
+            chk(f"{fn} recoverable at wrapper commit", False, str(e))
 
 # 7. every row is A100 and gpu backend
 for k, d in raw.items():

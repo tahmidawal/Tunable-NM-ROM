@@ -333,6 +333,26 @@ def main():
         print(f"   DIRECT (sine-diagonalised exact inverse): {direct_ms:.2f} ms, "
               f"err {np.mean(d_err):.2e}, rel resid {np.mean(d_res):.2e}", flush=True)
 
+        # ---- OVER-CONVERGENCE AUDIT of this project's own Poisson FOM baseline.
+        # The reference cell (followup/fu_timing.fom_solve) times
+        # jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL, maxiter=mp.CG_MAXITER) with
+        # CG_TOL = 1e-13 -- the tolerance used to MANUFACTURE the truth data, which is
+        # far tighter than any tolerance a user of the solution would ask for.  Timing
+        # that exact call here says how much of every previously reported Poisson
+        # speedup came from an over-converged denominator.
+        tb_cg = jax.jit(lambda F: jax.scipy.sparse.linalg.cg(
+            op, F, tol=mp.CG_TOL, maxiter=mp.CG_MAXITER)[0])
+        tb_t = [wu.time_fn(lambda ii=i: tb_cg(Fj[ii]).block_until_ready(),
+                           TIME_REPS, TIME_WARM)[0] for i in range(N_TIME)]
+        tb_ms = float(np.mean(tb_t)) * 1e3
+        tb_it, tb_rs = [], []
+        for i in range(min(N_CHECK, N_TEST)):
+            x_, k_, tr_, fl_ = cg(Fj[i], zero, mp.CG_TOL)
+            tb_it.append(int(k_)); tb_rs.append(float(tr_))
+        print(f"   TESTBED FOM baseline (jax.scipy CG at CG_TOL={mp.CG_TOL:.0e}): "
+              f"{tb_ms:.2f} ms, {np.mean(tb_it):.0f} iters, achieved true rel res "
+              f"{np.mean(tb_rs):.2e}", flush=True)
+
         # ---- pure-FOM baseline: the SAME CG from a ZERO start
         base = {}
         for ft in FOM_TAUS:
@@ -481,6 +501,11 @@ def main():
                     speedup_vs_fom=t_base_ms / t_total_ms,
                     speedup_fom_stage_only=t_base_ms / t_fom_ms,
                     t_fom_direct_ms=direct_ms,
+                    t_fom_testbed_ms=tb_ms,
+                    fom_testbed_cg_tol=float(mp.CG_TOL),
+                    fom_testbed_iters=float(np.mean(tb_it)),
+                    fom_testbed_true_rel_res=float(np.mean(tb_rs)),
+                    overconvergence_factor=tb_ms / (float(np.mean(btms)) * 1e3),
                     t_fom_native_ms=float(np.mean(ntw)) * 1e3,
                     t_fom_baseline_native_ms=float(np.mean(ntb)) * 1e3,
                     t_fom_baseline_unpaired_ms=base[ft]["t_ms_unpaired"],

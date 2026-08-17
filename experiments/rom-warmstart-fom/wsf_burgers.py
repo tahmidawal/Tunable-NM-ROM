@@ -590,6 +590,14 @@ def main():
                 pde="burgers2d", N=n, n_dof=n2, rom_tau=bc.GN_TOL, fom_tau=tau,
                 t_rom_ms=t_rom_ms, t_pre_ms=t_pre_ms, t_rom_ic_ms=ic_med * 1e3,
                 t_fom_testbed_ms=tb_med * 1e3,
+                # OVER-CONVERGENCE AUDIT: burgers2d_film runs a FIXED NEWTON_ITERS
+                # Newton steps per time step with no tolerance test, so it performs
+                # NEWTON_ITERS * NUM_STEPS linear solves regardless of need.
+                fom_testbed_newton_iters=float(bc.bf.NEWTON_ITERS * T),
+                fom_testbed_linear_solves=float(bc.bf.NEWTON_ITERS * T),
+                fom_testbed_rel_newton_residual=float(max(
+                    pt["testbed_max_rel_newton_residual"] for pt in chk["per_trajectory"])),
+                overconvergence_factor=(tb_med * 1e3) / arm_out["prev"]["t_ms"],
                 offline_train_ic_bank_s=bank_build_s,
                 t_rom_rollout_ms=roll_med * 1e3, t_decode_ms=t_dec_ms,
                 t_fom_ms=arm_out["rom"]["t_ms"], t_total_ms=t_total,

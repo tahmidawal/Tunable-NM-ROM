@@ -45,12 +45,16 @@ T1 = bc.NUM_STEPS + 1
 # nodes: colloc full | eq<m> (NNLS-EQ grid nodes) | eqoff<m> (NNLS-EQ meshfree pool).
 # fd = strong FD residual control (full | rand<m> | biased<m> | offgrid<m>).
 # weakall = all (N-2)^2 modes on the full grid: must equal lspg:full:fd (cross-check).
-DEFAULT_VARIANTS = ("lspg:full:fd,galerkin:full:fd,lspg:rand512:fd,lspg:offgrid512:fd,"
-                    "lspg:full:weak64,lspg:eq256:weak64,lspg:eq512:weak64,"
+# Random / importance / off-grid STRONG-form collocation is deliberately NOT in the
+# default list: it lost on both Poisson and Burgers and costs cluster time.
+DEFAULT_VARIANTS = ("lspg:full:fd,galerkin:full:fd,lspg:full:weakall,galerkin:full:weakall,"
+                    "lspg:full:weak16,lspg:full:weak32,lspg:full:weak64,"
+                    "lspg:full:weak128,lspg:full:weak256,lspg:full:weak64a0,"
+                    "galerkin:full:weak64,"
+                    "lspg:eq256:weak64,lspg:eq512:weak64,"
                     "lspg:eqoff256:weak64,lspg:eqoff512:weak64,"
-                    "lspg:full:weak256,lspg:eq512:weak256,lspg:eq1024:weak256,"
-                    "galerkin:full:weak64,lspg:full:weakc64,lspg:eqoff512:weakc64,"
-                    "lspg:full:weakall")
+                    "lspg:eq512:weak256,lspg:eq1024:weak256,"
+                    "lspg:full:weakc64,lspg:eqoff512:weakc64")
 VARIANTS = [v for v in os.environ.get("VARIANTS", DEFAULT_VARIANTS).split(",") if v]
 POD_KS = [int(k) for k in os.environ.get("POD_KS", "6,8,16,32,64").split(",") if k]
 POD_VARIANTS = [v for v in os.environ.get(
@@ -144,6 +148,31 @@ def main():
     r_fom = fom_res(u1, u0, float(kap_te[0]))[jnp.asarray(interior)]
     chk = dict(local_vs_fom_maxabs=float(jnp.max(jnp.abs(r_local - r_fom))),
                fom_traj_step1_rel_res=float(jnp.linalg.norm(r_fom) / jnp.linalg.norm(u0)))
+    # exactness of the weak form: with ALL (N-2)^2 sine modes and alpha=0 the test
+    # matrix Phi is square-orthogonal, so r_weak = Phi^T r_fd -- the two residual
+    # vectors must have identical norms and the LM/Galerkin normal equations are the
+    # same.  Checked at 3 random latents against the FULL-grid strong-form operator.
+    ops_fd_chk = bc.make_step_ops(dec, N, dict(kind="grid", idx=interior), "fd", "lspg")
+    ops_wa_chk = bc.make_weak_ops(dec, N, dict(kind="grid", idx=interior, w=None),
+                                  kind="weak", M=(N - 2) ** 2, alpha=0.0, solver="lspg")
+    rngc = np.random.default_rng(99)
+    devs, devs_g = [], []
+    for _ in range(3):
+        zc = jnp.asarray(rngc.normal(size=K) * float(np.std(Ztr)), dtype=F64)
+        prev = jnp.asarray(rngc.normal(size=(N - 2) ** 2) * 1e-2)
+        kc = float(kap_te[0])
+        r_fd_ = ops_fd_chk["r_w"](zc, prev, kc)
+        r_wa_ = ops_wa_chk["r_w"](zc, prev, kc)
+        devs.append(float(abs(jnp.linalg.norm(r_fd_) - jnp.linalg.norm(r_wa_))
+                          / jnp.linalg.norm(r_fd_)))
+        _, J_fd_, JD_fd_ = ops_fd_chk["rJ"](zc, prev, kc)
+        _, J_wa_, JD_wa_ = ops_wa_chk["rJ"](zc, prev, kc)
+        g_fd = JD_fd_.T @ r_fd_
+        g_wa = JD_wa_.T @ r_wa_
+        devs_g.append(float(jnp.linalg.norm(g_fd - g_wa) / jnp.linalg.norm(g_fd)))
+    chk["weakall_vs_fd_resnorm_reldev"] = float(max(devs))
+    chk["weakall_vs_fd_galerkin_grad_reldev"] = float(max(devs_g))
+    del ops_fd_chk, ops_wa_chk
     log(f"  checks: {chk}")
     report["checks"] = chk
 
@@ -224,8 +253,7 @@ def main():
     def build_ops(decoder, var, i, cache):
         solver, colloc_name, objective = var.split(":")
         if objective.startswith("weak"):
-            kind = "weakc" if objective.startswith("weakc") else "weak"
-            M = (N - 2) ** 2 if objective == "weakall" else int(objective[len(kind):])
+            kind, M, alpha = bc.parse_objective(objective, N)
             if colloc_name == "full":
                 col = dict(kind="grid", idx=interior, w=None)
             else:
@@ -233,7 +261,7 @@ def main():
                 m = int(colloc_name[5:] if pool == "off" else colloc_name[2:])
                 if pool == "off" and decoder.kind != "coord":
                     return None                       # meshfree pool undefined for POD rows
-                key = (decoder.kind, decoder.k, kind, M, m, pool)
+                key = (decoder.kind, decoder.k, kind, M, m, pool)  # alpha-free: EQ fits u only
                 if key not in cache:
                     zs = Z_snap if decoder.kind == "coord" else (
                         (U_tr.reshape(-1, n2) @ np.asarray(decoder.V))[
@@ -242,7 +270,8 @@ def main():
                     cache[key] = bc.fit_eq_weights(decoder, N, M, m, zs, kind=kind, pool=pool,
                                                    rng=np.random.default_rng(EQ_RNG_SEED))
                 col = cache[key]
-            return bc.make_weak_ops(decoder, N, col, kind=kind, M=M, solver=solver)
+            return bc.make_weak_ops(decoder, N, col, kind=kind, M=M, alpha=alpha,
+                                    solver=solver)
         col = bc.make_collocation(colloc_name, N, np.random.default_rng(1234 + i),
                                   data_row=dict(u0=U_te[i, 0]))
         return bc.make_step_ops(decoder, N, col, objective, solver)
@@ -264,6 +293,7 @@ def main():
             runs.append(r)
         s = summarize(runs)
         s["m"] = int(ops["m"]); s["secs"] = time.time() - t0
+        s["M"] = ops.get("M"); s["alpha"] = ops.get("alpha")
         s["eq_info"] = ops.get("colloc_info")
         results[var] = s
         log(f"  {var:24s} m={ops['m']:5d}  traj rel mean {s['traj_rel_mean']:.3e} "
@@ -332,6 +362,7 @@ def main():
                 del r["fields"]
                 runs.append(r)
             s = summarize(runs); s["m"] = int(ops["m"]); s["secs"] = time.time() - t0
+            s["M"] = ops.get("M"); s["alpha"] = ops.get("alpha")
             s["eq_info"] = ops.get("colloc_info")
             podres[f"k{k}:{var}"] = s
             log(f"  POD k={k:3d} {var:20s} traj rel mean {s['traj_rel_mean']:.3e} "

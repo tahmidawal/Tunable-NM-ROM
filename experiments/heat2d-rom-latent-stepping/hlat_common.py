@@ -289,6 +289,8 @@ def make_weak_ops(dec, n, colloc, kind="weak", M=64, alpha=WEAK_ALPHA, solver="l
 
     ops = _finish_ops(rJ, r_w, u_q, full, m, solver)
     ops["M"] = M
+    ops["alpha"] = float(alpha)
+    ops["r_w"] = jax.jit(r_w)
     ops["tol_scale"] = float(np.sqrt(interior.size))
     ops["colloc_info"] = colloc.get("info")
     return ops
@@ -328,7 +330,35 @@ def make_step_ops(dec, n, colloc, objective="fd", solver="lspg"):
     def full(z):
         return dec(z, coords) if dec.kind == "coord" else dec.V @ z
 
-    return _finish_ops(rJ, r_w, prev_of, full, m, solver)
+    ops = _finish_ops(rJ, r_w, prev_of, full, m, solver)
+    ops["r_w"] = jax.jit(r_w)
+    return ops
+
+
+def parse_objective(objective, n, default_alpha=WEAK_ALPHA):
+    """'fd' | 'weak<M>' | 'weakc<M>' | 'weakall' | any of the weak forms with an
+    explicit 'a<alpha>' suffix (e.g. 'weak64a0').  Returns (kind, M, alpha).
+
+    'weakall' = ALL (n-2)^2 modes and alpha=0 by definition: Phi is then a square
+    orthogonal matrix, so r_weak = Phi^T r_fd and BOTH the LSPG normal equations
+    (J^T J, J^T r) and the Galerkin root (JD^T Phi Phi^T r_fd) are IDENTICAL to
+    the strong-form full-grid ones -- the exactness cross-check."""
+    if objective == "fd":
+        return "fd", 0, 0.0
+    assert objective.startswith("weak"), objective
+    body = objective[len("weak"):]
+    alpha = default_alpha
+    if body.startswith("all"):
+        rest = body[3:]
+        alpha = float(rest[1:]) if rest.startswith("a") else 0.0
+        return "weak", (n - 2) ** 2, alpha
+    kind = "weak"
+    if body.startswith("c"):
+        kind, body = "weakc", body[1:]
+    if "a" in body:
+        body, a_s = body.split("a", 1)
+        alpha = float(a_s)
+    return kind, min(int(body), (n - 2) ** 2), alpha
 
 
 # --------------------------- jitted cold start ---------------------------

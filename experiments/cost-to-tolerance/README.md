@@ -130,6 +130,19 @@ the two cells cannot publish two different Poisson denominators. Both compare
 `jax.scipy`-at-`CG_TOL` against `jax.scipy`-at-tau (like-for-like in the solver); an
 instrumented CG is ~15% cheaper per iteration and mixing the two understates the correction.
 
+**Anchoring the correction.** A measured over-convergence ratio may only be applied to the
+archived ladders if re-timing the *archived function itself* reproduces the archived number.
+Each mesh therefore records `anchor_vs_archived`: this run's re-timed
+`cg(tol=CG_TOL)` against `pt_n/timing_n.json`'s `fom_cg_s`, with both achieved true residuals.
+Three independent measurements agree at N=128 — archived 15.145 ms, the `rom-warmstart-fom`
+cell 14.86 ms, this cell 14.795 ms (2.3% spread) — which is what licenses the **time**
+multiplier there. Where the anchor fails, the iteration multiplier is reported instead and read
+as a *lower bound* on the corrected speedup, not as the estimate. Note the archived baseline
+does not reach its nominal 1e-13 at fine meshes (6.96e-11 at N=512), so two over-convergence
+factors are reported and they answer different questions: one against what the archived run
+*achieved*, one against the tolerance a consumer would actually *ask for* (1e-6, 1e-8). The
+first degenerates to 1.00 at coarse meshes; the second is the one that bites.
+
 **GPU clock ramp.** The NNLS-EQ fits run on the host for minutes, and a device coming out of
 that idle stretch is still ramping — the `rom-warmstart-fom` cell measured a 17% swing at N=512
 between identical work timed early versus late, in both an instrumented and a library solver.

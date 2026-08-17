@@ -104,6 +104,19 @@ FOM_LADDER = sorted({float(v) for v in os.environ.get(
 FOM_ONLY = int(os.environ.get("FOM_ONLY", "0"))
 DO_CEILING = int(os.environ.get("DO_CEILING", "1"))
 BURN_IN_S = float(os.environ.get("BURN_IN_S", "1.5"))
+# The ARCHIVED Poisson baseline, transcribed from
+# poisson2d-rom-objective/runs/followup/pt_n/timing_n.json (rows[*].fom_cg_s and
+# .fom_max_rel_residual).  Re-timing the SAME function and reproducing that number is
+# what licenses applying a measured over-convergence ratio to the archived ladders --
+# per the rom-warmstart-fom cell's revised point 6, the TIME multiplier is preferred
+# ONLY where it can be anchored this way; otherwise the ITERATION multiplier is a
+# lower bound, not the estimate.  Note the archived run does not reach its nominal
+# 1e-13 at fine meshes (6.96e-11 at N=512).
+ARCHIVED_FOM_MS = {32: 5.591, 64: 7.786, 128: 15.145, 256: 31.135, 512: 96.010}
+ARCHIVED_FOM_RES = {32: 1.03e-13, 64: 3.60e-13, 128: 2.17e-12, 256: 1.25e-11, 512: 6.96e-11}
+# tolerances a CONSUMER of the solution would plausibly ask for (the peer cell's
+# "engineering choice"), reported next to the strict achieved-accuracy match
+ENG_TOLS = [float(v) for v in os.environ.get("ENG_TOLS", "1e-6,1e-8").split(",") if v]
 DO_SUPP = int(os.environ.get("DO_SUPP", "1"))
 POOL_CONTROL = int(os.environ.get("POOL_CONTROL", "1"))
 CAP_CONTROL = int(os.environ.get("CAP_CONTROL", "1"))
@@ -469,8 +482,33 @@ def main():
         _match = min([r for r in ladder
                       if r["achieved_rel_residual"] <= _testbed["achieved_rel_residual"]],
                      key=lambda r: r["fom_cg_s"], default=_testbed)
+        # ENGINEERING over-convergence: against the tolerance a consumer would ask for,
+        # which is the peer cell's definition and the one that actually bites.
+        _eng = {}
+        for et in ENG_TOLS:
+            cand = [r for r in ladder if r["fom_tol"] <= et]
+            if cand:
+                rr = max(cand, key=lambda r: r["fom_tol"])
+                _eng[f"{et:.0e}"] = dict(t_ms=rr["fom_cg_s"] * 1e3,
+                                         achieved=rr["achieved_rel_residual"],
+                                         factor=_testbed["fom_cg_s"] / rr["fom_cg_s"])
+        # ANCHORING CHECK: does re-timing the archived function reproduce the archived
+        # number?  If not, that is itself the finding and no time multiplier is valid.
+        _arch = ARCHIVED_FOM_MS.get(n)
+        _anchor = (None if _arch is None else
+                   dict(archived_ms=_arch, retimed_ms=_testbed["fom_cg_s"] * 1e3,
+                        rel_diff=abs(_testbed["fom_cg_s"] * 1e3 - _arch) / _arch,
+                        archived_true_rel_res=ARCHIVED_FOM_RES.get(n),
+                        retimed_true_rel_res=_testbed["achieved_rel_residual"],
+                        source="poisson2d-rom-objective/runs/followup/pt_n/timing_n.json"))
+        if _anchor:
+            log(f"   anchor N={n}: archived {_arch:.2f} ms vs re-timed "
+                f"{_testbed['fom_cg_s']*1e3:.2f} ms ({100*_anchor['rel_diff']:.1f}% diff; "
+                f"archived achieved {ARCHIVED_FOM_RES.get(n):.1e}, re-timed "
+                f"{_testbed['achieved_rel_residual']:.1e})")
         report["fom_baseline"] = report.get("fom_baseline", [])
         report["fom_baseline"].append(dict(
+            overconvergence_engineering=_eng, anchor_vs_archived=_anchor,
             N=n,
             t_fom_testbed_ms=_testbed["fom_cg_s"] * 1e3,
             fom_testbed_cg_tol=mp.CG_TOL,

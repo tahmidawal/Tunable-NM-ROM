@@ -24,8 +24,10 @@ Only two things are NEW here, and both are deliberately shared by BOTH arms:
             V(z) <= rom_tau * V(z_0)
 
         i.e. a RELATIVE REDUCTION OF THE WEAK-FORM OBJECTIVE from the initial
-        guess z_0.  rom_tau = 0 disables it, and the solver is then bit-for-bit
-        fu_eq.make_lm_jit (asserted below).  A tolerance on ||Au-f||/||f|| is
+        guess z_0.  rom_tau = 0 disables it, and the solver is then NUMERICALLY
+        EQUIVALENT to fu_eq.make_lm_jit (the final latent is asserted equal to
+        1e-12 relative below, and exact bitwise agreement is recorded when it
+        holds).  A tolerance on ||Au-f||/||f|| is
         unreachable: at the weak-form solution that sits near 2e-1 while the
         FIELD error is ~8e-3.
 
@@ -74,7 +76,12 @@ TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
 TIME_WARM = int(os.environ.get("TIME_WARM", "2"))
 N_TEST = int(os.environ.get("N_TEST", "16"))       # accuracy / iteration statistics
 N_TIME = int(os.environ.get("N_TIME", "8"))        # test cases that are wall-clock timed
+N_CHECK = int(os.environ.get("N_CHECK", "4"))      # cases used for the solver cross-checks
 INIT = os.environ.get("INIT", "mean")
+if INIT != "mean":
+    raise SystemExit("INIT must be 'mean': the 'nearest' cold start needs a "
+                     "PER-QUERY lookup that would also have to be timed and charged "
+                     "to the hybrid total; it is not part of this benchmark.")
 CG_MAXITER = int(os.environ.get("CG_MAXITER", "40000"))
 REF_TAU = float(os.environ.get("REF_TAU", "1e-13"))   # tolerance of the reference solution
 POOL = os.environ.get("POOL", "offgrid")
@@ -183,7 +190,9 @@ def main():
         provenance=prov, rows=[], checks=[])
 
     def save():
-        json.dump(report, open(OUT, "w"), indent=1, default=float)
+        # allow_nan=False: an invalid number must fail loudly here rather than be
+        # serialised as a bare NaN and silently averaged into a headline later.
+        json.dump(report, open(OUT, "w"), indent=1, default=float, allow_nan=False)
 
     for n in NS:
         t_n0 = time.time()
@@ -191,7 +200,6 @@ def main():
         n_i = grid.n_i
         op = lambda v: mp.neg_lap_interior(v, n)
         cg = wu.make_cg(op, maxiter=CG_MAXITER)
-        cg_err = wu.make_cg_to_err(op, maxiter=CG_MAXITER)   # oracle diagnostic
         Fs = sources(n, cx, cy, w, a, N_TRAIN, N_TEST)
         Fj = [jnp.asarray(Fs[i]) for i in range(N_TEST)]
         zero = jnp.zeros((n_i, n_i), F64)
@@ -205,17 +213,38 @@ def main():
             ref_flag.append(int(fl))
         U_ref = np.stack(U_ref)
         ref_norm = np.linalg.norm(U_ref.reshape(N_TEST, -1), axis=1)
-        chk = wu.cg_reference_check(op, Fj[0], REF_TAU, cg)
-        chk.update(N=n, ref_iters_max=int(np.max(ref_iters)),
+        # cross-check the counting CG against the testbed's own jax.scipy CG at
+        # EVERY tolerance that will be reported and on several right-hand sides,
+        # comparing TRUE residuals -- one RHS at one tolerance is not enough to
+        # validate a replacement solver (Codex).
+        native = {}
+        subchecks = []
+        for tt in sorted(set(FOM_TAUS + [REF_TAU])):
+            for i in range(min(N_CHECK, N_TEST)):
+                ref_fn, c = wu.cg_reference_check(op, Fj[i], tt, cg)
+                c["case"] = i
+                subchecks.append(c)
+                if c["counting_cg_flag"] != 0 or c["counting_cg_true_rel_res"] > tt:
+                    raise SystemExit(f"N={n} tau={tt}: counting CG flag "
+                                     f"{c['counting_cg_flag']} true res "
+                                     f"{c['counting_cg_true_rel_res']:.2e} > {tt:.0e}")
+                if c["rel_diff_vs_jax_scipy_cg"] > 1e-6:
+                    raise SystemExit(f"N={n} tau={tt} case {i}: counting CG disagrees "
+                                     f"with the testbed CG by "
+                                     f"{c['rel_diff_vs_jax_scipy_cg']:.2e}")
+            if tt in FOM_TAUS:
+                native[tt] = ref_fn
+        chk = dict(N=n, subchecks=subchecks,
+                   ref_iters_max=int(np.max(ref_iters)),
                    ref_true_rel_res_max=float(np.max(ref_res)),
-                   ref_flags=sorted(set(ref_flag)))
+                   ref_flags=sorted(set(ref_flag)),
+                   rel_diff_vs_jax_scipy_cg=float(max(c["rel_diff_vs_jax_scipy_cg"]
+                                                      for c in subchecks)))
         report["checks"].append(chk)
         print(f"== N={n}: reference CG {np.max(ref_iters)} iters, true rel res "
-              f"{np.max(ref_res):.2e}; counting-CG vs jax.scipy.cg rel diff "
-              f"{chk['rel_diff_vs_jax_scipy_cg']:.2e}", flush=True)
-        if chk["rel_diff_vs_jax_scipy_cg"] > 1e-8 or max(ref_flag) != 0:
-            raise SystemExit(f"N={n}: counting CG disagrees with the testbed CG "
-                             f"or did not converge -- refusing to time it")
+              f"{np.max(ref_res):.2e}; counting-CG vs jax.scipy.cg max rel diff "
+              f"{chk['rel_diff_vs_jax_scipy_cg']:.2e} over {len(subchecks)} checks",
+              flush=True)
 
         # ---- ROM pieces at this N (EQ weights refit on THIS grid, as in fu_timing)
         spec = dict(kind="weak", alpha=1.0, M=M_MODES)
@@ -291,10 +320,28 @@ def main():
                         lambda ii=i: cg(Fj[ii], zero, ft)[0].block_until_ready(),
                         TIME_REPS, TIME_WARM)
                     tms.append(m_)
+            # SENSITIVITY BASELINE: the testbed's own jax.scipy CG (which cannot count
+            # iterations, hence the counting kernel above) timed at the same tolerance
+            # with x0 supplied at runtime -- so the production library solver appears
+            # next to the instrumented one and neither can hide behind the other.
+            ntm = [wu.time_fn(lambda ii=i: native[ft](Fj[ii], zero).block_until_ready(),
+                              TIME_REPS, TIME_WARM)[0] for i in range(N_TIME)]
             base[ft] = dict(iters=it, true_rel_res=res, t_s=tms,
-                            t_ms=float(np.mean(tms)) * 1e3, err=err)
+                            t_ms=float(np.mean(tms)) * 1e3, err=err,
+                            t_native_ms=float(np.mean(ntm)) * 1e3)
             print(f"   FOM baseline tau={ft:.0e}: {np.mean(it):.1f} iters, "
-                  f"{np.mean(tms)*1e3:.2f} ms, err {np.mean(err):.2e}", flush=True)
+                  f"{np.mean(tms)*1e3:.2f} ms (jax.scipy CG {np.mean(ntm)*1e3:.2f} ms), "
+                  f"err {np.mean(err):.2e}", flush=True)
+
+        # ---- POST-HOC ORACLE DIAGNOSTIC (never timed, never on the hybrid path):
+        # the plain-CG error curve from a zero start, graded against the reference
+        # solution.  It answers "how many CG iterations is the ROM answer worth?"
+        # WITHOUT ever stopping a solver on the reference (Codex leakage rule).
+        curves = []
+        for i in range(min(N_CHECK, N_TEST)):
+            nmax = int(max(base[ft]["iters"][i] for ft in FOM_TAUS))
+            curves.append(np.asarray(wu.cg_error_curve(op, Fj[i], jnp.asarray(U_ref[i]),
+                                                       nmax)))
 
         # ---- ROM tolerance ladder
         for rt in ROM_TAUS:
@@ -329,9 +376,9 @@ def main():
             # plain CG iterations from a zero start reach the ROM's own field accuracy?
             # This is the "what is the ROM's answer worth, in CG iterations" number.
             eq_it = []
-            for i in range(N_TEST):
-                k_, e_ = cg_err(Fj[i], jnp.asarray(U_ref[i]), err_rom[i])
-                eq_it.append(int(k_))
+            for i, curve in enumerate(curves):
+                hit = np.nonzero(curve <= err_rom[i])[0]
+                eq_it.append(int(hit[0]) if hit.size else -1)
             print(f"   ROM tau={rt:g}: {np.mean(nJs):.1f} LM iters, {t_rom_ms:.2f} ms, "
                   f"obj red {np.mean(obj_red):.2e}, field err {np.mean(err_rom):.3e}, "
                   f"rel resid {np.mean(res_rom):.2e}, A-norm err ratio "
@@ -353,6 +400,12 @@ def main():
                         tms.append(m_)
                 if max(flg) != 0:
                     raise SystemExit(f"N={n} rom_tau={rt} fom_tau={ft}: warm CG flag {max(flg)}")
+                if max(res) > ft:
+                    raise SystemExit(f"N={n} rom_tau={rt} fom_tau={ft}: warm CG true "
+                                     f"residual {max(res):.2e} > {ft:.0e}")
+                ntw = [wu.time_fn(lambda ii=i: native[ft](
+                           Fj[ii], jnp.asarray(U_rom[ii])).block_until_ready(),
+                       TIME_REPS, TIME_WARM)[0] for i in range(N_TIME)]
                 t_fom_ms = float(np.mean(tms)) * 1e3
                 t_total_ms = pre_med * 1e3 + t_rom_ms + dec_med * 1e3 + t_fom_ms
                 t_base_ms = base[ft]["t_ms"]
@@ -375,7 +428,9 @@ def main():
                     err_rel_l2_rom=float(np.mean(err_rom)),
                     rom_rel_residual=float(np.mean(res_rom)),
                     rom_err_Anorm_ratio=float(np.mean(a_rom)),
-                    cg_iters_equivalent_to_rom=float(np.mean(eq_it)),
+                    cg_iters_equivalent_to_rom=(float(np.mean([v for v in eq_it if v >= 0]))
+                                               if any(v >= 0 for v in eq_it) else None),
+                    cg_iters_equivalent_not_reached=int(sum(v < 0 for v in eq_it)),
                     rom_obj_reduction=float(np.mean(obj_red)),
                     rom_lm_iters=float(np.mean(nJs)),
                     rom_lm_attempts=float(np.mean(atts)),
@@ -387,6 +442,11 @@ def main():
                     speedup_vs_fom=t_base_ms / t_total_ms,
                     speedup_fom_stage_only=t_base_ms / t_fom_ms,
                     t_fom_direct_ms=direct_ms,
+                    t_fom_native_ms=float(np.mean(ntw)) * 1e3,
+                    t_fom_baseline_native_ms=base[ft]["t_native_ms"],
+                    speedup_vs_fom_native=base[ft]["t_native_ms"] / (
+                        pre_med * 1e3 + t_rom_ms + dec_med * 1e3
+                        + float(np.mean(ntw)) * 1e3),
                     direct_rel_err=float(np.mean(d_err)),
                     speedup_vs_direct=direct_ms / t_total_ms,
                     n_test=N_TEST, n_time=N_TIME, seed=mp.SEED, run_role=RUN_ROLE,

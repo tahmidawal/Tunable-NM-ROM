@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import wsf_style as st                                    # noqa: E402
+from wsf_summarize import select_consolidated             # noqa: E402
 
 RUNS = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "runs")
 FIGS = os.path.join(HERE, "figs")
@@ -255,8 +256,17 @@ def main():
     # their wall clock is not comparable across N; they are used only for the
     # iteration-count panel, which is hardware-independent.
     role = lambda r: r.get("run_role") or "consolidated"   # the script default
-    P = [r for r in pts if r["pde"] == "poisson2d" and role(r) == "consolidated"]
-    B = [r for r in pts if r["pde"] == "burgers2d" and role(r) == "consolidated"]
+    # the cross-N axes may only carry ONE consolidated run (one process, one GPU);
+    # select_consolidated enforces that and reports what it dropped
+    P, Pprov = select_consolidated([r for r in pts if r["pde"] == "poisson2d"],
+                                   lambda r: (r["N"], r["rom_tau"], r["fom_tau"]))
+    B, Bprov = select_consolidated([r for r in pts if r["pde"] == "burgers2d"],
+                                   lambda r: (r["N"], r["fom_tau"]))
+    for nm, pv in (("poisson", Pprov), ("burgers", Bprov)):
+        if pv:
+            print(f"  {nm} cross-N times from {pv['source_json']} job "
+                  f"{pv['slurm_job_id']} gpu {pv['gpu']} meshes {pv['meshes']} "
+                  f"({len(pv['dropped_groups'])} other group(s) dropped)")
     Piter = {}
     for r in [q for q in pts if q["pde"] == "poisson2d"]:
         k = (r["N"], r["rom_tau"], r["fom_tau"])

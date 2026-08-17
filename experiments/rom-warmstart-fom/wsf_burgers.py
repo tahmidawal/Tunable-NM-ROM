@@ -98,8 +98,19 @@ def make_bicgstab(tol, maxiter):
 
     Stopping test ||r_k|| <= tol * ||b||, matching
     `jax.scipy.sparse.linalg.bicgstab(..., tol=LIN_TOL)` (whose atol default is 0).
+
+    The ALPHA HALF-STEP convergence test is included: if ||s|| = ||r - alpha A p||
+    already meets the threshold, x + alpha p is the answer and the omega half-step
+    is skipped (omega is forced to 0, which makes x_new = x + alpha p and r_new = s
+    exactly).  Omitting that test is a real correctness defect: when s is exactly
+    zero, t^T t = 0 and a naive implementation declares a breakdown and DISCARDS a
+    converged iterate.  The A(s) product is still evaluated in that final sweep --
+    the recursion is branchless so that all three arms execute one identical
+    kernel -- so `matvecs` (not `k`) is the honest work count.
+
     flag: 0 converged, 1 maxiter, 2 breakdown (rho, rhat^T v or t^T t underflowed,
-    or a non-finite quantity appeared)."""
+    or a non-finite quantity appeared).  All three are returned and are propagated
+    into the Newton status by the caller; none is silently dropped."""
     def bicgstab(A, b):
         bn = jnp.linalg.norm(b)
         thr = tol * bn
@@ -110,13 +121,14 @@ def make_bicgstab(tol, maxiter):
         omega = jnp.asarray(1.0, F64)
         v = jnp.zeros_like(b); p = jnp.zeros_like(b)
         tiny = 1e-300
+        bad0 = ~(jnp.all(jnp.isfinite(b)) & jnp.isfinite(bn))
 
         def cond(s):
-            x, r, p, v, rho, alpha, omega, k, bad = s
+            x, r, p, v, rho, alpha, omega, k, mv, bad = s
             return (jnp.linalg.norm(r) > thr) & (k < maxiter) & (~bad)
 
         def body(s):
-            x, r, p, v, rho, alpha, omega, k, bad = s
+            x, r, p, v, rho, alpha, omega, k, mv, bad = s
             rho_new = jnp.sum(rhat * r)
             brk = (jnp.abs(rho_new) < tiny) | (jnp.abs(omega) < tiny)
             beta = (rho_new / jnp.where(brk, 1.0, rho)) * \
@@ -127,10 +139,13 @@ def make_bicgstab(tol, maxiter):
             brk = brk | (jnp.abs(rv) < tiny)
             alpha_new = rho_new / jnp.where(brk, 1.0, rv)
             s_ = r - alpha_new * v_new
+            # ALPHA HALF-STEP CONVERGENCE: accept x + alpha p and skip the omega stage
+            s_conv = jnp.linalg.norm(s_) <= thr
             t_ = A(s_)
             tt = jnp.sum(t_ * t_)
-            brk = brk | (tt < tiny)
-            omega_new = jnp.sum(t_ * s_) / jnp.where(brk, 1.0, tt)
+            brk = brk | ((tt < tiny) & (~s_conv))       # tt == 0 with s == 0 is SUCCESS
+            omega_new = jnp.where(s_conv, 0.0,
+                                  jnp.sum(t_ * s_) / jnp.where(brk | s_conv, 1.0, tt))
             x_new = x + alpha_new * p_new + omega_new * s_
             r_new = s_ - omega_new * t_
             nonfinite = ~(jnp.all(jnp.isfinite(x_new)) & jnp.all(jnp.isfinite(r_new)))
@@ -140,13 +155,14 @@ def make_bicgstab(tol, maxiter):
             keep = lambda new, old: jnp.where(brk, old, new)
             return (keep(x_new, x), keep(r_new, r), keep(p_new, p), keep(v_new, v),
                     keep(rho_new, rho), keep(alpha_new, alpha), keep(omega_new, omega),
-                    k + 1, brk)
+                    k + 1, mv + 2, brk)
 
-        x, r, p, v, rho, alpha, omega, k, bad = jax.lax.while_loop(
-            cond, body, (x, r, p, v, rho, alpha, omega, jnp.int32(0), jnp.bool_(False)))
+        x, r, p, v, rho, alpha, omega, k, mv, bad = jax.lax.while_loop(
+            cond, body, (x, r, p, v, rho, alpha, omega, jnp.int32(0), jnp.int32(0),
+                         bad0))
         flag = jnp.where(bad, jnp.int32(2),
-                         jnp.where(k >= maxiter, jnp.int32(1), jnp.int32(0)))
-        return x, k, flag
+                         jnp.where(jnp.linalg.norm(r) > thr, jnp.int32(1), jnp.int32(0)))
+        return x, k, mv, flag
     return bicgstab
 
 
@@ -163,8 +179,10 @@ def make_chain(n, tol_rel):
     ||R(u, u_prev, nu)|| <= tol_rel * ||u_prev||  -- the testbed's own convergence
     metric (`burgers2d_film.newton_step` reports exactly this ratio).
 
-    newton_flag: 0 converged, 1 max_newton reached, 2 non-finite Newton step,
-    3 non-finite residual."""
+    newton_flag: 0 converged, 1 max_newton reached without meeting the tolerance,
+    2 non-finite Newton step, 3 non-finite residual, 4 the linear solve broke down
+    or hit its own iteration cap.  A NON-FINITE INITIAL RESIDUAL is flagged before
+    the loop, so a NaN can never be reported as a zero-iteration success."""
     _, residual = bc.bf.make_rollout(n)
     bicg = make_bicgstab(LIN_TOL, LIN_MAXITER)
 
@@ -173,30 +191,45 @@ def make_chain(n, tol_rel):
                             jnp.where(mode == 1, 2.0 * u_prev - u_prev2, g))
         tol_abs = tol_rel * jnp.linalg.norm(u_prev)
         r0 = residual(u_start, u_prev, nu)
-        init = (u_start, r0, jnp.linalg.norm(r0), jnp.int32(0), jnp.int32(0),
-                jnp.int32(0), jnp.int32(0))
+        rn0 = jnp.linalg.norm(r0)
+        # a NaN start must NOT slip through the `rn > tol_abs` test as "converged"
+        init0 = jnp.where(jnp.isfinite(rn0), jnp.int32(0), jnp.int32(3))
+        init = (u_start, r0, rn0, jnp.int32(0), jnp.int32(0), jnp.int32(0),
+                jnp.int32(0), init0)
 
         def cond(s):
-            u, r, rn, k, nl, nbrk, flag = s
+            u, r, rn, k, nl, nbrk, nlmax, flag = s
             return (rn > tol_abs) & (k < MAX_NEWTON) & (flag == 0)
 
         def body(s):
-            u, r, rn, k, nl, nbrk, flag = s
+            u, r, rn, k, nl, nbrk, nlmax, flag = s
             Jv = lambda vv: jax.jvp(lambda uu: residual(uu, u_prev, nu), (u,), (vv,))[1]
-            du, li, lflag = bicg(Jv, -r)
+            du, li, lmv, lflag = bicg(Jv, -r)
             ok = jnp.all(jnp.isfinite(du))
             u2 = jnp.where(ok, u + du, u)
             r2 = residual(u2, u_prev, nu)
             rn2 = jnp.linalg.norm(r2)
             fin = jnp.isfinite(rn2)
-            new_flag = jnp.where(~ok, jnp.int32(2), jnp.where(~fin, jnp.int32(3), jnp.int32(0)))
+            # the linear solver's own status is PROPAGATED, not dropped: an inexact
+            # correction is allowed to continue (Newton may still converge) but the
+            # occurrence is both counted and raised into the Newton flag.
+            new_flag = jnp.where(~ok, jnp.int32(2),
+                          jnp.where(~fin, jnp.int32(3),
+                            jnp.where(lflag != 0, jnp.int32(4), jnp.int32(0))))
+            # flag 4 must not abort the Newton loop -- it records that a linear solve
+            # was inexact.  Convergence is still decided by the residual test below.
+            cont = jnp.where(new_flag == 4, jnp.int32(0), new_flag)
             return (jnp.where(fin, u2, u), jnp.where(fin, r2, r),
                     jnp.where(fin, rn2, rn), k + 1, nl + li,
-                    nbrk + (lflag == 2).astype(jnp.int32), new_flag)
+                    nbrk + (lflag == 2).astype(jnp.int32),
+                    nlmax + (lflag == 1).astype(jnp.int32), cont)
 
-        u, r, rn, k, nl, nbrk, flag = jax.lax.while_loop(cond, body, init)
-        flag = jnp.where((flag == 0) & (rn > tol_abs), jnp.int32(1), flag)
-        return u, k, nl, nbrk, flag, rn / jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
+        u, r, rn, k, nl, nbrk, nlmax, flag = jax.lax.while_loop(cond, body, init)
+        flag = jnp.where((flag == 0) & (rn > tol_abs), jnp.int32(1),
+                         jnp.where((flag == 0) & ((nbrk > 0) | (nlmax > 0)),
+                                   jnp.int32(4), flag))
+        return (u, k, nl, nbrk + nlmax, flag,
+                rn / jnp.maximum(jnp.linalg.norm(u_prev), 1e-300))
 
     def chain(u0, nu, guesses, mode):
         def body(carry, g):
@@ -209,24 +242,53 @@ def make_chain(n, tol_rel):
     return jax.jit(chain), residual
 
 
-def fom_reference_check(n, u0, nu, chain, residual):
+def fom_reference_check(n, trajs, chain):
     """The counting Newton chain (previous-step arm) must reproduce the testbed's
-    own fixed-8-iteration rollout -- otherwise the 'FOM' being timed here is not
-    the FOM that produced the data."""
-    roll, _ = bc.bf.make_rollout(n)
-    snaps, rr = roll(jnp.asarray(u0)[None], jnp.asarray([nu]))
-    U_ref = np.asarray(snaps)[1:, 0]                       # (T, n^2), steps 1..T
+    own fixed-8-iteration rollout -- otherwise the "FOM" being timed here is not the
+    FOM that produced the data.  Checked on EVERY test trajectory and reported as
+    the PER-STEP maximum as well as the global trajectory norm (a global norm can
+    hide one bad step).  The linear solver is checked separately against
+    `jax.scipy.sparse.linalg.bicgstab` on a representative Newton correction."""
+    roll, residual = bc.bf.make_rollout(n)
+    bicg = make_bicgstab(LIN_TOL, LIN_MAXITER)
     dummy = jnp.zeros((T, n * n), F64)
-    U, KK, NL, NB, FL, RR = chain(jnp.asarray(u0), nu, dummy, jnp.int32(0))
-    U = np.asarray(U)
-    rel = float(np.linalg.norm(U - U_ref) / np.linalg.norm(U_ref))
-    return U_ref, dict(rel_diff_vs_testbed_rollout=rel,
-                       testbed_max_rel_newton_residual=float(jnp.max(rr)),
-                       counting_chain_max_rel_newton_residual=float(jnp.max(RR)),
-                       counting_chain_newton_iters=int(np.sum(np.asarray(KK))),
-                       counting_chain_lin_iters=int(np.sum(np.asarray(NL))),
-                       counting_chain_lin_breakdowns=int(np.sum(np.asarray(NB))),
-                       counting_chain_flags=sorted(set(np.asarray(FL).tolist())))
+    per, worst_step, worst_glob = [], 0.0, 0.0
+    for U, nu, _ in trajs:
+        u0 = U[0]
+        snaps, rr = roll(jnp.asarray(u0)[None], jnp.asarray([nu]))
+        U_ref = np.asarray(snaps)[1:, 0]
+        Uc, KK, NL, NB, FL, RR = chain(jnp.asarray(u0), nu, dummy, jnp.int32(0))
+        Uc = np.asarray(Uc)
+        glob = float(np.linalg.norm(Uc - U_ref) / np.linalg.norm(U_ref))
+        step = float(np.max(np.linalg.norm(Uc - U_ref, axis=1)
+                            / np.linalg.norm(U_ref, axis=1)))
+        worst_glob = max(worst_glob, glob); worst_step = max(worst_step, step)
+        per.append(dict(rel_diff_trajectory_norm=glob, rel_diff_max_over_steps=step,
+                        testbed_max_rel_newton_residual=float(jnp.max(rr)),
+                        counting_chain_max_rel_newton_residual=float(jnp.max(RR)),
+                        newton_iters=int(np.sum(np.asarray(KK))),
+                        lin_iters=int(np.sum(np.asarray(NL))),
+                        lin_failures=int(np.sum(np.asarray(NB))),
+                        flags=sorted(set(np.asarray(FL).tolist()))))
+    # linear-solver cross-check on one representative Newton correction
+    U, nu, _ = trajs[0]
+    u_prev = jnp.asarray(U[0]); u = jnp.asarray(U[1])
+    r = residual(u_prev, u_prev, nu)
+    Jv = lambda vv: jax.jvp(lambda uu: residual(uu, u_prev, nu), (u_prev,), (vv,))[1]
+    du_ours, k_, mv_, fl_ = bicg(Jv, -r)
+    du_ref, _ = jax.scipy.sparse.linalg.bicgstab(Jv, -r, tol=LIN_TOL,
+                                                 maxiter=LIN_MAXITER)
+    lin = dict(rel_diff_vs_jax_scipy_bicgstab=float(
+                   jnp.linalg.norm(du_ours - du_ref)
+                   / jnp.maximum(jnp.linalg.norm(du_ref), 1e-300)),
+               ours_rel_lin_residual=float(jnp.linalg.norm(Jv(du_ours) + r)
+                                           / jnp.maximum(jnp.linalg.norm(r), 1e-300)),
+               jax_rel_lin_residual=float(jnp.linalg.norm(Jv(du_ref) + r)
+                                          / jnp.maximum(jnp.linalg.norm(r), 1e-300)),
+               ours_iters=int(k_), ours_matvecs=int(mv_), ours_flag=int(fl_))
+    return dict(per_trajectory=per, linear_solver=lin,
+                rel_diff_vs_testbed_rollout=worst_glob,
+                rel_diff_max_over_steps=worst_step)
 
 
 # --------------------------------------------------------------- ROM
@@ -302,7 +364,9 @@ def main():
                   provenance=prov, rows=[], checks=[], per_step=[])
 
     def save():
-        json.dump(report, open(OUT, "w"), indent=1, default=float)
+        # allow_nan=False: an invalid number must fail loudly here rather than be
+        # serialised as a bare NaN and silently averaged into a headline later.
+        json.dump(report, open(OUT, "w"), indent=1, default=float, allow_nan=False)
 
     for n in NS:
         t_n0 = time.time()
@@ -328,18 +392,45 @@ def main():
                                     idx=col["idx"], w=col.get("w"))
         dec_all = jax.jit(lambda ZZ: jax.vmap(lambda zz: dec(zz, coords))(ZZ))
 
+        # ---- ONLINE PREPROCESSING, charged to the hybrid total.
+        # blat_rom.py picks the cold start as the best of {mean t=0 latent, the t=0
+        # latent of the training trajectory whose INITIAL FIELD is nearest to the
+        # query u0}.  That nearest-neighbour search is QUERY-DEPENDENT O(n_train n^2)
+        # work, so it cannot be treated as free.  The bank of training initial fields
+        # is genuinely offline (it is training data, and blob_ic is analytic at any
+        # mesh), so it is built and timed separately; the SEARCH, the latent gather,
+        # the tolerance scale and the per-step tolerance vector are the online part
+        # and are timed into t_pre_ms.
+        t_bank0 = time.time()
+        cxb, cyb, wb, ab, nub, _zb = bc.bf.sample_params()
+        U0_bank = jnp.asarray(np.stack([np.asarray(bc.bf.blob_ic(n, cxb[i], cyb[i],
+                                                                 wb[i], ab[i])).reshape(-1)
+                                        for i in range(bc.N_TRAIN)]))
+        Zt0_bank = jnp.asarray(Ztr[:, 0, :])
+        zmean0 = jnp.asarray(Ztr.mean(axis=0)[0])
+        bank_build_s = time.time() - t_bank0
+        interior_j = jnp.asarray(interior)
+        tol_scale = float(ops.get("tol_scale", np.sqrt(ops["m"])))
+
+        @jax.jit
+        def prep(u0):
+            j = jnp.argmin(jnp.sum((U0_bank - u0[None, :]) ** 2, axis=1))
+            Z0 = jnp.stack([zmean0, Zt0_bank[j]])
+            u0_rms = jnp.sqrt(jnp.mean(u0[interior_j] ** 2))
+            usc = jnp.full((T,), bc.GN_TOL * u0_rms * tol_scale)
+            return Z0, usc, j
+
         rom_per_traj = []
         for j, (U, nu, _) in enumerate(trajs):
             u0 = U[0]
+            u0j_ = jnp.asarray(u0)
+            Z0, usc, jj = prep(u0j_)
             u0_rms = float(np.sqrt(np.mean(u0[interior] ** 2)))
-            jj, _d = fu.nearest_train_ic(n, u0)
-            Z0 = jnp.asarray(np.stack([Ztr.mean(axis=0)[0], Ztr[jj, 0]]))
-            z_e, rel_e, nJ_e, b_e, att_e = fit_eq(jnp.asarray(u0), Z0)
-            usc = jnp.full((T,), bc.GN_TOL * u0_rms * ops.get("tol_scale", np.sqrt(ops["m"])))
+            z_e, rel_e, nJ_e, b_e, att_e = fit_eq(u0j_, Z0)
             Zr, rn_, nj_, re_ = ops["rollout_jit"](z_e, nu, usc, bc.GN_BUDGET)
             G = np.asarray(dec_all(Zr))                       # (T, n^2) guesses, t=1..T
             err = np.linalg.norm(G - U[1:], axis=1) / np.linalg.norm(U[1:], axis=1)
-            rom_per_traj.append(dict(z_e=z_e, Z0=Z0, u0=u0, u0_rms=u0_rms, nu=nu,
+            rom_per_traj.append(dict(z_e=z_e, Z0=Z0, usc=usc, u0=u0, u0_rms=u0_rms, nu=nu,
                                      G=G, U=U, rom_err=err,
                                      ic_rel_on_eq=float(rel_e), ic_iters=int(nJ_e),
                                      rom_iters=int(jnp.sum(nj_))))
@@ -352,30 +443,46 @@ def main():
         # ---- ROM online cost (same protocol)
         r0 = rom_per_traj[0]
         u0j = jnp.asarray(r0["u0"])
+        pre_med, _ = wu.time_fn(lambda: prep(u0j)[0].block_until_ready(),
+                                TIME_REPS, TIME_WARM)
         ic_med, _ = wu.time_fn(lambda: fit_eq(u0j, r0["Z0"])[0].block_until_ready(),
                                TIME_REPS, TIME_WARM)
-        usc0 = jnp.full((T,), bc.GN_TOL * r0["u0_rms"] * ops.get("tol_scale", np.sqrt(ops["m"])))
+        usc0 = r0["usc"]
         roll_med, _ = wu.time_fn(
             lambda: ops["rollout_jit"](r0["z_e"], r0["nu"], usc0, bc.GN_BUDGET)[0].block_until_ready(),
             TIME_REPS, TIME_WARM)
         Zr0 = ops["rollout_jit"](r0["z_e"], r0["nu"], usc0, bc.GN_BUDGET)[0]
         dec_med, _ = wu.time_fn(lambda: dec_all(Zr0).block_until_ready(), TIME_REPS, TIME_WARM)
-        log(f"   ROM cost: IC {ic_med*1e3:.1f} ms + rollout {roll_med*1e3:.1f} ms "
-            f"+ decode {dec_med*1e3:.1f} ms")
+        # SENSITIVITY BASELINE: the testbed's OWN jitted rollout at batch 1 (a fixed
+        # 8-Newton-iteration scan, no tolerance test and no dummy guess stream), i.e.
+        # the production FOM as the reference cell timed it.
+        roll_tb, _ = bc.bf.make_rollout(n)
+        U0b = jnp.asarray(r0["u0"])[None]; nu1b = jnp.asarray([r0["nu"]])
+        tb_med, _ = wu.time_fn(lambda: roll_tb(U0b, nu1b)[0].block_until_ready(),
+                               TIME_REPS, TIME_WARM)
+        log(f"   ROM cost: pre {pre_med*1e3:.1f} ms + IC {ic_med*1e3:.1f} ms "
+            f"+ rollout {roll_med*1e3:.1f} ms + decode {dec_med*1e3:.1f} ms   "
+            f"(training-IC bank built offline in {bank_build_s:.1f} s; "
+            f"testbed rollout {tb_med*1e3:.1f} ms)")
 
         for tau in FOM_TAUS:
-            chain, residual = make_chain(n, tau)
-            U_ref_chk, chk = fom_reference_check(n, r0["u0"], r0["nu"], chain, residual)
+            chain, _res = make_chain(n, tau)
+            chk = fom_reference_check(n, trajs, chain)
             chk.update(N=n, fom_tau=tau)
             report["checks"].append(chk)
-            log(f"   tau={tau:.0e}: counting chain vs testbed rollout rel diff "
-                f"{chk['rel_diff_vs_testbed_rollout']:.2e} "
-                f"({chk['counting_chain_newton_iters']} Newton, "
-                f"{chk['counting_chain_lin_iters']} BiCGStab iters, "
-                f"{chk['counting_chain_lin_breakdowns']} breakdowns)")
-            if chk["rel_diff_vs_testbed_rollout"] > 1e-8:
+            log(f"   tau={tau:.0e}: counting chain vs testbed rollout: traj-norm "
+                f"{chk['rel_diff_vs_testbed_rollout']:.2e}, worst step "
+                f"{chk['rel_diff_max_over_steps']:.2e}; BiCGStab vs jax.scipy "
+                f"{chk['linear_solver']['rel_diff_vs_jax_scipy_bicgstab']:.2e} "
+                f"(lin resid ours {chk['linear_solver']['ours_rel_lin_residual']:.1e} "
+                f"vs jax {chk['linear_solver']['jax_rel_lin_residual']:.1e})")
+            if chk["rel_diff_max_over_steps"] > 1e-7:
                 raise SystemExit(f"N={n} tau={tau}: the counting Newton chain does not "
-                                 f"reproduce the testbed rollout -- refusing to time it")
+                                 f"reproduce the testbed rollout (worst step "
+                                 f"{chk['rel_diff_max_over_steps']:.2e}) -- refusing to time it")
+            if chk["linear_solver"]["ours_rel_lin_residual"] > 1e3 * LIN_TOL:
+                raise SystemExit(f"N={n}: the counting BiCGStab left a relative linear "
+                                 f"residual {chk['linear_solver']['ours_rel_lin_residual']:.2e}")
 
             arm_out = {}
             for arm in ARMS:
@@ -414,19 +521,43 @@ def main():
                                               for p in per_traj])),
                     max_rel_newton_residual=float(np.max([np.max(p["rel_res"])
                                                           for p in per_traj])),
+                    all_finite=bool(np.all(np.isfinite(np.concatenate(
+                        [np.asarray(p["rel_res"]) for p in per_traj])))),
                     err_vs_fom=float(np.mean([p["err_vs_fom"] for p in per_traj])))
-                log(f"     arm {arm:7s}: {arm_out[arm]['newton_total']:.1f} Newton, "
-                    f"{arm_out[arm]['lin_total']:.0f} BiCGStab iters, "
-                    f"{med*1e3:.1f} ms, err vs FOM {arm_out[arm]['err_vs_fom']:.2e}, "
-                    f"breakdowns {arm_out[arm]['breakdowns']}, "
-                    f"nonzero flags {arm_out[arm]['flags_nonzero']}")
+                a = arm_out[arm]
+                log(f"     arm {arm:7s}: {a['newton_total']:.1f} Newton, "
+                    f"{a['lin_total']:.0f} BiCGStab iters, "
+                    f"{med*1e3:.1f} ms, err vs FOM {a['err_vs_fom']:.2e}, "
+                    f"max rel Newton resid {a['max_rel_newton_residual']:.2e}, "
+                    f"lin failures {a['breakdowns']}, "
+                    f"nonzero Newton flags {a['flags_nonzero']}")
+                # SOLVER HEALTH GATE: a configuration is publishable only if EVERY
+                # step of EVERY arm actually met the Newton tolerance with finite
+                # arithmetic.  A cheap failed warm solve must never be able to
+                # contribute a headline speedup (Codex MUST FIX).
+                if not a["all_finite"]:
+                    raise SystemExit(f"N={n} tau={tau} arm {arm}: non-finite Newton residual")
+                if a["max_rel_newton_residual"] > tau:
+                    raise SystemExit(
+                        f"N={n} tau={tau} arm {arm}: max relative Newton residual "
+                        f"{a['max_rel_newton_residual']:.3e} exceeds the tolerance -- "
+                        f"the FOM finish did not converge, refusing to publish the row")
+                if a["flags_nonzero"] or a["breakdowns"]:
+                    raise SystemExit(
+                        f"N={n} tau={tau} arm {arm}: {a['flags_nonzero']} non-zero Newton "
+                        f"flags and {a['breakdowns']} linear-solver failures (BiCGStab "
+                        f"breakdown or max-iteration).  These are reported, never dropped; "
+                        f"investigate before publishing this configuration.")
 
             t_rom_ms = (ic_med + roll_med) * 1e3
             t_dec_ms = dec_med * 1e3
-            t_total = t_rom_ms + t_dec_ms + arm_out["rom"]["t_ms"]
+            t_pre_ms = pre_med * 1e3
+            t_total = t_pre_ms + t_rom_ms + t_dec_ms + arm_out["rom"]["t_ms"]
             row = dict(
                 pde="burgers2d", N=n, n_dof=n2, rom_tau=bc.GN_TOL, fom_tau=tau,
-                t_rom_ms=t_rom_ms, t_rom_ic_ms=ic_med * 1e3,
+                t_rom_ms=t_rom_ms, t_pre_ms=t_pre_ms, t_rom_ic_ms=ic_med * 1e3,
+                t_fom_testbed_ms=tb_med * 1e3,
+                offline_train_ic_bank_s=bank_build_s,
                 t_rom_rollout_ms=roll_med * 1e3, t_decode_ms=t_dec_ms,
                 t_fom_ms=arm_out["rom"]["t_ms"], t_total_ms=t_total,
                 t_fom_baseline_ms=arm_out["prev"]["t_ms"],
@@ -451,6 +582,9 @@ def main():
                 speedup_fom_stage_only=arm_out["prev"]["t_ms"] / arm_out["rom"]["t_ms"],
                 bicgstab_breakdowns=sum(arm_out[a]["breakdowns"] for a in ARMS),
                 newton_flags_nonzero=sum(arm_out[a]["flags_nonzero"] for a in ARMS),
+                max_rel_newton_residual={a: arm_out[a]["max_rel_newton_residual"]
+                                         for a in ARMS},
+                arm_all_finite={a: arm_out[a]["all_finite"] for a in ARMS},
                 m=int(ops["m"]), variant=VARIANT, n_traj=N_TEST_TRAJ,
                 run_role=RUN_ROLE,
                 seed=bc.SEED, gpu=prov["gpu"], gpu_kind=prov["gpu_kind"],

@@ -11,6 +11,8 @@ import json
 import os
 import sys
 
+import numpy as np
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 RUNS = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "runs")
 
@@ -20,18 +22,31 @@ SCHEMA = ["pde", "N", "rom_tau", "fom_tau", "t_rom_ms", "t_decode_ms", "t_fom_ms
           "jax_backend", "commit"]
 
 
-def load_reports():
-    out = []
+def load_reports(strict=True):
+    """Load every cell report.  A malformed JSON is an ERROR, not something to skip
+    silently: a half-written file from an aborted job would otherwise make an
+    incomplete ladder look complete (Codex MUST FIX)."""
+    out, skipped = [], []
     for p in sorted(glob.glob(os.path.join(RUNS, "**", "*.json"), recursive=True)):
         if os.path.basename(p) == "hybrid_points.json":
             continue
         try:
             d = json.load(open(p))
-        except Exception:
-            continue
+        except Exception as e:
+            if strict:
+                raise SystemExit(f"{p}: unreadable JSON ({e}).  An aborted or truncated "
+                                 f"report must be removed or re-run, never skipped.")
+            skipped.append(p); continue
         if isinstance(d, dict) and "rows" in d and "provenance" in d:
+            if not d.get("complete"):
+                skipped.append(p)
+                print(f"  SKIP (incomplete run, job aborted before DONE): {p}")
+                continue
+            role = (d.get("config") or {}).get("run_role", "consolidated")
+            if role not in ("panel", "consolidated"):
+                raise SystemExit(f"{p}: run_role={role!r} is not panel|consolidated")
             out.append((p, d))
-    return out
+    return out, skipped
 
 
 def flat_points(reports):
@@ -43,6 +58,14 @@ def flat_points(reports):
             row.update({k: v for k, v in r.items() if k not in row})
             row["source_json"] = os.path.relpath(p, HERE)
             row["complete"] = bool(d.get("complete"))
+            pv = d.get("provenance", {})
+            # a DIRTY tree can publish two different codes under one commit, so the
+            # content hash of the harness sources travels with every row
+            row["source_sha256"] = json.dumps(pv.get("source_sha256"), sort_keys=True)
+            row.setdefault("gpu", pv.get("gpu"))
+            row.setdefault("jax_backend", pv.get("jax_backend"))
+            row.setdefault("slurm_job_id", pv.get("slurm_job_id"))
+            row["gpu_kind"] = pv.get("gpu_kind")
             pts.append(row)
     return pts
 
@@ -67,7 +90,44 @@ def table(rows, cols, headers=None, specs=None):
 
 
 def taulabel(t):
-    return "converged" if not t else f"{t:g}"
+    # rom_tau=0 DISABLES the objective-reduction test; the reference LM then stops on
+    # its own relative-decrease / step-size / budget / lambda rules, which is NOT the
+    # same as "converged" (Codex SHOULD FIX).
+    return "ref. stops" if not t else f"{t:g}"
+
+
+def select_consolidated(rows, key):
+    """The cross-N wall-clock contract is: EVERY N from ONE process on ONE GPU.
+    Pool the consolidated rows by (source file, Slurm job id, GPU, commit, harness
+    source hash) and return the single group covering the most meshes; anything
+    else is a cross-job mixture and must not be placed on one axis (Codex MUST FIX).
+    Duplicate keys inside a group are a hard error rather than an arbitrary pick."""
+    role = lambda r: r.get("run_role") or "consolidated"
+    cons = [r for r in rows if role(r) == "consolidated"]
+    if not cons:
+        return [], None
+    groups = {}
+    for r in cons:
+        g = (r.get("source_json"), r.get("slurm_job_id"), r.get("gpu"),
+             r.get("commit"), r.get("source_sha256"))
+        groups.setdefault(g, []).append(r)
+    best_g, best = max(groups.items(), key=lambda kv: (len({r["N"] for r in kv[1]}),
+                                                       len(kv[1])))
+    seen = {}
+    for r in best:
+        k = key(r)
+        if k in seen:
+            raise SystemExit(f"duplicate consolidated row for key {k} in "
+                             f"{r.get('source_json')} -- refusing to pick arbitrarily")
+        seen[k] = r
+    prov = dict(source_json=best_g[0], slurm_job_id=best_g[1], gpu=best_g[2],
+                commit=best_g[3], source_sha256=best_g[4],
+                n_groups_seen=len(groups),
+                meshes=sorted({r["N"] for r in best}),
+                dropped_groups=[dict(source_json=g[0], slurm_job_id=g[1], gpu=g[2],
+                                     meshes=sorted({r["N"] for r in v}))
+                                for g, v in groups.items() if g != best_g])
+    return best, prov
 
 
 def split_roles(rows, key):
@@ -103,9 +163,52 @@ def role_consistency(rows, key, fields):
     return out
 
 
+def breakeven(P, ft):
+    """EXTRAPOLATION, clearly labelled as such.  Fit log t_FOM = a + b log N over
+    the measured ladder, take the best measured hybrid overhead C (the ROM stage:
+    preprocess + latent solve + decode, which the reference cell showed is flat in
+    N) and the mean iteration-saving fraction s, and solve
+
+        s * t_FOM(N) = C     ->    N_breakeven = exp((log(C/s) - a) / b)
+
+    for the mesh at which the saved FOM work would first pay for the ROM stage.
+    Returns None when the hybrid already wins inside the measured ladder."""
+    rows = [r for r in P if r["fom_tau"] == ft]
+    if len(rows) < 4:
+        return None
+    Ns = sorted({r["N"] for r in rows})
+    if len(Ns) < 3:
+        return None
+    y = [np.log(np.mean([r["t_fom_baseline_ms"] for r in rows if r["N"] == n]))
+         for n in Ns]
+    b, a = np.polyfit(np.log(Ns), y, 1)
+    best = {n: min([r for r in rows if r["N"] == n], key=lambda r: r["t_total_ms"])
+            for n in Ns}
+    if any(best[n]["speedup_vs_fom"] > 1.0 for n in Ns):
+        return dict(fom_tau=ft, already_wins=True, exponent=float(b))
+    # the configuration with the largest saving-per-overhead ratio at the largest N
+    nmax = Ns[-1]
+    cand = [r for r in rows if r["N"] == nmax and r.get("iter_saving_frac", 0) > 0]
+    if not cand:
+        return dict(fom_tau=ft, already_wins=False, exponent=float(b),
+                    note="no configuration saved any CG iterations at the largest N")
+    r = max(cand, key=lambda r: r["iter_saving_frac"]
+            / max(r["t_rom_ms"] + r.get("t_pre_ms", 0.0) + r["t_decode_ms"], 1e-9))
+    C = r["t_rom_ms"] + r.get("t_pre_ms", 0.0) + r["t_decode_ms"]
+    s = r["iter_saving_frac"]
+    Nb = float(np.exp((np.log(C / s) - a) / b))
+    return dict(fom_tau=ft, already_wins=False, exponent=float(b),
+                rom_tau=r["rom_tau"], rom_stage_ms=C, iter_saving_frac=s,
+                fom_ms_needed=C / s, breakeven_N=Nb,
+                breakeven_dof_vs_largest=(Nb / nmax) ** 2)
+
+
 def main():
-    reports = load_reports()
+    reports, skipped = load_reports()
     pts = flat_points(reports)
+    if skipped:
+        print(f"  {len(skipped)} report(s) skipped as incomplete: "
+              + ", ".join(os.path.basename(x) for x in skipped))
     os.makedirs(RUNS, exist_ok=True)
     with open(os.path.join(RUNS, "hybrid_points.json"), "w") as f:
         json.dump(pts, f, indent=1)
@@ -116,8 +219,10 @@ def main():
     Ball = [r for r in pts if r["pde"] == "burgers2d"]
     pkey = lambda r: (r["N"], r["rom_tau"], r["fom_tau"])
     bkey = lambda r: (r["N"], r["fom_tau"])
-    Pcons, P = split_roles(Pall, pkey)
-    Bcons, B = split_roles(Ball, bkey)
+    Pcons, Pprov = select_consolidated(Pall, pkey)
+    Bcons, Bprov = select_consolidated(Ball, bkey)
+    _, P = split_roles(Pall, pkey)
+    _, B = split_roles(Ball, bkey)
     md = ["# Generated tables -- ROM-warm-started FOM",
           "",
           "Every number below is produced by `wsf_summarize.py` from the JSONs in "
@@ -148,7 +253,9 @@ def main():
                 cells = [fmt(sub[t]["t_total_ms"], ".4g") if t in sub else "--" for t in rts]
                 lines.append("| " + " | ".join([str(n), base] + cells) + " |")
             md += lines + [""]
-        md += ["### P2. Best hybrid per N (over the ROM tolerance ladder)", ""]
+        md += ["### P2. Best hybrid per N (POST-SELECTED: the minimum over the ROM "
+               "tolerance ladder is chosen using the same timing samples it reports, "
+               "so it carries a best-of-noise bias; the full ladder is P1)", ""]
         rows = []
         for ft in fts:
             for n in Ns:
@@ -209,6 +316,18 @@ def main():
                       "iter saving", "ROM A-norm err ratio", "ROM rel resid"],
                      {"iters_from_baseline": ".1f", "iters_from_rom": ".1f",
                       "iter_saving_frac": ".4f"}), ""]
+        md += ["### P4b. EXTRAPOLATED break-even mesh (not measured -- an extrapolation "
+               "of the fitted FOM cost law past the ladder)", ""]
+        be = [b for b in (breakeven(Pcons, ft) for ft in fts) if b]
+        md += [table(be, ["fom_tau", "already_wins", "exponent", "rom_tau",
+                          "rom_stage_ms", "iter_saving_frac", "fom_ms_needed",
+                          "breakeven_N", "breakeven_dof_vs_largest"],
+                     ["tau_FOM", "wins in ladder?", "fitted t_FOM ~ N^b",
+                      "rom_tau used", "ROM stage (ms)", "iter saving",
+                      "FOM (ms) needed", "break-even N", "x DOF vs largest measured"],
+                     {"exponent": ".3f", "rom_stage_ms": ".4g",
+                      "iter_saving_frac": ".4f", "fom_ms_needed": ".4g",
+                      "breakeven_N": ".4g", "breakeven_dof_vs_largest": ".4g"}), ""]
         cc = role_consistency(Pall, pkey, ["iters_from_rom", "iters_from_baseline",
                                            "err_rel_l2_rom", "err_final"])
         bad = [c for c in cc if c["abs_diff"] > 1e-12 * max(abs(c["consolidated"]), 1.0)]
@@ -264,6 +383,14 @@ def main():
                       "baseline err vs FOM", "BiCGStab breakdowns",
                       "non-zero Newton flags"]), ""]
 
+    md += ["## Consolidated-run provenance (the sole source of every cross-N time)", ""]
+    for name, prov in (("Poisson", Pprov), ("Burgers", Bprov)):
+        if prov:
+            md += [f"**{name}**: source `{prov['source_json']}`, Slurm job "
+                   f"`{prov['slurm_job_id']}`, GPU `{prov['gpu']}`, commit "
+                   f"`{str(prov['commit'])[:12]}`, meshes {prov['meshes']}; "
+                   f"{prov['n_groups_seen']} consolidated group(s) seen, "
+                   f"{len(prov['dropped_groups'])} dropped as cross-job.", ""]
     with open(os.path.join(HERE, "SUMMARY_TABLES.md"), "w") as f:
         f.write("\n".join(md) + "\n")
     print(f"wrote {os.path.join(HERE, 'SUMMARY_TABLES.md')}")

@@ -7,9 +7,18 @@ test sources as the coord ROM:
   galerkin  : (V^T A V) c = V^T f     (= energy-norm / Ritz Galerkin ROM)
   fd        : min_c ||A V c - f||     (LSPG on the FD residual)
   weak_a1_M : min_c ||Phi_M^T V c - Lambda_M^{-1} Phi_M^T f||   (the coord ROM's
-              objective, full grid; requires M' >= k)
-Linear, so every ROM is one small least-squares / k x k solve; errors are mean
-rel-L2 over the full grid vs the FD solution.
+              objective, FULL GRID; requires M' >= k)
+Every objective is quadratic in the POD coefficients, so the exact minimiser is
+reported (an unregularised least-squares / k x k solve).  The damped LM used for
+the nonlinear coordinate manifold converges to this same point whenever the
+system has full column rank, which is recorded per k (`rank`, `cond`,
+`square_system`) -- a square or rank-deficient Petrov-Galerkin system (M' <= k)
+is labelled and must not be read as a fair comparison.
+NOTE ON COMPARABILITY: these are FULL-GRID objectives.  The coordinate rows they
+should be compared against are the coordinate ROM's own full-grid rows; the
+NNLS-EQ coordinate rows use a different (hyper-reduced) quadrature.
+Errors are mean rel-L2 over the full grid vs the FD solution -- the same metric
+and the same 16 held-out sources as pro_colloc.py.
 
 Usage: [N=64] [KS=2,4,6,8,12,16,24,32,48,64] [MS=64,256] [N_TEST=16] python fu_pod.py <out.json>
 """
@@ -71,6 +80,7 @@ def main():
         SV = np.stack([np.asarray(spec(jnp.asarray(V[:, j].reshape(n_i, n_i)))) for j in range(k)], -1)  # (n_i,n_i,k)
         Ag = V.T @ AV                                          # k x k (SPD)
         e = {"proj": [], "galerkin": [], "fd": []} | {f"weak_a1_M{M}": [] for M in MS}
+        cond_rank = {}
         for i in range(N_TEST):
             u_int = U_test[i][int_idx]
             f = F[i].reshape(-1)
@@ -83,7 +93,13 @@ def main():
                 A_ = SV[mk]                                    # (M', k)  Phi_M^T V
                 b_ = Cf[mk] / lam[mk]                          # Lambda^{-1} Phi_M^T f
                 c, *_ = np.linalg.lstsq(A_, b_, rcond=None); e[f"weak_a1_M{M}"].append(err(V @ c, i))
+                cond_rank[M] = (float(np.linalg.cond(A_)), int(np.linalg.matrix_rank(A_)),
+                                bool(A_.shape[0] <= k))
         row = dict(k=k, n_modes={M: int(masks[M].sum()) for M in MS},
+                   cond_A_galerkin=float(np.linalg.cond(Ag)),
+                   weak_cond={M: cond_rank[M][0] for M in MS},
+                   weak_rank={M: cond_rank[M][1] for M in MS},
+                   weak_square_or_underdetermined={M: cond_rank[M][2] for M in MS},
                    **{kk: dict(mean=float(np.mean(v)), median=float(np.median(v)), max=float(np.max(v)))
                       for kk, v in e.items()})
         rows.append(row)

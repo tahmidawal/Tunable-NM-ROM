@@ -50,6 +50,12 @@ EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
 EQ_PERTURB = int(os.environ.get("EQ_PERTURB", "3"))
 EQ_MODES = int(os.environ.get("EQ_MODES", "64"))
 EQ_ROWS = int(os.environ.get("EQ_ROWS", "4096"))
+# EQ_FIXED_SNAPS=1 draws the EQ snapshot indices, latent perturbations and row subset
+# from a FIXED stream inside eq_weights, so every (M, m, pool) in an m/M ladder is fitted
+# on the SAME decoder snapshots and the grid/meshfree pools are compared like-for-like.
+# Default 0 reproduces the frozen round-1/round-2 runs bit-for-bit (shared rng stream,
+# so each cache miss consumed fresh draws).  All follow-up cells set it to 1.
+EQ_FIXED_SNAPS = int(os.environ.get("EQ_FIXED_SNAPS", "0"))
 
 
 def main():
@@ -65,7 +71,8 @@ def main():
     manifest = dict(pkl=os.path.basename(PKL), pkl_config=cfg, ns=NS, n_test=N_TEST,
                     gn_iters=GN_ITERS, hard_bc=HARD_BC, objectives=OBJECTIVES, ms=MS,
                     schemes=SCHEMES, inits=INITS, eq_snaps=EQ_SNAPS, eq_perturb=EQ_PERTURB,
-                    eq_modes=EQ_MODES, eq_rows=EQ_ROWS, bc_beta=bc_beta, backend=jax.default_backend())
+                    eq_modes=EQ_MODES, eq_rows=EQ_ROWS, eq_fixed_snaps=EQ_FIXED_SNAPS,
+                    bc_beta=bc_beta, backend=jax.default_backend())
     print("MANIFEST " + json.dumps(manifest), flush=True)
 
     U, z_true_all, coords, fom_res = mp.build_snapshots(N)
@@ -111,7 +118,8 @@ def main():
         if key in eq_cache:
             return eq_cache[key]
         t0 = time.time()
-        idx = rng.choice(N_TRAIN, size=min(EQ_SNAPS, N_TRAIN), replace=False)
+        r_eq = np.random.default_rng(mp.SEED + 20259) if EQ_FIXED_SNAPS else rng
+        idx = r_eq.choice(N_TRAIN, size=min(EQ_SNAPS, N_TRAIN), replace=False)
         f_int = lambda i: mp.source_interior(N, cx[i], cy[i], w[i], a[i])
         cand = jnp.asarray(cand_off) if offgrid else grid.coords_int
         n_c = cand.shape[0]
@@ -126,7 +134,7 @@ def main():
         for i in idx:
             f2d = jnp.asarray(f_int(i))
             z = jnp.asarray(Z_tr[i])
-            for zz in [z] + [z + 0.05 * jnp.asarray(rng.standard_normal(K)) for _ in range(EQ_PERTURB)]:
+            for zz in [z] + [z + 0.05 * jnp.asarray(r_eq.standard_normal(K)) for _ in range(EQ_PERTURB)]:
                 snaps.append(np.asarray(snap_fn(zz, f2d)))
                 fulls.append(snaps[-1] if not offgrid else np.asarray(full_fn(zz, f2d)))
         R = np.stack(snaps)                                        # (n_snap, n_c)
@@ -147,7 +155,7 @@ def main():
         G = np.einsum("sp,pm->smp", R, Phi).reshape(-1, n_c)          # (n_snap*M', n_c)
         sc = np.linalg.norm(G, axis=1) + 1e-300
         G, b = G / sc[:, None], b / sc
-        rows = rng.choice(G.shape[0], size=min(G.shape[0], EQ_ROWS), replace=False)
+        rows = r_eq.choice(G.shape[0], size=min(G.shape[0], EQ_ROWS), replace=False)
         wts, rnorm, n_outer = pc.nnls_capped(G[rows], b[rows], max_support=m)
         supp = np.nonzero(wts > 0)[0]
         if len(supp) >= m:
@@ -164,13 +172,21 @@ def main():
         wq, rnorm_final, _ = pc.nnls_capped(Gk, b, max_support=len(keep))
         if np.any(wq <= 0):        # nodes NNLS zeroed out keep a tiny nominal weight (still m nodes)
             wq = np.where(wq > 0, wq, 1e-8 * max(wq.max(), 1e-300))
-        rnorm_final = float(np.linalg.norm(Gk @ wq - b))
+        resid_rows = Gk @ wq - b
+        rnorm_final = float(np.linalg.norm(resid_rows))
+        rel_rows = np.abs(resid_rows) / (np.abs(b) + 1e-300)     # PER-ROW: a global norm hides a bad mode
         rnorm_full = float(np.linalg.norm(G @ np.ones(n_c) - b)) if not offgrid else float("nan")  # == 0 on-grid by construction
         eq_cache[key] = (keep, wq, dict(support=int(len(supp)), padded=int(padded), rnorm_capped=float(rnorm),
                                       rnorm_final=rnorm_final, rnorm_fullgrid=rnorm_full, b_norm=float(np.linalg.norm(b)),
+                                      rel_fit=rnorm_final / float(np.linalg.norm(b)),
+                                      row_rel_median=float(np.median(rel_rows)),
+                                      row_rel_p95=float(np.quantile(rel_rows, 0.95)),
+                                      row_rel_max=float(np.max(rel_rows)), fixed_snaps=EQ_FIXED_SNAPS,
                                       n_outer=int(n_outer), secs=time.time() - t0, n_rows=int(len(rows))))
-        print(f"  NNLS-EQ m={m}: support {len(supp)} (+{padded} padded) rows {len(rows)} rnorm capped {rnorm:.2e} "
-              f"final(all rows) {rnorm_final:.2e} / ||b|| {np.linalg.norm(b):.2e} [{time.time()-t0:.0f}s]", flush=True)
+        print(f"  NNLS-EQ m={m} M={M} {'meshfree' if offgrid else 'grid'}: support {len(supp)} (+{padded} padded) "
+              f"rows {len(rows)} rnorm capped {rnorm:.2e} final(all rows) {rnorm_final:.2e} / ||b|| "
+              f"{np.linalg.norm(b):.2e} (per-row median {np.median(rel_rows):.1e}, p95 "
+              f"{np.quantile(rel_rows, 0.95):.1e}, max {np.max(rel_rows):.1e}) [{time.time()-t0:.0f}s]", flush=True)
         return eq_cache[key]
 
     def biased_nodes(m, i, r):

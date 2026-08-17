@@ -3,6 +3,14 @@ import glob, json, os, sys
 import numpy as np
 
 def f(x): return "—" if x is None or (isinstance(x, float) and not np.isfinite(x)) else f"{x:.2e}"
+
+def sp(t, key, fom):
+    """Speedup vs the FOM computed from the RAW medians in the JSON (the key names
+    written by hlat_rom changed across runs; the raw seconds never did)."""
+    v = t.get(key)
+    return float("nan") if not v or not fom else fom / v
+
+def spf(x): return "—" if not np.isfinite(x) else f"{x:.2f}x"
 rows = []
 cells = sorted(glob.glob("runs/ad_*/hlat_rom_*.json"))
 print("## Stage 2 — latent-stepping ROM (held-out TEST_SEED trajectories)\n")
@@ -18,7 +26,7 @@ for c in cells:
     print("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for v, s in r["rom"].items():
         t = r["timing"].get(v, {})
-        print(f"| `{v}` | {s.get('M') or '—'} | {s['m']} | {f(s['traj_rel_mean'])} | {f(s['traj_rel_median'])} | {f(s['traj_rel_max'])} | {s['n_blowup']}/{s['n_total']} | {s['iters_cold_step0']:.1f} / {s['iters_warm_mean']:.1f} | {s['step_time_ms_median']:.1f} | {t.get('rollout_s_median',float('nan'))*1e3:.0f} | {t.get('speedup_vs_fom_rollout_only',float('nan')):.2f}x | {t.get('speedup_vs_fom_end_to_end_py_ic',float('nan')):.2f}x / {t.get('speedup_vs_fom_end_to_end_jit_ic',float('nan')):.2f}x |")
+        print(f"| `{v}` | {s.get('M') or '—'} | {s['m']} | {f(s['traj_rel_mean'])} | {f(s['traj_rel_median'])} | {f(s['traj_rel_max'])} | {s['n_blowup']}/{s['n_total']} | {s['iters_cold_step0']:.1f} / {s['iters_warm_mean']:.1f} | {s['step_time_ms_median']:.1f} | {t.get('rollout_s_median',float('nan'))*1e3:.0f} | {spf(sp(t,'rollout_s_median',fom))} | {spf(sp(t,'end_to_end_py_ic_s',fom))} / {spf(sp(t,'end_to_end_jit_ic_s',fom))} |")
     if r.get("pod_direct"):
         print("\nDirect reduced POD-Galerkin (k x k solve per step, the production linear ROM):\n")
         print("| k | traj rel-L2 mean | median | max | rollout ms | speedup vs FOM |")
@@ -27,14 +35,14 @@ for c in cells:
             t = r["timing"].get(f"pod_direct_{kk}", {})
             print(f"| {kk[1:]} | {f(v['traj_rel_mean'])} | {f(v['traj_rel_median'])} | "
                   f"{f(v['traj_rel_max'])} | {t.get('rollout_s_median',float('nan'))*1e3:.1f} | "
-                  f"{t.get('speedup_vs_fom_rollout_only',float('nan')):.1f}x |")
+                  f"{spf(sp(t,'rollout_s_median',fom))} |")
     print("\nPOD control (same solver), projection floors " + ", ".join(f"k{k}={f(v)}" for k, v in r["oracle_pod_projection_floor_test"].items()) + ":\n")
     print("| k | variant | traj rel-L2 mean | median | iters warm | step ms | rollout ms | speedup |")
     print("|---|---|---|---|---|---|---|---|")
     for kv, s in r["pod_rom"].items():
         k, var = kv.split(":", 1)
         t = r["timing"].get(f"pod_{k}:{var}", {})
-        print(f"| {k[1:]} | `{var}` | {f(s['traj_rel_mean'])} | {f(s['traj_rel_median'])} | {s['iters_warm_mean']:.1f} | {s['step_time_ms_median']:.1f} | {t.get('rollout_s_median',float('nan'))*1e3:.0f} | {t.get('speedup_vs_fom_end_to_end',float('nan')):.2f}x |")
+        print(f"| {k[1:]} | `{var}` | {f(s['traj_rel_mean'])} | {f(s['traj_rel_median'])} | {s['iters_warm_mean']:.1f} | {s['step_time_ms_median']:.1f} | {t.get('rollout_s_median',float('nan'))*1e3:.0f} | {spf(sp(t,'end_to_end_s',fom))} |")
     pt = r["oracle_inferred_latent_test"]["per_time_mean"]
     print("\nper-time (t-index 0/10/20/30/40/50): oracle " + " / ".join(f(pt[i]) for i in (0,10,20,30,40,50)))
     for v in ("lspg:full:fd", "lspg:full:weak64", "lspg:eq256:weak64", "lspg:eqoff256:weak64", "lspg:full:weakc64"):

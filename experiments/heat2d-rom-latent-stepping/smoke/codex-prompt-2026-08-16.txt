@@ -1,0 +1,112 @@
+ADVERSARIAL READ-ONLY CODE REVIEW. Do NOT modify, create, or delete ANY file anywhere
+(no AGENTS.md, no notes, no fixes, no `git` writes, no commits/pushes). Do NOT run GPU
+work, do NOT run `sbatch` or any cluster/SSH command, do NOT install packages. You may
+read files and run cheap read-only shell commands (cat/grep/find/sed/python3 -c for
+pure-numpy arithmetic). Report findings only, in your final message.
+
+WHAT THIS IS
+A reduced-order-model (ROM) experiment harness for the 2D heat equation, ported from a
+validated Burgers-2D reference. Full-order model (FOM):
+  du/dt = kappa * lap(u) on [0,1]^2, u = 0 on the walls, backward Euler dt = 0.005,
+  50 steps, conjugate-gradient solve per implicit step.
+The FOM lives in
+  /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-13-heat2d-coord-decoder/experiments/heat2d-coord-decoder/heat2d_film.py
+(functions boundary_mask, make_rollout, sample_params, build_trajectories, film_apply).
+
+The ROM: a hard-BC FiLM coordinate "auto-decoder" u(x;z) = eps * b(x) * FiLM(x;z) with
+b(x,y) = 16 x(1-x) y(1-y), one latent per (trajectory, time) snapshot. Online, at each
+implicit step the latent is solved by damped Levenberg-Marquardt (LSPG) or damped Newton
+on the Galerkin root, warm-started at the previous step's latent. Objectives:
+ (a) STRONG form: the FOM's own discrete backward-Euler residual at m interior nodes,
+     R = u - u_prev - dt*kappa*lap5(u), evaluated from decoder values at 5-point stencils;
+ (b) WEAK form (the recipe under test): project R onto the M lowest DISCRETE sine modes
+     phi_i (exact eigenvectors of the ghost-zero 5-point Laplacian, -L phi_i = lam_i phi_i),
+     giving R_i = w_i [ phi_i^T (u - u_prev) + dt*kappa*lam_i*phi_i^T u ],
+     w_i = (1 + dt*kappa*lam_i)^(-alpha).
+ (c) hyper-reduction: replace the exact grid sums phi_i^T u by an m-point quadrature with
+     non-negative weights from a capped Lawson-Hanson NNLS fit ("EQ"), on grid nodes
+     ("eq<m>") or on a meshfree random pool ("eqoff<m>").
+Controls: POD basis with the same solver (POD-LSPG at k in 6,8,16,32,64), and an
+"oracle" floor (per-snapshot latents fitted to the HELD-OUT field).
+
+FILES TO REVIEW (absolute paths), all under
+/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-16-heat2d-rom-latent-stepping/experiments/heat2d-rom-latent-stepping/ :
+  hlat_common.py      heat operators, weak form, NNLS-EQ, objective parser, jitted IC solve
+  hlat_train_ad.py    auto-decoder + POD training
+  hlat_stage1.py      Stage-1 pilot on a pre-existing (z,t)-conditioned sweep decoder
+  hlat_rom.py         Stage-2 ROM evaluation, floors, POD control, timing
+  hlat_summarize.py   markdown tables from the JSONs
+  cluster/make_cell.sh, cluster/launch.sh   Slurm staging/launch
+Most PDE-agnostic machinery is IMPORTED from the Burgers reference (read it, do not
+change it):
+  /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-16-burgers2d-rom-latent-stepping/experiments/burgers2d-rom-latent-stepping/blat_common.py
+  (pod_basis, CoordDecoder, PODDecoder, bc_factor, test_modes, modes_at, nnls_capped,
+   _finish_ops, solve_step, fit_ic, rollout, time_fn, make_collocation, lm_solve)
+
+REVIEW THESE FIVE QUESTIONS SPECIFICALLY, hardest first:
+
+1. RESIDUAL vs THE FOM'S ACTUAL DISCRETE OPERATOR AND dt.
+   Does hlat_common.be_residual_from_stencil reproduce heat2d_film's implicit_op EXACTLY
+   (sign of the dt*kappa*lap term, dx = 1/(n-1), the mask/boundary rows, and the fact that
+   heat2d_film's rollout multiplies each solved step by mask_flat)? Is the weak-form
+   identity phi_i^T L u = -lam_i phi_i^T u actually exact for THIS operator and THIS mode
+   normalisation (check test_modes' eigenvalue formula 4/dx^2*(sin^2(pi kx/(2(n-1))) +
+   sin^2(pi ky/(2(n-1)))), the mode grid xi = k/(n-1), and the interior flattening order
+   i*(n-2)+j vs the full-grid flattening i*n+j used by interior_indices/grid_coords)? Is
+   the hard-BC factor exactly zero on the wall nodes so the ghost-zero assumption holds?
+   Check the 'weakall' cross-check added in hlat_rom (all (n-2)^2 modes, alpha forced to 0)
+   really is an identity, including the Galerkin gradient JD^T r.
+
+2. HELD-OUT LEAKAGE INTO THE ROM PATH.
+   The ROM is allowed to know: u0, kappa, the PDE, the training set. It must never use the
+   held-out trajectory. Trace every place a test array (U_test/z_test/kappa_test) is
+   touched in hlat_rom.py and hlat_stage1.py and say whether each use is (i) legitimate,
+   (ii) an explicitly-labelled ORACLE floor, or (iii) actual leakage. Pay attention to:
+   cold-start init selection, EQ weight fitting, tolerance scales (u0_rms), the
+   "best-of" init selection rules (are they selected on the objective or on the held-out
+   error?), and POD basis construction. Also: is the TEST split really disjoint from
+   training/model selection (TEST_SEED = SEED+1, separate draw)?
+
+3. TIMING PROTOCOL VALIDITY.
+   hlat_rom's timing section: is the ROM-vs-FOM comparison apples-to-apples? Consider
+   compile time exclusion, block_until_ready placement, whether the FOM is timed at the
+   same batch size and with the same jit, whether the ROM rollout timing excludes work the
+   ROM genuinely needs (initial-condition latent solve, decoding the 51 output slices),
+   whether the Galerkin variants (python loop) are comparable to the LSPG variants
+   (device lax.scan), and whether any timed ROM path silently benefits from cached
+   compilation of a shape another variant already compiled. Flag anything that would
+   inflate the reported speedup.
+
+4. POD COMPARABILITY.
+   Is the POD control a fair linear baseline? Same snapshots, same solver, same tolerance
+   rule, same stopping criterion, same collocation? Note PODDecoder only supports grid
+   rows. Is the POD basis built from the same TRAIN snapshots as the auto-decoder
+   (blat_common.pod_basis, host f64 Gram)? Are POD projection floors computed on the same
+   test set? Is anything about the POD arm accidentally advantaged or handicapped?
+
+5. WEAK-FORM UNITS AND WEIGHTS.
+   The weight w_i = (1 + dt*kappa*lam_i)^(-alpha). With alpha=1 this is exactly the inverse
+   diagonal of the backward-Euler operator in mode space. Argue what LSPG with this weight
+   is actually minimising for the LINEAR heat equation and whether it is the right thing.
+   Check the units/scaling of the residual vector across variants (full grid sums vs NNLS
+   quadrature vs different M) and whether the stopping tolerance in blat_common.rollout
+   (`us = u_scale * ops["tol_scale"]`, tol_scale = sqrt((n-2)^2) for weak, sqrt(m) for
+   strong; absolute tolerance = GN_TOL * us with GN_TOL = 1e-9, u_scale = RMS of the known
+   u0 over the interior) is comparable across variants AND still meaningful at late times,
+   given that the heat solution DECAYS strongly (kappa up to 0.5 over T = 0.25, so
+   ||u_50|| can be 1e-3 x ||u_0|| or smaller). If the tolerance can bind trivially late in
+   the rollout, say so and quantify.
+
+ALSO REPORT any outright bug, shape/dtype error, silent f32 downcast, env-variable
+collision between heat2d_film / burgers2d_film / ms_parametric (all three read N, HIDDEN,
+N_TRAIN etc. at import — import order in hlat_common.py is claimed to be load-bearing),
+NaN handling, or anything in cluster/make_cell.sh + cluster/launch.sh that could produce a
+silently wrong run (CPU fallback, stale staged code, two jobs in one directory, logs
+written to a quota'd home dir).
+
+OUTPUT FORMAT: a markdown report with sections MUST-FIX (correctness or integrity bugs
+that would invalidate results), SHOULD-FIX (weakens the claim but not fatal), and
+NITS/OBSERVATIONS. For each item: file, line number, what is wrong, why it matters, and
+the concrete minimal fix. Be adversarial and specific; if a claim in a docstring is not
+actually true, say so. If you verified something is CORRECT, say that too (a short
+"verified correct" list at the end) so the reviewer knows what you checked.

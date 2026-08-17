@@ -74,14 +74,14 @@ elif [[ "$wave" == "wave2" ]]; then
   # ---- timing vs K on ONE GPU, all K sequential in ONE process (+ the POD ladder)
   PK=""
   for K in 2 4 6 8 12 16 24 32; do
-    src="$EXP/runs/ad_n64_k$K/blat_ad_N64_K$K.pkl"; [[ -f "$src" ]] || src="$EXP/runs/bk_K$K/blat_ad_N64_K$K.pkl"
-    [[ -f "$src" ]] || { echo "missing K=$K checkpoint (looked in runs/ad_n64_k$K and runs/bk_K$K)" >&2; exit 1; }
+    src="$EXP/runs/ad_n64_k$K/blat_ad_N64_K$K.pkl"; [[ -f "$src" ]] || src="$EXP/runs/followup/bk_K$K/blat_ad_N64_K$K.pkl"
+    [[ -f "$src" ]] || { echo "missing K=$K checkpoint (looked in runs/ad_n64_k$K and runs/followup/bk_K$K)" >&2; exit 1; }
     PK="$PK,in/blat_ad_N64_K$K.pkl"
   done
   d=$("$MK" bt_k 64G 8 "MODE=k N=64 K_LAT=8 N_TEST=16 PKLS=${PK#,} POD_KS=2,4,6,8,12,16,24,32,64 TIME_REPS=7 VARIANTS=lspg:eq256:weak64,lspg:full:weak64 POD_VARIANT=lspg:full:fd" \
       "\$PY -u followup/fu_timing.py ../out/timing_k.json")
   for K in 2 4 6 8 12 16 24 32; do
-    src="$EXP/runs/ad_n64_k$K/blat_ad_N64_K$K.pkl"; [[ -f "$src" ]] || src="$EXP/runs/bk_K$K/blat_ad_N64_K$K.pkl"
+    src="$EXP/runs/ad_n64_k$K/blat_ad_N64_K$K.pkl"; [[ -f "$src" ]] || src="$EXP/runs/followup/bk_K$K/blat_ad_N64_K$K.pkl"
     cp "$src" "$d/code/in/"
   done
   stamp "$d"

@@ -203,6 +203,237 @@ with it targeting the continuum PDE (the FOM's own O(h) error shrinks 3.8e-2 -> 
    needs M > k: POD k=64 with `weak64` (square system) is unstable (1.66) while `weak64` with
    k <= 32 and `fd` with any k are fine — documented as a caveat, not used for any claim.
 
+## Follow-up (2026-08-17) — k ladder, multi-seed, EQ knobs, honest cost
+
+`followup/` extends this study without touching anything above: new code in `followup/`,
+new results in `runs/followup/<cell>/`, generated tables in `followup/FOLLOWUP_TABLES.md`,
+figures in `followup/figs/` (also copied to `Plots/`).  Every table above is unchanged;
+the K=4/8/16 rows of the frozen round are reused verbatim as three points of the new k
+ladder.
+
+Everything below: N=64 unless stated, 16 fresh test trajectories from `TEST_SEED=1`, f64,
+`jax_backend=gpu`, `JAX_DEFAULT_MATMUL_PRECISION=highest`, one isolated cluster job
+directory per cell, data regenerated on the cluster from the seed, checksummed pull,
+cluster directories deleted.  Adversarial review before the fan-out:
+`CODEX-REVIEW-followup.md` (all MUST items applied; disposition table in that file).
+
+### New code
+
+| path | what |
+|---|---|
+| `blat_train_ad.py` | + `TRAIN_SEED`: the FiLM network initialisation and the minibatch / collocation-point order.  The per-snapshot latents are initialised **deterministically** from the top-K POD coefficients, and the data draw, the split and the `TEST_SEED` test set never see it — so a multi-seed sweep varies training randomness only.  Default = the data seed, reproducing the frozen weights and latents; non-default seeds get their own file name (`_S<seed>`), as do their ROM reports. |
+| `followup/fu_common.py` | an **exact** `lax.while_loop` port of `ms_autodecoder.lm_solve` (the Python-loop LM that `blat_common.fit_ic` uses for the online cold start, which dominated end-to-end time at 0.6–1.3 s): same damping, acceptance, both stopping tests applied only after an accepted step, same accounting.  Plus the nearest-training-IC rule by **field** distance at the tested mesh, matching `blat_rom.py`. |
+| `followup/fu_timing.py` | one-GPU, one-process cost measurement.  `MODE=n`: N ladder at fixed (k, M, m) — the coordinate decoder is meshfree so the same N=64 checkpoint runs at every N, with the EQ weights refit per N and the FOM's own Newton residual asserted < 1e-8 before anything is timed.  `MODE=k`: K ladder + the POD control, and (with `POD_KS=` empty) the m/M cost ladder.  2 warm-ups, median of 7, `block_until_ready`, FOM = the testbed's own jitted implicit rollout at batch 1. |
+| `followup/fu_summarize.py`, `fu_style.py` | tables + figures straight from the JSONs (verified to reproduce the frozen K=4/8/16 rows exactly). |
+| `followup/cluster/{make_cell.sh,launch.sh,fu_cells.sh,pull.sh}` | `blat2/` namespace: one job per cell dir, sha256-verified staging and pull, `squeue` checked before and after every submit, `git_commit` + `git_dirty` recorded in every batch script, cluster dirs deleted after a verified pull. |
+
+`blat_common.fit_eq_weights` additionally reports per-row NNLS fit diagnostics (median /
+p95 / max of |Gw−b|/|b| over the fitted rows) so a single badly-fitted test mode cannot
+hide behind a small global norm; the max is dominated by rows whose target projection is
+near zero and should be read next to the median.
+
+### Cells
+
+| cell | job | what |
+|---|---|---|
+| `bk_K{2,6,12,24,32}` | 2481734–2481748 | k ladder: retrain the auto-decoder at each K (60k steps, the frozen budget), then the ROM sweep.  K=4/8/16 are the frozen `runs/ad_n64_k{4,8,16}` cells, reused verbatim. |
+| `bs_S{1,2}` | 2481749/2481753 | multi-seed: K=8, `TRAIN_SEED` 1 and 2 (seed 0 = the frozen `runs/ad_n64_k8`) |
+| `bm_m` | 2481756 | m ladder at (K=8, M=64): m ∈ {64…1024} for the exact-FOM weak form on grid nodes, and for the continuum weak form on grid nodes *and* a meshfree pool, + the full grid |
+| `bm_M` | 2481759 | M ladder at m ≈ 4M |
+| `bt_m` | 2481763 | per-rollout / per-iteration cost of every m and M ladder point, one GPU, one process |
+| `bt_n` | 2488105 | cost vs N on one GPU, N ∈ {32,64,128,256} sequential in one process |
+| `bt_k` | 2488123 | cost vs K on one GPU + the POD control |
+
+### k ladder — the manifold is worth ~8x in k, and the knee is the intrinsic dimension
+
+Trajectory rel-L2 (mean over the 51 slices, then over 16 held-out trajectories); **zero
+blow-ups in every cell**.  Figure: `followup/figs/burgers_k_ladder.png`.
+
+| K | 2 | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
+|---|---|---|---|---|---|---|---|---|
+| coordinate ROM `full:weak64` | 4.47e-1 | 7.74e-2 | 1.73e-2 | **1.65e-2** | 1.13e-2 | 9.62e-3 | 1.02e-2 | 1.47e-2 |
+| coordinate ROM `eq256:weak64` | 4.48e-1 | 7.74e-2 | 1.81e-2 | 1.74e-2 | 1.22e-2 | 1.10e-2 | 1.21e-2 | 1.85e-2 |
+| inferred-latent floor (oracle) | 1.97e-1 | 5.24e-2 | 1.41e-2 | 1.15e-2 | 8.61e-3 | 7.40e-3 | 6.35e-3 | 5.79e-3 |
+| POD-LSPG (same solver) | 6.06e-1 | 3.92e-1 | 2.70e-1 | 2.09e-1 | 1.38e-1 | 9.73e-2 | 6.03e-2 | 4.32e-2 |
+| POD projection floor | 6.02e-1 | 3.75e-1 | 2.57e-1 | 1.96e-1 | 1.27e-1 | 8.90e-2 | 5.39e-2 | 3.79e-2 |
+
+1. **The knee is at the intrinsic dimension 6** (5 family parameters + time): the ROM falls
+   5.8x from K=2 to K=4 and another 4.5x from K=4 to K=6, then flattens (1.73e-2 → 9.6e-3
+   over K=6…16).  K=4 < 6 is representation-limited — the *oracle* is already 5.2e-2 there.
+2. **POD needs ~8x the latent dimension for the same accuracy.**  With the same solver, the
+   same residual and the same test modes, POD-LSPG at k=8 is 2.09e-1 — **12.7x** the
+   coordinate ROM at K=8 — and the crossover is at **k ≈ 64**: POD-64 reaches 1.40e-2, which
+   the coordinate manifold already beats at K=8 (1.65e-2 is 1.2x above it) and clears at
+   K=16 (9.6e-3).  Read the other way: the coordinate ROM at K=6 (1.73e-2) matches POD
+   somewhere around k = 56, i.e. **~9x fewer latent dimensions**.
+3. **The ROM tracks its own floor, never the solver.**  ROM/oracle = 1.23 (K=6), 1.44 (K=8),
+   1.30 (K=16); the gap does not grow.
+4. **Beyond K=16 the ROM stops improving even though the floor does** (K=24 1.02e-2,
+   K=32 1.47e-2 against oracle floors 6.35e-3 and 5.79e-3), and the solver visibly works
+   harder: warm iterations per step rise from 5.5 (K=6) to 9.5 (K=24) to 15.7 (K=32).  With
+   a fixed 60k-step budget the extra latent directions are increasingly poorly conditioned
+   for the online solve — the useful range here is K = 6…16.
+5. **POD sits just above its projection floor** (1.05–1.13x at every k), so the linear
+   control is solver-limited by at most 13% and the gap to the coordinate ROM is the
+   manifold's, not the solver's.
+
+### Multi-seed (K=8, three training seeds)
+
+`TRAIN_SEED` changes the FiLM network initialisation and the minibatch / collocation-point
+order.  The per-snapshot latents are initialised deterministically from the top-K POD
+coefficients, and the data draw, the split and the `TEST_SEED` test set are untouched — so
+the spread below is training randomness and nothing else.
+
+| quantity | seed 0 | seed 1 | seed 2 | mean ± std |
+|---|---|---|---|---|
+| train reconstruction (learned latents) | 3.52e-3 | 3.55e-3 | 3.48e-3 | 3.52e-3 ± 3.3e-5 |
+| ORACLE inferred-latent floor (held out) | 1.15e-2 | 1.24e-2 | 1.11e-2 | 1.17e-2 ± 6.3e-4 |
+| IC fit at t=0 | 2.31e-2 | 2.15e-2 | 2.09e-2 | 2.18e-2 ± 1.1e-3 |
+| ROM `full:weak64` | 1.65e-2 | 1.57e-2 | 1.46e-2 | **1.56e-2 ± 9.6e-4** |
+| ROM `eq256:weak64` | 1.74e-2 | 1.61e-2 | 1.52e-2 | **1.62e-2 ± 1.1e-3** |
+| ROM `full:fd` (strong-form control) | 2.01e-2 | 1.91e-2 | 1.93e-2 | 1.95e-2 ± 4.9e-4 |
+| POD-LSPG k=8 control | 2.09e-1 | 2.09e-1 | 2.09e-1 | 2.09e-1 (std 0 by construction) |
+
+The headline is reproducible to **6%** and the 12.7x gap to POD is two orders of magnitude
+outside the spread.  The weak form's 1.2x edge over the strong FD residual (1.56e-2 vs
+1.95e-2) is 4 standard deviations, so it survives seeding as well.  The POD basis is a
+deterministic function of the training snapshots, so its control row carries no
+training-seed variance.
+
+### The hyper-reduction knobs — m and M ladders (K=8)
+
+Per-step times are the median-of-7 device-synced rollout of the `bt_m` cost cell divided by
+the 50 steps (one GPU, one process).  Figure: `followup/figs/burgers_eq_knobs.png`.
+
+| m | 64 | 128 | 256 | 512 | 1024 | full grid (3844) |
+|---|---|---|---|---|---|---|
+| `weak64` (exact FOM operator), grid EQ | 6.54e-2 | 1.95e-2 | 1.74e-2 | 1.68e-2 | 1.67e-2 | 1.65e-2 |
+| ↳ ms per ROM step | 2.37 | 3.56 | 5.50 | 9.03 | 17.55 | 61.52 |
+| ↳ NNLS relative fit | 2.1e-1 | 4.9e-2 | 6.2e-3 | 1.0e-3 | 1.5e-4 | 0 |
+| `weakc64` (continuum), grid EQ | 1.11e-1 | 5.53e-2 | 4.47e-2 | 4.51e-2 | 4.55e-2 | 4.56e-2 |
+| `weakc64` (continuum), **meshfree** pool | 1.20e-1 | 5.41e-2 | 4.49e-2 | 4.53e-2 | 4.55e-2 | 4.56e-2 |
+| ↳ ms per ROM step (meshfree) | 1.50 | 1.82 | 2.33 | 3.09 | 4.71 | 12.87 |
+
+| M | 16 | 32 | 64 | 128 | 256 |
+|---|---|---|---|---|---|
+| full grid | 1.88e-2 | 1.68e-2 | 1.65e-2 | 1.66e-2 | 1.67e-2 |
+| NNLS-EQ, m = 4M | 2.86e-2 | 1.83e-2 | 1.74e-2 | 1.67e-2 | 1.68e-2 |
+| ms per ROM step, full / EQ | 59.4 / 2.40 | 61.6 / 3.72 | 61.5 / 5.50 | 62.0 / 9.09 | 62.3 / 17.7 |
+
+- **m ≈ 4M is the knee, and it is 11x cheaper than the full grid**: m=256 gives 1.74e-2
+  against 1.65e-2 full-grid (5% worse) at 5.50 ms/step against 61.5 ms/step.  m=512 closes
+  it to 2% at 9.0 ms/step; m=128 (2M) is already 18% worse and m=64 (M) fails outright.
+- **The NNLS fit residual predicts the ROM error**: it falls 2.1e-1 → 1.5e-4 across the
+  ladder and the error saturates exactly where it drops below ~1e-3.  It is computed
+  offline, before the ROM is ever run.
+- **The meshfree candidate pool matches grid nodes** for the continuum weak form at every m
+  (4.49e-2 vs 4.47e-2 at m=256) and is the cheapest arm in the study (2.33 ms/step, one
+  decoder evaluation per node, no stencil) — but `weakc` is a *different model*: it targets
+  the continuum PDE, so against the upwind FOM it sits at 4.5e-2 at every m, exactly as in
+  the frozen round.  The meshfree pool is not available for the exact-FOM `weak` form,
+  which needs grid neighbours for the upwind stencil.
+- **M is saturated at 64**: M=16 is genuinely under-resolved (1.88e-2 even on the full
+  grid), M=32 is within 2%, and M ≥ 64 changes nothing while costing linearly in m = 4M.
+
+### Online cost vs N — the whole online path can be made mesh-free
+
+One GPU, all four meshes measured **sequentially in one process**, 2 warm-ups then the
+median of 7 `block_until_ready` repetitions.  The FOM is the testbed's own jitted implicit
+rollout at batch 1 — the function that produced the truth — and its Newton residual is
+asserted below 1e-8 before anything is timed.  The coordinate decoder is meshfree, so the
+*same* N=64 checkpoint runs at every N and only the EQ quadrature is refit.  Figure:
+`followup/figs/burgers_cost_vs_N.png`.
+
+| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / ROM step | ms / Jacobian eval | cold start, full grid (python / jitted) | cold start, EQ nodes (m=256) | decode 51 slices | end-to-end (EQ start, with / without decode) |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 204 ms | 286 ms | 0.71x | 5.73 | 1.11 | 870 / 34.5 ms | 17.2 ms | 2.8 ms | 0.67x / 0.67x |
+| 64 | 424 ms | 280 ms | **1.51x** | 5.61 | 1.06 | 1025 / 105.5 ms | 24.5 ms | 11.0 ms | 1.34x / 1.39x |
+| 128 | 1158 ms | 277 ms | **4.18x** | 5.54 | 1.09 | 1454 / 414.2 ms | 32.0 ms | 45.8 ms | 3.27x / 3.75x |
+| 256 | 2203 ms | 272 ms | **8.09x** | 5.45 | 1.07 | 3338 / 1671.8 ms | 19.3 ms | 180.9 ms | **4.66x / 7.55x** |
+
+1. **The rollout is flat: 272–286 ms across a 64x range of degrees of freedom** (N=32→256,
+   1024→65536 DOF, ±2.6%), with the same ~256 Jacobian evaluations and the same 1.07–1.11 ms
+   per Jacobian evaluation, while the FOM grows 10.8x.  The speedup therefore *grows* with
+   the mesh: 0.71x → 8.09x.  The ROM error is flat too (1.03–1.19e-2 on the timed
+   trajectory).
+2. **Two arms show the same thing from the other side.**  `eqoff512:weakc64` (meshfree,
+   one decoder evaluation per node) is flat at 151–155 ms and reaches **14.5x** at N=256;
+   the *non*-hyper-reduced `full:weak64` grows 837 ms → 56.4 s (67x) exactly like the FOM,
+   which is the control that shows the flatness comes from the hyper-reduction and not from
+   the manifold.
+3. **The cold start was the last O(n) piece, and it did not have to be.**  Fitting the
+   latent to the known u₀ on the full grid costs 34.5 ms at N=32 but 1672 ms at N=256 and
+   capped the end-to-end speedup near 1.0x.  Fitting it instead on the *same* m=256 EQ nodes
+   with the same weights makes it n-free — 17–32 ms at every N — and lifts the end-to-end
+   speedup to 7.55x at N=256 (4.66x if the full field is also decoded at all 51 slices).
+   The price is measurable and small: the t=0 misfit, measured on the full grid either way,
+   goes from 2.11e-2 to 2.51e-2 at N=32 and from 3.47e-2 to 4.31e-2 at N=256, with the
+   latent differing by 2–5%.
+4. **The 51-slice full-field decode (2.8 → 181 ms) is genuinely O(n) and is the output, not
+   the solve.**  It is reported separately so the reader can compose whichever end-to-end
+   number matches their use case; a ROM asked for functionals rather than fields never pays
+   it.
+5. **The jitted cold start is the same algorithm as the Python one it replaces**: an exact
+   `lax.while_loop` port of `ms_autodecoder.lm_solve`, landing on the same latent to 1e-16
+   relative in every row, at 2–25x the speed (the ratio shrinks with N because the Python
+   loop's per-iteration overhead becomes negligible against O(n) work).
+
+### Per-iteration cost and iterations vs k (one GPU, N=64, FOM 422 ms)
+
+| K | 2 | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
+|---|---|---|---|---|---|---|---|---|
+| coordinate ROM rollout `eq256:weak64` | 184 ms | 187 ms | 222 ms | 277 ms | 360 ms | 448 ms | 793 ms | 2104 ms |
+| speedup vs FOM | 2.30x | 2.25x | 1.90x | 1.52x | 1.17x | 0.94x | 0.53x | 0.20x |
+| Jacobian evaluations (50 steps) | 314 | 258 | 246 | 262 | 261 | 274 | 360 | 764 |
+| ms per Jacobian evaluation | 0.59 | 0.73 | 0.90 | 1.06 | 1.38 | 1.63 | 2.20 | 2.75 |
+| POD-LSPG rollout at the same k | 38 ms | 35 ms | 39 ms | 35 ms | 44 ms | 44 ms | 41 ms | 46 ms |
+| POD ms per Jacobian evaluation | 0.22 | 0.19 | 0.20 | 0.18 | 0.23 | 0.23 | 0.21 | 0.24 |
+
+Per-iteration cost grows **4.7x** from K=2 to K=32 (0.59 → 2.75 ms) — the `jacfwd` over the
+FiLM decoder is linear in K — and the iteration count is flat at ~260 up to K=16 and then
+blows up (360 at K=24, 764 at K=32).  Combined, the rollout is 11x more expensive at K=32
+than at K=2 while the *accuracy* is no better than K=12's, which is the cost-side statement
+of the K ≤ 16 useful range found above.  **The accuracy/cost sweet spot is K = 6–8**: 1.7e-2
+at 1.9–1.5x the FOM, and 4.2x/8.1x once the mesh is 128/256.  The POD control is
+6–12x faster than the FOM at every k (its "decoder" is one 4096×k matvec) and its
+per-iteration cost barely moves with k — the coordinate manifold buys accuracy per latent
+dimension and pays for it in cost per iteration.  This is the honest trade: at N=64 POD-64
+(1.40e-2, 5.8x faster than the FOM) and coordinate-K=8 (1.65e-2, 1.5x faster) are
+comparable in accuracy, and POD wins on time; by N=256 the coordinate ROM's cost is
+unchanged while both the FOM and any full-grid arm have grown ~10x.
+
+### Caveats
+
+- 16 held-out trajectories per cell; means carry tails (medians are in the JSONs and in
+  `FOLLOWUP_TABLES.md`).  Zero blow-ups anywhere in the follow-up: 0/16 in every one of the
+  8 x 4 k-ladder variants, the 3 x 4 seed variants, the 17 m-ladder variants and the 10
+  M-ladder variants.
+- The k ladder trains one decoder per K at one budget (60k steps).  K=24 and K=32 are
+  visibly under-trained *for the online solve* (their held-out floors keep improving while
+  the ROM does not), so "the ROM stops improving past K=16" is a statement about this
+  budget, not about the manifold's capacity.
+- Timing tables are one GPU, one process, median of 7 — but `bt_n`, `bt_m` and `bt_k` are
+  three different jobs on three different (possibly different-model) GPUs, so numbers may be
+  compared **within** each table and not across them.  The k ladder's *errors* are
+  hardware-independent (f64) and are compared freely.
+- The multi-seed cells were not pinned to one GPU model; only errors are taken from them.
+- `weakc` (the continuum weak form, the only variant that admits a meshfree quadrature pool)
+  is stated against the upwind FOM only.  It is O(h) away from that FOM by construction; its
+  4.5e-2 is the same size as the FOM's own discretization error at N=64 against the 512²
+  reference (3.8e-2, `burgers2d-coord-rom` README).  Against the continuum it may well be
+  better; not measured.
+- The hyper-reduced cold start is only available for grid-node EQ sets: u₀ is known on the
+  mesh, so an off-grid node set would need an interpolation step that was not implemented.
+  The `weakc`/meshfree arms therefore still report the full-grid cold start.
+- `blat_common.test_modes` takes exactly M modes from a stable sort, which splits a
+  degenerate `(kx,ky)/(ky,kx)` eigenshell at M = 16, 128 and 256, so the retained set is not
+  exactly x/y symmetric at those M.  This is the frozen round's convention and was kept for
+  comparability (Codex SHOULD-fix, deliberately not applied — see
+  `CODEX-REVIEW-followup.md`); the effect is a fraction of one mode out of M.
+- Two-reviewer gate: `CODEX-REVIEW-followup.md` (adversarial harness review before the
+  fan-out, all MUST items applied) plus a second Codex pass over the finished tables and
+  figures against the raw JSONs.
+
 ## Caveats
 
 - Single training seed; 16 test trajectories per cell (means carry tails: K=8 `eq512:weak64`

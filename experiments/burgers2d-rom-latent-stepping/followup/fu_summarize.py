@@ -258,19 +258,34 @@ def tab_timing(D, out):
                    f"`block_until_ready`; the coordinate decoder is meshfree so the SAME N=64 "
                    f"checkpoint is used at every N, EQ weights refit per N)\n")
         out.append("| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / ROM step | ms / Jacobian eval | "
-                   "IC fit (python LM) | IC fit (jitted LM) | decode 51 slices | end-to-end speedup (jitted IC) |")
+                   "cold start, full grid (python / jitted LM) | cold start, EQ nodes (m=256) | "
+                   "decode 51 slices | end-to-end speedup (EQ cold start, + / − decode) |")
         out.append("|---|---|---|---|---|---|---|---|---|---|")
         for r in t["rows"]:
             v = r["rom"].get(EQ, {})
             ic = r["ic_fit"]
+            e = v.get("ic_fit_eq_nodes") or {}
+            eq_ic = f"{e['s']*1e3:.1f} ms" if e else "—"
+            e2e = (f"{v.get('speedup_end_to_end_eq_ic', float('nan')):.2f}x / "
+                   f"**{v.get('speedup_end_to_end_eq_ic_no_decode', float('nan')):.2f}x**") if e else                   f"{v.get('speedup_end_to_end_jit_ic', float('nan')):.2f}x (full-grid start)"
             out.append(f"| {r['N']} | {r['fom_rollout_s']*1e3:.0f} ms | {v.get('rollout_s_median', float('nan'))*1e3:.0f} ms | "
                        f"**{v.get('speedup_rollout_only', float('nan')):.2f}x** | "
                        f"{v.get('rollout_s_median', float('nan'))*1e3/50:.2f} | "
                        f"{v.get('s_per_jacobian_eval', float('nan'))*1e3:.2f} | "
-                       f"{ic['python_s']*1e3:.0f} ms | {ic['jit_s']*1e3:.1f} ms | "
-                       f"{r['decode_all_slices_s']*1e3:.1f} ms | "
-                       f"{v.get('speedup_end_to_end_jit_ic', float('nan')):.2f}x |")
+                       f"{ic['python_s']*1e3:.0f} / {ic['jit_s']*1e3:.1f} ms | {eq_ic} | "
+                       f"{r['decode_all_slices_s']*1e3:.1f} ms | {e2e} |")
         out.append("")
+        rows_e = [(r["N"], r["rom"].get(EQ, {}).get("ic_fit_eq_nodes")) for r in t["rows"]]
+        if any(e for _, e in rows_e):
+            out.append("Cold-start accuracy cost of hyper-reducing it (t=0 misfit measured on the FULL "
+                       "grid either way, and the latent difference): " + "; ".join(
+                f"N={n}: {e['rel_on_full_grid']:.3e} vs {r['ic_fit']['jit_rel']:.3e} full-grid fit, "
+                f"|Δz|/(1+|z|) {e['z_rel_diff_vs_full']:.1e}"
+                for (n, e), r in zip(rows_e, t["rows"]) if e) + ".\n")
+            out.append("The jitted cold start is an exact port of the Python-loop LM: the two land on the "
+                       "same latent to " + f"{max(r['ic_fit']['z_rel_diff'] for r in t['rows']):.0e}"
+                       " relative in every row, at " + ", ".join(
+                f"{r['ic_fit']['python_s']/r['ic_fit']['jit_s']:.0f}x" for r in t["rows"]) + " the speed.\n")
         out.append("Other variants (rollout ms / speedup): " + "; ".join(
             f"N={r['N']}: " + ", ".join(f"`{k.split(':',1)[1]}` {v['rollout_s_median']*1e3:.0f}/{v['speedup_rollout_only']:.2f}x"
                                         for k, v in r["rom"].items() if k != EQ)
@@ -337,6 +352,10 @@ def fig_kladder(D):
 
 
 def fig_timing(D):
+    """Left: rollout cost of the FOM and of four ROM variants against the mesh.
+    Right: the pieces of the online path, separating what is n-free by
+    construction (latent rollout, hyper-reduced cold start) from what is not
+    (full-grid cold start, full-field decode of all 51 slices)."""
     t = D["tn"]
     if not t:
         return None
@@ -344,25 +363,46 @@ def fig_timing(D):
     import matplotlib.pyplot as plt
     r = t["rows"]
     N = [x["N"] for x in r]
-    fig, ax = plt.subplots(figsize=(5.4, 3.8))
-    fs.clean(ax)
+    fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.9))
+    ax = fs.clean(axes[0])
     ax.plot(N, [x["fom_rollout_s"] * 1e3 for x in r], "o-", color=fs.C["red"],
             label="FOM (implicit BE rollout, 50 steps)")
-    styles = [("s-", "blue"), ("^--", "aqua"), ("v--", "yellow"), ("d--", "violet")]
-    vars_ = list(r[0]["rom"].keys())
-    for (mk, col), v in zip(styles, vars_):
-        y = [x["rom"][v]["rollout_s_median"] * 1e3 for x in r]
-        ax.plot(N, y, mk, color=fs.C[col], label=f"ROM `{v.split(':',1)[1]}`")
+    styles = [("s-", "blue"), ("^--", "aqua"), ("v:", "yellow"), ("d--", "violet")]
+    for (mk, col), v in zip(styles, list(r[0]["rom"].keys())):
+        ax.plot(N, [x["rom"][v]["rollout_s_median"] * 1e3 for x in r], mk, color=fs.C[col],
+                label=f"ROM `{v.split(':', 1)[1]}`")
     for x in r:
-        s = x["rom"].get(EQ)
-        if s:
-            ax.annotate(f"{s['speedup_rollout_only']:.1f}x", (x["N"], s["rollout_s_median"] * 1e3),
-                        xytext=(0, -13), textcoords="offset points", ha="center", fontsize=8, color=fs.INK2)
+        sp = x["rom"].get(EQ)
+        if sp:
+            ax.annotate(f"{sp['speedup_rollout_only']:.1f}x", (x["N"], x["fom_rollout_s"] * 1e3),
+                        xytext=(6, -12), textcoords="offset points", ha="left", fontsize=8,
+                        color=fs.C["red"])
     ax.set_xscale("log", base=2); ax.set_yscale("log")
     ax.set_xticks(N); ax.set_xticklabels([str(n) for n in N])
     ax.set_xlabel("mesh N ($N^2$ degrees of freedom)"); ax.set_ylabel("rollout wall time (ms)")
-    ax.set_title("Burgers 2D — online cost is independent of the mesh", loc="left")
-    ax.legend(loc="upper left")
+    ax.set_title("50-step rollout: ROM flat, FOM rising", loc="left")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.19), ncol=2)
+
+    ax = fs.clean(axes[1])
+    ax.plot(N, [x["fom_rollout_s"] * 1e3 for x in r], "o-", color=fs.C["red"], label="FOM (reference)")
+    ax.plot(N, [x["rom"][EQ]["rollout_s_median"] * 1e3 for x in r], "s-", color=fs.C["blue"],
+            label="ROM latent rollout (m=256)")
+    eq = [(x["rom"][EQ].get("ic_fit_eq_nodes") or {}).get("s") for x in r]
+    if all(e is not None for e in eq):
+        ax.plot(N, [e * 1e3 for e in eq], "^-", color=fs.C["aqua"],
+                label="cold start on the m=256 EQ nodes")
+    ax.plot(N, [x["ic_fit"]["jit_s"] * 1e3 for x in r], "^--", color=fs.C["magenta"],
+            label="cold start on the full grid (O(n))")
+    ax.plot(N, [x["decode_all_slices_s"] * 1e3 for x in r], "v:", color=fs.C["yellow"],
+            label="decode all 51 slices (output, O(n))")
+    ax.set_xscale("log", base=2); ax.set_yscale("log")
+    ax.set_xticks(N); ax.set_xticklabels([str(n) for n in N])
+    ax.set_xlabel("mesh N ($N^2$ degrees of freedom)"); ax.set_ylabel("wall time (ms)")
+    ax.set_title("the online path, piece by piece", loc="left")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.19), ncol=1)
+    fig.suptitle("Burgers 2D — online cost is independent of the mesh", x=0.005, ha="left",
+                 fontsize=10, color=fs.INK)
+    fig.tight_layout()
     return fs.save(fig, FIGS, "burgers_cost_vs_N", (PLOTS,))
 
 

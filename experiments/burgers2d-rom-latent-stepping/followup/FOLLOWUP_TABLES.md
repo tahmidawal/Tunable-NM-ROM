@@ -75,14 +75,40 @@ Oracle inferred-latent floor on this cell: 1.15e-02; blow-ups: 0 in 17 x 16 roll
 
 ### Online cost vs N on ONE GPU (cuda:0, all N sequential in one process; K=8, M=64, m=256, median of 7 after 2 warm-ups, `block_until_ready`; the coordinate decoder is meshfree so the SAME N=64 checkpoint is used at every N, EQ weights refit per N)
 
-| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / ROM step | ms / Jacobian eval | IC fit (python LM) | IC fit (jitted LM) | decode 51 slices | end-to-end speedup (jitted IC) |
+| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / ROM step | ms / Jacobian eval | cold start, full grid (python / jitted LM) | cold start, EQ nodes (m=256) | decode 51 slices | end-to-end speedup (EQ cold start, + / − decode) |
 |---|---|---|---|---|---|---|---|---|---|
-| 32 | 208 ms | 280 ms | **0.74x** | 5.61 | 1.09 | 918 ms | 34.6 ms | 4.3 ms | 0.65x |
-| 64 | 426 ms | 289 ms | **1.48x** | 5.77 | 1.11 | 1015 ms | 106.1 ms | 11.5 ms | 1.05x |
-| 128 | 1162 ms | 274 ms | **4.24x** | 5.49 | 1.08 | 1384 ms | 417.6 ms | 46.1 ms | 1.57x |
-| 256 | 2227 ms | 274 ms | **8.13x** | 5.48 | 1.08 | 3384 ms | 1696.7 ms | 188.3 ms | 1.03x |
+| 32 | 204 ms | 286 ms | **0.71x** | 5.73 | 1.11 | 870 / 34.5 ms | 17.2 ms | 2.8 ms | 0.67x / **0.67x** |
+| 64 | 424 ms | 280 ms | **1.51x** | 5.61 | 1.06 | 1025 / 105.5 ms | 24.5 ms | 11.0 ms | 1.34x / **1.39x** |
+| 128 | 1158 ms | 277 ms | **4.18x** | 5.54 | 1.09 | 1454 / 414.2 ms | 32.0 ms | 45.8 ms | 3.27x / **3.75x** |
+| 256 | 2203 ms | 272 ms | **8.09x** | 5.45 | 1.07 | 3338 / 1671.8 ms | 19.3 ms | 180.9 ms | 4.66x / **7.55x** |
 
-Other variants (rollout ms / speedup): N=32: `eq512:weak64` 483/0.43x, `full:weak64` 847/0.25x, `eqoff512:weakc64` 148/1.40x; N=64: `eq512:weak64` 486/0.88x, `full:weak64` 3477/0.12x, `eqoff512:weakc64` 152/2.80x; N=128: `eq512:weak64` 485/2.40x, `full:weak64` 14238/0.08x, `eqoff512:weakc64` 157/7.42x; N=256: `eq512:weak64` 488/4.56x, `full:weak64` 57322/0.04x, `eqoff512:weakc64` 154/14.48x.
+Cold-start accuracy cost of hyper-reducing it (t=0 misfit measured on the FULL grid either way, and the latent difference): N=32: 2.509e-02 vs 2.107e-02 full-grid fit, |Δz|/(1+|z|) 3.7e-02; N=64: 2.462e-02 vs 2.137e-02 full-grid fit, |Δz|/(1+|z|) 2.0e-02; N=128: 4.142e-02 vs 2.928e-02 full-grid fit, |Δz|/(1+|z|) 5.3e-02; N=256: 4.311e-02 vs 3.467e-02 full-grid fit, |Δz|/(1+|z|) 4.6e-02.
+
+The jitted cold start is an exact port of the Python-loop LM: the two land on the same latent to 1e-16 relative in every row, at 25x, 10x, 4x, 2x the speed.
+
+Other variants (rollout ms / speedup): N=32: `eq512:weak64` 496/0.41x, `full:weak64` 837/0.24x, `eqoff512:weakc64` 151/1.35x; N=64: `eq512:weak64` 481/0.88x, `full:weak64` 3391/0.13x, `eqoff512:weakc64` 155/2.73x; N=128: `eq512:weak64` 481/2.41x, `full:weak64` 13933/0.08x, `eqoff512:weakc64` 154/7.51x; N=256: `eq512:weak64` 475/4.64x, `full:weak64` 56440/0.04x, `eqoff512:weakc64` 152/14.54x.
 
 Accuracy of the N=64-trained ROM against the FOM at each N (test trajectory 0, single trajectory — a transfer check, not the cell's error statistic): N=32: 1.15e-02; N=64: 1.19e-02; N=128: 1.03e-02; N=256: 1.07e-02.
+
+### Per-iteration cost and iterations vs k on ONE GPU (cuda:0, N=64, FOM 422 ms)
+
+| manifold | k | rollout `eq256:weak64` | speedup | Jacobian evals (50 steps) | ms / Jacobian eval | IC fit (jitted) |
+|---|---|---|---|---|---|---|
+| coordinate | 2 | 184 ms | 2.30x | 314 | 0.59 | 52 ms |
+| coordinate | 4 | 187 ms | 2.25x | 258 | 0.73 | 46 ms |
+| coordinate | 6 | 222 ms | 1.90x | 246 | 0.90 | 82 ms |
+| coordinate | 8 | 277 ms | 1.52x | 262 | 1.06 | 104 ms |
+| coordinate | 12 | 360 ms | 1.17x | 261 | 1.38 | 726 ms |
+| coordinate | 16 | 448 ms | 0.94x | 274 | 1.63 | 337 ms |
+| coordinate | 24 | 793 ms | 0.53x | 360 | 2.20 | 1127 ms |
+| coordinate | 32 | 2104 ms | 0.20x | 764 | 2.75 | 1890 ms |
+| POD | 2 | 38 ms | 11.03x | 174 | 0.22 | projection (exact) |
+| POD | 4 | 35 ms | 12.00x | 188 | 0.19 | projection (exact) |
+| POD | 6 | 39 ms | 10.86x | 195 | 0.20 | projection (exact) |
+| POD | 8 | 35 ms | 12.03x | 196 | 0.18 | projection (exact) |
+| POD | 12 | 44 ms | 9.52x | 192 | 0.23 | projection (exact) |
+| POD | 16 | 44 ms | 9.65x | 193 | 0.23 | projection (exact) |
+| POD | 24 | 41 ms | 10.37x | 195 | 0.21 | projection (exact) |
+| POD | 32 | 46 ms | 9.20x | 195 | 0.24 | projection (exact) |
+| POD | 64 | 73 ms | 5.78x | 196 | 0.37 | projection (exact) |
 

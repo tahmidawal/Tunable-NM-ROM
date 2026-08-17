@@ -140,3 +140,121 @@ Two things cause this, and both are wave-specific:
    grows monotonically to ~0.94 by T=1.  Nothing damps a phase error: `|δz| ≈ 0.27` out of a
    ~[-1,1]^5 range already dephases the wave by O(1) over one crossing time.
 
+## Stage 2 — auto-decoder latent-stepping ROM
+
+All numbers are traj-RMS against the 80-substep FOM, mean over 16 held-out trajectories,
+`RS=20` unless stated.  **Zero blow-ups anywhere** (0/16 in every one of the 3 x 16
+coordinate variants and the 3 x 15 POD variants at N=64, and at N=128); warm Gauss-Newton
+converges in ~5 Jacobian evaluations per step, cold starts in ~4.
+
+### Floors and headline numbers (N=64)
+
+| | K=4 | K=8 | K=16 |
+|---|---|---|---|
+| auto-decoder TRAIN recon at learned latents | 1.31e-1 | 7.03e-2 | 5.99e-2 |
+| **ORACLE held-out inferred latents** (per snapshot, budget 60) | 3.11e-1 | 1.72e-1 | (see tables) |
+| IC fit (cold start from the known `u0`) | 1.86e-1 | 1.13e-1 | |
+| ROM `lspg:eq256:weak64` (the recipe) | 1.02e0 | 8.78e-1 | 6.80e-1 |
+| **ROM / its own oracle floor** | **3.3x** | **5.1x** | |
+| kinematic energy `E_T/E_0` | 0.27 | 0.27 | 0.61 |
+| POD-LSPG k=6 / 8 / 16 / 32 / 64 (same solver) | 4.29e-1 / 3.42e-1 / 2.19e-1 / 1.41e-1 / **8.38e-2** | same | same |
+| POD projection floors k=6 / 8 / 16 / 32 / 64 (test) | 4.28e-1 / 3.42e-1 / 2.17e-1 / 1.38e-1 / 8.20e-2 | | |
+| **POD-LSPG / its own projection floor** | **1.002 / 1.002 / 1.006 / 1.020 / 1.022** | | |
+| POD kinematic energy `E_T/E_0` | **1.0000** at every rank | | |
+
+### The two findings
+
+**1. The linear ROM inherits the FOM's conservation; the nonlinear one does not.**
+The Newmark residual is *linear* in `u`, so projecting it onto a fixed linear subspace `V`
+returns a Newmark scheme on the reduced operator `Vᵀ L V` — still symmetric negative
+definite, still exactly energy-conserving, still unconditionally stable.  That is precisely
+what the POD arms show: **POD-LSPG sits at its projection floor at every rank (ratio
+1.00–1.02) and conserves the discrete energy to four digits.**  A nonlinear manifold has no
+such structure — the tangent space rotates with `z`, so the per-step Gauss-Newton update is
+not energy-consistent.  The coordinate ROM dissipates 61–84% of the energy and lands 3.3x
+(K=4) / 5.1x (K=8) above **its own** oracle floor.  The manifold's better approximation power
+at matched dimension (K=8 oracle floor 1.72e-1 vs POD-8 3.42e-1, 2.0x better) is entirely
+destroyed by the stepping, and on this problem the *linear* ROM wins outright.
+
+This is the mirror image of the Burgers result, where the same solver, same residual and same
+collocation gave the coordinate manifold a 12.6x advantage over POD at matched dimension.
+Taken together the two rounds say: **the nonlinear manifold buys accuracy when the PDE damps
+the error it injects, and loses when the PDE conserves it.**
+
+**2. Every objective/hyper-reduction knob that mattered on Poisson and Burgers is irrelevant
+here — including the ones that were supposed to matter on wave.**
+
+| knob | result at K=8, N=64 |
+|---|---|
+| Galerkin vs LSPG | **identical to 4 significant figures** in all 16 variants (8.783e-1 both, 8.952e-1 both, 8.762e-1 vs 8.767e-1) |
+| test modes `M` = 64 / 144 / 256 | 8.78e-1 / 8.71e-1 / 8.85e-1 — within 1.5% |
+| weighted (`alpha=1`) vs unweighted (`weaku`) weak form | 8.952e-1 vs 8.931e-1 |
+| `lam^-1/2` energy weighting (`weakl`) | 8.408e-1 — the only knob worth anything (4% better), and it *inflates* the energy (`E_T/E_0` 1.17) |
+| weak vs strong FD residual | 8.95e-1 vs 8.77e-1 |
+| meshfree (`eqoff256`) vs grid (`eq256`) NNLS quadrature | 8.791e-1 vs 8.783e-1 |
+| **NNLS-EQ `m=256` (= 4M nodes) vs the full 3844-node grid** | **8.783e-1 vs 8.952e-1 — the 15x-cheaper quadrature is if anything slightly better** |
+| random 512-node strong collocation | 8.939e-1 |
+| off-grid continuum strong form | 8.735e-1 |
+
+So the **hyper-reduction half of the recipe is validated on wave** (NNLS-EQ at `m ≈ 4M`
+reproduces the full-grid answer at 1/5 of the per-step cost, from a meshfree pool as
+happily as from grid nodes, with NNLS relative fit residuals of 1.0e-2 at m=256 and 7e-5 at
+m=1024) even though the ROM it accelerates does not work.  The failure is upstream of every
+objective choice.
+
+### Where the error comes from: injection vs amplification
+
+`wlat_stepdiag.py`, K=8, started from **oracle latents fitted to the exact Newmark sub-step
+fields** (so the two-level warm start is exact), 8 trajectories x 4 start snapshots, then run
+for `H` snapshot intervals:
+
+| `H` (snapshot intervals, = 20H latent steps) | 1 | 2 | 5 | 10 |
+|---|---|---|---|---|
+| ROM `lspg:eq256:weak64` | 2.046e-1 | 2.249e-1 | 3.749e-1 | 6.578e-1 |
+| oracle latent fit of the FOM state at the same time | 1.959e-1 | 1.720e-1 | 1.730e-1 | 1.949e-1 |
+| **excess (the ROM's own contribution)** | **+8.7e-3** | +5.3e-2 | +2.0e-1 | **+4.6e-1** |
+| `hold` control (freeze the latent) | +9.6e-2 | +2.7e-1 | +7.4e-1 | +1.16e0 |
+
+**One interval of latent stepping is accurate**: the excess is 4% of the oracle floor, and
+11x smaller than doing nothing.  The stepping is not broken.  The excess then grows roughly
+like `H^1.7` — the injected error is *amplified*, not damped, which is what "dissipation-free"
+means for a ROM.
+
+The ROM time-step arm closes the argument.  Refining `dt` makes the answer **worse**:
+
+| `RS` | latent steps | same-`dt` FOM error (the time-discretisation floor) | ROM `lspg:eq256:weak64` |
+|---|---|---|---|
+| 8 | 400 | 1.39e-2 | **8.428e-1** |
+| 20 | 1000 | 2.39e-3 | 8.783e-1 |
+| 40 | 2000 | 4.80e-4 | 9.063e-1 |
+
+The time-discretisation error falls 29x while the ROM error *rises* 8%.  The per-step
+injection is set by the manifold's representation error, which does not shrink with `dt`, so
+more steps simply means more injections.  A latent-stepping ROM on a conservative PDE is not
+a convergent scheme in `dt`.
+
+### Timing (N=64, one A100 per cell, median of 7 after 2 warm-ups, `block_until_ready`)
+
+The IC latent solve is a **jitted** LM (78–97 ms), so — unlike the Burgers round — it does not
+dominate; the full 51-slice decode is 10 ms.
+
+| | rollout | ms / latent step | speedup vs the 80-substep FOM (384 ms) |
+|---|---|---|---|
+| FOM (CN/CG, 4000 substeps, batch 1) | 384 ms | 0.096 | 1x |
+| same-`dt` u-only Newmark FOM (`RS=20`) | 161 ms | 0.16 | 2.4x |
+| coord `lspg:eq256:weak64`, K=8, `RS=20` | 2443 ms | 2.44 | **0.16x** |
+| coord `lspg:eq256:weak64`, K=8, `RS=8` | 1095 ms | 2.74 | 0.35x |
+| coord `lspg:eqoff256:weak64` (meshfree) | 2420 ms | 2.42 | 0.16x |
+| coord `lspg:full:weak64` | 13.5 s | 13.5 | 0.03x |
+| coord `lspg:full:fd` | 62.1 s | 62.1 | 0.006x |
+| POD k=8, `RS=20` | 453 ms | 0.45 | 0.85x |
+| POD k=8, `RS=8` | 184 ms | 0.46 | **2.09x** |
+| POD k=64, `RS=20` | 954 ms | 0.95 | 0.40x |
+
+**No coordinate ROM pays at N=64.**  The wave FOM is an SPD CG solve on 4096 unknowns at
+0.096 ms per sub-step; a single f64 FiLM decoder evaluation at 256 quadrature nodes with its
+Gauss-Newton Jacobian costs 25x that.  This reproduces, inside a real ROM, the wave testbed's
+own timing conclusion ("the wave FOM is CHEAP, so full-field surrogate decoding does not pay
+at fine resolution").  The n-free per-step cost is real — `eq256` costs the same 2.4 ms per
+step at N=64 and N=128 — but the FOM's cost grows too slowly for it to matter at these sizes.
+

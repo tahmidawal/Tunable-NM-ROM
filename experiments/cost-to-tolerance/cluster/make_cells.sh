@@ -145,6 +145,16 @@ if [[ "$MODE" == "panels" ]]; then
         "\$PY -u ctol_burgers.py ../out/ctol_burgers_n$NN.json")
     stage_burgers "$d"; seal "$d"
   done
+elif [[ "$MODE" == "fom" ]]; then
+  # FOM-ONLY cell: the iso-accuracy ladder at EVERY mesh, sequentially in ONE process
+  # on ONE GPU.  Two reasons this is its own job rather than part of the panels:
+  #   * the denominator of the headline claim then has cross-N comparable timings,
+  #     which the fanned-out panels cannot give;
+  #   * it refines the ladder without disturbing ROM panels that are already running.
+  d=$(mk ctol_fom_p 4 96G \
+      "$PGRID NS=32,64,128,256,512 FOM_ONLY=1 DO_SUPP=0 POOL_CONTROL=0 CAP_CONTROL=0 DO_CEILING=0" \
+      "\$PY -u ctol_poisson.py ../out/ctol_poisson_fomladder.json")
+  stage_poisson "$d"; seal "$d"
 elif [[ "$MODE" == "consolidate" ]]; then
   CFG="$HERE/stage/consolidate_configs.json"
   [[ -f "$CFG" ]] || { echo "missing $CFG -- run ctol_pick_configs.py first" >&2; exit 1; }

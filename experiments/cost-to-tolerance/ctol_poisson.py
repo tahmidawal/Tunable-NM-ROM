@@ -98,9 +98,15 @@ K_BIG = int(os.environ.get("K_BIG", "32"))
 # m ~ 4M is the knee (HANDOFF.md rule 4).  The m ~ 4M setting is therefore PRIMARY here
 # and the m = MQ run is kept as a labelled artefact of the original spec.
 MQ_4M = int(os.environ.get("MQ_4M", str(4 * int(os.environ.get("M_BIG", "256")))))
+# HALF-DECADE spacing through the band where the ROM's own errors live (1e-3..3e-1),
+# decades below it.  With decade-only spacing the "cheapest FOM rung reaching the ROM's
+# error" OVERSHOOTS -- at N=64 the 1e-2 rung delivers 1.74e-3 for a ROM error of
+# 1.16e-2, six times more accuracy than needed -- which makes the reported iso-accuracy
+# ratio an UPPER BOUND on the ROM's advantage rather than an estimate.  Refining the
+# ladder here tightens the denominator instead of flattering it.
 FOM_LADDER = sorted({float(v) for v in os.environ.get(
-    "FOM_LADDER", "3e-1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-8,1e-10,1e-13").split(",") if v}
-    | {mp.CG_TOL}, reverse=True)     # the archived tolerance is always a rung
+    "FOM_LADDER", "3e-1,1e-1,3e-2,1e-2,3e-3,1e-3,3e-4,1e-4,3e-5,1e-5,1e-6,1e-8,1e-10,1e-13"
+).split(",") if v} | {mp.CG_TOL}, reverse=True)     # the archived tolerance is always a rung
 FOM_ONLY = int(os.environ.get("FOM_ONLY", "0"))
 DO_CEILING = int(os.environ.get("DO_CEILING", "1"))
 BURN_IN_S = float(os.environ.get("BURN_IN_S", "1.5"))

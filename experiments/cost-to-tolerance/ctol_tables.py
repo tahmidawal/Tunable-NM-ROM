@@ -53,6 +53,9 @@ def fmt(x, spec=".3e"):
         return str(x)
 
 
+FOM_LADDER_FILE = "ctol_poisson_fomladder.json"
+
+
 def load(runs):
     """Merge every panel JSON (one job per (pde, mesh)) plus, when present, the
     single-GPU consolidation JSON.  Rows tagged arm='consolidated' are kept in a
@@ -78,7 +81,18 @@ def load(runs):
             d["panels"].append(dict(cfg, _file=os.path.relpath(f, runs),
                                     _complete=bool(j.get("complete"))))
             d["complete"] = d["complete"] and bool(j.get("complete"))
+            fom_only = bool(cfg.get("fom_only"))
             consolidated = bool(cfg.get("configs"))
+            if fom_only:
+                # the dedicated FOM cell: every mesh's ladder on ONE GPU, so these
+                # rungs -- not the per-panel ones -- are the cross-N comparable
+                # denominator.  It contributes no ROM rows.
+                d["fom_ladder_1gpu"] = d.get("fom_ladder_1gpu", []) + j.get("fom", [])
+                d["fom_baseline_1gpu"] = d.get("fom_baseline_1gpu", []) + \
+                    j.get("fom_baseline", [])
+                d["panels"].append(dict(cfg, _file=os.path.relpath(f, runs),
+                                        _complete=bool(j.get("complete"))))
+                continue
             for r in j["rows"]:
                 (d["consolidated_rows"] if consolidated else d["rows"]).append(r)
             for fo in j.get("fom", []):

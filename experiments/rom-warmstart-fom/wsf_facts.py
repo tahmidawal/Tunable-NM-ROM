@@ -43,6 +43,15 @@ def build(runs=None):
     _, Bm = ws.split_roles(B, bkey)
     f = {}
     f["verify_checks"] = "130"   # wsf_verify.py; update if checks are added
+    # per-cell job provenance table, built from the reports themselves
+    rows_ = []
+    for path, d in sorted(reports, key=lambda t: t[0]):
+        cell = os.path.relpath(path, HERE).split(os.sep)[1]
+        pv = d["provenance"]; cf = d["config"]
+        rows_.append(f"| `{cell}` | {cf.get('run_role')} | `{pv['slurm_job_id']}` | "
+                     f"{pv['gpu_kind']} | {pv['jax_backend']} | `{pv['commit'][:12]}` | "
+                     f"{pv.get('matmul_precision')} | {len(d['rows'])} |")
+    f["job_table"] = "\n".join(rows_)
     f["n_reports"] = str(len(reports))
     f["n_rows"] = str(len(pts))
     f["n_skipped"] = str(len(skipped))

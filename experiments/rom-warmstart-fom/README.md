@@ -759,4 +759,27 @@ Every result row additionally carries `commit`, a **sha256 of every `wsf_*.py`**
 tree cannot publish two different codes under one commit hash), `gpu`, `gpu_kind`,
 `jax_backend`, `slurm_job_id`, `seed`, and `run_role`.
 
+### Jobs, as run
+
+All eleven `COMPLETED`, all on one GPU model, all with `jax_backend=gpu` asserted by the
+sbatch preflight before any work and `JAX_DEFAULT_MATMUL_PRECISION=highest` set.
+
+| cell | role | Slurm job | GPU | backend | commit | precision | rows |
+|---|---|---|---|---|---|---|---|
+| `wsb_cons` | consolidated | `2511371` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 12 |
+| `wsb_n128` | panel | `2511381` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 3 |
+| `wsb_n256` | panel | `2511377` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 3 |
+| `wsb_n32` | panel | `2511390` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 3 |
+| `wsb_n64` | panel | `2511388` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 3 |
+| `wsp_cons` | consolidated | `2511369` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 75 |
+| `wsp_n128` | panel | `2511382` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 15 |
+| `wsp_n256` | panel | `2511379` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 15 |
+| `wsp_n32` | panel | `2511392` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 15 |
+| `wsp_n512` | panel | `2511373` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 15 |
+| `wsp_n64` | panel | `2511389` | NVIDIA A100 80GB PCIe | gpu | `72b44d40c86c` | highest | 15 |
+
+Data regenerated from seed on the cluster at every run; results pulled with sha256 manifests
+(`cluster/pull.sh` diffs remote against local and refuses a mismatch), and the
+`/cluster/tufts/paralab/tawal01/wsfom/` job directories deleted afterwards.
+
 <!-- PROVENANCE -->

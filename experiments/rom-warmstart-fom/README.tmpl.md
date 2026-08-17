@@ -759,4 +759,17 @@ Every result row additionally carries `commit`, a **sha256 of every `wsf_*.py`**
 tree cannot publish two different codes under one commit hash), `gpu`, `gpu_kind`,
 `jax_backend`, `slurm_job_id`, `seed`, and `run_role`.
 
+### Jobs, as run
+
+All eleven `COMPLETED`, all on one GPU model, all with `jax_backend=gpu` asserted by the
+sbatch preflight before any work and `JAX_DEFAULT_MATMUL_PRECISION=highest` set.
+
+| cell | role | Slurm job | GPU | backend | commit | precision | rows |
+|---|---|---|---|---|---|---|---|
+{{job_table}}
+
+Data regenerated from seed on the cluster at every run; results pulled with sha256 manifests
+(`cluster/pull.sh` diffs remote against local and refuses a mismatch), and the
+`/cluster/tufts/paralab/tawal01/wsfom/` job directories deleted afterwards.
+
 <!-- PROVENANCE -->

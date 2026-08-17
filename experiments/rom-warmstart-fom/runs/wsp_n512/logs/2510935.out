@@ -1,0 +1,22 @@
+host=pax051  gpu=NVIDIA A100-PCIE-40GB
+commit=ac5caa74a3d03d4535923770cb2890c945f9286b  dirty=ee67bad42a75  cell=wsp_n512
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 commit=72b44d4 NS=[512] rom_taus=[0.5, 0.1, 0.01, 0.001, 0.0] fom_taus=[1e-06, 1e-08, 1e-10] M=64 m=256 pool=offgrid reps=7 warm=2
+== N=512: reference CG 1988 iters, true rel res 3.96e-12; counting-CG vs jax.scipy.cg max rel diff 4.99e-12 over 16 checks
+  NNLS-EQ offgrid M=64 m=256 @N=512: support 256 (+0) rel fit 2.64e-03 (row p95 4.4e-01, max 3.2e+02) [25s]
+   DIRECT (sine-diagonalised exact inverse): 0.26 ms, err 2.13e-14, rel resid 1.47e-11
+   FOM baseline tau=1e-06: 1341.5 iters, 62.07 ms (jax.scipy CG 62.63 ms), err 3.29e-08
+   FOM baseline tau=1e-08: 1573.2 iters, 72.67 ms (jax.scipy CG 73.53 ms), err 2.92e-10
+   FOM baseline tau=1e-10: 1772.4 iters, 82.63 ms (jax.scipy CG 82.24 ms), err 2.29e-12
+   ROM tau=0.5: 2.6 LM iters, 2.16 ms, obj red 3.47e-01, field err 4.568e-01, rel resid 2.59e+00, A-norm err ratio 8.49e-01, worth 184.0 CG iters, reasons {'rom_tau': 16}
+     tau_FOM=1e-06: CG 1424.4 vs 1341.5 iters  total 65.96 ms vs FOM 62.07 ms  (0.94x)  err_final 3.39e-08
+     tau_FOM=1e-08: CG 1649.6 vs 1573.2 iters  total 75.12 ms vs FOM 72.67 ms  (0.97x)  err_final 2.93e-10
+     tau_FOM=1e-10: CG 1860.5 vs 1772.4 iters  total 83.68 ms vs FOM 82.63 ms  (0.99x)  err_final 2.63e-12
+   ROM tau=0.1: 4.9 LM iters, 2.01 ms, obj red 5.30e-02, field err 9.777e-02, rel resid 8.25e-01, A-norm err ratio 2.83e-01, worth 393.0 CG iters, reasons {'rom_tau': 16}
+     tau_FOM=1e-06: CG 1343.4 vs 1341.5 iters  total 63.00 ms vs FOM 62.07 ms  (0.99x)  err_final 3.50e-08
+     tau_FOM=1e-08: CG 1595.0 vs 1573.2 iters  total 72.97 ms vs FOM 72.67 ms  (1.00x)  err_final 3.25e-10
+     tau_FOM=1e-10: CG 1816.5 vs 1772.4 iters  total 81.78 ms vs FOM 82.63 ms  (1.01x)  err_final 2.31e-12
+   ROM tau=0.01: 11.2 LM iters, 2.95 ms, obj red 7.87e-03, field err 1.205e-02, rel resid 2.11e-01, A-norm err ratio 5.36e-02, worth 549.5 CG iters, reasons {'converged': 2, 'rom_tau': 14}
+     tau_FOM=1e-06: CG 1261.5 vs 1341.5 iters  total 61.13 ms vs FOM 62.07 ms  (1.02x)  err_final 4.26e-08
+     tau_FOM=1e-08: CG 1513.8 vs 1573.2 iters  total 71.40 ms vs FOM 72.67 ms  (1.02x)  err_final 3.73e-10
+     tau_FOM=1e-10: CG 1749.8 vs 1772.4 iters  total 80.32 ms vs FOM 82.63 ms  (1.03x)  err_final 2.54e-12

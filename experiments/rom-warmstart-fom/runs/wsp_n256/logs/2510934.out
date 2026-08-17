@@ -1,0 +1,33 @@
+host=pax051  gpu=NVIDIA A100-PCIE-40GB
+commit=ac5caa74a3d03d4535923770cb2890c945f9286b  dirty=ee67bad42a75  cell=wsp_n256
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 commit=72b44d4 NS=[256] rom_taus=[0.5, 0.1, 0.01, 0.001, 0.0] fom_taus=[1e-06, 1e-08, 1e-10] M=64 m=256 pool=offgrid reps=7 warm=2
+== N=256: reference CG 987 iters, true rel res 9.83e-13; counting-CG vs jax.scipy.cg max rel diff 2.61e-15 over 16 checks
+  NNLS-EQ offgrid M=64 m=256 @N=256: support 256 (+0) rel fit 2.64e-03 (row p95 4.4e-01, max 3.2e+02) [28s]
+   DIRECT (sine-diagonalised exact inverse): 0.12 ms, err 2.87e-14, rel resid 2.83e-12
+   FOM baseline tau=1e-06: 658.4 iters, 22.43 ms (jax.scipy CG 21.20 ms), err 5.19e-08
+   FOM baseline tau=1e-08: 775.9 iters, 25.51 ms (jax.scipy CG 25.03 ms), err 4.10e-10
+   FOM baseline tau=1e-10: 876.4 iters, 28.76 ms (jax.scipy CG 28.07 ms), err 3.15e-12
+   ROM tau=0.5: 2.6 LM iters, 1.58 ms, obj red 3.47e-01, field err 4.568e-01, rel resid 2.48e+00, A-norm err ratio 8.49e-01, worth 89.8 CG iters, reasons {'rom_tau': 16}
+     tau_FOM=1e-06: CG 701.1 vs 658.4 iters  total 27.09 ms vs FOM 22.43 ms  (0.83x)  err_final 4.96e-08
+     tau_FOM=1e-08: CG 814.5 vs 775.9 iters  total 30.67 ms vs FOM 25.51 ms  (0.83x)  err_final 4.13e-10
+     tau_FOM=1e-10: CG 919.8 vs 876.4 iters  total 34.28 ms vs FOM 28.76 ms  (0.84x)  err_final 3.72e-12
+   ROM tau=0.1: 4.9 LM iters, 2.05 ms, obj red 5.30e-02, field err 9.778e-02, rel resid 8.22e-01, A-norm err ratio 2.83e-01, worth 194.8 CG iters, reasons {'rom_tau': 16}
+     tau_FOM=1e-06: CG 661.2 vs 658.4 iters  total 26.43 ms vs FOM 22.43 ms  (0.85x)  err_final 4.66e-08
+     tau_FOM=1e-08: CG 786.2 vs 775.9 iters  total 30.36 ms vs FOM 25.51 ms  (0.84x)  err_final 4.62e-10
+     tau_FOM=1e-10: CG 898.5 vs 876.4 iters  total 34.15 ms vs FOM 28.76 ms  (0.84x)  err_final 3.18e-12
+   ROM tau=0.01: 11.2 LM iters, 3.04 ms, obj red 7.87e-03, field err 1.205e-02, rel resid 2.09e-01, A-norm err ratio 5.36e-02, worth 272.8 CG iters, reasons {'converged': 2, 'rom_tau': 14}
+     tau_FOM=1e-06: CG 616.5 vs 658.4 iters  total 25.90 ms vs FOM 22.43 ms  (0.87x)  err_final 6.73e-08
+     tau_FOM=1e-08: CG 744.7 vs 775.9 iters  total 30.24 ms vs FOM 25.51 ms  (0.84x)  err_final 5.29e-10
+     tau_FOM=1e-10: CG 863.6 vs 876.4 iters  total 33.87 ms vs FOM 28.76 ms  (0.85x)  err_final 3.71e-12
+   ROM tau=0.001: 27.8 LM iters, 8.45 ms, obj red 5.19e-03, field err 8.861e-03, rel resid 2.04e-01, A-norm err ratio 4.91e-02, worth 289.2 CG iters, reasons {'converged': 16}
+     tau_FOM=1e-06: CG 603.6 vs 658.4 iters  total 30.83 ms vs FOM 22.43 ms  (0.73x)  err_final 6.73e-08
+     tau_FOM=1e-08: CG 732.6 vs 775.9 iters  total 35.11 ms vs FOM 25.51 ms  (0.73x)  err_final 5.72e-10
+     tau_FOM=1e-10: CG 855.5 vs 876.4 iters  total 38.69 ms vs FOM 28.76 ms  (0.74x)  err_final 4.11e-12
+   ROM tau=0: 27.8 LM iters, 8.40 ms, obj red 5.19e-03, field err 8.861e-03, rel resid 2.04e-01, A-norm err ratio 4.91e-02, worth 289.2 CG iters, reasons {'converged': 16}
+     tau_FOM=1e-06: CG 603.6 vs 658.4 iters  total 30.59 ms vs FOM 22.43 ms  (0.73x)  err_final 6.73e-08
+     tau_FOM=1e-08: CG 732.6 vs 775.9 iters  total 34.74 ms vs FOM 25.51 ms  (0.73x)  err_final 5.72e-10
+     tau_FOM=1e-10: CG 855.5 vs 876.4 iters  total 38.85 ms vs FOM 28.76 ms  (0.74x)  err_final 4.11e-12
+== N=256 done [124s]
+DONE
+ALL-DONE

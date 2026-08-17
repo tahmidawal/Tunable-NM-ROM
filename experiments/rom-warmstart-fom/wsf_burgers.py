@@ -79,6 +79,11 @@ TIME_WARM = int(os.environ.get("TIME_WARM", "2"))
 TEST_IDX = int(os.environ.get("TEST_IDX", "0"))
 N_TEST_TRAJ = int(os.environ.get("N_TEST_TRAJ", "4"))    # trajectories for iteration stats
 MAX_NEWTON = int(os.environ.get("MAX_NEWTON", "25"))
+# time slices decoded at once.  vmapping the FiLM decoder over all 51 slices at
+# N=256 asks for a single 12.5 GB activation buffer and OOMs a 40 GB A100, which
+# would make the decode cost depend on which card the job landed on.  Chunking
+# bounds the working set and makes the measurement hardware-independent.
+DEC_CHUNK = int(os.environ.get("DEC_CHUNK", "8"))
 LIN_TOL = float(os.environ.get("LIN_TOL", str(bc.bf.LIN_TOL)))
 LIN_MAXITER = int(os.environ.get("LIN_MAXITER", str(bc.bf.LIN_MAXITER)))
 FOM_RES_TOL = float(os.environ.get("FOM_RES_TOL", "1e-8"))
@@ -390,7 +395,14 @@ def main():
                              f"hyper-reduced cold start needs one")
         fit_eq = fu.make_fit_ic_jit(dec, n, bc.IC_BUDGET, coords=coords,
                                     idx=col["idx"], w=col.get("w"))
-        dec_all = jax.jit(lambda ZZ: jax.vmap(lambda zz: dec(zz, coords))(ZZ))
+        def _dec_all(ZZ):
+            k = ZZ.shape[1]
+            pad = (-ZZ.shape[0]) % DEC_CHUNK
+            Zp = jnp.concatenate([ZZ, jnp.zeros((pad, k), F64)]) if pad else ZZ
+            out = jax.lax.map(lambda zc: jax.vmap(lambda z: dec(z, coords))(zc),
+                              Zp.reshape(-1, DEC_CHUNK, k))
+            return out.reshape(-1, coords.shape[0])[:ZZ.shape[0]]
+        dec_all = jax.jit(_dec_all)
 
         # ---- ONLINE PREPROCESSING, charged to the hybrid total.
         # blat_rom.py picks the cold start as the best of {mean t=0 latent, the t=0

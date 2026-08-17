@@ -249,33 +249,44 @@ near zero and should be read next to the median.
 Trajectory rel-L2 (mean over the 51 slices, then over 16 held-out trajectories); **zero
 blow-ups in every cell**.  Figure: `followup/figs/burgers_k_ladder.png`.
 
-| K | 2 | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
-|---|---|---|---|---|---|---|---|---|
-| coordinate ROM `full:weak64` | 4.47e-1 | 7.74e-2 | 1.73e-2 | **1.65e-2** | 1.13e-2 | 9.62e-3 | 1.02e-2 | 1.47e-2 |
-| coordinate ROM `eq256:weak64` | 4.48e-1 | 7.74e-2 | 1.81e-2 | 1.74e-2 | 1.22e-2 | 1.10e-2 | 1.21e-2 | 1.85e-2 |
-| inferred-latent floor (oracle) | 1.97e-1 | 5.24e-2 | 1.41e-2 | 1.15e-2 | 8.61e-3 | 7.40e-3 | 6.35e-3 | 5.79e-3 |
-| POD-LSPG (same solver) | 6.06e-1 | 3.92e-1 | 2.70e-1 | 2.09e-1 | 1.38e-1 | 9.73e-2 | 6.03e-2 | 4.32e-2 |
-| POD projection floor | 6.02e-1 | 3.75e-1 | 2.57e-1 | 1.96e-1 | 1.27e-1 | 8.90e-2 | 5.39e-2 | 3.79e-2 |
+| K | 2 | 4 | 6 | 8 | 12 | 16 | 24 | 32 | (POD only) 64 |
+|---|---|---|---|---|---|---|---|---|---|
+| coordinate ROM `full:weak64` | 4.47e-1 | 7.74e-2 | 1.73e-2 | **1.65e-2** | 1.13e-2 | 9.62e-3 | 1.02e-2 | 1.47e-2 | — |
+| coordinate ROM `eq256:weak64` | 4.48e-1 | 7.74e-2 | 1.81e-2 | 1.74e-2 | 1.22e-2 | 1.10e-2 | 1.21e-2 | 1.85e-2 | — |
+| inferred-latent floor (oracle) | 1.97e-1 | 5.24e-2 | 1.41e-2 | 1.15e-2 | 8.61e-3 | 7.40e-3 | 6.35e-3 | 5.79e-3 | — |
+| POD, **same weak objective** `full:weak64` | 6.06e-1 | 3.93e-1 | 2.70e-1 | 2.09e-1 | 1.36e-1 | 9.50e-2 | 5.74e-2 | 4.06e-2 | 1.66 (square) |
+| POD-LSPG `full:fd` (frozen round's control) | 6.06e-1 | 3.92e-1 | 2.70e-1 | 2.09e-1 | 1.38e-1 | 9.73e-2 | 6.03e-2 | 4.32e-2 | 1.40e-2 |
+| POD projection floor | 6.02e-1 | 3.75e-1 | 2.57e-1 | 1.96e-1 | 1.27e-1 | 8.90e-2 | 5.39e-2 | 3.79e-2 | 1.22e-2 |
 
 1. **The knee is at the intrinsic dimension 6** (5 family parameters + time): the ROM falls
    5.8x from K=2 to K=4 and another 4.5x from K=4 to K=6, then flattens (1.73e-2 → 9.6e-3
    over K=6…16).  K=4 < 6 is representation-limited — the *oracle* is already 5.2e-2 there.
-2. **POD needs ~8x the latent dimension for the same accuracy.**  With the same solver, the
-   same residual and the same test modes, POD-LSPG at k=8 is 2.09e-1 — **12.7x** the
-   coordinate ROM at K=8 — and the crossover is at **k ≈ 64**: POD-64 reaches 1.40e-2, which
-   the coordinate manifold already beats at K=8 (1.65e-2 is 1.2x above it) and clears at
-   K=16 (9.6e-3).  Read the other way: the coordinate ROM at K=6 (1.73e-2) matches POD
-   somewhere around k = 56, i.e. **~9x fewer latent dimensions**.
-3. **The ROM tracks its own floor, never the solver.**  ROM/oracle = 1.23 (K=6), 1.44 (K=8),
-   1.30 (K=16); the gap does not grow.
+2. **POD needs ~7x the latent dimension for the same accuracy.**  With the same solver, the
+   same residual and the same test modes, POD at k=8 is 2.09e-1 — **12.7x** the coordinate
+   ROM at K=8.  Interpolating the POD `full:fd` curve *inside* the measured range (k=32
+   4.32e-2 → k=64 1.40e-2, slope k^−1.63), POD needs **k ≈ 60** to reach the coordinate
+   ROM's K=8 value of 1.65e-2 — a **7.4x** reduction in latent dimension for the same
+   accuracy.  Read the other way round, POD-64 (1.40e-2) is 1.18x *better* than the
+   coordinate ROM at K=8 and 1.24x better than at K=12 (1.13e-2 — comparable), and the
+   coordinate manifold overtakes it at K=16 (9.62e-3, 1.46x better than POD-64).  So the
+   crossover in *accuracy at equal k* is everywhere in favour of the manifold; the crossover
+   in *best achievable accuracy* is at coordinate K ≈ 12–16 against POD k=64.  POD beyond
+   k=64 was not measured (the stored basis has rank 64).
+3. **The ROM tracks its own floor up to K=16.**  ROM/oracle = 1.23 (K=6), 1.44 (K=8), 1.30
+   (K=16) — then it detaches: 1.61 at K=24 and 2.53 at K=32, which is the same phenomenon as
+   item 4.
 4. **Beyond K=16 the ROM stops improving even though the floor does** (K=24 1.02e-2,
    K=32 1.47e-2 against oracle floors 6.35e-3 and 5.79e-3), and the solver visibly works
    harder: warm iterations per step rise from 5.5 (K=6) to 9.5 (K=24) to 15.7 (K=32).  With
    a fixed 60k-step budget the extra latent directions are increasingly poorly conditioned
    for the online solve — the useful range here is K = 6…16.
-5. **POD sits just above its projection floor** (1.05–1.13x at every k), so the linear
-   control is solver-limited by at most 13% and the gap to the coordinate ROM is the
-   manifold's, not the solver's.
+5. **POD sits just above its projection floor** — `full:fd`/floor ranges 1.006–1.15 over
+   k=2…64 — so the linear control is solver-limited by at most ~15% and the gap to the
+   coordinate ROM is the manifold's, not the solver's.  The same-weak-objective POD row is
+   the like-for-like comparison and is essentially identical to `full:fd` up to k=32
+   (within 6%); at k=64 = M it is a square weak Petrov-Galerkin system and is unstable
+   (1.66), as in the frozen round — it is excluded from the figure by that condition and
+   kept in the table.
 
 ### Multi-seed (K=8, three training seeds)
 
@@ -294,11 +305,14 @@ the spread below is training randomness and nothing else.
 | ROM `full:fd` (strong-form control) | 2.01e-2 | 1.91e-2 | 1.93e-2 | 1.95e-2 ± 4.9e-4 |
 | POD-LSPG k=8 control | 2.09e-1 | 2.09e-1 | 2.09e-1 | 2.09e-1 (std 0 by construction) |
 
-The headline is reproducible to **6%** and the 12.7x gap to POD is two orders of magnitude
-outside the spread.  The weak form's 1.2x edge over the strong FD residual (1.56e-2 vs
-1.95e-2) is 4 standard deviations, so it survives seeding as well.  The POD basis is a
-deterministic function of the training snapshots, so its control row carries no
-training-seed variance.
+The headline is reproducible to a **6% coefficient of variation over three training seeds on
+one fixed test set** (not a confidence interval), and the 12.7x gap to POD is two orders of
+magnitude outside that spread.  The weak form's 1.2x edge over the strong FD residual
+(1.56e-2 vs 1.95e-2) is ~4 sample standard deviations, so it survives seeding as well.  The
+POD basis is a deterministic function of the training snapshots, so its control row carries
+no training-seed variance; only `k8:lspg:full:fd` was actually run in all three cells, and
+`FOLLOWUP_TABLES.md` marks the other POD variants as seed-0 only rather than reporting a
+spurious zero spread for them.
 
 ### The hyper-reduction knobs — m and M ladders (K=8)
 
@@ -327,15 +341,17 @@ the 50 steps (one GPU, one process).  Figure: `followup/figs/burgers_eq_knobs.pn
   ladder and the error saturates exactly where it drops below ~1e-3.  It is computed
   offline, before the ROM is ever run.
 - **The meshfree candidate pool matches grid nodes** for the continuum weak form at every m
-  (4.49e-2 vs 4.47e-2 at m=256) and is the cheapest arm in the study (2.33 ms/step, one
-  decoder evaluation per node, no stencil) — but `weakc` is a *different model*: it targets
+  (4.49e-2 vs 4.47e-2 at m=256) and is the cheapest *coordinate* arm at m=256 (2.33 ms/step,
+  one decoder evaluation per node, no stencil; its own m=64/128 points are cheaper still at
+  1.50/1.82 ms/step, and every POD arm is cheaper again at ~0.7 ms/step) — but `weakc` is a
+  *different model*: it targets
   the continuum PDE, so against the upwind FOM it sits at 4.5e-2 at every m, exactly as in
   the frozen round.  The meshfree pool is not available for the exact-FOM `weak` form,
   which needs grid neighbours for the upwind stencil.
 - **M is saturated at 64**: M=16 is genuinely under-resolved (1.88e-2 even on the full
   grid), M=32 is within 2%, and M ≥ 64 changes nothing while costing linearly in m = 4M.
 
-### Online cost vs N — the whole online path can be made mesh-free
+### Online cost vs N — the whole online path can be made mesh-size independent
 
 One GPU, all four meshes measured **sequentially in one process**, 2 warm-ups then the
 median of 7 `block_until_ready` repetitions.  The FOM is the testbed's own jitted implicit
@@ -344,31 +360,46 @@ asserted below 1e-8 before anything is timed.  The coordinate decoder is meshfre
 *same* N=64 checkpoint runs at every N and only the EQ quadrature is refit.  Figure:
 `followup/figs/burgers_cost_vs_N.png`.
 
-| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / ROM step | ms / Jacobian eval | cold start, full grid (python / jitted) | cold start, EQ nodes (m=256) | decode 51 slices | end-to-end (EQ start, with / without decode) |
-|---|---|---|---|---|---|---|---|---|---|
-| 32 | 204 ms | 286 ms | 0.71x | 5.73 | 1.11 | 870 / 34.5 ms | 17.2 ms | 2.8 ms | 0.67x / 0.67x |
-| 64 | 424 ms | 280 ms | **1.51x** | 5.61 | 1.06 | 1025 / 105.5 ms | 24.5 ms | 11.0 ms | 1.34x / 1.39x |
-| 128 | 1158 ms | 277 ms | **4.18x** | 5.54 | 1.09 | 1454 / 414.2 ms | 32.0 ms | 45.8 ms | 3.27x / 3.75x |
-| 256 | 2203 ms | 272 ms | **8.09x** | 5.45 | 1.07 | 3338 / 1671.8 ms | 19.3 ms | 180.9 ms | **4.66x / 7.55x** |
+(All numbers are test trajectory 0 — the timed trajectory.  The end-to-end columns are
+**measured**: the rollout is re-timed *and re-graded* starting from the hyper-reduced cold
+start's own latent, so no number here is a composition of pieces measured from different
+starting points.)
 
-1. **The rollout is flat: 272–286 ms across a 64x range of degrees of freedom** (N=32→256,
-   1024→65536 DOF, ±2.6%), with the same ~256 Jacobian evaluations and the same 1.07–1.11 ms
-   per Jacobian evaluation, while the FOM grows 10.8x.  The speedup therefore *grows* with
-   the mesh: 0.71x → 8.09x.  The ROM error is flat too (1.03–1.19e-2 on the timed
+| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / step | ms / Jacobian | cold start, full grid (python / jitted) | cold start, EQ m=256 | rollout FROM the EQ start (its traj. error) | decode 51 slices | end-to-end (EQ start, with / without decode) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 32 | 197 ms | 261 ms | 0.76x | 5.21 | 1.00 | 778 / 31.6 ms | 12.9 ms | 259 ms (1.01e-2) | 2.4 ms | 0.72x / 0.72x |
+| 64 | 442 ms | 260 ms | **1.70x** | 5.20 | 1.00 | 863 / 94.9 ms | 16.0 ms | 266 ms (1.09e-2) | 9.8 ms | 1.52x / 1.57x |
+| 128 | 1215 ms | 264 ms | **4.61x** | 5.28 | 1.03 | 1278 / 369.7 ms | 18.1 ms | 255 ms (8.90e-3) | 40.8 ms | 3.88x / 4.46x |
+| 256 | 2148 ms | 258 ms | **8.32x** | 5.16 | 1.02 | 2818 / 1468.2 ms | 19.2 ms | 250 ms (9.32e-3) | 164.4 ms | **4.95x / 7.96x** |
+
+1. **The rollout is flat: 258–264 ms across a 64x range of degrees of freedom** (N=32→256,
+   1024→65536 DOF, ±1.2%), with ~255 Jacobian evaluations and 1.00–1.03 ms per Jacobian
+   evaluation at every N, while the FOM grows 10.9x.  The speedup therefore *grows* with the
+   mesh: 0.76x → **8.32x**.  The ROM error is flat too (8.90e-3–1.09e-2 on the timed
    trajectory).
-2. **Two arms show the same thing from the other side.**  `eqoff512:weakc64` (meshfree,
-   one decoder evaluation per node) is flat at 151–155 ms and reaches **14.5x** at N=256;
-   the *non*-hyper-reduced `full:weak64` grows 837 ms → 56.4 s (67x) exactly like the FOM,
-   which is the control that shows the flatness comes from the hyper-reduction and not from
-   the manifold.
+2. **Two arms show the same thing from the other side.**  `eqoff512:weakc64` (a genuinely
+   meshfree quadrature pool, one decoder evaluation per node) is flat at ~150 ms and reaches
+   **14x** at N=256; the *non*-hyper-reduced `full:weak64` grows ~840 ms → ~56 s,
+   a factor **67** — steeper even than the FOM's 10.8x, because its per-step work is O(n)
+   with a much larger constant (a FiLM decoder evaluation and a Jacobian column per node).
+   That arm is the control showing the flatness comes from the hyper-reduction, not from the
+   manifold.  Note that the primary `eq256:weak64` arm is mesh-size *independent* but not
+   mesh-*free*: its EQ nodes are grid nodes and its residual uses the FOM's upwind stencil.
+   Only the `weakc`/`eqoff` arms are meshfree.
 3. **The cold start was the last O(n) piece, and it did not have to be.**  Fitting the
    latent to the known u₀ on the full grid costs 34.5 ms at N=32 but 1672 ms at N=256 and
    capped the end-to-end speedup near 1.0x.  Fitting it instead on the *same* m=256 EQ nodes
-   with the same weights makes it n-free — 17–32 ms at every N — and lifts the end-to-end
-   speedup to 7.55x at N=256 (4.66x if the full field is also decoded at all 51 slices).
-   The price is measurable and small: the t=0 misfit, measured on the full grid either way,
-   goes from 2.11e-2 to 2.51e-2 at N=32 and from 3.47e-2 to 4.31e-2 at N=256, with the
-   latent differing by 2–5%.
+   with the same weights makes it mesh-size independent — 17–32 ms at every N.  The
+   end-to-end numbers in the last column are **measured, not composed**: the rollout is
+   re-timed *and re-graded* starting from that hyper-reduced latent (a first version of this
+   cell composed the EQ fit time with a rollout timed from the full-grid latent, which the
+   verification pass correctly rejected — see `CODEX-REVIEW-followup-2.md`).  End-to-end goes
+   from 0.72x at N=32 to **7.96x at N=256** (4.95x if the full field is also decoded at all
+   51 slices).  And the price turns out to be nil where it matters: the *t=0* misfit is
+   indeed worse (2.11e-2 → 2.51e-2 at N=32, 3.47e-2 → 4.31e-2 at N=256, latent within 2–5%),
+   but the *trajectory* error from the hyper-reduced start is the same or slightly better
+   (1.01e-2 vs 1.15e-2 at N=32, 9.32e-3 vs 1.07e-2 at N=256) — the warm-started latent solve
+   forgets a marginally worse initial guess within a few steps.
 4. **The 51-slice full-field decode (2.8 → 181 ms) is genuinely O(n) and is the output, not
    the solve.**  It is reported separately so the reader can compose whichever end-to-end
    number matches their use case; a ROM asked for functionals rather than fields never pays
@@ -404,10 +435,14 @@ unchanged while both the FOM and any full-grid arm have grown ~10x.
 
 ### Caveats
 
-- 16 held-out trajectories per cell; means carry tails (medians are in the JSONs and in
-  `FOLLOWUP_TABLES.md`).  Zero blow-ups anywhere in the follow-up: 0/16 in every one of the
-  8 x 4 k-ladder variants, the 3 x 4 seed variants, the 17 m-ladder variants and the 10
-  M-ladder variants.
+- 16 held-out trajectories per cell; means carry tails.  Medians are printed beside the
+  means in `followup/FOLLOWUP_TABLES.md`.  Zero blow-ups anywhere in the follow-up: 0/16 in
+  every one of the 8 x 4 k-ladder variants, the 3 x 4 seed variants, the 17 m-ladder
+  variants and the 10 M-ladder variants.
+- Zero blow-ups is not the same as convergence at every step.  Time steps that end on the
+  per-step LM budget rather than the residual/stall criterion are counted per cell in
+  `FOLLOWUP_TABLES.md` and are **included** in every mean; they are rare up to K=16 and
+  common at K=32 (233 of 800 steps for `eq256:weak64`).
 - The k ladder trains one decoder per K at one budget (60k steps).  K=24 and K=32 are
   visibly under-trained *for the online solve* (their held-out floors keep improving while
   the ROM does not), so "the ROM stops improving past K=16" is a statement about this
@@ -415,7 +450,16 @@ unchanged while both the FOM and any full-grid arm have grown ~10x.
 - Timing tables are one GPU, one process, median of 7 — but `bt_n`, `bt_m` and `bt_k` are
   three different jobs on three different (possibly different-model) GPUs, so numbers may be
   compared **within** each table and not across them.  The k ladder's *errors* are
-  hardware-independent (f64) and are compared freely.
+  hardware-independent (f64) and are compared freely.  Accuracy statistics are always
+  16-trajectory means; timing is always test trajectory 0.  The N=128/256 speedups are
+  measured at K=8 only, so the "K = 6–8 sweet spot" combines a 16-trajectory accuracy
+  statement with a single-trajectory K=8 timing statement.
+- "Per-iteration cost is linear in K" is the expected `jacfwd` scaling, offered as an
+  explanation; the *measured* change is 4.7x over a 16x increase in K, so other terms
+  (the fixed m x 5 stencil evaluation, the M x m matvec) clearly dominate at small K.
+- The "knee at the intrinsic dimension" and the "under-trained / poorly conditioned past
+  K=16" readings are descriptions consistent with one ladder at one budget; no
+  longer-training or conditioning control was run.
 - The multi-seed cells were not pinned to one GPU model; only errors are taken from them.
 - `weakc` (the continuum weak form, the only variant that admits a meshfree quadrature pool)
   is stated against the upwind FOM only.  It is O(h) away from that FOM by construction; its
@@ -430,9 +474,13 @@ unchanged while both the FOM and any full-grid arm have grown ~10x.
   exactly x/y symmetric at those M.  This is the frozen round's convention and was kept for
   comparability (Codex SHOULD-fix, deliberately not applied — see
   `CODEX-REVIEW-followup.md`); the effect is a fraction of one mode out of M.
-- Two-reviewer gate: `CODEX-REVIEW-followup.md` (adversarial harness review before the
-  fan-out, all MUST items applied) plus a second Codex pass over the finished tables and
-  figures against the raw JSONs.
+- Two-reviewer gate, both archived: `CODEX-REVIEW-followup.md` (adversarial harness review
+  before the fan-out; all MUST items applied) and `CODEX-REVIEW-followup-2.md` (a second
+  read-only pass that re-derived 1 311 table cells, 143 timing medians and all 8 figures
+  from the raw JSONs).  The second pass found no error in any generated table and 19 errors
+  in hand-written prose or figure titles, all fixed here — including one that required
+  rerunning a cell (the EQ-cold-start end-to-end numbers were compositions, not
+  measurements).  Both files carry a per-item disposition table.
 
 ## Caveats
 

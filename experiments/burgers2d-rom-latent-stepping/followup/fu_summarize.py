@@ -97,8 +97,13 @@ def gather():
 def tab_kladder(D, out):
     if not D["kladder"]:
         return
-    out.append("### k ladder — coordinate ROM vs POD-LSPG at the same k "
+    out.append("### k ladder — coordinate ROM vs POD at the same k "
                "(N=64, 16 held-out trajectories, trajectory rel-L2 = mean over the 51 slices)\n")
+    out.append("The POD rows below carry BOTH the strong-form `full:fd` residual and the same "
+               "weak objective the coordinate columns use, so the like-for-like comparison "
+               "(same solver, same residual, same test modes, same TRAIN snapshots) is "
+               "coordinate `full:weak64` against POD `full:weak64`; `full:fd` is the frozen "
+               "round's control.\n")
     out.append("| K | train recon | ORACLE inferred latent | IC fit (t=0) | `full:fd` | `full:weak64` | `eq256:weak64` | `eq512:weak64` | blow-ups | warm iters/step |")
     out.append("|---|---|---|---|---|---|---|---|---|---|")
     for e in D["kladder"]:
@@ -113,6 +118,19 @@ def tab_kladder(D, out):
             sum(v.get("n_blowup", 0) for v in rom.values()),
             f"{eq.get('iters_warm_mean', float('nan')):.2f}" if eq else "—"))
     out.append("")
+    out.append("Medians over the 16 trajectories (the means carry tails): " + ", ".join(
+        "K={}: `full:weak64` {} / `eq256:weak64` {}".format(
+            e["K"], fmt(get(e["rep"], ["rom", FULLW, "traj_rel_median"])),
+            fmt(get(e["rep"], ["rom", EQ, "traj_rel_median"])))
+        for e in D["kladder"]) + ".\n")
+    out.append("Time steps that ended on the per-step LM BUDGET rather than the residual/stall "
+               "criterion, out of 16 x 50 = 800 (`full:weak64` / `eq256:weak64`): " + ", ".join(
+        "K={}: {}/{}".format(
+            e["K"],
+            (get(e["rep"], ["rom", FULLW, "reasons"]) or {}).get("budget", 0),
+            (get(e["rep"], ["rom", EQ, "reasons"]) or {}).get("budget", 0))
+        for e in D["kladder"]) + ".  Nothing is dropped: every rollout completed (zero "
+               "blow-ups), and budget-terminated steps are included.\n")
     pod = pod_table(D)
     if pod:
         out.append("POD-LSPG control (same solver, same objective, same TRAIN snapshots; the basis "
@@ -144,8 +162,11 @@ def pod_table(D):
 def tab_seeds(D, out):
     if len(D["seeds"]) < 2:
         return
-    out.append("### Multi-seed (K=8, N=64; TRAIN_SEED changes the net init, the latent init and "
-               "the batch order only — the data draw, the split and the TEST_SEED test set are fixed)\n")
+    out.append("### Multi-seed (K=8, N=64)\n")
+    out.append("`TRAIN_SEED` changes the FiLM network initialisation and the minibatch / "
+               "collocation-point order.  The per-snapshot latents are initialised "
+               "DETERMINISTICALLY from the top-K POD coefficients, so latent init does NOT vary; "
+               "neither do the data draw, the split or the `TEST_SEED` test set.\n")
     keys = [("train recon (learned latents)", lambda r: r.get("train_rel_mean")),
             ("ORACLE inferred-latent floor (held out)", lambda r: get(r, ["oracle_inferred_latent_test", "traj_rel_mean"])),
             ("IC fit at t=0", lambda r: get(r, ["ic_fit", "rel_mean"])),
@@ -161,12 +182,20 @@ def tab_seeds(D, out):
                    + f" | {np.nanmean(v):.2e} ± {np.nanstd(v, ddof=1):.1e} |")
     pk = {}
     for e in D["seeds"]:
-        for key, s in (e["rep"].get("pod_rom") or {}).items():
+        for key, s_ in (e["rep"].get("pod_rom") or {}).items():
             if key.startswith("k8:"):
-                pk.setdefault(key, []).append(s["traj_rel_mean"])
-    for key, vals in sorted(pk.items()):
-        out.append(f"| POD control {key} | " + " | ".join(fmt(v) for v in vals)
-                   + f" | {np.mean(vals):.2e} ± {np.std(vals, ddof=1) if len(vals) > 1 else 0:.1e} |")
+                pk.setdefault(key, {})[e["seed"]] = s_["traj_rel_mean"]
+    n_seeds = len(D["seeds"])
+    for key, byseed in sorted(pk.items()):
+        if len(byseed) < n_seeds:          # only measured in some cells -> do NOT fake a spread
+            got = ", ".join(f"seed {k}: {fmt(v)}" for k, v in sorted(byseed.items()))
+            out.append(f"| POD control {key} | " + " | ".join(
+                fmt(byseed.get(e["seed"])) for e in D["seeds"])
+                + f" | not run for every seed ({got}) |")
+            continue
+        v = np.array([byseed[e["seed"]] for e in D["seeds"]], dtype=float)
+        out.append(f"| POD control {key} | " + " | ".join(fmt(x) for x in v)
+                   + f" | {v.mean():.2e} ± {v.std(ddof=1):.1e} |")
     out.append("\nThe POD basis is a deterministic function of the TRAIN snapshots, so the POD "
                "control carries no training-seed variance (any spread in its row is solver "
                "non-determinism only).\n")
@@ -257,22 +286,35 @@ def tab_timing(D, out):
                    f"K={get(t, ['ckpt', 'k'])}, M=64, m=256, median of {t['time_reps']} after 2 warm-ups, "
                    f"`block_until_ready`; the coordinate decoder is meshfree so the SAME N=64 "
                    f"checkpoint is used at every N, EQ weights refit per N)\n")
-        out.append("| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / ROM step | ms / Jacobian eval | "
-                   "cold start, full grid (python / jitted LM) | cold start, EQ nodes (m=256) | "
-                   "decode 51 slices | end-to-end speedup (EQ cold start, + / − decode) |")
-        out.append("|---|---|---|---|---|---|---|---|---|---|")
+        out.append("Accuracy statistics elsewhere in this file are 16-trajectory means; every "
+                   "number in this table is test trajectory 0 (the timed trajectory).  The "
+                   "end-to-end columns are MEASURED: the rollout is re-timed and re-graded from "
+                   "the hyper-reduced cold start's own latent, not composed from a rollout that "
+                   "started somewhere else.\n")
+        out.append("| N | FOM rollout | ROM `eq256:weak64` | speedup | ms / step | ms / Jacobian | "
+                   "cold start, full grid (python / jitted) | cold start, EQ m=256 | "
+                   "rollout FROM the EQ start (its traj. error) | decode 51 slices | "
+                   "end-to-end (EQ start, with / without decode) |")
+        out.append("|---|---|---|---|---|---|---|---|---|---|---|")
         for r in t["rows"]:
             v = r["rom"].get(EQ, {})
             ic = r["ic_fit"]
             e = v.get("ic_fit_eq_nodes") or {}
+            re_ = v.get("rollout_from_eq_start") or {}
             eq_ic = f"{e['s']*1e3:.1f} ms" if e else "—"
-            e2e = (f"{v.get('speedup_end_to_end_eq_ic', float('nan')):.2f}x / "
-                   f"**{v.get('speedup_end_to_end_eq_ic_no_decode', float('nan')):.2f}x**") if e else                   f"{v.get('speedup_end_to_end_jit_ic', float('nan')):.2f}x (full-grid start)"
-            out.append(f"| {r['N']} | {r['fom_rollout_s']*1e3:.0f} ms | {v.get('rollout_s_median', float('nan'))*1e3:.0f} ms | "
+            from_eq = (f"{re_['rollout_s_median']*1e3:.0f} ms "
+                       f"({fmt(re_.get('traj_rel_vs_fom_at_this_N'))})" if re_ else "—")
+            if re_:
+                e2e = (f"{re_['speedup_end_to_end']:.2f}x / "
+                       f"**{re_['speedup_end_to_end_no_decode']:.2f}x**")
+            else:
+                e2e = f"{v.get('speedup_end_to_end_jit_ic', float('nan')):.2f}x (full-grid start)"
+            out.append(f"| {r['N']} | {r['fom_rollout_s']*1e3:.0f} ms | "
+                       f"{v.get('rollout_s_median', float('nan'))*1e3:.0f} ms | "
                        f"**{v.get('speedup_rollout_only', float('nan')):.2f}x** | "
                        f"{v.get('rollout_s_median', float('nan'))*1e3/50:.2f} | "
                        f"{v.get('s_per_jacobian_eval', float('nan'))*1e3:.2f} | "
-                       f"{ic['python_s']*1e3:.0f} / {ic['jit_s']*1e3:.1f} ms | {eq_ic} | "
+                       f"{ic['python_s']*1e3:.0f} / {ic['jit_s']*1e3:.1f} ms | {eq_ic} | {from_eq} | "
                        f"{r['decode_all_slices_s']*1e3:.1f} ms | {e2e} |")
         out.append("")
         rows_e = [(r["N"], r["rom"].get(EQ, {}).get("ic_fit_eq_nodes")) for r in t["rows"]]
@@ -323,9 +365,11 @@ def fig_kladder(D):
     orc = [get(e["rep"], ["oracle_inferred_latent_test", "traj_rel_mean"]) for e in D["kladder"]]
     pk = sorted(pod)
     pfd = [pod[k].get(FD) for k in pk]
-    # the square Petrov-Galerkin case (M' test modes vs k >= M' unknowns) is unstable and
-    # is documented as such; it is kept in the table and dropped from the figure
-    pwk = [(v if (v is not None and v < 1.0) else np.nan) for v in (pod[k].get(FULLW) for k in pk)]
+    # the weak objective uses M = 64 test modes, so at k >= 64 the Petrov-Galerkin system is
+    # square/underdetermined and the arm is unstable by construction (documented in the frozen
+    # round).  Excluded from the figure by that CONDITION, not by its value; kept in the table.
+    M_WEAK = int(FULLW.split(":")[2][len("weak"):])
+    pwk = [(pod[k].get(FULLW) if k < M_WEAK else np.nan) for k in pk]
     ppr = [pod[k].get("proj") for k in pk]
     fig, ax = plt.subplots(figsize=(5.4, 3.8))
     fs.clean(ax)
@@ -387,7 +431,7 @@ def fig_timing(D):
     ax.set_xscale("log", base=2); ax.set_yscale("log")
     ax.set_xticks(N); ax.set_xticklabels([str(n) for n in N])
     ax.set_xlabel("mesh N ($N^2$ degrees of freedom)"); ax.set_ylabel("rollout wall time (ms)")
-    ax.set_title("50-step rollout: ROM flat, FOM rising", loc="left")
+    ax.set_title("50-step rollout: hyper-reduced ROM flat, FOM rising", loc="left")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.19), ncol=2)
 
     ax = fs.clean(axes[1])
@@ -407,8 +451,8 @@ def fig_timing(D):
     ax.set_xlabel("mesh N ($N^2$ degrees of freedom)"); ax.set_ylabel("wall time (ms)")
     ax.set_title("the online path, piece by piece", loc="left")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.19), ncol=1)
-    fig.suptitle("Burgers 2D — online cost is independent of the mesh", x=0.005, ha="left",
-                 fontsize=10, color=fs.INK)
+    fig.suptitle("Burgers 2D — the hyper-reduced latent rollout does not see the mesh",
+                 x=0.005, ha="left", fontsize=10, color=fs.INK)
     fig.tight_layout()
     return fs.save(fig, FIGS, "burgers_cost_vs_N", (PLOTS,))
 

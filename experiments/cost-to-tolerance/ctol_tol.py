@@ -36,15 +36,21 @@ WHAT IS REUSED
   plus the same tau test; `check_tau_agreement` covers it too.
 
 Reason codes (shared with the reference solvers):
-  Poisson / IC : 0 budget, 1 converged(rel-dec/step), 2 TAU REACHED,
-                 3 lambda_max, 4 nan_step_lambda_max, 5 nan_at_init
-  Burgers step : 0 budget, 1 TAU REACHED, 2 stalled, 3 lambda_max/nan,
-                 4 tol_at_init, 5 nan_at_init
+  lm_tau_poisson : 0 budget, 1 converged(rel-dec/step), 2 TAU REACHED (including
+                   at the initial guess), 3 lambda saturation, 5 nan_at_init
+  lm_tau_generic : as above, and additionally 4 = lambda saturation after a
+                   NON-FINITE step (the reference `lm_jit_solver` distinguishes
+                   these two; `fu_eq.make_lm_jit` does not, and neither does
+                   lm_tau_poisson)
+  Burgers step   : 0 budget, 1 TAU REACHED, 2 stalled, 3 lambda_max/nan,
+                   4 tol at init, 5 nan_at_init  (blat_common.lm_step_jit)
 A cell is CENSORED at tau when the solver stopped for any reason other than
 reaching tau (Poisson: for any test source; Burgers: at any time step or in the
 cold start).  Censored cells are reported, never dropped.
 """
 from __future__ import annotations
+
+import os
 
 import numpy as np
 import jax
@@ -79,10 +85,16 @@ def lm_tau_generic(f, K, budget):
         r0, J0 = rJ(z0)
         rn0 = jnp.linalg.norm(r0)
         tol = tau * rn0
+        # tau can already hold at the initial guess (||r(z0)|| == 0); the reference
+        # solver would then run on and terminate as "no strict decrease possible",
+        # which would be recorded as censored.  Test it up front, exactly as
+        # blat_common's lm_step_jit does with its reason 4.
+        init_reason = jnp.where(~jnp.isfinite(rn0), jnp.int32(5),
+                                jnp.where((tau > 0) & (rn0 <= tol), jnp.int32(2),
+                                          jnp.int32(0)))
         # z, r, J, rn, lam, attempts, accepted, rejected, n_res, n_jac, reason
         init = (z0, r0, J0, rn0, jnp.asarray(1e-6, F64), jnp.int32(0), jnp.int32(0),
-                jnp.int32(0), jnp.int32(1), jnp.int32(1),
-                jnp.where(jnp.isfinite(rn0), jnp.int32(0), jnp.int32(5)))
+                jnp.int32(0), jnp.int32(1), jnp.int32(1), init_reason)
 
         def cond(s):
             return (s[10] == 0) & (s[5] < budget)
@@ -143,8 +155,11 @@ def lm_tau_poisson(dec, K, pts, wq, PhiT, Wl, budget):
         r0, J0 = rJ(z0, f_m)
         v0 = jnp.linalg.norm(r0)
         tol = tau * v0
+        init_reason = jnp.where(~jnp.isfinite(v0), jnp.int32(5),
+                                jnp.where((tau > 0) & (v0 <= tol), jnp.int32(2),
+                                          jnp.int32(0)))
         init = (z0, J0, r0, v0, jnp.asarray(1e-6, F64), jnp.int32(0), jnp.int32(0),
-                jnp.int32(1), jnp.where(jnp.isfinite(v0), jnp.int32(0), jnp.int32(5)))
+                jnp.int32(1), init_reason)
 
         def cond(s):
             return (s[8] == 0) & (s[5] < budget)
@@ -211,6 +226,30 @@ def rollout_tau_burgers(ops, num_steps, budget):
         return out
 
     return jax.jit(rollout)
+
+
+# --------------------------------------------------------------------------
+# provenance
+# --------------------------------------------------------------------------
+def sha256_of(paths):
+    """sha256 of each existing path, keyed by basename.  The executed bundle is
+    assembled from several source worktrees, so the git commit of THIS tree does
+    not identify it; hashing every staged module and checkpoint into the result
+    JSON does."""
+    import hashlib
+    out = {}
+    for p in paths:
+        if p and os.path.isfile(p):
+            h = hashlib.sha256()
+            with open(p, "rb") as f:
+                for chunk in iter(lambda: f.read(1 << 20), b""):
+                    h.update(chunk)
+            out[os.path.basename(p)] = h.hexdigest()[:16]
+    return out
+
+
+def module_files(modules):
+    return [getattr(m, "__file__", None) for m in modules]
 
 
 # --------------------------------------------------------------------------

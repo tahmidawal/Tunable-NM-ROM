@@ -35,6 +35,18 @@ BSRC="$WTS/2026-08-16-burgers2d-rom-latent-stepping/experiments/burgers2d-rom-la
 MSP="$WTS/2026-08-14-multistage-precision/experiments/multistage-precision"
 B2D="$WTS/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom"
 
+# The executed bundle is assembled from FOUR worktrees, so this tree's commit alone
+# does not identify it.  Record every source worktree's commit and dirty state; the
+# drivers additionally sha256 every module and checkpoint they actually load into
+# the result JSON, and the staged MANIFEST.sha256 is pulled back with the results.
+src_commit() { git -C "$1" rev-parse --short HEAD 2>/dev/null || echo unknown; }
+src_dirty()  { git -C "$1" status --porcelain -- . 2>/dev/null | sha256sum | cut -c1-8; }
+SRC_COMMITS="ctol=$COMMIT/$DIRTY"
+for d in "$PSRC" "$BSRC" "$MSP" "$B2D"; do
+  SRC_COMMITS="$SRC_COMMITS,$(basename "$(dirname "$(dirname "$d")")")=$(src_commit "$d")/$(src_dirty "$d")"
+done
+echo "source bundle: $SRC_COMMITS"
+
 mk() {  # mk <cell> <hours> <mem> <envs> <cmd>
   local cell="$1" hours="$2" mem="$3" envs="$4" cmd="$5"
   local d="$ROOT/$cell"
@@ -56,8 +68,11 @@ export JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export PY=$PY
 export CTOL_COMMIT=$COMMIT
+export CTOL_SRC_COMMITS="$SRC_COMMITS"
 echo "host=\$(hostname)  node=\$SLURMD_NODENAME  gpu=\$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
 echo "commit=$COMMIT  dirty=$DIRTY (dirty marker 'e3b0c442' == clean)  cell=$cell  job=\$SLURM_JOB_ID"
+echo "src_bundle=$SRC_COMMITS"
+cp "$REMOTE/$cell/MANIFEST.sha256" "$REMOTE/$cell/out/MANIFEST.sha256" 2>/dev/null || true
 \$PY - <<'PRE' || { echo "GPU PREFLIGHT FAILED"; exit 42; }
 import sys, jax
 d = jax.devices()[0]
@@ -98,9 +113,14 @@ stage_burgers() {  # stage_burgers <dir>
      "$d/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/"
   cp "$MSP"/ms_parametric.py "$MSP"/ms_autodecoder.py \
      "$d/code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/"
-  for K in 2 4 6 8 12 16 24 32; do
-    src=$(find "$BSRC/runs" -name "blat_ad_N64_K${K}.pkl" | head -1)
-    [[ -n "$src" ]] || { echo "missing burgers checkpoint K=$K" >&2; exit 1; }
+  # EXPLICIT checkpoint paths (a `find | head -1` would silently pick a different
+  # checkpoint if the source tree ever grew a second file of the same name)
+  for spec in "2:runs/followup/bk_K2" "4:runs/ad_n64_k4" "6:runs/followup/bk_K6" \
+              "8:runs/ad_n64_k8" "12:runs/followup/bk_K12" "16:runs/ad_n64_k16" \
+              "24:runs/followup/bk_K24" "32:runs/followup/bk_K32"; do
+    K="${spec%%:*}"; sub="${spec#*:}"
+    src="$BSRC/$sub/blat_ad_N64_K${K}.pkl"
+    [[ -f "$src" ]] || { echo "missing burgers checkpoint K=$K at $src" >&2; exit 1; }
     cp "$src" "$d/ckpt/"
   done
 }
@@ -112,14 +132,14 @@ BGRID="N=64 KS=2,4,6,8,12,16,24,32 TAUS=1e-1,1e-2,1e-3 M=64 MQ=256 M_BIG=256 K_B
 
 if [[ "$MODE" == "panels" ]]; then
   for NN in 32 64 128 256 512; do
-    mem=64G; hrs=8
-    [[ $NN -ge 256 ]] && { mem=192G; hrs=12; }
+    mem=64G; hrs=16
+    [[ $NN -ge 256 ]] && { mem=192G; hrs=24; }
     d=$(mk "ctol_p_n$NN" "$hrs" "$mem" "$PGRID NS=$NN" \
         "\$PY -u ctol_poisson.py ../out/ctol_poisson_n$NN.json")
     stage_poisson "$d"; seal "$d"
   done
   for NN in 32 64 128 256; do
-    mem=96G; hrs=16
+    mem=96G; hrs=24
     [[ $NN -ge 256 ]] && { mem=240G; hrs=24; }
     d=$(mk "ctol_b_n$NN" "$hrs" "$mem" "$BGRID NS=$NN" \
         "\$PY -u ctol_burgers.py ../out/ctol_burgers_n$NN.json")

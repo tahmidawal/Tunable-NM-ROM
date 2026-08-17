@@ -37,6 +37,7 @@ def main():
                                                   "consolidate_configs.json"))
     args = ap.parse_args()
     data = T.load(args.runs)
+    T.audit(data, allow_incomplete=True)      # warn, but still select what exists
     pts = T.to_points(data)
     primary = [p for p in pts if p.get("arm") in (None, "primary")]
     picked, seen = [], set()
@@ -48,23 +49,37 @@ def main():
         seen.add(key)
         picked.append(dict(pde=p["pde"], method=p["method"], N=p["N"], k=p["k"],
                            M=p["M"], m=p["m"], tau=p["tau"], why=why,
-                           panel_time_ms=p["time_ms"], panel_err=p["err_rel_l2"]))
+                           arm="consolidated", panel_arm=p.get("arm"),
+                           panel_time_ms=p["time_ms"], panel_err=p["err_rel_l2"],
+                           panel_censored=p.get("censored")))
 
     for pde, d in sorted(data.items()):
         for N in d["config"]["ns"]:
             for method in ("coord", "pod"):
                 sel = [p for p in primary if p["pde"] == pde and p["method"] == method
-                       and p["N"] == N and p.get("err_rel_l2") is not None
-                       and math.isfinite(p["err_rel_l2"])
-                       and p.get("time_ms") is not None]
-                if not sel:
+                       and p["N"] == N]
+                usable = T.usable_points(sel)          # uncensored, blow-up free
+                if not usable:
+                    # nothing reached its tolerance at this (pde, method, N); fall back
+                    # to the as-deployed set so the mesh is still represented, LABELLED
+                    usable = T.usable_points(sel, require_uncensored=False)
+                    tag = "AS-DEPLOYED (no uncensored cell at this mesh)"
+                else:
+                    tag = ""
+                if not usable:
                     continue
+                # the WHOLE non-dominated frontier is re-timed, not just the argmin:
+                # the scaling figure picks its operating point from the frontier, so
+                # every frontier point must have a single-GPU time
+                for p in T.nondominated(usable, require_uncensored=False):
+                    add(p, ("frontier " + tag).strip())
                 for target in T.TARGETS[pde]:
-                    b = T.cheapest_reaching(sel, target)
+                    b = T.cheapest_reaching(usable, target, require_uncensored=False)
                     if b is not None:
-                        add(b, f"cheapest reaching {target:.0e}")
-                add(min(sel, key=lambda p: p["err_rel_l2"]), "most accurate")
-                add(min(sel, key=lambda p: p["time_ms"]), "fastest")
+                        add(b, (f"cheapest reaching {target:.0e} " + tag).strip())
+                add(min(usable, key=lambda p: p["err_rel_l2"]),
+                    ("most accurate " + tag).strip())
+                add(min(usable, key=lambda p: p["time_ms"]), ("fastest " + tag).strip())
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     json.dump(picked, open(args.out, "w"), indent=1)
     n_p = sum(1 for p in picked if p["pde"] == "poisson2d")

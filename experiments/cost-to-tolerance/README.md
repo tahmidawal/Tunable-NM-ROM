@@ -60,6 +60,14 @@ error it did reach. Censored cells are never dropped. A POD arm that converges t
 exact minimiser while still above `tau` is censored — correctly, because for that model the
 tolerance is genuinely unreachable.
 
+A censored cell's cost is the cost of running to *termination*, not the cost to the tolerance,
+so admitting it to a "cost at tau" frontier would reintroduce the very defect (a) that this
+cell exists to remove. Two frontiers are therefore reported: the **strict** frontier
+(uncensored, blow-up-free cells only) is the primary one, and the **as-deployed** frontier
+(set the knob, take whatever the solver reaches) is tabulated and drawn dashed beside it.
+A Burgers cell in which any trajectory blows up has a non-finite `err_rel_l2` — it can never
+enter either frontier — with the finite-only mean retained as a labelled diagnostic.
+
 ## 3. What one cell is, and why cost and accuracy come from the same run
 
 A cell is `(pde, method, N, k, M, m, tau)` with `method` in `{coord, pod}`. For each cell the
@@ -77,25 +85,43 @@ The solve is deterministic, so every repetition returns the same latent; the rep
 `time_ms` and `err_rel_l2` therefore come from the same invocation, the same initial guess and
 the same source set.
 
-**Time accounting.** `time_ms` in the shared Pareto schema is the **end-to-end online cost**,
-because that is what the FOM baseline delivers:
+**Time accounting.** There is exactly **one timed quantity per cell**: the whole online path,
+compiled into a single jitted function and synchronised once. `time_ms` in the shared Pareto
+schema is that number, because it is what the FOM baseline delivers:
 
-* Poisson: input preprocessing (`Lambda^-1 Phi^T f`, one matvec against a per-mesh table built
-  offline) + latent solve + decode of the interior field. The FOM baseline is the testbed's own
-  jitted CG returning exactly that interior field.
+* Poisson: input preprocessing (`Lambda^-1 Phi_M^T f`) + latent solve + decode of the interior
+  field. The FOM baseline is the testbed's own jitted CG returning exactly that interior field,
+  timed on **every** test source with the same warm-up/median-of-7 protocol and summarised with
+  the same across-source statistic (CG iteration counts are source dependent, so timing one
+  source would compare different workloads).
 * Burgers: hyper-reduced cold start + 50 tau-stopped latent steps + the 51-slice full-field
-  decode. The FOM baseline is the testbed's own jitted implicit rollout at batch 1.
+  decode. The FOM baseline is the testbed's own jitted implicit rollout at batch 1, likewise
+  timed on every test trajectory.
 
-`time_ms_solve` isolates the latent solve — the quantity the cost(`k`) question asks about —
-and is what the cost(`k`) figure plots. Both are in every row.
+The preprocess and decode stages are also measured in isolation. They are value-independent and
+`k`-independent, so `time_ms_solve` — the latent-solve component the cost(`k`) question asks
+about — is **derived** by subtracting them from the timed pipeline, and every row records that
+derivation explicitly. Nothing is a sum of independently measured medians.
+
+The input preprocessing is timed as the **deployable** operation: the selected-mode contraction
+`Phi_sel (M' x n_i^2)` against the source, `O(M' N^2)`. The reference splitter's grid branch
+performs the full dense sine transform `S^T f S` and then gathers the `M'` retained modes, which
+is `O(N^3)` and at N=512 would charge the ROM for work no deployment needs. Both are measured;
+the selected-mode result is asserted equal to `pro_common.weak_source_term` to 1e-10 relative.
 
 ## 4. Grid and settings
 
 `k` in {2, 4, 6, 8, 12, 16, 24, 32}; `N` in {32, 64, 128, 256, 512} (Poisson) and
 {32, 64, 128, 256} (Burgers). `M`=64, `m`=256 fixed, **except `M`=256 whenever `k` >= 32** —
 the weak form collapses when `M <= k` (heat `M`=16,`K`=16 gave 9.0e-2 against a 6.3e-3
-ceiling; Burgers POD `k`=64,`M`=64 diverged). A supplementary arm at `k`=32 adds `m`=1024 so
-the `m ~ 4M` knee is not silently violated by the `m` = `M` = 256 corner.
+ceiling; Burgers POD `k`=64,`M`=64 diverged).
+
+That exception means the `k`=32 column is **not a pure `k` step**: it also quadruples the
+number of test modes. Two supplementary arms make the confound measurable rather than hidden:
+`m`=1024 at `k`=32 (so `m ~ 4M`, the knee, instead of the `m` = `M` corner), and an
+**isolator** at fixed `k`=8 with the same `(M, m)` = (256, 1024) change. Both are valid
+configurations and both enter the Pareto scatter and frontier; the cost(`k`) tables report the
+spec'd primary grid.
 
 <!-- BEGIN GENERATED: configuration -->
 <!-- END GENERATED: configuration -->
@@ -120,7 +146,26 @@ that at `M`=256). This cell caps the pool at 4096 candidates — the Poisson rec
 size — drawn once from a fixed stream, for both PDEs, both arms and every mesh. At N <= 64 the
 interior has 900 / 3844 nodes, i.e. fewer than the cap, so the pool *is* the full interior and
 the fit is identical to the reference. The NNLS targets remain the **exact full-grid**
-projections at every mesh. Per-cell fit quality is reported below so the cap is auditable.
+projections at every mesh, and the support padding rule and the (coordinate-whitened) latent
+perturbation are the reference's. Per-cell fit quality is reported below.
+
+Because a capped random pool could in principle create an artificial error floor at fine
+meshes, a **`cap_control` arm** re-fits `k`=8 for **both** methods with the pool *uncapped*
+(every interior node) at every mesh where the design matrix still fits, and re-measures. That
+bounds what the cap costs by measurement rather than by assumption.
+
+**Burgers POD training set.** The POD basis is built from **all 512 training trajectories** —
+the same training set the coordinate decoder was trained on — retaining every 4th time slice
+so the snapshot matrix is 3.5 GB rather than 13.7 GB at N=256. The parameter spread, which is
+the axis a POD basis needs, is complete. The projection floor of each `V_k` on the held-out
+test set is reported per mesh as an oracle bound on the POD arm.
+
+**Cold start (Burgers).** Both inits are the reference's: the mean t=0 training latent, and the
+t=0 latent of the training trajectory whose initial field is nearest to the known `u0`. The
+reference performs that nearest search on the full grid *outside* the timed region, which is an
+`O(N_train N^2)` online operation and would quietly reintroduce mesh dependence. Here it is
+done on the **same m EQ nodes** the ROM already samples — `O(N_train m)`, mesh independent —
+and **inside** the timed, jitted cold start.
 
 ## 5. How this was run
 
@@ -146,7 +191,20 @@ python ctol_pick_configs.py
 python ctol_tables.py && python ctol_figs.py
 ```
 
+### Surface integrity
+
+`ctol_tables.py` refuses to build these tables unless every panel finished, every expected
+primary cell is present exactly once, and every panel ran on GPU in f64 at matmul precision
+`highest`. Its verdict:
+
+<!-- BEGIN GENERATED: integrity -->
+<!-- END GENERATED: integrity -->
+
 ### Provenance
+
+The executed bundle is assembled from four worktrees, so this tree's commit alone does not
+identify it. Every panel records the commit and dirty state of all four source trees, the
+sha256 of every module and checkpoint it actually loaded, and the staged manifest hash.
 
 <!-- BEGIN GENERATED: provenance -->
 <!-- END GENERATED: provenance -->
@@ -210,6 +268,20 @@ Burgers numbers are summed over the cold start and all 50 time steps).
 <!-- BEGIN GENERATED: iters_k_burgers2d_1e-02 -->
 <!-- END GENERATED: iters_k_burgers2d_1e-02 -->
 
+At the other two tolerances:
+
+<!-- BEGIN GENERATED: iters_k_poisson2d_1e-01 -->
+<!-- END GENERATED: iters_k_poisson2d_1e-01 -->
+
+<!-- BEGIN GENERATED: iters_k_poisson2d_1e-03 -->
+<!-- END GENERATED: iters_k_poisson2d_1e-03 -->
+
+<!-- BEGIN GENERATED: iters_k_burgers2d_1e-01 -->
+<!-- END GENERATED: iters_k_burgers2d_1e-01 -->
+
+<!-- BEGIN GENERATED: iters_k_burgers2d_1e-03 -->
+<!-- END GENERATED: iters_k_burgers2d_1e-03 -->
+
 ### 6.3 The knob -> accuracy map: field error actually achieved at each tau
 
 <!-- BEGIN GENERATED: err_k_poisson2d_1e-01 -->
@@ -269,6 +341,16 @@ Non-dominated configurations, per mesh:
 <!-- BEGIN GENERATED: pareto_burgers2d -->
 <!-- END GENERATED: pareto_burgers2d -->
 
+The **as-deployed** frontier, censored cells included (set the knob, take whatever the solver
+reaches). Where it extends past the strict frontier, the extra accuracy is bought by running to
+termination rather than to the declared tolerance:
+
+<!-- BEGIN GENERATED: paretodep_poisson2d -->
+<!-- END GENERATED: paretodep_poisson2d -->
+
+<!-- BEGIN GENERATED: paretodep_burgers2d -->
+<!-- END GENERATED: paretodep_burgers2d -->
+
 **Who owns the frontier at each mesh**
 
 <!-- BEGIN GENERATED: owner_poisson2d -->
@@ -306,8 +388,15 @@ NNLS-EQ relative fit per cell (at the first tau; the fit does not depend on tau)
 <!-- BEGIN GENERATED: eqfit_burgers2d -->
 <!-- END GENERATED: eqfit_burgers2d -->
 
-Supplementary arms (`pod_direct` = the exact linear POD minimiser as one pinv matvec;
-`coord_meshfree_pool` = the headline meshfree EQ pool at `k`=8):
+POD projection floor on the held-out test set — the oracle bound no POD solver can beat
+(Burgers only; the Poisson POD basis is built from the same 512 training sources):
+
+<!-- BEGIN GENERATED: podfloor -->
+<!-- END GENERATED: podfloor -->
+
+Supplementary arms: `pod_direct` = the exact linear POD minimiser as one pinv matvec;
+`coord_meshfree_pool` = the headline meshfree EQ pool at `k`=8; `*_uncapped_pool` = the
+`cap_control` arms that refit EQ with every interior node as a candidate:
 
 <!-- BEGIN GENERATED: supplementary -->
 <!-- END GENERATED: supplementary -->

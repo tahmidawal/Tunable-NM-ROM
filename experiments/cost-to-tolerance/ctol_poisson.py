@@ -96,6 +96,10 @@ K_BIG = int(os.environ.get("K_BIG", "32"))
 MQ_SUPP = int(os.environ.get("MQ_SUPP", "1024"))       # supplementary m ~ 4M at k >= K_BIG
 DO_SUPP = int(os.environ.get("DO_SUPP", "1"))
 POOL_CONTROL = int(os.environ.get("POOL_CONTROL", "1"))
+CAP_CONTROL = int(os.environ.get("CAP_CONTROL", "1"))
+# the uncapped-pool control is only affordable while the ECSW design matrix fits:
+# rows x n_cand doubles are ~2 GB at 16k candidates and M=64
+CAP_CONTROL_MAX = int(os.environ.get("CAP_CONTROL_MAX", "16384"))
 N_TEST = int(os.environ.get("N_TEST", "16"))
 GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
 TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
@@ -139,8 +143,15 @@ def build_plan():
         if DO_SUPP:
             for k_ in KS:
                 if k_ >= K_BIG:
+                    # m ~ 4M, so the k >= K_BIG cells are not stuck at the m = M corner
                     arms[(k_, M_BIG, MQ_SUPP, "supp_m4M")] = {
                         "coord": list(TAUS), "pod": list(TAUS)}
+            if 8 in KS:
+                # ISOLATOR: the same (M, m) change that the k >= K_BIG cells make,
+                # applied at FIXED k = 8, so the k=32 cost jump can be split into
+                # "more latent dimensions" and "4x more test modes / 4x more nodes"
+                arms[(8, M_BIG, MQ_SUPP, "supp_M256")] = {
+                    "coord": list(TAUS), "pod": list(TAUS)}
         plan[n_] = arms
     return plan
 
@@ -170,6 +181,35 @@ def time_fn(fn, reps=None, warm=None):
     for _ in range(reps):
         t0 = time.perf_counter(); fn(); ts.append(time.perf_counter() - t0)
     return float(np.median(ts)), [float(t) for t in ts]
+
+
+def weak_source_projector_sel(grid, spec):
+    """The DEPLOYABLE input preprocessing for the weak form on grid modes.
+
+    `fu_eq.weak_source_projector` splits the mode table into an offline and an
+    online half, but for pts_kind='grid' its online half is the FULL dense sine
+    transform `S^T f S` (2 N^3 flops) followed by a gather of the M' retained
+    modes.  Only the M' retained rows are ever used, so the deployable operation
+    is the selected-mode contraction, `Phi_sel (M' x n_i^2)` times the flattened
+    source: O(M' N^2).  Charging the full transform to the online path
+    overcharges the ROM at fine meshes (it is the whole cost at N=512).
+
+    Returns (apply, build_secs); `apply` is numerically identical to
+    `pro_common.weak_source_term(grid, spec, 'grid', f)` -- asserted by the
+    caller."""
+    t0 = time.time()
+    alpha, M = spec["alpha"], spec["M"]
+    mask = np.asarray(grid.mode_mask(M)).astype(bool)
+    I, Jm = np.nonzero(mask)
+    lam = np.asarray(grid.lam)[I, Jm]
+    S_ = np.asarray(grid.S)
+    # Phi_sel[q, p] = S[px_p, I_q] * S[py_p, Jm_q]  over the interior nodes p
+    Phi_sel = jnp.asarray((S_[grid.ix_full - 1][:, I] * S_[grid.iy_full - 1][:, Jm]).T)
+    wgt = jnp.asarray(lam ** (-alpha))
+
+    def apply(f_int2d):
+        return (Phi_sel @ jnp.asarray(f_int2d).reshape(-1)) * wgt
+    return jax.jit(apply), time.time() - t0
 
 
 def pod_basis_host(S, kmax):
@@ -202,26 +242,45 @@ def fom_solve(n, Fs):
     return solve_one, U_int, res
 
 
-def timed_sweep(lm, z0, f_ms_j, tau, err_fn, fd_fn):
-    """Per source: WARM warm-ups, TIME_REPS timed reps, error from the LAST
-    TIMED repetition.  Returns the per-source lists."""
-    t, err, jac, att, reason, fd, red = [], [], [], [], [], [], []
-    for fmi in f_ms_j:
+def make_pipeline(ap, lm, u_full, z0):
+    """The whole ONLINE path as ONE jitted, once-synchronised function:
+    preprocess the query source -> tau-stopped latent solve -> decode the
+    interior field.  Timing this (rather than summing three separately measured
+    medians) is what makes `time_ms` and `err_rel_l2` literally the same run."""
+    def pipe(F, tau):
+        f_m = ap(F)
+        z, val, v0, nJ, acc, att, rsn = lm(z0, f_m, tau)
+        return u_full(z), z, val, v0, nJ, acc, att, rsn
+    return jax.jit(pipe)
+
+
+def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid, n_i):
+    """Per source: WARM warm-ups, then TIME_REPS timed, block_until_ready-
+    synchronised repetitions of the FULL PIPELINE; the field that is GRADED is
+    the one returned by the LAST TIMED repetition.  ONE timed quantity per cell,
+    so `time_ms` and `err_rel_l2` are literally the same invocation.  The
+    preprocess and decode stages are measured separately (they are
+    value-independent and k-independent) and subtracted to give the
+    latent-solve component, which is reported as DERIVED."""
+    t_pipe = []
+    err, jac, att_l, reason, fd, red = [], [], [], [], [], []
+    for i, Fi in enumerate(Fs_j):
         for _ in range(WARM):
-            lm(z0, fmi, tau)[0].block_until_ready()
+            pipeline(Fi, tau)[0].block_until_ready()
         ts = []
         for _ in range(TIME_REPS):
             t0 = time.perf_counter()
-            out = lm(z0, fmi, tau)
+            out = pipeline(Fi, tau)
             out[0].block_until_ready()
             ts.append(time.perf_counter() - t0)
-        z_i, val, v0, nJ, acc, n_att, rsn = out          # LAST TIMED REPETITION
-        t.append(float(np.median(ts)))
-        err.append(err_fn(z_i, len(err)))
-        fd.append(fd_fn(z_i, len(fd)))
-        jac.append(int(nJ)); att.append(int(n_att)); reason.append(int(rsn))
-        red.append(float(val) / max(float(v0), 1e-300))   # achieved ||r||/||r(z0)||
-    return t, err, jac, att, reason, fd, red
+        u, z_i, val, v0, nJ, acc, n_att, rsn = out      # LAST TIMED REPETITION
+        t_pipe.append(float(np.median(ts)))
+        ui = np.asarray(u).reshape(n_i, n_i)
+        err.append(float(np.linalg.norm(ui - ref_int[i]) / tn[i]))
+        fd.append(float(np.linalg.norm(np.asarray(grid.op(jnp.asarray(ui))) - Fs[i]) / fn_[i]))
+        jac.append(int(nJ)); att_l.append(int(n_att)); reason.append(int(rsn))
+        red.append(float(val) / max(float(v0), 1e-300))     # achieved ||r||/||r(z0)||
+    return t_pipe, err, jac, att_l, reason, fd, red
 
 
 # --------------------------------------------------------------------------
@@ -272,6 +331,16 @@ def main():
                     slurm_job=os.environ.get("SLURM_JOB_ID"),
                     time_ms_definition="preprocess + latent solve + interior-field decode",
                     node=NODE, configs=CONFIGS or None, arm_tag=ARM_TAG,
+                    source_sha256=ctol_tol.sha256_of(
+                        ctol_tol.module_files([ctol_tol, ctol_eq, pc, mp])
+                        + [os.path.join(HERE, "ctol_poisson.py"),
+                           os.path.join(HERE, "ctol_tables.py")]
+                        + [os.path.join(PRO_DIR, "followup", "fu_eq.py")]),
+                    ckpt_sha256=ctol_tol.sha256_of(
+                        [os.path.join(PKL_DIR, ck[k]["path"]) for k in ks_used]),
+                    src_commits=os.environ.get("CTOL_SRC_COMMITS"),
+                    manifest_sha256=ctol_tol.sha256_of(
+                        [os.path.abspath(os.path.join(HERE, "..", "MANIFEST.sha256"))]),
                     ns_measured=sorted(plan), ks_measured=ks_used,
                     ckpts={k: ck[k]["path"] for k in ks_used}),
         rows=[], fom=[], supplementary=[], complete=False)
@@ -289,12 +358,22 @@ def main():
                                           w[N_TRAIN + i], a[N_TRAIN + i])
                        for i in range(N_TEST)])
         solve_one, U_int, fom_res = fom_solve(n, Fs)
-        F0 = jnp.asarray(Fs[0])
-        fom_med, fom_all = time_fn(lambda: solve_one(F0).block_until_ready())
+        # the FOM is timed on EVERY test source with the same warm-up / median-of-
+        # TIME_REPS protocol and summarised with the SAME across-source statistic
+        # as the ROM (CG iteration counts are source dependent, so timing source 0
+        # alone would compare different workloads)
+        fom_per = []
+        for i in range(N_TEST):
+            Fi = jnp.asarray(Fs[i])
+            med_i, _ = time_fn(lambda _F=Fi: solve_one(_F).block_until_ready())
+            fom_per.append(med_i)
+        fom_med, fom_all = float(np.median(fom_per)), fom_per
         tn = np.array([np.linalg.norm(U_int[i]) for i in range(N_TEST)])
         fn_ = np.array([np.linalg.norm(Fs[i]) for i in range(N_TEST)])
         report["fom"].append(dict(pde="poisson2d", method="fom", N=n, n_dof=n_i2,
                                   fom_cg_s=fom_med, all=fom_all,
+                                  fom_cg_s_mean=float(np.mean(fom_per)),
+                                  fom_cg_s_max=float(np.max(fom_per)),
                                   fom_max_rel_residual=fom_res, cg_tol=mp.CG_TOL,
                                   n_sources=N_TEST, gpu=gpu_name, node=NODE,
                                   slurm_job=os.environ.get("SLURM_JOB_ID"),
@@ -315,13 +394,21 @@ def main():
         def preprocess(M):
             if M not in pre_cache:
                 spec = dict(kind="weak", alpha=1.0, M=M)
-                ap, build_s = weak_source_projector(grid, spec, "grid")
-                chk = float(jnp.max(jnp.abs(ap(jnp.asarray(Fs[0]))
-                                            - pc.weak_source_term(grid, spec, "grid", Fs[0]))))
+                ap, build_s = weak_source_projector_sel(grid, spec)
+                ref = pc.weak_source_term(grid, spec, "grid", Fs[0])
+                chk = float(jnp.max(jnp.abs(ap(jnp.asarray(Fs[0])) - ref))
+                            / (float(jnp.max(jnp.abs(ref))) + 1e-300))
+                if not np.isfinite(chk) or chk > 1e-10:
+                    raise SystemExit(f"selected-mode preprocessor disagrees with "
+                                     f"pro_common.weak_source_term by {chk:.2e}")
                 med, _ = time_fn(lambda: ap(jnp.asarray(Fs[0])).block_until_ready())
-                pre_cache[M] = (ap, med, build_s, chk)
-                log(f"   preprocess M={M}: {med*1e3:.3f} ms/query "
-                    f"(offline table {build_s:.1f} s, vs reference maxabs {chk:.1e})")
+                # the reference's full dense sine transform, for the record
+                ap_full, _b = weak_source_projector(grid, spec, "grid")
+                med_full, _ = time_fn(lambda: ap_full(jnp.asarray(Fs[0])).block_until_ready())
+                pre_cache[M] = (ap, med, build_s, chk, med_full)
+                log(f"   preprocess M={M}: selected-mode matvec {med*1e3:.3f} ms/query "
+                    f"(full dense sine transform {med_full*1e3:.3f} ms; offline table "
+                    f"{build_s:.1f} s; vs reference rel {chk:.1e})")
             return pre_cache[M]
 
         def phi_full(M):
@@ -340,7 +427,7 @@ def main():
 
         for (k, M, m, arm_tag), methods in sorted(plan[n].items()):
             spec = dict(kind="weak", alpha=1.0, M=M)
-            ap, pre_med, pre_build_s, pre_chk = preprocess(M)
+            ap, pre_med, pre_build_s, pre_chk, pre_med_full = preprocess(M)
             Phi_f = phi_full(M)
             f_ms_j = [jnp.asarray(np.asarray(ap(jnp.asarray(Fs[i])))) for i in range(N_TEST)]
 
@@ -388,22 +475,19 @@ def main():
                         f"poisson {method} N={n} k={k}")
                     log(f"   tau-solver vs reference solver at tau=0: rel |dz| {d_agree:.2e}")
 
+                pipeline = make_pipeline(ap, lm, u_full, z0)
                 z_probe = lm(z0, f_ms_j[0], methods[method][0])[0]
                 dec_med, _ = time_fn(lambda: u_full(z_probe).block_until_ready())
-
-                def err_fn(z_i, i, _u=u_full):
-                    ui = np.asarray(_u(z_i)).reshape(n_i, n_i)
-                    return float(np.linalg.norm(ui - U_int[i]) / tn[i])
-
-                def fd_fn(z_i, i, _u=u_full):
-                    ui = jnp.asarray(np.asarray(_u(z_i)).reshape(n_i, n_i))
-                    return float(np.linalg.norm(np.asarray(grid.op(ui)) - Fs[i]) / fn_[i])
+                Fs_j = [jnp.asarray(Fs[i]) for i in range(N_TEST)]
 
                 for tau in methods[method]:
-                    per_t, per_err, per_jac, per_att, per_reason, per_fd, per_red = timed_sweep(
-                        lm, z0, f_ms_j, tau, err_fn, fd_fn)
-                    solve_ms = float(np.median(per_t)) * 1e3
-                    e2e_ms = solve_ms + pre_med * 1e3 + dec_med * 1e3
+                    (per_p, per_err, per_jac, per_att, per_reason, per_fd,
+                     per_red) = timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau,
+                                            U_int, tn, Fs, fn_, grid, n_i)
+                    e2e_ms = float(np.median(per_p)) * 1e3          # the timed pipeline
+                    # DERIVED: the pipeline minus the two value-independent,
+                    # k-independent stages measured in isolation
+                    solve_ms = e2e_ms - pre_med * 1e3 - dec_med * 1e3
                     cens = [r not in TAU_OK for r in per_reason]
                     row = dict(pde="poisson2d", method=method, N=n, k=k, M=M, m=int(len(wq)),
                                tau=tau, time_ms=e2e_ms, err_rel_l2=float(np.mean(per_err)),
@@ -413,8 +497,11 @@ def main():
                                node=NODE, slurm_job=os.environ.get("SLURM_JOB_ID"),
                                # ---- beyond the shared schema: diagnostics / provenance
                                arm=arm_tag, time_ms_solve=solve_ms,
+                               time_ms_solve_derivation="timed pipeline minus the "
+                               "separately measured preprocess and decode medians",
                                time_ms_pre=pre_med * 1e3, time_ms_decode=dec_med * 1e3,
-                               time_ms_solve_per_source=[float(v) * 1e3 for v in per_t],
+                               time_ms_pre_full_transform=pre_med_full * 1e3,
+                               time_ms_e2e_per_source=[float(v) * 1e3 for v in per_p],
                                err_rel_l2_median=float(np.median(per_err)),
                                err_rel_l2_max=float(np.max(per_err)),
                                err_rel_l2_per_source=[float(v) for v in per_err],
@@ -464,7 +551,43 @@ def main():
                     save()
                 log(f"   [cell {method} N={n} k={k} M={M} m={m}: {time.time()-t_cell:.0f}s]")
 
-        # ---- control: the headline MESHFREE EQ pool, coordinate arm at k=8 ----
+        # ---- control arms -----------------------------------------------------
+        # (a) POOL CONTROL: the headline recipe's MESHFREE EQ pool (the primary
+        #     arms use the interior grid for both methods so POD, which is only
+        #     defined at grid nodes, gets the identical hyper-reduction).
+        # (b) CAP CONTROL: the SAME grid pool but UNCAPPED (every interior node as
+        #     an ECSW candidate), so the default 4096-candidate cap is bounded by
+        #     measurement rather than assumed harmless.  Only run where the design
+        #     matrix fits (CAP_CONTROL_MAX candidates).
+        all_taus = sorted({t_ for arms in plan.values() for v in arms.values()
+                           for tt in v.values() for t_ in tt}, reverse=True)
+
+        def run_control(label, arm, k, M, m, dec_pts_fn, pts_np, wq, PhiT, Wl,
+                        z0, u_full_c, ap_c, eq_info):
+            lm_c, _r = ctol_tol.lm_tau_poisson(dec_pts_fn, k, pts_np, wq, PhiT, Wl, GN_ITERS)
+            pipe_c = make_pipeline(ap_c, lm_c, u_full_c, z0)
+            fm_c = [jnp.asarray(np.asarray(ap_c(jnp.asarray(Fs[i])))) for i in range(N_TEST)]
+            Fs_j = [jnp.asarray(Fs[i]) for i in range(N_TEST)]
+            for tau in all_taus:
+                (pp, pe, pj, pa, pr, pfd, prd) = timed_sweep(
+                    pipe_c, lm_c, z0, Fs_j, fm_c, tau, U_int, tn, Fs, fn_, grid, n_i)
+                report["supplementary"].append(dict(
+                    pde="poisson2d", method=label, N=n, k=k, M=M, m=int(len(wq)),
+                    tau=tau, arm=arm, time_ms=float(np.median(pp)) * 1e3,
+                    err_rel_l2=float(np.mean(pe)), jac_evals=float(np.mean(pj)),
+                    iters=float(np.mean(pa)),
+                    censored=bool(any(r not in TAU_OK for r in pr)),
+                    censored_frac=float(np.mean([r not in TAU_OK for r in pr])),
+                    rel_reduction_mean=float(np.mean(prd)),
+                    fd_residual_rel_mean=float(np.mean(pfd)),
+                    n_sources=N_TEST, seed=SEED, gpu=gpu_name, node=NODE,
+                    jax_backend=dev.platform, commit=commit,
+                    eq_rel_fit=eq_info["rel_fit"], eq_n_cand=eq_info["n_cand"]))
+                log(f"   [{arm}] {label} N={n} k={k} tau={tau:.0e} "
+                    f"e2e {np.median(pp)*1e3:.2f} ms err {np.mean(pe):.3e} "
+                    f"eqfit {eq_info['rel_fit']:.2e}")
+            save()
+
         if POOL_CONTROL and 8 in ks_used:
             k, M, m = 8, M_MODES, MQ
             spec = dict(kind="weak", alpha=1.0, M=M)
@@ -479,35 +602,46 @@ def main():
                 jax.jit(lambda z, _d=dec_k: _d(z, grid.coords_int)),
                 np.asarray(PhiT_c).T, np.asarray(PhiT_fo).T * grid.dx ** 2,
                 ck[k]["Z_tr"], k, m, f"poisson coord MESHFREE-POOL N={n} k={k}", pc.nnls_capped)
-            pts_np = cand_off[keep]
-            PhiT, Wl = pc.colloc_mode_table(grid, spec, "offgrid", pts_np)
+            PhiT, Wl = pc.colloc_mode_table(grid, spec, "offgrid", cand_off[keep])
             ap_o, _ = weak_source_projector(grid, spec, "offgrid")
-            fmo = [jnp.asarray(np.asarray(ap_o(jnp.asarray(Fs[i])))) for i in range(N_TEST)]
-            lm, _rn = ctol_tol.lm_tau_poisson(dec_k, k, pts_np, wq, PhiT, Wl, GN_ITERS)
-            z0 = jnp.asarray(ck[k]["Z_tr"].mean(0))
-            u_full_c = jax.jit(lambda z, _d=dec_k: _d(z, grid.coords_int))
+            run_control("coord_meshfree_pool", "pool_control", k, M, m, dec_k,
+                        cand_off[keep], wq, PhiT, Wl,
+                        jnp.asarray(ck[k]["Z_tr"].mean(0)),
+                        jax.jit(lambda z, _d=dec_k: _d(z, grid.coords_int)), ap_o, eq_info)
 
-            def err_c(z_i, i):
-                ui = np.asarray(u_full_c(z_i)).reshape(n_i, n_i)
-                return float(np.linalg.norm(ui - U_int[i]) / tn[i])
+        if CAP_CONTROL and 8 in ks_used and cand_pos.size < n_i2 and n_i2 <= CAP_CONTROL_MAX:
+            k, M, m = 8, M_MODES, MQ
+            spec = dict(kind="weak", alpha=1.0, M=M)
+            ap_g, _pm, _pb, _pc2, _pf = preprocess(M)
+            Phi_f = phi_full(M)
+            full_pos = np.arange(n_i2)
+            for method in ("coord", "pod"):
+                if method == "coord":
+                    dec_k = ck[k]["dec"]
+                    Z_snap = ck[k]["Z_tr"]
+                    z0c = jnp.asarray(Z_snap.mean(0))
+                    u_c = jax.jit(lambda z, _d=dec_k: _d(z, grid.coords_int))
+                    u_f = u_c
+                else:
+                    Vk = np.ascontiguousarray(Vfull[:, :k])
+                    Vk_j = jnp.asarray(Vk)
+                    Z_snap = X_tr @ Vk
+                    z0c = jnp.asarray(c_mean_full[:k])
+                    u_c = jax.jit(lambda c, _V=Vk_j: _V @ c)
+                    u_f = u_c
+                keep, wq, eq_info = ctol_eq.eq_fit_poisson(
+                    u_c, u_f, Phi_f, Phi_f, Z_snap, k, m,
+                    f"poisson {method} UNCAPPED-POOL N={n} k={k}", pc.nnls_capped)
+                pts_np = np.asarray(grid.coords_int)[full_pos[keep]]
+                PhiT, Wl = pc.colloc_mode_table(grid, spec, "grid", pts_np)
+                if method == "coord":
+                    dpf = dec_k
+                else:
+                    Vq_j = jnp.asarray(Vk[full_pos[keep]])
+                    dpf = lambda z, xy, _V=Vq_j: _V @ z
+                run_control(f"{method}_uncapped_pool", "cap_control", k, M, m, dpf,
+                            pts_np, wq, PhiT, Wl, z0c, u_f, ap_g, eq_info)
 
-            for tau in sorted({t_ for arms in plan.values() for v in arms.values()
-                               for tt in v.values() for t_ in tt}, reverse=True):
-                per_t, per_err, per_jac, per_att, per_reason, _fd, per_red = timed_sweep(
-                    lm, z0, fmo, tau, err_c, lambda z, i: float("nan"))
-                report["supplementary"].append(dict(
-                    pde="poisson2d", method="coord_meshfree_pool", N=n, k=k, M=M,
-                    m=int(len(wq)), tau=tau, arm="pool_control",
-                    time_ms_solve=float(np.median(per_t)) * 1e3,
-                    err_rel_l2=float(np.mean(per_err)), jac_evals=float(np.mean(per_jac)),
-                    iters=float(np.mean(per_att)),
-                    censored=bool(any(r not in TAU_OK for r in per_reason)),
-                    rel_reduction_mean=float(np.mean(per_red)),
-                    n_sources=N_TEST, seed=SEED, gpu=gpu_name, jax_backend=dev.platform,
-                    commit=commit, eq_rel_fit=eq_info["rel_fit"]))
-                log(f"   [pool control] meshfree N={n} k=8 tau={tau:.0e} "
-                    f"solve {np.median(per_t)*1e3:.2f} ms err {np.mean(per_err):.3e}")
-            save()
         log(f"== N={n} done [{time.time()-t_mesh:.0f}s]")
 
     report["complete"] = True

@@ -163,10 +163,20 @@ def fig_pareto(pts, pde, ns, out, extra):
         for p in here:
             if not (finite(p.get("time_ms")) and finite(p.get("err_rel_l2"))):
                 continue
-            ax.plot(p["time_ms"], p["err_rel_l2"], "o", ms=3,
-                    color=M_COLOR[p["method"]], alpha=0.22, mec="none")
+            cens = bool(p.get("censored") or p.get("censored_frac"))
+            ax.plot(p["time_ms"], p["err_rel_l2"], "o" if not cens else "x", ms=3,
+                    color=M_COLOR[p["method"]], alpha=0.22 if not cens else 0.35,
+                    mec="none" if not cens else M_COLOR[p["method"]], mew=0.8)
         for meth in ("coord", "pod"):
-            fr = T.nondominated([p for p in here if p["method"] == meth])
+            sel_m = [p for p in here if p["method"] == meth]
+            # dashed = the AS-DEPLOYED frontier (censored cells allowed: set the knob
+            # and take whatever the solver reaches); solid = the STRICT frontier
+            # (only cells that actually reached their own tau)
+            fd_ = T.nondominated(sel_m, require_uncensored=False)
+            if fd_:
+                ax.plot([p["time_ms"] for p in fd_], [p["err_rel_l2"] for p in fd_], "--",
+                        color=M_COLOR[meth], lw=1.1, alpha=0.65, zorder=2)
+            fr = T.nondominated(sel_m)
             if not fr:
                 continue
             ax.plot([p["time_ms"] for p in fr], [p["err_rel_l2"] for p in fr], "-",
@@ -191,7 +201,9 @@ def fig_pareto(pts, pde, ns, out, extra):
             ax.legend(loc="upper right")
     fig.suptitle(f"{PDE_LABEL[pde]}: iso-error Pareto frontier "
                  f"(all $k$ x $\\tau$ configurations; labels are $k$; the FOM is exact, so it "
-                 f"is a vertical line -- the price of exactness)", y=1.02, color=st.INK)
+                 f"is a vertical line -- the price of exactness)"
+                 f"\nsolid = cells that reached their own $\\tau$;  dashed = as-deployed "
+                 f"(censored cells, crosses, included)", y=1.04, color=st.INK)
     fig.tight_layout()
     return st.save(fig, out, f"ctol_pareto_{pde}", extra)
 

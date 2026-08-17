@@ -130,15 +130,37 @@ def to_points(data):
     return pts
 
 
-def nondominated(points, time_key="time_ms", err_key="err_rel_l2"):
+def usable_points(points, time_key="time_ms", err_key="err_rel_l2",
+                  require_uncensored=True):
+    """Points that may define a "cost at tau" operating point.
+
+    A CENSORED cell stopped for a reason other than reaching its own tau, so its
+    cost is the cost of running to termination, not the cost to the tolerance --
+    admitting it would reintroduce exactly the defect this cell exists to remove.
+    A cell with a blow-up has no usable error at all.  Both are still reported in
+    every raw table and in the scatter; they simply cannot define the frontier.
+    `require_uncensored=False` gives the AS-DEPLOYED view (set the knob, take
+    whatever the solver reaches), which is reported alongside and labelled."""
+    out = []
+    for p in points:
+        if p.get(time_key) is None or p.get(err_key) is None:
+            continue
+        if not (math.isfinite(p[time_key]) and math.isfinite(p[err_key])):
+            continue
+        if p.get("n_blowup"):
+            continue
+        if require_uncensored and (p.get("censored") or p.get("censored_frac")):
+            continue
+        out.append(p)
+    return out
+
+
+def nondominated(points, time_key="time_ms", err_key="err_rel_l2",
+                 require_uncensored=True):
     """Non-dominated set under (minimise time, minimise error).  A point is
     dominated when another point is <= in BOTH coordinates and < in at least
-    one.  Points with a non-finite error are never on the frontier (they are
-    kept in the scatter and reported, but they are not a usable operating
-    point)."""
-    usable = [p for p in points
-              if p.get(time_key) is not None and p.get(err_key) is not None
-              and math.isfinite(p[time_key]) and math.isfinite(p[err_key])]
+    one."""
+    usable = usable_points(points, time_key, err_key, require_uncensored)
     out = []
     for p in usable:
         dom = False
@@ -154,11 +176,10 @@ def nondominated(points, time_key="time_ms", err_key="err_rel_l2"):
     return sorted(out, key=lambda p: p[time_key])
 
 
-def cheapest_reaching(points, target, time_key="time_ms"):
-    """Cheapest configuration whose error is <= target, or None."""
-    ok = [p for p in points if p.get("err_rel_l2") is not None
-          and math.isfinite(p["err_rel_l2"]) and p["err_rel_l2"] <= target
-          and p.get(time_key) is not None and math.isfinite(p[time_key])]
+def cheapest_reaching(points, target, time_key="time_ms", require_uncensored=True):
+    """Cheapest UNCENSORED configuration whose error is <= target, or None."""
+    ok = [p for p in usable_points(points, time_key, require_uncensored=require_uncensored)
+          if p["err_rel_l2"] <= target]
     return min(ok, key=lambda p: p[time_key]) if ok else None
 
 
@@ -306,25 +327,29 @@ def build_blocks(data, pts):
         B[f"resid_{pde}"] = md_table(["tau", "method", "N"] + [f"k={k}" for k in ks], rows)
 
     # ---- iso-error Pareto frontier ---------------------------------------
+    # STRICT frontier: uncensored, blow-up-free cells only -- a censored cell's
+    # cost is "cost to termination", not "cost to tau", and admitting it would
+    # reintroduce the defect this cell exists to remove.  The AS-DEPLOYED frontier
+    # (all cells; set the knob and take what you get) is tabulated next to it.
     for pde, d in sorted(data.items()):
-        rows = []
-        for N in d["config"]["ns"]:
-            fom = [p for p in primary if p["pde"] == pde and p["method"] == "fom"
-                   and p["N"] == N]
-            fom_ms = fom[0]["time_ms"] if fom else None
-            for method in ("coord", "pod"):
-                sel = [p for p in primary if p["pde"] == pde and p["method"] == method
+        for strict, key in ((True, "pareto"), (False, "paretodep")):
+            rows = []
+            for N in d["config"]["ns"]:
+                fom = [p for p in primary if p["pde"] == pde and p["method"] == "fom"
                        and p["N"] == N]
-                fr = nondominated(sel)
-                for p in fr:
-                    rows.append([N, method, p["k"], f"{p['tau']:.0e}",
-                                 fmt(p["time_ms"], ".2f"), fmt(p["err_rel_l2"]),
-                                 fmt(p["jac_evals"], ".1f"),
-                                 "yes" if p["censored"] else "no",
-                                 fmt(fom_ms / p["time_ms"], ".1f") if fom_ms else "--"])
-        B[f"pareto_{pde}"] = md_table(
-            ["N", "method", "k", "tau", "time ms (e2e)", "err rel-L2", "jac evals",
-             "censored", "x FOM"], rows)
+                fom_ms = fom[0]["time_ms"] if fom else None
+                for method in ("coord", "pod"):
+                    sel = [p for p in primary if p["pde"] == pde
+                           and p["method"] == method and p["N"] == N]
+                    for p in nondominated(sel, require_uncensored=strict):
+                        rows.append([N, method, p["k"], p["M"], p["m"], f"{p['tau']:.0e}",
+                                     fmt(p["time_ms"], ".2f"), fmt(p["err_rel_l2"]),
+                                     fmt(p["jac_evals"], ".1f"),
+                                     fmt(100 * (p.get("censored_frac") or 0.0), ".0f"),
+                                     fmt(fom_ms / p["time_ms"], ".1f") if fom_ms else "--"])
+            B[f"{key}_{pde}"] = md_table(
+                ["N", "method", "k", "M", "m", "tau", "time ms (e2e)", "err rel-L2",
+                 "jac evals", "censored %", "x FOM"], rows)
 
     # ---- who owns the frontier -------------------------------------------
     for pde, d in sorted(data.items()):
@@ -335,13 +360,13 @@ def build_blocks(data, pts):
             fr = nondominated(sel)
             n_c = sum(1 for p in fr if p["method"] == "coord")
             n_p = sum(1 for p in fr if p["method"] == "pod")
-            best_c = min([p for p in sel if p["method"] == "coord"
-                          and math.isfinite(p["err_rel_l2"])],
+            usable = usable_points(sel)
+            best_c = min([p for p in usable if p["method"] == "coord"],
                          key=lambda p: p["err_rel_l2"], default=None)
-            best_p = min([p for p in sel if p["method"] == "pod"
-                          and math.isfinite(p["err_rel_l2"])],
+            best_p = min([p for p in usable if p["method"] == "pod"],
                          key=lambda p: p["err_rel_l2"], default=None)
-            owner = ("coord" if n_p == 0 else "pod" if n_c == 0 else "split")
+            owner = ("--" if n_c + n_p == 0 else
+                     "coord" if n_p == 0 else "pod" if n_c == 0 else "split")
             rows.append([N, n_c, n_p, owner,
                          fmt(best_c["err_rel_l2"]) if best_c else "--",
                          f"k={best_c['k']}" if best_c else "--",
@@ -349,7 +374,8 @@ def build_blocks(data, pts):
                          f"k={best_p['k']}" if best_p else "--"])
         B[f"owner_{pde}"] = md_table(
             ["N", "coord points on frontier", "pod points on frontier", "owner",
-             "best coord err", "at", "best pod err", "at"], rows)
+             "best coord err (uncensored)", "at", "best pod err (uncensored)", "at"],
+            rows)
 
     # ---- scaling: cheapest time reaching an error target -------------------
     # The CONFIG is chosen from the panel grid (accuracy is GPU-independent); the TIME
@@ -410,14 +436,19 @@ def build_blocks(data, pts):
     rows = []
     for pde, d in sorted(data.items()):
         for s in d.get("supplementary", []):
-            rows.append([pde, s["method"], s["N"], s["k"], s.get("M"), s.get("m"),
+            rows.append([pde, s["method"], s.get("N"), s.get("k", "--"),
+                         s.get("M", "--"), s.get("m", "--"),
                          f"{s['tau']:.0e}" if s.get("tau") else "--",
+                         fmt(s.get("time_ms"), ".3f"),
                          fmt(s.get("time_ms_solve"), ".3f"),
-                         fmt(s.get("err_rel_l2")), s.get("arm")])
+                         fmt(s.get("err_rel_l2")),
+                         fmt(100 * (s.get("censored_frac") or 0.0), ".0f")
+                         if s.get("censored_frac") is not None else "--",
+                         fmt(s.get("eq_rel_fit"), ".2e"), s.get("arm")])
     if rows:
         B["supplementary"] = md_table(
-            ["pde", "arm method", "N", "k", "M", "m", "tau", "solve ms", "err rel-L2",
-             "arm"], rows)
+            ["pde", "arm method", "N", "k", "M", "m", "tau", "e2e ms", "solve ms",
+             "err rel-L2", "censored %", "EQ rel fit", "arm"], rows)
     else:
         B["supplementary"] = "_(no supplementary arms in this run)_"
 
@@ -434,6 +465,24 @@ def build_blocks(data, pts):
                                            if k in cells else "--" for k in ks])
         B[f"eqfit_{pde}"] = md_table(["method", "N"] + [f"k={k}" for k in ks], rows)
 
+    # ---- POD projection floor (oracle bound on the POD arm) ----------------
+    rows = []
+    for pde, d in sorted(data.items()):
+        for sup in d.get("supplementary", []):
+            if sup.get("method") != "pod_projection_floor":
+                continue
+            fl = sup.get("floors", {})
+            rows.append([pde, sup["N"], sup.get("n_snapshots"),
+                         fmt(sup.get("orthonormality_dev"), ".1e")]
+                        + [fmt(fl.get(str(k))) for k in sorted(int(x) for x in fl)])
+    if rows:
+        ks_f = sorted(int(x) for x in next(
+            sup["floors"] for d in data.values() for sup in d.get("supplementary", [])
+            if sup.get("method") == "pod_projection_floor"))
+        B["podfloor"] = md_table(["pde", "N", "snapshots", "orthonorm dev"]
+                                 + [f"k={k}" for k in ks_f], rows)
+    else:
+        B["podfloor"] = "_(no POD projection floors in this run)_"
     return B
 
 
@@ -461,14 +510,82 @@ def rewrite(readme, blocks):
     return n
 
 
+# The grid this cell is SPECIFIED to deliver.  Checking coverage against the union
+# of what actually arrived would never notice a panel that failed to land at all.
+EXPECTED = {
+    "poisson2d": dict(ns=[32, 64, 128, 256, 512], ks=[2, 4, 6, 8, 12, 16, 24, 32],
+                      taus=[1e-1, 1e-2, 1e-3]),
+    "burgers2d": dict(ns=[32, 64, 128, 256], ks=[2, 4, 6, 8, 12, 16, 24, 32],
+                      taus=[1e-1, 1e-2, 1e-3]),
+}
+
+
+def audit(data, allow_incomplete=False):
+    """Refuse to build tables from a partial surface.
+
+    The drivers save incrementally and pull.sh copies the output of a job that
+    failed, so a crashed panel would otherwise become a quietly incomplete
+    surface.  Every panel must have finished, every expected
+    (N, k, M, m, method, tau) primary cell must be present exactly once, and the
+    configuration/backend must agree across panels."""
+    problems = []
+    for pde, d in sorted(data.items()):
+        for c in d["panels"]:
+            if not c.get("_complete"):
+                problems.append(f"{pde}: panel {c.get('_file')} did not finish "
+                                f"(no `complete: true`)")
+            if c.get("backend") != "gpu":
+                problems.append(f"{pde}: panel {c.get('_file')} ran on "
+                                f"backend={c.get('backend')!r}, not gpu")
+            if c.get("matmul_precision") != "highest":
+                problems.append(f"{pde}: panel {c.get('_file')} had "
+                                f"JAX_DEFAULT_MATMUL_PRECISION={c.get('matmul_precision')!r}")
+            if not c.get("x64"):
+                problems.append(f"{pde}: panel {c.get('_file')} did not run in f64")
+        seen = {}
+        for r in d["rows"]:
+            key = (r["N"], r["k"], r["M"], r["m"], r["method"], r["tau"], r.get("arm"))
+            seen[key] = seen.get(key, 0) + 1
+        dup = [k for k, v in seen.items() if v > 1]
+        if dup:
+            problems.append(f"{pde}: {len(dup)} duplicated cells, e.g. {dup[:3]}")
+        cfg = d["config"]
+        kb, mb, mq = cfg["k_big"], cfg["M_big"], cfg["m"]
+        exp = EXPECTED.get(pde, dict(ns=cfg["ns"], ks=cfg["ks"], taus=cfg["taus"]))
+        for miss in sorted(set(exp["ns"]) - set(cfg["ns"])):
+            problems.append(f"{pde}: mesh N={miss} is missing entirely (no panel landed)")
+        for miss in sorted(set(exp["ks"]) - set(cfg["ks"])):
+            problems.append(f"{pde}: k={miss} is missing entirely")
+        for N in sorted(set(cfg["ns"]) & set(exp["ns"])):
+            for k in exp["ks"]:
+                M = mb if k >= kb else cfg["M"]
+                for method in ("coord", "pod"):
+                    for tau in exp["taus"]:
+                        if (N, k, M, mq, method, tau, "primary") not in seen:
+                            problems.append(f"{pde}: missing primary cell "
+                                            f"N={N} k={k} M={M} m={mq} {method} "
+                                            f"tau={tau:.0e}")
+    if problems:
+        head = f"{len(problems)} surface-integrity problem(s):\n  " + "\n  ".join(problems[:40])
+        if not allow_incomplete:
+            raise SystemExit(head + "\n(pass --allow-incomplete to build provisional "
+                                    "tables from a partial surface)")
+        print("  WARNING (--allow-incomplete): " + head, file=sys.stderr)
+    return problems
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", default=os.path.join(HERE, "runs"))
     ap.add_argument("--readme", default=os.path.join(HERE, "README.md"))
+    ap.add_argument("--allow-incomplete", action="store_true",
+                    help="build provisional tables from a partial surface, stamping the "
+                         "problems into the README's integrity block")
     args = ap.parse_args()
     data = load(args.runs)
     if not data:
         raise SystemExit("no surface JSONs found")
+    problems = audit(data, args.allow_incomplete)
     pts = to_points(data)
     out = os.path.join(args.runs, "pareto_points.json")
     json.dump(pts, open(out, "w"), indent=1)
@@ -484,6 +601,12 @@ def main():
         if p["method"] not in ("coord", "pod", "fom"):
             raise SystemExit(f"pareto point has method '{p['method']}' outside the schema")
     blocks = build_blocks(data, pts)
+    blocks["integrity"] = ("_no integrity problems: every panel complete, every expected "
+                           "primary cell present exactly once, every panel on GPU in f64 at "
+                           "matmul precision `highest`._"
+                           if not problems else
+                           "**PROVISIONAL -- the surface is incomplete:**\n\n"
+                           + "\n".join(f"* {t}" for t in problems[:40]))
     rewrite(args.readme, blocks)
 
 

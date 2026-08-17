@@ -46,7 +46,7 @@ EQ_SEED = int(os.environ.get("CTOL_EQ_SEED", "20259"))
 
 
 # --------------------------------------------------------------------------
-def _solve_nnls(G, b, m, rng, nnls_capped, label, extra, t0):
+def _solve_nnls(G, b, m, rng, nnls_capped, label, extra, t0, pad_score=None):
     """Shared tail of both fits: row scaling -> capped Lawson-Hanson on an
     EQ_ROWS subsample -> support padding -> nonnegative refit on ALL rows."""
     sc = np.linalg.norm(G, axis=1) + 1e-300
@@ -61,7 +61,9 @@ def _solve_nnls(G, b, m, rng, nnls_capped, label, extra, t0):
         padded = 0
     else:
         rest = np.setdiff1d(np.arange(n_c), supp)
-        score = np.abs(G).mean(0)
+        # the reference pads on the mean |snapshot| at each candidate node, not on
+        # the design matrix -- keep that rule so the fit matches fu_eq / blat
+        score = np.abs(G).mean(0) if pad_score is None else pad_score
         pad = rest[np.argsort(-score[rest])[:m - len(supp)]]
         keep = np.concatenate([supp, pad])
         padded = len(pad)
@@ -88,9 +90,11 @@ def _solve_nnls(G, b, m, rng, nnls_capped, label, extra, t0):
 
 
 def candidate_pool(n_i2, cap=None, seed=None):
+    # cap=0 (or any value >= n_i2) means "no cap": use every interior node.  The
+    # `cap_control` arms use that to bound what the default cap costs.
     """Indices into the interior-node list: all of them when the interior is no
     larger than the cap, otherwise a fixed random subsample."""
-    cap = CAND_CAP if cap is None else cap
+    cap = CAND_CAP if cap is None else (n_i2 if not cap else cap)
     if n_i2 <= cap:
         return np.arange(n_i2)
     r = np.random.default_rng(EQ_SEED if seed is None else seed)
@@ -113,15 +117,18 @@ def eq_fit_poisson(u_cand, u_full, Phi_c, Phi_f, Z_snap, K, m, label, nnls_cappe
     r_eq = np.random.default_rng(EQ_SEED)
     n_tr = Z_snap.shape[0]
     idx = r_eq.choice(n_tr, size=min(EQ_SNAPS, n_tr), replace=False)
-    # The reference uses an ABSOLUTE 0.05 perturbation, which is ~5% for the
-    # coordinate latents (rms ~ 1) but numerically nothing for POD coefficients
-    # (rms ~ 1e2).  Scaling it by rms(Z) keeps the two arms symmetric and stays
-    # within a few percent of the reference for the coordinate decoder.
-    pert = 0.05 * float(np.sqrt(np.mean(np.asarray(Z_snap) ** 2)))
+    # The reference uses an ABSOLUTE 0.05 perturbation.  That is ~5% for the
+    # coordinate latents (per-coordinate std ~ 1) but numerically nothing for POD
+    # coefficients, whose per-coordinate std spans orders of magnitude across
+    # modes.  A single global RMS scale is not invariant to per-coordinate
+    # scaling either (it over-excites the weak modes), so the perturbation is
+    # COORDINATE-WHITENED: 0.05 * std(Z[:, j]) per coordinate.  For the
+    # coordinate decoder that reduces to ~the reference's absolute 0.05.
+    pert = 0.05 * np.asarray(Z_snap, dtype=np.float64).std(axis=0)
     snaps, fulls = [], []
     for i in idx:
         z = jnp.asarray(Z_snap[i])
-        for zz in [z] + [z + pert * jnp.asarray(r_eq.standard_normal(K))
+        for zz in [z] + [z + jnp.asarray(pert * r_eq.standard_normal(K))
                          for _ in range(EQ_PERTURB)]:
             snaps.append(np.asarray(u_cand(zz)))
             fulls.append(np.asarray(u_full(zz)))
@@ -131,8 +138,10 @@ def eq_fit_poisson(u_cand, u_full, Phi_c, Phi_f, Z_snap, K, m, label, nnls_cappe
     G = np.einsum("sp,pm->smp", R, Phi_c).reshape(-1, R.shape[1])
     del Rf
     return _solve_nnls(G, b, m, r_eq, nnls_capped, label,
-                       dict(kind="weak_poisson", perturb_abs=pert,
-                            z_rms=pert / 0.05), t0)
+                       dict(kind="weak_poisson",
+                            perturb_per_coord=[float(v) for v in pert],
+                            z_std=[float(v) for v in pert / 0.05]), t0,
+                       pad_score=np.abs(R).mean(0))
 
 
 # --------------------------------------------------------------------------
@@ -155,7 +164,7 @@ def eq_fit_burgers(u_full, adv_full, Phi_full, cand_pos, Z_snap, K, m, label,
     r_eq = np.random.default_rng(EQ_SEED)
     n_s = Z_snap.shape[0]
     idx = r_eq.choice(n_s, size=min(EQ_SNAPS, n_s), replace=False)
-    Gs, bs = [], []
+    Gs, bs, snap_c = [], [], []
     Phi_c = Phi_full[cand_pos]                                  # (n_c, M)
     for i in idx:
         z = jnp.asarray(Z_snap[i])
@@ -164,7 +173,9 @@ def eq_fit_burgers(u_full, adv_full, Phi_full, cand_pos, Z_snap, K, m, label,
         for v_f in (uf, Nf):
             bs.append(Phi_full.T @ v_f)                          # (M,)
             Gs.append(Phi_c.T * v_f[cand_pos][None, :])          # (M, n_c)
+            snap_c.append(v_f[cand_pos])
+    pad_score = np.abs(np.stack(snap_c)).mean(0)                 # reference rule
     G = np.concatenate(Gs, axis=0)
     b = np.concatenate(bs)
     return _solve_nnls(G, b, m, r_eq, nnls_capped, label,
-                       dict(kind="weak_burgers"), t0)
+                       dict(kind="weak_burgers"), t0, pad_score=pad_score)

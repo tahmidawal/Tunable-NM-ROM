@@ -118,10 +118,17 @@ ceiling; Burgers POD `k`=64,`M`=64 diverged).
 
 That exception means the `k`=32 column is **not a pure `k` step**: it also quadruples the
 number of test modes. Two supplementary arms make the confound measurable rather than hidden:
-`m`=1024 at `k`=32 (so `m ~ 4M`, the knee, instead of the `m` = `M` corner), and an
-**isolator** at fixed `k`=8 with the same `(M, m)` = (256, 1024) change. Both are valid
-configurations and both enter the Pareto scatter and frontier; the cost(`k`) tables report the
-spec'd primary grid.
+
+* an **isolator** at fixed `k`=8 with `M`=256 and `m` held at 256 — exactly the change the
+  primary grid makes at `k`=32, with `k` frozen, so the two effects separate;
+* `m`=512 at `k`=32, so the `m` = `M` = 256 corner is not the only `m` measured there.
+
+Both are valid configurations and both enter the Pareto scatter and frontier; the cost(`k`)
+tables report the spec'd primary grid. `m` is deliberately *not* pushed to the `m ~ 4M` knee
+(1024) for these: the ECSW refit is solved on every row and its cost grows as `m^3`, so one
+`M`=256, `m`=1024 Poisson fit is ~60 min — more than ten times the entire primary grid — for a
+supplementary arm. That was measured on the first submission and the arms were retuned before
+the run (see §10).
 
 <!-- BEGIN GENERATED: configuration -->
 <!-- END GENERATED: configuration -->
@@ -436,6 +443,17 @@ CODEX-REVIEW-RESULTS.md   audit of every table and figure against the JSONs, aft
 ```
 
 ## 10. Status
+
+**First submission, retuned.** The nine panels were first submitted with the supplementary
+arms at `m`=1024. Timing the primary `M`=64, `m`=256 fits in the running jobs (15 s at 17 408
+ECSW rows) calibrates the capped Lawson-Hanson refit at ~6 GFLOP/s, and its cost grows as
+`n_rows * m^3 / 3`: an `M`=256, `m`=1024 Poisson fit is ~61 min, four per panel, i.e. **4.1 h
+per panel of supplementary work against ~25 min for the whole primary grid**, and it would
+have serialised the four Burgers panels behind it. The panels were cancelled ~14 minutes in
+(before any supplementary fit completed, so nothing measured was discarded), the supplementary
+arms retuned as described in §4, and everything resubmitted. The same pass caught a second
+defect: the batch environment pinned `N_POD_TRAJ=128`, which would have silently overridden
+the driver default and reinstated exactly the POD handicap the Codex audit had just removed.
 
 The nine panel jobs (`ctol_p_n{32,64,128,256,512}`, `ctol_b_n{32,64,128,256}`) were submitted
 together on 2026-08-17, one per directory under `/cluster/tufts/paralab/tawal01/ctol/`, all on

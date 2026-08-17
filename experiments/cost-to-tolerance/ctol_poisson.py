@@ -93,7 +93,7 @@ M_MODES = int(os.environ.get("M", "64"))
 MQ = int(os.environ.get("MQ", "256"))
 M_BIG = int(os.environ.get("M_BIG", "256"))
 K_BIG = int(os.environ.get("K_BIG", "32"))
-MQ_SUPP = int(os.environ.get("MQ_SUPP", "1024"))       # supplementary m ~ 4M at k >= K_BIG
+MQ_SUPP = int(os.environ.get("MQ_SUPP", "512"))       # supplementary m ~ 4M at k >= K_BIG
 DO_SUPP = int(os.environ.get("DO_SUPP", "1"))
 POOL_CONTROL = int(os.environ.get("POOL_CONTROL", "1"))
 CAP_CONTROL = int(os.environ.get("CAP_CONTROL", "1"))
@@ -147,10 +147,12 @@ def build_plan():
                     arms[(k_, M_BIG, MQ_SUPP, "supp_m4M")] = {
                         "coord": list(TAUS), "pod": list(TAUS)}
             if 8 in KS:
-                # ISOLATOR: the same (M, m) change that the k >= K_BIG cells make,
-                # applied at FIXED k = 8, so the k=32 cost jump can be split into
-                # "more latent dimensions" and "4x more test modes / 4x more nodes"
-                arms[(8, M_BIG, MQ_SUPP, "supp_M256")] = {
+                # ISOLATOR at FIXED k = 8 of the M jump the SPEC makes at k >= K_BIG
+                # (M: 64 -> 256 with m held at MQ).  m is held at MQ deliberately:
+                # that is exactly the change the primary grid makes, and the ECSW
+                # refit cost grows as m^3 -- m=1024 at M=256 is ~60 min per fit,
+                # more than ten times the whole primary grid, for a supplementary arm.
+                arms[(8, M_BIG, MQ, "supp_M256")] = {
                     "coord": list(TAUS), "pod": list(TAUS)}
         plan[n_] = arms
     return plan

@@ -2,3 +2,10 @@ __pycache__/
 *.pyc
 cluster/stage/
 cluster/pull/
+
+# The repo root .gitignore excludes *.pkl / *.out / *.log as "regenerable artefacts".
+# For this experiment the trained auto-decoder checkpoints and the Slurm logs ARE the
+# provenance (commit, GPU, jax_backend, job id), so re-include them here.  Total ~41 MB.
+!runs/**/*.pkl
+!runs/**/*.out
+!smoke/*.pkl

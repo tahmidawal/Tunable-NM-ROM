@@ -1,0 +1,118 @@
+host=pax143  gpu=NVIDIA A100-PCIE-40GB
+git_commit=90171caef6800d6decc71aab627b126c6b8db80d dirty=0
+jax_backend=gpu cuda:0
+jax_backend=gpu  x64=True  N=64 K=16 steps=60000 batch=128 p_sub=2048 t_smooth=0.01 bc=poly hidden=256x5
+  FOM: 576 trajectories (50 implicit steps each) in 2s, spot rel residual 4.62e-11
+  data check (train/val only): max FOM rel residual 1.00e-10
+  data fingerprint {'sum': 46336015.67638748, 'sumsq': 102344517.30381185, 'shape': [576, 51, 4096]}
+  POD: 26112 snapshots, top-64 ortho dev 3.0e-15 [4s]
+  POD val floors: r4=2.762e-01  r6=1.873e-01  r8=1.330e-01  r16=6.233e-02  r32=2.291e-02  r64=6.730e-03
+  film params 463425, n_freq 31, eps 9.1933e-01
+  step      0  loss 1.257e-02  data 1.202e-02  [6s]
+  step   2000  loss 8.110e-04  data 1.099e-04  [103s]
+  step   4000  loss 6.926e-04  data 4.263e-05  [200s]
+  step   6000  loss 2.394e-03  data 3.514e-05  [298s]
+  step   8000  loss 4.418e-04  data 3.000e-05  [396s]
+  step  10000  loss 7.114e-04  data 1.885e-05  [494s]
+  step  12000  loss 4.967e-04  data 1.313e-05  [592s]
+  step  14000  loss 1.091e-03  data 9.941e-06  [689s]
+  step  16000  loss 2.224e-04  data 4.966e-06  [787s]
+  step  18000  loss 6.613e-04  data 8.899e-06  [885s]
+  step  20000  loss 4.333e-04  data 7.247e-06  [983s]
+  step  22000  loss 3.074e-04  data 9.359e-06  [1081s]
+  step  24000  loss 1.153e-03  data 8.497e-06  [1179s]
+  step  26000  loss 3.448e-04  data 5.375e-06  [1277s]
+  step  28000  loss 4.429e-04  data 3.898e-06  [1375s]
+  step  30000  loss 3.300e-04  data 2.320e-06  [1473s]
+  step  32000  loss 1.170e-03  data 4.629e-06  [1571s]
+  step  34000  loss 4.779e-04  data 2.644e-06  [1669s]
+  step  36000  loss 6.946e-04  data 1.928e-06  [1766s]
+  step  38000  loss 2.537e-04  data 1.475e-06  [1864s]
+  step  40000  loss 1.029e-03  data 1.420e-06  [1962s]
+  step  42000  loss 2.397e-04  data 1.145e-06  [2060s]
+  step  44000  loss 2.229e-03  data 1.261e-06  [2158s]
+  step  46000  loss 3.437e-04  data 1.100e-06  [2256s]
+  step  48000  loss 2.249e-04  data 7.592e-07  [2354s]
+  step  50000  loss 7.338e-04  data 6.457e-07  [2452s]
+  step  52000  loss 3.022e-04  data 4.162e-07  [2550s]
+  step  54000  loss 8.903e-04  data 5.648e-07  [2648s]
+  step  56000  loss 4.509e-04  data 6.242e-07  [2746s]
+  step  58000  loss 3.732e-04  data 5.079e-07  [2844s]
+  step  59999  loss 3.401e-04  data 4.810e-07  [2942s]
+  TRAIN recon at learned latents: mean rel 5.899e-03 (median 4.652e-03, max 1.377e-01); latent RMS 1.025, mean |dz| per step 9.795e-02 [2942s]
+wrote N64_K16
+jax_backend=gpu  N=64  variants=['lspg:full:fd', 'galerkin:full:fd', 'lspg:full:weakall', 'galerkin:full:weakall', 'lspg:full:weak16', 'lspg:full:weak32', 'lspg:full:weak64', 'lspg:full:weak128', 'lspg:full:weak256', 'lspg:full:weak64a0', 'galerkin:full:weak64', 'lspg:eq256:weak64', 'lspg:eq512:weak64', 'lspg:eqoff256:weak64', 'lspg:eqoff512:weak64', 'lspg:eq512:weak256', 'lspg:eq1024:weak256', 'lspg:full:weakc64', 'lspg:eqoff512:weakc64']
+  FOM: 576 trajectories (50 implicit steps each) in 2s, spot rel residual 4.62e-11
+  data check: max FOM rel residual over all trajectories 1.00e-10
+  checks: {'local_vs_fom_maxabs': 1.942890293094024e-16, 'fom_traj_step1_rel_res': 7.595584952637874e-11, 'weakall_vs_fd_resnorm_reldev': 5.020665173703178e-15, 'weakall_vs_fd_galerkin_grad_reldev': 1.3886926585952145e-15, 'weakall_vs_fd_lspg_grad_reldev': 1.1817797584079934e-14, 'weakall_vs_fd_lspg_hess_reldev': 1.910772113236665e-14, 'decoder_wall_maxabs': 0.0}
+  ORACLE inferred-latent floor (held-out, budget 40): 6.706e-03 [213s]
+  IC fit (u0 misfit): python 2.315e-02  jit 2.315e-02 (|diff| 9.6e-18)
+  lspg:full:fd             m= 3844  traj rel mean 1.578e-02 (med 1.375e-02, max 3.358e-02) blowups 0  iters cold 24.1 warm 9.89  step 181.9 ms  [188s]
+  galerkin:full:fd         m= 3844  traj rel mean 1.105e-02 (med 9.972e-03, max 2.545e-02) blowups 0  iters cold 23.1 warm 5.20  step 93.4 ms  [105s]
+  lspg:full:weakall        m= 3844  traj rel mean 1.578e-02 (med 1.375e-02, max 3.358e-02) blowups 0  iters cold 24.1 warm 9.89  step 40.8 ms  [61s]
+  galerkin:full:weakall    m= 3844  traj rel mean 1.105e-02 (med 9.972e-03, max 2.545e-02) blowups 0  iters cold 23.1 warm 5.20  step 26.5 ms  [39s]
+  lspg:full:weak16         m= 3844  traj rel mean 9.035e-02 (med 2.844e-02, max 6.448e-01) blowups 0  iters cold 13.7 warm 14.22  step 81.8 ms  [58s]
+  lspg:full:weak32         m= 3844  traj rel mean 2.065e-02 (med 1.059e-02, max 1.448e-01) blowups 0  iters cold 15.1 warm 9.26  step 36.6 ms  [38s]
+  lspg:full:weak64         m= 3844  traj rel mean 1.067e-02 (med 9.332e-03, max 3.635e-02) blowups 0  iters cold 12.6 warm 7.58  step 32.6 ms  [32s]
+  lspg:full:weak128        m= 3844  traj rel mean 9.864e-03 (med 9.788e-03, max 2.541e-02) blowups 0  iters cold 14.0 warm 7.38  step 32.6 ms  [32s]
+  lspg:full:weak256        m= 3844  traj rel mean 9.728e-03 (med 1.047e-02, max 2.119e-02) blowups 0  iters cold 12.9 warm 7.32  step 32.8 ms  [33s]
+  lspg:full:weak64a0       m= 3844  traj rel mean 1.095e-02 (med 9.513e-03, max 3.594e-02) blowups 0  iters cold 13.0 warm 7.53  step 32.7 ms  [32s]
+  galerkin:full:weak64     m= 3844  traj rel mean 1.070e-02 (med 9.528e-03, max 3.635e-02) blowups 0  iters cold 9.9 warm 4.40  step 23.8 ms  [25s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 1.05e-03 [14s]
+    EQ out-of-fit proj err 2.30e-03 (max 5.72e-03), w in [2.76e+00, 3.33e+01]
+  lspg:eq256:weak64        m=  256  traj rel mean 1.135e-02 (med 1.059e-02, max 3.728e-02) blowups 0  iters cold 14.2 warm 7.66  step 5.2 ms  [24s]
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 2.47e-04 [58s]
+    EQ out-of-fit proj err 1.09e-03 (max 2.50e-03), w in [8.82e-01, 1.86e+01]
+  lspg:eq512:weak64        m=  512  traj rel mean 1.052e-02 (med 9.668e-03, max 3.200e-02) blowups 0  iters cold 13.9 warm 7.63  step 7.0 ms  [70s]
+  NNLS-EQ weak/off M=64 m=256: support 256 (+0 pad), rel fit 1.04e-03 [15s]
+    EQ out-of-fit proj err 2.26e-03 (max 9.79e-03), w in [1.85e+00, 3.55e+01]
+  lspg:eqoff256:weak64     m=  256  traj rel mean 1.102e-02 (med 9.495e-03, max 3.532e-02) blowups 0  iters cold 15.2 warm 7.73  step 5.3 ms  [23s]
+  NNLS-EQ weak/off M=64 m=512: support 512 (+0 pad), rel fit 2.62e-04 [59s]
+    EQ out-of-fit proj err 1.09e-03 (max 2.83e-03), w in [6.23e-01, 2.56e+01]
+  lspg:eqoff512:weak64     m=  512  traj rel mean 1.074e-02 (med 8.936e-03, max 3.624e-02) blowups 0  iters cold 13.0 warm 7.64  step 6.9 ms  [68s]
+  NNLS-EQ weak/grid M=256 m=512: support 512 (+0 pad), rel fit 1.79e-03 [194s]
+    EQ out-of-fit proj err 2.88e-03 (max 1.04e-02), w in [2.04e-01, 1.60e+01]
+  lspg:eq512:weak256       m=  512  traj rel mean 9.789e-03 (med 9.850e-03, max 2.103e-02) blowups 0  iters cold 12.7 warm 7.34  step 6.9 ms  [203s]
+  NNLS-EQ weak/grid M=256 m=1024: support 1024 (+0 pad), rel fit 3.72e-04 [872s]
+    EQ out-of-fit proj err 1.08e-03 (max 2.42e-03), w in [4.64e-01, 8.60e+00]
+  lspg:eq1024:weak256      m= 1024  traj rel mean 9.749e-03 (med 1.059e-02, max 2.091e-02) blowups 0  iters cold 14.7 warm 7.34  step 10.3 ms  [886s]
+  lspg:full:weakc64        m= 3844  traj rel mean 1.064e-02 (med 8.717e-03, max 3.625e-02) blowups 0  iters cold 12.5 warm 7.57  step 32.1 ms  [31s]
+  lspg:eqoff512:weakc64    m=  512  traj rel mean 1.079e-02 (med 8.766e-03, max 3.621e-02) blowups 0  iters cold 13.2 warm 7.61  step 6.8 ms  [8s]
+  POD k=  6 lspg:full:fd         traj rel mean 1.876e-01 (med 1.185e-01) blowups 0 iters warm 3.48 step 1.3 ms
+  POD k=  6 galerkin:full:fd     traj rel mean 1.822e-01 (med 1.123e-01) blowups 0 iters warm 2.00 step 2.4 ms
+  POD k=  6 lspg:full:weak64     traj rel mean 1.813e-01 (med 1.121e-01) blowups 0 iters warm 3.44 step 1.4 ms
+  NNLS-EQ weak/grid M=64 m=512: support 238 (+274 pad), rel fit 4.96e-06 [14s]
+    EQ out-of-fit proj err 3.95e-06 (max 7.02e-06), w in [3.59e-07, 3.59e+01]
+  POD k=  6 lspg:eq512:weak64    traj rel mean 1.813e-01 (med 1.121e-01) blowups 0 iters warm 3.46 step 1.6 ms
+  POD k=  8 lspg:full:fd         traj rel mean 1.368e-01 (med 8.480e-02) blowups 0 iters warm 3.44 step 1.3 ms
+  POD k=  8 galerkin:full:fd     traj rel mean 1.305e-01 (med 7.129e-02) blowups 0 iters warm 2.00 step 2.4 ms
+  POD k=  8 lspg:full:weak64     traj rel mean 1.294e-01 (med 6.916e-02) blowups 0 iters warm 3.43 step 1.4 ms
+  NNLS-EQ weak/grid M=64 m=512: support 262 (+250 pad), rel fit 5.75e-06 [15s]
+    EQ out-of-fit proj err 4.57e-06 (max 7.63e-06), w in [2.98e-07, 2.98e+01]
+  POD k=  8 lspg:eq512:weak64    traj rel mean 1.294e-01 (med 6.916e-02) blowups 0 iters warm 3.49 step 1.4 ms
+  POD k= 16 lspg:full:fd         traj rel mean 6.788e-02 (med 4.451e-02) blowups 0 iters warm 3.47 step 1.2 ms
+  POD k= 16 galerkin:full:fd     traj rel mean 6.261e-02 (med 3.600e-02) blowups 0 iters warm 2.00 step 2.4 ms
+  POD k= 16 lspg:full:weak64     traj rel mean 6.165e-02 (med 3.367e-02) blowups 0 iters warm 3.45 step 1.5 ms
+  NNLS-EQ weak/grid M=64 m=512: support 337 (+175 pad), rel fit 5.55e-06 [25s]
+    EQ out-of-fit proj err 4.98e-06 (max 1.77e-05), w in [2.49e-07, 2.49e+01]
+  POD k= 16 lspg:eq512:weak64    traj rel mean 6.165e-02 (med 3.367e-02) blowups 0 iters warm 3.50 step 1.4 ms
+  POD k= 32 lspg:full:fd         traj rel mean 2.576e-02 (med 1.609e-02) blowups 0 iters warm 3.46 step 1.5 ms
+  POD k= 32 galerkin:full:fd     traj rel mean 2.363e-02 (med 1.324e-02) blowups 0 iters warm 2.00 step 2.4 ms
+  POD k= 32 lspg:full:weak64     traj rel mean 2.319e-02 (med 1.324e-02) blowups 0 iters warm 3.50 step 1.6 ms
+  NNLS-EQ weak/grid M=64 m=512: support 394 (+118 pad), rel fit 5.13e-06 [35s]
+    EQ out-of-fit proj err 6.54e-06 (max 4.44e-05), w in [2.14e-07, 2.14e+01]
+  POD k= 32 lspg:eq512:weak64    traj rel mean 2.319e-02 (med 1.324e-02) blowups 0 iters warm 3.49 step 1.5 ms
+  POD k= 64 lspg:full:fd         traj rel mean 7.302e-03 (med 4.428e-03) blowups 0 iters warm 3.51 step 1.8 ms
+  POD k= 64 galerkin:full:fd     traj rel mean 6.810e-03 (med 3.543e-03) blowups 0 iters warm 2.00 step 2.7 ms
+  POD k= 64 lspg:full:weak64     traj rel mean 5.196e-02 (med 3.215e-02) blowups 0 iters warm 3.05 step 1.5 ms
+  NNLS-EQ weak/grid M=64 m=512: support 444 (+68 pad), rel fit 4.68e-06 [42s]
+    EQ out-of-fit proj err 9.15e-06 (max 7.34e-05), w in [1.91e-07, 1.91e+01]
+  POD k= 64 lspg:eq512:weak64    traj rel mean 5.011e-02 (med 3.182e-02) blowups 0 iters warm 3.03 step 1.4 ms
+  POD-direct (reduced BE Galerkin) k=  6: traj rel mean 1.822e-01 (med 1.123e-01)
+  POD-direct (reduced BE Galerkin) k=  8: traj rel mean 1.305e-01 (med 7.129e-02)
+  POD-direct (reduced BE Galerkin) k= 16: traj rel mean 6.261e-02 (med 3.600e-02)
+  POD-direct (reduced BE Galerkin) k= 32: traj rel mean 2.363e-02 (med 1.324e-02)
+  POD-direct (reduced BE Galerkin) k= 64: traj rel mean 6.810e-03 (med 3.543e-03)
+  timing: FOM 51 ms; lspg:full:fd=9100ms  galerkin:full:fd=5020ms  lspg:full:weakall=2036ms  galerkin:full:weakall=1401ms  lspg:full:weak16=2735ms  lspg:full:weak32=1546ms  lspg:full:weak64=1474ms  lspg:full:weak128=1479ms  lspg:full:weak256=1494ms  lspg:full:weak64a0=1484ms  galerkin:full:weak64=1150ms  lspg:eq256:weak64=180ms  lspg:eq512:weak64=267ms  lspg:eqoff256:weak64=186ms  lspg:eqoff512:weak64=266ms  lspg:eq512:weak256=272ms  lspg:eq1024:weak256=450ms  lspg:full:weakc64=1460ms  lspg:eqoff512:weakc64=268ms  pod_k6:lspg:full:fd=33ms  pod_k6:lspg:full:weak64=38ms  pod_k6:lspg:eq512:weak64=31ms  pod_k8:lspg:full:fd=30ms  pod_k8:lspg:full:weak64=34ms  pod_k8:lspg:eq512:weak64=34ms  pod_k16:lspg:full:fd=34ms  pod_k16:lspg:full:weak64=40ms  pod_k16:lspg:eq512:weak64=35ms  pod_k32:lspg:full:fd=32ms  pod_k32:lspg:full:weak64=39ms  pod_k32:lspg:eq512:weak64=36ms  pod_k64:lspg:full:fd=48ms  pod_k64:lspg:full:weak64=34ms  pod_k64:lspg:eq512:weak64=34ms  pod_direct_k6=4ms  pod_direct_k8=7ms  pod_direct_k16=5ms  pod_direct_k32=6ms  pod_direct_k64=9ms  ic_solve_jit=356ms  ic_solve_py=449ms  decode_all_slices=11ms
+wrote hlat_rom_N64_K16.json
+ALL-DONE

@@ -251,13 +251,15 @@ fixed head start buys a fixed number of iterations out of a total that grows wit
 of digits demanded.
 
 The gap between what the ROM's answer *looks* worth and what it *is* worth is the striking
-part. A post-hoc diagnostic (plain CG from a zero start, graded against the reference
-solution — it never stops a solver on the reference) shows the ROM's field accuracy is
-reached by plain CG only after **{{p_worth_N512}} iterations** at `N = 512`, out of
-{{p_baseiters_N512}}. Yet warm-starting from that same field saves only
-{{p_maxsave_1em10_N512}}% of them. Being *as accurate as* CG's 500th iterate is not the same
-as *being* CG's 500th iterate: the ROM's error is spread across the spectrum, and CG must
-still remove the part the ROM never resolved.
+part. A post-hoc diagnostic — plain CG from a zero start, with its saved iterates graded
+against the reference solution in the **relative L2 field error**; it never stops a solver on
+the reference — shows that plain CG needs **{{p_worth_N512}} iterations** at `N = 512` before
+it is as accurate as the ROM, out of {{p_baseiters_N512}} for the full solve. Yet
+warm-starting from that same field saves only {{p_maxsave_1em10_N512}}% of them. Being *as
+accurate as* CG's {{p_worth_N512}}th iterate in L2 is not the same as *being* CG's
+{{p_worth_N512}}th iterate: what CG contracts monotonically is the **A-norm**, in which the
+ROM's error is only {{p_rom_anorm}} of the initial one, and the part the ROM never resolved
+still has to be removed from scratch.
 
 **A bad guess is worse than no guess.** {{p_n_negative}} of the measured configurations
 needed *more* CG iterations from the ROM start than from zero, the worst by

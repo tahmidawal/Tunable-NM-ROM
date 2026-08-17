@@ -1,0 +1,11 @@
+jax_backend=gpu  N=64 RS=20  starts=[0, 10, 20, 30] H=[1, 2, 5, 10] n_test=8  variants=['lspg:eq256:weak64', 'lspg:full:weak64', 'lspg:full:fd', 'galerkin:full:fd']
+  TRAIN/VAL FOM: 576 trajectories, max rel energy drift 3.18e-11
+  TEST FOM: 16 trajectories, max rel energy drift 1.21e-11
+  data fingerprint: bitwise identical to the training run: False; moment rel diff 5.93e-16
+  building exact Newmark sub-step trajectories at the ROM dt ...
+    8 x 1001 sub-step fields [55s]
+  exact sub-step trajectory vs the 80-substep FOM snapshots: 1.370e-03 (= the RS=20 time-discretisation floor)
+  oracle latent fits at 20 sub-steps x 8 trajectories ...
+    done [1607s]; mean oracle rel 1.895e-01
+  NNLS-EQ grid M=64 m=256: support 256 (+0 pad), rel fit 1.01e-02 [81s]
+  lspg:eq256:weak64        H=1: rom 2.046e-01 (oracle 1.959e-01, excess +8.736e-03)  H=2: rom 2.249e-01 (oracle 1.720e-01, excess +5.295e-02)  H=5: rom 3.749e-01 (oracle 1.730e-01, excess +2.020e-01)  H=10: rom 6.578e-01 (oracle 1.949e-01, excess +4.630e-01)  [383s]

@@ -1,0 +1,16 @@
+host=pax142  gpu=NVIDIA A100-PCIE-40GB
+git_commit=3b701fbabc7645153855c13058ce251e8de71cc2
+cell=ws1_n64_diag
+jax_backend=gpu cuda:0
+jax_backend=gpu  N=64  n_freq=31 t_freq=25  S1_RS=10 dt=0.002 IC_W=1.0 budget=60 lev_chunk=8
+  TRAIN/VAL FOM: 576 trajectories, max rel energy drift 3.18e-11
+  TEST FOM: 16 trajectories, max rel energy drift 1.21e-11
+  ORACLE (true z) traj rel mean 3.184e-02
+  Newmark-state residual check 9.6e-16; decoder residual at true z (rel) 5.584e-03
+  ic              : traj rel mean 8.830e-01 (med 9.397e-01, max 1.361e+00)  |z-z*| 4.281e-01  obj(found)/obj(z*) 0.728 (16/16 below)  [21s]
+  resid           : traj rel mean 1.041e+00 (med 9.561e-01, max 1.696e+00)  |z-z*| 1.592e+00  obj(found)/obj(z*) 0.171 (16/16 below)  [1287s]
+  both            : traj rel mean 6.342e-01 (med 7.307e-01, max 1.353e+00)  |z-z*| 2.685e-01  obj(found)/obj(z*) 0.808 (16/16 below)  [1240s]
+  both_oracleinit : traj rel mean 5.928e-01 (med 6.142e-01, max 1.351e+00)  |z-z*| 2.559e-01  obj(found)/obj(z*) 0.817 (16/16 below)  [648s]
+  both_multistart : traj rel mean 6.610e-01 (med 7.303e-01, max 1.364e+00)  |z-z*| 2.839e-01  obj(found)/obj(z*) 0.805 (16/16 below)  [4492s]
+wrote stage1 json
+ALL-DONE

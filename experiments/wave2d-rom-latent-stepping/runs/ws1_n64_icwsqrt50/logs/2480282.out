@@ -1,0 +1,14 @@
+host=pax007  gpu=NVIDIA A100 80GB PCIe
+git_commit=ad575708e8cb064d6997d5527a7979673a3479b4
+cell=ws1_n64_icwsqrt50
+jax_backend=gpu cuda:0
+jax_backend=gpu  N=64  n_freq=31 t_freq=25  S1_RS=10 dt=0.002 IC_W=7.0710678118654755 budget=60 lev_chunk=8
+  TRAIN/VAL FOM: 576 trajectories, max rel energy drift 3.18e-11
+  TEST FOM: 16 trajectories, max rel energy drift 1.21e-11
+  ORACLE (true z) traj rel mean 3.184e-02
+  Newmark-state residual check 9.6e-16; decoder residual at true z (rel) 5.584e-03
+  ic    : traj rel mean 8.830e-01 (med 9.397e-01, max 1.361e+00)  |z-z*| 4.281e-01  [17s]
+  resid : traj rel mean 1.041e+00 (med 9.561e-01, max 1.697e+00)  |z-z*| 1.592e+00  [1147s]
+  both  : traj rel mean 6.068e-01 (med 2.114e-01, max 1.349e+00)  |z-z*| 3.012e-01  [1116s]
+wrote stage1 json
+ALL-DONE

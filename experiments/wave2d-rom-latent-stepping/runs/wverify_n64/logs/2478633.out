@@ -1,0 +1,24 @@
+host=pax007  gpu=NVIDIA A100 80GB PCIe
+git_commit=0934a3224433388f11e4280e29cd8bd5551a27b9
+cell=wverify_n64
+jax_backend=gpu cuda:0
+jax_backend=gpu  N=64  RS=20  RS_LIST=[1, 2, 4, 8, 16, 20, 40, 80]
+  V4 FOM energy drift 1.61e-12  [1s]
+  V5 RS=  1 (dt=2.00e-02,    50 steps): traj rel vs FOM 1.327e-01 (max 2.391e-01), E-drift 3.3e-12  [1s]
+  V5 RS=  2 (dt=1.00e-02,   100 steps): traj rel vs FOM 5.398e-02 (max 1.256e-01), E-drift 1.2e-11  [1s]
+  V5 RS=  4 (dt=5.00e-03,   200 steps): traj rel vs FOM 2.171e-02 (max 7.441e-02), E-drift 3.6e-11  [1s]
+  V5 RS=  8 (dt=2.50e-03,   400 steps): traj rel vs FOM 7.218e-03 (max 2.839e-02), E-drift 3.4e-10  [1s]
+  V5 RS= 16 (dt=1.25e-03,   800 steps): traj rel vs FOM 1.845e-03 (max 7.281e-03), E-drift 1.4e-09  [1s]
+  V5 RS= 20 (dt=1.00e-03,  1000 steps): traj rel vs FOM 1.157e-03 (max 4.567e-03), E-drift 5.7e-10  [1s]
+  V5 RS= 40 (dt=5.00e-04,  2000 steps): traj rel vs FOM 2.321e-04 (max 9.165e-04), E-drift 1.3e-09  [2s]
+  V5 RS= 80 (dt=2.50e-04,  4000 steps): traj rel vs FOM 2.781e-08 (max 8.079e-08), E-drift 1.8e-08  [3s]
+  V1 Newmark(RS=80) == CN FOM: 2.78e-08 OK
+  V2 residual-operator checks {'strong_full': 2.0859061893304806e-16, 'strong_rand': 1.674036224860834e-16, 'weak_full': 2.1210248654527636e-16, 'weak_nonsolution': 0.00025961739175637725}
+  V2b FOM-state residual (rel) 2.94e-17
+  V3 ||weak_allmodes|| 3.095926e-01 vs ||strong_full|| 3.095926e-01  rel diff 3.59e-16
+  V4b Newmark(RS=80) energy drift 2.26e-09
+  FOM: 576 trajectories (50x80 CN substeps, dt=0.00025) in 5s, max rel energy drift 3.18e-11
+  TEST FOM: 16 trajectories, max rel energy drift 1.21e-11
+  V6 POD val floors: r4=5.466e-01  r6=4.497e-01  r8=3.766e-01  r16=2.460e-01  r32=1.463e-01  r64=8.019e-02   ortho dev 2.0e-15
+wrote wlat_verify_N64.json  all_ok=True
+ALL-DONE

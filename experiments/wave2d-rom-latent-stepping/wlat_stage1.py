@@ -45,6 +45,12 @@ S1_RS = int(os.environ.get("S1_RS", "10"))            # residual time levels per
 DT1 = wc.DT_SNAP / S1_RS
 IC_W = float(os.environ.get("IC_W", "1.0"))
 BUDGET = int(os.environ.get("S1_BUDGET", "60"))
+# extra initialisations for `both`: the k nearest training ICs (legitimate -- u0 is
+# known) and, as a LABELLED ORACLE DIAGNOSTIC, the true z.  The oracle-init arm
+# answers the question a failed `both` raises: is the objective's minimiser not at
+# z*, or is LM merely stuck in a local minimum on the way there?
+N_MULTI = int(os.environ.get("S1_MULTI", "6"))
+DO_ORACLE_INIT = int(os.environ.get("S1_ORACLE_INIT", "1"))
 F32 = jnp.float32
 
 
@@ -148,35 +154,61 @@ def main():
     log(f"  Newmark-state residual check {report['newmark_states_residual_maxabs']:.1e}; "
         f"decoder residual at true z (rel) {np.mean(rt):.3e}")
 
-    for name, (rJ, rn) in objs.items():
+    arms = list(objs.items())
+    if DO_ORACLE_INIT:
+        arms.append(("both_oracleinit", objs["both"]))       # LABELLED ORACLE DIAGNOSTIC
+        arms.append(("both_multistart", objs["both"]))
+    for name, (rJ, rn) in arms:
         t0 = time.time()
         rows = []
         for i in range(wc.N_TEST):
             u0 = jnp.asarray(U_te[i, 0]); c = float(c_te[i])
-            j = int(np.argmin(np.linalg.norm(U_tr0 - U_te[i, 0], axis=1)))
+            d_ic = np.linalg.norm(U_tr0 - U_te[i, 0], axis=1)
+            j = int(np.argmin(d_ic))
             z_c = np.log(c) / np.log(2.0)                            # known c -> z[4]
             z0_mean = zmean.copy(); z0_mean[4] = z_c
             z0_near = z_tr[j].copy(); z0_near[4] = z_c
+            inits = [("mean", z0_mean), ("nearest_ic", z0_near)]
+            if name == "both_oracleinit":
+                # the TRUE z as the only start: if LM stays there and the objective is
+                # lower than the `both` optimum, `both` is a local-minimum failure;
+                # if LM walks away to a LOWER objective, the residual+IC objective's
+                # minimiser genuinely is not z*.  Not available to any ROM.
+                inits = [("true_z", z_te[i].copy())]
+            elif name == "both_multistart":
+                for rank in range(1, N_MULTI):
+                    jj = int(np.argsort(d_ic)[rank])
+                    zk = z_tr[jj].copy(); zk[4] = z_c
+                    inits.append((f"near{rank}", zk))
             best = None
-            for iname, z0 in (("mean", z0_mean), ("nearest_ic", z0_near)):
+            for iname, z0 in inits:
                 z, r, info = lm_solve(lambda zz: rJ(zz, u0, c), lambda zz: rn(zz, u0, c),
                                       jnp.asarray(z0, F64), BUDGET)
                 if best is None or r < best[1]:
                     best = (np.asarray(z), r, iname, info)
             z, r, iname, info = best
             e, es, per = traj_err(z, U_te[i])
+            obj_at_true = float(rn(jnp.asarray(z_te[i], F64), u0, c))
             rows.append(dict(traj_rel=e, snap_rel=es, z_err=float(np.linalg.norm(z - z_te[i])),
-                             init=iname, obj=float(r), accepted=info["accepted"],
-                             reason=info["reason"], per_time=per.tolist()))
+                             init=iname, obj=float(r), obj_at_true_z=obj_at_true,
+                             obj_ratio_found_over_true=float(r) / max(obj_at_true, 1e-300),
+                             accepted=info["accepted"], reason=info["reason"],
+                             per_time=per.tolist()))
         tr = np.array([r["traj_rel"] for r in rows])
         report[name] = dict(traj_rel_mean=float(tr.mean()), traj_rel_median=float(np.median(tr)),
                             traj_rel_max=float(tr.max()),
                             snap_rel_mean=float(np.mean([r["snap_rel"] for r in rows])),
                             z_err_mean=float(np.mean([r["z_err"] for r in rows])),
                             per_time_mean=np.mean([r["per_time"] for r in rows], axis=0).tolist(),
+                            obj_ratio_found_over_true_mean=float(np.mean(
+                                [r["obj_ratio_found_over_true"] for r in rows])),
+                            n_found_below_true=int(sum(r["obj_ratio_found_over_true"] < 1.0
+                                                       for r in rows)),
                             rows=rows, secs=time.time() - t0)
-        log(f"  {name:6s}: traj rel mean {tr.mean():.3e} (med {np.median(tr):.3e}, max {tr.max():.3e})"
-            f"  |z-z*| {report[name]['z_err_mean']:.3e}  [{time.time()-t0:.0f}s]")
+        log(f"  {name:16s}: traj rel mean {tr.mean():.3e} (med {np.median(tr):.3e}, "
+            f"max {tr.max():.3e})  |z-z*| {report[name]['z_err_mean']:.3e}  obj(found)/obj(z*) "
+            f"{report[name]['obj_ratio_found_over_true_mean']:.3f} "
+            f"({report[name]['n_found_below_true']}/{len(rows)} below)  [{time.time()-t0:.0f}s]")
 
     os.makedirs(OUTDIR, exist_ok=True)
     with open(os.path.join(OUTDIR, f"wlat_stage1_N{N}.json"), "w") as f:

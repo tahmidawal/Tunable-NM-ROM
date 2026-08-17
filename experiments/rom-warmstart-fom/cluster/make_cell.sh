@@ -57,6 +57,9 @@ cd "$REMOTE/code/rom-warmstart-fom"
 export JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+# the staged code dir is NOT a git repo; git discovery there walks up into an
+# unrelated ancestor repository, so the commit is stamped explicitly here
+export WSF_COMMIT=$COMMIT
 echo "host=\$(hostname)  gpu=\$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
 echo "commit=$COMMIT  dirty=$DIRTY  cell=$cell"
 \$PY - <<'PRE' || { echo "GPU PREFLIGHT FAILED"; exit 42; }

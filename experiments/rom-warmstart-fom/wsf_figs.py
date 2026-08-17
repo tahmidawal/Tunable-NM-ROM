@@ -72,7 +72,9 @@ def fig_poisson_total_vs_tau(P, paths):
             y = [sub[t]["t_total_ms"] if t in sub else np.nan for t in rts]
             ax.plot(x, y, "-o", color=c, label=f"N={n}")
             if sub:
-                b = list(sub.values())[0]["t_fom_baseline_ms"]
+                # mean of the repeated paired baselines at this (N, tau), not whichever
+                # ROM rung happened to be first in the dict
+                b = float(np.mean([r["t_fom_baseline_ms"] for r in sub.values()]))
                 ax.plot([x[0] - 0.35, x[-1] + 0.35], [b, b], "--", color=c,
                         lw=1.2, alpha=0.85)
         ax.set_xticks(x); ax.set_xticklabels([taulab(t) for t in rts])
@@ -100,14 +102,19 @@ def fig_poisson_crossover(P, paths):
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(9.4, 3.6), layout="constrained")
     fom = [np.mean([r["t_fom_baseline_ms"] for r in P if r["N"] == n and r["fom_tau"] == ftm])
            for n in Ns]
-    best = [min([r["t_total_ms"] for r in P if r["N"] == n and r["fom_tau"] == ftm])
-            for n in Ns]
+    # ONE selector for both panels: choose the row minimising total time and read its
+    # speedup, rather than minimising time on the left and maximising speedup on the
+    # right (which picked different rungs at two meshes).
+    best_row = {n: min([r for r in P if r["N"] == n and r["fom_tau"] == ftm],
+                       key=lambda r: r["t_total_ms"]) for n in Ns}
+    best = [best_row[n]["t_total_ms"] for n in Ns]
     romonly = [min([r["t_rom_ms"] + r.get("t_pre_ms", 0.0) + r["t_decode_ms"]
                     for r in P if r["N"] == n and r["fom_tau"] == ftm]) for n in Ns]
     direct = [np.mean([r.get("t_fom_direct_ms", np.nan) for r in P
                        if r["N"] == n and r["fom_tau"] == ftm]) for n in Ns]
     a1.plot(Ns, fom, "-o", color=st.C["blue"], label="pure FOM (CG, zero start)")
-    a1.plot(Ns, best, "-s", color=st.C["orange"], label="best hybrid (ROM + CG)")
+    a1.plot(Ns, best, "-s", color=st.C["orange"],
+            label="best hybrid (ROM + CG), post-selected")
     a1.plot(Ns, romonly, "--^", color=st.C["violet"],
             label="ROM stage alone (solve + decode)")
     if np.isfinite(direct).any():
@@ -121,8 +128,8 @@ def fig_poisson_crossover(P, paths):
 
     for ci, ft in enumerate(fts):
         nn = sorted({r["N"] for r in P if r["fom_tau"] == ft})
-        sp = [max([r["speedup_vs_fom"] for r in P if r["N"] == n and r["fom_tau"] == ft],
-                  default=np.nan) for n in nn]
+        sp = [min([r for r in P if r["N"] == n and r["fom_tau"] == ft],
+                  key=lambda r: r["t_total_ms"])["speedup_vs_fom"] for n in nn]
         if nn:
             a2.plot(nn, sp, "-o", color=NCOL[ci % len(NCOL)], label=f"$\\tau_{{FOM}}$={ft:g}")
     a2.axhline(1.0, color=st.INK2, lw=1.0, ls="--")
@@ -131,7 +138,8 @@ def fig_poisson_crossover(P, paths):
     a2.set_xscale("log", base=2)          # linear y: the range is ~0.5-1.1 and a log
     a2.set_xticks(Ns)                     # axis there produces unreadable minor ticks
     a2.set_xticklabels([str(n) for n in Ns])
-    a2.set_xlabel("N"); a2.set_ylabel("best hybrid speedup over the FOM")
+    a2.set_xlabel("N")
+    a2.set_ylabel("hybrid speedup over the FOM\n(post-selected best rom_tau)")
     # title states the ANSWER, not the question: leaving "where does it win?" over a
     # curve that never crosses 1.0 invites the reader to assume it does somewhere.
     best = max((r["speedup_vs_fom"] for r in P), default=float("nan"))

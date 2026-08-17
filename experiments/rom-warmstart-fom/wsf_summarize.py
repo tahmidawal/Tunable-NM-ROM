@@ -338,7 +338,11 @@ def main():
             if r["N"] in seen_n or not r.get("t_fom_testbed_ms"):
                 continue
             seen_n.add(r["N"])
-            tn = r.get("t_fom_baseline_native_ms")
+            # MEAN over the repeated ROM rungs at this (N, tau) -- taking the first row
+            # here and the last in wsf_facts.py made the two tables disagree by ~1.5%
+            _g = [q for q in P if q["N"] == r["N"] and q["fom_tau"] == r["fom_tau"]
+                  and q.get("t_fom_baseline_native_ms")]
+            tn = (sum(q["t_fom_baseline_native_ms"] for q in _g) / len(_g)) if _g else None
             orows.append(dict(
                 N=r["N"], t_fom_testbed_ms=r["t_fom_testbed_ms"],
                 fom_testbed_iters=r.get("fom_testbed_iters"),

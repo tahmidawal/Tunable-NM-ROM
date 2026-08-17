@@ -54,10 +54,34 @@ chk("extrap wins all", sum(r["iters_from_extrap"] < r["iters_from_baseline"] for
 neg = sum(r.get("iter_saving_frac", 0) < 0 for r in P)
 chk("negative savings count", infile(f"{neg} of {len(P)} measured configurations"), f"{neg}/{len(P)}")
 
-# 4. direct-solver ratio at N=512
-r512 = [r for r in P if r["N"] == 512 and r["fom_tau"] == 1e-10][0]
-ratio = r512["t_fom_baseline_ms"] / r512["t_fom_direct_ms"]
-chk("direct ratio N=512", infile(f"{ratio:.0f}x"), f"{ratio:.0f}x")
+# 4. direct-solver ratio at N=512 -- SEMANTIC: the ratio and BOTH its operands must appear
+#    together, aggregated the same way.  An earlier version checked only that "494x" occurred
+#    somewhere, which is why it passed a sentence whose quoted operands did not divide to it.
+grp = [r for r in P if r["N"] == 512 and r["fom_tau"] == 1e-10]
+num = sum(r["t_fom_baseline_ms"] for r in grp) / len(grp)
+den = sum(r["t_fom_direct_ms"] for r in grp) / len(grp)
+ratio = num / den
+chk("direct ratio N=512 value", infile(f"{ratio:.0f}x"), f"{ratio:.0f}x")
+chk("direct ratio numerator quoted", infile(f"{num:.4g} ms"), f"{num:.4g}")
+chk("direct ratio denominator quoted", infile(f"{den:.4g} ms"), f"{den:.4g}")
+chk("direct ratio operands divide to the quoted value",
+    abs(float(f"{num:.4g}") / float(f"{den:.4g}") - ratio) / ratio < 0.01)
+
+# 4b. the commit reported must be the WRAPPER commit from the sbatch logs, and the bogus
+#     git-discovered one must not be presented as the run commit.
+import re as _re, glob as _g
+wrap = set()
+for lg in _g.glob("runs/*/logs/*.out"):
+    m = _re.search(r"commit=([0-9a-f]{40})", open(lg, errors="ignore").read())
+    if m:
+        wrap.add(m.group(1))
+chk("one wrapper commit across all logs", len(wrap) == 1, str(wrap))
+if wrap:
+    w = wrap.pop()
+    chk("wrapper commit in README", infile(w[:12]))
+    bogus = raw["wsp_cons"]["provenance"]["commit"]
+    chk("bogus discovered commit is named as invalid, not as the run commit",
+        (bogus[:12] not in R) or ("not an object in" in R))
 
 # 5. burgers over-convergence factors
 for r in B:

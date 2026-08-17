@@ -92,6 +92,16 @@ def source_hashes(here=None, patterns=("wsf_*.py",)):
 
 
 def provenance(here=None):
+    """Provenance stamp.
+
+    COMMIT: taken from the environment variable `WSF_COMMIT`, which the sbatch wrapper
+    stamps with the commit the cell was staged from.  Git *discovery* is NOT trusted on
+    the cluster: the staged code directory is not a git repository, so `git -C <dir>`
+    walks UP the tree and reports whatever ancestor repository it finds
+    (`/cluster/tufts/paralab/tawal01/.git` in practice) -- a commit that does not exist
+    in this project, together with a huge unrelated dirty listing.  A results audit
+    caught exactly that.  Discovery is therefore only used as a fallback, and only when
+    it can be shown to describe THIS file."""
     here = here or os.path.dirname(os.path.abspath(__file__))
 
     def git(*a):
@@ -100,10 +110,23 @@ def provenance(here=None):
                                            stderr=subprocess.DEVNULL).decode().strip()
         except Exception:
             return "unknown"
+
+    # is the discovered repository actually the one containing this file?
+    top = git("rev-parse", "--show-toplevel")
+    tracked = (top != "unknown"
+               and os.path.abspath(here).startswith(os.path.abspath(top))
+               and git("ls-files", "--error-unmatch",
+                       os.path.basename(__file__)) != "unknown")
+    env_commit = os.environ.get("WSF_COMMIT", "")
+    commit = env_commit or (git("rev-parse", "HEAD") if tracked else "unknown")
     dev = jax.devices()[0]
-    return dict(commit=git("rev-parse", "HEAD"),
-                commit_short=git("rev-parse", "--short", "HEAD"),
-                dirty=git("status", "--porcelain"),
+    return dict(commit=commit,
+                commit_source=("env:WSF_COMMIT" if env_commit
+                               else ("git" if tracked else "UNAVAILABLE")),
+                git_discovered_commit=git("rev-parse", "HEAD"),
+                git_discovery_trusted=bool(tracked),
+                commit_short=commit[:12],
+                dirty=git("status", "--porcelain") if tracked else "",
                 source_sha256=source_hashes(here),
                 jax_backend=jax.default_backend(),
                 gpu=str(dev),

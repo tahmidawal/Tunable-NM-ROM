@@ -397,12 +397,12 @@ def main():
                 z, val, v0, nJ, acc, att, r_ = lm(z_init, f_ms[i])
                 zs.append(z); vals.append(float(val)); v0s.append(float(v0))
                 nJs.append(int(nJ)); atts.append(int(att)); rsn.append(int(r_))
-            rom_t = []
+            rom_t, rom_reps = [], []
             for i in range(N_TIME):
                 m_, _a = wu.time_fn(
                     lambda ii=i: lm(z_init, f_ms[ii])[0].block_until_ready(),
                     TIME_REPS, TIME_WARM)
-                rom_t.append(m_)
+                rom_t.append(m_); rom_reps.append(_a)
             t_rom_ms = float(np.mean(rom_t)) * 1e3
             U_rom = [np.asarray(dec_int(zs[i])) for i in range(N_TEST)]
             err_rom = [float(np.linalg.norm(U_rom[i] - U_ref[i]) / ref_norm[i])
@@ -434,6 +434,7 @@ def main():
             for ft in FOM_TAUS:
                 it, res, tms, errf, flg = [], [], [], [], []
                 btms, ntw, ntb = [], [], []
+                reps_warm, reps_base = [], []
                 for i in range(N_TEST):
                     x0 = jnp.asarray(U_rom[i])
                     x, k, rr, fl = cg(Fj[i], x0, ft)
@@ -449,6 +450,9 @@ def main():
                         b_, _b = wu.time_fn(
                             lambda ii=i: cg(Fj[ii], zero, ft)[0].block_until_ready(),
                             TIME_REPS, TIME_WARM)
+                        # PERSIST every repetition: without them the best-of-noise bias
+                        # of the post-selected 'best rom_tau' cannot be audited later.
+                        reps_warm.append(_a); reps_base.append(_b)
                         nw_, _c = wu.time_fn(
                             lambda ii=i, xx=x0: native[ft](Fj[ii], xx).block_until_ready(),
                             TIME_REPS, TIME_WARM)
@@ -469,7 +473,7 @@ def main():
                 t_base_ms = float(np.mean(btms)) * 1e3      # PAIRED baseline
                 row = dict(
                     pde="poisson2d", N=n, n_dof=n_i ** 2, rom_tau=rt, fom_tau=ft,
-                    t_rom_ms=t_rom_ms, t_pre_ms=pre_med * 1e3, t_decode_ms=dec_med * 1e3,
+                    t_rom_ms=t_rom_ms, t_rom_all_s=rom_reps, t_pre_ms=pre_med * 1e3, t_decode_ms=dec_med * 1e3,
                     t_decode_full_grid_ms=decfull_med * 1e3,
                     t_fom_ms=t_fom_ms, t_total_ms=t_total_ms,
                     t_fom_baseline_ms=t_base_ms,
@@ -509,6 +513,7 @@ def main():
                     t_fom_native_ms=float(np.mean(ntw)) * 1e3,
                     t_fom_baseline_native_ms=float(np.mean(ntb)) * 1e3,
                     t_fom_baseline_unpaired_ms=base[ft]["t_ms_unpaired"],
+                    t_fom_all_s=reps_warm, t_fom_baseline_all_s=reps_base,
                     speedup_vs_fom_native=(float(np.mean(ntb)) * 1e3) / (
                         pre_med * 1e3 + t_rom_ms + dec_med * 1e3
                         + float(np.mean(ntw)) * 1e3),

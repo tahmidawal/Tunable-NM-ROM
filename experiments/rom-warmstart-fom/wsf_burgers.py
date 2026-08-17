@@ -531,7 +531,9 @@ def main():
                 newton = np.array([p["newton"] for p in per_traj], float)
                 lin = np.array([p["lin"] for p in per_traj], float)
                 arm_out[arm] = dict(
-                    t_ms=med * 1e3, t_all=all_,
+                    # every repetition retained: the median alone cannot show whether a
+                    # between-arm difference is larger than the run-to-run spread
+                    t_ms=med * 1e3, t_all=all_, t_all_s=all_,
                     # the wall clock is trajectory 0 only, so its own counts are kept
                     # beside the mean over all N_TEST_TRAJ trajectories
                     newton_total_timed_traj=float(newton[0].sum()),
@@ -601,6 +603,7 @@ def main():
                 offline_train_ic_bank_s=bank_build_s,
                 t_rom_rollout_ms=roll_med * 1e3, t_decode_ms=t_dec_ms,
                 t_fom_ms=arm_out["rom"]["t_ms"], t_total_ms=t_total,
+                t_fom_all_s={a: arm_out[a]["t_all"] for a in ARMS},
                 t_fom_baseline_ms=arm_out["prev"]["t_ms"],
                 t_fom_extrap_ms=arm_out["extrap"]["t_ms"],
                 iters_from_rom=arm_out["rom"]["newton_total"],

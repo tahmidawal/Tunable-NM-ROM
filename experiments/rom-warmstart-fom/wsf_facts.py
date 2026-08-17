@@ -42,16 +42,32 @@ def build(runs=None):
     _, Pm = ws.split_roles(P, pkey)
     _, Bm = ws.split_roles(B, bkey)
     f = {}
-    f["verify_checks"] = "132"   # wsf_verify.py; update if checks are added
+    f["verify_checks"] = "138"   # wsf_verify.py; update if checks are added
     # per-cell job provenance table, built from the reports themselves
+    import glob as _g
+    import re as _re
     rows_ = []
+    wrappers = set()
     for path, d in sorted(reports, key=lambda t: t[0]):
         cell = os.path.relpath(path, HERE).split(os.sep)[1]
         pv = d["provenance"]; cf = d["config"]
+        # The commit recorded INSIDE the report is not trustworthy: on the cluster the
+        # staged code dir is not a git repo, so git discovery walked up into an unrelated
+        # ancestor repository.  The authoritative value is the one the sbatch wrapper
+        # stamped into the log from the staging machine.
+        wc = "unknown"
+        for lg in _g.glob(os.path.join(os.path.dirname(path), "..", "logs", "*.out")):
+            m = _re.search(r"commit=([0-9a-f]{40})", open(lg, errors="ignore").read())
+            if m:
+                wc = m.group(1); break
+        wrappers.add(wc)
         rows_.append(f"| `{cell}` | {cf.get('run_role')} | `{pv['slurm_job_id']}` | "
-                     f"{pv['gpu_kind']} | {pv['jax_backend']} | `{pv['commit'][:12]}` | "
+                     f"{pv['gpu_kind']} | {pv['jax_backend']} | `{wc[:12]}` | "
                      f"{pv.get('matmul_precision')} | {len(d['rows'])} |")
     f["job_table"] = "\n".join(rows_)
+    f["wrapper_commit"] = sorted(wrappers)[0] if len(wrappers) == 1 else ",".join(sorted(wrappers))
+    f["wrapper_commit_short"] = f["wrapper_commit"][:12]
+    f["bogus_commit_short"] = str(reports[0][1]["provenance"]["commit"])[:12] if reports else "n/a"
     f["n_reports"] = str(len(reports))
     f["n_rows"] = str(len(pts))
     f["n_skipped"] = str(len(skipped))
@@ -87,13 +103,26 @@ def build(runs=None):
             sub = [r for r in Pc if r["N"] == n and r["fom_tau"] == ftm]
             if not sub:
                 continue
-            r0 = sub[0]
+            # sub holds one row per ROM rung; t_fom_testbed_ms and the direct solve are
+            # per-MESH constants, but the paired baseline was measured once per rung, so
+            # aggregate by MEAN rather than picking an arbitrary rung (the summarizer
+            # took the first and this took the last, which disagreed by ~1.5%).
+            r0 = dict(sub[0])
+            for k_ in ("t_fom_baseline_ms", "t_fom_baseline_native_ms", "t_decode_ms"):
+                vals = [x[k_] for x in sub if x.get(k_) is not None]
+                if vals:
+                    r0[k_] = sum(vals) / len(vals)
             f[f"p_direct_N{n}"] = g(r0.get("t_fom_direct_ms"), ".3g")
             f[f"p_directerr_N{n}"] = g(r0.get("direct_rel_err"), ".2e")
+            # pin the ratio and BOTH operands to the same row so the sentence quoting
+            # them cannot mix rungs (an audit caught 494x quoted beside 81.58/0.166)
             f[f"p_cgdirect_N{n}"] = g(r0["t_fom_baseline_ms"] / r0["t_fom_direct_ms"], ".0f")
+            f[f"p_cgnum_N{n}"] = g(r0["t_fom_baseline_ms"], ".4g")
+            f[f"p_cgden_N{n}"] = g(r0["t_fom_direct_ms"], ".4g")
+            f[f"p_cgdirect_rung_N{n}"] = f"mean of {len(sub)} ROM rungs"
             f[f"p_decode_N{n}"] = g(r0["t_decode_ms"], ".3g")
             f[f"p_dof_N{n}"] = str(r0["n_dof"])
-            f[f"p_ref_res_N{n}"] = g(r0.get("reference_true_rel_residual"), ".2e")
+            f[f"p_ref_res_N{n}"] = g(r0.get("reference_true_rel_residual"), ".3e")
             bb = max(sub, key=lambda r: r["iter_saving_frac"])
             f[f"p_maxsave_{tag}_N{n}"] = g(100 * bb["iter_saving_frac"], ".3g")
         # saving fraction vs tolerance, at the largest mesh
@@ -105,6 +134,18 @@ def build(runs=None):
                 bb = max(sub, key=lambda r: r["iter_saving_frac"])
                 f[f"p_maxsave_{tg}_Nmax"] = g(100 * bb["iter_saving_frac"], ".3g")
         f["p_nmax"] = str(nmax)
+        f["p_ref_tau"] = g(Pc[0].get("ref_tau") or 1e-12, ".0e")
+        rr = [r["t_fom_baseline_ms"] / r["t_fom_baseline_native_ms"] for r in Pc
+              if r.get("t_fom_baseline_native_ms")]
+        if rr:
+            f["p_instr_vs_lib_lo"] = g(100.0 * (min(rr) - 1.0), ".2g")
+            f["p_instr_vs_lib_hi"] = g(100.0 * (max(rr) - 1.0), ".2g")
+        # populations behind the "worth K CG iterations" comparison
+        s4 = [r for r in Pc if r["N"] == nmax and r["rom_tau"] == 0
+              and r["fom_tau"] == min(fts)]
+        if s4:
+            f["p_worth_ncases"] = str(min(s4[0].get("n_time", 8), 4))
+            f["p_baseiters_ncases"] = str(s4[0].get("n_test", 16))
         # ABSOLUTE iterations saved, not just the fraction.  Checking this refuted an
         # earlier "a fixed head start buys a fixed number of iterations" claim: the
         # absolute saving COLLAPSES as the tolerance tightens, so the head start is
@@ -355,7 +396,10 @@ def build(runs=None):
             # be compared against jax.scipy CG at the looser tolerance, NOT against this
             # cell's counting CG -- otherwise the ratio conflates "tighter tolerance" with
             # "different solver implementation" (the two differ by ~15% per iteration).
-            tn = r.get("t_fom_baseline_native_ms")
+            # same aggregation as P3c: mean over the repeated rungs at this (N, tau)
+            grp = [x for x in Pc if x["N"] == r["N"] and x["fom_tau"] == r["fom_tau"]
+                   and x.get("t_fom_baseline_native_ms")]
+            tn = (sum(x["t_fom_baseline_native_ms"] for x in grp) / len(grp)) if grp else None
             tb = r.get("t_fom_testbed_ms")
             facn = (tb / tn) if (tb and tn) else None
             f[f"oc_p_factor_{k}"] = g(facn, ".2f")
@@ -402,9 +446,27 @@ def build(runs=None):
             if m:
                 ms.append(m)
         if ms:
-            f[f"oc_{tagp}_mult_min"] = g(min(ms), ".3f")
-            f[f"oc_{tagp}_mult_max"] = g(max(ms), ".3f")
-            f[f"oc_{tagp}_mult_spread"] = g(100.0 * (max(ms) / min(ms) - 1.0), ".3g")
+            # AVERAGE PER MESH before taking the spread.  The raw spread over every
+            # repeated ROM rung mixes rung-to-rung timing noise into what is presented as
+            # variation WITH N, and overstates it (2.75% vs 0.93% on Poisson).
+            per_n = {}
+            ftmin = min(x["fom_tau"] for x in C)
+            for r in C:
+                if r["fom_tau"] != ftmin:
+                    continue
+                if kind == "p":
+                    tn, tb = r.get("t_fom_baseline_native_ms"), r.get("t_fom_testbed_ms")
+                    m = (tn / tb) if (tn and tb) else None
+                else:
+                    fac = r.get("overconvergence_factor")
+                    m = (1.0 / fac) if fac else None
+                if m:
+                    per_n.setdefault(r["N"], []).append(m)
+            means = [sum(v) / len(v) for v in per_n.values()]
+            f[f"oc_{tagp}_mult_min"] = g(min(means), ".3f")
+            f[f"oc_{tagp}_mult_max"] = g(max(means), ".3f")
+            f[f"oc_{tagp}_mult_spread"] = g(100.0 * (max(means) / min(means) - 1.0), ".2g")
+            f[f"oc_{tagp}_mult_rungspread"] = g(100.0 * (max(ms) / min(ms) - 1.0), ".2g")
 
     # Does ANY rung in this cell's ladder reach what the archived baselines achieved?
     for tagp, C, key in (("p", Pc, "final_rel_residual_baseline"),
@@ -431,10 +493,17 @@ def build(runs=None):
     # burn-in (an earlier relayed 4.74 ms at N=32 came from a smoke run and was
     # retracted; the panel value is 3.66 ms).  Relayed, not measured here.
     XA = {32: 3.66, 64: 7.144, 128: 14.795}
-    f["xagent_p_arch_N128"] = "15.145"
-    f["xagent_p_mine_N128"] = "14.86"
-    f["xagent_p_theirs_N128"] = "14.795"
-    f["xagent_p_spread_N128"] = "2.3"
+    # Only the SISTER timings are external.  The archive and this cell's own value are
+    # derived from local JSONs, and the spread is computed rather than quoted.
+    if Pc and os.path.isfile(OLD_P):
+        _arch = {o["N"]: o["fom_cg_s"] * 1e3 for o in json.load(open(OLD_P))["rows"]}
+        _mine = {r["N"]: r.get("t_fom_testbed_ms") for r in Pc}
+        for n in (32, 64, 128):
+            if n in _arch and _mine.get(n) and n in XA:
+                vals = [_arch[n], _mine[n], XA[n]]
+                f[f"xagent_p_arch_N{n}"] = g(_arch[n], ".4g")
+                f[f"xagent_p_mine_N{n}"] = g(_mine[n], ".4g")
+                f[f"xagent_p_spread_N{n}"] = g(100.0 * (max(vals) / min(vals) - 1.0), ".2g")
     if Pc:
         for n, theirs in XA.items():
             mine = next((r.get("t_fom_testbed_ms") for r in Pc if r["N"] == n), None)

@@ -221,7 +221,7 @@ env var), 16 held-out test sources, LM budget 60, f64, `jax_backend=gpu`,
 `JAX_DEFAULT_MATMUL_PRECISION=highest`, one isolated cluster job directory per cell,
 data regenerated on the cluster from the seed, checksummed pull, cluster directories
 deleted.  Adversarial review before the fan-out: `CODEX-REVIEW-followup.md` (all MUST
-items applied; the disposition table is in that file).
+items applied; the disposition table is in that file).  After the cells finished, a SECOND read-only Codex pass re-derived every table cell, aggregate, timing median and figure series from the raw JSONs: `CODEX-REVIEW-followup-2.md` (no error found in any generated table; 19 found in hand-written prose or figure titles, all fixed).  Both files carry a per-item disposition table.
 
 ### New code
 

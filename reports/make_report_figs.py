@@ -5,7 +5,7 @@ source file by `check()` before it is plotted, so a transcription slip fails
 loudly instead of shipping a wrong figure.
 
 Sources:
-  P_OBJ  = worktrees/2026-08-16-poisson2d-rom-objective/.../README.md  (round-1 objective sweep)
+  P_OBJ  = experiments/poisson2d-rom-objective/README.md  (round-1 objective sweep)
   P_FU   = .../poisson2d-rom-objective/followup/FOLLOWUP_TABLES.md     (k ladder, hard-BC)
   B_FU   = .../burgers2d-rom-latent-stepping/followup/FOLLOWUP_TABLES.md
   H_RM   = .../heat2d-rom-latent-stepping/README.md
@@ -18,21 +18,21 @@ import sys
 
 import numpy as np
 
-WT = "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees"
-sys.path.insert(0, os.path.join(
-    WT, "2026-08-16-poisson2d-rom-objective/experiments/poisson2d-rom-objective/followup"))
+HERE = os.path.dirname(os.path.abspath(__file__))
+EXP = os.path.abspath(os.path.join(HERE, "..", "experiments"))
+sys.path.insert(0, os.path.join(EXP, "poisson2d-rom-objective/followup"))
 import fu_style as st  # noqa: E402
 
 import matplotlib.pyplot as plt  # noqa: E402
 
-OUT = "/home/tahmid/Dev/pod-ae-nmrom/reports/figs"
+OUT = os.path.join(HERE, "figs")
 
 SRC = {
-    "P_OBJ": f"{WT}/2026-08-16-poisson2d-rom-objective/experiments/poisson2d-rom-objective/README.md",
-    "P_FU": f"{WT}/2026-08-16-poisson2d-rom-objective/experiments/poisson2d-rom-objective/followup/FOLLOWUP_TABLES.md",
-    "B_FU": f"{WT}/2026-08-16-burgers2d-rom-latent-stepping/experiments/burgers2d-rom-latent-stepping/followup/FOLLOWUP_TABLES.md",
-    "H_RM": f"{WT}/2026-08-16-heat2d-rom-latent-stepping/experiments/heat2d-rom-latent-stepping/README.md",
-    "W_RM": f"{WT}/2026-08-16-wave2d-rom-latent-stepping/experiments/wave2d-rom-latent-stepping/README.md",
+    "P_OBJ": os.path.join(EXP, "poisson2d-rom-objective/README.md"),
+    "P_FU": os.path.join(EXP, "poisson2d-rom-objective/followup/FOLLOWUP_TABLES.md"),
+    "B_FU": os.path.join(EXP, "burgers2d-rom-latent-stepping/followup/FOLLOWUP_TABLES.md"),
+    "H_RM": os.path.join(EXP, "heat2d-rom-latent-stepping/README.md"),
+    "W_RM": os.path.join(EXP, "wave2d-rom-latent-stepping/README.md"),
 }
 _TEXT = {k: open(v).read() for k, v in SRC.items()}
 

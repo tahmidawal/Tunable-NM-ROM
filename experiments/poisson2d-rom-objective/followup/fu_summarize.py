@@ -545,14 +545,12 @@ def fig_cost_vs_k(D):
     ax.plot(ks, [r["rom_s_per_iter"] * 1e3 for r in co], "s--", color=fs.C["aqua"],
             label="per Gauss-Newton iteration")
     ax.axhline(t["fom_cg_s"] * 1e3, color=fs.C["red"], ls="-", lw=1.6, label="FOM (CG solve)")
-    ax2 = ax.twiny()          # iteration counts as text, not a second y-scale
-    ax2.set_xlim(ax.get_xlim()); ax2.set_xscale("log", base=2)
-    ax2.set_xticks(ks)
-    ax2.set_xticklabels([f"{r['rom_iters_mean']:.0f}" for r in co], fontsize=7, color=fs.INK2)
-    ax2.set_xlabel("Jacobian evaluations to termination", fontsize=8, color=fs.INK2)
-    for sp in ("top", "right", "left", "bottom"):
-        ax2.spines[sp].set_visible(False)
     ax.set_xscale("log", base=2); ax.set_yscale("log")
+    # iteration counts as direct labels on the total-cost markers (no second scale)
+    for r_ in co:
+        ax.annotate(f"{r_['rom_iters_mean']:.0f} it", (r_["k"], r_["rom_solve_s"] * 1e3),
+                    xytext=(0, 8), textcoords="offset points", ha="center", fontsize=7.5,
+                    color=fs.INK2)
     ax.set_xticks(ks); ax.set_xticklabels([str(k) for k in ks])
     ax.set_xlabel("latent dimension k"); ax.set_ylabel("wall time (ms)")
     ax.set_title("Poisson 2D — online cost vs latent dimension", loc="left")

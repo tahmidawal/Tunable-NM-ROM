@@ -389,6 +389,15 @@ are a **like-for-like** comparison. At the looser and more realistic `tau = 1e-8
 tolerance-based FOM costs {{oc_b_t_tol_1em08_N256}} ms at `N = 256`
 ({{oc_b_factor_1em08_N256}}x over-convergence).
 
+**The instrument is anchored to the archived baseline.** This cell does not model the old
+denominator, it re-times *the same function*: `burgers2d_film.make_rollout(n)` at batch 1.
+Measured here against the archived value, the two agree to {{oc_b_archcheck_N32}}% at
+`N = 32`, {{oc_b_archcheck_N64}}% at `N = 64`, {{oc_b_archcheck_N128}}% at `N = 128` and
+{{oc_b_archcheck_N256}}% at `N = 256`. The correction is therefore not an extrapolation from a
+different setup — it divides the *same* measured baseline by a properly converged one. (The
+archived JSONs record only `cuda:0`, not the card model; agreement at this level is itself
+evidence the archived runs used a comparable card.)
+
 ### Burgers: the correction to apply
 
 The previously reported speedup is `S_old(N) = t_fixed8(N) / t_ROM(N)`. The corrected one at a
@@ -451,7 +460,13 @@ quoted here.)
 | 256 | {{oc_p_t_fixed_N256}} | {{oc_p_iters_fixed_N256}} | {{oc_p_resid_N256}} | {{oc_p_t_tol_native_1em10_N256}} | {{oc_p_iters_tol_1em10_N256}} | {{oc_p_factor_1em10_N256}}x |
 | 512 | {{oc_p_t_fixed_N512}} | {{oc_p_iters_fixed_N512}} | {{oc_p_resid_N512}} | {{oc_p_t_tol_native_1em10_N512}} | {{oc_p_iters_tol_1em10_N512}} | {{oc_p_factor_1em10_N512}}x |
 
-Applying the same multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
+The same anchoring check on the Poisson side — this cell re-times
+`jax.scipy.sparse.linalg.cg(op, F, tol=CG_TOL)`, the archived baseline function — gives
+agreement of {{oc_p_archcheck_N32}}% at `N = 32`, {{oc_p_archcheck_N64}}% at `N = 64`,
+{{oc_p_archcheck_N128}}% at `N = 128`, {{oc_p_archcheck_N256}}% at `N = 256` and
+{{oc_p_archcheck_N512}}% at `N = 512`.
+
+Applying the multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
 
 | N | old FOM (ms) | old solve-only speedup | old end-to-end | m (time) | m (iterations) | corrected solve-only | corrected end-to-end |
 |---|---|---|---|---|---|---|---|

@@ -255,6 +255,13 @@ def build(runs=None):
             if e.get("speedup_end_to_end_no_decode"):
                 f[f"oc_b_old_e2e_N{n}"] = g(e["speedup_end_to_end_no_decode"], ".2f")
             f[f"oc_b_old_fom_N{n}"] = g(orow["fom_rollout_s"] * 1e3, ".4g")
+            # INSTRUMENT VALIDATION: this cell re-times the archived baseline function
+            # itself, so the two should agree.  If they do, the correction below is
+            # anchored to the same denominator the archived speedups actually used.
+            mine = [r.get("t_fom_testbed_ms") for r in Bc if r["N"] == n]
+            if mine and mine[0]:
+                f[f"oc_b_archcheck_N{n}"] = g(
+                    100.0 * abs(mine[0] / (orow["fom_rollout_s"] * 1e3) - 1.0), ".2g")
             for r in Bc:
                 if r["N"] != n:
                     continue
@@ -295,6 +302,10 @@ def build(runs=None):
             f[f"oc_p_old_speed_N{n}"] = g(orow["speedup_solve_only"], ".2f")
             f[f"oc_p_old_e2e_N{n}"] = g(orow["speedup_end_to_end"], ".2f")
             f[f"oc_p_old_fom_N{n}"] = g(orow["fom_cg_s"] * 1e3, ".4g")
+            mine = [r.get("t_fom_testbed_ms") for r in Pc if r["N"] == n]
+            if mine and mine[0]:
+                f[f"oc_p_archcheck_N{n}"] = g(
+                    100.0 * abs(mine[0] / (orow["fom_cg_s"] * 1e3) - 1.0), ".2g")
             for r in Pc:
                 if r["N"] != n:
                     continue

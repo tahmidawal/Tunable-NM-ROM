@@ -175,11 +175,16 @@ a panel every timing shares one GPU, so the per-(PDE, N) Pareto frontier — who
 computed *within* a panel — is valid as measured.
 
 The **scaling figure compares timings across meshes**, which panels on different physical GPUs
-cannot support. So after the panels land, `ctol_pick_configs.py` selects the handful of
-argmin configurations per (method, N) from the panel *accuracies* (which are
-GPU-independent), and a single **consolidation job re-times only those, sequentially, on one
-GPU**. That consolidation run is the only timing source the scaling figure uses; the
-cross-check table below shows panel vs consolidated timings side by side.
+cannot support. So after the panels land, `ctol_pick_configs.py` selects, from the panel
+*accuracies* (which are GPU-independent), the **whole non-dominated frontier** of every
+(PDE, method, N) plus the target-reaching, most-accurate and fastest configurations, and a
+single **consolidation job re-times exactly those, sequentially, in one process on one GPU**.
+That consolidation run is the only timing source the scaling figure uses; the cross-check
+table below puts panel and consolidated timings for the same configurations side by side, so
+the size of the cross-GPU hazard is visible rather than assumed away.
+
+The local GB10 box was used only for sub-minute smoke tests of the harness; no reported number
+comes from it.
 
 ```bash
 cd experiments/cost-to-tolerance

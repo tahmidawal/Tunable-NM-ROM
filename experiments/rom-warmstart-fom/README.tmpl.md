@@ -403,8 +403,13 @@ is a ratio of two wall clocks measured together on one GPU in this cell; applyin
 speedup measured on a *different* GPU assumes that ratio is machine-independent. The
 **iteration** multiplier — Newton steps actually performed, {{oc_b_newton_fixed}} for the
 fixed-8 scan against the measured tolerance-based count — is a pure work count and carries
-across machines with no assumption. They should agree; where they differ, the iteration
-multiplier is the safer one to quote. Old values read from `{{oc_b_old_json}}`:
+across machines with no assumption.
+
+On the Burgers side the time multiplier additionally compares the testbed's own rollout
+against **this cell's** Newton driver, so it carries an implementation difference as well as a
+tolerance difference (the two were verified to agree to 2.6e-16 on a representative linear
+solve, but the outer loops are not the same code). **Where the two multipliers disagree,
+quote the iteration one.** Old values read from `{{oc_b_old_json}}`:
 
 | N | old FOM (ms) | old rollout speedup | old end-to-end | m (time) | m (iterations) | corrected rollout | corrected end-to-end |
 |---|---|---|---|---|---|---|---|
@@ -431,13 +436,20 @@ The question was whether the Poisson CG baseline shares the defect. **It does.**
 tolerance any consumer of the solution would request. A fixed, very tight tolerance has
 exactly the same effect as a fixed iteration count.
 
-| N | CG at `CG_TOL` (ms) | iterations | achieved residual | at `tau=1e-10` (ms) | iterations | over-convergence factor |
+The comparison below is **like-for-like in the solver**: both columns are
+`jax.scipy.sparse.linalg.cg`, differing only in tolerance. (This cell's own instrumented CG is
+about 15% cheaper per iteration than `jax.scipy`'s, so comparing the testbed's `jax.scipy`
+baseline against the instrumented one would conflate "tighter tolerance" with "different
+implementation". That mixed ratio is recorded as `oc_p_factor_mixed_*` and is **not** what is
+quoted here.)
+
+| N | jax.scipy CG at `CG_TOL` (ms) | iterations | achieved residual | jax.scipy CG at `tau=1e-10` (ms) | iterations | over-convergence factor |
 |---|---|---|---|---|---|---|
-| 32 | {{oc_p_t_fixed_N32}} | {{oc_p_iters_fixed_N32}} | {{oc_p_resid_N32}} | {{oc_p_t_tol_1em10_N32}} | {{oc_p_iters_tol_1em10_N32}} | {{oc_p_factor_1em10_N32}}x |
-| 64 | {{oc_p_t_fixed_N64}} | {{oc_p_iters_fixed_N64}} | {{oc_p_resid_N64}} | {{oc_p_t_tol_1em10_N64}} | {{oc_p_iters_tol_1em10_N64}} | {{oc_p_factor_1em10_N64}}x |
-| 128 | {{oc_p_t_fixed_N128}} | {{oc_p_iters_fixed_N128}} | {{oc_p_resid_N128}} | {{oc_p_t_tol_1em10_N128}} | {{oc_p_iters_tol_1em10_N128}} | {{oc_p_factor_1em10_N128}}x |
-| 256 | {{oc_p_t_fixed_N256}} | {{oc_p_iters_fixed_N256}} | {{oc_p_resid_N256}} | {{oc_p_t_tol_1em10_N256}} | {{oc_p_iters_tol_1em10_N256}} | {{oc_p_factor_1em10_N256}}x |
-| 512 | {{oc_p_t_fixed_N512}} | {{oc_p_iters_fixed_N512}} | {{oc_p_resid_N512}} | {{oc_p_t_tol_1em10_N512}} | {{oc_p_iters_tol_1em10_N512}} | {{oc_p_factor_1em10_N512}}x |
+| 32 | {{oc_p_t_fixed_N32}} | {{oc_p_iters_fixed_N32}} | {{oc_p_resid_N32}} | {{oc_p_t_tol_native_1em10_N32}} | {{oc_p_iters_tol_1em10_N32}} | {{oc_p_factor_1em10_N32}}x |
+| 64 | {{oc_p_t_fixed_N64}} | {{oc_p_iters_fixed_N64}} | {{oc_p_resid_N64}} | {{oc_p_t_tol_native_1em10_N64}} | {{oc_p_iters_tol_1em10_N64}} | {{oc_p_factor_1em10_N64}}x |
+| 128 | {{oc_p_t_fixed_N128}} | {{oc_p_iters_fixed_N128}} | {{oc_p_resid_N128}} | {{oc_p_t_tol_native_1em10_N128}} | {{oc_p_iters_tol_1em10_N128}} | {{oc_p_factor_1em10_N128}}x |
+| 256 | {{oc_p_t_fixed_N256}} | {{oc_p_iters_fixed_N256}} | {{oc_p_resid_N256}} | {{oc_p_t_tol_native_1em10_N256}} | {{oc_p_iters_tol_1em10_N256}} | {{oc_p_factor_1em10_N256}}x |
+| 512 | {{oc_p_t_fixed_N512}} | {{oc_p_iters_fixed_N512}} | {{oc_p_resid_N512}} | {{oc_p_t_tol_native_1em10_N512}} | {{oc_p_iters_tol_1em10_N512}} | {{oc_p_factor_1em10_N512}}x |
 
 Applying the same multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
 

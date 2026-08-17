@@ -276,12 +276,20 @@ def build(runs=None):
             f[f"oc_p_iters_fixed_N{r['N']}"] = g(r.get("fom_testbed_iters"), ".0f")
             f[f"oc_p_resid_N{r['N']}"] = g(r.get("fom_testbed_true_rel_res"), ".2e")
             f[f"oc_p_t_tol_{k}"] = g(r["t_fom_baseline_ms"], ".4g")
+            f[f"oc_p_t_tol_native_{k}"] = g(r.get("t_fom_baseline_native_ms"), ".4g")
             f[f"oc_p_iters_tol_{k}"] = g(r["iters_from_baseline"], ".0f")
-            fac = r.get("overconvergence_factor")
-            f[f"oc_p_factor_{k}"] = g(fac, ".2f")
-            f[f"oc_p_mult_{k}"] = g(1.0 / fac if fac else None, ".3f")
-            nf = r.get("fom_testbed_iters")
-            f[f"oc_p_multit_{k}"] = g(r["iters_from_baseline"] / nf if nf else None, ".3f")
+            # LIKE-FOR-LIKE time factor: the testbed baseline is jax.scipy CG, so it must
+            # be compared against jax.scipy CG at the looser tolerance, NOT against this
+            # cell's counting CG -- otherwise the ratio conflates "tighter tolerance" with
+            # "different solver implementation" (the two differ by ~15% per iteration).
+            tn = r.get("t_fom_baseline_native_ms")
+            tb = r.get("t_fom_testbed_ms")
+            facn = (tb / tn) if (tb and tn) else None
+            f[f"oc_p_factor_{k}"] = g(facn, ".2f")
+            f[f"oc_p_mult_{k}"] = g(1.0 / facn if facn else None, ".3f")
+            f[f"oc_p_factor_mixed_{k}"] = g(r.get("overconvergence_factor"), ".2f")
+            nfi = r.get("fom_testbed_iters")
+            f[f"oc_p_multit_{k}"] = g(r["iters_from_baseline"] / nfi if nfi else None, ".3f")
         for orow in oldp["rows"]:
             n = orow["N"]
             f[f"oc_p_old_speed_N{n}"] = g(orow["speedup_solve_only"], ".2f")
@@ -291,10 +299,11 @@ def build(runs=None):
                 if r["N"] != n:
                     continue
                 k = f"{tg(r['fom_tau'])}_N{n}"
-                fac = r.get("overconvergence_factor")
-                if fac:
-                    f[f"oc_p_new_speed_{k}"] = g(orow["speedup_solve_only"] / fac, ".2f")
-                    f[f"oc_p_new_e2e_{k}"] = g(orow["speedup_end_to_end"] / fac, ".2f")
+                tn = r.get("t_fom_baseline_native_ms"); tb = r.get("t_fom_testbed_ms")
+                facn = (tb / tn) if (tb and tn) else None
+                if facn:
+                    f[f"oc_p_new_speed_{k}"] = g(orow["speedup_solve_only"] / facn, ".2f")
+                    f[f"oc_p_new_e2e_{k}"] = g(orow["speedup_end_to_end"] / facn, ".2f")
 
     # ---------------- consistency ----------------
     from wsf_summarize import role_consistency

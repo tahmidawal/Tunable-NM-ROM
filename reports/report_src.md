@@ -4,6 +4,23 @@
 
 ---
 
+> ## ⚠ Every speedup in this report is superseded (17 Aug 2026)
+>
+> **Accuracy results, decoder ceilings and ROM-side timings stand. Only the denominators were wrong — and they were wrong in the direction that flatters us.** Both full-order baselines did more work than the accuracy they delivered required:
+>
+> - **Burgers** — the FOM baseline is a *fixed-8-Newton* rollout: 400 Newton steps and 400 BiCGStab solves per 50-step trajectory, by construction, landing at a residual of ~9e-13. A tolerance-based solve matched to what it actually reaches needs 105–120 Newton steps. Over-convergence **3.75–4.79×**, measured, and anchored by re-timing the archived function itself to within 0.1–0.5%.
+> - **Poisson** — the FOM baseline is CG at `tol=1e-13`, the tolerance used to *manufacture the truth data*. Over-convergence **~1.16×**, nearly constant.
+>
+> **What that does to the headline numbers:** the Burgers end-to-end ladder of 0.72× → 1.57× → 4.46× → 7.96× becomes roughly **0.19× → 0.36× → 0.93× → 1.83×**. The 8× on §85 is ~1.8×, and the N=128 point moves from clearly winning to break-even. The Poisson 0.3× → 4.9× ladder on §81 loses about 1.16× throughout.
+>
+> **Correcting old tables:** Poisson's factor is nearly constant (2.8% spread), so a single scalar is defensible there. **Burgers' is not** — 3.75–4.79× with a 28% spread, so a scalar bends the slope of the N-ladder, which is the very quantity the mesh-independence claim rests on. Correct per mesh, or not at all.
+>
+> **Still open:** the two experiment cells ladder *different knobs* on Burgers (a Newton tolerance vs the testbed's `NEWTON_ITERS`), so the Burgers denominator is formally unsettled pending a pre-registered cross-check. Do not quote a corrected Burgers speedup as final until that resolves.
+>
+> Measured in `exp/2026-08-17-rom-warmstart-fom`; see that cell's `CORRECTION TO THE RECORD` section for the per-mesh tables.
+
+---
+
 ## How to read this report
 
 We are building a **reduced-order model (ROM)**: instead of solving a PDE on a mesh with hundreds of thousands of unknowns, we solve for a handful of latent variables `z` on a learned solution manifold, then decode the field.

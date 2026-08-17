@@ -407,18 +407,24 @@ stated Newton tolerance is
 S_corrected(N, tau) = S_old(N) x m(N, tau),    m(N, tau) = t_tolerance(N, tau) / t_fixed8(N)
 ```
 
-so **multiply the old number by `m`**. Two versions of `m` are given. The **time** multiplier
-is a ratio of two wall clocks measured together on one GPU in this cell; applying it to a
-speedup measured on a *different* GPU assumes that ratio is machine-independent. The
-**iteration** multiplier — Newton steps actually performed, {{oc_b_newton_fixed}} for the
-fixed-8 scan against the measured tolerance-based count — is a pure work count and carries
-across machines with no assumption.
+so **multiply the old number by `m`**. Two versions of `m` are given and they do not agree
+exactly; which to use depends on what you can establish about the hardware.
+
+- The **time** multiplier is a ratio of two wall clocks measured together on one GPU here.
+  **Use this one when the archived baseline is reproduced** — the anchoring check above shows
+  it is, to a few percent — because it correctly carries the fixed per-solve overhead that the
+  archived timing also paid.
+- The **iteration** multiplier ({{oc_b_newton_fixed}} fixed Newton steps against the measured
+  tolerance-based count) is a pure work count that needs no hardware assumption, but it
+  *ignores* fixed overhead and so is the more aggressive of the two. Use it as the fallback
+  when hardware comparability cannot be established, and read it as a lower bound on the
+  corrected speedup.
 
 On the Burgers side the time multiplier additionally compares the testbed's own rollout
 against **this cell's** Newton driver, so it carries an implementation difference as well as a
-tolerance difference (the two were verified to agree to 2.6e-16 on a representative linear
-solve, but the outer loops are not the same code). **Where the two multipliers disagree,
-quote the iteration one.** Old values read from `{{oc_b_old_json}}`:
+tolerance difference (the two agree to 2.6e-16 on a representative linear solve, and the chain
+reproduces the archived rollout to {{oc_b_archcheck_N128}}% at `N = 128`, but the outer loops
+are not the same code). Old values read from `{{oc_b_old_json}}`:
 
 | N | old FOM (ms) | old rollout speedup | old end-to-end | m (time) | m (iterations) | corrected rollout | corrected end-to-end |
 |---|---|---|---|---|---|---|---|
@@ -484,8 +490,10 @@ Applying the multiplier to the archived Poisson ladder in `{{oc_p_old_json}}`:
    correction larger still.
 2. Do **not** apply a single scalar — the multiplier depends on `N`, and it changes the slope
    of the N-ladders, not just their level.
-2b. Prefer the **iteration** multiplier when correcting a number measured on other hardware;
-   the time multiplier assumes the fixed-vs-tolerance work ratio transfers between GPUs.
+2b. Use the **time** multiplier where the anchoring check holds (it does here, to a few
+   percent), since it carries the fixed per-solve overhead the archived timing also paid. Fall
+   back to the **iteration** multiplier only when hardware comparability cannot be shown, and
+   treat it as a lower bound on the corrected speedup.
 3. The ROM-side numbers are unaffected. Nothing about the ROM's cost or accuracy changes;
    only the denominator does.
 4. This does not, by itself, overturn the qualitative Burgers conclusion that the latent solve

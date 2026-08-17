@@ -346,6 +346,36 @@ def main():
                      {"t_fom_baseline_ms": ".4g", "t_fom_baseline_native_ms": ".4g",
                       "t_fom_baseline_unpaired_ms": ".4g", "t_fom_direct_ms": ".4g",
                       "cg_over_direct": ".1f"}), ""]
+        md += ["### P3c. Over-convergence of the ARCHIVED Poisson FOM baseline", "",
+               "> The reference cell times `jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL)` "
+               "with `CG_TOL = 1e-13` -- the tolerance used to MANUFACTURE the truth data. "
+               "Both columns below are jax.scipy CG, differing only in tolerance, so the "
+               "factor is like-for-like in the solver.", ""]
+        orows = []
+        seen_n = set()
+        for r in sorted([q for q in P if q["fom_tau"] == min(fts)], key=lambda q: q["N"]):
+            if r["N"] in seen_n or not r.get("t_fom_testbed_ms"):
+                continue
+            seen_n.add(r["N"])
+            tn = r.get("t_fom_baseline_native_ms")
+            orows.append(dict(
+                N=r["N"], t_fom_testbed_ms=r["t_fom_testbed_ms"],
+                fom_testbed_iters=r.get("fom_testbed_iters"),
+                fom_testbed_true_rel_res=r.get("fom_testbed_true_rel_res"),
+                t_native=tn, iters_tol=r["iters_from_baseline"],
+                factor=(r["t_fom_testbed_ms"] / tn) if tn else None,
+                mult_time=(tn / r["t_fom_testbed_ms"]) if tn else None,
+                mult_iters=(r["iters_from_baseline"] / r["fom_testbed_iters"]
+                            if r.get("fom_testbed_iters") else None)))
+        md += [table(orows, ["N", "t_fom_testbed_ms", "fom_testbed_iters",
+                             "fom_testbed_true_rel_res", "t_native", "iters_tol",
+                             "factor", "mult_time", "mult_iters"],
+                     ["N", "CG at CG_TOL (ms)", "iters", "achieved res",
+                      f"CG at {min(fts):g} (ms)", "iters", "over-conv factor",
+                      "multiplier (time)", "multiplier (iters)"],
+                     {"t_fom_testbed_ms": ".4g", "fom_testbed_iters": ".0f",
+                      "t_native": ".4g", "iters_tol": ".0f", "factor": ".2f",
+                      "mult_time": ".3f", "mult_iters": ".3f"}), ""]
         md += ["### P4b. EXTRAPOLATED break-even mesh (not measured -- an extrapolation "
                "of the fitted FOM cost law past the ladder)", ""]
         be = [b for b in (breakeven(Pcons, ft) for ft in fts) if b]
@@ -411,13 +441,22 @@ def main():
                "tolerance test.  Stopping at the tolerance instead is the honest baseline "
                "and is much cheaper, so any speedup quoted against the fixed-8 rollout is "
                "measured against an over-converged solver.", ""]
+        for r in (crows if crows else rows):
+            nf = r.get("fom_testbed_newton_iters")
+            r["mult_iters"] = (r["iters_from_baseline"] / nf) if nf else None
+            r["mult_time"] = ((r["t_fom_baseline_ms"] / r["t_fom_testbed_ms"])
+                              if r.get("t_fom_testbed_ms") else None)
         md += [table(crows if crows else rows,
                      ["fom_tau", "N", "t_fom_baseline_ms", "t_fom_testbed_ms",
-                      "iters_from_baseline"],
+                      "iters_from_baseline", "fom_testbed_newton_iters",
+                      "fom_testbed_rel_newton_residual", "mult_time", "mult_iters"],
                      ["tau_FOM", "N", "FOM at tolerance (ms)",
-                      "testbed fixed-8 rollout (ms)", "Newton iters at tolerance"],
+                      "testbed fixed-8 rollout (ms)", "Newton iters at tolerance",
+                      "Newton iters fixed-8", "fixed-8 achieved res",
+                      "multiplier (time)", "multiplier (iters)"],
                      {"t_fom_baseline_ms": ".4g", "t_fom_testbed_ms": ".4g",
-                      "iters_from_baseline": ".1f"}), ""]
+                      "iters_from_baseline": ".1f", "fom_testbed_newton_iters": ".0f",
+                      "mult_time": ".3f", "mult_iters": ".3f"}), ""]
         md += ["### B3. Accuracy and solver health", ""]
         md += [table(rows, ["fom_tau", "N", "err_rel_l2_rom", "err_final",
                             "err_final_baseline", "bicgstab_breakdowns",

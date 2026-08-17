@@ -9,7 +9,7 @@
 > **Accuracy results, decoder ceilings and ROM-side timings stand. Only the denominators were wrong — and they were wrong in the direction that flatters us.** Both full-order baselines did more work than the accuracy they delivered required:
 >
 > - **Burgers** — the FOM baseline is a *fixed-8-Newton* rollout: 400 Newton steps and 400 BiCGStab solves per 50-step trajectory, by construction, landing at a residual of ~9e-13. A tolerance-based solve matched to what it actually reaches needs 105–120 Newton steps. Over-convergence **3.75–4.79×**, measured, and anchored by re-timing the archived function itself to within 0.1–0.5%.
-> - **Poisson** — the FOM baseline is CG at `tol=1e-13`, the tolerance used to *manufacture the truth data*. Over-convergence **~1.16×**, nearly constant.
+> - **Poisson** — the archived FOM baseline is `jax.scipy.sparse.linalg.cg` at `tol = CG_TOL = 1e-13`, the same constant `ms_parametric.build_snapshots` uses to manufacture the truth data; re-timing that exact call shows it *attains* a true relative residual of 8.9e-14 at N=32 but only 3.9e-12 at N=512, so at fine meshes it neither reaches its requested tolerance nor stops at a useful one. Over-convergence **~1.16×**, nearly constant.
 >
 > **What that does to the headline numbers:** the Burgers end-to-end ladder of 0.72× → 1.57× → 4.46× → 7.96× becomes roughly **0.19× → 0.36× → 0.93× → 1.83×**. The 8× on §85 is ~1.8×, and the N=128 point moves from clearly winning to break-even. The Poisson 0.3× → 4.9× ladder on §81 loses about 1.16× throughout.
 >

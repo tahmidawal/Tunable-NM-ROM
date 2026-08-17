@@ -162,9 +162,49 @@ Note also that the archived baseline does not reach its nominal 1e-13 at fine me
 at N=512), so two over-convergence factors are reported and they answer different questions: one
 against what the archived run *achieved*, one against the tolerance a consumer would actually
 *ask for* (1e-6, 1e-8). The first degenerates to 1.00 at coarse meshes; the second is the one
-that bites. On Poisson the factor is ~1.16x and nearly constant across N, so a single scalar is
-a fair approximation there; on Burgers it is 3.75–4.79x with a 28% spread and genuinely
-N-dependent, so it is not.
+that bites.
+
+### The scalar asymmetry — a rule you can act on
+
+If you are correcting an archived table, the most useful thing here is **not** either
+over-convergence factor on its own; it is that the two PDEs behave differently:
+
+> **Poisson: a single scalar is defensible.** The factor is ~1.16x and nearly constant across
+> the mesh ladder (per-mesh multipliers 0.856–0.880, a 2.8% spread). Multiplying a whole
+> archived Poisson ladder by one number changes its level and leaves its **slope** essentially
+> intact.
+>
+> **Burgers: a single scalar is not.** The factor is 3.75–4.79x with a 28% spread and is
+> genuinely N-dependent (multipliers 0.209–0.267). A scalar there bends the slope of the
+> N-ladder — which is the very quantity a mesh-independence claim rests on — so Burgers must be
+> corrected per mesh, or not at all.
+
+The asymmetry also sets the stakes for reconciling definitions between cells: a mismatched
+Burgers denominator lands on a ~4x correction, a mismatched Poisson one on a ~1.16x correction.
+
+### Cross-checking the two Burgers ladders
+
+This cell and `rom-warmstart-fom` ladder **different knobs** on Burgers, and that is stated
+rather than glossed: this cell varies the testbed's own fixed-length `NEWTON_ITERS` over
+{1,2,3,4,6,8}; that cell replaces the fixed scan with a tolerance-based Newton loop and ladders
+`tau` in `||R(u, u_prev, nu)|| <= tau*||u_prev||`. They are not comparable rung-for-rung.
+
+They do reconcile, because a tolerance-based solve reports how many steps it actually took: that
+cell measures **1.97–2.40 Newton steps per time step** across every mesh and tolerance, against
+the testbed's fixed 8. So its rungs sit at approximately this cell's `NEWTON_ITERS=2` rung, and
+the ~4x over-convergence is the same fact seen from two directions. The predicted cross-check,
+recorded before the Burgers panels landed so it cannot be fitted after the fact:
+
+| N | peer `tau`=1e-6 arm | this cell's `NEWTON_ITERS`=2 rung should be near |
+|---|---|---|
+| 32 | 47.6 ms | ~47.6 ms |
+| 64 | 85.6 ms | ~85.6 ms |
+| 128 | 228.1 ms | ~228.1 ms |
+| 256 | 449.9 ms | ~449.9 ms |
+
+with achieved residual in the 9.6e-7 to 9.9e-7 band. Agreement confirms the two denominators
+are the same quantity; disagreement means one of the two ladders is not measuring what it
+claims, and that would need resolving before either Burgers speedup is quoted.
 
 <!-- BEGIN GENERATED: anchor -->
 <!-- END GENERATED: anchor -->

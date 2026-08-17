@@ -495,6 +495,34 @@ def build_blocks(data, pts):
                                            if k in cells else "--" for k in ks])
         B[f"eqfit_{pde}"] = md_table(["method", "N"] + [f"k={k}" for k in ks], rows)
 
+    # ---- FOM baseline anchor, per mesh -------------------------------------
+    rows = []
+    for pde, d in sorted(data.items()):
+        for b_ in d.get("fom_baseline", []):
+            an = b_.get("anchor_vs_archived") or {}
+            pct = 100 * an["rel_diff"] if an.get("rel_diff") is not None else None
+            peer = PEER_ANCHOR_PCT.get((pde, b_["N"]))
+            v = anchor_verdict(pct)
+            # a mesh where BOTH instruments are weak is uncorrected, not corrected by
+            # a number neither supports
+            oc_ach = b_.get("overconvergence_factor")
+            if v == "iterations" and oc_ach is not None and abs(oc_ach - 1.0) < 1e-9:
+                v = "UNCORRECTED (anchor fails AND the achieved-residual factor is 1.00)"
+            eng = (b_.get("overconvergence_engineering") or {})
+            eng_s = "  ".join(f"{kk}:{vv['factor']:.2f}x" for kk, vv in sorted(eng.items()))
+            rows.append([pde, b_["N"], fmt(an.get("archived_ms"), ".2f"),
+                         fmt(an.get("retimed_ms"), ".2f"),
+                         fmt(pct, ".1f") if pct is not None else "--",
+                         fmt(peer, ".1f") if peer is not None else "--",
+                         fmt(an.get("archived_true_rel_res"), ".1e"),
+                         fmt(an.get("retimed_true_rel_res"), ".1e"),
+                         fmt(oc_ach, ".2f"), eng_s or "--", v])
+    B["anchor"] = md_table(
+        ["pde", "N", "archived ms", "re-timed ms", "this cell %", "peer cell %",
+         "archived true res", "re-timed true res", "over-conv (achieved)",
+         "over-conv (engineering)", "multiplier to use"], rows) if rows else \
+        "_(no FOM anchor recorded in this run)_"
+
     # ---- decoder ceiling per (N, k): the checkpoint's own oracle ------------
     # Accuracy is NON-MONOTONE in k because each k is a SEPARATELY TRAINED
     # checkpoint.  Reporting each checkpoint's own oracle inferred-latent error next
@@ -553,6 +581,32 @@ def build_blocks(data, pts):
 
 
 TARGETS = {"poisson2d": [2e-2, 1e-2], "burgers2d": [5e-2, 2e-2]}
+
+# The ANCHOR is a PER-MESH property, not a global licence.  Re-timing the archived
+# baseline function agrees to single-digit percent at the fine meshes and fails badly
+# at the coarse end, because a coarse solve is dominated by per-iteration kernel-launch
+# overhead, which does not transfer between environments or driver versions.  Two
+# independent re-timings (this cell and rom-warmstart-fom) found the same thing:
+#   N=32   archived 5.591 ms   this 4.74   peer 3.548  -> 15% / 37%   FAILS
+#   N=64   archived 7.786 ms   this 7.144  peer 7.124  ->  8% /  8.5% marginal
+#   N=128  archived 15.145 ms  this 14.795 peer 14.860 ->  2% /  1.9% ok
+#   N=256  archived 31.135 ms              peer 29.610 ->        4.9% ok
+#   N=512  archived 96.010 ms              peer 93.070 ->        3.1% ok
+# Note the two re-timings agree with EACH OTHER at N=64 to 0.3% while both sit ~8%
+# below the archive: at that mesh the archive is the outlier, not the re-timings.
+ANCHOR_OK_PCT = 10.0          # "single-digit percent" per the shared rule
+PEER_ANCHOR_PCT = {("poisson2d", 32): 37.0, ("poisson2d", 64): 8.5,
+                   ("poisson2d", 128): 1.9, ("poisson2d", 256): 4.9,
+                   ("poisson2d", 512): 3.1,
+                   ("burgers2d", 32): 0.21, ("burgers2d", 64): 6.8,
+                   ("burgers2d", 128): 0.13, ("burgers2d", 256): 0.53}
+
+
+def anchor_verdict(pct):
+    """time | iterations | uncorrected -- the shared rule with rom-warmstart-fom."""
+    if pct is None or not math.isfinite(pct):
+        return "unknown"
+    return "time" if pct < ANCHOR_OK_PCT else "iterations"
 
 
 def rewrite(readme, blocks):

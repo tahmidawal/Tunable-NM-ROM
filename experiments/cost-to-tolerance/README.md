@@ -130,18 +130,44 @@ the two cells cannot publish two different Poisson denominators. Both compare
 `jax.scipy`-at-`CG_TOL` against `jax.scipy`-at-tau (like-for-like in the solver); an
 instrumented CG is ~15% cheaper per iteration and mixing the two understates the correction.
 
-**Anchoring the correction.** A measured over-convergence ratio may only be applied to the
-archived ladders if re-timing the *archived function itself* reproduces the archived number.
-Each mesh therefore records `anchor_vs_archived`: this run's re-timed
+**Anchoring the correction — and it is per-mesh, not global.** A measured over-convergence
+ratio may only be applied to the archived ladders if re-timing the *archived function itself*
+reproduces the archived number. Each mesh records `anchor_vs_archived`: this run's re-timed
 `cg(tol=CG_TOL)` against `pt_n/timing_n.json`'s `fom_cg_s`, with both achieved true residuals.
-Three independent measurements agree at N=128 — archived 15.145 ms, the `rom-warmstart-fom`
-cell 14.86 ms, this cell 14.795 ms (2.3% spread) — which is what licenses the **time**
-multiplier there. Where the anchor fails, the iteration multiplier is reported instead and read
-as a *lower bound* on the corrected speedup, not as the estimate. Note the archived baseline
-does not reach its nominal 1e-13 at fine meshes (6.96e-11 at N=512), so two over-convergence
-factors are reported and they answer different questions: one against what the archived run
-*achieved*, one against the tolerance a consumer would actually *ask for* (1e-6, 1e-8). The
-first degenerates to 1.00 at coarse meshes; the second is the one that bites.
+
+Two **independent** re-timings — this cell and `rom-warmstart-fom` — agree that the anchor
+holds at the fine meshes and *fails at the coarse end*: ~2% at N=128, 3–5% at N=256/512, but
+**15% (this cell) and 37% (the peer) at N=32**. A coarse solve is dominated by per-iteration
+kernel-launch overhead, which does not transfer between environments or driver versions. So the
+rule, shared with that cell, is per-row: **time multiplier where the mesh's anchor is
+single-digit percent, iteration multiplier where it is not** — and it is published on every row
+of the anchor table rather than asserted once.
+
+**N=32 is uncorrected, not corrected.** There both instruments are weak *simultaneously*: the
+anchor fails, and the achieved-residual over-convergence factor is exactly 1.00 because the
+1e-13 solve genuinely reaches ~9e-14 at that mesh. A number neither instrument supports is not
+an estimate, so N=32 is reported uncorrected.
+
+**Do not read agreement between two within-run multipliers as validation.** A time multiplier
+and an iteration multiplier computed inside the *same* run share precisely the environment that
+the anchor failure is about, so their agreeing closely is not evidence that either is
+transferable. (The peer cell measured 0.865 vs 0.862 at N=32 — the mesh where the anchor fails
+worst.)
+
+At N=64 the two re-timings agree with **each other** to 0.3% (7.144 ms here, 7.124 ms there)
+while both sit ~8% below the archived 7.786 ms. At that mesh the archive is the outlier, not the
+re-timings.
+
+Note also that the archived baseline does not reach its nominal 1e-13 at fine meshes (6.96e-11
+at N=512), so two over-convergence factors are reported and they answer different questions: one
+against what the archived run *achieved*, one against the tolerance a consumer would actually
+*ask for* (1e-6, 1e-8). The first degenerates to 1.00 at coarse meshes; the second is the one
+that bites. On Poisson the factor is ~1.16x and nearly constant across N, so a single scalar is
+a fair approximation there; on Burgers it is 3.75–4.79x with a 28% spread and genuinely
+N-dependent, so it is not.
+
+<!-- BEGIN GENERATED: anchor -->
+<!-- END GENERATED: anchor -->
 
 **GPU clock ramp.** The NNLS-EQ fits run on the host for minutes, and a device coming out of
 that idle stretch is still ramping — the `rom-warmstart-fom` cell measured a 17% swing at N=512
@@ -441,6 +467,12 @@ termination rather than to the declared tolerance:
 <!-- END GENERATED: owner_burgers2d -->
 
 ### 6.7 Scaling: cheapest time reaching a fixed error target vs N
+
+**Read the N=32 point with caution, in both arms.** At the coarsest mesh both the ROM and the
+FOM are dominated by per-iteration kernel-launch overhead rather than by floating-point work —
+which is exactly why the FOM anchor fails there (above). Mesh-independence is a claim about the
+*flat* part of the curve; the leftmost point is the least informative, not the most.
+
 
 Figures: `figs/ctol_scaling_poisson2d.{png,pdf}`, `figs/ctol_scaling_burgers2d.{png,pdf}`.
 Mesh independence appears as a flat line while the FOM's rises. The configuration is chosen

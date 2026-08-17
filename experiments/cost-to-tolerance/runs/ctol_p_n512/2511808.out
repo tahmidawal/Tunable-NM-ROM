@@ -1,0 +1,144 @@
+host=pax051  node=pax051  gpu=NVIDIA A100-PCIE-40GB
+commit=9741ff0  dirty=e3b0c44298fc (dirty marker 'e3b0c442' == clean)  cell=ctol_p_n512  job=2511808
+src_bundle=ctol=9741ff0/e3b0c44298fc,2026-08-16-poisson2d-rom-objective=d68d8cb/e3b0c442,2026-08-16-burgers2d-rom-latent-stepping=c7e9c2e/e3b0c442,2026-08-14-multistage-precision=b389467/e3b0c442,2026-08-14-burgers2d-coord-rom=b327915/e3b0c442
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100-PCIE-40GB x64=True KS=[2, 4, 6, 8, 12, 16, 24, 32] NS=[512] TAUS=[0.1, 0.01, 0.001] M=64 m=256 reps=7 warm=2
+  plan: 1 mesh(es) [512], k values [2, 4, 6, 8, 12, 16, 24, 32], 20 (arm, method) cells
+  ckpt k= 2: autodec_K2_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.235
+  ckpt k= 4: autodec_K4_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.192
+  ckpt k= 6: autodec_K6_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.182
+  ckpt k= 8: autodec_K8_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.175
+  ckpt k=12: autodec_K12_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.164
+  ckpt k=16: autodec_K16_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.147
+  ckpt k=24: autodec_K24_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.143
+  ckpt k=32: autodec_K32_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.141
+   FOM CG tol=3e-01:   20.359 ms  err 3.677e-02  achieved residual 3.00e-01
+   FOM CG tol=1e-01:   27.385 ms  err 7.104e-03  achieved residual 9.98e-02
+   FOM CG tol=1e-02:   36.494 ms  err 6.526e-04  achieved residual 9.96e-03
+   FOM CG tol=1e-03:   45.724 ms  err 5.396e-05  achieved residual 9.99e-04
+   FOM CG tol=1e-04:   52.729 ms  err 3.356e-06  achieved residual 9.99e-05
+   FOM CG tol=1e-05:   58.079 ms  err 3.443e-07  achieved residual 9.96e-06
+   FOM CG tol=1e-06:   57.376 ms  err 3.291e-08  achieved residual 9.99e-07
+   FOM CG tol=1e-08:   66.696 ms  err 2.924e-10  achieved residual 1.00e-08
+   FOM CG tol=1e-10:   84.395 ms  err 2.290e-12  achieved residual 1.19e-10
+   FOM CG tol=1e-13:   97.153 ms  err 0.000e+00  achieved residual 6.96e-11
+   anchor N=512: archived 96.01 ms vs re-timed 97.15 ms (1.2% diff; archived achieved 7.0e-11, re-timed 7.0e-11)
+   overconvergence factor at N=512: 1.00x (testbed 1e-13 achieved 7.0e-11; matched rung tol=1e-13)
+== N= 512  FOM CG @1e-13    97.15 ms  (residual 7.0e-11) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 60s, max rel residual over all samples 7.70e-11
+   POD basis: 512 snapshots, orthonormality dev 1.17e-13, sv0 2.400e+01 sv[31] 1.684e-01
+   EQ candidate pool: 4096 of 260100 interior nodes (cap 4096)
+   preprocess M=64: selected-mode matvec 0.591 ms/query (full dense sine transform 0.578 ms; offline table 0.9 s; vs reference rel 4.4e-16)
+  NNLS-EQ poisson coord N=512 k=2 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 4.77e-03 (row p95 6.0e-01, max 8.8e+02) [24s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N= 512 k= 2 M= 64 m= 256 tau=1e-01  solve    5.48 ms  e2e   13.14 ms  jac  22.9  err 3.972e-01  fd 1.27e+00  cens  88%
+   coord N= 512 k= 2 M= 64 m= 256 tau=1e-02  solve    4.08 ms  e2e   11.74 ms  jac  23.7  err 3.960e-01  fd 1.26e+00  cens 100%
+   coord N= 512 k= 2 M= 64 m= 256 tau=1e-03  solve    4.05 ms  e2e   11.71 ms  jac  23.7  err 3.960e-01  fd 1.26e+00  cens 100%
+   ceiling  N= 512 k= 2: oracle inferred-latent 1.233e-01 (max 3.086e-01, inits {'nearest': 14, 'mean': 2})
+   [cell coord N=512 k=2 M=64 m=256: 66s]
+  NNLS-EQ poisson pod N=512 k=2 M=64 m=256: pool 4096 support 123 (+133 pad) rel fit 6.90e-07 (row p95 5.9e-04, max 2.0e-01) [9s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   pod   N= 512 k= 2 M= 64 m= 256 tau=1e-01  solve    0.68 ms  e2e    1.32 ms  jac   3.6  err 4.565e-01  fd 9.19e-01  cens 100%
+   pod   N= 512 k= 2 M= 64 m= 256 tau=1e-02  solve    0.68 ms  e2e    1.32 ms  jac   3.6  err 4.565e-01  fd 9.19e-01  cens 100%
+   pod   N= 512 k= 2 M= 64 m= 256 tau=1e-03  solve    0.69 ms  e2e    1.33 ms  jac   3.6  err 4.565e-01  fd 9.19e-01  cens 100%
+   pod_direct N= 512 k= 2 solve 0.0522 ms err 4.565e-01 cond 1.0e+00
+   [cell pod N=512 k=2 M=64 m=256: 17s]
+  NNLS-EQ poisson coord N=512 k=4 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.60e-03 (row p95 3.0e-01, max 4.0e+02) [24s]
+   coord N= 512 k= 4 M= 64 m= 256 tau=1e-01  solve   -0.48 ms  e2e    7.26 ms  jac   4.4  err 9.325e-02  fd 6.11e-01  cens   0%
+   coord N= 512 k= 4 M= 64 m= 256 tau=1e-02  solve    1.12 ms  e2e    8.87 ms  jac  12.5  err 1.994e-02  fd 3.65e-01  cens  56%
+   coord N= 512 k= 4 M= 64 m= 256 tau=1e-03  solve    2.10 ms  e2e    9.84 ms  jac  16.2  err 1.695e-02  fd 3.53e-01  cens 100%
+   ceiling  N= 512 k= 4: oracle inferred-latent 1.518e-02 (max 3.285e-02, inits {'nearest': 8, 'mean': 8})
+   [cell coord N=512 k=4 M=64 m=256: 59s]
+  NNLS-EQ poisson pod N=512 k=4 M=64 m=256: pool 4096 support 198 (+58 pad) rel fit 5.24e-06 (row p95 3.4e-03, max 3.6e+00) [17s]
+   pod   N= 512 k= 4 M= 64 m= 256 tau=1e-01  solve    0.71 ms  e2e    1.38 ms  jac   3.4  err 2.906e-01  fd 8.53e-01  cens  88%
+   pod   N= 512 k= 4 M= 64 m= 256 tau=1e-02  solve    0.82 ms  e2e    1.49 ms  jac   3.6  err 2.906e-01  fd 8.53e-01  cens 100%
+   pod   N= 512 k= 4 M= 64 m= 256 tau=1e-03  solve    0.83 ms  e2e    1.50 ms  jac   3.6  err 2.906e-01  fd 8.53e-01  cens 100%
+   pod_direct N= 512 k= 4 solve 0.0519 ms err 2.906e-01 cond 1.0e+00
+   [cell pod N=512 k=4 M=64 m=256: 25s]
+  NNLS-EQ poisson coord N=512 k=6 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.56e-03 (row p95 2.7e-01, max 1.4e+02) [24s]
+   coord N= 512 k= 6 M= 64 m= 256 tau=1e-01  solve    0.33 ms  e2e    7.99 ms  jac   8.6  err 1.557e-01  fd 9.30e-01  cens  12%
+   coord N= 512 k= 6 M= 64 m= 256 tau=1e-02  solve    1.73 ms  e2e    9.39 ms  jac  14.5  err 9.640e-02  fd 7.29e-01  cens  19%
+   coord N= 512 k= 6 M= 64 m= 256 tau=1e-03  solve    4.55 ms  e2e   12.22 ms  jac  26.0  err 9.442e-02  fd 7.19e-01  cens 100%
+   ceiling  N= 512 k= 6: oracle inferred-latent 8.586e-03 (max 1.539e-02, inits {'nearest': 11, 'mean': 5})
+   [cell coord N=512 k=6 M=64 m=256: 87s]
+  NNLS-EQ poisson pod N=512 k=6 M=64 m=256: pool 4096 support 236 (+20 pad) rel fit 5.97e-06 (row p95 4.8e-03, max 4.1e+00) [26s]
+   pod   N= 512 k= 6 M= 64 m= 256 tau=1e-01  solve    0.95 ms  e2e    1.62 ms  jac   3.2  err 2.193e-01  fd 8.14e-01  cens  81%
+   pod   N= 512 k= 6 M= 64 m= 256 tau=1e-02  solve    1.15 ms  e2e    1.82 ms  jac   3.6  err 2.193e-01  fd 8.14e-01  cens 100%
+   pod   N= 512 k= 6 M= 64 m= 256 tau=1e-03  solve    1.15 ms  e2e    1.82 ms  jac   3.6  err 2.193e-01  fd 8.14e-01  cens 100%
+   pod_direct N= 512 k= 6 solve 0.0516 ms err 2.193e-01 cond 1.0e+00
+   [cell pod N=512 k=6 M=64 m=256: 34s]
+  NNLS-EQ poisson coord N=512 k=8 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.45e-03 (row p95 3.2e-01, max 1.9e+02) [24s]
+   coord N= 512 k= 8 M= 64 m= 256 tau=1e-01  solve    0.10 ms  e2e    7.74 ms  jac   4.9  err 8.127e-02  fd 7.43e-01  cens   0%
+   coord N= 512 k= 8 M= 64 m= 256 tau=1e-02  solve    0.72 ms  e2e    8.37 ms  jac   9.4  err 1.288e-02  fd 2.18e-01  cens   6%
+   coord N= 512 k= 8 M= 64 m= 256 tau=1e-03  solve    5.99 ms  e2e   13.63 ms  jac  31.3  err 8.614e-03  fd 2.09e-01  cens 100%
+   ceiling  N= 512 k= 8: oracle inferred-latent 6.929e-03 (max 1.505e-02, inits {'nearest': 6, 'mean': 10})
+   [cell coord N=512 k=8 M=64 m=256: 90s]
+  NNLS-EQ poisson pod N=512 k=8 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 8.26e-06 (row p95 6.4e-03, max 1.7e+01) [28s]
+   pod   N= 512 k= 8 M= 64 m= 256 tau=1e-01  solve    0.42 ms  e2e    1.09 ms  jac   3.2  err 1.761e-01  fd 7.69e-01  cens  75%
+   pod   N= 512 k= 8 M= 64 m= 256 tau=1e-02  solve    0.92 ms  e2e    1.59 ms  jac   3.6  err 1.761e-01  fd 7.69e-01  cens 100%
+   pod   N= 512 k= 8 M= 64 m= 256 tau=1e-03  solve    1.04 ms  e2e    1.72 ms  jac   3.6  err 1.761e-01  fd 7.69e-01  cens 100%
+   pod_direct N= 512 k= 8 solve 0.0522 ms err 1.761e-01 cond 1.0e+00
+   [cell pod N=512 k=8 M=64 m=256: 36s]
+   preprocess M=256: selected-mode matvec 0.975 ms/query (full dense sine transform 0.596 ms; offline table 1.6 s; vs reference rel 4.4e-16)
+  NNLS-EQ poisson coord N=512 k=8 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 6.76e-02 (row p95 6.4e+01, max 3.6e+05) [64s]
+   coord N= 512 k= 8 M=256 m= 256 tau=1e-01  solve   -0.15 ms  e2e    7.89 ms  jac   5.1  err 8.009e-02  fd 6.46e-01  cens   0%
+   coord N= 512 k= 8 M=256 m= 256 tau=1e-02  solve    7.66 ms  e2e   15.70 ms  jac  30.7  err 1.560e-02  fd 2.66e-01  cens  94%
+   coord N= 512 k= 8 M=256 m= 256 tau=1e-03  solve    7.38 ms  e2e   15.42 ms  jac  31.7  err 1.584e-02  fd 2.72e-01  cens 100%
+   [cell coord N=512 k=8 M=256 m=256: 84s]
+  NNLS-EQ poisson pod N=512 k=8 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 4.52e-02 (row p95 1.0e+03, max 2.5e+06) [62s]
+   pod   N= 512 k= 8 M=256 m= 256 tau=1e-01  solve    1.15 ms  e2e    2.21 ms  jac   3.1  err 1.761e-01  fd 7.69e-01  cens  75%
+   pod   N= 512 k= 8 M=256 m= 256 tau=1e-02  solve    2.28 ms  e2e    3.33 ms  jac   3.4  err 1.761e-01  fd 7.69e-01  cens 100%
+   pod   N= 512 k= 8 M=256 m= 256 tau=1e-03  solve    2.27 ms  e2e    3.32 ms  jac   3.4  err 1.761e-01  fd 7.69e-01  cens 100%
+   pod_direct N= 512 k= 8 solve 0.0509 ms err 1.761e-01 cond 1.0e+00
+   [cell pod N=512 k=8 M=256 m=256: 74s]
+  NNLS-EQ poisson coord N=512 k=12 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.46e-03 (row p95 3.1e-01, max 4.6e+02) [24s]
+   coord N= 512 k=12 M= 64 m= 256 tau=1e-01  solve    0.46 ms  e2e    8.12 ms  jac   7.5  err 1.057e-01  fd 8.62e-01  cens   6%
+   coord N= 512 k=12 M= 64 m= 256 tau=1e-02  solve    1.51 ms  e2e    9.17 ms  jac  14.7  err 2.915e-02  fd 4.07e-01  cens  19%
+   coord N= 512 k=12 M= 64 m= 256 tau=1e-03  solve    9.51 ms  e2e   17.17 ms  jac  35.1  err 2.634e-02  fd 3.86e-01  cens 100%
+   ceiling  N= 512 k=12: oracle inferred-latent 6.112e-03 (max 1.435e-02, inits {'nearest': 9, 'mean': 7})
+   [cell coord N=512 k=12 M=64 m=256: 134s]
+  NNLS-EQ poisson pod N=512 k=12 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 2.06e-05 (row p95 1.8e-02, max 2.4e+01) [27s]
+   pod   N= 512 k=12 M= 64 m= 256 tau=1e-01  solve   -0.09 ms  e2e    0.59 ms  jac   2.8  err 1.282e-01  fd 7.09e-01  cens  44%
+   pod   N= 512 k=12 M= 64 m= 256 tau=1e-02  solve    0.81 ms  e2e    1.49 ms  jac   3.7  err 1.282e-01  fd 7.09e-01  cens 100%
+   pod   N= 512 k=12 M= 64 m= 256 tau=1e-03  solve    0.81 ms  e2e    1.49 ms  jac   3.7  err 1.282e-01  fd 7.09e-01  cens 100%
+   pod_direct N= 512 k=12 solve 0.0530 ms err 1.282e-01 cond 1.0e+00
+   [cell pod N=512 k=12 M=64 m=256: 35s]
+  NNLS-EQ poisson coord N=512 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.27e-03 (row p95 2.7e-01, max 2.2e+02) [24s]
+   coord N= 512 k=16 M= 64 m= 256 tau=1e-01  solve    0.32 ms  e2e    7.99 ms  jac   4.8  err 8.246e-02  fd 4.07e-01  cens   0%
+   coord N= 512 k=16 M= 64 m= 256 tau=1e-02  solve    1.08 ms  e2e    8.75 ms  jac   7.4  err 1.178e-02  fd 1.87e-01  cens   0%
+   coord N= 512 k=16 M= 64 m= 256 tau=1e-03  solve    7.65 ms  e2e   15.31 ms  jac  30.4  err 6.388e-03  fd 1.64e-01  cens  94%
+   ceiling  N= 512 k=16: oracle inferred-latent 4.059e-03 (max 6.267e-03, inits {'nearest': 8, 'mean': 8})
+   [cell coord N=512 k=16 M=64 m=256: 117s]
+  NNLS-EQ poisson pod N=512 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 4.19e-05 (row p95 2.7e-02, max 7.5e+00) [28s]
+   pod   N= 512 k=16 M= 64 m= 256 tau=1e-01  solve    0.01 ms  e2e    0.70 ms  jac   2.4  err 1.000e-01  fd 6.49e-01  cens  25%
+   pod   N= 512 k=16 M= 64 m= 256 tau=1e-02  solve    0.77 ms  e2e    1.46 ms  jac   3.7  err 1.000e-01  fd 6.49e-01  cens 100%
+   pod   N= 512 k=16 M= 64 m= 256 tau=1e-03  solve    0.78 ms  e2e    1.47 ms  jac   3.7  err 1.000e-01  fd 6.49e-01  cens 100%
+   pod_direct N= 512 k=16 solve 0.0513 ms err 1.000e-01 cond 1.0e+00
+   [cell pod N=512 k=16 M=64 m=256: 36s]
+  NNLS-EQ poisson coord N=512 k=24 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.32e-03 (row p95 2.6e-01, max 2.7e+02) [24s]
+   coord N= 512 k=24 M= 64 m= 256 tau=1e-01  solve    0.36 ms  e2e    8.02 ms  jac   4.8  err 9.533e-02  fd 5.73e-01  cens   0%
+   coord N= 512 k=24 M= 64 m= 256 tau=1e-02  solve    1.50 ms  e2e    9.16 ms  jac  10.7  err 1.893e-02  fd 2.96e-01  cens   6%
+   coord N= 512 k=24 M= 64 m= 256 tau=1e-03  solve   13.76 ms  e2e   21.42 ms  jac  37.3  err 1.472e-02  fd 2.57e-01  cens  94%
+   ceiling  N= 512 k=24: oracle inferred-latent 3.920e-03 (max 8.404e-03, inits {'nearest': 8, 'mean': 8})
+   [cell coord N=512 k=24 M=64 m=256: 210s]
+  NNLS-EQ poisson pod N=512 k=24 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 9.85e-05 (row p95 4.2e-02, max 3.4e+01) [27s]
+   pod   N= 512 k=24 M= 64 m= 256 tau=1e-01  solve    0.05 ms  e2e    0.77 ms  jac   2.0  err 6.602e-02  fd 5.59e-01  cens   0%
+   pod   N= 512 k=24 M= 64 m= 256 tau=1e-02  solve    1.04 ms  e2e    1.75 ms  jac   4.0  err 6.602e-02  fd 5.59e-01  cens 100%
+   pod   N= 512 k=24 M= 64 m= 256 tau=1e-03  solve    1.03 ms  e2e    1.74 ms  jac   4.0  err 6.602e-02  fd 5.59e-01  cens 100%
+   pod_direct N= 512 k=24 solve 0.0598 ms err 6.602e-02 cond 1.0e+00
+   [cell pod N=512 k=24 M=64 m=256: 35s]
+  NNLS-EQ poisson coord N=512 k=32 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 6.65e-02 (row p95 7.8e+01, max 4.8e+05) [61s]
+   coord N= 512 k=32 M=256 m= 256 tau=1e-01  solve    2.58 ms  e2e   10.65 ms  jac  12.6  err 9.357e-02  fd 5.91e-01  cens  12%
+   coord N= 512 k=32 M=256 m= 256 tau=1e-02  solve   19.52 ms  e2e   27.59 ms  jac  40.4  err 5.162e-02  fd 7.18e-01  cens 100%
+   coord N= 512 k=32 M=256 m= 256 tau=1e-03  solve   19.55 ms  e2e   27.62 ms  jac  40.4  err 5.162e-02  fd 7.18e-01  cens 100%
+   [cell coord N=512 k=32 M=256 m=256: 87s]
+  NNLS-EQ poisson pod N=512 k=32 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 6.05e-02 (row p95 3.8e+02, max 4.8e+05) [60s]
+   pod   N= 512 k=32 M=256 m= 256 tau=1e-01  solve   -0.01 ms  e2e    1.11 ms  jac   2.1  err 5.139e-02  fd 5.06e-01  cens   6%
+   pod   N= 512 k=32 M=256 m= 256 tau=1e-02  solve    0.72 ms  e2e    1.84 ms  jac   3.9  err 5.139e-02  fd 5.06e-01  cens 100%
+   pod   N= 512 k=32 M=256 m= 256 tau=1e-03  solve    0.73 ms  e2e    1.85 ms  jac   3.9  err 5.139e-02  fd 5.06e-01  cens 100%
+   pod_direct N= 512 k=32 solve 0.0597 ms err 5.139e-02 cond 1.1e+00
+   [cell pod N=512 k=32 M=256 m=256: 73s]
+  NNLS-EQ poisson coord N=512 k=32 M=256 m=1024: pool 4096 support 1024 (+0 pad) rel fit 1.36e-04 (row p95 1.7e-01, max 7.4e+02) [1367s]
+   coord N= 512 k=32 M=256 m=1024 tau=1e-01  solve    4.32 ms  e2e   12.41 ms  jac   9.6  err 1.063e-01  fd 7.15e-01  cens   6%
+   coord N= 512 k=32 M=256 m=1024 tau=1e-02  solve    7.83 ms  e2e   15.92 ms  jac  18.1  err 4.621e-02  fd 5.31e-01  cens  31%
+   coord N= 512 k=32 M=256 m=1024 tau=1e-03  solve   35.74 ms  e2e   43.84 ms  jac  40.8  err 4.315e-02  fd 5.19e-01  cens 100%

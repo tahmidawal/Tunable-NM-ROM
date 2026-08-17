@@ -155,6 +155,21 @@ elif [[ "$MODE" == "fom" ]]; then
       "$PGRID NS=32,64,128,256,512 FOM_ONLY=1 DO_SUPP=0 POOL_CONTROL=0 CAP_CONTROL=0 DO_CEILING=0" \
       "\$PY -u ctol_poisson.py ../out/ctol_poisson_fomladder.json")
   stage_poisson "$d"; seal "$d"
+elif [[ "$MODE" == "recover" ]]; then
+  # RECOVERY after ctol_p_n512 died in the oracle-ceiling arm (GPU OOM: an unchunked
+  # jacfwd of the full-field misfit at N=512, k=32 wanted 16.87 GiB).  Its PRIMARY
+  # surface survived to disk except the three k=32 POD cells that were next in line,
+  # so only those and the ceiling arm need re-running -- not the 50-minute panel.
+  CFG="$HERE/stage/recover_n512_configs.json"
+  [[ -f "$CFG" ]] || { echo "missing $CFG" >&2; exit 1; }
+  d=$(mk ctol_rec_n512 4 192G \
+      "$PGRID NS=512 DO_SUPP=0 POOL_CONTROL=0 CAP_CONTROL=0 DO_CEILING=0 DO_POD_DIRECT=0 CONFIGS=../recover_n512_configs.json ARM_TAG=primary" \
+      "\$PY -u ctol_poisson.py ../out/ctol_poisson_n512_recover.json")
+  stage_poisson "$d"; cp "$CFG" "$d/recover_n512_configs.json"; seal "$d"
+  d=$(mk ctol_ceil_n512 6 192G \
+      "$PGRID NS=512 CEILING_ONLY=1 CEIL_CHUNK=16384 DO_SUPP=0 POOL_CONTROL=0 CAP_CONTROL=0" \
+      "\$PY -u ctol_poisson.py ../out/ctol_poisson_n512_ceiling.json")
+  stage_poisson "$d"; seal "$d"
 elif [[ "$MODE" == "consolidate" ]]; then
   CFG="$HERE/stage/consolidate_configs.json"
   [[ -f "$CFG" ]] || { echo "missing $CFG -- run ctol_pick_configs.py first" >&2; exit 1; }

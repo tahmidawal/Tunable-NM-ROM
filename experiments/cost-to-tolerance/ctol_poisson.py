@@ -111,6 +111,10 @@ FOM_ONLY = int(os.environ.get("FOM_ONLY", "0"))
 DO_CEILING = int(os.environ.get("DO_CEILING", "1"))
 BURN_IN_S = float(os.environ.get("BURN_IN_S", "1.5"))
 CEIL_BUDGET = int(os.environ.get("CEIL_BUDGET", "300"))   # the ceiling LM must converge
+# points per Gauss-Newton block in the ceiling solve.  16384 keeps the jacfwd
+# intermediate near 0.5 GB at k=32; the un-chunked version needed ~17 GiB at N=512.
+CEIL_CHUNK = int(os.environ.get("CEIL_CHUNK", "16384"))
+CEILING_ONLY = int(os.environ.get("CEILING_ONLY", "0"))
 # The ARCHIVED Poisson baseline, transcribed from
 # poisson2d-rom-objective/runs/followup/pt_n/timing_n.json (rows[*].fom_cg_s and
 # .fom_max_rel_residual).  Re-timing the SAME function and reproducing that number is
@@ -325,29 +329,64 @@ def fom_ladder(n, Fs, U_ref, tn, fn_, time_fn_):
     return out
 
 
-def oracle_ceiling(dec, grid, Z_tr, U_int, tn, n_i, budget, nn_idx):
+def oracle_ceiling(dec, grid, Z_tr, U_int, tn, n_i, budget, nn_idx, chunk):
     """The DECODER'S OWN ceiling at this k: LM on the data misfit to the held-out
     field (an oracle -- the ROM never sees it).  Reported next to the ROM error so
     that non-monotone accuracy in k is a MEASURED property of the separately
     trained checkpoints rather than a caveat about them.
 
     BEST OF TWO INITS (mean training latent, and the latent of the nearest training
-    sample in PARAMETER space), exactly as `pro_colloc.py`/`pro_train.py` compute
-    their floors.  A single mean init is not enough at large k -- the LM stalls in
-    the higher-dimensional latent space and reports a 'ceiling' the ROM then beats,
-    which is a diagnostic of the ceiling solve rather than of the decoder."""
+    sample in PARAMETER space), exactly as `pro_colloc.py` / `pro_train.py` compute
+    their floors.
+
+    CHUNKED OVER POINTS.  A naive `jacfwd` of the full-field misfit forward-modes
+    k tangents through the decoder at every interior node at once; at N=512, k=32
+    that intermediate is ~17 GiB and OOMs an 80 GB A100 (it killed the first N=512
+    panel).  The Gauss-Newton normal equations are separable over points, so
+    H = sum_c J_c^T J_c, g = sum_c J_c^T r_c and ||r||^2 = sum_c ||r_c||^2 are
+    accumulated over point chunks and the (n_i^2 x k) Jacobian is never
+    materialised.  The result is mathematically identical, and the LM driver is
+    `pro_common.lm_generic` -- the reference generic LM, not a new one."""
     coords_int = grid.coords_int
-    f = lambda z, u: dec(z, coords_int) - u
-    rJ = jax.jit(lambda z, u: (f(z, u), jax.jacfwd(f)(z, u)))
-    rn = jax.jit(lambda z, u: jnp.linalg.norm(f(z, u)))
+    n_pts = int(coords_int.shape[0])
+    bounds = [(a, min(a + chunk, n_pts)) for a in range(0, n_pts, chunk)]
+
+    @jax.jit
+    def _blk(z, pts, uu):
+        f = lambda zz: dec(zz, pts) - uu
+        r = f(z)
+        J = jax.jacfwd(f)(z)
+        return J.T @ J, J.T @ r, jnp.sum(r * r)
+
+    @jax.jit
+    def _blk_val(z, pts, uu):
+        return jnp.sum((dec(z, pts) - uu) ** 2)
+
+    def HgV(z, u):
+        H = g = None
+        ss = 0.0
+        for a, b in bounds:
+            Hc, gc, sc = _blk(z, coords_int[a:b], u[a:b])
+            H = Hc if H is None else H + Hc
+            g = gc if g is None else g + gc
+            ss = ss + sc
+        return H, g, jnp.sqrt(ss)
+
+    def V(z, u):
+        ss = 0.0
+        for a, b in bounds:
+            ss = ss + _blk_val(z, coords_int[a:b], u[a:b])
+        return jnp.sqrt(ss)
+
     z_mean = jnp.asarray(Z_tr.mean(0))
     rels, which = [], []
     for i in range(U_int.shape[0]):
         u = jnp.asarray(U_int[i].reshape(-1))
         best = None
         for name, z0 in (("mean", z_mean), ("nearest", jnp.asarray(Z_tr[nn_idx[i]]))):
-            z, r, _ = pc.lm_solve(lambda zz: rJ(zz, u), lambda zz: rn(zz, u), z0, budget)
-            rel = float(r) / tn[i]
+            z, val, _ = pc.lm_generic(lambda zz: HgV(zz, u), lambda zz: V(zz, u),
+                                      z0, budget)
+            rel = float(val) / tn[i]
             if best is None or rel < best[0]:
                 best = (rel, name)
         rels.append(best[0]); which.append(best[1])
@@ -553,6 +592,26 @@ def main():
         if FOM_ONLY:
             save()
             continue
+        if CEILING_ONLY:
+            # recovery path: the ceiling arm alone, for every k, with the chunked
+            # normal equations.  Skips the POD basis and every ROM cell.
+            for k in ks_used:
+                t0c = time.time()
+                cm, cx_, cinit = oracle_ceiling(
+                    ck[k]["dec"], grid, ck[k]["Z_tr"], U_int, tn, n_i,
+                    max(GN_ITERS, CEIL_BUDGET), nn_idx, CEIL_CHUNK)
+                report["supplementary"].append(dict(
+                    pde="poisson2d", method="oracle_ceiling", N=n, k=k,
+                    M=(M_BIG if k >= K_BIG else M_MODES), m=None, tau=None,
+                    arm="ceiling", err_rel_l2=cm, err_rel_l2_max=cx_,
+                    init_used=cinit, budget=max(GN_ITERS, CEIL_BUDGET),
+                    ceil_chunk=CEIL_CHUNK, n_sources=N_TEST, seed=SEED,
+                    gpu=gpu_name, node=NODE, jax_backend=dev.platform,
+                    commit=commit))
+                log(f"   ceiling  N={n:4d} k={k:2d}: {cm:.3e} (max {cx_:.3e}, "
+                    f"inits {cinit}) [{time.time()-t0c:.0f}s]")
+                save()
+            continue
 
         # POD basis at THIS mesh from the SAME 512 training sources
         U_all = np.asarray(mp.build_snapshots(n)[0])
@@ -733,7 +792,7 @@ def main():
                 if DO_CEILING and method == "coord" and arm_tag == "primary":
                     cm, cx_, cinit = oracle_ceiling(
                         dec_k, grid, ck[k]["Z_tr"], U_int, tn, n_i,
-                        max(GN_ITERS, CEIL_BUDGET), nn_idx)
+                        max(GN_ITERS, CEIL_BUDGET), nn_idx, CEIL_CHUNK)
                     best_rom = min((r["err_rel_l2"] for r in report["rows"]
                                     if r["N"] == n and r["k"] == k
                                     and r["method"] == "coord"

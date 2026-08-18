@@ -138,7 +138,14 @@ def load(runs):
                                         _complete=bool(j.get("complete"))))
                 continue
             for r in j["rows"]:
-                (d["consolidated_rows"] if consolidated else d["rows"]).append(r)
+                # A row tagged arm='primary' belongs to the SURFACE even when the
+                # job was driven by a CONFIGS file.  The recovery cell that refilled
+                # the three N=512 k=32 POD cells was launched that way, and bucketing
+                # by the config alone silently hid them from the coverage check --
+                # the surface then read as incomplete while the data was present.
+                row_is_primary = r.get("arm") == "primary"
+                (d["consolidated_rows"] if (consolidated and not row_is_primary)
+                 else d["rows"]).append(r)
             for fo in j.get("fom", []):
                 (d["consolidated_fom"] if consolidated else d["fom"]).append(fo)
             d["supplementary"] += j.get("supplementary", [])

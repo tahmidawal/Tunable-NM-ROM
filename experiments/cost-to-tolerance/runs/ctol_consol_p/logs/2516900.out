@@ -1,0 +1,199 @@
+host=pax007  node=pax007  gpu=NVIDIA A100 80GB PCIe
+commit=b61ba89  dirty=78235ef9e9b8 (dirty marker 'e3b0c442' == clean)  cell=ctol_consol_p  job=2516900
+src_bundle=ctol=b61ba89/78235ef9e9b8,2026-08-16-poisson2d-rom-objective=d68d8cb/e3b0c442,2026-08-16-burgers2d-rom-latent-stepping=c7e9c2e/e3b0c442,2026-08-14-multistage-precision=b389467/e3b0c442,2026-08-14-burgers2d-coord-rom=b327915/e3b0c442
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100 80GB PCIe x64=True KS=[2, 4, 6, 8, 12, 16, 24, 32] NS=[32, 64, 128, 256, 512] TAUS=[0.1, 0.01, 0.001] M=64 m=256 reps=7 warm=2
+  plan: 5 mesh(es) [32, 64, 128, 256, 512], k values [4, 8, 16, 24, 32], 20 (arm, method) cells  [CONFIGS=../consolidate_configs.json]
+  ckpt k= 4: autodec_K4_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.192
+  ckpt k= 8: autodec_K8_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.175
+  ckpt k=16: autodec_K16_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.147
+  ckpt k=24: autodec_K24_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.143
+  ckpt k=32: autodec_K32_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.141
+   FOM CG tol=3e-01:    0.543 ms  err 2.759e-01  achieved residual 2.98e-01
+   FOM CG tol=1e-01:    0.906 ms  err 5.895e-02  achieved residual 9.98e-02
+   FOM CG tol=3e-02:    1.145 ms  err 8.091e-03  achieved residual 2.99e-02
+   FOM CG tol=1e-02:    1.304 ms  err 2.579e-03  achieved residual 9.89e-03
+   FOM CG tol=3e-03:    1.453 ms  err 7.141e-04  achieved residual 2.91e-03
+   FOM CG tol=1e-03:    1.624 ms  err 2.585e-04  achieved residual 9.98e-04
+   FOM CG tol=3e-04:    1.802 ms  err 6.600e-05  achieved residual 2.98e-04
+   FOM CG tol=1e-04:    1.931 ms  err 1.739e-05  achieved residual 9.98e-05
+   FOM CG tol=3e-05:    2.083 ms  err 3.637e-06  achieved residual 2.86e-05
+   FOM CG tol=1e-05:    2.193 ms  err 1.077e-06  achieved residual 9.85e-06
+   FOM CG tol=1e-06:    2.368 ms  err 1.419e-07  achieved residual 9.98e-07
+   FOM CG tol=1e-08:    2.773 ms  err 1.181e-09  achieved residual 9.99e-09
+   FOM CG tol=1e-10:    3.131 ms  err 8.576e-12  achieved residual 9.75e-11
+   FOM CG tol=1e-13:    3.630 ms  err 0.000e+00  achieved residual 1.03e-13
+   anchor N=32: archived 5.59 ms vs re-timed 3.63 ms (35.1% diff; archived achieved 1.0e-13, re-timed 1.0e-13)
+   overconvergence factor at N=32: 1.00x (testbed 1e-13 achieved 1.0e-13; matched rung tol=1e-13)
+== N=  32  FOM CG @1e-13     3.63 ms  (residual 1.0e-13) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 3s, max rel residual over all samples 1.13e-13
+   POD basis: 512 snapshots, orthonormality dev 8.26e-14, sv0 1.457e+00 sv[31] 1.067e-02
+   EQ candidate pool: 900 of 900 interior nodes (cap 4096)
+   preprocess M=64: selected-mode matvec 0.162 ms/query (full dense sine transform 0.161 ms; offline table 0.1 s; vs reference rel 3.4e-16)
+  NNLS-EQ poisson coord N=32 k=4 M=64 m=256: pool 900 support 256 (+0 pad) rel fit 1.93e-03 (row p95 3.4e-01, max 6.6e+02) [17s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N=  32 k= 4 M= 64 m= 256 tau=1e-01  solve    1.40 ms  e2e    1.67 ms  jac   4.4  err 8.405e-02  fd 5.31e-01  cens   0%
+   [cell coord N=32 k=4 M=64 m=256: 23s]
+  NNLS-EQ poisson coord N=32 k=16 M=64 m=256: pool 900 support 256 (+0 pad) rel fit 1.34e-03 (row p95 2.7e-01, max 2.1e+03) [17s]
+   coord N=  32 k=16 M= 64 m= 256 tau=1e-01  solve    2.13 ms  e2e    2.41 ms  jac   4.8  err 7.673e-02  fd 3.61e-01  cens   0%
+   coord N=  32 k=16 M= 64 m= 256 tau=1e-02  solve    3.02 ms  e2e    3.30 ms  jac   7.3  err 1.301e-02  fd 1.62e-01  cens   0%
+   [cell coord N=32 k=16 M=64 m=256: 24s]
+  NNLS-EQ poisson pod N=32 k=24 M=64 m=256: pool 900 support 256 (+0 pad) rel fit 9.68e-05 (row p95 3.6e-02, max 3.7e+01) [19s]
+   pod   N=  32 k=24 M= 64 m= 256 tau=1e-01  solve    0.13 ms  e2e    0.34 ms  jac   2.0  err 6.946e-02  fd 5.60e-01  cens   0%
+   [cell pod N=32 k=24 M=64 m=256: 22s]
+   preprocess M=256: selected-mode matvec 0.161 ms/query (full dense sine transform 0.166 ms; offline table 0.0 s; vs reference rel 3.4e-16)
+  NNLS-EQ poisson pod N=32 k=32 M=256 m=900: pool 900 support 787 (+113 pad) rel fit 1.53e-06 (row p95 7.4e-03, max 3.6e+01) [1463s]
+   pod   N=  32 k=32 M=256 m= 900 tau=1e-01  solve    0.16 ms  e2e    0.37 ms  jac   2.0  err 5.367e-02  fd 5.03e-01  cens   0%
+   [cell pod N=32 k=32 M=256 m=900: 1466s]
+== N=32 done [1552s]
+   FOM CG tol=3e-01:    1.172 ms  err 1.761e-01  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    1.815 ms  err 3.235e-02  achieved residual 1.00e-01
+   FOM CG tol=3e-02:    2.218 ms  err 5.761e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:    2.527 ms  err 1.743e-03  achieved residual 1.00e-02
+   FOM CG tol=3e-03:    2.880 ms  err 5.433e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:    3.206 ms  err 1.732e-04  achieved residual 9.99e-04
+   FOM CG tol=3e-04:    3.473 ms  err 4.140e-05  achieved residual 2.93e-04
+   FOM CG tol=1e-04:    3.736 ms  err 1.183e-05  achieved residual 1.00e-04
+   FOM CG tol=3e-05:    4.082 ms  err 2.534e-06  achieved residual 2.95e-05
+   FOM CG tol=1e-05:    4.278 ms  err 8.294e-07  achieved residual 9.76e-06
+   FOM CG tol=1e-06:    4.633 ms  err 1.053e-07  achieved residual 9.97e-07
+   FOM CG tol=1e-08:    5.512 ms  err 7.536e-10  achieved residual 9.51e-09
+   FOM CG tol=1e-10:    6.205 ms  err 5.890e-12  achieved residual 9.96e-11
+   FOM CG tol=1e-13:    7.202 ms  err 0.000e+00  achieved residual 3.60e-13
+   anchor N=64: archived 7.79 ms vs re-timed 7.20 ms (7.5% diff; archived achieved 3.6e-13, re-timed 3.6e-13)
+   overconvergence factor at N=64: 1.00x (testbed 1e-13 achieved 3.6e-13; matched rung tol=1e-13)
+== N=  64  FOM CG @1e-13     7.20 ms  (residual 3.6e-13) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+   POD basis: 512 snapshots, orthonormality dev 1.89e-13, sv0 2.959e+00 sv[31] 2.098e-02
+   EQ candidate pool: 3844 of 3844 interior nodes (cap 4096)
+   preprocess M=64: selected-mode matvec 0.154 ms/query (full dense sine transform 0.171 ms; offline table 0.1 s; vs reference rel 2.2e-16)
+  NNLS-EQ poisson coord N=64 k=4 M=64 m=256: pool 3844 support 256 (+0 pad) rel fit 1.70e-03 (row p95 3.2e-01, max 6.1e+02) [17s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N=  64 k= 4 M= 64 m= 256 tau=1e-01  solve    1.50 ms  e2e    1.84 ms  jac   4.5  err 8.372e-02  fd 5.44e-01  cens   0%
+   [cell coord N=64 k=4 M=64 m=256: 21s]
+  NNLS-EQ poisson coord N=64 k=16 M=64 m=256: pool 3844 support 256 (+0 pad) rel fit 1.37e-03 (row p95 2.7e-01, max 4.3e+02) [18s]
+   coord N=  64 k=16 M= 64 m= 256 tau=1e-02  solve    3.09 ms  e2e    3.43 ms  jac   7.5  err 1.155e-02  fd 1.72e-01  cens   0%
+   [cell coord N=64 k=16 M=64 m=256: 21s]
+  NNLS-EQ poisson pod N=64 k=24 M=64 m=256: pool 3844 support 256 (+0 pad) rel fit 8.92e-05 (row p95 3.5e-02, max 1.7e+01) [20s]
+   pod   N=  64 k=24 M= 64 m= 256 tau=1e-01  solve    0.13 ms  e2e    0.34 ms  jac   2.0  err 6.678e-02  fd 5.59e-01  cens   0%
+   [cell pod N=64 k=24 M=64 m=256: 22s]
+   preprocess M=256: selected-mode matvec 0.167 ms/query (full dense sine transform 0.166 ms; offline table 0.0 s; vs reference rel 2.2e-16)
+  NNLS-EQ poisson pod N=64 k=32 M=256 m=1024: pool 3844 support 815 (+209 pad) rel fit 1.40e-05 (row p95 8.2e-02, max 4.5e+02) [1538s]
+   pod   N=  64 k=32 M=256 m=1024 tau=1e-01  solve    0.16 ms  e2e    0.37 ms  jac   2.0  err 5.105e-02  fd 5.03e-01  cens   0%
+   [cell pod N=64 k=32 M=256 m=1024: 1541s]
+== N=64 done [1628s]
+   FOM CG tol=3e-01:    2.746 ms  err 1.151e-01  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    3.757 ms  err 1.726e-02  achieved residual 9.99e-02
+   FOM CG tol=3e-02:    4.559 ms  err 4.063e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:    5.199 ms  err 1.238e-03  achieved residual 9.99e-03
+   FOM CG tol=3e-03:    5.739 ms  err 4.162e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:    6.517 ms  err 1.166e-04  achieved residual 9.94e-04
+   FOM CG tol=3e-04:    7.168 ms  err 2.871e-05  achieved residual 3.00e-04
+   FOM CG tol=1e-04:    7.655 ms  err 7.798e-06  achieved residual 9.92e-05
+   FOM CG tol=3e-05:    8.142 ms  err 1.782e-06  achieved residual 2.98e-05
+   FOM CG tol=1e-05:    8.509 ms  err 6.857e-07  achieved residual 9.96e-06
+   FOM CG tol=1e-06:    9.674 ms  err 7.746e-08  achieved residual 9.93e-07
+   FOM CG tol=1e-08:   11.402 ms  err 5.602e-10  achieved residual 9.91e-09
+   FOM CG tol=1e-10:   13.012 ms  err 4.295e-12  achieved residual 9.97e-11
+   FOM CG tol=1e-13:   14.694 ms  err 0.000e+00  achieved residual 2.17e-12
+   anchor N=128: archived 15.14 ms vs re-timed 14.69 ms (3.0% diff; archived achieved 2.2e-12, re-timed 2.2e-12)
+   overconvergence factor at N=128: 1.00x (testbed 1e-13 achieved 2.2e-12; matched rung tol=1e-13)
+== N= 128  FOM CG @1e-13    14.69 ms  (residual 2.2e-12) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 9s, max rel residual over all samples 2.46e-12
+   POD basis: 512 snapshots, orthonormality dev 8.48e-14, sv0 5.965e+00 sv[31] 4.196e-02
+   EQ candidate pool: 4096 of 15876 interior nodes (cap 4096)
+   preprocess M=64: selected-mode matvec 0.179 ms/query (full dense sine transform 0.182 ms; offline table 0.1 s; vs reference rel 4.4e-16)
+  NNLS-EQ poisson coord N=128 k=4 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.90e-03 (row p95 3.6e-01, max 3.9e+02) [20s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N= 128 k= 4 M= 64 m= 256 tau=1e-01  solve    1.51 ms  e2e    2.07 ms  jac   4.5  err 8.514e-02  fd 5.63e-01  cens   0%
+   [cell coord N=128 k=4 M=64 m=256: 25s]
+  NNLS-EQ poisson coord N=128 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.30e-03 (row p95 2.6e-01, max 4.2e+02) [20s]
+   coord N= 128 k=16 M= 64 m= 256 tau=1e-02  solve    3.06 ms  e2e    3.62 ms  jac   7.5  err 1.150e-02  fd 1.72e-01  cens   0%
+   [cell coord N=128 k=16 M=64 m=256: 24s]
+  NNLS-EQ poisson pod N=128 k=24 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 9.47e-05 (row p95 3.7e-02, max 2.6e+02) [22s]
+   pod   N= 128 k=24 M= 64 m= 256 tau=1e-01  solve    0.22 ms  e2e    0.44 ms  jac   2.0  err 6.620e-02  fd 5.59e-01  cens   0%
+   [cell pod N=128 k=24 M=64 m=256: 24s]
+   preprocess M=256: selected-mode matvec 0.198 ms/query (full dense sine transform 0.183 ms; offline table 0.0 s; vs reference rel 4.4e-16)
+  NNLS-EQ poisson pod N=128 k=32 M=256 m=1024: pool 4096 support 799 (+225 pad) rel fit 1.59e-05 (row p95 1.0e-01, max 9.3e+02) [1943s]
+   pod   N= 128 k=32 M=256 m=1024 tau=1e-01  solve    0.24 ms  e2e    0.49 ms  jac   2.0  err 5.049e-02  fd 5.03e-01  cens   0%
+   [cell pod N=128 k=32 M=256 m=1024: 1946s]
+  NNLS-EQ poisson coord UNCAPPED-POOL N=128 k=8: pool 15876 support 256 (+0 pad) rel fit 1.38e-03 (row p95 2.9e-01, max 8.8e+01) [28s]
+   [cap_control] coord_uncapped_pool N=128 k=8 tau=1e-01 e2e 2.41 ms err 9.791e-02 eqfit 1.38e-03
+   [cap_control] coord_uncapped_pool N=128 k=8 tau=1e-02 e2e 3.30 ms err 1.313e-02 eqfit 1.38e-03
+  NNLS-EQ poisson pod UNCAPPED-POOL N=128 k=8: pool 15876 support 247 (+9 pad) rel fit 9.23e-06 (row p95 6.8e-03, max 5.0e+01) [32s]
+   [cap_control] pod_uncapped_pool N=128 k=8 tau=1e-01 e2e 0.99 ms err 1.763e-01 eqfit 9.23e-06
+   [cap_control] pod_uncapped_pool N=128 k=8 tau=1e-02 e2e 1.20 ms err 1.763e-01 eqfit 9.23e-06
+== N=128 done [2126s]
+   FOM CG tol=3e-01:    6.265 ms  err 6.581e-02  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    7.907 ms  err 1.065e-02  achieved residual 9.99e-02
+   FOM CG tol=3e-02:    9.472 ms  err 2.979e-03  achieved residual 2.99e-02
+   FOM CG tol=1e-02:   10.763 ms  err 8.878e-04  achieved residual 1.00e-02
+   FOM CG tol=3e-03:   12.364 ms  err 2.923e-04  achieved residual 2.99e-03
+   FOM CG tol=1e-03:   13.964 ms  err 8.042e-05  achieved residual 9.98e-04
+   FOM CG tol=3e-04:   15.243 ms  err 1.958e-05  achieved residual 2.99e-04
+   FOM CG tol=1e-04:   16.063 ms  err 5.194e-06  achieved residual 9.98e-05
+   FOM CG tol=3e-05:   17.047 ms  err 1.264e-06  achieved residual 2.99e-05
+   FOM CG tol=1e-05:   17.726 ms  err 4.615e-07  achieved residual 1.00e-05
+   FOM CG tol=1e-06:   19.713 ms  err 5.188e-08  achieved residual 9.97e-07
+   FOM CG tol=1e-08:   22.967 ms  err 4.102e-10  achieved residual 9.88e-09
+   FOM CG tol=1e-10:   25.756 ms  err 3.157e-12  achieved residual 1.00e-10
+   FOM CG tol=1e-13:   29.928 ms  err 0.000e+00  achieved residual 1.25e-11
+   anchor N=256: archived 31.14 ms vs re-timed 29.93 ms (3.9% diff; archived achieved 1.3e-11, re-timed 1.2e-11)
+   overconvergence factor at N=256: 1.00x (testbed 1e-13 achieved 1.2e-11; matched rung tol=1e-13)
+== N= 256  FOM CG @1e-13    29.93 ms  (residual 1.2e-11) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 18s, max rel residual over all samples 1.38e-11
+   POD basis: 512 snapshots, orthonormality dev 1.77e-13, sv0 1.198e+01 sv[31] 8.410e-02
+   EQ candidate pool: 4096 of 64516 interior nodes (cap 4096)
+   preprocess M=64: selected-mode matvec 0.224 ms/query (full dense sine transform 0.193 ms; offline table 0.2 s; vs reference rel 1.4e-16)
+  NNLS-EQ poisson coord N=256 k=4 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.83e-03 (row p95 3.6e-01, max 6.0e+02) [22s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N= 256 k= 4 M= 64 m= 256 tau=1e-01  solve    1.55 ms  e2e    3.02 ms  jac   4.5  err 8.300e-02  fd 5.73e-01  cens   0%
+   [cell coord N=256 k=4 M=64 m=256: 28s]
+  NNLS-EQ poisson coord N=256 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.26e-03 (row p95 2.4e-01, max 4.2e+02) [22s]
+   coord N= 256 k=16 M= 64 m= 256 tau=1e-02  solve    3.11 ms  e2e    4.57 ms  jac   7.5  err 1.127e-02  fd 1.86e-01  cens   0%
+   [cell coord N=256 k=16 M=64 m=256: 26s]
+  NNLS-EQ poisson pod N=256 k=24 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 9.38e-05 (row p95 3.5e-02, max 2.3e+01) [25s]
+   pod   N= 256 k=24 M= 64 m= 256 tau=1e-01  solve    0.20 ms  e2e    0.47 ms  jac   2.0  err 6.605e-02  fd 5.59e-01  cens   0%
+   [cell pod N=256 k=24 M=64 m=256: 28s]
+   preprocess M=256: selected-mode matvec 0.280 ms/query (full dense sine transform 0.226 ms; offline table 0.6 s; vs reference rel 1.4e-16)
+  NNLS-EQ poisson pod N=256 k=32 M=256 m=1024: pool 4096 support 818 (+206 pad) rel fit 1.31e-05 (row p95 8.1e-02, max 4.3e+03) [1843s]
+   pod   N= 256 k=32 M=256 m=1024 tau=1e-01  solve    0.23 ms  e2e    0.56 ms  jac   2.0  err 5.035e-02  fd 5.03e-01  cens   0%
+   [cell pod N=256 k=32 M=256 m=1024: 1847s]
+== N=256 done [2000s]
+   FOM CG tol=3e-01:   22.122 ms  err 3.677e-02  achieved residual 3.00e-01
+   FOM CG tol=1e-01:   26.650 ms  err 7.104e-03  achieved residual 9.98e-02
+   FOM CG tol=3e-02:   31.063 ms  err 1.965e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:   35.014 ms  err 6.526e-04  achieved residual 9.96e-03
+   FOM CG tol=3e-03:   39.202 ms  err 1.951e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:   43.438 ms  err 5.396e-05  achieved residual 9.99e-04
+   FOM CG tol=3e-04:   46.961 ms  err 1.308e-05  achieved residual 3.00e-04
+   FOM CG tol=1e-04:   50.482 ms  err 3.356e-06  achieved residual 9.99e-05
+   FOM CG tol=3e-05:   53.063 ms  err 9.381e-07  achieved residual 3.00e-05
+   FOM CG tol=1e-05:   55.415 ms  err 3.443e-07  achieved residual 9.96e-06
+   FOM CG tol=1e-06:   62.000 ms  err 3.291e-08  achieved residual 9.99e-07
+   FOM CG tol=1e-08:   72.230 ms  err 2.924e-10  achieved residual 1.00e-08
+   FOM CG tol=1e-10:   80.428 ms  err 2.290e-12  achieved residual 1.19e-10
+   FOM CG tol=1e-13:   93.037 ms  err 0.000e+00  achieved residual 6.95e-11
+   anchor N=512: archived 96.01 ms vs re-timed 93.04 ms (3.1% diff; archived achieved 7.0e-11, re-timed 6.9e-11)
+   overconvergence factor at N=512: 1.00x (testbed 1e-13 achieved 6.9e-11; matched rung tol=1e-13)
+== N= 512  FOM CG @1e-13    93.04 ms  (residual 6.9e-11) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 60s, max rel residual over all samples 7.71e-11
+   POD basis: 512 snapshots, orthonormality dev 1.54e-13, sv0 2.400e+01 sv[31] 1.684e-01
+   EQ candidate pool: 4096 of 260100 interior nodes (cap 4096)
+   preprocess M=64: selected-mode matvec 0.418 ms/query (full dense sine transform 0.391 ms; offline table 3.2 s; vs reference rel 4.4e-16)
+  NNLS-EQ poisson coord N=512 k=4 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.60e-03 (row p95 3.0e-01, max 4.0e+02) [25s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N= 512 k= 4 M= 64 m= 256 tau=1e-01  solve    1.42 ms  e2e    6.39 ms  jac   4.4  err 9.325e-02  fd 6.11e-01  cens   0%
+   [cell coord N=512 k=4 M=64 m=256: 32s]
+  NNLS-EQ poisson coord N=512 k=8 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.45e-03 (row p95 3.2e-01, max 1.9e+02) [23s]
+   coord N= 512 k= 8 M= 64 m= 256 tau=1e-01  solve    1.72 ms  e2e    6.70 ms  jac   4.9  err 8.127e-02  fd 7.43e-01  cens   0%
+   [cell coord N=512 k=8 M=64 m=256: 30s]
+  NNLS-EQ poisson coord N=512 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.27e-03 (row p95 2.7e-01, max 2.2e+02) [24s]
+   coord N= 512 k=16 M= 64 m= 256 tau=1e-02  solve    2.88 ms  e2e    7.86 ms  jac   7.4  err 1.178e-02  fd 1.87e-01  cens   0%
+   [cell coord N=512 k=16 M=64 m=256: 31s]
+  NNLS-EQ poisson pod N=512 k=24 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 9.85e-05 (row p95 4.2e-02, max 3.4e+01) [26s]
+   pod   N= 512 k=24 M= 64 m= 256 tau=1e-01  solve    0.00 ms  e2e    0.52 ms  jac   2.0  err 6.602e-02  fd 5.59e-01  cens   0%
+   [cell pod N=512 k=24 M=64 m=256: 31s]
+== N=512 done [335s]
+DONE
+ALL-DONE

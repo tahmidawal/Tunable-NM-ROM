@@ -14,7 +14,7 @@ has published.
 |---|---|---|
 | **Experiment 2** — ROM warm-start → FOM | **Final.** Complete, two Codex audits, 141/141 independent checks, pushed, cluster cleaned. | Quote freely. |
 | **Correction to the record** — both FOM baselines were inflated | **Final** for Poisson; **open** for Burgers pending a cross-check. | Quote Poisson. Mark Burgers provisional. |
-| **Experiment 1** — cost-to-tolerance / Pareto | **Partial.** 3 of 4 Burgers panels in; consolidation, tables, figures and Codex pass still to come. | Directionally reliable, numerically provisional. |
+| **Experiment 1** — cost-to-tolerance / Pareto | **Surface complete**, single-GPU consolidation pulled, 873 points, tables rebuilt. Verdict prose and the results Codex pass still to come. | Numbers quotable; prose unaudited. |
 | **Accuracy results** (all PDEs, both experiments) | **Unaffected by any correction.** | Quote freely. |
 
 Everything the corrections touched was a **denominator**. No accuracy number moved.
@@ -28,26 +28,24 @@ than the accuracy it delivers requires. Measured against an **iso-accuracy** FOM
 gradients run only as far as the ROM's own accuracy, which is the only honest denominator —
 the coordinate ROM looks like this on Poisson:
 
-| N | coordinate ROM vs iso-accuracy FOM | POD vs iso-accuracy FOM |
-|---|---|---|
-| 32 | **0.40×** | 3.44× |
-| 64 | **0.74×** | 4.82× |
-| 128 | **1.42×** | 8.20× |
+| N | 32 | 64 | 128 | 256 | 512 |
+|---|---|---|---|---|---|
+| coordinate ROM vs iso-accuracy FOM | 0.35× | 0.65× | **1.26×** | **1.73×** | **3.39×** |
 
-*Provisional: these pair ROM times from fanned-out panels with FOM times from a separate job,
-i.e. different GPUs. The published figures must come from the single-GPU consolidation run, and
-they will move **down**, because a finer tolerance ladder charges the FOM for less unnecessary
-accuracy.*
+*Final: measured on a single GPU by the consolidation runs of 18 August (Slurm 2516900 and
+2516905), replacing the earlier cross-GPU pairings. The coarse meshes moved down as predicted;
+N ≥ 256 moved **up**, because those panels had run on a slower A100 model.*
 
 At coarse meshes the ROM is **slower than simply under-converging CG**, and it does not cross
 1× until past N = 64. And on 2-D Poisson specifically, an exact **direct solve runs in
 0.063–0.166 ms — 494× faster than the iterative FOM at N = 512**. On this problem the reviewer
 who said a direct solver beats us was right, and we should say so in our own words.
 
-**So the claim cannot be "the ROM is faster."** What survives is **mesh-independence**: ROM cost
-is flat (3.42 → 3.64 ms from N = 64 → 128) while the iso-accuracy FOM roughly doubles per
-refinement (2.51 → 5.18 ms). Everything of value lies to the right of the crossover. The scaling
-figure stops being a supporting exhibit and becomes the entire result.
+**So the claim cannot be "the ROM is faster" without qualification.** What carries it is
+**mesh-independence**: our cost runs 3.3 → 7.9 ms across a 256-fold change in unknowns while the
+iso-accuracy FOM grows 1.2 → 26.7 ms, a factor of 23. We cross over between N = 128 and N = 256
+and the advantage widens to 3.39× by N = 512. The scaling figure stops being a supporting
+exhibit and becomes the entire result.
 
 The honest scope of the direct-solver concession: this is 2-D with a cheap sparse
 factorisation. It does not automatically transfer to 3-D, to nonlinear problems, or to settings

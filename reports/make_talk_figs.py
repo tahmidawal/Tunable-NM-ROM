@@ -59,12 +59,12 @@ def save(fig, name):
 
 # ---------------------------------------------------------------- 1. crossover
 def fig_crossover():
-    N = np.array([32, 64, 128])
-    ours = np.array([0.40, 0.74, 1.42])
-    pod = np.array([3.44, 4.82, 8.20])
+    N = np.array([32, 64, 128, 256, 512])
+    ours = np.array([0.35, 0.65, 1.26, 1.73, 3.39])
+    pod = np.array([3.13, 4.88, 7.65, 14.18, 42.51])
 
     fig, ax = plt.subplots(figsize=(9, 5.5))
-    ax.axhspan(1.0, 20, color="#e8f4ea", zorder=0)
+    ax.axhspan(1.0, 200, color="#e8f4ea", zorder=0)
     ax.axhline(1.0, color=FOM, lw=1.6, ls="--", zorder=2)
 
     ax.plot(N, ours, "o-", color=OURS, lw=3, ms=11, label="Coordinate ROM (ours)", zorder=4)
@@ -74,25 +74,24 @@ def fig_crossover():
         ax.annotate(f"{y:.2f}×", (x, y), textcoords="offset points", xytext=(0, 14),
                     ha="center", fontsize=12.5, color=OURS, fontweight="bold")
 
-    ax.text(33, 1.6, "faster than the full solver", fontsize=11.5, color="#2b7a43")
+    ax.text(33, 1.35, "faster than the full solver", fontsize=11.5, color="#2b7a43")
     ax.text(33, 0.62, "slower than the full solver", fontsize=11.5, color="#8a5a00")
-    ax.annotate("we cross over\nhere", xy=(96, 1.0), xytext=(64, 0.42),
+    ax.annotate("we cross over\nhere", xy=(160, 1.0), xytext=(90, 0.45),
                 fontsize=12, color=OURS, ha="center",
                 arrowprops=dict(arrowstyle="->", color=OURS, lw=1.6))
-    ax.text(128, 8.2, "POD is faster —\nbut 4× less accurate\n(see next slide)",
-            fontsize=11, color=POD, ha="right", va="bottom")
+    ax.text(512, 55, "POD is far faster — but its\nerror sticks at ~5%, which is\nwhere we are 4× better",
+            fontsize=10.5, color=POD, ha="right", va="bottom")
 
     ax.set_xscale("log"); ax.set_yscale("log")
     ax.set_xticks(N); ax.set_xticklabels([str(n) for n in N])
     ax.set_xticks([], minor=True)
-    ax.set_yticks([0.4, 1, 2, 4, 8]); ax.set_yticklabels(["0.4×", "1×", "2×", "4×", "8×"])
+    ax.set_yticks([0.4, 1, 2, 4, 8, 16, 40]); ax.set_yticklabels(["0.4×", "1×", "2×", "4×", "8×", "16×", "40×"])
     ax.set_yticks([], minor=True)
-    ax.set_ylim(0.33, 16)
+    ax.set_ylim(0.3, 90)
     ax.set_xlabel("mesh resolution  N  (grid is N × N)")
     ax.set_ylabel("speed-up vs a full solver\nrun to the SAME accuracy")
-    ax.set_title("Our advantage grows with mesh size — but only pays past N ≈ 100")
+    ax.set_title("Our advantage grows with mesh size — and only pays past N ≈ 150")
     ax.legend(loc="upper left", frameon=False)
-    stamp(ax)
     save(fig, "1_crossover")
 
 

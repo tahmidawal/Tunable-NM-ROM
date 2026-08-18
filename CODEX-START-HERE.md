@@ -38,30 +38,23 @@ that noise.
 | `cost-to-tolerance` | **INCOMPLETE — see below** | tables yes, verdict no |
 | `k-stall-diagnosis` | complete as a diagnostic; not a production measurement | see its README |
 
-### `cost-to-tolerance` is the one unfinished cell
+### `cost-to-tolerance` — surface complete, prose and audit outstanding
 
-Done: all nine panels, the fine FOM ladder, both N=512 recovery cells, the single-GPU
-ceiling+spectrum run, `runs/pareto_points.json` (698 rows), generated tables in §6, four figures.
+Done: all nine panels, the fine FOM ladder, both N=512 recovery cells, the ceiling+spectrum run,
+**and both single-GPU consolidation runs** (Slurm 2516900 Poisson 2:07:36, 2516905 Burgers
+4:39:23, pulled 18 Aug with matching checksums). `runs/pareto_points.json` now holds **873
+points** and all 52 generated blocks in the README are rebuilt from them.
 
-Not done:
-1. **The single-GPU consolidation run never happened.** There is no `ctol_consol_*` directory in
-   `runs/`. This matters: every ROM-vs-FOM ratio currently pairs ROM times from fanned-out
-   panels with FOM times from a separate job, i.e. **different GPUs**. N ≤ 128 ran on an
-   A100-80GB and N ≥ 256 on an A100-40GB, which alone produces a 3.7× apparent speed-up in the
-   latent solve. Iteration counts are hardware-free and fine; wall-clock ratios are not.
-2. §7 Verdict and §8 Caveats are placeholders.
-3. No `CODEX-REVIEW-RESULTS.md` — the second audit never ran.
+**The headline ratios are now single-GPU** — ours against the cheapest FOM rung at least as
+accurate. Poisson 0.35 / 0.65 / 1.26 / 1.73 / 3.39× at N = 32…512; Burgers 0.18 / 0.21 / 0.55 /
+0.53×. These replace the earlier cross-GPU pairings.
 
-To finish it, from `experiments/cost-to-tolerance/`:
-
-```bash
-python ctol_pick_configs.py
-./cluster/make_cells.sh consolidate
-./cluster/launch.sh ctol_consol_p && ./cluster/launch.sh ctol_consol_b
-./cluster/pull.sh
-python ctol_tables.py     # refuses to build unless the surface is complete
-python ctol_figs.py
-```
+Still not done:
+1. §7 Verdict and §8 Caveats are placeholders — write them from the generated tables.
+2. No `CODEX-REVIEW-RESULTS.md`; the second audit never ran. **Nothing in that cell's prose has
+   been independently checked**, and on every previous cell that pass found something material.
+3. `runs/ctol_p_n512/` is missing `complete: true` (the panel crashed in the ceiling arm and was
+   recovered); the coverage check passes via the union, but the note is worth keeping.
 
 ---
 

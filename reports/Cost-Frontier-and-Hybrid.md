@@ -48,6 +48,55 @@ time goes:
 
 At 512×512 the latent solve — the part we optimised — is 9% of the total.
 
+### How few points the residual actually needs
+
+The solve never touches the whole grid. Empirical quadrature (non-negative least squares)
+picks a small set of points and weights that reproduce the residual, and everything above
+rests on how few are enough.
+
+![error and cost against quadrature points](talk_figs/9_eq_points.png)
+
+At 64×64, k=8, M=64 test modes:
+
+| points | share of grid | error | cost | quadrature fit |
+|---|---|---|---|---|
+| **Poisson** | | | *ms per solve* | |
+| 64 | 2% | 5.48e-2 | 11.1 | 1.4e-1 |
+| 128 | 3% | 1.80e-2 | 13.9 | 1.6e-2 |
+| 256 | 7% | 8.66e-3 | 15.1 | 2.4e-3 |
+| 512 | 13% | 7.68e-3 | 15.2 | 2.4e-4 |
+| 1024 | 27% | 7.65e-3 | 18.9 | 1.6e-5 |
+| every point | 100% | 7.65e-3 | 35.6 | exact |
+| **Burgers** | | | *ms per step* | |
+| 256 | 7% | 1.74e-2 | 4.7 | 6.2e-3 |
+| 512 | 13% | 1.68e-2 | 7.9 | 1.0e-3 |
+| every point | 100% | 1.65e-2 | 46.5 | exact |
+
+Thirteen percent of the points gives the same error as all of them, for 43% of the cost on
+Poisson and 17% on Burgers. Error stops improving once the quadrature fit reaches about 1e-3;
+below that the decoder's own ceiling binds, not the quadrature. That makes the fit residual a
+usable way to choose the number of points without needing held-out error.
+
+The share matters more as the grid grows. Holding the point count at 256 and refining:
+
+| grid | interior nodes | share of grid | error | solve | quadrature fit |
+|---|---|---|---|---|---|
+| **Poisson** | | | | *ms per solve* | |
+| 32×32 | 900 | 28.4% | 1.08e-2 | 8.8 | 1.5e-3 |
+| 64×64 | 3,844 | 6.7% | 8.48e-3 | 7.2 | 1.3e-3 |
+| 128×128 | 15,876 | 1.6% | 8.40e-3 | 8.3 | 1.5e-3 |
+| 256×256 | 64,516 | 0.4% | 8.38e-3 | 6.4 | 1.5e-3 |
+| 512×512 | 260,100 | 0.1% | 8.61e-3 | 6.0 | 1.5e-3 |
+| **Burgers** | | | | *ms per rollout* | |
+| 32×32 | 900 | 28.4% | 1.62e-2 | 331 | 7.0e-3 |
+| 64×64 | 3,844 | 6.7% | 1.58e-2 | 307 | 6.7e-3 |
+| 128×128 | 15,876 | 1.6% | 1.67e-2 | 304 | 7.4e-3 |
+| 256×256 | 64,516 | 0.4% | 1.76e-2 | 362 | 7.3e-3 |
+
+The same 256 points cover 28% of the coarsest grid and 0.1% of the finest, and the error and
+the solve cost barely move. That is the mesh-independence result seen from the quadrature side:
+the number of points the residual needs is set by the problem, not by the grid.
+
 ---
 
 ## 2. Speed against accuracy

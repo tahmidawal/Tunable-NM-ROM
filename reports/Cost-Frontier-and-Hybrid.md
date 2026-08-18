@@ -20,20 +20,44 @@ method, and it holds.
 
 Now the same sweep across k, against what the decoder itself is capable of. "Ceiling" is the
 error you would get from the best possible latent, so it is the floor no solver can beat. All
-three rows come from the same runs at the tightest setting:
+rows come from the same runs at the tightest setting, over 16 test cases:
 
 | k | 2 | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
 |---|---|---|---|---|---|---|---|---|
 | ceiling | 1.24e-1 | 1.55e-2 | 8.84e-3 | 7.04e-3 | 6.24e-3 | 4.13e-3 | 3.98e-3 | 3.28e-3 |
-| we get | 5.46e-1 | 1.74e-2 | 5.85e-2 | 8.48e-3 | 4.79e-2 | 6.54e-3 | 1.49e-2 | 4.02e-2 |
-| ratio | 4.4 | 1.1 | 6.6 | 1.2 | 7.7 | 1.6 | 3.7 | 12.3 |
-| iterations | 23.4 | 15.9 | 29.2 | 28.2 | 34.7 | 29.0 | 37.4 | 39.6 |
+| we get, mean | 5.46e-1 | 1.74e-2 | 5.85e-2 | 8.48e-3 | 4.79e-2 | 6.54e-3 | 1.49e-2 | 4.02e-2 |
+| we get, median | — | 1.55e-2 | 8.52e-3 | 7.25e-3 | 7.58e-3 | 5.05e-3 | 4.93e-3 | 3.66e-3 |
+| cases that diverged | — | 0/16 | 2/16 | 0/16 | 3/16 | 0/16 | 1/16 | 5/16 |
 
-The ceiling improves monotonically — every extra dimension genuinely helps the decoder. We
-reach it at k=4, 8 and 16, and miss it badly at 6, 12, 24 and 32, where the solve also burns
-extra iterations without getting closer. It is not the data and not ill-conditioning: our
-optimiser stalls at those latent sizes. It is a defect in our solver and the most useful thing
-to fix.
+The ceiling improves monotonically, so every extra dimension genuinely helps the decoder. The
+mean row looks like our solver fails at k=6, 12, 24 and 32 and works at 4, 8 and 16. That
+reading is wrong, and the median row is why: it sits within 1.0–1.2× of the ceiling at *every*
+k, including the supposedly failing ones. At k=32 the median is the best on the ladder.
+
+What actually happens is that a handful of individual cases diverge, and the mean over sixteen
+of them is dominated by those few. Running all 64 held-out cases instead of 16 shows k=8 and
+k=16 failing too — 3 and 4 cases respectively. Our sixteen simply drew none of them. There is
+no special structure to the latent sizes; the failure rate rises smoothly with k.
+
+The cause is in the optimiser, not the model. It starts almost undamped, so its first step is
+ten to several hundred times the size of the latent vector itself, and it accepts any step that
+lowers the residual at all. When a wild step happens to lower it slightly, the solve leaves the
+region of latent space the decoder was trained on and settles at a spurious solution out there.
+The objective itself is fine: the path from the starting guess to the right answer is downhill
+the whole way, and every successful solve ends below the objective value at the true answer
+while every failed one ends 27–90× above it.
+
+Constraining steps to the size of the training set of latents fixes it:
+
+| k | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
+|---|---|---|---|---|---|---|---|
+| ratio to ceiling, now | 1.11 | 7.61 | 1.10 | 7.85 | 1.26 | 3.40 | 15.49 |
+| with the fix | 1.09 | 1.05 | 1.09 | 1.18 | 1.28 | 1.45 | 1.50 |
+
+No setting gets worse, iterations fall at the large k, and it holds at 256×256. The fix has not
+yet been measured through the full production path, so those numbers are a demonstration rather
+than a replacement for the ones above. The same optimiser is used on Heat, Burgers and Wave, so
+their accuracy numbers are likely pessimistic by some amount too.
 
 ### Where the time goes
 

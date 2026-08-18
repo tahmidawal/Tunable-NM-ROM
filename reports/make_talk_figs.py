@@ -133,37 +133,37 @@ def fig_kladder():
     k = np.array([2, 4, 6, 8, 12, 16, 24, 32])
     ceil = np.array([1.236e-1, 1.551e-2, 8.835e-3, 7.043e-3,
                      6.236e-3, 4.133e-3, 3.976e-3, 3.280e-3])
-    rom = np.array([5.455e-1, 1.742e-2, 5.845e-2, 8.482e-3,
-                    4.789e-2, 6.542e-3, 1.491e-2, 4.022e-2])
-    good = np.array([False, True, False, True, False, True, False, False])
+    mean = np.array([5.455e-1, 1.742e-2, 5.845e-2, 8.482e-3,
+                     4.789e-2, 6.542e-3, 1.491e-2, 4.022e-2])
+    kmed = np.array([4, 6, 8, 12, 16, 24, 32])
+    med = np.array([1.55e-2, 8.52e-3, 7.25e-3, 7.58e-3, 5.05e-3, 4.93e-3, 3.66e-3])
+    blown = {6: 2, 12: 3, 24: 1, 32: 5}
 
-    fig, ax = plt.subplots(figsize=(9.5, 5.5))
+    fig, ax = plt.subplots(figsize=(9.5, 5.6))
     ax.plot(k, ceil, "o--", color=CEIL, lw=2.5, ms=9,
-            label="what the decoder CAN do (ceiling)")
-    ax.plot(k, rom, "o-", color=OURS, lw=3, ms=10,
-            label="what our solver ACHIEVES")
-    ax.plot(k[good], rom[good], "o", color="#2b7a43", ms=15, mfc="none", mew=2.5,
-            label="solver reaches the ceiling")
+            label="best the decoder can do")
+    ax.plot(k, mean, "o-", color="#bbbbbb", lw=2.4, ms=9,
+            label="our error, mean of 16 cases")
+    ax.plot(kmed, med, "o-", color=OURS, lw=3, ms=10,
+            label="our error, median of 16 cases")
 
-    for xi, yi, g in zip(k, rom, good):
-        if not g and xi > 2:
-            ax.annotate("✗", (xi, yi), textcoords="offset points", xytext=(0, 12),
-                        ha="center", fontsize=15, color="#a33", fontweight="bold")
+    for kk, n in blown.items():
+        yi = mean[list(k).index(kk)]
+        ax.annotate(f"{n} of 16\ndiverged", (kk, yi), textcoords="offset points",
+                    xytext=(0, 11), ha="center", fontsize=9.5, color="#a33")
 
     ax.set_xscale("log"); ax.set_yscale("log")
     ax.set_xticks(k); ax.set_xticklabels([str(v) for v in k])
+    ax.set_xticks([], minor=True)
     ax.set_xlabel("latent dimension  k")
     ax.set_ylabel("held-out error  (relative L2)")
-    ax.set_title("The decoder keeps improving with k — our solver does not")
+    ax.set_title("The spikes are a few diverging cases, not a failure at particular k")
     ax.legend(loc="lower left", frameon=False)
-    ax.text(0.985, 0.97, "gap = solver failure, not a data limit", transform=ax.transAxes,
-            ha="right", va="top", fontsize=12.5, color="#a33")
-    ax.text(0.985, 0.885,
-            "diagnosed: the optimiser STALLS at these k.\n"
-            "Not conditioning — the Jacobian is full rank at every k,\n"
-            "and the same k fail at every mesh.",
+    ax.text(0.985, 0.96,
+            "The median tracks the ceiling at every k.\n"
+            "A step-size limit removes the divergences\n"
+            "and costs nothing.",
             transform=ax.transAxes, ha="right", va="top", fontsize=10.5, color="#666")
-    stamp(ax, "PROVISIONAL — error values pending the consolidation run")
     save(fig, "3_k_ladder")
 
 

@@ -89,58 +89,55 @@ of those cells censor).
 
 ---
 
-## 3. A new defect: our solve fails at particular latent dimensions
+## 3. A new defect, now diagnosed and fixed
 
-This is the most interesting finding of the day, and it is a limitation of **our method**, not
-of the approach.
+The reported error at some latent dimensions sits far above what the decoder is capable of —
+6.6× at k=6, 7.7× at k=12, 12.3× at k=32, against 1.1–1.6× at k=4, 8 and 16. **That k-specific
+reading was an artifact and is now withdrawn.**
 
-The decoder ceilings are cleanly **monotone** in `k` — 1.24e-1 → 3.28e-3 from `k = 2` to
-`k = 32`, no reversals, same pattern at N = 512. So every added dimension genuinely improves the
-decoder. What oscillates is the **ROM / ceiling ratio**:
+The reported figure is a **mean over 16 test cases**, and at those k it is dominated by one to
+five diverging solves. The median tells a different story:
 
-| `k` | 2 | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
-|---|---|---|---|---|---|---|---|---|
-| ceiling | 1.236e-1 | 1.551e-2 | 8.835e-3 | 7.043e-3 | 6.236e-3 | 4.133e-3 | 3.976e-3 | 3.280e-3 |
-| ROM (`τ`=1e-3) | 5.455e-1 | 1.742e-2 | 5.845e-2 | 8.482e-3 | 4.789e-2 | 6.542e-3 | 1.491e-2 | 4.022e-2 |
-| **ratio** | 4.4 | **1.1** | 6.6 | **1.2** | 7.7 | **1.6** | 3.7 | 12.3 |
+| k | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
+|---|---|---|---|---|---|---|---|
+| ceiling | 1.55e-2 | 8.84e-3 | 7.04e-3 | 6.24e-3 | 4.13e-3 | 3.98e-3 | 3.28e-3 |
+| mean (as published) | 1.74e-2 | 5.85e-2 | 8.48e-3 | 4.79e-2 | 6.54e-3 | 1.49e-2 | 4.02e-2 |
+| median | 1.55e-2 | 8.52e-3 | 7.25e-3 | 7.58e-3 | 5.05e-3 | 4.93e-3 | 3.66e-3 |
+| diverged | 0/16 | 2/16 | 0/16 | 3/16 | 0/16 | 1/16 | 5/16 |
 
-The latent solve reaches the ceiling at `k` = 4, 8, 16 and fails badly at `k` = 6, 12, 24, 32.
+The median is within 1.0–1.2× of the ceiling at **every** k, and k=32's median is the best on
+the ladder. Running all 64 held-out cases rather than 16 shows k=8 and k=16 failing too (3 and
+4 cases). Our sixteen simply drew none of them. There is no powers-of-two structure; the
+failure rate rises smoothly with k.
 
-**Three explanations ruled out:**
+**Root cause: the latent optimiser has no globalisation.** It starts essentially undamped, so
+its first Gauss–Newton step is 10–350× the norm of the latent itself, and it accepts any step
+that decreases the residual at all — no sufficient-decrease or gain-ratio test. When an
+overshoot happens to decrease it slightly, the iterate leaves the region of latent space the
+decoder was trained on and converges to a spurious stationary point out there. The discriminator
+is exact: the iterate's norm after the first accepted step, relative to the training-latent
+cloud radius, is 0.77–1.32× for solves that succeed and 1.73–4.60× for solves that fail.
 
-- **Not checkpoint quality.** The ceilings are monotone; the decoders are fine.
-- **Not hyper-reduction.** EQ fit quality is flat at ~1.3–1.7e-3 across all of them, and
-  `k = 32` has the *best* fit of the lot (1.02e-4) alongside the *worst* ratio.
-- **Not `M/k`.** Among the `M = 64` rows, `k = 6` has `M/k = 10.7` and fails (6.6) while
-  `k = 16` has `M/k = 4.0` and works (1.6). More test modes per latent dimension is not the
-  discriminator — worth stating, because "M > k comfortably" is a standing project rule and a
-  reader will reach for it.
+The objective is not at fault. A slice from the starting guess to the true answer is
+monotonically downhill in every case tested, failures included; every successful solve ends
+*below* the objective value at the oracle latent while every failed one ends 27–90× above it.
+Reproduced on the full-grid objective with no hyper-reduction at all, which also rules out
+quadrature.
 
-The `k = 32` degradation **survives isolation at matched `(M, m) = (256, 256)`**, so it is about
-`k` and not the quadrature settings:
+**Fix: constrain the step to the training-latent cloud radius.** One line.
 
-| N | 32 | 64 | 128 | 256 |
-|---|---|---|---|---|
-| `k = 8` ratio | 3.5 | 2.1 | 2.5 | 2.2 |
-| `k = 32` ratio | **14.1** | **16.1** | **15.6** | **18.0** |
+| k | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
+|---|---|---|---|---|---|---|---|
+| ratio to ceiling now | 1.11 | 7.61 | 1.10 | 7.85 | 1.26 | 3.40 | 15.49 |
+| with the fix | 1.09 | 1.05 | 1.09 | 1.18 | 1.28 | 1.45 | 1.50 |
 
-**Two live hypotheses, undecided.** A monotone ceiling proves the decoder can *represent* the
-field at every `k`; it says nothing about whether its Jacobian is well *conditioned* there.
-Near-degenerate latent directions would give exactly this signature. So it is either (a)
-conditioning of the manifold parameterisation — a training/architecture finding, arguably the
-more publishable one — or (b) a genuine defect in the weak-form solve at those dimensions.
+No arm regresses, iterations fall at large k, and it holds at N=256. Two caveats: the fix has
+not been re-measured through the production hyper-reduction and timing path, so those ratios are
+a demonstration rather than replacements; and 3 of 64 cases at k=4 survive every fix without
+ever leaving the trust region, which looks like a representation limit rather than a solver one.
 
-The discriminator is now measured: the chunked ceiling accumulates `H = JᵀJ`, whose eigenvalues
-are the squared singular values of `J`, so condition number and numerical rank come free. The
-well-conditioned reference is **N = 32, `k` = 8: full rank 8/8, condition number 2.5e+02**,
-singular values decaying 1.04e-1 → 3.8e-4. If the suspect `k` collapse against that, hypothesis
-(a) is confirmed.
-
-**This reframes a standing rule.** "More latent dimensions is not better past the intrinsic
-dimension" was wrong. Extra dimensions *do* help the decoder — our solve simply becomes
-unreliable in some of them.
-
----
+**The same unglobalised optimiser is used on Heat, Burgers and Wave.** So the project's accuracy
+numbers are broadly pessimistic, by an amount not yet quantified.
 
 ## 4. The ROM warm-start hybrid does not pay (final)
 

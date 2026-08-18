@@ -1,0 +1,143 @@
+host=pax106  node=pax106  gpu=NVIDIA A100 80GB PCIe
+commit=9741ff0  dirty=e3b0c44298fc (dirty marker 'e3b0c442' == clean)  cell=ctol_b_n128  job=2511812
+src_bundle=ctol=9741ff0/e3b0c44298fc,2026-08-16-poisson2d-rom-objective=d68d8cb/e3b0c442,2026-08-16-burgers2d-rom-latent-stepping=c7e9c2e/e3b0c442,2026-08-14-multistage-precision=b389467/e3b0c442,2026-08-14-burgers2d-coord-rom=b327915/e3b0c442
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100 80GB PCIe KS=[2, 4, 6, 8, 12, 16, 24, 32] NS=[128] TAUS=[0.1, 0.01, 0.001] M=64 m=256 reps=7 warm=2 ckpt_N=64 n_test=16 n_pod_traj=512
+  plan: 1 mesh(es) [128], k values [2, 4, 6, 8, 12, 16, 24, 32], 20 (arm, method) cells
+  ckpt k= 2: blat_ad_N64_K2.pkl train_seed=0
+  ckpt k= 4: blat_ad_N64_K4.pkl train_seed=None
+  ckpt k= 6: blat_ad_N64_K6.pkl train_seed=0
+  ckpt k= 8: blat_ad_N64_K8.pkl train_seed=None
+  ckpt k=12: blat_ad_N64_K12.pkl train_seed=0
+  ckpt k=16: blat_ad_N64_K16.pkl train_seed=None
+  ckpt k=24: blat_ad_N64_K24.pkl train_seed=0
+  ckpt k=32: blat_ad_N64_K32.pkl train_seed=0
+== N= 128: test trajectories regenerated, FOM Newton residual 9.99e-13
+   FOM Newton=1:     77.5 ms  err 2.586e-04  residual 1.92e-02
+   FOM Newton=2:    202.4 ms  err 1.714e-07  residual 8.17e-05
+   FOM Newton=3:    337.6 ms  err 2.264e-12  residual 2.03e-09
+   FOM Newton=4:    476.5 ms  err 0.000e+00  residual 9.99e-13
+   FOM Newton=6:    758.7 ms  err 0.000e+00  residual 9.99e-13
+   FOM Newton=8:   1037.3 ms  err 0.000e+00  residual 9.99e-13
+   FOM rollout (batch 1, median over 16 sources, reference Newton=8) 967.5 ms -- ladder above is iso-accuracy
+   POD basis: 6656 snapshots from 512 trajectories x 13 slices (stride 4), orthonormality dev 2.02e-14, sv0 1.641e+03 sv[31] 3.942e+01 (train FOM residual 9.99e-13)
+   POD projection floor (held-out): k=2:6.050e-01  k=4:3.805e-01  k=6:2.623e-01  k=8:2.029e-01  k=12:1.322e-01  k=16:9.462e-02  k=24:5.911e-02  k=32:4.205e-02
+   EQ candidate pool: 4096 of 15876 interior nodes (cap 4096)
+  NNLS-EQ burgers coord N=128 k=2 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 4.76e-02 (row p95 2.4e+00, max 1.3e+03) [13s]
+   coord N= 128 k= 2 M= 64 m= 256 tau=1e-01  e2e    269.8 ms  solve    228.2 ms  jac  445.4  err 4.489e-01  fomres 5.73e-01  cens 100.0%  blowups 0
+   coord N= 128 k= 2 M= 64 m= 256 tau=1e-02  e2e    270.0 ms  solve    228.4 ms  jac  445.4  err 4.489e-01  fomres 5.73e-01  cens 100.0%  blowups 0
+   coord N= 128 k= 2 M= 64 m= 256 tau=1e-03  e2e    270.6 ms  solve    229.0 ms  jac  445.4  err 4.489e-01  fomres 5.73e-01  cens 100.0%  blowups 0
+   WARNING ceiling N=128 k=2: the ROM (4.489e-01) BEAT the oracle ceiling (6.803e-01); the ceiling LM did not converge and this cell's ceiling is not a valid bound
+   ceiling  N= 128 k= 2: oracle inferred-latent 6.803e-01 (max 2.467e+00, every 10th slice)
+   [cell coord N=128 k=2 M=64 m=256: 205s]
+  NNLS-EQ burgers pod N=128 k=2 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 2.28e-05 (row p95 1.0e-02, max 4.6e+00) [14s]
+   pod   N= 128 k= 2 M= 64 m= 256 tau=1e-01  e2e     34.5 ms  solve     34.4 ms  jac  193.2  err 6.098e-01  fomres 2.06e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 2 M= 64 m= 256 tau=1e-02  e2e     34.5 ms  solve     34.5 ms  jac  193.2  err 6.098e-01  fomres 2.06e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 2 M= 64 m= 256 tau=1e-03  e2e     34.5 ms  solve     34.4 ms  jac  193.2  err 6.098e-01  fomres 2.06e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=2 M=64 m=256: 31s]
+  NNLS-EQ burgers coord N=128 k=4 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 8.69e-03 (row p95 7.2e-01, max 4.5e+02) [12s]
+   coord N= 128 k= 4 M= 64 m= 256 tau=1e-01  e2e    263.9 ms  solve    222.2 ms  jac  279.6  err 8.072e-02  fomres 1.59e-02  cens 78.2%  blowups 0
+   coord N= 128 k= 4 M= 64 m= 256 tau=1e-02  e2e    268.7 ms  solve    227.0 ms  jac  323.5  err 7.871e-02  fomres 1.59e-02  cens 100.0%  blowups 0
+   coord N= 128 k= 4 M= 64 m= 256 tau=1e-03  e2e    268.4 ms  solve    226.7 ms  jac  323.5  err 7.871e-02  fomres 1.59e-02  cens 100.0%  blowups 0
+   ceiling  N= 128 k= 4: oracle inferred-latent 6.057e-02 (max 2.220e-01, every 10th slice)
+   [cell coord N=128 k=4 M=64 m=256: 155s]
+  NNLS-EQ burgers pod N=128 k=4 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.14e-04 (row p95 4.2e-02, max 4.4e+01) [13s]
+   pod   N= 128 k= 4 M= 64 m= 256 tau=1e-01  e2e     31.5 ms  solve     31.5 ms  jac  197.6  err 3.984e-01  fomres 2.50e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 4 M= 64 m= 256 tau=1e-02  e2e     31.5 ms  solve     31.4 ms  jac  197.6  err 3.984e-01  fomres 2.50e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 4 M= 64 m= 256 tau=1e-03  e2e     31.6 ms  solve     31.5 ms  jac  197.6  err 3.984e-01  fomres 2.50e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=4 M=64 m=256: 30s]
+  NNLS-EQ burgers coord N=128 k=6 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 7.54e-03 (row p95 6.5e-01, max 6.6e+02) [12s]
+   coord N= 128 k= 6 M= 64 m= 256 tau=1e-01  e2e    139.0 ms  solve     97.1 ms  jac  136.6  err 2.390e-02  fomres 1.03e-02  cens 11.0%  blowups 0
+   coord N= 128 k= 6 M= 64 m= 256 tau=1e-02  e2e    299.5 ms  solve    257.7 ms  jac  306.8  err 1.898e-02  fomres 1.02e-02  cens 100.0%  blowups 0
+   coord N= 128 k= 6 M= 64 m= 256 tau=1e-03  e2e    299.5 ms  solve    257.7 ms  jac  306.8  err 1.898e-02  fomres 1.02e-02  cens 100.0%  blowups 0
+   ceiling  N= 128 k= 6: oracle inferred-latent 1.741e-02 (max 6.537e-02, every 10th slice)
+   [cell coord N=128 k=6 M=64 m=256: 158s]
+  NNLS-EQ burgers pod N=128 k=6 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.73e-04 (row p95 5.2e-02, max 1.9e+04) [14s]
+   pod   N= 128 k= 6 M= 64 m= 256 tau=1e-01  e2e     33.6 ms  solve     33.5 ms  jac  200.8  err 2.757e-01  fomres 2.77e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 6 M= 64 m= 256 tau=1e-02  e2e     33.6 ms  solve     33.5 ms  jac  200.8  err 2.757e-01  fomres 2.77e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 6 M= 64 m= 256 tau=1e-03  e2e     33.6 ms  solve     33.6 ms  jac  200.8  err 2.757e-01  fomres 2.77e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=6 M=64 m=256: 31s]
+  NNLS-EQ burgers coord N=128 k=8 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 7.41e-03 (row p95 5.6e-01, max 2.0e+03) [12s]
+   coord N= 128 k= 8 M= 64 m= 256 tau=1e-01  e2e    146.6 ms  solve    105.0 ms  jac  127.9  err 2.386e-02  fomres 9.21e-03  cens  5.8%  blowups 0
+   coord N= 128 k= 8 M= 64 m= 256 tau=1e-02  e2e    342.6 ms  solve    301.0 ms  jac  330.4  err 1.672e-02  fomres 8.91e-03  cens 100.0%  blowups 0
+   coord N= 128 k= 8 M= 64 m= 256 tau=1e-03  e2e    345.5 ms  solve    303.9 ms  jac  330.9  err 1.672e-02  fomres 8.91e-03  cens 100.0%  blowups 0
+   ceiling  N= 128 k= 8: oracle inferred-latent 1.456e-02 (max 5.682e-02, every 10th slice)
+   [cell coord N=128 k=8 M=64 m=256: 191s]
+  NNLS-EQ burgers pod N=128 k=8 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 2.33e-04 (row p95 5.4e-02, max 1.3e+01) [14s]
+   pod   N= 128 k= 8 M= 64 m= 256 tau=1e-01  e2e     31.0 ms  solve     30.9 ms  jac  202.4  err 2.158e-01  fomres 2.82e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 8 M= 64 m= 256 tau=1e-02  e2e     31.0 ms  solve     31.0 ms  jac  202.4  err 2.158e-01  fomres 2.82e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 8 M= 64 m= 256 tau=1e-03  e2e     32.2 ms  solve     32.2 ms  jac  202.4  err 2.158e-01  fomres 2.82e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=8 M=64 m=256: 31s]
+  NNLS-EQ burgers coord N=128 k=8 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 1.33e-01 (row p95 1.2e+02, max 3.5e+05) [25s]
+   coord N= 128 k= 8 M=256 m= 256 tau=1e-01  e2e    357.9 ms  solve    316.2 ms  jac  345.5  err 7.569e-02  fomres 9.53e-03  cens 98.3%  blowups 0
+   coord N= 128 k= 8 M=256 m= 256 tau=1e-02  e2e    365.9 ms  solve    324.3 ms  jac  372.8  err 7.025e-02  fomres 9.34e-03  cens 100.0%  blowups 0
+   coord N= 128 k= 8 M=256 m= 256 tau=1e-03  e2e    366.6 ms  solve    325.0 ms  jac  373.6  err 7.025e-02  fomres 9.34e-03  cens 100.0%  blowups 0
+   [cell coord N=128 k=8 M=256 m=256: 194s]
+  NNLS-EQ burgers pod N=128 k=8 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 9.76e-02 (row p95 1.7e+02, max 3.0e+05) [25s]
+   pod   N= 128 k= 8 M=256 m= 256 tau=1e-01  e2e     35.6 ms  solve     35.6 ms  jac  201.4  err 2.181e-01  fomres 2.74e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 8 M=256 m= 256 tau=1e-02  e2e     35.7 ms  solve     35.6 ms  jac  201.4  err 2.181e-01  fomres 2.74e-02  cens 100.0%  blowups 0
+   pod   N= 128 k= 8 M=256 m= 256 tau=1e-03  e2e     35.7 ms  solve     35.6 ms  jac  201.4  err 2.181e-01  fomres 2.74e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=8 M=256 m=256: 43s]
+  NNLS-EQ burgers coord N=128 k=12 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 7.96e-03 (row p95 6.1e-01, max 8.1e+02) [12s]
+   coord N= 128 k=12 M= 64 m= 256 tau=1e-01  e2e    170.8 ms  solve    129.2 ms  jac  128.6  err 2.574e-02  fomres 9.09e-03  cens  1.7%  blowups 0
+   coord N= 128 k=12 M= 64 m= 256 tau=1e-02  e2e    467.1 ms  solve    425.5 ms  jac  365.4  err 1.426e-02  fomres 9.06e-03  cens 100.0%  blowups 0
+   coord N= 128 k=12 M= 64 m= 256 tau=1e-03  e2e    467.9 ms  solve    426.3 ms  jac  368.9  err 1.426e-02  fomres 9.06e-03  cens 100.0%  blowups 0
+   ceiling  N= 128 k=12: oracle inferred-latent 1.237e-02 (max 1.077e-01, every 10th slice)
+   [cell coord N=128 k=12 M=64 m=256: 254s]
+  NNLS-EQ burgers pod N=128 k=12 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 4.30e-04 (row p95 9.1e-02, max 4.2e+01) [14s]
+   pod   N= 128 k=12 M= 64 m= 256 tau=1e-01  e2e     37.6 ms  solve     37.6 ms  jac  203.8  err 1.425e-01  fomres 2.71e-02  cens 100.0%  blowups 0
+   pod   N= 128 k=12 M= 64 m= 256 tau=1e-02  e2e     37.8 ms  solve     37.7 ms  jac  203.8  err 1.425e-01  fomres 2.71e-02  cens 100.0%  blowups 0
+   pod   N= 128 k=12 M= 64 m= 256 tau=1e-03  e2e     37.7 ms  solve     37.6 ms  jac  203.8  err 1.425e-01  fomres 2.71e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=12 M=64 m=256: 33s]
+  NNLS-EQ burgers coord N=128 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 7.95e-03 (row p95 6.6e-01, max 4.2e+02) [13s]
+   coord N= 128 k=16 M= 64 m= 256 tau=1e-01  e2e    201.7 ms  solve    159.9 ms  jac  181.0  err 4.569e-02  fomres 4.80e-02  cens  8.5%  blowups 0
+   coord N= 128 k=16 M= 64 m= 256 tau=1e-02  e2e    619.9 ms  solve    578.2 ms  jac  422.1  err 1.578e-02  fomres 1.04e-02  cens 99.9%  blowups 0
+   coord N= 128 k=16 M= 64 m= 256 tau=1e-03  e2e    622.1 ms  solve    580.3 ms  jac  426.0  err 1.546e-02  fomres 1.04e-02  cens 100.0%  blowups 0
+   ceiling  N= 128 k=16: oracle inferred-latent 1.197e-02 (max 1.099e-01, every 10th slice)
+   [cell coord N=128 k=16 M=64 m=256: 399s]
+  NNLS-EQ burgers pod N=128 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 6.88e-04 (row p95 1.1e-01, max 1.2e+02) [13s]
+   pod   N= 128 k=16 M= 64 m= 256 tau=1e-01  e2e     35.4 ms  solve     35.3 ms  jac  205.1  err 1.010e-01  fomres 2.83e-02  cens 100.0%  blowups 0
+   pod   N= 128 k=16 M= 64 m= 256 tau=1e-02  e2e     35.6 ms  solve     35.5 ms  jac  205.4  err 1.010e-01  fomres 2.83e-02  cens 100.0%  blowups 0
+   pod   N= 128 k=16 M= 64 m= 256 tau=1e-03  e2e     35.6 ms  solve     35.6 ms  jac  205.4  err 1.010e-01  fomres 2.83e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=16 M=64 m=256: 32s]
+  NNLS-EQ burgers coord N=128 k=24 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 8.89e-03 (row p95 7.9e-01, max 3.3e+02) [12s]
+   coord N= 128 k=24 M= 64 m= 256 tau=1e-01  e2e    261.8 ms  solve    220.2 ms  jac  232.4  err 5.337e-02  fomres 6.69e-02  cens 12.3%  blowups 0
+   coord N= 128 k=24 M= 64 m= 256 tau=1e-02  e2e   1156.6 ms  solve   1114.9 ms  jac  644.9  err 2.322e-02  fomres 1.59e-02  cens 95.0%  blowups 0
+   coord N= 128 k=24 M= 64 m= 256 tau=1e-03  e2e   1156.5 ms  solve   1114.9 ms  jac  643.1  err 2.192e-02  fomres 1.51e-02  cens 100.0%  blowups 0
+   ceiling  N= 128 k=24: oracle inferred-latent 9.736e-03 (max 5.715e-02, every 10th slice)
+   [cell coord N=128 k=24 M=64 m=256: 802s]
+  NNLS-EQ burgers pod N=128 k=24 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.17e-03 (row p95 1.5e-01, max 8.3e+01) [12s]
+   pod   N= 128 k=24 M= 64 m= 256 tau=1e-01  e2e     37.0 ms  solve     37.0 ms  jac  197.9  err 6.273e-02  fomres 2.69e-02  cens 91.4%  blowups 0
+   pod   N= 128 k=24 M= 64 m= 256 tau=1e-02  e2e     38.5 ms  solve     38.5 ms  jac  207.9  err 6.273e-02  fomres 2.69e-02  cens 100.0%  blowups 0
+   pod   N= 128 k=24 M= 64 m= 256 tau=1e-03  e2e     38.6 ms  solve     38.5 ms  jac  207.9  err 6.273e-02  fomres 2.69e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=24 M=64 m=256: 33s]
+  NNLS-EQ burgers coord N=128 k=32 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 1.35e-01 (row p95 9.8e+01, max 7.5e+04) [27s]
+   coord N= 128 k=32 M=256 m= 256 tau=1e-01  e2e   2723.1 ms  solve   2681.2 ms  jac  987.2  err 8.600e-02  fomres 3.84e-02  cens 98.0%  blowups 0
+   coord N= 128 k=32 M=256 m= 256 tau=1e-02  e2e   2787.9 ms  solve   2746.0 ms  jac 1037.3  err 8.201e-02  fomres 2.91e-02  cens 99.8%  blowups 0
+   coord N= 128 k=32 M=256 m= 256 tau=1e-03  e2e   2786.5 ms  solve   2744.6 ms  jac 1044.5  err 8.472e-02  fomres 3.56e-02  cens 100.0%  blowups 0
+   [cell coord N=128 k=32 M=256 m=256: 1183s]
+  NNLS-EQ burgers pod N=128 k=32 M=256 m=256: pool 4096 support 256 (+0 pad) rel fit 1.31e-01 (row p95 1.5e+02, max 3.8e+05) [25s]
+   pod   N= 128 k=32 M=256 m= 256 tau=1e-01  e2e     42.6 ms  solve     42.6 ms  jac  203.4  err 8.584e-02  fomres 3.12e-02  cens 99.4%  blowups 0
+   pod   N= 128 k=32 M=256 m= 256 tau=1e-02  e2e     42.9 ms  solve     42.8 ms  jac  206.0  err 8.584e-02  fomres 3.12e-02  cens 100.0%  blowups 0
+   pod   N= 128 k=32 M=256 m= 256 tau=1e-03  e2e     42.9 ms  solve     42.8 ms  jac  206.0  err 8.584e-02  fomres 3.12e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=32 M=256 m=256: 48s]
+  NNLS-EQ burgers coord N=128 k=32 M=256 m=1024: pool 4096 support 1024 (+0 pad) rel fit 4.58e-03 (row p95 2.3e+00, max 5.3e+03) [714s]
+   coord N= 128 k=32 M=256 m=1024 tau=1e-01  e2e   1558.4 ms  solve   1517.2 ms  jac  322.8  err 2.421e-02  fomres 1.37e-02  cens 24.3%  blowups 0
+   coord N= 128 k=32 M=256 m=1024 tau=1e-02  e2e   6256.2 ms  solve   6215.0 ms  jac  694.9  err 9.640e-03  fomres 1.02e-02  cens 100.0%  blowups 0
+   coord N= 128 k=32 M=256 m=1024 tau=1e-03  e2e   6256.1 ms  solve   6214.8 ms  jac  700.4  err 9.640e-03  fomres 1.02e-02  cens 100.0%  blowups 0
+   ceiling  N= 128 k=32: oracle inferred-latent 8.928e-03 (max 5.343e-02, every 10th slice)
+   [cell coord N=128 k=32 M=256 m=1024: 3883s]
+  NNLS-EQ burgers pod N=128 k=32 M=256 m=1024: pool 4096 support 1024 (+0 pad) rel fit 1.89e-04 (row p95 2.1e-01, max 9.3e+01) [970s]
+   pod   N= 128 k=32 M=256 m=1024 tau=1e-01  e2e     41.1 ms  solve     41.1 ms  jac  196.6  err 4.553e-02  fomres 2.19e-02  cens 90.0%  blowups 0
+   pod   N= 128 k=32 M=256 m=1024 tau=1e-02  e2e     47.6 ms  solve     47.6 ms  jac  207.5  err 4.553e-02  fomres 2.19e-02  cens 100.0%  blowups 0
+   pod   N= 128 k=32 M=256 m=1024 tau=1e-03  e2e     47.6 ms  solve     47.6 ms  jac  207.5  err 4.553e-02  fomres 2.19e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=32 M=256 m=1024: 994s]
+  NNLS-EQ burgers coord UNCAPPED-POOL N=128 k=8: pool 15876 support 256 (+0 pad) rel fit 7.39e-03 (row p95 6.0e-01, max 5.4e+02) [14s]
+   coord N= 128 k= 8 M= 64 m= 256 tau=1e-01  e2e    156.6 ms  solve    115.1 ms  jac  134.5  err 2.379e-02  fomres 9.28e-03  cens  7.2%  blowups 0
+   [cell coord N=128 k=8 M=64 m=256: 43s]
+  NNLS-EQ burgers pod UNCAPPED-POOL N=128 k=8: pool 15876 support 256 (+0 pad) rel fit 2.09e-04 (row p95 5.0e-02, max 1.2e+01) [16s]
+   pod   N= 128 k= 8 M= 64 m= 256 tau=1e-01  e2e     30.8 ms  solve     30.7 ms  jac  202.4  err 2.158e-01  fomres 2.82e-02  cens 100.0%  blowups 0
+   [cell pod N=128 k=8 M=64 m=256: 23s]
+== N=128 done [9466s]
+DONE
+ALL-DONE

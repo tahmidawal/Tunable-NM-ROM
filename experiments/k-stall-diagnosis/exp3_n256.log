@@ -1,0 +1,12 @@
+jax_backend=gpu N=256 M=64 modes=64 tau=0.001 budget=60 TR=1.0
+k= 6 R_train=0.717 ceiling mean 8.596e-03 med 7.863e-03
+    base     err mean 6.702e-02 med 8.771e-03 | ratio mean  7.80 med  1.05 | blown  3/16 | red 2.45e-02 | it  32.4
+    lam0_1   err mean 9.056e-03 med 8.257e-03 | ratio mean  1.05 med  1.03 | blown  0/16 | red 5.16e-03 | it  26.8
+    tr       err mean 9.056e-03 med 8.257e-03 | ratio mean  1.05 med  1.03 | blown  0/16 | red 5.16e-03 | it  32.9
+    nielsen  err mean 9.056e-03 med 8.257e-03 | ratio mean  1.05 med  1.03 | blown  0/16 | red 5.16e-03 | it  28.2
+jax_backend=gpu N=256 M=64 modes=64 tau=0.001 budget=60 TR=1.0
+k=12 R_train=0.980 ceiling mean 6.117e-03 med 4.967e-03
+    base     err mean 4.874e-02 med 6.359e-03 | ratio mean  7.97 med  1.12 | blown  3/16 | red 2.47e-02 | it  45.1
+    lam0_1   err mean 7.145e-03 med 5.130e-03 | ratio mean  1.17 med  1.08 | blown  0/16 | red 3.52e-03 | it  35.5
+    tr       err mean 7.154e-03 med 5.130e-03 | ratio mean  1.17 med  1.08 | blown  0/16 | red 3.52e-03 | it  40.2
+    nielsen  err mean 1.266e-02 med 5.130e-03 | ratio mean  2.07 med  1.08 | blown  1/16 | red 8.42e-03 | it  37.2

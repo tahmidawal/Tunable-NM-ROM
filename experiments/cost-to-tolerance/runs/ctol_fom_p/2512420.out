@@ -1,0 +1,101 @@
+host=pax051  node=pax051  gpu=NVIDIA A100-PCIE-40GB
+commit=68ac248  dirty=4819beccd106 (dirty marker 'e3b0c442' == clean)  cell=ctol_fom_p  job=2512420
+src_bundle=ctol=68ac248/4819beccd106,2026-08-16-poisson2d-rom-objective=d68d8cb/e3b0c442,2026-08-16-burgers2d-rom-latent-stepping=c7e9c2e/e3b0c442,2026-08-14-multistage-precision=b389467/e3b0c442,2026-08-14-burgers2d-coord-rom=b327915/e3b0c442
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100-PCIE-40GB x64=True KS=[2, 4, 6, 8, 12, 16, 24, 32] NS=[32, 64, 128, 256, 512] TAUS=[0.1, 0.01, 0.001] M=64 m=256 reps=7 warm=2
+  plan: 5 mesh(es) [32, 64, 128, 256, 512], k values [2, 4, 6, 8, 12, 16, 24, 32], 80 (arm, method) cells
+  ckpt k= 2: autodec_K2_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.235
+  ckpt k= 4: autodec_K4_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.192
+  ckpt k= 6: autodec_K6_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.182
+  ckpt k= 8: autodec_K8_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.175
+  ckpt k=12: autodec_K12_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.164
+  ckpt k=16: autodec_K16_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.147
+  ckpt k=24: autodec_K24_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.143
+  ckpt k=32: autodec_K32_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.141
+   FOM CG tol=3e-01:    0.575 ms  err 2.759e-01  achieved residual 2.98e-01
+   FOM CG tol=1e-01:    0.950 ms  err 5.895e-02  achieved residual 9.98e-02
+   FOM CG tol=3e-02:    1.350 ms  err 8.091e-03  achieved residual 2.99e-02
+   FOM CG tol=1e-02:    1.589 ms  err 2.579e-03  achieved residual 9.89e-03
+   FOM CG tol=3e-03:    1.951 ms  err 7.141e-04  achieved residual 2.91e-03
+   FOM CG tol=1e-03:    1.827 ms  err 2.585e-04  achieved residual 9.98e-04
+   FOM CG tol=3e-04:    2.027 ms  err 6.600e-05  achieved residual 2.98e-04
+   FOM CG tol=1e-04:    2.123 ms  err 1.739e-05  achieved residual 9.98e-05
+   FOM CG tol=3e-05:    2.333 ms  err 3.637e-06  achieved residual 2.86e-05
+   FOM CG tol=1e-05:    2.451 ms  err 1.077e-06  achieved residual 9.85e-06
+   FOM CG tol=1e-06:    2.625 ms  err 1.419e-07  achieved residual 9.98e-07
+   FOM CG tol=1e-08:    3.010 ms  err 1.181e-09  achieved residual 9.99e-09
+   FOM CG tol=1e-10:    3.377 ms  err 8.576e-12  achieved residual 9.75e-11
+   FOM CG tol=1e-13:    3.859 ms  err 0.000e+00  achieved residual 1.03e-13
+   anchor N=32: archived 5.59 ms vs re-timed 3.86 ms (31.0% diff; archived achieved 1.0e-13, re-timed 1.0e-13)
+   overconvergence factor at N=32: 1.00x (testbed 1e-13 achieved 1.0e-13; matched rung tol=1e-13)
+== N=  32  FOM CG @1e-13     3.86 ms  (residual 1.0e-13) -- the ladder above is the iso-accuracy baseline
+   FOM CG tol=3e-01:    1.390 ms  err 1.761e-01  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    2.078 ms  err 3.235e-02  achieved residual 1.00e-01
+   FOM CG tol=3e-02:    2.510 ms  err 5.761e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:    2.841 ms  err 1.743e-03  achieved residual 1.00e-02
+   FOM CG tol=3e-03:    3.226 ms  err 5.433e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:    3.511 ms  err 1.732e-04  achieved residual 9.99e-04
+   FOM CG tol=3e-04:    3.820 ms  err 4.140e-05  achieved residual 2.93e-04
+   FOM CG tol=1e-04:    4.102 ms  err 1.183e-05  achieved residual 1.00e-04
+   FOM CG tol=3e-05:    4.346 ms  err 2.534e-06  achieved residual 2.95e-05
+   FOM CG tol=1e-05:    4.598 ms  err 8.294e-07  achieved residual 9.76e-06
+   FOM CG tol=1e-06:    5.074 ms  err 1.053e-07  achieved residual 9.97e-07
+   FOM CG tol=1e-08:    5.881 ms  err 7.536e-10  achieved residual 9.51e-09
+   FOM CG tol=1e-10:    6.694 ms  err 5.890e-12  achieved residual 9.96e-11
+   FOM CG tol=1e-13:    7.709 ms  err 0.000e+00  achieved residual 3.60e-13
+   anchor N=64: archived 7.79 ms vs re-timed 7.71 ms (1.0% diff; archived achieved 3.6e-13, re-timed 3.6e-13)
+   overconvergence factor at N=64: 1.00x (testbed 1e-13 achieved 3.6e-13; matched rung tol=1e-13)
+== N=  64  FOM CG @1e-13     7.71 ms  (residual 3.6e-13) -- the ladder above is the iso-accuracy baseline
+   FOM CG tol=3e-01:    3.075 ms  err 1.151e-01  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    4.116 ms  err 1.726e-02  achieved residual 9.99e-02
+   FOM CG tol=3e-02:    4.981 ms  err 4.063e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:    5.674 ms  err 1.238e-03  achieved residual 9.99e-03
+   FOM CG tol=3e-03:    6.288 ms  err 4.162e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:    7.091 ms  err 1.166e-04  achieved residual 9.94e-04
+   FOM CG tol=3e-04:    7.749 ms  err 2.871e-05  achieved residual 3.00e-04
+   FOM CG tol=1e-04:    8.333 ms  err 7.798e-06  achieved residual 9.92e-05
+   FOM CG tol=3e-05:    8.800 ms  err 1.782e-06  achieved residual 2.98e-05
+   FOM CG tol=1e-05:    9.072 ms  err 6.857e-07  achieved residual 9.96e-06
+   FOM CG tol=1e-06:   10.137 ms  err 7.746e-08  achieved residual 9.93e-07
+   FOM CG tol=1e-08:   12.047 ms  err 5.602e-10  achieved residual 9.91e-09
+   FOM CG tol=1e-10:   13.484 ms  err 4.295e-12  achieved residual 9.97e-11
+   FOM CG tol=1e-13:   15.560 ms  err 0.000e+00  achieved residual 2.17e-12
+   anchor N=128: archived 15.14 ms vs re-timed 15.56 ms (2.7% diff; archived achieved 2.2e-12, re-timed 2.2e-12)
+   overconvergence factor at N=128: 1.00x (testbed 1e-13 achieved 2.2e-12; matched rung tol=1e-13)
+== N= 128  FOM CG @1e-13    15.56 ms  (residual 2.2e-12) -- the ladder above is the iso-accuracy baseline
+   FOM CG tol=3e-01:    6.837 ms  err 6.581e-02  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    8.612 ms  err 1.065e-02  achieved residual 9.99e-02
+   FOM CG tol=3e-02:   10.075 ms  err 2.979e-03  achieved residual 2.99e-02
+   FOM CG tol=1e-02:   11.615 ms  err 8.878e-04  achieved residual 1.00e-02
+   FOM CG tol=3e-03:   12.895 ms  err 2.923e-04  achieved residual 2.99e-03
+   FOM CG tol=1e-03:   14.490 ms  err 8.042e-05  achieved residual 9.98e-04
+   FOM CG tol=3e-04:   15.831 ms  err 1.958e-05  achieved residual 2.99e-04
+   FOM CG tol=1e-04:   16.888 ms  err 5.194e-06  achieved residual 9.98e-05
+   FOM CG tol=3e-05:   17.846 ms  err 1.264e-06  achieved residual 2.99e-05
+   FOM CG tol=1e-05:   18.658 ms  err 4.615e-07  achieved residual 1.00e-05
+   FOM CG tol=1e-06:   20.723 ms  err 5.188e-08  achieved residual 9.97e-07
+   FOM CG tol=1e-08:   24.314 ms  err 4.102e-10  achieved residual 9.88e-09
+   FOM CG tol=1e-10:   27.269 ms  err 3.157e-12  achieved residual 1.00e-10
+   FOM CG tol=1e-13:   31.475 ms  err 0.000e+00  achieved residual 1.25e-11
+   anchor N=256: archived 31.14 ms vs re-timed 31.48 ms (1.1% diff; archived achieved 1.3e-11, re-timed 1.2e-11)
+   overconvergence factor at N=256: 1.00x (testbed 1e-13 achieved 1.2e-11; matched rung tol=1e-13)
+== N= 256  FOM CG @1e-13    31.48 ms  (residual 1.2e-11) -- the ladder above is the iso-accuracy baseline
+   FOM CG tol=3e-01:   19.261 ms  err 3.677e-02  achieved residual 3.00e-01
+   FOM CG tol=1e-01:   23.032 ms  err 7.104e-03  achieved residual 9.98e-02
+   FOM CG tol=3e-02:   26.799 ms  err 1.965e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:   30.884 ms  err 6.526e-04  achieved residual 9.96e-03
+   FOM CG tol=3e-03:   35.077 ms  err 1.951e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:   38.885 ms  err 5.396e-05  achieved residual 9.99e-04
+   FOM CG tol=3e-04:   41.623 ms  err 1.308e-05  achieved residual 3.00e-04
+   FOM CG tol=1e-04:   44.428 ms  err 3.356e-06  achieved residual 9.99e-05
+   FOM CG tol=3e-05:   48.055 ms  err 9.381e-07  achieved residual 3.00e-05
+   FOM CG tol=1e-05:   49.182 ms  err 3.443e-07  achieved residual 9.96e-06
+   FOM CG tol=1e-06:   55.016 ms  err 3.291e-08  achieved residual 9.99e-07
+   FOM CG tol=1e-08:   63.253 ms  err 2.924e-10  achieved residual 1.00e-08
+   FOM CG tol=1e-10:   71.725 ms  err 2.290e-12  achieved residual 1.19e-10
+   FOM CG tol=1e-13:   80.864 ms  err 0.000e+00  achieved residual 6.95e-11
+   anchor N=512: archived 96.01 ms vs re-timed 80.86 ms (15.8% diff; archived achieved 7.0e-11, re-timed 6.9e-11)
+   overconvergence factor at N=512: 1.00x (testbed 1e-13 achieved 6.9e-11; matched rung tol=1e-13)
+== N= 512  FOM CG @1e-13    80.86 ms  (residual 6.9e-11) -- the ladder above is the iso-accuracy baseline
+DONE
+ALL-DONE

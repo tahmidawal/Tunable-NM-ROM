@@ -1,0 +1,15 @@
+jax_backend=gpu N=32 sources=64
+k= 4 base R_train=0.753 mean 3.449e-02 med 1.660e-02 blown  4/64 idx [np.int64(18), np.int64(28), np.int64(49), np.int64(53)] | escape ratio med 0.49 max 1.32
+k= 4 tr   R_train=0.753 mean 3.328e-02 med 1.607e-02 blown  3/64 idx [np.int64(18), np.int64(28), np.int64(49)] | escape ratio med 0.49 max 1.32
+k= 6 base R_train=0.717 mean 8.390e-02 med 1.032e-02 blown 14/64 idx [np.int64(1), np.int64(3), np.int64(14), np.int64(18), np.int64(22), np.int64(27), np.int64(33), np.int64(36), np.int64(37), np.int64(44), np.int64(49), np.int64(53)] | escape ratio med 0.61 max 2.76
+k= 6 tr   R_train=0.717 mean 1.486e-02 med 9.614e-03 blown  2/64 idx [np.int64(18), np.int64(53)] | escape ratio med 0.55 max 1.09
+k= 8 base R_train=0.820 mean 2.819e-02 med 6.462e-03 blown  3/64 idx [np.int64(18), np.int64(22), np.int64(52)] | escape ratio med 0.54 max 3.37
+k= 8 tr   R_train=0.820 mean 8.418e-03 med 6.598e-03 blown  0/64 idx [] | escape ratio med 0.55 max 1.02
+k=12 base R_train=0.980 mean 3.483e-02 med 6.108e-03 blown  8/64 idx [np.int64(9), np.int64(12), np.int64(14), np.int64(19), np.int64(22), np.int64(27), np.int64(46), np.int64(53)] | escape ratio med 0.57 max 5.29
+k=12 tr   R_train=0.980 mean 7.822e-03 med 5.936e-03 blown  0/64 idx [] | escape ratio med 0.55 max 1.27
+k=16 base R_train=0.933 mean 2.067e-02 med 4.833e-03 blown  4/64 idx [np.int64(18), np.int64(19), np.int64(21), np.int64(37)] | escape ratio med 0.65 max 6.39
+k=16 tr   R_train=0.933 mean 6.270e-03 med 4.590e-03 blown  0/64 idx [] | escape ratio med 0.61 max 1.26
+k=24 base R_train=1.135 mean 9.355e-03 med 4.608e-03 blown  2/64 idx [np.int64(14), np.int64(23)] | escape ratio med 0.77 max 7.18
+k=24 tr   R_train=1.135 mean 5.907e-03 med 4.341e-03 blown  0/64 idx [] | escape ratio med 0.69 max 1.91
+k=32 base R_train=1.293 mean 5.820e-02 med 6.844e-03 blown 22/64 idx [np.int64(1), np.int64(5), np.int64(13), np.int64(14), np.int64(16), np.int64(18), np.int64(19), np.int64(27), np.int64(28), np.int64(33), np.int64(41), np.int64(42)] | escape ratio med 1.64 max 13.07
+k=32 tr   R_train=1.293 mean 5.635e-03 med 3.877e-03 blown  1/64 idx [np.int64(1)] | escape ratio med 0.86 max 3.23

@@ -1,0 +1,26 @@
+host=pax106  gpu=NVIDIA A100 80GB PCIe
+commit=63de48bdd5dd7c4a89494a05d0059bf48e27fe5e  dirty=e3b0c44298fc  cell=wsb_n64
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 commit=72b44d4 NS=[64] fom_taus=[1e-06, 1e-08, 1e-10] variant=lspg:eq256:weak64 n_traj=4 reps=7 warm=2 lin_tol=1e-10 max_newton=25
+== N=64: FOM test trajectories regenerated, max Newton rel residual 9.75e-13
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.21e-03 (per-row median 9.7e-03, p95 6.8e-01, max 3.4e+02) [16s]
+   ROM (lspg:eq256:weak64) m=256: traj rel-L2 vs FOM@N 1.736e-02, IC misfit on EQ nodes 2.51e-02, latent-solve iters 286 over 50 steps
+   ROM cost: pre 0.1 ms + IC 16.2 ms + rollout 265.6 ms + decode 13.6 ms   (training-IC bank built offline in 0.2 s; testbed rollout 408.0 ms)
+   tau=1e-06: counting chain vs testbed rollout: traj-norm 9.44e-07, worst step 5.06e-06; BiCGStab vs jax.scipy 4.67e-16 (lin resid ours 9.8e-11 vs jax 9.8e-11)
+     arm prev   : 98.5 Newton, 1390 BiCGStab iters, 85.9 ms, err vs FOM 2.59e-07, max rel Newton resid 9.83e-07, lin failures 0, nonzero Newton flags 0
+     arm extrap : 55.5 Newton, 832 BiCGStab iters, 54.7 ms, err vs FOM 7.50e-07, max rel Newton resid 9.92e-07, lin failures 0, nonzero Newton flags 0
+     arm rom    : 93.0 Newton, 1838 BiCGStab iters, 99.7 ms, err vs FOM 7.53e-07, max rel Newton resid 9.73e-07, lin failures 0, nonzero Newton flags 0
+   tau=1e-06: total 395 ms vs FOM 86 ms (0.22x)  Newton 93.0 vs 98.5 (extrap 55.5)
+   tau=1e-08: counting chain vs testbed rollout: traj-norm 1.98e-09, worst step 5.16e-09; BiCGStab vs jax.scipy 4.67e-16 (lin resid ours 9.8e-11 vs jax 9.8e-11)
+     arm prev   : 101.5 Newton, 1440 BiCGStab iters, 93.1 ms, err vs FOM 7.77e-10, max rel Newton resid 8.57e-09, lin failures 0, nonzero Newton flags 0
+     arm extrap : 87.2 Newton, 1313 BiCGStab iters, 70.8 ms, err vs FOM 9.60e-09, max rel Newton resid 9.72e-09, lin failures 0, nonzero Newton flags 0
+     arm rom    : 103.8 Newton, 2105 BiCGStab iters, 143.9 ms, err vs FOM 3.05e-09, max rel Newton resid 9.38e-09, lin failures 0, nonzero Newton flags 0
+   tau=1e-08: total 439 ms vs FOM 93 ms (0.21x)  Newton 103.8 vs 101.5 (extrap 87.2)
+   tau=1e-10: counting chain vs testbed rollout: traj-norm 1.40e-10, worst step 3.18e-10; BiCGStab vs jax.scipy 4.67e-16 (lin resid ours 9.8e-11 vs jax 9.8e-11)
+     arm prev   : 112.5 Newton, 1605 BiCGStab iters, 94.8 ms, err vs FOM 7.93e-11, max rel Newton resid 9.96e-11, lin failures 0, nonzero Newton flags 0
+     arm extrap : 103.0 Newton, 1613 BiCGStab iters, 106.3 ms, err vs FOM 5.77e-12, max rel Newton resid 8.27e-11, lin failures 0, nonzero Newton flags 0
+     arm rom    : 124.2 Newton, 2456 BiCGStab iters, 143.7 ms, err vs FOM 6.56e-11, max rel Newton resid 9.79e-11, lin failures 0, nonzero Newton flags 0
+   tau=1e-10: total 439 ms vs FOM 95 ms (0.22x)  Newton 124.2 vs 112.5 (extrap 103.0)
+== N=64 done [72s]
+DONE
+ALL-DONE

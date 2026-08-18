@@ -1,0 +1,82 @@
+E0817 15:58:42.989245 3963790 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+E0817 15:58:44.894405 3963848 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+W0817 16:46:56.250167 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:46:56.251289 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:47:06.251472 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:47:06.252187 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:47:16.252361 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:47:16.252534 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:47:26.252707 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:47:26.253294 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:47:36.253467 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:47:36.253652 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:47:46.253883 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:47:46.254062 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:47:56.254224 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:47:56.254953 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:48:06.255193 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:48:06.255374 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:48:16.255543 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:48:16.255718 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:48:26.255892 3963853 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.94GiB (rounded to 8522956800)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:48:26.256074 3963853 bfc_allocator.cc:525] **_***_____________________*******************************************************_________________*
+W0817 16:48:36.814063 3963801 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 16.87GiB (rounded to 18111558912)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0817 16:48:36.814260 3963801 bfc_allocator.cc:525] **_***_____________________________________________________________________________________________*
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ctol/ctol_p_n512/code/ctol_poisson.py", line 850, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ctol/ctol_p_n512/code/ctol_poisson.py", line 728, in main
+    cm, cx_, cinit = oracle_ceiling(
+                     ~~~~~~~~~~~~~~^
+        dec_k, grid, ck[k]["Z_tr"], U_int, tn, n_i,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        max(GN_ITERS, CEIL_BUDGET), nn_idx)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ctol/ctol_p_n512/code/ctol_poisson.py", line 343, in oracle_ceiling
+    z, r, _ = pc.lm_solve(lambda zz: rJ(zz, u), lambda zz: rn(zz, u), z0, budget)
+              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ctol/ctol_p_n512/code/deps/poisson2d-rom-objective/deps/ms_autodecoder.py", line 89, in lm_solve
+    rn = float(jnp.linalg.norm(r))
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 300, in __float__
+    return self._value.__float__()
+           ^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/profiler.py", line 420, in wrapper
+    return func(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 623, in _value
+    npy_value, did_copy = self._single_device_array_to_np_array_did_copy()
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.87GiB. [executable_name='jit_norm'] [tf-allocator-allocation-error='']

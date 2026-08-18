@@ -31,7 +31,7 @@ rows come from the same runs at the tightest setting, over 16 test cases:
 
 The ceiling improves monotonically, so every extra dimension genuinely helps the decoder. The
 mean row looks like our solver fails at k=6, 12, 24 and 32 and works at 4, 8 and 16. That
-reading is wrong, and the median row is why: it sits within 1.0–1.2× of the ceiling at *every*
+reading is wrong, and the median row is why: it sits within 0.96–1.24× of the ceiling at *every*
 k, including the supposedly failing ones. At k=32 the median is the best on the ladder.
 
 What actually happens is that a handful of individual cases diverge, and the mean over sixteen
@@ -47,7 +47,10 @@ The objective itself is fine: the path from the starting guess to the right answ
 the whole way, and every successful solve ends below the objective value at the true answer
 while every failed one ends 27–90× above it.
 
-Constraining steps to the size of the training set of latents fixes it:
+Constraining steps to the size of the training set of latents fixes it. Both rows below
+were measured on the full-grid objective in a companion investigation, not through the
+hyper-reduced production path, so they are internally consistent with each other but not
+directly comparable to the numbers above:
 
 | k | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
 |---|---|---|---|---|---|---|---|

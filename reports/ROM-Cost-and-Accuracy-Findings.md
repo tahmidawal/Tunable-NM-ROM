@@ -105,7 +105,7 @@ five diverging solves. The median tells a different story:
 | median | 1.55e-2 | 8.52e-3 | 7.25e-3 | 7.58e-3 | 5.05e-3 | 4.93e-3 | 3.66e-3 |
 | diverged | 0/16 | 2/16 | 0/16 | 3/16 | 0/16 | 1/16 | 5/16 |
 
-The median is within 1.0–1.2× of the ceiling at **every** k, and k=32's median is the best on
+The median is within 0.96–1.24× of the ceiling at **every** k, and k=32's median is the best on
 the ladder. Running all 64 held-out cases rather than 16 shows k=8 and k=16 failing too (3 and
 4 cases). Our sixteen simply drew none of them. There is no powers-of-two structure; the
 failure rate rises smoothly with k.
@@ -124,7 +124,9 @@ monotonically downhill in every case tested, failures included; every successful
 Reproduced on the full-grid objective with no hyper-reduction at all, which also rules out
 quadrature.
 
-**Fix: constrain the step to the training-latent cloud radius.** One line.
+**Fix: constrain the step to the training-latent cloud radius.** One line. Both rows below
+were measured on the full-grid objective, so they compare to each other but not to the
+hyper-reduced numbers above.
 
 | k | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
 |---|---|---|---|---|---|---|---|

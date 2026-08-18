@@ -48,6 +48,14 @@ EXTRA = ["arm", "time_ms_solve", "time_ms_pre", "time_ms_decode", "censored_frac
 # mesh-independence result.  Below this fraction the derived value is suppressed.
 SOLVE_RESOLUTION = 0.15
 
+# `censored` is an ANY predicate: true if ANY tau-stopped solve in the cell missed its
+# tolerance.  That is 16 solves for Poisson (one per source) but 816 for Burgers (a cold
+# start plus 50 time steps, per each of 16 trajectories), so the two PDEs' `censored`
+# flags are NOT the same predicate and the Burgers strict frontier is empty by
+# construction rather than by failure -- at tau=1e-1, k=8, N=64 only 6.5% of the 816
+# solves miss.  A third, comparable view thresholds the FRACTION instead.
+CENSORED_FRAC_MAX = 0.10
+
 
 def solve_ms(p):
     """Derived latent-solve time, or None when it is below the resolution of the
@@ -393,24 +401,39 @@ def build_blocks(data, pts):
     # reintroduce the defect this cell exists to remove.  The AS-DEPLOYED frontier
     # (all cells; set the knob and take what you get) is tabulated next to it.
     for pde, d in sorted(data.items()):
-        for strict, key in ((True, "pareto"), (False, "paretodep")):
+        for strict, key in ((True, "pareto"), (False, "paretodep"), ("frac", "paretofrac")):
             rows = []
             for N in d["config"]["ns"]:
-                fom = [p for p in primary if p["pde"] == pde and p["method"] == "fom"
-                       and p["N"] == N]
-                fom_ms = fom[0]["time_ms"] if fom else None
+                # The FOM is a LADDER, so "x FOM" must name which rung.  Using
+                # whichever rung happened to come first in the list is meaningless --
+                # it silently picked the 1-Newton-step rung for Burgers and reported
+                # the ROM as 0.2x.  Two denominators are reported instead: the
+                # ISO-ACCURACY rung (cheapest rung reaching THAT row's error, the
+                # honest speedup) and the EXACT rung (the price of exactness).
+                fsel = [p for p in pts if p["pde"] == pde and p["method"] == "fom"
+                        and p["N"] == N and p.get("arm") in ("fom", "fom_consolidated")]
+                fex = next((p for p in fsel if p.get("exact_reference")), None)
+                fom_ms = fex["time_ms"] if fex else None
                 for method in ("coord", "pod"):
                     sel = [p for p in primary if p["pde"] == pde
                            and p["method"] == method and p["N"] == N]
-                    for p in nondominated(sel, require_uncensored=strict):
+                    if strict == "frac":
+                        sel = [p for p in sel
+                               if (p.get("censored_frac") or 0.0) <= CENSORED_FRAC_MAX
+                               and not p.get("n_blowup")]
+                    for p in nondominated(sel, require_uncensored=(strict is True)):
+                        iso = cheapest_reaching(fsel, p["err_rel_l2"],
+                                                require_uncensored=False)
                         rows.append([N, method, p["k"], p["M"], p["m"], f"{p['tau']:.0e}",
                                      fmt(p["time_ms"], ".2f"), fmt(p["err_rel_l2"]),
                                      fmt(p["jac_evals"], ".1f"),
                                      fmt(100 * (p.get("censored_frac") or 0.0), ".0f"),
+                                     fmt(iso["time_ms"] / p["time_ms"], ".2f")
+                                     if iso else "unreached",
                                      fmt(fom_ms / p["time_ms"], ".1f") if fom_ms else "--"])
             B[f"{key}_{pde}"] = md_table(
                 ["N", "method", "k", "M", "m", "tau", "time ms (e2e)", "err rel-L2",
-                 "jac evals", "censored %", "x FOM"], rows)
+                 "jac evals", "censored %", "x iso-accuracy FOM", "x exact FOM"], rows)
 
     # ---- who owns the frontier -------------------------------------------
     for pde, d in sorted(data.items()):

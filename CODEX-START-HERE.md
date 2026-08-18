@@ -142,6 +142,16 @@ steps beats it and costs nothing.
 
 ---
 
+## What is and is not in this branch
+
+Self-contained: all 16 trained decoders for the k-ladder (`cost-to-tolerance/ckpt_poisson`,
+`ckpt_burgers`, 74 MB) are tracked here. They were `.gitignore`d in the source cell and existed
+nowhere else in git, so a clone would have had no decoders to run. Result JSONs, Slurm logs,
+sha256 manifests, figures and every Codex audit are tracked.
+
+Not here: `runs/smoke/` interface-test artefacts, `cluster/stage/` copies of code already
+tracked, and `__pycache__`. Data is regenerated from seed on the cluster and is never synced.
+
 ## Compute
 
 `CLAUDE.md` in the repo root is authoritative and unchanged. In short: Tufts is the default for

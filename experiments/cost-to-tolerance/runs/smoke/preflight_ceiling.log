@@ -1,0 +1,10 @@
+jax_backend=gpu device=cuda:0 gpu=NVIDIA GB10 x64=True KS=[8] NS=[32] TAUS=[0.01] M=32 m=64 reps=1 warm=1
+  plan: 1 mesh(es) [32], k values [8], 2 (arm, method) cells
+  ckpt k= 8: autodec_K8_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.175
+   FOM CG tol=1e-02:    2.282 ms  err 4.040e-03  achieved residual 9.66e-03
+   FOM CG tol=1e-13:    6.109 ms  err 0.000e+00  achieved residual 9.46e-14
+   anchor N=32: archived 5.59 ms vs re-timed 6.11 ms (9.3% diff; archived achieved 1.0e-13, re-timed 9.5e-14)
+   overconvergence factor at N=32: 1.00x (testbed 1e-13 achieved 9.5e-14; matched rung tol=1e-13)
+== N=  32  FOM CG @1e-13     6.11 ms  (residual 9.5e-14) -- the ladder above is the iso-accuracy baseline
+   ceiling  N=  32 k= 8: 9.138e-03 (max 1.341e-02, inits {'mean': 1, 'nearest': 1}, jac cond 2.54e+02, rank 8/8) [17s]
+DONE

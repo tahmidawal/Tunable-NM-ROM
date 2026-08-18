@@ -37,7 +37,8 @@ SCHEMA = ["pde", "method", "N", "k", "M", "m", "tau", "time_ms", "err_rel_l2",
 EXTRA = ["arm", "time_ms_solve", "time_ms_pre", "time_ms_decode", "censored_frac",
          "err_rel_l2_median", "err_rel_l2_max", "rel_reduction_mean",
          "fd_residual_rel_mean", "fom_residual_rel_mean", "eq_rel_fit",
-         "ms_per_jac", "n_modes", "n_modes_le_k", "n_blowup", "speedup_e2e"]
+         "ms_per_jac", "n_modes", "n_modes_le_k", "n_blowup", "speedup_e2e",
+         "err_rel_l2_per_source"]
 
 
 # `time_ms_solve` is DERIVED (timed pipeline minus separately measured preprocess and
@@ -55,6 +56,23 @@ SOLVE_RESOLUTION = 0.15
 # construction rather than by failure -- at tau=1e-1, k=8, N=64 only 6.5% of the 816
 # solves miss.  A third, comparable view thresholds the FRACTION instead.
 CENSORED_FRAC_MAX = 0.10
+
+
+def blown(p, factor=5.0):
+    """Sources whose error exceeds `factor` x the cell's own MEDIAN.
+
+    The per-source error distribution is heavy-tailed: a handful of solves diverge
+    while the rest track the decoder ceiling.  A MEAN over 16 sources is therefore
+    not a summary of it -- reporting the mean alone is what produced this cell's
+    false "the solver stalls at particular k" finding.  Returns (n_blown, n_total)."""
+    e = p.get("err_rel_l2_per_source")
+    if not e:
+        return None, None
+    v = [x for x in e if x is not None and math.isfinite(x)]
+    if not v:
+        return None, len(e)
+    med = sorted(v)[len(v) // 2]
+    return sum(1 for x in v if x > factor * med), len(e)
 
 
 def solve_ms(p):
@@ -658,6 +676,52 @@ def build_blocks(data, pts):
         "_(the Burgers panels have not landed yet; this cross-check is pre-registered "\
         "against the peer values recorded in ctol_tables.PEER_BURGERS_TAU1EM6)_"
 
+    # ---- decoder ceiling per (N, k), with the ROBUST statistic ---------------
+    # The per-source error distribution is HEAVY-TAILED: a few solves diverge while
+    # the rest track the ceiling.  Reporting the MEAN alone produced this cell's false
+    # "the solver stalls at particular k" finding, so mean, MEDIAN and the number of
+    # diverged sources are all reported side by side.
+    for pde, d in sorted(data.items()):
+        ks = d["config"]["ks"]
+        rows = []
+        for N in d["config"]["ns"]:
+            cl = {c["k"]: c for c in d.get("supplementary", [])
+                  if c.get("method") == "oracle_ceiling" and c.get("N") == N}
+            if not cl:
+                continue
+            kb2, mb2 = d["config"]["k_big"], d["config"]["M_big"]
+            m4 = d["config"].get("mq_4m", 4 * mb2)
+            rows.append(["(M, m) measured at", N]
+                        + [f"({mb2},{min(m4,(N-2)**2)})" if k >= kb2
+                           else f"({d['config']['M']},{d['config']['m']})" for k in ks])
+            rows.append(["ceiling (oracle)", N]
+                        + [fmt(cl[k]["err_rel_l2"]) if k in cl else "--" for k in ks])
+            tau_t = min(d["config"]["taus"])
+            tight = {p["k"]: p for p in primary
+                     if p["pde"] == pde and p["method"] == "coord"
+                     and p["N"] == N and p["tau"] == tau_t}
+            rows.append([f"ROM mean (tau={tau_t:.0e})", N]
+                        + [fmt(tight[k]["err_rel_l2"]) if k in tight else "--"
+                           for k in ks])
+            rows.append([f"ROM MEDIAN (tau={tau_t:.0e})", N]
+                        + [fmt(tight[k].get("err_rel_l2_median")) if k in tight else "--"
+                           for k in ks])
+            rows.append(["diverged sources", N]
+                        + [(lambda b_, n_: f"{b_}/{n_}" if b_ is not None else "--")(
+                            *blown(tight[k])) if k in tight else "--" for k in ks])
+            for lab, fld in (("mean", "err_rel_l2"), ("MEDIAN", "err_rel_l2_median")):
+                rows.append([f"ROM({lab}) / ceiling", N]
+                            + [fmt(tight[k][fld] / cl[k]["err_rel_l2"], ".2f")
+                               if (k in tight and k in cl and cl[k]["err_rel_l2"]
+                                   and tight[k].get(fld) is not None
+                                   and math.isfinite(tight[k][fld])) else "--"
+                               for k in ks])
+            rows.append(["ceiling valid (ROM did not beat it)", N]
+                        + [("no" if cl[k].get("rom_beat_ceiling") else "yes")
+                           if k in cl else "--" for k in ks])
+        B[f"ceiling_{pde}"] = md_table(["quantity", "N"] + [f"k={k}" for k in ks], rows) \
+            if rows else "_(no ceiling arm in this run)_"
+
     # ---- k=32 at MATCHED (M, m): separating the k step from the (M, m) step -
     # The promoted grid runs k=32 at (M=256, m=1024) while k in {2..24} run at
     # (M=64, m=256), so the k=32 ROM/ceiling ratio in the table above confounds the
@@ -1006,6 +1070,18 @@ def main():
                            "**PROVISIONAL -- the surface is incomplete:**\n\n"
                            + "\n".join(f"* {t}" for t in problems[:40]) + warn_md)
     rewrite(args.readme, blocks)
+    # A generated block still present in the README but no longer produced by any
+    # generator is STALE and reads as current -- strictly worse than a missing one.
+    # This cell shipped exactly that for several commits after a slice-replace
+    # silently removed the ceiling-table generator.
+    if os.path.isfile(args.readme):
+        present = set(re.findall(r"<!-- BEGIN GENERATED: ([^>]+?) -->",
+                                 open(args.readme).read()))
+        orphaned = sorted(present - set(blocks))
+        if orphaned:
+            raise SystemExit(
+                "README contains GENERATED block(s) that no generator produces, so they "
+                "are stale and will silently read as current: " + ", ".join(orphaned))
     unlabelled = audit_tolerance_labels(args.readme, blocks)
     if unlabelled:
         raise SystemExit(

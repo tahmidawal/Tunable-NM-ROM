@@ -959,46 +959,153 @@ At the other two tolerances:
 
 ### 6.3 The knob -> accuracy map: field error actually achieved at each tau
 
-**Accuracy is non-monotone in `k` — and the ceiling arm shows it is NOT the checkpoints.**
-Each `k` is a *separately trained* decoder, so the natural first reading is that decoder quality
-varies along the `k` axis. **The measurement rejects that.** Each checkpoint's own **oracle
-ceiling** — the error of the best latent obtainable by LM on the data misfit to the held-out
-field, which no solver can beat — is *cleanly monotone decreasing* in `k` at every mesh
-(N=64: 1.24e-1 → 3.28e-3 from `k`=2 to 32, no reversals). The decoders get uniformly better.
+**A fraction of solves DIVERGE, and the rate rises with `k`. This is not `k`-specific, and an
+earlier version of this section said it was.**
 
-What oscillates is the **ROM/ceiling ratio** (N=64, `tau`=1e-3: 1.1 at `k`=4, 6.6 at `k`=6,
-1.2 at `k`=8, 7.7 at `k`=12, 1.6 at `k`=16). So the latent solve, not the decoder, is what
-fails at particular `k`. Two further candidates are ruled out by the same table:
+The published ROM error is a **mean over 16 held-out sources**, and at some `k` that mean is
+carried by a handful of divergent solves. Recomputed from this cell's own archived
+`err_rel_l2_per_source` arrays (N=64, `tau`=1e-3):
 
-* **not hyper-reduction quality** — the NNLS-EQ fit is flat at ~1.3–1.7e-3 across all of them,
-  and `k`=32's fit is the *best* of the set while its ratio is the *worst*;
-* **not `M`/`k` headroom** — among the `M`=64 rows, `k`=6 has `M/k` = 10.7 and fails (6.6) while
-  `k`=16 has `M/k` = 4.0 and works (1.6). More test modes per latent dimension is not the
-  discriminator, despite "`M` > `k` comfortably" being a standing project rule.
+| | k=4 | k=6 | k=8 | k=12 | k=16 | k=24 | k=32 |
+|---|---|---|---|---|---|---|---|
+| ceiling | 1.55e-2 | 8.84e-3 | 7.04e-3 | 6.24e-3 | 4.13e-3 | 3.98e-3 | 3.28e-3 |
+| ROM **mean** | 1.74e-2 | 5.85e-2 | 8.48e-3 | 4.79e-2 | 6.54e-3 | 1.49e-2 | 4.02e-2 |
+| ROM **median** | 1.55e-2 | 8.52e-3 | 7.25e-3 | 7.58e-3 | 5.05e-3 | 4.93e-3 | 3.66e-3 |
+| diverged sources | 0/16 | 2/16 | 0/16 | 3/16 | 0/16 | 1/16 | 5/16 |
 
-**Two live hypotheses remain, and this cell does not yet decide between them.** A monotone
-ceiling establishes that the decoder can *represent* the field at every `k`; it says nothing
-about whether the manifold parameterisation is well *conditioned* there. So either:
+**The median tracks the ceiling at 0.96–1.24× at every `k`, including the ones that looked
+broken** — and `k`=32's median is the best on the ladder. The mean is not a summary of this
+distribution, and presenting it as one is what produced the earlier false finding. Mean, median
+and diverged-source count are therefore reported together wherever a `k` curve appears.
 
-1. **conditioning** — a checkpoint with near-degenerate or unused latent directions gives
-   exactly this signature (good ceiling, ill-conditioned Gauss–Newton, high ratio). This is
-   checkpoint-specific but is *not* "checkpoint quality" in the sense rejected above; it would
-   be a training/architecture finding.
-2. **a defect in the weak-form solve** at those dimensions — a solver finding.
+**The `k`-specific pattern was a sampling artefact.** A companion investigation re-ran on all 64
+held-out sources (this study uses 16) and found `k`=8 diverging on 3/64 and `k`=16 on 4/64 — the
+values that looked immune here. This cell's 16-source draw simply contained none of them. The
+divergence **rate rises smoothly with `k`**; the apparent "powers of two are safe" structure is
+coincidence, and I should not have read a pattern off eight points of a noisy rate.
 
-The decoder-Jacobian spectrum at the ceiling latent (condition number and numerical rank per
-(N, `k`), recorded free from the `H` = `Jᵀ J` the chunked ceiling already accumulates)
-discriminates them, and is reported below. Whichever it is, this is a limitation of **our
-method**, not of the approach, and it belongs in the verdict as such.
+**Root cause: the latent LM is unglobalised.** `lam0 = 1e-6` makes the first step effectively an
+undamped Gauss–Newton step — 10–350× the norm of the latent itself — and the acceptance test
+takes *any* decrease in `‖r‖`, with no sufficient-decrease or gain-ratio condition. An overshoot
+that happens to lower the residual slightly is accepted, the iterate leaves the region of latent
+space the decoder was trained on, and it converges to a spurious stationary point out there. The
+discriminator is the iterate norm after the first accepted step relative to the training-cloud
+radius: 0.77–1.32× when it succeeds, 1.73–4.60× when it fails, separating at ~1.5 (9/9 correct).
 
-**The `k`=32 row is not a pure `k` step.** Under the promoted grid it runs at (`M`, `m`) =
-(256, 1024) while `k` ∈ {2…24} run at (64, 256), so its ratio confounds the latent dimension
-with a 4× change in both test modes and quadrature size. The isolator and artefact arms give
-the comparison at **identical** (`M`, `m`) = (256, 256), and it survives: `k`=32 is ~7× worse
-than `k`=8 at matched settings, consistently at every mesh (ratio 14.1 / 16.1 / 15.6 / 18.0 at
-N=32/64/128/256, against 3.5 / 2.1 / 2.5 / 2.2 for `k`=8). So the `k`=32 degradation is real
-and about `k`, not an artefact of the (`M`, `m`) change — but the raw ratio table's `k`=32
-entry must still be read as measured under different settings.
+Two candidate explanations were tested and **rejected**: it is not the objective and not a basin
+barrier (a 1-D slice from `z0` to the ceiling latent decreases monotonically with its minimum
+exactly at the ceiling in all 9 cases, failures included — every successful solve ends *below*
+the objective value at the oracle latent, every failed one 27–90× *above* it); and it is not the
+hyper-reduction (reproduced on the full-grid weak objective with no NNLS-EQ at all).
+
+Also rejected by the measurements in this cell: it is **not decoder quality** (the ceilings are
+cleanly monotone in `k` at every mesh), **not conditioning of the parameterisation** (the decoder
+Jacobian is full rank at every (N, `k`) and cond(J) grows smoothly from 2.3 to 4.4e3 with no
+spike at the suspect values, essentially mesh-independent), and **not `M`/`k` headroom** (`k`=6
+has `M/k` = 10.7 and fails while `k`=16 has `M/k` = 4.0 and works).
+
+**The fix is one line, and it is NOT in these numbers.** Adding a trust region tied to the
+training latent cloud — reject any step with `‖dz‖ > Δ`, `Δ = max_i ‖Z_i − z_mean‖`, treated as a
+failed step so `λ ×= 10` — takes the ROM/ceiling ratio at N=64 from 1.11/7.61/1.10/7.85/1.26/3.40/15.49
+to 1.09/1.05/1.09/1.18/1.28/1.45/1.50 across `k`=4…32, with no arm regressing and iteration
+counts *falling* at large `k`; confirmed at N=256. **Those ratios were measured in a companion
+investigation, not through this cell's EQ + timing path, so they are not drop-in replacements for
+any cell published here.** Everything in this README reports what the *shipped* solver does. The
+fleet was deliberately not re-run for the fix; that belongs in a follow-up.
+
+**Scope beyond this cell.** The same `lam0 = 1e-6` + accept-any-decrease pattern is in
+`pro_common.lm_generic` and `ms_autodecoder.lm_solve`, which Heat, Burgers and Wave all inherit
+through `fu_eq.make_lm_jit` and this cell's `ctol_tol`. So the project's coordinate-ROM accuracy
+numbers are likely **broadly pessimistic**, and some previously reported "the ROM stalls above
+its ceiling" results may be this artefact rather than a property of the method.
+
+**The `k`=32 row is still not a pure `k` step** and is marked as such: under the promoted grid it
+runs at (`M`, `m`) = (256, 1024) while `k` ∈ {2…24} run at (64, 256). The matched-(`M`, `m`)
+table below compares it against the fixed-`k`=8 isolator at identical (256, 256).
+
+<!-- BEGIN GENERATED: ceiling_poisson2d -->
+| quantity                            | N   | k=2       | k=4       | k=6       | k=8       | k=12      | k=16      | k=24      | k=32       |
+|-------------------------------------|-----|-----------|-----------|-----------|-----------|-----------|-----------|-----------|------------|
+| (M, m) measured at                  | 32  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,900)  |
+| ceiling (oracle)                    | 32  | 1.250e-01 | 1.724e-02 | 1.047e-02 | 7.966e-03 | 7.088e-03 | 4.877e-03 | 4.424e-03 | 3.596e-03  |
+| ROM mean (tau=1e-03)                | 32  | 5.761e-01 | 1.958e-02 | 6.029e-02 | 1.076e-02 | 5.131e-02 | 7.647e-03 | 1.584e-02 | 4.185e-02  |
+| ROM MEDIAN (tau=1e-03)              | 32  | 4.300e-01 | 1.996e-02 | 8.630e-03 | 7.149e-03 | 8.600e-03 | 4.739e-03 | 6.278e-03 | 4.294e-03  |
+| diverged sources                    | 32  | 0/16      | 0/16      | 2/16      | 0/16      | 4/16      | 0/16      | 1/16      | 4/16       |
+| ROM(mean) / ceiling                 | 32  | 4.61      | 1.14      | 5.76      | 1.35      | 7.24      | 1.57      | 3.58      | 11.64      |
+| ROM(MEDIAN) / ceiling               | 32  | 3.44      | 1.16      | 0.82      | 0.90      | 1.21      | 0.97      | 1.42      | 1.19       |
+| ceiling valid (ROM did not beat it) | 32  | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
+| (M, m) measured at                  | 64  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
+| ceiling (oracle)                    | 64  | 1.236e-01 | 1.551e-02 | 8.835e-03 | 7.043e-03 | 6.236e-03 | 4.133e-03 | 3.976e-03 | 3.280e-03  |
+| ROM mean (tau=1e-03)                | 64  | 5.455e-01 | 1.742e-02 | 5.845e-02 | 8.482e-03 | 4.789e-02 | 6.542e-03 | 1.491e-02 | 4.022e-02  |
+| ROM MEDIAN (tau=1e-03)              | 64  | 4.085e-01 | 1.550e-02 | 8.517e-03 | 7.245e-03 | 7.576e-03 | 5.049e-03 | 4.933e-03 | 3.662e-03  |
+| diverged sources                    | 64  | 0/16      | 0/16      | 2/16      | 0/16      | 3/16      | 0/16      | 1/16      | 5/16       |
+| ROM(mean) / ceiling                 | 64  | 4.41      | 1.12      | 6.61      | 1.20      | 7.68      | 1.58      | 3.75      | 12.26      |
+| ROM(MEDIAN) / ceiling               | 64  | 3.31      | 1.00      | 0.96      | 1.03      | 1.21      | 1.22      | 1.24      | 1.12       |
+| ceiling valid (ROM did not beat it) | 64  | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
+| (M, m) measured at                  | 128 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
+| ceiling (oracle)                    | 128 | 1.233e-01 | 1.525e-02 | 8.637e-03 | 6.951e-03 | 6.137e-03 | 4.072e-03 | 3.930e-03 | 3.226e-03  |
+| ROM mean (tau=1e-03)                | 128 | 4.925e-01 | 1.704e-02 | 5.847e-02 | 8.397e-03 | 4.533e-02 | 6.234e-03 | 1.435e-02 | 4.376e-02  |
+| ROM MEDIAN (tau=1e-03)              | 128 | 4.082e-01 | 1.491e-02 | 8.551e-03 | 7.048e-03 | 7.570e-03 | 4.457e-03 | 4.521e-03 | 3.854e-03  |
+| diverged sources                    | 128 | 0/16      | 0/16      | 2/16      | 0/16      | 4/16      | 0/16      | 1/16      | 5/16       |
+| ROM(mean) / ceiling                 | 128 | 3.99      | 1.12      | 6.77      | 1.21      | 7.39      | 1.53      | 3.65      | 13.56      |
+| ROM(MEDIAN) / ceiling               | 128 | 3.31      | 0.98      | 0.99      | 1.01      | 1.23      | 1.09      | 1.15      | 1.19       |
+| ceiling valid (ROM did not beat it) | 128 | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
+| (M, m) measured at                  | 256 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
+| ceiling (oracle)                    | 256 | 1.233e-01 | 1.519e-02 | 8.596e-03 | 6.933e-03 | 6.117e-03 | 4.062e-03 | 3.922e-03 | 3.220e-03  |
+| ROM mean (tau=1e-03)                | 256 | 4.925e-01 | 1.717e-02 | 7.027e-02 | 8.378e-03 | 6.007e-02 | 6.733e-03 | 1.563e-02 | 5.790e-02  |
+| ROM MEDIAN (tau=1e-03)              | 256 | 4.082e-01 | 1.525e-02 | 8.770e-03 | 8.073e-03 | 8.501e-03 | 5.233e-03 | 5.022e-03 | 3.550e-03  |
+| diverged sources                    | 256 | 0/16      | 0/16      | 2/16      | 0/16      | 3/16      | 0/16      | 1/16      | 4/16       |
+| ROM(mean) / ceiling                 | 256 | 4.00      | 1.13      | 8.18      | 1.21      | 9.82      | 1.66      | 3.98      | 17.98      |
+| ROM(MEDIAN) / ceiling               | 256 | 3.31      | 1.00      | 1.02      | 1.16      | 1.39      | 1.29      | 1.28      | 1.10       |
+| ceiling valid (ROM did not beat it) | 256 | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
+| (M, m) measured at                  | 512 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
+| ceiling (oracle)                    | 512 | 1.233e-01 | 1.518e-02 | 8.586e-03 | 6.929e-03 | 6.112e-03 | 4.059e-03 | 3.920e-03 | 3.219e-03  |
+| ROM mean (tau=1e-03)                | 512 | 3.960e-01 | 1.695e-02 | 9.442e-02 | 8.614e-03 | 2.634e-02 | 6.388e-03 | 1.472e-02 | 4.315e-02  |
+| ROM MEDIAN (tau=1e-03)              | 512 | 3.855e-01 | 1.482e-02 | 9.363e-03 | 7.647e-03 | 9.334e-03 | 4.191e-03 | 5.037e-03 | 3.585e-03  |
+| diverged sources                    | 512 | 0/16      | 0/16      | 3/16      | 0/16      | 2/16      | 1/16      | 1/16      | 5/16       |
+| ROM(mean) / ceiling                 | 512 | 3.21      | 1.12      | 11.00     | 1.24      | 4.31      | 1.57      | 3.76      | 13.41      |
+| ROM(MEDIAN) / ceiling               | 512 | 3.13      | 0.98      | 1.09      | 1.10      | 1.53      | 1.03      | 1.29      | 1.11       |
+| ceiling valid (ROM did not beat it) | 512 | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
+<!-- END GENERATED: ceiling_poisson2d -->
+
+<!-- BEGIN GENERATED: ceiling_burgers2d -->
+| quantity                            | N   | k=2       | k=4       | k=6       | k=8       | k=12      | k=16      | k=24      | k=32       |
+|-------------------------------------|-----|-----------|-----------|-----------|-----------|-----------|-----------|-----------|------------|
+| (M, m) measured at                  | 32  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,900)  |
+| ceiling (oracle)                    | 32  | 6.949e-01 | 5.097e-02 | 1.476e-02 | 1.232e-02 | 9.831e-03 | 8.529e-03 | 7.661e-03 | 7.972e-03  |
+| ROM mean (tau=1e-03)                | 32  | 4.626e-01 | 7.064e-02 | 1.692e-02 | 1.623e-02 | 1.172e-02 | 1.588e-02 | 1.883e-02 | 7.568e-03  |
+| ROM MEDIAN (tau=1e-03)              | 32  | 3.505e-01 | 6.714e-02 | 1.632e-02 | 1.560e-02 | 9.479e-03 | 8.992e-03 | 1.048e-02 | 6.319e-03  |
+| diverged sources                    | 32  | 0/16      | 0/16      | 0/16      | 0/16      | 0/16      | 1/16      | 1/16      | 0/16       |
+| ROM(mean) / ceiling                 | 32  | 0.67      | 1.39      | 1.15      | 1.32      | 1.19      | 1.86      | 2.46      | 0.95       |
+| ROM(MEDIAN) / ceiling               | 32  | 0.50      | 1.32      | 1.11      | 1.27      | 0.96      | 1.05      | 1.37      | 0.79       |
+| ceiling valid (ROM did not beat it) | 32  | no        | yes       | yes       | yes       | yes       | yes       | yes       | no         |
+| (M, m) measured at                  | 64  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
+| ceiling (oracle)                    | 64  | 6.752e-01 | 5.541e-02 | 1.517e-02 | 1.235e-02 | 1.050e-02 | 8.975e-03 | 7.483e-03 | 7.772e-03  |
+| ROM mean (tau=1e-03)                | 64  | 4.314e-01 | 7.456e-02 | 1.783e-02 | 1.579e-02 | 1.265e-02 | 1.177e-02 | 2.428e-02 | 9.383e-03  |
+| ROM MEDIAN (tau=1e-03)              | 64  | 3.261e-01 | 7.271e-02 | 1.638e-02 | 1.547e-02 | 1.007e-02 | 1.102e-02 | 1.350e-02 | 7.023e-03  |
+| diverged sources                    | 64  | 0/16      | 0/16      | 0/16      | 0/16      | 0/16      | 0/16      | 1/16      | 0/16       |
+| ROM(mean) / ceiling                 | 64  | 0.64      | 1.35      | 1.18      | 1.28      | 1.21      | 1.31      | 3.24      | 1.21       |
+| ROM(MEDIAN) / ceiling               | 64  | 0.48      | 1.31      | 1.08      | 1.25      | 0.96      | 1.23      | 1.80      | 0.90       |
+| ceiling valid (ROM did not beat it) | 64  | no        | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
+| (M, m) measured at                  | 128 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
+| ceiling (oracle)                    | 128 | 6.803e-01 | 6.057e-02 | 1.741e-02 | 1.456e-02 | 1.237e-02 | 1.197e-02 | 9.736e-03 | 8.928e-03  |
+| ROM mean (tau=1e-03)                | 128 | 4.489e-01 | 7.871e-02 | 1.898e-02 | 1.672e-02 | 1.426e-02 | 1.546e-02 | 2.192e-02 | 9.640e-03  |
+| ROM MEDIAN (tau=1e-03)              | 128 | 3.455e-01 | 8.261e-02 | 1.840e-02 | 1.670e-02 | 1.187e-02 | 1.042e-02 | 1.538e-02 | 6.251e-03  |
+| diverged sources                    | 128 | 0/16      | 0/16      | 0/16      | 0/16      | 0/16      | 1/16      | 1/16      | 0/16       |
+| ROM(mean) / ceiling                 | 128 | 0.66      | 1.30      | 1.09      | 1.15      | 1.15      | 1.29      | 2.25      | 1.08       |
+| ROM(MEDIAN) / ceiling               | 128 | 0.51      | 1.36      | 1.06      | 1.15      | 0.96      | 0.87      | 1.58      | 0.70       |
+| ceiling valid (ROM did not beat it) | 128 | no        | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
+| (M, m) measured at                  | 256 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
+| ceiling (oracle)                    | 256 | 6.858e-01 | 6.127e-02 | 1.888e-02 | 1.611e-02 | 1.372e-02 | 1.362e-02 | 1.161e-02 | 1.063e-02  |
+| ROM mean (tau=1e-03)                | 256 | 4.201e-01 | 8.235e-02 | 2.000e-02 | 1.761e-02 | 1.489e-02 | 1.444e-02 | 2.702e-02 | 1.037e-02  |
+| ROM MEDIAN (tau=1e-03)              | 256 | 3.251e-01 | 8.632e-02 | 1.891e-02 | 1.590e-02 | 1.263e-02 | 1.242e-02 | 1.385e-02 | 5.886e-03  |
+| diverged sources                    | 256 | 0/16      | 0/16      | 0/16      | 0/16      | 0/16      | 0/16      | 2/16      | 0/16       |
+| ROM(mean) / ceiling                 | 256 | 0.61      | 1.34      | 1.06      | 1.09      | 1.09      | 1.06      | 2.33      | 0.98       |
+| ROM(MEDIAN) / ceiling               | 256 | 0.47      | 1.41      | 1.00      | 0.99      | 0.92      | 0.91      | 1.19      | 0.55       |
+| ceiling valid (ROM did not beat it) | 256 | no        | yes       | yes       | yes       | yes       | yes       | yes       | no         |
+<!-- END GENERATED: ceiling_burgers2d -->
+
+The `k`=32 comparison at **identical** (`M`, `m`) = (256, 256), against the fixed-`k`=8 isolator:
 
 <!-- BEGIN GENERATED: matched_Mm -->
 | pde       | N   | k  | M   | m   | ROM err   | ceiling   | ROM/ceiling | EQ rel fit |
@@ -1023,6 +1130,9 @@ entry must still be read as measured under different settings.
 | poisson2d | 512 | 32 | 256 | 256 | 5.162e-02 | 3.219e-03 | 16.0        | 6.65e-02   |
 <!-- END GENERATED: matched_Mm -->
 
+Decoder-Jacobian conditioning at the ceiling latent — full rank everywhere, smooth in `k`, no
+spike at the values that looked broken:
+
 <!-- BEGIN GENERATED: jaccond_poisson2d -->
 | quantity           | N   | k=2 | k=4 | k=6 | k=8 | k=12 | k=16 | k=24 | k=32     |
 |--------------------|-----|-----|-----|-----|-----|------|------|------|----------|
@@ -1030,78 +1140,9 @@ entry must still be read as measured under different settings.
 | numerical rank / k | 512 | --  | --  | --  | --  | --   | --   | --   | 32/32    |
 <!-- END GENERATED: jaccond_poisson2d -->
 
-<!-- BEGIN GENERATED: ceiling_poisson2d -->
-| quantity                            | N   | k=2       | k=4       | k=6       | k=8       | k=12      | k=16      | k=24      | k=32       |
-|-------------------------------------|-----|-----------|-----------|-----------|-----------|-----------|-----------|-----------|------------|
-| (M, m) measured at                  | 32  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,900)  |
-| ceiling                             | 32  | 1.250e-01 | 1.724e-02 | 1.047e-02 | 7.966e-03 | 7.088e-03 | 4.877e-03 | 4.424e-03 | 3.596e-03  |
-| ROM tau=1e-01                       | 32  | 5.761e-01 | 8.405e-02 | 1.036e-01 | 9.539e-02 | 1.247e-01 | 7.673e-02 | 9.535e-02 | 1.073e-01  |
-| ROM tau=1e-02                       | 32  | 5.761e-01 | 2.082e-02 | 6.209e-02 | 1.453e-02 | 5.395e-02 | 1.301e-02 | 1.983e-02 | 4.472e-02  |
-| ROM tau=1e-03                       | 32  | 5.761e-01 | 1.958e-02 | 6.029e-02 | 1.076e-02 | 5.131e-02 | 7.647e-03 | 1.584e-02 | 4.185e-02  |
-| ROM / ceiling (tau=1e-03)           | 32  | 4.61      | 1.14      | 5.76      | 1.35      | 7.24      | 1.57      | 3.58      | 11.64      |
-| ceiling valid (ROM did not beat it) | 32  | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
-| (M, m) measured at                  | 64  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
-| ceiling                             | 64  | 1.236e-01 | 1.551e-02 | 8.835e-03 | 7.043e-03 | 6.236e-03 | 4.133e-03 | 3.976e-03 | 3.280e-03  |
-| ROM tau=1e-01                       | 64  | 5.455e-01 | 8.372e-02 | 1.113e-01 | 8.928e-02 | 1.173e-01 | 8.971e-02 | 8.770e-02 | 1.037e-01  |
-| ROM tau=1e-02                       | 64  | 5.455e-01 | 2.075e-02 | 6.036e-02 | 1.322e-02 | 5.218e-02 | 1.155e-02 | 1.968e-02 | 4.329e-02  |
-| ROM tau=1e-03                       | 64  | 5.455e-01 | 1.742e-02 | 5.845e-02 | 8.482e-03 | 4.789e-02 | 6.542e-03 | 1.491e-02 | 4.022e-02  |
-| ROM / ceiling (tau=1e-03)           | 64  | 4.41      | 1.12      | 6.61      | 1.20      | 7.68      | 1.58      | 3.75      | 12.26      |
-| ceiling valid (ROM did not beat it) | 64  | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
-| (M, m) measured at                  | 128 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
-| ceiling                             | 128 | 1.233e-01 | 1.525e-02 | 8.637e-03 | 6.951e-03 | 6.137e-03 | 4.072e-03 | 3.930e-03 | 3.226e-03  |
-| ROM tau=1e-01                       | 128 | 4.925e-01 | 8.514e-02 | 1.183e-01 | 9.486e-02 | 1.037e-01 | 1.011e-01 | 8.790e-02 | 1.053e-01  |
-| ROM tau=1e-02                       | 128 | 4.925e-01 | 2.051e-02 | 6.077e-02 | 1.411e-02 | 4.925e-02 | 1.150e-02 | 1.886e-02 | 4.689e-02  |
-| ROM tau=1e-03                       | 128 | 4.925e-01 | 1.704e-02 | 5.847e-02 | 8.397e-03 | 4.533e-02 | 6.234e-03 | 1.435e-02 | 4.376e-02  |
-| ROM / ceiling (tau=1e-03)           | 128 | 3.99      | 1.12      | 6.77      | 1.21      | 7.39      | 1.53      | 3.65      | 13.56      |
-| ceiling valid (ROM did not beat it) | 128 | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
-| (M, m) measured at                  | 256 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
-| ceiling                             | 256 | 1.233e-01 | 1.519e-02 | 8.596e-03 | 6.933e-03 | 6.117e-03 | 4.062e-03 | 3.922e-03 | 3.220e-03  |
-| ROM tau=1e-01                       | 256 | 4.925e-01 | 8.300e-02 | 1.350e-01 | 1.013e-01 | 1.117e-01 | 9.984e-02 | 9.974e-02 | 1.216e-01  |
-| ROM tau=1e-02                       | 256 | 4.925e-01 | 2.003e-02 | 7.199e-02 | 1.406e-02 | 6.235e-02 | 1.127e-02 | 1.929e-02 | 6.089e-02  |
-| ROM tau=1e-03                       | 256 | 4.925e-01 | 1.717e-02 | 7.027e-02 | 8.378e-03 | 6.007e-02 | 6.733e-03 | 1.563e-02 | 5.790e-02  |
-| ROM / ceiling (tau=1e-03)           | 256 | 4.00      | 1.13      | 8.18      | 1.21      | 9.82      | 1.66      | 3.98      | 17.98      |
-| ceiling valid (ROM did not beat it) | 256 | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
-| (M, m) measured at                  | 512 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
-| ceiling                             | 512 | 1.233e-01 | 1.518e-02 | 8.586e-03 | 6.929e-03 | 6.112e-03 | 4.059e-03 | 3.920e-03 | 3.219e-03  |
-| ROM tau=1e-01                       | 512 | 3.972e-01 | 9.325e-02 | 1.557e-01 | 8.127e-02 | 1.057e-01 | 8.246e-02 | 9.533e-02 | 1.063e-01  |
-| ROM tau=1e-02                       | 512 | 3.960e-01 | 1.994e-02 | 9.640e-02 | 1.288e-02 | 2.915e-02 | 1.178e-02 | 1.893e-02 | 4.621e-02  |
-| ROM tau=1e-03                       | 512 | 3.960e-01 | 1.695e-02 | 9.442e-02 | 8.614e-03 | 2.634e-02 | 6.388e-03 | 1.472e-02 | 4.315e-02  |
-| ROM / ceiling (tau=1e-03)           | 512 | 3.21      | 1.12      | 11.00     | 1.24      | 4.31      | 1.57      | 3.76      | 13.41      |
-| ceiling valid (ROM did not beat it) | 512 | yes       | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
-<!-- END GENERATED: ceiling_poisson2d -->
-
-<!-- BEGIN GENERATED: ceiling_burgers2d -->
-| quantity                            | N   | k=2       | k=4       | k=6       | k=8       | k=12      | k=16      | k=24      | k=32       |
-|-------------------------------------|-----|-----------|-----------|-----------|-----------|-----------|-----------|-----------|------------|
-| (M, m) measured at                  | 32  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,900)  |
-| ceiling                             | 32  | 6.949e-01 | 5.097e-02 | 1.476e-02 | 1.232e-02 | 9.831e-03 | 8.529e-03 | 7.661e-03 | 7.972e-03  |
-| ROM tau=1e-01                       | 32  | 4.626e-01 | 7.327e-02 | 2.099e-02 | 2.321e-02 | 2.182e-02 | 3.666e-02 | 3.687e-02 | 2.380e-02  |
-| ROM tau=1e-02                       | 32  | 4.626e-01 | 7.064e-02 | 1.692e-02 | 1.623e-02 | 1.172e-02 | 1.602e-02 | 2.235e-02 | 7.679e-03  |
-| ROM tau=1e-03                       | 32  | 4.626e-01 | 7.064e-02 | 1.692e-02 | 1.623e-02 | 1.172e-02 | 1.588e-02 | 1.883e-02 | 7.568e-03  |
-| ROM / ceiling (tau=1e-03)           | 32  | 0.67      | 1.39      | 1.15      | 1.32      | 1.19      | 1.86      | 2.46      | 0.95       |
-| ceiling valid (ROM did not beat it) | 32  | no        | yes       | yes       | yes       | yes       | yes       | yes       | no         |
-| (M, m) measured at                  | 64  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
-| ceiling                             | 64  | 6.752e-01 | 5.541e-02 | 1.517e-02 | 1.235e-02 | 1.050e-02 | 8.975e-03 | 7.483e-03 | 7.772e-03  |
-| ROM tau=1e-01                       | 64  | 4.314e-01 | 7.691e-02 | 2.238e-02 | 2.071e-02 | 1.936e-02 | 2.660e-02 | 4.497e-02 | 2.083e-02  |
-| ROM tau=1e-02                       | 64  | 4.314e-01 | 7.456e-02 | 1.783e-02 | 1.579e-02 | 1.265e-02 | 1.180e-02 | 2.892e-02 | 9.383e-03  |
-| ROM tau=1e-03                       | 64  | 4.314e-01 | 7.456e-02 | 1.783e-02 | 1.579e-02 | 1.265e-02 | 1.177e-02 | 2.428e-02 | 9.383e-03  |
-| ROM / ceiling (tau=1e-03)           | 64  | 0.64      | 1.35      | 1.18      | 1.28      | 1.21      | 1.31      | 3.24      | 1.21       |
-| ceiling valid (ROM did not beat it) | 64  | no        | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
-| (M, m) measured at                  | 128 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
-| ceiling                             | 128 | 6.803e-01 | 6.057e-02 | 1.741e-02 | 1.456e-02 | 1.237e-02 | 1.197e-02 | 9.736e-03 | 8.928e-03  |
-| ROM tau=1e-01                       | 128 | 4.489e-01 | 8.072e-02 | 2.390e-02 | 2.386e-02 | 2.574e-02 | 4.569e-02 | 5.337e-02 | 2.421e-02  |
-| ROM tau=1e-02                       | 128 | 4.489e-01 | 7.871e-02 | 1.898e-02 | 1.672e-02 | 1.426e-02 | 1.578e-02 | 2.322e-02 | 9.640e-03  |
-| ROM tau=1e-03                       | 128 | 4.489e-01 | 7.871e-02 | 1.898e-02 | 1.672e-02 | 1.426e-02 | 1.546e-02 | 2.192e-02 | 9.640e-03  |
-| ROM / ceiling (tau=1e-03)           | 128 | 0.66      | 1.30      | 1.09      | 1.15      | 1.15      | 1.29      | 2.25      | 1.08       |
-| ceiling valid (ROM did not beat it) | 128 | no        | yes       | yes       | yes       | yes       | yes       | yes       | yes        |
-| (M, m) measured at                  | 256 | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (64,256)  | (256,1024) |
-| ceiling                             | 256 | 6.858e-01 | 6.127e-02 | 1.888e-02 | 1.611e-02 | 1.372e-02 | 1.362e-02 | 1.161e-02 | 1.063e-02  |
-| ROM tau=1e-01                       | 256 | 4.201e-01 | 8.435e-02 | 2.468e-02 | 2.541e-02 | 2.133e-02 | 4.135e-02 | 9.278e-02 | 2.427e-02  |
-| ROM tau=1e-02                       | 256 | 4.201e-01 | 8.235e-02 | 2.000e-02 | 1.761e-02 | 1.489e-02 | 1.451e-02 | 2.079e-02 | 1.041e-02  |
-| ROM tau=1e-03                       | 256 | 4.201e-01 | 8.235e-02 | 2.000e-02 | 1.761e-02 | 1.489e-02 | 1.444e-02 | 2.702e-02 | 1.037e-02  |
-| ROM / ceiling (tau=1e-03)           | 256 | 0.61      | 1.34      | 1.06      | 1.09      | 1.09      | 1.06      | 2.33      | 0.98       |
-| ceiling valid (ROM did not beat it) | 256 | no        | yes       | yes       | yes       | yes       | yes       | yes       | no         |
-<!-- END GENERATED: ceiling_burgers2d -->
+<!-- BEGIN GENERATED: jaccond_burgers2d -->
+_(no Jacobian spectrum recorded in this run)_
+<!-- END GENERATED: jaccond_burgers2d -->
 
 
 <!-- BEGIN GENERATED: err_k_poisson2d_1e-01 -->

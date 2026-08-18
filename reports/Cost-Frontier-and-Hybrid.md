@@ -68,14 +68,20 @@ At 64×64, k=8, M=64 test modes:
 | 1024 | 27% | 7.65e-3 | 18.9 | 1.6e-5 |
 | every point | 100% | 7.65e-3 | 35.6 | exact |
 | **Burgers** | | | *ms per step* | |
-| 256 | 7% | 1.74e-2 | 4.7 | 6.2e-3 |
-| 512 | 13% | 1.68e-2 | 7.9 | 1.0e-3 |
-| every point | 100% | 1.65e-2 | 46.5 | exact |
+| 64 | 2% | 6.54e-2 | 3.4 | 2.1e-1 |
+| 128 | 3% | 1.95e-2 | 4.5 | 4.9e-2 |
+| 256 | 7% | 1.74e-2 | 6.2 | 6.2e-3 |
+| 512 | 13% | 1.68e-2 | 10.8 | 1.0e-3 |
+| 1024 | 27% | 1.67e-2 | 20.7 | 1.5e-4 |
+| every point | 100% | 1.65e-2 | 70.9 | exact |
 
-Thirteen percent of the points gives the same error as all of them, for 43% of the cost on
-Poisson and 17% on Burgers. Error stops improving once the quadrature fit reaches about 1e-3;
-below that the decoder's own ceiling binds, not the quadrature. That makes the fit residual a
-usable way to choose the number of points without needing held-out error.
+Both problems behave the same way. Thirteen percent of the points gives essentially the
+full-grid error — identical on Poisson, 1.7% worse on Burgers — for 43% and 15% of the cost.
+Seven percent is already within 13% and 5% of it, at 42% and 9% of the cost.
+
+Error stops improving once the quadrature fit reaches about 1e-3; below that the decoder's own
+ceiling binds, not the quadrature. That makes the fit residual a usable way to choose the
+number of points without needing held-out error.
 
 The share matters more as the grid grows. Holding the point count at 256 and refining:
 

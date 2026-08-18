@@ -27,10 +27,10 @@ POISSON = dict(
     fit=[1.4e-1, 1.6e-2, 2.4e-3, 2.4e-4, 1.6e-5, 0.0],
     ceiling=7.11e-3, unit="ms per solve")
 BURGERS = dict(
-    m=[256, 512, NINT],
-    err=[1.742e-2, 1.682e-2, 1.654e-2],
-    cost=[4.746, 7.851, 46.453],                        # ms per time step
-    fit=[6.21e-3, 1.042e-3, 0.0],
+    m=[64, 128, 256, 512, 1024, NINT],
+    err=[6.540e-2, 1.946e-2, 1.742e-2, 1.682e-2, 1.665e-2, 1.654e-2],
+    cost=[3.352, 4.498, 6.248, 10.772, 20.669, 70.946],  # ms per time step
+    fit=[2.09e-1, 4.89e-2, 6.21e-3, 1.04e-3, 1.45e-4, 0.0],
     ceiling=1.15e-2, unit="ms per step")
 
 ERRC, COSTC, FLOOR = "#0072B2", "#D55E00", "#009E73"

@@ -1,6 +1,6 @@
 # AGENTS.md — operating rules for this repository
 
-**Read `CODEX-START-HERE.md` first.** It has the state of every experiment, what is safe to
+**Read `CODEX-START-HERE.md` first, then `LAB-LOG.md`.** It has the state of every experiment, what is safe to
 quote, the corrections already applied, and the prioritised next steps. This file is only about
 *how to run things here without breaking them*.
 
@@ -119,6 +119,30 @@ These are what separate a result from a plausible-looking number.
 - On Burgers, keep the FOM-exact upwind operator inside the weak advection term.
 
 ---
+
+## Sessions, worktrees, and the lab log
+
+**One session writes to one worktree.** Reading across worktrees is fine and often necessary;
+writing to more than one is not. Two agents writing into one tree corrupt each other's `runs/`
+and cluster directories.
+
+**Several experiments at once: one worktree each, and ask first.** Give each its own subagent,
+its own worktree, and its own cluster namespace (`/cluster/tufts/paralab/tawal01/<ns>/`) —
+the account is shared. Propose the names and get confirmation before creating any of them.
+When they finish, **ask whether to merge the worktrees**; do not merge unprompted, and do not
+leave the question unasked.
+
+**Starting new work: ask where to branch from.** Say which base you would pick and why. Never
+assume `main` — it is the frozen baseline with a known-broken heat rollout, so branching from it
+silently discards every correction since.
+
+**Every worktree carries `LAB-LOG.md`,** append-only, `## YYYY-MM-DD` headers, one subsection per
+session. Appending is a closing step of the session, not an optional extra. Record what was run
+and where it landed, what was found with numbers, **what was retracted**, and what is left open.
+
+If work exists only in a scratchpad or in conversation, it does not exist. Two things were nearly
+lost this way on 17–18 August: a root-cause investigation living in `/tmp`, and the trained
+decoders, which were `.gitignore`d and tracked on no branch.
 
 ## Git
 

@@ -1,8 +1,12 @@
 # Start here
 
 Branch `exp/2026-08-18-codex-handoff`. Everything the project has produced through
-18 August 2026 is in this one tree. Read this file, then `reports/report_src.md` for the
-science, then the cell README you are working in.
+18 August 2026 is in this one tree. Read this file, then `LAB-LOG.md` for the chronology
+including everything that was retracted, then `reports/report_src.md` for the science, then the
+cell README you are working in. `AGENTS.md` has the operating rules.
+
+**Append to `LAB-LOG.md` before your session ends.** Newest entry at the bottom, dated header,
+and record retractions as carefully as results.
 
 `main` is the frozen public baseline and its heat ROM rollout is known broken (frozen after
 step 1), so **do not treat `main` as a reference for behaviour.**

@@ -156,9 +156,14 @@ def fig_kladder():
     ax.set_ylabel("held-out error  (relative L2)")
     ax.set_title("The decoder keeps improving with k — our solver does not")
     ax.legend(loc="lower left", frameon=False)
-    ax.text(0.985, 0.95, "gap = solver failure, not a data limit", transform=ax.transAxes,
-            ha="right", va="top", fontsize=12, color="#a33")
-    stamp(ax)
+    ax.text(0.985, 0.97, "gap = solver failure, not a data limit", transform=ax.transAxes,
+            ha="right", va="top", fontsize=12.5, color="#a33")
+    ax.text(0.985, 0.885,
+            "diagnosed: the optimiser STALLS at these k.\n"
+            "Not conditioning — the Jacobian is full rank at every k,\n"
+            "and the same k fail at every mesh.",
+            transform=ax.transAxes, ha="right", va="top", fontsize=10.5, color="#666")
+    stamp(ax, "PROVISIONAL — error values pending the consolidation run")
     save(fig, "3_k_ladder")
 
 

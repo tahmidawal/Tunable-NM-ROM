@@ -1,0 +1,141 @@
+host=pax007  node=pax007  gpu=NVIDIA A100 80GB PCIe
+commit=b61ba89  dirty=e3b0c44298fc (dirty marker 'e3b0c442' == clean)  cell=ctol_ceil_all  job=2513071
+src_bundle=ctol=b61ba89/e3b0c44298fc,2026-08-16-poisson2d-rom-objective=d68d8cb/e3b0c442,2026-08-16-burgers2d-rom-latent-stepping=c7e9c2e/e3b0c442,2026-08-14-multistage-precision=b389467/e3b0c442,2026-08-14-burgers2d-coord-rom=b327915/e3b0c442
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100 80GB PCIe x64=True KS=[2, 4, 6, 8, 12, 16, 24, 32] NS=[32, 64, 128, 256, 512] TAUS=[0.1, 0.01, 0.001] M=64 m=256 reps=7 warm=2
+  plan: 5 mesh(es) [32, 64, 128, 256, 512], k values [2, 4, 6, 8, 12, 16, 24, 32], 80 (arm, method) cells
+  ckpt k= 2: autodec_K2_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.235
+  ckpt k= 4: autodec_K4_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.192
+  ckpt k= 6: autodec_K6_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.182
+  ckpt k= 8: autodec_K8_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.175
+  ckpt k=12: autodec_K12_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.164
+  ckpt k=16: autodec_K16_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.147
+  ckpt k=24: autodec_K24_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.143
+  ckpt k=32: autodec_K32_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.141
+   FOM CG tol=3e-01:    0.542 ms  err 2.759e-01  achieved residual 2.98e-01
+   FOM CG tol=1e-01:    0.905 ms  err 5.895e-02  achieved residual 9.98e-02
+   FOM CG tol=3e-02:    1.138 ms  err 8.091e-03  achieved residual 2.99e-02
+   FOM CG tol=1e-02:    1.294 ms  err 2.579e-03  achieved residual 9.89e-03
+   FOM CG tol=3e-03:    1.452 ms  err 7.141e-04  achieved residual 2.91e-03
+   FOM CG tol=1e-03:    1.607 ms  err 2.585e-04  achieved residual 9.98e-04
+   FOM CG tol=3e-04:    1.779 ms  err 6.600e-05  achieved residual 2.98e-04
+   FOM CG tol=1e-04:    1.907 ms  err 1.739e-05  achieved residual 9.98e-05
+   FOM CG tol=3e-05:    2.078 ms  err 3.637e-06  achieved residual 2.86e-05
+   FOM CG tol=1e-05:    2.175 ms  err 1.077e-06  achieved residual 9.85e-06
+   FOM CG tol=1e-06:    2.355 ms  err 1.419e-07  achieved residual 9.98e-07
+   FOM CG tol=1e-08:    2.762 ms  err 1.181e-09  achieved residual 9.99e-09
+   FOM CG tol=1e-10:    3.133 ms  err 8.576e-12  achieved residual 9.75e-11
+   FOM CG tol=1e-13:    3.610 ms  err 0.000e+00  achieved residual 1.03e-13
+   anchor N=32: archived 5.59 ms vs re-timed 3.61 ms (35.4% diff; archived achieved 1.0e-13, re-timed 1.0e-13)
+   overconvergence factor at N=32: 1.00x (testbed 1e-13 achieved 1.0e-13; matched rung tol=1e-13)
+== N=  32  FOM CG @1e-13     3.61 ms  (residual 1.0e-13) -- the ladder above is the iso-accuracy baseline
+   ceiling  N=  32 k= 2: 1.250e-01 (max 3.141e-01, inits {'mean': 2, 'nearest': 14}, jac cond 2.32e+00, rank 2/2) [5s]
+   ceiling  N=  32 k= 4: 1.724e-02 (max 3.875e-02, inits {'mean': 8, 'nearest': 8}, jac cond 4.60e+01, rank 4/4) [3s]
+   ceiling  N=  32 k= 6: 1.047e-02 (max 2.208e-02, inits {'mean': 9, 'nearest': 7}, jac cond 9.70e+01, rank 6/6) [4s]
+   ceiling  N=  32 k= 8: 7.966e-03 (max 1.473e-02, inits {'mean': 8, 'nearest': 8}, jac cond 2.28e+02, rank 8/8) [4s]
+   ceiling  N=  32 k=12: 7.088e-03 (max 1.627e-02, inits {'mean': 11, 'nearest': 5}, jac cond 4.48e+02, rank 12/12) [6s]
+   ceiling  N=  32 k=16: 4.877e-03 (max 1.041e-02, inits {'mean': 10, 'nearest': 6}, jac cond 9.33e+02, rank 16/16) [5s]
+   ceiling  N=  32 k=24: 4.424e-03 (max 8.527e-03, inits {'mean': 7, 'nearest': 9}, jac cond 1.97e+03, rank 24/24) [5s]
+   ceiling  N=  32 k=32: 3.596e-03 (max 6.909e-03, inits {'mean': 5, 'nearest': 11}, jac cond 4.53e+03, rank 32/32) [8s]
+   FOM CG tol=3e-01:    1.163 ms  err 1.761e-01  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    1.800 ms  err 3.235e-02  achieved residual 1.00e-01
+   FOM CG tol=3e-02:    2.214 ms  err 5.761e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:    2.515 ms  err 1.743e-03  achieved residual 1.00e-02
+   FOM CG tol=3e-03:    2.869 ms  err 5.433e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:    3.206 ms  err 1.732e-04  achieved residual 9.99e-04
+   FOM CG tol=3e-04:    3.470 ms  err 4.140e-05  achieved residual 2.93e-04
+   FOM CG tol=1e-04:    3.725 ms  err 1.183e-05  achieved residual 1.00e-04
+   FOM CG tol=3e-05:    4.071 ms  err 2.534e-06  achieved residual 2.95e-05
+   FOM CG tol=1e-05:    4.245 ms  err 8.294e-07  achieved residual 9.76e-06
+   FOM CG tol=1e-06:    4.636 ms  err 1.053e-07  achieved residual 9.97e-07
+   FOM CG tol=1e-08:    5.492 ms  err 7.536e-10  achieved residual 9.51e-09
+   FOM CG tol=1e-10:    6.218 ms  err 5.890e-12  achieved residual 9.96e-11
+   FOM CG tol=1e-13:    7.172 ms  err 0.000e+00  achieved residual 3.60e-13
+   anchor N=64: archived 7.79 ms vs re-timed 7.17 ms (7.9% diff; archived achieved 3.6e-13, re-timed 3.6e-13)
+   overconvergence factor at N=64: 1.00x (testbed 1e-13 achieved 3.6e-13; matched rung tol=1e-13)
+== N=  64  FOM CG @1e-13     7.17 ms  (residual 3.6e-13) -- the ladder above is the iso-accuracy baseline
+   ceiling  N=  64 k= 2: 1.236e-01 (max 3.098e-01, inits {'mean': 2, 'nearest': 14}, jac cond 2.32e+00, rank 2/2) [4s]
+   ceiling  N=  64 k= 4: 1.551e-02 (max 3.421e-02, inits {'mean': 5, 'nearest': 11}, jac cond 4.34e+01, rank 4/4) [2s]
+   ceiling  N=  64 k= 6: 8.835e-03 (max 1.529e-02, inits {'mean': 7, 'nearest': 9}, jac cond 9.82e+01, rank 6/6) [3s]
+   ceiling  N=  64 k= 8: 7.043e-03 (max 1.497e-02, inits {'mean': 9, 'nearest': 7}, jac cond 2.41e+02, rank 8/8) [4s]
+   ceiling  N=  64 k=12: 6.236e-03 (max 1.418e-02, inits {'mean': 11, 'nearest': 5}, jac cond 4.60e+02, rank 12/12) [4s]
+   ceiling  N=  64 k=16: 4.133e-03 (max 6.596e-03, inits {'mean': 6, 'nearest': 10}, jac cond 9.10e+02, rank 16/16) [3s]
+   ceiling  N=  64 k=24: 3.976e-03 (max 8.311e-03, inits {'mean': 10, 'nearest': 6}, jac cond 1.95e+03, rank 24/24) [5s]
+   ceiling  N=  64 k=32: 3.280e-03 (max 5.740e-03, inits {'mean': 6, 'nearest': 10}, jac cond 4.37e+03, rank 32/32) [10s]
+   FOM CG tol=3e-01:    2.741 ms  err 1.151e-01  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    3.741 ms  err 1.726e-02  achieved residual 9.99e-02
+   FOM CG tol=3e-02:    4.531 ms  err 4.063e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:    5.174 ms  err 1.238e-03  achieved residual 9.99e-03
+   FOM CG tol=3e-03:    5.732 ms  err 4.162e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:    6.506 ms  err 1.166e-04  achieved residual 9.94e-04
+   FOM CG tol=3e-04:    7.166 ms  err 2.871e-05  achieved residual 3.00e-04
+   FOM CG tol=1e-04:    7.669 ms  err 7.798e-06  achieved residual 9.92e-05
+   FOM CG tol=3e-05:    8.146 ms  err 1.782e-06  achieved residual 2.98e-05
+   FOM CG tol=1e-05:    8.523 ms  err 6.857e-07  achieved residual 9.96e-06
+   FOM CG tol=1e-06:    9.603 ms  err 7.746e-08  achieved residual 9.93e-07
+   FOM CG tol=1e-08:   11.602 ms  err 5.602e-10  achieved residual 9.91e-09
+   FOM CG tol=1e-10:   12.959 ms  err 4.295e-12  achieved residual 9.97e-11
+   FOM CG tol=1e-13:   14.735 ms  err 0.000e+00  achieved residual 2.17e-12
+   anchor N=128: archived 15.14 ms vs re-timed 14.74 ms (2.7% diff; archived achieved 2.2e-12, re-timed 2.2e-12)
+   overconvergence factor at N=128: 1.00x (testbed 1e-13 achieved 2.2e-12; matched rung tol=1e-13)
+== N= 128  FOM CG @1e-13    14.74 ms  (residual 2.2e-12) -- the ladder above is the iso-accuracy baseline
+   ceiling  N= 128 k= 2: 1.233e-01 (max 3.089e-01, inits {'mean': 2, 'nearest': 14}, jac cond 2.32e+00, rank 2/2) [4s]
+   ceiling  N= 128 k= 4: 1.525e-02 (max 3.317e-02, inits {'mean': 7, 'nearest': 9}, jac cond 4.25e+01, rank 4/4) [3s]
+   ceiling  N= 128 k= 6: 8.637e-03 (max 1.537e-02, inits {'mean': 6, 'nearest': 10}, jac cond 9.87e+01, rank 6/6) [5s]
+   ceiling  N= 128 k= 8: 6.951e-03 (max 1.503e-02, inits {'mean': 8, 'nearest': 8}, jac cond 2.44e+02, rank 8/8) [5s]
+   ceiling  N= 128 k=12: 6.137e-03 (max 1.431e-02, inits {'mean': 6, 'nearest': 10}, jac cond 4.65e+02, rank 12/12) [8s]
+   ceiling  N= 128 k=16: 4.072e-03 (max 6.331e-03, inits {'mean': 8, 'nearest': 8}, jac cond 9.15e+02, rank 16/16) [6s]
+   ceiling  N= 128 k=24: 3.930e-03 (max 8.382e-03, inits {'mean': 8, 'nearest': 8}, jac cond 1.90e+03, rank 24/24) [13s]
+   ceiling  N= 128 k=32: 3.226e-03 (max 5.220e-03, inits {'mean': 5, 'nearest': 11}, jac cond 4.37e+03, rank 32/32) [28s]
+   FOM CG tol=3e-01:    6.244 ms  err 6.581e-02  achieved residual 3.00e-01
+   FOM CG tol=1e-01:    7.848 ms  err 1.065e-02  achieved residual 9.99e-02
+   FOM CG tol=3e-02:    9.486 ms  err 2.979e-03  achieved residual 2.99e-02
+   FOM CG tol=1e-02:   11.089 ms  err 8.878e-04  achieved residual 1.00e-02
+   FOM CG tol=3e-03:   12.346 ms  err 2.923e-04  achieved residual 2.99e-03
+   FOM CG tol=1e-03:   13.885 ms  err 8.042e-05  achieved residual 9.98e-04
+   FOM CG tol=3e-04:   15.049 ms  err 1.958e-05  achieved residual 2.99e-04
+   FOM CG tol=1e-04:   15.995 ms  err 5.194e-06  achieved residual 9.98e-05
+   FOM CG tol=3e-05:   16.912 ms  err 1.264e-06  achieved residual 2.99e-05
+   FOM CG tol=1e-05:   17.810 ms  err 4.615e-07  achieved residual 1.00e-05
+   FOM CG tol=1e-06:   19.727 ms  err 5.188e-08  achieved residual 9.97e-07
+   FOM CG tol=1e-08:   22.889 ms  err 4.102e-10  achieved residual 9.88e-09
+   FOM CG tol=1e-10:   25.796 ms  err 3.157e-12  achieved residual 1.00e-10
+   FOM CG tol=1e-13:   29.748 ms  err 0.000e+00  achieved residual 1.25e-11
+   anchor N=256: archived 31.14 ms vs re-timed 29.75 ms (4.5% diff; archived achieved 1.3e-11, re-timed 1.2e-11)
+   overconvergence factor at N=256: 1.00x (testbed 1e-13 achieved 1.2e-11; matched rung tol=1e-13)
+== N= 256  FOM CG @1e-13    29.75 ms  (residual 1.2e-11) -- the ladder above is the iso-accuracy baseline
+   ceiling  N= 256 k= 2: 1.233e-01 (max 3.087e-01, inits {'mean': 2, 'nearest': 14}, jac cond 2.32e+00, rank 2/2) [11s]
+   ceiling  N= 256 k= 4: 1.519e-02 (max 3.291e-02, inits {'mean': 4, 'nearest': 12}, jac cond 4.22e+01, rank 4/4) [7s]
+   ceiling  N= 256 k= 6: 8.596e-03 (max 1.539e-02, inits {'mean': 3, 'nearest': 13}, jac cond 9.88e+01, rank 6/6) [15s]
+   ceiling  N= 256 k= 8: 6.933e-03 (max 1.505e-02, inits {'mean': 10, 'nearest': 6}, jac cond 2.45e+02, rank 8/8) [15s]
+   ceiling  N= 256 k=12: 6.117e-03 (max 1.435e-02, inits {'mean': 7, 'nearest': 9}, jac cond 4.66e+02, rank 12/12) [26s]
+   ceiling  N= 256 k=16: 4.062e-03 (max 6.279e-03, inits {'mean': 7, 'nearest': 9}, jac cond 9.19e+02, rank 16/16) [19s]
+   ceiling  N= 256 k=24: 3.922e-03 (max 8.400e-03, inits {'mean': 9, 'nearest': 7}, jac cond 1.89e+03, rank 24/24) [40s]
+   ceiling  N= 256 k=32: 3.220e-03 (max 5.186e-03, inits {'mean': 6, 'nearest': 10}, jac cond 4.37e+03, rank 32/32) [100s]
+   FOM CG tol=3e-01:   22.062 ms  err 3.677e-02  achieved residual 3.00e-01
+   FOM CG tol=1e-01:   26.541 ms  err 7.104e-03  achieved residual 9.98e-02
+   FOM CG tol=3e-02:   31.039 ms  err 1.965e-03  achieved residual 3.00e-02
+   FOM CG tol=1e-02:   34.977 ms  err 6.526e-04  achieved residual 9.96e-03
+   FOM CG tol=3e-03:   39.181 ms  err 1.951e-04  achieved residual 3.00e-03
+   FOM CG tol=1e-03:   43.675 ms  err 5.396e-05  achieved residual 9.99e-04
+   FOM CG tol=3e-04:   47.353 ms  err 1.308e-05  achieved residual 3.00e-04
+   FOM CG tol=1e-04:   50.282 ms  err 3.356e-06  achieved residual 9.99e-05
+   FOM CG tol=3e-05:   53.169 ms  err 9.381e-07  achieved residual 3.00e-05
+   FOM CG tol=1e-05:   55.570 ms  err 3.443e-07  achieved residual 9.96e-06
+   FOM CG tol=1e-06:   61.617 ms  err 3.291e-08  achieved residual 9.99e-07
+   FOM CG tol=1e-08:   72.231 ms  err 2.924e-10  achieved residual 1.00e-08
+   FOM CG tol=1e-10:   80.413 ms  err 2.290e-12  achieved residual 1.19e-10
+   FOM CG tol=1e-13:   93.062 ms  err 0.000e+00  achieved residual 6.96e-11
+   anchor N=512: archived 96.01 ms vs re-timed 93.06 ms (3.1% diff; archived achieved 7.0e-11, re-timed 7.0e-11)
+   overconvergence factor at N=512: 1.00x (testbed 1e-13 achieved 7.0e-11; matched rung tol=1e-13)
+== N= 512  FOM CG @1e-13    93.06 ms  (residual 7.0e-11) -- the ladder above is the iso-accuracy baseline
+   ceiling  N= 512 k= 2: 1.233e-01 (max 3.086e-01, inits {'mean': 2, 'nearest': 14}, jac cond 2.32e+00, rank 2/2) [23s]
+   ceiling  N= 512 k= 4: 1.518e-02 (max 3.285e-02, inits {'mean': 8, 'nearest': 8}, jac cond 4.21e+01, rank 4/4) [18s]
+   ceiling  N= 512 k= 6: 8.586e-03 (max 1.539e-02, inits {'mean': 4, 'nearest': 12}, jac cond 9.88e+01, rank 6/6) [44s]
+   ceiling  N= 512 k= 8: 6.929e-03 (max 1.505e-02, inits {'mean': 9, 'nearest': 7}, jac cond 2.45e+02, rank 8/8) [46s]
+   ceiling  N= 512 k=12: 6.112e-03 (max 1.435e-02, inits {'mean': 7, 'nearest': 9}, jac cond 4.67e+02, rank 12/12) [88s]
+   ceiling  N= 512 k=16: 4.059e-03 (max 6.267e-03, inits {'mean': 9, 'nearest': 7}, jac cond 9.21e+02, rank 16/16) [64s]
+   ceiling  N= 512 k=24: 3.920e-03 (max 8.404e-03, inits {'mean': 8, 'nearest': 8}, jac cond 1.89e+03, rank 24/24) [141s]
+   ceiling  N= 512 k=32: 3.219e-03 (max 5.178e-03, inits {'mean': 6, 'nearest': 10}, jac cond 4.37e+03, rank 32/32) [375s]
+DONE
+ALL-DONE

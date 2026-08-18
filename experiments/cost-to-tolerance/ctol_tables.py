@@ -40,6 +40,24 @@ EXTRA = ["arm", "time_ms_solve", "time_ms_pre", "time_ms_decode", "censored_frac
          "ms_per_jac", "n_modes", "n_modes_le_k", "n_blowup", "speedup_e2e"]
 
 
+# `time_ms_solve` is DERIVED (timed pipeline minus separately measured preprocess and
+# decode).  Where the O(n) decode dominates -- at N=512 it is 7.15 ms of a 7.26 ms
+# end-to-end -- the derivation is a small difference of two large numbers and can even
+# go negative.  That is a limit of the instrument, not a claim about the solve: it says
+# the latent solve has become negligible next to the decode, which is itself the
+# mesh-independence result.  Below this fraction the derived value is suppressed.
+SOLVE_RESOLUTION = 0.15
+
+
+def solve_ms(p):
+    """Derived latent-solve time, or None when it is below the resolution of the
+    subtraction that produced it."""
+    t, e = p.get("time_ms_solve"), p.get("time_ms")
+    if t is None or e is None or not (math.isfinite(t) and math.isfinite(e)) or e <= 0:
+        return None
+    return t if (t / e) >= SOLVE_RESOLUTION else None
+
+
 def fmt(x, spec=".3e"):
     if x is None:
         return "--"
@@ -285,8 +303,11 @@ def build_blocks(data, pts):
                     cells = {p["k"]: p for p in primary
                              if p["pde"] == pde and p["method"] == method
                              and p["N"] == N and p["tau"] == tau}
-                    rows.append([method, N] + [fmt(cells[k]["time_ms_solve"], ".2f")
-                                               if k in cells else "--" for k in ks])
+                    rows.append([method, N]
+                                + [(fmt(solve_ms(cells[k]), ".2f")
+                                    if (k in cells and solve_ms(cells[k]) is not None)
+                                    else ("below res" if k in cells else "--"))
+                                   for k in ks])
             B[key] = md_table(["method", "N"] + [f"k={k}" for k in ks], rows)
 
             key = f"iters_k_{pde}_{tau:.0e}"
@@ -314,20 +335,26 @@ def build_blocks(data, pts):
     # ---- N-independence of the k dependence -------------------------------
     for pde, d in sorted(data.items()):
         ks, ns = d["config"]["ks"], d["config"]["ns"]
-        rows = []
-        for tau in d["config"]["taus"]:
-            for method in ("coord", "pod"):
-                for N in ns:
-                    cells = {p["k"]: p for p in primary
-                             if p["pde"] == pde and p["method"] == method
-                             and p["N"] == N and p["tau"] == tau}
-                    if 8 not in cells:
-                        continue
-                    base = cells[8]["time_ms_solve"]
-                    rows.append([f"{tau:.0e}", method, N]
-                                + [fmt(cells[k]["time_ms_solve"] / base, ".2f")
-                                   if k in cells and base else "--" for k in ks])
-        B[f"kshape_{pde}"] = md_table(["tau", "method", "N"] + [f"k={k}" for k in ks], rows)
+        for which, key, lab in ((solve_ms, f"kshape_{pde}", "latent solve (derived)"),
+                                (lambda p: p.get("time_ms"), f"kshapee2e_{pde}",
+                                 "end-to-end online")):
+            rows = []
+            for tau in d["config"]["taus"]:
+                for method in ("coord", "pod"):
+                    for N in ns:
+                        cells = {p["k"]: p for p in primary
+                                 if p["pde"] == pde and p["method"] == method
+                                 and p["N"] == N and p["tau"] == tau}
+                        base = which(cells[8]) if 8 in cells else None
+                        if not base or not math.isfinite(base):
+                            continue
+                        rows.append([f"{tau:.0e}", method, N]
+                                    + [(fmt(which(cells[k]) / base, ".2f")
+                                        if (k in cells and which(cells[k]) is not None)
+                                        else ("below res" if k in cells else "--"))
+                                       for k in ks])
+            B[key] = (f"_normalised at k=8; quantity: {lab}_\n\n"
+                      + md_table(["tau", "method", "N"] + [f"k={k}" for k in ks], rows))
 
     # ---- censoring --------------------------------------------------------
     for pde, d in sorted(data.items()):
@@ -540,15 +567,23 @@ def build_blocks(data, pts):
         "_(no FOM anchor recorded in this run)_"
 
     # ---- Burgers denominator cross-check against rom-warmstart-fom ---------
-    # The two cells ladder DIFFERENT knobs (fixed-length NEWTON_ITERS here, a
-    # tolerance-based Newton loop there), so they are reconciled through the peer's
-    # MEASURED per-step count rather than compared rung-for-rung.  Two known biases
-    # act in OPPOSITE directions and are reported separately rather than netted:
-    #   (a) their solve takes 1.97-1.99 steps/step, not 2.00, so an integer-2 rung
-    #       here would be 1-3% too slow  -> removed by interpolating the ladder;
-    #   (b) their loop performs an outer tolerance test (one residual evaluation per
-    #       time step) that a fixed-length loop does not  -> their time carries a few
-    #       percent with no counterpart here, so this cell should read slightly LOW.
+    # RECONCILE ON ACCURACY, NOT ON WORK.  The first version of this table matched the
+    # peer's MEAN NEWTON STEPS PER TIME STEP (1.97-1.99) against this cell's ladder.
+    # That is matching on WORK, and it is the same error class as the inflated FOM
+    # denominator this whole cell exists to remove: equal step counts do not imply
+    # equal accuracy.  The peer's solve is ADAPTIVE -- it stops each time step when
+    # THAT step's residual clears tau, so 1.97 is an average over steps needing 1 and
+    # steps needing 3 -- whereas this cell's NEWTON_ITERS is a FIXED-LENGTH scan doing
+    # the same count everywhere.  Matched on steps, this cell read 14-22% low; the
+    # last column of the old table showed why, with achieved residuals of 1.4e-5 to
+    # 1.6e-4 against the peer's 9.8e-7.  It was cheaper because it was less converged.
+    #
+    # So the target is bracketed on the RESIDUAL axis instead.  A fixed-length scan
+    # cannot land between integer step counts, so where the peer's residual falls
+    # strictly between two rungs the comparison is reported as a COST BRACKET and
+    # declared INCONCLUSIVE rather than interpolated -- Newton convergence is
+    # superlinear, so interpolating cost against log-residual between rungs would be
+    # inventing a number.
     rows = []
     d = data.get("burgers2d")
     if d:
@@ -557,72 +592,48 @@ def build_blocks(data, pts):
             if f.get("fom_newton_iters") is not None:
                 rungs_by_N.setdefault(f["N"], []).append(f)
         for N, ref in sorted(PEER_BURGERS_TAU1EM6.items()):
-            rungs = rungs_by_N.get(N, [])
-            t_i, a_, b_, r2 = interp_newton_ladder(rungs, ref["steps_per_step"])
-            r2rung = next((r for r in rungs if r["fom_newton_iters"] == 2), None)
-            t2 = (r2rung.get("fom_rollout_s_mean") or r2rung["fom_rollout_s"]) * 1e3 \
-                if r2rung else None
-            dev = (100 * (t_i - ref["t_ms"]) / ref["t_ms"]) if t_i else None
-            rows.append([N, fmt(ref["t_ms"], ".1f"), ref["steps_per_step"],
-                         fmt(t2, ".1f") if t2 else "--",
-                         fmt(t_i, ".1f") if t_i else "--",
-                         fmt(dev, "+.1f") if dev is not None else "--",
-                         fmt(r2, ".4f") if r2 is not None else "--",
-                         fmt(b_, ".2f") if b_ is not None else "--",
-                         fmt(ref["achieved"], ".2e"),
-                         fmt(r2rung.get("achieved_rel_residual"), ".2e") if r2rung else "--",
-                         ("expected: low by a few %" if dev is None else
-                          "CONSISTENT (low, small)" if -6.0 <= dev < 0 else
-                          "INVESTIGATE (high)" if dev >= 0 else
-                          "INVESTIGATE (low by a lot)")])
+            rungs = sorted(rungs_by_N.get(N, []), key=lambda r: r["fom_newton_iters"])
+            if not rungs:
+                continue
+            tgt = ref["achieved"]
+            tms = lambda r: (r.get("fom_rollout_s_mean") or r["fom_rollout_s"]) * 1e3
+            at_or_better = [r for r in rungs if r["achieved_rel_residual"] <= tgt]
+            worse = [r for r in rungs if r["achieved_rel_residual"] > tgt]
+            lo = max(worse, key=lambda r: r["fom_newton_iters"]) if worse else None
+            hi = min(at_or_better, key=lambda r: r["fom_newton_iters"]) if at_or_better else None
+            # A rung MATCHES if it lands within a factor of 2 of the peer's residual,
+            # whether marginally above or below it -- requiring strict dominance would
+            # reject a rung at 9.94e-7 against a target of 9.71e-7, which is a 1.02x
+            # difference and plainly the same accuracy.
+            near = min(rungs, key=lambda r: abs(math.log(
+                max(r["achieved_rel_residual"], 1e-300) / tgt)))
+            exact = 0.5 * tgt <= near["achieved_rel_residual"] <= 2.0 * tgt
+            if exact:
+                hi = near
+                dev = 100 * (tms(hi) - ref["t_ms"]) / ref["t_ms"]
+                verdict = ("CONSISTENT (low, small)" if -6.0 <= dev < 0 else
+                           "low by a lot" if dev < -6.0 else "high")
+                cost = fmt(tms(hi), ".1f")
+                res = fmt(hi["achieved_rel_residual"], ".2e")
+                devs = fmt(dev, "+.1f")
+            else:
+                cost = (f"{tms(lo):.1f}-{tms(hi):.1f}" if (lo is not None and hi is not None)
+                        else "--")
+                res = ((f"{lo['achieved_rel_residual']:.1e} / "
+                        f"{hi['achieved_rel_residual']:.1e}")
+                       if (lo is not None and hi is not None) else "--")
+                devs = "--"
+                verdict = "INCONCLUSIVE (target falls between integer rungs)"
+            rows.append([N, fmt(ref["t_ms"], ".1f"), fmt(tgt, ".2e"),
+                         (f"{lo['fom_newton_iters'] if lo else '?'}-"
+                          f"{hi['fom_newton_iters'] if hi else '?'}"),
+                         cost, res, devs, verdict])
     B["burgers_denominator"] = md_table(
-        ["N", "peer tau=1e-6 ms", "peer steps/step", "this cell NEWTON_ITERS=2 ms",
-         "this cell interpolated to peer steps", "deviation %", "ladder fit R2",
-         "marginal ms per Newton step", "peer achieved res", "this cell achieved res",
-         "read by SIGN"], rows) if rows else \
+        ["N", "peer tau=1e-6 ms", "peer achieved res", "this cell rungs bracketing it",
+         "this cell ms", "this cell achieved res", "deviation %", "verdict"],
+        rows) if rows else \
         "_(the Burgers panels have not landed yet; this cross-check is pre-registered "\
         "against the peer values recorded in ctol_tables.PEER_BURGERS_TAU1EM6)_"
-
-    # ---- decoder ceiling per (N, k): the checkpoint's own oracle ------------
-    # Accuracy is NON-MONOTONE in k because each k is a SEPARATELY TRAINED
-    # checkpoint.  Reporting each checkpoint's own oracle inferred-latent error next
-    # to the ROM error turns that confound into a measured quantity.
-    for pde, d in sorted(data.items()):
-        ks = d["config"]["ks"]
-        rows = []
-        for N in d["config"]["ns"]:
-            cl = {c["k"]: c for c in d.get("supplementary", [])
-                  if c.get("method") == "oracle_ceiling" and c.get("N") == N}
-            if not cl:
-                continue
-            kb2, mb2 = d["config"]["k_big"], d["config"]["M_big"]
-            m4 = d["config"].get("mq_4m", 4 * mb2)
-            rows.append(["(M, m) measured at", N]
-                        + [f"({mb2},{min(m4,(N-2)**2)})" if k >= kb2
-                           else f"({d['config']['M']},{d['config']['m']})" for k in ks])
-            rows.append(["ceiling", N] + [fmt(cl[k]["err_rel_l2"]) if k in cl else "--"
-                                          for k in ks])
-            for tau in d["config"]["taus"]:
-                cells = {p["k"]: p for p in primary
-                         if p["pde"] == pde and p["method"] == "coord"
-                         and p["N"] == N and p["tau"] == tau}
-                rows.append([f"ROM tau={tau:.0e}", N]
-                            + [fmt(cells[k]["err_rel_l2"]) if k in cells else "--"
-                               for k in ks])
-            tau_t = min(d["config"]["taus"])
-            tight = {p["k"]: p for p in primary
-                     if p["pde"] == pde and p["method"] == "coord"
-                     and p["N"] == N and p["tau"] == tau_t}
-            rows.append([f"ROM / ceiling (tau={tau_t:.0e})", N]
-                        + [fmt(tight[k]["err_rel_l2"] / cl[k]["err_rel_l2"], ".2f")
-                           if (k in tight and k in cl and cl[k]["err_rel_l2"]
-                               and math.isfinite(tight[k]["err_rel_l2"])) else "--"
-                           for k in ks])
-            rows.append(["ceiling valid (ROM did not beat it)", N]
-                        + [("no" if cl[k].get("rom_beat_ceiling") else "yes")
-                           if k in cl else "--" for k in ks])
-        B[f"ceiling_{pde}"] = (md_table(["quantity", "N"] + [f"k={k}" for k in ks], rows)
-                               if rows else "_(no ceiling arm in this run)_")
 
     # ---- k=32 at MATCHED (M, m): separating the k step from the (M, m) step -
     # The promoted grid runs k=32 at (M=256, m=1024) while k in {2..24} run at

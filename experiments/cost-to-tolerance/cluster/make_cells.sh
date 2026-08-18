@@ -181,7 +181,7 @@ elif [[ "$MODE" == "recover" ]]; then
 elif [[ "$MODE" == "consolidate" ]]; then
   CFG="$HERE/stage/consolidate_configs.json"
   [[ -f "$CFG" ]] || { echo "missing $CFG -- run ctol_pick_configs.py first" >&2; exit 1; }
-  d=$(mk ctol_consol_p 8 192G \
+  d=$(mk ctol_consol_p 12 192G \
       "$PGRID NS=32,64,128,256,512 DO_SUPP=0 POOL_CONTROL=0 DO_POD_DIRECT=0 CONFIGS=../consolidate_configs.json ARM_TAG=consolidated" \
       "\$PY -u ctol_poisson.py ../out/ctol_poisson_consolidated.json")
   stage_poisson "$d"; cp "$CFG" "$d/consolidate_configs.json"; seal "$d"

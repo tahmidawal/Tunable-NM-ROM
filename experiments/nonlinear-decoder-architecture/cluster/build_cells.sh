@@ -81,9 +81,10 @@ EOF
   finish_cell "$d"
 }
 
-make_burgers() { # cell hidden layers n_freq architecture group_size film_start [train_seed] [steps]
+make_burgers() { # cell hidden layers n_freq architecture group_size film_start [train_seed] [steps] [variants]
   local cell="$1" hidden="$2" layers="$3" n_freq="$4" arch="${5:-resfilm}" group="${6:-8}" film_start="${7:-2}"
   local train_seed="${8:-0}" steps="${9:-60000}" seed_suffix=""
+  local variants="${10:-lspg:full:weak64,lspg:eq256:weak64,lspg:eq512:weak64}"
   [[ "$train_seed" =~ ^[0-9]+$ ]] || { echo "invalid training seed $train_seed" >&2; exit 2; }
   [[ "$steps" =~ ^[1-9][0-9]*$ ]] || { echo "invalid step count $steps" >&2; exit 2; }
   [[ "$train_seed" == 0 ]] || seed_suffix="_S$train_seed"
@@ -107,11 +108,11 @@ export TRAIN_SEED=$train_seed
 export AD_HIDDEN=$hidden AD_LAYERS=$layers AD_N_FREQ=$n_freq
 export DECODER_ARCH=$arch FILM_GROUP_SIZE=$group FILM_START=$film_start Z_WIDTH=64
 export GN_BUDGET=30 GN_TOL=1e-9 IC_BUDGET=100 FLOOR_BUDGET=60
-export VARIANTS=lspg:full:weak64,lspg:eq256:weak64,lspg:eq512:weak64
+export VARIANTS=$variants
 export POD_KS=16 POD_VARIANTS= DO_TIMING=1 TIME_REPS=7
 \$PY -u blat_train_ad.py ../../out
 \$PY -u blat_rom.py ../../out/blat_ad_N64_K16${seed_suffix}.pkl ../../out
-\$PY -c "import json; d=json.load(open('../../out/blat_rom_N64_K16${seed_suffix}.json')); assert d['backend']=='gpu' and set(d['rom'])=={'lspg:full:weak64','lspg:eq256:weak64','lspg:eq512:weak64'}"
+\$PY -c "import json; d=json.load(open('../../out/blat_rom_N64_K16${seed_suffix}.json')); assert d['backend']=='gpu' and set(d['rom'])==set('$variants'.split(','))"
 EOF
   finish_cell "$d"
 }
@@ -171,8 +172,15 @@ case "$round" in
     # FiLM at the same width whose group-2 decoder ceiling already passes.
     make_burgers nda_bg160l4g1f31_r10 160 4 31 groupfilm 1 0
     ;;
+  round11)
+    # Three-seed confirmation (seed zero is round 2 + objective round 9) at the
+    # passing M=96,m=384 arm, with M=128,m=512 retained as the margin control.
+    vars="lspg:full:weak96,lspg:eq384:weak96,lspg:full:weak128,lspg:eq512:weak128"
+    make_burgers nda_bg160l4g2f31_s1_r11 160 4 31 groupfilm 2 0 1 60000 "$vars"
+    make_burgers nda_bg160l4g2f31_s2_r11 160 4 31 groupfilm 2 0 2 60000 "$vars"
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11]" >&2
     exit 2
     ;;
 esac

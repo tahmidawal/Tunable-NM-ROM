@@ -150,26 +150,28 @@ def burgers_objective_rows():
     for path in sorted(glob.glob(os.path.join(RUNS, "nda_bobj*")) +
                        glob.glob(os.path.join(RUNS, "nda_bg160l4g2f31_s*_r11")) +
                        glob.glob(os.path.join(RUNS, "nda_btrust*"))):
-        report_path = os.path.join(path, "out", "blat_rom_N64_K16.json")
-        if not os.path.isfile(report_path):
-            continue
-        report = read(report_path)
-        config = report["config"]
-        seed = seed_of(config.get("ad_config", config))
-        for M, m in ((96, 384), (128, 512)):
-            full_key, eq_key = f"lspg:full:weak{M}", f"lspg:eq{m}:weak{M}"
-            if full_key not in report["rom"] or eq_key not in report["rom"]:
-                continue
-            full, eq = report["rom"][full_key], report["rom"][eq_key]
-            rows.append(dict(
-                cell=os.path.basename(path), seed=seed,
-                trust_factor=float(config.get("tr_factor", 0.0)), M=M, m=m,
-                decoder=report["oracle_inferred_latent_test"]["traj_rel_mean"],
-                full=full["traj_rel_mean"], full_median=full["traj_rel_median"],
-                full_max=full["traj_rel_max"], full_blowups=full["n_blowup"],
-                eq=eq["traj_rel_mean"], eq_median=eq["traj_rel_median"],
-                eq_max=eq["traj_rel_max"], eq_blowups=eq["n_blowup"],
-            ))
+        report_paths = glob.glob(os.path.join(path, "out", "**", "blat_rom_N64_K16.json"),
+                                 recursive=True)
+        for report_path in sorted(report_paths):
+            report = read(report_path)
+            config = report["config"]
+            seed = seed_of(config.get("ad_config", config))
+            subdir = os.path.relpath(os.path.dirname(report_path), os.path.join(path, "out"))
+            cell = os.path.basename(path) if subdir == "." else f"{os.path.basename(path)}/{subdir}"
+            for M, m in ((96, 384), (128, 512)):
+                full_key, eq_key = f"lspg:full:weak{M}", f"lspg:eq{m}:weak{M}"
+                if full_key not in report["rom"] or eq_key not in report["rom"]:
+                    continue
+                full, eq = report["rom"][full_key], report["rom"][eq_key]
+                rows.append(dict(
+                    cell=cell, seed=seed,
+                    trust_factor=float(config.get("tr_factor", 0.0)), M=M, m=m,
+                    decoder=report["oracle_inferred_latent_test"]["traj_rel_mean"],
+                    full=full["traj_rel_mean"], full_median=full["traj_rel_median"],
+                    full_max=full["traj_rel_max"], full_blowups=full["n_blowup"],
+                    eq=eq["traj_rel_mean"], eq_median=eq["traj_rel_median"],
+                    eq_max=eq["traj_rel_max"], eq_blowups=eq["n_blowup"],
+                ))
     return rows
 
 

@@ -208,6 +208,23 @@ def main():
     if any_censored:
         md += ["", "Rows with nonzero censoring are budget-limited. They are useful diagnostic measurements but are not promoted to headline iso-accuracy speedups.", ""]
 
+    selected_poisson_e2e = [
+        r for r in pairs if r["cell"].startswith("nda_pe2e_")
+        and r["M"] == p_selected["M"] and r["m"] == p_selected["m"]]
+    if selected_poisson_e2e:
+        loose = next(r for r in selected_poisson_e2e if r["tau"] == 1e-2)
+        architecture_relation = (
+            f"{loose['speedup']:.3f}× faster" if loose["speedup"] >= 1 else
+            f"{1/loose['speedup']:.3f}× slower")
+        fom_relation = (
+            f"{loose['iso_fom_speedup']:.3f}× faster" if loose["iso_fom_speedup"] >= 1 else
+            f"{1/loose['iso_fom_speedup']:.3f}× slower")
+        md += [
+            (f"At the selected Poisson M={loose['M']},m={loose['m']} arm and tau={sci(loose['tau'])}, "
+             f"the compact decoder is {architecture_relation} than the saved decoder architecture and "
+             f"{fom_relation} than the like-for-like iso-accuracy FOM. This row is uncensored and has "
+             f"compact error {sci(loose['variant']['error'])}."), ""]
+
     selected_burgers_e2e = [r for r in pairs if r["cell"] == "nda_be2e_g160m640_r24"]
     if selected_burgers_e2e:
         loose = next(r for r in selected_burgers_e2e if r["tau"] == 1e-2)

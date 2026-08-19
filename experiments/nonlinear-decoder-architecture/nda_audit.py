@@ -92,11 +92,15 @@ def audit_cells():
             continue
         cell = os.path.basename(cell_dir)
         logs = []
-        for path in glob.glob(os.path.join(cell_dir, "logs", "*")):
+        log_paths = glob.glob(os.path.join(cell_dir, "logs", "*"))
+        for path in log_paths:
             if os.path.isfile(path):
                 with open(path, errors="replace") as fp:
                     logs.append(fp.read())
         log = "\n".join(logs)
+        job_ids = sorted({os.path.basename(path).split(".")[0] for path in log_paths
+                          if os.path.basename(path).split(".")[0].isdigit()})
+        meta = re.search(r"cell=\S+ commit=(\S+)(?: dirty_hash=\S+)? host=(\S+) gpu=([^\n]+)", log)
         js = json_text(cell_dir)
         checksums_ok, checksum_errors = checksum_audit(cell_dir)
         launch_ok, highest = launch_audit(cell_dir, log)
@@ -114,6 +118,9 @@ def audit_cells():
             launch_provenance_ok=launch_ok,
             gpu_ok=gpu_ok, done_ok=done_ok, precision_ok=precision_ok,
             failure_marker=failure_marker, passed=passed,
+            job_ids=job_ids, commit=None if meta is None else meta.group(1),
+            host=None if meta is None else meta.group(2),
+            gpu=None if meta is None else meta.group(3).strip(),
         ))
     return rows
 
@@ -189,14 +196,15 @@ def main():
         "Generated from pulled artifacts and checksum manifests. Excluded cells are retained for diagnosis but do not support reported timing claims.", "",
         f"Overall accepted-result audit: **{'PASS' if overall else 'PENDING/FAIL'}**", "",
         "## Cell integrity", "",
-        "| cell | disposition | checksums | launch provenance | GPU | f64/highest | complete | failure marker |",
-        "|---|---|---:|---:|---:|---:|---:|---:|",
+        "| cell | job | device | disposition | checksums | launch provenance | GPU backend | f64/highest | complete | failure marker |",
+        "|---|---:|---|---|---:|---:|---:|---:|---:|---:|",
     ]
     for row in cells:
         disposition = (f"excluded: {row['exclusion_reason']}" if row["excluded"]
                        else ("accepted" if row["passed"] else "failed audit"))
         md.append(
-            f"| {row['cell']} | {disposition} | {row['checksums_ok']} | {row['launch_provenance_ok']} | "
+            f"| {row['cell']} | {','.join(row['job_ids'])} | {row['gpu'] or '—'} | {disposition} | "
+            f"{row['checksums_ok']} | {row['launch_provenance_ok']} | "
             f"{row['gpu_ok']} | {row['precision_ok']} | {row['done_ok']} | "
             f"{row['failure_marker']} |")
     md += ["", "## Accepted timing arrays", "",

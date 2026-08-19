@@ -7,6 +7,11 @@ walltime="$3"
 envs="$4"
 command="$5"
 gpu_type="${6:-h100}"
+if [[ "$cell" == ctol_hybb_* ]]; then
+  job_name="$cell"
+else
+  job_name="hybb_$cell"
+fi
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(dirname "$HERE")"
@@ -41,7 +46,7 @@ cp "$WORKTREES/2026-08-16-burgers2d-rom-latent-stepping/experiments/burgers2d-ro
 
 cat > "$STAGE/run.sbatch" <<EOF
 #!/bin/bash
-#SBATCH -J hybb_$cell
+#SBATCH -J $job_name
 #SBATCH -p gpu
 #SBATCH --gres=gpu:$gpu_type:1
 #SBATCH -c 8

@@ -73,6 +73,18 @@ def main():
         hidden=p_recommended["hidden"], layers=p_recommended["layers"],
         group_size=p_recommended["group_size"], n_params=p_recommended["n_params"],
         M=p_recommended["M"], m=p_recommended["m"])
+    p_lower_gate = max(
+        (r for r in summary["poisson_gate_audit"]["rows"]
+         if r["architecture"] == p_recommended["architecture"] and
+         r["hidden"] == p_recommended["hidden"] and
+         r["group_size"] == p_recommended["group_size"] and
+         r["m"] < p_recommended["m"]),
+        key=lambda r: r["m"], default=None)
+    p_lower = (None if p_lower_gate is None else aggregate(
+        summary, "Poisson", architecture=p_lower_gate["architecture"],
+        hidden=p_lower_gate["hidden"], layers=p_lower_gate["layers"],
+        group_size=p_lower_gate["group_size"], n_params=p_lower_gate["n_params"],
+        M=p_lower_gate["M"], m=p_lower_gate["m"]))
     p_control = next(r for r in summary["poisson"]
                      if r["cell"] == "saved-control/fair-M128")
     p_bench, b_bench = bench(summary, "poisson"), bench(summary, "burgers")
@@ -106,8 +118,14 @@ def main():
          f"{p_selected['n_params']:,} parameters, with three-seed decoder/full/EQ means "
          f"{sci(p_selected['decoder']['mean'])}, {sci(p_selected['full']['mean'])}, and "
          f"{sci(p_selected['eq']['mean'])}. It is the narrowest tested even width "
-         f"whose three-seed mean clears the accuracy gates; H96 failed, while H100 is the nearby accuracy-margin option."), "",
+         f"for which every seed clears the accuracy gates; H96 failed, while H100 is the nearby accuracy-margin option."), "",
     ]
+    if p_lower is not None:
+        md += [
+            (f"The weak-objective boundary is closed to the tested four-mode resolution: the next cheaper "
+             f"M={p_lower['M']},m={p_lower['m']} arm fails, with worst-seed EQ error "
+             f"{sci(p_lower['eq']['max'])} and maximum EQ/full ratio "
+             f"{max(p_lower_gate['eq_full_ratios']):.3f}."), ""]
     if burgers_complete:
         b96 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=96, m=384)
         b128 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=128, m=512)
@@ -128,6 +146,24 @@ def main():
                 f"The M96,m384 arm has full/EQ means {sci(b96['full']['mean'])} and {sci(b96['eq']['mean'])}, "
                 "but is retained only as the aggressive lower-cost arm because at least one per-seed gate fails."
             )
+            lower_gate = max(
+                (r for r in gate["rows"]
+                 if r["architecture"] == recommended["architecture"] and
+                 r["hidden"] == recommended["hidden"] and
+                 r["group_size"] == recommended["group_size"] and
+                 r["M"] == recommended["M"] and r["m"] < recommended["m"]),
+                key=lambda r: r["m"], default=None)
+            if lower_gate is not None:
+                lower = aggregate(
+                    summary, "Burgers", architecture=lower_gate["architecture"],
+                    hidden=lower_gate["hidden"], layers=lower_gate["layers"],
+                    group_size=lower_gate["group_size"], n_params=lower_gate["n_params"],
+                    M=lower_gate["M"], m=lower_gate["m"])
+                recommendation += (
+                    f" The closest cheaper m={lower['m']} arm fails, with worst-seed EQ error "
+                    f"{sci(lower['eq']['max'])} and maximum EQ/full ratio "
+                    f"{max(lower_gate['eq_full_ratios']):.3f}."
+                )
         else:
             b_params = b_bench["models"]["variant"]["n_params"]
             recommendation = (

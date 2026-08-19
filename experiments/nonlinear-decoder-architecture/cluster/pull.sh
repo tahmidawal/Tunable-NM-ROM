@@ -22,9 +22,9 @@ if grep -Eqi 'out of memory|oom|captured.*constant|no space left|disk quota|trac
 fi
 
 mkdir -p "$DEST"
-ssh tufts-login "cd '$REMOTE' && find out logs -type f -exec sha256sum {} \\; | sort" > "$DEST/REMOTE.sha256"
-scp -q -r "tufts-login:$REMOTE/out" "tufts-login:$REMOTE/logs" "$DEST/"
+ssh tufts-login "cd '$REMOTE' && find out logs -type f -exec sha256sum {} \\; | sort; sha256sum run.sbatch MANIFEST.sha256" > "$DEST/REMOTE.sha256"
+scp -q -r "tufts-login:$REMOTE/out" "tufts-login:$REMOTE/logs" \
+  "tufts-login:$REMOTE/run.sbatch" "tufts-login:$REMOTE/MANIFEST.sha256" "$DEST/"
 (cd "$DEST" && sha256sum -c REMOTE.sha256)
 ssh tufts-login "rm -rf '$REMOTE'"
 echo "pulled, verified, and removed remote cell $cell -> $DEST"
-

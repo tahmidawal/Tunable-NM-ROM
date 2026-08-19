@@ -1,0 +1,14 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=8743f9650c5295fb72cf69d76f1ce8e7d220a2a6 dirty=e3b0c44298fc cell=physics_helm_gate
+jax_backend=gpu cuda:0
+N=64 tau=1e-06 linear        : 23.725 ms, save=0.000 ms, Newton=84, BiCG=108
+N=64 tau=1e-06 quadratic     : 19.335 ms, save=3.965 ms, Newton=62, BiCG=84
+N=64 tau=1e-06 cubic         : 17.333 ms, save=6.258 ms, Newton=56, BiCG=72
+N=64 tau=1e-06 imex_euler    : 24.967 ms, save=-1.457 ms, Newton=83, BiCG=110
+N=64 tau=1e-06 imex_ab2      : 23.550 ms, save=0.207 ms, Newton=74, BiCG=100
+N=256 tau=1e-06 linear        : 31.907 ms, save=0.000 ms, Newton=87, BiCG=117
+N=256 tau=1e-06 quadratic     : 24.899 ms, save=6.718 ms, Newton=62, BiCG=86
+N=256 tau=1e-06 cubic         : 22.804 ms, save=8.933 ms, Newton=56, BiCG=76
+N=256 tau=1e-06 imex_euler    : 34.033 ms, save=-2.518 ms, Newton=86, BiCG=122
+N=256 tau=1e-06 imex_ab2      : 32.674 ms, save=-0.915 ms, Newton=76, BiCG=110
+ALL-DONE

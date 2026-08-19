@@ -73,12 +73,16 @@ locked calibrated FOM configuration.
   this already needs rank 32 plus a spatial warp, it cannot plausibly fit the
   oracle's few-millisecond budget.  The transported linear-basis surrogate is
   therefore stopped too, rather than being relabelled as a successful NM-ROM.
-* The remaining evidence-backed cheap control is a semi-implicit physics
-  predictor: exact discrete upwind advection is explicit and the Dirichlet
-  diffusion operator is solved exactly by DST-I.  A local N=32 smoke reduced
-  linear-extrapolation guess error from 4.49e-3 to 4.33e-4 and BiCGStab work
-  from 155 to 126; its charged paired cluster gate is pending.  It is a
-  classical control and sets the bar for any future learned manifold.
+* A semi-implicit physics predictor (exact discrete upwind advection plus a
+  Dirichlet diffusion solve by DST-I) reduced field-guess error in local smoke,
+  but failed the solver-work objective in the charged cluster gate.  With the
+  calibrated Helmholtz FOM at `tau=1e-6`, IMEX Euler lost 1.46 ms at N=64 and
+  2.52 ms at N=256 to linear extrapolation; AB2 was statistically tied at N=64
+  and lost 0.92 ms at N=256.  In contrast, the zero-construction cubic history
+  control saved 6.26 ms and 8.93 ms, with paired 95% median intervals excluding
+  zero.  This is direct evidence that field L2 alone is the wrong warm-start
+  objective: the apparently more accurate physics guess did not minimise total
+  finishing work.
 * Inexact-Newton calibration showed that the inherited inner tolerance `1e-10`
   was substantial over-solving.  A Dirichlet diffusion/Helmholtz left
   preconditioner reduced BiCGStab work by roughly an order of magnitude in its

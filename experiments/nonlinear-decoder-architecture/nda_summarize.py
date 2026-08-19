@@ -409,7 +409,7 @@ def main():
         rejected=[
             dict(cell="nda_pbench_g98_r8",
                  reason="timed before post-burn exact-kernel warmups; retained but excluded"),
-            dict(cell="nda_be2e_g160_r12",
+            dict(cell="nda_be2e_g160_r12_failed",
                  reason="failed before the compact arm because the driver dropped checkpoint decoder metadata; retained and superseded by r14"),
             dict(cell="nda_pe2e_g98_r11",
                  reason="raw timing repetitions were not persisted; superseded by r23"),

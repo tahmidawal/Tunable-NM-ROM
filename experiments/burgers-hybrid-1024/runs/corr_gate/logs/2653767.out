@@ -1,0 +1,11 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=5da366e0045b27cf8754fbc2c482b7896964ee12 dirty=e3b0c44298fc cell=corr_gate
+jax_backend=gpu cuda:0
+rank 4: train remaining=7.606e-01 val remaining=8.749e-01
+rank 8: train remaining=6.351e-01 val remaining=7.928e-01
+rank 16: train remaining=4.731e-01 val remaining=7.017e-01
+rank 32: train remaining=2.771e-01 val remaining=5.285e-01
+best parameter_extra_info: {'feature_kind': 'parameter_extra_info', 'rank': 32, 'bandwidth': 0.5, 'ridge': 0.0001, 'validation_remaining_correction_ratio_global': 0.9955831140203729, 'cosine_median': 0.1177894730757584, 'cosine_p10': 0.018763466938045918, 'oracle_direction_q_median': 0.017107311288547887, 'remaining_correction_ratio_median': 0.995828674227772, 'remaining_correction_ratio_p90': 1.0068766709776922, 'fraction_cases_q75': 0.0}
+best field_moments_deployable: {'feature_kind': 'field_moments_deployable', 'rank': 32, 'bandwidth': 0.5, 'ridge': 0.0001, 'validation_remaining_correction_ratio_global': 0.9951883355812537, 'cosine_median': 0.11635131364314634, 'cosine_p10': 0.01632088776225202, 'oracle_direction_q_median': 0.017300736730825127, 'remaining_correction_ratio_median': 0.9955992076635318, 'remaining_correction_ratio_p90': 1.0068895935389748, 'fraction_cases_q75': 0.0}
+DONE in 14.5s model=../out/corr_gate.npz
+ALL-DONE

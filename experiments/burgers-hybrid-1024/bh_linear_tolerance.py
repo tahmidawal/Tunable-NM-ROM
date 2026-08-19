@@ -26,6 +26,9 @@ FOM_TAUS = [float(value) for value in os.environ.get(
 LINEAR_TOLS = [float(value) for value in os.environ.get(
     "LINEAR_TOLS", "1e-4,1e-6,1e-8,1e-10"
 ).split(",")]
+PRECONDITIONERS = [value for value in os.environ.get(
+    "PRECONDITIONERS", "none"
+).split(",")]
 CALIB_SEED = int(os.environ.get("CALIB_SEED", "2"))
 CALIB_DRAW_COUNT = int(os.environ.get("CALIB_DRAW_COUNT", "8"))
 N_CALIB_TRAJ = int(os.environ.get("N_CALIB_TRAJ", "4"))
@@ -53,6 +56,7 @@ def main():
             "ns": NS,
             "fom_taus": FOM_TAUS,
             "linear_tols": LINEAR_TOLS,
+            "preconditioners": PRECONDITIONERS,
             "arms": [name for name, _ in ARMS],
             "calibration_seed": CALIB_SEED,
             "calibration_draw_count": CALIB_DRAW_COUNT,
@@ -84,75 +88,83 @@ def main():
         for outer_tau in FOM_TAUS:
             calls = {}
             metrics = {}
-            for linear_tol in LINEAR_TOLS:
-                chain, _ = bc.make_chain(n, outer_tau, lin_tol=linear_tol)
-                for arm, mode in ARMS:
-                    key = f"lin={linear_tol:g}:{arm}"
-                    per_trajectory = []
-                    for trajectory in trajectories:
-                        output = chain(
-                            jnp.asarray(trajectory["U"][0]), trajectory["nu"], dummy,
-                            jnp.int32(mode)
-                        )
-                        U, newton, linear, breakdowns, flags, rel_res = [
-                            np.asarray(value) for value in output
-                        ]
-                        if (
-                            not np.all(np.isfinite(rel_res))
-                            or float(np.max(rel_res)) > outer_tau
-                            or int(np.sum(breakdowns))
-                            or int(np.sum(flags != 0))
-                        ):
-                            raise SystemExit(
-                                f"N={n} outer={outer_tau} lin={linear_tol} arm={arm}: "
-                                f"health failure maxres={np.max(rel_res):.3e} "
-                                f"breakdowns={np.sum(breakdowns)} flags={np.sum(flags != 0)}"
+            for preconditioner in PRECONDITIONERS:
+                for linear_tol in LINEAR_TOLS:
+                    chain, _ = bc.make_chain(
+                        n, outer_tau, lin_tol=linear_tol,
+                        preconditioner=preconditioner,
+                    )
+                    for arm, mode in ARMS:
+                        key = f"pre={preconditioner}:lin={linear_tol:g}:{arm}"
+                        per_trajectory = []
+                        for trajectory in trajectories:
+                            output = chain(
+                                jnp.asarray(trajectory["U"][0]), trajectory["nu"], dummy,
+                                jnp.int32(mode)
                             )
-                        per_trajectory.append({
-                            "trajectory_index": trajectory["index"],
-                            "newton_total": int(np.sum(newton)),
-                            "linear_total": int(np.sum(linear)),
-                            "newton_per_step": newton.tolist(),
-                            "linear_per_step": linear.tolist(),
-                            "max_final_rel_residual": float(np.max(rel_res)),
-                            "final_trajectory_rel_l2": float(
-                                np.linalg.norm(U - trajectory["U"][1:])
-                                / np.linalg.norm(trajectory["U"][1:])
-                            ),
-                        })
-                    metrics[key] = {
-                        "N": n,
-                        "n_dof": n * n,
-                        "fom_tau": outer_tau,
-                        "linear_tol": linear_tol,
-                        "arm": arm,
-                        "newton_total_mean": float(np.mean([
-                            item["newton_total"] for item in per_trajectory
-                        ])),
-                        "linear_total_mean": float(np.mean([
-                            item["linear_total"] for item in per_trajectory
-                        ])),
-                        "max_final_rel_residual": float(max(
-                            item["max_final_rel_residual"] for item in per_trajectory
-                        )),
-                        "reference_max_newton_residual": worst_reference,
-                        "per_trajectory": per_trajectory,
-                    }
-                    for trajectory in trajectories:
-                        trajectory_index = trajectory["index"]
-                        calls[(key, trajectory_index)] = (
-                            lambda chain_fn=chain, traj=trajectory, mode_value=jnp.int32(mode):
-                            chain_fn(
-                                jnp.asarray(traj["U"][0]), traj["nu"], dummy, mode_value
-                            )[0].block_until_ready()
-                        )
+                            U, newton, linear, breakdowns, flags, rel_res = [
+                                np.asarray(value) for value in output
+                            ]
+                            if (
+                                not np.all(np.isfinite(rel_res))
+                                or float(np.max(rel_res)) > outer_tau
+                                or int(np.sum(breakdowns))
+                                or int(np.sum(flags != 0))
+                            ):
+                                raise SystemExit(
+                                    f"N={n} outer={outer_tau} lin={linear_tol} arm={arm}: "
+                                    f"health failure maxres={np.max(rel_res):.3e} "
+                                    f"breakdowns={np.sum(breakdowns)} flags={np.sum(flags != 0)}"
+                                )
+                            per_trajectory.append({
+                                "trajectory_index": trajectory["index"],
+                                "newton_total": int(np.sum(newton)),
+                                "linear_total": int(np.sum(linear)),
+                                "newton_per_step": newton.tolist(),
+                                "linear_per_step": linear.tolist(),
+                                "max_final_rel_residual": float(np.max(rel_res)),
+                                "final_trajectory_rel_l2": float(
+                                    np.linalg.norm(U - trajectory["U"][1:])
+                                    / np.linalg.norm(trajectory["U"][1:])
+                                ),
+                            })
+                        metrics[key] = {
+                            "N": n,
+                            "n_dof": n * n,
+                            "fom_tau": outer_tau,
+                            "linear_tol": linear_tol,
+                            "preconditioner": preconditioner,
+                            "arm": arm,
+                            "newton_total_mean": float(np.mean([
+                                item["newton_total"] for item in per_trajectory
+                            ])),
+                            "linear_total_mean": float(np.mean([
+                                item["linear_total"] for item in per_trajectory
+                            ])),
+                            "max_final_rel_residual": float(max(
+                                item["max_final_rel_residual"] for item in per_trajectory
+                            )),
+                            "reference_max_newton_residual": worst_reference,
+                            "per_trajectory": per_trajectory,
+                        }
+                        for trajectory in trajectories:
+                            trajectory_index = trajectory["index"]
+                            calls[(key, trajectory_index)] = (
+                                lambda chain_fn=chain, traj=trajectory,
+                                mode_value=jnp.int32(mode): chain_fn(
+                                    jnp.asarray(traj["U"][0]), traj["nu"], dummy,
+                                    mode_value
+                                )[0].block_until_ready()
+                            )
 
             # Compile/warm all calls, burn once, then pair by trajectory and
             # repetition while rotating the (linear tolerance, arm) order.
             keys = list(metrics)
             for call in calls.values():
                 call()
-            anchor = calls[(f"lin={LINEAR_TOLS[-1]:g}:linear", 0)]
+            anchor = calls[(
+                f"pre={PRECONDITIONERS[0]}:lin={LINEAR_TOLS[-1]:g}:linear", 0
+            )]
             burn_count = bc.gpu_burn(anchor, BURN_S)
             for warm in range(TIME_WARM):
                 offset = warm % len(keys)
@@ -184,7 +196,8 @@ def main():
                 report["rows"].append(row)
                 bc.log(
                     f"N={n} outer={outer_tau:.0e} lin={row['linear_tol']:.0e} "
-                    f"{row['arm']:9s}: Newton={row['newton_total_mean']:.1f} "
+                    f"pre={row['preconditioner']} {row['arm']:9s}: "
+                    f"Newton={row['newton_total_mean']:.1f} "
                     f"BiCG={row['linear_total_mean']:.0f} "
                     f"population median={row['time_median_over_population_ms']:.2f}ms"
                 )
@@ -195,28 +208,33 @@ def main():
     # polynomial arm. Ties within 1% choose the tighter tolerance. No test data.
     for outer_tau in FOM_TAUS:
         candidates = []
-        for linear_tol in LINEAR_TOLS:
-            relevant = [row for row in report["rows"] if (
-                row["fom_tau"] == outer_tau and row["linear_tol"] == linear_tol
-            )]
-            by_arm = {}
-            for arm, _ in ARMS:
-                values = [row["time_median_over_population_ms"] for row in relevant
-                          if row["arm"] == arm]
-                by_arm[arm] = float(np.median(values))
-            best_arm = min(by_arm, key=by_arm.get)
-            candidates.append({
-                "linear_tol": linear_tol,
-                "best_polynomial_arm": best_arm,
-                "pooled_mesh_median_ms": by_arm[best_arm],
-                "arm_times_ms": by_arm,
-            })
+        for preconditioner in PRECONDITIONERS:
+            for linear_tol in LINEAR_TOLS:
+                relevant = [row for row in report["rows"] if (
+                    row["fom_tau"] == outer_tau
+                    and row["linear_tol"] == linear_tol
+                    and row["preconditioner"] == preconditioner
+                )]
+                by_arm = {}
+                for arm, _ in ARMS:
+                    values = [row["time_median_over_population_ms"] for row in relevant
+                              if row["arm"] == arm]
+                    by_arm[arm] = float(np.median(values))
+                best_arm = min(by_arm, key=by_arm.get)
+                candidates.append({
+                    "linear_tol": linear_tol,
+                    "preconditioner": preconditioner,
+                    "best_polynomial_arm": best_arm,
+                    "pooled_mesh_median_ms": by_arm[best_arm],
+                    "arm_times_ms": by_arm,
+                })
         best_value = min(item["pooled_mesh_median_ms"] for item in candidates)
         near = [item for item in candidates
                 if item["pooled_mesh_median_ms"] <= 1.01 * best_value]
         selected = min(near, key=lambda item: item["linear_tol"])
         report["selection"][f"{outer_tau:.0e}"] = {
             "selected_linear_tol": selected["linear_tol"],
+            "selected_preconditioner": selected["preconditioner"],
             "selected_on_arm": selected["best_polynomial_arm"],
             "rule": "fastest pooled-N polynomial; within 1% choose tighter",
             "candidates": candidates,
@@ -228,4 +246,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

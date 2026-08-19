@@ -36,6 +36,52 @@ guess and saved only 15.149 ms in the FOM stage. Therefore:
 3. Audited consolidation through `N={32,64,128,256,512,1024}` at
    `tau_FOM={1e-6,1e-8,1e-10}`.
 
+## Completed gates
+
+The first two timing gates are diagnostic rather than headline results: they
+used a four-trajectory seed-1 population and the inherited over-tight inner
+linear tolerance.  They established the direction of travel, but the final
+confirmation will use the canonical draw-16 cohort, a dynamic oracle, and the
+locked calibrated FOM configuration.
+
+* The oracle at `N=256`, `tau_FOM=1e-6` found that removing 75--90% of the
+  linear-extrapolation error can save only roughly 2--4 ms per 50-step chain.
+  Seven paired repetitions were too noisy to order nearby qualities, so the
+  narrowed confirmation uses at least 21 paired repetitions.
+* Zero-cost quadratic and cubic history predictors reduced guess-field error
+  but increased BiCGStab work.  They are retained as strong charged classical
+  controls, not called learned or NM-ROM methods.
+* The disjoint seed-2 calibration chose inner tolerances `1e-4`, `1e-4`, and
+  `1e-6` for outer tolerances `1e-6`, `1e-8`, and `1e-10`, respectively.  The
+  selected rows had maximum returned outer residuals `9.997496e-7`,
+  `9.988694e-9`, and `9.345625e-11`, with no solver-health failure.  This gate
+  selected settings only; confirmation timings grade the returned timed solve
+  instead of making a separate grading invocation.
+* A train/validation-only correction-spectrum gate rejected the cached global
+  linear basis.  At `N=64`, a rank-32 POD basis left 52.85% of validation
+  correction norm, already above the 25% oracle target before coefficient
+  prediction.  Both generator-parameter and deployable initial-field-moment
+  coefficient maps left about 99.5% and had zero validation cases meeting the
+  target.  Further work therefore requires a shift-aware nonlinear manifold;
+  raising rank or tuning the same RFF map is not justified.
+
+All exact values and complete arrays for these gates are in `runs/`.  No gate
+number is promoted without its JSON, batch log, and matching remote/local
+checksums.
+
+## Final audit contract
+
+Every confirmation arm is invoked in a joint post-burn block with rotated
+order.  The timed call returns the field, residuals, Newton counts, BiCGStab
+counts, flags, and breakdowns; grading happens only after that return.  JSON
+retains per-case/per-repetition arrays, paired deltas and confidence intervals,
+medians, outlier counts, and every selected trajectory.  The final reference
+gate is at least ten times tighter than the tightest reported FOM tolerance,
+the oracle is constructed from the live dynamic extrapolator, and the counting
+solver is checked against both the testbed operator and JAX BiCGStab at every
+reported mesh/tolerance.  The same locked inner solver is used by every
+warm-start arm.
+
 ## Provenance and cluster layout
 
 All jobs live under `/cluster/tufts/paralab/tawal01/hybb1024/`, one directory per

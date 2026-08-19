@@ -194,7 +194,8 @@ def make_bicgstab(tol=LIN_TOL, maxiter=LIN_MAXITER):
     return bicgstab
 
 
-def make_chain(n, tol_rel, predictor=None, lin_tol=None):
+def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
+               oracle_quality=0.0):
     """One FOM chain for previous, extrapolated, or supplied guesses.
 
     ``mode`` is a traced runtime integer: 0 previous state, 1 linear
@@ -203,11 +204,37 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None):
     history. Mode 6 is linear extrapolation plus a supplied correction field.
     Polynomial arms use lower-order startup fallbacks.
     All arms therefore share the same operator, Newton stopping test, linear
-    solver, and compiled executable.
+    solver, and compiled executable. Mode 7 is the diagnostic dynamic oracle
+    ``base + q*(exact_next-base)`` with ``q=oracle_quality`` and the exact next
+    reference supplied in ``guess``.
     """
     _, residual = bf.make_rollout(n)
     effective_lin_tol = LIN_TOL if lin_tol is None else float(lin_tol)
     bicg = make_bicgstab(tol=effective_lin_tol)
+    if preconditioner not in ("none", "jacobi"):
+        raise ValueError(f"unknown preconditioner {preconditioner}")
+    dx = 1.0 / (n - 1)
+
+    def jacobi_diagonal(u, nu):
+        field = u.reshape(n, n)
+        center = field[1:-1, 1:-1]
+        xm = field[:-2, 1:-1]
+        xp = field[2:, 1:-1]
+        ym = field[1:-1, :-2]
+        yp = field[1:-1, 2:]
+        adv_diagonal = jnp.where(
+            center > 0.0,
+            (4.0 * center - xm - ym) / dx,
+            (xp + yp - 4.0 * center) / dx,
+        )
+        diagonal = jnp.ones((n, n), F64)
+        diagonal = diagonal.at[1:-1, 1:-1].set(
+            1.0 + bf.DT * (adv_diagonal + 4.0 * nu / dx**2)
+        )
+        # Avoid turning an unusual advection-dominated negative diagonal into a
+        # division breakdown. This safeguard is reported through solver health.
+        diagonal = jnp.where(jnp.abs(diagonal) > 1e-12, diagonal, 1.0)
+        return diagonal.reshape(-1)
 
     dynamic_predictor = predictor or (
         lambda u_prev, u_prev2, u_prev3, u_prev4, nu, step_index: u_prev
@@ -256,6 +283,22 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None):
                     lambda: values[0] + values[4],
                     lambda: 2.0 * values[0] - values[1] + values[4],
                 ),
+                lambda values: (
+                    jax.lax.cond(
+                        values[5] == 0,
+                        lambda: values[0],
+                        lambda: 2.0 * values[0] - values[1],
+                    )
+                    + oracle_quality
+                    * (
+                        values[4]
+                        - jax.lax.cond(
+                            values[5] == 0,
+                            lambda: values[0],
+                            lambda: 2.0 * values[0] - values[1],
+                        )
+                    )
+                ),
             ),
             args,
         )
@@ -280,10 +323,17 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None):
 
         def body(state):
             u, r, rn, k, nlin, nbreak, nlinmax, flag = state
-            Jv = lambda vec: jax.jvp(
+            Jv_raw = lambda vec: jax.jvp(
                 lambda uu: residual(uu, u_prev, nu), (u,), (vec,)
             )[1]
-            du, linear_iters, _, linear_flag = bicg(Jv, -r)
+            if preconditioner == "jacobi":
+                diagonal = jacobi_diagonal(u, nu)
+                Jv = lambda vec: Jv_raw(vec) / diagonal
+                rhs = -r / diagonal
+            else:
+                Jv = Jv_raw
+                rhs = -r
+            du, linear_iters, _, linear_flag = bicg(Jv, rhs)
             finite_step = jnp.all(jnp.isfinite(du))
             u2 = jnp.where(finite_step, u + du, u)
             r2 = residual(u2, u_prev, nu)
@@ -341,6 +391,105 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None):
         return U, newton, linear, breakdowns, flags, rel_res
 
     return jax.jit(chain), residual
+
+
+def reference_equivalence(n, trajectories, chain, lin_tol=LIN_TOL,
+                          preconditioner="none"):
+    """Counting-chain equivalence to the testbed and JAX BiCGStab.
+
+    The previous-state arm is compared against the testbed fixed-8-Newton
+    rollout on every supplied trajectory. One representative Newton correction
+    is separately checked against ``jax.scipy.sparse.linalg.bicgstab`` under the
+    same optional left-Jacobi transformation.
+    """
+    rollout, residual = bf.make_rollout(n)
+    dummy = jnp.zeros((T, n * n), F64)
+    per_trajectory = []
+    for trajectory in trajectories:
+        U_ref_j, reference_residuals = rollout(
+            jnp.asarray(trajectory["U"][0])[None],
+            jnp.asarray([trajectory["nu"]]),
+        )
+        U_ref = np.asarray(U_ref_j)[1:, 0]
+        U_count, newton, linear, breakdowns, flags, rel_res = chain(
+            jnp.asarray(trajectory["U"][0]), trajectory["nu"], dummy, jnp.int32(0)
+        )
+        U_count = np.asarray(U_count)
+        step_error = np.linalg.norm(U_count - U_ref, axis=1) / np.maximum(
+            np.linalg.norm(U_ref, axis=1), 1e-300
+        )
+        per_trajectory.append({
+            "trajectory_index": trajectory["index"],
+            "trajectory_rel_difference": float(
+                np.linalg.norm(U_count - U_ref) / np.linalg.norm(U_ref)
+            ),
+            "max_step_rel_difference": float(np.max(step_error)),
+            "testbed_max_rel_newton_residual": float(jnp.max(reference_residuals)),
+            "counting_max_rel_newton_residual": float(jnp.max(rel_res)),
+            "newton_total": int(jnp.sum(newton)),
+            "linear_total": int(jnp.sum(linear)),
+            "breakdowns": int(jnp.sum(breakdowns)),
+            "flags_nonzero": int(jnp.sum(flags != 0)),
+        })
+
+    trajectory = trajectories[0]
+    u_prev = jnp.asarray(trajectory["U"][0])
+    nu = trajectory["nu"]
+    r = residual(u_prev, u_prev, nu)
+    Jv_raw = lambda vec: jax.jvp(
+        lambda uu: residual(uu, u_prev, nu), (u_prev,), (vec,)
+    )[1]
+    if preconditioner == "jacobi":
+        dx = 1.0 / (n - 1)
+        field = u_prev.reshape(n, n)
+        center = field[1:-1, 1:-1]
+        xm, xp = field[:-2, 1:-1], field[2:, 1:-1]
+        ym, yp = field[1:-1, :-2], field[1:-1, 2:]
+        adv = jnp.where(center > 0.0, (4.0 * center - xm - ym) / dx,
+                        (xp + yp - 4.0 * center) / dx)
+        diag = jnp.ones((n, n), F64).at[1:-1, 1:-1].set(
+            1.0 + bf.DT * (adv + 4.0 * nu / dx**2)
+        ).reshape(-1)
+        diag = jnp.where(jnp.abs(diag) > 1e-12, diag, 1.0)
+        op = lambda vec: Jv_raw(vec) / diag
+        rhs = -r / diag
+    else:
+        op, rhs = Jv_raw, -r
+    ours, ours_iterations, ours_matvecs, ours_flag = make_bicgstab(
+        lin_tol, LIN_MAXITER
+    )(op, rhs)
+    reference, _ = jax.scipy.sparse.linalg.bicgstab(
+        op, rhs, tol=lin_tol, maxiter=LIN_MAXITER
+    )
+    ours_residual = float(
+        jnp.linalg.norm(op(ours) - rhs) / jnp.maximum(jnp.linalg.norm(rhs), 1e-300)
+    )
+    reference_residual = float(
+        jnp.linalg.norm(op(reference) - rhs)
+        / jnp.maximum(jnp.linalg.norm(rhs), 1e-300)
+    )
+    return {
+        "per_trajectory": per_trajectory,
+        "linear_solver": {
+            "preconditioner": preconditioner,
+            "lin_tol": lin_tol,
+            "relative_solution_difference_vs_jax": float(
+                jnp.linalg.norm(ours - reference)
+                / jnp.maximum(jnp.linalg.norm(reference), 1e-300)
+            ),
+            "ours_relative_residual": ours_residual,
+            "jax_relative_residual": reference_residual,
+            "ours_iterations": int(ours_iterations),
+            "ours_matvecs": int(ours_matvecs),
+            "ours_flag": int(ours_flag),
+        },
+        "max_step_rel_difference": max(
+            item["max_step_rel_difference"] for item in per_trajectory
+        ),
+        "max_trajectory_rel_difference": max(
+            item["trajectory_rel_difference"] for item in per_trajectory
+        ),
+    }
 
 
 def test_modes(n, count):

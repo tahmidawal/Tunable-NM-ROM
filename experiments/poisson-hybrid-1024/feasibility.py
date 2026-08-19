@@ -102,6 +102,7 @@ NATIVE_ARM_NAMES = [v for v in os.environ.get(
 BOOTSTRAP_REPS = int(os.environ.get("BOOTSTRAP_REPS", "1000" if SMOKE else "10000"))
 BOOTSTRAP_SEED = int(os.environ.get("BOOTSTRAP_SEED", "821731"))
 PAIRWISE_DIAGNOSTIC = bool(int(os.environ.get("PAIRWISE_DIAGNOSTIC", "1")))
+BALANCED_PAIR_ARM = os.environ.get("BALANCED_PAIR_ARM", "")
 
 
 @dataclass(frozen=True)
@@ -175,6 +176,13 @@ if not (0.0 < CAL_FRAC < 0.5):
     raise SystemExit("CAL_FRAC must lie in (0, 0.5)")
 if not SMOKE and jax.default_backend() != "gpu":
     raise SystemExit("real feasibility runs require jax_backend=gpu")
+if BALANCED_PAIR_ARM:
+    if ARM_NAMES != [BALANCED_PAIR_ARM]:
+        raise SystemExit("BALANCED_PAIR_ARM requires ARMS to contain exactly that one arm")
+    if TIME_REPS % 2:
+        raise SystemExit("balanced AB/BA confirmation requires an even TIME_REPS")
+    if PAIRWISE_DIAGNOSTIC:
+        raise SystemExit("balanced AB/BA confirmation requires PAIRWISE_DIAGNOSTIC=0")
 
 
 def sha256(path: str) -> str:
@@ -333,6 +341,150 @@ def paired_ratio_ci(numerator_s, denominator_s, seed):
     sample = rng.integers(0, len(num), size=(BOOTSTRAP_REPS, len(num)))
     ratios = num[sample].mean(axis=1) / den[sample].mean(axis=1)
     return [float(np.quantile(ratios, 0.025)), float(np.quantile(ratios, 0.975))]
+
+
+def balanced_pair_summary(arm_s, zero_s, positions, seed):
+    """Summarize an exactly balanced, case-clustered AB/BA comparison.
+
+    Each adjacent pair of repetitions is AB then BA with a fresh burn before each order.
+    The headline estimate is the median across case medians, and the bootstrap resamples
+    whole cases so repetitions from the same source trajectory are never treated as
+    independent.
+    """
+    arm = np.asarray(arm_s, dtype=float)
+    zero = np.asarray(zero_s, dtype=float)
+    if arm.shape != zero.shape or arm.ndim != 2:
+        raise ValueError("balanced pair arrays must be matching case-by-repetition matrices")
+    if arm.shape[1] % 2:
+        raise ValueError("balanced pair repetitions must be even")
+    pos = np.asarray(positions)
+    expected = np.asarray(["first", "second"] * (arm.shape[1] // 2))
+    if pos.shape != arm.shape or np.any(pos != expected[None, :]):
+        raise ValueError("arm positions are not exactly first/second balanced within each case")
+
+    arm_case = np.median(arm, axis=1)
+    zero_case = np.median(zero, axis=1)
+    delta = arm - zero
+    delta_case = np.median(delta, axis=1)
+    estimate_arm = float(np.median(arm_case))
+    estimate_zero = float(np.median(zero_case))
+
+    rng = np.random.default_rng(seed)
+    sample = rng.integers(0, arm.shape[0], size=(BOOTSTRAP_REPS, arm.shape[0]))
+    boot_arm = np.median(arm_case[sample], axis=1)
+    boot_zero = np.median(zero_case[sample], axis=1)
+    boot_delta = np.median(delta_case[sample], axis=1)
+    boot_speedup = boot_zero / boot_arm
+
+    arm_threshold = 1.5 * arm_case[:, None]
+    zero_threshold = 1.5 * zero_case[:, None]
+    arm_outliers = np.sum(arm > arm_threshold, axis=1)
+    zero_outliers = np.sum(zero > zero_threshold, axis=1)
+    arm_first = arm[:, 0::2]
+    arm_second = arm[:, 1::2]
+    zero_second = zero[:, 0::2]
+    zero_first = zero[:, 1::2]
+    per_case = []
+    for i in range(arm.shape[0]):
+        per_case.append(dict(
+            case=i,
+            arm_median_s=float(arm_case[i]),
+            zero_median_s=float(zero_case[i]),
+            paired_delta_arm_minus_zero_median_s=float(delta_case[i]),
+            arm_first_position_median_s=float(np.median(arm_first[i])),
+            arm_second_position_median_s=float(np.median(arm_second[i])),
+            zero_first_position_median_s=float(np.median(zero_first[i])),
+            zero_second_position_median_s=float(np.median(zero_second[i])),
+            arm_outlier_count=int(arm_outliers[i]),
+            zero_outlier_count=int(zero_outliers[i]),
+            arm_faster_repetition_count=int(np.sum(delta[i] < 0.0)),
+            zero_faster_repetition_count=int(np.sum(delta[i] > 0.0)),
+            exact_tie_repetition_count=int(np.sum(delta[i] == 0.0)),
+        ))
+    return dict(
+        estimator="median across per-case medians",
+        arm_median_across_case_medians_s=estimate_arm,
+        zero_median_across_case_medians_s=estimate_zero,
+        speedup_zero_over_arm=estimate_zero / estimate_arm,
+        paired_delta_arm_minus_zero_median_across_cases_s=float(np.median(delta_case)),
+        case_clustered_bootstrap_reps=BOOTSTRAP_REPS,
+        arm_bootstrap_ci95_s=[float(np.quantile(boot_arm, 0.025)),
+                              float(np.quantile(boot_arm, 0.975))],
+        zero_bootstrap_ci95_s=[float(np.quantile(boot_zero, 0.025)),
+                               float(np.quantile(boot_zero, 0.975))],
+        speedup_case_clustered_bootstrap_ci95=[
+            float(np.quantile(boot_speedup, 0.025)),
+            float(np.quantile(boot_speedup, 0.975)),
+        ],
+        paired_delta_bootstrap_ci95_s=[float(np.quantile(boot_delta, 0.025)),
+                                       float(np.quantile(boot_delta, 0.975))],
+        paired_case_sign_counts=dict(
+            arm_faster=int(np.sum(delta_case < 0.0)),
+            zero_faster=int(np.sum(delta_case > 0.0)),
+            exact_tie=int(np.sum(delta_case == 0.0)),
+        ),
+        paired_repetition_sign_counts=dict(
+            arm_faster=int(np.sum(delta < 0.0)),
+            zero_faster=int(np.sum(delta > 0.0)),
+            exact_tie=int(np.sum(delta == 0.0)),
+        ),
+        position_diagnostics_s=dict(
+            arm_first_median=float(np.median(arm_first)),
+            arm_second_median=float(np.median(arm_second)),
+            zero_first_median=float(np.median(zero_first)),
+            zero_second_median=float(np.median(zero_second)),
+        ),
+        outlier_rule="within-case repetition > 1.5 * that arm/case median; retained",
+        arm_outlier_count=int(np.sum(arm_outliers)),
+        zero_outlier_count=int(np.sum(zero_outliers)),
+        per_case=per_case,
+    )
+
+
+def balanced_abba_time(fn_arm, fn_zero, grade_arm, grade_zero, reps, warm, burn_fn,
+                       burn_s, seed):
+    """Time AB then BA after separate immediate burns, grading every timed output."""
+    if reps % 2:
+        raise ValueError("AB/BA timing needs an even repetition count")
+    arm_all, zero_all = [], []
+    arm_grades, zero_grades = [], []
+    positions, burn_iterations = [], []
+
+    def one(fn, grade):
+        t0 = time.perf_counter()
+        out = fn()
+        jax.block_until_ready(out)
+        elapsed = time.perf_counter() - t0
+        return elapsed, grade(out)
+
+    for _ in range(warm):
+        jax.block_until_ready(fn_arm())
+        jax.block_until_ready(fn_zero())
+    for _ in range(reps // 2):
+        burn_iterations.append(wu.gpu_burn(burn_fn, burn_s) if burn_s > 0 else 0)
+        ta, ga = one(fn_arm, grade_arm)
+        tz, gz = one(fn_zero, grade_zero)
+        arm_all.append(ta); zero_all.append(tz)
+        arm_grades.append(ga); zero_grades.append(gz)
+        positions.append("first")
+
+        burn_iterations.append(wu.gpu_burn(burn_fn, burn_s) if burn_s > 0 else 0)
+        tz, gz = one(fn_zero, grade_zero)
+        ta, ga = one(fn_arm, grade_arm)
+        arm_all.append(ta); zero_all.append(tz)
+        arm_grades.append(ga); zero_grades.append(gz)
+        positions.append("second")
+    return dict(
+        arm_all_s=arm_all,
+        zero_all_s=zero_all,
+        arm_timed_telemetry=arm_grades,
+        zero_timed_telemetry=zero_grades,
+        arm_positions=positions,
+        zero_positions=["second" if p == "first" else "first" for p in positions],
+        burn_iterations=burn_iterations,
+        burn_rule="fresh GPU burn immediately before every AB and every BA pair",
+        bootstrap_seed=seed,
+    )
 
 
 def endpoint_bilinear(uc, out_n: int):
@@ -767,6 +919,12 @@ def main():
                 "repetition > 1.5 * its case median; diagnose only, never discard"
             ),
             pairwise_diagnostic=PAIRWISE_DIAGNOSTIC,
+            balanced_pair_arm=BALANCED_PAIR_ARM or None,
+            balanced_pair_contract=(
+                "within each case: burn, learned then zero; reburn, zero then learned; "
+                "repeat with exact equal positions; grade every timed invocation"
+                if BALANCED_PAIR_ARM else None
+            ),
             cg_maxiter=CG_MAXITER,
             matmul_precision=os.environ.get("JAX_DEFAULT_MATMUL_PRECISION", "unset"),
             dtype="f64",
@@ -1408,6 +1566,108 @@ def main():
                         "authoritative joint timing pending",
                         flush=True,
                     )
+
+        # Narrow confirmation of the learned arm uses an exact AB/BA design instead of the
+        # multi-arm rotation below. It is deliberately the only authoritative timing block
+        # in that run; direct/native controls remain separately labelled sensitivity results.
+        if BALANCED_PAIR_ARM:
+            arm_name = BALANCED_PAIR_ARM
+            pair_blocks = {}
+            for tau_index, tau in enumerate(FOM_TAUS):
+                arm_fn = timing_registry[(tau, arm_name)]
+                zero_fn = baseline_registry[tau]
+                cases = []
+                for i in range(N_TIME):
+                    g = lambda out, ii=i: grade_cg_output(out, Fs[ii], Uref[ii], op)
+                    case = balanced_abba_time(
+                        lambda ii=i: arm_fn(params[ii], Fs[ii]),
+                        lambda ii=i: zero_fn(params[ii], Fs[ii]),
+                        g, g, TIME_REPS, TIME_WARM,
+                        lambda ii=i: zero_fn(params[ii], Fs[ii])[0].block_until_ready(),
+                        BURN_S,
+                        BOOTSTRAP_SEED + 1009 * n + 101 * tau_index + i,
+                    )
+                    case["case"] = i
+                    case["source_parameter"] = np.asarray(params_np[i]).tolist()
+                    cases.append(case)
+                arm_s = [c["arm_all_s"] for c in cases]
+                zero_s = [c["zero_all_s"] for c in cases]
+                positions = [c["arm_positions"] for c in cases]
+                seed = BOOTSTRAP_SEED + 1009 * n + int(round(-np.log10(tau)))
+                summary = balanced_pair_summary(arm_s, zero_s, positions, seed)
+                arm_tele = [c["arm_timed_telemetry"] for c in cases]
+                zero_tele = [c["zero_timed_telemetry"] for c in cases]
+                arm_res_max = max(g["recomputed_true_rel_residual"]
+                                  for case in arm_tele for g in case)
+                zero_res_max = max(g["recomputed_true_rel_residual"]
+                                   for case in zero_tele for g in case)
+                arm_flag_max = max(g["flag"] for case in arm_tele for g in case)
+                zero_flag_max = max(g["flag"] for case in zero_tele for g in case)
+                if arm_flag_max or zero_flag_max or arm_res_max > tau or zero_res_max > tau:
+                    raise SystemExit(
+                        f"N={n} tau={tau}: balanced timed residual/flag gate failed "
+                        f"arm={arm_res_max:.3e}/{arm_flag_max} "
+                        f"zero={zero_res_max:.3e}/{zero_flag_max}"
+                    )
+                pair_blocks[str(tau)] = dict(
+                    arm=arm_name,
+                    zero="same unpreconditioned true-residual counting CG, x0=zeros",
+                    order_rule="per case and adjacent pair: burn-AB, reburn-BA",
+                    exact_equal_position_asserted=True,
+                    same_invocation_cost_accuracy_work=True,
+                    cases=cases,
+                    summary=summary,
+                    arm_true_rel_residual_max=float(arm_res_max),
+                    zero_true_rel_residual_max=float(zero_res_max),
+                    arm_iterations_mean=float(np.mean([
+                        g["iterations"] for case in arm_tele for g in case])),
+                    zero_iterations_mean=float(np.mean([
+                        g["iterations"] for case in zero_tele for g in case])),
+                )
+                row = next(r for r in report["rows"]
+                           if r["N"] == n and r["fom_tau"] == tau
+                           and r["arm"] == arm_name)
+                row.update(
+                    balanced_pair_authoritative=True,
+                    joint_timing_authoritative=False,
+                    hybrid_total_ms=summary["arm_median_across_case_medians_s"] * 1e3,
+                    baseline_total_ms=summary["zero_median_across_case_medians_s"] * 1e3,
+                    speedup_vs_zero_cg=summary["speedup_zero_over_arm"],
+                    hybrid_total_bootstrap_ci95_ms=[
+                        v * 1e3 for v in summary["arm_bootstrap_ci95_s"]],
+                    baseline_total_bootstrap_ci95_ms=[
+                        v * 1e3 for v in summary["zero_bootstrap_ci95_s"]],
+                    speedup_vs_zero_cg_bootstrap_ci95=summary[
+                        "speedup_case_clustered_bootstrap_ci95"],
+                    paired_delta_arm_minus_zero_ms=(summary[
+                        "paired_delta_arm_minus_zero_median_across_cases_s"] * 1e3),
+                    paired_delta_bootstrap_ci95_ms=[
+                        v * 1e3 for v in summary["paired_delta_bootstrap_ci95_s"]],
+                    paired_case_sign_counts=summary["paired_case_sign_counts"],
+                    paired_repetition_sign_counts=summary["paired_repetition_sign_counts"],
+                    hybrid_timing_outlier_count=summary["arm_outlier_count"],
+                    baseline_timing_outlier_count=summary["zero_outlier_count"],
+                    final_true_rel_residual_max=float(arm_res_max),
+                    baseline_true_rel_residual_max=float(zero_res_max),
+                    iters_hybrid_timed_mean=pair_blocks[str(tau)]["arm_iterations_mean"],
+                    iters_baseline_timed_mean=pair_blocks[str(tau)]["zero_iterations_mean"],
+                    balanced_pair_cases=summary["per_case"],
+                    balanced_pair_timed_telemetry=arm_tele,
+                    balanced_pair_baseline_timed_telemetry=zero_tele,
+                )
+                print(
+                    f"BALANCED N={n} {arm_name} tau={tau:.0e}: "
+                    f"{row['hybrid_total_ms']:.3f}/{row['baseline_total_ms']:.3f} ms "
+                    f"speedup {row['speedup_vs_zero_cg']:.4f} "
+                    f"CI {row['speedup_vs_zero_cg_bootstrap_ci95']} "
+                    f"signs {row['paired_case_sign_counts']}",
+                    flush=True,
+                )
+                save()
+            mesh_check["balanced_pair_timing"] = pair_blocks
+            mesh_check["wall_seconds"] = time.time() - mesh_t0
+            save()
+            continue
 
         # Authoritative wall clock: all arms, zero-start CG, and exact FFT-DST are rotated
         # through one post-burn block. This supports paired combined-vs-spectral deltas and

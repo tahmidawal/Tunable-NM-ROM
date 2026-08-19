@@ -112,6 +112,29 @@ counting/native CG, native Jacobi sensitivity, dense sine direct, and FFT-DST di
 rotated post-burn block. No fresh-seed timing selects an architecture, rank, tolerance, or
 reported comparison.
 
+## Pre-registered balanced timing audit
+
+The 15-arm rotation in the first fresh-seed job is not authoritative for the small claimed K8
+crossover: six cases times seven repetitions visit only 12 of the 15 cyclic offsets, and the raw
+N=1024 timings show a material first/second-position effect. The learned crossover is therefore
+withdrawn pending a narrow balanced confirmation. Architecture, weak objective, trust radius,
+coarse grid, FOM kernel, and tolerances stay locked; there is no further model or hyperparameter
+selection.
+
+The audit compares only `lmtrmean_c64_q0` with the same unpreconditioned true-residual counting
+CG from zero at N=512 and N=1024 and tolerances 1e-6, 1e-8, and 1e-10. It uses fresh
+`TEST_SEED=20260820`, 16 accuracy cases, eight timed cases, and 12 timed repetitions per case.
+Every adjacent repetition pair is exactly: burn, learned then zero; reburn, zero then learned.
+Thus each method occupies first and second position six times per case. The timed return is graded
+for field error, true residual, status, and iterations from that same invocation. Headline times
+are medians across per-case medians; uncertainty is a paired case-clustered bootstrap over source
+cases. The JSON also retains raw samples, order-specific medians, paired case/repetition signs,
+per-case outliers under the fixed 1.5x rule (none removed), and per-case source parameters.
+
+The earlier exact-direct and native-CG measurements remain separately labeled controls rather
+than entering the AB/BA pair. Counting CG is authoritative because the native implementation was
+slower at every tolerance and missed true residual gates at the tight high-resolution rows.
+
 ## Files
 
 - `feasibility.py`: train-only RBF calibration, coarse decoding, spectral corrections,
@@ -124,10 +147,10 @@ reported comparison.
 
 ## Status
 
-The fresh-seed six-resolution, three-tolerance confirmation is complete. All primary counting-CG
-arms meet their true-residual tolerance from their timed invocation, and the logs are clean. The
-optimized pure K8 NM-ROM crosses over only at N=1024, where its modest advantage over zero-start
-CG is supported by paired bootstrap intervals; it loses below that resolution. Pure GroupFiLM
+The fresh-seed six-resolution, three-tolerance mechanism ladder is complete and all primary
+counting-CG arms meet their true-residual tolerance from their timed invocation. Its small K8
+crossover claim is provisional because the multi-arm order was not fully balanced; the dedicated
+AB/BA audit above is the authority for that question. Pure GroupFiLM
 does not improve work. GroupFiLM plus q8 beats zero-start CG but loses decisively to the matched
 spectral controls, so its apparent gain is classical rather than learned. Dense sine direct is
 the fastest eligible method on most rows; at the tight N=1024 row its measured residual is not

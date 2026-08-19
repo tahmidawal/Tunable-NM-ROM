@@ -211,9 +211,47 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
     _, residual = bf.make_rollout(n)
     effective_lin_tol = LIN_TOL if lin_tol is None else float(lin_tol)
     bicg = make_bicgstab(tol=effective_lin_tol)
-    if preconditioner not in ("none", "jacobi"):
+    if preconditioner not in ("none", "jacobi", "helmholtz"):
         raise ValueError(f"unknown preconditioner {preconditioner}")
     dx = 1.0 / (n - 1)
+    interior_size = n - 2
+    frequencies = jnp.arange(1, interior_size + 1, dtype=F64)
+    helmholtz_eigenvalues = (4.0 / dx**2) * (
+        jnp.sin(jnp.pi * frequencies[:, None] / (2.0 * (n - 1))) ** 2
+        + jnp.sin(jnp.pi * frequencies[None, :] / (2.0 * (n - 1))) ** 2
+    )
+
+    def dst1(values, axis):
+        """Unnormalised DST-I implemented by an odd FFT extension."""
+        zeros_shape = list(values.shape)
+        zeros_shape[axis] = 1
+        zeros = jnp.zeros(zeros_shape, values.dtype)
+        extension = jnp.concatenate(
+            (zeros, values, zeros, -jnp.flip(values, axis=axis)), axis=axis
+        )
+        transformed = -jnp.fft.fft(extension, axis=axis).imag
+        index = [slice(None)] * values.ndim
+        index[axis] = slice(1, values.shape[axis] + 1)
+        return transformed[tuple(index)]
+
+    def dst2(values):
+        return dst1(dst1(values, 0), 1)
+
+    def helmholtz_solve(vector, nu):
+        """Apply (I-dt*nu*Laplacian_D)^-1 with exact Dirichlet rows."""
+        rhs = vector.reshape(n, n)
+        coupling = bf.DT * nu / dx**2
+        adjusted = rhs[1:-1, 1:-1]
+        adjusted = adjusted.at[0, :].add(coupling * rhs[0, 1:-1])
+        adjusted = adjusted.at[-1, :].add(coupling * rhs[-1, 1:-1])
+        adjusted = adjusted.at[:, 0].add(coupling * rhs[1:-1, 0])
+        adjusted = adjusted.at[:, -1].add(coupling * rhs[1:-1, -1])
+        coefficients = dst2(adjusted)
+        solution_interior = dst2(
+            coefficients / (1.0 + bf.DT * nu * helmholtz_eigenvalues)
+        ) / (4.0 * (interior_size + 1) ** 2)
+        solution = rhs.at[1:-1, 1:-1].set(solution_interior)
+        return solution.reshape(-1)
 
     def jacobi_diagonal(u, nu):
         field = u.reshape(n, n)
@@ -330,6 +368,9 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
                 diagonal = jacobi_diagonal(u, nu)
                 Jv = lambda vec: Jv_raw(vec) / diagonal
                 rhs = -r / diagonal
+            elif preconditioner == "helmholtz":
+                Jv = lambda vec: helmholtz_solve(Jv_raw(vec), nu)
+                rhs = helmholtz_solve(-r, nu)
             else:
                 Jv = Jv_raw
                 rhs = -r
@@ -453,6 +494,45 @@ def reference_equivalence(n, trajectories, chain, lin_tol=LIN_TOL,
         diag = jnp.where(jnp.abs(diag) > 1e-12, diag, 1.0)
         op = lambda vec: Jv_raw(vec) / diag
         rhs = -r / diag
+    elif preconditioner == "helmholtz":
+        # Reconstruct the exact Dirichlet Helmholtz inverse used by the chain
+        # so this independent JAX-BiCGStab check has the identical operator.
+        dx = 1.0 / (n - 1)
+        m = n - 2
+        freq = jnp.arange(1, m + 1, dtype=F64)
+        eigenvalues = (4.0 / dx**2) * (
+            jnp.sin(jnp.pi * freq[:, None] / (2.0 * (n - 1))) ** 2
+            + jnp.sin(jnp.pi * freq[None, :] / (2.0 * (n - 1))) ** 2
+        )
+
+        def dst_axis(values, axis):
+            zeros_shape = list(values.shape)
+            zeros_shape[axis] = 1
+            zeros = jnp.zeros(zeros_shape, values.dtype)
+            extension = jnp.concatenate(
+                (zeros, values, zeros, -jnp.flip(values, axis=axis)), axis=axis
+            )
+            transformed = -jnp.fft.fft(extension, axis=axis).imag
+            index = [slice(None)] * values.ndim
+            index[axis] = slice(1, values.shape[axis] + 1)
+            return transformed[tuple(index)]
+
+        def solve_helmholtz(vector):
+            field = vector.reshape(n, n)
+            coupling = bf.DT * nu / dx**2
+            adjusted = field[1:-1, 1:-1]
+            adjusted = adjusted.at[0, :].add(coupling * field[0, 1:-1])
+            adjusted = adjusted.at[-1, :].add(coupling * field[-1, 1:-1])
+            adjusted = adjusted.at[:, 0].add(coupling * field[1:-1, 0])
+            adjusted = adjusted.at[:, -1].add(coupling * field[1:-1, -1])
+            coefficients = dst_axis(dst_axis(adjusted, 0), 1)
+            interior = dst_axis(
+                dst_axis(coefficients / (1.0 + bf.DT * nu * eigenvalues), 0), 1
+            ) / (4.0 * (m + 1) ** 2)
+            return field.at[1:-1, 1:-1].set(interior).reshape(-1)
+
+        op = lambda vec: solve_helmholtz(Jv_raw(vec))
+        rhs = solve_helmholtz(-r)
     else:
         op, rhs = Jv_raw, -r
     ours, ours_iterations, ours_matvecs, ours_flag = make_bicgstab(

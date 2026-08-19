@@ -145,8 +145,12 @@ case "$round" in
     # gates, while 96 is the lower bracket.
     make_poisson nda_pg104l4g2_r4 104 4 0 groupfilm 2
     ;;
+  round5)
+    # Binary refinement after width 104 passed the decoder and full-ROM gates.
+    make_poisson nda_pg100l4g2_r5 100 4 0 groupfilm 2
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5]" >&2
     exit 2
     ;;
 esac

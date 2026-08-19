@@ -127,9 +127,13 @@ def burn_gpu():
 
 
 def timed(fn, args):
+    # Burn first, then re-warm the exact kernel being measured.  Reversing this
+    # order lets the large burn matmul evict/idle the decoder executable; the
+    # first nominal repetition then becomes a systematic outlier (and CUDA's
+    # timer reports sub-optimal accuracy) even though the median is stable.
+    burn_gpu()
     for _ in range(WARM):
         fn(*args).block_until_ready()
-    burn_gpu()
     vals = []
     for _ in range(REPS):
         t0 = time.perf_counter()

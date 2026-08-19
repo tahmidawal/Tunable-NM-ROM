@@ -656,6 +656,82 @@ def make_full_weak_history_predictor(n, mode_count=16, reduced_iters=2,
     return predictor
 
 
+def make_physics_predictor(n, scheme="imex_euler"):
+    """Cheap classical physics predictors used as charged strong controls.
+
+    ``explicit_euler`` evaluates the exact discrete upwind operator once.
+    ``imex_euler`` treats the exact Dirichlet diffusion operator implicitly and
+    upwind advection explicitly.  ``imex_ab2`` uses the same diffusion solve
+    with second-order advection history after an Euler startup.  These are not
+    learned and are never labelled NM-ROM arms.
+    """
+    if scheme not in ("explicit_euler", "imex_euler", "imex_ab2"):
+        raise ValueError(f"unknown physics predictor {scheme}")
+    _, residual = bf.make_rollout(n)
+    dx = 1.0 / (n - 1)
+    m = n - 2
+    frequencies = jnp.arange(1, m + 1, dtype=F64)
+    laplacian_eigenvalues = (4.0 / dx**2) * (
+        jnp.sin(jnp.pi * frequencies[:, None] / (2.0 * (n - 1))) ** 2
+        + jnp.sin(jnp.pi * frequencies[None, :] / (2.0 * (n - 1))) ** 2
+    )
+
+    def dst_axis(values, axis):
+        zeros_shape = list(values.shape)
+        zeros_shape[axis] = 1
+        zeros = jnp.zeros(zeros_shape, values.dtype)
+        extension = jnp.concatenate(
+            (zeros, values, zeros, -jnp.flip(values, axis=axis)), axis=axis
+        )
+        transformed = -jnp.fft.fft(extension, axis=axis).imag
+        index = [slice(None)] * values.ndim
+        index[axis] = slice(1, values.shape[axis] + 1)
+        return transformed[tuple(index)]
+
+    def solve_diffusion(rhs, nu):
+        interior = rhs.reshape(n, n)[1:-1, 1:-1]
+        coefficients = dst_axis(dst_axis(interior, 0), 1)
+        solved = dst_axis(
+            dst_axis(
+                coefficients / (1.0 + bf.DT * nu * laplacian_eigenvalues), 0
+            ),
+            1,
+        ) / (4.0 * (m + 1) ** 2)
+        return jnp.zeros((n, n), F64).at[1:-1, 1:-1].set(solved).reshape(-1)
+
+    def advection(field_flat):
+        field = field_flat.reshape(n, n)
+        center = field[1:-1, 1:-1]
+        dxm = (center - field[:-2, 1:-1]) / dx
+        dxp = (field[2:, 1:-1] - center) / dx
+        dym = (center - field[1:-1, :-2]) / dx
+        dyp = (field[1:-1, 2:] - center) / dx
+        ux = jnp.where(center > 0.0, dxm, dxp)
+        uy = jnp.where(center > 0.0, dym, dyp)
+        return center * (ux + uy)
+
+    def predictor(u_prev, u_prev2, u_prev3, u_prev4, nu, step_index):
+        del u_prev3, u_prev4
+        if scheme == "explicit_euler":
+            return u_prev - residual(u_prev, u_prev, nu)
+        adv_current = advection(u_prev)
+        if scheme == "imex_ab2":
+            adv_previous = advection(u_prev2)
+            adv_used = jax.lax.cond(
+                step_index == 0,
+                lambda: adv_current,
+                lambda: 1.5 * adv_current - 0.5 * adv_previous,
+            )
+        else:
+            adv_used = adv_current
+        rhs = u_prev.reshape(n, n).at[1:-1, 1:-1].add(-bf.DT * adv_used)
+        rhs = rhs.at[0, :].set(0.0).at[-1, :].set(0.0)
+        rhs = rhs.at[:, 0].set(0.0).at[:, -1].set(0.0)
+        return solve_diffusion(rhs.reshape(-1), nu)
+
+    return predictor
+
+
 def generate_reference(n, trajectory_indices, test_seed, draw_count=None):
     """Regenerate fresh test trajectories from seed with the reference FOM."""
     count = int(draw_count or (max(trajectory_indices) + 1))

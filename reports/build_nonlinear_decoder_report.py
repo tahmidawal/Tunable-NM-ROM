@@ -301,9 +301,17 @@ def main():
         fom_relation = (f"{loose['iso_fom_speedup']:.3f}× faster"
                         if loose["iso_fom_speedup"] >= 1 else
                         f"{1/loose['iso_fom_speedup']:.3f}× slower")
-        censor_note = ("This is an uncensored, accuracy-passing deployment point."
-                       if loose in deployable else
-                       "This row remains budget-censored and is diagnostic only.")
+        if deployable:
+            censor_note = "This is an uncensored, accuracy-passing deployment point."
+        else:
+            best_accuracy = min(selected_burgers_e2e,
+                                key=lambda r: r["variant"]["error"])
+            censor_note = (
+                "No measured selected-objective row is both uncensored and 1%-accurate. "
+                f"The lowest-error row has error {sci(best_accuracy['variant']['error'])} "
+                f"with {pct(best_accuracy['variant']['censored_frac'])} censoring; the speed row "
+                "reported here is therefore diagnostic only."
+            )
         md += [
             (f"At the selected Burgers M={loose['M']},m={loose['m']} arm and tau={sci(loose['tau'])}, "
              f"the compact decoder is {loose['speedup']:.3f}× faster than the saved decoder architecture "

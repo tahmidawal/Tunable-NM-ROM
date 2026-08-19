@@ -101,6 +101,7 @@ NATIVE_ARM_NAMES = [v for v in os.environ.get(
 ).split(",") if v]
 BOOTSTRAP_REPS = int(os.environ.get("BOOTSTRAP_REPS", "1000" if SMOKE else "10000"))
 BOOTSTRAP_SEED = int(os.environ.get("BOOTSTRAP_SEED", "821731"))
+PAIRWISE_DIAGNOSTIC = bool(int(os.environ.get("PAIRWISE_DIAGNOSTIC", "1")))
 
 
 @dataclass(frozen=True)
@@ -765,6 +766,7 @@ def main():
             timing_outlier_rule=(
                 "repetition > 1.5 * its case median; diagnose only, never discard"
             ),
+            pairwise_diagnostic=PAIRWISE_DIAGNOSTIC,
             cg_maxiter=CG_MAXITER,
             matmul_precision=os.environ.get("JAX_DEFAULT_MATMUL_PRECISION", "unset"),
             dtype="f64",
@@ -1254,22 +1256,23 @@ def main():
 
                 hybrid_reps, baseline_reps = [], []
                 hybrid_timed_telemetry, baseline_timed_telemetry = [], []
-                for i in range(N_TIME):
-                    if BURN_S > 0:
-                        wu.gpu_burn(
-                            lambda ii=i: baseline(params[ii], Fs[ii])[0].block_until_ready(),
-                            BURN_S,
+                if PAIRWISE_DIAGNOSTIC:
+                    for i in range(N_TIME):
+                        if BURN_S > 0:
+                            wu.gpu_burn(
+                                lambda ii=i: baseline(params[ii], Fs[ii])[0].block_until_ready(),
+                                BURN_S,
+                            )
+                        ha, ba, hg, bg = paired_time(
+                            lambda ii=i: hybrid(params[ii], Fs[ii]),
+                            lambda ii=i: baseline(params[ii], Fs[ii]),
+                            lambda out, ii=i: grade_cg_output(out, Fs[ii], Uref[ii], op),
+                            lambda out, ii=i: grade_cg_output(out, Fs[ii], Uref[ii], op),
+                            TIME_REPS,
+                            TIME_WARM,
                         )
-                    ha, ba, hg, bg = paired_time(
-                        lambda ii=i: hybrid(params[ii], Fs[ii]),
-                        lambda ii=i: baseline(params[ii], Fs[ii]),
-                        lambda out, ii=i: grade_cg_output(out, Fs[ii], Uref[ii], op),
-                        lambda out, ii=i: grade_cg_output(out, Fs[ii], Uref[ii], op),
-                        TIME_REPS,
-                        TIME_WARM,
-                    )
-                    hybrid_reps.append(ha); baseline_reps.append(ba)
-                    hybrid_timed_telemetry.append(hg); baseline_timed_telemetry.append(bg)
+                        hybrid_reps.append(ha); baseline_reps.append(ba)
+                        hybrid_timed_telemetry.append(hg); baseline_timed_telemetry.append(bg)
                 hmed = [float(np.median(v)) for v in hybrid_reps]
                 bmed = [float(np.median(v)) for v in baseline_reps]
                 hf = [float(jnp.linalg.norm(finals[i][0] - Uref[i])
@@ -1311,17 +1314,20 @@ def main():
                     baseline_all_s=baseline_reps,
                     hybrid_timed_telemetry=hybrid_timed_telemetry,
                     baseline_timed_telemetry=baseline_timed_telemetry,
-                    hybrid_total_ms=float(np.mean(hmed)) * 1e3,
-                    baseline_total_ms=float(np.mean(bmed)) * 1e3,
-                    speedup_vs_zero_cg=float(np.mean(bmed) / np.mean(hmed)),
+                    hybrid_total_ms=(float(np.mean(hmed)) * 1e3 if hmed else None),
+                    baseline_total_ms=(float(np.mean(bmed)) * 1e3 if bmed else None),
+                    speedup_vs_zero_cg=(float(np.mean(bmed) / np.mean(hmed))
+                                        if hmed else None),
                     iters_hybrid_all=[v[1] for v in finals],
                     iters_baseline_all=[v[1] for v in bases],
                     iters_hybrid_mean=float(np.mean([v[1] for v in finals])),
                     iters_baseline_mean=float(np.mean([v[1] for v in bases])),
-                    iters_hybrid_timed_mean=float(np.mean([
-                        g["iterations"] for case in hybrid_timed_telemetry for g in case])),
-                    iters_baseline_timed_mean=float(np.mean([
-                        g["iterations"] for case in baseline_timed_telemetry for g in case])),
+                    iters_hybrid_timed_mean=(float(np.mean([
+                        g["iterations"] for case in hybrid_timed_telemetry for g in case]))
+                        if hybrid_timed_telemetry else None),
+                    iters_baseline_timed_mean=(float(np.mean([
+                        g["iterations"] for case in baseline_timed_telemetry for g in case]))
+                        if baseline_timed_telemetry else None),
                     iter_saving_fraction=1.0 - float(np.mean([v[1] for v in finals]))
                                              / float(np.mean([v[1] for v in bases])),
                     guess_rel_l2_mean=float(np.mean([v["guess_rel_l2"] for v in diagnostics])),
@@ -1333,20 +1339,24 @@ def main():
                     guess_diagnostics_per_case=diagnostics,
                     lm_diagnostics_per_case=lm_diagnostics,
                     transport_residual_gate_per_case=transport_gate_diagnostics,
-                    final_true_rel_residual_max=float(max(
+                    final_true_rel_residual_max=(float(max(
                         g["recomputed_true_rel_residual"]
-                        for case in hybrid_timed_telemetry for g in case)),
-                    baseline_true_rel_residual_max=float(max(
+                        for case in hybrid_timed_telemetry for g in case))
+                        if hybrid_timed_telemetry else None),
+                    baseline_true_rel_residual_max=(float(max(
                         g["recomputed_true_rel_residual"]
-                        for case in baseline_timed_telemetry for g in case)),
+                        for case in baseline_timed_telemetry for g in case))
+                        if baseline_timed_telemetry else None),
                     final_true_rel_residual_validation_max=float(max(v[2] for v in finals)),
                     baseline_true_rel_residual_validation_max=float(max(v[2] for v in bases)),
-                    final_rel_l2_mean=float(np.mean([
+                    final_rel_l2_mean=(float(np.mean([
                         g["rel_l2_vs_exact_dst"]
-                        for case in hybrid_timed_telemetry for g in case])),
-                    baseline_rel_l2_mean=float(np.mean([
+                        for case in hybrid_timed_telemetry for g in case]))
+                        if hybrid_timed_telemetry else None),
+                    baseline_rel_l2_mean=(float(np.mean([
                         g["rel_l2_vs_exact_dst"]
-                        for case in baseline_timed_telemetry for g in case])),
+                        for case in baseline_timed_telemetry for g in case]))
+                        if baseline_timed_telemetry else None),
                     final_rel_l2_validation_mean=float(np.mean(hf)),
                     baseline_rel_l2_validation_mean=float(np.mean(bf)),
                     exact_direct_ms=None,
@@ -1354,14 +1364,26 @@ def main():
                 )
                 report["rows"].append(row)
                 save()
-                print(
-                    f"RESULT N={n} {arm.name} tau={tau:.0e}: construct "
-                    f"{row['construction_ms']:.3f} ms, Aerr {row['guess_a_norm_ratio_mean']:.3e}, "
-                    f"iters {row['iters_hybrid_mean']:.1f}/{row['iters_baseline_mean']:.1f}, "
-                    f"total {row['hybrid_total_ms']:.3f}/{row['baseline_total_ms']:.3f} ms, "
-                    f"speedup {row['speedup_vs_zero_cg']:.3f}x",
-                    flush=True,
-                )
+                if PAIRWISE_DIAGNOSTIC:
+                    print(
+                        f"RESULT N={n} {arm.name} tau={tau:.0e}: construct "
+                        f"{row['construction_ms']:.3f} ms, Aerr "
+                        f"{row['guess_a_norm_ratio_mean']:.3e}, iters "
+                        f"{row['iters_hybrid_mean']:.1f}/{row['iters_baseline_mean']:.1f}, "
+                        f"total {row['hybrid_total_ms']:.3f}/"
+                        f"{row['baseline_total_ms']:.3f} ms, speedup "
+                        f"{row['speedup_vs_zero_cg']:.3f}x",
+                        flush=True,
+                    )
+                else:
+                    print(
+                        f"VALIDATED N={n} {arm.name} tau={tau:.0e}: construct "
+                        f"{row['construction_ms']:.3f} ms, Aerr "
+                        f"{row['guess_a_norm_ratio_mean']:.3e}, iters "
+                        f"{row['iters_hybrid_mean']:.1f}/{row['iters_baseline_mean']:.1f}; "
+                        "authoritative joint timing pending",
+                        flush=True,
+                    )
 
         # Authoritative wall clock: all arms, zero-start CG, and exact FFT-DST are rotated
         # through one post-burn block. This supports paired combined-vs-spectral deltas and
@@ -1509,13 +1531,21 @@ def main():
                     means["spectral_q8"] / means[name] if "spectral_q8" in means else None
                 )
                 tele = all_telemetry[name]
+                btele = all_telemetry["zero_cg"]
                 row["iters_hybrid_timed_mean"] = float(np.mean([
                     g["iterations"] for case in tele for g in case]))
+                row["iters_baseline_timed_mean"] = float(np.mean([
+                    g["iterations"] for case in btele for g in case]))
                 row["final_true_rel_residual_max"] = float(max(
                     g["recomputed_true_rel_residual"] for case in tele for g in case))
                 row["final_rel_l2_mean"] = float(np.mean([
                     g["rel_l2_vs_exact_dst"] for case in tele for g in case]))
                 row["joint_timed_telemetry"] = tele
+                row["baseline_true_rel_residual_max"] = float(max(
+                    g["recomputed_true_rel_residual"] for case in btele for g in case))
+                row["baseline_rel_l2_mean"] = float(np.mean([
+                    g["rel_l2_vs_exact_dst"] for case in btele for g in case]))
+                row["joint_baseline_timed_telemetry"] = btele
                 for control, deltas in paired_deltas_by_control.items():
                     if name in deltas:
                         row[f"paired_delta_vs_{control}"] = deltas[name]

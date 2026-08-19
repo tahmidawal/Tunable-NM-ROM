@@ -94,6 +94,24 @@ def decoder_speed(summary):
 
 
 def seed_variability(summary):
+    b_all = summary["burgers_three_seed"]
+    b_rec = summary["burgers_gate_audit"]["recommended"]
+    b_focus = []
+    if b_rec is not None:
+        same_family = [r for r in b_all
+                       if r["architecture"] == b_rec["architecture"] and
+                       r["hidden"] == b_rec["hidden"] and
+                       r["group_size"] == b_rec["group_size"] and
+                       r["M"] == b_rec["M"]]
+        selected = next(r for r in same_family if r["m"] == b_rec["m"])
+        lower = max((r for r in same_family if r["m"] < b_rec["m"]),
+                    key=lambda r: r["m"], default=None)
+        b_focus.extend(r for r in (lower, selected) if r is not None)
+    b_focus.extend(r for r in b_all
+                   if r["M"] == 128 and r["m"] == 640 and
+                   ((r["hidden"] == 159 and r["group_size"] == 3) or
+                    (r["hidden"] == 160 and r["group_size"] == 4)))
+    b_focus = sorted(b_focus, key=lambda r: (r["group_size"], r["m"]))
     panels = [
         ("Poisson H98/g2", 6e-3,
          sorted((r for r in summary["poisson_three_seed"]
@@ -101,12 +119,8 @@ def seed_variability(summary):
                 key=lambda r: (r["m"], r["M"])),
          lambda r: f'M{r["M"]}\nm{r["m"]}'),
         ("Burgers H160", 1e-2,
-         sorted((r for r in summary["burgers_three_seed"]
-                 if r["hidden"] == 160 and
-                 ((r["group_size"] == 2 and r["M"] == 128) or
-                  (r["group_size"] == 4 and r["m"] == 640))),
-                key=lambda r: (r["group_size"], r["m"])),
-         lambda r: f'g{r["group_size"]}\nM{r["M"]}/m{r["m"]}'),
+         b_focus,
+         lambda r: f'H{r["hidden"]}/g{r["group_size"]}\nM{r["M"]}/m{r["m"]}'),
     ]
     if not any(rows for _, _, rows, _ in panels):
         return

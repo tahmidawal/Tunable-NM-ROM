@@ -93,6 +93,22 @@ use the selected rank clamped to their interior dimension. This sensitivity also
 dense sine diagonalization as a separately labeled direct baseline, including its measured f64
 true residual, rather than conflating it with a partial-q-plus-CG hybrid.
 
+## Locked fresh-seed confirmation
+
+Validation fixes the spectral rule to `q=min(512,N-2)` at FOM tolerance `1e-6` and full rank at
+`1e-8` and `1e-10`. Both `spectral_q512` and `spectral_q1024` remain in the confirmation JSON so
+the matched same-job sensitivity is auditable, but `TEST_SEED=20260819` does not re-select the
+rule. The dense full-rank direct solve and FFT-DST direct solve are separately labeled; a direct
+field is only eligible at a tolerance when its timed invocation's measured true residual meets it.
+
+The final job uses N=32,64,128,256,512,1024; all three tolerances; 16 accuracy cases and six
+timed cases with seven repetitions each. Its fixed learned controls are the original audited K=8
+weak LM NM-ROM (`lmmean_cfull_q0`), the cached nonlinear K=16 GroupFiLM NM-ROM selected by the
+calibration gate (`groupn_rt30_c64_q8`), and the parameter-aligned stage-1 learned surrogate
+(`param1_c64_q8`). These are timed alongside the two spectral arms, zero-start counting/native
+CG, native Jacobi sensitivity, dense sine direct, and FFT-DST direct in one rotated post-burn block.
+No fresh-seed timing selects an architecture, rank, tolerance, or reported comparison.
+
 ## Files
 
 - `feasibility.py`: train-only RBF calibration, coarse decoding, spectral corrections,

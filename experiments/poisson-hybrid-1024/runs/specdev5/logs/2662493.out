@@ -1,0 +1,30 @@
+host=pax050 job=2662493 gpu=NVIDIA A100 80GB PCIe
+commit=d01c94cd0b58d2dc3e400da6d7cd779e4bb87c31 dirty_hash=e3b0c44298fc cell=specdev5
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[512, 1024] taus=[1e-06, 1e-08, 1e-10] arms=['spectral_q256', 'spectral_q384', 'spectral_q512', 'spectral_q1024'] test_seed=0 smoke=0 reps=7 warm=2
+VALIDATED N=512 spectral_q256 tau=1e-06: construct 0.107 ms, Aerr 3.718e-06, iters 1.1/1330.1; authoritative joint timing pending
+VALIDATED N=512 spectral_q256 tau=1e-08: construct 0.107 ms, Aerr 3.718e-06, iters 2.1/1569.6; authoritative joint timing pending
+VALIDATED N=512 spectral_q256 tau=1e-10: construct 0.107 ms, Aerr 3.718e-06, iters 3.2/1770.6; authoritative joint timing pending
+VALIDATED N=512 spectral_q384 tau=1e-06: construct 0.130 ms, Aerr 9.843e-07, iters 0.6/1330.1; authoritative joint timing pending
+VALIDATED N=512 spectral_q384 tau=1e-08: construct 0.130 ms, Aerr 9.843e-07, iters 1.1/1569.6; authoritative joint timing pending
+VALIDATED N=512 spectral_q384 tau=1e-10: construct 0.130 ms, Aerr 9.843e-07, iters 1.8/1770.6; authoritative joint timing pending
+VALIDATED N=512 spectral_q512 tau=1e-06: construct 0.159 ms, Aerr 1.341e-13, iters 0.0/1330.1; authoritative joint timing pending
+VALIDATED N=512 spectral_q512 tau=1e-08: construct 0.159 ms, Aerr 1.341e-13, iters 0.0/1569.6; authoritative joint timing pending
+VALIDATED N=512 spectral_q512 tau=1e-10: construct 0.159 ms, Aerr 1.341e-13, iters 0.0/1770.6; authoritative joint timing pending
+VALIDATED N=512 spectral_q1024 tau=1e-06: construct 0.158 ms, Aerr 1.341e-13, iters 0.0/1330.1; authoritative joint timing pending
+VALIDATED N=512 spectral_q1024 tau=1e-08: construct 0.158 ms, Aerr 1.341e-13, iters 0.0/1569.6; authoritative joint timing pending
+VALIDATED N=512 spectral_q1024 tau=1e-10: construct 0.158 ms, Aerr 1.341e-13, iters 0.0/1770.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q256 tau=1e-06: construct 0.192 ms, Aerr 4.946e-06, iters 2.8/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q256 tau=1e-08: construct 0.192 ms, Aerr 4.946e-06, iters 5.1/3178.4; authoritative joint timing pending
+VALIDATED N=1024 spectral_q256 tau=1e-10: construct 0.192 ms, Aerr 4.946e-06, iters 7.6/3574.8; authoritative joint timing pending
+VALIDATED N=1024 spectral_q384 tau=1e-06: construct 0.224 ms, Aerr 2.416e-06, iters 1.6/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q384 tau=1e-08: construct 0.224 ms, Aerr 2.416e-06, iters 3.0/3178.4; authoritative joint timing pending
+VALIDATED N=1024 spectral_q384 tau=1e-10: construct 0.224 ms, Aerr 2.416e-06, iters 4.5/3574.8; authoritative joint timing pending
+VALIDATED N=1024 spectral_q512 tau=1e-06: construct 0.297 ms, Aerr 1.320e-06, iters 1.1/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q512 tau=1e-08: construct 0.297 ms, Aerr 1.320e-06, iters 1.9/3178.4; authoritative joint timing pending
+VALIDATED N=1024 spectral_q512 tau=1e-10: construct 0.297 ms, Aerr 1.320e-06, iters 3.1/3574.8; authoritative joint timing pending
+VALIDATED N=1024 spectral_q1024 tau=1e-06: construct 0.629 ms, Aerr 2.915e-13, iters 0.0/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q1024 tau=1e-08: construct 0.629 ms, Aerr 2.915e-13, iters 0.0/3178.4; authoritative joint timing pending
+VALIDATED N=1024 spectral_q1024 tau=1e-10: construct 0.629 ms, Aerr 2.915e-13, iters 0.2/3574.8; authoritative joint timing pending
+DONE
+ALL-DONE

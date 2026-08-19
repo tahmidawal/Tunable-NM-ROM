@@ -79,6 +79,12 @@ locked calibrated FOM configuration.
   linear-extrapolation guess error from 4.49e-3 to 4.33e-4 and BiCGStab work
   from 155 to 126; its charged paired cluster gate is pending.  It is a
   classical control and sets the bar for any future learned manifold.
+* Inexact-Newton calibration showed that the inherited inner tolerance `1e-10`
+  was substantial over-solving.  A Dirichlet diffusion/Helmholtz left
+  preconditioner reduced BiCGStab work by roughly an order of magnitude in its
+  own calibration job.  Because wall clock cannot be selected across jobs, a
+  narrowed joint none-versus-Helmholtz lock job is required before any timing
+  claim or final solver setting is accepted.
 
 All exact values and complete arrays for these gates are in `runs/`.  No gate
 number is promoted without its JSON, batch log, and matching remote/local

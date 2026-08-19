@@ -192,8 +192,13 @@ case "$round" in
     make_burgers nda_bg160l4g4f31_s1_r18 160 4 31 groupfilm 4 0 1 60000 "$vars"
     make_burgers nda_bg160l4g4f31_s2_r18 160 4 31 groupfilm 4 0 2 60000 "$vars"
     ;;
+  round19)
+    # Final seed-0 compression bracket beyond group 4. This is discarded unless
+    # its decoder clears 8e-3 before any objective or seed follow-up is run.
+    make_burgers nda_bg160l4g8f31_r19 160 4 31 groupfilm 8 0
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15|round18]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15|round18|round19]" >&2
     exit 2
     ;;
 esac

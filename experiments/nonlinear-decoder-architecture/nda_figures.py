@@ -49,25 +49,25 @@ def architecture_tradeoff(summary):
     axes[0].grid(alpha=0.25)
     axes[0].legend(frameon=False, loc="upper right")
 
-    burgers = summary["burgers_three_seed"]
-    xs = np.arange(len(burgers))
-    labels = [f'g{r["group_size"]}\nM{r["M"]}/m{r["m"]}' for r in burgers]
-    axes[1].bar(xs - 0.18, [r["full"]["mean"] for r in burgers], width=0.36,
-                yerr=[r["full"]["sample_std"] for r in burgers], capsize=3,
-                color="#4C78A8", label="full weak")
-    axes[1].bar(xs + 0.18, [r["eq"]["mean"] for r in burgers], width=0.36,
-                yerr=[r["eq"]["sample_std"] for r in burgers], capsize=3,
-                color="#F58518", label="NNLS-EQ weak")
+    burgers = sorted(
+        (r for r in summary["burgers_three_seed"]
+         if r["hidden"] == 160 and r["group_size"] == 2 and r["M"] == 128),
+        key=lambda r: r["m"])
+    xs = [r["m"] for r in burgers]
+    axes[1].errorbar(xs, [r["full"]["mean"] for r in burgers],
+                     yerr=[r["full"]["sample_std"] for r in burgers],
+                     marker="o", capsize=3, color="#4C78A8", label="full weak")
+    axes[1].errorbar(xs, [r["eq"]["mean"] for r in burgers],
+                     yerr=[r["eq"]["sample_std"] for r in burgers],
+                     marker="s", capsize=3, color="#F58518", label="NNLS-EQ weak")
     axes[1].axhline(1e-2, color="#777777", linestyle="--", linewidth=1,
                     label="1% accuracy target")
-    axes[1].set_xticks(xs, labels)
-    axes[1].set_title("Burgers H160: three-seed objective refinement")
+    axes[1].set_title("Burgers H160/g2: quadrature boundary")
+    axes[1].set_xlabel("NNLS quadrature points m (M=128)")
     axes[1].set_ylabel("held-out trajectory relative $L^2$ error")
     axes[1].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
     axes[1].grid(axis="y", alpha=0.25)
-    handles, legend_labels = axes[1].get_legend_handles_labels()
-    axes[1].legend(handles[1:] + handles[:1], legend_labels[1:] + legend_labels[:1],
-                   frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=3)
+    axes[1].legend(frameon=False, loc="upper right")
     save(fig, "architecture_accuracy_tradeoff")
 
 
@@ -94,34 +94,45 @@ def decoder_speed(summary):
 
 
 def seed_variability(summary):
-    available = summary["poisson_three_seed"] + summary["burgers_three_seed"]
-    if not available:
+    panels = [
+        ("Poisson H98/g2", 6e-3,
+         sorted((r for r in summary["poisson_three_seed"]
+                 if r["hidden"] == 98 and r["group_size"] == 2),
+                key=lambda r: (r["m"], r["M"])),
+         lambda r: f'M{r["M"]}\nm{r["m"]}'),
+        ("Burgers H160", 1e-2,
+         sorted((r for r in summary["burgers_three_seed"]
+                 if r["hidden"] == 160 and
+                 ((r["group_size"] == 2 and r["M"] == 128) or
+                  (r["group_size"] == 4 and r["m"] == 640))),
+                key=lambda r: (r["group_size"], r["m"])),
+         lambda r: f'g{r["group_size"]}\nM{r["M"]}/m{r["m"]}'),
+    ]
+    if not any(rows for _, _, rows, _ in panels):
         return
-    groups = []
-    for row in available:
-        if row["name"] == "Poisson":
-            label = f'Poisson H{row["hidden"]}'
-        else:
-            label = f'Burgers g{row["group_size"]} M{row["M"]}/m{row["m"]}'
-        groups.append((label, row))
-    fig, ax = plt.subplots(figsize=(max(7.0, 1.5 * len(groups)), 4.5), constrained_layout=True)
-    x = np.arange(len(groups))
+    fig, axes = plt.subplots(1, 2, figsize=(13.2, 4.8), constrained_layout=True)
     offsets = {"decoder": -0.24, "full": 0.0, "eq": 0.24}
     colors = {"decoder": "#54A24B", "full": "#4C78A8", "eq": "#F58518"}
-    for metric in ("decoder", "full", "eq"):
-        means = [row[metric]["mean"] for _, row in groups]
-        stds = [row[metric]["sample_std"] for _, row in groups]
-        ax.errorbar(x + offsets[metric], means, yerr=stds, fmt="o", capsize=4,
-                    color=colors[metric], label=metric)
-        for index, (_, row) in enumerate(groups):
-            ax.scatter(np.repeat(x[index] + offsets[metric], 3), row[metric]["values"],
-                       s=18, color=colors[metric], alpha=0.55)
-    ax.set_xticks(x, [label for label, _ in groups])
-    ax.set_ylabel("held-out relative $L^2$ error")
-    ax.set_title("Three-seed variability (points) and mean ± sample std")
-    ax.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
-    ax.grid(axis="y", alpha=0.25)
-    ax.legend(frameon=False, ncol=3)
+    for ax, (title, gate, rows, label) in zip(axes, panels):
+        x = np.arange(len(rows))
+        for metric in ("decoder", "full", "eq"):
+            means = [row[metric]["mean"] for row in rows]
+            stds = [row[metric]["sample_std"] for row in rows]
+            ax.errorbar(x + offsets[metric], means, yerr=stds, fmt="o", capsize=4,
+                        color=colors[metric], label=metric)
+            for index, row in enumerate(rows):
+                ax.scatter(np.repeat(x[index] + offsets[metric], 3), row[metric]["values"],
+                           s=18, color=colors[metric], alpha=0.55)
+        ax.axhline(gate, color="#777777", linestyle="--", linewidth=1,
+                   label="accuracy gate")
+        ax.set_xticks(x, [label(row) for row in rows], fontsize=8)
+        ax.set_title(title)
+        ax.set_xlabel("weak objective / quadrature")
+        ax.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+        ax.grid(axis="y", alpha=0.25)
+    axes[0].set_ylabel("held-out relative $L^2$ error")
+    axes[1].legend(frameon=False, ncol=2, fontsize=8)
+    fig.suptitle("Three-seed values and mean ± sample standard deviation")
     save(fig, "three_seed_variability")
 
 

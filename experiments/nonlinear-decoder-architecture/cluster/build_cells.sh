@@ -53,8 +53,8 @@ EOF
   (cd "$d" && find . -type f -not -name MANIFEST.sha256 -exec sha256sum {} \; | sort > MANIFEST.sha256)
 }
 
-make_poisson() { # cell hidden layers film_start
-  local cell="$1" hidden="$2" layers="$3" film_start="$4"
+make_poisson() { # cell hidden layers film_start architecture group_size
+  local cell="$1" hidden="$2" layers="$3" film_start="$4" arch="${5:-resfilm}" group="${6:-8}"
   local d
   d="$(make_base "$cell" 64G 12:00:00)"
   mkdir -p "$d/code/poisson/followup" "$d/code/poisson/deps/nonlinear-decoder-architecture"
@@ -66,7 +66,7 @@ make_poisson() { # cell hidden layers film_start
 cd code/poisson
 export N=64 N_TRAIN=512 N_VAL=64 STEPS=20000 BATCH=32 P_SUB=1024
 export K_LAT=16 HARD_BC=1 GN_ITERS=60 TRAIN_SEED=0
-export HIDDEN=$hidden N_LAYERS=$layers DECODER_ARCH=resfilm FILM_GROUP_SIZE=8 FILM_START=$film_start Z_WIDTH=64
+export HIDDEN=$hidden N_LAYERS=$layers DECODER_ARCH=$arch FILM_GROUP_SIZE=$group FILM_START=$film_start Z_WIDTH=64
 \$PY -u followup/fu_train.py ../../out
 export PKL=../../out/autodec_K16_N64_hbc_stages.pkl
 export N_TEST=16 OBJECTIVES=weak_a1_M128 MS=512 SCHEMES=full,nnls INITS=nearest
@@ -77,8 +77,8 @@ EOF
   finish_cell "$d"
 }
 
-make_burgers() { # cell hidden layers n_freq
-  local cell="$1" hidden="$2" layers="$3" n_freq="$4"
+make_burgers() { # cell hidden layers n_freq architecture group_size film_start
+  local cell="$1" hidden="$2" layers="$3" n_freq="$4" arch="${5:-resfilm}" group="${6:-8}" film_start="${7:-2}"
   local d
   d="$(make_base "$cell" 80G 18:00:00)"
   mkdir -p "$d/code/burgers/followup" \
@@ -96,7 +96,7 @@ cd code/burgers
 export N=64 N_TRAIN=512 N_VAL=64 N_TEST=16 K_LAT=16
 export AD_STEPS=60000 AD_BATCH=128 P_SUB=2048 T_SMOOTH=1e-2 LAT_REG=1e-4 LAT_LR=5e-3 PEAK_LR=2e-3
 export AD_HIDDEN=$hidden AD_LAYERS=$layers AD_N_FREQ=$n_freq
-export DECODER_ARCH=resfilm FILM_GROUP_SIZE=8 FILM_START=2 Z_WIDTH=64
+export DECODER_ARCH=$arch FILM_GROUP_SIZE=$group FILM_START=$film_start Z_WIDTH=64
 export GN_BUDGET=30 GN_TOL=1e-9 IC_BUDGET=100 FLOOR_BUDGET=60
 export VARIANTS=lspg:full:weak64,lspg:eq256:weak64,lspg:eq512:weak64
 export POD_KS=16 POD_VARIANTS= DO_TIMING=1 TIME_REPS=7
@@ -107,11 +107,27 @@ EOF
   finish_cell "$d"
 }
 
-make_poisson nda_p96l4_r1 96 4 2
-make_poisson nda_p128l4_r1 128 4 2
-make_burgers nda_b160l4f31_r1 160 4 31
-make_burgers nda_b160l4f16_r1 160 4 16
-make_burgers nda_b128l5f16_r1 128 5 16
+round="${1:-round1}"
+case "$round" in
+  round1)
+    make_poisson nda_p96l4_r1 96 4 2
+    make_poisson nda_p128l4_r1 128 4 2
+    make_burgers nda_b160l4f31_r1 160 4 31
+    make_burgers nda_b160l4f16_r1 160 4 16
+    make_burgers nda_b128l5f16_r1 128 5 16
+    ;;
+  round2)
+    # Every affine layer is modulated, but adjacent channels share one FiLM
+    # coefficient.  group=2 and group=4 bracket the compression/accuracy trade.
+    make_poisson nda_pg128l4g2_r2 128 4 0 groupfilm 2
+    make_poisson nda_pg128l4g4_r2 128 4 0 groupfilm 4
+    make_burgers nda_bg160l4g2f31_r2 160 4 31 groupfilm 2 0
+    make_burgers nda_bg192l4g2f31_r2 192 4 31 groupfilm 2 0
+    ;;
+  *)
+    echo "usage: $0 [round1|round2]" >&2
+    exit 2
+    ;;
+esac
 
-echo "built round-1 cells under $STAGE_ROOT"
-
+echo "built $round cells under $STAGE_ROOT"

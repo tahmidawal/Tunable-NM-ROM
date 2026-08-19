@@ -15,6 +15,9 @@ from __future__ import annotations
 import math
 
 import jax
+
+jax.config.update("jax_enable_x64", True)
+
 import jax.numpy as jnp
 import numpy as np
 
@@ -55,7 +58,7 @@ def validate_config(config):
     missing = [k for k in required if k not in config]
     if missing:
         raise ValueError(f"decoder config missing {missing}")
-    if config["name"] not in ("resfilm", "warp_resfilm"):
+    if config["name"] not in ("resfilm", "groupfilm", "warp_resfilm"):
         raise ValueError(f"unknown nonlinear decoder {config['name']}")
     h = int(config["hidden"])
     group = int(config["group_size"])
@@ -65,8 +68,8 @@ def validate_config(config):
         raise ValueError(f"hidden={h} must be divisible by group_size={group}")
     if layers < 2:
         raise ValueError("n_layers counts the stem and residual transforms; need >=2")
-    if not 1 <= start < layers:
-        raise ValueError(f"film_start must be in [1,{layers - 1}], got {start}")
+    if not 0 <= start < layers:
+        raise ValueError(f"film_start must be in [0,{layers - 1}], got {start}")
     return config
 
 
@@ -116,8 +119,27 @@ def parameter_count(params):
     return sum(int(np.prod(x.shape)) for x in jax.tree_util.tree_leaves(params))
 
 
-def apply(params, z, xy, n_freq, config_, z_ff=0):
-    """Evaluate the nonlinear decoder at arbitrary coordinates ``xy``."""
+def _latent_embedding(params, z, z_ff):
+    return jax.nn.swish(z_features(z, z_ff) @ params["z_embed"]["W"]
+                        + params["z_embed"]["b"])
+
+
+def prepare_coords(params, xy, n_freq, config_):
+    """Cache the coordinate-only stem at a fixed point set.
+
+    This is valid only for the unwarped residual decoder.  It changes no
+    arithmetic downstream of the stem and imposes no output basis.
+    """
+    cfg = validate_config(config_)
+    if cfg["name"] not in ("resfilm", "groupfilm"):
+        raise ValueError("coordinate caching is unavailable when coordinates depend on z")
+    # Cache the affine map, not its activation: film_start=0 still modulates the
+    # stem before the first nonlinearity and remains exactly cacheable.
+    return coord_features(xy, n_freq) @ params["stem"]["W"] + params["stem"]["b"]
+
+
+def apply_prepared(params, z, h, config_, z_ff=0):
+    """Evaluate from a coordinate stem produced by :func:`prepare_coords`."""
     cfg = validate_config(config_)
     hidden = int(cfg["hidden"])
     group_size = int(cfg["group_size"])
@@ -126,19 +148,59 @@ def apply(params, z, xy, n_freq, config_, z_ff=0):
     n_groups = hidden // group_size
     n_mod = n_layers - film_start
 
-    ze = jax.nn.swish(z_features(z, z_ff) @ params["z_embed"]["W"]
-                      + params["z_embed"]["b"])
+    ze = _latent_embedding(params, z, z_ff)
+    film = (ze @ params["film"]["W"] + params["film"]["b"]).reshape(
+        n_mod, 2, n_groups)
+    if film_start == 0:
+        gamma = jnp.repeat(film[0, 0], group_size)
+        beta = jnp.repeat(film[0, 1], group_size)
+        h = h * (1.0 + gamma) + beta
+    h = jax.nn.swish(h)
+    scale = float(cfg["residual_scale"])
+    for block_index, lyr in enumerate(params["blocks"], start=1):
+        r = h @ lyr["W"] + lyr["b"]
+        if block_index >= film_start:
+            mod_index = block_index - film_start
+            gamma = jnp.repeat(film[mod_index, 0], group_size)
+            beta = jnp.repeat(film[mod_index, 1], group_size)
+            r = r * (1.0 + gamma) + beta
+        if cfg["name"] == "groupfilm":
+            h = jax.nn.swish(r)
+        else:
+            h = h + scale * jax.nn.swish(r)
+    return (h @ params["out"]["W"] + params["out"]["b"])[:, 0]
+
+
+def apply(params, z, xy, n_freq, config_, z_ff=0):
+    """Evaluate the nonlinear decoder at arbitrary coordinates ``xy``."""
+    cfg = validate_config(config_)
     xy_net = xy
     if cfg["name"] == "warp_resfilm":
+        ze = _latent_embedding(params, z, z_ff)
         raw = ze @ params["warp"]["W"] + params["warp"]["b"]
         shift = float(cfg["warp_max_shift"]) * jnp.tanh(raw[:2])
         log_scale = float(cfg["warp_max_log_scale"]) * jnp.tanh(raw[2:])
         xy_net = 0.5 + (xy - 0.5) * jnp.exp(log_scale)[None, :] + shift[None, :]
 
+    h = coord_features(xy_net, n_freq) @ params["stem"]["W"] + params["stem"]["b"]
+    # Keep the warp's z-dependent stem in this function; the unwarped arm is
+    # bitwise-equivalent to prepare_coords + apply_prepared.
+    if cfg["name"] in ("resfilm", "groupfilm"):
+        return apply_prepared(params, z, h, cfg, z_ff)
+
+    hidden = int(cfg["hidden"])
+    group_size = int(cfg["group_size"])
+    film_start = int(cfg["film_start"])
+    n_layers = int(cfg["n_layers"])
+    n_groups = hidden // group_size
+    n_mod = n_layers - film_start
     film = (ze @ params["film"]["W"] + params["film"]["b"]).reshape(
         n_mod, 2, n_groups)
-    h = jax.nn.swish(coord_features(xy_net, n_freq) @ params["stem"]["W"]
-                     + params["stem"]["b"])
+    if film_start == 0:
+        gamma = jnp.repeat(film[0, 0], group_size)
+        beta = jnp.repeat(film[0, 1], group_size)
+        h = h * (1.0 + gamma) + beta
+    h = jax.nn.swish(h)
     scale = float(cfg["residual_scale"])
     for block_index, lyr in enumerate(params["blocks"], start=1):
         r = h @ lyr["W"] + lyr["b"]
@@ -149,4 +211,3 @@ def apply(params, z, xy, n_freq, config_, z_ff=0):
             r = r * (1.0 + gamma) + beta
         h = h + scale * jax.nn.swish(r)
     return (h @ params["out"]["W"] + params["out"]["b"])[:, 0]
-

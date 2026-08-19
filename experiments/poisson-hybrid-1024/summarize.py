@@ -13,6 +13,10 @@ def f(value, digits=3):
     return "—" if value is None else f"{value:.{digits}f}"
 
 
+def sci(value, digits=2):
+    return "—" if value is None else f"{value:.{digits}e}"
+
+
 def ci(row, key):
     values = row.get(key)
     return "—" if not values else f"[{values[0]:.3f}, {values[1]:.3f}]"
@@ -47,27 +51,74 @@ def main():
         "", "## End-to-end rows", "",
         "Times are mean case medians from the authoritative rotated block. Confidence intervals "
         "are deterministic case-resampling bootstrap intervals when present.", "",
-        "| run | N | arm | construct ms | total ms | total 95% CI ms | speedup/zero | "
-        "speedup 95% CI | CG iters | guess A-error | outliers | direct ms |",
-        "|---|---:|---|---:|---:|---|---:|---|---:|---:|---:|---:|",
+        "| run | N | tolerance | arm | construct ms | total ms | total 95% CI ms | "
+        "speedup/zero | speedup 95% CI | CG iters | guess A-error | final residual | "
+        "outliers | direct ms |",
+        "|---|---:|---:|---|---:|---:|---|---:|---|---:|---:|---:|---:|---:|",
     ])
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
         for row in data["rows"]:
             lines.append(
-                f"| {label} | {row['N']} | `{row['arm']}` | {f(row.get('construction_ms'))} | "
+                f"| {label} | {row['N']} | {row['fom_tau']:.0e} | `{row['arm']}` | "
+                f"{f(row.get('construction_ms'))} | "
                 f"{f(row.get('hybrid_total_ms'))} | {ci(row, 'hybrid_total_bootstrap_ci95_ms')} | "
                 f"{f(row.get('speedup_vs_zero_cg'))} | "
                 f"{ci(row, 'speedup_vs_zero_cg_bootstrap_ci95')} | "
                 f"{f(row.get('iters_hybrid_timed_mean', row.get('iters_hybrid_mean')), 1)} | "
-                f"{f(row.get('guess_a_norm_ratio_mean'), 4)} | "
+                f"{sci(row.get('guess_a_norm_ratio_mean'))} | "
+                f"{sci(row.get('final_true_rel_residual_max'))} | "
                 f"{row.get('hybrid_timing_outlier_count', '—')} | "
                 f"{f(row.get('exact_direct_ms'))} |"
             )
+    lines.extend([
+        "", "## Classical and native baselines", "",
+        "These are from the same authoritative rotated blocks as the end-to-end rows.", "",
+        "| run | N | tolerance | baseline | total ms | total 95% CI ms | iterations | "
+        "outliers | max residual | mean relative L2 |",
+        "|---|---:|---:|---|---:|---|---:|---:|---:|---:|",
+    ])
+    for path, data in runs:
+        label = os.path.basename(path).removesuffix(".json")
+        for mesh in data.get("mesh_checks", []):
+            for tolerance, block in mesh.get("joint_timing", {}).items():
+                means = block["mean_of_case_medians_ms"]
+                summaries = block.get("timing_summaries", {})
+                telemetry = block.get("timed_telemetry", {})
+                names = [
+                    name for name in block.get("order_base", [])
+                    if name in ("zero_cg", "fft_dst_direct") or name.startswith("native_")
+                ]
+                for name in names:
+                    summary = summaries.get(name, {})
+                    ci_s = summary.get("bootstrap_ci95_s")
+                    ci_ms = None if ci_s is None else [1000.0 * value for value in ci_s]
+                    grades = [grade for case in telemetry.get(name, []) for grade in case]
+                    residual = max(
+                        (grade["recomputed_true_rel_residual"] for grade in grades),
+                        default=None,
+                    )
+                    rel_l2 = (
+                        sum(grade["rel_l2_vs_exact_dst"] for grade in grades) / len(grades)
+                        if grades else None
+                    )
+                    iterations = (
+                        sum(grade["iterations"] for grade in grades) / len(grades)
+                        if grades and "iterations" in grades[0] else None
+                    )
+                    lines.append(
+                        f"| {label} | {mesh['N']} | {float(tolerance):.0e} | `{name}` | "
+                        f"{f(means.get(name))} | "
+                        f"{('—' if ci_ms is None else f'[{ci_ms[0]:.3f}, {ci_ms[1]:.3f}]')} | "
+                        f"{f(iterations, 1)} | {summary.get('outlier_count', '—')} | "
+                        f"{sci(residual)} | "
+                        f"{sci(rel_l2)} |"
+                    )
     lines.extend(["", "## Spectral-control paired comparisons", "",
                   "Positive delta means the candidate is slower than the named spectral control.", "",
-                  "| run | N | candidate | control | delta ms | 95% CI ms | control/candidate |",
-                  "|---|---:|---|---|---:|---|---:|"])
+                  "| run | N | tolerance | candidate | control | delta ms | 95% CI ms | "
+                  "control/candidate |",
+                  "|---|---:|---:|---|---|---:|---|---:|"])
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
         for row in data["rows"]:
@@ -79,7 +130,8 @@ def main():
             for control in controls:
                 pair = row[f"paired_delta_vs_{control}"]
                 lines.append(
-                    f"| {label} | {row['N']} | `{row['arm']}` | `{control}` | "
+                    f"| {label} | {row['N']} | {row['fom_tau']:.0e} | `{row['arm']}` | "
+                    f"`{control}` | "
                     f"{f(pair.get('mean_ms'))} | "
                     f"{ci(pair, 'bootstrap_ci95_ms')} | "
                     f"{f(pair.get('speedup_spectral_over_arm'))} |"

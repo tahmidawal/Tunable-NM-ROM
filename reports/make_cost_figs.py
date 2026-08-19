@@ -22,9 +22,9 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 WT = os.path.join(HERE, "..", "worktrees")
 PARETO = os.path.abspath(os.path.join(
-    WT, "2026-08-17-cost-to-tolerance/experiments/cost-to-tolerance/runs/pareto_points.json"))
+    WT, "2026-08-18-codex-handoff/experiments/cost-to-tolerance/runs/pareto_points.json"))
 HYBRID = os.path.abspath(os.path.join(
-    WT, "2026-08-17-rom-warmstart-fom/experiments/rom-warmstart-fom/runs/hybrid_points.json"))
+    WT, "2026-08-18-codex-handoff/experiments/rom-warmstart-fom/runs/hybrid_points.json"))
 OUT = os.path.join(HERE, "talk_figs")
 TAB = os.path.join(HERE, "2026-08-18-solve-cost-quadrature-and-the-hybrid.md")
 os.makedirs(OUT, exist_ok=True)

@@ -53,8 +53,12 @@ EOF
   (cd "$d" && find . -type f -not -name MANIFEST.sha256 -exec sha256sum {} \; | sort > MANIFEST.sha256)
 }
 
-make_poisson() { # cell hidden layers film_start architecture group_size
+make_poisson() { # cell hidden layers film_start architecture group_size [train_seed] [steps]
   local cell="$1" hidden="$2" layers="$3" film_start="$4" arch="${5:-resfilm}" group="${6:-8}"
+  local train_seed="${7:-0}" steps="${8:-20000}" seed_suffix=""
+  [[ "$train_seed" =~ ^[0-9]+$ ]] || { echo "invalid training seed $train_seed" >&2; exit 2; }
+  [[ "$steps" =~ ^[1-9][0-9]*$ ]] || { echo "invalid step count $steps" >&2; exit 2; }
+  [[ "$train_seed" == 0 ]] || seed_suffix="_S$train_seed"
   local d
   d="$(make_base "$cell" 64G 12:00:00)"
   mkdir -p "$d/code/poisson/followup" "$d/code/poisson/deps/nonlinear-decoder-architecture"
@@ -64,11 +68,11 @@ make_poisson() { # cell hidden layers film_start architecture group_size
   cp "$EXP/nda_arch.py" "$d/code/poisson/deps/nonlinear-decoder-architecture/"
   cat >> "$d/run.sbatch" <<EOF
 cd code/poisson
-export N=64 N_TRAIN=512 N_VAL=64 STEPS=20000 BATCH=32 P_SUB=1024
-export K_LAT=16 HARD_BC=1 GN_ITERS=60 TRAIN_SEED=0
+export N=64 N_TRAIN=512 N_VAL=64 STEPS=$steps BATCH=32 P_SUB=1024
+export K_LAT=16 HARD_BC=1 GN_ITERS=60 TRAIN_SEED=$train_seed
 export HIDDEN=$hidden N_LAYERS=$layers DECODER_ARCH=$arch FILM_GROUP_SIZE=$group FILM_START=$film_start Z_WIDTH=64
 \$PY -u followup/fu_train.py ../../out
-export PKL=../../out/autodec_K16_N64_hbc_stages.pkl
+export PKL=../../out/autodec_K16_N64_hbc${seed_suffix}_stages.pkl
 export N_TEST=16 OBJECTIVES=weak_a1_M128 MS=512 SCHEMES=full,nnls INITS=nearest
 export EQ_SNAPS=64 EQ_PERTURB=3 EQ_ROWS=3072 EQ_FIXED_SNAPS=1
 \$PY -u pro_colloc.py ../../out/rom.json
@@ -77,8 +81,12 @@ EOF
   finish_cell "$d"
 }
 
-make_burgers() { # cell hidden layers n_freq architecture group_size film_start
+make_burgers() { # cell hidden layers n_freq architecture group_size film_start [train_seed] [steps]
   local cell="$1" hidden="$2" layers="$3" n_freq="$4" arch="${5:-resfilm}" group="${6:-8}" film_start="${7:-2}"
+  local train_seed="${8:-0}" steps="${9:-60000}" seed_suffix=""
+  [[ "$train_seed" =~ ^[0-9]+$ ]] || { echo "invalid training seed $train_seed" >&2; exit 2; }
+  [[ "$steps" =~ ^[1-9][0-9]*$ ]] || { echo "invalid step count $steps" >&2; exit 2; }
+  [[ "$train_seed" == 0 ]] || seed_suffix="_S$train_seed"
   local d
   d="$(make_base "$cell" 80G 18:00:00)"
   mkdir -p "$d/code/burgers/followup" \
@@ -94,15 +102,16 @@ make_burgers() { # cell hidden layers n_freq architecture group_size film_start
   cat >> "$d/run.sbatch" <<EOF
 cd code/burgers
 export N=64 N_TRAIN=512 N_VAL=64 N_TEST=16 K_LAT=16
-export AD_STEPS=60000 AD_BATCH=128 P_SUB=2048 T_SMOOTH=1e-2 LAT_REG=1e-4 LAT_LR=5e-3 PEAK_LR=2e-3
+export AD_STEPS=$steps AD_BATCH=128 P_SUB=2048 T_SMOOTH=1e-2 LAT_REG=1e-4 LAT_LR=5e-3 PEAK_LR=2e-3
+export TRAIN_SEED=$train_seed
 export AD_HIDDEN=$hidden AD_LAYERS=$layers AD_N_FREQ=$n_freq
 export DECODER_ARCH=$arch FILM_GROUP_SIZE=$group FILM_START=$film_start Z_WIDTH=64
 export GN_BUDGET=30 GN_TOL=1e-9 IC_BUDGET=100 FLOOR_BUDGET=60
 export VARIANTS=lspg:full:weak64,lspg:eq256:weak64,lspg:eq512:weak64
 export POD_KS=16 POD_VARIANTS= DO_TIMING=1 TIME_REPS=7
 \$PY -u blat_train_ad.py ../../out
-\$PY -u blat_rom.py ../../out/blat_ad_N64_K16.pkl ../../out
-\$PY -c "import json; d=json.load(open('../../out/blat_rom_N64_K16.json')); assert d['backend']=='gpu' and set(d['rom'])=={'lspg:full:weak64','lspg:eq256:weak64','lspg:eq512:weak64'}"
+\$PY -u blat_rom.py ../../out/blat_ad_N64_K16${seed_suffix}.pkl ../../out
+\$PY -c "import json; d=json.load(open('../../out/blat_rom_N64_K16${seed_suffix}.json')); assert d['backend']=='gpu' and set(d['rom'])=={'lspg:full:weak64','lspg:eq256:weak64','lspg:eq512:weak64'}"
 EOF
   finish_cell "$d"
 }
@@ -131,8 +140,13 @@ case "$round" in
     make_poisson nda_pg96l4g2_r3 96 4 0 groupfilm 2
     make_poisson nda_pg112l3g2_r3 112 3 0 groupfilm 2
     ;;
+  round4)
+    # Interpolate the width knee after round 3: 112 passes the decoder/full-ROM
+    # gates, while 96 is the lower bracket.
+    make_poisson nda_pg104l4g2_r4 104 4 0 groupfilm 2
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3]" >&2
+    echo "usage: $0 [round1|round2|round3|round4]" >&2
     exit 2
     ;;
 esac

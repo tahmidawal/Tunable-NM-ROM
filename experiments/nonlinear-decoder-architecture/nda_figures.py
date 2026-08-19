@@ -49,18 +49,19 @@ def architecture_tradeoff(summary):
     axes[0].grid(alpha=0.25)
     axes[0].legend(frameon=False, loc="upper right")
 
-    burgers = summary["burgers_objectives"]
-    trust0 = [r for r in burgers if r["seed"] == 0 and r["trust_factor"] == 0]
-    xs = np.arange(len(trust0))
-    labels = [f'M={r["M"]}, m={r["m"]}' for r in trust0]
-    axes[1].bar(xs - 0.18, [r["full"] for r in trust0], width=0.36,
+    burgers = summary["burgers_three_seed"]
+    xs = np.arange(len(burgers))
+    labels = [f'g{r["group_size"]}\nM{r["M"]}/m{r["m"]}' for r in burgers]
+    axes[1].bar(xs - 0.18, [r["full"]["mean"] for r in burgers], width=0.36,
+                yerr=[r["full"]["sample_std"] for r in burgers], capsize=3,
                 color="#4C78A8", label="full weak")
-    axes[1].bar(xs + 0.18, [r["eq"] for r in trust0], width=0.36,
+    axes[1].bar(xs + 0.18, [r["eq"]["mean"] for r in burgers], width=0.36,
+                yerr=[r["eq"]["sample_std"] for r in burgers], capsize=3,
                 color="#F58518", label="NNLS-EQ weak")
     axes[1].axhline(1e-2, color="#777777", linestyle="--", linewidth=1,
                     label="1% accuracy target")
     axes[1].set_xticks(xs, labels)
-    axes[1].set_title("Burgers H160: objective refinement")
+    axes[1].set_title("Burgers H160: three-seed objective refinement")
     axes[1].set_ylabel("held-out trajectory relative $L^2$ error")
     axes[1].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
     axes[1].grid(axis="y", alpha=0.25)

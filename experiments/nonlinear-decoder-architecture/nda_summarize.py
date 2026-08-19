@@ -105,6 +105,31 @@ def poisson_rows():
     return out
 
 
+def poisson_objective_rows():
+    rows = []
+    for path in sorted(glob.glob(os.path.join(RUNS, "nda_peq*"))):
+        rom_path = os.path.join(path, "out", "rom.json")
+        if not os.path.isfile(rom_path):
+            continue
+        rom = read(rom_path)
+        config = rom["manifest"]["pkl_config"]
+        decoder = config.get("decoder_config")
+        if decoder is None:
+            continue
+        full, eq = pick(rom["rows"], "full"), pick(rom["rows"], "nnls")
+        rows.append(dict(
+            pde="Poisson", cell=os.path.basename(path), seed=seed_of(config),
+            architecture=decoder["name"], hidden=decoder["hidden"],
+            layers=decoder["n_layers"], group_size=decoder.get("group_size", 1),
+            n_params=config["n_params"], decoder=rom["oracle"]["nearest"],
+            full=full["rom_rel_l2_mean"], full_median=full["rom_rel_l2_med"],
+            full_max=full["rom_rel_l2_max"], eq=eq["rom_rel_l2_mean"],
+            eq_median=eq["rom_rel_l2_med"], eq_max=eq["rom_rel_l2_max"],
+            M=int(full["objective"].split("M")[-1]), m=eq["m"],
+        ))
+    return rows
+
+
 def burgers_rows():
     out = []
     base = os.path.join(WT, "experiments", "burgers2d-rom-latent-stepping", "runs",
@@ -238,6 +263,31 @@ def burgers_gate_audit(rows):
                                           if passing else None))
 
 
+def poisson_gate_audit(rows):
+    audits = []
+    group_keys = ("architecture", "hidden", "layers", "group_size", "n_params", "M", "m")
+    for candidate in sorted({tuple(r[k] for k in group_keys) for r in rows}):
+        descriptor = dict(zip(group_keys, candidate))
+        members = sorted((r for r in rows if all(r[k] == descriptor[k] for k in group_keys)),
+                         key=lambda r: r["seed"])
+        if [r["seed"] for r in members] != [0, 1, 2]:
+            continue
+        decoder_pass = all(r["decoder"] <= 6e-3 for r in members)
+        full_pass = all(r["full"] <= 6e-3 for r in members)
+        eq_pass = all(r["eq"] <= 6e-3 for r in members)
+        ratio_pass = all(r["eq"] / r["full"] <= 1.05 for r in members)
+        audits.append(dict(
+            **descriptor, seeds=[0, 1, 2], decoder_all_le_6e3=decoder_pass,
+            full_all_le_6e3=full_pass, eq_all_le_6e3=eq_pass,
+            eq_full_all_le_1p05=ratio_pass,
+            all_conservative_gates=decoder_pass and full_pass and eq_pass and ratio_pass,
+            eq_full_ratios=[r["eq"] / r["full"] for r in members],
+        ))
+    passing = [r for r in audits if r["all_conservative_gates"]]
+    return dict(rows=audits, recommended=(min(passing, key=lambda r: (r["m"], r["n_params"]))
+                                          if passing else None))
+
+
 def benchmark(cell):
     path = os.path.join(RUNS, cell, "out", "benchmark.json")
     if not os.path.isfile(path):
@@ -302,10 +352,14 @@ def markdown_table(headers, align, rows):
 
 def main():
     poisson = poisson_rows()
+    poisson_objective = poisson_objective_rows()
     burgers = burgers_rows()
     burgers_objective = burgers_objective_rows()
+    poisson_seed_rows = (
+        [r for r in poisson if r["cell"].startswith(("nda_pg98", "nda_pg100"))]
+        + poisson_objective)
     poisson_seed = aggregate(
-        [r for r in poisson if r["cell"].startswith(("nda_pg98", "nda_pg100"))],
+        poisson_seed_rows,
         ["architecture", "hidden", "layers", "group_size", "n_params", "M", "m"],
         ["decoder", "full", "eq"], "Poisson",
     )
@@ -315,11 +369,13 @@ def main():
         ["decoder", "full", "eq"], "Burgers",
     )
     burgers_gates = burgers_gate_audit(burgers_objective)
+    poisson_gates = poisson_gate_audit(poisson_seed_rows)
     benchmarks = [x for x in (
         benchmark("nda_pbench_g98b_r8"), benchmark("nda_bbench_g160_r12")) if x]
     e2e_rows = e2e("nda_pe2e_g98_r23") + e2e("nda_be2e_g160m640_r24")
     result = dict(
-        poisson=poisson, poisson_three_seed=poisson_seed,
+        poisson=poisson, poisson_objectives=poisson_objective,
+        poisson_three_seed=poisson_seed, poisson_gate_audit=poisson_gates,
         burgers=burgers, burgers_objectives=burgers_objective,
         burgers_three_seed=burgers_seed, burgers_gate_audit=burgers_gates,
         benchmarks=benchmarks, e2e=e2e_rows,
@@ -360,6 +416,16 @@ def main():
           sci(r[metric]["mean"]), sci(r[metric]["sample_std"]), sci(r[metric]["max"])]
          for r in poisson_seed for metric in ("decoder", "full", "eq")]
     )
+    if poisson_gates["rows"]:
+        md += ["", "## Poisson conservative three-seed gate audit", ""]
+        md += markdown_table(
+            ["architecture", "M,m", "decoder ≤6e-3 all", "full ≤6e-3 all", "EQ ≤6e-3 all", "EQ/full ≤1.05 all", "all gates"],
+            ["---", "---:", "---:", "---:", "---:", "---:", "---:"],
+            [[f'{r["architecture"]} H{r["hidden"]}×{r["layers"]}', f'{r["M"]},{r["m"]}',
+              str(r["decoder_all_le_6e3"]), str(r["full_all_le_6e3"]),
+              str(r["eq_all_le_6e3"]), str(r["eq_full_all_le_1p05"]),
+              str(r["all_conservative_gates"])] for r in poisson_gates["rows"]]
+        )
     md += ["", "## Burgers-2D initial architecture screen (N=64, k=16, M=64)", ""]
     md += markdown_table(
         ["cell", "seed", "architecture", "width×layers", "group", "frequencies", "parameters", "train", "decoder", "full", "EQ256", "EQ512"],

@@ -67,8 +67,12 @@ def main():
     with SUMMARY.open() as f:
         summary = json.load(f)
 
-    p98 = aggregate(summary, "Poisson", hidden=98, M=128, m=512)
-    p100 = aggregate(summary, "Poisson", hidden=100, M=128, m=512)
+    p_recommended = summary["poisson_gate_audit"]["recommended"]
+    p_selected = aggregate(
+        summary, "Poisson", architecture=p_recommended["architecture"],
+        hidden=p_recommended["hidden"], layers=p_recommended["layers"],
+        group_size=p_recommended["group_size"], n_params=p_recommended["n_params"],
+        M=p_recommended["M"], m=p_recommended["m"])
     p_control = next(r for r in summary["poisson"]
                      if r["cell"] == "saved-control/fair-M128")
     p_bench, b_bench = bench(summary, "poisson"), bench(summary, "burgers")
@@ -90,9 +94,11 @@ def main():
         "# Pure nonlinear decoder architectures for Poisson and Burgers NMROMs", "",
         f"This report compares compact, purely nonlinear coordinate decoders with the saved FiLM controls. {state} Every table and prose result below is generated from run JSONs, not transcribed manually.", "",
         "## Recommendation", "",
-        (f"For Poisson, use group-FiLM H98×4 with group size 2: {p98['n_params']:,} parameters, "
-         f"with three-seed decoder/full/EQ means {sci(p98['decoder']['mean'])}, "
-         f"{sci(p98['full']['mean'])}, and {sci(p98['eq']['mean'])}. It is the narrowest tested even width "
+        (f"For Poisson, use group-FiLM H{p_selected['hidden']}×{p_selected['layers']} with group size "
+         f"{p_selected['group_size']} at M={p_selected['M']},m={p_selected['m']}: "
+         f"{p_selected['n_params']:,} parameters, with three-seed decoder/full/EQ means "
+         f"{sci(p_selected['decoder']['mean'])}, {sci(p_selected['full']['mean'])}, and "
+         f"{sci(p_selected['eq']['mean'])}. It is the narrowest tested even width "
          f"whose three-seed mean clears the accuracy gates; H96 failed, while H100 is the nearby accuracy-margin option."), "",
     ]
     if burgers_complete:
@@ -137,14 +143,14 @@ def main():
         ["---", "---:", "---:", "---:", "---:"],
         [["saved H128×4 control (single seed, fair M,m)", f'{p_control["n_params"]:,}',
           sci(p_control["decoder"]), sci(p_control["full"]), sci(p_control["eq"])],
-         *[[f'group-FiLM H{row["hidden"]}×4', f'{row["n_params"]:,}',
+         *[[f'group-FiLM H{row["hidden"]}×{row["layers"]}, M{row["M"]},m{row["m"]}', f'{row["n_params"]:,}',
             f'{sci(row["decoder"]["mean"])}±{sci(row["decoder"]["sample_std"])}',
             f'{sci(row["full"]["mean"])}±{sci(row["full"]["sample_std"])}',
             f'{sci(row["eq"]["mean"])}±{sci(row["eq"]["sample_std"])}']
-           for row in (p98, p100)]]
+           for row in summary["poisson_three_seed"]]]
     )
     md += ["",
-           (f"The selected Poisson decoder removes {pct(1 - p98['n_params']/p_control['n_params'])} of the parameters. "
+           (f"The selected Poisson decoder removes {pct(1 - p_selected['n_params']/p_control['n_params'])} of the parameters. "
             "The saved control remains more accurate in the fair M128,m512 comparison, so the defensible claim is a size/speed tradeoff at acceptable accuracy—not an accuracy improvement over the control."), ""]
 
     if burgers_complete:

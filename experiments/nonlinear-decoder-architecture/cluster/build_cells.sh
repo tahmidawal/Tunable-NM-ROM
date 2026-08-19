@@ -179,8 +179,14 @@ case "$round" in
     make_burgers nda_bg160l4g2f31_s1_r11 160 4 31 groupfilm 2 0 1 60000 "$vars"
     make_burgers nda_bg160l4g2f31_s2_r11 160 4 31 groupfilm 2 0 2 60000 "$vars"
     ;;
+  round15)
+    # Compression boundary beyond the selected group-2 model.  If sharing one
+    # modulation pair across four channels preserves the decoder gate, it is a
+    # strictly smaller candidate for the refined weak objectives.
+    make_burgers nda_bg160l4g4f31_r15 160 4 31 groupfilm 4 0
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15]" >&2
     exit 2
     ;;
 esac

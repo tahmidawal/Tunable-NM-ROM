@@ -99,10 +99,14 @@ def main():
     poisson_timed = any(r["M"] == p_recommended["M"] and
                         r["m"] == p_recommended["m"] and
                         r["cell"].startswith("nda_pe2e_") for r in pairs)
+    poisson_deployable = any(
+        r["cell"].startswith("nda_pe2e_") and
+        r["variant"]["censored_frac"] == 0 and
+        r["variant"]["error"] <= 1e-2 for r in pairs)
     burgers_timed = (b_recommended is not None and any(
         r["M"] == b_recommended["M"] and r["m"] == b_recommended["m"] and
         r["cell"].startswith("nda_be2e_") for r in pairs))
-    e2e_complete = poisson_timed and burgers_timed
+    e2e_complete = poisson_timed and poisson_deployable and burgers_timed
     final = (burgers_complete and e2e_complete and
              summary["burgers_gate_audit"]["recommended"] is not None)
     state = ("Final for the N=64, k=16 architecture comparison described here."
@@ -253,19 +257,34 @@ def main():
     selected_poisson_e2e = [
         r for r in pairs if r["cell"].startswith("nda_pe2e_")
         and r["M"] == p_selected["M"] and r["m"] == p_selected["m"]]
-    if selected_poisson_e2e:
-        loose = next(r for r in selected_poisson_e2e if r["tau"] == 1e-2)
+    deployable_poisson = [
+        r for r in pairs if r["cell"].startswith("nda_pe2e_") and
+        r["variant"]["censored_frac"] == 0 and r["variant"]["error"] <= 1e-2]
+    preferred_poisson = [
+        r for r in deployable_poisson
+        if r["M"] == p_selected["M"] and r["m"] == p_selected["m"]]
+    if selected_poisson_e2e or deployable_poisson:
+        pool = preferred_poisson or deployable_poisson or selected_poisson_e2e
+        # Prefer the loosest accurate, uncensored stopping point. This avoids
+        # comparing absolute wall clock across jobs that may use different GPUs.
+        loose = max(pool, key=lambda r: r["tau"])
         architecture_relation = (
             f"{loose['speedup']:.3f}× faster" if loose["speedup"] >= 1 else
             f"{1/loose['speedup']:.3f}× slower")
         fom_relation = (
             f"{loose['iso_fom_speedup']:.3f}× faster" if loose["iso_fom_speedup"] >= 1 else
             f"{1/loose['iso_fom_speedup']:.3f}× slower")
+        objective_note = (
+            "This is also the minimum validated objective."
+            if loose["M"] == p_selected["M"] and loose["m"] == p_selected["m"] else
+            f"The smaller M={p_selected['M']},m={p_selected['m']} validation objective did not "
+            "produce an uncensored 1%-accurate stopping point in the measured tolerance bracket."
+        )
         md += [
-            (f"At the selected Poisson M={loose['M']},m={loose['m']} arm and tau={sci(loose['tau'])}, "
+            (f"At the deployable Poisson M={loose['M']},m={loose['m']} arm and tau={sci(loose['tau'])}, "
              f"the compact decoder is {architecture_relation} than the saved decoder architecture and "
              f"{fom_relation} than the like-for-like iso-accuracy FOM. This row is uncensored and has "
-             f"compact error {sci(loose['variant']['error'])}."), ""]
+             f"compact error {sci(loose['variant']['error'])}. {objective_note}"), ""]
 
     selected_burgers_e2e = ([] if b_recommended is None else [
         r for r in pairs if r["cell"].startswith("nda_be2e_") and

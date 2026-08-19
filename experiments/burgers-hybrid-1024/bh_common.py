@@ -194,7 +194,7 @@ def make_bicgstab(tol=LIN_TOL, maxiter=LIN_MAXITER):
     return bicgstab
 
 
-def make_chain(n, tol_rel, predictor=None):
+def make_chain(n, tol_rel, predictor=None, lin_tol=None):
     """One FOM chain for previous, extrapolated, or supplied guesses.
 
     ``mode`` is a traced runtime integer: 0 previous state, 1 linear
@@ -205,9 +205,12 @@ def make_chain(n, tol_rel, predictor=None):
     solver, and compiled executable.
     """
     _, residual = bf.make_rollout(n)
-    bicg = make_bicgstab()
+    effective_lin_tol = LIN_TOL if lin_tol is None else float(lin_tol)
+    bicg = make_bicgstab(tol=effective_lin_tol)
 
-    dynamic_predictor = predictor or (lambda u_prev, u_prev2, nu: u_prev)
+    dynamic_predictor = predictor or (
+        lambda u_prev, u_prev2, u_prev3, u_prev4, nu, step_index: u_prev
+    )
 
     def step(u_prev, u_prev2, u_prev3, u_prev4, guess, step_index, mode, nu):
         def quadratic(args):
@@ -242,7 +245,9 @@ def make_chain(n, tol_rel, predictor=None):
                 lambda values: values[0],
                 lambda values: 2.0 * values[0] - values[1],
                 lambda values: values[4],
-                lambda values: dynamic_predictor(values[0], values[1], nu),
+                lambda values: dynamic_predictor(
+                    values[0], values[1], values[2], values[3], nu, values[5]
+                ),
                 quadratic,
                 cubic,
             ),
@@ -406,7 +411,8 @@ def make_full_weak_history_predictor(n, mode_count=16, reduced_iters=2,
         final_norm = jnp.linalg.norm(weak_residual(alpha))
         return alpha, initial_norm, final_norm
 
-    def predictor(u_prev, u_prev2, nu):
+    def predictor(u_prev, u_prev2, u_prev3, u_prev4, nu, step_index):
+        del u_prev3, u_prev4, step_index
         velocity = u_prev - u_prev2
         alpha, _, _ = solve_alpha(u_prev, u_prev2, nu)
         return u_prev + alpha * velocity
@@ -415,9 +421,11 @@ def make_full_weak_history_predictor(n, mode_count=16, reduced_iters=2,
     return predictor
 
 
-def generate_reference(n, trajectory_indices, test_seed):
+def generate_reference(n, trajectory_indices, test_seed, draw_count=None):
     """Regenerate fresh test trajectories from seed with the reference FOM."""
-    count = max(trajectory_indices) + 1
+    count = int(draw_count or (max(trajectory_indices) + 1))
+    if count <= max(trajectory_indices):
+        raise ValueError("draw_count must exceed every trajectory index")
     cx, cy, width, amp, nu, _ = bf.sample_params(seed=test_seed, m=count)
     rollout, _ = bf.make_rollout(n)
     trajectories = []

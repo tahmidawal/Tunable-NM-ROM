@@ -26,6 +26,7 @@ QUALITY = [float(value) for value in os.environ.get(
 N_TEST_TRAJ = int(os.environ.get("N_TEST_TRAJ", "4"))
 TEST_START = int(os.environ.get("TEST_START", "0"))
 TEST_SEED = int(os.environ.get("TEST_SEED", str(bc.bf.SEED + 1)))
+TEST_DRAW_COUNT = int(os.environ.get("TEST_DRAW_COUNT", "16"))
 TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
 TIME_WARM = int(os.environ.get("TIME_WARM", "2"))
 BURN_S = float(os.environ.get("BURN_S", "3"))
@@ -86,6 +87,7 @@ def main():
             "n_test_trajectories": N_TEST_TRAJ,
             "test_indices": list(range(TEST_START, TEST_START + N_TEST_TRAJ)),
             "test_seed": TEST_SEED,
+            "test_draw_count": TEST_DRAW_COUNT,
             "time_reps": TIME_REPS,
             "time_warm": TIME_WARM,
             "burn_seconds": BURN_S,
@@ -105,7 +107,8 @@ def main():
     for n in NS:
         started = time.time()
         trajectories = bc.generate_reference(
-            n, list(range(TEST_START, TEST_START + N_TEST_TRAJ)), TEST_SEED
+            n, list(range(TEST_START, TEST_START + N_TEST_TRAJ)), TEST_SEED,
+            draw_count=TEST_DRAW_COUNT,
         )
         worst_reference = max(t["max_reference_newton_residual"] for t in trajectories)
         if not np.isfinite(worst_reference) or worst_reference > REFERENCE_RESIDUAL_GATE:

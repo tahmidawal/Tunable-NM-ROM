@@ -1,0 +1,15 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=ab0868767f7047b08e79e69954599e02f44b1a6f dirty=e3b0c44298fc cell=controls_gate
+jax_backend=gpu cuda:0
+N=64 tau=1e-06 prev     : guessL2=1.84e-02 Newton=100.0 BiCG=1012 total=44.11ms speedup/linear=0.572x
+N=64 tau=1e-06 linear   : guessL2=2.30e-03 Newton=55.8 BiCG=589 total=25.24ms speedup/linear=1.000x
+N=64 tau=1e-06 quadratic: guessL2=1.36e-03 Newton=54.0 BiCG=610 total=28.05ms speedup/linear=0.900x
+N=64 tau=1e-06 cubic    : guessL2=1.24e-03 Newton=53.8 BiCG=626 total=27.87ms speedup/linear=0.906x
+N=64 complete in 9.7s
+N=256 tau=1e-06 prev     : guessL2=1.88e-02 Newton=100.2 BiCG=3862 total=163.51ms speedup/linear=0.543x
+N=256 tau=1e-06 linear   : guessL2=2.72e-03 Newton=56.8 BiCG=2297 total=88.85ms speedup/linear=1.000x
+N=256 tau=1e-06 quadratic: guessL2=1.91e-03 Newton=55.2 BiCG=2366 total=98.69ms speedup/linear=0.900x
+N=256 tau=1e-06 cubic    : guessL2=1.96e-03 Newton=55.8 BiCG=2475 total=105.55ms speedup/linear=0.842x
+N=256 complete in 22.4s
+DONE
+ALL-DONE

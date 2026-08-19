@@ -33,6 +33,20 @@ def main():
         if not data.get("complete"):
             raise SystemExit(f"incomplete run: {path}")
         runs.append((path, data))
+    balanced_rows = [
+        row for _, data in runs for row in data["rows"]
+        if row.get("balanced_pair_authoritative")
+    ]
+    balanced_keys = {(row["N"], row["fom_tau"], row["arm"]) for row in balanced_rows}
+
+    def balanced_verdict(row):
+        speed_ci = row["speedup_vs_zero_cg_bootstrap_ci95"]
+        delta_ci = row["paired_delta_bootstrap_ci95_ms"]
+        if speed_ci[0] > 1.0 and delta_ci[1] < 0.0:
+            return "supported faster"
+        if speed_ci[1] < 1.0 and delta_ci[0] > 0.0:
+            return "supported slower"
+        return "inconclusive/tie"
 
     lines = [
         "# Poisson hybrid results (generated)", "",
@@ -47,6 +61,25 @@ def main():
             f"| {os.path.basename(path)} | {p.get('slurm_job_id', '—')} | "
             f"{p.get('gpu_kind', '—')} | {p.get('commit_short', '—')} | {source} |"
         )
+    if balanced_rows:
+        supported = [row for row in balanced_rows
+                     if balanced_verdict(row) == "supported faster"]
+        lines.extend([
+            "", "## Audited learned-hybrid conclusion", "",
+            "The conservative gate calls a learned crossover only when both the paired "
+            "case-clustered speedup interval lies above one and the paired learned-minus-zero "
+            "delta interval lies below zero. The balanced audit yields "
+            f"**{len(supported)} supported faster row(s)**; all other learned rows are ties, "
+            "inconclusive, or slower. The earlier overlapping multi-arm K8 rows are omitted "
+            "below because these balanced rows supersede them.", "",
+        ])
+        for row in supported:
+            lines.append(
+                f"- N={row['N']}, tolerance={row['fom_tau']:.0e}: "
+                f"{row['speedup_vs_zero_cg']:.3f}x, clustered 95% CI "
+                f"[{row['speedup_vs_zero_cg_bootstrap_ci95'][0]:.3f}, "
+                f"{row['speedup_vs_zero_cg_bootstrap_ci95'][1]:.3f}]."
+            )
     lines.extend([
         "", "## End-to-end rows", "",
         "Multi-arm rows use the stored mean of case medians and are mechanism evidence only for "
@@ -61,6 +94,9 @@ def main():
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
         for row in data["rows"]:
+            key = (row["N"], row["fom_tau"], row["arm"])
+            if key in balanced_keys and not row.get("balanced_pair_authoritative"):
+                continue
             design = ("balanced AB/BA" if row.get("balanced_pair_authoritative")
                       else "multi-arm rotation")
             lines.append(
@@ -129,8 +165,8 @@ def main():
         "No timing outlier is removed.", "",
         "| run | N | tolerance | learned ms | zero ms | learned-zero ms | delta 95% CI ms | "
         "speedup | speedup 95% CI | case signs L/Z/T | repetition signs L/Z/T | "
-        "learned/zero outliers | learned/zero iterations |",
-        "|---|---:|---:|---:|---:|---:|---|---:|---|---|---|---|---|",
+        "learned/zero outliers | learned/zero iterations | verdict |",
+        "|---|---:|---:|---:|---:|---:|---|---:|---|---|---|---|---|---|",
     ])
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
@@ -150,7 +186,8 @@ def main():
                 f"{rs['arm_faster']}/{rs['zero_faster']}/{rs['exact_tie']} | "
                 f"{row['hybrid_timing_outlier_count']}/{row['baseline_timing_outlier_count']} | "
                 f"{f(row['iters_hybrid_timed_mean'], 1)}/"
-                f"{f(row['iters_baseline_timed_mean'], 1)} |"
+                f"{f(row['iters_baseline_timed_mean'], 1)} | "
+                f"{balanced_verdict(row)} |"
             )
     lines.extend([
         "", "### Balanced per-case medians", "",

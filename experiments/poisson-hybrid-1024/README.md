@@ -149,8 +149,24 @@ slower at every tolerance and missed true residual gates at the tight high-resol
 
 The fresh-seed six-resolution, three-tolerance mechanism ladder is complete and all primary
 counting-CG arms meet their true-residual tolerance from their timed invocation. Its small K8
-crossover claim is provisional because the multi-arm order was not fully balanced; the dedicated
-AB/BA audit above is the authority for that question. Pure GroupFiLM
+crossover claim from the multi-arm rotation is retracted because the timing order was not fully
+balanced. The dedicated AB/BA audit (`pairfinal1`, cluster job 2664551) is authoritative: N=512
+is tied at the two looser tolerances and loses at the tightest; N=1024 has a smaller supported win
+only at 1e-6, mixed/inconclusive evidence at 1e-8, and no win at 1e-10. Exact values, paired
+case/repetition signs, order-specific medians, outliers, and case-clustered intervals are generated
+from the JSON in `FINAL.generated.md`.
+
+The balanced job used the untouched selection-independent seed 20260820 and completed on an
+A100 80GB PCIe with GPU preflight, f64/x64, and highest matmul precision. Every one of its six
+rows passed the same-invocation true-residual and status gates; every case had six first-position
+and six second-position samples per method, and no sample triggered the fixed within-case outlier
+rule. Local and remote pull checksums matched, the logs contain no forbidden warning signature,
+and the explicit remote job directory was deleted after verification.
+
+Native JAX-CG sensitivity in `final1` loses for the learned warm start at both audited high
+resolutions and all tolerances, and its N=512/N=1024 tight-tolerance fields fail the recomputed
+true-residual gate. The true-residual counting CG is therefore the authoritative iterative
+contract; native results remain visible as non-eligible sensitivity controls. Pure GroupFiLM
 does not improve work. GroupFiLM plus q8 beats zero-start CG but loses decisively to the matched
 spectral controls, so its apparent gain is classical rather than learned. Dense sine direct is
 the fastest eligible method on most rows; at the tight N=1024 row its measured residual is not

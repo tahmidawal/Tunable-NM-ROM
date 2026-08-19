@@ -1,0 +1,20 @@
+host=pax105 job=2664551 gpu=NVIDIA A100 80GB PCIe
+commit=92447ead81a9c37609d1f0127de98300e5a927a3 dirty_hash=e3b0c44298fc cell=pairfinal1
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[512, 1024] taus=[1e-06, 1e-08, 1e-10] arms=['lmtrmean_c64_q0'] test_seed=20260820 smoke=0 reps=12 warm=2
+  STREAMED NNLS-EQ M=64 m=256 @N=512: support 256 (+0) rel fit 2.64e-03 [21s]
+VALIDATED N=512 lmtrmean_c64_q0 tau=1e-06: construct 4.236 ms, Aerr 7.867e-02, iters 1272.8/1345.2; authoritative joint timing pending
+VALIDATED N=512 lmtrmean_c64_q0 tau=1e-08: construct 4.236 ms, Aerr 7.867e-02, iters 1524.6/1581.4; authoritative joint timing pending
+VALIDATED N=512 lmtrmean_c64_q0 tau=1e-10: construct 4.236 ms, Aerr 7.867e-02, iters 1767.7/1784.2; authoritative joint timing pending
+BALANCED N=512 lmtrmean_c64_q0 tau=1e-06: 62.006/62.269 ms speedup 1.0042 CI [0.9840065105736113, 1.0578462828438935] signs {'arm_faster': 5, 'zero_faster': 3, 'exact_tie': 0}
+BALANCED N=512 lmtrmean_c64_q0 tau=1e-08: 73.868/73.751 ms speedup 0.9984 CI [0.9726330936619972, 1.018179550577897] signs {'arm_faster': 3, 'zero_faster': 5, 'exact_tie': 0}
+BALANCED N=512 lmtrmean_c64_q0 tau=1e-10: 85.432/82.404 ms speedup 0.9646 CI [0.9414866112051772, 0.9812196337763066] signs {'arm_faster': 0, 'zero_faster': 8, 'exact_tie': 0}
+  STREAMED NNLS-EQ M=64 m=256 @N=1024: support 256 (+0) rel fit 2.64e-03 [23s]
+VALIDATED N=1024 lmtrmean_c64_q0 tau=1e-06: construct 4.255 ms, Aerr 8.058e-02, iters 2589.7/2732.7; authoritative joint timing pending
+VALIDATED N=1024 lmtrmean_c64_q0 tau=1e-08: construct 4.255 ms, Aerr 8.058e-02, iters 3092.1/3203.8; authoritative joint timing pending
+VALIDATED N=1024 lmtrmean_c64_q0 tau=1e-10: construct 4.255 ms, Aerr 8.058e-02, iters 3570.9/3602.6; authoritative joint timing pending
+BALANCED N=1024 lmtrmean_c64_q0 tau=1e-06: 211.996/217.578 ms speedup 1.0263 CI [1.0136140860678844, 1.0765119742262304] signs {'arm_faster': 7, 'zero_faster': 1, 'exact_tie': 0}
+BALANCED N=1024 lmtrmean_c64_q0 tau=1e-08: 253.531/257.030 ms speedup 1.0138 CI [0.9934886609955065, 1.0307234565499028] signs {'arm_faster': 7, 'zero_faster': 1, 'exact_tie': 0}
+BALANCED N=1024 lmtrmean_c64_q0 tau=1e-10: 290.348/288.587 ms speedup 0.9939 CI [0.9803576842069791, 1.009960604605777] signs {'arm_faster': 3, 'zero_faster': 5, 'exact_tie': 0}
+DONE
+ALL-DONE

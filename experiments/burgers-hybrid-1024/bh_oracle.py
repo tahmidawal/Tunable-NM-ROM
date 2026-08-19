@@ -138,6 +138,7 @@ def main():
             ]
             # q=0 is exactly extrap and is represented by the traced extrap arm.
             arm_data = {}
+            timed_calls = {}
             for name, q in candidate_specs:
                 per_trajectory = []
                 for trajectory in trajectories:
@@ -193,23 +194,21 @@ def main():
                 else:
                     timed_guesses = extrap0 + q * (first["U"][1:] - extrap0)
                     timed_mode = 2
-                median, repetitions = bc.time_fn(
-                    lambda: chain(
-                        jnp.asarray(first["U"][0]),
-                        first["nu"],
-                        jnp.asarray(timed_guesses),
-                        jnp.int32(timed_mode),
-                    )[0].block_until_ready(),
-                    TIME_REPS,
-                    TIME_WARM,
-                )
                 key = name if q is None else f"{name}:q={q:g}"
+                timed_guesses_j = jnp.asarray(timed_guesses)
+                timed_mode_j = jnp.int32(timed_mode)
+                u0_timed_j = jnp.asarray(first["U"][0])
+                timed_calls[key] = lambda u0=u0_timed_j, nu=first["nu"], \
+                    guesses=timed_guesses_j, mode=timed_mode_j: chain(
+                        u0,
+                        nu,
+                        guesses,
+                        mode,
+                    )[0].block_until_ready()
                 arm_data[key] = {
                     "name": name,
                     "quality": q,
                     "oracle_non_deployable": name == "oracle",
-                    "fom_finish_ms": median * 1e3,
-                    "fom_finish_repetitions_s": repetitions,
                     "newton_total_mean": float(
                         np.mean([p["newton_total"] for p in per_trajectory])
                     ),
@@ -224,6 +223,33 @@ def main():
                     ),
                     "per_trajectory": per_trajectory,
                 }
+
+            # Pair/interleave every arm inside each repetition. Rotating the order
+            # makes each candidate appear at every clock position across the block,
+            # preventing the sequential prev->extrap->oracle order from turning
+            # residual device-clock drift into an apparent warm-start benefit.
+            timing_keys = list(timed_calls)
+            for warm_index in range(TIME_WARM):
+                offset = warm_index % len(timing_keys)
+                for key in timing_keys[offset:] + timing_keys[:offset]:
+                    timed_calls[key]()
+            timing_samples = {key: [] for key in timing_keys}
+            timing_orders = []
+            for repetition in range(TIME_REPS):
+                offset = repetition % len(timing_keys)
+                order = timing_keys[offset:] + timing_keys[:offset]
+                if (repetition // len(timing_keys)) % 2:
+                    order = list(reversed(order))
+                timing_orders.append(order)
+                for key in order:
+                    start_timing = time.perf_counter()
+                    timed_calls[key]()
+                    timing_samples[key].append(float(time.perf_counter() - start_timing))
+            for key in timing_keys:
+                samples = timing_samples[key]
+                arm_data[key]["fom_finish_ms"] = float(np.median(samples) * 1e3)
+                arm_data[key]["fom_finish_repetitions_s"] = samples
+                arm_data[key]["paired_timing_orders"] = timing_orders
 
             extrap_time = arm_data["extrap:q=0"]["fom_finish_ms"]
             prev_time = arm_data["prev"]["fom_finish_ms"]

@@ -10,7 +10,7 @@ gpu_type="${6:-h100}"
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(dirname "$HERE")"
-WT="$(cd "$EXP/../.." && pwd)"
+WORKTREES="$(cd "$EXP/../../.." && pwd)"
 REMOTE="/cluster/tufts/paralab/tawal01/hybb1024/$cell"
 STAGE="$HERE/stage/$cell"
 COMMIT="$(git -C "$EXP" rev-parse HEAD)"
@@ -20,7 +20,7 @@ DIRTY="$(git -C "$EXP" status --porcelain -- . | sha256sum | cut -c1-12)"
 rm -rf "$STAGE"
 mkdir -p "$STAGE/logs" "$STAGE/out" "$STAGE/code/deps/burgers2d-coord-rom"
 cp "$EXP"/bh_*.py "$STAGE/code/"
-cp "$WT/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" \
+cp "$WORKTREES/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" \
   "$STAGE/code/deps/burgers2d-coord-rom/"
 
 cat > "$STAGE/run.sbatch" <<EOF
@@ -54,4 +54,3 @@ EOF
 
 (cd "$STAGE" && find . -type f -not -name MANIFEST.sha256 -exec sha256sum {} \; | sort > MANIFEST.sha256)
 echo "$STAGE"
-

@@ -88,7 +88,13 @@ locked calibrated FOM configuration.
   preconditioner reduced BiCGStab work by roughly an order of magnitude in its
   own calibration job.  Because wall clock cannot be selected across jobs, a
   narrowed joint none-versus-Helmholtz lock job is required before any timing
-  claim or final solver setting is accepted.
+  claim or final solver setting is accepted.  That joint job selected the
+  Helmholtz preconditioner at every outer tolerance: inner tolerances `1e-2`,
+  `1e-4`, and `1e-5` for outer `1e-6`, `1e-8`, and `1e-10`.  On the selected
+  cubic calibration arm, N=256 required only 76.5, 144.75, and 223.5 mean
+  BiCGStab iterations over all 50 steps; maximum returned outer residuals were
+  9.65e-7, 9.82e-9, and 9.33e-11.  These settings are now locked identically
+  across final arms.
 
 All exact values and complete arrays for these gates are in `runs/`.  No gate
 number is promoted without its JSON, batch log, and matching remote/local

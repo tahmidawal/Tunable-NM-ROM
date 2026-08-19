@@ -267,13 +267,17 @@ def main():
     )
     benchmarks = [x for x in (
         benchmark("nda_pbench_g98b_r8"), benchmark("nda_bbench_g160_r12")) if x]
-    e2e_rows = e2e("nda_pe2e_g98_r11") + e2e("nda_be2e_g160_r12")
+    e2e_rows = e2e("nda_pe2e_g98_r11") + e2e("nda_be2e_g160_r14")
     result = dict(
         poisson=poisson, poisson_three_seed=poisson_seed,
         burgers=burgers, burgers_objectives=burgers_objective,
         burgers_three_seed=burgers_seed, benchmarks=benchmarks, e2e=e2e_rows,
-        rejected=[dict(cell="nda_pbench_g98_r8",
-                       reason="timed before post-burn exact-kernel warmups; retained but excluded")],
+        rejected=[
+            dict(cell="nda_pbench_g98_r8",
+                 reason="timed before post-burn exact-kernel warmups; retained but excluded"),
+            dict(cell="nda_be2e_g160_r12",
+                 reason="failed before the compact arm because the driver dropped checkpoint decoder metadata; retained and superseded by r14"),
+        ],
     )
     with open(os.path.join(HERE, "summary.json"), "w") as fp:
         json.dump(result, fp, indent=2)
@@ -343,7 +347,8 @@ def main():
           f'{100*r["censored_frac"]:.1f}%'] for r in e2e_rows]
     )
     md += ["", "## Excluded measurements", "",
-           "- `nda_pbench_g98_r8`: rejected because the exact kernels were warmed before, rather than after, the GPU burn. Its artifacts are retained for audit; `nda_pbench_g98b_r8` is the accepted rerun.", ""]
+           "- `nda_pbench_g98_r8`: rejected because the exact kernels were warmed before, rather than after, the GPU burn. Its artifacts are retained for audit; `nda_pbench_g98b_r8` is the accepted rerun.",
+           "- `nda_be2e_g160_r12`: failed after the control arm because the cost driver dropped the compact checkpoint's decoder metadata. The failure is retained as `nda_be2e_g160_r12_failed`; `nda_be2e_g160_r14` is the corrected rerun.", ""]
     with open(os.path.join(HERE, "SUMMARY.md"), "w") as fp:
         fp.write("\n".join(md))
     print(f"wrote {os.path.join(HERE, 'summary.json')} and SUMMARY.md")

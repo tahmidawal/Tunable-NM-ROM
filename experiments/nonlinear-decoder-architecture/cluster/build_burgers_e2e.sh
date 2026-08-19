@@ -2,11 +2,13 @@
 # Same-GPU, burn-in-controlled end-to-end Burgers comparison at selected arms.
 set -euo pipefail
 
-cell="$1"; variant="$2"; group="${3:-2}"; selected_m="${4:-}"
+cell="$1"; variant="$2"; group="${3:-2}"; selected_m="${4:-}"; variant_hidden="${5:-160}"
 [[ "$cell" =~ ^nda_[A-Za-z0-9_]+$ ]] || { echo "invalid cell" >&2; exit 2; }
 [[ -f "$variant" ]] || { echo "missing variant checkpoint $variant" >&2; exit 3; }
-[[ "$group" =~ ^[1248]$ ]] || { echo "invalid FiLM group $group" >&2; exit 2; }
+[[ "$group" =~ ^[1-9][0-9]*$ ]] || { echo "invalid FiLM group $group" >&2; exit 2; }
 [[ -z "$selected_m" || "$selected_m" =~ ^[1-9][0-9]*$ ]] || { echo "invalid selected m" >&2; exit 2; }
+[[ "$variant_hidden" =~ ^[1-9][0-9]*$ ]] || { echo "invalid variant width $variant_hidden" >&2; exit 2; }
+(( variant_hidden % group == 0 )) || { echo "width must be divisible by FiLM group" >&2; exit 2; }
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(cd "$HERE/.." && pwd)"
@@ -80,7 +82,7 @@ export TIME_REPS=9 TIME_WARM=3 BURN_IN_S=1.5 DO_SUPP=0 DO_CEILING=0
 export CONFIGS=../configs.json ARM_TAG=architecture_e2e FOM_NEWTON_LADDER=3
 export AD_HIDDEN=256 AD_LAYERS=5 DECODER_ARCH=film PKL_DIR=../ckpt/control
 \$PY -u ctol_burgers.py ../out/control.json
-export AD_HIDDEN=160 AD_LAYERS=4 DECODER_ARCH=groupfilm FILM_GROUP_SIZE=$group FILM_START=0 Z_WIDTH=64 PKL_DIR=../ckpt/variant
+export AD_HIDDEN=$variant_hidden AD_LAYERS=4 DECODER_ARCH=groupfilm FILM_GROUP_SIZE=$group FILM_START=0 Z_WIDTH=64 PKL_DIR=../ckpt/variant
 \$PY -u ctol_burgers.py ../out/variant.json
 \$PY - <<'PY'
 import json

@@ -1,0 +1,30 @@
+./code/poisson/pro_colloc.py: OK
+./code/poisson/deps/ms_autodecoder.py: OK
+./code/poisson/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./run.sbatch: OK
+./code/poisson/followup/fu_train.py: OK
+./code/poisson/pro_common.py: OK
+./code/poisson/deps/ms_parametric.py: OK
+cell=nda_p96l4_r1 commit=1d33737b418e0fe07c58b3dace408ebdcedb1f40 dirty_hash=e3b0c44298fc host=pax022 gpu=NVIDIA L40S
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.81:/projects/paralab  4.6T  4.1T  473G  90% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True K_LAT=16 HARD_BC=1 decoder={'name': 'resfilm', 'hidden': 96, 'n_layers': 4, 'group_size': 8, 'film_start': 2, 'z_width': 64, 'residual_scale': 0.5773502691896258, 'warp_max_shift': 0.15, 'warp_max_log_scale': 0.25, 'z_ff': 0}
+CONFIG {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 96, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 16, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 0, "decoder_config": {"name": "resfilm", "hidden": 96, "n_layers": 4, "group_size": 8, "film_start": 2, "z_width": 64, "residual_scale": 0.5773502691896258, "warp_max_shift": 0.15, "warp_max_log_scale": 0.25, "z_ff": 0}}
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+  [A] step      0 loss 1.571e-01 [9s]
+  [A] step   5000 loss 1.741e-04 [23s]
+  [A] step  10000 loss 5.500e-05 [38s]
+  [A] step  15000 loss 2.784e-05 [52s]
+  [A] Adam 20000 steps in 66s (final batch loss 2.037e-05)
+RESULT K16_N64_hbc: TRAIN 2.017e-02/2.307e-02  VAL inferred mean 2.127e-02 nearest 2.127e-02 best 2.127e-02  boundary-block(train) 0.0e+00
+DONE
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "autodec_K16_N64_hbc_stages.pkl", "pkl_config": {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 96, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 16, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 0, "decoder_config": {"name": "resfilm", "hidden": 96, "n_layers": 4, "group_size": 8, "film_start": 2, "z_width": 64, "residual_scale": 0.5773502691896258, "warp_max_shift": 0.15, "warp_max_log_scale": 0.25, "z_ff": 0}, "n_params": 34833}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 1, "objectives": ["weak_a1_M128"], "ms": [512], "schemes": ["full", "nnls"], "inits": ["nearest"], "eq_snaps": 64, "eq_perturb": 3, "eq_modes": 64, "eq_rows": 3072, "eq_fixed_snaps": 1, "bc_beta": 0.0, "backend": "gpu"}
+  FOM: 576 CG solves in 4s, max rel residual over all samples 4.29e-13
+ORACLE nearest=2.168e-02
+RESULT obj=weak_a1_M128   full     m= 3844 init=nearest  ROM 2.199e-02 (med 1.963e-02 max 4.630e-02) oracle 2.168e-02 acc/rej 24/10 {'converged': 16} [11s]
+  NNLS-EQ m=512 M=128 grid: support 512 (+0 padded) rows 3072 rnorm capped 2.28e-01 final(all rows) 9.71e-01 / ||b|| 7.53e+02 (per-row median 1.1e-02, p95 3.6e-01, max 6.8e+02) [122s]
+RESULT obj=weak_a1_M128   nnls     m=  512 init=nearest  ROM 2.199e-02 (med 1.967e-02 max 4.620e-02) oracle 2.168e-02 acc/rej 26/9 {'converged': 15, 'budget': 1} [128s]
+DONE
+ALL-DONE

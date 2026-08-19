@@ -1,0 +1,23 @@
+./code/deps/ms_autodecoder.py: OK
+./ckpt/variant.pkl: OK
+./code/pro_colloc.py: OK
+./code/pro_common.py: OK
+./code/nda_poisson_eval.py: OK
+./run.sbatch: OK
+./code/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./code/deps/ms_parametric.py: OK
+cell=nda_peq104m416_s0_r30 commit=dbc34d610a89ee71ad0863c9178323c041861931 host=pax063 gpu=NVIDIA H100 PCIe
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.77:/projects/paralab  4.6T  4.1T  473G  90% /cluster/tufts/paralab
+jax_backend=gpu
+CHECKPOINT_CONFIG {'N': 64, 'n_train': 512, 'n_val': 64, 'n_stages': 1, 'steps': 20000, 'batch': 32, 'p_sub': 1024, 'hidden': 98, 'n_layers': 4, 'peak_lr': 0.002, 'const_lr': 0, 'lbfgs_steps': 0, 'z_ff': 0, 'freq_margin': 4, 'seed': 0, 'K_LAT': 16, 'lat_lr': 0.005, 'lat_reg': 0.0001, 'hard_bc': 1, 'gn_iters': 60, 'train_seed': 0, 'decoder_config': {'name': 'groupfilm', 'hidden': 98, 'n_layers': 4, 'group_size': 2, 'film_start': 0, 'z_width': 64, 'residual_scale': 0.5773502691896258, 'warp_max_shift': 0.15, 'warp_max_log_scale': 0.25, 'z_ff': 0}, 'n_params': 58419}
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "variant.pkl", "pkl_config": {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 98, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 16, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 0, "decoder_config": {"name": "groupfilm", "hidden": 98, "n_layers": 4, "group_size": 2, "film_start": 0, "z_width": 64, "residual_scale": 0.5773502691896258, "warp_max_shift": 0.15, "warp_max_log_scale": 0.25, "z_ff": 0}, "n_params": 58419}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 1, "objectives": ["weak_a1_M104"], "ms": [416], "schemes": ["full", "nnls"], "inits": ["nearest"], "eq_snaps": 64, "eq_perturb": 3, "eq_modes": 64, "eq_rows": 3072, "eq_fixed_snaps": 1, "bc_beta": 0.0, "backend": "gpu"}
+  FOM: 576 CG solves in 3s, max rel residual over all samples 4.29e-13
+TRUST factor=0 train_radius=0.931314 delta=inf
+ORACLE nearest=4.710e-03
+RESULT obj=weak_a1_M104   full     m= 3844 init=nearest  ROM 5.750e-03 (med 4.654e-03 max 1.624e-02) oracle 4.710e-03 acc/rej 21/3 {'budget': 1, 'converged': 15} [6s]
+  NNLS-EQ m=416 M=104 grid: support 416 (+0 padded) rows 3072 rnorm capped 2.07e-01 final(all rows) 7.77e-01 / ||b|| 7.54e+02 (per-row median 6.9e-03, p95 3.7e-01, max 4.2e+02) [52s]
+RESULT obj=weak_a1_M104   nnls     m=  416 init=nearest  ROM 6.005e-03 (med 4.775e-03 max 1.657e-02) oracle 4.710e-03 acc/rej 22/3 {'budget': 2, 'converged': 14} [55s]
+DONE
+ALL-DONE

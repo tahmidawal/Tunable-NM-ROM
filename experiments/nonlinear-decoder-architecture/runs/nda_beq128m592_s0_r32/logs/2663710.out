@@ -1,0 +1,33 @@
+./ckpt/variant.pkl: OK
+./code/deps/multistage-precision/ms_autodecoder.py: OK
+./code/blat_rom.py: OK
+./code/followup/fu_common.py: OK
+./code/blat_summarize.py: OK
+./code/deps/burgers2d-coord-rom/burgers2d_film.py: OK
+./code/followup/fu_summarize.py: OK
+./code/blat_common.py: OK
+./code/followup/fu_style.py: OK
+./code/nda_burgers_eval.py: OK
+./code/blat_stage1.py: OK
+./run.sbatch: OK
+./code/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./code/followup/fu_timing.py: OK
+./code/blat_train_ad.py: OK
+./code/deps/multistage-precision/ms_parametric.py: OK
+cell=nda_beq128m592_s0_r32 commit=dbc34d610a89ee71ad0863c9178323c041861931 host=pax144 gpu=NVIDIA A100-SXM4-40GB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.76:/projects/paralab  4.6T  4.1T  473G  90% /cluster/tufts/paralab
+jax_backend=gpu
+CHECKPOINT_CONFIG {'N': 64, 'dt': 0.005, 'num_steps': 50, 'n_train': 512, 'n_val': 64, 'seed': 0, 'bc_mode': 'poly', 'k_lat': 16, 'n_test': 16, 'gn_budget': 30, 'gn_tol': 1e-09, 'ic_budget': 100, 'ad_hidden': 160, 'ad_layers': 4, 'decoder_config': {'name': 'groupfilm', 'hidden': 160, 'n_layers': 4, 'group_size': 2, 'film_start': 0, 'z_width': 64, 'residual_scale': 0.5773502691896258, 'warp_max_shift': 0.15, 'warp_max_log_scale': 0.25, 'z_ff': 0}, 'x64': True, 'train_seed': 0, 'ad_steps': 60000, 'ad_batch': 128, 'p_sub': 2048, 't_smooth': 0.01, 'lat_reg': 0.0001, 'lat_lr': 0.005, 'peak_lr': 0.002, 'n_freq': 31, 'n_params': 140449}
+jax_backend=gpu  N=64  variants=['lspg:full:weak128', 'lspg:eq592:weak128']
+  TRUST factor=0 train_radius=19.2562 delta=inf
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  checks: {'local_vs_fom_maxabs': 0.0, 'fom_traj_step1_rel_res': 6.374458614255595e-16}
+  ORACLE inferred-latent floor (held-out, budget 60): 7.688e-03 [106s]
+  IC fit (u0 misfit): mean 1.824e-02
+  lspg:full:weak128        m= 3844  traj rel mean 9.618e-03 (med 8.645e-03, max 2.013e-02) blowups 0  iters cold 10.9 warm 6.47  step 60.9 ms  [59s]
+  NNLS-EQ weak/grid M=128 m=592: support 592 (+0 pad), rel fit 1.77e-03 (per-row median 8.1e-03, p95 6.7e-01, max 4.7e+02) [223s]
+  lspg:eq592:weak128       m=  592  traj rel mean 9.812e-03 (med 8.715e-03, max 1.972e-02) blowups 0  iters cold 11.8 warm 6.49  step 9.5 ms  [236s]
+wrote blat_rom_N64_K16.json
+ALL-DONE

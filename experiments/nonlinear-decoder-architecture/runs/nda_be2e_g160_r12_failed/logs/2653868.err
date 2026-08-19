@@ -1,0 +1,46 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/ctol_burgers.py", line 702, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/ctol_burgers.py", line 676, in main
+    report["rows"] += measure(
+                      ~~~~~~~^
+        k, M, m, arm_tag, method, methods[method], cand_pos,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        f"burgers {method} N={n} k={k} M={M} m={m}")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/ctol_burgers.py", line 507, in measure
+    keep, wq, eq_info = ctol_eq.eq_fit_burgers(
+                        ~~~~~~~~~~~~~~~~~~~~~~^
+        u_full_eq, adv_full, phi_full(M), cand, Z_snap, k, m, label,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        bc.nnls_capped)
+        ^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/ctol_eq.py", line 171, in eq_fit_burgers
+    uf = np.asarray(u_full(z))
+                    ~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/ctol_burgers.py", line 499, in <lambda>
+    u_full_eq = jax.jit(lambda z, _d=dec: _d(z, xy_int))
+                                          ~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/deps/burgers2d-rom-latent-stepping/blat_common.py", line 271, in __call__
+    return self.eps * bc_factor(xy) * apply_decoder(
+                                      ~~~~~~~~~~~~~^
+        self.params, z, xy, self.n_freq, self.decoder_config)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/deps/burgers2d-rom-latent-stepping/blat_common.py", line 135, in apply_decoder
+    return mp.film_apply(params, z, xy, n_freq, cfg.get("z_ff", 0))
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/nda_be2e_g160_r12/code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py", line 180, in film_apply
+    film = (g @ params["film"]["W"] + params["film"]["b"]).reshape(
+        N_LAYERS, 2, HIDDEN)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py", line 1538, in meth
+    return getattr(self.aval, name).fun(self, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py", line 375, in _reshape
+    newshape = _compute_newshape(self, args[0] if len(args) == 1 else args)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py", line 542, in _compute_newshape
+    raise TypeError(f"cannot reshape array of shape {arr.shape} (size {arr.size}) "
+                    f"into shape {orig_newshape} (size {math.prod(newshape)})")
+TypeError: cannot reshape array of shape (640,) (size 640) into shape (4, 2, 160) (size 1280)
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

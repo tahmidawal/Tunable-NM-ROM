@@ -1,0 +1,31 @@
+./code/poisson/deps/ms_autodecoder.py: OK
+./code/poisson/pro_colloc.py: OK
+./code/poisson/pro_common.py: OK
+./code/poisson/followup/fu_train.py: OK
+./run.sbatch: OK
+./code/poisson/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./code/poisson/deps/ms_parametric.py: OK
+cell=nda_pg100l4g2_s1_r7 commit=377db5580b351891aa256ce0e271f3bff402f916 dirty_hash=4b00bb1ca6a8 host=pax049 gpu=NVIDIA A100 80GB PCIe
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.87:/projects/paralab  4.6T  4.1T  480G  90% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True K_LAT=16 HARD_BC=1 decoder={'name': 'groupfilm', 'hidden': 100, 'n_layers': 4, 'group_size': 2, 'film_start': 0, 'z_width': 64, 'residual_scale': 0.5773502691896258, 'warp_max_shift': 0.15, 'warp_max_log_scale': 0.25, 'z_ff': 0}
+CONFIG {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 100, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 16, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 1, "decoder_config": {"name": "groupfilm", "hidden": 100, "n_layers": 4, "group_size": 2, "film_start": 0, "z_width": 64, "residual_scale": 0.5773502691896258, "warp_max_shift": 0.15, "warp_max_log_scale": 0.25, "z_ff": 0}}
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+  [A] step      0 loss 3.419e-02 [4s]
+  [A] step   5000 loss 5.960e-05 [18s]
+  [A] step  10000 loss 1.725e-05 [34s]
+  [A] step  15000 loss 4.865e-06 [48s]
+  [A] Adam 20000 steps in 63s (final batch loss 4.397e-06)
+RESULT K16_N64_hbc_S1: TRAIN 6.698e-03/6.511e-03  VAL inferred mean 1.336e-02 nearest 5.478e-03 best 5.270e-03  boundary-block(train) 0.0e+00
+DONE
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "autodec_K16_N64_hbc_S1_stages.pkl", "pkl_config": {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 100, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 16, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 1, "decoder_config": {"name": "groupfilm", "hidden": 100, "n_layers": 4, "group_size": 2, "film_start": 0, "z_width": 64, "residual_scale": 0.5773502691896258, "warp_max_shift": 0.15, "warp_max_log_scale": 0.25, "z_ff": 0}, "n_params": 60189}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 1, "objectives": ["weak_a1_M128"], "ms": [512], "schemes": ["full", "nnls"], "inits": ["nearest"], "eq_snaps": 64, "eq_perturb": 3, "eq_modes": 64, "eq_rows": 3072, "eq_fixed_snaps": 1, "bc_beta": 0.0, "backend": "gpu"}
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+TRUST factor=0 train_radius=1.03476 delta=inf
+ORACLE nearest=5.222e-03
+RESULT obj=weak_a1_M128   full     m= 3844 init=nearest  ROM 5.478e-03 (med 4.713e-03 max 8.878e-03) oracle 5.222e-03 acc/rej 26/3 {'converged': 16} [7s]
+  NNLS-EQ m=512 M=128 grid: support 512 (+0 padded) rows 3072 rnorm capped 1.17e-01 final(all rows) 5.44e-01 / ||b|| 7.49e+02 (per-row median 6.4e-03, p95 3.1e-01, max 6.1e+03) [140s]
+RESULT obj=weak_a1_M128   nnls     m=  512 init=nearest  ROM 5.608e-03 (med 4.746e-03 max 1.014e-02) oracle 5.222e-03 acc/rej 25/3 {'budget': 1, 'converged': 15} [144s]
+DONE
+ALL-DONE

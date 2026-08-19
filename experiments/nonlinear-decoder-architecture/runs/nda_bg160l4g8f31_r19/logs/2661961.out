@@ -1,0 +1,73 @@
+./code/burgers/deps/multistage-precision/ms_autodecoder.py: OK
+./code/burgers/blat_rom.py: OK
+./code/burgers/followup/fu_common.py: OK
+./code/burgers/blat_summarize.py: OK
+./run.sbatch: OK
+./code/burgers/deps/burgers2d-coord-rom/burgers2d_film.py: OK
+./code/burgers/followup/fu_summarize.py: OK
+./code/burgers/blat_common.py: OK
+./code/burgers/followup/fu_style.py: OK
+./code/burgers/blat_stage1.py: OK
+./code/burgers/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./code/burgers/followup/fu_timing.py: OK
+./code/burgers/blat_train_ad.py: OK
+./code/burgers/deps/multistage-precision/ms_parametric.py: OK
+cell=nda_bg160l4g8f31_r19 commit=fa1992584c74c8c813708e862ee16f8411db9caa dirty_hash=99981e6d08ef host=pax063 gpu=NVIDIA H100 PCIe
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.77:/projects/paralab  4.6T  4.1T  474G  90% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu  x64=True  N=64 K=16 steps=60000 batch=128 p_sub=2048 t_smooth=0.01 bc=poly hidden=160x4 decoder={'name': 'groupfilm', 'hidden': 160, 'n_layers': 4, 'group_size': 8, 'film_start': 0, 'z_width': 64, 'residual_scale': 0.5773502691896258, 'warp_max_shift': 0.15, 'warp_max_log_scale': 0.25, 'z_ff': 0}
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 8s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  data fingerprint {'sum': 12014563.752092322, 'sumsq': 5940357.887094005, 'shape': [576, 51, 4096]}
+  POD: 26112 snapshots, top-64 ortho dev 1.9e-15 [4s]
+  POD val floors: r4=3.933e-01  r6=2.833e-01  r8=2.108e-01  r16=1.013e-01  r32=4.169e-02  r64=1.324e-02
+  decoder params 109249, n_freq 31, eps 2.2114e-01
+  step      0  loss 1.384e-01  data 1.378e-01  [4s]
+  step   2000  loss 1.441e-03  data 9.696e-04  [33s]
+  step   4000  loss 9.280e-04  data 4.555e-04  [62s]
+  step   6000  loss 1.893e-03  data 9.218e-04  [91s]
+  step   8000  loss 7.320e-04  data 2.116e-04  [120s]
+  step  10000  loss 8.895e-04  data 3.249e-04  [150s]
+  step  12000  loss 6.337e-04  data 1.397e-04  [179s]
+  step  14000  loss 7.382e-04  data 1.330e-04  [208s]
+  step  16000  loss 3.723e-04  data 7.802e-05  [238s]
+  step  18000  loss 5.214e-04  data 7.891e-05  [267s]
+  step  20000  loss 5.671e-04  data 8.530e-05  [297s]
+  step  22000  loss 5.344e-04  data 5.342e-05  [326s]
+  step  24000  loss 6.909e-04  data 3.992e-05  [356s]
+  step  26000  loss 4.448e-04  data 9.811e-05  [385s]
+  step  28000  loss 6.177e-04  data 8.492e-05  [415s]
+  step  30000  loss 4.917e-04  data 4.894e-05  [444s]
+  step  32000  loss 4.213e-04  data 3.429e-05  [474s]
+  step  34000  loss 3.930e-04  data 2.185e-05  [503s]
+  step  36000  loss 5.549e-04  data 2.567e-05  [533s]
+  step  38000  loss 4.120e-04  data 1.485e-05  [562s]
+  step  40000  loss 5.796e-04  data 3.076e-05  [592s]
+  step  42000  loss 3.314e-04  data 1.694e-05  [621s]
+  step  44000  loss 6.759e-04  data 1.584e-05  [651s]
+  step  46000  loss 3.727e-04  data 1.366e-05  [680s]
+  step  48000  loss 3.202e-04  data 7.466e-06  [710s]
+  step  50000  loss 7.553e-04  data 9.102e-06  [739s]
+  step  52000  loss 4.854e-04  data 6.478e-06  [769s]
+  step  54000  loss 3.241e-04  data 7.871e-06  [798s]
+  step  56000  loss 4.531e-04  data 7.503e-06  [828s]
+  step  58000  loss 4.462e-04  data 6.718e-06  [857s]
+  step  59999  loss 4.241e-04  data 6.305e-06  [887s]
+  TRAIN recon at learned latents: mean rel 6.306e-03 (median 5.322e-03, max 5.632e-02); latent RMS 1.037, mean |dz| per step 1.265e-01 [887s]
+wrote N64_K16
+jax_backend=gpu  N=64  variants=['lspg:full:weak64', 'lspg:eq256:weak64', 'lspg:eq512:weak64']
+  TRUST factor=0 train_radius=19.2216 delta=inf
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 8s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  checks: {'local_vs_fom_maxabs': 0.0, 'fom_traj_step1_rel_res': 6.374458614255595e-16}
+  ORACLE inferred-latent floor (held-out, budget 60): 8.045e-03 [93s]
+  IC fit (u0 misfit): mean 2.051e-02
+  lspg:full:weak64         m= 3844  traj rel mean 1.286e-02 (med 9.963e-03, max 5.066e-02) blowups 0  iters cold 10.4 warm 6.69  step 40.9 ms  [40s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.16e-03 (per-row median 1.1e-02, p95 6.9e-01, max 7.1e+02) [15s]
+  lspg:eq256:weak64        m=  256  traj rel mean 1.365e-02 (med 1.077e-02, max 5.160e-02) blowups 0  iters cold 11.5 warm 6.77  step 4.6 ms  [22s]
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 9.57e-04 (per-row median 2.0e-03, p95 1.4e-01, max 9.6e+01) [63s]
+  lspg:eq512:weak64        m=  512  traj rel mean 1.313e-02 (med 1.053e-02, max 5.145e-02) blowups 0  iters cold 10.5 warm 6.67  step 6.8 ms  [73s]
+  timing: lspg:full:weak64=1985ms  lspg:eq256:weak64=177ms  lspg:eq512:weak64=287ms  fom_rollout=319ms
+wrote blat_rom_N64_K16.json
+ALL-DONE

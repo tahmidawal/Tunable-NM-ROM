@@ -1,0 +1,175 @@
+{
+ "manifest": {
+  "pkl": "variant.pkl",
+  "pkl_config": {
+   "N": 64,
+   "n_train": 512,
+   "n_val": 64,
+   "n_stages": 1,
+   "steps": 20000,
+   "batch": 32,
+   "p_sub": 1024,
+   "hidden": 98,
+   "n_layers": 4,
+   "peak_lr": 0.002,
+   "const_lr": 0,
+   "lbfgs_steps": 0,
+   "z_ff": 0,
+   "freq_margin": 4,
+   "seed": 0,
+   "K_LAT": 16,
+   "lat_lr": 0.005,
+   "lat_reg": 0.0001,
+   "hard_bc": 1,
+   "gn_iters": 60,
+   "train_seed": 0,
+   "decoder_config": {
+    "name": "groupfilm",
+    "hidden": 98,
+    "n_layers": 4,
+    "group_size": 2,
+    "film_start": 0,
+    "z_width": 64,
+    "residual_scale": 0.5773502691896258,
+    "warp_max_shift": 0.15,
+    "warp_max_log_scale": 0.25,
+    "z_ff": 0
+   },
+   "n_params": 58419
+  },
+  "ns": 1,
+  "n_test": 16,
+  "gn_iters": 60,
+  "hard_bc": 1,
+  "objectives": [
+   "weak_a1_M128"
+  ],
+  "ms": [
+   512
+  ],
+  "schemes": [
+   "full",
+   "nnls"
+  ],
+  "inits": [
+   "nearest"
+  ],
+  "eq_snaps": 64,
+  "eq_perturb": 3,
+  "eq_modes": 64,
+  "eq_rows": 3072,
+  "eq_fixed_snaps": 1,
+  "bc_beta": 0.0,
+  "backend": "gpu",
+  "tr_factor": 0.0,
+  "train_latent_radius": 0.9313135488222498,
+  "trust_delta": Infinity
+ },
+ "fom_max_rel_residual": 4.286116736461677e-13,
+ "oracle": {
+  "nearest": 0.00470984523855026
+ },
+ "rows": [
+  {
+   "objective": "weak_a1_M128",
+   "scheme": "full",
+   "m": 3844,
+   "init": "nearest",
+   "ns": 1,
+   "n_modes_retained": 129,
+   "bc_beta": null,
+   "budget": 60,
+   "rom_rel_l2_mean": 0.004928933468555505,
+   "rom_rel_l2_med": 0.004386356919237125,
+   "rom_rel_l2_max": 0.007371671055043349,
+   "oracle_rel_l2_mean": 0.00470984523855026,
+   "obj_med": 0.00022440951695016316,
+   "lm_accepted_med": 22.0,
+   "lm_rejected_med": 2.5,
+   "lm_attempts_med": 22.5,
+   "lm_reasons": {
+    "converged": 16
+   },
+   "boundary_block_med": 0.0,
+   "eq_info": null,
+   "per_sample_rom_rel_l2": [
+    0.004279082605534335,
+    0.007371671055043349,
+    0.004308355862523739,
+    0.005923344981024261,
+    0.0028161004456464887,
+    0.004327021534705619,
+    0.00567339423268817,
+    0.004332295576528918,
+    0.004089867840258987,
+    0.0040439864287219,
+    0.004241770994698011,
+    0.006944453942333944,
+    0.005440953860265084,
+    0.0044404182619453315,
+    0.005878142521302238,
+    0.00475207535366771
+   ],
+   "secs": 5.853987216949463
+  },
+  {
+   "objective": "weak_a1_M128",
+   "scheme": "nnls",
+   "m": 512,
+   "init": "nearest",
+   "ns": 1,
+   "n_modes_retained": 129,
+   "bc_beta": null,
+   "budget": 60,
+   "rom_rel_l2_mean": 0.005010378657833346,
+   "rom_rel_l2_med": 0.004384773272820242,
+   "rom_rel_l2_max": 0.007433819169363712,
+   "oracle_rel_l2_mean": 0.00470984523855026,
+   "obj_med": 0.00022787269855532752,
+   "lm_accepted_med": 22.0,
+   "lm_rejected_med": 3.0,
+   "lm_attempts_med": 22.5,
+   "lm_reasons": {
+    "budget": 1,
+    "converged": 15
+   },
+   "boundary_block_med": 0.0,
+   "eq_info": {
+    "support": 512,
+    "padded": 0,
+    "rnorm_capped": 0.1336862656443956,
+    "rnorm_final": 0.5695049284845181,
+    "rnorm_fullgrid": 5.431934600368704e-13,
+    "b_norm": 754.2140923253044,
+    "rel_fit": 0.000755097172380706,
+    "row_rel_median": 0.006431508886564396,
+    "row_rel_p95": 0.3615097923116652,
+    "row_rel_max": 4432.045741784563,
+    "fixed_snaps": 1,
+    "n_outer": 532,
+    "secs": 104.37478446960449,
+    "n_rows": 3072
+   },
+   "per_sample_rom_rel_l2": [
+    0.004272590961958326,
+    0.007433819169363712,
+    0.004310807781510145,
+    0.0057174500844461825,
+    0.0028180037144459706,
+    0.00432762510161583,
+    0.005730690960575995,
+    0.0043332748735796164,
+    0.004061041488782511,
+    0.004061949953653894,
+    0.004242542922377111,
+    0.006947173666492819,
+    0.005957229752654312,
+    0.004436271672060867,
+    0.00670581475160284,
+    0.004809771670213406
+   ],
+   "secs": 107.21220707893372
+  }
+ ],
+ "complete": true
+}

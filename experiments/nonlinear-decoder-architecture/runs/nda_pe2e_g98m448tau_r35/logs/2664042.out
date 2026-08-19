@@ -1,0 +1,60 @@
+./code/deps/poisson2d-rom-objective/deps/ms_autodecoder.py: OK
+./code/ctol_poisson.py: OK
+./code/ctol_tol.py: OK
+./code/ctol_tables.py: OK
+./code/ctol_figs.py: OK
+./ckpt/variant/autodec_K16_N64_hbc_stages.pkl: OK
+./ckpt/control/autodec_K16_N64_hbc_stages.pkl: OK
+./code/deps/poisson2d-rom-objective/pro_common.py: OK
+./code/deps/poisson2d-rom-objective/followup/fu_style.py: OK
+./code/deps/poisson2d-rom-objective/followup/fu_eq.py: OK
+./configs.json: OK
+./code/deps/poisson2d-rom-objective/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./code/ctol_pick_configs.py: OK
+./code/ctol_eq.py: OK
+./run.sbatch: OK
+./code/ctol_burgers.py: OK
+./code/deps/poisson2d-rom-objective/deps/ms_parametric.py: OK
+cell=nda_pe2e_g98m448tau_r35 commit=9f2be8d6a35db09e1a5cd9001bca6471f7fabcbd host=pax011 gpu=NVIDIA H200
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.79:/projects/paralab  4.6T  4.1T  473G  90% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 gpu=NVIDIA H200 x64=True KS=[16] NS=[64] TAUS=[0.0075, 0.005] M=112 m=448 reps=9 warm=3
+  plan: 1 mesh(es) [64], k values [16], 1 (arm, method) cells  [CONFIGS=../configs.json]
+  ckpt k=16: autodec_K16_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.147
+   FOM CG tol=1e-06:    3.302 ms  err 1.053e-07  achieved residual 9.97e-07
+   FOM CG tol=1e-13:    5.078 ms  err 0.000e+00  achieved residual 3.60e-13
+   anchor N=64: archived 7.79 ms vs re-timed 5.08 ms (34.8% diff; archived achieved 3.6e-13, re-timed 3.6e-13)
+   overconvergence factor at N=64: 1.00x (testbed 1e-13 achieved 3.6e-13; matched rung tol=1e-13)
+== N=  64  FOM CG @1e-13     5.08 ms  (residual 3.6e-13) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 4s, max rel residual over all samples 4.29e-13
+   POD basis: 512 snapshots, orthonormality dev 5.57e-14, sv0 2.959e+00 sv[15] 7.885e-02
+   EQ candidate pool: 3844 of 3844 interior nodes (cap 4096)
+   preprocess M=112: selected-mode matvec 0.141 ms/query (full dense sine transform 0.143 ms; offline table 0.1 s; vs reference rel 2.2e-16)
+  NNLS-EQ poisson coord N=64 k=16 M=112 m=448: pool 3844 support 448 (+0 pad) rel fit 5.29e-04 (row p95 2.7e-01, max 2.8e+02) [74s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N=  64 k=16 M=112 m= 448 tau=7e-03  solve    2.52 ms  e2e    2.79 ms  jac   8.6  err 8.655e-03  fd 1.43e-01  cens   0%
+   coord N=  64 k=16 M=112 m= 448 tau=5e-03  solve    2.99 ms  e2e    3.26 ms  jac  12.9  err 6.563e-03  fd 1.34e-01  cens  19%
+   [cell coord N=64 k=16 M=112 m=448: 82s]
+== N=64 done [92s]
+DONE
+jax_backend=gpu device=cuda:0 gpu=NVIDIA H200 x64=True KS=[16] NS=[64] TAUS=[0.0075, 0.005] M=112 m=448 reps=9 warm=3
+  plan: 1 mesh(es) [64], k values [16], 1 (arm, method) cells  [CONFIGS=../configs.json]
+  ckpt k=16: autodec_K16_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.148
+   FOM CG tol=1e-06:    3.325 ms  err 1.053e-07  achieved residual 9.97e-07
+   FOM CG tol=1e-13:    5.151 ms  err 0.000e+00  achieved residual 3.60e-13
+   anchor N=64: archived 7.79 ms vs re-timed 5.15 ms (33.8% diff; archived achieved 3.6e-13, re-timed 3.6e-13)
+   overconvergence factor at N=64: 1.00x (testbed 1e-13 achieved 3.6e-13; matched rung tol=1e-13)
+== N=  64  FOM CG @1e-13     5.15 ms  (residual 3.6e-13) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 4s, max rel residual over all samples 4.29e-13
+   POD basis: 512 snapshots, orthonormality dev 5.57e-14, sv0 2.959e+00 sv[15] 7.885e-02
+   EQ candidate pool: 3844 of 3844 interior nodes (cap 4096)
+   preprocess M=112: selected-mode matvec 0.136 ms/query (full dense sine transform 0.142 ms; offline table 0.1 s; vs reference rel 2.2e-16)
+  NNLS-EQ poisson coord N=64 k=16 M=112 m=448: pool 3844 support 448 (+0 pad) rel fit 5.07e-04 (row p95 2.7e-01, max 2.4e+02) [76s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N=  64 k=16 M=112 m= 448 tau=7e-03  solve    2.76 ms  e2e    3.04 ms  jac  11.2  err 9.689e-03  fd 1.96e-01  cens   6%
+   coord N=  64 k=16 M=112 m= 448 tau=5e-03  solve    3.23 ms  e2e    3.50 ms  jac  16.0  err 8.954e-03  fd 1.93e-01  cens  31%
+   [cell coord N=64 k=16 M=112 m=448: 85s]
+== N=64 done [95s]
+DONE
+ALL-DONE

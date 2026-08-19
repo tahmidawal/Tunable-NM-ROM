@@ -1,0 +1,52 @@
+{
+ "config": {
+  "N": 64,
+  "n_train": 512,
+  "n_val": 64,
+  "n_stages": 1,
+  "steps": 20000,
+  "batch": 32,
+  "p_sub": 1024,
+  "hidden": 100,
+  "n_layers": 4,
+  "peak_lr": 0.002,
+  "const_lr": 0,
+  "lbfgs_steps": 0,
+  "z_ff": 0,
+  "freq_margin": 4,
+  "seed": 0,
+  "K_LAT": 16,
+  "lat_lr": 0.005,
+  "lat_reg": 0.0001,
+  "hard_bc": 1,
+  "gn_iters": 60,
+  "train_seed": 2,
+  "decoder_config": {
+   "name": "groupfilm",
+   "hidden": 100,
+   "n_layers": 4,
+   "group_size": 2,
+   "film_start": 0,
+   "z_width": 64,
+   "residual_scale": 0.5773502691896258,
+   "warp_max_shift": 0.15,
+   "warp_max_log_scale": 0.25,
+   "z_ff": 0
+  },
+  "n_params": 60189
+ },
+ "fom_max_rel_residual": 4.286116736461677e-13,
+ "eps0": 0.0023595950971842788,
+ "n_freq": 6,
+ "adam_final_batch_loss": 3.148947249800399e-06,
+ "train_global_rel": 0.0061172161584906945,
+ "train_mean_rel_l2": 0.006244312498172344,
+ "val_lm_inferred_mean_rel_l2": {
+  "mean": 0.005577715832821838,
+  "nearest": 0.004900239805177082,
+  "best": 0.004900005604280744
+ },
+ "boundary_block_train_med": 0.0,
+ "latent_rms": 0.15165794420002293,
+ "complete": true
+}

@@ -1,0 +1,53 @@
+./configs.json: OK
+./ckpt/variant/blat_ad_N64_K16.pkl: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_autodecoder.py: OK
+./run.sbatch: OK
+./code/ctol_poisson.py: OK
+./code/ctol_tol.py: OK
+./code/ctol_tables.py: OK
+./code/ctol_figs.py: OK
+./code/deps/burgers2d-rom-latent-stepping/followup/fu_common.py: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py: OK
+./code/deps/burgers2d-rom-latent-stepping/blat_common.py: OK
+./ckpt/control/blat_ad_N64_K16.pkl: OK
+./code/deps/burgers2d-rom-latent-stepping/followup/fu_style.py: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./code/ctol_pick_configs.py: OK
+./code/ctol_eq.py: OK
+./code/ctol_burgers.py: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py: OK
+cell=nda_be2e_g160m592tau_r34 commit=9f2be8d6a35db09e1a5cd9001bca6471f7fabcbd host=pax050 gpu=NVIDIA A100 80GB PCIe
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.85:/projects/paralab  4.6T  4.1T  473G  90% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100 80GB PCIe KS=[16] NS=[64] TAUS=[0.05, 0.02] M=128 m=592 reps=9 warm=3 ckpt_N=64 n_test=16 n_pod_traj=512
+  plan: 1 mesh(es) [64], k values [16], 1 (arm, method) cells  [CONFIGS=../configs.json]
+  ckpt k=16: blat_ad_N64_K16.pkl train_seed=None
+== N=  64: test trajectories regenerated, FOM Newton residual 9.99e-13
+   FOM Newton=3:    112.0 ms  err 3.463e-13  residual 1.08e-10
+   FOM rollout (batch 1, median over 16 sources, reference Newton=8) 336.6 ms -- ladder above is iso-accuracy
+   POD basis: 6656 snapshots from 512 trajectories x 13 slices (stride 4), orthonormality dev 1.33e-15, sv0 8.053e+02 sv[15] 5.368e+01 (train FOM residual 1.00e-12)
+   POD projection floor (held-out): k=16:9.092e-02
+   EQ candidate pool: 3844 of 3844 interior nodes (cap 4096)
+  NNLS-EQ burgers coord N=64 k=16 M=128 m=592: pool 3844 support 592 (+0 pad) rel fit 3.19e-03 (row p95 9.4e-01, max 7.0e+02) [115s]
+   coord N=  64 k=16 M=128 m= 592 tau=5e-02  e2e    548.9 ms  solve    538.8 ms  jac  237.2  err 1.268e-02  fomres 4.57e-03  cens 34.1%  blowups 0
+   coord N=  64 k=16 M=128 m= 592 tau=2e-02  e2e   1130.5 ms  solve   1120.3 ms  jac  379.9  err 9.750e-03  fomres 4.46e-03  cens 98.8%  blowups 0
+   [cell coord N=64 k=16 M=128 m=592: 477s]
+== N=64 done [592s]
+DONE
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100 80GB PCIe KS=[16] NS=[64] TAUS=[0.05, 0.02] M=128 m=592 reps=9 warm=3 ckpt_N=64 n_test=16 n_pod_traj=512
+  plan: 1 mesh(es) [64], k values [16], 1 (arm, method) cells  [CONFIGS=../configs.json]
+  ckpt k=16: blat_ad_N64_K16.pkl train_seed=0
+== N=  64: test trajectories regenerated, FOM Newton residual 9.99e-13
+   FOM Newton=3:    110.1 ms  err 3.463e-13  residual 1.08e-10
+   FOM rollout (batch 1, median over 16 sources, reference Newton=8) 334.2 ms -- ladder above is iso-accuracy
+   POD basis: 6656 snapshots from 512 trajectories x 13 slices (stride 4), orthonormality dev 1.33e-15, sv0 8.053e+02 sv[15] 5.368e+01 (train FOM residual 1.00e-12)
+   POD projection floor (held-out): k=16:9.092e-02
+   EQ candidate pool: 3844 of 3844 interior nodes (cap 4096)
+  NNLS-EQ burgers coord N=64 k=16 M=128 m=592: pool 3844 support 592 (+0 pad) rel fit 2.23e-03 (row p95 6.2e-01, max 1.5e+03) [114s]
+   coord N=  64 k=16 M=128 m= 592 tau=5e-02  e2e    336.2 ms  solve    332.5 ms  jac  272.5  err 1.791e-02  fomres 5.85e-03  cens 45.0%  blowups 0
+   coord N=  64 k=16 M=128 m= 592 tau=2e-02  e2e    514.7 ms  solve    511.0 ms  jac  404.9  err 1.267e-02  fomres 4.88e-03  cens 100.0%  blowups 0
+   [cell coord N=64 k=16 M=128 m=592: 293s]
+== N=64 done [407s]
+DONE
+ALL-DONE

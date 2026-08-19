@@ -1,0 +1,61 @@
+./ckpt/variant/blat_ad_N64_K16.pkl: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_autodecoder.py: OK
+./code/ctol_tol.py: OK
+./code/ctol_tables.py: OK
+./configs.json: OK
+./code/ctol_figs.py: OK
+./code/deps/burgers2d-rom-latent-stepping/followup/fu_common.py: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py: OK
+./code/deps/burgers2d-rom-latent-stepping/blat_common.py: OK
+./ckpt/control/blat_ad_N64_K16.pkl: OK
+./code/deps/burgers2d-rom-latent-stepping/followup/fu_style.py: OK
+./run.sbatch: OK
+./code/ctol_poisson.py: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/nonlinear-decoder-architecture/nda_arch.py: OK
+./code/ctol_pick_configs.py: OK
+./code/ctol_burgers.py: OK
+./code/ctol_eq.py: OK
+./code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py: OK
+cell=nda_be2e_g160_r14 commit=251494c83a1b4c4d2dad8101eb0def75927879ef host=pax010 gpu=NVIDIA H200
+Filesystem                       Size  Used Avail Use% Mounted on
+10.246.194.80:/projects/paralab  4.6T  4.1T  475G  90% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 gpu=NVIDIA H200 KS=[16] NS=[64] TAUS=[0.01, 0.001] M=96 m=384 reps=9 warm=3 ckpt_N=64 n_test=16 n_pod_traj=512
+  plan: 1 mesh(es) [64], k values [16], 2 (arm, method) cells  [CONFIGS=../configs.json]
+  ckpt k=16: blat_ad_N64_K16.pkl train_seed=None
+== N=  64: test trajectories regenerated, FOM Newton residual 9.99e-13
+   FOM Newton=3:     86.1 ms  err 3.463e-13  residual 1.08e-10
+   FOM rollout (batch 1, median over 16 sources, reference Newton=8) 261.0 ms -- ladder above is iso-accuracy
+   POD basis: 6656 snapshots from 512 trajectories x 13 slices (stride 4), orthonormality dev 1.33e-15, sv0 8.053e+02 sv[15] 5.368e+01 (train FOM residual 1.00e-12)
+   POD projection floor (held-out): k=16:9.092e-02
+   EQ candidate pool: 3844 of 3844 interior nodes (cap 4096)
+  NNLS-EQ burgers coord N=64 k=16 M=96 m=384: pool 3844 support 384 (+0 pad) rel fit 5.24e-03 (row p95 1.1e+00, max 2.9e+03) [33s]
+   coord N=  64 k=16 M= 96 m= 384 tau=1e-02  e2e    380.3 ms  solve    377.1 ms  jac  405.1  err 1.067e-02  fomres 4.90e-03  cens 99.9%  blowups 0
+   coord N=  64 k=16 M= 96 m= 384 tau=1e-03  e2e    380.8 ms  solve    377.7 ms  jac  407.1  err 1.067e-02  fomres 4.90e-03  cens 100.0%  blowups 0
+   [cell coord N=64 k=16 M=96 m=384: 189s]
+  NNLS-EQ burgers coord N=64 k=16 M=128 m=512: pool 3844 support 512 (+0 pad) rel fit 4.22e-03 (row p95 1.2e+00, max 1.8e+03) [72s]
+   coord N=  64 k=16 M=128 m= 512 tau=1e-02  e2e    480.5 ms  solve    477.4 ms  jac  413.1  err 9.658e-03  fomres 4.47e-03  cens 100.0%  blowups 0
+   coord N=  64 k=16 M=128 m= 512 tau=1e-03  e2e    480.7 ms  solve    477.5 ms  jac  414.8  err 9.658e-03  fomres 4.47e-03  cens 100.0%  blowups 0
+   [cell coord N=64 k=16 M=128 m=512: 266s]
+== N=64 done [543s]
+DONE
+jax_backend=gpu device=cuda:0 gpu=NVIDIA H200 KS=[16] NS=[64] TAUS=[0.01, 0.001] M=96 m=384 reps=9 warm=3 ckpt_N=64 n_test=16 n_pod_traj=512
+  plan: 1 mesh(es) [64], k values [16], 2 (arm, method) cells  [CONFIGS=../configs.json]
+  ckpt k=16: blat_ad_N64_K16.pkl train_seed=0
+== N=  64: test trajectories regenerated, FOM Newton residual 9.99e-13
+   FOM Newton=3:     85.8 ms  err 3.463e-13  residual 1.08e-10
+   FOM rollout (batch 1, median over 16 sources, reference Newton=8) 259.4 ms -- ladder above is iso-accuracy
+   POD basis: 6656 snapshots from 512 trajectories x 13 slices (stride 4), orthonormality dev 1.33e-15, sv0 8.053e+02 sv[15] 5.368e+01 (train FOM residual 1.00e-12)
+   POD projection floor (held-out): k=16:9.092e-02
+   EQ candidate pool: 3844 of 3844 interior nodes (cap 4096)
+  NNLS-EQ burgers coord N=64 k=16 M=96 m=384: pool 3844 support 384 (+0 pad) rel fit 4.42e-03 (row p95 7.5e-01, max 1.7e+03) [32s]
+   coord N=  64 k=16 M= 96 m= 384 tau=1e-02  e2e    199.8 ms  solve    198.4 ms  jac  392.6  err 1.091e-02  fomres 4.23e-03  cens 100.0%  blowups 0
+   coord N=  64 k=16 M= 96 m= 384 tau=1e-03  e2e    200.7 ms  solve    199.3 ms  jac  394.9  err 1.091e-02  fomres 4.23e-03  cens 100.0%  blowups 0
+   [cell coord N=64 k=16 M=96 m=384: 120s]
+  NNLS-EQ burgers coord N=64 k=16 M=128 m=512: pool 3844 support 512 (+0 pad) rel fit 3.14e-03 (row p95 8.0e-01, max 7.8e+02) [75s]
+   coord N=  64 k=16 M=128 m= 512 tau=1e-02  e2e    256.7 ms  solve    255.2 ms  jac  411.2  err 1.003e-02  fomres 4.12e-03  cens 99.9%  blowups 0
+   coord N=  64 k=16 M=128 m= 512 tau=1e-03  e2e    256.2 ms  solve    254.8 ms  jac  412.4  err 9.987e-03  fomres 4.12e-03  cens 100.0%  blowups 0
+   [cell coord N=64 k=16 M=128 m=512: 182s]
+== N=64 done [389s]
+DONE
+ALL-DONE

@@ -101,7 +101,7 @@ def seed_variability(summary):
         if row["name"] == "Poisson":
             label = f'Poisson H{row["hidden"]}'
         else:
-            label = f'Burgers M{row["M"]}'
+            label = f'Burgers g{row["group_size"]} M{row["M"]}/m{row["m"]}'
         groups.append((label, row))
     fig, ax = plt.subplots(figsize=(max(7.0, 1.5 * len(groups)), 4.5), constrained_layout=True)
     x = np.arange(len(groups))

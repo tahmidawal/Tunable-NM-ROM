@@ -313,7 +313,8 @@ def main():
     burgers_gates = burgers_gate_audit(burgers_objective)
     benchmarks = [x for x in (
         benchmark("nda_pbench_g98b_r8"), benchmark("nda_bbench_g160_r12")) if x]
-    e2e_rows = e2e("nda_pe2e_g98_r11") + e2e("nda_be2e_g160_r14")
+    e2e_rows = (e2e("nda_pe2e_g98_r11") + e2e("nda_be2e_g160_r14") +
+                e2e("nda_be2e_g160m640_r21"))
     result = dict(
         poisson=poisson, poisson_three_seed=poisson_seed,
         burgers=burgers, burgers_objectives=burgers_objective,

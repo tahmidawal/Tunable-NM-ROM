@@ -126,7 +126,7 @@ class FilmControl:
         )
         self.mean_initial_latent = self.z_train[:, 0].mean(axis=0)
 
-    def build(self, n, latent_extrapolation_scale=0.0):
+    def build(self, n, latent_extrapolation_scale=0.0, shared_ops=None):
         """Build one deployable weak-rollout variant.
 
         ``latent_extrapolation_scale=0`` is the audited previous-latent LM
@@ -137,7 +137,12 @@ class FilmControl:
         decoder = self.decoder
         coords = jnp.asarray(rc.grid_coords(n))
         decode_coords = jnp.asarray(rc.grid_coords(self.decode_resolution))
-        ops = build_ops(decoder, n, self.z_snapshots)
+        # A same-mesh history gate shares the exact fitted EQ rule.  This is
+        # offline work either way, but avoiding a second deterministic NNLS
+        # fit keeps the gate bounded and makes equality structural.
+        ops = shared_ops if shared_ops is not None else build_ops(
+            decoder, n, self.z_snapshots
+        )
         collocation = ops.get("colloc_used")
         if collocation is None or collocation.get("kind") != "grid":
             raise ValueError("FiLM control requires grid EQ for exact FOM upwind")

@@ -153,10 +153,14 @@ def main():
             raise SystemExit(f"N={n}: reference residual {worst_reference:.3e}")
         offline_start = time.time()
         built_by_arm = {}
+        shared_ops = None
         for mode, arm in zip(LATENT_HISTORY_MODES, FILM_ARMS):
             built_by_arm[arm] = film.build(
-                n, latent_extrapolation_scale=_HISTORY_SCALES[mode]
+                n,
+                latent_extrapolation_scale=_HISTORY_SCALES[mode],
+                shared_ops=shared_ops,
             )
+            shared_ops = built_by_arm[arm]["ops"]
         built = built_by_arm[FILM_ARMS[0]]
         report["offline_per_mesh"][str(n)] = {
             "build_seconds": float(time.time() - offline_start),

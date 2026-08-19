@@ -1,0 +1,857 @@
+{
+  "audit": {
+    "all_finite": true,
+    "breakdowns_total": 0,
+    "case_aware_tukey_outliers_total": 66,
+    "equivalence_condition_count": 18,
+    "flags_nonzero_total": 0,
+    "max_counting_vs_testbed_step_rel_diff": 1.8924273713891025e-06,
+    "max_counting_vs_testbed_trajectory_rel_diff": 1.1644588371887063e-06,
+    "max_outer_residual_over_tau": 0.9978028089843288,
+    "max_reference_residual": 9.999924334837862e-13,
+    "max_relative_solution_diff_vs_jax": 1.2939007240337056e-16,
+    "row_count": 54,
+    "timed_record_count": 1512
+  },
+  "classification": "untouched-seed final confirmation",
+  "cohort": {
+    "canonical_draw_count": 16,
+    "repetitions_per_trajectory": 7,
+    "seed": 20260819,
+    "selected_indices": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "comparisons": [
+    {
+      "N": 32,
+      "cubic": {
+        "bicgstab": 64.5,
+        "newton": 53.5,
+        "saving_vs_linear_95ci_ms": [
+          7.993750739842653,
+          16.988574992865324
+        ],
+        "saving_vs_linear_ms": 13.757283333688974,
+        "time_ms": 30.854685930535197
+      },
+      "fom_tau": 1e-06,
+      "guarded_film_nmrom": {
+        "bicgstab": 64.5,
+        "guard_accepted_count_median": 0.5,
+        "guard_accepted_fraction_median": 0.01,
+        "newton": 53.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -135.35823905840516,
+          -125.09096739813685
+        ],
+        "saving_vs_cubic_ms": -128.22347693145275,
+        "saving_vs_linear_95ci_ms": [
+          -124.793142080307,
+          -108.1749745644629
+        ],
+        "saving_vs_linear_ms": -115.99059868603945,
+        "time_ms": 162.30382840149105
+      },
+      "health": {
+        "case_aware_tukey_outliers": 2,
+        "max_outer_residual": 9.827194542629552e-07,
+        "max_trajectory_rel_l2": 1.959833645761317e-06
+      },
+      "linear": {
+        "bicgstab": 99.0,
+        "newton": 81.5,
+        "time_ms": 42.75781731121242
+      },
+      "linear_tol": 0.01
+    },
+    {
+      "N": 32,
+      "cubic": {
+        "bicgstab": 123.5,
+        "newton": 57.0,
+        "saving_vs_linear_95ci_ms": [
+          19.895547535270452,
+          26.964324060827494
+        ],
+        "saving_vs_linear_ms": 22.86894340068102,
+        "time_ms": 45.09817436337471
+      },
+      "fom_tau": 1e-08,
+      "guarded_film_nmrom": {
+        "bicgstab": 123.5,
+        "guard_accepted_count_median": 0.5,
+        "guard_accepted_fraction_median": 0.01,
+        "newton": 56.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -136.13593531772494,
+          -126.25111965462565
+        ],
+        "saving_vs_cubic_ms": -128.57744353823364,
+        "saving_vs_linear_95ci_ms": [
+          -111.40742525458336,
+          -99.61522836238146
+        ],
+        "saving_vs_linear_ms": -107.75910317897797,
+        "time_ms": 177.0131727680564
+      },
+      "health": {
+        "case_aware_tukey_outliers": 2,
+        "max_outer_residual": 9.806349069024176e-09,
+        "max_trajectory_rel_l2": 1.1129431763867155e-08
+      },
+      "linear": {
+        "bicgstab": 196.5,
+        "newton": 93.5,
+        "time_ms": 67.70889554172754
+      },
+      "linear_tol": 0.0001
+    },
+    {
+      "N": 32,
+      "cubic": {
+        "bicgstab": 188.5,
+        "newton": 66.5,
+        "saving_vs_linear_95ci_ms": [
+          18.65783194079995,
+          27.710831724107265
+        ],
+        "saving_vs_linear_ms": 23.071971721947193,
+        "time_ms": 58.159298030659556
+      },
+      "fom_tau": 1e-10,
+      "guarded_film_nmrom": {
+        "bicgstab": 188.5,
+        "guard_accepted_count_median": 0.5,
+        "guard_accepted_fraction_median": 0.01,
+        "newton": 66.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -131.13928167149425,
+          -122.27429496124387
+        ],
+        "saving_vs_cubic_ms": -124.87994926050305,
+        "saving_vs_linear_95ci_ms": [
+          -108.33133151754737,
+          -94.69572314992547
+        ],
+        "saving_vs_linear_ms": -104.36662449501455,
+        "time_ms": 183.51074657402933
+      },
+      "health": {
+        "case_aware_tukey_outliers": 2,
+        "max_outer_residual": 9.37248537545175e-11,
+        "max_trajectory_rel_l2": 7.446434517276964e-11
+      },
+      "linear": {
+        "bicgstab": 278.0,
+        "newton": 101.0,
+        "time_ms": 83.54017208330333
+      },
+      "linear_tol": 1e-05
+    },
+    {
+      "N": 64,
+      "cubic": {
+        "bicgstab": 75.5,
+        "newton": 57.5,
+        "saving_vs_linear_95ci_ms": [
+          6.5912907011806965,
+          13.952394016087055
+        ],
+        "saving_vs_linear_ms": 11.303602950647473,
+        "time_ms": 24.722875794395804
+      },
+      "fom_tau": 1e-06,
+      "guarded_film_nmrom": {
+        "bicgstab": 78.0,
+        "guard_accepted_count_median": 1.0,
+        "guard_accepted_fraction_median": 0.02,
+        "newton": 57.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -134.7186602652073,
+          -119.93632186204195
+        ],
+        "saving_vs_cubic_ms": -130.402967100963,
+        "saving_vs_linear_95ci_ms": [
+          -126.0843682102859,
+          -106.24453658238053
+        ],
+        "saving_vs_linear_ms": -120.14816608279943,
+        "time_ms": 156.77688596770167
+      },
+      "health": {
+        "case_aware_tukey_outliers": 1,
+        "max_outer_residual": 9.95276583983307e-07,
+        "max_trajectory_rel_l2": 1.6769071798852986e-06
+      },
+      "linear": {
+        "bicgstab": 123.0,
+        "newton": 90.5,
+        "time_ms": 35.26194696314633
+      },
+      "linear_tol": 0.01
+    },
+    {
+      "N": 64,
+      "cubic": {
+        "bicgstab": 146.5,
+        "newton": 61.0,
+        "saving_vs_linear_95ci_ms": [
+          16.47677691653371,
+          21.190432831645012
+        ],
+        "saving_vs_linear_ms": 19.471404142677784,
+        "time_ms": 36.201841197907925
+      },
+      "fom_tau": 1e-08,
+      "guarded_film_nmrom": {
+        "bicgstab": 146.0,
+        "guard_accepted_count_median": 1.0,
+        "guard_accepted_fraction_median": 0.02,
+        "newton": 59.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -134.066600818187,
+          -120.67075353115797
+        ],
+        "saving_vs_cubic_ms": -129.42042108625174,
+        "saving_vs_linear_95ci_ms": [
+          -114.86657476052642,
+          -99.40161230042577
+        ],
+        "saving_vs_linear_ms": -111.65228695608675,
+        "time_ms": 165.79366265796125
+      },
+      "health": {
+        "case_aware_tukey_outliers": 3,
+        "max_outer_residual": 9.3560005607135e-09,
+        "max_trajectory_rel_l2": 3.624099567806595e-09
+      },
+      "linear": {
+        "bicgstab": 240.0,
+        "newton": 100.0,
+        "time_ms": 54.65366551652551
+      },
+      "linear_tol": 0.0001
+    },
+    {
+      "N": 64,
+      "cubic": {
+        "bicgstab": 201.0,
+        "newton": 70.5,
+        "saving_vs_linear_95ci_ms": [
+          12.607447803020477,
+          21.58629195764661
+        ],
+        "saving_vs_linear_ms": 16.410744516178966,
+        "time_ms": 45.69200286641717
+      },
+      "fom_tau": 1e-10,
+      "guarded_film_nmrom": {
+        "bicgstab": 204.0,
+        "guard_accepted_count_median": 1.0,
+        "guard_accepted_fraction_median": 0.02,
+        "newton": 70.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -134.28641017526388,
+          -120.86378410458565
+        ],
+        "saving_vs_cubic_ms": -130.94303640536964,
+        "saving_vs_linear_95ci_ms": [
+          -117.9171740077436,
+          -99.45805370807648
+        ],
+        "saving_vs_linear_ms": -116.32646434009075,
+        "time_ms": 178.2424240373075
+      },
+      "health": {
+        "case_aware_tukey_outliers": 4,
+        "max_outer_residual": 9.954374121447579e-11,
+        "max_trajectory_rel_l2": 6.41462175694547e-11
+      },
+      "linear": {
+        "bicgstab": 302.5,
+        "newton": 102.0,
+        "time_ms": 64.6649319678545
+      },
+      "linear_tol": 1e-05
+    },
+    {
+      "N": 128,
+      "cubic": {
+        "bicgstab": 90.5,
+        "newton": 61.0,
+        "saving_vs_linear_95ci_ms": [
+          10.984574910253286,
+          23.485075682401657
+        ],
+        "saving_vs_linear_ms": 17.070922069251537,
+        "time_ms": 41.634429013356566
+      },
+      "fom_tau": 1e-06,
+      "guarded_film_nmrom": {
+        "bicgstab": 93.0,
+        "guard_accepted_count_median": 2.0,
+        "guard_accepted_fraction_median": 0.04,
+        "newton": 61.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -146.44846646115184,
+          -124.67357842251658
+        ],
+        "saving_vs_cubic_ms": -135.28056209906936,
+        "saving_vs_linear_95ci_ms": [
+          -135.45954134315252,
+          -101.01140476763248
+        ],
+        "saving_vs_linear_ms": -118.52688854560256,
+        "time_ms": 175.65603042021394
+      },
+      "health": {
+        "case_aware_tukey_outliers": 8,
+        "max_outer_residual": 9.968022127636084e-07,
+        "max_trajectory_rel_l2": 1.5207919526769398e-06
+      },
+      "linear": {
+        "bicgstab": 131.5,
+        "newton": 92.0,
+        "time_ms": 57.224615942686796
+      },
+      "linear_tol": 0.01
+    },
+    {
+      "N": 128,
+      "cubic": {
+        "bicgstab": 156.5,
+        "newton": 62.0,
+        "saving_vs_linear_95ci_ms": [
+          27.623970061540604,
+          37.45306795462966
+        ],
+        "saving_vs_linear_ms": 33.44106813892722,
+        "time_ms": 59.339156141504645
+      },
+      "fom_tau": 1e-08,
+      "guarded_film_nmrom": {
+        "bicgstab": 156.5,
+        "guard_accepted_count_median": 2.0,
+        "guard_accepted_fraction_median": 0.04,
+        "newton": 59.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -144.1127876751125,
+          -122.6213569752872
+        ],
+        "saving_vs_cubic_ms": -136.88347046263516,
+        "saving_vs_linear_95ci_ms": [
+          -116.09205510467291,
+          -89.13224609568715
+        ],
+        "saving_vs_linear_ms": -101.89164103940129,
+        "time_ms": 193.7224769499153
+      },
+      "health": {
+        "case_aware_tukey_outliers": 3,
+        "max_outer_residual": 9.358056077028284e-09,
+        "max_trajectory_rel_l2": 3.4811652113926643e-09
+      },
+      "linear": {
+        "bicgstab": 259.0,
+        "newton": 100.0,
+        "time_ms": 91.81306650862098
+      },
+      "linear_tol": 0.0001
+    },
+    {
+      "N": 128,
+      "cubic": {
+        "bicgstab": 223.0,
+        "newton": 70.0,
+        "saving_vs_linear_95ci_ms": [
+          17.226720228791237,
+          34.47404643520713
+        ],
+        "saving_vs_linear_ms": 27.212848188355565,
+        "time_ms": 76.96959585882723
+      },
+      "fom_tau": 1e-10,
+      "guarded_film_nmrom": {
+        "bicgstab": 225.5,
+        "guard_accepted_count_median": 2.0,
+        "guard_accepted_fraction_median": 0.04,
+        "newton": 70.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -149.98824801295996,
+          -126.04475393891335
+        ],
+        "saving_vs_cubic_ms": -136.87092741020024,
+        "saving_vs_linear_95ci_ms": [
+          -123.0679196305573,
+          -97.41616854444146
+        ],
+        "saving_vs_linear_ms": -111.63229425437748,
+        "time_ms": 218.67009857669473
+      },
+      "health": {
+        "case_aware_tukey_outliers": 5,
+        "max_outer_residual": 9.696272106614636e-11,
+        "max_trajectory_rel_l2": 5.0721614629912436e-11
+      },
+      "linear": {
+        "bicgstab": 321.0,
+        "newton": 102.0,
+        "time_ms": 108.02627867087722
+      },
+      "linear_tol": 1e-05
+    },
+    {
+      "N": 256,
+      "cubic": {
+        "bicgstab": 95.5,
+        "newton": 61.5,
+        "saving_vs_linear_95ci_ms": [
+          9.173122700303793,
+          18.543805927038193
+        ],
+        "saving_vs_linear_ms": 13.94933951087296,
+        "time_ms": 36.398530239239335
+      },
+      "fom_tau": 1e-06,
+      "guarded_film_nmrom": {
+        "bicgstab": 96.5,
+        "guard_accepted_count_median": 2.5,
+        "guard_accepted_fraction_median": 0.05,
+        "newton": 61.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -132.3853563517332,
+          -121.68367533013225
+        ],
+        "saving_vs_cubic_ms": -126.73103041015565,
+        "saving_vs_linear_95ci_ms": [
+          -123.46096383407712,
+          -108.13314467668533
+        ],
+        "saving_vs_linear_ms": -110.04671710543334,
+        "time_ms": 163.92611828632653
+      },
+      "health": {
+        "case_aware_tukey_outliers": 1,
+        "max_outer_residual": 9.9245796471262e-07,
+        "max_trajectory_rel_l2": 1.3293714212117293e-06
+      },
+      "linear": {
+        "bicgstab": 139.5,
+        "newton": 92.5,
+        "time_ms": 49.59395248442888
+      },
+      "linear_tol": 0.01
+    },
+    {
+      "N": 256,
+      "cubic": {
+        "bicgstab": 159.5,
+        "newton": 62.5,
+        "saving_vs_linear_95ci_ms": [
+          25.172382593154907,
+          32.71094663068652
+        ],
+        "saving_vs_linear_ms": 27.90941414423287,
+        "time_ms": 53.42171876691282
+      },
+      "fom_tau": 1e-08,
+      "guarded_film_nmrom": {
+        "bicgstab": 164.5,
+        "guard_accepted_count_median": 2.5,
+        "guard_accepted_fraction_median": 0.05,
+        "newton": 61.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -135.8685907907784,
+          -128.03233275189996
+        ],
+        "saving_vs_cubic_ms": -130.46496361494064,
+        "saving_vs_linear_95ci_ms": [
+          -110.97399657592177,
+          -95.61623306944966
+        ],
+        "saving_vs_linear_ms": -102.13952604681253,
+        "time_ms": 185.46334351412952
+      },
+      "health": {
+        "case_aware_tukey_outliers": 2,
+        "max_outer_residual": 9.495215051199619e-09,
+        "max_trajectory_rel_l2": 4.329580617902359e-09
+      },
+      "linear": {
+        "bicgstab": 264.0,
+        "newton": 100.5,
+        "time_ms": 82.3074160143733
+      },
+      "linear_tol": 0.0001
+    },
+    {
+      "N": 256,
+      "cubic": {
+        "bicgstab": 235.5,
+        "newton": 71.0,
+        "saving_vs_linear_95ci_ms": [
+          11.694985907524824,
+          31.044202856719494
+        ],
+        "saving_vs_linear_ms": 23.054938297718763,
+        "time_ms": 71.78730494342744
+      },
+      "fom_tau": 1e-10,
+      "guarded_film_nmrom": {
+        "bicgstab": 239.0,
+        "guard_accepted_count_median": 2.5,
+        "guard_accepted_fraction_median": 0.05,
+        "newton": 71.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -138.86082312092185,
+          -127.13787006214261
+        ],
+        "saving_vs_cubic_ms": -131.1942043248564,
+        "saving_vs_linear_95ci_ms": [
+          -119.86081581562757,
+          -95.93176888301969
+        ],
+        "saving_vs_linear_ms": -111.57820629887283,
+        "time_ms": 202.96195754781365
+      },
+      "health": {
+        "case_aware_tukey_outliers": 2,
+        "max_outer_residual": 9.705702763148459e-11,
+        "max_trajectory_rel_l2": 5.3751747065374445e-11
+      },
+      "linear": {
+        "bicgstab": 335.5,
+        "newton": 102.5,
+        "time_ms": 98.57193706557155
+      },
+      "linear_tol": 1e-05
+    },
+    {
+      "N": 512,
+      "cubic": {
+        "bicgstab": 97.0,
+        "newton": 62.5,
+        "saving_vs_linear_95ci_ms": [
+          30.22494586184621,
+          56.53961841017008
+        ],
+        "saving_vs_linear_ms": 48.042562790215015,
+        "time_ms": 103.39268203824759
+      },
+      "fom_tau": 1e-06,
+      "guarded_film_nmrom": {
+        "bicgstab": 100.0,
+        "guard_accepted_count_median": 4.0,
+        "guard_accepted_fraction_median": 0.08,
+        "newton": 63.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -168.17708685994148,
+          -126.97523273527622
+        ],
+        "saving_vs_cubic_ms": -153.02183735184371,
+        "saving_vs_linear_95ci_ms": [
+          -117.55113815888762,
+          -79.63474886491895
+        ],
+        "saving_vs_linear_ms": -110.3075712453574,
+        "time_ms": 247.77141911908984
+      },
+      "health": {
+        "case_aware_tukey_outliers": 7,
+        "max_outer_residual": 9.978028089843288e-07,
+        "max_trajectory_rel_l2": 1.3735011170624608e-06
+      },
+      "linear": {
+        "bicgstab": 146.5,
+        "newton": 93.5,
+        "time_ms": 149.0036533214152
+      },
+      "linear_tol": 0.01
+    },
+    {
+      "N": 512,
+      "cubic": {
+        "bicgstab": 160.5,
+        "newton": 62.5,
+        "saving_vs_linear_95ci_ms": [
+          72.19178602099419,
+          97.85363357514143
+        ],
+        "saving_vs_linear_ms": 78.99766764603555,
+        "time_ms": 141.07996853999794
+      },
+      "fom_tau": 1e-08,
+      "guarded_film_nmrom": {
+        "bicgstab": 165.5,
+        "guard_accepted_count_median": 4.0,
+        "guard_accepted_fraction_median": 0.08,
+        "newton": 61.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -161.79192857816815,
+          -130.54912677034736
+        ],
+        "saving_vs_cubic_ms": -145.40358865633607,
+        "saving_vs_linear_95ci_ms": [
+          -81.60882256925106,
+          -33.18529622629285
+        ],
+        "saving_vs_linear_ms": -70.37595938891172,
+        "time_ms": 282.27287461049855
+      },
+      "health": {
+        "case_aware_tukey_outliers": 5,
+        "max_outer_residual": 9.898625676649356e-09,
+        "max_trajectory_rel_l2": 6.014858022710467e-09
+      },
+      "linear": {
+        "bicgstab": 268.0,
+        "newton": 100.5,
+        "time_ms": 226.07019334100187
+      },
+      "linear_tol": 0.0001
+    },
+    {
+      "N": 512,
+      "cubic": {
+        "bicgstab": 241.0,
+        "newton": 71.0,
+        "saving_vs_linear_95ci_ms": [
+          28.686281759291887,
+          97.81620930880308
+        ],
+        "saving_vs_linear_ms": 69.8713178280741,
+        "time_ms": 205.7682538870722
+      },
+      "fom_tau": 1e-10,
+      "guarded_film_nmrom": {
+        "bicgstab": 245.5,
+        "guard_accepted_count_median": 4.0,
+        "guard_accepted_fraction_median": 0.08,
+        "newton": 71.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -168.88281563296914,
+          -132.84675544127822
+        ],
+        "saving_vs_cubic_ms": -157.7868431340903,
+        "saving_vs_linear_95ci_ms": [
+          -140.31820092350245,
+          -35.102357156574726
+        ],
+        "saving_vs_linear_ms": -88.0077900364995,
+        "time_ms": 356.4510880969465
+      },
+      "health": {
+        "case_aware_tukey_outliers": 3,
+        "max_outer_residual": 9.573749186173845e-11,
+        "max_trajectory_rel_l2": 6.854921332668935e-11
+      },
+      "linear": {
+        "bicgstab": 342.0,
+        "newton": 102.5,
+        "time_ms": 287.7992738503963
+      },
+      "linear_tol": 1e-05
+    },
+    {
+      "N": 1024,
+      "cubic": {
+        "bicgstab": 97.0,
+        "newton": 63.0,
+        "saving_vs_linear_95ci_ms": [
+          131.58051995560527,
+          232.57817886769772
+        ],
+        "saving_vs_linear_ms": 201.5654428396374,
+        "time_ms": 390.4087219852954
+      },
+      "fom_tau": 1e-06,
+      "guarded_film_nmrom": {
+        "bicgstab": 100.0,
+        "guard_accepted_count_median": 4.0,
+        "guard_accepted_fraction_median": 0.08,
+        "newton": 63.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -165.19408812746406,
+          -135.89228317141533
+        ],
+        "saving_vs_cubic_ms": -149.2338851094246,
+        "saving_vs_linear_95ci_ms": [
+          -5.00801857560873,
+          71.83834491297603
+        ],
+        "saving_vs_linear_ms": 50.37175654433668,
+        "time_ms": 535.2869459893554
+      },
+      "health": {
+        "case_aware_tukey_outliers": 8,
+        "max_outer_residual": 9.885446933443824e-07,
+        "max_trajectory_rel_l2": 1.2242392299210303e-06
+      },
+      "linear": {
+        "bicgstab": 149.0,
+        "newton": 94.0,
+        "time_ms": 587.9828126635402
+      },
+      "linear_tol": 0.01
+    },
+    {
+      "N": 1024,
+      "cubic": {
+        "bicgstab": 162.0,
+        "newton": 62.5,
+        "saving_vs_linear_95ci_ms": [
+          317.927623167634,
+          462.5987699255347
+        ],
+        "saving_vs_linear_ms": 354.41294754855335,
+        "time_ms": 586.1691210884601
+      },
+      "fom_tau": 1e-08,
+      "guarded_film_nmrom": {
+        "bicgstab": 167.5,
+        "guard_accepted_count_median": 4.0,
+        "guard_accepted_fraction_median": 0.08,
+        "newton": 61.5,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -163.24601555243134,
+          -125.55499700829387
+        ],
+        "saving_vs_cubic_ms": -153.11268903315067,
+        "saving_vs_linear_95ci_ms": [
+          192.70427199080586,
+          304.15764823555946
+        ],
+        "saving_vs_linear_ms": 198.53622210212052,
+        "time_ms": 728.8152212277055
+      },
+      "health": {
+        "case_aware_tukey_outliers": 4,
+        "max_outer_residual": 9.698533273340682e-09,
+        "max_trajectory_rel_l2": 5.554681593771897e-09
+      },
+      "linear": {
+        "bicgstab": 271.0,
+        "newton": 101.0,
+        "time_ms": 963.7096205260605
+      },
+      "linear_tol": 0.0001
+    },
+    {
+      "N": 1024,
+      "cubic": {
+        "bicgstab": 244.0,
+        "newton": 71.0,
+        "saving_vs_linear_95ci_ms": [
+          125.36396691575646,
+          419.8553520254791
+        ],
+        "saving_vs_linear_ms": 312.5248870346695,
+        "time_ms": 851.4275203924626
+      },
+      "fom_tau": 1e-10,
+      "guarded_film_nmrom": {
+        "bicgstab": 248.5,
+        "guard_accepted_count_median": 4.0,
+        "guard_accepted_fraction_median": 0.08,
+        "newton": 71.0,
+        "reduced_jacobians_median": 100.0,
+        "saving_vs_cubic_95ci_ms": [
+          -184.46708982810378,
+          -158.26750174164772
+        ],
+        "saving_vs_cubic_ms": -168.7998827546835,
+        "saving_vs_linear_95ci_ms": [
+          -58.42495709657669,
+          261.84714352712035
+        ],
+        "saving_vs_linear_ms": 143.7983913347125,
+        "time_ms": 1016.8652185238898
+      },
+      "health": {
+        "case_aware_tukey_outliers": 4,
+        "max_outer_residual": 9.913927827269905e-11,
+        "max_trajectory_rel_l2": 7.600258942358382e-11
+      },
+      "linear": {
+        "bicgstab": 345.0,
+        "newton": 102.5,
+        "time_ms": 1204.624007921666
+      },
+      "linear_tol": 1e-05
+    }
+  ],
+  "decision_counts": {
+    "condition_count": 18,
+    "cubic_clearly_faster_than_linear": 18,
+    "guarded_film_clearly_faster_than_linear": 1,
+    "guarded_film_clearly_slower_than_cubic": 18
+  },
+  "method": {
+    "confidence_interval": "10000-draw trajectory-cluster bootstrap of per-trajectory paired medians; repetitions are not treated as IID",
+    "dt": 0.005,
+    "film_contract": "two-Jacobian weak FiLM NM-ROM candidate; exact full-FOM residual guard against live cubic at every step; all candidate, guard, fallback, and FOM costs charged in the same invocation",
+    "inner_tolerances": [
+      0.01,
+      0.0001,
+      1e-05
+    ],
+    "outer_tolerances": [
+      1e-06,
+      1e-08,
+      1e-10
+    ],
+    "preconditioner": "helmholtz",
+    "steps": 50,
+    "timing_estimator": "median repetitions within each trajectory, then median across trajectory clusters"
+  },
+  "provenance": {
+    "commit": "f309c07a5eb4e88001ae6b7e53c57ee6f96e2f7b",
+    "commit_source": "env:BH_COMMIT",
+    "gpu": "cuda:0",
+    "gpu_kind": "NVIDIA A100-PCIE-40GB",
+    "host": "pax142",
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "matmul_precision": "highest",
+    "slurm_job_id": "2664725",
+    "source_sha256": {
+      "bh_common.py": "d60083b91228d90ba1af726a3a55ac5afc18d1808379c4d5a7b4adee6ca3f51b",
+      "bh_correction_spectrum.py": "cf524b0ae6df683c333a91ecbc89c4d0764a79f673f073a53b92b458237b4ec8",
+      "bh_film_confirmation.py": "888cbe5a36fac82828938ff3e0562a8a9974944f44974868d5a7a6519dd8846e",
+      "bh_film_control.py": "7f9f4ba68555d8c1f37ad7a0694e712dff86e04a0f7506d1bbfb3d2df77ebe55",
+      "bh_history_controls.py": "5dd439c9d83d294263e35425d6362dad92fb7b6340fc359aa701b68d29a5eae5",
+      "bh_history_manifold.py": "12c276d8db0363c87e49eeeac8c2510406fcdcdb416462714bd0abb8e40c7d64",
+      "bh_linear_tolerance.py": "3cee245c449d8a62c6a4b0a46f5f7e7b77eea556b76a1a1fc961f8faf57bab98",
+      "bh_oracle.py": "473318f3f6750115a272ea6ddaee50d1aac492dd1478f07ccf7dcd04f2cda582",
+      "bh_oracle_confirm.py": "cde3d18fb7801e9b3c70c5c2ca81b46023e4de9fcd451bc4d643eaaec6ddc27c",
+      "bh_physics_controls.py": "03aea998885ed2f9de947447bbf59990c2cb77df84d2abce51cd09272a14f51c",
+      "bh_select_film_budget.py": "f3ade07e868671c88246e8db9b23013ad7ff4159c163a54f448dee005f9186b5",
+      "bh_select_latent_history.py": "b1e314cf7653b7ca35cc8e2405147881d40ae755278c2005edfec97a20d65797",
+      "bh_shifted_correction_gate.py": "0f36a46106905ba846db003281ce9ab6c8f09d6f511d5e5185c349584531e821"
+    },
+    "x64": true
+  },
+  "source": "experiments/burgers-hybrid-1024/runs/confirm2/out/confirm2.json",
+  "source_sha256": "e166288d62df2676aa70f5910644a64ea2b1668dd8003546bd1cd4f2a1ba1625"
+}

@@ -1,7 +1,8 @@
 # Burgers-2D FOM-exact hybrid optimisation through N=1024
 
-Status: active experiment. Numbers in this cell are provisional until the final
-single-GPU consolidation and independent verification pass.
+Status: final untouched-seed confirmation complete. The selected-cohort panel
+remains explicitly provisional; headline results come only from
+`runs/confirm2/out/confirm2.json` and its generated summary.
 
 This cell redesigns the Burgers warm-start path after the audited FiLM NM-ROM
 rollout lost every wall-clock comparison through `N=256`. The delivered field is
@@ -47,7 +48,7 @@ locked calibrated FOM configuration.
 * The oracle at `N=256`, `tau_FOM=1e-6` found that removing 75--90% of the
   linear-extrapolation error can save only roughly 2--4 ms per 50-step chain.
   Seven paired repetitions were too noisy to order nearby qualities, so the
-  narrowed confirmation uses at least 21 paired repetitions.
+  narrowed oracle confirmation uses at least 21 paired repetitions.
 * Zero-cost quadratic and cubic history predictors reduced guess-field error
   but increased BiCGStab work.  They are retained as strong charged classical
   controls, not called learned or NM-ROM methods.
@@ -172,9 +173,9 @@ Job 2663384 uses seed 1 indices 0:4 and is **provisional only**: although those
 cases were disjoint from the latent-history and budget selection cases, the
 corrected oracle had already inspected them.  The untouched confirmation uses
 seed 20260819, draws 16 cases once, and fixes indices 0:4 without inspection.
-Its uncertainty calculation first takes the paired median over 21 repetitions
+Its uncertainty calculation first takes the paired median over seven repetitions
 within each trajectory and then bootstraps the four trajectory clusters; it
-does not treat 84 correlated timings as IID.  Tukey outliers are likewise
+does not treat 28 correlated timings as IID.  Tukey outliers are likewise
 counted within trajectory.  Finally, deployable initializer moments gather at
 most a fixed 64x64 endpoint sample from `u0` (and charge it), while the cold LM
 fit remains on the 256 EQ nodes.  Thus no cold-start component scans N squared
@@ -199,3 +200,21 @@ All jobs live under `/cluster/tufts/paralab/tawal01/hybb1024/`, one directory pe
 job, on the `gpu` partition. Batch scripts assert `jax_backend=gpu`, set
 `JAX_DEFAULT_MATMUL_PRECISION=highest`, and regenerate trajectories from the
 recorded seed. Pulled runs retain logs and remote/local checksums.
+
+## Final untouched-seed result
+
+Job 2664725 completed the pre-registered six-mesh, three-tolerance panel in one
+process on one A100. It used the untouched seed-20260819 canonical draw-16
+cohort, fixed indices 0:4, and the locked Helmholtz/inexact-Newton settings for
+all arms. The checksummed source JSON, logs, and per-trajectory/per-repetition
+arrays live in `runs/confirm2/`; the cluster job directory was removed only
+after both checksum manifests passed locally.
+
+`bh_summarize_confirm2.py` validates the complete condition grid, solver health,
+precision, provenance, and repetition shape before generating
+`runs/confirm2/out/final_summary.json` and
+`runs/confirm2/out/final_table.md`. The generated result is unambiguous: the
+cubic classical predictor beats linear throughout the full panel, while the
+two-Jacobian genuine weak FiLM NM-ROM with its charged exact-residual guard and
+live cubic fallback loses to cubic throughout. The NM-ROM arm is therefore a
+mechanism-audited negative control, not the recommended Burgers warm start.

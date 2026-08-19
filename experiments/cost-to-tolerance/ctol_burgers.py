@@ -554,7 +554,8 @@ def main():
             rows = []
             ctol_tol.burn_in(BURN_IN_S)   # the EQ fit just spent minutes on the HOST
             for tau in taus:
-                per_p, per_err, per_jac, per_att, per_cens = [], [], [], [], []
+                per_p, per_p_reps = [], []
+                per_err, per_jac, per_att, per_cens = [], [], [], []
                 per_ic, per_fom_res, per_red, per_red_ic = [], [], [], []
                 step_reasons, blowups = {}, 0
                 for i in range(N_TEST):
@@ -570,6 +571,7 @@ def main():
                     (Fj, z0, ic_rn, ic_rn0, ic_nJ, ic_att, ic_rsn,
                      srn, srn0, snJ, satt, sreason) = out      # LAST TIMED REPETITION
                     per_p.append(float(np.median(ts)))
+                    per_p_reps.append([float(t) for t in ts])
                     F = np.asarray(Fj)
                     e = (np.linalg.norm(F - U_te[i], axis=1) / tn[i]
                          if np.all(np.isfinite(F)) else np.array([np.nan]))
@@ -614,6 +616,8 @@ def main():
                     time_ms_solve_derivation="pipeline median minus the isolated decode median",
                     time_ms_decode=dec_med * 1e3,
                     time_ms_e2e_per_source=[float(v) * 1e3 for v in per_p],
+                    time_ms_e2e_repetitions_per_source=[
+                        [float(v) * 1e3 for v in source] for source in per_p_reps],
                     err_rel_l2_finite_only=err_finite,
                     err_rel_l2_median=(float(np.median(np.asarray(per_err)[ok]))
                                        if ok.any() else float("nan")),

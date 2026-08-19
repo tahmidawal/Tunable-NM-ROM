@@ -423,7 +423,7 @@ def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid,
     preprocess and decode stages are measured separately (they are
     value-independent and k-independent) and subtracted to give the
     latent-solve component, which is reported as DERIVED."""
-    t_pipe = []
+    t_pipe, t_pipe_reps = [], []
     err, jac, att_l, reason, fd, red = [], [], [], [], [], []
     ctol_tol.burn_in(BURN_IN_S)      # the EQ fit just spent minutes on the HOST
     for i, Fi in enumerate(Fs_j):
@@ -437,12 +437,13 @@ def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid,
             ts.append(time.perf_counter() - t0)
         u, z_i, val, v0, nJ, acc, n_att, rsn = out      # LAST TIMED REPETITION
         t_pipe.append(float(np.median(ts)))
+        t_pipe_reps.append([float(t) for t in ts])
         ui = np.asarray(u).reshape(n_i, n_i)
         err.append(float(np.linalg.norm(ui - ref_int[i]) / tn[i]))
         fd.append(float(np.linalg.norm(np.asarray(grid.op(jnp.asarray(ui))) - Fs[i]) / fn_[i]))
         jac.append(int(nJ)); att_l.append(int(n_att)); reason.append(int(rsn))
         red.append(float(val) / max(float(v0), 1e-300))     # achieved ||r||/||r(z0)||
-    return t_pipe, err, jac, att_l, reason, fd, red
+    return t_pipe, t_pipe_reps, err, jac, att_l, reason, fd, red
 
 
 # --------------------------------------------------------------------------
@@ -737,9 +738,10 @@ def main():
                 Fs_j = [jnp.asarray(Fs[i]) for i in range(N_TEST)]
 
                 for tau in methods[method]:
-                    (per_p, per_err, per_jac, per_att, per_reason, per_fd,
-                     per_red) = timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau,
-                                            U_int, tn, Fs, fn_, grid, n_i)
+                    (per_p, per_p_reps, per_err, per_jac, per_att, per_reason,
+                     per_fd, per_red) = timed_sweep(
+                         pipeline, lm, z0, Fs_j, f_ms_j, tau,
+                         U_int, tn, Fs, fn_, grid, n_i)
                     e2e_ms = float(np.median(per_p)) * 1e3          # the timed pipeline
                     # DERIVED: the pipeline minus the two value-independent,
                     # k-independent stages measured in isolation
@@ -758,6 +760,9 @@ def main():
                                time_ms_pre=pre_med * 1e3, time_ms_decode=dec_med * 1e3,
                                time_ms_pre_full_transform=pre_med_full * 1e3,
                                time_ms_e2e_per_source=[float(v) * 1e3 for v in per_p],
+                               time_ms_e2e_repetitions_per_source=[
+                                   [float(v) * 1e3 for v in source]
+                                   for source in per_p_reps],
                                err_rel_l2_median=float(np.median(per_err)),
                                err_rel_l2_max=float(np.max(per_err)),
                                err_rel_l2_per_source=[float(v) for v in per_err],
@@ -854,7 +859,7 @@ def main():
             fm_c = [jnp.asarray(np.asarray(ap_c(jnp.asarray(Fs[i])))) for i in range(N_TEST)]
             Fs_j = [jnp.asarray(Fs[i]) for i in range(N_TEST)]
             for tau in all_taus:
-                (pp, pe, pj, pa, pr, pfd, prd) = timed_sweep(
+                (pp, pp_reps, pe, pj, pa, pr, pfd, prd) = timed_sweep(
                     pipe_c, lm_c, z0, Fs_j, fm_c, tau, U_int, tn, Fs, fn_, grid, n_i)
                 report["supplementary"].append(dict(
                     pde="poisson2d", method=label, N=n, k=k, M=M, m=int(len(wq)),
@@ -865,6 +870,9 @@ def main():
                     censored_frac=float(np.mean([r not in TAU_OK for r in pr])),
                     rel_reduction_mean=float(np.mean(prd)),
                     fd_residual_rel_mean=float(np.mean(pfd)),
+                    time_ms_e2e_per_source=[float(v) * 1e3 for v in pp],
+                    time_ms_e2e_repetitions_per_source=[
+                        [float(v) * 1e3 for v in source] for source in pp_reps],
                     n_sources=N_TEST, seed=SEED, gpu=gpu_name, node=NODE,
                     jax_backend=dev.platform, commit=commit,
                     eq_rel_fit=eq_info["rel_fit"], eq_n_cand=eq_info["n_cand"]))

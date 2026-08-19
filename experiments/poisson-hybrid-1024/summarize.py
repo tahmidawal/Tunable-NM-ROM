@@ -53,8 +53,8 @@ def main():
         "are deterministic case-resampling bootstrap intervals when present.", "",
         "| run | N | tolerance | arm | construct ms | total ms | total 95% CI ms | "
         "speedup/zero | speedup 95% CI | CG iters | guess A-error | final residual | "
-        "outliers | direct ms |",
-        "|---|---:|---:|---|---:|---:|---|---:|---|---:|---:|---:|---:|---:|",
+        "meets tau | outliers | direct ms |",
+        "|---|---:|---:|---|---:|---:|---|---:|---|---:|---:|---:|---|---:|---:|",
     ])
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
@@ -68,6 +68,7 @@ def main():
                 f"{f(row.get('iters_hybrid_timed_mean', row.get('iters_hybrid_mean')), 1)} | "
                 f"{sci(row.get('guess_a_norm_ratio_mean'))} | "
                 f"{sci(row.get('final_true_rel_residual_max'))} | "
+                f"{'yes' if row.get('final_true_rel_residual_max', float('inf')) <= row['fom_tau'] else 'no'} | "
                 f"{row.get('hybrid_timing_outlier_count', '—')} | "
                 f"{f(row.get('exact_direct_ms'))} |"
             )
@@ -75,8 +76,8 @@ def main():
         "", "## Classical and native baselines", "",
         "These are from the same authoritative rotated blocks as the end-to-end rows.", "",
         "| run | N | tolerance | baseline | total ms | total 95% CI ms | iterations | "
-        "outliers | max residual | mean relative L2 |",
-        "|---|---:|---:|---|---:|---|---:|---:|---:|---:|",
+        "outliers | max residual | meets tau | mean relative L2 |",
+        "|---|---:|---:|---|---:|---|---:|---:|---:|---|---:|",
     ])
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
@@ -113,6 +114,7 @@ def main():
                         f"{('—' if ci_ms is None else f'[{ci_ms[0]:.3f}, {ci_ms[1]:.3f}]')} | "
                         f"{f(iterations, 1)} | {summary.get('outlier_count', '—')} | "
                         f"{sci(residual)} | "
+                        f"{'yes' if residual is not None and residual <= float(tolerance) else 'no'} | "
                         f"{sci(rel_l2)} |"
                     )
     lines.extend(["", "## Spectral-control paired comparisons", "",

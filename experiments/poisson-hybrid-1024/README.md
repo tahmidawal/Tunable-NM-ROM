@@ -102,12 +102,15 @@ rule. The dense full-rank direct solve and FFT-DST direct solve are separately l
 field is only eligible at a tolerance when its timed invocation's measured true residual meets it.
 
 The final job uses N=32,64,128,256,512,1024; all three tolerances; 16 accuracy cases and six
-timed cases with seven repetitions each. Its fixed learned controls are the original audited K=8
-weak LM NM-ROM (`lmmean_cfull_q0`), the cached nonlinear K=16 GroupFiLM NM-ROM selected by the
-calibration gate (`groupn_rt30_c64_q8`), and the parameter-aligned stage-1 learned surrogate
-(`param1_c64_q8`). These are timed alongside the two spectral arms, zero-start counting/native
-CG, native Jacobi sensitivity, dense sine direct, and FFT-DST direct in one rotated post-burn block.
-No fresh-seed timing selects an architecture, rank, tolerance, or reported comparison.
+timed cases with seven repetitions each. Its fixed genuine NM-ROM controls are the original
+audited K=8 full-decode weak LM (`lmmean_cfull_q0`), its optimized trust-region/coarse-decode
+two-stage variant (`lmtrmean_c64_q0`), and cached nonlinear K=16 GroupFiLM both learned-only
+(`groupn_rt30_c64_q0`) and with a separately labeled q8 classical third stage
+(`groupn_rt30_c64_q8`). The lower-priority parameter-aligned surrogate is excluded because it is
+not an NM-ROM online solve. These controls are timed alongside the two spectral arms, zero-start
+counting/native CG, native Jacobi sensitivity, dense sine direct, and FFT-DST direct in one
+rotated post-burn block. No fresh-seed timing selects an architecture, rank, tolerance, or
+reported comparison.
 
 ## Files
 

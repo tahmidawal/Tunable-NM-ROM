@@ -109,6 +109,7 @@ The trust radius is 1% of the training-cloud radius. This is reported as a solve
 - The group-8 H160 compression bracket fails already at M64 on seed 0: decoder/full/EQ512 errors are 1.213e-02, 2.416e-02, and 2.442e-02.
 - The divisible group-3 H159 bracket is also seed-unstable: its three-seed maximum full/EQ errors are 1.087e-02 and 1.135e-02.
 - The H144/group-2 width bracket fails on seed 0, so no extra seeds were run: decoder/full/EQ errors are 8.181e-03, 1.089e-02, and 1.113e-02.
+- The wider H176/group-2 arm improves its decoder floor to 7.504e-03, but worsens the actual M64 full/EQ256/EQ512 ROM errors to 1.128e-02, 1.267e-02, and 1.207e-02; no extra seeds were warranted.
 
 ## Scope and provenance
 

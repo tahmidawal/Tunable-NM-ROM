@@ -39,6 +39,7 @@ Overall accepted-result audit: **PASS**
 | nda_bg160l4g4f31_s1_r18 | 2661924 | NVIDIA A100 80GB PCIe | accepted | True | True | True | True | True | False |
 | nda_bg160l4g4f31_s2_r18 | 2661927 | NVIDIA H200 | accepted | True | True | True | True | True | False |
 | nda_bg160l4g8f31_r19 | 2661961 | NVIDIA H100 PCIe | accepted | True | True | True | True | True | False |
+| nda_bg176l4g2f31_r8 | 2653521 | NVIDIA L40S | accepted | True | True | True | True | True | False |
 | nda_bg192l4g2f31_r2 | 2652524 | NVIDIA A100-PCIE-40GB | accepted | True | True | True | True | True | False |
 | nda_bobj160_r9 | 2653635 | NVIDIA H200 | accepted | True | True | True | True | True | False |
 | nda_bobj160g4_r17 | 2661792 | NVIDIA H200 | accepted | True | True | True | True | True | False |

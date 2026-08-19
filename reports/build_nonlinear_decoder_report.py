@@ -367,6 +367,14 @@ def main():
             f"- The H144/group-2 width bracket fails on seed 0, so no extra seeds were run: "
             f"decoder/full/EQ errors are {sci(h144[0]['decoder'])}, "
             f"{sci(h144[0]['full'])}, and {sci(h144[0]['eq'])}.")
+    h176 = [r for r in summary["burgers"]
+            if r["hidden"] == 176 and r["group_size"] == 2 and r["seed"] == 0]
+    if h176:
+        failure_rows.append(
+            f"- The wider H176/group-2 arm improves its decoder floor to "
+            f"{sci(h176[0]['decoder'])}, but worsens the actual M64 full/EQ256/EQ512 ROM errors "
+            f"to {sci(h176[0]['full'])}, {sci(h176[0]['eq256'])}, and "
+            f"{sci(h176[0]['eq512'])}; no extra seeds were warranted.")
     md += failure_rows + ["",
         "## Scope and provenance", "",
         "The result is limited to N=64, k=16, the recorded held-out families, and the weak-form solvers tested here. Every cluster cell regenerated its data from seed, logged `jax_backend=gpu`, used f64/highest precision, ran alone in its directory, and was pulled with checksums. Exact run rows, timing arrays, medians, maxima, outlier counts, manifests, and job logs are in the experiment directory.", "",

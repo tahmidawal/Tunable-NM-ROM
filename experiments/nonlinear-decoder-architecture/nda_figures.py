@@ -9,6 +9,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIGURES = os.path.join(HERE, "figures")
+plt.rcParams["svg.hashsalt"] = "nonlinear-decoder-architecture"
 
 
 def load_summary():
@@ -19,7 +20,12 @@ def load_summary():
 def save(fig, stem):
     os.makedirs(FIGURES, exist_ok=True)
     fig.savefig(os.path.join(FIGURES, f"{stem}.png"), dpi=220, bbox_inches="tight")
-    fig.savefig(os.path.join(FIGURES, f"{stem}.svg"), bbox_inches="tight")
+    svg_path = os.path.join(FIGURES, f"{stem}.svg")
+    fig.savefig(svg_path, bbox_inches="tight", metadata={"Date": None})
+    with open(svg_path) as f:
+        svg = f.read()
+    with open(svg_path, "w") as f:
+        f.write("\n".join(line.rstrip() for line in svg.splitlines()) + "\n")
     plt.close(fig)
 
 

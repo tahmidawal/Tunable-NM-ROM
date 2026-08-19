@@ -128,6 +128,17 @@ the same cubic control in one rotated timing block; the locked winner alone
 enters confirmation.  This gate changes neither the trained checkpoint nor the
 FOM tolerance.
 
+The held-out latent-history gate selected linear latent extrapolation: all 36
+paired end-to-end records were faster than the previous-latent start, while the
+finished FOM Newton/BiCGStab work was identical pairwise.  The unlimited weak
+LM remained far slower than cubic, so it is not the final optimized FiLM arm.
+The last bounded gate caps the weak solve at one or two Jacobian evaluations
+per step.  Each resulting candidate is compared online against the live cubic
+candidate using both exact full FOM residuals; Newton receives the lower-
+residual candidate and the charged guard acceptance fraction is retained.
+This makes a low-budget NM-ROM candidate safe without hiding a degraded guess
+behind a separate untimed fallback.
+
 The EQ refit is also bounded for the 1024 mesh.  A literal full-candidate
 matrix would contain 8192 rows by about one million columns and is not a viable
 offline algorithm.  The scalable refit uses a deterministic uniform tensor

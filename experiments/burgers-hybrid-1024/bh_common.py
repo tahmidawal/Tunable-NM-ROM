@@ -195,7 +195,7 @@ def make_bicgstab(tol=LIN_TOL, maxiter=LIN_MAXITER):
 
 
 def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
-               oracle_quality=0.0):
+               oracle_quality=0.0, return_guard=False):
     """One FOM chain for previous, extrapolated, or supplied guesses.
 
     ``mode`` is a traced runtime integer: 0 previous state, 1 linear
@@ -207,6 +207,12 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
     solver, and compiled executable. Mode 7 is the diagnostic dynamic oracle
     ``base + q*(exact_next-base)`` with ``q=oracle_quality`` and the exact next
     reference supplied in ``guess``.
+    Mode 8 is a safe supplied-guess arm: it evaluates the exact FOM residual
+    of both the supplied candidate and the live cubic-history candidate and
+    starts Newton from whichever has smaller finite residual.  When
+    ``return_guard`` is true, the chain appends a Boolean per-step array that
+    records selection of the supplied candidate; existing callers retain the
+    original six-output contract by default.
     """
     _, residual = bf.make_rollout(n)
     effective_lin_tol = LIN_TOL if lin_tol is None else float(lin_tol)
@@ -337,11 +343,35 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
                         )
                     )
                 ),
+                lambda values: values[4],
             ),
             args,
         )
         tol_abs = tol_rel * jnp.linalg.norm(u_prev)
-        r0 = residual(u_start, u_prev, nu)
+        def guarded_start():
+            cubic_start = cubic(args)
+            supplied_residual = residual(guess, u_prev, nu)
+            cubic_residual = residual(cubic_start, u_prev, nu)
+            supplied_norm = jnp.linalg.norm(supplied_residual)
+            cubic_norm = jnp.linalg.norm(cubic_residual)
+            use_supplied = (
+                jnp.isfinite(supplied_norm)
+                & jnp.isfinite(cubic_norm)
+                & (supplied_norm <= cubic_norm)
+            )
+            return (
+                jnp.where(use_supplied, guess, cubic_start),
+                jnp.where(use_supplied, supplied_residual, cubic_residual),
+                use_supplied,
+            )
+
+        def ordinary_start():
+            ordinary_residual = residual(u_start, u_prev, nu)
+            return u_start, ordinary_residual, jnp.asarray(False)
+
+        u_start, r0, guard_accepted = jax.lax.cond(
+            mode == 8, guarded_start, ordinary_start
+        )
         rn0 = jnp.linalg.norm(r0)
         init_flag = jnp.where(jnp.isfinite(rn0), jnp.int32(0), jnp.int32(3))
         init = (
@@ -412,7 +442,7 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
             ),
         )
         rel_res = rn / jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
-        return u, k, nlin, nbreak + nlinmax, flag, rel_res
+        return u, k, nlin, nbreak + nlinmax, flag, rel_res, guard_accepted
 
     def chain(u0, nu, guesses, mode):
         def body(carry, inputs):
@@ -424,12 +454,12 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
             u = out[0]
             return (u, u_prev, u_prev2, u_prev3), out
 
-        _, (U, newton, linear, breakdowns, flags, rel_res) = jax.lax.scan(
+        _, outputs = jax.lax.scan(
             body,
             (u0, u0, u0, u0),
             (guesses, jnp.arange(T, dtype=jnp.int32)),
         )
-        return U, newton, linear, breakdowns, flags, rel_res
+        return outputs if return_guard else outputs[:6]
 
     return jax.jit(chain), residual
 

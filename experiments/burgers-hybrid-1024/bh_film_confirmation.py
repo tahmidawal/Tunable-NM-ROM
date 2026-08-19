@@ -39,6 +39,9 @@ LATENT_HISTORY_MODES = tuple(
     value.strip() for value in
     os.environ.get("LATENT_HISTORY_MODES", "previous").split(",") if value.strip()
 )
+MAX_STEP_JACOBIANS = tuple(int(value) for value in os.environ.get(
+    "MAX_STEP_JACOBIANS", "31"
+).split(","))
 TEST_SEED = int(os.environ.get("TEST_SEED", "1"))
 TEST_DRAW_COUNT = int(os.environ.get("TEST_DRAW_COUNT", "16"))
 TEST_START = int(os.environ.get("TEST_START", "0"))
@@ -50,9 +53,19 @@ REFERENCE_RESIDUAL_GATE = float(os.environ.get("REFERENCE_RESIDUAL_GATE", "1e-11
 _HISTORY_SCALES = {"previous": 0.0, "extrapolation": 1.0}
 if not LATENT_HISTORY_MODES or any(mode not in _HISTORY_SCALES for mode in LATENT_HISTORY_MODES):
     raise ValueError(f"invalid LATENT_HISTORY_MODES={LATENT_HISTORY_MODES}")
+if not MAX_STEP_JACOBIANS or any(value < 1 for value in MAX_STEP_JACOBIANS):
+    raise ValueError(f"invalid MAX_STEP_JACOBIANS={MAX_STEP_JACOBIANS}")
+FILM_VARIANTS = tuple(
+    (mode, max_jacobians)
+    for mode in LATENT_HISTORY_MODES
+    for max_jacobians in MAX_STEP_JACOBIANS
+)
 FILM_ARMS = (
-    ("film_nmrom",) if len(LATENT_HISTORY_MODES) == 1 else
-    tuple(f"film_nmrom_{mode}" for mode in LATENT_HISTORY_MODES)
+    ("film_nmrom",) if len(FILM_VARIANTS) == 1 else
+    tuple(
+        f"film_nmrom_{mode}_j{max_jacobians}"
+        for mode, max_jacobians in FILM_VARIANTS
+    )
 )
 ARMS = ("linear", "cubic") + FILM_ARMS
 
@@ -77,9 +90,10 @@ def bootstrap_ci(values, seed):
 
 
 def grade_fom(fom_output, trajectory, elapsed):
-    U, newton, linear, breakdowns, flags, rel_res = [np.asarray(v) for v in fom_output]
+    values = [np.asarray(value) for value in fom_output]
+    U, newton, linear, breakdowns, flags, rel_res = values[:6]
     target = trajectory["U"][1:]
-    return {
+    grade = {
         "elapsed_s": float(elapsed),
         "trajectory_rel_l2": float(np.linalg.norm(U - target) / np.linalg.norm(target)),
         "max_final_rel_residual": float(np.max(rel_res)),
@@ -91,6 +105,14 @@ def grade_fom(fom_output, trajectory, elapsed):
         "flags_nonzero": int(np.sum(flags != 0)),
         "finite": bool(np.all(np.isfinite(U)) and np.all(np.isfinite(rel_res))),
     }
+    if len(values) == 7:
+        guard = values[6]
+        grade.update({
+            "film_guard_accepted_count": int(np.sum(guard)),
+            "film_guard_accepted_fraction": float(np.mean(guard)),
+            "film_guard_accepted_per_step": guard.tolist(),
+        })
+    return grade
 
 
 def run_condition(
@@ -110,6 +132,13 @@ def run_condition(
         lin_tol=linear_tol,
         preconditioner=PRECONDITIONER,
     )
+    guarded_film_chain, _ = bc.make_chain(
+        n,
+        fom_tau,
+        lin_tol=linear_tol,
+        preconditioner=PRECONDITIONER,
+        return_guard=True,
+    )
     dummy = jnp.zeros((bc.T, n * n), jnp.float64)
 
     end_to_end_by_arm = {}
@@ -120,7 +149,7 @@ def run_condition(
         def film_end_to_end(u0, nu, construct_fn=construct):
             construction = construct_fn(u0, nu)
             guesses = construction[0]
-            fom = chain(u0, nu, guesses, jnp.int32(2))
+            fom = guarded_film_chain(u0, nu, guesses, jnp.int32(8))
             return fom, construction
 
         end_to_end_by_arm[arm] = film_end_to_end
@@ -300,6 +329,29 @@ def run_condition(
             "gpu_burn_iterations": burn_count,
             "paired_timing_orders": timing_orders,
         }
+        if arm in FILM_ARMS:
+            row.update({
+                "film_guard_accepted_fraction_median": float(np.median([
+                    record["film_guard_accepted_fraction"]
+                    for record in records[arm]
+                ])),
+                "film_guard_accepted_count_median": float(np.median([
+                    record["film_guard_accepted_count"]
+                    for record in records[arm]
+                ])),
+                "reduced_jacobians_total_median": float(np.median([
+                    record["reduced_jacobians_total"]
+                    for record in records[arm]
+                ])),
+                "reduced_attempts_total_median": float(np.median([
+                    record["reduced_attempts_total"]
+                    for record in records[arm]
+                ])),
+                "reduced_tol_at_init_steps_median": float(np.median([
+                    record["reduced_tol_at_init_steps"]
+                    for record in records[arm]
+                ])),
+            })
         report["rows"].append(row)
         bc.log(
             f"N={n} tau={fom_tau:.0e} {arm:10s}: "
@@ -354,7 +406,13 @@ def main():
             "decode_chunk": DECODE_CHUNK,
             "decode_resolution": DECODE_RESOLUTION,
             "latent_history_modes": LATENT_HISTORY_MODES,
+            "max_step_jacobians": MAX_STEP_JACOBIANS,
+            "film_variants": [
+                {"mode": mode, "max_step_jacobians": max_jacobians}
+                for mode, max_jacobians in FILM_VARIANTS
+            ],
             "exact_upwind_weak_contract": True,
+            "charged_exact_fom_residual_guard_vs_live_cubic": True,
             "cold_start_hyper_reduced_on_same_eq_nodes": True,
             "historical_full_grid_path": (
                 "audited 479.569ms N256 construction retained as context only; "
@@ -392,10 +450,11 @@ def main():
         offline_start = time.time()
         built_by_arm = {}
         shared_ops = None
-        for mode, arm in zip(LATENT_HISTORY_MODES, FILM_ARMS):
+        for (mode, max_jacobians), arm in zip(FILM_VARIANTS, FILM_ARMS):
             built_by_arm[arm] = film.build(
                 n,
                 latent_extrapolation_scale=_HISTORY_SCALES[mode],
+                max_step_jacobians=max_jacobians,
                 shared_ops=shared_ops,
             )
             shared_ops = built_by_arm[arm]["ops"]
@@ -411,6 +470,8 @@ def main():
                 arm: {
                     "mode": mode,
                     "scale": built_by_arm[arm]["latent_extrapolation_scale"],
+                    "max_step_jacobians": built_by_arm[arm]["max_step_jacobians"],
+                    "rollout_attempt_budget": built_by_arm[arm]["rollout_attempt_budget"],
                     "eq_indices_equal_to_first": bool(np.array_equal(
                         built_by_arm[arm]["eq_indices"], built["eq_indices"]
                     )),
@@ -418,7 +479,7 @@ def main():
                         built_by_arm[arm]["eq_weights"], built["eq_weights"]
                     )),
                 }
-                for mode, arm in zip(LATENT_HISTORY_MODES, FILM_ARMS)
+                for (mode, _), arm in zip(FILM_VARIANTS, FILM_ARMS)
             },
         }
         for condition_index, (fom_tau, linear_tol) in enumerate(CONDITIONS):

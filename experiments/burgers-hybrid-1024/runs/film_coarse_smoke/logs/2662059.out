@@ -1,0 +1,8 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=1e40050e9585a7f76707e15e31b34c3507923c51 dirty=e3b0c44298fc cell=film_coarse_smoke
+jax_backend=gpu cuda:0
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.37e-03 (per-row median 1.1e-02, p95 7.7e-01, max 5.1e+02) [14s]
+N=32 linear    : 23.86ms vs cubic=-5.11ms Newton=70 BiCG=70
+N=32 cubic     : 18.75ms vs cubic=0.00ms Newton=52 BiCG=52
+N=32 film_nmrom: 246.35ms vs cubic=-227.60ms Newton=100 BiCG=100
+ALL-DONE

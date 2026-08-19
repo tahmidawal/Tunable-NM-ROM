@@ -1,0 +1,9 @@
+host=pax050 gpu=NVIDIA A100 80GB PCIe
+commit=2c14e8b2b7bc251aeb652e8bc867c39304e7994e dirty=e3b0c44298fc cell=film_latent_gate_a100
+jax_backend=gpu cuda:0
+  bounded-grid NNLS-EQ M=64 m=256: candidates 3844/3844, rel fit 6.21e-03 (p95 6.8e-01) [17s]
+N=64 tau=1e-06 linear    : 29.25ms vs cubic=-7.42ms Newton=86 BiCG=94
+N=64 tau=1e-06 cubic     : 21.11ms vs cubic=0.00ms Newton=56 BiCG=62
+N=64 tau=1e-06 film_nmrom_previous: 370.60ms vs cubic=-349.14ms Newton=100 BiCG=106
+N=64 tau=1e-06 film_nmrom_extrapolation: 327.00ms vs cubic=-305.56ms Newton=100 BiCG=106
+ALL-DONE

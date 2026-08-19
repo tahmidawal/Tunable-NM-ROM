@@ -240,7 +240,13 @@ class FilmControl:
         )
         self.mean_initial_latent = self.z_train[:, 0].mean(axis=0)
 
-    def build(self, n, latent_extrapolation_scale=0.0, shared_ops=None):
+    def build(
+        self,
+        n,
+        latent_extrapolation_scale=0.0,
+        max_step_jacobians=None,
+        shared_ops=None,
+    ):
         """Build one deployable weak-rollout variant.
 
         ``latent_extrapolation_scale=0`` is the audited previous-latent LM
@@ -249,6 +255,16 @@ class FilmControl:
         exits immediately when it is already below the absolute tolerance.
         """
         decoder = self.decoder
+        max_step_jacobians = (
+            rc.GN_BUDGET + 1
+            if max_step_jacobians is None
+            else int(max_step_jacobians)
+        )
+        if max_step_jacobians < 1:
+            raise ValueError("max_step_jacobians must be positive")
+        # lm_step_jit always evaluates the objective/Jacobian once at the
+        # supplied start. Its budget counts subsequent trial attempts.
+        rollout_attempt_budget = max_step_jacobians - 1
         coords = jnp.asarray(rc.grid_coords(n))
         decode_coords = jnp.asarray(rc.grid_coords(self.decode_resolution))
         # A same-mesh history gate shares the exact fitted EQ rule.  This is
@@ -310,7 +326,7 @@ class FilmControl:
                 extrapolated = z_previous + history_scale * (z_previous - z_older)
                 z_start = jnp.where(step == 0, z_previous, extrapolated)
                 z_new, rn, n_jac, accepted, reason, attempts = ops["step_jit"](
-                    z_start, previous_centers, nu, tolerance, rc.GN_BUDGET
+                    z_start, previous_centers, nu, tolerance, rollout_attempt_budget
                 )
                 next_carry = (
                     z_previous,
@@ -387,6 +403,8 @@ class FilmControl:
             "decode_chunk": chunk,
             "decode_resolution": self.decode_resolution,
             "latent_extrapolation_scale": float(latent_extrapolation_scale),
+            "max_step_jacobians": max_step_jacobians,
+            "rollout_attempt_budget": rollout_attempt_budget,
             "eq_info": collocation.get("info"),
             "eq_indices": np.asarray(collocation["idx"]),
             "eq_weights": np.asarray(collocation["w"]),

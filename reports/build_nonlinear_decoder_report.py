@@ -321,6 +321,14 @@ def main():
         failure_rows.append(
             f"- The group-8 H160 compression bracket fails already at M64 on seed 0: decoder/full/EQ512 "
             f"errors are {sci(group8[0]['decoder'])}, {sci(group8[0]['full'])}, and {sci(group8[0]['eq512'])}.")
+    group3 = [r for r in summary["burgers_three_seed"]
+              if r["group_size"] == 3 and r["hidden"] == 159 and
+              r["M"] == 128 and r["m"] == 640]
+    if group3:
+        failure_rows.append(
+            f"- The divisible group-3 H159 bracket is also seed-unstable: its three-seed maximum "
+            f"full/EQ errors are {sci(group3[0]['full']['max'])} and "
+            f"{sci(group3[0]['eq']['max'])}.")
     md += failure_rows + ["",
         "## Scope and provenance", "",
         "The result is limited to N=64, k=16, the recorded held-out families, and the weak-form solvers tested here. Every cluster cell regenerated its data from seed, logged `jax_backend=gpu`, used f64/highest precision, ran alone in its directory, and was pulled with checksums. Exact run rows, timing arrays, medians, maxima, outlier counts, manifests, and job logs are in the experiment directory.", "",

@@ -29,9 +29,10 @@ guess and saved only 15.149 ms in the FOM stage. Therefore:
    baselines. It interpolates between linear extrapolation and the exact next
    FOM state to measure how much guess error must be removed, and how much FOM
    time that removal can buy. Oracle rows are explicitly non-deployable.
-2. Cheap deployable predictors: history-only controls and a cached low-rank
-   correction of linear extrapolation. Candidate selection is based on total
-   time and BiCGStab work, not field L2 alone.
+2. Cheap deployable predictors: a charged history-only **classical control**,
+   followed by a learned cached low-rank correction of linear extrapolation.
+   The history-line arm is not called an NM-ROM. Candidate selection is based
+   on total time and BiCGStab work, not field L2 alone.
 3. Audited consolidation through `N={32,64,128,256,512,1024}` at
    `tau_FOM={1e-6,1e-8,1e-10}`.
 
@@ -41,4 +42,3 @@ All jobs live under `/cluster/tufts/paralab/tawal01/hybb1024/`, one directory pe
 job, on the `gpu` partition. Batch scripts assert `jax_backend=gpu`, set
 `JAX_DEFAULT_MATMUL_PRECISION=highest`, and regenerate trajectories from the
 recorded seed. Pulled runs retain logs and remote/local checksums.
-

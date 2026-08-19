@@ -1,0 +1,28 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=c79c485cd58daf5ce5c852063fbe95377bc6f30b dirty=e3b0c44298fc cell=oracle_gate
+jax_backend=gpu cuda:0
+backend=gpu gpu=NVIDIA H100 PCIe NS=[64, 256] taus=[1e-06] quality=[0.0, 0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 1.0] ntraj=4
+N=64: regenerated references, max residual=9.71e-13
+  tau=1e-06 prev            : Newton=100.0 BiCG=1012 time=42.19ms budget_vs_extrap=-18.54ms
+  tau=1e-06 extrap:q=0      : Newton=55.8 BiCG=589 time=23.65ms budget_vs_extrap=0.00ms
+  tau=1e-06 oracle:q=0.1    : Newton=55.5 BiCG=582 time=23.56ms budget_vs_extrap=0.09ms
+  tau=1e-06 oracle:q=0.25   : Newton=55.2 BiCG=580 time=23.55ms budget_vs_extrap=0.10ms
+  tau=1e-06 oracle:q=0.5    : Newton=54.2 BiCG=566 time=23.48ms budget_vs_extrap=0.17ms
+  tau=1e-06 oracle:q=0.75   : Newton=53.0 BiCG=550 time=23.63ms budget_vs_extrap=0.02ms
+  tau=1e-06 oracle:q=0.9    : Newton=51.0 BiCG=523 time=23.16ms budget_vs_extrap=0.49ms
+  tau=1e-06 oracle:q=0.99   : Newton=50.0 BiCG=512 time=23.17ms budget_vs_extrap=0.48ms
+  tau=1e-06 oracle:q=1      : Newton=0.0 BiCG=0 time=2.44ms budget_vs_extrap=21.22ms
+N=64 complete in 10.3s
+N=256: regenerated references, max residual=9.86e-13
+  tau=1e-06 prev            : Newton=100.2 BiCG=3862 time=154.29ms budget_vs_extrap=-70.63ms
+  tau=1e-06 extrap:q=0      : Newton=56.8 BiCG=2311 time=83.65ms budget_vs_extrap=0.00ms
+  tau=1e-06 oracle:q=0.1    : Newton=56.5 BiCG=2281 time=83.72ms budget_vs_extrap=-0.06ms
+  tau=1e-06 oracle:q=0.25   : Newton=55.8 BiCG=2238 time=84.99ms budget_vs_extrap=-1.33ms
+  tau=1e-06 oracle:q=0.5    : Newton=54.5 BiCG=2178 time=85.04ms budget_vs_extrap=-1.39ms
+  tau=1e-06 oracle:q=0.75   : Newton=53.0 BiCG=2110 time=81.96ms budget_vs_extrap=1.70ms
+  tau=1e-06 oracle:q=0.9    : Newton=51.2 BiCG=2042 time=80.21ms budget_vs_extrap=3.45ms
+  tau=1e-06 oracle:q=0.99   : Newton=50.0 BiCG=2014 time=81.68ms budget_vs_extrap=1.97ms
+  tau=1e-06 oracle:q=1      : Newton=0.0 BiCG=0 time=2.84ms budget_vs_extrap=80.81ms
+N=256 complete in 20.6s
+DONE
+ALL-DONE

@@ -194,21 +194,59 @@ def make_bicgstab(tol=LIN_TOL, maxiter=LIN_MAXITER):
     return bicgstab
 
 
-def make_chain(n, tol_rel):
+def make_chain(n, tol_rel, predictor=None):
     """One FOM chain for previous, extrapolated, or supplied guesses.
 
     ``mode`` is a traced runtime integer: 0 previous state, 1 linear
-    extrapolation, 2 supplied guess array. All arms therefore share the same
-    operator, Newton stopping test, linear solver, and compiled executable.
+    extrapolation, 2 supplied guess array, 3 a dynamically constructed guess
+    from ``predictor(u_prev,u_prev2,nu)``, 4 quadratic history, and 5 cubic
+    history. Polynomial arms use lower-order startup fallbacks.
+    All arms therefore share the same operator, Newton stopping test, linear
+    solver, and compiled executable.
     """
     _, residual = bf.make_rollout(n)
     bicg = make_bicgstab()
 
-    def step(u_prev, u_prev2, guess, mode, nu):
-        u_start = jnp.where(
-            mode == 0,
-            u_prev,
-            jnp.where(mode == 1, 2.0 * u_prev - u_prev2, guess),
+    dynamic_predictor = predictor or (lambda u_prev, u_prev2, nu: u_prev)
+
+    def step(u_prev, u_prev2, u_prev3, u_prev4, guess, step_index, mode, nu):
+        def quadratic(args):
+            up, up2, up3, _, _, index = args
+            return jax.lax.cond(
+                index == 0,
+                lambda: up,
+                lambda: jax.lax.cond(
+                    index == 1,
+                    lambda: 2.0 * up - up2,
+                    lambda: 3.0 * up - 3.0 * up2 + up3,
+                ),
+            )
+
+        def cubic(args):
+            up, up2, up3, up4, _, index = args
+            return jax.lax.cond(
+                index < 2,
+                lambda: jax.lax.cond(index == 0, lambda: up,
+                                     lambda: 2.0 * up - up2),
+                lambda: jax.lax.cond(
+                    index == 2,
+                    lambda: 3.0 * up - 3.0 * up2 + up3,
+                    lambda: 4.0 * up - 6.0 * up2 + 4.0 * up3 - up4,
+                ),
+            )
+
+        args = (u_prev, u_prev2, u_prev3, u_prev4, guess, step_index)
+        u_start = jax.lax.switch(
+            mode,
+            (
+                lambda values: values[0],
+                lambda values: 2.0 * values[0] - values[1],
+                lambda values: values[4],
+                lambda values: dynamic_predictor(values[0], values[1], nu),
+                quadratic,
+                cubic,
+            ),
+            args,
         )
         tol_abs = tol_rel * jnp.linalg.norm(u_prev)
         r0 = residual(u_start, u_prev, nu)
@@ -275,18 +313,106 @@ def make_chain(n, tol_rel):
         return u, k, nlin, nbreak + nlinmax, flag, rel_res
 
     def chain(u0, nu, guesses, mode):
-        def body(carry, guess):
-            u_prev, u_prev2 = carry
-            out = step(u_prev, u_prev2, guess, mode, nu)
+        def body(carry, inputs):
+            u_prev, u_prev2, u_prev3, u_prev4 = carry
+            guess, step_index = inputs
+            out = step(
+                u_prev, u_prev2, u_prev3, u_prev4, guess, step_index, mode, nu
+            )
             u = out[0]
-            return (u, u_prev), out
+            return (u, u_prev, u_prev2, u_prev3), out
 
         _, (U, newton, linear, breakdowns, flags, rel_res) = jax.lax.scan(
-            body, (u0, u0), guesses
+            body,
+            (u0, u0, u0, u0),
+            (guesses, jnp.arange(T, dtype=jnp.int32)),
         )
         return U, newton, linear, breakdowns, flags, rel_res
 
     return jax.jit(chain), residual
+
+
+def test_modes(n, count):
+    """Lowest unit-norm discrete sine modes and Laplacian eigenvalues."""
+    dx = 1.0 / (n - 1)
+    frequencies = np.arange(1, n - 1)
+    kx_all, ky_all = np.meshgrid(frequencies, frequencies, indexing="ij")
+    eigenvalues_all = (4.0 / dx**2) * (
+        np.sin(np.pi * kx_all / (2 * (n - 1))) ** 2
+        + np.sin(np.pi * ky_all / (2 * (n - 1))) ** 2
+    )
+    order = np.argsort(eigenvalues_all.reshape(-1), kind="stable")[:count]
+    kx = kx_all.reshape(-1)[order]
+    ky = ky_all.reshape(-1)[order]
+    xi = frequencies / (n - 1)
+    sx = np.sin(np.pi * np.outer(xi, kx))
+    sy = np.sin(np.pi * np.outer(xi, ky))
+    phi = (sx[:, None, :] * sy[None, :, :]).reshape(-1, count)
+    phi /= np.linalg.norm(phi, axis=0, keepdims=True)
+    return phi, eigenvalues_all.reshape(-1)[order]
+
+
+def make_full_weak_history_predictor(n, mode_count=16, reduced_iters=2,
+                                     trust_radius=0.5, alpha_min=0.0,
+                                     alpha_max=1.5):
+    """One-dimensional weak-LSPG predictor on the history-line manifold.
+
+    The per-step reduced manifold is
+
+        u(alpha) = u_n + alpha * (u_n - u_{n-1}).
+
+    Linear extrapolation is alpha=1. Starting there, a few scalar
+    Gauss--Newton iterations minimise the exact-FOM residual projected onto
+    smooth sine test modes. This is the full-grid diagnostic version; it obeys
+    the weak-form rule and keeps the FOM's exact upwind advection. A later EQ
+    version can remove its grid projection cost without changing the manifold.
+    """
+    _, residual = bf.make_rollout(n)
+    phi_np, eigenvalues_np = test_modes(n, mode_count)
+    phi = jnp.asarray(phi_np, F64)
+    eigenvalues = jnp.asarray(eigenvalues_np, F64)
+    interior = jnp.asarray(
+        (np.arange(1, n - 1)[:, None] * n + np.arange(1, n - 1)[None, :]).reshape(-1)
+    )
+
+    def solve_alpha(u_prev, u_prev2, nu):
+        velocity = u_prev - u_prev2
+        weights = (1.0 + bf.DT * nu * eigenvalues) ** -1.0
+
+        def weak_residual(alpha):
+            candidate = u_prev + alpha * velocity
+            point_residual = residual(candidate, u_prev, nu)[interior]
+            return weights * (phi.T @ point_residual)
+
+        def body(alpha, _):
+            reduced_residual = weak_residual(alpha)
+            jacobian = jax.jacfwd(weak_residual)(alpha)
+            step = -jnp.vdot(jacobian, reduced_residual) / (
+                jnp.vdot(jacobian, jacobian) + 1e-30
+            )
+            step = jnp.clip(step, -trust_radius, trust_radius)
+            trial = jnp.clip(alpha + step, alpha_min, alpha_max)
+            trial_residual = weak_residual(trial)
+            accept = (
+                jnp.all(jnp.isfinite(trial_residual))
+                & (jnp.linalg.norm(trial_residual) < jnp.linalg.norm(reduced_residual))
+            )
+            return jnp.where(accept, trial, alpha), None
+
+        initial_norm = jnp.linalg.norm(weak_residual(jnp.asarray(1.0, F64)))
+        alpha, _ = jax.lax.scan(
+            body, jnp.asarray(1.0, F64), None, length=reduced_iters
+        )
+        final_norm = jnp.linalg.norm(weak_residual(alpha))
+        return alpha, initial_norm, final_norm
+
+    def predictor(u_prev, u_prev2, nu):
+        velocity = u_prev - u_prev2
+        alpha, _, _ = solve_alpha(u_prev, u_prev2, nu)
+        return u_prev + alpha * velocity
+
+    predictor.diagnostics = jax.jit(solve_alpha)
+    return predictor
 
 
 def generate_reference(n, trajectory_indices, test_seed):
@@ -325,6 +451,30 @@ def extrapolated_guesses(U):
     return guesses
 
 
+def polynomial_guesses(U, order):
+    """Reference-history diagnostic stream with deployable startup fallbacks."""
+    if order not in (2, 3):
+        raise ValueError("polynomial order must be 2 or 3")
+    guesses = np.empty_like(U[1:])
+    for step in range(T):
+        if step == 0:
+            guesses[step] = U[step]
+        elif step == 1:
+            guesses[step] = 2.0 * U[step] - U[step - 1]
+        elif order == 2 or step == 2:
+            guesses[step] = (
+                3.0 * U[step] - 3.0 * U[step - 1] + U[step - 2]
+            )
+        else:
+            guesses[step] = (
+                4.0 * U[step]
+                - 6.0 * U[step - 1]
+                + 4.0 * U[step - 2]
+                - U[step - 3]
+            )
+    return guesses
+
+
 def guess_diagnostics(U, guesses, residual, nu):
     """Per-step L2 error and FOM residual of a supplied guess stream."""
     Uj = jnp.asarray(U)
@@ -338,4 +488,3 @@ def guess_diagnostics(U, guesses, residual, nu):
         / jnp.maximum(jnp.linalg.norm(up), 1e-300)
     )(Gj, Uj[:-1])
     return np.asarray(err), np.asarray(rr)
-

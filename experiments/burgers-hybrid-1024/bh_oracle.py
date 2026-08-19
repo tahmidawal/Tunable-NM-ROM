@@ -253,7 +253,17 @@ def main():
 
             extrap_time = arm_data["extrap:q=0"]["fom_finish_ms"]
             prev_time = arm_data["prev"]["fom_finish_ms"]
+            extrap_samples = np.asarray(
+                arm_data["extrap:q=0"]["fom_finish_repetitions_s"]
+            )
+            prev_samples = np.asarray(arm_data["prev"]["fom_finish_repetitions_s"])
             for key, arm in arm_data.items():
+                samples = np.asarray(arm["fom_finish_repetitions_s"])
+                arm["paired_delta_vs_extrap_s"] = (extrap_samples - samples).tolist()
+                arm["paired_delta_vs_prev_s"] = (prev_samples - samples).tolist()
+                arm["paired_delta_vs_extrap_median_ms"] = float(
+                    np.median(extrap_samples - samples) * 1e3
+                )
                 arm["max_construction_cost_to_beat_extrap_ms"] = (
                     extrap_time - arm["fom_finish_ms"]
                 )

@@ -185,8 +185,15 @@ case "$round" in
     # strictly smaller candidate for the refined weak objectives.
     make_burgers nda_bg160l4g4f31_r15 160 4 31 groupfilm 4 0
     ;;
+  round18)
+    # Seed confirmation for the smaller group-4 decoder at the first robust
+    # group-2 objective, M=128,m=640. Seed zero is round 15 + objective round 17.
+    vars="lspg:full:weak128,lspg:eq640:weak128"
+    make_burgers nda_bg160l4g4f31_s1_r18 160 4 31 groupfilm 4 0 1 60000 "$vars"
+    make_burgers nda_bg160l4g4f31_s2_r18 160 4 31 groupfilm 4 0 2 60000 "$vars"
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15|round18]" >&2
     exit 2
     ;;
 esac

@@ -16,6 +16,7 @@ import hashlib
 import os
 import pickle
 import sys
+import time
 
 import jax
 import jax.numpy as jnp
@@ -43,6 +44,7 @@ import fu_common as fu  # noqa: E402
 F64 = jnp.float64
 EQ_RNG_SEED = 4321
 VARIANT = "lspg:eq256:weak64"
+EQ_GRID_POOL = int(os.environ.get("EQ_GRID_POOL", "4096"))
 
 
 def file_sha256(path):
@@ -53,21 +55,133 @@ def file_sha256(path):
     return digest.hexdigest()
 
 
+def fit_bounded_grid_eq(decoder, n, mode_count, point_count, z_snapshots):
+    """Fit EQ on a deterministic tensor subset of target-grid candidates.
+
+    The projection targets still use every interior node and exact discrete
+    upwind advection.  Only the candidate columns passed to NNLS are bounded,
+    avoiding an impossible 8192-by-one-million host matrix at N=1024.  Every
+    retained quadrature node is a target-grid node with its full FOM stencil.
+    """
+    started = time.time()
+    _, _, phi, _, _ = rc.test_modes(n, mode_count)
+    coords = jnp.asarray(rc.grid_coords(n))
+    interior = rc.interior_indices(n)
+    interior_side = n - 2
+    pool_side = min(interior_side, int(np.floor(np.sqrt(EQ_GRID_POOL))))
+    axis = np.unique(np.rint(np.linspace(1, n - 2, pool_side)).astype(np.int64))
+    ii, jj = np.meshgrid(axis, axis, indexing="ij")
+    candidate_indices = (ii * n + jj).reshape(-1)
+    positions = np.searchsorted(interior, candidate_indices)
+    if not np.all(interior[positions] == candidate_indices):
+        raise ValueError("bounded EQ candidate is not on the interior grid")
+    phi_candidate = np.asarray(phi[positions])
+
+    full_coords = coords[jnp.asarray(interior)]
+    stencils = rc.stencil_indices(candidate_indices, n)
+    stencil_coords = coords[jnp.asarray(stencils.reshape(-1))]
+    dx = 1.0 / (n - 1)
+
+    @jax.jit
+    def snapshot_values(z, full_points, stencil_points):
+        full = decoder(z, full_points)
+        stencil = decoder(z, stencil_points).reshape(-1, 5)
+        center, xp, xm, yp, ym = [stencil[:, column] for column in range(5)]
+        ux = jnp.where(center > 0.0, (center - xm) / dx, (xp - center) / dx)
+        uy = jnp.where(center > 0.0, (center - ym) / dx, (yp - center) / dx)
+        return full, center, center * (ux + uy)
+
+    blocks, targets = [], []
+    phi_t = np.asarray(phi).T
+    phi_candidate_t = phi_candidate.T
+    for z in z_snapshots:
+        full, candidate_u, candidate_advection = [
+            np.asarray(value) for value in snapshot_values(
+                jnp.asarray(z, F64), full_coords, stencil_coords
+            )
+        ]
+        full_advection = np.asarray(rc.upwind_adv_field(jnp.asarray(full), n))
+        for full_value, candidate_value in (
+            (full, candidate_u),
+            (full_advection, candidate_advection),
+        ):
+            targets.append(phi_t @ full_value)
+            blocks.append(phi_candidate_t * candidate_value[None, :])
+
+    matrix = np.concatenate(blocks, axis=0)
+    target = np.concatenate(targets)
+    row_scale = np.linalg.norm(matrix, axis=1) + 1e-300
+    matrix = matrix / row_scale[:, None]
+    target = target / row_scale
+    weights, capped_norm, outer = rc.nnls_capped(
+        matrix, target, max_support=point_count
+    )
+    support = np.nonzero(weights > 0)[0]
+    padded = 0
+    if support.size >= point_count:
+        keep = support[np.argsort(-weights[support])[:point_count]]
+    else:
+        rest = np.setdiff1d(np.arange(candidate_indices.size), support)
+        score = np.abs(matrix).mean(axis=0)
+        pad = rest[np.argsort(-score[rest])[:point_count - support.size]]
+        keep = np.concatenate((support, pad))
+        padded = int(pad.size)
+    final_weights, final_norm, _ = rc.nnls_capped(
+        matrix[:, keep], target, max_support=keep.size
+    )
+    final_weights = np.where(
+        final_weights > 0,
+        final_weights,
+        1e-8 * max(final_weights.max(), 1e-300),
+    )
+    residual_rows = matrix[:, keep] @ final_weights - target
+    relative_rows = np.abs(residual_rows) / (np.abs(target) + 1e-300)
+    info = {
+        "support": int(support.size),
+        "padded": padded,
+        "rnorm_capped": float(capped_norm),
+        "rnorm_final": float(np.linalg.norm(residual_rows)),
+        "b_norm": float(np.linalg.norm(target)),
+        "rel_fit": float(np.linalg.norm(residual_rows) / np.linalg.norm(target)),
+        "n_rows": int(matrix.shape[0]),
+        "row_rel_median": float(np.median(relative_rows)),
+        "row_rel_p95": float(np.quantile(relative_rows, 0.95)),
+        "row_rel_max": float(np.max(relative_rows)),
+        "n_cand": int(candidate_indices.size),
+        "n_interior": int(interior.size),
+        "candidate_strategy": "deterministic_uniform_tensor_target_grid",
+        "candidate_cap": EQ_GRID_POOL,
+        "exact_full_grid_projection_targets": True,
+        "exact_upwind_candidate_stencils": True,
+        "secs": float(time.time() - started),
+        "M": int(mode_count),
+        "m": int(keep.size),
+        "kind": "weak",
+        "pool": "bounded_grid",
+        "nnls_outer": int(outer),
+    }
+    rc.log(
+        f"  bounded-grid NNLS-EQ M={mode_count} m={keep.size}: "
+        f"candidates {candidate_indices.size}/{interior.size}, "
+        f"rel fit {info['rel_fit']:.2e} "
+        f"(p95 {info['row_rel_p95']:.1e}) [{info['secs']:.0f}s]"
+    )
+    return {
+        "kind": "grid",
+        "idx": candidate_indices[keep],
+        "w": final_weights,
+        "info": info,
+    }
+
+
 def build_ops(decoder, n, z_snapshots):
-    """Audited weak64/EQ256 path, with per-N decoder-output NNLS refit."""
+    """Audited weak64/EQ256 path, with scalable per-N NNLS refit."""
     solver, collocation_name, objective = VARIANT.split(":")
     kind = "weak"
     mode_count = int(objective[len(kind):])
     point_count = int(collocation_name[2:])
-    collocation = rc.fit_eq_weights(
-        decoder,
-        n,
-        mode_count,
-        point_count,
-        z_snapshots,
-        kind=kind,
-        pool="grid",
-        rng=np.random.default_rng(EQ_RNG_SEED),
+    collocation = fit_bounded_grid_eq(
+        decoder, n, mode_count, point_count, z_snapshots
     )
     return rc.make_weak_ops(
         decoder, n, collocation, kind=kind, M=mode_count, solver=solver

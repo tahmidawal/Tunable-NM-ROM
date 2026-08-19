@@ -128,6 +128,21 @@ the same cubic control in one rotated timing block; the locked winner alone
 enters confirmation.  This gate changes neither the trained checkpoint nor the
 FOM tolerance.
 
+The EQ refit is also bounded for the 1024 mesh.  A literal full-candidate
+matrix would contain 8192 rows by about one million columns and is not a viable
+offline algorithm.  The scalable refit uses a deterministic uniform tensor
+pool of at most 4096 **target-grid** nodes, while retaining exact full-grid
+projection targets from decoder-output snapshots and exact five-point FOM
+upwind stencils at every candidate; NNLS still selects `m=256=4M` nodes anew at
+each N.  This is grid EQ, not random or off-grid strong collocation.  Candidate
+strategy, pool size, fit diagnostics, indices, and weights are persisted.
+
+The six meshes and three locked outer/inner tolerance pairs run in one final
+process and on one GPU.  Each mesh fits EQ only once, then all three tolerance
+blocks reuse the identical FiLM constructor.  Every tolerance block separately
+burns the GPU and rotates all arms, so reported paired differences never cross
+jobs or solver settings.
+
 ## Final audit contract
 
 Every confirmation arm is invoked in a joint post-burn block with rotated

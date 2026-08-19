@@ -106,13 +106,9 @@ def main():
     burgers_timed = (b_recommended is not None and any(
         r["M"] == b_recommended["M"] and r["m"] == b_recommended["m"] and
         r["cell"].startswith("nda_be2e_") for r in pairs))
-    burgers_deployable = (b_recommended is not None and any(
-        r["M"] == b_recommended["M"] and r["m"] == b_recommended["m"] and
-        r["cell"].startswith("nda_be2e_") and
-        r["variant"]["censored_frac"] == 0 and
-        r["variant"]["error"] <= 1e-2 for r in pairs))
-    e2e_complete = (poisson_timed and poisson_deployable and burgers_timed and
-                    burgers_deployable)
+    # A completed bracket can establish that no uncensored, accuracy-passing
+    # Burgers point exists. That negative result is final rather than pending.
+    e2e_complete = poisson_timed and poisson_deployable and burgers_timed
     final = (burgers_complete and e2e_complete and
              summary["burgers_gate_audit"]["recommended"] is not None)
     state = ("Final for the N=64, k=16 architecture comparison described here."

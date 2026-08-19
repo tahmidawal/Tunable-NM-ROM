@@ -82,11 +82,32 @@ def outlier_count(values):
     return int(np.sum((values < q1 - 1.5 * iqr) | (values > q3 + 1.5 * iqr)))
 
 
-def bootstrap_ci(values, seed):
-    values = np.asarray(values)
+def cluster_bootstrap_ci(case_medians, seed):
+    """Bootstrap trajectory clusters after within-trajectory medians."""
+    values = np.asarray(case_medians, np.float64)
     rng = np.random.default_rng(seed)
-    sampled = values[rng.integers(0, values.size, size=(4000, values.size))]
+    sampled = values[rng.integers(0, values.size, size=(10000, values.size))]
     return [float(v) for v in np.quantile(np.median(sampled, axis=1), [0.025, 0.975])]
+
+
+def per_case_medians(records, values):
+    grouped = {}
+    for record, value in zip(records, values):
+        grouped.setdefault(record["trajectory_index"], []).append(value)
+    expected = {record["trajectory_index"] for record in records}
+    if set(grouped) != expected or any(len(group) != TIME_REPS for group in grouped.values()):
+        raise ValueError("timing records are not balanced by trajectory")
+    return {
+        str(index): float(np.median(grouped[index])) for index in sorted(grouped)
+    }
+
+
+def per_case_outliers(records):
+    grouped = {}
+    for record in records:
+        grouped.setdefault(record["trajectory_index"], []).append(record["elapsed_s"])
+    counts = {str(index): outlier_count(grouped[index]) for index in sorted(grouped)}
+    return counts, int(sum(counts.values()))
 
 
 def grade_fom(fom_output, trajectory, elapsed):
@@ -283,6 +304,16 @@ def run_condition(
             - record["elapsed_s"]
             for record in records[arm]
         ]
+        timing_case_medians = per_case_medians(records[arm], elapsed)
+        linear_case_medians = per_case_medians(records[arm], delta_linear)
+        cubic_case_medians = per_case_medians(records[arm], delta_cubic)
+        newton_case_medians = per_case_medians(
+            records[arm], [record["newton_total"] for record in records[arm]]
+        )
+        linear_work_case_medians = per_case_medians(
+            records[arm], [record["linear_total"] for record in records[arm]]
+        )
+        outliers_by_case, outlier_total = per_case_outliers(records[arm])
         bootstrap_seed = condition_index * 100000
         row = {
             "N": n,
@@ -294,32 +325,42 @@ def run_condition(
             "timed_records": records[arm],
             "timing_repetitions_s": elapsed,
             "timing_shape": [N_TEST_TRAJ, TIME_REPS],
-            "timing_median_ms": float(np.median(elapsed) * 1e3),
-            "timing_outlier_count_tukey": outlier_count(elapsed),
+            "timing_case_medians_s": timing_case_medians,
+            "timing_median_ms": float(
+                np.median(list(timing_case_medians.values())) * 1e3
+            ),
+            "timing_outlier_count_tukey_by_case": outliers_by_case,
+            "timing_outlier_count_tukey": outlier_total,
             "paired_saving_vs_linear_s": delta_linear,
+            "paired_saving_vs_linear_case_medians_s": linear_case_medians,
             "paired_saving_vs_linear_median_ms": float(
-                np.median(delta_linear) * 1e3
+                np.median(list(linear_case_medians.values())) * 1e3
             ),
             "paired_saving_vs_linear_median_95ci_ms": [
-                1e3 * value for value in bootstrap_ci(
-                    delta_linear, 20260819 + n + arm_index + bootstrap_seed
+                1e3 * value for value in cluster_bootstrap_ci(
+                    list(linear_case_medians.values()),
+                    20260819 + n + arm_index + bootstrap_seed,
                 )
             ],
             "paired_saving_vs_cubic_s": delta_cubic,
+            "paired_saving_vs_cubic_case_medians_s": cubic_case_medians,
             "paired_saving_vs_cubic_median_ms": float(
-                np.median(delta_cubic) * 1e3
+                np.median(list(cubic_case_medians.values())) * 1e3
             ),
             "paired_saving_vs_cubic_median_95ci_ms": [
-                1e3 * value for value in bootstrap_ci(
-                    delta_cubic, 20260829 + n + arm_index + bootstrap_seed
+                1e3 * value for value in cluster_bootstrap_ci(
+                    list(cubic_case_medians.values()),
+                    20260829 + n + arm_index + bootstrap_seed,
                 )
             ],
-            "newton_total_median": float(np.median([
-                record["newton_total"] for record in records[arm]
-            ])),
-            "linear_total_median": float(np.median([
-                record["linear_total"] for record in records[arm]
-            ])),
+            "newton_total_case_medians": newton_case_medians,
+            "newton_total_median": float(np.median(list(
+                newton_case_medians.values()
+            ))),
+            "linear_total_case_medians": linear_work_case_medians,
+            "linear_total_median": float(np.median(list(
+                linear_work_case_medians.values()
+            ))),
             "max_timed_outer_residual": float(max(
                 record["max_final_rel_residual"] for record in records[arm]
             )),
@@ -413,7 +454,10 @@ def main():
             ],
             "exact_upwind_weak_contract": True,
             "charged_exact_fom_residual_guard_vs_live_cubic": True,
-            "cold_start_hyper_reduced_on_same_eq_nodes": True,
+            "cold_start_fit_hyper_reduced_on_same_eq_nodes": True,
+            "initializer_features_hyper_reduced": (
+                "charged fixed endpoint sample of at most 64x64 u0 values"
+            ),
             "historical_full_grid_path": (
                 "audited 479.569ms N256 construction retained as context only; "
                 "not used for optimized timing"
@@ -425,6 +469,15 @@ def main():
             "canonical_draw_count": TEST_DRAW_COUNT,
             "selected_test_indices": list(range(TEST_START, TEST_START + N_TEST_TRAJ)),
             "time_reps": TIME_REPS,
+            "timing_estimator": (
+                "median repetitions within each trajectory, then median across "
+                "trajectory clusters"
+            ),
+            "confidence_interval": (
+                "10000-draw trajectory-cluster bootstrap of per-trajectory "
+                "paired medians; repetitions are not treated as IID"
+            ),
+            "outlier_method": "Tukey fences within each trajectory only",
             "same_invocation_nmrom_plus_fom_cost_accuracy_work": True,
             "reference_residual_gate": REFERENCE_RESIDUAL_GATE,
             "f64": True,
@@ -466,6 +519,9 @@ def main():
             "eq_weights": built["eq_weights"].tolist(),
             "decode_chunk": built["decode_chunk"],
             "decode_resolution": built["decode_resolution"],
+            "feature_sample_resolution": built["feature_sample_resolution"],
+            "feature_sample_count": built["feature_sample_count"],
+            "feature_sample_indices": built["feature_sample_indices"].tolist(),
             "latent_history_variants": {
                 arm: {
                     "mode": mode,

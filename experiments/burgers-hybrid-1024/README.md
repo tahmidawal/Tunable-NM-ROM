@@ -168,6 +168,18 @@ blocks reuse the identical FiLM constructor.  Every tolerance block separately
 burns the GPU and rotates all arms, so reported paired differences never cross
 jobs or solver settings.
 
+Job 2663384 uses seed 1 indices 0:4 and is **provisional only**: although those
+cases were disjoint from the latent-history and budget selection cases, the
+corrected oracle had already inspected them.  The untouched confirmation uses
+seed 20260819, draws 16 cases once, and fixes indices 0:4 without inspection.
+Its uncertainty calculation first takes the paired median over 21 repetitions
+within each trajectory and then bootstraps the four trajectory clusters; it
+does not treat 84 correlated timings as IID.  Tukey outliers are likewise
+counted within trajectory.  Finally, deployable initializer moments gather at
+most a fixed 64x64 endpoint sample from `u0` (and charge it), while the cold LM
+fit remains on the 256 EQ nodes.  Thus no cold-start component scans N squared
+values online at the large meshes.
+
 ## Final audit contract
 
 Every confirmation arm is invoked in a joint post-burn block with rotated

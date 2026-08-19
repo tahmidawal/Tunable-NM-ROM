@@ -317,7 +317,12 @@ class FilmControl:
         mean_initial = jnp.asarray(self.mean_initial_latent, F64)
         history_scale = jnp.asarray(float(latent_extrapolation_scale), F64)
         tolerance_scale = float(ops.get("tol_scale", np.sqrt((n - 2) ** 2)))
-        grid_axis = jnp.linspace(0.0, 1.0, n)
+        feature_resolution = min(n, self.decode_resolution)
+        feature_indices_np = np.unique(np.rint(
+            np.linspace(0, n - 1, feature_resolution)
+        ).astype(np.int64))
+        feature_indices = jnp.asarray(feature_indices_np)
+        feature_axis = feature_indices / float(n - 1)
 
         def rollout_history(z0, nu, tolerances):
             """Weak LSPG scan with a charged, zero-allocation history start."""
@@ -341,14 +346,18 @@ class FilmControl:
             return outputs
 
         def field_features(u0, nu):
-            field = jnp.maximum(u0.reshape(n, n), 0.0)
+            full_field = u0.reshape(n, n)
+            field = jnp.maximum(
+                full_field[feature_indices[:, None], feature_indices[None, :]],
+                0.0,
+            )
             mass = jnp.sum(field) + 1e-300
             row_mass = jnp.sum(field, axis=1)
             col_mass = jnp.sum(field, axis=0)
-            cx = jnp.sum(row_mass * grid_axis) / mass
-            cy = jnp.sum(col_mass * grid_axis) / mass
-            x_variance = jnp.sum(row_mass * (grid_axis - cx) ** 2) / mass
-            y_variance = jnp.sum(col_mass * (grid_axis - cy) ** 2) / mass
+            cx = jnp.sum(row_mass * feature_axis) / mass
+            cy = jnp.sum(col_mass * feature_axis) / mass
+            x_variance = jnp.sum(row_mass * (feature_axis - cx) ** 2) / mass
+            y_variance = jnp.sum(col_mass * (feature_axis - cy) ** 2) / mass
             width = jnp.sqrt(jnp.maximum((x_variance + y_variance) / 2.0, 1e-12))
             amplitude = jnp.max(field)
             lognu = jnp.log(nu)
@@ -405,6 +414,9 @@ class FilmControl:
             "latent_extrapolation_scale": float(latent_extrapolation_scale),
             "max_step_jacobians": max_step_jacobians,
             "rollout_attempt_budget": rollout_attempt_budget,
+            "feature_sample_resolution": int(feature_indices_np.size),
+            "feature_sample_count": int(feature_indices_np.size ** 2),
+            "feature_sample_indices": feature_indices_np,
             "eq_info": collocation.get("info"),
             "eq_indices": np.asarray(collocation["idx"]),
             "eq_weights": np.asarray(collocation["w"]),

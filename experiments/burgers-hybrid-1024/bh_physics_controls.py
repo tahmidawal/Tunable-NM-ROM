@@ -36,6 +36,14 @@ REFERENCE_RESIDUAL_GATE = float(os.environ.get("REFERENCE_RESIDUAL_GATE", "1e-11
 ARM_NAMES = os.environ.get(
     "ARMS", "linear,explicit_euler,imex_euler,imex_ab2"
 ).split(",")
+HISTORY_BLEND_COEFFICIENTS = {
+    "lq25": (0.25, 0.0),
+    "lq50": (0.50, 0.0),
+    "lq75": (0.75, 0.0),
+    "qc25": (1.0, 0.25),
+    "qc50": (1.0, 0.50),
+    "qc75": (1.0, 0.75),
+}
 
 
 def save(report):
@@ -85,7 +93,11 @@ def diagnostic_guess(arm, U, nu, n):
         return bc.polynomial_guesses(U, 2)
     if arm == "cubic":
         return bc.polynomial_guesses(U, 3)
-    predictor = bc.make_physics_predictor(n, arm)
+    predictor = (
+        bc.make_history_blend_predictor(*HISTORY_BLEND_COEFFICIENTS[arm])
+        if arm in HISTORY_BLEND_COEFFICIENTS
+        else bc.make_physics_predictor(n, arm)
+    )
     history = [jnp.asarray(U[0])] * 4
     guesses = []
     for step in range(bc.T):
@@ -107,6 +119,7 @@ def main():
     valid_arms = {
         "prev", "linear", "quadratic", "cubic",
         "explicit_euler", "imex_euler", "imex_ab2",
+        *HISTORY_BLEND_COEFFICIENTS,
     }
     if not set(arm_names).issubset(valid_arms):
         raise SystemExit(f"unknown arm in {arm_names}")
@@ -154,11 +167,14 @@ def main():
             chains = {}
             modes = {}
             for arm in arm_names:
-                predictor = (
-                    bc.make_physics_predictor(n, arm)
-                    if arm in {"explicit_euler", "imex_euler", "imex_ab2"}
-                    else None
-                )
+                if arm in {"explicit_euler", "imex_euler", "imex_ab2"}:
+                    predictor = bc.make_physics_predictor(n, arm)
+                elif arm in HISTORY_BLEND_COEFFICIENTS:
+                    predictor = bc.make_history_blend_predictor(
+                        *HISTORY_BLEND_COEFFICIENTS[arm]
+                    )
+                else:
+                    predictor = None
                 chains[arm], _ = bc.make_chain(
                     n,
                     tau,
@@ -174,7 +190,7 @@ def main():
                     "explicit_euler": 3,
                     "imex_euler": 3,
                     "imex_ab2": 3,
-                }[arm])
+                }.get(arm, 3))
             calls = {
                 (arm, trajectory["index"]): (
                     lambda chain=chains[arm], traj=trajectory, mode=modes[arm]: chain(

@@ -732,6 +732,44 @@ def make_physics_predictor(n, scheme="imex_euler"):
     return predictor
 
 
+def make_history_blend_predictor(second_difference=1.0, third_difference=1.0):
+    """Stable Newton-backward history blend with deployable fallbacks.
+
+    The mature-step predictor is
+
+        u_n + Delta u_n + a2 Delta^2 u_n + a3 Delta^3 u_n.
+
+    ``(a2,a3)=(0,0)`` is linear, ``(1,0)`` quadratic and ``(1,1)`` cubic.
+    Fractional coefficients provide a bounded zero-cost hyperparameter sweep.
+    Unavailable differences are omitted during the first three steps.
+    """
+    a2 = float(second_difference)
+    a3 = float(third_difference)
+    if not (0.0 <= a2 <= 1.0 and 0.0 <= a3 <= 1.0):
+        raise ValueError("history blend coefficients must lie in [0,1]")
+
+    def predictor(u_prev, u_prev2, u_prev3, u_prev4, nu, step_index):
+        del nu
+        linear = 2.0 * u_prev - u_prev2
+        second = u_prev - 2.0 * u_prev2 + u_prev3
+        third = u_prev - 3.0 * u_prev2 + 3.0 * u_prev3 - u_prev4
+        return jax.lax.cond(
+            step_index == 0,
+            lambda: u_prev,
+            lambda: jax.lax.cond(
+                step_index == 1,
+                lambda: linear,
+                lambda: jax.lax.cond(
+                    step_index == 2,
+                    lambda: linear + a2 * second,
+                    lambda: linear + a2 * second + a3 * third,
+                ),
+            ),
+        )
+
+    return predictor
+
+
 def generate_reference(n, trajectory_indices, test_seed, draw_count=None):
     """Regenerate fresh test trajectories from seed with the reference FOM."""
     count = int(draw_count or (max(trajectory_indices) + 1))

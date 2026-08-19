@@ -119,10 +119,19 @@ reported comparison.
 - `cluster/`: isolated job construction, launch, pull, and explicit-ID cancellation helpers
   (added after the local smoke gate).
 - `runs/`: checksummed pulled artifacts only.
+- `SUMMARY.generated.md`: exhaustive tables generated from the audited run JSONs.
 
 ## Status
 
-Local jaxrun smoke passes interpolation, hard-boundary, GroupFiLM cached decode, solver, residual,
-and persistence gates.
-It falsified source-parameter-to-latent prediction for the frozen checkpoint; no local wall-clock
-number is a cluster result. Full feasibility results remain pending.
+The fresh-seed six-resolution, three-tolerance confirmation is complete. All primary counting-CG
+arms meet their true-residual tolerance from their timed invocation, and the logs are clean. The
+optimized pure K8 NM-ROM crosses over only at N=1024, where its modest advantage over zero-start
+CG is supported by paired bootstrap intervals; it loses below that resolution. Pure GroupFiLM
+does not improve work. GroupFiLM plus q8 beats zero-start CG but loses decisively to the matched
+spectral controls, so its apparent gain is classical rather than learned. Dense sine direct is
+the fastest eligible method on most rows; at the tight N=1024 row its measured residual is not
+eligible, while the full-rank warm start plus FOM refinement and FFT-DST direct remain eligible.
+
+The source-parameter-to-latent map and transported-tail training round were stopped by their
+pre-registered mechanism gates rather than tuned on held-out timings. Local wall clock remains
+non-result smoke evidence only; all numeric conclusions are generated in `SUMMARY.generated.md`.

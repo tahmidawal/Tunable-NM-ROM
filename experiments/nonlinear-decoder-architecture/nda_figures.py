@@ -118,7 +118,7 @@ def seed_variability(summary):
                  if r["hidden"] == 98 and r["group_size"] == 2),
                 key=lambda r: (r["m"], r["M"])),
          lambda r: f'M{r["M"]}\nm{r["m"]}'),
-        ("Burgers H160", 1e-2,
+        ("Burgers architecture boundary", 1e-2,
          b_focus,
          lambda r: f'H{r["hidden"]}/g{r["group_size"]}\nM{r["M"]}/m{r["m"]}'),
     ]

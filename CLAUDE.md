@@ -65,10 +65,16 @@ worktree or from somewhere else. Say which one you would pick and why. Never ass
 `main` is the frozen baseline and its heat ROM rollout is known broken, so branching from it
 silently discards every correction made since.
 
-### Every worktree carries `LAB-LOG.md`
+### One canonical `LAB-LOG.md`, on `main`, read and appended by every session
 
-An append-only record, newest entry at the bottom, `## YYYY-MM-DD` headers with one subsection
-per session. **Appending to it is a closing step of the session, not an optional extra.**
+`/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md`. Worktrees share one `.git`, so
+that absolute path resolves to main's copy from inside any worktree — there is **no per-worktree
+copy**, and no separate status or start-here document. **Read it at the start of a session and
+append to it before the session ends; appending is a closing step, not an optional extra.**
+
+The file has two parts: a **Where things stand** block at the top that each session rewrites when
+what is true has changed, and an append-only chronology below it, oldest first, `## YYYY-MM-DD`
+headers with one `###` per session.
 
 Each entry records:
 

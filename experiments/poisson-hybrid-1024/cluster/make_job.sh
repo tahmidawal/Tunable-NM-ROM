@@ -30,7 +30,7 @@ cp "$EXPS/poisson2d-rom-objective/followup/fu_eq.py" \
    "$STAGE/code/poisson2d-rom-objective/followup/"
 cp "$EXPS/rom-warmstart-fom/wsf_util.py" "$EXPS/rom-warmstart-fom/wsf_poisson.py" \
    "$STAGE/code/rom-warmstart-fom/"
-NDA="$WT/../2026-08-19-nonlinear-decoder-architecture/experiments/nonlinear-decoder-architecture"
+NDA="$WT/2026-08-19-nonlinear-decoder-architecture/experiments/nonlinear-decoder-architecture"
 cp "$NDA/nda_arch.py" "$STAGE/code/poisson-hybrid-1024/deps/"
 MSP="$WT/2026-08-14-multistage-precision/experiments/multistage-precision"
 cp "$MSP/ms_parametric.py" "$MSP/ms_autodecoder.py" \

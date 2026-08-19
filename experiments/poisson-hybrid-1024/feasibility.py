@@ -1469,9 +1469,11 @@ def main():
                 for j, name in enumerate(names)
             }
             paired_deltas_by_control = {}
-            for control in ("spectral_q8", "spectral_q16"):
-                if control not in all_times:
-                    continue
+            # Pair every candidate directly against every spectral arm present in this
+            # invocation.  In particular, final confirmation must compare learned arms
+            # with the validation-locked rank, which need not be q8 or q16.
+            spectral_controls = [name for name in names if name.startswith("spectral_q")]
+            for control in spectral_controls:
                 st = all_times[control]
                 control_rows = {}
                 for name in names:

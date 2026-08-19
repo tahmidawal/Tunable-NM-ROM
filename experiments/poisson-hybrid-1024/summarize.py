@@ -71,11 +71,13 @@ def main():
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
         for row in data["rows"]:
-            for control in ("spectral_q8", "spectral_q16", "spectral_q24",
-                            "spectral_q32", "spectral_q48", "spectral_q64"):
-                pair = row.get(f"paired_delta_vs_{control}")
-                if pair is None:
-                    continue
+            controls = sorted(
+                key.removeprefix("paired_delta_vs_")
+                for key in row
+                if key.startswith("paired_delta_vs_spectral_q")
+            )
+            for control in controls:
+                pair = row[f"paired_delta_vs_{control}"]
                 lines.append(
                     f"| {label} | {row['N']} | `{row['arm']}` | `{control}` | "
                     f"{f(pair.get('mean_ms'))} | "

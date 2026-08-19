@@ -122,11 +122,11 @@ def burgers_rows():
         eq512=rom["rom"]["lspg:eq512:weak64"]["traj_rel_mean"],
     ))
     for path in sorted(glob.glob(os.path.join(RUNS, "nda_b*"))):
-        report_path = os.path.join(path, "out", "blat_ad_N64_K16_report.json")
-        rom_path = os.path.join(path, "out", "blat_rom_N64_K16.json")
-        if not os.path.isfile(report_path) or not os.path.isfile(rom_path):
+        report_paths = glob.glob(os.path.join(path, "out", "blat_ad_N64_K16*_report.json"))
+        rom_paths = glob.glob(os.path.join(path, "out", "blat_rom_N64_K16*.json"))
+        if len(report_paths) != 1 or len(rom_paths) != 1:
             continue
-        train, rom = read(report_path), read(rom_path)
+        train, rom = read(report_paths[0]), read(rom_paths[0])
         config = train["config"]
         decoder = config.get("decoder_config")
         if decoder is None or "lspg:full:weak64" not in rom["rom"]:
@@ -149,8 +149,9 @@ def burgers_objective_rows():
     rows = []
     for path in sorted(glob.glob(os.path.join(RUNS, "nda_bobj*")) +
                        glob.glob(os.path.join(RUNS, "nda_bg160l4g2f31_s*_r11")) +
+                       glob.glob(os.path.join(RUNS, "nda_beq*")) +
                        glob.glob(os.path.join(RUNS, "nda_btrust*"))):
-        report_paths = glob.glob(os.path.join(path, "out", "**", "blat_rom_N64_K16.json"),
+        report_paths = glob.glob(os.path.join(path, "out", "**", "blat_rom_N64_K16*.json"),
                                  recursive=True)
         for report_path in sorted(report_paths):
             report = read(report_path)
@@ -158,9 +159,13 @@ def burgers_objective_rows():
             seed = seed_of(config.get("ad_config", config))
             subdir = os.path.relpath(os.path.dirname(report_path), os.path.join(path, "out"))
             cell = os.path.basename(path) if subdir == "." else f"{os.path.basename(path)}/{subdir}"
-            for M, m in ((96, 384), (128, 512)):
-                full_key, eq_key = f"lspg:full:weak{M}", f"lspg:eq{m}:weak{M}"
-                if full_key not in report["rom"] or eq_key not in report["rom"]:
+            for eq_key in sorted(report["rom"]):
+                match = re.fullmatch(r"lspg:eq(\d+):weak(\d+)", eq_key)
+                if match is None:
+                    continue
+                m, M = map(int, match.groups())
+                full_key = f"lspg:full:weak{M}"
+                if full_key not in report["rom"]:
                     continue
                 full, eq = report["rom"][full_key], report["rom"][eq_key]
                 rows.append(dict(
@@ -182,6 +187,7 @@ def aggregate(rows, keys, value_keys, name):
         groups.setdefault(group, []).append(row)
     out = []
     for group, members in sorted(groups.items()):
+        members = sorted(members, key=lambda r: r["seed"])
         seeds = sorted({r["seed"] for r in members})
         if seeds != [0, 1, 2]:
             continue
@@ -198,7 +204,8 @@ def aggregate(rows, keys, value_keys, name):
 
 def burgers_gate_audit(rows):
     audits = []
-    for M, m in ((96, 384), (128, 512)):
+    candidates = sorted({(r["M"], r["m"]) for r in rows if r["trust_factor"] == 0})
+    for M, m in candidates:
         members = [r for r in rows
                    if r["trust_factor"] == 0 and r["M"] == M and r["m"] == m]
         members = sorted(members, key=lambda r: r["seed"])

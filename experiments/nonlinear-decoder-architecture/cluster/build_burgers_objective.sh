@@ -3,8 +3,10 @@
 set -euo pipefail
 
 cell="$1"; checkpoint="$2"
+variants="${3:-lspg:full:weak96,lspg:eq384:weak96,lspg:full:weak128,lspg:eq512:weak128}"
 [[ "$cell" =~ ^nda_[A-Za-z0-9_]+$ ]] || { echo "invalid cell" >&2; exit 2; }
 [[ -f "$checkpoint" ]] || { echo "missing checkpoint $checkpoint" >&2; exit 3; }
+[[ "$variants" =~ ^lspg:[A-Za-z0-9,:_-]+$ ]] || { echo "invalid variants" >&2; exit 2; }
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(cd "$HERE/.." && pwd)"
@@ -49,7 +51,7 @@ df -h /cluster/tufts/paralab/tawal01
 \$PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b=='gpu' else 42)"
 cd code
 export N_TEST=16 FLOOR_BUDGET=60 GN_BUDGET=30 GN_TOL=1e-9 IC_BUDGET=100
-export VARIANTS=lspg:full:weak96,lspg:eq384:weak96,lspg:full:weak128,lspg:eq512:weak128
+export VARIANTS=$variants
 export POD_KS=16 POD_VARIANTS= DO_TIMING=0 TR_FACTOR=0
 \$PY -u nda_burgers_eval.py ../ckpt/variant.pkl ../out
 \$PY - <<'PY'
@@ -57,8 +59,7 @@ import glob, json
 p = glob.glob('../out/*.json')
 assert len(p) == 1
 d = json.load(open(p[0]))
-want = {'lspg:full:weak96', 'lspg:eq384:weak96',
-        'lspg:full:weak128', 'lspg:eq512:weak128'}
+want = set('$variants'.split(','))
 assert d['backend'] == 'gpu' and set(d['rom']) == want
 PY
 echo ALL-DONE

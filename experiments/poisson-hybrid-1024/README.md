@@ -79,6 +79,13 @@ validation-only ladders (or an explicit N-dependent rule if the minima differ by
 for the independent seed. Every extension retains the FFT-DST direct solve; no timing is compared
 across jobs without a repeated within-job control.
 
+The q192/q256 extension left q256 as the total-time endpoint winner at N=1024, so it did not yet
+bracket the spectral minimum. Before looking at any fresh-seed case, one final N=1024 job repeats
+q192/q256 and adds q384/q512/q768 and full rank (the requested q1024 arm is clamped to the 1022
+interior modes). The lowest authoritative mean-of-case-medians in that single rotated job fixes
+the N=1024 rank. Because the bracket includes the dense exact endpoint and the FFT-DST direct
+baseline, there is no further rank extension or held-out timing selection after this job.
+
 ## Files
 
 - `feasibility.py`: train-only RBF calibration, coarse decoding, spectral corrections,

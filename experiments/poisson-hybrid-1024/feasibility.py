@@ -61,6 +61,7 @@ OUT = sys.argv[1]
 PKL = os.environ["PKL"]
 PARAM_PKL = os.environ.get("PARAM_PKL", "")
 GROUP_PKL = os.environ.get("GROUP_PKL", "")
+TRANSPORT_PKL = os.environ.get("TRANSPORT_PKL", "")
 SMOKE = bool(int(os.environ.get("SMOKE", "0")))
 NS = [int(v) for v in os.environ.get("NS", "32" if SMOKE else "256,512").split(",")]
 FOM_TAUS = [float(v) for v in os.environ.get(
@@ -79,6 +80,7 @@ LM_ROM_TAU = float(os.environ.get("LM_ROM_TAU", "0.01"))
 GROUP_M = int(os.environ.get("GROUP_M", "128"))
 GROUP_MQ = int(os.environ.get("GROUP_MQ", "512"))
 GROUP_GN_ITERS = int(os.environ.get("GROUP_GN_ITERS", "60"))
+TRANSPORT_TR_DELTA = float(os.environ.get("TRANSPORT_TR_DELTA", "0.25"))
 TR_SCALE = float(os.environ.get("TR_SCALE", "1.0"))
 EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
 EQ_PERTURB = int(os.environ.get("EQ_PERTURB", "3"))
@@ -97,6 +99,8 @@ ARM_NAMES = [v for v in os.environ.get(
 NATIVE_ARM_NAMES = [v for v in os.environ.get(
     "NATIVE_ARMS", "spectral_q8,param1_c64_q8,lmmean_c64_q0"
 ).split(",") if v]
+BOOTSTRAP_REPS = int(os.environ.get("BOOTSTRAP_REPS", "1000" if SMOKE else "10000"))
+BOOTSTRAP_SEED = int(os.environ.get("BOOTSTRAP_SEED", "821731"))
 
 
 @dataclass(frozen=True)
@@ -106,6 +110,10 @@ class Arm:
     coarse_n: int
     q: int
     rom_tau: float | None = None
+    weak_M: int | None = None
+    weak_m: int | None = None
+    gn_budget: int | None = None
+    base_q: int = 0
 
 
 def parse_arm(name: str) -> Arm:
@@ -139,6 +147,17 @@ def parse_arm(name: str) -> Arm:
             raise ValueError(f"unknown GroupFiLM ROM-tolerance code {code!r}")
         return Arm(name, "group_nearest", -1 if ctext == "full" else int(ctext),
                    int(qpart), tau_by_code[code])
+    if name.startswith("tp"):
+        # tp0_m24_c64 / tp1_m32_c64: direct initializer or one LM attempt,
+        # selected high-tail weak modes, and a q16 exact base in both cases.
+        budget_text, mtext, ctext = name.split("_")
+        budget = int(budget_text[2:])
+        weak_M = int(mtext[1:])
+        weak_m_by_M = {24: 96, 32: 128}
+        if budget not in (0, 1) or weak_M not in weak_m_by_M:
+            raise ValueError(f"unsupported bounded transport arm {name!r}")
+        return Arm(name, "transport_tail", int(ctext[1:]), 0, None,
+                   weak_M, weak_m_by_M[weak_M], budget, 16)
     if name.startswith("param1_c") or name.startswith("paramall_c"):
         prefix = "param1_c" if name.startswith("param1_c") else "paramall_c"
         predictor = "param_s1" if prefix == "param1_c" else "param_all"
@@ -283,6 +302,38 @@ def grade_cg_output(out, F, Uref, op):
     )
 
 
+def repetition_summary(all_s, seed):
+    """Case-median estimate, deterministic case bootstrap, and fixed outlier rule."""
+    a = np.asarray(all_s, dtype=float)
+    case_medians = np.median(a, axis=1)
+    estimate = float(np.mean(case_medians))
+    rng = np.random.default_rng(seed)
+    sample = rng.integers(0, len(case_medians), size=(BOOTSTRAP_REPS, len(case_medians)))
+    boot = case_medians[sample].mean(axis=1)
+    # Pre-registered clock/outlier diagnostic; no observations are removed.
+    threshold = 1.5 * case_medians[:, None]
+    return dict(
+        mean_of_case_medians_s=estimate,
+        case_medians_s=case_medians.tolist(),
+        bootstrap_case_resample_reps=BOOTSTRAP_REPS,
+        bootstrap_ci95_s=[float(np.quantile(boot, 0.025)),
+                          float(np.quantile(boot, 0.975))],
+        outlier_rule="timing repetition > 1.5 * its case median; retained in raw arrays",
+        outlier_count=int(np.sum(a > threshold)),
+        n_repetitions=int(a.size),
+    )
+
+
+def paired_ratio_ci(numerator_s, denominator_s, seed):
+    """Case-resampled CI for the ratio of mean case medians on paired inputs."""
+    num = np.median(np.asarray(numerator_s, dtype=float), axis=1)
+    den = np.median(np.asarray(denominator_s, dtype=float), axis=1)
+    rng = np.random.default_rng(seed)
+    sample = rng.integers(0, len(num), size=(BOOTSTRAP_REPS, len(num)))
+    ratios = num[sample].mean(axis=1) / den[sample].mean(axis=1)
+    return [float(np.quantile(ratios, 0.025)), float(np.quantile(ratios, 0.975))]
+
+
 def endpoint_bilinear(uc, out_n: int):
     """Coordinate-consistent bilinear prolongation for endpoint-including grids.
 
@@ -406,9 +457,21 @@ def continuum_modes(grid, M):
     return II.reshape(-1)[keep], JJ.reshape(-1)[keep], lam_all[keep]
 
 
-def make_separable_source_projector(grid, M, alpha=1.0):
+def continuum_tail_modes(grid, M, base_q):
+    """Lowest complete eigenshells not already spanned by a q-by-q exact base."""
+    kk = np.arange(1, grid.N - 1)
+    II, JJ = np.meshgrid(kk, kk, indexing="ij")
+    eligible = ~((II <= base_q) & (JJ <= base_q))
+    I, J = II[eligible], JJ[eligible]
+    lam = np.pi**2 * (I**2 + J**2)
+    m_eff = min(M, len(lam))
+    keep = lam <= np.sort(lam)[m_eff - 1]
+    return I[keep], J[keep], lam[keep]
+
+
+def make_separable_source_projector(grid, M, alpha=1.0, modes=None):
     """O(N^2 sqrt(M)) source projection with no captured O(M N^2) constant."""
-    I, J, lam = continuum_modes(grid, M)
+    I, J, lam = continuum_modes(grid, M) if modes is None else modes
     maxk = int(max(np.max(I), np.max(J)))
     x = np.arange(1, grid.N - 1) / (grid.N - 1)
     S = jnp.asarray(np.sin(np.pi * np.outer(x, np.arange(1, maxk + 1))))
@@ -423,7 +486,7 @@ def make_separable_source_projector(grid, M, alpha=1.0):
                                 captured_table_shape=list(S.shape))
 
 
-def eq_fit_streamed(dec, grid, Ztr, K, M, m):
+def eq_fit_streamed(dec, grid, Ztr, K, M, m, modes=None, full_dec=None):
     """The audited off-grid NNLS-EQ fit with streamed/separable full-grid targets.
 
     It preserves the fixed RNG stream, snapshots, row normalization, row subset, capped NNLS,
@@ -434,7 +497,7 @@ def eq_fit_streamed(dec, grid, Ztr, K, M, m):
     rng = np.random.default_rng(EQ_SEED)
     idx = rng.choice(len(Ztr), size=min(EQ_SNAPS, len(Ztr)), replace=False)
     cand_np = np.random.default_rng(mp.SEED + 12345).uniform(0.0, 1.0, size=(EQ_CAND, 2))
-    I, J, lam = continuum_modes(grid, M)
+    I, J, lam = continuum_modes(grid, M) if modes is None else modes
     Phi = (2.0 * np.sin(np.pi * cand_np[:, 0, None] * I[None, :])
            * np.sin(np.pi * cand_np[:, 1, None] * J[None, :]))
     maxk = int(max(np.max(I), np.max(J)))
@@ -442,7 +505,8 @@ def eq_fit_streamed(dec, grid, Ztr, K, M, m):
     S = jnp.asarray(np.sin(np.pi * np.outer(x, np.arange(1, maxk + 1))))
     cand = jnp.asarray(cand_np)
     snap_fn = jax.jit(lambda z: dec(z, cand))
-    full_fn = jax.jit(lambda z: dec(z, grid.coords_int).reshape(grid.n_i, grid.n_i))
+    full_fn = (jax.jit(lambda z: dec(z, grid.coords_int).reshape(grid.n_i, grid.n_i))
+               if full_dec is None else jax.jit(full_dec))
     snaps, targets = [], []
     for i in idx:
         z = jnp.asarray(Ztr[i])
@@ -607,6 +671,36 @@ def main():
             fixed_output_basis=False,
         )
 
+    transport_info = None
+    transport_model = None
+    if any(a.predictor == "transport_tail" for a in ARMS):
+        if not TRANSPORT_PKL:
+            raise SystemExit("a tp* arm requires TRANSPORT_PKL")
+        import transport_arch as ta
+
+        td = pickle.load(open(TRANSPORT_PKL, "rb"))
+        tcfg = td["config"]
+        if tcfg["architecture"]["name"] != "separable_transport_tail":
+            raise SystemExit("unexpected transported-tail architecture")
+        if int(tcfg["q_base"]) != 16 or int(tcfg["K"]) != 6:
+            raise SystemExit("transport checkpoint must be the pre-registered q16/K6 model")
+        tparams = jax.tree_util.tree_map(jnp.asarray, td["params"])
+        tinit = jax.tree_util.tree_map(jnp.asarray, td["initializer"])
+        transport_model = dict(
+            module=ta, params=tparams, eps=float(td["eps"]),
+            initializer=tinit, config=tcfg, Z=jnp.asarray(td["z_train"]),
+        )
+        transport_info = dict(
+            pkl=os.path.basename(TRANSPORT_PKL), pkl_sha256=sha256(TRANSPORT_PKL),
+            architecture_source=os.path.basename(ta.__file__),
+            architecture_source_sha256=sha256(ta.__file__),
+            config=tcfg, selected_step=td["selected_step"],
+            selection_key=td["selection_key"],
+            initializer_info=td["initializer_info"],
+            n_params=ta.parameter_count(tparams), fixed_output_basis=False,
+            full_grid_complexity="O(R*N^2 + width*R*N)",
+        )
+
     param_info = None
     param_stages = None
     if any(a.predictor.startswith("param_") for a in ARMS):
@@ -658,9 +752,19 @@ def main():
             group_M=GROUP_M,
             group_m=GROUP_MQ,
             group_gn_iters=GROUP_GN_ITERS,
+            transport_trust_delta=TRANSPORT_TR_DELTA,
             trust_region_scale=TR_SCALE,
             arms=[a.__dict__ for a in ARMS],
             native_cg_sensitivity_arms=NATIVE_ARM_NAMES,
+            preconditioned_baseline=(
+                "native jax.scipy CG with exact diagonal/Jacobi inverse; for the constant-"
+                "coefficient Poisson stencil this is a scalar and should not change Krylov work"
+            ),
+            bootstrap_reps=BOOTSTRAP_REPS,
+            bootstrap_seed=BOOTSTRAP_SEED,
+            timing_outlier_rule=(
+                "repetition > 1.5 * its case median; diagnose only, never discard"
+            ),
             cg_maxiter=CG_MAXITER,
             matmul_precision=os.environ.get("JAX_DEFAULT_MATMUL_PRECISION", "unset"),
             dtype="f64",
@@ -672,6 +776,7 @@ def main():
         rbf_train_only=rbf_info,
         parameter_aligned_checkpoint=param_info,
         nonlinear_groupfilm_checkpoint=group_info,
+        transported_tail_checkpoint=transport_info,
         rows=[],
         mesh_checks=[],
     )
@@ -879,9 +984,83 @@ def main():
         else:
             gpre_apply = None
 
+        have_transport = any(a.predictor == "transport_tail" for a in ARMS)
+        transport_solvers = {}
+        transport_projectors = {}
+        transport_field_decoders = {}
+        if have_transport:
+            assert transport_model is not None
+            ta = transport_model["module"]
+            tparams = transport_model["params"]
+            teps = transport_model["eps"]
+            tZ = transport_model["Z"]
+            tx_full = jnp.linspace(0.0, 1.0, n, dtype=F64)
+
+            def transport_raw_dec(z, xy):
+                return ta.apply_points(tparams, z, xy, teps)
+
+            def transport_full_int(z):
+                return ta.apply_grid(tparams, z, tx_full, teps)[1:-1, 1:-1]
+
+            mesh_check["transport_weak_configs"] = {}
+            for weak_M in sorted({a.weak_M for a in ARMS
+                                  if a.predictor == "transport_tail"}):
+                arm0 = next(a for a in ARMS if a.predictor == "transport_tail"
+                            and a.weak_M == weak_M)
+                modes = continuum_tail_modes(grid, weak_M, arm0.base_q)
+                tpts, twq, teq_info = eq_fit_streamed(
+                    transport_raw_dec, grid, tZ, 6, weak_M, arm0.weak_m,
+                    modes=modes, full_dec=transport_full_int,
+                )
+                I, J, tlam = modes
+                tPhiT = jnp.asarray(
+                    2.0 * np.sin(np.pi * np.asarray(tpts)[:, 0, None] * I[None, :])
+                    * np.sin(np.pi * np.asarray(tpts)[:, 1, None] * J[None, :])
+                ).T
+                tWl = jnp.asarray(tlam ** -1.0)
+                tpre, tpre_info = make_separable_source_projector(
+                    grid, weak_M, alpha=1.0, modes=modes
+                )
+                transport_projectors[weak_M] = tpre
+                if any(a.gn_budget == 1 for a in ARMS
+                       if a.predictor == "transport_tail" and a.weak_M == weak_M):
+                    transport_solvers[weak_M] = make_lm_obj_tr_jit(
+                        transport_raw_dec, 6, tpts, twq, tPhiT, tWl, 1, 0.0,
+                        TRANSPORT_TR_DELTA,
+                    )
+                mesh_check["transport_weak_configs"][str(weak_M)] = dict(
+                    base_q=arm0.base_q, selected_mode_count=len(I),
+                    selected_mode_i=I.tolist(), selected_mode_j=J.tolist(),
+                    eq_info=teq_info, source_projector=tpre_info,
+                )
+            for cN in sorted({a.coarse_n for a in ARMS
+                              if a.predictor == "transport_tail"}):
+                cx = jnp.linspace(0.0, 1.0, cN, dtype=F64)
+
+                def transport_grid_dec(z, ignored_xy, *, cx=cx):
+                    del ignored_xy
+                    return ta.apply_grid(tparams, z, cx, teps).reshape(-1)
+
+                transport_field_decoders[cN] = transport_grid_dec
+
         timing_registry = {}
         baseline_registry = {}
         guess_registry = {}
+        if have_transport:
+            tinit = transport_model["initializer"]
+            tSq = grid.S[:, :16]
+            tlamq = grid.lam[:16, :16]
+
+            def transport_coeff(F):
+                return tSq.T @ F @ tSq
+
+            def transport_z_init(F):
+                c = (transport_coeff(F) / (n - 1)).reshape(-1)
+                xs = (c - tinit["mean"]) / tinit["scale"]
+                return jnp.concatenate([jnp.ones((1,), dtype=F64), xs]) @ tinit["weights"]
+
+            def transport_base(F):
+                return tSq @ (transport_coeff(F) / tlamq) @ tSq.T
         for arm in ARMS:
             q = min(arm.q, ni)
             Sq = grid.S[:, :q] if q else None
@@ -892,6 +1071,7 @@ def main():
                 cN = n if arm.coarse_n < 0 else arm.coarse_n
                 field_decoder = None
                 latent_decoder = dec
+                additive_base = lambda F: jnp.zeros_like(F)
                 if arm.predictor == "rbf":
                     predictor = lambda p, F: rbf_predict(p)
                 elif arm.predictor == "nearest":
@@ -922,6 +1102,17 @@ def main():
                     def predictor(p, F, *, solver=group_solver):
                         idx = jnp.argmin(jnp.sum((nearest_P - p[None, :]) ** 2, axis=1))
                         return solver(group_model["Z"][idx], gpre_apply(F))[0]
+                elif arm.predictor == "transport_tail":
+                    latent_decoder = transport_field_decoders[cN]
+                    additive_base = transport_base
+                    tsolver = transport_solvers.get(arm.weak_M)
+                    tproject = transport_projectors[arm.weak_M]
+
+                    def predictor(p, F, *, budget=arm.gn_budget, solver=tsolver,
+                                  project=tproject):
+                        del p
+                        z0 = transport_z_init(F)
+                        return z0 if budget == 0 else solver(z0, project(F))[0]
                 else:
                     raise AssertionError(arm.predictor)
 
@@ -939,8 +1130,15 @@ def main():
                     un = un.at[:, 0].set(0.0).at[:, -1].set(0.0)
                     return un
 
-                def learned_guess(p, F, *, learned_full_f=learned_full_f):
-                    x0 = learned_full_f(p, F)[1:-1, 1:-1]
+                def learned_guess(p, F, *, learned_full_f=learned_full_f,
+                                  additive_base=additive_base,
+                                  residual_gate=(arm.predictor == "transport_tail")):
+                    base0 = additive_base(F)
+                    x0 = base0 + learned_full_f(p, F)[1:-1, 1:-1]
+                    if residual_gate:
+                        base_r2 = jnp.sum(jnp.square(F - op(base0)))
+                        candidate_r2 = jnp.sum(jnp.square(F - op(x0)))
+                        x0 = jnp.where(candidate_r2 <= base_r2, x0, base0)
                     if q:
                         residual = F - op(x0)
                         coeff = (Sq.T @ residual @ Sq) / lamq
@@ -961,6 +1159,8 @@ def main():
             X0 = [guess(params[i], Fs[i]) for i in range(N_TEST)]
             if arm.predictor != "none":
                 full0 = learned_full_f(params[0], Fs[0])
+                if arm.predictor == "transport_tail":
+                    full0 = full0 + jnp.pad(transport_base(Fs[0]), 1)
             else:
                 full0 = jnp.pad(X0[0], 1)
             boundary_check = float(jnp.max(jnp.abs(jnp.concatenate(
@@ -969,10 +1169,25 @@ def main():
             if boundary_check > 1e-14:
                 raise SystemExit(f"N={n} arm={arm.name}: hard-BC failure {boundary_check:.3e}")
             diagnostics = [norm_metrics(X0[i], Uref[i], op, Fs[i]) for i in range(N_TEST)]
+            transport_gate_diagnostics = None
+            if arm.predictor == "transport_tail":
+                transport_gate_diagnostics = []
+                for i in range(N_TEST):
+                    b0 = transport_base(Fs[i])
+                    candidate = b0 + learned_full_f(params[i], Fs[i])[1:-1, 1:-1]
+                    rb = float(jnp.linalg.norm(Fs[i] - op(b0)) / jnp.linalg.norm(Fs[i]))
+                    rc = float(jnp.linalg.norm(Fs[i] - op(candidate)) / jnp.linalg.norm(Fs[i]))
+                    transport_gate_diagnostics.append(dict(
+                        case=i, base_true_rel_residual=rb,
+                        candidate_true_rel_residual=rc, accepted=bool(rc <= rb),
+                    ))
             lm_diagnostics = None
-            if arm.predictor.startswith("lm_") or arm.predictor == "group_nearest":
+            if (arm.predictor.startswith("lm_") or arm.predictor == "group_nearest"
+                    or (arm.predictor == "transport_tail" and arm.gn_budget == 1)):
                 solver = (group_solvers[arm.rom_tau]
                           if arm.predictor == "group_nearest" else
+                          transport_solvers[arm.weak_M]
+                          if arm.predictor == "transport_tail" else
                           lm_tr if arm.predictor.startswith("lm_tr_") else lm_base)
                 lm_diagnostics = []
                 for i in range(N_TEST):
@@ -983,6 +1198,9 @@ def main():
                             (nearest_P - params[i][None, :]) ** 2, axis=1)))
                         z0i = group_model["Z"][nearest_index]
                         source_projection = gpre_apply
+                    elif arm.predictor == "transport_tail":
+                        z0i = transport_z_init(Fs[i])
+                        source_projection = transport_projectors[arm.weak_M]
                     else:
                         source_projection = pre_apply
                         if arm.predictor.endswith("nearest"):
@@ -1062,16 +1280,26 @@ def main():
                     N=n,
                     n_dof=ni**2,
                     arm=arm.name,
-                    component=("learned" if arm.predictor != "none" and q == 0 else
+                    component=("combined_q16_transport" if
+                               arm.predictor == "transport_tail" else
+                               "learned" if arm.predictor != "none" and q == 0 else
                                "combined" if arm.predictor != "none" else "classical"),
                     method_family=("nmrom" if arm.predictor.startswith("lm_") else
                                    "nmrom_nonlinear_groupfilm" if
                                    arm.predictor == "group_nearest" else
+                                   "nmrom_q16_transport_tail" if
+                                   arm.predictor == "transport_tail" and arm.gn_budget else
+                                   "direct_q16_transport_tail" if
+                                   arm.predictor == "transport_tail" else
                                    "direct_surrogate" if arm.predictor.startswith("param_") else
                                    "latent_prediction_negative_control" if arm.predictor in
                                    ("rbf", "nearest") else "classical_spectral"),
                     predictor=arm.predictor,
                     rom_tau=arm.rom_tau,
+                    weak_M=arm.weak_M,
+                    weak_m=arm.weak_m,
+                    gn_budget=arm.gn_budget,
+                    exact_base_q=arm.base_q,
                     coarse_n=arm.coarse_n,
                     spectral_q=q,
                     spectral_modes=q*q,
@@ -1104,6 +1332,7 @@ def main():
                         [v["guess_true_rel_residual"] for v in diagnostics])),
                     guess_diagnostics_per_case=diagnostics,
                     lm_diagnostics_per_case=lm_diagnostics,
+                    transport_residual_gate_per_case=transport_gate_diagnostics,
                     final_true_rel_residual_max=float(max(
                         g["recomputed_true_rel_residual"]
                         for case in hybrid_timed_telemetry for g in case)),
@@ -1141,8 +1370,9 @@ def main():
         for tau in FOM_TAUS:
             baseline = baseline_registry[tau]
             direct_runtime = jax.jit(lambda p, F: direct(F))
-            native_names = ["native_zero"] + [f"native_{v}" for v in NATIVE_ARM_NAMES
-                                                 if v in guess_registry]
+            native_names = ["native_zero", "native_jacobi_zero"] + [
+                f"native_{v}" for v in NATIVE_ARM_NAMES if v in guess_registry
+            ]
             names = (["zero_cg", "fft_dst_direct"] + [a.name for a in ARMS]
                      + native_names)
             funcs = {
@@ -1155,6 +1385,13 @@ def main():
             native_zero = jax.jit(lambda p, F: jax.scipy.sparse.linalg.cg(
                 op, F, x0=zero, tol=tau, maxiter=CG_MAXITER)[0])
             funcs["native_zero"] = lambda p, F, fn=native_zero: fn(p, F)
+            jacobi_scale = 1.0 / (4.0 * (n - 1) ** 2)
+            native_jacobi_zero = jax.jit(lambda p, F: jax.scipy.sparse.linalg.cg(
+                op, F, x0=zero, tol=tau, maxiter=CG_MAXITER,
+                M=lambda x: jacobi_scale * x)[0])
+            funcs["native_jacobi_zero"] = (
+                lambda p, F, fn=native_jacobi_zero: fn(p, F)
+            )
             for arm_name in NATIVE_ARM_NAMES:
                 if arm_name not in guess_registry:
                     continue
@@ -1198,27 +1435,45 @@ def main():
                     all_telemetry[name].append(case_g[name])
             means = {name: float(np.mean([np.median(v) for v in all_times[name]]))
                      for name in names}
-            paired_deltas = {}
-            if "spectral_q8" in all_times:
-                st = all_times["spectral_q8"]
+            summary_seed = BOOTSTRAP_SEED + 1009 * n + int(round(-np.log10(tau)))
+            timing_summaries = {
+                name: repetition_summary(all_times[name], summary_seed + 37 * j)
+                for j, name in enumerate(names)
+            }
+            paired_deltas_by_control = {}
+            for control in ("spectral_q8", "spectral_q16"):
+                if control not in all_times:
+                    continue
+                st = all_times[control]
+                control_rows = {}
                 for name in names:
-                    if (name in ("zero_cg", "fft_dst_direct", "spectral_q8")
+                    if (name in ("zero_cg", "fft_dst_direct", control)
                             or name.startswith("native_")):
                         continue
                     delta = [[all_times[name][i][r] - st[i][r]
                               for r in range(TIME_REPS)] for i in range(N_TIME)]
-                    paired_deltas[name] = dict(
-                        all_s=delta,
-                        mean_ms=float(np.mean([np.median(v) for v in delta])) * 1e3,
-                        speedup_spectral_over_arm=means["spectral_q8"] / means[name],
+                    dsummary = repetition_summary(
+                        delta, summary_seed + 10000 + 53 * names.index(name)
                     )
+                    control_rows[name] = dict(
+                        all_s=delta,
+                        mean_ms=dsummary["mean_of_case_medians_s"] * 1e3,
+                        bootstrap_ci95_ms=[v * 1e3 for v in dsummary["bootstrap_ci95_s"]],
+                        speedup_spectral_over_arm=means[control] / means[name],
+                        speedup_bootstrap_ci95=paired_ratio_ci(
+                            st, all_times[name],
+                            summary_seed + 20000 + 71 * names.index(name),
+                        ),
+                    )
+                paired_deltas_by_control[control] = control_rows
             mesh_joint[str(tau)] = dict(
                 order_base=names,
                 order_rule="cyclic shift by (case + repetition)",
                 all_s=all_times,
                 timed_telemetry=all_telemetry,
                 mean_of_case_medians_ms={k: v * 1e3 for k, v in means.items()},
-                paired_delta_vs_spectral_q8=paired_deltas,
+                timing_summaries=timing_summaries,
+                paired_delta_by_spectral_control=paired_deltas_by_control,
             )
             mesh_check.setdefault("authoritative_exact_direct_ms", {})[str(tau)] = (
                 means["fft_dst_direct"] * 1e3
@@ -1235,6 +1490,20 @@ def main():
                 row["hybrid_total_ms"] = means[name] * 1e3
                 row["baseline_total_ms"] = base_ms
                 row["speedup_vs_zero_cg"] = means["zero_cg"] / means[name]
+                row["hybrid_total_bootstrap_ci95_ms"] = [
+                    v * 1e3 for v in timing_summaries[name]["bootstrap_ci95_s"]
+                ]
+                row["hybrid_timing_outlier_count"] = timing_summaries[name]["outlier_count"]
+                row["baseline_total_bootstrap_ci95_ms"] = [
+                    v * 1e3 for v in timing_summaries["zero_cg"]["bootstrap_ci95_s"]
+                ]
+                row["baseline_timing_outlier_count"] = timing_summaries["zero_cg"][
+                    "outlier_count"
+                ]
+                row["speedup_vs_zero_cg_bootstrap_ci95"] = paired_ratio_ci(
+                    all_times["zero_cg"], all_times[name],
+                    summary_seed + 30000 + 97 * names.index(name),
+                )
                 row["exact_direct_ms"] = means["fft_dst_direct"] * 1e3
                 row["speedup_spectral_q8_over_arm"] = (
                     means["spectral_q8"] / means[name] if "spectral_q8" in means else None
@@ -1247,8 +1516,10 @@ def main():
                 row["final_rel_l2_mean"] = float(np.mean([
                     g["rel_l2_vs_exact_dst"] for case in tele for g in case]))
                 row["joint_timed_telemetry"] = tele
-                if name in paired_deltas:
-                    row["paired_delta_vs_spectral_q8"] = paired_deltas[name]
+                for control, deltas in paired_deltas_by_control.items():
+                    if name in deltas:
+                        row[f"paired_delta_vs_{control}"] = deltas[name]
+                        row[f"speedup_{control}_over_arm"] = means[control] / means[name]
             save()
         mesh_check["joint_timing"] = mesh_joint
 

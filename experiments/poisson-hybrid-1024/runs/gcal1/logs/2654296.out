@@ -1,0 +1,16 @@
+host=pax142 job=2654296 gpu=NVIDIA A100-PCIE-40GB
+commit=8a2f159e393d5749b965b068ee944ff5a5465044 dirty_hash=e3b0c44298fc cell=gcal1
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[256] taus=[1e-06] arms=['groupn_rt30_c64_q0', 'groupn_rt10_c64_q0', 'groupn_rt03_c64_q0', 'groupn_rt01_c64_q0', 'groupn_rt30_c64_q8', 'groupn_rt10_c64_q8', 'groupn_rt03_c64_q8', 'spectral_q8', 'spectral_q16'] test_seed=0 smoke=0 reps=5 warm=2
+  STREAMED NNLS-EQ M=128 m=512 @N=256: support 512 (+0) rel fit 8.09e-04 [160s]
+RESULT N=256 groupn_rt30_c64_q0 tau=1e-06: construct 2.288 ms, Aerr 5.407e-01, iters 673.9/653.8, total 24.097/21.777 ms, speedup 0.904x
+RESULT N=256 groupn_rt10_c64_q0 tau=1e-06: construct 2.767 ms, Aerr 2.610e-01, iters 650.8/653.8, total 23.528/21.872 ms, speedup 0.930x
+RESULT N=256 groupn_rt03_c64_q0 tau=1e-06: construct 2.937 ms, Aerr 1.311e-01, iters 641.8/653.8, total 23.410/21.832 ms, speedup 0.933x
+RESULT N=256 groupn_rt01_c64_q0 tau=1e-06: construct 3.967 ms, Aerr 7.238e-02, iters 626.1/653.8, total 24.251/21.801 ms, speedup 0.899x
+RESULT N=256 groupn_rt30_c64_q8 tau=1e-06: construct 2.345 ms, Aerr 1.424e-01, iters 175.4/653.8, total 8.142/21.779 ms, speedup 2.675x
+RESULT N=256 groupn_rt10_c64_q8 tau=1e-06: construct 2.843 ms, Aerr 1.082e-01, iters 171.5/653.8, total 8.356/21.778 ms, speedup 2.606x
+RESULT N=256 groupn_rt03_c64_q8 tau=1e-06: construct 3.023 ms, Aerr 8.403e-02, iters 168.0/653.8, total 8.467/21.674 ms, speedup 2.560x
+RESULT N=256 spectral_q8 tau=1e-06: construct 0.084 ms, Aerr 1.577e-01, iters 141.1/653.8, total 5.059/21.780 ms, speedup 4.305x
+RESULT N=256 spectral_q16 tau=1e-06: construct 0.084 ms, Aerr 2.577e-02, iters 50.7/653.8, total 2.275/21.831 ms, speedup 9.595x
+DONE
+ALL-DONE

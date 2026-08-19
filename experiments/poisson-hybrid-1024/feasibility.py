@@ -38,6 +38,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 EXPS = os.path.dirname(HERE)
 for path in (
     os.path.join(HERE, "deps"),
+    os.environ.get("GROUP_ARCH_DIR", ""),
+    os.path.abspath(os.path.join(
+        HERE, "..", "..", "..", "2026-08-19-nonlinear-decoder-architecture",
+        "experiments", "nonlinear-decoder-architecture",
+    )),
     os.path.join(EXPS, "poisson2d-rom-objective"),
     os.path.join(EXPS, "poisson2d-rom-objective", "followup"),
     os.path.join(EXPS, "rom-warmstart-fom"),
@@ -55,6 +60,7 @@ import wsf_util as wu  # noqa: E402
 OUT = sys.argv[1]
 PKL = os.environ["PKL"]
 PARAM_PKL = os.environ.get("PARAM_PKL", "")
+GROUP_PKL = os.environ.get("GROUP_PKL", "")
 SMOKE = bool(int(os.environ.get("SMOKE", "0")))
 NS = [int(v) for v in os.environ.get("NS", "32" if SMOKE else "256,512").split(",")]
 FOM_TAUS = [float(v) for v in os.environ.get(
@@ -70,6 +76,9 @@ M_MODES = int(os.environ.get("M", "64"))
 MQ = int(os.environ.get("MQ", "256"))
 GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
 LM_ROM_TAU = float(os.environ.get("LM_ROM_TAU", "0.01"))
+GROUP_M = int(os.environ.get("GROUP_M", "128"))
+GROUP_MQ = int(os.environ.get("GROUP_MQ", "512"))
+GROUP_GN_ITERS = int(os.environ.get("GROUP_GN_ITERS", "60"))
 TR_SCALE = float(os.environ.get("TR_SCALE", "1.0"))
 EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
 EQ_PERTURB = int(os.environ.get("EQ_PERTURB", "3"))
@@ -96,6 +105,7 @@ class Arm:
     predictor: str
     coarse_n: int
     q: int
+    rom_tau: float | None = None
 
 
 def parse_arm(name: str) -> Arm:
@@ -119,6 +129,16 @@ def parse_arm(name: str) -> Arm:
         return Arm(name, predictor, -1 if ctext == "full" else int(ctext), int(qpart))
     if name.startswith("spectral_q"):
         return Arm(name, "none", 0, int(name[len("spectral_q"):]))
+    if name.startswith("groupn_rt"):
+        body, qpart = name.rsplit("_q", 1)
+        prefix, ctext = body.rsplit("_c", 1)
+        code = prefix[len("groupn_rt"):]
+        tau_by_code = {"30": 0.30, "10": 0.10, "03": 0.03,
+                       "01": 0.01, "001": 0.001}
+        if code not in tau_by_code:
+            raise ValueError(f"unknown GroupFiLM ROM-tolerance code {code!r}")
+        return Arm(name, "group_nearest", -1 if ctext == "full" else int(ctext),
+                   int(qpart), tau_by_code[code])
     if name.startswith("param1_c") or name.startswith("paramall_c"):
         prefix = "param1_c" if name.startswith("param1_c") else "paramall_c"
         predictor = "param_s1" if prefix == "param1_c" else "param_all"
@@ -513,6 +533,11 @@ def norm_metrics(x0, uref, op, F) -> dict:
     )
 
 
+def bc_factor(xy):
+    """The exact hard-Dirichlet multiplier used to train both Poisson decoders."""
+    return 16.0 * xy[:, 0] * (1.0 - xy[:, 0]) * xy[:, 1] * (1.0 - xy[:, 1])
+
+
 def main():
     prov = wu.provenance(HERE)
     prov["source_sha256"] = wu.source_hashes(HERE, ("*.py",))
@@ -530,6 +555,57 @@ def main():
     if cfg["K_LAT"] != 8:
         raise SystemExit(f"pre-registered feasibility requires K=8, got {cfg['K_LAT']}")
     dec = pc.make_decoder(stages[:1], hard_bc=True)
+
+    group_info = None
+    group_model = None
+    if any(a.predictor == "group_nearest" for a in ARMS):
+        if not GROUP_PKL:
+            raise SystemExit("a groupn_* arm requires GROUP_PKL")
+        import nda_arch as nda
+
+        gd = pickle.load(open(GROUP_PKL, "rb"))
+        gcfg = gd["config"]
+        gst = gd["stages"][0]
+        gdcfg = gst["decoder_config"]
+        if not bool(gcfg.get("hard_bc", 0)):
+            raise SystemExit("GroupFiLM checkpoint must enforce hard boundary conditions")
+        if gdcfg["name"] != "groupfilm":
+            raise SystemExit(f"expected groupfilm checkpoint, got {gdcfg['name']!r}")
+        if int(gcfg["n_train"]) != mp.N_TRAIN:
+            raise SystemExit("GroupFiLM checkpoint training set does not match source lookup")
+        gparams = jax.tree_util.tree_map(jnp.asarray, gst["params"])
+        gz = jnp.asarray(gd["z_tr"])
+        gk = int(gcfg["K_LAT"])
+        gn_freq = int(gst["n_freq"])
+        geps = float(gst["eps"])
+        gz_ff = int(gst.get("z_ff", gdcfg.get("z_ff", 0)))
+
+        def group_raw_dec(z, xy):
+            return geps * bc_factor(xy) * nda.apply(
+                gparams, z, xy, gn_freq, gdcfg, gz_ff
+            )
+
+        group_model = dict(
+            module=nda,
+            params=gparams,
+            Z=gz,
+            K=gk,
+            n_freq=gn_freq,
+            eps=geps,
+            z_ff=gz_ff,
+            decoder_config=gdcfg,
+            raw_dec=group_raw_dec,
+        )
+        group_info = dict(
+            pkl=os.path.basename(GROUP_PKL),
+            pkl_sha256=sha256(GROUP_PKL),
+            architecture_source=os.path.basename(nda.__file__),
+            architecture_source_sha256=sha256(nda.__file__),
+            config=gcfg,
+            n_params=nda.parameter_count(gparams),
+            cached_coordinate_stem=True,
+            fixed_output_basis=False,
+        )
 
     param_info = None
     param_stages = None
@@ -579,6 +655,9 @@ def main():
             m=MQ,
             gn_iters=GN_ITERS,
             lm_rom_tau=LM_ROM_TAU,
+            group_M=GROUP_M,
+            group_m=GROUP_MQ,
+            group_gn_iters=GROUP_GN_ITERS,
             trust_region_scale=TR_SCALE,
             arms=[a.__dict__ for a in ARMS],
             native_cg_sensitivity_arms=NATIVE_ARM_NAMES,
@@ -592,6 +671,7 @@ def main():
         provenance=prov,
         rbf_train_only=rbf_info,
         parameter_aligned_checkpoint=param_info,
+        nonlinear_groupfilm_checkpoint=group_info,
         rows=[],
         mesh_checks=[],
     )
@@ -654,8 +734,14 @@ def main():
             return nearest_Z[idx]
 
         nearest_jit = jax.jit(nearest_predict)
-        predictor_reps = {"rbf": [], "nearest": []}
-        for key, fn in (("rbf", rbf_jit), ("nearest", nearest_jit)):
+        lookup_fns = [("rbf", rbf_jit), ("nearest", nearest_jit)]
+        if group_model is not None:
+            group_nearest_jit = jax.jit(lambda p: group_model["Z"][
+                jnp.argmin(jnp.sum((nearest_P - p[None, :]) ** 2, axis=1))
+            ])
+            lookup_fns.append(("group_nearest", group_nearest_jit))
+        predictor_reps = {key: [] for key, _ in lookup_fns}
+        for key, fn in lookup_fns:
             for i in range(N_TIME):
                 _, reps = wu.time_fn(
                     lambda ii=i, ff=fn: ff(params[ii]).block_until_ready(),
@@ -720,6 +806,79 @@ def main():
         else:
             lm_base = lm_tr = None
 
+        # The compact GroupFiLM is a genuine nonlinear coordinate manifold.  Its
+        # coordinate-only stem is cached separately at EQ and decode points; only the
+        # small latent modulation path remains online.  Hyper-reduction is refit for
+        # every N, matching the repository's method contract.
+        have_group = any(a.predictor == "group_nearest" for a in ARMS)
+        group_solvers = {}
+        group_field_decoders = {}
+        if have_group:
+            assert group_model is not None
+            nda = group_model["module"]
+            gparams = group_model["params"]
+            gz = group_model["Z"]
+            gk = group_model["K"]
+            gdcfg = group_model["decoder_config"]
+            gn_freq = group_model["n_freq"]
+            geps = group_model["eps"]
+            gz_ff = group_model["z_ff"]
+            graw = group_model["raw_dec"]
+            gpts, gwq, geq_info = eq_fit_streamed(
+                graw, grid, gz, gk, GROUP_M, GROUP_MQ
+            )
+            gpts_j = jnp.asarray(gpts)
+            gh_eq = nda.prepare_coords(gparams, gpts_j, gn_freq, gdcfg)
+            gb_eq = bc_factor(gpts_j)
+
+            def group_eq_dec(z, ignored_xy):
+                del ignored_xy
+                return geps * gb_eq * nda.apply_prepared(
+                    gparams, z, gh_eq, gdcfg, gz_ff
+                )
+
+            gspec = dict(kind="weak", alpha=1.0, M=GROUP_M)
+            gPhiT, gWl = pc.colloc_mode_table(grid, gspec, "offgrid", gpts)
+            gpre_apply, gpre_info = make_separable_source_projector(
+                grid, GROUP_M, alpha=1.0
+            )
+            for rt in sorted({a.rom_tau for a in ARMS
+                              if a.predictor == "group_nearest"}):
+                group_solvers[rt] = make_lm_obj_jit(
+                    group_eq_dec, gk, gpts, gwq, gPhiT, gWl,
+                    GROUP_GN_ITERS, rt,
+                )
+            for cN in sorted({n if a.coarse_n < 0 else a.coarse_n for a in ARMS
+                              if a.predictor == "group_nearest"}):
+                cg_grid = grid if cN == n else pc.Grid(cN)
+                cxy = cg_grid.coords
+                ch = nda.prepare_coords(gparams, cxy, gn_freq, gdcfg)
+                cb = bc_factor(cxy)
+
+                def cached_group_dec(z, ignored_xy, *, ch=ch, cb=cb):
+                    del ignored_xy
+                    return geps * cb * nda.apply_prepared(
+                        gparams, z, ch, gdcfg, gz_ff
+                    )
+
+                group_field_decoders[cN] = cached_group_dec
+            mesh_check["group_eq_info"] = geq_info
+            mesh_check["group_source_projector"] = gpre_info
+            mesh_check["group_cached_stems"] = {
+                str(cN): list(group_field_decoders[cN](gz[0], jnp.empty((0, 2))).shape)
+                for cN in group_field_decoders
+            }
+            if n <= 256:
+                gdense_ref = pc.weak_source_term(grid, gspec, "offgrid", np.asarray(Fs[0]))
+                gpre_diff = float(jnp.max(jnp.abs(gpre_apply(Fs[0]) - gdense_ref)))
+                if gpre_diff > 1e-11:
+                    raise SystemExit(
+                        f"N={n}: GroupFiLM separable source projector mismatch {gpre_diff:.3e}"
+                    )
+                mesh_check["group_source_projector_vs_dense_maxabs"] = gpre_diff
+        else:
+            gpre_apply = None
+
         timing_registry = {}
         baseline_registry = {}
         guess_registry = {}
@@ -732,6 +891,7 @@ def main():
                 cgrid = grid if arm.coarse_n < 0 else pc.Grid(arm.coarse_n)
                 cN = n if arm.coarse_n < 0 else arm.coarse_n
                 field_decoder = None
+                latent_decoder = dec
                 if arm.predictor == "rbf":
                     predictor = lambda p, F: rbf_predict(p)
                 elif arm.predictor == "nearest":
@@ -753,14 +913,24 @@ def main():
                     stages_use = param_stages[:1] if arm.predictor == "param_s1" else param_stages
                     field_decoder = lambda p, xy: mp.combined_apply(stages_use, p, xy)
                     predictor = None
+                elif arm.predictor == "group_nearest":
+                    if group_model is None or gpre_apply is None:
+                        raise AssertionError("GroupFiLM arm without initialized solver")
+                    group_solver = group_solvers[arm.rom_tau]
+                    latent_decoder = group_field_decoders[cN]
+
+                    def predictor(p, F, *, solver=group_solver):
+                        idx = jnp.argmin(jnp.sum((nearest_P - p[None, :]) ** 2, axis=1))
+                        return solver(group_model["Z"][idx], gpre_apply(F))[0]
                 else:
                     raise AssertionError(arm.predictor)
 
                 def learned_full_f(p, F, *, cgrid=cgrid, cN=cN, predictor=predictor,
-                                   field_decoder=field_decoder):
+                                   field_decoder=field_decoder,
+                                   latent_decoder=latent_decoder):
                     if field_decoder is None:
                         z = predictor(p, F)
-                        uc = dec(z, cgrid.coords).reshape(cN, cN)
+                        uc = latent_decoder(z, cgrid.coords).reshape(cN, cN)
                     else:
                         uc = field_decoder(p, cgrid.coords).reshape(cN, cN)
                     un = uc if cN == n else endpoint_bilinear(uc, n)
@@ -800,17 +970,28 @@ def main():
                 raise SystemExit(f"N={n} arm={arm.name}: hard-BC failure {boundary_check:.3e}")
             diagnostics = [norm_metrics(X0[i], Uref[i], op, Fs[i]) for i in range(N_TEST)]
             lm_diagnostics = None
-            if arm.predictor.startswith("lm_"):
-                solver = lm_tr if arm.predictor.startswith("lm_tr_") else lm_base
+            if arm.predictor.startswith("lm_") or arm.predictor == "group_nearest":
+                solver = (group_solvers[arm.rom_tau]
+                          if arm.predictor == "group_nearest" else
+                          lm_tr if arm.predictor.startswith("lm_tr_") else lm_base)
                 lm_diagnostics = []
                 for i in range(N_TEST):
                     z0i = z_mean
                     nearest_index = None
-                    if arm.predictor.endswith("nearest"):
+                    if arm.predictor == "group_nearest":
                         nearest_index = int(jnp.argmin(jnp.sum(
                             (nearest_P - params[i][None, :]) ** 2, axis=1)))
-                        z0i = nearest_Z[nearest_index]
-                    _, val, v0, nJ, acc, att, reason = solver(z0i, pre_apply(Fs[i]))
+                        z0i = group_model["Z"][nearest_index]
+                        source_projection = gpre_apply
+                    else:
+                        source_projection = pre_apply
+                        if arm.predictor.endswith("nearest"):
+                            nearest_index = int(jnp.argmin(jnp.sum(
+                                (nearest_P - params[i][None, :]) ** 2, axis=1)))
+                            z0i = nearest_Z[nearest_index]
+                    _, val, v0, nJ, acc, att, reason = solver(
+                        z0i, source_projection(Fs[i])
+                    )
                     lm_diagnostics.append(dict(
                         case=i,
                         nearest_training_index=nearest_index,
@@ -884,10 +1065,13 @@ def main():
                     component=("learned" if arm.predictor != "none" and q == 0 else
                                "combined" if arm.predictor != "none" else "classical"),
                     method_family=("nmrom" if arm.predictor.startswith("lm_") else
+                                   "nmrom_nonlinear_groupfilm" if
+                                   arm.predictor == "group_nearest" else
                                    "direct_surrogate" if arm.predictor.startswith("param_") else
                                    "latent_prediction_negative_control" if arm.predictor in
                                    ("rbf", "nearest") else "classical_spectral"),
                     predictor=arm.predictor,
+                    rom_tau=arm.rom_tau,
                     coarse_n=arm.coarse_n,
                     spectral_q=q,
                     spectral_modes=q*q,

@@ -49,6 +49,28 @@ parameters directly to a field, then use the identical coarse decode/prolongatio
 finisher. These are labeled `direct_surrogate`, not NM-ROM; they test whether aligning the chart
 is sufficient to make a useful warm start.
 
+## Pre-registered cached nonlinear-decoder gate
+
+The architecture gate reuses the frozen K=16 `groupfilm` checkpoint selected by the independent
+nonlinear-decoder study. It has no POD/output basis: latent FiLM modulation is followed by
+nonlinear activations. The coordinate-only affine stem is cached offline at EQ and coarse-grid
+decode points, so this optimization does not change the learned function. Its weak objective uses
+the independently selected M=128/m=512 configuration and a charged nearest-training-latent lookup.
+
+On the model's original 64-case validation stream (`TEST_SEED=0`, cases after the 512 training
+cases), the fixed calibration candidates are objective-reduction stops 0.30, 0.10, 0.03, and
+0.01. Learned-only is reported for each; combined q8 is reported for 0.30, 0.10, and 0.03, next to
+spectral-only q8/q16. The gate passes only if an arm reaches at most three median Jacobian
+evaluations and its combined q8 total beats spectral q8 within the same rotated timing block.
+Among passing candidates, validation total cost selects one stop before any fresh-seed ladder.
+If none passes, GroupFiLM remains an architecture control and is not expanded into a costly
+confirmation fleet.
+
+The final fresh-seed ladder will use `TEST_SEED=20260819` and retain the selected GroupFiLM arm,
+the original audited K=8 LM baseline, the parameter-aligned surrogate controls, spectral q8/q16,
+zero-start counting/native CG, and the FFT-DST exact direct solver. Cost, work, residual, and error
+are all taken from each timed invocation in the same rotated block.
+
 ## Files
 
 - `feasibility.py`: train-only RBF calibration, coarse decoding, spectral corrections,
@@ -59,6 +81,7 @@ is sufficient to make a useful warm start.
 
 ## Status
 
-Local jaxrun smoke passes interpolation, hard-boundary, solver, residual, and persistence gates.
+Local jaxrun smoke passes interpolation, hard-boundary, GroupFiLM cached decode, solver, residual,
+and persistence gates.
 It falsified source-parameter-to-latent prediction for the frozen checkpoint; no local wall-clock
 number is a cluster result. Full feasibility results remain pending.

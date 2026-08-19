@@ -1,10 +1,10 @@
-"""Paired calibration gate for cheap classical Burgers predictors.
+"""Paired calibration or locked confirmation for classical Burgers predictors.
 
 Every timed invocation returns the solved field and all solver telemetry.  The
 returned object is blocked inside the timer and graded afterward, so cost,
 accuracy, outer residuals, and work counts cannot be assembled from different
-calls.  This is a calibration-only seed-2 gate; final seed-1 confirmation is a
-separate locked job.
+calls.  Candidate selection uses disjoint seed 2; a locked seed-1 confirmation
+uses the same harness with ``RUN_ROLE=confirmation``.
 """
 from __future__ import annotations
 
@@ -24,12 +24,18 @@ NS = [int(v) for v in os.environ.get("NS", "64,256").split(",")]
 FOM_TAUS = [float(v) for v in os.environ.get("FOM_TAUS", "1e-6").split(",")]
 LINEAR_TOL = float(os.environ.get("LINEAR_TOL", "1e-4"))
 PRECONDITIONER = os.environ.get("PRECONDITIONER", "none")
-CALIB_SEED = int(os.environ.get("CALIB_SEED", "2"))
-CALIB_DRAW_COUNT = int(os.environ.get("CALIB_DRAW_COUNT", "8"))
-N_TRAJ = int(os.environ.get("N_CALIB_TRAJ", "4"))
+RUN_ROLE = os.environ.get("RUN_ROLE", "calibration")
+DATA_SEED = int(os.environ.get("DATA_SEED", os.environ.get("CALIB_SEED", "2")))
+DRAW_COUNT = int(os.environ.get("DRAW_COUNT", os.environ.get("CALIB_DRAW_COUNT", "8")))
+TRAJECTORY_START = int(os.environ.get("TRAJECTORY_START", "0"))
+N_TRAJ = int(os.environ.get("N_TRAJ", os.environ.get("N_CALIB_TRAJ", "4")))
 TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
 TIME_WARM = int(os.environ.get("TIME_WARM", "2"))
 BURN_S = float(os.environ.get("BURN_S", "3"))
+REFERENCE_RESIDUAL_GATE = float(os.environ.get("REFERENCE_RESIDUAL_GATE", "1e-11"))
+ARM_NAMES = os.environ.get(
+    "ARMS", "linear,explicit_euler,imex_euler,imex_ab2"
+).split(",")
 
 
 def save(report):
@@ -71,8 +77,14 @@ def grade(output, trajectory, elapsed):
 
 
 def diagnostic_guess(arm, U, nu, n):
+    if arm == "prev":
+        return U[:-1]
     if arm == "linear":
         return bc.extrapolated_guesses(U)
+    if arm == "quadratic":
+        return bc.polynomial_guesses(U, 2)
+    if arm == "cubic":
+        return bc.polynomial_guesses(U, 3)
     predictor = bc.make_physics_predictor(n, arm)
     history = [jnp.asarray(U[0])] * 4
     guesses = []
@@ -89,24 +101,34 @@ def main():
     provenance = bc.provenance()
     if provenance["matmul_precision"] != "highest":
         raise SystemExit("JAX_DEFAULT_MATMUL_PRECISION must be highest")
-    arm_names = ["linear", "explicit_euler", "imex_euler", "imex_ab2"]
+    arm_names = ARM_NAMES
+    if "linear" not in arm_names:
+        raise SystemExit("linear must be included as the paired baseline")
+    valid_arms = {
+        "prev", "linear", "quadratic", "cubic",
+        "explicit_euler", "imex_euler", "imex_ab2",
+    }
+    if not set(arm_names).issubset(valid_arms):
+        raise SystemExit(f"unknown arm in {arm_names}")
     report = {
         "config": {
-            "purpose": "calibration-only charged classical physics predictor gate",
+            "purpose": f"{RUN_ROLE} charged classical physics predictor gate",
+            "run_role": RUN_ROLE,
             "classification": "classical controls; no learned or NM-ROM claim",
             "ns": NS,
             "fom_taus": FOM_TAUS,
             "linear_tol": LINEAR_TOL,
             "preconditioner": PRECONDITIONER,
-            "calibration_seed": CALIB_SEED,
-            "canonical_draw_count": CALIB_DRAW_COUNT,
-            "trajectory_indices": list(range(N_TRAJ)),
-            "test_population_touched": False,
+            "data_seed": DATA_SEED,
+            "canonical_draw_count": DRAW_COUNT,
+            "trajectory_indices": list(range(TRAJECTORY_START, TRAJECTORY_START + N_TRAJ)),
+            "test_population_touched": RUN_ROLE != "calibration",
             "arms": arm_names,
             "time_reps": TIME_REPS,
             "time_warm": TIME_WARM,
             "burn_seconds": BURN_S,
             "same_invocation_cost_accuracy_work": True,
+            "reference_residual_gate": REFERENCE_RESIDUAL_GATE,
             "f64": True,
         },
         "provenance": provenance,
@@ -118,10 +140,13 @@ def main():
 
     for n in NS:
         trajectories = bc.generate_reference(
-            n, list(range(N_TRAJ)), CALIB_SEED, draw_count=CALIB_DRAW_COUNT
+            n,
+            list(range(TRAJECTORY_START, TRAJECTORY_START + N_TRAJ)),
+            DATA_SEED,
+            draw_count=DRAW_COUNT,
         )
         worst_reference = max(t["max_reference_newton_residual"] for t in trajectories)
-        if not np.isfinite(worst_reference) or worst_reference > 1e-8:
+        if not np.isfinite(worst_reference) or worst_reference > REFERENCE_RESIDUAL_GATE:
             raise SystemExit(f"N={n}: bad reference residual {worst_reference:.3e}")
         dummy = jnp.zeros((bc.T, n * n), jnp.float64)
 
@@ -129,7 +154,11 @@ def main():
             chains = {}
             modes = {}
             for arm in arm_names:
-                predictor = None if arm == "linear" else bc.make_physics_predictor(n, arm)
+                predictor = (
+                    bc.make_physics_predictor(n, arm)
+                    if arm in {"explicit_euler", "imex_euler", "imex_ab2"}
+                    else None
+                )
                 chains[arm], _ = bc.make_chain(
                     n,
                     tau,
@@ -137,7 +166,15 @@ def main():
                     lin_tol=LINEAR_TOL,
                     preconditioner=PRECONDITIONER,
                 )
-                modes[arm] = jnp.int32(1 if arm == "linear" else 3)
+                modes[arm] = jnp.int32({
+                    "prev": 0,
+                    "linear": 1,
+                    "quadratic": 4,
+                    "cubic": 5,
+                    "explicit_euler": 3,
+                    "imex_euler": 3,
+                    "imex_ab2": 3,
+                }[arm])
             calls = {
                 (arm, trajectory["index"]): (
                     lambda chain=chains[arm], traj=trajectory, mode=modes[arm]: chain(

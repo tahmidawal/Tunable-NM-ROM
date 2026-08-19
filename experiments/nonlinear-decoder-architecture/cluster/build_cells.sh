@@ -206,8 +206,14 @@ case "$round" in
     make_burgers nda_bg159l4g3f31_s1_r22 159 4 31 groupfilm 3 0 1 60000 "$vars"
     make_burgers nda_bg159l4g3f31_s2_r22 159 4 31 groupfilm 3 0 2 60000 "$vars"
     ;;
+  round29)
+    # Close the trunk-width gap below H160 while retaining the robust group-2
+    # modulation capacity. Seed zero is a hard gate before any seed follow-up.
+    vars="lspg:full:weak128,lspg:eq640:weak128"
+    make_burgers nda_bg144l4g2f31_s0_r29 144 4 31 groupfilm 2 0 0 60000 "$vars"
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15|round18|round19|round22]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15|round18|round19|round22|round29]" >&2
     exit 2
     ;;
 esac

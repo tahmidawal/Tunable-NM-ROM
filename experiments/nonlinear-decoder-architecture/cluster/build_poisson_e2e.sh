@@ -34,12 +34,22 @@ cp "$EXP/nda_arch.py" \
    "$STAGE/code/deps/poisson2d-rom-objective/deps/nonlinear-decoder-architecture/"
 cp "$control" "$STAGE/ckpt/control/autodec_K16_N64_hbc_stages.pkl"
 cp "$variant" "$STAGE/ckpt/variant/autodec_K16_N64_hbc_stages.pkl"
-cat > "$STAGE/configs.json" <<'EOF'
+cat > "$STAGE/configs.json" <<EOF
 [
   {"pde":"poisson2d","method":"coord","N":64,"k":16,"M":$selected_M,"m":$selected_m,"tau":0.01,"arm":"architecture_e2e"},
   {"pde":"poisson2d","method":"coord","N":64,"k":16,"M":$selected_M,"m":$selected_m,"tau":0.001,"arm":"architecture_e2e"}
 ]
 EOF
+/home/tahmid/Dev/.venv/bin/python - "$STAGE/configs.json" "$selected_M" "$selected_m" <<'PY'
+import json
+import sys
+
+path, expected_M, expected_m = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+with open(path) as fp:
+    rows = json.load(fp)
+assert len(rows) == 2
+assert {(row["M"], row["m"]) for row in rows} == {(expected_M, expected_m)}
+PY
 commit="$(git -C "$WT" rev-parse HEAD)"
 cat > "$STAGE/run.sbatch" <<EOF
 #!/bin/bash

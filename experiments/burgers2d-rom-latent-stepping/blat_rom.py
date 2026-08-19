@@ -109,6 +109,12 @@ def main():
     dec = bc.CoordDecoder(jax.tree_util.tree_map(jnp.asarray, ck["params"]),
                           ck["n_freq"], ck["eps"], K, decoder_cfg)
     Ztr = ck["Z_train"]                                   # (n_tr, T1, K)
+    train_latents = Ztr.reshape(-1, K)
+    train_radius = float(np.max(np.linalg.norm(
+        train_latents - train_latents.mean(axis=0), axis=1)))
+    bc.TR_DELTA = bc.TR_FACTOR * train_radius if bc.TR_FACTOR > 0 else np.inf
+    log(f"  TRUST factor={bc.TR_FACTOR:g} train_radius={train_radius:.6g} "
+        f"delta={bc.TR_DELTA:.6g}")
     V = ck["V"]
     if max(POD_KS) > V.shape[1]:
         raise SystemExit(f"POD_KS {POD_KS} exceeds stored basis rank {V.shape[1]}")
@@ -131,7 +137,8 @@ def main():
     interior = bc.interior_indices(N)
     report = dict(config=dict(bc.CONFIG, variants=VARIANTS, pod_ks=POD_KS,
                               pod_variants=POD_VARIANTS, floor_budget=FLOOR_BUDGET,
-                              ad_pkl=os.path.basename(AD_PKL), ad_config=ck["config"]),
+                              ad_pkl=os.path.basename(AD_PKL), ad_config=ck["config"],
+                              train_latent_radius=train_radius, trust_delta=bc.TR_DELTA),
                   backend=jax.default_backend(), data_fingerprint=fp,
                   test_seed=bc.TEST_SEED, max_fom_rel_residual=d["max_fom_rel_residual"],
                   train_rel_mean=ck["train_rel_mean"],

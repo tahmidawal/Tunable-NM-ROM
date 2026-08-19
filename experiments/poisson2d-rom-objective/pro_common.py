@@ -225,7 +225,8 @@ def source_at(cx, cy, w, a, xs, ys):
 
 # ------------------------------ generic LM ------------------------------
 
-def lm_generic(HgV, V, z0, budget, lam0=1e-6, use_rel_dec=True):
+def lm_generic(HgV, V, z0, budget, lam0=1e-6, use_rel_dec=True,
+               trust_delta=np.inf):
     """Levenberg-Marquardt on a generic objective given (H, g, val) at z and a
     cheap val(z).  Same damping schedule / acceptance / stopping / accounting
     as ms_autodecoder.lm_solve (for residual objectives H=J^T J, g=J^T r,
@@ -251,9 +252,11 @@ def lm_generic(HgV, V, z0, budget, lam0=1e-6, use_rel_dec=True):
             if lam >= 1e12:
                 reason = "nan_step_lambda_max"; break
             continue
+        within_trust = float(jnp.linalg.norm(dz)) <= trust_delta
         z_new = z + dz
-        val_new = float(V(z_new)); n_r += 1
-        if np.isfinite(val_new) and val_new < val:
+        val_new = float(V(z_new)) if within_trust else float("inf")
+        n_r += int(within_trust)
+        if within_trust and np.isfinite(val_new) and val_new < val:
             rel_dec = (val - val_new) / (abs(val) + 1e-300)
             step = float(jnp.linalg.norm(dz)) / (1.0 + float(jnp.linalg.norm(z)))
             z, val = z_new, val_new
@@ -266,7 +269,8 @@ def lm_generic(HgV, V, z0, budget, lam0=1e-6, use_rel_dec=True):
             if lam >= 1e12:
                 reason = "lambda_max"; break
     return z, val, dict(accepted=acc, rejected=rej, n_resid_evals=n_r, n_jac_evals=n_J,
-                        final_lambda=float(lam), reason=reason, attempts=attempt)
+                        final_lambda=float(lam), reason=reason, attempts=attempt,
+                        trust_delta=float(trust_delta))
 
 
 # ------------------------------ objectives (full interior grid) ------------------------------

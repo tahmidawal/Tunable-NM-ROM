@@ -56,6 +56,7 @@ EQ_ROWS = int(os.environ.get("EQ_ROWS", "4096"))
 # Default 0 reproduces the frozen round-1/round-2 runs bit-for-bit (shared rng stream,
 # so each cache miss consumed fresh draws).  All follow-up cells set it to 1.
 EQ_FIXED_SNAPS = int(os.environ.get("EQ_FIXED_SNAPS", "0"))
+TR_FACTOR = float(os.environ.get("TR_FACTOR", "0"))
 
 
 def main():
@@ -84,6 +85,13 @@ def main():
     z_mean = Z_tr.mean(0)
     inits = {"mean": np.tile(z_mean, (N_TEST, 1)), "nearest": Z_tr[nn_idx][:N_TEST]}
     inits = {k: v for k, v in inits.items() if k in INITS}
+    train_radius = float(np.max(np.linalg.norm(Z_tr - z_mean, axis=1)))
+    trust_delta = TR_FACTOR * train_radius if TR_FACTOR > 0 else float("inf")
+    manifest["tr_factor"] = TR_FACTOR
+    manifest["train_latent_radius"] = train_radius
+    manifest["trust_delta"] = trust_delta
+    print(f"TRUST factor={TR_FACTOR:g} train_radius={train_radius:.6g} delta={trust_delta:.6g}",
+          flush=True)
     dec_full = jax.jit(lambda z: dec(z, coords))
 
     # oracle (data misfit, same budget)
@@ -257,7 +265,8 @@ def main():
                                                                  mp.source_interior(N, cx[gi], cy[gi], w[gi], a[gi])))
                         args = (pts, keep, jnp.asarray(wq), PhiT, Wl, jnp.asarray(f_m))
                         z, val, info = pc.lm_generic(lambda zz: HgV(zz, *args), lambda zz: V(zz, *args),
-                                                     jnp.asarray(Z0[i]), GN_ITERS)
+                                                     jnp.asarray(Z0[i]), GN_ITERS,
+                                                     trust_delta=trust_delta)
                         per["err"].append(float(np.linalg.norm(np.asarray(dec_full(z)) - U_test[i]) / tn[i]))
                         per["err_or"].append(float(oracle[iname][i]))
                         per["obj"].append(float(val))

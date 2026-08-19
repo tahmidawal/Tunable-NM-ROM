@@ -98,6 +98,8 @@ N_TEST = int(os.environ.get("N_TEST", "16"))
 GN_BUDGET = int(os.environ.get("GN_BUDGET", "30"))   # attempts per time step
 GN_TOL = float(os.environ.get("GN_TOL", "1e-9"))     # ||r|| <= tol * ||u_prev||
 IC_BUDGET = int(os.environ.get("IC_BUDGET", "100"))  # LM attempts for z_0
+TR_FACTOR = float(os.environ.get("TR_FACTOR", "0"))
+TR_DELTA = np.inf
 
 
 def decoder_config_from_env():
@@ -140,6 +142,7 @@ def parameter_count(params):
 CONFIG = dict(N=N, dt=DT, num_steps=NUM_STEPS, n_train=N_TRAIN, n_val=N_VAL,
               seed=SEED, bc_mode=BC_MODE, k_lat=K_LAT, n_test=N_TEST,
               gn_budget=GN_BUDGET, gn_tol=GN_TOL, ic_budget=IC_BUDGET,
+              tr_factor=TR_FACTOR,
               ad_hidden=AD_HIDDEN, ad_layers=AD_LAYERS,
               decoder_config=DECODER_CONFIG, x64=True)
 
@@ -745,10 +748,11 @@ def _finish_ops(rJ, r_w, prev_of, full, m, solver):
             D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
             dz = jnp.linalg.solve(H + lam * D, -g)
             finite = jnp.all(jnp.isfinite(dz))
+            within_trust = jnp.linalg.norm(dz) <= TR_DELTA
             tiny = finite & (jnp.linalg.norm(dz) <= 1e-12 * (1.0 + jnp.linalg.norm(z)))
-            z_new = z + jnp.where(finite, dz, 0.0)
+            z_new = z + jnp.where(finite & within_trust, dz, 0.0)
             rn_new = rn_fn(z_new, prev_c, nu)
-            accept = finite & jnp.isfinite(rn_new) & (rn_new < rn)
+            accept = finite & within_trust & jnp.isfinite(rn_new) & (rn_new < rn)
             r2, J2 = jax.lax.cond(accept, lambda: rJ_lspg(z_new, prev_c, nu),
                                   lambda: (r, J))
             rel_dec = jnp.where(accept, (rn - rn_new) / rn, 1.0)
@@ -814,6 +818,11 @@ def solve_step(ops, z0, prev_c, nu, u_scale, budget=GN_BUDGET, tol=GN_TOL,
                 lam = min(lam * 10.0, 1e12); rej += 1
                 if lam >= 1e12:
                     reason = "nan_step"; break
+                continue
+            if float(jnp.linalg.norm(dz)) > TR_DELTA:
+                lam = min(lam * 10.0, 1e12); rej += 1
+                if lam >= 1e12:
+                    reason = "trust_lambda_max"; break
                 continue
             if float(jnp.linalg.norm(dz)) <= 1e-12 * (1.0 + float(jnp.linalg.norm(z))):
                 reason = "stalled"; break

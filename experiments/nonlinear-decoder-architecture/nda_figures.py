@@ -60,6 +60,15 @@ def architecture_tradeoff(summary):
     axes[1].errorbar(xs, [r["eq"]["mean"] for r in burgers],
                      yerr=[r["eq"]["sample_std"] for r in burgers],
                      marker="s", capsize=3, color="#F58518", label="NNLS-EQ weak")
+    recommended = summary["burgers_gate_audit"]["recommended"]
+    if recommended is not None:
+        chosen = next(r for r in burgers if r["m"] == recommended["m"])
+        axes[1].scatter(chosen["m"], chosen["eq"]["mean"], s=145,
+                        facecolors="none", edgecolors="#222222", linewidths=1.4,
+                        zorder=4)
+        axes[1].annotate(f'selected m={chosen["m"]}',
+                         (chosen["m"], chosen["eq"]["mean"]),
+                         xytext=(8, -24), textcoords="offset points", fontsize=8)
     axes[1].axhline(1e-2, color="#777777", linestyle="--", linewidth=1,
                     label="1% accuracy target")
     axes[1].set_title("Burgers H160/g2: quadrature boundary")

@@ -139,6 +139,11 @@ residual candidate and the charged guard acceptance fraction is retained.
 This makes a low-budget NM-ROM candidate safe without hiding a degraded guess
 behind a separate untimed fallback.
 
+`runs/film_latent_gate_h100_redundant` is the already-queued duplicate of the
+latent-history mechanism gate.  It completed after the A100 selection result;
+it is retained for provenance but its wall clock is not pooled with or compared
+against the A100 job.
+
 The EQ refit is also bounded for the 1024 mesh.  A literal full-candidate
 matrix would contain 8192 rows by about one million columns and is not a viable
 offline algorithm.  The scalable refit uses a deterministic uniform tensor

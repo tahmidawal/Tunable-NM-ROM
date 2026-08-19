@@ -1,0 +1,10 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=e1c7822c69fc6bdb294743e461819c6aff17b63f dirty=e3b0c44298fc cell=film_latent_gate
+jax_backend=gpu cuda:0
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.21e-03 (per-row median 9.7e-03, p95 6.8e-01, max 3.4e+02) [15s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.21e-03 (per-row median 9.7e-03, p95 6.8e-01, max 3.4e+02) [13s]
+N=64 linear    : 23.30ms vs cubic=-6.39ms Newton=86 BiCG=94
+N=64 cubic     : 16.88ms vs cubic=0.00ms Newton=56 BiCG=62
+N=64 film_nmrom_previous: 275.40ms vs cubic=-258.07ms Newton=100 BiCG=106
+N=64 film_nmrom_extrapolation: 245.00ms vs cubic=-227.68ms Newton=100 BiCG=106
+ALL-DONE

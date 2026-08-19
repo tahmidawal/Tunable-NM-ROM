@@ -1046,7 +1046,14 @@ def main():
                 transport_field_decoders[cN] = transport_grid_dec
 
         timing_registry = {}
-        baseline_registry = {}
+        def make_baseline(tau):
+            return jax.jit(lambda p, F: cg(F, zero, tau))
+
+        baseline_registry = {tau: make_baseline(tau) for tau in FOM_TAUS}
+        baseline_validation = {
+            tau: [baseline_registry[tau](params[i], Fs[i]) for i in range(N_TEST)]
+            for tau in FOM_TAUS
+        }
         guess_registry = {}
         if have_transport:
             tinit = transport_model["initializer"]
@@ -1240,15 +1247,14 @@ def main():
             for tau in FOM_TAUS:
                 # One CG object for both arms. The hybrid callable contains construction.
                 hybrid = jax.jit(lambda p, F: cg(F, raw_guess(p, F), tau))
-                baseline = jax.jit(lambda p, F: cg(F, zero, tau))
+                baseline = baseline_registry[tau]
                 timing_registry[(tau, arm.name)] = hybrid
-                baseline_registry[tau] = baseline
-                finals, bases = [], []
+                finals = []
                 for i in range(N_TEST):
                     xh, kh, rh, fh = hybrid(params[i], Fs[i])
-                    xb, kb, rb, fb = baseline(params[i], Fs[i])
                     finals.append((xh, int(kh), float(rh), int(fh)))
-                    bases.append((xb, int(kb), float(rb), int(fb)))
+                bases = [(x, int(k), float(r), int(flag))
+                         for x, k, r, flag in baseline_validation[tau]]
                 if max(v[3] for v in finals + bases) != 0:
                     raise SystemExit(f"N={n} arm={arm.name} tau={tau}: CG failure flag")
                 if max(v[2] for v in finals + bases) > tau:

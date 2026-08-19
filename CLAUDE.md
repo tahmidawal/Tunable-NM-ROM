@@ -13,6 +13,82 @@ The repository has two clean packages:
 `best-results/` is the frozen experiment archive. Do not casually rewrite those scripts or
 reported outputs; make a new experiment directory when extending them.
 
+## Branching — main is the baseline; experiments live in worktrees
+
+`main` is the frozen baseline. Never run or commit experiments directly on it.
+
+Every new experiment starts in its own git worktree on its own branch, pushed to GitHub
+(`origin` = https://github.com/tahmidawal/Tunable-NM-ROM.git):
+
+- **Ask the user before creating a worktree** — propose the name and get confirmation first.
+- Worktree dirs live in `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/`,
+  named `YYYY-MM-DD-<short-descriptive-slug>` — date first so directories sort
+  chronologically. The `worktrees/` dir is listed in `.git/info/exclude` so `main` stays
+  clean; it is never committed.
+- The branch name mirrors the directory: `exp/YYYY-MM-DD-<slug>`.
+- Push the branch to origin with `-u` immediately and keep it synced as work progresses.
+
+```bash
+cd /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude
+git worktree add -b exp/YYYY-MM-DD-<slug> worktrees/YYYY-MM-DD-<slug> main
+git -C worktrees/YYYY-MM-DD-<slug> push -u origin exp/YYYY-MM-DD-<slug>
+```
+
+Each worktree doubles as its own isolated job/submit directory, satisfying the
+one-job-per-directory rule below. Finished experiments stay on their branches as an archive;
+merge back to main only deliberately.
+
+## Sessions, worktrees, and the lab log
+
+### One session writes to one worktree
+
+A session works in a single worktree unless told otherwise. Reading across worktrees is fine
+and often necessary — comparing cells, assembling reports, auditing another cell's JSONs — but
+**write to one tree only**. Two sessions or agents writing into the same tree corrupt each
+other's `runs/` and cluster directories.
+
+### Several experiments at once — one worktree each, and ask first
+
+When asked to run more than one experiment concurrently, give each its own subagent and its own
+worktree. **Propose the names and get confirmation before creating any of them.** Give each a
+distinct cluster namespace as well (`/cluster/tufts/paralab/tawal01/<ns>/`), because the account
+is shared and jobs from different experiments must never land in one directory.
+
+**When they finish, ask whether to merge the worktrees into one.** Do not merge on your own
+initiative, and do not leave the decision unasked — a finished experiment sitting alone on its
+branch is easy to lose track of. Record whichever way it goes in the lab log.
+
+### Starting a new session on new ideas — ask where to start from
+
+Before creating a worktree for new work, ask whether it should branch from the most recent
+worktree or from somewhere else. Say which one you would pick and why. Never assume `main`:
+`main` is the frozen baseline and its heat ROM rollout is known broken, so branching from it
+silently discards every correction made since.
+
+### One canonical `LAB-LOG.md`, on `main`, read and appended by every session
+
+`/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md`. Worktrees share one `.git`, so
+that absolute path resolves to main's copy from inside any worktree — there is **no per-worktree
+copy**, and no separate status or start-here document. **Read it at the start of a session and
+append to it before the session ends; appending is a closing step, not an optional extra.**
+
+The file has two parts: a **Where things stand** block at the top that each session rewrites when
+what is true has changed, and an append-only chronology below it, oldest first, `## YYYY-MM-DD`
+headers with one `###` per session.
+
+Each entry records:
+
+- what was run, and where it landed (branch, job ids, cluster namespace)
+- what was found, with the numbers
+- **what was wrong and got retracted** — this matters more than the successes, and it is the
+  part that gets silently dropped
+- what is left open, and what the next session should pick up
+
+Two failures this rule exists to prevent, both from 17–18 August: a root-cause investigation
+that existed only in a `/tmp` scratchpad and was nearly lost, and a set of trained decoders that
+were `.gitignore`d and tracked nowhere, so the branch could be read but not rerun. **If work only
+exists in a scratchpad or in conversation, it does not exist.**
+
 ## Routing — which machine
 
 ### Tufts is the default; the local GB10 is the fallback

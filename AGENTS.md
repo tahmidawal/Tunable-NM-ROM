@@ -1,8 +1,15 @@
 # AGENTS.md — operating rules for this repository
 
-**Read `CODEX-START-HERE.md` first, then `LAB-LOG.md`.** It has the state of every experiment, what is safe to
-quote, the corrections already applied, and the prioritised next steps. This file is only about
-*how to run things here without breaking them*.
+**Read `LAB-LOG.md` first.** It is the single canonical record for the project — current state
+at the top, then the dated chronology including everything that was retracted. It lives on `main`
+at the repository root and every session reads and appends to that one file by absolute path:
+
+```
+/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md
+```
+
+There is no per-worktree copy and no separate status document. This file carries no state — it is
+only about *how to run things here without breaking them*.
 
 Every rule below was written after something went wrong. None is stylistic.
 
@@ -136,9 +143,11 @@ leave the question unasked.
 assume `main` — it is the frozen baseline with a known-broken heat rollout, so branching from it
 silently discards every correction since.
 
-**Every worktree carries `LAB-LOG.md`,** append-only, `## YYYY-MM-DD` headers, one subsection per
-session. Appending is a closing step of the session, not an optional extra. Record what was run
-and where it landed, what was found with numbers, **what was retracted**, and what is left open.
+**Append to the canonical `LAB-LOG.md` before your session ends** — the one on `main` at the
+repository root, by absolute path, whichever worktree you are in. Add a dated `##` section with a
+`###` per session at the bottom, and rewrite the "Where things stand" block at the top if what is
+true has changed. Record what was run and where it landed, what was found with numbers, **what
+was retracted**, and what is left open. Appending is a closing step, not an optional extra.
 
 If work exists only in a scratchpad or in conversation, it does not exist. Two things were nearly
 lost this way on 17–18 August: a root-cause investigation living in `/tmp`, and the trained

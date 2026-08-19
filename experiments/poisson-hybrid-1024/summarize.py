@@ -87,7 +87,8 @@ def main():
                 telemetry = block.get("timed_telemetry", {})
                 names = [
                     name for name in block.get("order_base", [])
-                    if name in ("zero_cg", "fft_dst_direct") or name.startswith("native_")
+                    if name in ("zero_cg", "fft_dst_direct", "dense_dst_direct")
+                    or name.startswith("native_")
                 ]
                 for name in names:
                     summary = summaries.get(name, {})

@@ -86,6 +86,13 @@ interior modes). The lowest authoritative mean-of-case-medians in that single ro
 the N=1024 rank. Because the bracket includes the dense exact endpoint and the FFT-DST direct
 baseline, there is no further rank extension or held-out timing selection after this job.
 
+The full-rank bracket located the N=1024 `1e-6` turnover at q512. A final validation sensitivity,
+still on `TEST_SEED=0`, repeats q256/q384/q512/full rank at N=512 and N=1024 for all three FOM
+tolerances. It fixes the `(N, tolerance)` rank rule before fresh-seed confirmation; lower meshes
+use the selected rank clamped to their interior dimension. This sensitivity also times the full
+dense sine diagonalization as a separately labeled direct baseline, including its measured f64
+true residual, rather than conflating it with a partial-q-plus-CG hybrid.
+
 ## Files
 
 - `feasibility.py`: train-only RBF calibration, coarse decoding, spectral corrections,

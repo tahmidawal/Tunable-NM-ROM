@@ -1,0 +1,12 @@
+host=pax050 job=2662361 gpu=NVIDIA A100 80GB PCIe
+commit=b7a5263fba818febf1dee59390a5caf101db9824 dirty_hash=e3b0c44298fc cell=specdev4
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[1024] taus=[1e-06] arms=['spectral_q192', 'spectral_q256', 'spectral_q384', 'spectral_q512', 'spectral_q768', 'spectral_q1024'] test_seed=0 smoke=0 reps=7 warm=2
+VALIDATED N=1024 spectral_q192 tau=1e-06: construct 0.149 ms, Aerr 7.882e-06, iters 4.1/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q256 tau=1e-06: construct 0.192 ms, Aerr 4.946e-06, iters 2.8/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q384 tau=1e-06: construct 0.223 ms, Aerr 2.416e-06, iters 1.6/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q512 tau=1e-06: construct 0.296 ms, Aerr 1.320e-06, iters 1.1/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q768 tau=1e-06: construct 0.466 ms, Aerr 3.506e-07, iters 0.6/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q1024 tau=1e-06: construct 0.635 ms, Aerr 2.915e-13, iters 0.0/2702.6; authoritative joint timing pending
+DONE
+ALL-DONE

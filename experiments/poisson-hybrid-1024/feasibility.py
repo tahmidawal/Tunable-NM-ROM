@@ -801,9 +801,25 @@ def main():
 
         # Exact O(N^2 log N) FFT-DST inverse of the same Dirichlet FD operator.
         direct = jax.jit(lambda F: dst2_ortho(dst2_ortho(F) / grid.lam))
+        # Dense sine diagonalization is a distinct O(N^3) direct baseline.  At
+        # moderate N its GEMMs can beat the FFT implementation on a GPU, but its
+        # attained f64 residual must be reported rather than assumed exact.
+        Sfull = grid.S
+        dense_direct = jax.jit(
+            lambda F: Sfull @ ((Sfull.T @ F @ Sfull) / grid.lam) @ Sfull.T
+        )
         Uref = [direct(F) for F in Fs]
         d_res = [float(jnp.linalg.norm(op(Uref[i]) - Fs[i]) / jnp.linalg.norm(Fs[i]))
                  for i in range(N_TEST)]
+        Udense = [dense_direct(F) for F in Fs]
+        dense_res = [
+            float(jnp.linalg.norm(op(Udense[i]) - Fs[i]) / jnp.linalg.norm(Fs[i]))
+            for i in range(N_TEST)
+        ]
+        dense_vs_fft = [
+            float(jnp.linalg.norm(Udense[i] - Uref[i]) / jnp.linalg.norm(Uref[i]))
+            for i in range(N_TEST)
+        ]
 
         if BURN_S > 0:
             burn_n = wu.gpu_burn(
@@ -824,6 +840,8 @@ def main():
             n_dof=ni**2,
             test_parameters=params_np.tolist(),
             exact_direct_true_rel_residual_max=float(max(d_res)),
+            dense_dst_direct_true_rel_residual_max=float(max(dense_res)),
+            dense_dst_direct_rel_l2_vs_fft_max=float(max(dense_vs_fft)),
             pre_eq_diagnostic_exact_direct_all_s=direct_reps,
             pre_eq_diagnostic_exact_direct_ms=(
                 float(np.mean([np.median(v) for v in direct_reps])) * 1e3
@@ -1398,14 +1416,20 @@ def main():
         for tau in FOM_TAUS:
             baseline = baseline_registry[tau]
             direct_runtime = jax.jit(lambda p, F: direct(F))
+            dense_direct_runtime = jax.jit(lambda p, F: dense_direct(F))
             native_names = ["native_zero", "native_jacobi_zero"] + [
                 f"native_{v}" for v in NATIVE_ARM_NAMES if v in guess_registry
             ]
-            names = (["zero_cg", "fft_dst_direct"] + [a.name for a in ARMS]
+            names = (["zero_cg", "fft_dst_direct", "dense_dst_direct"]
+                     + [a.name for a in ARMS]
                      + native_names)
             funcs = {
                 "zero_cg": lambda p, F, baseline=baseline: baseline(p, F),
                 "fft_dst_direct": lambda p, F, direct_runtime=direct_runtime: direct_runtime(p, F),
+                "dense_dst_direct": (
+                    lambda p, F, dense_direct_runtime=dense_direct_runtime:
+                    dense_direct_runtime(p, F)
+                ),
             }
             for a in ARMS:
                 hfn = timing_registry[(tau, a.name)]
@@ -1448,7 +1472,7 @@ def main():
                         out = funcs[name](params[i], Fs[i])
                         jax.block_until_ready(out)
                         case_t[name].append(time.perf_counter() - t0)
-                        if name == "fft_dst_direct" or name.startswith("native_"):
+                        if name in ("fft_dst_direct", "dense_dst_direct") or name.startswith("native_"):
                             x = out
                             case_g[name].append(dict(
                                 recomputed_true_rel_residual=float(
@@ -1477,7 +1501,7 @@ def main():
                 st = all_times[control]
                 control_rows = {}
                 for name in names:
-                    if (name in ("zero_cg", "fft_dst_direct", control)
+                    if (name in ("zero_cg", "fft_dst_direct", "dense_dst_direct", control)
                             or name.startswith("native_")):
                         continue
                     delta = [[all_times[name][i][r] - st[i][r]
@@ -1508,6 +1532,9 @@ def main():
             mesh_check.setdefault("authoritative_exact_direct_ms", {})[str(tau)] = (
                 means["fft_dst_direct"] * 1e3
             )
+            mesh_check.setdefault("authoritative_dense_dst_direct_ms", {})[str(tau)] = (
+                means["dense_dst_direct"] * 1e3
+            )
             # Replace earlier pairwise diagnostic wall clock with authoritative joint values.
             base_ms = means["zero_cg"] * 1e3
             for row in report["rows"]:
@@ -1535,6 +1562,7 @@ def main():
                     summary_seed + 30000 + 97 * names.index(name),
                 )
                 row["exact_direct_ms"] = means["fft_dst_direct"] * 1e3
+                row["dense_dst_direct_ms"] = means["dense_dst_direct"] * 1e3
                 row["speedup_spectral_q8_over_arm"] = (
                     means["spectral_q8"] / means[name] if "spectral_q8" in means else None
                 )

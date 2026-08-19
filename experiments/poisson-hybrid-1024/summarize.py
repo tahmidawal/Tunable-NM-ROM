@@ -49,18 +49,23 @@ def main():
         )
     lines.extend([
         "", "## End-to-end rows", "",
-        "Times are mean case medians from the authoritative rotated block. Confidence intervals "
-        "are deterministic case-resampling bootstrap intervals when present.", "",
-        "| run | N | tolerance | arm | construct ms | total ms | total 95% CI ms | "
+        "Multi-arm rows use the stored mean of case medians and are mechanism evidence only for "
+        "small learned-versus-zero differences because that rotation was not position-balanced. "
+        "Balanced AB/BA rows use the median across case medians and are authoritative for the "
+        "optimized K8-versus-zero comparison. Confidence intervals resample whole cases.", "",
+        "| run | design | N | tolerance | arm | construct ms | total ms | total 95% CI ms | "
         "speedup/zero | speedup 95% CI | CG iters | guess A-error | final residual | "
         "meets tau | outliers | direct ms |",
-        "|---|---:|---:|---|---:|---:|---|---:|---|---:|---:|---:|---|---:|---:|",
+        "|---|---|---:|---:|---|---:|---:|---|---:|---|---:|---:|---:|---|---:|---:|",
     ])
     for path, data in runs:
         label = os.path.basename(path).removesuffix(".json")
         for row in data["rows"]:
+            design = ("balanced AB/BA" if row.get("balanced_pair_authoritative")
+                      else "multi-arm rotation")
             lines.append(
-                f"| {label} | {row['N']} | {row['fom_tau']:.0e} | `{row['arm']}` | "
+                f"| {label} | {design} | {row['N']} | {row['fom_tau']:.0e} | "
+                f"`{row['arm']}` | "
                 f"{f(row.get('construction_ms'))} | "
                 f"{f(row.get('hybrid_total_ms'))} | {ci(row, 'hybrid_total_bootstrap_ci95_ms')} | "
                 f"{f(row.get('speedup_vs_zero_cg'))} | "
@@ -117,6 +122,63 @@ def main():
                         f"{'yes' if residual is not None and residual <= float(tolerance) else 'no'} | "
                         f"{sci(rel_l2)} |"
                     )
+    lines.extend([
+        "", "## Authoritative balanced learned-versus-zero confirmation", "",
+        "Each adjacent pair is burn, learned-first/zero-second, reburn, "
+        "zero-first/learned-second. Positive paired delta means the learned hybrid is slower. "
+        "No timing outlier is removed.", "",
+        "| run | N | tolerance | learned ms | zero ms | learned-zero ms | delta 95% CI ms | "
+        "speedup | speedup 95% CI | case signs L/Z/T | repetition signs L/Z/T | "
+        "learned/zero outliers | learned/zero iterations |",
+        "|---|---:|---:|---:|---:|---:|---|---:|---|---|---|---|---|",
+    ])
+    for path, data in runs:
+        label = os.path.basename(path).removesuffix(".json")
+        for row in data["rows"]:
+            if not row.get("balanced_pair_authoritative"):
+                continue
+            cs = row["paired_case_sign_counts"]
+            rs = row["paired_repetition_sign_counts"]
+            lines.append(
+                f"| {label} | {row['N']} | {row['fom_tau']:.0e} | "
+                f"{f(row['hybrid_total_ms'])} | {f(row['baseline_total_ms'])} | "
+                f"{f(row['paired_delta_arm_minus_zero_ms'])} | "
+                f"{ci(row, 'paired_delta_bootstrap_ci95_ms')} | "
+                f"{f(row['speedup_vs_zero_cg'])} | "
+                f"{ci(row, 'speedup_vs_zero_cg_bootstrap_ci95')} | "
+                f"{cs['arm_faster']}/{cs['zero_faster']}/{cs['exact_tie']} | "
+                f"{rs['arm_faster']}/{rs['zero_faster']}/{rs['exact_tie']} | "
+                f"{row['hybrid_timing_outlier_count']}/{row['baseline_timing_outlier_count']} | "
+                f"{f(row['iters_hybrid_timed_mean'], 1)}/"
+                f"{f(row['iters_baseline_timed_mean'], 1)} |"
+            )
+    lines.extend([
+        "", "### Balanced per-case medians", "",
+        "`L1/L2` and `Z1/Z2` are the learned and zero medians when each method ran first/second.",
+        "", "| run | N | tolerance | case | learned ms | zero ms | learned-zero ms | "
+        "L1/L2 ms | Z1/Z2 ms | repetition signs L/Z/T | outliers L/Z |",
+        "|---|---:|---:|---:|---:|---:|---:|---|---|---|---|",
+    ])
+    for path, data in runs:
+        label = os.path.basename(path).removesuffix(".json")
+        for row in data["rows"]:
+            if not row.get("balanced_pair_authoritative"):
+                continue
+            for case in row["balanced_pair_cases"]:
+                lines.append(
+                    f"| {label} | {row['N']} | {row['fom_tau']:.0e} | {case['case']} | "
+                    f"{f(1000 * case['arm_median_s'])} | "
+                    f"{f(1000 * case['zero_median_s'])} | "
+                    f"{f(1000 * case['paired_delta_arm_minus_zero_median_s'])} | "
+                    f"{f(1000 * case['arm_first_position_median_s'])}/"
+                    f"{f(1000 * case['arm_second_position_median_s'])} | "
+                    f"{f(1000 * case['zero_first_position_median_s'])}/"
+                    f"{f(1000 * case['zero_second_position_median_s'])} | "
+                    f"{case['arm_faster_repetition_count']}/"
+                    f"{case['zero_faster_repetition_count']}/"
+                    f"{case['exact_tie_repetition_count']} | "
+                    f"{case['arm_outlier_count']}/{case['zero_outlier_count']} |"
+                )
     lines.extend(["", "## Spectral-control paired comparisons", "",
                   "Positive delta means the candidate is slower than the named spectral control.", "",
                   "| run | N | tolerance | candidate | control | delta ms | 95% CI ms | "

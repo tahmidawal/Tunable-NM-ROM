@@ -78,9 +78,15 @@ def grade(output, trajectory, elapsed, kind, quality, residual):
     guesses = live_guess_stream(
         U, trajectory["U"][0], target, kind, quality if quality is not None else 0.0
     )
-    guess_l2, guess_res = bc.guess_diagnostics(
-        trajectory["U"], guesses, residual, trajectory["nu"]
+    live_previous = np.concatenate((trajectory["U"][:1], U[:-1]), axis=0)
+    guess_l2 = np.linalg.norm(guesses - target, axis=1) / np.maximum(
+        np.linalg.norm(target, axis=1), 1e-300
     )
+    guess_res = np.asarray(jax.vmap(
+        lambda guess, previous: jnp.linalg.norm(
+            residual(guess, previous, trajectory["nu"])
+        ) / jnp.maximum(jnp.linalg.norm(previous), 1e-300)
+    )(jnp.asarray(guesses), jnp.asarray(live_previous)))
     return {
         "elapsed_s": float(elapsed),
         "trajectory_rel_l2": float(np.linalg.norm(U - target) / np.linalg.norm(target)),

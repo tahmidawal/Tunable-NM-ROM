@@ -12,7 +12,7 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-08-18
+# Where things stand — 2026-08-19
 
 ## The method
 
@@ -26,25 +26,35 @@ error by ~N².
 
 ## What is true right now
 
-**Accuracy holds.** At k=8, N=64, held-out relative L2 against the decoder's own ceiling:
-Poisson 7.65e-3 (ceiling 7.11e-3), Heat 1.87e-2 (1.16e-2), Burgers 1.65e-2 (1.15e-2). Wave
-fails outright, 8.78e-1 against a 1.72e-1 ceiling, for a structural reason. POD at the same
-latent size is 1.3e-1 to 2.1e-1 and **cannot reach 1% error at any number of modes** — it
-saturates near 5%.
+**The weak NM-ROM remains accurate and mesh-independent, but its usefulness as a FOM warm start
+is narrow.** The final architecture/solver push now covers Poisson-2D and Burgers-2D at
+N=32/64/128/256/512/1024 and FOM tolerances 1e-6/1e-8/1e-10, with cost, work, and returned
+residual from the same invocation.
 
-**Cost is mesh-independent.** Iterations to tolerance at k=8 are 10.1 / 10.4 / 10.3 / 10.3 / 9.4
-across N = 32…512. The same 256 quadrature points are 28% of the coarsest grid and 0.1% of the
-finest with error flat at 8.4–8.6e-3.
+**Poisson has one genuine learned crossover.** The optimized K=8 trust-region NM-ROM, decoded at
+fixed N=64 before counting CG, is 211.996 ms versus 217.578 ms at N=1024 and tolerance 1e-6:
+1.026× with a trajectory/case-clustered 95% interval [1.014, 1.077]. N=512 is a tie or loss;
+N=1024 at 1e-8 is inconclusive and at 1e-10 is a tie/slight loss. This is a real but modest
+crossover against counting CG, not a solver-independent victory.
 
-**Speed, measured on one GPU against a full solver run only as far as our own accuracy:**
-Poisson 0.35 / 0.65 / 1.26 / 1.73 / 3.39× at N = 32…512 — we cross over between 128 and 256.
-Burgers 0.18 / 0.21 / 0.55 / 0.53×, losing everywhere. On 2-D Poisson a **direct sparse solve is
-494× faster than the iterative one**; a reviewer said so and was right.
+**Classical Poisson structure dominates learning.** In the same A100-80GB panel, the selected
+spectral warm start plus counting CG takes 0.759/0.814/0.931 ms at N=1024 for tolerances
+1e-6/1e-8/1e-10, 300.9/331.3/325.2× faster than zero-start CG. FFT-DST remains an eligible exact
+control. A GroupFiLM+q8 arm is 61.9–99.8 ms, but the matched classical spectral arm is below
+1 ms; the apparent combined benefit comes from the classical stage.
 
-**The warm-start hybrid does not pay** on either PDE. Linear extrapolation from the previous two
-time steps beats it and costs nothing.
+**Burgers is won by solver and history tuning, not by the NM-ROM.** Exact Helmholtz
+preconditioning, calibrated inexact Newton tolerances, and cubic history beat linear history in
+18/18 resolution/tolerance conditions. The guarded two-Jacobian weak FiLM NM-ROM loses to cubic
+in 18/18. At N=1024, cubic takes 390.4/586.2/851.4 ms while guarded FiLM takes
+535.3/728.8/1016.9 ms. Its exact-residual guard accepts a median 4 of 50 learned steps, so almost
+all FOM work comes from the charged cubic fallback.
 
-**Decoding is now the bottleneck** — 84% of online cost at N=512, against 9% for the latent solve.
+**The architectural negative results are useful.** Direct Poisson source-to-latent RBF prediction
+failed; a cached K=16 GroupFiLM was neutral/losing; a learned high-frequency tail could not beat
+the sub-millisecond spectral control. Burgers correction manifolds are not compact enough:
+rank-32 leaves 0.528 validation correction before transport, and the best translated/scaled
+deployable surrogate still leaves 0.620. More rank/RFF tuning is not justified on these families.
 
 ## What has been retracted — do not re-derive these
 
@@ -62,24 +72,33 @@ time steps beats it and costs nothing.
    published heat numbers are not impeached by it. Separately, `_build_eq_weights` has zero call
    sites under `best-results/` — the archived Heat-2D benchmark did no hyper-reduction while its
    README advertises EQ as the mechanism. Unexplained.
+5. **The first N=1024 Poisson K8 crossover claim (1.04–1.08× at all three tolerances) is
+   retracted.** A 15-arm cyclic timing schedule did not balance clock position. Fresh-seed AB/BA
+   timing supports only 1.026× at tolerance 1e-6; the other two rows are inconclusive.
+6. **The first Burgers six-mesh panel is provisional.** Its timing repetitions were initially
+   bootstrapped as IID and its cohort had informed early controls. The untouched-seed confirmation
+   uses per-trajectory medians and cluster bootstrap and supersedes it.
 
 ## Where the work is
 
-Everything through 18 August is on **`exp/2026-08-18-codex-handoff`**, in
-`worktrees/2026-08-18-codex-handoff` — seven experiment cells, four written reports with their
-figure generators, and every Codex audit. `main` carries only this log and the rules.
+Everything through 18 August is on **`exp/2026-08-18-codex-handoff`**. The new final cells are on
+**`exp/2026-08-19-poisson-hybrid-1024`** and **`exp/2026-08-19-burgers-hybrid-1024`**, in their
+same-named worktrees. The cross-PDE generated report is
+`reports/2026-08-19-hybrid-warm-starts-through-1024.md` on `main`. The two result branches remain
+unmerged pending an explicit user decision.
 
 ## What to do next, in order
 
-1. **Finish `cost-to-tolerance`**: §7 Verdict and §8 Caveats are placeholders and the results
-   Codex audit never ran. The tables are trustworthy; the prose around them is unchecked.
-2. **Apply the trust-region fix upstream** (`ms_autodecoder.lm_solve`, `pro_common.lm_generic`)
-   and re-measure all four PDEs.
-3. **Attack the decode** — 84% of online cost at the finest grid.
-4. **Resolve the Burgers correction denominator** — the two cells ladder different knobs, so it
-   is formally open. A pre-registered cross-check is set up.
-5. Reviewer baselines: tuned FNO, POD-DeepONet, an L-shaped domain, 3-D, preconditioned and
-   direct classical solvers.
+1. Decide whether to merge the two 2026-08-19 hybrid branches; do not merge them implicitly.
+2. For Poisson, treat FFT/DST/spectral methods as the production baseline on this separable
+   rectangle. A learned warm start is scientifically interesting but not operationally best.
+3. For Burgers, make cubic history plus the calibrated Helmholtz-preconditioned FOM the default.
+   A new learned attempt needs a genuinely transported nonlinear manifold and a construction
+   budget far below the tested FiLM path; the current correction gates say to stop.
+4. Finish the older `cost-to-tolerance` prose/audit and apply the trust-region fix to the other
+   PDE paths if those standalone-ROM results are still needed.
+5. Reviewer baselines and generalisation tests remain: tuned FNO, POD-DeepONet, nonseparable or
+   irregular domains, and 3-D problems where the exact rectangular spectral solve is unavailable.
 6. Decide whether `fix/heat-rollout-warm-start` merges into `main`.
 
 ---
@@ -990,3 +1009,134 @@ Created `exp/2026-08-18-codex-handoff` with all seven cells, the reports, `AGENT
 - Decoding is now 84% of online cost at N=512 while the latent solve is 9%.
 - On 2-D Poisson a direct sparse solve is 494× faster than the iterative baseline. Say it before
   a reviewer does.
+
+---
+
+## 2026-08-19
+
+### Hybrid NM-ROM → FOM progress review
+
+Read-only review of the final hybrid cell on `exp/2026-08-18-codex-handoff`; no new GPU jobs or
+numerical experiments were run. Re-ran `experiments/rom-warmstart-fom/wsf_verify.py` with the
+repository venv: **146 checks passed, 0 failed**. The recorded conclusion is unchanged: the
+decoded NM-ROM field is handed to the same FOM solver and both arms reach `fom_tau=1e-6`, but the
+hybrid is slower at every measured mesh. Poisson reaches at best 0.933× across 75 configurations;
+Burgers reaches 0.15–0.49× and loses 12/12 wall-clock comparisons. The core result remains final
+and audited. Scope remains Poisson-2D and Burgers-2D only; applying the trust-region latent-solver
+fix through the production EQ/timing path and testing whether operator-aware training improves
+the Poisson A-norm warm start remain open follow-ups.
+
+Follow-up feasibility analysis from the consolidated `hybrid_points.json`: the hybrid was not
+architecture-optimised for warm-start utility. It froze the standalone-ROM K=8 checkpoints and
+varied ROM/FOM stopping tolerances; the upstream cells had swept K and M/m, but not decoder shape
+or an FOM-convergence-aware training loss. At Poisson N=512 and `fom_tau=1e-6`, the best row spends
+7.434 ms on preprocessing + ROM + decode and saves 3.007 ms in the FOM stage, so preserving the
+same solver-stage saving while reducing the warm-start cost by 2.47× would break even. The
+corresponding requirement is 3.02× at N=256 and grows rapidly on coarser meshes. This makes a
+targeted Poisson optimisation push plausible against the current unpreconditioned iterative
+baseline, though not against the measured direct solver. Burgers is much less promising at the
+fixed `dt=0.005`: at N=256, `fom_tau=1e-6`, warm-start construction costs 479.57 ms and saves only
+15.15 ms of FOM work, requiring 31.66× cheaper construction at unchanged guess quality. Any next
+round should pre-register total-cost gates, target the norm/work the FOM contracts rather than
+field L2 alone, and compare Burgers against linear extrapolation.
+
+### Autonomous hybrid optimisation through N=1024 (in progress)
+
+User approved two isolated tracks from `exp/2026-08-18-codex-handoff`:
+`exp/2026-08-19-poisson-hybrid-1024` in `worktrees/2026-08-19-poisson-hybrid-1024`
+with cluster namespace `hybp1024/`, and `exp/2026-08-19-burgers-hybrid-1024` in
+`worktrees/2026-08-19-burgers-hybrid-1024` with namespace `hybb1024/`. Results below are
+feasibility diagnostics, not final claims; the required single-GPU N=32…1024 ladders have not
+run yet.
+
+**Poisson early gates.** A train-only RBF map from the known four source parameters to the frozen
+K=8 auto-decoder latents failed (calibration standardised latent MSE 0.838); its N=64 decoded
+guess was worse than zero in both L2 and A-norm, so this path was abandoned rather than tuned on
+test cases. The tracked parameter-aligned decoder is far better (local smoke: 3.32e-3 L2,
+2.55e-2 A-norm ratio), but construction did not pay at N=64. An exact 8×8 low-sine-mode
+classical control dominated every learned arm locally; cluster timing and larger N remain open.
+This reinforces that source-aligned training and solver-norm quality matter, while also setting a
+strong non-learned control the NM-ROM must beat.
+
+**Burgers oracle gate.** Job 2653184, H100 PCIe, f64/highest, `jax_backend=gpu`, checksums matched,
+zero health failures, remote directory deleted after pull. On its recorded fresh four-case seed-1
+cohort at N=256 and outer tolerance 1e-6, linear extrapolation has mean guess L2 2.72e-3. Removing
+75% / 90% / 99% of that error with a nondeployable oracle reduced mean BiCGStab work from 2311 to
+2110 / 2042 / 2014, but the trajectory-0 paired-median FOM budgets were only about 1.7 / 3.4 /
+2.0 ms and were noisy/nonmonotone; only the exact next state caused a discontinuous zero-Newton
+finish. Therefore a practical predictor must remove roughly 75–90% of extrapolation error and cost
+only a few milliseconds per entire 50-step rollout. This gate is preliminary: drawing `m=4` from
+`sample_params` is not the prefix of the canonical `m=16` draw because parameter arrays are sampled
+sequentially. Future runs lock the full draw before selecting cases. The final baseline will also
+calibrate the inherited inner BiCGStab tolerance instead of retaining the over-solved 1e-10 value,
+and final timing will cover all test trajectories rather than timing trajectory 0 while averaging
+work over four.
+
+### Autonomous hybrid optimisation through N=1024 — final
+
+The two approved isolated tracks are complete and clean but **not merged**:
+`exp/2026-08-19-poisson-hybrid-1024` at `0ffc0d8` and
+`exp/2026-08-19-burgers-hybrid-1024` at `1752d9e`. All real measurements ran on the Tufts `gpu`
+partition with `jax_backend=gpu`, f64/x64, and `JAX_DEFAULT_MATMUL_PRECISION=highest`. Each final
+job had an isolated paralab directory, regenerated its cohort from the recorded seed, persisted
+raw repetitions and same-invocation cost/accuracy/work, passed checksum/source-hash audits, and
+had its explicit remote directory deleted after pull.
+
+**Poisson architecture and solver gates.** The frozen K=8 latent chart is not predictable from
+source parameters by a simple train-only RBF (best standardised latent MSE 0.838), so that path
+was stopped. Fixed-N=64 decode and trust-region LM reduced construction to about 4.25 ms at the
+finest mesh. A cached nonlinear K=16 GroupFiLM remained neutral/losing as a pure warm start.
+GroupFiLM plus q8 cut CG work, but the matched spectral-only arm was tens of milliseconds faster;
+learning was not responsible for the apparent combined win. A proposed compact transported tail
+was hard-stopped when the classical sine-mode ladder reached sub-millisecond total cost.
+
+The first six-mesh Poisson panel, job 2662802 on an A100-80GB, was numerically healthy but its
+15-arm cyclic timing order was not balanced: six cases times seven repetitions covered only
+offsets 0–11. Its claim of 1.04–1.08× K8 speedup at N=1024 is **retracted**. The corrective job
+2664551 used fresh seed 20260820, eight cases, twelve repetitions, and exact burn-AB/reburn-BA
+balance (48 first and 48 second positions per method). At N=512, K8 versus zero-start counting CG
+is 1.004× [0.984,1.058] at 1e-6, 0.998× [0.973,1.018] at 1e-8, and a supported loss 0.965×
+[0.941,0.981] at 1e-10. At N=1024 it is a supported 1.026× [1.014,1.077] at 1e-6, an
+inconclusive 1.014× [0.993,1.031] at 1e-8, and an inconclusive 0.994× [0.980,1.010] at 1e-10.
+The loose row is the **only** defensible genuine NM-ROM→FOM crossover.
+
+This learned crossover is not the production winner. In job 2662802 at N=1024, the locked
+spectral control takes 0.759/0.814/0.931 ms at FOM tolerances 1e-6/1e-8/1e-10 versus
+228.212/269.776/302.598 ms for zero-start counting CG: 300.9/331.3/325.2×. FFT-DST is an eligible
+exact control. Dense DST is faster at loose tolerances but its measured N=1024 residual fails the
+1e-10 gate; it remains correctly labelled as a separate direct baseline. Native library CG
+misses the tight true-residual gate at N=512/1024, so the reviewed counting solver is
+authoritative and the solver sensitivity is disclosed.
+
+**Burgers architecture, solver, and history gates.** The inherited fixed inner tolerance was
+over-solving. A same-job calibration locked exact Dirichlet Helmholtz preconditioning with inner
+tolerances 1e-2/1e-4/1e-5 for outer tolerances 1e-6/1e-8/1e-10. Cubic live-history prediction
+beat linear, higher-degree blends did not improve it, and IMEX Euler/AB2 lost. A corrected dynamic
+oracle showed that removing 75–90% of extrapolation error could buy only a few to about fourteen
+milliseconds at N=256. Fixed correction POD was not compact (rank-32 validation remaining ratio
+0.528), and even translation/width alignment plus a deployable predictor left 0.620 globally;
+those learned-correction paths were stopped.
+
+The retained genuine control is the audited K=8 weak FiLM NM-ROM with M=64, m=256, exact upwind,
+two Jacobians per step, fixed-N=64 decode/prolongation, an exact full-FOM residual guard against
+the live cubic guess, and every candidate/guard/fallback/FOM cost charged. Cold-start features now
+use a fixed coarse endpoint sample rather than scanning the target grid. The provisional seed-1
+panel is superseded because its uncertainty treated timing repetitions as IID and its cohort had
+informed early controls.
+
+Final Burgers job 2664725 ran on an A100-40GB with untouched seed 20260819, canonical draw 16
+then indices 0–3, seven repetitions per trajectory, and trajectory-clustered bootstrap. It has 54
+rows and 1,512 timed records; all are finite, with zero flags/breakdowns, returned residual/tau at
+most 0.997803, references at most 9.999924e-13, and 18/18 counting/JAX checks passing. Cubic beats
+linear in all 18 mesh/tolerance conditions; guarded FiLM loses to cubic in all 18. At N=1024,
+linear/cubic/FiLM times are 587.983/390.409/535.287 ms at 1e-6,
+963.710/586.169/728.815 ms at 1e-8, and 1204.624/851.428/1016.865 ms at 1e-10. FiLM accepts a
+median four of fifty learned candidates there and cannot repay roughly 149–169 ms of overhead
+versus cubic.
+
+**Artifacts and remaining decision.** The cross-PDE report is generated by
+`reports/build_2026_08_19_hybrid_warm_starts_through_1024.py` into
+`reports/2026-08-19-hybrid-warm-starts-through-1024.md`. Source artifacts are the checksummed
+`runs/pairfinal1/` and `runs/final1/` directories in the Poisson worktree and `runs/confirm2/`
+plus the correction gates in the Burgers worktree. The only open session action is the user's
+decision whether to merge the two experiment branches; no merge was performed implicitly.

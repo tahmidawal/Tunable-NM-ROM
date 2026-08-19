@@ -166,8 +166,13 @@ case "$round" in
     # the full-ROM gate; 192 is the upper bracket from round 2.
     make_burgers nda_bg176l4g2f31_r8 176 4 31 groupfilm 2 0
     ;;
+  round10)
+    # Isolate latent-modulation capacity from pointwise trunk cost: per-channel
+    # FiLM at the same width whose group-2 decoder ceiling already passes.
+    make_burgers nda_bg160l4g1f31_r10 160 4 31 groupfilm 1 0
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10]" >&2
     exit 2
     ;;
 esac

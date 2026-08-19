@@ -21,7 +21,7 @@ STAGE="$HERE/stage/$cell"
 
 mkdir -p "$STAGE/code/followup" "$STAGE/code/deps/nonlinear-decoder-architecture" \
          "$STAGE/code/deps/multistage-precision" "$STAGE/code/deps/burgers2d-coord-rom" \
-         "$STAGE/ckpt" "$STAGE/out/control_tr1" "$STAGE/out/variant_tr1" "$STAGE/logs"
+         "$STAGE/ckpt" "$STAGE/out/control_tr001" "$STAGE/out/variant_tr001" "$STAGE/logs"
 cp "$BURGERS"/blat_*.py "$STAGE/code/"
 cp "$BURGERS"/followup/fu_*.py "$STAGE/code/followup/"
 cp "$MSP/ms_parametric.py" "$MSP/ms_autodecoder.py" "$STAGE/code/deps/multistage-precision/"
@@ -52,10 +52,10 @@ df -h /cluster/tufts/paralab/tawal01
 \$PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b=='gpu' else 42)"
 cd code
 export N_TEST=16 FLOOR_BUDGET=60 GN_BUDGET=30 GN_TOL=1e-9 IC_BUDGET=100
-export VARIANTS=lspg:full:weak64,lspg:eq256:weak64,lspg:eq512:weak64
-export POD_KS=16 POD_VARIANTS= DO_TIMING=0 TR_FACTOR=1
-\$PY -u nda_burgers_eval.py ../ckpt/control.pkl ../out/control_tr1
-\$PY -u nda_burgers_eval.py ../ckpt/variant.pkl ../out/variant_tr1
+export VARIANTS=lspg:full:weak96,lspg:eq384:weak96,lspg:full:weak128,lspg:eq512:weak128
+export POD_KS=16 POD_VARIANTS= DO_TIMING=0 TR_FACTOR=0.01
+\$PY -u nda_burgers_eval.py ../ckpt/control.pkl ../out/control_tr001
+\$PY -u nda_burgers_eval.py ../ckpt/variant.pkl ../out/variant_tr001
 \$PY - <<'PY'
 import glob, json
 p = glob.glob('../out/*/*.json')
@@ -63,8 +63,9 @@ assert len(p) == 2
 for f in p:
     d = json.load(open(f))
     assert d['backend'] == 'gpu'
-    assert set(d['rom']) == {'lspg:full:weak64', 'lspg:eq256:weak64', 'lspg:eq512:weak64'}
-    assert d['config']['tr_factor'] == 1.0
+    assert set(d['rom']) == {'lspg:full:weak96', 'lspg:eq384:weak96',
+                             'lspg:full:weak128', 'lspg:eq512:weak128'}
+    assert d['config']['tr_factor'] == 0.01
 PY
 echo ALL-DONE
 EOF

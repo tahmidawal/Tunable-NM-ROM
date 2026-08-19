@@ -1,0 +1,24 @@
+host=pax050 job=2659541 gpu=NVIDIA A100 80GB PCIe
+commit=0e58b4d5ced3c81b711f8baf50a30ec0d34e34fa dirty_hash=4caa241a3a3a cell=specdev1
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[256, 512, 1024] taus=[1e-06] arms=['spectral_q8', 'spectral_q16', 'spectral_q24', 'spectral_q32', 'spectral_q48', 'spectral_q64'] test_seed=0 smoke=0 reps=7 warm=2
+RESULT N=256 spectral_q8 tau=1e-06: construct 0.067 ms, Aerr 1.577e-01, iters 141.1/653.8, total 4.484/20.434 ms, speedup 4.557x
+RESULT N=256 spectral_q16 tau=1e-06: construct 0.066 ms, Aerr 2.577e-02, iters 50.7/653.8, total 1.846/20.484 ms, speedup 11.098x
+RESULT N=256 spectral_q24 tau=1e-06: construct 0.069 ms, Aerr 3.961e-03, iters 21.9/653.8, total 1.044/20.390 ms, speedup 19.538x
+RESULT N=256 spectral_q32 tau=1e-06: construct 0.068 ms, Aerr 7.308e-04, iters 10.9/653.8, total 0.701/20.234 ms, speedup 28.879x
+RESULT N=256 spectral_q48 tau=1e-06: construct 0.069 ms, Aerr 7.303e-05, iters 4.8/653.8, total 0.479/20.058 ms, speedup 41.863x
+RESULT N=256 spectral_q64 tau=1e-06: construct 0.071 ms, Aerr 3.886e-05, iters 3.1/653.8, total 0.392/20.047 ms, speedup 51.177x
+RESULT N=512 spectral_q8 tau=1e-06: construct 0.072 ms, Aerr 1.577e-01, iters 292.6/1330.1, total 13.642/62.204 ms, speedup 4.560x
+RESULT N=512 spectral_q16 tau=1e-06: construct 0.074 ms, Aerr 2.574e-02, iters 107.1/1330.1, total 5.262/62.472 ms, speedup 11.872x
+RESULT N=512 spectral_q24 tau=1e-06: construct 0.076 ms, Aerr 3.951e-03, iters 47.2/1330.1, total 2.733/62.628 ms, speedup 22.914x
+RESULT N=512 spectral_q32 tau=1e-06: construct 0.079 ms, Aerr 7.294e-04, iters 23.6/1330.1, total 1.812/62.713 ms, speedup 34.604x
+RESULT N=512 spectral_q48 tau=1e-06: construct 0.080 ms, Aerr 7.511e-05, iters 10.5/1330.1, total 1.180/62.687 ms, speedup 53.103x
+RESULT N=512 spectral_q64 tau=1e-06: construct 0.082 ms, Aerr 4.139e-05, iters 7.1/1330.1, total 0.985/65.856 ms, speedup 66.885x
+RESULT N=1024 spectral_q8 tau=1e-06: construct 0.082 ms, Aerr 1.577e-01, iters 604.4/2702.6, total 47.474/212.378 ms, speedup 4.474x
+RESULT N=1024 spectral_q16 tau=1e-06: construct 0.080 ms, Aerr 2.573e-02, iters 224.8/2702.6, total 19.139/220.178 ms, speedup 11.504x
+RESULT N=1024 spectral_q24 tau=1e-06: construct 0.085 ms, Aerr 3.948e-03, iters 99.2/2702.6, total 9.272/210.687 ms, speedup 22.724x
+RESULT N=1024 spectral_q32 tau=1e-06: construct 0.085 ms, Aerr 7.290e-04, iters 50.6/2702.6, total 6.288/226.676 ms, speedup 36.051x
+RESULT N=1024 spectral_q48 tau=1e-06: construct 0.113 ms, Aerr 7.563e-05, iters 23.6/2702.6, total 3.856/218.524 ms, speedup 56.677x
+RESULT N=1024 spectral_q64 tau=1e-06: construct 0.117 ms, Aerr 4.202e-05, iters 15.6/2702.6, total 2.927/219.533 ms, speedup 75.015x
+DONE
+ALL-DONE

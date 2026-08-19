@@ -124,8 +124,15 @@ case "$round" in
     make_burgers nda_bg160l4g2f31_r2 160 4 31 groupfilm 2 0
     make_burgers nda_bg192l4g2f31_r2 192 4 31 groupfilm 2 0
     ;;
+  round3)
+    # Narrow all-layer grouped-FiLM screen: reduce the pointwise trunk cost,
+    # which the round-2 same-GPU benchmark identified as the remaining limit.
+    make_poisson nda_pg112l4g2_r3 112 4 0 groupfilm 2
+    make_poisson nda_pg96l4g2_r3 96 4 0 groupfilm 2
+    make_poisson nda_pg112l3g2_r3 112 3 0 groupfilm 2
+    ;;
   *)
-    echo "usage: $0 [round1|round2]" >&2
+    echo "usage: $0 [round1|round2|round3]" >&2
     exit 2
     ;;
 esac

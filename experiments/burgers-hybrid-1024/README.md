@@ -64,6 +64,21 @@ locked calibrated FOM configuration.
   coefficient maps left about 99.5% and had zero validation cases meeting the
   target.  Further work therefore requires a shift-aware nonlinear manifold;
   raising rank or tuning the same RFF map is not justified.
+* A follow-up transported-basis gate aligned every correction by centroid and
+  width measured from the currently available field.  This improved the
+  rank-32 projection substantially, but still left 29.05% of global validation
+  correction norm (the target was at most 25%); only 56.25% of individual
+  snapshots met the target.  The best deployable time-sliced coefficient map
+  left 62.03% globally and only 31.25% of snapshots met the target.  Because
+  this already needs rank 32 plus a spatial warp, it cannot plausibly fit the
+  oracle's few-millisecond budget.  The transported linear-basis surrogate is
+  therefore stopped too, rather than being relabelled as a successful NM-ROM.
+* The remaining evidence-backed cheap control is a semi-implicit physics
+  predictor: exact discrete upwind advection is explicit and the Dirichlet
+  diffusion operator is solved exactly by DST-I.  A local N=32 smoke reduced
+  linear-extrapolation guess error from 4.49e-3 to 4.33e-4 and BiCGStab work
+  from 155 to 126; its charged paired cluster gate is pending.  It is a
+  classical control and sets the bar for any future learned manifold.
 
 All exact values and complete arrays for these gates are in `runs/`.  No gate
 number is promoted without its JSON, batch log, and matching remote/local

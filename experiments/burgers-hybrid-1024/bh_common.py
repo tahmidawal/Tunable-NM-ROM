@@ -200,7 +200,8 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None):
     ``mode`` is a traced runtime integer: 0 previous state, 1 linear
     extrapolation, 2 supplied guess array, 3 a dynamically constructed guess
     from ``predictor(u_prev,u_prev2,nu)``, 4 quadratic history, and 5 cubic
-    history. Polynomial arms use lower-order startup fallbacks.
+    history. Mode 6 is linear extrapolation plus a supplied correction field.
+    Polynomial arms use lower-order startup fallbacks.
     All arms therefore share the same operator, Newton stopping test, linear
     solver, and compiled executable.
     """
@@ -250,6 +251,11 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None):
                 ),
                 quadratic,
                 cubic,
+                lambda values: jax.lax.cond(
+                    values[5] == 0,
+                    lambda: values[0] + values[4],
+                    lambda: 2.0 * values[0] - values[1] + values[4],
+                ),
             ),
             args,
         )

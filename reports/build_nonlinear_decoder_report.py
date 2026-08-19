@@ -79,7 +79,8 @@ def main():
 
     burgers_complete = bool(summary["burgers_three_seed"])
     e2e_complete = any(r["cell"] == "nda_be2e_g160_r14" for r in summary["e2e"])
-    final = burgers_complete and e2e_complete
+    final = (burgers_complete and e2e_complete and
+             summary["burgers_gate_audit"]["recommended"] is not None)
     state = ("Final for the N=64, k=16 architecture comparison described here."
              if final else
              "Provisional: Burgers seed or end-to-end cells are still absent from the pulled artifacts.")

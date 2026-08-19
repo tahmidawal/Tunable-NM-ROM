@@ -6,7 +6,9 @@ M=64 and m=256, retaining the exact FOM upwind stencil.  The old online cold
 start searched a 512-by-N^2 training-field bank; this optimized control instead
 maps moments derived from the supplied u0 (plus known nu) to a latent start and
 charges those reductions.  It still performs the weak reduced PDE solve at all
-50 steps and is therefore a genuine NM-ROM, not a direct surrogate.
+50 steps and is therefore a genuine NM-ROM, not a direct surrogate.  The 50
+latent states are decoded only on a fixed 64x64 grid and bilinearly prolonged
+inside the charged end-to-end JAX path.
 """
 from __future__ import annotations
 
@@ -75,10 +77,11 @@ def build_ops(decoder, n, z_snapshots):
 class FilmControl:
     """Checkpoint plus per-resolution weak operators and charged constructor."""
 
-    def __init__(self, checkpoint_path, decode_chunk=2):
+    def __init__(self, checkpoint_path, decode_chunk=2, decode_resolution=64):
         self.checkpoint_path = checkpoint_path
         self.checkpoint_sha256 = file_sha256(checkpoint_path)
         self.decode_chunk = int(decode_chunk)
+        self.decode_resolution = int(decode_resolution)
         with open(checkpoint_path, "rb") as handle:
             checkpoint = pickle.load(handle)
         for key, value in (
@@ -126,6 +129,7 @@ class FilmControl:
     def build(self, n):
         decoder = self.decoder
         coords = jnp.asarray(rc.grid_coords(n))
+        decode_coords = jnp.asarray(rc.grid_coords(self.decode_resolution))
         ops = build_ops(decoder, n, self.z_snapshots)
         collocation = ops.get("colloc_used")
         if collocation is None or collocation.get("kind") != "grid":
@@ -141,7 +145,7 @@ class FilmControl:
         chunk = self.decode_chunk
 
         @jax.jit
-        def decode_all(latents, decode_coordinates):
+        def decode_all(latents):
             padding = (-latents.shape[0]) % chunk
             padded = (
                 jnp.concatenate((latents, jnp.zeros((padding, latents.shape[1]), F64)))
@@ -150,11 +154,22 @@ class FilmControl:
             )
             decoded = jax.lax.map(
                 lambda latent_chunk: jax.vmap(
-                    lambda latent: decoder(latent, decode_coordinates)
+                    lambda latent: decoder(latent, decode_coords)
                 )(latent_chunk),
                 padded.reshape(-1, chunk, latents.shape[1]),
             )
-            return decoded.reshape(-1, coords.shape[0])[:latents.shape[0]]
+            coarse = decoded.reshape(
+                -1, self.decode_resolution, self.decode_resolution
+            )[:latents.shape[0]]
+            if n == self.decode_resolution:
+                return coarse.reshape(latents.shape[0], n * n)
+            fine = jax.image.resize(
+                coarse,
+                (latents.shape[0], n, n),
+                method="linear",
+                antialias=False,
+            )
+            return fine.reshape(latents.shape[0], n * n)
 
         initializer_weights = jnp.asarray(self.initializer_weights, F64)
         mean_initial = jnp.asarray(self.mean_initial_latent, F64)
@@ -182,7 +197,7 @@ class FilmControl:
             ], F64)
 
         @jax.jit
-        def construct(u0, nu, decode_coordinates):
+        def construct(u0, nu):
             features = field_features(u0, nu)
             predicted_initial = jnp.concatenate((jnp.ones((1,), F64), features)) @ initializer_weights
             starts = jnp.stack((mean_initial, predicted_initial))
@@ -196,7 +211,9 @@ class FilmControl:
             latents, reduced_norm, step_jacobians, reason = ops["rollout_jit"](
                 z_initial, nu, tolerance, rc.GN_BUDGET
             )
-            guesses = decode_all(latents, decode_coordinates)
+            # Fixed-coarse neural decode plus charged, fused bilinear
+            # prolongation.  The FOM receives a full target-grid guess.
+            guesses = decode_all(latents)
             return (
                 guesses,
                 ic_relative,
@@ -215,8 +232,8 @@ class FilmControl:
             "variant": VARIANT,
             "N": n,
             "decode_chunk": chunk,
+            "decode_resolution": self.decode_resolution,
             "eq_info": collocation.get("info"),
             "eq_indices": np.asarray(collocation["idx"]),
             "eq_weights": np.asarray(collocation["w"]),
-            "coords": coords,
         }

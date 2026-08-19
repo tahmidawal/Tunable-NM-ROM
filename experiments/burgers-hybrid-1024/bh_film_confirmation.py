@@ -27,6 +27,7 @@ FOM_TAU = float(os.environ.get("FOM_TAU", "1e-6"))
 LINEAR_TOL = float(os.environ.get("LINEAR_TOL", "1e-2"))
 PRECONDITIONER = os.environ.get("PRECONDITIONER", "helmholtz")
 DECODE_CHUNK = int(os.environ.get("DECODE_CHUNK", "2"))
+DECODE_RESOLUTION = int(os.environ.get("DECODE_RESOLUTION", "64"))
 TEST_SEED = int(os.environ.get("TEST_SEED", "1"))
 TEST_DRAW_COUNT = int(os.environ.get("TEST_DRAW_COUNT", "16"))
 TEST_START = int(os.environ.get("TEST_START", "0"))
@@ -80,12 +81,19 @@ def main():
     provenance = bc.provenance()
     if provenance["matmul_precision"] != "highest":
         raise SystemExit("JAX_DEFAULT_MATMUL_PRECISION must be highest")
-    film = FilmControl(CHECKPOINT, decode_chunk=DECODE_CHUNK)
+    film = FilmControl(
+        CHECKPOINT,
+        decode_chunk=DECODE_CHUNK,
+        decode_resolution=DECODE_RESOLUTION,
+    )
     report = {
         "config": {
             "purpose": "genuine weak FiLM NM-ROM negative control",
             "classification": {
-                "film_nmrom": "genuine NM-ROM: weak EQ LSPG at every time step",
+                "film_nmrom": (
+                    "optimized genuine NM-ROM: weak EQ LSPG at every time step; "
+                    "fixed-coarse decode and charged fused prolongation"
+                ),
                 "linear": "classical live-history control",
                 "cubic": "classical live-history control",
             },
@@ -95,6 +103,13 @@ def main():
             "linear_tol": LINEAR_TOL,
             "preconditioner": PRECONDITIONER,
             "decode_chunk": DECODE_CHUNK,
+            "decode_resolution": DECODE_RESOLUTION,
+            "exact_upwind_weak_contract": True,
+            "cold_start_hyper_reduced_on_same_eq_nodes": True,
+            "historical_full_grid_path": (
+                "audited 479.569ms N256 construction retained as context only; "
+                "not used for optimized timing"
+            ),
             "checkpoint_basename": os.path.basename(CHECKPOINT),
             "checkpoint_sha256": film.checkpoint_sha256,
             "checkpoint_config": film.checkpoint_config,
@@ -132,8 +147,8 @@ def main():
             "eq_indices": built["eq_indices"].tolist(),
             "eq_weights": built["eq_weights"].tolist(),
             "decode_chunk": built["decode_chunk"],
+            "decode_resolution": built["decode_resolution"],
         }
-        coords = built["coords"]
         construct = built["construct"]
         chain, _ = bc.make_chain(
             n,
@@ -144,8 +159,8 @@ def main():
         dummy = jnp.zeros((bc.T, n * n), jnp.float64)
 
         @jax.jit
-        def film_end_to_end(u0, nu, decode_coordinates):
-            construction = construct(u0, nu, decode_coordinates)
+        def film_end_to_end(u0, nu):
+            construction = construct(u0, nu)
             guesses = construction[0]
             fom = chain(u0, nu, guesses, jnp.int32(2))
             return fom, construction
@@ -166,7 +181,7 @@ def main():
             )
             calls[("film_nmrom", trajectory["index"])] = (
                 lambda u0_value=u0, nu_value=nu: film_end_to_end(
-                    u0_value, nu_value, coords
+                    u0_value, nu_value
                 )
             )
 

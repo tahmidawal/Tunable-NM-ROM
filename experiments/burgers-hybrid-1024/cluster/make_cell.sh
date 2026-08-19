@@ -23,6 +23,22 @@ cp "$EXP"/bh_*.py "$STAGE/code/"
 cp "$WORKTREES/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" \
   "$STAGE/code/deps/burgers2d-coord-rom/"
 
+# The final genuine-NM-ROM negative control reuses the audited K=8 FiLM
+# checkpoint and weak-EQ implementation.  Stage every dependency by content so
+# the manifest, rather than an ancestor git repository, fixes provenance.
+FILM_DEP="$STAGE/code/deps/burgers2d-rom-latent-stepping"
+mkdir -p "$FILM_DEP/followup" "$FILM_DEP/deps/burgers2d-coord-rom" \
+  "$FILM_DEP/deps/multistage-precision"
+cp "$EXP/../burgers2d-rom-latent-stepping/blat_common.py" "$FILM_DEP/"
+cp "$EXP/../burgers2d-rom-latent-stepping/followup/fu_common.py" "$FILM_DEP/followup/"
+cp "$WORKTREES/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" \
+  "$FILM_DEP/deps/burgers2d-coord-rom/"
+cp "$WORKTREES/2026-08-14-multistage-precision/experiments/multistage-precision/ms_parametric.py" \
+  "$WORKTREES/2026-08-14-multistage-precision/experiments/multistage-precision/ms_autodecoder.py" \
+  "$FILM_DEP/deps/multistage-precision/"
+cp "$WORKTREES/2026-08-16-burgers2d-rom-latent-stepping/experiments/burgers2d-rom-latent-stepping/followup/cluster/stage/bt_n/code/in/blat_ad_N64_K8.pkl" \
+  "$FILM_DEP/"
+
 cat > "$STAGE/run.sbatch" <<EOF
 #!/bin/bash
 #SBATCH -J hybb_$cell

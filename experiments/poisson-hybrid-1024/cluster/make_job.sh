@@ -32,6 +32,7 @@ cp "$EXPS/rom-warmstart-fom/wsf_util.py" "$EXPS/rom-warmstart-fom/wsf_poisson.py
    "$STAGE/code/rom-warmstart-fom/"
 NDA="$WT/2026-08-19-nonlinear-decoder-architecture/experiments/nonlinear-decoder-architecture"
 cp "$NDA/nda_arch.py" "$STAGE/code/poisson-hybrid-1024/deps/"
+cp "$EXP/transport_arch.py" "$STAGE/code/poisson-hybrid-1024/deps/"
 MSP="$WT/2026-08-14-multistage-precision/experiments/multistage-precision"
 cp "$MSP/ms_parametric.py" "$MSP/ms_autodecoder.py" \
    "$STAGE/code/poisson2d-rom-objective/deps/"
@@ -41,6 +42,12 @@ cp "$MSP/runs/par512_bw/ms_parametric_stages.pkl" \
    "$STAGE/code/poisson-hybrid-1024/input/param.pkl"
 cp "$NDA/runs/nda_pg98l4g2_r6/out/autodec_K16_N64_hbc_stages.pkl" \
    "$STAGE/code/poisson-hybrid-1024/input/groupfilm.pkl"
+transport_export=""
+TRANSPORT_CKPT="$EXP/runs/ttrain1/out/transport_tail.pkl"
+if [[ -f "$TRANSPORT_CKPT" ]]; then
+  cp "$TRANSPORT_CKPT" "$STAGE/code/poisson-hybrid-1024/input/transport_tail.pkl"
+  transport_export="export TRANSPORT_PKL=input/transport_tail.pkl"
+fi
 
 cat > "$STAGE/run.sbatch" <<EOF
 #!/bin/bash
@@ -64,6 +71,7 @@ echo "commit=$COMMIT dirty_hash=$DIRTY_HASH cell=$cell"
 export PKL=input/auto.pkl
 export PARAM_PKL=input/param.pkl
 export GROUP_PKL=input/groupfilm.pkl
+$transport_export
 export $envs
 \$PY feasibility.py "$REMOTE/out/$cell.json"
 echo ALL-DONE

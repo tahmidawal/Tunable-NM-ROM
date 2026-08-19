@@ -156,7 +156,9 @@ def burgers_objective_rows():
         for report_path in sorted(report_paths):
             report = read(report_path)
             config = report["config"]
-            seed = seed_of(config.get("ad_config", config))
+            ad_config = config.get("ad_config", config)
+            seed = seed_of(ad_config)
+            decoder_config = config.get("decoder_config", ad_config.get("decoder_config", {}))
             subdir = os.path.relpath(os.path.dirname(report_path), os.path.join(path, "out"))
             cell = os.path.basename(path) if subdir == "." else f"{os.path.basename(path)}/{subdir}"
             for eq_key in sorted(report["rom"]):
@@ -170,6 +172,11 @@ def burgers_objective_rows():
                 full, eq = report["rom"][full_key], report["rom"][eq_key]
                 rows.append(dict(
                     cell=cell, seed=seed,
+                    architecture=decoder_config.get("name", "film"),
+                    hidden=decoder_config.get("hidden", ad_config.get("ad_hidden")),
+                    layers=decoder_config.get("n_layers", ad_config.get("ad_layers")),
+                    group_size=decoder_config.get("group_size", 1),
+                    n_params=ad_config.get("n_params"),
                     trust_factor=float(config.get("tr_factor", 0.0)), M=M, m=m,
                     decoder=report["oracle_inferred_latent_test"]["traj_rel_mean"],
                     full=full["traj_rel_mean"], full_median=full["traj_rel_median"],
@@ -204,10 +211,14 @@ def aggregate(rows, keys, value_keys, name):
 
 def burgers_gate_audit(rows):
     audits = []
-    candidates = sorted({(r["M"], r["m"]) for r in rows if r["trust_factor"] == 0})
-    for M, m in candidates:
+    group_keys = ("architecture", "hidden", "layers", "group_size", "n_params", "M", "m")
+    candidates = sorted({tuple(r[k] for k in group_keys)
+                         for r in rows if r["trust_factor"] == 0})
+    for candidate in candidates:
+        descriptor = dict(zip(group_keys, candidate))
         members = [r for r in rows
-                   if r["trust_factor"] == 0 and r["M"] == M and r["m"] == m]
+                   if r["trust_factor"] == 0 and
+                   all(r[k] == descriptor[k] for k in group_keys)]
         members = sorted(members, key=lambda r: r["seed"])
         if [r["seed"] for r in members] != [0, 1, 2]:
             continue
@@ -216,14 +227,14 @@ def burgers_gate_audit(rows):
         eq_pass = all(r["eq"] <= 1e-2 for r in members)
         ratio_pass = all(r["eq"] / r["full"] <= 1.05 for r in members)
         audits.append(dict(
-            M=M, m=m, seeds=[0, 1, 2], decoder_all_le_8e3=decoder_pass,
+            **descriptor, seeds=[0, 1, 2], decoder_all_le_8e3=decoder_pass,
             full_all_le_1e2=full_pass, eq_all_le_1e2=eq_pass,
             eq_full_all_le_1p05=ratio_pass,
             all_conservative_gates=decoder_pass and full_pass and eq_pass and ratio_pass,
             eq_full_ratios=[r["eq"] / r["full"] for r in members],
         ))
     passing = [r for r in audits if r["all_conservative_gates"]]
-    return dict(rows=audits, recommended=(min(passing, key=lambda r: (r["m"], r["M"]))
+    return dict(rows=audits, recommended=(min(passing, key=lambda r: (r["m"], r["n_params"]))
                                           if passing else None))
 
 
@@ -268,6 +279,8 @@ def e2e(cell):
                 error=row["err_rel_l2"], error_median=row["err_rel_l2_median"],
                 error_max=row["err_rel_l2_max"], jac_evals=row["jac_evals"],
                 censored_frac=row["censored_frac"], gpu=row["gpu"],
+                fom_iso_accuracy_ms=row.get("fom_iso_accuracy_ms"),
+                fom_reference_ms=row.get("fom_rollout_ms", row.get("fom_cg_ms")),
                 reps=report["config"]["time_reps"],
             ))
     return out
@@ -294,7 +307,8 @@ def main():
     )
     burgers_seed = aggregate(
         [r for r in burgers_objective if r["trust_factor"] == 0.0],
-        ["M", "m"], ["decoder", "full", "eq"], "Burgers",
+        ["architecture", "hidden", "layers", "group_size", "n_params", "M", "m"],
+        ["decoder", "full", "eq"], "Burgers",
     )
     burgers_gates = burgers_gate_audit(burgers_objective)
     benchmarks = [x for x in (
@@ -357,9 +371,10 @@ def main():
     if burgers_gates["rows"]:
         md += ["", "## Burgers conservative three-seed gate audit", ""]
         md += markdown_table(
-            ["M,m", "decoder ≤8e-3 all", "full ≤1e-2 all", "EQ ≤1e-2 all", "EQ/full ≤1.05 all", "all gates"],
-            ["---:", "---:", "---:", "---:", "---:", "---:"],
-            [[f'{r["M"]},{r["m"]}', str(r["decoder_all_le_8e3"]),
+            ["architecture", "group", "M,m", "decoder ≤8e-3 all", "full ≤1e-2 all", "EQ ≤1e-2 all", "EQ/full ≤1.05 all", "all gates"],
+            ["---", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
+            [[f'{r["architecture"]} H{r["hidden"]}×{r["layers"]}', r["group_size"],
+              f'{r["M"]},{r["m"]}', str(r["decoder_all_le_8e3"]),
               str(r["full_all_le_1e2"]), str(r["eq_all_le_1e2"]),
               str(r["eq_full_all_le_1p05"]), str(r["all_conservative_gates"])]
              for r in burgers_gates["rows"]]
@@ -382,12 +397,14 @@ def main():
         md.append("")
     md += ["## Same-GPU end-to-end rows", ""]
     md += markdown_table(
-        ["cell", "arm", "M,m", "tau", "e2e ms", "solve ms", "error mean", "error med", "error max", "Jac evals", "censored"],
-        ["---", "---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
+        ["cell", "arm", "M,m", "tau", "e2e ms", "solve ms", "error mean", "error med", "error max", "Jac evals", "censored", "iso-FOM ms"],
+        ["---", "---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
         [[r["cell"], r["arm"], f'{r["M"]},{r["m"]}', sci(r["tau"]),
           f'{r["time_ms"]:.3f}', f'{r["solve_ms"]:.3f}', sci(r["error"]),
           sci(r["error_median"]), sci(r["error_max"]), f'{r["jac_evals"]:.2f}',
-          f'{100*r["censored_frac"]:.1f}%'] for r in e2e_rows]
+          f'{100*r["censored_frac"]:.1f}%',
+          "—" if r["fom_iso_accuracy_ms"] is None else f'{r["fom_iso_accuracy_ms"]:.3f}']
+         for r in e2e_rows]
     )
     md += ["", "## Excluded measurements", "",
            "- `nda_pbench_g98_r8`: rejected because the exact kernels were warmed before, rather than after, the GPU burn. Its artifacts are retained for audit; `nda_pbench_g98b_r8` is the accepted rerun.",

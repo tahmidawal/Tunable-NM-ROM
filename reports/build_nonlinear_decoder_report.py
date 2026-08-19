@@ -57,6 +57,8 @@ def e2e_pairs(summary):
             cell=key[0], M=key[1], m=key[2], tau=key[3],
             control=control, variant=variant,
             speedup=control["time_ms"] / variant["time_ms"],
+            iso_fom_speedup=(None if variant.get("fom_iso_accuracy_ms") is None else
+                             variant["fom_iso_accuracy_ms"] / variant["time_ms"]),
         ))
     return pairs
 
@@ -92,15 +94,20 @@ def main():
          f"whose three-seed mean clears the accuracy gates; H96 failed, while H100 is the nearby accuracy-margin option."), "",
     ]
     if burgers_complete:
-        b96 = aggregate(summary, "Burgers", M=96, m=384)
-        b128 = aggregate(summary, "Burgers", M=128, m=512)
+        b96 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=96, m=384)
+        b128 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=128, m=512)
         b_params = b_bench["models"]["variant"]["n_params"]
         gate = summary["burgers_gate_audit"]
         recommended = gate["recommended"]
         if recommended is not None:
-            chosen = b96 if recommended["M"] == 96 else b128
+            chosen = aggregate(
+                summary, "Burgers", architecture=recommended["architecture"],
+                hidden=recommended["hidden"], layers=recommended["layers"],
+                group_size=recommended["group_size"], n_params=recommended["n_params"],
+                M=recommended["M"], m=recommended["m"])
             recommendation = (
-                f"For Burgers, use group-FiLM H160×4 with group size 2 ({b_params:,} parameters) "
+                f"For Burgers, use group-FiLM H{recommended['hidden']}×{recommended['layers']} "
+                f"with group size {recommended['group_size']} ({recommended['n_params']:,} parameters) "
                 f"at M={recommended['M']},m={recommended['m']}. Its three-seed decoder/full/EQ means are "
                 f"{sci(chosen['decoder']['mean'])}, {sci(chosen['full']['mean'])}, and {sci(chosen['eq']['mean'])}, "
                 "and every seed clears the conservative decoder, full-ROM, EQ-ROM, and EQ/full gates. "
@@ -139,8 +146,8 @@ def main():
             "The saved control remains more accurate in the fair M128,m512 comparison, so the defensible claim is a size/speed tradeoff at acceptable accuracy—not an accuracy improvement over the control."), ""]
 
     if burgers_complete:
-        b96 = aggregate(summary, "Burgers", M=96, m=384)
-        b128 = aggregate(summary, "Burgers", M=128, m=512)
+        b96 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=96, m=384)
+        b128 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=128, m=512)
         b_params = b_bench["models"]["variant"]["n_params"]
         b_control_params = b_bench["models"]["control"]["n_params"]
         md += ["### Burgers three-seed selection", ""]
@@ -177,12 +184,13 @@ def main():
            "## End-to-end rollout measurements", ""]
     pairs = e2e_pairs(summary)
     md += table(
-        ["cell", "M,m", "tau", "control ms/error", "compact ms/error", "control/compact", "censored control/compact"],
-        ["---", "---:", "---:", "---:", "---:", "---:", "---:"],
+        ["cell", "M,m", "tau", "control ms/error", "compact ms/error", "control/compact", "iso-FOM/compact", "censored control/compact"],
+        ["---", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
         [[r["cell"], f'{r["M"]},{r["m"]}', sci(r["tau"]),
           f'{r["control"]["time_ms"]:.3f} / {sci(r["control"]["error"])}',
           f'{r["variant"]["time_ms"]:.3f} / {sci(r["variant"]["error"])}',
           f'{r["speedup"]:.3f}×',
+          "—" if r["iso_fom_speedup"] is None else f'{r["iso_fom_speedup"]:.3f}×',
           f'{pct(r["control"]["censored_frac"])} / {pct(r["variant"]["censored_frac"])}'] for r in pairs]
     )
     any_censored = any(r[arm]["censored_frac"] > 0 for r in pairs for arm in ("control", "variant"))

@@ -95,6 +95,13 @@ locked calibrated FOM configuration.
   BiCGStab iterations over all 50 steps; maximum returned outer residuals were
   9.65e-7, 9.82e-9, and 9.33e-11.  These settings are now locked identically
   across final arms.
+* A bounded zero-cost history blend sweep did not improve the cubic endpoint.
+  The closest competitor, 75% of the third backward difference, was tied with
+  cubic: cubic's paired median saving versus that blend was 0.286 ms at N=64
+  (95% bootstrap interval crossing zero) and 0.016 ms at N=256 (also crossing
+  zero).  Cubic had the slightly lower pooled mesh median and is the simpler
+  pre-existing endpoint, so it remains locked; no fourth-order extrapolator is
+  justified by this plateau.
 
 All exact values and complete arrays for these gates are in `runs/`.  No gate
 number is promoted without its JSON, batch log, and matching remote/local

@@ -1,0 +1,22 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=46c5ea892f71cad94db843c83e1c2ed69d608739 dirty=e3b0c44298fc cell=history_blend_gate
+jax_backend=gpu cuda:0
+N=64 tau=1e-06 linear        : 24.578 ms, save=0.000 ms, Newton=84, BiCG=108
+N=64 tau=1e-06 lq25          : 24.797 ms, save=-0.168 ms, Newton=81, BiCG=105
+N=64 tau=1e-06 lq50          : 23.593 ms, save=1.021 ms, Newton=76, BiCG=100
+N=64 tau=1e-06 lq75          : 21.530 ms, save=2.847 ms, Newton=68, BiCG=88
+N=64 tau=1e-06 quadratic     : 20.185 ms, save=3.913 ms, Newton=62, BiCG=84
+N=64 tau=1e-06 qc25          : 19.752 ms, save=4.332 ms, Newton=60, BiCG=78
+N=64 tau=1e-06 qc50          : 18.673 ms, save=5.585 ms, Newton=57, BiCG=72
+N=64 tau=1e-06 qc75          : 18.220 ms, save=6.191 ms, Newton=56, BiCG=70
+N=64 tau=1e-06 cubic         : 17.964 ms, save=6.411 ms, Newton=56, BiCG=72
+N=256 tau=1e-06 linear        : 32.768 ms, save=0.000 ms, Newton=87, BiCG=117
+N=256 tau=1e-06 lq25          : 32.482 ms, save=0.288 ms, Newton=83, BiCG=112
+N=256 tau=1e-06 lq50          : 30.968 ms, save=1.738 ms, Newton=78, BiCG=106
+N=256 tau=1e-06 lq75          : 27.797 ms, save=4.740 ms, Newton=68, BiCG=92
+N=256 tau=1e-06 quadratic     : 25.406 ms, save=7.137 ms, Newton=62, BiCG=86
+N=256 tau=1e-06 qc25          : 24.416 ms, save=7.434 ms, Newton=58, BiCG=77
+N=256 tau=1e-06 qc50          : 23.498 ms, save=8.982 ms, Newton=56, BiCG=72
+N=256 tau=1e-06 qc75          : 23.290 ms, save=9.456 ms, Newton=56, BiCG=70
+N=256 tau=1e-06 cubic         : 23.316 ms, save=9.434 ms, Newton=56, BiCG=76
+ALL-DONE

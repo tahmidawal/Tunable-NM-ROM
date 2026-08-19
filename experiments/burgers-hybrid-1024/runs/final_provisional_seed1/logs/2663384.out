@@ -1,0 +1,64 @@
+host=pax144 gpu=NVIDIA A100-PCIE-40GB
+commit=5cfd399a475d2c2dc8be31e0ad1a45a6e0cf9502 dirty=e3b0c44298fc cell=ctol_hybb_final
+jax_backend=gpu cuda:0
+  bounded-grid NNLS-EQ M=64 m=256: candidates 900/900, rel fit 6.37e-03 (p95 7.7e-01) [17s]
+N=32 tau=1e-06 linear    : 47.60ms vs cubic=-15.39ms Newton=88 BiCG=124
+N=32 tau=1e-06 cubic     : 32.47ms vs cubic=0.00ms Newton=54 BiCG=76
+N=32 tau=1e-06 film_nmrom: 158.80ms vs cubic=-126.01ms Newton=54 BiCG=76
+N=32 tau=1e-08 linear    : 76.98ms vs cubic=-27.47ms Newton=98 BiCG=228
+N=32 tau=1e-08 cubic     : 49.17ms vs cubic=0.00ms Newton=57 BiCG=138
+N=32 tau=1e-08 film_nmrom: 180.68ms vs cubic=-131.02ms Newton=57 BiCG=138
+N=32 tau=1e-10 linear    : 90.60ms vs cubic=-24.10ms Newton=101 BiCG=304
+N=32 tau=1e-10 cubic     : 65.99ms vs cubic=0.00ms Newton=70 BiCG=215
+N=32 tau=1e-10 film_nmrom: 193.48ms vs cubic=-127.36ms Newton=70 BiCG=215
+  bounded-grid NNLS-EQ M=64 m=256: candidates 3844/3844, rel fit 6.21e-03 (p95 6.8e-01) [20s]
+N=64 tau=1e-06 linear    : 44.95ms vs cubic=-14.74ms Newton=94 BiCG=153
+N=64 tau=1e-06 cubic     : 31.32ms vs cubic=0.00ms Newton=58 BiCG=93
+N=64 tau=1e-06 film_nmrom: 159.36ms vs cubic=-131.14ms Newton=58 BiCG=96
+N=64 tau=1e-08 linear    : 67.80ms vs cubic=-23.01ms Newton=100 BiCG=273
+N=64 tau=1e-08 cubic     : 43.50ms vs cubic=0.00ms Newton=60 BiCG=165
+N=64 tau=1e-08 film_nmrom: 172.52ms vs cubic=-131.19ms Newton=60 BiCG=166
+N=64 tau=1e-10 linear    : 70.51ms vs cubic=-13.89ms Newton=104 BiCG=342
+N=64 tau=1e-10 cubic     : 55.98ms vs cubic=0.00ms Newton=77 BiCG=265
+N=64 tau=1e-10 film_nmrom: 184.08ms vs cubic=-127.99ms Newton=77 BiCG=270
+  bounded-grid NNLS-EQ M=64 m=256: candidates 4096/15876, rel fit 6.06e-03 (p95 7.4e-01) [20s]
+N=128 tau=1e-06 linear    : 67.19ms vs cubic=-21.28ms Newton=96 BiCG=162
+N=128 tau=1e-06 cubic     : 44.94ms vs cubic=0.00ms Newton=62 BiCG=103
+N=128 tau=1e-06 film_nmrom: 169.77ms vs cubic=-126.78ms Newton=62 BiCG=105
+N=128 tau=1e-08 linear    : 100.61ms vs cubic=-34.42ms Newton=100 BiCG=292
+N=128 tau=1e-08 cubic     : 65.19ms vs cubic=0.00ms Newton=62 BiCG=180
+N=128 tau=1e-08 film_nmrom: 190.69ms vs cubic=-127.06ms Newton=62 BiCG=184
+N=128 tau=1e-10 linear    : 121.43ms vs cubic=-19.58ms Newton=104 BiCG=368
+N=128 tau=1e-10 cubic     : 101.08ms vs cubic=0.00ms Newton=82 BiCG=302
+N=128 tau=1e-10 film_nmrom: 235.37ms vs cubic=-129.12ms Newton=82 BiCG=313
+  bounded-grid NNLS-EQ M=64 m=256: candidates 4096/64516, rel fit 5.90e-03 (p95 6.6e-01) [22s]
+N=256 tau=1e-06 linear    : 56.45ms vs cubic=-17.06ms Newton=98 BiCG=168
+N=256 tau=1e-06 cubic     : 38.95ms vs cubic=0.00ms Newton=63 BiCG=105
+N=256 tau=1e-06 film_nmrom: 165.50ms vs cubic=-125.10ms Newton=63 BiCG=110
+N=256 tau=1e-08 linear    : 85.02ms vs cubic=-28.22ms Newton=100 BiCG=300
+N=256 tau=1e-08 cubic     : 56.72ms vs cubic=0.00ms Newton=63 BiCG=192
+N=256 tau=1e-08 film_nmrom: 184.32ms vs cubic=-126.46ms Newton=63 BiCG=202
+N=256 tau=1e-10 linear    : 109.35ms vs cubic=-14.69ms Newton=104 BiCG=388
+N=256 tau=1e-10 cubic     : 94.62ms vs cubic=0.00ms Newton=84 BiCG=332
+N=256 tau=1e-10 film_nmrom: 225.86ms vs cubic=-131.12ms Newton=84 BiCG=344
+  bounded-grid NNLS-EQ M=64 m=256: candidates 4096/260100, rel fit 6.00e-03 (p95 6.9e-01) [21s]
+N=512 tau=1e-06 linear    : 160.07ms vs cubic=-55.47ms Newton=98 BiCG=170
+N=512 tau=1e-06 cubic     : 104.38ms vs cubic=0.00ms Newton=63 BiCG=105
+N=512 tau=1e-06 film_nmrom: 234.27ms vs cubic=-129.92ms Newton=63 BiCG=110
+N=512 tau=1e-08 linear    : 255.95ms vs cubic=-84.29ms Newton=99 BiCG=313
+N=512 tau=1e-08 cubic     : 168.86ms vs cubic=0.00ms Newton=64 BiCG=202
+N=512 tau=1e-08 film_nmrom: 306.29ms vs cubic=-134.41ms Newton=64 BiCG=212
+N=512 tau=1e-10 linear    : 324.41ms vs cubic=-42.62ms Newton=103 BiCG=394
+N=512 tau=1e-10 cubic     : 283.50ms vs cubic=0.00ms Newton=84 BiCG=345
+N=512 tau=1e-10 film_nmrom: 421.40ms vs cubic=-137.34ms Newton=84 BiCG=354
+  bounded-grid NNLS-EQ M=64 m=256: candidates 4096/1044484, rel fit 6.26e-03 (p95 6.9e-01) [28s]
+N=1024 tau=1e-06 linear    : 660.96ms vs cubic=-240.41ms Newton=98 BiCG=172
+N=1024 tau=1e-06 cubic     : 418.39ms vs cubic=0.00ms Newton=63 BiCG=106
+N=1024 tau=1e-06 film_nmrom: 561.86ms vs cubic=-139.72ms Newton=63 BiCG=111
+N=1024 tau=1e-08 linear    : 1104.30ms vs cubic=-380.16ms Newton=100 BiCG=320
+N=1024 tau=1e-08 cubic     : 718.51ms vs cubic=0.00ms Newton=64 BiCG=206
+N=1024 tau=1e-08 film_nmrom: 879.12ms vs cubic=-157.37ms Newton=64 BiCG=216
+N=1024 tau=1e-10 linear    : 1386.40ms vs cubic=-168.74ms Newton=103 BiCG=408
+N=1024 tau=1e-10 cubic     : 1198.21ms vs cubic=0.00ms Newton=85 BiCG=353
+N=1024 tau=1e-10 film_nmrom: 1357.68ms vs cubic=-159.60ms Newton=84 BiCG=362
+ALL-DONE

@@ -193,14 +193,16 @@ def main():
            "## End-to-end rollout measurements", ""]
     pairs = e2e_pairs(summary)
     md += table(
-        ["cell", "M,m", "tau", "control ms/error", "compact ms/error", "control/compact", "iso-FOM/compact", "censored control/compact"],
-        ["---", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
+        ["cell", "M,m", "tau", "control ms/error", "compact ms/error", "control/compact", "iso-FOM/compact", "censored control/compact", "timing outliers control/compact"],
+        ["---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
         [[r["cell"], f'{r["M"]},{r["m"]}', sci(r["tau"]),
           f'{r["control"]["time_ms"]:.3f} / {sci(r["control"]["error"])}',
           f'{r["variant"]["time_ms"]:.3f} / {sci(r["variant"]["error"])}',
           f'{r["speedup"]:.3f}×',
           "—" if r["iso_fom_speedup"] is None else f'{r["iso_fom_speedup"]:.3f}×',
-          f'{pct(r["control"]["censored_frac"])} / {pct(r["variant"]["censored_frac"])}'] for r in pairs]
+          f'{pct(r["control"]["censored_frac"])} / {pct(r["variant"]["censored_frac"])}',
+          f'{r["control"]["timing_outliers"]}/{r["control"]["timing_samples"]} / '
+          f'{r["variant"]["timing_outliers"]}/{r["variant"]["timing_samples"]}'] for r in pairs]
     )
     any_censored = any(r[arm]["censored_frac"] > 0 for r in pairs for arm in ("control", "variant"))
     if any_censored:

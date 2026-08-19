@@ -327,6 +327,9 @@ def e2e(cell):
             if (not isinstance(raw, list) or len(raw) != row["n_sources"] or
                     any(len(values) != report["config"]["time_reps"] for values in raw)):
                 raise ValueError(f"{cell}/{arm}: missing complete raw timing arrays")
+            timing_outliers = sum(
+                value > 1.5 * float(np.median(values))
+                for values in raw for value in values)
             out.append(dict(
                 cell=cell, arm=arm, M=row["M"], m=row["m"], tau=row["tau"],
                 time_ms=row["time_ms"], solve_ms=row["time_ms_solve"],
@@ -335,7 +338,8 @@ def e2e(cell):
                 censored_frac=row["censored_frac"], gpu=row["gpu"],
                 fom_iso_accuracy_ms=row.get("fom_iso_accuracy_ms"),
                 fom_reference_ms=row.get("fom_rollout_ms", row.get("fom_cg_ms")),
-                reps=report["config"]["time_reps"],
+                reps=report["config"]["time_reps"], timing_outliers=timing_outliers,
+                timing_samples=sum(len(values) for values in raw),
             ))
     return out
 
@@ -473,12 +477,13 @@ def main():
         md.append("")
     md += ["## Same-GPU end-to-end rows", ""]
     md += markdown_table(
-        ["cell", "arm", "M,m", "tau", "e2e ms", "solve ms", "error mean", "error med", "error max", "Jac evals", "censored", "iso-FOM ms"],
-        ["---", "---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
+        ["cell", "arm", "M,m", "tau", "e2e ms", "solve ms", "error mean", "error med", "error max", "Jac evals", "censored", "timing outliers", "iso-FOM ms"],
+        ["---", "---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
         [[r["cell"], r["arm"], f'{r["M"]},{r["m"]}', sci(r["tau"]),
           f'{r["time_ms"]:.3f}', f'{r["solve_ms"]:.3f}', sci(r["error"]),
           sci(r["error_median"]), sci(r["error_max"]), f'{r["jac_evals"]:.2f}',
           f'{100*r["censored_frac"]:.1f}%',
+          f'{r["timing_outliers"]}/{r["timing_samples"]}',
           "—" if r["fom_iso_accuracy_ms"] is None else f'{r["fom_iso_accuracy_ms"]:.3f}']
          for r in e2e_rows]
     )

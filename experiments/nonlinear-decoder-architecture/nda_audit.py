@@ -181,9 +181,15 @@ def main():
     timing = [
         audit_benchmark("nda_pbench_g98b_r8"),
         audit_benchmark("nda_bbench_g160_r12"),
-        audit_e2e("nda_pe2e_g98_r23"),
-        audit_e2e("nda_be2e_g160m640_r24"),
     ]
+    e2e_cells = sorted({os.path.basename(path)
+                        for pattern in ("nda_pe2e_*", "nda_be2e_*")
+                        for path in glob.glob(os.path.join(RUNS, pattern))
+                        if os.path.isdir(path) and
+                        os.path.basename(path) not in EXCLUDED and
+                        all(os.path.isfile(os.path.join(path, "out", f"{arm}.json"))
+                            for arm in ("control", "variant"))})
+    timing.extend(audit_e2e(cell) for cell in e2e_cells)
     overall = (all(row["passed"] for row in cells if not row["excluded"])
                and all(row["passed"] for row in timing))
     result = dict(overall_pass=overall, cells=cells, accepted_timing=timing,

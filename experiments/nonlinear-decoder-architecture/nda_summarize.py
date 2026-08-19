@@ -12,6 +12,12 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 WT = os.path.abspath(os.path.join(HERE, "..", ".."))
 RUNS = os.path.join(HERE, "runs")
+E2E_EXCLUDED = {
+    "nda_pe2e_g98_r11",
+    "nda_be2e_g160_r12_failed",
+    "nda_be2e_g160_r14",
+    "nda_be2e_g160m640_r21",
+}
 
 
 def read(path):
@@ -344,6 +350,23 @@ def e2e(cell):
     return out
 
 
+def accepted_e2e_rows():
+    """Load every complete raw-array E2E cell not explicitly retracted."""
+    rows = []
+    patterns = ("nda_pe2e_*", "nda_be2e_*")
+    cells = sorted({os.path.basename(path) for pattern in patterns
+                    for path in glob.glob(os.path.join(RUNS, pattern))
+                    if os.path.isdir(path)})
+    for cell in cells:
+        if cell in E2E_EXCLUDED:
+            continue
+        if not all(os.path.isfile(os.path.join(RUNS, cell, "out", f"{arm}.json"))
+                   for arm in ("control", "variant")):
+            continue
+        rows.extend(e2e(cell))
+    return rows
+
+
 def sci(value):
     return f"{value:.3e}"
 
@@ -376,7 +399,7 @@ def main():
     poisson_gates = poisson_gate_audit(poisson_seed_rows)
     benchmarks = [x for x in (
         benchmark("nda_pbench_g98b_r8"), benchmark("nda_bbench_g160_r12")) if x]
-    e2e_rows = e2e("nda_pe2e_g98_r23") + e2e("nda_be2e_g160m640_r24")
+    e2e_rows = accepted_e2e_rows()
     result = dict(
         poisson=poisson, poisson_objectives=poisson_objective,
         poisson_three_seed=poisson_seed, poisson_gate_audit=poisson_gates,

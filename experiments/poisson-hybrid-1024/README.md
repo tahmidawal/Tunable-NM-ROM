@@ -120,6 +120,7 @@ reported comparison.
   (added after the local smoke gate).
 - `runs/`: checksummed pulled artifacts only.
 - `SUMMARY.generated.md`: exhaustive tables generated from the audited run JSONs.
+- `FINAL.generated.md`: the same generated tables restricted to the fresh-seed confirmation.
 
 ## Status
 

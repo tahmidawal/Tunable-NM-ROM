@@ -106,7 +106,13 @@ def main():
     burgers_timed = (b_recommended is not None and any(
         r["M"] == b_recommended["M"] and r["m"] == b_recommended["m"] and
         r["cell"].startswith("nda_be2e_") for r in pairs))
-    e2e_complete = poisson_timed and poisson_deployable and burgers_timed
+    burgers_deployable = (b_recommended is not None and any(
+        r["M"] == b_recommended["M"] and r["m"] == b_recommended["m"] and
+        r["cell"].startswith("nda_be2e_") and
+        r["variant"]["censored_frac"] == 0 and
+        r["variant"]["error"] <= 1e-2 for r in pairs))
+    e2e_complete = (poisson_timed and poisson_deployable and burgers_timed and
+                    burgers_deployable)
     final = (burgers_complete and e2e_complete and
              summary["burgers_gate_audit"]["recommended"] is not None)
     state = ("Final for the N=64, k=16 architecture comparison described here."
@@ -348,6 +354,14 @@ def main():
             f"- The divisible group-3 H159 bracket is also seed-unstable: its three-seed maximum "
             f"full/EQ errors are {sci(group3[0]['full']['max'])} and "
             f"{sci(group3[0]['eq']['max'])}.")
+    h144 = [r for r in summary["burgers_objectives"]
+            if r["hidden"] == 144 and r["group_size"] == 2 and
+            r["M"] == 128 and r["m"] == 640 and r["seed"] == 0]
+    if h144:
+        failure_rows.append(
+            f"- The H144/group-2 width bracket fails on seed 0, so no extra seeds were run: "
+            f"decoder/full/EQ errors are {sci(h144[0]['decoder'])}, "
+            f"{sci(h144[0]['full'])}, and {sci(h144[0]['eq'])}.")
     md += failure_rows + ["",
         "## Scope and provenance", "",
         "The result is limited to N=64, k=16, the recorded held-out families, and the weak-form solvers tested here. Every cluster cell regenerated its data from seed, logged `jax_backend=gpu`, used f64/highest precision, ran alone in its directory, and was pulled with checksums. Exact run rows, timing arrays, medians, maxima, outlier counts, manifests, and job logs are in the experiment directory.", "",

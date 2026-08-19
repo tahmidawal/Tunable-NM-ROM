@@ -89,6 +89,23 @@ that existed only in a `/tmp` scratchpad and was nearly lost, and a set of train
 were `.gitignore`d and tracked nowhere, so the branch could be read but not rerun. **If work only
 exists in a scratchpad or in conversation, it does not exist.**
 
+## Reports
+
+Written-up results live in `reports/` on `main`, beside the lab log. One report per question,
+never one per session.
+
+- **Name them `YYYY-MM-DD-<what-it-contains>.md`** — the date is when the *numbers* were
+  finalised, not when the prose was last edited, and the slug says what the report is about so
+  the filename alone tells a reader whether to open it. Good:
+  `2026-08-18-solve-cost-quadrature-and-the-hybrid.md`. Bad: `results2.md`, `final-report.md`.
+- **Open every report with a level-1 title and one or two sentences** saying what it covers and
+  what state its numbers are in — final, provisional, or superseded.
+- **Never hand-type a number into a report.** Generate tables from the run JSONs with a script in
+  `reports/`, so a report cannot drift from its data. Every prose number that has gone wrong in
+  this project went wrong by being typed by hand.
+- **Say which numbers are provisional and why**, inline, next to them — not only in a preamble.
+- `*.built.md` files are generated for publishing; edit the source, not the build.
+
 ## Routing — which machine
 
 ### Tufts is the default; the local GB10 is the fallback

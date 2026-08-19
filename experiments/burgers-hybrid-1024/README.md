@@ -73,6 +73,13 @@ locked calibrated FOM configuration.
   this already needs rank 32 plus a spatial warp, it cannot plausibly fit the
   oracle's few-millisecond budget.  The transported linear-basis surrogate is
   therefore stopped too, rather than being relabelled as a successful NM-ROM.
+* The corrected live-history oracle used the locked Helmholtz FOM, canonical
+  seed-1 draw-16/select-0:4 cohort, and 21 repetitions per case.  Removing 50%,
+  75%, 90%, and 99% of dynamic extrapolation error saved paired medians 1.23,
+  4.55, 14.25, and 17.49 ms at N=256.  This supersedes the preliminary noisy
+  few-millisecond curve: a genuinely q90 predictor has room, but the deployable
+  learned correction retained 62% rather than 10% of the error and cannot
+  access that budget.
 * A semi-implicit physics predictor (exact discrete upwind advection plus a
   Dirichlet diffusion solve by DST-I) reduced field-guess error in local smoke,
   but failed the solver-work objective in the charged cluster gate.  With the
@@ -106,6 +113,10 @@ locked calibrated FOM configuration.
 All exact values and complete arrays for these gates are in `runs/`.  No gate
 number is promoted without its JSON, batch log, and matching remote/local
 checksums.
+
+`runs/film_smoke` is a superseded N=32 harness smoke from before the fixed-64
+decode/prolongation optimization.  It validates execution only and is excluded
+from every result table; the final FiLM job uses the optimized coarse path.
 
 ## Final audit contract
 

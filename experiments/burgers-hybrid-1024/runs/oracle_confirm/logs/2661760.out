@@ -1,0 +1,11 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=46c5ea892f71cad94db843c83e1c2ed69d608739 dirty=e3b0c44298fc cell=oracle_confirm
+jax_backend=gpu cuda:0
+N=256 tau=1e-06 prev          : 42.932ms delta_extrap=-3.091ms Newton=110 BiCG=173
+N=256 tau=1e-06 extrap        : 40.965ms delta_extrap=0.000ms Newton=98 BiCG=168
+N=256 tau=1e-06 oracle:q=0.5  : 38.696ms delta_extrap=1.228ms Newton=91 BiCG=156
+N=256 tau=1e-06 oracle:q=0.75 : 33.510ms delta_extrap=4.552ms Newton=78 BiCG=130
+N=256 tau=1e-06 oracle:q=0.9  : 25.841ms delta_extrap=14.247ms Newton=58 BiCG=95
+N=256 tau=1e-06 oracle:q=0.99 : 23.445ms delta_extrap=17.490ms Newton=52 BiCG=81
+N=256 tau=1e-06 oracle:q=1    : 5.456ms delta_extrap=35.441ms Newton=0 BiCG=0
+ALL-DONE

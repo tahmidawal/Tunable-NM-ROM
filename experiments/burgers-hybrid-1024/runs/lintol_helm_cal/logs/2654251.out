@@ -1,0 +1,77 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=af9e9381bba6076454e2aa272c6b9bbef9879c06 dirty=e3b0c44298fc cell=lintol_helm_cal
+jax_backend=gpu cuda:0
+N=64 outer=1e-06 lin=1e-02 pre=helmholtz linear   : Newton=82.8 BiCG=104 population median=25.56ms
+N=64 outer=1e-06 lin=1e-02 pre=helmholtz quadratic: Newton=62.5 BiCG=82 population median=20.90ms
+N=64 outer=1e-06 lin=1e-02 pre=helmholtz cubic    : Newton=55.5 BiCG=71 population median=18.85ms
+N=64 outer=1e-06 lin=1e-03 pre=helmholtz linear   : Newton=62.0 BiCG=118 population median=24.32ms
+N=64 outer=1e-06 lin=1e-03 pre=helmholtz quadratic: Newton=54.5 BiCG=107 population median=22.73ms
+N=64 outer=1e-06 lin=1e-03 pre=helmholtz cubic    : Newton=53.5 BiCG=105 population median=22.50ms
+N=64 outer=1e-06 lin=1e-04 pre=helmholtz linear   : Newton=55.5 BiCG=123 population median=23.94ms
+N=64 outer=1e-06 lin=1e-04 pre=helmholtz quadratic: Newton=53.8 BiCG=120 population median=24.33ms
+N=64 outer=1e-06 lin=1e-04 pre=helmholtz cubic    : Newton=52.8 BiCG=118 population median=24.49ms
+N=64 outer=1e-06 lin=1e-05 pre=helmholtz linear   : Newton=55.2 BiCG=147 population median=26.81ms
+N=64 outer=1e-06 lin=1e-05 pre=helmholtz quadratic: Newton=53.8 BiCG=146 population median=27.68ms
+N=64 outer=1e-06 lin=1e-05 pre=helmholtz cubic    : Newton=52.8 BiCG=146 population median=27.26ms
+N=64 outer=1e-08 lin=1e-02 pre=helmholtz linear   : Newton=123.2 BiCG=164 population median=35.50ms
+N=64 outer=1e-08 lin=1e-02 pre=helmholtz quadratic: Newton=104.5 BiCG=134 population median=30.52ms
+N=64 outer=1e-08 lin=1e-02 pre=helmholtz cubic    : Newton=88.5 BiCG=121 population median=28.16ms
+N=64 outer=1e-08 lin=1e-03 pre=helmholtz linear   : Newton=102.0 BiCG=199 population median=37.43ms
+N=64 outer=1e-08 lin=1e-03 pre=helmholtz quadratic: Newton=81.2 BiCG=160 population median=32.14ms
+N=64 outer=1e-08 lin=1e-03 pre=helmholtz cubic    : Newton=69.8 BiCG=138 population median=27.74ms
+N=64 outer=1e-08 lin=1e-04 pre=helmholtz linear   : Newton=97.0 BiCG=215 population median=39.17ms
+N=64 outer=1e-08 lin=1e-04 pre=helmholtz quadratic: Newton=64.8 BiCG=150 population median=28.80ms
+N=64 outer=1e-08 lin=1e-04 pre=helmholtz cubic    : Newton=58.5 BiCG=133 population median=25.73ms
+N=64 outer=1e-08 lin=1e-05 pre=helmholtz linear   : Newton=82.2 BiCG=229 population median=40.76ms
+N=64 outer=1e-08 lin=1e-05 pre=helmholtz quadratic: Newton=60.8 BiCG=169 population median=29.81ms
+N=64 outer=1e-08 lin=1e-05 pre=helmholtz cubic    : Newton=57.2 BiCG=160 population median=28.72ms
+N=64 outer=1e-10 lin=1e-02 pre=helmholtz linear   : Newton=157.2 BiCG=209 population median=44.00ms
+N=64 outer=1e-10 lin=1e-02 pre=helmholtz quadratic: Newton=147.8 BiCG=202 population median=42.58ms
+N=64 outer=1e-10 lin=1e-02 pre=helmholtz cubic    : Newton=128.8 BiCG=182 population median=38.34ms
+N=64 outer=1e-10 lin=1e-03 pre=helmholtz linear   : Newton=121.8 BiCG=239 population median=44.33ms
+N=64 outer=1e-10 lin=1e-03 pre=helmholtz quadratic: Newton=109.8 BiCG=218 population median=40.14ms
+N=64 outer=1e-10 lin=1e-03 pre=helmholtz cubic    : Newton=102.5 BiCG=204 population median=38.57ms
+N=64 outer=1e-10 lin=1e-04 pre=helmholtz linear   : Newton=104.8 BiCG=235 population median=41.97ms
+N=64 outer=1e-10 lin=1e-04 pre=helmholtz quadratic: Newton=102.8 BiCG=229 population median=41.66ms
+N=64 outer=1e-10 lin=1e-04 pre=helmholtz cubic    : Newton=87.2 BiCG=198 population median=38.02ms
+N=64 outer=1e-10 lin=1e-05 pre=helmholtz linear   : Newton=102.0 BiCG=285 population median=47.99ms
+N=64 outer=1e-10 lin=1e-05 pre=helmholtz quadratic: Newton=90.5 BiCG=258 population median=44.21ms
+N=64 outer=1e-10 lin=1e-05 pre=helmholtz cubic    : Newton=70.0 BiCG=198 population median=34.14ms
+N=256 outer=1e-06 lin=1e-02 pre=helmholtz linear   : Newton=86.0 BiCG=115 population median=32.60ms
+N=256 outer=1e-06 lin=1e-02 pre=helmholtz quadratic: Newton=62.8 BiCG=86 population median=25.27ms
+N=256 outer=1e-06 lin=1e-02 pre=helmholtz cubic    : Newton=56.8 BiCG=76 population median=23.14ms
+N=256 outer=1e-06 lin=1e-03 pre=helmholtz linear   : Newton=63.2 BiCG=126 population median=30.59ms
+N=256 outer=1e-06 lin=1e-03 pre=helmholtz quadratic: Newton=54.8 BiCG=110 population median=27.62ms
+N=256 outer=1e-06 lin=1e-03 pre=helmholtz cubic    : Newton=53.8 BiCG=108 population median=28.00ms
+N=256 outer=1e-06 lin=1e-04 pre=helmholtz linear   : Newton=56.0 BiCG=130 population median=29.73ms
+N=256 outer=1e-06 lin=1e-04 pre=helmholtz quadratic: Newton=54.0 BiCG=125 population median=30.29ms
+N=256 outer=1e-06 lin=1e-04 pre=helmholtz cubic    : Newton=53.5 BiCG=125 population median=31.04ms
+N=256 outer=1e-06 lin=1e-05 pre=helmholtz linear   : Newton=55.8 BiCG=160 population median=34.00ms
+N=256 outer=1e-06 lin=1e-05 pre=helmholtz quadratic: Newton=54.0 BiCG=158 population median=34.96ms
+N=256 outer=1e-06 lin=1e-05 pre=helmholtz cubic    : Newton=53.5 BiCG=159 population median=35.56ms
+N=256 outer=1e-08 lin=1e-02 pre=helmholtz linear   : Newton=125.2 BiCG=178 population median=45.76ms
+N=256 outer=1e-08 lin=1e-02 pre=helmholtz quadratic: Newton=107.0 BiCG=148 population median=39.08ms
+N=256 outer=1e-08 lin=1e-02 pre=helmholtz cubic    : Newton=93.2 BiCG=138 population median=36.88ms
+N=256 outer=1e-08 lin=1e-03 pre=helmholtz linear   : Newton=101.8 BiCG=204 population median=47.10ms
+N=256 outer=1e-08 lin=1e-03 pre=helmholtz quadratic: Newton=83.8 BiCG=169 population median=40.37ms
+N=256 outer=1e-08 lin=1e-03 pre=helmholtz cubic    : Newton=71.5 BiCG=144 population median=35.06ms
+N=256 outer=1e-08 lin=1e-04 pre=helmholtz linear   : Newton=99.0 BiCG=233 population median=51.40ms
+N=256 outer=1e-08 lin=1e-04 pre=helmholtz quadratic: Newton=67.0 BiCG=164 population median=37.47ms
+N=256 outer=1e-08 lin=1e-04 pre=helmholtz cubic    : Newton=60.5 BiCG=145 population median=33.14ms
+N=256 outer=1e-08 lin=1e-05 pre=helmholtz linear   : Newton=84.0 BiCG=248 population median=52.84ms
+N=256 outer=1e-08 lin=1e-05 pre=helmholtz quadratic: Newton=62.2 BiCG=188 population median=38.83ms
+N=256 outer=1e-08 lin=1e-05 pre=helmholtz cubic    : Newton=58.5 BiCG=174 population median=37.67ms
+N=256 outer=1e-10 lin=1e-02 pre=helmholtz linear   : Newton=157.2 BiCG=226 population median=56.22ms
+N=256 outer=1e-10 lin=1e-02 pre=helmholtz quadratic: Newton=151.8 BiCG=226 population median=55.70ms
+N=256 outer=1e-10 lin=1e-02 pre=helmholtz cubic    : Newton=129.8 BiCG=197 population median=49.76ms
+N=256 outer=1e-10 lin=1e-03 pre=helmholtz linear   : Newton=127.0 BiCG=256 population median=57.25ms
+N=256 outer=1e-10 lin=1e-03 pre=helmholtz quadratic: Newton=110.2 BiCG=223 population median=50.32ms
+N=256 outer=1e-10 lin=1e-03 pre=helmholtz cubic    : Newton=104.5 BiCG=212 population median=47.89ms
+N=256 outer=1e-10 lin=1e-04 pre=helmholtz linear   : Newton=104.8 BiCG=248 population median=53.26ms
+N=256 outer=1e-10 lin=1e-04 pre=helmholtz quadratic: Newton=103.2 BiCG=245 population median=53.77ms
+N=256 outer=1e-10 lin=1e-04 pre=helmholtz cubic    : Newton=89.8 BiCG=218 population median=49.42ms
+N=256 outer=1e-10 lin=1e-05 pre=helmholtz linear   : Newton=102.2 BiCG=302 population median=61.59ms
+N=256 outer=1e-10 lin=1e-05 pre=helmholtz quadratic: Newton=91.0 BiCG=276 population median=58.47ms
+N=256 outer=1e-10 lin=1e-05 pre=helmholtz cubic    : Newton=73.0 BiCG=224 population median=46.85ms
+SELECTION {'1e-06': {'selected_linear_tol': 0.01, 'selected_preconditioner': 'helmholtz', 'selected_on_arm': 'cubic', 'rule': 'fastest pooled-N polynomial; within 1% choose tighter', 'candidates': [{'linear_tol': 0.01, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 20.996197476051748, 'arm_times_ms': {'linear': 29.082344262860715, 'quadratic': 23.084289859980345, 'cubic': 20.996197476051748}}, {'linear_tol': 0.001, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'quadratic', 'pooled_mesh_median_ms': 25.173756293952465, 'arm_times_ms': {'linear': 27.454944793134928, 'quadratic': 25.173756293952465, 'cubic': 25.24858817923814}}, {'linear_tol': 0.0001, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'linear', 'pooled_mesh_median_ms': 26.838999474421144, 'arm_times_ms': {'linear': 26.838999474421144, 'quadratic': 27.3106504464522, 'cubic': 27.7647424954921}}, {'linear_tol': 1e-05, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'linear', 'pooled_mesh_median_ms': 30.404547695070505, 'arm_times_ms': {'linear': 30.404547695070505, 'quadratic': 31.32384771015495, 'cubic': 31.410880852490664}}]}, '1e-08': {'selected_linear_tol': 0.0001, 'selected_preconditioner': 'helmholtz', 'selected_on_arm': 'cubic', 'rule': 'fastest pooled-N polynomial; within 1% choose tighter', 'candidates': [{'linear_tol': 0.01, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 32.5192182790488, 'arm_times_ms': {'linear': 40.63452372793108, 'quadratic': 34.8005291307345, 'cubic': 32.5192182790488}}, {'linear_tol': 0.001, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 31.400268198922276, 'arm_times_ms': {'linear': 42.2649389365688, 'quadratic': 36.25523031223565, 'cubic': 31.400268198922276}}, {'linear_tol': 0.0001, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 29.435799224302173, 'arm_times_ms': {'linear': 45.2858863864094, 'quadratic': 33.13242900185287, 'cubic': 29.435799224302173}}, {'linear_tol': 1e-05, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 33.195748925209045, 'arm_times_ms': {'linear': 46.79865820799023, 'quadratic': 34.320791717618704, 'cubic': 33.195748925209045}}]}, '1e-10': {'selected_linear_tol': 1e-05, 'selected_preconditioner': 'helmholtz', 'selected_on_arm': 'cubic', 'rule': 'fastest pooled-N polynomial; within 1% choose tighter', 'candidates': [{'linear_tol': 0.01, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 44.051355216652155, 'arm_times_ms': {'linear': 50.10808596853167, 'quadratic': 49.13777648471296, 'cubic': 44.051355216652155}}, {'linear_tol': 0.001, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 43.23193954769522, 'arm_times_ms': {'linear': 50.789791624993086, 'quadratic': 45.22819514386356, 'cubic': 43.23193954769522}}, {'linear_tol': 0.0001, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 43.71617897413671, 'arm_times_ms': {'linear': 47.617917181923985, 'quadratic': 47.71476658061147, 'cubic': 43.71617897413671}}, {'linear_tol': 1e-05, 'preconditioner': 'helmholtz', 'best_polynomial_arm': 'cubic', 'pooled_mesh_median_ms': 40.49834655597806, 'arm_times_ms': {'linear': 54.78776234667748, 'quadratic': 51.33955285418779, 'cubic': 40.49834655597806}}]}}
+ALL-DONE

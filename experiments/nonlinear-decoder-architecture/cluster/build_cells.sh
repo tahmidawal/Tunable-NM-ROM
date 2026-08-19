@@ -197,8 +197,17 @@ case "$round" in
     # its decoder clears 8e-3 before any objective or seed follow-up is run.
     make_burgers nda_bg160l4g8f31_r19 160 4 31 groupfilm 8 0
     ;;
+  round22)
+    # Group 3 does not divide H160, so use the nearest narrower width H159.
+    # This closes the only plausible compression gap between robust group 2
+    # and seed-unstable group 4 directly at the selected M=128,m=640 arm.
+    vars="lspg:full:weak128,lspg:eq640:weak128"
+    make_burgers nda_bg159l4g3f31_s0_r22 159 4 31 groupfilm 3 0 0 60000 "$vars"
+    make_burgers nda_bg159l4g3f31_s1_r22 159 4 31 groupfilm 3 0 1 60000 "$vars"
+    make_burgers nda_bg159l4g3f31_s2_r22 159 4 31 groupfilm 3 0 2 60000 "$vars"
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15|round18|round19]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8|round10|round11|round15|round18|round19|round22]" >&2
     exit 2
     ;;
 esac

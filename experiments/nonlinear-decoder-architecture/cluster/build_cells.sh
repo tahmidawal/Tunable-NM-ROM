@@ -153,8 +153,16 @@ case "$round" in
     # Final seed-0 width point between the passing width 100 and failing 96.
     make_poisson nda_pg98l4g2_r6 98 4 0 groupfilm 2
     ;;
+  round7)
+    # Training-seed confirmation on both sides of the final passing-width
+    # comparison.  Seed zero already exists from rounds 5 and 6.
+    make_poisson nda_pg98l4g2_s1_r7 98 4 0 groupfilm 2 1
+    make_poisson nda_pg98l4g2_s2_r7 98 4 0 groupfilm 2 2
+    make_poisson nda_pg100l4g2_s1_r7 100 4 0 groupfilm 2 1
+    make_poisson nda_pg100l4g2_s2_r7 100 4 0 groupfilm 2 2
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7]" >&2
     exit 2
     ;;
 esac

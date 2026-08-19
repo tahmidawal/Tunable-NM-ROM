@@ -95,12 +95,26 @@ def main():
         b96 = aggregate(summary, "Burgers", M=96, m=384)
         b128 = aggregate(summary, "Burgers", M=128, m=512)
         b_params = b_bench["models"]["variant"]["n_params"]
-        md += [
-            (f"For Burgers, use group-FiLM H160×4 with group size 2 ({b_params:,} parameters). "
-             f"The M96,m384 arm has three-seed full/EQ means {sci(b96['full']['mean'])} and {sci(b96['eq']['mean'])}; "
-             f"the M128,m512 arm has {sci(b128['full']['mean'])} and {sci(b128['eq']['mean'])}. "
-             "Choose M96 for minimum online work when its per-seed EQ/full ratios remain within the declared gate; choose M128 for the conservative accuracy-margin result."), "",
-        ]
+        gate = summary["burgers_gate_audit"]
+        recommended = gate["recommended"]
+        if recommended is not None:
+            chosen = b96 if recommended["M"] == 96 else b128
+            recommendation = (
+                f"For Burgers, use group-FiLM H160×4 with group size 2 ({b_params:,} parameters) "
+                f"at M={recommended['M']},m={recommended['m']}. Its three-seed decoder/full/EQ means are "
+                f"{sci(chosen['decoder']['mean'])}, {sci(chosen['full']['mean'])}, and {sci(chosen['eq']['mean'])}, "
+                "and every seed clears the conservative decoder, full-ROM, EQ-ROM, and EQ/full gates. "
+                f"The M96,m384 arm has full/EQ means {sci(b96['full']['mean'])} and {sci(b96['eq']['mean'])}, "
+                "but is retained only as the aggressive lower-cost arm because at least one per-seed gate fails."
+            )
+        else:
+            recommendation = (
+                f"No Burgers objective arm cleared every conservative three-seed gate. The H160×4 architecture "
+                f"has {b_params:,} parameters; its M96,m384 and M128,m512 full/EQ means are "
+                f"{sci(b96['full']['mean'])}/{sci(b96['eq']['mean'])} and "
+                f"{sci(b128['full']['mean'])}/{sci(b128['eq']['mean'])}, respectively."
+            )
+        md += [recommendation, ""]
     else:
         md += ["The Burgers H160×4 recommendation is awaiting the two pulled seed-confirmation artifacts.", ""]
 

@@ -196,6 +196,30 @@ def aggregate(rows, keys, value_keys, name):
     return out
 
 
+def burgers_gate_audit(rows):
+    audits = []
+    for M, m in ((96, 384), (128, 512)):
+        members = [r for r in rows
+                   if r["trust_factor"] == 0 and r["M"] == M and r["m"] == m]
+        members = sorted(members, key=lambda r: r["seed"])
+        if [r["seed"] for r in members] != [0, 1, 2]:
+            continue
+        decoder_pass = all(r["decoder"] <= 8e-3 for r in members)
+        full_pass = all(r["full"] <= 1e-2 for r in members)
+        eq_pass = all(r["eq"] <= 1e-2 for r in members)
+        ratio_pass = all(r["eq"] / r["full"] <= 1.05 for r in members)
+        audits.append(dict(
+            M=M, m=m, seeds=[0, 1, 2], decoder_all_le_8e3=decoder_pass,
+            full_all_le_1e2=full_pass, eq_all_le_1e2=eq_pass,
+            eq_full_all_le_1p05=ratio_pass,
+            all_conservative_gates=decoder_pass and full_pass and eq_pass and ratio_pass,
+            eq_full_ratios=[r["eq"] / r["full"] for r in members],
+        ))
+    passing = [r for r in audits if r["all_conservative_gates"]]
+    return dict(rows=audits, recommended=(min(passing, key=lambda r: (r["m"], r["M"]))
+                                          if passing else None))
+
+
 def benchmark(cell):
     path = os.path.join(RUNS, cell, "out", "benchmark.json")
     if not os.path.isfile(path):
@@ -265,13 +289,15 @@ def main():
         [r for r in burgers_objective if r["trust_factor"] == 0.0],
         ["M", "m"], ["decoder", "full", "eq"], "Burgers",
     )
+    burgers_gates = burgers_gate_audit(burgers_objective)
     benchmarks = [x for x in (
         benchmark("nda_pbench_g98b_r8"), benchmark("nda_bbench_g160_r12")) if x]
     e2e_rows = e2e("nda_pe2e_g98_r11") + e2e("nda_be2e_g160_r14")
     result = dict(
         poisson=poisson, poisson_three_seed=poisson_seed,
         burgers=burgers, burgers_objectives=burgers_objective,
-        burgers_three_seed=burgers_seed, benchmarks=benchmarks, e2e=e2e_rows,
+        burgers_three_seed=burgers_seed, burgers_gate_audit=burgers_gates,
+        benchmarks=benchmarks, e2e=e2e_rows,
         rejected=[
             dict(cell="nda_pbench_g98_r8",
                  reason="timed before post-burn exact-kernel warmups; retained but excluded"),
@@ -321,6 +347,16 @@ def main():
           sci(r["eq"]), sci(r["eq_median"]), sci(r["eq_max"]), f'{r["eq"]/r["full"]:.3f}',
           f'{r["full_blowups"]}/{r["eq_blowups"]}'] for r in burgers_objective]
     )
+    if burgers_gates["rows"]:
+        md += ["", "## Burgers conservative three-seed gate audit", ""]
+        md += markdown_table(
+            ["M,m", "decoder ≤8e-3 all", "full ≤1e-2 all", "EQ ≤1e-2 all", "EQ/full ≤1.05 all", "all gates"],
+            ["---:", "---:", "---:", "---:", "---:", "---:"],
+            [[f'{r["M"]},{r["m"]}', str(r["decoder_all_le_8e3"]),
+              str(r["full_all_le_1e2"]), str(r["eq_all_le_1e2"]),
+              str(r["eq_full_all_le_1p05"]), str(r["all_conservative_gates"])]
+             for r in burgers_gates["rows"]]
+        )
     md += ["", "## Accepted same-GPU decoder benchmarks", ""]
     for bench in benchmarks:
         control = bench["models"]["control"]["n_params"]

@@ -327,8 +327,10 @@ def main():
                                  f"{c['config'][key]} vs {val}")
         if c["k_lat"] != k:
             raise SystemExit(f"{p}: k_lat {c['k_lat']} != {k}")
+        decoder_config = c["config"].get("decoder_config")
         dec = bc.CoordDecoder(jax.tree_util.tree_map(jnp.asarray, c["params"]),
-                              c["n_freq"], c["eps"], k)
+                              c["n_freq"], c["eps"], k,
+                              decoder_config=decoder_config)
         ck[k] = dict(cfg=c["config"], dec=dec, Ztr=np.asarray(c["Z_train"]),
                      fp=c["data_fingerprint"], path=os.path.basename(p))
         log(f"  ckpt k={k:2d}: {os.path.basename(p)} train_seed={c['config'].get('train_seed')}")

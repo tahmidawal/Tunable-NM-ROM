@@ -226,6 +226,7 @@ def main():
 
     md += [
         "![Architecture accuracy tradeoff](../experiments/nonlinear-decoder-architecture/figures/architecture_accuracy_tradeoff.png)", "",
+        "![Three-seed variability](../experiments/nonlinear-decoder-architecture/figures/three_seed_variability.png)", "",
         "## Decoder-kernel speed", "",
         "All accepted decoder timings are f64/highest, use nine persisted repetitions, burn the GPU, then warm the exact compiled kernel. Speedups compare models within one job on one GPU.", "",
     ]

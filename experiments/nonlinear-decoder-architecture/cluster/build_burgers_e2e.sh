@@ -3,12 +3,14 @@
 set -euo pipefail
 
 cell="$1"; variant="$2"; group="${3:-2}"; selected_m="${4:-}"; variant_hidden="${5:-160}"
+tau_loose="${6:-0.01}"; tau_tight="${7:-0.001}"
 [[ "$cell" =~ ^nda_[A-Za-z0-9_]+$ ]] || { echo "invalid cell" >&2; exit 2; }
 [[ -f "$variant" ]] || { echo "missing variant checkpoint $variant" >&2; exit 3; }
 [[ "$group" =~ ^[1-9][0-9]*$ ]] || { echo "invalid FiLM group $group" >&2; exit 2; }
 [[ -z "$selected_m" || "$selected_m" =~ ^[1-9][0-9]*$ ]] || { echo "invalid selected m" >&2; exit 2; }
 [[ "$variant_hidden" =~ ^[1-9][0-9]*$ ]] || { echo "invalid variant width $variant_hidden" >&2; exit 2; }
 (( variant_hidden % group == 0 )) || { echo "width must be divisible by FiLM group" >&2; exit 2; }
+[[ "$tau_loose" =~ ^0\.[0-9]+$ && "$tau_tight" =~ ^0\.[0-9]+$ ]] || { echo "invalid tolerances" >&2; exit 2; }
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXP="$(cd "$HERE/.." && pwd)"
@@ -39,8 +41,8 @@ cp "$variant" "$STAGE/ckpt/variant/blat_ad_N64_K16.pkl"
 if [[ -n "$selected_m" ]]; then
 cat > "$STAGE/configs.json" <<EOF
 [
-  {"pde":"burgers2d","method":"coord","N":64,"k":16,"M":128,"m":$selected_m,"tau":0.01,"arm":"selected"},
-  {"pde":"burgers2d","method":"coord","N":64,"k":16,"M":128,"m":$selected_m,"tau":0.001,"arm":"selected"}
+  {"pde":"burgers2d","method":"coord","N":64,"k":16,"M":128,"m":$selected_m,"tau":$tau_loose,"arm":"selected"},
+  {"pde":"burgers2d","method":"coord","N":64,"k":16,"M":128,"m":$selected_m,"tau":$tau_tight,"arm":"selected"}
 ]
 EOF
   main_M=128; main_m="$selected_m"; expected_rows=2
@@ -76,7 +78,7 @@ echo "cell=$cell commit=$commit host=\$(hostname) gpu=\$(nvidia-smi --query-gpu=
 df -h /cluster/tufts/paralab/tawal01
 \$PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b=='gpu' else 42)"
 cd code
-export N=64 KS=16 NS=64 TAUS=1e-2,1e-3 M=$main_M MQ=$main_m M_BIG=128 K_BIG=99 MQ_4M=$main_m
+export N=64 KS=16 NS=64 TAUS=$tau_loose,$tau_tight M=$main_M MQ=$main_m M_BIG=128 K_BIG=99 MQ_4M=$main_m
 export CTOL_N_TEST=16 N_POD_TRAJ=512 POD_SLICE_STRIDE=4 GEN_CHUNK=16
 export TIME_REPS=9 TIME_WARM=3 BURN_IN_S=1.5 DO_SUPP=0 DO_CEILING=0
 export CONFIGS=../configs.json ARM_TAG=architecture_e2e FOM_NEWTON_LADDER=3

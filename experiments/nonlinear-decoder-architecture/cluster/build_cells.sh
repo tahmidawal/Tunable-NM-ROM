@@ -161,8 +161,13 @@ case "$round" in
     make_poisson nda_pg100l4g2_s1_r7 100 4 0 groupfilm 2 1
     make_poisson nda_pg100l4g2_s2_r7 100 4 0 groupfilm 2 2
     ;;
+  round8)
+    # Burgers width midpoint: 160 passes its decoder gate but narrowly misses
+    # the full-ROM gate; 192 is the upper bracket from round 2.
+    make_burgers nda_bg176l4g2f31_r8 176 4 31 groupfilm 2 0
+    ;;
   *)
-    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7]" >&2
+    echo "usage: $0 [round1|round2|round3|round4|round5|round6|round7|round8]" >&2
     exit 2
     ;;
 esac

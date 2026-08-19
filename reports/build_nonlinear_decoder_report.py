@@ -97,7 +97,6 @@ def main():
     if burgers_complete:
         b96 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=96, m=384)
         b128 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=128, m=512)
-        b_params = b_bench["models"]["variant"]["n_params"]
         gate = summary["burgers_gate_audit"]
         recommended = gate["recommended"]
         if recommended is not None:
@@ -116,6 +115,7 @@ def main():
                 "but is retained only as the aggressive lower-cost arm because at least one per-seed gate fails."
             )
         else:
+            b_params = b_bench["models"]["variant"]["n_params"]
             recommendation = (
                 f"No Burgers objective arm cleared every conservative three-seed gate. The H160×4 architecture "
                 f"has {b_params:,} parameters; its M96,m384 and M128,m512 full/EQ means are "
@@ -147,21 +147,22 @@ def main():
             "The saved control remains more accurate in the fair M128,m512 comparison, so the defensible claim is a size/speed tradeoff at acceptable accuracy—not an accuracy improvement over the control."), ""]
 
     if burgers_complete:
-        b96 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=96, m=384)
-        b128 = aggregate(summary, "Burgers", hidden=160, group_size=2, M=128, m=512)
-        b_params = b_bench["models"]["variant"]["n_params"]
         b_control_params = b_bench["models"]["control"]["n_params"]
         md += ["### Burgers three-seed selection", ""]
         md += table(
             ["model/objective", "parameters", "decoder mean±std", "full mean±std", "EQ mean±std"],
             ["---", "---:", "---:", "---:", "---:"],
-            [[f'group-FiLM H160×4, M{row["M"]},m{row["m"]}', f"{b_params:,}",
+            [[f'group-FiLM H{row["hidden"]}×{row["layers"]} g{row["group_size"]}, M{row["M"]},m{row["m"]}',
+              f'{row["n_params"]:,}',
               f'{sci(row["decoder"]["mean"])}±{sci(row["decoder"]["sample_std"])}',
               f'{sci(row["full"]["mean"])}±{sci(row["full"]["sample_std"])}',
               f'{sci(row["eq"]["mean"])}±{sci(row["eq"]["sample_std"])}']
-             for row in (b96, b128)]
+             for row in summary["burgers_three_seed"]]
         )
-        md += ["", f"H160 removes {pct(1 - b_params/b_control_params)} of the saved Burgers control parameters.", ""]
+        selected = summary["burgers_gate_audit"]["recommended"]
+        selected_params = (b_bench["models"]["variant"]["n_params"] if selected is None
+                           else selected["n_params"])
+        md += ["", f"The selected Burgers decoder removes {pct(1 - selected_params/b_control_params)} of the saved control parameters.", ""]
 
     md += [
         "![Architecture accuracy tradeoff](../experiments/nonlinear-decoder-architecture/figures/architecture_accuracy_tradeoff.png)", "",

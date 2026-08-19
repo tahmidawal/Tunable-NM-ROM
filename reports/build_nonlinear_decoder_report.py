@@ -78,7 +78,8 @@ def main():
     b_full = bench_row(b_bench, "forward", 262144)
 
     burgers_complete = bool(summary["burgers_three_seed"])
-    e2e_complete = any(r["cell"] == "nda_be2e_g160_r14" for r in summary["e2e"])
+    e2e_complete = ({r["cell"] for r in summary["e2e"]} >=
+                    {"nda_pe2e_g98_r23", "nda_be2e_g160m640_r24"})
     final = (burgers_complete and e2e_complete and
              summary["burgers_gate_audit"]["recommended"] is not None)
     state = ("Final for the N=64, k=16 architecture comparison described here."
@@ -199,6 +200,18 @@ def main():
     if any_censored:
         md += ["", "Rows with nonzero censoring are budget-limited. They are useful diagnostic measurements but are not promoted to headline iso-accuracy speedups.", ""]
 
+    selected_burgers_e2e = [r for r in pairs if r["cell"] == "nda_be2e_g160m640_r24"]
+    if selected_burgers_e2e:
+        loose = next(r for r in selected_burgers_e2e if r["tau"] == 1e-2)
+        fom_relation = (f"{loose['iso_fom_speedup']:.3f}× faster"
+                        if loose["iso_fom_speedup"] >= 1 else
+                        f"{1/loose['iso_fom_speedup']:.3f}× slower")
+        md += [
+            (f"At the selected Burgers M={loose['M']},m={loose['m']} arm and tau={sci(loose['tau'])}, "
+             f"the compact decoder is {loose['speedup']:.3f}× faster than the saved decoder architecture "
+             f"inside the same job. It is {fom_relation} than the "
+             "like-for-like iso-accuracy FOM, so this is an architecture speedup—not a claimed FOM crossover."), ""]
+
     trust_rows = [r for r in summary["burgers_objectives"] if r["trust_factor"] > 0]
     if trust_rows:
         md += ["## Local latent trust-region check", ""]
@@ -211,17 +224,32 @@ def main():
         )
         md += ["", "The trust radius is 1% of the training-cloud radius. This is reported as a solver sensitivity check, not folded into the architectural comparison.", ""]
 
-    md += [
+    failure_rows = [
         "## What failed or was retracted", "",
         "- Compact residual-FiLM arms failed both PDE accuracy targets; parameter count alone was not enough.",
         "- Burgers H192 did not materially improve the seed-0 decoder or M64 ROM over H160, so increasing width was not the productive direction.",
         "- The old Poisson M64,m256 control comparison is not used for architectural accuracy claims. The control was re-evaluated fairly at M128,m512.",
         "- `nda_pbench_g98_r8` is retained but rejected: its exact kernels were warmed before the GPU burn. `nda_pbench_g98b_r8` is the accepted corrected rerun.",
-        "- `nda_be2e_g160_r12` is retained but rejected: the driver dropped the compact checkpoint's decoder metadata and failed before that arm. The loader was fixed and `nda_be2e_g160_r14` is the corrected rerun.", "",
+        "- `nda_be2e_g160_r12` is retained but rejected: the driver dropped the compact checkpoint's decoder metadata and failed before that arm. The loader was fixed in the subsequent runs.",
+        "- `nda_pe2e_g98_r11`, `nda_be2e_g160_r14`, and `nda_be2e_g160m640_r21` are excluded from timing claims because they retained per-source medians but not every raw repetition. The accepted r23/r24 reruns persist the full arrays.",
+    ]
+    group4 = [r for r in summary["burgers_three_seed"]
+              if r["group_size"] == 4 and r["M"] == 128 and r["m"] == 640]
+    if group4:
+        failure_rows.append(
+            f"- The smaller group-4 H160 decoder is not robust: its three-seed maximum full-ROM error is "
+            f"{sci(group4[0]['full']['max'])}, above the 1% gate, despite a passing seed-0 result.")
+    group8 = [r for r in summary["burgers"] if r["group_size"] == 8 and r["hidden"] == 160]
+    if group8:
+        failure_rows.append(
+            f"- The group-8 H160 compression bracket fails already at M64 on seed 0: decoder/full/EQ512 "
+            f"errors are {sci(group8[0]['decoder'])}, {sci(group8[0]['full'])}, and {sci(group8[0]['eq512'])}.")
+    md += failure_rows + ["",
         "## Scope and provenance", "",
         "The result is limited to N=64, k=16, the recorded held-out families, and the weak-form solvers tested here. Every cluster cell regenerated its data from seed, logged `jax_backend=gpu`, used f64/highest precision, ran alone in its directory, and was pulled with checksums. Exact run rows, timing arrays, medians, maxima, outlier counts, manifests, and job logs are in the experiment directory.", "",
         "- [Generated full tables](../experiments/nonlinear-decoder-architecture/SUMMARY.md)",
         "- [Machine-readable summary](../experiments/nonlinear-decoder-architecture/summary.json)",
+        "- [Generated result audit](../experiments/nonlinear-decoder-architecture/AUDIT.md)",
         "- [Experiment method and code](../experiments/nonlinear-decoder-architecture/README.md)", "",
     ]
     OUTPUT.write_text("\n".join(md))

@@ -273,6 +273,10 @@ def e2e(cell):
             continue
         report = read(path)
         for row in report["rows"]:
+            raw = row.get("time_ms_e2e_repetitions_per_source")
+            if (not isinstance(raw, list) or len(raw) != row["n_sources"] or
+                    any(len(values) != report["config"]["time_reps"] for values in raw)):
+                raise ValueError(f"{cell}/{arm}: missing complete raw timing arrays")
             out.append(dict(
                 cell=cell, arm=arm, M=row["M"], m=row["m"], tau=row["tau"],
                 time_ms=row["time_ms"], solve_ms=row["time_ms_solve"],
@@ -313,8 +317,7 @@ def main():
     burgers_gates = burgers_gate_audit(burgers_objective)
     benchmarks = [x for x in (
         benchmark("nda_pbench_g98b_r8"), benchmark("nda_bbench_g160_r12")) if x]
-    e2e_rows = (e2e("nda_pe2e_g98_r11") + e2e("nda_be2e_g160_r14") +
-                e2e("nda_be2e_g160m640_r21"))
+    e2e_rows = e2e("nda_pe2e_g98_r23") + e2e("nda_be2e_g160m640_r24")
     result = dict(
         poisson=poisson, poisson_three_seed=poisson_seed,
         burgers=burgers, burgers_objectives=burgers_objective,
@@ -325,6 +328,12 @@ def main():
                  reason="timed before post-burn exact-kernel warmups; retained but excluded"),
             dict(cell="nda_be2e_g160_r12",
                  reason="failed before the compact arm because the driver dropped checkpoint decoder metadata; retained and superseded by r14"),
+            dict(cell="nda_pe2e_g98_r11",
+                 reason="raw timing repetitions were not persisted; superseded by r23"),
+            dict(cell="nda_be2e_g160_r14",
+                 reason="raw timing repetitions were not persisted; superseded by r24"),
+            dict(cell="nda_be2e_g160m640_r21",
+                 reason="raw timing repetitions were not persisted; superseded by r24"),
         ],
     )
     with open(os.path.join(HERE, "summary.json"), "w") as fp:
@@ -410,6 +419,9 @@ def main():
     md += ["", "## Excluded measurements", "",
            "- `nda_pbench_g98_r8`: rejected because the exact kernels were warmed before, rather than after, the GPU burn. Its artifacts are retained for audit; `nda_pbench_g98b_r8` is the accepted rerun.",
            "- `nda_be2e_g160_r12`: failed after the control arm because the cost driver dropped the compact checkpoint's decoder metadata. The failure is retained as `nda_be2e_g160_r12_failed`; `nda_be2e_g160_r14` is the corrected rerun.", ""]
+    md[-1:-1] = [
+        "- `nda_pe2e_g98_r11`, `nda_be2e_g160_r14`, and `nda_be2e_g160m640_r21`: raw timing repetitions were not persisted. Their artifacts remain for diagnosis, while r23/r24 are the accepted timing reruns.",
+    ]
     with open(os.path.join(HERE, "SUMMARY.md"), "w") as fp:
         fp.write("\n".join(md))
     print(f"wrote {os.path.join(HERE, 'summary.json')} and SUMMARY.md")

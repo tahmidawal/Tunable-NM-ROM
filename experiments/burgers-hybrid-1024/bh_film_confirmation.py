@@ -28,6 +28,10 @@ LINEAR_TOL = float(os.environ.get("LINEAR_TOL", "1e-2"))
 PRECONDITIONER = os.environ.get("PRECONDITIONER", "helmholtz")
 DECODE_CHUNK = int(os.environ.get("DECODE_CHUNK", "2"))
 DECODE_RESOLUTION = int(os.environ.get("DECODE_RESOLUTION", "64"))
+LATENT_HISTORY_MODES = tuple(
+    value.strip() for value in
+    os.environ.get("LATENT_HISTORY_MODES", "previous").split(",") if value.strip()
+)
 TEST_SEED = int(os.environ.get("TEST_SEED", "1"))
 TEST_DRAW_COUNT = int(os.environ.get("TEST_DRAW_COUNT", "16"))
 TEST_START = int(os.environ.get("TEST_START", "0"))
@@ -36,7 +40,14 @@ TIME_REPS = int(os.environ.get("TIME_REPS", "21"))
 TIME_WARM = int(os.environ.get("TIME_WARM", "2"))
 BURN_S = float(os.environ.get("BURN_S", "3"))
 REFERENCE_RESIDUAL_GATE = float(os.environ.get("REFERENCE_RESIDUAL_GATE", "1e-11"))
-ARMS = ("linear", "cubic", "film_nmrom")
+_HISTORY_SCALES = {"previous": 0.0, "extrapolation": 1.0}
+if not LATENT_HISTORY_MODES or any(mode not in _HISTORY_SCALES for mode in LATENT_HISTORY_MODES):
+    raise ValueError(f"invalid LATENT_HISTORY_MODES={LATENT_HISTORY_MODES}")
+FILM_ARMS = (
+    ("film_nmrom",) if len(LATENT_HISTORY_MODES) == 1 else
+    tuple(f"film_nmrom_{mode}" for mode in LATENT_HISTORY_MODES)
+)
+ARMS = ("linear", "cubic") + FILM_ARMS
 
 
 def save(report):
@@ -104,6 +115,7 @@ def main():
             "preconditioner": PRECONDITIONER,
             "decode_chunk": DECODE_CHUNK,
             "decode_resolution": DECODE_RESOLUTION,
+            "latent_history_modes": LATENT_HISTORY_MODES,
             "exact_upwind_weak_contract": True,
             "cold_start_hyper_reduced_on_same_eq_nodes": True,
             "historical_full_grid_path": (
@@ -140,7 +152,12 @@ def main():
         if not np.isfinite(worst_reference) or worst_reference > REFERENCE_RESIDUAL_GATE:
             raise SystemExit(f"N={n}: reference residual {worst_reference:.3e}")
         offline_start = time.time()
-        built = film.build(n)
+        built_by_arm = {}
+        for mode, arm in zip(LATENT_HISTORY_MODES, FILM_ARMS):
+            built_by_arm[arm] = film.build(
+                n, latent_extrapolation_scale=_HISTORY_SCALES[mode]
+            )
+        built = built_by_arm[FILM_ARMS[0]]
         report["offline_per_mesh"][str(n)] = {
             "build_seconds": float(time.time() - offline_start),
             "eq_info": built["eq_info"],
@@ -148,8 +165,20 @@ def main():
             "eq_weights": built["eq_weights"].tolist(),
             "decode_chunk": built["decode_chunk"],
             "decode_resolution": built["decode_resolution"],
+            "latent_history_variants": {
+                arm: {
+                    "mode": mode,
+                    "scale": built_by_arm[arm]["latent_extrapolation_scale"],
+                    "eq_indices_equal_to_first": bool(np.array_equal(
+                        built_by_arm[arm]["eq_indices"], built["eq_indices"]
+                    )),
+                    "eq_weights_equal_to_first": bool(np.array_equal(
+                        built_by_arm[arm]["eq_weights"], built["eq_weights"]
+                    )),
+                }
+                for mode, arm in zip(LATENT_HISTORY_MODES, FILM_ARMS)
+            },
         }
-        construct = built["construct"]
         chain, _ = bc.make_chain(
             n,
             FOM_TAU,
@@ -158,12 +187,18 @@ def main():
         )
         dummy = jnp.zeros((bc.T, n * n), jnp.float64)
 
-        @jax.jit
-        def film_end_to_end(u0, nu):
-            construction = construct(u0, nu)
-            guesses = construction[0]
-            fom = chain(u0, nu, guesses, jnp.int32(2))
-            return fom, construction
+        end_to_end_by_arm = {}
+        for arm in FILM_ARMS:
+            construct = built_by_arm[arm]["construct"]
+
+            @jax.jit
+            def film_end_to_end(u0, nu, construct_fn=construct):
+                construction = construct_fn(u0, nu)
+                guesses = construction[0]
+                fom = chain(u0, nu, guesses, jnp.int32(2))
+                return fom, construction
+
+            end_to_end_by_arm[arm] = film_end_to_end
 
         calls = {}
         for trajectory in trajectories:
@@ -179,11 +214,13 @@ def main():
                     u0_value, nu_value, dummy, jnp.int32(5)
                 )
             )
-            calls[("film_nmrom", trajectory["index"])] = (
-                lambda u0_value=u0, nu_value=nu: film_end_to_end(
-                    u0_value, nu_value
+            for arm in FILM_ARMS:
+                end_to_end = end_to_end_by_arm[arm]
+                calls[(arm, trajectory["index"])] = (
+                    lambda u0_value=u0, nu_value=nu, fn=end_to_end: fn(
+                        u0_value, nu_value
+                    )
                 )
-            )
 
         for call in calls.values():
             jax.block_until_ready(call())
@@ -212,7 +249,7 @@ def main():
                     output = calls[(arm, trajectory["index"])]()
                     jax.block_until_ready(output)
                     elapsed = time.perf_counter() - start
-                    if arm == "film_nmrom":
+                    if arm in FILM_ARMS:
                         fom_output, construction = output
                     else:
                         fom_output, construction = output, None
@@ -224,7 +261,7 @@ def main():
                         (
                             guesses, ic_relative, ic_jacobians, best_start,
                             ic_attempts, reduced_norm, step_jacobians, reasons,
-                            field_features,
+                            step_attempts, field_features,
                         ) = [np.asarray(v) for v in construction]
                         target = trajectory["U"][1:]
                         record.update({
@@ -243,6 +280,9 @@ def main():
                             "reduced_jacobians_total": int(np.sum(step_jacobians)),
                             "reduced_jacobians_per_step": step_jacobians.tolist(),
                             "reduced_reason_per_step": reasons.tolist(),
+                            "reduced_attempts_total": int(np.sum(step_attempts)),
+                            "reduced_attempts_per_step": step_attempts.tolist(),
+                            "reduced_tol_at_init_steps": int(np.sum(reasons == 4)),
                             "field_features_from_u0_and_nu": field_features.tolist(),
                         })
                     if (

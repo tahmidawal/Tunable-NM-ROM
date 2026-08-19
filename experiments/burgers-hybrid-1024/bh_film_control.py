@@ -126,7 +126,14 @@ class FilmControl:
         )
         self.mean_initial_latent = self.z_train[:, 0].mean(axis=0)
 
-    def build(self, n):
+    def build(self, n, latent_extrapolation_scale=0.0):
+        """Build one deployable weak-rollout variant.
+
+        ``latent_extrapolation_scale=0`` is the audited previous-latent LM
+        start.  ``1`` uses ``2 z_n - z_{n-1}`` after the first step.  In both
+        cases the LM solver evaluates the weak objective at that start and
+        exits immediately when it is already below the absolute tolerance.
+        """
         decoder = self.decoder
         coords = jnp.asarray(rc.grid_coords(n))
         decode_coords = jnp.asarray(rc.grid_coords(self.decode_resolution))
@@ -173,8 +180,30 @@ class FilmControl:
 
         initializer_weights = jnp.asarray(self.initializer_weights, F64)
         mean_initial = jnp.asarray(self.mean_initial_latent, F64)
+        history_scale = jnp.asarray(float(latent_extrapolation_scale), F64)
         tolerance_scale = float(ops.get("tol_scale", np.sqrt((n - 2) ** 2)))
         grid_axis = jnp.linspace(0.0, 1.0, n)
+
+        def rollout_history(z0, nu, tolerances):
+            """Weak LSPG scan with a charged, zero-allocation history start."""
+            def body(carry, tolerance):
+                z_older, z_previous, previous_centers, step = carry
+                extrapolated = z_previous + history_scale * (z_previous - z_older)
+                z_start = jnp.where(step == 0, z_previous, extrapolated)
+                z_new, rn, n_jac, accepted, reason, attempts = ops["step_jit"](
+                    z_start, previous_centers, nu, tolerance, rc.GN_BUDGET
+                )
+                next_carry = (
+                    z_previous,
+                    z_new,
+                    ops["prev_of"](z_new),
+                    step + jnp.int32(1),
+                )
+                return next_carry, (z_new, rn, n_jac, reason, attempts)
+
+            initial = (z0, z0, ops["prev_of"](z0), jnp.int32(0))
+            _, outputs = jax.lax.scan(body, initial, tolerances)
+            return outputs
 
         def field_features(u0, nu):
             field = jnp.maximum(u0.reshape(n, n), 0.0)
@@ -208,9 +237,13 @@ class FilmControl:
             z_initial, ic_relative, ic_jacobians, best_start, ic_attempts = fit_initial(
                 u0, starts
             )
-            latents, reduced_norm, step_jacobians, reason = ops["rollout_jit"](
-                z_initial, nu, tolerance, rc.GN_BUDGET
-            )
+            (
+                latents,
+                reduced_norm,
+                step_jacobians,
+                reason,
+                step_attempts,
+            ) = rollout_history(z_initial, nu, tolerance)
             # Fixed-coarse neural decode plus charged, fused bilinear
             # prolongation.  The FOM receives a full target-grid guess.
             guesses = decode_all(latents)
@@ -223,6 +256,7 @@ class FilmControl:
                 reduced_norm,
                 step_jacobians,
                 reason,
+                step_attempts,
                 features,
             )
 
@@ -233,6 +267,7 @@ class FilmControl:
             "N": n,
             "decode_chunk": chunk,
             "decode_resolution": self.decode_resolution,
+            "latent_extrapolation_scale": float(latent_extrapolation_scale),
             "eq_info": collocation.get("info"),
             "eq_indices": np.asarray(collocation["idx"]),
             "eq_weights": np.asarray(collocation["w"]),

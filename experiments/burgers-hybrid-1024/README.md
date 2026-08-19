@@ -118,6 +118,16 @@ checksums.
 decode/prolongation optimization.  It validates execution only and is excluded
 from every result table; the final FiLM job uses the optimized coarse path.
 
+Before that final job, the fixed-coarse FiLM control also gates its live latent
+initialisation on development data.  The existing method already carries the
+previous accepted latent into the next weak LM solve and performs an immediate
+weak-objective tolerance test.  The bounded alternative starts steps after the
+first from `2*z_n-z_(n-1)`, retaining the same trust-region solver and early
+exit.  `LATENT_HISTORY_MODES=previous,extrapolation` runs both variants against
+the same cubic control in one rotated timing block; the locked winner alone
+enters confirmation.  This gate changes neither the trained checkpoint nor the
+FOM tolerance.
+
 ## Final audit contract
 
 Every confirmation arm is invoked in a joint post-burn block with rotated

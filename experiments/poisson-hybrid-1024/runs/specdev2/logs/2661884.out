@@ -1,0 +1,18 @@
+host=pax142 job=2661884 gpu=NVIDIA A100-PCIE-40GB
+commit=2e4ac0d56b2e49c6094afba60a0c524091d24d95 dirty_hash=e3b0c44298fc cell=specdev2
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[256, 512, 1024] taus=[1e-06] arms=['spectral_q32', 'spectral_q64', 'spectral_q96', 'spectral_q128'] test_seed=0 smoke=0 reps=7 warm=2
+VALIDATED N=256 spectral_q32 tau=1e-06: construct 0.077 ms, Aerr 7.308e-04, iters 10.9/653.8; authoritative joint timing pending
+VALIDATED N=256 spectral_q64 tau=1e-06: construct 0.080 ms, Aerr 3.886e-05, iters 3.1/653.8; authoritative joint timing pending
+VALIDATED N=256 spectral_q96 tau=1e-06: construct 0.084 ms, Aerr 1.906e-05, iters 1.8/653.8; authoritative joint timing pending
+VALIDATED N=256 spectral_q128 tau=1e-06: construct 0.085 ms, Aerr 1.042e-05, iters 1.2/653.8; authoritative joint timing pending
+VALIDATED N=512 spectral_q32 tau=1e-06: construct 0.083 ms, Aerr 7.294e-04, iters 23.6/1330.1; authoritative joint timing pending
+VALIDATED N=512 spectral_q64 tau=1e-06: construct 0.086 ms, Aerr 4.139e-05, iters 7.1/1330.1; authoritative joint timing pending
+VALIDATED N=512 spectral_q96 tau=1e-06: construct 0.097 ms, Aerr 2.213e-05, iters 4.2/1330.1; authoritative joint timing pending
+VALIDATED N=512 spectral_q128 tau=1e-06: construct 0.101 ms, Aerr 1.391e-05, iters 2.9/1330.1; authoritative joint timing pending
+VALIDATED N=1024 spectral_q32 tau=1e-06: construct 0.100 ms, Aerr 7.290e-04, iters 50.6/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q64 tau=1e-06: construct 0.135 ms, Aerr 4.202e-05, iters 15.6/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q96 tau=1e-06: construct 0.140 ms, Aerr 2.289e-05, iters 9.7/2702.6; authoritative joint timing pending
+VALIDATED N=1024 spectral_q128 tau=1e-06: construct 0.152 ms, Aerr 1.480e-05, iters 6.9/2702.6; authoritative joint timing pending
+DONE
+ALL-DONE

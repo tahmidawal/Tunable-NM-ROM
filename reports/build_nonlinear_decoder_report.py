@@ -81,9 +81,16 @@ def main():
     b_jac = bench_row(b_bench, "jacobian", 2560)
     b_full = bench_row(b_bench, "forward", 262144)
 
+    pairs = e2e_pairs(summary)
     burgers_complete = bool(summary["burgers_three_seed"])
-    e2e_complete = ({r["cell"] for r in summary["e2e"]} >=
-                    {"nda_pe2e_g98_r23", "nda_be2e_g160m640_r24"})
+    b_recommended = summary["burgers_gate_audit"]["recommended"]
+    poisson_timed = any(r["M"] == p_recommended["M"] and
+                        r["m"] == p_recommended["m"] and
+                        r["cell"].startswith("nda_pe2e_") for r in pairs)
+    burgers_timed = (b_recommended is not None and any(
+        r["M"] == b_recommended["M"] and r["m"] == b_recommended["m"] and
+        r["cell"].startswith("nda_be2e_") for r in pairs))
+    e2e_complete = poisson_timed and burgers_timed
     final = (burgers_complete and e2e_complete and
              summary["burgers_gate_audit"]["recommended"] is not None)
     state = ("Final for the N=64, k=16 architecture comparison described here."
@@ -191,7 +198,6 @@ def main():
     md += ["", "![Same-GPU decoder speedup](../experiments/nonlinear-decoder-architecture/figures/same_gpu_decoder_speedup.png)", "",
            "Coordinate caching is exact to the check stored in each benchmark JSON; it removes coordinate-only affine work without changing the nonlinear model.", "",
            "## End-to-end rollout measurements", ""]
-    pairs = e2e_pairs(summary)
     md += table(
         ["cell", "M,m", "tau", "control ms/error", "compact ms/error", "control/compact", "iso-FOM/compact", "censored control/compact", "timing outliers control/compact"],
         ["---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
@@ -225,17 +231,27 @@ def main():
              f"{fom_relation} than the like-for-like iso-accuracy FOM. This row is uncensored and has "
              f"compact error {sci(loose['variant']['error'])}."), ""]
 
-    selected_burgers_e2e = [r for r in pairs if r["cell"] == "nda_be2e_g160m640_r24"]
+    selected_burgers_e2e = ([] if b_recommended is None else [
+        r for r in pairs if r["cell"].startswith("nda_be2e_") and
+        r["M"] == b_recommended["M"] and r["m"] == b_recommended["m"]])
     if selected_burgers_e2e:
-        loose = next(r for r in selected_burgers_e2e if r["tau"] == 1e-2)
+        deployable = [r for r in selected_burgers_e2e
+                      if r["variant"]["censored_frac"] == 0 and
+                      r["variant"]["error"] <= 1e-2]
+        loose = min(deployable or selected_burgers_e2e,
+                    key=lambda r: r["variant"]["time_ms"])
         fom_relation = (f"{loose['iso_fom_speedup']:.3f}× faster"
                         if loose["iso_fom_speedup"] >= 1 else
                         f"{1/loose['iso_fom_speedup']:.3f}× slower")
+        censor_note = ("This is an uncensored, accuracy-passing deployment point."
+                       if loose in deployable else
+                       "This row remains budget-censored and is diagnostic only.")
         md += [
             (f"At the selected Burgers M={loose['M']},m={loose['m']} arm and tau={sci(loose['tau'])}, "
              f"the compact decoder is {loose['speedup']:.3f}× faster than the saved decoder architecture "
              f"inside the same job. It is {fom_relation} than the "
-             "like-for-like iso-accuracy FOM, so this is an architecture speedup—not a claimed FOM crossover."), ""]
+             "like-for-like iso-accuracy FOM, so this is an architecture speedup—not a claimed FOM crossover. "
+             f"{censor_note}"), ""]
 
     trust_rows = [r for r in summary["burgers_objectives"] if r["trust_factor"] > 0]
     if trust_rows:

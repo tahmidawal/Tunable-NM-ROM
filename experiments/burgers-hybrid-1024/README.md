@@ -139,6 +139,15 @@ residual candidate and the charged guard acceptance fraction is retained.
 This makes a low-budget NM-ROM candidate safe without hiding a degraded guess
 behind a separate untimed fallback.
 
+The bounded gate selected the two-Jacobian arm for the final genuine hybrid.
+The one-Jacobian arm performs only the initial weak evaluation, never passes a
+candidate through the guard on the held-out cohort, and is therefore retained
+only as the zero-update safety-floor diagnostic.  Two Jacobians permit one
+actual LM update and pass a median one of 50 candidate steps through the exact
+guard.  That extremely low acceptance is the mechanism-level reason the FiLM
+work cannot amortize its construction cost; it is not hidden by reporting only
+the finished field.
+
 `runs/film_latent_gate_h100_redundant` is the already-queued duplicate of the
 latent-history mechanism gate.  It completed after the A100 selection result;
 it is retained for provenance but its wall clock is not pooled with or compared

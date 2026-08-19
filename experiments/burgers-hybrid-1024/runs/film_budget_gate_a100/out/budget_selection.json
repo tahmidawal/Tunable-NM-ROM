@@ -1,0 +1,25 @@
+{
+ "input": "experiments/burgers-hybrid-1024/runs/film_budget_gate_a100/out/film_budget_gate.json",
+ "input_sha256": "5eee5b00e18d8f9fe384874fcb9084c192ba8c3b359138bc7f02308ac38847f3",
+ "selection_population": "held-out canonical draw-16 indices 4:8",
+ "selection_rule": "minimum max-step-Jacobian budget that produces and passes at least one actual reduced update through the exact live-cubic FOM-residual guard",
+ "selected_max_step_jacobians": 2,
+ "selected_history_mode": "extrapolation",
+ "j1_classification": "zero-update safety-floor diagnostic; excluded from final",
+ "j1_guard_accepted_fraction_median": 0.0,
+ "j2_guard_accepted_fraction_median": 0.02,
+ "j2_guard_accepted_count_median": 1.0,
+ "j1_timing_median_ms": 109.45463413372636,
+ "j2_timing_median_ms": 157.68797928467393,
+ "j2_extra_time_vs_j1_median_ms": 48.23270672932267,
+ "j2_extra_time_vs_j1_median_95ci_ms": [
+  48.060383240226656,
+  48.44645131379366
+ ],
+ "j1_reduced_jacobians_median": 50.0,
+ "j2_reduced_jacobians_median": 100.0,
+ "j1_linear_total_median": 61.5,
+ "j2_linear_total_median": 60.5,
+ "max_returned_outer_residual": 9.915254192411631e-07,
+ "complete": true
+}

@@ -1,0 +1,9 @@
+host=pax050 gpu=NVIDIA A100 80GB PCIe
+commit=4d57c665c8b82259e342746ca20b8d4afc86ca3a dirty=e3b0c44298fc cell=ctol_hybb_film_budget_gate
+jax_backend=gpu cuda:0
+  bounded-grid NNLS-EQ M=64 m=256: candidates 3844/3844, rel fit 6.21e-03 (p95 6.8e-01) [18s]
+N=64 tau=1e-06 linear    : 29.88ms vs cubic=-7.95ms Newton=86 BiCG=94
+N=64 tau=1e-06 cubic     : 22.06ms vs cubic=0.00ms Newton=56 BiCG=62
+N=64 tau=1e-06 film_nmrom_extrapolation_j1: 109.45ms vs cubic=-87.09ms Newton=56 BiCG=62
+N=64 tau=1e-06 film_nmrom_extrapolation_j2: 157.69ms vs cubic=-135.17ms Newton=56 BiCG=60
+ALL-DONE

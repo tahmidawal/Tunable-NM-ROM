@@ -47,7 +47,7 @@ for path in (
 
 import pro_common as pc  # noqa: E402
 from pro_common import mp, F64  # noqa: E402
-from fu_eq import eq_fit, weak_source_projector  # noqa: E402
+from fu_eq import eq_fit as legacy_eq_fit  # noqa: E402
 from wsf_poisson import make_lm_obj_jit  # noqa: E402
 import wsf_util as wu  # noqa: E402
 
@@ -71,6 +71,11 @@ MQ = int(os.environ.get("MQ", "256"))
 GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
 LM_ROM_TAU = float(os.environ.get("LM_ROM_TAU", "0.01"))
 TR_SCALE = float(os.environ.get("TR_SCALE", "1.0"))
+EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
+EQ_PERTURB = int(os.environ.get("EQ_PERTURB", "3"))
+EQ_ROWS = int(os.environ.get("EQ_ROWS", "3072"))
+EQ_CAND = int(os.environ.get("EQ_CAND_OFF", "4096"))
+EQ_SEED = int(os.environ.get("EQ_SEED", str(mp.SEED + 20259)))
 CAL_SEED = int(os.environ.get("CAL_SEED", "73129"))
 CAL_FRAC = float(os.environ.get("CAL_FRAC", "0.2"))
 RBF_LENGTHS = [float(v) for v in os.environ.get(
@@ -79,6 +84,9 @@ RBF_RIDGES = [float(v) for v in os.environ.get(
     "RBF_RIDGES", "1e-8,1e-6,1e-4,1e-2,1e-1,1").split(",")]
 ARM_NAMES = [v for v in os.environ.get(
     "ARMS", "rbf_c64_q0,nearest_c64_q0,rbf_c64_q8,spectral_q8,spectral_q16"
+).split(",") if v]
+NATIVE_ARM_NAMES = [v for v in os.environ.get(
+    "NATIVE_ARMS", "spectral_q8,param1_c64_q8,lmmean_c64_q0"
 ).split(",") if v]
 
 
@@ -219,21 +227,40 @@ def make_rbf_predictor(fit: dict):
     return predict
 
 
-def paired_time(fn_a, fn_b, reps: int, warm: int) -> tuple[list[float], list[float]]:
-    """Back-to-back timing with alternating order; every call must block."""
+def paired_time(fn_a, fn_b, grade_a, grade_b, reps: int, warm: int):
+    """Back-to-back timing with alternating order and telemetry from each timed output."""
     for _ in range(warm):
-        fn_a(); fn_b()
-    aa, bb = [], []
+        jax.block_until_ready(fn_a()); jax.block_until_ready(fn_b())
+    aa, bb, ga, gb = [], [], [], []
 
-    def one(fn):
-        t0 = time.perf_counter(); fn(); return time.perf_counter() - t0
+    def one(fn, grade):
+        t0 = time.perf_counter()
+        out = fn()
+        jax.block_until_ready(out)
+        elapsed = time.perf_counter() - t0
+        return elapsed, grade(out)
 
     for r in range(reps):
         if r % 2 == 0:
-            aa.append(one(fn_a)); bb.append(one(fn_b))
+            t, g = one(fn_a, grade_a); aa.append(t); ga.append(g)
+            t, g = one(fn_b, grade_b); bb.append(t); gb.append(g)
         else:
-            bb.append(one(fn_b)); aa.append(one(fn_a))
-    return aa, bb
+            t, g = one(fn_b, grade_b); bb.append(t); gb.append(g)
+            t, g = one(fn_a, grade_a); aa.append(t); ga.append(g)
+    return aa, bb, ga, gb
+
+
+def grade_cg_output(out, F, Uref, op):
+    x, iters, returned_rel_residual, flag = out
+    recomputed = jnp.linalg.norm(op(x) - F) / jnp.maximum(jnp.linalg.norm(F), 1e-300)
+    rel_l2 = jnp.linalg.norm(x - Uref) / jnp.maximum(jnp.linalg.norm(Uref), 1e-300)
+    return dict(
+        iterations=int(iters),
+        returned_true_rel_residual=float(returned_rel_residual),
+        recomputed_true_rel_residual=float(recomputed),
+        rel_l2_vs_exact_dst=float(rel_l2),
+        flag=int(flag),
+    )
 
 
 def endpoint_bilinear(uc, out_n: int):
@@ -263,6 +290,35 @@ def check_endpoint_bilinear():
     if err > 5e-14:
         raise SystemExit(f"endpoint-bilinear affine self-check failed: {err:.3e}")
     return err
+
+
+def dst1_ortho(x, axis):
+    """Orthonormal DST-I through an odd FFT extension; self-inverse."""
+    y = jnp.moveaxis(x, axis, -1)
+    n = y.shape[-1]
+    z = jnp.zeros(y.shape[:-1] + (1,), dtype=y.dtype)
+    ext = jnp.concatenate([z, y, z, -y[..., ::-1]], axis=-1)
+    raw = -0.5 * jnp.imag(jnp.fft.fft(ext, axis=-1)[..., 1:n + 1])
+    out = jnp.sqrt(jnp.asarray(2.0 / (n + 1), y.dtype)) * raw
+    return jnp.moveaxis(out, -1, axis)
+
+
+def dst2_ortho(x):
+    return dst1_ortho(dst1_ortho(x, 0), 1)
+
+
+def check_dst():
+    """The FFT DST must match the explicit orthonormal sine matrix."""
+    n = 17
+    rng = np.random.default_rng(119)
+    x = jnp.asarray(rng.standard_normal((n, n)))
+    p = np.arange(1, n + 1)
+    S = jnp.asarray(np.sqrt(2.0 / (n + 1)) * np.sin(np.pi * np.outer(p, p) / (n + 1)))
+    coeff_err = float(jnp.max(jnp.abs(dst2_ortho(x) - S.T @ x @ S)))
+    inverse_err = float(jnp.max(jnp.abs(dst2_ortho(dst2_ortho(x)) - x)))
+    if max(coeff_err, inverse_err) > 2e-13:
+        raise SystemExit(f"FFT DST self-check failed: coeff={coeff_err:.3e} inv={inverse_err:.3e}")
+    return dict(coeff_maxabs=coeff_err, inverse_maxabs=inverse_err)
 
 
 def make_lm_obj_tr_jit(dec, K, pts, wq, PhiT, Wl, budget, obj_rel, delta):
@@ -320,6 +376,116 @@ def make_lm_obj_tr_jit(dec, K, pts, wq, PhiT, Wl, budget, obj_rel, delta):
     return jax.jit(lm)
 
 
+def continuum_modes(grid, M):
+    """Continuous sine-mode indices selected exactly as the audited off-grid weak form."""
+    kk = np.arange(1, grid.N - 1)
+    II, JJ = np.meshgrid(kk, kk, indexing="ij")
+    lam_all = (np.pi**2 * (II**2 + JJ**2)).reshape(-1)
+    m_eff = min(M, lam_all.size)
+    keep = lam_all <= np.sort(lam_all)[m_eff - 1]
+    return II.reshape(-1)[keep], JJ.reshape(-1)[keep], lam_all[keep]
+
+
+def make_separable_source_projector(grid, M, alpha=1.0):
+    """O(N^2 sqrt(M)) source projection with no captured O(M N^2) constant."""
+    I, J, lam = continuum_modes(grid, M)
+    maxk = int(max(np.max(I), np.max(J)))
+    x = np.arange(1, grid.N - 1) / (grid.N - 1)
+    S = jnp.asarray(np.sin(np.pi * np.outer(x, np.arange(1, maxk + 1))))
+    Ii, Jj = jnp.asarray(I - 1), jnp.asarray(J - 1)
+    weight = jnp.asarray(2.0 * grid.dx**2 * lam**(-alpha))
+
+    def apply(F):
+        C = S.T @ F @ S
+        return C[Ii, Jj] * weight
+
+    return jax.jit(apply), dict(n_modes=len(I), max_1d_mode=maxk,
+                                captured_table_shape=list(S.shape))
+
+
+def eq_fit_streamed(dec, grid, Ztr, K, M, m):
+    """The audited off-grid NNLS-EQ fit with streamed/separable full-grid targets.
+
+    It preserves the fixed RNG stream, snapshots, row normalization, row subset, capped NNLS,
+    and final refit of `fu_eq.eq_fit`. It avoids materializing the N-grid decoder fields and
+    the (N^2,M) mode table, which would retain ~2 GiB + ~510 MiB at N=1024.
+    """
+    t0 = time.time()
+    rng = np.random.default_rng(EQ_SEED)
+    idx = rng.choice(len(Ztr), size=min(EQ_SNAPS, len(Ztr)), replace=False)
+    cand_np = np.random.default_rng(mp.SEED + 12345).uniform(0.0, 1.0, size=(EQ_CAND, 2))
+    I, J, lam = continuum_modes(grid, M)
+    Phi = (2.0 * np.sin(np.pi * cand_np[:, 0, None] * I[None, :])
+           * np.sin(np.pi * cand_np[:, 1, None] * J[None, :]))
+    maxk = int(max(np.max(I), np.max(J)))
+    x = np.arange(1, grid.N - 1) / (grid.N - 1)
+    S = jnp.asarray(np.sin(np.pi * np.outer(x, np.arange(1, maxk + 1))))
+    cand = jnp.asarray(cand_np)
+    snap_fn = jax.jit(lambda z: dec(z, cand))
+    full_fn = jax.jit(lambda z: dec(z, grid.coords_int).reshape(grid.n_i, grid.n_i))
+    snaps, targets = [], []
+    for i in idx:
+        z = jnp.asarray(Ztr[i])
+        zlist = [z] + [z + 0.05 * jnp.asarray(rng.standard_normal(K))
+                       for _ in range(EQ_PERTURB)]
+        for zz in zlist:
+            snaps.append(np.asarray(snap_fn(zz)))
+            U = full_fn(zz)
+            C = np.asarray(S.T @ U @ S)
+            targets.append(2.0 * grid.dx**2 * C[I - 1, J - 1])
+    R = np.stack(snaps)
+    T = np.stack(targets)
+    # Full-candidate row norms without forming (snap, mode, candidate).
+    row_sc = np.sqrt(np.maximum((R * R) @ (Phi * Phi), 0.0)) + 1e-300
+    n_snap, n_modes = T.shape
+    rows = rng.choice(n_snap * n_modes, size=min(n_snap * n_modes, EQ_ROWS), replace=False)
+    si, mi = rows // n_modes, rows % n_modes
+    Gsel = (R[si, :] * Phi[:, mi].T) / row_sc[si, mi, None]
+    bsel = T[si, mi] / row_sc[si, mi]
+    wts, rnorm, _ = pc.nnls_capped(Gsel, bsel, max_support=m)
+    supp = np.nonzero(wts > 0)[0]
+    if len(supp) >= m:
+        keep = supp[np.argsort(-wts[supp])[:m]]; padded = 0
+    else:
+        rest = np.setdiff1d(np.arange(EQ_CAND), supp)
+        pad = rest[np.argsort(-np.abs(R).mean(0)[rest])[:m - len(supp)]]
+        keep = np.concatenate([supp, pad]); padded = len(pad)
+    Gk = np.einsum("sp,pm->smp", R[:, keep], Phi[keep, :])
+    Gk = (Gk / row_sc[:, :, None]).reshape(-1, len(keep))
+    b = (T / row_sc).reshape(-1)
+    wq, _, _ = pc.nnls_capped(Gk, b, max_support=len(keep))
+    wq = np.where(wq > 0, wq, 1e-8 * max(wq.max(), 1e-300))
+    res = Gk @ wq - b
+    rel_rows = np.abs(res) / (np.abs(b) + 1e-300)
+    info = dict(
+        implementation="streamed_separable_exact_equivalent",
+        M=M,
+        n_modes=n_modes,
+        m=int(len(keep)),
+        pool="offgrid",
+        grid_N=grid.N,
+        support=int(len(supp)),
+        padded=int(padded),
+        rnorm_capped=float(rnorm),
+        rnorm_final=float(np.linalg.norm(res)),
+        b_norm=float(np.linalg.norm(b)),
+        rel_fit=float(np.linalg.norm(res) / np.linalg.norm(b)),
+        row_rel_median=float(np.median(rel_rows)),
+        row_rel_p95=float(np.quantile(rel_rows, 0.95)),
+        row_rel_max=float(np.max(rel_rows)),
+        n_rows=int(len(rows)),
+        n_cand=EQ_CAND,
+        n_snapshots=n_snap,
+        full_grid_peak_retained_fields=1,
+        full_grid_mode_table_materialized=False,
+        max_1d_mode=maxk,
+        seconds=time.time() - t0,
+    )
+    print(f"  STREAMED NNLS-EQ M={M} m={m} @N={grid.N}: support {len(supp)} "
+          f"(+{padded}) rel fit {info['rel_fit']:.2e} [{info['seconds']:.0f}s]", flush=True)
+    return cand_np[keep], wq, info
+
+
 def source_cases(n: int):
     if TEST_SEED == mp.SEED:
         cx, cy, w, a, p = mp.sample_params(seed=mp.SEED, m=mp.N_TRAIN + N_TEST)
@@ -357,6 +523,7 @@ def main():
         flush=True,
     )
     interp_affine_err = check_endpoint_bilinear()
+    dst_check = check_dst()
     d, cfg, stages, Ztr, hard_bc = pc.load_pkl(PKL)
     if not hard_bc:
         raise SystemExit("this harness requires the hard-BC checkpoint")
@@ -414,11 +581,13 @@ def main():
             lm_rom_tau=LM_ROM_TAU,
             trust_region_scale=TR_SCALE,
             arms=[a.__dict__ for a in ARMS],
+            native_cg_sensitivity_arms=NATIVE_ARM_NAMES,
             cg_maxiter=CG_MAXITER,
             matmul_precision=os.environ.get("JAX_DEFAULT_MATMUL_PRECISION", "unset"),
             dtype="f64",
             prolongation="endpoint-aligned separable bilinear",
             prolongation_affine_selfcheck_maxabs=interp_affine_err,
+            fft_dst_selfcheck=dst_check,
         ),
         provenance=prov,
         rbf_train_only=rbf_info,
@@ -443,8 +612,8 @@ def main():
         Fs = [jnp.asarray(v) for v in Fs_np]
         params = [jnp.asarray(v) for v in params_np]
 
-        # The exact sine inverse is both the error reference and the strongest baseline.
-        direct = jax.jit(lambda F: grid.S @ ((grid.S.T @ F @ grid.S) / grid.lam) @ grid.S.T)
+        # Exact O(N^2 log N) FFT-DST inverse of the same Dirichlet FD operator.
+        direct = jax.jit(lambda F: dst2_ortho(dst2_ortho(F) / grid.lam))
         Uref = [direct(F) for F in Fs]
         d_res = [float(jnp.linalg.norm(op(Uref[i]) - Fs[i]) / jnp.linalg.norm(Fs[i]))
                  for i in range(N_TEST)]
@@ -466,9 +635,12 @@ def main():
         mesh_check = dict(
             N=n,
             n_dof=ni**2,
+            test_parameters=params_np.tolist(),
             exact_direct_true_rel_residual_max=float(max(d_res)),
-            exact_direct_all_s=direct_reps,
-            exact_direct_ms=float(np.mean([np.median(v) for v in direct_reps])) * 1e3,
+            pre_eq_diagnostic_exact_direct_all_s=direct_reps,
+            pre_eq_diagnostic_exact_direct_ms=(
+                float(np.mean([np.median(v) for v in direct_reps])) * 1e3
+            ),
             burn_iterations=burn_n,
         )
         report["mesh_checks"].append(mesh_check)
@@ -499,9 +671,22 @@ def main():
         have_lm = any(a.predictor.startswith("lm_") for a in ARMS)
         if have_lm:
             spec = dict(kind="weak", alpha=1.0, M=M_MODES)
-            pts, wq, eq_info = eq_fit(dec, grid, Ztr, cfg["K_LAT"], M_MODES, MQ, "offgrid")
+            pts, wq, eq_info = eq_fit_streamed(dec, grid, Ztr, cfg["K_LAT"], M_MODES, MQ)
+            if SMOKE and bool(int(os.environ.get("COMPARE_LEGACY_EQ", "0"))):
+                old_pts, old_wq, old_info = legacy_eq_fit(
+                    dec, grid, Ztr, cfg["K_LAT"], M_MODES, MQ, "offgrid"
+                )
+                pts_diff = float(np.max(np.abs(np.asarray(pts) - np.asarray(old_pts))))
+                wq_diff = float(np.max(np.abs(np.asarray(wq) - np.asarray(old_wq))))
+                if pts_diff != 0.0 or wq_diff > 1e-10 * (1.0 + float(np.max(np.abs(old_wq)))):
+                    raise SystemExit(f"streamed EQ mismatch: pts={pts_diff:.3e} wq={wq_diff:.3e}")
+                eq_info["legacy_smoke_comparison"] = dict(
+                    pts_maxabs=pts_diff,
+                    weights_maxabs=wq_diff,
+                    legacy_rel_fit=old_info["rel_fit"],
+                )
             PhiT, Wl = pc.colloc_mode_table(grid, spec, "offgrid", pts)
-            pre_apply, pre_build_s = weak_source_projector(grid, spec, "offgrid")
+            pre_apply, pre_info = make_separable_source_projector(grid, M_MODES, alpha=1.0)
             lm_base = make_lm_obj_jit(
                 dec, cfg["K_LAT"], pts, wq, PhiT, Wl, GN_ITERS, LM_ROM_TAU
             )
@@ -522,13 +707,22 @@ def main():
             if lm_equiv > 1e-12 * (1.0 + float(jnp.linalg.norm(zref))):
                 raise SystemExit(f"N={n}: trust LM at delta=inf != audited LM ({lm_equiv:.3e})")
             mesh_check["eq_info"] = eq_info
-            mesh_check["source_projector_offline_build_s"] = pre_build_s
+            mesh_check["source_projector"] = pre_info
+            if n <= 256:
+                dense_ref = pc.weak_source_term(grid, spec, "offgrid", np.asarray(Fs[0]))
+                pre_diff = float(jnp.max(jnp.abs(pre_apply(Fs[0]) - dense_ref)))
+                if pre_diff > 1e-11:
+                    raise SystemExit(f"N={n}: separable source projector mismatch {pre_diff:.3e}")
+                mesh_check["source_projector_vs_dense_maxabs"] = pre_diff
             mesh_check["training_latent_radius"] = train_radius
             mesh_check["trust_delta"] = TR_SCALE * train_radius
             mesh_check["trust_inf_vs_audited_lm_maxabs"] = lm_equiv
         else:
             lm_base = lm_tr = None
 
+        timing_registry = {}
+        baseline_registry = {}
+        guess_registry = {}
         for arm in ARMS:
             q = min(arm.q, ni)
             Sq = grid.S[:, :q] if q else None
@@ -569,7 +763,7 @@ def main():
                         uc = dec(z, cgrid.coords).reshape(cN, cN)
                     else:
                         uc = field_decoder(p, cgrid.coords).reshape(cN, cN)
-                    un = endpoint_bilinear(uc, n)
+                    un = uc if cN == n else endpoint_bilinear(uc, n)
                     # Explicit reset makes hard-BC preservation independent of roundoff.
                     un = un.at[0, :].set(0.0).at[-1, :].set(0.0)
                     un = un.at[:, 0].set(0.0).at[:, -1].set(0.0)
@@ -593,6 +787,7 @@ def main():
                 raw_guess = spectral_guess
 
             guess = jax.jit(raw_guess)
+            guess_registry[arm.name] = guess
             X0 = [guess(params[i], Fs[i]) for i in range(N_TEST)]
             if arm.predictor != "none":
                 full0 = learned_full_f(params[0], Fs[0])
@@ -604,8 +799,35 @@ def main():
             if boundary_check > 1e-14:
                 raise SystemExit(f"N={n} arm={arm.name}: hard-BC failure {boundary_check:.3e}")
             diagnostics = [norm_metrics(X0[i], Uref[i], op, Fs[i]) for i in range(N_TEST)]
+            lm_diagnostics = None
+            if arm.predictor.startswith("lm_"):
+                solver = lm_tr if arm.predictor.startswith("lm_tr_") else lm_base
+                lm_diagnostics = []
+                for i in range(N_TEST):
+                    z0i = z_mean
+                    nearest_index = None
+                    if arm.predictor.endswith("nearest"):
+                        nearest_index = int(jnp.argmin(jnp.sum(
+                            (nearest_P - params[i][None, :]) ** 2, axis=1)))
+                        z0i = nearest_Z[nearest_index]
+                    _, val, v0, nJ, acc, att, reason = solver(z0i, pre_apply(Fs[i]))
+                    lm_diagnostics.append(dict(
+                        case=i,
+                        nearest_training_index=nearest_index,
+                        final_objective=float(val),
+                        initial_objective=float(v0),
+                        objective_reduction=float(val / jnp.maximum(v0, 1e-300)),
+                        jacobian_evaluations=int(nJ),
+                        accepted=int(acc),
+                        attempts=int(att),
+                        reason_code=int(reason),
+                    ))
 
             construction_reps = []
+            if BURN_S > 0:
+                wu.gpu_burn(
+                    lambda: cg(Fs[0], zero, FOM_TAUS[0])[0].block_until_ready(), BURN_S
+                )
             for i in range(N_TIME):
                 _, reps = wu.time_fn(
                     lambda ii=i: guess(params[ii], Fs[ii]).block_until_ready(),
@@ -618,6 +840,8 @@ def main():
                 # One CG object for both arms. The hybrid callable contains construction.
                 hybrid = jax.jit(lambda p, F: cg(F, raw_guess(p, F), tau))
                 baseline = jax.jit(lambda p, F: cg(F, zero, tau))
+                timing_registry[(tau, arm.name)] = hybrid
+                baseline_registry[tau] = baseline
                 finals, bases = [], []
                 for i in range(N_TEST):
                     xh, kh, rh, fh = hybrid(params[i], Fs[i])
@@ -630,14 +854,23 @@ def main():
                     raise SystemExit(f"N={n} arm={arm.name} tau={tau}: true residual gate failed")
 
                 hybrid_reps, baseline_reps = [], []
+                hybrid_timed_telemetry, baseline_timed_telemetry = [], []
                 for i in range(N_TIME):
-                    ha, ba = paired_time(
-                        lambda ii=i: hybrid(params[ii], Fs[ii])[0].block_until_ready(),
-                        lambda ii=i: baseline(params[ii], Fs[ii])[0].block_until_ready(),
+                    if BURN_S > 0:
+                        wu.gpu_burn(
+                            lambda ii=i: baseline(params[ii], Fs[ii])[0].block_until_ready(),
+                            BURN_S,
+                        )
+                    ha, ba, hg, bg = paired_time(
+                        lambda ii=i: hybrid(params[ii], Fs[ii]),
+                        lambda ii=i: baseline(params[ii], Fs[ii]),
+                        lambda out, ii=i: grade_cg_output(out, Fs[ii], Uref[ii], op),
+                        lambda out, ii=i: grade_cg_output(out, Fs[ii], Uref[ii], op),
                         TIME_REPS,
                         TIME_WARM,
                     )
                     hybrid_reps.append(ha); baseline_reps.append(ba)
+                    hybrid_timed_telemetry.append(hg); baseline_timed_telemetry.append(bg)
                 hmed = [float(np.median(v)) for v in hybrid_reps]
                 bmed = [float(np.median(v)) for v in baseline_reps]
                 hf = [float(jnp.linalg.norm(finals[i][0] - Uref[i])
@@ -664,6 +897,8 @@ def main():
                         [np.median(v) for v in construction_reps])) * 1e3,
                     hybrid_all_s=hybrid_reps,
                     baseline_all_s=baseline_reps,
+                    hybrid_timed_telemetry=hybrid_timed_telemetry,
+                    baseline_timed_telemetry=baseline_timed_telemetry,
                     hybrid_total_ms=float(np.mean(hmed)) * 1e3,
                     baseline_total_ms=float(np.mean(bmed)) * 1e3,
                     speedup_vs_zero_cg=float(np.mean(bmed) / np.mean(hmed)),
@@ -671,6 +906,10 @@ def main():
                     iters_baseline_all=[v[1] for v in bases],
                     iters_hybrid_mean=float(np.mean([v[1] for v in finals])),
                     iters_baseline_mean=float(np.mean([v[1] for v in bases])),
+                    iters_hybrid_timed_mean=float(np.mean([
+                        g["iterations"] for case in hybrid_timed_telemetry for g in case])),
+                    iters_baseline_timed_mean=float(np.mean([
+                        g["iterations"] for case in baseline_timed_telemetry for g in case])),
                     iter_saving_fraction=1.0 - float(np.mean([v[1] for v in finals]))
                                              / float(np.mean([v[1] for v in bases])),
                     guess_rel_l2_mean=float(np.mean([v["guess_rel_l2"] for v in diagnostics])),
@@ -679,11 +918,25 @@ def main():
                         [v["guess_a_norm_ratio"] for v in diagnostics])),
                     guess_true_rel_residual_mean=float(np.mean(
                         [v["guess_true_rel_residual"] for v in diagnostics])),
-                    final_true_rel_residual_max=float(max(v[2] for v in finals)),
-                    baseline_true_rel_residual_max=float(max(v[2] for v in bases)),
-                    final_rel_l2_mean=float(np.mean(hf)),
-                    baseline_rel_l2_mean=float(np.mean(bf)),
-                    exact_direct_ms=mesh_check["exact_direct_ms"],
+                    guess_diagnostics_per_case=diagnostics,
+                    lm_diagnostics_per_case=lm_diagnostics,
+                    final_true_rel_residual_max=float(max(
+                        g["recomputed_true_rel_residual"]
+                        for case in hybrid_timed_telemetry for g in case)),
+                    baseline_true_rel_residual_max=float(max(
+                        g["recomputed_true_rel_residual"]
+                        for case in baseline_timed_telemetry for g in case)),
+                    final_true_rel_residual_validation_max=float(max(v[2] for v in finals)),
+                    baseline_true_rel_residual_validation_max=float(max(v[2] for v in bases)),
+                    final_rel_l2_mean=float(np.mean([
+                        g["rel_l2_vs_exact_dst"]
+                        for case in hybrid_timed_telemetry for g in case])),
+                    baseline_rel_l2_mean=float(np.mean([
+                        g["rel_l2_vs_exact_dst"]
+                        for case in baseline_timed_telemetry for g in case])),
+                    final_rel_l2_validation_mean=float(np.mean(hf)),
+                    baseline_rel_l2_validation_mean=float(np.mean(bf)),
+                    exact_direct_ms=None,
                     boundary_contract_maxabs=boundary_check,
                 )
                 report["rows"].append(row)
@@ -696,6 +949,124 @@ def main():
                     f"speedup {row['speedup_vs_zero_cg']:.3f}x",
                     flush=True,
                 )
+
+        # Authoritative wall clock: all arms, zero-start CG, and exact FFT-DST are rotated
+        # through one post-burn block. This supports paired combined-vs-spectral deltas and
+        # removes timing-order selection. Telemetry is graded from every timed invocation.
+        mesh_joint = {}
+        for tau in FOM_TAUS:
+            baseline = baseline_registry[tau]
+            direct_runtime = jax.jit(lambda p, F: direct(F))
+            native_names = ["native_zero"] + [f"native_{v}" for v in NATIVE_ARM_NAMES
+                                                 if v in guess_registry]
+            names = (["zero_cg", "fft_dst_direct"] + [a.name for a in ARMS]
+                     + native_names)
+            funcs = {
+                "zero_cg": lambda p, F, baseline=baseline: baseline(p, F),
+                "fft_dst_direct": lambda p, F, direct_runtime=direct_runtime: direct_runtime(p, F),
+            }
+            for a in ARMS:
+                hfn = timing_registry[(tau, a.name)]
+                funcs[a.name] = lambda p, F, hfn=hfn: hfn(p, F)
+            native_zero = jax.jit(lambda p, F: jax.scipy.sparse.linalg.cg(
+                op, F, x0=zero, tol=tau, maxiter=CG_MAXITER)[0])
+            funcs["native_zero"] = lambda p, F, fn=native_zero: fn(p, F)
+            for arm_name in NATIVE_ARM_NAMES:
+                if arm_name not in guess_registry:
+                    continue
+                gfn = guess_registry[arm_name]
+                nfn = jax.jit(lambda p, F, gfn=gfn: jax.scipy.sparse.linalg.cg(
+                    op, F, x0=gfn(p, F), tol=tau, maxiter=CG_MAXITER)[0])
+                funcs[f"native_{arm_name}"] = lambda p, F, fn=nfn: fn(p, F)
+            all_times = {name: [] for name in names}
+            all_telemetry = {name: [] for name in names}
+            for i in range(N_TIME):
+                # Compile/warm every function, then burn immediately before the timed block.
+                for name in names:
+                    jax.block_until_ready(funcs[name](params[i], Fs[i]))
+                if BURN_S > 0:
+                    wu.gpu_burn(
+                        lambda ii=i: baseline(params[ii], Fs[ii])[0].block_until_ready(),
+                        BURN_S,
+                    )
+                case_t = {name: [] for name in names}
+                case_g = {name: [] for name in names}
+                for rep in range(TIME_REPS):
+                    shift = (i + rep) % len(names)
+                    order = names[shift:] + names[:shift]
+                    for name in order:
+                        t0 = time.perf_counter()
+                        out = funcs[name](params[i], Fs[i])
+                        jax.block_until_ready(out)
+                        case_t[name].append(time.perf_counter() - t0)
+                        if name == "fft_dst_direct" or name.startswith("native_"):
+                            x = out
+                            case_g[name].append(dict(
+                                recomputed_true_rel_residual=float(
+                                    jnp.linalg.norm(op(x) - Fs[i]) / jnp.linalg.norm(Fs[i])),
+                                rel_l2_vs_exact_dst=float(
+                                    jnp.linalg.norm(x - Uref[i]) / jnp.linalg.norm(Uref[i])),
+                            ))
+                        else:
+                            case_g[name].append(grade_cg_output(out, Fs[i], Uref[i], op))
+                for name in names:
+                    all_times[name].append(case_t[name])
+                    all_telemetry[name].append(case_g[name])
+            means = {name: float(np.mean([np.median(v) for v in all_times[name]]))
+                     for name in names}
+            paired_deltas = {}
+            if "spectral_q8" in all_times:
+                st = all_times["spectral_q8"]
+                for name in names:
+                    if (name in ("zero_cg", "fft_dst_direct", "spectral_q8")
+                            or name.startswith("native_")):
+                        continue
+                    delta = [[all_times[name][i][r] - st[i][r]
+                              for r in range(TIME_REPS)] for i in range(N_TIME)]
+                    paired_deltas[name] = dict(
+                        all_s=delta,
+                        mean_ms=float(np.mean([np.median(v) for v in delta])) * 1e3,
+                        speedup_spectral_over_arm=means["spectral_q8"] / means[name],
+                    )
+            mesh_joint[str(tau)] = dict(
+                order_base=names,
+                order_rule="cyclic shift by (case + repetition)",
+                all_s=all_times,
+                timed_telemetry=all_telemetry,
+                mean_of_case_medians_ms={k: v * 1e3 for k, v in means.items()},
+                paired_delta_vs_spectral_q8=paired_deltas,
+            )
+            mesh_check.setdefault("authoritative_exact_direct_ms", {})[str(tau)] = (
+                means["fft_dst_direct"] * 1e3
+            )
+            # Replace earlier pairwise diagnostic wall clock with authoritative joint values.
+            base_ms = means["zero_cg"] * 1e3
+            for row in report["rows"]:
+                if row["N"] != n or row["fom_tau"] != tau:
+                    continue
+                name = row["arm"]
+                row["pairwise_diagnostic_hybrid_total_ms"] = row["hybrid_total_ms"]
+                row["pairwise_diagnostic_baseline_total_ms"] = row["baseline_total_ms"]
+                row["joint_timing_authoritative"] = True
+                row["hybrid_total_ms"] = means[name] * 1e3
+                row["baseline_total_ms"] = base_ms
+                row["speedup_vs_zero_cg"] = means["zero_cg"] / means[name]
+                row["exact_direct_ms"] = means["fft_dst_direct"] * 1e3
+                row["speedup_spectral_q8_over_arm"] = (
+                    means["spectral_q8"] / means[name] if "spectral_q8" in means else None
+                )
+                tele = all_telemetry[name]
+                row["iters_hybrid_timed_mean"] = float(np.mean([
+                    g["iterations"] for case in tele for g in case]))
+                row["final_true_rel_residual_max"] = float(max(
+                    g["recomputed_true_rel_residual"] for case in tele for g in case))
+                row["final_rel_l2_mean"] = float(np.mean([
+                    g["rel_l2_vs_exact_dst"] for case in tele for g in case]))
+                row["joint_timed_telemetry"] = tele
+                if name in paired_deltas:
+                    row["paired_delta_vs_spectral_q8"] = paired_deltas[name]
+            save()
+        mesh_check["joint_timing"] = mesh_joint
 
         mesh_check["wall_seconds"] = time.time() - mesh_t0
         save()

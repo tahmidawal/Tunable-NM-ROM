@@ -9,10 +9,12 @@ EXP="$(dirname "$HERE")"
 REMOTE="/cluster/tufts/paralab/tawal01/hybp1024/$cell"
 DST="$EXP/runs/$cell"
 mkdir -p "$DST"
-ssh tufts-login "cd '$REMOTE' && find out logs -type f -exec sha256sum {} \; | sort" \
+ssh tufts-login "cd '$REMOTE' && { find out logs -type f -exec sha256sum {} \;; sha256sum MANIFEST.sha256 run.sbatch; } | sort" \
   > "$DST/REMOTE.sha256"
 scp -q -r "tufts-login:$REMOTE/out" "tufts-login:$REMOTE/logs" "$DST/"
-(cd "$DST" && find out logs -type f -exec sha256sum {} \; | sort > LOCAL.sha256)
+scp -q "tufts-login:$REMOTE/MANIFEST.sha256" "tufts-login:$REMOTE/run.sbatch" "$DST/"
+(cd "$DST" && { find out logs -type f -exec sha256sum {} \;; \
+  sha256sum MANIFEST.sha256 run.sbatch; } | sort > LOCAL.sha256)
 diff -u "$DST/REMOTE.sha256" "$DST/LOCAL.sha256"
 echo "checksums OK; deleting explicit completed job directory $REMOTE"
 ssh tufts-login "test '$REMOTE' = '/cluster/tufts/paralab/tawal01/hybp1024/$cell' && rm -rf '$REMOTE'"

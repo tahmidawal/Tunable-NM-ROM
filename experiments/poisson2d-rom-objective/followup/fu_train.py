@@ -42,11 +42,13 @@ N, N_TRAIN, N_VAL, STEPS = mp.N, mp.N_TRAIN, mp.N_VAL, mp.STEPS
 
 
 def main():
-    print(f"jax_backend={jax.default_backend()} x64={jax.config.jax_enable_x64} K_LAT={K_LAT} HARD_BC={HARD_BC}",
+    decoder_cfg = pc.decoder_config_from_env()
+    print(f"jax_backend={jax.default_backend()} x64={jax.config.jax_enable_x64} K_LAT={K_LAT} HARD_BC={HARD_BC} decoder={decoder_cfg}",
           flush=True)
     os.makedirs(OUTDIR, exist_ok=True)
     cfg = dict(mp.CONFIG, K_LAT=K_LAT, n_stages=1, lat_lr=5e-3, lat_reg=1e-4, hard_bc=HARD_BC,
-               gn_iters=GN_ITERS, train_seed=TRAIN_SEED)
+               gn_iters=GN_ITERS, train_seed=TRAIN_SEED,
+               decoder_config=decoder_cfg)
     print("CONFIG " + json.dumps(cfg), flush=True)
     U, z_true, coords, fom_res = mp.build_snapshots(N)
     U_tr, U_va = U[:N_TRAIN], U[N_TRAIN:]
@@ -55,6 +57,7 @@ def main():
     key = jax.random.PRNGKey(TRAIN_SEED + 100 + K_LAT)
     stages, Z_tr, eps0, n_freq, adam_loss = pc.train_autodecoder_stage0(
         key, np_rng, coords, U_tr, K_LAT, bool(HARD_BC), STEPS, mp.BATCH, mp.P_SUB)
+    cfg["n_params"] = pc.parameter_count(stages[0]["params"])
     dec = pc.make_decoder(stages, hard_bc=bool(HARD_BC))
     pred_tr = jnp.concatenate([jax.vmap(lambda z: dec(z, coords))(jnp.asarray(Z_tr[s:s + 64]))
                                for s in range(0, N_TRAIN, 64)])

@@ -56,11 +56,75 @@ for d in _CANDS:
 else:
     raise ImportError("ms_parametric.py not found in deps/ or sibling worktree")
 
+_ARCH_CANDS = [os.path.join(HERE, "deps", "nonlinear-decoder-architecture"),
+               os.path.join(os.path.dirname(HERE), "nonlinear-decoder-architecture")]
+for d in _ARCH_CANDS:
+    if os.path.isfile(os.path.join(d, "nda_arch.py")):
+        if d not in sys.path:
+            sys.path.insert(0, d)
+        break
+else:
+    raise ImportError("nda_arch.py not found in deps/ or sibling experiment")
+
 import ms_parametric as mp                    # noqa: E402
 from ms_autodecoder import lm_solve, infer_latents_lm   # noqa: E402,F401
+import nda_arch as nda                         # noqa: E402
 
 F64 = jnp.float64
 SEED = mp.SEED
+
+
+def decoder_config_from_env():
+    """Explicit architecture manifest written into every new checkpoint."""
+    name = os.environ.get("DECODER_ARCH", "film")
+    if name == "film":
+        return dict(name="film", hidden=mp.HIDDEN, n_layers=mp.N_LAYERS,
+                    z_ff=mp.Z_FF)
+    return nda.config(
+        name, mp.HIDDEN, mp.N_LAYERS,
+        group_size=int(os.environ.get("FILM_GROUP_SIZE", "8")),
+        film_start=int(os.environ.get("FILM_START", "1")),
+        z_width=int(os.environ.get("Z_WIDTH", "64")),
+        residual_scale=(None if "RESIDUAL_SCALE" not in os.environ
+                        else float(os.environ["RESIDUAL_SCALE"])),
+        warp_max_shift=float(os.environ.get("WARP_MAX_SHIFT", "0.15")),
+        warp_max_log_scale=float(os.environ.get("WARP_MAX_LOG_SCALE", "0.25"))) | {
+                            "z_ff": mp.Z_FF}
+
+
+def init_decoder(key, n_freq, k_lat, decoder_cfg):
+    if decoder_cfg["name"] == "film":
+        return mp.init_film_net(key, n_freq, k_lat, decoder_cfg.get("z_ff", 0))
+    return nda.init(key, n_freq, k_lat, decoder_cfg, decoder_cfg.get("z_ff", 0))
+
+
+def apply_decoder(params, z, xy, n_freq, decoder_cfg):
+    if decoder_cfg.get("name", "film") == "film":
+        return mp.film_apply(params, z, xy, n_freq, decoder_cfg.get("z_ff", 0))
+    return nda.apply(params, z, xy, n_freq, decoder_cfg,
+                     decoder_cfg.get("z_ff", 0))
+
+
+def parameter_count(params):
+    return sum(int(np.prod(x.shape)) for x in jax.tree_util.tree_leaves(params))
+
+
+def combined_apply(stages, z, xy):
+    total = 0.0
+    for stage in stages:
+        cfg = stage.get("decoder_config", dict(name="film", z_ff=stage.get("z_ff", 0)))
+        total = total + stage["eps"] * apply_decoder(
+            stage["params"], z, xy, stage["n_freq"], cfg)
+    return total
+
+
+def stages_from_np(raw):
+    return [{"params": jax.tree_util.tree_map(jnp.asarray, s["params"]),
+             "n_freq": int(s["n_freq"]), "eps": float(s["eps"]),
+             "z_ff": int(s.get("z_ff", 0)),
+             "decoder_config": s.get("decoder_config",
+                                       dict(name="film", z_ff=int(s.get("z_ff", 0))))}
+            for s in raw]
 
 
 # ------------------------------ checkpoints ------------------------------
@@ -77,7 +141,7 @@ def load_pkl(path):
     env_hb = os.environ.get("HARD_BC")
     if env_hb is not None and int(env_hb) != hb:
         raise ValueError(f"HARD_BC env={env_hb} conflicts with pkl hard_bc={hb}")
-    stages = mp.stages_from_np(d["stages"])
+    stages = stages_from_np(d["stages"])
     return d, cfg, stages, np.asarray(d["z_tr"]), hb
 
 
@@ -85,11 +149,11 @@ def make_decoder(stages, hard_bc=False):
     """dec(z, xy) -> values at xy (P,2).  hard_bc multiplies by b(x,y) =
     16 x(1-x) y(1-y) (== 1 at the centre, 0 on the walls)."""
     if not hard_bc:
-        return lambda z, xy: mp.combined_apply(stages, z, xy)
+        return lambda z, xy: combined_apply(stages, z, xy)
 
     def dec(z, xy):
         b = 16.0 * xy[:, 0] * (1 - xy[:, 0]) * xy[:, 1] * (1 - xy[:, 1])
-        return b * mp.combined_apply(stages, z, xy)
+        return b * combined_apply(stages, z, xy)
     return dec
 
 
@@ -512,7 +576,8 @@ def train_autodecoder_stage0(key, np_rng, coords, U_tr, k_lat, hard_bc, steps,
     n_s, n_pts = target.shape
     key, kz, k0 = jax.random.split(key, 3)
     Z = 0.1 * jax.random.normal(kz, (n_s, k_lat), dtype=F64)
-    params = mp.init_film_net(k0, n_freq, k_lat, 0)
+    decoder_cfg = decoder_config_from_env()
+    params = init_decoder(k0, n_freq, k_lat, decoder_cfg)
     bfun = (lambda xy: 16.0 * xy[:, 0] * (1 - xy[:, 0]) * xy[:, 1] * (1 - xy[:, 1])) if hard_bc \
         else (lambda xy: jnp.ones((xy.shape[0],), F64))
     opt = optax.adamw(mp.make_lr_schedule(steps), weight_decay=1e-6)
@@ -520,7 +585,8 @@ def train_autodecoder_stage0(key, np_rng, coords, U_tr, k_lat, hard_bc, steps,
 
     def loss_fn(ps, z_b, t_b, w_b, pidx):
         xy = coords[pidx]
-        pred = jax.vmap(lambda zi: bfun(xy) * mp.film_apply(ps, zi, xy, n_freq, 0))(z_b)
+        pred = jax.vmap(lambda zi: bfun(xy) * apply_decoder(
+            ps, zi, xy, n_freq, decoder_cfg))(z_b)
         se = jnp.mean((pred - t_b[:, pidx]) ** 2, axis=1)
         return jnp.mean(w_b * se)
 
@@ -557,9 +623,16 @@ def train_autodecoder_stage0(key, np_rng, coords, U_tr, k_lat, hard_bc, steps,
             print(f"  [{tag}] step {it:6d} loss {float(val):.3e} [{time.time()-t0:.0f}s]", flush=True)
     print(f"  [{tag}] Adam {steps} steps in {time.time()-t0:.0f}s (final batch loss {float(val):.3e})",
           flush=True)
-    stages = [{"params": params, "n_freq": n_freq, "eps": eps0, "z_ff": 0}]
+    stages = [{"params": params, "n_freq": n_freq, "eps": eps0,
+               "z_ff": decoder_cfg.get("z_ff", 0),
+               "decoder_config": decoder_cfg}]
     return stages, np.asarray(Z), eps0, n_freq, float(val)
 
 
 def stages_to_np(stages):
-    return mp.stages_to_np(stages)
+    return [{"params": jax.tree_util.tree_map(np.asarray, s["params"]),
+             "n_freq": int(s["n_freq"]), "eps": float(s["eps"]),
+             "z_ff": int(s.get("z_ff", 0)),
+             "decoder_config": s.get("decoder_config",
+                                       dict(name="film", z_ff=int(s.get("z_ff", 0))))}
+            for s in stages]

@@ -101,8 +101,13 @@ def main():
                        ("ad_layers", bc.AD_LAYERS), ("n_train", bc.N_TRAIN), ("seed", bc.SEED)):
         if ck["config"][key_] != val_:
             raise SystemExit(f"checkpoint/config mismatch on {key_}: {ck['config'][key_]} vs {val_}")
+    decoder_cfg = ck["config"].get("decoder_config", dict(
+        name="film", hidden=ck["config"]["ad_hidden"],
+        n_layers=ck["config"]["ad_layers"], z_ff=0))
+    if decoder_cfg != bc.DECODER_CONFIG:
+        raise SystemExit(f"checkpoint/config mismatch on decoder_config: {decoder_cfg} vs {bc.DECODER_CONFIG}")
     dec = bc.CoordDecoder(jax.tree_util.tree_map(jnp.asarray, ck["params"]),
-                          ck["n_freq"], ck["eps"], K)
+                          ck["n_freq"], ck["eps"], K, decoder_cfg)
     Ztr = ck["Z_train"]                                   # (n_tr, T1, K)
     V = ck["V"]
     if max(POD_KS) > V.shape[1]:

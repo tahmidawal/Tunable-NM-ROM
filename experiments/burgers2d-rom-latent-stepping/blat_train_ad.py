@@ -58,7 +58,8 @@ T1 = bc.NUM_STEPS + 1
 def main():
     log(f"jax_backend={jax.default_backend()}  x64={jax.config.jax_enable_x64}  "
         f"N={N} K={K} steps={AD_STEPS} batch={AD_BATCH} p_sub={P_SUB} "
-        f"t_smooth={T_SMOOTH} bc={bc.BC_MODE} hidden={bc.AD_HIDDEN}x{bc.AD_LAYERS}")
+        f"t_smooth={T_SMOOTH} bc={bc.BC_MODE} hidden={bc.AD_HIDDEN}x{bc.AD_LAYERS} "
+        f"decoder={bc.DECODER_CONFIG}")
     d = bc.build_data(N)
     U = d["U"]
     U_tr = U[:bc.N_TRAIN]                          # TEST split (TEST_SEED) untouched here
@@ -93,11 +94,17 @@ def main():
     Z = jnp.asarray(C)
     coords = jnp.asarray(bc.grid_coords(N))
     bfac = bc.bc_factor(coords)
-    n_freq = (N - 1) // 2
+    # The frozen control always used the Nyquist cap.  Compact decoder arms may
+    # lower this explicitly; the exact value is checkpointed and consumed by
+    # every ROM/timing path.
+    n_freq = min(int(os.environ.get("AD_N_FREQ", str((N - 1) // 2))),
+                 (N - 1) // 2)
+    if n_freq < 1:
+        raise ValueError(f"AD_N_FREQ must be positive, got {n_freq}")
     key = jax.random.PRNGKey(TRAIN_SEED)
-    params = mp.init_film_net(key, n_freq, K, 0)
-    n_par = sum(int(np.prod(p.shape)) for p in jax.tree_util.tree_leaves(params))
-    log(f"  film params {n_par}, n_freq {n_freq}, eps {eps:.4e}")
+    params = bc.init_decoder(key, n_freq, K)
+    n_par = bc.parameter_count(params)
+    log(f"  decoder params {n_par}, n_freq {n_freq}, eps {eps:.4e}")
 
     opt = optax.adamw(optax.warmup_cosine_decay_schedule(
         0.0, PEAK_LR, max(1, AD_STEPS // 20), AD_STEPS, end_value=1e-9),
@@ -109,7 +116,7 @@ def main():
     Bh = AD_BATCH // 2
 
     def dec_pts(ps, z, pidx):
-        return bfac[pidx] * mp.film_apply(ps, z, coords[pidx], n_freq)
+        return bfac[pidx] * bc.apply_decoder(ps, z, coords[pidx], n_freq)
 
     def loss_fn(ps, z_b, t_b, w_b, pidx):
         pred = jax.vmap(lambda zi: dec_pts(ps, zi, pidx))(z_b)
@@ -157,7 +164,7 @@ def main():
     train_secs = time.time() - t0
 
     # ---------------- train reconstruction at learned latents ----------------
-    dec = bc.CoordDecoder(params, n_freq, eps, K)
+    dec = bc.CoordDecoder(params, n_freq, eps, K, bc.DECODER_CONFIG)
     pred_fn = jax.jit(lambda z: dec(z, coords))
     rels = []
     CH = 32                                         # 512 rows x 16384 pts OOM'd a 40 GB A100
@@ -181,7 +188,8 @@ def main():
               eps=eps, k_lat=K, Z_train=Zn, V=V, sv=sv, pod_floors=floors,
               config=dict(bc.CONFIG, train_seed=TRAIN_SEED, ad_steps=AD_STEPS, ad_batch=AD_BATCH,
                           p_sub=P_SUB, t_smooth=T_SMOOTH, lat_reg=LAT_REG,
-                          lat_lr=LAT_LR, peak_lr=PEAK_LR, n_params=n_par),
+                          lat_lr=LAT_LR, peak_lr=PEAK_LR, n_freq=n_freq,
+                          n_params=n_par),
               data_fingerprint=fp, train_rel_mean=float(rels.mean()),
               train_rel_median=float(np.median(rels)), train_secs=train_secs,
               hist=hist, backend=jax.default_backend())

@@ -64,8 +64,14 @@ def load_ck(path, n=None):
         if ck["config"][key] != val:
             raise SystemExit(f"{os.path.basename(path)}: config mismatch on {key}: "
                              f"{ck['config'][key]} vs {val}")
+    decoder_cfg = ck["config"].get("decoder_config", dict(
+        name="film", hidden=ck["config"]["ad_hidden"],
+        n_layers=ck["config"]["ad_layers"], z_ff=0))
+    if decoder_cfg != bc.DECODER_CONFIG:
+        raise SystemExit(f"{os.path.basename(path)}: decoder_config mismatch: "
+                         f"{decoder_cfg} vs {bc.DECODER_CONFIG}")
     dec = bc.CoordDecoder(jax.tree_util.tree_map(jnp.asarray, ck["params"]),
-                          ck["n_freq"], ck["eps"], ck["k_lat"])
+                          ck["n_freq"], ck["eps"], ck["k_lat"], decoder_cfg)
     return ck, dec
 
 

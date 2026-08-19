@@ -60,6 +60,16 @@ for d in (BURGERS_DIR, MSP_DIR):
     if d not in sys.path:
         sys.path.insert(0, d)
 
+ARCH_DIRS = [os.path.join(HERE, "deps", "nonlinear-decoder-architecture"),
+             os.path.join(os.path.dirname(HERE), "nonlinear-decoder-architecture")]
+for d in ARCH_DIRS:
+    if os.path.isfile(os.path.join(d, "nda_arch.py")):
+        if d not in sys.path:
+            sys.path.insert(0, d)
+        break
+else:
+    raise ImportError("nda_arch.py not found in deps/ or sibling experiment")
+
 # --- burgers2d testbed first (sweep-checkpoint architecture from its defaults)
 os.environ.setdefault("HIDDEN", "256")
 import burgers2d_film as bf                       # noqa: E402
@@ -71,6 +81,7 @@ os.environ["HIDDEN"] = str(AD_HIDDEN)
 os.environ["N_LAYERS"] = str(AD_LAYERS)
 import ms_parametric as mp                        # noqa: E402
 from ms_autodecoder import lm_solve               # noqa: E402,F401
+import nda_arch as nda                             # noqa: E402
 
 assert mp.HIDDEN == AD_HIDDEN and mp.N_LAYERS == AD_LAYERS
 assert bf.HIDDEN == 256, "burgers2d_film must keep the sweep architecture"
@@ -88,10 +99,49 @@ GN_BUDGET = int(os.environ.get("GN_BUDGET", "30"))   # attempts per time step
 GN_TOL = float(os.environ.get("GN_TOL", "1e-9"))     # ||r|| <= tol * ||u_prev||
 IC_BUDGET = int(os.environ.get("IC_BUDGET", "100"))  # LM attempts for z_0
 
+
+def decoder_config_from_env():
+    name = os.environ.get("DECODER_ARCH", "film")
+    if name == "film":
+        return dict(name="film", hidden=AD_HIDDEN, n_layers=AD_LAYERS,
+                    z_ff=mp.Z_FF)
+    return nda.config(
+        name, AD_HIDDEN, AD_LAYERS,
+        group_size=int(os.environ.get("FILM_GROUP_SIZE", "8")),
+        film_start=int(os.environ.get("FILM_START", "1")),
+        z_width=int(os.environ.get("Z_WIDTH", "64")),
+        residual_scale=(None if "RESIDUAL_SCALE" not in os.environ
+                        else float(os.environ["RESIDUAL_SCALE"])),
+        warp_max_shift=float(os.environ.get("WARP_MAX_SHIFT", "0.15")),
+        warp_max_log_scale=float(os.environ.get("WARP_MAX_LOG_SCALE", "0.25"))) | {
+                            "z_ff": mp.Z_FF}
+
+
+DECODER_CONFIG = decoder_config_from_env()
+
+
+def init_decoder(key, n_freq, k_lat):
+    if DECODER_CONFIG["name"] == "film":
+        return mp.init_film_net(key, n_freq, k_lat, DECODER_CONFIG.get("z_ff", 0))
+    return nda.init(key, n_freq, k_lat, DECODER_CONFIG,
+                    DECODER_CONFIG.get("z_ff", 0))
+
+
+def apply_decoder(params, z, xy, n_freq, decoder_config=None):
+    cfg = decoder_config or DECODER_CONFIG
+    if cfg.get("name", "film") == "film":
+        return mp.film_apply(params, z, xy, n_freq, cfg.get("z_ff", 0))
+    return nda.apply(params, z, xy, n_freq, cfg, cfg.get("z_ff", 0))
+
+
+def parameter_count(params):
+    return sum(int(np.prod(x.shape)) for x in jax.tree_util.tree_leaves(params))
+
 CONFIG = dict(N=N, dt=DT, num_steps=NUM_STEPS, n_train=N_TRAIN, n_val=N_VAL,
               seed=SEED, bc_mode=BC_MODE, k_lat=K_LAT, n_test=N_TEST,
               gn_budget=GN_BUDGET, gn_tol=GN_TOL, ic_budget=IC_BUDGET,
-              ad_hidden=AD_HIDDEN, ad_layers=AD_LAYERS, x64=True)
+              ad_hidden=AD_HIDDEN, ad_layers=AD_LAYERS,
+              decoder_config=DECODER_CONFIG, x64=True)
 
 
 def log(*a):
@@ -205,16 +255,18 @@ def bc_factor(xy):
 class CoordDecoder:
     """u(x; z) = eps * b(x) * film(x; z).  Meshfree: evaluate anywhere."""
 
-    def __init__(self, params, n_freq, eps, k_lat):
+    def __init__(self, params, n_freq, eps, k_lat, decoder_config=None):
         self.params = params
         self.n_freq = int(n_freq)
         self.eps = float(eps)
         self.k = int(k_lat)
         self.kind = "coord"
+        self.decoder_config = decoder_config or dict(
+            name="film", hidden=AD_HIDDEN, n_layers=AD_LAYERS, z_ff=0)
 
     def __call__(self, z, xy):
-        return self.eps * bc_factor(xy) * mp.film_apply(self.params, z, xy,
-                                                        self.n_freq)
+        return self.eps * bc_factor(xy) * apply_decoder(
+            self.params, z, xy, self.n_freq, self.decoder_config)
 
 
 class PODDecoder:

@@ -148,7 +148,7 @@ def burgers_rows():
 def burgers_objective_rows():
     rows = []
     for path in sorted(glob.glob(os.path.join(RUNS, "nda_bobj*")) +
-                       glob.glob(os.path.join(RUNS, "nda_bg160l4g2f31_s*_r11")) +
+                       glob.glob(os.path.join(RUNS, "nda_bg*")) +
                        glob.glob(os.path.join(RUNS, "nda_beq*")) +
                        glob.glob(os.path.join(RUNS, "nda_btrust*"))):
         report_paths = glob.glob(os.path.join(path, "out", "**", "blat_rom_N64_K16*.json"),
@@ -361,9 +361,9 @@ def main():
     )
     md += ["", "## Burgers weak-objective refinement", ""]
     md += markdown_table(
-        ["cell", "seed", "trust", "M,m", "decoder", "full mean", "full med", "full max", "EQ mean", "EQ med", "EQ max", "EQ/full", "blowups"],
-        ["---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
-        [[r["cell"], r["seed"], f'{r["trust_factor"]:.3g}', f'{r["M"]},{r["m"]}',
+        ["cell", "seed", "group", "trust", "M,m", "decoder", "full mean", "full med", "full max", "EQ mean", "EQ med", "EQ max", "EQ/full", "blowups"],
+        ["---", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:", "---:"],
+        [[r["cell"], r["seed"], r["group_size"], f'{r["trust_factor"]:.3g}', f'{r["M"]},{r["m"]}',
           sci(r["decoder"]), sci(r["full"]), sci(r["full_median"]), sci(r["full_max"]),
           sci(r["eq"]), sci(r["eq_median"]), sci(r["eq_max"]), f'{r["eq"]/r["full"]:.3f}',
           f'{r["full_blowups"]}/{r["eq_blowups"]}'] for r in burgers_objective]

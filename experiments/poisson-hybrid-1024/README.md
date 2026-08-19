@@ -71,6 +71,14 @@ the original audited K=8 LM baseline, the parameter-aligned surrogate controls, 
 zero-start counting/native CG, and the FFT-DST exact direct solver. Cost, work, residual, and error
 are all taken from each timed invocation in the same rotated block.
 
+The spectral rank search is also fixed before fresh-seed inspection. The first validation ladder
+tests q=8/16/24/32/48/64 at every N. If q64 is the total-time endpoint winner at N=512 and N=1024,
+a same-job extension repeats q32/q64 and adds q96/q128. Only if q128 is again the endpoint winner
+does a second same-job extension repeat q64/q128 and add q192/q256. The minimum from these
+validation-only ladders (or an explicit N-dependent rule if the minima differ by N) is then locked
+for the independent seed. Every extension retains the FFT-DST direct solve; no timing is compared
+across jobs without a repeated within-job control.
+
 ## Files
 
 - `feasibility.py`: train-only RBF calibration, coarse decoding, spectral corrections,

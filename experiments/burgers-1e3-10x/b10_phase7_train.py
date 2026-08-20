@@ -506,7 +506,9 @@ def evaluate_states(datasets, generator, states, mean, scales):
             "trajectory_error_all": trajectory.tolist(),
             "snapshot_error_mean": float(np.mean(snapshot)),
             "snapshot_error_worst": float(np.max(snapshot)),
+            "snapshot_error_all": snapshot.tolist(),
             "k3_cox_identity_worst": float(np.max(identity)),
+            "k3_cox_identity_all": identity.tolist(),
             "all_finite": finite, "exact_binary_boundary": boundary,
         }
     pooled = np.asarray(pooled, np.float64)

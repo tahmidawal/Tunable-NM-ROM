@@ -219,8 +219,14 @@ def validate_metrics(metrics, spec, name):
                 and np.isclose(np.max(values), row["trajectory_error_worst"], rtol=1e-13),
                 f"{name} N{n} summaries")
         require(row["all_finite"] and row["exact_binary_boundary"], f"{name} N{n} output health")
-        require(np.isfinite(row["snapshot_error_mean"])
-                and np.isfinite(row["snapshot_error_worst"])
+        snapshot = np.asarray(row["snapshot_error_all"], np.float64)
+        route_identity = np.asarray(row["k3_cox_identity_all"], np.float64)
+        require(snapshot.shape == (count, _times) and np.all(np.isfinite(snapshot))
+                and np.isclose(np.mean(snapshot), row["snapshot_error_mean"], rtol=1e-13)
+                and np.isclose(np.max(snapshot), row["snapshot_error_worst"], rtol=1e-13)
+                and route_identity.shape == (count * _times,)
+                and np.all(np.isfinite(route_identity))
+                and np.max(route_identity) == row["k3_cox_identity_worst"]
                 and row["k3_cox_identity_worst"] <= IDENTITY_TOL,
                 f"{name} N{n} snapshot/identity")
         pooled.extend(values.tolist())

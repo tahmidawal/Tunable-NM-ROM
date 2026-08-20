@@ -89,6 +89,23 @@ must use exact balanced AB/BA pairs against both cubic and the classical dynamic
 arm with an immediate burn before every pair.  It is a learned sensitivity,
 not a candidate selected by the N=2048 primary data.
 
+The smoke licensed this block before the primary result was opened.  Its
+prospective execution is now fixed to seed **20260828**, canonical draw 16,
+indices 0:4, N=2048, and the same three tolerance/linear-tolerance pairs as the
+primary panel.  For each tolerance and trajectory it runs six blocks of the
+four-pair schedule cubic/FiLM, FiLM/cubic, dynamic/FiLM, FiLM/dynamic, with a
+three-second immediate burn before every pair.  Thus each comparison has
+twelve balanced repetitions per arm and trajectory.  The FiLM output is the
+unchanged K=8 extrapolated-latent arm with at most two latent Jacobians per
+step, fixed-N=64 charged decode/prolongation, and an exact full-grid residual
+guard.  All construction, guard, finish, accuracy, work, and returned-residual
+telemetry comes from the same dependent invocation.  EQ is refit offline at
+N=2048 on decoder-output snapshots with M=64 and m=256; offline fit, compile,
+checkpoint loading, and reference generation are excluded from warmed online
+latency.  Both comparisons are reported regardless of sign, using the same
+within-trajectory paired median and four-trajectory cluster bootstrap as the
+primary panel.
+
 ## Isolation
 
 Real jobs use only `/cluster/tufts/paralab/tawal01/hybb2048/`, one directory per

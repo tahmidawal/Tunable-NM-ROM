@@ -17,7 +17,8 @@ if len(sys.argv) != 12:
     )
 (REPORT_PATH, NPZ_PATH, CHECKPOINT_PATH, AUDIT_PATH, EXPECTED_COMMIT, JOB_ID,
  P4_PATH, P4_AUDIT_PATH, P4_MANIFEST_PATH, MANIFEST_PATH,
- EXPECTED_MANIFEST_SHA256) = sys.argv[1:]
+EXPECTED_MANIFEST_SHA256) = sys.argv[1:]
+AUDIT_SMOKE = os.environ.get("B10_AUDIT_SMOKE", "0") == "1"
 CANDIDATE = {
     "arm": "H1", "R": 48, "P": 32, "k": 24, "M": 96, "m": 384,
     "q": 19, "hyperdecoder_parameters": 111520, "predictor_parameters": 2104,
@@ -25,6 +26,19 @@ CANDIDATE = {
 TRAIN_MIX = [[64, 0, 512], [128, 0, 128], [256, 0, 64]]
 SELECTION_MIX = [[64, 512, 64], [128, 512, 32], [256, 512, 16]]
 TRAIN_SNAPSHOTS, SELECTION_SNAPSHOTS = 704 * 51, 112 * 51
+if AUDIT_SMOKE:
+    EXPECTED_STATUS = "excluded_execution_smoke"
+    TRAIN_SPEC, SELECTION_SPEC = ((24, 0, 4, 3),), ((28, 4, 2, 3),)
+    TRAIN_SNAPSHOTS, SELECTION_SNAPSHOTS = 12, 6
+    MANIFOLD_STEPS = PREDICTOR_STEPS = ORACLE_STEPS = 1
+    FIELD_BATCH = ORACLE_BATCH = 4
+    FIELD_POINTS = 32
+else:
+    EXPECTED_STATUS = "complete"
+    TRAIN_SPEC = ((64, 0, 512, 51), (128, 0, 128, 51), (256, 0, 64, 51))
+    SELECTION_SPEC = ((64, 512, 64, 51), (128, 512, 32, 51), (256, 512, 16, 51))
+    MANIFOLD_STEPS, PREDICTOR_STEPS, ORACLE_STEPS = 30_000, 20_000, 10_000
+    FIELD_BATCH, ORACLE_BATCH, FIELD_POINTS = 32, 64, 512
 
 
 def require(condition, message):
@@ -89,9 +103,11 @@ def layers(parameters, dimensions, name):
         require(finite(layer), f"{name} finite")
 
 
-def validate_metrics(metrics, counts, name):
+def validate_metrics(metrics, specification, name):
     pooled = []
-    for n, count in zip((64, 128, 256), counts):
+    require(set(metrics["meshes"]) == {str(row[0]) for row in specification},
+            f"{name} mesh set")
+    for n, _start, count, _times in specification:
         row = metrics["meshes"][str(n)]
         values = np.asarray(row["trajectory_error_all"], np.float64)
         require(values.shape == (count,) and np.all(np.isfinite(values)), f"{name} N{n} values")
@@ -117,7 +133,7 @@ def oracle_gate(metrics):
 
 def direct_gate(direct, oracle):
     result, ratios = True, {}
-    for key in ("64", "128", "256", "pooled"):
+    for key in tuple(direct["meshes"]) + ("pooled",):
         row = direct["pooled"] if key == "pooled" else direct["meshes"][key]
         base = oracle["pooled"] if key == "pooled" else oracle["meshes"][key]
         ratios[key] = row["trajectory_error_mean"] / max(base["trajectory_error_mean"], 1e-300)
@@ -126,7 +142,77 @@ def direct_gate(direct, oracle):
     return bool(result), ratios
 
 
-require(JOB_ID.isdigit() and len(EXPECTED_COMMIT) == 40, "identity arguments")
+def deterministic_schedule(total_snapshots, steps, batch_size, seed):
+    rng = np.random.default_rng(int(seed))
+    needed = int(steps) * int(batch_size)
+    pieces = []
+    while sum(item.size for item in pieces) < needed:
+        pieces.append(rng.permutation(total_snapshots).astype(np.int32))
+    ids = np.concatenate(pieces)[:needed].reshape(steps, batch_size)
+    point_seeds = rng.integers(
+        0, np.iinfo(np.uint64).max, size=(steps, batch_size), dtype=np.uint64
+    )
+    return ids, point_seeds
+
+
+def validate_metadata(rows, specification, name):
+    require(len(rows) == len(specification), f"{name} metadata count")
+    global_start = 0
+    for row, (n, start, count, times) in zip(rows, specification):
+        snapshots = count * times
+        expected = {
+            "N": n, "source_start": start, "source_stop": start + count,
+            "case_count": count, "num_times": times,
+            "snapshot_count": snapshots, "global_start": global_start,
+            "global_stop": global_start + snapshots,
+        }
+        require(all(row[key] == value for key, value in expected.items()),
+                f"{name} metadata/global ranges N={n}")
+        health = row["reference_health"]
+        require(health["reported_max_relative_residual"] <= 1e-8
+                and health["independent_max_relative_residual"] <= 1e-8,
+                f"{name} reference health N={n}")
+        if AUDIT_SMOKE:
+            require(health["status"] == "synthetic excluded smoke",
+                    f"{name} smoke health classification N={n}")
+        else:
+            require(health["seed"] == 0 and health["draw_count"] == 704
+                    and health["indices"] == list(range(start, start + count)),
+                    f"{name} reference provenance N={n}")
+        global_start += snapshots
+
+
+def validate_history(history, final_step, name):
+    steps = [row["step"] for row in history]
+    if AUDIT_SMOKE:
+        require(steps == [1], f"{name} smoke history structure")
+    else:
+        require(steps == [1] + list(range(1000, final_step + 1, 1000)),
+                f"{name} history structure")
+    require(finite(history), f"{name} finite history")
+
+
+def validate_oracle_history(row):
+    history = row["history"]
+    steps = [item["step"] for item in history]
+    if AUDIT_SMOKE:
+        require(steps == [1] and "full_metrics" in history[-1],
+                "oracle smoke history structure")
+        return
+    require(steps[0] == 1 and steps[-1] in (4000, 6000, 8000, 10000),
+            "oracle history terminal checkpoint")
+    expected = [1] + [step for step in (4000, 6000, 8000, 10000) if step <= steps[-1]]
+    require(steps == expected, "oracle checkpoint structure")
+    require(all("full_metrics" in item and "gate_pass" in item
+                for item in history[1:]), "oracle checkpoint metrics")
+    if steps[-1] < 10000:
+        require(history[-1]["gate_pass"] is True,
+                "oracle early stop without passing gate")
+    require(finite(history), "oracle finite history")
+
+
+require((JOB_ID == "local" if AUDIT_SMOKE else JOB_ID.isdigit())
+        and len(EXPECTED_COMMIT) == 40, "identity arguments")
 require(sha256(MANIFEST_PATH) == EXPECTED_MANIFEST_SHA256, "root manifest-file hash")
 report, p4, p4_audit = load(REPORT_PATH), load(P4_PATH), load(P4_AUDIT_PATH)
 root_manifest = manifest(MANIFEST_PATH)
@@ -136,7 +222,7 @@ staged_sources = {
     if path.startswith("./code/b10_") and path.endswith(".py")
 }
 require(source_hashes == staged_sources, "staged source hash binding")
-require(report["status"] == "complete", "report status")
+require(report["status"] == EXPECTED_STATUS, "report status")
 provenance = report["provenance"]
 require(provenance["commit"] == EXPECTED_COMMIT and str(provenance["slurm_job_id"]) == JOB_ID,
         "commit/job provenance")
@@ -146,11 +232,13 @@ config = report["config"]
 require(config["candidate"] == CANDIDATE and config["arm"] == "H1"
         and config["training_seed"] == 11, "candidate/seed")
 require(config["training_mix"] == TRAIN_MIX and config["selection_mix"] == SELECTION_MIX
-        and config["all_51_times"] is True, "data split/time lock")
-require(config["manifold_steps"] == 30000 and config["predictor_steps"] == 20000
-        and config["selection_oracle_steps"] == 10000, "step protocol")
-require(config["field_batch"] == 32 and config["field_points"] == 512
-        and config["selection_oracle_batch"] == 64, "batch protocol")
+        and config["all_51_times"] is (not AUDIT_SMOKE), "data split/time lock")
+require(config["manifold_steps"] == MANIFOLD_STEPS
+        and config["predictor_steps"] == PREDICTOR_STEPS
+        and config["selection_oracle_steps"] == ORACLE_STEPS, "step protocol")
+require(config["field_batch"] == FIELD_BATCH and config["field_points"] == FIELD_POINTS
+        and config["selection_oracle_batch"] == ORACLE_BATCH, "batch protocol")
+require(config["smoke"] is AUDIT_SMOKE, "smoke classification")
 require(config["model_validation_touched"] is False and config["confirmation_touched"] is False,
         "locked split touched")
 
@@ -185,7 +273,7 @@ require(report["npz"]["sha256"] == sha256(NPZ_PATH), "output NPZ checksum")
 require(report["checkpoint"]["sha256"] == sha256(CHECKPOINT_PATH), "checkpoint checksum")
 with open(CHECKPOINT_PATH, "rb") as handle:
     checkpoint = pickle.load(handle)
-require(checkpoint["status"] == "complete" and checkpoint["candidate"] == CANDIDATE
+require(checkpoint["status"] == EXPECTED_STATUS and checkpoint["candidate"] == CANDIDATE
         and checkpoint["training_seed"] == 11 and finite(checkpoint), "checkpoint identity/health")
 require(checkpoint["phase4_gate"] == gate, "checkpoint P4 gate binding")
 layers(checkpoint["hyperdecoder"], (19, 32, 32, 48 * 48 + 32 * 32), "hyperdecoder")
@@ -195,9 +283,9 @@ require(np.asarray(checkpoint["training_autolatent_raw"]).shape == (TRAIN_SNAPSH
         "autolatent shape")
 require(len(checkpoint["selection_oracle_optimizer_states"]) == 3,
         "three selection-oracle optimizer states")
-require(report["training"]["manifold_history"][-1]["step"] == 30000
-        and report["training"]["predictor_history"][-1]["step"] == 20000
-        and finite(report["training"]), "complete finite histories")
+validate_history(report["training"]["manifold_history"], MANIFOLD_STEPS, "manifold")
+validate_history(report["training"]["predictor_history"], PREDICTOR_STEPS, "predictor")
+require(finite(report["training"]), "finite training record")
 
 with np.load(NPZ_PATH, allow_pickle=False) as arrays:
     require(all(finite(arrays[name]) for name in arrays.files), "NPZ finite")
@@ -207,9 +295,26 @@ with np.load(NPZ_PATH, allow_pickle=False) as arrays:
     for start_index in range(3):
         require(arrays[f"selection_oracle_start{start_index}_q_raw"].shape
                 == (SELECTION_SNAPSHOTS, 19), f"oracle start {start_index} q shape")
-    require(arrays["manifold_snapshot_schedule"].shape == (30000, 32), "manifold schedule")
-    require(arrays["predictor_snapshot_schedule"].shape == (20000, 32), "predictor schedule")
-    require(arrays["selection_oracle_snapshot_schedule"].shape == (10000, 64), "oracle schedule")
+    schedule_specs = (
+        ("manifold", TRAIN_SNAPSHOTS, MANIFOLD_STEPS, FIELD_BATCH, 11),
+        ("predictor", TRAIN_SNAPSHOTS, PREDICTOR_STEPS, FIELD_BATCH, 100_011),
+        ("selection_oracle", SELECTION_SNAPSHOTS, ORACLE_STEPS, ORACLE_BATCH, 20_260_825),
+    )
+    for name, total, steps, batch, seed in schedule_specs:
+        expected_ids, expected_seeds = deterministic_schedule(total, steps, batch, seed)
+        require(np.array_equal(arrays[f"{name}_snapshot_schedule"], expected_ids),
+                f"{name} deterministic snapshot schedule")
+        require(np.array_equal(arrays[f"{name}_point_draw_seeds"], expected_seeds),
+                f"{name} deterministic point seeds")
+    training_affine = np.asarray(arrays["training_affine"], np.float64)
+    training_q_raw = np.asarray(arrays["training_q_raw"], np.float64)
+    expected_training_states = np.concatenate(
+        (training_affine, np.tanh(training_q_raw)), axis=1
+    )
+    require(np.array_equal(arrays["training_states"], expected_training_states),
+            "training state/autolatent consistency")
+    require(np.array_equal(checkpoint["training_autolatent_raw"], training_q_raw),
+            "checkpoint/NPZ training autolatent consistency")
     train_features = np.asarray(arrays["training_features"])
     select_features = np.asarray(arrays["selection_features"])
     mean, empirical = np.mean(train_features, axis=0), np.std(train_features, axis=0)
@@ -224,15 +329,29 @@ with np.load(NPZ_PATH, allow_pickle=False) as arrays:
     fold_error = max(float(np.max(np.abs(normalized - folded))),
                      float(np.max(np.abs(select_normalized - select_folded))))
     require(fold_error <= 1e-12, "folded predictor identity")
+    expected_predictor_states = np.tanh(select_folded)
+    require(np.allclose(arrays["selection_predictor_states"], expected_predictor_states,
+                        rtol=2e-13, atol=2e-14),
+            "selection predictor-state consistency")
+    chosen_for_states = int(report["selection_oracle"]["chosen_start"])
+    chosen_q_raw = np.asarray(
+        arrays[f"selection_oracle_start{chosen_for_states}_q_raw"], np.float64
+    )
+    require(np.array_equal(arrays["selection_oracle_chosen_q_raw"], chosen_q_raw),
+            "chosen oracle q consistency")
+    expected_oracle_states = np.concatenate(
+        (np.asarray(arrays["selection_affine"]), np.tanh(chosen_q_raw)), axis=1
+    )
+    require(np.array_equal(arrays["selection_oracle_states"], expected_oracle_states),
+            "selection oracle-state consistency")
 
-for row in report["data"]["training"] + report["data"]["selection"]:
-    health = row["reference_health"]
-    require(row["num_times"] == 51 and health["reported_max_relative_residual"] <= 1e-8
-            and health["independent_max_relative_residual"] <= 1e-8, "reference health")
+validate_metadata(report["data"]["training"], TRAIN_SPEC, "training")
+validate_metadata(report["data"]["selection"], SELECTION_SPEC, "selection")
 starts = report["selection_oracle"]["starts"]
 require([row["start_index"] for row in starts] == [0, 1, 2], "three oracle starts")
 for row in starts:
-    validate_metrics(row["metrics"], (64, 32, 16), f"oracle start {row['start_index']}")
+    validate_oracle_history(row)
+    validate_metrics(row["metrics"], SELECTION_SPEC, f"oracle start {row['start_index']}")
     require(row["gate_pass"] == oracle_gate(row["metrics"]), "oracle start gate")
 losses = [row["metrics"]["pooled"]["mean_snapshot_relative_l2_squared"] for row in starts]
 chosen = int(np.argmin(losses))
@@ -244,7 +363,7 @@ require(report["selection_oracle"]["start_selection_metric"]
 oracle = report["selection_oracle"]["metrics"]
 require(oracle == starts[chosen]["metrics"], "chosen oracle metrics")
 direct = report["selection_direct"]["metrics"]
-validate_metrics(direct, (64, 32, 16), "direct")
+validate_metrics(direct, SELECTION_SPEC, "direct")
 oracle_pass, (direct_pass, ratios) = oracle_gate(oracle), direct_gate(direct, oracle)
 gates = report["gates"]
 require(report["selection_oracle"]["gate_pass"] == oracle_pass
@@ -278,7 +397,7 @@ expected_next = (
 require(gates["phase4_next_decision"] == expected_next, "next-cell decision")
 
 audit = {
-    "status": "pass", "negative_aware": True,
+    "status": "pass", "negative_aware": True, "smoke": AUDIT_SMOKE,
     "source_json_sha256": sha256(REPORT_PATH), "source_npz_sha256": sha256(NPZ_PATH),
     "source_checkpoint_sha256": sha256(CHECKPOINT_PATH),
     "source_manifest_sha256": sha256(MANIFEST_PATH),
@@ -286,10 +405,13 @@ audit = {
     "p4_json_sha256": p4_json_sha, "p4_audit_sha256": sha256(P4_AUDIT_PATH),
     "p4_manifest_sha256": sha256(P4_MANIFEST_PATH),
     "predictor_fold_identity_max_abs": fold_error,
+    "state_consistency_recomputed": True,
+    "deterministic_schedules_recomputed": True,
+    "metadata_and_history_recomputed": True,
     "oracle_start_selection_losses": losses, "chosen_start": chosen, "gates": gates,
 }
 os.makedirs(os.path.dirname(os.path.abspath(AUDIT_PATH)), exist_ok=True)
 with open(AUDIT_PATH, "w") as handle:
     json.dump(audit, handle, indent=2, sort_keys=True, allow_nan=False)
     handle.write("\n")
-print(json.dumps({"status": "pass", "gates": gates}, indent=2))
+print(json.dumps({"status": "pass", "smoke": AUDIT_SMOKE, "gates": gates}, indent=2))

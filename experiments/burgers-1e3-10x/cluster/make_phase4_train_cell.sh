@@ -14,6 +14,13 @@ for name in "${sources[@]}"; do
   git -C "$WORKTREE" diff --quiet HEAD -- "experiments/burgers-1e3-10x/$name" || exit 3
   git -C "$WORKTREE" cat-file -e "$expected_commit:experiments/burgers-1e3-10x/$name"
 done
+sbatch_path="experiments/burgers-1e3-10x/cluster/phase4_train.sbatch"
+git -C "$WORKTREE" diff --quiet HEAD -- "$sbatch_path" || {
+  echo "dirty Phase4 trainer batch script" >&2; exit 3;
+}
+git -C "$WORKTREE" cat-file -e "$expected_commit:$sbatch_path"
+expected_sbatch_sha="$(git -C "$WORKTREE" show "$expected_commit:$sbatch_path" | sha256sum | cut -d' ' -f1)"
+[[ "$(sha256sum "$WORKTREE/$sbatch_path" | cut -d' ' -f1)" == "$expected_sbatch_sha" ]] || exit 3
 git -C "$WORKTREE" diff --quiet HEAD -- experiments/burgers-hybrid-1024/bh_common.py || exit 3
 git -C "$WORKTREE" cat-file -e "$expected_commit:experiments/burgers-hybrid-1024/bh_common.py"
 [[ -f "$P4/LOCAL.sha256" ]] || exit 4
@@ -33,6 +40,7 @@ bh_sha="$(awk '$2=="./code/bh_common.py" {print $1}' "$P4/MANIFEST.sha256")"
 [[ "$(sha256sum "$STAGE/code/deps/burgers2d-coord-rom/burgers2d_film.py" | cut -d' ' -f1)" == "$film_sha" ]] || exit 4
 [[ "$(sha256sum "$STAGE/code/bh_common.py" | cut -d' ' -f1)" == "$bh_sha" ]] || exit 4
 cp "$HERE/phase4_train.sbatch" "$STAGE/run.sbatch"
+[[ "$(sha256sum "$STAGE/run.sbatch" | cut -d' ' -f1)" == "$expected_sbatch_sha" ]] || exit 4
 (cd "$STAGE" && find . -type f ! -path './MANIFEST.sha256' -exec sha256sum {} \; | sort > MANIFEST.sha256)
 echo "stage=$STAGE"
 echo "commit=$expected_commit"

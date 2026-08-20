@@ -32,6 +32,10 @@ S0_JSON, ARM, OUTPUT_JSON, OUTPUT_NPZ, CHECKPOINT = sys.argv[1:6]
 PRIOR_TRAIN_JSONS = tuple(sys.argv[6:])
 SMOKE = os.environ.get("SMOKE", "0") == "1"
 TRAIN_SEED = int(os.environ.get("TRAIN_SEED", "11"))
+SMOKE_UPDATES = int(os.environ.get("SMOKE_UPDATES", "2"))
+SMOKE_SHAPE_FAITHFUL = os.environ.get("SMOKE_SHAPE_FAITHFUL", "0") == "1"
+if SMOKE and not 1 <= SMOKE_UPDATES <= 100:
+    raise SystemExit("excluded SMOKE_UPDATES must be in [1,100]")
 
 # Treat this mandatory health condition as an exception if JAX emits it through
 # Python warnings.  The cluster pull audit also rejects the log spelling.
@@ -94,6 +98,23 @@ def _load_prior_artifact(path, s0_sha256):
     ) is not False:
         raise SystemExit(f"prior artifact touched a locked split: {path}")
     candidate = (artifact.get("config") or {}).get("candidate") or {}
+    npz_record = _validate_companion(path, artifact, "npz")
+    checkpoint_record = _validate_companion(path, artifact, "checkpoint")
+    audit_path = os.path.join(os.path.dirname(os.path.abspath(path)), "AUDIT.json")
+    if not os.path.isfile(audit_path):
+        raise SystemExit(f"prior artifact lacks independent AUDIT.json: {path}")
+    with open(audit_path) as handle:
+        audit = json.load(handle)
+    if not (
+        audit.get("status") == "pass"
+        and audit.get("source_json_sha256") == c.sha256(path)
+        and audit.get("source_npz_sha256") == npz_record["sha256"]
+        and audit.get("source_checkpoint_sha256") == checkpoint_record["sha256"]
+        and audit.get("arm") == candidate.get("arm")
+        and audit.get("seed") == config.get("training_seed")
+        and audit.get("s0_json_sha256") == s0_sha256
+    ):
+        raise SystemExit(f"prior artifact independent audit mismatch: {path}")
     record = {
         "json_path": os.path.abspath(path), "json_sha256": c.sha256(path),
         "arm": candidate.get("arm"),
@@ -101,8 +122,8 @@ def _load_prior_artifact(path, s0_sha256):
         "oracle_gate_pass": (artifact.get("selection_oracle") or {}).get("gate_pass"),
         "direct_gate_pass": (artifact.get("selection_direct") or {}).get("gate_pass"),
         "promote_seed": (artifact.get("gates") or {}).get("promote_seed"),
-        "npz": _validate_companion(path, artifact, "npz"),
-        "checkpoint": _validate_companion(path, artifact, "checkpoint"),
+        "npz": npz_record, "checkpoint": checkpoint_record,
+        "audit": {"path": audit_path, "sha256": c.sha256(audit_path)},
     }
     if record["arm"] not in tuple(item["arm"] for item in s.CANDIDATES):
         raise SystemExit(f"invalid arm in prior artifact: {path}")
@@ -407,9 +428,9 @@ def train_manifold(candidate, datasets, arrays):
     r, k = candidate["R"], candidate["k"]
     q_dimension = k - 5
     total = sum(item["flat"].shape[0] for item in datasets)
-    steps = 2 if SMOKE else MANIFOLD_STEPS
-    batch = min(4, total) if SMOKE else FIELD_BATCH
-    points = 32 if SMOKE else FIELD_POINTS
+    steps = SMOKE_UPDATES if SMOKE else MANIFOLD_STEPS
+    batch = (FIELD_BATCH if SMOKE_SHAPE_FAITHFUL else min(4, total)) if SMOKE else FIELD_BATCH
+    points = (FIELD_POINTS if SMOKE_SHAPE_FAITHFUL else 32) if SMOKE else FIELD_POINTS
     schedule_ids, point_seeds = make_schedule(total, steps, batch, TRAIN_SEED)
     arrays["manifold_snapshot_schedule"] = schedule_ids
     arrays["manifold_point_draw_seeds"] = point_seeds
@@ -469,9 +490,9 @@ def train_predictor(
 ):
     r, k = candidate["R"], candidate["k"]
     total = target_states.shape[0]
-    steps = 2 if SMOKE else PREDICTOR_STEPS
-    batch = min(4, total) if SMOKE else FIELD_BATCH
-    points = 32 if SMOKE else FIELD_POINTS
+    steps = SMOKE_UPDATES if SMOKE else PREDICTOR_STEPS
+    batch = (FIELD_BATCH if SMOKE_SHAPE_FAITHFUL else min(4, total)) if SMOKE else FIELD_BATCH
+    points = (FIELD_POINTS if SMOKE_SHAPE_FAITHFUL else 32) if SMOKE else FIELD_POINTS
     schedule_ids, point_seeds = make_schedule(total, steps, batch, TRAIN_SEED + 100_000)
     arrays["predictor_snapshot_schedule"] = schedule_ids
     arrays["predictor_point_draw_seeds"] = point_seeds
@@ -643,10 +664,10 @@ def optimize_selection_oracle(candidate, datasets, hyper, arrays):
     total = sum(item["flat"].shape[0] for item in datasets)
     affine = concatenate(datasets, "affine")
     q_dimension = candidate["k"] - 5
-    steps = 2 if SMOKE else ORACLE_STEPS
-    batch = min(4, total) if SMOKE else ORACLE_BATCH
-    points = 32 if SMOKE else FIELD_POINTS
-    checkpoints = (2,) if SMOKE else ORACLE_CHECKPOINTS
+    steps = SMOKE_UPDATES if SMOKE else ORACLE_STEPS
+    batch = (ORACLE_BATCH if SMOKE_SHAPE_FAITHFUL else min(4, total)) if SMOKE else ORACLE_BATCH
+    points = (FIELD_POINTS if SMOKE_SHAPE_FAITHFUL else 32) if SMOKE else FIELD_POINTS
+    checkpoints = (steps,) if SMOKE else ORACLE_CHECKPOINTS
     schedule_ids, point_seeds = make_schedule(total, steps, batch, 20260825)
     arrays["selection_oracle_snapshot_schedule"] = schedule_ids
     arrays["selection_oracle_point_draw_seeds"] = point_seeds
@@ -737,11 +758,20 @@ def main():
         "config": {
             "arm": ARM, "candidate": candidate, "training_seed": TRAIN_SEED,
             "training_mix": TRAIN_MIX, "selection_mix": SELECTION_MIX,
-            "all_51_times": not SMOKE, "manifold_steps": 2 if SMOKE else MANIFOLD_STEPS,
-            "predictor_steps": 2 if SMOKE else PREDICTOR_STEPS,
-            "selection_oracle_steps": 2 if SMOKE else ORACLE_STEPS,
-            "field_batch": 4 if SMOKE else FIELD_BATCH,
-            "field_points": 32 if SMOKE else FIELD_POINTS,
+            "all_51_times": not SMOKE,
+            "manifold_steps": SMOKE_UPDATES if SMOKE else MANIFOLD_STEPS,
+            "predictor_steps": SMOKE_UPDATES if SMOKE else PREDICTOR_STEPS,
+            "selection_oracle_steps": SMOKE_UPDATES if SMOKE else ORACLE_STEPS,
+            "field_batch": (
+                FIELD_BATCH if (not SMOKE or SMOKE_SHAPE_FAITHFUL) else 4
+            ),
+            "field_points": (
+                FIELD_POINTS if (not SMOKE or SMOKE_SHAPE_FAITHFUL) else 32
+            ),
+            "selection_oracle_batch": (
+                ORACLE_BATCH if (not SMOKE or SMOKE_SHAPE_FAITHFUL) else 4
+            ),
+            "smoke_shape_faithful_batches": SMOKE_SHAPE_FAITHFUL if SMOKE else None,
             "manifold_adamw": {
                 "beta1": 0.9, "beta2": 0.999, "eps": 1e-8,
                 "weight_decay": 1e-6, "gradient_clip": 1.0,
@@ -886,9 +916,11 @@ def main():
             "local_loss_revision_near_miss_condition": bool(
                 oracle_pass and not direct_pass and all(
                     (row["trajectory_error_mean"] <= 6e-4
-                     and row["trajectory_error_worst"] <= 2e-3)
-                    for row in list(direct_metrics["meshes"].values())
-                    + [direct_metrics["pooled"]]
+                     and row["trajectory_error_worst"] <= 2e-3
+                     and row["all_finite"] and row["exact_binary_boundary"]
+                     and degradation[key] <= 3.0)
+                    for key, row in list(direct_metrics["meshes"].items())
+                    + [("pooled", direct_metrics["pooled"])]
                 ),
             ),
             "loss_revision_licensed": False,

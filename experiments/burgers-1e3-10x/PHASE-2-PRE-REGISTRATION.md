@@ -221,7 +221,9 @@ At most 12 Phase-2 scientific GPU job directories may be run:
 4. At most one conditional all-seed loss revision (one cell, all three independent
    retrainings in that directory).  It is licensed only when every seed's learned
    coefficient-manifold oracle passes, and at least one seed's direct decoder misses
-   the `3e-4` mean or `1e-3` worst gate by no more than 2x.  The only revision is to
+   its gate by no more than 2x: mean `<=6e-4`, worst `<=2e-3`, and direct/oracle
+   mean degradation `<=3.0` at every N and pooled, with finite exact-boundary output.
+   The only revision is to
    add fixed relative gradient, weak-PDE, and one-step rollout weights
    `(0.1,0.1,0.1)` to the existing relative-field loss; architecture and optimizer
    are unchanged.
@@ -299,7 +301,8 @@ change only the already listed gradient/weak/rollout weights; it may not change 
 optimizer, initialization, sampling, mesh, or oracle rule.
 The loss-revision license is a joint all-seed decision made only after completed
 seed-11, seed-29, and seed-47 artifacts exist for the same finalist: all three learned
-oracles must pass and at least one direct arm must miss its gate by no more than 2x.
+oracles must pass and at least one direct arm must satisfy every explicit 2x near-
+miss bound above.
 No single-seed training cell may claim that license; it records only its local
 near-miss condition.
 

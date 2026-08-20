@@ -1,0 +1,36 @@
+./code/b10_phase4.py: OK
+./code/b10_common.py: OK
+./code/b10_audit_phase4_train.py: OK
+./code/deps/burgers2d-coord-rom/burgers2d_film.py: OK
+./code/b10_phase3.py: OK
+./code/b10_phase4_train.py: OK
+./code/deps/p4/MANIFEST.sha256: OK
+./run.sbatch: OK
+./code/deps/p4/phase4_d.npz: OK
+./code/b10_spline.py: OK
+./code/b10_s0_spline.py: OK
+./code/bh_common.py: OK
+./code/b10_spline_train.py: OK
+./code/deps/p4/AUDIT.json: OK
+./code/deps/p4/phase4_d.json: OK
+host=pax011 gpu=NVIDIA H200
+commit=7b21066a405bcdade292154eb53fdbad1e0f240a cell=p4_h1_s11_r1 arm=H1 seed=11
+jax_backend=gpu cuda:0
+{
+ "status": "complete",
+ "arm": "H1",
+ "seed": 11,
+ "gates": {
+  "representation_oracle_all_N_and_pooled": false,
+  "direct_all_N_and_pooled": false,
+  "promote_seed": false,
+  "local_loss_revision_near_miss_condition": false,
+  "loss_revision_licensed": false,
+  "loss_revision_license_reason": "joint decision requires completed seed-11/29/47 artifacts; a single-seed cell cannot license revision",
+  "k32_retraining_near_miss_condition": false,
+  "k32_retraining_licensed": false,
+  "phase4_next_decision": "hard stop: learned manifold misses the 2x bracket"
+ }
+} 
+ALL-DONE
+ALL-DONE

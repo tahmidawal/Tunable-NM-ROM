@@ -555,20 +555,42 @@ def main():
                 "regenerated training binding")
         require(report["data"]["training_binding"] == binding,
                 "reported training binding")
+        target_normalization_local_max = None
+        target_physical_bitwise = None
+        target_features_bitwise = None
+        checkpoint_physical_bitwise = None
+        artifact_state_bitwise = None
         if not smoke:
-            require(np.array_equal(arrays["training_affine"], target_affine)
-                    and np.array_equal(arrays["training_features"], target_features),
+            target_normalization_delta = np.abs(
+                arrays["training_affine"] - target_affine
+            )
+            target_normalization_local_max = float(np.max(
+                target_normalization_delta
+            ))
+            target_physical_bitwise = bool(np.array_equal(
+                arrays["training_target_physical_affine"],
+                target_physical_affine,
+            ))
+            target_features_bitwise = bool(np.array_equal(
+                arrays["training_features"], target_features
+            ))
+            checkpoint_physical_bitwise = bool(np.array_equal(
+                checkpoint["training_target_physical_affine"],
+                target_physical_affine,
+            ))
+            artifact_state_bitwise = bool(np.array_equal(
+                arrays["training_affine"], arrays["training_states"][:, :5]
+            ))
+            require(np.all(np.isfinite(target_normalization_delta))
+                    and target_normalization_local_max <= AFFINE_REGEN_ATOL
+                    and target_features_bitwise,
                     "P5 target metadata/output binding")
-            require(np.array_equal(arrays["training_target_physical_affine"],
-                                   target_physical_affine),
+            require(target_physical_bitwise,
                     "immutable physical target affine binding")
-            require(np.array_equal(checkpoint["training_target_physical_affine"],
-                                   target_physical_affine),
+            require(checkpoint_physical_bitwise,
                     "checkpoint physical target affine binding")
-            require(np.array_equal(arrays["training_affine"],
-                                   normalized_affine_from_physical(
-                                       arrays["training_target_physical_affine"]
-                                   )), "locked affine normalization mapping")
+            require(artifact_state_bitwise,
+                    "locked artifact affine/state mapping")
             require(np.array_equal(arrays["coefficient_mean"], p5_mean)
                     and np.array_equal(arrays["head_scales"], p5_scales),
                     "P5 normalization/output binding")
@@ -689,6 +711,23 @@ def main():
         "predictor_fold_train_max_abs": train_fold,
         "predictor_fold_selection_max_abs": selection_fold,
         "training_binding": binding,
+        "target_normalization_local_recompute": {
+            "classification": (
+                "portable_f64_scalar_exp_log_recompute; immutable physical "
+                "target and staged scientific mapping remain exact"
+            ),
+            "absolute_tolerance": AFFINE_REGEN_ATOL,
+            "relative_tolerance": 0.0,
+            "max_abs": target_normalization_local_max,
+            "within_tolerance": (
+                True if smoke
+                else target_normalization_local_max <= AFFINE_REGEN_ATOL
+            ),
+            "physical_target_bitwise": target_physical_bitwise,
+            "feature_target_bitwise": target_features_bitwise,
+            "checkpoint_physical_target_bitwise": checkpoint_physical_bitwise,
+            "artifact_affine_state_bitwise": artifact_state_bitwise,
+        },
         "oracle_start_losses": losses, "chosen_start": chosen,
         "gates": expected_gates, "decision": expected_decision,
     }

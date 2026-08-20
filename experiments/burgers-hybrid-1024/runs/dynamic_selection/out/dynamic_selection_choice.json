@@ -1,0 +1,95 @@
+{
+ "status": "promoted",
+ "source": "runs/dynamic_selection/out/dynamic_selection.json",
+ "source_sha256": "87dcc00d4018b185fbb916b0f4eaec2ea79be33e1f4c2c6ddc662c3a31a33e46",
+ "aggregation": {
+  "time": "median repetitions within trajectory, then median trajectories",
+  "work": "deterministic per trajectory, then median trajectories"
+ },
+ "decisions": [
+  {
+   "arm": "coarse64_a1",
+   "coarse_n": 64,
+   "relaxation": 1.0,
+   "timing_median_ms": 47.2811171784997,
+   "saving_vs_cubic_median_ms": -18.96004332229495,
+   "case_time_ratios_vs_cubic": [
+    1.565422236926609,
+    1.7492840398326694,
+    1.5952374069191197,
+    1.738482624544289
+   ],
+   "gates": {
+    "newton_reduction_at_least_20pct": false,
+    "bicgstab_reduction_at_least_20pct": false,
+    "positive_median_total_saving": false,
+    "no_case_more_than_10pct_slower": false,
+    "solver_health": true
+   },
+   "eligible": false
+  },
+  {
+   "arm": "coarse128_a1",
+   "coarse_n": 128,
+   "relaxation": 1.0,
+   "timing_median_ms": 49.81786711141467,
+   "saving_vs_cubic_median_ms": -22.17770926654339,
+   "case_time_ratios_vs_cubic": [
+    1.7600006442598033,
+    1.845819355632096,
+    1.6606632437644477,
+    1.8324550944435818
+   ],
+   "gates": {
+    "newton_reduction_at_least_20pct": false,
+    "bicgstab_reduction_at_least_20pct": false,
+    "positive_median_total_saving": false,
+    "no_case_more_than_10pct_slower": false,
+    "solver_health": true
+   },
+   "eligible": false
+  },
+  {
+   "arm": "coarse256_a1",
+   "coarse_n": 256,
+   "relaxation": 1.0,
+   "timing_median_ms": 19.505904521793127,
+   "saving_vs_cubic_median_ms": 8.56431433930993,
+   "case_time_ratios_vs_cubic": [
+    0.6838430789442219,
+    0.6966160206242934,
+    0.677169589154946,
+    0.8131047606012534
+   ],
+   "gates": {
+    "newton_reduction_at_least_20pct": true,
+    "bicgstab_reduction_at_least_20pct": true,
+    "positive_median_total_saving": true,
+    "no_case_more_than_10pct_slower": true,
+    "solver_health": true
+   },
+   "eligible": true
+  }
+ ],
+ "selected": {
+  "arm": "coarse256_a1",
+  "coarse_n": 256,
+  "relaxation": 1.0,
+  "timing_median_ms": 19.505904521793127,
+  "saving_vs_cubic_median_ms": 8.56431433930993,
+  "case_time_ratios_vs_cubic": [
+   0.6838430789442219,
+   0.6966160206242934,
+   0.677169589154946,
+   0.8131047606012534
+  ],
+  "gates": {
+   "newton_reduction_at_least_20pct": true,
+   "bicgstab_reduction_at_least_20pct": true,
+   "positive_median_total_saving": true,
+   "no_case_more_than_10pct_slower": true,
+   "solver_health": true
+  },
+  "eligible": true
+ }
+}

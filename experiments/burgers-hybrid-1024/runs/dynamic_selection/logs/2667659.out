@@ -1,0 +1,9 @@
+host=pax049 gpu=NVIDIA A100 80GB PCIe
+commit=21008d9baceffc7f99dd561302cc21c033783ceb dirty=e3b0c44298fc cell=ctol_hybb_dynsel_a100
+jax_backend=gpu cuda:0
+N=256 cubic: 28.667 ms save=0.000 ms N/B=55.0/60.5
+N=256 coarse64_a1: 47.281 ms save=-18.960 ms N/B=100.0/105.0
+N=256 coarse128_a1: 49.818 ms save=-22.178 ms N/B=100.0/103.5
+N=256 coarse256_a1: 19.506 ms save=8.564 ms N/B=19.0/24.5
+DONE
+ALL-DONE

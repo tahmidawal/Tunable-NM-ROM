@@ -38,6 +38,34 @@ predictor, and three q starts, all checkpoint full-field scans, and artifact com
 BLAS/OpenMP are pinned to one thread; the 8 CPUs primarily support truth generation and host data
 sampling, not a claimed parallel fit speedup.
 
+## Exact staged smoke plus independent audit
+
+Commit `89195d7ccb73fa29f7694f22d927cd776830ce2a` was staged with manifest-file SHA-256
+`edbfc03235de0a2fbe9787c5fa4ee3418f765ea910ff3a5a6c447f8b7bd2b431`.  From that exact staged
+`code/` directory, the following excluded path completed end to end in 36 seconds:
+
+```bash
+source /etc/profile.d/jax-mem.sh
+JAX_DEFAULT_MATMUL_PRECISION=highest B10_COMMIT=89195d7ccb73fa29f7694f22d927cd776830ce2a \
+  SMOKE=1 SMOKE_UPDATES=1 TRAIN_SEED=11 \
+  jaxrun /home/tahmid/Dev/.venv/bin/python b10_phase4_train.py \
+  deps/p4/phase4_d.json H1 "$SMOKE_DIR/train.json" "$SMOKE_DIR/train.npz" \
+  "$SMOKE_DIR/checkpoint.pkl"
+B10_AUDIT_SMOKE=1 /home/tahmid/Dev/.venv/bin/python b10_audit_phase4_train.py \
+  "$SMOKE_DIR/train.json" "$SMOKE_DIR/train.npz" "$SMOKE_DIR/checkpoint.pkl" \
+  "$SMOKE_DIR/AUDIT.json" 89195d7ccb73fa29f7694f22d927cd776830ce2a local \
+  deps/p4/phase4_d.json deps/p4/AUDIT.json deps/p4/MANIFEST.sha256 \
+  ../MANIFEST.sha256 edbfc03235de0a2fbe9787c5fa4ee3418f765ea910ff3a5a6c447f8b7bd2b431
+```
+
+Trainer and independent-audit return codes were both zero.  The audit is explicitly
+negative-aware: the one-update synthetic scientific gates were false, yet the artifact audit
+passed.  It independently recomputed state/autolatent/predictor consistency, every deterministic
+schedule ID and uint64 point seed, metadata/global ranges, history/checkpoint structure, feature
+fold identity (`2.6020852139652106e-16`), P4 dependency chain, and all gate booleans.  Excluded
+artifact hashes were JSON `7efb53e8...`, NPZ `cf5ef310...`, checkpoint `829b8d38...`, and audit
+`e83ac920...`; they remain execution-only and are not scientific evidence.
+
 ## Artifact path
 
 Staging is exact-commit only through `cluster/make_phase4_train_cell.sh`; it copies the immutable

@@ -138,11 +138,29 @@ with np.load(NPZ_PATH, allow_pickle=False) as arrays:
             row = report["free_oracle"][arm]["meshes"][str(n)]
             require(trajectory.size == len(row["indices"]), f"{key} trajectory count")
             require(fit_healthy.size == trajectory.size * 51, f"{key} fit count")
-            require(np.all(fit_healthy) == row["zero_unhealthy_fits"],
-                    f"{key} fit health mismatch")
-            require(np.max(fit_normal) <= 1e-8, f"{key} normal residual gate")
+            # A negative scientific oracle-health result is a valid S0 outcome.
+            # Independently reconstruct every persisted health bit from the
+            # finite normal residual and the locked tolerance; do not require
+            # that all bits pass.  The global NPZ finiteness check above and
+            # exact-boundary aggregate below cover the other two conditions in
+            # fit_free_oracle's health definition.
+            recomputed_fit_healthy = np.isfinite(fit_normal) & (fit_normal <= 1e-8)
+            require(np.array_equal(fit_healthy, recomputed_fit_healthy),
+                    f"{key} per-fit health mismatch")
+            require(row["healthy_fits"] == int(np.sum(recomputed_fit_healthy)),
+                    f"{key} healthy fit count mismatch")
+            require(row["fit_count"] == int(recomputed_fit_healthy.size),
+                    f"{key} reported fit count mismatch")
+            require(row["zero_unhealthy_fits"] == bool(np.all(recomputed_fit_healthy)),
+                    f"{key} aggregate fit health mismatch")
+            same(np.max(fit_normal), row["relative_normal_worst"],
+                 f"{key} normal residual worst")
             require(np.all((iterations >= 0) & (iterations <= 500)),
                     f"{key} LSMR iteration range")
+            same(np.median(iterations), row["lsmr_iterations_median"],
+                 f"{key} LSMR iteration median")
+            require(int(np.max(iterations)) == row["lsmr_iterations_max"],
+                    f"{key} LSMR iteration max")
             same(np.mean(trajectory), row["trajectory_error_mean"], f"{key} mean")
             same(np.max(trajectory), row["trajectory_error_worst"], f"{key} worst")
             same(np.mean(snapshot), row["snapshot_error_mean"], f"{key} snapshot mean")
@@ -151,7 +169,7 @@ with np.load(NPZ_PATH, allow_pickle=False) as arrays:
             require(row["max_partition_sum_error"] <= 2e-15,
                     f"{key} partition of unity")
             pooled.extend(trajectory.tolist())
-            all_healthy = all_healthy and bool(np.all(fit_healthy))
+            all_healthy = all_healthy and bool(np.all(recomputed_fit_healthy))
         pooled = np.asarray(pooled, np.float64)
         summary = report["free_oracle"][arm]["summary"]
         same(np.mean(pooled), summary["trajectory_error_mean"], f"{arm} pooled mean")

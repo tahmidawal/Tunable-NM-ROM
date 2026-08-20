@@ -345,3 +345,13 @@ job used that stage. The Phase-7 lifecycle now rejects any local or remote
 pre-submit file set other than the manifest itself plus exactly its listed
 paths, disables bytecode writes in the batch, and applies an exact named-output
 allowlist at pull. Scientific code, methods, and gates are unchanged.
+
+Phase-7 job `2669861` subsequently failed before any training update/output at
+2:14 (`FAILED`, exit `1:0`, H200/GPU healthy) because the driver compared the
+physical P5 target affine directly with the normalized decoder state. The
+checksummed zero-science bundle is retained at `runs/p7_g1_s11_r1`, and only its
+exact remote directory was deleted. The locked schema mapping now retains the
+physical affine and derives the training state through the pre-existing
+`normalized_state_from_affine`. A read-only regression passes all 35,904 real
+P5 rows, exact independent mapping, all regenerated seed-0 parameter/features,
+and a healthy regenerated N64 draw-0 trajectory; no retry has been submitted.

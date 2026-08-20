@@ -40,6 +40,7 @@ EVALUATION_BATCH = 8
 _FULL_EVALUATORS = {}
 
 EXPECTED = {
+    "affine_regression": "d48f74080f7cd69e4f5e2a0d4bdbbd57bc31f7be52deac18aa0a4bc0e522e3ac",
     "p4_json": "ff425dfa1f73ac2d8559df2d780ef09dc1ade179ed5636458e53e0f389f5d617",
     "p4_npz": "720c5890b22709c83858f46e43f18fa3d28bb1305544f02ad9aea71625a2228f",
     "p4_audit": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3",
@@ -134,6 +135,30 @@ def validate_chains(args):
     if not all(checks):
         raise SystemExit("immutable P4/P5/P6 decision/provenance chain mismatch")
     records["phase7_preregistration"] = path_record(args.prereg)
+    records["affine_regression"] = validate_exact_hash(
+        args.affine_regression, "affine_regression"
+    )
+    regression = load_json(args.affine_regression)
+    if not (
+        regression.get("status") == "pass"
+        and regression.get("snapshot_count") == 35_904
+        and regression.get("chunk_count") == 16
+        and regression.get("locked_vs_independent_max_abs") == 0.0
+        and regression.get("all_normalized_finite_and_in_unit_box") is True
+        and regression.get("all_regenerated_parameter_feature_metadata_match") is True
+        and regression.get("regenerated_N64_draw0_normalized_affine_max_abs", 1.0)
+        <= regression.get("regenerated_N64_draw0_tolerance_max_abs", 0.0)
+        and regression.get("regenerated_N64_draw0_reference_health", {}).get(
+            "reported_max_relative_residual", 1.0
+        ) <= 1e-8
+        and regression.get("regenerated_N64_draw0_reference_health", {}).get(
+            "independent_max_relative_residual", 1.0
+        ) <= 1e-8
+        and regression.get("scientific_training_executed") is False
+        and regression.get("model_validation_touched") is False
+        and regression.get("confirmation_touched") is False
+    ):
+        raise SystemExit("Phase-7 affine-schema regression is not passing")
     records["decisions"] = {"P4": p4_decision, "P5": p5_decision, "P6": p6_decision}
     return p4, p5, p6, records
 
@@ -226,9 +251,16 @@ def load_target_coefficients(args, p5_report, smoke):
     ), axis=1)
     if not np.all(np.isfinite(normalized)):
         raise SystemExit("nonfinite normalized coefficient targets")
+    physical_affine = np.concatenate(affine)
+    normalized_affine = np.stack([
+        spline.normalized_state_from_affine(row) for row in physical_affine
+    ])
+    if not np.all(np.isfinite(normalized_affine)):
+        raise SystemExit("nonfinite normalized immutable target affine")
     return {
         "normalized": normalized,
-        "affine": np.concatenate(affine), "features": np.concatenate(features),
+        "physical_affine": physical_affine, "affine": normalized_affine,
+        "features": np.concatenate(features),
         "mean": mean, "scales": scales, "chunks": chunks,
     }
 
@@ -637,6 +669,7 @@ def main():
             parser.add_argument(f"--{phase}-{kind}", dest=f"{phase}_{kind}")
     parser.add_argument("--target-dir")
     parser.add_argument("--prereg")
+    parser.add_argument("--affine-regression", dest="affine_regression")
     parser.add_argument("--output-json", required=True)
     parser.add_argument("--output-npz", required=True)
     parser.add_argument("--checkpoint", required=True)
@@ -652,7 +685,7 @@ def main():
         required = [getattr(args, f"{phase}_{kind}")
                     for phase in ("p4", "p5", "p6")
                     for kind in ("json", "npz", "audit", "manifest")]
-        required += [args.target_dir, args.prereg]
+        required += [args.target_dir, args.prereg, args.affine_regression]
         if any(value is None for value in required):
             raise SystemExit("scientific Phase-7 requires complete immutable chains")
         p4_report, p5_report, p6_report, bindings = validate_chains(args)
@@ -675,6 +708,8 @@ def main():
         "selection_features": legacy.concatenate(selection, "features"),
         "coefficient_mean": targets["mean"], "head_scales": targets["scales"],
     }
+    if not args.smoke:
+        arrays["training_target_physical_affine"] = targets["physical_affine"]
     feature_mean, feature_scale, feature_empirical = legacy.predictor_feature_statistics(
         arrays["training_features"]
     )
@@ -758,6 +793,10 @@ def main():
         "training": legacy.metadata(training), "selection": legacy.metadata(selection),
         "target_chunks": targets["chunks"],
         "target_snapshot_count": int(targets["normalized"].shape[0]),
+        "target_affine_schema": (
+            "immutable P5 chunk affine is physical moment transport; "
+            "training_affine is its exact locked normalized_state_from_affine mapping"
+        ),
     }
     checkpoint = {
         "status": "excluded_execution_smoke" if args.smoke else "complete",
@@ -779,6 +818,8 @@ def main():
         "predictor_feature_scale": feature_scale,
         "data_metadata": data,
     }
+    if not args.smoke:
+        checkpoint["training_target_physical_affine"] = targets["physical_affine"]
     os.makedirs(os.path.dirname(os.path.abspath(args.checkpoint)), exist_ok=True)
     with open(args.checkpoint, "wb") as handle:
         pickle.dump(checkpoint, handle, protocol=pickle.HIGHEST_PROTOCOL)

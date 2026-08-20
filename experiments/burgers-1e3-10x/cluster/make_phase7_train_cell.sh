@@ -2,20 +2,20 @@
 # make_phase7_train_cell.sh CELL EXPECTED_COMMIT P4_CELL P5_CELL P6_CELL
 set -euo pipefail
 cell="$1"; expected_commit="$2"; p4_cell="$3"; p5_cell="$4"; p6_cell="$5"
-[[ "$cell" == p7_g1_s11_r1 ]] || { echo "invalid Phase7 cell" >&2; exit 2; }
+[[ "$cell" =~ ^p7_g1_s11_r[12]$ ]] || { echo "invalid Phase7 cell" >&2; exit 2; }
 [[ "$expected_commit" =~ ^[0-9a-f]{40}$ ]] || exit 2
 [[ "$p4_cell" == p4_d_r3 && "$p5_cell" == p5_d_r1 && "$p6_cell" == p6_d_r1 ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; EXP="$(dirname "$HERE")"
 WORKTREE="$(cd "$EXP/../.." && pwd)"; ROOT="$(cd "$WORKTREE/../.." && pwd)"
 STAGE="$HERE/stage/$cell"; P4="$EXP/runs/$p4_cell"; P5="$EXP/runs/$p5_cell"; P6="$EXP/runs/$p6_cell"
 [[ "$(git -C "$WORKTREE" rev-parse HEAD)" == "$expected_commit" ]] || exit 3
-sources=(b10_common.py b10_spline.py b10_spline_train.py b10_s0_spline.py b10_phase3.py b10_phase4.py b10_phase5.py b10_phase7.py b10_phase7_train.py b10_audit_phase7_train.py)
+sources=(b10_common.py b10_spline.py b10_spline_train.py b10_s0_spline.py b10_phase3.py b10_phase4.py b10_phase5.py b10_phase7.py b10_phase7_train.py b10_audit_phase7_train.py b10_test_phase7_affine_schema.py)
 for name in "${sources[@]}"; do
   path="experiments/burgers-1e3-10x/$name"
   git -C "$WORKTREE" diff --quiet HEAD -- "$path" || exit 3
   git -C "$WORKTREE" cat-file -e "$expected_commit:$path"
 done
-for path in experiments/burgers-1e3-10x/PHASE-7-PRE-REGISTRATION.md experiments/burgers-1e3-10x/cluster/phase7_train.sbatch experiments/burgers-1e3-10x/cluster/verify_manifest_file_set.sh; do
+for path in experiments/burgers-1e3-10x/PHASE-7-PRE-REGISTRATION.md experiments/burgers-1e3-10x/phase7_affine_schema_regression.json experiments/burgers-1e3-10x/cluster/phase7_train.sbatch experiments/burgers-1e3-10x/cluster/verify_manifest_file_set.sh; do
   git -C "$WORKTREE" diff --quiet HEAD -- "$path" || exit 3
   git -C "$WORKTREE" cat-file -e "$expected_commit:$path"
 done
@@ -34,6 +34,7 @@ mkdir -p "$STAGE/logs" "$STAGE/out" "$STAGE/code/deps/burgers2d-coord-rom" \
   "$STAGE/code/deps/p4" "$STAGE/code/deps/p5/targets" "$STAGE/code/deps/p6"
 for name in "${sources[@]}"; do cp "$EXP/$name" "$STAGE/code/"; done
 cp "$EXP/PHASE-7-PRE-REGISTRATION.md" "$STAGE/code/"
+cp "$EXP/phase7_affine_schema_regression.json" "$STAGE/code/"
 cp "$WORKTREE/experiments/burgers-hybrid-1024/bh_common.py" "$STAGE/code/"
 cp "$ROOT/worktrees/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" "$STAGE/code/deps/burgers2d-coord-rom/"
 cp "$P4/out/phase4_d.json" "$P4/out/phase4_d.npz" "$P4/out/AUDIT.json" "$P4/MANIFEST.sha256" "$STAGE/code/deps/p4/"

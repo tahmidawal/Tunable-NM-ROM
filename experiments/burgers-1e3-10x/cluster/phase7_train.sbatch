@@ -8,7 +8,7 @@
 #SBATCH -e logs/%j.err
 set -euo pipefail
 : "${B10_COMMIT:?}" "${B10_CELL:?}" "${B10_REMOTE:?}"
-test "$B10_CELL" = p7_g1_s11_r1
+[[ "$B10_CELL" =~ ^p7_g1_s11_r[12]$ ]]
 test "$B10_REMOTE" = "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$B10_CELL"
 cd "$B10_REMOTE"
 sha256sum -c MANIFEST.sha256
@@ -31,6 +31,7 @@ PRE
   --p6-json deps/p6/phase6_d.json --p6-npz deps/p6/phase6_d.npz \
   --p6-audit deps/p6/AUDIT.json --p6-manifest deps/p6/MANIFEST.sha256 \
   --target-dir deps/p5/targets --prereg PHASE-7-PRE-REGISTRATION.md \
+  --affine-regression phase7_affine_schema_regression.json \
   --output-json ../out/phase7_train.json --output-npz ../out/phase7_train.npz \
   --checkpoint ../out/checkpoint.pkl
 echo ALL-DONE

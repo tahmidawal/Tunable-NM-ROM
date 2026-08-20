@@ -2,7 +2,7 @@
 # pull_phase7_train.sh CELL JOB_ID EXPECTED_COMMIT EXPECTED_MANIFEST
 set -euo pipefail
 cell="$1"; job_id="$2"; expected_commit="$3"; expected_manifest="$4"
-[[ "$cell" == p7_g1_s11_r1 && "$job_id" =~ ^[0-9]+$ ]] || exit 2
+[[ "$cell" =~ ^p7_g1_s11_r[12]$ && "$job_id" =~ ^[0-9]+$ ]] || exit 2
 [[ "$expected_commit" =~ ^[0-9a-f]{40}$ && "$expected_manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; EXP="$(dirname "$HERE")"
 REMOTE="/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell"; LOCAL="$EXP/runs/$cell"
@@ -28,6 +28,7 @@ if rg -n -i "$health" "$LOCAL/logs/$job_id.out" "$LOCAL/logs/$job_id.err"; then 
   --expected-commit "$expected_commit" --job-id "$job_id" \
   --manifest "$LOCAL/MANIFEST.sha256" --expected-manifest "$expected_manifest" \
   --prereg "$EXP/PHASE-7-PRE-REGISTRATION.md" \
+  --affine-regression "$EXP/phase7_affine_schema_regression.json" \
   --p4-json "$P4/out/phase4_d.json" --p4-npz "$P4/out/phase4_d.npz" --p4-audit "$P4/out/AUDIT.json" --p4-manifest "$P4/MANIFEST.sha256" \
   --p5-json "$P5/out/phase5_d.json" --p5-npz "$P5/out/phase5_d.npz" --p5-audit "$P5/out/AUDIT.json" --p5-manifest "$P5/MANIFEST.sha256" \
   --p6-json "$P6/out/phase6_d.json" --p6-npz "$P6/out/phase6_d.npz" --p6-audit "$P6/out/AUDIT.json" --p6-manifest "$P6/MANIFEST.sha256" \

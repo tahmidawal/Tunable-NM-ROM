@@ -50,3 +50,14 @@ requires exact equality between the manifest path set and the actual stage path 
 the remote before submission, repeats the exact-set check at pull with only the five named scientific
 outputs/logs admitted, and sets `PYTHONDONTWRITEBYTECODE=1` in the batch. This is infrastructure-only
 hardening; no scientific execution, method, data, or gate changed.
+
+The first scientific submission, job 2669861, then stopped before any training
+update or output because it directly compared P5's physical moment-transport
+affine values with the decoder's normalized affine state. The complete zero-
+science failure bundle is retained under `runs/p7_g1_s11_r1`; its exact remote
+directory was deleted after checksum preservation. The sole schema repair keeps
+the immutable physical values, applies the pre-existing locked
+`normalized_state_from_affine` map, and persists/audits both. A read-only real-
+artifact regression verifies all 35,904 P5 rows and all regenerated seed-0
+parameter/features, with exact locked-versus-independent mapping and one healthy
+regenerated N64 draw-0 trajectory. No retry is submitted without a new audit.

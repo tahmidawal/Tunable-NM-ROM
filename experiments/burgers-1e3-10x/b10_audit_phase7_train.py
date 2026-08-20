@@ -12,6 +12,7 @@ import numpy as np
 
 
 EXPECTED = {
+    "affine_regression": "d48f74080f7cd69e4f5e2a0d4bdbbd57bc31f7be52deac18aa0a4bc0e522e3ac",
     "p4_json": "ff425dfa1f73ac2d8559df2d780ef09dc1ade179ed5636458e53e0f389f5d617",
     "p4_npz": "720c5890b22709c83858f46e43f18fa3d28bb1305544f02ad9aea71625a2228f",
     "p4_audit": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3",
@@ -177,6 +178,23 @@ def schedule(total, steps, batch, seed):
     return ids, seeds
 
 
+def normalized_affine_from_physical(physical):
+    """Independent NumPy form of the locked decoder-state normalization."""
+    value = np.asarray(physical, np.float64)
+    l11, l22 = np.exp(value[:, 2]), np.exp(value[:, 4])
+    log_ratio = np.log(1.0 / 0.015)
+    result = np.column_stack((
+        (value[:, 0] - 0.5) / 0.75,
+        (value[:, 1] - 0.5) / 0.75,
+        2.0 * (np.log(l11) - np.log(0.015)) / log_ratio - 1.0,
+        value[:, 3] / (2.0 * np.sqrt(l11 * l22)),
+        2.0 * (np.log(l22) - np.log(0.015)) / log_ratio - 1.0,
+    ))
+    require(np.all(np.isfinite(result)) and np.all(np.abs(result) <= 1.0),
+            "normalized physical affine range")
+    return result
+
+
 def validate_metadata(rows, spec, smoke, name):
     require(len(rows) == len(spec), f"{name} metadata count")
     offset = 0
@@ -275,6 +293,7 @@ def parse_args():
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--expected-manifest", required=True)
     parser.add_argument("--prereg", required=True)
+    parser.add_argument("--affine-regression")
     for phase in ("p4", "p5", "p6"):
         for kind in ("json", "npz", "audit", "manifest"):
             parser.add_argument(f"--{phase}-{kind}", dest=f"{phase}_{kind}")
@@ -307,7 +326,21 @@ def main():
     bindings = None
     if not smoke:
         require(args.target_dir is not None, "target directory")
+        require(args.affine_regression is not None
+                and sha256(args.affine_regression) == EXPECTED["affine_regression"],
+                "affine regression hash")
+        regression = load(args.affine_regression)
+        require(regression["status"] == "pass"
+                and regression["snapshot_count"] == 35_904
+                and regression["locked_vs_independent_max_abs"] == 0.0
+                and regression["regenerated_N64_draw0_normalized_affine_max_abs"]
+                <= regression["regenerated_N64_draw0_tolerance_max_abs"],
+                "affine regression result")
+        require(root_manifest.get("./code/phase7_affine_schema_regression.json")
+                == EXPECTED["affine_regression"], "manifest affine regression")
         bindings = report["bindings"]
+        require(bindings["affine_regression"]["sha256"]
+                == EXPECTED["affine_regression"], "report affine regression")
         for phase in ("p4", "p5", "p6"):
             for kind in ("json", "npz", "audit", "manifest"):
                 key = f"{phase}_{kind}"
@@ -367,7 +400,8 @@ def main():
                 target_affine.append(np.asarray(target["affine"], np.float64).reshape(-1, 5))
                 target_features.append(np.asarray(target["features"], np.float64).reshape(-1, 7))
                 next_global += size
-        target_affine = np.concatenate(target_affine)
+        target_physical_affine = np.concatenate(target_affine)
+        target_affine = normalized_affine_from_physical(target_physical_affine)
         target_features = np.concatenate(target_features)
         require(next_global == 35_904, "target global total")
         with np.load(args.p5_npz, allow_pickle=False) as p5_arrays:
@@ -411,6 +445,10 @@ def main():
     validate_metadata(report["data"]["training"], train_spec, smoke, "training")
     validate_metadata(report["data"]["selection"], select_spec, smoke, "selection")
     require(report["data"]["target_snapshot_count"] == train_total, "target total")
+    require(report["data"]["target_affine_schema"] == (
+        "immutable P5 chunk affine is physical moment transport; "
+        "training_affine is its exact locked normalized_state_from_affine mapping"
+    ), "target affine schema")
 
     require(report["npz"]["sha256"] == sha256(args.npz), "NPZ checksum")
     require(report["checkpoint"]["sha256"] == sha256(args.checkpoint), "checkpoint checksum")
@@ -462,6 +500,16 @@ def main():
             require(np.array_equal(arrays["training_affine"], target_affine)
                     and np.array_equal(arrays["training_features"], target_features),
                     "P5 target metadata/output binding")
+            require(np.array_equal(arrays["training_target_physical_affine"],
+                                   target_physical_affine),
+                    "immutable physical target affine binding")
+            require(np.array_equal(checkpoint["training_target_physical_affine"],
+                                   target_physical_affine),
+                    "checkpoint physical target affine binding")
+            require(np.array_equal(arrays["training_affine"],
+                                   normalized_affine_from_physical(
+                                       arrays["training_target_physical_affine"]
+                                   )), "locked affine normalization mapping")
             require(np.array_equal(arrays["coefficient_mean"], p5_mean)
                     and np.array_equal(arrays["head_scales"], p5_scales),
                     "P5 normalization/output binding")

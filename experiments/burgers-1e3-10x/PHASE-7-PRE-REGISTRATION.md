@@ -38,6 +38,14 @@ normalization are immutable. No coefficient target is regenerated, dropped,
 reweighted, or refit. The P4 exposed coefficients are diagnostic controls only
 and never enter a weight update or train normalization.
 
+Schema clarification locked after zero-output infrastructure job 2669861 and
+before any retry: P5 target chunks store the physical five-value moment transport
+returned by `fit_hierarchical_oracle`; the decoder/training state uses its already-
+locked `normalized_state_from_affine` image. Both physical values and exact mapped
+states are persisted and independently audited. The failed job compared these two
+schemas directly before its first training update. This clarification changes no
+field, coefficient, transport definition, training method, loss, gate, or cell cap.
+
 ## Fixed model
 
 The spatial decoder remains Phase-4 H1: clamped cubic global R=48 plus the fixed

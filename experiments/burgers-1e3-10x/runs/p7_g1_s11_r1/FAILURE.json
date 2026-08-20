@@ -1,0 +1,28 @@
+{
+  "status": "excluded_infrastructure_schema_failure",
+  "scientific_output_count": 0,
+  "scientific_cell_consumed": false,
+  "job_id": "2669861",
+  "job_name": "ctol_b10_p7_g1_s11_r1",
+  "state": "FAILED",
+  "elapsed": "00:02:14",
+  "exit_code": "1:0",
+  "node": "pax011",
+  "gpu_kind": "NVIDIA H200",
+  "jax_backend": "gpu",
+  "commit": "ca1da4a17d55bdace220f8ac488b7048c58cbc04",
+  "manifest_sha256": "450e461b64c6421c33b01dd38051b31c6a8c9d64316bac46986d45519c7001ce",
+  "failure": "regenerated training affine/P5 target mismatch",
+  "classification": "physical-versus-normalized affine schema comparison before training",
+  "all_done": false,
+  "output_files": [],
+  "known_hwloc_warning_lines": 2,
+  "unclassified_health_warnings": 0,
+  "remote_cleaned": true,
+  "logs": {
+    "stdout_sha256": "6abd5b53ed24a142587d5e4db12aa045d79e0dedff91e04ef2072a342eb7e889",
+    "stderr_sha256": "1c7ae25f0c9a50543270375335555ce289360082f7be4734353827c680818f00",
+    "sacct_sha256": "70307bed86c0bab223cd3e36f3ce7655c0a8d952273d885dfb4d3831699a78af",
+    "remote_sha256": "549c21fde19872208732c919d57872b366f6c23bac99399a9d3f6f1e120d29c9"
+  }
+}

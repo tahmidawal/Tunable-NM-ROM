@@ -2,7 +2,7 @@
 # launch_phase7_train_cell.sh CELL EXPECTED_COMMIT EXPECTED_MANIFEST
 set -euo pipefail
 cell="$1"; expected_commit="$2"; expected_manifest="$3"
-[[ "$cell" == p7_g1_s11_r1 && "$expected_commit" =~ ^[0-9a-f]{40}$ && "$expected_manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
+[[ "$cell" =~ ^p7_g1_s11_r[12]$ && "$expected_commit" =~ ^[0-9a-f]{40}$ && "$expected_manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; STAGE="$HERE/stage/$cell"
 REMOTE="/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell"
 [[ "$(sha256sum "$STAGE/MANIFEST.sha256" | cut -d' ' -f1)" == "$expected_manifest" ]] || exit 3

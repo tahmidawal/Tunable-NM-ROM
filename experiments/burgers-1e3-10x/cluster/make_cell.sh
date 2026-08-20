@@ -22,6 +22,7 @@ DIRTY="$(git -C "$WORKTREE" status --porcelain -- "$EXP" | sha256sum | cut -c1-1
 rm -rf "$STAGE"
 mkdir -p "$STAGE/logs" "$STAGE/out" "$STAGE/code/deps/burgers2d-coord-rom"
 cp "$EXP"/b10_*.py "$STAGE/code/"
+cp "$WORKTREE/experiments/burgers-hybrid-1024/bh_common.py" "$STAGE/code/"
 cp "$ROOT/worktrees/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" \
   "$STAGE/code/deps/burgers2d-coord-rom/"
 

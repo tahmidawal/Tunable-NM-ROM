@@ -17,7 +17,7 @@ mkdir -p "$LOCAL"
 scp -q -r "tufts-login:$REMOTE/logs" "tufts-login:$REMOTE/out" \
   "tufts-login:$REMOTE/MANIFEST.sha256" "tufts-login:$REMOTE/REMOTE.sha256" "$LOCAL/"
 (cd "$LOCAL" && sha256sum -c REMOTE.sha256)
-if rg -n -i 'captured.large.constant|out of memory|oom|disk.full|no space|traceback|nan|inf' \
+if rg -n -i 'captured.large.constant|out of memory|(^|[^[:alpha:]])oom([^[:alpha:]]|$)|disk.full|no space|traceback|(^|[^[:alpha:]])(nan|inf)([^[:alpha:]]|$)' \
   "$LOCAL/logs/$job_id.out" "$LOCAL/logs/$job_id.err"; then
   echo "health-warning pattern found; inspect before accepting" >&2
   exit 4

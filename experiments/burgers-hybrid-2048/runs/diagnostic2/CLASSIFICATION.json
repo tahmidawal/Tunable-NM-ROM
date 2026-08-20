@@ -1,0 +1,41 @@
+{
+ "classification": "final_negative_reference_diagnostic",
+ "job_id": "2677878",
+ "slurm_state": "COMPLETED",
+ "slurm_exit_code": "0:0",
+ "execution_commit": "1f81e7cbcf48475fc018737e5590ab9cffeca512",
+ "scientific_timing_or_method_rows": false,
+ "reference_replacement_licensed": false,
+ "final_timing_licensed": false,
+ "producer_gate": {
+  "public_vs_instrumented_update_match": false,
+  "two_tight_routes_health_and_residual": false,
+  "two_tight_routes_field_agreement": true,
+  "all_pass": false
+ },
+ "batch_one_reproduction": {
+  "absolute_residual_difference": 0.0,
+  "relative_field_difference": 0.0,
+  "active_nonfinite_public_updates": 25,
+  "max_active_public_vs_instrumented_update_relative_difference": null
+ },
+ "helmholtz_candidate": {
+  "max_returned_residual": 9.429357347688513e-13,
+  "breakdowns_or_linear_max_total": 0,
+  "flags_nonzero": 0
+ },
+ "helmholtz_strict_ladder": {
+  "max_returned_residual": 2.8502074453063464e-13,
+  "breakdowns_or_linear_max_total": 0,
+  "flags_nonzero": 50,
+  "newton_total": 1250
+ },
+ "tight_route_agreement": {
+  "max_step_relative_difference": 1.3674113431649328e-12,
+  "trajectory_relative_difference": 6.971405683089061e-13
+ },
+ "result_sha256": "d37788228c15445aeeb93b538a9989726f540dbb1d756205ec116efc18496606",
+ "terminal_fields_sha256": "bbaa4b0525761c8ea013221976074d63404fe5e83f248926fd485844236fa77b",
+ "remote_directory_deleted_after_independent_audit": true,
+ "conclusion": "The exact batch-one replay reproduces the public-JAX freeze and identifies 25 nonfinite public updates. The healthy Helmholtz candidate is not licensed because update-match and two-tight-route-health gates fail; the strict ladder capped all 50 steps. No reference replacement or timing is licensed."
+}

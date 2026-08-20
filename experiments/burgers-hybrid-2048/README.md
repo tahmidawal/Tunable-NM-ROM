@@ -109,6 +109,19 @@ producer-check artifact and `PRODUCER-CHECK-DONE` marker are mandatory.  If
 this exact batch-one replay still misses either reproduction gate, the
 diagnostic hard-stops with no further topology relaxation.
 
+The repaired diagnostic is complete as H200 job `2677878` and is a **final
+negative reference diagnostic**.  The exact batch-one replay reproduces the
+public-JAX field and residual bit-for-bit, identifying 25 nonfinite public
+updates at the frozen step.  The Helmholtz candidate is healthy at maximum
+returned residual `9.429357347688513e-13` with zero flags/breakdowns.  It also
+agrees with the strict ladder to maximum per-step/whole-trajectory relative
+field differences `1.3674113431649328e-12` / `6.971405683089061e-13`.
+Nevertheless, the strict ladder reaches the 25-Newton cap and returns a
+nonzero flag at all 50 steps, while the public/instrumented update-match value
+is null because every active public update is nonfinite.  The frozen
+update-match and two-tight-route-health gates therefore fail.  This diagnostic
+licenses no reference replacement and no timing result.
+
 For every tolerance and trajectory, the process runs six exact AB then
 immediately reburned BA blocks.  This gives twelve repetitions per arm and
 trajectory, with a three-second GPU burn immediately before every pair.  Every

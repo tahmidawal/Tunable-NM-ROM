@@ -1,0 +1,13 @@
+host=pax144 job=2667673 gpu=NVIDIA A100-PCIE-40GB
+commit=46127cd773206707fcdbc5cdfa8196d71e814b6c dirty_hash=e3b0c44298fc cell=paramritzg1
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[64, 256] taus=[1e-06] arms=['param1_c64_q0', 'paramritz1_m24_c64_q0', 'spectral_q256'] test_seed=20260821 smoke=0 reps=6 warm=2
+  NNLS-EQ grid M=24 m=96 @N=64: support 96 (+0) rel fit 6.52e-03 (row p95 3.3e-01, max 4.9e+01) [3s]
+RESULT N=64 param1_c64_q0 tau=1e-06: construct 0.210 ms, Aerr 3.084e-02, iters 142.9/158.0, total 5.072/5.492 ms, speedup 1.083x
+RESULT N=64 paramritz1_m24_c64_q0 tau=1e-06: construct 0.418 ms, Aerr 3.916e-02, iters 145.2/158.0, total 5.374/5.537 ms, speedup 1.030x
+RESULT N=64 spectral_q256 tau=1e-06: construct 0.074 ms, Aerr 1.030e-14, iters 0.0/158.0, total 0.171/5.509 ms, speedup 32.189x
+RESULT N=256 param1_c64_q0 tau=1e-06: construct 0.215 ms, Aerr 4.770e-02, iters 604.0/657.1, total 20.150/21.868 ms, speedup 1.085x
+RESULT N=256 paramritz1_m24_c64_q0 tau=1e-06: construct 0.421 ms, Aerr 5.346e-02, iters 610.8/657.1, total 20.787/22.221 ms, speedup 1.069x
+RESULT N=256 spectral_q256 tau=1e-06: construct 0.088 ms, Aerr 6.251e-14, iters 0.0/657.1, total 0.190/21.583 ms, speedup 113.676x
+DONE
+ALL-DONE

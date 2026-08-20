@@ -198,6 +198,8 @@ tolerances 1e-6/1e-8 and spectral/full-rank or FFT-DST at 1e-10.
 - `runs/`: checksummed pulled artifacts only.
 - `SUMMARY.generated.md`: exhaustive tables generated from the audited run JSONs.
 - `FINAL.generated.md`: the same generated tables restricted to the fresh-seed confirmation.
+- `summarize_speed_push.py` and `SPEED-PUSH.generated.md`: generated closing audit for the final
+  one-update mechanism gates, balanced K8 result, and production direct controls.
 
 ## Status
 
@@ -230,5 +232,9 @@ The source-parameter-to-latent map and transported-tail training round were stop
 pre-registered mechanism gates rather than tuned on held-out timings. Local wall clock remains
 non-result smoke evidence only; all numeric conclusions are generated in `SUMMARY.generated.md`.
 The alpha=1 one-update parameter-aligned gate also failed all solver-relevant mechanism gates.
-The sole remaining Poisson experiment is the pre-registered alpha=0.5 energy-objective gate
-above; it is not a continuation or retuning of the alpha=1 panel.
+The pre-registered alpha=0.5 energy-objective gate then failed the same A-error, CG-work, and
+same-job-total tests at both development meshes despite accepting every update and lowering its
+own truncated objective.  It therefore did not advance to the frozen N=1024 confirmation, and
+no alpha or M tuning followed.  `SPEED-PUSH.generated.md` is the closing, JSON-derived audit.
+The Poisson nonlinear-warm-start speed search is exhausted under the construction budgets and
+strongest eligible direct/spectral controls recorded here.

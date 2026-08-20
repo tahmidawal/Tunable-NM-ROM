@@ -291,7 +291,9 @@ and 512 seeded without-replacement points, cosine rate `5e-2 -> 1e-3`, and
 `1e-8*mean(raw_q^2)`.  At updates 4000, 6000, 8000, and 10000, full-grid/all-time
 metrics are evaluated; a start may stop at the first checkpoint where every
 per-N and pooled oracle gate passes.  The lowest final full-field loss among the
-three stored starts is the oracle result.  The direct predictor is then evaluated
+three stored starts is the oracle result.  That selection loss is locked to the
+pooled, equally snapshot-weighted `mean(snapshot_relative_L2^2)` across all exposed
+selection meshes, cases, and times; it is persisted for every start.  The direct predictor is then evaluated
 without selection-time latent optimization.  The optional loss-revision cell may
 change only the already listed gradient/weak/rollout weights; it may not change any
 optimizer, initialization, sampling, mesh, or oracle rule.

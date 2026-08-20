@@ -132,12 +132,31 @@ def load_s0_gate(path, arm):
     npz_path = os.path.join(os.path.dirname(os.path.abspath(path)), npz.get("path", ""))
     if not os.path.isfile(npz_path) or c.sha256(npz_path) != npz.get("sha256"):
         raise SystemExit("S0 NPZ checksum is missing or invalid")
+    audit_path = os.path.join(os.path.dirname(os.path.abspath(path)), "AUDIT.json")
+    if not os.path.isfile(audit_path):
+        raise SystemExit("independent sibling S0 AUDIT.json is missing")
+    with open(audit_path) as handle:
+        audit = json.load(handle)
+    if not (
+        audit.get("status") == "pass"
+        and audit.get("source_json_sha256") == gate["sha256"]
+        and audit.get("source_npz_sha256") == npz["sha256"]
+        and audit.get("expected_commit") == artifact.get("provenance", {}).get("commit")
+        and str(audit.get("job_id"))
+        == str(artifact.get("provenance", {}).get("slurm_job_id"))
+        and audit.get("decision") == artifact.get("decision")
+    ):
+        raise SystemExit("independent S0 audit provenance/decision validation failed")
     promoted_arms = list((artifact.get("decision") or {}).get("promoted_arms") or [])
     promoted = (artifact.get("free_oracle") or {}).get(arm, {}).get("promote")
     if arm not in promoted_arms or promoted is not True:
         raise SystemExit(f"S0 does not promote arm {arm}: promoted={promoted_arms!r}")
     gate["npz_path"] = npz_path
     gate["npz_sha256"] = npz["sha256"]
+    gate["audit_path"] = audit_path
+    gate["audit_sha256"] = c.sha256(audit_path)
+    gate["audit_status"] = audit["status"]
+    gate["audit_decision"] = audit["decision"]
     priors = [_load_prior_artifact(item, gate["sha256"])[1]
               for item in PRIOR_TRAIN_JSONS]
     duplicates = [(item["arm"], item["seed"]) for item in priors]
@@ -519,6 +538,8 @@ def evaluate_states(candidate, datasets, hyper, states):
     pooled_trajectory = []
     total_error_sq = 0.0
     total_truth_sq = 0.0
+    snapshot_relative_l2_squared_sum = 0.0
+    snapshot_count = 0
     all_finite = True
     exact_boundary = True
     for item in datasets:
@@ -565,6 +586,8 @@ def evaluate_states(candidate, datasets, hyper, states):
         pooled_trajectory.extend(trajectory.tolist())
         total_error_sq += float(np.sum(np.square(difference)))
         total_truth_sq += float(np.sum(np.square(truth)))
+        snapshot_relative_l2_squared_sum += float(np.sum(np.square(snapshot)))
+        snapshot_count += int(snapshot.size)
         result["meshes"][str(item["N"])] = {
             "trajectory_error_mean": float(np.mean(trajectory)),
             "trajectory_error_worst": float(np.max(trajectory)),
@@ -579,6 +602,9 @@ def evaluate_states(candidate, datasets, hyper, states):
         "trajectory_error_worst": float(np.max(pooled)),
         "trajectory_error_all": pooled.tolist(),
         "relative_field_mse": float(total_error_sq / max(total_truth_sq, 1e-300)),
+        "mean_snapshot_relative_l2_squared": float(
+            snapshot_relative_l2_squared_sum / max(snapshot_count, 1)
+        ),
         "all_finite": all_finite, "exact_binary_boundary": exact_boundary,
     }
     return result
@@ -690,7 +716,9 @@ def optimize_selection_oracle(candidate, datasets, hyper, arrays):
         })
     chosen = min(
         range(len(results)),
-        key=lambda index: results[index]["metrics"]["pooled"]["relative_field_mse"],
+        key=lambda index: results[index]["metrics"]["pooled"][
+            "mean_snapshot_relative_l2_squared"
+        ],
     )
     serializable = [{key: value for key, value in item.items() if key != "q_raw"}
                     for item in results]
@@ -842,6 +870,10 @@ def main():
         "selection_oracle": {
             "starts": oracle_starts, "chosen_start": chosen_start,
             "metrics": oracle_metrics, "gate_pass": oracle_pass,
+            "start_selection_metric": "pooled_mean_snapshot_relative_l2_squared",
+            "chosen_start_selection_loss": oracle_metrics["pooled"][
+                "mean_snapshot_relative_l2_squared"
+            ],
         },
         "selection_direct": {
             "metrics": direct_metrics, "degradation_direct_over_oracle": degradation,

@@ -69,13 +69,14 @@ BURGERS_TAU_OK = (1, 4)        # blat_common.lm_step_jit: 1 = tol, 4 = tol at in
 # --------------------------------------------------------------------------
 # generic residual-norm LM with a relative-reduction stop
 # --------------------------------------------------------------------------
-def lm_tau_generic(f, K, budget):
+def lm_tau_generic(f, K, budget, trust_delta=np.inf):
     """Jitted lm(z0, tau) minimising ||f(z)||, algorithmically identical to
     `fu_common.lm_jit_solver` / `ms_autodecoder.lm_solve` (same lam0=1e-6,
     /3 on accept, x10 on reject, clamp [1e-12, 1e12]; accept iff finite and
     strictly decreasing; stop tests only after an accepted step) with ONE
     addition: stop when ||r|| <= tau * ||r(z0)|| (tau <= 0 disables it, which
-    reproduces the reference solver exactly).
+    reproduces the reference solver exactly).  A finite ``trust_delta`` rejects
+    longer LM steps through the existing damping escalation.
 
     Returns (z, rn, rn0, n_jac, n_res, accepted, rejected, attempts, reason)."""
     rJ = lambda z: (f(z), jax.jacfwd(f)(z))
@@ -106,9 +107,11 @@ def lm_tau_generic(f, K, budget):
             D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
             dz = jnp.linalg.solve(H + lam * D, -g)
             finite = jnp.all(jnp.isfinite(dz))
-            z_new = z + jnp.where(finite, dz, 0.0)
-            rn_new = jnp.where(finite, rn_fn(z_new), jnp.inf)
-            accept = finite & jnp.isfinite(rn_new) & (rn_new < rn)
+            within_trust = jnp.linalg.norm(dz) <= trust_delta
+            admissible = finite & within_trust
+            z_new = z + jnp.where(admissible, dz, 0.0)
+            rn_new = jnp.where(admissible, rn_fn(z_new), jnp.inf)
+            accept = admissible & jnp.isfinite(rn_new) & (rn_new < rn)
             rel_dec = jnp.where(accept, (rn - rn_new) / rn, 1.0)
             step = jnp.linalg.norm(dz) / (1.0 + jnp.linalg.norm(z))
             r2, J2 = jax.lax.cond(accept, lambda: rJ(z_new), lambda: (r, J))
@@ -119,7 +122,7 @@ def lm_tau_generic(f, K, budget):
             acc = acc + accept.astype(jnp.int32)
             rej = rej + (~accept).astype(jnp.int32)
             n_J = n_J + accept.astype(jnp.int32)
-            n_r = n_r + finite.astype(jnp.int32) + accept.astype(jnp.int32)
+            n_r = n_r + admissible.astype(jnp.int32) + accept.astype(jnp.int32)
             # TAU is tested FIRST: it is the stopping rule this study reports.
             reason = jnp.where(
                 accept & (tau > 0) & (rn <= tol), jnp.int32(2),
@@ -138,8 +141,10 @@ def lm_tau_generic(f, K, budget):
 # --------------------------------------------------------------------------
 # Poisson: weak-form residual r(z) = Wl * (PhiT @ (wq * u(z, pts))) - f_m
 # --------------------------------------------------------------------------
-def lm_tau_poisson(dec, K, pts, wq, PhiT, Wl, budget):
+def lm_tau_poisson(dec, K, pts, wq, PhiT, Wl, budget, trust_delta=np.inf):
     """`fu_eq.make_lm_jit` with the absolute stop replaced by tau*||r(z0)||.
+    A finite ``trust_delta`` rejects longer LM steps through the same damping
+    schedule used for any other rejected proposal.
     Returns lm(z0, f_m, tau) -> (z, val, val0, n_jac, accepted, attempts,
     reason)."""
     pts = jnp.asarray(pts); wq = jnp.asarray(wq)
@@ -170,9 +175,11 @@ def lm_tau_poisson(dec, K, pts, wq, PhiT, Wl, budget):
             D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
             dz = jnp.linalg.solve(H + lam * D, -g)
             finite = jnp.all(jnp.isfinite(dz))
-            z_new = z + jnp.where(finite, dz, 0.0)
-            v_new = jnp.where(finite, rn_fn(z_new, f_m), jnp.inf)
-            accept = finite & jnp.isfinite(v_new) & (v_new < val)
+            within_trust = jnp.linalg.norm(dz) <= trust_delta
+            admissible = finite & within_trust
+            z_new = z + jnp.where(admissible, dz, 0.0)
+            v_new = jnp.where(admissible, rn_fn(z_new, f_m), jnp.inf)
+            accept = admissible & jnp.isfinite(v_new) & (v_new < val)
             rel_dec = jnp.where(accept, (val - v_new) / (jnp.abs(val) + 1e-300), 1.0)
             step = jnp.linalg.norm(dz) / (1.0 + jnp.linalg.norm(z))
             r2, J2 = jax.lax.cond(accept, lambda: rJ(z_new, f_m), lambda: (r, J))

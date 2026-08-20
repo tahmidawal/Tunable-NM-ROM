@@ -138,6 +138,8 @@ N_TEST = int(os.environ.get("N_TEST", "16"))
 GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
 TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
 WARM = int(os.environ.get("TIME_WARM", "2"))
+TR_FACTOR = float(os.environ.get("TR_FACTOR", "0"))
+DIRECT_COMPONENT_TIMING = int(os.environ.get("DIRECT_COMPONENT_TIMING", "0"))
 PKL_DIR = os.environ.get("PKL_DIR", "../ckpt")
 FOM_RES_TOL = float(os.environ.get("FOM_RES_TOL", "1e-10"))
 POD_KMAX = max(KS)
@@ -420,9 +422,10 @@ def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid,
     synchronised repetitions of the FULL PIPELINE; the field that is GRADED is
     the one returned by the LAST TIMED repetition.  ONE timed quantity per cell,
     so `time_ms` and `err_rel_l2` are literally the same invocation.  The
-    preprocess and decode stages are measured separately (they are
-    value-independent and k-independent) and subtracted to give the
-    latent-solve component, which is reported as DERIVED."""
+    preprocess and decode stages are measured separately.  When
+    DIRECT_COMPONENT_TIMING is enabled, the latent solve is also timed directly
+    with its own persisted repetitions; otherwise the historical derived value
+    is retained for backward compatibility."""
     t_pipe, t_pipe_reps = [], []
     err, jac, att_l, reason, fd, red = [], [], [], [], [], []
     ctol_tol.burn_in(BURN_IN_S)      # the EQ fit just spent minutes on the HOST
@@ -443,7 +446,22 @@ def timed_sweep(pipeline, lm, z0, Fs_j, f_ms_j, tau, ref_int, tn, Fs, fn_, grid,
         fd.append(float(np.linalg.norm(np.asarray(grid.op(jnp.asarray(ui))) - Fs[i]) / fn_[i]))
         jac.append(int(nJ)); att_l.append(int(n_att)); reason.append(int(rsn))
         red.append(float(val) / max(float(v0), 1e-300))     # achieved ||r||/||r(z0)||
-    return t_pipe, t_pipe_reps, err, jac, att_l, reason, fd, red
+    t_solve, t_solve_reps = [], []
+    if DIRECT_COMPONENT_TIMING:
+        ctol_tol.burn_in(BURN_IN_S)
+        for f_m in f_ms_j:
+            for _ in range(WARM):
+                lm(z0, f_m, tau)[0].block_until_ready()
+            ts = []
+            for _ in range(TIME_REPS):
+                t0 = time.perf_counter()
+                out = lm(z0, f_m, tau)
+                out[0].block_until_ready()
+                ts.append(time.perf_counter() - t0)
+            t_solve.append(float(np.median(ts)))
+            t_solve_reps.append([float(t) for t in ts])
+    return (t_pipe, t_pipe_reps, err, jac, att_l, reason, fd, red,
+            t_solve, t_solve_reps)
 
 
 # --------------------------------------------------------------------------
@@ -456,6 +474,7 @@ def main():
     commit = git_commit()
     plan = build_plan()
     ks_used = sorted({k_ for arms in plan.values() for (k_, _M, _m, _t) in arms})
+    uses_pod = any("pod" in methods for arms in plan.values() for methods in arms.values())
     log(f"  plan: {len(plan)} mesh(es) {sorted(plan)}, k values {ks_used}, "
         f"{sum(len(v) for a_ in plan.values() for v in a_.values())} (arm, method) cells"
         + (f"  [CONFIGS={CONFIGS}]" if CONFIGS else ""))
@@ -467,11 +486,16 @@ def main():
         d, cfg, stages, Z_tr, hb = pc.load_pkl(p)
         if cfg["K_LAT"] != k:
             raise SystemExit(f"{p}: K_LAT {cfg['K_LAT']} != {k}")
+        Z_tr = np.asarray(Z_tr)
+        train_radius = float(np.max(np.linalg.norm(Z_tr - Z_tr.mean(0), axis=1)))
         ck[k] = dict(cfg=cfg, dec=pc.make_decoder(stages[:1], hard_bc=bool(hb)),
-                     Z_tr=np.asarray(Z_tr), hard_bc=hb, path=os.path.basename(p))
+                     Z_tr=Z_tr, hard_bc=hb, path=os.path.basename(p),
+                     train_radius=train_radius,
+                     trust_delta=(TR_FACTOR * train_radius if TR_FACTOR > 0 else np.inf))
         log(f"  ckpt k={k:2d}: {os.path.basename(p)} hard_bc={hb} "
             f"train_seed={cfg.get('train_seed')} latent_rms="
-            f"{float(np.sqrt(np.mean(np.asarray(Z_tr)**2))):.3f}")
+            f"{float(np.sqrt(np.mean(Z_tr**2))):.3f} train_radius={train_radius:.3f} "
+            f"trust_delta={ck[k]['trust_delta']:.3f}")
 
     cx, cy, w, a, _z = mp.sample_params()
     N_TRAIN = mp.N_TRAIN
@@ -485,6 +509,8 @@ def main():
                     M_big=M_BIG, k_big=K_BIG, m_4M=MQ_4M, do_supp=DO_SUPP,
                     n_test=N_TEST, gn_iters=GN_ITERS, time_reps=TIME_REPS,
                     time_warm=WARM, seed=SEED, cg_tol=mp.CG_TOL,
+                    tr_factor=TR_FACTOR,
+                    direct_component_timing=bool(DIRECT_COMPONENT_TIMING),
                     cand_cap=ctol_eq.CAND_CAP, eq_snaps=ctol_eq.EQ_SNAPS,
                     eq_perturb=ctol_eq.EQ_PERTURB, eq_rows=ctol_eq.EQ_ROWS,
                     eq_seed=ctol_eq.EQ_SEED, eq_pool="grid",
@@ -637,14 +663,18 @@ def main():
                 save()
             continue
 
-        # POD basis at THIS mesh from the SAME 512 training sources
-        U_all = np.asarray(mp.build_snapshots(n)[0])
-        X_tr = U_all[:N_TRAIN][:, int_idx]
-        del U_all
-        Vfull, sv, orth = pod_basis_host(X_tr, POD_KMAX)
-        c_mean_full = X_tr.mean(0) @ Vfull
-        log(f"   POD basis: {X_tr.shape[0]} snapshots, orthonormality dev {orth:.2e}, "
-            f"sv0 {sv[0]:.3e} sv[{POD_KMAX-1}] {sv[-1]:.3e}")
+        # The coordinate-only k sweep does not need to manufacture a POD basis.
+        # Avoiding that unrelated work also prevents a long host-bound idle period
+        # immediately before the timing blocks.
+        X_tr = Vfull = c_mean_full = None
+        if uses_pod:
+            U_all = np.asarray(mp.build_snapshots(n)[0])
+            X_tr = U_all[:N_TRAIN][:, int_idx]
+            del U_all
+            Vfull, sv, orth = pod_basis_host(X_tr, POD_KMAX)
+            c_mean_full = X_tr.mean(0) @ Vfull
+            log(f"   POD basis: {X_tr.shape[0]} snapshots, orthonormality dev {orth:.2e}, "
+                f"sv0 {sv[0]:.3e} sv[{POD_KMAX-1}] {sv[-1]:.3e}")
 
         pre_cache, phi_cache = {}, {}
 
@@ -723,9 +753,15 @@ def main():
                     Vq_j = jnp.asarray(Vk[node_pos])
                     dec_pts_fn = lambda z, xy, _V=Vq_j: _V @ z
 
-                lm, _rn = ctol_tol.lm_tau_poisson(dec_pts_fn, k, pts_np, wq, PhiT, Wl, GN_ITERS)
+                trust_delta = ck[k]["trust_delta"] if method == "coord" else np.inf
+                lm, _rn = ctol_tol.lm_tau_poisson(
+                    dec_pts_fn, k, pts_np, wq, PhiT, Wl, GN_ITERS,
+                    trust_delta=trust_delta)
                 d_agree = None
-                if k == ks_used[0]:  # the tau solver must reproduce the reference at tau = 0
+                if k == ks_used[0] and not np.isfinite(trust_delta):
+                    # Without globalisation the tau solver must reproduce the
+                    # historical reference at tau=0.  A finite trust region is an
+                    # intentional solver change and is validated independently.
                     lm_ref = make_lm_jit(dec_pts_fn, k, pts_np, wq, PhiT, Wl, GN_ITERS, 0.0)
                     d_agree = ctol_tol.check_tau_agreement(
                         lm, lm_ref, (z0, f_ms_j[0], 0.0), (z0, f_ms_j[0]),
@@ -734,18 +770,21 @@ def main():
 
                 pipeline = make_pipeline(ap, lm, u_full, z0)
                 z_probe = lm(z0, f_ms_j[0], methods[method][0])[0]
-                dec_med, _ = time_fn(lambda: u_full(z_probe).block_until_ready())
+                ctol_tol.burn_in(BURN_IN_S)
+                dec_med, dec_reps = time_fn(lambda: u_full(z_probe).block_until_ready())
                 Fs_j = [jnp.asarray(Fs[i]) for i in range(N_TEST)]
 
                 for tau in methods[method]:
                     (per_p, per_p_reps, per_err, per_jac, per_att, per_reason,
-                     per_fd, per_red) = timed_sweep(
+                     per_fd, per_red, per_solve, per_solve_reps) = timed_sweep(
                          pipeline, lm, z0, Fs_j, f_ms_j, tau,
                          U_int, tn, Fs, fn_, grid, n_i)
                     e2e_ms = float(np.median(per_p)) * 1e3          # the timed pipeline
                     # DERIVED: the pipeline minus the two value-independent,
                     # k-independent stages measured in isolation
-                    solve_ms = e2e_ms - pre_med * 1e3 - dec_med * 1e3
+                    solve_derived_ms = e2e_ms - pre_med * 1e3 - dec_med * 1e3
+                    solve_ms = (float(np.median(per_solve)) * 1e3
+                                if DIRECT_COMPONENT_TIMING else solve_derived_ms)
                     cens = [r not in TAU_OK for r in per_reason]
                     row = dict(pde="poisson2d", method=method, N=n, k=k, M=M, m=int(len(wq)),
                                tau=tau, time_ms=e2e_ms, err_rel_l2=float(np.mean(per_err)),
@@ -755,9 +794,18 @@ def main():
                                node=NODE, slurm_job=os.environ.get("SLURM_JOB_ID"),
                                # ---- beyond the shared schema: diagnostics / provenance
                                arm=arm_tag, time_ms_solve=solve_ms,
-                               time_ms_solve_derivation="timed pipeline minus the "
-                               "separately measured preprocess and decode medians",
+                               time_ms_solve_derivation=(
+                                   "direct isolated latent solve median"
+                                   if DIRECT_COMPONENT_TIMING else
+                                   "timed pipeline minus the separately measured "
+                                   "preprocess and decode medians"),
+                               time_ms_solve_derived=solve_derived_ms,
+                               time_ms_solve_per_source=[float(v) * 1e3 for v in per_solve],
+                               time_ms_solve_repetitions_per_source=[
+                                   [float(v) * 1e3 for v in source]
+                                   for source in per_solve_reps],
                                time_ms_pre=pre_med * 1e3, time_ms_decode=dec_med * 1e3,
+                               time_ms_decode_repetitions=[float(v) * 1e3 for v in dec_reps],
                                time_ms_pre_full_transform=pre_med_full * 1e3,
                                time_ms_e2e_per_source=[float(v) * 1e3 for v in per_p],
                                time_ms_e2e_repetitions_per_source=[
@@ -784,6 +832,9 @@ def main():
                                        ladder, key=lambda r: r["fom_cg_s"])
                                     if r["err_rel_l2"] <= float(np.mean(per_err))), None),
                                lm_agreement_rel_dz=d_agree)
+                    row["train_latent_radius"] = ck[k]["train_radius"]
+                    row["trust_factor"] = TR_FACTOR
+                    row["trust_delta"] = trust_delta
                     report["rows"].append(row)
                     log(f"   {method:5s} N={n:4d} k={k:2d} M={M:3d} m={row['m']:4d} "
                         f"tau={tau:.0e}  solve {solve_ms:7.2f} ms  e2e {e2e_ms:7.2f} ms  "

@@ -106,6 +106,8 @@ CAP_CONTROL = int(os.environ.get("CAP_CONTROL", "1"))
 CAP_CONTROL_MAX = int(os.environ.get("CAP_CONTROL_MAX", "16384"))
 TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
 WARM = int(os.environ.get("TIME_WARM", "2"))
+TR_FACTOR = float(os.environ.get("TR_FACTOR", "0"))
+DIRECT_COMPONENT_TIMING = int(os.environ.get("DIRECT_COMPONENT_TIMING", "0"))
 PKL_DIR = os.environ.get("PKL_DIR", "../ckpt")
 FOM_RES_TOL = float(os.environ.get("FOM_RES_TOL", "1e-8"))
 GEN_CHUNK = int(os.environ.get("GEN_CHUNK", "16"))
@@ -310,6 +312,7 @@ def main():
     commit = git_commit()
     plan = build_plan()
     ks_used = sorted({k_ for arms in plan.values() for (k_, _M, _m, _t) in arms})
+    uses_pod = any("pod" in methods for arms in plan.values() for methods in arms.values())
     log(f"  plan: {len(plan)} mesh(es) {sorted(plan)}, k values {ks_used}, "
         f"{sum(len(v) for a_ in plan.values() for v in a_.values())} (arm, method) cells"
         + (f"  [CONFIGS={CONFIGS}]" if CONFIGS else ""))
@@ -331,9 +334,16 @@ def main():
         dec = bc.CoordDecoder(jax.tree_util.tree_map(jnp.asarray, c["params"]),
                               c["n_freq"], c["eps"], k,
                               decoder_config=decoder_config)
-        ck[k] = dict(cfg=c["config"], dec=dec, Ztr=np.asarray(c["Z_train"]),
-                     fp=c["data_fingerprint"], path=os.path.basename(p))
-        log(f"  ckpt k={k:2d}: {os.path.basename(p)} train_seed={c['config'].get('train_seed')}")
+        Ztr = np.asarray(c["Z_train"])
+        flat = Ztr.reshape(-1, k)
+        train_radius = float(np.max(np.linalg.norm(flat - flat.mean(0), axis=1)))
+        ck[k] = dict(cfg=c["config"], dec=dec, Ztr=Ztr,
+                     fp=c["data_fingerprint"], path=os.path.basename(p),
+                     train_radius=train_radius,
+                     trust_delta=(TR_FACTOR * train_radius if TR_FACTOR > 0 else np.inf))
+        log(f"  ckpt k={k:2d}: {os.path.basename(p)} "
+            f"train_seed={c['config'].get('train_seed')} train_radius={train_radius:.3f} "
+            f"trust_delta={ck[k]['trust_delta']:.3f}")
     fp0 = ck[ks_used[0]]["fp"]
     for k in ks_used[1:]:
         for key in ("sum", "sumsq"):
@@ -351,6 +361,8 @@ def main():
                     n_test=N_TEST, n_pod_traj=N_POD_TRAJ, num_steps=bc.NUM_STEPS,
                     dt=bc.DT, gn_budget=bc.GN_BUDGET, ic_budget=bc.IC_BUDGET,
                     time_reps=TIME_REPS, time_warm=WARM, seed=bc.SEED,
+                    tr_factor=TR_FACTOR,
+                    direct_component_timing=bool(DIRECT_COMPONENT_TIMING),
                     test_seed=bc.TEST_SEED, ckpt_N=bc.N,
                     cand_cap=ctol_eq.CAND_CAP, eq_snaps=ctol_eq.EQ_SNAPS,
                     eq_perturb=ctol_eq.EQ_PERTURB, eq_rows=ctol_eq.EQ_ROWS,
@@ -439,39 +451,41 @@ def main():
         # spread -- the axis a POD basis actually needs -- inside a 3.5 GB host array
         # at N=256 instead of 13.7 GB.  Slice 0 is always kept (it supplies the
         # cold-start initial fields).
-        U_pod, res_tr = gen_trajectories(n, cxr[:N_POD_TRAJ], cyr[:N_POD_TRAJ],
-                                         wr[:N_POD_TRAJ], ar[:N_POD_TRAJ],
-                                         nur[:N_POD_TRAJ], roll, stride=POD_SLICE_STRIDE)
-        n_slices = U_pod.shape[1]
-        S = U_pod.reshape(-1, n2)
-        Vfull, sv, orth = bc.pod_basis(S, kmax=POD_KMAX)
-        Vfull = np.asarray(Vfull)
-        log(f"   POD basis: {S.shape[0]} snapshots from {N_POD_TRAJ} trajectories "
-            f"x {n_slices} slices (stride {POD_SLICE_STRIDE}), orthonormality dev "
-            f"{orth:.2e}, sv0 {sv[0]:.3e} sv[{POD_KMAX-1}] {sv[-1]:.3e} "
-            f"(train FOM residual {res_tr:.2e})")
-        # projection floor of the POD subspace on the HELD-OUT test set (an oracle
-        # bound on the POD arm: no solver can beat it)
-        Ute_flat = U_te.reshape(-1, n2)
-        ute_n = np.linalg.norm(Ute_flat, axis=1)
         pod_floor = {}
-        for k_ in ks_used:
-            Vk_ = Vfull[:, :k_]
-            rec = (Ute_flat @ Vk_) @ Vk_.T
-            pod_floor[k_] = float(np.mean(np.linalg.norm(rec - Ute_flat, axis=1) / ute_n))
-        del Ute_flat, rec
-        report["supplementary"].append(dict(
-            pde="burgers2d", method="pod_projection_floor", N=n, arm="oracle_floor",
-            n_pod_traj=N_POD_TRAJ, pod_slice_stride=POD_SLICE_STRIDE,
-            n_snapshots=int(S.shape[0]), orthonormality_dev=orth,
-            floors={str(k_): v for k_, v in pod_floor.items()}, n_sources=N_TEST,
-            gpu=gpu_name, node=NODE, jax_backend=dev.platform, commit=commit))
-        log("   POD projection floor (held-out): "
-            + "  ".join(f"k={k_}:{v:.3e}" for k_, v in pod_floor.items()))
-
-        # initial fields of every training trajectory (slice 0 of the POD tensor);
-        # the ROM legitimately knows u0, so a nearest-IC lookup is online information
-        U0_tr = U_pod[:, 0]                                        # (N_POD_TRAJ, n^2)
+        U_pod = S = Vfull = None
+        if uses_pod:
+            U_pod, res_tr = gen_trajectories(
+                n, cxr[:N_POD_TRAJ], cyr[:N_POD_TRAJ], wr[:N_POD_TRAJ],
+                ar[:N_POD_TRAJ], nur[:N_POD_TRAJ], roll,
+                stride=POD_SLICE_STRIDE)
+            n_slices = U_pod.shape[1]
+            S = U_pod.reshape(-1, n2)
+            Vfull, sv, orth = bc.pod_basis(S, kmax=POD_KMAX)
+            Vfull = np.asarray(Vfull)
+            log(f"   POD basis: {S.shape[0]} snapshots from {N_POD_TRAJ} trajectories "
+                f"x {n_slices} slices (stride {POD_SLICE_STRIDE}), orthonormality dev "
+                f"{orth:.2e}, sv0 {sv[0]:.3e} sv[{POD_KMAX-1}] {sv[-1]:.3e} "
+                f"(train FOM residual {res_tr:.2e})")
+            Ute_flat = U_te.reshape(-1, n2)
+            ute_n = np.linalg.norm(Ute_flat, axis=1)
+            for k_ in ks_used:
+                Vk_ = Vfull[:, :k_]
+                rec = (Ute_flat @ Vk_) @ Vk_.T
+                pod_floor[k_] = float(np.mean(
+                    np.linalg.norm(rec - Ute_flat, axis=1) / ute_n))
+            del Ute_flat, rec
+            report["supplementary"].append(dict(
+                pde="burgers2d", method="pod_projection_floor", N=n,
+                arm="oracle_floor", n_pod_traj=N_POD_TRAJ,
+                pod_slice_stride=POD_SLICE_STRIDE, n_snapshots=int(S.shape[0]),
+                orthonormality_dev=orth,
+                floors={str(k_): v for k_, v in pod_floor.items()}, n_sources=N_TEST,
+                gpu=gpu_name, node=NODE, jax_backend=dev.platform, commit=commit))
+            U0_tr = U_pod[:, 0]
+        else:
+            U0_tr = np.stack([
+                bc.bf.blob_ic(n, cxr[i], cyr[i], wr[i], ar[i])
+                for i in range(N_POD_TRAJ)])
 
         cand_pos = ctol_eq.candidate_pool(interior.size)
         log(f"   EQ candidate pool: {cand_pos.size} of {interior.size} interior nodes "
@@ -511,6 +525,8 @@ def main():
                 bc.nnls_capped)
             node_pos = cand[keep]
             col = dict(kind="grid", idx=interior[node_pos], w=wq, info=eq_info)
+            trust_delta = ck[k]["trust_delta"] if method == "coord" else np.inf
+            bc.TR_DELTA = trust_delta
             ops = bc.make_weak_ops(dec, n, col, kind="weak", M=M, solver="lspg")
             rollout = ctol_tol.rollout_tau_burgers(ops, bc.NUM_STEPS, bc.GN_BUDGET)
 
@@ -550,10 +566,14 @@ def main():
             u0q_l = [jnp.asarray(U_te[i, 0])[idx_q] for i in range(N_TEST)]
             u0f_l = [jnp.asarray(U_te[i, 0]) for i in range(N_TEST)]
             Zt_probe = jnp.zeros((T1, k), F64)
-            dec_med, _ = time_fn(lambda: dec_all(Zt_probe).block_until_ready())
+            ctol_tol.burn_in(BURN_IN_S)
+            dec_med, dec_reps = time_fn(lambda: dec_all(Zt_probe).block_until_ready())
             rows = []
-            ctol_tol.burn_in(BURN_IN_S)   # the EQ fit just spent minutes on the HOST
             for tau in taus:
+                # Each tau is its own whole-path timing block.  The first follows
+                # a host-bound EQ fit and later ones follow isolated component
+                # measurements, so every block gets an explicit clock burn.
+                ctol_tol.burn_in(BURN_IN_S)
                 per_p, per_p_reps = [], []
                 per_err, per_jac, per_att, per_cens = [], [], [], []
                 per_ic, per_fom_res, per_red, per_red_ic = [], [], [], []
@@ -595,8 +615,44 @@ def main():
                     rr0 = np.maximum(np.asarray(srn0), 1e-300)
                     per_red.append(float(np.mean(np.asarray(srn) / rr0)))
                     per_red_ic.append(float(ic_rn) / max(float(ic_rn0), 1e-300))
+                per_cold, per_cold_reps = [], []
+                per_solve, per_solve_reps = [], []
+                if DIRECT_COMPONENT_TIMING:
+                    ctol_tol.burn_in(BURN_IN_S)
+                    z0_direct = []
+                    for i in range(N_TEST):
+                        args_ic = (u0q_l[i], tau)
+                        for _ in range(WARM):
+                            fit_ic(*args_ic)[0].block_until_ready()
+                        ts = []
+                        for _ in range(TIME_REPS):
+                            t0 = time.perf_counter()
+                            out_ic = fit_ic(*args_ic)
+                            out_ic[0].block_until_ready()
+                            ts.append(time.perf_counter() - t0)
+                        z0_direct.append(out_ic[0])
+                        per_cold.append(float(np.median(ts)))
+                        per_cold_reps.append([float(t) for t in ts])
+                    ctol_tol.burn_in(BURN_IN_S)
+                    for i in range(N_TEST):
+                        args_solve = (z0_direct[i], float(nut[i]), tau)
+                        for _ in range(WARM):
+                            rollout(*args_solve)[0].block_until_ready()
+                        ts = []
+                        for _ in range(TIME_REPS):
+                            t0 = time.perf_counter()
+                            out_solve = rollout(*args_solve)
+                            out_solve[0].block_until_ready()
+                            ts.append(time.perf_counter() - t0)
+                        per_solve.append(float(np.median(ts)))
+                        per_solve_reps.append([float(t) for t in ts])
                 e2e_ms = float(np.median(per_p)) * 1e3
-                solve_ms = e2e_ms - dec_med * 1e3
+                cold_ms = (float(np.median(per_cold)) * 1e3
+                           if DIRECT_COMPONENT_TIMING else float("nan"))
+                solve_derived_ms = e2e_ms - dec_med * 1e3 - (
+                    cold_ms if DIRECT_COMPONENT_TIMING else 0.0)
+                solve_ms = (float(np.median(per_solve)) * 1e3
+                            if DIRECT_COMPONENT_TIMING else solve_derived_ms)
                 ok = np.isfinite(per_err)
                 # A blow-up must NEVER leave a usable aggregate: the primary
                 # err_rel_l2 is non-finite (so the cell can never enter a Pareto
@@ -613,8 +669,20 @@ def main():
                     jax_backend=dev.platform, commit=commit, node=NODE,
                     slurm_job=os.environ.get("SLURM_JOB_ID"),
                     arm=arm_tag, time_ms_solve=solve_ms,
-                    time_ms_solve_derivation="pipeline median minus the isolated decode median",
+                    time_ms_solve_derivation=(
+                        "direct isolated 50-step latent rollout median"
+                        if DIRECT_COMPONENT_TIMING else
+                        "pipeline median minus the isolated decode median"),
+                    time_ms_solve_derived=solve_derived_ms,
+                    time_ms_solve_per_source=[float(v) * 1e3 for v in per_solve],
+                    time_ms_solve_repetitions_per_source=[
+                        [float(v) * 1e3 for v in source] for source in per_solve_reps],
+                    time_ms_cold_start=cold_ms,
+                    time_ms_cold_start_per_source=[float(v) * 1e3 for v in per_cold],
+                    time_ms_cold_start_repetitions_per_source=[
+                        [float(v) * 1e3 for v in source] for source in per_cold_reps],
                     time_ms_decode=dec_med * 1e3,
+                    time_ms_decode_repetitions=[float(v) * 1e3 for v in dec_reps],
                     time_ms_e2e_per_source=[float(v) * 1e3 for v in per_p],
                     time_ms_e2e_repetitions_per_source=[
                         [float(v) * 1e3 for v in source] for source in per_p_reps],
@@ -637,6 +705,10 @@ def main():
                     step_reasons=step_reasons,
                     eq_rel_fit=eq_info["rel_fit"], eq_n_cand=eq_info["n_cand"],
                     eq_info=eq_info,
+                    train_latent_radius=(ck[k]["train_radius"]
+                                         if method == "coord" else None),
+                    trust_factor=(TR_FACTOR if method == "coord" else 0.0),
+                    trust_delta=trust_delta,
                     ms_per_jac=solve_ms / max(float(np.mean(per_jac)), 1.0),
                     fom_rollout_ms=fom_med * 1e3, speedup_e2e=fom_med * 1e3 / e2e_ms,
                     fom_rule_for_speedup=f"NEWTON_ITERS={bc.bf.NEWTON_ITERS} -- the "

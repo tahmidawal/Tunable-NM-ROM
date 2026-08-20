@@ -202,7 +202,10 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
     extrapolation, 2 supplied guess array, 3 a dynamically constructed guess
     from ``predictor(u_prev,u_prev2,nu)``, 4 quadratic history, and 5 cubic
     history. Mode 6 is linear extrapolation plus a supplied correction field.
-    Polynomial arms use lower-order startup fallbacks.
+    Polynomial arms use lower-order startup fallbacks. Mode 9 adds a supplied
+    correction field to the live cubic-history predictor.  This lets a
+    trajectory-level learned model construct all corrections once while the
+    FOM still uses its own accepted history at every step.
     All arms therefore share the same operator, Newton stopping test, linear
     solver, and compiled executable. Mode 7 is the diagnostic dynamic oracle
     ``base + q*(exact_next-base)`` with ``q=oracle_quality`` and the exact next
@@ -344,6 +347,7 @@ def make_chain(n, tol_rel, predictor=None, lin_tol=None, preconditioner="none",
                     )
                 ),
                 lambda values: values[4],
+                lambda values: cubic(values) + values[4],
             ),
             args,
         )

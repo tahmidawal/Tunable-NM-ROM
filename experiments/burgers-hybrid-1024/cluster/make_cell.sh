@@ -27,6 +27,8 @@ mkdir -p "$STAGE/logs" "$STAGE/out" "$STAGE/code/deps/burgers2d-coord-rom"
 cp "$EXP"/bh_*.py "$STAGE/code/"
 cp "$WORKTREES/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" \
   "$STAGE/code/deps/burgers2d-coord-rom/"
+cp "$WORKTREES/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/sweep/burgers2d_film_N64.pkl" \
+  "$STAGE/code/deps/burgers2d-coord-rom/"
 
 # The final genuine-NM-ROM negative control reuses the audited K=8 FiLM
 # checkpoint and weak-EQ implementation.  Stage every dependency by content so

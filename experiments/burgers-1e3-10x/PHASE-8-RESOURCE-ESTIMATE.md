@@ -16,9 +16,24 @@ fit well below the 96 GiB host request and one H200. The conservative request is
 CPUs, 96 GiB, and 16 hours. This is an offline diagnostic; its elapsed time is not an online-cost
 claim and no cross-job timing is compared.
 
+The excluded GB10 all-selection 512-point attempt was terminated after more than 28 minutes and
+never produced admissible science. Its duration is used only as a lower-bound resource warning:
+the 16-hour request is more than 34 times that observed incomplete wall interval, but the excluded
+run cannot establish an upper bound or a GPU speed ratio. The driver therefore writes atomic
+health-only progress after data generation and every completed control, and both health-only
+progress plus a latent-work checkpoint after every trust attempt. Partial metrics may not be
+inspected or acted upon. The final audit binds the completed progress/checkpoint to the full trace.
+
+The primary r1 request remains H200 because current availability and runtime/memory risk favor the
+known Phase-7 device class. An H100 with at least 80 GB is an infrastructure-only fallback, not a
+scientific arm: it may be considered only with new root authorization if r1 is still pending with
+zero runtime, the exact numeric job is safely cancelled through the repository cancel helper, no
+output exists, and the identical commit/manifest is restaged after exact remote cleanup. There is
+no automatic GPU substitution, cancellation, or resubmission.
+
 The exact lifecycle verifies local dependency bundles and full hashes, creates one exact root
 manifest, stages directly into the paralab namespace only after queue/disk/absence checks, and
-requires GPU/f64/highest plus clean logs and completed Slurm state. Pull admits only the two named
-scientific outputs and two logs, rechecks checksums, runs an independent negative-aware trace and
+requires GPU/f64/highest plus clean logs and completed Slurm state. Pull admits only the four named
+scientific/progress outputs and two logs, rechecks checksums, runs an independent negative-aware trace and
 metric audit, and deletes only the exact remote cell after PASS. Synthetic smoke evidence is
 recorded below only after a mandated local `jaxrun` execution under one minute.

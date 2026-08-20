@@ -35,5 +35,6 @@ PRE
   --p7-checkpoint deps/p7/checkpoint.pkl --p7-audit deps/p7/AUDIT.json \
   --p7-manifest deps/p7/MANIFEST.sha256 --target-dir deps/p5/targets \
   --prereg PHASE-8-PRE-REGISTRATION.md \
-  --output-json ../out/phase8_d.json --output-npz ../out/phase8_d.npz
+  --output-json ../out/phase8_d.json --output-npz ../out/phase8_d.npz \
+  --progress-json ../out/PROGRESS.json --work-checkpoint ../out/work_checkpoint.pkl
 echo ALL-DONE

@@ -68,6 +68,23 @@ def load_json(path):
         return json.load(handle)
 
 
+def atomic_json(path, value):
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    temporary = f"{path}.partial"
+    with open(temporary, "w", encoding="utf-8") as handle:
+        json.dump(value, handle, indent=1, sort_keys=True, allow_nan=False)
+        handle.write("\n")
+    os.replace(temporary, path)
+
+
+def atomic_pickle(path, value):
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    temporary = f"{path}.partial"
+    with open(temporary, "wb") as handle:
+        pickle.dump(value, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    os.replace(temporary, path)
+
+
 def exact(path, key):
     digest = c.sha256(path)
     if digest != EXPECTED[key]:
@@ -233,11 +250,17 @@ def decode_metrics(datasets, states, coefficients, arrays, prefix, batch=BATCH):
                              np.maximum(np.sum(snapshot_den, axis=1), 1e-300))
         snapshot = np.sqrt(snapshot_num / np.maximum(snapshot_den, 1e-300))
         finite = bool(np.all(np.isfinite(prediction)))
-        boundary = bool(np.all(prediction[:, item["mask"] == 0.0] == 0.0))
+        boundary_violations = int(np.count_nonzero(
+            prediction[:, item["mask"] == 0.0] != 0.0
+        ))
+        boundary = boundary_violations == 0
         key = f"{prefix}_N{item['N']}"
         arrays[f"{key}_snapshot_numerator_sq"] = snapshot_num
         arrays[f"{key}_truth_norm_sq"] = snapshot_den
         arrays[f"{key}_identity"] = identity
+        arrays[f"{key}_boundary_violation_count"] = np.asarray(
+            boundary_violations, np.int64
+        )
         pooled_trajectory.extend(trajectory.tolist()); identities.extend(identity.tolist())
         snapshot_total += float(np.sum(snapshot_num / np.maximum(snapshot_den, 1e-300)))
         snapshot_count += int(snapshot.size)
@@ -249,6 +272,7 @@ def decode_metrics(datasets, states, coefficients, arrays, prefix, batch=BATCH):
             "snapshot_error_worst": float(np.max(snapshot)),
             "k3_cox_identity_worst": float(np.max(identity)),
             "all_finite": finite, "exact_binary_boundary": boundary,
+            "boundary_violation_count": boundary_violations,
         }
     pooled = np.asarray(pooled_trajectory)
     report["pooled"] = {
@@ -259,6 +283,9 @@ def decode_metrics(datasets, states, coefficients, arrays, prefix, batch=BATCH):
         "k3_cox_identity_worst": float(np.max(identities)),
         "all_finite": bool(all(v["all_finite"] for v in report["meshes"].values())),
         "exact_binary_boundary": bool(all(v["exact_binary_boundary"] for v in report["meshes"].values())),
+        "boundary_violation_count": int(sum(
+            v["boundary_violation_count"] for v in report["meshes"].values()
+        )),
     }
     return report
 
@@ -294,20 +321,24 @@ def make_trust_attempt():
 
         def body(carry, _):
             x, r, direction, rr, running, count, breakdown = carry
-            product = matvec(direction)
-            denominator = jnp.vdot(direction, product)
-            valid = running & jnp.isfinite(denominator) & (denominator > 0.0)
-            alpha = jnp.where(valid, rr / denominator, 0.0)
-            x_new = x + alpha * direction
-            r_new = r - alpha * product
-            rr_new = jnp.vdot(r_new, r_new)
-            converged = jnp.sqrt(rr_new) <= CG_TOL * jnp.maximum(jnp.sqrt(rr0), 1e-300)
-            beta = jnp.where(valid & (rr > 0.0), rr_new / rr, 0.0)
-            direction_new = r_new + beta * direction
-            return (jnp.where(valid, x_new, x), jnp.where(valid, r_new, r),
-                    jnp.where(valid, direction_new, direction), jnp.where(valid, rr_new, rr),
-                    valid & ~converged, count + valid.astype(jnp.int32),
-                    breakdown | (running & ~valid)), None
+            def perform(values):
+                x, r, direction, rr, _, count, breakdown = values
+                product = matvec(direction)
+                denominator = jnp.vdot(direction, product)
+                valid = jnp.isfinite(denominator) & (denominator > 0.0)
+                alpha = jnp.where(valid, rr / denominator, 0.0)
+                x_new = x + alpha * direction
+                r_new = r - alpha * product
+                rr_new = jnp.vdot(r_new, r_new)
+                converged = (jnp.sqrt(rr_new)
+                             <= CG_TOL * jnp.maximum(jnp.sqrt(rr0), 1e-300))
+                beta = jnp.where(valid & (rr > 0.0), rr_new / rr, 0.0)
+                direction_new = r_new + beta * direction
+                return (jnp.where(valid, x_new, x), jnp.where(valid, r_new, r),
+                        jnp.where(valid, direction_new, direction),
+                        jnp.where(valid, rr_new, rr), valid & ~converged,
+                        count + valid.astype(jnp.int32), breakdown | ~valid)
+            return lax.cond(running, perform, lambda values: values, carry), None
 
         initial = (jnp.zeros_like(q), right, right, rr0,
                    active & (rr0 > 0.0), jnp.int32(0), jnp.bool_(False))
@@ -348,7 +379,8 @@ def make_trust_attempt():
                                           0, 0, 0)))
 
 
-def run_trust(datasets, generator, starts, mean, scales, arrays, attempts):
+def run_trust(datasets, generator, starts, initial_objectives, mean, scales,
+              arrays, attempts, progress_path, checkpoint_path, wall_started):
     total = starts.shape[1]
     shape = (2, total)
     trace = {
@@ -369,26 +401,16 @@ def run_trust(datasets, generator, starts, mean, scales, arrays, attempts):
         "cg_relative_residual": np.empty((2, total, attempts), np.float64),
         "cg_breakdown": np.zeros((2, total, attempts), bool),
         "finite": np.zeros((2, total, attempts), bool),
+        "jvp_count": np.zeros((2, total, attempts), np.int32),
+        "vjp_count": np.zeros((2, total, attempts), np.int32),
+        "bound_active_count": np.zeros((2, total, attempts), np.int8),
     }
     attempt_fn = make_trust_attempt()
     for start_index in range(2):
         q = starts[start_index].copy()
         delta = np.full(total, DELTA0); damping = np.full(total, LAMBDA0)
-        active = np.ones(total, bool); objective = np.full(total, np.nan)
+        active = np.ones(total, bool); objective = initial_objectives[start_index].copy()
         trace["q"][start_index, :, 0] = q
-        for item in datasets:
-            lo, hi = item["global_start"], item["global_stop"]
-            for batch_start in range(lo, hi, BATCH):
-                local = batch_start - lo
-                result = attempt_fn(generator, jnp.asarray(q[batch_start:batch_start+BATCH]),
-                    jnp.asarray(item["affine"][local:local+BATCH]),
-                    jnp.asarray(item["flat"][local:local+BATCH]),
-                    jnp.asarray(item["coords"]), jnp.asarray(item["mask"]),
-                    jnp.asarray(mean), jnp.asarray(scales),
-                    jnp.asarray(delta[batch_start:batch_start+BATCH]),
-                    jnp.asarray(damping[batch_start:batch_start+BATCH]),
-                    jnp.asarray(active[batch_start:batch_start+BATCH]))
-                objective[batch_start:batch_start+BATCH] = np.asarray(result[5])
         trace["objective"][start_index, :, 0] = objective
         for attempt in range(attempts):
             attempted_before = active.copy()
@@ -419,16 +441,89 @@ def run_trust(datasets, generator, starts, mean, scales, arrays, attempts):
                     trace["cg_relative_residual"][start_index, sl, attempt] = cg_rel
                     trace["cg_breakdown"][start_index, sl, attempt] = breakdown
                     trace["finite"][start_index, sl, attempt] = finite
+                    work_count = np.where(attempted_before[sl], cg_iter + 1, 0)
+                    trace["jvp_count"][start_index, sl, attempt] = work_count
+                    trace["vjp_count"][start_index, sl, attempt] = work_count
+                    trace["bound_active_count"][start_index, sl, attempt] = np.sum(
+                        np.abs(next_q) >= 1.0, axis=1
+                    )
                     q[sl], objective[sl], delta[sl], damping[sl], active[sl] = (
                         next_q, next_obj, next_delta, next_damping, next_active)
             trace["attempted"][start_index, :, attempt] = attempted_before
             trace["q"][start_index, :, attempt + 1] = q
             trace["objective"][start_index, :, attempt + 1] = objective
+            atomic_json(progress_path, {
+                "status": "in_progress", "stage": "trust",
+                "start_index": start_index, "start_name": STARTS[start_index],
+                "attempt_completed": attempt + 1, "attempt_cap": attempts,
+                "active_count": int(np.sum(active)),
+                "accepted_count": int(np.sum(trace["accepted"][start_index,:,:attempt+1])),
+                "cg_breakdown_count": int(np.sum(
+                    trace["cg_breakdown"][start_index,:,:attempt+1]
+                    & trace["attempted"][start_index,:,:attempt+1])),
+                "elapsed_s": float(time.perf_counter() - wall_started),
+                "scientific_metrics_exposed": False,
+            })
+            atomic_pickle(checkpoint_path, {
+                "status": "in_progress", "start_index": start_index,
+                "attempt_completed": attempt + 1, "q": q,
+                "objective": objective, "delta": delta, "damping": damping,
+                "active": active,
+            })
+        arrays[f"trust_start{start_index}_terminal_delta"] = delta
+        arrays[f"trust_start{start_index}_terminal_damping"] = damping
+        arrays[f"trust_start{start_index}_terminal_active"] = active
     for name, value in trace.items():
         arrays[f"trust_{name}"] = value
     arrays["trust_starts_q"] = starts
     arrays["trust_terminal_q"] = trace["q"][:, :, -1]
+    atomic_pickle(checkpoint_path, {
+        "status": "complete", "attempt_cap": attempts,
+        "terminal_q": arrays["trust_terminal_q"],
+        "terminal_objective": trace["objective"][:,:,-1],
+    })
     return trace
+
+
+def trust_checkpoint_summary(datasets, objective, attempted, accepted):
+    result = {}
+    final_attempt = objective.shape[2] - 1
+    checkpoints = sorted(set((0, final_attempt) + tuple(
+        value for value in (10, 20, 30, 40) if value <= final_attempt
+    )))
+    for start_index, start_name in enumerate(STARTS):
+        rows = []
+        for checkpoint in checkpoints:
+            meshes, pooled = {}, []
+            for item in datasets:
+                lo, hi = item["global_start"], item["global_stop"]
+                values = objective[start_index, lo:hi, checkpoint]
+                pooled.extend(values.tolist())
+                meshes[str(item["N"])] = {
+                    "mean_snapshot_relative_l2_squared": float(np.mean(values)),
+                    "worst_snapshot_relative_l2": float(np.sqrt(np.max(values))),
+                }
+            pooled = np.asarray(pooled)
+            attempt_slice = slice(0, checkpoint)
+            rows.append({
+                "attempt": checkpoint, "meshes": meshes,
+                "pooled_mean_snapshot_relative_l2_squared": float(np.mean(pooled)),
+                "pooled_worst_snapshot_relative_l2": float(np.sqrt(np.max(pooled))),
+                "attempted_total_through_checkpoint": int(np.sum(
+                    attempted[start_index, :, attempt_slice])),
+                "accepted_total_through_checkpoint": int(np.sum(
+                    accepted[start_index, :, attempt_slice])),
+            })
+        result[start_name] = rows
+    return result
+
+
+def exact_objectives_from_control(datasets, arrays, prefix):
+    return np.concatenate([
+        (arrays[f"{prefix}_N{item['N']}_snapshot_numerator_sq"] /
+         np.maximum(arrays[f"{prefix}_N{item['N']}_truth_norm_sq"], 1e-300)).reshape(-1)
+        for item in datasets
+    ])
 
 
 def parse_args():
@@ -442,6 +537,8 @@ def parse_args():
     parser.add_argument("--prereg")
     parser.add_argument("--output-json", required=True)
     parser.add_argument("--output-npz", required=True)
+    parser.add_argument("--progress-json", required=True)
+    parser.add_argument("--work-checkpoint", required=True)
     parser.add_argument("--smoke", action="store_true")
     return parser.parse_args()
 
@@ -517,23 +614,48 @@ def main():
         "selection_affine": legacy.concatenate(selection, "affine"),
         "selection_features": legacy.concatenate(selection, "features"),
         "coefficient_mean": mean, "head_scales": scales,
+        "training_encoder_handoff_q_raw": p7_arrays["encoder_handoff_q_raw"],
+        "training_final_q_raw": p7_arrays["training_q_raw"],
+        "training_final_states": p7_arrays["training_states"],
+        "selection_locked_p7_oracle_states": p7_arrays["selection_oracle_states"],
     }
     controls = {}
+    completed_controls = []
+
+    def control_progress(name):
+        completed_controls.append(name)
+        atomic_json(args.progress_json, {
+            "status": "in_progress", "stage": "controls",
+            "completed_control_count": len(completed_controls),
+            "completed_control_names": completed_controls,
+            "elapsed_s": float(time.perf_counter() - started),
+            "scientific_metrics_exposed": False,
+        })
+
+    atomic_json(args.progress_json, {
+        "status": "in_progress", "stage": "data_regenerated",
+        "elapsed_s": float(time.perf_counter() - started),
+        "scientific_metrics_exposed": False,
+    })
     train_free_states = np.concatenate((arrays["training_affine"], np.zeros((len(train_coeff),19))), axis=1)
     controls["train_free_h1"] = decode_metrics(train, train_free_states, train_coeff, arrays, "train_free_h1")
+    control_progress("train_free_h1")
     handoff_q = np.tanh(p7_arrays["encoder_handoff_q_raw"])
     handoff_states = np.concatenate((arrays["training_affine"], handoff_q), axis=1)
     controls["train_encoder_handoff"] = decode_metrics(
         train, handoff_states, generator_coefficients(generator, handoff_q, mean, scales),
         arrays, "train_encoder_handoff")
+    control_progress("train_encoder_handoff")
     final_train_q = np.tanh(p7_arrays["training_q_raw"])
     controls["train_final_autolatent"] = decode_metrics(
         train, p7_arrays["training_states"],
         generator_coefficients(generator, final_train_q, mean, scales),
         arrays, "train_final_autolatent")
+    control_progress("train_final_autolatent")
     selection_free_states = np.concatenate((arrays["selection_affine"], np.zeros((len(selection_coeff),19))), axis=1)
     controls["selection_free_h1"] = decode_metrics(
         selection, selection_free_states, selection_coeff, arrays, "selection_free_h1")
+    control_progress("selection_free_h1")
     normalized_selection = normalized_coefficients(selection_coeff, mean, scales)
     encoder_q_raw = p7train.encode_all(encoder, normalized_selection)
     encoder_q = np.tanh(encoder_q_raw)
@@ -541,6 +663,7 @@ def main():
     controls["selection_free_target_encoder"] = decode_metrics(
         selection, encoder_states, generator_coefficients(generator, encoder_q, mean, scales),
         arrays, "selection_free_target_encoder")
+    control_progress("selection_free_target_encoder")
     predictor_states = np.asarray(jnp.tanh(spline.apply_mlp(
         predictor, jnp.asarray(arrays["selection_features"]))))
     predictor_q = predictor_states[:, 5:]
@@ -549,18 +672,35 @@ def main():
         selection, predictor_exact_affine_states,
         generator_coefficients(generator, predictor_q, mean, scales), arrays,
         "selection_predictor_q_exact_affine")
+    control_progress("selection_predictor_q_exact_affine")
     controls["selection_deployed_predictor"] = decode_metrics(
         selection, predictor_states,
         generator_coefficients(generator, predictor_q, mean, scales), arrays,
         "selection_deployed_predictor")
+    control_progress("selection_deployed_predictor")
     locked_states = p7_arrays["selection_oracle_states"]
     controls["selection_locked_p7_oracle"] = decode_metrics(
         selection, locked_states,
         generator_coefficients(generator, locked_states[:,5:], mean, scales), arrays,
         "selection_locked_p7_oracle")
+    control_progress("selection_locked_p7_oracle")
+
+    atomic_json(args.progress_json, {
+        "status": "in_progress", "stage": "controls_complete",
+        "elapsed_s": float(time.perf_counter() - started),
+        "scientific_metrics_exposed": False,
+    })
 
     starts = np.stack((predictor_q, encoder_q))
-    trace = run_trust(selection, generator, starts, mean, scales, arrays, attempts)
+    initial_objectives = np.stack((
+        exact_objectives_from_control(selection, arrays,
+                                      "selection_predictor_q_exact_affine"),
+        exact_objectives_from_control(selection, arrays,
+                                      "selection_free_target_encoder"),
+    ))
+    trace = run_trust(selection, generator, starts, initial_objectives,
+                      mean, scales, arrays, attempts, args.progress_json,
+                      args.work_checkpoint, started)
     trust_metrics = {}
     for index, name in enumerate(STARTS):
         q = trace["q"][index, :, -1]
@@ -578,12 +718,30 @@ def main():
     controls["selection_trust_starts"] = trust_metrics
     controls["selection_trust_two_start"] = chosen_metrics
 
+    trust_checkpoints = trust_checkpoint_summary(
+        selection, trace["objective"], trace["attempted"], trace["accepted"]
+    )
+    exhausted = []
+    for index in range(2):
+        terminal_active = arrays[f"trust_start{index}_terminal_active"]
+        terminal_delta = arrays[f"trust_start{index}_terminal_delta"]
+        terminal_damping = arrays[f"trust_start{index}_terminal_damping"]
+        never_accepted = ~np.any(trace["accepted"][index], axis=1)
+        exhausted.append(terminal_active & never_accepted
+                         & (terminal_delta <= DELTA_MIN)
+                         & (terminal_damping >= LAMBDA_MAX))
+    exhausted = np.stack(exhausted)
+    arrays["trust_unhealthy_exhaustion"] = exhausted
+
     trace_health = {
         "all_attempt_values_finite": bool(np.all(trace["finite"] | ~trace["attempted"])),
         "any_cg_breakdown": bool(np.any(trace["cg_breakdown"] & trace["attempted"])),
         "attempted_total": int(np.sum(trace["attempted"])),
         "accepted_total": int(np.sum(trace["accepted"])),
         "terminated_total": int(np.sum(trace["terminated"])),
+        "jvp_total": int(np.sum(trace["jvp_count"])),
+        "vjp_total": int(np.sum(trace["vjp_count"])),
+        "unhealthy_exhaustion_count": int(np.sum(exhausted)),
         "max_attempts": attempts,
     }
     identity_pass = bool(all(
@@ -592,7 +750,9 @@ def main():
     ) and all(row["pooled"]["k3_cox_identity_worst"] <= IDENTITY_TOL
               for row in trust_metrics.values()))
     health_pass = bool(trace_health["all_attempt_values_finite"]
-                       and not trace_health["any_cg_breakdown"] and identity_pass)
+                       and not trace_health["any_cg_breakdown"]
+                       and trace_health["unhealthy_exhaustion_count"] == 0
+                       and identity_pass)
     decision = {
         "p8_d_valid": bool(not args.smoke and health_pass),
         "t1_implementation_authorized": False,
@@ -622,15 +782,25 @@ def main():
     arrays["selection_predictor_q"] = predictor_q
     os.makedirs(os.path.dirname(os.path.abspath(args.output_npz)), exist_ok=True)
     np.savez_compressed(args.output_npz, **arrays)
+    atomic_json(args.progress_json, {
+        "status": "complete", "stage": "complete", "attempt_cap": attempts,
+        "elapsed_s": float(time.perf_counter() - started),
+        "scientific_metrics_exposed": False,
+    })
     report = {
         "status": "excluded_execution_smoke" if args.smoke else "complete",
         "provenance": c.provenance(), "config": config, "bindings": bindings,
         "data": {"training": legacy.metadata(train), "selection": legacy.metadata(selection),
                  "target_chunks": target_records, "affine_feature_binding": binding},
-        "controls": controls, "trust_health": trace_health,
+        "controls": controls, "trust_checkpoints": trust_checkpoints,
+        "trust_health": trace_health,
         "gates": {"identity": identity_pass, "health": health_pass},
         "decision": decision, "npz": {"basename": os.path.basename(args.output_npz),
                                         "sha256": c.sha256(args.output_npz)},
+        "progress": {"basename": os.path.basename(args.progress_json),
+                     "sha256": c.sha256(args.progress_json)},
+        "work_checkpoint": {"basename": os.path.basename(args.work_checkpoint),
+                            "sha256": c.sha256(args.work_checkpoint)},
         "elapsed_s": float(time.perf_counter() - started),
     }
     c.save_json(args.output_json, report)

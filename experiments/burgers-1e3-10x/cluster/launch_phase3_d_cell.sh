@@ -20,7 +20,7 @@ job_id="$(ssh tufts-login "
   set -euo pipefail
   cd '$REMOTE'
   test \"\$(sha256sum MANIFEST.sha256 | cut -d' ' -f1)\" = '$manifest'
-  sha256sum -c MANIFEST.sha256
+  sha256sum -c MANIFEST.sha256 >&2
   sbatch --parsable --job-name='ctol_b10_$cell' \
     --export=ALL,B10_COMMIT='$expected_commit',B10_CELL='$cell',B10_REMOTE='$REMOTE' \
     run.sbatch

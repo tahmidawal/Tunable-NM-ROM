@@ -55,11 +55,36 @@ online arm or creation of any timing row: the inherited fixed-eight-Newton
 testbed truth rollout had worst returned reference residual `1.215e-2` at
 N=2048 and failed the unchanged `1e-11` gate.  It is retained under
 `runs/final1/` as an excluded pre-science reference-generation failure.  The
-only licensed repair fixes that offline truth/equivalence rollout at 25 Newton
-iterations.  It does not change either online arm, its tolerance-stopped
-maximum of 25 Newton iterations, the cohort, timing order, or any selection
-rule.  A repaired job must still pass the same `1e-11` reference gate before a
-timed row can exist.
+prospectively reviewed 25-iteration offline-only repair was run as job
+`2674703`, but it reproduced the same residual exactly and likewise produced
+zero timing rows.  Both failures are excluded from speed and accuracy claims.
+Increasing a fixed iteration count is therefore retracted as a repair.
+
+Before any further reference change, a bounded diagnostic-only H200 job is
+locked to the same seed 20260827, draw 16, indices 0:4, and N=2048.  It first
+persists every trajectory's 50 final step residuals from the exact public-JAX
+fixed-25 path.  The trajectory with the largest nonfinite-or-finite maximum
+(lowest index breaks a tie), and then its first nonfinite or largest-residual
+step, are selected deterministically.  Only that single step is rerun with
+every Newton correction recording the achieved true linear residual
+`||J du+r||/||r||`, finite/update status, and a line-for-line instrumented JAX
+0.10.2 BiCGStab exit code; the public `info` value is documented as always
+`None`.  The selected trajectory's complete 50-step chain is compared under
+three frozen tolerance-stopped counting routes:
+unpreconditioned (outer `1e-12`, inner `1e-10`), exact Helmholtz (outer
+`1e-12`, inner `1e-8`), and an independent stricter exact-Helmholtz ladder
+(outer `1e-13`, inner `1e-10`).  It persists the complete residual, iteration,
+flag, field-norm, and pairwise field-difference histories plus each route's
+terminal field and checksum.  The diagnostic records no method timing, cannot
+promote a replacement, and licenses no final rerun without a separate
+post-diagnostic preregistration and audit.
+
+The instrumented and public JAX updates must agree to relative `1e-12`.  A
+future replacement preregistration may be proposed only if both Helmholtz
+routes have zero flags/breakdowns, satisfy the unchanged `1e-11` nonlinear
+reference gate at every step, and agree to `1e-10` in both maximum per-step and
+whole-trajectory relative field difference.  Passing those diagnostic gates
+does not itself replace the reference or license timing.
 
 For every tolerance and trajectory, the process runs six exact AB then
 immediately reburned BA blocks.  This gives twelve repetitions per arm and

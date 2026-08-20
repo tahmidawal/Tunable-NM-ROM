@@ -162,16 +162,131 @@ def audit_fom():
     }
 
 
+def audit_s0():
+    directory = os.path.join(RUNS, "s0_spline_r1")
+    report = load(os.path.join(directory, "out", "s0.json"))
+    independent = load(os.path.join(directory, "out", "AUDIT.json"))
+    log = open(os.path.join(directory, "logs", "2667808.out")).read()
+    error = open(os.path.join(directory, "logs", "2667808.err")).read()
+    provenance = report["provenance"]
+    assert report["status"] == "complete" and report["decision"]["phase2_hard_stop"]
+    assert provenance["jax_backend"] == "gpu" and provenance["x64"]
+    assert provenance["matmul_precision"] == "highest"
+    assert provenance["slurm_job_id"] == "2667808" and provenance["gpu_kind"] == "NVIDIA H200"
+    assert error == "" and "jax_backend=gpu" in log and "ALL-DONE" in log
+    assert not report["config"]["model_validation_touched"]
+    assert not report["config"]["confirmation_touched"]
+    assert independent["status"] == "pass"
+    assert independent["expected_commit"] == provenance["commit"]
+    assert independent["job_id"] == provenance["slurm_job_id"]
+    assert independent["source_json_sha256"] == sha256(os.path.join(directory, "out", "s0.json"))
+    assert independent["source_npz_sha256"] == sha256(os.path.join(directory, "out", "s0.npz"))
+    for arm in ("A", "B", "C"):
+        oracle = report["free_oracle"][arm]
+        expected_accuracy = all(
+            row["trajectory_error_mean"] <= 2e-4 and row["trajectory_error_worst"] <= 7e-4
+            for row in oracle["meshes"].values()
+        ) and oracle["summary"]["trajectory_error_mean"] <= 2e-4 and oracle["summary"]["trajectory_error_worst"] <= 7e-4
+        expected_health = all(row["zero_unhealthy_fits"] for row in oracle["meshes"].values())
+        assert oracle["summary"]["every_mesh_and_pooled_accuracy_pass"] == expected_accuracy
+        assert oracle["summary"]["zero_unhealthy_fits"] == expected_health
+        gate = report["cost_panel"]["gates"][arm]
+        assert gate["pass"] == (
+            gate["point_ge_10"] and gate["clustered_lower_ge_8"]
+            and gate["compiled_peak_memory_le_20GB"] and gate["paired_fom_accuracy_eligible"]
+        )
+        for suffix in ("direct", "mandatory", "maximum_one"):
+            method = f"{arm}_{suffix}"
+            records = report["cost_panel"]["records"][method]
+            summary = report["cost_panel"]["summaries"][method]
+            assert len(records) == 40
+            assert statistics.median(row["elapsed_s"] for row in records) == summary["median_elapsed_s"]
+    return {
+        "manifest_files": check_local_manifest("s0_spline_r1"),
+        "source_hashes": audit_source_hashes(report),
+        "backend": provenance["jax_backend"], "gpu": provenance["gpu_kind"],
+        "job_id": provenance["slurm_job_id"], "hard_stop": True,
+        "independent_audit_sha256": sha256(os.path.join(directory, "out", "AUDIT.json")),
+    }
+
+
+def audit_phase3():
+    directory = os.path.join(RUNS, "p3_d_r1")
+    report = load(os.path.join(directory, "out", "phase3_d.json"))
+    independent = load(os.path.join(directory, "out", "AUDIT.json"))
+    log = open(os.path.join(directory, "logs", "2668417.out")).read()
+    errors = open(os.path.join(directory, "logs", "2668417.err")).read().splitlines()
+    known = re.compile(
+        r"^E[0-9]{4} [0-9:.]+ [0-9]+ numa_hwloc\.cc:121\] "
+        r"Call to hwloc_set_cpubind\(\) failed: Invalid argument \[22\]$"
+    )
+    provenance = report["provenance"]
+    assert report["status"] == "complete"
+    assert provenance["jax_backend"] == "gpu" and provenance["x64"]
+    assert provenance["matmul_precision"] == "highest"
+    assert provenance["slurm_job_id"] == "2668417" and provenance["gpu_kind"] == "NVIDIA H200"
+    assert "jax_backend=gpu" in log and "ALL-DONE" in log
+    assert len(errors) == 2 and all(known.fullmatch(line) for line in errors)
+    assert not report["config"]["model_validation_touched"]
+    assert not report["config"]["confirmation_touched"]
+    assert independent["status"] == "pass"
+    assert independent["expected_commit"] == provenance["commit"]
+    assert independent["job_id"] == provenance["slurm_job_id"]
+    assert independent["source_json_sha256"] == sha256(os.path.join(directory, "out", "phase3_d.json"))
+    assert independent["source_npz_sha256"] == sha256(os.path.join(directory, "out", "phase3_d.npz"))
+    assert independent["manifest_file_sha256"] == sha256(os.path.join(directory, "MANIFEST.sha256"))
+    assert report["decision"] == {
+        "selected_solver": None, "selected_kernel": "K3",
+        "run_P3_F": False, "phase3_hard_stop": True,
+    }
+    for solver in ("S1", "S2"):
+        summary = report["solver_diagnostic"]["summaries"][solver]
+        assert summary["fit_count"] == 128 and summary["all_fit_health_pass"]
+        assert summary["worst_relative_normal_residual"] <= 1e-8
+        assert summary["no_snapshot_regression_pass"]
+        assert summary["target_N128_draw530_trajectory_relative_l2"] > 7e-4
+        assert not summary["target_N128_draw530_pass"] and not summary["pass"]
+    kernel = report["kernel_diagnostic"]
+    assert kernel["fom_accuracy"]["eligible"] and kernel["exact_position_balance"]
+    assert kernel["basis_identity"]["pass"] and kernel["pallas_basis_identity"]["pass"]
+    for index, route in enumerate(("K0", "K1", "K2", "K3")):
+        records, summary, gate = kernel["records"][route], kernel["summaries"][route], kernel["gates"][route]
+        assert len(records) == 80
+        assert statistics.median(row["elapsed_s"] for row in records) == summary["median_elapsed_s"]
+        assert summary["outliers_gt_1p5_within_trajectory_total"] == 0
+        assert gate["canonical_work_pass"] and gate["memory_pass"] and gate["fom_eligible"]
+        assert gate["pass"] == (
+            gate["identity_pass"] and gate["paired_median_speedup"] >= 10
+            and gate["clustered_speedup_ci"][0] >= 8
+        )
+        assert kernel["position_counts"][route] == [4] * 5
+        if index:
+            assert all(row["pass"] and row["exact_boundary"] for row in kernel["identity"][route])
+    assert kernel["selected_kernel"] == "K3"
+    return {
+        "manifest_files": check_local_manifest("p3_d_r1"),
+        "source_hashes": audit_source_hashes(report),
+        "backend": provenance["jax_backend"], "gpu": provenance["gpu_kind"],
+        "job_id": provenance["slurm_job_id"], "classified_hwloc_lines": len(errors),
+        "selected_solver": None, "selected_kernel": "K3", "hard_stop": True,
+        "independent_audit_sha256": sha256(os.path.join(directory, "out", "AUDIT.json")),
+    }
+
+
 def main():
     result = {
         "status": "pass",
-        "scope": "Burgers Phase 1 preregistered representation falsification and FOM calibration",
+        "scope": "Burgers finite Phase 1-3 pure-NMROM negative result",
         "d0": audit_d0(),
         "fom_calibration": audit_fom(),
+        "phase2_s0": audit_s0(),
+        "phase3_d": audit_phase3(),
         "excluded": {
             "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
             "local_smokes": "execution-only and excluded from scientific claims",
+            "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened",
         },
+        "model_validation_opened": False,
         "untouched_confirmation_opened": False,
     }
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)

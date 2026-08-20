@@ -1,6 +1,6 @@
 {
  "status": "pass",
- "scope": "Burgers Phase 1 preregistered representation falsification and FOM calibration",
+ "scope": "Burgers finite Phase 1-3 pure-NMROM negative result",
  "d0": {
   "manifest_files": [
    "out/d0.npz",
@@ -59,9 +59,66 @@
    }
   }
  },
+ "phase2_s0": {
+  "manifest_files": [
+   "SACCT.txt",
+   "MANIFEST.sha256",
+   "REMOTE.sha256",
+   "logs/2667808.out",
+   "out/s0.json",
+   "out/AUDIT.json",
+   "out/s0.npz",
+   "logs/2667808.err"
+  ],
+  "source_hashes": {
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_d0.py": "2e671ecec6af56508dafe3bd07248772b690e9080afcbfd218b8f7405d0def41",
+   "b10_d1.py": "215fbbef917cdb927f38d8257e88c5a4d8d83157713251808eeed32f8f4f05d8",
+   "b10_decide_d0.py": "4f77ed9afcc1dd5e3ed1a61537fe0b2d4fa849a1116ba8e410fb9878db6c1624",
+   "b10_fom_cal.py": "7c5dffce3dd307201d946ca8b768809f5d56ce8e12642c42823d9f53ca56cf9c",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "82f364a7e5c724b0345ede72640d12fdeafb9d2bbe1a66a4f09f0285941cd53c",
+   "b10_train_predictor.py": "99769a6990ab93f7461ed84eea4128bd513625a9a4cbc849e2762d6c60c6f710",
+   "b10_weak_eq.py": "bbb7fe4cb7668670a9fadde50dfbee34fa922c80fd3615fdf9cdabe5c7b97618"
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "job_id": "2667808",
+  "hard_stop": true,
+  "independent_audit_sha256": "cc85098ebf8005ff5b798b58ee16ddbcc6cf753444eed581d06846809063b688"
+ },
+ "phase3_d": {
+  "manifest_files": [
+   "REMOTE.sha256",
+   "out/phase3_d.json",
+   "SACCT.txt",
+   "out/AUDIT.json",
+   "logs/2668417.err",
+   "MANIFEST.sha256",
+   "logs/2668417.out",
+   "out/phase3_d.npz"
+  ],
+  "source_hashes": {
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_phase3.py": "5a67c44c6713d5c429df254bbfef7df2205372067f82882e6d1852ce61d1555e",
+   "b10_phase3_d.py": "c2cb7d509cdc98a2c18842be4aa4a99809b245ff0f5014476e5e217386616277",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "82f364a7e5c724b0345ede72640d12fdeafb9d2bbe1a66a4f09f0285941cd53c"
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "job_id": "2668417",
+  "classified_hwloc_lines": 2,
+  "selected_solver": null,
+  "selected_kernel": "K3",
+  "hard_stop": true,
+  "independent_audit_sha256": "bf59900ec549c1dfe769742731fd2712395097b1d14b4a30f43e74c3a6750e02"
+ },
  "excluded": {
   "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
-  "local_smokes": "execution-only and excluded from scientific claims"
+  "local_smokes": "execution-only and excluded from scientific claims",
+  "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened"
  },
+ "model_validation_opened": false,
  "untouched_confirmation_opened": false
 }

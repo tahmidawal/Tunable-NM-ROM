@@ -29,6 +29,10 @@ N_CASES = int(os.environ.get("CAL_CASES", "4"))
 TIME_REPS = int(os.environ.get("TIME_REPS", "14"))
 TIME_WARM = int(os.environ.get("TIME_WARM", "2"))
 BURN_SECONDS = float(os.environ.get("BURN_SECONDS", "3"))
+REFERENCE_OUTER = float(os.environ.get("REFERENCE_OUTER", "1e-12"))
+REFERENCE_INNER = float(os.environ.get("REFERENCE_INNER", "1e-7"))
+AUDIT_OUTER = float(os.environ.get("AUDIT_OUTER", "3e-13"))
+AUDIT_INNER = float(os.environ.get("AUDIT_INNER", "3e-8"))
 OUTER_TOLS = (3e-3, 1e-3, 3e-4, 1e-4, 3e-5, 1e-5, 1e-6)
 INNER_BY_OUTER = {
     3e-3: (3e-1, 1e-1),
@@ -97,6 +101,67 @@ def cluster_ci(case_medians, seed):
     return [float(value) for value in np.quantile(np.median(sample, axis=1), (0.025, 0.975))]
 
 
+def generate_counting_reference(n):
+    """Generate truth with the audited cubic/exact-Helmholtz counting chain."""
+    cx, cy, width, amplitude, nu, normalized = c.bf.sample_params(
+        seed=SEED, m=DRAW_COUNT
+    )
+    selected = np.arange(N_CASES)
+    u0 = np.stack([
+        c.bf.blob_ic(n, cx[index], cy[index], width[index], amplitude[index])
+        for index in selected
+    ]).astype(np.float64)
+    dummy = jnp.zeros((c.NUM_STEPS, n * n), jnp.float64)
+    reference_chain, _ = bc.make_chain(
+        n, REFERENCE_OUTER, lin_tol=REFERENCE_INNER, preconditioner="helmholtz"
+    )
+    trajectories = []
+    records = []
+    for case in range(N_CASES):
+        output = reference_chain(
+            jnp.asarray(u0[case]), nu[case], dummy, jnp.int32(5)
+        )
+        jax.block_until_ready(output)
+        snapshots = np.asarray(output[0])
+        truth = np.concatenate((u0[case, None], snapshots), axis=0)
+        item = grade(output, truth)
+        item["case_index"] = case
+        trajectories.append(truth)
+        records.append(item)
+    healthy = all(
+        item["finite"] and item["breakdowns"] == 0
+        and item["flags_nonzero"] == 0
+        and item["max_returned_relative_residual"] <= REFERENCE_OUTER
+        for item in records
+    )
+    if not healthy:
+        raise SystemExit(f"N={n} audited counting reference failed health gate")
+    parameters = {
+        "cx": np.asarray(cx[selected], np.float64),
+        "cy": np.asarray(cy[selected], np.float64),
+        "width": np.asarray(width[selected], np.float64),
+        "amplitude": np.asarray(amplitude[selected], np.float64),
+        "nu": np.asarray(nu[selected], np.float64),
+        "normalized": np.asarray(normalized[selected], np.float64),
+    }
+    health = {
+        "method": "audited counting cubic-history chain with exact Helmholtz",
+        "outer_tolerance": REFERENCE_OUTER,
+        "inner_tolerance": REFERENCE_INNER,
+        "max_returned_relative_residual": float(max(
+            item["max_returned_relative_residual"] for item in records
+        )),
+        "zero_breakdowns": bool(all(item["breakdowns"] == 0 for item in records)),
+        "zero_flags": bool(all(item["flags_nonzero"] == 0 for item in records)),
+        "all_finite": bool(all(item["finite"] for item in records)),
+        "records": records,
+        "seed": SEED,
+        "draw_count": DRAW_COUNT,
+        "indices": selected.tolist(),
+    }
+    return np.stack(trajectories), parameters, health, dummy
+
+
 def main():
     c.require_gpu_highest()
     if TIME_REPS % 2:
@@ -114,6 +179,13 @@ def main():
             "burn_seconds": BURN_SECONDS, "f64": True,
             "solution_accuracy_gate": {"mean": 1e-3, "worst": 3e-3},
             "reference_numerical_gate": 1e-4,
+            "reference_generation": {
+                "history": "cubic", "preconditioner": "exact Helmholtz DST-I",
+                "outer_tolerance": REFERENCE_OUTER,
+                "inner_tolerance": REFERENCE_INNER,
+                "audit_outer_tolerance": AUDIT_OUTER,
+                "audit_inner_tolerance": AUDIT_INNER,
+            },
             "confirmation_touched": False,
         },
         "provenance": c.provenance(),
@@ -123,17 +195,12 @@ def main():
     dummy_by_n = {}
     for n in NS:
         c.log("FOM calibration N", n)
-        fields, parameters, reference_health = c.generate_population(
-            n, SEED, DRAW_COUNT, np.arange(N_CASES), chunk=1
-        )
-        if reference_health["independent_max_relative_residual"] > 1e-8:
-            raise SystemExit(f"N={n} unhealthy reference")
-        dummy = jnp.zeros((c.NUM_STEPS, n * n), jnp.float64)
+        fields, parameters, reference_health, dummy = generate_counting_reference(n)
         dummy_by_n[n] = dummy
 
-        # Independent tight counting-chain equivalence bounds reference numerical error.
+        # An independently tighter counting chain bounds reference numerical error.
         reference_chain, _ = bc.make_chain(
-            n, 1e-11, lin_tol=1e-6, preconditioner="helmholtz"
+            n, AUDIT_OUTER, lin_tol=AUDIT_INNER, preconditioner="helmholtz"
         )
         tight_differences = []
         tight_residual = []
@@ -277,10 +344,12 @@ def main():
         selected_fom = eligible[0][1]
         report["meshes"][str(n)] = {
             "reference_health": reference_health,
-            "tight_reference_counting_difference": {
+            "independent_tighter_reference_difference": {
                 "trajectory_relative_l2_all": tight_differences,
                 "worst": reference_numerical_error,
                 "max_returned_residual": max(tight_residual),
+                "solution_error_gate": 1e-4,
+                "gate_pass": bool(reference_numerical_error <= 1e-4),
             },
             "burn_count": burn_count,
             "timing_orders": timing_orders,

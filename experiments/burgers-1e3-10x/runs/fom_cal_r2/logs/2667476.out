@@ -1,0 +1,8 @@
+host=pax144 gpu=NVIDIA A100-SXM4-40GB
+commit=6d571a2fcd22e6d35f13f90d59abb7681a71bf64 dirty=e3b0c44298fc cell=fom_cal_r2
+jax_backend=gpu cuda:0
+FOM calibration N 256
+N 256 selected outer=3e-03:inner=1e-01 {'trajectory_error_mean': 0.0009348341943529685, 'trajectory_error_worst': 0.001373821365081186, 'max_returned_relative_residual': 0.002989490992379926, 'median_elapsed_s': 0.027592206839472055, 'mean_newton_total': 43.25, 'mean_linear_total': 51.0, 'healthy': True, 'accuracy_eligible': True, 'per_case_median_elapsed_s': [0.031548597384244204, 0.027466373052448034, 0.02326852362602949, 0.027720904909074306], 'clustered_median_elapsed_ci_s': [0.02326852362602949, 0.031548597384244204]}
+FOM calibration N 512
+N 512 selected outer=3e-03:inner=1e-01 {'trajectory_error_mean': 0.0007003026852073684, 'trajectory_error_worst': 0.001382019423133863, 'max_returned_relative_residual': 0.002995796298714992, 'median_elapsed_s': 0.06767704803496599, 'mean_newton_total': 43.0, 'mean_linear_total': 52.0, 'healthy': True, 'accuracy_eligible': True, 'per_case_median_elapsed_s': [0.07703485479578376, 0.06732214079238474, 0.053813163889572024, 0.06778899999335408], 'clustered_median_elapsed_ci_s': [0.053813163889572024, 0.07703485479578376]}
+FOM calibration N 1024

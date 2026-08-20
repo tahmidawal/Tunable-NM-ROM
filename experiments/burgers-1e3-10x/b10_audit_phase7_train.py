@@ -63,6 +63,11 @@ def load(path):
         return json.load(handle)
 
 
+def json_normalized(value):
+    """Match the driver's intentional tuple-to-list JSON normalization."""
+    return json.loads(json.dumps(value))
+
+
 def manifest(path):
     rows = {}
     with open(path, encoding="utf-8") as handle:
@@ -407,8 +412,8 @@ def main():
         checkpoint = pickle.load(handle)
     require(checkpoint["status"] == report["status"]
             and checkpoint["provenance"] == provenance
-            and checkpoint["config"] == config
-            and checkpoint["bindings"] == bindings and finite(checkpoint),
+            and json_normalized(checkpoint["config"]) == config
+            and json_normalized(checkpoint["bindings"]) == bindings and finite(checkpoint),
             "checkpoint identity/finite")
     encoder_shapes(checkpoint["encoder"])
     generator_shapes(checkpoint["warmup_generator"])

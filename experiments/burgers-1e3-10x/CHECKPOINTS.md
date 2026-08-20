@@ -238,3 +238,36 @@ joint license does not fire: `selected_solver=null`, `selected_kernel=K3`,
 model-validation, EQ, scaling, and untouched confirmation were not run.  The
 two synthetic-only model-validation drafts and the stopped prospective P3-F
 draft remain excluded and uncommitted.
+
+## 2026-08-20 — Phase-4 diagnostic pass and learned-manifold hard stop
+
+P4-D job `2668794` selected H1 (global R48 plus central P32, k24) with exposed
+free-oracle pooled mean/worst `5.8054779105e-5 / 3.8589189381e-4` and all 5,712
+fits healthy.  Its live-H200 mandatory route is `26.007434x` with clustered
+interval `[20.138590,31.646479]`; maximum-one is only `7.056541x`
+`[5.577488,8.672268]`.  The exact checksummed remote was removed after the
+independent audit passed.
+
+The only licensed seed-11 H1/k24 training job, `2668956`, completed and audited.
+Its learned-oracle pooled mean/worst are `0.4309173579 / 0.6021214615`; direct
+prediction is `0.0813062370 / 0.1933868523`.  Both remain finite with exact
+boundary, but neither passes and the learned oracle misses the fixed k32 near-
+miss bracket.  Phase 4 therefore hard-stops before seeds 29/47, weak/EQ, scaling,
+model validation, or confirmation.  The active floor is coefficient-manifold
+generation/training, not the free H1 space or mandatory K3 path.
+
+## 2026-08-20 — prospective Phase-5 nonlinear coefficient generator bracket
+
+The exact Phase-4 dense output form `c(q)=b+W*h(q)` confines every 3,328-value
+coefficient vector to one affine subspace of rank at most 32.  The reproducible
+read-only checkpoint verifies the immutable P4-D chain and estimates a 0.252209
+relative centered-coefficient residual after 32 randomized-SVD directions; this
+is explicitly not a field-error lower bound or promotion result.
+
+`PHASE-5-PRE-REGISTRATION.md` fixes two post-spatialization nonlinear generators,
+G1 DualUpConv16 and G2 DualResUpConv32, the complete mirrored-encoder handoff,
+train-only free-coefficient normalization, all 35,904 target-fit health gates,
+same-job cost/non-collapse checks, sequential smallest-pass selection, and a
+maximum of six exposed-development cells.  No k/loss/architecture retry,
+model-validation access, confirmation access, generator implementation, or job
+is authorized before the preregistration audit.

@@ -1,0 +1,112 @@
+{
+  "classification": "read-only exposed-development post-hoc geometry diagnostic",
+  "dense_hyperdecoder_geometry": {
+    "coefficient_dimension": 3328,
+    "exact_output_affine_hull_upper_bound": 32,
+    "last_hidden_dimension": 32,
+    "map": "q19 -> 32 -> 32 -> 3328",
+    "proof": "c(q)=b+W*h(q), hence c(q)-b is in range(W), whose rank is at most 32"
+  },
+  "diagnostic_source_sha256": "05f4803b1a9c12d8d43b07201c25a092e78de58552ab62c136fae252ed934331",
+  "field_error_lower_bound": false,
+  "immutable_inputs": {
+    "AUDIT.json": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3",
+    "MANIFEST.sha256": "67a3bf8d0d8c755ec39cd4056a0bca0e852b4ba17493e8f052a0b288e63a201a",
+    "phase4_d.json": "ff425dfa1f73ac2d8559df2d780ef09dc1ade179ed5636458e53e0f389f5d617",
+    "phase4_d.npz": "720c5890b22709c83858f46e43f18fa3d28bb1305544f02ad9aea71625a2228f"
+  },
+  "interpretation": "The dense final affine layer proves an output affine-hull cap of 32. The randomized SVD estimates coefficient-space variation outside its best rank-32 sketch, but is not a rigorous singular-value bound and is not a field-error or promotion gate.",
+  "matrix": {
+    "centered_frobenius_sq": 10617014.655958109,
+    "centering": "per coefficient coordinate across all 5712 exposed snapshots",
+    "row_order": "N64,N128,N256; case-major then time-major within each mesh",
+    "shape": [
+      5712,
+      3328
+    ]
+  },
+  "phase4_identity": {
+    "backend": "gpu",
+    "commit": "ae80f8f559d75f90125496a9ad4e2e14e9aac51c",
+    "confirmation_touched": false,
+    "gpu": "NVIDIA H200",
+    "job_id": "2668794",
+    "matmul_precision": "highest",
+    "model_validation_touched": false,
+    "x64": true
+  },
+  "phase5_bracket_adaptation_allowed": false,
+  "promotion_claim": false,
+  "randomized_svd": {
+    "algorithm": "Gaussian range finder; QR; two subspace power iterations; SVD(Q^T X)",
+    "numpy_version": "2.4.4",
+    "power_iterations": 2,
+    "reported_numerical_rank_lower_bound_at_s_over_s1_gt_1e-10": 96,
+    "reported_rank_is_capped_by_sketch_columns": true,
+    "required_blas_threads": 1,
+    "rng": "numpy.random.Generator(PCG64)",
+    "s33_over_s1": 0.13044540986905367,
+    "seed": 20260820,
+    "sketch_columns": 96,
+    "summaries": {
+      "19": {
+        "estimated_captured_centered_frobenius_fraction": 0.8487819065356623,
+        "estimated_relative_centered_frobenius_residual": 0.3888677068931511,
+        "singular_value_over_first": 0.26313039633392427
+      },
+      "24": {
+        "estimated_captured_centered_frobenius_fraction": 0.896637598133482,
+        "estimated_relative_centered_frobenius_residual": 0.3215002361842336,
+        "singular_value_over_first": 0.2282598165669865
+      },
+      "32": {
+        "estimated_captured_centered_frobenius_fraction": 0.9363904875175779,
+        "estimated_relative_centered_frobenius_residual": 0.2522092632763953,
+        "singular_value_over_first": 0.14011979817786055
+      },
+      "48": {
+        "estimated_captured_centered_frobenius_fraction": 0.9649442483825532,
+        "estimated_relative_centered_frobenius_residual": 0.18723181251445167,
+        "singular_value_over_first": 0.0852617878714231
+      },
+      "64": {
+        "estimated_captured_centered_frobenius_fraction": 0.9770823872435225,
+        "estimated_relative_centered_frobenius_residual": 0.15138564250442485,
+        "singular_value_over_first": 0.05746003065405422
+      },
+      "96": {
+        "estimated_captured_centered_frobenius_fraction": 0.986751104750158,
+        "estimated_relative_centered_frobenius_residual": 0.11510384550414449,
+        "singular_value_over_first": 0.032253257133741525
+      }
+    }
+  },
+  "scientific_cell": false,
+  "selection_health": {
+    "128": {
+      "exact_boundary_count": 1632,
+      "healthy": 1632,
+      "normal_worst": 1.4467250216623154e-15,
+      "pou_max_abs": 0.0,
+      "snapshots": 1632,
+      "support_max": 32
+    },
+    "256": {
+      "exact_boundary_count": 816,
+      "healthy": 816,
+      "normal_worst": 3.033157999782293e-15,
+      "pou_max_abs": 0.0,
+      "snapshots": 816,
+      "support_max": 32
+    },
+    "64": {
+      "exact_boundary_count": 3264,
+      "healthy": 3264,
+      "normal_worst": 1.4669270640009328e-15,
+      "pou_max_abs": 0.0,
+      "snapshots": 3264,
+      "support_max": 32
+    }
+  },
+  "status": "pass"
+}

@@ -1,0 +1,13 @@
+{
+ "status": "excluded_pre_science_reference_generation_failure",
+ "job_id": "2674703",
+ "execution_commit": "7a41e2e2473549871a1515f0a67758ad823260ed",
+ "execution_source_sha256": "205e453ac8a071b249ef4b69ac0dff844d59196afde1e0a9e500126ad171d34c",
+ "fresh_seed": 20260827,
+ "reference_newton_iterations": 25,
+ "stderr_message": "N=2048: reference residual 1.215e-02",
+ "complete": false,
+ "completed_timing_rows": 0,
+ "scientific_outcome_opened": false,
+ "classification": "The explicitly verified 25-iteration testbed reference reproduced the fixed-eight-iteration failure exactly. No online arm compiled or ran a timed block. This job is excluded from speed or accuracy claims; increasing the fixed Newton count is not a valid repair, and no reference path may change before a bounded diagnostic identifies the hidden linear-solver failure."
+}

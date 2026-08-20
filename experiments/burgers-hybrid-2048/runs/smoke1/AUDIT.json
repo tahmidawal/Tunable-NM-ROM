@@ -1,0 +1,60 @@
+{
+ "status": "smoke_pass",
+ "source": "experiments/burgers-hybrid-2048/runs/smoke1/out/smoke.json",
+ "source_sha256": "806c80357d3017020d2d49e6c73d50dd56d3e8965f53f0f5369d02857e9d3771",
+ "execution_commit": "3f95afa2d178dbe6ef93483e425680cdf48a500e",
+ "execution_source_sha256": "1e72ba37147d7d381690aba1b64185762de01f89d7f75411c7d1992523f9060c",
+ "classification": "classical FOM warm start; not learned and not NM-ROM",
+ "timing_scope": "warmed compiled online trajectory solve; includes dynamic construction and FOM finish; excludes compilation, loading, test/reference generation, and first-query latency",
+ "smoke_excluded_from_scientific_claims": true,
+ "peak_device_fraction_of_limit": 0.08627358219074817,
+ "primary_final_panel_licensed": true,
+ "learned_sensitivity_decision": "shall_run",
+ "rows": [
+  {
+   "N": 2048,
+   "fom_tau": 1e-06,
+   "linear_tol": 0.01,
+   "cubic_median_ms": 530.2995850797743,
+   "dynamic_median_ms": 314.31545596569777,
+   "speedup_cubic_over_dynamic": 1.6871572015142886,
+   "paired_saving_median_ms": 215.9841291140765,
+   "paired_saving_trajectory_cluster_95ci_ms": [
+    215.9841291140765,
+    215.9841291140765
+   ],
+   "paired_saving_case_medians_ms": [
+    215.9841291140765
+   ],
+   "supported_speedup": false,
+   "finish_newton_median": {
+    "cubic": 61.0,
+    "dynamic": 19.0
+   },
+   "finish_bicgstab_median": {
+    "cubic": 61.0,
+    "dynamic": 19.0
+   },
+   "dynamic_extra_full_grid_residual_evaluations": 50,
+   "dynamic_extra_exact_helmholtz_inverses": 50,
+   "max_returned_residual": 7.676221923522881e-07,
+   "max_trajectory_rel_l2": 4.6091456210857284e-07,
+   "outliers_retained": {
+    "cubic": {
+     "per_trajectory": {
+      "12": 0
+     },
+     "total": 0
+    },
+    "dynamic": {
+     "per_trajectory": {
+      "12": 0
+     },
+     "total": 0
+    }
+   }
+  }
+ ],
+ "supported_speedup_cells": 0,
+ "total_cells": 1
+}

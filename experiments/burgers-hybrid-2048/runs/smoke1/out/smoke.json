@@ -1,0 +1,294 @@
+{
+ "config": {
+  "purpose": "N=2048 memory/execution smoke",
+  "classification": {
+   "cubic": "classical live cubic-history FOM warm start",
+   "dynamic": "classical FOM warm start; live cubic plus one target-grid exact-upwind residual and exact Helmholtz inverse; not learned and not NM-ROM"
+  },
+  "execution_kind": "smoke_excluded",
+  "ns": [
+   2048
+  ],
+  "conditions": [
+   {
+    "fom_tau": 1e-06,
+    "linear_tol": 0.01
+   }
+  ],
+  "resolution_policy": "coarse_n=N at every mesh (full-grid fraction 1.0)",
+  "relaxation": 1.0,
+  "preconditioner": "exact target-grid Helmholtz for both FOM finishes",
+  "dynamic_correction_steps_per_trajectory": 50,
+  "dynamic_extra_full_grid_residual_evaluations": 50,
+  "dynamic_extra_exact_helmholtz_inverses": 50,
+  "test_seed": 20260818,
+  "canonical_draw_count": 16,
+  "selected_test_indices": [
+   12
+  ],
+  "pair_blocks": 1,
+  "repetitions_per_arm_per_trajectory": 2,
+  "burn_before_every_AB_and_BA_block": true,
+  "burn_seconds": 0.1,
+  "timing_estimator": "median paired repetitions within trajectory, then median trajectories",
+  "confidence_interval": "20000-draw trajectory-cluster bootstrap of per-trajectory paired medians",
+  "timing_scope": "warmed compiled online trajectory solve; includes dynamic construction and FOM finish; excludes compilation, loading, test/reference generation, and first-query latency",
+  "accuracy_work_residual_from_every_timed_invocation": true,
+  "selection_artifact": "selection/dynamic_selection_choice.json",
+  "selection_sha256": "6d27c5d926a6b7e33861705656c7fa8c194bf8854ad5935f18df6920fb9f5e5d",
+  "pair_audit_artifact": "selection/dynamic_pair_audit.json",
+  "pair_audit_sha256": "008d36ed8442a387ba292a7748cb25e66b24a3436a5c0ce84901234526c9aa4a",
+  "reference_residual_gate": 1e-11,
+  "fresh_seed_touched": false,
+  "smoke": true,
+  "f64": true
+ },
+ "provenance": {
+  "commit": "3f95afa2d178dbe6ef93483e425680cdf48a500e",
+  "commit_source": "env:BH_COMMIT",
+  "source_sha256": {
+   "bh_2048_audit.py": "6bf0af2ae335e1fa49c65dabf079d9cf259e666f983561a4f8776c436c78c704",
+   "bh_2048_final.py": "1e72ba37147d7d381690aba1b64185762de01f89d7f75411c7d1992523f9060c",
+   "bh_common.py": "85d44c7ae9280099f6d831a52db01692b07577fc7da85c0ac6676466a92b510c",
+   "bh_dynamic_correction.py": "3b1afc11c74742d9a28d2ae03b89bb467ee76490d728635efe37089ef146a0c3"
+  },
+  "jax_backend": "gpu",
+  "jax_version": "0.10.2",
+  "x64": true,
+  "matmul_precision": "highest",
+  "gpu": "cuda:0",
+  "gpu_kind": "NVIDIA H200",
+  "slurm_job_id": "2670117",
+  "host": "pax011"
+ },
+ "reference_health": {
+  "2048": {
+   "max_reference_newton_residual": 9.905772738798977e-13
+  }
+ },
+ "rows": [
+  {
+   "N": 2048,
+   "fom_tau": 1e-06,
+   "linear_tol": 0.01,
+   "coarse_n": 2048,
+   "relaxation": 1.0,
+   "records": {
+    "cubic": [
+     {
+      "trajectory_index": 12,
+      "block": 0,
+      "sample_index": 0,
+      "order": "cubic/dynamic",
+      "elapsed_s": 0.5281709539704025,
+      "finish_newton_total": 61,
+      "finish_bicgstab_total": 61,
+      "extra_full_grid_residual_evaluations": 0,
+      "extra_exact_helmholtz_inverses": 0,
+      "breakdowns": 0,
+      "flags_nonzero": 0,
+      "max_returned_residual": 7.676221923522881e-07,
+      "trajectory_rel_l2": 1.9905676107563346e-07
+     },
+     {
+      "trajectory_index": 12,
+      "block": 0,
+      "sample_index": 1,
+      "order": "dynamic/cubic",
+      "elapsed_s": 0.532428216189146,
+      "finish_newton_total": 61,
+      "finish_bicgstab_total": 61,
+      "extra_full_grid_residual_evaluations": 0,
+      "extra_exact_helmholtz_inverses": 0,
+      "breakdowns": 0,
+      "flags_nonzero": 0,
+      "max_returned_residual": 7.676221923522881e-07,
+      "trajectory_rel_l2": 1.9905676107563346e-07
+     }
+    ],
+    "dynamic": [
+     {
+      "trajectory_index": 12,
+      "block": 0,
+      "sample_index": 0,
+      "order": "cubic/dynamic",
+      "elapsed_s": 0.3140851599164307,
+      "finish_newton_total": 19,
+      "finish_bicgstab_total": 19,
+      "extra_full_grid_residual_evaluations": 50,
+      "extra_exact_helmholtz_inverses": 50,
+      "breakdowns": 0,
+      "flags_nonzero": 0,
+      "max_returned_residual": 7.577223836603199e-07,
+      "trajectory_rel_l2": 4.6091456210857284e-07
+     },
+     {
+      "trajectory_index": 12,
+      "block": 0,
+      "sample_index": 1,
+      "order": "dynamic/cubic",
+      "elapsed_s": 0.3145457520149648,
+      "finish_newton_total": 19,
+      "finish_bicgstab_total": 19,
+      "extra_full_grid_residual_evaluations": 50,
+      "extra_exact_helmholtz_inverses": 50,
+      "breakdowns": 0,
+      "flags_nonzero": 0,
+      "max_returned_residual": 7.577223836603199e-07,
+      "trajectory_rel_l2": 4.6091456210857284e-07
+     }
+    ]
+   },
+   "burn_records": [
+    {
+     "block": 0,
+     "sample_index": 0,
+     "trajectory_index": 12,
+     "order": [
+      "cubic",
+      "dynamic"
+     ],
+     "iterations": 1
+    },
+    {
+     "block": 0,
+     "sample_index": 1,
+     "trajectory_index": 12,
+     "order": [
+      "dynamic",
+      "cubic"
+     ],
+     "iterations": 1
+    }
+   ],
+   "summary": {
+    "case_medians_s": {
+     "cubic": [
+      0.5302995850797743
+     ],
+     "dynamic": [
+      0.31431545596569777
+     ]
+    },
+    "cubic_median_ms": 530.2995850797743,
+    "dynamic_median_ms": 314.31545596569777,
+    "speedup_cubic_over_dynamic": 1.6871572015142886,
+    "paired_saving_vs_cubic_case_medians_ms": [
+     215.9841291140765
+    ],
+    "paired_saving_vs_cubic_median_ms": 215.9841291140765,
+    "paired_saving_trajectory_cluster_95ci_ms": [
+     215.9841291140765,
+     215.9841291140765
+    ],
+    "finish_newton_total_median": {
+     "cubic": 61.0,
+     "dynamic": 19.0
+    },
+    "finish_bicgstab_total_median": {
+     "cubic": 61.0,
+     "dynamic": 19.0
+    },
+    "dynamic_extra_full_grid_residual_evaluations": 50,
+    "dynamic_extra_exact_helmholtz_inverses": 50,
+    "max_returned_residual": 7.676221923522881e-07,
+    "max_trajectory_rel_l2": 4.6091456210857284e-07,
+    "tukey_1p5iqr_outliers_retained": {
+     "cubic": {
+      "per_trajectory": {
+       "12": 0
+      },
+      "total": 0
+     },
+     "dynamic": {
+      "per_trajectory": {
+       "12": 0
+      },
+      "total": 0
+     }
+    }
+   },
+   "equivalence": {
+    "per_trajectory": [
+     {
+      "trajectory_index": 12,
+      "trajectory_rel_difference": 3.046119714284562e-07,
+      "max_step_rel_difference": 4.1214581858805735e-07,
+      "testbed_max_rel_newton_residual": 9.905772738798977e-13,
+      "counting_max_rel_newton_residual": 5.11368515592259e-07,
+      "newton_total": 101,
+      "linear_total": 101,
+      "breakdowns": 0,
+      "flags_nonzero": 0
+     }
+    ],
+    "linear_solver": {
+     "preconditioner": "helmholtz",
+     "lin_tol": 0.01,
+     "relative_solution_difference_vs_jax": 0.0,
+     "ours_relative_residual": 0.0012261608765887554,
+     "jax_relative_residual": 0.0012261608765887554,
+     "ours_iterations": 1,
+     "ours_matvecs": 2,
+     "ours_flag": 0
+    },
+    "max_step_rel_difference": 4.1214581858805735e-07,
+    "max_trajectory_rel_difference": 3.046119714284562e-07
+   },
+   "device_memory_after_compile": {
+    "num_allocs": 1337,
+    "bytes_in_use": 1795096832,
+    "peak_bytes_in_use": 4646263552,
+    "largest_alloc_size": 2147483648,
+    "bytes_limit": 112583507968,
+    "bytes_reserved": 0,
+    "peak_bytes_reserved": 0,
+    "largest_free_block_bytes": 0,
+    "pool_bytes": 8724152320,
+    "peak_pool_bytes": 8724152320,
+    "peak_fraction_of_limit": 0.04126948640932936
+   },
+   "device_memory_after_condition": {
+    "num_allocs": 7849,
+    "bytes_in_use": 3472819968,
+    "peak_bytes_in_use": 9712982528,
+    "largest_alloc_size": 2147483648,
+    "bytes_limit": 112583507968,
+    "bytes_reserved": 0,
+    "peak_bytes_reserved": 0,
+    "largest_free_block_bytes": 0,
+    "pool_bytes": 17314086912,
+    "peak_pool_bytes": 17314086912,
+    "peak_fraction_of_limit": 0.08627358219074817
+   },
+   "complete": true
+  }
+ ],
+ "device_memory_at_start": {
+  "num_allocs": 0,
+  "bytes_in_use": 0,
+  "peak_bytes_in_use": 0,
+  "largest_alloc_size": 0,
+  "bytes_limit": 112583507968,
+  "bytes_reserved": 0,
+  "peak_bytes_reserved": 0,
+  "largest_free_block_bytes": 0,
+  "pool_bytes": 0,
+  "peak_pool_bytes": 0,
+  "peak_fraction_of_limit": 0.0
+ },
+ "device_memory_at_end": {
+  "num_allocs": 7849,
+  "bytes_in_use": 0,
+  "peak_bytes_in_use": 9712982528,
+  "largest_alloc_size": 2147483648,
+  "bytes_limit": 112583507968,
+  "bytes_reserved": 0,
+  "peak_bytes_reserved": 0,
+  "largest_free_block_bytes": 0,
+  "pool_bytes": 17314086912,
+  "peak_pool_bytes": 17314086912,
+  "peak_fraction_of_limit": 0.08627358219074817
+ },
+ "complete": true
+}

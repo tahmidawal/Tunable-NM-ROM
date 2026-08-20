@@ -34,6 +34,15 @@ reference residual at most 1e-11, finite fields, and peak device allocation at
 most 90% of the H200 limit.  Smoke timings are execution diagnostics and are
 excluded from scientific claims.
 
+The excluded smoke is complete as Slurm job `2670117` from preregistration
+commit `3f95afa2d178dbe6ef93483e425680cdf48a500e`.  Its H200, f64/highest,
+solver-health, reference, returned-residual, equivalence, raw-grid, and
+remote/local checksum gates all pass.  Peak allocation was below both frozen
+memory thresholds, so the authoritative classical panel is licensed and the
+bounded learned sensitivity is mandatory.  The raw smoke bundle and generated
+audit are retained under `runs/smoke1/`; its execution-only timing is not a
+scientific result.
+
 ## Authoritative fresh-seed panel
 
 The untouched cohort is locked before execution to seed **20260827**, canonical

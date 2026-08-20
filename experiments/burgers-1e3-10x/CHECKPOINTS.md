@@ -27,3 +27,18 @@ choice, but remains part of the operational record.
 The independent preregistered FOM-calibration cell was submitted as job
 `2667374` in directory `fom_cal`.  It uses only seed-20260822 calibration cases,
 never model-validation or confirmation data.
+
+## 2026-08-20 — FOM queue correction
+
+Job `2667374` (`ctol_b10_fom_cal`) remained pending at zero elapsed with reason
+`Resources` on the cluster's single mixed H100 node.  It produced no log or
+scientific output.  It was cancelled by explicit numeric ID through the
+repository-safe `experiments/cost-to-tolerance/cluster/cancel.sh`; the empty
+remote directory was removed after verifying that the job had left the queue.
+
+The identical preregistered FOM calibration was restaged from commit
+`6d571a2fcd22e6d35f13f90d59abb7681a71bf64` in the fresh one-job directory
+`fom_cal_r2`, with manifest-file SHA-256
+`7bd0fdb3284e3a8be69cf5acf0ab9a68cc261e8cd7fa8839babb0117b8eb7d2b`, and
+submitted once as job `2667476` (`ctol_b10_fom_cal_r2`) requesting A100.  Job
+`2667374` is infrastructure-only and consumes no scientific cell.

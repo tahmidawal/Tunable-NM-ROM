@@ -135,6 +135,34 @@ The earlier exact-direct and native-CG measurements remain separately labeled co
 than entering the AB/BA pair. Counting CG is authoritative because the native implementation was
 slower at every tolerance and missed true residual gates at the tight high-resolution rows.
 
+## 20 August speed push: one-update parameter-aligned nonlinear chart
+
+The audited K8 path leaves a real counting-CG construction budget at N=1024, but not enough to
+justify another multi-Jacobian FiLM sweep.  The next validation-only gate therefore reuses the
+already tracked stage-1 parameter-aligned coordinate decoder as a nonlinear manifold `u(x;z)`.
+The known normalized source parameters provide a deployable initial latent `z0`; exactly one
+weak Gauss--Newton update is then taken before a fixed-N=64 decode and the unchanged counting-CG
+finish.  This is reported as a parameter-aligned NM-ROM, while `param1_c64_q0` with no latent
+update remains separately labelled a direct surrogate.
+
+The online objective is the discrete weak form on the decoder's trained N=64 chart.  Discrete
+summation by parts expresses each residual mode using smooth decoder outputs rather than
+pointwise Laplacians.  NNLS weights are fitted on decoder-output snapshots, `M` is comfortably
+above `k=4`, and `m=4M`.  The Gaussian source projection is separable and uses only the known
+parameters, so the cold start never scans the target FOM grid.  The one-update kernel forms one
+decoder Jacobian, clips the step to radius 0.35, evaluates four fixed line-search lengths in one
+fused batch, and rejects the update unless its weak objective improves.
+
+Validation seed 0 screens `M/m = 16/64, 24/96, 32/128` at N=64 and N=256.  It retains the
+no-update parameter surrogate, the audited K8 trust-region arm, zero-start counting CG, and the
+eligible dense/FFT/spectral controls.  A learned candidate advances only if its same-job
+construction is below 0.6 ms and it strictly improves both mean held-out A-error and counting-CG
+work relative to the no-update parameter field.  Wall clock chooses only among candidates that
+pass those mechanism gates.  Any survivor is then frozen and measured on an untouched seed with
+balanced AB/BA timing through N=1024; dense DST is the production comparator at N=1024 tolerances
+1e-6/1e-8, and full spectral-plus-FOM or FFT-DST is the comparator at 1e-10.  If no candidate
+passes, the nonlinear latent-update route stops without a fresh-seed timing claim.
+
 ## Files
 
 - `feasibility.py`: train-only RBF calibration, coarse decoding, spectral corrections,

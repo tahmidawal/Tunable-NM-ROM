@@ -81,6 +81,7 @@ GROUP_M = int(os.environ.get("GROUP_M", "128"))
 GROUP_MQ = int(os.environ.get("GROUP_MQ", "512"))
 GROUP_GN_ITERS = int(os.environ.get("GROUP_GN_ITERS", "60"))
 TRANSPORT_TR_DELTA = float(os.environ.get("TRANSPORT_TR_DELTA", "0.25"))
+PARAM_LM_DELTA = float(os.environ.get("PARAM_LM_DELTA", "0.35"))
 TR_SCALE = float(os.environ.get("TR_SCALE", "1.0"))
 EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
 EQ_PERTURB = int(os.environ.get("EQ_PERTURB", "3"))
@@ -166,6 +167,18 @@ def parse_arm(name: str) -> Arm:
         left, qpart = name.split("_q")
         ctext = left[len(prefix):]
         return Arm(name, predictor, -1 if ctext == "full" else int(ctext), int(qpart))
+    if name.startswith("paramlm1_m"):
+        # One weak Gauss--Newton update on the parameter-aligned nonlinear
+        # manifold.  The decoder was trained with the physical source
+        # parameters as its chart, so the known parameters are a deployable
+        # initial latent rather than a held-out fitted quantity.
+        body, qpart = name.rsplit("_q", 1)
+        prefix, ctext = body.rsplit("_c", 1)
+        weak_M = int(prefix[len("paramlm1_m"):])
+        if weak_M < 8:
+            raise ValueError("parameter-aligned weak solve requires M comfortably above k=4")
+        return Arm(name, "param_lm", -1 if ctext == "full" else int(ctext),
+                   int(qpart), None, weak_M, 4 * weak_M, 1)
     raise ValueError(f"unknown arm {name!r}")
 
 
@@ -600,6 +613,78 @@ def make_lm_obj_tr_jit(dec, K, pts, wq, PhiT, Wl, budget, obj_rel, delta):
     return jax.jit(lm)
 
 
+def make_one_gn_tr_jit(dec, K, pts, wq, PhiT, Wl, delta):
+    """Exactly one weak Gauss--Newton update with a bounded line search.
+
+    Unlike the general LM loop, this kernel forms the decoder Jacobian only at
+    the deployable parameter-aligned initial latent.  Candidate residuals for
+    four fixed step lengths are vmapped and fused.  A non-improving update is
+    rejected, so the returned guess is never worse in its online weak
+    objective than the direct parameter-conditioned field.
+    """
+    pts = jnp.asarray(pts); wq = jnp.asarray(wq)
+    PhiT = jnp.asarray(PhiT); Wl = jnp.asarray(Wl)
+
+    def r_of(z, f_m):
+        return Wl * (PhiT @ (wq * dec(z, pts))) - f_m
+
+    def solve(z0, f_m):
+        r0 = r_of(z0, f_m)
+        J0 = jax.jacfwd(r_of)(z0, f_m)
+        H = J0.T @ J0
+        g = J0.T @ r0
+        D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
+        dz = jnp.linalg.solve(H + 1e-6 * D, -g)
+        dz_norm = jnp.linalg.norm(dz)
+        dz = dz * jnp.minimum(1.0, delta / jnp.maximum(dz_norm, 1e-300))
+        steps = jnp.asarray([1.0, 0.5, 0.25, 0.125], dtype=F64)
+        zc = z0[None, :] + steps[:, None] * dz[None, :]
+        vals = jax.vmap(lambda z: jnp.linalg.norm(r_of(z, f_m)))(zc)
+        best = jnp.argmin(vals)
+        v0 = jnp.linalg.norm(r0)
+        accept = jnp.isfinite(vals[best]) & (vals[best] < v0)
+        z = jnp.where(accept, zc[best], z0)
+        val = jnp.where(accept, vals[best], v0)
+        return (z, val, v0, jnp.int32(1), accept.astype(jnp.int32),
+                jnp.int32(1), jnp.where(accept, jnp.int32(7), jnp.int32(8)))
+
+    return jax.jit(solve)
+
+
+def make_parameter_source_projector(grid, M, alpha=1.0):
+    """Project the known Gaussian source onto fixed coarse-grid sine modes.
+
+    The Gaussian is separable, so the online projection is O(N sqrt(M)) and
+    never scans the target FOM grid.  This is the cold-start counterpart to
+    the decoder-output EQ hyper-reduction.
+    """
+    mask = np.asarray(grid.mode_mask(M)).astype(bool)
+    I, J = np.nonzero(mask)
+    lam = np.asarray(grid.lam)[I, J]
+    max_i, max_j = int(np.max(I)) + 1, int(np.max(J)) + 1
+    Sx = jnp.asarray(np.asarray(grid.S)[:, :max_i])
+    Sy = jnp.asarray(np.asarray(grid.S)[:, :max_j])
+    Ii, Jj = jnp.asarray(I), jnp.asarray(J)
+    lam_weight = jnp.asarray(lam ** (-alpha))
+    x = jnp.linspace(grid.dx, 1.0 - grid.dx, grid.n_i, dtype=F64)
+
+    def apply(p):
+        cx = 0.5 + 0.35 * p[0]
+        cy = 0.5 + 0.35 * p[1]
+        width = jnp.exp(jnp.log(0.045) + 0.8 * p[2])
+        amp = 1.25 + 0.75 * p[3]
+        fx = jnp.exp(-jnp.square(x - cx) / (2.0 * width**2))
+        fy = jnp.exp(-jnp.square(x - cy) / (2.0 * width**2))
+        ax = Sx.T @ fx
+        ay = Sy.T @ fy
+        return amp * ax[Ii] * ay[Jj] * lam_weight
+
+    return jax.jit(apply), dict(
+        implementation="separable_known_gaussian_no_target_grid_scan",
+        n_modes=int(len(I)), max_1d_mode=max(max_i, max_j), coarse_grid_N=grid.N,
+    )
+
+
 def continuum_modes(grid, M):
     """Continuous sine-mode indices selected exactly as the audited off-grid weak form."""
     kk = np.arange(1, grid.N - 1)
@@ -881,6 +966,51 @@ def main():
     nearest_Z = jnp.asarray(Ztr)
     z_mean = jnp.asarray(np.asarray(Ztr).mean(axis=0))
 
+    # A source-aligned nonlinear-manifold gate.  The stage-1 parameter decoder
+    # is reused as u(x; z), initialized at the known physical parameters, then
+    # updated by exactly one weak GN step.  Its weak objective lives permanently
+    # on the trained N=64 chart, so the EQ fit is done once per M (not once per
+    # target FOM mesh) and all target-grid dependence remains in the FOM finish.
+    param_lm_models = {}
+    param_lm_info = None
+    if any(a.predictor == "param_lm" for a in ARMS):
+        if param_stages is None:
+            raise SystemExit("a paramlm1_* arm requires PARAM_PKL")
+        bad_c = sorted({a.coarse_n for a in ARMS
+                        if a.predictor == "param_lm" and a.coarse_n != 64})
+        if bad_c:
+            raise SystemExit(f"parameter-aligned latent chart is fixed at c64, got {bad_c}")
+        pgrid = pc.Grid(64)
+        pdec = lambda z, xy: mp.combined_apply(param_stages[:1], z, xy)
+        per_m = {}
+        for weak_M in sorted({a.weak_M for a in ARMS if a.predictor == "param_lm"}):
+            weak_m = 4 * weak_M
+            ppts, pwq, peq_info = legacy_eq_fit(
+                pdec, pgrid, P_train, 4, weak_M, weak_m, "grid"
+            )
+            pspec = dict(kind="weak", alpha=1.0, M=weak_M)
+            pPhiT, pWl = pc.colloc_mode_table(pgrid, pspec, "grid", ppts)
+            pproject, pproject_info = make_parameter_source_projector(
+                pgrid, weak_M, alpha=1.0
+            )
+            psolver = make_one_gn_tr_jit(
+                pdec, 4, ppts, pwq, pPhiT, pWl, PARAM_LM_DELTA
+            )
+            param_lm_models[weak_M] = dict(
+                solve=psolver, project=pproject, decoder=pdec,
+            )
+            per_m[str(weak_M)] = dict(
+                weak_M=weak_M, weak_m=weak_m, eq=peq_info,
+                source_projector=pproject_info,
+            )
+        param_lm_info = dict(
+            method="parameter-aligned nonlinear coordinate manifold plus exactly one weak GN update",
+            initialization="known normalized physical source parameters",
+            chart_grid_N=64, latent_dimension=4, trust_delta=PARAM_LM_DELTA,
+            cold_start="separable known-source projection; no target-grid scan",
+            weak_configurations=per_m,
+        )
+
     report = dict(
         complete=False,
         config=dict(
@@ -906,6 +1036,7 @@ def main():
             group_m=GROUP_MQ,
             group_gn_iters=GROUP_GN_ITERS,
             transport_trust_delta=TRANSPORT_TR_DELTA,
+            parameter_lm_trust_delta=PARAM_LM_DELTA,
             trust_region_scale=TR_SCALE,
             arms=[a.__dict__ for a in ARMS],
             native_cg_sensitivity_arms=NATIVE_ARM_NAMES,
@@ -935,6 +1066,7 @@ def main():
         provenance=prov,
         rbf_train_only=rbf_info,
         parameter_aligned_checkpoint=param_info,
+        parameter_aligned_nmrom_gate=param_lm_info,
         nonlinear_groupfilm_checkpoint=group_info,
         transported_tail_checkpoint=transport_info,
         rows=[],
@@ -1278,6 +1410,15 @@ def main():
                     stages_use = param_stages[:1] if arm.predictor == "param_s1" else param_stages
                     field_decoder = lambda p, xy: mp.combined_apply(stages_use, p, xy)
                     predictor = None
+                elif arm.predictor == "param_lm":
+                    if arm.weak_M not in param_lm_models:
+                        raise AssertionError("parameter-aligned NM-ROM arm without weak model")
+                    pmodel = param_lm_models[arm.weak_M]
+                    latent_decoder = pmodel["decoder"]
+
+                    def predictor(p, F, *, model=pmodel):
+                        del F
+                        return model["solve"](p, model["project"](p))[0]
                 elif arm.predictor == "group_nearest":
                     if group_model is None or gpre_apply is None:
                         raise AssertionError("GroupFiLM arm without initialized solver")
@@ -1367,9 +1508,12 @@ def main():
                         candidate_true_rel_residual=rc, accepted=bool(rc <= rb),
                     ))
             lm_diagnostics = None
-            if (arm.predictor.startswith("lm_") or arm.predictor == "group_nearest"
+            if (arm.predictor.startswith("lm_") or arm.predictor in
+                    ("group_nearest", "param_lm")
                     or (arm.predictor == "transport_tail" and arm.gn_budget == 1)):
-                solver = (group_solvers[arm.rom_tau]
+                solver = (param_lm_models[arm.weak_M]["solve"]
+                          if arm.predictor == "param_lm" else
+                          group_solvers[arm.rom_tau]
                           if arm.predictor == "group_nearest" else
                           transport_solvers[arm.weak_M]
                           if arm.predictor == "transport_tail" else
@@ -1378,7 +1522,11 @@ def main():
                 for i in range(N_TEST):
                     z0i = z_mean
                     nearest_index = None
-                    if arm.predictor == "group_nearest":
+                    if arm.predictor == "param_lm":
+                        z0i = params[i]
+                        source_projection = lambda ignored, *, ii=i: (
+                            param_lm_models[arm.weak_M]["project"](params[ii]))
+                    elif arm.predictor == "group_nearest":
                         nearest_index = int(jnp.argmin(jnp.sum(
                             (nearest_P - params[i][None, :]) ** 2, axis=1)))
                         z0i = group_model["Z"][nearest_index]
@@ -1392,9 +1540,10 @@ def main():
                             nearest_index = int(jnp.argmin(jnp.sum(
                                 (nearest_P - params[i][None, :]) ** 2, axis=1)))
                             z0i = nearest_Z[nearest_index]
-                    _, val, v0, nJ, acc, att, reason = solver(
-                        z0i, source_projection(Fs[i])
-                    )
+                    source_arg = (param_lm_models[arm.weak_M]["project"](params[i])
+                                  if arm.predictor == "param_lm" else
+                                  source_projection(Fs[i]))
+                    _, val, v0, nJ, acc, att, reason = solver(z0i, source_arg)
                     lm_diagnostics.append(dict(
                         case=i,
                         nearest_training_index=nearest_index,
@@ -1470,6 +1619,8 @@ def main():
                                "learned" if arm.predictor != "none" and q == 0 else
                                "combined" if arm.predictor != "none" else "classical"),
                     method_family=("nmrom" if arm.predictor.startswith("lm_") else
+                                   "nmrom_nonlinear_parameter_aligned" if
+                                   arm.predictor == "param_lm" else
                                    "nmrom_nonlinear_groupfilm" if
                                    arm.predictor == "group_nearest" else
                                    "nmrom_q16_transport_tail" if

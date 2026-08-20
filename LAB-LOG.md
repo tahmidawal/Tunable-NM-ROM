@@ -120,17 +120,30 @@ is trainable under the locked preregistration, however, because K3/Cox weak-resi
 validation, and untouched confirmation remain unopened. This is a numerical identity-screen
 failure, not evidence about trained G1/G2 field accuracy.
 
-**The Phase 6 Cox-weak/K3-full arithmetic repair passes every locked structural gate.** The
+**The Phase 6 Cox-weak/K3-full arithmetic repair passed every locked structural gate.** The
 actual G1 route uses Cox--de Boor evaluation for the 50 weak-query evaluations and retains the
 fast K3/Pallas kernel for the charged 51-field full decode; it changes no spline space, latent
 state, generator, predictor, weak form, or learned parameter. Against a new live eligible H200
 FOM at 98.760 ms, the repaired route takes 4.798 ms: 20.582x with trajectory-clustered 95%
 interval [16.204,25.160]. Its worst Cox-control identity is 2.858e-16, the separately executed
 timed route agrees with its identity route to 6.851e-16, exact 50/51 work and zero failures pass,
-and compiled eligibility memory is 0.496 GB. This repairs the Phase-5 implementation floor and
-licenses only a separate G1 seed-11 training proposal/audit. It is not a learned-model or
-headline NM-ROM result; training, weak/EQ, scaling, model validation, and untouched confirmation
-remain unrun.
+and compiled eligibility memory is 0.496 GB. This repaired the Phase-5 implementation floor and
+licensed the separately preregistered G1 seed-11 training cell now completed in Phase 7. It is
+not itself a learned-model or headline NM-ROM result.
+
+**The Burgers 1e-3/10x Phase 7 G1 seed-11 result is a final hard stop.** Final job `2673185`
+completed on an H200 with GPU/f64/highest and passed the complete negative-aware independent
+audit. The learned oracle trajectory mean/worst relative-L2 is 0.3878/1.2733 at N=64,
+0.3565/1.1429 at N=128, 0.3477/0.9033 at N=256, and 0.3731/1.2733 pooled. The direct predictor
+is better but still far outside its gate: 0.07982/0.19369, 0.08281/0.17667,
+0.08720/0.17775, and 0.08173/0.19369, respectively. Both routes are finite, preserve exact
+boundary values, and pass K3/Cox identity; direct/oracle mean degradation is below 1.5. Accuracy
+alone fails at every mesh and pooled. Therefore G1 seed 11 fails, seeds 29/47 and G2 are not
+licensed, and weak/EQ, scaling, model validation, and untouched confirmation remain unopened.
+No deployable or headline Burgers NM-ROM is claimed. Two earlier Phase-7 jobs are preserved as
+zero-science infrastructure failures: r1 compared physical and normalized affine schemas, and
+r2 required nonportable bitwise equality across regenerated f64 paths. The final absolute-only
+`2e-15` regeneration check changed no data, model, loss, training input, or gate.
 
 **The architectural negative results are useful.** Direct Poisson source-to-latent RBF prediction
 failed; a cached K=16 GroupFiLM was neutral/losing; a learned high-frequency tail could not beat
@@ -195,17 +208,16 @@ Poisson commit `57329c0` and Burgers commit `559583c`; its generated report is
 **`exp/2026-08-19-nonlinear-decoder-architecture`** in its same-named worktree; its generated
 report is `reports/2026-08-19-nonlinear-decoder-architecture.md`, and its 73-cell audit passes
 with five cells explicitly excluded. That branch also remains unmerged. The Burgers-only
-Phase-1 branch is **`exp/2026-08-19-burgers-1e3-10x`** in its same-named worktree; its generated
-negative-result report is `reports/2026-08-20-burgers-1e3-10x.md`. It too remains unmerged.
+Phase-1--7 branch is **`exp/2026-08-19-burgers-1e3-10x`** in its same-named worktree; its
+generated final hard-stop report is `reports/2026-08-20-burgers-1e3-10x.md`. It too remains
+unmerged.
 
 ## What to do next, in order
 
 1. Decide whether to merge the three completed 2026-08-19 result branches; do not merge them
    implicitly.
-2. For the still-active Burgers 1e-3/10x objective, do not run downstream Phase-5 cells. First
-   diagnose the K3/Cox weak-residual identity discrepancy without changing the 2e-14 gate; any
-   next phase needs a finite, prospectively audited numerical repair that retains the paired
-   10x/8x-LB mandatory-speed gates before generator training can be reconsidered.
+2. Keep the completed Burgers 1e-3/10x Phase-7 hard stop binding: do not run seeds 29/47, G2,
+   weak/EQ, model validation, scaling, or confirmation under this search.
 3. Test the selected pure nonlinear standalone architectures across N=128…512 before claiming
    resolution-independent architecture rankings or a broad Poisson crossover. On Burgers, work
    on the online objective/solver and stopping policy rather than more decoder-width tuning.
@@ -1719,3 +1731,66 @@ prospectively audited G1 seed-11 training proposal; it does not authorize traini
 does not establish any learned reconstruction, rollout, EQ, N=256/512 scaling, or N=1024
 headline result. Model-validation indices 576:640 and seed-20261031 confirmation remain unopened.
 The generated report and global rerunnable audit incorporate Phase 6 and rebuild byte-identically.
+
+### Burgers 1e-3 / 10x — Phase 7 G1 seed-11 final hard stop
+
+Phase 7 prospectively fixed one complete G1/seed-11 training cell: 10,000 mirrored-encoder/G1
+warmup updates with bitwise handoff, 30,000 joint G1/autolatent updates, 20,000 direct-predictor
+updates, and three fixed exposed-selection q-oracle starts. It bound the immutable 35,904 P5
+coefficient targets, the Phase-6 Cox-weak/K3-full route, every seed/schedule/loss/gate, and kept
+model validation, confirmation, weak/EQ, scaling, and G2 inaccessible.
+
+Two retries are preserved as zero-science infrastructure failures. Job `2669861` ran
+GPU/f64/highest on an H200 but stopped before output or a training update because it compared P5's
+physical affine transport directly with the normalized decoder state. The checksummed failure is
+at `runs/p7_g1_s11_r1`; its exact remote directory was deleted. After locking the pre-existing
+physical-to-normalized mapping, job `2669975` ran on pax011/H200 from commit `825107e` and
+manifest `9e8e722b...`, but again stopped before output/update because it required bitwise equality
+between P5's batch-4 generation and Phase 7's batch-8 regeneration. A same-node read-only audit
+found first N64 draw-0 difference `3.1734496141e-18`, trajectory maximum
+`4.4408920985e-16`, and first-64-trajectory maximum `8.8817841970e-16`; exact feature columns
+and immutable physical targets remained intact. The retracted assumption is that separately
+regenerated f64 scalar exp/log paths must be bitwise equal even on the same node. The prospectively
+fixed replacement is finite componentwise absolute difference `<=2e-15`, no relative tolerance,
+followed by exact immutable-target replacement before any update. The regression covers all
+35,904 immutable rows, exercises the actual N64 regeneration path, and rejects a `2.1e-15`
+perturbation. No data, architecture, target, training input, loss, schedule, or scientific gate
+changed.
+
+The sole complete cell, job `2673185` (`ctol_b10_p7_g1_s11_r3`), ran from scientific commit
+`b85a0b06d3dd2fe460e41a801f51050f271fcf5b` and manifest SHA-256
+`a95fc4621a90cef13071df1ad1db363187deac0f7fc7c8c774c0fedd7c9c3a19` on
+pax008/NVIDIA H200 with GPU backend, f64/highest, eight CPUs, and 96 GiB. It completed in 10:46,
+exit `0:0`, with empty stderr and 8,708,316 KiB peak batch RSS. The exact remote checksum manifest
+was reverified after pull. The complete local bundle at `runs/p7_g1_s11_r3`, including the
+independent audit, is sealed by `LOCAL.sha256` whose SHA-256 is
+`43b1bd33314a021dd492c20ba8d1fb0bc6d80022b4da2689bb42d38daa552acc`; the exact remote
+cell was then deleted and absence verified.
+
+The first local independent audit correctly stopped before metric inspection because a local
+NumPy scalar exp/log recomputation of the normalized physical target was not bitwise identical to
+the cluster artifact. Read-only diagnosis found first difference `[6,3]` at
+`3.469446951953614e-18`, maximum `2.220446049250313e-16` at `[16128,4]`, and 1,915 differing
+values among 179,520. The immutable physical target, feature array, artifact normalized affine,
+regenerated affine, and checkpoint bindings were intact. Audit-only commit
+`ae99d3b5898265d7f62aca8db5c317b11a261e5d` therefore independently recomputes the mapping
+with the already-preregistered `2e-15` absolute/no-relative portability ceiling while retaining
+bitwise physical, feature, checkpoint, and artifact-state checks. It changes no scientific JSON,
+NPZ, checkpoint, method, or gate. The full negative-aware audit then passed and records local
+maximum `2.220446049250313e-16` plus the exact-versus-portable classification.
+
+**The trained G1 accuracy result is decisively negative.** Learned-oracle trajectory mean/worst
+relative-L2 values are `0.3877976038 / 1.2732774798` at N64,
+`0.3564755671 / 1.1429050819` at N128, `0.3477184635 / 0.9032960927` at N256, and
+`0.3731228590 / 1.2732774798` pooled. Direct-predictor mean/worst values are
+`0.0798188159 / 0.1936914758`, `0.0828073612 / 0.1766724003`,
+`0.0871985709 / 0.1777454954`, and `0.0817269367 / 0.1936914758`, respectively.
+Direct/oracle mean ratios are `0.205825965`, `0.232294633`, `0.250773485`, and
+`0.219034923`, so the degradation ceiling passes; every output is finite with exact binary
+boundary, and route identity passes. But both fixed accuracy gates fail at every N and pooled.
+The immutable decision is `g1_seed11_pass=false`, `phase7_hard_stop=true`,
+`seeds29_47_proposal_licensed=false`, `training_authorized=false`, and `next_action=hard stop`.
+No G2, further retry, weak/EQ, model validation, scaling, or confirmation is licensed or run.
+This tenth scientific cell closes the Burgers-only search without a 1e-3/10x learned Pareto
+point. The generated final report and global rerunnable audit incorporate the result and rebuild
+byte-identically; the two unrelated untracked synthetic model-validation drafts remain excluded.

@@ -1,0 +1,23 @@
+stage_manifest_file_sha256=67a3bf8d0d8c755ec39cd4056a0bca0e852b4ba17493e8f052a0b288e63a201a
+./code/b10_phase4.py: OK
+./code/b10_common.py: OK
+./code/b10_audit_phase4_d.py: OK
+./code/deps/burgers2d-coord-rom/burgers2d_film.py: OK
+./code/b10_phase3.py: OK
+./code/deps/p3/phase3_d.json: OK
+./code/b10_spline.py: OK
+./code/b10_phase4_d.py: OK
+./run.sbatch: OK
+./code/b10_s0_spline.py: OK
+./code/deps/p3/AUDIT.json: OK
+./code/deps/s0/s0.json: OK
+./code/deps/p3/MANIFEST.sha256: OK
+./code/deps/s0/AUDIT.json: OK
+./code/bh_common.py: OK
+./code/deps/s0/s0.npz: OK
+./code/deps/p3/phase3_d.npz: OK
+host=pax011 gpu=NVIDIA H200
+commit=ae80f8f559d75f90125496a9ad4e2e14e9aac51c cell=p4_d_r3 oracle_workers=8
+jax_backend=gpu cuda:0
+{'status': 'complete', 'decision': {'selected_spatial_arm': 'H1', 'training_seed11_k24_licensed': True, 'correction_classification': 'conditional-zero-or-occasional-attempt', 'phase4_hard_stop': False, 'scientific_promotion_allowed': True}, 'elapsed_s': 1573.9047644068487}
+ALL-DONE

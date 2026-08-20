@@ -425,6 +425,31 @@ def recover_blob_parameters(u0, n):
     return np.asarray((cx, cy, width, np.exp(log_amplitude)), np.float64)
 
 
+def recover_blob_parameters_fixed_sample(u0, n, max_axis=64):
+    """Recover Gaussian IC parameters from at most max_axis**2 grid values."""
+    axis = np.unique(np.rint(np.linspace(0, n - 1, min(max_axis, n))).astype(int))
+    ii, jj = np.meshgrid(axis, axis, indexing="ij")
+    flat_indices = (ii * n + jj).reshape(-1)
+    coords = grid_coords(n)[flat_indices]
+    values = np.asarray(u0, np.float64).reshape(-1)[flat_indices]
+    interior = (
+        (coords[:, 0] > 0.0) & (coords[:, 0] < 1.0)
+        & (coords[:, 1] > 0.0) & (coords[:, 1] < 1.0)
+    )
+    threshold = max(float(np.max(values)) * 1e-12, 1e-300)
+    keep = interior & (values > threshold)
+    x, y = coords[keep, 0], coords[keep, 1]
+    design = np.column_stack((np.ones(x.size), x, y, x * x + y * y))
+    coefficients, *_ = np.linalg.lstsq(design, np.log(values[keep]), rcond=None)
+    constant, bx, by, quadratic = coefficients
+    width = np.sqrt(-1.0 / (2.0 * quadratic))
+    cx = -bx / (2.0 * quadratic)
+    cy = -by / (2.0 * quadratic)
+    log_amplitude = constant + (cx * cx + cy * cy) / (2.0 * width * width)
+    recovered = np.asarray((cx, cy, width, np.exp(log_amplitude)), np.float64)
+    return recovered, flat_indices
+
+
 def error_metrics(prediction, truth):
     prediction = np.asarray(prediction, np.float64)
     truth = np.asarray(truth, np.float64)

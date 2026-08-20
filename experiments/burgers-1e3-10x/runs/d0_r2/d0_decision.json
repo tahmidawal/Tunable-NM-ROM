@@ -1,0 +1,90 @@
+{
+ "status": "authoritative_preregistered_decision",
+ "d0_sha256_recorded_npz": "30684e123f97a34ee42b5f6d2692acec65f42120d789bd7e028559e6e97522be",
+ "selection_indices": [
+  512,
+  575
+ ],
+ "nearest_wall_definition": "lowest parameter-to-wall-distance quartile",
+ "non_authoritative_fields_ignored": [
+  "concepts.*.wall_chart_licensed",
+  "concepts.*.nearest_wall_squared_error_fraction"
+ ],
+ "concepts": {
+  "HG4": {
+   "representation_oracle_mean": 0.03656540745802753,
+   "representation_oracle_worst": 0.07631995378870161,
+   "representation_gate_pass": false,
+   "predictor_decoder_mean": 0.10480059906150502,
+   "predictor_decoder_worst": 0.44405185575798883,
+   "oracle_to_predictor_mean_ratio": 2.866113256957491,
+   "nearest_wall_quartile_source_indices": [
+    530,
+    567,
+    569,
+    551,
+    523,
+    543,
+    545,
+    555,
+    514,
+    542,
+    535,
+    515,
+    552,
+    527,
+    544,
+    565
+   ],
+   "nearest_wall_squared_representation_oracle_error_fraction": 0.37440824433101805,
+   "wall_license_pass": false,
+   "basis_condition": {
+    "train_median": 108.34758947465419,
+    "train_worst": 904.4634242378829,
+    "selection_median": 87.25970831398598,
+    "selection_worst": 980.740424915322
+   }
+  },
+  "HG5": {
+   "representation_oracle_mean": 0.021026295500469683,
+   "representation_oracle_worst": 0.052672146335245626,
+   "representation_gate_pass": false,
+   "predictor_decoder_mean": 0.12198576406817126,
+   "predictor_decoder_worst": 0.5730960208201987,
+   "oracle_to_predictor_mean_ratio": 5.801581361084094,
+   "nearest_wall_quartile_source_indices": [
+    530,
+    567,
+    569,
+    551,
+    523,
+    543,
+    545,
+    555,
+    514,
+    542,
+    535,
+    515,
+    552,
+    527,
+    544,
+    565
+   ],
+   "nearest_wall_squared_representation_oracle_error_fraction": 0.38021578616235335,
+   "wall_license_pass": false,
+   "basis_condition": {
+    "train_median": 682.383965428435,
+    "train_worst": 10226.209716593261,
+    "selection_median": 490.0814828779447,
+    "selection_worst": 9964.999104541024
+   }
+  }
+ },
+ "promotions": {
+  "train_HG4": false,
+  "train_HG5": false,
+  "train_HG5_reason": "requires HG4 representation pass and a subsequent trained-HG4 decoder miss",
+  "run_conditional_D1_HG5S": false
+ },
+ "hard_stop_now": true
+}

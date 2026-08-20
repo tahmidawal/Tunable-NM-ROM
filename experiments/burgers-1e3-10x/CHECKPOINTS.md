@@ -106,3 +106,32 @@ partition of unity.  Its pointwise wall weight is bounded in `[0,1]`, its
 interior weight is exactly `1-w_wall`, HG5 columns use the interior weight, and
 HG2 wall columns use the wall weight.  D1 persists and gates the numerical
 maximum of `abs(w_interior+w_wall-1)` at `1e-15`.
+
+## 2026-08-20 — Phase-1 final negative
+
+D0 job `2667377` completed on an NVIDIA H200 with GPU backend, f64/highest,
+empty stderr, and reference residual maxima `9.996e-13` (train) and
+`9.962e-13` (selection).  Its remote and local checksums passed and remote
+directory `d0_r2` was deleted.  HG4's representation oracle mean/worst are
+`3.657e-2` / `7.632e-2`; HG5's are `2.103e-2` / `5.267e-2`.  Both fail the
+fixed `2e-4` / `7e-4` gate.  The authoritative representation-oracle
+nearest-wall squared-error fractions are `0.374408` (HG4) and `0.380216`
+(HG5), so the conditional HG5S/D1 license does not fire.  HG4/HG5 training,
+D1, weak/EQ, ROM scaling, and confirmation were not run.
+
+Corrected FOM job `2667536` completed on an NVIDIA A100-PCIE-40GB with GPU
+backend, f64/highest, and only the two classified non-numerical Tufts/JAX hwloc
+lines.  Checksums passed and remote `fom_cal_r4` was deleted.  At N=256/512/1024
+the fastest accuracy-eligible setting is outer `3e-3`, inner `1e-1`; mean errors
+are `9.348e-4` / `7.003e-4` / `6.584e-4`, worst errors `1.374e-3` / `1.382e-3`
+/ `1.400e-3`, and medians `26.599` / `66.450` / `238.049` ms.  The N=1024
+10x point budget is therefore `23.805` ms.  Tight-vs-tighter reference
+differences are at most `5.234e-13`, with zero flags/breakdowns.
+
+The architecture-generic direct-predictor/zero-or-one-bounded-weak/EQ driver
+was implemented and execution-smoked locally, including fixed-size cold start,
+`M>=max(64,4k)`, `m=4M`, decoder-output NNLS, exact upwind, one Jacobian per
+correction, and six-order balanced timing.  The smoke was excluded and the cell
+was not submitted because the prior representation hard stop fired.  The final
+Phase-1 report, machine tables, figures, and passing rerunnable audit are under
+`reports/2026-08-20-burgers-1e3-10x.md` and `reports/generated/`.

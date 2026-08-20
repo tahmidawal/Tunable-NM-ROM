@@ -1,0 +1,19 @@
+host=pax144 gpu=NVIDIA A100-PCIE-40GB
+commit=2457c9c6f4c036dc7b7ac5963b597ac2b583dfc1 dirty=e3b0c44298fc cell=fom_cal_r4
+jax_backend=gpu cuda:0
+FOM calibration N 256
+N 256 selected outer=3e-03:inner=1e-01 {'trajectory_error_mean': 0.000934834194781334, 'trajectory_error_worst': 0.001373821365081238, 'max_returned_relative_residual': 0.002989490992379189, 'median_elapsed_s': 0.026599274948239326, 'mean_newton_total': 43.25, 'mean_linear_total': 51.0, 'healthy': True, 'accuracy_eligible': True, 'per_case_median_elapsed_s': [0.030680494382977486, 0.02656096895225346, 0.02241661469452083, 0.026601307094097137], 'clustered_median_elapsed_ci_s': [0.02241661469452083, 0.030680494382977486]}
+FOM calibration N 512
+N 512 selected outer=3e-03:inner=1e-01 {'trajectory_error_mean': 0.0007003026851518312, 'trajectory_error_worst': 0.0013820194231174948, 'max_returned_relative_residual': 0.0029957962987208677, 'median_elapsed_s': 0.06645008805207908, 'mean_newton_total': 43.0, 'mean_linear_total': 52.0, 'healthy': True, 'accuracy_eligible': True, 'per_case_median_elapsed_s': [0.07600128976628184, 0.0660171345807612, 0.05259402049705386, 0.0666529955342412], 'clustered_median_elapsed_ci_s': [0.05259402049705386, 0.07600128976628184]}
+FOM calibration N 1024
+N 1024 selected outer=3e-03:inner=1e-01 {'trajectory_error_mean': 0.000658406440176631, 'trajectory_error_worst': 0.0014000013197263224, 'max_returned_relative_residual': 0.0029805296430208063, 'median_elapsed_s': 0.2380486368201673, 'mean_newton_total': 43.0, 'mean_linear_total': 52.75, 'healthy': True, 'accuracy_eligible': True, 'per_case_median_elapsed_s': [0.2991677331738174, 0.2344328265171498, 0.18404954043217003, 0.24087943299673498], 'clustered_median_elapsed_ci_s': [0.18404954043217003, 0.2991677331738174]}
+{
+ "status": "complete",
+ "selected": {
+  "256": "outer=3e-03:inner=1e-01",
+  "512": "outer=3e-03:inner=1e-01",
+  "1024": "outer=3e-03:inner=1e-01"
+ }
+} 
+ALL-DONE
+ALL-DONE

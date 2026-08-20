@@ -1,0 +1,414 @@
+{
+ "status": "complete",
+ "classification": "genuine weak FiLM NM-ROM sensitivity",
+ "source": "experiments/burgers-hybrid-2048/runs/learned1/out/learned.json",
+ "source_sha256": "ef1545b7e9623c4a1a0cb53e40f4ccd9dc72d2518381ee2825b13f24847d997e",
+ "execution_commit": "b1131b1e4501258d153a2a519e8c0a42d9063842",
+ "execution_source_sha256": "585c40c29ebd3ca6facacf595aa53b1f6a80a580bd3d4ce7777fb8ef9d5e42c0",
+ "license_smoke_sha256": "3dcd750d8434705701d9cf11a1ec76818e66609a2e2f6bb4c904647b6db56313",
+ "peak_device_fraction_of_limit": 0.38503372536873764,
+ "rows": [
+  {
+   "N": 2048,
+   "fom_tau": 1e-06,
+   "linear_tol": 0.01,
+   "cubic_vs_film": {
+    "comparison": "cubic_vs_film_nmrom",
+    "case_medians_s": {
+     "cubic": [
+      0.9552471851930022,
+      0.5578682746272534,
+      0.6510676515754312,
+      0.8615511045791209
+     ],
+     "film_nmrom": [
+      1.0464081054087728,
+      0.6584277574438602,
+      0.7628243949729949,
+      0.9617319896351546
+     ]
+    },
+    "control_median_ms": 756.309378077276,
+    "film_nmrom_median_ms": 862.2781923040748,
+    "speedup_control_over_film_nmrom": 0.8771060022477877,
+    "paired_saving_control_minus_film_case_medians_ms": [
+     -91.02816181257367,
+     -100.69253691472113,
+     -111.816237680614,
+     -100.17263237386942
+    ],
+    "paired_saving_control_minus_film_median_ms": -100.43258464429528,
+    "paired_saving_trajectory_cluster_95ci_ms": [
+     -111.816237680614,
+     -91.02816181257367
+    ],
+    "supported_film_speedup": false,
+    "finish_newton_total_median": {
+     "cubic": 62.5,
+     "film_nmrom": 63.5
+    },
+    "finish_bicgstab_total_median": {
+     "cubic": 104.0,
+     "film_nmrom": 110.5
+    },
+    "max_returned_residual": 9.904355496635776e-07,
+    "max_trajectory_rel_l2": 1.0636303714095225e-06,
+    "film_guard_accepted_count_median": 4.0,
+    "reduced_jacobians_total_median": 100.0,
+    "outliers_retained": {
+     "cubic": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 0,
+       "2": 3,
+       "3": 1
+      },
+      "total": 4
+     },
+     "film_nmrom": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 0,
+       "2": 0,
+       "3": 0
+      },
+      "total": 0
+     }
+    }
+   },
+   "dynamic_vs_film": {
+    "comparison": "dynamic_vs_film_nmrom",
+    "case_medians_s": {
+     "dynamic": [
+      0.8915910350624472,
+      0.3917810400016606,
+      0.536252266028896,
+      0.8915527467615902
+     ],
+     "film_nmrom": [
+      1.0460016124416143,
+      0.6588225818704814,
+      0.7629735674709082,
+      0.9618667883332819
+     ]
+    },
+    "control_median_ms": 713.9025063952431,
+    "film_nmrom_median_ms": 862.420177902095,
+    "speedup_control_over_film_nmrom": 0.8277896606406718,
+    "paired_saving_control_minus_film_case_medians_ms": [
+     -154.35474296100438,
+     -267.0178967528045,
+     -226.74592002294958,
+     -70.37860434502363
+    ],
+    "paired_saving_control_minus_film_median_ms": -190.55033149197698,
+    "paired_saving_trajectory_cluster_95ci_ms": [
+     -267.0178967528045,
+     -70.37860434502363
+    ],
+    "supported_film_speedup": false,
+    "finish_newton_total_median": {
+     "dynamic": 41.5,
+     "film_nmrom": 63.5
+    },
+    "finish_bicgstab_total_median": {
+     "dynamic": 82.0,
+     "film_nmrom": 110.5
+    },
+    "max_returned_residual": 9.934624735104e-07,
+    "max_trajectory_rel_l2": 1.7300244804305155e-06,
+    "film_guard_accepted_count_median": 4.0,
+    "reduced_jacobians_total_median": 100.0,
+    "outliers_retained": {
+     "dynamic": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 1,
+       "2": 0,
+       "3": 0
+      },
+      "total": 1
+     },
+     "film_nmrom": {
+      "per_trajectory": {
+       "0": 1,
+       "1": 0,
+       "2": 0,
+       "3": 0
+      },
+      "total": 1
+     }
+    }
+   }
+  },
+  {
+   "N": 2048,
+   "fom_tau": 1e-08,
+   "linear_tol": 0.0001,
+   "cubic_vs_film": {
+    "comparison": "cubic_vs_film_nmrom",
+    "case_medians_s": {
+     "cubic": [
+      1.743832369800657,
+      0.808479366125539,
+      1.0935564865358174,
+      1.9681813274510205
+     ],
+     "film_nmrom": [
+      1.852208872558549,
+      0.9265436958521605,
+      1.143248345470056,
+      2.0686026338953525
+     ]
+    },
+    "control_median_ms": 1418.6944281682372,
+    "film_nmrom_median_ms": 1497.7286090143025,
+    "speedup_control_over_film_nmrom": 0.9472306395361708,
+    "paired_saving_control_minus_film_case_medians_ms": [
+     -108.23653056286275,
+     -117.93146748095751,
+     -49.72642846405506,
+     -100.39051715284586
+    ],
+    "paired_saving_control_minus_film_median_ms": -104.3135238578543,
+    "paired_saving_trajectory_cluster_95ci_ms": [
+     -117.93146748095751,
+     -49.72642846405506
+    ],
+    "supported_film_speedup": false,
+    "finish_newton_total_median": {
+     "cubic": 68.0,
+     "film_nmrom": 69.0
+    },
+    "finish_bicgstab_total_median": {
+     "cubic": 219.5,
+     "film_nmrom": 222.0
+    },
+    "max_returned_residual": 9.589613300543712e-09,
+    "max_trajectory_rel_l2": 5.363420835794538e-09,
+    "film_guard_accepted_count_median": 4.0,
+    "reduced_jacobians_total_median": 100.0,
+    "outliers_retained": {
+     "cubic": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 0,
+       "2": 0,
+       "3": 0
+      },
+      "total": 0
+     },
+     "film_nmrom": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 0,
+       "2": 0,
+       "3": 0
+      },
+      "total": 0
+     }
+    }
+   },
+   "dynamic_vs_film": {
+    "comparison": "dynamic_vs_film_nmrom",
+    "case_medians_s": {
+     "dynamic": [
+      1.488562464946881,
+      0.8661553114652634,
+      1.173639991087839,
+      1.5162065874319524
+     ],
+     "film_nmrom": [
+      1.852113525616005,
+      0.9266962741967291,
+      1.1434206666890532,
+      2.0687167074065655
+     ]
+    },
+    "control_median_ms": 1331.10122801736,
+    "film_nmrom_median_ms": 1497.7670961525291,
+    "speedup_control_over_film_nmrom": 0.8887237751695165,
+    "paired_saving_control_minus_film_case_medians_ms": [
+     -363.51304058916867,
+     -60.483979526907206,
+     30.375106958672404,
+     -552.563137607649
+    ],
+    "paired_saving_control_minus_film_median_ms": -211.99851005803794,
+    "paired_saving_trajectory_cluster_95ci_ms": [
+     -552.563137607649,
+     30.375106958672404
+    ],
+    "supported_film_speedup": false,
+    "finish_newton_total_median": {
+     "dynamic": 54.0,
+     "film_nmrom": 69.0
+    },
+    "finish_bicgstab_total_median": {
+     "dynamic": 187.0,
+     "film_nmrom": 222.0
+    },
+    "max_returned_residual": 9.589613300543712e-09,
+    "max_trajectory_rel_l2": 5.363399648897044e-09,
+    "film_guard_accepted_count_median": 4.0,
+    "reduced_jacobians_total_median": 100.0,
+    "outliers_retained": {
+     "dynamic": {
+      "per_trajectory": {
+       "0": 2,
+       "1": 0,
+       "2": 0,
+       "3": 0
+      },
+      "total": 2
+     },
+     "film_nmrom": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 0,
+       "2": 1,
+       "3": 0
+      },
+      "total": 1
+     }
+    }
+   }
+  },
+  {
+   "N": 2048,
+   "fom_tau": 1e-10,
+   "linear_tol": 1e-05,
+   "cubic_vs_film": {
+    "comparison": "cubic_vs_film_nmrom",
+    "case_medians_s": {
+     "cubic": [
+      2.9815256430301815,
+      1.1629128518979996,
+      1.445953052956611,
+      3.1653942596167326
+     ],
+     "film_nmrom": [
+      3.1018005290534347,
+      1.2679487857967615,
+      1.5651937846560031,
+      3.3007359858602285
+     ]
+    },
+    "control_median_ms": 2213.739347993396,
+    "film_nmrom_median_ms": 2333.497156854719,
+    "speedup_control_over_film_nmrom": 0.9486788280373385,
+    "paired_saving_control_minus_film_case_medians_ms": [
+     -120.06641086190939,
+     -104.98199262656271,
+     -119.18503697961569,
+     -135.2763578761369
+    ],
+    "paired_saving_control_minus_film_median_ms": -119.62572392076254,
+    "paired_saving_trajectory_cluster_95ci_ms": [
+     -135.2763578761369,
+     -104.98199262656271
+    ],
+    "supported_film_speedup": false,
+    "finish_newton_total_median": {
+     "cubic": 91.0,
+     "film_nmrom": 91.5
+    },
+    "finish_bicgstab_total_median": {
+     "cubic": 352.5,
+     "film_nmrom": 361.5
+    },
+    "max_returned_residual": 9.647306483560248e-11,
+    "max_trajectory_rel_l2": 6.591661808323485e-11,
+    "film_guard_accepted_count_median": 4.0,
+    "reduced_jacobians_total_median": 100.0,
+    "outliers_retained": {
+     "cubic": {
+      "per_trajectory": {
+       "0": 1,
+       "1": 3,
+       "2": 0,
+       "3": 1
+      },
+      "total": 5
+     },
+     "film_nmrom": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 1,
+       "2": 0,
+       "3": 0
+      },
+      "total": 1
+     }
+    }
+   },
+   "dynamic_vs_film": {
+    "comparison": "dynamic_vs_film_nmrom",
+    "case_medians_s": {
+     "dynamic": [
+      2.6682245309930295,
+      1.024856111034751,
+      1.357171478914097,
+      3.1429200696293265
+     ],
+     "film_nmrom": [
+      3.1017840390559286,
+      1.2676127518061548,
+      1.5649010993074626,
+      3.3008498980198056
+     ]
+    },
+    "control_median_ms": 2012.6980049535632,
+    "film_nmrom_median_ms": 2333.3425691816956,
+    "speedup_control_over_film_nmrom": 0.8625814449780589,
+    "paired_saving_control_minus_film_case_medians_ms": [
+     -433.5293974727392,
+     -242.7830658853054,
+     -207.50385452993214,
+     -157.89032052271068
+    ],
+    "paired_saving_control_minus_film_median_ms": -225.14346020761877,
+    "paired_saving_trajectory_cluster_95ci_ms": [
+     -433.5293974727392,
+     -157.89032052271068
+    ],
+    "supported_film_speedup": false,
+    "finish_newton_total_median": {
+     "dynamic": 72.5,
+     "film_nmrom": 91.5
+    },
+    "finish_bicgstab_total_median": {
+     "dynamic": 301.5,
+     "film_nmrom": 361.5
+    },
+    "max_returned_residual": 9.647306483560248e-11,
+    "max_trajectory_rel_l2": 6.591661808323485e-11,
+    "film_guard_accepted_count_median": 4.0,
+    "reduced_jacobians_total_median": 100.0,
+    "outliers_retained": {
+     "dynamic": {
+      "per_trajectory": {
+       "0": 1,
+       "1": 1,
+       "2": 0,
+       "3": 1
+      },
+      "total": 3
+     },
+     "film_nmrom": {
+      "per_trajectory": {
+       "0": 0,
+       "1": 0,
+       "2": 0,
+       "3": 3
+      },
+      "total": 3
+     }
+    }
+   }
+  }
+ ],
+ "film_supported_vs_cubic_cells": 0,
+ "film_supported_vs_dynamic_cells": 0,
+ "total_cells_per_comparison": 3
+}

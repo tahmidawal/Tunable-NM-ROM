@@ -1,0 +1,12 @@
+host=pax011 gpu=NVIDIA H200
+commit=b1131b1e4501258d153a2a519e8c0a42d9063842 dirty=e3b0c44298fc cell=ctol_hybb2048_learned1
+jax_backend=gpu cuda:0
+  bounded-grid NNLS-EQ M=64 m=256: candidates 4096/4186116, rel fit 6.10e-03 (p95 7.7e-01) [32s]
+N=2048 tau=1e-06 cubic/FiLM: 756.309/862.278ms speedup=0.877x
+N=2048 tau=1e-06 dynamic/FiLM: 713.903/862.420ms speedup=0.828x
+N=2048 tau=1e-08 cubic/FiLM: 1418.694/1497.729ms speedup=0.947x
+N=2048 tau=1e-08 dynamic/FiLM: 1331.101/1497.767ms speedup=0.889x
+N=2048 tau=1e-10 cubic/FiLM: 2213.739/2333.497ms speedup=0.949x
+N=2048 tau=1e-10 dynamic/FiLM: 2012.698/2333.343ms speedup=0.863x
+DONE
+ALL-DONE

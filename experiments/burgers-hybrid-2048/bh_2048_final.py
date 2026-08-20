@@ -23,14 +23,14 @@ LINEAR_TOLS = tuple(float(value) for value in os.environ.get(
     "LINEAR_TOLS", "1e-2,1e-4,1e-5"
 ).split(","))
 CONDITIONS = tuple(zip(FOM_TAUS, LINEAR_TOLS))
-TEST_SEED = int(os.environ.get("TEST_SEED", "20260827"))
+TEST_SEED = int(os.environ.get("TEST_SEED", "20260830"))
 DRAW_COUNT = int(os.environ.get("DRAW_COUNT", "16"))
 TEST_START = int(os.environ.get("TEST_START", "0"))
 N_CASES = int(os.environ.get("N_CASES", "4"))
 PAIR_BLOCKS = int(os.environ.get("PAIR_BLOCKS", "6"))
 BURN_S = float(os.environ.get("BURN_S", "3"))
 REFERENCE_RESIDUAL_GATE = float(os.environ.get("REFERENCE_RESIDUAL_GATE", "1e-11"))
-REFERENCE_NEWTON_ITERS = int(os.environ.get("NEWTON_ITERS", "25"))
+REFERENCE_MAX_NEWTON = int(os.environ.get("MAX_NEWTON", "25"))
 SELECTION_JSON = os.environ.get(
     "SELECTION_JSON", "selection/dynamic_selection_choice.json"
 )
@@ -39,23 +39,29 @@ PAIR_AUDIT_JSON = os.environ.get(
 )
 SMOKE = os.environ.get("BH_2048_SMOKE", "0") == "1"
 
+REFERENCE_ROUTES = (
+    {
+        "name": "helmholtz_candidate",
+        "outer_tol": 1e-12,
+        "linear_tol": 1e-8,
+    },
+    {
+        "name": "helmholtz_inner_strict",
+        "outer_tol": 1e-12,
+        "linear_tol": 1e-10,
+    },
+)
+REFERENCE_FIELD_AGREEMENT_GATE = 1e-10
+
 LOCKED_NS = (2048,)
 LOCKED_CONDITIONS = ((1e-6, 1e-2), (1e-8, 1e-4), (1e-10, 1e-5))
 LOCKED_FINAL = {
-    "seed": 20260827,
+    "seed": 20260830,
     "draw_count": 16,
     "start": 0,
     "cases": 4,
     "pair_blocks": 6,
     "burn_s": 3.0,
-}
-LOCKED_SMOKE = {
-    "seed": 20260818,
-    "draw_count": 16,
-    "start": 12,
-    "cases": 1,
-    "pair_blocks": 1,
-    "burn_s": 0.1,
 }
 
 
@@ -109,6 +115,247 @@ def tukey_counts(records, trajectory_indices):
             (values < q1 - 1.5 * iqr) | (values > q3 + 1.5 * iqr)
         ))
     return {"per_trajectory": by_case, "total": int(sum(by_case.values()))}
+
+
+def finite_float(value):
+    value = float(value)
+    return value if np.isfinite(value) else None
+
+
+def generate_tight_reference(report, n):
+    """Generate a gated reference from two prospective Helmholtz routes.
+
+    No online arm is compiled or timed until every route on every trajectory
+    passes.  The candidate fields are retained only after the independent
+    inner-strict route agrees within the frozen field gate.
+    """
+    indices = list(range(TEST_START, TEST_START + N_CASES))
+    cx, cy, width, amplitude, nu, _ = bc.bf.sample_params(
+        seed=TEST_SEED, m=DRAW_COUNT
+    )
+    dummy = jnp.zeros((bc.T, n * n), jnp.float64)
+    chains = {
+        route["name"]: bc.make_chain(
+            n,
+            route["outer_tol"],
+            lin_tol=route["linear_tol"],
+            preconditioner="helmholtz",
+        )[0]
+        for route in REFERENCE_ROUTES
+    }
+    health = {
+        "kind": "prospective_dual_exact_helmholtz",
+        "gate_evaluated_before_online_compile_or_timing": True,
+        "reference_residual_gate": REFERENCE_RESIDUAL_GATE,
+        "field_agreement_gate": REFERENCE_FIELD_AGREEMENT_GATE,
+        "candidate_route": REFERENCE_ROUTES[0]["name"],
+        "routes": list(REFERENCE_ROUTES),
+        "trajectories": [],
+        "all_pass": False,
+    }
+    report["reference_health"][str(n)] = health
+    save(report)
+    trajectories = []
+    for index in indices:
+        parameters = {
+            "cx": float(cx[index]),
+            "cy": float(cy[index]),
+            "width": float(width[index]),
+            "amplitude": float(amplitude[index]),
+            "nu": float(nu[index]),
+        }
+        u0 = np.asarray(bc.bf.blob_ic(
+            n,
+            parameters["cx"],
+            parameters["cy"],
+            parameters["width"],
+            parameters["amplitude"],
+        ))
+        fields = {}
+        route_records = []
+        for route in REFERENCE_ROUTES:
+            outputs = chains[route["name"]](
+                jnp.asarray(u0),
+                parameters["nu"],
+                dummy,
+                jnp.int32(0),
+            )
+            outputs[0].block_until_ready()
+            U, newton, linear, breakdowns, flags, residuals = [
+                np.asarray(value) for value in outputs
+            ]
+            fields[route["name"]] = U
+            finite = bool(
+                np.isfinite(U).all()
+                and np.isfinite(residuals).all()
+            )
+            max_residual = finite_float(np.max(residuals)) if finite else None
+            breakdown_total = int(np.sum(breakdowns))
+            flags_nonzero = int(np.sum(flags != 0))
+            route_pass = bool(
+                finite
+                and breakdown_total == 0
+                and flags_nonzero == 0
+                and max_residual is not None
+                and max_residual <= REFERENCE_RESIDUAL_GATE
+            )
+            route_records.append({
+                **route,
+                "preconditioner": "exact_helmholtz",
+                "max_newton_iterations_per_step": REFERENCE_MAX_NEWTON,
+                "per_step_newton_iterations": [int(value) for value in newton],
+                "per_step_linear_iterations": [int(value) for value in linear],
+                "per_step_breakdowns_or_linear_max": [
+                    int(value) for value in breakdowns
+                ],
+                "per_step_flags": [int(value) for value in flags],
+                "per_step_actual_outer_relative_residual": [
+                    finite_float(value) for value in residuals
+                ],
+                "max_actual_outer_relative_residual": max_residual,
+                "all_fields_and_residuals_finite": finite,
+                "breakdowns_or_linear_max_total": breakdown_total,
+                "flags_nonzero": flags_nonzero,
+                "newton_total": int(np.sum(newton)),
+                "linear_total": int(np.sum(linear)),
+                "route_pass": route_pass,
+            })
+
+        candidate = fields[REFERENCE_ROUTES[0]["name"]]
+        strict = fields[REFERENCE_ROUTES[1]["name"]]
+        step_differences = []
+        numerator_sq = 0.0
+        denominator_sq = 0.0
+        for step in range(bc.T):
+            difference = candidate[step] - strict[step]
+            numerator = float(np.linalg.norm(difference))
+            denominator = float(np.linalg.norm(strict[step]))
+            step_differences.append(
+                finite_float(numerator / max(denominator, 1e-300))
+            )
+            numerator_sq += numerator * numerator
+            denominator_sq += denominator * denominator
+        finite_agreement = all(value is not None for value in step_differences)
+        max_step_difference = (
+            max(step_differences) if finite_agreement else None
+        )
+        trajectory_difference = finite_float(
+            np.sqrt(numerator_sq) / max(np.sqrt(denominator_sq), 1e-300)
+        )
+        agreement_pass = bool(
+            finite_agreement
+            and max_step_difference is not None
+            and trajectory_difference is not None
+            and max_step_difference <= REFERENCE_FIELD_AGREEMENT_GATE
+            and trajectory_difference <= REFERENCE_FIELD_AGREEMENT_GATE
+        )
+        trajectory_pass = bool(
+            agreement_pass and all(item["route_pass"] for item in route_records)
+        )
+        health["trajectories"].append({
+            "trajectory_index": index,
+            "parameters": parameters,
+            "routes": route_records,
+            "candidate_vs_inner_strict": {
+                "per_step_relative_field_difference": step_differences,
+                "max_step_relative_field_difference": max_step_difference,
+                "trajectory_relative_field_difference": trajectory_difference,
+                "agreement_pass": agreement_pass,
+            },
+            "trajectory_pass": trajectory_pass,
+        })
+        reference_fields = np.empty((bc.T + 1, n * n), np.float64)
+        reference_fields[0] = u0
+        reference_fields[1:] = candidate
+        trajectories.append({
+            "index": int(index),
+            "U": reference_fields,
+            "nu": parameters["nu"],
+            "parameters": parameters,
+        })
+        save(report)
+
+    health["all_pass"] = bool(
+        len(health["trajectories"]) == N_CASES
+        and all(item["trajectory_pass"] for item in health["trajectories"])
+    )
+    residual_maxima = [
+        route["max_actual_outer_relative_residual"]
+        for item in health["trajectories"]
+        for route in item["routes"]
+    ]
+    step_maxima = [
+        item["candidate_vs_inner_strict"]["max_step_relative_field_difference"]
+        for item in health["trajectories"]
+    ]
+    trajectory_maxima = [
+        item["candidate_vs_inner_strict"][
+            "trajectory_relative_field_difference"
+        ]
+        for item in health["trajectories"]
+    ]
+    health["max_actual_outer_relative_residual"] = (
+        max(residual_maxima) if all(value is not None for value in residual_maxima)
+        else None
+    )
+    health["max_step_relative_field_difference"] = (
+        max(step_maxima) if all(value is not None for value in step_maxima)
+        else None
+    )
+    health["max_trajectory_relative_field_difference"] = (
+        max(trajectory_maxima)
+        if all(value is not None for value in trajectory_maxima)
+        else None
+    )
+    save(report)
+    return trajectories, health
+
+
+def reference_equivalence(n, trajectories, chain, fom_tau):
+    """Compare the row's counting solver directly with the gated reference."""
+    dummy = jnp.zeros((bc.T, n * n), jnp.float64)
+    per_trajectory = []
+    for trajectory in trajectories:
+        outputs = chain(
+            jnp.asarray(trajectory["U"][0]),
+            trajectory["nu"],
+            dummy,
+            jnp.int32(0),
+        )
+        outputs[0].block_until_ready()
+        U, newton, linear, breakdowns, flags, residuals = [
+            np.asarray(value) for value in outputs
+        ]
+        reference = trajectory["U"][1:]
+        step_difference = np.linalg.norm(U - reference, axis=1) / np.maximum(
+            np.linalg.norm(reference, axis=1), 1e-300
+        )
+        per_trajectory.append({
+            "trajectory_index": trajectory["index"],
+            "trajectory_rel_difference": float(
+                np.linalg.norm(U - reference)
+                / np.maximum(np.linalg.norm(reference), 1e-300)
+            ),
+            "max_step_rel_difference": float(np.max(step_difference)),
+            "counting_max_rel_newton_residual": float(np.max(residuals)),
+            "newton_total": int(np.sum(newton)),
+            "linear_total": int(np.sum(linear)),
+            "breakdowns": int(np.sum(breakdowns)),
+            "flags_nonzero": int(np.sum(flags != 0)),
+            "all_fields_finite": bool(np.isfinite(U).all()),
+        })
+    return {
+        "reference_kind": "prospective_dual_exact_helmholtz_candidate",
+        "comparison_start": "previous_state",
+        "fom_tau": fom_tau,
+        "per_trajectory": per_trajectory,
+        "max_step_rel_difference": max(
+            item["max_step_rel_difference"] for item in per_trajectory
+        ),
+        "max_trajectory_rel_difference": max(
+            item["trajectory_rel_difference"] for item in per_trajectory
+        ),
+    }
 
 
 def grade(outputs, trajectory, block, sample_index, order, elapsed, arm, fom_tau):
@@ -302,12 +549,8 @@ def run_condition(report, n, trajectories, fom_tau, linear_tol, condition_index)
     row["summary"] = summarize(
         row, trajectory_indices, TEST_SEED + n + 1009 * condition_index
     )
-    row["equivalence"] = bc.reference_equivalence(
-        n,
-        trajectories,
-        cubic_chain,
-        lin_tol=linear_tol,
-        preconditioner="helmholtz",
+    row["equivalence"] = reference_equivalence(
+        n, trajectories, cubic_chain, fom_tau
     )
     row["device_memory_after_condition"] = device_memory()
     row["complete"] = True
@@ -331,12 +574,12 @@ def main():
         raise SystemExit("f64/highest precision contract failed")
     if len(FOM_TAUS) != len(LINEAR_TOLS):
         raise SystemExit("FOM_TAUS and LINEAR_TOLS must have equal length")
-    if not SMOKE and (
-        REFERENCE_NEWTON_ITERS != 25 or bc.bf.NEWTON_ITERS != 25
-    ):
-        raise SystemExit("N=2048 reference generation requires fixed 25 Newton iterations")
-    lock = LOCKED_SMOKE if SMOKE else LOCKED_FINAL
-    expected_conditions = ((1e-6, 1e-2),) if SMOKE else LOCKED_CONDITIONS
+    if SMOKE:
+        raise SystemExit("final3 is an authoritative panel, not a smoke run")
+    if REFERENCE_MAX_NEWTON != 25 or bc.MAX_NEWTON != 25:
+        raise SystemExit("N=2048 tight reference requires MAX_NEWTON=25")
+    lock = LOCKED_FINAL
+    expected_conditions = LOCKED_CONDITIONS
     if (
         NS != LOCKED_NS
         or CONDITIONS != expected_conditions
@@ -373,10 +616,7 @@ def main():
 
     report = {
         "config": {
-            "purpose": (
-                "N=2048 memory/execution smoke" if SMOKE else
-                "fresh-seed N=2048 classical warm-start extension"
-            ),
+            "purpose": "fresh-seed N=2048 classical warm-start extension",
             "classification": {
                 "cubic": "classical live cubic-history FOM warm start",
                 "dynamic": (
@@ -384,7 +624,7 @@ def main():
                     "residual and exact Helmholtz inverse; not learned and not NM-ROM"
                 ),
             },
-            "execution_kind": "smoke_excluded" if SMOKE else "authoritative_fresh_seed",
+            "execution_kind": "authoritative_fresh_seed",
             "ns": list(NS),
             "conditions": [
                 {"fom_tau": tau, "linear_tol": linear_tol}
@@ -420,8 +660,18 @@ def main():
             "pair_audit_artifact": PAIR_AUDIT_JSON,
             "pair_audit_sha256": sha256(PAIR_AUDIT_JSON),
             "reference_residual_gate": REFERENCE_RESIDUAL_GATE,
-            "fresh_seed_touched": not SMOKE,
-            "smoke": SMOKE,
+            "reference_field_agreement_gate": REFERENCE_FIELD_AGREEMENT_GATE,
+            "reference_max_newton_iterations_per_step": REFERENCE_MAX_NEWTON,
+            "reference_routes": list(REFERENCE_ROUTES),
+            "reference_candidate_fields_used_only_after_all_route_gates": True,
+            "reference_gate_before_online_compile_or_timing": True,
+            "reference_design_informed_by_excluded_development_seed": 20260827,
+            "reference_design_diagnostic_job": "2677878",
+            "excluded_implementation_smoke_seed": 20260829,
+            "reference_cohort_was_untouched_before_final3": True,
+            "fixed_public_jax_reference_used": False,
+            "fresh_seed_touched": True,
+            "smoke": False,
             "f64": True,
         },
         "provenance": provenance,
@@ -431,32 +681,16 @@ def main():
         "device_memory_at_end": {},
         "complete": False,
     }
-    if not SMOKE:
-        report["config"].update({
-            "reference_newton_iterations": REFERENCE_NEWTON_ITERS,
-            "reference_solver_scope": (
-                "offline truth generation and independent equivalence only; "
-                "online counting solvers remain tolerance-stopped with MAX_NEWTON=25"
-            ),
-        })
+    report["config"]["reference_solver_scope"] = (
+        "offline dual exact-Helmholtz truth generation and direct counting "
+        "equivalence only; online methods/tolerances/schedule remain unchanged"
+    )
     save(report)
 
     for n in NS:
-        trajectories = bc.generate_reference(
-            n,
-            list(range(TEST_START, TEST_START + N_CASES)),
-            TEST_SEED,
-            draw_count=DRAW_COUNT,
-        )
-        worst_reference = float(max(
-            trajectory["max_reference_newton_residual"] for trajectory in trajectories
-        ))
-        if not np.isfinite(worst_reference) or worst_reference > REFERENCE_RESIDUAL_GATE:
-            raise SystemExit(f"N={n}: reference residual {worst_reference:.3e}")
-        report["reference_health"][str(n)] = {
-            "max_reference_newton_residual": worst_reference
-        }
-        save(report)
+        trajectories, reference_health = generate_tight_reference(report, n)
+        if not reference_health["all_pass"]:
+            raise SystemExit(f"N={n}: dual Helmholtz reference gate failed")
         for condition_index, (fom_tau, linear_tol) in enumerate(CONDITIONS):
             run_condition(
                 report, n, trajectories, fom_tau, linear_tol, condition_index

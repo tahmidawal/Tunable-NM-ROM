@@ -43,9 +43,9 @@ bounded learned sensitivity is mandatory.  The raw smoke bundle and generated
 audit are retained under `runs/smoke1/`; its execution-only timing is not a
 scientific result.
 
-## Authoritative fresh-seed panel
+## Development reference failures and diagnostic
 
-The untouched cohort is locked before execution to seed **20260827**, canonical
+The original cohort was locked before execution to seed **20260827**, canonical
 draw 16, indices 0:4.  Only N=2048 is run, at the inherited outer/inner pairs
 (1e-6,1e-2), (1e-8,1e-4), and (1e-10,1e-5).  The policy is fixed at
 `coarse_n=N`, relaxation 1; neither final timing nor accuracy changes it.
@@ -121,6 +121,42 @@ nonzero flag at all 50 steps, while the public/instrumented update-match value
 is null because every active public update is nonfinite.  The frozen
 update-match and two-tight-route-health gates therefore fail.  This diagnostic
 licenses no reference replacement and no timing result.
+
+## Authoritative fresh-seed panel
+
+The only licensed primary follow-up is a prospectively frozen, informed
+reference repair on a wholly untouched cohort: seed **20260830**, canonical
+draw 16, indices 0:4.  Seed 20260827 is permanently development-only and will
+never produce a timing claim.  Before compiling or timing an online arm, each
+new trajectory must pass two independently executed exact-Helmholtz counting
+routes: candidate outer/inner tolerances `(1e-12,1e-8)` and inner-strict
+`(1e-12,1e-10)`, both with at most 25 Newton iterations.  The shared outer
+tolerance is above the observed N=2048 arithmetic floor; independence is in
+the tenfold stricter inner solve.  Both routes must be finite, have zero
+flags/breakdowns, and return actual outer residual at most `1e-11` at every
+step.  Their maximum per-step and whole-trajectory relative field differences
+must both be at most `1e-10`.  Every route's actual residual and work history
+is persisted.  Candidate fields become the reference only if all gates pass
+on all four trajectories; otherwise the job stops before any timing row.
+
+If the reference gate passes, the primary methods, outer/inner tolerance
+panel, dynamic correction, AB/BA ordering, six blocks, twelve repetitions per
+arm/trajectory, three-second immediate burns, estimators, and accuracy/work
+telemetry are exactly the originally registered design.  The fixed public-JAX
+rollout and its equivalence path are not used as truth.  Final producer and
+audit commands run on separate fail-closed shell lines, and both
+`FINAL-AUDIT-DONE` and `ALL-DONE` markers are required.
+
+Seed 20260829 is also excluded before final execution.  During implementation,
+an N=32-only local structural smoke accidentally used its first four parameter
+draws; it exercised only the new reference/equivalence plumbing and no N=2048
+field, primary method, or timing.  It reported reference pass, maximum actual
+outer residual `9.500501846359613e-13`, maximum route field difference
+`4.781917940670456e-14`, row-equivalence maximum residual
+`9.938508215690312e-7`, and maximum field difference
+`3.5494211868205905e-6`.  The cohort was discarded immediately.  A repository
+and run/log-artifact search found no prior occurrence of seed 20260830 before
+it was locked here.
 
 For every tolerance and trajectory, the process runs six exact AB then
 immediately reburned BA blocks.  This gives twelve repetitions per arm and

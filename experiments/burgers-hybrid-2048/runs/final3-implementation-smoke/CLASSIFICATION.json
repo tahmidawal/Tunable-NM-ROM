@@ -1,0 +1,20 @@
+{
+ "classification": "excluded_local_implementation_smoke",
+ "seed": 20260829,
+ "mesh": 32,
+ "trajectory_indices": [0, 1, 2, 3],
+ "scientific_timing_or_method_rows": false,
+ "n2048_field_evaluated": false,
+ "primary_method_evaluated": false,
+ "timing_evaluated": false,
+ "source_driver_sha256_at_execution": "28ead21fda3ff19d3584fb7ca9b23a9c6ae8db9158327bbd7824af55d37ef406",
+ "observed_structural_output": {
+  "reference_pass": true,
+  "reference_max_actual_outer_residual": 9.500501846359613e-13,
+  "reference_max_step_field_agreement": 4.781917940670456e-14,
+  "equivalence_max_residual": 9.938508215690312e-7,
+  "equivalence_max_step_field_difference": 3.5494211868205905e-6
+ },
+ "action": "Seed 20260829 was excluded immediately; final3 was relocked prospectively to seed 20260830 before commit, staging, or any N=2048 execution.",
+ "seed_20260830_prelock_repo_and_run_log_search_matches": 0
+}

@@ -204,14 +204,25 @@ def main():
         )
         tight_differences = []
         tight_residual = []
+        audit_records = []
         for case in range(N_CASES):
             output = reference_chain(
                 jnp.asarray(fields[case, 0]), parameters["nu"][case], dummy,
                 jnp.int32(5)
             )
             item = grade(output, fields[case])
+            item["case_index"] = case
             tight_differences.append(item["trajectory_relative_l2"])
             tight_residual.append(item["max_returned_relative_residual"])
+            audit_records.append(item)
+        audit_healthy = all(
+            item["finite"] and item["breakdowns"] == 0
+            and item["flags_nonzero"] == 0
+            and item["max_returned_relative_residual"] <= AUDIT_OUTER
+            for item in audit_records
+        )
+        if not audit_healthy:
+            raise SystemExit(f"N={n} independent tighter reference failed health gate")
         reference_numerical_error = max(tight_differences)
         if reference_numerical_error > 1e-4:
             raise SystemExit(
@@ -350,6 +361,15 @@ def main():
                 "max_returned_residual": max(tight_residual),
                 "solution_error_gate": 1e-4,
                 "gate_pass": bool(reference_numerical_error <= 1e-4),
+                "health_gate_pass": audit_healthy,
+                "zero_breakdowns": bool(all(
+                    item["breakdowns"] == 0 for item in audit_records
+                )),
+                "zero_flags": bool(all(
+                    item["flags_nonzero"] == 0 for item in audit_records
+                )),
+                "all_finite": bool(all(item["finite"] for item in audit_records)),
+                "records": audit_records,
             },
             "burn_count": burn_count,
             "timing_orders": timing_orders,

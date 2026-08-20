@@ -62,3 +62,16 @@ both chains had zero flags/breakdowns, maximum returned residual `1.377e-13`,
 and differed by `6.317e-15`.  These smoke numbers are excluded from scientific
 claims.  A corrected FOM calibration will consume a second cell in this budget
 category; the original targets and promotion gates are unchanged.
+
+The first corrected staging, job `2667531` (`ctol_b10_fom_cal_r3`), was still
+pending at zero elapsed when a pre-run audit found that the implementation had
+persisted tighter-chain residuals but had not explicitly gated its finite,
+breakdown, flag, and tolerance health fields.  It was cancelled by explicit ID
+through the repository-safe cancellation script before any log or output was
+created; the output-free remote directory was deleted.  The implementation now
+requires the independent audit chain to be finite, have zero breakdowns and
+flags, and return residual no larger than `3e-13` on every case, and persists
+all per-case health/work records.  A second N=32 execution smoke passed this
+explicit health gate with worst chain difference `6.316e-15`; it is excluded
+from scientific claims.  Job `2667531` is code-preflight-only and consumes no
+scientific cell.

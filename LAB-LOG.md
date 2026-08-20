@@ -120,6 +120,18 @@ is trainable under the locked preregistration, however, because K3/Cox weak-resi
 validation, and untouched confirmation remain unopened. This is a numerical identity-screen
 failure, not evidence about trained G1/G2 field accuracy.
 
+**The Phase 6 Cox-weak/K3-full arithmetic repair passes every locked structural gate.** The
+actual G1 route uses Cox--de Boor evaluation for the 50 weak-query evaluations and retains the
+fast K3/Pallas kernel for the charged 51-field full decode; it changes no spline space, latent
+state, generator, predictor, weak form, or learned parameter. Against a new live eligible H200
+FOM at 98.760 ms, the repaired route takes 4.798 ms: 20.582x with trajectory-clustered 95%
+interval [16.204,25.160]. Its worst Cox-control identity is 2.858e-16, the separately executed
+timed route agrees with its identity route to 6.851e-16, exact 50/51 work and zero failures pass,
+and compiled eligibility memory is 0.496 GB. This repairs the Phase-5 implementation floor and
+licenses only a separate G1 seed-11 training proposal/audit. It is not a learned-model or
+headline NM-ROM result; training, weak/EQ, scaling, model validation, and untouched confirmation
+remain unrun.
+
 **The architectural negative results are useful.** Direct Poisson source-to-latent RBF prediction
 failed; a cached K=16 GroupFiLM was neutral/losing; a learned high-frequency tail could not beat
 the sub-millisecond spectral control. Burgers correction manifolds are not compact enough:
@@ -1668,3 +1680,42 @@ failure. The complete immutable bundle is committed at `d6ba627`; the generated 
 audit are committed at `67b8c7e` and rebuild byte-identically. Eight scientific cells were
 consumed through Phase 5. The two untracked synthetic-only model-validation drafts remain
 excluded and untouched.
+
+### Burgers 1e-3 / 10x — Phase 6 G1 actual-route identity repair passes
+
+The single authorized P6-D job `2669652` ran from exact scientific commit
+`3f454057c2aa5234ae1f589d1f7443a994ebf740` and staged-manifest SHA-256
+`f8932a6a4304a14b93bfdf6783e900a47a9a1d45ba03f9915941bb00770bfb40` in isolated directory
+`p6_d_r1` on an NVIDIA H200. It completed in 2:36 with exit 0, GPU backend, f64/highest, 6.44 GB
+maximum RSS, and exactly three classified Tufts/JAX hwloc binding lines. The independent
+negative-aware audit passes. JSON/NPZ/AUDIT SHA-256 values are
+`9fe2d49bbb0324fd08ef5da906c3afab0338a1f3bbfb6dfc1ef73f89603c139a`,
+`9f0372daba8c12e3aff86efde3201d3ae0612aba8cd297aa37559aa286967381`, and
+`9e017b37709bf37fc8c8b87bbbb70461cba8afb47603a5b65dd2618c901ad2b4`. All remote/local
+checksums, nested immutable P5 provenance, source hashes, Slurm state, backend/health, and
+scientific recomputations pass. The exact remote directory was deleted after preservation; the
+audited bundle is committed on the experiment branch at `de5b450`.
+
+**The arithmetic repair succeeds without changing the learned method.** R0 reproduces the
+Phase-5 polynomial-weak/K3-full discrepancy, with live-case identity maxima
+`3.533e-14--4.826e-14`. The sole candidate R1 evaluates the same fixed cubic basis with
+Cox--de Boor arithmetic for weak current/previous queries, then retains K3/Pallas for the final
+full-grid decode. R1's four Cox-control identity maxima are `2.831e-16--2.858e-16`, and a
+separate execution of the actual timed route agrees with the identity route to at most
+`6.851e-16`. Exact boundary, basis/support, finite output, exactly 50 weak evaluations, exactly
+51 coefficient-grid evaluations, zero Jacobian/trial evaluations, zero failures, and the
+496,002,376-byte compiled-memory gate all pass.
+
+**The repaired actual route clears the same-job speed gate with ample margin.** The live
+cubic/exact-Helmholtz FOM is healthy and eligible at mean/worst trajectory error
+`6.5840644023e-4 / 1.4000013197e-3`, with median `98.760372` ms and zero timing outliers. R1 has
+median `4.798337` ms, paired speedup `20.582209x`, and trajectory-clustered 95% interval
+`[16.204135,25.159861]`, also with zero outliers. The tight/tighter reference chains are healthy
+and differ by at most `4.4518333659e-13`. The immutable decision is
+`repair_licensed=true`, `phase6_hard_stop=false`, and `training_authorized=false`.
+
+Phase 6 consumed the ninth scientific cell in the finite search. It licenses only a separate,
+prospectively audited G1 seed-11 training proposal; it does not authorize training itself and
+does not establish any learned reconstruction, rollout, EQ, N=256/512 scaling, or N=1024
+headline result. Model-validation indices 576:640 and seed-20261031 confirmation remain unopened.
+The generated report and global rerunnable audit incorporate Phase 6 and rebuild byte-identically.

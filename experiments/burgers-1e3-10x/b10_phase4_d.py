@@ -40,6 +40,20 @@ def load_json(path):
         return json.load(handle)
 
 
+def normalized_audit_decision(audit, phase):
+    """Normalize current S0 and legacy-flat P3 independent-audit schemas."""
+    if isinstance(audit.get("decision"), dict):
+        return audit["decision"]
+    if phase == "P3":
+        required = (
+            "selected_solver", "selected_kernel", "run_P3_F",
+            "phase3_hard_stop",
+        )
+        if all(key in audit for key in required):
+            return {key: audit[key] for key in required}
+    raise SystemExit(f"{phase} audit decision schema is unsupported")
+
+
 def manifest_rows(path):
     rows = {}
     with open(path, encoding="utf-8") as handle:
@@ -59,7 +73,8 @@ def validate_bound_artifact(json_path, npz_path, audit_path, phase):
         raise SystemExit(f"{phase} audit JSON binding mismatch")
     if audit.get("source_npz_sha256") != c.sha256(npz_path):
         raise SystemExit(f"{phase} audit NPZ binding mismatch")
-    if audit.get("decision") != report.get("decision"):
+    audit_decision = normalized_audit_decision(audit, phase)
+    if audit_decision != report.get("decision"):
         raise SystemExit(f"{phase} audit decision mismatch")
     expected = (
         phase == "S0" and report["decision"].get("phase2_hard_stop") is True
@@ -86,7 +101,9 @@ def binding(
         "audit_sha256": c.sha256(audit_path),
         "commit": report["provenance"]["commit"],
         "job_id": report["provenance"]["slurm_job_id"],
-        "audit_decision": audit["decision"],
+        "audit_decision": normalized_audit_decision(
+            audit, "P3" if "phase3_hard_stop" in report["decision"] else "S0"
+        ),
     }
     if manifest_path is not None:
         value.update({

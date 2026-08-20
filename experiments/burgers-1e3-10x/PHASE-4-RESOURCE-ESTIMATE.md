@@ -30,3 +30,14 @@ that manifest.  `bh_common.py` must be clean and present at the exact P4 commit.
 The pull path independently verifies all hashes, scheduler state, GPU/precision,
 health-warning absence, negative or positive scientific gates, and removes only
 the exact completed remote cell after a passing audit.
+
+## Excluded pre-science launch checkpoint
+
+The first launch, job 2668601, reached the H200 GPU preflight successfully but
+exited before data generation because P4 expected the current nested independent-
+audit decision schema while the immutable P3 audit uses its older flat schema.
+It is excluded infrastructure/code-preflight evidence and consumes no scientific
+P4-D cell.  Its complete log, manifest, scheduler record, and checksums are retained
+under `runs/p4_d_r1_failed_2668601/`; the exact remote directory was checksummed and
+removed.  The normalization regression check must pass both the nested S0 and flat
+P3 immutable artifacts before any fresh launch is authorized.

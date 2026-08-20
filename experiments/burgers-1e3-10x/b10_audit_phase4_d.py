@@ -43,7 +43,10 @@ def verify_chain(report, name, paths):
         if c.sha256(path) != bound[f"{label}_sha256"]:
             raise SystemExit(f"{name} {label} immutable binding failed")
     source, audit = load(paths[0]), load(paths[2])
-    if audit["status"] != "pass" or audit["decision"] != source["decision"]:
+    if (
+        audit["status"] != "pass"
+        or d.normalized_audit_decision(audit, name) != source["decision"]
+    ):
         raise SystemExit(f"{name} independent chain status failed")
     if audit["source_json_sha256"] != c.sha256(paths[0]):
         raise SystemExit(f"{name} audit JSON binding failed")

@@ -187,6 +187,7 @@ with open(CHECKPOINT_PATH, "rb") as handle:
     checkpoint = pickle.load(handle)
 require(checkpoint["status"] == "complete" and checkpoint["candidate"] == CANDIDATE
         and checkpoint["training_seed"] == 11 and finite(checkpoint), "checkpoint identity/health")
+require(checkpoint["phase4_gate"] == gate, "checkpoint P4 gate binding")
 layers(checkpoint["hyperdecoder"], (19, 32, 32, 48 * 48 + 32 * 32), "hyperdecoder")
 layers(checkpoint["direct_predictor_standardized"], (7, 32, 32, 24), "predictor standardized")
 layers(checkpoint["direct_predictor_folded_raw"], (7, 32, 32, 24), "predictor folded")
@@ -203,6 +204,9 @@ with np.load(NPZ_PATH, allow_pickle=False) as arrays:
     require(arrays["training_states"].shape == (TRAIN_SNAPSHOTS, 24), "training states")
     require(arrays["selection_oracle_states"].shape == (SELECTION_SNAPSHOTS, 24), "oracle states")
     require(arrays["selection_predictor_states"].shape == (SELECTION_SNAPSHOTS, 24), "direct states")
+    for start_index in range(3):
+        require(arrays[f"selection_oracle_start{start_index}_q_raw"].shape
+                == (SELECTION_SNAPSHOTS, 19), f"oracle start {start_index} q shape")
     require(arrays["manifold_snapshot_schedule"].shape == (30000, 32), "manifold schedule")
     require(arrays["predictor_snapshot_schedule"].shape == (20000, 32), "predictor schedule")
     require(arrays["selection_oracle_snapshot_schedule"].shape == (10000, 64), "oracle schedule")
@@ -210,6 +214,9 @@ with np.load(NPZ_PATH, allow_pickle=False) as arrays:
     select_features = np.asarray(arrays["selection_features"])
     mean, empirical = np.mean(train_features, axis=0), np.std(train_features, axis=0)
     scale = np.where(empirical < 1e-12, 1.0, empirical)
+    require(np.allclose(mean, checkpoint["predictor_feature_mean"], rtol=1e-14, atol=1e-15)
+            and np.allclose(scale, checkpoint["predictor_feature_scale"], rtol=1e-14,
+                            atol=1e-15), "train-only feature statistics")
     normalized = mlp(checkpoint["direct_predictor_standardized"], (train_features - mean) / scale)
     folded = mlp(checkpoint["direct_predictor_folded_raw"], train_features)
     select_normalized = mlp(checkpoint["direct_predictor_standardized"], (select_features - mean) / scale)
@@ -226,14 +233,23 @@ starts = report["selection_oracle"]["starts"]
 require([row["start_index"] for row in starts] == [0, 1, 2], "three oracle starts")
 for row in starts:
     validate_metrics(row["metrics"], (64, 32, 16), f"oracle start {row['start_index']}")
+    require(row["gate_pass"] == oracle_gate(row["metrics"]), "oracle start gate")
 losses = [row["metrics"]["pooled"]["mean_snapshot_relative_l2_squared"] for row in starts]
 chosen = int(np.argmin(losses))
 require(report["selection_oracle"]["chosen_start"] == chosen, "oracle chosen start")
+require(report["selection_oracle"]["start_selection_metric"]
+        == "pooled_mean_snapshot_relative_l2_squared"
+        and np.isclose(report["selection_oracle"]["chosen_start_selection_loss"],
+                       losses[chosen], rtol=1e-14), "oracle start-selection loss")
 oracle = report["selection_oracle"]["metrics"]
+require(oracle == starts[chosen]["metrics"], "chosen oracle metrics")
 direct = report["selection_direct"]["metrics"]
 validate_metrics(direct, (64, 32, 16), "direct")
 oracle_pass, (direct_pass, ratios) = oracle_gate(oracle), direct_gate(direct, oracle)
 gates = report["gates"]
+require(report["selection_oracle"]["gate_pass"] == oracle_pass
+        and report["selection_direct"]["gate_pass"] == direct_pass,
+        "reported oracle/direct gates")
 require(gates["representation_oracle_all_N_and_pooled"] == oracle_pass
         and gates["direct_all_N_and_pooled"] == direct_pass
         and gates["promote_seed"] == bool(oracle_pass and direct_pass), "scientific gates")

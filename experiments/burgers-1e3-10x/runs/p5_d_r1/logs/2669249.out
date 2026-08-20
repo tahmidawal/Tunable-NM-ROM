@@ -1,0 +1,43 @@
+stage_manifest_file_sha256=6135791d3a5cca08b0ff1c424d93451579f3dd1048bef2a5cf314e2b8bf317d6
+./code/b10_phase4.py: OK
+./code/deps/phase5/PHASE-5-RANK-CHECKPOINT.md: OK
+./code/b10_phase5.py: OK
+./code/b10_phase5_rank_diagnostic.py: OK
+./code/b10_common.py: OK
+./code/deps/phase5/PHASE-5-PRE-REGISTRATION.md: OK
+./code/deps/burgers2d-coord-rom/burgers2d_film.py: OK
+./code/b10_phase3.py: OK
+./code/b10_phase5_d.py: OK
+./code/deps/p4/MANIFEST.sha256: OK
+./code/deps/p4/phase4_d.npz: OK
+./code/deps/phase5/phase5_rank_diagnostic.json: OK
+./code/b10_spline.py: OK
+./run.sbatch: OK
+./code/b10_phase4_d.py: OK
+./code/b10_audit_phase5_d.py: OK
+./code/b10_s0_spline.py: OK
+./code/bh_common.py: OK
+./code/deps/p4/AUDIT.json: OK
+./code/deps/p4/phase4_d.json: OK
+host=pax011 gpu=NVIDIA H200
+commit=e18edda9b124be8f7fa21c07ef21804c8dbecc48 cell=p5_d_r1 oracle_workers=8
+jax_backend=gpu cuda:0
+{'target_chunk': 'targets_N64_0000_0064.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.4791422446248726e-15}
+{'target_chunk': 'targets_N64_0064_0128.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.3434545235686753e-15}
+{'target_chunk': 'targets_N64_0128_0192.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.4055093941439719e-15}
+{'target_chunk': 'targets_N64_0192_0256.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.5749149597352972e-15}
+{'target_chunk': 'targets_N64_0256_0320.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.7972740357616438e-15}
+{'target_chunk': 'targets_N64_0320_0384.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.5015341394105807e-15}
+{'target_chunk': 'targets_N64_0384_0448.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.4352027784407865e-15}
+{'target_chunk': 'targets_N64_0448_0512.npz', 'snapshots': 3264, 'healthy': 3264, 'normal_worst': 1.4951000363437036e-15}
+{'target_chunk': 'targets_N128_0000_0032.npz', 'snapshots': 1632, 'healthy': 1632, 'normal_worst': 2.9669002008757734e-15}
+{'target_chunk': 'targets_N128_0032_0064.npz', 'snapshots': 1632, 'healthy': 1632, 'normal_worst': 1.3094447437801982e-15}
+{'target_chunk': 'targets_N128_0064_0096.npz', 'snapshots': 1632, 'healthy': 1632, 'normal_worst': 1.3930749336766642e-15}
+{'target_chunk': 'targets_N128_0096_0128.npz', 'snapshots': 1632, 'healthy': 1632, 'normal_worst': 1.2763755784989421e-15}
+{'target_chunk': 'targets_N256_0000_0016.npz', 'snapshots': 816, 'healthy': 816, 'normal_worst': 1.7217585599524655e-15}
+{'target_chunk': 'targets_N256_0016_0032.npz', 'snapshots': 816, 'healthy': 816, 'normal_worst': 1.6212386001775432e-15}
+{'target_chunk': 'targets_N256_0032_0048.npz', 'snapshots': 816, 'healthy': 816, 'normal_worst': 1.9166664048835684e-15}
+{'target_chunk': 'targets_N256_0048_0064.npz', 'snapshots': 816, 'healthy': 816, 'normal_worst': 3.2782920288282803e-15}
+{'status': 'complete', 'decision': {'target_integrity_pass': True, 'arm_training_licenses': {'G1': False, 'G2': False}, 'next_seed11_arm': None, 'phase5_hard_stop': True, 'scientific_promotion_allowed': True}, 'elapsed_s': 1882.357984767761}
+{"confirmation_touched": false, "decision": {"arm_training_licenses": {"G1": false, "G2": false}, "next_seed11_arm": null, "phase5_hard_stop": true, "scientific_promotion_allowed": true, "target_integrity_pass": true}, "model_validation_touched": false, "negative_aware": true, "source_json": "phase5_d.json", "source_json_sha256": "97f8bc6bb9e1d67d0baf4652bd57e6fb69dab484fc8f99ce12018e9f6c1d0c96", "source_npz_sha256": "5235b81b19c4ed459e7fda4291fe67eb3f4b87ba07413eb36e861a0b147dfe54", "status": "pass"}
+ALL-DONE

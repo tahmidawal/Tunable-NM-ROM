@@ -1,0 +1,1665 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Poisson-2D and Burgers-2D results and plot audit through August 18",
+    "description": "Status-aware technical report from archived August 18 run JSONs.",
+    "generatedAt": "2026-08-20T00:00:00Z",
+    "cards": [
+      {
+        "id": "poisson_headroom",
+        "description": "EQ error divided by the nonlinear decoder ceiling.",
+        "dataset": "summary",
+        "sourceId": "accuracy_jsons",
+        "metrics": [
+          {
+            "label": "Poisson EQ / ceiling",
+            "field": "poisson_eq_ceiling_ratio",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "burgers_headroom",
+        "description": "EQ error divided by the nonlinear decoder ceiling.",
+        "dataset": "summary",
+        "sourceId": "accuracy_jsons",
+        "metrics": [
+          {
+            "label": "Burgers EQ / ceiling",
+            "field": "burgers_eq_ceiling_ratio",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "poisson_cost",
+        "description": "Provisional standalone matched-accuracy maximum.",
+        "dataset": "summary",
+        "sourceId": "cost_json",
+        "metrics": [
+          {
+            "label": "Poisson standalone max",
+            "field": "poisson_provisional_speedup",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "poisson_hybrid",
+        "description": "Best observed original hybrid at the shared FOM tolerance.",
+        "dataset": "summary",
+        "sourceId": "hybrid_json",
+        "metrics": [
+          {
+            "label": "Poisson hybrid max",
+            "field": "poisson_hybrid_speedup",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "burgers_hybrid",
+        "description": "Best observed original hybrid at the shared FOM tolerance.",
+        "dataset": "summary",
+        "sourceId": "hybrid_json",
+        "metrics": [
+          {
+            "label": "Burgers hybrid max",
+            "field": "burgers_hybrid_speedup",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "accuracy_headroom",
+        "title": "Nonlinear ROM error relative to the decoder ceiling",
+        "subtitle": "Values near one indicate that optimization and quadrature add little error beyond representation.",
+        "headerMarkdown": "Both weak-form routes remain close to the learned-manifold ceiling; empirical quadrature adds modest headroom loss.",
+        "type": "bar",
+        "dataset": "accuracy_nonlinear",
+        "sourceId": "accuracy_jsons",
+        "encodings": {
+          "x": {
+            "field": "pde",
+            "type": "nominal",
+            "label": "PDE"
+          },
+          "y": {
+            "field": "ratio_to_ceiling",
+            "type": "quantitative",
+            "label": "Error / decoder ceiling",
+            "format": "number"
+          },
+          "color": {
+            "field": "route",
+            "type": "nominal",
+            "label": "Route"
+          },
+          "tooltip": [
+            {
+              "field": "mean_error",
+              "type": "quantitative",
+              "label": "Mean relative-L2",
+              "format": "number"
+            },
+            {
+              "field": "ceiling",
+              "type": "quantitative",
+              "label": "Decoder ceiling",
+              "format": "number"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "value": 1.0,
+            "label": "Decoder ceiling"
+          }
+        ],
+        "valueFormat": "number"
+      },
+      {
+        "id": "objective_comparison",
+        "title": "Poisson error by residual objective",
+        "subtitle": "The pointwise finite-difference residual is the outlier; smooth weak or filtered objectives approach the decoder floor.",
+        "headerMarkdown": "The objective definition, not decoder capacity, explains the original Poisson failure.",
+        "type": "horizontalBar",
+        "dataset": "objectives",
+        "sourceId": "objective_json",
+        "encodings": {
+          "x": {
+            "field": "objective",
+            "type": "nominal",
+            "label": "Objective"
+          },
+          "y": {
+            "field": "mean_error",
+            "type": "quantitative",
+            "label": "Mean relative-L2",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "median_error",
+              "type": "quantitative",
+              "label": "Median",
+              "format": "number"
+            },
+            {
+              "field": "max_error",
+              "type": "quantitative",
+              "label": "Maximum",
+              "format": "number"
+            },
+            {
+              "field": "n_sources",
+              "type": "quantitative",
+              "label": "Sources",
+              "format": "number"
+            }
+          ]
+        },
+        "valueFormat": "number"
+      },
+      {
+        "id": "quadrature_ratio",
+        "title": "Quadrature error relative to the full-grid weak solve",
+        "subtitle": "m=M is inadequate on both PDEs; accuracy is near saturation by m=4M.",
+        "headerMarkdown": "A common m near four times M is the smallest defensible operating region in these archived sweeps.",
+        "type": "bar",
+        "dataset": "quadrature",
+        "sourceId": "quadrature_jsons",
+        "encodings": {
+          "x": {
+            "field": "m_label",
+            "type": "ordinal",
+            "label": "Quadrature size"
+          },
+          "y": {
+            "field": "error_ratio_to_full",
+            "type": "quantitative",
+            "label": "Error / full-grid error",
+            "format": "number"
+          },
+          "color": {
+            "field": "pde",
+            "type": "nominal",
+            "label": "PDE"
+          },
+          "tooltip": [
+            {
+              "field": "mean_error",
+              "type": "quantitative",
+              "label": "Mean error",
+              "format": "number"
+            },
+            {
+              "field": "time_ms",
+              "type": "quantitative",
+              "label": "Online ms",
+              "format": "number"
+            },
+            {
+              "field": "eq_fit",
+              "type": "quantitative",
+              "label": "EQ relative fit",
+              "format": "number"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "value": 1.0,
+            "label": "Full-grid accuracy"
+          }
+        ],
+        "valueFormat": "number"
+      },
+      {
+        "id": "optimizer_mean",
+        "title": "Mean error-to-ceiling ratio across latent dimension",
+        "subtitle": "The base-LM spikes are caused by a few divergent source solves; trust-region globalization removes them.",
+        "headerMarkdown": "This replaces the retracted k-stall plot; use the adjacent table for medians and divergent counts.",
+        "type": "bar",
+        "dataset": "optimizer_chart",
+        "sourceId": "optimizer_json",
+        "encodings": {
+          "x": {
+            "field": "k_label",
+            "type": "ordinal",
+            "label": "Latent dimension k"
+          },
+          "y": {
+            "field": "ratio_mean",
+            "type": "quantitative",
+            "label": "Mean error / mean ceiling",
+            "format": "number"
+          },
+          "color": {
+            "field": "solver",
+            "type": "nominal",
+            "label": "Latent solver"
+          },
+          "tooltip": [
+            {
+              "field": "ratio_median",
+              "type": "quantitative",
+              "label": "Median ratio",
+              "format": "number"
+            },
+            {
+              "field": "divergent_cases",
+              "type": "quantitative",
+              "label": "Divergent sources",
+              "format": "number"
+            },
+            {
+              "field": "n_sources",
+              "type": "quantitative",
+              "label": "Sources",
+              "format": "number"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "value": 1.0,
+            "label": "Decoder ceiling"
+          }
+        ],
+        "valueFormat": "number"
+      },
+      {
+        "id": "cost_speedup",
+        "title": "Provisional Poisson standalone speedup at matched accuracy",
+        "subtitle": "Same A100-80GB consolidation; faster-than-FOM begins only at the larger meshes in this archived cell.",
+        "headerMarkdown": "Treat this curve as provisional until the unfinished cost-cell audit is closed.",
+        "type": "bar",
+        "dataset": "cost",
+        "sourceId": "cost_json",
+        "encodings": {
+          "x": {
+            "field": "N_label",
+            "type": "ordinal",
+            "label": "Mesh N"
+          },
+          "y": {
+            "field": "speedup",
+            "type": "quantitative",
+            "label": "Matched FOM time / ROM time",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "coord_error",
+              "type": "quantitative",
+              "label": "ROM error",
+              "format": "number"
+            },
+            {
+              "field": "coord_time_ms",
+              "type": "quantitative",
+              "label": "ROM ms",
+              "format": "number"
+            },
+            {
+              "field": "fom_error",
+              "type": "quantitative",
+              "label": "Matched FOM error",
+              "format": "number"
+            },
+            {
+              "field": "fom_time_ms",
+              "type": "quantitative",
+              "label": "Matched FOM ms",
+              "format": "number"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "value": 1.0,
+            "label": "Parity"
+          }
+        ],
+        "valueFormat": "number"
+      },
+      {
+        "id": "hybrid_speedup",
+        "title": "Best observed original ROM-to-FOM hybrid speedup",
+        "subtitle": "At the shared FOM tolerance, neither PDE crosses parity after charging ROM construction and correction.",
+        "headerMarkdown": "Standalone ROM speed does not transfer automatically to end-to-end hybrid speed.",
+        "type": "bar",
+        "dataset": "hybrid",
+        "sourceId": "hybrid_json",
+        "encodings": {
+          "x": {
+            "field": "N_label",
+            "type": "ordinal",
+            "label": "Mesh N"
+          },
+          "y": {
+            "field": "speedup",
+            "type": "quantitative",
+            "label": "Baseline FOM time / hybrid time",
+            "format": "number"
+          },
+          "color": {
+            "field": "pde",
+            "type": "nominal",
+            "label": "PDE"
+          },
+          "tooltip": [
+            {
+              "field": "rom_tau",
+              "type": "quantitative",
+              "label": "ROM tolerance",
+              "format": "number"
+            },
+            {
+              "field": "fom_time_ms",
+              "type": "quantitative",
+              "label": "Baseline FOM ms",
+              "format": "number"
+            },
+            {
+              "field": "hybrid_time_ms",
+              "type": "quantitative",
+              "label": "Hybrid ms",
+              "format": "number"
+            },
+            {
+              "field": "baseline_iters",
+              "type": "quantitative",
+              "label": "Baseline iterations",
+              "format": "number"
+            },
+            {
+              "field": "rom_iters",
+              "type": "quantitative",
+              "label": "Post-ROM iterations",
+              "format": "number"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "value": 1.0,
+            "label": "Parity"
+          }
+        ],
+        "valueFormat": "number"
+      }
+    ],
+    "tables": [
+      {
+        "id": "accuracy_table",
+        "title": "Accuracy detail",
+        "subtitle": "Mean relative-L2 error and optimization headroom at K=8, N=64.",
+        "dataset": "accuracy_detail",
+        "sourceId": "accuracy_jsons",
+        "density": "compact",
+        "columns": [
+          {
+            "field": "pde",
+            "label": "PDE"
+          },
+          {
+            "field": "route",
+            "label": "Route"
+          },
+          {
+            "field": "mean_error",
+            "label": "Mean error",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "ratio_to_ceiling",
+            "label": "Error / ceiling",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "pod_floor",
+            "label": "POD projection floor",
+            "format": "number",
+            "align": "right"
+          }
+        ]
+      },
+      {
+        "id": "quadrature_table",
+        "title": "Quadrature accuracy and online cost",
+        "subtitle": "The two timing cells use their own full-grid controls; absolute milliseconds are not compared across PDEs.",
+        "dataset": "quadrature",
+        "sourceId": "quadrature_jsons",
+        "density": "compact",
+        "columns": [
+          {
+            "field": "pde",
+            "label": "PDE"
+          },
+          {
+            "field": "m_label",
+            "label": "m / M"
+          },
+          {
+            "field": "mean_error",
+            "label": "Mean error",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "error_ratio_to_full",
+            "label": "Error / full",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "time_ms",
+            "label": "Online ms",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "time_ratio_to_full",
+            "label": "Time / full",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "eq_fit",
+            "label": "EQ fit",
+            "format": "number",
+            "align": "right"
+          }
+        ]
+      },
+      {
+        "id": "optimizer_table",
+        "title": "Mean, median, and divergent-count diagnostic",
+        "subtitle": "All statistics are shown together to prevent mean-only artifacts.",
+        "dataset": "optimizer_detail",
+        "sourceId": "optimizer_json",
+        "density": "compact",
+        "columns": [
+          {
+            "field": "k",
+            "label": "k",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "base_mean",
+            "label": "Base mean",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "base_median",
+            "label": "Base median",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "base_divergent",
+            "label": "Base divergent",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "trust_mean",
+            "label": "Trust mean",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "trust_median",
+            "label": "Trust median",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "trust_divergent",
+            "label": "Trust divergent",
+            "format": "number",
+            "align": "right"
+          }
+        ]
+      },
+      {
+        "id": "cost_table",
+        "title": "Provisional Poisson matched-accuracy rows",
+        "subtitle": "The selected FOM row is the cheapest same-GPU row no less accurate than the coordinate ROM.",
+        "dataset": "cost",
+        "sourceId": "cost_json",
+        "density": "compact",
+        "columns": [
+          {
+            "field": "N",
+            "label": "N",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "coord_error",
+            "label": "ROM error",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "coord_time_ms",
+            "label": "ROM ms",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "fom_error",
+            "label": "FOM error",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "fom_time_ms",
+            "label": "FOM ms",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "speedup",
+            "label": "Speedup",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "status",
+            "label": "Status"
+          }
+        ]
+      },
+      {
+        "id": "hybrid_table",
+        "title": "Original hybrid detail at the shared FOM tolerance",
+        "subtitle": "Best observed ROM tolerance per PDE and mesh; descriptive envelope, not a preregistered selection.",
+        "dataset": "hybrid",
+        "sourceId": "hybrid_json",
+        "density": "compact",
+        "columns": [
+          {
+            "field": "pde",
+            "label": "PDE"
+          },
+          {
+            "field": "N",
+            "label": "N",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "rom_tau",
+            "label": "ROM tau",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "fom_time_ms",
+            "label": "Baseline ms",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "hybrid_time_ms",
+            "label": "Hybrid ms",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "speedup",
+            "label": "Speedup",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "baseline_iters",
+            "label": "Baseline iters",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "rom_iters",
+            "label": "ROM iters",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "extrap_iters",
+            "label": "Extrap iters",
+            "format": "number",
+            "align": "right"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "accuracy_jsons",
+        "label": "Archived Poisson and Burgers accuracy JSONs",
+        "path": "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/followup/pk_K8/rom_K8.json"
+      },
+      {
+        "id": "objective_json",
+        "label": "Poisson residual-objective sweep",
+        "path": "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/obj_K8_S1/obj_K8_S1.json"
+      },
+      {
+        "id": "quadrature_jsons",
+        "label": "Poisson and Burgers quadrature timing sweeps",
+        "path": "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/followup/pt_m/timing_m.json"
+      },
+      {
+        "id": "optimizer_json",
+        "label": "Poisson latent-optimizer diagnostic",
+        "path": "worktrees/2026-08-18-codex-handoff/experiments/k-stall-diagnosis/exp3_N64.json"
+      },
+      {
+        "id": "cost_json",
+        "label": "Single-GPU cost-to-tolerance consolidation",
+        "path": "worktrees/2026-08-18-codex-handoff/experiments/cost-to-tolerance/runs/pareto_points.json"
+      },
+      {
+        "id": "hybrid_json",
+        "label": "ROM-to-FOM warm-start consolidation and verifier",
+        "path": "worktrees/2026-08-18-codex-handoff/experiments/rom-warmstart-fom/runs/hybrid_points.json"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Poisson-2D and Burgers-2D results and plot audit through August 18\n\nArchived evidence only; later hybrid and architecture results are intentionally excluded."
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## Technical summary\n\nThe weak nonlinear ROM stays close to its decoder ceiling on both PDEs: the EQ-to-ceiling ratios are **1.218x** for Poisson and **1.519x** for Burgers. The trust-region diagnostic removes **11** recorded divergent source-solves. The provisional standalone Poisson curve reaches **3.388x**, yet the best observed original hybrid remains below parity at **0.933x** for Poisson and **0.492x** for Burgers."
+      },
+      {
+        "id": "summary_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "poisson_headroom",
+          "burgers_headroom",
+          "poisson_cost",
+          "poisson_hybrid",
+          "burgers_hybrid"
+        ]
+      },
+      {
+        "id": "accuracy_intro",
+        "type": "markdown",
+        "body": "## Accuracy and residual objectives\n\nThe weak form fixes the dominant accuracy failure. Ratios to the decoder ceiling isolate optimization and quadrature headroom from representation error."
+      },
+      {
+        "id": "accuracy_chart_block",
+        "type": "chart",
+        "chartId": "accuracy_headroom"
+      },
+      {
+        "id": "accuracy_table_block",
+        "type": "table",
+        "tableId": "accuracy_table"
+      },
+      {
+        "id": "objective_chart_block",
+        "type": "chart",
+        "chartId": "objective_comparison"
+      },
+      {
+        "id": "quadrature_intro",
+        "type": "markdown",
+        "body": "## Quadrature tradeoff\n\nThe shared inconsistency is undersampling: m=M is not a defensible operating point, while m near four times M is the first common region close to full-grid accuracy."
+      },
+      {
+        "id": "quadrature_chart_block",
+        "type": "chart",
+        "chartId": "quadrature_ratio"
+      },
+      {
+        "id": "quadrature_table_block",
+        "type": "table",
+        "tableId": "quadrature_table"
+      },
+      {
+        "id": "optimizer_intro",
+        "type": "markdown",
+        "body": "## Optimizer robustness\n\nThe withdrawn k-stall conclusion came from mean-only aggregation. The replacement view keeps means, medians, and divergent counts together."
+      },
+      {
+        "id": "optimizer_chart_block",
+        "type": "chart",
+        "chartId": "optimizer_mean"
+      },
+      {
+        "id": "optimizer_table_block",
+        "type": "table",
+        "tableId": "optimizer_table"
+      },
+      {
+        "id": "cost_intro",
+        "type": "markdown",
+        "body": "## Cost-to-tolerance and deployment\n\nThe standalone Poisson curve is provisional. The original hybrid result is the stronger deployment test through August 18 because it charges construction and correction in the same invocation."
+      },
+      {
+        "id": "cost_chart_block",
+        "type": "chart",
+        "chartId": "cost_speedup"
+      },
+      {
+        "id": "cost_table_block",
+        "type": "table",
+        "tableId": "cost_table"
+      },
+      {
+        "id": "hybrid_chart_block",
+        "type": "chart",
+        "chartId": "hybrid_speedup"
+      },
+      {
+        "id": "hybrid_table_block",
+        "type": "table",
+        "tableId": "hybrid_table"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## Limitations and robustness\n\nThe independent hybrid verifier was rerun during generation: **146 checks passed and 0 failed**. The strict Burgers cost cell contains **0 uncensored consolidated coordinate rows out of 33**, so no Burgers strict frontier is shown. Absolute timings from different jobs are never compared across PDEs."
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## What to make consistent next\n\n1. Apply the trust-region solver to both frozen PDE paths and always report mean, median, worst case, and divergent count together.\n2. Standardize M, m, the NNLS training snapshots, and cold-start hyper-reduction before comparing cost.\n3. Rebuild the cost frontier with same-invocation accuracy and time, saved repetition arrays, GPU burn-in, and the reference FOM tolerance in every caption.\n4. Compare learned warm starts with the strongest classical extrapolation or history arm within one job.\n5. Finish the archived cost-cell audit before promoting the provisional standalone Poisson crossover."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further questions\n\n- Does trust-region globalization close the remaining Burgers headroom without increasing online cost materially?\n- Which part of the hybrid overhead dominates after the cold start is hyper-reduced: latent solve, decode, or correction?\n- Does a fixed quadrature ratio remain adequate as resolution and latent dimension increase?\n- Can any learned warm start beat linear or higher-order history on the same trajectories?"
+      },
+      {
+        "id": "scope",
+        "type": "markdown",
+        "body": "## Scope and source context\n\nThis report stops at the evidence available through August 18. Accuracy cells support method-level comparisons but are not pooled as one benchmark. All quantitative text, tables, and chart datasets were generated from the archived JSONs; the source controls expose their provenance."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-20T00:00:00Z",
+    "status": "ready",
+    "datasets": {
+      "summary": [
+        {
+          "poisson_eq_ceiling_ratio": 1.2178922749897956,
+          "burgers_eq_ceiling_ratio": 1.5187659311431372,
+          "poisson_provisional_speedup": 3.3884908307015467,
+          "poisson_hybrid_speedup": 0.9330666896038121,
+          "burgers_hybrid_speedup": 0.49193069277826595,
+          "divergences_removed": 11,
+          "burgers_uncensored": 0,
+          "verifier_failed": 0
+        }
+      ],
+      "accuracy_nonlinear": [
+        {
+          "pde": "Poisson-2D",
+          "route": "Decoder ceiling",
+          "mean_error": 0.0071093108993884845,
+          "ceiling": 0.0071093108993884845,
+          "ratio_to_ceiling": 1.0,
+          "pod_error": 0.17686011460329493,
+          "pod_floor": 0.17686010826074147
+        },
+        {
+          "pde": "Poisson-2D",
+          "route": "Full-grid weak",
+          "mean_error": 0.007654335026873691,
+          "ceiling": 0.0071093108993884845,
+          "ratio_to_ceiling": 1.0766634256397603,
+          "pod_error": 0.17686011460329493,
+          "pod_floor": 0.17686010826074147
+        },
+        {
+          "pde": "Poisson-2D",
+          "route": "EQ weak",
+          "mean_error": 0.008658374824865991,
+          "ceiling": 0.0071093108993884845,
+          "ratio_to_ceiling": 1.2178922749897956,
+          "pod_error": 0.17686011460329493,
+          "pod_floor": 0.17686010826074147
+        },
+        {
+          "pde": "Burgers-2D",
+          "route": "Decoder ceiling",
+          "mean_error": 0.011471049979687136,
+          "ceiling": 0.011471049979687136,
+          "ratio_to_ceiling": 1.0,
+          "pod_error": 0.2094107099732745,
+          "pod_floor": 0.1964509514438139
+        },
+        {
+          "pde": "Burgers-2D",
+          "route": "Full-grid weak",
+          "mean_error": 0.01654336683526808,
+          "ceiling": 0.011471049979687136,
+          "ratio_to_ceiling": 1.442184182316612,
+          "pod_error": 0.2094107099732745,
+          "pod_floor": 0.1964509514438139
+        },
+        {
+          "pde": "Burgers-2D",
+          "route": "EQ weak",
+          "mean_error": 0.017421839903588997,
+          "ceiling": 0.011471049979687136,
+          "ratio_to_ceiling": 1.5187659311431372,
+          "pod_error": 0.2094107099732745,
+          "pod_floor": 0.1964509514438139
+        }
+      ],
+      "accuracy_detail": [
+        {
+          "pde": "Poisson-2D",
+          "route": "Decoder ceiling",
+          "mean_error": 0.0071093108993884845,
+          "ceiling": 0.0071093108993884845,
+          "ratio_to_ceiling": 1.0,
+          "pod_error": 0.17686011460329493,
+          "pod_floor": 0.17686010826074147
+        },
+        {
+          "pde": "Poisson-2D",
+          "route": "Full-grid weak",
+          "mean_error": 0.007654335026873691,
+          "ceiling": 0.0071093108993884845,
+          "ratio_to_ceiling": 1.0766634256397603,
+          "pod_error": 0.17686011460329493,
+          "pod_floor": 0.17686010826074147
+        },
+        {
+          "pde": "Poisson-2D",
+          "route": "EQ weak",
+          "mean_error": 0.008658374824865991,
+          "ceiling": 0.0071093108993884845,
+          "ratio_to_ceiling": 1.2178922749897956,
+          "pod_error": 0.17686011460329493,
+          "pod_floor": 0.17686010826074147
+        },
+        {
+          "pde": "Poisson-2D",
+          "route": "POD-ROM",
+          "mean_error": 0.17686011460329493,
+          "ceiling": 0.0071093108993884845,
+          "ratio_to_ceiling": 24.87725141103447,
+          "pod_error": 0.17686011460329493,
+          "pod_floor": 0.17686010826074147
+        },
+        {
+          "pde": "Burgers-2D",
+          "route": "Decoder ceiling",
+          "mean_error": 0.011471049979687136,
+          "ceiling": 0.011471049979687136,
+          "ratio_to_ceiling": 1.0,
+          "pod_error": 0.2094107099732745,
+          "pod_floor": 0.1964509514438139
+        },
+        {
+          "pde": "Burgers-2D",
+          "route": "Full-grid weak",
+          "mean_error": 0.01654336683526808,
+          "ceiling": 0.011471049979687136,
+          "ratio_to_ceiling": 1.442184182316612,
+          "pod_error": 0.2094107099732745,
+          "pod_floor": 0.1964509514438139
+        },
+        {
+          "pde": "Burgers-2D",
+          "route": "EQ weak",
+          "mean_error": 0.017421839903588997,
+          "ceiling": 0.011471049979687136,
+          "ratio_to_ceiling": 1.5187659311431372,
+          "pod_error": 0.2094107099732745,
+          "pod_floor": 0.1964509514438139
+        },
+        {
+          "pde": "Burgers-2D",
+          "route": "POD-ROM",
+          "mean_error": 0.2094107099732745,
+          "ceiling": 0.011471049979687136,
+          "ratio_to_ceiling": 18.2555834334344,
+          "pod_error": 0.2094107099732745,
+          "pod_floor": 0.1964509514438139
+        }
+      ],
+      "objectives": [
+        {
+          "objective": "Pointwise finite difference",
+          "objective_key": "fd",
+          "mean_error": 0.06248411150630185,
+          "median_error": 0.050635972316441125,
+          "max_error": 0.16296743791278848,
+          "n_sources": 16
+        },
+        {
+          "objective": "Weak / spectral M64",
+          "objective_key": "spec_a1_M64",
+          "mean_error": 0.008481546554926889,
+          "median_error": 0.007727024658846587,
+          "max_error": 0.01578578531887527,
+          "n_sources": 16
+        },
+        {
+          "objective": "CG-filtered residual",
+          "objective_key": "cg20",
+          "mean_error": 0.008446990155381175,
+          "median_error": 0.007600129033769066,
+          "max_error": 0.017710084663346982,
+          "n_sources": 16
+        },
+        {
+          "objective": "Ritz energy",
+          "objective_key": "ritz",
+          "mean_error": 0.010017663116144531,
+          "median_error": 0.008378960560681797,
+          "max_error": 0.020992355633332165,
+          "n_sources": 16
+        },
+        {
+          "objective": "Low-pass residual",
+          "objective_key": "lowpass4",
+          "mean_error": 0.009405388945856973,
+          "median_error": 0.008143674354570297,
+          "max_error": 0.018348452555799474,
+          "n_sources": 16
+        }
+      ],
+      "quadrature": [
+        {
+          "pde": "Poisson-2D",
+          "M": 64,
+          "m": 64,
+          "m_label": "1xM",
+          "mean_error": 0.062510193694391,
+          "time_ms": 11.123847216367722,
+          "eq_fit": 0.14004371557117345,
+          "worst_row_error": 19843.17671436286,
+          "error_ratio_to_full": 8.056262062149084,
+          "time_ratio_to_full": 0.31229521717793907
+        },
+        {
+          "pde": "Poisson-2D",
+          "M": 64,
+          "m": 128,
+          "m_label": "2xM",
+          "mean_error": 0.017219235295069933,
+          "time_ms": 13.905958272516727,
+          "eq_fit": 0.01607191215465511,
+          "worst_row_error": 2004.3415363943982,
+          "error_ratio_to_full": 2.219200803073786,
+          "time_ratio_to_full": 0.3904012860220689
+        },
+        {
+          "pde": "Poisson-2D",
+          "M": 64,
+          "m": 256,
+          "m_label": "4xM",
+          "mean_error": 0.008422194473116667,
+          "time_ms": 15.072972513735294,
+          "eq_fit": 0.0024121361645816995,
+          "worst_row_error": 1911.7794762176522,
+          "error_ratio_to_full": 1.08544545783258,
+          "time_ratio_to_full": 0.42316449813944146
+        },
+        {
+          "pde": "Poisson-2D",
+          "M": 64,
+          "m": 512,
+          "m_label": "8xM",
+          "mean_error": 0.007788282091640486,
+          "time_ms": 15.189963392913342,
+          "eq_fit": 0.0002427705800651389,
+          "worst_row_error": 45.10400828836846,
+          "error_ratio_to_full": 1.0037473544067483,
+          "time_ratio_to_full": 0.42644894562510877
+        },
+        {
+          "pde": "Poisson-2D",
+          "M": 64,
+          "m": 1024,
+          "m_label": "16xM",
+          "mean_error": 0.0077556642685301675,
+          "time_ms": 18.89896485954523,
+          "eq_fit": 1.59720188920352e-05,
+          "worst_row_error": 15.258832516826653,
+          "error_ratio_to_full": 0.9995435963419717,
+          "time_ratio_to_full": 0.5305768966842318
+        },
+        {
+          "pde": "Poisson-2D",
+          "M": 64,
+          "m": 3844,
+          "m_label": "full grid",
+          "mean_error": 0.0077592055983486475,
+          "time_ms": 35.6196528300643,
+          "eq_fit": null,
+          "worst_row_error": null,
+          "error_ratio_to_full": 1.0,
+          "time_ratio_to_full": 1.0
+        },
+        {
+          "pde": "Burgers-2D",
+          "M": 64,
+          "m": 64,
+          "m_label": "1xM",
+          "mean_error": 0.06540415926562368,
+          "time_ms": 3.351746127009392,
+          "eq_fit": 0.20853615676011392,
+          "worst_row_error": 44119.97103586872,
+          "error_ratio_to_full": 3.9534974907163236,
+          "time_ratio_to_full": 0.04724383483714653
+        },
+        {
+          "pde": "Burgers-2D",
+          "M": 64,
+          "m": 128,
+          "m_label": "2xM",
+          "mean_error": 0.019457351317512604,
+          "time_ms": 4.498000722378492,
+          "eq_fit": 0.048870852658970475,
+          "worst_row_error": 5549.692901436438,
+          "error_ratio_to_full": 1.1761421670044077,
+          "time_ratio_to_full": 0.06340062617302752
+        },
+        {
+          "pde": "Burgers-2D",
+          "M": 64,
+          "m": 256,
+          "m_label": "4xM",
+          "mean_error": 0.017421839916798604,
+          "time_ms": 6.247691810131073,
+          "eq_fit": 0.006210968294057375,
+          "worst_row_error": 339.09867864967777,
+          "error_ratio_to_full": 1.053101227324032,
+          "time_ratio_to_full": 0.08806303007638215
+        },
+        {
+          "pde": "Burgers-2D",
+          "M": 64,
+          "m": 512,
+          "m_label": "8xM",
+          "mean_error": 0.016823477529726745,
+          "time_ms": 10.772492736577988,
+          "eq_fit": 0.0010422756726819304,
+          "worst_row_error": 31.083232193869183,
+          "error_ratio_to_full": 1.0169319038071563,
+          "time_ratio_to_full": 0.15184141290717304
+        },
+        {
+          "pde": "Burgers-2D",
+          "M": 64,
+          "m": 1024,
+          "m_label": "16xM",
+          "mean_error": 0.016654402422301463,
+          "time_ms": 20.669497083872557,
+          "eq_fit": 0.00014523440077117363,
+          "worst_row_error": 74.47890499005842,
+          "error_ratio_to_full": 1.0067117890552222,
+          "time_ratio_to_full": 0.29134256277000564
+        },
+        {
+          "pde": "Burgers-2D",
+          "M": 64,
+          "m": 3844,
+          "m_label": "full grid",
+          "mean_error": 0.016543366833849507,
+          "time_ms": 70.9456829354167,
+          "eq_fit": null,
+          "worst_row_error": null,
+          "error_ratio_to_full": 1.0,
+          "time_ratio_to_full": 1.0
+        }
+      ],
+      "optimizer_chart": [
+        {
+          "k": 4,
+          "k_label": "4",
+          "solver": "Base LM",
+          "ratio_mean": 1.1093882825499684,
+          "ratio_median": 1.0054684080195724,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 4,
+          "k_label": "4",
+          "solver": "Trust region",
+          "ratio_mean": 1.0887044761546198,
+          "ratio_median": 1.0054684045668025,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 6,
+          "k_label": "6",
+          "solver": "Base LM",
+          "ratio_mean": 7.614384204318022,
+          "ratio_median": 1.0493844321837291,
+          "divergent_cases": 3,
+          "n_sources": 16
+        },
+        {
+          "k": 6,
+          "k_label": "6",
+          "solver": "Trust region",
+          "ratio_mean": 1.0530055499976483,
+          "ratio_median": 1.0265974372097282,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 8,
+          "k_label": "8",
+          "solver": "Base LM",
+          "ratio_mean": 1.1016624954615235,
+          "ratio_median": 1.052230598257544,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 8,
+          "k_label": "8",
+          "solver": "Trust region",
+          "ratio_mean": 1.0897858159258205,
+          "ratio_median": 1.049121417842633,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 12,
+          "k_label": "12",
+          "solver": "Base LM",
+          "ratio_mean": 7.853641226026741,
+          "ratio_median": 1.095564492485373,
+          "divergent_cases": 3,
+          "n_sources": 16
+        },
+        {
+          "k": 12,
+          "k_label": "12",
+          "solver": "Trust region",
+          "ratio_mean": 1.1772161890699802,
+          "ratio_median": 1.0865262091131038,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 16,
+          "k_label": "16",
+          "solver": "Base LM",
+          "ratio_mean": 1.2575525475562075,
+          "ratio_median": 1.0881748160329359,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 16,
+          "k_label": "16",
+          "solver": "Trust region",
+          "ratio_mean": 1.2769781655423285,
+          "ratio_median": 1.0918630708587116,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 24,
+          "k_label": "24",
+          "solver": "Base LM",
+          "ratio_mean": 3.396420389369202,
+          "ratio_median": 1.2536043055693473,
+          "divergent_cases": 1,
+          "n_sources": 16
+        },
+        {
+          "k": 24,
+          "k_label": "24",
+          "solver": "Trust region",
+          "ratio_mean": 1.4459616422619197,
+          "ratio_median": 1.2345259052781437,
+          "divergent_cases": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 32,
+          "k_label": "32",
+          "solver": "Base LM",
+          "ratio_mean": 15.487026310641019,
+          "ratio_median": 1.7949722228171723,
+          "divergent_cases": 4,
+          "n_sources": 16
+        },
+        {
+          "k": 32,
+          "k_label": "32",
+          "solver": "Trust region",
+          "ratio_mean": 1.5047982225948444,
+          "ratio_median": 1.279810362668699,
+          "divergent_cases": 0,
+          "n_sources": 16
+        }
+      ],
+      "optimizer_detail": [
+        {
+          "k": 4,
+          "base_mean": 1.1093882825499684,
+          "base_median": 1.0054684080195724,
+          "base_divergent": 0,
+          "trust_mean": 1.0887044761546198,
+          "trust_median": 1.0054684045668025,
+          "trust_divergent": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 6,
+          "base_mean": 7.614384204318022,
+          "base_median": 1.0493844321837291,
+          "base_divergent": 3,
+          "trust_mean": 1.0530055499976483,
+          "trust_median": 1.0265974372097282,
+          "trust_divergent": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 8,
+          "base_mean": 1.1016624954615235,
+          "base_median": 1.052230598257544,
+          "base_divergent": 0,
+          "trust_mean": 1.0897858159258205,
+          "trust_median": 1.049121417842633,
+          "trust_divergent": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 12,
+          "base_mean": 7.853641226026741,
+          "base_median": 1.095564492485373,
+          "base_divergent": 3,
+          "trust_mean": 1.1772161890699802,
+          "trust_median": 1.0865262091131038,
+          "trust_divergent": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 16,
+          "base_mean": 1.2575525475562075,
+          "base_median": 1.0881748160329359,
+          "base_divergent": 0,
+          "trust_mean": 1.2769781655423285,
+          "trust_median": 1.0918630708587116,
+          "trust_divergent": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 24,
+          "base_mean": 3.396420389369202,
+          "base_median": 1.2536043055693473,
+          "base_divergent": 1,
+          "trust_mean": 1.4459616422619197,
+          "trust_median": 1.2345259052781437,
+          "trust_divergent": 0,
+          "n_sources": 16
+        },
+        {
+          "k": 32,
+          "base_mean": 15.487026310641019,
+          "base_median": 1.7949722228171723,
+          "base_divergent": 4,
+          "trust_mean": 1.5047982225948444,
+          "trust_median": 1.279810362668699,
+          "trust_divergent": 0,
+          "n_sources": 16
+        }
+      ],
+      "cost": [
+        {
+          "N": 32,
+          "N_label": "32",
+          "coord_error": 0.013014442662524162,
+          "coord_time_ms": 3.302693832665682,
+          "fom_error": 0.008090936838386452,
+          "fom_time_ms": 1.145338173955679,
+          "speedup": 0.34678908551182586,
+          "gpu": "NVIDIA A100 80GB PCIe",
+          "coord_censored": false,
+          "status": "Provisional: formal cell review incomplete"
+        },
+        {
+          "N": 64,
+          "N_label": "64",
+          "coord_error": 0.011551689008294043,
+          "coord_time_ms": 3.431193996220827,
+          "fom_error": 0.005761181884514985,
+          "fom_time_ms": 2.2181104868650436,
+          "speedup": 0.6464544089632083,
+          "gpu": "NVIDIA A100 80GB PCIe",
+          "coord_censored": false,
+          "status": "Provisional: formal cell review incomplete"
+        },
+        {
+          "N": 128,
+          "N_label": "128",
+          "coord_error": 0.011502231454049761,
+          "coord_time_ms": 3.6243321374058723,
+          "fom_error": 0.004062825671168993,
+          "fom_time_ms": 4.559448920190334,
+          "speedup": 1.2580107858033605,
+          "gpu": "NVIDIA A100 80GB PCIe",
+          "coord_censored": false,
+          "status": "Provisional: formal cell review incomplete"
+        },
+        {
+          "N": 256,
+          "N_label": "256",
+          "coord_error": 0.011270026122256397,
+          "coord_time_ms": 4.571010824292898,
+          "fom_error": 0.010652367082041187,
+          "fom_time_ms": 7.9066697508096695,
+          "speedup": 1.7297420756015762,
+          "gpu": "NVIDIA A100 80GB PCIe",
+          "coord_censored": false,
+          "status": "Provisional: formal cell review incomplete"
+        },
+        {
+          "N": 512,
+          "N_label": "512",
+          "coord_error": 0.011779928552021517,
+          "coord_time_ms": 7.864716928452253,
+          "fom_error": 0.007104037194714979,
+          "fom_time_ms": 26.649521198123693,
+          "speedup": 3.3884908307015467,
+          "gpu": "NVIDIA A100 80GB PCIe",
+          "coord_censored": false,
+          "status": "Provisional: formal cell review incomplete"
+        }
+      ],
+      "hybrid": [
+        {
+          "pde": "Poisson-2D",
+          "N": 32,
+          "N_label": "32",
+          "rom_tau": 0.5,
+          "fom_tau": 1e-06,
+          "speedup": 0.5951999008532268,
+          "baseline_iters": 77.9375,
+          "rom_iters": 81.875,
+          "extrap_iters": null,
+          "fom_time_ms": 2.4253473384305835,
+          "hybrid_time_ms": 4.0748449973762035,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Poisson-2D",
+          "N": 64,
+          "N_label": "64",
+          "rom_tau": 0.5,
+          "fom_tau": 1e-06,
+          "speedup": 0.7121360176512936,
+          "baseline_iters": 158.1875,
+          "rom_iters": 168.3125,
+          "extrap_iters": null,
+          "fom_time_ms": 4.820659174583852,
+          "hybrid_time_ms": 6.769295549020171,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Poisson-2D",
+          "N": 128,
+          "N_label": "128",
+          "rom_tau": 0.1,
+          "fom_tau": 1e-06,
+          "speedup": 0.8312929106856471,
+          "baseline_iters": 322.125,
+          "rom_iters": 324.8125,
+          "extrap_iters": null,
+          "fom_time_ms": 10.046626906841993,
+          "hybrid_time_ms": 12.085543829016387,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Poisson-2D",
+          "N": 256,
+          "N_label": "256",
+          "rom_tau": 0.01,
+          "fom_tau": 1e-06,
+          "speedup": 0.879020767565407,
+          "baseline_iters": 658.4375,
+          "rom_iters": 616.5,
+          "extrap_iters": null,
+          "fom_time_ms": 19.85162973869592,
+          "hybrid_time_ms": 22.58380060084164,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Poisson-2D",
+          "N": 512,
+          "N_label": "512",
+          "rom_tau": 0.01,
+          "fom_tau": 1e-06,
+          "speedup": 0.9330666896038121,
+          "baseline_iters": 1341.5,
+          "rom_iters": 1261.5,
+          "extrap_iters": null,
+          "fom_time_ms": 61.705436790362,
+          "hybrid_time_ms": 66.13186118192971,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Burgers-2D",
+          "N": 32,
+          "N_label": "32",
+          "rom_tau": 1e-09,
+          "fom_tau": 1e-06,
+          "speedup": 0.14529560826632462,
+          "baseline_iters": 98.25,
+          "rom_iters": 92.5,
+          "extrap_iters": 54.25,
+          "fom_time_ms": 47.624693252146244,
+          "hybrid_time_ms": 327.7779268100858,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Burgers-2D",
+          "N": 64,
+          "N_label": "64",
+          "rom_tau": 1e-09,
+          "fom_tau": 1e-06,
+          "speedup": 0.2164101654789727,
+          "baseline_iters": 98.5,
+          "rom_iters": 93.0,
+          "extrap_iters": 55.5,
+          "fom_time_ms": 85.5585290119052,
+          "hybrid_time_ms": 395.353558473289,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Burgers-2D",
+          "N": 128,
+          "N_label": "128",
+          "rom_tau": 1e-09,
+          "fom_tau": 1e-06,
+          "speedup": 0.39285655109375905,
+          "baseline_iters": 98.75,
+          "rom_iters": 92.0,
+          "extrap_iters": 56.5,
+          "fom_time_ms": 228.05743664503098,
+          "hybrid_time_ms": 580.510713160038,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        },
+        {
+          "pde": "Burgers-2D",
+          "N": 256,
+          "N_label": "256",
+          "rom_tau": 1e-09,
+          "fom_tau": 1e-06,
+          "speedup": 0.49193069277826595,
+          "baseline_iters": 99.25,
+          "rom_iters": 92.0,
+          "extrap_iters": 57.0,
+          "fom_time_ms": 449.8835066333413,
+          "hybrid_time_ms": 914.526198990643,
+          "selection": "Best observed ROM tolerance at fixed FOM tolerance"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "accuracy_jsons",
+      "label": "Archived Poisson and Burgers accuracy JSONs",
+      "path": "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/followup/pk_K8/rom_K8.json",
+      "query": {
+        "engine": "local-json/python",
+        "executed_at": "2026-08-20T00:00:00Z",
+        "sql": "SELECT pde, route, mean_error, ceiling FROM archived_accuracy_json WHERE K = 8 AND N = 64",
+        "description": "Selects K=8, N=64 decoder-ceiling, full weak, m=256 EQ weak, and POD comparison rows for both PDEs.",
+        "tables_used": [
+          "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/followup/pk_K8/rom_K8.json",
+          "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/followup/pp_pod/pod_ladder.json",
+          "worktrees/2026-08-18-codex-handoff/experiments/burgers2d-rom-latent-stepping/runs/ad_n64_k8/blat_rom_N64_K8.json"
+        ],
+        "filters": [
+          "Poisson-2D",
+          "Burgers-2D",
+          "K=8",
+          "N=64"
+        ],
+        "metric_definitions": {
+          "ratio_to_ceiling": "mean ROM relative-L2 error divided by the corresponding nonlinear decoder oracle error"
+        }
+      }
+    },
+    {
+      "id": "objective_json",
+      "label": "Poisson residual-objective sweep",
+      "path": "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/obj_K8_S1/obj_K8_S1.json",
+      "query": {
+        "engine": "local-json/python",
+        "executed_at": "2026-08-20T00:00:00Z",
+        "sql": "SELECT objective, rom_rel_l2_mean, rom_rel_l2_med, rom_rel_l2_max FROM poisson_objective_rows WHERE init = 'nearest'",
+        "description": "Selects nearest-initialized pointwise, weak, filtered, Ritz, and low-pass objective rows.",
+        "tables_used": [
+          "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/obj_K8_S1/obj_K8_S1.json"
+        ],
+        "filters": [
+          "init=nearest"
+        ],
+        "metric_definitions": {
+          "mean_error": "mean relative-L2 field error over the recorded test sources"
+        }
+      }
+    },
+    {
+      "id": "quadrature_jsons",
+      "label": "Poisson and Burgers quadrature timing sweeps",
+      "path": "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/followup/pt_m/timing_m.json",
+      "query": {
+        "engine": "local-json/python",
+        "executed_at": "2026-08-20T00:00:00Z",
+        "sql": "SELECT pde, M, m, mean_error, time_ms, eq_fit FROM quadrature_rows WHERE M = 64 AND pool IN ('grid','full')",
+        "description": "Selects M=64 grid-supported empirical-quadrature rows at m=M through m=16M and the full-grid control for both PDEs.",
+        "tables_used": [
+          "worktrees/2026-08-18-codex-handoff/experiments/poisson2d-rom-objective/runs/followup/pt_m/timing_m.json",
+          "worktrees/2026-08-18-codex-handoff/experiments/burgers2d-rom-latent-stepping/runs/followup/bm_m/blat_rom_N64_K8.json"
+        ],
+        "filters": [
+          "M=64",
+          "grid-supported EQ",
+          "K=8"
+        ],
+        "metric_definitions": {
+          "error_ratio_to_full": "row mean error divided by the full-grid weak row error from the same timing cell"
+        }
+      }
+    },
+    {
+      "id": "optimizer_json",
+      "label": "Poisson latent-optimizer diagnostic",
+      "path": "worktrees/2026-08-18-codex-handoff/experiments/k-stall-diagnosis/exp3_N64.json",
+      "query": {
+        "engine": "local-json/python",
+        "executed_at": "2026-08-20T00:00:00Z",
+        "sql": "SELECT k, arm, ratio_mean, ratio_med, n_blown FROM optimizer_rows WHERE N = 64 AND arm IN ('base','tr')",
+        "description": "Compares the base latent LM and trust-region repair over the shared frozen source set.",
+        "tables_used": [
+          "worktrees/2026-08-18-codex-handoff/experiments/k-stall-diagnosis/exp3_N64.json"
+        ],
+        "filters": [
+          "N=64",
+          "arms=base,tr"
+        ],
+        "metric_definitions": {
+          "ratio_mean": "mean ROM error divided by mean decoder-ceiling error",
+          "ratio_median": "median ROM error divided by median decoder-ceiling error"
+        }
+      }
+    },
+    {
+      "id": "cost_json",
+      "label": "Single-GPU cost-to-tolerance consolidation",
+      "path": "worktrees/2026-08-18-codex-handoff/experiments/cost-to-tolerance/runs/pareto_points.json",
+      "query": {
+        "engine": "local-json/python",
+        "executed_at": "2026-08-20T00:00:00Z",
+        "sql": "SELECT coord.N, coord.err_rel_l2, coord.time_ms, MIN(fom.time_ms) FROM consolidated_coord coord JOIN consolidated_fom fom ON fom.N = coord.N AND fom.err_rel_l2 <= coord.err_rel_l2 WHERE coord.pde = 'poisson2d' GROUP BY coord.N, coord.err_rel_l2, coord.time_ms",
+        "description": "For each Poisson mesh, selects the consolidated K=16 coordinate ROM at tau=1e-2 and the cheapest same-GPU FOM row with error no larger than the ROM error.",
+        "tables_used": [
+          "worktrees/2026-08-18-codex-handoff/experiments/cost-to-tolerance/runs/pareto_points.json"
+        ],
+        "filters": [
+          "gpu=NVIDIA A100 80GB PCIe",
+          "pde=poisson2d",
+          "arm=consolidated/fom_consolidated"
+        ],
+        "metric_definitions": {
+          "speedup": "accuracy-matched FOM time divided by total coordinate-ROM time"
+        }
+      }
+    },
+    {
+      "id": "hybrid_json",
+      "label": "ROM-to-FOM warm-start consolidation and verifier",
+      "path": "worktrees/2026-08-18-codex-handoff/experiments/rom-warmstart-fom/runs/hybrid_points.json",
+      "query": {
+        "engine": "local-json/python",
+        "executed_at": "2026-08-20T00:00:00Z",
+        "sql": "SELECT pde, N, MAX(speedup_vs_fom) FROM hybrid_rows WHERE run_role = 'consolidated' AND fom_tau = 1e-6 GROUP BY pde, N",
+        "description": "At the shared FOM tolerance, selects the best observed consolidated ROM tolerance per PDE and mesh; the independent verifier is rerun during report generation.",
+        "tables_used": [
+          "worktrees/2026-08-18-codex-handoff/experiments/rom-warmstart-fom/runs/hybrid_points.json",
+          "worktrees/2026-08-18-codex-handoff/experiments/rom-warmstart-fom/wsf_verify.py"
+        ],
+        "filters": [
+          "run_role=consolidated",
+          "fom_tau=1e-6"
+        ],
+        "metric_definitions": {
+          "speedup": "baseline FOM time divided by ROM construction plus FOM correction time"
+        }
+      }
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://2026-08-18-two-pde-results-and-plot-audit"
+  }
+}

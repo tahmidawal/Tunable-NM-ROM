@@ -271,3 +271,22 @@ same-job cost/non-collapse checks, sequential smallest-pass selection, and a
 maximum of six exposed-development cells.  No k/loss/architecture retry,
 model-validation access, confirmation access, generator implementation, or job
 is authorized before the preregistration audit.
+
+## 2026-08-20 — Phase-5 P5-D implementation preflight
+
+After the preregistration/rank audit passed, P5-D implementation added only the
+locked G1/G2 generator primitives, exact H1/K3 mandatory and max-one structural
+paths, chunked generation and S2 fitting for all 35,904 training coefficient
+targets, train-only per-control mean/per-head RMS normalization, deterministic
+non-collapse/identity/memory/cost gates, and an independent negative-aware audit.
+Exact make/launch/pull scripts bind the P4-D, rank, preregistration, Burgers FOM,
+and staged-source chains.  The requested scientific resource is one H200, 8 CPUs,
+96 GB, and 8 hours; no job has been submitted.
+
+The final excluded local smoke completed in 53.483 seconds under the mandated
+GB10 `jaxrun`.  Both synthetic target fits were healthy (independent normal worst
+`4.58e-16`), train normalization integrity passed, and both generator arms passed
+their exact primitive, rank/curvature non-collapse, Pallas/basis, K3/Cox, and
+boundary checks.  The same independent audit used for a later scientific artifact
+passed end-to-end.  Scientific licenses remain deliberately false in smoke, and
+no training, model-validation, confirmation, or cluster execution occurred.

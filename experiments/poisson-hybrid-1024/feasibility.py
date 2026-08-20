@@ -20,6 +20,7 @@ SMOKE=0, run on a GPU, use f64/highest precision, and retain every timing repeti
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 import os
 import pickle
@@ -104,6 +105,8 @@ BOOTSTRAP_REPS = int(os.environ.get("BOOTSTRAP_REPS", "1000" if SMOKE else "1000
 BOOTSTRAP_SEED = int(os.environ.get("BOOTSTRAP_SEED", "821731"))
 PAIRWISE_DIAGNOSTIC = bool(int(os.environ.get("PAIRWISE_DIAGNOSTIC", "1")))
 BALANCED_PAIR_ARM = os.environ.get("BALANCED_PAIR_ARM", "")
+BALANCED_CONTROL_REPS = int(os.environ.get("BALANCED_CONTROL_REPS", "0"))
+POISSON_2048_KIND = os.environ.get("POISSON_2048_KIND", "")
 
 
 @dataclass(frozen=True)
@@ -198,12 +201,63 @@ if not (0.0 < CAL_FRAC < 0.5):
 if not SMOKE and jax.default_backend() != "gpu":
     raise SystemExit("real feasibility runs require jax_backend=gpu")
 if BALANCED_PAIR_ARM:
-    if ARM_NAMES != [BALANCED_PAIR_ARM]:
-        raise SystemExit("BALANCED_PAIR_ARM requires ARMS to contain exactly that one arm")
+    if ARM_NAMES.count(BALANCED_PAIR_ARM) != 1:
+        raise SystemExit("BALANCED_PAIR_ARM must appear exactly once in ARMS")
+    if any(a.name != BALANCED_PAIR_ARM and a.predictor != "none" for a in ARMS):
+        raise SystemExit("balanced confirmation permits only its learned arm and spectral controls")
     if TIME_REPS % 2:
         raise SystemExit("balanced AB/BA confirmation requires an even TIME_REPS")
     if PAIRWISE_DIAGNOSTIC:
         raise SystemExit("balanced AB/BA confirmation requires PAIRWISE_DIAGNOSTIC=0")
+    control_count = 3 + sum(a.predictor == "none" for a in ARMS)
+    if BALANCED_CONTROL_REPS <= 0 or BALANCED_CONTROL_REPS % (2 * control_count):
+        raise SystemExit(
+            "BALANCED_CONTROL_REPS must be a positive multiple of twice the number "
+            "of zero/dense/FFT/spectral controls"
+        )
+
+
+def require_2048(condition, message):
+    if not condition:
+        raise SystemExit(f"POISSON_2048_KIND={POISSON_2048_KIND}: {message}")
+
+
+if 2048 in NS and POISSON_2048_KIND not in ("smoke", "final"):
+    raise SystemExit("N=2048 requires POISSON_2048_KIND=smoke or final")
+if POISSON_2048_KIND:
+    require_2048(NS == [2048], "NS must be exactly 2048")
+    require_2048(FOM_TAUS == [1e-6, 1e-8, 1e-10],
+                 "FOM_TAUS must be exactly 1e-6,1e-8,1e-10")
+    require_2048(ARM_NAMES == [
+        "lmtrmean_c64_q0", "spectral_q1024", "spectral_q2048"
+    ], "ARMS must be frozen K8,q1024,q2048 in that order")
+    require_2048(NATIVE_ARM_NAMES == [], "NATIVE_ARMS must be empty")
+    require_2048(BALANCED_PAIR_ARM == "lmtrmean_c64_q0",
+                 "BALANCED_PAIR_ARM must be lmtrmean_c64_q0")
+    require_2048(BALANCED_CONTROL_REPS == 10, "BALANCED_CONTROL_REPS must be 10")
+    require_2048(not PAIRWISE_DIAGNOSTIC, "PAIRWISE_DIAGNOSTIC must be 0")
+    require_2048(M_MODES == 64 and MQ == 256, "M/MQ must be 64/256")
+    require_2048(GN_ITERS == 60 and LM_ROM_TAU == 0.01,
+                 "GN_ITERS/LM_ROM_TAU must be 60/0.01")
+    require_2048(TR_SCALE == 1.0, "TR_SCALE must be 1.0")
+    require_2048(CG_MAXITER == 50000, "CG_MAXITER must be 50000")
+    require_2048(EQ_SNAPS == 64 and EQ_PERTURB == 3 and EQ_ROWS == 3072
+                 and EQ_CAND == 4096,
+                 "EQ_SNAPS/EQ_PERTURB/EQ_ROWS/EQ_CAND_OFF must be 64/3/3072/4096")
+    if POISSON_2048_KIND == "smoke":
+        require_2048(SMOKE, "smoke mode requires SMOKE=1")
+        require_2048(TEST_SEED == 13579, "smoke TEST_SEED must be 13579")
+        require_2048(N_TEST == 1 and N_TIME == 1, "smoke N_TEST/N_TIME must be 1/1")
+        require_2048(TIME_REPS == 2 and TIME_WARM == 1 and BURN_S == 0.0,
+                     "smoke TIME_REPS/TIME_WARM/BURN_S must be 2/1/0")
+        require_2048(BOOTSTRAP_REPS == 100, "smoke BOOTSTRAP_REPS must be 100")
+    else:
+        require_2048(not SMOKE, "final mode requires SMOKE=0")
+        require_2048(TEST_SEED == 20260826, "final TEST_SEED must be 20260826")
+        require_2048(N_TEST == 16 and N_TIME == 8, "final N_TEST/N_TIME must be 16/8")
+        require_2048(TIME_REPS == 12 and TIME_WARM == 3 and BURN_S == 3.0,
+                     "final TIME_REPS/TIME_WARM/BURN_S must be 12/3/3")
+        require_2048(BOOTSTRAP_REPS == 10000, "final BOOTSTRAP_REPS must be 10000")
 
 
 def sha256(path: str) -> str:
@@ -329,6 +383,8 @@ def grade_cg_output(out, F, Uref, op):
         recomputed_true_rel_residual=float(recomputed),
         rel_l2_vs_exact_dst=float(rel_l2),
         flag=int(flag),
+        boundary_maxabs=0.0,
+        boundary_contract="interior-only unknown padded by exact zero Dirichlet boundary",
     )
 
 
@@ -506,6 +562,151 @@ def balanced_abba_time(fn_arm, fn_zero, grade_arm, grade_zero, reps, warm, burn_
         burn_rule="fresh GPU burn immediately before every AB and every BA pair",
         bootstrap_seed=seed,
     )
+
+
+def balanced_control_orders(names, reps):
+    """Forward rotations plus their reverses: exact position and precedence balance."""
+    names = list(names)
+    k = len(names)
+    if reps <= 0 or reps % (2 * k):
+        raise ValueError("balanced control repetitions must be a multiple of 2*k")
+    one_cycle = []
+    forward = [names[s:] + names[:s] for s in range(k)]
+    one_cycle.extend(forward)
+    one_cycle.extend([list(reversed(order)) for order in forward])
+    orders = one_cycle * (reps // (2 * k))
+
+    position_counts = {
+        name: [sum(order[pos] == name for order in orders) for pos in range(k)]
+        for name in names
+    }
+    expected_position = reps // k
+    if any(count != expected_position
+           for counts in position_counts.values() for count in counts):
+        raise ValueError("control design is not exactly position balanced")
+    precedence_counts = {}
+    for a, b in itertools.combinations(names, 2):
+        ab = sum(order.index(a) < order.index(b) for order in orders)
+        ba = sum(order.index(b) < order.index(a) for order in orders)
+        if ab != ba:
+            raise ValueError(f"control design is not precedence balanced for {a}/{b}")
+        precedence_counts[f"{a}|{b}"] = dict(a_before_b=ab, b_before_a=ba)
+    return orders, dict(
+        position_counts=position_counts,
+        precedence_counts=precedence_counts,
+        exact_position_balance=True,
+        exact_pairwise_precedence_balance=True,
+    )
+
+
+def balanced_control_time(funcs, graders, names, reps, warm, burn_fn, burn_s):
+    """Time a fixed multi-control panel under an exactly balanced order design."""
+    orders, balance = balanced_control_orders(names, reps)
+    all_s = {name: [] for name in names}
+    telemetry = {name: [] for name in names}
+    positions = {name: [] for name in names}
+    burn_iterations = []
+
+    for _ in range(warm):
+        for name in names:
+            jax.block_until_ready(funcs[name]())
+    for order in orders:
+        burn_iterations.append(wu.gpu_burn(burn_fn, burn_s) if burn_s > 0 else 0)
+        for pos, name in enumerate(order):
+            t0 = time.perf_counter()
+            out = funcs[name]()
+            jax.block_until_ready(out)
+            all_s[name].append(time.perf_counter() - t0)
+            telemetry[name].append(graders[name](out))
+            positions[name].append(pos)
+    return dict(
+        all_s=all_s,
+        timed_telemetry=telemetry,
+        positions=positions,
+        orders=orders,
+        balance=balance,
+        burn_iterations=burn_iterations,
+        burn_rule="fresh GPU burn immediately before every balanced multi-method order",
+    )
+
+
+def balanced_control_summary(all_s, positions, seed):
+    """Median-across-case estimate and whole-case bootstrap for one control."""
+    values = np.asarray(all_s, dtype=float)
+    pos = np.asarray(positions, dtype=int)
+    if values.shape != pos.shape or values.ndim != 2:
+        raise ValueError("control timing/position arrays must match case-by-repetition")
+    k = int(np.max(pos)) + 1
+    expected = values.shape[1] // k
+    if any(np.sum(pos[i] == p) != expected
+           for i in range(values.shape[0]) for p in range(k)):
+        raise ValueError("control positions are not exactly balanced within every case")
+    case_medians = np.median(values, axis=1)
+    estimate = float(np.median(case_medians))
+    rng = np.random.default_rng(seed)
+    sample = rng.integers(0, len(case_medians), size=(BOOTSTRAP_REPS, len(case_medians)))
+    boot = np.median(case_medians[sample], axis=1)
+    threshold = 1.5 * case_medians[:, None]
+    return dict(
+        estimator="median across per-case medians",
+        median_across_case_medians_s=estimate,
+        case_medians_s=case_medians.tolist(),
+        case_clustered_bootstrap_reps=BOOTSTRAP_REPS,
+        bootstrap_ci95_s=[float(np.quantile(boot, 0.025)),
+                          float(np.quantile(boot, 0.975))],
+        position_medians_s={
+            str(p): float(np.median(values[pos == p])) for p in range(k)
+        },
+        outlier_rule="within-case repetition > 1.5 * that method/case median; retained",
+        outlier_count=int(np.sum(values > threshold)),
+        n_repetitions=int(values.size),
+    )
+
+
+def balanced_control_pair_summary(a_s, b_s, seed):
+    """Whole-case paired inference; positive delta means method a is slower."""
+    a = np.asarray(a_s, dtype=float)
+    b = np.asarray(b_s, dtype=float)
+    if a.shape != b.shape or a.ndim != 2:
+        raise ValueError("paired control arrays must be matching case-by-repetition")
+    a_case = np.median(a, axis=1)
+    b_case = np.median(b, axis=1)
+    delta = a - b
+    delta_case = np.median(delta, axis=1)
+    estimate_a = float(np.median(a_case))
+    estimate_b = float(np.median(b_case))
+    rng = np.random.default_rng(seed)
+    sample = rng.integers(0, len(a_case), size=(BOOTSTRAP_REPS, len(a_case)))
+    boot_delta = np.median(delta_case[sample], axis=1)
+    boot_speedup = np.median(b_case[sample], axis=1) / np.median(a_case[sample], axis=1)
+    return dict(
+        estimator="median across per-case medians; bootstrap resamples whole cases",
+        method_a_median_s=estimate_a,
+        method_b_median_s=estimate_b,
+        delta_a_minus_b_median_across_cases_s=float(np.median(delta_case)),
+        delta_a_minus_b_bootstrap_ci95_s=[float(np.quantile(boot_delta, 0.025)),
+                                          float(np.quantile(boot_delta, 0.975))],
+        speedup_b_over_a=estimate_b / estimate_a,
+        speedup_b_over_a_bootstrap_ci95=[float(np.quantile(boot_speedup, 0.025)),
+                                         float(np.quantile(boot_speedup, 0.975))],
+        paired_case_sign_counts=dict(
+            a_faster=int(np.sum(delta_case < 0.0)),
+            b_faster=int(np.sum(delta_case > 0.0)),
+            exact_tie=int(np.sum(delta_case == 0.0)),
+        ),
+        paired_repetition_sign_counts=dict(
+            a_faster=int(np.sum(delta < 0.0)),
+            b_faster=int(np.sum(delta > 0.0)),
+            exact_tie=int(np.sum(delta == 0.0)),
+        ),
+    )
+
+
+def device_memory_stats():
+    """Return integer CUDA allocator statistics when the backend exposes them."""
+    stats = jax.devices()[0].memory_stats() or {}
+    return {str(key): int(value) for key, value in stats.items()
+            if isinstance(value, (int, np.integer))}
 
 
 def endpoint_bilinear(uc, out_n: int):
@@ -851,10 +1052,15 @@ def bc_factor(xy):
 def main():
     prov = wu.provenance(HERE)
     prov["source_sha256"] = wu.source_hashes(HERE, ("*.py",))
+    if POISSON_2048_KIND:
+        gpu_kind = prov.get("gpu_kind", "")
+        require_2048("A100" in gpu_kind and "80GB" in gpu_kind,
+                     f"requires NVIDIA A100 80GB GPU class, got {gpu_kind!r}")
     print(
         f"jax_backend={jax.default_backend()} device={jax.devices()[0]} "
         f"NS={NS} taus={FOM_TAUS} arms={ARM_NAMES} test_seed={TEST_SEED} "
-        f"smoke={int(SMOKE)} reps={TIME_REPS} warm={TIME_WARM}",
+        f"smoke={int(SMOKE)} reps={TIME_REPS} control_reps={BALANCED_CONTROL_REPS} "
+        f"warm={TIME_WARM}",
         flush=True,
     )
     interp_affine_err = check_endpoint_bilinear()
@@ -1072,6 +1278,15 @@ def main():
             balanced_pair_contract=(
                 "within each case: burn, learned then zero; reburn, zero then learned; "
                 "repeat with exact equal positions; grade every timed invocation"
+                if BALANCED_PAIR_ARM else None
+            ),
+            balanced_control_reps=BALANCED_CONTROL_REPS,
+            poisson_2048_kind=POISSON_2048_KIND or None,
+            balanced_control_contract=(
+                "zero CG, dense DST, FFT-DST, and every spectral arm use forward cyclic "
+                "rotations plus their reverses; each method has equal occupancy at every "
+                "position and every pair has equal precedence, with a fresh burn before "
+                "each order and whole-case bootstrap inference"
                 if BALANCED_PAIR_ARM else None
             ),
             cg_maxiter=CG_MAXITER,
@@ -1775,11 +1990,15 @@ def main():
                                    for case in zero_tele for g in case)
                 arm_flag_max = max(g["flag"] for case in arm_tele for g in case)
                 zero_flag_max = max(g["flag"] for case in zero_tele for g in case)
-                if arm_flag_max or zero_flag_max or arm_res_max > tau or zero_res_max > tau:
+                arm_bc_max = max(g["boundary_maxabs"] for case in arm_tele for g in case)
+                zero_bc_max = max(g["boundary_maxabs"] for case in zero_tele for g in case)
+                if (arm_flag_max or zero_flag_max or arm_res_max > tau or zero_res_max > tau
+                        or arm_bc_max > 1e-14 or zero_bc_max > 1e-14):
                     raise SystemExit(
                         f"N={n} tau={tau}: balanced timed residual/flag gate failed "
                         f"arm={arm_res_max:.3e}/{arm_flag_max} "
-                        f"zero={zero_res_max:.3e}/{zero_flag_max}"
+                        f"zero={zero_res_max:.3e}/{zero_flag_max} "
+                        f"bc={arm_bc_max:.3e}/{zero_bc_max:.3e}"
                     )
                 pair_blocks[str(tau)] = dict(
                     arm=arm_name,
@@ -1791,6 +2010,8 @@ def main():
                     summary=summary,
                     arm_true_rel_residual_max=float(arm_res_max),
                     zero_true_rel_residual_max=float(zero_res_max),
+                    arm_boundary_maxabs=float(arm_bc_max),
+                    zero_boundary_maxabs=float(zero_bc_max),
                     arm_iterations_mean=float(np.mean([
                         g["iterations"] for case in arm_tele for g in case])),
                     zero_iterations_mean=float(np.mean([
@@ -1837,6 +2058,186 @@ def main():
                 )
                 save()
             mesh_check["balanced_pair_timing"] = pair_blocks
+
+            # Production controls are deliberately timed in a second block rather than
+            # inserted into the learned-versus-zero AB/BA pair.  Forward cyclic rotations
+            # plus their reverses give every method equal occupancy at every clock position
+            # and every method pair equal precedence.  Every timed output is graded here.
+            direct_runtime = jax.jit(lambda p, F: direct(F))
+            dense_direct_runtime = jax.jit(lambda p, F: dense_direct(F))
+            spectral_names = [a.name for a in ARMS if a.predictor == "none"]
+            control_names = ["zero_cg", "dense_dst_direct", "fft_dst_direct"] + spectral_names
+            production_blocks = {}
+            for tau_index, tau in enumerate(FOM_TAUS):
+                baseline = baseline_registry[tau]
+                cases = []
+                for i in range(N_TIME):
+                    funcs = {
+                        "zero_cg": lambda ii=i, fn=baseline: fn(params[ii], Fs[ii]),
+                        "dense_dst_direct": (
+                            lambda ii=i, fn=dense_direct_runtime: fn(params[ii], Fs[ii])
+                        ),
+                        "fft_dst_direct": (
+                            lambda ii=i, fn=direct_runtime: fn(params[ii], Fs[ii])
+                        ),
+                    }
+                    for name in spectral_names:
+                        fn = timing_registry[(tau, name)]
+                        funcs[name] = lambda ii=i, fn=fn: fn(params[ii], Fs[ii])
+
+                    def direct_grade(out, *, ii=i):
+                        return dict(
+                            iterations=0,
+                            recomputed_true_rel_residual=float(
+                                jnp.linalg.norm(op(out) - Fs[ii]) / jnp.linalg.norm(Fs[ii])
+                            ),
+                            rel_l2_vs_exact_dst=float(
+                                jnp.linalg.norm(out - Uref[ii]) / jnp.linalg.norm(Uref[ii])
+                            ),
+                            flag=0,
+                            boundary_maxabs=0.0,
+                            boundary_contract=(
+                                "interior-only unknown padded by exact zero Dirichlet boundary"
+                            ),
+                        )
+
+                    cg_grade = lambda out, ii=i: grade_cg_output(
+                        out, Fs[ii], Uref[ii], op
+                    )
+                    graders = {
+                        "zero_cg": cg_grade,
+                        "dense_dst_direct": direct_grade,
+                        "fft_dst_direct": direct_grade,
+                    }
+                    graders.update({name: cg_grade for name in spectral_names})
+                    case = balanced_control_time(
+                        funcs, graders, control_names, BALANCED_CONTROL_REPS, TIME_WARM,
+                        lambda ii=i, fn=baseline: fn(params[ii], Fs[ii])[0].block_until_ready(),
+                        BURN_S,
+                    )
+                    case["case"] = i
+                    case["source_parameter"] = np.asarray(params_np[i]).tolist()
+                    cases.append(case)
+
+                all_s = {
+                    name: [case["all_s"][name] for case in cases]
+                    for name in control_names
+                }
+                positions = {
+                    name: [case["positions"][name] for case in cases]
+                    for name in control_names
+                }
+                telemetry = {
+                    name: [case["timed_telemetry"][name] for case in cases]
+                    for name in control_names
+                }
+                summary_seed = BOOTSTRAP_SEED + 1009 * n + int(round(-np.log10(tau)))
+                summaries = {
+                    name: balanced_control_summary(
+                        all_s[name], positions[name], summary_seed + 37 * j
+                    )
+                    for j, name in enumerate(control_names)
+                }
+                comparisons = {}
+                for j, (a, b) in enumerate(itertools.combinations(control_names, 2)):
+                    comparisons[f"{a}|{b}"] = balanced_control_pair_summary(
+                        all_s[a], all_s[b], summary_seed + 10000 + 53 * j
+                    )
+                eligibility = {}
+                for name in control_names:
+                    grades = [g for case in telemetry[name] for g in case]
+                    residual = max(g["recomputed_true_rel_residual"] for g in grades)
+                    flag = max(g["flag"] for g in grades)
+                    boundary = max(g["boundary_maxabs"] for g in grades)
+                    finite = bool(np.all(np.isfinite(np.asarray(all_s[name], dtype=float))))
+                    eligible = finite and flag == 0 and residual <= tau and boundary <= 1e-14
+                    eligibility[name] = dict(
+                        eligible=eligible,
+                        all_times_finite=finite,
+                        flag_max=int(flag),
+                        true_rel_residual_max=float(residual),
+                        boundary_maxabs=float(boundary),
+                        rel_l2_mean=float(np.mean([
+                            g["rel_l2_vs_exact_dst"] for g in grades
+                        ])),
+                        iterations_mean=float(np.mean([g["iterations"] for g in grades])),
+                    )
+                    if name == "zero_cg" or name.startswith("spectral_q"):
+                        if not eligible:
+                            raise SystemExit(
+                                f"N={n} tau={tau}: required iterative control {name} "
+                                f"failed eligibility {eligibility[name]}"
+                            )
+                balance_audit = cases[0]["balance"]
+                if any(case["balance"] != balance_audit for case in cases[1:]):
+                    raise SystemExit("balanced control order audit changed across cases")
+                production_blocks[str(tau)] = dict(
+                    methods=control_names,
+                    order_rule=(
+                        "forward cyclic rotations followed by their reverses; fresh burn "
+                        "immediately before every order"
+                    ),
+                    exact_position_and_pairwise_precedence_balance=True,
+                    same_invocation_cost_accuracy_work=True,
+                    cases=cases,
+                    all_s=all_s,
+                    timed_telemetry=telemetry,
+                    summaries=summaries,
+                    pairwise_comparisons=comparisons,
+                    eligibility=eligibility,
+                    balance_audit=balance_audit,
+                )
+                for name in spectral_names:
+                    row = next(r for r in report["rows"]
+                               if r["N"] == n and r["fom_tau"] == tau
+                               and r["arm"] == name)
+                    method_summary = summaries[name]
+                    method_eligibility = eligibility[name]
+                    row.update(
+                        balanced_control_authoritative=True,
+                        joint_timing_authoritative=False,
+                        hybrid_total_ms=(
+                            method_summary["median_across_case_medians_s"] * 1e3
+                        ),
+                        hybrid_total_bootstrap_ci95_ms=[
+                            value * 1e3 for value in method_summary["bootstrap_ci95_s"]
+                        ],
+                        hybrid_timing_outlier_count=method_summary["outlier_count"],
+                        final_true_rel_residual_max=method_eligibility[
+                            "true_rel_residual_max"
+                        ],
+                        final_rel_l2_mean=method_eligibility["rel_l2_mean"],
+                        iters_hybrid_timed_mean=method_eligibility["iterations_mean"],
+                    )
+                print(
+                    f"CONTROLS N={n} tau={tau:.0e}: "
+                    + ", ".join(
+                        f"{name}={summaries[name]['median_across_case_medians_s'] * 1e3:.3f}ms/"
+                        f"{'eligible' if eligibility[name]['eligible'] else 'ineligible'}"
+                        for name in control_names
+                    ),
+                    flush=True,
+                )
+                save()
+            mesh_check["balanced_production_controls"] = production_blocks
+            memory = device_memory_stats()
+            mesh_check["device_memory_stats"] = memory
+            peak = memory.get("peak_bytes_in_use")
+            limit = memory.get("bytes_limit")
+            mesh_check["device_memory_peak_fraction"] = (
+                float(peak / limit) if peak is not None and limit else None
+            )
+            if POISSON_2048_KIND:
+                require_2048(peak is not None and limit is not None and limit > 0,
+                             "CUDA memory_stats must expose peak_bytes_in_use and bytes_limit")
+                require_2048(peak / limit <= 0.80,
+                             f"peak device allocation {peak / limit:.3%} exceeds 80%")
+                mesh_check["device_memory_gate"] = dict(
+                    required_peak_fraction_max=0.80,
+                    passed=True,
+                    peak_bytes=int(peak),
+                    limit_bytes=int(limit),
+                )
             mesh_check["wall_seconds"] = time.time() - mesh_t0
             save()
             continue

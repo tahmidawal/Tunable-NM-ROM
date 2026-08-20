@@ -238,3 +238,54 @@ own truncated objective.  It therefore did not advance to the frozen N=1024 conf
 no alpha or M tuning followed.  `SPEED-PUSH.generated.md` is the closing, JSON-derived audit.
 The Poisson nonlinear-warm-start speed search is exhausted under the construction budgets and
 strongest eligible direct/spectral controls recorded here.
+
+## 20 August N=2048 extension: locked confirmation design
+
+This extension is a resolution confirmation, not a renewed architecture or hyperparameter
+search.  It branches exactly from audited Poisson closure commit `57329c0` and keeps the frozen
+genuine K=8 NM-ROM `lmtrmean_c64_q0`: M=64, m=256 decoder-output EQ, alpha=1 smooth weak form,
+training-cloud trust region, mean training latent initialization, fixed N=64 decode/prolongation,
+and the same unpreconditioned true-residual counting-CG finish.  There is no architecture,
+objective, latent-dimension, coarse-grid, quadrature, or stopping-policy selection at N=2048.
+
+The sole scientific cohort is fixed before output to `TEST_SEED=20260826`, first 16 generated
+cases, with the first eight timed.  The mesh is only N=2048 and FOM tolerances are exactly
+1e-6, 1e-8, and 1e-10.  Both smoke and final are constrained to the same NVIDIA A100-80GB GPU
+class; all work is f64/highest.  Every timed invocation returns its
+own field, true residual, error, status, boundary contract, and iteration work; no cost or
+accuracy is joined across calls or jobs.  The hard zero boundary is checked on the learned guess
+and on every timed final field.  All timing samples are retained, and the fixed outlier diagnostic
+is a repetition above 1.5 times its own case median; no observation is removed.
+
+The final uses three untimed warmups.  The learned comparison then uses 12 repetitions per timed
+case and tolerance.  Every adjacent pair is
+fresh burn, NM-ROM then zero CG; fresh burn, zero CG then NM-ROM.  Thus each method is first and
+second six times per case.  The headline is the median across eight per-case medians, with 10,000
+whole-case bootstrap resamples for time, paired delta, and speed ratio.  A learned crossover is
+supported only when the clustered speedup interval is above one, the learned-minus-zero delta
+interval is below zero, all statuses are zero, and every recomputed true residual and exact-zero
+boundary meets its named gate.
+
+Production controls are measured in a second balanced block in the same job: zero counting CG,
+dense DST, FFT-DST, partial `spectral_q1024` plus counting CG, and full
+`spectral_q2048` plus counting CG (the full arm clamps to all 2046 interior modes).  Ten
+repetitions use all five cyclic rotations followed by their reverses, with a fresh burn before
+every order.  Each method occupies every clock position exactly twice per case and every method
+pair has 5/5 precedence.  The same median-across-cases and whole-case bootstrap contract applies.
+Direct methods are eligible only where their timed maximum recomputed residual meets the named
+tolerance; an ineligible direct row remains visible rather than being silently promoted.  The
+partial/full ranks are fixed scaling controls, not a rank sweep or selection bracket.
+
+Before the scientific cohort is opened, an excluded N=2048 execution/memory smoke uses unrelated
+seed 13579, one case, no clock claim, and the same learned/full-control compiled routes.  The
+smoke uses two learned repetitions, one untimed warmup, ten balanced control repetitions, and no
+burn because its only purposes are execution and peak-memory eligibility.  The final
+job is licensed only if that smoke completes without OOM, captured-large-constant, nonfinite,
+boundary, solver-status, or required-residual failure and reports peak device allocation at most
+80% of the device limit.  Smoke timings and field errors are non-results.  The scientific run is
+single-shot regardless of outcome; no seed, rank, or architecture follow-up is licensed here.
+
+An earlier local under-one-minute wiring attempt is retained as an explicitly incomplete
+non-result: its streamed EQ fit consumed almost the entire local budget and the timeout stopped it
+before any row completed.  A separate synthetic unit smoke verifies the ten-order position and
+precedence assertions.  Neither replaces the required A100-80GB N=2048 memory smoke.

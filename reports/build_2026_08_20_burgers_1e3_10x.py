@@ -1,4 +1,4 @@
-"""Generate the final Burgers 1e-3/10x negative-result report from artifacts."""
+"""Generate the Burgers 1e-3/10x Phase-4 checkpoint from artifacts."""
 from __future__ import annotations
 
 import json
@@ -20,6 +20,7 @@ DECISION_PATH = os.path.join(RUNS, "d0_r2", "d0_decision.json")
 FOM_PATH = os.path.join(RUNS, "fom_cal_r4", "out", "fom_cal.json")
 S0_PATH = os.path.join(RUNS, "s0_spline_r1", "out", "s0.json")
 P3_PATH = os.path.join(RUNS, "p3_d_r1", "out", "phase3_d.json")
+P4_PATH = os.path.join(RUNS, "p4_d_r3", "out", "phase4_d.json")
 AUDIT_PATH = os.path.join(ROOT, "reports", "generated", "burgers_1e3_10x_audit.json")
 TABLE_PATH = os.path.join(ROOT, "reports", "generated", "burgers_1e3_10x_tables.json")
 REPORT_PATH = os.path.join(ROOT, "reports", "2026-08-20-burgers-1e3-10x.md")
@@ -133,14 +134,22 @@ def make_figures(decision, fom, p3):
 
 
 def main():
-    d0, decision, fom, s0, p3, audit = map(load, (
-        D0_PATH, DECISION_PATH, FOM_PATH, S0_PATH, P3_PATH, AUDIT_PATH
+    d0, decision, fom, s0, p3, p4, audit = map(load, (
+        D0_PATH, DECISION_PATH, FOM_PATH, S0_PATH, P3_PATH, P4_PATH, AUDIT_PATH
     ))
     assert audit["status"] == "pass"
     assert decision["hard_stop_now"] and s0["decision"]["phase2_hard_stop"]
     assert p3["decision"] == {
         "selected_solver": None, "selected_kernel": "K3",
         "run_P3_F": False, "phase3_hard_stop": True,
+    }
+    assert audit["phase4_d"]["training_seed11_k24_licensed"]
+    assert p4["decision"] == {
+        "selected_spatial_arm": "H1",
+        "training_seed11_k24_licensed": True,
+        "correction_classification": "conditional-zero-or-occasional-attempt",
+        "phase4_hard_stop": False,
+        "scientific_promotion_allowed": True,
     }
     figures = make_figures(decision, fom, p3)
 
@@ -217,8 +226,40 @@ def main():
             "memory_pass": gate["memory_pass"], "pass": gate["pass"],
         })
 
+    p4_oracle_rows = []
+    for arm in ("H1", "H2"):
+        oracle = p4["free_oracle"][arm]
+        for n in (64, 128, 256):
+            row = oracle["meshes"][str(n)]
+            p4_oracle_rows.append({
+                "arm": arm, "N": n, "mean": row["trajectory_mean"],
+                "worst": row["trajectory_worst"], "snapshot_worst": row["snapshot_worst"],
+                "healthy": row["healthy_count"], "fits": row["fit_count"],
+                "normal_worst": row["normal_worst"],
+                "pass": row["zero_unhealthy"] and row["trajectory_mean"] <= 2e-4
+                and row["trajectory_worst"] <= 7e-4,
+            })
+        p4_oracle_rows.append({
+            "arm": arm, "N": "pooled", "mean": oracle["summary"]["trajectory_mean"],
+            "worst": oracle["summary"]["trajectory_worst"], "snapshot_worst": None,
+            "healthy": sum(row["healthy_count"] for row in oracle["meshes"].values()),
+            "fits": sum(row["fit_count"] for row in oracle["meshes"].values()),
+            "normal_worst": max(row["normal_worst"] for row in oracle["meshes"].values()),
+            "pass": oracle["summary"]["pass"],
+        })
+    p4_cost_rows = []
+    for arm in ("H1", "H2"):
+        for route, key in (("mandatory", "mandatory"), ("maximum-one", "maximum_one")):
+            summary = p4["cost_panel"]["summaries"][f"{arm}_{key}"]
+            gate = p4["cost_panel"]["gates"][arm][key]
+            p4_cost_rows.append({
+                "arm": arm, "route": route, "median_s": summary["median_elapsed_s"],
+                "speedup": gate["paired_median_speedup"], "clustered_ci": gate["clustered_speedup_ci"],
+                "outliers": summary["outliers_gt_1p5_within_trajectory_total"], "pass": gate["pass"],
+            })
+
     tables = {
-        "status": "final_negative_phases_1_to_3",
+        "status": "phase4_d_positive_training_active",
         "representation_phase1": representation_rows,
         "fom_scaling_phase1": fom_rows,
         "spline_phase2": {"oracle_meshes": spline_rows, "cost": s0_cost},
@@ -228,10 +269,16 @@ def main():
             "live_fom_median_s": p3["kernel_diagnostic"]["summaries"]["fom"]["median_elapsed_s"],
             "decision": p3["decision"],
         },
+        "hierarchical_phase4": {
+            "oracle": p4_oracle_rows, "cost": p4_cost_rows,
+            "live_fom_accuracy": p4["cost_panel"]["fom_accuracy"],
+            "live_fom_median_s": p4["cost_panel"]["summaries"]["fom"]["median_elapsed_s"],
+            "decision": p4["decision"],
+        },
         "inherited_pure_nmrom": d0["inherited"],
         "scientific_cells": {
             "D0": 1, "excluded_partial_FOM": 1, "final_FOM": 1,
-            "Phase2_S0": 1, "Phase3_D": 1, "Phase3_F": 0,
+            "Phase2_S0": 1, "Phase3_D": 1, "Phase3_F": 0, "Phase4_D": 1,
             "training": 0, "weak_EQ": 0, "scaling": 0, "confirmation": 0,
         },
     }
@@ -276,31 +323,49 @@ def main():
           "/".join("pass" if row[key] else "fail" for key in ("identity_pass", "canonical_work_pass", "memory_pass")),
           "pass" if row["pass"] else "fail"] for row in kernel_rows],
     )
+    p4_oracle_md = table(
+        ["status", "arm", "N", "oracle mean / worst", "snapshot worst", "healthy fits", "normal worst", "decision"],
+        [["final", row["arm"], row["N"], f"{sci(row['mean'])} / {sci(row['worst'])}",
+          "—" if row["snapshot_worst"] is None else sci(row["snapshot_worst"]),
+          f"{row['healthy']}/{row['fits']}", sci(row["normal_worst"]),
+          "pass" if row["pass"] else "fail"] for row in p4_oracle_rows],
+    )
+    p4_cost_md = table(
+        ["status", "arm", "route", "median ms", "speedup", "clustered 95% CI", "outliers", "decision"],
+        [["final", row["arm"], row["route"], ms(row["median_s"]), f"{row['speedup']:.3f}x",
+          f"[{row['clustered_ci'][0]:.3f}, {row['clustered_ci'][1]:.3f}]", row["outliers"],
+          "pass" if row["pass"] else "fail"] for row in p4_cost_rows],
+    )
     inherited = d0["inherited"]
     live = p3["kernel_diagnostic"]
     selected_solver = min(solver_rows, key=lambda row: row["target_N128_draw530_trajectory_relative_l2"])
     selected_kernel = next(row for row in kernel_rows if row["route"] == p3["decision"]["selected_kernel"])
     miss_ratio = selected_solver["target_N128_draw530_trajectory_relative_l2"] / 7e-4
     improvement = 1 - selected_solver["target_N128_draw530_trajectory_relative_l2"] / selected_solver["target_N128_draw530_s0_trajectory_relative_l2"]
+    h1 = p4["free_oracle"]["H1"]
+    h1_cost = p4["cost_panel"]["gates"]["H1"]
     gate_md = table(["status", "gate", "result"], [
         ["final pass", "reference numerical error <=1e-4", sci(max(row["tighter_difference_worst"] for row in fom_rows))],
-        ["final fail", "selected decoder reconstruction mean<=3e-4, worst<=1e-3 on untouched validation", "no trained decoder; validation untouched"],
-        ["final fail", "full weak<=7e-4 and EQ<=1e-3, degradation<=1.05", "training/weak/EQ not licensed"],
-        ["final pass (structural only)", "N1024 mandatory kernel >=10x, clustered LB>=8x", f"{selected_kernel['speedup']:.3f}x, LB {selected_kernel['clustered_ci'][0]:.3f}"],
-        ["final fail", "locked spline representation witness <=7e-4", sci(selected_solver["target_N128_draw530_trajectory_relative_l2"])],
+        ["not reached", "selected decoder reconstruction mean<=3e-4, worst<=1e-3 on untouched validation", "H1 seed-11 training licensed; validation untouched"],
+        ["not reached", "full weak<=7e-4 and EQ<=1e-3, degradation<=1.05", "training/weak/EQ not yet run"],
+        ["final pass (structural only)", "N1024 H1 mandatory >=10x, clustered LB>=8x", f"{h1_cost['mandatory']['paired_median_speedup']:.3f}x, LB {h1_cost['mandatory']['clustered_speedup_ci'][0]:.3f}"],
+        ["final fail (worst-case route)", "N1024 H1 maximum-one >=10x, clustered LB>=8x", f"{h1_cost['maximum_one']['paired_median_speedup']:.3f}x, LB {h1_cost['maximum_one']['clustered_speedup_ci'][0]:.3f}"],
+        ["final pass", "H1 free-oracle mean<=2e-4, worst<=7e-4", f"{sci(h1['summary']['trajectory_mean'])} / {sci(h1['summary']['trajectory_worst'])}"],
         ["not reached", "N256/N512 learned scaling", "no eligible trained pure model"],
         ["not opened", "untouched confirmation", "fixed data remained untouched"],
     ])
 
-    report = f"""# Burgers 1e-3 / 10x pure NM-ROM search — final Phase 1–3 result
+    report = f"""# Burgers 1e-3 / 10x pure NM-ROM search — Phase 4 diagnostic checkpoint
 
-This report covers the finite transported-Hermite search, calibrated Burgers FOM, adaptive transported-spline oracle/cost screen, and exact solver/kernel repair. All accepted numbers are **final**. The result is negative: no pure nonlinear model reached the simultaneous accuracy and speed gates, and model-validation plus untouched-confirmation draws were never opened.
+This report covers the finite transported-Hermite search, calibrated Burgers FOM, adaptive transported-spline screens, exact solver/kernel repair, and hierarchical-spline diagnostic. All accepted diagnostic numbers are **final**. The overall search remains active because Phase 4 licenses one H1/k24 seed-11 training cell; model-validation and untouched-confirmation draws remain unopened.
 
 ## Outcome
 
 **[final negative]** Phase 1 stopped because the best transported Hermite oracle ({best['concept']}) has mean/worst {sci(best['oracle_mean'])} / {sci(best['oracle_worst'])}. Phase 2's much richer R=48/k=24 spline reaches pooled mean/worst {sci(s0['free_oracle']['C']['summary']['trajectory_error_mean'])} / {sci(s0['free_oracle']['C']['summary']['trajectory_error_worst'])}, but its original coefficient fits are unhealthy and its N=128 worst exceeds the {sci(7e-4)} gate. Its same-job mandatory cost also reaches only {s0_cost['speedup']:.3f}x with clustered interval [{s0_cost['clustered_ci'][0]:.3f}, {s0_cost['clustered_ci'][1]:.3f}].
 
 Phase 3 successfully repairs both implementation defects without changing the spline space. Both algebraic solvers become fully healthy, and exact kernel {p3['decision']['selected_kernel']} reaches {selected_kernel['speedup']:.3f}x with clustered interval [{selected_kernel['clustered_ci'][0]:.3f}, {selected_kernel['clustered_ci'][1]:.3f}]. Yet the best repaired N=128 draw-530 trajectory remains {sci(selected_solver['target_N128_draw530_trajectory_relative_l2'])}: a {100*improvement:.1f}% improvement over {sci(selected_solver['target_N128_draw530_s0_trajectory_relative_l2'])}, but still {miss_ratio:.4f}x the unchanged {sci(7e-4)} representation gate. Therefore `selected_solver=null`, P3-F is not licensed, and no training/weak-EQ/scaling/confirmation result exists.
+
+**[final Phase-4 diagnostic; training active]** The genuinely hierarchical H1 chart passes every exposed free-oracle gate with pooled mean/worst {sci(h1['summary']['trajectory_mean'])} / {sci(h1['summary']['trajectory_worst'])} and is the preregistered smallest passing arm. Its same-H200 mandatory path reaches {h1_cost['mandatory']['paired_median_speedup']:.3f}x with clustered interval [{h1_cost['mandatory']['clustered_speedup_ci'][0]:.3f}, {h1_cost['mandatory']['clustered_speedup_ci'][1]:.3f}], licensing seed-11 k24 training. The worst-case maximum-one route reaches only {h1_cost['maximum_one']['paired_median_speedup']:.3f}x with interval [{h1_cost['maximum_one']['clustered_speedup_ci'][0]:.3f}, {h1_cost['maximum_one']['clustered_speedup_ci'][1]:.3f}], so H1 is only conditionally eligible for a zero/occasional-attempt policy; any later corrected rollout must independently pass the unchanged speed gates.
 
 The inherited seed-0 H160x4/g2 artifact copied into D0 has full-weak mean/worst {sci(inherited['full_weak_trajectory_mean'])} / {sci(inherited['full_weak_trajectory_worst'])}; this specific inherited row is neither a new result nor an eligible Pareto point.
 
@@ -340,22 +405,30 @@ The authoritative wall fractions are computed from representation-oracle arrays.
 
 **[final]** The live FOM has mean/worst error {sci(live['fom_accuracy']['mean'])} / {sci(live['fom_accuracy']['worst'])}, is healthy/eligible, and has median {ms(live['summaries']['fom']['median_elapsed_s'])} ms. K1, K2, and K3 all pass both speed requirements. For K3, basis-probe maximum absolute weight difference is {sci(live['pallas_basis_identity']['weight_max_abs'])}; all four live-case full/stencil/previous/residual/rho identities, exact boundaries, finite exactly-50 weak-evaluation work records, memory gates, and the 20-repeat cyclic balance pass. All within-trajectory timing outlier counts are zero.
 
+## Phase 4 hierarchical spline diagnostic
+
+{p4_oracle_md}
+
+{p4_cost_md}
+
+**[final positive selection]** Both H1 and H2 pass the exposed oracle and mandatory structural-cost gates; the preregistered smallest passing arm H1 is selected. Its full exposed oracle contains {sum(row['fit_count'] for row in h1['meshes'].values())} healthy fits with no S0 or fixed-P3-subset regression. The paired live FOM has mean/worst error {sci(p4['cost_panel']['fom_accuracy']['mean'])} / {sci(p4['cost_panel']['fom_accuracy']['worst'])} and median {ms(p4['cost_panel']['summaries']['fom']['median_elapsed_s'])} ms. Identity is at most {sci(max(row['max_relative_l2'] for row in p4['cost_panel']['identity']['H1']))}; exact boundaries, support, finite exactly-50 mandatory work, memory, balanced 20-repeat ordering, and zero timing outliers pass. The maximum-one row is a measured limitation, not a headline result or a reason to weaken the final speed gate.
+
 ## Gate ledger and stopping condition
 
 {gate_md}
 
-The structural K3 row is not a deployable NM-ROM Pareto point: it uses representative locked states to lower-bound mandatory work and has no eligible trained decoder/solver. Consequently no method can claim the headline N=1024 accuracy/speed result. The preregistered finite Phase-3 stopping condition is met honestly at `selected_solver=null`, `selected_kernel=K3`, `run_P3_F=false`, `phase3_hard_stop=true`.
+No structural row is a deployable NM-ROM Pareto point: H1 is still an oracle/cost diagnostic without a trained decoder or rollout. Consequently no method can yet claim the headline N=1024 result. Phase 4 is active at `selected_spatial_arm=H1`, `training_seed11_k24_licensed=true`, and `correction_classification=conditional-zero-or-occasional-attempt`; the next and only licensed scientific cell is H1/k24 seed-11 training.
 
 ## Exclusions and cell accounting
 
-**[excluded]** Job 2667476 is a partial FOM attempt that failed before N=1024. Zero-output jobs 2667361, 2667374, and 2667531 are infrastructure/code-preflight records. Every local smoke is execution-only. The two synthetic-only model-validation drafts and the stopped prospective P3-F draft are uncommitted and excluded; none touched model-validation or confirmation data.
+**[excluded]** Job 2667476 is a partial FOM attempt that failed before N=1024. Zero-output jobs 2667361, 2667374, 2667531, and Phase-4 job 2668601 are infrastructure/code-preflight records. Phase-4 job 2668613 is excluded without scientific inspection because its root manifest omitted the nested P3 manifest. Every local smoke is execution-only. The two synthetic-only model-validation drafts are uncommitted and excluded; none touched model-validation or confirmation data.
 
-**[final accounting]** Five scientific cells were consumed: D0, one excluded partial FOM cell, corrected FOM calibration, Phase-2 S0, and Phase-3 P3-D. P3-F, training, model validation, weak/EQ, scaling, and confirmation consumed zero scientific cells. All completed remote directories were deleted after checksummed pulls, and the assigned namespace is empty.
+**[checkpoint accounting]** Six accepted scientific cells were consumed: D0, one excluded partial FOM cell, corrected FOM calibration, Phase-2 S0, Phase-3 P3-D, and Phase-4 P4-D. The two Phase-4 provenance failures did not alter the scientific method/cap and are excluded. Training, model validation, weak/EQ, scaling, and confirmation consumed zero cells. All completed remote directories were deleted after checksummed pulls, and the assigned namespace is empty.
 
 ## Artifacts and rerun
 
-- Preregistrations: `experiments/burgers-1e3-10x/PRE-REGISTRATION.md`, `PHASE-2-PRE-REGISTRATION.md`, `PHASE-3-PRE-REGISTRATION.md`
-- Accepted runs: `experiments/burgers-1e3-10x/runs/d0_r2/`, `fom_cal_r4/`, `s0_spline_r1/`, `p3_d_r1/`
+- Preregistrations: `experiments/burgers-1e3-10x/PRE-REGISTRATION.md`, `PHASE-2-PRE-REGISTRATION.md`, `PHASE-3-PRE-REGISTRATION.md`, `PHASE-4-PRE-REGISTRATION.md`
+- Accepted runs: `experiments/burgers-1e3-10x/runs/d0_r2/`, `fom_cal_r4/`, `s0_spline_r1/`, `p3_d_r1/`, `p4_d_r3/`
 - Machine tables: `reports/generated/burgers_1e3_10x_tables.json`
 - Audit: `reports/generated/burgers_1e3_10x_audit.json`
 - Regenerate: `/home/tahmid/Dev/.venv/bin/python reports/audit_2026_08_20_burgers_1e3_10x.py && /home/tahmid/Dev/.venv/bin/python reports/build_2026_08_20_burgers_1e3_10x.py`

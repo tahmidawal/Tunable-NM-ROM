@@ -1,6 +1,6 @@
 {
  "status": "pass",
- "scope": "Burgers finite Phase 1-3 pure-NMROM negative result",
+ "scope": "Burgers finite Phase 1-4 pure-NMROM diagnostic checkpoint",
  "d0": {
   "manifest_files": [
    "out/d0.npz",
@@ -114,9 +114,40 @@
   "hard_stop": true,
   "independent_audit_sha256": "bf59900ec549c1dfe769742731fd2712395097b1d14b4a30f43e74c3a6750e02"
  },
+ "phase4_d": {
+  "manifest_files": [
+   "REMOTE.sha256",
+   "logs/2668794.err",
+   "MANIFEST.sha256",
+   "out/phase4_d.npz",
+   "logs/2668794.out",
+   "SACCT.txt",
+   "out/AUDIT.json",
+   "out/phase4_d.json"
+  ],
+  "source_hashes": {
+   "b10_audit_phase4_d.py": "4200dd6b76e50cac2aab0a9d62dbd5333592f2dcaeddf2ff857a34bf806488ee",
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_phase3.py": "5a67c44c6713d5c429df254bbfef7df2205372067f82882e6d1852ce61d1555e",
+   "b10_phase4.py": "00c1ae05bec605ec1d492c74ef4c8a56b84cfa96aee610ce06f3fdca5da38a8c",
+   "b10_phase4_d.py": "8dba884a1687e52f4d908877f0f6c8d997fcdf1f7d6f1f03fdcb303626fa21c0",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "82f364a7e5c724b0345ede72640d12fdeafb9d2bbe1a66a4f09f0285941cd53c"
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "job_id": "2668794",
+  "classified_hwloc_lines": 2,
+  "selected_spatial_arm": "H1",
+  "training_seed11_k24_licensed": true,
+  "correction_classification": "conditional-zero-or-occasional-attempt",
+  "independent_audit_sha256": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3"
+ },
  "excluded": {
   "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
   "local_smokes": "execution-only and excluded from scientific claims",
+  "phase4_r1": "pre-science dependency-schema failure; zero scientific output",
+  "phase4_r2": "completed output excluded without scientific inspection because the root manifest omitted the nested P3 manifest",
   "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened"
  },
  "model_validation_opened": false,

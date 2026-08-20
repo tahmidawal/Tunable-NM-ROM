@@ -1,5 +1,5 @@
 {
- "status": "final_negative_phases_1_to_3",
+ "status": "phase4_d_positive_training_active",
  "representation_phase1": [
   {
    "concept": "HG4",
@@ -244,6 +244,162 @@
    "phase3_hard_stop": true
   }
  },
+ "hierarchical_phase4": {
+  "oracle": [
+   {
+    "arm": "H1",
+    "N": 64,
+    "mean": 5.425492552283339e-05,
+    "worst": 0.00035931759898014836,
+    "snapshot_worst": 0.0005824752743608245,
+    "healthy": 3264,
+    "fits": 3264,
+    "normal_worst": 1.4669270640009328e-15,
+    "pass": true
+   },
+   {
+    "arm": "H1",
+    "N": 128,
+    "mean": 6.298724419354269e-05,
+    "worst": 0.00038589189380902123,
+    "snapshot_worst": 0.0006394841941855016,
+    "healthy": 1632,
+    "fits": 1632,
+    "normal_worst": 1.4467250216623154e-15,
+    "pass": true
+   },
+   {
+    "arm": "H1",
+    "N": 256,
+    "mean": 6.338926325756966e-05,
+    "worst": 0.0002995121095817958,
+    "snapshot_worst": 0.0005820208493149652,
+    "healthy": 816,
+    "fits": 816,
+    "normal_worst": 3.033157999782293e-15,
+    "pass": true
+   },
+   {
+    "arm": "H1",
+    "N": "pooled",
+    "mean": 5.8054779105141225e-05,
+    "worst": 0.00038589189380902123,
+    "snapshot_worst": null,
+    "healthy": 5712,
+    "fits": 5712,
+    "normal_worst": 3.033157999782293e-15,
+    "pass": true
+   },
+   {
+    "arm": "H2",
+    "N": 64,
+    "mean": 5.3967039980067434e-05,
+    "worst": 0.00035931736506566775,
+    "snapshot_worst": 0.0005824751762198505,
+    "healthy": 3264,
+    "fits": 3264,
+    "normal_worst": 1.8341051858788134e-15,
+    "pass": true
+   },
+   {
+    "arm": "H2",
+    "N": 128,
+    "mean": 6.159867133466893e-05,
+    "worst": 0.00038576793866978515,
+    "snapshot_worst": 0.0006394053609748159,
+    "healthy": 1632,
+    "fits": 1632,
+    "normal_worst": 2.0255819195873296e-15,
+    "pass": true
+   },
+   {
+    "arm": "H2",
+    "N": 256,
+    "mean": 5.977093761368391e-05,
+    "worst": 0.0002995057888751047,
+    "snapshot_worst": 0.000582018634595274,
+    "healthy": 816,
+    "fits": 816,
+    "normal_worst": 5.009669735016413e-15,
+    "pass": true
+   },
+   {
+    "arm": "H2",
+    "N": "pooled",
+    "mean": 5.697663431475593e-05,
+    "worst": 0.00038576793866978515,
+    "snapshot_worst": null,
+    "healthy": 5712,
+    "fits": 5712,
+    "normal_worst": 5.009669735016413e-15,
+    "pass": true
+   }
+  ],
+  "cost": [
+   {
+    "arm": "H1",
+    "route": "mandatory",
+    "median_s": 0.0038164816796779633,
+    "speedup": 26.007433961555094,
+    "clustered_ci": [
+     20.138589882140558,
+     31.6464793942412
+    ],
+    "outliers": 0,
+    "pass": true
+   },
+   {
+    "arm": "H1",
+    "route": "maximum-one",
+    "median_s": 0.014065941795706749,
+    "speedup": 7.056541018817879,
+    "clustered_ci": [
+     5.577487827021284,
+     8.672268083937306
+    ],
+    "outliers": 0,
+    "pass": false
+   },
+   {
+    "arm": "H2",
+    "route": "mandatory",
+    "median_s": 0.003711732104420662,
+    "speedup": 26.741395245495983,
+    "clustered_ci": [
+     21.59807306283112,
+     32.67899498514677
+    ],
+    "outliers": 0,
+    "pass": true
+   },
+   {
+    "arm": "H2",
+    "route": "maximum-one",
+    "median_s": 0.014010045444592834,
+    "speedup": 7.084694738661081,
+    "clustered_ci": [
+     5.613569269334758,
+     8.685951021211547
+    ],
+    "outliers": 0,
+    "pass": false
+   }
+  ],
+  "live_fom_accuracy": {
+   "mean": 0.0006584064402266894,
+   "worst": 0.001400001319726601,
+   "healthy": true,
+   "eligible": true
+  },
+  "live_fom_median_s": 0.09925689524970949,
+  "decision": {
+   "selected_spatial_arm": "H1",
+   "training_seed11_k24_licensed": true,
+   "correction_classification": "conditional-zero-or-occasional-attempt",
+   "phase4_hard_stop": false,
+   "scientific_promotion_allowed": true
+  }
+ },
  "inherited_pure_nmrom": {
   "artifact": "inherited_h160.json",
   "sha256": "354ef84c046fbdb16dc3bbe56bf94fd75c41889807fbc40825e2c7eeb2044550",
@@ -315,6 +471,7 @@
   "Phase2_S0": 1,
   "Phase3_D": 1,
   "Phase3_F": 0,
+  "Phase4_D": 1,
   "training": 0,
   "weak_EQ": 0,
   "scaling": 0,

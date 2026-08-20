@@ -273,17 +273,92 @@ def audit_phase3():
     }
 
 
+def audit_phase4():
+    directory = os.path.join(RUNS, "p4_d_r3")
+    report_path = os.path.join(directory, "out", "phase4_d.json")
+    npz_path = os.path.join(directory, "out", "phase4_d.npz")
+    report = load(report_path)
+    independent = load(os.path.join(directory, "out", "AUDIT.json"))
+    log = open(os.path.join(directory, "logs", "2668794.out")).read()
+    errors = open(os.path.join(directory, "logs", "2668794.err")).read().splitlines()
+    known = re.compile(
+        r"^E[0-9]{4} [0-9:.]+ [0-9]+ numa_hwloc\.cc:121\] "
+        r"Call to hwloc_set_cpubind\(\) failed: Invalid argument \[22\]$"
+    )
+    provenance = report["provenance"]
+    assert report["status"] == "complete"
+    assert provenance["jax_backend"] == "gpu" and provenance["x64"]
+    assert provenance["matmul_precision"] == "highest"
+    assert provenance["slurm_job_id"] == "2668794"
+    assert provenance["gpu_kind"] == "NVIDIA H200"
+    assert "jax_backend=gpu" in log and "ALL-DONE" in log
+    assert len(errors) == 2 and all(known.fullmatch(line) for line in errors)
+    assert not report["config"]["model_validation_touched"]
+    assert not report["config"]["confirmation_touched"]
+    assert independent["status"] == "pass"
+    assert independent["expected_commit"] == provenance["commit"]
+    assert independent["expected_job"] == provenance["slurm_job_id"]
+    assert independent["source_json_sha256"] == sha256(report_path)
+    assert independent["source_npz_sha256"] == sha256(npz_path)
+    assert independent["manifest_sha256"] == sha256(os.path.join(directory, "MANIFEST.sha256"))
+    expected_decision = {
+        "selected_spatial_arm": "H1",
+        "training_seed11_k24_licensed": True,
+        "correction_classification": "conditional-zero-or-occasional-attempt",
+        "phase4_hard_stop": False,
+        "scientific_promotion_allowed": True,
+    }
+    assert report["decision"] == expected_decision
+    assert independent["decision"] == expected_decision
+    for arm in ("H1", "H2"):
+        oracle = report["free_oracle"][arm]
+        assert oracle["summary"]["pass"]
+        assert oracle["summary"]["trajectory_mean"] <= 2e-4
+        assert oracle["summary"]["trajectory_worst"] <= 7e-4
+        for mesh in oracle["meshes"].values():
+            assert mesh["healthy_count"] == mesh["fit_count"]
+            assert mesh["normal_worst"] <= 1e-8
+            assert mesh["trajectory_mean"] <= 2e-4 and mesh["trajectory_worst"] <= 7e-4
+            assert mesh["exact_boundary"] and mesh["max_support"] <= 32
+            assert mesh["s0_no_regression"] and mesh["p3_fixed_subset_no_regression"]
+        gate = report["cost_panel"]["gates"][arm]
+        assert gate["training_cost_license"] and gate["mandatory"]["pass"]
+        assert not gate["maximum_one"]["pass"]
+    panel = report["cost_panel"]
+    assert panel["fom_accuracy"]["eligible"] and panel["exact_position_balance"]
+    for method in ("fom", "H1_mandatory", "H1_maximum_one", "H2_mandatory", "H2_maximum_one"):
+        records, summary = panel["records"][method], panel["summaries"][method]
+        assert len(records) == 80
+        assert statistics.median(row["elapsed_s"] for row in records) == summary["median_elapsed_s"]
+        assert summary["outliers_gt_1p5_within_trajectory_total"] == 0
+        assert panel["position_counts"][method] == [4] * 5
+    for arm in ("H1", "H2"):
+        assert all(row["pass"] and row["exact_boundary"] for row in panel["identity"][arm])
+    return {
+        "manifest_files": check_local_manifest("p4_d_r3"),
+        "source_hashes": audit_source_hashes(report),
+        "backend": provenance["jax_backend"], "gpu": provenance["gpu_kind"],
+        "job_id": provenance["slurm_job_id"], "classified_hwloc_lines": len(errors),
+        "selected_spatial_arm": "H1", "training_seed11_k24_licensed": True,
+        "correction_classification": expected_decision["correction_classification"],
+        "independent_audit_sha256": sha256(os.path.join(directory, "out", "AUDIT.json")),
+    }
+
+
 def main():
     result = {
         "status": "pass",
-        "scope": "Burgers finite Phase 1-3 pure-NMROM negative result",
+        "scope": "Burgers finite Phase 1-4 pure-NMROM diagnostic checkpoint",
         "d0": audit_d0(),
         "fom_calibration": audit_fom(),
         "phase2_s0": audit_s0(),
         "phase3_d": audit_phase3(),
+        "phase4_d": audit_phase4(),
         "excluded": {
             "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
             "local_smokes": "execution-only and excluded from scientific claims",
+            "phase4_r1": "pre-science dependency-schema failure; zero scientific output",
+            "phase4_r2": "completed output excluded without scientific inspection because the root manifest omitted the nested P3 manifest",
             "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened",
         },
         "model_validation_opened": False,

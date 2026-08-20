@@ -10,8 +10,13 @@ conditionally licensed G2/q32 training cell.
 Work remains on branch `exp/2026-08-19-burgers-1e3-10x` in worktree
 `worktrees/2026-08-19-burgers-1e3-10x`, prospectively based on Phase-7 closure
 commit `b52ba3705dda55885b57248cfc19fc2b72894336`. P8-D binds the immutable r3
-JSON/NPZ/checkpoint SHA-256 values `a59e9264...`, `fd40d339c...`, and
-`11310163...`, plus its passing audit `35c95ee3...` and P5/P6 dependency chain.
+JSON/NPZ/checkpoint SHA-256 values
+`a59e92640aae787003d5753d4614de1b6fe90c68fdba7f2daa81a125a3c0956c`,
+`fd40d339c0746b48c07408d5d017dff8819595350c365f7af5fc0d40673946ae`, and
+`113101637ef2b4fb75fe2ca0ba0dabe5a90c35d03a5c563b765438385c62db8c`,
+plus its passing audit
+`35c95ee38dea7622f40b6c199f4164b6c27ec3f37ad5561a51de6cd3b0a79322`
+and P5/P6 dependency chain.
 
 The only development populations are regenerated seed-0, all 51 times:
 N64 cases `0:512`, N128 `0:128`, and N256 `0:64` for training (35,904
@@ -55,6 +60,10 @@ is not optimized. The only starts are the r3 direct-predictor q and the r3
 free-target-encoder q. There is no zero/random start or restart. With normalized
 residual `r`, matrix-free JVP/VJP products apply the exact full-grid decoder
 Jacobian `J=d r/dq`; no dense full-grid Jacobian is formed.
+
+The free-target-encoder initialization uses exposed free coefficients and is
+strictly a nondeployable diagnostic/oracle control. The direct predictor is the
+only deployable route; its direct field remains separately gated and reported.
 
 At each attempt solve `(J^T J + lambda I)p=-J^T r` by matrix-free CG, at most 19
 iterations and relative residual tolerance `1e-12`. Scale `p` to radius `Delta`,

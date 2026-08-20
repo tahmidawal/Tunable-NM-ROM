@@ -58,6 +58,15 @@ log-quadratic fit only on the positive 3-by-3 sampled patch around that maximum.
 The direct decoded arm is a charged surrogate control only; it is never headline-
 eligible as an NM-ROM.
 
+All seven predictor features are standardized by means and standard deviations
+computed from the locked training mix only (a standard deviation below `1e-12` is
+replaced by one).  Selection and training use that identical transformation.  For
+deployment, standardization is folded exactly into the first affine layer,
+`W_fold=W/scale[:,None]` and `b_fold=b-(mean/scale)@W`; the raw-feature folded and
+standardized-feature predictions must agree to `1e-12` in f64.  Both parameterizations,
+the train-only mean/scale, and the identity error are persisted.  Thus S0's raw-input
+MLP has the exact deployed operation shape and no uncharged normalization kernel.
+
 ## Spline mathematics locked before S0
 
 The aligned domain is exactly `D=[-4.5,4.5]^2`.  In each coordinate the spline has
@@ -229,6 +238,14 @@ At most 12 Phase-2 scientific GPU job directories may be run:
 8. One N=1024 same-GPU development/preconfirmation cell.
 9. Exactly one untouched confirmation cell, only if every earlier gate passes.
 
+Candidate training is licensed only by a checksummed artifact chain, never by a
+manual override.  Seed 11 may run the S0-promoted smallest arm directly.  A larger
+promoted arm may run only when every smaller promoted arm has a completed,
+checksummed seed-11 artifact whose learned coefficient-manifold oracle fails; a
+direct-predictor failure alone does not license escalation.  Seeds 29 and 47 require
+the completed, checksummed, passing seed-11 finalist artifact for the same arm.
+Every input artifact and decision, including JSON/NPZ/checkpoint hashes, is persisted.
+
 This allocation is `1+3+2+1+1+1+1+1+1=12` cells at maximum.  Infrastructure-only
 attempts with zero scientific output may be resubmitted once and remain recorded.
 Local jobs are execution smokes only and never scientific evidence.
@@ -278,6 +295,11 @@ three stored starts is the oracle result.  The direct predictor is then evaluate
 without selection-time latent optimization.  The optional loss-revision cell may
 change only the already listed gradient/weak/rollout weights; it may not change any
 optimizer, initialization, sampling, mesh, or oracle rule.
+The loss-revision license is a joint all-seed decision made only after completed
+seed-11, seed-29, and seed-47 artifacts exist for the same finalist: all three learned
+oracles must pass and at least one direct arm must miss its gate by no more than 2x.
+No single-seed training cell may claim that license; it records only its local
+near-miss condition.
 
 S0 promotes an `R` only if its free projection oracle at every locked selection N
 and pooled over those trajectories has trajectory mean `<=2e-4`, trajectory worst

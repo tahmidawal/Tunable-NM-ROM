@@ -26,7 +26,7 @@ ssh tufts-login "
   cd '$REMOTE'
   sha256sum -c MANIFEST.sha256
   sacct -j '$job_id' --format=JobIDRaw,JobName%32,State,Elapsed,ExitCode,NodeList%24,AllocTRES%80 > SACCT.txt
-  awk -v id='$job_id' '\$1==id {seen=1; if (\$2 != "ctol_b10_$cell" || \$3 != "COMPLETED" || \$5 != "0:0") exit 2} END {exit(seen?0:3)}' SACCT.txt
+  awk -v id='$job_id' '\$1==id {seen=1; if (\$2 != \"ctol_b10_$cell\" || \$3 != \"COMPLETED\" || \$5 != \"0:0\") exit 2} END {exit(seen?0:3)}' SACCT.txt
   find logs out -type f -exec sha256sum {} \; | sort > REMOTE.sha256
   sha256sum SACCT.txt MANIFEST.sha256 >> REMOTE.sha256
 "

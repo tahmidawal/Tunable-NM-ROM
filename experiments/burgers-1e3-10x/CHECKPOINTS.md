@@ -198,3 +198,43 @@ self-test passes, proving that an honest no-solver/no-kernel decision yields an
 integrity pass plus Phase-3 hard stop rather than an audit failure.  No
 scientific job, training, model-validation, or confirmation run preceded this
 checkpoint.
+
+## 2026-08-20 — Phase-3 P3-D final hard stop
+
+The single authorized P3-D job `2668417` ran from immutable commit
+`bff4472cfbf054a158387b7cbbc4d40a0d4102db` on an NVIDIA H200 with GPU backend,
+f64/highest, and completed in 3:20.  Its manifest-file SHA-256 is
+`c7bacf66d326e4511be17db2af7b46be57bd45832781f5c11d3e93d048dc7107`.
+The 214-byte raw stderr contains exactly two classified Tufts/JAX hwloc binding
+lines.  Remote and local checksums, Slurm state, staged provenance, and the
+independent negative-aware audit all pass.  The exact remote directory
+`p3_d_r1` was deleted after validation; the assigned namespace and queue are
+empty.
+
+Both coefficient-solve repairs eliminate the Phase-2 numerical-health failure.
+Augmented column-preconditioned LSMR (S1) has 128/128 healthy fits and worst
+relative normal residual `5.672e-14`; sparse normal-equation SuperLU (S2) also
+has 128/128 healthy fits and worst residual `1.341e-15`.  Both pass the locked
+per-snapshot no-regression rule.  However, their targeted N=128 draw-530
+trajectory errors are `7.888286332e-4` and `7.888286339e-4`, respectively,
+versus the Phase-2 value `9.968316650e-4`.  This is a real 20.9% algebraic
+improvement, but it remains `1.1269x` above the unchanged `7e-4` gate.  Neither
+solver is selected; the active floor is now representation rather than
+coefficient-solve health.
+
+The new live N=1024 FOM is healthy and accuracy eligible at mean/worst
+`6.584e-4` / `1.400e-3`, with median `98.8863` ms.  K0 takes `17.2595` ms for
+`5.729x`, clustered interval `[4.518,7.011]`, and fails.  The mathematically
+identical optimized kernels all pass: K1 takes `8.86708` ms for `11.152x`,
+interval `[8.821,13.701]`; K2 takes `8.60510` ms for `11.492x`, interval
+`[9.093,14.152]`; K3 takes `2.53521` ms for `39.005x`, interval
+`[30.285,46.755]`, and is selected.  Every selected-kernel identity, exact
+boundary/support, memory, canonical finite 50-weak-evaluation work, balance,
+and zero-failure/outlier gate passes.
+
+Because no solver satisfies the unchanged accuracy gate, the preregistered
+joint license does not fire: `selected_solver=null`, `selected_kernel=K3`,
+`run_P3_F=false`, and `phase3_hard_stop=true`.  P3-F, spline training,
+model-validation, EQ, scaling, and untouched confirmation were not run.  The
+two synthetic-only model-validation drafts and the stopped prospective P3-F
+draft remain excluded and uncommitted.

@@ -75,3 +75,10 @@ all per-case health/work records.  A second N=32 execution smoke passed this
 explicit health gate with worst chain difference `6.316e-15`; it is excluded
 from scientific claims.  Job `2667531` is code-preflight-only and consumes no
 scientific cell.
+
+The corrected calibration was staged from clean commit
+`2457c9c6f4c036dc7b7ac5963b597ac2b583dfc1` in fresh directory `fom_cal_r4`.
+Its manifest-file SHA-256 is
+`89069fab6c4792154874f5fe42865cd0ba551b516907c5ce9ef77686d321d5c0`; job
+`2667536` (`ctol_b10_fom_cal_r4`) requests one A100, 128 GB host memory, eight
+CPUs, and 90 minutes.

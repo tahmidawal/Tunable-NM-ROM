@@ -16,7 +16,7 @@ states are decoded together in f64, and their temporal differences correct the
 live cubic FOM history.  This is explicitly **not** called a genuine NM-ROM
 until an online weak PDE residual selects its latent state.  Development seed
 20260818, draw 16, indices 4:8 is disjoint from checkpoint training/selection
-and the untouched final seed 20260819.  Local execution smokes at q=16/24/32
+and the continued round's locked final seed 20260825.  Local execution smokes at q=16/24/32
 left 0.877/0.781/0.666 of the correction error and are excluded from scientific
 claims.  One final q=48/64 cluster representation gate is allowed; if neither
 leaves at most 0.25, the checkpoint is stopped without further fitting.
@@ -37,6 +37,14 @@ disjoint seed-20260818 indices 8:12; neither selection cohort is reused.
 Local q=16/32/64 execution smokes are excluded; they only motivated the locked
 resolution bracket.  This control raises the denominator any learned hybrid
 must beat and does not replace the genuine NM-ROM attempt.
+
+Seed 20260819 is the already-inspected immutable `confirm2` cohort and is not a
+fresh confirmation draw for this continuation.  Before any new final data are
+opened, the continued round locks seed **20260825**, canonical draw 16, indices
+0:4 as its untouched final cohort.  Development/selection remains entirely on
+seed 20260818.  The new final cohort is opened only after the architecture,
+coarse-resolution rule, relaxation, weak-update policy, and FOM solver are
+committed.
 
 This cell redesigns the Burgers warm-start path after the audited FiLM NM-ROM
 rollout lost every wall-clock comparison through `N=256`. The delivered field is

@@ -1,0 +1,23 @@
+host=pax050 gpu=NVIDIA A100 80GB PCIe
+commit=9cdeca5aabc9f911f3d6057e371813e11d3e6c89 dirty=e3b0c44298fc cell=ctol_hybb_dynfinal1
+jax_backend=gpu cuda:0
+N=32 tau=1e-06: cubic=29.911ms dynamic=23.187ms paired_save=6.692ms speedup=1.290x
+N=32 tau=1e-08: cubic=43.327ms dynamic=46.896ms paired_save=-3.501ms speedup=0.924x
+N=32 tau=1e-10: cubic=59.720ms dynamic=55.324ms paired_save=5.709ms speedup=1.079x
+N=64 tau=1e-06: cubic=23.236ms dynamic=17.909ms paired_save=5.401ms speedup=1.297x
+N=64 tau=1e-08: cubic=35.575ms dynamic=37.235ms paired_save=-1.032ms speedup=0.955x
+N=64 tau=1e-10: cubic=44.706ms dynamic=43.255ms paired_save=3.006ms speedup=1.034x
+N=128 tau=1e-06: cubic=36.164ms dynamic=27.286ms paired_save=8.881ms speedup=1.325x
+N=128 tau=1e-08: cubic=53.464ms dynamic=56.245ms paired_save=-2.228ms speedup=0.951x
+N=128 tau=1e-10: cubic=74.415ms dynamic=70.152ms paired_save=7.015ms speedup=1.061x
+N=256 tau=1e-06: cubic=34.274ms dynamic=25.501ms paired_save=8.757ms speedup=1.344x
+N=256 tau=1e-08: cubic=46.178ms dynamic=46.525ms paired_save=-0.234ms speedup=0.993x
+N=256 tau=1e-10: cubic=61.897ms dynamic=59.734ms paired_save=3.801ms speedup=1.036x
+N=512 tau=1e-06: cubic=88.885ms dynamic=65.113ms paired_save=23.699ms speedup=1.365x
+N=512 tau=1e-08: cubic=134.486ms dynamic=137.913ms paired_save=-2.715ms speedup=0.975x
+N=512 tau=1e-10: cubic=175.443ms dynamic=170.617ms paired_save=9.681ms speedup=1.028x
+N=1024 tau=1e-06: cubic=308.432ms dynamic=226.403ms paired_save=81.583ms speedup=1.362x
+N=1024 tau=1e-08: cubic=473.612ms dynamic=490.791ms paired_save=-13.944ms speedup=0.965x
+N=1024 tau=1e-10: cubic=631.715ms dynamic=621.222ms paired_save=26.786ms speedup=1.017x
+DONE
+ALL-DONE

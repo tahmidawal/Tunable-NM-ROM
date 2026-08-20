@@ -1,8 +1,11 @@
 # Burgers-2D FOM-exact hybrid optimisation through N=1024
 
-Status: final untouched-seed confirmation complete. The selected-cohort panel
-remains explicitly provisional; headline results come only from
-`runs/confirm2/out/confirm2.json` and its generated summary.
+Status: the immutable genuine-NMROM confirmation and the continued classical
+warm-start confirmation are complete.  The earlier selected-cohort panel
+remains explicitly provisional; its genuine-NMROM headline comes only from
+`runs/confirm2/out/confirm2.json` and its generated summary.  The continued
+classical result comes only from the checksummed fresh-seed artifact described
+below.
 
 ## Continued speed push — 2026-08-20
 
@@ -69,6 +72,28 @@ changes are permitted after this cohort is opened.  These are warmed compiled
 online trajectory latencies: the dynamic construction and FOM finish are both
 charged, while compilation, module/checkpoint loading, test-data generation,
 and reference generation are explicitly outside the timed invocation.
+
+### Continued round outcome
+
+Job 2667698 completed the frozen 18-cell panel in one process on one A100 80 GB.
+The raw same-invocation telemetry, empty stderr, execution manifest, batch
+script, and matching remote/local checksums are retained in
+`runs/dynamic_final/`.  `bh_summarize_dynamic_final.py` validates the exact
+mesh/tolerance grid, seed and policy, execution commit and source hash, AB/BA
+record grid, solver health and equivalence, correction-work counters, and
+outlier retention before generating
+`runs/dynamic_final/out/dynamic_final_summary.json` and
+`runs/dynamic_final/out/dynamic_final_table.md`.  Those generated files, not
+transcribed prose, are the source for every cell value and support decision.
+
+The result is conditional rather than universal: the generated table marks a
+cell supported only when its four-trajectory cluster interval for paired time
+saving lies entirely above zero.  The arm remains a **classical, nonlearned,
+non-NMROM** full-grid warm start.  Its wall time includes the 50 residual and
+50 Helmholtz correction operations per trajectory; the displayed Newton and
+BiCGStab counts are explicitly finish-only.  Tight-tolerance evidence is based
+on only four held-out trajectories and some intervals are wide, so no claim is
+made beyond the per-cell decisions in the generated summary.
 
 Seed 20260819 is the already-inspected immutable `confirm2` cohort and is not a
 fresh confirmation draw for this continuation.  Before any new final data are

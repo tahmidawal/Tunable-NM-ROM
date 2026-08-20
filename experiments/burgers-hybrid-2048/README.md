@@ -86,6 +86,29 @@ reference gate at every step, and agree to `1e-10` in both maximum per-step and
 whole-trajectory relative field difference.  Passing those diagnostic gates
 does not itself replace the reference or license timing.
 
+Diagnostic job `2676167` completed its phase-1 public rollout but is excluded
+as a diagnostic-instrumentation failure.  The phase-1 result localizes the
+failure to trajectory 3: steps 1--40 finish below `1e-12`, while steps 41--50
+remain at `1.2154764671954222e-2`.  The detailed replay then failed the fixed
+`1e-12` reproduction gate before any counting route ran.  It had replayed one
+unbatched vector solve, whereas the public rollout applies an exact batch-one
+`jax.vmap` transformation; this can change JAX BiCGStab's breakdown path at
+N=2048.  The job contains no method timing and licenses neither a replacement
+reference nor a primary rerun.  Its Slurm exit status is also excluded as a
+completion signal: an `A && B` shell list allowed failed producer `A` to skip
+checker `B` and continue to the final marker under Bash `set -e`.
+
+A single bounded `diagnostic2` repair is prospectively locked before execution.
+It changes only the detailed replay topology: a jitted wrapper invokes
+`jax.vmap(detailed_step)` on `(u_prev[None], nu[None])`, waits for the batched
+device result, and removes axis zero only afterward.  Snapshot indexing,
+phase-1 cohort, deterministic trajectory/step selection, three counting
+routes, tolerances, gates, and the prohibition on timing/self-promotion remain
+unchanged.  The producer and checker are separate shell commands; a nonempty
+producer-check artifact and `PRODUCER-CHECK-DONE` marker are mandatory.  If
+this exact batch-one replay still misses either reproduction gate, the
+diagnostic hard-stops with no further topology relaxation.
+
 For every tolerance and trajectory, the process runs six exact AB then
 immediately reburned BA blocks.  This gives twelve repetitions per arm and
 trajectory, with a three-second GPU burn immediately before every pair.  Every

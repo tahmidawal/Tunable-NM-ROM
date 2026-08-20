@@ -185,7 +185,7 @@ def instrumented_jax_bicgstab(operator, rhs):
 
 
 def make_detailed_fixed_step(residual):
-    """Expose every hidden linear outcome while reproducing the fixed route."""
+    """Expose hidden linear outcomes with the fixed route's batch-one topology."""
     def step(u_prev, nu):
         scale = jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
 
@@ -245,7 +245,18 @@ def make_detailed_fixed_step(residual):
 
         return jax.lax.scan(body, u_prev, None, length=FIXED_NEWTON_ITERS)
 
-    return jax.jit(step)
+    # ``bf.make_rollout`` applies ``jax.vmap(newton_step)`` even when B=1.
+    # Preserve that transformation topology here: at N=2048 the public JAX
+    # BiCGStab path can make a different breakdown decision when replayed as an
+    # unbatched vector solve.  Axis zero is removed only after the compiled,
+    # batched call has completed on device.
+    step_batch = jax.vmap(step)
+
+    @jax.jit
+    def detailed_batch_one(u_prev_batch, nu_batch):
+        return step_batch(u_prev_batch, nu_batch)
+
+    return detailed_batch_one
 
 
 def trajectory_parameters():
@@ -324,8 +335,12 @@ def run_detailed_phase(report, parameters, selected_index):
     snapshots, _ = rollout(u0[None], jnp.asarray([nu]))
     u_prev = snapshots[selected_step - 1, 0]
     expected_u = snapshots[selected_step, 0]
-    u, telemetry = diagnostic_step(u_prev, nu)
-    telemetry = [np.asarray(value) for value in telemetry]
+    u_batch, telemetry_batch = diagnostic_step(
+        u_prev[None], jnp.asarray([nu])
+    )
+    jax.block_until_ready((u_batch, telemetry_batch))
+    u = u_batch[0]
+    telemetry = [np.asarray(value)[0] for value in telemetry_batch]
     (
         pre_relative,
         post_relative,
@@ -531,6 +546,7 @@ def main():
                 "ties choose lowest trajectory index"
             ),
             "detailed_scope": "selected worst trajectory and worst step only",
+            "detailed_public_solver_topology": "exact_batch1_vmap",
             "counting_routes": list(COUNTING_ROUTES),
             "counting_scope": "selected worst trajectory only",
             "f64": True,

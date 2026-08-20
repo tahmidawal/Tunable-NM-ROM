@@ -96,6 +96,8 @@ def main():
             "wrong update-match gate")
     require(config["tight_route_agreement_gate"] == 1e-10,
             "wrong tight-route agreement gate")
+    require(config["detailed_public_solver_topology"] == "exact_batch1_vmap",
+            "detailed public-solver topology drifted")
 
     require(provenance["jax_backend"] == "gpu", "non-GPU diagnostic")
     require(provenance["jax_version"] == "0.10.2", "wrong runtime JAX")

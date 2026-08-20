@@ -1,0 +1,26 @@
+{
+ "classification": "excluded_diagnostic_instrumentation_failure",
+ "job_id": "2676167",
+ "slurm_state": "COMPLETED",
+ "slurm_exit_code": "0:0",
+ "scientific_timing_or_method_rows": false,
+ "reference_replacement_licensed": false,
+ "final_timing_licensed": false,
+ "reason": "The diagnostic phase-1 fixed-public-JAX rollout completed, but the detailed public/instrumented replay did not preserve the batch-one vmap topology of that rollout and failed its unchanged reproduction gate before any counting route ran.",
+ "persisted_evidence": {
+  "complete": false,
+  "fixed25_trajectory_count": 4,
+  "selected_trajectory": 3,
+  "selected_step": 41,
+  "selected_phase1_residual": 0.012154764671954222,
+  "counting_route_count": 0,
+  "pairwise_field_agreement_count": 0,
+  "terminal_field_artifact_present": false,
+  "producer_check_present": false
+ },
+ "failed_reproduction": {
+  "absolute_residual_difference": 0.012154764671680853,
+  "relative_field_difference": 0.011847013266061494
+ },
+ "remote_directory_retained_pending_independent_audit": "/cluster/tufts/paralab/tawal01/hybb2048/ctol_hybb2048_diagnostic1"
+}

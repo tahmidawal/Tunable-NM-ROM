@@ -166,6 +166,10 @@ def main():
             "burn_before_every_AB_and_BA_block": True,
             "burn_seconds": BURN_S,
             "accuracy_work_residual_from_every_timed_invocation": True,
+            "dynamic_correction_steps_per_trajectory": int(bc.T),
+            "dynamic_extra_full_grid_residual_evaluations": int(bc.T),
+            "dynamic_extra_exact_helmholtz_inverses": int(bc.T),
+            "finish_work_excludes_dynamic_corrections": True,
             "new_final_seed_touched": False,
             "f64": True,
             "selection_artifact": SELECTION_JSON,
@@ -248,6 +252,13 @@ def main():
         "cubic_linear_total_median": float(
             np.median([record["linear_total"] for record in report["records"]["cubic"]])
         ),
+        "work_counter_interpretation": (
+            "Newton/BiCGStab counts are for the FOM finish; dynamic additionally "
+            "performs 50 charged full-grid residual evaluations and 50 charged "
+            "exact Helmholtz inverses"
+        ),
+        "dynamic_extra_full_grid_residual_evaluations": int(bc.T),
+        "dynamic_extra_exact_helmholtz_inverses": int(bc.T),
         "max_returned_residual": float(
             max(
                 record["max_returned_residual"]

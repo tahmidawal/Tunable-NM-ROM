@@ -38,6 +38,38 @@ Local q=16/32/64 execution smokes are excluded; they only motivated the locked
 resolution bracket.  This control raises the denominator any learned hybrid
 must beat and does not replace the genuine NM-ROM attempt.
 
+The cluster representation gate is now a hard stop: although q=48/64 passes
+the aggregate threshold at N=64, neither passes the required 0.25 threshold at
+N=256.  `runs/trajectory_representation/out/trajectory_quality.json` is the
+checksummed source.  The direct checkpoint is not promoted to an online weak
+latent solve and remains a supervised surrogate negative control.
+
+The classical selection and disjoint AB/BA gates both promoted the target-grid
+arm.  Their machine-validated decisions are
+`runs/dynamic_selection/out/dynamic_selection_choice.json` and
+`runs/dynamic_pair/out/dynamic_pair_audit.json`.  The cross-resolution policy
+is now frozen as `coarse_n=N` with relaxation 1 at every mesh: only the
+full-grid fraction passed at N=256, while q=64 and q=128 failed.  The
+candidate's Newton and BiCGStab counters describe only its FOM finish.  Each
+trajectory also performs exactly 50 charged full-grid residual evaluations and
+50 charged exact Helmholtz inverses; wall time includes all of them.
+
+Before opening the new final seed, the confirmation is locked to N=32, 64, 128,
+256, 512, and 1024 and outer/inner tolerance pairs
+(1e-6,1e-2), (1e-8,1e-4), and (1e-10,1e-5).  One sequential GPU process uses
+seed 20260825, canonical draw 16, indices 0:4.  At every mesh/tolerance/case it
+runs six exact AB then reburned BA blocks, giving twelve repetitions per arm
+and trajectory, with a three-second burn immediately before every pair.  Every
+timed invocation returns and persists accuracy, residual, flags, finish work,
+and the explicit correction-work counters.  Inference uses per-trajectory
+paired medians and trajectory-cluster bootstrap intervals; Tukey outliers are
+counted and retained.  The comparator is the identical cubic-history,
+Helmholtz-preconditioned FOM with the same locked inner tolerance.  No policy
+changes are permitted after this cohort is opened.  These are warmed compiled
+online trajectory latencies: the dynamic construction and FOM finish are both
+charged, while compilation, module/checkpoint loading, test-data generation,
+and reference generation are explicitly outside the timed invocation.
+
 Seed 20260819 is the already-inspected immutable `confirm2` cohort and is not a
 fresh confirmation draw for this continuation.  Before any new final data are
 opened, the continued round locks seed **20260825**, canonical draw 16, indices

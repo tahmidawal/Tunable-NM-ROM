@@ -1,0 +1,60 @@
+host=pax144 gpu=NVIDIA A100-SXM4-40GB
+commit=d9543a1304e2bf13add463dddccf025dd348b9c1 dirty=e3b0c44298fc cell=ctol_hybb_dynpair1
+jax_backend=gpu cuda:0
+{
+ "case_medians_s": {
+  "cubic": [
+   0.03855545073747635,
+   0.032573089469224215,
+   0.027604879345744848,
+   0.03964905091561377
+  ],
+  "dynamic": [
+   0.02901864843443036,
+   0.02189698163419962,
+   0.017609079834073782,
+   0.03428501728922129
+  ]
+ },
+ "cubic_median_ms": 35.56427010335028,
+ "dynamic_median_ms": 25.45781503431499,
+ "speedup_cubic_over_dynamic": 1.3969883140172337,
+ "saving_vs_cubic_case_medians_ms": [
+  9.536802303045988,
+  10.676107835024595,
+  9.995799511671066,
+  5.364033626392484
+ ],
+ "saving_vs_cubic_median_ms": 9.766300907358527,
+ "saving_vs_cubic_trajectory_cluster_95ci_ms": [
+  5.364033626392484,
+  10.676107835024595
+ ],
+ "dynamic_newton_total_median": 24.0,
+ "cubic_newton_total_median": 57.5,
+ "dynamic_linear_total_median": 38.5,
+ "cubic_linear_total_median": 81.0,
+ "max_returned_residual": 9.960720738030756e-07,
+ "max_trajectory_rel_l2": 2.08517843934023e-06,
+ "tukey_1p5iqr_outliers_retained": {
+  "cubic": {
+   "per_trajectory": {
+    "8": 0,
+    "9": 0,
+    "10": 1,
+    "11": 1
+   },
+   "total": 2
+  },
+  "dynamic": {
+   "per_trajectory": {
+    "8": 1,
+    "9": 1,
+    "10": 1,
+    "11": 1
+   },
+   "total": 4
+  }
+ }
+} DONE
+ALL-DONE

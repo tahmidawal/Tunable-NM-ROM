@@ -321,3 +321,20 @@ and rho. Canonical work passed and compiled eligibility memory was 33.944 MB.
 These are execution-only checks. The scientific request is one H200, four CPUs,
 64 GB, and two hours; exact staging and its manifest remain subject to root
 pre-submit audit.
+
+## 2026-08-20 — prospective Phase-7 G1 seed-11 training
+
+Phase 7 is prospectively limited to one complete seed-11 G1 training cell. It
+uses the immutable P5 set of 35,904 healthy H1 coefficient targets and the
+audited P6 Cox-weak/K3-full actual route. The fixed work is a 10,000-update
+mirrored-encoder/G1 warmup with bitwise handoff, 30,000 joint G1/autolatent
+updates, 20,000 direct-predictor updates, and three exposed-selection q-oracle
+starts of at most 10,000 updates. No G2 fallback, retry, weak/EQ, model-
+validation, scaling, or confirmation access is implemented or licensed.
+
+The first excluded synthetic-only N16 execution completed in 48 seconds on the
+local GB10 under `jaxrun`, GPU/f64/highest, with `ALL-DONE`. Its K3/Cox identity
+gate passed; its deliberately untrained accuracy gates were false and are
+classified as excluded. The shared independent audit and exact P4/P5/P6/target
+staging lifecycle are implemented. The requested scientific resource is one
+H200, 8 CPUs, 96 GB, and 16 hours; no job has been submitted.

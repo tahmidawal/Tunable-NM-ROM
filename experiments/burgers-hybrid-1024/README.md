@@ -4,6 +4,40 @@ Status: final untouched-seed confirmation complete. The selected-cohort panel
 remains explicitly provisional; headline results come only from
 `runs/confirm2/out/confirm2.json` and its generated summary.
 
+## Continued speed push — 2026-08-20
+
+The audited result above is immutable.  A new bounded development round tests
+two mechanisms without reopening its data or claims.
+
+The first is a supervised complete-trajectory FiLM checkpoint used only as a
+representation control.  Parameters are recovered once from a fixed coarse
+log-Gaussian fit to the available initial condition and known viscosity; all 51
+states are decoded together in f64, and their temporal differences correct the
+live cubic FOM history.  This is explicitly **not** called a genuine NM-ROM
+until an online weak PDE residual selects its latent state.  Development seed
+20260818, draw 16, indices 4:8 is disjoint from checkpoint training/selection
+and the untouched final seed 20260819.  Local execution smokes at q=16/24/32
+left 0.877/0.781/0.666 of the correction error and are excluded from scientific
+claims.  One final q=48/64 cluster representation gate is allowed; if neither
+leaves at most 0.25, the checkpoint is stopped without further fitting.
+
+The second is a stronger **classical** FOM control: one fixed-coarse exact
+upwind residual plus one exact coarse Dirichlet Helmholtz inverse corrects the
+live cubic guess.  It is never labelled learned or NM-ROM.  The only real
+selection cell is locked at N=256, outer/inner tolerances 1e-6/1e-2, development
+seed 20260818 draw 16 indices 0:4, relaxation exactly 1, and coarse sizes
+64/128/256 versus cubic.  Promotion requires finite healthy same-invocation
+results.  Timing is first reduced to the median over repetitions within each
+trajectory and then to the median across trajectories; deterministic work is
+reduced directly across trajectories.  Promotion requires at least 20% lower
+trajectory-median Newton and BiCGStab work, positive median total-time saving,
+and no trajectory's timing median more than 10% slower.  A promoted arm then
+gets a fresh exact candidate-versus-cubic AB/BA/reburn timing gate on the
+disjoint seed-20260818 indices 8:12; neither selection cohort is reused.
+Local q=16/32/64 execution smokes are excluded; they only motivated the locked
+resolution bracket.  This control raises the denominator any learned hybrid
+must beat and does not replace the genuine NM-ROM attempt.
+
 This cell redesigns the Burgers warm-start path after the audited FiLM NM-ROM
 rollout lost every wall-clock comparison through `N=256`. The delivered field is
 always finished by the same full-order backward-Euler/Newton/BiCGStab solver to a

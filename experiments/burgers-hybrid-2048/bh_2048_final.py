@@ -30,6 +30,7 @@ N_CASES = int(os.environ.get("N_CASES", "4"))
 PAIR_BLOCKS = int(os.environ.get("PAIR_BLOCKS", "6"))
 BURN_S = float(os.environ.get("BURN_S", "3"))
 REFERENCE_RESIDUAL_GATE = float(os.environ.get("REFERENCE_RESIDUAL_GATE", "1e-11"))
+REFERENCE_NEWTON_ITERS = int(os.environ.get("NEWTON_ITERS", "25"))
 SELECTION_JSON = os.environ.get(
     "SELECTION_JSON", "selection/dynamic_selection_choice.json"
 )
@@ -330,6 +331,10 @@ def main():
         raise SystemExit("f64/highest precision contract failed")
     if len(FOM_TAUS) != len(LINEAR_TOLS):
         raise SystemExit("FOM_TAUS and LINEAR_TOLS must have equal length")
+    if not SMOKE and (
+        REFERENCE_NEWTON_ITERS != 25 or bc.bf.NEWTON_ITERS != 25
+    ):
+        raise SystemExit("N=2048 reference generation requires fixed 25 Newton iterations")
     lock = LOCKED_SMOKE if SMOKE else LOCKED_FINAL
     expected_conditions = ((1e-6, 1e-2),) if SMOKE else LOCKED_CONDITIONS
     if (
@@ -426,6 +431,14 @@ def main():
         "device_memory_at_end": {},
         "complete": False,
     }
+    if not SMOKE:
+        report["config"].update({
+            "reference_newton_iterations": REFERENCE_NEWTON_ITERS,
+            "reference_solver_scope": (
+                "offline truth generation and independent equivalence only; "
+                "online counting solvers remain tolerance-stopped with MAX_NEWTON=25"
+            ),
+        })
     save(report)
 
     for n in NS:

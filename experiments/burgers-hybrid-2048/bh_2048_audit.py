@@ -49,6 +49,14 @@ expected = {
     "fresh_seed_touched": not smoke,
     "f64": True,
 }
+if not smoke:
+    expected.update({
+        "reference_newton_iterations": 25,
+        "reference_solver_scope": (
+            "offline truth generation and independent equivalence only; "
+            "online counting solvers remain tolerance-stopped with MAX_NEWTON=25"
+        ),
+    })
 for key, value in expected.items():
     if config.get(key) != value:
         raise SystemExit(f"N=2048 {key} drifted: {config.get(key)!r} != {value!r}")

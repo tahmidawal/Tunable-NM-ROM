@@ -60,6 +60,7 @@ export JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export BH_COMMIT=$COMMIT
+export NEWTON_ITERS=25
 echo "host=\$(hostname) gpu=\$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
 echo "commit=$COMMIT dirty=$DIRTY cell=$cell"
 \$PY - <<'PRE' || { echo "GPU PREFLIGHT FAILED"; exit 42; }

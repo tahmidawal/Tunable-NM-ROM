@@ -50,6 +50,17 @@ draw 16, indices 0:4.  Only N=2048 is run, at the inherited outer/inner pairs
 (1e-6,1e-2), (1e-8,1e-4), and (1e-10,1e-5).  The policy is fixed at
 `coarse_n=N`, relaxation 1; neither final timing nor accuracy changes it.
 
+The first fresh-seed attempt, job `2672535`, stopped before compilation of an
+online arm or creation of any timing row: the inherited fixed-eight-Newton
+testbed truth rollout had worst returned reference residual `1.215e-2` at
+N=2048 and failed the unchanged `1e-11` gate.  It is retained under
+`runs/final1/` as an excluded pre-science reference-generation failure.  The
+only licensed repair fixes that offline truth/equivalence rollout at 25 Newton
+iterations.  It does not change either online arm, its tolerance-stopped
+maximum of 25 Newton iterations, the cohort, timing order, or any selection
+rule.  A repaired job must still pass the same `1e-11` reference gate before a
+timed row can exist.
+
 For every tolerance and trajectory, the process runs six exact AB then
 immediately reburned BA blocks.  This gives twelve repetitions per arm and
 trajectory, with a three-second GPU burn immediately before every pair.  Every
@@ -105,6 +116,11 @@ checkpoint loading, and reference generation are excluded from warmed online
 latency.  Both comparisons are reported regardless of sign, using the same
 within-trajectory paired median and four-trajectory cluster bootstrap as the
 primary panel.
+
+If the learned block's inherited fixed-eight reference attempt also stops
+before any timing row, its only licensed rerun uses the same 25-iteration
+offline reference/equivalence repair.  This is not a change to the weak
+NM-ROM, its guard, or either online FOM finish.
 
 ## Isolation
 

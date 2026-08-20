@@ -1,0 +1,94 @@
+{
+ "config": {
+  "purpose": "fresh-seed N=2048 classical warm-start extension",
+  "classification": {
+   "cubic": "classical live cubic-history FOM warm start",
+   "dynamic": "classical FOM warm start; live cubic plus one target-grid exact-upwind residual and exact Helmholtz inverse; not learned and not NM-ROM"
+  },
+  "execution_kind": "authoritative_fresh_seed",
+  "ns": [
+   2048
+  ],
+  "conditions": [
+   {
+    "fom_tau": 1e-06,
+    "linear_tol": 0.01
+   },
+   {
+    "fom_tau": 1e-08,
+    "linear_tol": 0.0001
+   },
+   {
+    "fom_tau": 1e-10,
+    "linear_tol": 1e-05
+   }
+  ],
+  "resolution_policy": "coarse_n=N at every mesh (full-grid fraction 1.0)",
+  "relaxation": 1.0,
+  "preconditioner": "exact target-grid Helmholtz for both FOM finishes",
+  "dynamic_correction_steps_per_trajectory": 50,
+  "dynamic_extra_full_grid_residual_evaluations": 50,
+  "dynamic_extra_exact_helmholtz_inverses": 50,
+  "test_seed": 20260827,
+  "canonical_draw_count": 16,
+  "selected_test_indices": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "pair_blocks": 6,
+  "repetitions_per_arm_per_trajectory": 12,
+  "burn_before_every_AB_and_BA_block": true,
+  "burn_seconds": 3.0,
+  "timing_estimator": "median paired repetitions within trajectory, then median trajectories",
+  "confidence_interval": "20000-draw trajectory-cluster bootstrap of per-trajectory paired medians",
+  "timing_scope": "warmed compiled online trajectory solve; includes dynamic construction and FOM finish; excludes compilation, loading, test/reference generation, and first-query latency",
+  "accuracy_work_residual_from_every_timed_invocation": true,
+  "selection_artifact": "selection/dynamic_selection_choice.json",
+  "selection_sha256": "6d27c5d926a6b7e33861705656c7fa8c194bf8854ad5935f18df6920fb9f5e5d",
+  "pair_audit_artifact": "selection/dynamic_pair_audit.json",
+  "pair_audit_sha256": "008d36ed8442a387ba292a7748cb25e66b24a3436a5c0ce84901234526c9aa4a",
+  "reference_residual_gate": 1e-11,
+  "fresh_seed_touched": true,
+  "smoke": false,
+  "f64": true
+ },
+ "provenance": {
+  "commit": "b1131b1e4501258d153a2a519e8c0a42d9063842",
+  "commit_source": "env:BH_COMMIT",
+  "source_sha256": {
+   "bh_2048_audit.py": "6bf0af2ae335e1fa49c65dabf079d9cf259e666f983561a4f8776c436c78c704",
+   "bh_2048_final.py": "1e72ba37147d7d381690aba1b64185762de01f89d7f75411c7d1992523f9060c",
+   "bh_2048_learned.py": "585c40c29ebd3ca6facacf595aa53b1f6a80a580bd3d4ce7777fb8ef9d5e42c0",
+   "bh_2048_learned_audit.py": "ab68b4bada91fe2650325f2e2e8047d6af75829b31f31249326070824ac3aab2",
+   "bh_common.py": "85d44c7ae9280099f6d831a52db01692b07577fc7da85c0ac6676466a92b510c",
+   "bh_dynamic_correction.py": "3b1afc11c74742d9a28d2ae03b89bb467ee76490d728635efe37089ef146a0c3"
+  },
+  "jax_backend": "gpu",
+  "jax_version": "0.10.2",
+  "x64": true,
+  "matmul_precision": "highest",
+  "gpu": "cuda:0",
+  "gpu_kind": "NVIDIA H200",
+  "slurm_job_id": "2672535",
+  "host": "pax011"
+ },
+ "reference_health": {},
+ "rows": [],
+ "device_memory_at_start": {
+  "num_allocs": 0,
+  "bytes_in_use": 0,
+  "peak_bytes_in_use": 0,
+  "largest_alloc_size": 0,
+  "bytes_limit": 112583507968,
+  "bytes_reserved": 0,
+  "peak_bytes_reserved": 0,
+  "largest_free_block_bytes": 0,
+  "pool_bytes": 0,
+  "peak_pool_bytes": 0,
+  "peak_fraction_of_limit": 0.0
+ },
+ "device_memory_at_end": {},
+ "complete": false
+}

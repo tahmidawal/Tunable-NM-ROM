@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import sys
 import time
@@ -25,6 +26,9 @@ CASE_START = int(os.environ.get("CASE_START", "8"))
 N_CASES = int(os.environ.get("N_CASES", "4"))
 PAIR_BLOCKS = int(os.environ.get("PAIR_BLOCKS", "6"))
 BURN_S = float(os.environ.get("BURN_S", "3"))
+SELECTION_JSON = os.environ.get(
+    "SELECTION_JSON", "selection/dynamic_selection_choice.json"
+)
 
 
 def save(report):
@@ -38,6 +42,32 @@ def bootstrap_interval(values, seed=20260820, draws=20000):
     sampled = values[rng.integers(0, len(values), size=(draws, len(values)))]
     medians = np.median(sampled, axis=1)
     return [float(np.quantile(medians, 0.025)), float(np.quantile(medians, 0.975))]
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def tukey_counts(records, trajectories):
+    by_case = {}
+    for trajectory in trajectories:
+        values = np.asarray(
+            [
+                record["elapsed_s"]
+                for record in records
+                if record["trajectory_index"] == trajectory["index"]
+            ],
+            np.float64,
+        )
+        q1, q3 = np.quantile(values, [0.25, 0.75])
+        iqr = q3 - q1
+        count = int(np.sum((values < q1 - 1.5 * iqr) | (values > q3 + 1.5 * iqr)))
+        by_case[str(trajectory["index"])] = count
+    return {"per_trajectory": by_case, "total": int(sum(by_case.values()))}
 
 
 def grade(outputs, trajectory, repetition, order, elapsed):
@@ -75,6 +105,16 @@ def main():
         raise SystemExit("matmul precision must be highest")
     if PAIR_BLOCKS < 2:
         raise SystemExit("at least two AB/BA blocks are required")
+    with open(SELECTION_JSON) as handle:
+        selection = json.load(handle)
+    selected = selection.get("selected")
+    if selection.get("status") != "promoted" or selected is None:
+        raise SystemExit("dynamic policy was not promoted by the selection gate")
+    if (
+        int(selected["coarse_n"]) != COARSE_N
+        or float(selected["relaxation"]) != RELAXATION
+    ):
+        raise SystemExit("requested pair policy does not match selected policy")
     trajectories = bc.generate_reference(
         N,
         list(range(CASE_START, CASE_START + N_CASES)),
@@ -128,6 +168,9 @@ def main():
             "accuracy_work_residual_from_every_timed_invocation": True,
             "new_final_seed_touched": False,
             "f64": True,
+            "selection_artifact": SELECTION_JSON,
+            "selection_sha256": sha256(SELECTION_JSON),
+            "selected_policy": selected,
         },
         "provenance": provenance,
         "reference_health": {
@@ -219,6 +262,10 @@ def main():
                 for record in records
             )
         ),
+        "tukey_1p5iqr_outliers_retained": {
+            arm: tukey_counts(records, trajectories)
+            for arm, records in report["records"].items()
+        },
     }
     report["complete"] = True
     save(report)

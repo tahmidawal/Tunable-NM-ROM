@@ -25,6 +25,11 @@ DIRTY="$(git -C "$EXP" status --porcelain -- . | sha256sum | cut -c1-12)"
 rm -rf "$STAGE"
 mkdir -p "$STAGE/logs" "$STAGE/out" "$STAGE/code/deps/burgers2d-coord-rom"
 cp "$EXP"/bh_*.py "$STAGE/code/"
+if [[ -f "$EXP/runs/dynamic_selection/out/dynamic_selection_choice.json" ]]; then
+  mkdir -p "$STAGE/code/selection"
+  cp "$EXP/runs/dynamic_selection/out/dynamic_selection_choice.json" \
+    "$STAGE/code/selection/"
+fi
 cp "$WORKTREES/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" \
   "$STAGE/code/deps/burgers2d-coord-rom/"
 cp "$WORKTREES/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/sweep/burgers2d_film_N64.pkl" \

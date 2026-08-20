@@ -54,6 +54,9 @@ ORACLE_STEPS = 10_000
 ORACLE_BATCH = 64
 ORACLE_CHECKPOINTS = (4_000, 6_000, 8_000, 10_000)
 HISTORY_EVERY = 1_000
+PARENT_GATE_NAME = "s0_gate"
+STAGE_NAME = "Phase-2 spline hyperdecoder/autolatent/direct predictor training"
+EXTRA_GATE_FN = None
 
 
 def candidate_by_arm(arm):
@@ -359,12 +362,12 @@ def sample_field_batch(datasets, snapshot_ids, point_seeds, point_count):
     )
 
 
-def make_decoder_batch(r):
+def make_decoder_batch(candidate):
     def decode(hyper, states, coords, masks):
         coefficients = jax.vmap(lambda state: s.apply_mlp(hyper, state[5:]))(states)
         return jax.vmap(
-            lambda state, coeff, xy, mask: s.decode_one_jax(
-                state, coeff, xy, mask, r
+            lambda state, coeff, xy, mask: s.decode_candidate_jax(
+                state, coeff, xy, mask, candidate
             )
         )(states, coefficients, coords, masks)
     return decode
@@ -425,7 +428,7 @@ def predictor_fold_identity(predictor, folded, raw_features, mean, scale):
 
 
 def train_manifold(candidate, datasets, arrays):
-    r, k = candidate["R"], candidate["k"]
+    k = candidate["k"]
     q_dimension = k - 5
     total = sum(item["flat"].shape[0] for item in datasets)
     steps = SMOKE_UPDATES if SMOKE else MANIFOLD_STEPS
@@ -437,14 +440,17 @@ def train_manifold(candidate, datasets, arrays):
     hyper_key, q_key = jax.random.split(jax.random.PRNGKey(TRAIN_SEED))
     variables = {
         "hyper": s.init_mlp(
-            hyper_key, (q_dimension, s.HYPER_WIDTH, s.HYPER_WIDTH, r * r)
+            hyper_key, (
+                q_dimension, s.HYPER_WIDTH, s.HYPER_WIDTH,
+                s.coefficient_count(candidate),
+            )
         ),
         "q_raw": 0.01 * jax.random.normal(q_key, (total, q_dimension), dtype=jnp.float64),
     }
     schedule = optimizer_schedule(1e-3, 1e-5, steps)
     optimizer = adamw(schedule)
     opt_state = optimizer.init(variables)
-    decode = make_decoder_batch(r)
+    decode = make_decoder_batch(candidate)
 
     def loss_fn(parameters, ids, coords, masks, targets, affine):
         q = jnp.tanh(parameters["q_raw"][ids])
@@ -488,7 +494,7 @@ def train_manifold(candidate, datasets, arrays):
 def train_predictor(
     candidate, datasets, hyper, target_states, feature_mean, feature_scale, arrays
 ):
-    r, k = candidate["R"], candidate["k"]
+    k = candidate["k"]
     total = target_states.shape[0]
     steps = SMOKE_UPDATES if SMOKE else PREDICTOR_STEPS
     batch = (FIELD_BATCH if SMOKE_SHAPE_FAITHFUL else min(4, total)) if SMOKE else FIELD_BATCH
@@ -502,7 +508,7 @@ def train_predictor(
     schedule = optimizer_schedule(5e-4, 5e-6, steps)
     optimizer = adamw(schedule)
     opt_state = optimizer.init(predictor)
-    decode = make_decoder_batch(r)
+    decode = make_decoder_batch(candidate)
 
     def loss_fn(
         parameters, hyper_parameters, coords, masks, targets, features,
@@ -554,7 +560,6 @@ def train_predictor(
 
 
 def evaluate_states(candidate, datasets, hyper, states):
-    r = candidate["R"]
     result = {"meshes": {}}
     pooled_trajectory = []
     total_error_sq = 0.0
@@ -575,8 +580,8 @@ def evaluate_states(candidate, datasets, hyper, states):
                 lambda state: s.apply_mlp(hyper_parameters, state[5:])
             )(batch_states)
             return jax.vmap(
-                lambda state, coeff: s.decode_one_jax(
-                    state, coeff, coordinate_arg, mask_arg, r
+                lambda state, coeff: s.decode_candidate_jax(
+                    state, coeff, coordinate_arg, mask_arg, candidate
                 )
             )(batch_states, coefficients)
 
@@ -675,7 +680,7 @@ def optimize_selection_oracle(candidate, datasets, hyper, arrays):
         0.0, 0.25, size=(total, q_dimension)
     )
     starts = (np.zeros_like(random_start), random_start, -random_start)
-    decode = make_decoder_batch(candidate["R"])
+    decode = make_decoder_batch(candidate)
     results = []
     schedule = optimizer_schedule(5e-2, 1e-3, steps)
     for start_index, initial in enumerate(starts):
@@ -733,7 +738,7 @@ def optimize_selection_oracle(candidate, datasets, hyper, arrays):
             "start_index": start_index, "history": history, "metrics": final_metrics,
             "gate_pass": oracle_gate(final_metrics),
             "elapsed_s": float(time.perf_counter() - started),
-            "q_raw": np.asarray(q_raw),
+            "q_raw": np.asarray(q_raw), "optimizer_state": opt_state,
         })
     chosen = min(
         range(len(results)),
@@ -741,9 +746,14 @@ def optimize_selection_oracle(candidate, datasets, hyper, arrays):
             "mean_snapshot_relative_l2_squared"
         ],
     )
-    serializable = [{key: value for key, value in item.items() if key != "q_raw"}
+    serializable = [{key: value for key, value in item.items()
+                     if key not in ("q_raw", "optimizer_state")}
                     for item in results]
-    return results[chosen]["q_raw"], chosen, serializable, results[chosen]["metrics"]
+    optimizer_states = tuple(item["optimizer_state"] for item in results)
+    return (
+        results[chosen]["q_raw"], chosen, serializable,
+        results[chosen]["metrics"], optimizer_states,
+    )
 
 
 def main():
@@ -753,7 +763,7 @@ def main():
     if not SMOKE and TRAIN_SEED not in (11, 29, 47):
         raise SystemExit("scientific training seed must be 11, 29, or 47")
     report = {
-        "stage": "Phase-2 spline hyperdecoder/autolatent/direct predictor training",
+        "stage": STAGE_NAME,
         "status": "excluded_execution_smoke" if SMOKE else "running",
         "config": {
             "arm": ARM, "candidate": candidate, "training_seed": TRAIN_SEED,
@@ -782,7 +792,7 @@ def main():
             "model_validation_touched": False, "confirmation_touched": False,
             "f64": True, "smoke": SMOKE,
         },
-        "provenance": c.provenance(), "s0_gate": s0_gate,
+        "provenance": c.provenance(), PARENT_GATE_NAME: s0_gate,
     }
     c.save_json(OUTPUT_JSON, report)
     arrays = {}
@@ -834,7 +844,7 @@ def main():
         feature_mean, feature_scale,
     )
     fold_identity_error = max(fold_identity_train, fold_identity_selection)
-    selection_q_raw, chosen_start, oracle_starts, oracle_metrics = (
+    selection_q_raw, chosen_start, oracle_starts, oracle_metrics, oracle_opt_states = (
         optimize_selection_oracle(candidate, selection, hyper, arrays)
     )
     selection_oracle_states = np.concatenate((
@@ -869,9 +879,12 @@ def main():
         "predictor_fold_identity_selection_max_abs": fold_identity_selection,
         "manifold_optimizer_state": jax.tree_util.tree_map(np.asarray, manifold_opt_state),
         "predictor_optimizer_state": jax.tree_util.tree_map(np.asarray, predictor_opt_state),
+        "selection_oracle_optimizer_states": jax.tree_util.tree_map(
+            np.asarray, oracle_opt_states
+        ),
         "training_affine": arrays["training_affine"],
         "training_features": arrays["training_features"],
-        "data_metadata": report["data"], "s0_gate": s0_gate,
+        "data_metadata": report["data"], PARENT_GATE_NAME: s0_gate,
         "provenance": report["provenance"], "config": report["config"],
     }
     os.makedirs(os.path.dirname(os.path.abspath(CHECKPOINT)), exist_ok=True)
@@ -932,6 +945,8 @@ def main():
         "checkpoint": {"path": os.path.basename(CHECKPOINT), "sha256": c.sha256(CHECKPOINT)},
         "npz": {"path": os.path.basename(OUTPUT_NPZ), "sha256": c.sha256(OUTPUT_NPZ)},
     })
+    if EXTRA_GATE_FN is not None:
+        report["gates"].update(EXTRA_GATE_FN(report))
     report["status"] = "excluded_execution_smoke" if SMOKE else "complete"
     c.save_json(OUTPUT_JSON, report)
     c.log(json.dumps({

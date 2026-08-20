@@ -32,6 +32,16 @@ CANDIDATES = (
 )
 
 
+def coefficient_count(candidate):
+    return int(candidate["R"]) ** 2
+
+
+def decode_candidate_jax(state, coefficients, coords, boundary_mask, candidate):
+    return decode_one_jax(
+        state, coefficients, coords, boundary_mask, int(candidate["R"])
+    )
+
+
 def knots_np(r):
     """Open-uniform clamped cubic knots on the locked aligned domain."""
     r = int(r)

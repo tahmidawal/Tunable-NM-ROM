@@ -406,3 +406,13 @@ fails by orders of magnitude: `0.079818816 / 0.193691476`,
 Both accuracy gates fail at every mesh and pooled. Therefore G1 seed 11 fails,
 Phase 7 hard-stops, seeds 29/47 are not licensed, and G2, weak/EQ, model
 validation, scaling, and confirmation remain unopened and unauthorized.
+
+## 2026-08-20 — prospective Phase-8 finite correction bracket
+
+Phase 8 is preregistered before implementation as at most one H200 exact-full-grid
+representation/inference diagnostic, one complete-epoch G1/q19 corrected training
+cell, and one conditional G2/q32 cell only after quantified stationary tangent-
+capacity evidence and a repaired Cox-weak/K3-full cost/identity preflight. The
+terminated overlong local trust-region attempt is excluded. No implementation,
+smoke, data generation, cluster job, downstream weak/EQ, scaling, model validation,
+confirmation, or seed 29/47 work is yet authorized or present.

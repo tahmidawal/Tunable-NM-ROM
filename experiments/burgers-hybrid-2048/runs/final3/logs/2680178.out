@@ -1,0 +1,16 @@
+host=pax008 gpu=NVIDIA H200
+commit=c6b26229fd82b9e676599f39485920705126094c dirty=e3b0c44298fc cell=ctol_hybb2048_final3
+jax_backend=gpu cuda:0
+N=2048 tau=1e-06: cubic=532.817ms dynamic=343.673ms paired_save=178.175ms speedup=1.550x peak_fraction=0.08687257578418965
+N=2048 tau=1e-08: cubic=923.747ms dynamic=927.397ms paired_save=5.293ms speedup=0.996x peak_fraction=0.08687257578418965
+N=2048 tau=1e-10: cubic=1191.344ms dynamic=1209.532ms paired_save=45.404ms speedup=0.985x peak_fraction=0.08687257578418965
+DONE
+{
+ "status": "complete",
+ "peak_device_fraction_of_limit": 0.08687257578418965,
+ "primary_final_panel_licensed": null,
+ "learned_sensitivity_decision": null,
+ "supported_speedup_cells": 1
+}
+FINAL-AUDIT-DONE
+ALL-DONE

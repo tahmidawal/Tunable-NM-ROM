@@ -1,7 +1,8 @@
 # Burgers-2D hybrid extension at N=2048
 
-Status: prospectively registered from audited Burgers commit `559583c`; no
-N=2048 scientific outcome has been opened at this commit.
+Status: final and independently audited. Raw primary results are under
+`runs/final3/`; all primary and learned numbers are generated from run JSONs in
+`FINAL-RESULT.generated.md` by `bh_2048_render_final.py`.
 
 ## Scope and classifications
 

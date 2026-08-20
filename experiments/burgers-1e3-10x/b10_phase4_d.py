@@ -40,6 +40,15 @@ def load_json(path):
         return json.load(handle)
 
 
+def manifest_rows(path):
+    rows = {}
+    with open(path, encoding="utf-8") as handle:
+        for line in handle:
+            digest, relative = line.rstrip().split("  ", 1)
+            rows[relative.removeprefix("./")] = digest
+    return rows
+
+
 def validate_bound_artifact(json_path, npz_path, audit_path, phase):
     report, audit = load_json(json_path), load_json(audit_path)
     if report.get("status") != "complete" or audit.get("status") != "pass":
@@ -65,8 +74,10 @@ def validate_bound_artifact(json_path, npz_path, audit_path, phase):
     return report, audit
 
 
-def binding(json_path, npz_path, audit_path, report, audit):
-    return {
+def binding(
+    json_path, npz_path, audit_path, report, audit, manifest_path=None,
+):
+    value = {
         "json": os.path.abspath(json_path),
         "json_sha256": c.sha256(json_path),
         "npz": os.path.abspath(npz_path),
@@ -77,6 +88,12 @@ def binding(json_path, npz_path, audit_path, report, audit):
         "job_id": report["provenance"]["slurm_job_id"],
         "audit_decision": audit["decision"],
     }
+    if manifest_path is not None:
+        value.update({
+            "staged_manifest": os.path.abspath(manifest_path),
+            "staged_manifest_sha256": c.sha256(manifest_path),
+        })
+    return value
 
 
 def trajectory_metrics(prediction, truth):
@@ -569,6 +586,7 @@ def main():
     parser.add_argument("--p3-json")
     parser.add_argument("--p3-npz")
     parser.add_argument("--p3-audit")
+    parser.add_argument("--p3-manifest")
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
     c.require_gpu_highest()
@@ -579,14 +597,42 @@ def main():
         bindings = None
         status = "excluded_execution_smoke_pass"
     else:
-        required = (args.s0_json, args.s0_npz, args.s0_audit, args.p3_json, args.p3_npz, args.p3_audit)
+        required = (args.s0_json, args.s0_npz, args.s0_audit, args.p3_json, args.p3_npz, args.p3_audit, args.p3_manifest)
         if any(value is None for value in required):
             raise SystemExit("scientific P4-D requires complete S0 and P3 chains")
         s0_report, s0_audit = validate_bound_artifact(args.s0_json, args.s0_npz, args.s0_audit, "S0")
         p3_report, p3_audit = validate_bound_artifact(args.p3_json, args.p3_npz, args.p3_audit, "P3")
+        prior_manifest = manifest_rows(args.p3_manifest)
+        film_key = "code/deps/burgers2d-coord-rom/burgers2d_film.py"
+        bh_key = "code/bh_common.py"
+        film_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "deps", "burgers2d-coord-rom", "burgers2d_film.py",
+        )
+        bh_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "bh_common.py"
+        )
+        if prior_manifest.get(film_key) != c.sha256(film_path):
+            raise SystemExit("external Burgers FOM source differs from immutable P3 manifest")
+        if prior_manifest.get(bh_key) != c.sha256(bh_path):
+            raise SystemExit("bh_common differs from immutable P3 manifest")
         free, arrays = run_free_oracle(args.s0_npz, p3_report, smoke=False)
         cost = run_cost(smoke=False)
-        bindings = {"S0": binding(args.s0_json, args.s0_npz, args.s0_audit, s0_report, s0_audit), "P3": binding(args.p3_json, args.p3_npz, args.p3_audit, p3_report, p3_audit)}
+        bindings = {
+            "S0": binding(
+                args.s0_json, args.s0_npz, args.s0_audit,
+                s0_report, s0_audit,
+            ),
+            "P3": binding(
+                args.p3_json, args.p3_npz, args.p3_audit,
+                p3_report, p3_audit, args.p3_manifest,
+            ),
+            "runtime_dependencies": {
+                "burgers2d_film_sha256": c.sha256(film_path),
+                "bh_common_sha256": c.sha256(bh_path),
+                "source_manifest": "P3",
+            },
+        }
         status = "complete"
     selected = None
     if not args.smoke:

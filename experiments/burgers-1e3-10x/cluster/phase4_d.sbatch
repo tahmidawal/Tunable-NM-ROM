@@ -28,5 +28,6 @@ PRE
 $PY b10_phase4_d.py \
   --output-json ../out/phase4_d.json --output-npz ../out/phase4_d.npz \
   --s0-json deps/s0/s0.json --s0-npz deps/s0/s0.npz --s0-audit deps/s0/AUDIT.json \
-  --p3-json deps/p3/phase3_d.json --p3-npz deps/p3/phase3_d.npz --p3-audit deps/p3/AUDIT.json
+  --p3-json deps/p3/phase3_d.json --p3-npz deps/p3/phase3_d.npz --p3-audit deps/p3/AUDIT.json \
+  --p3-manifest deps/p3/MANIFEST.sha256
 echo ALL-DONE

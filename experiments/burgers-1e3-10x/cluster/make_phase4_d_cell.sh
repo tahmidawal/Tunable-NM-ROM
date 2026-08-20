@@ -18,6 +18,10 @@ for name in "${sources[@]}"; do
   git -C "$WORKTREE" diff --quiet HEAD -- "experiments/burgers-1e3-10x/$name" || exit 3
   git -C "$WORKTREE" cat-file -e "$expected_commit:experiments/burgers-1e3-10x/$name"
 done
+git -C "$WORKTREE" diff --quiet HEAD -- experiments/burgers-hybrid-1024/bh_common.py || {
+  echo "dirty bh_common dependency" >&2; exit 3;
+}
+git -C "$WORKTREE" cat-file -e "$expected_commit:experiments/burgers-hybrid-1024/bh_common.py"
 for run in "$S0" "$P3"; do
   [[ -f "$run/LOCAL.sha256" ]] || exit 4
   (cd "$run" && sha256sum -c LOCAL.sha256)
@@ -31,6 +35,12 @@ cp "$WORKTREE/experiments/burgers-hybrid-1024/bh_common.py" "$STAGE/code/"
 cp "$ROOT/worktrees/2026-08-14-burgers2d-coord-rom/experiments/burgers2d-coord-rom/burgers2d_film.py" "$STAGE/code/deps/burgers2d-coord-rom/"
 cp "$S0/out/s0.json" "$S0/out/s0.npz" "$S0/out/AUDIT.json" "$STAGE/code/deps/s0/"
 cp "$P3/out/phase3_d.json" "$P3/out/phase3_d.npz" "$P3/out/AUDIT.json" "$STAGE/code/deps/p3/"
+cp "$P3/MANIFEST.sha256" "$STAGE/code/deps/p3/MANIFEST.sha256"
+film_sha="$(awk '$2=="./code/deps/burgers2d-coord-rom/burgers2d_film.py" {print $1}' "$P3/MANIFEST.sha256")"
+bh_sha="$(awk '$2=="./code/bh_common.py" {print $1}' "$P3/MANIFEST.sha256")"
+[[ "$film_sha" =~ ^[0-9a-f]{64}$ && "$bh_sha" =~ ^[0-9a-f]{64}$ ]] || exit 4
+[[ "$(sha256sum "$STAGE/code/deps/burgers2d-coord-rom/burgers2d_film.py" | cut -d' ' -f1)" == "$film_sha" ]] || exit 4
+[[ "$(sha256sum "$STAGE/code/bh_common.py" | cut -d' ' -f1)" == "$bh_sha" ]] || exit 4
 cp "$HERE/phase4_d.sbatch" "$STAGE/run.sbatch"
 (cd "$STAGE" && find . -type f -not -name MANIFEST.sha256 -exec sha256sum {} \; | sort > MANIFEST.sha256)
 echo "stage=$STAGE"

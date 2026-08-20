@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
+import subprocess
 
 import numpy as np
 
@@ -398,6 +400,7 @@ def main():
     parser.add_argument("--p3-json")
     parser.add_argument("--p3-npz")
     parser.add_argument("--p3-audit")
+    parser.add_argument("--p3-manifest")
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
     report = load(args.report)
@@ -413,7 +416,7 @@ def main():
         raise SystemExit("forbidden cohort-touch flag")
     chain_reports = {}
     if not smoke:
-        required = (args.expected_commit, args.expected_job, args.manifest, args.s0_json, args.s0_npz, args.s0_audit, args.p3_json, args.p3_npz, args.p3_audit)
+        required = (args.expected_commit, args.expected_job, args.manifest, args.s0_json, args.s0_npz, args.s0_audit, args.p3_json, args.p3_npz, args.p3_audit, args.p3_manifest)
         if any(value is None for value in required):
             raise SystemExit("scientific audit requires provenance and both chains")
         if report["provenance"]["commit"] != args.expected_commit or str(report["provenance"]["slurm_job_id"]) != str(args.expected_job):
@@ -435,6 +438,31 @@ def main():
                 key = f"{prefix}/{os.path.basename(path)}"
                 if manifest.get(key) != c.sha256(path):
                     raise SystemExit(f"manifest immutable dependency mismatch: {key}")
+        prior_manifest = parse_manifest(args.p3_manifest)
+        if c.sha256(args.p3_manifest) != report["bindings"]["P3"]["staged_manifest_sha256"]:
+            raise SystemExit("P3 staged-manifest report binding mismatch")
+        if manifest.get("code/deps/p3/MANIFEST.sha256") != c.sha256(args.p3_manifest):
+            raise SystemExit("P4 manifest does not bind the P3 staged manifest")
+        film_key = "code/deps/burgers2d-coord-rom/burgers2d_film.py"
+        bh_key = "code/bh_common.py"
+        dependencies = report["bindings"]["runtime_dependencies"]
+        if not (
+            prior_manifest.get(film_key) == manifest.get(film_key)
+            == dependencies["burgers2d_film_sha256"]
+            and prior_manifest.get(bh_key) == manifest.get(bh_key)
+            == dependencies["bh_common_sha256"]
+            and dependencies["source_manifest"] == "P3"
+        ):
+            raise SystemExit("runtime dependency provenance mismatch")
+        worktree = os.path.dirname(os.path.dirname(os.path.dirname(
+            os.path.abspath(__file__)
+        )))
+        bh_bytes = subprocess.check_output((
+            "git", "-C", worktree, "show",
+            f"{args.expected_commit}:experiments/burgers-hybrid-1024/bh_common.py",
+        ))
+        if hashlib.sha256(bh_bytes).hexdigest() != dependencies["bh_common_sha256"]:
+            raise SystemExit("bh_common is not the expected-commit content")
     with np.load(args.npz, allow_pickle=False) as arrays:
         free = audit_free(
             report, arrays, smoke,
@@ -464,6 +492,7 @@ def main():
         "expected_job": args.expected_job,
         "manifest_sha256": None if smoke else c.sha256(args.manifest),
         "negative_aware": True, "smoke": smoke,
+        "fom_timing_summary_recomputed": bool(not smoke),
         "decision": expected_decision,
     }
     c.save_json(args.audit, result)

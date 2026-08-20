@@ -38,7 +38,8 @@ if rg -n -i "$health" "$LOCAL/logs/$job_id.out" "$LOCAL/logs/$job_id.err"; then 
 "$PY" "$EXP/b10_audit_phase4_d.py" "$LOCAL/out/phase4_d.json" "$LOCAL/out/phase4_d.npz" "$LOCAL/out/AUDIT.json" \
  --expected-commit "$expected_commit" --expected-job "$job_id" --manifest "$LOCAL/MANIFEST.sha256" \
  --s0-json "$S0/s0.json" --s0-npz "$S0/s0.npz" --s0-audit "$S0/AUDIT.json" \
- --p3-json "$P3/phase3_d.json" --p3-npz "$P3/phase3_d.npz" --p3-audit "$P3/AUDIT.json"
+ --p3-json "$P3/phase3_d.json" --p3-npz "$P3/phase3_d.npz" --p3-audit "$P3/AUDIT.json" \
+ --p3-manifest "$EXP/runs/$p3_cell/MANIFEST.sha256"
 (cd "$LOCAL" && find . -type f -not -name LOCAL.sha256 -exec sha256sum {} \; | sort > LOCAL.sha256)
 ssh tufts-login "set -euo pipefail; test '$REMOTE' = '/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell'; rm -rf '$REMOTE'; test ! -e '$REMOTE'"
 echo squeue_after_cleanup

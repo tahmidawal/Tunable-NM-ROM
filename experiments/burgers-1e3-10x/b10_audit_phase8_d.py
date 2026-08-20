@@ -367,6 +367,8 @@ def main():
     require(config["objective"]=="exact discrete full-grid FOM relative-L2-squared"
             and config["starts"]==list(STARTS) and config["direct_q_optimization"] is True,
             "objective/starts")
+    require(config["scientific_full_grid_route"]=="Cox"
+            and config["K3_role"]=="identity_control_only", "Cox objective/K3 role")
     require(config["free_target_encoder_deployable"] is False
             and config["direct_predictor_deployable"] is True, "deployment classification")
     require(all(config[name] is False for name in

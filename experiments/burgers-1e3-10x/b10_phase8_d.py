@@ -239,7 +239,9 @@ def decode_metrics(datasets, states, coefficients, arrays, prefix, batch=BATCH):
             actual, control = evaluate(jnp.asarray(sb), jnp.asarray(cb),
                                        jnp.asarray(coords), jnp.asarray(mask), coarse, fine)
             actual, control = np.asarray(actual)[:, :npoints], np.asarray(control)[:, :npoints]
-            prediction[start:start + take] = actual[:take]
+            # Cox is the sole exact-full-grid scientific objective. K3 remains
+            # only as the separately reported route-identity control.
+            prediction[start:start + take] = control[:take]
             identity[start:start + take] = np.linalg.norm(
                 actual[:take] - control[:take], axis=1
             ) / np.maximum(np.linalg.norm(control[:take], axis=1), 1e-300)
@@ -306,77 +308,98 @@ def make_trust_attempt():
         prediction = p4.decode_one_cox_jax(state, coefficient, coords, mask, p7.H1)
         return (prediction - truth) / jnp.maximum(jnp.linalg.norm(truth), 1e-150)
 
-    def one(generator, q, affine, truth, coords, mask, mean, scales, delta, damping, active):
-        function = lambda value: residual_one(
-            generator, value, affine, truth, coords, mask, mean, scales)
-        residual, pullback = jax.vjp(function, q)
-        gradient = pullback(residual)[0]
+    def one(generator, q, affine, truth, coords, mask, mean, scales, delta,
+            damping, active, recorded_objective):
+        def perform(_):
+            function = lambda value: residual_one(
+                generator, value, affine, truth, coords, mask, mean, scales)
+            residual, pullback = jax.vjp(function, q)
+            gradient = pullback(residual)[0]
 
-        def matvec(value):
-            jvalue = jax.jvp(function, (q,), (value,))[1]
-            return pullback(jvalue)[0] + damping * value
+            def matvec(value):
+                jvalue = jax.jvp(function, (q,), (value,))[1]
+                return pullback(jvalue)[0] + damping * value
 
-        right = -gradient
-        rr0 = jnp.vdot(right, right)
+            right = -gradient
+            rr0 = jnp.vdot(right, right)
 
-        def body(carry, _):
-            x, r, direction, rr, running, count, breakdown = carry
-            def perform(values):
-                x, r, direction, rr, _, count, breakdown = values
-                product = matvec(direction)
-                denominator = jnp.vdot(direction, product)
-                valid = jnp.isfinite(denominator) & (denominator > 0.0)
-                alpha = jnp.where(valid, rr / denominator, 0.0)
-                x_new = x + alpha * direction
-                r_new = r - alpha * product
-                rr_new = jnp.vdot(r_new, r_new)
-                converged = (jnp.sqrt(rr_new)
-                             <= CG_TOL * jnp.maximum(jnp.sqrt(rr0), 1e-300))
-                beta = jnp.where(valid & (rr > 0.0), rr_new / rr, 0.0)
-                direction_new = r_new + beta * direction
-                return (jnp.where(valid, x_new, x), jnp.where(valid, r_new, r),
-                        jnp.where(valid, direction_new, direction),
-                        jnp.where(valid, rr_new, rr), valid & ~converged,
-                        count + valid.astype(jnp.int32), breakdown | ~valid)
-            return lax.cond(running, perform, lambda values: values, carry), None
+            def body(carry, _):
+                x, r, direction, rr, running, count, breakdown = carry
 
-        initial = (jnp.zeros_like(q), right, right, rr0,
-                   active & (rr0 > 0.0), jnp.int32(0), jnp.bool_(False))
-        (step, _, _, rr, _, iterations, breakdown), _ = lax.scan(
-            body, initial, xs=None, length=CG_MAX)
-        step = step * jnp.minimum(1.0, delta / jnp.maximum(jnp.linalg.norm(step), 1e-300))
-        trial = jnp.clip(q + step, -1.0, 1.0)
-        actual_step = trial - q
-        jstep = jax.jvp(function, (q,), (actual_step,))[1]
-        predicted = -jnp.vdot(gradient, actual_step) - 0.5 * jnp.vdot(jstep, jstep)
-        trial_residual = function(trial)
-        objective = jnp.vdot(residual, residual)
-        trial_objective = jnp.vdot(trial_residual, trial_residual)
-        actual = 0.5 * (objective - trial_objective)
-        rho = jnp.where(predicted > 0.0, actual / predicted, -jnp.inf)
-        finite = (jnp.all(jnp.isfinite(trial_residual)) & jnp.isfinite(predicted)
-                  & jnp.isfinite(actual) & jnp.isfinite(rho))
-        accepted = active & ~breakdown & finite & (predicted > 0.0) & (actual > 0.0) & (rho >= ACCEPT_RHO)
-        next_q = jnp.where(accepted, trial, q)
-        next_objective = jnp.where(accepted, trial_objective, objective)
-        terminate = accepted & (((objective - trial_objective) /
-                     jnp.maximum(objective, 1e-300) <= 1e-12)
-                    | (jnp.linalg.norm(actual_step) /
-                       (1.0 + jnp.linalg.norm(q)) <= 1e-12))
-        shrink = active & (~accepted | (rho < 0.25))
-        expand = accepted & (rho > 0.75) & (jnp.linalg.norm(actual_step) >= 0.9 * delta)
-        improve = accepted & (rho > 0.75)
-        next_delta = jnp.where(shrink, jnp.maximum(delta / 4.0, DELTA_MIN),
-                     jnp.where(expand, jnp.minimum(2.0 * delta, DELTA_MAX), delta))
-        next_damping = jnp.where(shrink, jnp.minimum(10.0 * damping, LAMBDA_MAX),
-                       jnp.where(improve, jnp.maximum(damping / 3.0, LAMBDA_MIN), damping))
-        cg_relative = jnp.sqrt(rr) / jnp.maximum(jnp.sqrt(rr0), 1e-300)
-        return (next_q, next_objective, next_delta, next_damping, active & ~terminate,
-                objective, trial_objective, gradient, actual_step, predicted, actual,
-                rho, accepted, terminate, iterations, cg_relative, breakdown, finite)
+                def cg_step(values):
+                    x, r, direction, rr, _, count, breakdown = values
+                    product = matvec(direction)
+                    denominator = jnp.vdot(direction, product)
+                    valid = jnp.isfinite(denominator) & (denominator > 0.0)
+                    alpha = jnp.where(valid, rr / denominator, 0.0)
+                    x_new = x + alpha * direction
+                    r_new = r - alpha * product
+                    rr_new = jnp.vdot(r_new, r_new)
+                    converged = (jnp.sqrt(rr_new)
+                                 <= CG_TOL * jnp.maximum(jnp.sqrt(rr0), 1e-300))
+                    beta = jnp.where(valid & (rr > 0.0), rr_new / rr, 0.0)
+                    direction_new = r_new + beta * direction
+                    return (jnp.where(valid, x_new, x), jnp.where(valid, r_new, r),
+                            jnp.where(valid, direction_new, direction),
+                            jnp.where(valid, rr_new, rr), valid & ~converged,
+                            count + valid.astype(jnp.int32), breakdown | ~valid)
+                return lax.cond(running, cg_step, lambda values: values, carry), None
+
+            initial = (jnp.zeros_like(q), right, right, rr0, rr0 > 0.0,
+                       jnp.int32(0), jnp.bool_(False))
+            (step, _, _, rr, _, iterations, breakdown), _ = lax.scan(
+                body, initial, xs=None, length=CG_MAX)
+            step = step * jnp.minimum(
+                1.0, delta / jnp.maximum(jnp.linalg.norm(step), 1e-300))
+            trial = jnp.clip(q + step, -1.0, 1.0)
+            actual_step = trial - q
+            jstep = jax.jvp(function, (q,), (actual_step,))[1]
+            predicted = (-jnp.vdot(gradient, actual_step)
+                         - 0.5 * jnp.vdot(jstep, jstep))
+            trial_residual = function(trial)
+            objective = jnp.vdot(residual, residual)
+            trial_objective = jnp.vdot(trial_residual, trial_residual)
+            actual = 0.5 * (objective - trial_objective)
+            rho = jnp.where(predicted > 0.0, actual / predicted, -jnp.inf)
+            finite = (jnp.all(jnp.isfinite(trial_residual))
+                      & jnp.isfinite(predicted) & jnp.isfinite(actual)
+                      & jnp.isfinite(rho))
+            accepted = (~breakdown & finite & (predicted > 0.0)
+                        & (actual > 0.0) & (rho >= ACCEPT_RHO))
+            next_q = jnp.where(accepted, trial, q)
+            next_objective = jnp.where(accepted, trial_objective, objective)
+            terminate = accepted & (((objective - trial_objective)
+                         / jnp.maximum(objective, 1e-300) <= 1e-12)
+                        | (jnp.linalg.norm(actual_step)
+                           / (1.0 + jnp.linalg.norm(q)) <= 1e-12))
+            shrink = ~accepted | (rho < 0.25)
+            expand = (accepted & (rho > 0.75)
+                      & (jnp.linalg.norm(actual_step) >= 0.9 * delta))
+            improve = accepted & (rho > 0.75)
+            next_delta = jnp.where(
+                shrink, jnp.maximum(delta / 4.0, DELTA_MIN),
+                jnp.where(expand, jnp.minimum(2.0 * delta, DELTA_MAX), delta))
+            next_damping = jnp.where(
+                shrink, jnp.minimum(10.0 * damping, LAMBDA_MAX),
+                jnp.where(improve, jnp.maximum(damping / 3.0, LAMBDA_MIN), damping))
+            cg_relative = jnp.sqrt(rr) / jnp.maximum(jnp.sqrt(rr0), 1e-300)
+            return (next_q, next_objective, next_delta, next_damping, ~terminate,
+                    objective, trial_objective, gradient, actual_step, predicted,
+                    actual, rho, accepted, terminate, iterations, cg_relative,
+                    breakdown, finite)
+
+        def inactive(_):
+            zero = jnp.asarray(0.0, jnp.float64)
+            return (q, recorded_objective, delta, damping, jnp.bool_(False),
+                    recorded_objective, recorded_objective, jnp.zeros_like(q),
+                    jnp.zeros_like(q), zero, zero, zero, jnp.bool_(False),
+                    jnp.bool_(False), jnp.int32(0), zero, jnp.bool_(False),
+                    jnp.bool_(True))
+
+        return lax.cond(active, perform, inactive, operand=None)
 
     return jax.jit(jax.vmap(one, in_axes=(None, 0, 0, 0, None, None, None, None,
-                                          0, 0, 0)))
+                                          0, 0, 0, 0)))
 
 
 def run_trust(datasets, generator, starts, initial_objectives, mean, scales,
@@ -423,10 +446,13 @@ def run_trust(datasets, generator, starts, initial_objectives, mean, scales,
                         jnp.asarray(item["flat"][local:local+BATCH]),
                         jnp.asarray(item["coords"]), jnp.asarray(item["mask"]),
                         jnp.asarray(mean), jnp.asarray(scales), jnp.asarray(delta[sl]),
-                        jnp.asarray(damping[sl]), jnp.asarray(active[sl]))
+                        jnp.asarray(damping[sl]), jnp.asarray(active[sl]),
+                        jnp.asarray(objective[sl]))
                     (next_q, next_obj, next_delta, next_damping, next_active,
                      old_obj, trial_obj, gradient, step, pred, actual, rho,
                      accepted, terminated, cg_iter, cg_rel, breakdown, finite) = map(np.asarray, result)
+                    if not np.allclose(old_obj, objective[sl], rtol=2e-13, atol=2e-14):
+                        raise SystemExit("Cox trust objective/control trace mismatch")
                     trace["delta"][start_index, sl, attempt] = delta[sl]
                     trace["damping"][start_index, sl, attempt] = damping[sl]
                     trace["gradient_norm"][start_index, sl, attempt] = np.linalg.norm(gradient, axis=1)
@@ -763,6 +789,8 @@ def main():
     }
     config = {
         "objective": "exact discrete full-grid FOM relative-L2-squared",
+        "scientific_full_grid_route": "Cox",
+        "K3_role": "identity_control_only",
         "candidate": p7.G1, "latent_dimension": 19,
         "train_mix": TRAIN_MIX, "selection_mix": SELECTION_MIX,
         "starts": list(STARTS), "direct_q_optimization": True,

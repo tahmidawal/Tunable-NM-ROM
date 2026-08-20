@@ -30,6 +30,11 @@ INHERITED="$ROOT/worktrees/2026-08-19-nonlinear-decoder-architecture/experiments
 if [[ -f "$INHERITED" ]]; then
   cp "$INHERITED" "$STAGE/code/deps/inherited_h160.json"
 fi
+if [[ "$cell" == d1* ]]; then
+  D0_RUN="$EXP/runs/d0_r2/out/d0.json"
+  [[ -f "$D0_RUN" ]] || { echo "missing pulled D0 artifact: $D0_RUN" >&2; exit 4; }
+  cp "$D0_RUN" "$STAGE/code/deps/d0.json"
+fi
 
 cat > "$STAGE/run.sbatch" <<EOF
 #!/bin/bash

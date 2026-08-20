@@ -251,6 +251,105 @@ def decode_hermite_states(states, coords, boundary_mask, degree, batch=64):
     return np.concatenate(chunks)
 
 
+def affine_moment_warp(fields, coords):
+    """L2 moment center and lower Cholesky factor for full-covariance alignment."""
+    weights = jnp.square(jnp.maximum(fields, 0.0))
+    mass = jnp.sum(weights, axis=1) + 1e-300
+    center = jnp.sum(weights[:, :, None] * coords[None], axis=1) / mass[:, None]
+    delta = coords[None] - center[:, None]
+    covariance = jnp.einsum("bn,bni,bnj->bij", weights, delta, delta) / mass[:, None, None]
+    covariance = 2.0 * covariance + 1e-8 * jnp.eye(2, dtype=F64)[None]
+    return center, jnp.linalg.cholesky(covariance)
+
+
+def hg5s_basis(coords, boundary_mask, center, cholesky):
+    """HG5 plus six smooth nearest-wall chart functions (32-state decoder)."""
+    delta = coords - center[None]
+    xi = delta[:, 0] / cholesky[0, 0]
+    eta = (delta[:, 1] - cholesky[1, 0] * xi) / cholesky[1, 1]
+    hx = _probabilists_hermite(xi, 5)
+    hy = _probabilists_hermite(eta, 5)
+    envelope = jnp.exp(-0.5 * (jnp.square(xi) + jnp.square(eta))) * boundary_mask
+    global_columns = [
+        envelope * hx[px] * hy[py] for px, py in hermite_pairs(5)
+    ]
+    distances = jnp.asarray((center[0], 1.0 - center[0], center[1], 1.0 - center[1]))
+    chart_weights = jax.nn.softmax(-distances / 0.05)
+    wall_scale = jnp.maximum(0.75 * (cholesky[0, 0] + cholesky[1, 1]), 0.02)
+    wall_profiles = jnp.stack((
+        jnp.exp(-coords[:, 0] / wall_scale),
+        jnp.exp(-(1.0 - coords[:, 0]) / wall_scale),
+        jnp.exp(-coords[:, 1] / wall_scale),
+        jnp.exp(-(1.0 - coords[:, 1]) / wall_scale),
+    ), axis=1)
+    wall_gate = wall_profiles @ chart_weights
+    wall_columns = [
+        wall_gate * envelope * hx[px] * hy[py] for px, py in hermite_pairs(2)
+    ]
+    return jnp.stack(global_columns + wall_columns, axis=1)
+
+
+def fit_hg5s_states(fields, coords, boundary_mask, batch=32):
+    fields = jnp.asarray(fields, F64)
+    coords = jnp.asarray(coords, F64)
+    boundary_mask = jnp.asarray(boundary_mask, F64)
+    n_coeff = len(hermite_pairs(5)) + len(hermite_pairs(2))
+    assert 5 + n_coeff == 32
+
+    def fit_one(field):
+        center, cholesky = affine_moment_warp(field[None], coords)
+        center, cholesky = center[0], cholesky[0]
+        basis = hg5s_basis(coords, boundary_mask, center, cholesky)
+        norms = jnp.linalg.norm(basis, axis=0) + 1e-300
+        normalized = basis / norms[None]
+        gram = normalized.T @ normalized
+        rhs = normalized.T @ field
+        ridge = 1e-12 * jnp.maximum(jnp.trace(gram) / n_coeff, 1e-300)
+        scaled = jnp.linalg.solve(gram + ridge * jnp.eye(n_coeff, dtype=F64), rhs)
+        coefficients = scaled / norms
+        prediction = basis @ coefficients
+        state = jnp.concatenate((
+            center,
+            jnp.asarray((jnp.log(cholesky[0, 0]), cholesky[1, 0],
+                         jnp.log(cholesky[1, 1]))),
+            coefficients,
+        ))
+        return state, prediction, jnp.linalg.cond(gram)
+
+    vmapped = jax.jit(jax.vmap(fit_one))
+    states, predictions, conditions = [], [], []
+    for start in range(0, fields.shape[0], batch):
+        state, prediction, condition = vmapped(fields[start:start + batch])
+        states.append(np.asarray(state))
+        predictions.append(np.asarray(prediction))
+        conditions.append(np.asarray(condition))
+    return np.concatenate(states), np.concatenate(predictions), np.concatenate(conditions)
+
+
+def hg5s_cholesky(state):
+    return jnp.asarray((
+        (jnp.exp(state[2]), 0.0),
+        (state[3], jnp.exp(state[4])),
+    ), dtype=F64)
+
+
+def decode_hg5s_states(states, coords, boundary_mask, batch=64):
+    states = jnp.asarray(states, F64)
+    coords = jnp.asarray(coords, F64)
+    boundary_mask = jnp.asarray(boundary_mask, F64)
+
+    def decode_one(state):
+        return hg5s_basis(
+            coords, boundary_mask, state[:2], hg5s_cholesky(state)
+        ) @ state[5:]
+
+    vmapped = jax.jit(jax.vmap(decode_one))
+    chunks = []
+    for start in range(0, states.shape[0], batch):
+        chunks.append(np.asarray(vmapped(states[start:start + batch])))
+    return np.concatenate(chunks)
+
+
 def polynomial_design(features, degree=3):
     """Deterministic complete polynomial features through the named degree."""
     features = np.asarray(features, np.float64)

@@ -42,7 +42,7 @@ bh_sha="$(awk '$2=="./code/bh_common.py" {print $1}' "$P3/MANIFEST.sha256")"
 [[ "$(sha256sum "$STAGE/code/deps/burgers2d-coord-rom/burgers2d_film.py" | cut -d' ' -f1)" == "$film_sha" ]] || exit 4
 [[ "$(sha256sum "$STAGE/code/bh_common.py" | cut -d' ' -f1)" == "$bh_sha" ]] || exit 4
 cp "$HERE/phase4_d.sbatch" "$STAGE/run.sbatch"
-(cd "$STAGE" && find . -type f -not -name MANIFEST.sha256 -exec sha256sum {} \; | sort > MANIFEST.sha256)
+(cd "$STAGE" && find . -type f ! -path './MANIFEST.sha256' -exec sha256sum {} \; | sort > MANIFEST.sha256)
 echo "stage=$STAGE"
 echo "commit=$expected_commit"
 echo "manifest_file_sha256=$(sha256sum "$STAGE/MANIFEST.sha256" | cut -d' ' -f1)"

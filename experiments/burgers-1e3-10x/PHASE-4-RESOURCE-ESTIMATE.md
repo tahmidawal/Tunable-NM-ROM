@@ -41,3 +41,12 @@ P4-D cell.  Its complete log, manifest, scheduler record, and checksums are reta
 under `runs/p4_d_r1_failed_2668601/`; the exact remote directory was checksummed and
 removed.  The normalization regression check must pass both the nested S0 and flat
 P3 immutable artifacts before any fresh launch is authorized.
+
+Job 2668613 subsequently completed, but its root manifest had excluded the nested
+P3 manifest because the exclusion matched every `MANIFEST.sha256` basename.  The
+independent audit stopped at that provenance gate before its result or decision was
+inspected.  It is likewise excluded, its complete local bundle is checksummed under
+`runs/p4_d_r2/`, and the exact remote directory was removed.  The corrected root
+manifest rule excludes only `./MANIFEST.sha256`; a tracked non-scientific fixture
+requires the nested P3 manifest entry and rejects a corrupted entry before any new
+launch can be considered.

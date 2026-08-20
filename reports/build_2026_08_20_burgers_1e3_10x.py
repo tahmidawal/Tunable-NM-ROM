@@ -10,6 +10,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams["svg.hashsalt"] = "burgers-1e3-10x-2026-08-20"
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 EXP = os.path.join(ROOT, "experiments", "burgers-1e3-10x")
 D0_PATH = os.path.join(EXP, "runs", "d0_r2", "out", "d0.json")
@@ -40,6 +42,14 @@ def table(headers, rows):
     return "\n".join(output)
 
 
+def normalize_svg(path):
+    """Remove backend whitespace while preserving deterministic SVG bytes."""
+    with open(path) as handle:
+        lines = handle.readlines()
+    with open(path, "w") as handle:
+        handle.writelines(line.rstrip() + "\n" for line in lines)
+
+
 def make_figures(decision, fom):
     os.makedirs(FIG_DIR, exist_ok=True)
     names = ["HG4", "HG5"]
@@ -60,7 +70,8 @@ def make_figures(decision, fom):
     fig.tight_layout()
     rep_base = os.path.join(FIG_DIR, "burgers_1e3_10x_representation_floor")
     fig.savefig(rep_base + ".png", dpi=180)
-    fig.savefig(rep_base + ".svg")
+    fig.savefig(rep_base + ".svg", metadata={"Date": None})
+    normalize_svg(rep_base + ".svg")
     plt.close(fig)
 
     ns = np.asarray((256, 512, 1024))
@@ -85,7 +96,8 @@ def make_figures(decision, fom):
     fig.tight_layout()
     fom_base = os.path.join(FIG_DIR, "burgers_1e3_10x_fom_scaling")
     fig.savefig(fom_base + ".png", dpi=180)
-    fig.savefig(fom_base + ".svg")
+    fig.savefig(fom_base + ".svg", metadata={"Date": None})
+    normalize_svg(fom_base + ".svg")
     plt.close(fig)
     return {
         "representation": os.path.relpath(rep_base + ".png", os.path.dirname(REPORT_PATH)),
@@ -208,7 +220,7 @@ This report covers the preregistered transported Hermite-Gaussian Phase-1 search
 
 **[final negative]** Neither transported analytic decoder can represent the locked 64-case selection trajectories closely enough to justify training. The best oracle is {best['concept']} at mean {sci(best['oracle_mean'])} and worst {sci(best['oracle_worst'])}, respectively {best['oracle_mean']/2e-4:.1f}x and {best['oracle_worst']/7e-4:.1f}x above the fixed representation gates. Its authoritative nearest-wall squared-error fraction is {best['oracle_wall_fraction']:.6f}, below the 0.5 license for the conditional wall chart. Therefore HG4 training, HG5 training, HG5S/D1, weak/EQ tuning, ROM scaling, and confirmation were all stopped rather than run on a failed representation.
 
-The inherited pure H160x4/g2 weak ROM remains the best measured deployable pure-model accuracy point in the available artifacts, at mean {sci(inherited['full_weak_trajectory_mean'])} and worst {sci(inherited['full_weak_trajectory_worst'])}; it is still far outside the new 1e-3 target and has no eligible paired 10x point. The new {best['concept']} number is an oracle, not a deployable Pareto point.
+The inherited seed-0 H160x4/g2 artifact copied into D0 has full-weak mean {sci(inherited['full_weak_trajectory_mean'])} and worst {sci(inherited['full_weak_trajectory_worst'])}; this specific row is still far outside the new 1e-3 target and has no eligible paired 10x point. No claim is made that it supersedes the broader earlier three-seed architecture summary. The new {best['concept']} number is an oracle, not a deployable Pareto point.
 
 ## Locked data and integrity
 

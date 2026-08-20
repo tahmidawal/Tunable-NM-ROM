@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from types import SimpleNamespace
 
 import jax
 
@@ -13,9 +14,11 @@ import numpy as np
 
 import b10_common as c
 import b10_spline as spline
+import b10_phase7_train as trainer
 
 
 EXPECTED_P5 = "97f8bc6bb9e1d67d0baf4652bd57e6fb69dab484fc8f99ce12018e9f6c1d0c96"
+EXPECTED_P5_NPZ = "5235b81b19c4ed459e7fda4291fe67eb3f4b87ba07413eb36e861a0b147dfe54"
 
 
 def require(value, message):
@@ -36,8 +39,9 @@ def independent_normalize(physical):
     ))
 
 
-def build(p5_json, target_dir):
+def build(p5_json, p5_npz, target_dir):
     require(c.sha256(p5_json) == EXPECTED_P5, "immutable P5 JSON hash")
+    require(c.sha256(p5_npz) == EXPECTED_P5_NPZ, "immutable P5 NPZ hash")
     with open(p5_json, encoding="utf-8") as handle:
         report = json.load(handle)
     sampled_values = c.bf.sample_params(seed=0, m=704)
@@ -52,6 +56,7 @@ def build(p5_json, target_dir):
     normalized_max = np.full(5, -np.inf)
     max_mapping_delta = 0.0
     first_locked_normalized = None
+    all_physical, all_normalized = [], []
     for row in report["train_targets"]["chunks"]:
         path = os.path.join(target_dir, row["basename"])
         require(c.sha256(path) == row["sha256"], f"chunk hash {row['basename']}")
@@ -62,6 +67,8 @@ def build(p5_json, target_dir):
             ])
             if first_locked_normalized is None:
                 first_locked_normalized = locked[:51].copy()
+            all_physical.append(physical)
+            all_normalized.append(locked)
             independent = independent_normalize(physical)
             require(np.array_equal(locked, independent),
                     f"locked/independent mapping {row['basename']}")
@@ -121,6 +128,14 @@ def build(p5_json, target_dir):
             "N": row["N"], "snapshot_count": row["snapshot_count"],
         })
     require(snapshot_count == next_global == 35_904, "snapshot total")
+    all_physical = np.concatenate(all_physical)
+    all_normalized = np.concatenate(all_normalized)
+    loaded = trainer.load_target_coefficients(
+        SimpleNamespace(p5_npz=p5_npz, target_dir=target_dir), report, False
+    )
+    require(np.array_equal(loaded["physical_affine"], all_physical)
+            and np.array_equal(loaded["affine"], all_normalized),
+            "actual Phase7 loader physical/normalized mapping")
     fields, _parameters, reference_health = c.generate_population(
         64, 0, 704, np.asarray((0,), np.int64), chunk=1
     )
@@ -143,6 +158,7 @@ def build(p5_json, target_dir):
     return {
         "status": "pass", "classification": "read_only_real_P5_schema_regression",
         "p5_json_sha256": EXPECTED_P5, "chunk_count": len(chunk_records),
+        "p5_npz_sha256": EXPECTED_P5_NPZ,
         "snapshot_count": snapshot_count, "chunks": chunk_records,
         "source_parameter_seed": 0, "source_parameter_draw_count": 704,
         "physical_affine_min": physical_min.tolist(),
@@ -159,6 +175,7 @@ def build(p5_json, target_dir):
         "regenerated_N64_draw0_reference_health": reference_health,
         "all_normalized_finite_and_in_unit_box": True,
         "all_regenerated_parameter_feature_metadata_match": True,
+        "actual_phase7_loader_mapping_match": True,
         "scientific_training_executed": False,
         "model_validation_touched": False, "confirmation_touched": False,
     }
@@ -167,11 +184,12 @@ def build(p5_json, target_dir):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--p5-json", required=True)
+    parser.add_argument("--p5-npz", required=True)
     parser.add_argument("--target-dir", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    result = build(args.p5_json, args.target_dir)
+    result = build(args.p5_json, args.p5_npz, args.target_dir)
     if args.check:
         with open(args.output, encoding="utf-8") as handle:
             observed = json.load(handle)

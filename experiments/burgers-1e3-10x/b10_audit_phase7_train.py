@@ -12,7 +12,7 @@ import numpy as np
 
 
 EXPECTED = {
-    "affine_regression": "d48f74080f7cd69e4f5e2a0d4bdbbd57bc31f7be52deac18aa0a4bc0e522e3ac",
+    "affine_regression": "218e648d2a3e1ad53b6d556435320a222daf3b449140865d07c09ff18ae0cad5",
     "p4_json": "ff425dfa1f73ac2d8559df2d780ef09dc1ade179ed5636458e53e0f389f5d617",
     "p4_npz": "720c5890b22709c83858f46e43f18fa3d28bb1305544f02ad9aea71625a2228f",
     "p4_audit": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3",
@@ -333,6 +333,7 @@ def main():
         require(regression["status"] == "pass"
                 and regression["snapshot_count"] == 35_904
                 and regression["locked_vs_independent_max_abs"] == 0.0
+                and regression["actual_phase7_loader_mapping_match"] is True
                 and regression["regenerated_N64_draw0_normalized_affine_max_abs"]
                 <= regression["regenerated_N64_draw0_tolerance_max_abs"],
                 "affine regression result")

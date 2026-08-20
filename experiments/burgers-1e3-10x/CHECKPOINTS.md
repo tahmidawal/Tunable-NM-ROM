@@ -82,3 +82,27 @@ Its manifest-file SHA-256 is
 `89069fab6c4792154874f5fe42865cd0ba551b516907c5ce9ef77686d321d5c0`; job
 `2667536` (`ctol_b10_fom_cal_r4`) requests one A100, 128 GB host memory, eight
 CPUs, and 90 minutes.
+
+## 2026-08-20 — prospective diagnostic-task clarification
+
+This clarification was committed while D0 job `2667377` was still pending at
+zero elapsed with no output.  It does not change the two-diagnostic cap, fixed
+draws, candidate order, or promotion thresholds.  D0 groups the inherited-floor
+decomposition with the HG4/HG5 representation-oracle and wall measurements that
+the preregistration's finite-cell paragraph assigned to D1; conditional D1 is
+the remaining HG5S representation/cost falsification.  Measuring the HG5 oracle
+does not license HG5 training: that still requires an HG4 representation pass
+followed by a trained-HG4 decoder miss.
+
+The predictor-error-based `wall_chart_licensed` field written by the already
+staged D0 is explicitly non-authoritative.  The only HG5S license is recomputed
+from D0's persisted HG4/HG5 `representation_oracle.trajectory_all` arrays and
+the locked seed-0 indices 512:576: the nearest-wall parameter quartile must
+account for at least half of a concept's squared representation-oracle error.
+D1 is not submitted unless that corrected license fires.
+
+The HG5S implementation is also corrected prospectively to a literal two-way
+partition of unity.  Its pointwise wall weight is bounded in `[0,1]`, its
+interior weight is exactly `1-w_wall`, HG5 columns use the interior weight, and
+HG2 wall columns use the wall weight.  D1 persists and gates the numerical
+maximum of `abs(w_interior+w_wall-1)` at `1e-15`.

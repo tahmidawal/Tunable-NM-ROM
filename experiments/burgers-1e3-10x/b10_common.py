@@ -262,19 +262,10 @@ def affine_moment_warp(fields, coords):
     return center, jnp.linalg.cholesky(covariance)
 
 
-def hg5s_basis(coords, boundary_mask, center, cholesky):
-    """HG5 plus six smooth nearest-wall chart functions (32-state decoder)."""
-    delta = coords - center[None]
-    xi = delta[:, 0] / cholesky[0, 0]
-    eta = (delta[:, 1] - cholesky[1, 0] * xi) / cholesky[1, 1]
-    hx = _probabilists_hermite(xi, 5)
-    hy = _probabilists_hermite(eta, 5)
-    envelope = jnp.exp(-0.5 * (jnp.square(xi) + jnp.square(eta))) * boundary_mask
-    global_columns = [
-        envelope * hx[px] * hy[py] for px, py in hermite_pairs(5)
-    ]
+def hg5s_chart_weights(coords, center, cholesky):
+    """Complementary smooth interior/wall partition-of-unity weights."""
     distances = jnp.asarray((center[0], 1.0 - center[0], center[1], 1.0 - center[1]))
-    chart_weights = jax.nn.softmax(-distances / 0.05)
+    orientation = jax.nn.softmax(-distances / 0.05)
     wall_scale = jnp.maximum(0.75 * (cholesky[0, 0] + cholesky[1, 1]), 0.02)
     wall_profiles = jnp.stack((
         jnp.exp(-coords[:, 0] / wall_scale),
@@ -282,7 +273,24 @@ def hg5s_basis(coords, boundary_mask, center, cholesky):
         jnp.exp(-coords[:, 1] / wall_scale),
         jnp.exp(-(1.0 - coords[:, 1]) / wall_scale),
     ), axis=1)
-    wall_gate = wall_profiles @ chart_weights
+    wall = jnp.clip(wall_profiles @ orientation, 0.0, 1.0)
+    interior = 1.0 - wall
+    return interior, wall
+
+
+def hg5s_basis(coords, boundary_mask, center, cholesky):
+    """Two-chart POU HG5/HG2 wall decoder (32-dimensional state)."""
+    delta = coords - center[None]
+    xi = delta[:, 0] / cholesky[0, 0]
+    eta = (delta[:, 1] - cholesky[1, 0] * xi) / cholesky[1, 1]
+    hx = _probabilists_hermite(xi, 5)
+    hy = _probabilists_hermite(eta, 5)
+    envelope = jnp.exp(-0.5 * (jnp.square(xi) + jnp.square(eta))) * boundary_mask
+    interior_gate, wall_gate = hg5s_chart_weights(coords, center, cholesky)
+    global_columns = [
+        interior_gate * envelope * hx[px] * hy[py]
+        for px, py in hermite_pairs(5)
+    ]
     wall_columns = [
         wall_gate * envelope * hx[px] * hy[py] for px, py in hermite_pairs(2)
     ]

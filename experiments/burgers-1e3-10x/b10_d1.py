@@ -22,6 +22,37 @@ TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
 BURN_SECONDS = float(os.environ.get("BURN_SECONDS", "3"))
 
 
+def authoritative_wall_license(d0):
+    """Recompute the preregistered license from representation-oracle errors."""
+    cx, cy, *_ = c.bf.sample_params(seed=SEED, m=DRAW_COUNT)
+    selected = np.arange(START, START + COUNT)
+    distance = np.minimum.reduce((
+        cx[selected], cy[selected], 1.0 - cx[selected], 1.0 - cy[selected]
+    ))
+    nearest = np.array_split(np.argsort(distance), 4)[0]
+    concepts = {}
+    for name in ("HG4", "HG5"):
+        if name not in d0.get("concepts", {}):
+            continue
+        errors = np.asarray(
+            d0["concepts"][name]["representation_oracle"]["trajectory_all"],
+            np.float64,
+        )
+        if errors.shape != (COUNT,):
+            raise SystemExit(f"{name} oracle error shape does not match locked selection")
+        fraction = float(
+            np.sum(np.square(errors[nearest])) / np.sum(np.square(errors))
+        )
+        concepts[name] = {
+            "nearest_wall_quartile_indices": selected[nearest].tolist(),
+            "nearest_wall_squared_oracle_error_fraction": fraction,
+            "license_pass": bool(fraction >= 0.5),
+        }
+    return {"concepts": concepts, "fires": bool(any(
+        value["license_pass"] for value in concepts.values()
+    ))}
+
+
 def wall_strata(errors, parameters):
     distance = np.minimum.reduce((
         parameters["cx"], parameters["cy"],
@@ -66,12 +97,10 @@ def main():
         d0 = json.load(handle)
     if d0.get("status") != "complete":
         raise SystemExit("D0 is not complete")
-    wall_licensed = any(
-        concept.get("wall_chart_licensed", False)
-        for concept in d0["concepts"].values()
-    )
+    wall_license = authoritative_wall_license(d0)
+    wall_licensed = wall_license["fires"]
     if not wall_licensed:
-        raise SystemExit("D1 HG5S was not licensed by D0 wall stratification")
+        raise SystemExit("D1 HG5S lacks the authoritative oracle-error wall license")
     started = time.time()
     fields, parameters, health = c.generate_population(
         N, SEED, DRAW_COUNT, np.arange(START, START + COUNT)
@@ -83,6 +112,15 @@ def main():
     oracle = oracle.reshape(fields.shape)
     metrics = c.error_metrics(oracle, fields)
     strata = wall_strata(np.asarray(metrics["trajectory_all"]), parameters)
+    representative_state = jnp.asarray(states[0])
+    representative_cholesky = c.hg5s_cholesky(representative_state)
+    representative_coords = jnp.asarray(c.grid_coords(N), jnp.float64)
+    interior_weight, wall_weight = c.hg5s_chart_weights(
+        representative_coords, representative_state[:2], representative_cholesky
+    )
+    pou_error = float(jnp.max(jnp.abs(interior_weight + wall_weight - 1.0)))
+    if pou_error > 1e-15:
+        raise SystemExit(f"partition-of-unity identity failed: {pou_error:.3e}")
 
     # Lower-bound the analytic decoder and one weak Jacobian before training it.
     representative = jnp.asarray(states.reshape(COUNT, c.NUM_STEPS + 1, 32)[0])
@@ -130,11 +168,21 @@ def main():
             "selection_indices": [START, START + COUNT - 1],
             "model_validation_touched": False, "confirmation_touched": False,
             "latent_dimension": k, "M": M, "m": m,
-            "architecture": "full-covariance HG5 plus six smooth wall-chart functions",
+            "architecture": "full-covariance HG5/HG2 two-way wall partition of unity",
             "parameter_count_grid_independent": True, "f64": True,
         },
         "provenance": c.provenance(),
-        "d0": {"sha256": c.sha256(D0_JSON), "wall_chart_licensed": wall_licensed},
+        "d0": {
+            "sha256": c.sha256(D0_JSON),
+            "predictor_based_wall_chart_licensed_non_authoritative": True,
+            "authoritative_representation_oracle_wall_license": wall_license,
+        },
+        "partition_of_unity": {
+            "definition": "w_interior=1-w_wall",
+            "representative_max_abs_sum_minus_one": pou_error,
+            "gate": 1e-15,
+            "gate_pass": bool(pou_error <= 1e-15),
+        },
         "reference_health": health,
         "representation_oracle": metrics,
         "basis_condition": {

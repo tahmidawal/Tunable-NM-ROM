@@ -370,3 +370,39 @@ replaces the regenerated state with the exact immutable state before training.
 No model, data, loss, scientific gate, or locked split changes. One exact clean
 `p7_g1_s11_r3` stage may be submitted only after independent/root audit; no
 further retry is allowed.
+
+## 2026-08-20 — Phase-7 G1 seed-11 final hard stop
+
+The single authorized complete Phase-7 cell, job `2673185`, ran from immutable
+scientific commit `b85a0b06d3dd2fe460e41a801f51050f271fcf5b` and manifest
+SHA-256 `a95fc4621a90cef13071df1ad1db363187deac0f7fc7c8c774c0fedd7c9c3a19`
+on pax008/NVIDIA H200 with GPU backend, f64, and highest matmul precision. It
+completed in 10:46 with exit `0:0`, empty stderr, `ALL-DONE`, and peak batch
+RSS 8,708,316 KiB. The exact pulled files match the remote checksum manifest;
+the complete local bundle, including the independent audit, is sealed by
+`LOCAL.sha256` with SHA-256
+`43b1bd33314a021dd492c20ba8d1fb0bc6d80022b4da2689bb42d38daa552acc`.
+Only the exact validated remote cell was deleted, and its absence was verified.
+
+The independent negative-aware audit passes. The immutable physical affine,
+features, checkpoint physical affine, and artifact affine/state bindings are
+bitwise exact. The cluster artifact's regenerated and immutable normalized
+affine arrays are also bitwise identical. Recomputing the normalized mapping
+locally changes 1,915 of 179,520 scalar values only through portable f64 scalar
+exp/log arithmetic, with maximum absolute difference
+`2.220446049250313e-16`; this passes the prospectively fixed `2e-15` absolute
+tolerance with zero relative tolerance. The audit-only portability repair is
+commit `ae99d3b5898265d7f62aca8db5c317b11a261e5d` and changes no immutable JSON,
+NPZ, checkpoint, preregistered method, training input, loss, or gate.
+
+The trained G1 learned-oracle trajectory mean/worst relative-L2 values are
+`0.387797604 / 1.273277480` at N64, `0.356475567 / 1.142905082` at N128,
+`0.347718463 / 0.903296093` at N256, and
+`0.373122859 / 1.273277480` pooled. The direct predictor is better but still
+fails by orders of magnitude: `0.079818816 / 0.193691476`,
+`0.082807361 / 0.176672400`, `0.087198571 / 0.177745495`, and
+`0.081726937 / 0.193691476`, respectively. Direct/oracle mean ratios are
+`0.205826`, `0.232295`, `0.250773`, and `0.219035`, and route identity passes.
+Both accuracy gates fail at every mesh and pooled. Therefore G1 seed 11 fails,
+Phase 7 hard-stops, seeds 29/47 are not licensed, and G2, weak/EQ, model
+validation, scaling, and confirmation remain unopened and unauthorized.

@@ -1,5 +1,5 @@
 {
- "status": "phase4_d_positive_training_active",
+ "status": "phase4_hard_stop_learned_manifold_failure",
  "representation_phase1": [
   {
    "concept": "HG4",
@@ -398,6 +398,69 @@
    "correction_classification": "conditional-zero-or-occasional-attempt",
    "phase4_hard_stop": false,
    "scientific_promotion_allowed": true
+  },
+  "seed11_training": {
+   "rows": [
+    {
+     "N": 64,
+     "oracle_mean": 0.425720325104355,
+     "oracle_worst": 0.6021214615132151,
+     "direct_mean": 0.07917352010651138,
+     "direct_worst": 0.19338685234057598,
+     "oracle_pass": false,
+     "direct_pass": false,
+     "finite": true,
+     "exact_boundary": true
+    },
+    {
+     "N": 128,
+     "oracle_mean": 0.4343099941748716,
+     "oracle_worst": 0.5310786190764687,
+     "direct_mean": 0.0829357134664367,
+     "direct_worst": 0.17036582473254216,
+     "oracle_pass": false,
+     "direct_pass": false,
+     "finite": true,
+     "exact_boundary": true
+    },
+    {
+     "N": 256,
+     "oracle_mean": 0.44492021647531055,
+     "oracle_worst": 0.5508343065038613,
+     "direct_mean": 0.08657815164083912,
+     "direct_worst": 0.16891902101829204,
+     "oracle_pass": false,
+     "direct_pass": false,
+     "finite": true,
+     "exact_boundary": true
+    },
+    {
+     "N": "pooled",
+     "oracle_mean": 0.4309173578917819,
+     "oracle_worst": 0.6021214615132151,
+     "direct_mean": 0.08130623699996543,
+     "direct_worst": 0.19338685234057598,
+     "oracle_pass": false,
+     "direct_pass": false,
+     "finite": true,
+     "exact_boundary": true
+    }
+   ],
+   "chosen_oracle_start": 1,
+   "chosen_oracle_loss": 0.16980169239964943,
+   "manifold_final_sampled_loss": 0.0018403763716653785,
+   "predictor_final_relative_field_loss": 0.004907182196063854,
+   "gates": {
+    "representation_oracle_all_N_and_pooled": false,
+    "direct_all_N_and_pooled": false,
+    "promote_seed": false,
+    "local_loss_revision_near_miss_condition": false,
+    "loss_revision_licensed": false,
+    "loss_revision_license_reason": "joint decision requires completed seed-11/29/47 artifacts; a single-seed cell cannot license revision",
+    "k32_retraining_near_miss_condition": false,
+    "k32_retraining_licensed": false,
+    "phase4_next_decision": "hard stop: learned manifold misses the 2x bracket"
+   }
   }
  },
  "inherited_pure_nmrom": {
@@ -472,7 +535,7 @@
   "Phase3_D": 1,
   "Phase3_F": 0,
   "Phase4_D": 1,
-  "training": 0,
+  "training": 1,
   "weak_EQ": 0,
   "scaling": 0,
   "confirmation": 0

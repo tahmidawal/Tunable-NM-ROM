@@ -1,6 +1,6 @@
 {
  "status": "pass",
- "scope": "Burgers finite Phase 1-4 pure-NMROM diagnostic checkpoint",
+ "scope": "Burgers finite Phase 1-4 pure-NMROM search closure",
  "d0": {
   "manifest_files": [
    "out/d0.npz",
@@ -142,6 +142,40 @@
   "training_seed11_k24_licensed": true,
   "correction_classification": "conditional-zero-or-occasional-attempt",
   "independent_audit_sha256": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3"
+ },
+ "phase4_h1_seed11": {
+  "manifest_files": [
+   "out/checkpoint.pkl",
+   "logs/2668956.err",
+   "SACCT.txt",
+   "REMOTE.sha256",
+   "out/AUDIT.json",
+   "out/train.npz",
+   "out/train.json",
+   "logs/2668956.out",
+   "MANIFEST.sha256"
+  ],
+  "source_hashes": {
+   "b10_audit_phase4_train.py": "2929e20cfea061bc2c4e81b4ed000342bc0ebda2a3b4a9dfe53e7f941e6b93e0",
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_phase3.py": "5a67c44c6713d5c429df254bbfef7df2205372067f82882e6d1852ce61d1555e",
+   "b10_phase4.py": "00c1ae05bec605ec1d492c74ef4c8a56b84cfa96aee610ce06f3fdca5da38a8c",
+   "b10_phase4_train.py": "5bf63823619e26b1e92089315b1e618b71d5ae4e20dbdff0cd9dc79f05761567",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "8c088207ab73d1ceba87343b357128b0c535777893349b7f6bea15dead409731",
+   "b10_spline_train.py": "de1d0f8506e9bae722c0207abe7fd11b3c4ae46f0e074fedecec86cc46158790"
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "job_id": "2668956",
+  "classified_hwloc_lines": 2,
+  "oracle_pooled_mean": 0.4309173578917819,
+  "oracle_pooled_worst": 0.6021214615132151,
+  "direct_pooled_mean": 0.08130623699996543,
+  "direct_pooled_worst": 0.19338685234057598,
+  "hard_stop": true,
+  "next_decision": "hard stop: learned manifold misses the 2x bracket",
+  "independent_audit_sha256": "8cfcb873efcd5e80155f2537492abee5cc9281bc89011243fefc305fcfd22575"
  },
  "excluded": {
   "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",

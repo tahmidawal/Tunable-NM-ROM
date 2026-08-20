@@ -4,9 +4,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import pickle
 import re
 import statistics
 import subprocess
+
+import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 EXP = os.path.join(ROOT, "experiments", "burgers-1e3-10x")
@@ -345,15 +348,136 @@ def audit_phase4():
     }
 
 
+def audit_phase4_train():
+    directory = os.path.join(RUNS, "p4_h1_s11_r1")
+    report_path = os.path.join(directory, "out", "train.json")
+    npz_path = os.path.join(directory, "out", "train.npz")
+    checkpoint_path = os.path.join(directory, "out", "checkpoint.pkl")
+    report = load(report_path)
+    independent = load(os.path.join(directory, "out", "AUDIT.json"))
+    log = open(os.path.join(directory, "logs", "2668956.out")).read()
+    errors = open(os.path.join(directory, "logs", "2668956.err")).read().splitlines()
+    known = re.compile(
+        r"^E[0-9]{4} [0-9:.]+ [0-9]+ numa_hwloc\.cc:121\] "
+        r"Call to hwloc_set_cpubind\(\) failed: Invalid argument \[22\]$"
+    )
+    provenance = report["provenance"]
+    assert report["status"] == "complete"
+    assert provenance["jax_backend"] == "gpu" and provenance["x64"]
+    assert provenance["matmul_precision"] == "highest"
+    assert provenance["slurm_job_id"] == "2668956"
+    assert provenance["gpu_kind"] == "NVIDIA H200"
+    assert "jax_backend=gpu" in log and "ALL-DONE" in log
+    assert len(errors) == 2 and all(known.fullmatch(line) for line in errors)
+    assert not report["config"]["model_validation_touched"]
+    assert not report["config"]["confirmation_touched"]
+    assert report["config"]["training_seed"] == 11
+    assert report["config"]["candidate"] == {
+        "arm": "H1", "R": 48, "P": 32, "k": 24, "M": 96, "m": 384,
+        "q": 19, "hyperdecoder_parameters": 111520, "predictor_parameters": 2104,
+    }
+    assert independent["status"] == "pass" and independent["negative_aware"]
+    assert independent["expected_commit"] == provenance["commit"]
+    assert independent["job_id"] == provenance["slurm_job_id"]
+    assert independent["source_json_sha256"] == sha256(report_path)
+    assert independent["source_npz_sha256"] == sha256(npz_path)
+    assert independent["source_checkpoint_sha256"] == sha256(checkpoint_path)
+    assert independent["source_manifest_sha256"] == sha256(
+        os.path.join(directory, "MANIFEST.sha256")
+    )
+    assert independent["state_consistency_recomputed"]
+    assert independent["deterministic_schedules_recomputed"]
+    assert independent["metadata_and_history_recomputed"]
+    assert independent["predictor_fold_identity_max_abs"] <= 1e-12
+    assert report["npz"]["sha256"] == sha256(npz_path)
+    assert report["checkpoint"]["sha256"] == sha256(checkpoint_path)
+    assert audit_source_hashes(report)
+    with open(checkpoint_path, "rb") as handle:
+        checkpoint = pickle.load(handle)
+    with np.load(npz_path, allow_pickle=False) as arrays:
+        assert np.array_equal(
+            arrays["training_states"],
+            np.concatenate((arrays["training_affine"], np.tanh(arrays["training_q_raw"])), axis=1),
+        )
+        assert np.array_equal(checkpoint["training_autolatent_raw"], arrays["training_q_raw"])
+        chosen = report["selection_oracle"]["chosen_start"]
+        chosen_raw = arrays[f"selection_oracle_start{chosen}_q_raw"]
+        assert np.array_equal(arrays["selection_oracle_chosen_q_raw"], chosen_raw)
+        assert np.array_equal(
+            arrays["selection_oracle_states"],
+            np.concatenate((arrays["selection_affine"], np.tanh(chosen_raw)), axis=1),
+        )
+        assert np.all(np.isfinite(arrays["selection_predictor_states"]))
+
+    def validate_metrics(metrics):
+        pooled = []
+        for n, expected_count in ((64, 64), (128, 32), (256, 16)):
+            row = metrics["meshes"][str(n)]
+            values = np.asarray(row["trajectory_error_all"], np.float64)
+            assert values.shape == (expected_count,) and np.all(np.isfinite(values))
+            assert np.isclose(np.mean(values), row["trajectory_error_mean"], rtol=1e-12)
+            assert np.isclose(np.max(values), row["trajectory_error_worst"], rtol=1e-12)
+            assert row["all_finite"] and row["exact_binary_boundary"]
+            pooled.extend(values.tolist())
+        pooled = np.asarray(pooled)
+        assert np.array_equal(pooled, np.asarray(metrics["pooled"]["trajectory_error_all"]))
+        assert np.isclose(np.mean(pooled), metrics["pooled"]["trajectory_error_mean"], rtol=1e-12)
+        assert np.isclose(np.max(pooled), metrics["pooled"]["trajectory_error_worst"], rtol=1e-12)
+        assert metrics["pooled"]["all_finite"] and metrics["pooled"]["exact_binary_boundary"]
+
+    oracle, direct = report["selection_oracle"]["metrics"], report["selection_direct"]["metrics"]
+    validate_metrics(oracle)
+    validate_metrics(direct)
+    oracle_pass = all(
+        row["trajectory_error_mean"] <= 2e-4 and row["trajectory_error_worst"] <= 7e-4
+        for row in list(oracle["meshes"].values()) + [oracle["pooled"]]
+    )
+    direct_pass = all(
+        row["trajectory_error_mean"] <= 3e-4 and row["trajectory_error_worst"] <= 1e-3
+        and row["trajectory_error_mean"] / max(base["trajectory_error_mean"], 1e-300) <= 1.5
+        for row, base in [
+            *( (direct["meshes"][key], oracle["meshes"][key]) for key in ("64", "128", "256") ),
+            (direct["pooled"], oracle["pooled"]),
+        ]
+    )
+    k32_near_miss = (not oracle_pass) and all(
+        row["trajectory_error_mean"] <= 4e-4 and row["trajectory_error_worst"] <= 1.4e-3
+        for row in list(oracle["meshes"].values()) + [oracle["pooled"]]
+    )
+    gates = report["gates"]
+    assert gates["representation_oracle_all_N_and_pooled"] == oracle_pass
+    assert gates["direct_all_N_and_pooled"] == direct_pass
+    assert gates["promote_seed"] == (oracle_pass and direct_pass)
+    assert gates["k32_retraining_near_miss_condition"] == k32_near_miss
+    assert not gates["k32_retraining_licensed"] and not gates["loss_revision_licensed"]
+    assert gates["phase4_next_decision"] == "hard stop: learned manifold misses the 2x bracket"
+    assert independent["gates"] == gates
+    assert report["training"]["manifold_history"][-1]["step"] == 30000
+    assert report["training"]["predictor_history"][-1]["step"] == 20000
+    return {
+        "manifest_files": check_local_manifest("p4_h1_s11_r1"),
+        "source_hashes": audit_source_hashes(report),
+        "backend": provenance["jax_backend"], "gpu": provenance["gpu_kind"],
+        "job_id": provenance["slurm_job_id"], "classified_hwloc_lines": len(errors),
+        "oracle_pooled_mean": oracle["pooled"]["trajectory_error_mean"],
+        "oracle_pooled_worst": oracle["pooled"]["trajectory_error_worst"],
+        "direct_pooled_mean": direct["pooled"]["trajectory_error_mean"],
+        "direct_pooled_worst": direct["pooled"]["trajectory_error_worst"],
+        "hard_stop": True, "next_decision": gates["phase4_next_decision"],
+        "independent_audit_sha256": sha256(os.path.join(directory, "out", "AUDIT.json")),
+    }
+
+
 def main():
     result = {
         "status": "pass",
-        "scope": "Burgers finite Phase 1-4 pure-NMROM diagnostic checkpoint",
+        "scope": "Burgers finite Phase 1-4 pure-NMROM search closure",
         "d0": audit_d0(),
         "fom_calibration": audit_fom(),
         "phase2_s0": audit_s0(),
         "phase3_d": audit_phase3(),
         "phase4_d": audit_phase4(),
+        "phase4_h1_seed11": audit_phase4_train(),
         "excluded": {
             "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
             "local_smokes": "execution-only and excluded from scientific claims",

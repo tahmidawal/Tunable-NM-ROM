@@ -175,15 +175,21 @@ def fit_chunk(fields, coords, mask):
     }
 
 
-def save_target_chunk(path, n, indices, fields, parameters, health, fitted):
+def save_target_chunk(
+    path, n, indices, fields, parameters, health, fitted, snapshot_offset,
+):
     times = int(fields.shape[1])
     features = c.trajectory_features(parameters, n)[:, :times]
     case = np.repeat(np.asarray(indices, np.int64)[:, None], times, axis=1)
     time_index = np.broadcast_to(np.arange(times, dtype=np.int64), case.shape)
     mesh = np.full(case.shape, n, np.int64)
     arrays = dict(fitted)
+    global_snapshot = np.arange(
+        snapshot_offset, snapshot_offset + case.size, dtype=np.int64
+    ).reshape(case.shape)
     arrays.update({
-        "features": features, "global_index": case, "time_index": time_index,
+        "features": features, "source_draw_index": case,
+        "global_snapshot_index": global_snapshot, "time_index": time_index,
         "N": mesh, "normalized_parameters": parameters["normalized"],
     })
     for name in ("cx", "cy", "width", "amplitude", "nu"):
@@ -192,6 +198,8 @@ def save_target_chunk(path, n, indices, fields, parameters, health, fitted):
     return {
         "basename": os.path.basename(path), "sha256": c.sha256(path),
         "N": n, "indices": [int(value) for value in indices],
+        "global_snapshot_start": int(snapshot_offset),
+        "global_snapshot_stop": int(snapshot_offset + case.size),
         "snapshot_count": int(case.size), "reference_health": health,
         "healthy_count": int(np.sum(fitted["healthy"])),
         "normal_worst": float(np.max(fitted["normal"])),
@@ -251,7 +259,7 @@ def run_targets(target_dir, smoke=False):
             filename = f"targets_N{n}_{indices[0]:04d}_{indices[-1] + 1:04d}.npz"
             row = save_target_chunk(
                 os.path.join(target_dir, filename), n, indices,
-                fields, parameters, health, fitted,
+                fields, parameters, health, fitted, total,
             )
             chunks.append(row)
             values = fitted["coefficients"].reshape(-1, 3328)
@@ -302,6 +310,41 @@ def run_targets(target_dir, smoke=False):
 def relative_l2(value, control):
     return float(np.linalg.norm(np.asarray(value) - np.asarray(control)) /
                  max(np.linalg.norm(np.asarray(control)), 1e-300))
+
+
+def canonical_work_pass(row, suffix, n, steps):
+    """Reconstruct the complete untimed online-work contract."""
+    expected_shape = [steps + 1, n * n]
+    common = bool(
+        row["finite"] and row["zero_failures"]
+        and row["output_shape"] == expected_shape
+        and row["weak_objective_evaluations"] == steps
+        and len(row["weak_residual_norm_all"]) == steps
+        and np.all(np.isfinite(row["weak_residual_norm_all"]))
+    )
+    if suffix == "mandatory":
+        return bool(
+            common and row["weak_jacobian_evaluations"] == 0
+            and row["trial_residual_evaluations"] == 0
+            and row["coefficient_grid_evaluations"] == steps + 1
+            and len(row["rho_all"]) == steps
+            and np.all(np.isfinite(row["rho_all"]))
+        )
+    factors = np.asarray(row["trial_factor_all"], np.float64)
+    return bool(
+        common and row["weak_jacobian_evaluations"] == steps
+        and row["trial_residual_evaluations"] == 4 * steps
+        and row["coefficient_grid_evaluations"] == 8 * steps + 1
+        and all(len(row[key]) == steps for key in (
+            "rho_before_all", "rho_after_all", "jacobian_frobenius_all",
+            "trial_factor_all", "bounded_step_norm_all", "accepted_all",
+        ))
+        and all(np.all(np.isfinite(row[key])) for key in (
+            "rho_before_all", "rho_after_all", "jacobian_frobenius_all",
+            "trial_factor_all", "bounded_step_norm_all",
+        ))
+        and np.all(np.isin(factors, np.asarray((1.0, 0.5, 0.25, 0.0))))
+    )
 
 
 def run_cost_smoke(mean, scales):
@@ -546,10 +589,7 @@ def run_cost(mean, scales, smoke=False):
                 20265100 + 20 * index + (suffix == "maximum_one"),
             )
             work = bool(len(canonical[method]) == 4 and all(
-                item["finite"] and item["zero_failures"]
-                and item["weak_objective_evaluations"] == 50
-                and item["weak_jacobian_evaluations"] == (0 if suffix == "mandatory" else 50)
-                and item["trial_residual_evaluations"] == (0 if suffix == "mandatory" else 200)
+                canonical_work_pass(item, suffix, n, steps)
                 for item in canonical[method]))
             memory = setup[arm]["kernels"][suffix]["memory_analysis"]["eligibility_device_bytes"]
             one[suffix] = {"paired_median_speedup": float(speed),

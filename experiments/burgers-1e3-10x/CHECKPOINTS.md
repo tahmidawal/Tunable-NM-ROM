@@ -283,10 +283,17 @@ Exact make/launch/pull scripts bind the P4-D, rank, preregistration, Burgers FOM
 and staged-source chains.  The requested scientific resource is one H200, 8 CPUs,
 96 GB, and 8 hours; no job has been submitted.
 
-The final excluded local smoke completed in 53.483 seconds under the mandated
+The final excluded local smoke completed in 54.741 seconds under the mandated
 GB10 `jaxrun`.  Both synthetic target fits were healthy (independent normal worst
 `4.58e-16`), train normalization integrity passed, and both generator arms passed
 their exact primitive, rank/curvature non-collapse, Pallas/basis, K3/Cox, and
 boundary checks.  The same independent audit used for a later scientific artifact
 passed end-to-end.  Scientific licenses remain deliberately false in smoke, and
 no training, model-validation, confirmation, or cluster execution occurred.
+
+The post-audit hardening also gives every target an explicit source draw and a
+unique 0--35,903 global snapshot index, independently regenerates every seed-0
+parameter/normalized vector and feature, reconstructs the exact timing schedule
+and coverage, and requires complete 51/401 coefficient-work accounting.  A
+deterministic scientific-shape fixture reaches the otherwise cluster-only timing,
+order, outlier, and canonical-work audit branches and passes.

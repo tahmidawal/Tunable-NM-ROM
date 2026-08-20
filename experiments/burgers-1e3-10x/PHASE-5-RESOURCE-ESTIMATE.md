@@ -25,7 +25,7 @@ wall limit, that is an infrastructure-only incomplete attempt and may not produc
 scientific promotion evidence.
 
 The excluded local execution smoke used the mandated GB10 command, completed in
-53.483 seconds, fit 2/2 synthetic targets with worst independent normal residual
+54.741 seconds, fit 2/2 synthetic targets with worst independent normal residual
 4.58e-16, and executed both G1/G2 generator, non-collapse, basis/Pallas, K3/Cox,
 and exact-boundary paths.  Its shared independent audit passed.  It intentionally
 does not compile or time the full 51-state N1024 mandatory/max-one kernels; those
@@ -33,25 +33,40 @@ are cluster-only because compiling both locally would violate the one-minute
 smoke rule.  Smoke artifacts are excluded and carry no scientific license.
 
 Exact smoke invocation (the temporary output directory for the recorded run was
-`/tmp/b10-p5d-smoke-ybzMB6`):
+`/tmp/b10-p5d-smoke-r2-s8vRbE`):
 
 ```bash
 source /etc/profile.d/jax-mem.sh
 cd experiments/burgers-1e3-10x
 B10_ORACLE_WORKERS=1 JAX_DEFAULT_MATMUL_PRECISION=highest \
   timeout 59s jaxrun /home/tahmid/Dev/.venv/bin/python b10_phase5_d.py \
-  --output-json /tmp/b10-p5d-smoke-ybzMB6/phase5_d.json \
-  --output-npz /tmp/b10-p5d-smoke-ybzMB6/phase5_d.npz \
-  --target-dir /tmp/b10-p5d-smoke-ybzMB6/targets --smoke
+  --output-json /tmp/b10-p5d-smoke-r2-s8vRbE/phase5_d.json \
+  --output-npz /tmp/b10-p5d-smoke-r2-s8vRbE/phase5_d.npz \
+  --target-dir /tmp/b10-p5d-smoke-r2-s8vRbE/targets --smoke
 source /etc/profile.d/jax-mem.sh
 JAX_DEFAULT_MATMUL_PRECISION=highest timeout 59s \
   jaxrun /home/tahmid/Dev/.venv/bin/python b10_audit_phase5_d.py \
-  /tmp/b10-p5d-smoke-ybzMB6/phase5_d.json \
-  /tmp/b10-p5d-smoke-ybzMB6/phase5_d.npz \
-  /tmp/b10-p5d-smoke-ybzMB6/AUDIT.json --smoke
+  /tmp/b10-p5d-smoke-r2-s8vRbE/phase5_d.json \
+  /tmp/b10-p5d-smoke-r2-s8vRbE/phase5_d.npz \
+  /tmp/b10-p5d-smoke-r2-s8vRbE/AUDIT.json --smoke
 ```
 
 The JSON/NPZ/AUDIT SHA-256 values are respectively
-`43a1ead5417903007949f866f143897d08ab0823f672fb5cb896d43cb45e0cd1`,
+`57d339dc5b5c62b017f7eeba5c508e949939f8e36148276342e1177fb619b425`,
 `81fb4eb96b0dd92035ccdf867d0a3e19e73a9cbc7d82221529dad5643ede5f68`, and
-`fce4d88ea7ccb73b443936177c0b74e401a11b4e5caed54ca1cc4f187f04ecfa`.
+`40d0dfbdd02f8a2166dc97b0dcedde68bda621138de08632eed4168233541a91`.
+
+The synthetic scientific-shape audit fixture runs the exact 20-repetition
+cyclic/reversed five-method schedule, 80 unique case/repetition rows per method,
+native timing summaries/outliers, and all 51/401 coefficient-work records.  It
+passes the positive fixture and rejects corrupted summary/order records while
+classifying corrupted work as a negative gate:
+
+```bash
+source /etc/profile.d/jax-mem.sh
+JAX_DEFAULT_MATMUL_PRECISION=highest \
+  jaxrun /home/tahmid/Dev/.venv/bin/python \
+  experiments/burgers-1e3-10x/b10_audit_phase5_d.py x x x \
+  --science-shape-self-test
+# phase5_d_science_shape_fixture=PASS
+```

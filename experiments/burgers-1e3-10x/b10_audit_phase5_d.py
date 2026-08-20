@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 import os
@@ -35,7 +36,9 @@ def parse_manifest(path):
 
 
 def compare_summary(observed, recomputed, name):
-    scalar_keys = ("median_elapsed_s", "outlier_count")
+    scalar_keys = (
+        "median_elapsed_s", "outliers_gt_1p5_within_trajectory_total",
+    )
     for key in scalar_keys:
         if key not in observed or key not in recomputed:
             raise SystemExit(f"{name} missing timing summary {key}")
@@ -45,7 +48,10 @@ def compare_summary(observed, recomputed, name):
             okay = close(observed[key], recomputed[key])
         if not okay:
             raise SystemExit(f"{name} timing summary mismatch: {key}")
-    for key in ("per_case_median_elapsed_s", "per_case_outlier_count"):
+    for key in (
+        "elapsed_all_s", "per_case_median_elapsed_s",
+        "outliers_gt_1p5_within_trajectory_all",
+    ):
         if not np.allclose(observed[key], recomputed[key], rtol=2e-12, atol=1e-15):
             raise SystemExit(f"{name} timing array mismatch: {key}")
 
@@ -60,6 +66,14 @@ def audit_targets(report, main, json_path, smoke):
     sums = np.zeros(3328, np.float64)
     seen = {n: [] for n in expected}
     paths = []
+    next_global_snapshot = 0
+    sampled = None
+    if not smoke:
+        values = c.bf.sample_params(seed=d.TARGET_SEED, m=d.TARGET_DRAW_COUNT)
+        sampled = dict(zip(
+            ("cx", "cy", "width", "amplitude", "nu", "normalized"),
+            (np.asarray(value, np.float64) for value in values),
+        ))
     for row in chunks:
         n = int(row["N"])
         if n not in expected:
@@ -77,14 +91,32 @@ def audit_targets(report, main, json_path, smoke):
                 raise SystemExit("target state/feature shape mismatch")
             indices = np.asarray(row["indices"], np.int64)
             expected_index = np.broadcast_to(indices[:, None], shape)
-            if not np.array_equal(arrays["global_index"], expected_index):
-                raise SystemExit("target global-index metadata mismatch")
+            if not np.array_equal(arrays["source_draw_index"], expected_index):
+                raise SystemExit("target source-draw metadata mismatch")
+            expected_global = np.arange(
+                next_global_snapshot, next_global_snapshot + cases * times,
+                dtype=np.int64,
+            ).reshape(shape)
+            if not np.array_equal(arrays["global_snapshot_index"], expected_global):
+                raise SystemExit("target global-snapshot metadata mismatch")
+            if (row["global_snapshot_start"] != next_global_snapshot
+                    or row["global_snapshot_stop"] != next_global_snapshot + cases * times):
+                raise SystemExit("target global-snapshot range mismatch")
+            next_global_snapshot += cases * times
             if not np.array_equal(arrays["time_index"], np.broadcast_to(np.arange(times), shape)):
                 raise SystemExit("target time metadata mismatch")
             if not np.array_equal(arrays["N"], np.full(shape, n)):
                 raise SystemExit("target mesh metadata mismatch")
             parameters = {name: np.asarray(arrays[f"parameter_{name}"])
                           for name in ("cx", "cy", "width", "amplitude", "nu")}
+            if not smoke:
+                for name, parameter in parameters.items():
+                    if not np.array_equal(parameter, sampled[name][indices]):
+                        raise SystemExit(f"target regenerated parameter mismatch: {name}")
+                if not np.array_equal(
+                    arrays["normalized_parameters"], sampled["normalized"][indices]
+                ):
+                    raise SystemExit("target regenerated normalized-parameter mismatch")
             features = c.trajectory_features(parameters, n)[:, :times]
             if not np.array_equal(arrays["features"], features):
                 raise SystemExit("target feature recomputation mismatch")
@@ -125,11 +157,16 @@ def audit_targets(report, main, json_path, smoke):
                     and health_record["reported_max_relative_residual"] <= 1e-8
                     and health_record["independent_max_relative_residual"] <= 1e-8):
                 raise SystemExit("target reference health failure")
+            if (health_record["seed"] != d.TARGET_SEED
+                    or health_record["draw_count"] != d.TARGET_DRAW_COUNT
+                    or health_record["indices"] != row["indices"]):
+                raise SystemExit("target reference metadata mismatch")
     for n, (start, count, _) in expected.items():
         if seen[n] != list(range(start, start + count)):
             raise SystemExit(f"N{n} target cohort mismatch")
     expected_total = 2 if smoke else d.TARGET_COUNT
-    if total != expected_total or target["snapshot_count"] != total:
+    if (total != expected_total or target["snapshot_count"] != total
+            or next_global_snapshot != expected_total):
         raise SystemExit("target total mismatch")
     mean = sums / total
     sumsq = np.zeros(2, np.float64)
@@ -171,8 +208,92 @@ def audit_targets(report, main, json_path, smoke):
     return integrity, mean, scales
 
 
+def expected_timing_orders():
+    methods = ["fom", "G1_mandatory", "G1_maximum_one",
+               "G2_mandatory", "G2_maximum_one"]
+    orders = []
+    for repetition in range(d.TIME_REPS):
+        offset = repetition % len(methods)
+        order = methods[offset:] + methods[:offset]
+        if (repetition // len(methods)) % 2:
+            order = list(reversed(order))
+        orders.append(order)
+    return methods, orders
+
+
+def independent_work_pass(row, suffix):
+    expected_shape = [c.NUM_STEPS + 1, 1024 * 1024]
+    common = bool(
+        row.get("finite") and row.get("zero_failures")
+        and row.get("output_shape") == expected_shape
+        and row.get("weak_objective_evaluations") == c.NUM_STEPS
+        and len(row.get("weak_residual_norm_all", ())) == c.NUM_STEPS
+        and np.all(np.isfinite(row.get("weak_residual_norm_all", ())))
+    )
+    if suffix == "mandatory":
+        return bool(
+            common and row.get("weak_jacobian_evaluations") == 0
+            and row.get("trial_residual_evaluations") == 0
+            and row.get("coefficient_grid_evaluations") == 51
+            and len(row.get("rho_all", ())) == 50
+            and np.all(np.isfinite(row.get("rho_all", ())))
+        )
+    names = ("rho_before_all", "rho_after_all", "jacobian_frobenius_all",
+             "trial_factor_all", "bounded_step_norm_all")
+    factors = np.asarray(row.get("trial_factor_all", ()), np.float64)
+    return bool(
+        common and row.get("weak_jacobian_evaluations") == 50
+        and row.get("trial_residual_evaluations") == 200
+        and row.get("coefficient_grid_evaluations") == 401
+        and all(len(row.get(name, ())) == 50 for name in names + ("accepted_all",))
+        and all(np.all(np.isfinite(row.get(name, ()))) for name in names)
+        and np.all(np.isin(factors, np.asarray((1.0, 0.5, 0.25, 0.0))))
+    )
+
+
+def audit_science_panel_shape(panel, main):
+    methods, orders = expected_timing_orders()
+    if panel.get("timing_orders") != orders:
+        raise SystemExit("exact cyclic/reversed timing order mismatch")
+    position = {method: [sum(order[pos] == method for order in orders)
+                         for pos in range(len(methods))] for method in methods}
+    if (panel.get("position_counts") != position
+            or panel.get("exact_position_balance") is not True
+            or not all(value == 4 for counts in position.values() for value in counts)):
+        raise SystemExit("exact timing position balance mismatch")
+    expected_coverage = {(case, repetition) for case in range(4)
+                         for repetition in range(d.TIME_REPS)}
+    work = {}
+    for method in methods:
+        rows = panel["records"][method]
+        coverage = {(int(row["case_index"]), int(row["repetition"])) for row in rows}
+        if len(rows) != 80 or coverage != expected_coverage or len(coverage) != len(rows):
+            raise SystemExit(f"{method} timing coverage mismatch")
+        recomputed = base.summarize_timing(rows, 4)
+        compare_summary(panel["summaries"][method], recomputed, method)
+        observed = np.asarray(main[f"timing_{method}"])
+        expected_array = np.asarray([
+            [row["case_index"], row["repetition"], row["elapsed_s"]] for row in rows
+        ], np.float64)
+        if not np.array_equal(observed, expected_array):
+            raise SystemExit(f"{method} NPZ timing mismatch")
+        if method == "fom":
+            continue
+        arm, suffix = method.split("_", 1)
+        canonical = panel["canonical_work"][method]
+        passed = bool(
+            len(canonical) == 4
+            and sorted(int(row["case_index"]) for row in canonical) == list(range(4))
+            and all(row["method"] == method and independent_work_pass(row, suffix)
+                    for row in canonical)
+        )
+        work[method] = passed
+    return work
+
+
 def audit_cost(report, main, mean, scales, smoke):
     panel = report["cost_panel"]
+    science_work = None if smoke else audit_science_panel_shape(panel, main)
     arm_pass = {}
     for index, candidate in enumerate(p5.CANDIDATES):
         arm = candidate["arm"]
@@ -207,19 +328,8 @@ def audit_cost(report, main, mean, scales, smoke):
         gate = panel["gates"][arm]
         for suffix in ("mandatory", "maximum_one"):
             method = f"{arm}_{suffix}"
-            work = bool(len(panel["canonical_work"][method]) == 4 and all(
-                row["finite"] and row["zero_failures"]
-                and row["weak_objective_evaluations"] == 50
-                and row["weak_jacobian_evaluations"] == (0 if suffix == "mandatory" else 50)
-                and row["trial_residual_evaluations"] == (0 if suffix == "mandatory" else 200)
-                for row in panel["canonical_work"][method]))
+            work = science_work[method]
             summary = base.summarize_timing(panel["records"][method], 4)
-            compare_summary(panel["summaries"][method], summary, method)
-            npz_rows = np.asarray(main[f"timing_{method}"])
-            json_rows = np.asarray([[row["case_index"], row["repetition"], row["elapsed_s"]]
-                                    for row in panel["records"][method]])
-            if not np.array_equal(npz_rows, json_rows):
-                raise SystemExit(f"{method} NPZ timing mismatch")
             speed = panel["summaries"]["fom"]["median_elapsed_s"] / summary["median_elapsed_s"]
             ci = base.clustered_speedup_ci(
                 panel["summaries"]["fom"]["per_case_median_elapsed_s"],
@@ -245,21 +355,6 @@ def audit_cost(report, main, mean, scales, smoke):
             raise SystemExit(f"{arm} cost classification mismatch")
         arm_pass[arm] = license_value
     if not smoke:
-        if len(panel["timing_orders"]) != 20 or any(len(order) != 5 for order in panel["timing_orders"]):
-            raise SystemExit("timing order shape mismatch")
-        position = {method: [sum(order[pos] == method for order in panel["timing_orders"])
-                             for pos in range(5)] for method in panel["records"]}
-        if position != panel["position_counts"] or not all(
-                value == 4 for counts in position.values() for value in counts):
-            raise SystemExit("timing position balance mismatch")
-        for method, rows in panel["records"].items():
-            if len(rows) != 80:
-                raise SystemExit(f"{method} timing count mismatch")
-            if method == "fom":
-                compare_summary(panel["summaries"][method], base.summarize_timing(rows, 4), method)
-                if not np.array_equal(np.asarray(main[f"timing_{method}"]),
-                                      np.asarray([[row["case_index"], row["repetition"], row["elapsed_s"]] for row in rows])):
-                    raise SystemExit("FOM NPZ timing mismatch")
         first = [row for row in panel["records"]["fom"] if row["repetition"] == 0]
         mean_error = float(np.mean([row["trajectory_relative_l2"] for row in first]))
         worst_error = float(np.max([row["trajectory_relative_l2"] for row in first]))
@@ -295,6 +390,15 @@ def audit_bindings(report, args, manifest):
             or p4_audit["source_npz_sha256"] != c.sha256(args.p4_npz)
             or p4_report["npz"]["sha256"] != c.sha256(args.p4_npz)):
         raise SystemExit("P4 independent decision mismatch")
+    if not (
+        p4["commit"] == p4_report["provenance"]["commit"]
+        and str(p4["job_id"]) == str(p4_report["provenance"]["slurm_job_id"])
+        and p4["manifest_sha256"] == c.sha256(args.p4_manifest)
+        and p4_report["provenance"]["jax_backend"] == "gpu"
+        and p4_report["provenance"]["x64"] is True
+        and p4_report["provenance"]["matmul_precision"] == "highest"
+    ):
+        raise SystemExit("P4 provenance/backend binding mismatch")
     phase5 = report["bindings"]["Phase5"]
     for label, path in (("json", args.rank_json), ("script", args.rank_script),
                         ("checkpoint", args.rank_checkpoint), ("preregistration", args.prereg)):
@@ -335,6 +439,108 @@ def audit_bindings(report, args, manifest):
             raise SystemExit(f"staged source mismatch: {source}")
 
 
+def audit_config(report):
+    config = report["config"]
+    expected_train = {
+        str(n): {"start": start, "count": count, "times": 51,
+                 "chunk_cases": chunk}
+        for n, (start, count, chunk) in d.TRAIN.items()
+    }
+    checks = (
+        config["train"] == expected_train,
+        config["target_seed"] == d.TARGET_SEED,
+        config["target_draw_count"] == d.TARGET_DRAW_COUNT,
+        config["target_workers"] == 8,
+        config["target_fit_count"] == d.TARGET_COUNT,
+        config["candidates"] == list(p5.CANDIDATES),
+        config["H1"] == p5.H1,
+        config["time_repetitions"] == d.TIME_REPS,
+        config["time_warmups"] == d.TIME_WARM,
+        close(config["burn_seconds"], d.BURN_SECONDS),
+        close(config["identity_tolerance"], d.IDENTITY_TOL),
+        close(config["normal_tolerance"], s.ORACLE_NORMAL_TOL),
+        config["model_validation_touched"] is False,
+        config["confirmation_touched"] is False,
+        config["smoke"] is False,
+        config["f64"] is True,
+        config["matmul_precision"] == "highest",
+        report["provenance"]["jax_backend"] == "gpu",
+        report["provenance"]["x64"] is True,
+        report["provenance"]["matmul_precision"] == "highest",
+    )
+    if not all(checks):
+        raise SystemExit("P5-D locked config/backend mismatch")
+
+
+def science_shape_self_test():
+    methods, orders = expected_timing_orders()
+    records, summaries, main = {}, {}, {}
+    for method_index, method in enumerate(methods):
+        rows = []
+        for repetition in range(20):
+            for case in range(4):
+                rows.append({"case_index": case, "repetition": repetition,
+                             "elapsed_s": 1.0 + 0.01 * method_index
+                             + 0.001 * case + 1e-5 * repetition})
+        records[method] = rows
+        summaries[method] = base.summarize_timing(rows, 4)
+        main[f"timing_{method}"] = np.asarray([
+            [row["case_index"], row["repetition"], row["elapsed_s"]] for row in rows
+        ], np.float64)
+    canonical = {}
+    for arm in ("G1", "G2"):
+        mandatory, maximum = [], []
+        for case in range(4):
+            common = {"case_index": case, "finite": True, "zero_failures": True,
+                      "output_shape": [51, 1024 * 1024],
+                      "weak_objective_evaluations": 50,
+                      "weak_residual_norm_all": [1.0] * 50}
+            mandatory.append(dict(common, method=f"{arm}_mandatory",
+                                  weak_jacobian_evaluations=0,
+                                  trial_residual_evaluations=0,
+                                  coefficient_grid_evaluations=51,
+                                  rho_all=[1.0] * 50))
+            maximum.append(dict(common, method=f"{arm}_maximum_one",
+                                weak_jacobian_evaluations=50,
+                                trial_residual_evaluations=200,
+                                coefficient_grid_evaluations=401,
+                                rho_before_all=[1.0] * 50,
+                                rho_after_all=[0.5] * 50,
+                                jacobian_frobenius_all=[2.0] * 50,
+                                trial_factor_all=[0.5] * 50,
+                                bounded_step_norm_all=[0.1] * 50,
+                                accepted_all=[True] * 50))
+        canonical[f"{arm}_mandatory"] = mandatory
+        canonical[f"{arm}_maximum_one"] = maximum
+    position = {method: [sum(order[pos] == method for order in orders)
+                         for pos in range(5)] for method in methods}
+    panel = {"timing_orders": orders, "position_counts": position,
+             "exact_position_balance": True, "records": records,
+             "summaries": summaries, "canonical_work": canonical}
+    passed = audit_science_panel_shape(panel, main)
+    if not all(passed.values()):
+        raise SystemExit("science-shape positive fixture failed")
+    mutations = []
+    wrong_summary = copy.deepcopy(panel)
+    wrong_summary["summaries"]["fom"]["outliers_gt_1p5_within_trajectory_total"] += 1
+    mutations.append(wrong_summary)
+    wrong_order = copy.deepcopy(panel)
+    wrong_order["timing_orders"][0] = list(reversed(wrong_order["timing_orders"][0]))
+    mutations.append(wrong_order)
+    wrong_work = copy.deepcopy(panel)
+    wrong_work["canonical_work"]["G1_mandatory"][0]["coefficient_grid_evaluations"] = 50
+    mutations.append(wrong_work)
+    for mutated in mutations:
+        try:
+            result = audit_science_panel_shape(mutated, main)
+        except SystemExit:
+            continue
+        if not all(result.values()):
+            continue
+        raise SystemExit("science-shape negative fixture was not rejected")
+    print("phase5_d_science_shape_fixture=PASS")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("json")
@@ -352,7 +558,11 @@ def main():
     parser.add_argument("--rank-checkpoint")
     parser.add_argument("--prereg")
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--science-shape-self-test", action="store_true")
     args = parser.parse_args()
+    if args.science_shape_self_test:
+        science_shape_self_test()
+        return
     report = load(args.json)
     expected_status = "excluded_execution_smoke_pass" if args.smoke else "complete"
     if report.get("status") != expected_status:
@@ -363,6 +573,7 @@ def main():
         if report["provenance"]["commit"] != args.expected_commit or str(report["provenance"]["slurm_job_id"]) != str(args.expected_job):
             raise SystemExit("P5-D expected provenance mismatch")
         audit_bindings(report, args, args.manifest)
+        audit_config(report)
     with np.load(args.npz, allow_pickle=False) as main_arrays:
         integrity, mean, scales = audit_targets(report, main_arrays, args.json, args.smoke)
         arm_cost = audit_cost(report, main_arrays, mean, scales, args.smoke)

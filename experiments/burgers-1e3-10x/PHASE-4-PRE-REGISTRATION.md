@@ -124,7 +124,10 @@ P4-D fits every time of every exposed selection trajectory: N64 indices `512:576
 N128 `512:544`, and N256 `512:528`, all 51 times.  H1/H2 must pass separately at
 each N and pooled: trajectory mean `<=2e-4`, worst `<=7e-4`, zero unhealthy fits,
 exact boundary/POU/support, and finite outputs.  The smallest arm passing these and
-the cost gates below is selected; an exact tie selects H1.
+the mandatory cost gates below is selected; an exact tie selects H1.  Its separate
+max-one result determines whether its P4-D cost license is correction-capable or
+conditional zero/occasional-attempt, but does not create a false free-oracle hard
+stop before an actual trained rollout supplies rho/attempt frequency.
 
 Two prospective no-regression checks are additional integrity guards, not substitute
 promotion claims:
@@ -183,10 +186,15 @@ four observations in every clock position.  All repetition arrays, per-trajector
 medians and within-trajectory outliers, work/rho/Jacobian/trial records, first-use,
 compiled memory, and 10,000-resample trajectory-clustered intervals are persisted.
 
-A P4-D arm passes cost only when **both** mandatory and max-one have zero failures,
-finite canonical work, compiled memory `<=20 GB`, paired median speedup `>=10`, and
-clustered 95% lower bound `>=8` against the live eligible FOM.  Mandatory speed is a
-structural lower bound and can never by itself license a deployable claim.
+An arm receives the initial training cost license only when mandatory has zero
+failures, finite canonical work, compiled memory `<=20 GB`, paired median speedup
+`>=10`, and clustered 95% lower bound `>=8` against the live eligible FOM.  Max-one
+is always measured and reported.  If it passes the same gates, the arm is classified
+`correction-capable`; if it fails, the arm is only `conditional-zero-or-occasional-
+attempt` and may proceed to training so that actual rho/attempt frequency can be
+measured.  The 50-correction max-one route is a worst-case structural oracle, not the
+later thresholded policy.  Mandatory speed can license training but can never by
+itself license a deployable or final claim.
 
 The final online rule remains unchanged.  Every step evaluates the exact-upwind weak
 objective and
@@ -276,7 +284,10 @@ failure/censoring; and development/confirmation mean `<=1e-3`, worst `<=3e-3`.
 N1024 additionally requires median same-GPU speedup `>=10x` and trajectory-clustered
 95% lower bound `>=8x` against the fastest healthy like-for-like FOM satisfying the
 same accuracy requirement.  Accuracy, cost, work, and failures come from the same
-solver invocation.  N256 and N512 scaling are reported.  No threshold is weakened.
+solver invocation.  N256 and N512 scaling each require trajectory mean `<=1e-3`,
+worst `<=3e-3`, zero failure/censoring, finite work, and healthy reference/solver
+records.  Their same-job speed and clustered intervals are reported without a speed
+threshold.  No threshold is weakened.
 
 Accepted model-validation, scaling, N1024, and confirmation truth uses the audited
 cubic/exact-Helmholtz outer/inner `1e-12/1e-7` chain and independent

@@ -2,7 +2,7 @@
 # make_phase7_train_cell.sh CELL EXPECTED_COMMIT P4_CELL P5_CELL P6_CELL
 set -euo pipefail
 cell="$1"; expected_commit="$2"; p4_cell="$3"; p5_cell="$4"; p6_cell="$5"
-[[ "$cell" =~ ^p7_g1_s11_r[12]$ ]] || { echo "invalid Phase7 cell" >&2; exit 2; }
+[[ "$cell" =~ ^p7_g1_s11_r3$ ]] || { echo "invalid final Phase7 cell" >&2; exit 2; }
 [[ "$expected_commit" =~ ^[0-9a-f]{40}$ ]] || exit 2
 [[ "$p4_cell" == p4_d_r3 && "$p5_cell" == p5_d_r1 && "$p6_cell" == p6_d_r1 ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; EXP="$(dirname "$HERE")"

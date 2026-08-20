@@ -12,7 +12,7 @@ import numpy as np
 
 
 EXPECTED = {
-    "affine_regression": "218e648d2a3e1ad53b6d556435320a222daf3b449140865d07c09ff18ae0cad5",
+    "affine_regression": "b91e7b736a9b685ef03b7fe4887a26eadf69af8285316aad2a34babce9927e76",
     "p4_json": "ff425dfa1f73ac2d8559df2d780ef09dc1ade179ed5636458e53e0f389f5d617",
     "p4_npz": "720c5890b22709c83858f46e43f18fa3d28bb1305544f02ad9aea71625a2228f",
     "p4_audit": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3",
@@ -44,6 +44,7 @@ SELECT_MIX = [[64, 512, 64], [128, 512, 32], [256, 512, 16]]
 TRAIN_SPEC = ((64, 0, 512, 51), (128, 0, 128, 51), (256, 0, 64, 51))
 SELECT_SPEC = ((64, 512, 64, 51), (128, 512, 32, 51), (256, 512, 16, 51))
 IDENTITY_TOL = 2e-14
+AFFINE_REGEN_ATOL = 2e-15
 
 
 def require(value, message):
@@ -337,6 +338,19 @@ def main():
                 and regression["regenerated_N64_draw0_normalized_affine_max_abs"]
                 <= regression["regenerated_N64_draw0_tolerance_max_abs"],
                 "affine regression result")
+        require(regression["regenerated_N64_draw0_tolerance_max_abs"]
+                == AFFINE_REGEN_ATOL
+                and regression[
+                    "regenerated_N64_first64_normalized_affine_max_abs"
+                ] <= AFFINE_REGEN_ATOL
+                and regression[
+                    "regenerated_N64_first64_feature_exact_columns_bitwise"
+                ] is True
+                and regression["actual_phase7_affine_tolerance_path_match"] is True
+                and regression[
+                    "actual_phase7_affine_above_tolerance_rejected"
+                ] is True,
+                "affine regression tolerance probe")
         require(root_manifest.get("./code/phase7_affine_schema_regression.json")
                 == EXPECTED["affine_regression"], "manifest affine regression")
         bindings = report["bindings"]
@@ -443,6 +457,8 @@ def main():
             and config["field_batch"] == field_batch
             and config["oracle_batch"] == oracle_batch
             and config["field_points"] == field_points, "training protocol")
+    require(config["regenerated_affine_absolute_tolerance"] == AFFINE_REGEN_ATOL,
+            "regenerated affine tolerance")
     validate_metadata(report["data"]["training"], train_spec, smoke, "training")
     validate_metadata(report["data"]["selection"], select_spec, smoke, "selection")
     require(report["data"]["target_snapshot_count"] == train_total, "target total")
@@ -486,6 +502,8 @@ def main():
         require(all(finite(arrays[name]) for name in arrays.files), "NPZ finite")
         shape_specs = {
             "training_affine": (train_total, 5), "training_features": (train_total, 7),
+            "training_regenerated_affine": (train_total, 5),
+            "training_regenerated_features": (train_total, 7),
             "selection_affine": (select_total, 5), "selection_features": (select_total, 7),
             "coefficient_mean": (3328,), "head_scales": (2,),
             "encoder_handoff_q_raw": (train_total, 19),
@@ -497,6 +515,46 @@ def main():
         for name, shape in shape_specs.items():
             require(arrays[name].shape == shape, f"NPZ {name} shape")
         require(np.all(arrays["head_scales"] > 0.0), "positive head scales")
+        regenerated_affine_delta = np.abs(
+            arrays["training_regenerated_affine"] - arrays["training_affine"]
+        )
+        regenerated_affine_max = float(np.max(regenerated_affine_delta))
+        exact_columns = (0, 1, 2, 3, 5, 6)
+        regenerated_features = arrays["training_regenerated_features"]
+        immutable_features = arrays["training_features"]
+        feature_scale = np.maximum(
+            np.abs(regenerated_features[:, 4]), np.abs(immutable_features[:, 4])
+        )
+        feature_tolerance = np.abs(np.spacing(feature_scale))
+        feature_delta = np.abs(regenerated_features[:, 4] - immutable_features[:, 4])
+        binding = {
+            "checked": not smoke,
+            "normalized_affine_absolute_tolerance": AFFINE_REGEN_ATOL,
+            "normalized_affine_max_abs": regenerated_affine_max,
+            "normalized_affine_within_tolerance": bool(
+                np.all(np.isfinite(regenerated_affine_delta))
+                and regenerated_affine_max <= AFFINE_REGEN_ATOL
+            ),
+            "feature_exact_columns_bitwise": bool(np.array_equal(
+                regenerated_features[:, exact_columns],
+                immutable_features[:, exact_columns],
+            )),
+            "feature_viscosity_max_abs": float(np.max(feature_delta)),
+            "feature_viscosity_within_ulp": bool(np.all(
+                feature_delta <= feature_tolerance
+            )),
+        }
+        if smoke:
+            binding.update({
+                "normalized_affine_max_abs": 0.0,
+                "feature_viscosity_max_abs": 0.0,
+            })
+        require(binding["normalized_affine_within_tolerance"]
+                and binding["feature_exact_columns_bitwise"]
+                and binding["feature_viscosity_within_ulp"],
+                "regenerated training binding")
+        require(report["data"]["training_binding"] == binding,
+                "reported training binding")
         if not smoke:
             require(np.array_equal(arrays["training_affine"], target_affine)
                     and np.array_equal(arrays["training_features"], target_features),
@@ -630,6 +688,7 @@ def main():
         "schedules_recomputed": True, "metadata_recomputed": True,
         "predictor_fold_train_max_abs": train_fold,
         "predictor_fold_selection_max_abs": selection_fold,
+        "training_binding": binding,
         "oracle_start_losses": losses, "chosen_start": chosen,
         "gates": expected_gates, "decision": expected_decision,
     }

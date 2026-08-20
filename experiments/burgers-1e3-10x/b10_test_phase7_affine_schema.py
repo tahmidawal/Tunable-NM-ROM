@@ -56,6 +56,7 @@ def build(p5_json, p5_npz, target_dir):
     normalized_max = np.full(5, -np.inf)
     max_mapping_delta = 0.0
     first_locked_normalized = None
+    first_target_features = None
     all_physical, all_normalized = [], []
     for row in report["train_targets"]["chunks"]:
         path = os.path.join(target_dir, row["basename"])
@@ -66,7 +67,10 @@ def build(p5_json, p5_npz, target_dir):
                 spline.normalized_state_from_affine(item) for item in physical
             ])
             if first_locked_normalized is None:
-                first_locked_normalized = locked[:51].copy()
+                first_locked_normalized = locked.copy()
+                first_target_features = np.asarray(
+                    values["features"], np.float64
+                ).reshape(-1, 7).copy()
             all_physical.append(physical)
             all_normalized.append(locked)
             independent = independent_normalize(physical)
@@ -136,25 +140,52 @@ def build(p5_json, p5_npz, target_dir):
     require(np.array_equal(loaded["physical_affine"], all_physical)
             and np.array_equal(loaded["affine"], all_normalized),
             "actual Phase7 loader physical/normalized mapping")
-    fields, _parameters, reference_health = c.generate_population(
-        64, 0, 704, np.asarray((0,), np.int64), chunk=1
+    probe_indices = np.arange(64, dtype=np.int64)
+    fields, probe_parameters, reference_health = c.generate_population(
+        64, 0, 704, probe_indices, chunk=8
     )
     coords = c.grid_coords(64)
     regenerated_normalized = np.stack([
         spline.normalized_state_from_affine(
             spline.affine_state_from_field(field, coords)
-        ) for field in fields.reshape(51, 64 * 64)
+        ) for field in fields.reshape(64 * 51, 64 * 64)
     ])
     regenerated_delta = np.abs(regenerated_normalized - first_locked_normalized)
-    # The local JAX 0.10.1 and immutable cluster JAX 0.10.2 reference chains
-    # differ by sub-femtoscale reductions near zero; scientific same-version
-    # execution retains the driver's bitwise equality requirement.
-    regenerated_tolerance = 2e-15
+    regenerated_tolerance = trainer.AFFINE_REGEN_ATOL
+    unequal = np.argwhere(regenerated_normalized != first_locked_normalized)
+    first_unequal = (
+        tuple(int(value) for value in unequal[0]) if unequal.size else None
+    )
+    maximum_index = tuple(int(value) for value in np.unravel_index(
+        int(np.argmax(regenerated_delta)), regenerated_delta.shape
+    ))
+    regenerated_features = c.trajectory_features(probe_parameters, 64).reshape(-1, 7)
+    exact_columns = (0, 1, 2, 3, 5, 6)
+    feature_viscosity_delta = np.abs(
+        regenerated_features[:, 4] - first_target_features[:, 4]
+    )
     require(reference_health["reported_max_relative_residual"] <= 1e-8
             and reference_health["independent_max_relative_residual"] <= 1e-8,
             "regenerated N64 draw0 reference health")
     require(np.max(regenerated_delta) <= regenerated_tolerance,
-            "regenerated N64 draw0 normalized affine mapping")
+            "regenerated N64 first64 normalized affine mapping")
+    require(trainer.validate_regenerated_affine(
+        regenerated_normalized, first_locked_normalized
+    ) == float(np.max(regenerated_delta)), "actual Phase7 affine tolerance path")
+    rejected_above_tolerance = first_locked_normalized.copy()
+    rejected_above_tolerance[0, 0] += 2.1e-15
+    try:
+        trainer.validate_regenerated_affine(
+            rejected_above_tolerance, first_locked_normalized
+        )
+    except SystemExit as error:
+        require(str(error) == "regenerated training affine/P5 target mismatch",
+                "above-tolerance failure classification")
+    else:
+        require(False, "above-tolerance affine accepted")
+    require(np.array_equal(
+        regenerated_features[:, exact_columns], first_target_features[:, exact_columns]
+    ), "regenerated N64 first64 exact feature columns")
     return {
         "status": "pass", "classification": "read_only_real_P5_schema_regression",
         "p5_json_sha256": EXPECTED_P5, "chunk_count": len(chunk_records),
@@ -167,12 +198,28 @@ def build(p5_json, p5_npz, target_dir):
         "normalized_affine_max": normalized_max.tolist(),
         "locked_vs_independent_max_abs": max_mapping_delta,
         "regenerated_N64_draw0_normalized_affine_max_abs": float(
-            np.max(regenerated_delta)
+            np.max(regenerated_delta[:51])
         ),
         "regenerated_N64_draw0_tolerance_max_abs": float(
             regenerated_tolerance
         ),
-        "regenerated_N64_draw0_reference_health": reference_health,
+        "regenerated_N64_first64_normalized_affine_first_index": (
+            None if first_unequal is None else list(first_unequal)
+        ),
+        "regenerated_N64_first64_normalized_affine_first_abs": (
+            0.0 if first_unequal is None else float(regenerated_delta[first_unequal])
+        ),
+        "regenerated_N64_first64_normalized_affine_max_index": list(maximum_index),
+        "regenerated_N64_first64_normalized_affine_max_abs": float(
+            np.max(regenerated_delta)
+        ),
+        "actual_phase7_affine_tolerance_path_match": True,
+        "actual_phase7_affine_above_tolerance_rejected": True,
+        "regenerated_N64_first64_feature_exact_columns_bitwise": True,
+        "regenerated_N64_first64_feature_viscosity_max_abs": float(
+            np.max(feature_viscosity_delta)
+        ),
+        "regenerated_N64_first64_reference_health": reference_health,
         "all_normalized_finite_and_in_unit_box": True,
         "all_regenerated_parameter_feature_metadata_match": True,
         "actual_phase7_loader_mapping_match": True,

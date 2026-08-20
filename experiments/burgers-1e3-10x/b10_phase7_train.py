@@ -36,11 +36,12 @@ ORACLE_BATCH = 64
 ORACLE_CHECKPOINTS = (4_000, 6_000, 8_000, 10_000)
 HISTORY_EVERY = 1_000
 IDENTITY_TOL = 2e-14
+AFFINE_REGEN_ATOL = 2e-15
 EVALUATION_BATCH = 8
 _FULL_EVALUATORS = {}
 
 EXPECTED = {
-    "affine_regression": "218e648d2a3e1ad53b6d556435320a222daf3b449140865d07c09ff18ae0cad5",
+    "affine_regression": "b91e7b736a9b685ef03b7fe4887a26eadf69af8285316aad2a34babce9927e76",
     "p4_json": "ff425dfa1f73ac2d8559df2d780ef09dc1ade179ed5636458e53e0f389f5d617",
     "p4_npz": "720c5890b22709c83858f46e43f18fa3d28bb1305544f02ad9aea71625a2228f",
     "p4_audit": "f41010b72ad9ddae43409a1c1d2073dc2839edea22e57a7d5bafc8e2359e08a3",
@@ -149,10 +150,20 @@ def validate_chains(args):
         and regression.get("actual_phase7_loader_mapping_match") is True
         and regression.get("regenerated_N64_draw0_normalized_affine_max_abs", 1.0)
         <= regression.get("regenerated_N64_draw0_tolerance_max_abs", 0.0)
-        and regression.get("regenerated_N64_draw0_reference_health", {}).get(
+        and regression.get("regenerated_N64_draw0_tolerance_max_abs")
+        == AFFINE_REGEN_ATOL
+        and regression.get(
+            "regenerated_N64_first64_normalized_affine_max_abs", 1.0
+        ) <= AFFINE_REGEN_ATOL
+        and regression.get(
+            "regenerated_N64_first64_feature_exact_columns_bitwise"
+        ) is True
+        and regression.get("actual_phase7_affine_tolerance_path_match") is True
+        and regression.get("actual_phase7_affine_above_tolerance_rejected") is True
+        and regression.get("regenerated_N64_first64_reference_health", {}).get(
             "reported_max_relative_residual", 1.0
         ) <= 1e-8
-        and regression.get("regenerated_N64_draw0_reference_health", {}).get(
+        and regression.get("regenerated_N64_first64_reference_health", {}).get(
             "independent_max_relative_residual", 1.0
         ) <= 1e-8
         and regression.get("scientific_training_executed") is False
@@ -266,19 +277,47 @@ def load_target_coefficients(args, p5_report, smoke):
     }
 
 
+def validate_regenerated_affine(regenerated, immutable):
+    regenerated = np.asarray(regenerated, np.float64)
+    immutable = np.asarray(immutable, np.float64)
+    if regenerated.shape != immutable.shape:
+        raise SystemExit("regenerated training affine/P5 target shape mismatch")
+    delta = np.abs(regenerated - immutable)
+    maximum = float(np.max(delta))
+    if (
+        not np.all(np.isfinite(regenerated))
+        or not np.all(np.isfinite(delta))
+        or maximum > AFFINE_REGEN_ATOL
+    ):
+        raise SystemExit("regenerated training affine/P5 target mismatch")
+    return maximum
+
+
 def bind_training_metadata(datasets, targets, smoke):
     if smoke:
-        return
+        return {
+            "checked": False,
+            "normalized_affine_absolute_tolerance": AFFINE_REGEN_ATOL,
+            "normalized_affine_max_abs": 0.0,
+            "normalized_affine_within_tolerance": True,
+            "feature_exact_columns_bitwise": True,
+            "feature_viscosity_max_abs": 0.0,
+            "feature_viscosity_within_ulp": True,
+        }
     affine = legacy.concatenate(datasets, "affine")
     features = legacy.concatenate(datasets, "features")
-    if not np.array_equal(affine, targets["affine"]):
-        raise SystemExit("regenerated training affine/P5 target mismatch")
+    affine_max = validate_regenerated_affine(affine, targets["affine"])
     exact = (0, 1, 2, 3, 5, 6)
     scale = np.maximum(np.abs(features[:, 4]), np.abs(targets["features"][:, 4]))
     tolerance = np.abs(np.spacing(scale))
+    feature_delta = np.abs(features[:, 4] - targets["features"][:, 4])
+    exact_features = bool(np.array_equal(
+        features[:, exact], targets["features"][:, exact]
+    ))
+    viscosity_features = bool(np.all(feature_delta <= tolerance))
     if (
-        not np.array_equal(features[:, exact], targets["features"][:, exact])
-        or not np.all(np.abs(features[:, 4] - targets["features"][:, 4]) <= tolerance)
+        not exact_features
+        or not viscosity_features
     ):
         raise SystemExit("regenerated training features/P5 target mismatch")
     offset = 0
@@ -287,6 +326,15 @@ def bind_training_metadata(datasets, targets, smoke):
         item["affine"] = targets["affine"][offset:offset + size]
         item["features"] = targets["features"][offset:offset + size]
         offset += size
+    return {
+        "checked": True,
+        "normalized_affine_absolute_tolerance": AFFINE_REGEN_ATOL,
+        "normalized_affine_max_abs": affine_max,
+        "normalized_affine_within_tolerance": True,
+        "feature_exact_columns_bitwise": exact_features,
+        "feature_viscosity_max_abs": float(np.max(feature_delta)),
+        "feature_viscosity_within_ulp": viscosity_features,
+    }
 
 
 def history_item(step, loss, parts, schedule):
@@ -701,10 +749,15 @@ def main():
     training = smoke_datasets("train") if args.smoke else legacy.load_mix(TRAIN_MIX, "train")
     selection = smoke_datasets("selection") if args.smoke else legacy.load_mix(SELECTION_MIX, "selection")
     targets = load_target_coefficients(args, p5_report, args.smoke)
-    bind_training_metadata(training, targets, args.smoke)
+    regenerated_training_affine = legacy.concatenate(training, "affine").copy()
+    regenerated_training_features = legacy.concatenate(training, "features").copy()
+    training_binding = bind_training_metadata(training, targets, args.smoke)
+    c.log({"phase7_training_binding": training_binding})
     arrays = {
         "training_affine": legacy.concatenate(training, "affine"),
         "training_features": legacy.concatenate(training, "features"),
+        "training_regenerated_affine": regenerated_training_affine,
+        "training_regenerated_features": regenerated_training_features,
         "selection_affine": legacy.concatenate(selection, "affine"),
         "selection_features": legacy.concatenate(selection, "features"),
         "coefficient_mean": targets["mean"], "head_scales": targets["scales"],
@@ -778,6 +831,7 @@ def main():
         "predictor_steps": predictor_steps, "oracle_steps": oracle_steps,
         "field_batch": field_batch, "oracle_batch": oracle_batch,
         "field_points": field_points, "identity_tolerance": IDENTITY_TOL,
+        "regenerated_affine_absolute_tolerance": AFFINE_REGEN_ATOL,
         "oracle_starts": {
             "zero": "zeros", "random": "PCG64 Normal(0,0.25^2), seed 20260825",
             "reverse": "exact negative of random",
@@ -798,6 +852,7 @@ def main():
             "immutable P5 chunk affine is physical moment transport; "
             "training_affine is its exact locked normalized_state_from_affine mapping"
         ),
+        "training_binding": training_binding,
     }
     checkpoint = {
         "status": "excluded_execution_smoke" if args.smoke else "complete",

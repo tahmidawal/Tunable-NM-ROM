@@ -8,7 +8,7 @@
 #SBATCH -e logs/%j.err
 set -euo pipefail
 : "${B10_COMMIT:?}" "${B10_CELL:?}" "${B10_REMOTE:?}"
-[[ "$B10_CELL" =~ ^p7_g1_s11_r[12]$ ]]
+[[ "$B10_CELL" =~ ^p7_g1_s11_r3$ ]]
 test "$B10_REMOTE" = "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$B10_CELL"
 cd "$B10_REMOTE"
 sha256sum -c MANIFEST.sha256

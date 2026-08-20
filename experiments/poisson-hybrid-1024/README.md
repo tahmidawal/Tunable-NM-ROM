@@ -285,6 +285,11 @@ boundary, solver-status, or required-residual failure and reports peak device al
 80% of the device limit.  Smoke timings and field errors are non-results.  The scientific run is
 single-shot regardless of outcome; no seed, rank, or architecture follow-up is licensed here.
 
+The excluded smoke completed on the required A100-80GB class and passed the frozen execution,
+memory, residual, boundary, provenance, and checksum audit.  Its pulled raw artifact and generated
+`AUDIT.json` are retained under `runs/n2048smoke1/`; no smoke timing or error is used as a
+scientific result.
+
 An earlier local under-one-minute wiring attempt is retained as an explicitly incomplete
 non-result: its streamed EQ fit consumed almost the entire local budget and the timeout stopped it
 before any row completed.  A separate synthetic unit smoke verifies the ten-order position and

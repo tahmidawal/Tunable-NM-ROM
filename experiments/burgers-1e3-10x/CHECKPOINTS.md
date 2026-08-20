@@ -297,3 +297,27 @@ parameter/normalized vector and feature, reconstructs the exact timing schedule
 and coverage, and requires complete 51/401 coefficient-work accounting.  A
 deterministic scientific-shape fixture reaches the otherwise cluster-only timing,
 order, outlier, and canonical-work audit branches and passes.
+
+## 2026-08-20 — Phase-6 identity repair implemented, pre-submit only
+
+Phase 6 was prospectively locked at commit `8d7c952` after the audited P5-D
+hard stop and before implementation or scientific output. It authorizes exactly
+one G1-only diagnostic cell. R0 retains polynomial/Horner weak stencils and K3
+full decode; the sole candidate R1 uses the mathematically identical Cox--de
+Boor evaluator for the actual fixed weak stencil queries while retaining K3 for
+the charged 51-by-N^2 full decode. Every invocation also charges the locked
+cold recovery and raw-feature construction. The unchanged identity `2e-14`,
+paired 10x/LB8, 20 GB, exact-50/51-work, eligible-live-FOM, and zero-failure
+gates all remain simultaneous. Passing P6-D would license only a separate
+training proposal/audit, not training itself.
+
+The driver, independent negative-aware audit, and exact make/launch/pull paths
+are implemented but no scientific job has been submitted. The final excluded
+N=32, one-step GB10 smoke completed in 36.234 seconds under GPU/f64/highest; its
+shared audit passed in 4.0 seconds. R1's full-field K3/Cox identity was
+`4.266e-16`, all four Cox weak outputs were bitwise identical, and the actual
+timed and identity R1 executables were bitwise identical for fields, residual,
+and rho. Canonical work passed and compiled eligibility memory was 33.944 MB.
+These are execution-only checks. The scientific request is one H200, four CPUs,
+64 GB, and two hours; exact staging and its manifest remain subject to root
+pre-submit audit.

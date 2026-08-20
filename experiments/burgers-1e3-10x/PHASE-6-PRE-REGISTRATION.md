@@ -50,6 +50,9 @@ P6-D reports two G1 routes:
 
 Both generate the 51 coefficient grids exactly once before the 50 weak
 evaluations. R1 is the actual timed route, not an audit-only substitution. Its
+charged invocation also repeats the locked at-most-64-by-64 initial-condition
+sample, nine-point local log-quadratic fit, and raw seven-feature construction,
+as in P5-D. Its
 identity probe computes states and coefficients once, applies one common Cox
 weak operator to the candidate and Cox control, and independently compares the
 K3 full decode with the Cox full decode. It returns the actual candidate

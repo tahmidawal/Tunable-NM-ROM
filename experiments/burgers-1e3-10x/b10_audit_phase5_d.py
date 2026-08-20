@@ -74,6 +74,15 @@ def audit_targets(report, main, json_path, smoke):
             ("cx", "cy", "width", "amplitude", "nu", "normalized"),
             (np.asarray(value, np.float64) for value in values),
         ))
+    expected_chunks = []
+    for n, (start, count, times) in expected.items():
+        chunk_cases = 2 if smoke else d.TRAIN[n][2]
+        for chunk_start in range(start, start + count, chunk_cases):
+            stop = min(chunk_start + chunk_cases, start + count)
+            expected_chunks.append((n, list(range(chunk_start, stop))))
+    observed_chunks = [(int(row["N"]), row["indices"]) for row in chunks]
+    if observed_chunks != expected_chunks:
+        raise SystemExit("exact target chunk sequence/boundaries mismatch")
     for row in chunks:
         n = int(row["N"])
         if n not in expected:
@@ -261,6 +270,27 @@ def audit_science_panel_shape(panel, main):
             or panel.get("exact_position_balance") is not True
             or not all(value == 4 for counts in position.values() for value in counts)):
         raise SystemExit("exact timing position balance mismatch")
+    burn = panel.get("burn_count")
+    if not isinstance(burn, (int, float)) or not np.isfinite(burn) or burn <= 0:
+        raise SystemExit("scientific GPU burn count is not positive/finite")
+    first = panel.get("first_execution_after_compile_s", {})
+    if set(first) != set(methods) or not all(
+        np.isfinite(value) and value >= 0.0 for value in first.values()
+    ):
+        raise SystemExit("first execution timing mismatch")
+    for arm in ("G1", "G2"):
+        kernels = panel.get("setup", {}).get(arm, {}).get("kernels", {})
+        if set(kernels) != {"mandatory", "maximum_one", "identity_k3", "identity_cox"}:
+            raise SystemExit(f"{arm} setup-kernel coverage mismatch")
+        for name, setup in kernels.items():
+            values = [setup.get(key) for key in (
+                "lower_s", "compile_s", "lower_plus_compile_s",
+            )]
+            if not all(isinstance(value, (int, float)) and np.isfinite(value)
+                       and value >= 0.0 for value in values):
+                raise SystemExit(f"{arm}/{name} setup timing mismatch")
+            if not close(values[2], values[0] + values[1]):
+                raise SystemExit(f"{arm}/{name} setup timing sum mismatch")
     expected_coverage = {(case, repetition) for case in range(4)
                          for repetition in range(d.TIME_REPS)}
     work = {}
@@ -388,6 +418,9 @@ def audit_bindings(report, args, manifest):
     if (p4_audit["status"] != "pass" or p4_audit["decision"] != p4_report["decision"]
             or p4_audit["source_json_sha256"] != c.sha256(args.p4_json)
             or p4_audit["source_npz_sha256"] != c.sha256(args.p4_npz)
+            or p4_audit["manifest_sha256"] != c.sha256(args.p4_manifest)
+            or p4_audit["expected_commit"] != p4_report["provenance"]["commit"]
+            or str(p4_audit["expected_job"]) != str(p4_report["provenance"]["slurm_job_id"])
             or p4_report["npz"]["sha256"] != c.sha256(args.p4_npz)):
         raise SystemExit("P4 independent decision mismatch")
     if not (
@@ -516,7 +549,16 @@ def science_shape_self_test():
                          for pos in range(5)] for method in methods}
     panel = {"timing_orders": orders, "position_counts": position,
              "exact_position_balance": True, "records": records,
-             "summaries": summaries, "canonical_work": canonical}
+             "summaries": summaries, "canonical_work": canonical,
+             "burn_count": 123,
+             "first_execution_after_compile_s": {
+                 method: 0.1 + 0.01 * index for index, method in enumerate(methods)
+             },
+             "setup": {arm: {"kernels": {name: {
+                 "lower_s": 0.1, "compile_s": 0.2,
+                 "lower_plus_compile_s": 0.3,
+             } for name in ("mandatory", "maximum_one", "identity_k3", "identity_cox")}}
+                       for arm in ("G1", "G2")}}
     passed = audit_science_panel_shape(panel, main)
     if not all(passed.values()):
         raise SystemExit("science-shape positive fixture failed")

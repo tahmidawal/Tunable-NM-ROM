@@ -1,6 +1,6 @@
 {
  "status": "pass",
- "scope": "Burgers finite Phase 1-5 pure-NMROM search closure",
+ "scope": "Burgers finite Phase 1-6 pure-NMROM search checkpoint",
  "d0": {
   "manifest_files": [
    "out/d0.npz",
@@ -225,6 +225,44 @@
   "target_normal_worst": 3.2782920288282803e-15,
   "hard_stop": true,
   "independent_audit_sha256": "c84ee29e1b9fe84f5e90949e18be26c07a6c54c00320a2f7a82bd1cb8dee0eff"
+ },
+ "phase6_d": {
+  "manifest_files": [
+   "logs/2669652.out",
+   "logs/2669652.err",
+   "SACCT.txt",
+   "RESULTS.sha256",
+   "out/AUDIT.json",
+   "out/phase6_d.npz",
+   "out/phase6_d.json",
+   "REMOTE.sha256",
+   "MANIFEST.sha256"
+  ],
+  "source_hashes": {
+   "b10_audit_phase6_d.py": "e750ed12d7482f47b37f6e2bf38ea68bd9c9d37ded8c03d4cbbf75352ffe4169",
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_phase3.py": "5a67c44c6713d5c429df254bbfef7df2205372067f82882e6d1852ce61d1555e",
+   "b10_phase4.py": "00c1ae05bec605ec1d492c74ef4c8a56b84cfa96aee610ce06f3fdca5da38a8c",
+   "b10_phase4_d.py": "8dba884a1687e52f4d908877f0f6c8d997fcdf1f7d6f1f03fdcb303626fa21c0",
+   "b10_phase5.py": "0547fac0053b01b9cadbece9b98d4dba704b18d300cfe13abee165cda19b0084",
+   "b10_phase6.py": "329f91f18e4c242fcabdf5ae5ef8616605d908c4bc7a149bae5dae68112a4c42",
+   "b10_phase6_d.py": "7e7ef8ac5362670e99d789cd8f8e8ebeece03bd08b2382f69b0897c70934ed54",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "8c088207ab73d1ceba87343b357128b0c535777893349b7f6bea15dead409731"
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "job_id": "2669652",
+  "classified_hwloc_lines": 3,
+  "repair_licensed": true,
+  "paired_median_speedup": 20.582208872951714,
+  "clustered_speedup_ci": [
+   16.20413469161336,
+   25.15986063542671
+  ],
+  "identity_worst": 2.858010930216804e-16,
+  "actual_route_identity_worst": 6.851316842366852e-16,
+  "independent_audit_sha256": "9e017b37709bf37fc8c8b87bbbb70461cba8afb47603a5b65dd2618c901ad2b4"
  },
  "excluded": {
   "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",

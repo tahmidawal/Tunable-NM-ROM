@@ -425,22 +425,46 @@ def recover_blob_parameters(u0, n):
     return np.asarray((cx, cy, width, np.exp(log_amplitude)), np.float64)
 
 
-def recover_blob_parameters_fixed_sample(u0, n, max_axis=64):
-    """Recover Gaussian IC parameters from at most max_axis**2 grid values."""
+def fixed_sample_geometry(n, max_axis=64):
+    """Return at most max_axis**2 indices/coordinates without allocating N**2."""
     axis = np.unique(np.rint(np.linspace(0, n - 1, min(max_axis, n))).astype(int))
     ii, jj = np.meshgrid(axis, axis, indexing="ij")
     flat_indices = (ii * n + jj).reshape(-1)
-    coords = grid_coords(n)[flat_indices]
+    coords = np.column_stack((
+        ii.reshape(-1).astype(np.float64) / (n - 1),
+        jj.reshape(-1).astype(np.float64) / (n - 1),
+    ))
+    if flat_indices.size > max_axis**2 or coords.shape != (flat_indices.size, 2):
+        raise AssertionError("fixed sample geometry exceeds its resolution-independent cap")
+    return axis, flat_indices, coords
+
+
+def recover_blob_parameters_fixed_sample(u0, n, max_axis=64):
+    """Recover the log-quadratic Gaussian from a local 3x3 sampled patch.
+
+    The only field read is the deterministic at-most-64x64 sample.  Its interior
+    maximum locates a positive 3x3 patch; the family centers are at least 0.15
+    from walls, so the patch exists.  No N^2 coordinate array is constructed.
+    """
+    axis, flat_indices, coords = fixed_sample_geometry(n, max_axis=max_axis)
     values = np.asarray(u0, np.float64).reshape(-1)[flat_indices]
-    interior = (
-        (coords[:, 0] > 0.0) & (coords[:, 0] < 1.0)
-        & (coords[:, 1] > 0.0) & (coords[:, 1] < 1.0)
+    sampled = values.reshape(axis.size, axis.size)
+    interior = sampled[1:-1, 1:-1]
+    if interior.size == 0 or not np.all(np.isfinite(interior)):
+        raise ValueError("fixed sample has no finite interior for a 3x3 recovery patch")
+    local_peak = np.unravel_index(int(np.argmax(interior)), interior.shape)
+    peak_i, peak_j = local_peak[0] + 1, local_peak[1] + 1
+    patch_i, patch_j = np.meshgrid(
+        np.arange(peak_i - 1, peak_i + 2),
+        np.arange(peak_j - 1, peak_j + 2), indexing="ij",
     )
-    threshold = max(float(np.max(values)) * 1e-12, 1e-300)
-    keep = interior & (values > threshold)
-    x, y = coords[keep, 0], coords[keep, 1]
+    patch_positions = (patch_i * axis.size + patch_j).reshape(-1)
+    patch_values = values[patch_positions]
+    if not np.all(np.isfinite(patch_values)) or np.any(patch_values <= 0.0):
+        raise ValueError("fixed sample recovery patch is nonfinite/nonpositive")
+    x, y = coords[patch_positions, 0], coords[patch_positions, 1]
     design = np.column_stack((np.ones(x.size), x, y, x * x + y * y))
-    coefficients, *_ = np.linalg.lstsq(design, np.log(values[keep]), rcond=None)
+    coefficients, *_ = np.linalg.lstsq(design, np.log(patch_values), rcond=None)
     constant, bx, by, quadratic = coefficients
     width = np.sqrt(-1.0 / (2.0 * quadratic))
     cx = -bx / (2.0 * quadratic)

@@ -1,0 +1,9 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+commit=b002506ce976c2b114b1503a76fc550e2e07115c dirty=e3b0c44298fc cell=trajrep1
+jax_backend=gpu cuda:0
+N=64 q=48: remaining=0.1972 guessL2=6.5210e-04 guessR=2.5211e-03 latent=1.54e-01
+N=64 q=64: remaining=0.0797 guessL2=3.4867e-04 guessR=8.1508e-04 latent=1.15e-12
+N=256 q=48: remaining=0.4039 guessL2=1.4986e-03 guessR=3.6546e-02 latent=5.49e-02
+N=256 q=64: remaining=0.3717 guessL2=1.3939e-03 guessR=3.6753e-02 latent=6.04e-02
+DONE
+ALL-DONE

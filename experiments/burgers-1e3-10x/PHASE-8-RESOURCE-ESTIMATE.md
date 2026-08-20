@@ -40,16 +40,16 @@ recorded below only after a mandated local `jaxrun` execution under one minute.
 
 ## Excluded final synthetic smoke
 
-The exact staged code from commit `77ab4f54a4f4333e3c97b929a1ddf6c0419f7a08` and local
-manifest SHA-256 `e09b57371b7e070e95ccca6278000ea27b5a57a4cb416c9c7bb3a93c2bd1a290`
-completed under `jaxrun`, GPU/f64/highest, in 30.521 seconds. It used two synthetic N16 cases and
+The exact staged code from commit `0feb11f834f194e209903720b1416fb3fd15570e` and local
+manifest SHA-256 `e97d6266b9cb2ad00c91daef1d9ccd4d075cc9614ea8f14c6fefe83c348c13cb`
+completed under `jaxrun`, GPU/f64/highest, in 23.300 seconds. It used two synthetic N16 cases and
 two times for train and selection, one attempt, and no locked artifact argument. All eight
 snapshot/start attempts were accepted with 160 JVP and 160 VJP calls, zero CG breakdown, zero
 unhealthy exhaustion, exact boundary, and passing identity/health. The independent negative-aware
 audit passed and retained `p8_d_valid=false` plus no T1/T2 authorization. JSON/NPZ/progress/work-
-checkpoint/audit SHA-256 values are respectively `63f47fdc8af06841e54364abbc42914c20c04b0b905de3ec19f92270d8db4af0`,
-`6740165ab68439eb96665a0d94f50eca2227739629056193c149e8afcaa72199`,
-`dc36ac3135581dda52666366ffcf58cb0d4dfba2c06e371b97e26ac27fc2655c`,
-`b140d6ae33be147b5bc566596bb13d509cf31a2b834f7ee1af9d69cc972ff409`, and
-`d52229267d55f37f389e219cc7a6b6da0f208d45a99ea684bf5cb4b8e0f1c1f6`.
+checkpoint/audit SHA-256 values are respectively `533ec8d801bd4ae237f3555a54944d8affe1e5af264228def42b9450563d48cb`,
+`7f1b9b4b1254439bbaa5068aae00b7affe9f4f866709571d8b3e8a2bbe0a9588`,
+`f54f13030d8abc55cd8119a83e6e9a3badf774f4d84ff65bd5df0278fdaddaf4`,
+`7459fa1fe86328dcc47b2bf0a274c9a6a5514687e054dab9b46fecb43a81f4ea`, and
+`e11b8e2dda4740b574b4f9d3fce9ac3c9ba64c1011b4d50df0908a79d3fc1a35`.
 These are excluded implementation evidence, not scientific metrics.

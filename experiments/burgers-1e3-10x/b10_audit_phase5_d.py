@@ -119,15 +119,41 @@ def audit_targets(report, main, json_path, smoke):
             parameters = {name: np.asarray(arrays[f"parameter_{name}"])
                           for name in ("cx", "cy", "width", "amplitude", "nu")}
             if not smoke:
-                for name, parameter in parameters.items():
-                    if not np.array_equal(parameter, sampled[name][indices]):
-                        raise SystemExit(f"target regenerated parameter mismatch: {name}")
-                if not np.array_equal(
+                normalized_exact = np.array_equal(
                     arrays["normalized_parameters"], sampled["normalized"][indices]
-                ):
+                )
+                if not normalized_exact:
                     raise SystemExit("target regenerated normalized-parameter mismatch")
+                for name, parameter in parameters.items():
+                    expected_parameter = sampled[name][indices]
+                    if name == "nu":
+                        # The normalized viscosity draw is bitwise identical,
+                        # while JAX 0.10.1/0.10.2 exp differs by at most one f64
+                        # ULP.  Cluster-side same-version audit remains bitwise.
+                        tolerance = np.abs(np.spacing(np.maximum(
+                            np.abs(parameter), np.abs(expected_parameter)
+                        )))
+                        matched = bool(np.all(np.isfinite(parameter)) and np.all(
+                            np.abs(parameter - expected_parameter) <= tolerance
+                        ))
+                    else:
+                        matched = np.array_equal(parameter, expected_parameter)
+                    if not matched:
+                        raise SystemExit(f"target regenerated parameter mismatch: {name}")
             features = c.trajectory_features(parameters, n)[:, :times]
-            if not np.array_equal(arrays["features"], features):
+            observed_features = np.asarray(arrays["features"])
+            exact_columns = (0, 1, 2, 3, 5, 6)
+            feature_scale = np.maximum(
+                np.abs(observed_features[..., 4]), np.abs(features[..., 4])
+            )
+            feature_tolerance = np.abs(np.spacing(feature_scale))
+            if (not np.array_equal(
+                    observed_features[..., exact_columns],
+                    features[..., exact_columns]
+                ) or not np.all(
+                    np.abs(observed_features[..., 4] - features[..., 4])
+                    <= feature_tolerance
+                )):
                 raise SystemExit("target feature recomputation mismatch")
             coefficients = np.asarray(arrays["coefficients"])
             normal = np.asarray(arrays["normal"])

@@ -43,3 +43,10 @@ only itself. `cluster/launch_phase7_train_cell.sh` stages directly into the assi
 queue/disk checks. `cluster/pull_phase7_train.sh` requires completed Slurm/GPU/ALL-DONE health,
 checksums the complete artifacts, rejects warning/OOM/disk/captured-constant evidence, runs the same
 negative-aware audit, and deletes only the exact remote cell after audit success.
+
+Pre-submit review rejected the first exact stage because its local smoke created Python bytecode
+cache files after root-manifest generation. No scientific job used that stage. The lifecycle now
+requires exact equality between the manifest path set and the actual stage path set locally and on
+the remote before submission, repeats the exact-set check at pull with only the five named scientific
+outputs/logs admitted, and sets `PYTHONDONTWRITEBYTECODE=1` in the batch. This is infrastructure-only
+hardening; no scientific execution, method, data, or gate changed.

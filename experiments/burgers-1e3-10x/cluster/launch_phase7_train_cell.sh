@@ -6,11 +6,13 @@ cell="$1"; expected_commit="$2"; expected_manifest="$3"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; STAGE="$HERE/stage/$cell"
 REMOTE="/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell"
 [[ "$(sha256sum "$STAGE/MANIFEST.sha256" | cut -d' ' -f1)" == "$expected_manifest" ]] || exit 3
+"$STAGE/verify_manifest_file_set.sh" "$STAGE" "$STAGE/MANIFEST.sha256"
+(cd "$STAGE" && sha256sum -c MANIFEST.sha256)
 echo squeue_before_submit
 ssh tufts-login "squeue -u tawal01 -o '%i|%j|%T|%M|%R'"
 ssh tufts-login "set -euo pipefail; df -h /cluster/tufts/paralab/tawal01; test ! -e '$REMOTE'; mkdir -p '$REMOTE'"
 scp -q -r "$STAGE/"* "tufts-login:$REMOTE/"
-ssh tufts-login "set -euo pipefail; cd '$REMOTE'; test \"\$(sha256sum MANIFEST.sha256 | cut -d' ' -f1)\" = '$expected_manifest'; sha256sum -c MANIFEST.sha256"
+ssh tufts-login "set -euo pipefail; cd '$REMOTE'; test \"\$(sha256sum MANIFEST.sha256 | cut -d' ' -f1)\" = '$expected_manifest'; ./verify_manifest_file_set.sh . MANIFEST.sha256; sha256sum -c MANIFEST.sha256"
 job_id="$(ssh tufts-login "cd '$REMOTE' && sbatch --parsable --job-name=ctol_b10_$cell --export=ALL,B10_COMMIT=$expected_commit,B10_CELL=$cell,B10_REMOTE=$REMOTE run.sbatch")"
 [[ "$job_id" =~ ^[0-9]+$ ]] || exit 4
 echo "job_id=$job_id remote=$REMOTE manifest=$expected_manifest"

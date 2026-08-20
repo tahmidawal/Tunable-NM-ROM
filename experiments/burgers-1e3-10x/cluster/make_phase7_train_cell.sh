@@ -15,7 +15,7 @@ for name in "${sources[@]}"; do
   git -C "$WORKTREE" diff --quiet HEAD -- "$path" || exit 3
   git -C "$WORKTREE" cat-file -e "$expected_commit:$path"
 done
-for path in experiments/burgers-1e3-10x/PHASE-7-PRE-REGISTRATION.md experiments/burgers-1e3-10x/cluster/phase7_train.sbatch; do
+for path in experiments/burgers-1e3-10x/PHASE-7-PRE-REGISTRATION.md experiments/burgers-1e3-10x/cluster/phase7_train.sbatch experiments/burgers-1e3-10x/cluster/verify_manifest_file_set.sh; do
   git -C "$WORKTREE" diff --quiet HEAD -- "$path" || exit 3
   git -C "$WORKTREE" cat-file -e "$expected_commit:$path"
 done
@@ -45,7 +45,10 @@ bh_sha="$(awk '$2=="./code/bh_common.py" {print $1}' "$P4/MANIFEST.sha256")"
 [[ "$(sha256sum "$STAGE/code/deps/burgers2d-coord-rom/burgers2d_film.py" | cut -d' ' -f1)" == "$film_sha" ]] || exit 4
 [[ "$(sha256sum "$STAGE/code/bh_common.py" | cut -d' ' -f1)" == "$bh_sha" ]] || exit 4
 cp "$HERE/phase7_train.sbatch" "$STAGE/run.sbatch"
+cp "$HERE/verify_manifest_file_set.sh" "$STAGE/verify_manifest_file_set.sh"
 (cd "$STAGE" && find . -type f ! -path './MANIFEST.sha256' -exec sha256sum {} \; | sort > MANIFEST.sha256)
+"$STAGE/verify_manifest_file_set.sh" "$STAGE" "$STAGE/MANIFEST.sha256"
+(cd "$STAGE" && sha256sum -c MANIFEST.sha256)
 echo "stage=$STAGE"
 echo "commit=$expected_commit"
 echo "manifest_file_sha256=$(sha256sum "$STAGE/MANIFEST.sha256" | cut -d' ' -f1)"

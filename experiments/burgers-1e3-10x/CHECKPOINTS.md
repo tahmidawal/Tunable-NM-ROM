@@ -338,3 +338,10 @@ gate passed; its deliberately untrained accuracy gates were false and are
 classified as excluded. The shared independent audit and exact P4/P5/P6/target
 staging lifecycle are implemented. The requested scientific resource is one
 H200, 8 CPUs, 96 GB, and 16 hours; no job has been submitted.
+
+Pre-submit review rejected the initial stage because the staged smoke created
+unmanifested Python bytecode caches after manifest generation. No scientific
+job used that stage. The Phase-7 lifecycle now rejects any local or remote
+pre-submit file set other than the manifest itself plus exactly its listed
+paths, disables bytecode writes in the batch, and applies an exact named-output
+allowlist at pull. Scientific code, methods, and gates are unchanged.

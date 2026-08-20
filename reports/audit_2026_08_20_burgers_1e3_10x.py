@@ -468,16 +468,100 @@ def audit_phase4_train():
     }
 
 
+def audit_phase5_d():
+    directory = os.path.join(RUNS, "p5_d_r1")
+    report_path = os.path.join(directory, "out", "phase5_d.json")
+    npz_path = os.path.join(directory, "out", "phase5_d.npz")
+    report = load(report_path)
+    independent = load(os.path.join(directory, "out", "AUDIT.json"))
+    log = open(os.path.join(directory, "logs", "2669249.out")).read()
+    errors = open(os.path.join(directory, "logs", "2669249.err")).read().splitlines()
+    known = re.compile(
+        r"^E[0-9]{4} [0-9:.]+ [0-9]+ numa_hwloc\.cc:121\] "
+        r"Call to hwloc_set_cpubind\(\) failed: Invalid argument \[22\]$"
+    )
+    provenance = report["provenance"]
+    assert report["status"] == "complete"
+    assert provenance["jax_backend"] == "gpu" and provenance["x64"]
+    assert provenance["matmul_precision"] == "highest"
+    assert provenance["slurm_job_id"] == "2669249"
+    assert provenance["gpu_kind"] == "NVIDIA H200"
+    assert "jax_backend=gpu" in log and "ALL-DONE" in log
+    assert len(errors) == 3 and all(known.fullmatch(line) for line in errors)
+    assert not report["config"]["model_validation_touched"]
+    assert not report["config"]["confirmation_touched"]
+    assert independent["status"] == "pass" and independent["negative_aware"]
+    assert independent["source_json_sha256"] == sha256(report_path)
+    assert independent["source_npz_sha256"] == sha256(npz_path)
+    assert report["npz"]["sha256"] == sha256(npz_path)
+    assert audit_source_hashes(report)
+
+    targets = report["train_targets"]
+    assert targets["integrity_pass"]
+    assert targets["snapshot_count"] == targets["expected_snapshot_count"] == 35904
+    assert targets["chunk_count"] == len(targets["chunks"]) == 16
+    assert sum(row["healthy_count"] for row in targets["chunks"]) == 35904
+    assert max(row["normal_worst"] for row in targets["chunks"]) <= 1e-8
+    assert all(
+        row["boundary_all"] and row["pou_worst"] <= 1e-12
+        and row["support_max"] <= 32 and row["rhs_finite_all"]
+        and row["prediction_finite_all"] and row["coefficient_finite_all"]
+        for row in targets["chunks"]
+    )
+
+    panel = report["cost_panel"]
+    assert panel["fom_accuracy"]["eligible"] and panel["exact_position_balance"]
+    for method in ("fom", "G1_mandatory", "G1_maximum_one", "G2_mandatory", "G2_maximum_one"):
+        records, summary = panel["records"][method], panel["summaries"][method]
+        assert len(records) == 80
+        assert statistics.median(row["elapsed_s"] for row in records) == summary["median_elapsed_s"]
+        assert summary["outliers_gt_1p5_within_trajectory_total"] == 0
+        assert panel["position_counts"][method] == [4] * 5
+    for arm in ("G1", "G2"):
+        identity_pass = all(row["pass"] for row in panel["identity"][arm])
+        gate = panel["gates"][arm]
+        assert not identity_pass and not gate["identity_pass"]
+        assert panel["geometry"][arm]["pass"] and gate["noncollapse_pass"]
+        assert gate["mandatory"]["paired_median_speedup"] >= 10
+        assert gate["mandatory"]["clustered_speedup_ci"][0] >= 8
+        assert not gate["mandatory"]["pass"] and not gate["training_cost_license"]
+        assert all(
+            row["relative_l2"]["full_fields"] < 1e-14
+            and row["relative_l2"]["weak_residual"] > report["config"]["identity_tolerance"]
+            and row["exact_boundary"]
+            for row in panel["identity"][arm]
+        )
+    expected = {
+        "target_integrity_pass": True,
+        "arm_training_licenses": {"G1": False, "G2": False},
+        "next_seed11_arm": None,
+        "phase5_hard_stop": True,
+        "scientific_promotion_allowed": True,
+    }
+    assert report["decision"] == independent["decision"] == expected
+    return {
+        "manifest_files": check_local_manifest("p5_d_r1"),
+        "source_hashes": audit_source_hashes(report),
+        "backend": provenance["jax_backend"], "gpu": provenance["gpu_kind"],
+        "job_id": provenance["slurm_job_id"], "classified_hwloc_lines": len(errors),
+        "target_fits": targets["snapshot_count"],
+        "target_normal_worst": max(row["normal_worst"] for row in targets["chunks"]),
+        "hard_stop": True,
+        "independent_audit_sha256": sha256(os.path.join(directory, "out", "AUDIT.json")),
+    }
+
+
 def main():
     result = {
         "status": "pass",
-        "scope": "Burgers finite Phase 1-4 pure-NMROM search closure",
+        "scope": "Burgers finite Phase 1-5 pure-NMROM search closure",
         "d0": audit_d0(),
         "fom_calibration": audit_fom(),
         "phase2_s0": audit_s0(),
         "phase3_d": audit_phase3(),
         "phase4_d": audit_phase4(),
         "phase4_h1_seed11": audit_phase4_train(),
+        "phase5_d": audit_phase5_d(),
         "excluded": {
             "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
             "local_smokes": "execution-only and excluded from scientific claims",

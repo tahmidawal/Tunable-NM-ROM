@@ -1,5 +1,5 @@
 {
- "status": "phase4_hard_stop_learned_manifold_failure",
+ "status": "phase5_hard_stop_identity_failure",
  "representation_phase1": [
   {
    "concept": "HG4",
@@ -463,6 +463,77 @@
    }
   }
  },
+ "nonlinear_generator_phase5": {
+  "rows": [
+   {
+    "arm": "G1",
+    "rank": 127,
+    "curvature_median": 0.05507041246441219,
+    "mandatory_median_s": 0.004538579843938351,
+    "mandatory_speedup": 21.852143933130634,
+    "mandatory_ci": [
+     17.003471524081103,
+     26.38559924604341
+    ],
+    "maximum_one_median_s": 0.06088989996351302,
+    "maximum_one_speedup": 1.62880379276656,
+    "maximum_one_ci": [
+     1.286488467973952,
+     2.0069579828694204
+    ],
+    "full_field_identity_worst": 2.858010930216804e-16,
+    "weak_identity_worst": 4.8255283342982255e-14,
+    "identity_pass": false,
+    "training_license": false
+   },
+   {
+    "arm": "G2",
+    "rank": 127,
+    "curvature_median": 0.057202586822515514,
+    "mandatory_median_s": 0.006586756324395537,
+    "mandatory_speedup": 15.05713815985866,
+    "mandatory_ci": [
+     11.837358727995204,
+     18.486059974646075
+    ],
+    "maximum_one_median_s": 0.17727606720291078,
+    "maximum_one_speedup": 0.5594534082721233,
+    "maximum_one_ci": [
+     0.4418336548618527,
+     0.6891144346912814
+    ],
+    "full_field_identity_worst": 2.8732871821740003e-16,
+    "weak_identity_worst": 4.686024270346091e-14,
+    "identity_pass": false,
+    "training_license": false
+   }
+  ],
+  "target_snapshot_count": 35904,
+  "target_chunk_count": 16,
+  "target_normal_worst": 3.2782920288282803e-15,
+  "target_integrity_pass": true,
+  "head_rms": [
+   0.8494597790864373,
+   0.6797529719802483
+  ],
+  "live_fom_accuracy": {
+   "mean": 0.0006584064402266894,
+   "worst": 0.001400001319726601,
+   "healthy": true,
+   "eligible": true
+  },
+  "live_fom_median_s": 0.09917770000174642,
+  "decision": {
+   "target_integrity_pass": true,
+   "arm_training_licenses": {
+    "G1": false,
+    "G2": false
+   },
+   "next_seed11_arm": null,
+   "phase5_hard_stop": true,
+   "scientific_promotion_allowed": true
+  }
+ },
  "inherited_pure_nmrom": {
   "artifact": "inherited_h160.json",
   "sha256": "354ef84c046fbdb16dc3bbe56bf94fd75c41889807fbc40825e2c7eeb2044550",
@@ -535,6 +606,7 @@
   "Phase3_D": 1,
   "Phase3_F": 0,
   "Phase4_D": 1,
+  "Phase5_D": 1,
   "training": 1,
   "weak_EQ": 0,
   "scaling": 0,

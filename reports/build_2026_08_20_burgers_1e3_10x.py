@@ -1,4 +1,4 @@
-"""Generate the Burgers 1e-3/10x Phase-4 hard-stop report from artifacts."""
+"""Generate the Burgers 1e-3/10x Phase-5 hard-stop report from artifacts."""
 from __future__ import annotations
 
 import json
@@ -22,6 +22,7 @@ S0_PATH = os.path.join(RUNS, "s0_spline_r1", "out", "s0.json")
 P3_PATH = os.path.join(RUNS, "p3_d_r1", "out", "phase3_d.json")
 P4_PATH = os.path.join(RUNS, "p4_d_r3", "out", "phase4_d.json")
 P4_TRAIN_PATH = os.path.join(RUNS, "p4_h1_s11_r1", "out", "train.json")
+P5_PATH = os.path.join(RUNS, "p5_d_r1", "out", "phase5_d.json")
 AUDIT_PATH = os.path.join(ROOT, "reports", "generated", "burgers_1e3_10x_audit.json")
 TABLE_PATH = os.path.join(ROOT, "reports", "generated", "burgers_1e3_10x_tables.json")
 REPORT_PATH = os.path.join(ROOT, "reports", "2026-08-20-burgers-1e3-10x.md")
@@ -135,9 +136,9 @@ def make_figures(decision, fom, p3):
 
 
 def main():
-    d0, decision, fom, s0, p3, p4, p4_train, audit = map(load, (
+    d0, decision, fom, s0, p3, p4, p4_train, p5, audit = map(load, (
         D0_PATH, DECISION_PATH, FOM_PATH, S0_PATH, P3_PATH, P4_PATH,
-        P4_TRAIN_PATH, AUDIT_PATH,
+        P4_TRAIN_PATH, P5_PATH, AUDIT_PATH,
     ))
     assert audit["status"] == "pass"
     assert decision["hard_stop_now"] and s0["decision"]["phase2_hard_stop"]
@@ -154,6 +155,14 @@ def main():
         "scientific_promotion_allowed": True,
     }
     assert audit["phase4_h1_seed11"]["hard_stop"]
+    assert audit["phase5_d"]["hard_stop"]
+    assert p5["decision"] == {
+        "target_integrity_pass": True,
+        "arm_training_licenses": {"G1": False, "G2": False},
+        "next_seed11_arm": None,
+        "phase5_hard_stop": True,
+        "scientific_promotion_allowed": True,
+    }
     assert p4_train["gates"] == {
         "representation_oracle_all_N_and_pooled": False,
         "direct_all_N_and_pooled": False,
@@ -304,8 +313,31 @@ def main():
         and direct_metrics["pooled"]["exact_binary_boundary"],
     })
 
+    p5_rows = []
+    for arm in ("G1", "G2"):
+        geometry = p5["cost_panel"]["geometry"][arm]
+        gate = p5["cost_panel"]["gates"][arm]
+        identity = p5["cost_panel"]["identity"][arm]
+        p5_rows.append({
+            "arm": arm,
+            "rank": geometry["rank_at_tolerance"],
+            "curvature_median": geometry["curvature_median"],
+            "mandatory_median_s": p5["cost_panel"]["summaries"][f"{arm}_mandatory"]["median_elapsed_s"],
+            "mandatory_speedup": gate["mandatory"]["paired_median_speedup"],
+            "mandatory_ci": gate["mandatory"]["clustered_speedup_ci"],
+            "maximum_one_median_s": p5["cost_panel"]["summaries"][f"{arm}_maximum_one"]["median_elapsed_s"],
+            "maximum_one_speedup": gate["maximum_one"]["paired_median_speedup"],
+            "maximum_one_ci": gate["maximum_one"]["clustered_speedup_ci"],
+            "full_field_identity_worst": max(row["relative_l2"]["full_fields"] for row in identity),
+            "weak_identity_worst": max(row["relative_l2"]["weak_residual"] for row in identity),
+            "identity_pass": gate["identity_pass"],
+            "training_license": gate["training_cost_license"],
+        })
+    p5_targets = p5["train_targets"]
+    p5_target_normal_worst = max(row["normal_worst"] for row in p5_targets["chunks"])
+
     tables = {
-        "status": "phase4_hard_stop_learned_manifold_failure",
+        "status": "phase5_hard_stop_identity_failure",
         "representation_phase1": representation_rows,
         "fom_scaling_phase1": fom_rows,
         "spline_phase2": {"oracle_meshes": spline_rows, "cost": s0_cost},
@@ -329,11 +361,22 @@ def main():
                 "gates": p4_train["gates"],
             },
         },
+        "nonlinear_generator_phase5": {
+            "rows": p5_rows,
+            "target_snapshot_count": p5_targets["snapshot_count"],
+            "target_chunk_count": p5_targets["chunk_count"],
+            "target_normal_worst": p5_target_normal_worst,
+            "target_integrity_pass": p5_targets["integrity_pass"],
+            "head_rms": p5_targets["normalization"]["head_rms"],
+            "live_fom_accuracy": p5["cost_panel"]["fom_accuracy"],
+            "live_fom_median_s": p5["cost_panel"]["summaries"]["fom"]["median_elapsed_s"],
+            "decision": p5["decision"],
+        },
         "inherited_pure_nmrom": d0["inherited"],
         "scientific_cells": {
             "D0": 1, "excluded_partial_FOM": 1, "final_FOM": 1,
             "Phase2_S0": 1, "Phase3_D": 1, "Phase3_F": 0, "Phase4_D": 1,
-            "training": 1, "weak_EQ": 0, "scaling": 0, "confirmation": 0,
+            "Phase5_D": 1, "training": 1, "weak_EQ": 0, "scaling": 0, "confirmation": 0,
         },
     }
     os.makedirs(os.path.dirname(TABLE_PATH), exist_ok=True)
@@ -398,6 +441,17 @@ def main():
           f"{'pass' if row['oracle_pass'] else 'fail'} / {'pass' if row['direct_pass'] else 'fail'}"]
          for row in p4_training_rows],
     )
+    p5_md = table(
+        ["status", "arm", "rank / curvature", "mandatory ms / speedup / 95% CI",
+         "maximum-one ms / speedup / 95% CI", "full / weak identity worst", "decision"],
+        [["final", row["arm"], f"{row['rank']} / {sci(row['curvature_median'])}",
+          f"{ms(row['mandatory_median_s'])} / {row['mandatory_speedup']:.3f}x / "
+          f"[{row['mandatory_ci'][0]:.3f}, {row['mandatory_ci'][1]:.3f}]",
+          f"{ms(row['maximum_one_median_s'])} / {row['maximum_one_speedup']:.3f}x / "
+          f"[{row['maximum_one_ci'][0]:.3f}, {row['maximum_one_ci'][1]:.3f}]",
+          f"{sci(row['full_field_identity_worst'])} / {sci(row['weak_identity_worst'])}",
+          "train" if row["training_license"] else "kill"] for row in p5_rows],
+    )
     inherited = d0["inherited"]
     live = p3["kernel_diagnostic"]
     selected_solver = min(solver_rows, key=lambda row: row["target_N128_draw530_trajectory_relative_l2"])
@@ -408,6 +462,7 @@ def main():
     h1_cost = p4["cost_panel"]["gates"]["H1"]
     trained_oracle = p4_train["selection_oracle"]["metrics"]["pooled"]
     trained_direct = p4_train["selection_direct"]["metrics"]["pooled"]
+    p5_g1 = p5_rows[0]
     gate_md = table(["status", "gate", "result"], [
         ["final pass", "reference numerical error <=1e-4", sci(max(row["tighter_difference_worst"] for row in fom_rows))],
         ["final fail on exposed selection", "seed-11 learned-manifold oracle mean<=2e-4, worst<=7e-4", f"{sci(trained_oracle['trajectory_error_mean'])} / {sci(trained_oracle['trajectory_error_worst'])}"],
@@ -419,11 +474,12 @@ def main():
         ["final pass", "H1 free-oracle mean<=2e-4, worst<=7e-4", f"{sci(h1['summary']['trajectory_mean'])} / {sci(h1['summary']['trajectory_worst'])}"],
         ["not reached", "N256/N512 learned scaling", "no eligible trained pure model"],
         ["not opened", "untouched confirmation", "fixed data remained untouched"],
+        ["final fail", "Phase-5 K3/Cox identity <=2e-14", sci(p5_g1["weak_identity_worst"])],
     ])
 
-    report = f"""# Burgers 1e-3 / 10x pure NM-ROM search — Phase 4 hard stop
+    report = f"""# Burgers 1e-3 / 10x pure NM-ROM search — Phase 5 hard stop
 
-This report covers the finite transported-Hermite search, calibrated Burgers FOM, adaptive transported-spline screens, exact solver/kernel repair, hierarchical-spline diagnostic, and the licensed H1/k24 seed-11 training cell. All accepted numbers are **final** for Phases 1–4. Phase 4 ends at its preregistered learned-manifold hard stop; model-validation and untouched-confirmation draws remained unopened.
+This report covers the finite transported-Hermite search, calibrated Burgers FOM, adaptive transported-spline screens, exact solver/kernel repair, hierarchical-spline diagnostic, H1/k24 seed-11 training, and the Phase-5 nonlinear-generator diagnostic. All accepted numbers are **final** for Phases 1–5. Phase 5 ends at its preregistered identity hard stop; model-validation and untouched-confirmation draws remained unopened.
 
 ## Outcome
 
@@ -434,6 +490,8 @@ Phase 3 successfully repairs both implementation defects without changing the sp
 **[final Phase-4 diagnostic]** The genuinely hierarchical H1 chart passes every exposed free-oracle gate with pooled mean/worst {sci(h1['summary']['trajectory_mean'])} / {sci(h1['summary']['trajectory_worst'])} and is the preregistered smallest passing arm. Its same-H200 mandatory path reaches {h1_cost['mandatory']['paired_median_speedup']:.3f}x with clustered interval [{h1_cost['mandatory']['clustered_speedup_ci'][0]:.3f}, {h1_cost['mandatory']['clustered_speedup_ci'][1]:.3f}], which licensed the now-completed seed-11 k24 training cell. The worst-case maximum-one route reaches only {h1_cost['maximum_one']['paired_median_speedup']:.3f}x with interval [{h1_cost['maximum_one']['clustered_speedup_ci'][0]:.3f}, {h1_cost['maximum_one']['clustered_speedup_ci'][1]:.3f}], so H1 was only conditionally eligible for a zero/occasional-attempt policy; the training hard stop prevents any rollout claim.
 
 **[final Phase-4 training hard stop]** The complete H1/k24 seed-11 hyperdecoder/autolatent fit fails its exposed learned-manifold oracle by orders of magnitude: pooled mean/worst {sci(trained_oracle['trajectory_error_mean'])} / {sci(trained_oracle['trajectory_error_worst'])}. Its direct predictor is better but still fails at {sci(trained_direct['trajectory_error_mean'])} / {sci(trained_direct['trajectory_error_worst'])}. Both are finite and preserve the exact binary boundary. The learned oracle also misses the locked k32 near-miss bracket, so seeds 29/47, k32, model validation, weak/EQ, scaling, and confirmation are not licensed.
+
+**[final Phase-5 diagnostic hard stop]** The fixed nonlinear generator bracket clears target integrity, non-collapse, memory, canonical-work, and mandatory-speed screens, but neither arm clears the unchanged K3/Cox identity tolerance {sci(p5['config']['identity_tolerance'])}. G1 is the faster arm at {p5_g1['mandatory_speedup']:.3f}x with clustered interval [{p5_g1['mandatory_ci'][0]:.3f}, {p5_g1['mandatory_ci'][1]:.3f}], yet its worst weak-residual identity is {sci(p5_g1['weak_identity_worst'])}. The full-field discrepancy is only {sci(p5_g1['full_field_identity_worst'])}. Therefore no Phase-5 generator is trained and all downstream gates remain unopened.
 
 The inherited seed-0 H160x4/g2 artifact copied into D0 has full-weak mean/worst {sci(inherited['full_weak_trajectory_mean'])} / {sci(inherited['full_weak_trajectory_worst'])}; this specific inherited row is neither a new result nor an eligible Pareto point.
 
@@ -487,22 +545,28 @@ The authoritative wall fractions are computed from representation-oracle arrays.
 
 **[final negative]** The selected oracle start is {p4_train['selection_oracle']['chosen_start']} by pooled mean snapshot-relative-L2-squared {sci(p4_train['selection_oracle']['chosen_start_selection_loss'])}. The manifold and predictor schedules finish exactly at {p4_train['training']['manifold_history'][-1]['step']} and {p4_train['training']['predictor_history'][-1]['step']} steps. The learned-manifold failure is the active Phase-4 floor: the free H1 coefficient projection and mandatory K3 path already pass, while the fixed dense coefficient generator cannot reproduce that exposed free-oracle solution set. No deployed rollout was timed in this training cell, so the structural speed row is not a learned-model speed claim.
 
+## Phase 5 nonlinear spatial-generator diagnostic
+
+{p5_md}
+
+**[final negative]** All {p5_targets['snapshot_count']} S2/H1 training coefficient targets across {p5_targets['chunk_count']} locked chunks are finite and healthy; the worst normal residual is {sci(p5_target_normal_worst)}. The train-only per-head coefficient RMS values are {sci(p5_targets['normalization']['head_rms'][0])} and {sci(p5_targets['normalization']['head_rms'][1])}. Both prospective generators exhibit numerical rank {p5_rows[0]['rank']} and nonzero curvature, so the diagnostic does not show the Phase-4 fixed-affine-output-subspace collapse. The live FOM is eligible at mean/worst {sci(p5['cost_panel']['fom_accuracy']['mean'])} / {sci(p5['cost_panel']['fom_accuracy']['worst'])} with median {ms(p5['cost_panel']['summaries']['fom']['median_elapsed_s'])} ms. Mandatory structural speed passes for both arms, but the weak-residual identity component fails for every live case while fields and stencils agree near machine precision. Under the locked negative-aware gate this is a hard stop, not a training or rollout claim.
+
 ## Gate ledger and stopping condition
 
 {gate_md}
 
-No row is a deployable NM-ROM Pareto point. H1 proves that the spline space and structural mandatory kernel can clear their exposed gates, but the trained seed-11 coefficient manifold fails before model validation or rollout. Consequently no method claims the headline N=1024 result. Phase 4 is exhausted at `phase4_next_decision=hard stop: learned manifold misses the 2x bracket`; there is no licensed downstream Phase-4 cell.
+No row is a deployable NM-ROM Pareto point. H1 proves that the spline space and structural mandatory kernel can clear their exposed gates, but the trained Phase-4 seed-11 coefficient manifold fails before model validation or rollout, and Phase 5 stops before training on its unchanged numerical-identity gate. Consequently no method claims the headline N=1024 result. Phase 5 is exhausted with `next_seed11_arm=null`; there is no licensed downstream Phase-5 cell.
 
 ## Exclusions and cell accounting
 
 **[excluded]** Job 2667476 is a partial FOM attempt that failed before N=1024. Zero-output jobs 2667361, 2667374, 2667531, and Phase-4 job 2668601 are infrastructure/code-preflight records. Phase-4 job 2668613 is excluded without scientific inspection because its root manifest omitted the nested P3 manifest. Every local smoke is execution-only. The two synthetic-only model-validation drafts are uncommitted and excluded; none touched model-validation or confirmation data.
 
-**[final Phase-4 accounting]** Seven scientific cells were consumed: D0, one excluded partial FOM cell, corrected FOM calibration, Phase-2 S0, Phase-3 P3-D, Phase-4 P4-D, and H1/k24 seed-11 training. The two Phase-4 provenance failures did not alter the scientific method/cap and are excluded. Model validation, weak/EQ, scaling, and confirmation consumed zero cells. All completed remote directories were deleted after checksummed pulls, and the assigned namespace is empty.
+**[final Phase-5 accounting]** Eight scientific cells were consumed: D0, one excluded partial FOM cell, corrected FOM calibration, Phase-2 S0, Phase-3 P3-D, Phase-4 P4-D, H1/k24 seed-11 training, and Phase-5 P5-D. The two Phase-4 provenance failures did not alter the scientific method/cap and are excluded. Model validation, weak/EQ, scaling, confirmation, and Phase-5 generator training consumed zero cells. All completed remote directories were deleted after checksummed pulls, and the assigned namespace is empty.
 
 ## Artifacts and rerun
 
-- Preregistrations: `experiments/burgers-1e3-10x/PRE-REGISTRATION.md`, `PHASE-2-PRE-REGISTRATION.md`, `PHASE-3-PRE-REGISTRATION.md`, `PHASE-4-PRE-REGISTRATION.md`
-- Accepted runs: `experiments/burgers-1e3-10x/runs/d0_r2/`, `fom_cal_r4/`, `s0_spline_r1/`, `p3_d_r1/`, `p4_d_r3/`, `p4_h1_s11_r1/`
+- Preregistrations: `experiments/burgers-1e3-10x/PRE-REGISTRATION.md`, `PHASE-2-PRE-REGISTRATION.md`, `PHASE-3-PRE-REGISTRATION.md`, `PHASE-4-PRE-REGISTRATION.md`, `PHASE-5-PRE-REGISTRATION.md`
+- Accepted runs: `experiments/burgers-1e3-10x/runs/d0_r2/`, `fom_cal_r4/`, `s0_spline_r1/`, `p3_d_r1/`, `p4_d_r3/`, `p4_h1_s11_r1/`, `p5_d_r1/`
 - Machine tables: `reports/generated/burgers_1e3_10x_tables.json`
 - Audit: `reports/generated/burgers_1e3_10x_audit.json`
 - Regenerate: `/home/tahmid/Dev/.venv/bin/python reports/audit_2026_08_20_burgers_1e3_10x.py && /home/tahmid/Dev/.venv/bin/python reports/build_2026_08_20_burgers_1e3_10x.py`

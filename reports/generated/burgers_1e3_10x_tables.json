@@ -1,5 +1,5 @@
 {
- "status": "phase6_identity_repair_licensed_training_pending",
+ "status": "phase7_g1_seed11_final_hard_stop",
  "representation_phase1": [
   {
    "concept": "HG4",
@@ -590,6 +590,94 @@
    "scientific_promotion_allowed": true
   }
  },
+ "g1_training_phase7": {
+  "rows": [
+   {
+    "N": 64,
+    "oracle_mean": 0.3877976037577974,
+    "oracle_worst": 1.2732774797578963,
+    "direct_mean": 0.07981881586666872,
+    "direct_worst": 0.19369147579945084,
+    "direct_over_oracle": 0.20582596460941596,
+    "oracle_pass": false,
+    "direct_pass": false,
+    "finite": true,
+    "exact_boundary": true
+   },
+   {
+    "N": 128,
+    "oracle_mean": 0.3564755671217132,
+    "oracle_worst": 1.142905081868078,
+    "direct_mean": 0.08280736116269052,
+    "direct_worst": 0.17667240032311116,
+    "direct_over_oracle": 0.23229463334977235,
+    "oracle_pass": false,
+    "direct_pass": false,
+    "finite": true,
+    "exact_boundary": true
+   },
+   {
+    "N": 256,
+    "oracle_mean": 0.3477184634902999,
+    "oracle_worst": 0.9032960926699153,
+    "direct_mean": 0.0871985709127447,
+    "direct_worst": 0.17774549536517176,
+    "direct_over_oracle": 0.2507734850702779,
+    "oracle_pass": false,
+    "direct_pass": false,
+    "finite": true,
+    "exact_boundary": true
+   },
+   {
+    "N": "pooled",
+    "oracle_mean": 0.37312285896641656,
+    "oracle_worst": 1.2732774797578963,
+    "direct_mean": 0.08172693667211438,
+    "direct_worst": 0.19369147579945084,
+    "direct_over_oracle": 0.21903492297015853,
+    "oracle_pass": false,
+    "direct_pass": false,
+    "finite": true,
+    "exact_boundary": true
+   }
+  ],
+  "chosen_oracle_start": 1,
+  "chosen_oracle_loss": 0.26483255987505727,
+  "training_binding": {
+   "checked": true,
+   "normalized_affine_absolute_tolerance": 2e-15,
+   "normalized_affine_max_abs": 0.0,
+   "normalized_affine_within_tolerance": true,
+   "feature_exact_columns_bitwise": true,
+   "feature_viscosity_max_abs": 0.0,
+   "feature_viscosity_within_ulp": true
+  },
+  "local_normalization_recompute": {
+   "absolute_tolerance": 2e-15,
+   "artifact_affine_state_bitwise": true,
+   "checkpoint_physical_target_bitwise": true,
+   "classification": "portable_f64_scalar_exp_log_recompute; immutable physical target and staged scientific mapping remain exact",
+   "feature_target_bitwise": true,
+   "max_abs": 2.220446049250313e-16,
+   "physical_target_bitwise": true,
+   "relative_tolerance": 0.0,
+   "within_tolerance": true
+  },
+  "gates": {
+   "representation_oracle_all_N_and_pooled": false,
+   "direct_all_N_and_pooled": false,
+   "route_identity_all_selection": true,
+   "promote_seed": false
+  },
+  "decision": {
+   "g1_seed11_pass": false,
+   "seeds29_47_proposal_licensed": false,
+   "phase7_hard_stop": true,
+   "training_authorized": false,
+   "next_action": "hard stop",
+   "scientific_promotion_allowed": true
+  }
+ },
  "inherited_pure_nmrom": {
   "artifact": "inherited_h160.json",
   "sha256": "354ef84c046fbdb16dc3bbe56bf94fd75c41889807fbc40825e2c7eeb2044550",
@@ -663,7 +751,8 @@
   "Phase3_F": 0,
   "Phase4_D": 1,
   "Phase5_D": 1,
-  "training": 1,
+  "Phase4_training": 1,
+  "Phase7_training": 1,
   "weak_EQ": 0,
   "scaling": 0,
   "confirmation": 0,

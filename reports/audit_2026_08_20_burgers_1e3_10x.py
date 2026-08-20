@@ -1,4 +1,4 @@
-"""Rerunnable integrity/numerical audit for the Burgers Phase-1--6 search."""
+"""Rerunnable integrity/numerical audit for the Burgers Phase-1--7 search."""
 from __future__ import annotations
 
 import hashlib
@@ -661,10 +661,147 @@ def audit_phase6_d():
     }
 
 
+def audit_phase7_train():
+    directory = os.path.join(RUNS, "p7_g1_s11_r3")
+    report_path = os.path.join(directory, "out", "phase7_train.json")
+    npz_path = os.path.join(directory, "out", "phase7_train.npz")
+    checkpoint_path = os.path.join(directory, "out", "checkpoint.pkl")
+    audit_path = os.path.join(directory, "out", "AUDIT.json")
+    report, independent = load(report_path), load(audit_path)
+    log = open(os.path.join(directory, "logs", "2673185.out")).read()
+    error = open(os.path.join(directory, "logs", "2673185.err")).read()
+    provenance = report["provenance"]
+    expected_gates = {
+        "representation_oracle_all_N_and_pooled": False,
+        "direct_all_N_and_pooled": False,
+        "route_identity_all_selection": True,
+        "promote_seed": False,
+    }
+    expected_decision = {
+        "g1_seed11_pass": False,
+        "seeds29_47_proposal_licensed": False,
+        "phase7_hard_stop": True,
+        "training_authorized": False,
+        "next_action": "hard stop",
+        "scientific_promotion_allowed": True,
+    }
+    assert report["status"] == "complete"
+    assert provenance["jax_backend"] == "gpu" and provenance["x64"]
+    assert provenance["matmul_precision"] == "highest"
+    assert provenance["slurm_job_id"] == "2673185"
+    assert provenance["gpu_kind"] == "NVIDIA H200"
+    assert "jax_backend=gpu" in log and "ALL-DONE" in log and error == ""
+    assert not any(
+        report["config"][name]
+        for name in (
+            "model_validation_touched", "confirmation_touched",
+            "weak_eq_touched", "scaling_touched", "g2_fallback",
+            "retry_allowed", "p5_targets_regenerated",
+        )
+    )
+    assert report["gates"] == independent["gates"] == expected_gates
+    assert report["decision"] == independent["decision"] == expected_decision
+    assert independent["status"] == "pass" and independent["negative_aware"]
+    assert independent["immutable_bindings_verified"]
+    assert independent["source_json_sha256"] == sha256(report_path)
+    assert independent["source_npz_sha256"] == sha256(npz_path)
+    assert independent["source_checkpoint_sha256"] == sha256(checkpoint_path)
+    assert independent["manifest_sha256"] == sha256(
+        os.path.join(directory, "MANIFEST.sha256")
+    )
+    assert independent["expected_commit"] == provenance["commit"]
+    assert independent["expected_job"] == provenance["slurm_job_id"]
+    portability = independent["target_normalization_local_recompute"]
+    assert portability == {
+        "classification": (
+            "portable_f64_scalar_exp_log_recompute; immutable physical "
+            "target and staged scientific mapping remain exact"
+        ),
+        "absolute_tolerance": 2e-15,
+        "relative_tolerance": 0.0,
+        "max_abs": portability["max_abs"],
+        "within_tolerance": True,
+        "physical_target_bitwise": True,
+        "feature_target_bitwise": True,
+        "checkpoint_physical_target_bitwise": True,
+        "artifact_affine_state_bitwise": True,
+    }
+    assert np.isfinite(portability["max_abs"])
+    assert portability["max_abs"] <= portability["absolute_tolerance"]
+    binding = independent["training_binding"]
+    assert binding == report["data"]["training_binding"]
+    assert binding["checked"] and binding["normalized_affine_within_tolerance"]
+    assert binding["normalized_affine_max_abs"] <= 2e-15
+    assert binding["feature_exact_columns_bitwise"]
+    assert binding["feature_viscosity_within_ulp"]
+    assert audit_source_hashes(report)
+
+    oracle = report["selection_oracle"]["metrics"]
+    direct = report["selection_direct"]["metrics"]
+    oracle_pass = True
+    direct_pass = True
+    identity_pass = True
+    degradation = {}
+    rows = {}
+    for key in ("64", "128", "256", "pooled"):
+        oracle_row = oracle["pooled"] if key == "pooled" else oracle["meshes"][key]
+        direct_row = direct["pooled"] if key == "pooled" else direct["meshes"][key]
+        ratio = direct_row["trajectory_error_mean"] / max(
+            oracle_row["trajectory_error_mean"], 1e-300
+        )
+        degradation[key] = ratio
+        oracle_pass &= bool(
+            oracle_row["trajectory_error_mean"] <= 2e-4
+            and oracle_row["trajectory_error_worst"] <= 7e-4
+            and oracle_row["k3_cox_identity_worst"] <= 2e-14
+            and oracle_row["all_finite"] and oracle_row["exact_binary_boundary"]
+        )
+        direct_pass &= bool(
+            direct_row["trajectory_error_mean"] <= 3e-4
+            and direct_row["trajectory_error_worst"] <= 1e-3
+            and direct_row["k3_cox_identity_worst"] <= 2e-14
+            and direct_row["all_finite"] and direct_row["exact_binary_boundary"]
+            and ratio <= 1.5
+        )
+        identity_pass &= bool(
+            oracle_row["k3_cox_identity_worst"] <= 2e-14
+            and direct_row["k3_cox_identity_worst"] <= 2e-14
+        )
+        rows[key] = {
+            "oracle_mean": oracle_row["trajectory_error_mean"],
+            "oracle_worst": oracle_row["trajectory_error_worst"],
+            "direct_mean": direct_row["trajectory_error_mean"],
+            "direct_worst": direct_row["trajectory_error_worst"],
+            "direct_over_oracle": ratio,
+        }
+    assert not oracle_pass and not direct_pass and identity_pass
+    assert all(
+        np.isclose(
+            value,
+            report["selection_direct"]["degradation_direct_over_oracle"][key],
+            rtol=1e-14,
+        )
+        for key, value in degradation.items()
+    )
+    assert report["selection_oracle"]["chosen_start"] == independent["chosen_start"]
+    assert report["training"]["warmup_history"][-1]["step"] == 10_000
+    assert report["training"]["joint_history"][-1]["step"] == 30_000
+    assert report["training"]["predictor_history"][-1]["step"] == 20_000
+    return {
+        "manifest_files": check_local_manifest("p7_g1_s11_r3"),
+        "source_hashes": audit_source_hashes(report),
+        "backend": provenance["jax_backend"], "gpu": provenance["gpu_kind"],
+        "job_id": provenance["slurm_job_id"], "hard_stop": True,
+        "rows": rows,
+        "target_normalization_local_max_abs": portability["max_abs"],
+        "independent_audit_sha256": sha256(audit_path),
+    }
+
+
 def main():
     result = {
         "status": "pass",
-        "scope": "Burgers finite Phase 1-6 pure-NMROM search checkpoint",
+        "scope": "Burgers finite Phase 1-7 pure-NMROM search final hard stop",
         "d0": audit_d0(),
         "fom_calibration": audit_fom(),
         "phase2_s0": audit_s0(),
@@ -673,11 +810,14 @@ def main():
         "phase4_h1_seed11": audit_phase4_train(),
         "phase5_d": audit_phase5_d(),
         "phase6_d": audit_phase6_d(),
+        "phase7_g1_seed11": audit_phase7_train(),
         "excluded": {
             "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
             "local_smokes": "execution-only and excluded from scientific claims",
             "phase4_r1": "pre-science dependency-schema failure; zero scientific output",
             "phase4_r2": "completed output excluded without scientific inspection because the root manifest omitted the nested P3 manifest",
+            "phase7_r1": "zero-science physical-vs-normalized affine schema failure before output/training",
+            "phase7_r2": "zero-science exact-regeneration comparison failure before output/training",
             "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened",
         },
         "model_validation_opened": False,

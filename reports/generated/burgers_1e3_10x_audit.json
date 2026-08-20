@@ -1,6 +1,6 @@
 {
  "status": "pass",
- "scope": "Burgers finite Phase 1-6 pure-NMROM search checkpoint",
+ "scope": "Burgers finite Phase 1-7 pure-NMROM search final hard stop",
  "d0": {
   "manifest_files": [
    "out/d0.npz",
@@ -264,11 +264,75 @@
   "actual_route_identity_worst": 6.851316842366852e-16,
   "independent_audit_sha256": "9e017b37709bf37fc8c8b87bbbb70461cba8afb47603a5b65dd2618c901ad2b4"
  },
+ "phase7_g1_seed11": {
+  "manifest_files": [
+   "out/checkpoint.pkl",
+   "out/AUDIT.json",
+   "out/phase7_train.json",
+   "MANIFEST.sha256",
+   "REMOTE.sha256",
+   "SACCT.txt",
+   "logs/2673185.err",
+   "logs/2673185.out",
+   "out/phase7_train.npz"
+  ],
+  "source_hashes": {
+   "b10_audit_phase7_train.py": "6d54140037a261ee3ce8ac457e8c924c340b37d79336a859e255dce677189661",
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_phase3.py": "5a67c44c6713d5c429df254bbfef7df2205372067f82882e6d1852ce61d1555e",
+   "b10_phase4.py": "00c1ae05bec605ec1d492c74ef4c8a56b84cfa96aee610ce06f3fdca5da38a8c",
+   "b10_phase5.py": "0547fac0053b01b9cadbece9b98d4dba704b18d300cfe13abee165cda19b0084",
+   "b10_phase7.py": "c32a0b085948c216e8be7b8976b35e8853a0434c1ced687f7596255ade8c0dea",
+   "b10_phase7_train.py": "a9589d3a7ca6efdf48c1f3b3310aa86f03e840e51d9c22f6785d4b554ca84871",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "8c088207ab73d1ceba87343b357128b0c535777893349b7f6bea15dead409731",
+   "b10_spline_train.py": "de1d0f8506e9bae722c0207abe7fd11b3c4ae46f0e074fedecec86cc46158790",
+   "b10_test_phase7_affine_schema.py": "663d7942672573ad6b7ece4516a66ee4f03a3ab446dbe780dac1b281fd9c7e7f"
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "job_id": "2673185",
+  "hard_stop": true,
+  "rows": {
+   "64": {
+    "oracle_mean": 0.3877976037577974,
+    "oracle_worst": 1.2732774797578963,
+    "direct_mean": 0.07981881586666872,
+    "direct_worst": 0.19369147579945084,
+    "direct_over_oracle": 0.20582596460941596
+   },
+   "128": {
+    "oracle_mean": 0.3564755671217132,
+    "oracle_worst": 1.142905081868078,
+    "direct_mean": 0.08280736116269052,
+    "direct_worst": 0.17667240032311116,
+    "direct_over_oracle": 0.23229463334977235
+   },
+   "256": {
+    "oracle_mean": 0.3477184634902999,
+    "oracle_worst": 0.9032960926699153,
+    "direct_mean": 0.0871985709127447,
+    "direct_worst": 0.17774549536517176,
+    "direct_over_oracle": 0.2507734850702779
+   },
+   "pooled": {
+    "oracle_mean": 0.37312285896641656,
+    "oracle_worst": 1.2732774797578963,
+    "direct_mean": 0.08172693667211438,
+    "direct_worst": 0.19369147579945084,
+    "direct_over_oracle": 0.21903492297015853
+   }
+  },
+  "target_normalization_local_max_abs": 2.220446049250313e-16,
+  "independent_audit_sha256": "35c95ee38dea7622f40b6c199f4164b6c27ec3f37ad5561a51de6cd3b0a79322"
+ },
  "excluded": {
   "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
   "local_smokes": "execution-only and excluded from scientific claims",
   "phase4_r1": "pre-science dependency-schema failure; zero scientific output",
   "phase4_r2": "completed output excluded without scientific inspection because the root manifest omitted the nested P3 manifest",
+  "phase7_r1": "zero-science physical-vs-normalized affine schema failure before output/training",
+  "phase7_r2": "zero-science exact-regeneration comparison failure before output/training",
   "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened"
  },
  "model_validation_opened": false,

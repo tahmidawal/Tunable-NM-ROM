@@ -179,6 +179,14 @@ def parse_arm(name: str) -> Arm:
             raise ValueError("parameter-aligned weak solve requires M comfortably above k=4")
         return Arm(name, "param_lm", -1 if ctext == "full" else int(ctext),
                    int(qpart), None, weak_M, 4 * weak_M, 1)
+    if name.startswith("paramritz1_m"):
+        body, qpart = name.rsplit("_q", 1)
+        prefix, ctext = body.rsplit("_c", 1)
+        weak_M = int(prefix[len("paramritz1_m"):])
+        if weak_M < 8:
+            raise ValueError("parameter-aligned Ritz solve requires M comfortably above k=4")
+        return Arm(name, "param_ritz", -1 if ctext == "full" else int(ctext),
+                   int(qpart), None, weak_M, 4 * weak_M, 1)
     raise ValueError(f"unknown arm {name!r}")
 
 
@@ -973,38 +981,48 @@ def main():
     # target FOM mesh) and all target-grid dependence remains in the FOM finish.
     param_lm_models = {}
     param_lm_info = None
-    if any(a.predictor == "param_lm" for a in ARMS):
+    param_predictors = {a.predictor for a in ARMS
+                        if a.predictor in ("param_lm", "param_ritz")}
+    if param_predictors:
         if param_stages is None:
-            raise SystemExit("a paramlm1_* arm requires PARAM_PKL")
+            raise SystemExit("a parameter-aligned NM-ROM arm requires PARAM_PKL")
         bad_c = sorted({a.coarse_n for a in ARMS
-                        if a.predictor == "param_lm" and a.coarse_n != 64})
+                        if a.predictor in param_predictors and a.coarse_n != 64})
         if bad_c:
             raise SystemExit(f"parameter-aligned latent chart is fixed at c64, got {bad_c}")
         pgrid = pc.Grid(64)
         pdec = lambda z, xy: mp.combined_apply(param_stages[:1], z, xy)
         per_m = {}
-        for weak_M in sorted({a.weak_M for a in ARMS if a.predictor == "param_lm"}):
+        for weak_M in sorted({a.weak_M for a in ARMS if a.predictor in param_predictors}):
             weak_m = 4 * weak_M
             ppts, pwq, peq_info = legacy_eq_fit(
                 pdec, pgrid, P_train, 4, weak_M, weak_m, "grid"
             )
-            pspec = dict(kind="weak", alpha=1.0, M=weak_M)
-            pPhiT, pWl = pc.colloc_mode_table(pgrid, pspec, "grid", ppts)
-            pproject, pproject_info = make_parameter_source_projector(
-                pgrid, weak_M, alpha=1.0
-            )
-            psolver = make_one_gn_tr_jit(
-                pdec, 4, ppts, pwq, pPhiT, pWl, PARAM_LM_DELTA
-            )
-            param_lm_models[weak_M] = dict(
-                solve=psolver, project=pproject, decoder=pdec,
-            )
+            variants = {}
+            for predictor, alpha in (("param_lm", 1.0), ("param_ritz", 0.5)):
+                if predictor not in param_predictors:
+                    continue
+                pspec = dict(kind="weak", alpha=alpha, M=weak_M)
+                pPhiT, pWl = pc.colloc_mode_table(pgrid, pspec, "grid", ppts)
+                pproject, pproject_info = make_parameter_source_projector(
+                    pgrid, weak_M, alpha=alpha
+                )
+                psolver = make_one_gn_tr_jit(
+                    pdec, 4, ppts, pwq, pPhiT, pWl, PARAM_LM_DELTA
+                )
+                param_lm_models[(predictor, weak_M)] = dict(
+                    solve=psolver, project=pproject, decoder=pdec, alpha=alpha,
+                )
+                variants[predictor] = dict(
+                    alpha=alpha, source_projector=pproject_info,
+                    interpretation=("truncated A-error / projected Ritz" if alpha == 0.5
+                                    else "truncated field-error weak objective"),
+                )
             per_m[str(weak_M)] = dict(
-                weak_M=weak_M, weak_m=weak_m, eq=peq_info,
-                source_projector=pproject_info,
+                weak_M=weak_M, weak_m=weak_m, eq=peq_info, variants=variants,
             )
         param_lm_info = dict(
-            method="parameter-aligned nonlinear coordinate manifold plus exactly one weak GN update",
+            method="parameter-aligned nonlinear coordinate manifold plus exactly one projected update",
             initialization="known normalized physical source parameters",
             chart_grid_N=64, latent_dimension=4, trust_delta=PARAM_LM_DELTA,
             cold_start="separable known-source projection; no target-grid scan",
@@ -1410,10 +1428,11 @@ def main():
                     stages_use = param_stages[:1] if arm.predictor == "param_s1" else param_stages
                     field_decoder = lambda p, xy: mp.combined_apply(stages_use, p, xy)
                     predictor = None
-                elif arm.predictor == "param_lm":
-                    if arm.weak_M not in param_lm_models:
+                elif arm.predictor in ("param_lm", "param_ritz"):
+                    pkey = (arm.predictor, arm.weak_M)
+                    if pkey not in param_lm_models:
                         raise AssertionError("parameter-aligned NM-ROM arm without weak model")
-                    pmodel = param_lm_models[arm.weak_M]
+                    pmodel = param_lm_models[pkey]
                     latent_decoder = pmodel["decoder"]
 
                     def predictor(p, F, *, model=pmodel):
@@ -1509,10 +1528,10 @@ def main():
                     ))
             lm_diagnostics = None
             if (arm.predictor.startswith("lm_") or arm.predictor in
-                    ("group_nearest", "param_lm")
+                    ("group_nearest", "param_lm", "param_ritz")
                     or (arm.predictor == "transport_tail" and arm.gn_budget == 1)):
-                solver = (param_lm_models[arm.weak_M]["solve"]
-                          if arm.predictor == "param_lm" else
+                solver = (param_lm_models[(arm.predictor, arm.weak_M)]["solve"]
+                          if arm.predictor in ("param_lm", "param_ritz") else
                           group_solvers[arm.rom_tau]
                           if arm.predictor == "group_nearest" else
                           transport_solvers[arm.weak_M]
@@ -1522,10 +1541,11 @@ def main():
                 for i in range(N_TEST):
                     z0i = z_mean
                     nearest_index = None
-                    if arm.predictor == "param_lm":
+                    if arm.predictor in ("param_lm", "param_ritz"):
                         z0i = params[i]
                         source_projection = lambda ignored, *, ii=i: (
-                            param_lm_models[arm.weak_M]["project"](params[ii]))
+                            param_lm_models[(arm.predictor, arm.weak_M)]["project"](
+                                params[ii]))
                     elif arm.predictor == "group_nearest":
                         nearest_index = int(jnp.argmin(jnp.sum(
                             (nearest_P - params[i][None, :]) ** 2, axis=1)))
@@ -1540,8 +1560,9 @@ def main():
                             nearest_index = int(jnp.argmin(jnp.sum(
                                 (nearest_P - params[i][None, :]) ** 2, axis=1)))
                             z0i = nearest_Z[nearest_index]
-                    source_arg = (param_lm_models[arm.weak_M]["project"](params[i])
-                                  if arm.predictor == "param_lm" else
+                    source_arg = (param_lm_models[(arm.predictor, arm.weak_M)][
+                                      "project"](params[i])
+                                  if arm.predictor in ("param_lm", "param_ritz") else
                                   source_projection(Fs[i]))
                     _, val, v0, nJ, acc, att, reason = solver(z0i, source_arg)
                     lm_diagnostics.append(dict(
@@ -1620,7 +1641,7 @@ def main():
                                "combined" if arm.predictor != "none" else "classical"),
                     method_family=("nmrom" if arm.predictor.startswith("lm_") else
                                    "nmrom_nonlinear_parameter_aligned" if
-                                   arm.predictor == "param_lm" else
+                                   arm.predictor in ("param_lm", "param_ritz") else
                                    "nmrom_nonlinear_groupfilm" if
                                    arm.predictor == "group_nearest" else
                                    "nmrom_q16_transport_tail" if

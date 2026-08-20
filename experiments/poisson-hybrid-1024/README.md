@@ -153,15 +153,41 @@ parameters, so the cold start never scans the target FOM grid.  The one-update k
 decoder Jacobian, clips the step to radius 0.35, evaluates four fixed line-search lengths in one
 fused batch, and rejects the update unless its weak objective improves.
 
-Validation seed 0 screens `M/m = 16/64, 24/96, 32/128` at N=64 and N=256.  It retains the
-no-update parameter surrogate, the audited K8 trust-region arm, zero-start counting CG, and the
-eligible dense/FFT/spectral controls.  A learned candidate advances only if its same-job
-construction is below 0.6 ms and it strictly improves both mean held-out A-error and counting-CG
-work relative to the no-update parameter field.  Wall clock chooses only among candidates that
-pass those mechanism gates.  Any survivor is then frozen and measured on an untouched seed with
+Validation seed 0 screens `M/m = 16/64, 24/96, 32/128` at N=64 and N=256.  This means the
+canonical held-out slice 512:528: the harness first draws the checkpoint's 512 training cases
+and then takes the next 16, so no training case enters selection.  The panel retains the
+no-update parameter surrogate, zero-start counting CG, and the eligible dense/FFT/spectral
+controls.  A learned candidate advances only if its same-job
+construction is below 0.6 ms and it strictly improves mean held-out A-error, counting-CG work,
+and end-to-end total time relative to the no-update parameter field.  Update acceptance is
+reported descriptively and does not govern this already-running gate; any future acceptance gate
+must fix its numerical threshold before launch.  Wall clock chooses only among
+candidates that pass those mechanism gates.  Any survivor is then frozen and measured on an untouched seed with
 balanced AB/BA timing through N=1024; dense DST is the production comparator at N=1024 tolerances
 1e-6/1e-8, and full spectral-plus-FOM or FFT-DST is the comparator at 1e-10.  If no candidate
 passes, the nonlinear latent-update route stops without a fresh-seed timing claim.
+
+The alpha=1 field-error gate is now stopped: all three updates lowered their own weak objective
+but worsened A-error, counting-CG work, and total time relative to the direct parameter field at
+both meshes.  This is an objective-alignment failure, not a failed line search, so no alpha=1
+candidate advances and those cases are not reused for another architecture or hyperparameter
+selection.
+
+One final, distinct objective-design gate is frozen before launch.  It changes only the weak
+weight to alpha=0.5, the energy/A-norm weighting already defined in `pro_common.py`, and tests
+exactly `paramritz1_m24_c64_q0`: K=4, M=24, m=96, fixed N=64 decode, trust radius 0.35, and one
+GN Jacobian/update.  Alpha and M are not swept.  Development uses the wholly new seed 20260821,
+its first 16 cases, N=64 and N=256, and tolerance 1e-6; neither the seed-0 cohort nor the locked
+confirmation seed is inspected.  The same-job panel is fixed to the no-update
+`param1_c64_q0`, `spectral_q256`, zero-start counting CG, dense DST, and FFT-DST controls.
+
+This last candidate advances only if, separately at both N=64 and N=256, construction is below
+0.6 ms and all three means are strictly below `param1_c64_q0`: initial-guess A-error,
+counting-CG iterations, and same-invocation end-to-end total time.  Update acceptance is only a
+diagnostic.  Failure of any gate at either mesh exhausts this Poisson nonlinear-warm-start search
+without an N=1024 run.  Only a full pass permits one selection-independent confirmation on the
+already frozen seed 20260822 through N=1024, retaining the production dense-DST control at
+tolerances 1e-6/1e-8 and spectral/full-rank or FFT-DST at 1e-10.
 
 ## Files
 
@@ -203,3 +229,6 @@ eligible, while the full-rank warm start plus FOM refinement and FFT-DST direct 
 The source-parameter-to-latent map and transported-tail training round were stopped by their
 pre-registered mechanism gates rather than tuned on held-out timings. Local wall clock remains
 non-result smoke evidence only; all numeric conclusions are generated in `SUMMARY.generated.md`.
+The alpha=1 one-update parameter-aligned gate also failed all solver-relevant mechanism gates.
+The sole remaining Poisson experiment is the pre-registered alpha=0.5 energy-objective gate
+above; it is not a continuation or retuning of the alpha=1 panel.

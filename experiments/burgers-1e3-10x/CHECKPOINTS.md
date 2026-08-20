@@ -135,3 +135,38 @@ correction, and six-order balanced timing.  The smoke was excluded and the cell
 was not submitted because the prior representation hard stop fired.  The final
 Phase-1 report, machine tables, figures, and passing rerunnable audit are under
 `reports/2026-08-20-burgers-1e3-10x.md` and `reports/generated/`.
+
+## 2026-08-20 — Phase-2 S0 final hard stop
+
+Phase-2 S0 job `2667808` ran from immutable commit
+`3d9adb769c1534f507ae15d86ad2f38506e77954` on an NVIDIA H200 with GPU
+backend, f64/highest, empty stderr, and no health-warning strings.  It completed
+in 26:29.  The staged manifest-file SHA-256 is
+`4d685e0e0010b50b1eb0bdd7ec912af18f7b8f5f7ef5e0dd97f7a118548d0b5c`.
+Every remote and local checksum passed, the independent audit recomputed the
+negative promotion decision, and only the exact validated remote directory
+`s0_spline_r1` was deleted.
+
+The live same-invocation N=1024 FOM is healthy and accuracy eligible: trajectory
+mean/worst `6.584064402266894e-4` / `1.400001319726601e-3`, with median
+`98.73205446638167` ms on this H200.  Its reference/tighter-chain maximum
+difference is `4.451833365903874e-13`, with zero flags and breakdowns.
+
+The best representation arm C (`R=48,k=24,M=96,m=384`) has pooled free-oracle
+mean/worst `1.0152647430990104e-4` / `9.968316650470358e-4`.  Its N=64 row
+passes accuracy at `7.50691784850431e-5` / `4.535938141940804e-4`, N=128 fails
+the worst gate at `1.324325051399621e-4` / `9.968316650470358e-4`, and N=256
+passes at `1.4554359594921073e-4` / `6.876475617684664e-4`.  Numerical health
+fails at every mesh: only `1847/3264`, `707/1632`, and `313/816` fits pass the
+locked normal-residual tolerance, all rows reach the 500-iteration ceiling, and
+the respective worst relative normal residuals are `8.728e-7`, `2.751e-6`, and
+`1.791e-6`.  This is a coefficient-solve health failure plus one remaining
+N=128 representation miss, not evidence against the locked spline space alone.
+
+Arm C's charged direct, mandatory-weak, and maximum-one-update medians are
+`14.9657265`, `15.0776885`, and `25.9345588` ms.  The eligible mandatory route
+therefore reaches only `6.548222x` speedup, with trajectory-clustered 95%
+interval `[5.160779,8.028586]`.  Both the 10x point gate and 8x lower-bound gate
+fail.  No arm is promoted; no hyperdecoder/predictor training, model validation,
+EQ, scaling, or confirmation was run.  The two local synthetic-only
+model-validation drafts are excluded and uncommitted.

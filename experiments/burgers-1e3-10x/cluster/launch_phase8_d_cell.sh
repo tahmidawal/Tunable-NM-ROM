@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# launch_phase8_d_cell.sh p8_d_r1 EXPECTED_COMMIT EXPECTED_MANIFEST
+# launch_phase8_d_cell.sh p8_d_r2 EXPECTED_COMMIT EXPECTED_MANIFEST
 set -euo pipefail
 cell="$1"; expected_commit="$2"; expected_manifest="$3"
-[[ "$cell" == p8_d_r1 && "$expected_commit" =~ ^[0-9a-f]{40}$ \
+[[ "$cell" == p8_d_r2 && "$expected_commit" =~ ^[0-9a-f]{40}$ \
    && "$expected_manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; STAGE="$HERE/stage/$cell"
 REMOTE="/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell"

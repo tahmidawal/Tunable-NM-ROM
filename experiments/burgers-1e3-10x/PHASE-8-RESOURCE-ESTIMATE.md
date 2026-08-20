@@ -1,7 +1,8 @@
 # Phase-8 P8-D resource and implementation checkpoint
 
-Status: prospective implementation only. No scientific Phase-8 job has been staged remotely or
-submitted. P8-D is exactly one cluster-only H200 diagnostic cell, `p8_d_r1`; T1/T2 are absent.
+Status: corrected lifecycle prospective only. The submitted `p8_d_r1` attempt failed before any
+scientific code ran and is excluded. P8-D remains exactly one cluster-only diagnostic cell; only
+its exact fresh replacement `p8_d_r2` may be submitted after audit. T1/T2 are absent.
 
 The cell regenerates the locked 35,904 training and 5,712 exposed-selection snapshots, binds the
 immutable P4/P5/P6/P7 artifacts, and evaluates exact full grids for the free-H1, r3 encoder,
@@ -24,12 +25,12 @@ health-only progress after data generation and every completed control, and both
 progress plus a latent-work checkpoint after every trust attempt. Partial metrics may not be
 inspected or acted upon. The final audit binds the completed progress/checkpoint to the full trace.
 
-The primary r1 request remains H200 because current availability and runtime/memory risk favor the
-known Phase-7 device class. An H100 with at least 80 GB is an infrastructure-only fallback, not a
-scientific arm: it may be considered only with new root authorization if r1 is still pending with
-zero runtime, the exact numeric job is safely cancelled through the repository cancel helper, no
-output exists, and the identical commit/manifest is restaged after exact remote cleanup. There is
-no automatic GPU substitution, cancellation, or resubmission.
+The r2 request remains H200 because r1 allocated that device immediately and runtime/memory risk
+favors the known Phase-7 device class. The user permits any available compatible GPU, with
+H200/H100/A100-80GB preferred for memory safety; a different device would retain identical
+science, GPU/f64/highest preflight, and no cross-job timing claim. The exact device request is
+fixed before staging and submission; there is no automatic substitution, cancellation, or
+resubmission.
 
 The exact lifecycle verifies local dependency bundles and full hashes, creates one exact root
 manifest, stages directly into the paralab namespace only after queue/disk/absence checks, and

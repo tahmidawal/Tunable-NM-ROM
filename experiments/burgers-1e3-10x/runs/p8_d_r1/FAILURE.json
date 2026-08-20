@@ -1,0 +1,36 @@
+{
+  "status": "excluded_infrastructure_runtime_file_set_failure",
+  "scientific_output_count": 0,
+  "scientific_cell_consumed": false,
+  "job_id": "2683739",
+  "job_name": "ctol_b10_p8_d_r1",
+  "state": "FAILED",
+  "elapsed": "00:00:02",
+  "exit_code": "4:0",
+  "node": "pax008",
+  "gpu_constraint": "h200",
+  "jax_backend": null,
+  "backend_preflight_reached": false,
+  "precision_preflight_reached": false,
+  "commit": "aa1192c271d77ad8b8ffd3828716921b3249407e",
+  "manifest_sha256": "e97d6266b9cb2ad00c91daef1d9ccd4d075cc9614ea8f14c6fefe83c348c13cb",
+  "failure": "startup exact-set verifier rejected Slurm-created stdout and stderr",
+  "classification": "zero-science batch-lifecycle failure before source verification, backend preflight, data regeneration, or driver execution",
+  "all_done": false,
+  "output_files": [],
+  "stdout_empty": true,
+  "stderr_only_manifest_diff": true,
+  "remote_manifest_contents_verified": true,
+  "remote_exact_file_count_with_runtime_logs": 51,
+  "remote_runtime_extras": [
+    "logs/2683739.out",
+    "logs/2683739.err"
+  ],
+  "remote_cleaned": true,
+  "logs": {
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "b346defbfebe4a7fdc5bda6ca81b6357c07ccd686746f157f97a7669144b478c",
+    "sacct_sha256": "d3fa264a6546c2d38622cf80f30db7ae2b30d3f96106dde8630c1927b2789cb6",
+    "remote_sha256": "4240211121bf44bd27576005a55f0f8243e58521cf54378a5fdb29d516a23ccf"
+  }
+}

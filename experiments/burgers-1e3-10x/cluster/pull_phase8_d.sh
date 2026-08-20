@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# pull_phase8_d.sh p8_d_r1 JOB_ID EXPECTED_COMMIT EXPECTED_MANIFEST
+# pull_phase8_d.sh p8_d_r2 JOB_ID EXPECTED_COMMIT EXPECTED_MANIFEST
 set -euo pipefail
 cell="$1"; job_id="$2"; expected_commit="$3"; expected_manifest="$4"
-[[ "$cell" == p8_d_r1 && "$job_id" =~ ^[0-9]+$ \
+[[ "$cell" == p8_d_r2 && "$job_id" =~ ^[0-9]+$ \
    && "$expected_commit" =~ ^[0-9a-f]{40}$ && "$expected_manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; EXP="$(dirname "$HERE")"
 REMOTE="/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell"; LOCAL="$EXP/runs/$cell"

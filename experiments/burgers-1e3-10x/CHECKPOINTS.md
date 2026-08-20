@@ -431,4 +431,23 @@ inactive lanes bypass the complete residual/JVP/VJP/trial operation. Independent
 full-grid metric and exact trust-trace recomputations: 8/8 one-attempt work rows
 were accepted, 160 JVP/160 VJP were charged, boundary/identity passed, and CG
 breakdown/unhealthy exhaustion counts were zero. Its negative classification
-remains binding and no Phase-8 scientific job has been submitted.
+remains binding and no Phase-8 scientific driver has executed.
+
+The first authorized lifecycle attempt, job `2683739` (`p8_d_r1`), allocated
+pax008 under the H200 request but failed in two seconds with exit `4:0`, before
+source verification, backend/precision preflight, data regeneration, or driver
+execution. Slurm created `logs/2683739.out` and `.err` before the batch body;
+the startup exact-set verifier did not enumerate those deterministic runtime
+files and rejected them as its only two extras. Stdout is empty, stderr contains
+only that manifest diff, and no output file exists. The 49 manifest-bound files
+and exact 51-file set including the two logs were independently reverified. The
+complete zero-science bundle is checksum-preserved at `runs/p8_d_r1`; its exact
+remote directory was deleted and absence verified.
+
+The prospective batch-only repair explicitly admits exactly
+`./logs/$SLURM_JOB_ID.out` and `./logs/$SLURM_JOB_ID.err` during the startup
+file-set check. A regression clones the exact stage, requires those two named
+extras, and rejects an unlisted third file. The scientific driver, auditor,
+method, data, objective, work, and gates are unchanged, so the execution smoke
+is not repeated. Only a fresh isolated `p8_d_r2` lifecycle is now implemented;
+no replacement job has been submitted pending root audit.

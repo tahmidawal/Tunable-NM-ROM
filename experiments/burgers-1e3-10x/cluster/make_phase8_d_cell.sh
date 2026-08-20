@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# make_phase8_d_cell.sh p8_d_r1 EXPECTED_COMMIT p4_d_r3 p5_d_r1 p6_d_r1 p7_g1_s11_r3
+# make_phase8_d_cell.sh p8_d_r2 EXPECTED_COMMIT p4_d_r3 p5_d_r1 p6_d_r1 p7_g1_s11_r3
 set -euo pipefail
 cell="$1"; expected_commit="$2"; p4_cell="$3"; p5_cell="$4"; p6_cell="$5"; p7_cell="$6"
-[[ "$cell" == p8_d_r1 && "$expected_commit" =~ ^[0-9a-f]{40}$ ]] || exit 2
+[[ "$cell" == p8_d_r2 && "$expected_commit" =~ ^[0-9a-f]{40}$ ]] || exit 2
 [[ "$p4_cell" == p4_d_r3 && "$p5_cell" == p5_d_r1 && "$p6_cell" == p6_d_r1 \
    && "$p7_cell" == p7_g1_s11_r3 ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; EXP="$(dirname "$HERE")"
@@ -11,7 +11,7 @@ STAGE="$HERE/stage/$cell"; P4="$EXP/runs/$p4_cell"; P5="$EXP/runs/$p5_cell"
 P6="$EXP/runs/$p6_cell"; P7="$EXP/runs/$p7_cell"
 [[ "$(git -C "$WORKTREE" rev-parse HEAD)" == "$expected_commit" ]] || exit 3
 sources=(b10_common.py b10_spline.py b10_spline_train.py b10_s0_spline.py b10_phase3.py b10_phase4.py b10_phase5.py b10_phase7.py b10_phase7_train.py b10_phase8_d.py b10_audit_phase8_d.py)
-tracked=(experiments/burgers-1e3-10x/PHASE-8-PRE-REGISTRATION.md experiments/burgers-1e3-10x/PHASE-8-RESOURCE-ESTIMATE.md experiments/burgers-1e3-10x/cluster/phase8_d.sbatch experiments/burgers-1e3-10x/cluster/verify_manifest_file_set.sh)
+tracked=(experiments/burgers-1e3-10x/PHASE-8-PRE-REGISTRATION.md experiments/burgers-1e3-10x/PHASE-8-RESOURCE-ESTIMATE.md experiments/burgers-1e3-10x/cluster/phase8_d.sbatch experiments/burgers-1e3-10x/cluster/verify_manifest_file_set.sh experiments/burgers-1e3-10x/cluster/test_phase8_runtime_file_set.sh)
 for name in "${sources[@]}"; do tracked+=("experiments/burgers-1e3-10x/$name"); done
 for path in "${tracked[@]}" experiments/burgers-hybrid-1024/bh_common.py; do
   git -C "$WORKTREE" diff --quiet HEAD -- "$path" || exit 3

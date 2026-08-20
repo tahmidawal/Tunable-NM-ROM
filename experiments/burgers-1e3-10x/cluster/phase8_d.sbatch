@@ -8,10 +8,11 @@
 #SBATCH -e logs/%j.err
 set -euo pipefail
 : "${B10_COMMIT:?}" "${B10_CELL:?}" "${B10_REMOTE:?}"
-[[ "$B10_CELL" == p8_d_r1 ]]
+[[ "$B10_CELL" == p8_d_r2 ]]
 test "$B10_REMOTE" = "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$B10_CELL"
 cd "$B10_REMOTE"
-./verify_manifest_file_set.sh . MANIFEST.sha256
+./verify_manifest_file_set.sh . MANIFEST.sha256 \
+  "./logs/$SLURM_JOB_ID.out" "./logs/$SLURM_JOB_ID.err"
 sha256sum -c MANIFEST.sha256
 cd code
 export PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python

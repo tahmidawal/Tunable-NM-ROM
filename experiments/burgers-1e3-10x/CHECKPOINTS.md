@@ -423,3 +423,10 @@ only locked train/selection FOM data, persist the complete two-start q-direct
 trust work, and recompute full-grid metrics. The exact make/launch/pull lifecycle
 admits only `p8_d_r1`; no scientific stage or submission exists pending synthetic
 smoke, implementation commit, and root pre-submit audit.
+
+The final synthetic-only P8-D smoke completed from exact staged commit `77ab4f5`
+in 30.521 seconds under `jaxrun`, GPU/f64/highest. Independent audit passed the
+full-grid metric and exact trust-trace recomputations: 8/8 one-attempt work rows
+were accepted, 160 JVP/160 VJP were charged, boundary/identity passed, and CG
+breakdown/unhealthy exhaustion counts were zero. Its negative classification
+remains binding and no Phase-8 scientific job has been submitted.

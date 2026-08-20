@@ -37,3 +37,19 @@ requires GPU/f64/highest plus clean logs and completed Slurm state. Pull admits 
 scientific/progress outputs and two logs, rechecks checksums, runs an independent negative-aware trace and
 metric audit, and deletes only the exact remote cell after PASS. Synthetic smoke evidence is
 recorded below only after a mandated local `jaxrun` execution under one minute.
+
+## Excluded final synthetic smoke
+
+The exact staged code from commit `77ab4f54a4f4333e3c97b929a1ddf6c0419f7a08` and local
+manifest SHA-256 `e09b57371b7e070e95ccca6278000ea27b5a57a4cb416c9c7bb3a93c2bd1a290`
+completed under `jaxrun`, GPU/f64/highest, in 30.521 seconds. It used two synthetic N16 cases and
+two times for train and selection, one attempt, and no locked artifact argument. All eight
+snapshot/start attempts were accepted with 160 JVP and 160 VJP calls, zero CG breakdown, zero
+unhealthy exhaustion, exact boundary, and passing identity/health. The independent negative-aware
+audit passed and retained `p8_d_valid=false` plus no T1/T2 authorization. JSON/NPZ/progress/work-
+checkpoint/audit SHA-256 values are respectively `63f47fdc8af06841e54364abbc42914c20c04b0b905de3ec19f92270d8db4af0`,
+`6740165ab68439eb96665a0d94f50eca2227739629056193c149e8afcaa72199`,
+`dc36ac3135581dda52666366ffcf58cb0d4dfba2c06e371b97e26ac27fc2655c`,
+`b140d6ae33be147b5bc566596bb13d509cf31a2b834f7ee1af9d69cc972ff409`, and
+`d52229267d55f37f389e219cc7a6b6da0f208d45a99ea684bf5cb4b8e0f1c1f6`.
+These are excluded implementation evidence, not scientific metrics.

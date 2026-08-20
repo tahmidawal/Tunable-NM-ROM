@@ -12,7 +12,7 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-08-19
+# Where things stand — 2026-08-20
 
 ## The method
 
@@ -23,6 +23,10 @@ evaluated at `m` NNLS empirical-quadrature points rather than the whole grid. On
 256 points, forms 64 equations, solves for 8 unknowns — independent of grid size. Minimising the
 pointwise residual instead does not work: the discrete Laplacian amplifies grid-scale decoder
 error by ~N².
+
+The completed standalone N=64,k=16 architecture search also has a smaller pure nonlinear
+group-FiLM decoder: coordinates and the latent state both pass through the network, with no POD
+basis or linear corrector. Keep `M > k` comfortably and `m ≈ 4M`.
 
 ## What is true right now
 
@@ -43,6 +47,13 @@ spectral warm start plus counting CG takes 0.759/0.814/0.931 ms at N=1024 for to
 control. A GroupFiLM+q8 arm is 61.9–99.8 ms, but the matched classical spectral arm is below
 1 ms; the apparent combined benefit comes from the classical stage.
 
+**The final Poisson one-update search is negative.** Both the alpha=1 weak-field update and a
+separately preregistered alpha=0.5 energy/Ritz update accepted all 16 development cases and
+reduced their projected objectives, yet worsened global A-error, counting-CG work, and same-job
+end-to-end time against the direct parameter surrogate at N=64 and N=256. The alpha=0.5 arm is
+5.391 versus 5.125 ms at N=64 and 20.801 versus 20.312 ms at N=256. It failed the frozen gates,
+so no N=1024 confirmation or further objective/hyperparameter sweep was run.
+
 **Burgers is won by solver and history tuning, not by the NM-ROM.** Exact Helmholtz
 preconditioning, calibrated inexact Newton tolerances, and cubic history beat linear history in
 18/18 resolution/tolerance conditions. The guarded two-Jacobian weak FiLM NM-ROM loses to cubic
@@ -50,11 +61,87 @@ in 18/18. At N=1024, cubic takes 390.4/586.2/851.4 ms while guarded FiLM takes
 535.3/728.8/1016.9 ms. Its exact-residual guard accepts a median 4 of 50 learned steps, so almost
 all FOM work comes from the charged cubic fallback.
 
+**A new classical Burgers warm start is the practical speed winner.** One charged full-grid
+residual evaluation and one exact Helmholtz inverse before every fine FOM step beat optimized
+cubic-history FOM in 10/18 fresh-seed cells. All six tolerance-1e-6 rows from N=32 through 1024
+are supported wins. At N=1024 the time falls from 308.432 to 226.403 ms, 1.362×, with paired
+saving 81.583 ms and trajectory-clustered 95% interval [19.396, 95.499]. No tolerance-1e-8 row
+is supported; tolerance 1e-10 is supported at N=32/256/512/1024, with wide four-trajectory
+intervals. This method is nonlearned and not an NM-ROM. Its warmed wall time charges all 50
+extra residual evaluations and all 50 Helmholtz inverses; its finishing iteration counters do
+not include those operations.
+
+**The Burgers 1e-3/10x transported-Hermite Phase 1 is a final negative.** On locked seed-0
+selection indices 512:576, HG4's representation oracle mean/worst are 3.657e-2 / 7.632e-2 and
+HG5's are 2.103e-2 / 5.267e-2, far above the preregistered 2e-4 / 7e-4 gate. The authoritative
+nearest-wall squared-error fractions are only 0.374/0.380, so the conditional wall-chart idea is
+not licensed. No failed representation was trained, weak/EQ tuned, scaled, or shown confirmation
+data. A corrected cubic/exact-Helmholtz calibration selects outer 3e-3, inner 1e-1 at every N:
+26.599/66.450/238.049 ms at N=256/512/1024 while satisfying mean <=1e-3, worst <=3e-3. The
+N=1024 10x construction budget is therefore 23.805 ms on that same A100 panel.
+
+**The transported-spline Phase 2/3 line is a final negative despite a successful numerical and
+kernel repair.** Phase-2 arm C, R=48/k=24, had pooled free-oracle mean/worst
+1.015e-4 / 9.968e-4, unhealthy capped LSMR fits, and only 6.548x paired speedup. The bounded P3-D
+repair then made both replacement coefficient solvers healthy: augmented preconditioned LSMR
+and sparse normal-equation LU reach worst normal residuals 5.672e-14 and 1.341e-15. Both reduce
+the targeted N=128 draw-530 trajectory from 9.968e-4 to 7.888e-4 without snapshot regression,
+but still miss the unchanged 7e-4 gate by 1.1269x. The algebraic repair therefore succeeds and
+exposes a remaining representation floor. In the same new H200 job, exact polynomial kernels K1
+and K2 pass the speed gates at 11.152x [8.821,13.701] and 11.492x [9.093,14.152]; the exact f64
+Pallas K3 reaches 39.005x [30.285,46.755] at 2.535 ms against the live eligible 98.886 ms FOM.
+Every identity, boundary, finite 50-weak-evaluation, memory, balance, and outlier gate passes.
+Because no solver meets accuracy, P3-F, training, model validation, EQ, scaling, and untouched
+confirmation were not run. The earlier A100 23.805 ms value remains planning context only, never
+a cross-job pass/fail threshold.
+
+**The hierarchical transported-spline Phase 4 is a final learned-manifold negative despite a
+positive spatial/cost diagnostic.** The preregistered H1 chart (global R=48 plus a fixed central
+P=32 fine patch, k=24) has exposed free-oracle pooled mean/worst 5.805e-5 / 3.859e-4, all 5,712
+fits healthy, and mandatory structural speed 26.007x [20.139,31.646] against its live eligible
+H200 FOM. Its maximum-one route is only 7.057x [5.577,8.672]. The licensed complete seed-11
+hyperdecoder/autolatent fit then fails catastrophically: learned-oracle pooled mean/worst are
+0.4309 / 0.6021 and direct-predictor mean/worst are 0.08131 / 0.1934. Both remain finite with
+exact binary boundary, but the learned oracle also misses the fixed k32 near-miss bracket. The
+active floor is the small-k dense coefficient generator/training geometry, not the free H1
+spline space or mandatory K3 cost. Phase 4 hard-stops: seeds 29/47, k32, weak/EQ, scaling,
+model-validation, and untouched confirmation were not licensed or opened. No deployable or
+headline Burgers NM-ROM result is claimed.
+
+**The nonlinear-generator Phase 5 diagnostic is a final pre-training negative.** All 35,904
+locked S2/H1 training coefficient targets are finite and healthy, with worst normal residual
+3.278e-15. The fixed nonlinear spatial generators G1/G2 both avoid the Phase-4 affine-output
+collapse: each has reported numerical output rank 127, with median curvature 0.05507/0.05720.
+Both also pass the same-H200 mandatory structural speed screen: G1 reaches 21.852x
+[17.003,26.386] and G2 reaches 15.057x [11.837,18.486] against the live eligible FOM. Neither
+is trainable under the locked preregistration, however, because K3/Cox weak-residual identity is
+3.273e-14--4.826e-14 against an unchanged 2e-14 gate, even though full fields agree to about
+2.9e-16. Phase 5 therefore hard-stops before generator training; weak/EQ, scaling, model
+validation, and untouched confirmation remain unopened. This is a numerical identity-screen
+failure, not evidence about trained G1/G2 field accuracy.
+
 **The architectural negative results are useful.** Direct Poisson source-to-latent RBF prediction
 failed; a cached K=16 GroupFiLM was neutral/losing; a learned high-frequency tail could not beat
 the sub-millisecond spectral control. Burgers correction manifolds are not compact enough:
 rank-32 leaves 0.528 validation correction before transport, and the best translated/scaled
 deployable surrogate still leaves 0.620. More rank/RFF tuning is not justified on these families.
+
+**The pure nonlinear standalone architecture search is final at N=64,k=16.** Poisson group-FiLM
+H98×4/g2 has 58,419 parameters, 51.6% fewer than the saved H128×4 FiLM. At the selected fully
+converged M=112,m=448 objective, three-seed decoder/full/EQ means are
+4.808e-3 / 5.232e-3 / 5.411e-3 and every seed passes the 6e-3 and EQ/full ≤1.05 gates. Its
+separate deployable M=128,m=512,tau=1e-2 point is uncensored at 9.924e-3 error: 4.568 ms versus
+4.387 ms for the saved decoder architecture and 5.013 ms for the like-for-like FOM. That is
+1.041× slower than the saved architecture but 1.098× faster than the iso-accuracy FOM.
+
+Burgers group-FiLM H160×4/g2 has 140,449 parameters, 69.7% fewer than the saved H256×5 FiLM.
+At M=128,m=592 its three-seed decoder/full/EQ means are
+7.446e-3 / 9.580e-3 / 9.860e-3 and every seed passes the 8e-3 decoder, 1e-2 ROM, and EQ/full
+≤1.05 gates. Its representative Jacobian kernel is 2.061× faster raw and 2.101× faster with
+coordinate caching, but **there is no deployable Burgers FOM crossover**: the tau=5e-2 speed row
+is 1.633× faster than the saved architecture yet has 1.791e-2 error, 45.0% censoring, and is
+3.054× slower than the iso-accuracy FOM. No measured selected-objective row is both uncensored
+and 1%-accurate.
 
 ## What has been retracted — do not re-derive these
 
@@ -78,6 +165,11 @@ deployable surrogate still leaves 0.620. More rank/RFF tuning is not justified o
 6. **The first Burgers six-mesh panel is provisional.** Its timing repetitions were initially
    bootstrapped as IID and its cohort had informed early controls. The untouched-seed confirmation
    uses per-trajectory medians and cluster bootstrap and supersedes it.
+7. **Five standalone architecture cells are excluded from claims.** Three early end-to-end rows
+   failed to persist every raw timing repetition, one exact-kernel benchmark used the wrong
+   burn/warm order, and one Burgers driver lost decoder metadata and aborted. Corrected same-GPU
+   reruns replace them. The Poisson M=112,m=448 validation choice is not its deployable timing
+   point, and the Burgers decoder/saved-architecture speedups are not FOM speedups.
 
 ## Where the work is
 
@@ -85,21 +177,39 @@ Everything through 18 August is on **`exp/2026-08-18-codex-handoff`**. The new f
 **`exp/2026-08-19-poisson-hybrid-1024`** and **`exp/2026-08-19-burgers-hybrid-1024`**, in their
 same-named worktrees. The cross-PDE generated report is
 `reports/2026-08-19-hybrid-warm-starts-through-1024.md` on `main`. The two result branches remain
-unmerged pending an explicit user decision.
+unmerged pending an explicit user decision. Their bounded follow-on speed search closes at
+Poisson commit `57329c0` and Burgers commit `559583c`; its generated report is
+`reports/2026-08-20-hybrid-speed-push.md` on `main`. The standalone pure nonlinear search is on
+**`exp/2026-08-19-nonlinear-decoder-architecture`** in its same-named worktree; its generated
+report is `reports/2026-08-19-nonlinear-decoder-architecture.md`, and its 73-cell audit passes
+with five cells explicitly excluded. That branch also remains unmerged. The Burgers-only
+Phase-1 branch is **`exp/2026-08-19-burgers-1e3-10x`** in its same-named worktree; its generated
+negative-result report is `reports/2026-08-20-burgers-1e3-10x.md`. It too remains unmerged.
 
 ## What to do next, in order
 
-1. Decide whether to merge the two 2026-08-19 hybrid branches; do not merge them implicitly.
-2. For Poisson, treat FFT/DST/spectral methods as the production baseline on this separable
+1. Decide whether to merge the three completed 2026-08-19 result branches; do not merge them
+   implicitly.
+2. For the still-active Burgers 1e-3/10x objective, do not run downstream Phase-5 cells. First
+   diagnose the K3/Cox weak-residual identity discrepancy without changing the 2e-14 gate; any
+   next phase needs a finite, prospectively audited numerical repair that retains the paired
+   10x/8x-LB mandatory-speed gates before generator training can be reconsidered.
+3. Test the selected pure nonlinear standalone architectures across N=128…512 before claiming
+   resolution-independent architecture rankings or a broad Poisson crossover. On Burgers, work
+   on the online objective/solver and stopping policy rather than more decoder-width tuning.
+4. For Poisson, treat FFT/DST/spectral methods as the production baseline on this separable
    rectangle. A learned warm start is scientifically interesting but not operationally best.
-3. For Burgers, make cubic history plus the calibrated Helmholtz-preconditioned FOM the default.
-   A new learned attempt needs a genuinely transported nonlinear manifold and a construction
-   budget far below the tested FiLM path; the current correction gates say to stop.
-4. Finish the older `cost-to-tolerance` prose/audit and apply the trust-region fix to the other
+5. For the current Burgers family, use the charged residual-plus-Helmholtz warm start at
+   tolerance 1e-6; retain cubic history at 1e-8, where the new method has no supported win. The
+   1e-10 evidence is mixed by resolution and should remain a measured policy rather than a
+   universal default. A new learned attempt still needs a genuinely transported nonlinear
+   manifold and a construction budget far below the tested FiLM path; the current learned gates
+   say to stop.
+6. Finish the older `cost-to-tolerance` prose/audit and apply the trust-region fix to the other
    PDE paths if those standalone-ROM results are still needed.
-5. Reviewer baselines and generalisation tests remain: tuned FNO, POD-DeepONet, nonseparable or
+7. Reviewer baselines and generalisation tests remain: tuned FNO, POD-DeepONet, nonseparable or
    irregular domains, and 3-D problems where the exact rectangular spectral solve is unavailable.
-6. Decide whether `fix/heat-rollout-warm-start` merges into `main`.
+8. Decide whether `fix/heat-rollout-warm-start` merges into `main`.
 
 ---
 
@@ -1140,3 +1250,421 @@ versus cubic.
 `runs/pairfinal1/` and `runs/final1/` directories in the Poisson worktree and `runs/confirm2/`
 plus the correction gates in the Burgers worktree. The only open session action is the user's
 decision whether to merge the two experiment branches; no merge was performed implicitly.
+
+---
+
+## 2026-08-19
+
+### Pure nonlinear coordinate-decoder architecture search — final
+
+Completed the autonomous standalone NMROM search in
+`worktrees/2026-08-19-nonlinear-decoder-architecture` on
+`exp/2026-08-19-nonlinear-decoder-architecture`, branched from
+`exp/2026-08-18-codex-handoff`. Real runs used the isolated Tufts namespace
+`/cluster/tufts/paralab/tawal01/nmrom_nonlinear_decoder/`; it is empty after checksummed pulls,
+and no jobs remain queued. The final branch commit is `9c330bd`.
+
+Every candidate is a pure nonlinear coordinate decoder, not POD plus a nonlinear corrector.
+Selection required all three seeds—not only the mean—to pass. Poisson gates were decoder/full/EQ
+≤6e-3 and EQ/full ≤1.05; Burgers gates were decoder ≤8e-3, full/EQ ≤1e-2, and EQ/full ≤1.05.
+The selector then minimized quadrature points and parameter count. Fully converged objective
+selection and practical-tolerance end-to-end deployment were kept separate.
+
+**Poisson selection.** Group-FiLM H98×4/g2, 58,419 parameters, removes 51.6% of the saved
+H128×4 FiLM's parameters. At M=112,m=448 its three-seed decoder/full/EQ means are
+4.808e-3 / 5.232e-3 / 5.411e-3, with every seed passing. The next cheaper M=108,m=432 arm fails:
+worst-seed EQ is 6.073e-3 and maximum EQ/full is 1.080. The saved control remains more accurate
+in a fair M=128,m=512 comparison, so the claim is a size/speed tradeoff, not better accuracy.
+On the A100-PCIE-40GB same-job deployment measurement, M=128,m=512,tau=1e-2 gives compact
+4.568 ms / 9.924e-3 error versus saved architecture 4.387 ms / 9.741e-3 and iso-accuracy FOM
+5.013 ms. Both learned arms are uncensored, each retains 144 raw timings, and both have zero
+timing outliers. The compact decoder is therefore 1.041× slower than the saved architecture but
+1.098× faster than the FOM. The cheaper M=112,m=448 point did not produce an uncensored
+1%-accurate stopping point in the measured tolerance bracket.
+
+**Burgers selection.** Group-FiLM H160×4/g2, 140,449 parameters, removes 69.7% of the saved
+H256×5 FiLM's parameters. At M=128,m=592 its three-seed decoder/full/EQ means are
+7.446e-3 / 9.580e-3 / 9.860e-3; every seed passes. The closest cheaper m=576 arm fails only the
+robust degradation gate, with maximum EQ/full 1.057. On the H200 kernel benchmark, the compact
+Jacobian is 2.061× faster raw and 2.101× faster with coordinate caching; all timing outlier
+counts are zero. On the A100-80GB end-to-end job at tau=5e-2, it is 1.633× faster than the saved
+architecture (336.159 versus 548.938 ms), but error is 1.791e-2, censoring is 45.0%, and it is
+3.054× slower than the iso-accuracy FOM. At tau=2e-2 it is 2.197× faster than the saved
+architecture but still has 1.267e-2 error and 100% censoring. Thus no selected Burgers row is
+both uncensored and 1%-accurate, and no FOM crossover is claimed.
+
+**Closed architecture brackets.** Residual-FiLM failed both PDE targets. Burgers H160/g8 fails
+on seed 0; H160/g4 and H159/g3 are seed-unstable; H144/g2 fails on seed 0. H192/g2 did not
+improve the decoder or M64 ROM enough to justify width. The final H176/g2 run (job 2653521,
+L40S) improved the decoder floor to 7.504e-3 but worsened actual M64 full/EQ256/EQ512 errors to
+1.128e-2 / 1.267e-2 / 1.207e-2, so no extra seeds were warranted. Better reconstruction alone
+did not select a better ROM.
+
+**Audit and retractions.** The independent audit passes across 73 pulled cells: checksums,
+staged launch provenance, GPU backend, f64/highest, completion markers, and accepted raw timing
+arrays/medians all agree. Five cells remain visible but excluded: `nda_pbench_g98_r8` used the
+wrong post-fit burn/warm order; `nda_pe2e_g98_r11`, `nda_be2e_g160_r14`, and
+`nda_be2e_g160m640_r21` did not retain every raw timing repetition; and
+`nda_be2e_g160_r12_failed` aborted after losing compact-decoder metadata. Corrected runs replace
+all timing claims. The generated final report is
+`reports/2026-08-19-nonlinear-decoder-architecture.md`; tables, prose numbers, and figures are
+regenerated from the run JSONs, and the SVG output is deterministic.
+
+**Open.** This is final only for N=64,k=16 and the recorded held-out families. Resolution scaling
+of the selected standalone models remains unmeasured. On Burgers, further H/group-size tuning is
+not justified by this bracket; progress now requires an online objective/solver/stopping change.
+The branch is deliberately unmerged pending the user's decision.
+
+---
+
+## 2026-08-19
+
+### Heat-AmgX preregistration stopped before execution; next target narrowed to Burgers only
+
+Created `exp/2026-08-19-heat-amgx-nmrom` in
+`worktrees/2026-08-19-heat-amgx-nmrom` from the final pure-nonlinear architecture commit
+`9c330bd`. The isolated intake found no Tufts PETSc, AmgX, or hypre module/package, so the
+preregistered route was an isolated AmgX source build under the assigned paralab namespace.
+That finite search plan is committed at `f76ff22`.
+
+The user then explicitly narrowed the next experiment to **Burgers first and Burgers only**.
+The Heat agent was interrupted before implementation or submission. No Heat GPU job was ever
+submitted, `/cluster/tufts/paralab/tawal01/heat_amgx_nmrom/` was never created, and the Heat
+worktree is clean. There are therefore no Heat numerical results, timing claims, or cluster
+artifacts to retain or retract. The stopped preregistration branch remains unmerged. A fresh
+Burgers-only goal/worktree still requires the durable Heat goal to be cleared and the proposed
+Burgers base/worktree/namespace to be confirmed.
+
+---
+
+## 2026-08-20
+
+### Burgers 1e-3 / 10x — transported-Hermite Phase 1 final negative
+
+Executed the preregistered Burgers-only Phase 1 in
+`worktrees/2026-08-19-burgers-1e3-10x` on
+`exp/2026-08-19-burgers-1e3-10x`, based on audited Burgers hybrid/FOM commit
+`1752d9e`. The Phase-1 closure is commit `3d3fe09`. Real jobs used only
+`/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/`; D0 and FOM artifacts
+were checksum-verified before remote deletion, and the assigned namespace is empty. No merge was
+performed.
+
+**Representation hard stop.** D0 job 2667377 ran on an H200 with GPU backend, f64/highest, empty
+stderr, and fixed seed-0 train/selection indices 0:512 / 512:576. HG4's aligned representation
+oracle mean/worst are 3.657e-2 / 7.632e-2; HG5's are 2.103e-2 / 5.267e-2. Both miss the fixed
+2e-4 / 7e-4 gate by orders of magnitude. The simple ridge predictor is worse: mean/worst
+1.048e-1 / 4.441e-1 for HG4 and 1.220e-1 / 5.731e-1 for HG5. The authoritative nearest-wall
+squared representation-error fractions are 0.374408 and 0.380216, below the 0.5 conditional
+HG5S license. Therefore no failed concept was trained, D1 was not run, and weak/EQ, scaling,
+all-seed, model-validation, and untouched-confirmation gates were not opened. The active floor is
+representation, not latent prediction or weak optimization.
+
+**Final FOM denominator.** Corrected job 2667536 ran on an A100-PCIE-40GB and used an audited
+cubic-history/exact-Helmholtz reference at outer/inner 1e-12/1e-7, checked against an independent
+3e-13/3e-8 chain. The maximum cross-chain difference is 5.234e-13 and all chains are finite with
+zero flags/breakdowns. The fastest eligible calibration is outer 3e-3, inner 1e-1 at every N.
+At N=256/512/1024 its mean errors are 9.348e-4 / 7.003e-4 / 6.584e-4, worst errors
+1.374e-3 / 1.382e-3 / 1.400e-3, and 50-step medians 26.599 / 66.450 / 238.049 ms. N=1024's 10x
+point budget is 23.805 ms and its 8x threshold is 29.756 ms. No ineligible decoder was timed and
+promoted against those budgets.
+
+**Exclusions and artifacts.** Job 2667476 is retained but excluded: it produced provisional
+N=256/512 rows, then failed before N=1024 because its driver used the legacy fixed-eight-Newton
+training-data rollout as truth. Jobs 2667361, 2667374, and 2667531 had zero scientific output.
+Local smokes are execution-only. The generated report is
+`reports/2026-08-20-burgers-1e3-10x.md`; its machine tables, figures, and passing rerunnable audit
+are generated from run JSONs. A direct-predictor/one-bounded-weak/EQ driver was implemented and
+smoked but deliberately not submitted after the representation hard stop.
+
+**Open Phase 2.** The overall Burgers objective remains active. The next proposal is a finite
+transported compact-support cubic B-spline hyperdecoder bracket that separates the spline
+control-grid size from a small online latent dimension and must pass free-spline representation,
+small-k coefficient-manifold, and N=1024 cost oracles before training. It preserves every
+development/model-validation/confirmation lock and remains pure nonlinear; its preregistration is
+not yet committed pending audit of the finite bracket.
+
+### Burgers 1e-3 / 10x — adaptive spline Phase 2 preregistered, S0 ready
+
+Phase 2 is now prospectively locked at commit `73fd1d1` and amended/implemented at clean commit
+`3d9adb7`, before any Phase-2 scientific job. This is a new adaptive preregistration after the
+Phase-1 hard stop, with a maximum of 12 new scientific cells; the prior three plus these 12 are
+cumulative bookkeeping, not retroactive authorization. Seed-0 selection data are exposed
+development data, while model-validation indices 576:640 and the seed-20261031 confirmation draw
+remain unopened.
+
+The finite bracket is `(R,k,M,m)=(24,12,64,256)`, `(32,16,64,256)`, and
+`(48,24,96,384)`. It uses a fixed `[-4.5,4.5]^2` full-covariance transported, clamped cubic
+B-spline hyperdecoder with exact 16-point local support, zero outside the aligned domain, exact
+binary physical boundary, and no POD/linear corrector. The conservative analytic tail-plus-cubic
+bounds are 2.272e-3 / 6.388e-4 / 1.266e-4, so R=48 is the credible guard arm. Training and
+selection mixtures are locked at N=64/128/256 and use all 51 time slices. All three training
+seeds must completely retrain the hyperdecoder, autolatents, and direct predictor; seed 11 is the
+single-k deployable policy, while seeds 29/47 are pass-all robustness retrainings.
+
+The excluded local S0 smoke completed in 28.83 seconds on GPU/f64/highest. It exercised finite
+direct, mandatory-weak, and maximum-one-update paths, exact clamped-span agreement at knots and
+adjacent f64 values, and a hyper-reduced 3x3 log-quadratic cold recovery. On the four locked
+seed-20260822 N=1024 initial conditions, that recovery read exactly 4096 samples and had relative
+parameter errors between 4.30e-15 and 3.16e-14 without constructing an N^2 coordinate array.
+These are execution/identity checks, not scientific accuracy or timing results.
+
+S0 is implemented but not yet scientifically submitted. It will execute all 17,136 free-oracle
+fits and pair the N=1024 structural direct/50-weak/max-one-update paths against a live healthy,
+accuracy-eligible cubic/exact-Helmholtz FOM in the same job. Eligibility uses only the paired
+same-job FOM median/10 and clustered speedup ratio; the earlier 23.805 ms value is planning
+context, not a cross-job clock gate. The audited request is one isolated H200, 8 CPUs, 64 GB,
+and six hours under the existing Burgers namespace. The local per-fit bracket implies about 1.42
+hours serial projection work; scientific S0 uses an ordered eight-worker map and may not truncate
+any cohort.
+
+---
+
+## 2026-08-20
+
+### Autonomous Poisson/Burgers hybrid speed push — final
+
+Continued the two completed hybrid tracks autonomously in their existing approved worktrees:
+`exp/2026-08-19-poisson-hybrid-1024` and `exp/2026-08-19-burgers-hybrid-1024`. The final branch
+commits are `57329c0` and `559583c`; both worktrees are clean and remain unmerged. All real jobs
+used isolated Tufts GPU directories, GPU backend, f64/highest precision, same-invocation timing,
+accuracy and work telemetry, retained repetition arrays, checksum-verified pulls, and explicit
+remote cleanup.
+
+**Poisson architecture/objective closure.** Job 2667580 tested one weak Gauss--Newton update on
+the physical-parameter-aligned K=4 conditional decoder with alpha=1. Job 2667673 then tested one
+separately preregistered alpha=0.5 energy/Ritz update, M=24,m=96,c64, on a new development seed.
+Both routes reduced their projected objective and accepted every update but worsened global
+A-error, counting-CG work, and same-job total against the direct parameter surrogate at both
+N=64 and N=256. The alpha=0.5 comparison is 5.391 versus 5.125 ms at N=64 and 20.801 versus
+20.312 ms at N=256. The frozen gate therefore stopped N=1024 confirmation and any additional
+alpha/M sweep. This does not retract the earlier balanced K=8 result: the only supported genuine
+NM-ROM crossover remains N=1024,tolerance 1e-6 at 211.996 versus 217.578 ms, 1.026× with 95%
+interval [1.014,1.077], against counting CG. Dense/spectral rectangular solvers remain hundreds
+of times faster and are the production choice.
+
+**Burgers learned closure.** Job 2667575 tested the bounded one-shot transported trajectory
+representation. Its q=64 remaining correction ratio grows from 0.0797 at N=64 to 0.3717 at
+N=256, failing the frozen 0.25 scalability gate. No weak wrapper or training round was promoted.
+The earlier guarded FiLM hybrid remains a clean 18/18 loss against cubic-history FOM; no learned
+Burgers speedup is claimed.
+
+**Burgers practical solver result.** A separate classical full-grid residual-plus-exact-
+Helmholtz correction passed development selection, a disjoint N=256 AB/BA gate (job 2667675),
+and the untouched final panel (job 2667698, A100-80GB, seed 20260825). The final has 18 cells,
+1,728 timed records, 864 immediate burns, exact AB/BA balance, zero solver flags/breakdowns, and
+all returned residuals within tolerance. It supports 10/18 cells: all six tolerance-1e-6 meshes,
+none at 1e-8, and N=32/256/512/1024 at 1e-10. At N=1024,tolerance 1e-6, optimized cubic takes
+308.432 ms and the corrected FOM takes 226.403 ms, 1.362×; paired saving is 81.583 ms with
+trajectory-clustered 95% interval [19.396,95.499]. This is explicitly classical, nonlearned,
+and not an NM-ROM. Wall time charges 50 full-grid residual evaluations and 50 exact Helmholtz
+inverses; finishing Newton/BiCGStab counters exclude them. Timings are warmed steady-state online
+times, not compile/load/first-query latency.
+
+The independent audit found no remaining validity blocker. The generated cross-PDE report is
+`reports/2026-08-20-hybrid-speed-push.md`, built from the retained JSONs by
+`reports/build_2026_08_20_hybrid_speed_push.py`. The two result branches were deliberately not
+merged; that remains an explicit user decision.
+
+### Burgers 1e-3 / 10x — adaptive spline Phase 2 final S0 hard stop
+
+Scientific S0 job `2667808` ran in the isolated `s0_spline_r1` directory from commit `3d9adb7`
+on an NVIDIA H200. It completed in 26:29 with GPU backend, f64/highest, empty stderr, and no
+health-warning strings. The staged manifest-file hash was `4d685e0e0010b50b1eb0bdd7ec912af18f7b8f5f7ef5e0dd97f7a118548d0b5c`.
+All remote/pulled checksums and the independent numerical audit passed. The original audit
+checker incorrectly demanded that a scientific health gate pass instead of verifying the
+recorded negative outcome; commit `e2cb52d` corrected that integrity logic without changing the
+immutable scientific JSON/NPZ. Local checksums then passed and the exact remote directory was
+deleted. The assigned namespace and queue were clean afterward.
+
+The same-invocation N=1024 cubic/exact-Helmholtz FOM is healthy and accuracy eligible, with
+mean/worst trajectory error 6.584e-4 / 1.400e-3 and H200 median 98.732 ms. The tight/tighter
+reference difference is at most 4.452e-13 with zero flags/breakdowns. These H200 times supersede
+the earlier A100 number only within this paired S0 comparison; no cross-job wall-clock claim is
+made.
+
+The R=48/k=24 guard arm C is the only credible representation row. Its pooled free-spline
+oracle mean/worst are 1.015e-4 / 9.968e-4. N=64 and N=256 pass the 2e-4 / 7e-4 accuracy gate,
+but N=128 worst error is 9.968e-4 and fails. All three meshes fail coefficient-solve health:
+1847/3264, 707/1632, and 313/816 fits pass the 1e-8 normal test, every median/max iteration count
+is 500, and worst normal residuals are 8.728e-7, 2.751e-6, and 1.791e-6. This is classified as
+a numerical-oracle-fit failure plus a remaining N=128 accuracy miss, not as proof that the
+mathematically fixed spline space itself fails.
+
+Arm C's charged direct, mandatory-weak, and maximum-one-update medians are 14.966, 15.078, and
+25.935 ms. Mandatory speedup is only 6.548x with trajectory-clustered 95% interval
+[5.161,8.029]; both the 10x point gate and 8x lower-bound gate fail despite passing memory and
+FOM-denominator gates. No arm was promoted, so no Phase-2 training/model-validation/EQ/scaling/
+confirmation job was submitted. Two local synthetic-only model-validation drafts remain
+explicitly excluded and uncommitted.
+
+**Open bounded Phase 3.** The only licensed direction is a finite joint repair that preserves
+the exact R=48/k=24 transported spline: compare augmented column-preconditioned LSMR against
+sparse normal-equation LU for coefficient health, and compare mathematically identical
+span-polynomial/fused sequential-time decode kernels for at least a 1.53x mandatory-path speed
+gain. A diagnostic may license at most one full C-only rerun; training remains blocked unless
+all-fit normal residuals are <=1e-8, N=128 worst error is <=7e-4, and a new live paired H200 panel
+passes median >=10x and clustered lower bound >=8x.
+
+### Burgers 1e-3 / 10x — Phase 3 exact solver/kernel repair final negative
+
+The single preregistered P3-D job `2668417` ran from commit `bff4472c` in isolated directory
+`p3_d_r1` on an NVIDIA H200. It completed in 3:20 with GPU backend and f64/highest. Its raw
+214-byte stderr retains exactly two classified Tufts/JAX hwloc binding lines. The manifest-file
+SHA-256 is `c7bacf66d326e4511be17db2af7b46be57bd45832781f5c11d3e93d048dc7107`.
+Remote and local checksums, Slurm completion, staged source hashes, and the independent
+negative-aware audit all pass; the exact validated remote directory was deleted and the assigned
+namespace/queue are empty.
+
+**Algebraic repair succeeded, representation still failed.** S1 augmented column-preconditioned
+LSMR and S2 sparse normal-equation SuperLU each have 128/128 healthy fixed-subset fits, pass the
+per-snapshot no-regression rule, and have worst relative normal residuals 5.672e-14 and 1.341e-15.
+Their N=128 draw-530 trajectory errors are 7.888286332e-4 and 7.888286339e-4, improving the S0
+9.968316650e-4 witness by 20.9% but missing the fixed 7e-4 gate by 1.1269x. No solver is selected;
+the active floor is the locked spline representation, not numerical oracle health.
+
+**Kernel repair succeeded.** The live paired cubic/exact-Helmholtz FOM is healthy and eligible at
+mean/worst 6.584e-4 / 1.400e-3 and median 98.886 ms. K0 is 17.259 ms, 5.729x with clustered 95%
+interval [4.518,7.011], and fails. Exact sequential polynomial K1 is 8.867 ms, 11.152x
+[8.821,13.701]; chunk-three K2 is 8.605 ms, 11.492x [9.093,14.152]; block-128 f64 Pallas K3 is
+2.535 ms, 39.005x [30.285,46.755] and is selected. All identity, exact boundary/support, memory,
+canonical finite exactly-50 weak evaluation, exact timing balance, and zero-outlier gates pass.
+
+The joint Phase-3 license requires both a solver and a kernel. Its immutable decision is
+`selected_solver=null`, `selected_kernel=K3`, `run_P3_F=false`, and hard stop. Therefore P3-F,
+hyperdecoder/direct-predictor training, model validation, EQ, N=256/512 scaling, and untouched
+confirmation were not run. This closes the finite Phase-3 bracket negatively without weakening
+the 1e-3/10x headline or any supporting gate. Synthetic-only model-validation drafts and the
+stopped prospective P3-F draft remain excluded and uncommitted.
+
+### Burgers 1e-3 / 10x — Phase 4 hierarchical diagnostic selects H1
+
+The final provenance-correct P4-D job `2668794` ran from commit `ae80f8f5` in isolated directory
+`p4_d_r3` on an NVIDIA H200. It completed in 26:33 with GPU backend and f64/highest. Its stderr
+contains exactly two classified Tufts/JAX hwloc binding lines. The root manifest SHA-256 is
+`67a3bf8d0d8c755ec39cd4056a0bca0e852b4ba17493e8f052a0b288e63a201a`; JSON and NPZ SHA-256
+are `ff425dfa1f73ac2d8559df2d780ef09dc1ade179ed5636458e53e0f389f5d617` and
+`720c5890b22709c83858f46e43f18fa3d28bb1305544f02ad9aea71625a2228f`. Remote/local checksums,
+Slurm completion, nested S0/P3 provenance, immutable source hashes, and the independent
+negative-aware audit pass. The exact remote directory was deleted after preservation.
+
+**The exposed representation gate now passes.** H1 (global R=48 plus central P=32, k=24) has
+pooled free-oracle trajectory mean/worst `5.8054779105e-5 / 3.8589189381e-4`. Its N=64,128,256
+means/worsts are `5.4254925523e-5 / 3.5931759898e-4`, `6.2987244194e-5 /
+3.8589189381e-4`, and `6.3389263258e-5 / 2.9951210958e-4`; all `3264/1632/816`
+fits are healthy with worst independent normal residual `3.033e-15`. Exact boundary, C2
+partition, maximum support 32, full S0 no-regression, and the fixed P3-subset no-regression rules
+pass. The targeted N=128 draw-530 trajectory is `2.8852054843e-4`. H2 also passes but is larger,
+so the preregistered smallest-pass rule selects H1.
+
+**Mandatory speed passes; maximum-one speed does not.** The same-invocation tight/tighter
+cubic/exact-Helmholtz FOM is healthy/eligible at mean/worst `6.5840644023e-4 /
+1.4000013197e-3` and median `99.256895` ms. H1 mandatory median is `3.816482` ms,
+`26.007434x` with trajectory-clustered 95% interval `[20.138590,31.646479]`. H1 maximum-one
+median is `14.065942` ms, only `7.056541x` with interval `[5.577488,8.672268]`. All full-field,
+stencil, previous-state, residual, rho, boundary, support, memory, exactly-50 weak-evaluation,
+balanced-order, and zero-outlier checks pass. The immutable decision is H1 selected, seed-11
+k24 training licensed, and correction class `conditional-zero-or-occasional-attempt`. A later
+corrected rollout may proceed only if its actual thresholded policy passes the unchanged 10x/LB8
+and zero-failure gates; mandatory timing alone is not a deployable claim.
+
+Jobs `2668601` and `2668613` are excluded provenance attempts. The first failed before science
+on a legacy dependency-audit schema mismatch. The second completed but was preserved without
+scientific inspection because the root manifest omitted the nested P3 manifest. Both exact
+remote directories were checksummed, retained locally, classified, and deleted. Neither altered
+the Phase-4 methods, gates, or cap. The next and only licensed cell is H1/k24 seed-11 training;
+model-validation and untouched confirmation remain unopened.
+
+The licensed H1/k24 seed-11 trainer, independent negative-aware audit, and exact
+make/launch/pull path are implemented at commit `7b21066a`. The final exact-staged excluded local
+execution plus audit completed on the GB10 in 36 seconds with GPU backend, f64/highest, a
+3,328-value hierarchical coefficient output, three retained selection-oracle optimizer states,
+and no locked data access. The audit independently recomputed state/autolatent/predictor
+consistency, deterministic schedule IDs and point seeds, metadata/global ranges, histories, and
+all negative scientific gates. The exact local staging manifest is
+`edbfc03235de0a2fbe9787c5fa4ee3418f765ea910ff3a5a6c447f8b7bd2b431`; it binds the P4-D
+root manifest `67a3bf8d...` and the git-clean batch script. The prospective cluster request is
+H200/8 CPU/64 GiB/12 h. No training job has been submitted pending implementation audit.
+
+### Burgers 1e-3 / 10x — Phase 4 H1/k24 seed-11 learned-manifold hard stop
+
+The only licensed Phase-4 training cell, job `2668956`, ran from exact commit `7b21066a` and
+manifest `edbfc03235de0a2fbe9787c5fa4ee3418f765ea910ff3a5a6c447f8b7bd2b431` in isolated
+directory `p4_h1_s11_r1` on an NVIDIA H200. It completed in 8:37 with exit 0, GPU backend,
+f64/highest, 7.21 GiB maximum RSS, and exactly two classified Tufts/JAX hwloc binding lines.
+All remote and local checksums, Slurm state, P4-D dependency chain, staged source hashes, and the
+independent negative-aware audit pass. The JSON, NPZ, and checkpoint SHA-256 values are
+`9963b1bff49d3e4f4deffd364d326f2ec2a578c66bbeb039e72272fd75eae1f8`,
+`968452abc765a78d63a21c001cec6b7d3508ce6eec5f771fdae602ecb59812b4`, and
+`2982cec3653260374b5c01d44e0518f727117779d87f75cac3adc5ad8e71899c`. The exact remote
+directory was deleted after preservation, and the assigned namespace and queue were clean.
+
+**The dense coefficient manifold fails decisively.** The complete 30,000-step H1/k24
+hyperdecoder/autolatent fit ends at sampled relative field loss `1.8403763717e-3`; the
+20,000-step direct predictor ends at relative field loss `4.9071821961e-3`. Three independent
+10,000-step selection-autolatent starts were evaluated, and start 1 was selected by the locked
+pooled mean snapshot-relative-L2-squared criterion. Its learned-manifold oracle pooled
+trajectory mean/worst are `0.4309173579 / 0.6021214615`. Per mesh they are
+`0.4257203251 / 0.6021214615` at N=64, `0.4343099942 / 0.5310786191` at N=128, and
+`0.4449202165 / 0.5508343065` at N=256. The direct predictor is better but still far outside
+its gate: pooled `0.0813062370 / 0.1933868523`, with per-mesh mean/worst
+`0.0791735201 / 0.1933868523`, `0.0829357135 / 0.1703658247`, and
+`0.0865781516 / 0.1689190210`. Every output is finite and preserves the exact binary boundary.
+
+The representation-oracle, direct-predictor, seed-promotion, loss-revision, and k32 near-miss
+gates all fail. The immutable next decision is `hard stop: learned manifold misses the 2x
+bracket`. Therefore seeds 29/47, k32, model validation, full weak/EQ, N=256/512 scaling,
+N=1024 rollout, and untouched confirmation were not licensed or run. The positive free H1
+oracle and mandatory K3 timing remain structural evidence only; the training cell did not time
+a deployed rollout. The active Phase-4 floor is the learned small-k coefficient generator, whose
+dense affine output confines all generated coefficient grids to a fixed low-dimensional affine
+subspace, not the H1 spline representation or its mandatory online kernel.
+
+The complete immutable training bundle is committed on the experiment branch at `8d8e613`.
+The generated final Phase-4 report and global rerunnable audit include this negative result and
+rebuild byte-identically. Seven scientific cells were consumed through the Phase-4 hard stop;
+no downstream Phase-4 job remains licensed. The two untracked synthetic-only model-validation
+drafts remain excluded and neither model-validation nor confirmation data was accessed.
+
+### Burgers 1e-3 / 10x — Phase 5 nonlinear-generator diagnostic hard stop
+
+The single authorized P5-D job `2669249` ran from exact scientific commit
+`e18edda9b124be8f7fa21c07ef21804c8dbecc48` and staged-manifest SHA-256
+`6135791d3a5cca08b0ff1c424d93451579f3dd1048bef2a5cf314e2b8bf317d6` in isolated directory
+`p5_d_r1` on an NVIDIA H200. It completed in 31:45 with exit 0, GPU backend, f64/highest, 7.24
+GiB maximum RSS, and exactly three classified Tufts/JAX hwloc binding lines. The independent
+negative-aware audit passes. Its JSON/NPZ/AUDIT SHA-256 values are
+`97f8bc6bb9e1d67d0baf4652bd57e6fb69dab484fc8f99ce12018e9f6c1d0c96`,
+`5235b81b19c4ed459e7fda4291fe67eb3f4b87ba07413eb36e861a0b147dfe54`, and
+`c84ee29e1b9fe84f5e90949e18be26c07a6c54c00320a2f7a82bd1cb8dee0eff`. A local audit-only
+patch at `eba2295` allows the one-ULP cluster/local JAX difference in generated viscosity and
+its normalized feature while retaining bitwise checks on all other parameters/features. The
+scientific artifacts are unchanged. All remote/local checksums passed and the exact remote
+directory was deleted after preservation.
+
+**The full training-target generation succeeds.** All 35,904 S2/H1 coefficient targets in the
+locked N=64/128/256, case-major, all-51-time mixture are finite and healthy. All 16 chunks pass
+exact boundary, partition-of-unity, support, RHS/prediction/coefficient finiteness, and metadata
+checks; the worst normal residual is `3.2782920288e-15`. Train-only coarse/fine head RMS values
+are `0.8494597791 / 0.6797529720`.
+
+**The nonlinear generators avoid the diagnosed affine-output collapse and have structural speed
+headroom.** On the deterministic nonconstant screen both G1 and G2 have numerical output rank
+127 at relative tolerance 1e-10; their median curvature values are `0.0550704125` and
+`0.0572025868`. Against the same live eligible H200 FOM (mean/worst error
+`6.5840644023e-4 / 1.4000013197e-3`, median `99.177700` ms), G1 mandatory is `4.538580` ms,
+`21.852144x` with clustered 95% interval `[17.003472,26.385599]`; G2 mandatory is `6.586756`
+ms, `15.057138x` with interval `[11.837359,18.486060]`. Canonical work, memory, timing balance,
+zero-outlier, noncollapse, and eligible-denominator gates pass. Worst-case maximum-one remains
+nondeployable at `1.628804x` for G1 and `0.559453x` for G2.
+
+**The unchanged identity gate hard-stops both arms before training.** K3 and Cox full fields
+agree to worst relative L2 `2.8580109302e-16` for G1 and `2.8732871822e-16` for G2. Their weak
+residuals amplify that roundoff: live-case relative discrepancies range from
+`3.2730455159e-14` to `4.8255283343e-14`, above the locked `2e-14` identity tolerance. Every
+case therefore fails identity, so both training licenses are false and `next_seed11_arm=null`.
+No G1/G2 training, weak/EQ, scaling, model validation, or untouched confirmation cell was run.
+The result is a numerical identity-screen hard stop, not a measured learned-generator accuracy
+failure. The complete immutable bundle is committed at `d6ba627`; the generated report/global
+audit are committed at `67b8c7e` and rebuild byte-identically. Eight scientific cells were
+consumed through Phase 5. The two untracked synthetic-only model-validation drafts remain
+excluded and untouched.

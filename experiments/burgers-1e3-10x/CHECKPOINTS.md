@@ -170,3 +170,31 @@ interval `[5.160779,8.028586]`.  Both the 10x point gate and 8x lower-bound gate
 fail.  No arm is promoted; no hyperdecoder/predictor training, model validation,
 EQ, scaling, or confirmation was run.  The two local synthetic-only
 model-validation drafts are excluded and uncommitted.
+
+## 2026-08-20 — Phase-3 bounded repair preregistered
+
+Phase 3 preserves arm C exactly and authorizes at most two scientific cells:
+one same-H200 P3-D solver/kernel diagnostic and, only if it selects both parts,
+one full-cohort plus paired-cost P3-F rerun.  The solver bracket is the identical
+ridge objective solved by augmented column-preconditioned LSMR or sparse normal-
+equation SuperLU.  The kernel bracket is the current Cox control plus sequential
+span-polynomial, fixed chunk-three span-polynomial, and a block-128 f64
+Pallas/Triton route.  Every target, draw, tolerance, identity threshold,
+no-regression rule, repetition count, and hard stop is fixed in
+`PHASE-3-PRE-REGISTRATION.md`.
+
+The excluded feasibility smoke ran on GB10/GPU/f64/highest in 4.46 seconds.
+Across 4,234 knot/nextafter/random probes, the noncustom polynomial weights
+differed from Cox by at most `3.886e-16`; the K3-specific Pallas implementation
+differed by at most `1.066e-14`, with exact support indices.  Random-field and
+weak-path identities pass `2e-14`, exact boundary/support pass, and both solver
+routes reached normal residual below `7e-16` on the synthetic field.
+
+The complete P3-D excluded execution smoke ran with the mandated local command
+in 16.44 seconds.  It compiled all K0/K1/K2/K3 mandatory and untimed identity
+paths; K1/K2/K3 maximum full/stencil/residual/rho relative differences were
+`3.84e-15`, `3.84e-15`, and `1.17e-14`.  The independent audit's fixed negative
+self-test passes, proving that an honest no-solver/no-kernel decision yields an
+integrity pass plus Phase-3 hard stop rather than an audit failure.  No
+scientific job, training, model-validation, or confirmation run preceded this
+checkpoint.

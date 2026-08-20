@@ -1,0 +1,22 @@
+host=pax049 job=2670159 gpu=NVIDIA A100 80GB PCIe, 81920 MiB
+commit=a98b1e8d77f27fd76c6bd008d38e6064a591f6fb dirty_hash=e3b0c44298fc cell=n2048final1 namespace=hybp2048
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 NS=[2048] taus=[1e-06, 1e-08, 1e-10] arms=['lmtrmean_c64_q0', 'spectral_q1024', 'spectral_q2048'] test_seed=20260826 smoke=0 reps=12 control_reps=10 warm=3
+  STREAMED NNLS-EQ M=64 m=256 @N=2048: support 256 (+0) rel fit 2.64e-03 [45s]
+VALIDATED N=2048 lmtrmean_c64_q0 tau=1e-06: construct 3.045 ms, Aerr 7.898e-02, iters 5266.6/5502.9; authoritative joint timing pending
+VALIDATED N=2048 lmtrmean_c64_q0 tau=1e-08: construct 3.045 ms, Aerr 7.898e-02, iters 6269.4/6425.4; authoritative joint timing pending
+VALIDATED N=2048 lmtrmean_c64_q0 tau=1e-10: construct 3.045 ms, Aerr 7.898e-02, iters 7193.1/7198.2; authoritative joint timing pending
+VALIDATED N=2048 spectral_q1024 tau=1e-06: construct 1.726 ms, Aerr 2.122e-07, iters 1.1/5502.9; authoritative joint timing pending
+VALIDATED N=2048 spectral_q1024 tau=1e-08: construct 1.726 ms, Aerr 2.122e-07, iters 2.2/6425.4; authoritative joint timing pending
+VALIDATED N=2048 spectral_q1024 tau=1e-10: construct 1.726 ms, Aerr 2.122e-07, iters 4.8/7198.2; authoritative joint timing pending
+VALIDATED N=2048 spectral_q2048 tau=1e-06: construct 4.548 ms, Aerr 1.042e-12, iters 0.0/5502.9; authoritative joint timing pending
+VALIDATED N=2048 spectral_q2048 tau=1e-08: construct 4.548 ms, Aerr 1.042e-12, iters 0.0/6425.4; authoritative joint timing pending
+VALIDATED N=2048 spectral_q2048 tau=1e-10: construct 4.548 ms, Aerr 1.042e-12, iters 1.6/7198.2; authoritative joint timing pending
+BALANCED N=2048 lmtrmean_c64_q0 tau=1e-06: 1472.986/1547.144 ms speedup 1.0503 CI [1.018431455691642, 1.0666538282578704] signs {'arm_faster': 8, 'zero_faster': 0, 'exact_tie': 0}
+BALANCED N=2048 lmtrmean_c64_q0 tau=1e-08: 1757.347/1802.813 ms speedup 1.0259 CI [0.9932270006993846, 1.0521550762284997] signs {'arm_faster': 6, 'zero_faster': 2, 'exact_tie': 0}
+BALANCED N=2048 lmtrmean_c64_q0 tau=1e-10: 2015.330/2008.121 ms speedup 0.9964 CI [0.9845378634770533, 1.0032114947208088] signs {'arm_faster': 4, 'zero_faster': 4, 'exact_tie': 0}
+CONTROLS N=2048 tau=1e-06: zero_cg=1533.607ms/eligible, dense_dst_direct=4.066ms/eligible, fft_dst_direct=4.387ms/eligible, spectral_q1024=1.921ms/eligible, spectral_q2048=4.380ms/eligible
+CONTROLS N=2048 tau=1e-08: zero_cg=1787.715ms/eligible, dense_dst_direct=4.077ms/eligible, fft_dst_direct=4.393ms/eligible, spectral_q1024=2.470ms/eligible, spectral_q2048=4.368ms/eligible
+CONTROLS N=2048 tau=1e-10: zero_cg=1991.052ms/eligible, dense_dst_direct=4.062ms/ineligible, fft_dst_direct=4.392ms/ineligible, spectral_q1024=3.734ms/eligible, spectral_q2048=5.138ms/eligible
+DONE
+ALL-DONE

@@ -290,6 +290,30 @@ memory, residual, boundary, provenance, and checksum audit.  Its pulled raw arti
 `AUDIT.json` are retained under `runs/n2048smoke1/`; no smoke timing or error is used as a
 scientific result.
 
+## 20 August N=2048 extension: final outcome
+
+The single locked scientific job `2670159` completed on the required A100-80GB class from clean
+commit `a98b1e8`.  Its stderr is empty; the log records GPU backend and `ALL-DONE`; f64/highest,
+memory, residual, boundary, timing-balance, raw-record, source-provenance, and pull-checksum gates
+all pass.  The staged `feasibility.py` hash is bound byte-for-byte to the scientific commit.
+
+The genuine K=8 NM-ROM warm start has one supported N=2048 crossover, at FOM tolerance 1e-6.
+The 1e-8 row is inconclusive and the 1e-10 row is a tie/slight loss.  This sharpens rather than
+broadens the earlier conclusion: the learned method has a repeatable but small loose-tolerance
+crossover against unpreconditioned counting CG, not a tolerance-independent win.
+
+The fixed structured controls remain the operational result.  Partial `spectral_q1024` plus
+counting CG is the fastest eligible method at every tested tolerance.  Dense and FFT-DST direct
+methods remain visible but fail the measured 1e-10 true-residual gate; the partial and full
+spectral-plus-CG rows pass it.  These controls are classical and are not attributed to learning.
+
+All exact values and intervals in `N2048.generated.md` are generated from the immutable final
+JSON by `summarize_2048.py`.  That script independently recomputes every learned and structured
+timing estimator, whole-case bootstrap interval, case sign, outlier count, balance assertion,
+solver gate, and source/commit binding without importing the scientific driver.  The standard
+audit is `runs/n2048final1/AUDIT.json`; the separate raw-array audit is
+`runs/n2048final1/INDEPENDENT-AUDIT.json`.  This branch is closed with no N=2048 tuning or rerun.
+
 An earlier local under-one-minute wiring attempt is retained as an explicitly incomplete
 non-result: its streamed EQ fit consumed almost the entire local budget and the timeout stopped it
 before any row completed.  A separate synthetic unit smoke verifies the ten-order position and

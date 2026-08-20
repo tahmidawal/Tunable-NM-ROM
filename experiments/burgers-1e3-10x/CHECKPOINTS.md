@@ -416,3 +416,10 @@ capacity evidence and a repaired Cox-weak/K3-full cost/identity preflight. The
 terminated overlong local trust-region attempt is excluded. No implementation,
 smoke, data generation, cluster job, downstream weak/EQ, scaling, model validation,
 confirmation, or seed 29/47 work is yet authorized or present.
+
+P8-D implementation is now isolated from T1/T2: the prospective driver and
+independent negative-aware auditor bind the exact P4/P5/P6/P7 chains, regenerate
+only locked train/selection FOM data, persist the complete two-start q-direct
+trust work, and recompute full-grid metrics. The exact make/launch/pull lifecycle
+admits only `p8_d_r1`; no scientific stage or submission exists pending synthetic
+smoke, implementation commit, and root pre-submit audit.

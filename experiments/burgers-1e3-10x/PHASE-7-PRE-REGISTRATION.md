@@ -46,6 +46,35 @@ states are persisted and independently audited. The failed job compared these tw
 schemas directly before its first training update. This clarification changes no
 field, coefficient, transport definition, training method, loss, gate, or cell cap.
 
+Numerical comparison clarification locked after zero-output infrastructure job
+2669975 and before any further stage or submission: the immutable P5 targets and
+their hashes remain exact, and their physical affine values must still map
+bitwise through `normalized_state_from_affine` to the states used by training.
+Only the separately regenerated FOM-field moment check changes from bitwise
+equality to the fixed finite componentwise rule
+
+```
+abs(regenerated_normalized_affine - immutable_normalized_affine) <= 2e-15
+```
+
+with no relative tolerance. The regenerated and immutable arrays must have the
+same shape, and the maximum absolute difference is persisted and independently
+audited. After this check, the regenerated state is replaced by the exact
+immutable normalized state before any update, so the tolerance cannot alter a
+training input. All feature rules are unchanged: columns 0/1/2/3/5/6 remain
+bitwise and only the pre-existing viscosity-derived column-4 ULP rule applies.
+
+This narrow repair is forced by same-node evidence. P5 job 2669249 and Phase-7
+job 2669975 both ran on pax011/NVIDIA H200 with JAX 0.10.2 and identical hashes
+for `b10_common.py`, `b10_spline.py`, and the inherited Burgers FOM. P5 formed
+its target trajectories in batches of four whereas Phase 7 regenerated batches
+of eight; the bitwise affine assertion failed before output or training. The
+read-only GB10 reproduction against the immutable target finds the first N64
+draw-0 normalized-affine difference at snapshot 0/component 3 (`3.1735e-18`),
+maximum `4.4409e-16` over that trajectory and `8.8818e-16` over the first 64
+trajectories. The fixed `2e-15` ceiling is the already-audited cross-execution
+bound in the Phase-7 schema regression, not a data/model/loss/gate change.
+
 ## Fixed model
 
 The spatial decoder remains Phase-4 H1: clamped cubic global R=48 plus the fixed
@@ -183,8 +212,12 @@ predictor-fold, schedule/seed, metadata, history/checkpoint, per-N/pooled metric
 identity, gate, and provenance consistency. It accepts an honestly recorded
 negative decision rather than demanding promotion.
 
-Phase 7 authorizes exactly one scientific cell. Infrastructure-only zero-output
-failure may be resubmitted once without changing the method. A complete valid cell
-consumes the cap. Local smoke is synthetic-only, under one minute, and touches no
-locked scientific field or coefficient artifact. No model-validation, weak/EQ,
-scaling, N1024 learned rollout, or confirmation cell is authorized here.
+Phase 7 authorizes exactly one complete scientific cell. Jobs 2669861 and
+2669975 both stopped before any output or training update and consume no
+scientific cell. After the numerical rule above is implemented, independently
+audited on real immutable data, and exact-staged for root review, one final
+`p7_g1_s11_r3` submission may be authorized separately. No further
+infrastructure retry is allowed. A complete valid cell consumes the cap. Local
+smoke is synthetic-only, under one minute, and touches no locked scientific
+field or coefficient artifact. No model-validation, weak/EQ, scaling, N1024
+learned rollout, or confirmation cell is authorized here.

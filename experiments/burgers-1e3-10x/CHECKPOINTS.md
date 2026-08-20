@@ -355,3 +355,18 @@ physical affine and derives the training state through the pre-existing
 `normalized_state_from_affine`. A read-only regression passes all 35,904 real
 P5 rows, exact independent mapping, all regenerated seed-0 parameter/features,
 and a healthy regenerated N64 draw-0 trajectory; no retry has been submitted.
+
+The sole corrected retry, job `2669975`, ran on pax011/H200/GPU from exact
+commit `825107e` and manifest `9e8e722b...` but failed at 2:18, again before an
+output or training update. Its bitwise regenerated-normalized-affine assertion
+was too strict: P5-D job `2669249` and this retry used the same node/model/JAX
+and identical FOM/affine sources, but P5 generated batch-4 trajectories while
+Phase 7 regenerated batch-8 trajectories. The r2 bundle is checksum-preserved
+at `runs/p7_g1_s11_r2` and its exact remote directory is deleted. A prospective
+final infrastructure repair now fixes the finite componentwise normalized-
+affine regeneration tolerance at `2e-15` with no relative tolerance, retains
+exact immutable physical targets/hashes and exact locked normalization, and
+replaces the regenerated state with the exact immutable state before training.
+No model, data, loss, scientific gate, or locked split changes. One exact clean
+`p7_g1_s11_r3` stage may be submitted only after independent/root audit; no
+further retry is allowed.

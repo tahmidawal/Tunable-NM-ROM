@@ -61,3 +61,17 @@ the immutable physical values, applies the pre-existing locked
 artifact regression verifies all 35,904 P5 rows and all regenerated seed-0
 parameter/features, with exact locked-versus-independent mapping and one healthy
 regenerated N64 draw-0 trajectory. No retry is submitted without a new audit.
+
+The corrected retry, job 2669975, also stopped before any training update or
+output, at the bitwise comparison between independently regenerated normalized
+affine moments and the exact immutable normalized P5 values. It ran on the same
+pax011 H200/JAX 0.10.2 node as P5-D and with identical FOM/affine source hashes;
+the execution-shape difference is P5's batch-4 generation versus Phase 7's
+batch-8 regeneration. The checksummed zero-science bundle is retained under
+`runs/p7_g1_s11_r2`, and the exact remote directory was deleted. The final
+bounded infrastructure repair keeps every immutable target/hash and exact
+physical-to-normalized mapping, but checks regenerated finite normalized moments
+with fixed componentwise absolute tolerance `2e-15`, no relative tolerance, then
+uses the exact immutable state for training. A real-data regression and exact
+clean `p7_g1_s11_r3` stage are required for root audit; no job is submitted by
+this preflight.

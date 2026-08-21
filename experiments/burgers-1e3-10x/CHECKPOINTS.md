@@ -665,3 +665,13 @@ opens the fixed 18 predictor epochs and exposed selection only after the
 globalized train gate passes.  The unchanged accuracy/speed gates, one-cell
 cap, information boundary, and all downstream seals remain binding.  No
 Phase-11 implementation or job is authorized by this preregistration alone.
+
+The prospective Phase-11 implementation now contains only the single G2/q32
+cell, independent negative-aware audit, exact H200 lifecycle, and conservative
+same-job runtime kill.  Resolution-homogeneous 8/2/1 batches cover training,
+full-field evaluation, and q globalization without retaining a full cohort on
+device.  Excluded local checks completed the G2 negative execution path in
+43.4 seconds, its independent full-field/trust/work audit in 7.8 seconds, the
+unchanged same-route structural smoke in 10.0 seconds, ten corruption controls
+plus the positive conditional-selection contract, and exact pull contracts.
+No Phase-11 scientific job has been submitted.

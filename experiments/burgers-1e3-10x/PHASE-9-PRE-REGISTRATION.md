@@ -177,8 +177,11 @@ license a rollout-speed claim or downstream weak/EQ work.
 
 ## Exact conditional G2 capacity license
 
-G2 is licensed only if the healthy terminal G1 train result misses its train
-gate at every N and pooled and all conditions below pass. Let
+G2 is licensed only if the healthy terminal G1 train result fails at least one
+required per-N or pooled train gate, the pooled capacity criteria below pass,
+and those criteria also pass for every failing N stratum. Passing N strata
+remain fully reported but need not fail to justify a resolution-local capacity
+escalation. Let
 `L_e=mean(ell)` over all 35,904 terminal train snapshots at joint epoch `e`.
 The locked late improvement is
 
@@ -208,16 +211,17 @@ eta_E = sqrt(sum ||r+J delta||_2^2
 
 These are computed for the full 35,904-snapshot cohort in fixed global-index
 order, not a subset; there is no random seed. Quantiles use NumPy
-`quantile(method="linear")`. At every N and pooled, gamma median must be
-`<=1e-4` and p95 `<=1e-3`; eta median must be `>=0.9`, p10 `>=0.8`, and eta_E
-`>=0.8`. At every N and pooled, at most 1% of q components may satisfy
-`min(q+1,1-q)<=1e-6`.
+`quantile(method="linear")`. For pooled and for every N stratum whose accuracy
+gate fails, gamma median must be `<=1e-4` and p95 `<=1e-3`; eta median must be
+`>=0.9`, p10 `>=0.8`, and eta_E `>=0.8`; at most 1% of q components may satisfy
+`min(q+1,1-q)<=1e-6`. The same metrics for passing N strata are persisted and
+reported but do not enter the capacity-license conjunction.
 
 The independent auditor recomputes `L_24`, `L_27`, `I_24_27`, every gamma/eta,
 quantile, eta_E, and bound fraction from persisted immutable arrays and requires
-every clause by Boolean conjunction. Any failure, any partial-N pass, a train
-pass followed by a selection miss, or any subjective alternative classification
-hard-stops Phase 9 without G2.
+every applicable clause by Boolean conjunction. Any applicable failure, an
+all-strata train pass, a train pass followed by a selection miss, or any
+subjective alternative classification hard-stops Phase 9 without G2.
 
 ## P9-T2: sole nonlinear capacity escalation, if licensed
 

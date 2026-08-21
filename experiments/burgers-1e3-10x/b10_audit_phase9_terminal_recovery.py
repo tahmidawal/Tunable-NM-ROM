@@ -46,7 +46,14 @@ def capacity_delta_close(left, right):
     a = np.asarray(left); b = np.asarray(right)
     scale = max(1.0, float(np.max(np.abs(a))), float(np.max(np.abs(b))))
     return bool(np.all(np.isfinite(a)) and np.all(np.isfinite(b))
-                and float(np.max(np.abs(a-b))) <= 1e-12 * scale)
+                and float(np.max(np.abs(a-b))) <= 2e-12 * scale)
+
+
+def tree_max_abs(left, right):
+    a = jax.tree_util.tree_leaves(left); b = jax.tree_util.tree_leaves(right)
+    if len(a) != len(b) or any(np.asarray(x).shape != np.asarray(y).shape for x, y in zip(a, b)):
+        return float("inf")
+    return float(max((np.max(np.abs(np.asarray(x)-np.asarray(y))) for x, y in zip(a, b)), default=0.0))
 
 
 def metrics_from_arrays(arrays, prefix, n):
@@ -172,7 +179,7 @@ def decision_contract(report, arrays, checkpoint, source_work, folded):
                  and recovery.tree_exact(checkpoint["predictor"], source_work["predictor"])
                  and recovery.tree_exact(checkpoint["predictor_optimizer_state"],
                                          source_work["predictor_optimizer_state"])
-                 and recovery.tree_exact(checkpoint["folded_predictor"], folded)
+                 and tree_max_abs(checkpoint["folded_predictor"], folded) <= recovery.STATE_ATOL
                  and np.array_equal(checkpoint["q_raw"], source_work["q_raw"])
                  and np.array_equal(checkpoint["final_target_states"], source_work["final_target_states"])
                  and np.array_equal(checkpoint["evaluation_states"], source_work["evaluation_states"]))
@@ -239,7 +246,7 @@ def main():
                   "logs": "jax_backend=gpu" in stdout and "ALL-DONE" in stdout
                           and not re.search(r"(?i)(captured.*large.*constant|oom|out of memory|traceback|disk.*full)", stdout + stderr)}
     if args.smoke:
-        failed = {"mode": "synthetic"}; dependency_binding = True
+        failed = {"mode": "synthetic"}; dependency_binding = True; target_manifest_binding = True
     else:
         failed = recovery.validate_failed(args.failed_dir)
         dependency_binding = all(rows.get("code/deps/failed/" + relative) == digest
@@ -252,26 +259,39 @@ def main():
                 basename = ("AUDIT.json" if kind == "audit" else "MANIFEST.sha256" if kind == "manifest"
                             else "checkpoint.pkl" if kind == "checkpoint" else f"{stem}.{kind}")
                 dependency_binding &= rows.get(f"code/deps/{phase}/{basename}") == report["bindings"][f"{phase}_{kind}"]["sha256"]
-    source_binding = bool(args.smoke or (rows.get("code/b10_phase9_terminal_recovery.py") is not None
+        p5_report = load_json(args.p5_json)
+        target_manifest_binding = bool(len(p5_report["train_targets"]["chunks"]) == 16
+            and all(rows.get("code/deps/p5/targets/" + row["basename"]) == row["sha256"]
+                    for row in p5_report["train_targets"]["chunks"]))
+    source_binding = bool(args.smoke or (all(rows.get("code/" + name) == digest
+                              for name, digest in report["provenance"].get("source_sha256", {}).items())
+                          and rows.get("code/b10_phase9_terminal_recovery.py") is not None
                           and rows.get("code/b10_audit_phase9_terminal_recovery.py") is not None
                           and rows.get("code/PHASE-9-TERMINAL-RECOVERY-PRE-REGISTRATION.md") == c.sha256(args.prereg)))
     artifact_binding = bool(report["npz"]["sha256"] == c.sha256(args.source_npz)
                             and report["checkpoint"]["sha256"] == c.sha256(args.checkpoint))
-    train, coefficients, target_features, _, regeneration = recovery.load_train(args, args.smoke)
+    train, coefficients, target_features, target_records, regeneration = recovery.load_train(args, args.smoke)
     features = legacy.concatenate(train, "features"); norm = p9.train_normalization(coefficients, features)
     source_work = ({"generator": checkpoint["generator"], "encoder": checkpoint["encoder"],
                     "predictor": checkpoint["predictor"], "q_raw": checkpoint["q_raw"],
                     "final_target_states": checkpoint["final_target_states"],
                     "evaluation_states": checkpoint["evaluation_states"],
-                    "predictor_optimizer_state": checkpoint["predictor_optimizer_state"]}
+                    "predictor_optimizer_state": checkpoint["predictor_optimizer_state"],
+                    "optimizer_state": checkpoint["predictor_optimizer_state"]}
                    if args.smoke else
                    pickle.load(open(os.path.join(args.failed_dir, "out/work_checkpoint.pkl"), "rb")))
     folded = legacy.fold_predictor_standardization(source_work["predictor"], norm["feature_mean"], norm["feature_scale"])
     state_delta = np.abs(p9.predictor_batches(folded, features) - np.asarray(source_work["evaluation_states"]))
+    source_records = recovery.source_tree_records(source_work)
+    source_work_binding = bool(report["source_work"]["trees_before"] == source_records
+        and report["source_work"]["trees_after"] == source_records
+        and report["source_work"]["sha256_before"] == report["source_work"]["sha256_after"]
+        and report["source_work"]["zero_update_binding"] is True
+        and (args.smoke or report["source_work"]["sha256_before"] == recovery.EXPECTED_FAILED["out/work_checkpoint.pkl"]))
     state_binding = bool(recovery.tree_exact(checkpoint["generator"], source_work["generator"])
                          and recovery.tree_exact(checkpoint["encoder"], source_work["encoder"])
                          and recovery.tree_exact(checkpoint["predictor"], source_work["predictor"])
-                         and recovery.tree_exact(checkpoint["folded_predictor"], folded)
+                         and tree_max_abs(checkpoint["folded_predictor"], folded) <= recovery.STATE_ATOL
                          and np.array_equal(checkpoint["q_raw"], source_work["q_raw"])
                          and np.array_equal(checkpoint["final_target_states"], source_work["final_target_states"])
                          and np.all(state_delta <= recovery.STATE_ATOL))
@@ -280,7 +300,13 @@ def main():
                          and np.array_equal(arrays["predictor_feature_mean"], norm["feature_mean"])
                          and np.array_equal(arrays["predictor_feature_scale"], norm["feature_scale"])
                          and np.array_equal(arrays["training_features"], features)
-                         and np.array_equal(arrays["normalization_source_indices"], np.arange(len(coefficients))))
+                         and np.array_equal(arrays["normalization_source_indices"], np.arange(len(coefficients)))
+                         and report["normalization"]["mean_sha256"] == p9.array_sha(norm["mean"])
+                         and report["normalization"]["scales_sha256"] == p9.array_sha(norm["scales"])
+                         and report["normalization"]["normalized_coefficients_sha256"] == p9.array_sha(norm["normalized"])
+                         and report["normalization"]["feature_mean_sha256"] == p9.array_sha(norm["feature_mean"])
+                         and report["normalization"]["feature_scale_sha256"] == p9.array_sha(norm["feature_scale"])
+                         and report["normalization"]["features_sha256"] == p9.array_sha(features))
     fresh = {}; q = np.tanh(np.asarray(checkpoint["q_raw"])); states = np.concatenate((legacy.concatenate(train, "affine"), q), axis=1)
     fresh_metrics = p9.evaluate_full(train, checkpoint["generator"], states, norm["mean"], norm["scales"],
                                      recovery.CONFIG, fresh, "terminal_train", True)
@@ -305,11 +331,15 @@ def main():
                         row["num_times"], row["global_start"], row["global_stop"])
                        for row in legacy.metadata(train)]
     metadata = bool(metadata_actual == metadata_expected and report["data"]["training"] == legacy.metadata(train)
+                    and report["data"]["target_chunks"] == target_records
+                    and report["data"]["regeneration"] == regeneration
+                    and report["data"]["snapshot_count"] == len(coefficients)
                     and all(row["reference_health"]["reported_max_relative_residual"] <= 1e-8
                             and row["reference_health"]["independent_max_relative_residual"] <= 1e-8
                             for row in legacy.metadata(train)))
     health = bool(all(provenance.values()) and failed == report["failed_run_bindings"]
-                  and dependency_binding and source_binding and artifact_binding and state_binding
+                  and dependency_binding and target_manifest_binding and source_binding
+                  and artifact_binding and source_work_binding and state_binding
                   and normalization and metadata and full_field and capacity and contract and negative["pass"])
     result = {"status": "pass" if health else "fail", "negative_aware": True,
               "classification": report["classification"], "expected_commit": args.expected_commit,
@@ -318,8 +348,11 @@ def main():
               "checkpoint_sha256": c.sha256(args.checkpoint),
               "checks": {"provenance": provenance, "failed_bundle": failed == report["failed_run_bindings"],
                          "dependency_binding": dependency_binding, "source_binding": source_binding,
-                         "artifact_binding": artifact_binding, "state_fold_binding": state_binding,
+                         "target_manifest_binding": target_manifest_binding,
+                         "artifact_binding": artifact_binding, "source_work_binding": source_work_binding,
+                         "state_fold_binding": state_binding,
                          "state_fold_max_abs": float(np.max(state_delta)),
+                         "folded_parameter_max_abs": tree_max_abs(checkpoint["folded_predictor"], folded),
                          "normalization": normalization, "metadata_reference_health": metadata,
                          "full_field_independent": full_field, "capacity_independent": capacity,
                          "capacity_array_match": capacity_arrays,

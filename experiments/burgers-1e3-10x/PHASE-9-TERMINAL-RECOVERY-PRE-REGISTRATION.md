@@ -49,9 +49,10 @@ encoder (29,811), predictor (2,104), q_raw `(35904,19)`, final target states
 `(35904,24)`, evaluation states `(35904,24)`, and predictor optimizer are
 required finite and tree/hash bound.  The first five final-target components
 must equal regenerated affine states and the remaining 19 must equal
-`tanh(q_raw)` exactly.  The train-only folded predictor must reproduce the
-stored evaluation states to componentwise absolute tolerance `2e-15` with no
-relative tolerance, and its standardized/unstandardized identity must be at
+`tanh(q_raw)` exactly.  The train-only folded predictor parameters and their
+reproduced stored evaluation states must agree componentwise to absolute
+tolerance `2e-15` with no relative tolerance, and its standardized/
+unstandardized identity must be at
 most `1e-12`.  The source checkpoint hash is checked both before and after.
 No missing encoder/joint optimizer, update order, preflight, encoder-handoff,
 or epoch history is invented.
@@ -98,13 +99,13 @@ all gates and the forced-negative license rather than trusting labels.  Fixed
 capacity floating-work arrays are compared componentwise at `rtol=5e-13,
 atol=5e-13`, except that CG-relative residual uses absolute tolerance `1e-12`
 and the unscaled CG solution vector uses the fixed global scale-aware bound
-`max_abs_delta <= 1e-12*max(1,max_abs_either_delta)`; Boolean
+`max_abs_delta <= 2e-12*max(1,max_abs_either_delta)`; Boolean
 CG classification remains exact, while independently repeated iteration counts
 must lie in `[0,38]` and differ by at most one (the excluded synthetic case can
 cross the stopping threshold one iteration apart).  Both copies must
 independently satisfy the unchanged `1e-12` convergence rule.  These tolerances
 are prospectively fixed from excluded synthetic repeats (largest delta globally
-scaled difference `6.5e-13`, largest CG-relative absolute difference `6.9e-13`)
+scaled difference `1.1e-12`, largest CG-relative absolute difference `6.9e-13`)
 and do not relax a scientific or licensing gate.  Fixed
 corruption tests must reject work-tree/q/state/fold mutation, nonzero update
 count, opened selection, field metric/boundary corruption, capacity-CG

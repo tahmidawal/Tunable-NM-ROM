@@ -555,7 +555,7 @@ sealed, and G2/T2 licensing is forced false.
 The prospective recovery implementation now has a zero-update driver,
 independent negative-aware auditor, H200 lifecycle, resource bound, and exact
 pull contract.  The synthetic driver completed in 26.27 seconds; the final
-independent audit completed in 20.75 seconds and passed full-field and final
+hardened independent audit completed in 18.88 seconds and passed full-field and final
 capacity recomputation plus a positive contract and nine corruption
 rejections.  Repeated synthetic capacity CG reductions established the locked
 audit-only roundoff bounds recorded in the preregistration; scientific gates

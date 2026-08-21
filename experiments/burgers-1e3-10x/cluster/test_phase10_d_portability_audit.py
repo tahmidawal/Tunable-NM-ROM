@@ -24,4 +24,6 @@ assert audit["checks"]["trust_trace"]["termination_portable"] is True
 assert audit["checks"]["negative_self_test"]["pass"] is True
 assert audit["checks"]["negative_self_test"]["termination_beyond_band_rejected"] is True
 assert audit["decision"]["optimizer_updates"]==0 and audit["decision"]["g2_licensed"] is False
-print("phase10_portability_synthetic_audit=pass corruptions=9")
+assert audit["checks"]["negative_self_test"]["normalization_corruption_count"]==4
+assert audit["checks"]["negative_self_test"]["normalization_corruptions_rejected"] is True
+print("phase10_portability_synthetic_audit=pass corruptions=13")

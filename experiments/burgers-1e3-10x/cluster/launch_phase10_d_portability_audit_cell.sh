@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cell="$1"; commit="$2"; manifest="$3"
-[[ "$cell" == p10_d_r2_audit_r1 && "$commit" =~ ^[0-9a-f]{40}$ && "$manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
+[[ "$cell" == p10_d_r2_audit_r2 && "$commit" =~ ^[0-9a-f]{40}$ && "$manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; STAGE="$HERE/stage/$cell"; REMOTE="/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell"
 [[ "$(sha256sum "$STAGE/MANIFEST.sha256"|cut -d' ' -f1)" == "$manifest" ]]
 "$STAGE/verify_manifest_file_set.sh" "$STAGE" "$STAGE/MANIFEST.sha256"; (cd "$STAGE" && sha256sum -c MANIFEST.sha256)

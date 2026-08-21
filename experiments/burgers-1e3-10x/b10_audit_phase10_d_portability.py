@@ -45,6 +45,14 @@ EXPECTED_R2 = {
     "out/phase10_d.npz": "35d139fedcfff539aef25a335c556d47f2ec5e8581066a9e1f9b6ad8fcef4664",
     "out/work_checkpoint.pkl": "5fd879c32f2205d6427b272042c095624d824a8278e1eaf074c5295bcb574d68",
 }
+EXPECTED_AUDIT_R1 = {
+    "LOCAL.sha256":"43b7d071a4301b9511da38cbbd2e74ac63a0bcba48abd4a5cad29a69ef98796d",
+    "MANIFEST.sha256":"d462f02c9f4c6b00f43c3002e56c30eb88d62061894589b4b62e30fb3685f5cb",
+    "REMOTE.sha256":"e7c9fae182d37060bb137d9d56b8ee743bacc915631c349aa9b77da4f47d628e",
+    "SACCT.txt":"28aab3917b0dc99e93f3e6d762662d7a798c944fd8d21f23f43ceb2b3af59d4e",
+    "logs/2747981.err":"8666e85d654007462211b1f558558eb59e7493fc5d4bce2840432caafe673598",
+    "logs/2747981.out":"ca168fd48464dd72d82d26752cdbb62c2a0b617e29ac8775174ef834774790a7",
+}
 
 
 def load_json(path):
@@ -153,6 +161,29 @@ def structured_comparison(actual, reference):
     return {"rtol":RTOL,"atol":ATOL,"fields":details,"pass":bool(passed)}
 
 
+def normalization_binding(checkpoint, recovery_arrays, recovery_report, phase10_arrays):
+    """Bind the real nested recovery-checkpoint normalization schema."""
+    names={"mean":"coefficient_mean","scales":"head_scales",
+           "feature_mean":"predictor_feature_mean","feature_scale":"predictor_feature_scale"}
+    nested=checkpoint.get("normalization") if isinstance(checkpoint,dict) else None
+    schema=bool(isinstance(nested,dict) and set(nested)==set(names))
+    exact={}; hashes={}
+    for nested_name,array_name in names.items():
+        value=np.asarray(nested[nested_name]) if schema else np.asarray([],np.float64)
+        recovery_value=np.asarray(recovery_arrays.get(array_name,[]))
+        exact[nested_name]=bool(schema and value.dtype==recovery_value.dtype
+            and np.issubdtype(value.dtype,np.floating) and np.all(np.isfinite(value))
+            and np.array_equal(value,recovery_value))
+        hashes[nested_name]=bool(schema and recovery_report["normalization"].get(
+            ("mean_sha256" if nested_name=="mean" else "scales_sha256" if nested_name=="scales"
+             else "feature_mean_sha256" if nested_name=="feature_mean" else "feature_scale_sha256"))==p9.array_sha(value))
+    phase10_exact={"mean":bool(schema and np.array_equal(nested["mean"],phase10_arrays["coefficient_mean"])),
+        "scales":bool(schema and np.array_equal(nested["scales"],phase10_arrays["head_scales"]))}
+    return {"schema_exact":schema,"nested_recovery_npz_exact":exact,
+            "nested_recovery_report_hashes":hashes,"phase10_mean_scales_exact":phase10_exact,
+            "pass":bool(schema and all(exact.values()) and all(hashes.values()) and all(phase10_exact.values()))}
+
+
 def termination_contract(recorded, accepted, relative_improvement, step_relative):
     host=accepted&((relative_improvement<=TERMINATION_THRESHOLD)|(step_relative<=TERMINATION_THRESHOLD))
     mismatch=recorded!=host
@@ -231,6 +262,24 @@ def corruption_tests(decision):
                       ("scientific_promotion_allowed",True),
                       ("corrected_g1_proposal_eligible",not decision["fixed_g1_train_representable"])):
         one=copy.deepcopy(decision); one[key]=value; decision_cases.append(not old.decision_contract(one))
+    values={"mean":np.asarray([1.,2.]),"scales":np.asarray([3.,4.]),
+            "feature_mean":np.asarray([5.,6.]),"feature_scale":np.asarray([7.,8.])}
+    recovery_arrays={"coefficient_mean":values["mean"],"head_scales":values["scales"],
+        "predictor_feature_mean":values["feature_mean"],"predictor_feature_scale":values["feature_scale"]}
+    recovery_report={"normalization":{"mean_sha256":p9.array_sha(values["mean"]),
+        "scales_sha256":p9.array_sha(values["scales"]),"feature_mean_sha256":p9.array_sha(values["feature_mean"]),
+        "feature_scale_sha256":p9.array_sha(values["feature_scale"])}}
+    checkpoint={"normalization":copy.deepcopy(values)}
+    normalization_positive=normalization_binding(checkpoint,recovery_arrays,recovery_report,recovery_arrays)["pass"]
+    normalization_cases=[]
+    one={"coefficient_mean":values["mean"]}; normalization_cases.append(
+        not normalization_binding(one,recovery_arrays,recovery_report,recovery_arrays)["pass"])
+    one=copy.deepcopy(checkpoint); one["normalization"]["mean"][0]+=1e-8; normalization_cases.append(
+        not normalization_binding(one,recovery_arrays,recovery_report,recovery_arrays)["pass"])
+    one=copy.deepcopy(recovery_report); one["normalization"]["feature_scale_sha256"]="bad"; normalization_cases.append(
+        not normalization_binding(checkpoint,recovery_arrays,one,recovery_arrays)["pass"])
+    one=copy.deepcopy(checkpoint); del one["normalization"]["feature_mean"]; normalization_cases.append(
+        not normalization_binding(one,recovery_arrays,recovery_report,recovery_arrays)["pass"])
     return {"floating_portable_positive":bool(floating_positive),
             "floating_larger_perturbation_rejected":bool(floating_negative),
             "termination_exact_and_near_positive":bool(exact_and_near),
@@ -238,13 +287,17 @@ def corruption_tests(decision):
             "termination_inactive_corruption_rejected":bool(inactive_rejected),
             "decision_corruption_count":len(decision_cases),
             "decision_corruptions_rejected":bool(all(decision_cases)),
+            "normalization_schema_positive":bool(normalization_positive),
+            "normalization_corruption_count":len(normalization_cases),
+            "normalization_corruptions_rejected":bool(all(normalization_cases)),
             "pass":bool(floating_positive and floating_negative and exact_and_near
-                         and beyond_rejected and inactive_rejected and all(decision_cases))}
+                         and beyond_rejected and inactive_rejected and all(decision_cases)
+                         and normalization_positive and all(normalization_cases))}
 
 
 def parse_args():
     parser=argparse.ArgumentParser()
-    parser.add_argument("--r2-bundle"); parser.add_argument("--recovery-dir")
+    parser.add_argument("--r2-bundle"); parser.add_argument("--audit-r1-failed-dir"); parser.add_argument("--recovery-dir")
     parser.add_argument("--accepted-audit-dir"); parser.add_argument("--failed-t1-dir")
     parser.add_argument("--r1-failed-dir"); parser.add_argument("--p5-json")
     parser.add_argument("--p7-npz"); parser.add_argument("--target-dir")
@@ -271,17 +324,18 @@ def main():
     prereg_binding=bool(rows.get("code/PHASE-10-PRE-REGISTRATION.md")==c.sha256(args.prereg))
 
     if args.smoke:
-        r2_binding=recovery_binding=accepted_binding=failed_binding=r1_binding=True
+        r2_binding=audit_r1_binding=recovery_binding=accepted_binding=failed_binding=r1_binding=True
         source_json=os.path.join(args.r2_bundle,"phase10_d.json")
         source_npz=os.path.join(args.r2_bundle,"phase10_d.npz")
         initial_path=os.path.join(args.r2_bundle,"initial_control.npz")
         work_path=os.path.join(args.r2_bundle,"work_checkpoint.pkl")
         source_bundle_manifest=None
     else:
-        required=(args.r2_bundle,args.recovery_dir,args.accepted_audit_dir,args.failed_t1_dir,
+        required=(args.r2_bundle,args.audit_r1_failed_dir,args.recovery_dir,args.accepted_audit_dir,args.failed_t1_dir,
                   args.r1_failed_dir,args.p5_json,args.p7_npz,args.target_dir)
         if any(x is None for x in required): raise SystemExit("audit-only cell requires exact dependency paths")
         r2_binding=exact_bundle(args.r2_bundle,EXPECTED_R2)
+        audit_r1_binding=exact_bundle(args.audit_r1_failed_dir,EXPECTED_AUDIT_R1)
         recovery_binding=p10.exact_bundle(args.recovery_dir,p10.EXPECTED_RECOVERY)
         accepted_binding=p10.exact_bundle(args.accepted_audit_dir,p10.EXPECTED_ACCEPTED)
         failed_binding=recovery.validate_failed(args.failed_t1_dir)
@@ -322,6 +376,13 @@ def main():
         source_sha="synthetic"; accepted_metrics=report["initial_train"]
         accepted_arrays={key.replace("initial_train_","terminal_train_",1):value
                          for key,value in initial_control.items() if key.startswith("initial_train_")}
+        checkpoint={"normalization":{"mean":norm["mean"],"scales":norm["scales"],
+            "feature_mean":norm["feature_mean"],"feature_scale":norm["feature_scale"]}}
+        recovery_norm_arrays={"coefficient_mean":norm["mean"],"head_scales":norm["scales"],
+            "predictor_feature_mean":norm["feature_mean"],"predictor_feature_scale":norm["feature_scale"]}
+        recovery_report={"normalization":{"mean_sha256":p9.array_sha(norm["mean"]),
+            "scales_sha256":p9.array_sha(norm["scales"]),"feature_mean_sha256":p9.array_sha(norm["feature_mean"]),
+            "feature_scale_sha256":p9.array_sha(norm["feature_scale"])}}
         accepted_source_exact=True; dependency_binding=True
     else:
         recovery_report=load_json(os.path.join(args.recovery_dir,"out/phase9_terminal_recovery.json"))
@@ -330,12 +391,15 @@ def main():
         accepted_source_exact=bool(recovery_report["terminal_train"]==accepted_metrics)
         with np.load(os.path.join(args.recovery_dir,"out/phase9_terminal_recovery.npz"),allow_pickle=False) as data:
             accepted_arrays={name:np.asarray(data[name]) for name in data.files if name.startswith("terminal_train_")}
+            recovery_norm_arrays={name:np.asarray(data[name]) for name in
+                ("coefficient_mean","head_scales","predictor_feature_mean","predictor_feature_scale")}
         train,coefficients,_,targets,regeneration=recovery.load_train(args,False)
         norm=p9.train_normalization(coefficients,legacy.concatenate(train,"features"))
         checkpoint_path=os.path.join(args.recovery_dir,"out/terminal_checkpoint.pkl")
         checkpoint=pickle.load(open(checkpoint_path,"rb")); generator=checkpoint["generator"]
         qraw=np.asarray(checkpoint["q_raw"]); source_sha=c.sha256(checkpoint_path)
         dependency_binding=bool(all(rows.get("code/deps/r2_failed/"+name)==digest for name,digest in EXPECTED_R2.items())
+            and all(rows.get("code/deps/audit_r1_failed/"+name)==digest for name,digest in EXPECTED_AUDIT_R1.items())
             and all(rows.get("code/deps/recovery/"+name)==digest for name,digest in p10.EXPECTED_RECOVERY.items())
             and all(rows.get("code/deps/accepted/"+name)==digest for name,digest in p10.EXPECTED_ACCEPTED.items())
             and all(rows.get("code/deps/failed/"+name)==digest for name,digest in recovery.EXPECTED_FAILED.items())
@@ -373,9 +437,9 @@ def main():
         with np.load(args.p7_npz,allow_pickle=False) as p7_source:
             immutable_data=bool(np.array_equal(arrays["training_affine"],np.asarray(p7_source["training_affine"]))
                 and np.array_equal(arrays["training_features"],np.asarray(p7_source["training_features"])))
-        immutable_data &= bool(np.array_equal(arrays["coefficient_mean"],np.asarray(checkpoint["coefficient_mean"]))
-            and np.array_equal(arrays["head_scales"],np.asarray(checkpoint["head_scales"]))
-            and np.array_equal(arrays["normalization_source_indices"],np.arange(len(coefficients))))
+        immutable_data &= bool(np.array_equal(arrays["normalization_source_indices"],np.arange(len(coefficients))))
+    recovered_normalization=normalization_binding(checkpoint,recovery_norm_arrays,recovery_report,arrays)
+    immutable_data &= recovered_normalization["pass"]
     immutable_data &= bool(report["normalization"]=={
         "source":"train only","mean_sha256":p9.array_sha(arrays["coefficient_mean"]),
         "scales_sha256":p9.array_sha(arrays["head_scales"]),
@@ -457,13 +521,15 @@ def main():
     corruptions=corruption_tests(expected_decision)
     checks={"audit_provenance":audit_provenance_check,"audit_source_binding":audit_source_binding,
         "prereg_manifest_binding":prereg_binding,"dependency_binding":dependency_binding,
-        "immutable_r2_bundle_binding":bool(r2_binding),"recovery_binding":bool(recovery_binding),
+        "immutable_r2_bundle_binding":bool(r2_binding),"audit_r1_failure_binding":bool(audit_r1_binding),
+        "recovery_binding":bool(recovery_binding),
         "accepted_audit_binding":bool(accepted_binding),"failed_t1_binding":bool(failed_binding),
         "r1_failure_binding":bool(r1_binding),"source_provenance":source_provenance,
         "original_audit_failure_bound":original_audit_failure,"initial_control_file_exact":initial_control_exact,
         "accepted_initial_control_arrays":accepted_control_arrays,
         "accepted_initial_control_metrics":accepted_control_metrics,
         "accepted_initial_control":accepted_control,"immutable_data_binding":immutable_data,
+        "recovered_normalization_binding":recovered_normalization,
         "repeated_data_arrays":repeated_data,"repeated_training_metadata":metadata_repeat,
         "target_chunks_exact":targets_exact,"repeated_regeneration":regeneration_repeat,
         "source_model_immutable":source_model,"repeated_initial_arrays":repeated_initial_arrays,
@@ -480,6 +546,7 @@ def main():
         "expected_audit_commit":args.expected_audit_commit,"expected_audit_job":str(args.expected_audit_job),
         "manifest_sha256":c.sha256(args.manifest),"source_commit":args.expected_source_commit,
         "source_job":str(args.expected_source_job),"source_bundle_sha256":EXPECTED_R2,
+        "audit_r1_failure_sha256":EXPECTED_AUDIT_R1,
         "source_json_sha256":c.sha256(source_json),"source_npz_sha256":c.sha256(source_npz),
         "initial_control_sha256":c.sha256(initial_path),"work_checkpoint_sha256":c.sha256(work_path),
         "portability_contract":{"relative_tolerance":RTOL,"absolute_tolerance":ATOL,

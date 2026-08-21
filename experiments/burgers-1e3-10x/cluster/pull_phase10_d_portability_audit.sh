@@ -13,12 +13,13 @@ verify_phase10_portability_audit_bundle() {
   awk '{print $2}' "$root/REMOTE.sha256" | LC_ALL=C sort > "$actual.remote"
   cmp -s "$expected" "$actual.remote" || { rm -f "$expected" "$actual" "$actual.remote"; return 24; }
   rm -f "$expected" "$actual" "$actual.remote"
-  awk -F'|' -v job="$job" '$1==job && $2=="p10_d_r2_audit_r1" && $3=="COMPLETED" && $4=="0:0" {ok=1} END {exit !ok}' "$root/SACCT.txt" || return 25
+  awk -F'|' -v job="$job" '$1==job && $2=="p10_d_r2_audit_r2" && $3=="COMPLETED" && $4=="0:0" {ok=1} END {exit !ok}' "$root/SACCT.txt" || return 25
   jq -e --arg commit "$commit" --arg job "$job" --arg manifest "$expected_manifest" \
     '.status=="pass" and .audit_only==true and .negative_aware==true
      and .expected_audit_commit==$commit and .expected_audit_job==$job and .manifest_sha256==$manifest
      and .source_commit=="25bb3502b851a4eb56c51a25af3fc844e3583219" and .source_job=="2739690"
      and .checks.accepted_initial_control==true and .checks.repeated_full_field==true
+     and .checks.audit_r1_failure_binding==true and .checks.recovered_normalization_binding.pass==true
      and .checks.trust_trace.pass==true and .checks.trust_trace.termination_portable==true
      and .checks.negative_self_test.pass==true and .decision.optimizer_updates==0
      and .decision.architecture_increase_licensed==false and .decision.g2_licensed==false
@@ -43,7 +44,7 @@ verify_original_phase10_r2_remote() {
 main() {
   [[ $# -eq 4 ]] || exit 2
   local cell="$1" job="$2" commit="$3" expected_manifest="$4"
-  [[ "$cell" == p10_d_r2_audit_r1 ]] || exit 2
+  [[ "$cell" == p10_d_r2_audit_r2 ]] || exit 2
   local here exp remote source_remote local_dir transfer state
   here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; exp="$(dirname "$here")"
   remote="/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$cell"
@@ -59,7 +60,7 @@ main() {
   (cd "$transfer" && find out logs MANIFEST.sha256 REMOTE.sha256 SACCT.txt -type f -exec sha256sum {} \; | LC_ALL=C sort > LOCAL.sha256 && sha256sum -c LOCAL.sha256)
   mv "$transfer" "$local_dir"; transfer=""; (cd "$local_dir" && sha256sum -c LOCAL.sha256)
   verify_original_phase10_r2_remote "$source_remote"
-  ssh tufts-login "test '$remote' = '/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p10_d_r2_audit_r1' \
+  ssh tufts-login "test '$remote' = '/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p10_d_r2_audit_r2' \
     && test '$source_remote' = '/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p10_d_r2' \
     && rm -rf -- '$remote' '$source_remote' && test ! -e '$remote' && test ! -e '$source_remote'"
   echo "pulled=$local_dir job=$job commit=$commit manifest=$expected_manifest audit_remote_removed=true source_remote_removed=true"

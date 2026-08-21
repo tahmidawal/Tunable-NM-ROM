@@ -10,10 +10,10 @@ jq -n --arg commit "$commit" --arg job "$job" --arg manifest "$manifest" \
     source_npz_sha256:"35d139fedcfff539aef25a335c556d47f2ec5e8581066a9e1f9b6ad8fcef4664",
     initial_control_sha256:"03bcbd51fc375b87bb876953b910d8c6a11dcffc893048ed7d9a6f2c46f4290c",
     work_checkpoint_sha256:"5fd879c32f2205d6427b272042c095624d824a8278e1eaf074c5295bcb574d68",
-    checks:{accepted_initial_control:true,repeated_full_field:true,trust_trace:{pass:true,termination_portable:true},negative_self_test:{pass:true}},
+    checks:{accepted_initial_control:true,repeated_full_field:true,audit_r1_failure_binding:true,recovered_normalization_binding:{pass:true},trust_trace:{pass:true,termination_portable:true},negative_self_test:{pass:true}},
     decision:{optimizer_updates:0,architecture_increase_licensed:false,g2_licensed:false,selection_evaluated:false},capacity:{accepted:false,used:false}}' > "$root/out/AUDIT.json"
 printf 'jax_backend=gpu\nALL-DONE\n' > "$root/logs/$job.out"; : > "$root/logs/$job.err"
-printf 'JobIDRaw|JobName|State|ExitCode|\n%s|p10_d_r2_audit_r1|COMPLETED|0:0|\n' "$job" > "$root/SACCT.txt"
+printf 'JobIDRaw|JobName|State|ExitCode|\n%s|p10_d_r2_audit_r2|COMPLETED|0:0|\n' "$job" > "$root/SACCT.txt"
 refresh(){ (cd "$1" && find out logs -type f -exec sha256sum {} \; | LC_ALL=C sort > REMOTE.sha256); }; refresh "$root"
 verify_phase10_portability_audit_bundle "$root" "$job" "$commit" "$manifest"
 for kind in extra sacct manifest source trust license initial work; do one="$fixture/$kind"; cp -a "$root" "$one"; expected="$manifest"

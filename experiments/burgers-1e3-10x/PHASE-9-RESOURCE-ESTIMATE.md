@@ -12,8 +12,13 @@ The 528,768-update schedule is not assumed to fit merely from these byte
 counts. Before update 1 the same-job no-update preflight compiles and measures
 all three update phases at each resolution, persists 3 warmups and 10 measured
 repetitions, and projects all locked updates, full-cohort evaluations, and
-terminal trust/capacity work, the independent audit, and a conservative second
-data-regeneration reserve equal to elapsed pre-preflight work. The decision
+terminal trust/capacity work.  The evaluation charge is explicit: 56 train-cohort
+Cox passes (54 epoch ends, terminal, and independent terminal recomputation),
+two train-cohort K3-equivalent passes, two selection initial-objective Cox
+passes, two selection terminal Cox passes, and two selection terminal
+K3-equivalent passes.  It additionally charges the independent audit, a
+conservative second data-regeneration reserve equal to elapsed pre-preflight
+work, and a fixed 900-second output-compression/final-audit reserve. The decision
 subtracts actual monotonic data-generation, compile, and preflight elapsed time
 from 16 hours. If the projected remainder plus 15% exceeds the actual remaining
 allocation, execution stops with bitwise-unchanged weights;

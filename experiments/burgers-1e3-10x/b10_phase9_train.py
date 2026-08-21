@@ -50,6 +50,15 @@ TRUST_ATTEMPTS = 40
 DELTA0, DELTA_MIN, DELTA_MAX = .25, 2.0 ** -20, 1.0
 LAMBDA0, LAMBDA_MIN, LAMBDA_MAX = 1e-6, 1e-12, 1e12
 ACCEPT_RHO = 1e-4
+CAPACITY_CG_RELATIVE_TOL = 1e-12
+FINAL_IO_AUDIT_RESERVE_SECONDS = 900.0
+PREFLIGHT_EVALUATION_COUNTS = {
+    "train_cox_cohorts": 56,
+    "train_k3_equivalent_cohorts": 2,
+    "selection_initial_objective_cohorts": 2,
+    "selection_terminal_cox_cohorts": 2,
+    "selection_terminal_k3_equivalent_cohorts": 2,
+}
 
 ARMS = {
     "T1": {"label": "G1/q19", "channels": 16, "residual": False, "q": 19,
@@ -550,20 +559,36 @@ def preflight(config, views, variables, optimizers, kernels, norm, smoke, job_st
     update_seconds=sum(medians[f"{phase}_N{n}"]*BATCHES_PER_N*PHASES[phase]["epochs"]
                        for phase in PHASES for n in views if n in N_ORDER)
     if smoke:
+        train_eval_unit=selection_eval_unit=0.0
+        train_eval_seconds=selection_eval_seconds=0.0
         eval_seconds=trust_seconds=capacity_seconds=0.0
     else:
-        eval_seconds=56*sum(math.ceil(len(v["truth"])/BATCH_BY_N[n])*medians[f"evaluation_N{n}"] for n,v in views.items())
+        train_eval_unit=sum(math.ceil(len(v["truth"])/BATCH_BY_N[n])*medians[f"evaluation_N{n}"] for n,v in views.items())
         selection_counts={64:3264,128:1632,256:816}
+        selection_eval_unit=sum(math.ceil(selection_counts[n]/BATCH_BY_N[n])*medians[f"evaluation_N{n}"] for n in N_ORDER)
+        train_eval_seconds=(PREFLIGHT_EVALUATION_COUNTS["train_cox_cohorts"]
+                            +PREFLIGHT_EVALUATION_COUNTS["train_k3_equivalent_cohorts"])*train_eval_unit
+        selection_eval_seconds=(PREFLIGHT_EVALUATION_COUNTS["selection_initial_objective_cohorts"]
+                                +PREFLIGHT_EVALUATION_COUNTS["selection_terminal_cox_cohorts"]
+                                +PREFLIGHT_EVALUATION_COUNTS["selection_terminal_k3_equivalent_cohorts"])*selection_eval_unit
+        eval_seconds=train_eval_seconds+selection_eval_seconds
         trust_seconds=2*TRUST_ATTEMPTS*sum(selection_counts[n]*medians[f"trust_N{n}"] for n in N_ORDER)
         capacity_seconds=sum(len(v["truth"])*medians[f"capacity_N{n}"] for n,v in views.items())
     audit_regeneration_reserve=0.0 if smoke else elapsed_before_preflight
-    projected=update_seconds+eval_seconds+max(trust_seconds,2*capacity_seconds)+audit_regeneration_reserve
+    fixed_io_audit_reserve=0.0 if smoke else FINAL_IO_AUDIT_RESERVE_SECONDS
+    projected=update_seconds+eval_seconds+max(trust_seconds,2*capacity_seconds)+audit_regeneration_reserve+fixed_io_audit_reserve
     after={name:array_sha(np.concatenate([np.ravel(np.asarray(x)) for x in jax.tree_util.tree_leaves(tree)]))
            for name,tree in variables.items()}
     actual_elapsed=float(time.perf_counter()-job_started); allocation=float(os.environ.get("SLURM_TIMELIMIT_SECONDS",57600)); remaining=max(0.,allocation-actual_elapsed)
     return {"raw_seconds":raw,"median_seconds":medians,"projected_update_seconds":float(update_seconds),
+            "evaluation_counts":dict(PREFLIGHT_EVALUATION_COUNTS),
+            "train_cohort_evaluation_unit_seconds":float(train_eval_unit),
+            "selection_cohort_evaluation_unit_seconds":float(selection_eval_unit),
+            "projected_train_evaluation_seconds":float(train_eval_seconds),
+            "projected_selection_evaluation_seconds":float(selection_eval_seconds),
             "projected_evaluation_seconds":float(eval_seconds),"projected_trust_seconds":float(trust_seconds),"projected_capacity_seconds":float(capacity_seconds),
             "elapsed_before_preflight_seconds":elapsed_before_preflight,"audit_regeneration_reserve_seconds":audit_regeneration_reserve,
+            "fixed_io_audit_reserve_seconds":fixed_io_audit_reserve,
             "projected_terminal_seconds":float(projected),"safety_factor":1.15,
             "allocation_seconds":allocation,"actual_elapsed_at_decision_seconds":actual_elapsed,
             "actual_remaining_at_decision_seconds":remaining,"required_with_safety_seconds":float(1.15*projected),
@@ -597,6 +622,8 @@ def train_all(config, datasets, views, norm, args, smoke, job_started):
         return variables,permutations,{},pre,False
     params={"generator":generator,"encoder":encoder}; state=optimizers[0].init(params)
     history={}; arrays={}; global_step=0; final_optimizer_states={}
+    expected_updates=sum(total_steps.values())
+    executed_resolution_order=np.empty(expected_updates,np.int16)
     for phase in ("encoder","joint","predictor"):
         if phase=="joint":
             q_raw=encode_batches(params["encoder"],norm["normalized"],config)
@@ -625,6 +652,7 @@ def train_all(config, datasets, views, norm, args, smoke, job_started):
                     else:
                         standardized=(v["features"][local]-norm["feature_mean"])/norm["feature_scale"]
                         predictor,state,loss,parts=kernels[2](predictor,state,generator,jnp.asarray(standardized),jnp.asarray(target_states[take]),truth,coords,mask,jnp.asarray(norm["mean"]),jnp.asarray(norm["scales"]))
+                    executed_resolution_order[global_step]=np.int16(n)
                     global_step += 1; last=(float(loss),np.asarray(parts).tolist())
             if phase=="encoder":
                 q=encode_batches(params["encoder"],norm["normalized"],config); generator_eval=params["generator"]
@@ -644,8 +672,13 @@ def train_all(config, datasets, views, norm, args, smoke, job_started):
                 "generator":jax.tree_util.tree_map(np.asarray,generator_eval),"encoder":jax.tree_util.tree_map(np.asarray,params["encoder"]),
                 "predictor":jax.tree_util.tree_map(np.asarray,predictor if phase=="predictor" else variables["predictor"]),
                 "q_raw":np.asarray(joint["q_raw"]) if phase in ("joint","predictor") else None,
-                "optimizer_state":jax.tree_util.tree_map(np.asarray,state),"states":states_eval})
+                "final_target_states":np.asarray(target_states) if phase=="predictor" else None,
+                "predictor_optimizer_state":jax.tree_util.tree_map(np.asarray,state) if phase=="predictor" else None,
+                "optimizer_state":jax.tree_util.tree_map(np.asarray,state),"evaluation_states":states_eval})
         final_optimizer_states[phase]=jax.tree_util.tree_map(np.asarray,state)
+    if global_step != expected_updates:
+        raise AssertionError(f"executed update count {global_step} != {expected_updates}")
+    arrays["update_resolution_order"]=executed_resolution_order
     variables.update({"generator":generator,"encoder":params["encoder"],"q_raw":jnp.asarray(q_raw),
                       "predictor":predictor,"folded_predictor":folded,"target_states":target_states,
                       "optimizer_states":final_optimizer_states})
@@ -700,23 +733,30 @@ def capacity_metrics(datasets,generator,q,mean,scales,arrays):
         for name,value in zip(("gamma","eta","residual","tangent","delta","cg_iterations","cg_relative","cg_breakdown","bound_fraction"),
                               (gamma,eta,resid,tangent,delta,iters,cgrel,breakdown,bound)):
             arrays[f"capacity_N{item['N']}_{name}"]=value
-        report["meshes"][str(item["N"])]=capacity_summary(gamma,eta,resid,tangent,bound,breakdown)
+        converged=np.isfinite(cgrel)&(cgrel<=CAPACITY_CG_RELATIVE_TOL)&~breakdown
+        nonconverged=~breakdown&~converged
+        arrays[f"capacity_N{item['N']}_cg_converged"]=converged
+        arrays[f"capacity_N{item['N']}_cg_nonconverged"]=nonconverged
+        report["meshes"][str(item["N"])]=capacity_summary(gamma,eta,resid,tangent,bound,breakdown,nonconverged)
         for name,value in (("gamma",gamma),("eta",eta),("residual",resid),("tangent",tangent),("bound",bound)):
             pooled[name].extend(value.tolist())
         offset += count
     pooled_breakdown=np.concatenate([np.asarray(arrays[f"capacity_N{item['N']}_cg_breakdown"],bool) for item in datasets])
-    report["pooled"]=capacity_summary(*(np.asarray(pooled[x]) for x in ("gamma","eta","residual","tangent","bound")),pooled_breakdown)
+    pooled_nonconverged=np.concatenate([np.asarray(arrays[f"capacity_N{item['N']}_cg_nonconverged"],bool) for item in datasets])
+    report["pooled"]=capacity_summary(*(np.asarray(pooled[x]) for x in ("gamma","eta","residual","tangent","bound")),pooled_breakdown,pooled_nonconverged)
     return report
 
 
-def capacity_summary(gamma,eta,residual,tangent,bound,breakdown):
+def capacity_summary(gamma,eta,residual,tangent,bound,breakdown,nonconverged):
     return {"gamma_median":float(np.quantile(gamma,.5,method="linear")),
             "gamma_p95":float(np.quantile(gamma,.95,method="linear")),
             "eta_median":float(np.quantile(eta,.5,method="linear")),
             "eta_p10":float(np.quantile(eta,.1,method="linear")),
             "eta_E":float(np.sqrt(np.sum(tangent)/max(np.sum(residual),1e-300))),
             "bound_component_fraction":float(np.mean(bound)),
-            "cg_breakdown_count":int(np.sum(breakdown)),"all_finite":bool(all(np.all(np.isfinite(x)) for x in (gamma,eta,residual,tangent,bound)))}
+            "cg_breakdown_count":int(np.sum(breakdown)),
+            "cg_nonconvergence_count":int(np.sum(nonconverged)),
+            "all_finite":bool(all(np.all(np.isfinite(x)) for x in (gamma,eta,residual,tangent,bound)))}
 
 
 def make_trust_attempt(config):
@@ -913,7 +953,7 @@ def license_capacity(train_metrics,capacity,history):
                 "gamma":bool(row["gamma_median"]<=1e-4 and row["gamma_p95"]<=1e-3),
                 "eta":bool(row["eta_median"]>=.9 and row["eta_p10"]>=.8 and row["eta_E"]>=.8),
                 "bound":bool(row["bound_component_fraction"]<=.01),
-                "finite":bool(row["all_finite"] and row["cg_breakdown_count"]==0)}
+                "finite":bool(row["all_finite"] and row["cg_breakdown_count"]==0 and row["cg_nonconvergence_count"]==0)}
     tested={key:clauses(key) for key in [*train_metrics["meshes"],"pooled"]}
     applicable=sorted(set(failing+["pooled"]))
     licensed=bool(failing and all(all(tested[key].values()) for key in applicable))
@@ -987,8 +1027,6 @@ def main():
     if updates_started:
         arrays["final_q_raw"]=np.asarray(variables["q_raw"])
         arrays["final_target_states"]=np.asarray(variables["target_states"])
-        arrays["update_resolution_order"]=(np.asarray((16,16,16),np.int16) if smoke else
-            np.tile(np.asarray(N_ORDER,np.int16),sum(PHASES[x]["epochs"] for x in PHASES)*BATCHES_PER_N))
         predictor_fold_identity=legacy.predictor_fold_identity(variables["predictor"],variables["folded_predictor"],
             legacy.concatenate(train,"features"),norm["feature_mean"],norm["feature_scale"])
         q=np.tanh(np.asarray(variables["q_raw"])); train_states=np.concatenate((legacy.concatenate(train,"affine"),q),axis=1)

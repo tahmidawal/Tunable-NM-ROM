@@ -519,3 +519,23 @@ contains its same-job live-FOM Cox-weak/K3-full structural preflight. The fixed
 synthetic contract and driver/auditor smoke tests pass under f64/highest on the
 local GPU; they are excluded and open no data. Only T1 may be staged, and no
 Phase-9 job is authorized before root audits the exact commit and manifest.
+
+The final prospective provenance/runtime hardening records the actual resolution
+at every executed update and requires the exact 528,768-entry order plus terminal
+history marker; it binds the terminal work checkpoint byte-for-byte to every
+final model/state and predictor optimizer state. The no-update projection now
+names and charges 58 train-cohort-equivalent and six selection-cohort-equivalent
+full-field passes, trust/capacity alternatives, regeneration, and a fixed
+900-second compression/final-audit reserve. Capacity CG relative residuals have
+an independently checked convergence/nonconvergence classification, and any
+nonconvergence blocks G2. Pull verification now binds the expected manifest,
+commit, job, scientific artifact hashes, exact runtime set, and Slurm
+`COMPLETED|0:0` before local sealing or remote cleanup.
+
+The superseding T1 synthetic execution completed in 44.891 seconds under the
+55-second `jaxrun` cap with GPU/f64/highest and exact executed order
+`[16,16,16]`; its independent audit passed. Six targeted audit corruptions
+(optimizer, feature normalization, preflight, actual update order, history
+marker, and terminal work checkpoint), two capacity-classification corruptions,
+and five pulled-bundle corruptions were all rejected. These are excluded
+synthetic/static controls only; no locked data or Phase-9 scientific job ran.

@@ -60,7 +60,12 @@ def metric_match(report,arrays,prefix,terminal):
 
 
 def schedule_check(report,arrays,smoke):
-    if smoke: return bool(report["schedule"]["total_update_count"]==3)
+    if smoke:
+        return bool(report["schedule"]["total_update_count"]==3
+                    and np.array_equal(np.asarray(arrays.get("update_resolution_order")),np.asarray((16,16,16),np.int16))
+                    and np.array_equal(np.asarray(arrays.get("history_marker")),np.asarray((3,),np.int64))
+                    and [report["history"].get(f"{phase}_epoch1",{}).get("terminal_update")
+                         for phase in ("encoder","joint","predictor")] == [1,2,3])
     sizes={64:26112,128:6528,256:3264}
     for phase,row in p9.PHASES.items():
         expected=p9.schedule_permutations(phase,row["epochs"],sizes)
@@ -74,9 +79,10 @@ def schedule_check(report,arrays,smoke):
             "phase_update_counts":expected_counts,"total_update_count":528768,"terminal_epochs":{"encoder":9,"joint":27,"predictor":18},"terminal_only":True}:
         return False
     if not report["decision"]["updates_started"]:
-        return bool(not report["history"] and "update_resolution_order" not in arrays)
+        return bool(not report["history"] and "update_resolution_order" not in arrays and "history_marker" not in arrays)
     expected_order=np.tile(np.asarray((64,128,256),np.int16),54*3264)
     if not np.array_equal(arrays["update_resolution_order"],expected_order): return False
+    if not np.array_equal(np.asarray(arrays["history_marker"]),np.asarray((528768,),np.int64)): return False
     terminals={"encoder":88128,"joint":352512,"predictor":528768}
     for phase,epochs in (("encoder",9),("joint",27),("predictor",18)):
         rows=[report["history"].get(f"{phase}_epoch{epoch}") for epoch in range(1,epochs+1)]
@@ -126,20 +132,34 @@ def trace_check(arrays):
     return checks
 
 
+def capacity_cg_classification_check(relative,breakdown,converged,nonconverged):
+    relative=np.asarray(relative); breakdown=np.asarray(breakdown,bool)
+    expected_converged=np.isfinite(relative)&(relative<=p9.CAPACITY_CG_RELATIVE_TOL)&~breakdown
+    expected_nonconverged=~breakdown&~expected_converged
+    return bool(np.array_equal(np.asarray(converged,bool),expected_converged)
+                and np.array_equal(np.asarray(nonconverged,bool),expected_nonconverged))
+
+
 def capacity_check(report,arrays):
     if report.get("capacity") is None: return {"present":False,"pass":True,"license":False}
     summaries={"meshes":{}}; work_pass=True
     for n in (64,128,256):
-        values=[np.asarray(arrays[f"capacity_N{n}_{name}"]) for name in ("gamma","eta","residual","tangent","bound_fraction","cg_breakdown")]
+        values=[np.asarray(arrays[f"capacity_N{n}_{name}"]) for name in ("gamma","eta","residual","tangent","bound_fraction","cg_breakdown","cg_nonconverged")]
         summaries["meshes"][str(n)]=p9.capacity_summary(*values)
         delta=np.asarray(arrays[f"capacity_N{n}_delta"]); iters=np.asarray(arrays[f"capacity_N{n}_cg_iterations"]); relative=np.asarray(arrays[f"capacity_N{n}_cg_relative"])
+        breakdown=np.asarray(arrays[f"capacity_N{n}_cg_breakdown"],bool)
+        converged=np.asarray(arrays[f"capacity_N{n}_cg_converged"],bool)
+        nonconverged=np.asarray(arrays[f"capacity_N{n}_cg_nonconverged"],bool)
         work_pass &= bool(delta.ndim==2 and delta.shape[1]==19 and np.all(np.isfinite(delta)) and np.all(np.isfinite(relative))
-                          and np.all(relative>=0) and np.all(iters>=0) and np.all(iters<=38))
+                          and np.all(relative>=0) and np.all(iters>=0) and np.all(iters<=38)
+                          and capacity_cg_classification_check(relative,breakdown,converged,nonconverged))
     pooled=[]
     for name in ("gamma","eta","residual","tangent","bound_fraction"):
         pooled.append(np.concatenate([np.asarray(arrays[f"capacity_N{n}_{name}"]) for n in (64,128,256)]))
-    summaries["pooled"]=p9.capacity_summary(*pooled,np.asarray([],bool))
-    summary_match=close(json.dumps(summaries,sort_keys=True),json.dumps(report["capacity"],sort_keys=True)) if False else summaries==report["capacity"]
+    pooled_breakdown=np.concatenate([np.asarray(arrays[f"capacity_N{n}_cg_breakdown"],bool) for n in (64,128,256)])
+    pooled_nonconverged=np.concatenate([np.asarray(arrays[f"capacity_N{n}_cg_nonconverged"],bool) for n in (64,128,256)])
+    summaries["pooled"]=p9.capacity_summary(*pooled,pooled_breakdown,pooled_nonconverged)
+    summary_match=summaries==report["capacity"]
     # Recompute the exact Boolean conjunction without trusting the driver's label.
     failing=report["capacity_license"]["failing_strata"]; applicable=sorted(set(failing+["pooled"]))
     improvements={}
@@ -154,7 +174,8 @@ def capacity_check(report,arrays):
         imp=improvements[key]
         criteria[key]={"late_improvement":bool(0<=imp<=.01),"gamma":bool(row["gamma_median"]<=1e-4 and row["gamma_p95"]<=1e-3),
                        "eta":bool(row["eta_median"]>=.9 and row["eta_p10"]>=.8 and row["eta_E"]>=.8),
-                       "bound":bool(row["bound_component_fraction"]<=.01),"finite":bool(row["all_finite"] and row["cg_breakdown_count"]==0)}
+                       "bound":bool(row["bound_component_fraction"]<=.01),
+                       "finite":bool(row["all_finite"] and row["cg_breakdown_count"]==0 and row["cg_nonconvergence_count"]==0)}
     licensed=bool(failing and all(all(criteria[k].values()) for k in applicable))
     improvement_match=all(close(improvements[k],report["capacity_license"]["late_improvement_24_27"][k]) for k in improvements)
     return {"present":True,"summary_match":summary_match,"work_pass":work_pass,"criteria_match":criteria==report["capacity_license"]["criteria"],"improvement_match":improvement_match,
@@ -276,7 +297,7 @@ def full_field_check(report,arrays,checkpoint,smoke):
             np.asarray(checkpoint["normalization"]["mean"]),np.asarray(checkpoint["normalization"]["scales"]),fresh)
         for item in train:
             n=item["N"]
-            for suffix in ("gamma","eta","residual","tangent","delta","cg_iterations","cg_relative","cg_breakdown","bound_fraction"):
+            for suffix in ("gamma","eta","residual","tangent","delta","cg_iterations","cg_relative","cg_breakdown","cg_converged","cg_nonconverged","bound_fraction"):
                 capacity &= close(fresh[f"capacity_N{n}_{suffix}"],arrays[f"capacity_N{n}_{suffix}"])
         capacity &= recomputed_capacity==report["capacity"]
     return {"terminal_train_exact_arrays":bool(all(checks)),"capacity_exact_arrays":bool(capacity),"pass":bool(all(checks) and capacity)}
@@ -314,13 +335,20 @@ def main():
                 "logs":("jax_backend=gpu" in stdout and "ALL-DONE" in stdout and not re.search(r"(?i)(captured.*large.*constant|oom|out of memory|traceback|disk.*full)",stdout+stderr))}
     counts={"generator":leaves(checkpoint["generator"]),"encoder":leaves(checkpoint["encoder"]),"predictor":leaves(checkpoint["predictor"])}
     parameter_pass=counts==report["parameter_counts"]["expected"]==report["parameter_counts"]["reported"]
-    work_binding=True
+    work_binding=bool(report.get("work_checkpoint") is None and not report["decision"]["updates_started"])
     if report.get("work_checkpoint") is not None:
         work_path=os.path.join(os.path.dirname(args.source_json),report["work_checkpoint"]["basename"])
         work=pickle.load(open(work_path,"rb")) if os.path.isfile(work_path) else {}
         work_binding=bool(os.path.isfile(work_path) and c.sha256(work_path)==report["work_checkpoint"]["sha256"]
                           and work.get("phase")=="predictor" and work.get("epoch")== (1 if args.smoke else 18)
                           and work.get("global_update")== (3 if args.smoke else 528768)
+                          and tree_exact(work.get("generator"),checkpoint["generator"])
+                          and tree_exact(work.get("encoder"),checkpoint["encoder"])
+                          and tree_exact(work.get("predictor"),checkpoint["predictor"])
+                          and np.array_equal(np.asarray(work.get("q_raw")),np.asarray(checkpoint["q_raw"]))
+                          and np.array_equal(np.asarray(work.get("final_target_states")),np.asarray(checkpoint["final_target_states"]))
+                          and tree_exact(work.get("predictor_optimizer_state"),checkpoint["optimizer_states"]["predictor"])
+                          and tree_exact(work.get("optimizer_state"),checkpoint["optimizer_states"]["predictor"])
                           and all(np.all(np.isfinite(np.asarray(x))) for x in __import__('jax').tree_util.tree_leaves(work.get("optimizer_state",{}))))
     source_binding=bool(args.smoke or all(rows.get("code/"+name)==digest for name,digest in report["provenance"].get("source_sha256",{}).items()))
     dependency_binding=True
@@ -354,22 +382,43 @@ def main():
     if structural_stop:
         projection_exact=True
     elif args.smoke:
-        projection_exact=True
+        remaining=max(0.,preflight["allocation_seconds"]-preflight["actual_elapsed_at_decision_seconds"])
+        projection_exact=bool(preflight["projected_update_seconds"]==0 and preflight["projected_evaluation_seconds"]==0
+            and preflight["projected_train_evaluation_seconds"]==0 and preflight["projected_selection_evaluation_seconds"]==0
+            and preflight["train_cohort_evaluation_unit_seconds"]==0 and preflight["selection_cohort_evaluation_unit_seconds"]==0
+            and preflight["projected_trust_seconds"]==0 and preflight["projected_capacity_seconds"]==0
+            and preflight["fixed_io_audit_reserve_seconds"]==0
+            and preflight["evaluation_counts"]==p9.PREFLIGHT_EVALUATION_COUNTS
+            and preflight["projected_terminal_seconds"]==0 and preflight["required_with_safety_seconds"]==0
+            and close(remaining,preflight["actual_remaining_at_decision_seconds"]) and preflight["proceed_before_update1"])
     else:
         med=preflight["median_seconds"]
         updates=sum(med[f"{phase}_N{n}"]*3264*p9.PHASES[phase]["epochs"] for phase in p9.PHASES for n in (64,128,256))
         sizes={64:26112,128:6528,256:3264}; selects={64:3264,128:1632,256:816}
-        evaluation=56*sum(int(np.ceil(sizes[n]/p9.BATCH_BY_N[n]))*med[f"evaluation_N{n}"] for n in sizes)
+        train_unit=sum(int(np.ceil(sizes[n]/p9.BATCH_BY_N[n]))*med[f"evaluation_N{n}"] for n in sizes)
+        selection_unit=sum(int(np.ceil(selects[n]/p9.BATCH_BY_N[n]))*med[f"evaluation_N{n}"] for n in selects)
+        counts=p9.PREFLIGHT_EVALUATION_COUNTS
+        train_evaluation=(counts["train_cox_cohorts"]+counts["train_k3_equivalent_cohorts"])*train_unit
+        selection_evaluation=(counts["selection_initial_objective_cohorts"]+counts["selection_terminal_cox_cohorts"]
+                              +counts["selection_terminal_k3_equivalent_cohorts"])*selection_unit
+        evaluation=train_evaluation+selection_evaluation
         trust_seconds=2*p9.TRUST_ATTEMPTS*sum(selects[n]*med[f"trust_N{n}"] for n in selects)
         capacity_seconds=sum(sizes[n]*med[f"capacity_N{n}"] for n in sizes)
         reserve=preflight["audit_regeneration_reserve_seconds"]
-        projected=updates+evaluation+max(trust_seconds,2*capacity_seconds)+reserve
+        fixed_reserve=p9.FINAL_IO_AUDIT_RESERVE_SECONDS
+        projected=updates+evaluation+max(trust_seconds,2*capacity_seconds)+reserve+fixed_reserve
         remaining=max(0.,preflight["allocation_seconds"]-preflight["actual_elapsed_at_decision_seconds"])
         proceed=1.15*projected<=remaining
         projection_exact=bool(close(updates,preflight["projected_update_seconds"]) and close(evaluation,preflight["projected_evaluation_seconds"])
+            and preflight["evaluation_counts"]==counts
+            and close(train_unit,preflight["train_cohort_evaluation_unit_seconds"])
+            and close(selection_unit,preflight["selection_cohort_evaluation_unit_seconds"])
+            and close(train_evaluation,preflight["projected_train_evaluation_seconds"])
+            and close(selection_evaluation,preflight["projected_selection_evaluation_seconds"])
             and close(trust_seconds,preflight["projected_trust_seconds"]) and close(capacity_seconds,preflight["projected_capacity_seconds"])
             and close(projected,preflight["projected_terminal_seconds"]) and close(remaining,preflight["actual_remaining_at_decision_seconds"])
             and close(reserve,preflight["elapsed_before_preflight_seconds"]) and reserve>=0
+            and close(fixed_reserve,preflight["fixed_io_audit_reserve_seconds"])
             and close(1.15*projected,preflight["required_with_safety_seconds"]) and proceed==preflight["proceed_before_update1"])
     preflight_check=bool(preflight.get("weights_bitwise_unchanged") and projection_exact and (structural_stop or
                          (timing_shape and np.isfinite(preflight["projected_terminal_seconds"]))))

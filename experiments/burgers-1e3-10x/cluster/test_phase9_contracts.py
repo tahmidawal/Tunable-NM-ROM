@@ -48,5 +48,25 @@ assert audit.trace_check(fixture)["pass"]
 for key,index,value in (("trust_rho",(0,0,0),.6),("trust_q",(0,0,1,0),.2),("trust_jvp_count",(0,0,0),3),
                         ("trust_active",(0,0,1),False),("trust_cg_breakdown",(0,0,0),True)):
     corrupt={name:array.copy() for name,array in fixture.items()}; corrupt[key][index]=value; assert not audit.trace_check(corrupt)["pass"]
-assert p9.capacity_summary(np.ones(2),np.ones(2),np.ones(2),np.ones(2),np.zeros(2),np.asarray((False,True)))["cg_breakdown_count"]==1
+summary=p9.capacity_summary(np.zeros(2),np.ones(2),np.ones(2),np.ones(2),np.zeros(2),
+                            np.asarray((False,True)),np.asarray((True,False)))
+assert summary["cg_breakdown_count"]==1 and summary["cg_nonconvergence_count"]==1
+clean_summary=p9.capacity_summary(np.zeros(2),np.ones(2),np.ones(2),np.ones(2),np.zeros(2),
+                                  np.zeros(2,bool),np.zeros(2,bool))
+bad_summary=dict(clean_summary); bad_summary["cg_nonconvergence_count"]=1
+train_row={"trajectory_error_mean":1e-3,"trajectory_error_worst":2e-3}
+train_metrics={"meshes":{str(n):dict(train_row) for n in (64,128,256)},"pooled":dict(train_row)}
+def epoch_metrics(value):
+    row={"mean_snapshot_relative_l2_squared":value}
+    return {"meshes":{str(n):dict(row) for n in (64,128,256)},"pooled":dict(row)}
+history={"joint_epoch24":{"metrics":epoch_metrics(1.0)},"joint_epoch27":{"metrics":epoch_metrics(.995)}}
+capacity={"meshes":{str(n):dict(clean_summary) for n in (64,128,256)},"pooled":dict(clean_summary)}
+assert p9.license_capacity(train_metrics,capacity,history)["g2_licensed"]
+capacity["pooled"]=bad_summary
+assert not p9.license_capacity(train_metrics,capacity,history)["g2_licensed"]
+relative=np.asarray((.5*p9.CAPACITY_CG_RELATIVE_TOL,2*p9.CAPACITY_CG_RELATIVE_TOL))
+breakdown=np.zeros(2,bool); converged=np.asarray((True,False)); nonconverged=np.asarray((False,True))
+assert audit.capacity_cg_classification_check(relative,breakdown,converged,nonconverged)
+assert not audit.capacity_cg_classification_check(relative,breakdown,~converged,nonconverged)
+assert not audit.capacity_cg_classification_check(relative,breakdown,converged,~nonconverged)
 print("phase9_contracts=pass")

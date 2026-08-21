@@ -1,0 +1,65 @@
+{
+ "checkpoint_sha256": "cf73892c3f0e065951154beb77fcb4113375a9957fafe1de850f681946fca851",
+ "checks": {
+  "data_and_full_fields": {
+   "pass": true,
+   "skipped": "pre-update stop"
+  },
+  "decision": {
+   "pass": true,
+   "pre_update_stop": true,
+   "selection_sealed": true
+  },
+  "dependency_binding": true,
+  "file_binding": true,
+  "information_boundary": true,
+  "metrics": true,
+  "negative_self_test": {
+   "five_corruptions_rejected": true,
+   "pass": true,
+   "positive_contract": true
+  },
+  "parameter_counts": true,
+  "predictor_fold": true,
+  "provenance": {
+   "commit": true,
+   "gpu": true,
+   "job": true,
+   "logs": true,
+   "precision": true
+  },
+  "runtime_preflight": true,
+  "schedule": true,
+  "selection_trust": {
+   "pass": true,
+   "present": false
+  },
+  "structural_preflight": true,
+  "train_trust": {
+   "pass": true,
+   "present": false
+  },
+  "work_checkpoint": true
+ },
+ "decision": {
+  "arm": "G2/q32",
+  "globalized_train_pass": false,
+  "next_action": "hard stop",
+  "phase11_pass": false,
+  "predictor_trained": false,
+  "retracted_capacity_used": false,
+  "scientific_promotion_allowed": false,
+  "selection_evaluated": false,
+  "structural_preflight_pass": false,
+  "third_architecture_licensed": false,
+  "train_direct_pass": false,
+  "updates_started": false
+ },
+ "expected_commit": "358b0a62d2c98a38ac9909eea327b7f0b48a3035",
+ "expected_job": "2754129",
+ "manifest_sha256": "36969c5db0b1caa7671b9620ba63338d8f8384994b082eb1c11d460450c1022e",
+ "negative_aware": true,
+ "source_json_sha256": "c1a3d24a0883fa5046248f294fb40b55a584de87d42e58c2d20aedd8d63e39bb",
+ "source_npz_sha256": "f0260ef4f2127d258480b17dbedc0a8720f1e454d9298ecfb93d697822a31aec",
+ "status": "pass"
+}

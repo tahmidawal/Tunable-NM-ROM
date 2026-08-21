@@ -702,3 +702,22 @@ equal, with handoff SHA-256
 and maximum absolute delta zero.  The isolated first result is excluded as a
 local audit transient; the production auditor retains exact comparisons and
 contains no retry or tolerance relaxation.
+
+Phase-11 r2 job `2754129` completed in 4m01s on pax008/H200/GPU/f64/highest,
+and its independent negative-aware audit passed.  The fresh same-H200 G2
+structural preflight measured paired median speedup `3.047233624534141x` with
+trajectory-clustered 95% interval
+`[2.396706675073385, 3.7521239409805687]`, decisively below the locked
+`10x / 8x-lower-bound` gates.  Median live eligible-FOM and repaired-route
+times were `0.09761777520179749 s` and `0.03205502685159445 s`; both methods
+had 96 same-invocation records, exact `[12,12]` position balance per method,
+and zero within-trajectory `>1.5x` outliers.  The route itself was healthy:
+K3/Cox identity worst `2.8418069919297566e-16`, exact boundary, 50 Cox weak
+plus 51 K3 coefficient-grid/full-field evaluations, no weak-Jacobian or trial
+work, no failures, and `1206594776` compiled device bytes.  The FOM was
+eligible and finite with zero breakdowns/flags.  The structural gate stopped
+before runtime projection and update 1 with bitwise-unchanged weights; no
+training, predictor, selection, or downstream data ran, and the decision is a
+binding hard stop with no promotion.  The exact r2 bundle is checksum-preserved
+under `runs/p11_g2_s11_r2`; after PASS, r2 and reverified r1 remotes were
+removed exactly.

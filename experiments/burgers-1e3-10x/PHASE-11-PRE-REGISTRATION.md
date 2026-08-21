@@ -259,3 +259,19 @@ Regression tests must prove the containers are independent, pre-update history
 stays empty, nested arrays/scalars serialize, and nonfinite JSON remains
 rejected.  No retry is authorized until its exact commit and manifest pass a
 new root audit; r1 never self-authorizes any other arm or downstream work.
+
+## Final disposition
+
+The sole retry job `2754129` completed on pax008/H200 and passed its exact
+independent audit.  Its fresh G2 structural preflight measured paired median
+speedup `3.047233624534141x` with clustered 95% interval
+`[2.396706675073385, 3.7521239409805687]`, below both locked gates.  The live
+eligible-FOM and repaired-route medians were respectively
+`0.09761777520179749 s` and `0.03205502685159445 s`; 96 records per method had
+exact AB/BA balance and zero within-trajectory outliers.  Identity, boundary,
+work, FOM health, and memory controls passed, including identity worst
+`2.8418069919297566e-16` and `1206594776` compiled device bytes.  Therefore
+the structural gate stopped before runtime projection and update 1 with
+bitwise-unchanged weights.  Phase 11 is closed negatively: no learned G2,
+predictor, selection, rollout-speed, third-architecture, or downstream claim
+is licensed.

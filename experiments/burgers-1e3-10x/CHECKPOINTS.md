@@ -728,3 +728,18 @@ K3/Cox identity, and Phase 11 stopped before runtime projection/update 1 with
 bitwise-unchanged weights.  No training, predictor, selection, or downstream
 data ran, and the invalid result licenses none of them retrospectively.  Both
 r1 and r2 remotes were checksum-verified and removed exactly.
+
+Phase 12 prospectively permits exactly one seed-11 G2/q32 cell to repair the
+retracted Phase-11 structural implementation before any update.  The timed
+route may contain only charged cold recovery/features, predictor+G2, 50 Cox
+weak evaluations, and 51 K3 full fields; its five exact f64 leaves total
+`429230728` logical bytes and locked compiler output is `429230768` bytes.
+The 51-state Cox full control runs only in a separate untimed identity
+executable on identical inputs.  Independent actual-vs-identity and K3-vs-Cox
+checks remain `<=2e-14`, and a sixth-leaf hidden-control corruption must be
+rejected.  Raw 24x4 AB/BA repetitions, burn, outliers, full compiler memory,
+live FOM health, and unchanged `10x / LB8x` gates are mandatory.  A miss stops
+before update 1; a pass alone opens the unchanged 18-encoder/54-joint,
+full-train final-q globalization, conditional predictor, and gated selection
+path.  This is a new prospective repair, not retrospective timing selection;
+no implementation or job is yet authorized.

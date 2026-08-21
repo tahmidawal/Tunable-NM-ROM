@@ -76,6 +76,27 @@ def close(left, right, message, rtol=2e-13, atol=2e-14):
     require(np.allclose(left, right, rtol=rtol, atol=atol, equal_nan=False), message)
 
 
+def audit_attempt_values(trial, predicted, actual, rho, finite, attempted):
+    """Verify positive-ratio rows and the fixed nonpositive-prediction sentinel."""
+    attempted = np.asarray(attempted, bool)
+    trial = np.asarray(trial); predicted = np.asarray(predicted)
+    actual = np.asarray(actual); rho = np.asarray(rho)
+    finite = np.asarray(finite, bool)
+    require(all(value.shape == attempted.shape for value in
+                (trial, predicted, actual, rho, finite)), "attempt value shapes")
+    base_finite = np.isfinite(trial) & np.isfinite(predicted) & np.isfinite(actual)
+    require(np.all(base_finite | ~attempted), "finite attempted trial/predicted/actual")
+    positive = attempted & (predicted > 0.0)
+    sentinel = attempted & ~positive
+    require(np.all(finite[positive]) and not np.any(finite[sentinel]),
+            "recorded attempt finiteness classification")
+    require(np.all(np.isfinite(rho[positive])), "finite positive-prediction rho")
+    close(rho[positive], (actual/predicted)[positive], "positive-prediction rho")
+    require(np.all(np.isneginf(rho[sentinel])), "nonpositive-prediction rho sentinel")
+    require(not np.any(np.isnan(rho[attempted]) | np.isposinf(rho[attempted])),
+            "invalid attempted rho")
+
+
 def normalized_affine(physical):
     physical = np.asarray(physical, np.float64)
     l11, l22 = np.exp(physical[:, 2]), np.exp(physical[:, 4])
@@ -158,7 +179,7 @@ def audit_traces(arrays, attempts, total):
     require(np.array_equal(jvp, np.where(attempted, cg_iters + 1, 0))
             and np.array_equal(vjp, jvp), "matrix-free work counts")
     require(np.all((bound >= 0) & (bound <= 19)), "bound activity counts")
-    require(np.all(finite | ~attempted), "attempt finiteness")
+    audit_attempt_values(trial, predicted, actual, rho, finite, attempted)
     require(not np.any(breakdown & attempted), "no CG breakdown")
     require(np.all(attempted[:,:,0]), "all starts attempted once")
     for index in range(attempts):

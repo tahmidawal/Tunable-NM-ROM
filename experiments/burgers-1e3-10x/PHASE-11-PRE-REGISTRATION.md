@@ -233,3 +233,29 @@ projection, structural timing/identity/work, premature selection access, and
 false positive/negative gate decisions. Exact checksummed pull and remote
 cleanup occur only after audit PASS. Negative outcomes are binding.
 
+## Prospective r1 infrastructure closure and sole retry
+
+Job `2751097` (`p11_g2_s11_r1`) ran the exact commit
+`cf6dee04f96110a0e8f7fb9be334f216aac0f4b1` and 69-file manifest
+`a14887b2828cde86c5489a1e5d6cf5437c4ea51ed32d6dd453944b11ad32584f`
+on pax008/H200/GPU, f64/highest.  It exited `1:0` after 3m46s while writing the
+terminal JSON, before independent audit.  The partial report records
+`structural_preflight_pass=false` and `updates_started=false`; the NPZ has only
+normalization arrays, the checkpoint has no optimizer states and an empty
+globalized-q array, and no PROGRESS file exists.  Therefore the arm consumed
+zero optimizer updates.  The structural numeric panel was not durably written,
+the runtime projection was not executed, and no r1 value or gate is accepted
+as scientific evidence.
+
+The exact infrastructure cause is a shared empty dictionary on the pre-update
+branch (`permutations`, `arrays`, and `history` aliased), followed by the lack
+of recursive NumPy JSON normalization.  The first unserializable path was
+`history.coefficient_mean`.  One sole prospective retry
+`p11_g2_s11_r2` may use distinct empty dictionaries and generic recursive
+normalization of NumPy arrays/scalars only.  It must reproduce the unchanged
+architecture, initialization, data, fresh structural panel, runtime kill,
+schedule, loss, trust protocol, gates, H200 request, and information boundary.
+Regression tests must prove the containers are independent, pre-update history
+stays empty, nested arrays/scalars serialize, and nonfinite JSON remains
+rejected.  No retry is authorized until its exact commit and manifest pass a
+new root audit; r1 never self-authorizes any other arm or downstream work.

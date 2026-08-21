@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p11_g2_s11_r1/code/b10_phase11_g2.py", line 893, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p11_g2_s11_r1/code/b10_phase11_g2.py", line 886, in main
+    atomic_json(args.output_json, report)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p11_g2_s11_r1/code/b10_phase11_g2.py", line 81, in atomic_json
+    p9.atomic_json(path, value)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p11_g2_s11_r1/code/b10_phase9_train.py", line 91, in atomic_json
+    json.dump(value, handle, indent=1, sort_keys=True, allow_nan=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+                 ^^^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type ndarray is not JSON serializable

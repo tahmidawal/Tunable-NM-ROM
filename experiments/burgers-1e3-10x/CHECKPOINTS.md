@@ -675,3 +675,15 @@ device.  Excluded local checks completed the G2 negative execution path in
 unchanged same-route structural smoke in 10.0 seconds, ten corruption controls
 plus the positive conditional-selection contract, and exact pull contracts.
 No Phase-11 scientific job has been submitted.
+
+Phase-11 r1 job `2751097` ran commit `cf6dee04f96110a0e8f7fb9be334f216aac0f4b1`
+on pax008/H200/GPU/f64/highest and failed `1:0` after 3m46s during terminal
+JSON serialization with zero optimizer updates.  The pre-update branch had
+aliased its permutation/array/history dictionaries; normalization then placed
+an ndarray at the first failing path `history.coefficient_mean`.  The exact
+bundle and scheduler record are checksum-preserved under
+`runs/p11_g2_s11_r1_failed`, while the remote remains retained.  The partial
+report's structural-fail Boolean is unaccepted: its numeric structural panel
+was never written and runtime projection never ran.  A sole prospective r2 may
+repair only independent empty containers plus generic recursive NumPy JSON
+normalization, with all science and gates unchanged, after a new root audit.

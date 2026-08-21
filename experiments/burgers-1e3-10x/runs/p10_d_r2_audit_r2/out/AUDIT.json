@@ -1,0 +1,4437 @@
+{
+ "audit_only": true,
+ "audit_r1_failure_sha256": {
+  "LOCAL.sha256": "43b7d071a4301b9511da38cbbd2e74ac63a0bcba48abd4a5cad29a69ef98796d",
+  "MANIFEST.sha256": "d462f02c9f4c6b00f43c3002e56c30eb88d62061894589b4b62e30fb3685f5cb",
+  "REMOTE.sha256": "e7c9fae182d37060bb137d9d56b8ee743bacc915631c349aa9b77da4f47d628e",
+  "SACCT.txt": "28aab3917b0dc99e93f3e6d762662d7a798c944fd8d21f23f43ceb2b3af59d4e",
+  "logs/2747981.err": "8666e85d654007462211b1f558558eb59e7493fc5d4bce2840432caafe673598",
+  "logs/2747981.out": "ca168fd48464dd72d82d26752cdbb62c2a0b617e29ac8775174ef834774790a7"
+ },
+ "capacity": {
+  "accepted": false,
+  "g2_licensed": false,
+  "license_complete": false,
+  "reproducible": false,
+  "used": false
+ },
+ "checks": {
+  "accepted_audit_binding": true,
+  "accepted_initial_control": true,
+  "accepted_initial_control_arrays": {
+   "atol": 2e-14,
+   "fields": {
+    "N128.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N128.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N256.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N64.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "accepted_initial_control_metrics": {
+   "atol": 2e-14,
+   "fields": {
+    "N128.categorical": {
+     "pass": true
+    },
+    "N128.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.categorical": {
+     "pass": true
+    },
+    "N256.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.categorical": {
+     "pass": true
+    },
+    "N64.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.categorical": {
+     "pass": true
+    },
+    "pooled.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "artifacts": true,
+  "audit_provenance": {
+   "commit": true,
+   "gpu": true,
+   "job": true,
+   "logs": true,
+   "precision": true
+  },
+  "audit_r1_failure_binding": true,
+  "audit_source_binding": true,
+  "config": true,
+  "decision": true,
+  "dependency_binding": true,
+  "failed_t1_binding": true,
+  "field_health": true,
+  "health": true,
+  "identity": true,
+  "immutable_data_binding": true,
+  "immutable_r2_bundle_binding": true,
+  "information_boundary": true,
+  "initial_control_file_exact": true,
+  "negative_self_test": {
+   "decision_corruption_count": 6,
+   "decision_corruptions_rejected": true,
+   "floating_larger_perturbation_rejected": true,
+   "floating_portable_positive": true,
+   "normalization_corruption_count": 4,
+   "normalization_corruptions_rejected": true,
+   "normalization_schema_positive": true,
+   "pass": true,
+   "termination_beyond_band_rejected": true,
+   "termination_exact_and_near_positive": true,
+   "termination_inactive_corruption_rejected": true
+  },
+  "objective_binding": true,
+  "original_audit_failure_bound": true,
+  "prereg_manifest_binding": true,
+  "r1_failure_binding": true,
+  "recovered_normalization_binding": {
+   "nested_recovery_npz_exact": {
+    "feature_mean": true,
+    "feature_scale": true,
+    "mean": true,
+    "scales": true
+   },
+   "nested_recovery_report_hashes": {
+    "feature_mean": true,
+    "feature_scale": true,
+    "mean": true,
+    "scales": true
+   },
+   "pass": true,
+   "phase10_mean_scales_exact": {
+    "mean": true,
+    "scales": true
+   },
+   "schema_exact": true
+  },
+  "recovery_binding": true,
+  "repeated_data_arrays": {
+   "atol": 2e-14,
+   "fields": {
+    "coefficient_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "head_scales": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "training_affine": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "training_features": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "repeated_full_field": true,
+  "repeated_initial_arrays": {
+   "atol": 2e-14,
+   "fields": {
+    "N128.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N128.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N256.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N64.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "repeated_initial_metrics": {
+   "atol": 2e-14,
+   "fields": {
+    "N128.categorical": {
+     "pass": true
+    },
+    "N128.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.categorical": {
+     "pass": true
+    },
+    "N256.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.categorical": {
+     "pass": true
+    },
+    "N64.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.categorical": {
+     "pass": true
+    },
+    "pooled.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "repeated_regeneration": {
+   "atol": 2e-14,
+   "fields": {
+    "root.__keys__": {
+     "pass": true
+    },
+    "root.absolute_tolerance": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root.feature_exact_columns_bitwise": {
+     "exact": true,
+     "pass": true
+    },
+    "root.p7_training_features_exact": {
+     "exact": true,
+     "pass": true
+    },
+    "root.p7_vs_physical_mapping": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root.regenerated_vs_physical_mapping": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root.relative_tolerance": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root.viscosity_feature_max_abs": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root.viscosity_feature_within_ulp": {
+     "exact": true,
+     "pass": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "repeated_terminal_arrays": {
+   "atol": 2e-14,
+   "fields": {
+    "N128.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N128.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N256.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.boundary_count": {
+     "bitwise_exact": true,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true,
+     "zero": true
+    },
+    "N64.denominator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.identity": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.numerator": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "repeated_terminal_metrics": {
+   "atol": 2e-14,
+   "fields": {
+    "N128.categorical": {
+     "pass": true
+    },
+    "N128.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N128.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.categorical": {
+     "pass": true
+    },
+    "N256.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N256.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.categorical": {
+     "pass": true
+    },
+    "N64.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "N64.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.categorical": {
+     "pass": true
+    },
+    "pooled.k3_cox_identity_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.mean_snapshot_relative_l2_squared": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.trajectory_error_mean": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "pooled.trajectory_error_worst": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "python_float_type": true,
+     "same_dtype": true,
+     "same_shape": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "repeated_training_metadata": {
+   "atol": 2e-14,
+   "fields": {
+    "root.__length__": {
+     "pass": true
+    },
+    "root[0].N": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].__keys__": {
+     "pass": true
+    },
+    "root[0].case_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].global_start": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].global_stop": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].num_times": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.__keys__": {
+     "pass": true
+    },
+    "root[0].reference_health.draw_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.independent_max_relative_residual": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root[0].reference_health.indices.__length__": {
+     "pass": true
+    },
+    "root[0].reference_health.indices[0]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[100]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[101]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[102]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[103]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[104]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[105]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[106]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[107]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[108]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[109]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[10]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[110]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[111]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[112]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[113]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[114]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[115]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[116]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[117]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[118]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[119]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[11]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[120]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[121]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[122]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[123]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[124]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[125]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[126]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[127]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[128]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[129]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[12]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[130]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[131]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[132]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[133]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[134]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[135]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[136]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[137]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[138]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[139]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[13]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[140]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[141]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[142]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[143]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[144]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[145]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[146]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[147]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[148]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[149]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[14]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[150]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[151]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[152]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[153]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[154]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[155]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[156]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[157]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[158]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[159]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[15]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[160]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[161]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[162]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[163]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[164]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[165]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[166]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[167]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[168]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[169]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[16]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[170]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[171]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[172]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[173]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[174]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[175]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[176]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[177]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[178]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[179]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[17]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[180]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[181]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[182]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[183]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[184]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[185]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[186]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[187]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[188]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[189]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[18]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[190]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[191]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[192]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[193]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[194]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[195]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[196]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[197]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[198]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[199]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[19]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[1]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[200]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[201]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[202]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[203]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[204]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[205]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[206]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[207]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[208]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[209]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[20]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[210]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[211]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[212]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[213]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[214]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[215]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[216]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[217]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[218]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[219]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[21]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[220]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[221]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[222]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[223]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[224]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[225]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[226]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[227]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[228]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[229]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[22]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[230]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[231]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[232]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[233]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[234]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[235]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[236]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[237]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[238]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[239]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[23]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[240]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[241]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[242]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[243]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[244]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[245]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[246]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[247]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[248]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[249]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[24]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[250]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[251]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[252]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[253]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[254]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[255]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[256]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[257]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[258]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[259]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[25]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[260]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[261]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[262]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[263]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[264]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[265]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[266]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[267]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[268]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[269]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[26]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[270]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[271]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[272]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[273]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[274]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[275]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[276]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[277]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[278]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[279]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[27]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[280]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[281]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[282]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[283]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[284]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[285]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[286]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[287]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[288]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[289]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[28]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[290]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[291]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[292]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[293]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[294]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[295]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[296]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[297]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[298]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[299]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[29]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[2]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[300]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[301]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[302]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[303]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[304]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[305]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[306]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[307]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[308]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[309]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[30]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[310]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[311]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[312]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[313]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[314]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[315]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[316]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[317]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[318]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[319]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[31]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[320]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[321]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[322]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[323]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[324]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[325]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[326]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[327]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[328]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[329]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[32]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[330]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[331]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[332]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[333]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[334]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[335]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[336]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[337]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[338]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[339]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[33]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[340]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[341]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[342]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[343]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[344]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[345]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[346]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[347]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[348]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[349]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[34]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[350]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[351]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[352]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[353]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[354]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[355]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[356]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[357]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[358]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[359]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[35]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[360]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[361]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[362]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[363]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[364]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[365]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[366]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[367]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[368]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[369]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[36]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[370]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[371]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[372]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[373]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[374]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[375]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[376]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[377]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[378]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[379]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[37]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[380]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[381]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[382]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[383]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[384]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[385]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[386]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[387]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[388]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[389]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[38]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[390]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[391]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[392]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[393]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[394]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[395]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[396]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[397]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[398]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[399]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[39]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[3]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[400]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[401]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[402]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[403]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[404]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[405]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[406]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[407]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[408]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[409]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[40]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[410]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[411]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[412]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[413]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[414]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[415]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[416]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[417]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[418]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[419]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[41]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[420]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[421]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[422]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[423]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[424]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[425]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[426]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[427]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[428]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[429]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[42]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[430]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[431]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[432]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[433]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[434]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[435]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[436]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[437]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[438]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[439]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[43]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[440]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[441]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[442]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[443]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[444]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[445]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[446]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[447]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[448]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[449]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[44]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[450]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[451]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[452]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[453]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[454]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[455]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[456]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[457]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[458]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[459]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[45]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[460]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[461]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[462]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[463]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[464]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[465]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[466]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[467]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[468]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[469]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[46]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[470]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[471]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[472]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[473]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[474]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[475]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[476]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[477]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[478]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[479]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[47]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[480]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[481]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[482]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[483]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[484]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[485]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[486]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[487]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[488]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[489]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[48]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[490]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[491]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[492]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[493]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[494]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[495]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[496]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[497]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[498]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[499]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[49]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[4]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[500]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[501]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[502]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[503]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[504]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[505]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[506]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[507]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[508]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[509]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[50]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[510]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[511]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[51]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[52]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[53]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[54]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[55]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[56]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[57]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[58]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[59]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[5]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[60]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[61]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[62]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[63]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[64]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[65]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[66]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[67]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[68]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[69]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[6]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[70]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[71]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[72]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[73]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[74]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[75]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[76]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[77]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[78]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[79]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[7]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[80]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[81]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[82]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[83]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[84]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[85]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[86]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[87]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[88]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[89]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[8]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[90]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[91]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[92]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[93]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[94]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[95]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[96]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[97]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[98]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[99]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.indices[9]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].reference_health.reported_max_relative_residual": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root[0].reference_health.seed": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].snapshot_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].source_start": {
+     "exact": true,
+     "pass": true
+    },
+    "root[0].source_stop": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].N": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].__keys__": {
+     "pass": true
+    },
+    "root[1].case_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].global_start": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].global_stop": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].num_times": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.__keys__": {
+     "pass": true
+    },
+    "root[1].reference_health.draw_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.independent_max_relative_residual": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root[1].reference_health.indices.__length__": {
+     "pass": true
+    },
+    "root[1].reference_health.indices[0]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[100]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[101]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[102]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[103]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[104]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[105]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[106]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[107]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[108]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[109]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[10]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[110]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[111]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[112]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[113]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[114]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[115]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[116]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[117]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[118]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[119]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[11]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[120]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[121]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[122]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[123]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[124]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[125]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[126]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[127]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[12]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[13]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[14]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[15]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[16]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[17]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[18]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[19]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[1]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[20]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[21]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[22]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[23]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[24]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[25]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[26]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[27]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[28]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[29]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[2]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[30]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[31]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[32]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[33]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[34]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[35]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[36]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[37]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[38]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[39]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[3]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[40]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[41]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[42]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[43]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[44]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[45]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[46]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[47]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[48]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[49]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[4]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[50]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[51]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[52]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[53]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[54]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[55]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[56]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[57]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[58]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[59]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[5]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[60]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[61]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[62]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[63]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[64]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[65]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[66]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[67]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[68]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[69]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[6]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[70]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[71]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[72]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[73]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[74]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[75]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[76]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[77]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[78]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[79]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[7]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[80]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[81]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[82]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[83]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[84]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[85]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[86]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[87]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[88]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[89]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[8]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[90]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[91]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[92]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[93]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[94]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[95]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[96]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[97]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[98]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[99]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.indices[9]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].reference_health.reported_max_relative_residual": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root[1].reference_health.seed": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].snapshot_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].source_start": {
+     "exact": true,
+     "pass": true
+    },
+    "root[1].source_stop": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].N": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].__keys__": {
+     "pass": true
+    },
+    "root[2].case_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].global_start": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].global_stop": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].num_times": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.__keys__": {
+     "pass": true
+    },
+    "root[2].reference_health.draw_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.independent_max_relative_residual": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root[2].reference_health.indices.__length__": {
+     "pass": true
+    },
+    "root[2].reference_health.indices[0]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[10]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[11]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[12]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[13]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[14]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[15]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[16]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[17]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[18]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[19]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[1]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[20]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[21]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[22]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[23]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[24]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[25]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[26]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[27]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[28]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[29]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[2]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[30]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[31]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[32]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[33]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[34]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[35]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[36]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[37]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[38]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[39]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[3]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[40]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[41]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[42]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[43]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[44]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[45]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[46]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[47]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[48]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[49]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[4]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[50]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[51]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[52]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[53]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[54]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[55]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[56]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[57]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[58]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[59]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[5]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[60]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[61]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[62]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[63]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[6]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[7]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[8]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.indices[9]": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].reference_health.reported_max_relative_residual": {
+     "bitwise_exact": true,
+     "finite": true,
+     "max_absolute_difference": 0.0,
+     "max_bound_normalized_difference": 0.0,
+     "max_relative_difference": 0.0,
+     "pass": true,
+     "same_dtype": true,
+     "same_shape": true
+    },
+    "root[2].reference_health.seed": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].snapshot_count": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].source_start": {
+     "exact": true,
+     "pass": true
+    },
+    "root[2].source_stop": {
+     "exact": true,
+     "pass": true
+    }
+   },
+   "pass": true,
+   "rtol": 2e-13
+  },
+  "source_model_immutable": true,
+  "source_provenance": {
+   "commit": true,
+   "gpu": true,
+   "job": true,
+   "logs": true,
+   "manifest": true,
+   "precision": true
+  },
+  "target_chunks_exact": true,
+  "train_gate_descriptive": false,
+  "trust_trace": {
+   "acceptance_exact": true,
+   "active_transition": true,
+   "attempt_active_exact": true,
+   "attempt_work_finite": true,
+   "bound_count_exact": true,
+   "damping_transition": true,
+   "delta_transition": true,
+   "inactive_no_work": true,
+   "no_breakdown": true,
+   "no_unhealthy_exhaustion": true,
+   "nonpositive_sentinel": true,
+   "objective_transition": true,
+   "one_start_shape": true,
+   "pass": true,
+   "positive_rho_exact": true,
+   "q_transition": true,
+   "rho_definition": true,
+   "sole_choice_binding": true,
+   "terminal_exhaustion_exact": true,
+   "termination": {
+    "allowed_roundoff_mismatch_count": 2,
+    "bad_mismatch_count": 0,
+    "host_true_count": 33871,
+    "mismatch_count": 2,
+    "mismatch_distance_from_threshold": [
+     1.0399276538289793e-16,
+     1.872104530630452e-16
+    ],
+    "mismatch_indices": [
+     [
+      0,
+      27770,
+      13
+     ],
+     [
+      0,
+      32114,
+      17
+     ]
+    ],
+    "pass": true,
+    "recorded_true_count": 33873,
+    "roundoff_band": 4e-16,
+    "threshold": 1e-12
+   },
+   "termination_portable": true,
+   "work_exact": true
+  },
+  "work_checkpoint_binding": true
+ },
+ "decision": {
+  "architecture_increase_licensed": false,
+  "corrected_g1_proposal_eligible": false,
+  "fixed_g1_train_representable": false,
+  "g2_licensed": false,
+  "next_action": "separate architecture-justification proposal; no architecture license",
+  "optimizer_updates": 0,
+  "p10_d_valid": true,
+  "scientific_promotion_allowed": false,
+  "selection_evaluated": false
+ },
+ "expected_audit_commit": "47c0695d087acb209400fc769126ba5ce77ba43f",
+ "expected_audit_job": "2750135",
+ "initial_control_sha256": "03bcbd51fc375b87bb876953b910d8c6a11dcffc893048ed7d9a6f2c46f4290c",
+ "initial_train": {
+  "meshes": {
+   "128": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.8618064888258682e-15,
+    "mean_snapshot_relative_l2_squared": 0.0002447136005404005,
+    "trajectory_error_mean": 0.014145086201103382,
+    "trajectory_error_worst": 0.045103855826087606
+   },
+   "256": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.265540734532685e-15,
+    "mean_snapshot_relative_l2_squared": 0.00028891276426699686,
+    "trajectory_error_mean": 0.015578520766500157,
+    "trajectory_error_worst": 0.0484066602026945
+   },
+   "64": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.973504067287116e-15,
+    "mean_snapshot_relative_l2_squared": 0.0001895535649650981,
+    "trajectory_error_mean": 0.01246725439932803,
+    "trajectory_error_worst": 0.04077637642320842
+   }
+  },
+  "pooled": {
+   "all_finite": true,
+   "boundary_violation_count": 0,
+   "k3_cox_identity_worst": 2.973504067287116e-15,
+   "mean_snapshot_relative_l2_squared": 0.00020861531682441658,
+   "trajectory_error_mean": 0.013055157123939194,
+   "trajectory_error_worst": 0.0484066602026945
+  }
+ },
+ "manifest_sha256": "44877a42a749b608372e29f13dd3f35c2d6a488aa2c824f563b01b08e506b456",
+ "negative_aware": true,
+ "portability_contract": {
+  "absolute_tolerance": 2e-14,
+  "relative_tolerance": 2e-13,
+  "termination_roundoff_band": 4e-16
+ },
+ "recovered_train": {
+  "meshes": {
+   "128": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.8288426582187173e-15,
+    "mean_snapshot_relative_l2_squared": 0.00012968551229562494,
+    "trajectory_error_mean": 0.010568575224987099,
+    "trajectory_error_worst": 0.027144160561838927
+   },
+   "256": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.1199306048860893e-15,
+    "mean_snapshot_relative_l2_squared": 0.00013978975764737515,
+    "trajectory_error_mean": 0.011175100983955343,
+    "trajectory_error_worst": 0.0346294172981746
+   },
+   "64": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.7307806580685084e-15,
+    "mean_snapshot_relative_l2_squared": 0.00010102641565329818,
+    "trajectory_error_mean": 0.009412789716854914,
+    "trajectory_error_worst": 0.02286807703192582
+   }
+  },
+  "pooled": {
+   "all_finite": true,
+   "boundary_violation_count": 0,
+   "k3_cox_identity_worst": 2.8288426582187173e-15,
+   "mean_snapshot_relative_l2_squared": 0.00010976110067863732,
+   "trajectory_error_mean": 0.009783142651706258,
+   "trajectory_error_worst": 0.0346294172981746
+  }
+ },
+ "source_bundle_sha256": {
+  "LOCAL.sha256": "36076277caf1372eb4d02735219bda76a50ace2f8d0e5d1a5ab6dd3ba88e6990",
+  "MANIFEST.sha256": "60cd3e3f2d4946c8671f3cb43c3a852fd72a12b86735f3314bf7e78379edb45d",
+  "REMOTE.sha256": "b00d582486c2a42e007600f96e188a16786aba44c6f68a7f9f5a3113ba574cd3",
+  "SACCT.txt": "e820866cc0644bac1ba5e637aa201b9a246074db425eee1f7aeeebaad8bed99d",
+  "logs/2739690.err": "e5fe48ff1ae7be8842bae484e6ae1b49247665ba51d4c8e4e8723db5cbaa1d4b",
+  "logs/2739690.out": "eac0cb9090384c506ab767b6fe68e2a313201c27666a611b2114d86e0dda3f84",
+  "out/AUDIT.json": "d4d593db619bb84e5ef659a79c0b3fe6e44e6533fd7cedaf8f988acc6a57abda",
+  "out/PROGRESS.json": "4d522adecc615739303fa81fa71fdee8c9a904532df0e4da33a814d916d0ccba",
+  "out/initial_control.npz": "03bcbd51fc375b87bb876953b910d8c6a11dcffc893048ed7d9a6f2c46f4290c",
+  "out/phase10_d.json": "f0fab7583d1f1590efb58cd97d0128f34cc80cf4ab7ce8e3271066158f239523",
+  "out/phase10_d.npz": "35d139fedcfff539aef25a335c556d47f2ec5e8581066a9e1f9b6ad8fcef4664",
+  "out/work_checkpoint.pkl": "5fd879c32f2205d6427b272042c095624d824a8278e1eaf074c5295bcb574d68"
+ },
+ "source_commit": "25bb3502b851a4eb56c51a25af3fc844e3583219",
+ "source_job": "2739690",
+ "source_json_sha256": "f0fab7583d1f1590efb58cd97d0128f34cc80cf4ab7ce8e3271066158f239523",
+ "source_npz_sha256": "35d139fedcfff539aef25a335c556d47f2ec5e8581066a9e1f9b6ad8fcef4664",
+ "status": "pass",
+ "work_checkpoint_sha256": "5fd879c32f2205d6427b272042c095624d824a8278e1eaf074c5295bcb574d68"
+}

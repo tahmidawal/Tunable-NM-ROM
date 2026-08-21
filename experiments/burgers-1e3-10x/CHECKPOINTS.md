@@ -635,3 +635,22 @@ remains retained.  This infrastructure-only audit attempt is unconsumed.  One
 prospective audit-only r2 may correct only the schema lookup and must bind the
 nested arrays to the immutable recovery NPZ/report with positive and corrupt
 real-schema regression controls.
+
+Phase10-D audit-only r2 job `2750135` completed in 4m43s on
+pax008/H200/GPU/f64/highest.  Its independent negative-aware audit passed and
+accepted immutable job `2739690` as a valid train-only diagnostic; the exact
+pulled bundle has LOCAL digest
+`735b03b303b18618d835ed3c2154aa6f7fd5b5316707deee460702f934782a7e`.
+The two device termination predicates differed from host recomputation by only
+`1.040e-16` and `1.872e-16` around the locked threshold, both inside the
+prospective `4e-16` band; no mismatch lay outside it.  Fixed-generator latent
+globalization reduced pooled train trajectory relative-L2 from mean/worst
+`1.3055157123939194e-2 / 4.84066602026945e-2` to
+`9.783142651706258e-3 / 3.46294172981746e-2`.  Per-N recovered mean/worst was
+N64 `9.412789716854914e-3 / 2.286807703192582e-2`, N128
+`1.0568575224987099e-2 / 2.7144160561838927e-2`, and N256
+`1.1175100983955343e-2 / 3.46294172981746e-2`.  The fixed G1 generator is not
+train-representable at the unchanged `2e-4 / 7e-4` gates; corrected-G1 is not
+eligible, architecture/G2 is not licensed by this diagnostic, and no
+selection/capacity/downstream data was used.  Both source and audit remotes
+were checksum-verified and removed only after PASS.

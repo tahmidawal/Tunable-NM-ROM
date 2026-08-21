@@ -539,3 +539,27 @@ The superseding T1 synthetic execution completed in 44.891 seconds under the
 marker, and terminal work checkpoint), two capacity-classification corruptions,
 and five pulled-bundle corruptions were all rejected. These are excluded
 synthetic/static controls only; no locked data or Phase-9 scientific job ran.
+
+## 2026-08-21 — prospective Phase-9 terminal recovery
+
+T1 job `2702357` completed all 528,768 updates on an H200, then failed during
+terminal capacity-license finalization because per-mesh history rows lacked the
+pooled-only `mean_snapshot_relative_l2_squared` key.  It wrote no scientific
+JSON/NPZ/final checkpoint/AUDIT; the checksummed failure and exact final work
+checkpoint are preserved, and the verified remote directory was removed.
+Exactly one separately labelled H200 zero-update terminal-recovery cell is now
+preregistered.  It may recover audited train Cox/K3 metrics and descriptive
+final capacity only; missing epoch history is never fabricated, selection stays
+sealed, and G2/T2 licensing is forced false.
+
+The prospective recovery implementation now has a zero-update driver,
+independent negative-aware auditor, H200 lifecycle, resource bound, and exact
+pull contract.  The synthetic driver completed in 26.27 seconds; the final
+independent audit completed in 20.75 seconds and passed full-field and final
+capacity recomputation plus a positive contract and nine corruption
+rejections.  Repeated synthetic capacity CG reductions established the locked
+audit-only roundoff bounds recorded in the preregistration; scientific gates
+and the forced-false license did not change.  The pull fixture passes and
+rejects wrong manifest/job, unexpected output, failed SACCT, and a false G2
+decision.  All smoke evidence is excluded, and no recovery job is authorized
+before root audits the clean staged commit.

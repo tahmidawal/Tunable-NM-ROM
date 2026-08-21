@@ -77,8 +77,28 @@ EXPECTED_EXTRA = {
 warnings.filterwarnings("error", message=r"(?i).*captured.*large.*constant.*", category=Warning)
 
 
+def json_normalize(value):
+    """Recursively convert NumPy/JAX JSON leaves without changing values."""
+    if isinstance(value, dict):
+        return {key: json_normalize(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_normalize(item) for item in value]
+    if isinstance(value, np.ndarray):
+        return json_normalize(value.tolist())
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, jax.Array):
+        return json_normalize(np.asarray(value))
+    return value
+
+
 def atomic_json(path, value):
-    p9.atomic_json(path, value)
+    p9.atomic_json(path, json_normalize(value))
+
+
+def independent_pre_update_containers():
+    permutations, arrays, history = {}, {}, {}
+    return permutations, arrays, history
 
 
 def atomic_pickle(path, value):
@@ -701,7 +721,7 @@ def main():
                      "predictor": p9.init_predictor(CONFIG), "q_raw": initial_q,
                      "target_states": np.concatenate((legacy.concatenate(train, "affine"), initial_q), axis=1),
                      "optimizer_states": {}}
-        permutations = arrays = history = {}
+        permutations, arrays, history = independent_pre_update_containers()
         preflight = {"structural_preflight_pass": False, "weights_bitwise_unchanged": True,
                      "proceed_before_update1": False}
         updates_started = False

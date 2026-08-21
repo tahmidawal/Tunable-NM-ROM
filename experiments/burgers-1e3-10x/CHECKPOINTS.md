@@ -687,3 +687,18 @@ report's structural-fail Boolean is unaccepted: its numeric structural panel
 was never written and runtime projection never ran.  A sole prospective r2 may
 repair only independent empty containers plus generic recursive NumPy JSON
 normalization, with all science and gates unchanged, after a new root audit.
+
+The repaired excluded smoke completed in 50.9 seconds.  Its first local audit
+invocation reported only the aggregate `state_handoff=false`; that temporary
+AUDIT path was overwritten by the immediate diagnostic rerun before the
+artifact-retention ruling, so no first-failure file remains.  Every exact
+subcomparison then had zero difference.  Three consecutive fresh-process
+audits of the same immutable bundle passed and produced byte-identical AUDIT
+SHA-256 `eb38531b10f1fd418ea5b63f3a21efd6f52aa0421fcbe47db9bf7dad8ef1f738`.
+Three standalone fresh-process probes all found the recomputed encoder handoff,
+NPZ/checkpoint handoff, q states, final states, and initial objective bitwise
+equal, with handoff SHA-256
+`b995bd247fe34f0fe715dbcc689a55c1220bf58e10ee549156a1b2fa013e97af`
+and maximum absolute delta zero.  The isolated first result is excluded as a
+local audit transient; the production auditor retains exact comparisons and
+contains no retry or tolerance relaxation.

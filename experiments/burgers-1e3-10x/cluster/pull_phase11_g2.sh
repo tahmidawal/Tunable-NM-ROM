@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pull_phase11_g2.sh p11_g2_s11_r1 JOB COMMIT MANIFEST_SHA256
+# pull_phase11_g2.sh p11_g2_s11_r2 JOB COMMIT MANIFEST_SHA256
 set -euo pipefail
 
 verify_pulled_bundle() {
@@ -35,7 +35,7 @@ verify_pulled_bundle() {
 main() {
   [[ $# -eq 4 ]] || exit 2
   local cell="$1" job="$2" commit="$3" expected_manifest="$4"
-  [[ "$cell" == p11_g2_s11_r1 && "$job" =~ ^[0-9]+$ && "$commit" =~ ^[0-9a-f]{40}$ \
+  [[ "$cell" == p11_g2_s11_r2 && "$job" =~ ^[0-9]+$ && "$commit" =~ ^[0-9a-f]{40}$ \
      && "$expected_manifest" =~ ^[0-9a-f]{64}$ ]] || exit 2
   local here exp remote local_dir transfer state
   here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; exp="$(dirname "$here")"

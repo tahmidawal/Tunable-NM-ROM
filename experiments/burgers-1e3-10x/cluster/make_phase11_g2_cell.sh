@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# make_phase11_g2_cell.sh p11_g2_s11_r1 COMMIT
+# make_phase11_g2_cell.sh p11_g2_s11_r2 COMMIT
 set -euo pipefail
 [[ $# -eq 2 ]] || exit 2
 cell="$1"; commit="$2"
-[[ "$cell" == p11_g2_s11_r1 && "$commit" =~ ^[0-9a-f]{40}$ ]] || exit 2
+[[ "$cell" == p11_g2_s11_r2 && "$commit" =~ ^[0-9a-f]{40}$ ]] || exit 2
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; EXP="$(dirname "$HERE")"; WORKTREE="$(cd "$EXP/../.." && pwd)"; ROOT="$(cd "$WORKTREE/../.." && pwd)"
 STAGE="$HERE/stage/$cell"
 P4="$EXP/runs/p4_d_r3"; P5="$EXP/runs/p5_d_r1"; P6="$EXP/runs/p6_d_r1"; P7="$EXP/runs/p7_g1_s11_r3"; P8="$EXP/runs/p8_d_r2"

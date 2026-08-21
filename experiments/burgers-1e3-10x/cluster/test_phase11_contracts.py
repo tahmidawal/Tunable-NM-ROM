@@ -10,6 +10,7 @@ import json
 import os
 import pickle
 import sys
+import tempfile
 
 import numpy as np
 
@@ -22,6 +23,30 @@ sys.path.insert(0, HERE)
 import b10_audit_phase11_g2 as audit
 import b10_phase11_g2 as p11
 import b10_phase9_train as p9
+
+
+permutations, pre_arrays, pre_history = p11.independent_pre_update_containers()
+permutations["sentinel"] = 1
+assert pre_arrays == {} and pre_history == {}
+pre_arrays["sentinel"] = 2
+assert pre_history == {}
+
+nested = p11.json_normalize({"array": np.asarray([[1., 2.]], np.float64),
+    "scalar": np.asarray(3, np.int64)[()], "tuple": (np.bool_(True), np.float64(.5)),
+    "nested": [{"value": np.asarray([4], np.int32)}]})
+assert nested == {"array": [[1.0, 2.0]], "scalar": 3,
+                  "tuple": [True, .5], "nested": [{"value": [4]}]}
+with tempfile.TemporaryDirectory() as tmp:
+    path = os.path.join(tmp, "nested.json")
+    p11.atomic_json(path, nested)
+    with open(path, encoding="utf-8") as handle:
+        assert json.load(handle) == nested
+    try:
+        p11.atomic_json(path, {"bad": np.asarray([np.nan])})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("nonfinite JSON was not rejected")
 
 
 root = os.path.abspath(BUNDLE)
@@ -104,4 +129,4 @@ counts = {"generator": p9.tree_count(checkpoint["generator"]),
           "predictor": p9.tree_count(checkpoint["predictor"])}
 assert counts == {"generator": 165954, "encoder": 164384, "predictor": 2533}
 assert audit.negative_self_test()["pass"]
-print("phase11_contracts=pass corruptions=10 positive_selection_contract=pass")
+print("phase11_contracts=pass corruptions=10 positive_selection_contract=pass json_normalization=pass independent_pre_update_containers=pass")

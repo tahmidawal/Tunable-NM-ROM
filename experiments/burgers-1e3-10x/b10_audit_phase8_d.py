@@ -91,7 +91,8 @@ def audit_attempt_values(trial, predicted, actual, rho, finite, attempted):
     require(np.all(finite[positive]) and not np.any(finite[sentinel]),
             "recorded attempt finiteness classification")
     require(np.all(np.isfinite(rho[positive])), "finite positive-prediction rho")
-    close(rho[positive], (actual/predicted)[positive], "positive-prediction rho")
+    close(rho[positive], actual[positive]/predicted[positive],
+          "positive-prediction rho")
     require(np.all(np.isneginf(rho[sentinel])), "nonpositive-prediction rho sentinel")
     require(not np.any(np.isnan(rho[attempted]) | np.isposinf(rho[attempted])),
             "invalid attempted rho")
@@ -195,7 +196,7 @@ def audit_traces(arrays, attempts, total):
               f"actual decrease {index}")
         positive = predicted[:,:,index] > 0.0
         close(rho[:,:,index][positive],
-              (actual[:,:,index]/predicted[:,:,index])[positive], f"rho {index}")
+              actual[:,:,index][positive]/predicted[:,:,index][positive], f"rho {index}")
         expected_accept = (active & finite[:,:,index] & ~breakdown[:,:,index]
                            & positive & (actual[:,:,index] > 0.0)
                            & (rho[:,:,index] >= 1e-4))

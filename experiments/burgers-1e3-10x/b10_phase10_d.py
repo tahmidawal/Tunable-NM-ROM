@@ -22,6 +22,11 @@ import b10_spline_train as legacy
 CONFIG = p9.ARMS["T1"]
 ATTEMPTS = 40
 BATCH = 8
+PORTABILITY_RTOL = 2e-13
+PORTABILITY_ATOL = 2e-14
+FIELD_ARRAY_SUFFIXES = ("numerator", "denominator", "trajectory", "boundary_count", "identity")
+FLOAT_METRICS = ("trajectory_error_mean", "trajectory_error_worst",
+                 "mean_snapshot_relative_l2_squared", "k3_cox_identity_worst")
 EXPECTED_RECOVERY = {
     "out/phase9_terminal_recovery.json": "8d86ab90c1d293e4810c3d3a9391db48f635f8c77a7a8c30e71809a112bc7f8d",
     "out/phase9_terminal_recovery.npz": "d6e5001d8dcb5ba7fb269241b989492533379807bcbc4cb65a384f7d429c773e",
@@ -34,6 +39,16 @@ EXPECTED_ACCEPTED = {
     "out/AUDIT-WORK.npz": "66ef97a0daeb2036e0aa6ccc3f31863e6861702baaa9711311d1839541cd556b",
     "LOCAL.sha256": "65e546fa0226fa0cc50a9d4f5953f53f1b51995a1741be656481621571a35a65",
     "MANIFEST.sha256": "9173714f5a03feef10a9f22f21b4c0c6466caad34e710ccb3131ebb655730edc",
+}
+EXPECTED_R1_FAILED = {
+    "FAILURE.json": "511f0654d43b9c2f05f530bdd03fad54a3a1db0c9adeb4d083ef8c5ac2ecb943",
+    "LOCAL.sha256": "ac033e5fcff3afced17886831307c3bb6913fbda7c73607c878c939086e8f3a1",
+    "MANIFEST.sha256": "78caed8611e904bb53b961ade0c97be33a5b0dbc19f2c71a1d6ba30590e9de16",
+    "REMOTE.sha256": "e05aad95bcd633fd666b8bd0eb77ab82ac97ba504b2e63b48a1d5fff367842dc",
+    "SACCT.txt": "04a7edd0a6ca9f495df685d08925001716d69f1ca812188de46babbdf8bc5030",
+    "logs/2738710.err": "28fcd4e8dfe32f33db42a6900870cd6f6cd3638dc704e6fce557572692721039",
+    "logs/2738710.out": "78623084ca91d06849f503e31ac869f7fadf5a087a2645364d61038c3de8e780",
+    "out/PROGRESS.json": "73ffeb145cca7d0c214811d471c841bcab4febe30cf9cffda456f9257850dfde",
 }
 
 
@@ -53,14 +68,98 @@ def exact_bundle(root, expected):
     return result
 
 
+def validate_r1_failure(root):
+    result = exact_bundle(root, EXPECTED_R1_FAILED)
+    failure = load_json(os.path.join(root, "FAILURE.json"))
+    progress = load_json(os.path.join(root, "out/PROGRESS.json"))
+    if not (failure["status"] == "excluded_pre_trust_initial_binding_failure"
+            and failure["scientific_result"] is False
+            and failure["trust_attempts_started"] == 0
+            and failure["optimizer_updates"] == 0
+            and failure["selection_touched"] is False
+            and failure["capacity_used"] is False
+            and failure["scientific_metrics_persisted"] is False
+            and progress["stage"] == "initial_full_field"
+            and progress["optimizer_updates"] == 0
+            and progress["scientific_metrics_exposed"] is False):
+        raise SystemExit("Phase10 r1 zero-attempt failure classification mismatch")
+    return result
+
+
+def metric_binding(actual, expected):
+    """Audit-grade cross-node comparison of the fixed initial metric control."""
+    details = {"rtol": PORTABILITY_RTOL, "atol": PORTABILITY_ATOL,
+               "metric_max_abs": {}, "metric_exact": {}}
+    passed = set(actual) == {"meshes", "pooled"} == set(expected)
+    scopes = [("pooled", actual.get("pooled", {}), expected.get("pooled", {}))]
+    actual_meshes = actual.get("meshes", {}); expected_meshes = expected.get("meshes", {})
+    passed &= set(actual_meshes) == set(expected_meshes)
+    scopes += [(f"N{n}", actual_meshes.get(n, {}), expected_meshes.get(n, {}))
+               for n in sorted(expected_meshes)]
+    required = set(FLOAT_METRICS) | {"all_finite", "boundary_violation_count"}
+    for label, fresh, reference in scopes:
+        passed &= set(fresh) == required == set(reference)
+        passed &= type(fresh.get("all_finite")) is bool and type(reference.get("all_finite")) is bool
+        passed &= fresh.get("all_finite") == reference.get("all_finite") is True
+        passed &= type(fresh.get("boundary_violation_count")) is int
+        passed &= type(reference.get("boundary_violation_count")) is int
+        passed &= fresh.get("boundary_violation_count") == reference.get("boundary_violation_count") == 0
+        for name in FLOAT_METRICS:
+            left = fresh.get(name); right = reference.get(name)
+            typed = type(left) is float and type(right) is float
+            finite = typed and np.isfinite(left) and np.isfinite(right)
+            delta = float(abs(left-right)) if finite else float("inf")
+            close = bool(finite and np.isclose(left, right, rtol=PORTABILITY_RTOL, atol=PORTABILITY_ATOL))
+            details["metric_max_abs"][f"{label}.{name}"] = delta
+            details["metric_exact"][f"{label}.{name}"] = bool(typed and left == right)
+            passed &= close
+    details["metrics_max_abs"] = float(max(details["metric_max_abs"].values(), default=0.0))
+    details["metrics_bitwise_exact"] = bool(all(details["metric_exact"].values()))
+    details["pass"] = bool(passed)
+    return details
+
+
+def array_binding(fresh, reference, meshes):
+    details = {"rtol": PORTABILITY_RTOL, "atol": PORTABILITY_ATOL,
+               "array_max_abs": {}, "array_exact": {}}
+    passed = True
+    for n in meshes:
+        for suffix in FIELD_ARRAY_SUFFIXES:
+            fresh_key = f"initial_train_N{n}_{suffix}"
+            reference_key = f"terminal_train_N{n}_{suffix}"
+            left = np.asarray(fresh[fresh_key]); right = np.asarray(reference[reference_key])
+            same_shape = left.shape == right.shape
+            if suffix == "boundary_count":
+                close = bool(same_shape and np.issubdtype(left.dtype, np.integer)
+                             and np.issubdtype(right.dtype, np.integer)
+                             and np.array_equal(left, right) and np.all(left == 0))
+                delta = float(np.max(np.abs(left.astype(np.int64)-right.astype(np.int64)))) if same_shape and left.size else 0.0
+            else:
+                finite = bool(same_shape and np.issubdtype(left.dtype, np.floating)
+                              and np.issubdtype(right.dtype, np.floating)
+                              and np.all(np.isfinite(left)) and np.all(np.isfinite(right)))
+                close = bool(finite and np.allclose(left, right, rtol=PORTABILITY_RTOL, atol=PORTABILITY_ATOL))
+                delta = float(np.max(np.abs(left-right))) if finite and left.size else (0.0 if finite else float("inf"))
+            label = f"N{n}.{suffix}"
+            details["array_max_abs"][label] = delta
+            details["array_exact"][label] = bool(same_shape and np.array_equal(left, right))
+            passed &= close
+    details["arrays_max_abs"] = float(max(details["array_max_abs"].values(), default=0.0))
+    details["arrays_bitwise_exact"] = bool(all(details["array_exact"].values()))
+    details["pass"] = bool(passed)
+    return details
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--recovery-dir"); parser.add_argument("--accepted-audit-dir")
+    parser.add_argument("--r1-failed-dir")
     parser.add_argument("--failed-t1-dir"); parser.add_argument("--p5-json")
     parser.add_argument("--p7-npz"); parser.add_argument("--target-dir")
     parser.add_argument("--prereg", required=True)
     parser.add_argument("--output-json", required=True); parser.add_argument("--output-npz", required=True)
     parser.add_argument("--progress-json", required=True); parser.add_argument("--work-checkpoint", required=True)
+    parser.add_argument("--initial-control-npz", required=True)
     parser.add_argument("--smoke", action="store_true")
     return parser.parse_args()
 
@@ -147,17 +246,19 @@ def main():
     args=parse_args(); c.require_gpu_highest(); started=time.perf_counter(); attempts=1 if args.smoke else ATTEMPTS
     legacy.SMOKE=args.smoke
     if args.smoke:
-        accepted_bindings=recovery_bindings=failed_bindings={"mode":"synthetic"}
+        accepted_bindings=recovery_bindings=failed_bindings=r1_failed_bindings={"mode":"synthetic"}
         accepted_report=None; train,coefficients,_,targets,regeneration=recovery.load_train(args,True)
         norm=p9.train_normalization(coefficients,legacy.concatenate(train,"features"))
         generator=p9.init_generator(CONFIG); qraw=np.zeros((len(coefficients),19),np.float64)
         source_checkpoint={"generator":generator,"q_raw":qraw,"normalization":{"mean":norm["mean"],"scales":norm["scales"]}}
         source_hash_before="synthetic"
     else:
-        required=(args.recovery_dir,args.accepted_audit_dir,args.failed_t1_dir,args.p5_json,args.p7_npz,args.target_dir)
+        required=(args.recovery_dir,args.accepted_audit_dir,args.r1_failed_dir,args.failed_t1_dir,
+                  args.p5_json,args.p7_npz,args.target_dir)
         if any(value is None for value in required): raise SystemExit("scientific P10-D requires exact dependency paths")
         recovery_bindings=exact_bundle(args.recovery_dir,EXPECTED_RECOVERY)
         accepted_bindings=exact_bundle(args.accepted_audit_dir,EXPECTED_ACCEPTED)
+        r1_failed_bindings=validate_r1_failure(args.r1_failed_dir)
         failed_bindings=recovery.validate_failed(args.failed_t1_dir)
         accepted_report=load_json(os.path.join(args.accepted_audit_dir,"out/AUDIT.json"))
         if not (accepted_report["status"]=="pass" and accepted_report["decision"]["terminal_full_field_accepted"] is True
@@ -187,8 +288,31 @@ def main():
         "optimizer_updates":0,"scientific_metrics_exposed":False})
     initial=p9.evaluate_full(train,generator,states0,norm["mean"],norm["scales"],CONFIG,arrays,"initial_train",True)
     recovery.add_snapshot_losses(initial,arrays,"initial_train",train)
-    initial_exact=bool(args.smoke or initial==accepted_report["terminal_train"])
-    if not initial_exact: raise SystemExit("accepted terminal full-field did not reproduce exactly")
+    control_arrays={key:np.asarray(value) for key,value in arrays.items() if key.startswith("initial_train_")}
+    control_arrays.update({"final_q_start":q0,"training_affine":affine})
+    os.makedirs(os.path.dirname(os.path.abspath(args.initial_control_npz)),exist_ok=True)
+    np.savez_compressed(args.initial_control_npz,**control_arrays)
+    if args.smoke:
+        accepted_terminal=initial
+        reference_arrays={key.replace("initial_train_","terminal_train_",1):value
+                          for key,value in control_arrays.items() if key.startswith("initial_train_")}
+        accepted_source_exact=True
+    else:
+        recovery_report=load_json(os.path.join(args.recovery_dir,"out/phase9_terminal_recovery.json"))
+        accepted_terminal=accepted_report["terminal_train"]
+        accepted_source_exact=bool(recovery_report["terminal_train"]==accepted_terminal)
+        with np.load(os.path.join(args.recovery_dir,"out/phase9_terminal_recovery.npz"),allow_pickle=False) as source:
+            reference_arrays={name:np.asarray(source[name]) for name in source.files
+                              if name.startswith("terminal_train_")}
+    initial_metric_binding=metric_binding(initial,accepted_terminal)
+    initial_array_binding=array_binding(arrays,reference_arrays,[x["N"] for x in train])
+    initial_binding={"accepted_and_source_report_exact":accepted_source_exact,
+        "metrics":initial_metric_binding,"arrays":initial_array_binding,
+        "initial_control_sha256":c.sha256(args.initial_control_npz)}
+    initial_binding["pass"]=bool(accepted_source_exact and initial_metric_binding["pass"]
+                                  and initial_array_binding["pass"])
+    if not initial_binding["pass"]:
+        raise SystemExit("accepted terminal full-field failed portable initial-control binding")
     objective0=np.concatenate([arrays[f"initial_train_N{x['N']}_numerator"]/
         np.maximum(arrays[f"initial_train_N{x['N']}_denominator"],1e-300) for x in train])
     trace,exhaustion=run_trust(train,generator,q0,objective0,norm["mean"],norm["scales"],attempts,args,started)
@@ -211,7 +335,7 @@ def main():
         "max_attempts":attempts}
     identity=bool(all(row["k3_cox_identity_worst"]<=p9.IDENTITY_TOL for row in
         [*initial["meshes"].values(),initial["pooled"],*terminal["meshes"].values(),terminal["pooled"]]))
-    health=bool(initial_exact and objective_binding and trace_health["finite"] and trace_health["no_breakdown"]
+    health=bool(initial_binding["pass"] and objective_binding and trace_health["finite"] and trace_health["no_breakdown"]
                 and trace_health["unhealthy_exhaustion_count"]==0 and identity
                 and all(row["boundary_violation_count"]==0 and row["all_finite"] for row in
                     [*initial["meshes"].values(),initial["pooled"],*terminal["meshes"].values(),terminal["pooled"]]))
@@ -238,7 +362,8 @@ def main():
     report={"status":"excluded_execution_smoke" if args.smoke else "complete",
         "classification":"fixed accepted G1, final-q-only, full-train globalization diagnostic",
         "provenance":c.provenance(),"prereg_sha256":c.sha256(args.prereg),
-        "bindings":{"recovery":recovery_bindings,"accepted_audit":accepted_bindings,"failed_t1":failed_bindings},
+        "bindings":{"recovery":recovery_bindings,"accepted_audit":accepted_bindings,
+            "r1_failed":r1_failed_bindings,"failed_t1":failed_bindings},
         "config":{"generator":"fixed accepted G1","latent_dimension":19,"sole_start":"tanh(final_q_raw)",
             "objective":"exact discrete full-grid Cox FOM relative-L2-squared","train_mix":p9.TRAIN_MIX,
             "selection_touched":False,"optimizer_updates":0,"attempts":attempts,"cg_max":19,"cg_tolerance":1e-12,
@@ -253,11 +378,13 @@ def main():
             "q_raw_sha256_before":qraw_before,"q_raw_sha256_after":p9.array_sha(qraw),"immutable":immutable_model,
             "generator_parameter_count":p9.tree_count(generator)},
         "initial_train":initial,"recovered_train":terminal,"trace_health":trace_health,
-        "checks":{"accepted_initial_exact":initial_exact,"terminal_objective_binding":objective_binding,
+        "checks":{"accepted_initial_control":initial_binding,"terminal_objective_binding":objective_binding,
             "identity":identity,"health":health,"recovered_train_gate":recovered_pass},
         "information_boundary":{"train_only":True,"selection_touched":False,"model_validation_touched":False,
             "confirmation_touched":False,"weak_eq_touched":False,"scaling_touched":False,"capacity_used":False},
         "decision":decision,"npz":{"basename":os.path.basename(args.output_npz),"sha256":c.sha256(args.output_npz)},
+        "initial_control":{"basename":os.path.basename(args.initial_control_npz),
+            "sha256":c.sha256(args.initial_control_npz)},
         "progress":{"basename":os.path.basename(args.progress_json),"sha256":c.sha256(args.progress_json)},
         "work_checkpoint":{"basename":os.path.basename(args.work_checkpoint),"sha256":c.sha256(args.work_checkpoint)},
         "elapsed_s":float(time.perf_counter()-started)}

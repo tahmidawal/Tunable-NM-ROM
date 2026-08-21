@@ -9,5 +9,8 @@ assert report["information_boundary"]["selection_touched"] is False and report["
 assert audit["status"]=="pass" and audit["checks"]["negative_self_test"]["pass"] is True
 assert audit["checks"]["negative_self_test"]["decision_corruption_count"]==6
 assert audit["checks"]["negative_self_test"]["trace_corruption_count"]==6
+assert audit["checks"]["portability_negative_self_test"]["pass"] is True
+assert audit["checks"]["portability_negative_self_test"]["corruption_count"]==5
+assert audit["checks"]["initial_control_file_binding"] is True
 assert audit["decision"]["architecture_increase_licensed"] is False and audit["decision"]["g2_licensed"] is False
-print("phase10_synthetic_contract=pass corruptions=12")
+print("phase10_synthetic_contract=pass corruptions=17")

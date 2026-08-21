@@ -20,6 +20,12 @@ import b10_phase9_train as p9
 import b10_phase9_terminal_recovery as recovery
 import b10_spline_train as legacy
 
+PORTABILITY_RTOL = 2e-13
+PORTABILITY_ATOL = 2e-14
+FLOAT_METRICS = ("trajectory_error_mean", "trajectory_error_worst",
+                 "mean_snapshot_relative_l2_squared", "k3_cox_identity_worst")
+FIELD_ARRAY_SUFFIXES = ("numerator", "denominator", "trajectory", "boundary_count", "identity")
+
 
 def load_json(path):
     with open(path,encoding="utf-8") as handle: return json.load(handle)
@@ -48,6 +54,86 @@ def exact_arrays(left,right,prefix,meshes):
 def objectives(arrays,prefix,train):
     return np.concatenate([np.asarray(arrays[f"{prefix}_N{x['N']}_numerator"])/
         np.maximum(np.asarray(arrays[f"{prefix}_N{x['N']}_denominator"]),1e-300) for x in train])
+
+
+def independent_initial_binding(actual_metrics, reference_metrics, fresh_arrays, reference_arrays, meshes):
+    """Independent audit implementation of the prospective f64 portability contract."""
+    details={"rtol":PORTABILITY_RTOL,"atol":PORTABILITY_ATOL,
+             "metric_max_abs":{},"metric_exact":{},"array_max_abs":{},"array_exact":{}}
+    passed=set(actual_metrics)=={"meshes","pooled"}==set(reference_metrics)
+    actual_meshes=actual_metrics.get("meshes",{}); reference_meshes=reference_metrics.get("meshes",{})
+    passed &= set(actual_meshes)==set(reference_meshes)==set(str(n) for n in meshes)
+    scopes=[("pooled",actual_metrics.get("pooled",{}),reference_metrics.get("pooled",{}))]
+    scopes += [(f"N{n}",actual_meshes.get(str(n),{}),reference_meshes.get(str(n),{})) for n in meshes]
+    required=set(FLOAT_METRICS)|{"all_finite","boundary_violation_count"}
+    for label,left,right in scopes:
+        passed &= set(left)==required==set(right)
+        passed &= type(left.get("all_finite")) is bool and type(right.get("all_finite")) is bool
+        passed &= left.get("all_finite")==right.get("all_finite") is True
+        passed &= type(left.get("boundary_violation_count")) is int
+        passed &= type(right.get("boundary_violation_count")) is int
+        passed &= left.get("boundary_violation_count")==right.get("boundary_violation_count")==0
+        for name in FLOAT_METRICS:
+            one=left.get(name); two=right.get(name)
+            typed=type(one) is float and type(two) is float
+            finite=typed and np.isfinite(one) and np.isfinite(two)
+            delta=float(abs(one-two)) if finite else float("inf")
+            passed &= bool(finite and np.isclose(one,two,rtol=PORTABILITY_RTOL,atol=PORTABILITY_ATOL))
+            details["metric_max_abs"][f"{label}.{name}"]=delta
+            details["metric_exact"][f"{label}.{name}"]=bool(typed and one==two)
+    for n in meshes:
+        for suffix in FIELD_ARRAY_SUFFIXES:
+            left=np.asarray(fresh_arrays[f"initial_train_N{n}_{suffix}"])
+            right=np.asarray(reference_arrays[f"terminal_train_N{n}_{suffix}"])
+            same_shape=left.shape==right.shape
+            if suffix=="boundary_count":
+                valid=bool(same_shape and np.issubdtype(left.dtype,np.integer)
+                           and np.issubdtype(right.dtype,np.integer)
+                           and np.array_equal(left,right) and np.all(left==0))
+                delta=float(np.max(np.abs(left.astype(np.int64)-right.astype(np.int64)))) if same_shape and left.size else 0.0
+            else:
+                finite=bool(same_shape and np.issubdtype(left.dtype,np.floating)
+                            and np.issubdtype(right.dtype,np.floating)
+                            and np.all(np.isfinite(left)) and np.all(np.isfinite(right)))
+                valid=bool(finite and np.allclose(left,right,rtol=PORTABILITY_RTOL,atol=PORTABILITY_ATOL))
+                delta=float(np.max(np.abs(left-right))) if finite and left.size else (0.0 if finite else float("inf"))
+            label=f"N{n}.{suffix}"
+            details["array_max_abs"][label]=delta
+            details["array_exact"][label]=bool(same_shape and np.array_equal(left,right))
+            passed &= valid
+    details["metrics_max_abs"]=float(max(details["metric_max_abs"].values(),default=0.0))
+    details["arrays_max_abs"]=float(max(details["array_max_abs"].values(),default=0.0))
+    details["metrics_bitwise_exact"]=bool(all(details["metric_exact"].values()))
+    details["arrays_bitwise_exact"]=bool(all(details["array_exact"].values()))
+    details["pass"]=bool(passed)
+    return details
+
+
+def portability_negative_tests():
+    row={"trajectory_error_mean":float(.01),"trajectory_error_worst":float(.02),
+         "mean_snapshot_relative_l2_squared":float(1e-4),"k3_cox_identity_worst":float(2e-15),
+         "all_finite":True,"boundary_violation_count":0}
+    metrics={"meshes":{"16":copy.deepcopy(row)},"pooled":copy.deepcopy(row)}
+    fresh={f"initial_train_N16_{name}":np.asarray([0.,1.],np.int32 if name=="boundary_count" else np.float64)
+           for name in FIELD_ARRAY_SUFFIXES}
+    reference={key.replace("initial_train_","terminal_train_",1):value.copy() for key,value in fresh.items()}
+    exact=independent_initial_binding(metrics,metrics,fresh,reference,[16])["pass"]
+    portable_metrics=copy.deepcopy(metrics); portable_metrics["meshes"]["16"]["trajectory_error_mean"]+=1e-15
+    portable=independent_initial_binding(portable_metrics,metrics,fresh,reference,[16])["pass"]
+    corruptions=[]
+    one=copy.deepcopy(metrics); one["pooled"]["trajectory_error_mean"]+=1e-8
+    corruptions.append(not independent_initial_binding(one,metrics,fresh,reference,[16])["pass"])
+    one=copy.deepcopy(metrics); one["meshes"]["16"]["all_finite"]=False
+    corruptions.append(not independent_initial_binding(one,metrics,fresh,reference,[16])["pass"])
+    one={key:value.copy() for key,value in fresh.items()}; one["initial_train_N16_boundary_count"][0]=1
+    corruptions.append(not independent_initial_binding(metrics,metrics,one,reference,[16])["pass"])
+    one={key:value.copy() for key,value in fresh.items()}; one["initial_train_N16_numerator"]=one["initial_train_N16_numerator"][:1]
+    corruptions.append(not independent_initial_binding(metrics,metrics,one,reference,[16])["pass"])
+    one={key:value.copy() for key,value in fresh.items()}; one["initial_train_N16_identity"][0]=np.nan
+    corruptions.append(not independent_initial_binding(metrics,metrics,one,reference,[16])["pass"])
+    return {"exact_positive":bool(exact),"portable_positive":bool(portable),
+            "corruption_count":len(corruptions),"corruptions_rejected":bool(all(corruptions)),
+            "pass":bool(exact and portable and all(corruptions))}
 
 
 def trace_check(arrays):
@@ -126,9 +212,11 @@ def negative_tests(decision,arrays):
 def parse_args():
     parser=argparse.ArgumentParser()
     parser.add_argument("--source-json",required=True); parser.add_argument("--source-npz",required=True)
+    parser.add_argument("--initial-control-npz",required=True)
     parser.add_argument("--work-checkpoint",required=True); parser.add_argument("--manifest",required=True)
     parser.add_argument("--prereg",required=True); parser.add_argument("--recovery-dir")
     parser.add_argument("--accepted-audit-dir"); parser.add_argument("--failed-t1-dir")
+    parser.add_argument("--r1-failed-dir")
     parser.add_argument("--p5-json"); parser.add_argument("--p7-npz"); parser.add_argument("--target-dir")
     parser.add_argument("--expected-commit",required=True); parser.add_argument("--expected-job",required=True)
     parser.add_argument("--slurm-out",required=True); parser.add_argument("--slurm-err",required=True)
@@ -152,14 +240,16 @@ def main():
         for name,digest in provenance["source_sha256"].items()))
     prereg_binding=bool(rows.get("code/PHASE-10-PRE-REGISTRATION.md")==c.sha256(args.prereg))
     if args.smoke:
-        dependency_binding=True; accepted_bindings=recovery_bindings=failed_bindings=True
-        accepted_terminal_field=True
+        dependency_binding=True; accepted_bindings=recovery_bindings=failed_bindings=r1_failed_bindings=True
+        accepted_terminal_field=None; recovery_reference_arrays=None; accepted_source_exact=True
     else:
         recovery_bindings=(p10.exact_bundle(args.recovery_dir,p10.EXPECTED_RECOVERY)==report["bindings"]["recovery"])
         accepted_bindings=(p10.exact_bundle(args.accepted_audit_dir,p10.EXPECTED_ACCEPTED)==report["bindings"]["accepted_audit"])
+        r1_failed_bindings=(p10.validate_r1_failure(args.r1_failed_dir)==report["bindings"]["r1_failed"])
         failed_bindings=(recovery.validate_failed(args.failed_t1_dir)==report["bindings"]["failed_t1"])
         dependency_binding=bool(all(rows.get("code/deps/recovery/"+name)==digest for name,digest in p10.EXPECTED_RECOVERY.items())
             and all(rows.get("code/deps/accepted/"+name)==digest for name,digest in p10.EXPECTED_ACCEPTED.items())
+            and all(rows.get("code/deps/p10_r1_failed/"+name)==digest for name,digest in p10.EXPECTED_R1_FAILED.items())
             and all(rows.get("code/deps/failed/"+name)==digest for name,digest in recovery.EXPECTED_FAILED.items()))
         recovery_report=load_json(os.path.join(args.recovery_dir,"out/phase9_terminal_recovery.json"))
         for phase,stem in {"p4":"phase4_d","p5":"phase5_d","p6":"phase6_d","p7":"phase7_train","p8":"phase8_d"}.items():
@@ -171,6 +261,10 @@ def main():
         dependency_binding &= len(p5_report["train_targets"]["chunks"])==16
         dependency_binding &= all(rows.get("code/deps/p5/targets/"+x["basename"])==x["sha256"] for x in p5_report["train_targets"]["chunks"])
         accepted_terminal_field=load_json(os.path.join(args.accepted_audit_dir,"out/AUDIT.json"))["terminal_train"]
+        accepted_source_exact=bool(recovery_report["terminal_train"]==accepted_terminal_field)
+        with np.load(os.path.join(args.recovery_dir,"out/phase9_terminal_recovery.npz"),allow_pickle=False) as control:
+            recovery_reference_arrays={name:np.asarray(control[name]) for name in control.files
+                                       if name.startswith("terminal_train_")}
     train,coefficients,_,targets,regeneration=recovery.load_train(args,args.smoke)
     features=legacy.concatenate(train,"features"); norm=p9.train_normalization(coefficients,features)
     if args.smoke:
@@ -205,7 +299,41 @@ def main():
     field_check=bool(exact_arrays(fresh_initial,arrays,"initial_train",meshes)
         and exact_arrays(fresh_terminal,arrays,"recovered_train",meshes)
         and initial==report["initial_train"] and terminal==report["recovered_train"])
-    accepted_field_binding=bool(args.smoke or initial==accepted_terminal_field)
+    if args.smoke:
+        accepted_terminal_field=initial
+        recovery_reference_arrays={key.replace("initial_train_","terminal_train_",1):value
+                                   for key,value in fresh_initial.items()}
+    accepted_control=independent_initial_binding(initial,accepted_terminal_field,fresh_initial,
+                                                  recovery_reference_arrays,meshes)
+    reported_control=report["checks"]["accepted_initial_control"]
+    expected_reported_control={
+        "accepted_and_source_report_exact":accepted_source_exact,
+        "metrics":{"rtol":PORTABILITY_RTOL,"atol":PORTABILITY_ATOL,
+            "metric_max_abs":accepted_control["metric_max_abs"],
+            "metric_exact":accepted_control["metric_exact"],
+            "metrics_max_abs":accepted_control["metrics_max_abs"],
+            "metrics_bitwise_exact":accepted_control["metrics_bitwise_exact"],
+            "pass":bool(accepted_control["pass"])},
+        "arrays":{"rtol":PORTABILITY_RTOL,"atol":PORTABILITY_ATOL,
+            "array_max_abs":accepted_control["array_max_abs"],
+            "array_exact":accepted_control["array_exact"],
+            "arrays_max_abs":accepted_control["arrays_max_abs"],
+            "arrays_bitwise_exact":accepted_control["arrays_bitwise_exact"],
+            "pass":bool(accepted_control["pass"])},
+        "initial_control_sha256":c.sha256(args.initial_control_npz),
+        "pass":bool(accepted_source_exact and accepted_control["pass"])}
+    # Metric and array contracts are separately true in the driver. The
+    # independent combined audit has the same pass value because both are
+    # required and uses separately recomputed values above.
+    accepted_field_binding=bool(accepted_source_exact and accepted_control["pass"]
+                                and reported_control==expected_reported_control)
+    with np.load(args.initial_control_npz,allow_pickle=False) as saved:
+        saved_keys=set(saved.files); expected_saved={key for key in arrays if key.startswith("initial_train_")}
+        expected_saved |= {"final_q_start","training_affine"}
+        initial_control_file=bool(saved_keys==expected_saved
+            and all(np.array_equal(np.asarray(saved[key]),np.asarray(arrays[key])) for key in saved_keys)
+            and np.array_equal(np.asarray(saved["final_q_start"]),q0)
+            and np.array_equal(np.asarray(saved["training_affine"]),affine))
     trace=trace_check(arrays)
     objective_binding=bool(np.allclose(objectives(arrays,"initial_train",train),arrays["trust_objective"][0,:,0],rtol=2e-13,atol=2e-14)
         and np.allclose(objectives(arrays,"recovered_train",train),arrays["trust_objective"][0,:,-1],rtol=2e-13,atol=2e-14))
@@ -217,7 +345,8 @@ def main():
         [*initial["meshes"].values(),initial["pooled"],*terminal["meshes"].values(),terminal["pooled"]]))
     field_health=bool(all(row["all_finite"] and row["boundary_violation_count"]==0 for row in
         [*initial["meshes"].values(),initial["pooled"],*terminal["meshes"].values(),terminal["pooled"]]))
-    health=bool(trace["pass"] and identity and field_health and field_check and objective_binding)
+    health=bool(trace["pass"] and identity and field_health and field_check and accepted_field_binding
+                and initial_control_file and objective_binding)
     train_pass=bool(health and p9.gate(terminal,2e-4,7e-4,True))
     expected_decision={"p10_d_valid":bool(not args.smoke and health and source_model),
         "fixed_g1_train_representable":bool(not args.smoke and health and source_model and train_pass),
@@ -238,24 +367,32 @@ def main():
         and config["delta_min"]==2**-20 and config["delta_max"]==1 and config["lambda0"]==1e-6
         and config["lambda_min"]==1e-12 and config["lambda_max"]==1e12 and config["accept_rho"]==1e-4)
     artifacts=bool(report["npz"]["sha256"]==c.sha256(args.source_npz)
+        and report["initial_control"]=={"basename":os.path.basename(args.initial_control_npz),
+            "sha256":c.sha256(args.initial_control_npz)}
         and report["progress"]["sha256"]==c.sha256(os.path.join(os.path.dirname(args.source_json),report["progress"]["basename"]))
         and report["work_checkpoint"]["sha256"]==c.sha256(args.work_checkpoint))
     negative=negative_tests(expected_decision,arrays)
+    portability_negative=portability_negative_tests()
     checks={"provenance":provenance_check,"source_manifest_binding":source_binding,
         "prereg_manifest_binding":prereg_binding,"dependency_binding":dependency_binding,
         "recovery_binding":recovery_bindings,"accepted_audit_binding":accepted_bindings,
+        "r1_zero_attempt_binding":r1_failed_bindings,
         "failed_t1_binding":failed_bindings,"data_normalization":data_normalization,
         "source_model_immutable":source_model,"full_field_independent":field_check,
         "accepted_terminal_field_binding":accepted_field_binding,
+        "accepted_terminal_field_portability":accepted_control,
+        "initial_control_file_binding":initial_control_file,
         "trust_trace":trace,"objective_binding":objective_binding,"work_checkpoint_binding":work_binding,
         "identity":identity,"field_health":field_health,"health":health,"train_pass":train_pass,
         "config":config_check,"information_boundary":information,"artifacts":artifacts,
-        "decision":decision,"negative_self_test":negative}
+        "decision":decision,"negative_self_test":negative,
+        "portability_negative_self_test":portability_negative}
     passed=bool(all(provenance_check.values()) and all(value if isinstance(value,bool) else value.get("pass",False)
         for key,value in checks.items() if key not in ("provenance","train_pass")) and decision)
     output={"status":"pass" if passed else "fail","negative_aware":True,"expected_commit":args.expected_commit,
         "expected_job":str(args.expected_job),"manifest_sha256":c.sha256(args.manifest),
         "source_json_sha256":c.sha256(args.source_json),"source_npz_sha256":c.sha256(args.source_npz),
+        "initial_control_sha256":c.sha256(args.initial_control_npz),
         "work_checkpoint_sha256":c.sha256(args.work_checkpoint),"checks":checks,
         "initial_train":initial,"recovered_train":terminal,"decision":expected_decision,
         "capacity":{"accepted":False,"reproducible":False,"license_complete":False,"g2_licensed":False,"used":False}}

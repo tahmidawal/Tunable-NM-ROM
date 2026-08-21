@@ -507,3 +507,15 @@ independently recomputed stationary tangent-capacity evidence. Both retain the
 P6 Cox-weak/K3-full route and immutable train/selection boundary. No Phase-9
 implementation, smoke, stage, job, downstream weak/EQ, scaling, model
 validation, confirmation, or seeds 29/47 work is authorized yet.
+
+The prospective Phase-9 implementation now covers both locked arms in one
+arm-generic driver and independent negative-aware auditor. It binds P4--P8,
+uses train-only normalization and explicit-array Cox full-grid objectives,
+persists exact epoch permutations/full-cohort metrics/checkpoints, stops before
+update 1 when the same-job throughput projection plus 15% exceeds 16 hours,
+and independently recomputes trust-sentinel, capacity-license, schedule,
+normalization, parameter-count, and full-field controls. T2 additionally
+contains its same-job live-FOM Cox-weak/K3-full structural preflight. The fixed
+synthetic contract and driver/auditor smoke tests pass under f64/highest on the
+local GPU; they are excluded and open no data. Only T1 may be staged, and no
+Phase-9 job is authorized before root audits the exact commit and manifest.

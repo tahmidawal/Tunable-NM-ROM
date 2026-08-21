@@ -610,3 +610,16 @@ selection/capacity/downstream data. Its verified bundle is preserved at commit
 The arm is unconsumed. A prospective r2 portability repair replaces only this
 initial equality with fixed audit-grade f64 comparisons, persists the pre-trust
 control, and leaves all method, trust, and scientific gates unchanged.
+
+Phase10-D r2 job `2739690` completed all 40 trust attempts on
+pax010/H200/GPU/f64/highest with zero optimizer updates, zero CG breakdowns,
+and immutable scientific/control/work artifacts, then failed only in its
+independent repeat audit. The complete failed-audit bundle is preserved at
+commit `1f16217deb1f982fa643302afd798a7d0a25325f`; its LOCAL digest is
+`36076277caf1372eb4d02735219bda76a50ace2f8d0e5d1a5ab6dd3ba88e6990`.
+The audit repeat exposed N256 f64 evaluation differences and two device/host
+termination comparisons lying only `1.04e-16` and `1.87e-16` above the fixed
+threshold. The result remains unaccepted and its remote remains preserved.
+One prospectively amended audit-only cell may apply the locked scale-aware
+`2e-13/2e-14` comparison and a `4e-16` termination roundoff band; it may not
+alter or rerun the scientific result or open any downstream data.

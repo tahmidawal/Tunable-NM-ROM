@@ -131,3 +131,39 @@ keys/types, Boolean health, integer boundary counts, q/affine ordering, source
 model/q/normalization hashes, and the unchanged zero-boundary and K3/Cox
 `<=2e-14` identity gates remain exact. No trust parameter, objective, data,
 model, loss, scientific gate, decision branch, or method changes.
+
+## Prospective audit-only amendment after completed r2
+
+Job `2739690` completed all 40 fixed trust attempts and sealed the scientific
+JSON, NPZ, initial control, and work checkpoint with zero optimizer updates.
+It then exited `1:0` only because the independent repeat imposed nonportable
+host/device exact predicates. The exact failed-audit bundle is preserved at
+commit `1f16217deb1f982fa643302afd798a7d0a25325f`; its `LOCAL.sha256` digest is
+`36076277caf1372eb4d02735219bda76a50ace2f8d0e5d1a5ab6dd3ba88e6990`.
+The scientific artifacts and original failed AUDIT remain immutable and no
+scientific rerun is permitted. One separate audit-only H200 cell may decide
+whether the completed r2 result is valid.
+
+The repaired auditor independently compares the persisted driver
+`initial_control.npz` directly with the accepted immutable source. Floating
+metrics and arrays require finite, identical-shape values satisfying the fixed
+componentwise bound
+`abs(repeat-reference) <= 2e-14 + 2e-13*abs(reference)`; Boolean health,
+integer boundary counts, q/affine ordering, and source-model/normalization
+hashes remain exact. A separately regenerated full-field/data repeat uses the
+same bound for floating arrays and reported metrics and persists, per field,
+the maximum absolute difference, maximum relative difference, and maximum
+bound-normalized difference. Shapes, dtypes, finiteness, categorical values,
+zero boundary, source identities, and the unchanged `2e-14` K3/Cox gate remain
+exact.
+
+Every trust transition, acceptance, work count, cap, and decision rule remains
+unchanged. A recorded device termination predicate must equal the host
+recomputation except when an accepted row's recomputed relative-improvement is
+within `4e-16` of the fixed `1e-12` termination threshold; only that predicate
+may follow the persisted device Boolean inside the band. The audit persists
+the mismatch indices and distances and rejects any mismatch outside the band.
+Corruption controls must reject a larger floating perturbation, a categorical
+or boundary change, and a termination mismatch beyond the band. The audit-only
+cell performs no optimizer/scientific update and opens no selection, capacity,
+weak/EQ, scaling, model-validation, confirmation, or downstream data.

@@ -497,3 +497,13 @@ accepts the valid sentinel and rejects four corruptions. No scientific JSON,
 NPZ, progress, work checkpoint, method, or gate changed. The sealed local
 bundle is `runs/p8_d_r2`; `LOCAL.sha256` has SHA-256
 `226eee5fc59aad42ef0a700cafa0965ac148c1c6821f085d8db8b48aed9d39e1`.
+
+## 2026-08-20 — prospective Phase-9 exact-field training bracket
+
+Phase 9 is preregistered independently from valid P4--P7 evidence and immutable
+descriptive P8 evidence; it does not promote the invalid P8-D result. The finite
+cap is one exact-full-field G1/q19 training cell plus one G2/q32 cell only after
+independently recomputed stationary tangent-capacity evidence. Both retain the
+P6 Cox-weak/K3-full route and immutable train/selection boundary. No Phase-9
+implementation, smoke, stage, job, downstream weak/EQ, scaling, model
+validation, confirmation, or seeds 29/47 work is authorized yet.

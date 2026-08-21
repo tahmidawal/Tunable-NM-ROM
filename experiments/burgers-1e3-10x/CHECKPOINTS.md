@@ -451,3 +451,49 @@ extras, and rejects an unlisted third file. The scientific driver, auditor,
 method, data, objective, work, and gates are unchanged, so the execution smoke
 is not repeated. Only a fresh isolated `p8_d_r2` lifecycle is now implemented;
 no replacement job has been submitted pending root audit.
+
+## 2026-08-20 — Phase-8 exact-full-grid diagnostic hard stop
+
+The sole complete P8-D cell, job `2686475`, ran from exact scientific commit
+`e410fde7b5fabe479facaf150b205712b14fd45f` and manifest SHA-256
+`1af89411e6a37c1106fa9285e50468bd936e34a7ab15b070b06d1a82846416ad`
+on pax008/NVIDIA H200 with GPU backend, f64/highest, eight CPUs, and 96 GiB.
+It completed in 33:35 with exit `0:0`, empty stderr, `ALL-DONE`, and peak batch
+RSS 9,482,916 KiB. All immutable source/dependency hashes, exact metadata,
+reference residuals, affine/features, full-grid metrics, trust work, boundary,
+identity, scheduler/backend evidence, and remote/local checksums pass the final
+independent negative-aware audit. The exact 57-file remote set was reverified
+and deleted; absence was confirmed.
+
+The free H1 representation remains adequate: train trajectory mean/worst are
+`7.720782063e-5 / 5.490564886e-4`, and exposed selection is
+`5.805477911e-5 / 3.858918938e-4`. G1 is the remaining floor. Train encoder
+handoff `0.191563330 / 0.788742203` improves to final autolatent
+`0.035090643 / 0.431860815`, still orders above the free space. On selection,
+free-target encoder, exact-affine predictor-q, deployed predictor, and locked
+P7 oracle are respectively `0.193715601 / 0.945147652`,
+`0.073212304 / 0.232073797`, `0.081726937 / 0.193691476`, and
+`0.373122859 / 1.273277480`.
+
+The exact Cox full-grid trust protocol globalizes successfully but cannot
+remove that generator floor. Predictor and nondeployable free-target-encoder
+starts finish at `0.023130558 / 0.055558350` and
+`0.023316427 / 0.060001853`; the lower two-start control is
+`0.023116452 / 0.054601627`. It charges 277,742 attempts, 272,668 accepted
+steps, and 5,554,795 JVP/VJP calls each, with zero CG breakdown or unhealthy
+exhaustion. All fields are finite with exact boundary and passing K3/Cox
+identity. However, 26 attempted rows have a finite nonpositive predicted
+decrease and therefore the fixed `rho=-inf`, `trust_finite=false` rejection
+sentinel. Under the unchanged preregistration this makes health false even
+though identity is true. P8-D is invalid and every T1, T2, and scientific-
+promotion license is false; Phase 8 hard-stops without training.
+
+The first auditor incorrectly required scientific health to pass before it
+could validate the recorded negative. Audit-only commits `a59f8b0` and
+`9181c0e` now independently accept only the exact nonpositive-prediction
+sentinel while rejecting NaN, positive infinity, nonfinite work, mismatched
+ratios/finiteness, CG breakdown, and false decisions. Its negative self-test
+accepts the valid sentinel and rejects four corruptions. No scientific JSON,
+NPZ, progress, work checkpoint, method, or gate changed. The sealed local
+bundle is `runs/p8_d_r2`; `LOCAL.sha256` has SHA-256
+`226eee5fc59aad42ef0a700cafa0965ac148c1c6821f085d8db8b48aed9d39e1`.

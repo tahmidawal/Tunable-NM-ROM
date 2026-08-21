@@ -654,3 +654,14 @@ train-representable at the unchanged `2e-4 / 7e-4` gates; corrected-G1 is not
 eligible, architecture/G2 is not licensed by this diagnostic, and no
 selection/capacity/downstream data was used.  Both source and audit remotes
 were checksum-verified and removed only after PASS.
+
+Phase 11 prospectively licenses exactly one seed-11 G2/q32 cell independently
+from the accepted free-H1 and fixed-G1 full-field evidence.  It does not claim
+that Phase 10 licensed G2, and it excludes the retracted/nonportable capacity
+records from every decision.  The cell requires a fresh same-H200 P6-repaired
+structural preflight before update 1, 18 encoder plus 54 joint exact-full-field
+epochs, terminal train control and final-q-only 40-attempt globalization, and
+opens the fixed 18 predictor epochs and exposed selection only after the
+globalized train gate passes.  The unchanged accuracy/speed gates, one-cell
+cap, information boundary, and all downstream seals remain binding.  No
+Phase-11 implementation or job is authorized by this preregistration alone.

@@ -575,3 +575,20 @@ descriptive evidence and can never license G2.  One prospective auditor-only
 cell may accept the exactly reproduced terminal train field while persisting,
 but never accepting, both capacity work records.  No retry, T2, selection, or
 downstream data is opened.
+
+Audit-only job `2737342` completed `0:0` in 25m52s on pax008/H200 with GPU,
+f64, highest precision, zero updates, and empty stderr.  The independent audit
+accepted the immutable terminal full-train field: trajectory mean/worst is
+`0.0124672544/0.0407763764` at N64, `0.0141450862/0.0451038558` at N128,
+`0.0155785208/0.0484066602` at N256, and `0.0130551571/0.0484066602` pooled.
+All fields are finite, boundary violations are zero, and worst K3/Cox identity
+is `2.9735041e-15`; the unchanged `2e-4/7e-4` train gate therefore fails
+decisively.  Capacity is retracted, nonreproducible, unaccepted, and never a G2
+license: original/repeat CG iterations disagree on 11,030/2,794/1,418 rows at
+N64/N128/N256 (maximum four iterations), with one N64 convergence-label
+disagreement.  All 20 corruption contracts passed.  The preserved bundle has
+AUDIT SHA-256 `b7bb908addaeb54c81293624c4433c61388c03faf9f514dbe5c8f3ec9d281377`,
+AUDIT-WORK `66ef97a0daeb2036e0aa6ccc3f31863e6861702baaa9711311d1839541cd556b`,
+and LOCAL `65e546fa0226fa0cc50a9d4f5953f53f1b51995a1741be656481621571a35a65`.
+Both the audit-only and original recovery remotes were checksum-verified and
+removed after PASS.  Selection, T2, and all downstream data remain sealed.

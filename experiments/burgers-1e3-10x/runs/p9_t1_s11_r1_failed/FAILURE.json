@@ -1,0 +1,110 @@
+{
+  "status": "excluded_post_update_terminal_finalization_failure",
+  "classification": "infrastructure_finalization_bug_after_all_scientific_updates; no audited scientific result",
+  "scientific_cell_consumed": true,
+  "job": {
+    "id": "2702357",
+    "name": "p9_t1_s11_r1",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed": "00:47:20",
+    "node": "pax008",
+    "gpu": "NVIDIA H200",
+    "jax_backend": "gpu",
+    "jax_enable_x64": true,
+    "matmul_precision": "highest"
+  },
+  "provenance": {
+    "commit": "4a87fe325ce07ce88cdb0995375a614fa864bf7a",
+    "manifest_sha256": "a403b5facfa4e6cd3b6a14abdb3503c1e85721408182419e2e197a05a51bfa1e"
+  },
+  "last_persisted_progress": {
+    "status": "in_progress",
+    "phase": "predictor",
+    "epoch": 18,
+    "global_update": 528768,
+    "required_global_updates": 528768,
+    "scientific_metrics_exposed": false
+  },
+  "failure": {
+    "exception": "KeyError: 'mean_snapshot_relative_l2_squared'",
+    "location": "b10_phase9_train.py:948 in license_capacity.loss",
+    "root_cause": "evaluate_full records mean_snapshot_relative_l2_squared only in the pooled row, but license_capacity.loss requests that key from every per-mesh row while computing the locked epoch24-to-27 improvement",
+    "timing": "after terminal_train and final capacity computation in memory, before terminal JSON/NPZ/checkpoint/AUDIT persistence and before selection evaluation",
+    "control_flow_evidence": "the failing capacity-license branch is reachable only for T1 with train_health=true, train_pass=false, and smoke=false; numerical terminal metrics were not persisted and are therefore not audited"
+  },
+  "immutable_outputs": [
+    "out/PROGRESS.json",
+    "out/work_checkpoint.pkl"
+  ],
+  "absent_outputs": [
+    "out/phase9_train.json",
+    "out/phase9_train.npz",
+    "out/checkpoint.pkl",
+    "out/AUDIT.json"
+  ],
+  "work_checkpoint": {
+    "phase": "predictor",
+    "epoch": 18,
+    "global_update": 528768,
+    "all_arrays_finite": true,
+    "generator": {
+      "leaf_count": 20,
+      "element_count": 30594,
+      "tree_sha256": "9f97cb80ec0e4484dcbbf04cb43260b968af2671304d2d30cd18c4bffd227052"
+    },
+    "encoder": {
+      "leaf_count": 18,
+      "element_count": 29811,
+      "tree_sha256": "dad725ba647d08504818a3f537fb2899b3dfcf179faa58416145ec82081c1355"
+    },
+    "predictor": {
+      "leaf_count": 6,
+      "element_count": 2104,
+      "tree_sha256": "efb2f7e50a9b2a4d7c8274d7b352b57aad6611d8a75d4abe016b20a63521f3b0"
+    },
+    "predictor_optimizer_state": {
+      "leaf_count": 14,
+      "element_count": 4210,
+      "tree_sha256": "ebe5f62f3df9edbd0c7f035093c262182a081a94afe3fd383abe26401b4facae",
+      "duplicate_optimizer_state_exact": true
+    },
+    "q_raw": {
+      "shape": [35904, 19],
+      "dtype": "float64"
+    },
+    "final_target_states": {
+      "shape": [35904, 24],
+      "dtype": "float64",
+      "latent_tail_exactly_tanh_q_raw": true
+    },
+    "evaluation_states": {
+      "shape": [35904, 24],
+      "dtype": "float64"
+    },
+    "missing_for_original_full_audit": [
+      "update_resolution_order",
+      "history including joint epoch24 and epoch27 metrics",
+      "preflight report",
+      "encoder optimizer state",
+      "joint optimizer state",
+      "explicit encoder-to-q_raw handoff telemetry"
+    ]
+  },
+  "salvage_assessment": {
+    "sufficient_for": "prospectively preregistered zero-update regeneration and terminal Cox full-grid train evaluation from the exact final scientific parameters and states",
+    "insufficient_for": "reconstruction of the original complete Phase9 checkpoint/audit schema or the preregistered epoch24-to-27 capacity-improvement clause",
+    "g2_license_recoverable": false
+  },
+  "sha256": {
+    "MANIFEST.sha256": "a403b5facfa4e6cd3b6a14abdb3503c1e85721408182419e2e197a05a51bfa1e",
+    "REMOTE.sha256": "2426d43463506065706ca1a76b0ccc064df6a971a02be4063d1c64e72487eaf1",
+    "SACCT.txt": "98292764147d97708b47ebf50d18f16df29fb6db3cc166a09b74ae9c1a474cf7",
+    "out/PROGRESS.json": "1aca12633096dd0dd75fcf5da353b3500b2dac7d77055b3112a8a32f1cae53b5",
+    "out/work_checkpoint.pkl": "dd7b5fecc07e9021c6264febf5c7187004daaa73a50381921d5190eede639ce0",
+    "logs/2702357.out": "ea0ad35af5d8b5bfd94176e40ee41b8a91fcba50cf2733d57ade352ddcc73fbb",
+    "logs/2702357.err": "d5428105ef196548ad927f13e1cb1e6ad8dc7e1fe176dde8ebc938df743ea5ce"
+  },
+  "remote_preserved": true,
+  "remote_cleaned": false
+}

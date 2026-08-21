@@ -108,3 +108,26 @@ about 3.14 times P8-D's 5,712-by-40 two-start attempt count; P8-D completed in
 33m35s on an H200, making 16 hours conservative without a cross-job timing
 claim. Local execution is limited to one excluded synthetic smoke under 60
 seconds through the mandated GPU wrapper. There is no retry or second D cell.
+
+## Prospective portability amendment after zero-attempt r1
+
+Job `2738710` reached GPU/f64/highest and independently regenerated the initial
+full-field control, then stopped before trust attempt 1 because the driver used
+exact Python dictionary equality against the accepted metric summary. It wrote
+no JSON, NPZ, work checkpoint, or audit; performed zero optimizer updates; and
+touched no selection, capacity, or downstream data. The exact failure bundle is
+preserved with LOCAL SHA-256
+`ac033e5fcff3afced17886831307c3bb6913fbda7c73607c878c939086e8f3a1`.
+This is an unconsumed infrastructure/portability failure, not the one Phase-10
+diagnostic outcome. Exactly one fresh `p10_d_r2` lifecycle is permitted after
+root audit; there is no further retry.
+
+Before attempt 1, r2 persists an immutable `initial_control.npz`. The driver and
+independent auditor compare every required recomputed initial Cox/K3 floating
+metric and floating array with the accepted immutable recovery control using
+`rtol=2e-13, atol=2e-14`, finite values, and identical shapes. They persist
+maximum absolute differences and exact-versus-portable classification. Metric
+keys/types, Boolean health, integer boundary counts, q/affine ordering, source
+model/q/normalization hashes, and the unchanged zero-boundary and K3/Cox
+`<=2e-14` identity gates remain exact. No trust parameter, objective, data,
+model, loss, scientific gate, decision branch, or method changes.

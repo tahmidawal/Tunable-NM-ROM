@@ -600,3 +600,13 @@ train snapshots, and keeps selection sealed.  A pass can support a later
 corrected-G1 alternating-optimization proposal; a miss cannot license an
 architecture increase.  No Phase-10 implementation or job is authorized by
 the preregistration alone.
+
+Phase10-D r1 job `2738710` ran for 2m17s on pax010/H200/GPU/f64/highest
+and stopped before trust attempt 1 on exact Python dictionary equality between
+independently regenerated and accepted initial metric summaries. It produced no
+scientific result or metric artifact, used zero updates, and touched no
+selection/capacity/downstream data. Its verified bundle is preserved at commit
+`b675a612c675c8fbdc51ad9fe9b09f5bcc398a64`; the exact remote was removed.
+The arm is unconsumed. A prospective r2 portability repair replaces only this
+initial equality with fixed audit-grade f64 comparisons, persists the pre-trust
+control, and leaves all method, trust, and scientific gates unchanged.

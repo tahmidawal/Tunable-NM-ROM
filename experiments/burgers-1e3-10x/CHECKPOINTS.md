@@ -563,3 +563,15 @@ and the forced-false license did not change.  The pull fixture passes and
 rejects wrong manifest/job, unexpected output, failed SACCT, and a false G2
 decision.  All smoke evidence is excluded, and no recovery job is authorized
 before root audits the clean staged commit.
+
+Recovery job `2735251` ran on H200/GPU/f64/highest and completed the immutable
+zero-update driver, but exited `1:0` when the independent capacity repeat did
+not reproduce CG stopping telemetry.  Full-field, source-work/fold,
+normalization, provenance, decision, and corruption checks passed; capacity
+iterations differed by up to four and near-threshold N64 convergence labels
+differed.  The complete failed bundle is checksummed locally and remains on the
+cluster pending audit-only closure.  Capacity is retracted as nonportable
+descriptive evidence and can never license G2.  One prospective auditor-only
+cell may accept the exactly reproduced terminal train field while persisting,
+but never accepting, both capacity work records.  No retry, T2, selection, or
+downstream data is opened.

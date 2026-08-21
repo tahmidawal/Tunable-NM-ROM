@@ -113,3 +113,35 @@ classification corruption, and any true/complete capacity license.  A local
 smoke may use only synthetic data under 60 seconds via the mandated GPU wrapper;
 it is excluded.  The total cap is one recovery cell.  No training retry, T2,
 weak/EQ, scaling, model-validation, or confirmation cell is opened.
+
+## Prospective audit-only retraction after job 2735251
+
+Recovery job `2735251` completed its zero-update driver and immutable JSON/NPZ/
+terminal checkpoint, but the independent auditor honestly failed because GPU
+CG reductions near the `1e-12` stopping boundary did not reproduce stopping
+iterations or N64 convergence labels.  The driver artifacts remain byte-for-
+byte immutable: JSON `8d86ab90c1d293e4810c3d3a9391db48f635f8c77a7a8c30e71809a112bc7f8d`,
+NPZ `d6e5001d8dcb5ba7fb269241b989492533379807bcbc4cb65a384f7d429c773e`,
+checkpoint `90e9df6388bf3c05905d52c5ff073f331728ffd493a965e4376e4df285bb07d9`,
+failed AUDIT `a1c6c0ee23e16da4aab1e4320aedcab4bd7039ec650429908feb15a471f99cec`,
+and original manifest `3b001ee45df4d9889dec99052dee9489623da2ca158b9db9d9006e35739279dd`.
+
+Exactly one separately staged H200/8CPU/96GiB/16h audit-only cell may rerun the
+independent auditor.  It runs no driver, optimizer, update, selection, or new
+scientific route.  The terminal full-field claim may be accepted only if Cox/
+K3 arrays, finite health, boundary counts, aggregation, data, normalization,
+and final checkpoint bindings independently reproduce exactly.  This keeps the
+unchanged train mean/worst gates and cannot promote a failed train result.
+
+All Phase-9 recovery capacity evidence is prospectively **retracted as
+nonportable descriptive context**.  It is not interpreted as two accepted
+capacity records.  The auditor requires both the immutable original and its
+repeat to be finite, breakdown-free, and internally consistent with their own
+CG relative residual, iteration cap, and convergence classification.  It
+persists original/repeat work arrays, iteration and convergence disagreement
+indices/counts, and both summaries, but sets `capacity_reproducible=false`,
+`capacity_accepted=false`, `capacity_license_complete=false`, and
+`g2_licensed=false` unconditionally.  Any true capacity acceptance/license or
+loss of the historical disagreement fails a corruption contract.  The audit-
+only result may pass while capacity remains explicitly retracted; no capacity
+number can select architecture or license T2.

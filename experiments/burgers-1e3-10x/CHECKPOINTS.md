@@ -592,3 +592,11 @@ AUDIT-WORK `66ef97a0daeb2036e0aa6ccc3f31863e6861702baaa9711311d1839541cd556b`,
 and LOCAL `65e546fa0226fa0cc50a9d4f5953f53f1b51995a1741be656481621571a35a65`.
 Both the audit-only and original recovery remotes were checksum-verified and
 removed after PASS.  Selection, T2, and all downstream data remain sealed.
+
+Phase 10 prospectively permits one train-only fixed-generator diagnostic.  It
+starts bounded-q globalization only from the accepted final train q, uses the
+exact Cox full-grid objective and fixed 40-attempt LM protocol on all 35,904
+train snapshots, and keeps selection sealed.  A pass can support a later
+corrected-G1 alternating-optimization proposal; a miss cannot license an
+architecture increase.  No Phase-10 implementation or job is authorized by
+the preregistration alone.

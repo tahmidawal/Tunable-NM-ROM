@@ -298,15 +298,22 @@ def validate_chains(args, arm):
             and reports["p8"]["gates"]["health"] is False):
         raise SystemExit("P4-P8 scientific decision chain mismatch")
     if arm == "T2":
-        if args.t1_json is None or args.t1_npz is None or args.t1_audit is None:
+        if any(x is None for x in (args.t1_json,args.t1_npz,args.t1_checkpoint,args.t1_audit,args.t1_manifest)):
             raise SystemExit("T2 requires immutable audited T1 capacity license")
         t1 = p8.load_json(args.t1_json); audit = p8.load_json(args.t1_audit)
         if not (audit.get("status") == "pass" and audit.get("negative_aware") is True
                 and audit.get("decision", {}).get("g2_licensed") is True
-                and t1.get("decision", {}).get("g2_licensed") is True):
+                and t1.get("decision", {}).get("g2_licensed") is True
+                and audit.get("source_json_sha256")==c.sha256(args.t1_json)
+                and audit.get("source_npz_sha256")==c.sha256(args.t1_npz)
+                and audit.get("checkpoint_sha256")==c.sha256(args.t1_checkpoint)
+                and audit.get("manifest_sha256")==c.sha256(args.t1_manifest)
+                and t1.get("npz",{}).get("sha256")==c.sha256(args.t1_npz)
+                and t1.get("checkpoint",{}).get("sha256")==c.sha256(args.t1_checkpoint)
+                and audit.get("decision")==t1.get("decision")):
             raise SystemExit("T2 capacity license absent")
         for name, path in (("t1_json", args.t1_json), ("t1_npz", args.t1_npz),
-                           ("t1_audit", args.t1_audit)):
+                           ("t1_checkpoint",args.t1_checkpoint),("t1_audit", args.t1_audit),("t1_manifest",args.t1_manifest)):
             bindings[name] = {"basename": os.path.basename(path), "sha256": c.sha256(path)}
     bindings["prereg"] = {"basename": os.path.basename(args.prereg), "sha256": c.sha256(args.prereg)}
     return reports, bindings
@@ -486,8 +493,14 @@ def gate(metrics, mean_limit, worst_limit, terminal=False):
                     for row in rows))
 
 
-def preflight(config, views, variables, optimizers, kernels, norm, smoke):
+def trust_health_gate(health):
+    return bool(all(bool(value) for key,value in health.items()
+                    if key not in ("breakdown_count","unhealthy_exhaustion_count")))
+
+
+def preflight(config, views, variables, optimizers, kernels, norm, smoke, job_started):
     """Compile and time no-update work, always discarding returned parameters."""
+    elapsed_before_preflight=float(time.perf_counter()-job_started)
     repeats = 1 if smoke else 13
     warmups = 0 if smoke else 3
     medians={}; raw={}; before={name:array_sha(np.concatenate([np.ravel(np.asarray(x)) for x in jax.tree_util.tree_leaves(tree)]))
@@ -511,11 +524,11 @@ def preflight(config, views, variables, optimizers, kernels, norm, smoke):
             times=[]
             for rep in range(repeats):
                 started=time.perf_counter(); result=kernel(*one_args)
-                jax.block_until_ready(result[2]); elapsed=time.perf_counter()-started
+                jax.block_until_ready(result); elapsed=time.perf_counter()-started
                 if rep>=warmups: times.append(elapsed)
             raw[f"{name}_N{n}"]=times; medians[f"{name}_N{n}"]=float(np.median(times))
         if not smoke:
-            eval_fn=jax.jit(lambda gen,st,tr,xy,ma,me,sc: exact_loss(gen,st,tr,xy,ma,me,sc,config)[0])
+            eval_fn=jax.jit(lambda gen,st,tr,xy,ma,me,sc: exact_loss(gen,st,tr,xy,ma,me,sc,config))
             eval_states=jnp.asarray(variables["target_states"][view["global"][take]])
             trust_fn=make_trust_attempt(config); q0=eval_states[:1,5:]; aff0=jnp.asarray(view["affine"][take[:1]])
             truth0=jnp.asarray(view["truth"][take[:1]]); objective0=jnp.asarray((1.,),F64)
@@ -529,7 +542,7 @@ def preflight(config, views, variables, optimizers, kernels, norm, smoke):
             for name,invoke in extra:
                 times=[]
                 for rep in range(repeats):
-                    start=time.perf_counter(); result=invoke(); jax.block_until_ready(result); elapsed=time.perf_counter()-start
+                    start=time.perf_counter(); result=invoke(); materialized=jax.tree_util.tree_map(lambda x:np.asarray(jax.device_get(x)),result); elapsed=time.perf_counter()-start
                     if rep>=warmups: times.append(elapsed)
                 raw[f"{name}_N{n}"]=times; medians[f"{name}_N{n}"]=float(np.median(times))
     # Exact deterministic count; evaluation/trust are bounded by conservative
@@ -539,16 +552,22 @@ def preflight(config, views, variables, optimizers, kernels, norm, smoke):
     if smoke:
         eval_seconds=trust_seconds=capacity_seconds=0.0
     else:
-        eval_seconds=55*sum(math.ceil(len(v["truth"])/BATCH_BY_N[n])*medians[f"evaluation_N{n}"] for n,v in views.items())
+        eval_seconds=56*sum(math.ceil(len(v["truth"])/BATCH_BY_N[n])*medians[f"evaluation_N{n}"] for n,v in views.items())
         selection_counts={64:3264,128:1632,256:816}
         trust_seconds=2*TRUST_ATTEMPTS*sum(selection_counts[n]*medians[f"trust_N{n}"] for n in N_ORDER)
         capacity_seconds=sum(len(v["truth"])*medians[f"capacity_N{n}"] for n,v in views.items())
-    projected=update_seconds+eval_seconds+max(trust_seconds,capacity_seconds)
+    audit_regeneration_reserve=0.0 if smoke else elapsed_before_preflight
+    projected=update_seconds+eval_seconds+max(trust_seconds,2*capacity_seconds)+audit_regeneration_reserve
     after={name:array_sha(np.concatenate([np.ravel(np.asarray(x)) for x in jax.tree_util.tree_leaves(tree)]))
            for name,tree in variables.items()}
+    actual_elapsed=float(time.perf_counter()-job_started); allocation=float(os.environ.get("SLURM_TIMELIMIT_SECONDS",57600)); remaining=max(0.,allocation-actual_elapsed)
     return {"raw_seconds":raw,"median_seconds":medians,"projected_update_seconds":float(update_seconds),
             "projected_evaluation_seconds":float(eval_seconds),"projected_trust_seconds":float(trust_seconds),"projected_capacity_seconds":float(capacity_seconds),
+            "elapsed_before_preflight_seconds":elapsed_before_preflight,"audit_regeneration_reserve_seconds":audit_regeneration_reserve,
             "projected_terminal_seconds":float(projected),"safety_factor":1.15,
+            "allocation_seconds":allocation,"actual_elapsed_at_decision_seconds":actual_elapsed,
+            "actual_remaining_at_decision_seconds":remaining,"required_with_safety_seconds":float(1.15*projected),
+            "proceed_before_update1":bool(1.15*projected<=remaining),
             "weights_bitwise_unchanged":before==after,"before_hashes":before,"after_hashes":after}
 
 
@@ -557,7 +576,7 @@ def training_batches(view, permutation):
     return permutation.reshape((-1,batch))
 
 
-def train_all(config, datasets, views, norm, args, smoke):
+def train_all(config, datasets, views, norm, args, smoke, job_started):
     sizes={n:len(v["truth"]) for n,v in views.items()}
     epochs={name:(1 if smoke else row["epochs"]) for name,row in PHASES.items()}
     permutations = ({name:np.arange(next(iter(sizes.values())),dtype=np.int32)
@@ -572,9 +591,8 @@ def train_all(config, datasets, views, norm, args, smoke):
     target_states=np.concatenate((legacy.concatenate(datasets,"affine"),np.tanh(q_raw)),axis=1)
     variables={"generator":generator,"encoder":encoder,"predictor":predictor,"q_raw":jnp.asarray(q_raw),
                "target_states":target_states}
-    pre=preflight(config,views,variables,optimizers,kernels,norm,smoke)
-    remaining=max(0.0, float(os.environ.get("SLURM_TIMELIMIT_SECONDS",57600))-float(os.environ.get("B10_JOB_ELAPSED_SECONDS",0)))
-    permitted=bool(smoke or (pre["weights_bitwise_unchanged"] and 1.15*pre["projected_terminal_seconds"] <= remaining))
+    pre=preflight(config,views,variables,optimizers,kernels,norm,smoke,job_started)
+    permitted=bool(smoke or (pre["weights_bitwise_unchanged"] and pre["proceed_before_update1"]))
     if not permitted:
         return variables,permutations,{},pre,False
     params={"generator":generator,"encoder":encoder}; state=optimizers[0].init(params)
@@ -686,7 +704,8 @@ def capacity_metrics(datasets,generator,q,mean,scales,arrays):
         for name,value in (("gamma",gamma),("eta",eta),("residual",resid),("tangent",tangent),("bound",bound)):
             pooled[name].extend(value.tolist())
         offset += count
-    report["pooled"]=capacity_summary(*(np.asarray(pooled[x]) for x in ("gamma","eta","residual","tangent","bound")),np.asarray([],bool))
+    pooled_breakdown=np.concatenate([np.asarray(arrays[f"capacity_N{item['N']}_cg_breakdown"],bool) for item in datasets])
+    report["pooled"]=capacity_summary(*(np.asarray(pooled[x]) for x in ("gamma","eta","residual","tangent","bound")),pooled_breakdown)
     return report
 
 
@@ -743,7 +762,8 @@ def make_trust_attempt(config):
 def run_trust(datasets,generator,starts,mean,scales,config,arrays,args,smoke):
     attempts=1 if smoke else TRUST_ATTEMPTS; total=starts.shape[1]; qdim=config["q"]
     trace={"q":np.empty((2,total,attempts+1,qdim)),"objective":np.empty((2,total,attempts+1)),
-           "delta":np.empty((2,total,attempts)),"damping":np.empty((2,total,attempts)),
+           "delta":np.empty((2,total,attempts+1)),"damping":np.empty((2,total,attempts+1)),
+           "active":np.zeros((2,total,attempts+1),bool),
            "trial_objective":np.empty((2,total,attempts)),"predicted":np.empty((2,total,attempts)),
            "actual":np.empty((2,total,attempts)),"rho":np.empty((2,total,attempts)),
            "rho_defined":np.zeros((2,total,attempts),bool),"accepted":np.zeros((2,total,attempts),bool),
@@ -761,6 +781,7 @@ def run_trust(datasets,generator,starts,mean,scales,config,arrays,args,smoke):
             temp={}; evaluate_full([item],generator,state,mean,scales,config,temp,"initial",False)
             objective[off:off+count]=temp[f"initial_N{item['N']}_numerator"]/temp[f"initial_N{item['N']}_denominator"]; off+=count
         trace["q"][start_index,:,0]=q; trace["objective"][start_index,:,0]=objective
+        trace["delta"][start_index,:,0]=delta; trace["damping"][start_index,:,0]=damping; trace["active"][start_index,:,0]=active
         for attempt in range(attempts):
             attempted=active.copy(); current_delta=delta.copy(); current_damping=damping.copy(); off=0
             for item in datasets:
@@ -771,12 +792,17 @@ def run_trust(datasets,generator,starts,mean,scales,config,arrays,args,smoke):
                     trace[name][start_index,sl,attempt]=value
                 q[sl],objective[sl],delta[sl],damping[sl],active[sl]=nq,no,nd,nl,na; off+=count
             trace["attempted"][start_index,:,attempt]=attempted
-            trace["delta"][start_index,:,attempt]=current_delta; trace["damping"][start_index,:,attempt]=current_damping
+            if not (np.array_equal(current_delta,trace["delta"][start_index,:,attempt])
+                    and np.array_equal(current_damping,trace["damping"][start_index,:,attempt])):
+                raise SystemExit("trust state transition persistence mismatch")
             trace["jvp_count"][start_index,:,attempt]=np.where(attempted,trace["cg_iterations"][start_index,:,attempt]+1,0)
             trace["vjp_count"][start_index,:,attempt]=np.where(attempted,trace["cg_iterations"][start_index,:,attempt]+1,0)
             trace["q"][start_index,:,attempt+1]=q; trace["objective"][start_index,:,attempt+1]=objective
+            trace["delta"][start_index,:,attempt+1]=delta; trace["damping"][start_index,:,attempt+1]=damping; trace["active"][start_index,:,attempt+1]=active
             atomic_json(args.progress_json,{"status":"in_progress","phase":"trust","start":start_index,"attempt":attempt+1,"scientific_metrics_exposed":False})
     for name,value in trace.items(): arrays["trust_"+name]=value
+    arrays["trust_unhealthy_exhaustion"]=(trace["active"][:,:,-1]
+        & (trace["delta"][:,:,-1]<=DELTA_MIN) & (trace["damping"][:,:,-1]>=LAMBDA_MAX))
     return trace
 
 
@@ -823,38 +849,53 @@ def t2_structural_preflight(config,mean,scales,smoke=False):
     route_jit=jax.jit(route); lowered=route_jit.lower(predictor,generator,jnp.asarray(feature_rows[0]),jnp.asarray(parameters["nu"][0]),jnp.asarray(mean),jnp.asarray(scales)); executable=lowered.compile()
     memory=base.memory_analysis(executable)["eligibility_device_bytes"]
     route_args=[(predictor,generator,jnp.asarray(feature_rows[i]),jnp.asarray(parameters["nu"][i]),jnp.asarray(mean),jnp.asarray(scales)) for i in range(cases)]
-    identity=[]
-    for case,args in enumerate(route_args):
-        fields,control,residual,states,coeff=map(np.asarray,executable(*args)); identity.append({"case":case,
-            "relative_l2":float(np.linalg.norm(fields-control)/max(np.linalg.norm(control),1e-300)),
-            "boundary":bool(np.all(fields[:,np.asarray(mask)==0]==0)),"finite":bool(all(np.all(np.isfinite(x)) for x in (fields,control,residual,states,coeff)))})
     if smoke:
-        return {"pass":False,"scientific":False,"identity":identity,"compiled_device_bytes":int(memory)}
+        fields,control,residual,states,coeff=map(np.asarray,executable(*route_args[0]))
+        identity={"relative_l2":float(np.linalg.norm(fields-control)/max(np.linalg.norm(control),1e-300)),
+            "boundary":bool(np.all(fields[:,np.asarray(mask)==0]==0)),"finite":bool(all(np.all(np.isfinite(x)) for x in (fields,control,residual,states,coeff)))}
+        return {"pass":False,"scientific":False,"same_invocation_identity":identity,"compiled_device_bytes":int(memory)}
     fom=base.bc.make_chain(n,base.FOM_OUTER,lin_tol=base.FOM_INNER,preconditioner="helmholtz")[0]
     def invoke(method,case,return_output=False):
         started=time.perf_counter()
-        out=(fom(jnp.asarray(truth[case,0]),parameters["nu"][case],dummy,jnp.int32(5)) if method=="fom" else executable(*route_args[case]))
+        work={}
+        if method=="fom": out=fom(jnp.asarray(truth[case,0]),parameters["nu"][case],dummy,jnp.int32(5))
+        else:
+            recovered,sample_indices=c.recover_blob_parameters_fixed_sample(truth[case,0],n)
+            one={"cx":recovered[0:1],"cy":recovered[1:2],"width":recovered[2:3],"amplitude":recovered[3:4],"nu":parameters["nu"][case:case+1]}
+            args=list(route_args[case]); args[2]=jnp.asarray(c.trajectory_features(one,n)[0,:steps+1]); out=executable(*tuple(args))
+            work={"cold_sample_count":int(sample_indices.size),"cold_recovery_finite":bool(np.all(np.isfinite(recovered)))}
         jax.block_until_ready(out); elapsed=float(time.perf_counter()-started)
-        return (out,elapsed) if return_output else elapsed
-    fom_grade=[base.fom_grade(invoke("fom",case,True)[0],truth[case]) for case in range(cases)]
-    fom_eligible=bool(all(row["finite"] and row["breakdowns"]==0 and row["flags_nonzero"]==0
-                          and row["max_returned_relative_residual"]<=base.FOM_OUTER for row in fom_grade)
-                      and np.mean([row["trajectory_relative_l2"] for row in fom_grade])<=1e-3
-                      and np.max([row["trajectory_relative_l2"] for row in fom_grade])<=3e-3)
+        return (out,elapsed,work) if return_output else elapsed
     for method in ("fom","rom"): invoke(method,0)
-    c.gpu_burn(3.0); records={"fom":[],"rom":[]}; orders=[]
+    burn_count=c.gpu_burn(3.0); records={"fom":[],"rom":[]}; orders=[]
     for rep in range(24):
         order=("fom","rom") if rep%2==0 else ("rom","fom"); orders.append(order)
         for case in range(cases):
-            for method in order: records[method].append({"repetition":rep,"case":case,"elapsed_s":invoke(method,case)})
-    per_case={method:[float(np.median([x["elapsed_s"] for x in rows if x["case"]==case])) for case in range(cases)] for method,rows in records.items()}
+            for position,method in enumerate(order):
+                output,elapsed,invoke_work=invoke(method,case,True); row={"repetition":rep,"case_index":case,"position":position,"elapsed_s":elapsed,**invoke_work}
+                if method=="fom": row.update(base.fom_grade(output,truth[case]))
+                else:
+                    fields,control,residual,states,coeff=map(np.asarray,output)
+                    row.update({"identity_relative_l2":float(np.linalg.norm(fields-control)/max(np.linalg.norm(control),1e-300)),
+                        "exact_boundary":bool(np.all(fields[:,np.asarray(mask)==0]==0)),
+                        "finite":bool(all(np.all(np.isfinite(x)) for x in (fields,control,residual,states,coeff))),
+                        "cold_sample_count":invoke_work["cold_sample_count"],"cold_recovery_finite":invoke_work["cold_recovery_finite"],
+                        "cox_weak_evaluations":int(residual.shape[0]),"k3_coefficient_grid_full_field_evaluations":int(fields.shape[0]),
+                        "weak_jacobian_evaluations":0,"trial_evaluations":0,"failures":0})
+                records[method].append(row)
+    summaries={method:base.summarize_timing(rows,cases) for method,rows in records.items()}
+    per_case={method:summaries[method]["per_case_median_elapsed_s"] for method in records}
     speed=float(np.median(per_case["fom"])/np.median(per_case["rom"])); ci=base.clustered_speedup_ci(per_case["fom"],per_case["rom"],20266100)
-    identity_pass=all(x["relative_l2"]<=IDENTITY_TOL and x["boundary"] and x["finite"] for x in identity)
+    fom_eligible=bool(all(row["finite"] and row["breakdowns"]==0 and row["flags_nonzero"]==0 and row["max_returned_relative_residual"]<=base.FOM_OUTER for row in records["fom"])
+        and np.mean([row["trajectory_relative_l2"] for row in records["fom"]])<=1e-3 and np.max([row["trajectory_relative_l2"] for row in records["fom"]])<=3e-3)
+    identity_pass=all(x["identity_relative_l2"]<=IDENTITY_TOL and x["exact_boundary"] and x["finite"]
+        and x["cox_weak_evaluations"]==50 and x["k3_coefficient_grid_full_field_evaluations"]==51
+        and x["weak_jacobian_evaluations"]==0 and x["trial_evaluations"]==0 and x["failures"]==0 for x in records["rom"])
     gate=bool(fom_eligible and identity_pass and memory<=20_000_000_000 and speed>=10 and ci[0]>=8)
-    return {"scientific":True,"identity":identity,"compiled_device_bytes":int(memory),"memory_pass":memory<=20_000_000_000,
+    return {"scientific":True,"compiled_device_bytes":int(memory),"memory_pass":memory<=20_000_000_000,
             "work":{"cox_weak_evaluations":50,"k3_coefficient_grid_full_field_evaluations":51,"weak_jacobian_evaluations":0,"trial_evaluations":0,"failures":0},
-            "fom_grade":fom_grade,"fom_eligible":fom_eligible,"orders":[list(x) for x in orders],"position_counts":{"fom":[12,12],"rom":[12,12]},"records":records,
-            "per_case_median_seconds":per_case,"paired_median_speedup":speed,"clustered_speedup_ci":ci,"pass":gate}
+            "fom_eligible":fom_eligible,"burn_count":int(burn_count),"orders":[list(x) for x in orders],"position_counts":{"fom":[12,12],"rom":[12,12]},"records":records,
+            "summaries":summaries,"per_case_median_seconds":per_case,"paired_median_speedup":speed,"clustered_speedup_ci":ci,"pass":gate}
 
 
 def license_capacity(train_metrics,capacity,history):
@@ -890,12 +931,13 @@ def parse_args():
         parser.add_argument(f"--p7-{kind}",dest=f"p7_{kind}")
     for kind in ("json","npz","audit","manifest"):
         parser.add_argument(f"--p8-{kind}",dest=f"p8_{kind}")
-    for kind in ("json","npz","audit"):
+    for kind in ("json","npz","checkpoint","audit","manifest"):
         parser.add_argument(f"--t1-{kind}",dest=f"t1_{kind}")
     parser.add_argument("--target-dir"); parser.add_argument("--prereg")
     parser.add_argument("--output-json",required=True); parser.add_argument("--output-npz",required=True)
     parser.add_argument("--checkpoint",required=True); parser.add_argument("--progress-json",required=True)
     parser.add_argument("--work-checkpoint",required=True); parser.add_argument("--smoke",action="store_true")
+    parser.add_argument("--smoke-skip-structural",action="store_true")
     return parser.parse_args()
 
 
@@ -912,21 +954,26 @@ def main():
     train,selection,coefficients,target_records=load_populations(args,smoke)
     features=legacy.concatenate(train,"features"); norm=train_normalization(coefficients,features)
     views=per_n_views(train,norm["normalized"])
-    structural=t2_structural_preflight(config,norm["mean"],norm["scales"],smoke) if args.arm=="T2" else None
+    if args.smoke_skip_structural and not (smoke and args.arm=="T2"):
+        raise SystemExit("--smoke-skip-structural is T2 synthetic-only")
+    structural=(t2_structural_preflight(config,norm["mean"],norm["scales"],smoke)
+                if args.arm=="T2" and not args.smoke_skip_structural else
+                {"scientific":False,"separately_smoked":True,"pass":False} if args.arm=="T2" else None)
     if structural is not None and not structural["pass"] and not smoke:
         initial_q=np.zeros((len(coefficients),config["q"]),np.float64)
         variables={"generator":init_generator(config),"encoder":init_encoder(config),"predictor":init_predictor(config),
                    "q_raw":jnp.asarray(initial_q),"target_states":np.concatenate((legacy.concatenate(train,"affine"),initial_q),axis=1)}
         train_result=(variables,{}, {},{"structural_preflight":structural,"weights_bitwise_unchanged":True},False)
     else:
-        train_result=train_all(config,train,views,norm,args,smoke)
+        train_result=train_all(config,train,views,norm,args,smoke,started)
     if len(train_result)==5:
         variables,permutations,arrays,preflight,updates_started=train_result; history={}
     else:
         variables,permutations,arrays,preflight,updates_started,history=train_result
     arrays.update({"coefficient_mean":norm["mean"],"head_scales":norm["scales"],
                    "predictor_feature_mean":norm["feature_mean"],"predictor_feature_scale":norm["feature_scale"],
-                   "normalization_source_indices":norm["source_indices"]})
+                   "predictor_feature_empirical_scale":norm["feature_empirical"],
+                   "training_features":features,"normalization_source_indices":norm["source_indices"]})
     arrays.update(permutations)
     parameter_counts={"generator":tree_count(variables["generator"]),"encoder":tree_count(variables["encoder"]),
                       "predictor":tree_count(variables["predictor"])}
@@ -938,13 +985,17 @@ def main():
     terminal_train=capacity=capacity_license=selection_report=trust_health=None
     predictor_fold_identity=None
     if updates_started:
+        arrays["final_q_raw"]=np.asarray(variables["q_raw"])
+        arrays["final_target_states"]=np.asarray(variables["target_states"])
+        arrays["update_resolution_order"]=(np.asarray((16,16,16),np.int16) if smoke else
+            np.tile(np.asarray(N_ORDER,np.int16),sum(PHASES[x]["epochs"] for x in PHASES)*BATCHES_PER_N))
         predictor_fold_identity=legacy.predictor_fold_identity(variables["predictor"],variables["folded_predictor"],
             legacy.concatenate(train,"features"),norm["feature_mean"],norm["feature_scale"])
         q=np.tanh(np.asarray(variables["q_raw"])); train_states=np.concatenate((legacy.concatenate(train,"affine"),q),axis=1)
-        terminal_train=evaluate_full(train,variables["generator"],train_states,norm["mean"],norm["scales"],config,arrays,"terminal_train",True)
+        terminal_train=evaluate_full(train,variables["generator"],train_states,norm["mean"],norm["scales"],config,arrays,"terminal_train",not smoke)
         train_health=bool(all(row["all_finite"] and row["boundary_violation_count"]==0 and row["k3_cox_identity_worst"]<=IDENTITY_TOL
-                              for row in list(terminal_train["meshes"].values())+[terminal_train["pooled"]]))
-        train_pass=gate(terminal_train,2e-4,7e-4,True); decision["train_pass"]=train_pass
+                              for row in list(terminal_train["meshes"].values())+[terminal_train["pooled"]])) if not smoke else True
+        train_pass=gate(terminal_train,2e-4,7e-4,not smoke); decision["train_pass"]=train_pass
         if args.arm=="T1" and train_health and not train_pass and not smoke:
             capacity=capacity_metrics(train,variables["generator"],q,norm["mean"],norm["scales"],arrays)
             capacity_license=license_capacity(terminal_train,capacity,history)
@@ -958,6 +1009,7 @@ def main():
             arrays["selection_free_encoder_q_raw"]=encoder_raw; arrays["selection_direct_states"]=direct_states
             trace=run_trust(selection,variables["generator"],np.stack((predictor_q,encoder_q)),norm["mean"],norm["scales"],config,arrays,args,smoke)
             best=np.argmin(trace["objective"][:,:,-1],axis=0); bestq=np.where(best[:,None]==0,trace["q"][0,:,-1],trace["q"][1,:,-1])
+            arrays["trust_chosen_start"]=best.astype(np.int8); arrays["trust_chosen_terminal_q"]=bestq
             oracle_states=np.concatenate((legacy.concatenate(selection,"affine"),bestq),axis=1)
             direct=evaluate_full(selection,variables["generator"],direct_states,norm["mean"],norm["scales"],config,arrays,"selection_direct",True)
             oracle=evaluate_full(selection,variables["generator"],oracle_states,norm["mean"],norm["scales"],config,arrays,"selection_oracle",True)
@@ -965,12 +1017,15 @@ def main():
                     max((oracle["pooled"] if key=="pooled" else oracle["meshes"][key])["trajectory_error_mean"],1e-300)
                     for key in [*direct["meshes"],"pooled"]}
             defined=trace["rho_defined"]&trace["attempted"]; undefined=(~trace["rho_defined"])&trace["attempted"]
-            trust_health={"finite":bool(np.all(trace["finite"]|~trace["attempted"])),"breakdown_count":int(np.sum(trace["cg_breakdown"]&trace["attempted"])),
+            breakdown_count=int(np.sum(trace["cg_breakdown"]&trace["attempted"])); exhaustion_count=int(np.sum(arrays["trust_unhealthy_exhaustion"]))
+            trust_health={"finite":bool(np.all(trace["finite"]|~trace["attempted"])),"breakdown_count":breakdown_count,
+                          "no_breakdown":breakdown_count==0,"unhealthy_exhaustion_count":exhaustion_count,"no_unhealthy_exhaustion":exhaustion_count==0,
                           "defined_rho_match":bool(np.allclose(trace["rho"][defined],trace["actual"][defined]/trace["predicted"][defined],rtol=2e-13,atol=2e-14)),
                           "undefined_rho_zero":bool(np.all(trace["rho"][undefined]==0.0)),"undefined_never_accepted":bool(not np.any(trace["accepted"][undefined]))}
+            trust_gate=trust_health_gate(trust_health)
             selection_pass=bool(gate(direct,3e-4,1e-3,True) and gate(oracle,2e-4,7e-4,True)
-                                and all(x<=1.5 for x in ratios.values()) and all(trust_health.values()))
-            selection_report={"direct":direct,"oracle":oracle,"direct_oracle_mean_ratio":ratios,"trust_health":trust_health,"pass":selection_pass}
+                                and all(x<=1.5 for x in ratios.values()) and trust_gate)
+            selection_report={"direct":direct,"oracle":oracle,"direct_oracle_mean_ratio":ratios,"trust_health":trust_health,"trust_gate":trust_gate,"pass":selection_pass}
             decision.update({"selection_evaluated":True,"phase9_pass":selection_pass,"scientific_promotion_allowed":selection_pass,
                              "next_action":"separate corrected-rollout proposal" if selection_pass else "hard stop"})
         elif decision["g2_licensed"]:
@@ -980,6 +1035,9 @@ def main():
     checkpoint={"status":"excluded_execution_smoke" if smoke else "complete","arm":args.arm,"config":config,
                 "generator":jax.tree_util.tree_map(np.asarray,variables["generator"]),"encoder":jax.tree_util.tree_map(np.asarray,variables["encoder"]),
                 "predictor":jax.tree_util.tree_map(np.asarray,variables["predictor"]),"q_raw":np.asarray(variables["q_raw"]),
+                "folded_predictor":jax.tree_util.tree_map(np.asarray,variables.get("folded_predictor",variables["predictor"])),
+                "encoder_handoff_q_raw":np.asarray(arrays.get("encoder_handoff_q_raw",np.empty((0,config["q"])))),
+                "final_target_states":np.asarray(variables["target_states"]),
                 "optimizer_states":jax.tree_util.tree_map(np.asarray,variables.get("optimizer_states",{})),
                 "normalization":{k:norm[k] for k in ("mean","scales","feature_mean","feature_scale")}}
     atomic_pickle(args.checkpoint,checkpoint)
@@ -992,15 +1050,21 @@ def main():
                 "model_validation_touched":False,"confirmation_touched":False,"weak_eq_touched":False,"scaling_touched":False},
             "normalization":{"definition":"train-only vector mean and centered per-head RMS","elapsed_s":norm["elapsed_s"],
                 "host_bytes":norm["host_bytes"],"mean_sha256":array_sha(norm["mean"]),"scales_sha256":array_sha(norm["scales"]),
-                "feature_mean_sha256":array_sha(norm["feature_mean"]),"feature_scale_sha256":array_sha(norm["feature_scale"])},
+                "normalized_training_coefficients_sha256":array_sha(norm["normalized"]),
+                "training_features_sha256":array_sha(features),"feature_mean_sha256":array_sha(norm["feature_mean"]),
+                "feature_scale_sha256":array_sha(norm["feature_scale"]),"feature_empirical_scale_sha256":array_sha(norm["feature_empirical"])},
             "schedule":{"phase_order":["encoder","joint","predictor"],"epochs":{k:(1 if smoke else v["epochs"]) for k,v in PHASES.items()},
-                "resolution_cycle":[64,128,256],"batches":{"64":8,"128":2,"256":1},"terminal_only":True},
+                "resolution_cycle":[64,128,256],"batches":{"64":8,"128":2,"256":1},"batches_per_N_epoch":1 if smoke else 3264,
+                "phase_update_counts":{k:(1 if smoke else v["epochs"]*9792) for k,v in PHASES.items()},
+                "total_update_count":3 if smoke else 528768,"terminal_epochs":{"encoder":9,"joint":27,"predictor":18},"terminal_only":True},
             "preflight":preflight,"history":history,"terminal_train":terminal_train,"capacity":capacity,
             "t2_structural_preflight":structural,
             "predictor_fold_identity":predictor_fold_identity,
             "capacity_license":capacity_license,"selection":selection_report,"decision":decision,
             "npz":{"basename":os.path.basename(args.output_npz),"sha256":c.sha256(args.output_npz)},
             "checkpoint":{"basename":os.path.basename(args.checkpoint),"sha256":c.sha256(args.checkpoint)},
+            "work_checkpoint":({"basename":os.path.basename(args.work_checkpoint),"sha256":c.sha256(args.work_checkpoint)}
+                               if os.path.isfile(args.work_checkpoint) else None),
             "elapsed_s":float(time.perf_counter()-started)}
     atomic_json(args.output_json,report); atomic_json(args.progress_json,{"status":"complete","scientific_metrics_exposed":False})
     print(json.dumps({"status":report["status"],"decision":decision},sort_keys=True),flush=True); print("ALL-DONE",flush=True)

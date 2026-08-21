@@ -8,7 +8,7 @@
 #SBATCH -e logs/%j.err
 set -euo pipefail
 : "${B10_COMMIT:?}" "${B10_CELL:?}" "${B10_REMOTE:?}" "${B10_ARM:?}"
-[[ "$B10_CELL" == p9_t1_s11_r1 && "$B10_ARM" == T1 ]]
+[[ ("$B10_CELL" == p9_t1_s11_r1 && "$B10_ARM" == T1) || ("$B10_CELL" == p9_t2_s11_r1 && "$B10_ARM" == T2) ]]
 test "$B10_REMOTE" = "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/$B10_CELL"
 cd "$B10_REMOTE"
 ./verify_manifest_file_set.sh . MANIFEST.sha256 "./logs/$SLURM_JOB_ID.out" "./logs/$SLURM_JOB_ID.err"
@@ -31,7 +31,11 @@ common=(
   --p7-json deps/p7/phase7_train.json --p7-npz deps/p7/phase7_train.npz --p7-checkpoint deps/p7/checkpoint.pkl --p7-audit deps/p7/AUDIT.json --p7-manifest deps/p7/MANIFEST.sha256
   --p8-json deps/p8/phase8_d.json --p8-npz deps/p8/phase8_d.npz --p8-audit deps/p8/AUDIT.json --p8-manifest deps/p8/MANIFEST.sha256
 )
-"$PY" b10_phase9_train.py --arm "$B10_ARM" "${common[@]}" --target-dir deps/p5/targets \
+t1=()
+if [[ "$B10_ARM" == T2 ]]; then
+  t1=(--t1-json deps/t1/phase9_train.json --t1-npz deps/t1/phase9_train.npz --t1-checkpoint deps/t1/checkpoint.pkl --t1-audit deps/t1/AUDIT.json --t1-manifest deps/t1/MANIFEST.sha256)
+fi
+"$PY" b10_phase9_train.py --arm "$B10_ARM" "${common[@]}" "${t1[@]}" --target-dir deps/p5/targets \
   --prereg PHASE-9-PRE-REGISTRATION.md --output-json ../out/phase9_train.json \
   --output-npz ../out/phase9_train.npz --checkpoint ../out/checkpoint.pkl \
   --progress-json ../out/PROGRESS.json --work-checkpoint ../out/work_checkpoint.pkl

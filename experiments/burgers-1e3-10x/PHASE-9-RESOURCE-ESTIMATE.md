@@ -12,8 +12,11 @@ The 528,768-update schedule is not assumed to fit merely from these byte
 counts. Before update 1 the same-job no-update preflight compiles and measures
 all three update phases at each resolution, persists 3 warmups and 10 measured
 repetitions, and projects all locked updates, full-cohort evaluations, and
-terminal trust work. If the projected terminal runtime plus 15% exceeds the
-remaining 16-hour allocation, execution stops with bitwise-unchanged weights;
+terminal trust/capacity work, the independent audit, and a conservative second
+data-regeneration reserve equal to elapsed pre-preflight work. The decision
+subtracts actual monotonic data-generation, compile, and preflight elapsed time
+from 16 hours. If the projected remainder plus 15% exceeds the actual remaining
+allocation, execution stops with bitwise-unchanged weights;
 the cell is an infrastructure-only result. This makes the 16-hour request
 feasible by construction without relying on a cross-job timing extrapolation.
 

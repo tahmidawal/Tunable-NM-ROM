@@ -623,3 +623,15 @@ threshold. The result remains unaccepted and its remote remains preserved.
 One prospectively amended audit-only cell may apply the locked scale-aware
 `2e-13/2e-14` comparison and a `4e-16` termination roundoff band; it may not
 alter or rerun the scientific result or open any downstream data.
+
+Phase10-D audit-only r1 job `2747981` passed pax010/H200/GPU/f64/highest
+preflight, performed zero optimizer/scientific updates, and failed `1:0` after
+1m45s before writing an audit output.  The cause was a top-level normalization
+lookup against the immutable recovery checkpoint's existing nested
+`normalization` schema.  The exact zero-output bundle has LOCAL digest
+`43b7d071a4301b9511da38cbbd2e74ac63a0bcba48abd4a5cad29a69ef98796d`;
+the audit remote was checksum-verified and removed, while the source r2 remote
+remains retained.  This infrastructure-only audit attempt is unconsumed.  One
+prospective audit-only r2 may correct only the schema lookup and must bind the
+nested arrays to the immutable recovery NPZ/report with positive and corrupt
+real-schema regression controls.

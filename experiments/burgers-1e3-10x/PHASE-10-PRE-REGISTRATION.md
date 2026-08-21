@@ -167,3 +167,22 @@ Corruption controls must reject a larger floating perturbation, a categorical
 or boundary change, and a termination mismatch beyond the band. The audit-only
 cell performs no optimizer/scientific update and opens no selection, capacity,
 weak/EQ, scaling, model-validation, confirmation, or downstream data.
+
+## Prospective audit-only schema correction after audit r1
+
+Audit-only job `2747981` passed H200/GPU/f64/highest preflight but exited
+`1:0` before producing an audit artifact because the auditor looked for
+`coefficient_mean` at the top level of the accepted terminal checkpoint.  The
+immutable checkpoint stores train-only normalization under the exact nested
+schema `normalization.{mean,scales,feature_mean,feature_scale}`.  The verified
+zero-output failure is infrastructure-only and does not consume the one audit
+decision or alter completed r2 science.
+
+Exactly one fresh audit-only r2 may replace only that invalid lookup with the
+existing nested schema.  It must bind all four nested arrays bitwise to the
+corresponding immutable recovery NPZ arrays and to their recorded recovery
+report hashes; the Phase10 mean/scales arrays and hashes remain independently
+bound as already specified.  A real-checkpoint-schema regression and a
+corrupted nested-array/hash regression must pass before staging.  No driver,
+scientific artifact, trust rule, gate, tolerance, model, data split, or
+information boundary changes, and no scientific rerun, are permitted.

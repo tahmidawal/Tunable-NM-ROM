@@ -114,8 +114,10 @@ def portability_negative_tests():
          "mean_snapshot_relative_l2_squared":float(1e-4),"k3_cox_identity_worst":float(2e-15),
          "all_finite":True,"boundary_violation_count":0}
     metrics={"meshes":{"16":copy.deepcopy(row)},"pooled":copy.deepcopy(row)}
-    fresh={f"initial_train_N16_{name}":np.asarray([0.,1.],np.int32 if name=="boundary_count" else np.float64)
-           for name in FIELD_ARRAY_SUFFIXES}
+    fresh={f"initial_train_N16_{name}":np.asarray(
+        [0,0] if name=="boundary_count" else [0.,1.],
+        np.int32 if name=="boundary_count" else np.float64)
+        for name in FIELD_ARRAY_SUFFIXES}
     reference={key.replace("initial_train_","terminal_train_",1):value.copy() for key,value in fresh.items()}
     exact=independent_initial_binding(metrics,metrics,fresh,reference,[16])["pass"]
     portable_metrics=copy.deepcopy(metrics); portable_metrics["meshes"]["16"]["trajectory_error_mean"]+=1e-15

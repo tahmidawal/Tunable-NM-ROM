@@ -1,4 +1,4 @@
-"""Rerunnable integrity/numerical audit for the Burgers Phase-1--7 search."""
+"""Rerunnable integrity/numerical audit for the Burgers Phase-1--8 search."""
 from __future__ import annotations
 
 import hashlib
@@ -798,10 +798,159 @@ def audit_phase7_train():
     }
 
 
+def audit_phase8_d():
+    directory = os.path.join(RUNS, "p8_d_r2")
+    report_path = os.path.join(directory, "out", "phase8_d.json")
+    npz_path = os.path.join(directory, "out", "phase8_d.npz")
+    progress_path = os.path.join(directory, "out", "PROGRESS.json")
+    work_path = os.path.join(directory, "out", "work_checkpoint.pkl")
+    audit_path = os.path.join(directory, "out", "AUDIT.json")
+    report, independent = load(report_path), load(audit_path)
+    log = open(os.path.join(directory, "logs", "2686475.out")).read()
+    error = open(os.path.join(directory, "logs", "2686475.err")).read()
+    provenance = report["provenance"]
+    expected_gates = {"identity": True, "health": False}
+    expected_decision = {
+        "p8_d_valid": False,
+        "t1_implementation_authorized": False,
+        "t1_submission_authorized": False,
+        "t2_authorized": False,
+        "next_action": "root audit of P8-D",
+        "scientific_promotion_allowed": False,
+    }
+    assert report["status"] == "complete"
+    assert provenance["jax_backend"] == "gpu" and provenance["x64"]
+    assert provenance["matmul_precision"] == "highest"
+    assert provenance["slurm_job_id"] == "2686475"
+    assert provenance["gpu_kind"] == "NVIDIA H200"
+    assert "jax_backend=gpu" in log and log.count("ALL-DONE") == 2
+    assert error == ""
+    assert report["config"]["objective"] == (
+        "exact discrete full-grid FOM relative-L2-squared"
+    )
+    assert report["config"]["scientific_full_grid_route"] == "Cox"
+    assert report["config"]["K3_role"] == "identity_control_only"
+    assert not any(
+        report["config"][name]
+        for name in (
+            "model_validation_touched", "confirmation_touched",
+            "training_touched", "weak_eq_touched", "scaling_touched",
+            "terminated_local_diagnostic_reused", "smoke",
+        )
+    )
+    assert independent["status"] == "pass" and independent["negative_aware"]
+    assert independent["expected_commit"] == provenance["commit"]
+    assert independent["expected_job"] == provenance["slurm_job_id"]
+    assert independent["source_json_sha256"] == sha256(report_path)
+    assert independent["source_npz_sha256"] == sha256(npz_path)
+    assert independent["manifest_sha256"] == sha256(
+        os.path.join(directory, "MANIFEST.sha256")
+    )
+    assert independent["progress_sha256"] == sha256(progress_path)
+    assert independent["work_checkpoint_sha256"] == sha256(work_path)
+    assert independent["immutable_bindings_verified"]
+    assert independent["affine_features_verified"]
+    assert independent["full_grid_metrics_recomputed"]
+    assert independent["trust_traces_recomputed"]
+    assert independent["slurm_backend_checks_verified"]
+    assert audit_source_hashes(report)
+
+    for cohort in ("training", "selection"):
+        assert all(
+            row["reference_health"]["reported_max_relative_residual"] <= 1e-8
+            and row["reference_health"]["independent_max_relative_residual"] <= 1e-8
+            for row in report["data"][cohort]
+        )
+    binding = report["data"]["affine_feature_binding"]
+    assert binding["absolute_tolerance"] == 2e-15
+    assert binding["relative_tolerance"] == 0.0
+    assert max(
+        binding["train_regenerated_vs_physical_mapping"],
+        binding["train_r3_vs_physical_mapping"],
+        binding["selection_regenerated_vs_r3"],
+    ) <= 2e-15
+    assert all(
+        binding[name]
+        for name in (
+            "train_feature_exact_columns_bitwise",
+            "train_viscosity_feature_within_ulp",
+            "selection_feature_exact_columns_bitwise",
+            "selection_viscosity_feature_within_ulp",
+        )
+    )
+
+    identity_pass = True
+    control_rows = {}
+    flat_controls = []
+    for name, control in report["controls"].items():
+        if "meshes" in control:
+            flat_controls.append((name, control))
+        else:
+            flat_controls.extend(
+                (f"{name}/{start}", nested)
+                for start, nested in control.items()
+            )
+    for name, control in flat_controls:
+        rows = [*control["meshes"].values(), control["pooled"]]
+        assert all(
+            row["all_finite"] and row["exact_binary_boundary"]
+            and row["boundary_violation_count"] == 0
+            and np.isfinite(row["trajectory_error_mean"])
+            and np.isfinite(row["trajectory_error_worst"])
+            for row in rows
+        )
+        identity_pass &= all(row["k3_cox_identity_worst"] <= 2e-14 for row in rows)
+        control_rows[name] = {
+            "pooled_mean": control["pooled"]["trajectory_error_mean"],
+            "pooled_worst": control["pooled"]["trajectory_error_worst"],
+        }
+    health = report["trust_health"]
+    independently_recomputed_health = bool(
+        health["all_attempt_values_finite"]
+        and not health["any_cg_breakdown"]
+        and health["unhealthy_exhaustion_count"] == 0
+    )
+    assert health == independent["trust_health"]
+    assert health["attempted_total"] == 277742
+    assert health["accepted_total"] == 272668
+    assert health["terminated_total"] == 9722
+    assert health["jvp_total"] == health["vjp_total"] == 5554795
+    assert not independently_recomputed_health and identity_pass
+    with np.load(npz_path) as arrays:
+        attempted = arrays["trust_attempted"].astype(bool)
+        finite_work = (
+            np.isfinite(arrays["trust_trial_objective"])
+            & np.isfinite(arrays["trust_predicted"])
+            & np.isfinite(arrays["trust_actual"])
+        )
+        nonpositive = attempted & finite_work & (arrays["trust_predicted"] <= 0)
+        nonpositive_count = int(np.count_nonzero(nonpositive))
+        assert nonpositive_count > 0
+        assert np.all(np.isneginf(arrays["trust_rho"][nonpositive]))
+        assert not np.any(arrays["trust_finite"][nonpositive])
+        assert not np.any(arrays["trust_accepted"][nonpositive])
+    assert report["gates"] == independent["gates"] == expected_gates
+    assert report["decision"] == independent["decision"] == expected_decision
+    return {
+        "manifest_files": check_local_manifest("p8_d_r2"),
+        "source_hashes": audit_source_hashes(report),
+        "backend": provenance["jax_backend"], "gpu": provenance["gpu_kind"],
+        "job_id": provenance["slurm_job_id"],
+        "elapsed_s": report["elapsed_s"],
+        "control_rows": control_rows,
+        "trust_health": health,
+        "nonpositive_prediction_sentinel_rows": nonpositive_count,
+        "gates": expected_gates,
+        "decision": expected_decision,
+        "hard_stop": True,
+        "independent_audit_sha256": sha256(audit_path),
+    }
+
+
 def main():
     result = {
         "status": "pass",
-        "scope": "Burgers finite Phase 1-7 pure-NMROM search final hard stop",
+        "scope": "Burgers finite Phase 1-8 pure-NMROM search final hard stop",
         "d0": audit_d0(),
         "fom_calibration": audit_fom(),
         "phase2_s0": audit_s0(),
@@ -811,6 +960,7 @@ def main():
         "phase5_d": audit_phase5_d(),
         "phase6_d": audit_phase6_d(),
         "phase7_g1_seed11": audit_phase7_train(),
+        "phase8_d": audit_phase8_d(),
         "excluded": {
             "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
             "local_smokes": "execution-only and excluded from scientific claims",
@@ -818,6 +968,8 @@ def main():
             "phase4_r2": "completed output excluded without scientific inspection because the root manifest omitted the nested P3 manifest",
             "phase7_r1": "zero-science physical-vs-normalized affine schema failure before output/training",
             "phase7_r2": "zero-science exact-regeneration comparison failure before output/training",
+            "phase8_r1": "zero-science staged-file verifier failure on the two Slurm-created logs",
+            "phase8_terminated_local_diagnostic": "overlong local diagnostic terminated; partial output excluded and never reused",
             "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened",
         },
         "model_validation_opened": False,

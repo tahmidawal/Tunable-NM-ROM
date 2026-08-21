@@ -1,5 +1,5 @@
 {
- "status": "phase7_g1_seed11_final_hard_stop",
+ "status": "phase8_d_final_health_hard_stop",
  "representation_phase1": [
   {
    "concept": "HG4",
@@ -678,6 +678,389 @@
    "scientific_promotion_allowed": true
   }
  },
+ "full_grid_diagnostic_phase8": {
+  "pooled_controls": [
+   {
+    "control": "train free H1",
+    "mean": 7.720782063457995e-05,
+    "worst": 0.000549056488605078,
+    "identity_worst": 4.93440982126798e-15,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "train encoder handoff",
+    "mean": 0.191563329730304,
+    "worst": 0.788742202526017,
+    "identity_worst": 2.766804524923918e-15,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "train final autolatent",
+    "mean": 0.0350906433225898,
+    "worst": 0.4318608152201881,
+    "identity_worst": 2.6041523612574213e-15,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection free H1",
+    "mean": 5.805477910514122e-05,
+    "worst": 0.0003858918938090212,
+    "identity_worst": 3.36766009405718e-15,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection free-target encoder",
+    "mean": 0.19371560124114537,
+    "worst": 0.945147651499048,
+    "identity_worst": 1.2857547370183107e-15,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection predictor q (exact affine)",
+    "mean": 0.07321230401570607,
+    "worst": 0.23207379693507552,
+    "identity_worst": 7.091779109790474e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection deployed predictor",
+    "mean": 0.08172693667211439,
+    "worst": 0.1936914757994508,
+    "identity_worst": 7.631002706657076e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection locked P7 oracle",
+    "mean": 0.3731228589664166,
+    "worst": 1.273277479757896,
+    "identity_worst": 1.532537621028626e-14,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection trust predictor start",
+    "mean": 0.02313055782621783,
+    "worst": 0.05555835040772315,
+    "identity_worst": 7.785660981718362e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection trust free-encoder start",
+    "mean": 0.023316426911047048,
+    "worst": 0.06000185254457181,
+    "identity_worst": 7.724782555414926e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "control": "selection trust two-start lower",
+    "mean": 0.023116452433020376,
+    "worst": 0.05460162720503168,
+    "identity_worst": 7.724782555414926e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   }
+  ],
+  "two_start_by_mesh": [
+   {
+    "N": 64,
+    "mean": 0.02171470814191324,
+    "worst": 0.03946176073465609,
+    "identity_worst": 7.476697933831115e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "N": 128,
+    "mean": 0.024758906228178633,
+    "worst": 0.05460162720503168,
+    "identity_worst": 7.724782555414926e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "N": 256,
+    "mean": 0.02543852200713241,
+    "worst": 0.04986729849147978,
+    "identity_worst": 4.505391112981456e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   },
+   {
+    "N": "pooled",
+    "mean": 0.023116452433020376,
+    "worst": 0.05460162720503168,
+    "identity_worst": 7.724782555414926e-16,
+    "finite": true,
+    "exact_boundary": true,
+    "boundary_violations": 0
+   }
+  ],
+  "objective": "exact discrete full-grid FOM relative-L2-squared",
+  "scientific_full_grid_route": "Cox",
+  "trust_checkpoints": {
+   "predictor_q": [
+    {
+     "attempt": 0,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.004695633060055819,
+       "worst_snapshot_relative_l2": 0.497922335047613
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.005580184854604639,
+       "worst_snapshot_relative_l2": 0.4013790946063661
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.005747138155481058,
+       "worst_snapshot_relative_l2": 0.3908585335092874
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0050985771578448014,
+     "pooled_worst_snapshot_relative_l2": 0.497922335047613,
+     "attempted_total_through_checkpoint": 0,
+     "accepted_total_through_checkpoint": 0
+    },
+    {
+     "attempt": 10,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005625320039715289,
+       "worst_snapshot_relative_l2": 0.06312115248208526
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.0007630935287883804,
+       "worst_snapshot_relative_l2": 0.06735026096728652
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.0007995103722382669,
+       "worst_snapshot_relative_l2": 0.06538355965116549
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0006536893493858776,
+     "pooled_worst_snapshot_relative_l2": 0.06735026096728652,
+     "attempted_total_through_checkpoint": 57092,
+     "accepted_total_through_checkpoint": 56034
+    },
+    {
+     "attempt": 20,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005619690399908669,
+       "worst_snapshot_relative_l2": 0.06312115248208325
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.0007587979700730927,
+       "worst_snapshot_relative_l2": 0.06508810907815436
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.0007945234617924386,
+       "worst_snapshot_relative_l2": 0.06535962734654342
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0006514279374145845,
+     "pooled_worst_snapshot_relative_l2": 0.06535962734654342,
+     "attempted_total_through_checkpoint": 101436,
+     "accepted_total_through_checkpoint": 99738
+    },
+    {
+     "attempt": 30,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005619184283382532,
+       "worst_snapshot_relative_l2": 0.06312115248208325
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.0007580557157148576,
+       "worst_snapshot_relative_l2": 0.06437504036249636
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.0007931113300648362,
+       "worst_snapshot_relative_l2": 0.06535944811317689
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0006509852106925092,
+     "pooled_worst_snapshot_relative_l2": 0.06535944811317689,
+     "attempted_total_through_checkpoint": 125693,
+     "accepted_total_through_checkpoint": 123528
+    },
+    {
+     "attempt": 40,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005619028594649369,
+       "worst_snapshot_relative_l2": 0.06312115248208325
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.000757712140668856,
+       "worst_snapshot_relative_l2": 0.06410293059367225
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.0007928475669464488,
+       "worst_snapshot_relative_l2": 0.06535944440286978
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0006508404694491298,
+     "pooled_worst_snapshot_relative_l2": 0.06535944440286978,
+     "attempted_total_through_checkpoint": 138191,
+     "accepted_total_through_checkpoint": 135652
+    }
+   ],
+   "free_target_encoder_q": [
+    {
+     "attempt": 0,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.03968076669926484,
+       "worst_snapshot_relative_l2": 1.0656387240038214
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.06061382906807568,
+       "worst_snapshot_relative_l2": 4.752741700309889
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.03879520102059298,
+       "worst_snapshot_relative_l2": 2.6427662727993453
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.045535132279114814,
+     "pooled_worst_snapshot_relative_l2": 4.752741700309889,
+     "attempted_total_through_checkpoint": 0,
+     "accepted_total_through_checkpoint": 0
+    },
+    {
+     "attempt": 10,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005637443312213553,
+       "worst_snapshot_relative_l2": 0.06312115248208398
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.0008451601852381562,
+       "worst_snapshot_relative_l2": 0.10241702121511431
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.0009741109362917902,
+       "worst_snapshot_relative_l2": 0.1194754442300713
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0007027726616647891,
+     "pooled_worst_snapshot_relative_l2": 0.1194754442300713,
+     "attempted_total_through_checkpoint": 57073,
+     "accepted_total_through_checkpoint": 56011
+    },
+    {
+     "attempt": 20,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005629510004510263,
+       "worst_snapshot_relative_l2": 0.06312115248208398
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.0008231082277832674,
+       "worst_snapshot_relative_l2": 0.09662445993780058
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.000931985334391683,
+       "worst_snapshot_relative_l2": 0.10704746467291516
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0006900008273946176,
+     "pooled_worst_snapshot_relative_l2": 0.10704746467291516,
+     "attempted_total_through_checkpoint": 101316,
+     "accepted_total_through_checkpoint": 99557
+    },
+    {
+     "attempt": 30,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005628426074307255,
+       "worst_snapshot_relative_l2": 0.06312115248208398
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.0008055528693367339,
+       "worst_snapshot_relative_l2": 0.09269041341621254
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.0009078579451713178,
+       "worst_snapshot_relative_l2": 0.1014082181929693
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.0006814763019382411,
+     "pooled_worst_snapshot_relative_l2": 0.1014082181929693,
+     "attempted_total_through_checkpoint": 126138,
+     "accepted_total_through_checkpoint": 123972
+    },
+    {
+     "attempt": 40,
+     "meshes": {
+      "64": {
+       "mean_snapshot_relative_l2_squared": 0.0005626549418023024,
+       "worst_snapshot_relative_l2": 0.06312115248208398
+      },
+      "128": {
+       "mean_snapshot_relative_l2_squared": 0.0008006483980784922,
+       "worst_snapshot_relative_l2": 0.09269041304690666
+      },
+      "256": {
+       "mean_snapshot_relative_l2_squared": 0.0008832189863894455,
+       "worst_snapshot_relative_l2": 0.09546830138863016
+      }
+     },
+     "pooled_mean_snapshot_relative_l2_squared": 0.000676447935679377,
+     "pooled_worst_snapshot_relative_l2": 0.09546830138863016,
+     "attempted_total_through_checkpoint": 139551,
+     "accepted_total_through_checkpoint": 137016
+    }
+   ]
+  },
+  "trust_health": {
+   "all_attempt_values_finite": false,
+   "any_cg_breakdown": false,
+   "attempted_total": 277742,
+   "accepted_total": 272668,
+   "terminated_total": 9722,
+   "jvp_total": 5554795,
+   "vjp_total": 5554795,
+   "unhealthy_exhaustion_count": 0,
+   "max_attempts": 40
+  },
+  "nonpositive_prediction_sentinel_rows": 26,
+  "gates": {
+   "identity": true,
+   "health": false
+  },
+  "decision": {
+   "p8_d_valid": false,
+   "t1_implementation_authorized": false,
+   "t1_submission_authorized": false,
+   "t2_authorized": false,
+   "next_action": "root audit of P8-D",
+   "scientific_promotion_allowed": false
+  }
+ },
  "inherited_pure_nmrom": {
   "artifact": "inherited_h160.json",
   "sha256": "354ef84c046fbdb16dc3bbe56bf94fd75c41889807fbc40825e2c7eeb2044550",
@@ -756,6 +1139,7 @@
   "weak_EQ": 0,
   "scaling": 0,
   "confirmation": 0,
-  "Phase6_D": 1
+  "Phase6_D": 1,
+  "Phase8_D": 1
  }
 }

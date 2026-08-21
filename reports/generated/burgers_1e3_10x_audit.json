@@ -1,6 +1,6 @@
 {
  "status": "pass",
- "scope": "Burgers finite Phase 1-7 pure-NMROM search final hard stop",
+ "scope": "Burgers finite Phase 1-8 pure-NMROM search final hard stop",
  "d0": {
   "manifest_files": [
    "out/d0.npz",
@@ -326,6 +326,109 @@
   "target_normalization_local_max_abs": 2.220446049250313e-16,
   "independent_audit_sha256": "35c95ee38dea7622f40b6c199f4164b6c27ec3f37ad5561a51de6cd3b0a79322"
  },
+ "phase8_d": {
+  "manifest_files": [
+   "out/PROGRESS.json",
+   "SACCT.txt",
+   "MANIFEST.sha256",
+   "logs/2686475.out",
+   "out/phase8_d.npz",
+   "out/phase8_d.json",
+   "out/AUDIT.json",
+   "REMOTE.sha256",
+   "out/work_checkpoint.pkl",
+   "logs/2686475.err"
+  ],
+  "source_hashes": {
+   "b10_audit_phase8_d.py": "5ffedbce4707390087c2da36af41825bc05f5952bd2a6db80f5d6c53093964ad",
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_phase3.py": "5a67c44c6713d5c429df254bbfef7df2205372067f82882e6d1852ce61d1555e",
+   "b10_phase4.py": "00c1ae05bec605ec1d492c74ef4c8a56b84cfa96aee610ce06f3fdca5da38a8c",
+   "b10_phase5.py": "0547fac0053b01b9cadbece9b98d4dba704b18d300cfe13abee165cda19b0084",
+   "b10_phase7.py": "c32a0b085948c216e8be7b8976b35e8853a0434c1ced687f7596255ade8c0dea",
+   "b10_phase7_train.py": "a9589d3a7ca6efdf48c1f3b3310aa86f03e840e51d9c22f6785d4b554ca84871",
+   "b10_phase8_d.py": "8a5919006ff0d916f9055ed0e5b0f18a34eb7c0ed219f827c3242faf9c0a46df",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "8c088207ab73d1ceba87343b357128b0c535777893349b7f6bea15dead409731",
+   "b10_spline_train.py": "de1d0f8506e9bae722c0207abe7fd11b3c4ae46f0e074fedecec86cc46158790"
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "job_id": "2686475",
+  "elapsed_s": 1994.5657310495153,
+  "control_rows": {
+   "train_free_h1": {
+    "pooled_mean": 7.720782063457995e-05,
+    "pooled_worst": 0.000549056488605078
+   },
+   "train_encoder_handoff": {
+    "pooled_mean": 0.191563329730304,
+    "pooled_worst": 0.788742202526017
+   },
+   "train_final_autolatent": {
+    "pooled_mean": 0.0350906433225898,
+    "pooled_worst": 0.4318608152201881
+   },
+   "selection_free_h1": {
+    "pooled_mean": 5.805477910514122e-05,
+    "pooled_worst": 0.0003858918938090212
+   },
+   "selection_free_target_encoder": {
+    "pooled_mean": 0.19371560124114537,
+    "pooled_worst": 0.945147651499048
+   },
+   "selection_predictor_q_exact_affine": {
+    "pooled_mean": 0.07321230401570607,
+    "pooled_worst": 0.23207379693507552
+   },
+   "selection_deployed_predictor": {
+    "pooled_mean": 0.08172693667211439,
+    "pooled_worst": 0.1936914757994508
+   },
+   "selection_locked_p7_oracle": {
+    "pooled_mean": 0.3731228589664166,
+    "pooled_worst": 1.273277479757896
+   },
+   "selection_trust_starts/predictor_q": {
+    "pooled_mean": 0.02313055782621783,
+    "pooled_worst": 0.05555835040772315
+   },
+   "selection_trust_starts/free_target_encoder_q": {
+    "pooled_mean": 0.023316426911047048,
+    "pooled_worst": 0.06000185254457181
+   },
+   "selection_trust_two_start": {
+    "pooled_mean": 0.023116452433020376,
+    "pooled_worst": 0.05460162720503168
+   }
+  },
+  "trust_health": {
+   "all_attempt_values_finite": false,
+   "any_cg_breakdown": false,
+   "attempted_total": 277742,
+   "accepted_total": 272668,
+   "terminated_total": 9722,
+   "jvp_total": 5554795,
+   "vjp_total": 5554795,
+   "unhealthy_exhaustion_count": 0,
+   "max_attempts": 40
+  },
+  "nonpositive_prediction_sentinel_rows": 26,
+  "gates": {
+   "identity": true,
+   "health": false
+  },
+  "decision": {
+   "p8_d_valid": false,
+   "t1_implementation_authorized": false,
+   "t1_submission_authorized": false,
+   "t2_authorized": false,
+   "next_action": "root audit of P8-D",
+   "scientific_promotion_allowed": false
+  },
+  "hard_stop": true,
+  "independent_audit_sha256": "d1e9e7bd238ac9e9320afc018fa5ff85afcd51d6ff714a61eb47c3b32900de17"
+ },
  "excluded": {
   "fom_cal_r2": "partial N256/N512 output; driver failed before N1024 reference audit",
   "local_smokes": "execution-only and excluded from scientific claims",
@@ -333,6 +436,8 @@
   "phase4_r2": "completed output excluded without scientific inspection because the root manifest omitted the nested P3 manifest",
   "phase7_r1": "zero-science physical-vs-normalized affine schema failure before output/training",
   "phase7_r2": "zero-science exact-regeneration comparison failure before output/training",
+  "phase8_r1": "zero-science staged-file verifier failure on the two Slurm-created logs",
+  "phase8_terminated_local_diagnostic": "overlong local diagnostic terminated; partial output excluded and never reused",
   "synthetic_modelval_and_stopped_p3f_drafts": "uncommitted; no scientific/model-validation data opened"
  },
  "model_validation_opened": false,

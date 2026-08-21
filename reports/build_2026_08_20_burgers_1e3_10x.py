@@ -1,4 +1,4 @@
-"""Generate the Burgers 1e-3/10x Phase-7 final report from artifacts."""
+"""Generate the Burgers 1e-3/10x Phase-8 final report from artifacts."""
 from __future__ import annotations
 
 import json
@@ -26,6 +26,8 @@ P5_PATH = os.path.join(RUNS, "p5_d_r1", "out", "phase5_d.json")
 P6_PATH = os.path.join(RUNS, "p6_d_r1", "out", "phase6_d.json")
 P7_PATH = os.path.join(RUNS, "p7_g1_s11_r3", "out", "phase7_train.json")
 P7_AUDIT_PATH = os.path.join(RUNS, "p7_g1_s11_r3", "out", "AUDIT.json")
+P8_PATH = os.path.join(RUNS, "p8_d_r2", "out", "phase8_d.json")
+P8_AUDIT_PATH = os.path.join(RUNS, "p8_d_r2", "out", "AUDIT.json")
 AUDIT_PATH = os.path.join(ROOT, "reports", "generated", "burgers_1e3_10x_audit.json")
 TABLE_PATH = os.path.join(ROOT, "reports", "generated", "burgers_1e3_10x_tables.json")
 REPORT_PATH = os.path.join(ROOT, "reports", "2026-08-20-burgers-1e3-10x.md")
@@ -139,9 +141,10 @@ def make_figures(decision, fom, p3):
 
 
 def main():
-    d0, decision, fom, s0, p3, p4, p4_train, p5, p6, p7, p7_audit, audit = map(load, (
+    d0, decision, fom, s0, p3, p4, p4_train, p5, p6, p7, p7_audit, p8, p8_audit, audit = map(load, (
         D0_PATH, DECISION_PATH, FOM_PATH, S0_PATH, P3_PATH, P4_PATH,
-        P4_TRAIN_PATH, P5_PATH, P6_PATH, P7_PATH, P7_AUDIT_PATH, AUDIT_PATH,
+        P4_TRAIN_PATH, P5_PATH, P6_PATH, P7_PATH, P7_AUDIT_PATH,
+        P8_PATH, P8_AUDIT_PATH, AUDIT_PATH,
     ))
     assert audit["status"] == "pass"
     assert decision["hard_stop_now"] and s0["decision"]["phase2_hard_stop"]
@@ -189,6 +192,17 @@ def main():
         "training_authorized": False,
         "next_action": "hard stop",
         "scientific_promotion_allowed": True,
+    }
+    assert audit["phase8_d"]["hard_stop"]
+    assert p8_audit["status"] == "pass" and p8_audit["negative_aware"]
+    assert p8["gates"] == {"identity": True, "health": False}
+    assert p8["decision"] == {
+        "p8_d_valid": False,
+        "t1_implementation_authorized": False,
+        "t1_submission_authorized": False,
+        "t2_authorized": False,
+        "next_action": "root audit of P8-D",
+        "scientific_promotion_allowed": False,
     }
     assert p4_train["gates"] == {
         "representation_oracle_all_N_and_pooled": False,
@@ -407,8 +421,54 @@ def main():
             and direct_row["exact_binary_boundary"],
         })
 
+    p8_labels = (
+        ("train_free_h1", "train free H1"),
+        ("train_encoder_handoff", "train encoder handoff"),
+        ("train_final_autolatent", "train final autolatent"),
+        ("selection_free_h1", "selection free H1"),
+        ("selection_free_target_encoder", "selection free-target encoder"),
+        ("selection_predictor_q_exact_affine", "selection predictor q (exact affine)"),
+        ("selection_deployed_predictor", "selection deployed predictor"),
+        ("selection_locked_p7_oracle", "selection locked P7 oracle"),
+        ("selection_trust_starts", "selection trust predictor start"),
+        ("selection_trust_starts", "selection trust free-encoder start"),
+        ("selection_trust_two_start", "selection trust two-start lower"),
+    )
+    p8_rows = []
+    for index, (key, label) in enumerate(p8_labels):
+        control = p8["controls"][key]
+        if key == "selection_trust_starts":
+            start = "predictor_q" if index == 8 else "free_target_encoder_q"
+            control = control[start]
+        row = control["pooled"]
+        p8_rows.append({
+            "control": label,
+            "mean": row["trajectory_error_mean"],
+            "worst": row["trajectory_error_worst"],
+            "identity_worst": row["k3_cox_identity_worst"],
+            "finite": row["all_finite"],
+            "exact_boundary": row["exact_binary_boundary"],
+            "boundary_violations": row["boundary_violation_count"],
+        })
+    p8_mesh_rows = []
+    for n in (64, 128, 256, "pooled"):
+        row = (
+            p8["controls"]["selection_trust_two_start"]["pooled"]
+            if n == "pooled" else
+            p8["controls"]["selection_trust_two_start"]["meshes"][str(n)]
+        )
+        p8_mesh_rows.append({
+            "N": n,
+            "mean": row["trajectory_error_mean"],
+            "worst": row["trajectory_error_worst"],
+            "identity_worst": row["k3_cox_identity_worst"],
+            "finite": row["all_finite"],
+            "exact_boundary": row["exact_binary_boundary"],
+            "boundary_violations": row["boundary_violation_count"],
+        })
+
     tables = {
-        "status": "phase7_g1_seed11_final_hard_stop",
+        "status": "phase8_d_final_health_hard_stop",
         "representation_phase1": representation_rows,
         "fom_scaling_phase1": fom_rows,
         "spline_phase2": {"oracle_meshes": spline_rows, "cost": s0_cost},
@@ -466,12 +526,25 @@ def main():
             "gates": p7["gates"],
             "decision": p7["decision"],
         },
+        "full_grid_diagnostic_phase8": {
+            "pooled_controls": p8_rows,
+            "two_start_by_mesh": p8_mesh_rows,
+            "objective": p8["config"]["objective"],
+            "scientific_full_grid_route": p8["config"]["scientific_full_grid_route"],
+            "trust_checkpoints": p8["trust_checkpoints"],
+            "trust_health": p8["trust_health"],
+            "nonpositive_prediction_sentinel_rows": audit["phase8_d"]
+            ["nonpositive_prediction_sentinel_rows"],
+            "gates": p8["gates"],
+            "decision": p8["decision"],
+        },
         "inherited_pure_nmrom": d0["inherited"],
         "scientific_cells": {
             "D0": 1, "excluded_partial_FOM": 1, "final_FOM": 1,
             "Phase2_S0": 1, "Phase3_D": 1, "Phase3_F": 0, "Phase4_D": 1,
             "Phase5_D": 1, "Phase4_training": 1, "Phase7_training": 1,
             "weak_EQ": 0, "scaling": 0, "confirmation": 0, "Phase6_D": 1,
+            "Phase8_D": 1,
         },
     }
     os.makedirs(os.path.dirname(TABLE_PATH), exist_ok=True)
@@ -568,6 +641,24 @@ def main():
           f"{'pass' if row['direct_pass'] else 'fail'}"]
          for row in p7_rows],
     )
+    p8_md = table(
+        ["status", "full-grid control", "trajectory mean / worst",
+         "identity worst", "health"],
+        [["final", row["control"], f"{sci(row['mean'])} / {sci(row['worst'])}",
+          sci(row["identity_worst"]),
+          "finite / exact boundary" if row["finite"] and row["exact_boundary"]
+          and row["boundary_violations"] == 0 else "fail"]
+         for row in p8_rows],
+    )
+    p8_mesh_md = table(
+        ["status", "N", "two-start trajectory mean / worst",
+         "identity worst", "health"],
+        [["final", row["N"], f"{sci(row['mean'])} / {sci(row['worst'])}",
+          sci(row["identity_worst"]),
+          "finite / exact boundary" if row["finite"] and row["exact_boundary"]
+          and row["boundary_violations"] == 0 else "fail"]
+         for row in p8_mesh_rows],
+    )
     inherited = d0["inherited"]
     live = p3["kernel_diagnostic"]
     selected_solver = min(solver_rows, key=lambda row: row["target_N128_draw530_trajectory_relative_l2"])
@@ -580,6 +671,13 @@ def main():
     trained_direct = p4_train["selection_direct"]["metrics"]["pooled"]
     p7_trained_oracle = p7["selection_oracle"]["metrics"]["pooled"]
     p7_trained_direct = p7["selection_direct"]["metrics"]["pooled"]
+    p8_train_free = p8["controls"]["train_free_h1"]["pooled"]
+    p8_selection_free = p8["controls"]["selection_free_h1"]["pooled"]
+    p8_train_autolatent = p8["controls"]["train_final_autolatent"]["pooled"]
+    p8_trust_predictor = p8["controls"]["selection_trust_starts"]["predictor_q"]["pooled"]
+    p8_trust_encoder = p8["controls"]["selection_trust_starts"]["free_target_encoder_q"]["pooled"]
+    p8_trust_two = p8["controls"]["selection_trust_two_start"]["pooled"]
+    p8_floor_ratio = p8_trust_two["trajectory_error_mean"] / p8_selection_free["trajectory_error_mean"]
     p5_g1 = p5_rows[0]
     gate_md = table(["status", "gate", "result"], [
         ["final pass", "reference numerical error <=1e-4", sci(max(row["tighter_difference_worst"] for row in fom_rows))],
@@ -592,6 +690,9 @@ def main():
         ["final pass (structural only)", "N1024 H1 mandatory >=10x, clustered LB>=8x", f"{h1_cost['mandatory']['paired_median_speedup']:.3f}x, LB {h1_cost['mandatory']['clustered_speedup_ci'][0]:.3f}"],
         ["final fail (worst-case route)", "N1024 H1 maximum-one >=10x, clustered LB>=8x", f"{h1_cost['maximum_one']['paired_median_speedup']:.3f}x, LB {h1_cost['maximum_one']['clustered_speedup_ci'][0]:.3f}"],
         ["final pass", "H1 free-oracle mean<=2e-4, worst<=7e-4", f"{sci(h1['summary']['trajectory_mean'])} / {sci(h1['summary']['trajectory_worst'])}"],
+        ["final pass", "Phase-8 full-grid selection free-H1 mean<=2e-4, worst<=7e-4", f"{sci(p8_selection_free['trajectory_error_mean'])} / {sci(p8_selection_free['trajectory_error_worst'])}"],
+        ["final fail", "Phase-8 exact two-start trust recovery mean<=2e-4, worst<=7e-4", f"{sci(p8_trust_two['trajectory_error_mean'])} / {sci(p8_trust_two['trajectory_error_worst'])}"],
+        ["final fail", "Phase-8 preregistered trust health", f"all_attempt_values_finite={str(p8['trust_health']['all_attempt_values_finite']).lower()}; identity={str(p8['gates']['identity']).lower()}"],
         ["not reached", "N256/N512 learned scaling", "no eligible trained pure model"],
         ["not opened", "untouched confirmation", "fixed data remained untouched"],
         ["final repaired", "G1 actual Cox-weak/K3-full identity <=2e-14",
@@ -600,9 +701,9 @@ def main():
          f"{p6_gate['paired_median_speedup']:.3f}x, LB {p6_gate['clustered_speedup_ci'][0]:.3f}"],
     ])
 
-    report = f"""# Burgers 1e-3 / 10x pure NM-ROM search — Phase 7 final hard stop
+    report = f"""# Burgers 1e-3 / 10x pure NM-ROM search — Phase 8 diagnostic hard stop
 
-This report covers the finite transported-Hermite search, calibrated Burgers FOM, adaptive transported-spline screens, exact solver/kernel repair, hierarchical-spline diagnostic, H1/k24 seed-11 training, the Phase-5 nonlinear-generator diagnostic, the Phase-6 Cox-weak/K3-full arithmetic repair, and the final Phase-7 G1 seed-11 training cell. All accepted numbers are **final** through Phase 7. Phase 7 hard-stops the search; model-validation and untouched-confirmation draws remain unopened.
+This report covers the finite transported-Hermite search, calibrated Burgers FOM, adaptive transported-spline screens, exact solver/kernel repair, hierarchical-spline diagnostic, H1/k24 seed-11 training, the nonlinear-generator and Cox-weak/K3-full route diagnostics, final Phase-7 G1 seed-11 training, and the Phase-8 exact full-grid inference decomposition. All accepted numbers are **final** through Phase 8. Phase 8 preserves its preregistered health hard stop and licenses no training; model-validation and untouched-confirmation draws remain unopened.
 
 ## Outcome
 
@@ -619,6 +720,8 @@ Phase 3 successfully repairs both implementation defects without changing the sp
 **[final Phase-6 positive diagnostic]** The actual G1 route uses Cox--de Boor arithmetic only for the 50 weak evaluations and retains K3/Pallas for the charged 51-field full decode. Its worst Cox-control identity is {sci(max(row['max_relative_l2'] for row in p6['cost_panel']['identity']['R1_cox_weak_k3_full']))}, and the independently executed timed route agrees with the identity route to {sci(max(row['max_relative_l2'] for row in p6['cost_panel']['actual_route_consistency']))}. Against the same-job eligible FOM at {ms(p6['cost_panel']['summaries']['fom']['median_elapsed_s'])} ms, the repaired route takes {ms(p6['cost_panel']['summaries']['R1_cox_weak_k3_full']['median_elapsed_s'], 5)} ms for {p6_gate['paired_median_speedup']:.3f}x with clustered interval [{p6_gate['clustered_speedup_ci'][0]:.3f}, {p6_gate['clustered_speedup_ci'][1]:.3f}]. Exact-50/51 work, zero failures, memory, boundary, basis/support, and live-FOM gates all pass. This structural result licensed the separately preregistered Phase-7 training cell below.
 
 **[final Phase-7 hard stop]** The complete G1 seed-11 learned oracle fails every N and pooled accuracy gate; pooled mean/worst are {sci(p7_trained_oracle['trajectory_error_mean'])} / {sci(p7_trained_oracle['trajectory_error_worst'])}. The direct predictor is substantially better than the learned oracle but also fails every accuracy gate at pooled {sci(p7_trained_direct['trajectory_error_mean'])} / {sci(p7_trained_direct['trajectory_error_worst'])}. Both routes are finite, preserve the exact boundary, and pass Cox/K3 identity. Therefore `g1_seed11_pass=false`, seeds 29/47 are not licensed, and no G2, weak/EQ, model validation, scaling, or confirmation cell is opened.
+
+**[final Phase-8 diagnostic hard stop]** Exact full-grid Cox verification separates the free-space and learned-generator floors. The train/selection free-H1 controls pass at pooled mean/worst {sci(p8_train_free['trajectory_error_mean'])} / {sci(p8_train_free['trajectory_error_worst'])} and {sci(p8_selection_free['trajectory_error_mean'])} / {sci(p8_selection_free['trajectory_error_worst'])}. The locked learned generator's train final autolatent is {sci(p8_train_autolatent['trajectory_error_mean'])} / {sci(p8_train_autolatent['trajectory_error_worst'])}. Forty matrix-free trust attempts reduce the selection predictor start to {sci(p8_trust_predictor['trajectory_error_mean'])} / {sci(p8_trust_predictor['trajectory_error_worst'])}; the independently initialized diagnostic start reaches {sci(p8_trust_encoder['trajectory_error_mean'])} / {sci(p8_trust_encoder['trajectory_error_worst'])}, and their per-trajectory lower envelope remains {sci(p8_trust_two['trajectory_error_mean'])} / {sci(p8_trust_two['trajectory_error_worst'])}. That mean is {p8_floor_ratio:.1f}x the free-H1 mean, so the dominant floor is the learned generator/training rather than the spline space or deployable inference start. This is a diagnostic conclusion only: {audit['phase8_d']['nonpositive_prediction_sentinel_rows']} attempted rows used the preregistered nonpositive-prediction sentinel, making `health=false`; the independent negative-aware audit accepts the immutable trace but `p8_d_valid=false`, so T1/T2 remain unauthorized.
 
 The inherited seed-0 H160x4/g2 artifact copied into D0 has full-weak mean/worst {sci(inherited['full_weak_trajectory_mean'])} / {sci(inherited['full_weak_trajectory_worst'])}; this specific inherited row is neither a new result nor an eligible Pareto point.
 
@@ -690,22 +793,30 @@ The authoritative wall fractions are computed from representation-oracle arrays.
 
 **[final negative hard stop]** The selected oracle start is {p7['selection_oracle']['chosen_start']} by pooled mean snapshot-relative-L2-squared {sci(p7['selection_oracle']['chosen_start_selection_loss'])}. The fixed warmup, joint, predictor, and oracle protocols completed, and the independent negative-aware audit passed. The regenerated training affine matched the immutable normalized target exactly in the cluster artifact (recorded maximum {sci(p7['data']['training_binding']['normalized_affine_max_abs'])}); an independent local scalar exp/log recomputation differs by at most {sci(p7_audit['target_normalization_local_recompute']['max_abs'])}, within its prospectively fixed absolute-only {sci(p7_audit['target_normalization_local_recompute']['absolute_tolerance'])} portability ceiling. Physical targets, features, checkpoint physical targets, and the artifact affine/state mapping remain bitwise exact. Accuracy, not integrity or route identity, causes the stop.
 
+## Phase 8 exact full-grid inference decomposition
+
+{p8_md}
+
+{p8_mesh_md}
+
+**[final diagnostic negative]** Every reported field is finite, has zero boundary violations, and agrees with the K3 identity control within {sci(2e-14)}. The exact Cox full-grid objective is not a random-point or coefficient surrogate. Predictor-start pooled mean snapshot-relative-L2-squared falls from {sci(p8['trust_checkpoints']['predictor_q'][0]['pooled_mean_snapshot_relative_l2_squared'])} at attempt 0 to {sci(p8['trust_checkpoints']['predictor_q'][-1]['pooled_mean_snapshot_relative_l2_squared'])} at attempt 40, while its worst snapshot falls from {sci(p8['trust_checkpoints']['predictor_q'][0]['pooled_worst_snapshot_relative_l2'])} to {sci(p8['trust_checkpoints']['predictor_q'][-1]['pooled_worst_snapshot_relative_l2'])}. The second, explicitly nondeployable oracle-only start converges to the same order. Work was persisted for {p8['trust_health']['attempted_total']} attempts, {p8['trust_health']['accepted_total']} acceptances, {p8['trust_health']['terminated_total']} terminations, and {p8['trust_health']['jvp_total']} JVP plus {p8['trust_health']['vjp_total']} VJP calls, with zero CG breakdown and zero unhealthy exhaustion. Because the locked health expression requires all attempted trace values finite and the sanctioned nonpositive-prediction sentinel is nonfinite, the health gate fails exactly as preregistered. This result must not be weakened into a Phase-8 training license.
+
 ## Gate ledger and stopping condition
 
 {gate_md}
 
-No row is a deployable NM-ROM Pareto point. H1 proves that the spline space and structural mandatory kernel can clear their exposed gates, and Phase 6 proves that G1's actual Cox-weak/K3-full route clears structural identity and speed. Phase 7 now shows that the fixed G1 seed-11 learned coefficient manifold misses the exposed accuracy targets by orders of magnitude. Consequently no method claims the headline N=1024 result, the search hard-stops, seeds 29/47 and G2 are not licensed, and weak/EQ, model validation, scaling, and confirmation remain unrun.
+No row is a deployable NM-ROM Pareto point. H1 proves that the spline space and structural mandatory kernel can clear their exposed gates, and Phase 6 proves that G1's actual Cox-weak/K3-full route clears structural identity and speed. Phase 8 localizes the fixed Phase-7 failure to the learned generator/training floor even after exact full-grid inference globalization, but its unchanged health gate fails. Consequently Phase 8 licenses no T1/T2, no method claims the headline N=1024 result, and weak/EQ, model validation, scaling, and confirmation remain unrun.
 
 ## Exclusions and cell accounting
 
-**[excluded]** Job 2667476 is a partial FOM attempt that failed before N=1024. Zero-output jobs 2667361, 2667374, 2667531, Phase-4 job 2668601, and Phase-7 jobs 2669861/2669975 are infrastructure/code-preflight records. The Phase-7 failures occurred before output or a training update: r1 exposed a physical-vs-normalized schema check, and r2 exposed a nonportable bitwise regeneration comparison. Phase-4 job 2668613 is excluded without scientific inspection because its root manifest omitted the nested P3 manifest. Every local smoke is execution-only. The two synthetic-only model-validation drafts are uncommitted and excluded; none touched model-validation or confirmation data.
+**[excluded]** Job 2667476 is a partial FOM attempt that failed before N=1024. Zero-output jobs 2667361, 2667374, 2667531, Phase-4 job 2668601, Phase-7 jobs 2669861/2669975, and Phase-8 job 2683739 are infrastructure/code-preflight records. The Phase-7 failures occurred before output or a training update: r1 exposed a physical-vs-normalized schema check, and r2 exposed a nonportable bitwise regeneration comparison. Phase-8 r1 failed in two seconds because the exact staged-set verifier did not allow the two Slurm-created log files; no driver, backend, data, or scientific output ran. Phase-4 job 2668613 is excluded without scientific inspection because its root manifest omitted the nested P3 manifest. The terminated overlong local trust diagnostic is excluded and was never reused. Every compliant local smoke is execution-only. The two synthetic-only model-validation drafts are uncommitted and excluded; none touched model-validation or confirmation data.
 
-**[final through Phase-7 accounting]** Ten scientific cells were consumed: D0, one excluded partial FOM cell, corrected FOM calibration, Phase-2 S0, Phase-3 P3-D, Phase-4 P4-D, H1/k24 seed-11 training, Phase-5 P5-D, Phase-6 P6-D, and final Phase-7 G1 seed-11 training. The Phase-4 provenance failures and Phase-7 pre-update failures did not alter the scientific method/cap and are excluded. Model validation, weak/EQ, scaling, and confirmation consumed zero cells. All completed remote directories were deleted after checksummed pulls, and the assigned namespace is empty.
+**[final through Phase-8 accounting]** Eleven scientific cells were consumed: D0, one excluded partial FOM cell, corrected FOM calibration, Phase-2 S0, Phase-3 P3-D, Phase-4 P4-D, H1/k24 seed-11 training, Phase-5 P5-D, Phase-6 P6-D, final Phase-7 G1 seed-11 training, and Phase-8 P8-D. The Phase-4 provenance failures, Phase-7 pre-update failures, and Phase-8 zero-science lifecycle failure did not alter the scientific method/cap and are excluded. Model validation, weak/EQ, scaling, and confirmation consumed zero cells. All completed remote directories were deleted after checksummed pulls, and the assigned namespace is empty.
 
 ## Artifacts and rerun
 
-- Preregistrations: `experiments/burgers-1e3-10x/PRE-REGISTRATION.md`, `PHASE-2-PRE-REGISTRATION.md`, `PHASE-3-PRE-REGISTRATION.md`, `PHASE-4-PRE-REGISTRATION.md`, `PHASE-5-PRE-REGISTRATION.md`, `PHASE-6-PRE-REGISTRATION.md`, `PHASE-7-PRE-REGISTRATION.md`
-- Accepted runs: `experiments/burgers-1e3-10x/runs/d0_r2/`, `fom_cal_r4/`, `s0_spline_r1/`, `p3_d_r1/`, `p4_d_r3/`, `p4_h1_s11_r1/`, `p5_d_r1/`, `p6_d_r1/`, `p7_g1_s11_r3/`
+- Preregistrations: `experiments/burgers-1e3-10x/PRE-REGISTRATION.md`, `PHASE-2-PRE-REGISTRATION.md`, `PHASE-3-PRE-REGISTRATION.md`, `PHASE-4-PRE-REGISTRATION.md`, `PHASE-5-PRE-REGISTRATION.md`, `PHASE-6-PRE-REGISTRATION.md`, `PHASE-7-PRE-REGISTRATION.md`, `PHASE-8-PRE-REGISTRATION.md`
+- Accepted runs: `experiments/burgers-1e3-10x/runs/d0_r2/`, `fom_cal_r4/`, `s0_spline_r1/`, `p3_d_r1/`, `p4_d_r3/`, `p4_h1_s11_r1/`, `p5_d_r1/`, `p6_d_r1/`, `p7_g1_s11_r3/`, `p8_d_r2/`
 - Machine tables: `reports/generated/burgers_1e3_10x_tables.json`
 - Audit: `reports/generated/burgers_1e3_10x_audit.json`
 - Regenerate: `/home/tahmid/Dev/.venv/bin/python reports/audit_2026_08_20_burgers_1e3_10x.py && /home/tahmid/Dev/.venv/bin/python reports/build_2026_08_20_burgers_1e3_10x.py`

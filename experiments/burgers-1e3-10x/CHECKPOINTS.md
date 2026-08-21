@@ -743,3 +743,12 @@ before update 1; a pass alone opens the unchanged 18-encoder/54-joint,
 full-train final-q globalization, conditional predictor, and gated selection
 path.  This is a new prospective repair, not retrospective timing selection;
 no implementation or job is yet authorized.
+
+The prospective Phase-12 handoff contract distinguishes scientific state from
+cross-process execution portability.  The producing run must persist terminal
+encoder output, encoder handoff, and initial joint q as separate bitwise-equal
+arrays with exact hashes.  The auditor recomputes the encoder once in a fresh
+process using `rtol=0`, fixed `atol=2e-15`, and no retries.  This fixed ceiling
+predates and safely covers the excluded local repeatability probe, which found
+two exact repeats and one `4.163336342344337e-17` maximum difference; the probe
+is infrastructure motivation only and provides no scientific evidence.

@@ -125,7 +125,13 @@ exact `N64,N128,N256` cycle with deterministic without-replacement complete
 epochs and terminal-only selection.
 
 The fixed schedule is 18 encoder+G2 epochs, bitwise encoder-to-q handoff, and
-54 joint G2+q epochs. Full-cohort epoch-end checks persist. Terminal full-train
+54 joint G2+q epochs. At the producing-run boundary, the terminal encoder
+output, persisted handoff, and initial joint `q_raw` are three distinct
+persisted copies and must be bitwise equal; their exact array hashes are
+stored and audited. A fresh-process independent encoder recomputation is a
+separate portability check with `rtol=0` and fixed componentwise absolute
+error `<=2e-15`. It does not replace or weaken the producing-run bitwise
+handoff, and the auditor has no retry path. Full-cohort epoch-end checks persist. Terminal full-train
 control is followed by final-q-only bounded matrix-free Cox trust recovery,
 at most 40 attempts per train snapshot, with the exact Phase-11 radius,
 damping, CG, rho-defined, transition, work, exhaustion, and health rules.
@@ -167,6 +173,9 @@ must reject a hidden-control count without the leaf, removed/reordered leaves,
 wrong dtype/shape/bytes, false memory, swapped identity/actual route, identity
 or boundary failure, timing imbalance, median/outlier corruption, false speed
 decision, premature update, and any provenance or downstream-boundary breach.
+Handoff corruptions additionally reject any one-bit mismatch among the three
+persisted producing-run copies and any fresh-process regenerated encoder
+component whose absolute difference exceeds `2e-15`.
 
 The cap is one Phase-12 cell. An infrastructure failure or negative result
 does not self-authorize a retry or another arm. Exact checksummed pull and

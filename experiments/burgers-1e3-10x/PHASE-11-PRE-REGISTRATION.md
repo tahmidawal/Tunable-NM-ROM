@@ -260,18 +260,31 @@ stays empty, nested arrays/scalars serialize, and nonfinite JSON remains
 rejected.  No retry is authorized until its exact commit and manifest pass a
 new root audit; r1 never self-authorizes any other arm or downstream work.
 
-## Final disposition
+## Final disposition and timing retraction
 
 The sole retry job `2754129` completed on pax008/H200 and passed its exact
-independent audit.  Its fresh G2 structural preflight measured paired median
-speedup `3.047233624534141x` with clustered 95% interval
-`[2.396706675073385, 3.7521239409805687]`, below both locked gates.  The live
-eligible-FOM and repaired-route medians were respectively
-`0.09761777520179749 s` and `0.03205502685159445 s`; 96 records per method had
-exact AB/BA balance and zero within-trajectory outliers.  Identity, boundary,
-work, FOM health, and memory controls passed, including identity worst
-`2.8418069919297566e-16` and `1206594776` compiled device bytes.  Therefore
-the structural gate stopped before runtime projection and update 1 with
-bitwise-unchanged weights.  Phase 11 is closed negatively: no learned G2,
-predictor, selection, rollout-speed, third-architecture, or downstream claim
-is licensed.
+independent audit under the implemented schema, stopping before runtime
+projection/update 1 with bitwise-unchanged weights.  A later source-backed
+call-graph reconciliation found that its timed `route` returned both the 51
+K3 full fields and a separately computed 51-state full-grid Cox control.
+Nevertheless the canonical work and independent auditor recorded only 50 Cox
+weak plus 51 K3 full evaluations; they inferred those counts from the residual
+and K3 output shapes and never accounted for the Cox control call/output.
+Phase 6 had correctly kept that full Cox identity/control outside the timed
+actual route.
+
+The reported `0.03205502685159445 s`, `3.047233624534141x`, and clustered
+interval `[2.396706675073385, 3.7521239409805687]` are therefore **retracted as
+an overcharged, canonical-work-invalid timing negative**, not accepted evidence
+that the intended G2 Cox-weak/K3-full route misses the speed gate.  The extra
+Cox output is exactly `51*1024^2*8 = 427819008` bytes; the compiled footprint
+was `1206594776` bytes versus Phase-5 G2 mandatory `555273272` bytes.  Changing
+q19/state24 to q32/state37 adds 21,632 generator and 429 predictor parameters
+but leaves the same 32-channel, three-block, depth-two residual convolutional
+heads, so this architectural delta does not remove the work-accounting defect.
+
+The immutable bundle remains valid evidence that the FOM, boundary, identity,
+and numerical route were healthy and that zero optimizer updates occurred.
+It establishes no corrected-route speed, learned G2, predictor, selection,
+rollout, third-architecture, or downstream result and licenses none
+retrospectively.

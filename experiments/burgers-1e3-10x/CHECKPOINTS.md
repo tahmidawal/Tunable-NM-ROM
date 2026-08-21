@@ -704,20 +704,27 @@ local audit transient; the production auditor retains exact comparisons and
 contains no retry or tolerance relaxation.
 
 Phase-11 r2 job `2754129` completed in 4m01s on pax008/H200/GPU/f64/highest,
-and its independent negative-aware audit passed.  The fresh same-H200 G2
-structural preflight measured paired median speedup `3.047233624534141x` with
-trajectory-clustered 95% interval
-`[2.396706675073385, 3.7521239409805687]`, decisively below the locked
-`10x / 8x-lower-bound` gates.  Median live eligible-FOM and repaired-route
-times were `0.09761777520179749 s` and `0.03205502685159445 s`; both methods
-had 96 same-invocation records, exact `[12,12]` position balance per method,
-and zero within-trajectory `>1.5x` outliers.  The route itself was healthy:
-K3/Cox identity worst `2.8418069919297566e-16`, exact boundary, 50 Cox weak
-plus 51 K3 coefficient-grid/full-field evaluations, no weak-Jacobian or trial
-work, no failures, and `1206594776` compiled device bytes.  The FOM was
-eligible and finite with zero breakdowns/flags.  The structural gate stopped
-before runtime projection and update 1 with bitwise-unchanged weights; no
-training, predictor, selection, or downstream data ran, and the decision is a
-binding hard stop with no promotion.  The exact r2 bundle is checksum-preserved
-under `runs/p11_g2_s11_r2`; after PASS, r2 and reverified r1 remotes were
-removed exactly.
+and its independent negative-aware audit passed under the then-implemented
+work schema.  Post-closure source reconciliation found that the timed G2
+executable returned a second 51-state full-grid field, produced by
+`decode_states_cox_sequential`, in addition to the intended 50 Cox weak and
+51 K3 full evaluations.  The report and auditor inferred work only from the
+weak-residual and K3-field shapes, so neither charged this extra 51-Cox-full
+operation in the canonical-work record.  The extra control output alone is
+`427819008` bytes; compiled eligibility memory was `1206594776` bytes versus
+`555273272` bytes for the Phase-5 G2 mandatory executable.  By contrast,
+Phase 6 executes its Cox-full identity/control separately and times only the
+actual Cox-weak/K3-full route.  The Phase-5 q19 to Phase-11 q32 change adds
+only 21,632 generator and 429 predictor parameters without changing the six
+32-channel residual convolution blocks, so it cannot explain the hidden call.
+
+The observed `3.047233624534141x` and interval
+`[2.396706675073385, 3.7521239409805687]` are therefore **retracted as an
+overcharged, canonical-work-invalid timing negative**; they do not establish
+a valid G2 architecture hard stop.  The immutable bundle remains preserved at
+`runs/p11_g2_s11_r2` as exact evidence of the bug.  It still proves the live
+FOM was healthy, the overcharged route was finite with exact boundary and
+K3/Cox identity, and Phase 11 stopped before runtime projection/update 1 with
+bitwise-unchanged weights.  No training, predictor, selection, or downstream
+data ran, and the invalid result licenses none of them retrospectively.  Both
+r1 and r2 remotes were checksum-verified and removed exactly.

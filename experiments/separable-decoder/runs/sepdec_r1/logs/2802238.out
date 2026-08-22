@@ -1,0 +1,163 @@
+host=pax010 gpu=NVIDIA H200
+jax_backend=gpu
+=== poisson K=8 R=32 ===
+jax_backend=gpu device=cuda:0 x64=True N=64 K=8 R=32 M=32 m=128 steps=40000 seed=0
+  FOM: 576 CG solves in 4s, max rel residual over all samples 4.29e-13
+  truth: 16 test sources, FOM CG rel residual 3.60e-13
+   train[poisson N=64 k=8 r=32] step      1/40000  rel-MSE 1.059e+00  [6s]
+   train[poisson N=64 k=8 r=32] step   2000/40000  rel-MSE 4.238e-03  [6s]
+   train[poisson N=64 k=8 r=32] step   4000/40000  rel-MSE 1.757e-03  [7s]
+   train[poisson N=64 k=8 r=32] step   6000/40000  rel-MSE 1.093e-03  [7s]
+   train[poisson N=64 k=8 r=32] step   8000/40000  rel-MSE 8.901e-04  [8s]
+   train[poisson N=64 k=8 r=32] step  10000/40000  rel-MSE 7.052e-04  [9s]
+   train[poisson N=64 k=8 r=32] step  12000/40000  rel-MSE 6.477e-04  [9s]
+   train[poisson N=64 k=8 r=32] step  14000/40000  rel-MSE 6.751e-04  [10s]
+   train[poisson N=64 k=8 r=32] step  16000/40000  rel-MSE 5.280e-04  [10s]
+   train[poisson N=64 k=8 r=32] step  18000/40000  rel-MSE 5.008e-04  [11s]
+   train[poisson N=64 k=8 r=32] step  20000/40000  rel-MSE 4.848e-04  [11s]
+   train[poisson N=64 k=8 r=32] step  22000/40000  rel-MSE 4.793e-04  [12s]
+   train[poisson N=64 k=8 r=32] step  24000/40000  rel-MSE 4.669e-04  [13s]
+   train[poisson N=64 k=8 r=32] step  26000/40000  rel-MSE 4.547e-04  [13s]
+   train[poisson N=64 k=8 r=32] step  28000/40000  rel-MSE 4.469e-04  [14s]
+   train[poisson N=64 k=8 r=32] step  30000/40000  rel-MSE 4.424e-04  [14s]
+   train[poisson N=64 k=8 r=32] step  32000/40000  rel-MSE 4.383e-04  [15s]
+   train[poisson N=64 k=8 r=32] step  34000/40000  rel-MSE 4.344e-04  [16s]
+   train[poisson N=64 k=8 r=32] step  36000/40000  rel-MSE 4.314e-04  [16s]
+   train[poisson N=64 k=8 r=32] step  38000/40000  rel-MSE 4.287e-04  [17s]
+   train[poisson N=64 k=8 r=32] step  40000/40000  rel-MSE 4.264e-04  [17s]
+   train[poisson N=64 k=8 r=32] done: recon rel-L2 mean 5.593e-02 max 2.598e-01  [19s]
+  test oracle rel-L2: mean 6.579e-02 max 1.218e-01
+  NNLS-EQ sep poisson N=64 k=8 M=32 m=128: pool 3844 support 128 (+0 pad) rel fit 1.25e-03 (row p95 7.1e-02, max 1.2e+02) [5s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   meshfree tau=1e-03  solve+decode    2.744 ms  jac  21.1  err 6.276e-02  cens 100%
+   meshfree tau=1e-02  solve+decode    2.739 ms  jac  20.4  err 6.307e-02  cens  88%
+   cached   tau=1e-03  solve+decode    2.710 ms  jac  21.1  err 6.276e-02  cens 100%
+   cached   tau=1e-02  solve+decode    2.705 ms  jac  20.4  err 6.307e-02  cens  88%
+   FOM CG tol=1e-01:    1.310 ms  err 3.235e-02
+   FOM CG tol=3e-02:    1.595 ms  err 5.761e-03
+   FOM CG tol=1e-02:    1.815 ms  err 1.743e-03
+   FOM CG tol=3e-03:    2.061 ms  err 5.433e-04
+   FOM CG tol=1e-03:    2.299 ms  err 1.732e-04
+   FOM CG tol=3e-04:    2.493 ms  err 4.140e-05
+   FOM CG tol=1e-04:    2.669 ms  err 1.183e-05
+   FOM CG tol=1e-06:    3.297 ms  err 1.053e-07
+DONE poisson [62s] -> /cluster/tufts/paralab/tawal01/sepdec/sepdec_r1/out/sep_poisson_K8_R32.json
+=== poisson K=16 R=64 ===
+jax_backend=gpu device=cuda:0 x64=True N=64 K=16 R=64 M=64 m=256 steps=40000 seed=0
+  FOM: 576 CG solves in 4s, max rel residual over all samples 4.29e-13
+  truth: 16 test sources, FOM CG rel residual 3.60e-13
+   train[poisson N=64 k=16 r=64] step      1/40000  rel-MSE 1.156e+00  [7s]
+   train[poisson N=64 k=16 r=64] step   2000/40000  rel-MSE 2.229e-03  [7s]
+   train[poisson N=64 k=16 r=64] step   4000/40000  rel-MSE 7.273e-04  [8s]
+   train[poisson N=64 k=16 r=64] step   6000/40000  rel-MSE 3.783e-04  [9s]
+   train[poisson N=64 k=16 r=64] step   8000/40000  rel-MSE 2.657e-04  [9s]
+   train[poisson N=64 k=16 r=64] step  10000/40000  rel-MSE 2.241e-04  [10s]
+   train[poisson N=64 k=16 r=64] step  12000/40000  rel-MSE 2.134e-04  [10s]
+   train[poisson N=64 k=16 r=64] step  14000/40000  rel-MSE 1.438e-04  [11s]
+   train[poisson N=64 k=16 r=64] step  16000/40000  rel-MSE 1.342e-04  [12s]
+   train[poisson N=64 k=16 r=64] step  18000/40000  rel-MSE 1.181e-04  [12s]
+   train[poisson N=64 k=16 r=64] step  20000/40000  rel-MSE 1.061e-04  [13s]
+   train[poisson N=64 k=16 r=64] step  22000/40000  rel-MSE 9.881e-05  [14s]
+   train[poisson N=64 k=16 r=64] step  24000/40000  rel-MSE 9.401e-05  [14s]
+   train[poisson N=64 k=16 r=64] step  26000/40000  rel-MSE 9.018e-05  [15s]
+   train[poisson N=64 k=16 r=64] step  28000/40000  rel-MSE 8.866e-05  [15s]
+   train[poisson N=64 k=16 r=64] step  30000/40000  rel-MSE 8.367e-05  [16s]
+   train[poisson N=64 k=16 r=64] step  32000/40000  rel-MSE 8.124e-05  [17s]
+   train[poisson N=64 k=16 r=64] step  34000/40000  rel-MSE 7.918e-05  [17s]
+   train[poisson N=64 k=16 r=64] step  36000/40000  rel-MSE 7.734e-05  [18s]
+   train[poisson N=64 k=16 r=64] step  38000/40000  rel-MSE 7.574e-05  [18s]
+   train[poisson N=64 k=16 r=64] step  40000/40000  rel-MSE 7.431e-05  [19s]
+   train[poisson N=64 k=16 r=64] done: recon rel-L2 mean 2.908e-02 max 1.797e-01  [21s]
+  test oracle rel-L2: mean 4.434e-02 max 8.628e-02
+  NNLS-EQ sep poisson N=64 k=16 M=64 m=256: pool 3844 support 256 (+0 pad) rel fit 1.27e-03 (row p95 1.4e-01, max 3.1e+02) [18s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   meshfree tau=1e-03  solve+decode    2.154 ms  jac  13.3  err 3.751e-02  cens 100%
+   meshfree tau=1e-02  solve+decode    1.895 ms  jac  11.4  err 3.797e-02  cens  75%
+   cached   tau=1e-03  solve+decode    2.059 ms  jac  13.3  err 3.751e-02  cens 100%
+   cached   tau=1e-02  solve+decode    1.798 ms  jac  11.4  err 3.797e-02  cens  75%
+   FOM CG tol=1e-01:    1.307 ms  err 3.235e-02
+   FOM CG tol=3e-02:    1.596 ms  err 5.761e-03
+   FOM CG tol=1e-02:    1.814 ms  err 1.743e-03
+   FOM CG tol=3e-03:    2.069 ms  err 5.433e-04
+   FOM CG tol=1e-03:    2.304 ms  err 1.732e-04
+   FOM CG tol=3e-04:    2.496 ms  err 4.140e-05
+   FOM CG tol=1e-04:    2.677 ms  err 1.183e-05
+   FOM CG tol=1e-06:    3.322 ms  err 1.053e-07
+DONE poisson [78s] -> /cluster/tufts/paralab/tawal01/sepdec/sepdec_r1/out/sep_poisson_K16_R64.json
+=== burgers K=8 R=32 ===
+jax_backend=gpu device=cuda:0 x64=True N=64 K=8 R=32 M=32 m=128 steps=40000 seed=0
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 6s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+   train[burgers N=64 k=8 r=32] step      1/40000  rel-MSE 1.063e+00  [8s]
+   train[burgers N=64 k=8 r=32] step   2000/40000  rel-MSE 1.133e-02  [10s]
+   train[burgers N=64 k=8 r=32] step   4000/40000  rel-MSE 5.568e-03  [11s]
+   train[burgers N=64 k=8 r=32] step   6000/40000  rel-MSE 3.971e-03  [13s]
+   train[burgers N=64 k=8 r=32] step   8000/40000  rel-MSE 3.396e-03  [15s]
+   train[burgers N=64 k=8 r=32] step  10000/40000  rel-MSE 3.120e-03  [16s]
+   train[burgers N=64 k=8 r=32] step  12000/40000  rel-MSE 2.947e-03  [18s]
+   train[burgers N=64 k=8 r=32] step  14000/40000  rel-MSE 2.851e-03  [20s]
+   train[burgers N=64 k=8 r=32] step  16000/40000  rel-MSE 2.777e-03  [22s]
+   train[burgers N=64 k=8 r=32] step  18000/40000  rel-MSE 2.721e-03  [23s]
+   train[burgers N=64 k=8 r=32] step  20000/40000  rel-MSE 2.739e-03  [25s]
+   train[burgers N=64 k=8 r=32] step  22000/40000  rel-MSE 2.660e-03  [27s]
+   train[burgers N=64 k=8 r=32] step  24000/40000  rel-MSE 2.640e-03  [28s]
+   train[burgers N=64 k=8 r=32] step  26000/40000  rel-MSE 2.624e-03  [30s]
+   train[burgers N=64 k=8 r=32] step  28000/40000  rel-MSE 2.610e-03  [32s]
+   train[burgers N=64 k=8 r=32] step  30000/40000  rel-MSE 2.603e-03  [33s]
+   train[burgers N=64 k=8 r=32] step  32000/40000  rel-MSE 2.590e-03  [35s]
+   train[burgers N=64 k=8 r=32] step  34000/40000  rel-MSE 2.582e-03  [37s]
+   train[burgers N=64 k=8 r=32] step  36000/40000  rel-MSE 2.575e-03  [39s]
+   train[burgers N=64 k=8 r=32] step  38000/40000  rel-MSE 2.569e-03  [40s]
+   train[burgers N=64 k=8 r=32] step  40000/40000  rel-MSE 2.564e-03  [42s]
+   train[burgers N=64 k=8 r=32] done: recon rel-L2 mean 5.081e-02 max 5.798e-01  [44s]
+  NNLS-EQ weak/grid M=32 m=128: support 128 (+0 pad), rel fit 1.10e-02 (per-row median 1.1e-02, p95 3.2e-01, max 6.3e+02) [4s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 1.50e-15
+   meshfree traj 0: ic 3.63e-02  err 3.319e-02  jac 277  n_done 50  rollout    56.84 ms
+   meshfree traj 1: ic 4.72e-01  err 2.010e-01  jac 259  n_done 50  rollout    45.18 ms
+   meshfree traj 2: ic 6.50e-02  err 3.163e-02  jac 358  n_done 50  rollout    63.86 ms
+   meshfree traj 3: ic 6.45e-02  err 5.182e-02  jac 288  n_done 50  rollout    46.60 ms
+   cached   traj 0: ic 3.63e-02  err 3.319e-02  jac 275  n_done 50  rollout    47.74 ms
+   cached   traj 1: ic 4.72e-01  err 2.010e-01  jac 262  n_done 50  rollout    40.67 ms
+   cached   traj 2: ic 6.50e-02  err 3.163e-02  jac 357  n_done 50  rollout    56.98 ms
+   cached   traj 3: ic 6.45e-02  err 5.182e-02  jac 288  n_done 50  rollout    41.26 ms
+   FOM reference rollout: 176.2 ms/trajectory
+DONE burgers [115s] -> /cluster/tufts/paralab/tawal01/sepdec/sepdec_r1/out/sep_burgers_K8_R32.json
+=== burgers K=16 R=64 ===
+jax_backend=gpu device=cuda:0 x64=True N=64 K=16 R=64 M=64 m=256 steps=40000 seed=0
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 6s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+   train[burgers N=64 k=16 r=64] step      1/40000  rel-MSE 1.153e+00  [9s]
+   train[burgers N=64 k=16 r=64] step   2000/40000  rel-MSE 6.209e-03  [11s]
+   train[burgers N=64 k=16 r=64] step   4000/40000  rel-MSE 2.428e-03  [13s]
+   train[burgers N=64 k=16 r=64] step   6000/40000  rel-MSE 1.371e-03  [14s]
+   train[burgers N=64 k=16 r=64] step   8000/40000  rel-MSE 1.036e-03  [16s]
+   train[burgers N=64 k=16 r=64] step  10000/40000  rel-MSE 9.436e-04  [18s]
+   train[burgers N=64 k=16 r=64] step  12000/40000  rel-MSE 8.660e-04  [20s]
+   train[burgers N=64 k=16 r=64] step  14000/40000  rel-MSE 7.034e-04  [22s]
+   train[burgers N=64 k=16 r=64] step  16000/40000  rel-MSE 6.823e-04  [24s]
+   train[burgers N=64 k=16 r=64] step  18000/40000  rel-MSE 6.356e-04  [25s]
+   train[burgers N=64 k=16 r=64] step  20000/40000  rel-MSE 5.968e-04  [27s]
+   train[burgers N=64 k=16 r=64] step  22000/40000  rel-MSE 5.635e-04  [29s]
+   train[burgers N=64 k=16 r=64] step  24000/40000  rel-MSE 5.511e-04  [31s]
+   train[burgers N=64 k=16 r=64] step  26000/40000  rel-MSE 5.277e-04  [33s]
+   train[burgers N=64 k=16 r=64] step  28000/40000  rel-MSE 5.117e-04  [34s]
+   train[burgers N=64 k=16 r=64] step  30000/40000  rel-MSE 5.007e-04  [36s]
+   train[burgers N=64 k=16 r=64] step  32000/40000  rel-MSE 4.899e-04  [38s]
+   train[burgers N=64 k=16 r=64] step  34000/40000  rel-MSE 4.815e-04  [40s]
+   train[burgers N=64 k=16 r=64] step  36000/40000  rel-MSE 4.741e-04  [42s]
+   train[burgers N=64 k=16 r=64] step  38000/40000  rel-MSE 4.676e-04  [43s]
+   train[burgers N=64 k=16 r=64] step  40000/40000  rel-MSE 4.619e-04  [45s]
+   train[burgers N=64 k=16 r=64] done: recon rel-L2 mean 2.327e-02 max 4.121e-01  [47s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 4.62e-03 (per-row median 9.3e-03, p95 3.9e-01, max 9.2e+01) [15s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 2.79e-15
+   meshfree traj 0: ic 1.46e-02  err 1.377e-02  jac 303  n_done 50  rollout    58.37 ms
+   meshfree traj 1: ic 3.60e-01  err 1.469e-01  jac 349  n_done 50  rollout    73.20 ms
+   meshfree traj 2: ic 4.52e-02  err 2.103e-02  jac 317  n_done 50  rollout    62.82 ms
+   meshfree traj 3: ic 4.69e-02  err 2.583e-02  jac 288  n_done 50  rollout    57.02 ms
+   cached   traj 0: ic 1.46e-02  err 1.377e-02  jac 304  n_done 50  rollout    49.77 ms
+   cached   traj 1: ic 3.60e-01  err 1.469e-01  jac 350  n_done 50  rollout    65.04 ms
+   cached   traj 2: ic 4.52e-02  err 2.103e-02  jac 318  n_done 50  rollout    58.35 ms
+   cached   traj 3: ic 4.69e-02  err 2.583e-02  jac 289  n_done 50  rollout    47.19 ms
+   FOM reference rollout: 176.1 ms/trajectory
+DONE burgers [136s] -> /cluster/tufts/paralab/tawal01/sepdec/sepdec_r1/out/sep_burgers_K16_R64.json
+ALL-DONE

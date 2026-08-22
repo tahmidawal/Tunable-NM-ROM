@@ -12,7 +12,7 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-08-20
+# Where things stand — 2026-08-22
 
 ## The method
 
@@ -31,15 +31,24 @@ basis or linear corrector. Keep `M > k` comfortably and `m ≈ 4M`.
 ## What is true right now
 
 **The weak NM-ROM remains accurate and mesh-independent, but its usefulness as a FOM warm start
-is narrow.** The final architecture/solver push now covers Poisson-2D and Burgers-2D at
-N=32/64/128/256/512/1024 and FOM tolerances 1e-6/1e-8/1e-10, with cost, work, and returned
-residual from the same invocation.
+is narrow.** The final architecture/solver push covers Poisson-2D and Burgers-2D at
+N=32/64/128/256/512/1024, with separate fresh-seed N=2048 extensions, at FOM tolerances
+1e-6/1e-8/1e-10. Cost, work, and returned residual come from the same invocation.
 
 **Poisson has one genuine learned crossover.** The optimized K=8 trust-region NM-ROM, decoded at
 fixed N=64 before counting CG, is 211.996 ms versus 217.578 ms at N=1024 and tolerance 1e-6:
 1.026× with a trajectory/case-clustered 95% interval [1.014, 1.077]. N=512 is a tie or loss;
 N=1024 at 1e-8 is inconclusive and at 1e-10 is a tie/slight loss. This is a real but modest
 crossover against counting CG, not a solver-independent victory.
+
+**At N=2048, the genuine Poisson crossover remains real only at tolerance 1e-6.** On a fresh
+eight-case A100-80GB panel with exactly balanced AB/BA timing, K=8 NM-ROM plus counting CG takes
+1472.986 ms versus 1547.144 ms for zero-start CG: 1.050x with case-clustered 95% interval
+[1.018, 1.067]. The 1e-8 and 1e-10 rows are unsupported. A separately balanced production
+block makes the practical conclusion much stronger: the eligible q=1024 spectral warm start
+takes 1.921/2.470/3.734 ms at 1e-6/1e-8/1e-10, 798.3/723.8/533.3x faster than same-block
+zero-start CG. The learned crossover is scientifically valid but not operationally competitive
+on this separable rectangle.
 
 **Classical Poisson structure dominates learning.** In the same A100-80GB panel, the selected
 spectral warm start plus counting CG takes 0.759/0.814/0.931 ms at N=1024 for tolerances
@@ -70,6 +79,17 @@ is supported; tolerance 1e-10 is supported at N=32/256/512/1024, with wide four-
 intervals. This method is nonlearned and not an NM-ROM. Its warmed wall time charges all 50
 extra residual evaluations and all 50 Helmholtz inverses; its finishing iteration counters do
 not include those operations.
+
+**The N=2048 Burgers extension preserves the same conclusion.** The genuine K=8 weak FiLM
+NM-ROM is slower than optimized cubic history at all three tolerances and has zero supported
+wins against either cubic or the classical correction. A separate untouched-seed H200 panel
+supports the nonlearned full-grid residual-plus-Helmholtz correction only at tolerance 1e-6:
+532.817 ms falls to 343.673 ms, 1.550x, with paired saving 178.175 ms and trajectory-clustered
+95% interval [54.945, 195.984]. The 1e-8 and 1e-10 rows are unsupported. The valid timing was
+gated by two independent exact-Helmholtz reference routes whose worst residual is 9.538e-13 and
+whose maximum step/trajectory disagreements are 4.683e-14/1.793e-14. Earlier public-JAX
+reference attempts and one false-success diagnostic are preserved as excluded pre-science
+failures; they contribute no timing claim.
 
 **The Burgers 1e-3/10x transported-Hermite Phase 1 is a final negative.** On locked seed-0
 selection indices 512:576, HG4's representation oracle mean/worst are 3.657e-2 / 7.632e-2 and
@@ -145,6 +165,33 @@ zero-science infrastructure failures: r1 compared physical and normalized affine
 r2 required nonportable bitwise equality across regenerated f64 paths. The final absolute-only
 `2e-15` regeneration check changed no data, model, loss, training input, or gate.
 
+**The post-Phase-7 Burgers continuation has not produced a learned result.** Phase 8's
+exact-full-grid q diagnostic left the best two-start G1 selection mean/worst at
+2.312e-2 / 5.460e-2 and failed its locked trust-health gate. Phase 9 then completed 528,768
+exact-field G1 updates; the independently recovered terminal train field is
+1.306e-2 / 4.841e-2 pooled. Phase 10's final-q-only globalization improves that to
+9.783e-3 / 3.463e-2, still 48.9x / 49.5x above the unchanged 2e-4 / 7e-4 train gates. Phase
+11 never started a G2 update: its structural executable included an unintended additional
+51-state Cox full decode, so the observed 3.047x speed and [2.397,3.752] interval are retracted,
+not a valid G2 speed failure. Phase 12 is prospective only; no job exists. These phases were
+added on the experiment branch after the canonical Phase-7 hard stop without a corresponding
+canonical-log update. Treat them as non-headline diagnostics pending an explicit decision about
+whether that post-stop search is admitted; they do not open weak/EQ, scaling, model validation,
+or confirmation.
+
+**The paired N=64 k=4--64, M=4k, m=4M sweep completed but is not a deployment result.** Job
+`2689547` completed `0:0` after 11:59:39 on pax007/A100-80GB with GPU/f64/highest. The remote
+result checksums and staged manifest match, and a corrected read-only audit reproduces all 36
+row aggregates from the persisted nine-repetition arrays; 13 of 576 per-source timing medians
+are upper outliers under the recorded 5-MAD rule. At tau=1e-3, Poisson mean error improves from
+2.340e-2 at k=4 to 2.932e-3 at k=64 while time grows from 4.115 to 56.288 ms, but every cell is
+censored and 15/16 cases are still censored from k=16 onward. Burgers is worse: every cell at
+both tolerances is censored, the best tau=1e-3 mean is 1.014e-2 at k=24, and the k=64 training
+run collapses to 0.454 train mean error before producing a 0.271 ROM mean. The run measured
+only the known over-solved Poisson truth-CG and fixed-eight-Newton Burgers baselines, so the
+draft builder's "like-for-like FOM" speed language is invalid. No speed/Pareto claim is accepted;
+the official pull, remote cleanup, corrected validator, and generated report remain unfinished.
+
 **The architectural negative results are useful.** Direct Poisson source-to-latent RBF prediction
 failed; a cached K=16 GroupFiLM was neutral/losing; a learned high-frequency tail could not beat
 the sub-millisecond spectral control. Burgers correction manifolds are not compact enough:
@@ -195,6 +242,14 @@ and 1%-accurate.
    burn/warm order, and one Burgers driver lost decoder metadata and aborted. Corrected same-GPU
    reruns replace them. The Poisson M=112,m=448 validation choice is not its deployable timing
    point, and the Burgers decoder/saved-architecture speedups are not FOM speedups.
+8. **Phase-9 G1 tangent-capacity evidence is retracted.** Independent H200 repeats changed CG
+   iteration counts on 11,030/2,794/1,418 N=64/128/256 rows and one N=64 convergence label.
+   The terminal G1 field remains accepted and negative, but neither capacity record can license
+   G2.
+9. **The Phase-11 G2 3.047x structural speed is retracted.** The timed executable performed the
+   intended 50 Cox weak and 51 K3 full evaluations plus an unintended second 51-state Cox full
+   decode that the canonical-work record omitted. The number is an overcharged implementation
+   diagnostic, neither a valid speed point nor evidence that the corrected G2 route fails.
 
 ## Where the work is
 
@@ -207,33 +262,57 @@ Poisson commit `57329c0` and Burgers commit `559583c`; its generated report is
 `reports/2026-08-20-hybrid-speed-push.md` on `main`. The standalone pure nonlinear search is on
 **`exp/2026-08-19-nonlinear-decoder-architecture`** in its same-named worktree; its generated
 report is `reports/2026-08-19-nonlinear-decoder-architecture.md`, and its 73-cell audit passes
-with five cells explicitly excluded. That branch also remains unmerged. The Burgers-only
-Phase-1--7 branch is **`exp/2026-08-19-burgers-1e3-10x`** in its same-named worktree; its
-generated final hard-stop report is `reports/2026-08-20-burgers-1e3-10x.md`. It too remains
-unmerged.
+with five cells explicitly excluded. That branch also remains unmerged. The Burgers-only branch
+is **`exp/2026-08-19-burgers-1e3-10x`** in its same-named worktree, currently at tracked commit
+`3702789`. Its generated report `reports/2026-08-20-burgers-1e3-10x.md` covers through Phase 8;
+the Phase-9/10 accepted negatives and Phase-11 retraction exist in the experiment checkpoint log
+and sealed run bundles but have no regenerated question report. Phase 12 is preregistered only;
+its implementation files are currently untracked and no job is queued or recorded. The branch
+remains unmerged.
+
+The N=2048 extensions are on **`exp/2026-08-20-poisson-hybrid-2048`** at clean commit
+`2c33188` and **`exp/2026-08-20-burgers-hybrid-2048`** at clean commit `a081472`, in their
+same-named worktrees. Their generated cross-PDE report is
+`reports/2026-08-20-hybrid-warm-starts-at-2048.md` on `main`. Both branches remain unmerged
+pending an explicit user decision.
+
+The completed-but-unfinalized paired latent-dimension sweep is on
+**`exp/2026-08-20-two-pde-k64-eq4m`** at commit `ae92252`, in its same-named worktree. Slurm job
+`2689547` completed on pax007/A100-80GB and its raw remote outputs remain under the isolated
+paralab directory `/cluster/tufts/paralab/tawal01/k64-eq4m/ctol_k64_eq4m_r1`. The worktree has
+an uncommitted validator edit and untracked report builder, but not the official pulled run
+bundle. The raw result is scientifically negative/inconclusive as described above and its
+lifecycle is not closed.
 
 ## What to do next, in order
 
-1. Decide whether to merge the three completed 2026-08-19 result branches; do not merge them
+1. Pause Phase 12 and all further Burgers training. Decide explicitly whether the canonical
+   Phase-7 hard stop remains binding or whether the post-stop Phase-8--12 search is admitted as a
+   new bounded search. If admitted, first audit and commit the untracked Phase-12 implementation;
+   its corrected structural route must pass 10x with lower bound 8x before update 1. If not
+   admitted, archive the Phase-9/10 negatives and Phase-11 retraction and close the branch.
+2. Close the existing k-sweep lifecycle without rerunning it: fix the local validator's baseline
+   assertion, pull the official results with checksums, delete only the exact verified remote
+   directory, and generate a report that labels both FOM speed baselines as over-solved. Do not
+   publish an iso-accuracy speed or Pareto claim from this run.
+3. Decide whether to merge the completed N<=1024 and N=2048 result branches; do not merge them
    implicitly.
-2. Keep the completed Burgers 1e-3/10x Phase-7 hard stop binding: do not run seeds 29/47, G2,
-   weak/EQ, model validation, scaling, or confirmation under this search.
-3. Test the selected pure nonlinear standalone architectures across N=128…512 before claiming
+4. Test the selected pure nonlinear standalone architectures across N=128…512 before claiming
    resolution-independent architecture rankings or a broad Poisson crossover. On Burgers, work
    on the online objective/solver and stopping policy rather than more decoder-width tuning.
-4. For Poisson, treat FFT/DST/spectral methods as the production baseline on this separable
-   rectangle. A learned warm start is scientifically interesting but not operationally best.
-5. For the current Burgers family, use the charged residual-plus-Helmholtz warm start at
-   tolerance 1e-6; retain cubic history at 1e-8, where the new method has no supported win. The
-   1e-10 evidence is mixed by resolution and should remain a measured policy rather than a
-   universal default. A new learned attempt still needs a genuinely transported nonlinear
+5. For Poisson, treat the q=1024 spectral arm (and FFT/DST controls) as the production baseline
+   on this separable rectangle. The N=2048 learned warm start crosses counting CG only at 1e-6
+   and is scientifically interesting, not operationally best.
+6. For the current Burgers family, use the charged residual-plus-Helmholtz warm start at
+   tolerance 1e-6; retain cubic history at 1e-8 and 1e-10 at N=2048, where neither tighter row
+   has a supported win. A new learned attempt still needs a genuinely transported nonlinear
    manifold and a construction budget far below the tested FiLM path; the current learned gates
    say to stop.
-6. Finish the older `cost-to-tolerance` prose/audit and apply the trust-region fix to the other
+7. Finish the older `cost-to-tolerance` prose/audit and apply the trust-region fix to the other
    PDE paths if those standalone-ROM results are still needed.
-7. Reviewer baselines and generalisation tests remain: tuned FNO, POD-DeepONet, nonseparable or
+8. Reviewer baselines and generalisation tests remain: tuned FNO, POD-DeepONet, nonseparable or
    irregular domains, and 3-D problems where the exact rectangular spectral solve is unavailable.
-8. Decide whether `fix/heat-rollout-warm-start` merges into `main`.
+9. Decide whether `fix/heat-rollout-warm-start` merges into `main`.
 
 ---
 
@@ -1794,3 +1873,419 @@ No G2, further retry, weak/EQ, model validation, scaling, or confirmation is lic
 This tenth scientific cell closes the Burgers-only search without a 1e-3/10x learned Pareto
 point. The generated final report and global rerunnable audit incorporate the result and rebuild
 byte-identically; the two unrelated untracked synthetic model-validation drafts remain excluded.
+
+---
+
+## 2026-08-20
+
+### Read-only review of the 18 August results and plots
+
+Reviewed the canonical log, the consolidated `exp/2026-08-18-codex-handoff` worktree, its
+reports, raw-result inventories, and the headline figures without running a new numerical
+experiment or changing an experiment branch. Re-ran the completed warm-start cell's independent
+verifier with the repository venv: **146 checks passed, 0 failed**.
+
+The durable 18 August results are the weak-form accuracy result on Poisson/Heat/Burgers (with the
+Wave negative), mesh-independent iteration/quadrature behavior, the k-spike retraction and
+full-grid trust-region diagnosis, and the final negative ROM-to-FOM warm-start result. The
+cost-to-tolerance single-GPU consolidation JSONs are present and generated the
+0.35/0.65/1.26/1.73/3.39x Poisson iso-accuracy ladder, but that cell still has placeholder
+Verdict/Caveats sections and no `CODEX-REVIEW-RESULTS.md`; treat its speed/Pareto claims as
+historical/provisional until that audit is finished. In particular,
+`reports/2026-08-18-solve-cost-quadrature-and-the-hybrid.md` still carries the older cross-GPU
+warning and a now-retracted k-specific stall interpretation, while the later regenerated
+`talk_figs/1_crossover` uses the consolidation timings. No statement in the top-level current
+status changed as a result of this review.
+
+### Generated two-PDE results and plot audit through 18 August
+
+Created the generated report `reports/2026-08-18-two-pde-results-and-plot-audit.md`, its canonical
+artifact JSON, its self-contained HTML reader, and
+`reports/build_2026_08_18_two_pde_results_and_plot_audit.py` on `main`. The builder reads only the
+archived Poisson-2D and Burgers-2D JSONs in `exp/2026-08-18-codex-handoff`; no experiment worktree
+was changed and no numerical job was launched. A second build reproduced the Markdown and artifact
+byte-for-byte. The portable artifact validates with six native charts, five tables, five headline
+metrics, and complete source metadata. Its packaged structural verification passes; interactive
+browser verification was unavailable because the local machine has no working supported Chromium
+binary.
+
+The report makes the main inconsistencies explicit rather than combining them into one status:
+weak-form full/EQ accuracy is close to the nonlinear decoder ceiling on both PDEs, `m=M` is poor
+while `m=4M` is near the full-grid accuracy region, the old latent-dimension stalls are withdrawn
+because eleven divergent source-solves distorted means and the trust-region repair leaves zero,
+the single-GPU standalone Poisson cost curve remains provisional, and the independently verified
+original ROM-to-FOM hybrid remains slower than baseline through the archived meshes. Burgers has
+zero uncensored coordinate points in that archived strict cost cell. Open work is to apply the
+same trust-region solver and aggregation rules to both PDEs, finish the cost-cell audit, persist
+timing repetitions, and compare learned warm starts with the strongest classical history arm in
+the same solver invocation.
+
+### Fresh-seed N=2048 Poisson and Burgers extensions
+
+Extended the independently audited hybrid-solver studies from N<=1024 to N=2048 on two new
+branches created from the completed speed-push commits rather than `main`:
+`exp/2026-08-20-poisson-hybrid-2048` from `57329c0` and
+`exp/2026-08-20-burgers-hybrid-2048` from `559583c`. Both branches remain clean and unmerged at
+final commits `2c33188` and `a081472`. All accepted jobs used GPU backend, f64,
+`JAX_DEFAULT_MATMUL_PRECISION=highest`, isolated paralab directories, same-invocation
+cost/accuracy/work telemetry, persisted repetitions, immediate burns, checksum-preserving pulls,
+and exact remote cleanup.
+
+**Poisson final.** Job `2670159` ran on an A100-80GB using fresh seed `20260826`, eight timed
+cases, 12 exactly balanced AB/BA repetitions per learned/zero method and case, and a separately
+balanced five-method production block. The genuine fixed-N64 K=8 trust-region NM-ROM plus
+counting CG is supported only at tolerance 1e-6: `1472.985849 / 1547.144049` ms for learned and
+zero, `1.050345x` with case-clustered ratio interval `[1.018431,1.066654]`, paired saving
+`53.329957` ms with interval `[33.637275,84.795740]`, and all eight cases faster. The 1e-8 row
+is `1.025872x [0.993227,1.052155]` and the 1e-10 row is
+`0.996423x [0.984538,1.003211]`; neither is supported. All 576 learned/zero and 1,200
+production-control records pass true-residual, boundary, flag, position-balance, and provenance
+gates, with zero timing outliers and peak device fraction 0.3658.
+
+The strongest eligible Poisson production control is classical `spectral_q1024` at every
+tolerance. Its `1.921111/2.469948/3.733728` ms totals at 1e-6/1e-8/1e-10 are
+`798.29/723.79/533.26x` faster than their same-block zero-start counting-CG medians. Dense and
+FFT DST direct solves are eligible at 1e-6 and 1e-8 but fail the measured 1e-10 true-residual
+gate; both spectral arms remain eligible. Three independent audit layers pass. The learned
+crossover is retained as a real counting-CG
+result, but any claim that it is the fastest Poisson route on this rectangle is rejected.
+
+**Burgers learned sensitivity.** Job `2672536` ran on an H200 using fresh seed `20260828`, four
+trajectories, and exactly balanced within-job comparisons. The genuine K=8 weak FiLM NM-ROM uses
+M=64, m=256, at most two latent Jacobians per step, fixed-N64 decode/prolongation, an exact
+residual guard, and the same exact-Helmholtz FOM finish as its controls. It has zero supported
+wins in three comparisons against cubic and zero against the classical dynamic correction; all
+six point estimates are slower. Against cubic, control/FiLM ratios are
+`0.877106/0.947231/0.948679x` at 1e-6/1e-8/1e-10. Against the dynamic control they are
+`0.827790/0.888724/0.862581x`. The guard accepts a median four of 50 steps while the arm pays
+100 reduced Jacobians per trajectory. All 576 timed records, 288 burns, accuracy, residual,
+work, equivalence, memory, and provenance checks pass. This confirms the learned Burgers route
+as a negative result rather than a practical warm start.
+
+**Burgers reference failures and repair.** Primary jobs `2672535` and `2674703` are excluded
+pre-science with zero timing rows: the inherited fixed public-JAX reference freezes at residual
+`1.215e-2` on development seed `20260827`, even with 25 fixed Newton iterations. Diagnostic job
+`2676167` is also excluded: an unbatched replay changed the public execution topology, and its
+batch script used a false-success `producer && checker` pattern. Corrected batch-one diagnostic
+`2677878` reproduces the failure: all 25 active public updates at trajectory 3, step 41 are
+nonfinite. Its healthy exact-Helmholtz candidate could not self-license: the update-match gate is
+null because every active public update is nonfinite, and the separately frozen outer-1e-13
+strict route hit the maximum Newton count. Seed `20260829` was then excluded
+after an N=32 implementation smoke touched only reference/equivalence health, with no N=2048
+field or method timing. None of these attempts contributes a speed claim.
+
+The final reference design was preregistered on never-used seed `20260830`: two separately
+compiled exact-Helmholtz routes at outer tolerance 1e-12 and inner tolerances 1e-8/1e-10 had to
+pass on all four trajectories before online compilation or timing. Both pass with worst actual
+outer residual `9.537719e-13`, maximum step agreement `4.682753e-14`, maximum trajectory
+agreement `1.793184e-14`, and zero flags/breakdowns.
+
+**Burgers classical final.** Job `2680178` then ran on an H200 with 12 AB/BA repetitions per
+arm and trajectory at all three tolerances. The full-grid residual-plus-exact-Helmholtz
+correction is supported only at 1e-6: cubic `532.816699` ms versus corrected `343.673245` ms,
+`1.550358x`, with paired saving `178.174519` ms and trajectory-clustered interval
+`[54.945137,195.983786]`. At 1e-8 the ratio is `0.996064x` and paired-saving interval
+`[-27.190926,67.302173]`; at 1e-10 it is `0.984962x` with interval
+`[-20.894478,266.999483]`. Neither tighter row is supported. All 288 timing records and 144
+burns pass health, work, accuracy, equivalence, balance, provenance, and independent raw
+recomputation. The method is classical, nonlearned, and not an NM-ROM. Its wall time charges 50
+full-grid exact-upwind residuals and 50 exact Helmholtz inverses; finishing iteration counters
+exclude those extra operations.
+
+The generated cross-PDE report is
+`reports/2026-08-20-hybrid-warm-starts-at-2048.md`, built by
+`reports/build_2026_08_20_hybrid_warm_starts_at_2048.py` directly from the six final raw/audit
+JSON inputs. Repeated generation is byte-identical. The result branches were not merged; an
+explicit user decision remains required.
+
+### Added the audited N=2048 extension to the two-PDE plot audit
+
+Updated the user-requested generated report
+`reports/2026-08-18-two-pde-results-and-plot-audit.md` without replacing its archived August-18
+sections. The new `Audited N=2048 extension` subsection sits inside `Cost and hybrid evidence`
+and adds the final Poisson learned, Poisson spectral, Burgers learned-FiLM, and Burgers classical
+tables plus two static plots:
+`reports/figs/two-pde-n2048-learned-speedup.png` and
+`reports/figs/two-pde-n2048-classical-speedup.png`.
+
+The report builder now binds the three N=2048 raw JSONs to their independent-audit SHA-256
+values before rendering. Both plots use only dimensionless within-job speedups, label the
+parity threshold, distinguish learned and classical methods, and state the case/trajectory and
+GPU context. The classical figure uses separate Poisson and Burgers panels because their
+speedup scales differ by hundreds-fold. No absolute timing is compared across jobs or GPU
+types. The linked HTML companion remains explicitly labeled as the archived through-August-18
+surface; the requested extension lives in the Markdown report.
+
+Two complete builds under the required local `jaxrun`, f64, highest-precision wrapper produced
+byte-identical Markdown, artifact JSON, and PNG files. The generated report SHA-256 is
+`29f53cd8d04c3af3826e49b45fee05db359c2ee2100bbff062057b677b87f5e9`; the learned and
+classical plot SHA-256 values are `8979c59475fae646c04faebf0789a89e421d45026435dda3614e3569786b17b3`
+and `4ece1dcae86d629ecafb9380d3ed0ff2b52ec400c9ef6ad370f659a1fbcedef5`.
+
+### Paired Poisson/Burgers k=4--64, m=4M sweep launched
+
+Created the confirmed isolated branch/worktree
+`exp/2026-08-20-two-pde-k64-eq4m` / `worktrees/2026-08-20-two-pde-k64-eq4m`
+from corrected standalone-architecture commit `9c330bd`, not from `main`. The experiment and
+generic timing/trust changes are committed at `ae92252`. The frozen N=64 coordinate-NM-ROM
+ladder is k=4,6,8,12,16,24,32,48,64 with M=4k and m=4M=16k for both Poisson-2D and
+Burgers-2D. Tau=1e-3 is primary for comparability with the retracted k-spike study; tau=1e-2 is
+a secondary deployment point sharing the same per-k EQ fit. Existing seed-0 checkpoints through
+k=32 are reused, while k=48/64 are trained in the job with the matching recorded recipe.
+
+Both PDEs run sequentially in one job on one physical GPU. The whole path, isolated decoder,
+and isolated latent solve each persist 16-by-9 or nine raw timing repetitions after three
+warm-ups and an explicit GPU burn. Burgers additionally persists its hyper-reduced cold-start
+timings. Whole-path cost and relative-L2 come from the same final timed invocation. Poisson uses
+a one-training-cloud-radius trust step; Burgers uses the independently accepted 0.01-radius
+factor and retains the FOM-exact upwind weak advection. Every EQ fit records global and worst-row
+diagnostics.
+
+Static parsing, shell syntax, generated-schema tests, both staged GPU imports, and a synthetic
+trust-rejection test passed locally. A bounded one-case Poisson end-to-end smoke reached `DONE`
+and populated all new timing fields. The analogous Burgers smoke reached regenerated truth and
+the EQ fit but was interrupted during first pipeline compilation at the repository's one-minute
+local-smoke ceiling; it produced no scientific result and no failure was inferred from the
+interrupted compilation.
+
+The checksummed 67 MB stage was copied directly to
+`/cluster/tufts/paralab/tawal01/k64-eq4m/ctol_k64_eq4m_r1`. Local and remote manifest SHA-256 are
+both `c07a22985adbe206a3aa285abd2e1ebae3b6bb6b3f6f422230ea546b29cedd43`. Queue checks were
+performed before and after submission. Job `2689547` requests the `gpu` partition, one generic
+GPU, eight CPUs, 96 GB host memory, and 18 hours; at launch it was pending for `Priority` while
+unrelated job `2686475` remained running. A subsequent check found job `2689547` running on
+`pax007` with `jax_backend=gpu`; both new Poisson checkpoints had trained and Burgers k=48
+training was in progress. No paired k-sweep result exists yet. Open: wait for completion, pull
+with checksums, audit health and raw repetitions, delete the exact remote job directory,
+generate the requested plots/report, and ask whether to merge this experiment branch after it
+finishes.
+
+## 2026-08-20
+
+### Closed stale Codex session writer
+
+Diagnosed failed resume of thread `01a01b95-3dad-7773-9c9e-0f6696c0a2c1`. The live writer was
+the Codex process group led by PID `1356196`, with writer PID `1356203`, attached to the VS Code
+terminal `pts/34`. At the user's request, sent `SIGINT` to that process group. Both processes
+exited cleanly, and a follow-up `lsof` check found no remaining holder of the thread-writer lock.
+No repository experiment, result, branch, worktree, cluster job, or scientific project state was
+changed.
+
+## 2026-08-20
+
+### Closed remaining stale Codex terminal sessions
+
+At the user's request, enumerated the remaining Codex TUI processes and closed the two sessions
+other than the active conversation: process group `1357652` on `pts/33` and process group
+`1359834` on `pts/32`. Both exited cleanly after `SIGINT`. Verification found none of PIDs
+`1357652`, `1357659`, `1359834`, or `1359841` still running. The only remaining Codex writer
+and lock belong to the active conversation on `pts/9`; surrounding VS Code and shell terminal
+processes were intentionally preserved. No scientific project state changed.
+
+---
+
+## 2026-08-22
+
+### Read-only audit of the actual latest experiments
+
+Reviewed the canonical log first, then reconciled it against all branches and found that it was
+stale in two important ways: paired sweep job `2689547` had completed, and the Burgers 1e-3/10x
+branch had continued from Phase 8 through a Phase-12 preregistration after the canonical Phase-7
+hard stop. No numerical job was launched, no cluster output was deleted, and no experiment
+worktree was modified in this audit.
+
+**Burgers Phase 8--12 disposition.** Verified the local `LOCAL.sha256` seals for P8-D job
+`2686475`, the accepted Phase-9 terminal-field audit job `2737342`, Phase-10 scientific job
+`2739690` and accepting audit-only job `2750135`, and Phase-11 job `2754129`; every listed file
+passes. P8-D remained invalid under its locked trust-health rule and, even descriptively, its
+best two-start G1 selection mean/worst was `2.3116452e-2 / 5.4601627e-2`. Phase 9's exact-field
+G1 training completed all 528,768 updates, but its accepted terminal pooled train field was
+`1.3055157e-2 / 4.8406660e-2`, with exact boundary and worst K3/Cox identity `2.974e-15`; the
+`2e-4 / 7e-4` gates fail. Its tangent-capacity record is retracted because independent CG
+repeats disagreed on thousands of iteration counts and one convergence label, so it cannot
+license G2.
+
+Phase 10's fixed-generator final-q-only globalization is a valid train diagnostic and improves
+pooled mean/worst from `1.3055157e-2 / 4.8406660e-2` to
+`9.7831427e-3 / 3.4629417e-2`, with zero optimizer updates in the diagnostic and zero boundary
+violations. It still misses the train gates by `48.916x / 49.471x`; the fixed G1 generator is
+not train-representable at the target. Phase 11 stopped before update 1. Post-closure source
+reconciliation proved that its timed G2 route returned an unintended second 51-state Cox full
+field in addition to the intended 50 Cox weak and 51 K3 full evaluations. Its `3.0472336x`
+speed and `[2.3967067,3.7521239]` clustered interval are therefore retracted as overcharged and
+canonical-work-invalid; they do not prove that the corrected G2 route fails. Phase 12 fixes that
+route prospectively but has only preregistration plus untracked implementation files. Current
+queue and accounting queries find no Phase-12 job.
+
+This continuation did not produce a learned Burgers Pareto point, a valid G2 speed result, any
+G2 training, predictor, selection, weak/EQ, scaling, model-validation, or confirmation result.
+It also conflicts with the still-canonical Phase-7 instruction that G2 and further retry were
+not licensed. Resolve that governance/state conflict before any Phase-12 submission.
+
+**Paired k-sweep disposition.** Scheduler accounting shows job `2689547` completed `0:0` after
+`11:59:39` on pax007/A100-80GB with peak batch RSS `7,665,336 KiB`. Its log records GPU backend,
+x64, highest precision, `ALL-DONE`, and only seven classified `hwloc_set_cpubind` lines in
+stderr. The remote `RESULTS.sha256` verifies both result JSONs, the original validation JSON,
+and copied manifest; the manifest SHA-256 `c07a22985adbe206a3aa285abd2e1ebae3b6bb6b3f6f422230ea546b29cedd43`
+matches the local stage and every staged input verifies. A temporary read-only pull was audited
+without changing the experiment worktree. All 36 rows reproduce their whole-path, solve,
+decode, Burgers cold-start, error, and stored truth-baseline speed aggregates from the persisted
+nine-repetition arrays. The recorded 5-MAD rule flags 13 of 576 per-source timing medians.
+
+The strengthened uncommitted validator fails on the first Burgers speed assertion only because
+it incorrectly compares stored `speedup_e2e` to `fom_iso_accuracy_ms`. The stored field is
+documented and exactly reproduces `fom_rollout_ms / time_ms`; the separately recomputed draft
+report ratio uses `fom_iso_accuracy_ms / time_ms`. After applying the documented distinction in
+the read-only audit, every row passes. This is a validator bug, not result corruption.
+
+Scientifically the sweep is negative/inconclusive. At tau `1e-3`, Poisson mean relative-L2
+improves monotonically from `2.3401651e-2` at k=4 to `2.9323133e-3` at k=64, while whole-path
+time increases from `4.115183` to `56.288242` ms. Every tight row is censored; 15/16 cases are
+censored for each k from 16 through 64. The loose tau `1e-2` row first reaches mean error below
+1% at k=32 (`9.0336771e-3`, `4.800909` ms) and is uncensored, but maximum case error is
+`2.9982541e-2`. Burgers is censored in all 18 rows. Its best tight mean is
+`1.0137654e-2` at k=24 with `1,692.781856` ms whole time; k=32 and 48 do not improve it. The
+new k=64 Burgers checkpoint diverged during training after 10,000 updates and finished at
+`0.4541673` train mean relative-L2 versus `0.00475747` at k=48; its EQ global fit degrades to
+`0.1621591` and its ROM mean to `0.2714355`. That row diagnoses a failed training recipe/seed,
+not latent-dimension convergence.
+
+Both result JSONs contain only one FOM row: Poisson CG at the `1e-13` truth-manufacturing
+tolerance (`7.528091` ms) and Burgers at the known over-solved fixed eight Newton iterations
+(`350.706853` ms). Therefore neither `fom_iso_accuracy_ms` field is an actual deployment-
+accuracy ladder, and the untracked report builder's "same-job like-for-like FOM" wording is
+false. Even before that baseline defect, no uncensored Burgers row reaches the 1% mean target.
+Do not make a speed/Pareto claim from this sweep. Its official result pull, exact remote cleanup,
+corrected validator, generated report, branch commit, and merge decision remain open.
+
+## 2026-08-22
+
+### Meeting-note interpretation and sample-aware decoder ideation
+
+Reviewed the supplied Hari/Sanjeev meeting transcript against the current Burgers implementation,
+the completed paired k-sweep artifact, and primary prior work. No code, checkpoint, numerical job,
+branch, worktree, cluster state, report, or scientific result was changed. The transcript asks for
+a staged algorithmic investigation, not yet an immediate unconstrained end-to-end training run:
+run full and sampled paths side by side; measure sampled-value, integral/weak-residual, and
+Gauss--Newton gradient/Jacobian/Hessian errors; establish scaling in both N and k; begin with a
+fixed sample rule; then consider sensitivity-driven or lazily updated samples. Hari does ask for a
+decoder whose partial reconstruction is intrinsic, but does not explicitly require joint decoder
+and quadrature optimization in the first experiment.
+
+The existing FiLM coordinate decoder is already intrinsically queryable: `CoordDecoder` accepts
+arbitrary coordinates and the weak Burgers path calls it only on selected five-point upwind
+stencils. The missing property is solver-aware efficiency and fidelity. Current decoder training
+minimizes weighted pointwise reconstruction plus latent regularization/smoothing. Current NNLS EQ
+is fitted afterwards on decoder-output fields and their induced exact-upwind advection projections;
+it does not preserve the Gauss--Newton gradient, normal operator, or update. The online weak path
+uses `jax.jacfwd` on the sampled residual (and another decoder Jacobian in the Galerkin route).
+Because m=4M=16k and exact upwinding evaluates 5m stencil entries, forward differentiation makes
+the sampled solve strongly superlinear in k even though it is independent of N.
+
+The completed N=64 Burgers tau=1e-3 rows make that distinction concrete. From k=4 to k=64, the
+one-time full decode remains approximately 10.7 ms, while the directly isolated 50-step latent
+solve grows from 121.55 ms to 22,698.07 ms and time per Jacobian from 0.358 to 20.805 ms. Thus the
+current bottleneck is repeated sampled-decoder differentiation and increasingly difficult/censored
+Gauss--Newton solves, not the unavoidable final full-field readout. These rows remain scientifically
+censored and are used here only as a component-cost diagnosis, not a deployment-speed result.
+
+The proposed research direction is a weak-operator-aware sparse decoder with a shared latent trunk,
+cached coordinate features, a point/stencil head evaluated only on the union of requested upwind
+stencils, and efficient JVP/VJP or structured latent derivatives. Train it against full-grid field
+accuracy and full weak-solver geometry: weak residual/integral error, gradient norm and direction,
+normal-operator actions on probe directions, and optionally the damped Gauss--Newton step. Learn or
+alternate a positive, fixed-budget quadrature rule while penalizing the cardinality of the union of
+stencils rather than only the number of centers. Keep smooth weak test modes and the FOM-exact
+upwind operator fixed initially; prevent decoder/quadrature collusion by always auditing full-grid
+teacher quantities and held-out trajectories. Test one static rule jointly across N=64/128/256 at
+fixed k and M before any adaptive rule. Random/importance/off-grid strong-form sampling is not the
+primary arm because the project has already rejected those on localized families.
+
+This broad area has material prior art. Shen et al., *High-order Differentiable Autoencoder for
+Nonlinear Model Reduction* (arXiv:2102.11026), alternate a GCN element selector and a nonnegative,
+state-dependent cubature-weight network for nonlinear reduced elastic mechanics. Their online
+weight network first expands the latent state to the full displacement, so it does not supply the
+sample-only N-independent path required here. Deep-HyROMnet (arXiv:2202.02658) instead learns
+reduced residuals and Jacobians directly. Classical DEIM/GNAT and newer gradient-preserving
+hyper-reduction also establish that preserving nonlinear/Jacobian or gradient structure is an
+existing objective. Therefore the plausible contribution is not merely "neural quadrature," but
+co-designing a query-only weak PDE decoder and positive stencil-aware quadrature to preserve the
+Gauss--Newton solve with measured N independence and like-for-like runtime.
+
+---
+
+## 2026-08-22
+
+### Separable-decoder first cell: designed, audited, built, and run
+
+Reviewed the state of the project after the paired k-sweep and the Burgers Phase 8-11 push.
+Two findings from other sessions were confirmed from primary sources and are recorded here so
+they are not lost: paired k-sweep job `2689547` COMPLETED on 2026-08-21 07:12 (11h59m,
+A100-80GB, `VALIDATION-PASSED rows=36`) but its `out/` JSONs remain UNPULLED and its 104 MB
+cluster directory `k64-eq4m/ctol_k64_eq4m_r1` still exists; its log shows a k=4..64 ladder in
+which error floors near 1e-2 by k=16-24 on both PDEs, cost grows ~170x across the ladder, and
+the Burgers k=64 cell collapsed in TRAINING (not only in EQ). Separately, Burgers 1e-3/10x
+Phases 8-11 ran on 2026-08-21 in `exp/2026-08-19-burgers-1e3-10x` (jobs 2702357..2754129, six
+FAILED): every surviving decision JSON says `scientific_promotion_allowed: false`; Phase 11
+G2 hard-stopped at the structural preflight with zero optimizer updates; Phase 12 is
+preregistered but NOT run, and its scripts are untracked in that worktree.
+
+New work this session, on `exp/2026-08-22-separable-decoder` (worktree of the same name,
+branched from k-sweep commit `ae92252` with user confirmation):
+
+**Design.** `reports/2026-08-22-separable-eq-decoder-design.md` on `main` (uncommitted)
+specifies a separable decoder u(x;z) = bc(x) (g(x)^T h(z)) - a Fourier-feature MLP feature
+bank in x times a nonlinear MLP head in z, no POD anywhere - whose weak-NM-ROM iteration is
+cached dense algebra with no spatial network in the loop. An independent adversarial audit
+(OpenAI Codex) found two blockers that were incorporated: the Burgers cache must reproduce
+the FOM sign-upwind stencil exactly (not autodiff continuum derivatives), and quadrature
+fidelity must be measured on the GN map (J^T r, J^T J, damped step), not Jacobian Frobenius
+norm. Prior art is closer than assumed (Shen et al. learned cubature, CROM, Deep-HyROMnet,
+gradient-preserving DEIM); the novelty claim is narrowed to preserving the incumbent
+discrete weak GN geometry with a query-only separable manifold.
+
+**Implementation.** `experiments/separable-decoder/`: `sep_common.py` (model + auto-decoder
+training), `sep_poisson.py`, `sep_burgers.py`. Both PDEs run TWO arms through the INCUMBENT
+solvers (`ctol_tol.lm_tau_poisson`; `blat_common` weak upwind ops / `lm_step_jit` /
+`rollout_jit`): a meshfree arm evaluating the network in-loop, and a cached arm using
+feature banks at the EQ/stencil nodes. GATE 0 asserts the arms' weak residual/Jacobian agree
+<= 1e-12 relative, so the discretization is provably unchanged. Local N=16 smokes passed
+(gate-0 dev 0.0 and 1.6e-15).
+
+**Run.** Slurm job `2802238`, isolated namespace `sepdec/sepdec_r1`, H200 (pax010),
+`jax_backend=gpu`, f64, highest matmul precision, COMPLETED in 6m47s. Four cells at N=64,
+seed 0: (K,R) = (8,32) and (16,64), M=4K, m=16K NNLS-EQ grid nodes, 40k training steps.
+Results pulled with matching SHA-256, remote directory deleted, JSONs/checkpoints committed
+at `2215bd9`. Gate 0 on the cluster: 0.0 (Poisson x2), 1.50e-15 / 2.79e-15 (Burgers).
+
+**Numbers (within-job unless noted).** Training cost collapsed: 19-21 s (Poisson) and
+44-47 s (Burgers) for 40k steps. Poisson K=16: test-oracle rel-L2 4.43e-2, weak-EQ solve
+3.75e-2 at tau=1e-3 in 2.06 ms (cached) with 13.3 Jacobians - the solve SATURATES the
+manifold, so accuracy is capacity/training-limited, not solver-limited; same-job FOM CG at
+tol=1e-1 reaches 3.24e-2 in 1.31 ms, so Poisson remains a classical win at N=64, as
+expected. Burgers K=16: all 4/4 fresh-seed test trajectories complete 50/50 steps, zero
+blowups, ~315 total Jacobians (incumbent FiLM k=16 used ~507 in the k-sweep log); trajectory
+rel-L2 1.38e-2/2.10e-2/2.58e-2 plus one 1.47e-1 outlier whose IC fit was poor (3.6e-1);
+cached rollout median 54.1 ms/trajectory versus the SAME-JOB, SAME-GPU truth-generating FOM
+Newton rollout at 176.1 ms - 3.3x faster. K=8 cached: 44.5 ms, errors 3.2e-2..5.2e-2 plus
+the same-IC outlier 2.01e-1.
+
+**Caveats, stated before anyone quotes the speedup.** The 176 ms Burgers baseline is the
+fixed-Newton truth rollout, NOT the optimized cubic-history/inexact-Newton solver, which at
+N=64 is expected to be substantially faster; no matched-tolerance classical arm ran in this
+job, so this is NOT yet a supported win against the strong baseline. Four trajectories, one
+GPU, no AB/BA repetition protocol, no clustered intervals. Cross-job comparisons to the
+FiLM k-sweep (A100 vs H200) are indicative only. The cached-vs-meshfree gap within this job
+is small (~12%) because the separable network is itself small; the large speedup vs FiLM
+comes from the architecture, and a same-job FiLM arm is needed to quote it properly.
+Trajectory 1's IC-fit failure (auto-decoder init from mean/train codes) is the clearest
+defect to fix.
+
+**Open, in order.** (1) Pull/validate/clean k-sweep job `2689547` and generate its report -
+still owed. (2) Same-job comparison cell: separable vs FiLM vs optimized classical Burgers
+baseline at matched tolerance with the repetition protocol; add IC-fit repair (better init
+search or encoder). (3) Poisson capacity push (r, steps, ff_scale) toward the FiLM ceiling
+~6.5e-3 before any Poisson claim. (4) The design doc's gates 1-2 (span ceiling, coefficient
+oracle) at N=128-512 to test mesh-independence of accuracy. (5) Decide whether Phase 12
+(preregistered, unrun) is ever launched given Phases 8-11; its scripts are untracked. (6)
+The two hand-edited generated reports on `main` still disagree with their builders.

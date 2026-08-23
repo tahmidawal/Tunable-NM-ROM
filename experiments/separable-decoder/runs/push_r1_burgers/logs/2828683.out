@@ -1,0 +1,149 @@
+host=pax051 gpu=NVIDIA A100-PCIE-40GB
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 x64=True ROUND1 N=256 K=16 R=64 steps=60000 seed=0
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 400s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+   train[burgers r1 N=256 k=16 r=64] step      1/60000  rel-MSE 1.150e+00  [50s]
+   train[burgers r1 N=256 k=16 r=64] step   2000/60000  rel-MSE 6.979e-03  [132s]
+   train[burgers r1 N=256 k=16 r=64] step   4000/60000  rel-MSE 2.662e-03  [213s]
+   train[burgers r1 N=256 k=16 r=64] step   6000/60000  rel-MSE 1.874e-03  [295s]
+   train[burgers r1 N=256 k=16 r=64] step   8000/60000  rel-MSE 1.375e-03  [377s]
+   train[burgers r1 N=256 k=16 r=64] step  10000/60000  rel-MSE 1.132e-03  [459s]
+   train[burgers r1 N=256 k=16 r=64] step  12000/60000  rel-MSE 1.002e-03  [541s]
+   train[burgers r1 N=256 k=16 r=64] step  14000/60000  rel-MSE 9.990e-04  [623s]
+   train[burgers r1 N=256 k=16 r=64] step  16000/60000  rel-MSE 8.691e-04  [705s]
+   train[burgers r1 N=256 k=16 r=64] step  18000/60000  rel-MSE 8.286e-04  [787s]
+   train[burgers r1 N=256 k=16 r=64] step  20000/60000  rel-MSE 8.164e-04  [869s]
+   train[burgers r1 N=256 k=16 r=64] step  22000/60000  rel-MSE 7.944e-04  [950s]
+   train[burgers r1 N=256 k=16 r=64] step  24000/60000  rel-MSE 7.669e-04  [1032s]
+   train[burgers r1 N=256 k=16 r=64] step  26000/60000  rel-MSE 7.276e-04  [1114s]
+   train[burgers r1 N=256 k=16 r=64] step  28000/60000  rel-MSE 7.237e-04  [1196s]
+   train[burgers r1 N=256 k=16 r=64] step  30000/60000  rel-MSE 6.913e-04  [1278s]
+   train[burgers r1 N=256 k=16 r=64] step  32000/60000  rel-MSE 6.798e-04  [1360s]
+   train[burgers r1 N=256 k=16 r=64] step  34000/60000  rel-MSE 6.612e-04  [1442s]
+   train[burgers r1 N=256 k=16 r=64] step  36000/60000  rel-MSE 6.550e-04  [1524s]
+   train[burgers r1 N=256 k=16 r=64] step  38000/60000  rel-MSE 6.453e-04  [1606s]
+   train[burgers r1 N=256 k=16 r=64] step  40000/60000  rel-MSE 6.362e-04  [1688s]
+   train[burgers r1 N=256 k=16 r=64] step  42000/60000  rel-MSE 6.306e-04  [1769s]
+   train[burgers r1 N=256 k=16 r=64] step  44000/60000  rel-MSE 6.222e-04  [1851s]
+   train[burgers r1 N=256 k=16 r=64] step  46000/60000  rel-MSE 6.174e-04  [1933s]
+   train[burgers r1 N=256 k=16 r=64] step  48000/60000  rel-MSE 6.106e-04  [2015s]
+   train[burgers r1 N=256 k=16 r=64] step  50000/60000  rel-MSE 6.057e-04  [2097s]
+   train[burgers r1 N=256 k=16 r=64] step  52000/60000  rel-MSE 6.011e-04  [2179s]
+   train[burgers r1 N=256 k=16 r=64] step  54000/60000  rel-MSE 5.970e-04  [2261s]
+   train[burgers r1 N=256 k=16 r=64] step  56000/60000  rel-MSE 5.933e-04  [2343s]
+   train[burgers r1 N=256 k=16 r=64] step  58000/60000  rel-MSE 5.900e-04  [2425s]
+   train[burgers r1 N=256 k=16 r=64] step  60000/60000  rel-MSE 5.869e-04  [2507s]
+   train[burgers r1 N=256 k=16 r=64] done: recon rel-L2 mean 2.408e-02 max 4.229e-01  [2510s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 4.33e-03 (per-row median 8.6e-03, p95 3.5e-01, max 9.9e+01) [66s]
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 5.56e-04 (per-row median 1.2e-03, p95 5.0e-02, max 9.2e+00) [145s]
+  NNLS-EQ weak/grid M=128 m=512: support 512 (+0 pad), rel fit 1.77e-03 (per-row median 9.0e-03, p95 5.0e-01, max 5.1e+02) [268s]
+  tail-builder baseline vs incumbent EQ fit: wq dev 0.00e+00
+  EQ-tail r1 burgers tail N=256 M=64 m=256: rel fit 1.08e-02 (p95 2.3e-01, max 5.8e+01) after 3 rounds [164s]
+  GATE 0 [ctrl]: max rel dev 1.37e-15
+  GATE 0 [m512]: max rel dev 1.33e-15
+  GATE 0 [M128]: max rel dev 1.11e-15
+  GATE 0 [tail]: max rel dev 1.31e-15
+  encoder[burgers u@EQ->z N=256]: rel-MSE 8.894e-03 on 8192 training pairs [5s]
+  IC solver identity: 5.14e-16
+  STEP GATE (adaptive repairs off vs incumbent): rel|dz| 0.00e+00
+  ROLLOUT GATE (v2 no-extrap vs incumbent): max |dZ| 4.30e-10 (fp-path divergence only; kernel gate is exact)
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 0: ic 1.64e-01 err 3.589e-02  jac 398  rs 0  e2e   124.32 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 0: ic 1.64e-01 err 3.589e-02  jac 398  rs 0  e2e   322.92 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 0: ic 1.64e-01 err 3.589e-02  jac 928  rs 54  e2e   311.71 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 0: ic 1.64e-01 err 3.589e-02  jac 242  rs 0  e2e    76.18 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 0: ic 1.64e-01 err 3.589e-02  jac 811  rs 72  e2e   264.21 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 0: ic 1.64e-01 err 3.589e-02  jac 785  rs 70  e2e   246.36 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 0: ic 1.64e-01 err 3.589e-02  jac 396  rs 0  e2e  1061.79 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 0: ic 1.64e-01 err 3.582e-02  jac 806  rs 69  e2e   258.80 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 0: ic 1.64e-01 err 3.439e-02  jac 784  rs 73  e2e   240.79 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 0: ic 1.64e-01 err 3.639e-02  jac 793  rs 72  e2e   241.94 ms
+   splits traj 0: ic ctrl 25.9 / high 962.7 / enc 4.0 ms (rel 1.64e-01 / 1.64e-01 / 1.64e-01); roll ctrl:103.9ms/j398 extrap:55.3ms/j243 adapt:166.7ms/j822 adapt_extrap:188.4ms/j819
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 1: ic 1.14e-01 err 2.948e-02  jac 407  rs 0  e2e   121.44 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 1: ic 1.14e-01 err 2.948e-02  jac 408  rs 0  e2e   279.88 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 1: ic 1.14e-01 err 2.948e-02  jac 914  rs 64  e2e   280.43 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 1: ic 1.14e-01 err 2.948e-02  jac 256  rs 0  e2e    82.79 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 1: ic 1.14e-01 err 2.948e-02  jac 861  rs 75  e2e   271.09 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 1: ic 1.14e-01 err 2.948e-02  jac 828  rs 70  e2e   256.74 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 1: ic 1.14e-01 err 2.948e-02  jac 409  rs 0  e2e   988.98 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 1: ic 1.14e-01 err 2.925e-02  jac 851  rs 70  e2e   278.24 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 1: ic 1.14e-01 err 2.986e-02  jac 783  rs 78  e2e   225.58 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 1: ic 1.14e-01 err 2.953e-02  jac 839  rs 76  e2e   249.34 ms
+   splits traj 1: ic ctrl 21.0 / high 892.6 / enc 4.4 ms (rel 1.14e-01 / 1.14e-01 / 1.14e-01); roll ctrl:105.0ms/j407 extrap:61.4ms/j255 adapt:250.3ms/j889 adapt_extrap:243.4ms/j824
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 2: ic 1.46e-01 err 3.711e-02  jac 375  rs 0  e2e   114.57 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 2: ic 1.46e-01 err 3.711e-02  jac 374  rs 0  e2e   277.39 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 2: ic 1.46e-01 err 3.711e-02  jac 916  rs 51  e2e   314.89 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 2: ic 1.46e-01 err 3.711e-02  jac 236  rs 0  e2e    72.19 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 2: ic 1.46e-01 err 3.711e-02  jac 831  rs 77  e2e   258.51 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 2: ic 1.46e-01 err 3.711e-02  jac 780  rs 77  e2e   224.17 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 2: ic 1.46e-01 err 3.711e-02  jac 374  rs 0  e2e   773.56 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 2: ic 1.46e-01 err 3.686e-02  jac 844  rs 77  e2e   252.18 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 2: ic 1.46e-01 err 3.637e-02  jac 794  rs 76  e2e   236.37 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 2: ic 1.46e-01 err 3.653e-02  jac 870  rs 77  e2e   251.44 ms
+   splits traj 2: ic ctrl 20.9 / high 680.5 / enc 3.5 ms (rel 1.46e-01 / 1.46e-01 / 1.46e-01); roll ctrl:96.2ms/j375 extrap:53.2ms/j237 adapt:284.9ms/j903 adapt_extrap:248.4ms/j867
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 3: ic 1.01e-01 err 3.053e-02  jac 331  rs 0  e2e   101.98 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 3: ic 1.01e-01 err 3.053e-02  jac 329  rs 0  e2e   302.06 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 3: ic 1.01e-01 err 3.053e-02  jac 914  rs 50  e2e   322.59 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 3: ic 1.01e-01 err 3.053e-02  jac 252  rs 0  e2e    87.85 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 3: ic 1.01e-01 err 3.053e-02  jac 899  rs 79  e2e   278.59 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 3: ic 1.01e-01 err 3.053e-02  jac 830  rs 80  e2e   242.30 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 3: ic 1.01e-01 err 3.053e-02  jac 331  rs 0  e2e   203.58 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 3: ic 1.01e-01 err 3.043e-02  jac 840  rs 81  e2e   251.17 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 3: ic 1.01e-01 err 3.018e-02  jac 903  rs 77  e2e   283.31 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 3: ic 1.01e-01 err 3.036e-02  jac 853  rs 83  e2e   244.91 ms
+   splits traj 3: ic ctrl 25.6 / high 122.8 / enc 4.4 ms (rel 1.01e-01 / 1.01e-01 / 1.01e-01); roll ctrl:80.1ms/j331 extrap:59.4ms/j255 adapt:296.9ms/j914 adapt_extrap:244.1ms/j873
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 4: ic 1.61e-02 err 1.354e-02  jac 280  rs 0  e2e    72.06 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 4: ic 1.61e-02 err 1.354e-02  jac 277  rs 0  e2e   171.45 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 4: ic 1.61e-02 err 1.354e-02  jac 904  rs 64  e2e   277.13 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 4: ic 1.61e-02 err 1.354e-02  jac 237  rs 0  e2e    65.20 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 4: ic 1.61e-02 err 1.354e-02  jac 814  rs 86  e2e   227.49 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 4: ic 1.61e-02 err 1.354e-02  jac 807  rs 88  e2e   208.86 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 4: ic 1.61e-02 err 1.354e-02  jac 278  rs 0  e2e   157.97 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 4: ic 1.61e-02 err 1.362e-02  jac 838  rs 90  e2e   222.80 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 4: ic 1.61e-02 err 1.343e-02  jac 821  rs 92  e2e   209.30 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 4: ic 1.61e-02 err 1.363e-02  jac 841  rs 94  e2e   199.79 ms
+   splits traj 4: ic ctrl 12.2 / high 88.2 / enc 2.9 ms (rel 1.61e-02 / 1.61e-02 / 1.61e-02); roll ctrl:66.6ms/j276 extrap:52.7ms/j237 adapt:285.6ms/j911 adapt_extrap:194.9ms/j835
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 5: ic 4.23e-02 err 2.149e-02  jac 411  rs 0  e2e   129.12 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 5: ic 4.23e-02 err 2.149e-02  jac 413  rs 0  e2e   296.88 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 5: ic 4.23e-02 err 2.149e-02  jac 900  rs 66  e2e   280.62 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 5: ic 4.23e-02 err 2.149e-02  jac 244  rs 0  e2e    77.51 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 5: ic 4.23e-02 err 2.149e-02  jac 815  rs 66  e2e   277.22 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 5: ic 4.23e-02 err 2.149e-02  jac 795  rs 72  e2e   236.83 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 5: ic 4.23e-02 err 2.149e-02  jac 415  rs 0  e2e   467.31 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 5: ic 4.23e-02 err 2.158e-02  jac 808  rs 68  e2e   258.20 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 5: ic 4.23e-02 err 2.221e-02  jac 782  rs 66  e2e   257.91 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 5: ic 4.23e-02 err 2.132e-02  jac 819  rs 65  e2e   260.80 ms
+   splits traj 5: ic ctrl 21.9 / high 364.8 / enc 3.5 ms (rel 4.23e-02 / 4.23e-02 / 4.23e-02); roll ctrl:104.9ms/j414 extrap:55.5ms/j242 adapt:274.9ms/j917 adapt_extrap:235.0ms/j817
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 6: ic 2.76e-02 err 1.825e-02  jac 356  rs 0  e2e   104.38 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 6: ic 2.76e-02 err 1.825e-02  jac 357  rs 0  e2e   228.02 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 6: ic 2.76e-02 err 1.825e-02  jac 888  rs 53  e2e   305.67 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 6: ic 2.76e-02 err 1.825e-02  jac 240  rs 0  e2e    73.60 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 6: ic 2.76e-02 err 1.825e-02  jac 797  rs 73  e2e   249.21 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 6: ic 2.76e-02 err 1.825e-02  jac 813  rs 74  e2e   240.04 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 6: ic 2.76e-02 err 1.825e-02  jac 357  rs 0  e2e   172.75 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 6: ic 2.76e-02 err 1.805e-02  jac 812  rs 73  e2e   253.17 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 6: ic 2.76e-02 err 1.826e-02  jac 877  rs 74  e2e   280.13 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 6: ic 2.76e-02 err 1.826e-02  jac 844  rs 73  e2e   251.22 ms
+   splits traj 6: ic ctrl 15.8 / high 83.9 / enc 3.2 ms (rel 2.76e-02 / 2.76e-02 / 2.76e-02); roll ctrl:92.9ms/j355 extrap:56.6ms/j241 adapt:291.2ms/j891 adapt_extrap:239.7ms/j825
+   cach|ctrl|ic_ctrl|roll_ctrl            traj 7: ic 1.73e-02 err 1.112e-02  jac 260  rs 0  e2e    64.86 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl            traj 7: ic 1.73e-02 err 1.112e-02  jac 261  rs 0  e2e   163.77 ms
+   cach|ctrl|ic_ctrl|roll_adapt           traj 7: ic 1.73e-02 err 1.112e-02  jac 893  rs 78  e2e   243.52 ms
+   cach|ctrl|ic_ctrl|roll_extrap          traj 7: ic 1.73e-02 err 1.112e-02  jac 219  rs 0  e2e    56.03 ms
+   cach|ctrl|ic_ctrl|roll_adapt_extrap    traj 7: ic 1.73e-02 err 1.112e-02  jac 827  rs 96  e2e   209.59 ms
+   cach|ctrl|ic_enc|roll_adapt_extrap     traj 7: ic 1.73e-02 err 1.112e-02  jac 832  rs 97  e2e   193.10 ms
+   cach|ctrl|ic_high|roll_ctrl            traj 7: ic 1.73e-02 err 1.112e-02  jac 261  rs 0  e2e   145.98 ms
+   cach|m512|ic_enc|roll_adapt_extrap     traj 7: ic 1.73e-02 err 1.125e-02  jac 840  rs 96  e2e   203.82 ms
+   cach|M128|ic_enc|roll_adapt_extrap     traj 7: ic 1.73e-02 err 1.107e-02  jac 842  rs 95  e2e   211.13 ms
+   cach|tail|ic_enc|roll_adapt_extrap     traj 7: ic 1.73e-02 err 1.122e-02  jac 840  rs 95  e2e   200.46 ms
+   splits traj 7: ic ctrl 13.4 / high 92.5 / enc 3.5 ms (rel 1.73e-02 / 1.73e-02 / 1.73e-02); roll ctrl:52.2ms/j261 extrap:47.0ms/j219 adapt:224.0ms/j896 adapt_extrap:201.4ms/j849
+  ORACLE traj 0: mean 2.801e-02 max 1.644e-01 t0 1.644e-01
+  ORACLE traj 1: mean 2.606e-02 max 1.139e-01 t0 1.139e-01
+  ORACLE traj 2: mean 3.231e-02 max 1.463e-01 t0 1.463e-01
+  ORACLE traj 3: mean 2.597e-02 max 1.008e-01 t0 1.008e-01
+  ORACLE traj 4: mean 1.205e-02 max 1.609e-02 t0 1.609e-02
+  ORACLE traj 5: mean 1.895e-02 max 4.225e-02 t0 4.225e-02
+  ORACLE traj 6: mean 1.600e-02 max 2.758e-02 t0 2.758e-02
+  ORACLE traj 7: mean 9.716e-03 max 1.725e-02 t0 1.725e-02
+  single-step weak-opt: t=1:1.40e-01(or 1.40e-01) t=10:3.29e-02(or 3.29e-02) t=25:1.21e-02(or 1.21e-02) t=50:8.75e-03(or 8.74e-03)
+DONE burgers r1 [6088s] -> /cluster/tufts/paralab/tawal01/n256_push/r1_burgers/out/sep_burgers_r1_K16_R64.json
+ALL-DONE

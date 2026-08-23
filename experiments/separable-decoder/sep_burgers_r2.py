@@ -178,11 +178,12 @@ def main():
                            replace=False)
         pick = np.sort(np.concatenate([early, extra]))
     S_tr = U.reshape(n_states, n2)[pick][:, interior]
+    n_early_pick = int(np.sum(tidx_of[pick] <= T_EARLY))
     report["data"]["n_states_trained"] = int(S_tr.shape[0])
-    report["data"]["n_early_states"] = int(early.size)
+    report["data"]["n_early_states_in_pick"] = n_early_pick
     coords_int = coords[interior]
-    sc.log(f"  training states: {S_tr.shape[0]} ({early.size} early t<={T_EARLY}"
-           f" + {S_tr.shape[0]-early.size} uniform)")
+    sc.log(f"  training states: {S_tr.shape[0]} ({n_early_pick} early "
+           f"t<={T_EARLY} + {S_tr.shape[0]-n_early_pick} uniform)")
 
     # ------------------ train (v2) ------------------------------------------
     params, Z_tr, tinfo = ss.train_autodecoder_v2(

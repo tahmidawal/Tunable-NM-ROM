@@ -2334,3 +2334,74 @@ inherited an open socket as stdin and waited on it; killed, relaunched with stdi
 
 **Open.** Unchanged from 2026-08-22 items (1)-(6); plus: scaling-round results to collect
 and merge decision for the four sepdec-n* worktrees when they finish.
+
+### N=512 separable-decoder scaling arm (sepdec_n512 agent) — complete, wrapped
+
+Branch `exp/2026-08-23-sepdec-n512` (worktree `worktrees/2026-08-23-sepdec-n512`), cluster
+namespace `/cluster/tufts/paralab/tawal01/sepdec_n512/` (now deleted). Jobs: j1 = 2825500
+(Poisson, A100 pax106, COMPLETED 2h55m), j2 = 2826612 (Burgers, H200, COMPLETED 2h28m,
+after two FAILED data-generation attempts 2825764 and 2826193), j4 = 2827874 (Poisson
+capacity push, CANCELLED by user decision at 1h15m when the project redirected to a
+focused N=256 push; no reportable numbers, logs preserved). j3 (Burgers refinement) was
+never submitted. All results pulled with verified SHA-256, committed (5725733, 15a5a11,
+1461b86), summary tables generated only by `experiments/separable-decoder/summarize_n512.py`
+(`SUMMARY-N512.md`).
+
+**Measurement rules.** Every AUDIT-2026-08-23 fix ran in-job: Burgers timing is END-TO-END
+(IC latent fit + 50-step rollout + full-grid decode of all 51 states, split reported);
+Poisson timing includes the source-to-f_m projection (proved identical to
+`pc.weak_source_term`, dev 0.0) and full-grid decode; errors extracted from a timed
+invocation's own outputs (timed-vs-error deviation 0.0 Poisson, ~1e-10 vs the incumbent
+untimed rollout for Burgers); raw timing repetitions retained; balanced alternating-order
+schedules; stop-reason histograms next to every error; fresh-seed Poisson cohort;
+per-row EQ diagnostics; gate 0 asserted per cell (0.0 Poisson, <=2.4e-15 Burgers).
+
+**Poisson N=512 (16 held-out + 16 fresh-seed sources, tau=1e-3, cached arm).** f(K):
+K8 5.61e-2 @ 4.19 ms, K16 3.15e-2 @ 3.06 ms, K24 2.71e-2 @ 3.88 ms, K32 2.72e-2 @ 7.76 ms.
+Error equals the representation oracle at every K — the accuracy plateau ~2.7e-2 for K>=24
+is decoder capacity/training-limited, not solver- or K-limited. Fresh-seed cohort ~1.4x
+worse (4.5e-2 at K24), same ranking — no cohort-contamination signal. Same-job CG ladder:
+26.4 ms (tol 1e-1, err 7.1e-3) to 61.8 ms (tol 1e-6). The ROM is 6.8-8.6x faster than the
+CHEAPEST CG rung — the N=64 "classical win" has flipped in wall time — but CG's loosest
+rung is already 3.8x MORE accurate than the ROM's plateau, so there is NO iso-accuracy
+crossover claim at N=512; the win is speed-at-the-ROM's-achievable-accuracy only. Caveat:
+tau=1e-3 rows are 100% censored (LM stops 'converged'/stalled, not tau-reached); tau=1e-2
+rows are 69-81% censored. The cancelled j4 was closing the capacity gap (train rel-MSE
+1.75e-5 at 108k steps vs 5.4e-5 at j1's K16 end) — the capacity push works and is the
+obvious N=256 lever.
+
+**Burgers N=512 (6 fresh-seed trajectories, 50 steps, end-to-end, cached arm).** f(K):
+K8 err 6.12e-2 @ 65.6 ms, K16 2.94e-2 @ 69.9 ms, K24 2.61e-2 @ 80.1 ms (split ~7-17 ms IC
+fit + ~60-64 ms rollout+decode). 6/6 trajectories complete at every K, zero blowups; the
+N=64 IC-fit failure mode did NOT recur — the nearest-decoded-t0 init bank (mean + top-3
+nearest training t=0 codes, incumbent-identical jitted LM) fixed it (worst IC 9.7e-2 at
+K16 vs 3.6e-1 at N=64). All ROM steps stop 'stalled' (100% censored). **Honest speed
+verdict: the ROM LOSES.** The same-job strong classical arm — tolerance-terminated
+inexact Newton with the exact-Helmholtz-preconditioned BiCGStab — reaches err 3.1e-4 in
+15-22 ms (ntol 1e-2) and 6.9e-8 in ~71 ms (ntol 1e-6): 3-4x faster AND ~100x more accurate
+than the ROM. The ROM beats only the over-solved fixed-8-Newton truth generator (357-360 ms,
+labelled, never a headline). This extends "Burgers is won by solver and history tuning,
+not by the NM-ROM" to N=512 with a same-job, same-GPU, end-to-end protocol.
+
+**Failures and fixes (the part that matters).** (1) Truth generation FAILED twice at
+N=512: the incumbent generator's unpreconditioned BiCGStab (tol 1e-10, maxiter 2000)
+stalls — job 2825764 (chunk 64) and job 2826193 (chunk 8, disproving my first batch-lane
+hypothesis; 7/576 trajectories, mostly high-nu 0.06-0.09, worst Newton rel residual
+1.37e-1). Fix adopted from the N=1024 agent (commit b5159a3 on its branch): exact
+sine-basis Helmholtz preconditioner patched into the STAGED burgers2d_film only
+(discretization, Newton guard, and 1e-8 truth gates unchanged and remain the arbiter);
+verified here at N=32 against the original generator to 9.6e-16. Data then converged to
+1.0e-12. (2) A near-miss worth recording: I ran a broad `pkill -f sep_burgers.py` that
+could have killed sibling agents' local smokes — it did not, but kill by exact PID only.
+(3) j2's tol-Newton baseline carries the same preconditioner (stated in its config); the
+"fom_truth_newton8" timing key name is retained for compatibility even though the staged
+generator is preconditioned — the config records this.
+
+**Open items for the N=256 push (from this arm's evidence).** (a) Decoder capacity is the
+binding constraint on BOTH PDEs (err==oracle everywhere): R=8K + n_ff=256 + 150k+ steps
+is the first lever (j4's truncated training curve supports it). (b) The Burgers EQ
+worst-row diagnostics grow with K (row_rel_max 2.0e3 at K24 vs 2.6e2 at K16) — watch.
+(c) Any Burgers speed claim at any N must now face the preconditioned tol-Newton arm,
+which exploits the same separable-rectangle structure the spectral Poisson warm start
+does. (d) The e2e ROM cost is rollout-dominated (~60 ms = ~300 LM iterations' kernel
+overhead), K-flat; shrinking it needs fewer implicit-step iterations, not smaller K.

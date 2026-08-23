@@ -1,0 +1,128 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 x64=True N=256 cells=[(8, 32), (16, 64)] steps=60000 seed=0
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 348s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+=== burgers cell N=256 K=8 R=32 M=32 m=128 steps=60000 arch=default ===
+   train[burgers N=256 k=8 r=32] step      1/60000  rel-MSE 1.062e+00  [35s]
+   train[burgers N=256 k=8 r=32] step   2000/60000  rel-MSE 1.279e-02  [95s]
+   train[burgers N=256 k=8 r=32] step   4000/60000  rel-MSE 6.464e-03  [156s]
+   train[burgers N=256 k=8 r=32] step   6000/60000  rel-MSE 4.710e-03  [216s]
+   train[burgers N=256 k=8 r=32] step   8000/60000  rel-MSE 4.048e-03  [277s]
+   train[burgers N=256 k=8 r=32] step  10000/60000  rel-MSE 3.770e-03  [337s]
+   train[burgers N=256 k=8 r=32] step  12000/60000  rel-MSE 3.635e-03  [398s]
+   train[burgers N=256 k=8 r=32] step  14000/60000  rel-MSE 3.513e-03  [458s]
+   train[burgers N=256 k=8 r=32] step  16000/60000  rel-MSE 3.444e-03  [519s]
+   train[burgers N=256 k=8 r=32] step  18000/60000  rel-MSE 3.496e-03  [579s]
+   train[burgers N=256 k=8 r=32] step  20000/60000  rel-MSE 3.375e-03  [639s]
+   train[burgers N=256 k=8 r=32] step  22000/60000  rel-MSE 3.342e-03  [700s]
+   train[burgers N=256 k=8 r=32] step  24000/60000  rel-MSE 3.305e-03  [760s]
+   train[burgers N=256 k=8 r=32] step  26000/60000  rel-MSE 3.290e-03  [821s]
+   train[burgers N=256 k=8 r=32] step  28000/60000  rel-MSE 3.270e-03  [881s]
+   train[burgers N=256 k=8 r=32] step  30000/60000  rel-MSE 3.283e-03  [942s]
+   train[burgers N=256 k=8 r=32] step  32000/60000  rel-MSE 3.246e-03  [1002s]
+   train[burgers N=256 k=8 r=32] step  34000/60000  rel-MSE 3.245e-03  [1063s]
+   train[burgers N=256 k=8 r=32] step  36000/60000  rel-MSE 3.228e-03  [1123s]
+   train[burgers N=256 k=8 r=32] step  38000/60000  rel-MSE 3.220e-03  [1184s]
+   train[burgers N=256 k=8 r=32] step  40000/60000  rel-MSE 3.214e-03  [1244s]
+   train[burgers N=256 k=8 r=32] step  42000/60000  rel-MSE 3.209e-03  [1305s]
+   train[burgers N=256 k=8 r=32] step  44000/60000  rel-MSE 3.202e-03  [1365s]
+   train[burgers N=256 k=8 r=32] step  46000/60000  rel-MSE 3.198e-03  [1426s]
+   train[burgers N=256 k=8 r=32] step  48000/60000  rel-MSE 3.194e-03  [1486s]
+   train[burgers N=256 k=8 r=32] step  50000/60000  rel-MSE 3.191e-03  [1547s]
+   train[burgers N=256 k=8 r=32] step  52000/60000  rel-MSE 3.187e-03  [1607s]
+   train[burgers N=256 k=8 r=32] step  54000/60000  rel-MSE 3.184e-03  [1667s]
+   train[burgers N=256 k=8 r=32] step  56000/60000  rel-MSE 3.182e-03  [1728s]
+   train[burgers N=256 k=8 r=32] step  58000/60000  rel-MSE 3.179e-03  [1788s]
+   train[burgers N=256 k=8 r=32] step  60000/60000  rel-MSE 3.177e-03  [1849s]
+   train[burgers N=256 k=8 r=32] done: recon rel-L2 mean 5.439e-02 max 5.898e-01  [1852s]
+  NNLS-EQ weak/grid M=32 m=128: support 128 (+0 pad), rel fit 1.08e-02 (per-row median 9.4e-03, p95 2.9e-01, max 3.0e+01) [26s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 1.83e-15
+  IC solver identity (jit lm_tau_generic vs fit_ic/lm_solve): 1.55e-16
+   meshfree traj 0: ic 2.67e-01 (244.8 ms, jac 161)  err 6.683e-02  jac 374  e2e   350.64 ms (roll 103.66 + dec 0.23)  latdev 2.3e-10
+   cached   traj 0: ic 2.67e-01 (16.1 ms, jac 161)  err 6.683e-02  jac 370  e2e   111.04 ms (roll 91.79 + dec 0.15)  latdev 3.8e-10
+   FOM traj 0: truthgen   1655.3 ms (OVER-SOLVED); tol-Newton 1e-02:52.0ms/err8.4e-04 1e-03:64.2ms/err6.6e-04 1e-05:148.4ms/err1.7e-05 1e-08:331.3ms/err1.9e-09
+   meshfree traj 1: ic 1.92e-01 (203.4 ms, jac 190)  err 7.160e-02  jac 426  e2e   323.15 ms (roll 120.02 + dec 0.19)  latdev 5.8e-09
+   cached   traj 1: ic 1.92e-01 (13.4 ms, jac 190)  err 7.160e-02  jac 425  e2e   116.22 ms (roll 105.68 + dec 0.15)  latdev 1.4e-09
+   FOM traj 1: truthgen   1996.3 ms (OVER-SOLVED); tol-Newton 1e-02:61.7ms/err3.2e-04 1e-03:83.3ms/err3.3e-04 1e-05:220.8ms/err1.7e-05 1e-08:425.7ms/err6.5e-10
+   meshfree traj 2: ic 2.82e-01 (96.2 ms, jac 95)  err 7.744e-02  jac 334  e2e   198.64 ms (roll 100.58 + dec 0.17)  latdev 1.9e-10
+   cached   traj 2: ic 2.82e-01 (6.5 ms, jac 95)  err 7.744e-02  jac 336  e2e    89.13 ms (roll 86.51 + dec 0.17)  latdev 2.3e-10
+   FOM traj 2: truthgen   1672.7 ms (OVER-SOLVED); tol-Newton 1e-02:50.7ms/err3.7e-04 1e-03:62.0ms/err3.7e-04 1e-05:143.8ms/err2.3e-05 1e-08:333.8ms/err1.4e-09
+   meshfree traj 3: ic 1.37e-01 (375.1 ms, jac 144)  err 4.404e-02  jac 376  e2e   482.16 ms (roll 106.67 + dec 0.23)  latdev 1.2e-09
+   cached   traj 3: ic 1.37e-01 (24.2 ms, jac 144)  err 4.404e-02  jac 376  e2e   116.30 ms (roll 88.84 + dec 0.18)  latdev 4.1e-10
+   FOM traj 3: truthgen   2322.9 ms (OVER-SOLVED); tol-Newton 1e-02:61.2ms/err2.9e-04 1e-03:76.9ms/err2.8e-04 1e-05:191.8ms/err2.1e-05 1e-08:465.0ms/err8.2e-10
+   meshfree traj 4: ic 3.36e-02 (112.7 ms, jac 105)  err 2.002e-02  jac 451  e2e   226.75 ms (roll 112.28 + dec 0.21)  latdev 1.6e-09
+   cached   traj 4: ic 3.36e-02 (7.5 ms, jac 105)  err 2.002e-02  jac 452  e2e   102.12 ms (roll 96.38 + dec 0.16)  latdev 4.9e-10
+   FOM traj 4: truthgen    907.1 ms (OVER-SOLVED); tol-Newton 1e-02:19.2ms/err5.6e-02 1e-03:36.5ms/err4.3e-05 1e-05:54.4ms/err3.9e-05 1e-08:169.8ms/err8.7e-11
+   meshfree traj 5: ic 7.01e-02 (96.2 ms, jac 101)  err 4.515e-02  jac 401  e2e   209.42 ms (roll 113.92 + dec 0.20)  latdev 9.8e-10
+   cached   traj 5: ic 7.01e-02 (6.6 ms, jac 101)  err 4.515e-02  jac 400  e2e   107.64 ms (roll 101.77 + dec 0.15)  latdev 1.2e-09
+   FOM traj 5: truthgen   1558.7 ms (OVER-SOLVED); tol-Newton 1e-02:49.8ms/err5.6e-04 1e-03:58.9ms/err5.6e-04 1e-05:157.4ms/err1.4e-05 1e-08:322.3ms/err2.4e-09
+   meshfree traj 6: ic 5.28e-02 (104.4 ms, jac 113)  err 3.894e-02  jac 354  e2e   199.92 ms (roll 93.83 + dec 0.18)  latdev 8.1e-10
+   cached   traj 6: ic 5.28e-02 (7.0 ms, jac 113)  err 3.894e-02  jac 351  e2e    91.13 ms (roll 81.13 + dec 0.17)  latdev 4.1e-10
+   FOM traj 6: truthgen   1468.2 ms (OVER-SOLVED); tol-Newton 1e-02:46.3ms/err1.6e-04 1e-03:57.1ms/err1.6e-04 1e-05:120.4ms/err2.7e-05 1e-08:288.6ms/err2.7e-10
+   meshfree traj 7: ic 3.12e-02 (129.0 ms, jac 114)  err 1.365e-02  jac 250  e2e   185.85 ms (roll 57.40 + dec 0.14)  latdev 5.1e-11
+   cached   traj 7: ic 3.12e-02 (8.5 ms, jac 114)  err 1.365e-02  jac 249  e2e    57.04 ms (roll 50.12 + dec 0.14)  latdev 2.0e-10
+   FOM traj 7: truthgen    908.1 ms (OVER-SOLVED); tol-Newton 1e-02:4.9ms/err1.8e-01 1e-03:36.1ms/err2.3e-05 1e-05:52.5ms/err2.0e-05 1e-08:173.5ms/err8.1e-11
+DONE burgers cell K=8 R=32 [2748s] -> /cluster/tufts/paralab/tawal01/sepdec_n256/j2/out/sep_burgers_K8_R32.json
+=== burgers cell N=256 K=16 R=64 M=64 m=256 steps=60000 arch=default ===
+   train[burgers N=256 k=16 r=64] step      1/60000  rel-MSE 1.150e+00  [34s]
+   train[burgers N=256 k=16 r=64] step   2000/60000  rel-MSE 6.978e-03  [104s]
+   train[burgers N=256 k=16 r=64] step   4000/60000  rel-MSE 2.695e-03  [175s]
+   train[burgers N=256 k=16 r=64] step   6000/60000  rel-MSE 1.693e-03  [246s]
+   train[burgers N=256 k=16 r=64] step   8000/60000  rel-MSE 1.342e-03  [316s]
+   train[burgers N=256 k=16 r=64] step  10000/60000  rel-MSE 1.127e-03  [387s]
+   train[burgers N=256 k=16 r=64] step  12000/60000  rel-MSE 1.006e-03  [458s]
+   train[burgers N=256 k=16 r=64] step  14000/60000  rel-MSE 9.845e-04  [528s]
+   train[burgers N=256 k=16 r=64] step  16000/60000  rel-MSE 8.790e-04  [599s]
+   train[burgers N=256 k=16 r=64] step  18000/60000  rel-MSE 8.218e-04  [670s]
+   train[burgers N=256 k=16 r=64] step  20000/60000  rel-MSE 8.246e-04  [741s]
+   train[burgers N=256 k=16 r=64] step  22000/60000  rel-MSE 7.648e-04  [811s]
+   train[burgers N=256 k=16 r=64] step  24000/60000  rel-MSE 7.431e-04  [882s]
+   train[burgers N=256 k=16 r=64] step  26000/60000  rel-MSE 7.290e-04  [953s]
+   train[burgers N=256 k=16 r=64] step  28000/60000  rel-MSE 7.097e-04  [1023s]
+   train[burgers N=256 k=16 r=64] step  30000/60000  rel-MSE 6.877e-04  [1094s]
+   train[burgers N=256 k=16 r=64] step  32000/60000  rel-MSE 6.959e-04  [1165s]
+   train[burgers N=256 k=16 r=64] step  34000/60000  rel-MSE 6.643e-04  [1236s]
+   train[burgers N=256 k=16 r=64] step  36000/60000  rel-MSE 6.544e-04  [1306s]
+   train[burgers N=256 k=16 r=64] step  38000/60000  rel-MSE 6.432e-04  [1377s]
+   train[burgers N=256 k=16 r=64] step  40000/60000  rel-MSE 6.352e-04  [1448s]
+   train[burgers N=256 k=16 r=64] step  42000/60000  rel-MSE 6.284e-04  [1518s]
+   train[burgers N=256 k=16 r=64] step  44000/60000  rel-MSE 6.222e-04  [1589s]
+   train[burgers N=256 k=16 r=64] step  46000/60000  rel-MSE 6.168e-04  [1660s]
+   train[burgers N=256 k=16 r=64] step  48000/60000  rel-MSE 6.116e-04  [1731s]
+   train[burgers N=256 k=16 r=64] step  50000/60000  rel-MSE 6.055e-04  [1801s]
+   train[burgers N=256 k=16 r=64] step  52000/60000  rel-MSE 6.010e-04  [1872s]
+   train[burgers N=256 k=16 r=64] step  54000/60000  rel-MSE 5.970e-04  [1943s]
+   train[burgers N=256 k=16 r=64] step  56000/60000  rel-MSE 5.932e-04  [2014s]
+   train[burgers N=256 k=16 r=64] step  58000/60000  rel-MSE 5.899e-04  [2084s]
+   train[burgers N=256 k=16 r=64] step  60000/60000  rel-MSE 5.868e-04  [2155s]
+   train[burgers N=256 k=16 r=64] done: recon rel-L2 mean 2.408e-02 max 4.242e-01  [2157s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 4.91e-03 (per-row median 9.9e-03, p95 4.1e-01, max 1.6e+02) [56s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 3.37e-15
+  IC solver identity (jit lm_tau_generic vs fit_ic/lm_solve): 5.06e-16
+   meshfree traj 0: ic 1.64e-01 (161.6 ms, jac 140)  err 3.517e-02  jac 404  e2e   278.32 ms (roll 116.38 + dec 0.26)  latdev 2.6e-09
+   cached   traj 0: ic 1.64e-01 (19.8 ms, jac 140)  err 3.517e-02  jac 402  e2e   122.72 ms (roll 102.14 + dec 0.18)  latdev 1.7e-09
+   FOM traj 0: truthgen   1658.8 ms (OVER-SOLVED); tol-Newton 1e-02:51.9ms/err8.4e-04 1e-03:63.8ms/err6.6e-04 1e-05:148.3ms/err1.7e-05 1e-08:331.2ms/err1.9e-09
+   meshfree traj 1: ic 1.14e-01 (143.3 ms, jac 141)  err 2.932e-02  jac 403  e2e   258.02 ms (roll 112.84 + dec 0.24)  latdev 2.1e-09
+   cached   traj 1: ic 1.14e-01 (17.8 ms, jac 141)  err 2.932e-02  jac 405  e2e   114.54 ms (roll 96.22 + dec 0.20)  latdev 2.1e-09
+   FOM traj 1: truthgen   1994.4 ms (OVER-SOLVED); tol-Newton 1e-02:61.6ms/err3.2e-04 1e-03:83.4ms/err3.3e-04 1e-05:220.0ms/err1.7e-05 1e-08:424.7ms/err6.5e-10
+   meshfree traj 2: ic 1.47e-01 (143.2 ms, jac 135)  err 3.686e-02  jac 374  e2e   253.95 ms (roll 109.19 + dec 0.26)  latdev 1.7e-09
+   cached   traj 2: ic 1.47e-01 (17.7 ms, jac 135)  err 3.686e-02  jac 376  e2e   108.60 ms (roll 89.66 + dec 0.19)  latdev 3.3e-10
+   FOM traj 2: truthgen   1673.1 ms (OVER-SOLVED); tol-Newton 1e-02:50.7ms/err3.7e-04 1e-03:62.0ms/err3.7e-04 1e-05:143.5ms/err2.3e-05 1e-08:333.4ms/err1.4e-09
+   meshfree traj 3: ic 1.01e-01 (179.6 ms, jac 165)  err 3.046e-02  jac 330  e2e   272.35 ms (roll 91.20 + dec 0.27)  latdev 3.7e-10
+   cached   traj 3: ic 1.01e-01 (22.1 ms, jac 165)  err 3.046e-02  jac 325  e2e   105.10 ms (roll 82.99 + dec 0.20)  latdev 6.8e-10
+   FOM traj 3: truthgen   2322.4 ms (OVER-SOLVED); tol-Newton 1e-02:61.2ms/err2.9e-04 1e-03:77.0ms/err2.8e-04 1e-05:191.7ms/err2.1e-05 1e-08:464.4ms/err8.2e-10
+   meshfree traj 4: ic 1.60e-02 (88.5 ms, jac 115)  err 1.373e-02  jac 278  e2e   166.10 ms (roll 77.05 + dec 0.26)  latdev 4.2e-10
+   cached   traj 4: ic 1.60e-02 (11.4 ms, jac 115)  err 1.373e-02  jac 278  e2e    75.06 ms (roll 63.68 + dec 0.18)  latdev 9.4e-10
+   FOM traj 4: truthgen    909.7 ms (OVER-SOLVED); tol-Newton 1e-02:19.2ms/err5.6e-02 1e-03:36.4ms/err4.3e-05 1e-05:54.5ms/err3.9e-05 1e-08:169.6ms/err8.7e-11
+   meshfree traj 5: ic 4.29e-02 (152.5 ms, jac 138)  err 2.150e-02  jac 416  e2e   273.23 ms (roll 120.50 + dec 0.21)  latdev 2.3e-09
+   cached   traj 5: ic 4.29e-02 (18.8 ms, jac 138)  err 2.150e-02  jac 414  e2e   123.91 ms (roll 104.35 + dec 0.20)  latdev 2.4e-09
+   FOM traj 5: truthgen   1566.3 ms (OVER-SOLVED); tol-Newton 1e-02:49.9ms/err5.6e-04 1e-03:59.0ms/err5.6e-04 1e-05:157.7ms/err1.4e-05 1e-08:323.3ms/err2.4e-09
+   meshfree traj 6: ic 2.77e-02 (106.6 ms, jac 121)  err 1.818e-02  jac 357  e2e   209.55 ms (roll 102.03 + dec 0.20)  latdev 1.2e-09
+   cached   traj 6: ic 2.77e-02 (13.5 ms, jac 121)  err 1.818e-02  jac 359  e2e    98.16 ms (roll 83.66 + dec 0.18)  latdev 7.7e-10
+   FOM traj 6: truthgen   1468.2 ms (OVER-SOLVED); tol-Newton 1e-02:46.2ms/err1.6e-04 1e-03:57.0ms/err1.6e-04 1e-05:120.5ms/err2.7e-05 1e-08:288.4ms/err2.7e-10
+   meshfree traj 7: ic 1.73e-02 (88.6 ms, jac 124)  err 1.102e-02  jac 260  e2e   151.34 ms (roll 61.89 + dec 0.25)  latdev 7.3e-10
+   cached   traj 7: ic 1.73e-02 (11.5 ms, jac 124)  err 1.102e-02  jac 261  e2e    62.38 ms (roll 51.13 + dec 0.20)  latdev 1.2e-09
+   FOM traj 7: truthgen    908.2 ms (OVER-SOLVED); tol-Newton 1e-02:5.0ms/err1.8e-01 1e-03:36.2ms/err2.3e-05 1e-05:52.5ms/err2.0e-05 1e-08:173.4ms/err8.1e-11
+DONE burgers cell K=16 R=64 [3289s] -> /cluster/tufts/paralab/tawal01/sepdec_n256/j2/out/sep_burgers_K16_R64.json
+ALL-DONE

@@ -5,9 +5,20 @@ Two solve arms through the SAME incumbent trust-LM weak solver
   meshfree : dec(z, pts) evaluates the feature network inside the loop
   cached   : dec_fast(z, .) = G_q @ h(z), G_q = features at the EQ nodes,
              cached once -- no spatial network in the compiled iteration.
-GATE 0: the two arms' weak residual/Jacobian and solve outputs must agree to
-<= 1e-12 relative.  Timing and error come from the same invocation.  The FOM
-CG iso-accuracy ladder is timed in the same job.
+GATE 0: the two arms' weak residual/Jacobian must agree to <= 1e-12 relative.
+
+MEASUREMENT RULES (HANDOFF 2026-08-23; each fixes an N=64 audit FAIL):
+  - the timed ROM pipe includes the online source projection f -> f_m AND the
+    full-grid decode readout, so it times what a user gets from a grid source;
+  - errors and counters are extracted FROM a timed invocation (the last timed
+    rep), and the max deviation between the first and last timed reps' outputs
+    is recorded;
+  - ALL raw timing repetitions are retained per (method, source, rep);
+  - balanced ordering: the unit list (both ROM arms x taus + the whole FOM CG
+    ladder) is executed REPS times, in reversed order on odd reps;
+  - stop-reason distributions are recorded next to every error;
+  - a fresh-seed test cohort (FRESH_SEED, never touched by training or model
+    selection at any N) is evaluated alongside the seed-0 held-out cohort.
 """
 from __future__ import annotations
 
@@ -41,25 +52,36 @@ GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
 TAUS = [float(v) for v in os.environ.get("TAUS", "1e-3,1e-2").split(",")]
 TR_FACTOR = float(os.environ.get("TR_FACTOR", "1.0"))
 SEED0 = int(os.environ.get("SEED0", "0"))
+FRESH_SEED = int(os.environ.get("FRESH_SEED", "1"))
+REPS = int(os.environ.get("REPS", "7"))
 OUT = os.environ.get("OUT", "sep_poisson.json")
 CKPT = os.environ.get("CKPT", f"sep_poisson_N{N}_K{K}_R{R}.pkl")
 FOM_LADDER = [float(v) for v in os.environ.get(
     "FOM_LADDER", "1e-1,3e-2,1e-2,3e-3,1e-3,3e-4,1e-4,1e-6").split(",")]
+ARCH = sc.arch_from_env()
+
+REASON_NAMES = {0: "budget", 1: "stalled", 2: "tol", 3: "lambda_max",
+                5: "nan_at_init"}
 
 
 def main():
     dev = jax.devices()[0]
     sc.log(f"jax_backend={dev.platform} device={dev} x64={jax.config.jax_enable_x64} "
-           f"N={N} K={K} R={R} M={M_MODES} m={MQ} steps={STEPS} seed={SEED0}")
+           f"N={N} K={K} R={R} M={M_MODES} m={MQ} steps={STEPS} seed={SEED0} "
+           f"arch={ARCH}")
     t_all = time.time()
     report = dict(config=dict(
         pde="poisson2d", N=N, k=K, r=R, M=M_MODES, m=MQ, steps=STEPS, lr=LR,
         taus=TAUS, n_test=N_TEST, gn_iters=GN_ITERS, tr_factor=TR_FACTOR,
-        seed=SEED0, data_seed=mp.SEED, cg_tol=mp.CG_TOL,
+        seed=SEED0, data_seed=mp.SEED, fresh_seed=FRESH_SEED, reps=REPS,
+        cg_tol=mp.CG_TOL, arch_cfg=ARCH,
         arch="separable: FourierFeat-MLP g(x)->R^r  x  MLP-head h(z)->R^r, "
              "hard poly BC; NO POD anywhere",
         objective=f"weak alpha=1 M={M_MODES}, NNLS-EQ m={MQ} grid nodes",
         solver="ctol_tol.lm_tau_poisson (incumbent trust-LM), both arms",
+        timing="pipe = source projection + LM solve + full-grid decode; "
+               "errors from the LAST TIMED rep; raw reps retained; balanced "
+               "unit order (reversed on odd reps)",
         x64=True, matmul_precision=os.environ.get("JAX_DEFAULT_MATMUL_PRECISION"),
         backend=dev.platform, gpu=getattr(dev, "device_kind", str(dev)),
         slurm_job=os.environ.get("SLURM_JOB_ID"),
@@ -74,40 +96,60 @@ def main():
     int_idx = np.asarray(grid.ix_full * N + grid.iy_full)
     U_all = np.asarray(mp.build_snapshots(N)[0])
     U_tr = U_all[:mp.N_TRAIN][:, int_idx]
-    cx, cy, w, a, _z = mp.sample_params()
-    Fs = np.stack([mp.source_interior(N, cx[mp.N_TRAIN + i], cy[mp.N_TRAIN + i],
-                                      w[mp.N_TRAIN + i], a[mp.N_TRAIN + i])
-                   for i in range(N_TEST)])
+    coords_int = np.asarray(grid.coords_int)
+
     solve_one = jax.jit(lambda F: jax.scipy.sparse.linalg.cg(
         lambda v: mp.neg_lap_interior(v, N), F, tol=mp.CG_TOL,
         maxiter=mp.CG_MAXITER)[0])
-    U_int = np.asarray(jax.lax.map(solve_one, jnp.asarray(Fs)))
-    res = float(np.max([np.linalg.norm(np.asarray(
-        mp.neg_lap_interior(jnp.asarray(U_int[i]), N)) - Fs[i])
-        / np.linalg.norm(Fs[i]) for i in range(N_TEST)]))
-    sc.log(f"  truth: {N_TEST} test sources, FOM CG rel residual {res:.2e}")
-    assert res < 1e-10, "unconverged truth"
-    U_int = U_int.reshape(N_TEST, -1)
-    tn = np.array([np.linalg.norm(U_int[i]) for i in range(N_TEST)])
-    coords_int = np.asarray(grid.coords_int)
+
+    def make_cohort(name, cxs, cys, ws, azs):
+        Fs = np.stack([mp.source_interior(N, cxs[i], cys[i], ws[i], azs[i])
+                       for i in range(N_TEST)])
+        U_int = np.asarray(jax.lax.map(solve_one, jnp.asarray(Fs)))
+        res = float(np.max([np.linalg.norm(np.asarray(
+            mp.neg_lap_interior(jnp.asarray(U_int[i]), N)) - Fs[i])
+            / np.linalg.norm(Fs[i]) for i in range(N_TEST)]))
+        sc.log(f"  truth[{name}]: {N_TEST} test sources, FOM CG rel residual "
+               f"{res:.2e}")
+        assert res < 1e-10, "unconverged truth"
+        U_int = U_int.reshape(N_TEST, -1)
+        tn = np.array([np.linalg.norm(U_int[i]) for i in range(N_TEST)])
+        return dict(name=name, Fs=Fs, U=U_int, tn=tn, truth_residual=res)
+
+    # held-out cohort: same-seed draw, indices N_TRAIN.. (validation-style)
+    cx, cy, w, a, _z = mp.sample_params()
+    cohorts = [make_cohort("held_seed0",
+                           cx[mp.N_TRAIN:], cy[mp.N_TRAIN:],
+                           w[mp.N_TRAIN:], a[mp.N_TRAIN:])]
+    # fresh-seed confirmation cohort: an entirely new draw, never used for any
+    # training or model selection at any resolution
+    cxf, cyf, wf, af, _zf = mp.sample_params(seed=FRESH_SEED, m=N_TEST)
+    cohorts.append(make_cohort(f"fresh_seed{FRESH_SEED}", cxf, cyf, wf, af))
+    report["cohorts"] = {c["name"]: dict(n=N_TEST,
+                                         truth_residual=c["truth_residual"])
+                         for c in cohorts}
 
     # ------------------ train ------------------------------------------------
     params, Z_tr, tinfo = sc.train_autodecoder(
         jax.random.PRNGKey(SEED0), coords_int, U_tr, K, R,
-        steps=STEPS, lr=LR, tag=f"poisson N={N} k={K} r={R}")
+        steps=STEPS, lr=LR, tag=f"poisson N={N} k={K} r={R}", **ARCH)
     report["train"] = tinfo
     dec = sc.SeparableDecoder(params, K, R)
     sc.save_pkl(CKPT, params, Z_tr, report["config"])
 
-    # held-out representation oracle on 4 test fields (mean/max)
-    om = []
+    # held-out representation oracle on 4 fields per cohort (mean/max)
     zbar = Z_tr.mean(0)
-    for i in range(min(4, N_TEST)):
-        _, val = sc.oracle_fit(dec, coords_int, U_int[i], [zbar], budget=150)
-        om.append(val)
-    report["oracle_test_rel_l2"] = dict(mean=float(np.mean(om)),
-                                        max=float(np.max(om)), n=len(om))
-    sc.log(f"  test oracle rel-L2: mean {np.mean(om):.3e} max {np.max(om):.3e}")
+    report["oracle_test_rel_l2"] = {}
+    for c in cohorts:
+        om = []
+        for i in range(min(4, N_TEST)):
+            _, val = sc.oracle_fit(dec, coords_int, c["U"][i], [zbar],
+                                   budget=150)
+            om.append(val)
+        report["oracle_test_rel_l2"][c["name"]] = dict(
+            mean=float(np.mean(om)), max=float(np.max(om)), n=len(om))
+        sc.log(f"  test oracle rel-L2 [{c['name']}]: mean {np.mean(om):.3e} "
+               f"max {np.max(om):.3e}")
     save()
 
     # ------------------ weak form + EQ --------------------------------------
@@ -128,8 +170,19 @@ def main():
     node_pos = cand_pos[keep]
     pts_np = coords_int[node_pos]
     PhiT, Wl = pc.colloc_mode_table(grid, spec, "grid", pts_np)
-    f_ms = [jnp.asarray(np.asarray(pc.weak_source_term(grid, spec, "grid", Fs[i])))
-            for i in range(N_TEST)]
+
+    # online source projection matrix: f_m = Lambda^{-alpha} Phi_f^T f.  Built
+    # once from the mode table (model-independent), charged INSIDE the timed
+    # pipe -- the N=64 audit flagged it as an uncharged online ROM cost.
+    lam_sel = np.asarray(grid.lam)[I, Jm]
+    Psrc = jnp.asarray((Phi_f * (lam_sel ** -1.0)[None, :]).T)     # (M', n_i^2)
+    f_ref = np.asarray(pc.weak_source_term(grid, spec, "grid",
+                                           cohorts[0]["Fs"][0]))
+    f_new = np.asarray(Psrc @ jnp.asarray(cohorts[0]["Fs"][0].reshape(-1)))
+    psrc_dev = float(np.max(np.abs(f_new - f_ref))
+                     / (np.max(np.abs(f_ref)) + 1e-300))
+    report["src_projection_max_rel_dev"] = psrc_dev
+    assert psrc_dev < 1e-12, "online source projection != weak_source_term"
 
     # ------------------ the two arms ----------------------------------------
     train_radius = float(np.max(np.linalg.norm(Z_tr - Z_tr.mean(0), axis=1)))
@@ -146,6 +199,8 @@ def main():
                 cached=(dec_fast, u_full_fast))
 
     # GATE 0: identity of the two arms through the SAME weak residual
+    f_m0 = jnp.asarray(f_ref)
+
     def r_of(dfn, z, f_m):
         return jnp.asarray(Wl) * (jnp.asarray(PhiT) @
                                   (jnp.asarray(wq) * dfn(z, jnp.asarray(pts_np)))) - f_m
@@ -154,68 +209,108 @@ def main():
     for _ in range(5):
         zt = jnp.asarray(Z_tr[rng.integers(len(Z_tr))] +
                          0.05 * rng.standard_normal(K))
-        ra = r_of(dec, zt, f_ms[0]); rb = r_of(dec_fast, zt, f_ms[0])
-        Ja = jax.jacfwd(lambda z: r_of(dec, z, f_ms[0]))(zt)
-        Jb = jax.jacfwd(lambda z: r_of(dec_fast, z, f_ms[0]))(zt)
+        ra = r_of(dec, zt, f_m0); rb = r_of(dec_fast, zt, f_m0)
+        Ja = jax.jacfwd(lambda z: r_of(dec, z, f_m0))(zt)
+        Jb = jax.jacfwd(lambda z: r_of(dec_fast, z, f_m0))(zt)
         g0.append(max(float(jnp.max(jnp.abs(ra - rb)) / (jnp.max(jnp.abs(ra)) + 1e-300)),
                       float(jnp.max(jnp.abs(Ja - Jb)) / (jnp.max(jnp.abs(Ja)) + 1e-300))))
     report["gate0_max_rel_dev"] = float(np.max(g0))
     sc.log(f"  GATE 0 (meshfree vs cached weak r/J identity): max rel dev {np.max(g0):.2e}")
     assert np.max(g0) < 1e-12, "gate 0 failed: cached arm is not the same discrete map"
 
-    # ------------------ solves: same solver, both arms, all taus ------------
+    # ------------------ timed pipes: source -> f_m -> LM -> full decode -----
+    pipes = {}
     for arm, (dfn, ufull) in arms.items():
         lm, _ = ctol_tol.lm_tau_poisson(dfn, K, pts_np, wq, PhiT, Wl,
                                         GN_ITERS, trust_delta=trust)
 
-        def pipe_fn(f_m, tau, _lm=lm, _uf=ufull):
+        def pipe_fn(F_vec, tau, _lm=lm, _uf=ufull):
+            f_m = Psrc @ F_vec
             out = _lm(z0, f_m, tau)
             return (_uf(out[0]),) + out[1:]
-        pipe = jax.jit(pipe_fn)
-        ctol_tol.burn_in(1.5)
-        for tau in TAUS:
-            per_t, per_err, per_jac, per_reason = [], [], [], []
-            for i in range(N_TEST):
-                u, val, v0, nJ, acc, att, rsn = pipe(f_ms[i], tau)
-                med, _ = sc.time_fn(lambda _f=f_ms[i]:
-                                    pipe(_f, tau)[0].block_until_ready())
-                per_t.append(med)
-                per_err.append(float(np.linalg.norm(np.asarray(u) - U_int[i]) / tn[i]))
-                per_jac.append(int(nJ)); per_reason.append(int(rsn))
-            cens = [r_ not in ctol_tol.POISSON_TAU_OK for r_ in per_reason]
-            row = dict(pde="poisson2d", method=f"sep_{arm}", N=N, k=K, r=R,
-                       M=M_MODES, m=int(len(wq)), tau=tau,
-                       time_ms=float(np.median(per_t)) * 1e3,
-                       time_ms_all=[t * 1e3 for t in per_t],
-                       err_rel_l2=float(np.mean(per_err)),
-                       err_rel_l2_max=float(np.max(per_err)),
-                       jac_evals=float(np.mean(per_jac)),
-                       censored_frac=float(np.mean(cens)),
-                       n_sources=N_TEST, trust_delta=trust)
-            report["rows"].append(row)
-            sc.log(f"   {arm:8s} tau={tau:.0e}  solve+decode {row['time_ms']:8.3f} ms  "
-                   f"jac {row['jac_evals']:5.1f}  err {row['err_rel_l2']:.3e}  "
-                   f"cens {row['censored_frac']*100:3.0f}%")
-            save()
+        pipes[arm] = jax.jit(pipe_fn)
 
-    # ------------------ FOM iso-accuracy ladder (same job) ------------------
+    # FOM CG ladder solvers (same job, same GPU, full interior field out)
+    cg = {}
     for tol in sorted(set(FOM_LADDER), reverse=True):
-        s1 = jax.jit(lambda F, _t=tol: jax.scipy.sparse.linalg.cg(
-            lambda v: mp.neg_lap_interior(v, N), F, tol=_t,
-            maxiter=mp.CG_MAXITER)[0])
-        errs, ts = [], []
-        for i in range(N_TEST):
-            Fi = jnp.asarray(Fs[i])
-            u = np.asarray(s1(Fi)).reshape(-1)
-            errs.append(float(np.linalg.norm(u - U_int[i]) / tn[i]))
-            med, _ = sc.time_fn(lambda _F=Fi: s1(_F).block_until_ready())
-            ts.append(med)
-        report.setdefault("fom", []).append(dict(
-            fom_tol=tol, time_ms=float(np.median(ts)) * 1e3,
-            err_rel_l2=float(np.mean(errs)), err_rel_l2_max=float(np.max(errs))))
-        sc.log(f"   FOM CG tol={tol:.0e}: {np.median(ts)*1e3:8.3f} ms  "
-               f"err {np.mean(errs):.3e}")
-        save()
+        cg[tol] = jax.jit(lambda F, _t=tol: jax.scipy.sparse.linalg.cg(
+            lambda v: mp.neg_lap_interior(v, N), F.reshape(n_i, n_i), tol=_t,
+            maxiter=mp.CG_MAXITER)[0].reshape(-1))
+
+    # timed units: every (arm, tau) and every ladder member.  One invocation =
+    # one (source -> field) solve; outputs of the FIRST and LAST timed rep are
+    # kept (error comes from the LAST timed rep, dev(first, last) is recorded).
+    units = []
+    for arm in ("meshfree", "cached"):
+        for tau in TAUS:
+            units.append((f"sep_{arm}", tau,
+                          lambda Fv, _p=pipes[arm], _t=tau: _p(Fv, _t)))
+    for tol in sorted(set(FOM_LADDER), reverse=True):
+        units.append(("fom_cg", tol,
+                      lambda Fv, _s=cg[tol]: (_s(Fv),)))
+
+    for c in cohorts:
+        Fv = [jnp.asarray(c["Fs"][i].reshape(-1)) for i in range(N_TEST)]
+        # warm every unit on every source (compile + autotune)
+        for _name, _p, fn in units:
+            for i in range(N_TEST):
+                out = fn(Fv[i]); out[0].block_until_ready()
+        ctol_tol.burn_in(1.5)
+        raw = {}      # (name, par) -> [source][rep] seconds
+        first, last = {}, {}
+        for rep in range(REPS):
+            order = units if rep % 2 == 0 else list(reversed(units))
+            for name, par, fn in order:
+                key = (name, par)
+                store = raw.setdefault(key, [[] for _ in range(N_TEST)])
+                for i in range(N_TEST):
+                    t0 = time.perf_counter()
+                    out = fn(Fv[i])
+                    out[0].block_until_ready()
+                    store[i].append(time.perf_counter() - t0)
+                    if rep == 0:
+                        first[(key, i)] = np.asarray(out[0])
+                    if rep == REPS - 1:
+                        last[(key, i)] = [np.asarray(o) for o in out]
+
+        for name, par, _fn in units:
+            key = (name, par)
+            per_med = [float(np.median(raw[key][i])) for i in range(N_TEST)]
+            errs = [float(np.linalg.norm(last[(key, i)][0] - c["U"][i])
+                          / c["tn"][i]) for i in range(N_TEST)]
+            devs = [float(np.max(np.abs(last[(key, i)][0] - first[(key, i)])))
+                    for i in range(N_TEST)]
+            row = dict(pde="poisson2d", method=name, cohort=c["name"], N=N,
+                       k=K, r=R, M=M_MODES, m=int(len(wq)),
+                       time_ms=float(np.median(per_med)) * 1e3,
+                       time_ms_raw=[[t * 1e3 for t in s] for s in raw[key]],
+                       err_rel_l2=float(np.mean(errs)),
+                       err_rel_l2_max=float(np.max(errs)),
+                       err_rel_l2_all=errs,
+                       dev_first_last_max=float(np.max(devs)),
+                       n_sources=N_TEST, reps=REPS)
+            if name.startswith("sep_"):
+                jacs = [int(last[(key, i)][3]) for i in range(N_TEST)]
+                rsn = [int(last[(key, i)][6]) for i in range(N_TEST)]
+                cens = [r_ not in ctol_tol.POISSON_TAU_OK for r_ in rsn]
+                row.update(tau=par, jac_evals=float(np.mean(jacs)),
+                           jac_evals_all=jacs,
+                           censored_frac=float(np.mean(cens)),
+                           stop_reasons={REASON_NAMES.get(r_, str(r_)):
+                                         rsn.count(r_) for r_ in set(rsn)},
+                           trust_delta=trust)
+                sc.log(f"   {c['name']:12s} {name:12s} tau={par:.0e}  "
+                       f"{row['time_ms']:8.3f} ms  jac {row['jac_evals']:5.1f}  "
+                       f"err {row['err_rel_l2']:.3e}  "
+                       f"cens {row['censored_frac']*100:3.0f}%  "
+                       f"dev {row['dev_first_last_max']:.1e}")
+            else:
+                row.update(fom_tol=par)
+                sc.log(f"   {c['name']:12s} FOM CG tol={par:.0e}: "
+                       f"{row['time_ms']:8.3f} ms  err {row['err_rel_l2']:.3e}  "
+                       f"dev {row['dev_first_last_max']:.1e}")
+            report["rows"].append(row)
+            save()
 
     report["complete"] = True
     report["total_seconds"] = time.time() - t_all

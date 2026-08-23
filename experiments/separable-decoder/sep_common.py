@@ -57,6 +57,16 @@ def log(*a):
     print(*a, flush=True)
 
 
+def arch_from_env():
+    """Architecture HPO knobs (HANDOFF search space), all env-driven."""
+    return dict(n_ff=int(os.environ.get("N_FF", "64")),
+                ff_scale=float(os.environ.get("FF_SCALE", "4.0")),
+                g_hidden=int(os.environ.get("G_HIDDEN", "128")),
+                g_layers=int(os.environ.get("G_LAYERS", "2")),
+                h_hidden=int(os.environ.get("H_HIDDEN", "128")),
+                h_layers=int(os.environ.get("H_LAYERS", "2")))
+
+
 # ------------------------------- model --------------------------------------
 
 def bc_poly(xy):
@@ -250,6 +260,45 @@ def load_pkl(path):
         d = pickle.load(f)
     params = jax.tree_util.tree_map(jnp.asarray, d["params"])
     return params, d["Z_tr"], d["cfg"]
+
+
+def make_batched_lm(res_fn, iters):
+    """vmap'd fixed-iteration damped LM on 1/2||res_fn(z, aux)||^2 (used for
+    the ONLINE Burgers IC latent fit -- data misfit to the known u0 only, no
+    truth anywhere).  res_fn(z, aux) -> residual vector.  Returns jitted
+    fit(z0s (n_init, k), aux) -> (best-z per init, best residual norm per
+    init).  Branchless accept/reject so the whole thing stays on device."""
+    def one(z0, aux):
+        def rn(z):
+            return jnp.linalg.norm(res_fn(z, aux))
+
+        def body(_, s):
+            z, lam, bz, bv = s
+            r = res_fn(z, aux)
+            J = jax.jacfwd(res_fn)(z, aux)
+            H = J.T @ J
+            g = J.T @ r
+            k = z.shape[0]
+            dz = jnp.linalg.solve(H + lam * jnp.diag(jnp.diag(H))
+                                  + 1e-30 * jnp.eye(k, dtype=F64), -g)
+            z2 = z + dz
+            v = jnp.linalg.norm(r)
+            v2 = rn(z2)
+            acc = jnp.isfinite(v2) & (v2 < v)
+            z = jnp.where(acc, z2, z)
+            lam = jnp.where(acc, jnp.maximum(lam / 3.0, 1e-12),
+                            jnp.minimum(lam * 10.0, 1e12))
+            vc = jnp.where(acc, v2, v)
+            better = vc < bv
+            bz = jnp.where(better, z, bz)
+            bv = jnp.minimum(bv, vc)
+            return z, lam, bz, bv
+
+        _, _, bz, bv = jax.lax.fori_loop(
+            0, iters, body, (z0, jnp.asarray(1e-6, F64), z0, rn(z0)))
+        return bz, bv
+
+    return jax.jit(jax.vmap(one, in_axes=(0, None)))
 
 
 def time_fn(fn, reps=7, warm=2):

@@ -2405,3 +2405,62 @@ worst-row diagnostics grow with K (row_rel_max 2.0e3 at K24 vs 2.6e2 at K16) —
 which exploits the same separable-rectangle structure the spectral Poisson warm start
 does. (d) The e2e ROM cost is rollout-dominated (~60 ms = ~300 LM iterations' kernel
 overhead), K-flat; shrinking it needs fewer implicit-step iterations, not smaller K.
+
+## 2026-08-23
+
+### N=256 separable-decoder scaling arm — closed (branch `exp/2026-08-23-sepdec-n256`)
+
+**What ran.** Four cluster jobs (all A100, namespace `/cluster/tufts/paralab/tawal01/sepdec_n256/`,
+now deleted): j1=2825729 (Poisson K8/K16-R64/K16-R128/K32, 100k steps), j2=2825730 (Burgers
+K8/K16, 60k steps), j3=2827130 (Burgers K24/K32, 40k steps, 1h58m), j4=2827131 (Poisson
+K16-R64 at 200k steps + K24, plus looser CG rungs 5e-1/3e-1). All COMPLETED 0:0; results
+sha256-verified and committed under `experiments/separable-decoder/runs/n256_j{1..4}/`.
+The session that ran j1/j2/j4 was lost mid-study; this closing session was a handoff that
+re-verified everything from the JSONs. All numbers below are from the committed generated
+tables `runs/SUMMARY-n256.md` / `runs/CROSSOVER-n256.txt` (scripts `summarize_n256.py`,
+`crossover_n256.py`); per-cell gate0 = 0.0 (Poisson) / ≤3.4e-15 (Burgers), timed-vs-error
+invocation latent deviation ≤~1e-8, recorded per HANDOFF measurement rules.
+
+**Poisson N=256 — the ROM is on the winning side of the crossover, with caveats.** Best
+config K=16 R=64 at 200k steps: cached solve 2.539 ms at mean rel-L2 2.893e-2 (heldout
+seed-0 cohort, tau=1e-3). The cheapest same-job CG rung at or below that error is tol=1e-1
+(8.156 ms, err 1.065e-2) -> ROM 3.21x faster at iso-accuracy-or-better, and j4's looser CG
+rungs close the escape hatch: CG 3e-1 is 6.4 ms at 6.58e-2 and CG 5e-1 is 5.2 ms at
+1.41e-1 — both slower AND less accurate than the ROM point, so no CG rung dominates it.
+Caveats, ranked: (1) the matched CG rung is ~2.7x MORE accurate than the ROM — this is a
+Pareto claim, not an equal-error win; (2) tau=1e-3 solves are 100% censored (all stop on
+budget/stall, none on tolerance; tau=1e-2 is 56-75% censored at nearly identical error);
+(3) fresh-seed-777 cohort degrades to 3.529e-2 mean (and K16-R128big degrades worst:
+2.988e-2 -> 5.478e-2 with max 3.97e-1 — bigger R overfits the seed-0 family); (4) 16-case
+cohorts, median-of-reps timing, single GPU type. Best raw accuracy: K=32 R=128 at 2.565e-2
+heldout / 3.230e-2 fresh, but at 5.4 ms it loses most of the speed margin.
+
+**Burgers N=256 — classical wins, cleanly, at every K.** Best ROM cell K=16 R=64: cached
+end-to-end 106.85 ms (ic 17.77 + roll 86.66 + dec 0.19) at traj err 2.453e-2. Same-job
+tolerance-Newton at 1e-3 is 60.5 ms at err 3.015e-4 -> ROM 0.57x (slower AND ~80x less
+accurate); even Newton 1e-2 (50.3 ms, err 3.050e-2 mean but max 1.85e-1) matches the ROM
+error class at half the cost. K=24/32 make it worse: e2e 139.0/175.1 ms (ratios 0.45x/0.35x)
+because the IC latent fit grows superlinearly with K (cached ic ms 8.0/17.8/36.5/66.9 for
+K=8/16/24/32). All rollout steps stop on 'stalled' (a few 'budget'), 0 blowups; the
+over-solved truth generator (~1.6 s) was never used as the headline baseline.
+
+**f(K) across all cells.** Error saturates by K~24-32 on both PDEs while cost keeps rising:
+Poisson heldout 5.37e-2 / 3.14e-2 / 2.92e-2 / 2.57e-2 and Burgers 4.72e-2 / 2.45e-2 /
+2.13e-2 / 2.09e-2 for K=8/16/24/32. The K16->K32 accuracy gain is ~1.2x on both PDEs for
+~2x (Poisson) to ~1.6x (Burgers) more online cost. The binding constraint is decoder/EQ
+quality, not latent capacity. EQ worst-row errors grow with K (Poisson row max 7.7e1 at K8
+-> 2.1e3 at K32; Burgers 3.0e1 -> 1.8e3), confirming the inherited N=64 concern scales.
+
+**Failures/retractions this arm.** None retracted; nothing exceeded budget (4 jobs
+submitted, 4 completed). Known weak points recorded, not hidden: 100% censoring at Poisson
+tau=1e-3; several K=24/32 Burgers IC fits landed at 7e-2-1.5e-1 latent-fit error (rollout
+errors stayed <=4.2e-2, but the N=64 IC-fit fragility persists in milder form); fresh-seed
+Poisson degradation above.
+
+**Open items.** (1) Censoring: no tau reaches tolerance-terminated stops at N=256 — the
+stopping rule needs rework before any tolerance-style claim. (2) Burgers IC fit is the
+scaling bottleneck (an offline IC encoder is the obvious fix). (3) EQ row-max growth with
+K unexplained. (4) Merge decision for the four sepdec-n* worktrees is pending the other
+three arms. Per user redirect the four-resolution round is ENDING; a new focused N=256
+push will run in a separate worktree by a different agent — this branch is the frozen
+archive of the scaling arm.

@@ -34,9 +34,10 @@ u(x; z) = bc(x) · ( g(x)ᵀ h(z) )          g : R² → R^r     h : R^k → R^r
 implemented in `sep_common.py`:
 
 - **`g` — the feature bank** (`features()`): all x-dependence. The coordinate
-  `x = (x₁,x₂)` is lifted to fixed random Fourier features
-  `[sin(2πBx), cos(2πBx)]` (`B ∈ R^{2×64}`, entries ~ N(0, 4²), never trained beyond the
-  MLP that follows), then through a SiLU MLP `128 → 128 → r`. The output is multiplied by
+  `x = (x₁,x₂)` is lifted to random Fourier features
+  `[sin(2πBx), cos(2πBx)]` (`B ∈ R^{2×64}`, entries initialised ~ N(0, 4²); B sits in the
+  optimized parameter tree and IS trained — audit AUDIT-2026-08-23.md measured 7–11%
+  relative drift from init), then through a SiLU MLP `128 → 128 → r`. The output is multiplied by
   the hard Dirichlet factor `bc(x) = 16 x₁(1−x₁) x₂(1−x₂)` — so every decoded field is
   *exactly* zero on the walls, off-grid included — and by a fixed data-scale constant
   `out_scale = RMS(training data)` so the network starts at the data's amplitude
@@ -174,8 +175,11 @@ construction and the final `G_all h(z*)` readout.
 Per (PDE, K, R): training curve and per-snapshot reconstruction; held-out
 representation oracle (direct LM fit of `z` to test truth — the manifold ceiling);
 NNLS-EQ fit diagnostics; gate-0 deviation; then for each arm and each τ: solve/rollout
-wall time (median of 7 reps after warmups, cost and error **from the same invocation**),
-error vs the seed-regenerated FOM truth, Jacobian counts, censoring/blowups; and a
+wall time (median of 7 reps after warmups), error vs the seed-regenerated FOM truth
+(**caveat, per AUDIT-2026-08-23.md: error/counters come from one untimed invocation and
+the wall time from 7 separate timed repetitions of the same jitted call on the same
+inputs — verified to agree to ~3e-10 in latents, but NOT literally the same invocation;
+the Burgers timed path also excludes the online IC fit**), Jacobian counts, censoring/blowups; and a
 same-job FOM baseline (Poisson: CG tolerance ladder; Burgers: the truth-generating
 Newton rollout). Everything lands in one JSON under `runs/sepdec_r1/out/`.
 

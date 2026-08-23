@@ -16,8 +16,10 @@ blat_common lm_step_jit/rollout_jit (trust 0.01x radius).
 (feature banks G_q / stencil G_st cached once; no spatial network in the
 compiled iteration). GATE 0 asserts the two arms' weak residual/Jacobian agree
 <= 1e-12 relative — the discretization (incl. the FOM sign-upwind stencil) is
-never changed, only how it is evaluated. Cost and error come from the same
-invocation; FOM CG ladder / reference Newton rollout timed in the same job.
+never changed, only how it is evaluated. Error/counters come from one untimed
+invocation and cost from 7 timed repetitions of the same jitted call (see
+AUDIT-2026-08-23.md — not literally the same invocation; Burgers timing excludes
+the online IC fit); FOM CG ladder / reference Newton rollout timed in the same job.
 
 **Smokes** (local GB10, N=16): Poisson gate0 dev 0.0, solve error = oracle
 error (manifold-limited); Burgers gate0 dev 1.6e-15, 50/50 steps, no blowups.

@@ -117,7 +117,7 @@ def main(paths):
             print(f"| {r['method']} | {r['err_traj_rel_mean']:.3e} | "
                   f"{r['err_traj_rel_max']:.3e} | {r['ic_rel_mean']:.2e}/"
                   f"{r['ic_rel_max']:.2e} | {r['e2e_ms_median']:.2f} | "
-                  f"{r['jac_total_mean']:.0f} | {r['restarts_mean']:.0f} | "
+                  f"{r['jac_total_mean']:.0f} | {r.get('restarts_mean', 0):.0f} | "
                   f"{r['n_blowups']} | {r['stop_reasons']} |")
         print("\n### Splits (median over trajectories, ms)\n")
         sp = d.get("splits", [])
@@ -161,10 +161,14 @@ def main(paths):
             for r in orc:
                 print(f"| {r['traj']} | {r['mean']:.3e} | {r['max']:.3e} | "
                       f"{r['t0']:.3e} |")
-        ss_ = d.get("single_step_weak_opt", {}).get("rows", [])
-        if ss_:
-            print("\nsingle-step weak-opt (from oracle z of true prev state; "
-                  "diagnostic):\n")
+        sso = d.get("single_step_weak_opt", {})
+        ss_sets = ({"ctrl": sso["rows"]} if "rows" in sso else
+                   {k: v for k, v in sso.items() if isinstance(v, list)})
+        for sname, ss_ in ss_sets.items():
+            if not ss_:
+                continue
+            print(f"\nsingle-step weak-opt [{sname}] (from oracle z of true "
+                  "prev state; diagnostic):\n")
             print("| traj | t | step err | oracle err at t | reason |")
             print("|" + "---|" * 5)
             for r in ss_:

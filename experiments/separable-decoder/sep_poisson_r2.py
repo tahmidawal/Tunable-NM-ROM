@@ -349,10 +349,14 @@ def main():
     def make_pipe(eq, lm, init_kind):
         G_q, wq, PhiT, Wl = eq["G_q"], eq["wq"], eq["PhiT"], eq["Wl"]
         f_m_of = eq["f_m_of"]
+        f_m_of_enc = eq_sets["ctrl"]["f_m_of"]     # encoder features are the
+        # CTRL-mode projection regardless of the solve's EQ set; computed
+        # INSIDE the timed pipe (real online cost of the encoder init)
 
         def pipe(F2d, tau):
             f_m = f_m_of(F2d)
-            z0 = enc_apply(enc_params, f_m) if init_kind == "enc" else zbar
+            z0 = enc_apply(enc_params, f_m_of_enc(F2d)) \
+                if init_kind == "enc" else zbar
             z, val, v0, nJ, acc, att, reason, rs = lm(
                 z0, G_q, wq, PhiT, Wl, f_m, tau, trust)
             return G_full @ h_fn(z), z, val, v0, nJ, att, reason, rs

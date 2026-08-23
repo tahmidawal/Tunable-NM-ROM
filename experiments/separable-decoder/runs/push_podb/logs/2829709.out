@@ -1,0 +1,14 @@
+host=pax144 gpu=NVIDIA A100-PCIE-40GB
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 x64=True POD-floor diagnostic PDE=burgers N=256 Rs=[64, 128, 256, 512, 1024, 2048]
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 397s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  burgers: training X (8192, 64516), test states (408, 64516)
+  burgers R=  64: family 2.146e-02  test-state 1.711e-02/2.056e-01  traj-mean 1.711e-02
+  burgers R= 128: family 5.768e-03  test-state 4.561e-03/7.322e-02  traj-mean 4.561e-03
+  burgers R= 256: family 8.391e-04  test-state 7.888e-04/1.919e-02  traj-mean 7.888e-04
+  burgers R= 512: family 4.644e-05  test-state 7.002e-05/2.300e-03  traj-mean 7.002e-05
+  burgers R=1024: family 5.163e-07  test-state 1.882e-06/1.287e-04  traj-mean 1.882e-06
+  burgers R=2048: family 1.105e-07  test-state 1.595e-07/4.396e-05  traj-mean 1.595e-07
+DONE pod-floor burgers [466s] -> /cluster/tufts/paralab/tawal01/n256_push/podb/out/pod_floor_N256_burgers.json
+ALL-DONE

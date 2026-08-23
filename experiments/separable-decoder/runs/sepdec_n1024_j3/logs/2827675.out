@@ -1,0 +1,6 @@
+host=pax008 gpu=NVIDIA H200
+jax_backend=gpu
+=== burgers N=1024 K=16 R=128 (accuracy push) ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=16 R=128 M=64 m=256 steps=60000 seed=0 n_train=160+8 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 168 trajectories (50 Newton-implicit steps each) in 404s, max Newton rel residual 9.99e-13
+  data check: max FOM rel residual over all trajectories 9.99e-13

@@ -1,0 +1,5 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+=== poisson N=1024 K=8 R=32 ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=8 R=32 M=32 m=128 steps=50000 seed=0 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 196s, max rel residual over all samples 4.31e-10

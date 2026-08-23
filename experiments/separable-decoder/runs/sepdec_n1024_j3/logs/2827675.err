@@ -1,0 +1,4 @@
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (25.69GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+/var/spool/slurm/job2827675/slurm_script: line 26: 3795373 Killed                  N=1024 N_TRAIN=160 N_VAL=8 K=$k R=$r M=$((4*k)) MQ=$((16*k)) STEPS=60000 MAX_SNAPS=3072 N_TEST=4 TR_FACTOR=0.01 REPS=5 FOM_REPS=3 PAIR_REPS=3 ICF_STARTS=32 ICF_ITERS=60 NEWTON_TOLS=1e-2,1e-3,1e-4 OUT="$ROOT/out/sep_burgers_N1024_K${k}_R${r}.json" CKPT="$ROOT/out/sep_burgers_N1024_K${k}_R${r}.pkl" "$PY" sep_burgers.py
+slurmstepd: error: Detected 1 oom_kill event in StepId=2827675.batch. Some of the step tasks have been OOM Killed.

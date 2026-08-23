@@ -2289,3 +2289,48 @@ search or encoder). (3) Poisson capacity push (r, steps, ff_scale) toward the Fi
 oracle) at N=128-512 to test mesh-independence of accuracy. (5) Decide whether Phase 12
 (preregistered, unrun) is ever launched given Phases 8-11; its scripts are untracked. (6)
 The two hand-edited generated reports on `main` still disagree with their builders.
+
+## 2026-08-23
+
+### Adversarial audit of the separable-decoder cell; N-scaling round launched
+
+**Audit.** A Codex adversarial verification of `experiments/separable-decoder/` ran against
+the committed sepdec_r1 checkpoints (report committed as
+`experiments/separable-decoder/AUDIT-2026-08-23.md` on `exp/2026-08-22-separable-decoder`,
+commit 4a2c186). Verdicts: nonlinearity PASS (superposition failure 0.07-0.70, Jacobians
+vary with z, union tangent ranks exceed k, no POD/SVD; g/h/h_lin trained from random init);
+online solve PASS (no path for test truth into either solver; mutation test — replacing the
+Burgers truth by 7*U+3 changed only the reported error, solution bits identical); gate 0
+PASS, independently recomputed at 0.0 (Poisson) / 1.8e-15 (Burgers); metrics PASS with
+caveats; **timing FAIL**; claim-sanity SUSPICIOUS (numbers match JSONs, two prose claims
+false).
+
+**Retracted/corrected.** (1) README/EXPERIMENT claimed "cost and error from the same
+invocation" — false: error came from an untimed invocation, cost from 7 timed repetitions
+of the same jitted call (audit measured 3e-10 latent agreement between the two, but the
+claim as written was wrong). (2) README called the Fourier matrix B "fixed" — B is in the
+optimized tree and drifted 7-11% from init. Both fixed in 4a2c186. (3) The 3.3x Burgers
+number is NOT a supported speedup: the timed ROM path excludes the online IC fit (~8 s
+warm local for 9 starts) and returns latents while the timed FOM returns full fields; the
+176 ms baseline is the over-solved fixed-8-Newton truth generator; raw timing reps were
+discarded; all Burgers steps stopped on 'stalled' and Poisson tau=1e-3 was 100% censored.
+
+**Decision.** The architecture and solves are real and unfabricated; the failures are
+measurement methodology. Proceeded with the confirmed N-scaling round with the audit's
+fixes made mandatory: `experiments/separable-decoder/HANDOFF.md` (same commit) now carries
+binding measurement rules — end-to-end timing incl. IC fit, symmetric decoded outputs, raw
+reps retained, balanced ordering, strong classical Burgers baseline in-job, censoring
+reported, fresh-seed Poisson cohort arm, per-row EQ diagnostics.
+
+**Launched.** Four worktrees `2026-08-23-sepdec-n{128,256,512,1024}` (branches
+`exp/<same>`) cut from `exp/2026-08-22-separable-decoder` @ 4a2c186, one sub-agent each,
+cluster namespaces `/cluster/tufts/paralab/tawal01/sepdec_n<N>/`, budget <=4 cluster jobs
+per agent. Mission per agent: best accuracy and honest speed-vs-classical at its N, both
+PDEs, f(K) with >=2 K values, per HANDOFF.md.
+
+**Also this session.** The first audit launch hung for ~6 h on a stdin-read (codex exec
+inherited an open socket as stdin and waited on it; killed, relaunched with stdin from
+/dev/null — the fix worth remembering).
+
+**Open.** Unchanged from 2026-08-22 items (1)-(6); plus: scaling-round results to collect
+and merge decision for the four sepdec-n* worktrees when they finish.

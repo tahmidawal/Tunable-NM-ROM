@@ -1,0 +1,221 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 x64=True N=256 K=16 R=64 M=64 m=256 steps=200000 seed=0 arch=default
+  FOM: 576 CG solves in 19s, max rel residual over all samples 1.38e-11
+  truth: 32 test sources (2 cohorts), FOM CG rel residual 1.25e-11
+   train[poisson N=256 k=16 r=64] step      1/200000  rel-MSE 1.152e+00  [11s]
+   train[poisson N=256 k=16 r=64] step   2000/200000  rel-MSE 2.206e-03  [21s]
+   train[poisson N=256 k=16 r=64] step   4000/200000  rel-MSE 7.206e-04  [32s]
+   train[poisson N=256 k=16 r=64] step   6000/200000  rel-MSE 4.390e-04  [42s]
+   train[poisson N=256 k=16 r=64] step   8000/200000  rel-MSE 2.472e-04  [53s]
+   train[poisson N=256 k=16 r=64] step  10000/200000  rel-MSE 1.909e-04  [63s]
+   train[poisson N=256 k=16 r=64] step  12000/200000  rel-MSE 1.742e-04  [73s]
+   train[poisson N=256 k=16 r=64] step  14000/200000  rel-MSE 1.883e-04  [84s]
+   train[poisson N=256 k=16 r=64] step  16000/200000  rel-MSE 1.323e-04  [94s]
+   train[poisson N=256 k=16 r=64] step  18000/200000  rel-MSE 1.109e-04  [105s]
+   train[poisson N=256 k=16 r=64] step  20000/200000  rel-MSE 9.722e-05  [115s]
+   train[poisson N=256 k=16 r=64] step  22000/200000  rel-MSE 1.054e-04  [126s]
+   train[poisson N=256 k=16 r=64] step  24000/200000  rel-MSE 9.868e-05  [136s]
+   train[poisson N=256 k=16 r=64] step  26000/200000  rel-MSE 9.687e-05  [147s]
+   train[poisson N=256 k=16 r=64] step  28000/200000  rel-MSE 7.689e-05  [157s]
+   train[poisson N=256 k=16 r=64] step  30000/200000  rel-MSE 7.344e-05  [168s]
+   train[poisson N=256 k=16 r=64] step  32000/200000  rel-MSE 8.338e-05  [178s]
+   train[poisson N=256 k=16 r=64] step  34000/200000  rel-MSE 8.380e-05  [189s]
+   train[poisson N=256 k=16 r=64] step  36000/200000  rel-MSE 8.007e-05  [199s]
+   train[poisson N=256 k=16 r=64] step  38000/200000  rel-MSE 7.936e-05  [210s]
+   train[poisson N=256 k=16 r=64] step  40000/200000  rel-MSE 7.053e-05  [220s]
+   train[poisson N=256 k=16 r=64] step  42000/200000  rel-MSE 6.085e-05  [231s]
+   train[poisson N=256 k=16 r=64] step  44000/200000  rel-MSE 6.626e-05  [241s]
+   train[poisson N=256 k=16 r=64] step  46000/200000  rel-MSE 6.751e-05  [252s]
+   train[poisson N=256 k=16 r=64] step  48000/200000  rel-MSE 5.948e-05  [262s]
+   train[poisson N=256 k=16 r=64] step  50000/200000  rel-MSE 5.715e-05  [273s]
+   train[poisson N=256 k=16 r=64] step  52000/200000  rel-MSE 6.184e-05  [283s]
+   train[poisson N=256 k=16 r=64] step  54000/200000  rel-MSE 6.308e-05  [294s]
+   train[poisson N=256 k=16 r=64] step  56000/200000  rel-MSE 5.384e-05  [304s]
+   train[poisson N=256 k=16 r=64] step  58000/200000  rel-MSE 5.403e-05  [315s]
+   train[poisson N=256 k=16 r=64] step  60000/200000  rel-MSE 5.477e-05  [325s]
+   train[poisson N=256 k=16 r=64] step  62000/200000  rel-MSE 6.529e-05  [336s]
+   train[poisson N=256 k=16 r=64] step  64000/200000  rel-MSE 5.673e-05  [346s]
+   train[poisson N=256 k=16 r=64] step  66000/200000  rel-MSE 5.070e-05  [357s]
+   train[poisson N=256 k=16 r=64] step  68000/200000  rel-MSE 5.520e-05  [367s]
+   train[poisson N=256 k=16 r=64] step  70000/200000  rel-MSE 6.377e-05  [377s]
+   train[poisson N=256 k=16 r=64] step  72000/200000  rel-MSE 5.042e-05  [388s]
+   train[poisson N=256 k=16 r=64] step  74000/200000  rel-MSE 5.702e-05  [398s]
+   train[poisson N=256 k=16 r=64] step  76000/200000  rel-MSE 5.248e-05  [409s]
+   train[poisson N=256 k=16 r=64] step  78000/200000  rel-MSE 5.655e-05  [419s]
+   train[poisson N=256 k=16 r=64] step  80000/200000  rel-MSE 5.057e-05  [430s]
+   train[poisson N=256 k=16 r=64] step  82000/200000  rel-MSE 4.874e-05  [440s]
+   train[poisson N=256 k=16 r=64] step  84000/200000  rel-MSE 4.766e-05  [451s]
+   train[poisson N=256 k=16 r=64] step  86000/200000  rel-MSE 4.935e-05  [461s]
+   train[poisson N=256 k=16 r=64] step  88000/200000  rel-MSE 5.295e-05  [472s]
+   train[poisson N=256 k=16 r=64] step  90000/200000  rel-MSE 4.759e-05  [482s]
+   train[poisson N=256 k=16 r=64] step  92000/200000  rel-MSE 5.014e-05  [493s]
+   train[poisson N=256 k=16 r=64] step  94000/200000  rel-MSE 4.602e-05  [503s]
+   train[poisson N=256 k=16 r=64] step  96000/200000  rel-MSE 5.140e-05  [514s]
+   train[poisson N=256 k=16 r=64] step  98000/200000  rel-MSE 4.529e-05  [524s]
+   train[poisson N=256 k=16 r=64] step 100000/200000  rel-MSE 4.674e-05  [535s]
+   train[poisson N=256 k=16 r=64] step 102000/200000  rel-MSE 4.625e-05  [545s]
+   train[poisson N=256 k=16 r=64] step 104000/200000  rel-MSE 4.659e-05  [556s]
+   train[poisson N=256 k=16 r=64] step 106000/200000  rel-MSE 4.477e-05  [566s]
+   train[poisson N=256 k=16 r=64] step 108000/200000  rel-MSE 4.941e-05  [577s]
+   train[poisson N=256 k=16 r=64] step 110000/200000  rel-MSE 4.594e-05  [587s]
+   train[poisson N=256 k=16 r=64] step 112000/200000  rel-MSE 4.561e-05  [598s]
+   train[poisson N=256 k=16 r=64] step 114000/200000  rel-MSE 4.479e-05  [608s]
+   train[poisson N=256 k=16 r=64] step 116000/200000  rel-MSE 4.551e-05  [619s]
+   train[poisson N=256 k=16 r=64] step 118000/200000  rel-MSE 4.359e-05  [629s]
+   train[poisson N=256 k=16 r=64] step 120000/200000  rel-MSE 4.338e-05  [640s]
+   train[poisson N=256 k=16 r=64] step 122000/200000  rel-MSE 4.379e-05  [650s]
+   train[poisson N=256 k=16 r=64] step 124000/200000  rel-MSE 4.367e-05  [661s]
+   train[poisson N=256 k=16 r=64] step 126000/200000  rel-MSE 4.320e-05  [671s]
+   train[poisson N=256 k=16 r=64] step 128000/200000  rel-MSE 4.370e-05  [682s]
+   train[poisson N=256 k=16 r=64] step 130000/200000  rel-MSE 4.554e-05  [692s]
+   train[poisson N=256 k=16 r=64] step 132000/200000  rel-MSE 4.296e-05  [703s]
+   train[poisson N=256 k=16 r=64] step 134000/200000  rel-MSE 4.308e-05  [713s]
+   train[poisson N=256 k=16 r=64] step 136000/200000  rel-MSE 4.276e-05  [724s]
+   train[poisson N=256 k=16 r=64] step 138000/200000  rel-MSE 4.379e-05  [734s]
+   train[poisson N=256 k=16 r=64] step 140000/200000  rel-MSE 4.318e-05  [745s]
+   train[poisson N=256 k=16 r=64] step 142000/200000  rel-MSE 4.267e-05  [755s]
+   train[poisson N=256 k=16 r=64] step 144000/200000  rel-MSE 4.238e-05  [766s]
+   train[poisson N=256 k=16 r=64] step 146000/200000  rel-MSE 4.250e-05  [776s]
+   train[poisson N=256 k=16 r=64] step 148000/200000  rel-MSE 4.276e-05  [787s]
+   train[poisson N=256 k=16 r=64] step 150000/200000  rel-MSE 4.236e-05  [797s]
+   train[poisson N=256 k=16 r=64] step 152000/200000  rel-MSE 4.216e-05  [808s]
+   train[poisson N=256 k=16 r=64] step 154000/200000  rel-MSE 4.230e-05  [818s]
+   train[poisson N=256 k=16 r=64] step 156000/200000  rel-MSE 4.250e-05  [829s]
+   train[poisson N=256 k=16 r=64] step 158000/200000  rel-MSE 4.205e-05  [839s]
+   train[poisson N=256 k=16 r=64] step 160000/200000  rel-MSE 4.210e-05  [850s]
+   train[poisson N=256 k=16 r=64] step 162000/200000  rel-MSE 4.194e-05  [860s]
+   train[poisson N=256 k=16 r=64] step 164000/200000  rel-MSE 4.191e-05  [871s]
+   train[poisson N=256 k=16 r=64] step 166000/200000  rel-MSE 4.183e-05  [881s]
+   train[poisson N=256 k=16 r=64] step 168000/200000  rel-MSE 4.180e-05  [891s]
+   train[poisson N=256 k=16 r=64] step 170000/200000  rel-MSE 4.180e-05  [902s]
+   train[poisson N=256 k=16 r=64] step 172000/200000  rel-MSE 4.177e-05  [912s]
+   train[poisson N=256 k=16 r=64] step 174000/200000  rel-MSE 4.169e-05  [923s]
+   train[poisson N=256 k=16 r=64] step 176000/200000  rel-MSE 4.168e-05  [933s]
+   train[poisson N=256 k=16 r=64] step 178000/200000  rel-MSE 4.164e-05  [944s]
+   train[poisson N=256 k=16 r=64] step 180000/200000  rel-MSE 4.161e-05  [954s]
+   train[poisson N=256 k=16 r=64] step 182000/200000  rel-MSE 4.157e-05  [965s]
+   train[poisson N=256 k=16 r=64] step 184000/200000  rel-MSE 4.155e-05  [975s]
+   train[poisson N=256 k=16 r=64] step 186000/200000  rel-MSE 4.152e-05  [986s]
+   train[poisson N=256 k=16 r=64] step 188000/200000  rel-MSE 4.150e-05  [996s]
+   train[poisson N=256 k=16 r=64] step 190000/200000  rel-MSE 4.148e-05  [1007s]
+   train[poisson N=256 k=16 r=64] step 192000/200000  rel-MSE 4.145e-05  [1017s]
+   train[poisson N=256 k=16 r=64] step 194000/200000  rel-MSE 4.143e-05  [1028s]
+   train[poisson N=256 k=16 r=64] step 196000/200000  rel-MSE 4.141e-05  [1038s]
+   train[poisson N=256 k=16 r=64] step 198000/200000  rel-MSE 4.139e-05  [1049s]
+   train[poisson N=256 k=16 r=64] step 200000/200000  rel-MSE 4.137e-05  [1059s]
+   train[poisson N=256 k=16 r=64] done: recon rel-L2 mean 2.189e-02 max 1.179e-01  [1062s]
+  test oracle rel-L2 [heldout_seed0]: mean 3.627e-02 max 7.404e-02
+  test oracle rel-L2 [fresh_seed777]: mean 5.842e-02 max 8.536e-02
+  NNLS-EQ sep poisson N=256 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 6.78e-04 (row p95 8.7e-02, max 9.5e+01) [35s]
+  f_m projection identity vs pc.weak_source_term: 0.00e+00
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   timing block: 11 subjects x 9 reps (+2 warm), AB/BA
+   meshfree tau=1e-03 [heldout_seed0 ] proj+solve+decode    2.499 ms  jac  11.1  err 2.893e-02  cens 100%  reasons {'1': 16}
+   meshfree tau=1e-03 [fresh_seed777 ] proj+solve+decode    2.514 ms  jac  11.2  err 3.529e-02  cens 100%  reasons {'1': 16}
+   meshfree tau=1e-02 [heldout_seed0 ] proj+solve+decode    2.222 ms  jac   8.6  err 2.963e-02  cens  56%  reasons {'1': 9, '2': 7}
+   meshfree tau=1e-02 [fresh_seed777 ] proj+solve+decode    2.131 ms  jac   8.7  err 3.564e-02  cens  56%  reasons {'1': 9, '2': 7}
+   cached   tau=1e-03 [heldout_seed0 ] proj+solve+decode    2.539 ms  jac  11.1  err 2.893e-02  cens 100%  reasons {'1': 16}
+   cached   tau=1e-03 [fresh_seed777 ] proj+solve+decode    2.542 ms  jac  11.2  err 3.529e-02  cens 100%  reasons {'1': 16}
+   cached   tau=1e-02 [heldout_seed0 ] proj+solve+decode    2.235 ms  jac   8.6  err 2.963e-02  cens  56%  reasons {'1': 9, '2': 7}
+   cached   tau=1e-02 [fresh_seed777 ] proj+solve+decode    2.198 ms  jac   8.7  err 3.564e-02  cens  56%  reasons {'1': 9, '2': 7}
+   FOM CG tol=5e-01 [heldout_seed0 ]:    5.241 ms  err 1.410e-01
+   FOM CG tol=5e-01 [fresh_seed777 ]:    4.525 ms  err 1.692e-01
+   FOM CG tol=3e-01 [heldout_seed0 ]:    6.432 ms  err 6.581e-02
+   FOM CG tol=3e-01 [fresh_seed777 ]:    5.844 ms  err 8.771e-02
+   FOM CG tol=1e-01 [heldout_seed0 ]:    8.156 ms  err 1.065e-02
+   FOM CG tol=1e-01 [fresh_seed777 ]:    8.212 ms  err 1.419e-02
+   FOM CG tol=3e-02 [heldout_seed0 ]:    9.541 ms  err 2.979e-03
+   FOM CG tol=3e-02 [fresh_seed777 ]:    9.743 ms  err 3.310e-03
+   FOM CG tol=1e-02 [heldout_seed0 ]:   11.255 ms  err 8.878e-04
+   FOM CG tol=1e-02 [fresh_seed777 ]:   11.179 ms  err 1.075e-03
+   FOM CG tol=1e-03 [heldout_seed0 ]:   14.032 ms  err 8.042e-05
+   FOM CG tol=1e-03 [fresh_seed777 ]:   13.985 ms  err 9.305e-05
+   FOM CG tol=1e-06 [heldout_seed0 ]:   20.053 ms  err 5.188e-08
+   FOM CG tol=1e-06 [fresh_seed777 ]:   20.058 ms  err 5.940e-08
+DONE poisson [1571s] -> /cluster/tufts/paralab/tawal01/sepdec_n256/j4/out/sep_poisson_K16_R64_s200k.json
+jax_backend=gpu device=cuda:0 x64=True N=256 K=24 R=96 M=96 m=384 steps=100000 seed=0 arch=default
+  FOM: 576 CG solves in 18s, max rel residual over all samples 1.36e-11
+  truth: 32 test sources (2 cohorts), FOM CG rel residual 1.24e-11
+   train[poisson N=256 k=24 r=96] step      1/100000  rel-MSE 1.422e+00  [11s]
+   train[poisson N=256 k=24 r=96] step   2000/100000  rel-MSE 2.442e-03  [24s]
+   train[poisson N=256 k=24 r=96] step   4000/100000  rel-MSE 6.968e-04  [36s]
+   train[poisson N=256 k=24 r=96] step   6000/100000  rel-MSE 3.327e-04  [48s]
+   train[poisson N=256 k=24 r=96] step   8000/100000  rel-MSE 2.169e-04  [61s]
+   train[poisson N=256 k=24 r=96] step  10000/100000  rel-MSE 1.493e-04  [73s]
+   train[poisson N=256 k=24 r=96] step  12000/100000  rel-MSE 1.234e-04  [86s]
+   train[poisson N=256 k=24 r=96] step  14000/100000  rel-MSE 1.042e-04  [98s]
+   train[poisson N=256 k=24 r=96] step  16000/100000  rel-MSE 8.352e-05  [111s]
+   train[poisson N=256 k=24 r=96] step  18000/100000  rel-MSE 1.192e-04  [123s]
+   train[poisson N=256 k=24 r=96] step  20000/100000  rel-MSE 6.594e-05  [136s]
+   train[poisson N=256 k=24 r=96] step  22000/100000  rel-MSE 5.809e-05  [148s]
+   train[poisson N=256 k=24 r=96] step  24000/100000  rel-MSE 5.669e-05  [161s]
+   train[poisson N=256 k=24 r=96] step  26000/100000  rel-MSE 5.598e-05  [173s]
+   train[poisson N=256 k=24 r=96] step  28000/100000  rel-MSE 5.592e-05  [186s]
+   train[poisson N=256 k=24 r=96] step  30000/100000  rel-MSE 5.038e-05  [198s]
+   train[poisson N=256 k=24 r=96] step  32000/100000  rel-MSE 4.427e-05  [211s]
+   train[poisson N=256 k=24 r=96] step  34000/100000  rel-MSE 4.227e-05  [224s]
+   train[poisson N=256 k=24 r=96] step  36000/100000  rel-MSE 4.436e-05  [236s]
+   train[poisson N=256 k=24 r=96] step  38000/100000  rel-MSE 3.584e-05  [249s]
+   train[poisson N=256 k=24 r=96] step  40000/100000  rel-MSE 4.996e-05  [261s]
+   train[poisson N=256 k=24 r=96] step  42000/100000  rel-MSE 3.980e-05  [274s]
+   train[poisson N=256 k=24 r=96] step  44000/100000  rel-MSE 3.317e-05  [286s]
+   train[poisson N=256 k=24 r=96] step  46000/100000  rel-MSE 3.155e-05  [299s]
+   train[poisson N=256 k=24 r=96] step  48000/100000  rel-MSE 4.467e-05  [311s]
+   train[poisson N=256 k=24 r=96] step  50000/100000  rel-MSE 3.106e-05  [324s]
+   train[poisson N=256 k=24 r=96] step  52000/100000  rel-MSE 3.019e-05  [336s]
+   train[poisson N=256 k=24 r=96] step  54000/100000  rel-MSE 3.020e-05  [349s]
+   train[poisson N=256 k=24 r=96] step  56000/100000  rel-MSE 2.723e-05  [362s]
+   train[poisson N=256 k=24 r=96] step  58000/100000  rel-MSE 2.642e-05  [374s]
+   train[poisson N=256 k=24 r=96] step  60000/100000  rel-MSE 2.697e-05  [387s]
+   train[poisson N=256 k=24 r=96] step  62000/100000  rel-MSE 2.696e-05  [399s]
+   train[poisson N=256 k=24 r=96] step  64000/100000  rel-MSE 2.495e-05  [412s]
+   train[poisson N=256 k=24 r=96] step  66000/100000  rel-MSE 2.429e-05  [424s]
+   train[poisson N=256 k=24 r=96] step  68000/100000  rel-MSE 2.540e-05  [437s]
+   train[poisson N=256 k=24 r=96] step  70000/100000  rel-MSE 2.339e-05  [449s]
+   train[poisson N=256 k=24 r=96] step  72000/100000  rel-MSE 2.312e-05  [462s]
+   train[poisson N=256 k=24 r=96] step  74000/100000  rel-MSE 2.276e-05  [474s]
+   train[poisson N=256 k=24 r=96] step  76000/100000  rel-MSE 2.240e-05  [487s]
+   train[poisson N=256 k=24 r=96] step  78000/100000  rel-MSE 2.233e-05  [499s]
+   train[poisson N=256 k=24 r=96] step  80000/100000  rel-MSE 2.178e-05  [512s]
+   train[poisson N=256 k=24 r=96] step  82000/100000  rel-MSE 2.159e-05  [525s]
+   train[poisson N=256 k=24 r=96] step  84000/100000  rel-MSE 2.131e-05  [537s]
+   train[poisson N=256 k=24 r=96] step  86000/100000  rel-MSE 2.105e-05  [550s]
+   train[poisson N=256 k=24 r=96] step  88000/100000  rel-MSE 2.090e-05  [562s]
+   train[poisson N=256 k=24 r=96] step  90000/100000  rel-MSE 2.063e-05  [575s]
+   train[poisson N=256 k=24 r=96] step  92000/100000  rel-MSE 2.045e-05  [587s]
+   train[poisson N=256 k=24 r=96] step  94000/100000  rel-MSE 2.028e-05  [600s]
+   train[poisson N=256 k=24 r=96] step  96000/100000  rel-MSE 2.012e-05  [612s]
+   train[poisson N=256 k=24 r=96] step  98000/100000  rel-MSE 1.996e-05  [625s]
+   train[poisson N=256 k=24 r=96] step 100000/100000  rel-MSE 1.982e-05  [637s]
+   train[poisson N=256 k=24 r=96] done: recon rel-L2 mean 1.669e-02 max 1.142e-01  [640s]
+  test oracle rel-L2 [heldout_seed0]: mean 3.340e-02 max 7.041e-02
+  test oracle rel-L2 [fresh_seed777]: mean 6.152e-02 max 8.967e-02
+  NNLS-EQ sep poisson N=256 k=24 M=96 m=384: pool 4096 support 384 (+0 pad) rel fit 7.10e-04 (row p95 1.7e-01, max 2.2e+02) [78s]
+  f_m projection identity vs pc.weak_source_term: 0.00e+00
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   timing block: 11 subjects x 9 reps (+2 warm), AB/BA
+   meshfree tau=1e-03 [heldout_seed0 ] proj+solve+decode    4.121 ms  jac  21.6  err 2.919e-02  cens 100%  reasons {'0': 1, '1': 15}
+   meshfree tau=1e-03 [fresh_seed777 ] proj+solve+decode    3.929 ms  jac  18.2  err 3.643e-02  cens 100%  reasons {'1': 16}
+   meshfree tau=1e-02 [heldout_seed0 ] proj+solve+decode    3.728 ms  jac  19.1  err 2.956e-02  cens  75%  reasons {'0': 1, '1': 11, '2': 4}
+   meshfree tau=1e-02 [fresh_seed777 ] proj+solve+decode    3.896 ms  jac  16.2  err 3.692e-02  cens  75%  reasons {'1': 12, '2': 4}
+   cached   tau=1e-03 [heldout_seed0 ] proj+solve+decode    4.531 ms  jac  21.6  err 2.919e-02  cens 100%  reasons {'0': 1, '1': 14, '3': 1}
+   cached   tau=1e-03 [fresh_seed777 ] proj+solve+decode    3.946 ms  jac  18.2  err 3.643e-02  cens 100%  reasons {'1': 16}
+   cached   tau=1e-02 [heldout_seed0 ] proj+solve+decode    4.116 ms  jac  19.0  err 2.956e-02  cens  75%  reasons {'0': 1, '1': 10, '2': 4, '3': 1}
+   cached   tau=1e-02 [fresh_seed777 ] proj+solve+decode    3.931 ms  jac  16.2  err 3.692e-02  cens  75%  reasons {'1': 12, '2': 4}
+   FOM CG tol=5e-01 [heldout_seed0 ]:    5.148 ms  err 1.410e-01
+   FOM CG tol=5e-01 [fresh_seed777 ]:    4.451 ms  err 1.692e-01
+   FOM CG tol=3e-01 [heldout_seed0 ]:    6.301 ms  err 6.581e-02
+   FOM CG tol=3e-01 [fresh_seed777 ]:    5.747 ms  err 8.771e-02
+   FOM CG tol=1e-01 [heldout_seed0 ]:    8.003 ms  err 1.065e-02
+   FOM CG tol=1e-01 [fresh_seed777 ]:    8.071 ms  err 1.419e-02
+   FOM CG tol=3e-02 [heldout_seed0 ]:    9.346 ms  err 2.979e-03
+   FOM CG tol=3e-02 [fresh_seed777 ]:    9.541 ms  err 3.310e-03
+   FOM CG tol=1e-02 [heldout_seed0 ]:   11.022 ms  err 8.878e-04
+   FOM CG tol=1e-02 [fresh_seed777 ]:   11.004 ms  err 1.075e-03
+   FOM CG tol=1e-03 [heldout_seed0 ]:   13.764 ms  err 8.042e-05
+   FOM CG tol=1e-03 [fresh_seed777 ]:   13.749 ms  err 9.305e-05
+   FOM CG tol=1e-06 [heldout_seed0 ]:   19.652 ms  err 5.188e-08
+   FOM CG tol=1e-06 [fresh_seed777 ]:   19.720 ms  err 5.940e-08
+DONE poisson [1232s] -> /cluster/tufts/paralab/tawal01/sepdec_n256/j4/out/sep_poisson_K24_R96.json
+ALL-DONE

@@ -26,7 +26,7 @@ mkdir -p "$DST/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom"
          "$DST/out" "$DST/logs"
 
 cp "$SEP"/sep_common.py "$SEP"/sep_poisson.py "$SEP"/sep_burgers.py "$DST/code/"
-for f in sep_solvers.py sep_poisson_r1.py sep_burgers_r1.py; do
+for f in sep_solvers.py sep_poisson_r1.py sep_burgers_r1.py sep_poisson_r2.py; do
   [ -f "$SEP/$f" ] && cp "$SEP/$f" "$DST/code/"
 done
 cp "$EXP"/cost-to-tolerance/ctol_eq.py "$EXP"/cost-to-tolerance/ctol_tol.py "$DST/code/"

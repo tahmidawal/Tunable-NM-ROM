@@ -280,6 +280,145 @@ def make_rollout_v2(step_kind, ops=None, step_ad=None, rn_fn=None, prev_of=None,
 
 
 # ===========================================================================
+# 2b. Round-2 auto-decoder training (architecture+optimization in scope)
+# ===========================================================================
+def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
+                         lam_orth=1e-4, weight_decay=0.0, p_sub=16384,
+                         ema_decay=0.999, full_last=20000, time_cap=0.0,
+                         log_every=5000, tag="", init_fn=None, **arch):
+    """Round-2 trainer for the separable decoder (PUSH-PLAN: architecture and
+    optimization in scope).  Differences from sep_common.train_autodecoder,
+    each individually optional:
+      * per-step POINT subsампling (p_sub interior points drawn iid per step;
+        unbiased estimate of the same relative-MSE loss) so wide-R / dense-S
+        cells stay ~constant cost per step; the last `full_last` steps run on
+        ALL points to remove subsample noise at the optimum,
+      * AdamW with weight decay applied ONLY to the g/h MLP weight matrices
+        (never biases, B, out_scale, or the codes Z),
+      * exponential moving average of (params, Z); at the end the raw and EMA
+        weights are both evaluated on the full grid and the better one is
+        returned (choice recorded),
+      * optional wall-time cap (time_cap seconds; 0 = off) that truncates
+        cleanly and records the achieved step count.
+    The model itself comes from sep_common.init_separable via init_fn (so
+    multi-scale Fourier features etc. plug in through **arch); the loss is the
+    SAME relative MSE + feature-Gram conditioning term.  PURE NEURAL: no POD
+    anywhere.  U: (S, n_pts) f64; coords: (n_pts, 2)."""
+    import sep_common as _sc
+    init_fn = init_fn or _sc.init_separable
+    coords = jnp.asarray(coords, dtype=F64)
+    U = jnp.asarray(U, dtype=F64)
+    S, n_pts = U.shape
+    key, kz, kp = jax.random.split(key, 3)
+    u_rms = float(jnp.sqrt(jnp.mean(U * U)))
+    params = init_fn(kp, k_lat, r_feat, out_scale=u_rms, **arch)
+    Z = 0.1 * jax.random.normal(kz, (S, k_lat), dtype=F64)
+    u_ms = jnp.mean(U * U)                      # GLOBAL constant (unbiased)
+
+    sched = optax.warmup_cosine_decay_schedule(
+        0.0, lr, min(500, steps // 10 + 1), steps, lr * 1e-2)
+
+    def wd_mask(pz):
+        p, z = pz
+        mask_p = {}
+        for k_, v in p.items():
+            if k_ in ("g", "h"):
+                mask_p[k_] = [(True, False) for _ in v]   # decay W, not b
+            else:                                          # B, h_lin, out_scale
+                mask_p[k_] = jax.tree_util.tree_map(lambda _: False, v)
+        return (mask_p, jax.tree_util.tree_map(lambda _: False, z))
+
+    if weight_decay > 0.0:
+        opt = optax.adamw(sched, weight_decay=weight_decay, mask=wd_mask)
+    else:
+        opt = optax.adam(sched)
+    state = opt.init((params, Z))
+
+    def loss_at(pz, pts_idx):
+        p, z = pz
+        G = _sc.features(p, coords[pts_idx])          # (p_sub, r)
+        H = _sc.head(p, z)                            # (S, r)
+        err = H @ G.T - U[:, pts_idx]
+        rel = jnp.mean(err * err) / u_ms
+        C = (G.T @ G) / (G.shape[0] * p["out_scale"] ** 2)
+        orth = jnp.mean((C - jnp.eye(C.shape[0], dtype=F64)) ** 2)
+        return rel + lam_orth * orth, rel
+
+    @jax.jit
+    def step_sub(pz, st, ema, k_):
+        pts_idx = jax.random.choice(k_, n_pts, shape=(p_sub,), replace=False)
+        (val, rel), grads = jax.value_and_grad(loss_at, has_aux=True)(pz, pts_idx)
+        grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
+        upd, st = opt.update(grads, st, pz)
+        pz = optax.apply_updates(pz, upd)
+        ema = jax.tree_util.tree_map(
+            lambda e, q: ema_decay * e + (1.0 - ema_decay) * q, ema, pz)
+        return pz, st, ema, rel
+
+    all_idx = jnp.arange(n_pts)
+
+    @jax.jit
+    def step_full(pz, st, ema):
+        (val, rel), grads = jax.value_and_grad(loss_at, has_aux=True)(pz, all_idx)
+        grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
+        upd, st = opt.update(grads, st, pz)
+        pz = optax.apply_updates(pz, upd)
+        ema = jax.tree_util.tree_map(
+            lambda e, q: ema_decay * e + (1.0 - ema_decay) * q, ema, pz)
+        return pz, st, ema, rel
+
+    pz = (params, Z)
+    ema = pz
+    t0 = time.time()
+    rel = jnp.inf
+    done = 0
+    capped = False
+    use_sub = 0 < p_sub < n_pts
+    for i in range(steps):
+        if use_sub and i < steps - full_last:
+            key, k_ = jax.random.split(key)
+            pz, state, ema, rel = step_sub(pz, state, ema, k_)
+        else:
+            pz, state, ema, rel = step_full(pz, state, ema)
+        done = i + 1
+        if done % log_every == 0 or i == 0:
+            print(f"   train2[{tag}] step {done:6d}/{steps}  rel-MSE "
+                  f"{float(rel):.3e}  [{time.time()-t0:.0f}s]", flush=True)
+        if time_cap and (time.time() - t0) > time_cap and i < steps - 1:
+            capped = True
+            print(f"   train2[{tag}] TIME CAP {time_cap:.0f}s hit at step "
+                  f"{done}", flush=True)
+            break
+
+    def recon_of(pz_):
+        p, z = pz_
+        G = _sc.features(p, coords)
+        Uh = _sc.head(p, z) @ G.T
+        per = jnp.linalg.norm(Uh - U, axis=1) / jnp.linalg.norm(U, axis=1)
+        return float(jnp.mean(per)), float(jnp.max(per))
+
+    raw_mean, raw_max = recon_of(pz)
+    ema_mean, ema_max = recon_of(ema)
+    use_ema = ema_mean < raw_mean
+    params, Z = ema if use_ema else pz
+    info = dict(final_rel_mse=float(rel), steps=steps, steps_done=done,
+                time_capped=capped, lr=lr, lam_orth=lam_orth,
+                weight_decay=weight_decay, p_sub=int(p_sub),
+                ema_decay=ema_decay, full_last=full_last, used_ema=bool(use_ema),
+                recon_raw_mean=raw_mean, recon_ema_mean=ema_mean,
+                seconds=time.time() - t0,
+                recon_rel_l2_mean=ema_mean if use_ema else raw_mean,
+                recon_rel_l2_max=ema_max if use_ema else raw_max,
+                n_snapshots=int(S), n_points=int(n_pts))
+    print(f"   train2[{tag}] done: recon rel-L2 mean "
+          f"{info['recon_rel_l2_mean']:.3e} max {info['recon_rel_l2_max']:.3e} "
+          f"(raw {raw_mean:.3e} / ema {ema_mean:.3e}, used "
+          f"{'ema' if use_ema else 'raw'})  [{info['seconds']:.0f}s]",
+          flush=True)
+    return params, np.asarray(Z), info
+
+
+# ===========================================================================
 # 3. Offline initial-guess encoders (TRAINING data only)
 # ===========================================================================
 def fit_code_encoder(key, X_np, Z_np, steps=8000, hidden=128, layers=2,

@@ -13,7 +13,7 @@ def main(paths):
     pois, burg = [], []
     for p in sorted(paths):
         d = json.load(open(p))
-        if d["config"].get("round") != 1:
+        if d["config"].get("round") not in (1, 2):
             continue
         (pois if d["config"]["pde"] == "poisson2d" else burg).append((p, d))
 
@@ -22,9 +22,9 @@ def main(paths):
     for p, d in pois:
         c = d["config"]
         t = d.get("train", {})
-        print(f"## Poisson r1 (N={c['N']} K={c['k']} R={c['r']} "
+        print(f"## Poisson r{c['round']} (N={c['N']} K={c['k']} R={c['r']} "
               f"steps={c['steps']}, {c.get('gpu','?')}, job "
-              f"{c.get('slurm_job')})\n")
+              f"{c.get('slurm_job')}, arch={c.get('arch_overrides')})\n")
         print(f"train: recon rel-L2 mean {t.get('recon_rel_l2_mean', float('nan')):.3e} "
               f"({t.get('seconds',0):.0f}s)\n")
         print("### Error ladder (rung -> value; held / fresh)\n")
@@ -43,7 +43,13 @@ def main(paths):
                 print(f"| weak-EQ optimum [{eqn}] (diag) | "
                       + " | ".join(f"{w[eqn][cn]['err_mean']:.3e}"
                                    for cn in cohs) + " |")
-            for arm in ("cach|ctrl|lm60|zbar", "cach|ctrl|rst300|enc"):
+            arms_seen = [r["method"] for r in d["rows"]
+                         if r.get("tau") == c["taus"][0]
+                         and r["cohort"] == cohs[0]]
+            for arm in ("cach|ctrl|lm60|zbar", "cach|ctrl|lm60|enc",
+                        "cach|ctrl|rst300|enc", "cach|M256|rst300|enc"):
+                if arm not in arms_seen:
+                    continue
                 vals = []
                 for cn in cohs:
                     rr = [r for r in d["rows"] if r["method"] == arm

@@ -83,9 +83,21 @@ def apply_mlp(params, x):
 
 def init_separable(key, k_lat, r_feat, n_ff=64, ff_scale=4.0,
                    g_hidden=128, g_layers=2, h_hidden=128, h_layers=2,
-                   out_scale=1.0):
+                   out_scale=1.0, ff_scales=None):
+    """ff_scales (round-2 lever, default OFF): a list of band scales, e.g.
+    [1, 4, 16] -- the n_ff frequencies are split evenly across the bands and
+    each band's B columns are drawn at its own scale (multi-scale Fourier
+    features).  ff_scales=None reproduces the original single-scale init
+    bit-for-bit (same rng draw, same multiplier)."""
     kb, kg, kh, kl = jax.random.split(key, 4)
-    B = jax.random.normal(kb, (2, n_ff), dtype=F64) * ff_scale      # fixed freqs
+    if ff_scales:
+        n_b = len(ff_scales)
+        split = [n_ff // n_b + (1 if i < n_ff % n_b else 0) for i in range(n_b)]
+        scale_vec = jnp.concatenate([jnp.full((s,), float(sc_), dtype=F64)
+                                     for s, sc_ in zip(split, ff_scales)])
+        B = jax.random.normal(kb, (2, n_ff), dtype=F64) * scale_vec[None, :]
+    else:
+        B = jax.random.normal(kb, (2, n_ff), dtype=F64) * ff_scale  # fixed freqs
     g_mlp = init_mlp(kg, [2 * n_ff] + [g_hidden] * g_layers + [r_feat])
     h_mlp = init_mlp(kh, [k_lat] + [h_hidden] * h_layers + [r_feat])
     h_lin = jax.random.normal(kl, (k_lat, r_feat), dtype=F64) * 0.3
@@ -275,6 +287,9 @@ def arch_from_env():
         v = typ(os.environ.get(env, str(dflt)))
         if v != dflt:
             out[k] = v
+    if os.environ.get("FF_SCALES"):                # e.g. "1,4,16" (multi-scale)
+        out["ff_scales"] = [float(v)
+                            for v in os.environ["FF_SCALES"].split(",")]
     return out
 
 

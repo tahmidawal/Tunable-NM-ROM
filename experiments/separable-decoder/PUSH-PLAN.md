@@ -42,6 +42,37 @@ rank-R projection floors for R in {64,128,256,512} tell us the R required for
 `pod_floor_n256.py` + committed numbers in `runs/pod_floor/`. GRAM64-style f64
 Gram per project rules. POD is a bound here, never a model ingredient.
 
+### Architecture and optimization are IN SCOPE (user authorization, 2026-08-23)
+
+1e-3 is to be treated as an ARCHITECTURE AND OPTIMIZATION problem: the decoder
+architecture and the training scheme may change, not merely be tuned. Picked by
+evidence (POD floors, ladder measurements), not all at once:
+
+- Capacity/structure of both tracks: multi-scale Fourier features (built,
+  `FF_SCALES`), wider/deeper g and h, R per the POD diagnostic, and the
+  multi-bank span extension u = sum_j bc*g_j(x)^T h_j(z) (or low-rank
+  z-modulated bank mixing) if a single span floors above target. The ONLY
+  architectural invariant: the model must still collapse to cached banks at
+  any fixed point set — that separability IS the method.
+- Training/optimization: 200-300k+ steps, two-stage schemes (fit codes+span,
+  then joint refine), L-BFGS polish on the small nets, EMA weights,
+  restarts/annealed ff_scale, stronger orthogonality/conditioning constraints
+  on G, weight decay tuned for fresh-cohort generalization, denser
+  mu-sampling / more snapshots (append extra seeds; NEVER change the
+  canonical seed-0 draw or the cohort definitions).
+- PURE NEURAL stands: no POD basis inside the model. SVD is a diagnostic
+  (floors) only. If a POD-initialized span ever looks decisively better than
+  anything neural we can train, DO NOT implement it — report the finding
+  upward for a user decision.
+- Every new architecture's banks re-pass gate 0 (<=1e-12); incumbent
+  discretization/residual definitions, no-test-truth, audit measurement
+  rules, ladder reporting, per-round analysis all unchanged.
+
+Strategy order: drive recon to <=5e-4 first (it floors everything), then
+verify oracle ~1e-3 on FRESH data, then re-certify the objective (M/m/EQ
+tails) at that scale. Poisson primary; Burgers effort gated on its POD-floor
+verdict.
+
 ### Objective certification at 1e-3
 
 M=4K (64 modes) leaves residual components outside the test span uncontrolled,

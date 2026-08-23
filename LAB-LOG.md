@@ -2630,3 +2630,50 @@ N=256 arm reported 2.5e-2 errors, so the gap is training, not method. (2) Poisso
 K=16 R=128 rerun + K>=24 f(K) points. (3) IC-fit representation failure (worst traj
 5.5e-1) persists -- more trajectories should fix it before any encoder work. (4) Merge
 decision for the four sepdec-n* branches is with the coordinator/user.
+
+## 2026-08-23
+
+### N=256 push session (branch exp/2026-08-23-n256-push) — round 1 + POD floors, rounds 2 in flight
+
+Dedicated push session on worktree `worktrees/2026-08-23-n256-push`, cluster namespace
+`/cluster/tufts/paralab/tawal01/n256_push/`. Mission evolved mid-session by user
+directive: first "push accuracy+speed at N=256", then "target rel-L2 ~1e-3
+(architecture+optimization authorized, PURE NEURAL, SVD as diagnostic only)", then
+"BURGERS is the primary 1e-3 target; Poisson becomes the control". All in
+`experiments/separable-decoder/PUSH-PLAN.md` on the branch.
+
+**Round 1 (jobs 2828682 Poisson, 2828683 Burgers, A100s, pulled+committed, remote dirs
+deleted).** Solver-termination repairs (budget 60->300, restart-on-stall x6, adaptive
+trust region), EQ arms (m 256->512, M 64->128, tail-reweighted NNLS, per-query adaptive
+quadrature), IC repairs (48-candidate/3x-budget fit, offline u0->z encoder), and
+2-step safeguarded warm-start extrapolation. Verdict, both PDEs: **accuracy moved by
+NONE of it** — solver output == weak-EQ optimum == representation oracle (Poisson: M=128
+weak-opt equals the L2 oracle to 4 digits; Burgers: single-step weak-opt from the true
+previous state's oracle equals the per-state oracle at every probed t; no error
+compounding over 50 steps). REPRESENTATION is the only binding rung at K16/R64
+(Poisson solve 2.89e-2 held / 3.53e-2 fresh; Burgers traj 2.47e-2). Speed levers that
+ARE real, identical error: Poisson f_m->z encoder init 2.8->2.0 ms; Burgers encoder IC
+20.9->3.5 ms (jac 136->9) and extrapolated warm start 94.5->55.4 ms rollout (jac
+352->241). Adaptive-TR restarts: 3x jacobians for nothing — dropped.
+**Retraction note:** the r1 "IC fit is a major accuracy lever" hypothesis (from j2's
+ic_rel up to 1.6e-1) is DEAD — the IC fits sit exactly ON the t0 representation floor;
+high-budget IC changed nothing.
+
+**POD-floor diagnostic (f64 Gram; `pod_floor_n256.py`; Poisson local GB10, Burgers
+cluster job 2829709 after the GB10 attempt proved too slow and was killed).**
+DIAGNOSTIC ONLY — no POD in any model. Poisson fresh-cohort floors onto the
+512-snapshot training span: R=64 3.2e-2 (the r1 oracle sits ON it), R=256 4.0e-3,
+R=512 8.1e-4; onto a 2048-sample dense family: R=256 2.7e-3, R=512 4.8e-4 mean.
+Burgers fresh test-state floors (8192-state training basis): R=64 1.7e-2 (r1 oracle
+on it), R=128 4.6e-3, R=256 7.9e-4, **R=512 7.0e-5 mean / 2.3e-3 max**, R=1024 1.9e-6.
+So Burgers 1e-3 is single-span feasible at R=512 — no multi-bank needed. Structural
+note recorded in-session: ANY cached-bank architecture (multi-bank, z-modulated mixing
+included) evaluates as G(x)·H(z), so its oracle is bounded by the POD floor at total
+bank width; multi-bank buys trainability, never a better floor.
+
+**Round 2 in flight at session-log time:** r2a/r2b Poisson control (2829746/7, A100,
+R=512, S=512+2048 seed-4242 extras, multi-scale-vs-single-scale FF pair, v2 trainer
+with point-subsampled AdamW+EMA, EQ certification M in {64,128,256} + tail) and r2
+Burgers primary (2829766, H100, R=512, 16384 states with all t<=5 early states,
+multi-scale FF, STEP_TOL ladder {1e-9,1e-6,1e-5}, per-step error tables, per-set
+single-step weak-opt vs oracle). Results land on the branch when pulled.

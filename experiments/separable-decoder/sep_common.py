@@ -261,3 +261,43 @@ def time_fn(fn, reps=7, warm=2):
         fn()
         ts.append(time.perf_counter() - t0)
     return float(np.median(ts)), ts
+
+
+def arch_from_env():
+    """Architecture knobs of init_separable, read from env (HPO search space:
+    HANDOFF.md).  Only returns keys that differ from the defaults so cells that
+    do not set them reproduce the N=64 recipe exactly."""
+    spec = dict(n_ff=("N_FF", int, 64), ff_scale=("FF_SCALE", float, 4.0),
+                g_hidden=("G_HIDDEN", int, 128), g_layers=("G_LAYERS", int, 2),
+                h_hidden=("H_HIDDEN", int, 128), h_layers=("H_LAYERS", int, 2))
+    out = {}
+    for k, (env, typ, dflt) in spec.items():
+        v = typ(os.environ.get(env, str(dflt)))
+        if v != dflt:
+            out[k] = v
+    return out
+
+
+def balanced_time(subjects, reps=7, warm=2, capture=True):
+    """MANDATORY-MEASUREMENT-RULES timing harness (HANDOFF.md rule 3):
+    subjects = [(name, fn)], where fn() runs one complete invocation and
+    BLOCKS before returning its outputs.  Every subject is warmed `warm`
+    times, then timed `reps` times in a BALANCED order: the full subject list
+    is swept once per repetition, forward on even sweeps and reversed on odd
+    sweeps (AB/BA), so no subject is systematically first or last.  ALL raw
+    repetition times are returned (never only medians), plus each subject's
+    captured outputs from its final timed invocation."""
+    raw = {name: [] for name, _ in subjects}
+    results = {}
+    for name, fn in subjects:
+        for _ in range(warm):
+            results[name] = fn()
+    for rep in range(reps):
+        order = subjects if rep % 2 == 0 else list(reversed(subjects))
+        for name, fn in order:
+            t0 = time.perf_counter()
+            res = fn()
+            raw[name].append(time.perf_counter() - t0)
+            if capture:
+                results[name] = res
+    return raw, results

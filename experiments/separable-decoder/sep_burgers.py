@@ -302,11 +302,10 @@ def run_cell(cell, cell_idx, data, baselines, report_common):
     interior_j = jnp.asarray(interior)
 
     def make_ic_fit(dec_full_one):
-        """dec_full_one(z) -> (n^2,) full-grid decode for ONE latent."""
-        bank = jax.lax.map(dec_full_one, t0_codes)          # (n_t0, n^2)
-        bank_sq = jnp.sum(bank * bank, axis=1)
-
-        def ic_fit(u0):
+        """dec_full_one(z) -> (n^2,) full-grid decode for ONE latent.  The
+        decoded-t0 bank (n_t0, n^2; ~1.2 GB at N=512) is an EXPLICIT argument
+        -- never a jit-captured constant (CLAUDE.md landmine)."""
+        def ic_fit(u0, bank, bank_sq):
             d2 = bank_sq - 2.0 * (bank @ u0)
             top = jax.lax.top_k(-d2, IC_TOPK)[1]
             inits = jnp.concatenate([zbar[None, :], t0_codes[top]], axis=0)
@@ -323,6 +322,11 @@ def run_cell(cell, cell_idx, data, baselines, report_common):
     dec_full_mesh = lambda z: dec(z, coords_j)
     ic_fit_cached = jax.jit(make_ic_fit(dec_full_cached))
     ic_fit_mesh = jax.jit(make_ic_fit(dec_full_mesh))
+    # one shared bank (decoded t0 fields; identical between arms to ~1e-15,
+    # used ONLY for init selection)
+    ic_bank = jax.lax.map(jax.jit(dec_full_cached), t0_codes)
+    ic_bank_sq = jnp.sum(ic_bank * ic_bank, axis=1)
+    ic_bank.block_until_ready()
 
     # ------------------ end-to-end jitted paths ------------------------------
     def make_paths(ops, ic_fit, dec_all):
@@ -337,8 +341,9 @@ def run_cell(cell, cell_idx, data, baselines, report_common):
             fields = dec_all(jnp.concatenate([z0[None, :], Z], axis=0))
             return fields, Z, rns, nJs, reasons
 
-        def e2e(u0, nu):
-            z0, ic_rel, ic_best, ic_rns, ic_rsn, ic_nJ = ic_fit(u0)
+        def e2e(u0, nu, bank, bank_sq):
+            z0, ic_rel, ic_best, ic_rns, ic_rsn, ic_nJ = ic_fit(u0, bank,
+                                                               bank_sq)
             fields, Z, rns, nJs, reasons = rodec(z0, nu, us_of(u0))
             return (fields, z0, ic_rel, ic_best, ic_rns, ic_rsn, ic_nJ,
                     rns, nJs, reasons)
@@ -361,7 +366,7 @@ def run_cell(cell, cell_idx, data, baselines, report_common):
         Ut = np.asarray(U_test[i])
         utn = np.linalg.norm(Ut, axis=1)
         for arm, (e2e, rodec_, ic_fit, ops) in arms.items():
-            out = e2e(u0, nu)
+            out = e2e(u0, nu, ic_bank, ic_bank_sq)
             (fields, z0, ic_rel, ic_best, ic_rns, ic_rsn, ic_nJ,
              rns, nJs, reasons) = [np.asarray(o) for o in out]
             per = np.linalg.norm(fields - Ut, axis=1) / utn
@@ -421,16 +426,19 @@ def run_cell(cell, cell_idx, data, baselines, report_common):
         nub = jnp.asarray(nu_test[i:i + 1])
         nu = float(nu_test[i])
         us = us_of(u0)
-        z0_cached = e2e_cached(u0, nu)[1]
-        z0_mesh = e2e_mesh(u0, nu)[1]
+        z0_cached = e2e_cached(u0, nu, ic_bank, ic_bank_sq)[1]
+        z0_mesh = e2e_mesh(u0, nu, ic_bank, ic_bank_sq)[1]
         z0_cached.block_until_ready(); z0_mesh.block_until_ready()
         ctol_tol.burn_in(1.0)
         thunks = {
-            "rom_cached_e2e": lambda: e2e_cached(u0, nu)[0].block_until_ready(),
-            "rom_cached_icfit": lambda: ic_fit_cached(u0)[0].block_until_ready(),
+            "rom_cached_e2e": lambda: e2e_cached(u0, nu, ic_bank, ic_bank_sq)[0]
+                .block_until_ready(),
+            "rom_cached_icfit": lambda: ic_fit_cached(u0, ic_bank, ic_bank_sq)[0]
+                .block_until_ready(),
             "rom_cached_rollout_decode":
                 lambda: rodec_cached(z0_cached, nu, us)[0].block_until_ready(),
-            "rom_meshfree_e2e": lambda: e2e_mesh(u0, nu)[0].block_until_ready(),
+            "rom_meshfree_e2e": lambda: e2e_mesh(u0, nu, ic_bank, ic_bank_sq)[0]
+                .block_until_ready(),
             "fom_truth_newton8":
                 lambda: fom_roll(U0b, nub)[0].block_until_ready(),
         }

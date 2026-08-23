@@ -1,0 +1,171 @@
+host=pax008 gpu=NVIDIA H200
+jax_backend=gpu
+manifest OK
+jax_backend=gpu device=cuda:0 x64=True N=512 cells=[{'K': 16, 'R': 64, 'nff': 128, 'ffs': 4.0, 'steps': 60000}, {'K': 8, 'R': 32, 'nff': 128, 'ffs': 4.0, 'steps': 60000}, {'K': 24, 'R': 96, 'nff': 128, 'ffs': 4.0, 'steps': 60000}] seed=0
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 214s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12 (gen chunk 8)
+  training states: 6144 of 29376 (576 t=0 states kept)
+   FOM newton ntol=1e-02 lin=1e-03: err 3.087e-04  iters/step 1.0
+   FOM newton ntol=1e-04 lin=1e-05: err 1.460e-04  iters/step 1.1
+   FOM newton ntol=1e-06 lin=1e-07: err 6.920e-08  iters/step 2.0
+   train[burgers N=512 K16_R64_nff128_ffs4] step      1/60000  rel-MSE 1.191e+00  [96s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step   2000/60000  rel-MSE 7.948e-03  [182s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step   4000/60000  rel-MSE 3.451e-03  [268s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step   6000/60000  rel-MSE 2.287e-03  [354s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step   8000/60000  rel-MSE 1.917e-03  [440s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  10000/60000  rel-MSE 1.615e-03  [526s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  12000/60000  rel-MSE 1.455e-03  [612s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  14000/60000  rel-MSE 1.296e-03  [699s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  16000/60000  rel-MSE 1.291e-03  [785s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  18000/60000  rel-MSE 1.215e-03  [871s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  20000/60000  rel-MSE 1.106e-03  [957s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  22000/60000  rel-MSE 1.098e-03  [1043s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  24000/60000  rel-MSE 1.038e-03  [1130s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  26000/60000  rel-MSE 1.060e-03  [1216s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  28000/60000  rel-MSE 9.974e-04  [1302s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  30000/60000  rel-MSE 9.793e-04  [1388s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  32000/60000  rel-MSE 9.568e-04  [1474s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  34000/60000  rel-MSE 9.441e-04  [1560s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  36000/60000  rel-MSE 9.701e-04  [1646s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  38000/60000  rel-MSE 9.240e-04  [1733s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  40000/60000  rel-MSE 9.096e-04  [1819s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  42000/60000  rel-MSE 8.968e-04  [1905s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  44000/60000  rel-MSE 8.868e-04  [1991s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  46000/60000  rel-MSE 8.798e-04  [2078s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  48000/60000  rel-MSE 8.730e-04  [2164s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  50000/60000  rel-MSE 8.676e-04  [2250s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  52000/60000  rel-MSE 8.621e-04  [2336s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  54000/60000  rel-MSE 8.574e-04  [2422s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  56000/60000  rel-MSE 8.530e-04  [2509s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  58000/60000  rel-MSE 8.491e-04  [2595s]
+   train[burgers N=512 K16_R64_nff128_ffs4] step  60000/60000  rel-MSE 8.456e-04  [2681s]
+   train[burgers N=512 K16_R64_nff128_ffs4] done: recon rel-L2 mean 2.880e-02 max 4.362e-01  [2683s]
+  NNLS-EQ sep burgers N=512 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 5.25e-03 (row p95 4.4e-01, max 2.6e+02) [13s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 2.23e-15
+   cached   traj 0: ic 2.15e-02 (init 2)  err 1.552e-02  jac 309  reasons {'stalled': 50}  dev(incumbent) 1.5e-10
+   meshfree traj 0: ic 2.15e-02 (init 3)  err 1.552e-02  jac 310  reasons {'stalled': 50}  dev(incumbent) 1.6e-10
+   cached   traj 1: ic 5.45e-02 (init 3)  err 1.740e-02  jac 299  reasons {'stalled': 50}  dev(incumbent) 3.7e-10
+   meshfree traj 1: ic 5.45e-02 (init 3)  err 1.740e-02  jac 298  reasons {'stalled': 50}  dev(incumbent) 1.9e-10
+   cached   traj 2: ic 4.89e-02 (init 2)  err 2.191e-02  jac 387  reasons {'stalled': 50}  dev(incumbent) 1.2e-09
+   meshfree traj 2: ic 4.89e-02 (init 2)  err 2.191e-02  jac 390  reasons {'stalled': 50}  dev(incumbent) 1.2e-10
+   cached   traj 3: ic 7.94e-02 (init 3)  err 5.344e-02  jac 305  reasons {'stalled': 50}  dev(incumbent) 6.0e-10
+   meshfree traj 3: ic 7.94e-02 (init 3)  err 5.344e-02  jac 301  reasons {'stalled': 50}  dev(incumbent) 6.2e-10
+   cached   traj 4: ic 9.67e-02 (init 2)  err 6.088e-02  jac 365  reasons {'stalled': 50}  dev(incumbent) 1.2e-10
+   meshfree traj 4: ic 9.67e-02 (init 2)  err 6.088e-02  jac 366  reasons {'stalled': 50}  dev(incumbent) 1.2e-10
+   cached   traj 5: ic 2.79e-02 (init 1)  err 7.308e-03  jac 398  reasons {'stalled': 50}  dev(incumbent) 2.7e-10
+   meshfree traj 5: ic 2.79e-02 (init 1)  err 7.308e-03  jac 396  reasons {'stalled': 49, 'budget': 1}  dev(incumbent) 2.4e-10
+   timed traj 0: rom_cached_e2e=63.1ms  rom_cached_icfit=9.7ms  rom_cached_rollout_decode=55.0ms  rom_meshfree_e2e=231.8ms  fom_truth_newton8=244.1ms  fom_newton_ntol0.01_lin0.001=14.6ms  fom_newton_ntol0.0001_lin1e-05=22.8ms  fom_newton_ntol1e-06_lin1e-07=47.1ms
+   timed traj 1: rom_cached_e2e=59.7ms  rom_cached_icfit=9.7ms  rom_cached_rollout_decode=51.3ms  rom_meshfree_e2e=231.9ms  fom_truth_newton8=316.6ms  fom_newton_ntol0.01_lin0.001=16.3ms  fom_newton_ntol0.0001_lin1e-05=23.7ms  fom_newton_ntol1e-06_lin1e-07=60.9ms
+   timed traj 2: rom_cached_e2e=84.5ms  rom_cached_icfit=12.3ms  rom_cached_rollout_decode=74.1ms  rom_meshfree_e2e=284.1ms  fom_truth_newton8=397.9ms  fom_newton_ntol0.01_lin0.001=21.6ms  fom_newton_ntol0.0001_lin1e-05=33.1ms  fom_newton_ntol1e-06_lin1e-07=80.1ms
+   timed traj 3: rom_cached_e2e=63.9ms  rom_cached_icfit=10.4ms  rom_cached_rollout_decode=55.2ms  rom_meshfree_e2e=245.0ms  fom_truth_newton8=409.3ms  fom_newton_ntol0.01_lin0.001=21.3ms  fom_newton_ntol0.0001_lin1e-05=29.4ms  fom_newton_ntol1e-06_lin1e-07=77.5ms
+   timed traj 4: rom_cached_e2e=75.8ms  rom_cached_icfit=8.5ms  rom_cached_rollout_decode=68.9ms  rom_meshfree_e2e=236.4ms  fom_truth_newton8=448.1ms  fom_newton_ntol0.01_lin0.001=22.4ms  fom_newton_ntol0.0001_lin1e-05=37.0ms  fom_newton_ntol1e-06_lin1e-07=87.8ms
+   timed traj 5: rom_cached_e2e=87.3ms  rom_cached_icfit=13.6ms  rom_cached_rollout_decode=76.4ms  rom_meshfree_e2e=302.1ms  fom_truth_newton8=315.0ms  fom_newton_ntol0.01_lin0.001=17.8ms  fom_newton_ntol0.0001_lin1e-05=29.3ms  fom_newton_ntol1e-06_lin1e-07=65.3ms
+CELL DONE burgers K16_R64_nff128_ffs4 [2786s] -> /cluster/tufts/paralab/tawal01/sepdec_n512/j2/out/sep_burgers_K16_R64_nff128_ffs4.json
+   train[burgers N=512 K8_R32_nff128_ffs4] step      1/60000  rel-MSE 1.059e+00  [92s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step   2000/60000  rel-MSE 1.402e-02  [170s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step   4000/60000  rel-MSE 7.218e-03  [248s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step   6000/60000  rel-MSE 6.188e-03  [326s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step   8000/60000  rel-MSE 5.262e-03  [405s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  10000/60000  rel-MSE 5.035e-03  [483s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  12000/60000  rel-MSE 4.932e-03  [561s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  14000/60000  rel-MSE 4.811e-03  [640s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  16000/60000  rel-MSE 4.735e-03  [718s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  18000/60000  rel-MSE 4.690e-03  [796s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  20000/60000  rel-MSE 4.661e-03  [875s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  22000/60000  rel-MSE 4.621e-03  [953s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  24000/60000  rel-MSE 4.620e-03  [1032s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  26000/60000  rel-MSE 4.606e-03  [1110s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  28000/60000  rel-MSE 4.559e-03  [1188s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  30000/60000  rel-MSE 4.534e-03  [1267s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  32000/60000  rel-MSE 4.525e-03  [1345s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  34000/60000  rel-MSE 4.527e-03  [1423s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  36000/60000  rel-MSE 4.508e-03  [1502s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  38000/60000  rel-MSE 4.499e-03  [1580s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  40000/60000  rel-MSE 4.491e-03  [1659s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  42000/60000  rel-MSE 4.484e-03  [1737s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  44000/60000  rel-MSE 4.479e-03  [1815s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  46000/60000  rel-MSE 4.475e-03  [1894s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  48000/60000  rel-MSE 4.471e-03  [1972s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  50000/60000  rel-MSE 4.467e-03  [2051s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  52000/60000  rel-MSE 4.463e-03  [2129s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  54000/60000  rel-MSE 4.460e-03  [2207s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  56000/60000  rel-MSE 4.458e-03  [2286s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  58000/60000  rel-MSE 4.455e-03  [2364s]
+   train[burgers N=512 K8_R32_nff128_ffs4] step  60000/60000  rel-MSE 4.453e-03  [2442s]
+   train[burgers N=512 K8_R32_nff128_ffs4] done: recon rel-L2 mean 6.394e-02 max 6.395e-01  [2443s]
+  NNLS-EQ sep burgers N=512 k=8 M=32 m=128: pool 4096 support 128 (+0 pad) rel fit 1.15e-02 (row p95 3.7e-01, max 5.3e+02) [4s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 1.93e-15
+   cached   traj 0: ic 5.21e-02 (init 0)  err 2.265e-02  jac 336  reasons {'stalled': 50}  dev(incumbent) 8.5e-11
+   meshfree traj 0: ic 5.21e-02 (init 0)  err 2.265e-02  jac 338  reasons {'stalled': 50}  dev(incumbent) 8.5e-11
+   cached   traj 1: ic 1.02e-01 (init 0)  err 3.325e-02  jac 269  reasons {'stalled': 50}  dev(incumbent) 3.0e-10
+   meshfree traj 1: ic 1.02e-01 (init 0)  err 3.325e-02  jac 265  reasons {'stalled': 50}  dev(incumbent) 4.9e-10
+   cached   traj 2: ic 1.35e-01 (init 0)  err 5.494e-02  jac 417  reasons {'stalled': 50}  dev(incumbent) 8.1e-10
+   meshfree traj 2: ic 1.35e-01 (init 0)  err 5.494e-02  jac 416  reasons {'stalled': 50}  dev(incumbent) 5.5e-10
+   cached   traj 3: ic 1.42e-01 (init 3)  err 1.085e-01  jac 268  reasons {'stalled': 50}  dev(incumbent) 1.9e-10
+   meshfree traj 3: ic 1.42e-01 (init 0)  err 1.085e-01  jac 267  reasons {'stalled': 50}  dev(incumbent) 1.5e-10
+   cached   traj 4: ic 2.27e-01 (init 3)  err 1.363e-01  jac 307  reasons {'stalled': 50}  dev(incumbent) 1.6e-10
+   meshfree traj 4: ic 2.27e-01 (init 3)  err 1.363e-01  jac 309  reasons {'stalled': 50}  dev(incumbent) 4.1e-10
+   cached   traj 5: ic 3.94e-02 (init 1)  err 1.148e-02  jac 417  reasons {'budget': 1, 'stalled': 49}  dev(incumbent) 3.2e-10
+   meshfree traj 5: ic 3.94e-02 (init 1)  err 1.148e-02  jac 412  reasons {'budget': 1, 'stalled': 49}  dev(incumbent) 1.7e-10
+   timed traj 0: rom_cached_e2e=66.3ms  rom_cached_icfit=6.5ms  rom_cached_rollout_decode=60.7ms  rom_meshfree_e2e=236.0ms  fom_truth_newton8=246.6ms
+   timed traj 1: rom_cached_e2e=46.5ms  rom_cached_icfit=8.2ms  rom_cached_rollout_decode=39.2ms  rom_meshfree_e2e=250.5ms  fom_truth_newton8=318.2ms
+   timed traj 2: rom_cached_e2e=84.9ms  rom_cached_icfit=8.2ms  rom_cached_rollout_decode=77.6ms  rom_meshfree_e2e=284.3ms  fom_truth_newton8=400.9ms
+   timed traj 3: rom_cached_e2e=48.8ms  rom_cached_icfit=5.7ms  rom_cached_rollout_decode=44.4ms  rom_meshfree_e2e=208.0ms  fom_truth_newton8=411.0ms
+   timed traj 4: rom_cached_e2e=64.9ms  rom_cached_icfit=6.6ms  rom_cached_rollout_decode=59.2ms  rom_meshfree_e2e=233.3ms  fom_truth_newton8=452.2ms
+   timed traj 5: rom_cached_e2e=77.5ms  rom_cached_icfit=7.7ms  rom_cached_rollout_decode=71.5ms  rom_meshfree_e2e=273.8ms  fom_truth_newton8=316.7ms
+CELL DONE burgers K8_R32_nff128_ffs4 [2517s] -> /cluster/tufts/paralab/tawal01/sepdec_n512/j2/out/sep_burgers_K8_R32_nff128_ffs4.json
+   train[burgers N=512 K24_R96_nff128_ffs4] step      1/60000  rel-MSE 1.393e+00  [94s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step   2000/60000  rel-MSE 7.886e-03  [197s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step   4000/60000  rel-MSE 2.965e-03  [300s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step   6000/60000  rel-MSE 1.711e-03  [404s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step   8000/60000  rel-MSE 1.483e-03  [507s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  10000/60000  rel-MSE 1.091e-03  [611s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  12000/60000  rel-MSE 9.302e-04  [714s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  14000/60000  rel-MSE 8.242e-04  [818s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  16000/60000  rel-MSE 7.197e-04  [921s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  18000/60000  rel-MSE 6.746e-04  [1025s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  20000/60000  rel-MSE 6.645e-04  [1128s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  22000/60000  rel-MSE 6.065e-04  [1232s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  24000/60000  rel-MSE 5.977e-04  [1335s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  26000/60000  rel-MSE 5.724e-04  [1439s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  28000/60000  rel-MSE 5.932e-04  [1542s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  30000/60000  rel-MSE 5.097e-04  [1646s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  32000/60000  rel-MSE 4.954e-04  [1749s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  34000/60000  rel-MSE 4.779e-04  [1853s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  36000/60000  rel-MSE 4.719e-04  [1956s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  38000/60000  rel-MSE 4.516e-04  [2060s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  40000/60000  rel-MSE 4.364e-04  [2163s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  42000/60000  rel-MSE 4.261e-04  [2266s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  44000/60000  rel-MSE 4.177e-04  [2369s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  46000/60000  rel-MSE 4.119e-04  [2472s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  48000/60000  rel-MSE 4.061e-04  [2575s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  50000/60000  rel-MSE 3.998e-04  [2678s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  52000/60000  rel-MSE 3.948e-04  [2781s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  54000/60000  rel-MSE 3.904e-04  [2885s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  56000/60000  rel-MSE 3.863e-04  [2988s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  58000/60000  rel-MSE 3.826e-04  [3091s]
+   train[burgers N=512 K24_R96_nff128_ffs4] step  60000/60000  rel-MSE 3.792e-04  [3194s]
+   train[burgers N=512 K24_R96_nff128_ffs4] done: recon rel-L2 mean 2.065e-02 max 3.090e-01  [3196s]
+  NNLS-EQ sep burgers N=512 k=24 M=96 m=384: pool 4096 support 384 (+0 pad) rel fit 3.66e-03 (row p95 5.9e-01, max 2.0e+03) [35s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 2.41e-15
+   cached   traj 0: ic 2.33e-02 (init 1)  err 1.230e-02  jac 311  reasons {'stalled': 50}  dev(incumbent) 6.8e-11
+   meshfree traj 0: ic 2.33e-02 (init 0)  err 1.230e-02  jac 311  reasons {'stalled': 50}  dev(incumbent) 4.8e-11
+   cached   traj 1: ic 3.41e-02 (init 0)  err 3.044e-02  jac 369  reasons {'stalled': 50}  dev(incumbent) 1.2e-10
+   meshfree traj 1: ic 3.41e-02 (init 3)  err 3.044e-02  jac 370  reasons {'stalled': 50}  dev(incumbent) 3.8e-11
+   cached   traj 2: ic 4.10e-02 (init 0)  err 1.970e-02  jac 386  reasons {'stalled': 50}  dev(incumbent) 3.2e-10
+   meshfree traj 2: ic 4.10e-02 (init 0)  err 1.970e-02  jac 385  reasons {'stalled': 50}  dev(incumbent) 3.4e-10
+   cached   traj 3: ic 6.02e-02 (init 3)  err 4.070e-02  jac 308  reasons {'stalled': 50}  dev(incumbent) 4.0e-10
+   meshfree traj 3: ic 6.02e-02 (init 3)  err 4.070e-02  jac 305  reasons {'stalled': 50}  dev(incumbent) 8.1e-10
+   cached   traj 4: ic 7.56e-02 (init 3)  err 4.701e-02  jac 355  reasons {'stalled': 50}  dev(incumbent) 3.7e-10
+   meshfree traj 4: ic 7.56e-02 (init 3)  err 4.701e-02  jac 359  reasons {'stalled': 50}  dev(incumbent) 3.3e-10
+   cached   traj 5: ic 2.13e-02 (init 1)  err 6.153e-03  jac 353  reasons {'stalled': 50}  dev(incumbent) 6.7e-11
+   meshfree traj 5: ic 2.13e-02 (init 3)  err 6.153e-03  jac 352  reasons {'stalled': 50}  dev(incumbent) 2.2e-10
+   timed traj 0: rom_cached_e2e=70.8ms  rom_cached_icfit=17.0ms  rom_cached_rollout_decode=53.8ms  rom_meshfree_e2e=272.9ms  fom_truth_newton8=246.2ms
+   timed traj 1: rom_cached_e2e=77.3ms  rom_cached_icfit=13.1ms  rom_cached_rollout_decode=63.4ms  rom_meshfree_e2e=253.8ms  fom_truth_newton8=316.3ms
+   timed traj 2: rom_cached_e2e=92.2ms  rom_cached_icfit=17.9ms  rom_cached_rollout_decode=75.4ms  rom_meshfree_e2e=305.3ms  fom_truth_newton8=400.5ms
+   timed traj 3: rom_cached_e2e=71.4ms  rom_cached_icfit=17.0ms  rom_cached_rollout_decode=54.9ms  rom_meshfree_e2e=276.9ms  fom_truth_newton8=408.7ms
+   timed traj 4: rom_cached_e2e=88.9ms  rom_cached_icfit=19.8ms  rom_cached_rollout_decode=68.0ms  rom_meshfree_e2e=312.8ms  fom_truth_newton8=450.7ms
+   timed traj 5: rom_cached_e2e=82.8ms  rom_cached_icfit=17.0ms  rom_cached_rollout_decode=65.1ms  rom_meshfree_e2e=287.3ms  fom_truth_newton8=314.8ms
+CELL DONE burgers K24_R96_nff128_ffs4 [3325s] -> /cluster/tufts/paralab/tawal01/sepdec_n512/j2/out/sep_burgers_K24_R96_nff128_ffs4.json
+ALL CELLS DONE burgers [8907s]
+ALL-DONE

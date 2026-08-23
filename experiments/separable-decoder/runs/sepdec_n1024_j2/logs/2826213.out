@@ -1,0 +1,119 @@
+host=pax008 gpu=NVIDIA H200
+jax_backend=gpu
+=== burgers N=1024 K=16 R=64 ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=16 R=64 M=64 m=256 steps=40000 seed=0 n_train=96+8 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 104 trajectories (50 Newton-implicit steps each) in 245s, max Newton rel residual 9.95e-13
+  data check: max FOM rel residual over all trajectories 9.95e-13
+   train[burgers N=1024 k=16 r=64] step      1/40000  rel-MSE 1.151e+00  [156s]
+   train[burgers N=1024 k=16 r=64] step   2000/40000  rel-MSE 5.463e-03  [290s]
+   train[burgers N=1024 k=16 r=64] step   4000/40000  rel-MSE 1.836e-03  [424s]
+   train[burgers N=1024 k=16 r=64] step   6000/40000  rel-MSE 1.048e-03  [559s]
+   train[burgers N=1024 k=16 r=64] step   8000/40000  rel-MSE 7.567e-04  [694s]
+   train[burgers N=1024 k=16 r=64] step  10000/40000  rel-MSE 6.106e-04  [828s]
+   train[burgers N=1024 k=16 r=64] step  12000/40000  rel-MSE 5.137e-04  [963s]
+   train[burgers N=1024 k=16 r=64] step  14000/40000  rel-MSE 4.708e-04  [1098s]
+   train[burgers N=1024 k=16 r=64] step  16000/40000  rel-MSE 4.218e-04  [1232s]
+   train[burgers N=1024 k=16 r=64] step  18000/40000  rel-MSE 3.795e-04  [1367s]
+   train[burgers N=1024 k=16 r=64] step  20000/40000  rel-MSE 3.517e-04  [1502s]
+   train[burgers N=1024 k=16 r=64] step  22000/40000  rel-MSE 3.332e-04  [1636s]
+   train[burgers N=1024 k=16 r=64] step  24000/40000  rel-MSE 3.205e-04  [1771s]
+   train[burgers N=1024 k=16 r=64] step  26000/40000  rel-MSE 3.056e-04  [1905s]
+   train[burgers N=1024 k=16 r=64] step  28000/40000  rel-MSE 2.970e-04  [2040s]
+   train[burgers N=1024 k=16 r=64] step  30000/40000  rel-MSE 2.858e-04  [2174s]
+   train[burgers N=1024 k=16 r=64] step  32000/40000  rel-MSE 2.749e-04  [2309s]
+   train[burgers N=1024 k=16 r=64] step  34000/40000  rel-MSE 2.681e-04  [2444s]
+   train[burgers N=1024 k=16 r=64] step  36000/40000  rel-MSE 2.621e-04  [2578s]
+   train[burgers N=1024 k=16 r=64] step  38000/40000  rel-MSE 2.568e-04  [2713s]
+   train[burgers N=1024 k=16 r=64] step  40000/40000  rel-MSE 2.522e-04  [2847s]
+   train[burgers N=1024 k=16 r=64] done: recon rel-L2 mean 1.872e-02 max 1.884e-01  [2850s]
+  NNLS-EQ sep burgers N=1024 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 5.31e-03 (row p95 4.1e-01, max 1.5e+03) [15s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 8.40e-15
+   IC check traj 0: span-fit 4.261e-02 vs incumbent (mean init, budget 30) 4.261e-02
+   IC traj 0: rel 4.261e-02 (est 4.261e-02)
+   IC traj 1: rel 5.506e-01 (est 5.506e-01)
+   IC traj 2: rel 1.355e-01 (est 1.355e-01)
+   IC traj 3: rel 9.630e-02 (est 9.630e-02)
+   meshfree traj 0: ic 4.26e-02  err 3.824e-02  jac 390  n_done 50
+   meshfree traj 1: ic 5.51e-01  err 3.090e-01  jac 346  n_done 50
+   meshfree traj 2: ic 1.35e-01  err 7.345e-02  jac 333  n_done 50
+   meshfree traj 3: ic 9.63e-02  err 4.772e-02  jac 315  n_done 50
+   cached   traj 0: ic 4.26e-02  err 3.824e-02  jac 387  n_done 50  e2e    69.78 ms (ic 3.95 + roll+dec 65.25)
+   cached   traj 1: ic 5.51e-01  err 3.090e-01  jac 345  n_done 50  e2e    58.53 ms (ic 3.96 + roll+dec 54.92)
+   cached   traj 2: ic 1.35e-01  err 7.345e-02  jac 333  n_done 50  e2e    53.61 ms (ic 3.97 + roll+dec 49.60)
+   cached   traj 3: ic 9.63e-02  err 4.772e-02  jac 316  n_done 50  e2e    60.84 ms (ic 3.96 + roll+dec 57.81)
+   FOM truth(newton8,lin1e-10) traj 0:   1659.59 ms  max step rel res 3.3e-14
+   FOM truth(newton8,lin1e-10) traj 1:   1257.73 ms  max step rel res 8.7e-13
+   FOM truth(newton8,lin1e-10) traj 2:   1564.20 ms  max step rel res 4.7e-14
+   FOM truth(newton8,lin1e-10) traj 3:   1609.36 ms  max step rel res 5.8e-13
+   tol-Newton ntol=1e-02 traj 0:    258.80 ms  err 1.925e-04  newton 50  paired ROM 69.70 / TN 258.86 ms
+   tol-Newton ntol=1e-02 traj 1:    380.55 ms  err 9.988e-04  newton 50  paired ROM 59.35 / TN 380.55 ms
+   tol-Newton ntol=1e-02 traj 2:    306.78 ms  err 1.071e-04  newton 51  paired ROM 54.14 / TN 306.70 ms
+   tol-Newton ntol=1e-02 traj 3:    314.01 ms  err 6.569e-04  newton 50  paired ROM 62.29 / TN 314.07 ms
+   tol-Newton ntol=1e-03 traj 0:    386.18 ms  err 1.193e-04  newton 50  paired ROM 70.27 / TN 386.12 ms
+   tol-Newton ntol=1e-03 traj 1:    496.25 ms  err 7.851e-04  newton 51  paired ROM 59.23 / TN 496.41 ms
+   tol-Newton ntol=1e-03 traj 2:    435.04 ms  err 6.884e-05  newton 51  paired ROM 54.16 / TN 434.77 ms
+   tol-Newton ntol=1e-03 traj 3:    481.89 ms  err 1.298e-04  newton 51  paired ROM 62.21 / TN 482.05 ms
+   tol-Newton ntol=1e-04 traj 0:    462.80 ms  err 1.186e-04  newton 50  paired ROM 70.06 / TN 462.72 ms
+   tol-Newton ntol=1e-04 traj 1:    823.73 ms  err 1.601e-04  newton 60  paired ROM 59.38 / TN 823.94 ms
+   tol-Newton ntol=1e-04 traj 2:    553.51 ms  err 6.217e-05  newton 52  paired ROM 54.24 / TN 553.36 ms
+   tol-Newton ntol=1e-04 traj 3:    645.55 ms  err 1.180e-04  newton 52  paired ROM 62.24 / TN 645.28 ms
+DONE burgers [3442s] -> /cluster/tufts/paralab/tawal01/sepdec_n1024/j2/out/sep_burgers_N1024_K16_R64.json
+=== burgers N=1024 K=8 R=32 ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=8 R=32 M=32 m=128 steps=40000 seed=0 n_train=96+8 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 104 trajectories (50 Newton-implicit steps each) in 245s, max Newton rel residual 9.95e-13
+  data check: max FOM rel residual over all trajectories 9.95e-13
+   train[burgers N=1024 k=8 r=32] step      1/40000  rel-MSE 1.057e+00  [153s]
+   train[burgers N=1024 k=8 r=32] step   2000/40000  rel-MSE 9.832e-03  [275s]
+   train[burgers N=1024 k=8 r=32] step   4000/40000  rel-MSE 4.895e-03  [398s]
+   train[burgers N=1024 k=8 r=32] step   6000/40000  rel-MSE 2.934e-03  [521s]
+   train[burgers N=1024 k=8 r=32] step   8000/40000  rel-MSE 2.355e-03  [645s]
+   train[burgers N=1024 k=8 r=32] step  10000/40000  rel-MSE 2.641e-03  [768s]
+   train[burgers N=1024 k=8 r=32] step  12000/40000  rel-MSE 1.969e-03  [891s]
+   train[burgers N=1024 k=8 r=32] step  14000/40000  rel-MSE 1.892e-03  [1014s]
+   train[burgers N=1024 k=8 r=32] step  16000/40000  rel-MSE 1.853e-03  [1137s]
+   train[burgers N=1024 k=8 r=32] step  18000/40000  rel-MSE 1.796e-03  [1260s]
+   train[burgers N=1024 k=8 r=32] step  20000/40000  rel-MSE 1.777e-03  [1383s]
+   train[burgers N=1024 k=8 r=32] step  22000/40000  rel-MSE 1.766e-03  [1506s]
+   train[burgers N=1024 k=8 r=32] step  24000/40000  rel-MSE 1.713e-03  [1629s]
+   train[burgers N=1024 k=8 r=32] step  26000/40000  rel-MSE 1.699e-03  [1752s]
+   train[burgers N=1024 k=8 r=32] step  28000/40000  rel-MSE 1.683e-03  [1876s]
+   train[burgers N=1024 k=8 r=32] step  30000/40000  rel-MSE 1.674e-03  [1999s]
+   train[burgers N=1024 k=8 r=32] step  32000/40000  rel-MSE 1.665e-03  [2122s]
+   train[burgers N=1024 k=8 r=32] step  34000/40000  rel-MSE 1.658e-03  [2245s]
+   train[burgers N=1024 k=8 r=32] step  36000/40000  rel-MSE 1.652e-03  [2368s]
+   train[burgers N=1024 k=8 r=32] step  38000/40000  rel-MSE 1.647e-03  [2491s]
+   train[burgers N=1024 k=8 r=32] step  40000/40000  rel-MSE 1.643e-03  [2614s]
+   train[burgers N=1024 k=8 r=32] done: recon rel-L2 mean 4.742e-02 max 3.607e-01  [2616s]
+  NNLS-EQ sep burgers N=1024 k=8 M=32 m=128: pool 4096 support 128 (+0 pad) rel fit 9.36e-03 (row p95 2.8e-01, max 7.1e+01) [6s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 4.75e-15
+   IC check traj 0: span-fit 6.646e-02 vs incumbent (mean init, budget 30) 7.822e-02
+   IC traj 0: rel 6.646e-02 (est 6.646e-02)
+   IC traj 1: rel 6.425e-01 (est 6.425e-01)
+   IC traj 2: rel 1.666e-01 (est 1.666e-01)
+   IC traj 3: rel 1.313e-01 (est 1.313e-01)
+   meshfree traj 0: ic 6.65e-02  err 6.386e-02  jac 304  n_done 50
+   meshfree traj 1: ic 6.42e-01  err 3.940e-01  jac 296  n_done 50
+   meshfree traj 2: ic 1.67e-01  err 9.548e-02  jac 318  n_done 50
+   meshfree traj 3: ic 1.31e-01  err 7.525e-02  jac 343  n_done 50
+   cached   traj 0: ic 6.65e-02  err 6.386e-02  jac 303  n_done 50  e2e    52.42 ms (ic 3.16 + roll+dec 46.58)
+   cached   traj 1: ic 6.42e-01  err 3.940e-01  jac 296  n_done 50  e2e    50.98 ms (ic 3.13 + roll+dec 47.47)
+   cached   traj 2: ic 1.67e-01  err 9.548e-02  jac 321  n_done 50  e2e    55.25 ms (ic 3.15 + roll+dec 52.77)
+   cached   traj 3: ic 1.31e-01  err 7.525e-02  jac 344  n_done 50  e2e    65.62 ms (ic 3.15 + roll+dec 58.96)
+   FOM truth(newton8,lin1e-10) traj 0:   1658.37 ms  max step rel res 3.3e-14
+   FOM truth(newton8,lin1e-10) traj 1:   1254.55 ms  max step rel res 8.7e-13
+   FOM truth(newton8,lin1e-10) traj 2:   1567.19 ms  max step rel res 4.7e-14
+   FOM truth(newton8,lin1e-10) traj 3:   1608.20 ms  max step rel res 5.8e-13
+   tol-Newton ntol=1e-02 traj 0:    256.96 ms  err 1.889e-04  newton 50  paired ROM 52.99 / TN 256.41 ms
+   tol-Newton ntol=1e-02 traj 1:    393.03 ms  err 1.000e-03  newton 50  paired ROM 51.55 / TN 392.89 ms
+   tol-Newton ntol=1e-02 traj 2:    308.87 ms  err 9.873e-05  newton 51  paired ROM 56.23 / TN 308.72 ms
+   tol-Newton ntol=1e-02 traj 3:    316.29 ms  err 6.968e-04  newton 50  paired ROM 66.23 / TN 316.03 ms
+   tol-Newton ntol=1e-03 traj 0:    373.62 ms  err 1.195e-04  newton 50  paired ROM 52.82 / TN 373.77 ms
+   tol-Newton ntol=1e-03 traj 1:    480.92 ms  err 7.848e-04  newton 51  paired ROM 51.42 / TN 481.42 ms
+   tol-Newton ntol=1e-03 traj 2:    435.64 ms  err 6.867e-05  newton 51  paired ROM 55.88 / TN 435.15 ms
+   tol-Newton ntol=1e-03 traj 3:    491.83 ms  err 1.297e-04  newton 51  paired ROM 66.19 / TN 492.13 ms
+   tol-Newton ntol=1e-04 traj 0:    463.15 ms  err 1.185e-04  newton 50  paired ROM 52.67 / TN 463.22 ms
+   tol-Newton ntol=1e-04 traj 1:    811.06 ms  err 1.600e-04  newton 60  paired ROM 51.53 / TN 811.35 ms
+   tol-Newton ntol=1e-04 traj 2:    551.46 ms  err 6.222e-05  newton 52  paired ROM 55.97 / TN 550.81 ms
+   tol-Newton ntol=1e-04 traj 3:    647.11 ms  err 1.180e-04  newton 52  paired ROM 66.53 / TN 646.95 ms
+DONE burgers [3173s] -> /cluster/tufts/paralab/tawal01/sepdec_n1024/j2/out/sep_burgers_N1024_K8_R32.json
+ALL-DONE

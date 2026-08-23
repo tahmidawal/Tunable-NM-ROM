@@ -44,15 +44,14 @@ burg () {  # burg <K>
     "$PY" sep_burgers.py
 }
 
-# primary K=16 first in each PDE so a late failure cannot cost the main cells
-pois 16
-pois 8
-pois 24
-pois 32
-burg 16
-burg 8
-burg 24
-burg 32
+# primary K=16 first in each PDE so a late failure cannot cost the main cells.
+# each cell is fault-isolated: one failed cell must not kill the sweep.
+FAILED=""
+for c in "pois 16" "pois 8" "pois 24" "pois 32" \
+         "burg 16" "burg 8" "burg 24" "burg 32"; do
+  if ! $c; then FAILED="$FAILED [$c]"; echo "CELL-FAILED: $c"; fi
+done
+if [ -n "$FAILED" ]; then echo "FAILED CELLS:$FAILED"; fi
 
 cd "$ROOT/out" && sha256sum *.json *.pkl > RESULTS.sha256
 echo ALL-DONE

@@ -497,6 +497,8 @@ def main():
         per_traj[("sep_cached", None)][-1]["dev_vs_untimed_incumbent"] = dev
         per_traj[("sep_cached", None)][-1]["untimed_traj_rel"] = ro.get("traj_rel")
         per_traj[("sep_cached", None)][-1]["untimed_n_done"] = int(ro["n_done"])
+        # crash-safe partial dump (replaced by the aggregated rows at the end)
+        report["partial"] = {f"{n_}|{p_}": v for (n_, p_), v in per_traj.items()}
         save()
 
     # ------------------ aggregate rows ---------------------------------------
@@ -525,6 +527,7 @@ def main():
         report["rows"].append(row)
         save()
 
+    report.pop("partial", None)
     report["complete"] = True
     report["total_seconds"] = time.time() - t_all
     save()

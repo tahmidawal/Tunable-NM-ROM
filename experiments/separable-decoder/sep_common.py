@@ -261,3 +261,27 @@ def time_fn(fn, reps=7, warm=2):
         fn()
         ts.append(time.perf_counter() - t0)
     return float(np.median(ts)), ts
+
+
+def time_multi(thunks, reps=7, warm=2):
+    """Balanced multi-arm timer (AUDIT-2026-08-23 fix: no fixed arm order).
+
+    thunks: dict name -> zero-arg blocking fn.  Every thunk is warmed `warm`
+    times, then `reps` rounds are timed; the within-round order alternates
+    forward / reversed so no arm is systematically first or last.  Returns
+    (raw, order): raw = dict name -> list of `reps` seconds, order = the
+    executed name sequence (for the JSON, so the schedule is auditable)."""
+    names = list(thunks.keys())
+    for nm in names:
+        for _ in range(warm):
+            thunks[nm]()
+    raw = {nm: [] for nm in names}
+    order = []
+    for r in range(reps):
+        seq = names if (r % 2 == 0) else list(reversed(names))
+        for nm in seq:
+            t0 = time.perf_counter()
+            thunks[nm]()
+            raw[nm].append(time.perf_counter() - t0)
+            order.append(nm)
+    return raw, order

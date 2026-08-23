@@ -25,7 +25,7 @@ echo "host=$(hostname) gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader |
 cd "$ROOT/code"
 
 pois () {  # pois <K>
-  local k=$1 r=$((6*k))
+  local k=$1; local r=$((6*k))
   echo "=== poisson K=$k R=$r ==="
   N=128 K=$k R=$r M=$((4*k)) MQ=$((16*k)) STEPS=60000 N_FF=128 \
     N_TEST=16 REPS=7 TR_FACTOR=1.0 FRESH_SEED=1 \
@@ -34,7 +34,7 @@ pois () {  # pois <K>
     "$PY" sep_poisson.py
 }
 burg () {  # burg <K>
-  local k=$1 r=$((6*k))
+  local k=$1; local r=$((6*k))
   echo "=== burgers K=$k R=$r ==="
   N=128 K=$k R=$r M=$((4*k)) MQ=$((16*k)) STEPS=60000 N_FF=128 \
     N_TEST=8 REPS=7 TR_FACTOR=0.01 NTOLS=3e-2,1e-2,1e-3,1e-5 \

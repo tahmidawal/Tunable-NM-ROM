@@ -17,10 +17,37 @@ Cluster namespace: /cluster/tufts/paralab/tawal01/n256_push/ (one subdir per job
 ## ACCURACY TARGET (user directive, 2026-08-23, supersedes "as far as it goes")
 
 The accuracy goal is **rel-L2 ~1e-3 solve error**, not merely improving on 3e-2.
-**Poisson is the primary 1e-3 target.** For Burgers, the POD-floor diagnostic
-(below) decides feasibility BEFORE jobs are sunk into it: if the trajectory-family
-floor says 1e-3 is infeasible at practical R (<=512), say so and propose the
-multi-bank span extension as the follow-up rather than brute-forcing R.
+
+**PRIORITY FLIP (user directive, later on 2026-08-23): BURGERS is the PRIMARY
+1e-3 target.** POD can reach machine precision on either PDE given enough
+modes; the scientific question is whether the NONLINEAR manifold hits ~1e-3
+trajectory rel-L2 on the advection-dominated problem with small K — that is
+the NM-ROM's justification. The Poisson R=512/M-certification round keeps
+running as the CONTROL (it validates the 1e-3 machinery on the easy case),
+but the campaign aims at Burgers:
+
+1. The Burgers POD-floor phase reports the trajectory-family floors vs R
+   prominently, including the spectrum-decay CONTRAST with the Poisson family
+   (that contrast IS the motivation slide). R — and single-span vs multi-bank —
+   is chosen from it.
+2. The Burgers 1e-3 round covers the whole chain at that scale:
+   (a) recon <= ~5e-4 on trajectory states with the v2 trainer;
+   (b) IC fit / encoder accurate to ~5e-4 (it floors the whole trajectory);
+   (c) per-step error-accumulation analysis — error vs step index along the
+       rollout is a REQUIRED table in the JSON, so a 1e-3 failure is
+       attributable to representation vs compounding;
+   (d) objective certification: M and EQ-tail arms at the 1e-3 scale for the
+       weak stepping operators;
+   (e) solver stepping terminating on TOLERANCE, not stall, with tolerances
+       consistent with 1e-3.
+3. The ladder is reported PER COMPONENT: recon / IC-fit / oracle (per-state,
+   fresh trajectories) / single-step solve error / accumulated trajectory
+   error — naming the binding rung each round.
+4. If the POD floor says a single span cannot reach ~5e-4 at practical R
+   (<= 512-1024): implement the multi-bank / z-modulated span extension
+   (cached-bank invariant preserved, gate 0 on every bank) rather than
+   brute-forcing R — nonlinearity-in-x-selection beating one big span is
+   exactly the interesting scientific result either way.
 
 Target ladder — every rung must reach ~1e-3 for the goal to be met:
 

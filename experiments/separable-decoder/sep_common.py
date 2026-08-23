@@ -261,3 +261,91 @@ def time_fn(fn, reps=7, warm=2):
         fn()
         ts.append(time.perf_counter() - t0)
     return float(np.median(ts)), ts
+
+
+# ---------------- N-scaling round additions (2026-08-23, N=1024 agent) -------
+# Mandatory-measurement helpers: balanced AB/BA paired timing with raw reps
+# retained, and the exact linear-span split used for fast (N-independent inner
+# loop) latent fits against KNOWN data (u0 / representation oracle).  The span
+# split is an algebraic identity of the separable decoder, not a new solver:
+#   || G h - u ||^2 = || L^T (h - c*) ||^2 + || G c* - u ||^2,
+#   Gram = G^T G = L L^T,  c* = Gram^{-1} G^T u.
+
+def arch_from_env():
+    """Decoder architecture knobs (HPO search space) from the environment."""
+    return dict(n_ff=int(os.environ.get("N_FF", "64")),
+                ff_scale=float(os.environ.get("FF_SCALE", "4.0")),
+                g_hidden=int(os.environ.get("G_HIDDEN", "128")),
+                g_layers=int(os.environ.get("G_LAYERS", "2")),
+                h_hidden=int(os.environ.get("H_HIDDEN", "128")),
+                h_layers=int(os.environ.get("H_LAYERS", "2")))
+
+
+def time_pair(fa, fb, reps=4, warm=2):
+    """Balanced paired timing: warm both sides, then A B | B A | A B | B A ...
+    (alternating AB/BA blocks).  ALL raw repetitions are returned; medians are
+    derived, never stored alone."""
+    for _ in range(warm):
+        fa(); fb()
+    ta, tb, order = [], [], []
+    for i in range(reps):
+        pair = "ab" if i % 2 == 0 else "ba"
+        for side in pair:
+            t0 = time.perf_counter()
+            (fa if side == "a" else fb)()
+            dt = time.perf_counter() - t0
+            (ta if side == "a" else tb).append(dt)
+            order.append(side)
+    return dict(a_ms=float(np.median(ta) * 1e3), b_ms=float(np.median(tb) * 1e3),
+                a_raw_ms=[t * 1e3 for t in ta], b_raw_ms=[t * 1e3 for t in tb],
+                order="".join(order), reps=int(reps), warm=int(warm))
+
+
+def make_span_fitter(G, h_fn, k_lat, inits, iters=40):
+    """Jitted multi-start damped-LM latent fit to KNOWN data via the span
+    split.  G (n_pts, r) is the cached full feature bank (z-independent);
+    inits (n_start, k).  Returns fit(u) -> (z_best, rel_est, val_best) fully
+    on device: the online cost is one (r x n_pts) matvec G^T u, one r x r
+    triangular solve, and an N-independent r-space LM.  rel_est is the exact
+    total relative misfit sqrt(||L^T(h-c*)||^2 + rlin^2)/||u|| (verify against
+    a direct decode out-of-band; cancellation is negligible at rel >= 1e-6)."""
+    Gram = G.T @ G
+    eps = 1e-12 * jnp.trace(Gram) / Gram.shape[0]
+    Lc = jnp.linalg.cholesky(Gram + eps * jnp.eye(Gram.shape[0], dtype=F64))
+    inits = jnp.asarray(np.stack([np.asarray(z) for z in inits]))
+
+    def phi(z, c):
+        return Lc.T @ (h_fn(z) - c)
+
+    def lm_single(z0, c):
+        def body(carry, _):
+            z, val, lam = carry
+            r = phi(z, c)
+            J = jax.jacfwd(lambda zz: phi(zz, c))(z)
+            H = J.T @ J
+            g = J.T @ r
+            D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(k_lat, dtype=F64)
+            dz = jnp.linalg.solve(H + lam * D, -g)
+            z_new = z + dz
+            v_new = jnp.linalg.norm(phi(z_new, c))
+            ok = jnp.isfinite(v_new) & (v_new < val)
+            z = jnp.where(ok, z_new, z)
+            val = jnp.where(ok, v_new, val)
+            lam = jnp.where(ok, jnp.maximum(lam / 3.0, 1e-12),
+                            jnp.minimum(lam * 10.0, 1e12))
+            return (z, val, lam), None
+        val0 = jnp.linalg.norm(phi(z0, c))
+        (z, val, _), _ = jax.lax.scan(body, (z0, val0, jnp.asarray(1e-6, F64)),
+                                      None, length=iters)
+        return z, val
+
+    def fit(u):
+        b = G.T @ u
+        c = jax.scipy.linalg.cho_solve((Lc, True), b)
+        rlin2 = jnp.maximum(jnp.dot(u, u) - jnp.dot(b, c), 0.0)
+        zs, vals = jax.vmap(lm_single, in_axes=(0, None))(inits, c)
+        i = jnp.argmin(vals)
+        v = vals[i]
+        rel = jnp.sqrt(v * v + rlin2) / jnp.maximum(jnp.linalg.norm(u), 1e-300)
+        return zs[i], rel, v
+    return jax.jit(fit)

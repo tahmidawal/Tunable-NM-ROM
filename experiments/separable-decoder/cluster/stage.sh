@@ -55,6 +55,11 @@ print(f"patched FOM_RES_TOL guard in {p}")
 PYPATCH
 done
 
+# Precondition the STAGED truth generator's inner BiCGStab (see
+# patch_bf_precond.py; discrete residual and truth checks unchanged).
+python3 "$HERE/patch_bf_precond.py" \
+  "$STAGE/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py"
+
 ( cd "$STAGE" && find . -name '*.py' -type f | sort | xargs sha256sum ) \
   > "$HERE/stage.manifest"
 echo "staged $(grep -c . "$HERE/stage.manifest") files -> $STAGE"

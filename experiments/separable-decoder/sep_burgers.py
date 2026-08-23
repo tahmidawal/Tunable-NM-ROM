@@ -79,6 +79,15 @@ def make_tol_newton(n):
     component anywhere."""
     _, residual = bc.bf.make_rollout(n)
     lin_maxiter = bc.bf.LIN_MAXITER
+    # same exact-Helmholtz preconditioner as the (patched) truth generator:
+    # boundary Jacobian rows are identity, interior stiff part is
+    # I + dt*nu*(-lap_h), inverted exactly in the sine basis
+    dxl = 1.0 / (n - 1)
+    _pp = np.arange(1, n - 1)
+    S_pc = jnp.asarray(np.sqrt(2.0 / (n - 1))
+                       * np.sin(np.pi * np.outer(_pp, _pp) / (n - 1)))
+    _l1 = (4.0 / dxl**2) * np.sin(np.pi * _pp / (2 * (n - 1))) ** 2
+    lam_pc = jnp.asarray(_l1[:, None] + _l1[None, :])
 
     def step(u_prev, nu, ntol, lin_tol):
         u_scale = jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
@@ -92,8 +101,14 @@ def make_tol_newton(n):
             r = residual(u, u_prev, nu)
             Jv = lambda v: jax.jvp(
                 lambda uu: residual(uu, u_prev, nu), (u,), (v,))[1]
+            def Minv(v):
+                V = v.reshape(n, n)
+                C = S_pc.T @ V[1:-1, 1:-1] @ S_pc
+                return V.at[1:-1, 1:-1].set(
+                    S_pc @ (C / (1.0 + bc.DT * nu * lam_pc)) @ S_pc.T
+                ).reshape(-1)
             du, _ = jax.scipy.sparse.linalg.bicgstab(
-                Jv, -r, tol=lin_tol, maxiter=lin_maxiter)
+                Jv, -r, tol=lin_tol, maxiter=lin_maxiter, M=Minv)
             ok = jnp.isfinite(du).all()
             u2 = u + jnp.where(ok, du, 0.0)
             rn2 = jnp.linalg.norm(residual(u2, u_prev, nu))

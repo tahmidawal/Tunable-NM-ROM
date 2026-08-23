@@ -186,16 +186,19 @@ def main():
                           fingerprint=bc.data_fingerprint(U),
                           max_fom_rel_residual=d.get("max_fom_rel_residual"))
 
-    # training states: every (trajectory, time) state, interior values
-    S_all = U.reshape(n_traj * T, n2)[:, interior]
+    # training states: subsample of the (trajectory, time) states, interior
+    # values.  Gather the picked rows DIRECTLY from U -- materializing the
+    # full (n_traj*T, n_i^2) state matrix beside U cost 2x71.6 GB host at
+    # N=1024 and contributed to the job-2827675 OOM.
     del d
     rng = np.random.default_rng(SEED0)
-    if S_all.shape[0] > MAX_SNAPS:
-        pick = np.sort(rng.choice(S_all.shape[0], MAX_SNAPS, replace=False))
+    n_states_total = n_traj * T
+    if n_states_total > MAX_SNAPS:
+        pick = np.sort(rng.choice(n_states_total, MAX_SNAPS, replace=False))
     else:
-        pick = np.arange(S_all.shape[0])
-    S_tr = np.ascontiguousarray(S_all[pick])
-    del S_all
+        pick = np.arange(n_states_total)
+    S_tr = np.ascontiguousarray(U[pick // T, pick % T][:, interior])
+    del U
     report["data"]["n_states_total"] = int(n_traj * T)
     report["data"]["n_states_trained"] = int(S_tr.shape[0])
     report["data"]["state_subsample"] = dict(

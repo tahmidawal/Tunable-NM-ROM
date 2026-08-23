@@ -154,19 +154,23 @@ def train_autodecoder(key, coords, U, k_lat, r_feat, steps=30000, lr=1e-3,
     opt = optax.adam(sched)
     state = opt.init((params, Z))
 
-    def loss_fn(pz):
+    # data and coords are EXPLICIT jit arguments -- never close a jit over
+    # the training array (a captured 25.7 GB constant OOM-killed job 2827675
+    # at N=1024 during lowering; same landmine as the nc128 lesson).
+    def loss_fn(pz, U_, coords_):
         p, z = pz
-        G = features(p, coords)                       # (n_pts, r)
+        G = features(p, coords_)                      # (n_pts, r)
         H = head(p, z)                                # (S, r)
-        err = H @ G.T - U
+        err = H @ G.T - U_
         rel = jnp.mean(err * err) / u_ms
         C = (G.T @ G) / (G.shape[0] * p["out_scale"] ** 2)
         orth = jnp.mean((C - jnp.eye(C.shape[0], dtype=F64)) ** 2)
         return rel + lam_orth * orth, rel
 
     @jax.jit
-    def step(pz, st):
-        (val, rel), grads = jax.value_and_grad(loss_fn, has_aux=True)(pz)
+    def step(pz, st, U_, coords_):
+        (val, rel), grads = jax.value_and_grad(loss_fn, has_aux=True)(
+            pz, U_, coords_)
         grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
         upd, st = opt.update(grads, st)
         return optax.apply_updates(pz, upd), st, val, rel
@@ -175,7 +179,7 @@ def train_autodecoder(key, coords, U, k_lat, r_feat, steps=30000, lr=1e-3,
     t0 = time.time()
     rel = jnp.inf
     for i in range(steps):
-        pz, state, val, rel = step(pz, state)
+        pz, state, val, rel = step(pz, state, U, coords)
         if (i + 1) % log_every == 0 or i == 0:
             log(f"   train[{tag}] step {i+1:6d}/{steps}  rel-MSE {float(rel):.3e}"
                 f"  [{time.time()-t0:.0f}s]")

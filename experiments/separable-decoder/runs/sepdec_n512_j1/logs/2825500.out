@@ -1,0 +1,321 @@
+host=pax106 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+manifest OK
+jax_backend=gpu device=cuda:0 x64=True N=512 cells=[{'K': 8, 'R': 32, 'nff': 128, 'ffs': 4.0, 'steps': 100000}, {'K': 16, 'R': 64, 'nff': 128, 'ffs': 4.0, 'steps': 100000}, {'K': 24, 'R': 96, 'nff': 128, 'ffs': 4.0, 'steps': 100000}, {'K': 32, 'R': 128, 'nff': 128, 'ffs': 4.0, 'steps': 100000}] seed=0
+  FOM: 576 CG solves in 57s, max rel residual over all samples 7.71e-11
+  truth: 16 held-out sources, FOM CG rel residual 6.95e-11
+  truth: 16 fresh-seed sources (seed 20260823), CG rel residual 6.29e-11
+   train[poisson N=512 K8_R32_nff128_ffs4] step      1/100000  rel-MSE 1.053e+00  [16s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step   2000/100000  rel-MSE 4.359e-03  [56s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step   4000/100000  rel-MSE 1.611e-03  [96s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step   6000/100000  rel-MSE 1.087e-03  [136s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step   8000/100000  rel-MSE 8.739e-04  [176s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  10000/100000  rel-MSE 7.167e-04  [216s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  12000/100000  rel-MSE 6.439e-04  [255s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  14000/100000  rel-MSE 5.879e-04  [295s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  16000/100000  rel-MSE 5.442e-04  [335s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  18000/100000  rel-MSE 5.650e-04  [375s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  20000/100000  rel-MSE 6.402e-04  [415s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  22000/100000  rel-MSE 4.872e-04  [455s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  24000/100000  rel-MSE 4.657e-04  [495s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  26000/100000  rel-MSE 4.608e-04  [535s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  28000/100000  rel-MSE 4.525e-04  [575s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  30000/100000  rel-MSE 4.525e-04  [615s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  32000/100000  rel-MSE 4.718e-04  [655s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  34000/100000  rel-MSE 4.302e-04  [695s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  36000/100000  rel-MSE 4.281e-04  [735s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  38000/100000  rel-MSE 4.292e-04  [775s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  40000/100000  rel-MSE 4.180e-04  [815s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  42000/100000  rel-MSE 4.207e-04  [855s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  44000/100000  rel-MSE 4.167e-04  [895s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  46000/100000  rel-MSE 4.168e-04  [935s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  48000/100000  rel-MSE 4.284e-04  [975s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  50000/100000  rel-MSE 4.072e-04  [1015s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  52000/100000  rel-MSE 4.054e-04  [1055s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  54000/100000  rel-MSE 4.053e-04  [1094s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  56000/100000  rel-MSE 4.024e-04  [1134s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  58000/100000  rel-MSE 4.027e-04  [1174s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  60000/100000  rel-MSE 4.016e-04  [1214s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  62000/100000  rel-MSE 4.016e-04  [1254s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  64000/100000  rel-MSE 3.990e-04  [1294s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  66000/100000  rel-MSE 4.018e-04  [1334s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  68000/100000  rel-MSE 3.978e-04  [1374s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  70000/100000  rel-MSE 3.987e-04  [1414s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  72000/100000  rel-MSE 3.957e-04  [1454s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  74000/100000  rel-MSE 3.950e-04  [1494s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  76000/100000  rel-MSE 3.946e-04  [1534s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  78000/100000  rel-MSE 3.939e-04  [1574s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  80000/100000  rel-MSE 3.936e-04  [1614s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  82000/100000  rel-MSE 3.933e-04  [1654s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  84000/100000  rel-MSE 3.927e-04  [1694s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  86000/100000  rel-MSE 3.924e-04  [1734s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  88000/100000  rel-MSE 3.920e-04  [1774s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  90000/100000  rel-MSE 3.917e-04  [1814s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  92000/100000  rel-MSE 3.915e-04  [1853s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  94000/100000  rel-MSE 3.912e-04  [1893s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  96000/100000  rel-MSE 3.909e-04  [1933s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step  98000/100000  rel-MSE 3.907e-04  [1973s]
+   train[poisson N=512 K8_R32_nff128_ffs4] step 100000/100000  rel-MSE 3.905e-04  [2013s]
+   train[poisson N=512 K8_R32_nff128_ffs4] done: recon rel-L2 mean 5.273e-02 max 2.515e-01  [2016s]
+  oracle rel-L2: held-out mean 6.344e-02 max 1.163e-01 | fresh mean 9.408e-02 max 1.537e-01
+  NNLS-EQ sep poisson N=512 k=8 M=32 m=128: pool 4096 support 128 (+0 pad) rel fit 8.07e-04 (row p95 4.4e-02, max 1.8e+01) [7s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   meshfree tau=1e-03  err 5.605e-02 (max 1.172e-01)  jac  20.2  cens 100%  reasons {'converged': 16}
+   meshfree tau=1e-02  err 5.605e-02 (max 1.172e-01)  jac  19.2  cens  81%  reasons {'converged': 13, 'tau': 3}
+   cached   tau=1e-03  err 5.605e-02 (max 1.172e-01)  jac  20.2  cens 100%  reasons {'converged': 16}
+   cached   tau=1e-02  err 5.605e-02 (max 1.172e-01)  jac  19.2  cens  81%  reasons {'converged': 13, 'tau': 3}
+   cached/FRESH tau=1e-03  err 7.980e-02 (max 1.564e-01)  cens 100%
+   cached/FRESH tau=1e-02  err 7.980e-02 (max 1.564e-01)  cens 100%
+   FOM CG tol=1e-01: err 7.104e-03
+   FOM CG tol=3e-02: err 1.965e-03
+   FOM CG tol=1e-02: err 6.526e-04
+   FOM CG tol=3e-03: err 1.951e-04
+   FOM CG tol=1e-03: err 5.396e-05
+   FOM CG tol=1e-06: err 3.291e-08
+   timed sep_meshfree_tau0.001        7.467 ms
+   timed sep_meshfree_tau0.01         7.229 ms
+   timed sep_cached_tau0.001          4.186 ms
+   timed sep_cached_tau0.01           3.992 ms
+   timed cg_tol0.1                   26.408 ms
+   timed cg_tol0.03                  31.151 ms
+   timed cg_tol0.01                  35.015 ms
+   timed cg_tol0.003                 39.263 ms
+   timed cg_tol0.001                 43.715 ms
+   timed cg_tol1e-06                 61.833 ms
+CELL DONE poisson K8_R32_nff128_ffs4 [2121s] -> /cluster/tufts/paralab/tawal01/sepdec_n512/j1/out/sep_poisson_K8_R32_nff128_ffs4.json
+   train[poisson N=512 K16_R64_nff128_ffs4] step      1/100000  rel-MSE 1.174e+00  [13s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step   2000/100000  rel-MSE 2.119e-03  [58s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step   4000/100000  rel-MSE 6.821e-04  [102s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step   6000/100000  rel-MSE 5.186e-04  [147s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step   8000/100000  rel-MSE 4.603e-04  [192s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  10000/100000  rel-MSE 1.821e-04  [236s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  12000/100000  rel-MSE 1.667e-04  [281s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  14000/100000  rel-MSE 1.295e-04  [326s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  16000/100000  rel-MSE 1.172e-04  [370s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  18000/100000  rel-MSE 1.335e-04  [415s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  20000/100000  rel-MSE 9.834e-05  [459s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  22000/100000  rel-MSE 1.544e-04  [504s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  24000/100000  rel-MSE 1.484e-04  [549s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  26000/100000  rel-MSE 9.923e-05  [593s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  28000/100000  rel-MSE 7.902e-05  [638s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  30000/100000  rel-MSE 1.100e-04  [683s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  32000/100000  rel-MSE 7.203e-05  [727s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  34000/100000  rel-MSE 8.237e-05  [772s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  36000/100000  rel-MSE 8.927e-05  [817s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  38000/100000  rel-MSE 8.740e-05  [861s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  40000/100000  rel-MSE 7.921e-05  [906s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  42000/100000  rel-MSE 6.815e-05  [950s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  44000/100000  rel-MSE 6.214e-05  [995s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  46000/100000  rel-MSE 6.769e-05  [1040s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  48000/100000  rel-MSE 5.982e-05  [1084s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  50000/100000  rel-MSE 7.576e-05  [1129s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  52000/100000  rel-MSE 6.401e-05  [1174s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  54000/100000  rel-MSE 5.783e-05  [1218s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  56000/100000  rel-MSE 5.666e-05  [1263s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  58000/100000  rel-MSE 5.705e-05  [1307s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  60000/100000  rel-MSE 6.111e-05  [1352s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  62000/100000  rel-MSE 5.512e-05  [1397s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  64000/100000  rel-MSE 5.450e-05  [1441s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  66000/100000  rel-MSE 5.462e-05  [1486s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  68000/100000  rel-MSE 5.357e-05  [1531s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  70000/100000  rel-MSE 5.386e-05  [1575s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  72000/100000  rel-MSE 5.284e-05  [1620s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  74000/100000  rel-MSE 5.237e-05  [1665s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  76000/100000  rel-MSE 5.166e-05  [1709s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  78000/100000  rel-MSE 5.154e-05  [1754s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  80000/100000  rel-MSE 5.107e-05  [1798s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  82000/100000  rel-MSE 5.081e-05  [1843s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  84000/100000  rel-MSE 5.057e-05  [1888s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  86000/100000  rel-MSE 5.015e-05  [1932s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  88000/100000  rel-MSE 4.991e-05  [1977s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  90000/100000  rel-MSE 4.963e-05  [2022s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  92000/100000  rel-MSE 4.938e-05  [2066s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  94000/100000  rel-MSE 4.914e-05  [2111s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  96000/100000  rel-MSE 4.890e-05  [2155s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step  98000/100000  rel-MSE 4.868e-05  [2200s]
+   train[poisson N=512 K16_R64_nff128_ffs4] step 100000/100000  rel-MSE 4.846e-05  [2245s]
+   train[poisson N=512 K16_R64_nff128_ffs4] done: recon rel-L2 mean 2.374e-02 max 1.436e-01  [2246s]
+  oracle rel-L2: held-out mean 3.864e-02 max 7.977e-02 | fresh mean 5.760e-02 max 1.122e-01
+  NNLS-EQ sep poisson N=512 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 8.12e-04 (row p95 1.0e-01, max 1.1e+02) [22s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   meshfree tau=1e-03  err 3.154e-02 (max 8.058e-02)  jac  12.6  cens 100%  reasons {'converged': 16}
+   meshfree tau=1e-02  err 3.228e-02 (max 8.058e-02)  jac  10.6  cens  69%  reasons {'converged': 11, 'tau': 5}
+   cached   tau=1e-03  err 3.154e-02 (max 8.058e-02)  jac  12.6  cens 100%  reasons {'converged': 16}
+   cached   tau=1e-02  err 3.228e-02 (max 8.058e-02)  jac  10.6  cens  69%  reasons {'converged': 11, 'tau': 5}
+   cached/FRESH tau=1e-03  err 4.598e-02 (max 1.137e-01)  cens 100%
+   cached/FRESH tau=1e-02  err 4.626e-02 (max 1.137e-01)  cens  69%
+   FOM CG tol=1e-01: err 7.104e-03
+   FOM CG tol=3e-02: err 1.965e-03
+   FOM CG tol=1e-02: err 6.526e-04
+   FOM CG tol=3e-03: err 1.951e-04
+   FOM CG tol=1e-03: err 5.396e-05
+   FOM CG tol=1e-06: err 3.291e-08
+   timed sep_meshfree_tau0.001        6.420 ms
+   timed sep_meshfree_tau0.01         5.904 ms
+   timed sep_cached_tau0.001          3.057 ms
+   timed sep_cached_tau0.01           2.472 ms
+   timed cg_tol0.1                   26.357 ms
+   timed cg_tol0.03                  31.108 ms
+   timed cg_tol0.01                  35.007 ms
+   timed cg_tol0.003                 39.222 ms
+   timed cg_tol0.001                 43.786 ms
+   timed cg_tol1e-06                 61.807 ms
+CELL DONE poisson K16_R64_nff128_ffs4 [2365s] -> /cluster/tufts/paralab/tawal01/sepdec_n512/j1/out/sep_poisson_K16_R64_nff128_ffs4.json
+   train[poisson N=512 K24_R96_nff128_ffs4] step      1/100000  rel-MSE 1.452e+00  [14s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step   2000/100000  rel-MSE 2.186e-03  [67s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step   4000/100000  rel-MSE 6.371e-04  [121s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step   6000/100000  rel-MSE 2.968e-04  [175s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step   8000/100000  rel-MSE 1.901e-04  [229s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  10000/100000  rel-MSE 1.471e-04  [282s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  12000/100000  rel-MSE 1.053e-04  [336s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  14000/100000  rel-MSE 8.994e-05  [390s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  16000/100000  rel-MSE 8.370e-05  [444s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  18000/100000  rel-MSE 7.777e-05  [497s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  20000/100000  rel-MSE 6.068e-05  [551s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  22000/100000  rel-MSE 5.558e-05  [605s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  24000/100000  rel-MSE 4.995e-05  [659s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  26000/100000  rel-MSE 6.692e-05  [713s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  28000/100000  rel-MSE 4.111e-05  [766s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  30000/100000  rel-MSE 4.848e-05  [820s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  32000/100000  rel-MSE 5.524e-05  [874s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  34000/100000  rel-MSE 4.078e-05  [928s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  36000/100000  rel-MSE 4.255e-05  [982s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  38000/100000  rel-MSE 3.737e-05  [1035s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  40000/100000  rel-MSE 3.531e-05  [1089s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  42000/100000  rel-MSE 3.025e-05  [1143s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  44000/100000  rel-MSE 3.656e-05  [1197s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  46000/100000  rel-MSE 3.062e-05  [1250s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  48000/100000  rel-MSE 3.587e-05  [1304s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  50000/100000  rel-MSE 2.774e-05  [1358s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  52000/100000  rel-MSE 2.756e-05  [1412s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  54000/100000  rel-MSE 2.642e-05  [1466s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  56000/100000  rel-MSE 2.476e-05  [1519s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  58000/100000  rel-MSE 2.426e-05  [1573s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  60000/100000  rel-MSE 2.369e-05  [1627s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  62000/100000  rel-MSE 2.285e-05  [1681s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  64000/100000  rel-MSE 2.252e-05  [1734s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  66000/100000  rel-MSE 2.275e-05  [1788s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  68000/100000  rel-MSE 2.238e-05  [1842s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  70000/100000  rel-MSE 2.217e-05  [1896s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  72000/100000  rel-MSE 2.123e-05  [1950s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  74000/100000  rel-MSE 2.110e-05  [2003s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  76000/100000  rel-MSE 2.060e-05  [2057s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  78000/100000  rel-MSE 2.032e-05  [2111s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  80000/100000  rel-MSE 2.035e-05  [2165s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  82000/100000  rel-MSE 1.987e-05  [2218s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  84000/100000  rel-MSE 1.969e-05  [2272s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  86000/100000  rel-MSE 1.949e-05  [2326s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  88000/100000  rel-MSE 1.930e-05  [2380s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  90000/100000  rel-MSE 1.913e-05  [2434s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  92000/100000  rel-MSE 1.899e-05  [2487s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  94000/100000  rel-MSE 1.884e-05  [2541s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  96000/100000  rel-MSE 1.870e-05  [2595s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step  98000/100000  rel-MSE 1.857e-05  [2649s]
+   train[poisson N=512 K24_R96_nff128_ffs4] step 100000/100000  rel-MSE 1.845e-05  [2702s]
+   train[poisson N=512 K24_R96_nff128_ffs4] done: recon rel-L2 mean 1.615e-02 max 1.151e-01  [2704s]
+  oracle rel-L2: held-out mean 3.230e-02 max 6.921e-02 | fresh mean 5.825e-02 max 1.382e-01
+  NNLS-EQ sep poisson N=512 k=24 M=96 m=384: pool 4096 support 384 (+0 pad) rel fit 6.63e-04 (row p95 1.8e-01, max 4.7e+02) [58s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   meshfree tau=1e-03  err 2.708e-02 (max 7.267e-02)  jac  17.4  cens 100%  reasons {'converged': 16}
+   meshfree tau=1e-02  err 2.751e-02 (max 7.267e-02)  jac  15.1  cens  69%  reasons {'converged': 11, 'tau': 5}
+   cached   tau=1e-03  err 2.708e-02 (max 7.267e-02)  jac  17.4  cens 100%  reasons {'converged': 16}
+   cached   tau=1e-02  err 2.751e-02 (max 7.267e-02)  jac  15.1  cens  69%  reasons {'converged': 11, 'tau': 5}
+   cached/FRESH tau=1e-03  err 4.499e-02 (max 1.385e-01)  cens 100%
+   cached/FRESH tau=1e-02  err 4.553e-02 (max 1.385e-01)  cens  69%
+   FOM CG tol=1e-01: err 7.104e-03
+   FOM CG tol=3e-02: err 1.965e-03
+   FOM CG tol=1e-02: err 6.526e-04
+   FOM CG tol=3e-03: err 1.951e-04
+   FOM CG tol=1e-03: err 5.396e-05
+   FOM CG tol=1e-06: err 3.291e-08
+   timed sep_meshfree_tau0.001        7.434 ms
+   timed sep_meshfree_tau0.01         7.115 ms
+   timed sep_cached_tau0.001          3.881 ms
+   timed sep_cached_tau0.01           3.529 ms
+   timed cg_tol0.1                   26.488 ms
+   timed cg_tol0.03                  31.199 ms
+   timed cg_tol0.01                  35.081 ms
+   timed cg_tol0.003                 39.483 ms
+   timed cg_tol0.001                 44.002 ms
+   timed cg_tol1e-06                 62.278 ms
+CELL DONE poisson K24_R96_nff128_ffs4 [2863s] -> /cluster/tufts/paralab/tawal01/sepdec_n512/j1/out/sep_poisson_K24_R96_nff128_ffs4.json
+   train[poisson N=512 K32_R128_nff128_ffs4] step      1/100000  rel-MSE 1.616e+00  [11s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step   2000/100000  rel-MSE 1.974e-03  [68s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step   4000/100000  rel-MSE 5.378e-04  [125s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step   6000/100000  rel-MSE 2.576e-04  [183s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step   8000/100000  rel-MSE 1.673e-04  [240s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  10000/100000  rel-MSE 1.160e-04  [297s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  12000/100000  rel-MSE 1.119e-04  [355s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  14000/100000  rel-MSE 7.020e-05  [412s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  16000/100000  rel-MSE 5.919e-05  [470s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  18000/100000  rel-MSE 5.296e-05  [527s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  20000/100000  rel-MSE 5.646e-05  [585s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  22000/100000  rel-MSE 5.104e-05  [642s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  24000/100000  rel-MSE 5.968e-05  [700s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  26000/100000  rel-MSE 7.129e-05  [757s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  28000/100000  rel-MSE 3.234e-05  [815s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  30000/100000  rel-MSE 4.154e-05  [872s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  32000/100000  rel-MSE 3.007e-05  [930s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  34000/100000  rel-MSE 2.758e-05  [987s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  36000/100000  rel-MSE 2.740e-05  [1044s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  38000/100000  rel-MSE 2.559e-05  [1102s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  40000/100000  rel-MSE 2.737e-05  [1159s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  42000/100000  rel-MSE 2.532e-05  [1217s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  44000/100000  rel-MSE 2.176e-05  [1274s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  46000/100000  rel-MSE 1.909e-05  [1332s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  48000/100000  rel-MSE 1.856e-05  [1389s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  50000/100000  rel-MSE 1.717e-05  [1447s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  52000/100000  rel-MSE 1.896e-05  [1504s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  54000/100000  rel-MSE 1.815e-05  [1561s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  56000/100000  rel-MSE 1.633e-05  [1619s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  58000/100000  rel-MSE 1.723e-05  [1676s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  60000/100000  rel-MSE 1.720e-05  [1734s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  62000/100000  rel-MSE 1.494e-05  [1791s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  64000/100000  rel-MSE 1.539e-05  [1849s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  66000/100000  rel-MSE 1.422e-05  [1906s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  68000/100000  rel-MSE 1.326e-05  [1964s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  70000/100000  rel-MSE 1.435e-05  [2021s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  72000/100000  rel-MSE 1.319e-05  [2079s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  74000/100000  rel-MSE 1.260e-05  [2136s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  76000/100000  rel-MSE 1.240e-05  [2193s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  78000/100000  rel-MSE 1.218e-05  [2251s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  80000/100000  rel-MSE 1.208e-05  [2308s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  82000/100000  rel-MSE 1.183e-05  [2366s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  84000/100000  rel-MSE 1.162e-05  [2423s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  86000/100000  rel-MSE 1.141e-05  [2481s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  88000/100000  rel-MSE 1.128e-05  [2538s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  90000/100000  rel-MSE 1.114e-05  [2596s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  92000/100000  rel-MSE 1.101e-05  [2653s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  94000/100000  rel-MSE 1.089e-05  [2710s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  96000/100000  rel-MSE 1.078e-05  [2768s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step  98000/100000  rel-MSE 1.068e-05  [2825s]
+   train[poisson N=512 K32_R128_nff128_ffs4] step 100000/100000  rel-MSE 1.058e-05  [2883s]
+   train[poisson N=512 K32_R128_nff128_ffs4] done: recon rel-L2 mean 1.270e-02 max 9.665e-02  [2884s]
+  oracle rel-L2: held-out mean 3.355e-02 max 6.874e-02 | fresh mean 5.807e-02 max 1.317e-01
+  NNLS-EQ sep poisson N=512 k=32 M=128 m=512: pool 4096 support 512 (+0 pad) rel fit 5.59e-04 (row p95 2.2e-01, max 3.2e+02) [126s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   meshfree tau=1e-03  err 2.723e-02 (max 7.051e-02)  jac  34.2  cens 100%  reasons {'converged': 13, 'budget': 3}
+   meshfree tau=1e-02  err 2.774e-02 (max 7.051e-02)  jac  28.8  cens  75%  reasons {'converged': 10, 'tau': 4, 'budget': 2}
+   cached   tau=1e-03  err 2.723e-02 (max 7.051e-02)  jac  34.2  cens 100%  reasons {'converged': 13, 'budget': 3}
+   cached   tau=1e-02  err 2.774e-02 (max 7.051e-02)  jac  28.8  cens  75%  reasons {'converged': 10, 'tau': 4, 'budget': 2}
+   cached/FRESH tau=1e-03  err 4.510e-02 (max 1.317e-01)  cens 100%
+   cached/FRESH tau=1e-02  err 4.547e-02 (max 1.317e-01)  cens  75%
+   FOM CG tol=1e-01: err 7.104e-03
+   FOM CG tol=3e-02: err 1.965e-03
+   FOM CG tol=1e-02: err 6.526e-04
+   FOM CG tol=3e-03: err 1.951e-04
+   FOM CG tol=1e-03: err 5.396e-05
+   FOM CG tol=1e-06: err 3.291e-08
+   timed sep_meshfree_tau0.001       11.703 ms
+   timed sep_meshfree_tau0.01        10.389 ms
+   timed sep_cached_tau0.001          7.763 ms
+   timed sep_cached_tau0.01           6.565 ms
+   timed cg_tol0.1                   26.320 ms
+   timed cg_tol0.03                  31.072 ms
+   timed cg_tol0.01                  34.943 ms
+   timed cg_tol0.003                 39.158 ms
+   timed cg_tol0.001                 43.670 ms
+   timed cg_tol1e-06                 61.791 ms
+CELL DONE poisson K32_R128_nff128_ffs4 [3112s] -> /cluster/tufts/paralab/tawal01/sepdec_n512/j1/out/sep_poisson_K32_R128_nff128_ffs4.json
+ALL CELLS DONE poisson [10524s]
+ALL-DONE

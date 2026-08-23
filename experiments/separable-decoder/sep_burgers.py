@@ -157,7 +157,19 @@ def make_newton_tol_rollout(n, ntol, lin_tol, residual, max_newton=NEWTON_MAX):
     residual as the truth generator (bf.make_rollout's `residual`), stopping
     each step's Newton loop at ||R|| <= ntol * ||u_prev|| with BiCGStab linear
     tolerance lin_tol.  This is the STRONG classical baseline arm; the fixed
-    eight-Newton truth generator is over-solved by construction."""
+    eight-Newton truth generator is over-solved by construction.
+
+    The inner BiCGStab carries the same exact sine-basis Helmholtz
+    preconditioner as the (staged, patched) truth generator -- boundary
+    Jacobian rows are identity, the stiff interior part is I + dt*nu*(-lap_h),
+    inverted exactly.  It strengthens the classical baseline; the discrete
+    residual and stopping rules are unchanged."""
+    dxl = 1.0 / (n - 1)
+    _pp = np.arange(1, n - 1)
+    S_pc = jnp.asarray(np.sqrt(2.0 / (n - 1))
+                       * np.sin(np.pi * np.outer(_pp, _pp) / (n - 1)))
+    _l1 = (4.0 / dxl**2) * np.sin(np.pi * _pp / (2 * (n - 1))) ** 2
+    lam_pc = jnp.asarray(_l1[:, None] + _l1[None, :])
 
     def step(u_prev, nu):
         u_scale = jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
@@ -171,8 +183,15 @@ def make_newton_tol_rollout(n, ntol, lin_tol, residual, max_newton=NEWTON_MAX):
             r = residual(u, u_prev, nu)
             Jv = lambda v: jax.jvp(lambda uu: residual(uu, u_prev, nu),
                                    (u,), (v,))[1]
+
+            def Minv(v):
+                V = v.reshape(n, n)
+                C = S_pc.T @ V[1:-1, 1:-1] @ S_pc
+                out = V.at[1:-1, 1:-1].set(
+                    S_pc @ (C / (1.0 + bc.DT * nu * lam_pc)) @ S_pc.T)
+                return out.reshape(-1)
             du, _ = jax.scipy.sparse.linalg.bicgstab(
-                Jv, -r, tol=lin_tol, maxiter=bc.bf.LIN_MAXITER)
+                Jv, -r, tol=lin_tol, maxiter=bc.bf.LIN_MAXITER, M=Minv)
             ok = jnp.isfinite(du).all()
             u2 = u + jnp.where(ok, du, 0.0)
             rn2 = jnp.linalg.norm(residual(u2, u_prev, nu))
@@ -217,6 +236,12 @@ def run_cell(cell, cell_idx, data, baselines, report_common):
         data_seed=bc.SEED, test_seed=bc.TEST_SEED, max_snaps=MAX_SNAPS,
         ic_topk=IC_TOPK, ic_budget=bc.IC_BUDGET,
         newton_ladder=NEWTON_LADDER, newton_max=NEWTON_MAX,
+        gen_chunk=GEN_CHUNK,
+        truth_generator="bf.make_rollout, fixed 8 Newton; inner BiCGStab "
+                        "exact-Helmholtz-preconditioned in the STAGED copy "
+                        "(patch_bf_precond.py; residual + 1e-8 gates "
+                        "unchanged); tol-Newton baseline preconditioned "
+                        "identically",
         time_reps=TIME_REPS, time_warm=TIME_WARM,
         arch="separable: FourierFeat-MLP g(x)->R^r  x  MLP-head h(z)->R^r, "
              "hard poly BC; NO POD anywhere",

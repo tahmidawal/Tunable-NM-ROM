@@ -39,6 +39,13 @@ cp "$EXP"/poisson2d-rom-objective/followup/fu_eq.py "$EXP"/poisson2d-rom-objecti
 cp "$B/deps/multistage-precision/ms_parametric.py" "$B/deps/multistage-precision/ms_autodecoder.py" "$P/deps/"
 cp "$EXP"/nonlinear-decoder-architecture/nda_arch.py "$ST/code/deps/nonlinear-decoder-architecture/"
 
+# Precondition the STAGED truth generator's inner BiCGStab with the exact
+# sine-basis Helmholtz inverse (adopted from the N=1024 agent's fix,
+# commit b5159a3 on exp/2026-08-23-sepdec-n1024; discrete residual, Newton
+# guard, and the <=1e-8 truth gates are unchanged and remain the arbiter).
+python3 "$HERE/patch_bf_precond.py" \
+  "$B/deps/burgers2d-coord-rom/burgers2d_film.py"
+
 ( cd "$ST" && find code -name '*.py' | sort | xargs sha256sum > MANIFEST.sha256 )
 echo "staged -> $ST"
 wc -l "$ST/MANIFEST.sha256"

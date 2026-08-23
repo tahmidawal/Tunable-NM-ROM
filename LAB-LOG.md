@@ -2550,3 +2550,83 @@ Burgers K=32-200k, Poisson 200k cells, Poisson m=32K probe (run_j2.sbatch on
 the branch documents them). The Poisson fresh-cohort objective gap (~2x above
 oracle) is the most interesting unexplained number. Merge decision for the
 four sepdec-n* worktrees still pending with the user.
+
+### N=1024 separable EQ-decoder scaling arm (sub-agent session)
+
+Branch/worktree `exp/2026-08-23-sepdec-n1024`, cluster namespace
+`/cluster/tufts/paralab/tawal01/sepdec_n1024/` (pulled, checksummed, committed, DELETED).
+Six submissions, ended early by user redirect to a focused N=256 push: 2825734 (Poisson,
+FAILED 3m, truth-guard), 2825838 (Poisson, TIMEOUT 4h05, 2/3 cells complete), 2825735
+(Burgers, FAILED 28m, truth not converged), 2826213 (Burgers, COMPLETED 1h50, both cells),
+2827675 (Burgers push, OOM 15m), 2827878 (Burgers push, user-CANCELLED at 1h14, cell 1 at
+34k/60k train steps, no artifacts saved). Results in
+`experiments/separable-decoder/runs/sepdec_n1024_{j1,j2,j3}/` on the branch; generated
+tables in `SUMMARY-N1024.md` (script `summarize_n1024.py`, no hand-typed numbers). All
+mandatory measurement rules from AUDIT-2026-08-23/HANDOFF implemented: end-to-end timing
+(Burgers includes the IC fit, split reported; Poisson includes source->weak projection,
+verified vs incumbent at 2.6e-16), full-grid decoded outputs on the timed paths, raw
+timing reps retained, balanced AB/BA pairs, timed-vs-error deviation recorded (0.0
+Poisson, <=3.8e-9 Burgers), stop-reason distributions, fresh-seed Poisson cohort, per-row
+EQ diagnostics. Gate 0: 0.0 (Poisson x2), 8.4e-15/4.8e-15 (Burgers).
+
+**Poisson N=1024 (job 2825838, A100, K=8 R=32 and K=16 R=64, 50k steps): the CG crossover
+flips hard, but the exact spectral control still wins.** Cached end-to-end solve (source ->
+projection -> trust-LM -> full 1022^2 decode) K=16: 3.0-3.5 ms, err 3.48e-2 held-out /
+5.06e-2 fresh-seed cohort (oracle 4.22e-2/6.39e-2 on n=4 -- solver saturates the manifold;
+solve errs are n=16). Same-job balanced-pair CG ladder: loosest (tol 1e-1) 98.4 ms at err
+4.9e-3, tightest (1e-6) 223 ms -> the ROM is 31x faster than the CHEAPEST CG run (which is
+still 7x more accurate than the ROM); ROM cost is N-independent (2.06 ms at N=64 -> 3.2 ms
+at N=1024) while CG grew 1.31 -> 98 ms. BUT the exact dense-spectral solve (same job,
+balanced-paired) is 0.64 ms at err 7e-15: the ROM LOSES 5x to the structure-exploiting
+classical solver, consistent with main's spectral-warm-start finding. Caveats ranked: (1)
+no CG point exists at the ROM's error level, so "31x" is at-unmatched-accuracy (ROM worse);
+(2) tau=1e-3 rows 100% censored (stalled), tau=1e-2 69-88%; (3) fresh-seed errors ~1.45x
+the held-out cohort's (mild model-selection contamination of the seed-0 cohort is visible);
+(4) truth CG hits the f64 floor at rel residual 4.3e-10 (guard made explicit at
+FOM_RES_TOL=1e-9; CG tol/maxiter unchanged). f(K): K=8 err 5.82e-2 at 3.5 ms; K=16 3.48e-2
+at 3.2 ms -- error improves with K at flat cost; K=16 R=128 cell died at the 4h wall,
+K=24/32 never ran. Meshfree arm solves are 14.7 ms vs cached 3.0 ms: caching is now a ~5x
+lever at N=1024 (was ~12% at N=64).
+
+**Burgers N=1024 (job 2826213, H200, K=16 R=64 and K=8 R=32, 40k steps, 104 trajectories,
+2048 states): honest end-to-end 5.1x over the STRONG classical baseline, but accuracy is
+training/coverage-limited and got worse with N.** Cached end-to-end (u0 -> span-split IC
+fit -> 50 implicit LM steps -> full 51-state decode): K=16 59.7 ms = 3.96 IC + 56.4
+roll+decode; K=8 53.8 ms. Balanced-paired against the tolerance-terminated Newton ladder
+(Helmholtz-preconditioned BiCGStab, same residual/stencil as truth; at its 1-Newton-per-
+step floor ntol=1e-2 it reaches err 4.9e-4 in 310 ms): 5.1x (K16) / 5.7x (K8); vs its
+ntol=1e-4 rung (err 1.1e-4, 599 ms): 9.9x. The truth generator (fixed-8-Newton) at 1587
+ms/traj is recorded as OVER-SOLVED reference only, never a headline. Caveats ranked: (1)
+ROM err 1.17e-1 (K16) / 1.57e-1 (K8) vs baseline 4.9e-4 -- nowhere near iso-accuracy, and
+WORSE than N=64 (5.2e-2), because training coverage collapsed (104 traj/2048 states vs
+576/8192 at N=64; memory-driven subsampling, indices recorded) and IC fits degraded
+(4.3e-2 .. 5.5e-1 per trajectory); (2) all 200 steps stopped on 'stalled', zero on 'tol',
+zero blowups; (3) 4 test trajectories, one GPU; (4) EQ worst-row error grew to 1.5e3 (K16;
+92 at N=64) -- the inherited worst-row growth is real for Burgers; (5) f(K) here: K=16
+beats K=8 on error at ~equal cost.
+
+**Fixes that cost jobs (shareable to the other scaling arms).** (a) Poisson truth guard:
+`ms_parametric.build_snapshots` asserts rel residual < 1e-10, unreachable at N=1024 (f64
+CG floor 4.31e-10) -> env-configurable FOM_RES_TOL patch applied by stage.sh to STAGED
+copies only. (b) Burgers truth generation: unpreconditioned BiCGStab (LIN_TOL 1e-10,
+maxiter 2000) stalls at N=1024 (max Newton rel res 8.67e-2, job 2825735) -> staged
+burgers2d_film patched with the exact sine-basis Helmholtz preconditioner
+(I+dt*nu*(-lap_h))^-1 on the interior; discrete residual, Newton guard, and <=1e-8 truth
+checks unchanged; verified vs the original generator at N=64 to 7.6e-16 state agreement;
+post-fix N=1024 truth residual 9.95e-13. Same preconditioner strengthens the tol-Newton
+baseline. (c) OOM (job 2827675, RSS 245 GB): the training jit closed over the 25.7 GB
+data array (captured-constant landmine) and sep_burgers held a 71.6 GB S_all beside the
+71.6 GB U -> data/coords now explicit jit args, direct row gather, U freed.
+
+**Retracted/incomplete.** Poisson K=16 R=128 (timeout) and the whole Burgers accuracy
+push (K=16 R=128, K=24 R=96, 168 traj/3072 states/60k steps -- j3, cancelled) produced no
+numbers; j4 (Poisson capacity push + K=24/32) never ran. The Burgers accuracy story at
+N=1024 is therefore an under-trained lower bound, not a capability ceiling. No speedup
+claim here is iso-accuracy; every ratio above is at the ROM's own (worse) error level.
+
+**Open for whoever picks this up.** (1) Burgers coverage/capacity push (j3 config
+committed as `cluster/run_j3.sbatch`, all three fixes in the committed stage) -- the
+N=256 arm reported 2.5e-2 errors, so the gap is training, not method. (2) Poisson
+K=16 R=128 rerun + K>=24 f(K) points. (3) IC-fit representation failure (worst traj
+5.5e-1) persists -- more trajectories should fix it before any encoder work. (4) Merge
+decision for the four sepdec-n* branches is with the coordinator/user.

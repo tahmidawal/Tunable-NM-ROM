@@ -26,7 +26,7 @@ cd "$ROOT/code"
 # the tolerance-terminated Newton ladder (full ladder timed in cell 0);
 # 6 fresh-seed test trajectories; data regenerated from seed in-job (once).
 # MAX_SNAPS=6144 with all t=0 states kept (memory: N=512 states are 2 MB each).
-N=512 CELLS="16:64,8:32,24:96" NFF=128 FF_SCALE=4.0 STEPS=60000 \
+N=512 GEN_CHUNK=8 CELLS="16:64,8:32,24:96" NFF=128 FF_SCALE=4.0 STEPS=60000 \
   MAX_SNAPS=6144 N_TEST=6 TIME_REPS=5 TIME_WARM=1 TR_FACTOR=0.01 \
   NEWTON_LADDER="1e-2:1e-3,1e-4:1e-5,1e-6:1e-7" BASELINE_CELLS=0 \
   OUT_DIR="$ROOT/out" "$PY" sep_burgers.py

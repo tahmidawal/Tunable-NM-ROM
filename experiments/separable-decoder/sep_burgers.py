@@ -45,6 +45,7 @@ import jax
 import jax.numpy as jnp
 
 import blat_common as bc                     # noqa: E402  (path set by sc)
+from blat_common import bf                    # noqa: E402
 import ctol_eq                                # noqa: E402
 import ctol_tol                               # noqa: E402
 
@@ -76,11 +77,57 @@ NEWTON_MAX = int(os.environ.get("NEWTON_MAX", "20"))
 # ladder; other cells time ROM arms + the truth-generator anchor only (the
 # ladder is cell-independent and same-job, so once per job suffices)
 BASELINE_CELLS = {int(v) for v in os.environ.get("BASELINE_CELLS", "0").split(",")}
+# data-generation rollout batch size.  64-lane vmapped batches at N=512 hit
+# the converged-lane BiCGStab underflow pathology (job 2825764: max Newton
+# rel residual 1.37e-1); the original burgers2d_refgen generated the N=512
+# reference with chunk 8 and max residual 5.2e-14.  Chunking changes ONLY the
+# batch decomposition, not the parameter draw, solver, or residual gates.
+GEN_CHUNK = int(os.environ.get("GEN_CHUNK", "64"))
 
 STEP_REASONS = {0: "budget", 1: "tol", 2: "stalled", 3: "lambda_max",
                 4: "tol_at_init", 5: "nan_at_init"}
 IC_REASONS = {0: "budget", 1: "converged", 2: "tau", 3: "lambda_max",
               4: "lambda_max_nonfinite", 5: "nan_at_init"}
+
+
+def build_data_chunked(n):
+    """blat_common.build_data with a controllable generation batch size.
+    Identical parameter draw, solver, iteration counts, and 1e-8 residual
+    gates; on failure, prints per-trajectory worst residuals before exiting."""
+    U, z, cx, cy, w, a, nu = bf.build_trajectories(n, chunk=GEN_CHUNK)
+    cxt, cyt, wt, at, nut, zt = bf.sample_params(seed=bc.TEST_SEED,
+                                                 m=bc.N_TEST)
+    rollout, residual = bf.make_rollout(n)
+    U0 = np.stack([bf.blob_ic(n, cxt[i], cyt[i], wt[i], at[i])
+                   for i in range(bc.N_TEST)])
+    Ut_parts, rt = [], 0.0
+    for s0 in range(0, bc.N_TEST, GEN_CHUNK):
+        e0 = min(s0 + GEN_CHUNK, bc.N_TEST)
+        snaps, res = rollout(jnp.asarray(U0[s0:e0]), jnp.asarray(nut[s0:e0]))
+        Ut_parts.append(np.asarray(snaps).transpose(1, 0, 2))
+        r = float(jnp.max(res))
+        if not np.isfinite(r) or r > rt:
+            rt = r
+    Ut = np.concatenate(Ut_parts, axis=0)
+    if not np.isfinite(rt) or rt > 1e-8:
+        raise SystemExit(f"TEST FOM Newton residual {rt:.2e} > 1e-8")
+    worst = max(bc.max_rel_residual(U, nu, n), bc.max_rel_residual(Ut, nut, n))
+    sc.log(f"  data check: max FOM rel residual over all trajectories "
+           f"{worst:.2e} (gen chunk {GEN_CHUNK})")
+    if not np.isfinite(worst) or worst > 1e-8:
+        # per-trajectory diagnosis before dying: which trajectories, which nu
+        vres = jax.jit(jax.vmap(
+            lambda u1, u0_, nu_: jnp.linalg.norm(residual(u1, u0_, nu_))
+            / jnp.linalg.norm(u0_)))
+        for i in range(U.shape[0]):
+            rr = float(jnp.max(vres(jnp.asarray(U[i, 1:]),
+                                    jnp.asarray(U[i, :-1]),
+                                    jnp.full((bc.NUM_STEPS,), nu[i]))))
+            if not np.isfinite(rr) or rr > 1e-8:
+                sc.log(f"    BAD traj {i}: nu={nu[i]:.4f} worst rel res {rr:.2e}")
+        raise SystemExit(f"FOM residual {worst:.2e} > 1e-8: data not converged")
+    return dict(U=U, nu=nu, U_test=Ut, nu_test=nut,
+                max_fom_rel_residual=worst)
 
 
 def parse_cells():
@@ -486,7 +533,7 @@ def main():
     t_all = time.time()
 
     # ------------------ data (regenerated from seed, ONCE per job) -----------
-    d = bc.build_data(N)
+    d = build_data_chunked(N)
     U = np.asarray(d["U"], dtype=np.float64)            # (n_traj, T, n^2)
     U_test = np.asarray(d["U_test"], dtype=np.float64)  # (N_TEST_all, T, n^2)
     nu_test = np.asarray(d["nu_test"], dtype=np.float64)

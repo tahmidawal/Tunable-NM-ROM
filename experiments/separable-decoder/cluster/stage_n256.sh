@@ -53,8 +53,8 @@ fail=0
 while read -r f; do
   rel=${f#"$DST/code/"}
   case "$rel" in sep_*) continue;; esac
-  if [ -f "$OLD/$rel" ]; then
-    a=$(sha256sum "$f" | cut -d' ' -f1); b=$(sha256sum "$OLD/$rel" | cut -d' ' -f1)
+  if [ -f "$OLD/code/$rel" ]; then
+    a=$(sha256sum "$f" | cut -d' ' -f1); b=$(sha256sum "$OLD/code/$rel" | cut -d' ' -f1)
     if [ "$a" != "$b" ]; then echo "DEP MISMATCH vs verified N=64 stage: $rel"; fail=1; fi
   else
     echo "NOTE: $rel not in N=64 stage (new file)"

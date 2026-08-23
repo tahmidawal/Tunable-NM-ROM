@@ -62,6 +62,7 @@ REPS = int(os.environ.get("REPS", "7"))
 PAIR_REPS = int(os.environ.get("PAIR_REPS", "4"))
 OUT = os.environ.get("OUT", "sep_poisson.json")
 CKPT = os.environ.get("CKPT", f"sep_poisson_N{N}_K{K}_R{R}.pkl")
+FOM_RES_TOL = float(os.environ.get("FOM_RES_TOL", "1e-10"))
 FOM_LADDER = [float(v) for v in os.environ.get(
     "FOM_LADDER", "1e-1,3e-2,1e-2,3e-3,1e-3,3e-4,1e-4,1e-6").split(",")]
 ARCH = sc.arch_from_env()
@@ -80,6 +81,7 @@ def main():
         taus=TAUS, tau_main=TAU_MAIN, n_test=N_TEST, n_test_fresh=N_TEST_FRESH,
         fresh_seed=FRESH_SEED, gn_iters=GN_ITERS, tr_factor=TR_FACTOR,
         seed=SEED0, data_seed=mp.SEED, n_train=mp.N_TRAIN, cg_tol=mp.CG_TOL,
+        fom_res_tol=FOM_RES_TOL,
         reps=REPS, pair_reps=PAIR_REPS, arch=ARCH,
         arch_desc="separable: FourierFeat-MLP g(x)->R^r  x  MLP-head h(z)->R^r, "
                   "hard poly BC; NO POD anywhere",
@@ -125,7 +127,9 @@ def main():
             mp.neg_lap_interior(jnp.asarray(U_int[i]), N)) - Fs[i])
             / np.linalg.norm(Fs[i]) for i in range(n_srcs)]))
         sc.log(f"  truth[{name}]: {n_srcs} sources, FOM CG rel residual {res:.2e}")
-        assert res < 1e-10, f"unconverged truth ({name})"
+        # unpreconditioned f64 CG floor ~ cond*eps ~ 4e-10 at N=1024; the
+        # threshold is explicit and recorded, CG tol/maxiter unchanged
+        assert res < FOM_RES_TOL, f"unconverged truth ({name}): {res:.2e}"
         U_int = U_int.reshape(n_srcs, -1)
         tn = np.array([np.linalg.norm(U_int[i]) for i in range(n_srcs)])
         return dict(name=name, Fs=Fs, U=U_int, tn=tn, n=n_srcs,

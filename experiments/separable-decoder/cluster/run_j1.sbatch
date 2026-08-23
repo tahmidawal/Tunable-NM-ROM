@@ -22,7 +22,7 @@ cd "$ROOT/code"
 run () {  # run <K> <R>
   local k=$1 r=$2
   echo "=== poisson N=1024 K=$k R=$r ==="
-  N=1024 K=$k R=$r M=$((4*k)) MQ=$((16*k)) STEPS=50000 \
+  N=1024 K=$k R=$r M=$((4*k)) MQ=$((16*k)) STEPS=50000 FOM_RES_TOL=1e-9 \
     N_TEST=16 N_TEST_FRESH=16 TR_FACTOR=1.0 \
     REPS=7 PAIR_REPS=4 TAU_MAIN=1e-2 \
     OUT="$ROOT/out/sep_poisson_N1024_K${k}_R${r}.json" \

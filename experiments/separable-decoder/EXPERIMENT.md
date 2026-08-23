@@ -67,3 +67,12 @@ budget <= 4 cluster jobs, branch `exp/2026-08-23-sepdec-n128`.
 
 Results land in `runs/sepdec_n128_j*/`; tables are generated only by
 `summarize_n128.py`.
+
+**j2 = Slurm 2827226 (A100): CANCELLED at 2h35m by user redirection to N=256.**
+Only cell 1 completed (Burgers K=16 R=128 200k steps, 16384 snaps): recon
+floor 1.93e-2 -> 1.37e-2 and rollout err mean 2.25e-2 -> 1.67e-2 (8 traj,
+e2e 80.5 ms) vs the j1 60k-step cell — i.e. j1-K=32 accuracy at K=16 cost.
+Pulled to `runs/sepdec_n128_j2/` (see its CANCELLED.md); the K=32-200k and
+three Poisson-200k cells (incl. the m=32K probe) never ran. Remote namespace
+deleted. No further N=128 jobs (2 of the 4-job budget used: 2825804 complete,
+2827226 cancelled; 2825787 was a 2-second bash-bug failure, nothing ran).

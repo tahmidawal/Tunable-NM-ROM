@@ -139,6 +139,47 @@ def burgers_tables(docs, lines):
             lines.append(f"| {d['config']['k']} | {r['method']} | {agg} |")
 
 
+
+def headline(docs, lines):
+    """Computed cross-comparisons (never hand-typed): ROM vs baselines."""
+    lines.append("\n## Headline comparisons (computed)\n")
+    lines.append("Poisson: cached ROM at tau=1e-3 (held cohort) vs the FOM CG "
+                 "ladder; Burgers: cached ROM end-to-end vs the Newton ladder. "
+                 "A ratio > 1 means the ROM is faster; iso-accuracy verdicts "
+                 "must respect the error columns.\n")
+    lines.append("| PDE | K | ROM ms | ROM err | best baseline <= ROM err "
+                 "(ms @ err) | cheapest baseline (ms @ err) | ROM/cheapest "
+                 "speed ratio |")
+    lines.append("|---|---|---|---|---|---|---|")
+    for d in docs:
+        c = d["config"]
+        if c["pde"] == "poisson2d":
+            rom = [r for r in d["rows"] if r["method"] == "sep_cached"
+                   and r.get("cohort", "").startswith("held")
+                   and r.get("tau") == 1e-3]
+            base = [r for r in d["rows"] if r["method"] == "fom_cg"
+                    and r.get("cohort", "").startswith("held")]
+        else:
+            rom = [r for r in d["rows"] if r["method"] == "sep_cached"]
+            base = [r for r in d["rows"] if r["method"] == "fom_newton_tol"]
+        if not rom or not base:
+            continue
+        rom = rom[0]
+        rerr = rom.get("err_rel_l2", rom.get("err_traj_rel_mean"))
+        rms_ = rom.get("time_ms", rom.get("e2e_ms_median"))
+        def berr(b): return b.get("err_rel_l2", b.get("err_traj_rel_mean"))
+        def bms(b): return b.get("time_ms", b.get("e2e_ms_median"))
+        ok = [b for b in base if berr(b) is not None and berr(b) <= rerr]
+        best_ok = min(ok, key=bms) if ok else None
+        cheap = min(base, key=bms)
+        lines.append(
+            f"| {c['pde']} | {c['k']} | {rms_:.2f} | {rerr:.2e} "
+            + (f"| {bms(best_ok):.2f} @ {berr(best_ok):.2e} " if best_ok
+               else "| none ")
+            + f"| {bms(cheap):.2f} @ {berr(cheap):.2e} "
+            + f"| {bms(cheap)/rms_:.2f}x |")
+
+
 def main():
     pats = sys.argv[1:] or [os.path.join(HERE, "runs", "sepdec_n128_*", "out",
                                          "*.json")]
@@ -153,6 +194,7 @@ def main():
     lines += [f"- `{d['_path']}` (complete={d.get('complete')})" for d in docs]
     poisson_tables(docs, lines)
     burgers_tables(docs, lines)
+    headline(docs, lines)
     text = "\n".join(lines) + "\n"
     out = os.path.join(HERE, "SUMMARY-N128.md")
     with open(out, "w") as f:

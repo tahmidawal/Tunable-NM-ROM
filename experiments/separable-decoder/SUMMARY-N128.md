@@ -180,3 +180,18 @@ Sources:
 | 32 | sep_meshfree | {'budget': 6, 'stalled': 394} |
 | 8 | sep_cached | {'stalled': 400} |
 | 8 | sep_meshfree | {'stalled': 400} |
+
+## Headline comparisons (computed)
+
+Poisson: cached ROM at tau=1e-3 (held cohort) vs the FOM CG ladder; Burgers: cached ROM end-to-end vs the Newton ladder. A ratio > 1 means the ROM is faster; iso-accuracy verdicts must respect the error columns.
+
+| PDE | K | ROM ms | ROM err | best baseline <= ROM err (ms @ err) | cheapest baseline (ms @ err) | ROM/cheapest speed ratio |
+|---|---|---|---|---|---|---|
+| burgers2d | 16 | 84.60 | 2.25e-02 | 68.52 @ 2.99e-04 | 25.16 @ 2.76e-01 | 0.30x |
+| burgers2d | 24 | 96.62 | 2.13e-02 | 68.38 @ 2.99e-04 | 25.07 @ 2.76e-01 | 0.26x |
+| burgers2d | 32 | 118.45 | 1.63e-02 | 68.59 @ 2.99e-04 | 25.28 @ 2.76e-01 | 0.21x |
+| burgers2d | 8 | 91.13 | 3.17e-02 | 68.41 @ 3.16e-02 | 25.11 @ 2.76e-01 | 0.28x |
+| poisson2d | 16 | 3.09 | 3.06e-02 | 3.75 @ 1.73e-02 | 3.75 @ 1.73e-02 | 1.21x |
+| poisson2d | 24 | 5.17 | 2.99e-02 | 3.73 @ 1.73e-02 | 3.73 @ 1.73e-02 | 0.72x |
+| poisson2d | 32 | 6.25 | 2.86e-02 | 3.75 @ 1.73e-02 | 3.75 @ 1.73e-02 | 0.60x |
+| poisson2d | 8 | 3.21 | 4.99e-02 | 3.74 @ 1.73e-02 | 3.74 @ 1.73e-02 | 1.16x |

@@ -345,11 +345,17 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
         opt = optax.adam(sched)
     state = opt.init((params, Z))
 
-    def loss_at(pz, pts_idx):
+    # NOTE (round 3): U and coords are EXPLICIT jit ARGUMENTS, never captured by
+    # the closure.  A closed-over device array is lowered as an HLO literal --
+    # measured on this box, a 2.05 GB capture costs +10 GB host RSS and 16 s of
+    # compile PER jit, versus 0.09 s as an argument.  U is 8.6 GB at the N=1024
+    # pool size; this is the captured-constant landmine in CLAUDE.md and it is
+    # what starved the earlier N=1024 arm.
+    def loss_at(pz, U_, C_):
         p, z = pz
-        G = _sc.features(p, coords[pts_idx])          # (p_sub, r)
+        G = _sc.features(p, C_)                       # (p_sub, r)
         H = _sc.head(p, z)                            # (S, r)
-        err = H @ G.T - U[:, pts_idx]
+        err = H @ G.T - U_
         if snap_norm:
             rel = jnp.mean(w_snap * jnp.mean(err * err, axis=1))
         else:
@@ -358,28 +364,23 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
         orth = jnp.mean((C - jnp.eye(C.shape[0], dtype=F64)) ** 2)
         return rel + lam_orth * orth, rel
 
+    def _apply(pz, st, ema, U_, C_):
+        (val, rel), grads = jax.value_and_grad(loss_at, has_aux=True)(pz, U_, C_)
+        grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
+        upd, st = opt.update(grads, st, pz)
+        pz = optax.apply_updates(pz, upd)
+        ema = jax.tree_util.tree_map(
+            lambda e, q: ema_decay * e + (1.0 - ema_decay) * q, ema, pz)
+        return pz, st, ema, rel
+
     @jax.jit
-    def step_sub(pz, st, ema, k_):
+    def step_sub(pz, st, ema, k_, U_all, C_all):
         pts_idx = jax.random.choice(k_, n_pts, shape=(p_sub,), replace=False)
-        (val, rel), grads = jax.value_and_grad(loss_at, has_aux=True)(pz, pts_idx)
-        grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
-        upd, st = opt.update(grads, st, pz)
-        pz = optax.apply_updates(pz, upd)
-        ema = jax.tree_util.tree_map(
-            lambda e, q: ema_decay * e + (1.0 - ema_decay) * q, ema, pz)
-        return pz, st, ema, rel
-
-    all_idx = jnp.arange(n_pts)
+        return _apply(pz, st, ema, U_all[:, pts_idx], C_all[pts_idx])
 
     @jax.jit
-    def step_full(pz, st, ema):
-        (val, rel), grads = jax.value_and_grad(loss_at, has_aux=True)(pz, all_idx)
-        grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
-        upd, st = opt.update(grads, st, pz)
-        pz = optax.apply_updates(pz, upd)
-        ema = jax.tree_util.tree_map(
-            lambda e, q: ema_decay * e + (1.0 - ema_decay) * q, ema, pz)
-        return pz, st, ema, rel
+    def step_full(pz, st, ema, U_all, C_all):
+        return _apply(pz, st, ema, U_all, C_all)
 
     pz = (params, Z)
     ema = pz
@@ -391,9 +392,9 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
     for i in range(steps):
         if use_sub and i < steps - full_last:
             key, k_ = jax.random.split(key)
-            pz, state, ema, rel = step_sub(pz, state, ema, k_)
+            pz, state, ema, rel = step_sub(pz, state, ema, k_, U, coords)
         else:
-            pz, state, ema, rel = step_full(pz, state, ema)
+            pz, state, ema, rel = step_full(pz, state, ema, U, coords)
         done = i + 1
         if done % log_every == 0 or i == 0:
             print(f"   train2[{tag}] step {done:6d}/{steps}  rel-MSE "
@@ -554,6 +555,71 @@ def make_oracle_lm(dec_full_fn, K, budget=200):
         return z, val
 
     return jax.jit(jax.vmap(one))
+
+
+def make_oracle_lm_banked(head_fn, K, budget=200):
+    """`make_oracle_lm` with the decode bank as an EXPLICIT jit ARGUMENT rather
+    than a captured closure constant: solve(G, z0s (B,K), targets (B,n)) with
+    dec_full(z) = G @ head_fn(z).  Algorithmically identical (same damping
+    schedule, same acceptance rule, same stopping tests); only the lowering
+    changes.  At N=1024 the bank is 4.3 GB and capturing it costs tens of GB of
+    host RSS per jit -- see the note in train_autodecoder_v2.  DIAGNOSTIC ONLY:
+    the targets are truth fields."""
+    def one(G, z0, t):
+        def f(z):
+            return G @ head_fn(z) - t
+        rJ = lambda z: (f(z), jax.jacfwd(f)(z))
+        rn_fn = lambda z: jnp.linalg.norm(f(z))
+        r0, J0 = rJ(z0)
+        v0 = jnp.linalg.norm(r0)
+        init = (z0, J0, r0, v0, jnp.asarray(1e-6, F64), jnp.int32(0),
+                jnp.int32(0))
+
+        def cond(s):
+            return (s[6] == 0) & (s[5] < budget)
+
+        def body(s):
+            z, J, r, val, lam, att, _ = s
+            H = J.T @ J
+            g = J.T @ r
+            D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
+            dz = jnp.linalg.solve(H + lam * D, -g)
+            finite = jnp.all(jnp.isfinite(dz))
+            z_new = z + jnp.where(finite, dz, 0.0)
+            v_new = jnp.where(finite, rn_fn(z_new), jnp.inf)
+            accept = finite & jnp.isfinite(v_new) & (v_new < val)
+            rel_dec = jnp.where(accept, (val - v_new) / (jnp.abs(val) + 1e-300),
+                                1.0)
+            step = jnp.linalg.norm(dz) / (1.0 + jnp.linalg.norm(z))
+            r2, J2 = jax.lax.cond(accept, lambda: rJ(z_new), lambda: (r, J))
+            z = jnp.where(accept, z_new, z)
+            val = jnp.where(accept, v_new, val)
+            lam = jnp.where(accept, jnp.maximum(lam / 3.0, 1e-12),
+                            jnp.minimum(lam * 10.0, 1e12))
+            done = jnp.where(accept & ((rel_dec < 1e-12) | (step < 1e-13)),
+                             jnp.int32(1),
+                             jnp.where((~accept) & (lam >= 1e12), jnp.int32(1),
+                                       jnp.int32(0)))
+            return (z, J2, r2, val, lam, att + 1, done)
+
+        z, J, r, val, lam, att, done = jax.lax.while_loop(cond, body, init)
+        return z, val
+
+    return jax.jit(jax.vmap(one, in_axes=(None, 0, 0)))
+
+
+def oracle_multi_init_banked(oracle_lm, G, z0_sets, targets):
+    """`oracle_multi_init` for the banked solver (bank passed per call)."""
+    best_z, best_v = None, None
+    for z0s in z0_sets:
+        z, v = oracle_lm(G, jnp.asarray(z0s, dtype=F64), targets)
+        if best_z is None:
+            best_z, best_v = z, v
+        else:
+            better = v < best_v
+            best_z = jnp.where(better[:, None], z, best_z)
+            best_v = jnp.where(better, v, best_v)
+    return best_z, best_v
 
 
 def oracle_multi_init(oracle_lm, z0_sets, targets):

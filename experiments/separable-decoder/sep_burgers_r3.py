@@ -86,7 +86,9 @@ MAX_SNAPS = int(os.environ.get("MAX_SNAPS", "16384"))
 T_EARLY = int(os.environ.get("T_EARLY", "5"))
 N_TRAJ = int(os.environ.get("N_TRAJ", "0"))          # 0 = whole canonical draw
 POOL = int(os.environ.get("POOL", "0"))              # 0 = all interior points
-GEN_CHUNK = int(os.environ.get("GEN_CHUNK", "64"))
+GEN_CHUNK = int(os.environ.get("GEN_CHUNK", "64" if N <= 256 else "8"))
+# the truth generator holds (T, B, N^2) f64 = 427 MB * B at N=1024, so the
+# trajectory chunk MUST shrink with N (this is what the default encodes).
 FULLROWS = int(os.environ.get("FULLROWS", "64"))     # full-grid recon check
 FEAT_CHUNK = int(os.environ.get("FEAT_CHUNK", "0"))  # 0 = no chunking
 EQ_MS = [int(v) for v in os.environ.get("EQ_MS", "64,256").split(",")]
@@ -104,7 +106,13 @@ IC_ENC_BUDGET = int(os.environ.get("IC_ENC_BUDGET", "50"))
 ENC_STEPS = int(os.environ.get("ENC_STEPS", "12000"))
 EXTRAP = float(os.environ.get("EXTRAP", "1.0"))
 ORACLE_BUDGET = int(os.environ.get("ORACLE_BUDGET", "150"))
-ORACLE_CHUNK = int(os.environ.get("ORACLE_CHUNK", "0"))   # 0 = all 51 at once
+# the oracle LM carries J of shape (chunk, N^2, K) -- 6.8 GB for the whole
+# T=51 at N=1024, so chunk it there.
+ORACLE_CHUNK = int(os.environ.get("ORACLE_CHUNK", "0" if N <= 256 else "17"))
+# MESH_ARM: the meshfree e2e control decodes 51 x N^2 points through the
+# g-track (8.6 GB of activations per hidden layer at N=1024).  It is the "what
+# does caching buy" control -- affordable at N<=256, not at N=1024.
+MESH_ARM = int(os.environ.get("MESH_ARM", "1" if N <= 256 else "0"))
 SSTEP_TS = [int(v) for v in os.environ.get("SSTEP_TS", "1,2,3,5,10,25,50").split(",")]
 SSTEP_BUDGET = int(os.environ.get("SSTEP_BUDGET", "120"))
 NEWTON_TOLS = [float(v) for v in os.environ.get(
@@ -194,7 +202,14 @@ def build_data_lean(n, n_traj, pool_pos, pick, full_rows, gen_chunk, log):
     T = bc.NUM_STEPS + 1
     cx, cy, w, a, nu, _z = bc.bf.sample_params(seed=bc.SEED)
     assert n_traj <= len(cx), f"n_traj {n_traj} > canonical draw {len(cx)}"
-    rollout, _ = bc.bf.make_rollout(n)
+    rollout, res_fn = bc.bf.make_rollout(n)
+    # independent convergence check, identical to `blat_common.max_rel_residual`
+    # but built ONCE and evaluated on the device-resident snapshots: the library
+    # version rebuilds (and so re-traces) the residual on every call, which at
+    # N=1024 means one recompile plus a full round-trip to host per chunk.
+    chk = jax.jit(jax.vmap(lambda u1, u0, nu_:
+                           jnp.linalg.norm(res_fn(u1, u0, nu_))
+                           / jnp.linalg.norm(u0)))
     pick_set = {int(v): i for i, v in enumerate(pick)}
     full_set = {int(pick[i]): j for j, i in enumerate(full_rows)}
     S_tr = np.zeros((pick.size, pool_pos.size), dtype=np.float64)
@@ -207,15 +222,16 @@ def build_data_lean(n, n_traj, pool_pos, pick, full_rows, gen_chunk, log):
         e = min(s + gen_chunk, n_traj)
         U0 = np.stack([bc.bf.blob_ic(n, cx[i], cy[i], w[i], a[i])
                        for i in range(s, e)])
-        snaps, res = rollout(jnp.asarray(U0), jnp.asarray(nu[s:e]))
-        snaps_np = np.asarray(snaps)                      # (T, B, n^2)
+        nu_j = jnp.asarray(nu[s:e])
+        snaps, res = rollout(jnp.asarray(U0), nu_j)
         cm = float(jnp.max(res))
         if not np.isfinite(cm) or cm > worst:
             worst = cm
-        U_chunk = snaps_np.transpose(1, 0, 2)             # (B, T, n^2) view
-        wr = bc.max_rel_residual(U_chunk, nu[s:e], n)
-        if not np.isfinite(wr) or wr > worst:
-            worst = wr
+        for k in range(bc.NUM_STEPS):
+            wr = float(jnp.max(chk(snaps[k + 1], snaps[k], nu_j)))
+            if not np.isfinite(wr) or wr > worst:
+                worst = wr
+        snaps_np = np.asarray(snaps)                      # (T, B, n^2)
         fp_sum += float(np.sum(snaps_np))
         fp_sumsq += float(np.sum(snaps_np * snaps_np))
         for b in range(e - s):
@@ -230,7 +246,7 @@ def build_data_lean(n, n_traj, pool_pos, pick, full_rows, gen_chunk, log):
                 fr = full_set.get(gid)
                 if fr is not None:
                     S_full[fr] = st[interior]
-        del snaps, snaps_np, U_chunk
+        del snaps, snaps_np
         log(f"   gen: trajectories {e}/{n_traj}  worst FOM rel residual "
             f"{worst:.2e}  [{time.time()-t0:.0f}s]")
     if not np.isfinite(worst) or worst > 1e-8:
@@ -417,7 +433,7 @@ def main():
     report["span"]["ls_floor_mean"] = float(np.mean([r["mean"] for r in sf]))
     sc.log(f"  SPAN least-squares floor on fresh test states: mean "
            f"{report['span']['ls_floor_mean']:.3e}")
-    del Gram_j, Lc, G_int
+    del Gram_j, Lc
     save()
 
     # ------------------ EQ sets + cached ops + gate 0 ------------------------
@@ -426,7 +442,23 @@ def main():
     dx = 1.0 / (N - 1)
     cand_pos = ctol_eq.candidate_pool(n_i2, cap=EQ_CAND_CAP)
     xy_int_j = jnp.asarray(coords_int)
-    u_full_int = jax.jit(lambda z: dec(z, xy_int_j))
+    # OFFLINE full-interior decodes for the EQ fit go through the CACHED bank
+    # (the collapse property, u(P;z) = G_P h(z)) instead of re-running the
+    # g-track over N^2 points: at N=1024 with g_hidden=1024 the meshfree call
+    # allocates ~8.6 GB of activations per hidden layer, 64 times over.  The
+    # two paths are algebraically the same object; the deviation is asserted
+    # here at the SAME 1e-12 bar as gate 0 and recorded.
+    bank_apply = jax.jit(lambda Gb, z: Gb @ h_fn(z))
+    def u_full_int(z):
+        return bank_apply(G_int, z)
+    _z_bank = jnp.asarray(Z_tr[eq_pick[0]])
+    _a, _b = u_full_int(_z_bank), dec(_z_bank, xy_int_j)
+    eq_bank_dev = float(jnp.max(jnp.abs(_a - _b))
+                        / (jnp.max(jnp.abs(_b)) + 1e-300))
+    report["gates"]["eq_bank_vs_meshfree"] = eq_bank_dev
+    sc.log(f"  EQ-fit bank vs meshfree full-interior decode: {eq_bank_dev:.2e}")
+    assert eq_bank_dev < 1e-12, "cached bank != meshfree decode on the interior"
+    del _a, _b
     adv_full = jax.jit(lambda uf: bc.upwind_adv_field(uf, N))
     eq_ops = {}
     for Mi in EQ_MS:
@@ -513,6 +545,7 @@ def main():
                             pos=pos, m=m)
         save()
 
+    del G_int
     e0 = eq_ops["ctrl"]
     ops0 = e0["ops_fast"]
     idx0_j = jnp.asarray(e0["idx"])
@@ -548,7 +581,12 @@ def main():
     cands_j = jnp.asarray(np.concatenate([Z0_states, zbar[None]], axis=0))
     report["ic"] = dict(n_candidates=int(cands_j.shape[0]))
 
-    def ic_ctrl_fit(u0):
+    # EVERY jit below takes the readout bank Gb as an explicit ARGUMENT.
+    # Capturing it in the closure lowers it as an HLO literal: measured on this
+    # project's hardware, a 2.05 GB capture costs +10 GB host RSS and 16 s of
+    # compile per jit (0.09 s as an argument), and G_all is 4.3 GB at N=1024
+    # with R=512.  Numerically nothing changes.
+    def ic_ctrl_fit(Gb, u0):
         u0_eq = u0[idx0_j]
         scores = jax.vmap(lambda z: jnp.linalg.norm(G_q0 @ h_fn(z) - u0_eq))(
             cands_j)
@@ -556,24 +594,26 @@ def main():
         z0s = cands_j[top]
 
         def f(z):
-            return G_all @ h_fn(z) - u0
+            return Gb @ h_fn(z) - u0
         lm = ctol_tol.lm_tau_generic(f, K, bc.IC_BUDGET)
         outs = jax.vmap(lambda z_: lm(z_, 0.0))(z0s)
         zs, rns, nJs = outs[0], outs[1], outs[3]
         b = jnp.argmin(jnp.where(jnp.isfinite(rns), rns, jnp.inf))
         return zs[b], rns[b], jnp.sum(nJs)
 
-    def ic_enc_fit(u0):
+    def ic_enc_fit(Gb, u0):
         z0 = enc_apply(enc_params, u0[enc_idx_j])
 
         def f(z):
-            return G_all @ h_fn(z) - u0
+            return Gb @ h_fn(z) - u0
         lm = ctol_tol.lm_tau_generic(f, K, IC_ENC_BUDGET)
         z, rn, _, nJ, *_ = lm(z0, 0.0)
         return z, rn, nJ
 
     ic_fits = dict(ctrl=ic_ctrl_fit, enc=ic_enc_fit)
-    ic_fit_jit = {a: jax.jit(f) for a, f in ic_fits.items()}
+    _ic_jit = {a: jax.jit(f) for a, f in ic_fits.items()}
+    ic_fit_jit = {a: (lambda u0, _f=f: _f(G_all, u0))
+                  for a, f in _ic_jit.items()}
 
     u0_gate = jnp.asarray(U_test[0, 0], dtype=F64)
 
@@ -606,11 +646,14 @@ def main():
     assert rdev < 1e-6
 
     # ------------------ e2e pipelines ----------------------------------------
-    def decode_all(Zf):
-        return jax.vmap(h_fn)(Zf) @ G_all.T
-    decode_jit = jax.jit(decode_all)
+    def decode_all(Gb, Zf):
+        return jax.vmap(h_fn)(Zf) @ Gb.T
+    _decode_jit = jax.jit(decode_all)
 
-    def decode_all_mesh(Zf):
+    def decode_jit(Zf):
+        return _decode_jit(G_all, Zf)
+
+    def decode_all_mesh(Gb, Zf):
         return jax.vmap(lambda z: dec(z, coords_j))(Zf)
 
     def make_e2e(ic_name, roll_name, eq_name="ctrl", step_tol=STEP_TOLS[0],
@@ -618,7 +661,7 @@ def main():
         ops = eq_ops[eq_name]["ops_fast"] if not mesh \
             else eq_ops[eq_name]["ops_ref"]
         if mesh:
-            def ic_fit(u0):
+            def ic_fit(Gb, u0):
                 u0_eq = u0[idx0_j]
                 scores = jax.vmap(lambda z: jnp.linalg.norm(
                     dec(z, coords_j[idx0_j]) - u0_eq))(cands_j)
@@ -647,31 +690,37 @@ def main():
         dec_all = decode_all_mesh if mesh else decode_all
         tol_scale = ops["tol_scale"]
 
-        def e2e(u0, nu):
-            z0, ic_rn, ic_nJ = ic_fit(u0)
+        def e2e(Gb, u0, nu):
+            z0, ic_rn, ic_nJ = ic_fit(Gb, u0)
             u_scale = jnp.sqrt(jnp.mean(u0[interior_j] ** 2))
             us = jnp.full((bc.NUM_STEPS,),
                           step_tol * u_scale * tol_scale, dtype=F64)
             Z, rns, nJs, reasons = roll_fn(z0, nu, us)
             Zfull = jnp.concatenate([z0[None], Z], axis=0)
-            F = dec_all(Zfull)
+            F = dec_all(Gb, Zfull)
             return F, z0, Z, rns, nJs, reasons, ic_rn, ic_nJ
         return jax.jit(e2e)
 
     CHAMP = "cach|ctrl|ic_enc|roll_extrap|t1e-9"
-    e2e_arms = {
+    e2e_raw = {
         "cach|ctrl|ic_ctrl|roll_ctrl|t1e-9": make_e2e("ctrl", "ctrl"),
-        "mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9": make_e2e("ctrl", "ctrl",
-                                                      mesh=True),
         CHAMP: make_e2e("enc", "extrap"),
     }
+    if MESH_ARM:
+        e2e_raw["mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9"] = make_e2e(
+            "ctrl", "ctrl", mesh=True)
     for stol in STEP_TOLS[1:]:
-        e2e_arms[f"cach|ctrl|ic_enc|roll_extrap|t{stol:.0e}"] = \
+        e2e_raw[f"cach|ctrl|ic_enc|roll_extrap|t{stol:.0e}"] = \
             make_e2e("enc", "extrap", step_tol=stol)
     for name in eq_ops:
         if name != "ctrl":
-            e2e_arms[f"cach|{name}|ic_enc|roll_extrap|t1e-9"] = \
+            e2e_raw[f"cach|{name}|ic_enc|roll_extrap|t1e-9"] = \
                 make_e2e("enc", "extrap", eq_name=name)
+    # bind the bank once; the wrappers are what the timing harness calls
+    e2e_arms = {a: (lambda u0, nu, _f=f: _f(G_all, u0, nu))
+                for a, f in e2e_raw.items()}
+    report["config"]["mesh_arm"] = bool(MESH_ARM)
+    report["config"]["e2e_arms"] = list(e2e_arms)
 
     fom_roll, _ = bc.bf.make_rollout(N)
     tol_newton = make_tol_newton_pc(N)
@@ -873,10 +922,10 @@ def main():
                    if a in e2e_arms]
         subs = []
         for aname in b_names:
-            be = jax.jit(jax.vmap(e2e_arms[aname]))
+            be = jax.jit(jax.vmap(e2e_raw[aname], in_axes=(None, 0, 0)))
 
             def fn(_b=be):
-                out = _b(u0b, nub)
+                out = _b(G_all, u0b, nub)
                 out[0].block_until_ready()
                 return out
             subs.append((f"batched|{aname}", fn))
@@ -925,8 +974,9 @@ def main():
         save()
 
     # ------------------ ladder diagnostics (truth used, labelled) ------------
-    full_fast = jax.jit(lambda z: G_all @ h_fn(z))
-    oracle_lm = ss.make_oracle_lm(full_fast, K, budget=ORACLE_BUDGET)
+    def full_fast(z):
+        return bank_apply(G_all, z)
+    oracle_lm = ss.make_oracle_lm_banked(h_fn, K, budget=ORACLE_BUDGET)
     report["oracle"] = []
     z_or_all = {}
     ochunk = ORACLE_CHUNK or T
@@ -938,7 +988,8 @@ def main():
             enc_in = jax.vmap(lambda u: enc_apply(enc_params, u[enc_idx_j]))(
                 targets)
             init_sets = [jnp.tile(jnp.asarray(zbar)[None], (e - s, 1)), enc_in]
-            z_or, v_or = ss.oracle_multi_init(oracle_lm, init_sets, targets)
+            z_or, v_or = ss.oracle_multi_init_banked(
+                oracle_lm, G_all, init_sets, targets)
             z_parts.append(np.asarray(z_or))
             v_parts.append(np.asarray(v_or))
         z_or_all[i] = np.concatenate(z_parts, axis=0)

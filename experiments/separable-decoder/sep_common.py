@@ -133,9 +133,19 @@ class SeparableDecoder:
     def __call__(self, z, xy):
         return features(self.params, xy) @ head(self.params, z)
 
-    def feat_at(self, xy):
-        """Cached-bank builder: numpy -> device (n_pts, r), z-independent."""
-        return jnp.asarray(features(self.params, jnp.asarray(xy, dtype=F64)))
+    def feat_at(self, xy, chunk=0):
+        """Cached-bank builder: numpy -> device (n_pts, r), z-independent.
+
+        chunk>0 evaluates the g-track in row blocks and concatenates.  The
+        RESULT IS IDENTICAL (features acts pointwise in x); chunking only
+        bounds the peak activation footprint, which at N=1024 (n^2 ~ 1.05e6)
+        and g_hidden=1024 would otherwise be ~8.6 GB per hidden layer."""
+        xy = jnp.asarray(xy, dtype=F64)
+        if not chunk or xy.shape[0] <= chunk:
+            return jnp.asarray(features(self.params, xy))
+        out = [features(self.params, xy[s:s + chunk])
+               for s in range(0, xy.shape[0], chunk)]
+        return jnp.concatenate(out, axis=0)
 
     def head_fn(self):
         p = self.params
@@ -291,6 +301,30 @@ def arch_from_env():
         out["ff_scales"] = [float(v)
                             for v in os.environ["FF_SCALES"].split(",")]
     return out
+
+
+def time_pair(fa, fb, reps=4, warm=2):
+    """Head-to-head PAIRED timing of exactly two subjects, the n1024-arm
+    protocol adopted as the project standard: warm both, then alternate
+    AB | BA | AB | BA ... so each side is first exactly half the time (with
+    reps=3 the realised order is 'abbaab').  ALL raw repetitions are returned;
+    medians are derived from them, never stored alone."""
+    for _ in range(warm):
+        fa()
+        fb()
+    ta, tb, order = [], [], []
+    for i in range(reps):
+        for side in ("ab" if i % 2 == 0 else "ba"):
+            t0 = time.perf_counter()
+            (fa if side == "a" else fb)()
+            dt = time.perf_counter() - t0
+            (ta if side == "a" else tb).append(dt)
+            order.append(side)
+    return dict(a_ms=float(np.median(ta) * 1e3),
+                b_ms=float(np.median(tb) * 1e3),
+                a_raw_ms=[t * 1e3 for t in ta],
+                b_raw_ms=[t * 1e3 for t in tb],
+                order="".join(order), reps=int(reps), warm=int(warm))
 
 
 def balanced_time(subjects, reps=7, warm=2, capture=True):

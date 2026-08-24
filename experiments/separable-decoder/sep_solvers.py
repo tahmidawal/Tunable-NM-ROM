@@ -285,7 +285,8 @@ def make_rollout_v2(step_kind, ops=None, step_ad=None, rn_fn=None, prev_of=None,
 def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
                          lam_orth=1e-4, weight_decay=0.0, p_sub=16384,
                          ema_decay=0.999, full_last=20000, time_cap=0.0,
-                         log_every=5000, tag="", init_fn=None, **arch):
+                         log_every=5000, tag="", init_fn=None,
+                         snap_norm=False, recon_chunk=2048, **arch):
     """Round-2 trainer for the separable decoder (PUSH-PLAN: architecture and
     optimization in scope).  Differences from sep_common.train_autodecoder,
     each individually optional:
@@ -314,6 +315,16 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
     params = init_fn(kp, k_lat, r_feat, out_scale=u_rms, **arch)
     Z = 0.1 * jax.random.normal(kz, (S, k_lat), dtype=F64)
     u_ms = jnp.mean(U * U)                      # GLOBAL constant (unbiased)
+    # PER-SNAPSHOT normalisation (round-3 lever, default OFF).  The reported
+    # metric is the mean over snapshots of the per-snapshot relative L2, but
+    # the default loss is one GLOBAL relative MSE, so low-amplitude states are
+    # down-weighted by their own norm.  snap_norm=True weights each snapshot by
+    # 1/mean_p(u_sp^2), computed ONCE on the full training point set, which
+    # makes the minimised quantity the mean per-snapshot relative MSE -- i.e.
+    # the square of the metric actually reported.  The weights are constants,
+    # so the point-subsampled estimator stays unbiased.
+    w_snap = 1.0 / jnp.maximum(jnp.mean(U * U, axis=1), 1e-300)   # (S,)
+    w_snap = w_snap / jnp.mean(w_snap)          # keep the loss O(1) as before
 
     sched = optax.warmup_cosine_decay_schedule(
         0.0, lr, min(500, steps // 10 + 1), steps, lr * 1e-2)
@@ -339,7 +350,10 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
         G = _sc.features(p, coords[pts_idx])          # (p_sub, r)
         H = _sc.head(p, z)                            # (S, r)
         err = H @ G.T - U[:, pts_idx]
-        rel = jnp.mean(err * err) / u_ms
+        if snap_norm:
+            rel = jnp.mean(w_snap * jnp.mean(err * err, axis=1))
+        else:
+            rel = jnp.mean(err * err) / u_ms
         C = (G.T @ G) / (G.shape[0] * p["out_scale"] ** 2)
         orth = jnp.mean((C - jnp.eye(C.shape[0], dtype=F64)) ** 2)
         return rel + lam_orth * orth, rel
@@ -391,10 +405,20 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
             break
 
     def recon_of(pz_):
+        """Exact per-snapshot relative L2 over ALL training points, evaluated in
+        snapshot blocks: the dense (S, n_pts) residual is 12.9 GB at the N=1024
+        pool size, so materialising it whole is what OOMs.  Blocking changes
+        nothing numerically."""
         p, z = pz_
         G = _sc.features(p, coords)
-        Uh = _sc.head(p, z) @ G.T
-        per = jnp.linalg.norm(Uh - U, axis=1) / jnp.linalg.norm(U, axis=1)
+        H = _sc.head(p, z)
+        per = []
+        for s in range(0, S, recon_chunk):
+            e = min(s + recon_chunk, S)
+            Uh = H[s:e] @ G.T
+            per.append(jnp.linalg.norm(Uh - U[s:e], axis=1)
+                       / jnp.linalg.norm(U[s:e], axis=1))
+        per = jnp.concatenate(per)
         return float(jnp.mean(per)), float(jnp.max(per))
 
     raw_mean, raw_max = recon_of(pz)
@@ -405,6 +429,7 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
                 time_capped=capped, lr=lr, lam_orth=lam_orth,
                 weight_decay=weight_decay, p_sub=int(p_sub),
                 ema_decay=ema_decay, full_last=full_last, used_ema=bool(use_ema),
+                snap_norm=bool(snap_norm),
                 recon_raw_mean=raw_mean, recon_ema_mean=ema_mean,
                 seconds=time.time() - t0,
                 recon_rel_l2_mean=ema_mean if use_ema else raw_mean,

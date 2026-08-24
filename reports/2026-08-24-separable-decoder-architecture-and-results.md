@@ -271,9 +271,9 @@ ROM e2e = IC latent fit + 50 implicit steps + full-grid decode, one job, one GPU
 |   | | | | | <sub>2026-08-23-sepdec-n128/experiments/separable-decoder/runs/sepdec_n128_j1/out/sep_burgers_K16_R96.json</sub> |
 | 256 | 106.9 | 2.453e-02 | 60.5 ms @ 3.0e-04 | 1613 ms | classical wins (1.8x slower) |
 |   | | | | | <sub>2026-08-23-sepdec-n256/experiments/separable-decoder/runs/n256_j2/out/sep_burgers_K16_R64.json</sub> |
-| 512 | 69.9 | 2.941e-02 | no strong baseline in job | -- | incomparable |
+| 512 | 69.9 | 2.941e-02 | 19.6 ms @ 3.1e-04 | 357 ms | classical wins (3.6x slower) |
 |   | | | | | <sub>2026-08-23-sepdec-n512/experiments/separable-decoder/runs/sepdec_n512_j2/out/sep_burgers_K16_R64_nff128_ffs4.json</sub> |
-| 1024 | 59.7 | 1.171e-01 | no strong baseline in job | -- | incomparable |
+| 1024 | 59.7 | 1.171e-01 | 310.4 ms @ 4.9e-04 | 1587 ms | **ROM wins 5.2x** |
 |   | | | | | <sub>2026-08-23-sepdec-n1024/experiments/separable-decoder/runs/sepdec_n1024_j2/out/sep_burgers_N1024_K16_R64.json</sub> |
 
 ### T3. N=256 push, round 2 (Burgers primary): the error ladder
@@ -430,11 +430,49 @@ extrapolation cut the rollout from 94.5 ms to 55.4 ms. End-to-end: ~120 ms → 5
   Both dropped.
 - **`R` was partly decorative.** Every run before round 3 was silently rank-capped at
   `G_h + 1 = 257` (T6). Reported `R = 512` cells were effectively `R = 257` cells.
-- **The Burgers speed claim does not survive a strong baseline** (T2): a
-  tolerance-terminated Newton solver with an exact Helmholtz preconditioner is both
-  faster and ~30–100× more accurate at every N where it was run in-job.
+- **The Burgers speed claim does not survive a strong baseline at N ≤ 512** (T2): a
+  tolerance-terminated Newton solver with an exact Helmholtz preconditioner is faster
+  and ~100× more accurate at N = 128, 256 and 512. It does **not** hold at N = 1024,
+  where the ROM wins 5.2× — see VI.5.
+- **A generator bug, caught 2026-08-24 while answering "wouldn't the FOM need longer
+  solves?":** the N = 512 and N = 1024 arms store their Newton ladders under
+  `fom_newton_tol`/`timing.summary` and `fom_tolnewton` respectively, not in `rows[]`.
+  The first version of this report's T2 therefore printed "no strong baseline in job"
+  for both and I wrote that the classical solver wins "at every N" — which was false.
+  Fixed in the generator; the crossover it was hiding is the most important speed
+  result in the study.
 
-## VI.4 Why Burgers loses on a GPU
+## VI.5 The Burgers crossover: N = 1024
+
+The classical intuition — a full-order solve must eventually cost more than a
+16-dimensional one — **is confirmed, and the crossover is visible in T2**:
+
+| N | ROM e2e | strong Newton | ratio |
+|---|---|---|---|
+| 128 | 84.6 ms | 68.5 ms | 0.81× |
+| 256 | 106.9 ms | 60.5 ms | 0.57× |
+| 512 | 69.9 ms | 19.6 ms | 0.28× |
+| **1024** | **59.7 ms** | **310.4 ms** | **5.2×** |
+
+Between N = 512 and N = 1024 the FOM cost jumps 19.6 → 310 ms — **16× for a 4×
+increase in unknowns** — while the ROM stays flat at ~60 ms. That is the classical
+scaling finally asserting itself: at N = 1024 the state vectors (1M f64 unknowns,
+8 MB each) no longer fit in cache and the solver becomes memory-bandwidth-bound, and
+the Newton count is already at its floor (`newton_total_mean` = 50.25, i.e. one
+Newton per step), so there is nothing left to optimise away. The N = 1024
+measurement is a paired AB/BA comparison (`order: "abbaab"`), the most careful timing
+protocol in the study.
+
+Two caveats, stated plainly. The inner linear tolerance differs between those two
+jobs (`lin_tol` 1e-3 at N = 512 vs 5e-4 at N = 1024), which inflates the jump
+somewhat — though not by 16×. And **the ROM's error at N = 1024 was 1.17e-1**, a
+badly under-trained run (memory limits cut its training coverage roughly 5×), so this
+is a speed win at an accuracy nobody would accept. The two halves of a publishable
+Burgers result currently sit at different resolutions: the accuracy work is at
+N = 256, the speed win is at N = 1024, and **no well-trained decoder has ever been
+run at N = 1024**. Closing that gap is the single highest-value experiment left.
+
+## VI.4 Why Burgers loses below the crossover
 
 The ROM is **latency-bound**: 50 timesteps × ~5–7 LM iterations ≈ 250–350 *serial*
 tiny operations, each a chain of kernel launches over K-sized matrices. Arithmetic is
@@ -449,6 +487,10 @@ This also bounds the Poisson claim honestly: at N = 1024 an exact dense-spectral
 solver does 0.64 ms at 7e-15 (T1, last column) — 5× faster than the ROM and at machine
 precision. The Poisson result is a win against *iterative* solvers on problems with no
 fast direct method, and should be stated that way.
+
+The Burgers case has no such fast direct method — the operator is nonlinear and
+changes every step — which is why the crossover in VI.5 is the more meaningful of the
+two speed results.
 
 ---
 
@@ -470,6 +512,9 @@ Two things were queued when the campaign was paused:
 
 1. **Accuracy:** re-run with the rank cap removed (`G_h = 1024`, `R = 512`), single-scale
    features, and drive reconstruction toward the R = 512 floor.
+1b. **The experiment neither queue contains:** a *well-trained* decoder at N = 1024,
+   where the speed win already exists (VI.5). Accuracy at N = 256 and speed at
+   N = 1024 have never been demonstrated by the same model.
 2. **Speed:** the first **batched multi-query** measurement — vmapped ROM *and*
    vmapped classical baselines in one job. Every timing in Part V is single-query,
    which is the worst possible framing for a latency-bound method. The many-query

@@ -131,10 +131,32 @@ for N, pats in SRC_B:
     s = min(sep, key=lambda r: g(r, "e2e_ms_median", "rollout_only_ms_median",
                                  "time_ms_median", default=1e9))
     st = g(s, "e2e_ms_median", "rollout_only_ms_median", "time_ms_median")
+    summ0 = (d.get("timing") or {}).get("summary") or {}
+    if st != st and "rom_cached_e2e" in summ0:
+        st = summ0["rom_cached_e2e"]["median_ms"]
     se = g(s, "err_traj_rel_mean")
+    # baseline rows live in rows[] (n128/n256) OR under top-level keys
+    # fom_newton_tol + timing.summary (n512) OR fom_tolnewton (n1024).
     nt = [r for r in rr if "newton_tol" in str(g(r, "method", default=""))]
     tg = [r for r in rr if "truthgen" in str(g(r, "method", default=""))
           or "fixed8" in str(g(r, "method", default=""))]
+    if not nt:
+        alt = d.get("fom_tolnewton") or d.get("fom_newton_tol") or []
+        summ = (d.get("timing") or {}).get("summary") or {}
+        for r in alt:
+            r = dict(r)
+            if "time_ms_median" not in r:      # n512: times live in timing.summary
+                key = next((k for k in summ if k.startswith("fom_newton")
+                            and f"{g(r,'ntol',default=-1):g}" in k), None)
+                if key:
+                    r["time_ms_median"] = summ[key]["median_ms"]
+            if "time_ms_median" in r:
+                r["method"] = "fom_newton_tol"
+                nt.append(r)
+        if not tg and isinstance(d.get("fom_truth"), dict):
+            tg = [{"method": "fom_truth", "time_ms_median": d["fom_truth"]["time_ms_median"]}]
+        if not tg and "fom_truth_newton8" in summ:
+            tg = [{"method": "fom_truth", "time_ms_median": summ["fom_truth_newton8"]["median_ms"]}]
 
     def nft(r):
         return g(r, "e2e_ms_median", "time_ms_median", default=1e9)

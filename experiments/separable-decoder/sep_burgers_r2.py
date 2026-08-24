@@ -48,6 +48,8 @@ import ctol_tol                               # noqa: E402
 F64 = jnp.float64
 
 N = int(os.environ.get("N", "64"))
+ROUND = int(os.environ.get("ROUND", "2"))
+BATCHED = int(os.environ.get("BATCHED", "0"))
 K = int(os.environ.get("K", "16"))
 R = int(os.environ.get("R", "256"))
 STEPS = int(os.environ.get("STEPS", "200000"))
@@ -141,7 +143,7 @@ def main():
     nu_test = np.asarray(d["nu_test"], dtype=np.float64)
 
     report = dict(config=dict(
-        pde="burgers2d", round=2, N=N, k=K, r=R, steps=STEPS, lr=LR,
+        pde="burgers2d", round=ROUND, N=N, k=K, r=R, steps=STEPS, lr=LR,
         p_sub=P_SUB, wd=WD, ema_decay=EMA_DECAY, full_last=FULL_LAST,
         time_cap=TIME_CAP, lam_orth=LAM_ORTH, max_snaps=MAX_SNAPS,
         t_early=T_EARLY, eq_Ms=EQ_MS, step_tols=STEP_TOLS, n_test=N_TEST,
@@ -584,6 +586,66 @@ def main():
         time_ms_median=float(np.median([r_["time_ms"] for r_ in tg_rows])),
         per_traj=tg_rows, n_test=n_test))
     save()
+
+    # ------------------ batched multi-query (round 3 speed) ------------------
+    if BATCHED:
+        u0b = jnp.asarray(U_test[:n_test, 0], dtype=F64)
+        nub = jnp.asarray(nu_test[:n_test], dtype=F64)
+        b_names = [a for a in ("cach|ctrl|ic_enc|roll_extrap|t1e-9",
+                               f"cach|M{max(EQ_MS)}|ic_enc|roll_extrap|t1e-9")
+                   if a in e2e_arms]
+        subs = []
+        for aname in b_names:
+            be = jax.jit(jax.vmap(e2e_arms[aname]))
+
+            def fn(_b=be):
+                out = _b(u0b, nub)
+                out[0].block_until_ready()
+                return out
+            subs.append((f"batched|{aname}", fn))
+        for ntol in (1e-2, 1e-3):
+            if ntol not in tol_rolls:
+                continue
+            br = jax.jit(jax.vmap(tol_rolls[ntol]))
+
+            def fn(_b=br):
+                out = _b(u0b, nub)
+                out[0].block_until_ready()
+                return out
+            subs.append((f"batched|fom_ntol_{ntol:.0e}", fn))
+        ctol_tol.burn_in(1.0)
+        raw_b, res_b = sc.balanced_time(subs, reps=REPS, warm=WARM)
+        report["batched"] = []
+        for name in raw_b:
+            times = raw_b[name]
+            ent = dict(subject=name, n_queries=n_test,
+                       total_ms_median=float(np.median(times)) * 1e3,
+                       amortized_ms=float(np.median(times)) * 1e3 / n_test,
+                       raw_s=[float(t) for t in times])
+            out = res_b[name]
+            Fb = np.asarray(out[0])                    # (n_test, T+1, n2)
+            errs = [float(np.mean(np.linalg.norm(Fb[i] - U_test[i], axis=1)
+                                  / np.linalg.norm(U_test[i], axis=1)))
+                    for i in range(n_test)]
+            ent.update(err_traj_rel_mean=float(np.mean(errs)),
+                       err_traj_rel_max=float(np.max(errs)))
+            if name.startswith("batched|cach"):
+                # equivalence check vs the single-query run: the per-time
+                # error curves must agree (fields themselves are not retained
+                # per trajectory in the single-query rows)
+                aname = name.split("batched|")[1]
+                dev = 0.0
+                for i in range(n_test):
+                    pt_b = np.linalg.norm(Fb[i] - U_test[i], axis=1) \
+                        / np.linalg.norm(U_test[i], axis=1)
+                    pt_s = np.asarray(per_arm_rows[aname][i]["per_time"])
+                    dev = max(dev, float(np.max(np.abs(pt_b - pt_s))))
+                ent["batched_vs_single_max_pertime_dev"] = dev
+            report["batched"].append(ent)
+            sc.log(f"   BATCHED {name}: total {ent['total_ms_median']:.2f} ms "
+                   f"-> {ent['amortized_ms']:.3f} ms/traj  "
+                   f"err {ent['err_traj_rel_mean']:.3e}")
+        save()
 
     # ------------------ ladder diagnostics (truth used, labelled) ------------
     full_fast = jax.jit(lambda z: G_all @ h_fn(z))

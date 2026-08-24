@@ -44,6 +44,8 @@ import ctol_tol                               # noqa: E402
 F64 = jnp.float64
 
 N = int(os.environ.get("N", "64"))
+ROUND = int(os.environ.get("ROUND", "2"))
+BATCHED = int(os.environ.get("BATCHED", "0"))
 K = int(os.environ.get("K", "16"))
 R = int(os.environ.get("R", "512"))
 STEPS = int(os.environ.get("STEPS", "300000"))
@@ -114,7 +116,7 @@ def main():
            f"n_extra={N_EXTRA} arch={ARCH or 'default'}")
     t_all = time.time()
     report = dict(config=dict(
-        pde="poisson2d", round=2, N=N, k=K, r=R, steps=STEPS, lr=LR,
+        pde="poisson2d", round=ROUND, N=N, k=K, r=R, steps=STEPS, lr=LR,
         p_sub=P_SUB, wd=WD, ema_decay=EMA_DECAY, full_last=FULL_LAST,
         time_cap=TIME_CAP, lam_orth=LAM_ORTH, n_extra=N_EXTRA,
         extra_seed=EXTRA_SEED, eq_Ms=EQ_MS, taus=TAUS, n_test=N_TEST,
@@ -472,6 +474,65 @@ def main():
                 n_sources=len(idxs)))
             sc.log(f"   FOM CG tol={tol:.0e} [{cname:14s}]: "
                    f"{np.median(ts)*1e3:8.3f} ms  err {np.mean(errs):.3e}")
+        save()
+
+    # ------------------ batched multi-query (round 3 speed) ------------------
+    if BATCHED:
+        Fb = jnp.asarray(Fs)                              # (n_src, n_i, n_i)
+        b_names = [a for a in ("cach|ctrl|lm60|enc",
+                               f"cach|M{max(EQ_MS)}|rst300|enc") if a in arms]
+        subs = []
+        for aname in b_names:
+            bp = jax.jit(jax.vmap(arms[aname], in_axes=(0, None)))
+
+            def fn(_bp=bp):
+                out = _bp(Fb, TAUS[0])
+                out[0].block_until_ready()
+                return out
+            subs.append((f"batched|{aname}", fn))
+        for tol in (1e-1, 1e-2, 1e-3):
+            if tol not in cg_solvers:
+                continue
+            bcg = jax.jit(jax.vmap(cg_solvers[tol]))
+
+            def fn(_b=bcg):
+                u = _b(Fb)
+                u.block_until_ready()
+                return u
+            subs.append((f"batched|fom_cg|{tol:.0e}", fn))
+        ctol_tol.burn_in(1.0)
+        raw_b, res_b = sc.balanced_time(subs, reps=REPS, warm=WARM)
+        report["batched"] = []
+        for name in raw_b:
+            times = raw_b[name]
+            ent = dict(subject=name, n_queries=n_src,
+                       total_ms_median=float(np.median(times)) * 1e3,
+                       amortized_ms=float(np.median(times)) * 1e3 / n_src,
+                       raw_s=[float(t) for t in times])
+            out = res_b[name]
+            if name.startswith("batched|cach"):
+                Ub = np.asarray(out[0]).reshape(n_src, -1)
+                errs = np.linalg.norm(Ub - U_int, axis=1) / tn
+                aname = name.split("batched|")[1]
+                dev = max(float(np.max(np.abs(
+                    Ub[i] - np.asarray(acc_t[f"{aname}|{TAUS[0]:.0e}"][i][1][0]
+                                       ).reshape(-1)))) for i in range(n_src))
+                ent.update(err_rel_l2=float(np.mean(errs)),
+                           err_rel_l2_max=float(np.max(errs)),
+                           per_cohort={cn: float(np.mean(
+                               errs[[i for i in range(n_src)
+                                     if cohort_of[i] == cn]]))
+                               for cn in set(cohort_of)},
+                           batched_vs_single_max_dev=dev)
+            else:
+                Ub = np.asarray(out).reshape(n_src, -1)
+                errs = np.linalg.norm(Ub - U_int, axis=1) / tn
+                ent.update(err_rel_l2=float(np.mean(errs)),
+                           err_rel_l2_max=float(np.max(errs)))
+            report["batched"].append(ent)
+            sc.log(f"   BATCHED {name}: total {ent['total_ms_median']:.2f} ms "
+                   f"-> {ent['amortized_ms']:.3f} ms/query  "
+                   f"err {ent.get('err_rel_l2', float('nan')):.3e}")
         save()
 
     # ------------------ ladder: oracle + weak-EQ optimum per set -------------

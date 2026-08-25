@@ -1,0 +1,40 @@
+host=pax052 gpu=NVIDIA A100-PCIE-40GB
+jax_backend=gpu
+stage MANIFEST OK
+acc959e388b7e6d5c024bb1701810aef6c2e994359ec79a6edeb225a803577d5  /cluster/tufts/paralab/tawal01/eqladder/lad256k16/in/sep_burgers_r3_N256_K16_R512.pkl
+jax_backend=gpu device=cuda:0 EQ-LADDER N=256 ckpt=sep_burgers_r3_N256_K16_R512.pkl
+  test data: 4 fresh trajectories, worst FOM rel residual 9.86e-13
+  EQ-fit bank vs meshfree full-interior decode: 4.30e-16
+  NNLS-EQ eq-ladder N=256 k=16 M=64 m=256: pool 64516 support 256 (+0 pad) rel fit 5.18e-03 (row p95 5.7e-01, max 2.8e+03) [34s]
+  GATE 0 [ctrl]: 1.19e-15
+  GATE F (full-grid ref vs make_weak_ops on interior) [ctrl]: 2.95e-16
+  NNLS-EQ eq-ladder N=256 k=16 M=256 m=1024: pool 64516 support 1024 (+0 pad) rel fit 5.25e-04 (row p95 3.6e-01, max 7.0e+03) [969s]
+  GATE 0 [M256]: 3.57e-16
+  GATE F (full-grid ref vs make_weak_ops on interior) [M256]: 1.82e-16
+  [ctrl] traj 0: rollout err 6.591e-03 (t0 5.41e-03, t1 3.99e-03, t50 8.37e-03), 108 LM iterates recorded [3s]
+  [ctrl] traj 1: rollout err 7.268e-02 (t0 2.07e-01, t1 1.75e-01, t50 3.98e-02), 110 LM iterates recorded [1s]
+  [ctrl] traj 2: rollout err 1.123e-02 (t0 9.41e-03, t1 2.51e-02, t50 9.34e-03), 114 LM iterates recorded [1s]
+  [ctrl] traj 3: rollout err 2.636e-02 (t0 1.58e-02, t1 3.52e-02, t50 2.59e-02), 110 LM iterates recorded [1s]
+  [M256] traj 0: rollout err 6.128e-03 (t0 5.41e-03, t1 3.92e-03, t50 8.42e-03), 107 LM iterates recorded [3s]
+  [M256] traj 1: rollout err 6.737e-02 (t0 2.07e-01, t1 1.75e-01, t50 3.38e-02), 110 LM iterates recorded [1s]
+  [M256] traj 2: rollout err 6.607e-03 (t0 9.41e-03, t1 1.22e-02, t50 7.08e-03), 141 LM iterates recorded [1s]
+  [M256] traj 3: rollout err 9.635e-03 (t0 1.58e-02, t1 1.79e-02, t50 1.21e-02), 127 LM iterates recorded [1s]
+  oracle traj 0: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 1: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 2: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 3: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  training snapshots: 16 states
+  ctrl  solver t= 1- 1 n=  46  (b) 1.24e-01 [lin 1.0e-01 adv 1.1e-01]  (c1) 4.38e-01 cos 0.6004  (c2) 4.89e-03  (c3) 3.09e-01 cos 0.9270
+  ctrl  solver t= 2- 2 n=   9  (b) 3.07e-01 [lin 3.0e-01 adv 2.1e-01]  (c1) 7.14e-01 cos 0.2525  (c2) 4.34e-03  (c3) 6.93e-01 cos 0.6484
+  ctrl  solver t= 3- 4 n=  18  (b) 3.98e-01 [lin 3.8e-01 adv 2.3e-01]  (c1) 7.49e-01 cos 0.2655  (c2) 3.89e-03  (c3) 7.05e-01 cos 0.4873
+  ctrl  solver t= 5- 9 n=  41  (b) 4.18e-01 [lin 3.6e-01 adv 2.6e-01]  (c1) 6.48e-01 cos 0.3258  (c2) 3.30e-03  (c3) 6.76e-01 cos 0.6382
+  ctrl  solver t=10-24 n= 120  (b) 4.89e-01 [lin 3.7e-01 adv 4.7e-01]  (c1) 6.91e-01 cos 0.1918  (c2) 2.86e-03  (c3) 7.01e-01 cos 0.4270
+  ctrl  solver t=25-50 n= 208  (b) 4.83e-01 [lin 3.1e-01 adv 5.5e-01]  (c1) 6.65e-01 cos 0.3004  (c2) 2.69e-03  (c3) 8.49e-01 cos 0.2698
+  M256  solver t= 1- 1 n=  63  (b) 5.54e-02 [lin 4.3e-02 adv 2.9e-02]  (c1) 4.09e-01 cos 0.7515  (c2) 3.53e-04  (c3) 1.49e-01 cos 0.9527
+  M256  solver t= 2- 2 n=  25  (b) 8.76e-02 [lin 8.7e-02 adv 1.2e-02]  (c1) 3.84e-01 cos 0.6953  (c2) 2.16e-04  (c3) 2.20e-01 cos 0.9530
+  M256  solver t= 3- 4 n=  29  (b) 6.28e-02 [lin 6.2e-02 adv 1.1e-02]  (c1) 3.28e-01 cos 0.6897  (c2) 1.82e-04  (c3) 3.50e-01 cos 0.8350
+  M256  solver t= 5- 9 n=  40  (b) 3.50e-02 [lin 3.6e-02 adv 1.4e-02]  (c1) 2.56e-01 cos 0.9107  (c2) 1.55e-04  (c3) 5.33e-01 cos 0.6681
+  M256  solver t=10-24 n= 120  (b) 5.40e-02 [lin 6.1e-02 adv 2.5e-02]  (c1) 4.41e-01 cos 0.7269  (c2) 1.40e-04  (c3) 5.15e-01 cos 0.5846
+  M256  solver t=25-50 n= 208  (b) 5.76e-02 [lin 6.3e-02 adv 2.4e-02]  (c1) 4.79e-01 cos 0.6217  (c2) 1.40e-04  (c3) 5.25e-01 cos 0.5849
+DONE -> /cluster/tufts/paralab/tawal01/eqladder/lad256k16/out/sep_eq_ladder_N256_K16_r3a.json [1827s]
+ALL-DONE

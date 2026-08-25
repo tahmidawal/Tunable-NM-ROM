@@ -304,6 +304,20 @@ print("Every row is one *speed* job run on a frozen decoder checkpoint, so error
       "come from the same protocol as T2/PROFILE (end-to-end incl. IC fit and full decode, "
       "matched-accuracy paired AB/BA against a swept (newton_tol, lin_tol) "
       "Helmholtz-preconditioned classical ladder). `paired` > 1 means the ROM is faster.\n")
+print("> **These rows are ALL N=256, where the classical solver wins regardless of decoder "
+      "quality (0.39x for the incumbent).** Do not read the sub-1 ratios as a regression "
+      "against the round-4 speed result: that win was at **N=1024** (1.61x single-query, "
+      "T2/PROFILE), the only resolution where the ROM leads. The accuracy campaign ran at "
+      "N=256 because iteration is ~1.5 h there versus 4 h+, and the h gap is "
+      "resolution-independent (36.8x at N=256 vs 31.7x at N=1024), so its findings "
+      "transfer. The N=1024 confirmation had not run when this was generated.\n>\n"
+      "> **Projection to N=1024, explicitly not a measurement:** the improved decoder "
+      "costs 1.27x more, and the classical rung it must now match also costs 1.32x more "
+      "(13.81 -> 18.26 ms, since a more accurate ROM must be compared against a more "
+      "accurate classical setting). Both sides rise together -- which is why the N=256 "
+      "ratio held at 0.39x -> 0.40x. Applying the same scaling at N=1024 gives ROM "
+      "~34 ms against classical ~57 ms, i.e. the 1.61x roughly preserved at 3x better "
+      "accuracy. That is what the queued `dn1024` job settles.\n")
 ACC = f"{WT}/2026-08-25-burgers-accuracy/experiments/separable-decoder/runs"
 NPUSH = f"{WT}/2026-08-23-n256-push/experiments/separable-decoder/runs"
 speed = []

@@ -1,0 +1,144 @@
+host=pax143 gpu=NVIDIA A100-PCIE-40GB
+jax_backend=gpu
+stage MANIFEST OK
+copied dense coefficients into this job's own dir
+jax_backend=gpu device=cuda:0 x64=True HFIT arms=['mid', 'ctl_cold'] steps=200000
+  whitening round-trip 1.183e-14   q == L^T h deviation 2.312e-15
+  span LS floor: train 6.2135e-04  fresh test 2.1236e-04  (S=131072, R=512, K_ckpt=16)
+   hfit[mid]       1/200000 loss 1.0157e+00 recon 1.0072e+00 [5s]
+   hfit[mid]    5000/200000 loss 8.3098e-03 recon 7.9238e-02 [14s]
+   hfit[mid]   10000/200000 loss 3.7714e-03 recon 5.2666e-02 [23s]
+   hfit[mid]   15000/200000 loss 2.3407e-03 recon 4.1963e-02 [32s]
+   hfit[mid]   20000/200000 loss 1.7069e-03 recon 3.5728e-02 [41s]
+   hfit[mid]   25000/200000 loss 1.2901e-03 recon 3.1479e-02 [50s]
+   hfit[mid]   30000/200000 loss 1.1041e-03 recon 2.8831e-02 [59s]
+   hfit[mid]   35000/200000 loss 9.1640e-04 recon 2.6076e-02 [68s]
+   hfit[mid]   40000/200000 loss 7.5348e-04 recon 2.4198e-02 [77s]
+   hfit[mid]   45000/200000 loss 6.3353e-04 recon 2.2346e-02 [87s]
+   hfit[mid]   50000/200000 loss 5.6446e-04 recon 2.1206e-02 [96s]
+   hfit[mid]   55000/200000 loss 5.1917e-04 recon 1.9932e-02 [105s]
+   hfit[mid]   60000/200000 loss 4.7612e-04 recon 1.8894e-02 [114s]
+   hfit[mid]   65000/200000 loss 3.9757e-04 recon 1.7747e-02 [124s]
+   hfit[mid]   70000/200000 loss 3.5635e-04 recon 1.6927e-02 [133s]
+   hfit[mid]   75000/200000 loss 3.4055e-04 recon 1.6111e-02 [142s]
+   hfit[mid]   80000/200000 loss 2.8554e-04 recon 1.5033e-02 [151s]
+   hfit[mid]   85000/200000 loss 2.7044e-04 recon 1.4295e-02 [161s]
+   hfit[mid]   90000/200000 loss 2.3849e-04 recon 1.3665e-02 [170s]
+   hfit[mid]   95000/200000 loss 2.1895e-04 recon 1.3236e-02 [179s]
+   hfit[mid]  100000/200000 loss 1.9584e-04 recon 1.2516e-02 [189s]
+   hfit[mid]  105000/200000 loss 1.6843e-04 recon 1.1993e-02 [198s]
+   hfit[mid]  110000/200000 loss 1.6276e-04 recon 1.1471e-02 [207s]
+   hfit[mid]  115000/200000 loss 1.5888e-04 recon 1.1072e-02 [216s]
+   hfit[mid]  120000/200000 loss 1.4138e-04 recon 1.0571e-02 [226s]
+   hfit[mid]  125000/200000 loss 1.2906e-04 recon 1.0109e-02 [235s]
+   hfit[mid]  130000/200000 loss 1.1913e-04 recon 9.8285e-03 [245s]
+   hfit[mid]  135000/200000 loss 1.1357e-04 recon 9.3700e-03 [254s]
+   hfit[mid]  140000/200000 loss 1.0778e-04 recon 9.0662e-03 [263s]
+   hfit[mid]  145000/200000 loss 1.0001e-04 recon 8.7624e-03 [273s]
+   hfit[mid]  150000/200000 loss 9.5054e-05 recon 8.5150e-03 [282s]
+   hfit[mid]  155000/200000 loss 9.5750e-05 recon 8.3057e-03 [291s]
+   hfit[mid]  160000/200000 loss 8.6109e-05 recon 8.1223e-03 [301s]
+   hfit[mid]  165000/200000 loss 8.5089e-05 recon 7.9575e-03 [310s]
+   hfit[mid]  170000/200000 loss 8.2347e-05 recon 7.8413e-03 [319s]
+   hfit[mid]  175000/200000 loss 7.8880e-05 recon 7.7395e-03 [329s]
+   hfit[mid]  180000/200000 loss 8.3001e-05 recon 7.6623e-03 [338s]
+   hfit[mid]  185000/200000 loss 7.9199e-05 recon 7.6004e-03 [347s]
+   hfit[mid]  190000/200000 loss 7.4052e-05 recon 7.5583e-03 [357s]
+   hfit[mid]  195000/200000 loss 7.8729e-05 recon 7.5274e-03 [366s]
+   hfit[mid]  200000/200000 loss 7.6711e-05 recon 7.5074e-03 [376s]
+  ARM mid: recon 7.5074e-03  oracle 5.1986e-03  oracle/floor 24.5x  oracle_nn 5.1978e-03  code-refit gain 1.087x
+  EMITTED refined decoder -> /cluster/tufts/paralab/tawal01/burgacc/dr256/out/sep_hfit_dense_mid_N256.pkl
+   hfit[ctl_cold]       1/200000 loss 1.0164e+00 recon 1.0075e+00 [4s]
+   hfit[ctl_cold]    5000/200000 loss 8.0495e-03 recon 7.7186e-02 [9s]
+   hfit[ctl_cold]   10000/200000 loss 4.0506e-03 recon 5.4164e-02 [15s]
+   hfit[ctl_cold]   15000/200000 loss 2.4802e-03 recon 4.2748e-02 [20s]
+   hfit[ctl_cold]   20000/200000 loss 1.7885e-03 recon 3.6100e-02 [25s]
+   hfit[ctl_cold]   25000/200000 loss 1.3596e-03 recon 3.1484e-02 [31s]
+   hfit[ctl_cold]   30000/200000 loss 1.1097e-03 recon 2.8368e-02 [36s]
+   hfit[ctl_cold]   35000/200000 loss 9.9676e-04 recon 2.5891e-02 [41s]
+   hfit[ctl_cold]   40000/200000 loss 8.1378e-04 recon 2.4032e-02 [47s]
+   hfit[ctl_cold]   45000/200000 loss 6.8017e-04 recon 2.2335e-02 [52s]
+   hfit[ctl_cold]   50000/200000 loss 6.1145e-04 recon 2.1015e-02 [57s]
+   hfit[ctl_cold]   55000/200000 loss 5.5060e-04 recon 1.9654e-02 [63s]
+   hfit[ctl_cold]   60000/200000 loss 4.8580e-04 recon 1.8630e-02 [68s]
+   hfit[ctl_cold]   65000/200000 loss 4.3814e-04 recon 1.7749e-02 [74s]
+   hfit[ctl_cold]   70000/200000 loss 4.1268e-04 recon 1.6780e-02 [79s]
+   hfit[ctl_cold]   75000/200000 loss 3.8196e-04 recon 1.6232e-02 [84s]
+   hfit[ctl_cold]   80000/200000 loss 3.3137e-04 recon 1.5386e-02 [90s]
+   hfit[ctl_cold]   85000/200000 loss 3.2382e-04 recon 1.4811e-02 [95s]
+   hfit[ctl_cold]   90000/200000 loss 2.9907e-04 recon 1.4373e-02 [100s]
+   hfit[ctl_cold]   95000/200000 loss 2.7410e-04 recon 1.3787e-02 [106s]
+   hfit[ctl_cold]  100000/200000 loss 2.4963e-04 recon 1.3283e-02 [111s]
+   hfit[ctl_cold]  105000/200000 loss 2.2955e-04 recon 1.2820e-02 [117s]
+   hfit[ctl_cold]  110000/200000 loss 2.2943e-04 recon 1.2410e-02 [122s]
+   hfit[ctl_cold]  115000/200000 loss 2.2435e-04 recon 1.2027e-02 [127s]
+   hfit[ctl_cold]  120000/200000 loss 2.0178e-04 recon 1.1567e-02 [133s]
+   hfit[ctl_cold]  125000/200000 loss 1.9630e-04 recon 1.1196e-02 [138s]
+   hfit[ctl_cold]  130000/200000 loss 1.7564e-04 recon 1.0913e-02 [144s]
+   hfit[ctl_cold]  135000/200000 loss 1.7986e-04 recon 1.0633e-02 [149s]
+   hfit[ctl_cold]  140000/200000 loss 1.7430e-04 recon 1.0378e-02 [154s]
+   hfit[ctl_cold]  145000/200000 loss 1.6319e-04 recon 1.0127e-02 [160s]
+   hfit[ctl_cold]  150000/200000 loss 1.5603e-04 recon 9.9224e-03 [165s]
+   hfit[ctl_cold]  155000/200000 loss 1.7993e-04 recon 9.7667e-03 [171s]
+   hfit[ctl_cold]  160000/200000 loss 1.4663e-04 recon 9.6188e-03 [176s]
+   hfit[ctl_cold]  165000/200000 loss 1.4656e-04 recon 9.4993e-03 [181s]
+   hfit[ctl_cold]  170000/200000 loss 1.4351e-04 recon 9.4123e-03 [187s]
+   hfit[ctl_cold]  175000/200000 loss 1.4238e-04 recon 9.3381e-03 [192s]
+   hfit[ctl_cold]  180000/200000 loss 1.4906e-04 recon 9.2837e-03 [198s]
+   hfit[ctl_cold]  185000/200000 loss 1.5239e-04 recon 9.2463e-03 [203s]
+   hfit[ctl_cold]  190000/200000 loss 1.3634e-04 recon 9.2162e-03 [208s]
+   hfit[ctl_cold]  195000/200000 loss 1.4732e-04 recon 9.1961e-03 [214s]
+   hfit[ctl_cold]  200000/200000 loss 1.4380e-04 recon 9.1822e-03 [219s]
+  ARM ctl_cold: recon 9.1822e-03  oracle 6.5204e-03  oracle/floor 30.7x  oracle_nn 6.5204e-03  code-refit gain 1.005x
+HFIT done in 648s -> /cluster/tufts/paralab/tawal01/burgacc/dr256/out/hfit_dr256.json
+jax_backend=gpu device=cuda:0 ROUND4-SPEED N=256 ckpt=sep_hfit_dense_mid_N256.pkl
+  test data: 8 fresh trajectories, worst FOM rel residual 9.92e-13
+  NNLS-EQ sep speed r4 N=256 k=16 M=64 m=256: pool 64516 support 256 (+0 pad) rel fit 4.02e-03 (row p95 4.2e-01, max 1.4e+03) [32s]
+  GATE 0 [ctrl]: 6.57e-15
+  trajectory parameters: canonical 576 + 4032 appended from seed 1000 (recorded in the checkpoint)
+  encoder[speed r4 u0->z0 N=256]: rel-MSE 3.946e-02 on 4608 training pairs [6s]
+  IC gram vs full: |dz|/(1+|z|) 1.54e-11, ||r|| rel diff 1.07e-10
+  variant LM step vs incumbent at stall=1e-12: max |dz| 0.00e+00
+   PROFILE rollout_extrap                    116.7957 ms
+   PROFILE ic_full                             9.0451 ms
+   PROFILE ic_gram                             2.7694 ms
+   PROFILE lm_step_budget8                     1.8403 ms
+   PROFILE lm_step_budget4                     1.0191 ms
+   PROFILE lm_step_budget2                     0.6534 ms
+   PROFILE lm_step_budget1                     0.5604 ms
+   PROFILE h_track_value                       0.4755 ms
+   PROFILE decode_full_grid_51                 0.3828 ms
+   PROFILE weak_residual_and_jacobian          0.1349 ms
+   PROFILE h_track_jacobian                    0.1144 ms
+   PROFILE bank_jacobian_Gst_dhdz              0.1143 ms
+   PROFILE prev_of                             0.0588 ms
+   PROFILE bank_value_Gst_h                    0.0545 ms
+   PROFILE weak_residual_r_w                   0.0512 ms
+   VARIANT base                       123.34 ms  err 8.926e-03  jac 368  ic_jac 19.4  {'budget': 5, 'stalled': 395}
+   VARIANT gram                       117.85 ms  err 8.926e-03  jac 369  ic_jac 19.4  {'budget': 6, 'stalled': 394}
+   VARIANT gram+stall1e-06             58.48 ms  err 8.926e-03  jac 238  ic_jac 19.4  {'budget': 3, 'stalled': 397}
+   VARIANT gram+stall1e-04             51.83 ms  err 8.923e-03  jac 210  ic_jac 19.4  {'budget': 3, 'stalled': 397}
+   VARIANT gram+stall1e-03             47.39 ms  err 8.917e-03  jac 191  ic_jac 19.4  {'budget': 1, 'stalled': 399}
+   VARIANT gram+stall1e-02             45.15 ms  err 8.961e-03  jac 173  ic_jac 19.4  {'budget': 1, 'stalled': 399}
+   VARIANT gram+budget8                86.14 ms  err 2.028e-02  jac 307  ic_jac 19.4  {'budget': 198, 'stalled': 202}
+   VARIANT gram+budget5                52.39 ms  err 8.301e-01  jac 78  ic_jac 19.4  {'budget': 389, 'stalled': 11}
+   VARIANT gram+budget3                37.31 ms  err 8.544e-01  jac 50  ic_jac 19.4  {'budget': 400}
+   VARIANT gram+budget2                29.20 ms  err 8.544e-01  jac 50  ic_jac 19.4  {'budget': 400}
+   VARIANT gram+budget1                21.08 ms  err 8.544e-01  jac 50  ic_jac 19.4  {'budget': 400}
+   VARIANT gram+extrap0               131.48 ms  err 8.926e-03  jac 469  ic_jac 19.4  {'budget': 10, 'stalled': 390}
+   VARIANT gram+extrap1.5             127.34 ms  err 8.926e-03  jac 435  ic_jac 19.4  {'budget': 7, 'stalled': 393}
+  MATCHED paired: ROM[gram+stall1e-02] 42.77 ms vs tol-Newton(nt=3e-03,lt=2e-03) 16.95 ms -> 0.40x
+   BATCH   1 rom|gram+stall1e-02                total    49.06 ms ->  49.059 ms/query  err 1.170e-02
+   BATCH   1 rom|base                           total   120.51 ms -> 120.513 ms/query  err 1.154e-02
+   BATCH   1 fom|nt3e-03|lt2e-03                total    16.76 ms ->  16.757 ms/query  err 8.365e-04
+   BATCH   2 rom|gram+stall1e-02                total    51.64 ms ->  25.821 ms/query  err 1.446e-02
+   BATCH   2 rom|base                           total   179.60 ms ->  89.798 ms/query  err 1.411e-02
+   BATCH   2 fom|nt3e-03|lt2e-03                total    19.04 ms ->   9.520 ms/query  err 6.133e-04
+   BATCH   4 rom|gram+stall1e-02                total    55.70 ms ->  13.925 ms/query  err 1.075e-02
+   BATCH   4 rom|base                           total   234.33 ms ->  58.583 ms/query  err 1.058e-02
+   BATCH   4 fom|nt3e-03|lt2e-03                total    26.43 ms ->   6.608 ms/query  err 4.737e-04
+   BATCH   8 rom|gram+stall1e-02                total    74.73 ms ->   9.341 ms/query  err 8.961e-03
+   BATCH   8 rom|base                           total   430.94 ms ->  53.868 ms/query  err 8.926e-03
+   BATCH   8 fom|nt3e-03|lt2e-03                total    48.28 ms ->   6.035 ms/query  err 3.538e-04
+DONE speed r4 N=256 [413s] -> /cluster/tufts/paralab/tawal01/burgacc/dr256/out/sep_speed_r5_dense_mid_N256.json
+ALL-DONE

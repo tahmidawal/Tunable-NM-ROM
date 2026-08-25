@@ -246,10 +246,10 @@ def main():
     # is off the reference recipe; the sibling redid it as r4s256a)
     for f in sorted(glob.glob(os.path.join(rf, "*.json"))):
         ref = json.load(open(f))
-    w("| decoder | K | trajectories | EQ set | gate 0 | rollout error |"
-      " best non-regressing e2e (ms) | jac/traj | matched classical (ms, err) |"
-      " paired ratio |")
-    w("|---|---|---|---|---|---|---|---|---|---|")
+    w("| decoder | K | h | trajectories | EQ set | gate 0 | rollout error |"
+      " best non-regressing e2e (ms) | jac IC | jac/traj |"
+      " matched classical (ms, err) | paired ratio |")
+    w("|---|---|---|---|---|---|---|---|---|---|---|---|")
     rows = []
     if ref is not None:
         rows.append(("round-4 incumbent (`sep_speed_r4`)", 16, 576, ref))
@@ -258,16 +258,24 @@ def main():
         ck = c.get("ckpt_cfg", {})
         rows.append((f"round 5 `{c['ckpt']}`", c["k"],
                      ck.get("hfit_n_traj", 576), d))
+    PARETO = []
     for label, k, ntraj, d in rows:
         base, champ, ma = speed_rows(d)
         g0 = d["gates"].get("eq_bank_vs_meshfree")
         eqm = d["config"].get("eq_Ms", [64])
-        w(f"| {label} | {k} | {ntraj} | M={eqm[0]} |"
+        sp = d["config"].get("ckpt_cfg", {}).get("hfit_spec", {})
+        hs = (f"{sp['hidden']}x{sp['layers']}" if sp.get("hidden")
+              else "256x2 (incumbent)")
+        rat = ma["paired"]["base_ms"] / ma["paired"]["rom_ms"]
+        w(f"| {label} | {k} | {hs} | {ntraj} | M={eqm[0]} |"
           f" {e(g0)} | {e(champ['err_traj_rel_mean'])} |"
           f" {champ['e2e_ms_median']:.2f} |"
+          f" {champ['ic_jac_mean']:.1f} |"
           f" {champ['jac_total_mean']:.0f} |"
           f" {ma['matched']['ms']:.2f}, {e(ma['matched']['err'])} |"
-          f" **{ma['paired']['base_ms'] / ma['paired']['rom_ms']:.2f}x** |")
+          f" **{rat:.2f}x** |")
+        PARETO.append((label, k, hs, ntraj, champ["err_traj_rel_mean"],
+                       champ["e2e_ms_median"], rat))
     w("")
     w("The round-4 row is the ON-RECIPE `r4s256a` job, not the earlier")
     w("`r4s256` one, which used a `snap_norm=True` checkpoint off the")
@@ -277,6 +285,71 @@ def main():
     w("is at least as accurate as the ROM; above 1 the ROM wins. All rows use")
     w("the CONTROL EQ set, the same one the round-4 row used, so no coarse-EQ")
     w("speed number is paired with a fine-EQ accuracy number.\n")
+
+    # ---- the Pareto statement ---------------------------------------------
+    inc = [r for r in PARETO if r[0].startswith("round-4")]
+    if inc and len(PARETO) > 1:
+        i = inc[0]
+        best_ratio = max((r for r in PARETO if not r[0].startswith("round-4")),
+                         key=lambda r: (round(r[6], 2), -r[4]))
+        best_err = min((r for r in PARETO if not r[0].startswith("round-4")),
+                       key=lambda r: r[4])
+        w("Two statements follow from that table, and they are the campaign's")
+        w("result:\n")
+        w(f"* **At an unchanged position against the classical ladder,")
+        w(f"  the ROM is {i[4] / best_err[4] if False else i[4] / best_ratio[4]:.2f}x more accurate.**")
+        w(f"  The incumbent is {e(i[4])} at {i[5]:.2f} ms, paired {i[6]:.2f}x;")
+        w(f"  dense mu-sampling with h={best_ratio[2]} at the same K={best_ratio[1]}")
+        w(f"  is {e(best_ratio[4])} at {best_ratio[5]:.2f} ms, paired")
+        w(f"  {best_ratio[6]:.2f}x. The matched-accuracy ratio is unchanged")
+        mi = [r for r in rows
+              if r[0].startswith("round-4")][0][3]["matched_accuracy"]
+        mb = [r for r in rows if not r[0].startswith("round-4")
+              and abs(r[3]["matched_accuracy"]["paired"]["base_ms"]
+                      / r[3]["matched_accuracy"]["paired"]["rom_ms"]
+                      - best_ratio[6]) < 1e-9][0][3]["matched_accuracy"]
+        w("  because the classical side has to get more accurate too: the")
+        w(f"  matched rung moves from {mi['matched']['ms']:.2f} ms at")
+        w(f"  {e(mi['matched']['err'])} to {mb['matched']['ms']:.2f} ms at")
+        w(f"  {e(mb['matched']['err'])}.")
+        w(f"* **The most accurate decoder measured** is {e(best_err[4])}")
+        w(f"  ({i[4] / best_err[4]:.2f}x better than the incumbent), at")
+        w(f"  {best_err[5]:.2f} ms and paired {best_err[6]:.2f}x -- accuracy")
+        w("  bought back with speed, which is the trade the campaign was told")
+        w("  not to make silently.\n")
+
+    # ---- EQ objective truncation -------------------------------------------
+    r4a6 = sorted(glob.glob(os.path.join(RUNS, "inherited", "r4a6", "*.json")))
+    if r4a6:
+        d = json.load(open(r4a6[0]))
+        w("## Result 5 -- the quadrature is binding only at the first step\n")
+        w("From the sibling's r4a6 job (N=1024, K=32, tail-capped NNLS already")
+        w("applied). `weak-EQ optimum / L2 oracle` at a single step is the")
+        w("objective-truncation error: what the EQ objective costs on top of")
+        w("what the manifold can represent.\n")
+        w("| EQ set | m | rel fit | worst row | " + " | ".join(
+            f"t={t}" for t in (1, 2, 3, 5, 10, 25, 50)) + " |")
+        w("|---" * 11 + "|")
+        for k in d["eq"]:
+            q = d["eq"][k]
+            by = {}
+            for x in d["single_step_weak_opt"][k]:
+                by.setdefault(x["t"], []).append((x["err"], x["oracle_err"]))
+            cells = []
+            for t in (1, 2, 3, 5, 10, 25, 50):
+                a = np.array(by[t])
+                cells.append(f"{(a[:, 0] / a[:, 1]).mean():.3f}")
+            w(f"| `{k}` | {q['m']} | {e(q['rel_fit'])} | {e(q['row_rel_max'])}"
+              " | " + " | ".join(cells) + " |")
+        w("")
+        w("Objective truncation is confined almost entirely to t=1, the first")
+        w("step off the sharp blob initial condition; from t=2 onward the EQ")
+        w("objective is not binding at the error scale these decoders reach.")
+        w("And the row-tail statistic points the WRONG WAY: the M=256 set has")
+        w("a far worse worst row than the control and tracks the oracle")
+        w("better. The certification metric is this tracking ratio, not the")
+        w("row tail, and the fix indicated is a first-step-specific")
+        w("quadrature rather than a globally finer one.\n")
 
     # ---- span floor by time ------------------------------------------------
     w("## Where inside a trajectory the error lives\n")

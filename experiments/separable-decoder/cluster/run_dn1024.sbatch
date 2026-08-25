@@ -12,6 +12,13 @@
 # ROUND 5 -- the decisive N=1024 run: DENSE mu-sampling + the best K, on the
 # frozen r4a6 bank, then the round-4 speed/accuracy protocol on the result.
 #
+# RECIPE CORRECTED 2026-08-25 04:35 from the N=256 Pareto measurement: the arm
+# to confirm is dense mu-sampling with a MODEST h (512x2) at the incumbent K,
+# not a large K.  At N=256 that gives rollout error 2.751e-2 -> 8.961e-3 (3.07x)
+# at 35.60 -> 45.15 ms with the matched-accuracy paired ratio UNCHANGED (0.39x
+# -> 0.40x), whereas K=48 gives a worse error (9.232e-3) at 135.75 ms (0.12x)
+# and a wide h at the same density gives 5.021e-3 but at 73.99 ms (0.23x).
+#
 # Round 5 established, at both resolutions, that the sole remaining rung is h's
 # generalisation in mu, and that exactly two levers move it: the latent
 # dimension K (oracle/span-floor 58.1x -> 36.8x -> 23.9x -> 18.6x -> 16.7x for
@@ -43,23 +50,23 @@ NPZ="$ROOT/out/sep_coeff_N1024_K32_R512.npz"
 # learning curve on the reserved cohort, then the emitted decoder at full density
 for F in 576 4096; do
   env NPZ="$NPZ" CKPT="$CK" OUT="$ROOT/out/hfit_dn1024_f$F.json" \
-    ARMS=k64,k32 STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 \
+    ARMS=mid,wide,k32 STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 \
     ORACLE_ITERS=150 CODEDIAG_N=2048 CODEDIAG_ITERS=60 ENC_STEPS=12000 \
     SEED0=0 TRAJ_FIT=$F HOLD_FROM=4096 HOLD_N=512 \
     "$PY" sep_hfit_run.py || echo "hfit F=$F FAILED"
 done
 env NPZ="$NPZ" CKPT="$CK" OUT="$ROOT/out/hfit_dn1024_full.json" \
-  ARMS=k64 STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 \
+  ARMS=mid,wide,k32 STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 \
   ORACLE_ITERS=150 CODEDIAG_N=2048 CODEDIAG_ITERS=60 ENC_STEPS=12000 SEED0=0 \
-  EMIT=k64 EMIT_PATH="$ROOT/out/sep_hfit_k64_N1024_dense.pkl" \
+  EMIT=mid EMIT_PATH="$ROOT/out/sep_hfit_dense_mid_N1024_dense.pkl" \
   "$PY" sep_hfit_run.py || { echo "HFIT-FULL FAILED"; exit 1; }
 
-env CKPT="$ROOT/out/sep_hfit_k64_N1024_dense.pkl" N=1024 N_TEST=8 EQ_MS=64,256 \
+env CKPT="$ROOT/out/sep_hfit_dense_mid_N1024_dense.pkl" N=1024 N_TEST=8 EQ_MS=64,256 \
   EQ_CAND_CAP=65536 SEED0=0 REPS=5 WARM=2 PAIR_REPS=3 TR_FACTOR=0.01 \
   STEP_TOL=1e-9 EXTRAP=1.0 IC_ENC_BUDGET=50 ENC_STEPS=12000 \
   STALLS=1e-12,1e-6,1e-4,1e-3,1e-2 BUDGETS=30,8,5,3,2,1 EXTRAPS=0,1.0,1.5 \
   BATCHES=1,2,4,8,16 NEWTON_TOLS=3e-1,1e-1,3e-2,1e-2,3e-3,1e-3,1e-4 \
-  LIN_FRACS=0.05,0.5 FEAT_CHUNK=131072 OUT_TAG=k64_N1024_dense \
+  LIN_FRACS=0.05,0.5 FEAT_CHUNK=131072 OUT_TAG=dense_mid_N1024_dense \
   OUT_PREFIX="$ROOT/out/" \
   "$PY" sep_speed_r5.py || echo "SPEED FAILED"
 

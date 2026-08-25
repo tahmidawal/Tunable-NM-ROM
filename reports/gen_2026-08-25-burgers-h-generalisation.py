@@ -28,6 +28,23 @@ def w(*a):
     OUT.append(" ".join(str(x) for x in a))
 
 
+# The training pick keeps a constant number of states per trajectory by
+# construction (MAX_SNAPS is scaled with n_traj), so the fitted trajectory count
+# is recoverable from the fitted state count even for the JSONs written before
+# `npz_n_traj` was recorded.  16384 states <-> 576 trajectories.
+SPT = 16384.0 / 576.0
+
+
+def n_traj_of(cfg, floors=None):
+    if (floors or {}).get("traj_fit"):
+        return int(floors["traj_fit"])
+    if cfg.get("traj_fit"):
+        return int(cfg["traj_fit"])
+    if cfg.get("npz_n_traj"):
+        return int(cfg["npz_n_traj"])
+    return int(round(cfg["S"] / SPT))
+
+
 def e(v, s="{:.3e}"):
     return "--" if v is None else s.format(v)
 
@@ -44,8 +61,11 @@ def arms():
             out.append(dict(
                 file=os.path.basename(f), job=d["config"].get("slurm_job"),
                 src=d["config"]["ckpt"], name=name, k=a.get("k"),
-                spec=a.get("spec", {}), traj=d["floors"].get("traj_fit") or 576,
+                spec=a.get("spec", {}), traj=n_traj_of(d["config"], d["floors"]),
                 steps=(a.get("train") or {}).get("steps_done"),
+                capped=bool((a.get("train") or {}).get("steps_done") and
+                            (a.get("train") or {}).get("steps") and
+                            (a["train"]["steps_done"] < a["train"]["steps"])),
                 recon=a["recon_train"]["mean"], oracle=a["oracle_test"]["mean"],
                 o_t0=a["oracle_test"]["t0"], o_late=a["oracle_test"]["late"],
                 ratio=a["oracle_over_span_floor"],
@@ -65,7 +85,7 @@ def plain(a):
             and not s.get("h_ff") and not s.get("z_noise")
             and not s.get("norm") and not s.get("wd") and not s.get("w")
             and not s.get("zinit") and not s.get("z_polish_every")
-            and not s.get("warm"))
+            and not s.get("warm") and not s.get("steps"))
 
 
 def speed_rows(d):
@@ -184,7 +204,9 @@ def main():
     kl = {}
     for a in A:
         if a["traj"] == 576 and plain(a):
-            kl.setdefault((a["src"], a["k"]), a)
+            cur = kl.get((a["src"], a["k"]))
+            if cur is None or (a["steps"] or 0) > (cur["steps"] or 0):
+                kl[(a["src"], a["k"])] = a
     w("| source bank | K | recon (train) | oracle (fresh) | oracle / span floor"
       " | oracle at t=0 | oracle at t>5 |")
     w("|---|---|---|---|---|---|---|")
@@ -209,7 +231,8 @@ def main():
     w("|---|---|---|---|---|---|")
     for a in lc:
         s = a["spec"]
-        w(f"| `{a['name']}` | {a['k']} | {s.get('hidden')}x{s.get('layers')} |"
+        nm = f"`{a['name']}`" + (" **(TIME-CAPPED)**" if a.get("capped") else "")
+        w(f"| {nm} | {a['k']} | {s.get('hidden')}x{s.get('layers')} |"
           f" {a['traj']} | **{e(a['hold'])}** | {a['hold_ratio']:.1f}x |")
     w("")
     grp = {}
@@ -233,6 +256,35 @@ def main():
     w("The canonical draw is 576 trajectories for a family with five")
     w("parameters plus time -- about three and a half samples per parameter")
     w("dimension. Nothing about that is enough, and the curve says so.\n")
+
+    # ---- K x density cross-table -------------------------------------------
+    cross = {}
+    for a in A:
+        s_ = a["spec"]
+        if s_.get("hidden") == 1024 and s_.get("layers") == 3 and plain(a) \
+                and a["src"].startswith("sep_burgers_r3_N256"):
+            cur = cross.setdefault(a["k"], {}).get(a["traj"])
+            if cur is None or (a["steps"] or 0) > (cur["steps"] or 0):
+                cross[a["k"]][a["traj"]] = a
+    tj = sorted({t for v in cross.values() for t in v})
+    if len(tj) > 1:
+        w("## The two levers together (N=256, h=1024x3, oracle / span floor)\n")
+        w("| K | " + " | ".join(f"{t} traj" for t in tj) + " |")
+        w("|---" * (len(tj) + 1) + "|")
+        for k in sorted(cross):
+            cells = []
+            for t in tj:
+                a = cross[k].get(t)
+                cells.append("--" if a is None else
+                             (f"{a['ratio']:.1f}x"
+                              + ("*" if a.get("capped") else "")))
+            w(f"| {k} | " + " | ".join(cells) + " |")
+        w("")
+        w("`*` marks an arm truncated by its wall-clock cap; those are lower")
+        w("bounds on the lever, not tests of it. Reading across a row is the")
+        w("density lever at fixed K; reading down a column is the K lever at")
+        w("fixed density. They compound, and neither saturates the other's")
+        w("gain -- but only the density direction is free at solve time.\n")
 
     # ---- the price ---------------------------------------------------------
     w("## Result 4 -- what each lever costs at solve time\n")

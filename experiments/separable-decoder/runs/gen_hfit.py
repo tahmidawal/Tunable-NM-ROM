@@ -15,6 +15,23 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SEP = os.path.dirname(HERE)
 
 
+# The training pick keeps a constant number of states per trajectory by
+# construction (MAX_SNAPS is scaled with n_traj), so the fitted trajectory count
+# is recoverable from the fitted state count even for the JSONs written before
+# `npz_n_traj` was recorded.  16384 states <-> 576 trajectories.
+SPT = 16384.0 / 576.0
+
+
+def n_traj_of(cfg, floors=None):
+    if (floors or {}).get("traj_fit"):
+        return int(floors["traj_fit"])
+    if cfg.get("traj_fit"):
+        return int(cfg["traj_fit"])
+    if cfg.get("npz_n_traj"):
+        return int(cfg["npz_n_traj"])
+    return int(round(cfg["S"] / SPT))
+
+
 def fmt(v, s="{:.3e}"):
     return "--" if v is None else s.format(v)
 
@@ -71,6 +88,10 @@ def main():
                 job=d["config"].get("slurm_job"), src=src, name=name,
                 k=a.get("k"), spec=a.get("spec", {}),
                 steps=a.get("train", {}).get("steps_done"),
+                spec_steps=a.get("spec", {}).get("steps"),
+                capped=bool((a.get("train") or {}).get("steps_done") and
+                            (a.get("train") or {}).get("steps") and
+                            (a["train"]["steps_done"] < a["train"]["steps"])),
                 recon=a["recon_train"]["mean"],
                 recon_max=a["recon_train"]["max"],
                 oracle=a["oracle_test"]["mean"],
@@ -82,7 +103,7 @@ def main():
                 o_nn=a["oracle_test_nn"]["mean"],
                 code_gain=a["oracle_train_from_codes"]["gain_vs_recon"],
                 secs=a.get("seconds"),
-                traj_fit=d["floors"].get("traj_fit") or 576,
+                traj_fit=n_traj_of(d["config"], d["floors"]),
                 hold=(a.get("oracle_holdout") or {}).get("mean"),
                 hold_ratio=(a.get("oracle_holdout") or {}).get(
                     "over_span_floor"),
@@ -116,7 +137,8 @@ def main():
             hs += " (" + ", ".join(extra) + ")"
         hold = ("--" if r["hold"] is None else
                 f"{fmt(r['hold'])} ({r['hold_ratio']:.1f}x)")
-        w(f"| `{r['name']}` | {r['k']} | {hs} | {r['traj_fit']} | "
+        nm = f"`{r['name']}`" + (" **(TIME-CAPPED)**" if r.get('capped') else "")
+        w(f"| {nm} | {r['k']} | {hs} | {r['traj_fit']} | "
           f"{r['steps']} | {fmt(r['recon'])} | **{fmt(r['oracle'])}** | "
           f"{r['ratio']:.1f}x | {fmt(r['o_t0'])} | "
           f"{fmt(r['o_late'])} | {fmt(r['o_nn'])} | {hold} | "
@@ -141,8 +163,11 @@ def main():
                 and r["spec"].get("layers") == 3 \
                 and not r["spec"].get("norm") and not r["spec"].get("wd") \
                 and not r["spec"].get("w") and not r["spec"].get("zinit") \
-                and not r["spec"].get("z_polish_every"):
-            kl.setdefault((r["src"], r["k"]), r)
+                and not r["spec"].get("z_polish_every") \
+                and not r["spec"].get("steps"):
+            cur = kl.get((r["src"], r["k"]))
+            if cur is None or (r["steps"] or 0) > (cur["steps"] or 0):
+                kl[(r["src"], r["k"])] = r
     if kl:
         w("## The K ladder (h = 1024x3, all other knobs at their defaults)\n")
         w("| source bank | K | recon (train) | oracle (fresh) | oracle/floor |")

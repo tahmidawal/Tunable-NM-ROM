@@ -1,0 +1,88 @@
+host=pax142 gpu=NVIDIA A100-PCIE-40GB
+jax_backend=gpu
+stage MANIFEST OK
+copied dense coefficients into this job's own dir
+jax_backend=gpu device=cuda:0 x64=True HFIT arms=['huge', 'k24', 'k32', 'k48'] steps=120000
+  whitening round-trip 1.183e-14   q == L^T h deviation 2.312e-15
+  span LS floor: train 6.1948e-04  fresh test 2.1236e-04  (S=116499, R=512, K_ckpt=16)
+   hfit[huge]       1/120000 loss 1.0151e+00 recon 1.0063e+00 [9s]
+   hfit[huge]    5000/120000 loss 5.6674e-03 recon 6.8254e-02 [142s]
+   hfit[huge]   10000/120000 loss 2.6197e-03 recon 4.3857e-02 [279s]
+   hfit[huge]   15000/120000 loss 1.5675e-03 recon 3.3877e-02 [417s]
+   hfit[huge]   20000/120000 loss 1.1796e-03 recon 2.8887e-02 [556s]
+   hfit[huge]   25000/120000 loss 8.3165e-04 recon 2.4684e-02 [694s]
+   hfit[huge] TIME CAP at step 25235
+  ARM huge: recon 2.3873e-02  oracle 7.7054e-03  oracle/floor 36.3x  oracle_nn 7.2315e-03  code-refit gain 2.993x  hold 1.0518e-02 (16.7x)
+   hfit[k24]       1/120000 loss 1.0212e+00 recon 1.0090e+00 [8s]
+   hfit[k24]    5000/120000 loss 7.0714e-03 recon 7.3164e-02 [40s]
+   hfit[k24]   10000/120000 loss 2.9434e-03 recon 4.7061e-02 [72s]
+   hfit[k24]   15000/120000 loss 1.7108e-03 recon 3.5770e-02 [104s]
+   hfit[k24]   20000/120000 loss 1.1054e-03 recon 2.9439e-02 [137s]
+   hfit[k24]   25000/120000 loss 1.0213e-03 recon 2.8092e-02 [169s]
+   hfit[k24]   30000/120000 loss 7.0126e-04 recon 2.4094e-02 [201s]
+   hfit[k24]   35000/120000 loss 5.5973e-04 recon 2.0661e-02 [234s]
+   hfit[k24]   40000/120000 loss 4.5831e-04 recon 1.8924e-02 [266s]
+   hfit[k24]   45000/120000 loss 3.5338e-04 recon 1.7168e-02 [299s]
+   hfit[k24]   50000/120000 loss 2.7485e-04 recon 1.4740e-02 [331s]
+   hfit[k24]   55000/120000 loss 2.2085e-04 recon 1.3057e-02 [364s]
+   hfit[k24]   60000/120000 loss 1.9869e-04 recon 1.2011e-02 [396s]
+   hfit[k24]   65000/120000 loss 1.3034e-04 recon 1.0379e-02 [429s]
+   hfit[k24]   70000/120000 loss 1.0385e-04 recon 9.1180e-03 [461s]
+   hfit[k24]   75000/120000 loss 8.5874e-05 recon 8.5262e-03 [493s]
+   hfit[k24]   80000/120000 loss 7.0171e-05 recon 7.7124e-03 [526s]
+   hfit[k24]   85000/120000 loss 5.7026e-05 recon 6.9479e-03 [558s]
+   hfit[k24]   90000/120000 loss 4.5443e-05 recon 6.1790e-03 [591s]
+   hfit[k24]   95000/120000 loss 3.8271e-05 recon 5.6239e-03 [623s]
+   hfit[k24]  100000/120000 loss 3.4920e-05 recon 5.3076e-03 [656s]
+   hfit[k24]  105000/120000 loss 3.3401e-05 recon 5.0811e-03 [689s]
+   hfit[k24] TIME CAP at step 106781
+  ARM k24: recon 5.0181e-03  oracle 3.3363e-03  oracle/floor 15.7x  oracle_nn 3.2725e-03  code-refit gain 1.220x  hold 4.9648e-03 (7.9x)
+   hfit[k32]       1/120000 loss 1.0286e+00 recon 1.0117e+00 [5s]
+   hfit[k32]    5000/120000 loss 6.3856e-03 recon 7.0134e-02 [37s]
+   hfit[k32]   10000/120000 loss 2.6519e-03 recon 4.4166e-02 [70s]
+   hfit[k32]   15000/120000 loss 1.6633e-03 recon 3.5494e-02 [102s]
+   hfit[k32]   20000/120000 loss 1.0482e-03 recon 2.7788e-02 [135s]
+   hfit[k32]   25000/120000 loss 7.8844e-04 recon 2.4035e-02 [168s]
+   hfit[k32]   30000/120000 loss 5.8079e-04 recon 2.0703e-02 [200s]
+   hfit[k32]   35000/120000 loss 4.8011e-04 recon 1.8411e-02 [233s]
+   hfit[k32]   40000/120000 loss 3.4829e-04 recon 1.5859e-02 [266s]
+   hfit[k32]   45000/120000 loss 3.0089e-04 recon 1.5251e-02 [299s]
+   hfit[k32]   50000/120000 loss 2.3311e-04 recon 1.3441e-02 [331s]
+   hfit[k32]   55000/120000 loss 1.9512e-04 recon 1.2434e-02 [364s]
+   hfit[k32]   60000/120000 loss 1.7515e-04 recon 1.1400e-02 [397s]
+   hfit[k32]   65000/120000 loss 1.2390e-04 recon 9.9066e-03 [430s]
+   hfit[k32]   70000/120000 loss 9.8135e-05 recon 8.7836e-03 [463s]
+   hfit[k32]   75000/120000 loss 7.2931e-05 recon 7.6867e-03 [496s]
+   hfit[k32]   80000/120000 loss 5.3926e-05 recon 6.7434e-03 [528s]
+   hfit[k32]   85000/120000 loss 3.9323e-05 recon 5.7529e-03 [561s]
+   hfit[k32]   90000/120000 loss 3.4766e-05 recon 5.3845e-03 [594s]
+   hfit[k32]   95000/120000 loss 2.9200e-05 recon 4.9629e-03 [627s]
+   hfit[k32]  100000/120000 loss 2.5658e-05 recon 4.5981e-03 [660s]
+   hfit[k32]  105000/120000 loss 2.4242e-05 recon 4.3846e-03 [693s]
+   hfit[k32] TIME CAP at step 106150
+  ARM k32: recon 4.3526e-03  oracle 2.8701e-03  oracle/floor 13.5x  oracle_nn 2.8529e-03  code-refit gain 1.241x  hold 4.2669e-03 (6.8x)
+   hfit[k48]       1/120000 loss 1.0415e+00 recon 1.0168e+00 [6s]
+   hfit[k48]    5000/120000 loss 5.2127e-03 recon 6.4138e-02 [39s]
+   hfit[k48]   10000/120000 loss 2.3913e-03 recon 4.1752e-02 [73s]
+   hfit[k48]   15000/120000 loss 1.4201e-03 recon 3.2115e-02 [106s]
+   hfit[k48]   20000/120000 loss 1.0737e-03 recon 2.8322e-02 [140s]
+   hfit[k48]   25000/120000 loss 7.6823e-04 recon 2.3187e-02 [174s]
+   hfit[k48]   30000/120000 loss 6.1284e-04 recon 2.1407e-02 [207s]
+   hfit[k48]   35000/120000 loss 4.5456e-04 recon 1.8014e-02 [241s]
+   hfit[k48]   40000/120000 loss 3.0983e-04 recon 1.5637e-02 [275s]
+   hfit[k48]   45000/120000 loss 2.6374e-04 recon 1.4550e-02 [309s]
+   hfit[k48]   50000/120000 loss 2.0168e-04 recon 1.2648e-02 [342s]
+   hfit[k48]   55000/120000 loss 1.6859e-04 recon 1.1442e-02 [376s]
+   hfit[k48]   60000/120000 loss 1.3244e-04 recon 9.9254e-03 [410s]
+   hfit[k48]   65000/120000 loss 1.0483e-04 recon 9.0973e-03 [444s]
+   hfit[k48]   70000/120000 loss 8.2492e-05 recon 8.1812e-03 [477s]
+   hfit[k48]   75000/120000 loss 5.8176e-05 recon 7.0059e-03 [511s]
+   hfit[k48]   80000/120000 loss 4.7319e-05 recon 6.2964e-03 [545s]
+   hfit[k48]   85000/120000 loss 3.3064e-05 recon 5.3783e-03 [579s]
+   hfit[k48]   90000/120000 loss 2.8399e-05 recon 5.0214e-03 [612s]
+   hfit[k48]   95000/120000 loss 2.3155e-05 recon 4.5102e-03 [646s]
+   hfit[k48]  100000/120000 loss 2.0992e-05 recon 4.2558e-03 [680s]
+   hfit[k48] TIME CAP at step 102992
+  ARM k48: recon 4.1065e-03  oracle 2.4824e-03  oracle/floor 11.7x  oracle_nn 2.4672e-03  code-refit gain 1.313x  hold 3.7767e-03 (6.0x)
+HFIT done in 3002s -> /cluster/tufts/paralab/tawal01/burgacc/dc256/out/hfit_dc256.json
+ALL-DONE

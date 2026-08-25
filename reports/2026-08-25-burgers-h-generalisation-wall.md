@@ -62,7 +62,6 @@ codes, so the span floor is a constant per bank and
 |---|---|---|---|---|---|---|
 | `base` | 16 | --x-- | 7.171e-03 | **7.814e-03** | 36.8x | 1.000 |
 | `refit_ctl` | 16 | 256x2 | 6.189e-03 | **7.367e-03** | 34.7x | 1.000 |
-| `wide` | 16 | 1024x3 | 4.257e-03 | **2.746e-03** | 12.9x | 1.133 |
 | `wide` | 16 | 1024x3 | 2.219e-03 | **6.813e-03** | 32.1x | 1.079 |
 | `wide` | 16 | 1024x3 | 2.166e-03 | **6.336e-03** | 29.8x | 1.081 |
 | `deep` | 16 | 512x6 | 2.504e-03 | **7.155e-03** | 33.7x | 1.068 |
@@ -95,7 +94,7 @@ shortlist:
 | source bank | K | recon (train) | oracle (fresh) | oracle / span floor | oracle at t=0 | oracle at t>5 |
 |---|---|---|---|---|---|---|
 | `sep_burgers_r3_N256_K16_R512.pkl` | 8 | 4.090e-03 | 1.234e-02 | **58.1x** | 4.925e-02 | 9.446e-03 |
-| `sep_burgers_r3_N256_K16_R512.pkl` | 16 | 4.257e-03 | 2.746e-03 | **12.9x** | 8.398e-03 | 2.423e-03 |
+| `sep_burgers_r3_N256_K16_R512.pkl` | 16 | 2.219e-03 | 6.813e-03 | **32.1x** | 3.195e-02 | 4.845e-03 |
 | `sep_burgers_r3_N256_K16_R512.pkl` | 24 | 1.781e-03 | 5.796e-03 | **27.3x** | 2.892e-02 | 4.087e-03 |
 | `sep_burgers_r3_N256_K16_R512.pkl` | 32 | 1.579e-03 | 5.067e-03 | **23.9x** | 2.607e-02 | 3.470e-03 |
 | `sep_burgers_r3_N256_K16_R512.pkl` | 48 | 1.311e-03 | 3.958e-03 | **18.6x** | 2.168e-02 | 2.669e-03 |
@@ -117,9 +116,13 @@ states' coefficients, and a higher-dimensional image does that better.
 
 | arm | K | h | fitted trajectories | held-out oracle | held-out oracle / that cohort's span floor |
 |---|---|---|---|---|---|
+| `huge` **(TIME-CAPPED)** | 16 | 2048x4 | 4096 | **1.052e-02** | 16.7x |
 | `k24` | 24 | 1024x3 | 576 | **1.265e-02** | 20.1x |
 | `k24` | 24 | 1024x3 | 1152 | **6.851e-03** | 10.9x |
+| `k24` **(TIME-CAPPED)** | 24 | 1024x3 | 4096 | **4.965e-03** | 7.9x |
 | `k24` | 24 | 1024x3 | 4096 | **4.915e-03** | 7.8x |
+| `k32` **(TIME-CAPPED)** | 32 | 1024x3 | 4096 | **4.267e-03** | 6.8x |
+| `k48` **(TIME-CAPPED)** | 48 | 1024x3 | 4096 | **3.777e-03** | 6.0x |
 | `refit_ctl` | 16 | 256x2 | 72 | **2.020e-02** | 57.5x |
 | `refit_ctl` | 16 | 256x2 | 144 | **1.358e-02** | 38.7x |
 | `refit_ctl` | 16 | 256x2 | 288 | **1.076e-02** | 30.7x |
@@ -136,7 +139,7 @@ Fitted power laws, `held-out oracle ~ (trajectories)^-p`:
 
 | arm | K | h | trajectory range | p |
 |---|---|---|---|---|
-| `k24` | 24 | 1024x3 | 576-4096 | 0.45 |
+| `k24` | 24 | 1024x3 | 576-4096 | 0.43 |
 | `refit_ctl` | 16 | 256x2 | 72-432 | 0.42 |
 | `wide` | 16 | 1024x3 | 72-432 | 0.86 |
 | `wide` | 16 | 1024x3 | 576-4096 | 0.40 |
@@ -144,6 +147,25 @@ Fitted power laws, `held-out oracle ~ (trajectories)^-p`:
 The canonical draw is 576 trajectories for a family with five
 parameters plus time -- about three and a half samples per parameter
 dimension. Nothing about that is enough, and the curve says so.
+
+## The two levers together (N=256, h=1024x3, oracle / span floor)
+
+| K | 72 traj | 144 traj | 288 traj | 432 traj | 576 traj | 1152 traj | 4096 traj | 4608 traj |
+|---|---|---|---|---|---|---|---|---|
+| 8 | -- | -- | -- | -- | 58.1x | -- | -- | -- |
+| 16 | 251.9x | 162.4x | 76.1x | 40.0x | 32.1x | 18.6x | 19.2x | 12.9x |
+| 24 | -- | -- | -- | -- | 27.3x | 16.4x | 15.9x | -- |
+| 32 | -- | -- | -- | -- | 23.9x | -- | 13.5x* | -- |
+| 48 | -- | -- | -- | -- | 18.6x | -- | 11.7x* | -- |
+| 64 | -- | -- | -- | -- | 16.7x | -- | -- | -- |
+| 96 | -- | -- | -- | -- | 13.0x | -- | -- | -- |
+| 128 | -- | -- | -- | -- | 9.7x | -- | -- | -- |
+
+`*` marks an arm truncated by its wall-clock cap; those are lower
+bounds on the lever, not tests of it. Reading across a row is the
+density lever at fixed K; reading down a column is the K lever at
+fixed density. They compound, and neither saturates the other's
+gain -- but only the density direction is free at solve time.
 
 ## Result 4 -- what each lever costs at solve time
 

@@ -11,6 +11,7 @@ The reference recipe is **K=16, R=512, G_HIDDEN=1024 (= 2R, which is what lifts 
 | N | arch | ROM base ms | ROM optimized ms | ROM err | matched classical ms | its err | single-query ratio (paired) | batch-16 ROM ms/q | batch-16 classical ms/q | batch-16 ratio | jac/step | gate 0 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 256 | `K16/R512/g1024/h256x2/single/snap_norm=True` | 75.31 | 36.54 | 2.268e-02 | 13.99 | 8.377e-04 | 0.40x | 4.46 | 4.52 | 1.01x | 3.22 | 7.725e-16 |
+| 256 | `K16/R512/g1024/h256x2/single` | 68.66 | 35.60 | 2.751e-02 | 13.81 | 8.377e-04 | 0.39x | 4.95 | 4.52 | 0.91x | 3.28 | 7.672e-16 |
 | 1024 | `K16/R512/g1024/h256x2/single` | 71.73 | 27.08 | 2.571e-02 | 42.86 | 7.874e-04 | 1.61x | 4.19 | 49.17 | 11.74x | 3.31 | 1.199e-15 |
 
 **Missing from the curve:** N = 128, 512 (no round-4 speed sweep on a reference-architecture checkpoint yet).
@@ -22,6 +23,9 @@ The reference recipe is **K=16, R=512, G_HIDDEN=1024 (= 2R, which is what lifts 
 | 256 | ROM optimized | 32.84 | 16.94 | 10.75 | 6.43 | 4.46 |
 | 256 | ROM base | 50.56 | 39.86 | 31.40 | 25.23 | 20.62 |
 | 256 | classical (matched) | 12.21 | 10.58 | 7.47 | 5.72 | 4.52 |
+| 256 | ROM optimized | 32.84 | 19.45 | 12.46 | 7.54 | 4.95 |
+| 256 | ROM base | 68.02 | 54.30 | 33.09 | 25.13 | 20.75 |
+| 256 | classical (matched) | 12.23 | 10.64 | 7.46 | 5.74 | 4.52 |
 | 1024 | ROM optimized | 24.57 | 13.98 | 9.44 | 5.78 | 4.19 |
 | 1024 | ROM base | 60.79 | 50.53 | 41.98 | 66.83 | 59.39 |
 | 1024 | classical (matched) | 35.95 | 56.98 | 51.85 | 49.61 | 49.17 |
@@ -32,10 +36,12 @@ The reference recipe is **K=16, R=512, G_HIDDEN=1024 (= 2R, which is what lifts 
 
 Every rung on fresh test trajectories except reconstruction, which is on the training states. `span LS floor` is the unconstrained R-coefficient least-squares floor of the LEARNED bank -- the best any map h could reach inside the span it was given.
 
-| N | arch | job | recon | span LS floor | oracle (K-dim) | rollout err | oracle / span floor | steps |
+The last column is the number that matters for the accuracy campaign: **oracle / span LS floor** is how far the K-dimensional map h falls short of the R-dimensional span it was trained alongside. Smaller is better; round 3 sat at 32-37x.
+
+| N | arch | job | recon | span LS floor | oracle (K-dim) | rollout err | steps trained | **oracle / span floor** |
 |---|---|---|---|---|---|---|---|---|
-| 256 | `K16/R1024/g2048/h256x2/single` **(off-curve)** | `2835790` | 6.965e-03 | 1.146e-04 | 8.085e-03 | 1.160e-02 | 70.6x | 300000 |
-| 256 | `K16/R512/g1024/h256x2/single` | `2835788` | 7.171e-03 | 2.124e-04 | 7.814e-03 | 1.186e-02 | 36.8x | 300000 |
-| 256 | `K16/R512/g1024/h256x2/single/snap_norm=True` | `2835789` | 8.074e-03 | 4.039e-04 | 9.932e-03 | 1.464e-02 | 24.6x | 300000 |
-| 1024 | `K16/R512/g1024/h256x2/single` | `2835794` | 7.298e-03 | 2.601e-04 | 8.242e-03 | 1.180e-02 | 31.7x | 300000 |
+| 256 | `K16/R512/g1024/h256x2/single/snap_norm=True` | `2835789` | 8.074e-03 | 4.039e-04 | 9.932e-03 | 1.464e-02 | 300000 | 24.6x |
+| 256 | `K16/R512/g1024/h256x2/single` | `2835788` | 7.171e-03 | 2.124e-04 | 7.814e-03 | 1.186e-02 | 300000 | 36.8x |
+| 256 | `K16/R1024/g2048/h256x2/single` **(off-curve)** | `2835790` | 6.965e-03 | 1.146e-04 | 8.085e-03 | 1.160e-02 | 300000 | 70.6x |
+| 1024 | `K16/R512/g1024/h256x2/single` | `2835794` | 7.298e-03 | 2.601e-04 | 8.242e-03 | 1.180e-02 | 300000 | 31.7x |
 

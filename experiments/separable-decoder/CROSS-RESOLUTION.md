@@ -10,22 +10,28 @@ The reference recipe is **K=16, R=512, G_HIDDEN=1024 (= 2R, which is what lifts 
 
 | N | arch | ROM base ms | ROM optimized ms | ROM err | matched classical ms | its err | single-query ratio (paired) | batch-16 ROM ms/q | batch-16 classical ms/q | batch-16 ratio | jac/step | gate 0 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 128 | `K16/R512/g1024/h256x2/single` | 41.48 | 22.89 | 1.544e-02 | 8.43 | 9.252e-04 | 0.38x | 2.67 | 1.02 | 0.38x | 3.32 | 5.804e-16 |
 | 256 | `K16/R512/g1024/h256x2/single/snap_norm=True` | 75.31 | 36.54 | 2.268e-02 | 13.99 | 8.377e-04 | 0.40x | 4.46 | 4.52 | 1.01x | 3.22 | 7.725e-16 |
 | 256 | `K16/R512/g1024/h256x2/single` | 68.66 | 35.60 | 2.751e-02 | 13.81 | 8.377e-04 | 0.39x | 4.95 | 4.52 | 0.91x | 3.28 | 7.672e-16 |
+| 512 | `K16/R512/g1024/h256x2/single` | 52.53 | 25.23 | 2.190e-02 | 15.00 | 7.913e-04 | 0.60x | 3.67 | 8.70 | 2.37x | 3.37 | 8.247e-16 |
 | 1024 | `K16/R512/g1024/h256x2/single` | 71.73 | 27.08 | 2.571e-02 | 42.86 | 7.874e-04 | 1.61x | 4.19 | 49.17 | 11.74x | 3.31 | 1.199e-15 |
-
-**Missing from the curve:** N = 128, 512 (no round-4 speed sweep on a reference-architecture checkpoint yet).
 
 ## S2. Amortization curve (ms per query, optimized ROM vs the matched classical rung)
 
 | N | subject | B=1 | B=2 | B=4 | B=8 | B=16 |
 |---|---|---|---|---|---|---|
+| 128 | ROM optimized | 23.06 | 11.61 | 8.26 | 4.54 | 2.67 |
+| 128 | ROM base | 35.83 | 27.22 | 19.73 | 11.71 | 8.15 |
+| 128 | classical (matched) | 8.30 | 5.62 | 3.39 | 1.83 | 1.02 |
 | 256 | ROM optimized | 32.84 | 16.94 | 10.75 | 6.43 | 4.46 |
 | 256 | ROM base | 50.56 | 39.86 | 31.40 | 25.23 | 20.62 |
 | 256 | classical (matched) | 12.21 | 10.58 | 7.47 | 5.72 | 4.52 |
 | 256 | ROM optimized | 32.84 | 19.45 | 12.46 | 7.54 | 4.95 |
 | 256 | ROM base | 68.02 | 54.30 | 33.09 | 25.13 | 20.75 |
 | 256 | classical (matched) | 12.23 | 10.64 | 7.46 | 5.74 | 4.52 |
+| 512 | ROM optimized | 26.54 | 14.14 | 9.44 | 5.27 | 3.67 |
+| 512 | ROM base | 42.16 | 37.17 | 23.91 | 21.85 | 17.80 |
+| 512 | classical (matched) | 13.63 | 14.38 | 11.08 | 9.86 | 8.70 |
 | 1024 | ROM optimized | 24.57 | 13.98 | 9.44 | 5.78 | 4.19 |
 | 1024 | ROM base | 60.79 | 50.53 | 41.98 | 66.83 | 59.39 |
 | 1024 | classical (matched) | 35.95 | 56.98 | 51.85 | 49.61 | 49.17 |
@@ -40,8 +46,16 @@ The last column is the number that matters for the accuracy campaign: **oracle /
 
 | N | arch | job | recon | span LS floor | oracle (K-dim) | rollout err | steps trained | **oracle / span floor** |
 |---|---|---|---|---|---|---|---|---|
+| 128 | `K16/R512/g1024/h256x2/single` | `2837076` | 6.516e-03 | 1.823e-04 | 7.409e-03 | 1.112e-02 | 300000 | 40.6x |
+| 256 | `K24/R512/g1024/h512x2/single/snap_norm=True/w_early=4.0/eq_tail=True` **(off-curve)** | `2837064` | 2.076e-02 | 3.603e-03 | 1.679e-02 | 2.169e-02 | 37990 **(TIME-CAPPED)** | 4.7x |
+| 256 | `K16/R512/g1024/h256x2/single/w_early=8.0/z_polish=20000/eq_tail=True` | `2837063` | 3.060e-02 | 4.487e-03 | 2.441e-02 | 2.783e-02 | 42479 **(TIME-CAPPED)** | 5.4x |
+| 256 | `K16/R512/g1024/h1024x3/single/eq_tail=True` | `2837061` | 3.272e-03 | 4.330e-04 | 9.688e-03 | 3.690e-02 | 99881 **(TIME-CAPPED)** | 22.4x |
+| 256 | `K32/R512/g1024/h512x3/single/eq_tail=True` **(off-curve)** | `2837062` | 1.563e-03 | 1.577e-04 | 3.711e-03 | 6.412e-03 | 300000 | 23.5x |
 | 256 | `K16/R512/g1024/h256x2/single/snap_norm=True` | `2835789` | 8.074e-03 | 4.039e-04 | 9.932e-03 | 1.464e-02 | 300000 | 24.6x |
 | 256 | `K16/R512/g1024/h256x2/single` | `2835788` | 7.171e-03 | 2.124e-04 | 7.814e-03 | 1.186e-02 | 300000 | 36.8x |
+| 256 | `K16/R512/g1024/h1024x4/single/w_early=4.0/z_polish=20000/eq_tail=True` | `2837065` | 1.113e-03 | 1.572e-04 | 7.955e-03 | 9.057e-02 | 300000 | 50.6x |
 | 256 | `K16/R1024/g2048/h256x2/single` **(off-curve)** | `2835790` | 6.965e-03 | 1.146e-04 | 8.085e-03 | 1.160e-02 | 300000 | 70.6x |
+| 512 | `K16/R512/g1024/h256x2/single` | `2837077` | 7.308e-03 | 2.383e-04 | 8.084e-03 | 1.064e-02 | 300000 | 33.9x |
+| 1024 | `K32/R512/g1024/h512x3/single/w_early=4.0/eq_tail=True` **(off-curve)** | `2837066` | 1.777e-03 | 1.731e-04 | 3.695e-03 | 6.847e-03 | 300000 | 21.3x |
 | 1024 | `K16/R512/g1024/h256x2/single` | `2835794` | 7.298e-03 | 2.601e-04 | 8.242e-03 | 1.180e-02 | 300000 | 31.7x |
 

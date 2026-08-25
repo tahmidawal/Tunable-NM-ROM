@@ -2945,3 +2945,48 @@ The two post-maintenance jobs were re-aimed at this recipe before requeueing:
 N=1024 confirmation matters most, because that is the only resolution where the
 ROM currently wins (1.61x) and therefore the only one where a 1.27x cost has
 room to be absorbed.
+
+**ADDENDUM 2 (05:15), the fine-quadrature grade and a correction to this
+entry's own quadrature verdict.** Job `fq256` re-measured the cost-matched
+decoder (dense, h=512x2, K=16, 4608 trajectories) on M=256 / m=1024 with its own
+timing and pairing in the same job:
+
+```
+EQ set          EQ rel fit   rollout err   e2e ms   matched ms   paired
+M=64,  m=256      ~4e-3       8.961e-3      45.15     18.26      0.40x
+M=256, m=1024     5.42e-4     6.184e-3      55.65     18.07      0.32x
+```
+
+gate 0 3.21e-15 on both. **The single-step diagnostic above understates what
+the quadrature costs a ROLLOUT.** "Truncation is ~1.00 from t=2 onward" is true
+of one step and false of fifty: the first-step error propagates, and the same
+decoder is 1.45x more accurate on the fine set. The quadrature is worth about a
+third of the remaining rollout error — and, like every other lever this round,
+it is bought with speed. What survives from the original verdict is narrower
+but still useful: the fix indicated is a FIRST-STEP-specific quadrature, and the
+row-tail statistic remains the wrong certification metric.
+
+**Final ladder for the campaign, N=256, all rows the round-4 protocol with
+matched-accuracy AB/BA pairing:**
+
+```
+decoder                       K   h       traj  EQ     rollout err  e2e ms  paired
+round-4 incumbent            16  256x2     576  M=64     2.751e-2    35.60   0.39x
+round 5 cost-matched         16  512x2    4608  M=64     8.961e-3    45.15   0.40x
+round 5 cost-matched, fineEQ 16  512x2    4608  M=256    6.184e-3    55.65   0.32x
+round 5 wide                 16  1024x3   4608  M=64     5.021e-3    73.99   0.23x
+round 5 K=48                 48  1024x3    576  M=64     9.232e-3   135.75   0.12x
+```
+
+Best fine-EQ-certified rollout of the campaign: **6.184e-03**. Best at an
+unchanged classical ratio: **8.961e-03, 3.07x better than the incumbent**.
+
+**Next session should:** collect `dn1024` (2837430) and `dn256b` (2837431),
+which run the corrected recipe at full density after the maintenance window and
+carry the only N=1024 confirmation — the resolution where the ROM actually wins
+(1.61x) and therefore the only one where the cost-matched row's 1.27x has room
+to be absorbed. Then decide whether to merge `exp/2026-08-25-burgers-accuracy`
+into `main`: the branch was created disposable, but it produced a 3.07x accuracy
+improvement at an unchanged ratio, four retractions, and reusable machinery
+(`sep_coeff_extract.py`, `sep_hfit*.py`, `sep_speed_r5.py`, `sep_burgers_r5.py`)
+that makes an h arm cost minutes instead of hours, so it should not be deleted.

@@ -53,6 +53,21 @@ ORACLE_EVERY = int(os.environ.get("ORACLE_EVERY", "1"))
 # per-arm evaluation short
 CODEDIAG_N = int(os.environ.get("CODEDIAG_N", "2048"))
 CODEDIAG_ITERS = int(os.environ.get("CODEDIAG_ITERS", "60"))
+# --- trajectory-count learning curve (round-5 wave 3) -----------------------
+# The wave-2 arms showed that h's TRAINING fit improves 3-5x with capacity while
+# the FRESH oracle barely moves, i.e. the binding constraint is generalisation
+# off the training trajectories, not capacity.  The canonical draw is only 576
+# trajectories in a 5-parameter family (~3.5 samples per dimension), so the
+# obvious suspect is mu-sampling density.  TRAJ_FIT restricts the fit to the
+# first F canonical trajectories and HOLD_FROM reserves a cohort that no arm in
+# the wave fits, so the same held-out states grade every F.  Those states are
+# TRAINING-cohort data held out from this arm, which makes the holdout oracle a
+# clean generalisation measure that does not touch the test cohort at all.
+TRAJ_FIT = int(os.environ.get("TRAJ_FIT", "0"))        # 0 = all
+HOLD_FROM = int(os.environ.get("HOLD_FROM", "0"))      # 0 = off
+HOLD_N = int(os.environ.get("HOLD_N", "512"))
+if HOLD_FROM and not TRAJ_FIT:
+    TRAJ_FIT = HOLD_FROM          # never fit the reserved cohort
 
 # ---------------------------------------------------------------------------
 # arm table.  Each arm is a dict of overrides for `hf.fit` plus a few flags:
@@ -119,9 +134,35 @@ def main():
     t_tr = np.asarray(d["t_tr"]); t_te = np.asarray(d["t_te"])
     traj_te = np.asarray(d["traj_te"])
     mu_tr = np.asarray(d["mu_tr"])
-    S = A_tr.shape[0]
-    fl_tr = np.asarray(jnp.sqrt(fl2_tr / un2_tr))
+    traj_tr = np.asarray(d["traj_tr"])
+    fl_tr_all = np.asarray(jnp.sqrt(fl2_tr / un2_tr))
     fl_te = np.asarray(jnp.sqrt(fl2_te / un2_te))
+    # held-out TRAINING-cohort trajectories (never fitted by any arm in a wave
+    # that sets HOLD_FROM), then the fit subset
+    hold = np.array([], dtype=int)
+    if HOLD_FROM:
+        hj = np.nonzero(traj_tr >= HOLD_FROM)[0]
+        hold = hj[np.linspace(0, hj.size - 1, min(HOLD_N, hj.size)).astype(int)]
+    if TRAJ_FIT:
+        keep = np.nonzero(traj_tr < TRAJ_FIT)[0]
+        assert not (HOLD_FROM and TRAJ_FIT > HOLD_FROM), \
+            "TRAJ_FIT overlaps the held-out cohort"
+        A_tr = A_tr[jnp.asarray(keep)]
+        un2_tr = un2_tr[jnp.asarray(keep)]
+        fl2_tr = fl2_tr[jnp.asarray(keep)]
+        Z_ck = Z_ck[jnp.asarray(keep)]
+        t_tr = t_tr[keep]
+        mu_tr = mu_tr[keep]
+        # `hold` indexes the FULL training block; remap it after subsetting by
+        # keeping the whitened targets for the holdout in their own arrays
+    A_hold = jnp.asarray(d["C_tr"], dtype=F64)[jnp.asarray(hold)] @ L \
+        if hold.size else None
+    if hold.size:
+        un2_hold = jnp.asarray(d["un2_tr"])[jnp.asarray(hold)]
+        fl2_hold = jnp.asarray(d["fl2_tr"])[jnp.asarray(hold)]
+        fl_hold = np.asarray(jnp.sqrt(fl2_hold / un2_hold))
+    S = A_tr.shape[0]
+    fl_tr = fl_tr_all[keep] if TRAJ_FIT else fl_tr_all
 
     # whitening round-trip gate: to_h(to_q(h)) must return h to ~1e-12
     qp_ck = hf.to_q(dict(h=p_ck["h"], h_lin=p_ck["h_lin"]), L)
@@ -148,7 +189,11 @@ def main():
         slurm_job=os.environ.get("SLURM_JOB_ID"),
         node=os.environ.get("SLURMD_NODENAME", "local")),
         gates=dict(whitening_round_trip=rt, q_equals_LT_h=wt),
-        floors=dict(train_span_floor_mean=float(fl_tr.mean()),
+        floors=dict(traj_fit=TRAJ_FIT, hold_from=HOLD_FROM,
+                    n_hold=int(hold.size),
+                    hold_span_floor_mean=(float(fl_hold.mean())
+                                          if hold.size else None),
+                    train_span_floor_mean=float(fl_tr.mean()),
                     train_span_floor_max=float(fl_tr.max()),
                     test_span_floor_mean=float(fl_te.mean()),
                     test_span_floor_max=float(fl_te.max())),
@@ -222,6 +267,18 @@ def main():
             note="representation oracle, DIAGNOSTIC (uses test truth); inits "
                  "= mean training code + training-only encoder")
         ent["oracle_over_span_floor"] = float(o_rel.mean() / fl_te.mean())
+        if hold.size:
+            z_ench = hf.head_apply(ep, A_hold)
+            ih = jnp.stack([jnp.tile(zbar[None], (A_hold.shape[0], 1)),
+                            z_ench], axis=1)
+            oh, _ = hf.oracle(qp, A_hold, fl2_hold, un2_hold, ih,
+                              ORACLE_ITERS)
+            ent["oracle_holdout"] = dict(
+                mean=float(oh.mean()), max=float(oh.max()), n=int(hold.size),
+                over_span_floor=float(oh.mean() / fl_hold.mean()),
+                note="oracle on TRAINING-cohort trajectories held out of this "
+                     "arm's fit -- a generalisation measure that never touches "
+                     "the test cohort")
         inits_nn = jnp.concatenate([inits, Z[jnp.asarray(nnj)][:, None]], axis=1)
         onn, _ = hf.oracle(qp, A_te, fl2_te, un2_te, inits_nn, ORACLE_ITERS)
         ent["oracle_test_nn"] = dict(
@@ -241,10 +298,14 @@ def main():
             gain_vs_recon=float(rec_sub / max(o_tr.mean(), 1e-300)),
             note="codes re-solved exactly at frozen h; ratio > 1 means the "
                  "codes had NOT converged during joint training")
+        hs = (f"  hold {ent['oracle_holdout']['mean']:.4e}"
+              f" ({ent['oracle_holdout']['over_span_floor']:.1f}x)"
+              if hold.size else "")
         log(f"  ARM {name}: recon {rec.mean():.4e}  oracle {o_rel.mean():.4e}"
             f"  oracle/floor {ent['oracle_over_span_floor']:.1f}x"
             f"  oracle_nn {onn.mean():.4e}"
-            f"  code-refit gain {ent['oracle_train_from_codes']['gain_vs_recon']:.3f}x")
+            f"  code-refit gain {ent['oracle_train_from_codes']['gain_vs_recon']:.3f}x"
+            + hs)
         return ent
 
     emitted = None

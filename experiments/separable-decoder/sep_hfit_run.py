@@ -101,6 +101,16 @@ ARM_SPECS = {
     "k24":         dict(hidden=1024, layers=3, k=24),
     "k32":         dict(hidden=1024, layers=3, k=32),
     "k32ffz":      dict(hidden=1024, layers=3, k=32, h_ff=128, h_ff_scale=2.0),
+    "k48":         dict(hidden=1024, layers=3, k=48),
+    "k64":         dict(hidden=1024, layers=3, k=64),
+    # --- lever 5 (round-5 wave 5): CODE JITTER.  The measured failure is that
+    #     h's image passes through the training targets and wanders between
+    #     them, so ask h to be right on a neighbourhood of each code.
+    "znoise":      dict(hidden=1024, layers=3, z_noise=0.02),
+    "znoise05":    dict(hidden=1024, layers=3, z_noise=0.05),
+    "k32_znoise":  dict(hidden=1024, layers=3, k=32, z_noise=0.02),
+    "k32_zn05":    dict(hidden=1024, layers=3, k=32, z_noise=0.05),
+    "k48_znoise":  dict(hidden=1024, layers=3, k=48, z_noise=0.02),
     # --- diagnostic: is the coefficient manifold a smooth function of the
     #     TRUE parameters at all?  codes initialised at standardised (mu, t).
     "paramcodes":  dict(hidden=1024, layers=3, k=6, zinit="params"),

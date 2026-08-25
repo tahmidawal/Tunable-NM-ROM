@@ -200,7 +200,8 @@ def oracle(qp, A, fl2, un2, Z_init, iters=120, chunk=512):
 def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
         batch=4096, wd=0.0, ema_decay=0.0, w_state=None, qp0=None, Z0=None,
         z_polish_every=0, z_polish_iters=40, log_every=5000, tag="",
-        time_cap=0.0, norm="snap", h_ff=0, h_ff_scale=1.0):
+        time_cap=0.0, norm="snap", h_ff=0, h_ff_scale=1.0,
+        z_noise=0.0):
     """Adam(W) on (q, Z) against the exact whitened objective.
 
     norm: 'snap' divides each state's squared error by its own ||u||^2 (so the
@@ -209,6 +210,12 @@ def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
         states, reproducing the loss the round-3 reference recipe actually
         used.  The round-3 snap_norm arm was WORSE than the global one, so
         both are kept as arms rather than assumed.
+    z_noise: per-step Gaussian jitter on the codes, in units of the current
+        code standard deviation.  The wave-2/3 arms showed the failure is that
+        h's image passes through the training codes' targets and wanders
+        between them, so jitter is aimed straight at it: it asks h to be
+        accurate on a NEIGHBOURHOOD of each training code, not just at it.
+        The codes themselves are still optimised un-jittered.
     w_state: optional per-state weight (S,), normalised to mean 1.
     qp0/Z0:  warm start (e.g. the checkpoint's own h, whitened).
     z_polish_every: run an exact code-only LM refinement of Z every so many
@@ -242,15 +249,23 @@ def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
            else optax.adam(sched))
     state = opt.init((qp, Z))
 
-    def loss_fn(pz, Ab, invb, idx):
+    def loss_fn(pz, Ab, invb, idx, eps):
         q, z = pz
-        d = head_apply(q, z[idx]) - Ab
+        zb = z[idx]
+        if z_noise:
+            zb = zb + z_noise * jnp.std(z) * eps
+        d = head_apply(q, zb) - Ab
         return jnp.mean(invb * jnp.sum(d * d, axis=1))
+
+    nb = min(batch, S)
 
     @jax.jit
     def step(pz, st, ema, kk, A_, inv_):
-        idx = jax.random.choice(kk, S, shape=(min(batch, S),), replace=False)
-        val, gr = jax.value_and_grad(loss_fn)(pz, A_[idx], inv_[idx], idx)
+        kk, ke = jax.random.split(kk)
+        idx = jax.random.choice(kk, S, shape=(nb,), replace=False)
+        eps = (jax.random.normal(ke, (nb, k_lat), dtype=F64) if z_noise
+               else jnp.zeros((nb, k_lat), dtype=F64))
+        val, gr = jax.value_and_grad(loss_fn)(pz, A_[idx], inv_[idx], idx, eps)
         upd, st = opt.update(gr, st, pz)
         pz = optax.apply_updates(pz, upd)
         ema = jax.tree_util.tree_map(
@@ -296,5 +311,6 @@ def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
                               wd=wd, ema_decay=ema_decay, used_ema=used_ema,
                               norm=norm, z_polish_every=int(z_polish_every),
                               h_ff=int(h_ff), h_ff_scale=float(h_ff_scale),
+                              z_noise=float(z_noise),
                               seconds=time.time() - t0,
                               final_loss=float(val))

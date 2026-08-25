@@ -82,6 +82,11 @@ def main():
                 o_nn=a["oracle_test_nn"]["mean"],
                 code_gain=a["oracle_train_from_codes"]["gain_vs_recon"],
                 secs=a.get("seconds"),
+                traj_fit=d["floors"].get("traj_fit") or 576,
+                hold=(a.get("oracle_holdout") or {}).get("mean"),
+                hold_ratio=(a.get("oracle_holdout") or {}).get(
+                    "over_span_floor"),
+                n_hold=d["floors"].get("n_hold"),
                 floor=d["floors"]["test_span_floor_mean"]))
     if not rows:
         w("_No arm JSONs found yet._")
@@ -94,9 +99,10 @@ def main():
         w(f"Source checkpoint `{src}`: train span floor "
           f"{fmt(fl['train_span_floor_mean'])}, fresh-test span floor "
           f"**{fmt(fl['test_span_floor_mean'])}**.\n")
-    w("| arm | K | h | steps | recon (train) | oracle (fresh) | oracle/floor | "
-      "oracle t=0 | oracle t<=5 | oracle t>5 | oracle_nn | code-refit gain | s |")
-    w("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    w("| arm | K | h | traj | steps | recon (train) | oracle (fresh) | "
+      "oracle/floor | oracle t=0 | oracle t>5 | oracle_nn | held-out oracle | "
+      "code-refit gain | s |")
+    w("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for r in rows:
         sp = r["spec"]
         hs = f"{sp.get('hidden', '--')}x{sp.get('layers', '--')}"
@@ -108,11 +114,13 @@ def main():
                 extra.append(f"{kk}={sp[kk]}")
         if extra:
             hs += " (" + ", ".join(extra) + ")"
-        w(f"| `{r['name']}` | {r['k']} | {hs} | {r['steps']} | "
-          f"{fmt(r['recon'])} | **{fmt(r['oracle'])}** | "
-          f"{r['ratio']:.1f}x | {fmt(r['o_t0'])} | {fmt(r['o_early'])} | "
-          f"{fmt(r['o_late'])} | {fmt(r['o_nn'])} | {r['code_gain']:.3f} | "
-          f"{r['secs']:.0f} |")
+        hold = ("--" if r["hold"] is None else
+                f"{fmt(r['hold'])} ({r['hold_ratio']:.1f}x)")
+        w(f"| `{r['name']}` | {r['k']} | {hs} | {r['traj_fit']} | "
+          f"{r['steps']} | {fmt(r['recon'])} | **{fmt(r['oracle'])}** | "
+          f"{r['ratio']:.1f}x | {fmt(r['o_t0'])} | "
+          f"{fmt(r['o_late'])} | {fmt(r['o_nn'])} | {hold} | "
+          f"{r['code_gain']:.3f} | {r['secs']:.0f} |")
     w("")
     w("Columns: `recon (train)` is the per-snapshot relative L2 over the "
       "training states with their own fitted codes; `oracle (fresh)` is the "
@@ -124,6 +132,39 @@ def main():
       "`code-refit gain` re-solves the codes exactly at frozen h on a 2048-"
       "state subsample: a value of 1.000 means the codes had already "
       "converged.\n")
+    # ---- K ladder and trajectory learning curve ----------------------------
+    kl = {}
+    for r in rows:
+        if r["traj_fit"] == 576 and not r["spec"].get("h_ff") \
+                and not r["spec"].get("z_noise") \
+                and r["spec"].get("hidden") == 1024 \
+                and r["spec"].get("layers") == 3 \
+                and not r["spec"].get("norm") and not r["spec"].get("wd") \
+                and not r["spec"].get("w") and not r["spec"].get("zinit") \
+                and not r["spec"].get("z_polish_every"):
+            kl.setdefault((r["src"], r["k"]), r)
+    if kl:
+        w("## The K ladder (h = 1024x3, all other knobs at their defaults)\n")
+        w("| source bank | K | recon (train) | oracle (fresh) | oracle/floor |")
+        w("|---|---|---|---|---|")
+        for (src, k) in sorted(kl, key=lambda t: (t[0], t[1])):
+            r = kl[(src, k)]
+            w(f"| `{src}` | {k} | {fmt(r['recon'])} | {fmt(r['oracle'])} | "
+              f"**{r['ratio']:.1f}x** |")
+        w("")
+    lc = [r for r in rows if r["hold"] is not None]
+    if lc:
+        w("## Trajectory learning curve (held-out cohort, never fitted)\n")
+        w("| arm | K | h | fitted trajectories | held-out oracle | "
+          "held-out oracle / that cohort's span floor | n states |")
+        w("|---|---|---|---|---|---|---|")
+        for r in sorted(lc, key=lambda z: (z["name"], z["traj_fit"])):
+            sp = r["spec"]
+            w(f"| `{r['name']}` | {r['k']} | "
+              f"{sp.get('hidden')}x{sp.get('layers')} | {r['traj_fit']} | "
+              f"**{fmt(r['hold'])}** | {r['hold_ratio']:.1f}x | "
+              f"{r['n_hold']} |")
+        w("")
     w("## Reparameterisation gates\n")
     w("| file | whitening round-trip | q == L^T h |")
     w("|---|---|---|")

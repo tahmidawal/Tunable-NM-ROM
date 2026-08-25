@@ -2677,3 +2677,83 @@ with point-subsampled AdamW+EMA, EQ certification M in {64,128,256} + tail) and 
 Burgers primary (2829766, H100, R=512, 16384 states with all t<=5 early states,
 multi-scale FF, STEP_TOL ladder {1e-9,1e-6,1e-5}, per-step error tables, per-set
 single-step weak-opt vs oracle). Results land on the branch when pulled.
+
+## 2026-08-25
+
+### N=256 push, rounds 3-4: the span fix, the h diagnosis, a retracted crossover, and the speed win
+
+Branch `exp/2026-08-23-n256-push` (carries N=1024 work despite the name), cluster
+namespace `n256_push`. Continues the round-1/2 entry above. Reports on `main`:
+`reports/2026-08-24-separable-decoder-architecture-and-results.md` (commit ee6b3e4);
+on the branch: `PROFILE.md`, `CROSS-RESOLUTION.md`, `runs/SUMMARY-R3.md`, all generated.
+
+**Round 3 (r3a 2835788, r3b 2835789, r3c 2835790, r3d 2835794 — all COMPLETED).**
+Fixed the rank cap found at the end of round 2 (g's last layer is linear, so span rank
+<= g_hidden+1; nominal R=512 runs had numerical rank exactly 257). `G_HIDDEN=2R` gives
+rank 512/512. Span least-squares floor on fresh test states is now 2.60e-4 (N=1024) /
+2.12e-4 (N=256, r3a) / 1.15e-4 (R=1024) — all BELOW the 1e-3 target.
+**But accuracy did not improve**, which is the informative result: R was never the
+limitation. The binding rung moved to **h**: oracle 8.24e-3 against a span floor of
+2.60e-4 at N=1024, i.e. the K=16 map reaches ~1/32 of what its own span allows. The same
+gap is 36.8x at N=256 — **resolution-independent**, so it is h's capacity/optimization,
+not anything about the grid, discretization or quadrature.
+
+**A landmine re-found and fixed.** A ~2 GB device array closed over by a `jit` is lowered
+as an HLO literal: +10 GB host RSS and 16 s compile PER JIT, vs 0.087 s as an explicit
+argument. `train_autodecoder_v2` closed over the training array (8.6 GB at N=1024) and the
+driver closed over `G_all` (4.3 GB) in ~8 jits. This is almost certainly what OOM-killed
+the earlier N=1024 arm at 245 GB RSS and forced its ~5x coverage cut. Banks and data are
+now explicit jit arguments everywhere; numerics unchanged. N=1024 then trained with FULL
+coverage and its error fell 1.17e-1 -> ~6e-3.
+
+**RETRACTION — the N=1024 Burgers crossover (5.2x) reported on 2026-08-24 is withdrawn.**
+That number compared the ROM against `nt=1e-2, lt=5e-4` (310 ms), a rung ~24x MORE
+accurate than the ROM and over-tight in its INNER tolerance; `lin_tol`, not `newton_tol`,
+was carrying it. Against the properly swept (newton_tol, lin_tol) ladder in the same job,
+the cheapest classical rung at least as accurate as the ROM was 63.1 ms vs ROM 72.9 ms =
+**0.86x, classical wins**. Cause: the report generator only looked for baselines in
+`rows[]`, while the n512/n1024 arms store them under `fom_newton_tol`/`timing.summary` and
+`fom_tolnewton`; fixed, and recorded as a retraction in the report itself.
+
+**Round 4 speed (r4s1024 2837055, r4s256 2837056 — no retraining, frozen r3 checkpoints).**
+Profiled first rather than guessing. The rollout is **kernel-count / dispatch bound**, not
+bandwidth or compute bound: per-LM-iteration marginal cost 0.140 ms, residual+Jacobian
+0.123 ms while moving ~5 MB (~70x above the bandwidth bound), dozens of fusions for
+~0.1 MFLOP. Both earlier hypotheses (naive host relaunch; bandwidth-bound skinny matmuls)
+were wrong. Two levers, on a frozen decoder:
+ - **Gram-space IC fit**: 18.08 -> 1.93 ms (~9x), matching the incumbent full-grid fit to a
+   latent deviation of 3.27e-13.
+ - **Adaptive stall tolerance** (1e-3): cuts iterations the solver was spending chasing a
+   tolerance representation error makes unreachable (399/400 steps stopped 'stalled',
+   0 on 'tol').
+Result at N=1024: ROM e2e 60.8 -> 24.6 ms (2.5x) at unchanged error (0.15% shift).
+**Matched-accuracy paired AB/BA: ROM 26.76 ms vs tol-Newton 43.10 ms = 1.61x, ROM wins.**
+Batch-16: ROM 4.19 vs classical 49.17 ms/query = 11.74x. At N=256 the same recipe gives
+0.40x single-query and 1.01x at batch 16 — the crossover is genuinely a large-N effect.
+**Honest negative:** hard-capping LM iterations is NOT a valid lever (budget<=5 collapses
+error to 6-8e-1); only the adaptive stall criterion is safe. Extrapolation order 1.0 beats
+0 and 1.5.
+**Caveat recorded in the generated file:** both sides of the batched columns are vmapped,
+and a vmap of a `lax.while_loop` runs until every lane finishes, so each batched solve pays
+its batch's worst-case iteration count — which penalises the classical solver more than the
+ROM (visible as classical per-query cost worsening from B=1 to B=2). **11.74x is an upper
+bound**, not a measurement against best-possible classical batching. The single-query 1.61x
+is unaffected.
+**Provenance error caught:** the first N=256 speed point used r3b's checkpoint
+(`snap_norm=True`), off-recipe relative to the N=1024 point; being redone as r4s256a.
+
+**In flight at checkpoint time (9 jobs, all sized to clear the 06:00 maintenance window):**
+r4x128 (2837076) and r4x512 (2837077) — train + in-job speed sweep at the reference recipe
+to complete a four-point resolution curve; r4s256a (2837078) — the recipe correction; and
+six accuracy arms 2837061-2837066 attacking h (wider/deeper h, code refinement, K=24/32,
+early-time loss weighting).
+
+**Open / next.** Accuracy is the sole remaining gap: ROM rollout ~6e-3 (M=256 EQ set) to
+~2.6e-2 (coarse M=64 set used in the speed sweep) against a classical rung at ~8e-4. To
+reach 1e-3: (1) fix h — capacity, latent-code convergence, K=24/32 (nearly free, the solve
+is dispatch-bound); (2) weight training toward the sharp early-time states, where the error
+concentrates (oracle 3.0e-2 at t=0 vs ~5.5e-3 late; t<=5 mean 1.83e-2 vs 6.09e-3 after);
+(3) fix the EQ ceiling — the M=64 set's own rel fit is 6.08e-3 with worst row ~9.8e2, so it
+cannot support a 1e-3 claim; tail-capped NNLS and larger m are needed; (4) only then
+re-tune the stall threshold. A dedicated worktree `2026-08-25-burgers-accuracy` continues
+this; the four-point curve and the accuracy-arm verdict land on the n256-push branch.

@@ -57,6 +57,48 @@ Rollout sits 1.3–1.9× above the oracle everywhere, so 1e-3 needs an oracle �
 5× below the best measured (r4a2/r4a6 oracle 3.7e-3). See the round-5 report for the K
 ladder (gap 58× at K=8 → 9.7× at K=128) and the μ-density saturation.
 
+## Poisson (the control problem) — where it stands
+
+Full write-up: `reports/2026-08-25-poisson-architecture-and-results.md` on `main`, tables by
+`reports/gen_2026-08-25-poisson-summary.py`. Table below is pasted from that generator's
+output (K=16, held-out sources, tau=1e-3; classical = cheapest CG rung at least as accurate):
+
+| grid N | unknowns | ROM ms | ROM error | classical CG ms | CG error | who wins |
+|---|---|---|---|---|---|---|
+| 64 | 3,844 | **2.06** | 3.75e-02 | 1.31 | 3.2e-02 | CG 1.6x |
+| 128 | 15,876 | **3.09** | 3.06e-02 | 3.75 | 1.7e-02 | **ROM 1.2x** |
+| 256 | 64,516 | **2.54** | 2.89e-02 | 8.16 | 1.1e-02 | **ROM 3.2x** |
+| 512 | 260,100 | **3.06** | 3.15e-02 | 26.36 | 7.1e-03 | **ROM 8.6x** |
+| 1024 | 1,044,484 | **3.50** | 3.48e-02 | 98.31 | 4.9e-03 | **ROM 28.1x** |
+| grid N | solver | ms | error |
+|---|---|---|---|
+| 1024 | spectral_dense | 0.64 | 7.0e-15 |
+
+Best decoder accuracy (N=256, R=512, single-scale features): recon 6.23e-3, fresh-cohort
+solve 9.46e-3. POD floor of the basis on fresh sources (diagnostic only):
+
+| basis size R | best possible error, fresh sources |
+|---|---|
+| 64 | 3.22e-02 |
+| 128 | 1.41e-02 |
+| 256 | 4.01e-03 |
+| 512 | 8.11e-04 |
+| 1024 | 8.11e-04 |
+
+So Poisson shows the same shape as Burgers: cost flat in N, crossover vs the iterative
+baseline, and an `h`-generalisation gap (~9e-3 achieved vs ~8e-4 floor).
+
+**Why the Poisson 28× is SOFT — read before quoting it:**
+1. The CG baseline is `jax.scipy.sparse.linalg.cg` on a matrix-free 5-point Laplacian with
+   **no preconditioner** (`M=` is passed nowhere). Its cost growth with N is partly the
+   baseline being weak; a multigrid/IC-preconditioned CG would be far flatter. This arm has
+   never been run — open item 3.
+2. This Poisson has constant coefficients, so an exact spectral solve exists: **0.64 ms at
+   7e-15** at N=1024, beating the ROM 5×. The ROM's claim is only against *iterative* solvers
+   on problems with no fast direct method.
+3. The Burgers baseline IS well-preconditioned (exact Helmholtz), so the Burgers numbers are
+   the trustworthy ones. Poisson is the control, not the headline.
+
 ## THE NEXT EXPERIMENT (cheap, decisive, do it first)
 
 The K=32 N=1024 checkpoint `runs/push_r4a6/out/sep_burgers_r4_N1024_K32_R512_h512x3.pkl`

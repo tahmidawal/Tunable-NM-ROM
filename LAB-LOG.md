@@ -2907,3 +2907,41 @@ round-off); a stage script with an enumerated file list that omitted the driver
 (now globs `sep_*.py`); and the captured-constant landmine, which
 `sep_coeff_extract.py` avoids by passing the 4.3 GB bank as an explicit jit
 argument.
+
+**ADDENDUM (04:45), the result the entry above was written just before: a
+genuine Pareto improvement, not a trade.** Job `dr256` isolated what `cfd256`
+confounded — that arm changed the data AND h's width together. Holding K at the
+incumbent 16 and h at 512x2, and spending the whole gain on 4608 trajectories:
+
+```
+decoder                        K   h        traj  rollout err  e2e ms  paired
+round-4 incumbent (r4s256a)   16   256x2     576    2.751e-2    35.60   0.39x
+round 5 dense, modest h       16   512x2    4608    8.961e-3    45.15   0.40x
+round 5 dense, wide h         16   1024x3   4608    5.021e-3    73.99   0.23x
+round 5 K=48                  48   1024x3    576    9.232e-3   135.75   0.12x
+```
+
+all four measured on the round-4 protocol at N=256 with the CONTROL EQ set and
+matched-accuracy paired AB/BA against the swept classical ladder. **The ROM is
+3.07x more accurate at an UNCHANGED position against the classical ladder**
+(0.39x -> 0.40x): it costs 1.27x more, and so does the classical rung it now has
+to be matched against (13.81 ms at 8.377e-4 becomes 18.26 ms at 3.538e-4). The
+wide-h arm is the campaign's most accurate decoder, 5.48x better than the
+incumbent, but pays 1.7x of the ratio for it. The K=48 arm is strictly dominated
+— worse error than dense/512x2 at three times the time.
+
+So the campaign's answer to "more accuracy without giving back the speed" is:
+**mu-density plus a modest h widening, at the incumbent K**. 3.07x, free in
+ratio terms; beyond that every further gain measured costs ratio.
+
+Also corrected here: the entry above says "there is no lever that is free at
+solve time"; that is too strong. Density is free, h's WIDTH is cheap-but-not-free
+(256x2 -> 512x2 costs 1.27x), and K is expensive (K=48 costs 3.81x). The three
+are ordered, and only the first two are usable at the current crossover.
+
+The two post-maintenance jobs were re-aimed at this recipe before requeueing:
+`dn1024` (2837430) and `dn256b` (2837431), both `--begin 12:10`, arms
+`mid,wide,k32` with `EMIT=mid` and the fine EQ set for the accuracy grade. The
+N=1024 confirmation matters most, because that is the only resolution where the
+ROM currently wins (1.61x) and therefore the only one where a 1.27x cost has
+room to be absorbed.

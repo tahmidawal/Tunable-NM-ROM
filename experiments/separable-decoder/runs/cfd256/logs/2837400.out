@@ -1,0 +1,183 @@
+host=pax049 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+jax_backend=gpu device=cuda:0 x64=True EXTRACT N=256 K=16 R=512 ckpt=/cluster/tufts/paralab/tawal01/burgacc/cfd256/in/sep_burgers_r3_N256_K16_R512.pkl
+  UNALIGNED-CODES MODE: pick 131072 != checkpoint codes 16384: the state pick does not match the checkpoint's training set
+    (expected for a dense-sampling extraction; the identity gate (*) holds for ANY z, so it still tests what it tests, and the checkpoint reconstruction is simply not comparable)
+  bank rank(>1e-8) 512/512  cond(G) 2.637e+04
+  APPENDED 4032 trajectories from seed 1000 to the canonical 576; canonical draw untouched
+   gen+proj: trajectories 64/4608  worst FOM rel residual 9.95e-13  [18s]
+   gen+proj: trajectories 128/4608  worst FOM rel residual 1.00e-12  [32s]
+   gen+proj: trajectories 192/4608  worst FOM rel residual 1.00e-12  [45s]
+   gen+proj: trajectories 256/4608  worst FOM rel residual 1.00e-12  [58s]
+   gen+proj: trajectories 320/4608  worst FOM rel residual 1.00e-12  [71s]
+   gen+proj: trajectories 384/4608  worst FOM rel residual 1.00e-12  [83s]
+   gen+proj: trajectories 448/4608  worst FOM rel residual 1.00e-12  [95s]
+   gen+proj: trajectories 512/4608  worst FOM rel residual 1.00e-12  [110s]
+   gen+proj: trajectories 576/4608  worst FOM rel residual 1.00e-12  [121s]
+   gen+proj: trajectories 640/4608  worst FOM rel residual 1.00e-12  [132s]
+   gen+proj: trajectories 704/4608  worst FOM rel residual 1.00e-12  [144s]
+   gen+proj: trajectories 768/4608  worst FOM rel residual 1.00e-12  [157s]
+   gen+proj: trajectories 832/4608  worst FOM rel residual 1.00e-12  [169s]
+   gen+proj: trajectories 896/4608  worst FOM rel residual 1.00e-12  [182s]
+   gen+proj: trajectories 960/4608  worst FOM rel residual 1.00e-12  [195s]
+   gen+proj: trajectories 1024/4608  worst FOM rel residual 1.00e-12  [208s]
+   gen+proj: trajectories 1088/4608  worst FOM rel residual 1.00e-12  [221s]
+   gen+proj: trajectories 1152/4608  worst FOM rel residual 1.00e-12  [234s]
+   gen+proj: trajectories 1216/4608  worst FOM rel residual 1.00e-12  [245s]
+   gen+proj: trajectories 1280/4608  worst FOM rel residual 1.00e-12  [258s]
+   gen+proj: trajectories 1344/4608  worst FOM rel residual 1.00e-12  [270s]
+   gen+proj: trajectories 1408/4608  worst FOM rel residual 1.00e-12  [279s]
+   gen+proj: trajectories 1472/4608  worst FOM rel residual 1.00e-12  [291s]
+   gen+proj: trajectories 1536/4608  worst FOM rel residual 1.00e-12  [305s]
+   gen+proj: trajectories 1600/4608  worst FOM rel residual 1.00e-12  [318s]
+   gen+proj: trajectories 1664/4608  worst FOM rel residual 1.00e-12  [328s]
+   gen+proj: trajectories 1728/4608  worst FOM rel residual 1.00e-12  [339s]
+   gen+proj: trajectories 1792/4608  worst FOM rel residual 1.00e-12  [350s]
+   gen+proj: trajectories 1856/4608  worst FOM rel residual 1.00e-12  [364s]
+   gen+proj: trajectories 1920/4608  worst FOM rel residual 1.00e-12  [374s]
+   gen+proj: trajectories 1984/4608  worst FOM rel residual 1.00e-12  [388s]
+   gen+proj: trajectories 2048/4608  worst FOM rel residual 1.00e-12  [400s]
+   gen+proj: trajectories 2112/4608  worst FOM rel residual 1.00e-12  [413s]
+   gen+proj: trajectories 2176/4608  worst FOM rel residual 1.00e-12  [423s]
+   gen+proj: trajectories 2240/4608  worst FOM rel residual 1.00e-12  [436s]
+   gen+proj: trajectories 2304/4608  worst FOM rel residual 1.00e-12  [450s]
+   gen+proj: trajectories 2368/4608  worst FOM rel residual 1.00e-12  [463s]
+   gen+proj: trajectories 2432/4608  worst FOM rel residual 1.00e-12  [473s]
+   gen+proj: trajectories 2496/4608  worst FOM rel residual 1.00e-12  [486s]
+   gen+proj: trajectories 2560/4608  worst FOM rel residual 1.00e-12  [499s]
+   gen+proj: trajectories 2624/4608  worst FOM rel residual 1.00e-12  [511s]
+   gen+proj: trajectories 2688/4608  worst FOM rel residual 1.00e-12  [522s]
+   gen+proj: trajectories 2752/4608  worst FOM rel residual 1.00e-12  [535s]
+   gen+proj: trajectories 2816/4608  worst FOM rel residual 1.00e-12  [546s]
+   gen+proj: trajectories 2880/4608  worst FOM rel residual 1.00e-12  [560s]
+   gen+proj: trajectories 2944/4608  worst FOM rel residual 1.00e-12  [573s]
+   gen+proj: trajectories 3008/4608  worst FOM rel residual 1.00e-12  [586s]
+   gen+proj: trajectories 3072/4608  worst FOM rel residual 1.00e-12  [597s]
+   gen+proj: trajectories 3136/4608  worst FOM rel residual 1.00e-12  [610s]
+   gen+proj: trajectories 3200/4608  worst FOM rel residual 1.00e-12  [623s]
+   gen+proj: trajectories 3264/4608  worst FOM rel residual 1.00e-12  [633s]
+   gen+proj: trajectories 3328/4608  worst FOM rel residual 1.00e-12  [646s]
+   gen+proj: trajectories 3392/4608  worst FOM rel residual 1.00e-12  [656s]
+   gen+proj: trajectories 3456/4608  worst FOM rel residual 1.00e-12  [669s]
+   gen+proj: trajectories 3520/4608  worst FOM rel residual 1.00e-12  [680s]
+   gen+proj: trajectories 3584/4608  worst FOM rel residual 1.00e-12  [690s]
+   gen+proj: trajectories 3648/4608  worst FOM rel residual 1.00e-12  [702s]
+   gen+proj: trajectories 3712/4608  worst FOM rel residual 1.00e-12  [715s]
+   gen+proj: trajectories 3776/4608  worst FOM rel residual 1.00e-12  [727s]
+   gen+proj: trajectories 3840/4608  worst FOM rel residual 1.00e-12  [741s]
+   gen+proj: trajectories 3904/4608  worst FOM rel residual 1.00e-12  [754s]
+   gen+proj: trajectories 3968/4608  worst FOM rel residual 1.00e-12  [766s]
+   gen+proj: trajectories 4032/4608  worst FOM rel residual 1.00e-12  [779s]
+   gen+proj: trajectories 4096/4608  worst FOM rel residual 1.00e-12  [788s]
+   gen+proj: trajectories 4160/4608  worst FOM rel residual 1.00e-12  [799s]
+   gen+proj: trajectories 4224/4608  worst FOM rel residual 1.00e-12  [809s]
+   gen+proj: trajectories 4288/4608  worst FOM rel residual 1.00e-12  [820s]
+   gen+proj: trajectories 4352/4608  worst FOM rel residual 1.00e-12  [831s]
+   gen+proj: trajectories 4416/4608  worst FOM rel residual 1.00e-12  [844s]
+   gen+proj: trajectories 4480/4608  worst FOM rel residual 1.00e-12  [856s]
+   gen+proj: trajectories 4544/4608  worst FOM rel residual 1.00e-12  [866s]
+   gen+proj: trajectories 4608/4608  worst FOM rel residual 1.00e-12  [876s]
+  GRAM IDENTITY gate on 64 training states: max rel deviation 1.434e-13 mean 3.258e-15  (full mean 1.166501e+00 vs gram mean 1.166501e+00)
+  span-floor direct-vs-Gram deviation on 64 rows: 2.432e-16  (direct mean 4.607034e-04)
+  checkpoint recon via (*): mean 1.621499e+00  (train span LS floor mean 6.213e-04)
+  fresh test span LS floor: mean 2.124e-04 max 2.998e-03  (test FOM residual 9.92e-13)
+EXTRACT done in 910s -> /cluster/tufts/paralab/tawal01/burgacc/cfd256/out/sep_coeff_N256_K16_R512.npz
+jax_backend=gpu device=cuda:0 x64=True HFIT arms=['wide'] steps=200000
+  whitening round-trip 1.183e-14   q == L^T h deviation 2.312e-15
+  span LS floor: train 6.2135e-04  fresh test 2.1236e-04  (S=131072, R=512, K_ckpt=16)
+   hfit[wide]       1/200000 loss 1.0138e+00 recon 1.0064e+00 [5s]
+   hfit[wide]    5000/200000 loss 6.8726e-03 recon 7.3381e-02 [32s]
+   hfit[wide]   10000/200000 loss 2.8817e-03 recon 4.7249e-02 [60s]
+   hfit[wide]   15000/200000 loss 2.0605e-03 recon 3.9374e-02 [87s]
+   hfit[wide]   20000/200000 loss 1.4137e-03 recon 3.2938e-02 [115s]
+   hfit[wide]   25000/200000 loss 1.0614e-03 recon 2.8216e-02 [142s]
+   hfit[wide]   30000/200000 loss 9.2661e-04 recon 2.5979e-02 [170s]
+   hfit[wide]   35000/200000 loss 7.5949e-04 recon 2.3426e-02 [197s]
+   hfit[wide]   40000/200000 loss 6.2504e-04 recon 2.1820e-02 [225s]
+   hfit[wide]   45000/200000 loss 6.0314e-04 recon 2.1600e-02 [252s]
+   hfit[wide]   50000/200000 loss 5.1584e-04 recon 1.9238e-02 [280s]
+   hfit[wide]   55000/200000 loss 4.2568e-04 recon 1.8084e-02 [307s]
+   hfit[wide]   60000/200000 loss 3.8963e-04 recon 1.7141e-02 [335s]
+   hfit[wide]   65000/200000 loss 3.3958e-04 recon 1.5954e-02 [363s]
+   hfit[wide]   70000/200000 loss 2.8202e-04 recon 1.4780e-02 [390s]
+   hfit[wide]   75000/200000 loss 2.6647e-04 recon 1.4272e-02 [418s]
+   hfit[wide]   80000/200000 loss 2.3792e-04 recon 1.3800e-02 [445s]
+   hfit[wide]   85000/200000 loss 2.1039e-04 recon 1.2545e-02 [473s]
+   hfit[wide]   90000/200000 loss 1.8839e-04 recon 1.2305e-02 [500s]
+   hfit[wide]   95000/200000 loss 1.5366e-04 recon 1.1250e-02 [528s]
+   hfit[wide]  100000/200000 loss 1.3841e-04 recon 1.0706e-02 [556s]
+   hfit[wide]  105000/200000 loss 1.1350e-04 recon 9.6764e-03 [583s]
+   hfit[wide]  110000/200000 loss 9.9982e-05 recon 9.1656e-03 [611s]
+   hfit[wide]  115000/200000 loss 9.1573e-05 recon 8.5581e-03 [638s]
+   hfit[wide]  120000/200000 loss 7.7808e-05 recon 7.9568e-03 [666s]
+   hfit[wide]  125000/200000 loss 6.9354e-05 recon 7.5563e-03 [693s]
+   hfit[wide]  130000/200000 loss 5.6603e-05 recon 6.8963e-03 [721s]
+   hfit[wide]  135000/200000 loss 5.3072e-05 recon 6.5676e-03 [748s]
+   hfit[wide]  140000/200000 loss 4.4378e-05 recon 6.0898e-03 [776s]
+   hfit[wide]  145000/200000 loss 3.9906e-05 recon 5.7066e-03 [804s]
+   hfit[wide]  150000/200000 loss 3.5746e-05 recon 5.4463e-03 [831s]
+   hfit[wide]  155000/200000 loss 3.2634e-05 recon 5.1274e-03 [859s]
+   hfit[wide]  160000/200000 loss 2.9323e-05 recon 4.9607e-03 [886s]
+   hfit[wide]  165000/200000 loss 2.7443e-05 recon 4.7687e-03 [914s]
+   hfit[wide]  170000/200000 loss 2.6267e-05 recon 4.5985e-03 [941s]
+   hfit[wide]  175000/200000 loss 2.4691e-05 recon 4.4831e-03 [969s]
+   hfit[wide]  180000/200000 loss 2.5413e-05 recon 4.4067e-03 [997s]
+   hfit[wide]  185000/200000 loss 2.3542e-05 recon 4.3469e-03 [1024s]
+   hfit[wide]  190000/200000 loss 2.2115e-05 recon 4.3041e-03 [1052s]
+   hfit[wide]  195000/200000 loss 2.2240e-05 recon 4.2739e-03 [1079s]
+   hfit[wide]  200000/200000 loss 2.2112e-05 recon 4.2568e-03 [1107s]
+  ARM wide: recon 4.2568e-03  oracle 2.7465e-03  oracle/floor 12.9x  oracle_nn 2.7248e-03  code-refit gain 1.133x
+  EMITTED refined decoder -> /cluster/tufts/paralab/tawal01/burgacc/cfd256/out/sep_hfit_dense_K16_N256.pkl
+HFIT done in 1145s -> /cluster/tufts/paralab/tawal01/burgacc/cfd256/out/hfit_cfd256.json
+jax_backend=gpu device=cuda:0 ROUND4-SPEED N=256 ckpt=sep_hfit_dense_K16_N256.pkl
+  test data: 8 fresh trajectories, worst FOM rel residual 9.92e-13
+  NNLS-EQ sep speed r4 N=256 k=16 M=64 m=256: pool 64516 support 256 (+0 pad) rel fit 4.30e-03 (row p95 4.6e-01, max 7.7e+02) [26s]
+  GATE 0 [ctrl]: 7.79e-15
+  trajectory parameters: canonical 576 + 4032 appended from seed 1000 (recorded in the checkpoint)
+  encoder[speed r4 u0->z0 N=256]: rel-MSE 2.230e-01 on 4608 training pairs [6s]
+  IC gram vs full: |dz|/(1+|z|) 6.12e-11, ||r|| rel diff 3.31e-10
+  variant LM step vs incumbent at stall=1e-12: max |dz| 0.00e+00
+   PROFILE rollout_extrap                    198.3476 ms
+   PROFILE ic_full                            32.1267 ms
+   PROFILE ic_gram                            12.6501 ms
+   PROFILE lm_step_budget8                     1.7697 ms
+   PROFILE lm_step_budget4                     0.9885 ms
+   PROFILE lm_step_budget2                     0.6618 ms
+   PROFILE lm_step_budget1                     0.5220 ms
+   PROFILE h_track_value                       0.5175 ms
+   PROFILE decode_full_grid_51                 0.4469 ms
+   PROFILE h_track_jacobian                    0.1474 ms
+   PROFILE weak_residual_and_jacobian          0.1397 ms
+   PROFILE bank_jacobian_Gst_dhdz              0.1258 ms
+   PROFILE prev_of                             0.0502 ms
+   PROFILE bank_value_Gst_h                    0.0492 ms
+   PROFILE weak_residual_r_w                   0.0489 ms
+   VARIANT base                       227.98 ms  err 5.016e-03  jac 586  ic_jac 32.1  {'budget': 87, 'stalled': 313}
+   VARIANT gram                       210.41 ms  err 5.016e-03  jac 588  ic_jac 32.1  {'budget': 87, 'stalled': 313}
+   VARIANT gram+stall1e-06            123.96 ms  err 5.027e-03  jac 365  ic_jac 32.1  {'budget': 35, 'stalled': 365}
+   VARIANT gram+stall1e-04            108.62 ms  err 5.024e-03  jac 308  ic_jac 32.1  {'budget': 28, 'stalled': 372}
+   VARIANT gram+stall1e-03             99.93 ms  err 5.047e-03  jac 277  ic_jac 32.1  {'budget': 14, 'stalled': 386}
+   VARIANT gram+stall1e-02             73.99 ms  err 5.021e-03  jac 205  ic_jac 32.1  {'stalled': 398, 'budget': 2}
+   VARIANT gram+budget8               123.61 ms  err 2.946e-02  jac 344  ic_jac 32.1  {'budget': 288, 'stalled': 112}
+   VARIANT gram+budget5                68.20 ms  err 8.305e-01  jac 79  ic_jac 32.1  {'budget': 397, 'stalled': 3}
+   VARIANT gram+budget3                51.71 ms  err 8.551e-01  jac 50  ic_jac 32.1  {'budget': 400}
+   VARIANT gram+budget2                43.03 ms  err 8.551e-01  jac 50  ic_jac 32.1  {'budget': 400}
+   VARIANT gram+budget1                34.34 ms  err 8.551e-01  jac 50  ic_jac 32.1  {'budget': 400}
+   VARIANT gram+extrap0               293.91 ms  err 4.965e-03  jac 822  ic_jac 32.1  {'budget': 183, 'stalled': 217}
+   VARIANT gram+extrap1.5             236.97 ms  err 4.983e-03  jac 663  ic_jac 32.1  {'budget': 116, 'stalled': 284}
+  MATCHED paired: ROM[gram+stall1e-02] 73.69 ms vs tol-Newton(nt=3e-03,lt=2e-03) 16.73 ms -> 0.23x
+   BATCH   1 rom|gram+stall1e-02                total    74.33 ms ->  74.331 ms/query  err 4.801e-03
+   BATCH   1 rom|base                           total   246.39 ms -> 246.392 ms/query  err 4.521e-03
+   BATCH   1 fom|nt3e-03|lt2e-03                total    16.26 ms ->  16.258 ms/query  err 8.365e-04
+   BATCH   2 rom|gram+stall1e-02                total   141.59 ms ->  70.796 ms/query  err 7.397e-03
+   BATCH   2 rom|base                           total   488.36 ms -> 244.179 ms/query  err 7.320e-03
+   BATCH   2 fom|nt3e-03|lt2e-03                total    18.86 ms ->   9.428 ms/query  err 6.133e-04
+   BATCH   4 rom|gram+stall1e-02                total   164.50 ms ->  41.124 ms/query  err 5.695e-03
+   BATCH   4 rom|base                           total   584.39 ms -> 146.098 ms/query  err 5.640e-03
+   BATCH   4 fom|nt3e-03|lt2e-03                total    26.30 ms ->   6.574 ms/query  err 4.737e-04
+   BATCH   8 rom|gram+stall1e-02                total   207.77 ms ->  25.972 ms/query  err 5.021e-03
+   BATCH   8 rom|base                           total   762.96 ms ->  95.370 ms/query  err 5.016e-03
+   BATCH   8 fom|nt3e-03|lt2e-03                total    47.81 ms ->   5.977 ms/query  err 3.538e-04
+DONE speed r4 N=256 [437s] -> /cluster/tufts/paralab/tawal01/burgacc/cfd256/out/sep_speed_r5_dense_K16_N256.json
+ALL-DONE

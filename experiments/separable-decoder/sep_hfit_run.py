@@ -118,6 +118,13 @@ ARM_SPECS = {
     "wide_wd4":    dict(hidden=1024, layers=3, wd=1e-4),
     "wide_wd3":    dict(hidden=1024, layers=3, wd=1e-3),
     "wide_short":  dict(hidden=1024, layers=3, steps=25000),
+    # --- wave 7b: COST-MATCHED capacity.  cfd256 showed the dense-data arm is
+    #     the most accurate decoder measured but 2.1x slower than the
+    #     incumbent, and the slowdown is h's WIDTH (1024x3 against the
+    #     incumbent's 256x2), not K and not the data.  These two arms keep the
+    #     online cost at or near the incumbent's and spend the density instead.
+    "mid":         dict(hidden=512, layers=2),
+    "ctl_cold":    dict(hidden=256, layers=2),
     # --- lever 5 (round-5 wave 5): CODE JITTER.  The measured failure is that
     #     h's image passes through the training targets and wanders between
     #     them, so ask h to be right on a neighbourhood of each code.

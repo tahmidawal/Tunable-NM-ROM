@@ -1,0 +1,96 @@
+host=pax020 gpu=NVIDIA L40S
+jax_backend=gpu
+stage MANIFEST OK
+jax_backend=gpu device=cuda:0 x64=True ROUND3 N=256 K=16 R=512 steps=300000 max_snaps=16384 n_traj=0 pool=0 t_early=5 snap_norm=0 seed=0
+  pick: 16384 states (3456 early t<=5) from 576 trajectories; point pool 64516/64516
+   gen: trajectories 64/576  worst FOM rel residual 9.95e-13  [74s]
+   gen: trajectories 128/576  worst FOM rel residual 1.00e-12  [147s]
+   gen: trajectories 192/576  worst FOM rel residual 1.00e-12  [217s]
+   gen: trajectories 256/576  worst FOM rel residual 1.00e-12  [285s]
+   gen: trajectories 320/576  worst FOM rel residual 1.00e-12  [351s]
+   gen: trajectories 384/576  worst FOM rel residual 1.00e-12  [415s]
+   gen: trajectories 448/576  worst FOM rel residual 1.00e-12  [477s]
+   gen: trajectories 512/576  worst FOM rel residual 1.00e-12  [552s]
+   gen: trajectories 576/576  worst FOM rel residual 1.00e-12  [611s]
+  test data: 8 fresh trajectories, worst FOM rel residual 9.92e-13
+  early-time loss weight 8.0 on 3456/16384 states
+   train2[burgers r4 N=256 k=16 r=512] step      1/300000  rel-MSE 2.640e+00  [23s]
+   train2[burgers r4 N=256 k=16 r=512] step   5000/300000  rel-MSE 2.986e-03  [1080s]
+   train2[burgers r4 N=256 k=16 r=512] step  10000/300000  rel-MSE 1.369e-03  [2137s]
+   train2[burgers r4 N=256 k=16 r=512] step  15000/300000  rel-MSE 5.826e-04  [3194s]
+   train2[burgers r4 N=256 k=16 r=512] step  20000/300000  rel-MSE 8.498e-04  [4251s]
+   train2[burgers r4 N=256 k=16 r=512] step  25000/300000  rel-MSE 3.403e-04  [5308s]
+   train2[burgers r4 N=256 k=16 r=512] step  30000/300000  rel-MSE 8.585e-04  [6364s]
+   train2[burgers r4 N=256 k=16 r=512] step  35000/300000  rel-MSE 3.386e-04  [7421s]
+   train2[burgers r4 N=256 k=16 r=512] step  40000/300000  rel-MSE 1.003e-03  [8478s]
+   train2[burgers r4 N=256 k=16 r=512] TIME CAP 9000s hit at step 42479
+   train2[burgers r4 N=256 k=16 r=512] code polish 20000 steps -> loss 7.464e-04 [2604s]
+   train2[burgers r4 N=256 k=16 r=512] done: recon rel-L2 mean 3.060e-02 max 2.742e-01 (raw 3.585e-02 / ema 3.060e-02, used ema)  [11620s]
+  recon on FULL interior for 64 training states: mean 3.310e-02 max 1.915e-01 (pool recon mean 3.060e-02)
+  SPAN spectrum: sv[0]/sv0=1.00e+00  sv[128]/sv0=3.96e-02  sv[256]/sv0=7.22e-03  sv[384]/sv0=1.93e-03  sv[511]/sv0=2.89e-04   rank(>1e-8) 512/512
+  SPAN least-squares floor on fresh test states: mean 4.487e-03
+  EQ-fit bank vs meshfree full-interior decode: 3.64e-16
+  EQ-tail sep burgers r4 N=256 k=16 M=64 m=256: rel fit 1.81e-02 (p95 6.2e-01, max 2.7e+02) after 2 rounds [48s]
+  GATE 0 [ctrl]: max rel dev 1.22e-15
+  EQ-tail sep burgers r4 N=256 k=16 M=256 m=1024: rel fit 8.30e-03 (p95 1.8e+00, max 1.3e+03) after 2 rounds [1293s]
+  GATE 0 [M256]: max rel dev 1.08e-15
+  encoder[burgers r4 u->z N=256]: rel-MSE 9.722e-03 on 16384 training pairs [47s]
+  IC solver identity: 3.65e-16
+  ROLLOUT GATE (v2 no-extrap vs incumbent): max |dZ| 3.52e-10
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 0: err 3.589e-02  e2e   378.10 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 0: err 3.589e-02  e2e    91.54 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 0: err 3.589e-02  e2e 36113.32 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 0: err 3.589e-02  e2e    91.13 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 0: err 3.469e-02  e2e   106.36 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 1: err 3.797e-02  e2e   291.38 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 1: err 3.797e-02  e2e    78.42 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 1: err 3.797e-02  e2e 24569.28 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 1: err 3.797e-02  e2e    78.44 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 1: err 3.453e-02  e2e   101.83 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 2: err 3.305e-02  e2e   299.44 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 2: err 3.305e-02  e2e    78.14 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 2: err 3.305e-02  e2e 26762.19 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 2: err 3.305e-02  e2e    78.25 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 2: err 3.100e-02  e2e    93.83 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 3: err 3.576e-02  e2e   242.63 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 3: err 3.576e-02  e2e    81.24 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 3: err 3.576e-02  e2e 19756.87 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 3: err 3.576e-02  e2e    81.33 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 3: err 3.447e-02  e2e   100.12 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 4: err 1.690e-02  e2e   250.75 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 4: err 1.690e-02  e2e    76.90 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 4: err 1.690e-02  e2e 24121.23 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 4: err 1.690e-02  e2e    76.57 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 4: err 1.699e-02  e2e    94.11 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 5: err 2.767e-02  e2e   344.46 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 5: err 2.767e-02  e2e    75.13 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 5: err 2.767e-02  e2e 47873.93 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 5: err 2.767e-02  e2e    75.12 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 5: err 2.699e-02  e2e    88.44 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 6: err 2.337e-02  e2e   249.79 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 6: err 2.337e-02  e2e    76.97 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 6: err 2.337e-02  e2e 68012.40 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 6: err 2.337e-02  e2e    76.96 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 6: err 2.152e-02  e2e    90.32 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 7: err 1.204e-02  e2e   215.42 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 7: err 1.204e-02  e2e    63.53 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 7: err 1.204e-02  e2e 21633.54 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 7: err 1.204e-02  e2e    63.13 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 7: err 1.119e-02  e2e    81.64 ms
+  MATCHED-ACCURACY paired: ROM 77.13 ms vs tol-Newton(nt=3e-03, lt=2e-03) 29.09 ms
+   BATCHED batched|cach|ctrl|ic_enc|roll_extrap|t1e-9: total 364.99 ms -> 45.624 ms/query  err 2.783e-02
+   BATCHED batched|cach|M256|ic_enc|roll_extrap|t1e-9: total 665.01 ms -> 83.126 ms/query  err 2.642e-02
+   BATCHED batched|fom|nt3e-03|lt2e-03: total 203.43 ms -> 25.428 ms/query  err 3.538e-04
+   BATCHED batched|fom|nt1e-02|lt5e-04: total 219.61 ms -> 27.451 ms/query  err 3.050e-02
+  ORACLE traj 0: mean 3.007e-02 max 1.318e-01 t0 1.318e-01
+  ORACLE traj 1: mean 3.118e-02 max 5.855e-02 t0 5.855e-02
+  ORACLE traj 2: mean 2.962e-02 max 9.085e-02 t0 9.085e-02
+  ORACLE traj 3: mean 3.304e-02 max 5.199e-02 t0 5.199e-02
+  ORACLE traj 4: mean 1.617e-02 max 2.118e-02 t0 1.490e-02
+  ORACLE traj 5: mean 2.408e-02 max 3.206e-02 t0 2.956e-02
+  ORACLE traj 6: mean 2.058e-02 max 2.237e-02 t0 2.184e-02
+  ORACLE traj 7: mean 1.055e-02 max 1.586e-02 t0 1.586e-02
+  single-step weak-opt [ctrl]: mean err 3.020e-02 vs mean oracle 2.974e-02 (gap = objective truncation)
+  single-step weak-opt [M256]: mean err 2.993e-02 vs mean oracle 2.974e-02 (gap = objective truncation)
+DONE burgers r4 N=256 [16595s] -> /cluster/tufts/paralab/tawal01/n256_push/r4a3/out/sep_burgers_r4_N256_K16_R512_h256x2.json
+ALL-DONE

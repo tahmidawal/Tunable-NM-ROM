@@ -76,6 +76,16 @@ OUT_PREFIX = os.environ.get("OUT_PREFIX", "")
 # ANY z, so it still tests what it is there to test; the checkpoint
 # reconstruction number becomes meaningless and is flagged as such.
 LOOSE = int(os.environ.get("LOOSE", "0"))
+# --- denser mu-sampling (round-5 wave 4) ------------------------------------
+# The wave-2/3 arms show the binding constraint on the ORACLE is generalisation
+# off the training trajectories, and the canonical draw is only 576 of them for
+# a 5-parameter family.  EXTRA_SEED/EXTRA_TRAJ APPEND trajectories from a fresh
+# seed to the canonical draw; the canonical seed-0 draw and the cohort
+# definitions are untouched, which is the form of densification the PUSH-PLAN
+# permits.  Appended trajectories are training data; the test cohort still comes
+# from TEST_SEED and is never fitted.
+EXTRA_SEED = int(os.environ.get("EXTRA_SEED", "0"))
+EXTRA_TRAJ = int(os.environ.get("EXTRA_TRAJ", "0"))
 
 
 def main():
@@ -96,7 +106,7 @@ def main():
     coords = np.asarray(bc.grid_coords(N))
     n_i2 = interior.size
     T = bc.NUM_STEPS + 1
-    n_traj = N_TRAJ or (bc.bf.N_TRAIN + bc.bf.N_VAL)
+    n_traj = N_TRAJ or (bc.bf.N_TRAIN + bc.bf.N_VAL + EXTRA_TRAJ)
 
     # ---- reproduce the r3/r4 state pick EXACTLY (same rng call sequence) ----
     rng = np.random.default_rng(SEED0)
@@ -116,7 +126,10 @@ def main():
                "state pick does not match the checkpoint's training set")
         if not LOOSE:
             raise SystemExit(msg)
-        sc.log(f"  LOOSE SMOKE MODE: {msg}")
+        sc.log(f"  UNALIGNED-CODES MODE: {msg}\n"
+               "    (expected for a dense-sampling extraction; the identity "
+               "gate (*) holds for ANY z, so it still tests what it tests, "
+               "and the checkpoint reconstruction is simply not comparable)")
         reps = int(np.ceil(pick.size / Z_ck.shape[0]))
         Z_ck = np.tile(Z_ck, (reps, 1))[:pick.size]
     else:
@@ -126,6 +139,7 @@ def main():
     report = dict(config=dict(
         pde="burgers2d", job="coeff_extract", N=N, k=K, r=R, ckpt=CKPT,
         max_snaps=MAX_SNAPS, t_early=T_EARLY, n_traj=int(n_traj),
+        extra_seed=EXTRA_SEED, extra_traj=EXTRA_TRAJ, n_canonical=576,
         n_test=N_TEST, seed=SEED0, data_seed=bc.SEED, test_seed=bc.TEST_SEED,
         num_steps=bc.NUM_STEPS, dt=bc.DT, x64=True,
         matmul_precision=os.environ.get("JAX_DEFAULT_MATMUL_PRECISION"),
@@ -182,6 +196,16 @@ def main():
 
     # ------------------- training data: stream + project --------------------
     cx, cy, w, a, nu, _z = bc.bf.sample_params(seed=bc.SEED)
+    n_canon = len(cx)
+    if EXTRA_SEED:
+        assert EXTRA_SEED not in (bc.SEED, bc.TEST_SEED), \
+            "appended seed collides with the canonical or the test draw"
+        ex = bc.bf.sample_params(seed=EXTRA_SEED, m=EXTRA_TRAJ)
+        cx = np.concatenate([cx, ex[0]]); cy = np.concatenate([cy, ex[1]])
+        w = np.concatenate([w, ex[2]]);   a = np.concatenate([a, ex[3]])
+        nu = np.concatenate([nu, ex[4]])
+        sc.log(f"  APPENDED {EXTRA_TRAJ} trajectories from seed {EXTRA_SEED} "
+               f"to the canonical {n_canon}; canonical draw untouched")
     assert n_traj <= len(cx)
     rollout, res_fn = bc.bf.make_rollout(N)
     chk = jax.jit(jax.vmap(lambda u1, u0, nu_:
@@ -311,7 +335,8 @@ def main():
     report["ckpt_recon"] = dict(
         mean=float(rec.mean()), max=float(rec.max()), codes_aligned=aligned,
         note=("checkpoint h,Z re-evaluated via (*)" if aligned else
-              "MEANINGLESS: LOOSE smoke mode, codes are a recycled stand-in"))
+              "NOT COMPARABLE: codes are a recycled stand-in because the "
+              "state pick does not match the checkpoint's training set"))
     fl_tr = np.sqrt(fl2_tr / np.maximum(un2_tr, 1e-300))
     report["train_span_floor"] = dict(mean=float(fl_tr.mean()),
                                       max=float(fl_tr.max()))

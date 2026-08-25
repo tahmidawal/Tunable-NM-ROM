@@ -1,0 +1,145 @@
+host=pax063 gpu=NVIDIA H100 PCIe
+jax_backend=gpu
+stage MANIFEST OK
+jax_backend=gpu device=cuda:0 x64=True ROUND3 N=256 K=16 R=1024 steps=300000 max_snaps=16384 n_traj=0 pool=0 t_early=5 snap_norm=0 seed=0
+  pick: 16384 states (3456 early t<=5) from 576 trajectories; point pool 64516/64516
+   gen: trajectories 64/576  worst FOM rel residual 9.95e-13  [11s]
+   gen: trajectories 128/576  worst FOM rel residual 1.00e-12  [20s]
+   gen: trajectories 192/576  worst FOM rel residual 1.00e-12  [29s]
+   gen: trajectories 256/576  worst FOM rel residual 1.00e-12  [38s]
+   gen: trajectories 320/576  worst FOM rel residual 1.00e-12  [46s]
+   gen: trajectories 384/576  worst FOM rel residual 1.00e-12  [54s]
+   gen: trajectories 448/576  worst FOM rel residual 1.00e-12  [63s]
+   gen: trajectories 512/576  worst FOM rel residual 1.00e-12  [72s]
+   gen: trajectories 576/576  worst FOM rel residual 1.00e-12  [80s]
+  test data: 8 fresh trajectories, worst FOM rel residual 9.92e-13
+   train2[burgers r3 N=256 k=16 r=1024] step      1/300000  rel-MSE 3.633e+00  [8s]
+   train2[burgers r3 N=256 k=16 r=1024] step   5000/300000  rel-MSE 3.624e-03  [132s]
+   train2[burgers r3 N=256 k=16 r=1024] step  10000/300000  rel-MSE 9.487e-04  [258s]
+   train2[burgers r3 N=256 k=16 r=1024] step  15000/300000  rel-MSE 2.218e-03  [383s]
+   train2[burgers r3 N=256 k=16 r=1024] step  20000/300000  rel-MSE 8.705e-04  [509s]
+   train2[burgers r3 N=256 k=16 r=1024] step  25000/300000  rel-MSE 4.968e-01  [634s]
+   train2[burgers r3 N=256 k=16 r=1024] step  30000/300000  rel-MSE 9.184e-04  [760s]
+   train2[burgers r3 N=256 k=16 r=1024] step  35000/300000  rel-MSE 6.488e-04  [886s]
+   train2[burgers r3 N=256 k=16 r=1024] step  40000/300000  rel-MSE 5.693e-04  [1011s]
+   train2[burgers r3 N=256 k=16 r=1024] step  45000/300000  rel-MSE 2.589e-04  [1137s]
+   train2[burgers r3 N=256 k=16 r=1024] step  50000/300000  rel-MSE 2.859e-04  [1262s]
+   train2[burgers r3 N=256 k=16 r=1024] step  55000/300000  rel-MSE 1.452e-04  [1388s]
+   train2[burgers r3 N=256 k=16 r=1024] step  60000/300000  rel-MSE 1.550e-04  [1514s]
+   train2[burgers r3 N=256 k=16 r=1024] step  65000/300000  rel-MSE 9.613e-05  [1639s]
+   train2[burgers r3 N=256 k=16 r=1024] step  70000/300000  rel-MSE 9.634e-05  [1765s]
+   train2[burgers r3 N=256 k=16 r=1024] step  75000/300000  rel-MSE 1.241e-04  [1891s]
+   train2[burgers r3 N=256 k=16 r=1024] step  80000/300000  rel-MSE 1.028e-04  [2016s]
+   train2[burgers r3 N=256 k=16 r=1024] step  85000/300000  rel-MSE 1.205e-04  [2142s]
+   train2[burgers r3 N=256 k=16 r=1024] step  90000/300000  rel-MSE 1.048e-04  [2268s]
+   train2[burgers r3 N=256 k=16 r=1024] step  95000/300000  rel-MSE 7.064e-05  [2393s]
+   train2[burgers r3 N=256 k=16 r=1024] step 100000/300000  rel-MSE 5.909e-05  [2519s]
+   train2[burgers r3 N=256 k=16 r=1024] step 105000/300000  rel-MSE 9.612e-05  [2645s]
+   train2[burgers r3 N=256 k=16 r=1024] step 110000/300000  rel-MSE 5.424e-05  [2770s]
+   train2[burgers r3 N=256 k=16 r=1024] step 115000/300000  rel-MSE 5.917e-05  [2896s]
+   train2[burgers r3 N=256 k=16 r=1024] step 120000/300000  rel-MSE 5.764e-05  [3021s]
+   train2[burgers r3 N=256 k=16 r=1024] step 125000/300000  rel-MSE 5.203e-05  [3147s]
+   train2[burgers r3 N=256 k=16 r=1024] step 130000/300000  rel-MSE 5.331e-05  [3273s]
+   train2[burgers r3 N=256 k=16 r=1024] step 135000/300000  rel-MSE 4.855e-05  [3399s]
+   train2[burgers r3 N=256 k=16 r=1024] step 140000/300000  rel-MSE 5.006e-05  [3524s]
+   train2[burgers r3 N=256 k=16 r=1024] step 145000/300000  rel-MSE 5.153e-05  [3650s]
+   train2[burgers r3 N=256 k=16 r=1024] step 150000/300000  rel-MSE 5.163e-05  [3776s]
+   train2[burgers r3 N=256 k=16 r=1024] step 155000/300000  rel-MSE 4.567e-05  [3902s]
+   train2[burgers r3 N=256 k=16 r=1024] step 160000/300000  rel-MSE 4.957e-05  [4027s]
+   train2[burgers r3 N=256 k=16 r=1024] step 165000/300000  rel-MSE 7.005e-05  [4153s]
+   train2[burgers r3 N=256 k=16 r=1024] step 170000/300000  rel-MSE 5.503e-05  [4278s]
+   train2[burgers r3 N=256 k=16 r=1024] step 175000/300000  rel-MSE 5.310e-05  [4404s]
+   train2[burgers r3 N=256 k=16 r=1024] step 180000/300000  rel-MSE 4.071e-05  [4530s]
+   train2[burgers r3 N=256 k=16 r=1024] step 185000/300000  rel-MSE 4.030e-05  [4656s]
+   train2[burgers r3 N=256 k=16 r=1024] step 190000/300000  rel-MSE 4.305e-05  [4782s]
+   train2[burgers r3 N=256 k=16 r=1024] step 195000/300000  rel-MSE 3.713e-05  [4907s]
+   train2[burgers r3 N=256 k=16 r=1024] step 200000/300000  rel-MSE 4.509e-05  [5033s]
+   train2[burgers r3 N=256 k=16 r=1024] step 205000/300000  rel-MSE 4.289e-05  [5159s]
+   train2[burgers r3 N=256 k=16 r=1024] step 210000/300000  rel-MSE 3.716e-05  [5284s]
+   train2[burgers r3 N=256 k=16 r=1024] step 215000/300000  rel-MSE 3.485e-05  [5410s]
+   train2[burgers r3 N=256 k=16 r=1024] step 220000/300000  rel-MSE 3.592e-05  [5536s]
+   train2[burgers r3 N=256 k=16 r=1024] step 225000/300000  rel-MSE 3.467e-05  [5662s]
+   train2[burgers r3 N=256 k=16 r=1024] step 230000/300000  rel-MSE 3.603e-05  [5787s]
+   train2[burgers r3 N=256 k=16 r=1024] step 235000/300000  rel-MSE 3.367e-05  [5913s]
+   train2[burgers r3 N=256 k=16 r=1024] step 240000/300000  rel-MSE 3.362e-05  [6039s]
+   train2[burgers r3 N=256 k=16 r=1024] step 245000/300000  rel-MSE 3.302e-05  [6164s]
+   train2[burgers r3 N=256 k=16 r=1024] step 250000/300000  rel-MSE 3.314e-05  [6290s]
+   train2[burgers r3 N=256 k=16 r=1024] step 255000/300000  rel-MSE 3.298e-05  [6416s]
+   train2[burgers r3 N=256 k=16 r=1024] step 260000/300000  rel-MSE 3.209e-05  [6541s]
+   train2[burgers r3 N=256 k=16 r=1024] step 265000/300000  rel-MSE 3.246e-05  [6667s]
+   train2[burgers r3 N=256 k=16 r=1024] step 270000/300000  rel-MSE 3.179e-05  [6793s]
+   train2[burgers r3 N=256 k=16 r=1024] step 275000/300000  rel-MSE 3.194e-05  [6918s]
+   train2[burgers r3 N=256 k=16 r=1024] step 280000/300000  rel-MSE 3.170e-05  [7044s]
+   train2[burgers r3 N=256 k=16 r=1024] step 285000/300000  rel-MSE 3.137e-05  [7170s]
+   train2[burgers r3 N=256 k=16 r=1024] step 290000/300000  rel-MSE 3.176e-05  [7296s]
+   train2[burgers r3 N=256 k=16 r=1024] step 295000/300000  rel-MSE 3.125e-05  [8887s]
+   train2[burgers r3 N=256 k=16 r=1024] step 300000/300000  rel-MSE 3.111e-05  [10461s]
+   train2[burgers r3 N=256 k=16 r=1024] done: recon rel-L2 mean 6.965e-03 max 7.527e-02 (raw 6.965e-03 / ema 6.968e-03, used raw)  [10463s]
+  recon on FULL interior for 64 training states: mean 7.164e-03 max 3.489e-02 (pool recon mean 6.965e-03)
+  SPAN spectrum: sv[0]/sv0=1.00e+00  sv[256]/sv0=7.21e-03  sv[512]/sv0=9.89e-04  sv[768]/sv0=1.95e-04  sv[1023]/sv0=2.76e-05   rank(>1e-8) 1024/1024
+  SPAN least-squares floor on fresh test states: mean 1.146e-04
+  EQ-fit bank vs meshfree full-interior decode: 2.48e-16
+  NNLS-EQ sep burgers r3 N=256 k=16 M=64 m=256: pool 64516 support 256 (+0 pad) rel fit 4.38e-03 (row p95 3.8e-01, max 4.1e+01) [27s]
+  GATE 0 [ctrl]: max rel dev 4.53e-16
+  NNLS-EQ sep burgers r3 N=256 k=16 M=256 m=1024: pool 64516 support 1024 (+0 pad) rel fit 5.81e-04 (row p95 4.2e-01, max 4.3e+03) [683s]
+  GATE 0 [M256]: max rel dev 7.38e-16
+  encoder[burgers r3 u->z N=256]: rel-MSE 1.730e-02 on 16384 training pairs [7s]
+  IC solver identity: 4.89e-16
+  ROLLOUT GATE (v2 no-extrap vs incumbent): max |dZ| 7.34e-11
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 0: err 2.025e-02  e2e   227.07 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 0: err 2.025e-02  e2e    76.97 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 0: err 2.025e-02  e2e  7248.72 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 0: err 2.025e-02  e2e    76.20 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 0: err 1.993e-02  e2e    93.27 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 1: err 1.779e-02  e2e   160.71 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 1: err 1.778e-02  e2e    76.92 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 1: err 1.779e-02  e2e  4143.44 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 1: err 1.778e-02  e2e    77.22 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 1: err 1.121e-02  e2e    87.02 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 2: err 1.871e-02  e2e   207.70 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 2: err 1.871e-02  e2e    68.76 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 2: err 1.871e-02  e2e  6516.89 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 2: err 1.871e-02  e2e    68.50 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 2: err 1.474e-02  e2e    87.40 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 3: err 1.196e-02  e2e   197.93 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 3: err 1.196e-02  e2e    64.93 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 3: err 1.196e-02  e2e  5702.58 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 3: err 1.196e-02  e2e    64.69 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 3: err 1.087e-02  e2e    85.99 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 4: err 5.406e-03  e2e   123.98 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 4: err 5.406e-03  e2e    69.36 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 4: err 5.406e-03  e2e  3720.29 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 4: err 5.406e-03  e2e    69.51 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 4: err 5.198e-03  e2e    85.91 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 5: err 7.261e-03  e2e   164.11 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 5: err 7.261e-03  e2e    70.73 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 5: err 7.261e-03  e2e  3831.30 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 5: err 7.261e-03  e2e    71.76 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 5: err 7.348e-03  e2e    93.56 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 6: err 5.763e-03  e2e   125.70 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 6: err 5.763e-03  e2e    67.91 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 6: err 5.763e-03  e2e  3366.87 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 6: err 5.763e-03  e2e    68.58 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 6: err 5.623e-03  e2e    75.40 ms
+   cach|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 7: err 5.679e-03  e2e   144.65 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-9         traj 7: err 5.679e-03  e2e    63.22 ms
+   mesh|ctrl|ic_ctrl|roll_ctrl|t1e-9          traj 7: err 5.679e-03  e2e  4529.23 ms
+   cach|ctrl|ic_enc|roll_extrap|t1e-06        traj 7: err 5.679e-03  e2e    64.02 ms
+   cach|M256|ic_enc|roll_extrap|t1e-9         traj 7: err 4.216e-03  e2e    74.42 ms
+  MATCHED-ACCURACY paired: ROM 69.00 ms vs tol-Newton(nt=3e-03, lt=2e-03) 13.35 ms
+   BATCHED batched|cach|ctrl|ic_enc|roll_extrap|t1e-9: total 182.54 ms -> 22.817 ms/query  err 1.160e-02
+   BATCHED batched|cach|M256|ic_enc|roll_extrap|t1e-9: total 306.37 ms -> 38.296 ms/query  err 9.891e-03
+   BATCHED batched|fom|nt3e-03|lt2e-03: total 33.12 ms -> 4.140 ms/query  err 3.538e-04
+   BATCHED batched|fom|nt1e-02|lt5e-04: total 35.39 ms -> 4.424 ms/query  err 3.050e-02
+  ORACLE traj 0: mean 1.408e-02 max 9.740e-02 t0 9.740e-02
+  ORACLE traj 1: mean 8.361e-03 max 2.970e-02 t0 2.970e-02
+  ORACLE traj 2: mean 1.235e-02 max 6.854e-02 t0 6.854e-02
+  ORACLE traj 3: mean 9.521e-03 max 3.465e-02 t0 3.465e-02
+  ORACLE traj 4: mean 4.814e-03 max 7.441e-03 t0 5.842e-03
+  ORACLE traj 5: mean 6.822e-03 max 1.430e-02 t0 1.430e-02
+  ORACLE traj 6: mean 5.341e-03 max 8.547e-03 t0 8.547e-03
+  ORACLE traj 7: mean 3.393e-03 max 6.500e-03 t0 6.500e-03
+  single-step weak-opt [ctrl]: mean err 1.498e-02 vs mean oracle 1.409e-02 (gap = objective truncation)
+  single-step weak-opt [M256]: mean err 1.433e-02 vs mean oracle 1.409e-02 (gap = objective truncation)
+DONE burgers r3 N=256 [12995s] -> /cluster/tufts/paralab/tawal01/n256_push/r3c/out/sep_burgers_r3_N256_K16_R1024.json
+ALL-DONE

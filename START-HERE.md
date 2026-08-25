@@ -18,13 +18,81 @@ Read in this order:
 5. `reports/2026-08-25-burgers-h-generalisation-wall.md` (this branch) — the round-5 campaign.
 6. `experiments/separable-decoder/HANDOFF-BURGERS-ACCURACY.md` — rules, levers, mechanics.
 
-## The model in one line
+## Why this line of work exists — the separable decoder is a NEW architecture
 
-`u(x;z) = bc(x)·⟨g(x), h(z)⟩` — a 512-feature spatial track `g` (Fourier lift → SiLU MLP,
-`G_HIDDEN ≥ 2R` or the bank is rank-capped) and a K-dim latent track `h` (SiLU MLP + linear
-skip). Because `g` never sees `z`, it is evaluated ONCE at the quadrature points into a cached
-table; the online solve is `table @ h(z)` — the grid never enters the loop. Pure neural, no
-POD anywhere; SVD is a diagnostic only.
+Everything on this branch is about one architectural idea, introduced 2026-08-22. Before it,
+the project's decoders were FiLM / coordinate networks in which the latent code `z` modulates
+the network *as it processes the coordinate* `x`. That is flexible, but it means every time
+the solver tests a new `z` it must re-run the whole network at every quadrature point — the
+decode cost sits inside the online loop and the ROM cannot be cheap.
+
+The advisor's ask (meeting notes, 08-22) was a decoder **designed for this task**: decode only
+at the sample points, with the empirical quadrature built in. The separable decoder makes
+that structural rather than approximate:
+
+```
+u(x; z)  =  bc(x) · ⟨ g(x) , h(z) ⟩         g: x → ℝ^R     h: z → ℝ^R
+```
+
+`x` and `z` never meet except in one inner product. Consequences that define the method:
+
+- **Sampling is built in.** `g` never sees `z`, so it is evaluated ONCE at the m≈256 NNLS
+  quadrature points into a cached table `G_q` (and a stencil bank `G_st` for Burgers
+  advection). Online, the residual is `table @ h(z)` and its Jacobian `table @ ∂h/∂z`
+  exactly — no spatial network in the loop, and **N never enters the loop**. That is why
+  the solve costs ~2–35 ms at N=64 and at N=1024 alike.
+- **Boundary conditions are exact by construction:** `bc(x)=16x₁(1−x₁)x₂(1−x₂)` is zero
+  on the walls, so every output satisfies Dirichlet — never imposed, never learned.
+- **It is genuinely nonlinear** (the manifold is the K-dim image of the SiLU MLP `h`
+  inside the R-dim span of `g`), which is what makes it an NM-ROM: on Burgers, 16 nonlinear
+  coefficients match what takes **117 linear POD modes** (report T7). Pure neural — no POD
+  basis, no POD init, no linear corrector anywhere; SVD is a diagnostic only.
+- **Its hard ceiling is a linear-algebra fact:** the manifold lives inside span{g}, so no
+  variant of this family can beat the rank-R POD floor. And the last layer of `g` is
+  linear, so the bank's rank is capped at `G_HIDDEN+1` — `G_HIDDEN ≥ 2R` is mandatory
+  (this bug silently capped R=512 at 257 for three rounds).
+
+Shapes and activations (round-3/4 config, `n_ff=64`, `G_HIDDEN=1024`, `R=512`, `K=16`):
+
+```
+   SPATIAL TRACK  g(x)                        LATENT TRACK  h(z)
+   x = (x₁,x₂)  (2,)                          z  (16,)
+        │ x @ B   B:(2,64) trained                 ├──────────┐
+   ang          (64,)                              │          │ linear skip
+        │ [sin(2π·), cos(2π·)]                     │          │ z·W (16→512)
+   features     (128,)                             │          │
+        │ 128→1024, SiLU                           │ 16→128, SiLU
+                (1024,)                                   (128,)
+        │ 1024→1024, SiLU                          │ 128→128, SiLU
+                (1024,)                                   (128,)
+        │ 1024→512, LINEAR                         │ 128→512, LINEAR
+   g̃(x)         (512,)                                    (512,) ←┘
+        │ × bc(x)·out_scale (a scalar)             │
+   g(x)         (512,)                        h(z)        (512,)
+        └──────────────┬─────────────────────────────┘
+                       ▼
+               ⟨g(x), h(z)⟩ = u(x;z)      one number
+```
+
+Training is auto-decoder style (one free code per snapshot, trained jointly with the weights),
+relative-MSE + a feature-Gram conditioning term, point-subsampled AdamW + EMA. The online
+solve is the incumbent weak-form trust-region LM on M=4K sine test modes — the discretization
+is never changed, only how it is evaluated (gate 0 asserts this at ≤1e-12 in every job).
+
+**Where the architecture is written up** (read these before changing the model):
+- `reports/2026-08-22-separable-eq-decoder-design.md` (main) — the design doc: math, the
+  cached-operator algebra derived from the discrete operators, cost model, gate ladder,
+  prior art, and the audit record of what the first draft got wrong.
+- `reports/2026-08-24-separable-decoder-architecture-and-results.md` (main) — the study:
+  Parts I–IV are the architecture and integrity guarantees; Part V the generated tables
+  T1–T8; VI.3 the retractions.
+- `reports/2026-08-25-poisson-architecture-and-results.md` (main) — the plain-language
+  version with the sheets-and-recipes picture and the offline-table/online-loop diagram.
+- `experiments/separable-decoder/README.md` and `AUDIT-2026-08-23.md` (this branch) — how a
+  run works end to end, and the adversarial audit that verified nonlinearity, no leakage,
+  and gate 0 — and failed the first timing methodology.
+- `PROFILE.md` (this branch) — why the online solve is kernel-dispatch-bound, which is what
+  every speed decision since round 4 rests on.
 
 ## What is established (all numbers from generated tables — never retype)
 

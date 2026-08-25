@@ -174,6 +174,7 @@ gain -- but only the density direction is free at solve time.
 | round-4 incumbent (`sep_speed_r4`) | 16 | 256x2 (incumbent) | 576 | M=64 | 2.868e-16 | 2.751e-02 | 35.60 | 8.0 | 164 | 13.81, 8.377e-04 | **0.39x** |
 | round 5 `sep_hfit_dense_K16_N256.pkl` | 16 | 1024x3 | 4608 | M=64 | 2.454e-15 | 5.021e-03 | 73.99 | 32.1 | 205 | 16.93, 3.538e-04 | **0.23x** |
 | round 5 `sep_hfit_dense_mid_N256.pkl` | 16 | 512x2 | 4608 | M=64 | 3.208e-15 | 8.961e-03 | 45.15 | 19.4 | 173 | 18.26, 3.538e-04 | **0.40x** |
+| round 5 `sep_hfit_dense_mid_N256.pkl` | 16 | 512x2 | 4608 | M=256 | 3.208e-15 | 6.184e-03 | 55.65 | 18.5 | 172 | 18.07, 3.538e-04 | **0.32x** |
 | round 5 `sep_hfit_k48_N256.pkl` | 48 | 1024x3 | 576 | M=64 | 3.764e-15 | 9.232e-03 | 135.75 | 29.1 | 254 | 17.36, 3.538e-04 | **0.12x** |
 
 The round-4 row is the ON-RECIPE `r4s256a` job, not the earlier
@@ -218,8 +219,18 @@ what the manifold can represent.
 | `M256` | 1024 | 6.548e-04 | 9.409e+03 | 2.256 | 1.040 | 1.017 | 1.004 | 1.001 | 1.001 | 1.001 |
 
 Objective truncation is confined almost entirely to t=1, the first
-step off the sharp blob initial condition; from t=2 onward the EQ
-objective is not binding at the error scale these decoders reach.
+step off the sharp blob initial condition; from t=2 onward a SINGLE
+step is not limited by the EQ objective at the error scale these
+decoders reach.
+
+**But a single-step diagnostic understates what the quadrature
+costs a ROLLOUT, because the first-step error propagates.** The
+same cost-matched decoder measured on both EQ sets, in Result 4
+above, gives a rollout error of 8.961e-03 on the control set and
+6.184e-03 on M=256/m=1024 -- a factor of 1.45 -- for 45.15 ms
+against 55.65 ms and a matched ratio of 0.40x against 0.32x. So the
+quadrature IS worth about a third of the remaining rollout error,
+and it is bought with speed like everything else here.
 And the row-tail statistic points the WRONG WAY: the M=256 set has
 a far worse worst row than the control and tracks the oracle
 better. The certification metric is this tracking ratio, not the

@@ -107,6 +107,17 @@ ARM_SPECS = {
     "k128":        dict(hidden=1024, layers=3, k=128),
     "k48_wd":      dict(hidden=1024, layers=3, k=48, wd=1e-6),
     "k48_h512":    dict(hidden=512, layers=3, k=48),
+    # --- lever 6 (wave 6): REGULARISATION.  The gap is generalisation, and
+    #     only a token wd=1e-6 had been tried.  Weight decay and early
+    #     stopping cost nothing at solve time, so if either works it is in the
+    #     same class as mu-density rather than in the same class as K.
+    "k48_wd4":     dict(hidden=1024, layers=3, k=48, wd=1e-4),
+    "k48_wd3":     dict(hidden=1024, layers=3, k=48, wd=1e-3),
+    "k48_wd2":     dict(hidden=1024, layers=3, k=48, wd=1e-2),
+    "k48_short":   dict(hidden=1024, layers=3, k=48, steps=25000),
+    "wide_wd4":    dict(hidden=1024, layers=3, wd=1e-4),
+    "wide_wd3":    dict(hidden=1024, layers=3, wd=1e-3),
+    "wide_short":  dict(hidden=1024, layers=3, steps=25000),
     # --- lever 5 (round-5 wave 5): CODE JITTER.  The measured failure is that
     #     h's image passes through the training targets and wanders between
     #     them, so ask h to be right on a neighbourhood of each code.

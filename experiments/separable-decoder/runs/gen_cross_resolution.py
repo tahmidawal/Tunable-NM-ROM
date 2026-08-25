@@ -167,11 +167,23 @@ def main(paths):
           "is on the training states. `span LS floor` is the unconstrained "
           "R-coefficient least-squares floor of the LEARNED bank -- the best "
           "any map h could reach inside the span it was given.\n")
+    print("The last column is the number that matters for the accuracy "
+          "campaign: **oracle / span LS floor** is how far the K-dimensional "
+          "map h falls short of the R-dimensional span it was trained "
+          "alongside. Smaller is better; round 3 sat at 32-37x.\n")
     print("| N | arch | job | recon | span LS floor | oracle (K-dim) | "
-          "rollout err | oracle / span floor | steps |")
+          "rollout err | steps trained | **oracle / span floor** |")
     print("|" + "---|" * 9)
-    for p, d in sorted(train, key=lambda pd: (pd[1]["config"]["N"],
-                                              str(arch_of(pd[1]["config"])))):
+
+    def _gap(pd):
+        d = pd[1]
+        orc = d.get("oracle", [])
+        sp = d.get("span", {}).get("ls_floor_mean")
+        if not orc or not sp:
+            return float("inf")
+        return float(np.mean([o["mean"] for o in orc])) / sp
+
+    for p, d in sorted(train, key=lambda pd: (pd[1]["config"]["N"], _gap(pd))):
         c, t = d["config"], d.get("train", {})
         a = arch_of(c)
         orc = d.get("oracle", [])
@@ -183,8 +195,9 @@ def main(paths):
         print(f"| {c['N']} | `{astr(a)}`{mark} | `{c.get('slurm_job')}` | "
               f"{f(t.get('recon_rel_l2_mean'))} | {f(sp)} | {f(om)} | "
               f"{f(cr['err_traj_rel_mean']) if cr else '--'} | "
-              f"{(g(gap, 1) + 'x') if gap else '--'} | "
-              f"{t.get('steps_done')} |")
+              f"{t.get('steps_done')}"
+              f"{' **(TIME-CAPPED)**' if t.get('time_capped') else ''} | "
+              f"{(g(gap, 1) + 'x') if gap else '--'} |")
     print()
 
 

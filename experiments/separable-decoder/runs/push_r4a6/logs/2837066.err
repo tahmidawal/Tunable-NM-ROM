@@ -1,0 +1,115 @@
+E0825 00:37:39.175361 3751842 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 1s:
+
+  %dot_general.12 = f64[1280,1024]{1,0} dot(%constant.51, %constant.31), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 00:37:46.012652 3751788 slow_operation_alarm.cc:140] The operation took 7.83736947s
+Constant folding an instruction is taking > 1s:
+
+  %dot_general.12 = f64[1280,1024]{1,0} dot(%constant.51, %constant.31), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 00:37:48.072764 3751842 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 2s:
+
+  %dot_general.13 = f64[1280,512]{1,0} dot(%constant.59, %constant.32), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=15}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 00:37:49.981310 3751788 slow_operation_alarm.cc:140] The operation took 3.908565906s
+Constant folding an instruction is taking > 2s:
+
+  %dot_general.13 = f64[1280,512]{1,0} dot(%constant.59, %constant.32), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=15}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 00:37:56.467139 3751842 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 4s:
+
+  %dot_general.48 = f64[1280,1024]{1,0} dot(%constant.107, %constant.56), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 00:38:00.310811 3751788 slow_operation_alarm.cc:140] The operation took 7.843747826s
+Constant folding an instruction is taking > 4s:
+
+  %dot_general.48 = f64[1280,1024]{1,0} dot(%constant.107, %constant.56), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 01:02:28.312929 3751842 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 8s:
+
+  %dot_general.12 = f64[5120,1024]{1,0} dot(%constant.51, %constant.31), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 01:02:51.922006 3751788 slow_operation_alarm.cc:140] The operation took 31.609144447s
+Constant folding an instruction is taking > 8s:
+
+  %dot_general.12 = f64[5120,1024]{1,0} dot(%constant.51, %constant.31), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 01:03:32.573776 3751842 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 16s:
+
+  %dot_general.48 = f64[5120,1024]{1,0} dot(%constant.107, %constant.56), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 01:03:48.401047 3751788 slow_operation_alarm.cc:140] The operation took 31.82733284s
+Constant folding an instruction is taking > 16s:
+
+  %dot_general.48 = f64[5120,1024]{1,0} dot(%constant.107, %constant.56), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+W0825 01:12:27.329549 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:12:27.330241 3751837 bfc_allocator.cc:525] ************_***********************________________________________________________________________
+W0825 01:12:37.330393 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:12:37.330552 3751837 bfc_allocator.cc:525] ************_***************************____________________________________________________________
+W0825 01:12:47.330629 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:12:47.330847 3751837 bfc_allocator.cc:525] ************_*******************************________________________________________________________
+W0825 01:12:57.330997 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:12:57.331156 3751837 bfc_allocator.cc:525] ************_************************************___________________________________________________
+W0825 01:13:07.331228 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:13:07.331390 3751837 bfc_allocator.cc:525] ************_****************************************_______________________________________________
+W0825 01:13:17.331512 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:13:17.331724 3751837 bfc_allocator.cc:525] ************_********************************************___________________________________________
+W0825 01:13:27.331902 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:13:27.332054 3751837 bfc_allocator.cc:525] ************_************************************************_______________________________________
+W0825 01:13:37.332159 3751837 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 68.03GiB (rounded to 73047998720)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0825 01:13:37.332328 3751837 bfc_allocator.cc:525] ************_****************************************************___________________________________

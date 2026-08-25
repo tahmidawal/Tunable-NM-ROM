@@ -296,3 +296,70 @@ if os.path.exists(fp) and os.path.exists(rp):
     print(f"- smallest linear POD rank matching that reconstruction: **{eq[0] if eq else 'n/a'}**")
     print(f"\n  => {K} nonlinear coefficients are worth about **{eq[0] if eq else '?'} "
           f"linear basis functions** on this family.")
+
+# ------------------------------------------------ T8 round-5 accuracy campaign
+print("\n### T8. Round-5 Burgers accuracy campaign (N=256): what the h-generalisation "
+      "work bought\n")
+print("Every row is one *speed* job run on a frozen decoder checkpoint, so error and cost "
+      "come from the same protocol as T2/PROFILE (end-to-end incl. IC fit and full decode, "
+      "matched-accuracy paired AB/BA against a swept (newton_tol, lin_tol) "
+      "Helmholtz-preconditioned classical ladder). `paired` > 1 means the ROM is faster.\n")
+ACC = f"{WT}/2026-08-25-burgers-accuracy/experiments/separable-decoder/runs"
+NPUSH = f"{WT}/2026-08-23-n256-push/experiments/separable-decoder/runs"
+speed = []
+for pat, tag in ((f"{NPUSH}/push_r4s256a/out/sep_speed_r4_*.json", "round-4 incumbent"),
+                 (f"{ACC}/*/out/sep_speed_r5_*.json", None)):
+    for fp in sorted(glob.glob(pat)):
+        try:
+            dd = json.load(open(fp))
+        except Exception:
+            continue
+        if int(g(dd.get("config", {}), "N", default=-1)) != 256:
+            continue
+        speed.append((tag or os.path.basename(g(dd["config"], "ckpt", default="?"))
+                      .replace("sep_hfit_", "").replace(".pkl", ""), fp, dd))
+if not speed:
+    print("_(no round-5 speed JSONs found)_")
+else:
+    print("| decoder | K | EQ | rollout err | ROM e2e ms | matched classical (ms @ err) "
+          "| paired | EQ-bank gate |")
+    print("|---|---|---|---|---|---|---|---|")
+    rows_out = []
+    for label, fp, dd in speed:
+        c = dd["config"]
+        ma = dd.get("matched_accuracy") or {}
+        m = ma.get("matched") or {}
+        pr = ma.get("paired") or {}
+        eqset = "M=256" if "M256" in os.path.basename(fp) else "M=64"
+        rom_ms = g(ma, "rom_e2e_ms")
+        err = g(ma, "rom_err")
+        ratio = (pr.get("base_ms") / pr.get("rom_ms")) if pr.get("rom_ms") else float("nan")
+        gate = g(dd.get("gates", {}), "eq_bank_vs_meshfree")
+        rows_out.append((err, label, int(g(c, "k", default=0)), eqset, err, rom_ms,
+                         g(m, "ms"), g(m, "err"), ratio, gate))
+    for _, label, k, eqset, err, rom_ms, cms, cerr, ratio, gate in sorted(rows_out,
+                                                                         reverse=True):
+        print(f"| {label} | {k} | {eqset} | **{err:.3e}** | {rom_ms:.2f} | "
+              f"{cms:.2f} @ {cerr:.1e} | {ratio:.2f}x | {gate:.1e} |")
+    best = min(rows_out)
+    inc = [r for r in rows_out if r[1] == "round-4 incumbent"]
+    if inc:
+        i = inc[0]
+        # the Pareto move: best error among arms whose paired ratio is no worse
+        # than the incumbent's -- i.e. accuracy bought without losing ground to
+        # the classical ladder.
+        held = [r for r in rows_out if r[1] != "round-4 incumbent" and r[8] >= i[8]]
+        if held:
+            b = min(held)
+            print(f"\n=> **At an unchanged position against the classical ladder** "
+                  f"({i[8]:.2f}x -> {b[8]:.2f}x), rollout error improves "
+                  f"**{i[4]:.3e} -> {b[4]:.3e} = {i[4]/b[4]:.2f}x** (`{b[1]}`). The ROM "
+                  f"costs {b[5]/i[5]:.2f}x more, and so does the classical rung it must "
+                  f"now match -- a Pareto move, not a trade.")
+        print(f"\n=> **Best error of the campaign**: **{best[4]:.3e}** (`{best[1]}`, "
+              f"{i[4]/best[4]:.2f}x better than the incumbent), but at {best[8]:.2f}x "
+              f"vs the incumbent's {i[8]:.2f}x -- i.e. {i[8]/best[8]:.1f}x of the "
+              f"speed ratio spent to buy it.")
+    print("\nFull campaign (35 h-arms, the K and mu-density ladders, and the levers that "
+          "failed) is in `reports/2026-08-25-burgers-h-generalisation-wall.md` on branch "
+          "`exp/2026-08-25-burgers-accuracy`.")

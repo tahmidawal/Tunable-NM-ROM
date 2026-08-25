@@ -42,6 +42,54 @@ Read it as **512 transparent sheets**, each painted with a different ripple:
 - `h(z)` is the recipe: how much of each sheet to stack. **It never depends on `x`.**
 - Multiply and add → the field value.
 
+### The same thing with shapes and activations
+
+Configuration below is the round-3/4 one: `n_ff=64`, `g_hidden=1024`, `R=512`, `K=16`.
+Every hidden layer uses **SiLU** (`x·sigmoid(x)`); every output layer is **linear**.
+
+```
+   SPATIAL TRACK  g(x)                        LATENT TRACK  h(z)
+   ═══════════════════                        ══════════════════
+
+   x = (x₁, x₂)          (2,)                 z                    (16,)
+        │                                          │
+        │  x @ B     B:(2,64), trained             ├─────────────────┐
+        ▼                                          │                 │
+   ang                   (64,)                     │                 │ linear
+        │                                          │                 │ skip
+        │  [ sin(2π·ang) , cos(2π·ang) ]           │                 │ z·W
+        ▼                                          │                 │ (16→512)
+   Fourier features     (128,)                     │                 │
+        │                                          │                 │
+        │  W₁: 128→1024                            │  W₁: 16→128     │
+        ▼  + b₁ , SiLU                             ▼  + b₁ , SiLU    │
+                       (1024,)                                (128,) │
+        │                                          │                 │
+        │  W₂: 1024→1024                           │  W₂: 128→128    │
+        ▼  + b₂ , SiLU                             ▼  + b₂ , SiLU    │
+                       (1024,)                                (128,) │
+        │                                          │                 │
+        │  W₃: 1024→512                            │  W₃: 128→512    │
+        ▼  + b₃ , LINEAR  ← no activation          ▼  + b₃ , LINEAR  │
+   g̃(x)                (512,)                                (512,) ←┘
+        │                                          │        (added)
+        │  × bc(x) · out_scale                     │
+        ▼    bc = 16·x₁(1−x₁)·x₂(1−x₂)  (a scalar) │
+   g(x)                 (512,)                 h(z)          (512,)
+        └────────────────────┬─────────────────────┘
+                             ▼
+                     ⟨ g(x) , h(z) ⟩  =  u(x; z)      one number
+```
+
+For a batch of `m` points the spatial track maps `(m, 2) → (m, 512)`, and **that matrix is
+the cached table**. The solve then does `table @ h(z)`: `(m,512) @ (512,) → (m,)`.
+
+> **Why the last layer being linear matters.** It means the feature bank's rank can never
+> exceed `g_hidden + 1`, whatever `R` says. With `g_hidden=128` or `256`, asking for
+> `R=512` silently gave rank 129 or 257 — a bug that cost three rounds before it was
+> caught. `g_hidden ≥ 2R` is the fix. A nonlinearity there would lift the cap but destroy
+> the linear-in-`h(z)` structure the whole caching trick depends on.
+
 Two details that matter: `bc(x)` is zero on the boundary, so **every** possible output
 satisfies the boundary condition exactly, for free. And `h` is **nonlinear**, which is what
 makes this a *nonlinear*-manifold ROM rather than a classical linear basis method.

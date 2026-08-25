@@ -59,24 +59,36 @@ figure 1.61×); "K is nearly free online" (K=48 = 3.81× wall time); "h is capac
 (it is generalisation-limited); "codes may not have converged" (1.000×); "more span helps"
 (R=1024 widened the gap to 70.6×); multi-scale Fourier features (worse than single-scale).
 
+**Quadrature — measured for the first time (EQ fidelity ladder, 2026-08-25).** The sampled
+weak residual differs from the exact full-grid one by tens of percent on the solver path
+(control set) and by of order one at the solution; the Jacobian is sampled well (Hessian rung
+~1e-4–1e-2), so the error enters through `R` and corrupts the gradient (cosines ~0.3–0.4
+control, ~0.6–0.8 fine) and the step. The larger share is in the LINEAR terms (`Φᵀu`), which
+the separable form can compute exactly with no quadrature. The NNLS "rel fit" (5e-3 / 5e-4) is
+not a certification of anything the solver uses. Resolution-independent (N=256 ≈ N=1024).
+
 **Soft:** the Poisson 28× at N=1024 is against an **unpreconditioned** `jax.scipy` CG; a
 preconditioned arm has not been run. An exact spectral solve does 0.64 ms at 7e-15 on this
 constant-coefficient Poisson. Burgers is the real target.
 
 ## The next experiment
 
-Round-4 speed sweep on the K=32 N=1024 checkpoint (`runs/push_r4a6/out/…K32_R512_h512x3.pkl`,
-via `cluster/run_r4s1024.sbatch` with `CKPT` swapped) — no training, minutes. If the K=16
-factor (2.65×) transfers: ~37 ms vs 62.9 ms ≈ 1.7× at 5–7e-3 — accuracy and speed in one
-model at N=1024. Measure; K=32's optimized cost is unknown. Then pull `dn1024` (2837430) and
-`dn256b` (2837431), pending in namespace `burgacc/`.
+**Exact linear terms in the weak residual** (report `2026-08-25-eq-fidelity-ladder.md`, §3
+item 1): replace `Φ_qᵀ(u−uⁿ)` and the Laplacian term by `(ΦᵀG_int)(h(z)−h(zⁿ))` — one
+precomputed M×R matrix, no quadrature, zero online cost change — then refit the m nodes for
+the advection term only, and re-run the ladder to confirm rungs (b)/(c1) drop. Needs gate 0
+redefined against the full-grid weak residual (log it as a rule change). After that, the
+round-4 speed sweep on the K=32 N=1024 checkpoint (`runs/push_r4a6/out/…K32_R512_h512x3.pkl`,
+`cluster/run_r4s1024.sbatch` with `CKPT` swapped) and pulling `dn1024` (2837430) /
+`dn256b` (2837431) in `burgacc/`.
 
 ## Open
 
-K=32 optimized timing · dn1024/dn256b · preconditioned Poisson CG arm · certify the EQ set
-for any 1e-3 claim (M=64's own rel-fit is 6e-3) · `h` generalisation (capacity + μ-density
-together; test-time residual refinement of `h` untried) · merge decision for the
-consolidated branch.
+Exact linear terms + advection-only EQ refit (the ladder's #1 fix) · K=32 optimized timing ·
+dn1024/dn256b · preconditioned Poisson CG arm · certify EQ sets with the ladder
+(`sep_eq_ladder.py`), not the NNLS rel-fit or row tail · `h` generalisation (capacity +
+μ-density together; test-time residual refinement of `h` untried) · merge decisions for the
+consolidated branch and for `exp/2026-08-25-eq-fidelity-ladder`.
 
 ---
 
@@ -2787,3 +2799,70 @@ running; the next session must pull them.
 
 **Next:** the round-4 speed sweep on the r4a6 K=32 checkpoint (see START-HERE) — the cheapest
 experiment that could put accuracy (5e-3) and speed (>1×) in the same N=1024 model.
+
+### EQ fidelity ladder — the quadrature error measured at every rung, and where it lives
+
+Worktree `worktrees/2026-08-25-eq-fidelity-ladder`, branch `exp/2026-08-25-eq-fidelity-ladder`
+(cut from `exp/2026-08-25-sepdec-consolidated`), cluster namespace `eqladder/` (now empty).
+Driver `experiments/separable-decoder/sep_eq_ladder.py`; per-bucket tables `EQ-LADDER.md`
+(`runs/gen_eq_ladder.py`); report on `main`: `reports/2026-08-25-eq-fidelity-ladder.md` with
+tables from `reports/gen_2026-08-25-eq-ladder.py`. Trains nothing.
+
+**Why.** Today's group meeting (`meeting_notes/aug25`, untracked): the advisor asked where the
+quadrature weights come from, suggested the model learn positions and weights, and insisted the
+L2, integral, gradient and Hessian errors be measured separately — "the gradient is the holy
+grail". Design doc §6.1 had specified exactly that ladder in August and it had never been run.
+Correction to carry back to the group: the weights are NOT uniform, they are NNLS-fitted (rel
+fit 5e-3 control / 5e-4 fine); the open question was what they are fitted to, not whether.
+
+**What ran.** Four arms, one checkpoint each, both EQ sets (control M=64/m=256 and fine
+M=256/m=1024, built by the same code as every speed/accuracy job): lad256k16 (r3a, 2841798,
+A100-40GB), lad256dm (round-5 dense_mid, 2841799, A100-80GB), lad1024k16 (r3d, the 1.61×
+decoder, 2841800, H200), lad1024k32 (r4a6, 2841801, H200). N=64 smoke local first. All
+`jax_backend=gpu`, stage manifests OK, sha256 OK, no captured-constant warning, remote dirs
+deleted. Gates: gate 0 ≤7e-15 on every arm; a NEW gate F (full-grid reference vs
+`make_weak_ops` on the whole interior with unit weights) ≤3e-16 at N=256, skipped at N=1024
+(reference too large). dense_mid's NNLS rel fits reproduce `fq256`'s to the digit.
+
+**Findings (numbers in the report's T-L1–T-L5, not retyped here).** (1) The sampled residual
+differs from the exact one by tens of percent along the solver path on the control set, of
+order one at the solution; single-digit percent / ~5–20 % on the fine set. Two orders of
+magnitude above the NNLS rel fit — that statistic measures `Φᵀu` on snapshots, the residual is
+a small difference. (2) The LINEAR part (`Φᵀ(u−uⁿ)`, Laplacian) is comparable to or larger than
+the advection part everywhere and 2–4× it on the fine set — and it can be computed EXACTLY as
+`(ΦᵀG)h(z)` with no quadrature at all. (3) The Hessian rung is fine (1e-4–1e-2): J is sampled
+well; the error enters through R and corrupts the gradient (path cosines ~0.3–0.4 control,
+~0.6–0.8 fine) and the LM step (cosines ~0.4–0.7). (4) At the oracle code the sampled gradient
+is several times the true one on the control set — the sampled objective's minimiser is
+elsewhere. This is the mechanism for rollout ≈ 1.3–1.9× oracle and for the fine-set 1.45× gain.
+(5) The absolute gradient error is similar across decoders; the better decoders (K=32,
+dense_mid) see a larger RELATIVE error because their true residual is smaller — the quadrature
+is a floor the accuracy campaign runs into. (6) Rung (a), L2 on the nodes vs the full grid,
+ratio ~0.98 everywhere: the sample points are representative; the state is not the problem.
+(7) N=256 ≈ N=1024. Caveat: t=0 oracle rows have `uⁿ = u` so are structurally lower; compare
+t≥5.
+
+**What is wrong / retracted here.** No published number changes. Two beliefs the project has
+been acting on are now measured false: that the NNLS rel fit certifies the EQ set (it certifies
+nothing the solver consumes), and — implicit in the design — that the whole residual must be
+sampled (the linear terms need not be). The meeting's "uniform weights" premise was also
+incorrect and is corrected in the report.
+
+**Engineering notes.** A first local smoke was killed by my own `timeout` while inside the
+M=256 NNLS fit (Lawson–Hanson to support 1024 takes 12–23 min on any machine; ~700 s on H200,
+~1000 s on A100) — not a code error; the M=256 fit dominates each job's wall time. A lab-log
+edit with `str.replace` on an empty anchor scrambled the file once; restored from git, redone
+with line anchors. Both are the reason this entry exists in git rather than a scratchpad.
+
+**Verdict on "learn the quadrature".** Ranked by the ladder: (1) exact linear terms — free,
+no learning, removes the dominant part; (2) same-target NNLS for the advection term on
+residual/gradient-fidelity rows incl. off-manifold iterates — convex, no network change;
+(3) learned nodes/weights only if the advection rung still binds after 1–2. Joint `(g,h,w)`
+training is not motivated by anything measured.
+
+**Next session:** implement (1) in a dated worktree from the consolidated branch (or from this
+one), redefine gate 0 against the full-grid weak residual and log it as a rule change, refit the
+advection-only EQ, re-run `sep_eq_ladder.py` to confirm, then the round-4 protocol for the
+accuracy/speed effect. `dn1024` (2837430) / `dn256b` (2837431) were still RUNNING in `burgacc/`
+at the end of this session — pull them. Merge decision for `exp/2026-08-25-eq-fidelity-ladder`:
+ask.

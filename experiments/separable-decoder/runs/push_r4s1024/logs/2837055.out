@@ -1,0 +1,57 @@
+host=pax010 gpu=NVIDIA H200
+jax_backend=gpu
+stage MANIFEST OK
+e780fd8a678f57354811bd45e67481d16822e49980492d34f72ce99ed343e921  /cluster/tufts/paralab/tawal01/n256_push/r4s1024/ckpt/sep_burgers_r3_N1024_K16_R512.pkl
+jax_backend=gpu device=cuda:0 ROUND4-SPEED N=1024 ckpt=sep_burgers_r3_N1024_K16_R512.pkl
+  test data: 16 fresh trajectories, worst FOM rel residual 9.74e-13
+  NNLS-EQ sep speed r4 N=1024 k=16 M=64 m=256: pool 65536 support 256 (+0 pad) rel fit 5.36e-03 (row p95 6.5e-01, max 7.8e+04) [31s]
+  GATE 0 [ctrl]: 1.20e-15
+  encoder[speed r4 u0->z0 N=1024]: rel-MSE 2.464e-04 on 576 training pairs [4s]
+  IC gram vs full: |dz|/(1+|z|) 3.27e-13, ||r|| rel diff 6.40e-11
+  variant LM step vs incumbent at stall=1e-12: max |dz| 0.00e+00
+   PROFILE rollout_extrap                     51.2857 ms
+   PROFILE ic_full                            18.0825 ms
+   PROFILE ic_gram                             1.9279 ms
+   PROFILE decode_full_grid_51                 1.3877 ms
+   PROFILE lm_step_budget8                     1.3522 ms
+   PROFILE lm_step_budget4                     0.7685 ms
+   PROFILE lm_step_budget2                     0.4896 ms
+   PROFILE lm_step_budget1                     0.3737 ms
+   PROFILE h_track_value                       0.3563 ms
+   PROFILE weak_residual_and_jacobian          0.1232 ms
+   PROFILE h_track_jacobian                    0.1181 ms
+   PROFILE bank_jacobian_Gst_dhdz              0.1153 ms
+   PROFILE prev_of                             0.0595 ms
+   PROFILE bank_value_Gst_h                    0.0562 ms
+   PROFILE weak_residual_r_w                   0.0547 ms
+   VARIANT base                        71.73 ms  err 2.539e-02  jac 273  ic_jac 8.2  {'stalled': 793, 'budget': 7}
+   VARIANT gram                        51.77 ms  err 2.539e-02  jac 273  ic_jac 8.2  {'stalled': 793, 'budget': 7}
+   VARIANT gram+stall1e-06             32.35 ms  err 2.539e-02  jac 199  ic_jac 8.2  {'stalled': 796, 'budget': 4}
+   VARIANT gram+stall1e-04             27.98 ms  err 2.546e-02  jac 172  ic_jac 8.2  {'stalled': 796, 'budget': 4}
+   VARIANT gram+stall1e-03             27.08 ms  err 2.571e-02  jac 166  ic_jac 8.2  {'stalled': 798, 'budget': 2}
+   VARIANT gram+stall1e-02             26.50 ms  err 2.714e-02  jac 157  ic_jac 8.2  {'stalled': 800}
+   VARIANT gram+budget8                46.95 ms  err 3.034e-02  jac 247  ic_jac 8.2  {'budget': 148, 'stalled': 652}
+   VARIANT gram+budget5                38.97 ms  err 6.123e-01  jac 95  ic_jac 8.2  {'budget': 657, 'stalled': 143}
+   VARIANT gram+budget3                27.08 ms  err 7.734e-01  jac 50  ic_jac 8.2  {'budget': 800}
+   VARIANT gram+budget2                21.11 ms  err 7.734e-01  jac 50  ic_jac 8.2  {'budget': 800}
+   VARIANT gram+budget1                15.14 ms  err 7.734e-01  jac 50  ic_jac 8.2  {'budget': 800}
+   VARIANT gram+extrap0                69.87 ms  err 2.579e-02  jac 380  ic_jac 8.2  {'stalled': 791, 'budget': 9}
+   VARIANT gram+extrap1.5              59.54 ms  err 2.544e-02  jac 322  ic_jac 8.2  {'stalled': 792, 'budget': 8}
+  MATCHED paired: ROM[gram+stall1e-03] 26.76 ms vs tol-Newton(nt=1e-02,lt=5e-03) 43.10 ms -> 1.61x
+   BATCH   1 rom|gram+stall1e-03                total    24.57 ms ->  24.570 ms/query  err 5.227e-02
+   BATCH   1 rom|base                           total    60.79 ms ->  60.788 ms/query  err 5.219e-02
+   BATCH   1 fom|nt1e-02|lt5e-03                total    35.95 ms ->  35.951 ms/query  err 3.697e-04
+   BATCH   2 rom|gram+stall1e-03                total    27.96 ms ->  13.982 ms/query  err 4.953e-02
+   BATCH   2 rom|base                           total   101.07 ms ->  50.535 ms/query  err 4.939e-02
+   BATCH   2 fom|nt1e-02|lt5e-03                total   113.96 ms ->  56.982 ms/query  err 3.691e-04
+   BATCH   4 rom|gram+stall1e-03                total    37.77 ms ->   9.442 ms/query  err 3.486e-02
+   BATCH   4 rom|base                           total   167.90 ms ->  41.975 ms/query  err 3.466e-02
+   BATCH   4 fom|nt1e-02|lt5e-03                total   207.38 ms ->  51.845 ms/query  err 3.775e-04
+   BATCH   8 rom|gram+stall1e-03                total    46.22 ms ->   5.777 ms/query  err 3.565e-02
+   BATCH   8 rom|base                           total   534.66 ms ->  66.833 ms/query  err 3.555e-02
+   BATCH   8 fom|nt1e-02|lt5e-03                total   396.90 ms ->  49.612 ms/query  err 9.195e-04
+   BATCH  16 rom|gram+stall1e-03                total    66.99 ms ->   4.187 ms/query  err 2.571e-02
+   BATCH  16 rom|base                           total   950.29 ms ->  59.393 ms/query  err 2.539e-02
+   BATCH  16 fom|nt1e-02|lt5e-03                total   786.77 ms ->  49.173 ms/query  err 7.874e-04
+DONE speed r4 N=1024 [964s] -> /cluster/tufts/paralab/tawal01/n256_push/r4s1024/out/sep_speed_r4_N1024_K16_R512.json
+ALL-DONE

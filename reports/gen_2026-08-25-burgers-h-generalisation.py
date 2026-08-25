@@ -102,8 +102,10 @@ def main():
           sorted(glob.glob(os.path.join(RUNS, "ext*", "out",
                                         "sep_coeff_*.json")))}
 
-    w("# Burgers 2D: the remaining error is h's generalisation in mu, and the")
-    w("# only lever that fixes it without paying at solve time is data\n")
+    w("# Burgers 2D: h's generalisation wall\n")
+    w("The remaining Burgers error is h's generalisation in mu, not its")
+    w("capacity; the only lever that improves it without paying at solve time")
+    w("is training data, and even that saturates.\n")
     w("Round 5 of the separable-decoder line, 2026-08-25, branch")
     w("`exp/2026-08-25-burgers-accuracy`, cluster namespace `burgacc`. These")
     w("numbers are FINAL for what they measure and PROVISIONAL as a route to")

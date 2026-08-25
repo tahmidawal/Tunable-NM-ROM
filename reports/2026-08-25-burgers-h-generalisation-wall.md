@@ -1,5 +1,8 @@
-# Burgers 2D: the remaining error is h's generalisation in mu, and the
-# only lever that fixes it without paying at solve time is data
+# Burgers 2D: h's generalisation wall
+
+The remaining Burgers error is h's generalisation in mu, not its
+capacity; the only lever that improves it without paying at solve time
+is training data, and even that saturates.
 
 Round 5 of the separable-decoder line, 2026-08-25, branch
 `exp/2026-08-25-burgers-accuracy`, cluster namespace `burgacc`. These

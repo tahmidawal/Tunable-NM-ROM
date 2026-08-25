@@ -29,12 +29,12 @@ mkdir -p "$DST/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom"
          "$DST/code/deps/nonlinear-decoder-architecture" \
          "$DST/out" "$DST/logs"
 
-cp "$SEP"/sep_common.py "$SEP"/sep_poisson.py "$SEP"/sep_burgers.py "$DST/code/"
-for f in sep_solvers.py sep_poisson_r1.py sep_burgers_r1.py sep_poisson_r2.py \
-         sep_burgers_r2.py sep_burgers_r3.py sep_burgers_r4.py sep_speed_r4.py \
-         sep_coeff_extract.py sep_hfit.py sep_burgers_r5.py pod_floor_n256.py; do
-  [ -f "$SEP/$f" ] && cp "$SEP/$f" "$DST/code/"
-done
+# copy EVERY experiment module, not an enumerated list -- an omitted driver
+# cost a whole submission wave once (jobs 2837170-73, "can't open file
+# sep_hfit_run.py").  The deps below are still enumerated and still verified
+# byte-identical to the N=64 stage.
+cp "$SEP"/sep_*.py "$DST/code/"
+[ -f "$SEP/pod_floor_n256.py" ] && cp "$SEP/pod_floor_n256.py" "$DST/code/"
 cp "$EXP"/cost-to-tolerance/ctol_eq.py "$EXP"/cost-to-tolerance/ctol_tol.py "$DST/code/"
 cp "$EXP"/burgers2d-rom-latent-stepping/blat_common.py \
    "$EXP"/burgers2d-rom-latent-stepping/blat_train_ad.py \

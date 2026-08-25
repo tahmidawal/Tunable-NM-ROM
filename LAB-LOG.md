@@ -2757,3 +2757,153 @@ concentrates (oracle 3.0e-2 at t=0 vs ~5.5e-3 late; t<=5 mean 1.83e-2 vs 6.09e-3
 cannot support a 1e-3 claim; tail-capped NNLS and larger m are needed; (4) only then
 re-tune the stall threshold. A dedicated worktree `2026-08-25-burgers-accuracy` continues
 this; the four-point curve and the accuracy-arm verdict land on the n256-push branch.
+
+### Round 5, Burgers accuracy campaign: the gap is generalisation in mu, and four inherited beliefs were wrong
+
+Branch `exp/2026-08-25-burgers-accuracy` (disposable worktree
+`worktrees/2026-08-25-burgers-accuracy`), cluster namespace `burgacc`. Generated
+files on that branch: `experiments/separable-decoder/HFIT.md`
+(`runs/gen_hfit.py`) and the report
+`reports/2026-08-25-burgers-h-generalisation-wall.md`
+(`reports/gen_2026-08-25-burgers-h-generalisation.py`). Thirty-plus h arms,
+three end-to-end confirmations, two coefficient extractions, all pulled,
+sha256-verified, `jax_backend=gpu`, stage manifests checked, remote dirs deleted.
+
+**The method that made the round possible.** With the bank `G` frozen,
+`Gram = G^T G`, `c*` the span least-squares coefficients of a target and `f` its
+residual, `||G h(z) - u||^2 = (h(z)-c*)^T Gram (h(z)-c*) + f^2` EXACTLY, because
+`G c*` is the orthogonal projection. So fitting h against full fields and
+against precomputed coefficients in the Gram metric are the same problem, at
+`O(S r^2)` instead of `O(S n_pts r)`, and reconstruction, the span floor and the
+representation oracle all become computable from a 70 MB file instead of the
+data (137 GB at N=1024). Whitening (`Gram = L L^T`, `q = L^T h`) folds exactly
+into h's last linear layer, so the model class is unchanged while the badly
+conditioned bank (cond(G) 2.64e4 at N=256) stops distorting the optimisation.
+`sep_coeff_extract.py` runs once per (N, checkpoint) in 140 s at N=256 / 20 min
+at N=1024; every h arm after that is minutes. The identity is gated by computing
+the source checkpoint's reconstruction two independent ways on 64 retained
+full-resolution states: mean deviation 3.67e-12 (N=256) / 6.52e-12 (N=1024).
+The extractions reproduce the cluster's own numbers to every digit those jobs
+printed — N=256 recon 7.171140e-03 against r3a's 0.007171139529778487, span
+floor 2.124e-04 against r3a's 0.00021236444373757098; N=1024 span floor
+2.601e-04 against r3d's 2.601e-04.
+
+**FOUR INHERITED BELIEFS ARE WRONG, and each was retiring a lever or wasting one.**
+
+1. *"The h gap is h's capacity/optimisation."* It is not: it is generalisation.
+   On the frozen r3a N=256 bank, capacity moves the TRAINING fit by 5x
+   (recon 7.17e-3 -> 1.39e-3 at h=2048x4) and the FRESH oracle by at most 1.2x
+   (7.81e-3 -> 6.34e-3). Capacity past h=1024x3 reverses outright (h=2048x4
+   gives the third-best training fit and 65.1x against the span floor).
+2. *"The latent codes may not have converged, so h may be fitting noise."*
+   False. Re-solving every training code exactly at frozen h changes the
+   incumbent's reconstruction by a factor of 1.000. Adding a
+   nearest-training-state initialisation chosen USING the test target changes
+   no oracle either. Both were levers 2 and part of lever 1 in the handoff.
+3. *"K is not the constraint — the family is intrinsically ~6-dimensional."*
+   False, and K is the strongest single knob measured. Oracle / span floor at
+   N=256, h=1024x3, 576 trajectories: 58.1x, 29.8x, 26.9x, 23.9x, 18.6x, 16.7x,
+   13.0x, 9.7x for K = 8, 16, 24, 32, 48, 64, 96, 128 — monotone and still
+   falling at K=128 (oracle 2.062e-3). The same slope appears at N=1024 on the
+   r4a6 bank (32.6x / 28.1x / 23.5x for K=32/48/64). Intrinsic dimension bounds
+   the DATA manifold; what the oracle needs is for h's IMAGE to pass near fresh
+   states' coefficients, and a bigger image does that better.
+4. *"K is nearly free online per the round-4 cost model."* False, and this is
+   the one that decides the campaign. Job `cf256` ran the round-4 protocol
+   unchanged on a K=48 decoder at N=256, control EQ set: rollout error
+   2.751e-2 -> 9.232e-3 (a 2.98x gain that DOES survive from the oracle into
+   the rollout) at 35.60 -> 135.75 ms, a **3.81x slowdown**; matched-accuracy
+   paired 0.39x -> 0.12x. 254 Jacobians per trajectory against 164, each with
+   three times the tangents. The N=1024 crossover is 1.61x and cannot absorb
+   3.81x.
+
+**The lever that is free at solve time is mu-density, and it is a power law
+that saturates.** The canonical draw is 576 trajectories for a five-parameter
+family plus time — about 3.5 samples per parameter dimension. Fitting the same
+arm on the first F canonical trajectories and grading every F on one reserved
+cohort (trajectories 432-575, fitted by no arm): held-out oracle 7.21e-2,
+4.14e-2, 2.39e-2, 1.49e-2 at F = 72, 144, 288, 432 for h=1024x3 (fitted
+exponent 0.86) and 2.02e-2, 1.36e-2, 1.08e-2, 9.47e-3 for h=256x2 (exponent
+0.42). Note the crossover: at 72 trajectories the SMALL h generalises 3.6x
+better than the wide one, at 432 the wide one is worse still — capacity has to
+be scaled with density, not raised on its own.
+Appending 4032 trajectories from seed 1000 to the canonical 576 (the canonical
+draw and the cohort definitions untouched) and grading on trajectories
+4096-4607: held-out oracle 1.375e-2 -> 8.017e-3 -> 6.013e-3 at 576 -> 1152 ->
+4096 for h=1024x3, i.e. exponent 0.78 over the first doubling but only 0.22
+over the last — **the density lever saturates once h's capacity binds again**,
+and the same arm's training reconstruction degrades 2.22e-3 -> 5.85e-3 as it is
+asked to fit seven times more states. K=24 at the same densities gives
+1.265e-2 -> 6.851e-3 -> 4.915e-3.
+
+**Best decoder of the campaign, and its price.** Job `cfd256`: 4608
+trajectories, K held at the incumbent 16, h=1024x3, 200k steps, refit on the
+frozen r3a bank, then the round-4 protocol with the control EQ set at N=256.
+Oracle 2.747e-3 (12.9x the span floor, against the incumbent's 36.8x), IC fit
+3.067e-2 -> 8.496e-3, **rollout error 2.751e-2 -> 5.022e-3, a 5.5x improvement**
+— and 35.60 -> 73.99 ms, 2.08x slower, matched-accuracy paired 0.39x -> 0.23x.
+It dominates the K=48 arm on both axes. The remaining slowdown is h's WIDTH,
+not the data and not K (this arm also widened h from the incumbent's 256x2);
+job `dr256` isolates that with h=512x2 and 256x2 at full density.
+
+**The quadrature "hard blocker" is real but is not where the handoff said, and
+the statistic that motivated it is misleading.** In the sibling's r4a6 job
+(N=1024, K=32, tail-capped NNLS already applied, cap 3e-2, 2 rounds), the
+single-step weak-EQ optimum tracks the L2 oracle as follows, by time index:
+at M=256/m=1024, ratio mean 2.256 (max 9.774) at t=1, then 1.040, 1.017, 1.004,
+1.001, 1.001, 1.001 at t = 2, 3, 5, 10, 25, 50. The control set (M=64, m=256)
+is 3.271 at t=1 and 1.026 by t=5. So **objective truncation is confined almost
+entirely to the FIRST STEP off the sharp blob initial condition**; from t=2
+onward the EQ objective is not binding at all at the 3e-3 error scale. Meanwhile
+the row-tail statistic that motivated the blocker points the WRONG WAY: the
+M=256 set has a far worse worst row than the control (9.41e3 against 1.43e2)
+and yet tracks the oracle 1.4x BETTER. Tail-capped NNLS was already in these
+runs and did not remove the tails. The right certification metric is
+weak-optimum-versus-oracle tracking, not the row tail, and the right fix is a
+first-step-specific quadrature, not a globally finer one.
+
+**Where the error lives inside a trajectory.** The bank's own span floor on
+fresh test states, by time index at N=256: 1.049e-3 at t=0, 5.03e-4 at t=1,
+3.53e-4 at t=5, 2.75e-4 at t=10, 1.09e-4 at t=50 (mean 2.124e-4; t<=5 mean
+5.08e-4, t>5 mean 1.73e-4). At N=1024: 9.23e-4 at t=0 down to 1.03e-4 at t=50.
+Every arm's oracle has the same shape an order of magnitude above it — even at
+K=128 the oracle is 1.270e-2 at t=0 against 1.337e-3 at t>5. The sharp blob IC
+is the hardest state for BOTH the bank and the map. Because a trajectory error
+is a mean over 51 states this does not by itself block a 1e-3 mean, but it
+blocks any per-state or worst-state claim, and t=0 plus t=1 is exactly where
+both the span floor and the quadrature are worst.
+
+**Levers measured and found neutral or harmful** (so nobody spends a retrain on
+them again): latent Fourier features of the code (best training fit in the
+table, oracle 260x-590x — an image that wiggles between training codes),
+capacity beyond h=1024x3, code jitter at sigma = 0.02 and 0.05 (47.0x and
+120.3x against 29.8x), code-only polish (43.6x), per-snapshot versus global
+loss normalisation, weight decay at 1e-6/1e-4/1e-3 (oracle unchanged to four
+digits at both K=16 and K=48), 25k-step early stopping (55.9x), early-time loss
+weighting inside the coefficient fit (30.6x against 29.8x), better latent
+initialisation, and more span (R=1024 widened the gap, an inherited result this
+round confirms the mechanism for).
+
+**Honest verdict on 1e-3.** Not reached, and not reachable by this round's
+levers at preserved speed. The best measured rollout is 5.022e-3 at N=256, 5.5x
+better than the incumbent, at 2.08x its cost; the classical ladder still wins
+at N=256 (0.23x). Reaching 1e-3 needs the oracle at roughly 5e-4 (rollout is
+1.4-1.9x the oracle in every configuration measured), which is another factor
+of 5.5 below the best oracle here. Density alone will not deliver it — it
+saturates — and K will, but at a cost the 1.61x N=1024 crossover cannot pay.
+The open question the campaign hands on is whether capacity and density scaled
+TOGETHER break the saturation at a cost the crossover can absorb; that is what
+`dc256` (capacity sweep at 4096 trajectories) and `dr256` (cost-matched h at
+full density) were run to answer, and what `dn1024` (2837322) and `dn256b`
+(2837323) will answer at full scale — both queued with `--begin` after the
+2026-08-25 06:00-12:00 maintenance reservation and NOT yet run.
+
+**Engineering notes.** Three submission waves were lost to avoidable causes and
+each is now fixed in the committed scripts: an identity gate set tighter than
+f64 round-off allows given cond(Gram) = cond(G)^2 (fixed with one step of
+iterative refinement through G, which took the deviation from 2.04e-8 to
+1.37e-11, plus bars set to catch a formulation error rather than police
+round-off); a stage script with an enumerated file list that omitted the driver
+(now globs `sep_*.py`); and the captured-constant landmine, which
+`sep_coeff_extract.py` avoids by passing the 4.3 GB bank as an explicit jit
+argument.

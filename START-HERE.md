@@ -167,39 +167,67 @@ baseline, and an `h`-generalisation gap (~9e-3 achieved vs ~8e-4 floor).
 3. The Burgers baseline IS well-preconditioned (exact Helmholtz), so the Burgers numbers are
    the trustworthy ones. Poisson is the control, not the headline.
 
-## THE NEXT EXPERIMENT (cheap, decisive, do it first)
+## CURRENT PHASE: SOLIDIFY (from 2026-08-25) — not the accuracy push
 
-The K=32 N=1024 checkpoint `runs/push_r4a6/out/sep_burgers_r4_N1024_K32_R512_h512x3.pkl`
-reaches **5.1e-3** but was timed only on the un-optimized round-3 solve path (98.9 ms). The
-round-4 levers took the K=16 path from 71.7 → 27.1 ms (2.65×). **Run the round-4 speed sweep
-on the K=32 checkpoint** — no training, minutes of GPU:
+The 1e-3 Burgers push is a *later* goal. The phase now is to make the architecture and every
+claim about it solid enough to build on: verified against the current code, reproducible from
+a clean checkout, documented once, and compared against honest baselines. Nothing new gets
+built until the checklist below is done.
 
-```
-cluster/run_r4s1024.sbatch with CKPT= the r4a6 .pkl, N=1024, same STALLS/BATCHES/NEWTON ladder
-```
+### A. Close the open measurements (no new science, just finish what is half-measured)
+1. Pull `dn1024` (2837430) and `dn256b` (2837431) from namespace `burgacc/` when they land
+   (`runs/pull_*.sh` pattern: sha256, commit, delete remote). No watcher is running on them.
+2. The K=32 N=1024 checkpoint (`runs/push_r4a6/out/…K32_R512_h512x3.pkl`, rollout 5.14e-3)
+   was timed only on the un-optimized solve path. Run the round-4 speed sweep on it
+   (`cluster/run_r4s1024.sbatch` with `CKPT` swapped; minutes, no training) so the N=1024
+   accuracy/speed state is a measurement, not a projection.
+3. Poisson: add a **preconditioned** CG arm (`M=` callable — multigrid or incomplete
+   Cholesky) at N=256 and N=1024. The current 28× is against unpreconditioned
+   `jax.scipy.sparse.linalg.cg` and is soft until this runs.
 
-If the same factor applies: ~37 ms vs the matched classical 62.9 ms ≈ **1.7× at 5–7e-3
-error** — accuracy and speed in the same model at N=1024, which is the result this project is
-for. Round 5 measured K=48 at 3.81× the K=16 cost, so K=32's optimized cost is the open number;
-measure, don't extrapolate. Report the batched curve too.
+### B. Verify the architecture as it exists NOW
+The only adversarial audit (`AUDIT-2026-08-23.md`) covered the N=64 cell. Since then: the
+`G_HIDDEN ≥ 2R` rank fix, the v2 point-subsampled trainer, Gram-space IC fit, adaptive stall
+tolerance, extrapolated warm start, batched paths, and the round-5 Gram-space `h` refit
+machinery. None of it has been audited. Run a fresh adversarial audit (Codex or equivalent,
+read-only, numerical checks on committed checkpoints) of the consolidated code: nonlinearity,
+no test-truth leakage in every solve path incl. the encoder IC and the Gram refit, gate 0 on
+every arm, timing symmetry, and that every generated table reproduces from the JSONs.
 
-Then: the two queued confirmations `dn1024` (2837430) and `dn256b` (2837431) in cluster
-namespace `burgacc/` (pending on H200 availability after the 08-25 maintenance) — pull them
-(`runs/pull_*.sh` pattern, sha256, delete remote), they are the full-density round-5 recipe
-at N=1024.
+### C. Make it reproducible
+- Can a fresh clone of this branch regenerate one cell end to end (data → train → EQ →
+  solve → tables) from documented commands? Do it once at small N and record the recipe.
+- Turn the gates (gate 0, EQ-bank-vs-meshfree, Gram-IC-vs-full, batched-vs-single) into a
+  runnable test file, not assertions scattered across five drivers.
+- The driver lineage `sep_burgers.py → _r2 → _r3 → _r4 → _r5` plus `sep_speed_r4.py` and the
+  `hfit` tools duplicates logic. Consolidate to one documented driver set; keep the old ones
+  only if a committed result depends on them, and say which.
 
-## Open items, ranked
+### D. Document once, against the current code
+- `reports/2026-08-22-separable-eq-decoder-design.md` predates the rank fix, the profile,
+  the speed levers, the batched caveat, and the `h`-generalisation wall. Revise it (or write
+  its successor) so the design doc describes the architecture that actually runs.
+- Every retracted number must be marked as retracted wherever it appears. Grep the reports.
+- One results table per PDE, generated, with the baseline named and its preconditioning
+  stated beside every classical number.
 
-1. K=32 optimized-solver timing at N=1024 (above).
-2. Pull `dn1024`/`dn256b`.
-3. **Poisson baseline is unpreconditioned** `jax.scipy.sparse.linalg.cg` with no `M=`; the 28×
-   Poisson claim is soft. Add a preconditioned (multigrid/IC) CG arm before quoting Poisson.
-4. Certify the quadrature for any 1e-3 claim: the M=64 EQ set's own rel-fit is 6e-3; use M=256
-   and report the EQ set beside every error.
-5. `h` generalisation: capacity + μ-density must scale together (round 5); K is the strongest
-   knob but costs online time. Test-time refinement of `h` on the PDE residual (no truth) is
-   legitimate and untried.
-6. Decide the merge to `main` for this branch (CLAUDE.md: ask, don't assume).
+### E. Baselines standardized
+Same classical solver family, same `(newton_tol, lin_tol)` / CG-tolerance ladder, same
+preconditioning, same paired AB/BA protocol at every N and both PDEs. The cross-N curves
+were assembled from jobs with differing `lin_tol` and preconditioning; regenerate them
+under one protocol before anyone plots them.
+
+**Exit criterion for this phase:** an updated audit passes, one clean driver set reproduces a
+cell from scratch, the design doc matches the code, and both PDEs' headline tables carry a
+preconditioned baseline. Only then does the accuracy campaign resume (open items below).
+
+## After solidifying — the accuracy campaign (deferred)
+
+Burgers to ~1e-3 at preserved N=1024 speed. Levers, ranked by round-5 evidence: `h`
+generalisation (capacity + μ-density must scale together; K is the strongest knob but costs
+online time — K=48 = 3.81×); certify the EQ set (M=64's own rel-fit is 6e-3; use M=256);
+test-time refinement of `h` on the PDE residual (no truth, untried). Merge decision for this
+branch: ask, don't assume.
 
 ## Non-negotiables (unchanged)
 

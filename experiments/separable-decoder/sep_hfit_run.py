@@ -48,6 +48,11 @@ TIME_CAP = float(os.environ.get("TIME_CAP", "0"))
 EMIT = os.environ.get("EMIT", "")          # arm name -> write a new checkpoint
 EMIT_PATH = os.environ.get("EMIT_PATH", "")
 ORACLE_EVERY = int(os.environ.get("ORACLE_EVERY", "1"))
+# the code-convergence diagnostic re-solves every training code exactly; a
+# subsample is enough to see whether the codes had converged and keeps the
+# per-arm evaluation short
+CODEDIAG_N = int(os.environ.get("CODEDIAG_N", "2048"))
+CODEDIAG_ITERS = int(os.environ.get("CODEDIAG_ITERS", "60"))
 
 # ---------------------------------------------------------------------------
 # arm table.  Each arm is a dict of overrides for `hf.fit` plus a few flags:
@@ -57,22 +62,33 @@ ORACLE_EVERY = int(os.environ.get("ORACLE_EVERY", "1"))
 #   zinit:  'params' to initialise the codes from the standardised (mu, t)
 # ---------------------------------------------------------------------------
 ARM_SPECS = {
+    # --- controls -----------------------------------------------------------
     "base":        dict(steps=0, warm="ckpt"),
     "refit_ctl":   dict(hidden=256, layers=2, warm="ckpt"),
     "refit_cold":  dict(hidden=256, layers=2),
+    "glob_ctl":    dict(hidden=256, layers=2, warm="ckpt", norm="global"),
+    # --- lever 1: h capacity and shape --------------------------------------
     "wide":        dict(hidden=1024, layers=3),
-    "wide_warmz":  dict(hidden=1024, layers=3, warm="z"),
+    "deep":        dict(hidden=512, layers=6),
     "huge":        dict(hidden=2048, layers=4),
+    "glob":        dict(hidden=1024, layers=3, norm="global"),
+    "wd":          dict(hidden=1024, layers=3, wd=1e-6),
+    # --- lever 1b: h's FUNCTION CLASS (latent Fourier features) -------------
+    "ffz64":       dict(hidden=1024, layers=3, h_ff=64, h_ff_scale=1.0),
+    "ffz128":      dict(hidden=1024, layers=3, h_ff=128, h_ff_scale=2.0),
+    "ffz256s4":    dict(hidden=1024, layers=3, h_ff=256, h_ff_scale=4.0),
+    # --- lever 2: latent codes (round-5 base arm already says 1.000x) -------
     "zpolish":     dict(hidden=1024, layers=3, z_polish_every=10000),
+    # --- lever 3: early-time weighting --------------------------------------
+    "early":       dict(hidden=1024, layers=3, w="early"),
+    # --- lever 4: K ---------------------------------------------------------
     "k8":          dict(hidden=1024, layers=3, k=8),
     "k24":         dict(hidden=1024, layers=3, k=24),
     "k32":         dict(hidden=1024, layers=3, k=32),
-    "early":       dict(hidden=1024, layers=3, w="early"),
+    "k32ffz":      dict(hidden=1024, layers=3, k=32, h_ff=128, h_ff_scale=2.0),
+    # --- diagnostic: is the coefficient manifold a smooth function of the
+    #     TRUE parameters at all?  codes initialised at standardised (mu, t).
     "paramcodes":  dict(hidden=1024, layers=3, k=6, zinit="params"),
-    "wd":          dict(hidden=1024, layers=3, wd=1e-6),
-    "glob":        dict(hidden=1024, layers=3, norm="global"),
-    "glob_ctl":    dict(hidden=256, layers=2, norm="global", warm="ckpt"),
-    "best":        dict(hidden=1024, layers=3),      # overwritten by ROUND2
 }
 
 
@@ -213,11 +229,16 @@ def main():
             note="UPPER BOUND on what better initialisation could buy: adds a "
                  "nearest-training-state init selected USING the test target")
         # code convergence: oracle on the TRAINING targets from the fitted codes
-        o_tr, _ = hf.oracle(qp, A_tr, fl2_tr, un2_tr, Z[:, None, :],
-                            ORACLE_ITERS, chunk=2048)
+        sub = np.linspace(0, A_tr.shape[0] - 1,
+                          min(CODEDIAG_N, A_tr.shape[0])).astype(int)
+        sj = jnp.asarray(sub)
+        o_tr, _ = hf.oracle(qp, A_tr[sj], fl2_tr[sj], un2_tr[sj],
+                            Z[sj][:, None, :], CODEDIAG_ITERS, chunk=1024)
+        rec_sub = float(rec[sub].mean())
         ent["oracle_train_from_codes"] = dict(
             mean=float(o_tr.mean()), max=float(o_tr.max()),
-            gain_vs_recon=float(rec.mean() / max(o_tr.mean(), 1e-300)),
+            n=int(len(sub)), recon_on_same_subset=rec_sub,
+            gain_vs_recon=float(rec_sub / max(o_tr.mean(), 1e-300)),
             note="codes re-solved exactly at frozen h; ratio > 1 means the "
                  "codes had NOT converged during joint training")
         log(f"  ARM {name}: recon {rec.mean():.4e}  oracle {o_rel.mean():.4e}"
@@ -266,10 +287,16 @@ def main():
             newp = {kk: vv for kk, vv in ck["params"].items()}
             newp["h"] = [(np.asarray(w), np.asarray(b)) for w, b in hp["h"]]
             newp["h_lin"] = np.asarray(hp["h_lin"])
+            if "hB" in hp:
+                newp["hB"] = np.asarray(hp["hB"])
+            else:
+                newp.pop("hB", None)
             cfg = dict(ck.get("cfg", {}))
             cfg["k"] = int(k)
             cfg["hfit_arm"] = name
             cfg["hfit_source_ckpt"] = os.path.basename(CKPT)
+            cfg["hfit_spec"] = {kk2: vv2 for kk2, vv2
+                                in ARM_SPECS[name].items()}
             path = EMIT_PATH or f"hfit_{name}.pkl"
             with open(path, "wb") as f:
                 pickle.dump(dict(params=newp, Z_tr=np.asarray(Z), cfg=cfg), f)

@@ -1,0 +1,21 @@
+host=pax007 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+jax_backend=gpu device=cuda:0 x64=True EXTRACT N=256 K=16 R=512 ckpt=/cluster/tufts/paralab/tawal01/burgacc/ext256/in/sep_burgers_r3_N256_K16_R512.pkl
+  pick reproduced: 16384 states, matches checkpoint codes
+  bank rank(>1e-8) 512/512  cond(G) 2.637e+04
+   gen+proj: trajectories 64/576  worst FOM rel residual 9.95e-13  [18s]
+   gen+proj: trajectories 128/576  worst FOM rel residual 1.00e-12  [31s]
+   gen+proj: trajectories 192/576  worst FOM rel residual 1.00e-12  [45s]
+   gen+proj: trajectories 256/576  worst FOM rel residual 1.00e-12  [58s]
+   gen+proj: trajectories 320/576  worst FOM rel residual 1.00e-12  [71s]
+   gen+proj: trajectories 384/576  worst FOM rel residual 1.00e-12  [83s]
+   gen+proj: trajectories 448/576  worst FOM rel residual 1.00e-12  [95s]
+   gen+proj: trajectories 512/576  worst FOM rel residual 1.00e-12  [109s]
+   gen+proj: trajectories 576/576  worst FOM rel residual 1.00e-12  [121s]
+  GRAM IDENTITY gate on 64 training states: max rel deviation 1.366e-11 mean 3.667e-12  (full mean 7.300427e-03 vs gram mean 7.300427e-03)
+  span-floor direct-vs-Gram deviation on 64 rows: 2.192e-16  (direct mean 4.500090e-04)
+  checkpoint recon via (*): mean 7.171140e-03  (train span LS floor mean 4.142e-04)
+  fresh test span LS floor: mean 2.124e-04 max 2.998e-03  (test FOM residual 9.92e-13)
+EXTRACT done in 140s -> /cluster/tufts/paralab/tawal01/burgacc/ext256/out/sep_coeff_N256_K16_R512.npz
+ALL-DONE

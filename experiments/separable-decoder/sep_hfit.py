@@ -65,8 +65,11 @@ def log(*a):
 # fitted q converts into a drop-in `params["h"]` / `params["h_lin"]` for the
 # incumbent decoder with no change to the decoder code.
 
-def init_head(key, k_lat, r_feat, hidden=256, layers=2, lin_scale=0.3):
-    sizes = [k_lat] + [hidden] * layers + [r_feat]
+def init_head(key, k_lat, r_feat, hidden=256, layers=2, lin_scale=0.3,
+              h_ff=0, h_ff_scale=1.0):
+    """Mirrors sep_common.init_separable's h-track exactly, including the
+    default-off latent Fourier features (`h_ff`)."""
+    sizes = [k_lat + 2 * int(h_ff)] + [hidden] * layers + [r_feat]
     ps = []
     for i in range(len(sizes) - 1):
         key, k1 = jax.random.split(key)
@@ -75,11 +78,19 @@ def init_head(key, k_lat, r_feat, hidden=256, layers=2, lin_scale=0.3):
                    jnp.zeros((sizes[i + 1],), dtype=F64)))
     key, k2 = jax.random.split(key)
     lin = jax.random.normal(k2, (k_lat, r_feat), dtype=F64) * lin_scale
-    return dict(h=ps, h_lin=lin)
+    out = dict(h=ps, h_lin=lin)
+    if h_ff:
+        key, k3 = jax.random.split(key)
+        out["hB"] = (jax.random.normal(k3, (k_lat, int(h_ff)), dtype=F64)
+                     * float(h_ff_scale))
+    return out
 
 
 def head_apply(hp, z):
     x = z
+    if "hB" in hp:
+        ang = 2.0 * jnp.pi * (z @ hp["hB"])
+        x = jnp.concatenate([z, jnp.sin(ang), jnp.cos(ang)], axis=-1)
     for w, b in hp["h"][:-1]:
         x = jax.nn.silu(x @ w + b)
     w, b = hp["h"][-1]
@@ -189,7 +200,7 @@ def oracle(qp, A, fl2, un2, Z_init, iters=120, chunk=512):
 def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
         batch=4096, wd=0.0, ema_decay=0.0, w_state=None, qp0=None, Z0=None,
         z_polish_every=0, z_polish_iters=40, log_every=5000, tag="",
-        time_cap=0.0, norm="snap"):
+        time_cap=0.0, norm="snap", h_ff=0, h_ff_scale=1.0):
     """Adam(W) on (q, Z) against the exact whitened objective.
 
     norm: 'snap' divides each state's squared error by its own ||u||^2 (so the
@@ -205,7 +216,9 @@ def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
         for their convergence -- lever 2 of the handoff)."""
     S = A.shape[0]
     key, kq, kz = jax.random.split(key, 3)
-    qp = qp0 if qp0 is not None else init_head(kq, k_lat, r_feat, hidden, layers)
+    qp = (qp0 if qp0 is not None else
+          init_head(kq, k_lat, r_feat, hidden, layers, h_ff=h_ff,
+                    h_ff_scale=h_ff_scale))
     Z = (jnp.asarray(Z0, dtype=F64) if Z0 is not None
          else 0.1 * jax.random.normal(kz, (S, k_lat), dtype=F64))
     w = (jnp.ones((S,), dtype=F64) if w_state is None
@@ -220,8 +233,10 @@ def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
 
     def wd_mask(pz):
         q, z = pz
-        return ({"h": [(True, False) for _ in q["h"]], "h_lin": False},
-                False)
+        m = {"h": [(True, False) for _ in q["h"]], "h_lin": False}
+        if "hB" in q:
+            m["hB"] = False            # fixed random latent frequencies
+        return (m, False)
 
     opt = (optax.adamw(sched, weight_decay=wd, mask=wd_mask) if wd > 0
            else optax.adam(sched))
@@ -280,5 +295,6 @@ def fit(key, A, un2, fl2, k_lat, r_feat, steps, lr, hidden, layers,
                               hidden=hidden, layers=layers, batch=int(batch),
                               wd=wd, ema_decay=ema_decay, used_ema=used_ema,
                               norm=norm, z_polish_every=int(z_polish_every),
+                              h_ff=int(h_ff), h_ff_scale=float(h_ff_scale),
                               seconds=time.time() - t0,
                               final_loss=float(val))

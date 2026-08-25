@@ -83,7 +83,7 @@ def apply_mlp(params, x):
 
 def init_separable(key, k_lat, r_feat, n_ff=64, ff_scale=4.0,
                    g_hidden=128, g_layers=2, h_hidden=128, h_layers=2,
-                   out_scale=1.0, ff_scales=None):
+                   out_scale=1.0, ff_scales=None, h_ff=0, h_ff_scale=1.0):
     """ff_scales (round-2 lever, default OFF): a list of band scales, e.g.
     [1, 4, 16] -- the n_ff frequencies are split evenly across the bands and
     each band's B columns are drawn at its own scale (multi-scale Fourier
@@ -99,12 +99,18 @@ def init_separable(key, k_lat, r_feat, n_ff=64, ff_scale=4.0,
     else:
         B = jax.random.normal(kb, (2, n_ff), dtype=F64) * ff_scale  # fixed freqs
     g_mlp = init_mlp(kg, [2 * n_ff] + [g_hidden] * g_layers + [r_feat])
-    h_mlp = init_mlp(kh, [k_lat] + [h_hidden] * h_layers + [r_feat])
+    h_in = k_lat + 2 * int(h_ff)          # latent Fourier features (default 0)
+    h_mlp = init_mlp(kh, [h_in] + [h_hidden] * h_layers + [r_feat])
     h_lin = jax.random.normal(kl, (k_lat, r_feat), dtype=F64) * 0.3
     # fixed data-scale constant, folded into the FEATURES so every cached bank
     # carries it (it is x-independent but keeps u ~ O(data) at init)
-    return dict(B=B, g=g_mlp, h=h_mlp, h_lin=h_lin,
-                out_scale=jnp.asarray(float(out_scale), dtype=F64))
+    out = dict(B=B, g=g_mlp, h=h_mlp, h_lin=h_lin,
+               out_scale=jnp.asarray(float(out_scale), dtype=F64))
+    if h_ff:
+        key, khb = jax.random.split(key)
+        out["hB"] = (jax.random.normal(khb, (k_lat, int(h_ff)), dtype=F64)
+                     * float(h_ff_scale))
+    return out
 
 
 def features(params, xy):
@@ -115,8 +121,19 @@ def features(params, xy):
 
 
 def head(params, z):
-    """h(z): (..., r).  NONLINEAR in z (MLP + linear skip)."""
-    return apply_mlp(params["h"], z) + z @ params["h_lin"]
+    """h(z): (..., r).  NONLINEAR in z (MLP + linear skip).
+
+    ROUND 5 option, default OFF and bit-identical when unused: if params
+    carries an `hB` matrix, the MLP sees random Fourier features of the LATENT
+    as well as the latent itself.  This is a z-side change only -- the bank
+    G(x) and therefore the cached-collapse property and gate 0 are untouched --
+    and it exists because round 5 measured that the codes are already converged
+    and h's own FUNCTION CLASS is what limits the fit."""
+    zf = z
+    if "hB" in params:
+        ang = 2.0 * jnp.pi * (z @ params["hB"])
+        zf = jnp.concatenate([z, jnp.sin(ang), jnp.cos(ang)], axis=-1)
+    return apply_mlp(params["h"], zf) + z @ params["h_lin"]
 
 
 class SeparableDecoder:
@@ -291,7 +308,8 @@ def arch_from_env():
     do not set them reproduce the N=64 recipe exactly."""
     spec = dict(n_ff=("N_FF", int, 64), ff_scale=("FF_SCALE", float, 4.0),
                 g_hidden=("G_HIDDEN", int, 128), g_layers=("G_LAYERS", int, 2),
-                h_hidden=("H_HIDDEN", int, 128), h_layers=("H_LAYERS", int, 2))
+                h_hidden=("H_HIDDEN", int, 128), h_layers=("H_LAYERS", int, 2),
+                h_ff=("H_FF", int, 0), h_ff_scale=("H_FF_SCALE", float, 1.0))
     out = {}
     for k, (env, typ, dflt) in spec.items():
         v = typ(os.environ.get(env, str(dflt)))

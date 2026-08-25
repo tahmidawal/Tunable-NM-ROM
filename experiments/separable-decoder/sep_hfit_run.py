@@ -103,6 +103,10 @@ ARM_SPECS = {
     "k32ffz":      dict(hidden=1024, layers=3, k=32, h_ff=128, h_ff_scale=2.0),
     "k48":         dict(hidden=1024, layers=3, k=48),
     "k64":         dict(hidden=1024, layers=3, k=64),
+    "k96":         dict(hidden=1024, layers=3, k=96),
+    "k128":        dict(hidden=1024, layers=3, k=128),
+    "k48_wd":      dict(hidden=1024, layers=3, k=48, wd=1e-6),
+    "k48_h512":    dict(hidden=512, layers=3, k=48),
     # --- lever 5 (round-5 wave 5): CODE JITTER.  The measured failure is that
     #     h's image passes through the training targets and wanders between
     #     them, so ask h to be right on a neighbourhood of each code.
@@ -123,6 +127,12 @@ def main():
         f" HFIT arms={ARMS} steps={STEPS}")
     t_all = time.time()
     d = np.load(NPZ)
+    exj = os.path.splitext(NPZ)[0] + ".json"
+    exc = json.load(open(exj))["config"] if os.path.exists(exj) else {}
+    global EXT_SEED, EXT_TRAJ, EXT_NTRAJ
+    EXT_SEED = int(exc.get("extra_seed", 0))
+    EXT_TRAJ = int(exc.get("extra_traj", 0))
+    EXT_NTRAJ = int(exc.get("n_traj", 576))
     with open(CKPT, "rb") as f:
         ck = pickle.load(f)
     p_ck = jax.tree_util.tree_map(jnp.asarray, ck["params"])
@@ -145,6 +155,7 @@ def main():
     traj_te = np.asarray(d["traj_te"])
     mu_tr = np.asarray(d["mu_tr"])
     traj_tr = np.asarray(d["traj_tr"])
+    pick_all = np.asarray(d["pick"])
     fl_tr_all = np.asarray(jnp.sqrt(fl2_tr / un2_tr))
     fl_te = np.asarray(jnp.sqrt(fl2_te / un2_te))
     # held-out TRAINING-cohort trajectories (never fitted by any arm in a wave
@@ -157,6 +168,7 @@ def main():
         keep = np.nonzero(traj_tr < TRAJ_FIT)[0]
         assert not (HOLD_FROM and TRAJ_FIT > HOLD_FROM), \
             "TRAJ_FIT overlaps the held-out cohort"
+        pick_all = pick_all[keep]
         A_tr = A_tr[jnp.asarray(keep)]
         un2_tr = un2_tr[jnp.asarray(keep)]
         fl2_tr = fl2_tr[jnp.asarray(keep)]
@@ -368,6 +380,14 @@ def main():
             cfg["hfit_source_ckpt"] = os.path.basename(CKPT)
             cfg["hfit_spec"] = {kk2: vv2 for kk2, vv2
                                 in ARM_SPECS[name].items()}
+            # the emitted codes correspond to THESE global state ids, in this
+            # order.  Downstream drivers must read them rather than trying to
+            # reconstruct a pick from (max_snaps, t_early, n_traj): a
+            # TRAJ_FIT subset or an appended-seed draw is not reconstructible.
+            cfg["hfit_pick"] = np.asarray(pick_all).tolist()
+            cfg["hfit_extra_seed"] = int(EXT_SEED)
+            cfg["hfit_extra_traj"] = int(EXT_TRAJ)
+            cfg["hfit_n_traj"] = int(EXT_NTRAJ)
             path = EMIT_PATH or f"hfit_{name}.pkl"
             with open(path, "wb") as f:
                 pickle.dump(dict(params=newp, Z_tr=np.asarray(Z), cfg=cfg), f)

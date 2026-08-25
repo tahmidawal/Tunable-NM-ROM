@@ -279,6 +279,84 @@ def make_rollout_v2(step_kind, ops=None, step_ad=None, rn_fn=None, prev_of=None,
     return jax.jit(roll, static_argnums=(3,))
 
 
+def make_step_lspg_var(r_w, K, stall_rel=1e-12, tr_delta=None):
+    """EXACT replica of `blat_common._finish_ops.lm_step_jit` with the stall
+    threshold as a PARAMETER instead of the hard-coded 1e-12.
+
+    Round-3 measurement: at N=1024 the Burgers rollout spends ~5.1 LM
+    iterations per step and 399 of 400 steps terminate on 'stalled', 0 on
+    'tol' -- the residual tolerance is unreachable because representation
+    error dominates, so those iterations are bought and thrown away.  This
+    lets a run stop as soon as the relative decrease falls below `stall_rel`.
+
+    Nothing else changes: same damping schedule (lam0=1e-6, /3 on accept, x10
+    on reject, clamped [1e-12, 1e12]), same acceptance rule (finite, inside the
+    trust region, strictly decreasing), same reason codes, same trust radius
+    (`blat_common.TR_DELTA` unless `tr_delta` is given).  With
+    stall_rel=1e-12 it must reproduce the incumbent step EXACTLY -- the caller
+    is expected to assert that, and `sep_speed_r4.py` does.
+
+    Returns step(z0, prev_c, nu, tol_abs, budget) with budget static, i.e. the
+    same signature as ops['step_jit']."""
+    import blat_common as _bc
+    TRD = _bc.TR_DELTA if tr_delta is None else tr_delta
+
+    def rJ_lspg(z, p, nu):
+        return (r_w(z, p, nu), jax.jacfwd(r_w)(z, p, nu))
+
+    def rn_fn(z, p, nu):
+        return jnp.linalg.norm(r_w(z, p, nu))
+
+    def step(z0, prev_c, nu, tol_abs, budget):
+        r0, J0 = rJ_lspg(z0, prev_c, nu)
+        rn0 = jnp.linalg.norm(r0)
+        init_reason = jnp.where(~jnp.isfinite(rn0), jnp.int32(5),
+                                jnp.where(rn0 <= tol_abs, jnp.int32(4),
+                                          jnp.int32(0)))
+        init = (z0, r0, J0, rn0, jnp.asarray(1e-6, F64), jnp.int32(0),
+                jnp.int32(0), jnp.int32(1), jnp.int32(0), init_reason)
+
+        def cond(s):
+            return (s[9] == 0) & (s[5] < budget)
+
+        def body(s):
+            z, r, J, rn, lam, att, acc, nJ, _, _ = s
+            H = J.T @ J
+            g = J.T @ r
+            D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
+            dz = jnp.linalg.solve(H + lam * D, -g)
+            finite = jnp.all(jnp.isfinite(dz))
+            within_trust = jnp.linalg.norm(dz) <= TRD
+            tiny = finite & (jnp.linalg.norm(dz)
+                             <= 1e-12 * (1.0 + jnp.linalg.norm(z)))
+            z_new = z + jnp.where(finite & within_trust, dz, 0.0)
+            rn_new = rn_fn(z_new, prev_c, nu)
+            accept = (finite & within_trust & jnp.isfinite(rn_new)
+                      & (rn_new < rn))
+            r2, J2 = jax.lax.cond(accept,
+                                  lambda: rJ_lspg(z_new, prev_c, nu),
+                                  lambda: (r, J))
+            rel_dec = jnp.where(accept, (rn - rn_new) / rn, 1.0)
+            z = jnp.where(accept, z_new, z)
+            rn = jnp.where(accept, rn_new, rn)
+            lam = jnp.where(accept, jnp.maximum(lam / 3.0, 1e-12),
+                            jnp.minimum(lam * 10.0, 1e12))
+            acc = acc + accept.astype(jnp.int32)
+            nJ = nJ + accept.astype(jnp.int32)
+            reason = jnp.where(
+                accept & (rn <= tol_abs), 1,
+                jnp.where((accept & (rel_dec < stall_rel)) | tiny, 2,
+                          jnp.where((~accept) & (lam >= 1e12), 3,
+                                    0))).astype(jnp.int32)
+            return (z, r2, J2, rn, lam, att + 1, acc, nJ, jnp.int32(0), reason)
+
+        z, r, J, rn, lam, att, acc, nJ, _, reason = jax.lax.while_loop(
+            cond, body, init)
+        return z, rn, nJ, acc, reason, att
+
+    return jax.jit(step, static_argnums=(4,))
+
+
 # ===========================================================================
 # 2b. Round-2 auto-decoder training (architecture+optimization in scope)
 # ===========================================================================
@@ -286,7 +364,8 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
                          lam_orth=1e-4, weight_decay=0.0, p_sub=16384,
                          ema_decay=0.999, full_last=20000, time_cap=0.0,
                          log_every=5000, tag="", init_fn=None,
-                         snap_norm=False, recon_chunk=2048, **arch):
+                         snap_norm=False, recon_chunk=2048, w_extra=None,
+                         z_polish=0, z_polish_lr=3e-3, **arch):
     """Round-2 trainer for the separable decoder (PUSH-PLAN: architecture and
     optimization in scope).  Differences from sep_common.train_autodecoder,
     each individually optional:
@@ -325,6 +404,18 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
     # so the point-subsampled estimator stays unbiased.
     w_snap = 1.0 / jnp.maximum(jnp.mean(U * U, axis=1), 1e-300)   # (S,)
     w_snap = w_snap / jnp.mean(w_snap)          # keep the loss O(1) as before
+    # ROUND 4: optional extra per-snapshot weight (S,).  The round-3 per-step
+    # error curves show the error is concentrated in the sharp early-time
+    # states (oracle 3.5e-2 at t=0 decaying to ~5.9e-3 by t=50), so the driver
+    # can up-weight them.  Constants, so the point-subsampled estimator stays
+    # unbiased.  Normalised to mean 1 so the loss scale is unchanged.
+    if w_extra is None:
+        w_ex = jnp.ones((S,), dtype=F64)
+    else:
+        w_ex = jnp.asarray(np.asarray(w_extra), dtype=F64)
+        w_ex = w_ex / jnp.mean(w_ex)
+    w_snap = w_snap * w_ex
+    w_snap = w_snap / jnp.mean(w_snap)
 
     sched = optax.warmup_cosine_decay_schedule(
         0.0, lr, min(500, steps // 10 + 1), steps, lr * 1e-2)
@@ -359,7 +450,7 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
         if snap_norm:
             rel = jnp.mean(w_snap * jnp.mean(err * err, axis=1))
         else:
-            rel = jnp.mean(err * err) / u_ms
+            rel = jnp.mean(w_ex * jnp.mean(err * err, axis=1)) / u_ms
         C = (G.T @ G) / (G.shape[0] * p["out_scale"] ** 2)
         orth = jnp.mean((C - jnp.eye(C.shape[0], dtype=F64)) ** 2)
         return rel + lam_orth * orth, rel
@@ -422,6 +513,43 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
         per = jnp.concatenate(per)
         return float(jnp.mean(per)), float(jnp.max(per))
 
+    # ---- code-only polish: freeze (g, h), re-optimise the free codes Z ----
+    # The codes are free variables of the auto-decoder; joint Adam may leave
+    # them short of the best code for the FINAL span.  This is a pure
+    # refinement of Z at fixed weights, so it cannot change the span and
+    # cannot touch test data.
+    zp_info = None
+    if z_polish > 0:
+        p_fix = pz[0]
+        opt_z = optax.adam(optax.cosine_decay_schedule(z_polish_lr, z_polish,
+                                                       1e-2))
+        st_z = opt_z.init(pz[1])
+
+        def loss_z(z, U_, C_):
+            G = _sc.features(p_fix, C_)
+            err = _sc.head(p_fix, z) @ G.T - U_
+            if snap_norm:
+                return jnp.mean(w_snap * jnp.mean(err * err, axis=1))
+            return jnp.mean(w_ex * jnp.mean(err * err, axis=1)) / u_ms
+
+        @jax.jit
+        def zstep(z, st, k_, U_all, C_all):
+            idx = jax.random.choice(k_, n_pts, shape=(p_sub,), replace=False)
+            v, g = jax.value_and_grad(loss_z)(z, U_all[:, idx], C_all[idx])
+            upd, st = opt_z.update(g, st)
+            return optax.apply_updates(z, upd), st, v
+
+        z_cur = pz[1]
+        t_z = time.time()
+        for i in range(z_polish):
+            key, k_ = jax.random.split(key)
+            z_cur, st_z, vz = zstep(z_cur, st_z, k_, U, coords)
+        pz = (p_fix, z_cur)
+        zp_info = dict(steps=int(z_polish), lr=float(z_polish_lr),
+                       final_loss=float(vz), seconds=time.time() - t_z)
+        print(f"   train2[{tag}] code polish {z_polish} steps -> loss "
+              f"{float(vz):.3e} [{time.time()-t_z:.0f}s]", flush=True)
+
     raw_mean, raw_max = recon_of(pz)
     ema_mean, ema_max = recon_of(ema)
     use_ema = ema_mean < raw_mean
@@ -435,7 +563,8 @@ def train_autodecoder_v2(key, coords, U, k_lat, r_feat, steps=300000, lr=1e-3,
                 seconds=time.time() - t0,
                 recon_rel_l2_mean=ema_mean if use_ema else raw_mean,
                 recon_rel_l2_max=ema_max if use_ema else raw_max,
-                n_snapshots=int(S), n_points=int(n_pts))
+                n_snapshots=int(S), n_points=int(n_pts),
+                w_extra_used=bool(w_extra is not None), z_polish=zp_info)
     print(f"   train2[{tag}] done: recon rel-L2 mean "
           f"{info['recon_rel_l2_mean']:.3e} max {info['recon_rel_l2_max']:.3e} "
           f"(raw {raw_mean:.3e} / ema {ema_mean:.3e}, used "
@@ -640,6 +769,32 @@ def oracle_multi_init(oracle_lm, z0_sets, targets):
 # ===========================================================================
 # 5. EQ tail control + per-query adaptive re-fit
 # ===========================================================================
+def build_eq_system_burgers(u_full, adv_full, Phi_full, cand_pos, Z_snap,
+                            eq_snaps=None, seed=None):
+    """The row system that `ctol_eq.eq_fit_burgers` builds internally, exposed
+    so the tail-capped NNLS below can be applied to it.  Identical assembly:
+    two row blocks per snapshot (u and the FOM-exact upwind field N(u)),
+    targets = exact full-grid projections, candidate columns restricted to
+    `cand_pos`.  Returns (G, b, pad_score)."""
+    import ctol_eq as _ce
+    r_eq = np.random.default_rng(_ce.EQ_SEED if seed is None else seed)
+    n_s = Z_snap.shape[0]
+    ns = _ce.EQ_SNAPS if eq_snaps is None else eq_snaps
+    idx = r_eq.choice(n_s, size=min(ns, n_s), replace=False)
+    Phi_c = Phi_full[cand_pos]
+    Gs, bs, snap_c = [], [], []
+    for i in idx:
+        z = jnp.asarray(Z_snap[i])
+        uf = np.asarray(u_full(z))
+        Nf = np.asarray(adv_full(jnp.asarray(uf)))
+        for v_f in (uf, Nf):
+            bs.append(Phi_full.T @ v_f)
+            Gs.append(Phi_c.T * v_f[cand_pos][None, :])
+            snap_c.append(v_f[cand_pos])
+    pad_score = np.abs(np.stack(snap_c)).mean(0)
+    return np.concatenate(Gs, axis=0), np.concatenate(bs), pad_score
+
+
 def _nnls_rows(Gn, bn, m, nnls_capped, rng, eq_rows, pad_score):
     """Reference NNLS sequence on PRE-normalized (possibly reweighted) rows:
     capped Lawson-Hanson on an eq_rows subsample -> support padding -> final

@@ -37,7 +37,7 @@ mkdir -p "$DST/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom"
 
 cp "$SEP"/sep_common.py "$SEP"/sep_poisson.py "$SEP"/sep_burgers.py "$DST/code/"
 for f in sep_solvers.py sep_poisson_r1.py sep_burgers_r1.py sep_poisson_r2.py \
-         sep_burgers_r2.py sep_burgers_r3.py pod_floor_n256.py; do
+         sep_burgers_r2.py sep_burgers_r3.py sep_burgers_r4.py sep_speed_r4.py pod_floor_n256.py; do
   [ -f "$SEP/$f" ] && cp "$SEP/$f" "$DST/code/"
 done
 cp "$EXP"/cost-to-tolerance/ctol_eq.py "$EXP"/cost-to-tolerance/ctol_tol.py "$DST/code/"

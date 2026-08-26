@@ -151,3 +151,20 @@ adv,grad,node, STEPS=3000/2000): nf256m64 (2844909), nf256m256 (2844910),
 nf1024m64 (2844911), nf1024m256 (2844912). Pull with
 `./runs/pull_exlin.sh <dir> <jobid> --delete` from the worktree's
 `experiments/separable-decoder/`.
+
+## 01:07 — stage-1 COMPLETE: all six jobs pulled and verified
+
+xl256r3a (2844813) and xl256dm (2844814) pulled; `EQ-LADDER-EXLIN.md` generated on the
+branch. The four-checkpoint picture, incumbent → exlin+adv-only at the same m:
+
+- Fine set (m=1024): (b) on the solver path improves 1.9–3.3× (r3a 0.056→0.030,
+  dense_mid 0.076→0.023, r3d 0.067→0.036, r4a6 0.112→0.082); oracle (b) improves up to
+  4.8× (dense_mid 0.14→0.029); oracle gradient cosines now 0.90–0.99 everywhere.
+- Coarse set (m=256): rollout error improves 7–20% on every checkpoint.
+- Fine-set rollout error: UNCHANGED on every checkpoint (r3a 2.24e-2, dense_mid 1.11e-2,
+  r3d 2.33e-2, r4a6 1.44e-2) — at m=1024 the quadrature is no longer the binding error
+  for these checkpoints; h's generalisation is (consistent with the lab log).
+- The speed-protocol A/B (T-X1) already showed the −11%/−18% rollout-error gain at
+  unchanged cost with the default (ctrl) EQ set.
+
+All six stage-1 cluster dirs deleted from `exlin/` after sha256+marker verification.

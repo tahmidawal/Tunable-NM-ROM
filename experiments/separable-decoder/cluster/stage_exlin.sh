@@ -34,6 +34,7 @@ mkdir -p "$DST/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom"
 # sep_hfit_run.py").  The deps below are still enumerated and still verified
 # byte-identical to the N=64 stage.
 cp "$SEP"/sep_*.py "$DST/code/"
+cp "$SEP"/exlin_common.py "$DST/code/"
 [ -f "$SEP/pod_floor_n256.py" ] && cp "$SEP/pod_floor_n256.py" "$DST/code/"
 cp "$EXP"/cost-to-tolerance/ctol_eq.py "$EXP"/cost-to-tolerance/ctol_tol.py "$DST/code/"
 cp "$EXP"/burgers2d-rom-latent-stepping/blat_common.py \

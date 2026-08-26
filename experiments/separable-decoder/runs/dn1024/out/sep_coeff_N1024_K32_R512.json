@@ -1,0 +1,175 @@
+{
+ "config": {
+  "pde": "burgers2d",
+  "job": "coeff_extract",
+  "N": 1024,
+  "k": 32,
+  "r": 512,
+  "ckpt": "/cluster/tufts/paralab/tawal01/burgacc/dn1024/in/sep_burgers_r4_N1024_K32_R512_h512x3.pkl",
+  "max_snaps": 131072,
+  "t_early": 5,
+  "n_traj": 4608,
+  "extra_seed": 1000,
+  "extra_traj": 4032,
+  "n_canonical": 576,
+  "n_test": 8,
+  "seed": 0,
+  "data_seed": 0,
+  "test_seed": 1,
+  "num_steps": 50,
+  "dt": 0.005,
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "slurm_job": "2837430",
+  "node": "pax011",
+  "loose": true,
+  "ckpt_cfg": {
+   "pde": "burgers2d",
+   "round": 4,
+   "N": 1024,
+   "k": 32,
+   "r": 512,
+   "steps": 300000,
+   "lr": 0.001,
+   "p_sub": 4096,
+   "wd": 1e-05,
+   "ema_decay": 0.999,
+   "full_last": 0,
+   "time_cap": 9000.0,
+   "lam_orth": 0.0001,
+   "snap_norm": false,
+   "max_snaps": 16384,
+   "t_early": 5,
+   "n_traj": 576,
+   "pool": 65536,
+   "eq_Ms": [
+    64,
+    256
+   ],
+   "eq_cand_cap": 65536,
+   "step_tols": [
+    1e-09,
+    1e-06
+   ],
+   "w_early": 4.0,
+   "z_polish": 0,
+   "z_polish_lr": 0.003,
+   "eq_m_factor": 4,
+   "eq_tail": true,
+   "eq_tail_cap": 0.03,
+   "eq_tail_rounds": 2,
+   "n_test": 8,
+   "gn_budget": 30,
+   "num_steps": 50,
+   "dt": 0.005,
+   "tr_factor": 0.01,
+   "seed": 0,
+   "data_seed": 0,
+   "test_seed": 1,
+   "reps": 5,
+   "warm": 2,
+   "pair_reps": 3,
+   "ic_top": 12,
+   "ic_budget": 100,
+   "ic_enc_budget": 50,
+   "enc_steps": 12000,
+   "extrap": 1.0,
+   "oracle_budget": 150,
+   "sstep_ts": [
+    1,
+    2,
+    3,
+    5,
+    10,
+    25,
+    50
+   ],
+   "sstep_budget": 120,
+   "newton_tols": [
+    0.3,
+    0.1,
+    0.03,
+    0.01,
+    0.003,
+    0.001,
+    0.0001
+   ],
+   "lin_fracs": [
+    0.05,
+    0.5
+   ],
+   "max_newton": 20,
+   "baseline": "tolerance-Newton, exact-Helmholtz-preconditioned BiCGStab (n512/n1024 recipe); STANDARDISED across N",
+   "feat_chunk": 131072,
+   "arch_overrides": {
+    "n_ff": 128,
+    "g_hidden": 1024,
+    "h_hidden": 512,
+    "h_layers": 3
+   },
+   "x64": true,
+   "matmul_precision": "highest",
+   "backend": "gpu",
+   "gpu": "NVIDIA H200",
+   "slurm_job": "2837066",
+   "node": "pax011"
+  }
+ },
+ "gates": {
+  "gram_identity_rel_dev_max": 8.468382734973737e-16,
+  "gram_identity_rel_dev_mean": 2.6503185601127447e-16,
+  "gram_identity_rows": 8,
+  "gram_identity_implied_field_rel": 3.965129173507626e-16,
+  "span_floor_direct_vs_gram_rel_dev": 1.8864661012624828e-16
+ },
+ "complete": true,
+ "span": {
+  "note": "DIAGNOSTIC ONLY -- no SVD/least-squares enters the model",
+  "gram_sv_ratio": {
+   "0": 1.0,
+   "128": 0.03724462061637392,
+   "256": 0.009501745570377832,
+   "384": 0.0010229823246878658,
+   "511": 5.3455513950932135e-05
+  },
+  "numerical_rank_1e8": 512,
+  "cond_G": 18707.1440547353,
+  "chol_jitter_rel": 1e-12
+ },
+ "data": {
+  "n_traj": 4608,
+  "T": 51,
+  "n_i2": 1044484,
+  "n_states_trained": 131072,
+  "fingerprint": {
+   "sum": 27169561935.565075,
+   "sumsq": 14466058804.702675,
+   "shape": [
+    4608,
+    51,
+    1048576
+   ]
+  },
+  "max_fom_rel_residual": 9.99936643074865e-13,
+  "max_fom_rel_residual_test": 9.971638201679026e-13
+ },
+ "ckpt_recon": {
+  "mean": 1.6211792472719533,
+  "max": 40.636192388532095,
+  "codes_aligned": false,
+  "note": "NOT COMPARABLE: codes are a recycled stand-in because the state pick does not match the checkpoint's training set"
+ },
+ "train_span_floor": {
+  "mean": 0.0005410187892160869,
+  "max": 0.052679241741429274
+ },
+ "test_span_floor": {
+  "mean": 0.00017306422199504006,
+  "max": 0.002838643919198483,
+  "n_states": 408
+ },
+ "npz": "sep_coeff_N1024_K32_R512.npz",
+ "total_seconds": 8656.932904720306
+}

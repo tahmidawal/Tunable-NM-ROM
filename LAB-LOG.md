@@ -12,18 +12,20 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-08-25
+# Where things stand — 2026-08-26
 
-*(The 2026-08-22 block this replaces described the FiLM-decoder era; it is in git history,
-commit 4c2cf0d and earlier.)*
+*(The 2026-08-25 block this replaces is in git history, commit c3f1726 and nearby.)*
 
 ## Read this first
 
 **Consolidated line of descent:** worktree `worktrees/2026-08-25-sepdec-consolidated`, branch
-`exp/2026-08-25-sepdec-consolidated`, with `START-HERE.md` at its root. It merges
-`exp/2026-08-22-separable-decoder` → `exp/2026-08-23-n256-push` → `exp/2026-08-25-burgers-accuracy`.
-Those three, and the scaling arms `exp/2026-08-23-sepdec-n{128,256,512,1024}`, are read-only
-archives. **New work branches from the consolidated branch, never from `main`.**
+`exp/2026-08-25-sepdec-consolidated`, with `START-HERE.md` at its root. **The most advanced
+branch is now `exp/2026-08-26-eq-learned`** (worktree `worktrees/2026-08-26-eq-learned`, cut
+from the consolidated branch): it adds the exact-linear residual (`sep_burgers_exlin.py`,
+`exlin_common.py`), the same-target and learned-node quadrature drivers
+(`sep_eq_gradfit.py`, `sep_eq_nodefit.py`), and all 14 result sets of 2026-08-26. Solver- or
+quadrature-side work should branch from it. `exp/2026-08-25-eq-fidelity-ladder` and the
+older experiment branches are read-only archives. Never branch from `main`.
 
 ## The method (separable EQ-decoder)
 
@@ -31,64 +33,70 @@ archives. **New work branches from the consolidated branch, never from `main`.**
 MLP, last layer linear, so `G_HIDDEN ≥ 2R` or the bank is rank-capped at `G_HIDDEN+1`) and a
 K-dim latent track `h` (SiLU MLP + linear skip). `g` never sees `z`, so it is evaluated once
 at the m≈256 NNLS quadrature points into a cached table and the online trust-region LM solve
-is `table @ h(z)` — the grid never enters the loop. Weak form on M=4K sine test modes;
-incumbent discretization reproduced bit-for-bit (gate 0 ≤1e-12, measured 0–3e-15). Pure
-neural; SVD appears only as a diagnostic. Auto-decoder training (codes are free variables),
-point-subsampled AdamW+EMA, banks/data as explicit jit arguments (a ~2 GB closed-over array
-costs +10 GB RSS and 16 s compile per jit).
+is `table @ h(z)` — the grid never enters the loop. Weak form on M=4K sine test modes.
+**As of 2026-08-26 the linear weak terms are EXACT**: `Φᵀu = (ΦᵀG)h(z)` with `A = ΦᵀG`
+precomputed (M×R), so only the advection term `ΦᵀN(u)` is sampled, on nodes fit to
+advection rows only. Gate 0 (bit-identity to `make_weak_ops`) still certifies the
+incumbent-form ops; gates L (linear exactness vs full grid, measured ≤1e-14) and A
+(advection unchanged, ≤6e-14) certify the exlin residual — the deliberate rule change the
+08-25 report announced. Pure neural; SVD only as a diagnostic; banks/data as explicit jit
+arguments.
 
 ## What is true right now
 
-**Speed — the architecture's prediction is confirmed.** ROM online cost is flat in N;
-classical cost grows. K=16/R=512, optimized solver (Gram-space IC 18→1.9 ms; adaptive stall
-tolerance), matched-accuracy paired AB/BA vs a swept Helmholtz-preconditioned Newton ladder
-(`CROSS-RESOLUTION.md`, generated): N=128 0.38×, N=256 0.39×, N=512 0.60×, **N=1024 1.61×
-(27.1 vs 42.9 ms)**; batch-16 upper bounds 0.38× / 0.91× / 2.37× / 11.74×. Profile: the solve
-is kernel-dispatch bound (`PROFILE.md`), not bandwidth or compute bound.
+**Speed — flat in N, confirmed, now also at K=32.** Matched-accuracy paired AB/BA vs the
+swept Helmholtz-preconditioned Newton ladder: K=16 N=1024 1.61×; **K=32 dense_mid
+full-density N=1024: 33.2 vs 63.2 ms = 1.90× (incumbent residual, job 2837430) and 33.6 vs
+62.9 ms = 1.87× (exact-linear, job 2844825)** — the K=32 optimized-path timing gap is
+closed. N=256 remains a loss (0.36–0.39×). Batch amortization unchanged.
 
-**Accuracy — the binding rung is `h`'s generalisation.** Solver = weak-EQ optimum ≈ oracle
-with no error compounding; the span floor (2.6e-4 at N=1024) is far below target; `h` reaches
-~1/25–1/35 of it, resolution-independently. Best rollout errors: K=16 dense_mid 8.96e-3 at an
-unchanged classical ratio (round 5, N=256); **K=32 h512x3 at N=1024: 5.14e-3 (M=256 EQ) /
-6.85e-3 (M=64)** — but timed only on the un-optimized solve path (98.9 ms vs matched classical
-62.9 ms = 0.66×). 1e-3 is NOT reached; it needs an oracle ≈5e-4, ~5× below the best measured.
+**Accuracy — exact linear terms are a zero-cost win; `h` generalisation still binds.**
+Report `2026-08-26-exact-linear-terms-and-gradient-eq.md` (F1–F8, tables generated):
+rollout error at unchanged paired cost improves **9.69e-3 → 7.98e-3 (−18%) at N=1024 K=32**
+and 8.96e-3 → 8.02e-3 (−11%) at N=256 dense_mid. Coarse-set (m=256) rollouts improve 7–20%
+on all four ladder checkpoints; fine-set (m=1024) rollouts are unchanged to three digits —
+at the fine budget quadrature is not the limiter, `h`'s generalisation is. 1e-3 is still
+not reached.
 
-**Retracted (do not quote):** the N=64 "3.3×" (IC fit excluded, over-solved baseline); the
-N=1024 "5.2×" (compared against a rung 24× more accurate — `lin_tol` was carrying it; honest
-figure 1.61×); "K is nearly free online" (K=48 = 3.81× wall time); "h is capacity-limited"
-(it is generalisation-limited); "codes may not have converged" (1.000×); "more span helps"
-(R=1024 widened the gap to 70.6×); multi-scale Fourier features (worse than single-scale).
+**Quadrature — measured, fixed where it binds, and the "learn it" question answered.**
+The 08-25 ladder finding stands (error was in `R`, mostly linear terms; `J` well sampled;
+NNLS rel-fit certifies nothing). With exlin, the residual error is purely advection and
+smaller (fine-set oracle (b) up to 4.8× better; oracle gradient cosines 0.90–0.99).
+Same-target NNLS (advection rows at off-manifold LM iterates + frozen-`J_f` gradient rows,
+both convex): monotone −21% rollout at N=1024 K=32 m=256, but NEGATIVE transfer at N=256
+dense_mid (+13% rollout) — a quadrature generalisation gap (held-out fidelity ≫ test-path
+fidelity) makes any state-conditioned refit checkpoint-dependent; validate on rollouts.
+Learned continuous nodes (frozen decoder+teacher, inner-NNLS variable projection): beat the
+convex baseline on every certification axis at the coarse budget on both checkpoints
+(held-out (b) −51%, rollout 2.067e-2 → 2.005e-2 at N=1024), and are a clean REPORTABLE
+NEGATIVE at the fine budget (init already optimal; optimizer wanders/overfits; rollouts
+tied). Bottom line for the advisor: the zero-cost always-safe win is exact linear terms;
+node learning wins only where quadrature binds and buys ~3% rollout there.
 
-**Quadrature — measured for the first time (EQ fidelity ladder, 2026-08-25).** The sampled
-weak residual differs from the exact full-grid one by tens of percent on the solver path
-(control set) and by of order one at the solution; the Jacobian is sampled well (Hessian rung
-~1e-4–1e-2), so the error enters through `R` and corrupts the gradient (cosines ~0.3–0.4
-control, ~0.6–0.8 fine) and the step. The larger share is in the LINEAR terms (`Φᵀu`), which
-the separable form can compute exactly with no quadrature. The NNLS "rel fit" (5e-3 / 5e-4) is
-not a certification of anything the solver uses. Resolution-independent (N=256 ≈ N=1024).
+**Retracted (do not quote):** everything in the 08-25 retraction list still holds (N=64
+"3.3×", N=1024 "5.2×", "K nearly free", "h capacity-limited", "codes unconverged", "more
+span helps", multi-scale features). Nothing new retracted on 08-26.
 
-**Soft:** the Poisson 28× at N=1024 is against an **unpreconditioned** `jax.scipy` CG; a
-preconditioned arm has not been run. An exact spectral solve does 0.64 ms at 7e-15 on this
-constant-coefficient Poisson. Burgers is the real target.
+**Soft:** the Poisson 28× is still against an unpreconditioned CG; the Poisson
+quadrature-free cell (whole residual `(Λ⊙ΦᵀG)h − Φᵀf`, no EQ at all) is designed but NOT
+run — it was the optional bonus that wall-clock did not reach.
 
 ## The next experiment
 
-**Exact linear terms in the weak residual** (report `2026-08-25-eq-fidelity-ladder.md`, §3
-item 1): replace `Φ_qᵀ(u−uⁿ)` and the Laplacian term by `(ΦᵀG_int)(h(z)−h(zⁿ))` — one
-precomputed M×R matrix, no quadrature, zero online cost change — then refit the m nodes for
-the advection term only, and re-run the ladder to confirm rungs (b)/(c1) drop. Needs gate 0
-redefined against the full-grid weak residual (log it as a rule change). After that, the
-round-4 speed sweep on the K=32 N=1024 checkpoint (`runs/push_r4a6/out/…K32_R512_h512x3.pkl`,
-`cluster/run_r4s1024.sbatch` with `CKPT` swapped) and pulling `dn1024` (2837430) /
-`dn256b` (2837431) in `burgacc/`.
+`h` generalisation is now unambiguously the binding rung at practical budgets (F3/F5/F8).
+The 08-25 open item stands: capacity + μ-density together, and test-time residual
+refinement of `h` (untried). On the quadrature side the only open follow-ups are the
+Poisson quadrature-free confirmation cell and, if a coarse-m deployment ever matters,
+adopting the stage-3 learned nodes there. Adopt `sep_burgers_exlin.py`'s residual as the
+default for future Burgers solver work.
 
 ## Open
 
-Exact linear terms + advection-only EQ refit (the ladder's #1 fix) · K=32 optimized timing ·
-dn1024/dn256b · preconditioned Poisson CG arm · certify EQ sets with the ladder
-(`sep_eq_ladder.py`), not the NNLS rel-fit or row tail · `h` generalisation (capacity +
-μ-density together; test-time residual refinement of `h` untried) · merge decisions for the
-consolidated branch and for `exp/2026-08-25-eq-fidelity-ladder`.
+`h` generalisation (capacity + μ-density; test-time refinement untried) · Poisson
+quadrature-free cell (designed, not run) · preconditioned Poisson CG arm · adopt exlin
+residual as default going forward · merge decisions: `exp/2026-08-25-sepdec-consolidated`,
+`exp/2026-08-25-eq-fidelity-ladder` (archive, per user), and now `exp/2026-08-26-eq-learned`
+— ask the user · certify EQ sets with the ladder, never the NNLS rel-fit.
 
 ---
 
@@ -2869,3 +2877,66 @@ advection-only EQ, re-run `sep_eq_ladder.py` to confirm, then the round-4 protoc
 accuracy/speed effect. `dn1024` (2837430) / `dn256b` (2837431) were still RUNNING in `burgacc/`
 at the end of this session — pull them. Merge decision for `exp/2026-08-25-eq-fidelity-ladder`:
 ask.
+
+
+## 2026-08-26
+
+### Autonomous overnight session — exact linear terms, same-target EQ, learned nodes (stages 1–3)
+
+Executed `understand/2026-08-26-autonomous-run-handoff.md` end to end. Branch
+`exp/2026-08-26-eq-learned` (worktree `worktrees/2026-08-26-eq-learned`, cut from
+`exp/2026-08-25-sepdec-consolidated`), cluster namespace `exlin/` — 14 jobs
+(2844813–2844912), all pulled, sha256+marker verified, remote dirs deleted, namespace
+empty at session end. Running log: `understand/2026-08-26-overnight-notes.md`. Report
+(final, all tables generated): `reports/2026-08-26-exact-linear-terms-and-gradient-eq.md`
++ `reports/gen_2026-08-26-exlin.py`. Explainer:
+`understand/2026-08-26-exact-linear-and-gradient-eq-explained.md` (Codex-written,
+numbers verified against the report).
+
+**Task 0.** Pulled `dn1024` (2837430, H200) and `dn256b` (2837431, A100) into the
+consolidated worktree (commit `b97d86c`): dense_mid full-density at N=1024 K=32 confirms
+err 9.69e-3 at **1.90× paired** on the optimized path (closing the K=32 timing gap);
+N=256 0.37×, err 8.96e-3.
+
+**Stage 1 — exact linear terms (final).** New residual `r_w(z) = wt ⊙ [A(h(z)−h(zⁿ)) +
+Δt(Φ_qᵀN(u)|nodes + νλ⊙A h(z))]`, `A = ΦᵀG` precomputed; advection-only NNLS node fit
+(`exlin_common.eq_fit_burgers_adv`). **Rule change logged:** gate 0 no longer applies to
+the full exlin residual BY DESIGN; it still runs on incumbent-form ops (code identity,
+≤7e-15 measured), and gates L (exlin linear vs full-grid linear, ≤6.1e-15 measured
+everywhere incl. N=1024) and A (advection unchanged, ≤5.5e-14) replace it. Results:
+**rollout err −18% at N=1024 (9.69e-3→7.98e-3) and −11% at N=256, at unchanged paired
+cost** (1.90×→1.87×, 0.37×→0.36×); fine-set fidelity 2–5× better, oracle gradient cosines
+0.90–0.99; coarse-set rollouts −7..−20%; fine-set rollouts unchanged on all four
+checkpoints (quadrature no longer binds there — `h` does).
+
+**Stage 2 — same-target NNLS (final).** Four sets at fixed m (inc/adv/path/grad), grad
+rows with the full-grid Jacobian FROZEN (linear in `w`; the literal `J_sᵀR_s` is
+quadratic — 08-25 correction respected). Certified on held-out iterates, never the
+rel-fit. Findings: WHERE rows are evaluated (off-manifold LM iterates vs training codes)
+is worth more than what they weight; monotone rollout gain at N=1024 K=32 m=256
+(inc 2.61e-2 → grad 2.07e-2, −21%); **NEGATIVE transfer at N=256 dense_mid**
+(1.51e-2 → 1.71e-2) — held-out gains do not imply test gains (quadrature generalisation
+gap); at m=1024 all four sets tie on rollout at both N.
+
+**Stage 3 — learned continuous nodes (final).** `sep_eq_nodefit.py`: sigmoid-box node
+positions, min-separation, inner-NNLS variable projection, frozen decoder + frozen
+full-grid teacher, loss = ladder rungs (b)+(c1). Gate C (continuous machinery ≡ grid ops
+at grid init) ≤8.6e-14 on all arms. **At m=256 the learned nodes beat the convex `grad`
+baseline on every certification axis on both checkpoints** (N=1024: held-out (b)
+0.146→0.071, c3 cos 0.985, test-path (b) 0.338→0.262, rollout 2.067e-2→2.005e-2; nodes
+moved ~7 dx) — the handoff's success bar is met at the coarse budget. **At m=1024 node
+learning is a clean reportable negative on both checkpoints** (init loss already 1e-5/1e-6,
+optimizer wanders or overfits, learned set certifies worse, rollouts tied). On N=256 the
+plain adv set keeps the best rollout of the whole same-target family.
+
+**Wrong / near-misses this session:** (1) `exlin_common.py` was not matched by the stage
+script's `sep_*.py` glob — caught before submission, would have killed a 4-job wave;
+fixed in `stage_exlin.sh`. (2) nf1024m256's final-refit loss came out WORSE than its init
+(optimizer mis-tuned for a landscape 3 orders flatter than the coarse arm's) — recorded
+as part of the fine-budget negative, not re-run. (3) Nothing retracted from published
+numbers; the incumbent-residual results stand as measured.
+
+**Open for the next session:** merge decisions (consolidated / eq-fidelity-ladder /
+eq-learned) — ask the user; the Poisson quadrature-free cell (designed in the report §
+bonus, not run); `h` generalisation as the actual accuracy lever; adopt the exlin
+residual as default in future Burgers drivers.

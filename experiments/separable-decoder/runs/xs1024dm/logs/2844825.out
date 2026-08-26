@@ -1,0 +1,61 @@
+host=pax010 gpu=NVIDIA H200
+jax_backend=gpu
+stage MANIFEST OK
+88589accc95e73730d2962ebecdca015d844026104c4a15dc293282a7678ec5e  /cluster/tufts/paralab/tawal01/exlin/xs1024dm/in/sep_hfit_dense_mid_N1024_dense.pkl
+jax_backend=gpu device=cuda:0 ROUND4-SPEED N=1024 ckpt=sep_hfit_dense_mid_N1024_dense.pkl
+  test data: 8 fresh trajectories, worst FOM rel residual 9.97e-13
+  NNLS-EQ exlin N=1024 k=32 M=64 m=256 adv-only: pool 65536 support 256 (+0 pad) rel fit 4.70e-03 (row p95 1.4e-01, max 1.8e+02) [25s]
+  GATE 0 [ctrl]: 3.51e-15
+  GATE L (exlin linear vs full-grid linear) [ctrl]: 3.02e-15
+  GATE A (exlin advection vs incumbent advection) [ctrl]: 2.99e-14
+  NNLS-EQ exlin N=1024 k=32 M=256 m=1024 adv-only: pool 65536 support 1024 (+0 pad) rel fit 5.53e-04 (row p95 1.5e-01, max 1.1e+02) [520s]
+  GATE 0 [M256]: 1.38e-15
+  GATE L (exlin linear vs full-grid linear) [M256]: 6.09e-15
+  GATE A (exlin advection vs incumbent advection) [M256]: 0.00e+00
+  trajectory parameters: canonical 576 + 4032 appended from seed 1000 (recorded in the checkpoint)
+  encoder[speed r4 u0->z0 N=1024]: rel-MSE 3.174e-02 on 4608 training pairs [4s]
+  IC gram vs full: |dz|/(1+|z|) 4.43e-11, ||r|| rel diff 1.50e-10
+  variant LM step vs incumbent at stall=1e-12: max |dz| 0.00e+00
+   PROFILE ic_full                           171.6861 ms
+   PROFILE rollout_extrap                     99.4497 ms
+   PROFILE ic_gram                            10.1989 ms
+   PROFILE lm_step_budget8                     1.4378 ms
+   PROFILE decode_full_grid_51                 1.4232 ms
+   PROFILE lm_step_budget4                     0.8301 ms
+   PROFILE lm_step_budget2                     0.5430 ms
+   PROFILE lm_step_budget1                     0.4225 ms
+   PROFILE h_track_value                       0.3563 ms
+   PROFILE weak_residual_and_jacobian          0.1422 ms
+   PROFILE h_track_jacobian                    0.1177 ms
+   PROFILE bank_jacobian_Gst_dhdz              0.1161 ms
+   PROFILE prev_of                             0.0604 ms
+   PROFILE bank_value_Gst_h                    0.0576 ms
+   PROFILE weak_residual_r_w                   0.0549 ms
+   VARIANT base                       158.35 ms  err 7.977e-03  jac 410  ic_jac 20.9  {'budget': 3, 'stalled': 397}
+   VARIANT gram                        99.48 ms  err 7.977e-03  jac 409  ic_jac 20.9  {'budget': 3, 'stalled': 397}
+   VARIANT gram+stall1e-06             47.19 ms  err 7.978e-03  jac 232  ic_jac 20.9  {'budget': 1, 'stalled': 399}
+   VARIANT gram+stall1e-04             39.16 ms  err 7.980e-03  jac 186  ic_jac 20.9  {'stalled': 400}
+   VARIANT gram+stall1e-03             35.58 ms  err 7.988e-03  jac 171  ic_jac 20.9  {'stalled': 400}
+   VARIANT gram+stall1e-02             33.88 ms  err 8.008e-03  jac 162  ic_jac 20.9  {'stalled': 400}
+   VARIANT gram+budget8                79.16 ms  err 1.059e-02  jac 369  ic_jac 20.9  {'budget': 205, 'stalled': 195}
+   VARIANT gram+budget5                57.79 ms  err 4.236e-01  jac 203  ic_jac 20.9  {'budget': 382, 'stalled': 18}
+   VARIANT gram+budget3                33.05 ms  err 7.908e-01  jac 88  ic_jac 20.9  {'budget': 400}
+   VARIANT gram+budget2                25.93 ms  err 7.908e-01  jac 75  ic_jac 20.9  {'budget': 400}
+   VARIANT gram+budget1                18.78 ms  err 7.909e-01  jac 62  ic_jac 20.9  {'budget': 400}
+   VARIANT gram+extrap0               114.13 ms  err 7.977e-03  jac 468  ic_jac 20.9  {'budget': 6, 'stalled': 394}
+   VARIANT gram+extrap1.5             108.69 ms  err 7.977e-03  jac 450  ic_jac 20.9  {'budget': 4, 'stalled': 396}
+  MATCHED paired: ROM[gram+stall1e-02] 33.58 ms vs tol-Newton(nt=3e-03,lt=2e-03) 62.94 ms -> 1.87x
+   BATCH   1 rom|gram+stall1e-02                total    44.60 ms ->  44.601 ms/query  err 9.958e-03
+   BATCH   1 rom|base                           total   238.73 ms -> 238.730 ms/query  err 9.882e-03
+   BATCH   1 fom|nt3e-03|lt2e-03                total    54.17 ms ->  54.166 ms/query  err 8.664e-04
+   BATCH   2 rom|gram+stall1e-02                total    49.69 ms ->  24.843 ms/query  err 1.094e-02
+   BATCH   2 rom|base                           total   466.30 ms -> 233.148 ms/query  err 1.082e-02
+   BATCH   2 fom|nt3e-03|lt2e-03                total    99.62 ms ->  49.810 ms/query  err 6.326e-04
+   BATCH   4 rom|gram+stall1e-02                total    55.06 ms ->  13.765 ms/query  err 8.315e-03
+   BATCH   4 rom|base                           total   784.75 ms -> 196.188 ms/query  err 8.256e-03
+   BATCH   4 fom|nt3e-03|lt2e-03                total   179.60 ms ->  44.901 ms/query  err 4.729e-04
+   BATCH   8 rom|gram+stall1e-02                total    63.62 ms ->   7.952 ms/query  err 8.008e-03
+   BATCH   8 rom|base                           total  1365.61 ms -> 170.701 ms/query  err 7.977e-03
+   BATCH   8 fom|nt3e-03|lt2e-03                total   418.92 ms ->  52.365 ms/query  err 3.486e-04
+DONE speed r4 N=1024 [1335s] -> /cluster/tufts/paralab/tawal01/exlin/xs1024dm/out/sep_burgers_exlin_dense_mid_N1024_dense_exlin.json
+ALL-DONE

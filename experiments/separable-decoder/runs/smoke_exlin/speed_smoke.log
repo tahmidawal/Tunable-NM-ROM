@@ -1,0 +1,37 @@
+jax_backend=gpu device=cuda:0 ROUND4-SPEED N=64 ckpt=sep_burgers_N64_K16_R64.pkl
+  test data: 2 fresh trajectories, worst FOM rel residual 9.99e-13
+  NNLS-EQ exlin N=64 k=16 M=64 m=256 adv-only: pool 3844 support 256 (+0 pad) rel fit 4.98e-03 (row p95 1.7e-01, max 3.7e+01) [214s]
+  GATE 0 [ctrl]: 4.15e-16
+  GATE L (exlin linear vs full-grid linear) [ctrl]: 4.36e-16
+  GATE A (exlin advection vs incumbent advection) [ctrl]: 0.00e+00
+  encoder[speed r4 u0->z0 N=64]: rel-MSE 3.152e-02 on 576 training pairs [41s]
+  IC gram vs full: |dz|/(1+|z|) 7.85e-13, ||r|| rel diff 8.88e-12
+  variant LM step vs incumbent at stall=1e-12: max |dz| 0.00e+00
+   PROFILE rollout_extrap                    124.2215 ms
+   PROFILE ic_full                             8.2400 ms
+   PROFILE ic_gram                             6.1631 ms
+   PROFILE lm_step_budget8                     3.8696 ms
+   PROFILE lm_step_budget4                     2.7923 ms
+   PROFILE lm_step_budget2                     2.0554 ms
+   PROFILE lm_step_budget1                     1.8455 ms
+   PROFILE decode_full_grid_51                 1.2440 ms
+   PROFILE weak_residual_and_jacobian          1.2270 ms
+   PROFILE h_track_value                       1.1075 ms
+   PROFILE h_track_jacobian                    1.0698 ms
+   PROFILE bank_jacobian_Gst_dhdz              0.9597 ms
+   PROFILE weak_residual_r_w                   0.7107 ms
+   PROFILE prev_of                             0.6691 ms
+   PROFILE bank_value_Gst_h                    0.6293 ms
+   VARIANT base                       121.33 ms  err 2.938e-02  jac 242  ic_jac 14.5  {'stalled': 100}
+   VARIANT gram                       119.57 ms  err 2.938e-02  jac 244  ic_jac 15.0  {'stalled': 100}
+   VARIANT gram+stall1e-02             71.57 ms  err 2.939e-02  jac 158  ic_jac 15.0  {'stalled': 100}
+   VARIANT gram+budget3                62.71 ms  err 6.513e-01  jac 50  ic_jac 15.0  {'budget': 100}
+   VARIANT gram+extrap0               190.45 ms  err 2.938e-02  jac 370  ic_jac 15.0  {'stalled': 100}
+  MATCHED paired: ROM[gram+stall1e-02] 71.15 ms vs tol-Newton(nt=1e-02,lt=5e-04) 33.56 ms -> 0.47x
+   BATCH   1 rom|gram+stall1e-02                total    78.52 ms ->  78.518 ms/query  err 2.523e-02
+   BATCH   1 rom|base                           total   152.97 ms -> 152.972 ms/query  err 2.522e-02
+   BATCH   1 fom|nt1e-02|lt5e-04                total    35.93 ms ->  35.927 ms/query  err 4.128e-04
+   BATCH   2 rom|gram+stall1e-02                total   100.36 ms ->  50.182 ms/query  err 2.939e-02
+   BATCH   2 rom|base                           total   210.20 ms -> 105.098 ms/query  err 2.938e-02
+   BATCH   2 fom|nt1e-02|lt5e-04                total    39.03 ms ->  19.517 ms/query  err 2.879e-04
+DONE speed r4 N=64 [529s] -> runs/smoke_exlin/sep_burgers_exlin_N64_smoke_exlin.json

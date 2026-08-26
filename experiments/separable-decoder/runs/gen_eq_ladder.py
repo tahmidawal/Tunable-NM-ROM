@@ -52,12 +52,14 @@ def main(paths):
         out.append(f"GPU {c.get('gpu')} · backend {c.get('backend')} · job "
                    f"{c.get('slurm_job')} · n_test {c['n_test']} · stall {c['stall']} "
                    f"· extrap {c['extrap']} · tail-capped NNLS {c.get('eq_tail')}\n")
-        out.append("\n**EQ sets and gates**\n\n| set | M | m | NNLS rel fit | row p95 | row max | gate 0 | gate F |\n|---|---|---|---|---|---|---|---|")
+        out.append("\n**EQ sets and gates**\n\n| set | M | m | NNLS rel fit | row p95 | row max | gate 0 | gate F | gate L | gate A |\n|---|---|---|---|---|---|---|---|---|---|")
+        gF_glob = (d.get("gates") or {}).get("gateF")
         for name, e in d["eq"].items():
             M = e.get("m", 0) // c["eq_m_factor"]
             out.append(f"| {name} | {M} | {e.get('m')} | {fmt(e.get('rel_fit'))} | "
                        f"{fmt(e.get('row_rel_p95'))} | {fmt(e.get('row_rel_max'))} | "
-                       f"{fmt(e.get('gate0'))} | {fmt(e.get('gateF'))} |")
+                       f"{fmt(e.get('gate0'))} | {fmt(e.get('gateF', gF_glob))} | "
+                       f"{fmt(e.get('gateL'))} | {fmt(e.get('gateA'))} |")
         if d.get("rollout"):
             out.append("\n**ROM rollouts used for the solver-path states** (full-grid "
                        "error vs truth; sanity, not the headline accuracy protocol)\n\n"
@@ -72,6 +74,7 @@ def main(paths):
                            f"{r['n_iters_total']} | {rs} |")
         recs = d["records"]
         for kind, title in (("solver", "Solver-path states (every LM iterate of the ROM rollout; off-manifold)"),
+                            ("heldout", "HELD-OUT fit-side iterates (training rollouts; excluded from every row build)"),
                             ("oracle", "Oracle states (full-grid LS code of the truth state; on-manifold)"),
                             ("train", "Training snapshots")):
             rk = [r for r in recs if r["kind"] == kind]

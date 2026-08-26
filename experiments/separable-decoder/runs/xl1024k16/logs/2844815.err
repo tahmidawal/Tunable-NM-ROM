@@ -1,0 +1,75 @@
+E0826 00:34:54.636115  793857 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 1s:
+
+  %dot_general.11 = f64[1280,1024]{1,0} dot(%constant.46, %constant.29), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:35:01.470696  793703 slow_operation_alarm.cc:140] The operation took 7.834654118s
+Constant folding an instruction is taking > 1s:
+
+  %dot_general.11 = f64[1280,1024]{1,0} dot(%constant.46, %constant.29), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:35:03.529871  793857 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 2s:
+
+  %dot_general.12 = f64[1280,512]{1,0} dot(%constant.54, %constant.30), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=15}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:35:05.422169  793703 slow_operation_alarm.cc:140] The operation took 3.892378804s
+Constant folding an instruction is taking > 2s:
+
+  %dot_general.12 = f64[1280,512]{1,0} dot(%constant.54, %constant.30), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=15}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:35:11.897594  793857 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 4s:
+
+  %dot_general.43 = f64[1280,1024]{1,0} dot(%constant.96, %constant.54), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:35:15.732766  793703 slow_operation_alarm.cc:140] The operation took 7.835240308s
+Constant folding an instruction is taking > 4s:
+
+  %dot_general.43 = f64[1280,1024]{1,0} dot(%constant.96, %constant.54), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:44:28.896910  793857 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 8s:
+
+  %dot_general.11 = f64[5120,1024]{1,0} dot(%constant.46, %constant.29), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:44:52.030478  793703 slow_operation_alarm.cc:140] The operation took 31.133650217s
+Constant folding an instruction is taking > 8s:
+
+  %dot_general.11 = f64[5120,1024]{1,0} dot(%constant.46, %constant.29), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:45:32.423632  793857 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 16s:
+
+  %dot_general.43 = f64[5120,1024]{1,0} dot(%constant.96, %constant.54), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 00:45:47.960103  793703 slow_operation_alarm.cc:140] The operation took 31.536546164s
+Constant folding an instruction is taking > 16s:
+
+  %dot_general.43 = f64[5120,1024]{1,0} dot(%constant.96, %constant.54), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(rJ)/dot_general" stack_frame_id=18}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.

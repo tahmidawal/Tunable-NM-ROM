@@ -1,0 +1,44 @@
+host=pax009 gpu=NVIDIA H200
+jax_backend=gpu
+stage MANIFEST OK
+e780fd8a678f57354811bd45e67481d16822e49980492d34f72ce99ed343e921  /cluster/tufts/paralab/tawal01/exlin/xl1024k16/in/sep_burgers_r3_N1024_K16_R512.pkl
+jax_backend=gpu device=cuda:0 EQ-LADDER N=1024 ckpt=sep_burgers_r3_N1024_K16_R512.pkl
+  test data: 4 fresh trajectories, worst FOM rel residual 8.68e-13
+  EQ-fit bank vs meshfree full-interior decode: 5.71e-16
+  NNLS-EQ eq-ladder N=1024 k=16 M=64 m=256 adv-only: pool 65536 support 256 (+0 pad) rel fit 5.83e-03 (row p95 2.5e-01, max 9.4e+01) [26s]
+  GATE 0 [ctrl]: 1.60e-15
+  GATE F skipped at N=1024 (> FULL_GATE_MAX_N)
+  GATE L (exlin linear vs full-grid linear) [ctrl]: 1.40e-15
+  GATE A (exlin advection vs incumbent advection) [ctrl]: 5.46e-14
+  NNLS-EQ eq-ladder N=1024 k=16 M=256 m=1024 adv-only: pool 65536 support 1024 (+0 pad) rel fit 5.21e-04 (row p95 1.4e-01, max 8.0e+01) [490s]
+  GATE 0 [M256]: 7.70e-16
+  GATE F skipped at N=1024 (> FULL_GATE_MAX_N)
+  GATE L (exlin linear vs full-grid linear) [M256]: 3.86e-15
+  GATE A (exlin advection vs incumbent advection) [M256]: 0.00e+00
+  [ctrl] traj 0: rollout err 6.075e-03 (t0 4.61e-03, t1 3.67e-03, t50 1.10e-02), 108 LM iterates recorded [3s]
+  [ctrl] traj 1: rollout err 7.519e-02 (t0 2.29e-01, t1 2.00e-01, t50 3.75e-02), 111 LM iterates recorded [1s]
+  [ctrl] traj 2: rollout err 9.672e-03 (t0 9.33e-03, t1 3.32e-02, t50 8.63e-03), 130 LM iterates recorded [1s]
+  [ctrl] traj 3: rollout err 2.115e-02 (t0 1.53e-02, t1 3.83e-02, t50 2.56e-02), 134 LM iterates recorded [1s]
+  [M256] traj 0: rollout err 5.885e-03 (t0 4.61e-03, t1 3.67e-03, t50 1.04e-02), 107 LM iterates recorded [3s]
+  [M256] traj 1: rollout err 7.051e-02 (t0 2.29e-01, t1 1.99e-01, t50 3.64e-02), 113 LM iterates recorded [2s]
+  [M256] traj 2: rollout err 6.811e-03 (t0 9.33e-03, t1 1.30e-02, t50 7.63e-03), 150 LM iterates recorded [2s]
+  [M256] traj 3: rollout err 9.810e-03 (t0 1.53e-02, t1 1.42e-02, t50 1.39e-02), 152 LM iterates recorded [2s]
+  oracle traj 0: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 1: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 2: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 3: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  training snapshots: 16 states
+  ctrl  solver t= 1- 1 n=  48  (b) 7.49e-02 [lin 2.8e-14 adv 7.5e-02]  (c1) 3.68e-01 cos 0.7304  (c2) 1.05e-03  (c3) 1.47e-01 cos 0.9638
+  ctrl  solver t= 2- 2 n=  21  (b) 1.59e-01 [lin 4.5e-14 adv 1.6e-01]  (c1) 5.43e-01 cos 0.5417  (c2) 8.63e-04  (c3) 4.18e-01 cos 0.7668
+  ctrl  solver t= 3- 4 n=  41  (b) 1.75e-01 [lin 5.4e-14 adv 1.8e-01]  (c1) 4.44e-01 cos 0.6632  (c2) 7.67e-04  (c3) 3.53e-01 cos 0.8284
+  ctrl  solver t= 5- 9 n=  45  (b) 3.08e-01 [lin 1.3e-13 adv 3.1e-01]  (c1) 5.48e-01 cos 0.5384  (c2) 6.05e-04  (c3) 6.21e-01 cos 0.6896
+  ctrl  solver t=10-24 n= 120  (b) 4.05e-01 [lin 2.2e-13 adv 4.0e-01]  (c1) 6.57e-01 cos 0.4589  (c2) 5.18e-04  (c3) 6.94e-01 cos 0.3565
+  ctrl  solver t=25-50 n= 208  (b) 4.80e-01 [lin 2.4e-13 adv 4.8e-01]  (c1) 7.21e-01 cos 0.2623  (c2) 5.76e-04  (c3) 8.27e-01 cos 0.3890
+  M256  solver t= 1- 1 n=  79  (b) 1.28e-02 [lin 3.9e-14 adv 1.3e-02]  (c1) 1.43e-01 cos 0.9735  (c2) 8.14e-05  (c3) 2.09e-02 cos 0.9998
+  M256  solver t= 2- 2 n=  43  (b) 1.05e-02 [lin 5.7e-14 adv 1.0e-02]  (c1) 6.44e-02 cos 0.9856  (c2) 3.34e-05  (c3) 5.43e-02 cos 0.9934
+  M256  solver t= 3- 4 n=  31  (b) 1.83e-02 [lin 1.1e-13 adv 1.8e-02]  (c1) 1.90e-01 cos 0.9286  (c2) 3.44e-05  (c3) 3.04e-01 cos 0.8405
+  M256  solver t= 5- 9 n=  41  (b) 2.99e-02 [lin 2.0e-13 adv 3.0e-02]  (c1) 2.30e-01 cos 0.9201  (c2) 3.30e-05  (c3) 5.82e-01 cos 0.4854
+  M256  solver t=10-24 n= 120  (b) 5.24e-02 [lin 3.0e-13 adv 5.2e-02]  (c1) 5.22e-01 cos 0.6647  (c2) 2.65e-05  (c3) 5.11e-01 cos 0.6470
+  M256  solver t=25-50 n= 208  (b) 4.57e-02 [lin 3.2e-13 adv 4.6e-02]  (c1) 5.14e-01 cos 0.6669  (c2) 2.12e-05  (c3) 5.51e-01 cos 0.6422
+DONE -> /cluster/tufts/paralab/tawal01/exlin/xl1024k16/out/sep_eq_ladder_N1024_K16_r3d_exlin.json [899s]
+ALL-DONE

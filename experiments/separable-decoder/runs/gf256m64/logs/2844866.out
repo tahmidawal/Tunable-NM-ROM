@@ -1,0 +1,82 @@
+host=pax052 gpu=NVIDIA A100-PCIE-40GB
+jax_backend=gpu
+stage MANIFEST OK
+3e98ca0067a3b3b65bf2ad9ff7bd83ea41cab11ec097ea726ad08c19f12b93ed  /cluster/tufts/paralab/tawal01/exlin/gf256m64/in/sep_hfit_dense_mid_N256.pkl
+jax_backend=gpu device=cuda:0 EQ-LADDER N=256 ckpt=sep_hfit_dense_mid_N256.pkl
+  test data: 4 fresh trajectories, worst FOM rel residual 9.86e-13
+  EQ-fit bank vs meshfree full-interior decode: 3.21e-15
+  NNLS-EQ gradfit N=256 k=16 M=64 m=256 inc: pool 64516 support 256 (+0 pad) rel fit 4.02e-03 (row p95 4.2e-01, max 1.4e+03) [34s]
+  GATE 0 [inc]: 6.57e-15
+  GATE F (full-grid ref vs make_weak_ops on interior): 2.85e-16
+  GATE L (exlin linear vs full-grid linear) [inc]: 3.48e-15
+  GATE A (exlin advection vs incumbent advection) [inc]: 0.00e+00
+  NNLS-EQ gradfit N=256 k=16 M=64 m=256 adv-only: pool 64516 support 256 (+0 pad) rel fit 4.26e-03 (row p95 1.1e-01, max 1.3e+01) [27s]
+  GATE 0 [adv]: 1.86e-15
+  GATE L (exlin linear vs full-grid linear) [adv]: 3.66e-16
+  GATE A (exlin advection vs incumbent advection) [adv]: 0.00e+00
+  collect traj 389 (nu 1.001e-02): 156 iterates
+  collect traj 93 (nu 1.392e-02): 110 iterates
+  collect traj 401 (nu 2.014e-02): 122 iterates
+  collect traj 61 (nu 2.720e-02): 155 iterates
+  collect traj 510 (nu 3.665e-02): 118 iterates
+  collect traj 536 (nu 5.176e-02): 141 iterates
+  collect traj 147 (nu 7.208e-02): 154 iterates
+  collect traj 1 (nu 9.990e-02): 146 iterates
+  collected 1102 fit-side LM iterates [9s]
+  built 96 state row blocks (+96 grad blocks) [2s]
+  NNLS-ST gradfit N=256 k=16 M=64 m=256 path: 6144 state rows + 0 grad rows (w=0)  state rel fit 3.50e-03  grad rel fit nan [30s]
+  GATE 0 [path]: 2.33e-15
+  GATE L (exlin linear vs full-grid linear) [path]: 1.83e-15
+  GATE A (exlin advection vs incumbent advection) [path]: 0.00e+00
+  NNLS-ST gradfit N=256 k=16 M=64 m=256 grad(w=2): 6144 state rows + 1536 grad rows (w=2)  state rel fit 3.46e-03  grad rel fit 9.06e-04 [31s]
+  GATE 0 [grad]: 1.90e-15
+  GATE L (exlin linear vs full-grid linear) [grad]: 1.56e-15
+  GATE A (exlin advection vs incumbent advection) [grad]: 0.00e+00
+  held-out iterates evaluated: 64 states x 4 sets
+  [inc] traj 0: rollout err 6.544e-03 (t0 5.21e-03, t1 4.40e-03, t50 9.16e-03), 133 LM iterates recorded [2s]
+  [inc] traj 1: rollout err 3.522e-02 (t0 9.04e-02, t1 7.56e-02, t50 1.37e-02), 137 LM iterates recorded [1s]
+  [inc] traj 2: rollout err 1.016e-02 (t0 8.54e-03, t1 1.77e-02, t50 8.45e-03), 138 LM iterates recorded [1s]
+  [inc] traj 3: rollout err 8.735e-03 (t0 1.45e-02, t1 2.34e-02, t50 7.85e-03), 138 LM iterates recorded [1s]
+  [adv] traj 0: rollout err 6.561e-03 (t0 5.21e-03, t1 4.40e-03, t50 9.21e-03), 133 LM iterates recorded [1s]
+  [adv] traj 1: rollout err 3.607e-02 (t0 9.04e-02, t1 7.63e-02, t50 1.43e-02), 135 LM iterates recorded [1s]
+  [adv] traj 2: rollout err 8.943e-03 (t0 8.54e-03, t1 1.77e-02, t50 8.02e-03), 153 LM iterates recorded [1s]
+  [adv] traj 3: rollout err 8.617e-03 (t0 1.45e-02, t1 2.29e-02, t50 7.85e-03), 136 LM iterates recorded [1s]
+  [path] traj 0: rollout err 6.522e-03 (t0 5.21e-03, t1 4.39e-03, t50 9.11e-03), 134 LM iterates recorded [2s]
+  [path] traj 1: rollout err 3.774e-02 (t0 9.04e-02, t1 7.57e-02, t50 1.70e-02), 132 LM iterates recorded [1s]
+  [path] traj 2: rollout err 1.528e-02 (t0 8.54e-03, t1 1.86e-02, t50 1.74e-02), 144 LM iterates recorded [1s]
+  [path] traj 3: rollout err 9.028e-03 (t0 1.45e-02, t1 2.27e-02, t50 8.97e-03), 142 LM iterates recorded [1s]
+  [grad] traj 0: rollout err 6.574e-03 (t0 5.21e-03, t1 4.39e-03, t50 9.13e-03), 134 LM iterates recorded [2s]
+  [grad] traj 1: rollout err 3.780e-02 (t0 9.04e-02, t1 7.61e-02, t50 1.73e-02), 133 LM iterates recorded [1s]
+  [grad] traj 2: rollout err 1.330e-02 (t0 8.54e-03, t1 1.81e-02, t50 1.49e-02), 140 LM iterates recorded [1s]
+  [grad] traj 3: rollout err 1.057e-02 (t0 1.45e-02, t1 2.30e-02, t50 1.31e-02), 143 LM iterates recorded [1s]
+  oracle traj 0: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 1: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 2: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 3: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  training snapshots: 16 states
+  inc   solver t= 1- 1 n=  70  (b) 1.02e-01 [lin 7.5e-14 adv 1.0e-01]  (c1) 4.05e-01 cos 0.7537  (c2) 2.54e-03  (c3) 2.11e-01 cos 0.9266
+  inc   solver t= 2- 2 n=  26  (b) 1.51e-01 [lin 8.7e-14 adv 1.5e-01]  (c1) 3.62e-01 cos 0.7046  (c2) 2.01e-03  (c3) 5.05e-01 cos 0.6931
+  inc   solver t= 3- 4 n=  32  (b) 2.15e-01 [lin 1.1e-13 adv 2.2e-01]  (c1) 4.19e-01 cos 0.6551  (c2) 1.59e-03  (c3) 6.86e-01 cos 0.5642
+  inc   solver t= 5- 9 n=  60  (b) 2.35e-01 [lin 1.6e-13 adv 2.4e-01]  (c1) 5.36e-01 cos 0.5119  (c2) 8.60e-04  (c3) 7.50e-01 cos 0.5610
+  inc   solver t=10-24 n= 150  (b) 2.49e-01 [lin 2.8e-13 adv 2.5e-01]  (c1) 5.63e-01 cos 0.4583  (c2) 4.01e-04  (c3) 8.06e-01 cos 0.5268
+  inc   solver t=25-50 n= 208  (b) 2.22e-01 [lin 3.7e-13 adv 2.2e-01]  (c1) 5.26e-01 cos 0.4604  (c2) 3.02e-04  (c3) 8.43e-01 cos 0.2702
+  adv   solver t= 1- 1 n=  69  (b) 9.76e-02 [lin 6.6e-14 adv 9.8e-02]  (c1) 3.84e-01 cos 0.7604  (c2) 2.50e-03  (c3) 1.74e-01 cos 0.9524
+  adv   solver t= 2- 2 n=  24  (b) 1.50e-01 [lin 9.7e-14 adv 1.5e-01]  (c1) 3.89e-01 cos 0.7366  (c2) 1.72e-03  (c3) 5.75e-01 cos 0.5686
+  adv   solver t= 3- 4 n=  29  (b) 2.04e-01 [lin 1.3e-13 adv 2.0e-01]  (c1) 4.62e-01 cos 0.6409  (c2) 1.31e-03  (c3) 6.61e-01 cos 0.5345
+  adv   solver t= 5- 9 n=  60  (b) 2.40e-01 [lin 1.7e-13 adv 2.4e-01]  (c1) 4.87e-01 cos 0.6715  (c2) 7.70e-04  (c3) 7.31e-01 cos 0.4779
+  adv   solver t=10-24 n= 150  (b) 2.23e-01 [lin 2.9e-13 adv 2.2e-01]  (c1) 4.63e-01 cos 0.7809  (c2) 3.12e-04  (c3) 8.46e-01 cos 0.3371
+  adv   solver t=25-50 n= 225  (b) 2.31e-01 [lin 4.1e-13 adv 2.3e-01]  (c1) 4.61e-01 cos 0.8010  (c2) 2.31e-04  (c3) 8.67e-01 cos 0.3164
+  path  solver t= 1- 1 n=  70  (b) 1.34e-01 [lin 6.5e-14 adv 1.3e-01]  (c1) 3.23e-01 cos 0.8991  (c2) 2.20e-03  (c3) 2.52e-01 cos 0.9051
+  path  solver t= 2- 2 n=  24  (b) 2.16e-01 [lin 8.4e-14 adv 2.2e-01]  (c1) 3.14e-01 cos 0.8723  (c2) 1.87e-03  (c3) 7.13e-01 cos 0.4725
+  path  solver t= 3- 4 n=  35  (b) 3.33e-01 [lin 1.3e-13 adv 3.3e-01]  (c1) 3.99e-01 cos 0.8335  (c2) 1.64e-03  (c3) 7.93e-01 cos 0.4093
+  path  solver t= 5- 9 n=  62  (b) 3.96e-01 [lin 1.6e-13 adv 4.0e-01]  (c1) 4.70e-01 cos 0.8038  (c2) 1.10e-03  (c3) 8.50e-01 cos 0.2894
+  path  solver t=10-24 n= 148  (b) 4.54e-01 [lin 2.5e-13 adv 4.5e-01]  (c1) 5.09e-01 cos 0.7559  (c2) 6.05e-04  (c3) 9.02e-01 cos 0.2510
+  path  solver t=25-50 n= 213  (b) 4.89e-01 [lin 3.2e-13 adv 4.9e-01]  (c1) 5.36e-01 cos 0.6176  (c2) 8.06e-04  (c3) 9.40e-01 cos 0.1446
+  grad  solver t= 1- 1 n=  70  (b) 1.11e-01 [lin 7.2e-14 adv 1.1e-01]  (c1) 2.74e-01 cos 0.9079  (c2) 2.89e-03  (c3) 1.99e-01 cos 0.9299
+  grad  solver t= 2- 2 n=  23  (b) 1.80e-01 [lin 1.0e-13 adv 1.8e-01]  (c1) 3.21e-01 cos 0.8140  (c2) 1.79e-03  (c3) 5.75e-01 cos 0.6001
+  grad  solver t= 3- 4 n=  33  (b) 2.73e-01 [lin 1.2e-13 adv 2.7e-01]  (c1) 4.19e-01 cos 0.7231  (c2) 1.55e-03  (c3) 7.44e-01 cos 0.4380
+  grad  solver t= 5- 9 n=  60  (b) 3.22e-01 [lin 1.6e-13 adv 3.2e-01]  (c1) 4.81e-01 cos 0.7093  (c2) 1.06e-03  (c3) 8.10e-01 cos 0.3852
+  grad  solver t=10-24 n= 151  (b) 4.37e-01 [lin 2.4e-13 adv 4.4e-01]  (c1) 5.11e-01 cos 0.6812  (c2) 7.93e-04  (c3) 9.02e-01 cos 0.2398
+  grad  solver t=25-50 n= 213  (b) 5.19e-01 [lin 3.0e-13 adv 5.2e-01]  (c1) 5.87e-01 cos 0.4917  (c2) 1.06e-03  (c3) 9.20e-01 cos 0.1458
+DONE -> /cluster/tufts/paralab/tawal01/exlin/gf256m64/out/sep_eq_gradfit_N256_K16_dense_mid_M64.json [857s]
+ALL-DONE

@@ -194,3 +194,23 @@ refits can overfit the fit-state distribution; on this checkpoint they do. (Cros
 the adv arm's rollout 1.505e-2 reproduces xl256dm's ctrl rollout to the digit.) The
 remaining arms (gf256m256, gf1024m256, nf256*, nf1024m256) will say whether this splits
 by checkpoint/K or by node budget.
+
+## 01:44 — the fine-budget arms: quadrature learning has nothing to win there
+
+- **gf1024m256** (2844870): at m=1024 all four quadratures TIE on rollout
+  (1.433–1.440e-2) and `inc` even has the best test-path (b) (0.051). The same-target
+  lever only matters at coarse budgets.
+- **nf1024m256** (2844912): a clean reportable negative for node learning at the fine
+  budget — the init (grad set) loss was already 1.28e-5 (vs 1.3e-2 on the coarse arm,
+  three orders lower), the optimizer wandered (final refit 2.42e-5, worse than init),
+  the learned set certifies worse than both baselines, rollouts tied (1.44e-2). Where
+  quadrature is not the binding error, there is nothing for learned nodes to win, and
+  the optimizer can only overfit.
+
+Emerging synthesis (pending the last two N=256 M=256 arms): (1) exact linear terms +
+advection-only refit = unambiguous default, gains everywhere it can gain, zero cost;
+(2) same-target/learned quadratures pay only at COARSE budgets and are
+checkpoint-dependent (N=1024 K=32: node −3% rollout vs grad and −19% vs adv; N=256
+dense_mid: the whole same-target family is worse than adv on rollout, node recovers
+part of it); (3) at fine budgets the quadrature is simply not the limiter — `h`'s
+generalisation is, as the lab log already says.

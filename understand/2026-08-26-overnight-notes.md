@@ -66,3 +66,49 @@ the residual error is now purely the advection term, as designed. The
 advection-only NNLS fit at M=64/m=256: rel fit 4.98e-3 on advection rows
 (same support/pad shape as the incumbent fit). Speed-driver smoke reproduced the
 fit to the digit (determinism across drivers confirmed).
+
+## 00:52 — stage-1 cluster wave submitted; first N=1024 results pulled
+
+Six jobs in namespace `exlin/`: ladder arms xl256r3a (2844813), xl256dm (2844814),
+xl1024k16 (2844815), xl1024k32 (2844816); speed A/B arms xs256dm (2844824, same
+checkpoint+protocol as dn256b) and xs1024dm (2844825, partner of dn1024).
+One near-miss caught before submission: `exlin_common.py` was not matched by the stage
+script's `sep_*.py` glob — fixed and restaged before anything went up.
+
+**xl1024k16 and xl1024k32 already finished and pulled clean** (gpu preflight, MANIFEST,
+RESULTS.sha256, no captured-constant warnings; remote dirs deleted). On the K=32 r4a6
+checkpoint, exlin + advection-only refit vs the 2026-08-25 incumbent ladder, same states:
+
+| quantity (N=1024, K=32) | old (incumbent) | new (exlin + adv-only) |
+|---|---|---|
+| oracle (b), fine set M256 | 0.214 | **0.095** |
+| oracle c1 cos, fine set | 0.819 | **0.902** |
+| solver-path c3 cos, fine set | 0.659 | 0.805 |
+| rollout err, ctrl (m=256) | 3.03e-2 | **2.47e-2** |
+| rollout err, fine (m=1024) | 1.435e-2 | 1.435e-2 (unchanged) |
+
+Reading: the quadrature is measurably more faithful at fixed m (the residual error is now
+purely advection, and it is smaller), and the coarse-set rollout improves ~20%. The
+fine-set rollout does NOT move — consistent with "the binding rung is h's generalisation"
+from the lab log: at m=1024 the quadrature was already not the limiter for this checkpoint.
+Numbers above are from the two JSONs (commit on the experiment branch); the generated
+tables will be the report source.
+
+## 00:52 — stage-2 smoke: off-manifold + gradient rows are a big fidelity lever
+
+`sep_eq_gradfit.py` compares four node/weight sets at fixed m=256 (M=64), all online with
+the exact-linear residual, certified on HELD-OUT solver iterates (never in any fit).
+N=64 smoke (`runs/smoke_exlin/sep_eq_gradfit_N64_smoke_gradfit.json`):
+
+| set (what the NNLS sees) | held-out (b) | held-out c1 | c1 cos | c3 cos |
+|---|---|---|---|---|
+| inc — u+N rows at training codes (incumbent) | 5.1e-2 | 0.57 | 0.802 | 0.846 |
+| adv — N rows at training codes (stage 1) | 4.4e-2 | 0.45 | 0.595 | 0.648 |
+| path — N rows at off-manifold LM iterates | 7.8e-3 | 0.105 | 0.990 | 0.989 |
+| grad — path + frozen-J_f gradient rows | 9.0e-3 | **0.054** | **0.997** | 0.990 |
+
+WHERE the rows are evaluated (solver-path states instead of training codes) is worth
+~5× on the residual rung and ~4× on the gradient rung; the gradient-teacher rows halve
+the gradient error again. Test rollouts at N=64 are unchanged (~2.9e-2) — rollout impact
+is what the cluster arms at N=256/1024 will measure. Gradfit wave submitted:
+gf256m64 (2844866), gf256m256 (2844868), gf1024m64 (2844869), gf1024m256 (2844870).

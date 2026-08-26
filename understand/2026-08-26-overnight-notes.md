@@ -168,3 +168,29 @@ branch. The four-checkpoint picture, incumbent → exlin+adv-only at the same m:
   unchanged cost with the default (ctrl) EQ set.
 
 All six stage-1 cluster dirs deleted from `exlin/` after sha256+marker verification.
+
+## 01:12 — stage 3 first arm: learned nodes BEAT the convex baseline (N=1024 K=32, m=256)
+
+nf1024m64 (2844911, H200, pulled+deleted): optimization loss 1.32e-2 → 4.86e-4, mean node
+move 6.9e-3 (~7 grid spacings), all 256 weights positive, gate C 8.6e-14, gate L 2e-16-ish.
+Certification vs the convex sets, same m:
+
+| set | held-out (b) | held-out (c1) | (c1) cos | (c3) cos | test-path (b) | oracle (b) | rollout |
+|---|---|---|---|---|---|---|---|
+| adv (stage 1) | 0.406 | 0.677 | 0.458 | 0.469 | 0.389 | 1.315 | 2.467e-2 |
+| grad (stage 2) | 0.146 | 0.217 | 0.950 | 0.906 | 0.338 | 0.773 | 2.067e-2 |
+| **node (stage 3)** | **0.071** | **0.170** | **0.977** | **0.985** | **0.262** | **0.527** | **2.005e-2** |
+
+The success bar (beat grad on held-out c1/c3 AND on rollout at the same m) is MET on this
+arm. The gain also generalizes to the test path (0.338→0.262), unlike most of the stage-2
+convex gains.
+
+## 01:12 — but stage 2 does NOT transfer on the N=256 dense_mid checkpoint
+
+gf256m64 (2844866, pulled+deleted): held-out improves as always ((b) 0.19→0.05, c1 cos
+0.61→0.97 adv→grad) but the TEST-path (b) degrades 0.21→0.39 and the test rollouts get
+WORSE: inc 1.517e-2 / adv 1.505e-2 / path 1.714e-2 / grad 1.706e-2 (+13%). Same-target
+refits can overfit the fit-state distribution; on this checkpoint they do. (Cross-check:
+the adv arm's rollout 1.505e-2 reproduces xl256dm's ctrl rollout to the digit.) The
+remaining arms (gf256m256, gf1024m256, nf256*, nf1024m256) will say whether this splits
+by checkpoint/K or by node budget.

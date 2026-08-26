@@ -108,8 +108,12 @@ The ladder ranks the fixes; the ranking is the answer.
 2. **Refit the advection quadrature against the right target** (F1, F3). With the linear part
    exact, all m nodes serve `ΦᵀN(u)` only; fit them by NNLS on residual/gradient-fidelity rows
    (design doc §6.2 stage 2, "same-target NNLS"), including off-manifold solver iterates and
-   several ν. Still convex; still "learned"; no network change. Certify with this ladder, not
-   the rel-fit or the row tail.
+   several ν. Still convex, with one qualification (caught in review): the literal gradient
+   `g_s = J_sᵀR_s` is *quadratic* in `w`, so "match `g_f`" is not itself linear least squares;
+   the convex form freezes one factor with the full-grid teacher (rows `J_fᵀR_s(w) ≈ J_fᵀR_f`
+   and `J_s(w)ᵀR_f ≈ J_fᵀR_f`, alongside residual and Jacobian rows) and then certifies the
+   actual `J_sᵀR_s` with rung (c1). Still "learned"; no network change. Certify with this
+   ladder, not the rel-fit or the row tail.
 3. **Learned nodes or a learned weight network** only if the advection rung is still binding
    after 1–2. The ladder script is the test that would decide it.
 

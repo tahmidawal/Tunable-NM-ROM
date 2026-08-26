@@ -2856,7 +2856,10 @@ with line anchors. Both are the reason this entry exists in git rather than a sc
 
 **Verdict on "learn the quadrature".** Ranked by the ladder: (1) exact linear terms — free,
 no learning, removes the dominant part; (2) same-target NNLS for the advection term on
-residual/gradient-fidelity rows incl. off-manifold iterates — convex, no network change;
+residual/gradient-fidelity rows incl. off-manifold iterates — convex once one factor of
+`JᵀR` is frozen at the full-grid teacher (the literal gradient is quadratic in `w`; correction
+from the Codex-written explainer `understand/2026-08-25-eq-fidelity-ladder-explained.md`),
+no network change;
 (3) learned nodes/weights only if the advection rung still binds after 1–2. Joint `(g,h,w)`
 training is not motivated by anything measured.
 

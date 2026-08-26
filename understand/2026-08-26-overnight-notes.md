@@ -112,3 +112,42 @@ WHERE the rows are evaluated (solver-path states instead of training codes) is w
 the gradient error again. Test rollouts at N=64 are unchanged (~2.9e-2) — rollout impact
 is what the cluster arms at N=256/1024 will measure. Gradfit wave submitted:
 gf256m64 (2844866), gf256m256 (2844868), gf1024m64 (2844869), gf1024m256 (2844870).
+
+## 01:02 — STAGE-1 HEADLINE: −18% rollout error at N=1024, cost unchanged
+
+The A/B speed arms are back (same checkpoint, same protocol, same GPU type as the
+incumbent runs pulled in Task 0):
+
+| arm | rollout err (base variant) | matched-accuracy paired timing |
+|---|---|---|
+| N=256 incumbent (dn256b) | 8.96e-3 | ROM 43.9 ms vs FOM 16.4 ms → 0.37× |
+| **N=256 exlin (xs256dm, 2844824)** | **8.02e-3 (−11%)** | 46.9 vs 16.9 → 0.36× |
+| N=1024 incumbent (dn1024) | 9.69e-3 | 33.2 vs 63.2 → 1.90× |
+| **N=1024 exlin (xs1024dm, 2844825)** | **7.98e-3 (−18%)** | 33.6 vs 62.9 → 1.87× |
+
+Exact linear terms + advection-only node refit is a pure accuracy gain at zero cost:
+the paired speedup is unchanged within noise, and every accuracy variant in the sweep
+improved. Gates in both jobs: gate 0 ≤5.6e-15 (incumbent-form ops), gate L ≤3.4e-15,
+gate A ≤3.0e-14. This confirms the ladder's #1 fix prediction with the round-4 protocol.
+
+## 01:02 — stage-2 first cluster arm (gf1024m64): the gain is monotone in row quality
+
+N=1024, K=32, coarse set m=256 (job 2844869, pulled+deleted): rollout error
+inc 2.61e-2 → adv 2.47e-2 → path 2.19e-2 → **grad 2.07e-2** (−21% vs incumbent),
+monotone in what the NNLS rows see. Held-out fidelity: (b) 0.39→0.15, c1 cos
+0.46→0.95 (adv→grad). BUT the test-solver-path numbers move much less
+((b) 0.39→0.34) — there is a real generalisation gap between fit-side (training
+trajectory) iterates and test-trajectory iterates. Late-time test-path (b) is even
+slightly worse for path/grad than adv at this m. The other three gradfit arms
+(N=256 both m, N=1024 m=1024) are still running.
+
+## 01:02 — stage-3 smoke passed; 4 overnight arms submitted
+
+`sep_eq_nodefit.py` N=64 smoke: gate C (continuous machinery at grid init ≡ grid ops)
+8.4e-15; gate L [node] 2.2e-16; node optimization loss 5.67e-5 → 1.29e-5 with mean node
+move 2.8e-3 (~0.18 dx); learned nodes beat the stage-2 grad baseline on held-out (b)
+5.1e-3 vs 9.0e-3 (−43%) at c1 cos 0.998 / c3 cos 0.998. Overnight arms (VARIANTS=
+adv,grad,node, STEPS=3000/2000): nf256m64 (2844909), nf256m256 (2844910),
+nf1024m64 (2844911), nf1024m256 (2844912). Pull with
+`./runs/pull_exlin.sh <dir> <jobid> --delete` from the worktree's
+`experiments/separable-decoder/`.

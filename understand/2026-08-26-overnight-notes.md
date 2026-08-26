@@ -38,3 +38,31 @@ Branch `exp/2026-08-26-eq-learned` cut from `exp/2026-08-25-sepdec-consolidated`
 Cluster namespace for this session: `/cluster/tufts/paralab/tawal01/exlin/`.
 
 Next: Stage 1 — write `sep_burgers_exlin.py` (exact linear terms), gates L/A/F, N=64 smoke.
+
+## 00:32 — Stage 1 code written; N=64 ladder smoke PASSED (all gates green)
+
+Code (commit `633b2ae` + cluster scripts `_exlin`, on `exp/2026-08-26-eq-learned`):
+
+- `exlin_common.py` — `eq_fit_burgers_adv`: the NNLS node fit restricted to the
+  advection row blocks (the u rows are gone because the linear terms are now exact).
+  Same seed, same subsample size, same padding, same final refit as the incumbent fit.
+- `sep_eq_ladder.py` gained `EXLIN=1` (sampled residual computes the linear terms
+  exactly as `A h(z)` with `A = Φᵀ G_int` precomputed) and `EQ_ADV_ONLY=1`.
+- `sep_burgers_exlin.py` — the round-4/5 speed protocol (`sep_speed_r5.py`) on the
+  exact-linear residual; everything else byte-identical.
+
+**Gate rule change (the one the report §3 announced).** Gate 0 = bit-identity of the
+whole sampled residual to `make_weak_ops` cannot apply to the exlin residual BY
+DESIGN (the linear part is now a different — exact — computation). It still runs on
+the incumbent-form ops built on the same node set (code identity), and two new gates
+cover the change: **gate L** (exlin linear part vs full-grid linear part, exactness,
+≤1e-12) and **gate A** (exlin advection part vs incumbent advection part, ≤1e-12).
+
+**N=64 ladder smoke** (local GB10, jaxrun, ckpt `sep_burgers_N64_K16_R64.pkl`,
+`runs/smoke_exlin/`): gate 0 = 4.15e-16, gate F = 3.07e-16, **gate L = 4.36e-16,
+gate A = 0.00e+00**. And the structural claim measured: `b_lin` collapsed to
+1.3e-14–2.1e-13 (numerically zero) at every time bucket while (b) = `b_adv` —
+the residual error is now purely the advection term, as designed. The
+advection-only NNLS fit at M=64/m=256: rel fit 4.98e-3 on advection rows
+(same support/pad shape as the incumbent fit). Speed-driver smoke reproduced the
+fit to the digit (determinism across drivers confirmed).

@@ -214,3 +214,32 @@ checkpoint-dependent (N=1024 K=32: node −3% rollout vs grad and −19% vs adv;
 dense_mid: the whole same-target family is worse than adv on rollout, node recovers
 part of it); (3) at fine budgets the quadrature is simply not the limiter — `h`'s
 generalisation is, as the lab log already says.
+
+## 02:20 — session complete: everything landed, verified, and written up
+
+All 14 cluster jobs (2844813–2844912) are pulled, integrity-checked (backend=gpu,
+precision=highest, x64, no captured-constant warnings, sha256 both sides), committed on
+`exp/2026-08-26-eq-learned`, and their remote dirs deleted — the `exlin/` namespace is
+empty and the queue is clear. Nothing is left running.
+
+Where to read, in order:
+1. `understand/2026-08-26-exact-linear-and-gradient-eq-explained.md` — the Codex-written
+   plain-language explainer (every number verified against the report programmatically).
+2. `reports/2026-08-26-exact-linear-terms-and-gradient-eq.md` — findings F1–F8 with
+   generated tables T-X1..T-X5 (`reports/gen_2026-08-26-exlin.py`).
+3. `LAB-LOG.md` — "Where things stand — 2026-08-26" rewritten + the session entry.
+
+The one-paragraph summary: **exact linear terms are a zero-cost win (−18% rollout error
+at N=1024, −11% at N=256, paired speedup unchanged) and are now the recommended default
+residual.** Same-target quadrature refits and learned nodes both work exactly where
+quadrature binds (coarse m=256: learned nodes beat the convex baseline on every
+certification rung, rollout −3% vs grad / −19..−23% vs the incumbent at N=1024) and are a
+clean, honestly-reported negative at the fine budget, where all quadratures tie because
+`h`'s generalisation is the binding error. One negative-transfer surprise: on the N=256
+dense_mid checkpoint the same-target family HURTS test rollouts (+13%) despite large
+held-out gains — any state-conditioned refit must be validated per checkpoint.
+
+Left open (also in the lab log): merge decisions for the three branches (please decide —
+I did not merge anything on my own); the Poisson quadrature-free cell (designed, not run
+— the optional bonus wall-clock did not reach); `h` generalisation as the next accuracy
+lever.

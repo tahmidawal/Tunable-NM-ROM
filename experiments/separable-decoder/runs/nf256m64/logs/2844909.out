@@ -1,0 +1,88 @@
+host=pax106 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+3e98ca0067a3b3b65bf2ad9ff7bd83ea41cab11ec097ea726ad08c19f12b93ed  /cluster/tufts/paralab/tawal01/exlin/nf256m64/in/sep_hfit_dense_mid_N256.pkl
+jax_backend=gpu device=cuda:0 EQ-LADDER N=256 ckpt=sep_hfit_dense_mid_N256.pkl
+  test data: 4 fresh trajectories, worst FOM rel residual 9.86e-13
+  EQ-fit bank vs meshfree full-interior decode: 3.96e-15
+  NNLS-EQ gradfit N=256 k=16 M=64 m=256 adv-only: pool 64516 support 256 (+0 pad) rel fit 4.26e-03 (row p95 1.1e-01, max 1.3e+01) [22s]
+  GATE 0 [adv]: 4.77e-15
+  GATE F (full-grid ref vs make_weak_ops on interior): 2.85e-16
+  GATE L (exlin linear vs full-grid linear) [adv]: 3.32e-15
+  GATE A (exlin advection vs incumbent advection) [adv]: 0.00e+00
+  collect traj 389 (nu 1.001e-02): 156 iterates
+  collect traj 93 (nu 1.392e-02): 110 iterates
+  collect traj 401 (nu 2.014e-02): 122 iterates
+  collect traj 61 (nu 2.720e-02): 155 iterates
+  collect traj 510 (nu 3.665e-02): 118 iterates
+  collect traj 536 (nu 5.176e-02): 141 iterates
+  collect traj 147 (nu 7.208e-02): 154 iterates
+  collect traj 1 (nu 9.990e-02): 146 iterates
+  collected 1102 fit-side LM iterates [8s]
+  built 96 state row blocks (+96 grad blocks) + frozen teachers [2s]
+  NNLS-ST gradfit N=256 k=16 M=64 m=256 grad(w=2): 6144 state rows + 1536 grad rows (w=2)  state rel fit 3.46e-03  grad rel fit 9.06e-04 [25s]
+  GATE 0 [grad]: 2.24e-15
+  GATE L (exlin linear vs full-grid linear) [grad]: 3.91e-16
+  GATE A (exlin advection vs incumbent advection) [grad]: 0.00e+00
+  GATE C (continuous machinery at grid init vs grid ops): 5.95e-14
+  node-opt step     0  loss 2.4051e-03 (b 2.364e-03, g 4.110e-05) [3s]
+  node-opt step   150  loss 1.1077e-03 (b 1.078e-03, g 2.924e-05) [4s]
+  node-opt step   300  loss 9.0860e-04 (b 8.851e-04, g 2.351e-05) [4s]
+  node-opt step   450  loss 7.7876e-04 (b 7.585e-04, g 2.025e-05) [5s]
+  node-opt step   600  loss 6.5539e-04 (b 6.321e-04, g 2.326e-05) [17s]
+  node-opt step   750  loss 5.2292e-04 (b 5.094e-04, g 1.357e-05) [17s]
+  node-opt step   900  loss 4.8048e-04 (b 4.676e-04, g 1.289e-05) [17s]
+  node-opt step  1050  loss 4.0951e-04 (b 3.987e-04, g 1.082e-05) [28s]
+  node-opt step  1200  loss 3.7610e-04 (b 3.661e-04, g 1.001e-05) [29s]
+  node-opt step  1350  loss 3.4329e-04 (b 3.338e-04, g 9.498e-06) [29s]
+  node-opt step  1500  loss 3.0477e-04 (b 2.967e-04, g 8.105e-06) [40s]
+  node-opt step  1650  loss 4.8828e-04 (b 4.682e-04, g 2.010e-05) [40s]
+  node-opt step  1800  loss 3.1300e-04 (b 3.029e-04, g 1.013e-05) [41s]
+  node-opt step  1950  loss 2.5064e-04 (b 2.439e-04, g 6.786e-06) [41s]
+  node-opt step  2100  loss 5.2554e-04 (b 5.020e-04, g 2.352e-05) [52s]
+  node-opt step  2250  loss 4.1904e-04 (b 4.052e-04, g 1.387e-05) [52s]
+  node-opt step  2400  loss 2.6021e-04 (b 2.517e-04, g 8.540e-06) [52s]
+  node-opt step  2550  loss 2.2389e-04 (b 2.178e-04, g 6.073e-06) [63s]
+  node-opt step  2700  loss 1.9380e-04 (b 1.887e-04, g 5.068e-06) [63s]
+  node-opt step  2850  loss 1.2067e-03 (b 1.146e-03, g 6.067e-05) [64s]
+  node-opt step  3000  loss 1.7874e-04 (b 1.741e-04, g 4.657e-06) [75s]
+  node-opt DONE: loss 2.4051e-03 -> 1.7874e-04 (best step 3000), mean node move 1.02e-02, 256/256 weights > 0 [86s]
+  GATE L [node]: 5.04e-16
+  held-out iterates evaluated: 64 states x 3 sets
+  [adv] traj 0: rollout err 6.561e-03 (t0 5.21e-03, t1 4.40e-03, t50 9.21e-03), 133 LM iterates recorded [1s]
+  [adv] traj 1: rollout err 3.607e-02 (t0 9.04e-02, t1 7.63e-02, t50 1.43e-02), 135 LM iterates recorded [1s]
+  [adv] traj 2: rollout err 8.943e-03 (t0 8.54e-03, t1 1.77e-02, t50 8.02e-03), 153 LM iterates recorded [1s]
+  [adv] traj 3: rollout err 8.617e-03 (t0 1.45e-02, t1 2.29e-02, t50 7.85e-03), 136 LM iterates recorded [1s]
+  [grad] traj 0: rollout err 6.574e-03 (t0 5.21e-03, t1 4.39e-03, t50 9.13e-03), 134 LM iterates recorded [1s]
+  [grad] traj 1: rollout err 3.780e-02 (t0 9.04e-02, t1 7.61e-02, t50 1.73e-02), 133 LM iterates recorded [1s]
+  [grad] traj 2: rollout err 1.330e-02 (t0 8.54e-03, t1 1.81e-02, t50 1.49e-02), 140 LM iterates recorded [1s]
+  [grad] traj 3: rollout err 1.057e-02 (t0 1.45e-02, t1 2.30e-02, t50 1.31e-02), 143 LM iterates recorded [1s]
+  [node] traj 0: rollout err 6.541e-03 (t0 5.21e-03, t1 4.39e-03, t50 9.20e-03), 134 LM iterates recorded [1s]
+  [node] traj 1: rollout err 3.674e-02 (t0 9.04e-02, t1 7.62e-02, t50 1.48e-02), 134 LM iterates recorded [1s]
+  [node] traj 2: rollout err 1.120e-02 (t0 8.54e-03, t1 1.78e-02, t50 1.25e-02), 139 LM iterates recorded [1s]
+  [node] traj 3: rollout err 9.153e-03 (t0 1.45e-02, t1 2.29e-02, t50 8.32e-03), 135 LM iterates recorded [1s]
+  oracle traj 0: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 1: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 2: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 3: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  training snapshots: 16 states
+  adv   solver t= 1- 1 n=  69  (b) 9.76e-02 [lin 6.0e-14 adv 9.8e-02]  (c1) 3.84e-01 cos 0.7604  (c2) 2.50e-03  (c3) 1.74e-01 cos 0.9524
+  adv   solver t= 2- 2 n=  24  (b) 1.50e-01 [lin 7.7e-14 adv 1.5e-01]  (c1) 3.89e-01 cos 0.7366  (c2) 1.72e-03  (c3) 5.75e-01 cos 0.5686
+  adv   solver t= 3- 4 n=  29  (b) 2.04e-01 [lin 1.4e-13 adv 2.0e-01]  (c1) 4.62e-01 cos 0.6409  (c2) 1.31e-03  (c3) 6.61e-01 cos 0.5345
+  adv   solver t= 5- 9 n=  60  (b) 2.40e-01 [lin 1.7e-13 adv 2.4e-01]  (c1) 4.87e-01 cos 0.6715  (c2) 7.70e-04  (c3) 7.31e-01 cos 0.4779
+  adv   solver t=10-24 n= 150  (b) 2.23e-01 [lin 2.8e-13 adv 2.2e-01]  (c1) 4.63e-01 cos 0.7809  (c2) 3.12e-04  (c3) 8.46e-01 cos 0.3371
+  adv   solver t=25-50 n= 225  (b) 2.31e-01 [lin 4.0e-13 adv 2.3e-01]  (c1) 4.61e-01 cos 0.8010  (c2) 2.31e-04  (c3) 8.67e-01 cos 0.3164
+  grad  solver t= 1- 1 n=  70  (b) 1.11e-01 [lin 6.8e-14 adv 1.1e-01]  (c1) 2.74e-01 cos 0.9079  (c2) 2.89e-03  (c3) 1.99e-01 cos 0.9299
+  grad  solver t= 2- 2 n=  23  (b) 1.80e-01 [lin 9.4e-14 adv 1.8e-01]  (c1) 3.21e-01 cos 0.8140  (c2) 1.79e-03  (c3) 5.75e-01 cos 0.6001
+  grad  solver t= 3- 4 n=  33  (b) 2.73e-01 [lin 1.1e-13 adv 2.7e-01]  (c1) 4.19e-01 cos 0.7231  (c2) 1.55e-03  (c3) 7.44e-01 cos 0.4380
+  grad  solver t= 5- 9 n=  60  (b) 3.22e-01 [lin 1.6e-13 adv 3.2e-01]  (c1) 4.81e-01 cos 0.7093  (c2) 1.06e-03  (c3) 8.10e-01 cos 0.3852
+  grad  solver t=10-24 n= 151  (b) 4.37e-01 [lin 2.6e-13 adv 4.4e-01]  (c1) 5.11e-01 cos 0.6812  (c2) 7.93e-04  (c3) 9.02e-01 cos 0.2398
+  grad  solver t=25-50 n= 213  (b) 5.19e-01 [lin 2.9e-13 adv 5.2e-01]  (c1) 5.87e-01 cos 0.4917  (c2) 1.06e-03  (c3) 9.20e-01 cos 0.1458
+  node  solver t= 1- 1 n=  69  (b) 9.51e-02 [lin 6.7e-14 adv 9.5e-02]  (c1) 3.10e-01 cos 0.8631  (c2) 2.78e-03  (c3) 1.81e-01 cos 0.9479
+  node  solver t= 2- 2 n=  24  (b) 1.54e-01 [lin 8.2e-14 adv 1.5e-01]  (c1) 3.20e-01 cos 0.7866  (c2) 1.68e-03  (c3) 5.52e-01 cos 0.6357
+  node  solver t= 3- 4 n=  33  (b) 2.48e-01 [lin 1.2e-13 adv 2.5e-01]  (c1) 4.44e-01 cos 0.6691  (c2) 1.23e-03  (c3) 7.12e-01 cos 0.5141
+  node  solver t= 5- 9 n=  60  (b) 2.95e-01 [lin 1.8e-13 adv 3.0e-01]  (c1) 5.28e-01 cos 0.5941  (c2) 7.90e-04  (c3) 7.66e-01 cos 0.4669
+  node  solver t=10-24 n= 148  (b) 3.71e-01 [lin 2.7e-13 adv 3.7e-01]  (c1) 4.89e-01 cos 0.7342  (c2) 4.44e-04  (c3) 8.30e-01 cos 0.3716
+  node  solver t=25-50 n= 208  (b) 3.93e-01 [lin 3.6e-13 adv 3.9e-01]  (c1) 4.83e-01 cos 0.7298  (c2) 3.11e-04  (c3) 8.46e-01 cos 0.2566
+DONE -> /cluster/tufts/paralab/tawal01/exlin/nf256m64/out/sep_eq_nodefit_N256_K16_dense_mid_M64.json [569s]
+ALL-DONE

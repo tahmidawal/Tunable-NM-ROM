@@ -1,0 +1,44 @@
+host=pax144 gpu=NVIDIA A100-SXM4-40GB
+jax_backend=gpu
+stage MANIFEST OK
+3e98ca0067a3b3b65bf2ad9ff7bd83ea41cab11ec097ea726ad08c19f12b93ed  /cluster/tufts/paralab/tawal01/exlin/xl256dm/in/sep_hfit_dense_mid_N256.pkl
+jax_backend=gpu device=cuda:0 EQ-LADDER N=256 ckpt=sep_hfit_dense_mid_N256.pkl
+  test data: 4 fresh trajectories, worst FOM rel residual 9.86e-13
+  EQ-fit bank vs meshfree full-interior decode: 3.21e-15
+  NNLS-EQ eq-ladder N=256 k=16 M=64 m=256 adv-only: pool 64516 support 256 (+0 pad) rel fit 4.26e-03 (row p95 1.1e-01, max 1.3e+01) [36s]
+  GATE 0 [ctrl]: 4.77e-15
+  GATE F (full-grid ref vs make_weak_ops on interior) [ctrl]: 2.85e-16
+  GATE L (exlin linear vs full-grid linear) [ctrl]: 3.32e-15
+  GATE A (exlin advection vs incumbent advection) [ctrl]: 0.00e+00
+  NNLS-EQ eq-ladder N=256 k=16 M=256 m=1024 adv-only: pool 64516 support 1024 (+0 pad) rel fit 5.45e-04 (row p95 1.3e-01, max 8.0e+01) [835s]
+  GATE 0 [M256]: 2.96e-15
+  GATE F (full-grid ref vs make_weak_ops on interior) [M256]: 2.85e-16
+  GATE L (exlin linear vs full-grid linear) [M256]: 4.33e-15
+  GATE A (exlin advection vs incumbent advection) [M256]: 0.00e+00
+  [ctrl] traj 0: rollout err 6.561e-03 (t0 5.21e-03, t1 4.40e-03, t50 9.21e-03), 133 LM iterates recorded [3s]
+  [ctrl] traj 1: rollout err 3.607e-02 (t0 9.04e-02, t1 7.63e-02, t50 1.43e-02), 135 LM iterates recorded [1s]
+  [ctrl] traj 2: rollout err 8.943e-03 (t0 8.54e-03, t1 1.77e-02, t50 8.02e-03), 153 LM iterates recorded [1s]
+  [ctrl] traj 3: rollout err 8.617e-03 (t0 1.45e-02, t1 2.29e-02, t50 7.85e-03), 136 LM iterates recorded [1s]
+  [M256] traj 0: rollout err 5.986e-03 (t0 5.21e-03, t1 4.29e-03, t50 8.79e-03), 134 LM iterates recorded [3s]
+  [M256] traj 1: rollout err 2.394e-02 (t0 9.04e-02, t1 7.43e-02, t50 1.39e-02), 141 LM iterates recorded [1s]
+  [M256] traj 2: rollout err 6.352e-03 (t0 8.54e-03, t1 1.90e-02, t50 6.07e-03), 134 LM iterates recorded [1s]
+  [M256] traj 3: rollout err 7.909e-03 (t0 1.45e-02, t1 2.20e-02, t50 7.13e-03), 124 LM iterates recorded [1s]
+  oracle traj 0: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 1: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 2: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 3: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  training snapshots: 16 states
+  ctrl  solver t= 1- 1 n=  69  (b) 9.76e-02 [lin 7.4e-14 adv 9.8e-02]  (c1) 3.84e-01 cos 0.7604  (c2) 2.50e-03  (c3) 1.74e-01 cos 0.9524
+  ctrl  solver t= 2- 2 n=  24  (b) 1.50e-01 [lin 8.6e-14 adv 1.5e-01]  (c1) 3.89e-01 cos 0.7366  (c2) 1.72e-03  (c3) 5.75e-01 cos 0.5686
+  ctrl  solver t= 3- 4 n=  29  (b) 2.04e-01 [lin 1.1e-13 adv 2.0e-01]  (c1) 4.62e-01 cos 0.6409  (c2) 1.31e-03  (c3) 6.61e-01 cos 0.5345
+  ctrl  solver t= 5- 9 n=  60  (b) 2.40e-01 [lin 1.8e-13 adv 2.4e-01]  (c1) 4.87e-01 cos 0.6715  (c2) 7.70e-04  (c3) 7.31e-01 cos 0.4779
+  ctrl  solver t=10-24 n= 150  (b) 2.23e-01 [lin 2.7e-13 adv 2.2e-01]  (c1) 4.63e-01 cos 0.7809  (c2) 3.12e-04  (c3) 8.46e-01 cos 0.3371
+  ctrl  solver t=25-50 n= 225  (b) 2.31e-01 [lin 4.1e-13 adv 2.3e-01]  (c1) 4.61e-01 cos 0.8010  (c2) 2.31e-04  (c3) 8.67e-01 cos 0.3164
+  M256  solver t= 1- 1 n=  73  (b) 2.98e-02 [lin 6.0e-14 adv 3.0e-02]  (c1) 1.13e-01 cos 0.9775  (c2) 3.41e-04  (c3) 6.84e-02 cos 0.9781
+  M256  solver t= 2- 2 n=  21  (b) 2.31e-02 [lin 1.0e-13 adv 2.3e-02]  (c1) 1.36e-01 cos 0.9236  (c2) 1.85e-04  (c3) 2.01e-01 cos 0.8825
+  M256  solver t= 3- 4 n=  30  (b) 3.66e-02 [lin 1.3e-13 adv 3.7e-02]  (c1) 2.71e-01 cos 0.8359  (c2) 1.28e-04  (c3) 4.12e-01 cos 0.6959
+  M256  solver t= 5- 9 n=  58  (b) 3.56e-02 [lin 1.8e-13 adv 3.6e-02]  (c1) 3.20e-01 cos 0.7538  (c2) 3.96e-05  (c3) 4.26e-01 cos 0.7813
+  M256  solver t=10-24 n= 140  (b) 2.46e-02 [lin 2.1e-13 adv 2.5e-02]  (c1) 1.74e-01 cos 0.9019  (c2) 1.80e-05  (c3) 4.03e-01 cos 0.8040
+  M256  solver t=25-50 n= 211  (b) 1.38e-02 [lin 2.5e-13 adv 1.4e-02]  (c1) 1.68e-01 cos 0.9680  (c2) 1.52e-05  (c3) 4.28e-01 cos 0.7550
+DONE -> /cluster/tufts/paralab/tawal01/exlin/xl256dm/out/sep_eq_ladder_N256_K16_dense_mid_exlin.json [1813s]
+ALL-DONE

@@ -222,3 +222,85 @@ N=64, K=16, R=64, M=64; 2000 steps, LR 3e-5; 4 fresh test trajectories; base = f
 | r100_ii_m64 | gpu | NVIDIA GB10 | 2000 | Y |
 
 Sources: runs/cd_*/out/sep_codesign_*.json on branch exp/2026-08-26-codesign; base rows deduplicated (bit-identical across arms at equal m).
+
+## Glossary — every term and table column, in plain language
+
+**The objects**
+
+- **FOM** — full-order model: the honest solver on the full N×N grid. Slow; it is the
+  ground truth and the thing the ROM must beat on speed.
+- **ROM** — reduced-order model: the fast surrogate that solves in K unknowns instead of
+  N² by staying on the decoder's manifold.
+- **decoder** — the learned map from a small latent vector to a full solution field,
+  $u(x;z) = bc(x)\,\langle g(x), h(z)\rangle$.
+- **latent $z$, K** — the ROM's actual unknowns; K=16 numbers per time step here.
+- **bank / g-track, R** — the frozen library of R=64 spatial functions $g(x)$; every
+  decoded field is a weighted mix of them.
+- **h-track / head** — the small network turning $z$ into the R mixing coefficients.
+  The only network part trained in this experiment.
+- **checkpoint / warm start** — a saved, already-trained decoder; all arms start from the
+  same committed one rather than training from scratch.
+
+**The residual and the quadrature**
+
+- **weak residual** — how we test that a candidate solution satisfies the PDE: project
+  the equation onto M test functions (sine modes). M=64 here.
+- **exlin** — the "exact linear terms" form: everything linear in the solution is
+  computed exactly through the precomputed matrix $A = \Phi^\top G$; only the nonlinear
+  advection term $u\,\nabla u$ still needs sampling.
+- **quadrature / EQ / nodes, m** — instead of evaluating the advection term on all grid
+  points, it is sampled at m chosen points ("nodes") with learned nonnegative weights.
+  Small m = fast solve, but a worse approximation. **m=M** (64 points) is the tight
+  budget where the approximation visibly binds; **m=4M** (256) is the comfortable one.
+- **NNLS** — nonnegative least squares, the convex solver that picks the node weights.
+  "Solved, not trained": it has a unique best answer, no gradient descent involved.
+- **variable projection** — the pattern of re-solving the weights by NNLS every few
+  hundred steps while the slow-moving things (network, positions) train by gradient.
+
+**The solver**
+
+- **LSPG / LM / trust region** — the online solve: at each time step, find the $z$
+  minimizing the weak residual by Levenberg–Marquardt (a damped Newton method), with a
+  cap on step size (trust region).
+- **rollout** — running the ROM through all 50 time steps of a trajectory from its
+  initial condition, like a real deployment. **rollout err** in the tables = relative L2
+  error against the FOM truth, averaged over all steps and over 4 fresh test
+  trajectories the training never saw. This is the number that decides everything.
+
+**The measurement columns**
+
+- **held-out** — states set aside before training: never used in any gradient or any
+  NNLS row. Metrics on them show generalization, not memorization.
+- **held (b)** — residual-mismatch rung: relative error of the sampled residual vs the
+  exact full-grid residual, $\|R_s - R_f\|/\|R_f\|$. 0.805 at m=64 means the sampled
+  residual is 80% wrong — the quadrature is badly binding there.
+- **held (c1), (c1) cos** — gradient rung: same comparison for the objective gradient
+  $J^\top R$ the solver steps on. The cosine is direction agreement (1.0 = the sampled
+  gradient points exactly where the true one does).
+- **(c3) cos** — step rung: direction agreement of the actual damped LM step
+  $\delta z$ computed from sampled vs exact quantities.
+- **held recon** — decoder quality: relative L2 reconstruction error on held-out
+  training snapshots vs FOM truth. If this degrades, the decoder itself got worse —
+  independent of any quadrature effect.
+- **trip** — whether the tripwire fired during training: held-out reconstruction
+  drifting more than 3% from the warm start flags the run (the guard against the
+  optimizer cannibalizing the decoder).
+- **vs base** — percent change in rollout err against the baseline row at the same m
+  (negative = better).
+
+**The arms**
+
+- **base** — no training at all: frozen decoder + NNLS-fitted nodes. The incumbent.
+  Identical across arms at equal m by construction (same seed, same fit).
+- **cot** — the arm's trained ("co-trained") variant, certified with the same
+  instrument as base.
+- **arm n** — nodes-only: decoder frozen, only node positions learned (+ NNLS weights).
+- **arm i / ii / iii** — decoder h-track AND nodes trained; i = value-mismatch loss
+  only, ii = + Jacobian mismatch, iii = + derivative-reconstruction term.
+- **r100_ prefix** — same as arm ii but with the reconstruction anchor weighted 100×
+  instead of 10× (the "can a stronger anchor stop the drift?" test — it could not).
+- **REC_W / anchor** — the loss weight on plain reconstruction of training snapshots;
+  the term meant to stop the decoder from degrading while it learns to be sampled.
+- **gates** — bit-level identity checks run before training (e.g. the continuous node
+  machinery must reproduce the grid machinery to ~1e-13); they exist to catch wiring
+  bugs before they can fake a result, and caught two in this experiment.

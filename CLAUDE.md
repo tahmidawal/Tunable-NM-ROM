@@ -113,6 +113,10 @@ never one per session.
   ```mermaid fences (GitHub, VS Code preview, and artifact pages all render them); use
   classDef color-coding to encode roles (e.g. trained / frozen / solved). ASCII drawings
   have already been rejected as unreadable once (2026-08-27).
+- **End every report with a plain-language glossary.** Define, at the bottom, every table
+  column and every term of art the report uses (rungs, arm names, m vs M, held-out, NNLS,
+  tripwire, ...), written for a reader who knows none of the project's vocabulary. Tables
+  are unreadable without it; assume the reader opens the report cold.
 - `*.built.md` files are generated for publishing; edit the source, not the build.
 
 ## Routing — which machine

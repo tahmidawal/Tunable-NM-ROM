@@ -20,6 +20,56 @@ computed exactly through the precomputed `A = ΦᵀG` (M=64 sine test modes), so
 advection term `ΦᵀN(u)` is sampled** at the m nodes, and the co-design has exactly one term
 to serve.
 
+```
+              THE SEPARABLE EQ-DECODER — pilot scale: N=64, K=16, R=64, M=64
+              (shapes from the committed checkpoint sep_burgers_N64_K16_R64.pkl)
+
+   latent z ∈ R^16                                coordinates x = (x,y) ∈ [0,1]^2
+        │                                                  │
+        ▼                                                  ▼
+  ┌───────────────────────────┐              ┌────────────────────────────────────┐
+  │ h-track        [TRAINED]  │              │ g-track (bank)          [FROZEN]   │
+  │ MLP 16→128→128→64 (SiLU)  │              │ Fourier lift sin/cos(2π x·B),      │
+  │ + linear skip z·h_lin,    │              │   B ∈ R^{2×64} → 128 features      │
+  │   h_lin ∈ R^{16×64}       │              │ MLP 128→128→128→64 (SiLU)          │
+  └────────────┬──────────────┘              │ × out_scale · bc(x),               │
+               │                             │   bc(x) = 16·x(1−x)·y(1−y)         │
+               ▼                             └──────────────────┬─────────────────┘
+     coefficients h(z) ∈ R^64                                   ▼
+               │                                       features g(x) ∈ R^64
+               │                                                │
+               └───────────────────┬────────────────────────────┘
+                                   ▼
+                    u(x; z) = ⟨ g(x), h(z) ⟩          (boundary exactly 0 via bc)
+
+
+              WEAK RESIDUAL (exlin form) — only advection is sampled
+
+  linear terms — EXACT     [FROZEN]        advection — SAMPLED at the m nodes
+  ─────────────────────────────────        ─────────────────────────────────────────
+  A = ΦᵀG ∈ R^{64×64}, precomputed         node positions X ∈ R^{m×2}     [TRAINED]
+  lin(z) = A(h(z) − h(zⁿ))                 node weights  w ∈ R^m, w ≥ 0   [SOLVED: NNLS]
+           + Δt·ν λ ⊙ A h(z)               stencil bank G_st ∈ R^{m×5×64} = g at X ± dx
+                                           N(u)|node = c·(ux+uy), sign-upwind on stencil
+                                           adv(z) = Φ(X)ᵀ ( w ⊙ N(u)|nodes )
+
+        r_w(z) = wt ⊙ [ lin(z) + Δt · adv(z) ],   wt = (1 + Δt·ν·λ)^(−α)
+        → trust-region LM/LSPG solve in z (K=16); the grid never enters the loop
+
+
+              CO-DESIGN TRAINING LOOP (arms i/ii/iii; arm n freezes the h-track)
+
+  every step        Adam on (h params [TRAINED], node positions X [TRAINED])
+  every 500 steps   NNLS re-solve of w on the exact loss-form rows  [SOLVED]
+  every 200 steps   held-out eval + tripwire (recon drift > 3% → flagged)
+
+  L = REC_W·L_rec/L⁰rec + SOB·L_sob/L⁰sob + SAMP·L_samp/L⁰samp + JAC·L_jac/L⁰jac
+       │                   │                │                     └ ‖∂z adv_sampled − ∂z adv_full‖²
+       │                   │                └ ‖adv_sampled − adv_full‖²  (same CURRENT decoder both
+       │                   └ ∂x-reconstruction                            sides: a mismatch — not
+       └ reconstruction anchor: 256 training snapshots vs FOM truth       foolable by moving points)
+```
+
 What each arm trains, solves, or freezes:
 
 | object | role | in this pilot |

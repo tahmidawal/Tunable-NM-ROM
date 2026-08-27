@@ -93,9 +93,28 @@ quadrature binds hard (held (b)=0.805) and node learning recovers over half the 
 "3.3×", N=1024 "5.2×", "K nearly free", "h capacity-limited", "codes unconverged", "more
 span helps", multi-scale features). Nothing new retracted on 08-26.
 
-**Soft:** the Poisson 28× is still against an unpreconditioned CG; the Poisson
-quadrature-free cell (whole residual `(Λ⊙ΦᵀG)h − Φᵀf`, no EQ at all) is designed but NOT
-run — it was the optional bonus that wall-clock did not reach.
+**Soft:** the Poisson 28× is still against an unpreconditioned CG.
+
+**Poisson quadrature-free — RUN AND CONFIRMED (2026-08-27, branch
+`exp/2026-08-27-b1d-poissonqf`, report
+`reports/2026-08-27-b1d-node-screening-and-poisson-qf.md`).** The whole residual
+`(Λ⊙ΦᵀG)h − Φᵀf` needs no EQ at all: identical to the full-grid reference to
+~1e-13 at every solver solution (gate Q, 0 fails at N=128/256/512), identical
+solve error to FULL/EQ (decoder floor), fastest online path (2.7–2.9 ms, flat
+in N vs FULL 4→11 ms), and it deletes the 25–37 s NNLS fit (<1 s matrix
+build). Also measured: the incumbent EQ residual is 5.5–7.9% wrong at
+solutions with gradient cosines down to −0.65 — masked by the decoder floor.
+**Adopt quadrature-free as the Poisson default.**
+
+**1D Burgers screening (same branch, same day): node learning transfers to 1D
+and pays exactly where the budget binds.** New self-contained 1D testbed
+(K=8, R=32, M=32, one seed, N=128/256/512, decoders resolution-flat at
+recon ~3.7e-3). At m=M the quadrature barely binds in 1D (+2..+10% over the
+oracle) and learned nodes close 84–97% of that small gap; at m=M/2 it binds
+hard (+318..+446%) and learned nodes buy **−52/−58/−61%**, resolution-stable
+— but learned m=M/2 nodes never reach the NNLS m=M baseline (~2× worse), the
+1D replication of the matched-accuracy refutation. Multi-seed confirmation
+designed, cheap (~3.5 min/job), NOT launched pending review.
 
 ## The next experiment
 
@@ -108,18 +127,20 @@ m=M on N=256/1024 — is now MEASURED AND CLOSED both ways** (2026-08-27, branch
 in-budget win transfers (m=M rollout −17.3% / −14.6% / −7.2% at N=64/256/1024; ties at
 m=4M everywhere), **but learned m=M nodes never reach the NNLS m=4M baseline** (+13.4% /
 +28.1% / +11.7% worse) — the 4×-cheaper-solve-at-matched-accuracy hypothesis is refuted.
-Adopt learned nodes only when already constrained to m=M; there is no speed story. Poisson
-quadrature-free confirmation cell still designed-not-run. Adopt `sep_burgers_exlin.py`'s
-residual as the default for future Burgers solver work.
+Adopt learned nodes only when already constrained to m=M; there is no speed story. The
+Poisson quadrature-free cell RAN 2026-08-27 and is confirmed (see above); adopt it as the
+Poisson default. Adopt `sep_burgers_exlin.py`'s residual as the default for future Burgers
+solver work.
 
 ## Open
 
 `h` generalisation (capacity + μ-density; test-time refinement untried) · anchor-set-sparsity
-hypothesis for the co-design drift (anchor on ALL codes; cheap, untested) · Poisson
-quadrature-free cell (designed, not run) · preconditioned Poisson CG arm · merge decisions:
-`exp/2026-08-25-sepdec-consolidated`, `exp/2026-08-25-eq-fidelity-ladder` (archive, per
-user), `exp/2026-08-26-eq-learned`, `exp/2026-08-26-codesign`, and now
-`exp/2026-08-27-nodes-mm` — ask the user ·
+hypothesis for the co-design drift (anchor on ALL codes; cheap, untested) · preconditioned
+Poisson CG arm · 1D screening multi-seed confirmation (designed, cheap, awaiting user
+review) · merge decisions: `exp/2026-08-25-sepdec-consolidated`,
+`exp/2026-08-25-eq-fidelity-ladder` (archive, per user), `exp/2026-08-26-eq-learned`,
+`exp/2026-08-26-codesign`, `exp/2026-08-27-nodes-mm`, and now
+`exp/2026-08-27-b1d-poissonqf` — ask the user ·
 certify EQ sets with the ladder, never the NNLS rel-fit.
 
 ---
@@ -3057,3 +3078,51 @@ lead (stronger N=1024 checkpoint — more snapshots — would also disambiguate
 why the m=M win shrinks with N); anchor-on-all-codes remains the only thing
 that could reopen co-training; merge decisions now include
 `exp/2026-08-27-nodes-mm`.
+
+### Session: 1D Burgers node screening + Poisson quadrature-free (branch exp/2026-08-27-b1d-poissonqf)
+
+User-directed ("start now", parallelize-for-speed): (A) one-seed frozen-decoder
+node-learning screening on a NEW 1D Burgers testbed at N=128/256/512; (B) the
+designed-never-run Poisson quadrature-free confirmation at the same N. Worktree
+`worktrees/2026-08-27-b1d-poissonqf` from `exp/2026-08-27-nodes-mm`; namespace
+`b1dqf/` (deleted at close); six jobs 2967085/87/89 (b1d) + 2967090/93/94 (qf),
+all A100, all COMPLETED 0:0 in 1–4 min, checksummed pulls committed at
+`225db32`. Report: `reports/2026-08-27-b1d-node-screening-and-poisson-qf.md`
+(generated tables T-B1/B2, T-P1/P2/P3). Notes:
+`understand/2026-08-27-b1d-poissonqf-notes.md`. A parallel subagent built the
+qf driver to spec in the same worktree (disjoint files) while the coordinator
+built the 1D testbed — total wall clock from user go to pulled results ~75 min.
+
+**Found:**
+
+- **Poisson quadrature-free CONFIRMED at scale** (gate Q 0 fails; residual ==
+  full grid to ~1e-13 at every solver solution at N=128/256/512): identical
+  solve error to FULL/EQ (decoder floor 3.06–3.15e-2), fastest online path
+  (2.7–2.9 ms, N-flat, vs FULL 4.0→11.1 ms), setup <1 s vs EQ's 25–37 s NNLS
+  fit. Also measured: the incumbent EQ residual is 5.5–7.9% wrong at solutions
+  with gradient cosines to −0.65 (masked by the decoder floor). New default
+  for linear Poisson.
+- **1D Burgers: node learning transfers to 1D, pays where the budget binds.**
+  Decoders resolution-flat (recon ~3.7e-3, oracle rollout 4.9–6.1e-3). At
+  m=M=32 quadrature barely binds in 1D (+2..+10% over oracle; unlike 2D's
+  80–100% mismatch) and learned nodes close 84–97% of the small gap; at the
+  added m=M/2=16 pair it binds hard (+318..+446%) and learned nodes buy
+  −52/−58/−61%, resolution-stable. Learned m=M/2 never reaches NNLS m=M
+  (~2× worse) — the matched-accuracy refutation replicates in 1D. Generous
+  4M arm == oracle everywhere (128 nodes already exact in 1D).
+- Gates all green at every N: 1D testbed E 1.9e-13 / F 1.7–1.8e-15 /
+  C ≤2.8e-14 / D ~2e-8, data residual ≤1.7e-13; qf S bitwise, F/E ≤1e-12,
+  Q ≤1.3e-15 random. `jax_backend=gpu` in all six logs.
+
+**Wrong / caveats recorded, nothing retracted:** 1D per-trajectory times are
+dispatch-bound and not m-sensitive (recorded, not a speed claim); the N=128
+generous arm is all 126 interior points (coincides with the oracle by
+construction); Poisson tau=1e-3 solves 100% censored (long-standing checkpoint
+behavior, identical across paths); one seed, one checkpoint per N.
+
+**Open for the next session:** multi-seed confirmation of the 1D screening
+(designed, ~3.5 min/job, NOT launched — user review first); merge decisions
+now also include `exp/2026-08-27-b1d-poissonqf`; wire the quadrature-free
+residual into the production Poisson path (currently a certified driver-level
+result); everything else unchanged (h generalisation remains the binding
+accuracy lead).

@@ -71,3 +71,15 @@ checked before/after each submit, manifests checked in-job:
 Code committed at `89a14ab` (1D testbed) and `b29593e` (QF driver +
 inherited checkpoints) on the branch before staging (stage records the
 commit). Monitor armed on the queue.
+
+## 2026-08-27 — results and close-out
+
+All six jobs COMPLETED 0:0 (wall 1:19–3:47), pulled with verified checksums,
+committed at `225db32`; namespace `b1dqf/` deleted; queue empty. Full
+findings and generated tables:
+`reports/2026-08-27-b1d-node-screening-and-poisson-qf.md`. Headlines:
+Poisson quadrature-free confirmed (gate Q 0 fails, ~1e-13 at solutions;
+fastest path; deletes the NNLS fit); 1D node learning pays where the budget
+binds (−52/−58/−61% at m=M/2; 84–97% of the small m=M gap) and does not
+substitute for budget. Multi-seed confirmation NOT launched (user review
+first). Lab log updated (Where things stand + session entry).

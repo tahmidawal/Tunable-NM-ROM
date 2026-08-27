@@ -79,11 +79,6 @@ What each arm trains, solves, or freezes:
 | node positions x₁…x_m | where advection is sampled | **trained** (continuous, sigmoid-box reparam, stage-3 machinery) |
 | node weights w | quadrature weights | **solved** — NNLS on the exact loss-form rows every 500 steps, never gradient-trained |
 
-The loss is four normalized terms: reconstruction anchor (L_rec, on 256 training
-snapshots), optional derivative reconstruction (L_sob), and the two mismatch terms —
-sampled-vs-full advection value (L_samp) and its z-Jacobian (L_jac) — both against the
-**current** decoder's own full-grid teacher, so the loss is a mismatch that cannot be
-reduced by fooling the points, only by the decoder and points genuinely agreeing.
 Certification never trusts the training loss: every arm is graded by the same external
 instrument (held-out ladder rungs + full ROM rollouts against FOM truth).
 

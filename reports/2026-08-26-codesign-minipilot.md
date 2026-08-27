@@ -20,55 +20,55 @@ computed exactly through the precomputed `A = ΦᵀG` (M=64 sine test modes), so
 advection term `ΦᵀN(u)` is sampled** at the m nodes, and the co-design has exactly one term
 to serve.
 
+Pilot scale: N=64, K=16, R=64, M=64; shapes from the committed checkpoint
+`sep_burgers_N64_K16_R64.pkl`. Color code: **orange = trained by gradient**, **blue =
+frozen**, **green = solved (convex NNLS, never gradient-trained)**.
+
+```mermaid
+flowchart TB
+  classDef trained fill:#f8e0cc,stroke:#c05b1e,color:#7a3a12
+  classDef frozen  fill:#e3ecf4,stroke:#48627b,color:#2e4257
+  classDef solved  fill:#e0f0e7,stroke:#2e7a5a,color:#1d5340
+  classDef plain   fill:#f7f7f2,stroke:#999999,color:#333333
+
+  z(["latent  z &in; R&sup1;&#8310;"]):::plain
+  x(["coords  x = (x,y) &in; [0,1]&sup2;"]):::plain
+
+  H["h-track &mdash; TRAINED<br/>MLP 16&rarr;128&rarr;128&rarr;64 (SiLU)<br/>+ linear skip z&middot;h_lin (16&times;64)"]:::trained
+  G["g-track (bank) &mdash; FROZEN<br/>Fourier lift sin/cos(2&pi; x&middot;B), B: 2&times;64 &rarr; 128 features<br/>MLP 128&rarr;128&rarr;128&rarr;64 (SiLU)<br/>&times; out_scale&middot;bc(x), bc = 16x(1&minus;x)y(1&minus;y)"]:::frozen
+
+  z --> H
+  x --> G
+  H --> C["coefficients h(z) &in; R&#8310;&#8308;"]:::plain
+  G --> F["features g(x) &in; R&#8310;&#8308;"]:::plain
+  C --> U["u(x; z) = &lang; g(x), h(z) &rang;<br/>boundary exactly 0 via bc"]:::plain
+  F --> U
+
+  U --> LIN["linear terms &mdash; EXACT, FROZEN<br/>A = &Phi;&#7488;G (64&times;64) precomputed<br/>lin(z) = A(h(z)&minus;h(z&#8319;)) + &Delta;t&middot;&nu;&lambda; &#8857; A&middot;h(z)"]:::frozen
+  U --> ADV["advection &mdash; SAMPLED at the m nodes<br/>N(u)|node = c&middot;(ux+uy), sign-upwind on &plusmn;dx stencil<br/>adv(z) = &Phi;(X)&#7488;( w &#8857; N(u)|nodes )"]:::plain
+  X["node positions X (m&times;2) &mdash; TRAINED<br/>sigmoid box + min-separation"]:::trained --> ADV
+  W["node weights w &ge; 0 &mdash; SOLVED<br/>NNLS re-solve every 500 steps"]:::solved --> ADV
+
+  LIN --> R["r_w(z) = wt &#8857; [ lin + &Delta;t&middot;adv ],  wt = (1+&Delta;t&middot;&nu;&middot;&lambda;)^(&minus;&alpha;)<br/>&rarr; trust-region LM/LSPG solve in z (K=16); the grid never enters the loop"]:::plain
+  ADV --> R
 ```
-              THE SEPARABLE EQ-DECODER — pilot scale: N=64, K=16, R=64, M=64
-              (shapes from the committed checkpoint sep_burgers_N64_K16_R64.pkl)
 
-   latent z ∈ R^16                                coordinates x = (x,y) ∈ [0,1]^2
-        │                                                  │
-        ▼                                                  ▼
-  ┌───────────────────────────┐              ┌────────────────────────────────────┐
-  │ h-track        [TRAINED]  │              │ g-track (bank)          [FROZEN]   │
-  │ MLP 16→128→128→64 (SiLU)  │              │ Fourier lift sin/cos(2π x·B),      │
-  │ + linear skip z·h_lin,    │              │   B ∈ R^{2×64} → 128 features      │
-  │   h_lin ∈ R^{16×64}       │              │ MLP 128→128→128→64 (SiLU)          │
-  └────────────┬──────────────┘              │ × out_scale · bc(x),               │
-               │                             │   bc(x) = 16·x(1−x)·y(1−y)         │
-               ▼                             └──────────────────┬─────────────────┘
-     coefficients h(z) ∈ R^64                                   ▼
-               │                                       features g(x) ∈ R^64
-               │                                                │
-               └───────────────────┬────────────────────────────┘
-                                   ▼
-                    u(x; z) = ⟨ g(x), h(z) ⟩          (boundary exactly 0 via bc)
+**Training cadences (co-design arms i/ii/iii; arm n freezes the h-track):** Adam on
+(h params, node positions) every step; NNLS re-solve of the weights on the exact
+loss-form rows every 500 steps; held-out evaluation + tripwire (recon drift > 3% flags
+the run) every 200 steps. The loss is four terms, each normalized by its own warm-start
+value:
 
-
-              WEAK RESIDUAL (exlin form) — only advection is sampled
-
-  linear terms — EXACT     [FROZEN]        advection — SAMPLED at the m nodes
-  ─────────────────────────────────        ─────────────────────────────────────────
-  A = ΦᵀG ∈ R^{64×64}, precomputed         node positions X ∈ R^{m×2}     [TRAINED]
-  lin(z) = A(h(z) − h(zⁿ))                 node weights  w ∈ R^m, w ≥ 0   [SOLVED: NNLS]
-           + Δt·ν λ ⊙ A h(z)               stencil bank G_st ∈ R^{m×5×64} = g at X ± dx
-                                           N(u)|node = c·(ux+uy), sign-upwind on stencil
-                                           adv(z) = Φ(X)ᵀ ( w ⊙ N(u)|nodes )
-
-        r_w(z) = wt ⊙ [ lin(z) + Δt · adv(z) ],   wt = (1 + Δt·ν·λ)^(−α)
-        → trust-region LM/LSPG solve in z (K=16); the grid never enters the loop
-
-
-              CO-DESIGN TRAINING LOOP (arms i/ii/iii; arm n freezes the h-track)
-
-  every step        Adam on (h params [TRAINED], node positions X [TRAINED])
-  every 500 steps   NNLS re-solve of w on the exact loss-form rows  [SOLVED]
-  every 200 steps   held-out eval + tripwire (recon drift > 3% → flagged)
-
-  L = REC_W·L_rec/L⁰rec + SOB·L_sob/L⁰sob + SAMP·L_samp/L⁰samp + JAC·L_jac/L⁰jac
-       │                   │                │                     └ ‖∂z adv_sampled − ∂z adv_full‖²
-       │                   │                └ ‖adv_sampled − adv_full‖²  (same CURRENT decoder both
-       │                   └ ∂x-reconstruction                            sides: a mismatch — not
-       └ reconstruction anchor: 256 training snapshots vs FOM truth       foolable by moving points)
 ```
+L = REC_W · L_rec/L⁰rec  +  SOB · L_sob/L⁰sob  +  SAMP · L_samp/L⁰samp  +  JAC · L_jac/L⁰jac
+```
+
+- `L_rec` — reconstruction anchor: 256 training snapshots vs FOM truth.
+- `L_sob` — derivative (&part;x) reconstruction of the same snapshots.
+- `L_samp` — &Vert;adv_sampled &minus; adv_full&Vert;&sup2;, both sides from the SAME
+  current decoder: a mismatch, so it cannot be reduced by fooling the points.
+- `L_jac` — the same mismatch for &part;z of the advection term (what the LM solver
+  steps on).
 
 What each arm trains, solves, or freezes:
 

@@ -1,3 +1,36 @@
 jax_backend=gpu device=cuda:0 CODESIGN N=64 ckpt=sep_burgers_N64_K16_R64.pkl TRAIN_H=1 TRAIN_NODES=1 m=256 steps=2000
   data cache hit: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-26-codesign/experiments/separable-decoder/runs/cd_smoke/data_n64.npz  U(576, 51, 4096)
   test data: 4 fresh trajectories, worst FOM rel residual 9.71e-13
+  GATE H (param split identity): 0.00e+00
+  GATE R (warm recon on regenerated snapshots): 2.488e-02
+  NNLS-EQ codesign N=64 k=16 M=64 m=256 adv-only: pool 3844 support 256 (+0 pad) rel fit 4.98e-03 (row p95 1.7e-01, max 3.7e+01) [485s]
+  init terms (fit): rec=1.962e-03  sob=1.207e-02  samp=1.718e-04  jac=1.687e-04
+  init terms (held): rec=2.212e-03  samp=1.940e-04  jac=2.105e-04
+  GATE 0 (grid closure vs make_weak_ops): 4.15e-16
+  GATE C (continuous machinery at grid init): 8.53e-15
+  GATE D (FD vs autodiff, kink-free window): ad=-5.365301e-01 rel=3.99e-07
+  step     0  loss 1.0200e+02  samp 1.718e-04  held samp 1.940e-04 jac 2.105e-04 rec-drift +0.0000 [1s]
+  step   200  loss 8.6790e+01  samp 2.236e-05  held samp 2.081e-04 jac 1.096e-04 rec-drift +0.0399  TRIPWIRE [52s]
+  step   400  loss 8.4079e+01  samp 1.674e-05  held samp 1.908e-04 jac 1.010e-04 rec-drift +0.0521  TRIPWIRE [98s]
+  step   600  loss 8.2564e+01  samp 1.286e-05  held samp 1.225e-04 jac 7.914e-05 rec-drift +0.0633  TRIPWIRE [580s]
+  step   800  loss 8.1587e+01  samp 1.202e-05  held samp 1.134e-04 jac 7.432e-05 rec-drift +0.0741  TRIPWIRE [607s]
+  step  1000  loss 8.0866e+01  samp 9.916e-06  held samp 1.459e-04 jac 7.788e-05 rec-drift +0.0846  TRIPWIRE [727s]
+  step  1200  loss 8.0285e+01  samp 9.736e-06  held samp 1.034e-04 jac 6.357e-05 rec-drift +0.0946  TRIPWIRE [753s]
+  step  1400  loss 7.9827e+01  samp 9.250e-06  held samp 9.902e-05 jac 6.095e-05 rec-drift +0.1040  TRIPWIRE [777s]
+  step  1600  loss 7.9438e+01  samp 8.688e-06  held samp 1.230e-04 jac 5.976e-05 rec-drift +0.1128  TRIPWIRE [909s]
+  step  1800  loss 7.9105e+01  samp 8.284e-06  held samp 1.273e-04 jac 5.925e-05 rec-drift +0.1214  TRIPWIRE [934s]
+  step  2000  loss 7.8823e+01  samp 7.323e-06  held samp 1.615e-04 jac 6.692e-05 rec-drift +0.1293  TRIPWIRE [1051s]
+  train DONE: best loss 7.8823e+01 at step 2000 [1051s]
+  GATE L [base]: 2.35e-16
+  [base] traj 0: rollout err 1.374e-02 (t0 1.46e-02, t50 1.78e-02) [3s]
+  [base] traj 1: rollout err 1.466e-01 (t0 3.60e-01, t50 7.86e-02) [1s]
+  [base] traj 2: rollout err 2.107e-02 (t0 4.52e-02, t50 1.82e-02) [1s]
+  [base] traj 3: rollout err 2.599e-02 (t0 4.69e-02, t50 2.96e-02) [1s]
+  [base] SUMMARY m=256: held b 3.062e-02 c1 2.393e-01 cos 0.9595 c3 5.798e-02 cos 0.9915  recon 2.733e-02  rollout 5.185e-02
+  GATE L [cot]: 2.81e-16
+  [cot] traj 0: rollout err 1.619e-02 (t0 1.68e-02, t50 2.03e-02) [1s]
+  [cot] traj 1: rollout err 1.635e-01 (t0 3.69e-01, t50 9.69e-02) [1s]
+  [cot] traj 2: rollout err 2.529e-02 (t0 5.34e-02, t50 2.35e-02) [1s]
+  [cot] traj 3: rollout err 2.679e-02 (t0 4.84e-02, t50 2.89e-02) [1s]
+  [cot] SUMMARY m=256: held b 1.250e-02 c1 2.816e-02 cos 0.9988 c3 1.858e-02 cos 0.9994  recon 3.046e-02  rollout 5.795e-02
+DONE -> sep_codesign_r100_ii_m256.json [2389s]

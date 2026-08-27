@@ -105,14 +105,17 @@ refinement of `h` (untried). On the quadrature side the co-design question is cl
 (negative, see above); the one measured lead worth cluster time is **frozen-decoder node
 learning at m=M budgets at N=256/1024** — if learned m=M nodes match NNLS m=4M accuracy,
 the sampled part of the online solve shrinks 4× at matched accuracy (a direct multiplier on
-the weak paired speedup). Needs the user's sign-off before submission. Poisson
+the weak paired speedup). **RUNNING as of 2026-08-27** (user-approved): branch
+`exp/2026-08-27-nodes-mm`, namespace `codesign-mm/`, Tufts jobs 2956403/04 (N=256
+m=64/m=256, A100) and 2956408/09 (N=1024 m=64/m=256, H200), pilot driver unchanged;
+notes `understand/2026-08-27-nodes-mm-notes.md`. Poisson
 quadrature-free confirmation cell still designed-not-run. Adopt `sep_burgers_exlin.py`'s
 residual as the default for future Burgers solver work.
 
 ## Open
 
 `h` generalisation (capacity + μ-density; test-time refinement untried) · nodes-only
-learning at m=M on N=256/1024 (the F3 lead — ask before submitting) · anchor-set-sparsity
+learning at m=M on N=256/1024 (RUNNING, jobs 2956403/04/08/09) · anchor-set-sparsity
 hypothesis for the co-design drift (anchor on ALL codes; cheap, untested) · Poisson
 quadrature-free cell (designed, not run) · preconditioned Poisson CG arm · merge decisions:
 `exp/2026-08-25-sepdec-consolidated`, `exp/2026-08-25-eq-fidelity-ladder` (archive, per

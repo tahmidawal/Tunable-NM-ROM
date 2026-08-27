@@ -84,6 +84,7 @@ STEPS = int(os.environ.get("STEPS", "2000"))
 LR = float(os.environ.get("LR", "3e-4"))
 LR_NODES = float(os.environ.get("LR_NODES", "3e-3"))
 REFIT_EVERY = int(os.environ.get("REFIT_EVERY", "200"))
+REFIT_JAC_STATES = int(os.environ.get("REFIT_JAC_STATES", "16"))
 EVAL_EVERY = int(os.environ.get("EVAL_EVERY", "250"))
 
 REC_W = float(os.environ.get("REC_W", "1.0"))
@@ -606,7 +607,12 @@ def main():
             Jn = np.asarray(jax.vmap(jax.jacfwd(a_rows_one))(Zb_j))  # (S,m,K)
             Jt = np.asarray(t_jac_of(hp, Zb_j))                      # (S,M,K)
             s_jac = np.sqrt(JAC_REL / (S * NORM["jac"]))
-            for si in range(S):
+            # subsample states for the jac ROW BLOCKS only (the loss keeps
+            # all states): the full S*K*M assembly made one NNLS refit ~10
+            # min at N=64 m=256 (measured, smoke2)
+            j_states = np.random.default_rng(SEED0 + 901).choice(
+                S, min(REFIT_JAC_STATES, S), replace=False)
+            for si in j_states:
                 for k_ in range(K):
                     rows = PhiX.T * Jn[si][:, k_][None, :]    # (M, m)
                     sw = (s_jac / np.sqrt(den_j_b[si])) * WT_b[si][:, None]

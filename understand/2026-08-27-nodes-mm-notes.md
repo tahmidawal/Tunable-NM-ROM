@@ -39,3 +39,29 @@ the exlin line's speedup.
   test trajectories, held-out rungs, gate L), so each JSON carries its own
   control; the m=4M jobs check that the win stays confined to the binding
   budget.
+
+## 2026-08-27 — N=256 results (both COMPLETED); N=1024 OOM + fix + resubmit
+
+- **N=256, m=M=64 (2956403): the pilot result TRANSFERS.** Base (NNLS grid
+  nodes) rollout 7.184e-2 → learned nodes 6.136e-2 = **−14.6%** (pilot at
+  N=64 was −17.3%). Quadrature binding as expected: held (b) 1.021 → 0.412.
+  Gate L 3.1e-16; recon identical both arms (2.964e-2, decoder frozen).
+- **N=256, m=4M=256 (2956404): tie, as at N=64.** Base 4.792e-2 → 4.833e-2
+  (+0.9%); held (b) 4.1e-2 → 1.3e-2 (mismatch improves, rollout doesn't —
+  quadrature not binding). Job wall-times: 4.5 and 6 min on an A100.
+- **N=1024 jobs 2956408/09 FAILED (retracted, nothing measured): GPU OOM**,
+  15.94 GiB allocation in `dens_of` → `t_jac_of`: the vmapped
+  `jacfwd` of the full-grid teacher materializes an (S=128, K=16,
+  n_i2≈1.044M) f64 tangent block. Fine at N≤256, fatal at N=1024 even on an
+  H200. Failed logs kept at
+  `runs/cdmm/failed-oom-logs/` on the branch.
+- **Fix:** `TEACHER_CHUNK` env in `sep_codesign.py` (commit ce73d52) —
+  `adv_full_of`/`t_jac_of` switch from `vmap` to `lax.map(batch_size=chunk)`;
+  default 0 keeps the pilot's unchunked path. Arm n differentiates only
+  w.r.t. node positions, which the teacher terms don't depend on, so
+  chunking changes memory only. Validated at N=64 (TEACHER_CHUNK=8,
+  20 steps): gate R and the full base certification reproduce the pilot
+  exactly (rollout 7.113e-2, held b 0.805, recon 2.733e-2).
+- **Resubmitted with TEACHER_CHUNK=8: jobs 2956820 (n1024m64), 2956822
+  (n1024m256).** N=256 results + logs pulled, checksums verified, finished
+  cluster dirs deleted.

@@ -24,8 +24,11 @@ branch is now `exp/2026-08-26-eq-learned`** (worktree `worktrees/2026-08-26-eq-l
 from the consolidated branch): it adds the exact-linear residual (`sep_burgers_exlin.py`,
 `exlin_common.py`), the same-target and learned-node quadrature drivers
 (`sep_eq_gradfit.py`, `sep_eq_nodefit.py`), and all 14 result sets of 2026-08-26. Solver- or
-quadrature-side work should branch from it. `exp/2026-08-25-eq-fidelity-ladder` and the
-older experiment branches are read-only archives. Never branch from `main`.
+quadrature-side work should branch from it. `exp/2026-08-26-codesign` (cut from eq-learned,
+late 08-26) holds the decoder–quadrature co-design mini-pilot (`sep_codesign.py`, 9 N=64
+arms, verdict below); treat it as a finished experiment archive plus the home of the
+`sep_codesign.py` machinery. `exp/2026-08-25-eq-fidelity-ladder` and the older experiment
+branches are read-only archives. Never branch from `main`.
 
 ## The method (separable EQ-decoder)
 
@@ -73,6 +76,19 @@ NEGATIVE at the fine budget (init already optimal; optimizer wanders/overfits; r
 tied). Bottom line for the advisor: the zero-cost always-safe win is exact linear terms;
 node learning wins only where quadrature binds and buys ~3% rollout there.
 
+**Co-design (late 08-26): training the decoder WITH its quadrature is a clean negative;
+node learning at the m=M budget is a new positive.** N=64 mini-pilot, 9 arms, report
+`2026-08-26-codesign-minipilot.md` (tables generated), branch `exp/2026-08-26-codesign`.
+Fine-tuning the h-track jointly with continuous nodes against the moving full-grid
+advection teacher drives the held-out sampled-vs-true gradient rung down 7–12× — the
+mechanism works — but every h-training arm pays ~+12% held-out reconstruction drift
+(insensitive to raising the reconstruction anchor 10×; anchor-set sparsity suspected,
+untested) and that drift loses to frozen-decoder node learning on rollouts at every budget:
+m=64 best co-train −13.5% vs **nodes-only −17.3%**; m=256 co-train +11–12% WORSE vs
+nodes-only tie. The −17.3% is itself news: stage 3 only ever tested m=4M; at m=M the
+quadrature binds hard (held (b)=0.805) and node learning recovers over half the gap to the
+4× budget for free. Untested at N≥256.
+
 **Retracted (do not quote):** everything in the 08-25 retraction list still holds (N=64
 "3.3×", N=1024 "5.2×", "K nearly free", "h capacity-limited", "codes unconverged", "more
 span helps", multi-scale features). Nothing new retracted on 08-26.
@@ -85,18 +101,23 @@ run — it was the optional bonus that wall-clock did not reach.
 
 `h` generalisation is now unambiguously the binding rung at practical budgets (F3/F5/F8).
 The 08-25 open item stands: capacity + μ-density together, and test-time residual
-refinement of `h` (untried). On the quadrature side the only open follow-ups are the
-Poisson quadrature-free confirmation cell and, if a coarse-m deployment ever matters,
-adopting the stage-3 learned nodes there. Adopt `sep_burgers_exlin.py`'s residual as the
-default for future Burgers solver work.
+refinement of `h` (untried). On the quadrature side the co-design question is closed
+(negative, see above); the one measured lead worth cluster time is **frozen-decoder node
+learning at m=M budgets at N=256/1024** — if learned m=M nodes match NNLS m=4M accuracy,
+the sampled part of the online solve shrinks 4× at matched accuracy (a direct multiplier on
+the weak paired speedup). Needs the user's sign-off before submission. Poisson
+quadrature-free confirmation cell still designed-not-run. Adopt `sep_burgers_exlin.py`'s
+residual as the default for future Burgers solver work.
 
 ## Open
 
-`h` generalisation (capacity + μ-density; test-time refinement untried) · Poisson
-quadrature-free cell (designed, not run) · preconditioned Poisson CG arm · adopt exlin
-residual as default going forward · merge decisions: `exp/2026-08-25-sepdec-consolidated`,
-`exp/2026-08-25-eq-fidelity-ladder` (archive, per user), and now `exp/2026-08-26-eq-learned`
-— ask the user · certify EQ sets with the ladder, never the NNLS rel-fit.
+`h` generalisation (capacity + μ-density; test-time refinement untried) · nodes-only
+learning at m=M on N=256/1024 (the F3 lead — ask before submitting) · anchor-set-sparsity
+hypothesis for the co-design drift (anchor on ALL codes; cheap, untested) · Poisson
+quadrature-free cell (designed, not run) · preconditioned Poisson CG arm · merge decisions:
+`exp/2026-08-25-sepdec-consolidated`, `exp/2026-08-25-eq-fidelity-ladder` (archive, per
+user), `exp/2026-08-26-eq-learned`, and now `exp/2026-08-26-codesign` — ask the user ·
+certify EQ sets with the ladder, never the NNLS rel-fit.
 
 ---
 
@@ -2940,3 +2961,51 @@ numbers; the incumbent-residual results stand as measured.
 eq-learned) — ask the user; the Poisson quadrature-free cell (designed in the report §
 bonus, not run); `h` generalisation as the actual accuracy lever; adopt the exlin
 residual as default in future Burgers drivers.
+
+### Session 2 (evening→night): decoder–quadrature co-design mini-pilot at N=64
+
+Post-overnight ideation session that turned into an experiment. The user asked why the
+decoder shouldn't be trained to optimize its own EQ sample points; after design discussion
+(design doc `understand/2026-08-26-codesign-design.md`, visual page published), they said
+"finish the N=64 one and get the results" — so the mini-pilot ran locally, autonomously,
+overnight-adjacent.
+
+**What ran, where:** worktree `worktrees/2026-08-26-codesign`, branch
+`exp/2026-08-26-codesign` (cut from `exp/2026-08-26-eq-learned`, approved). New driver
+`sep_codesign.py`: warm-start from the committed r1 N=64 checkpoint
+(`runs/sepdec_r1/out/sep_burgers_N64_K16_R64.pkl`), h-track + continuous node positions
+trained by Adam against the MOVING full-grid advection teacher (value + z-Jacobian
+mismatch, frozen per-state normalization), bank frozen, weights NNLS-re-solved on the
+exact loss-form rows, four-term self-calibrating loss, held-out tripwire, in-driver
+certification of base AND co-trained variants with the same instrument (gate L, held-out
+b/c1/c3, r5-rule rollouts on 4 fresh test trajectories). 2 smokes + 9 arms
+(n/i/ii/iii × m∈{64,256} + REC_W=100 rerides), all local GB10, all rc=0, everything
+committed on the branch including the small checkpoints and node sets (the 17–18 Aug
+lesson). Report: `reports/2026-08-26-codesign-minipilot.md` (F1–F5, tables generated by
+`reports/gen_2026-08-26-codesign-minipilot.py`).
+
+**Found:** (F1) the held-out sampled-vs-true mismatch is massively trainable (c1 rung
+7–12× better, cos 0.64→0.89 at m=64). (F2, the reportable negative) co-training still
+LOSES: ~+12% held-out reconstruction drift, insensitive to REC_W 10→100, costs more
+rollout accuracy than the mismatch buys — at m=64 best co-train −13.5% vs nodes-only
+−17.3%; at m=256 co-train is +11–12% WORSE while nodes-only ties. (F3, the new positive)
+at the never-before-tested m=M budget, frozen-decoder node learning is worth −17.3%
+rollout for free (7.113e-2 → 5.880e-2). (F4) jac/sob loss terms don't separate on
+rollouts at N=64.
+
+**Wrong / caught this session:** (1) gate C failed at 8e-7 — NNLS support at N=64
+contains boundary-ring nodes that the sigmoid-box logit clip shifts ~1e-6; box widened by
+dx/16, gate C 8.5e-15. (2) gate D exposed that stop-gradient normalization denominators
+make the loss FD-inconsistent → frozen at warm-start values; the residual mid-eps FD
+disagreement is REAL micro-nonsmoothness (upwind-Jacobian jumps ~1e-7 inside L_jac; FD
+matches autodiff to 7 digits in the kink-free window). (3) First training attempt at
+LR=3e-4 drifted +5.4% in 100 steps — tripwire fired as designed. (4) Ops: harness
+background tasks kept dying; runs were setsid-detached with rc files + Monitor. Foreground
+timeouts leave jaxrun scopes alive — two zombie GPU jobs briefly ran concurrently and were
+diagnosed via journald before wave 1.
+
+**Open for the next session:** the F3 lead — nodes-only learning at m=M on N=256/1024
+(direct 4× shrink of the sampled solve cost if it holds; ASK before submitting); the
+anchor-sparsity hypothesis for the drift (anchor on all 8192 codes — cheap, would reopen
+co-training only if it kills the drift); merge decision now includes
+`exp/2026-08-26-codesign`.

@@ -96,3 +96,21 @@ Wave 3 running (the pre-committed single adjustment round): co-train ii with
 **REC_W=100** at m=64 and m=256 (does an anchor strong enough to prevent
 drift leave any co-training win over nodes-only?), plus arm iii (+Sobolev)
 at m=64.
+
+## 2026-08-26 23:39 — wave 3 verdict and close-out
+
+- **REC_W=100 does NOT stop the drift** (held recon 3.047e-2 vs 3.054e-2 at
+  REC_W=10): the drift is not a smooth trade the anchor can price. Suspicion
+  (untested): 256 anchor states out of 8192 codes — h satisfies the anchors
+  while degrading between them. Rollout 6.154e-2: best co-train arm, still
+  behind nodes-only 5.880e-2.
+- **Sobolev arm no rescue** (6.451e-2).
+- Adjustment round spent → **verdict per protocol: co-training is a clean
+  reportable negative at N=64; frozen-decoder node learning at the m=M budget
+  is the new positive (−17.3%, free, untested at N≥256).**
+- Written up: `reports/2026-08-26-codesign-minipilot.md` (F1–F5, tables from
+  `reports/gen_2026-08-26-codesign-minipilot.py`). Lab log "Where things
+  stand" + session-2 entry updated. All 9 arms + smokes committed on
+  `exp/2026-08-26-codesign` including checkpoints and node sets.
+- NOT done, needs the user: any cluster submission (the F3 lead: nodes-only
+  at m=M on N=256/1024), the anchor-density redesign, merge decisions.

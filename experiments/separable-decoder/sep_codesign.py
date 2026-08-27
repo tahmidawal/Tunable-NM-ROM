@@ -77,6 +77,11 @@ N_TEST = int(os.environ.get("N_TEST", "4"))
 EQ_M = int(os.environ.get("EQ_M", "64"))
 EQ_M_FACTOR = int(os.environ.get("EQ_M_FACTOR", "4"))
 EQ_CAND_CAP = int(os.environ.get("EQ_CAND_CAP", "65536"))
+# chunk the full-grid teacher (adv_full_of / t_jac_of) over states: the
+# vmapped jacfwd materializes (S, K, n_i2) tangent fields -- 15.9 GiB at
+# N=1024 with S=128, K=16 (OOMed jobs 2956408/09 on an H200).  0 = unchunked
+# (pilot behavior, bit-identical); >0 = lax.map batch size, same values.
+TEACHER_CHUNK = int(os.environ.get("TEACHER_CHUNK", "0"))
 
 TRAIN_H = int(os.environ.get("TRAIN_H", "1"))
 TRAIN_NODES = int(os.environ.get("TRAIN_NODES", "1"))
@@ -149,7 +154,8 @@ def main():
     report = dict(config=dict(
         pde="burgers2d", kind="codesign", N=N, k=K, r=R,
         ckpt=os.path.basename(CKPT), ckpt_cfg=cfg, n_test=N_TEST, eq_M=EQ_M,
-        eq_m_factor=EQ_M_FACTOR, exlin=True, train_h=TRAIN_H,
+        eq_m_factor=EQ_M_FACTOR, teacher_chunk=TEACHER_CHUNK,
+        exlin=True, train_h=TRAIN_H,
         train_nodes=TRAIN_NODES, steps=STEPS, lr=LR, lr_nodes=LR_NODES,
         refit_every=REFIT_EVERY, eval_every=EVAL_EVERY, rec_w=REC_W,
         sob_rel=SOB_REL, samp_rel=SAMP_REL, jac_rel=JAC_REL,
@@ -336,7 +342,10 @@ def main():
 
     def adv_full_of(hp, Hb):
         Uf = Hb @ G_int.T                                     # (S, n_i2)
-        return jax.vmap(lambda uf: bc.upwind_adv_field(uf, N))(Uf)
+        f_one = lambda uf: bc.upwind_adv_field(uf, N)
+        if TEACHER_CHUNK > 0:
+            return jax.lax.map(f_one, Uf, batch_size=TEACHER_CHUNK)
+        return jax.vmap(f_one)(Uf)
 
     Zb_j, Zbp_j = jnp.asarray(Zb), jnp.asarray(Zbp)
     Zh_j, Zhp_j = jnp.asarray(Zh), jnp.asarray(Zhp)
@@ -375,7 +384,10 @@ def main():
         def t_one(z):
             u = G_int @ h_of(hp, z)
             return Phi_j.T @ bc.upwind_adv_field(u, N)
-        return jax.vmap(jax.jacfwd(t_one))(Zc)                # (S, M, K)
+        j_one = jax.jacfwd(t_one)
+        if TEACHER_CHUNK > 0:
+            return jax.lax.map(j_one, Zc, batch_size=TEACHER_CHUNK)
+        return jax.vmap(j_one)(Zc)                            # (S, M, K)
 
     def dens_of(hp, Zc, WTc):
         Hb = h_of(hp, Zc)

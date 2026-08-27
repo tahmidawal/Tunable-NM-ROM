@@ -45,6 +45,28 @@ Session log for the quadrature-aware co-training experiment. Design:
 - Runner for the arms: `runs/cd_minipilot.sh` (arms n/i/ii/iii × m 256/64,
   STEPS=2000, ≤3 concurrent local jaxrun).
 
-Open while running: whether LR=3e-5 holds the drift under 3% for 2000 steps;
-NNLS refit wall-time at step 200 (first refit compiles the jacfwd graphs —
-suspected minutes; confirm from the smoke log).
+## 2026-08-26 evening — smoke2 verdict: mechanism works, trade negative at generous m
+
+`runs/cd_smoke/out/sep_codesign_smoke2.json` (N=64, m=256, arm ii, 500 steps,
+LR=3e-5, REC_W=1):
+
+- **Held-out mismatch rungs collapse** — the co-design mechanism genuinely
+  works: (b) 3.062e-2 → 1.369e-2 (−55%), (c1) 0.2393 → 0.0311 (−87%), cos
+  0.9595 → 0.9980, (c3) cos 0.9915 → 0.9993, on states excluded from every
+  gradient and NNLS row.
+- **But the trade is net-negative at this budget:** held recon 2.733e-2 →
+  2.966e-2 (+8.5%; drift tripwire fired from step 100 on) and test rollout
+  5.185e-2 → 5.539e-2 (+6.8%). At m=256 = 4×M the quadrature is not the
+  binding error at N=64, so paying decoder quality for mismatch is a loss —
+  the same shape as stage-2's negative transfer and FREEZE_WDEC.
+- Ops: refits cost ~10 min each (full S·K jac row assembly, 139k×256 NNLS)
+  — measured from the step-100→200 gap (583 s) repeating at 300→400.
+
+Consequences applied (commit on exp/2026-08-26-codesign): arms run with
+**REC_W=10** (anchor 10× so the optimizer cannot cannibalize recon),
+REFIT_EVERY=500, jac refit rows subsampled to 16 states. The decisive budget
+for the pilot is **m=64** (=M), where quadrature binds.
+
+Mini-pilot wave 1 launched (detached; harness background tasks were being
+killed, so runs are setsid-detached with rc files + Monitor): arms n/i/ii at
+m=64, 2000 steps. Wave 2: same at m=256 + iii both m.

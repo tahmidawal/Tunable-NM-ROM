@@ -113,7 +113,14 @@ recon ~3.7e-3). At m=M the quadrature barely binds in 1D (+2..+10% over the
 oracle) and learned nodes close 84–97% of that small gap; at m=M/2 it binds
 hard (+318..+446%) and learned nodes buy **−52/−58/−61%**, resolution-stable
 — but learned m=M/2 nodes never reach the NNLS m=M baseline (~2× worse), the
-1D replication of the matched-accuracy refutation. Multi-seed confirmation
+1D replication of the matched-accuracy refutation. **Scaling ladder
+(same day, N=128..4096, report `2026-08-27-b1d-scaling-and-fom-cost.md`):
+the accuracy result is scale-stable across 32× (learned m=16: −52..−63% at
+all six N; learned m=32 on the oracle everywhere), the ROM latent solve is
+measured flat in N (34–46 ms/traj) — but the honest tridiagonal
+tolerance-Newton FOM is 8–9 ms and also launch-bound-flat, so the ROM is
+5–8× slower and ~35× less accurate at every 1D resolution: NO 1D speed
+story, testbed value is cheap screening.** Multi-seed confirmation
 designed, cheap (~3.5 min/job), NOT launched pending review.
 
 ## The next experiment
@@ -3126,3 +3133,32 @@ now also include `exp/2026-08-27-b1d-poissonqf`; wire the quadrature-free
 residual into the production Poisson path (currently a certified driver-level
 result); everything else unchanged (h generalisation remains the binding
 accuracy lead).
+
+### Session addendum: 1D scaling ladder N=128..4096 + FOM cost (same branch)
+
+User-directed follow-up ("confirm this is scalable, track the cost, compare
+to the FOM, still 1D"). Same worktree/branch; new driver `sep_b1d_scale.py`
+(commit 7af9c08): ON-DEVICE LM rollout (gate V == host-loop instrument to
+6e-14), Gram-space IC fit (gate G 1.3e-15), analytic tridiagonal FOM Newton
+(gate J 1.6e-16 vs jacfwd; gate T2 1.2e-16 vs the dense truth generator;
+data gen switched to the O(n) tridiagonal path). Six jobs 2969373–2969381
+(N=128/256/512/1024/2048/4096, A100, 2:08–3:33 each, all COMPLETED 0:0),
+pulled+checksummed at e7b1146, namespace `b1dqf/` deleted again, queue
+empty. Report: `reports/2026-08-27-b1d-scaling-and-fom-cost.md` (T-S1/S2/S3
+generated).
+
+**Found:** (1) accuracy scale-stable across 32× — learned m=16 −52..−63% at
+all six N, learned m=32 on the oracle everywhere, decoder floor flat.
+(2) ROM latent solve flat in N (34–46 ms/traj over 32×) — but so is the
+oracle arm and the FOM: at 1D sizes everything is kernel-launch-bound.
+(3) NO 1D speed story: the honest tridiagonal tolerance-Newton FOM does a
+trajectory in 8–9 ms at ~35× better accuracy → ROM 5–8× slower everywhere;
+1D testbed value = cheap screening, mirroring the 2D "wins only at
+1024²-scale" picture. (4) N=2048 FOM anomaly explained and flagged: ~4
+Newton iters/step (per-iteration cost flat, high-ν trajectories, upwind
+switching); its ntol=1e-8 cell is CAPPED (6/8 trajectories at max_newton) —
+recorded as capped, not a converged-tolerance cost.
+
+**Wrong/retracted:** nothing retracted; the capped N=2048 FOM 1e-8 cell is
+the one number that must not be quoted as a tolerance cost (flagged in the
+report table).

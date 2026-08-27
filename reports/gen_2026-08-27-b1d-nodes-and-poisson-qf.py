@@ -137,9 +137,74 @@ def t_p3(runs):
               f"{g['Q_solutions']['n_fail']} |")
 
 
+def load_scale():
+    out = {}
+    for p in sorted(glob.glob(os.path.join(RUNS, "b1ds_n*", "out",
+                                           "sep_b1d_scale_*.json"))):
+        d = json.load(open(p))
+        assert d.get("complete"), f"incomplete run: {p}"
+        out[d["config"]["N"]] = d
+    return out
+
+
+def t_s1(runs):
+    print("\n**T-S1 — 1D Burgers scaling ladder: accuracy per arm "
+          "(rollout err, 8 fresh trajectories, one seed).**\n")
+    print("| N | held recon | oracle | NNLS m=32 | learned m=32 (vs base) | "
+          "NNLS m=16 | learned m=16 (vs base) |")
+    print("|---|---|---|---|---|---|---|")
+    for N in sorted(runs):
+        v = runs[N]["variants"]
+
+        def vb(a, b):
+            return (f"{e(v[a]['rollout_err_mean'])} "
+                    f"({100*(v[a]['rollout_err_mean']-v[b]['rollout_err_mean'])/v[b]['rollout_err_mean']:+.1f}%)")
+        print(f"| {N} | {e(runs[N]['held_recon_rel'])} | "
+              f"{e(v['oracle']['rollout_err_mean'])} | "
+              f"{e(v['base_tight']['rollout_err_mean'])} | "
+              f"{vb('nodes_tight', 'base_tight')} | "
+              f"{e(v['base_half']['rollout_err_mean'])} | "
+              f"{vb('nodes_half', 'base_half')} |")
+
+
+def t_s2(runs):
+    print("\n**T-S2 — 1D Burgers: ROM online cost per trajectory "
+          "(learned m=32 arm; on-device instrument, medians of persisted "
+          "reps).  The latent solve is the part that must be flat in N; "
+          "IC projection and full decode are O(N) one-time ends.**\n")
+    print("| N | IC fit ms | latent solve ms | full decode ms | e2e ms | "
+          "oracle-arm solve ms (O(N) residual, for contrast) |")
+    print("|---|---|---|---|---|---|")
+    for N in sorted(runs):
+        v = runs[N]["variants"]
+        nt = v["nodes_tight"]
+        print(f"| {N} | {nt['ic_ms_median']:.2f} | "
+              f"{nt['roll_ms_median']:.2f} | {nt['dec_ms_median']:.2f} | "
+              f"{nt['e2e_ms_median']:.2f} | "
+              f"{v['oracle']['roll_ms_median']:.2f} |")
+
+
+def t_s3(runs):
+    print("\n**T-S3 — 1D Burgers: ROM vs the tridiagonal tolerance-Newton "
+          "FOM, same job, same GPU.  NOT iso-accuracy: the FOM is far more "
+          "accurate than the ROM everywhere (its error is shown).**\n")
+    print("| N | ROM e2e ms (learned m=32) | ROM err | FOM ms (ntol 1e-3) | "
+          "FOM err | FOM ms (ntol 1e-8) | ROM/FOM(1e-3) |")
+    print("|---|---|---|---|---|---|---|")
+    for N in sorted(runs):
+        v = runs[N]["variants"]["nodes_tight"]
+        fom = {f["ntol"]: f for f in runs[N]["fom"]}
+        f3, f8 = fom[1e-3], fom[1e-8]
+        print(f"| {N} | {v['e2e_ms_median']:.2f} | "
+              f"{e(v['rollout_err_mean'])} | {f3['ms_median']:.2f} | "
+              f"{e(f3['err_mean'])} | {f8['ms_median']:.2f} | "
+              f"{v['e2e_ms_median']/f3['ms_median']:.1f}x |")
+
+
 def main():
     b1d = load_b1d()
     qf = load_qf()
+    scale = load_scale()
     if b1d:
         t_b1(b1d)
         t_b2(b1d)
@@ -147,6 +212,10 @@ def main():
         t_p1(qf)
         t_p2(qf)
         t_p3(qf)
+    if scale:
+        t_s1(scale)
+        t_s2(scale)
+        t_s3(scale)
 
 
 if __name__ == "__main__":

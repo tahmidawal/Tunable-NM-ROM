@@ -83,3 +83,13 @@ fastest path; deletes the NNLS fit); 1D node learning pays where the budget
 binds (−52/−58/−61% at m=M/2; 84–97% of the small m=M gap) and does not
 substitute for budget. Multi-seed confirmation NOT launched (user review
 first). Lab log updated (Where things stand + session entry).
+
+## 2026-08-27 — scaling ladder (user follow-up) and close-out 2
+
+Six more jobs (2969373–2969381, N=128..4096) with the new cost instrument
+(`sep_b1d_scale.py`: device rollout, Gram IC fit, tridiagonal FOM; gates
+J/T2/G/V all ~1e-14..1e-16). Accuracy scale-stable across 32×; ROM solve
+flat in N; honest FOM 5–8× faster and ~35× more accurate at every 1D size
+(launch-bound regime) — no 1D speed story; N=2048 FOM 1e-8 cell capped
+(flagged). Report: `reports/2026-08-27-b1d-scaling-and-fom-cost.md`.
+Cluster clean, queue empty, all results committed (e7b1146).

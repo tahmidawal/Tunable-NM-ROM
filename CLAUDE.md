@@ -104,6 +104,15 @@ never one per session.
   `reports/`, so a report cannot drift from its data. Every prose number that has gone wrong in
   this project went wrong by being typed by hand.
 - **Say which numbers are provisional and why**, inline, next to them — not only in a preamble.
+- **Equations in LaTeX, not ASCII math.** Write display and inline math with `$...$` /
+  `$$...$$` in reports, design docs, and `understand/` explainers — GitHub and most
+  previewers render it. Unicode-approximated formulas (`Φᵀu`, `R^{2×64}`) are acceptable
+  only inside tables or code spans where LaTeX cannot render; never build multi-line
+  equations out of ASCII art. Code identifiers stay as backticked code, not math.
+- **Diagrams in mermaid, not ASCII box art.** Architecture and flow diagrams go in
+  ```mermaid fences (GitHub, VS Code preview, and artifact pages all render them); use
+  classDef color-coding to encode roles (e.g. trained / frozen / solved). ASCII drawings
+  have already been rejected as unreadable once (2026-08-27).
 - `*.built.md` files are generated for publishing; edit the source, not the build.
 
 ## Routing — which machine

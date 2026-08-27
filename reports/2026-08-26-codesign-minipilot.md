@@ -8,6 +8,35 @@ checkpoint-dependent sign flips before, so no finding below transfers
 automatically.** Design: `understand/2026-08-26-codesign-design.md`; chronology:
 `understand/2026-08-26-codesign-notes.md`.
 
+## The architecture under test
+
+The decoder is the project's separable EQ-decoder: `u(x; z) = bc(x) · ⟨g(x), h(z)⟩`. All
+x-dependence lives in the feature bank `g` (random-Fourier lift → SiLU MLP; at this pilot's
+scale R=64 features on the N=64 grid), all z-dependence in the head `h` (SiLU MLP + linear
+skip, K=16). Because `g` never sees `z`, the decoder restricted to any fixed point set is a
+cached table times `h(z)` — that is what makes an m-point quadrature the whole online cost
+story. The residual is the exact-linear (exlin) weak form adopted 2026-08-26: linear terms
+computed exactly through the precomputed `A = ΦᵀG` (M=64 sine test modes), so **only the
+advection term `ΦᵀN(u)` is sampled** at the m nodes, and the co-design has exactly one term
+to serve.
+
+What each arm trains, solves, or freezes:
+
+| object | role | in this pilot |
+|---|---|---|
+| bank `g`, `bc`, `A = ΦᵀG` | all spatial structure, exact linear terms | **frozen** (every cached identity and the span floor untouched) |
+| head `h` (`params["h"]`, `h_lin`) | z → 64 coefficients | **trained** in arms i/ii/iii, frozen in arm n; always warm-started from the committed checkpoint |
+| node positions x₁…x_m | where advection is sampled | **trained** (continuous, sigmoid-box reparam, stage-3 machinery) |
+| node weights w | quadrature weights | **solved** — NNLS on the exact loss-form rows every 500 steps, never gradient-trained |
+
+The loss is four normalized terms: reconstruction anchor (L_rec, on 256 training
+snapshots), optional derivative reconstruction (L_sob), and the two mismatch terms —
+sampled-vs-full advection value (L_samp) and its z-Jacobian (L_jac) — both against the
+**current** decoder's own full-grid teacher, so the loss is a mismatch that cannot be
+reduced by fooling the points, only by the decoder and points genuinely agreeing.
+Certification never trusts the training loss: every arm is graded by the same external
+instrument (held-out ladder rungs + full ROM rollouts against FOM truth).
+
 ## Findings
 
 **F1 — The mismatch is trainable, massively.** Fine-tuning the h-track jointly
@@ -52,6 +81,57 @@ with a poor IC fit, err_t0 0.36, shared by all arms — it inflates every mean
 equally). Wall budget: 2000 steps, LR 3e-5. Gates 0/C/D/H/L/R all passed in
 every run; two of them caught real wiring bugs before any training (notes,
 2026-08-26 entry).
+
+## Interpretation — why co-training does not work as well as it should
+
+Four readings, ordered from most to least certain; the numbers cited are all in T-C1.
+
+**1. The error budget never favored it.** Rollout error decomposes roughly into decoder
+representation error plus quadrature-induced solver error. At m=4M the quadrature term is
+already small (base held (b)=3.06e-2 against held recon 2.73e-2), so even a perfect
+quadrature cannot buy much — and the co-trained arms indeed improve the mismatch 7×
+while rollouts get *worse*, because any decoder degradation lands one-for-one in the
+larger term. At m=M the quadrature term IS large (b=0.805) — but nodes-only shows that
+most of the removable part is removable *without touching the decoder*. Co-training only
+pays where there is quadrature error that node placement alone cannot reach, and this
+pilot found none worth its price.
+
+**2. The drift is a generalization failure of the anchor, not a priced trade.** If the
+optimizer were smoothly exchanging reconstruction for integrability, multiplying the
+reconstruction weight by 10 (REC_W 10 → 100) should shrink the drift roughly
+proportionally. It did not move it (3.054e-2 → 3.047e-2). The consistent reading: `h` has
+enough capacity to keep the 256 anchored snapshots reconstructed while deforming
+*between* them, where the mismatch terms push and the anchor cannot see. The anchor
+constrains a measure-zero slice of the manifold; the mismatch terms act everywhere the
+fit states live. That is an experimental-design gap (anchor density), not necessarily a
+refutation of the idea — but as run, the anchor was structurally unable to protect the
+decoder.
+
+**3. There is a cheap direction the mismatch loss likes and physics does not.** The
+sampled-vs-full advection gap is largest where `N(u) = u·∇u` varies on scales the m
+points cannot resolve. Two ways to shrink it: sample better (what we wanted), or make
+`u`'s advection field tamer between sample points (what a flexible `h` can also do). The
+second is invisible to a sparse anchor and mildly destructive to reconstruction — which
+is exactly the observed signature: large mismatch gains, small uniform recon drift,
+rollouts that do not improve in proportion to the rungs. The frozen-denominator
+normalization blocks the crudest version (globally shrinking the advection term) but not
+this local smoothing.
+
+**4. It is the project's recurring pattern, third instance.** A component sitting at its
+data-optimum, re-optimized against a different objective, loses more on the original axis
+than it gains on the new one: FREEZE_WDEC (training the POD lift destroyed a 1e-4
+optimum), the stage-2 same-target refits (+13% test rollout at N=256 despite large
+held-out fidelity gains), and now this. The common mechanism is that the new objective is
+evaluated on a finite state set and the component has capacity to overfit that set. The
+node positions escape the pattern precisely because they are too low-dimensional (2m
+numbers) to overfit — which is arguably the deepest reason nodes-only wins: **it puts the
+learnable capacity where it cannot collude.**
+
+What would have to change for co-training to be worth revisiting, in order of cost:
+anchor on ALL training codes rather than 256 (removes reading 2's gap; one local run);
+a hard trust region on `h`'s drift (constraint, not penalty); or a regime where
+quadrature error dominates end-to-end error even after node learning — plausibly 2D at
+small m, not demonstrated anywhere yet.
 
 ## Recommendation
 

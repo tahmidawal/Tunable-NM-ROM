@@ -179,11 +179,121 @@ def make_rollout_1d(n):
     return jax.jit(rollout)
 
 
-def build_data_1d(n, n_train, n_test, seed, test_seed, chunk=128):
+def tridiag_jac(u_int, nu, n):
+    """Analytic tridiagonal Jacobian of fom_residual_int w.r.t. u_int
+    (the sign-upwind `where` treated as locally constant, the standard
+    subgradient convention — identical to what jacfwd produces).  Returns
+    (dl, d, du) in the jax.lax.linalg.tridiagonal_solve convention
+    (dl[0] and du[-1] unused/zero)."""
+    dx = 1.0 / (n - 1)
+    U = jnp.pad(u_int, 1)
+    c = U[1:-1]
+    s = (c > 0).astype(u_int.dtype)                           # upwind switch
+    ux = jnp.where(c > 0, (c - U[:-2]) / dx, (U[2:] - c) / dx)
+    dl = DT * (c * (-s / dx) - nu / dx ** 2)
+    d = 1.0 + DT * (ux + c * (2.0 * s - 1.0) / dx + 2.0 * nu / dx ** 2)
+    du = DT * (c * (1.0 - s) / dx - nu / dx ** 2)
+    dl = dl.at[0].set(0.0)
+    du = du.at[-1].set(0.0)
+    return dl, d, du
+
+
+def tri_solve(dl, d, du, b):
+    from jax.lax.linalg import tridiagonal_solve
+    return tridiagonal_solve(dl, d, du, b[:, None])[:, 0]
+
+
+def make_rollout_1d_tri(n):
+    """The truth generator with the O(n) tridiagonal Newton solve instead of
+    the dense Jacobian — same residual, same fixed-iteration Newton with the
+    same skip/finite guards, same NaN-propagating audit.  Used for data
+    generation at large n (the dense path is kept for cross-gating)."""
+    interior = interior_indices_1d(n)
+
+    def newton_step(u_int, up_int, nu):
+        def body(u, _):
+            r = fom_residual_int(u, up_int, nu, n)
+            dl, d, du = tridiag_jac(u, nu, n)
+            dz = tri_solve(dl, d, du, -r)
+            ok = jnp.all(jnp.isfinite(dz)) & \
+                (jnp.linalg.norm(r) > 1e-13 * (1.0 + jnp.linalg.norm(u)))
+            return jnp.where(ok, u + dz, u), None
+        u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
+        rfin = jnp.linalg.norm(fom_residual_int(u, up_int, nu, n)) \
+            / (jnp.linalg.norm(up_int) + 1e-300)
+        return u, rfin
+
+    def rollout(U0, nu):
+        u0_int = jnp.asarray(U0)[:, interior]
+
+        def body(carry, _):
+            u, worst = carry
+            u2, r = jax.vmap(newton_step, in_axes=(0, 0, 0))(u, u, nu)
+            return (u2, jnp.maximum(worst, jnp.max(r))), u2
+
+        (uT, worst), traj = jax.lax.scan(
+            body, (u0_int, jnp.asarray(0.0, F64)), None, length=NUM_STEPS)
+        B = U0.shape[0]
+        full = jnp.zeros((NUM_STEPS, B, n), dtype=F64)
+        full = full.at[:, :, 1:-1].set(traj)
+        snaps = jnp.concatenate([jnp.asarray(U0)[None], full], axis=0)
+        return jnp.transpose(snaps, (1, 0, 2)), worst
+
+    return jax.jit(rollout)
+
+
+def make_fom_tol_rollout(n, max_newton=8):
+    """Timed FOM baseline: tolerance-terminated Newton (stop when the
+    relative residual <= ntol), tridiagonal solve — the algorithm a real 1D
+    production FOM would use, so its cost is not inflated by a dense
+    factorization.  Whole 50-step rollout on device (lax.scan over steps,
+    lax.while_loop Newton inside).  Single trajectory (batch=1 single-query
+    cost).  Returns (traj (T, n_i), total Newton iters, worst rel residual)."""
+    interior = interior_indices_1d(n)
+
+    def step(u_int, nu, ntol):
+        up = u_int
+        upn = jnp.linalg.norm(up) + 1e-300
+
+        def cond(s):
+            u, it = s
+            r = fom_residual_int(u, up, nu, n)
+            return (jnp.linalg.norm(r) > ntol * upn) & (it < max_newton)
+
+        def body(s):
+            u, it = s
+            r = fom_residual_int(u, up, nu, n)
+            dl, d, du = tridiag_jac(u, nu, n)
+            dz = tri_solve(dl, d, du, -r)
+            u2 = jnp.where(jnp.all(jnp.isfinite(dz)), u + dz, u)
+            return (u2, it + 1)
+
+        u, it = jax.lax.while_loop(cond, body, (u_int, jnp.int32(0)))
+        rrel = jnp.linalg.norm(fom_residual_int(u, up, nu, n)) / upn
+        return u, it, rrel
+
+    def rollout(u0_full, nu, ntol):
+        def body(carry, _):
+            u, tot, worst = carry
+            u2, it, rrel = step(u, nu, ntol)
+            return (u2, tot + it, jnp.maximum(worst, rrel)), u2
+        (uT, tot, worst), traj = jax.lax.scan(
+            body, (jnp.asarray(u0_full)[interior], jnp.int32(0),
+                   jnp.asarray(0.0, F64)), None, length=NUM_STEPS)
+        return traj, tot, worst
+
+    return jax.jit(rollout)
+
+
+def build_data_1d(n, n_train, n_test, seed, test_seed, chunk=128,
+                  solver="dense"):
     """Regenerate train + fresh-test trajectories from seeds.  Aborts if any
     trajectory's FOM residual audit exceeds 1e-8 (unconverged Newton must
-    never become 'truth')."""
-    rollout = make_rollout_1d(n)
+    never become 'truth').  solver='dense' (the screening runs' generator)
+    or 'tri' (tridiagonal Newton, O(n), for large n; cross-gated in the
+    scale driver)."""
+    rollout = make_rollout_1d(n) if solver == "dense" \
+        else make_rollout_1d_tri(n)
     out = {}
     for name, sd, m in (("train", seed, n_train), ("test", test_seed, n_test)):
         c, w, a, nu = sample_params_1d(sd, m)

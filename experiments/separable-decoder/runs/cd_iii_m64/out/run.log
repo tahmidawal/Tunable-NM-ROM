@@ -1,0 +1,3 @@
+jax_backend=gpu device=cuda:0 CODESIGN N=64 ckpt=sep_burgers_N64_K16_R64.pkl TRAIN_H=1 TRAIN_NODES=1 m=64 steps=2000
+  data cache hit: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-26-codesign/experiments/separable-decoder/runs/cd_smoke/data_n64.npz  U(576, 51, 4096)
+  test data: 4 fresh trajectories, worst FOM rel residual 9.71e-13

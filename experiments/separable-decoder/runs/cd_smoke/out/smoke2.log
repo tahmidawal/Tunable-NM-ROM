@@ -1,0 +1,31 @@
+jax_backend=gpu device=cuda:0 CODESIGN N=64 ckpt=sep_burgers_N64_K16_R64.pkl TRAIN_H=1 TRAIN_NODES=1 m=256 steps=500
+  data cache hit: ../data_n64.npz  U(576, 51, 4096)
+  test data: 4 fresh trajectories, worst FOM rel residual 9.71e-13
+  GATE H (param split identity): 0.00e+00
+  GATE R (warm recon on regenerated snapshots): 2.488e-02
+  NNLS-EQ codesign N=64 k=16 M=64 m=256 adv-only: pool 3844 support 256 (+0 pad) rel fit 4.98e-03 (row p95 1.7e-01, max 3.7e+01) [32s]
+  init terms (fit): rec=1.962e-03  sob=1.207e-02  samp=1.718e-04  jac=1.687e-04
+  init terms (held): rec=2.212e-03  samp=1.940e-04  jac=2.105e-04
+  GATE 0 (grid closure vs make_weak_ops): 4.15e-16
+  GATE C (continuous machinery at grid init): 8.53e-15
+  GATE D (FD vs autodiff, kink-free window): ad=-2.258007e-02 rel=1.21e-05
+  step     0  loss 3.0000e+00  samp 1.718e-04  held samp 1.940e-04 jac 2.105e-04 rec-drift +0.0000 [0s]
+  step   100  loss 1.4301e+00  samp 2.516e-05  held samp 1.731e-04 jac 1.154e-04 rec-drift +0.0343  TRIPWIRE [13s]
+  step   200  loss 1.2496e+00  samp 1.645e-05  held samp 1.784e-04 jac 9.538e-05 rec-drift +0.0441  TRIPWIRE [596s]
+  step   300  loss 1.1684e+00  samp 1.291e-05  held samp 1.457e-04 jac 8.261e-05 rec-drift +0.0507  TRIPWIRE [608s]
+  step   400  loss 1.1195e+00  samp 1.084e-05  held samp 1.100e-04 jac 7.122e-05 rec-drift +0.0580  TRIPWIRE [1210s]
+  step   500  loss 1.0858e+00  samp 9.685e-06  held samp 9.149e-05 jac 6.673e-05 rec-drift +0.0643  TRIPWIRE [1222s]
+  train DONE: best loss 1.0853e+00 at step 499 [1222s]
+  GATE L [base]: 2.35e-16
+  [base] traj 0: rollout err 1.374e-02 (t0 1.46e-02, t50 1.78e-02) [3s]
+  [base] traj 1: rollout err 1.466e-01 (t0 3.60e-01, t50 7.86e-02) [1s]
+  [base] traj 2: rollout err 2.107e-02 (t0 4.52e-02, t50 1.82e-02) [1s]
+  [base] traj 3: rollout err 2.599e-02 (t0 4.69e-02, t50 2.96e-02) [1s]
+  [base] SUMMARY m=256: held b 3.062e-02 c1 2.393e-01 cos 0.9595 c3 5.798e-02 cos 0.9915  recon 2.733e-02  rollout 5.185e-02
+  GATE L [cot]: 3.56e-16
+  [cot] traj 0: rollout err 1.550e-02 (t0 1.45e-02, t50 1.95e-02) [1s]
+  [cot] traj 1: rollout err 1.576e-01 (t0 3.66e-01, t50 9.06e-02) [1s]
+  [cot] traj 2: rollout err 2.252e-02 (t0 4.88e-02, t50 1.95e-02) [1s]
+  [cot] traj 3: rollout err 2.592e-02 (t0 4.74e-02, t50 2.83e-02) [1s]
+  [cot] SUMMARY m=256: held b 1.369e-02 c1 3.108e-02 cos 0.9980 c3 1.966e-02 cos 0.9993  recon 2.966e-02  rollout 5.539e-02
+DONE -> sep_codesign_smoke2.json [2241s]

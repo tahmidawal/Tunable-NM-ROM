@@ -1,0 +1,51 @@
+jax_backend=gpu device=cuda:0 CODESIGN N=64 ckpt=sep_burgers_N64_K16_R64.pkl TRAIN_H=0 TRAIN_NODES=1 m=256 steps=2000
+  data cache hit: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-26-codesign/experiments/separable-decoder/runs/cd_smoke/data_n64.npz  U(576, 51, 4096)
+  test data: 4 fresh trajectories, worst FOM rel residual 9.71e-13
+  GATE H (param split identity): 0.00e+00
+  GATE R (warm recon on regenerated snapshots): 2.488e-02
+  NNLS-EQ codesign N=64 k=16 M=64 m=256 adv-only: pool 3844 support 256 (+0 pad) rel fit 4.98e-03 (row p95 1.7e-01, max 3.7e+01) [927s]
+  init terms (fit): rec=1.962e-03  sob=1.207e-02  samp=1.718e-04  jac=1.687e-04
+  init terms (held): rec=2.212e-03  samp=1.940e-04  jac=2.105e-04
+  GATE 0 (grid closure vs make_weak_ops): 3.38e-16
+  GATE C (continuous machinery at grid init): 8.03e-15
+E0826 21:04:10.205968  490831 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 1s:
+
+  %dot_general.62 = f64[256,3844]{1,0} dot(%constant.178, %constant.128), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(loss_fn)/jvp()/dot_general" stack_frame_id=35}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0826 21:04:12.564967  490506 slow_operation_alarm.cc:140] The operation took 3.359289615s
+Constant folding an instruction is taking > 1s:
+
+  %dot_general.62 = f64[256,3844]{1,0} dot(%constant.178, %constant.128), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(loss_fn)/jvp()/dot_general" stack_frame_id=35}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+  GATE D (FD vs autodiff, kink-free window): ad=1.782875e-01 rel=8.06e-08
+  step     0  loss 1.2000e+01  samp 1.718e-04  held samp 1.940e-04 jac 2.105e-04 rec-drift +0.0000 [1s]
+  step   200  loss 1.0439e+01  samp 2.226e-05  held samp 2.179e-04 jac 1.108e-04 rec-drift +0.0000 [26s]
+  step   400  loss 1.0350e+01  samp 1.684e-05  held samp 2.042e-04 jac 1.018e-04 rec-drift +0.0000 [46s]
+  step   600  loss 1.0279e+01  samp 1.295e-05  held samp 1.281e-04 jac 8.076e-05 rec-drift +0.0000 [1353s]
+  step   800  loss 1.0267e+01  samp 1.254e-05  held samp 1.191e-04 jac 7.696e-05 rec-drift +0.0000 [1368s]
+  step  1000  loss 1.0253e+01  samp 1.030e-05  held samp 1.313e-04 jac 7.768e-05 rec-drift +0.0000 [2878s]
+  step  1200  loss 1.0227e+01  samp 1.009e-05  held samp 1.066e-04 jac 6.696e-05 rec-drift +0.0000 [2892s]
+  step  1400  loss 1.0219e+01  samp 9.519e-06  held samp 9.565e-05 jac 6.244e-05 rec-drift +0.0000 [2904s]
+  step  1600  loss 1.0209e+01  samp 9.135e-06  held samp 1.055e-04 jac 5.912e-05 rec-drift +0.0000 [4403s]
+  step  1800  loss 1.0197e+01  samp 8.264e-06  held samp 9.896e-05 jac 5.667e-05 rec-drift +0.0000 [4414s]
+  step  2000  loss 1.0198e+01  samp 7.368e-06  held samp 1.351e-04 jac 6.388e-05 rec-drift +0.0000 [5653s]
+  train DONE: best loss 1.0194e+01 at step 1939 [5653s]
+  GATE L [base]: 2.35e-16
+  [base] traj 0: rollout err 1.374e-02 (t0 1.46e-02, t50 1.78e-02) [10s]
+  [base] traj 1: rollout err 1.466e-01 (t0 3.60e-01, t50 7.86e-02) [2s]
+  [base] traj 2: rollout err 2.107e-02 (t0 4.52e-02, t50 1.82e-02) [2s]
+  [base] traj 3: rollout err 2.599e-02 (t0 4.69e-02, t50 2.96e-02) [1s]
+  [base] SUMMARY m=256: held b 3.062e-02 c1 2.393e-01 cos 0.9595 c3 5.798e-02 cos 0.9915  recon 2.733e-02  rollout 5.185e-02
+  GATE L [cot]: 2.35e-16
+  [cot] traj 0: rollout err 1.373e-02 (t0 1.46e-02, t50 1.79e-02) [4s]
+  [cot] traj 1: rollout err 1.466e-01 (t0 3.60e-01, t50 7.84e-02) [1s]
+  [cot] traj 2: rollout err 2.173e-02 (t0 4.52e-02, t50 1.85e-02) [1s]
+  [cot] traj 3: rollout err 2.622e-02 (t0 4.69e-02, t50 2.99e-02) [2s]
+  [cot] SUMMARY m=256: held b 1.405e-02 c1 9.296e-02 cos 0.9844 c3 2.910e-02 cos 0.9965  recon 2.733e-02  rollout 5.207e-02
+DONE -> sep_codesign_n_m256.json [8190s]

@@ -1,0 +1,106 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+jax_backend=gpu device=cuda:0 B1D-SCREEN N=512 K=8 R=32 M=32 node_steps=2000
+  data[train] N=512 m=512: max FOM rel residual 1.34e-13
+  data[test] N=512 m=8: max FOM rel residual 1.13e-13
+   train[N512] step      1/40000  rel-MSE 1.109e+00  [7s]
+   train[N512] step   5000/40000  rel-MSE 2.568e-04  [10s]
+   train[N512] step  10000/40000  rel-MSE 8.611e-05  [13s]
+   train[N512] step  15000/40000  rel-MSE 7.268e-05  [16s]
+   train[N512] step  20000/40000  rel-MSE 3.526e-05  [19s]
+   train[N512] step  25000/40000  rel-MSE 2.764e-05  [22s]
+   train[N512] step  30000/40000  rel-MSE 2.377e-05  [25s]
+   train[N512] step  35000/40000  rel-MSE 2.037e-05  [28s]
+   train[N512] step  40000/40000  rel-MSE 1.877e-05  [31s]
+   train[N512] done: recon rel-L2 mean 3.632e-03 max 3.590e-02 [33s]
+  GATE E (sine modes are exact eigenvectors): 1.92e-13
+  GATE F (weak ops == Phi^T FOM residual): 1.69e-15
+  held-out reconstruction (frozen decoder): 3.834e-03
+  NNLS-EQ b1d N=512 M=32 m=32 adv-only: support 32 (+0 pad), rel fit 6.11e-02 (row p95 4.7e+01, max 4.9e+04) [0s]
+  NNLS-EQ b1d N=512 M=32 m=16 adv-only: support 16 (+0 pad), rel fit 2.74e-01 (row p95 1.9e+02, max 3.7e+04) [0s]
+  NNLS-EQ b1d N=512 M=32 m=128 adv-only: support 121 (+7 pad), rel fit 2.15e-06 (row p95 3.2e-03, max 8.5e-01) [1s]
+  GATE C (continuous machinery at grid init): 2.76e-14
+  [tight] init terms: samp=2.024e-03 jac=2.176e-03
+  GATE D (FD vs autodiff, kink-free window): ad=-7.417503e+00 rel=2.22e-08
+  [tight] step     0  loss 2.0000e+00  samp 2.024e-03  held samp 1.655e-03  held jac 1.485e-03  [3s]
+  [tight] step   200  loss 1.2613e+00  samp 1.329e-03  held samp 1.378e-03  held jac 1.202e-03  [3s]
+  [tight] step   400  loss 1.2418e+00  samp 1.280e-03  held samp 1.285e-03  held jac 1.184e-03  [4s]
+  [tight] step   600  loss 6.2190e-01  samp 5.695e-04  held samp 7.763e-04  held jac 9.280e-04  [6s]
+  [tight] step   800  loss 6.2189e-01  samp 5.694e-04  held samp 7.755e-04  held jac 9.271e-04  [6s]
+  [tight] step  1000  loss 5.0378e-01  samp 4.274e-04  held samp 6.791e-04  held jac 8.899e-04  [7s]
+  [tight] step  1200  loss 4.3618e-01  samp 3.708e-04  held samp 6.146e-04  held jac 8.003e-04  [7s]
+  [tight] step  1400  loss 4.3620e-01  samp 3.708e-04  held samp 6.147e-04  held jac 8.002e-04  [7s]
+  [tight] step  1600  loss 3.6308e-01  samp 3.023e-04  held samp 5.429e-04  held jac 7.108e-04  [8s]
+  [tight] step  1800  loss 3.6307e-01  samp 3.026e-04  held samp 5.435e-04  held jac 7.106e-04  [8s]
+  [tight] step  2000  loss 3.3992e-01  samp 2.783e-04  held samp 5.186e-04  held jac 6.826e-04  [9s]
+  [tight] node train DONE: best loss 3.3992e-01 at step 2000 [9s]
+  [half] init terms: samp=6.171e-02 jac=4.699e-02
+  [half] step     0  loss 2.0000e+00  samp 6.171e-02  held samp 5.324e-02  held jac 3.507e-02  [4s]
+  [half] step   200  loss 1.5472e+00  samp 4.659e-02  held samp 4.505e-02  held jac 3.271e-02  [5s]
+  [half] step   400  loss 1.5466e+00  samp 4.665e-02  held samp 4.480e-02  held jac 3.253e-02  [5s]
+  [half] step   600  loss 1.1147e+00  samp 3.287e-02  held samp 3.423e-02  held jac 2.629e-02  [6s]
+  [half] step   800  loss 1.1147e+00  samp 3.287e-02  held samp 3.423e-02  held jac 2.628e-02  [6s]
+  [half] step  1000  loss 1.0972e+00  samp 3.227e-02  held samp 3.392e-02  held jac 2.617e-02  [7s]
+  [half] step  1200  loss 1.0852e+00  samp 3.164e-02  held samp 3.385e-02  held jac 2.657e-02  [7s]
+  [half] step  1400  loss 1.0852e+00  samp 3.164e-02  held samp 3.385e-02  held jac 2.657e-02  [8s]
+  [half] step  1600  loss 1.0630e+00  samp 3.096e-02  held samp 3.342e-02  held jac 2.628e-02  [8s]
+  [half] step  1800  loss 1.0630e+00  samp 3.095e-02  held samp 3.342e-02  held jac 2.628e-02  [8s]
+  [half] step  2000  loss 1.0497e+00  samp 3.057e-02  held samp 3.313e-02  held jac 2.596e-02  [9s]
+  [half] node train DONE: best loss 1.0497e+00 at step 2000 [9s]
+  [oracle] traj 0: rollout err 4.647e-03 (t0 3.20e-03, t50 1.10e-02)  median 620 ms
+  [oracle] traj 1: rollout err 6.674e-03 (t0 1.28e-02, t50 1.91e-02)  median 656 ms
+  [oracle] traj 2: rollout err 2.280e-03 (t0 6.45e-03, t50 2.27e-03)  median 290 ms
+  [oracle] traj 3: rollout err 7.168e-03 (t0 3.39e-03, t50 7.14e-03)  median 345 ms
+  [oracle] traj 4: rollout err 4.538e-03 (t0 4.94e-03, t50 4.94e-03)  median 445 ms
+  [oracle] traj 5: rollout err 2.206e-03 (t0 2.73e-03, t50 2.85e-03)  median 294 ms
+  [oracle] traj 6: rollout err 3.289e-03 (t0 5.35e-03, t50 3.26e-03)  median 339 ms
+  [oracle] traj 7: rollout err 8.356e-03 (t0 3.41e-03, t50 1.22e-02)  median 570 ms
+  [oracle] SUMMARY m=510: held b 0.000e+00 c1 0.000e+00 cos 1.0000  rollout 4.895e-03  (393 ms/traj median)
+  [base_tight] traj 0: rollout err 4.631e-03 (t0 3.20e-03, t50 1.11e-02)  median 604 ms
+  [base_tight] traj 1: rollout err 6.914e-03 (t0 1.28e-02, t50 1.93e-02)  median 584 ms
+  [base_tight] traj 2: rollout err 3.611e-03 (t0 6.45e-03, t50 4.95e-03)  median 278 ms
+  [base_tight] traj 3: rollout err 7.528e-03 (t0 3.39e-03, t50 8.09e-03)  median 338 ms
+  [base_tight] traj 4: rollout err 4.812e-03 (t0 4.94e-03, t50 5.42e-03)  median 412 ms
+  [base_tight] traj 5: rollout err 2.246e-03 (t0 2.73e-03, t50 3.03e-03)  median 306 ms
+  [base_tight] traj 6: rollout err 3.406e-03 (t0 5.35e-03, t50 3.60e-03)  median 325 ms
+  [base_tight] traj 7: rollout err 8.696e-03 (t0 3.41e-03, t50 1.30e-02)  median 541 ms
+  [base_tight] SUMMARY m=32: held b 6.792e-02 c1 4.707e-01 cos 0.8766  rollout 5.230e-03  (375 ms/traj median)
+  [nodes_tight] traj 0: rollout err 4.652e-03 (t0 3.20e-03, t50 1.12e-02)  median 598 ms
+  [nodes_tight] traj 1: rollout err 6.592e-03 (t0 1.28e-02, t50 1.91e-02)  median 612 ms
+  [nodes_tight] traj 2: rollout err 2.313e-03 (t0 6.45e-03, t50 2.30e-03)  median 282 ms
+  [nodes_tight] traj 3: rollout err 7.340e-03 (t0 3.39e-03, t50 7.39e-03)  median 339 ms
+  [nodes_tight] traj 4: rollout err 4.548e-03 (t0 4.94e-03, t50 4.95e-03)  median 441 ms
+  [nodes_tight] traj 5: rollout err 2.202e-03 (t0 2.73e-03, t50 2.84e-03)  median 296 ms
+  [nodes_tight] traj 6: rollout err 3.153e-03 (t0 5.35e-03, t50 3.14e-03)  median 344 ms
+  [nodes_tight] traj 7: rollout err 8.492e-03 (t0 3.41e-03, t50 1.28e-02)  median 543 ms
+  [nodes_tight] SUMMARY m=32: held b 4.259e-02 c1 2.379e-01 cos 0.9460  rollout 4.911e-03  (392 ms/traj median)
+  [base_half] traj 0: rollout err 1.191e-02 (t0 3.20e-03, t50 2.28e-02)  median 850 ms
+  [base_half] traj 1: rollout err 1.191e-02 (t0 1.28e-02, t50 2.59e-02)  median 561 ms
+  [base_half] traj 2: rollout err 6.691e-02 (t0 6.45e-03, t50 1.13e-01)  median 516 ms
+  [base_half] traj 3: rollout err 1.957e-02 (t0 3.39e-03, t50 4.67e-02)  median 259 ms
+  [base_half] traj 4: rollout err 3.929e-02 (t0 4.94e-03, t50 5.58e-02)  median 358 ms
+  [base_half] traj 5: rollout err 2.266e-02 (t0 2.73e-03, t50 4.04e-02)  median 292 ms
+  [base_half] traj 6: rollout err 1.014e-02 (t0 5.35e-03, t50 1.94e-02)  median 338 ms
+  [base_half] traj 7: rollout err 3.156e-02 (t0 3.41e-03, t50 4.13e-02)  median 522 ms
+  [base_half] SUMMARY m=16: held b 3.724e-01 c1 1.128e+01 cos 0.5519  rollout 2.674e-02  (437 ms/traj median)
+  [nodes_half] traj 0: rollout err 4.860e-03 (t0 3.20e-03, t50 1.15e-02)  median 582 ms
+  [nodes_half] traj 1: rollout err 7.001e-03 (t0 1.28e-02, t50 1.97e-02)  median 558 ms
+  [nodes_half] traj 2: rollout err 3.474e-02 (t0 6.45e-03, t50 5.86e-02)  median 382 ms
+  [nodes_half] traj 3: rollout err 9.277e-03 (t0 3.39e-03, t50 1.53e-02)  median 284 ms
+  [nodes_half] traj 4: rollout err 5.972e-03 (t0 4.94e-03, t50 7.87e-03)  median 382 ms
+  [nodes_half] traj 5: rollout err 7.447e-03 (t0 2.73e-03, t50 1.47e-02)  median 303 ms
+  [nodes_half] traj 6: rollout err 3.401e-03 (t0 5.35e-03, t50 4.20e-03)  median 292 ms
+  [nodes_half] traj 7: rollout err 9.791e-03 (t0 3.41e-03, t50 1.49e-02)  median 488 ms
+  [nodes_half] SUMMARY m=16: held b 3.218e-01 c1 3.581e+00 cos 0.6539  rollout 1.031e-02  (382 ms/traj median)
+  [base_gen] traj 0: rollout err 4.647e-03 (t0 3.20e-03, t50 1.10e-02)  median 612 ms
+  [base_gen] traj 1: rollout err 6.674e-03 (t0 1.28e-02, t50 1.91e-02)  median 650 ms
+  [base_gen] traj 2: rollout err 2.280e-03 (t0 6.45e-03, t50 2.27e-03)  median 286 ms
+  [base_gen] traj 3: rollout err 7.168e-03 (t0 3.39e-03, t50 7.14e-03)  median 342 ms
+  [base_gen] traj 4: rollout err 4.538e-03 (t0 4.94e-03, t50 4.94e-03)  median 446 ms
+  [base_gen] traj 5: rollout err 2.205e-03 (t0 2.73e-03, t50 2.85e-03)  median 306 ms
+  [base_gen] traj 6: rollout err 3.289e-03 (t0 5.35e-03, t50 3.26e-03)  median 347 ms
+  [base_gen] traj 7: rollout err 8.356e-03 (t0 3.41e-03, t50 1.22e-02)  median 583 ms
+  [base_gen] SUMMARY m=128: held b 2.950e-06 c1 3.254e-05 cos 1.0000  rollout 4.895e-03  (397 ms/traj median)
+DONE -> /cluster/tufts/paralab/tawal01/b1dqf/b1d_n512/out/sep_b1d_n512.json sha256=d9e0397004160dad74de8e1fc4c094d6e3f2d301e8a86ae6ba6108a8d234ef8e [211s]
+ALL-DONE

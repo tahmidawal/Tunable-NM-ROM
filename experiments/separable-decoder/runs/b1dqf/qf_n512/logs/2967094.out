@@ -1,0 +1,36 @@
+host=pax106 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+40eb6ccb300957d7800810883c3934896f92ffab477c5bce357218e6e500498b  /cluster/tufts/paralab/tawal01/b1dqf/qf_n512/in/sep_poisson_N512_K16_R64_nff128_ffs4.pkl
+jax_backend=gpu device=cuda:0 x64=True matmul_precision=highest
+ckpt=/cluster/tufts/paralab/tawal01/b1dqf/qf_n512/in/sep_poisson_N512_K16_R64_nff128_ffs4.pkl
+  sha256=40eb6ccb300957d7800810883c3934896f92ffab477c5bce357218e6e500498b
+  N=512 K=16 R=64 M=64 m=256 gn_iters=60 tr_factor=1.0 seed0=0 fresh_seed=20260823 n_src=16/cohort reps=12 burn=3 taus=[0.001, 0.01]
+  truth: 32 sources (2 cohorts), FOM CG rel residual 6.96e-11
+  gate S: f_m vs pc.weak_source_term 0.00e+00; repeat 0.0e+00
+  NNLS-EQ qf-cell poisson N=512 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 8.12e-04 (row p95 1.0e-01, max 1.1e+02) [23s]
+  setup: EQ NNLS fit 23.0s + bank 2.44s  |  QF G_all 5.64s + B matmul 0.758s  (B: (64, 64))
+  gate F (cached vs meshfree weak r/J): max rel dev 2.53e-16
+  gate E (cached vs meshfree weak r/J): max rel dev 7.89e-16
+  gate Q (random, n=32): resid rel max 7.34e-16, grad rel max 6.19e-16
+  rungs@z0 eq  : b_resid mean 2.43e-04 max 8.75e-04  c1_grad mean 7.65e-05
+  rungs@z0 qf  : b_resid mean 2.36e-16 max 7.98e-16  c1_grad mean 4.25e-16
+  pipe jit-compile: full 7.4s  eq 1.3s  qf 1.2s
+   timing block: 6 subjects x 12 reps (+3 warm), balanced forward/reversed sweeps
+   full tau=1e-03 [heldout_seed0 ] proj+solve+decode   11.105 ms  jac  12.6  err 3.154e-02  cens 100%  reasons {'1': 16}
+   full tau=1e-03 [fresh_seed20260823] proj+solve+decode   10.590 ms  jac  12.3  err 4.597e-02  cens 100%  reasons {'1': 16}
+   full tau=1e-02 [heldout_seed0 ] proj+solve+decode    9.252 ms  jac  10.7  err 3.227e-02  cens  69%  reasons {'1': 11, '2': 5}
+   full tau=1e-02 [fresh_seed20260823] proj+solve+decode    9.528 ms  jac  10.4  err 4.625e-02  cens  69%  reasons {'1': 11, '2': 5}
+   eq   tau=1e-03 [heldout_seed0 ] proj+solve+decode    3.086 ms  jac  12.6  err 3.154e-02  cens 100%  reasons {'1': 16}
+   eq   tau=1e-03 [fresh_seed20260823] proj+solve+decode    2.867 ms  jac  12.2  err 4.598e-02  cens 100%  reasons {'1': 16}
+   eq   tau=1e-02 [heldout_seed0 ] proj+solve+decode    2.516 ms  jac  10.6  err 3.228e-02  cens  69%  reasons {'1': 11, '2': 5}
+   eq   tau=1e-02 [fresh_seed20260823] proj+solve+decode    2.535 ms  jac  10.3  err 4.626e-02  cens  69%  reasons {'1': 11, '2': 5}
+   qf   tau=1e-03 [heldout_seed0 ] proj+solve+decode    2.867 ms  jac  12.6  err 3.154e-02  cens 100%  reasons {'1': 16}
+   qf   tau=1e-03 [fresh_seed20260823] proj+solve+decode    2.615 ms  jac  12.3  err 4.597e-02  cens 100%  reasons {'1': 16}
+   qf   tau=1e-02 [heldout_seed0 ] proj+solve+decode    2.433 ms  jac  10.7  err 3.227e-02  cens  69%  reasons {'1': 11, '2': 5}
+   qf   tau=1e-02 [fresh_seed20260823] proj+solve+decode    2.441 ms  jac  10.4  err 4.625e-02  cens  69%  reasons {'1': 11, '2': 5}
+  gate Q (solutions, n=192): resid rel max 1.37e-13, grad rel max 2.07e-04, grad abs max 6.46e-14, fails 0
+  rungs@sol eq  : b_resid mean 5.50e-02 max 1.14e-01  c1_grad mean 9.24e+06  c1_cos min -0.653228
+  rungs@sol qf  : b_resid mean 3.25e-14 max 1.37e-13  c1_grad mean 1.38e-05  c1_cos min 1.000000
+DONE poisson-qf [76s] -> /cluster/tufts/paralab/tawal01/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json
+ALL-DONE

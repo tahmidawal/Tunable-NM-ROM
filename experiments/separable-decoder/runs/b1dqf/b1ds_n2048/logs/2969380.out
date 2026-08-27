@@ -1,0 +1,110 @@
+host=pax049 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+jax_backend=gpu device=cuda:0 B1D-SCALE N=2048 K=8 R=32 M=32
+  GATE J (tridiag Jacobian == jacfwd): 2.22e-16
+  data[train] N=2048 m=512: max FOM rel residual 2.72e-13
+  data[test] N=2048 m=8: max FOM rel residual 2.56e-13
+  GATE T2 (tri vs dense truth rollouts, 4 traj x 50 steps): 3.41e-14
+   train[N2048] step      1/40000  rel-MSE 1.109e+00  [7s]
+   train[N2048] step   5000/40000  rel-MSE 3.034e-04  [12s]
+   train[N2048] step  10000/40000  rel-MSE 8.759e-05  [18s]
+   train[N2048] step  15000/40000  rel-MSE 4.903e-05  [24s]
+   train[N2048] step  20000/40000  rel-MSE 4.988e-05  [29s]
+   train[N2048] step  25000/40000  rel-MSE 2.835e-05  [35s]
+   train[N2048] step  30000/40000  rel-MSE 2.552e-05  [40s]
+   train[N2048] step  35000/40000  rel-MSE 2.154e-05  [46s]
+   train[N2048] step  40000/40000  rel-MSE 1.989e-05  [52s]
+   train[N2048] done: recon rel-L2 mean 3.736e-03 max 3.836e-02 [54s]
+  GATE E (sine modes are exact eigenvectors): 2.32e-13
+  GATE F (weak ops == Phi^T FOM residual): 1.89e-15
+  held-out reconstruction (frozen decoder): 3.834e-03
+  NNLS-EQ b1d-scale N=2048 M=32 m=32 adv-only: support 32 (+0 pad), rel fit 6.93e-02 (row p95 4.3e+01, max 3.0e+04) [0s]
+  NNLS-EQ b1d-scale N=2048 M=32 m=16 adv-only: support 16 (+0 pad), rel fit 2.69e-01 (row p95 2.0e+02, max 7.5e+04) [0s]
+  NNLS-EQ b1d-scale N=2048 M=32 m=128 adv-only: support 122 (+6 pad), rel fit 1.89e-06 (row p95 2.2e-03, max 5.2e-01) [1s]
+  GATE C (continuous machinery at grid init): 6.44e-13
+  GATE D (FD vs autodiff, kink-free window): rel=5.18e-09
+  [tight] step     0  loss 2.0000e+00  held samp 2.008e-03  [1s]
+  [tight] step   200  loss 1.1740e+00  held samp 1.858e-03  [2s]
+  [tight] step   400  loss 1.1617e+00  held samp 1.878e-03  [2s]
+  [tight] step   600  loss 5.6916e-01  held samp 1.045e-03  [4s]
+  [tight] step   800  loss 5.6916e-01  held samp 1.045e-03  [5s]
+  [tight] step  1000  loss 4.8179e-01  held samp 8.737e-04  [5s]
+  [tight] step  1200  loss 4.2693e-01  held samp 7.706e-04  [5s]
+  [tight] step  1400  loss 4.2661e-01  held samp 7.699e-04  [6s]
+  [tight] step  1600  loss 3.5184e-01  held samp 6.279e-04  [6s]
+  [tight] step  1800  loss 3.5208e-01  held samp 6.281e-04  [7s]
+  [tight] step  2000  loss 3.2526e-01  held samp 5.766e-04  [7s]
+  [tight] node train DONE: best 3.2526e-01 at step 2000 [7s]
+  [half] step     0  loss 2.0000e+00  held samp 4.944e-02  [3s]
+  [half] step   200  loss 1.5674e+00  held samp 4.234e-02  [4s]
+  [half] step   400  loss 1.5673e+00  held samp 4.225e-02  [4s]
+  [half] step   600  loss 1.1376e+00  held samp 3.131e-02  [5s]
+  [half] step   800  loss 1.1376e+00  held samp 3.132e-02  [6s]
+  [half] step  1000  loss 1.1012e+00  held samp 3.061e-02  [6s]
+  [half] step  1200  loss 1.0563e+00  held samp 2.959e-02  [6s]
+  [half] step  1400  loss 1.0563e+00  held samp 2.959e-02  [7s]
+  [half] step  1600  loss 8.5071e-01  held samp 2.610e-02  [7s]
+  [half] step  1800  loss 8.5070e-01  held samp 2.611e-02  [8s]
+  [half] step  2000  loss 7.5101e-01  held samp 2.368e-02  [8s]
+  [half] node train DONE: best 7.5101e-01 at step 2000 [8s]
+  GATE G (Gram-space IC fit == banked fit): gram 3.584319e-03 banked 3.584319e-03 rel diff 4.46e-14
+  [oracle] traj 0: err 4.685e-03  ic 17.97 ms  roll 44.37 ms  dec 0.46 ms
+  [oracle] traj 1: err 6.877e-03  ic 18.26 ms  roll 53.85 ms  dec 0.45 ms
+  [oracle] traj 2: err 2.169e-03  ic 15.71 ms  roll 34.56 ms  dec 0.44 ms
+  [oracle] traj 3: err 2.806e-03  ic 16.68 ms  roll 28.31 ms  dec 0.48 ms
+  [oracle] traj 4: err 4.836e-03  ic 8.94 ms  roll 36.12 ms  dec 0.48 ms
+  [oracle] traj 5: err 2.405e-03  ic 26.67 ms  roll 28.20 ms  dec 0.47 ms
+  [oracle] traj 6: err 4.917e-03  ic 18.22 ms  roll 32.99 ms  dec 0.65 ms
+  [oracle] traj 7: err 1.194e-02  ic 8.68 ms  roll 61.32 ms  dec 0.50 ms
+  [oracle] SUMMARY m=2046: held b 0.000e+00  rollout 5.079e-03  e2e 53.62 ms (ic 17.29 + roll 35.73 + dec 0.48)
+  [base_tight] traj 0: err 4.647e-03  ic 18.06 ms  roll 41.26 ms  dec 0.47 ms
+  [base_tight] traj 1: err 6.905e-03  ic 18.40 ms  roll 48.21 ms  dec 0.57 ms
+  [base_tight] traj 2: err 4.435e-03  ic 15.94 ms  roll 40.05 ms  dec 0.59 ms
+  [base_tight] traj 3: err 3.586e-03  ic 16.61 ms  roll 25.08 ms  dec 0.50 ms
+  [base_tight] traj 4: err 5.068e-03  ic 8.91 ms  roll 32.99 ms  dec 0.47 ms
+  [base_tight] traj 5: err 2.486e-03  ic 26.54 ms  roll 27.68 ms  dec 0.48 ms
+  [base_tight] traj 6: err 4.903e-03  ic 17.90 ms  roll 29.77 ms  dec 0.48 ms
+  [base_tight] traj 7: err 1.224e-02  ic 8.66 ms  roll 55.77 ms  dec 0.47 ms
+  [base_tight] SUMMARY m=32: held b 6.816e-02  rollout 5.534e-03  e2e 55.69 ms (ic 17.22 + roll 36.54 + dec 0.48)
+  [nodes_tight] traj 0: err 4.680e-03  ic 18.00 ms  roll 41.53 ms  dec 0.47 ms
+  [nodes_tight] traj 1: err 7.190e-03  ic 18.26 ms  roll 48.39 ms  dec 0.46 ms
+  [nodes_tight] traj 2: err 2.189e-03  ic 15.75 ms  roll 35.34 ms  dec 0.46 ms
+  [nodes_tight] traj 3: err 2.855e-03  ic 16.50 ms  roll 25.84 ms  dec 0.44 ms
+  [nodes_tight] traj 4: err 4.837e-03  ic 8.92 ms  roll 33.70 ms  dec 0.49 ms
+  [nodes_tight] traj 5: err 2.422e-03  ic 26.68 ms  roll 25.84 ms  dec 0.47 ms
+  [nodes_tight] traj 6: err 4.924e-03  ic 18.02 ms  roll 30.14 ms  dec 0.43 ms
+  [nodes_tight] traj 7: err 1.206e-02  ic 8.65 ms  roll 56.74 ms  dec 0.46 ms
+  [nodes_tight] SUMMARY m=32: held b 3.991e-02  rollout 5.145e-03  e2e 52.28 ms (ic 17.29 + roll 34.43 + dec 0.46)
+  [base_half] traj 0: err 7.856e-03  ic 18.10 ms  roll 52.39 ms  dec 0.47 ms
+  [base_half] traj 1: err 1.213e-02  ic 18.32 ms  roll 47.83 ms  dec 0.52 ms
+  [base_half] traj 2: err 6.647e-02  ic 15.69 ms  roll 35.35 ms  dec 0.46 ms
+  [base_half] traj 3: err 1.655e-02  ic 16.53 ms  roll 22.64 ms  dec 0.46 ms
+  [base_half] traj 4: err 2.367e-02  ic 8.91 ms  roll 34.85 ms  dec 0.46 ms
+  [base_half] traj 5: err 1.835e-02  ic 26.61 ms  roll 24.60 ms  dec 0.46 ms
+  [base_half] traj 6: err 1.307e-02  ic 18.06 ms  roll 27.22 ms  dec 0.46 ms
+  [base_half] traj 7: err 2.227e-02  ic 8.66 ms  roll 70.93 ms  dec 0.45 ms
+  [base_half] SUMMARY m=16: held b 4.665e-01  rollout 2.254e-02  e2e 51.64 ms (ic 17.30 + roll 35.04 + dec 0.46)
+  [nodes_half] traj 0: err 4.600e-03  ic 18.08 ms  roll 40.97 ms  dec 0.47 ms
+  [nodes_half] traj 1: err 6.987e-03  ic 18.30 ms  roll 47.91 ms  dec 0.46 ms
+  [nodes_half] traj 2: err 2.162e-02  ic 15.80 ms  roll 32.10 ms  dec 0.46 ms
+  [nodes_half] traj 3: err 5.319e-03  ic 16.53 ms  roll 22.96 ms  dec 0.47 ms
+  [nodes_half] traj 4: err 6.005e-03  ic 8.89 ms  roll 30.18 ms  dec 0.39 ms
+  [nodes_half] traj 5: err 4.871e-03  ic 26.64 ms  roll 25.48 ms  dec 0.47 ms
+  [nodes_half] traj 6: err 4.741e-03  ic 18.06 ms  roll 26.47 ms  dec 0.46 ms
+  [nodes_half] traj 7: err 1.338e-02  ic 8.64 ms  roll 51.02 ms  dec 0.42 ms
+  [nodes_half] SUMMARY m=16: held b 2.873e-01  rollout 8.440e-03  e2e 50.43 ms (ic 17.28 + roll 31.14 + dec 0.46)
+  [base_gen] traj 0: err 4.685e-03  ic 18.12 ms  roll 41.76 ms  dec 0.48 ms
+  [base_gen] traj 1: err 6.877e-03  ic 18.42 ms  roll 49.83 ms  dec 0.49 ms
+  [base_gen] traj 2: err 2.169e-03  ic 15.81 ms  roll 32.39 ms  dec 0.49 ms
+  [base_gen] traj 3: err 2.806e-03  ic 16.65 ms  roll 26.04 ms  dec 0.47 ms
+  [base_gen] traj 4: err 4.836e-03  ic 8.94 ms  roll 33.88 ms  dec 0.49 ms
+  [base_gen] traj 5: err 2.405e-03  ic 26.70 ms  roll 25.83 ms  dec 0.48 ms
+  [base_gen] traj 6: err 4.917e-03  ic 18.02 ms  roll 30.54 ms  dec 0.47 ms
+  [base_gen] traj 7: err 1.194e-02  ic 8.67 ms  roll 56.54 ms  dec 0.48 ms
+  [base_gen] SUMMARY m=128: held b 2.966e-06  rollout 5.079e-03  e2e 51.02 ms (ic 17.31 + roll 33.17 + dec 0.48)
+  GATE V (device rollout vs host-loop rollout, traj 0): host 4.647452e-03 device 4.647452e-03 rel diff 6.49e-14
+  [FOM ntol=1e-03] 31.18 ms/traj  err 7.061e-05  newton/rollout 199.0
+  [FOM ntol=1e-08] 61.63 ms/traj  err 1.239e-06  newton/rollout 385.4
+DONE -> /cluster/tufts/paralab/tawal01/b1dqf/b1ds_n2048/out/sep_b1d_scale_n2048.json sha256=69796152c6b39dbef438b40708727061d304ddc208400b150ac85906b0e6a6c9 [154s]
+ALL-DONE

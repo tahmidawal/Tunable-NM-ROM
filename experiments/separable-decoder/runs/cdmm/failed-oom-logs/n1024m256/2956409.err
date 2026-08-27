@@ -1,0 +1,29 @@
+W0827 12:32:16.865235 3283372 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 15.94GiB (rounded to 17112825856)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0827 12:32:16.865801 3283372 bfc_allocator.cc:525] ****************************************____________***********************************************_
+W0827 12:32:26.910202 3283372 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 15.94GiB (rounded to 17112825856)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0827 12:32:26.910311 3283372 bfc_allocator.cc:525] ****************************************____________***********************************************_
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/codesign-mm/n1024m256/code/sep_codesign.py", line 920, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/codesign-mm/n1024m256/code/sep_codesign.py", line 415, in main
+    den_s_b, den_j_b = dens_of(hp0, Zb_j, WTb_j)
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/codesign-mm/n1024m256/code/sep_codesign.py", line 386, in dens_of
+    return np.asarray(den_s), np.asarray(den_j)
+                              ~~~~~~~~~~^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 414, in __array__
+    return np.asarray(self._value, dtype=dtype, **kwds)  # pyrefly: ignore[no-matching-overload]
+                      ^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/profiler.py", line 420, in wrapper
+    return func(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 623, in _value
+    npy_value, did_copy = self._single_device_array_to_np_array_did_copy()
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 15.94GiB. [executable_name='jit_add'] [tf-allocator-allocation-error='']

@@ -1,0 +1,42 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+d22318da72ec44a73b453cb5f20eebeca8db886ef07f831272dc61b78363d141  /cluster/tufts/paralab/tawal01/codesign-mm/n256m256/in/sep_burgers_N256_K16_R64.pkl
+jax_backend=gpu device=cuda:0 CODESIGN N=256 ckpt=sep_burgers_N256_K16_R64.pkl TRAIN_H=0 TRAIN_NODES=1 m=256 steps=2000
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 104s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  test data: 4 fresh trajectories, worst FOM rel residual 9.86e-13
+  GATE H (param split identity): 0.00e+00
+  GATE R (warm recon on regenerated snapshots): 2.617e-02
+  NNLS-EQ codesign N=256 k=16 M=64 m=256 adv-only: pool 64516 support 256 (+0 pad) rel fit 4.95e-03 (row p95 1.5e-01, max 4.6e+01) [22s]
+  init terms (fit): rec=2.208e-03  sob=1.762e-02  samp=2.257e-04  jac=2.049e-04
+  init terms (held): rec=2.785e-03  samp=3.468e-04  jac=3.506e-04
+  GATE 0 (grid closure vs make_weak_ops): 6.95e-16
+  GATE C (continuous machinery at grid init): 4.79e-14
+  GATE D (FD vs autodiff, kink-free window): ad=-1.829570e+00 rel=4.44e-07
+  step     0  loss 1.2000e+01  samp 2.257e-04  held samp 3.468e-04 jac 3.506e-04 rec-drift +0.0000 [0s]
+  step   200  loss 1.0379e+01  samp 2.400e-05  held samp 1.640e-04 jac 1.386e-04 rec-drift +0.0000 [2s]
+  step   400  loss 1.0272e+01  samp 1.640e-05  held samp 2.139e-04 jac 1.169e-04 rec-drift +0.0000 [4s]
+  step   600  loss 1.0224e+01  samp 1.296e-05  held samp 1.395e-04 jac 9.220e-05 rec-drift +0.0000 [25s]
+  step   800  loss 1.0204e+01  samp 1.162e-05  held samp 1.477e-04 jac 8.632e-05 rec-drift +0.0000 [27s]
+  step  1000  loss 1.0193e+01  samp 9.592e-06  held samp 1.595e-04 jac 8.584e-05 rec-drift +0.0000 [47s]
+  step  1200  loss 1.0176e+01  samp 9.590e-06  held samp 1.369e-04 jac 7.412e-05 rec-drift +0.0000 [49s]
+  step  1400  loss 1.0166e+01  samp 8.892e-06  held samp 1.242e-04 jac 6.868e-05 rec-drift +0.0000 [50s]
+  step  1600  loss 1.0157e+01  samp 8.622e-06  held samp 1.112e-04 jac 6.260e-05 rec-drift +0.0000 [71s]
+  step  1800  loss 1.0150e+01  samp 8.058e-06  held samp 1.185e-04 jac 6.128e-05 rec-drift +0.0000 [72s]
+  step  2000  loss 1.0146e+01  samp 7.142e-06  held samp 1.355e-04 jac 6.314e-05 rec-drift +0.0000 [92s]
+  train DONE: best loss 1.0145e+01 at step 1993 [92s]
+  GATE L [base]: 3.24e-16
+  [base] traj 0: rollout err 1.573e-02 (t0 1.45e-02, t50 1.99e-02) [2s]
+  [base] traj 1: rollout err 1.259e-01 (t0 3.28e-01, t50 6.92e-02) [0s]
+  [base] traj 2: rollout err 2.424e-02 (t0 5.61e-02, t50 2.22e-02) [0s]
+  [base] traj 3: rollout err 2.580e-02 (t0 6.07e-02, t50 2.95e-02) [0s]
+  [base] SUMMARY m=256: held b 4.140e-02 c1 2.507e-01 cos 0.9382 c3 6.386e-02 cos 0.9925  recon 2.964e-02  rollout 4.792e-02
+  GATE L [cot]: 3.24e-16
+  [cot] traj 0: rollout err 1.575e-02 (t0 1.45e-02, t50 1.99e-02) [1s]
+  [cot] traj 1: rollout err 1.265e-01 (t0 3.28e-01, t50 7.01e-02) [0s]
+  [cot] traj 2: rollout err 2.514e-02 (t0 5.61e-02, t50 2.27e-02) [0s]
+  [cot] traj 3: rollout err 2.591e-02 (t0 6.07e-02, t50 2.96e-02) [0s]
+  [cot] SUMMARY m=256: held b 1.316e-02 c1 7.783e-02 cos 0.9939 c3 1.995e-02 cos 0.9995  recon 2.964e-02  rollout 4.833e-02
+DONE -> /cluster/tufts/paralab/tawal01/codesign-mm/n256m256/out/sep_codesign_n_N256_m256.json [361s]
+ALL-DONE

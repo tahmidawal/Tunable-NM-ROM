@@ -1,0 +1,11 @@
+host=pax009 gpu=NVIDIA H200
+jax_backend=gpu
+stage MANIFEST OK
+eb8862950138939acd0132c8f15bbea124026a67e8de73495cb3001c9dd9b78a  /cluster/tufts/paralab/tawal01/codesign-mm/n1024m256/in/sep_burgers_N1024_K16_R64.pkl
+jax_backend=gpu device=cuda:0 CODESIGN N=1024 ckpt=sep_burgers_N1024_K16_R64.pkl TRAIN_H=0 TRAIN_NODES=1 m=256 steps=2000
+  FOM: 104 trajectories (50 Newton-implicit steps each) in 249s, max Newton rel residual 9.95e-13
+  data check: max FOM rel residual over all trajectories 9.95e-13
+  test data: 4 fresh trajectories, worst FOM rel residual 8.68e-13
+  GATE H (param split identity): 0.00e+00
+  GATE R (warm recon on regenerated snapshots): 1.894e-02
+  NNLS-EQ codesign N=1024 k=16 M=64 m=256 adv-only: pool 65536 support 256 (+0 pad) rel fit 5.99e-03 (row p95 1.5e-01, max 2.1e+01) [26s]

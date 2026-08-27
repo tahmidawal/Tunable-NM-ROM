@@ -65,3 +65,14 @@ the exlin line's speedup.
 - **Resubmitted with TEACHER_CHUNK=8: jobs 2956820 (n1024m64), 2956822
   (n1024m256).** N=256 results + logs pulled, checksums verified, finished
   cluster dirs deleted.
+
+## 2026-08-27 — N=1024 done; experiment closed
+
+- **2956820 (m=M): transfers, smaller — base 1.411e-1 → 1.309e-1 (−7.2%).**
+- **2956822 (m=4M): tie — 1.172e-1 → 1.170e-1 (−0.2%).**
+- **Matched-accuracy verdict (the decisive one): learned m=M nodes never
+  reach the NNLS m=4M baseline** — +13.4% / +28.1% / +11.7% worse at
+  N=64/256/1024. The 4×-cheaper-solve hypothesis is refuted; no speed story.
+- Written up: `reports/2026-08-27-nodes-at-mM-transfer.md` (generated
+  tables T-N1/T-N2, glossary). All results committed on the branch;
+  namespace `codesign-mm/` deleted; queue empty.

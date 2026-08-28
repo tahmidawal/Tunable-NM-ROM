@@ -154,3 +154,29 @@ repetition persisted; accuracy read from the same timed invocation.
   equals the full-grid fit; the analytic tridiagonal Jacobian equals
   automatic differentiation; the tridiagonal truth generator equals the
   dense one.
+
+## Addendum (2026-08-28) — where the FOM's cost actually starts to grow
+
+F3 above says the FOM is "effectively flat through $N{=}4096$"; a reader
+(correctly) objected that a full-order solve must grow with resolution. It
+does — linearly — and the ladder simply stopped inside the launch-latency
+floor. Timing-only measurement of the same tridiagonal tolerance-Newton
+instrument at larger $N$ (**local GB10, not the A100** — absolute times
+~2.7× the A100's; the shape is the point; script and JSON in
+`runs/b1dqf/fom_growth_local/` on the branch):
+
+| grid points | FOM ms/traj (ntol 1e-3) | Newton/step |
+|---|---|---|
+| 510 | 22.2 | 1.0 |
+| 4,094 | 25.5 | 1.0 |
+| 16,382 | 29.8 | 1.0 |
+| 65,534 | 36.1 | 1.0 |
+| 262,142 | 67.6 | 1.0 |
+| 1,048,574 | 207.0 | 1.0 |
+
+The floor lasts to roughly 10–20k points, then the cost climbs ~linearly
+(4× points → 3.1× time at the top). Read against the ROM's fixed ~22 ms
+(A100, optimized), a 1D crossover would begin somewhere around
+$10^5$–$10^6$ points — consistent with the 2D picture (win at $1024^2$,
+loss at $256^2$). The correct wording for F3 is therefore "below the
+latency floor in the measured range", not "flat".

@@ -1,0 +1,70 @@
+{
+ "config": {
+  "N": 512,
+  "mode": "thru",
+  "opt": {
+   "solver": "gj",
+   "onepass": true,
+   "hoist": true,
+   "nocond": true,
+   "lean": true,
+   "nodot": true,
+   "unroll": 1,
+   "scan_unroll": 5,
+   "ic_unroll": 1
+  },
+  "ic_arm": "fast",
+  "arms": [
+   "base_tight"
+  ],
+  "ckpt": "/cluster/tufts/paralab/tawal01/b1dqf/fast_n512/in/sep_b1d_scale_n512.pkl",
+  "nodes": "/cluster/tufts/paralab/tawal01/b1dqf/fast_n512/in/sep_b1d_scale_n512_nodes.npz",
+  "base_json": "/cluster/tufts/paralab/tawal01/b1dqf/fast_n512/in/sep_b1d_scale_n512.json",
+  "time_reps": 7,
+  "burn": 2,
+  "xla_flags": "",
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "jax_version": "0.10.2"
+ },
+ "variants": {},
+ "thru": {
+  "arm": "base_tight",
+  "err_mean": 0.005194388692557876,
+  "errs": [
+   0.004620298672801858,
+   0.006732564556326634,
+   0.003605738450471475,
+   0.007503170261880538,
+   0.004828568040885105,
+   0.0022391342291629983,
+   0.003371962224424835,
+   0.008653673104509565
+  ],
+  "ic_batch_ms": 21.41229600238148,
+  "roll_batch_ms": 41.92232600325951,
+  "ic_per_traj_ms": 2.676537000297685,
+  "roll_per_traj_ms": 5.240290750407439,
+  "times": {
+   "ic": [
+    0.021304185000190046,
+    0.021455005000461824,
+    0.021517127999686636,
+    0.02133750899520237,
+    0.02141229600238148,
+    0.02131595800165087,
+    0.02145832400128711
+   ],
+   "roll": [
+    0.041833521994703915,
+    0.04185414200037485,
+    0.04205354300211184,
+    0.04200245500396704,
+    0.04191432199877454,
+    0.04201977400225587,
+    0.041922326003259514
+   ]
+  }
+ }
+}

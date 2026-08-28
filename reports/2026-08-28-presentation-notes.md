@@ -15,6 +15,36 @@ $$u(x;z) = bc(x)\,\langle g(x),\,h(z)\rangle$$
 
 Because all $x$-dependence factors through $g$, the decoder restricted to any point set is a cached table times $h(z)$ — the online solve never touches the grid.
 
+```mermaid
+flowchart TB
+  classDef trained fill:#fbe9e0,stroke:#c6531c,color:#5a2a10
+  classDef frozen  fill:#e2ecf6,stroke:#2f5f8f,color:#1b3a5a
+  classDef solved  fill:#dff0e7,stroke:#237a58,color:#154a36
+  classDef plain   fill:#f7f7f2,stroke:#9aa7b3,color:#152028
+
+  z(["latent z  (K = 8 numbers)"]):::plain
+  x(["grid / sample coordinates x"]):::plain
+
+  H["head h(z) — TRAINED in stage 1, then frozen<br/>MLP + linear skip → R = 32 coefficients"]:::trained
+  G["bank g(x) — TRAINED in stage 1, then frozen<br/>Fourier features → MLP → 32 spatial shapes, × bc(x)<br/>evaluated ONCE per point set and cached as a table G"]:::frozen
+
+  z --> H
+  x --> G
+  H --> U["field  u = G · h(z)<br/>(table × coefficient vector)"]:::plain
+  G --> U
+
+  U --> LIN["LINEAR terms — EXACT, no sampling<br/>A = ΦᵀG (64 × 32) precomputed once<br/>Φᵀu = A h(z)"]:::frozen
+  U --> ADV["NONLINEAR term (Burgers advection u·u_x)<br/>evaluated at the m sample nodes only<br/>(Poisson has none → whole residual is exact)"]:::plain
+
+  X["node positions X — TRAINED in stage 2<br/>(decoder frozen; gradient on positions only)"]:::trained --> ADV
+  W["node weights w ≥ 0 — SOLVED by NNLS<br/>re-solved every 500 steps"]:::solved --> ADV
+
+  LIN --> R["weak residual r(z), 64 numbers<br/>→ Levenberg–Marquardt solve for z, each time step"]:::plain
+  ADV --> R
+```
+
+Color code: **orange = trained by gradient**, **blue = frozen / precomputed**, **green = solved by a convex fit (never gradient-trained)**. Everything on the blue path is exact; sampling error can only enter through the advection box, which is the only thing stage 2 touches.
+
 **Residual.** Project the PDE residual onto $M$ sine test modes $\Phi$ (weak form). Every linear term collapses through one precomputed matrix $A=\Phi^\top G$ $(M\times R)$, so $\Phi^\top u = A\,h(z)$ exactly — no quadrature. Only a nonlinear term is sampled. For Burgers (advection $N(u)=u\,u_x$, sign-upwind) at $m$ nodes $X$ with weights $w$:
 
 $$r(z) = W\odot\Big[A\big(h(z)-h(z^n)\big) + \Delta t\big(\Phi_X^\top (w\odot N_X(u)) + \nu\lambda\odot A\,h(z)\big)\Big]$$

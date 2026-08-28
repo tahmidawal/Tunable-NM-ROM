@@ -201,6 +201,58 @@ def t_s3(runs):
               f"{v['e2e_ms_median']/f3['ms_median']:.1f}x |")
 
 
+def load_fast():
+    out = {}
+    for p in sorted(glob.glob(os.path.join(RUNS, "fast_n*", "out",
+                                           "fast_a100_n*.json"))):
+        d = json.load(open(p))
+        N = d["config"]["N"]
+        tp = os.path.join(os.path.dirname(p), f"thru_a100_n{N}.json")
+        d["_thru"] = json.load(open(tp))["thru"] if os.path.exists(tp) \
+            else None
+        out[N] = d
+    return out
+
+
+def t_o1(runs):
+    print("\n**T-O1 — optimized rollout, A100 confirmation: reference vs "
+          "optimized, same job, same GPU, interleaved; parity vs the "
+          "committed baseline JSONs.**\n")
+    print("| N | arm | err (ref == fast) | parity vs baseline | "
+          "IC ms ref→fast | solve ms ref→fast | e2e ms ref→fast | speedup |")
+    print("|---|---|---|---|---|---|---|---|")
+    for N in sorted(runs):
+        for arm, a in runs[N]["variants"].items():
+            er = a["ic_ref_ms"] + a["roll_ref_ms"] + a["dec_ms"]
+            ef = a["ic_fast_ms"] + a["roll_fast_ms"] + a["dec_ms"]
+            pv = a["parity"]["err_rel_diff_fast_vs_base"]
+            print(f"| {N} | {arm} | {e(a['err_fast_mean'])} | {pv:.1e} | "
+                  f"{a['ic_ref_ms']:.1f}→{a['ic_fast_ms']:.1f} | "
+                  f"{a['roll_ref_ms']:.1f}→{a['roll_fast_ms']:.1f} | "
+                  f"{er:.1f}→{ef:.1f} | {er/ef:.2f}x |")
+
+
+def t_o2(runs, scale):
+    print("\n**T-O2 — where the optimized ROM stands against the "
+          "tridiagonal FOM (single-query latency, plus the amortized "
+          "throughput arm; the FOM was NOT batched — its batched cost "
+          "is unmeasured).**\n")
+    print("| N | ROM e2e ms (optimized, learned m=32) | FOM ms (ntol 1e-3) "
+          "| ROM/FOM | ROM amortized ms/traj (vmap x8) | thru err == "
+          "baseline |")
+    print("|---|---|---|---|---|---|")
+    for N in sorted(runs):
+        a = runs[N]["variants"]["nodes_tight"]
+        ef = a["ic_fast_ms"] + a["roll_fast_ms"] + a["dec_ms"]
+        fom = {f["ntol"]: f for f in scale[N]["fom"]}[1e-3]["ms_median"]
+        th = runs[N]["_thru"]
+        thr = ("—" if th is None else
+               f"{th['ic_per_traj_ms']+th['roll_per_traj_ms']:.1f}")
+        the = ("—" if th is None else e(th["err_mean"]))
+        print(f"| {N} | {ef:.1f} | {fom:.2f} | {ef/fom:.1f}x | {thr} | "
+              f"{the} |")
+
+
 def main():
     b1d = load_b1d()
     qf = load_qf()
@@ -216,6 +268,10 @@ def main():
         t_s1(scale)
         t_s2(scale)
         t_s3(scale)
+    fast = load_fast()
+    if fast and scale:
+        t_o1(fast)
+        t_o2(fast, scale)
 
 
 if __name__ == "__main__":

@@ -93,3 +93,13 @@ flat in N; honest FOM 5–8× faster and ~35× more accurate at every 1D size
 (launch-bound regime) — no 1D speed story; N=2048 FOM 1e-8 cell capped
 (flagged). Report: `reports/2026-08-27-b1d-scaling-and-fom-cost.md`.
 Cluster clean, queue empty, all results committed (e7b1146).
+
+## 2026-08-28 — overnight rollout optimization + A100 confirmation
+
+Subagent optimization pass (full log in the worktree's OPTIM-NOTES.md):
+kernel-count-bound diagnosis, cuSOLVER 8×8 solve was ~45%/iteration;
+kept = Gauss-Jordan + one-pass r+J + hoisting + no-cuBLAS matvecs +
+scan unroll; A100 confirmation (jobs 2976993/94): 2.2× e2e at parity
+(~1e-9), FOM gap now 2.5–3× single-query, amortized vmap×8 at 6.6–7.9
+ms/traj. Report: reports/2026-08-28-b1d-rollout-optimization.md. All
+committed; cluster clean.

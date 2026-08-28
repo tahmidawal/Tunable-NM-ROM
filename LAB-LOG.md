@@ -120,8 +120,18 @@ all six N; learned m=32 on the oracle everywhere), the ROM latent solve is
 measured flat in N (34–46 ms/traj) — but the honest tridiagonal
 tolerance-Newton FOM is 8–9 ms and also launch-bound-flat, so the ROM is
 5–8× slower and ~35× less accurate at every 1D resolution: NO 1D speed
-story, testbed value is cheap screening.** Multi-seed confirmation
-designed, cheap (~3.5 min/job), NOT launched pending review.
+story, testbed value is cheap screening.** **2026-08-28 rollout
+optimization (report `2026-08-28-b1d-rollout-optimization.md`): the LM
+rollout was kernel-count bound — the (8,8) cuSOLVER solve was ~45% of every
+iteration; replacing it with a broadcast Gauss–Jordan + one-pass r+J +
+per-trajectory constant hoisting + cuBLAS-free matvecs gives 2.2× e2e at
+bit-level parity (err deltas ~1e-9, identical stop reasons), A100-confirmed
+at N=512/4096. Single-query gap to the FOM now 2.5–3×; the amortized
+vmap×8 throughput arm reaches 6.6–7.9 ms/traj, at/below the FOM's
+single-query cost (labeled: throughput, FOM not batched). The kept
+optimizations are dimension-agnostic — porting them to the 2D exlin solve
+path is an open lever on the 1.87–1.90× paired speedups.** Multi-seed
+confirmation designed, cheap (~3.5 min/job), NOT launched pending review.
 
 ## The next experiment
 
@@ -3162,3 +3172,55 @@ recorded as capped, not a converged-tolerance cost.
 **Wrong/retracted:** nothing retracted; the capped N=2048 FOM 1e-8 cell is
 the one number that must not be quoted as a tolerance cost (flagged in the
 report table).
+
+## 2026-08-28
+
+### Session: ROM rollout optimization at parity (branch exp/2026-08-27-b1d-poissonqf, autonomous overnight)
+
+User-directed ("why is the ROM slow / is it using the GPU properly /
+optimize, iterate, keep the same error"), then explicitly left to run
+autonomously overnight. An optimization subagent worked locally (GB10,
+jaxrun, f64+highest, one process at a time); the coordinator ran the A100
+confirmation. New files only (`sep_b1d_fast.py`, `b1d_fast_common.py`,
+`OPTIM-NOTES.md`, commits 0e70da2/3e3f6f9); nothing existing modified.
+Report: `reports/2026-08-28-b1d-rollout-optimization.md` (T-O1/T-O2
+generated). Confirmation jobs 2976993/2976994 (A100, 1:26/1:23, COMPLETED
+0:0, manifests + checksums verified, namespace `b1dqf/` deleted, queue
+empty at close).
+
+**Found:**
+
+- **Diagnosis:** the rollout is kernel-count bound; the (8,8)
+  normal-equation solve through cuSOLVER cost ~110 µs of every ~120 µs LM
+  iteration (~45%); SM-utilization counters read 86% and are misleading
+  (any-kernel-resident time). Consistent with the 2D Round-4 profiling.
+- **Kept (pure implementation, parity-verified):** broadcast Gauss–Jordan
+  for the 8×8 solve (~28 µs), one-pass r+J via jax.linearize (no
+  lax.cond), per-trajectory constant hoisting (wt/A/Phi_q folded once per
+  rollout; head last layer merged with h_lin), broadcast-reduce matvecs
+  (no cuBLAS), outer-scan unroll 5.
+- **A100 result: 2.20–2.25× e2e on every sampled arm at N=512 and N=4096**
+  (IC 16.6→8.0 ms, solve 34.5→15.0 ms) at parity ≤5e-9 rel vs the
+  committed baselines, identical stop-reason histograms, latent dev
+  ≤2.4e-8. Single-query gap to the tridiagonal FOM: 5–8× → 2.5–3×.
+  Amortized vmap×8 throughput: 7.9 (N=512) / 6.6 (N=4096) ms/traj — at or
+  below the FOM's single-query 8–9 ms (labeled throughput-only; FOM not
+  batched).
+- **Rejected with numbers (OPTIM-NOTES.md):** scalar-unrolled Cholesky
+  (slower — serial fusion chains), XLA command buffers/CUDA graphs (no
+  effect), masked inner-loop unroll (slower), reduced-init IC fit
+  (PARITY FAILURE — the Gram IC landscape is multimodal; zbar-only lands
+  30–80% worse on 5/8 trajectories). Iteration capping/tolerance loosening
+  forbidden a priori (2D lesson).
+
+**Wrong/retracted:** nothing retracted. The subagent's first composed
+attempt (scalar Cholesky + one-pass) was 30–35% SLOWER and was rejected on
+its own A/B — kept in OPTIM-NOTES.md as the record that the ladder was
+measured, not assumed.
+
+**Open for the next session:** port the kept optimizations to the 2D exlin
+solve path (dimension-agnostic; the obvious lever on the 1.87–1.90× 2D
+paired speedups); batched-FOM comparison if the throughput claim is ever
+promoted beyond "in the FOM's single-query range"; multi-seed 1D
+confirmation still parked awaiting user review; merge decisions unchanged
+(six branches + this one's continuation).

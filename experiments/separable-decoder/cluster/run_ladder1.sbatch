@@ -1,0 +1,34 @@
+#!/bin/bash
+#SBATCH --job-name=ladder1
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:a100:1
+#SBATCH --constraint=a100-80G
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH --time=01:00:00
+#SBATCH --output=/cluster/tufts/paralab/tawal01/b1dtensor/ladder1/logs/%j.out
+#SBATCH --error=/cluster/tufts/paralab/tawal01/b1dtensor/ladder1/logs/%j.err
+
+# JOB A (2026-08-29): the whole 1D ladder N=128..4096, arms oracle / NNLS-32 /
+# tensor, in ONE process on ONE A100-80G, reps outermost and N order
+# alternating, from the six committed checkpoints + node sets.
+set -euo pipefail
+ROOT=/cluster/tufts/paralab/tawal01/b1dtensor/ladder1
+VENV=/cluster/tufts/paralab/tawal01/ae-research/venv
+PY="$VENV/bin/python"
+export JAX_DEFAULT_MATMUL_PRECISION=highest
+
+echo "host=$(hostname) gpu=$(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader | head -1)"
+"$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}', flush=True); sys.exit(0 if b=='gpu' else 42)"
+( cd "$ROOT" && sha256sum -c MANIFEST.sha256 --quiet && echo "stage MANIFEST OK" )
+export COMMIT=$(cat "$ROOT/COMMIT.txt")
+echo "commit=$COMMIT"
+
+cd "$ROOT/code"
+env NS=128,256,512,1024,2048,4096 ARMS=oracle,base_tight,tensor \
+  K=8 R=32 M=32 SEED0=0 TEST_SEED=1 N_TEST=8 TIME_REPS=7 BURN=2 \
+  ART_DIR="$ROOT/data" OUT="$ROOT/out/sep_b1d_ladder.json" \
+  "$PY" sep_b1d_ladder.py
+
+cd "$ROOT/out" && sha256sum *.json > RESULTS.sha256
+echo ALL-DONE

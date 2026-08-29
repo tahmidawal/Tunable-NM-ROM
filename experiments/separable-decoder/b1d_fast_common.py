@@ -392,6 +392,7 @@ def make_device_fast(su, X_v, w_v, opt, Q=None):
     use_nodot = opt.get("nodot", False)
     unroll = int(opt.get("unroll", 1))
     scan_unroll = int(opt.get("scan_unroll", 1))
+    with_att = bool(opt.get("with_att", False))   # also return LM attempts
     Qj = jnp.asarray(Q, dtype=F64) if tensor else None
 
     if use_lean and tensor:
@@ -671,10 +672,12 @@ def make_device_fast(su, X_v, w_v, opt, Q=None):
             z_init = z_k + EXTRAP * (z_k - z_km1)
             prev_c = prev_fn(z_k)
             z2, rn, nJ, reason, att = lm_step(z_init, prev_c)
-            return (z_k, z2), (z2, rn, nJ, reason)
+            return (z_k, z2), (z2, rn, nJ, reason, att)
 
-        (_, zT), (Z, rns, nJs, reasons) = jax.lax.scan(
+        (_, zT), (Z, rns, nJs, reasons, atts) = jax.lax.scan(
             body, (z0, z0), None, length=b1.NUM_STEPS, unroll=scan_unroll)
+        if with_att:
+            return Z, rns, nJs, reasons, atts
         return Z, rns, nJs, reasons
 
     return dict(rollout=jax.jit(rollout_fn, static_argnums=(3,)))

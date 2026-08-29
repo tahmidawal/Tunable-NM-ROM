@@ -56,6 +56,8 @@ BURN = int(os.environ.get("BURN", "2"))
 ARMS = os.environ.get(
     "ARMS", "oracle,base_tight,nodes_tight,tensor,tensor_nolean").split(",")
 N_TQ = int(os.environ.get("N_TQ", "32"))
+DENSE_GATE_MAX_N = int(os.environ.get("DENSE_GATE_MAX_N", "0")) or None
+T2_TRAJ = int(os.environ.get("T2_TRAJ", "4"))
 OPT = dict(solver=os.environ.get("OPT_SOLVER", "gj"),
            onepass=os.environ.get("OPT_ONEPASS", "1") == "1",
            hoist=os.environ.get("OPT_HOIST", "1") == "1",
@@ -197,33 +199,51 @@ def main():
     def save():
         json.dump(report, open(OUT, "w"), indent=1, default=float)
 
-    # ---------------- gate J ------------------------------------------------
+    # ---------------- gate J (dense n x n: at min(N, DENSE_GATE_MAX_N)) -----
+    N_dense = N if DENSE_GATE_MAX_N is None else min(N, DENSE_GATE_MAX_N)
+    n_i_dense = b1.interior_indices_1d(N_dense).size
     jrng = np.random.default_rng(fc.SEED0 + 400)
     gJ = []
     for _ in range(4):
-        u = jnp.asarray(jrng.standard_normal(n_i) * 0.5)
+        u = jnp.asarray(jrng.standard_normal(n_i_dense) * 0.5)
         nu = float(np.exp(jrng.uniform(np.log(0.01), np.log(0.1))))
-        Jd = jax.jacfwd(lambda v: b1.fom_residual_int(v, u, nu, N))(u)
-        dl, d, du = b1.tridiag_jac(u, nu, N)
+        Jd = jax.jacfwd(lambda v: b1.fom_residual_int(v, u, nu, N_dense))(u)
+        dl, d, du = b1.tridiag_jac(u, nu, N_dense)
         Jt = (np.diag(np.asarray(d)) + np.diag(np.asarray(dl)[1:], -1)
               + np.diag(np.asarray(du)[:-1], 1))
         gJ.append(float(np.max(np.abs(np.asarray(Jd) - Jt))
                         / (np.max(np.abs(np.asarray(Jd))) + 1e-300)))
+        del Jd, Jt
     report["gates"]["gateJ"] = float(np.max(gJ))
-    log(f"  GATE J (tridiag Jacobian == jacfwd): {np.max(gJ):.2e}")
+    report["gates"]["gateJ_N"] = int(N_dense)
+    log(f"  GATE J (tridiag Jacobian == jacfwd, at N={N_dense}): "
+        f"{np.max(gJ):.2e}")
     assert np.max(gJ) < 1e-12
 
     # ---------------- test data (tri generator) + gate T2 -------------------
     U_test, nu_test = fc.gen_test(N)
-    dense_roll = b1.make_rollout_1d(N)
-    sn_d, _ = dense_roll(jnp.asarray(U_test[:4, 0]), jnp.asarray(nu_test[:4]))
-    gT2 = float(np.max(np.abs(np.asarray(sn_d) - U_test[:4]))
-                / (np.max(np.abs(U_test[:4])) + 1e-300))
+    dense_roll = b1.make_rollout_1d(N_dense)
+    if N_dense == N:
+        U_ref = U_test[:T2_TRAJ]
+        sn_d, _ = dense_roll(jnp.asarray(U_test[:T2_TRAJ, 0]),
+                             jnp.asarray(nu_test[:T2_TRAJ]))
+    else:
+        c_, w_, a_, nu_ = b1.sample_params_1d(fc.TEST_SEED, fc.N_TEST)
+        U0d = np.stack([b1.blob_ic_1d(N_dense, c_[i], w_[i], a_[i])
+                        for i in range(T2_TRAJ)])
+        U_ref, _ = b1.make_rollout_1d_tri(N_dense)(
+            jnp.asarray(U0d), jnp.asarray(nu_[:T2_TRAJ]))
+        U_ref = np.asarray(U_ref)
+        sn_d, _ = dense_roll(jnp.asarray(U0d), jnp.asarray(nu_[:T2_TRAJ]))
+    gT2 = float(np.max(np.abs(np.asarray(sn_d) - U_ref))
+                / (np.max(np.abs(U_ref)) + 1e-300))
     report["gates"]["gateT2"] = gT2
-    log(f"  GATE T2 (tri vs dense truth rollouts, 4 traj x 50 steps): "
-        f"{gT2:.2e}")
+    report["gates"]["gateT2_N"] = int(N_dense)
+    report["gates"]["gateT2_traj"] = int(T2_TRAJ)
+    log(f"  GATE T2 (tri vs dense truth rollouts, {T2_TRAJ} traj x 50 steps,"
+        f" at N={N_dense}): {gT2:.2e}")
     assert gT2 < 1e-8
-    del dense_roll, sn_d
+    del dense_roll, sn_d, U_ref
     report["data"] = dict(test_sum=float(np.sum(U_test)),
                           test_sumsq=float(np.sum(U_test * U_test)),
                           nu_test=[float(v) for v in nu_test])

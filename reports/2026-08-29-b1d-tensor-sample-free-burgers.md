@@ -51,7 +51,7 @@ the only discrepancy comes from *decoded* fields undershooting zero.
 **F1 — the tensor arm equals the full-grid oracle, six checkpoints and two fresh decoders,
 $N = 128 \ldots 65\,536$.** Per-trajectory rollout error agrees to $\le 1.2\times10^{-6}$
 absolute at $N{=}128$, falling to $\le 2.5\times10^{-7}$ at $N \ge 512$ and $\le
-6\times10^{-10}$ at $N \ge 16\,384$ (T-1, T-6, T-9). Review R3 reproduced every printed
+6\times10^{-10}$ at $N \ge 16\,384$ (T-2, T-6, T-9). Review R3 reproduced every printed
 digit on CPU and measured the stricter observable — the direct relative difference between
 the two arms' decoded fields — at $\le 9\times10^{-6}$ (worst trajectory, $N{=}128$). The
 stop-reason histograms are identical at every $N$, but that is a coarse statistic (98–99 %
@@ -66,7 +66,7 @@ the 08-27 ladder, and the tensor inherits that margin, which is seed-noise scale
 **F2 — exact on the positivity cone; the deviation is first order in the undershoot and
 bounded.** Gate T0: on the ~2900–3100 training states whose decoded field is entirely
 positive, $h^\top T h$ equals $\Phi^\top N_{\text{upwind}}(Gh)$ to $\le 8.4\times10^{-15}$
-at every $N$ (T-4, T-12). The algebraic identity against the fixed backward stencil holds
+at every $N$ (T-3, T-11). The algebraic identity against the fixed backward stencil holds
 on all 8192 states to $1.3\times10^{-14}$; two accumulation orders agree to $10^{-15}$. The
 residual difference from the oracle is exactly
 $$
@@ -89,7 +89,7 @@ roundoff ($\sim10^{-6}$) would exceed the undershoot term at $N{=}1024$.
 
 **F3 — the latent solve does not grow with $N$; the full-grid oracle does once it leaves the
 launch floor.** On one A100 in one process, resolutions alternating and repetitions
-outermost (T-8), the tensor arm's latent solve is 14.3–20.2 ms per 50-step trajectory from
+outermost (T-6), the tensor arm's latent solve is 14.3–20.2 ms per 50-step trajectory from
 $N{=}128$ to $4096$ with fitted exponent $-0.08$ (oracle $-0.04$, NNLS-32 $-0.07$): every
 arm is under the launch floor there, including the $O(N)$ oracle. At $N = 16\,384$ and
 $65\,536$ — separate jobs on the same GPU model, fresh decoders trained in-job at the same
@@ -104,7 +104,7 @@ divides by loop attempts only (the per-step initial evaluation is not counted), 
 slopes are not meaningful (R5); it is kept as an amortisation, not a per-iteration cost.
 
 **F4 — cost: within about 7 % of the sampled rule; no 1D speedup.** End-to-end, tensor /
-NNLS-32 is 0.93–1.07 across the one-GPU ladder and 1.00–1.02 at large $N$ (T-9, T-10).
+NNLS-32 is 0.93–1.07 across the one-GPU ladder and 1.00–1.02 at large $N$ (T-7, T-10).
 The like-for-like implementation comparison against the oracle is `tensor_nolean` (the
 oracle path has no lean fold): 0.88–0.95× at $N \le 1024$, growing to 0.59× at
 $N{=}65\,536$. The `tensor` arm's 0.78–0.84× includes the fold. Arm order in the original
@@ -218,7 +218,7 @@ Job 3033260, node pax050, GPU **NVIDIA A100 80GB PCIe**, commit 0d96222e49, jax 
 | 4096 | base_tight | 6.78 | 13.62 | 0.40 | 20.43 | 197.9 | 82.4 | 4.888627e-03 | 1.4e-10 | 32.71 |
 | 4096 | tensor | 6.79 | 14.31 | 0.39 | 21.87 | 201.2 | 83.0 | 4.485115e-03 | nan | nan |
 
-#### Tensor vs oracle inside JOB A
+### T-7 — Tensor vs oracle inside JOB A
 
 | N | max per-traj abs err diff | stop hist identical | LM attempt counts identical | solve ratio tensor/oracle | solve ratio tensor/NNLS-32 | e2e ratio tensor/oracle | e2e ratio tensor/NNLS-32 |
 |---|---|---|---|---|---|---|---|
@@ -229,7 +229,7 @@ Job 3033260, node pax050, GPU **NVIDIA A100 80GB PCIe**, commit 0d96222e49, jax 
 | 2048 | 3.42e-08 | True | True | 0.707 | 0.908 | 0.822 | 0.928 |
 | 4096 | 5.36e-09 | True | True | 0.687 | 1.051 | 0.792 | 1.070 |
 
-#### Slopes from JOB A alone: exponent p in ms ~ N^p (least-squares fit of log ms vs log N)
+### T-8 — Slopes from JOB A alone: exponent p in ms ~ N^p (least-squares fit of log ms vs log N)
 
 | arm | N range | solve ms | us per LM attempt | ic ms | e2e ms |
 |---|---|---|---|---|---|
@@ -237,7 +237,7 @@ Job 3033260, node pax050, GPU **NVIDIA A100 80GB PCIe**, commit 0d96222e49, jax 
 | base_tight | 128..4096 | -0.0652 | +0.0092 | -0.0020 | -0.0455 |
 | tensor | 128..4096 | -0.0772 | +0.0095 | -0.0011 | -0.0493 |
 
-### T-7 — JOBs B/C — large N, each its own job and GPU (DIFFERENT JOB/GPU from JOB A: compare with care)
+### T-9 — JOBs B/C — large N, each its own job and GPU (DIFFERENT JOB/GPU from JOB A: compare with care)
 
 | N | job | node | GPU | arm | ic ms | solve ms | dec ms | e2e ms | err | stop hist | trained in-job (recon rel-L2 / train s) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -252,14 +252,14 @@ Job 3033260, node pax050, GPU **NVIDIA A100 80GB PCIe**, commit 0d96222e49, jax 
 | 65536 | 3033264 | pax105 | NVIDIA A100 80GB PCIe | nodes_tight | 6.87 | 15.76 | 0.60 | 24.00 | 4.612792e-03 | {'2': 398, '0': 2} | 3.759e-03 / 1012 |
 | 65536 | 3033264 | pax105 | NVIDIA A100 80GB PCIe | tensor_nolean | 6.80 | 15.88 | 0.54 | 23.22 | 4.532280e-03 | {'2': 398, '0': 2} | 3.759e-03 / 1012 |
 
-#### Large-N tensor vs oracle (within each job)
+### T-10 — Large-N tensor vs oracle (within each job)
 
 | N | max per-traj abs err diff | stop hist identical | latent dev max | solve ratio tensor/oracle | solve ratio tensor/NNLS-32 | e2e ratio tensor/oracle | e2e ratio tensor/NNLS-32 | FOM 1e-3 ms/traj (err) | FOM 1e-8 ms/traj (err) |
 |---|---|---|---|---|---|---|---|---|---|
 | 16384 | 5.76e-10 | True | 7.1e-07 | 0.661 | 1.020 | 0.781 | 1.015 | 9.28 (1.50e-04) | 15.87 (5.06e-10) |
 | 65536 | 1.72e-10 | True | 3.9e-08 | 0.419 | 1.022 | 0.541 | 1.005 | 9.78 (1.51e-04) | 16.82 (5.08e-10) |
 
-#### Large-N gates
+### T-11 — Large-N gates
 
 | N | J (at N) | T2 (at N, traj) | E | F | C | G rel | V rel | TB | TA | T0 (n states) | TQ r rel med / max | oracle parity vs in-job scale run |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|

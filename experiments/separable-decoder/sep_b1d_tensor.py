@@ -58,6 +58,12 @@ ARMS = os.environ.get(
 N_TQ = int(os.environ.get("N_TQ", "32"))
 DENSE_GATE_MAX_N = int(os.environ.get("DENSE_GATE_MAX_N", "0")) or None
 T2_TRAJ = int(os.environ.get("T2_TRAJ", "4"))
+# Gate C compares the continuous node machinery (bank evaluated at X +- dx)
+# with the grid stencil; its one-sided difference (c - xm)/dx has an f64
+# roundoff floor ~ eps/dx (3.6e-12 at N=16384, 1.4e-11 at N=65536), so the
+# fixed 1e-12 tripwire set on N <= 4096 must be relaxed at very large N
+# (job 3033262, N=16384, failed at 1.99e-12).  Default unchanged.
+GATE_C_TOL = float(os.environ.get("GATE_C_TOL", "1e-12"))
 OPT = dict(solver=os.environ.get("OPT_SOLVER", "gj"),
            onepass=os.environ.get("OPT_ONEPASS", "1") == "1",
            hoist=os.environ.get("OPT_HOIST", "1") == "1",
@@ -305,8 +311,9 @@ def main():
     gateC = float(np.max(np.abs(a_cont - N_full3[:, pos0]))
                   / (np.max(np.abs(N_full3[:, pos0])) + 1e-300))
     report["gates"]["gateC"] = gateC
-    log(f"  GATE C (continuous machinery at grid init): {gateC:.2e}")
-    assert gateC < 1e-12
+    log(f"  GATE C (continuous machinery at grid init): {gateC:.2e} "
+        f"(tol {GATE_C_TOL:.0e})")
+    assert gateC < GATE_C_TOL, (gateC, GATE_C_TOL)
 
     # ---------------- tensor build + gates TB / TX / TA / T0 / TS -----------
     t0 = time.time()

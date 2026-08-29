@@ -87,6 +87,12 @@ CKPT_CACHE = os.environ.get("CKPT_CACHE", "")
 # tri-vs-dense generator comparison uses (default 4, the original).
 DENSE_GATE_MAX_N = int(os.environ.get("DENSE_GATE_MAX_N", "0")) or None
 T2_TRAJ = int(os.environ.get("T2_TRAJ", "4"))
+# Gate C compares the continuous node machinery (bank evaluated at X +- dx)
+# with the grid stencil; its one-sided difference (c - xm)/dx has an f64
+# roundoff floor ~ eps/dx (3.6e-12 at N=16384, 1.4e-11 at N=65536), so the
+# fixed 1e-12 tripwire set on N <= 4096 must be relaxed at very large N
+# (job 3033262, N=16384, failed at 1.99e-12).  Default unchanged.
+GATE_C_TOL = float(os.environ.get("GATE_C_TOL", "1e-12"))
 OUT_PREFIX = os.environ.get("OUT_PREFIX", "")
 OUT_TAG = os.environ.get("OUT_TAG", "")
 
@@ -428,8 +434,9 @@ def main():
     gateC = float(np.max(np.abs(a_cont - a_grid))
                   / (np.max(np.abs(a_grid)) + 1e-300))
     report["gates"]["gateC"] = gateC
-    log(f"  GATE C (continuous machinery at grid init): {gateC:.2e}")
-    assert gateC < 1e-12
+    log(f"  GATE C (continuous machinery at grid init): {gateC:.2e} "
+        f"(tol {GATE_C_TOL:.0e})")
+    assert gateC < GATE_C_TOL, (gateC, GATE_C_TOL)
 
     # ---------------- node training (identical recipe to the screening) ------
     import optax

@@ -1,0 +1,26 @@
+host=pax050 gpu=NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=0d96222e4952a791e9b1c9ea74ebb74f95a4ed11
+jax_backend=gpu device=cuda:0 B1D-SCALE N=16384 K=8 R=32 M=32
+  GATE J (tridiag Jacobian == jacfwd, at N=16384): 1.19e-16
+  data[train] N=16384 m=512: max FOM rel residual 1.68e-11
+  data[test] N=16384 m=8: max FOM rel residual 1.59e-11
+  GATE T2 (tri vs dense truth rollouts, 1 traj x 50 steps, at N=16384): 3.76e-14
+   train[N16384] step      1/40000  rel-MSE 1.109e+00  [7s]
+   train[N16384] step   5000/40000  rel-MSE 5.671e-04  [43s]
+   train[N16384] step  10000/40000  rel-MSE 8.485e-05  [79s]
+   train[N16384] step  15000/40000  rel-MSE 5.813e-05  [116s]
+   train[N16384] step  20000/40000  rel-MSE 3.829e-05  [152s]
+   train[N16384] step  25000/40000  rel-MSE 2.811e-05  [189s]
+   train[N16384] step  30000/40000  rel-MSE 2.443e-05  [225s]
+   train[N16384] step  35000/40000  rel-MSE 2.174e-05  [262s]
+   train[N16384] step  40000/40000  rel-MSE 2.003e-05  [299s]
+   train[N16384] done: recon rel-L2 mean 3.764e-03 max 3.784e-02 [301s]
+  GATE E (sine modes are exact eigenvectors): 2.65e-13
+  GATE F (weak ops == Phi^T FOM residual): 4.15e-15
+  held-out reconstruction (frozen decoder): 3.850e-03
+  NNLS-EQ b1d-scale N=16384 M=32 m=32 adv-only: support 32 (+0 pad), rel fit 6.17e-02 (row p95 4.0e+01, max 1.0e+04) [1s]
+  NNLS-EQ b1d-scale N=16384 M=32 m=16 adv-only: support 16 (+0 pad), rel fit 2.74e-01 (row p95 1.8e+02, max 1.1e+04) [1s]
+  NNLS-EQ b1d-scale N=16384 M=32 m=128 adv-only: support 115 (+13 pad), rel fit 3.48e-06 (row p95 3.2e-03, max 4.6e-01) [2s]
+  GATE C (continuous machinery at grid init): 1.99e-12

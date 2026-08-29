@@ -106,6 +106,19 @@ build). Also measured: the incumbent EQ residual is 5.5–7.9% wrong at
 solutions with gradient cosines down to −0.65 — masked by the decoder floor.
 **Adopt quadrature-free as the Poisson default.**
 
+**1D Burgers sample-free via the precomputed quadratic tensor — RUN AND CONFIRMED
+(2026-08-29, branch `exp/2026-08-29-b1d-tensor`, report
+`reports/2026-08-29-b1d-tensor-sample-free-burgers.md`).** Advection u·u_x is quadratic
+in h, so Φᵀ(u⊙D⁻u) = ½hᵀQh with Q built once from the frozen bank (32³). At N=128/256/
+512/1024 the `tensor` arm matches the full-grid oracle's rollout error to ≤1.2e-6 with
+identical stop-reason histograms, beats NNLS-32 by 1–9 %, equals learned-32, and runs at
+cost parity with the sampled rule (0.98–1.05×) — zero sample points, no NNLS, no stage 2.
+Not bit-exact: 6.7–7 % of decoded points undershoot 0 and 60–68 % of LM candidates touch
+one (sign audit at every candidate), hence 1e-6 not 1e-9. No 1D speedup (launch-bound).
+Only for non-negative data as is; sign-changing data needs a polynomial FOM / split form /
+lift (synthesis in `understand/2026-08-29-sample-free-nonlinear-residual-synthesis.md`).
+**Adopt the tensor as the 1D Burgers default residual for this family; 2D port open.**
+
 **1D Burgers screening (same branch, same day): node learning transfers to 1D
 and pays exactly where the budget binds.** New self-contained 1D testbed
 (K=8, R=32, M=32, one seed, N=128/256/512, decoders resolution-flat at
@@ -3292,3 +3305,40 @@ committed checkpoints (pass: same stop reasons, oracle error to ≤1e-5, paired 
 base_tight); E3 fixed-sine-bank stage-1 (one job); E4 2D 64³ tensor vs m=256; FOM-choice
 study only after the user decides whether the truth may change. Previous open items
 unchanged.
+
+### Tensor arm run at N=128/256/512/1024 (subagent; user-directed "test this out")
+
+Worktree `worktrees/2026-08-29-b1d-tensor`, branch `exp/2026-08-29-b1d-tensor` (cut from
+`exp/2026-08-27-b1d-poissonqf`, user-confirmed), namespace `b1dtensor/` (now deleted).
+Code: `b1d_tensor_common.py`, tensor branch in `b1d_fast_common.py`, `b1d_tensor_audit.py`
+(E1), `sep_b1d_tensor.py` (E2), `cluster/{stage,push,pull}_tensor.sh`, `run_tensor_n*.sbatch`;
+results `runs/b1dtensor/`; notes `TENSOR-NOTES.md` (generated tables). Commits 42b687d,
+7ce4d6c (staged), aafa995 (results).
+
+**Run:** E1 local CPU audit on the four committed checkpoints; E2 four A100 jobs 3032356
+(N=128, pax049), 3032357 (N=256, pax051, **40 GB A100** — others 80 GB), 3032359 (N=512),
+3032362 (N=1024), ~1 min each, COMPLETED 0:0, `jax_backend=gpu`, manifests OK, checksums
+verified on pull. Arms oracle / base_tight / nodes_tight / tensor / tensor_nolean from the
+committed checkpoints + node sets (no training), 8 test trajectories regenerated from seed,
+burn 2 + 5 timed reps interleaved.
+
+**Found:** tensor = oracle rollout error to 1.2e-6 / 6.4e-7 / 2.5e-7 / 2.3e-7 abs (N=128
+…1024), identical stop-reason histograms (total and per trajectory); tensor/NNLS-32 error
+0.91/0.99/0.94/0.99, tensor/learned-32 1.00/1.00/1.00/1.02; e2e tensor/NNLS-32 0.98/0.99/
+1.05/0.99, tensor/oracle 0.84/0.83/0.90/0.80. Gates: T0 exact ≤8.2e-15 on ~3000
+all-positive states per N; algebraic identity ≤1.3e-14 on 8192 states; build order ≤1.3e-15;
+J/T2/E/F/C/G/V all pass; re-run baseline arms match committed JSONs ≤2.3e-8. Sign audit
+(E1, every LM candidate of the oracle host rollout): 1339–1642 candidates, 60–68 % touch a
+u≤0 point, min u −6.8e-3…−7.8e-3; residual mismatch median 4e-7–8e-6, max 1e-4–4e-4;
+gradient cosine ≥0.999996 on non-stationary candidates; contraction ratio max 2–6e8
+(median ~600), no observed harm in f64.
+
+**Wrong/retracted:** the ideation's "exact" label. The tensor is exact on the positivity
+cone (measured) but the rollouts visit undershooting states at most steps, so it is
+oracle-equal to 1e-6, not 1e-9. Reported as such. Nothing else retracted.
+
+**Open:** merge decision for `exp/2026-08-29-b1d-tensor` (ask user); 2D port (one 64³
+tensor for D⁻ₓ+D⁻ᵧ vs the m=256 arm — the only place this could also be a cost result);
+fixed-sine-bank stage-1 test (agent B's finding that 32 sines span the truth better than the
+learned bank); FOM-choice study (centered/skew/LF) only if sign-changing data becomes a
+target — changes the truth, user decision; multi-seed still parked.

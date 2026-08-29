@@ -1,0 +1,68 @@
+host=pax050 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+stage MANIFEST OK
+commit=7ce4d6ce87a93dcf37d90ad23fc521edb412cf1b
+jax_backend=gpu device=cuda:0 B1D-TENSOR N=1024 opt={'solver': 'gj', 'onepass': True, 'hoist': True, 'nocond': True, 'lean': True, 'nodot': True, 'unroll': 1, 'scan_unroll': 5, 'ic_unroll': 1} arms=['oracle', 'base_tight', 'nodes_tight', 'tensor', 'tensor_nolean'] reps=5 burn=2
+  GATE J (tridiag Jacobian == jacfwd): 1.09e-16
+  GATE T2 (tri vs dense truth rollouts, 4 traj x 50 steps): 2.03e-15
+  GATE E (sine modes are exact eigenvectors): 1.60e-13
+  GATE F (weak ops == Phi^T FOM residual): 1.93e-15
+  GATE C (continuous machinery at grid init): 0.00e+00
+  GATE TB (two chunk orders): 1.06e-15  [Q (32, 32, 32), 256 KiB, 0.01s]
+  GATE TX (in-job Q vs E1 CPU-built Q): 8.12e-16
+  GATE TA (h^T T h == Phi^T(u D^-u), 8192 training states): 1.26e-14
+  GATE T0 (tensor == oracle on the 2910 all-positive states): 8.17e-15 | all states: mismatch median 5.84e-08 max 8.46e-05, frac points u<=0 6.979%, min u -1.85e-02
+  GATE TQ (tensor vs oracle residual, 32 states, recorded not asserted): r rel median 2.24e-10 max 5.19e-05; J rel max 1.35e-04; states with u<=0: 17/32; min u -2.31e-01
+  GATE G (Gram-space IC fit == banked fit): gram 3.363014e-03 banked 3.363014e-03 rel diff 4.26e-14
+  [oracle] traj 0: err ref 4.990345e-03 fast 4.990345e-03 latdev 1.15e-09 reasons {'2': 50} | ic 26.77->12.99 ms  roll 31.94->18.39 ms
+  [oracle] traj 1: err ref 6.809890e-03 fast 6.809890e-03 latdev 3.15e-10 reasons {'0': 1, '2': 49} | ic 17.32->8.01 ms  roll 51.45->28.42 ms
+  [oracle] traj 2: err ref 3.775213e-03 fast 3.775213e-03 latdev 6.95e-09 reasons {'2': 50} | ic 18.51->8.92 ms  roll 25.33->14.37 ms
+  [oracle] traj 3: err ref 5.871578e-03 fast 5.871578e-03 latdev 1.72e-09 reasons {'2': 50} | ic 14.04->6.37 ms  roll 31.38->17.78 ms
+  [oracle] traj 4: err ref 4.623420e-03 fast 4.623420e-03 latdev 5.26e-12 reasons {'2': 50} | ic 8.51->4.36 ms  roll 38.07->21.02 ms
+  [oracle] traj 5: err ref 2.034350e-03 fast 2.034350e-03 latdev 3.85e-09 reasons {'2': 50} | ic 16.21->7.76 ms  roll 28.77->16.69 ms
+  [oracle] traj 6: err ref 6.870065e-03 fast 6.870065e-03 latdev 7.84e-09 reasons {'2': 50} | ic 10.51->4.83 ms  roll 41.56->23.25 ms
+  [oracle] traj 7: err ref 9.322473e-03 fast 9.322473e-03 latdev 1.47e-11 reasons {'2': 50} | ic 9.39->4.79 ms  roll 59.81->33.24 ms
+  [oracle] SUMMARY err ref 5.537167e-03 fast 5.537167e-03 (fast vs ref 2.8e-09; vs base json 2.4e-09) reasons {'2': 399, '0': 1} | e2e ref 49.88 fast 27.42 ms (ic 7.04 + roll 19.94 + dec 0.52)
+  [base_tight] traj 0: err ref 4.961514e-03 fast 4.961514e-03 latdev 1.16e-09 reasons {'2': 50} | ic 26.72->13.06 ms  roll 32.54->15.04 ms
+  [base_tight] traj 1: err ref 6.782713e-03 fast 6.782713e-03 latdev 3.18e-10 reasons {'0': 1, '2': 49} | ic 17.30->8.06 ms  roll 48.83->21.48 ms
+  [base_tight] traj 2: err ref 4.284796e-03 fast 4.284796e-03 latdev 7.63e-09 reasons {'2': 50} | ic 18.56->8.98 ms  roll 24.32->10.99 ms
+  [base_tight] traj 3: err ref 6.660908e-03 fast 6.660908e-03 latdev 1.66e-09 reasons {'2': 50} | ic 14.01->6.38 ms  roll 31.81->14.02 ms
+  [base_tight] traj 4: err ref 4.822457e-03 fast 4.822457e-03 latdev 5.23e-12 reasons {'2': 50} | ic 8.51->4.38 ms  roll 35.31->15.40 ms
+  [base_tight] traj 5: err ref 2.071292e-03 fast 2.071292e-03 latdev 3.84e-09 reasons {'2': 50} | ic 16.17->7.77 ms  roll 26.76->12.31 ms
+  [base_tight] traj 6: err ref 6.719182e-03 fast 6.719182e-03 latdev 9.43e-09 reasons {'2': 50} | ic 10.38->4.82 ms  roll 38.69->16.98 ms
+  [base_tight] traj 7: err ref 8.613915e-03 fast 8.613915e-03 latdev 1.47e-11 reasons {'2': 50} | ic 9.47->5.00 ms  roll 65.66->29.12 ms
+  [base_tight] SUMMARY err ref 5.614597e-03 fast 5.614597e-03 (fast vs ref 2.3e-09; vs base json 2.8e-09) reasons {'2': 399, '0': 1} | e2e ref 47.77 fast 22.02 ms (ic 7.06 + roll 15.25 + dec 0.50)
+  [nodes_tight] traj 0: err ref 4.984614e-03 fast 4.984614e-03 latdev 1.15e-09 reasons {'2': 50} | ic 26.84->13.09 ms  roll 30.16->13.88 ms
+  [nodes_tight] traj 1: err ref 7.144462e-03 fast 7.144462e-03 latdev 3.11e-10 reasons {'0': 1, '2': 49} | ic 17.39->8.09 ms  roll 50.50->22.23 ms
+  [nodes_tight] traj 2: err ref 3.775608e-03 fast 3.775608e-03 latdev 7.17e-09 reasons {'2': 50} | ic 18.74->9.00 ms  roll 24.59->11.18 ms
+  [nodes_tight] traj 3: err ref 5.828410e-03 fast 5.828410e-03 latdev 1.72e-09 reasons {'2': 50} | ic 14.12->6.40 ms  roll 29.71->13.40 ms
+  [nodes_tight] traj 4: err ref 4.620070e-03 fast 4.620070e-03 latdev 5.29e-12 reasons {'2': 50} | ic 8.59->4.40 ms  roll 36.03->15.92 ms
+  [nodes_tight] traj 5: err ref 2.043316e-03 fast 2.043316e-03 latdev 3.86e-09 reasons {'2': 50} | ic 16.16->7.77 ms  roll 27.17->12.39 ms
+  [nodes_tight] traj 6: err ref 6.923457e-03 fast 6.923458e-03 latdev 7.45e-09 reasons {'2': 50} | ic 10.61->4.90 ms  roll 39.46->17.97 ms
+  [nodes_tight] traj 7: err ref 8.284892e-03 fast 8.284892e-03 latdev 1.57e-11 reasons {'0': 1, '2': 49} | ic 9.47->4.79 ms  roll 65.05->28.71 ms
+  [nodes_tight] SUMMARY err ref 5.450604e-03 fast 5.450604e-03 (fast vs ref 2.7e-09; vs base json 2.6e-09) reasons {'2': 398, '0': 2} | e2e ref 47.41 fast 21.97 ms (ic 7.08 + roll 14.91 + dec 0.49)
+  [tensor] traj 0: err ref 4.990345e-03 fast 4.990345e-03 latdev 1.15e-09 reasons {'2': 50} | ic 26.78->13.09 ms  roll 29.35->14.32 ms
+  [tensor] traj 1: err ref 6.809877e-03 fast 6.809877e-03 latdev 3.15e-10 reasons {'0': 1, '2': 49} | ic 17.41->8.08 ms  roll 47.06->22.06 ms
+  [tensor] traj 2: err ref 3.775213e-03 fast 3.775213e-03 latdev 6.95e-09 reasons {'2': 50} | ic 18.67->8.97 ms  roll 23.02->11.30 ms
+  [tensor] traj 3: err ref 5.871618e-03 fast 5.871618e-03 latdev 1.72e-09 reasons {'2': 50} | ic 14.13->6.36 ms  roll 28.59->13.64 ms
+  [tensor] traj 4: err ref 4.623406e-03 fast 4.623406e-03 latdev 5.27e-12 reasons {'2': 50} | ic 8.54->4.34 ms  roll 34.58->16.14 ms
+  [tensor] traj 5: err ref 2.034350e-03 fast 2.034350e-03 latdev 3.85e-09 reasons {'2': 50} | ic 16.31->7.71 ms  roll 26.12->12.44 ms
+  [tensor] traj 6: err ref 6.870291e-03 fast 6.870291e-03 latdev 7.84e-09 reasons {'2': 50} | ic 10.41->4.76 ms  roll 37.63->17.53 ms
+  [tensor] traj 7: err ref 9.322458e-03 fast 9.322458e-03 latdev 1.47e-11 reasons {'2': 50} | ic 9.50->4.78 ms  roll 55.33->25.94 ms
+  [tensor] SUMMARY err ref 5.537195e-03 fast 5.537195e-03 (fast vs ref 2.8e-09; vs base json nan) reasons {'2': 399, '0': 1} | e2e ref 46.15 fast 21.82 ms (ic 7.04 + roll 15.51 + dec 0.51)
+  [tensor_nolean] traj 0: err ref 4.990345e-03 fast 4.990345e-03 latdev 1.15e-09 reasons {'2': 50} | ic 26.88->13.03 ms  roll 29.34->16.03 ms
+  [tensor_nolean] traj 1: err ref 6.809877e-03 fast 6.809877e-03 latdev 3.15e-10 reasons {'0': 1, '2': 49} | ic 17.32->8.04 ms  roll 47.34->25.09 ms
+  [tensor_nolean] traj 2: err ref 3.775213e-03 fast 3.775213e-03 latdev 6.95e-09 reasons {'2': 50} | ic 18.72->8.98 ms  roll 23.02->12.55 ms
+  [tensor_nolean] traj 3: err ref 5.871618e-03 fast 5.871618e-03 latdev 1.72e-09 reasons {'2': 50} | ic 14.09->6.36 ms  roll 28.74->15.49 ms
+  [tensor_nolean] traj 4: err ref 4.623406e-03 fast 4.623406e-03 latdev 5.26e-12 reasons {'2': 50} | ic 8.59->4.35 ms  roll 34.74->18.24 ms
+  [tensor_nolean] traj 5: err ref 2.034350e-03 fast 2.034350e-03 latdev 3.85e-09 reasons {'2': 50} | ic 16.13->7.73 ms  roll 26.21->14.14 ms
+  [tensor_nolean] traj 6: err ref 6.870291e-03 fast 6.870291e-03 latdev 7.84e-09 reasons {'2': 50} | ic 10.49->4.76 ms  roll 37.85->19.88 ms
+  [tensor_nolean] traj 7: err ref 9.322458e-03 fast 9.322458e-03 latdev 1.47e-11 reasons {'2': 50} | ic 9.38->4.46 ms  roll 55.05->29.22 ms
+  [tensor_nolean] SUMMARY err ref 5.537195e-03 fast 5.537195e-03 (fast vs ref 2.8e-09; vs base json nan) reasons {'2': 399, '0': 1} | e2e ref 46.43 fast 24.14 ms (ic 7.02 + roll 17.83 + dec 0.48)
+  [base_tight vs oracle] err |diff| max 7.89e-04 (ref path 7.89e-04); latent dev max 3.07e-01; stop hist identical: True (per traj True); e2e ratio vs oracle 0.803, vs base_tight 1.000
+  [nodes_tight vs oracle] err |diff| max 1.04e-03 (ref path 1.04e-03); latent dev max 2.93e-01; stop hist identical: False (per traj False); e2e ratio vs oracle 0.801, vs base_tight 0.997
+  [tensor vs oracle] err |diff| max 2.26e-07 (ref path 2.26e-07); latent dev max 5.58e-06; stop hist identical: True (per traj True); e2e ratio vs oracle 0.796, vs base_tight 0.991
+  [tensor_nolean vs oracle] err |diff| max 2.26e-07 (ref path 2.26e-07); latent dev max 5.58e-06; stop hist identical: True (per traj True); e2e ratio vs oracle 0.880, vs base_tight 1.096
+  GATE V (tensor arm: device rollout vs host-loop, traj 0): host 4.990345e-03 device 4.990345e-03 rel diff 4.35e-15 latdev 1.0e-13
+DONE -> /cluster/tufts/paralab/tawal01/b1dtensor/tensor_n1024/out/sep_b1d_tensor_n1024.json [59s]
+ALL-DONE

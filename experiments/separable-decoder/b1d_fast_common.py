@@ -154,6 +154,23 @@ class Setup:
             return wt * (lin + b1.DT * (Phi_j.T @ Nu))
         return r_w
 
+    def make_tensor_rw(self, Q):
+        """Tensor arm (2026-08-29): the oracle residual with the full-grid
+        advection projection Phi^T upwind(G h) replaced by the precomputed
+        quadratic 0.5 * h^T Q h (b1d_tensor_common).  Everything else — exact
+        linear terms, weights, dt, nu — is verbatim the oracle's."""
+        A_j, lam_j, h_fn = self.A_j, self.lam_j, self.h_fn
+        Qj = jnp.asarray(Q, dtype=F64)
+
+        def r_w(z, prev_m, nu):
+            wt = (1.0 + b1.DT * nu * lam_j) ** (-b1.WEAK_ALPHA)
+            hz = h_fn(z)
+            Ah = A_j @ hz
+            Pq = 0.5 * ((Qj @ hz) @ hz)
+            lin = (Ah - prev_m) + b1.DT * nu * lam_j * Ah
+            return wt * (lin + b1.DT * Pq)
+        return r_w
+
 
 def load_arms(nodes_npz):
     d = np.load(nodes_npz)
@@ -356,22 +373,32 @@ def pick_solver(opt):
     return lambda A, b: jnp.linalg.solve(A, b)
 
 
-def make_device_fast(su, X_v, w_v, opt):
+def make_device_fast(su, X_v, w_v, opt, Q=None):
     """Optimized rollout.  opt keys: solver ('gj'|'spd8'|'lu'), onepass,
     hoist, nocond, lean, unroll.  X_v None => oracle (full weak residual;
-    the lean restructure applies only to sampled arms)."""
+    the lean restructure applies only to sampled arms).  Q not None (with
+    X_v None) => TENSOR arm: advection term 0.5 h^T Q h (2026-08-29); the
+    lean restructure applies to it too (A-projection and h from one stacked
+    matmul, then the (M,R,R) contraction)."""
     TR_DELTA = su.TR_DELTA
     A_j, lam_j, params = su.A_j, su.lam_j, su.params
     solver_fn = pick_solver(opt)
     use_onepass = opt.get("onepass", True)
     use_hoist = opt.get("hoist", True)
     use_nocond = opt.get("nocond", True)
-    use_lean = opt.get("lean", False) and X_v is not None
+    tensor = Q is not None
+    assert not (tensor and X_v is not None)
+    use_lean = opt.get("lean", False) and (X_v is not None or tensor)
     use_nodot = opt.get("nodot", False)
     unroll = int(opt.get("unroll", 1))
     scan_unroll = int(opt.get("scan_unroll", 1))
+    Qj = jnp.asarray(Q, dtype=F64) if tensor else None
 
-    if use_lean:
+    if use_lean and tensor:
+        (W1, bh1), (W2, bh2), (W3, bh3) = params["h"]
+        W3aug = jnp.concatenate([W3, params["h_lin"]], axis=0)  # (h+K, R)
+        eyeR = jnp.eye(R, dtype=F64)
+    elif use_lean:
         # static pieces of the folded residual
         (W1, bh1), (W2, bh2), (W3, bh3) = params["h"]
         W3aug = jnp.concatenate([W3, params["h_lin"]], axis=0)  # (h+K, R)
@@ -402,7 +429,9 @@ def make_device_fast(su, X_v, w_v, opt):
         def r_w(z, prev_m):
             hz = b1.head(params, z)
             Ah = A_j @ hz
-            if X_v is None:
+            if tensor:
+                Pq = 0.5 * ((Qj @ hz) @ hz)
+            elif X_v is None:
                 Nu = b1.upwind_adv_field_1d(G_int @ hz, Ngrid)
                 Pq = Phi_j.T @ Nu
             else:
@@ -421,7 +450,9 @@ def make_device_fast(su, X_v, w_v, opt):
                 wt = (1.0 + b1.DT * nu * lam_j) ** (-b1.WEAK_ALPHA)
                 hz = b1.head(params, z)
                 Ah = A_j @ hz
-                if X_v is None:
+                if tensor:
+                    Pq = 0.5 * ((Qj @ hz) @ hz)
+                elif X_v is None:
                     Nu = b1.upwind_adv_field_1d(G_int @ hz, Ngrid)
                     Pq = Phi_j.T @ Nu
                 else:
@@ -435,7 +466,58 @@ def make_device_fast(su, X_v, w_v, opt):
         return outer
 
     def rollout_fn(z0, nu, tol_abs, budget):
-        if use_lean:
+        if use_lean and tensor:
+            # Tensor arm, lean: r = wt*(1+cvec)*(A h) - wt*prev_m
+            #                       + wt*DT*0.5*h^T Q h
+            # A-projection and h itself from ONE stacked matmul over the
+            # merged head last layer, then the (M,R,R) contraction.
+            wt = (1.0 + b1.DT * nu * lam_j) ** (-b1.WEAK_ALPHA)
+            cvec = b1.DT * nu * lam_j
+            scale = wt * (1.0 + cvec)
+            A2 = scale[:, None] * A_j                       # (M, R)
+            Mstack = jnp.concatenate([A2, eyeR], axis=0)    # (M+R, R)
+            Mfold = Mstack @ W3aug.T                        # (M+R, h+K)
+            yb = Mstack @ bh3
+            P2 = wt * b1.DT                                 # (M,)
+            Aw = wt[:, None] * A_j
+            Afold = Aw @ W3aug.T
+            ab = Aw @ bh3
+            Mloc = A_j.shape[0]
+
+            if use_nodot:
+                def cc_of(z):
+                    a1 = jax.nn.silu(jnp.sum(z[:, None] * W1, axis=0) + bh1)
+                    a2 = jax.nn.silu(jnp.sum(a1[:, None] * W2, axis=0) + bh2)
+                    return jnp.concatenate([a2, z])
+
+                def r_w(z, pm2):
+                    cc = cc_of(z)
+                    y = jnp.sum(Mfold * cc[None, :], axis=1) + yb
+                    Ah2 = y[:Mloc]
+                    hz = y[Mloc:]
+                    v = jnp.sum(Qj * hz[None, None, :], axis=2)   # (M, R)
+                    q = 0.5 * jnp.sum(v * hz[None, :], axis=1)    # (M,)
+                    return Ah2 - pm2 + P2 * q
+
+                def prev_fn(z):
+                    cc = cc_of(z)
+                    return jnp.sum(Afold * cc[None, :], axis=1) + ab
+            else:
+                def cc_of(z):
+                    a1 = jax.nn.silu(z @ W1 + bh1)
+                    a2 = jax.nn.silu(a1 @ W2 + bh2)
+                    return jnp.concatenate([a2, z])
+
+                def r_w(z, pm2):
+                    y = Mfold @ cc_of(z) + yb
+                    Ah2 = y[:Mloc]
+                    hz = y[Mloc:]
+                    q = 0.5 * ((Qj @ hz) @ hz)
+                    return Ah2 - pm2 + P2 * q
+
+                def prev_fn(z):
+                    return Afold @ cc_of(z) + ab
+        elif use_lean:
             # Fold every per-trajectory constant once per rollout call.
             # Mathematically identical residual (associativity-only changes):
             #   r = wt*(1+cvec)*(A h) - wt*prev_m + wt*DT*(Phi_q^T Nu)

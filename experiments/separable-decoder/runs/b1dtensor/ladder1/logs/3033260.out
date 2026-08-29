@@ -1,0 +1,52 @@
+host=pax050 gpu=NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=0d96222e4952a791e9b1c9ea74ebb74f95a4ed11
+jax_backend=gpu device=cuda:0 gpu=NVIDIA A100 80GB PCIe B1D-LADDER NS=[128, 256, 512, 1024, 2048, 4096] arms=['oracle', 'base_tight', 'tensor'] reps=7 burn=2 opt={'solver': 'gj', 'onepass': True, 'hoist': True, 'nocond': True, 'lean': True, 'nodot': True, 'unroll': 1, 'scan_unroll': 5, 'ic_unroll': 1, 'with_att': True}
+  cell N=128 built (n_i=126) [6.4s]
+  cell N=256 built (n_i=254) [2.7s]
+  cell N=512 built (n_i=510) [2.5s]
+  cell N=1024 built (n_i=1022) [2.4s]
+  cell N=2048 built (n_i=2046) [2.7s]
+  cell N=4096 built (n_i=4094) [2.9s]
+  rep 0 (burn, order asc) done [35.2s]
+  rep 1 (burn, order desc) done [4.0s]
+  rep 2 (timed, order asc) done [4.0s]
+  rep 3 (timed, order desc) done [3.9s]
+  rep 4 (timed, order asc) done [3.9s]
+  rep 5 (timed, order desc) done [3.9s]
+  rep 6 (timed, order asc) done [3.9s]
+  rep 7 (timed, order desc) done [3.9s]
+  rep 8 (timed, order asc) done [3.9s]
+  N=  128 oracle     err 5.009008e-03 (vs committed 4.4e-09) | ic 6.46 roll 21.42 dec 0.47 e2e 28.75 ms | attempts 217.2 -> 105.1 us/attempt
+  N=  128 base_tight err 5.480428e-03 (vs committed 3.8e-09) | ic 6.23 roll 16.47 dec 0.47 e2e 23.74 ms | attempts 215.0 -> 82.7 us/attempt
+  N=  128 tensor     err 5.009175e-03 (vs committed nan) | ic 6.23 roll 17.09 dec 0.46 e2e 24.06 ms | attempts 217.4 -> 82.9 us/attempt
+  N=  256 oracle     err 6.164550e-03 (vs committed 7.4e-09) | ic 9.33 roll 26.22 dec 0.40 e2e 33.53 ms | attempts 249.2 -> 97.2 us/attempt
+  N=  256 base_tight err 6.236229e-03 (vs committed 5.6e-09) | ic 9.28 roll 19.94 dec 0.39 e2e 27.12 ms | attempts 240.5 -> 75.0 us/attempt
+  N=  256 tensor     err 6.164636e-03 (vs committed nan) | ic 9.29 roll 20.21 dec 0.38 e2e 28.14 ms | attempts 249.2 -> 76.2 us/attempt
+  N=  512 oracle     err 4.876680e-03 (vs committed 2.7e-09) | ic 7.66 roll 21.69 dec 0.39 e2e 31.18 ms | attempts 220.8 -> 112.7 us/attempt
+  N=  512 base_tight err 5.194389e-03 (vs committed 3.1e-09) | ic 7.65 roll 14.77 dec 0.39 e2e 25.72 ms | attempts 212.1 -> 79.8 us/attempt
+  N=  512 tensor     err 4.876705e-03 (vs committed nan) | ic 7.65 roll 15.68 dec 0.39 e2e 26.33 ms | attempts 220.8 -> 81.9 us/attempt
+  N= 1024 oracle     err 5.537167e-03 (vs committed 5.7e-09) | ic 6.85 roll 21.26 dec 0.47 e2e 27.56 ms | attempts 202.5 -> 112.9 us/attempt
+  N= 1024 base_tight err 5.614597e-03 (vs committed 6.2e-09) | ic 6.87 roll 15.49 dec 0.48 e2e 21.70 ms | attempts 211.5 -> 82.0 us/attempt
+  N= 1024 tensor     err 5.537195e-03 (vs committed nan) | ic 6.87 roll 16.00 dec 0.47 e2e 21.55 ms | attempts 202.5 -> 84.5 us/attempt
+  N= 2048 oracle     err 5.078899e-03 (vs committed 6.2e-09) | ic 8.29 roll 20.43 dec 0.48 e2e 28.79 ms | attempts 203.8 -> 116.4 us/attempt
+  N= 2048 base_tight err 5.533699e-03 (vs committed 4.7e-09) | ic 8.23 roll 15.91 dec 0.47 e2e 25.50 ms | attempts 209.1 -> 80.5 us/attempt
+  N= 2048 tensor     err 5.078901e-03 (vs committed nan) | ic 8.27 roll 14.44 dec 0.47 e2e 23.67 ms | attempts 203.8 -> 81.4 us/attempt
+  N= 4096 oracle     err 4.485117e-03 (vs committed 4.5e-10) | ic 6.91 roll 20.84 dec 0.41 e2e 27.61 ms | attempts 201.2 -> 119.5 us/attempt
+  N= 4096 base_tight err 4.888627e-03 (vs committed 1.4e-10) | ic 6.78 roll 13.62 dec 0.40 e2e 20.43 ms | attempts 197.9 -> 82.4 us/attempt
+  N= 4096 tensor     err 4.485115e-03 (vs committed nan) | ic 6.79 roll 14.31 dec 0.39 e2e 21.87 ms | attempts 201.2 -> 83.0 us/attempt
+  slope log(roll_ms) vs log(N) [oracle, N=128..4096]: -0.0374
+  slope log(e2e_ms) vs log(N) [oracle, N=128..4096]: -0.0322
+  slope log(ms_per_lm_attempt_median) vs log(N) [oracle, N=128..4096]: +0.0487
+  slope log(ic_ms) vs log(N) [oracle, N=128..4096]: -0.0055
+  slope log(roll_ms) vs log(N) [base_tight, N=128..4096]: -0.0652
+  slope log(e2e_ms) vs log(N) [base_tight, N=128..4096]: -0.0455
+  slope log(ms_per_lm_attempt_median) vs log(N) [base_tight, N=128..4096]: +0.0092
+  slope log(ic_ms) vs log(N) [base_tight, N=128..4096]: -0.0020
+  slope log(roll_ms) vs log(N) [tensor, N=128..4096]: -0.0772
+  slope log(e2e_ms) vs log(N) [tensor, N=128..4096]: -0.0493
+  slope log(ms_per_lm_attempt_median) vs log(N) [tensor, N=128..4096]: +0.0095
+  slope log(ic_ms) vs log(N) [tensor, N=128..4096]: -0.0011
+DONE -> /cluster/tufts/paralab/tawal01/b1dtensor/ladder1/out/sep_b1d_ladder.json [87s]
+ALL-DONE

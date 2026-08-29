@@ -30,6 +30,9 @@ def e(x, f="{:.3e}"):
 
 def main():
     jobs = load(os.path.join(HERE, "tensor_n*", "out", "sep_b1d_tensor_n*.json"))
+    # the first four-job experiment (N <= 1024); the large-N jobs belong to
+    # the constant-time verification (gen_ladder.py)
+    jobs = {n: d for n, d in jobs.items() if n <= 1024}
     audits = load(os.path.join(HERE, "audit", "audit_n*.json"))
 
     print("### Provenance (A100 jobs)\n")

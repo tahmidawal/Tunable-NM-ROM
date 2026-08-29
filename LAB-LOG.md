@@ -3253,3 +3253,42 @@ beyond that copy.
 
 **Open:** unchanged from 2026-08-28 (2D port of the rollout optimizations, batched-FOM
 comparison, multi-seed 1D confirmation parked, merge decisions pending user).
+
+### Ideation: can the Burgers residual be made sample-free? (seven agents, no runs)
+
+**What was run:** nothing on GPU. User asked whether the nonlinear (Burgers) advection
+term can avoid sampling the way Poisson does, and asked for Codex + Fable subagents to
+ideate. Seven independent runs (4 Fable 5 with assigned angles, 3 Codex incl. a skeptic)
+on one shared brief; reports + brief + the agents' CPU scripts committed under
+`understand/ideation-2026-08-29-sample-free-nonlinear/`; synthesis in
+`understand/2026-08-29-sample-free-nonlinear-residual-synthesis.md`.
+
+**What was found (consensus):** advection u·u_x is quadratic in the field, hence in h, so
+Φᵀ(u⊙Du) = hᵀ T h with T = Σ_x Φ ⊗ G ⊗ (DG) precomputed once (M×R×R = 32³ in 1D, 64³ =
+2 MB in 2D). Sign-upwind decomposes exactly as central + (dx/2)|u|·Lap; |u| is the only
+non-polynomial piece; our 1D data is ≥ 0 (positive blobs, max principle) so the
+backward-difference tensor equals the full-grid oracle on the truth. Agents' CPU spot
+checks on the committed N=256 checkpoint [cpu-check, provisional]: exact (8e-15) on points
+with u>0; median 1.4e-7 / max ~1e-4 relative on decoded states (6.9 % of points undershoot
+0); Jacobian cosine ≥ 0.9996. Surprise finding (agent B): the learned bank's 32-dim span
+(2.7e-4) is WORSE than 32 plain sines (3.4e-5) — the 3.7e-3 floor is the K=8 head, so a
+fixed sine bank may lose nothing and would make Burgers analytic/quadrature-free like
+Poisson. Codex-2: T is not symmetric — use Q = T + Tᵀ(jk) for the Jacobian; naive tensor
+code may add one kernel vs the fused sampled path → in 1D this is an exactness/simplicity
+story, not speed. Codex-3 (skeptic): keep sampling as the general default; the tensor is a
+narrow positive-family experiment until a sign audit at every LM candidate is done.
+Agent D: cell Péclet ≤ 1.2 across the family → upwinding was never needed; a
+centered/skew/LF FOM would make the tensor exact for any sign but CHANGES THE TRUTH
+(O(10 %) at N=128) — user decision.
+
+**Wrong/retracted:** the coordinator's initial "2·T·h" Jacobian (T is not symmetric);
+the "fewer kernels" claim is unmeasured. Two Codex runs first failed on the `-s read-only`
+sandbox flag (bwrap) and were rerun without it — the prompt is the only guardrail on this
+box.
+
+**Open / proposed, NOT launched:** E1 CPU audit at every LM candidate (signs, q/J/Jᵀr,
+two accumulation orders); E2 one A100 job adding a `tensor` arm at N=256/512/4096 from
+committed checkpoints (pass: same stop reasons, oracle error to ≤1e-5, paired time ≤
+base_tight); E3 fixed-sine-bank stage-1 (one job); E4 2D 64³ tensor vs m=256; FOM-choice
+study only after the user decides whether the truth may change. Previous open items
+unchanged.

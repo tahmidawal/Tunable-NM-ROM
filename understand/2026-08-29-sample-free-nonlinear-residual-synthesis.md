@@ -1,5 +1,7 @@
 # Can the Burgers (nonlinear) residual be made sample-free? — synthesis of a seven-agent ideation
 
+**Correction (2026-08-29, after review R2): every 2D estimate below assumes a bank of R=64; the 2D Burgers headline runs (K=32, N=1024) used R=512, so the 2D tensor is ~3.4e7 entries (270 MB f64), not 2 MB, and the '2D could tie m=256 on cost' remarks are unsupported without compression (head-PCA Tucker). The 1D numbers (R=32) are unaffected and were subsequently confirmed on GPU — see `reports/2026-08-29-b1d-tensor-sample-free-burgers.md`.**
+
 **Status: ideation + CPU spot-checks only. No GPU job, no training, no cluster run. Nothing
 here is a result; the numbers marked [cpu-check] are provisional, single-checkpoint
 (N=256, K=8, R=32, seed 0) diagnostics run by the agents on the local box, CPU only, and

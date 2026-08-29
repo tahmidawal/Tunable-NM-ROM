@@ -106,18 +106,24 @@ build). Also measured: the incumbent EQ residual is 5.5–7.9% wrong at
 solutions with gradient cosines down to −0.65 — masked by the decoder floor.
 **Adopt quadrature-free as the Poisson default.**
 
-**1D Burgers sample-free via the precomputed quadratic tensor — RUN AND CONFIRMED
-(2026-08-29, branch `exp/2026-08-29-b1d-tensor`, report
-`reports/2026-08-29-b1d-tensor-sample-free-burgers.md`).** Advection u·u_x is quadratic
-in h, so Φᵀ(u⊙D⁻u) = ½hᵀQh with Q built once from the frozen bank (32³). At N=128/256/
-512/1024 the `tensor` arm matches the full-grid oracle's rollout error to ≤1.2e-6 with
-identical stop-reason histograms, beats NNLS-32 by 1–9 %, equals learned-32, and runs at
-cost parity with the sampled rule (0.98–1.05×) — zero sample points, no NNLS, no stage 2.
-Not bit-exact: 6.7–7 % of decoded points undershoot 0 and 60–68 % of LM candidates touch
-one (sign audit at every candidate), hence 1e-6 not 1e-9. No 1D speedup (launch-bound).
-Only for non-negative data as is; sign-changing data needs a polynomial FOM / split form /
-lift (synthesis in `understand/2026-08-29-sample-free-nonlinear-residual-synthesis.md`).
-**Adopt the tensor as the 1D Burgers default residual for this family; 2D port open.**
+**1D Burgers advection projected exactly (precomputed quadratic tensor, "no hyper-reduction
+needed") — RUN, CONSTANT-TIME VERIFIED, ADVERSARIALLY REVIEWED (2026-08-29, branch
+`exp/2026-08-29-b1d-tensor`, report `reports/2026-08-29-b1d-tensor-sample-free-burgers.md`,
+five reviews in `understand/review-2026-08-29-tensor-arm/`).** Advection u·u_x is quadratic
+in h, so Φᵀ(u⊙D⁻u) = ½hᵀQh with Q built once from the frozen bank (32³; Q = T + Tᵀ(jk) since
+T is not symmetric). The standard intrusive POD-Galerkin/OpInf quadratic operator, applied
+under a nonlinear MLP head over a learned bank — that setting is the only novelty. Tensor
+arm = full-grid oracle rollout error to ≤1.2e-6 (N=128) … ≤6e-10 (N≥16384), direct field
+difference ≤9e-6, on six committed checkpoints + two decoders trained in-job (N=16384,
+65536; same 3.76e-3 floor). Not bit-exact: deviation is FIRST order in the decoded
+undershoot × Δx × blob curvature (bounded; 60–68 % of LM candidates touch a u≤0 point).
+Not distinguishable from NNLS-32/learned-32 at n=8 (the "1–9 % better" claim is retracted).
+Latent solve flat in N on one GPU (exponent −0.08, N=128–4096); at N=16384→65536 the O(N)
+oracle climbs 21→33 ms while the tensor stays ~14 ms (cross-job ratio, not an exponent).
+Cost within ~7 % of the sampled rule; no 1D speedup. f64 required. Scope: non-negative data
+only; 2D bank is R=512 (tensor 270 MB — needs compression; earlier 2 MB estimate wrong).
+**Adopt the tensor as the 1D Burgers residual for this family; the 2D port needs
+compression first.**
 
 **1D Burgers screening (same branch, same day): node learning transfers to 1D
 and pays exactly where the budget binds.** New self-contained 1D testbed
@@ -3342,3 +3348,45 @@ tensor for D⁻ₓ+D⁻ᵧ vs the m=256 arm — the only place this could also b
 fixed-sine-bank stage-1 test (agent B's finding that 32 sines span the truth better than the
 learned bank); FOM-choice study (centered/skew/LF) only if sign-changing data becomes a
 target — changes the truth, user decision; multi-seed still parked.
+
+### Constant-time verification + five adversarial reviews of the tensor arm
+
+**Run (subagent, same worktree):** JOB A ladder 3033260 (one A100 80GB, one process, six
+committed checkpoints N=128…4096, arms oracle/NNLS-32/tensor, reps outermost, N alternating,
+7 timed reps); JOB B N=16384 3033636 (first attempt 3033262 FAILED gate C at 1.99e-12 vs a
+fixed 1e-12 tripwire — ε/Δx roundoff of a one-sided difference, not a bug; `GATE_C_TOL` knob
+added, failed log kept); JOB C N=65536 3033264 (160G, 24 min, decoder trained in-job 1012 s,
+recon 3.759e-3). All COMPLETED 0:0, `jax_backend=gpu`, checksums OK, namespace deleted.
+Results at `4f96247`.
+
+**Found:** tensor latent solve 14.3–20.2 ms flat over N=128…4096 (exponent −0.077; oracle
+−0.037, NNLS −0.065 — all launch-bound there); N=16384/65536: oracle solve 21.4→32.9 ms,
+tensor 14.2→13.8 ms, NNLS 13.9→13.5 ms; tensor = oracle error to 5.8e-10 / 1.7e-10; e2e
+tensor/NNLS 1.015 / 1.005. FOM (tridiagonal, ntol 1e-3) 9.3 / 9.8 ms at those N.
+
+**Reviews (3 Fable 5: code audit, methodology, numerics; 2 Codex: code audit, cost) — all
+five "legitimate with corrections", none blocking on the measurement; every correction
+applied to the report:** (1) not novel as an operator — standard quadratic Galerkin/OpInf
+tensor; novelty is the MLP-head-over-learned-bank setting; rename to "exact projection, no
+hyper-reduction needed"; (2) "second-order small" WRONG → first order in undershoot × Δx ×
+curvature, with an explicit bound (measured at 0.4× bound); (3) "identical solver decisions"
+contradicted by `njac_equal=False` on N=128 traj 7; (4) "1–9 % better than NNLS-32" not
+distinguishable from zero (sign test p≥0.07) → retracted; (5) "arms interleaved" was false
+in the four-job driver (arms sequential; IC drift 7–10 % between arm blocks); (6) like-for-
+like oracle timing is `tensor_nolean` (0.88–0.95×), not `tensor` (0.78–0.84×); (7) large-N
+exponents are two-point cross-job ratios, not exponents; (8) "µs per LM attempt" divides by
+loop attempts only (per-step initial eval uncounted) → slopes meaningless; (9) constant-time
+must be scoped to the latent solve (IC fit, decode O(N)); (10) f64 required (f32 roundoff
+would exceed the undershoot term); (11) 2D bank is R=512 not 64 → 270 MB tensor; synthesis
+corrected; (12) stop histograms are stall-dominated (absolute tol unreachable for 32 eq / 8
+unknowns) — low evidential weight. Independent CPU reproduction of every printed digit (R3).
+
+**Wrong/retracted this session:** items (2), (4), (5), (11) above, plus the coordinator's
+ideation-brief assumption R=64 in 2D. Two Codex reviews first hung on stdin in background
+launch (fixed with `</dev/null`); two earlier Codex ideation runs failed on the `-s read-only`
+sandbox flag.
+
+**Open:** merge decision for `exp/2026-08-29-b1d-tensor` (ask user); sign-changing family
+(expected failure — needed to make the positivity scope credible); ≥3 seeds × ≥32
+trajectories with paired CIs; assert min(truth) ≥ 0 numerically; fixed-sine-bank stage-1
+test; 2D port only with head-PCA compression; FOM-choice study (user decision).

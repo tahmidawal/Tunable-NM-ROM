@@ -3224,3 +3224,32 @@ paired speedups); batched-FOM comparison if the throughput claim is ever
 promoted beyond "in the FOM's single-query range"; multi-seed 1D
 confirmation still parked awaiting user review; merge decisions unchanged
 (six branches + this one's continuation).
+
+## 2026-08-29
+
+### Study deck: architecture, training, linear = quadrature-free vs nonlinear = sampled
+
+**What was made:** a Beamer study deck, `reports/2026-08-29-study-deck-linear-vs-nonlinear-residuals.{tex,pdf}`
+(18 slides, 16:9, compiles clean with `latexmk -pdf`). Contents: the separable decoder
+u = bc(x)⟨g(x),h(z)⟩ and the "field = table G × h(z)" consequence; role-colored TikZ
+architecture diagram (trained / frozen / NNLS-solved); stage-1 auto-decoder loss L1 with
+both terms explained in words; how the decoder is used online (weak form on Laplacian
+eigenmodes, LM in latent space); the one-fact explanation of why linear terms need no
+sampling (Φᵀ(Gh) = (ΦᵀG)h, precompute B once) and the Poisson quadrature-free residual
+r = W⊙[ΛBh(z) − Φᵀf] with its Jacobian; why a quadratic + sign-upwind advection term
+cannot be pre-tabulated and therefore must be sampled; the Burgers exlin residual, the
+NNLS baseline, the stage-2 node-position loss L2 and its design choices (frozen teacher,
+gradient matching, NNLS weights, held-out); Poisson N=128/256/512 and 1D Burgers
+N=128..4096 result tables; the N=512 error-vs-time figure; a linear-vs-nonlinear
+side-by-side summary; two glossary slides.
+
+**Numbers:** no new runs. Every table is copied verbatim from
+`reports/2026-08-28-presentation-notes.md`, whose tables are generated from the run
+JSONs by `reports/gen_2026-08-27-b1d-nodes-and-poisson-qf.py`; nothing hand-typed
+beyond that copy.
+
+**Wrong/retracted:** nothing. (Layout only: first build overflowed seven slides at
+11 pt; fixed by 10 pt + full-width equations + splitting stage-2 and glossary.)
+
+**Open:** unchanged from 2026-08-28 (2D port of the rollout optimizations, batched-FOM
+comparison, multi-seed 1D confirmation parked, merge decisions pending user).

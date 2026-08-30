@@ -2,7 +2,7 @@
  "config": {
   "pde": "stokes2d",
   "kind": "staggered_MAC_FOM_phase1",
-  "driver_revision": 2,
+  "driver_revision": 3,
   "discretization": "MAC, N cells, h=1/N, p at N^2 centres (mean-zero gauge), u_x on N(N-1) interior vertical faces, u_y on N(N-1) interior horizontal faces, boundary-normal velocities eliminated, no-slip tangential via ODD ghosts (wall diagonal -5/h^2)",
   "ns": [
    8,
@@ -80,7 +80,8 @@
    "jax_version": "0.10.1"
   },
   "allow_cpu": false,
-  "git_commit": "b4f0a264b35cf2ec979458772e7f349da87d0cf3",
+  "smoke": false,
+  "git_commit": "e4c3231f6bc3228dc24b9cd6a75e0341b496b9cb",
   "hostname": "spark-d69e"
  },
  "gates": {
@@ -98,6 +99,42 @@
    "numpy_is_f64": true,
    "allow_cpu": false,
    "rule": "solver output dtype must be float64; JAX must report x64=True and matmul_precision='highest', and backend 'gpu' unless ALLOW_CPU=1.  Phase 1's numerics are CPU scipy by design, but phase 2 inherits this JAX env"
+  },
+  "PRECOND": {
+   "debug_asserts_active": true,
+   "allow_cpu": 0,
+   "rank_ns": [
+    32,
+    64
+   ],
+   "freeslip_ns": [
+    8,
+    16,
+    32,
+    64,
+    128
+   ],
+   "ns": [
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+   ],
+   "ladder": [
+    32,
+    64,
+    128,
+    256
+   ],
+   "generic_ns": [
+    32,
+    64,
+    128
+   ],
+   "smoke": 0,
+   "rule": "ASSERTED unless SMOKE=1: python must run WITHOUT -O so assert statements are live; ALLOW_CPU must be 0; and the RANK_NS and FREESLIP_NS ladders must be non-empty.  A SMOKE=1 run records smoke=1 and is not a certified artifact"
   },
   "REF": {
    "rows": [
@@ -244,6 +281,7 @@
      "s3_ctl_fro_min": 0.14285714285714268,
      "s3_ctl_fro_max": 0.1428571428571431,
      "s3_ctl_fro_ideal": 0.14285714285714285,
+     "s3_ctl_fro_scaled_min": 0.9999999999999988,
      "s3_matched_cos_min": 0.9999999999999993,
      "s3_sol_fro_max": 4.3260789458850607e-17,
      "s3_sol_cos_max": 3.8929120600757105e-16,
@@ -279,6 +317,7 @@
      "s3_ctl_fro_min": 0.1249999999999993,
      "s3_ctl_fro_max": 0.12500000000000078,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999944,
      "s3_matched_cos_min": 0.9999999999999958,
      "s3_sol_fro_max": 7.623802803351191e-17,
      "s3_sol_cos_max": 4.996003610813204e-16,
@@ -314,6 +353,7 @@
      "s3_ctl_fro_min": 0.12499999999999704,
      "s3_ctl_fro_max": 0.12500000000000125,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999764,
      "s3_matched_cos_min": 0.9999999999999734,
      "s3_sol_fro_max": 6.063444153184888e-17,
      "s3_sol_cos_max": 5.655198531684391e-16,
@@ -349,6 +389,7 @@
      "s3_ctl_fro_min": 0.12499999999999671,
      "s3_ctl_fro_max": 0.12500000000000974,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999737,
      "s3_matched_cos_min": 0.9999999999999714,
      "s3_sol_fro_max": 4.781615267532078e-17,
      "s3_sol_cos_max": 2.8102520310824275e-16,
@@ -384,6 +425,7 @@
      "s3_ctl_fro_min": 0.12499999999999412,
      "s3_ctl_fro_max": 0.1250000000000109,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999529,
      "s3_matched_cos_min": 0.9999999999999629,
      "s3_sol_fro_max": 7.296392454983676e-17,
      "s3_sol_cos_max": 5.455705331947058e-16,
@@ -419,6 +461,7 @@
      "s3_ctl_fro_min": 0.12499999999998714,
      "s3_ctl_fro_max": 0.12500000000002223,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999998971,
      "s3_matched_cos_min": 0.9999999999999489,
      "s3_sol_fro_max": 1.386408720261313e-16,
      "s3_sol_cos_max": 1.452830911130576e-15,
@@ -521,6 +564,7 @@
      "s3_ctl_fro_min": 0.14285714285714268,
      "s3_ctl_fro_max": 0.1428571428571431,
      "s3_ctl_fro_ideal": 0.14285714285714285,
+     "s3_ctl_fro_scaled_min": 0.9999999999999988,
      "s3_matched_cos_min": 0.9999999999999993,
      "s3_sol_fro_max": 4.3260789458850607e-17,
      "s3_sol_cos_max": 3.8929120600757105e-16,
@@ -538,6 +582,7 @@
      "s3_ctl_fro_min": 0.1249999999999993,
      "s3_ctl_fro_max": 0.12500000000000078,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999944,
      "s3_matched_cos_min": 0.9999999999999958,
      "s3_sol_fro_max": 7.623802803351191e-17,
      "s3_sol_cos_max": 4.996003610813204e-16,
@@ -555,6 +600,7 @@
      "s3_ctl_fro_min": 0.12499999999999704,
      "s3_ctl_fro_max": 0.12500000000000125,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999764,
      "s3_matched_cos_min": 0.9999999999999734,
      "s3_sol_fro_max": 6.063444153184888e-17,
      "s3_sol_cos_max": 5.655198531684391e-16,
@@ -572,6 +618,7 @@
      "s3_ctl_fro_min": 0.12499999999999671,
      "s3_ctl_fro_max": 0.12500000000000974,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999737,
      "s3_matched_cos_min": 0.9999999999999714,
      "s3_sol_fro_max": 4.781615267532078e-17,
      "s3_sol_cos_max": 2.8102520310824275e-16,
@@ -589,6 +636,7 @@
      "s3_ctl_fro_min": 0.12499999999999412,
      "s3_ctl_fro_max": 0.1250000000000109,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999999529,
      "s3_matched_cos_min": 0.9999999999999629,
      "s3_sol_fro_max": 7.296392454983676e-17,
      "s3_sol_cos_max": 5.455705331947058e-16,
@@ -606,6 +654,7 @@
      "s3_ctl_fro_min": 0.12499999999998714,
      "s3_ctl_fro_max": 0.12500000000002223,
      "s3_ctl_fro_ideal": 0.125,
+     "s3_ctl_fro_scaled_min": 0.9999999999998971,
      "s3_matched_cos_min": 0.9999999999999489,
      "s3_sol_fro_max": 1.386408720261313e-16,
      "s3_sol_cos_max": 1.452830911130576e-15,
@@ -619,6 +668,7 @@
     }
    ],
    "min_ctl_fro": 0.12499999999998714,
+   "min_ctl_fro_scaled": 0.9999999999998971,
    "min_matched_cos": 0.9999999999999489,
    "max_sol_fro": 1.386408720261313e-16,
    "max_sol_cos": 1.452830911130576e-15,
@@ -626,7 +676,8 @@
    "floor": 0.01,
    "matched_cos": 0.99,
    "sol_tol": 1e-13,
-   "rule": "REPAIRED S3 (STOKES-PHASE1-VERIFY-codex.md).  Deterministic p = chi_kl aligned with each of the M control columns: matched-control cosine >= 0.99, control Frobenius metric >= 1e-2 (the design's own floor, = 1/sqrt(M) exactly for a mass-orthonormal control), solenoidal Frobenius metric and cosine <= 1e-13.  The rand_press_* fields are the SUPERSEDED grid-white-random-pressure diagnostic, retained as evidence and NOT gated"
+   "scaled_floor": 0.99,
+   "rule": "REPAIRED S3 (STOKES-PHASE1-VERIFY-codex.md).  Deterministic p = chi_kl aligned with each of the M control columns: matched-control cosine >= 0.99, control Frobenius metric >= 1e-2 (the design's own floor, = 1/sqrt(M) exactly for a mass-orthonormal control), solenoidal Frobenius metric and cosine <= 1e-13.  The rand_press_* fields are the SUPERSEDED grid-white-random-pressure diagnostic, retained as evidence and NOT gated.  ALSO gated dimensionlessly: sqrt(M) * control metric >= 0.99.  That constant is DERIVED, not chosen: the matched-cosine requirement cos >= 0.99 makes the aligned column alone contribute 0.99/sqrt(M) to the RMS.  It is the form that survives M -> large, where the constant 1e-2 floor would reject a CORRECT aligned control at M > 10^4"
   },
   "SYM": {
    "rows": [
@@ -668,7 +719,7 @@
      "expect_rank_D": 1023,
      "expect_dim_ker_D": 961,
      "expect_rank_C": 961,
-     "seconds": 0.7731101512908936
+     "seconds": 0.9392573833465576
     },
     {
      "N": 64,
@@ -678,7 +729,7 @@
      "expect_rank_D": 4095,
      "expect_dim_ker_D": 3969,
      "expect_rank_C": 3969,
-     "seconds": 104.38391494750977
+     "seconds": 110.22580814361572
     }
    ],
    "indirect": [
@@ -784,10 +835,12 @@
      "div_u_norm": 2.1003266824144526e-16,
      "lam": 1.5298269064520776e-15,
      "lin_resid_rel": 1.1283613298150488e-15,
+     "backward_err": 1.631579507840348e-17,
+     "K_fro": 3160.7391540587464,
      "p_mean_raw": 1.1102230246251565e-16,
      "saddle_dim": 177,
      "saddle_nnz": 1076,
-     "solve_seconds": 0.0008554458618164062
+     "solve_seconds": 0.0009000301361083984
     },
     {
      "N": 16,
@@ -815,10 +868,12 @@
      "div_u_norm": 1.2593384279408947e-16,
      "lam": 1.2129315022056562e-15,
      "lin_resid_rel": 4.771790682731224e-15,
+     "backward_err": 9.019696468110538e-18,
+     "K_fro": 25630.072337002875,
      "p_mean_raw": -2.220446049250313e-16,
      "saddle_dim": 737,
      "saddle_nnz": 4708,
-     "solve_seconds": 0.0036613941192626953
+     "solve_seconds": 0.003735065460205078
     },
     {
      "N": 32,
@@ -846,10 +901,12 @@
      "div_u_norm": 2.4573167576225824e-16,
      "lam": 7.74962443408098e-15,
      "lin_resid_rel": 2.5000857802579437e-14,
+     "backward_err": 5.966118037719511e-18,
+     "K_fro": 206207.64742365884,
      "p_mean_raw": 1.6653345369377348e-16,
      "saddle_dim": 3009,
      "saddle_nnz": 19652,
-     "solve_seconds": 0.0529782772064209
+     "solve_seconds": 0.050914764404296875
     },
     {
      "N": 64,
@@ -877,10 +934,12 @@
      "div_u_norm": 1.3675055686346698e-16,
      "lam": 1.254599366855501e-14,
      "lin_resid_rel": 1.0997527594553017e-13,
+     "backward_err": 3.2884658698910854e-18,
+     "K_fro": 1653931.505657958,
      "p_mean_raw": -5.551115123125783e-16,
      "saddle_dim": 12161,
      "saddle_nnz": 80260,
-     "solve_seconds": 0.6753482818603516
+     "solve_seconds": 0.7564079761505127
     },
     {
      "N": 128,
@@ -908,10 +967,12 @@
      "div_u_norm": 4.696300905544731e-16,
      "lam": 2.6452480777291022e-14,
      "lin_resid_rel": 5.757634718879958e-13,
+     "backward_err": 2.153447611322875e-18,
+     "K_fro": 13247757.711716803,
      "p_mean_raw": 7.216449660063518e-16,
      "saddle_dim": 48897,
      "saddle_nnz": 324356,
-     "solve_seconds": 7.097323894500732
+     "solve_seconds": 7.303362607955933
     },
     {
      "N": 256,
@@ -939,10 +1000,12 @@
      "div_u_norm": 4.961731863634395e-16,
      "lam": 2.0050049122584042e-13,
      "lin_resid_rel": 2.867739973879487e-12,
+     "backward_err": 1.3409857827381613e-18,
+     "K_fro": 106045752.9351891,
      "p_mean_raw": -7.216449660063518e-16,
      "saddle_dim": 196097,
      "saddle_nnz": 1304068,
-     "solve_seconds": 76.41427278518677
+     "solve_seconds": 79.2437059879303
     }
    ],
    "ladder": [
@@ -1042,12 +1105,10 @@
      "predicted_err_p": 0.026172152977030905,
      "observed_err_u": 0.05302928754551488,
      "observed_err_p": 0.02617215297702559,
-     "pred_dev_u": 1.3085021928592927e-15,
-     "pred_dev_p": 2.0308580402451544e-13,
-     "pred_dev_bound_u": 4.6647518614337857e-14,
-     "pred_dev_bound_p": 2.4280205379401064e-12,
-     "pred_margin_u": 0.028050842396943783,
-     "pred_margin_p": 0.08364253961245739
+     "pred_dev_u_diagnostic": 1.3085021928592927e-15,
+     "pred_dev_p_diagnostic": 2.0308580402451544e-13,
+     "implied_by_field_gate_u": 1.9857503962158682e-07,
+     "implied_by_field_gate_p": 3.9208549402779965e-07
     },
     {
      "N": 16,
@@ -1057,12 +1118,10 @@
      "predicted_err_p": 0.006454542799563923,
      "observed_err_u": 0.012950746721879179,
      "observed_err_p": 0.006454542799557603,
-     "pred_dev_u": 4.4202759838181665e-15,
-     "pred_dev_p": 9.790929922116976e-13,
-     "pred_dev_bound_u": 2.319485432127177e-13,
-     "pred_dev_bound_p": 2.490018040981424e-11,
-     "pred_margin_u": 0.019057140530364853,
-     "pred_margin_p": 0.03932071880996471
+     "pred_dev_u_diagnostic": 4.4202759838181665e-15,
+     "pred_dev_p_diagnostic": 9.790929922116976e-13,
+     "implied_by_field_gate_u": 7.821562481880533e-07,
+     "implied_by_field_gate_p": 1.5592964119279856e-06
     },
     {
      "N": 32,
@@ -1072,12 +1131,10 @@
      "predicted_err_p": 0.0016081890839747537,
      "observed_err_u": 0.003218964440078693,
      "observed_err_p": 0.0016081890840147284,
-     "pred_dev_u": 1.876744716366115e-13,
-     "pred_dev_p": 2.4856996816055117e-11,
-     "pred_dev_bound_u": 4.1471524689525286e-12,
-     "pred_dev_bound_p": 8.574977446198963e-10,
-     "pred_margin_u": 0.04525381524832473,
-     "pred_margin_p": 0.02898782763221552
+     "pred_dev_u_diagnostic": 1.876744716366115e-13,
+     "pred_dev_p_diagnostic": 2.4856996816055117e-11,
+     "implied_by_field_gate_u": 3.116589148823793e-06,
+     "implied_by_field_gate_p": 6.228174280405068e-06
     },
     {
      "N": 64,
@@ -1087,12 +1144,10 @@
      "predicted_err_p": 0.00040170815496520795,
      "observed_err_u": 0.0008035776793740345,
      "observed_err_p": 0.0004017081548548936,
-     "pred_dev_u": 2.251981224154077e-12,
-     "pred_dev_p": 2.746132267679395e-10,
-     "pred_dev_bound_u": 2.093045511461506e-11,
-     "pred_dev_bound_p": 6.969389203022479e-09,
-     "pred_margin_u": 0.10759351441821212,
-     "pred_margin_p": 0.03940276812907011
+     "pred_dev_u_diagnostic": 2.251981224154077e-12,
+     "pred_dev_p_diagnostic": 2.746132267679395e-10,
+     "implied_by_field_gate_u": 1.2454347642672517e-05,
+     "implied_by_field_gate_p": 2.4903694281277667e-05
     },
     {
      "N": 128,
@@ -1102,12 +1157,10 @@
      "predicted_err_p": 0.00010040586418358366,
      "observed_err_u": 0.00020082180970355568,
      "observed_err_p": 0.0001004058641801483,
-     "pred_dev_u": 5.747321092348341e-12,
-     "pred_dev_p": 3.421475801328527e-11,
-     "pred_dev_bound_u": 4.4255672558885453e-10,
-     "pred_dev_bound_p": 3.110442392721008e-07,
-     "pred_margin_u": 0.012986631453179485,
-     "pred_margin_p": 0.00010999965179665094
+     "pred_dev_u_diagnostic": 5.747321092348341e-12,
+     "pred_dev_p_diagnostic": 3.421475801328527e-11,
+     "implied_by_field_gate_u": 4.980538833309035e-05,
+     "implied_by_field_gate_p": 9.960577641516876e-05
     },
     {
      "N": 256,
@@ -1117,21 +1170,19 @@
      "predicted_err_p": 2.510014295120655e-05,
      "observed_err_u": 5.020091592952337e-05,
      "observed_err_p": 2.510014353637518e-05,
-     "pred_dev_u": 1.9841685112119452e-10,
-     "pred_dev_p": 2.331335841590093e-08,
-     "pred_dev_bound_u": 3.9221158231601795e-09,
-     "pred_dev_bound_p": 6.290339141470307e-06,
-     "pred_margin_u": 0.05058923807133351,
-     "pred_margin_p": 0.0037062164521787064
+     "pred_dev_u_diagnostic": 1.9841685112119452e-10,
+     "pred_dev_p_diagnostic": 2.331335841590093e-08,
+     "implied_by_field_gate_u": 0.0001992095527735606,
+     "implied_by_field_gate_p": 0.00039841410548416045
     }
    ],
    "worst_exact_u_rel": 1.9689380666525046e-13,
    "worst_exact_p_rel": 1.5788841166247458e-10,
-   "worst_pred_dev_u": 1.9841685112119452e-10,
-   "worst_pred_dev_p": 2.331335841590093e-08,
-   "worst_pred_margin": 0.10759351441821212,
+   "worst_pred_dev_u_diagnostic": 1.9841685112119452e-10,
+   "worst_pred_dev_p_diagnostic": 2.331335841590093e-08,
    "field_tol": 1e-08,
-   "rule": "The discrete saddle system has a CLOSED-FORM solution for this manufactured data (stk2d_common.exact_discrete): u_h = (t/sin t)^2 u_ex, p_h = (t/sin t) p_ex, t = pi h.  ASSERTED (a) field agreement ||u_h-u_h^exact||/||.|| <= 1e-8, and (b) the observed-vs-predicted ERROR deviation within its own roundoff amplification bound, pred_dev <= exact_rel/predicted_err.  (b) is self-calibrating: comparing errors of size predicted_err while the fields carry relative roundoff exact_rel amplifies by exactly that ratio.  Revision 1 gated pred_dev at the flat 1e-8 field tolerance, which its own recorded worst_pred_dev_p = 2.331e-8 EXCEEDED -- a category error in the threshold, not a defect; see STOKES-NOTES.md"
+   "pred_dev_gated": false,
+   "rule": "The discrete saddle system has a CLOSED-FORM solution for this manufactured data (stk2d_common.exact_discrete): u_h = (t/sin t)^2 u_ex, p_h = (t/sin t) p_ex, t = pi h.  THE GATE IS THE FIELD ASSERTION: ||u_h - u_h^exact||/||.|| <= 1e-8 (and likewise for p), a frozen a-priori tolerance.  pred_dev_*_diagnostic (observed vs closed-form-predicted ERROR) is RECORDED ONLY and is NOT a gate.  Two earlier attempts to gate it were both wrong and are retracted in STOKES-NOTES.md: revision 1 used the flat field tolerance, which its own recorded 2.331e-8 exceeded; revision 2 used pred_dev <= exact_rel/predicted_err, which omits a factor a = 1+eps AND is circular -- the bound derives from the very error it tests.  STOKES-PHASE1B-VERIFY-codex.md showed it is direction-dependent and blind: a parallel perturbation INSIDE the field tolerance (field error 9.99e-9) gives margin 1.0000251 and FAILS, while a 10% ORTHOGONAL perturbation gives margin 0.999774 and PASSES.  implied_by_field_gate_* is what the field gate alone already forces on pred_dev, showing the quantity is redundant as a gate"
   },
   "S_FOMGEN": {
    "rows": [
@@ -1161,10 +1212,12 @@
      "div_u_norm": 3.1695046493791055e-16,
      "lam": 2.1491596107577544e-14,
      "lin_resid_rel": 8.777297824825499e-15,
+     "backward_err": 8.351033642938739e-18,
+     "K_fro": 206207.64742365884,
      "p_mean_raw": 5.551115123125783e-17,
      "saddle_dim": 3009,
      "saddle_nnz": 19652,
-     "solve_seconds": 0.08496284484863281
+     "solve_seconds": 0.09102559089660645
     },
     {
      "N": 64,
@@ -1192,10 +1245,12 @@
      "div_u_norm": 1.3899472042641615e-16,
      "lam": -9.340307213182828e-15,
      "lin_resid_rel": 3.530213714201656e-14,
+     "backward_err": 4.241412718619986e-18,
+     "K_fro": 1653931.505657958,
      "p_mean_raw": 1.3877787807814457e-16,
      "saddle_dim": 12161,
      "saddle_nnz": 80260,
-     "solve_seconds": 0.6923174858093262
+     "solve_seconds": 0.6655828952789307
     },
     {
      "N": 128,
@@ -1223,10 +1278,12 @@
      "div_u_norm": 3.769677428042483e-16,
      "lam": 1.7323158762907495e-13,
      "lin_resid_rel": 1.6133325114195031e-13,
+     "backward_err": 2.427636267763939e-18,
+     "K_fro": 13247757.711716803,
      "p_mean_raw": -2.7755575615628914e-16,
      "saddle_dim": 48897,
      "saddle_nnz": 324356,
-     "solve_seconds": 7.091186046600342
+     "solve_seconds": 7.154098272323608
     }
    ],
    "orders_u": [
@@ -1329,10 +1386,12 @@
      "div_u_norm": 1.5629788096481496e-16,
      "lam": 7.658606666934654e-15,
      "lin_resid_rel": 2.4360495317044266e-15,
+     "backward_err": 1.7900825227859528e-17,
+     "K_fro": 2855.742285291164,
      "p_mean_raw": -3.747002708109903e-15,
      "saddle_dim": 177,
      "saddle_nnz": 1076,
-     "solve_seconds": 0.000736236572265625
+     "solve_seconds": 0.0008141994476318359
     },
     {
      "N": 16,
@@ -1360,10 +1419,12 @@
      "div_u_norm": 8.79370138942095e-17,
      "lam": 1.044536321764837e-14,
      "lin_resid_rel": 7.60310026010207e-15,
+     "backward_err": 6.756827013613375e-18,
+     "K_fro": 24371.828983480085,
      "p_mean_raw": 5.551115123125783e-17,
      "saddle_dim": 737,
      "saddle_nnz": 4708,
-     "solve_seconds": 0.003359079360961914
+     "solve_seconds": 0.003536224365234375
     },
     {
      "N": 32,
@@ -1391,10 +1452,12 @@
      "div_u_norm": 6.028405236901677e-17,
      "lam": -6.9385168163303914e-15,
      "lin_resid_rel": 4.517852076105703e-14,
+     "backward_err": 4.91202977724913e-18,
+     "K_fro": 201100.02255594105,
      "p_mean_raw": -1.432187701766452e-14,
      "saddle_dim": 3009,
      "saddle_nnz": 19652,
-     "solve_seconds": 0.018979549407958984
+     "solve_seconds": 0.02047419548034668
     },
     {
      "N": 64,
@@ -1422,10 +1485,12 @@
      "div_u_norm": 5.138056860393735e-17,
      "lam": 6.920160280081239e-16,
      "lin_resid_rel": 2.0680353005044413e-13,
+     "backward_err": 2.7781827451437495e-18,
+     "K_fro": 1633353.5105714255,
      "p_mean_raw": -4.746203430272544e-14,
      "saddle_dim": 12161,
      "saddle_nnz": 80260,
-     "solve_seconds": 0.20415973663330078
+     "solve_seconds": 0.21715259552001953
     },
     {
      "N": 128,
@@ -1453,10 +1518,12 @@
      "div_u_norm": 4.3959337960050213e-17,
      "lam": 1.0049197961009028e-14,
      "lin_resid_rel": 9.759174051338576e-13,
+     "backward_err": 1.6290502681423722e-18,
+     "K_fro": 13165152.524827959,
      "p_mean_raw": 6.750155989720952e-14,
      "saddle_dim": 48897,
      "saddle_nnz": 324356,
-     "solve_seconds": 2.0487377643585205
+     "solve_seconds": 2.074633836746216
     }
    ],
    "orders_u": [
@@ -1511,6 +1578,126 @@
    "err_floor": 0.5,
    "order_ceil": 0.5,
    "rule": "ASSERTED TO FAIL S-FOM.  Even (free-slip) tangential ghosts solve a DIFFERENT boundary-value problem, so the error must plateau at O(1) (>= 0.5 at every mesh) and must not converge (|observed order| <= 0.5).  If this arm ever looked second-order, S-FOM would be blind to the failure mode both audits single out"
+  },
+  "S_BACKERR": {
+   "rows": [
+    {
+     "N": 8,
+     "family": "frozen",
+     "ghost": "odd",
+     "backward_err": 1.631579507840348e-17,
+     "lin_resid_rel": 1.1283613298150488e-15,
+     "K_fro": 3160.7391540587464
+    },
+    {
+     "N": 16,
+     "family": "frozen",
+     "ghost": "odd",
+     "backward_err": 9.019696468110538e-18,
+     "lin_resid_rel": 4.771790682731224e-15,
+     "K_fro": 25630.072337002875
+    },
+    {
+     "N": 32,
+     "family": "frozen",
+     "ghost": "odd",
+     "backward_err": 5.966118037719511e-18,
+     "lin_resid_rel": 2.5000857802579437e-14,
+     "K_fro": 206207.64742365884
+    },
+    {
+     "N": 64,
+     "family": "frozen",
+     "ghost": "odd",
+     "backward_err": 3.2884658698910854e-18,
+     "lin_resid_rel": 1.0997527594553017e-13,
+     "K_fro": 1653931.505657958
+    },
+    {
+     "N": 128,
+     "family": "frozen",
+     "ghost": "odd",
+     "backward_err": 2.153447611322875e-18,
+     "lin_resid_rel": 5.757634718879958e-13,
+     "K_fro": 13247757.711716803
+    },
+    {
+     "N": 256,
+     "family": "frozen",
+     "ghost": "odd",
+     "backward_err": 1.3409857827381613e-18,
+     "lin_resid_rel": 2.867739973879487e-12,
+     "K_fro": 106045752.9351891
+    },
+    {
+     "N": 32,
+     "family": "generic",
+     "ghost": "odd",
+     "backward_err": 8.351033642938739e-18,
+     "lin_resid_rel": 8.777297824825499e-15,
+     "K_fro": 206207.64742365884
+    },
+    {
+     "N": 64,
+     "family": "generic",
+     "ghost": "odd",
+     "backward_err": 4.241412718619986e-18,
+     "lin_resid_rel": 3.530213714201656e-14,
+     "K_fro": 1653931.505657958
+    },
+    {
+     "N": 128,
+     "family": "generic",
+     "ghost": "odd",
+     "backward_err": 2.427636267763939e-18,
+     "lin_resid_rel": 1.6133325114195031e-13,
+     "K_fro": 13247757.711716803
+    },
+    {
+     "N": 8,
+     "family": "frozen",
+     "ghost": "even",
+     "backward_err": 1.7900825227859528e-17,
+     "lin_resid_rel": 2.4360495317044266e-15,
+     "K_fro": 2855.742285291164
+    },
+    {
+     "N": 16,
+     "family": "frozen",
+     "ghost": "even",
+     "backward_err": 6.756827013613375e-18,
+     "lin_resid_rel": 7.60310026010207e-15,
+     "K_fro": 24371.828983480085
+    },
+    {
+     "N": 32,
+     "family": "frozen",
+     "ghost": "even",
+     "backward_err": 4.91202977724913e-18,
+     "lin_resid_rel": 4.517852076105703e-14,
+     "K_fro": 201100.02255594105
+    },
+    {
+     "N": 64,
+     "family": "frozen",
+     "ghost": "even",
+     "backward_err": 2.7781827451437495e-18,
+     "lin_resid_rel": 2.0680353005044413e-13,
+     "K_fro": 1633353.5105714255
+    },
+    {
+     "N": 128,
+     "family": "frozen",
+     "ghost": "even",
+     "backward_err": 1.6290502681423722e-18,
+     "lin_resid_rel": 9.759174051338576e-13,
+     "K_fro": 13165152.524827959
+    }
+   ],
+   "n_solves": 14,
+   "worst": 1.7900825227859528e-17,
+   "tol": 1e-13,
+   "rule": "ASSERTED over EVERY solve in the run: normalised backward error ||K x - b|| / (||K||_F ||x|| + ||b||) <= 1e-13.  Frozen a priori from backward stability of the sparse LU, O(nnz^(1/2) u_mach); it does not derive from any quantity it tests, which is what the retracted S-EXACT prediction bound could not say.  Note ||res||/||rhs|| is ALSO recorded and grows like h^-2 because ||K|| does; that unnormalised form is a diagnostic, not the gate"
   }
  },
  "rows": [
@@ -1540,10 +1727,12 @@
    "div_u_norm": 2.1003266824144526e-16,
    "lam": 1.5298269064520776e-15,
    "lin_resid_rel": 1.1283613298150488e-15,
+   "backward_err": 1.631579507840348e-17,
+   "K_fro": 3160.7391540587464,
    "p_mean_raw": 1.1102230246251565e-16,
    "saddle_dim": 177,
    "saddle_nnz": 1076,
-   "solve_seconds": 0.0008554458618164062
+   "solve_seconds": 0.0009000301361083984
   },
   {
    "N": 16,
@@ -1571,10 +1760,12 @@
    "div_u_norm": 1.2593384279408947e-16,
    "lam": 1.2129315022056562e-15,
    "lin_resid_rel": 4.771790682731224e-15,
+   "backward_err": 9.019696468110538e-18,
+   "K_fro": 25630.072337002875,
    "p_mean_raw": -2.220446049250313e-16,
    "saddle_dim": 737,
    "saddle_nnz": 4708,
-   "solve_seconds": 0.0036613941192626953
+   "solve_seconds": 0.003735065460205078
   },
   {
    "N": 32,
@@ -1602,10 +1793,12 @@
    "div_u_norm": 2.4573167576225824e-16,
    "lam": 7.74962443408098e-15,
    "lin_resid_rel": 2.5000857802579437e-14,
+   "backward_err": 5.966118037719511e-18,
+   "K_fro": 206207.64742365884,
    "p_mean_raw": 1.6653345369377348e-16,
    "saddle_dim": 3009,
    "saddle_nnz": 19652,
-   "solve_seconds": 0.0529782772064209
+   "solve_seconds": 0.050914764404296875
   },
   {
    "N": 64,
@@ -1633,10 +1826,12 @@
    "div_u_norm": 1.3675055686346698e-16,
    "lam": 1.254599366855501e-14,
    "lin_resid_rel": 1.0997527594553017e-13,
+   "backward_err": 3.2884658698910854e-18,
+   "K_fro": 1653931.505657958,
    "p_mean_raw": -5.551115123125783e-16,
    "saddle_dim": 12161,
    "saddle_nnz": 80260,
-   "solve_seconds": 0.6753482818603516
+   "solve_seconds": 0.7564079761505127
   },
   {
    "N": 128,
@@ -1664,10 +1859,12 @@
    "div_u_norm": 4.696300905544731e-16,
    "lam": 2.6452480777291022e-14,
    "lin_resid_rel": 5.757634718879958e-13,
+   "backward_err": 2.153447611322875e-18,
+   "K_fro": 13247757.711716803,
    "p_mean_raw": 7.216449660063518e-16,
    "saddle_dim": 48897,
    "saddle_nnz": 324356,
-   "solve_seconds": 7.097323894500732
+   "solve_seconds": 7.303362607955933
   },
   {
    "N": 256,
@@ -1695,10 +1892,12 @@
    "div_u_norm": 4.961731863634395e-16,
    "lam": 2.0050049122584042e-13,
    "lin_resid_rel": 2.867739973879487e-12,
+   "backward_err": 1.3409857827381613e-18,
+   "K_fro": 106045752.9351891,
    "p_mean_raw": -7.216449660063518e-16,
    "saddle_dim": 196097,
    "saddle_nnz": 1304068,
-   "solve_seconds": 76.41427278518677
+   "solve_seconds": 79.2437059879303
   },
   {
    "N": 32,
@@ -1726,10 +1925,12 @@
    "div_u_norm": 3.1695046493791055e-16,
    "lam": 2.1491596107577544e-14,
    "lin_resid_rel": 8.777297824825499e-15,
+   "backward_err": 8.351033642938739e-18,
+   "K_fro": 206207.64742365884,
    "p_mean_raw": 5.551115123125783e-17,
    "saddle_dim": 3009,
    "saddle_nnz": 19652,
-   "solve_seconds": 0.08496284484863281
+   "solve_seconds": 0.09102559089660645
   },
   {
    "N": 64,
@@ -1757,10 +1958,12 @@
    "div_u_norm": 1.3899472042641615e-16,
    "lam": -9.340307213182828e-15,
    "lin_resid_rel": 3.530213714201656e-14,
+   "backward_err": 4.241412718619986e-18,
+   "K_fro": 1653931.505657958,
    "p_mean_raw": 1.3877787807814457e-16,
    "saddle_dim": 12161,
    "saddle_nnz": 80260,
-   "solve_seconds": 0.6923174858093262
+   "solve_seconds": 0.6655828952789307
   },
   {
    "N": 128,
@@ -1788,12 +1991,14 @@
    "div_u_norm": 3.769677428042483e-16,
    "lam": 1.7323158762907495e-13,
    "lin_resid_rel": 1.6133325114195031e-13,
+   "backward_err": 2.427636267763939e-18,
+   "K_fro": 13247757.711716803,
    "p_mean_raw": -2.7755575615628914e-16,
    "saddle_dim": 48897,
    "saddle_nnz": 324356,
-   "solve_seconds": 7.091186046600342
+   "solve_seconds": 7.154098272323608
   }
  ],
  "complete": true,
- "total_seconds": 204.07071495056152
+ "total_seconds": 213.7530333995819
 }

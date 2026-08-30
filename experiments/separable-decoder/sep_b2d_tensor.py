@@ -558,6 +558,14 @@ def main():
                             + bc.DT * ((Phi_q.T @ Nu) + nu * lam_j * pu))
     prev_inc = jax.jit(lambda z: G_st[:, 0, :] @ h_fn(z))
     rJ_inc = jax.jit(lambda z, p, nu: (r_inc(z, p, nu), jax.jacfwd(r_inc)(z, p, nu)))
+
+    def adv_inc(z, nu):
+        us = jnp.einsum("msr,r->ms", G_st, h_fn(z))
+        c, xp, xm, yp, ym = us[:, 0], us[:, 1], us[:, 2], us[:, 3], us[:, 4]
+        ux = jnp.where(c > 0.0, (c - xm) / dx, (xp - c) / dx)
+        uy = jnp.where(c > 0.0, (c - ym) / dx, (yp - c) / dx)
+        return wt_of(nu) * bc.DT * (Phi_q.T @ (c * (ux + uy)))
+    adv_inc_j = jax.jit(adv_inc)
     ops_ref = bc.make_weak_ops(dec, N, cl, kind="weak", M=EQ_M, solver="lspg")
     grng = np.random.default_rng(SEED0 + 50)
     nu_med = float(np.median(nu_test))
@@ -579,12 +587,11 @@ def main():
         _, lin_x, adv_x = parts_ex_j(zt, pm, nu_med, ())
         rf, lin_f, adv_f = parts_full_j(zt, pm, nu_med, aux_full)
         gL.append(float(jnp.max(jnp.abs(lin_x - lin_f)) / (jnp.max(jnp.abs(lin_f)) + 1e-300)))
-        # incumbent advection part = incumbent residual minus its linear part
-        r_i = r_inc(zt, prev_inc(zp), nu_med)
-        c_i = prev_inc(zt)
-        lin_i = wt_of(nu_med) * (Phi_q.T @ (c_i - prev_inc(zp))
-                                 + bc.DT * nu_med * lam_j * (Phi_q.T @ c_i))
-        adv_i = r_i - lin_i
+        # incumbent advection part, computed DIRECTLY from the incumbent
+        # stencil closure (sep_burgers_exlin.parts_inc), not by subtracting the
+        # linear part from the residual: the subtraction cancels ~|r| eps and
+        # tripped the 1e-12 tripwire at 2.3e-12 for R=512 (job 3039205)
+        adv_i = adv_inc_j(zt, nu_med)
         gA.append(float(jnp.max(jnp.abs(adv_x - adv_i)) / (jnp.max(jnp.abs(adv_i)) + 1e-300)))
         # FOMR: full-grid weak residual == wt * Phi^T R_FOM[interior]
         uf = G_all @ h_fn(zt)

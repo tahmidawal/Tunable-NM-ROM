@@ -88,6 +88,39 @@ remaining options.
   and a worse absolute error ($6.4\times10^{-2}$); that is a property of the checkpoint, not
   of the residual — the tensor-vs-oracle comparison is unaffected. Single seed throughout.
 
+## Figures (visual check; N=256 local reproduction, N=1024 cluster job 3049945)
+
+Produced by the branch's `runs/b2dtensor/make_figs.py` from the committed checkpoints, same
+test seed as the jobs; rollouts reproduce the main jobs' errors to the printed digits. Numbers
+in `figs/b2d-tensor-figs.json`; all 24 figures (N=64/256/1024, median and worst trajectories,
+fields / errors / curves / cross-sections) are on the branch under `runs/b2dtensor/figs/`.
+
+![2D fields, N=256, median trajectory](figs/b2d-tensor-fields_n256_traj5.png)
+
+*N=256, test trajectory 5 (ν=0.0338): FOM truth | tensor ROM | full-grid oracle ROM |
+NNLS-256 ROM at steps 0/10/25/50, shared colour scale per row. Mean rel-L2: tensor
+2.141e-02, oracle 2.141e-02, NNLS-256 2.151e-02. The four panels are
+indistinguishable; the ROM error is the decoder floor, visible at t=0 as the IC-fit error.*
+
+![2D pointwise errors, N=256, median trajectory](figs/b2d-tensor-errors_n256_traj5.png)
+
+*Same trajectory: |tensor − truth| and |NNLS-256 − truth| on a shared scale (10⁻²) are the
+same picture — both arms sit on the decoder floor — while |tensor − oracle| on its own scale
+is 10⁻⁶ (exactly 0 at t=0: same IC fit). Maximum tensor-vs-oracle per-step error difference
+2.5e-06.*
+
+![2D error curves, N=1024, median trajectory](figs/b2d-tensor-curves_n1024_traj1.png)
+
+*N=1024, test trajectory 1 (ν=0.0598): relative-L2 error per step for the three arms
+(one curve) and the per-step |tensor − oracle| difference (max 6.7e-07).
+Mean rel-L2: tensor 3.520e-02, oracle 3.520e-02, NNLS-256 3.534e-02.*
+
+![2D cross-sections, N=1024, median trajectory](figs/b2d-tensor-sections_n1024_traj1.png)
+
+*Cross-section through the blob centre at t=25 and t=50: truth vs tensor vs NNLS-256. The two
+ROMs coincide; both under-resolve the peak slightly — the decoder floor of this K=16, R=64
+checkpoint, not the residual.*
+
 ## Tables
 
 ### T-1 Provenance (one job per N; the GPU differs across N)

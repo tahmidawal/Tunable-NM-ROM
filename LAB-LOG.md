@@ -3456,3 +3456,15 @@ closes its jit over the 17 GB snapshot array (ran on H200; landmine noted, not f
 (ask user); R=512 bank compression (CP/Tucker of T itself, or a dense 270 MB table, or a
 smaller bank); multi-seed; sign-changing family; the N=1024 K16/R64 checkpoint is weak (IC
 err 0.15) — retrain if that cell is ever quoted for accuracy.
+
+### Figures for visual verification (1D and 2D tensor results)
+
+1D: `reports/fig_2026-08-30-b1d-tensor-fields.py` (local jaxrun, N=512, committed checkpoint,
+reproduces the A100 job's errors exactly) → `reports/figs/b1d-tensor-{fields,errors}-n512.png`
++ JSON. 2D: subagent's `runs/b2dtensor/make_figs.py` on the b2d branch (`b9a3931`; N=64/256
+local, N=1024 job 3049945 — first attempt 3049917 failed on a stale ROOT path) → 24 PNGs on the
+branch; five representative ones copied to `reports/figs/b2d-tensor-*.png` + figs.json. Both
+reports gained a Figures section; the deck gained four figure slides (31 slides). What the
+figures show: fields indistinguishable across truth/oracle/tensor/NNLS; pointwise tensor and
+oracle errors identical while NNLS differs (1D) or equals at the decoder floor (2D);
+|tensor−oracle| 1e-8…1e-7 (1D), 1e-6 (2D); error curves tensor ≡ oracle.

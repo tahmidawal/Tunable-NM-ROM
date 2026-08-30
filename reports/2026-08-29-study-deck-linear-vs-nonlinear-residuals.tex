@@ -676,6 +676,26 @@
   \end{columns}
 \end{frame}
 
+
+\begin{frame}{Seeing it in 2D (1/2): fields, $N=256$ --- truth and the three ROMs}
+  \centering
+  \includegraphics[height=0.74\textheight,trim=0 0 0 55,clip]{figs/b2d-tensor-fields_n256_traj5.png}\par
+  \vspace{0.5mm}\footnotesize
+  Test trajectory 5 ($\nu=0.034$): FOM truth $|$ tensor ROM $|$ full-grid oracle ROM $|$ NNLS-256 ROM at steps 0/10/25/50, shared colour scale per row. Mean rel-L2: tensor $2.141\times10^{-2}$, oracle $2.141\times10^{-2}$, NNLS-256 $2.151\times10^{-2}$. The four panels are indistinguishable.
+\end{frame}
+
+\begin{frame}{Seeing it in 2D (2/2): where the arms differ}
+  \begin{columns}[T]
+    \column{0.42\textwidth}
+    \includegraphics[height=0.66\textheight,trim=0 0 0 55,clip]{figs/b2d-tensor-errors_n256_traj5.png}
+    \column{0.58\textwidth}
+    \includegraphics[width=0.92\textwidth,trim=0 0 0 30,clip]{figs/b2d-tensor-curves_n1024_traj1.png}\\[0.5mm]
+    \includegraphics[width=0.92\textwidth,trim=0 0 0 30,clip]{figs/b2d-tensor-sections_n1024_traj1.png}
+  \end{columns}
+  \vspace{0.5mm}\scriptsize
+  Left ($N=256$): $|\text{tensor}-\text{truth}|$ and $|\text{NNLS-256}-\text{truth}|$ on a shared $10^{-2}$ scale are the same picture; $|\text{tensor}-\text{oracle}|$ on its own scale is $10^{-6}$ (0 at $t=0$: same IC fit). Right ($N=1024$): error per step is one curve for all arms, tensor--oracle gap $\le 7\times10^{-7}$; cross-sections at $t=25,50$ --- the ROMs coincide and under-resolve the peak slightly (decoder floor, not residual).
+\end{frame}
+
 \begin{frame}{What five adversarial reviews said (3 Claude, 2 Codex) --- and where the method stops}
   \begin{columns}[T]
     \column{0.5\textwidth}

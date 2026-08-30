@@ -163,16 +163,27 @@ def main(path=DEFAULT):
     print()
 
     print("### S-PRESS -- repaired S3, deterministic aligned pressures\n")
+    print("GATED, against an INDEPENDENTLY constructed control (the analytic "
+          "gradient of the same chi, sampled on the face lattices, never "
+          "touching the `Grad` operator):\n")
     print(table(["N", "M", "control Frobenius (min over p=chi_j)",
-                 "= 1/sqrt(M)", "sqrt(M) x metric", "matched-control cosine (min)",
+                 "= 1/sqrt(M)", "matched cosine (min)", "max off-diagonal cosine",
                  "solenoidal Frobenius (max)", "solenoidal cosine (max)",
                  "||D Phi|| normalized"],
-                [[r["N"], r["M"], f"{r['s3_ctl_fro_min']:.6f}",
+                [[r["N"], r["M"], f"{r['s3ind_ctl_fro_min']:.6f}",
                   f"{r['s3_ctl_fro_ideal']:.6f}",
-                  f"{r['s3_ctl_fro_scaled_min']:.12f}",
-                  f"{r['s3_matched_cos_min']:.12f}",
+                  f"{r['s3ind_matched_cos_min']:.6f}",
+                  e(r["s3ind_offdiag_cos_max"]),
                   e(r["s3_sol_fro_max"]), e(r["s3_sol_cos_max"]),
                   e(r["D_Phi_norm"])] for r in G["S_ADJ"]["rows"]]))
+    print()
+    print("DIAGNOSTIC ONLY -- the SELF-NORMALIZED control Psi_j = X_j/(h||X_j||). "
+          "Both columns are identically 1 for any nonzero X, even if `Grad` is "
+          "wrong; revisions 2-3 asserted on them (retraction 9):\n")
+    print(table(["N", "M", "matched cosine", "sqrt(M) x control Frobenius"],
+                [[r["N"], r["M"], f"{r['s3_matched_cos_min']:.12f}",
+                  f"{r['s3_ctl_fro_scaled_min']:.12f}"]
+                 for r in G["S_ADJ"]["rows"]]))
     print()
     print("SUPERSEDED diagnostic -- the same quantities with a grid-white "
           "RANDOM pressure (retained as evidence, not gated):\n")
@@ -205,15 +216,26 @@ def main(path=DEFAULT):
 
     print("### Supporting gates\n")
     print(table(["gate", "worst value", "rule"],
-                [["PRECOND (asserts live / ALLOW_CPU / ladders non-empty)",
+                [["PRECOND (asserts live / config mismatches / smoke)",
                   f"{G['PRECOND']['debug_asserts_active']} / "
-                  f"{G['PRECOND']['allow_cpu']} / "
-                  f"{len(G['PRECOND']['rank_ns'])},"
-                  f"{len(G['PRECOND']['freeslip_ns'])}",
-                  "asserts live, ALLOW_CPU=0, both ladders non-empty"],
-                 ["S-BACKERR (normalised backward error, all "
-                  f"{G['S_BACKERR']['n_solves']} solves)",
+                  f"{len(G['PRECOND']['config_mismatch'])} / "
+                  f"{G['PRECOND']['smoke']}",
+                  "asserts live, config == frozen contract, smoke=0"],
+                 [f"S-BACKERR global (all {G['S_BACKERR']['n_solves']} solves)",
                   e(G["S_BACKERR"]["worst"]), "<= 1e-13"],
+                 ["S-BACKERR momentum block",
+                  e(G["S_BACKERR"]["worst_mom_resid"]), "<= 1e-13"],
+                 ["S-BACKERR continuity block",
+                  e(G["S_BACKERR"]["worst_cont_resid"]), "<= 1e-12"],
+                 ["S-BACKERR gauge row (normalised)",
+                  e(G["S_BACKERR"]["worst_gauge_resid"]), "<= 1e-12"],
+                 ["S-BACKERR gauge row (raw |1^T p|)",
+                  e(G["S_BACKERR"]["worst_gauge_raw"]), "<= 1e-8"],
+                 ["MANIFEST (gates / row counts / non-finite)",
+                  f"{len(G['MANIFEST']['missing_gates'])} / "
+                  f"{len(G['MANIFEST']['row_count_mismatch'])} / "
+                  f"{len(G['MANIFEST']['nonfinite_fields'])}",
+                  "all zero"],
                  ["S0 (solver dtype / jax x64 / matmul / backend)",
                   f"{G['S0']['numpy_float64']} / {G['S0']['jax'].get('x64')} / "
                   f"{G['S0']['jax'].get('matmul_precision')} / "
@@ -231,7 +253,10 @@ def main(path=DEFAULT):
                   e(G["S_NU"]["p_invariance_rel"]), "<= 1e-9"]]))
     print()
     c = R["config"]
-    print(f"run: {os.path.basename(path)} | commit `{c['git_commit'][:12]}` | "
+    print(f"run: {os.path.basename(path)} | driver rev "
+          f"{c.get('driver_revision')} | complete={R['complete']} "
+          f"certified={R.get('certified')} | "
+          f"commit `{c['git_commit'][:12]}` | "
           f"host `{c['hostname']}` | numpy {c['numpy']} scipy {c['scipy']} | "
           f"jax backend `{c['jax'].get('backend')}` x64={c['jax'].get('x64')} "
           f"matmul `{c['jax'].get('matmul_precision')}` | "

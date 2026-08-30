@@ -1,6 +1,6 @@
 """PHASE 1 driver: the staggered MAC steady-Stokes FOM and its correctness gates.
 
-Revision 3 (2026-08-30), rewritten against `STOKES-PHASE1-VERIFY-codex.md`
+Revision 4 (2026-08-30), rewritten against `STOKES-PHASE1-VERIFY-codex.md`
 (Codex gpt-5.6-sol), which confirmed the operators, the solver and the
 closed-form claim, and required three additions:
 
@@ -9,8 +9,13 @@ closed-form claim, and required three additions:
   B. a REPAIRED S3 control -- deterministic aligned pressures p = chi_kl
      instead of grid-white random noise;
   C. every diagnostic turned into a real ASSERTION with a real threshold.
-     Revision 1 could report complete=true while its own recorded S3 control
-     floor failed.  It no longer can.
+
+Revision 4 closes STOKES-PHASE1C-VERIFY-codex.md: S-BACKERR gains blockwise
+residuals and full 17-solve coverage, PRECOND gains a frozen-config equality
+check, an expected-gate manifest with exact row counts, a non-finite sweep, and
+the rule that a SMOKE run never sets complete=true; and the tautological
+sqrt(M)*control-metric assertion is replaced by an independently constructed
+control.
 
 Every result is written as a NUMBER, never a boolean, into one JSON.
 
@@ -29,18 +34,23 @@ Every result is written as a NUMBER, never a boolean, into one JSON.
   S-STRUCT  ||D + Grad^T||_inf, ||D C||_inf, ||D C||_max: all exactly 0.
   S-RANK    rank D = N^2-1, dim ker D = rank C = (N-1)^2 by dense SVD at the
             RANK_NS meshes, and by an exact sparse-LU witness at every mesh.
-  S-PRESS   REPAIRED S3.  Deterministic p = chi_kl aligned with each control
-            column: matched-control cosine >= 0.99, control Frobenius metric
-            >= 1e-2 (the design's own floor, reachable with a coherent
-            pressure), solenoidal projection and cosine <= 1e-13.  The old
-            random-pressure numbers are retained as a labelled DIAGNOSTIC.
+  S-PRESS   REPAIRED S3.  Deterministic p = chi_kl, gated against an
+            INDEPENDENTLY constructed control (the analytic gradient of the
+            same chi, sampled on the face lattices, never touching Grad):
+            matched cosine >= 0.99, control Frobenius >= 1e-2, solenoidal
+            projection and cosine <= 1e-13.  The self-normalised control and
+            the random-pressure numbers are labelled DIAGNOSTICS ONLY.
   S-FOM     the frozen manufactured solution on N = 32,64,128,256 (8 and 16
             added because the audit tabulated anchors there too).  Order
             2.00 +/- 0.05 in BOTH variables, AND agreement with the audit
             anchors.
-  S-EXACT   the closed-form discrete solution.  Field agreement <= 1e-8, AND
-            the observed-vs-predicted error deviation within its own roundoff
-            amplification bound exact_rel / predicted_err.
+  S-EXACT   the closed-form discrete solution.  The GATE is field agreement
+            <= 1e-8.  pred_dev is RECORDED ONLY; two attempts to gate it were
+            wrong and are retracted (STOKES-NOTES.md retractions 6-7).
+  S-BACKERR global normalised backward error AND the three blockwise residuals
+            (momentum, continuity, mean-zero gauge) over ALL 17 solves.
+  MANIFEST  every expected gate present, exact expected row counts, and no
+            non-finite float anywhere in the report.
   S-FOMGEN  the GENERIC manufactured solution on N = 32,64,128.  Order
             2.00 +/- 0.05, agreement with the verifier's tabulated values, and
             error/solution cosine < 0.99 -- i.e. it must NOT be degenerate.
@@ -92,13 +102,31 @@ S3_FLOOR = 1e-2               # STOKES-DESIGN.md S3 control floor (kept)
 S3_MATCHED_COS = 0.99         # verifier's repaired-control requirement
 S3_SOL_TOL = 1e-13            # verifier's solenoidal requirement
 EXACT_FIELD_TOL = 1e-8
-BACKERR_TOL = 1e-13           # frozen a-priori: backward-stable LU gives ~1e-17
-S3_SCALED_FLOOR = 0.99        # sqrt(M) * control metric; DERIVED, see notes
+BACKERR_TOL = 1e-13           # frozen engineering threshold (~450 eps)
+CONT_TOL = 1e-12              # blockwise continuity residual
+GAUGE_TOL = 1e-12             # |1^T p| / (sqrt(n_p) ||p||)
+GAUGE_RAW_TOL = 1e-8          # raw |1^T p|, the verifier's requested form
+# (a sqrt(M)*metric floor was gated in rev 3; retracted as tautological)
 MMSF_TOL = 1e-6               # analytic-vs-FD forcing consistency
 ANCHOR_TOL = 1e-3             # anchors are quoted to 4 significant figures
 GEN_ANCHOR_TOL = 1e-5         # verifier quoted 7 significant figures
 FREESLIP_ERR_FLOOR = 0.5      # the wrong BVP must be O(1) wrong
 FREESLIP_ORDER_CEIL = 0.5     # ... and must not converge
+
+# ---- the frozen contract, and the manifest a certified run must satisfy ----
+FROZEN_CONFIG = dict(ns=[8, 16, 32, 64, 128, 256], ladder=[32, 64, 128, 256],
+                     generic_ns=[32, 64, 128],
+                     adj_ns=[8, 16, 32, 64, 128, 256], rank_ns=[32, 64],
+                     freeslip_ns=[8, 16, 32, 64, 128], M_modes=64, nu=1.0,
+                     allow_cpu=0)
+EXPECTED_GATES = frozenset((
+    "PRECOND", "S0", "REF", "MMSF", "MF", "S_ADJ", "S_STRUCT", "S_PRESS",
+    "SYM", "S_RANK", "S_FOM", "S_EXACT", "S_FOMGEN", "S_NU", "S_FREESLIP",
+    "S_BACKERR"))
+# Exact row counts implied by FROZEN_CONFIG.  "Non-empty" is not sufficient.
+EXPECTED_ROWS = dict(REF=3, MMSF=2, MF=6, S_ADJ=6, S_STRUCT=6, S_PRESS=6,
+                     SYM=6, S_FOM=6, S_EXACT=6, S_FOMGEN=3, S_FREESLIP=5,
+                     S_RANK_dense=2, S_RANK_indirect=6, S_BACKERR=17)
 
 # Anchors transcribed from the audits / verification, with their source.
 ANCHORS_FROZEN = {8: (5.303e-2, 2.617e-2), 16: (1.295e-2, 6.455e-3),
@@ -106,6 +134,41 @@ ANCHORS_FROZEN = {8: (5.303e-2, 2.617e-2), 16: (1.295e-2, 6.455e-3),
 ANCHORS_GENERIC = {32: (1.541713e-2, 1.833939e-1),
                    64: (3.820960e-3, 4.577326e-2),
                    128: (9.531800e-4, 1.144216e-2)}
+
+
+# Every call to stk.solve_stokes in this driver goes through track_solve, so
+# S-BACKERR covers ALL of them.  Revision 3 covered only the 14 that produced
+# report rows, silently excluding the S0 probe and the two S-NU solves
+# (STOKES-PHASE1C-VERIFY-codex.md).
+SOLVES = []
+
+
+def track_solve(tag, g, f, **kw):
+    u, p, info = stk.solve_stokes(g, f, **kw)
+    SOLVES.append(dict(tag=tag, N=int(g.N),
+                       ghost=kw.get("ghost", "odd"), nu=float(kw.get("nu", 1.0)),
+                       backward_err=info["backward_err"],
+                       mom_resid=info["mom_resid"],
+                       cont_resid=info["cont_resid"],
+                       gauge_resid=info["gauge_resid"],
+                       gauge_raw=info["gauge_raw"],
+                       lin_resid_rel=info["lin_resid_rel"],
+                       K_fro=info["K_fro"], lam=info["lam"]))
+    return u, p, info
+
+
+def finite(label, xs):
+    """Assert every value in an aggregate is finite BEFORE reducing it.
+
+    Python's max([finite, nan]) returns the finite value, so a NaN from a
+    failed solve could pass an aggregate assertion and turn a hard failure into
+    a green run.  Every aggregate in this driver is funnelled through here.
+    """
+    a = np.asarray([float(x) for x in xs], dtype=float)
+    bad = ~np.isfinite(a)
+    assert not bad.any(), (f"non-finite value(s) in {label}: "
+                           f"{a[bad].tolist()} (indices {np.nonzero(bad)[0].tolist()})")
+    return a
 
 
 def log(*a):
@@ -164,7 +227,8 @@ def gate_ref(report):
         log(f"  gate REF N={N:3d}: D {rows[-1]['D_maxdiff']:.1e}  "
             f"Grad {rows[-1]['Grad_maxdiff']:.1e}  "
             f"L {rows[-1]['L_maxdiff']:.1e}  C {rows[-1]['C_maxdiff']:.1e}")
-    worst = max(max(r[k] for k in r if k != "N") for r in rows)
+    worst = float(finite("REF", [r[k] for r in rows for k in r
+                                 if k != "N"]).max())
     report["gates"]["REF"] = dict(
         rows=rows, worst_maxdiff=float(worst), tol=0.0,
         rule="operators identical (exact 0) to STOKES-AUDIT-mac_check.py ops()")
@@ -195,7 +259,8 @@ def gate_mf(N, rng):
         D=r(stk.apply_divergence(g, U, V).ravel(), D @ u),
         Grad=r(g.pack(*stk.apply_gradient(g, P)), Gr @ p),
         C=r(g.pack(*stk.apply_curl(g, S)), C @ s))
-    out["worst"] = max(v for k, v in out.items() if k != "N")
+    out["worst"] = float(finite(f"MF N={N}",
+                                [v for k, v in out.items() if k != "N"]).max())
     return out
 
 
@@ -230,29 +295,59 @@ def adjoint_gates(N, rng):
     DC = (D @ C).tocsr()
     dgt = (D + Gr.T).tocsr()
 
-    # ---- matched NON-solenoidal control basis: Psi_j = Grad chi_j -----------
+    # ---- matched NON-solenoidal control bases -------------------------------
+    # chi_j = cos(k pi x) cos(l pi y) at cell centres; X_j = Grad chi_j is the
+    # DISCRETE gradient of it, and is the pressure field the S3 probe uses.
     xp, yp = g.coords_p()
+    xu, yu = g.coords_u()
+    xv, yv = g.coords_v()
     Chi = np.column_stack([(np.cos(k * np.pi * xp)
                             * np.cos(l * np.pi * yp)).ravel()
                            for (k, l) in modes])                 # (n_p, M)
     X = Gr @ Chi                                                 # (n_u, M)
-    Psi = X / (g.h * np.linalg.norm(X, axis=0))[None, :]         # mass-normalised
+
+    # SELF-NORMALISED control, Psi_j = X_j / (h ||X_j||).  RETAINED ONLY AS A
+    # DIAGNOSTIC: it is a normalised copy of X itself, so its matched cosine is
+    # identically 1 and sqrt(M)*ctl_fro is identically 1 for ANY nonzero X --
+    # even if Grad is wrong.  Revision 3 asserted on it; that assertion was
+    # tautological and is retracted (STOKES-PHASE1C-VERIFY-codex.md).
+    Psi = X / (g.h * np.linalg.norm(X, axis=0))[None, :]
+
+    # INDEPENDENTLY CONSTRUCTED control: the ANALYTIC gradient of the same
+    # chi_j, evaluated directly on the two face lattices.  It never touches the
+    # Grad operator, so aligning with X_j is a real measurement.  Note
+    # Grad_h chi has component factors sinc(k pi h/2) and sinc(l pi h/2) that
+    # DIFFER between components, so the matched cosine is < 1 at coarse h and
+    # rises to 1 -- it is not an identity.
+    Ana = np.column_stack([
+        g.pack(-k * np.pi * np.sin(k * np.pi * xu) * np.cos(l * np.pi * yu),
+               -l * np.pi * np.cos(k * np.pi * xv) * np.sin(l * np.pi * yv))
+        for (k, l) in modes])
+    PsiA = Ana / (g.h * np.linalg.norm(Ana, axis=0))[None, :]
 
     # ---- REPAIRED S3: deterministic aligned pressures p = chi_j ------------
     MuX = X * (g.h ** 2)
     A_ctl = Psi.T @ MuX                                          # (M, M)
+    A_ctlA = PsiA.T @ MuX                                        # (M, M)
     A_sol = Phi.T @ MuX                                          # (M, M)
     nX = np.linalg.norm(MuX, axis=0)
     nPsiF = np.linalg.norm(Psi, "fro")
+    nPsiAF = np.linalg.norm(PsiA, "fro")
     nPhiF = np.linalg.norm(Phi, "fro")
     ctl_fro_j = np.linalg.norm(A_ctl, axis=0) / (nPsiF * nX)
+    ctlA_fro_j = np.linalg.norm(A_ctlA, axis=0) / (nPsiAF * nX)
     sol_fro_j = np.linalg.norm(A_sol, axis=0) / (nPhiF * nX)
     PsiN = Psi / np.linalg.norm(Psi, axis=0)[None, :]
+    PsiAN = PsiA / np.linalg.norm(PsiA, axis=0)[None, :]
     PhiN = Phi / np.linalg.norm(Phi, axis=0)[None, :]
     XN = X / np.linalg.norm(X, axis=0)[None, :]
     Cc = np.abs(PsiN.T @ XN)
+    CcA = np.abs(PsiAN.T @ XN)
     Cs = np.abs(PhiN.T @ XN)
     matched_cos_j = np.diag(Cc)
+    matchedA_cos_j = np.diag(CcA)
+    offA = CcA.copy()
+    np.fill_diagonal(offA, 0.0)
 
     # ---- retained DIAGNOSTIC: the original grid-white random pressure ------
     p = rng.standard_normal(g.n_p)
@@ -285,6 +380,12 @@ def adjoint_gates(N, rng):
         struct_DC_max=stk.spnorm_max(DC),
         struct_DC_nnz=int(DC.nnz),
         # repaired S3 (deterministic, aligned)
+        # --- GATED: independently constructed analytic-gradient control ---
+        s3ind_ctl_fro_min=float(ctlA_fro_j.min()),
+        s3ind_ctl_fro_max=float(ctlA_fro_j.max()),
+        s3ind_matched_cos_min=float(matchedA_cos_j.min()),
+        s3ind_offdiag_cos_max=float(offA.max()),
+        # --- DIAGNOSTIC ONLY: the self-normalised control (tautological) ---
         s3_ctl_fro_min=float(ctl_fro_j.min()),
         s3_ctl_fro_max=float(ctl_fro_j.max()),
         s3_ctl_fro_ideal=float(1.0 / np.sqrt(M)),
@@ -353,8 +454,8 @@ def fom_run(N, ghost, nu, family="frozen"):
     Gr = stk.gradient_matrix(g)
     L = stk.laplacian_matrix(g, ghost)
     t = time.time()
-    u, p, info = stk.solve_stokes(g, mf["f"], nu=nu, ghost=ghost,
-                                  ops=(D, Gr, L))
+    u, p, info = track_solve(f"{family}/{ghost}", g, mf["f"], nu=nu,
+                             ghost=ghost, ops=(D, Gr, L))
     dt = time.time() - t
     uex = mf["u"]
     pex = mf["p"] - mf["p"].mean()
@@ -375,7 +476,8 @@ def fom_run(N, ghost, nu, family="frozen"):
         dev_u = float(abs(err_u - pred_u) / pred_u)
         dev_p = float(abs(err_p - pred_p) / pred_p)
     else:
-        exact_u = exact_p = pred_u = pred_p = dev_u = dev_p = float("nan")
+        # None, not NaN: the final non-finite sweep must be unambiguous.
+        exact_u = exact_p = pred_u = pred_p = dev_u = dev_p = None
 
     cos_eu = float(np.abs((u - uex) @ uex)
                    / (np.linalg.norm(u - uex) * np.linalg.norm(uex) + 1e-300))
@@ -433,7 +535,7 @@ def main():
 
     jp = jax_provenance()
     report = dict(config=dict(
-        pde="stokes2d", kind="staggered_MAC_FOM_phase1", driver_revision=3,
+        pde="stokes2d", kind="staggered_MAC_FOM_phase1", driver_revision=4,
         discretization="MAC, N cells, h=1/N, p at N^2 centres (mean-zero "
                        "gauge), u_x on N(N-1) interior vertical faces, u_y on "
                        "N(N-1) interior horizontal faces, boundary-normal "
@@ -467,11 +569,15 @@ def main():
     def save():
         json.dump(report, open(out, "w"), indent=1, default=float)
 
-    log(f"stk2d FOM gates (driver rev 3) -> {out}")
+    # Write complete=false IMMEDIATELY, before anything can fail, so a crash
+    # can never leave an older complete=true artifact at this path untouched.
+    save()
+    log(f"stk2d FOM gates (driver rev 4) -> {out}")
     log(f"  numpy {np.__version__} scipy {scipy.__version__}  jax {jp}")
 
     # ---- S0: ASSERTED, not merely recorded --------------------------------
-    probe = stk.solve_stokes(stk.MacGrid(8), stk.manufactured(stk.MacGrid(8))["f"])[0]
+    probe = track_solve("S0_probe", stk.MacGrid(8),
+                        stk.manufactured(stk.MacGrid(8))["f"])[0]
     s0 = dict(jax=jp, numpy_float64=str(probe.dtype),
               numpy_is_f64=bool(probe.dtype == np.float64),
               allow_cpu=bool(ALLOW_CPU),
@@ -497,14 +603,27 @@ def main():
     # passed" guarantee holds only under these.  They are now asserted rather
     # than assumed, so a JSON produced with assertions disabled or with an
     # emptied ladder cannot masquerade as a certified artifact.
-    pre = dict(debug_asserts_active=bool(__debug__), allow_cpu=int(ALLOW_CPU),
-               rank_ns=RANK_NS, freeslip_ns=FREESLIP_NS, ns=NS,
-               ladder=LADDER, generic_ns=GEN_NS, smoke=int(SMOKE),
-               rule="ASSERTED unless SMOKE=1: python must run WITHOUT -O so "
-                    "assert statements are live; ALLOW_CPU must be 0; and the "
-                    "RANK_NS and FREESLIP_NS ladders must be non-empty.  A "
-                    "SMOKE=1 run records smoke=1 and is not a certified "
-                    "artifact")
+    observed_cfg = dict(ns=NS, ladder=LADDER, generic_ns=GEN_NS, adj_ns=ADJ_NS,
+                        rank_ns=RANK_NS, freeslip_ns=FREESLIP_NS,
+                        M_modes=M_MODES, nu=NU, allow_cpu=int(ALLOW_CPU))
+    cfg_mismatch = {k: [FROZEN_CONFIG[k], v] for k, v in observed_cfg.items()
+                    if FROZEN_CONFIG[k] != v}
+    pre = dict(debug_asserts_active=bool(__debug__), smoke=int(SMOKE),
+               frozen_config=FROZEN_CONFIG, observed_config=observed_cfg,
+               config_mismatch=cfg_mismatch,
+               expected_gates=sorted(EXPECTED_GATES),
+               expected_row_counts=EXPECTED_ROWS,
+               rule="ASSERTED unless SMOKE=1: the ENTIRE configuration must "
+                    "equal the frozen contract -- not merely be non-empty, "
+                    "since env overrides could otherwise shorten a ladder and "
+                    "still reach complete=true; the expected gate manifest "
+                    "must be present with the EXACT expected row counts; and "
+                    "no aggregated array may contain a non-finite value "
+                    "(python's max([finite, nan]) returns the finite value, so "
+                    "a NaN could otherwise turn a failed solve into a green "
+                    "run).  Python must run WITHOUT -O, checked by a raise "
+                    "rather than an assert.  A SMOKE=1 run NEVER sets "
+                    "complete=true")
     report["gates"]["PRECOND"] = pre
     save()
     # NOT an assert: an assert cannot detect its own disablement under -O.
@@ -514,11 +633,10 @@ def main():
                            "produce a JSON that would claim complete=true "
                            "without having checked anything.")
     if not SMOKE:
-        assert ALLOW_CPU == 0, "PRECOND: ALLOW_CPU=1 is not a certified run"
-        assert RANK_NS, "PRECOND: RANK_NS is empty; S-RANK would not run"
-        assert FREESLIP_NS, "PRECOND: FREESLIP_NS is empty; S-FREESLIP dead"
-    log(f"  PRECOND: asserts_active={__debug__} allow_cpu={ALLOW_CPU} "
-        f"rank_ns={RANK_NS} freeslip_ns={FREESLIP_NS} smoke={SMOKE}")
+        assert not cfg_mismatch, ("PRECOND: configuration differs from the "
+                                  f"frozen contract: {cfg_mismatch}")
+    log(f"  PRECOND: asserts_active={__debug__} smoke={SMOKE} "
+        f"config_mismatch={cfg_mismatch or 'none'}")
 
     # ---- gate REF ---------------------------------------------------------
     log(" gate REF: operators vs archived auditor reference")
@@ -528,15 +646,19 @@ def main():
     log(" gate MMSF: analytic Laplacian / gradient vs high-accuracy FD")
     mmsf = [stk.mms_forcing_consistency(f) for f in stk.MMS_FAMILIES]
     for r in mmsf:
-        r["worst"] = max(r[k] for k in ("lap_u_rel", "lap_v_rel",
-                                        "grad_px_rel", "grad_py_rel",
-                                        "div_rel", "wall_trace_max"))
+        r["worst"] = float(finite(f"MMSF {r['family']}",
+                                  [r[k] for k in ("lap_u_rel", "lap_v_rel",
+                                                  "grad_px_rel", "grad_py_rel",
+                                                  "div_rel", "wall_trace_max")]
+                                  ).max())
         log(f"  {r['family']:8s}: lap_u {r['lap_u_rel']:.2e} "
             f"lap_v {r['lap_v_rel']:.2e} grad {r['grad_px_rel']:.2e}/"
             f"{r['grad_py_rel']:.2e} div {r['div_rel']:.2e} "
             f"wall {r['wall_trace_max']:.2e}")
     report["gates"]["MMSF"] = dict(
-        rows=mmsf, worst=float(max(r["worst"] for r in mmsf)), tol=MMSF_TOL,
+        rows=mmsf,
+        worst=float(finite("MMSF", [r["worst"] for r in mmsf]).max()),
+        tol=MMSF_TOL,
         rule="each family's analytic Laplacian, pressure gradient, continuous "
              "divergence and wall trace must match 4th-order finite "
              "differences of its own u,p to <= 1e-6 relative.  A sign or "
@@ -547,7 +669,7 @@ def main():
     # ---- gate MF ----------------------------------------------------------
     log(" gate MF: sparse vs independent matrix-free")
     mfr = [gate_mf(N, rng) for N in ADJ_NS]
-    worst_mf = max(r["worst"] for r in mfr)
+    worst_mf = float(finite("MF", [r["worst"] for r in mfr]).max())
     report["gates"]["MF"] = dict(rows=mfr, worst_rel=float(worst_mf), tol=1e-13,
                                  rule="max relative disagreement over "
                                       "{L_odd,L_even,D,Grad,C} <= 1e-13")
@@ -562,17 +684,20 @@ def main():
         log(f"  N={r['N']:4d}  S-ADJ {r['adj_primary']:.3e} / "
             f"{r['adj_test_projected']:.3e}  neg-ctl "
             f"{r['adj_negative_control']:.3e}  ||DC||_inf "
-            f"{r['struct_DC_inf']:.3e}  S3 ctl_fro "
-            f"{r['s3_ctl_fro_min']:.4f}  matched_cos "
-            f"{r['s3_matched_cos_min']:.6f}  sol_fro {r['s3_sol_fro_max']:.2e}"
-            f"  sol_cos {r['s3_sol_cos_max']:.2e}")
+            f"{r['struct_DC_inf']:.3e}  S3ind ctl_fro "
+            f"{r['s3ind_ctl_fro_min']:.6f}  matched_cos "
+            f"{r['s3ind_matched_cos_min']:.6f}  sol_fro "
+            f"{r['s3_sol_fro_max']:.2e}  sol_cos {r['s3_sol_cos_max']:.2e}")
     report["gates"]["S_ADJ"] = dict(
         rows=adj,
-        worst_primary=float(max(r["adj_primary"] for r in adj)),
-        worst_test_projected=float(max(r["adj_test_projected"] for r in adj)),
+        worst_primary=float(finite("adj_primary",
+                                   [r["adj_primary"] for r in adj]).max()),
+        worst_test_projected=float(finite(
+            "adj_test_projected", [r["adj_test_projected"] for r in adj]).max()),
         worst_test_projected_opnorm=float(
             max(r["adj_test_projected_opnorm"] for r in adj)),
-        min_negative_control=float(min(r["adj_negative_control"] for r in adj)),
+        min_negative_control=float(finite(
+            "adj_neg_ctl", [r["adj_negative_control"] for r in adj]).min()),
         tol=ADJ_TOL, neg_ctl_floor=NEG_CTL_FLOOR,
         rule="||M_u Grad + D^T M_p||_F/(||M_u Grad||_F+||D^T M_p||_F) <= 1e-14 "
              "AND ||Phi^T(M_u Grad + D^T M_p)||_F normalized the same way "
@@ -581,7 +706,8 @@ def main():
     report["gates"]["S_STRUCT"] = dict(
         rows=[{k: r[k] for k in r if k.startswith("struct_")
                or k in ("N", "n_u", "n_p", "n_psi")} for r in adj],
-        worst_DC_inf=float(max(r["struct_DC_inf"] for r in adj)),
+        worst_DC_inf=float(finite("struct_DC_inf",
+                                  [r["struct_DC_inf"] for r in adj]).max()),
         worst_D_plus_GradT_inf=float(max(r["struct_D_plus_GradT_inf"]
                                          for r in adj)),
         rule="||D + Grad^T||_inf and ||D C||_inf must be exactly 0")
@@ -589,14 +715,27 @@ def main():
         rows=[{k: r[k] for k in r
                if k.startswith("s3_") or k.startswith("rand_press_")
                or k.startswith("D_Phi") or k in ("N", "M")} for r in adj],
-        min_ctl_fro=float(min(r["s3_ctl_fro_min"] for r in adj)),
-        min_ctl_fro_scaled=float(min(r["s3_ctl_fro_scaled_min"] for r in adj)),
-        min_matched_cos=float(min(r["s3_matched_cos_min"] for r in adj)),
-        max_sol_fro=float(max(r["s3_sol_fro_max"] for r in adj)),
-        max_sol_cos=float(max(r["s3_sol_cos_max"] for r in adj)),
-        worst_D_Phi_norm=float(max(r["D_Phi_norm"] for r in adj)),
+        min_ctl_fro_independent=float(
+            finite("s3ind_ctl_fro", [r["s3ind_ctl_fro_min"] for r in adj]).min()),
+        min_matched_cos_independent=float(
+            finite("s3ind_matched_cos",
+                   [r["s3ind_matched_cos_min"] for r in adj]).min()),
+        max_offdiag_cos_independent=float(
+            finite("s3ind_offdiag", [r["s3ind_offdiag_cos_max"] for r in adj]).max()),
+        min_ctl_fro_selfnorm_diagnostic=float(
+            finite("s3_ctl_fro", [r["s3_ctl_fro_min"] for r in adj]).min()),
+        min_ctl_fro_scaled_selfnorm_diagnostic=float(
+            finite("s3_scaled", [r["s3_ctl_fro_scaled_min"] for r in adj]).min()),
+        min_matched_cos_selfnorm_diagnostic=float(
+            finite("s3_matched", [r["s3_matched_cos_min"] for r in adj]).min()),
+        max_sol_fro=float(finite("s3_sol_fro",
+                                 [r["s3_sol_fro_max"] for r in adj]).max()),
+        max_sol_cos=float(finite("s3_sol_cos",
+                                 [r["s3_sol_cos_max"] for r in adj]).max()),
+        worst_D_Phi_norm=float(finite("D_Phi_norm",
+                                      [r["D_Phi_norm"] for r in adj]).max()),
         floor=S3_FLOOR, matched_cos=S3_MATCHED_COS, sol_tol=S3_SOL_TOL,
-        scaled_floor=S3_SCALED_FLOOR,
+        selfnorm_scaled_gated=False,
         rule="REPAIRED S3 (STOKES-PHASE1-VERIFY-codex.md).  Deterministic "
              "p = chi_kl aligned with each of the M control columns: "
              "matched-control cosine >= 0.99, control Frobenius metric "
@@ -604,15 +743,24 @@ def main():
              "mass-orthonormal control), solenoidal Frobenius metric and "
              "cosine <= 1e-13.  The rand_press_* fields are the SUPERSEDED "
              "grid-white-random-pressure diagnostic, retained as evidence and "
-             "NOT gated.  ALSO gated dimensionlessly: sqrt(M) * control "
-             "metric >= 0.99.  That constant is DERIVED, not chosen: the "
-             "matched-cosine requirement cos >= 0.99 makes the aligned column "
-             "alone contribute 0.99/sqrt(M) to the RMS.  It is the form that "
-             "survives M -> large, where the constant 1e-2 floor would reject "
-             "a CORRECT aligned control at M > 10^4")
+             "NOT gated.  THE GATED CONTROL IS THE INDEPENDENT ONE "
+             "(s3ind_*): the ANALYTIC gradient of the same chi_j sampled on "
+             "the two face lattices, which never touches the Grad operator.  "
+             "Its matched cosine is a real measurement (0.9939 at N=8 rising "
+             "to 1 as h -> 0, because Grad_h chi carries component factors "
+             "sinc(k pi h/2) != sinc(l pi h/2)) and it collapses to 0 under a "
+             "v-block sign flip in Grad.  The SELF-NORMALISED control (s3_*, "
+             "Psi_j = X_j/(h||X_j||)) is retained as a DIAGNOSTIC ONLY: it is "
+             "a normalised copy of X, so its matched cosine and "
+             "sqrt(M)*ctl_fro are identically 1 for any nonzero X even if "
+             "Grad is wrong.  Revisions 2-3 asserted on it; that assertion was "
+             "TAUTOLOGICAL and is retracted -- see STOKES-NOTES.md retraction "
+             "9.  Known blind spot of the cosine form: it is invariant to a "
+             "global scale or global sign of Grad; those are covered by S-ADJ "
+             "and S-FOM")
     report["gates"]["SYM"] = dict(
         rows=[dict(N=r["N"], L_sym_max=r["L_sym_max"]) for r in adj],
-        worst=float(max(r["L_sym_max"] for r in adj)),
+        worst=float(finite("L_sym", [r["L_sym_max"] for r in adj]).max()),
         rule="||L - L^T||_max exactly 0")
     save()
 
@@ -625,12 +773,12 @@ def main():
     assert report["gates"]["S_STRUCT"]["worst_DC_inf"] == 0.0, "||DC|| != 0"
     assert report["gates"]["S_STRUCT"]["worst_D_plus_GradT_inf"] == 0.0
     assert report["gates"]["SYM"]["worst"] == 0.0, "L not symmetric"
-    assert GP["min_ctl_fro"] >= S3_FLOOR, \
-        f"S3 control floor failed: {GP['min_ctl_fro']}"
-    assert GP["min_ctl_fro_scaled"] >= S3_SCALED_FLOOR, \
-        f"S3 dimensionless control floor failed: {GP['min_ctl_fro_scaled']}"
-    assert GP["min_matched_cos"] >= S3_MATCHED_COS, \
-        f"S3 matched-control cosine failed: {GP['min_matched_cos']}"
+    assert GP["min_ctl_fro_independent"] >= S3_FLOOR, \
+        f"S3 control floor failed: {GP['min_ctl_fro_independent']}"
+    assert GP["min_matched_cos_independent"] >= S3_MATCHED_COS, \
+        f"S3 matched-control cosine failed: {GP['min_matched_cos_independent']}"
+    assert GP["max_offdiag_cos_independent"] <= 1e-12, \
+        f"S3 control columns not mutually distinct: {GP['max_offdiag_cos_independent']}"
     assert GP["max_sol_fro"] <= S3_SOL_TOL, \
         f"S3 solenoidal projection failed: {GP['max_sol_fro']}"
     assert GP["max_sol_cos"] <= S3_SOL_TOL, \
@@ -683,9 +831,12 @@ def main():
         save()
     lad = [r for r in rows if r["N"] in LADDER]
     ou, op = orders(lad, "err_u_mass_rel"), orders(lad, "err_p_mass_rel")
-    worst_dev = max(abs(o["order"] - ORDER_TARGET) for o in ou + op)
+    worst_dev = float(np.max(np.abs(
+        finite("S_FOM orders", [o["order"] for o in ou + op]) - ORDER_TARGET)))
     amatch = anchor_rows(rows, ANCHORS_FROZEN)
-    worst_anchor = max(max(a["rel_dev_u"], a["rel_dev_p"]) for a in amatch)
+    worst_anchor = float(finite("S_FOM anchors",
+                                [v for a in amatch
+                                 for v in (a["rel_dev_u"], a["rel_dev_p"])]).max())
     report["gates"]["S_FOM"] = dict(
         rows=rows, ladder=LADDER, orders_u=ou, orders_p=op,
         worst_order_deviation=float(worst_dev),
@@ -728,8 +879,10 @@ def main():
                            a_p * EXACT_FIELD_TOL / r["predicted_err_p"])))
     report["gates"]["S_EXACT"] = dict(
         rows=ex,
-        worst_exact_u_rel=float(max(r["exact_u_rel"] for r in ex)),
-        worst_exact_p_rel=float(max(r["exact_p_rel"] for r in ex)),
+        worst_exact_u_rel=float(finite("S_EXACT u",
+                                       [r["exact_u_rel"] for r in ex]).max()),
+        worst_exact_p_rel=float(finite("S_EXACT p",
+                                       [r["exact_p_rel"] for r in ex]).max()),
         worst_pred_dev_u_diagnostic=float(max(r["pred_dev_u_diagnostic"]
                                               for r in ex)),
         worst_pred_dev_p_diagnostic=float(max(r["pred_dev_p_diagnostic"]
@@ -775,10 +928,15 @@ def main():
             f"[{r['solve_seconds']:.1f}s]")
         save()
     gou, gop = orders(grows, "err_u_mass_rel"), orders(grows, "err_p_mass_rel")
-    gdev = max(abs(o["order"] - ORDER_TARGET) for o in gou + gop)
+    gdev = float(np.max(np.abs(
+        finite("S_FOMGEN orders", [o["order"] for o in gou + gop])
+        - ORDER_TARGET)))
     gamatch = anchor_rows(grows, ANCHORS_GENERIC)
-    gworst = max(max(a["rel_dev_u"], a["rel_dev_p"]) for a in gamatch)
-    max_cos = max(r["err_u_cos_with_uex"] for r in grows)
+    gworst = float(finite("S_FOMGEN anchors",
+                          [v for a in gamatch
+                           for v in (a["rel_dev_u"], a["rel_dev_p"])]).max())
+    max_cos = float(finite("S_FOMGEN cosine",
+                           [r["err_u_cos_with_uex"] for r in grows]).max())
     report["gates"]["S_FOMGEN"] = dict(
         rows=grows, orders_u=gou, orders_p=gop,
         worst_order_deviation=float(gdev), anchors=gamatch,
@@ -810,9 +968,11 @@ def main():
     mfn = stk.manufactured(gn, nu=1.0)
     ops_n = (stk.divergence_matrix(gn), stk.gradient_matrix(gn),
              stk.laplacian_matrix(gn, "odd"))
-    u1, p1, _ = stk.solve_stokes(gn, mfn["f"], nu=1.0, ghost="odd", ops=ops_n)
+    u1, p1, _ = track_solve("S_NU/nu=1", gn, mfn["f"], nu=1.0, ghost="odd",
+                            ops=ops_n)
     nu2 = 7.0
-    u2, p2, _ = stk.solve_stokes(gn, mfn["f"], nu=nu2, ghost="odd", ops=ops_n)
+    u2, p2, _ = track_solve("S_NU/nu=7", gn, mfn["f"], nu=nu2, ghost="odd",
+                            ops=ops_n)
     du_ = float(np.linalg.norm(nu2 * u2 - u1) / np.linalg.norm(u1))
     p1c, p2c = p1 - p1.mean(), p2 - p2.mean()
     dp_ = float(np.linalg.norm(p2c - p1c) / np.linalg.norm(p1c))
@@ -844,8 +1004,10 @@ def main():
                 f"err_p {r['err_p_mass_rel']:.4e}  "
                 f"bnd {r['err_u_bnd_rel']:.3e}  [{r['solve_seconds']:.1f}s]")
         fou, fop = orders(fs, "err_u_mass_rel"), orders(fs, "err_p_mass_rel")
-        min_err = min(r["err_u_mass_rel"] for r in fs)
-        max_ord = max(abs(o["order"]) for o in fou + fop)
+        min_err = float(finite("S_FREESLIP err",
+                               [r["err_u_mass_rel"] for r in fs]).min())
+        max_ord = float(np.max(np.abs(finite(
+            "S_FREESLIP orders", [o["order"] for o in fou + fop]))))
         report["gates"]["S_FREESLIP"] = dict(
             rows=fs, orders_u=fou, orders_p=fop,
             min_err_u=float(min_err), max_abs_order=float(max_ord),
@@ -872,42 +1034,133 @@ def main():
         assert max_ord <= FREESLIP_ORDER_CEIL, \
             f"S-FREESLIP converged (order {max_ord}): S-FOM may be blind"
 
-    # ---- S-BACKERR: an INDEPENDENT, pre-frozen check on the linear algebra -
-    # Replaces the retracted S-EXACT prediction gate.  The normalised backward
-    # error ||K x - b|| / (||K||_F ||x|| + ||b||) is bounded a priori by
-    # O(nnz^(1/2) u_mach) for a backward-stable factorisation.  Its threshold
-    # is a frozen constant that does NOT derive from any error being tested,
-    # and it certifies every solve in the run -- both manufactured families and
-    # the free-slip arm -- not just the closed-form one.
-    be_rows = [dict(N=r["N"], family=r["family"], ghost=r["ghost"],
-                    backward_err=r["backward_err"],
-                    lin_resid_rel=r["lin_resid_rel"], K_fro=r["K_fro"])
-               for r in report["rows"]] + \
-              [dict(N=r["N"], family=r["family"], ghost=r["ghost"],
-                    backward_err=r["backward_err"],
-                    lin_resid_rel=r["lin_resid_rel"], K_fro=r["K_fro"])
-               for r in report["gates"].get("S_FREESLIP", {}).get("rows", [])]
-    worst_be = max(r["backward_err"] for r in be_rows)
+    # ---- S-BACKERR: independent, pre-frozen checks on the linear algebra ---
+    # Replaces the retracted S-EXACT prediction gate.  FOUR asserted numbers,
+    # not one: the global normalised backward error PLUS the three blockwise
+    # residuals.  The blocks are separate because the global metric cannot see
+    # the bordered rows -- ||K||_F is dominated by the O(h^-2) momentum block,
+    # so a violated continuity or mean-zero-gauge row hides inside it.  Proven
+    # negative control (STOKES-PHASE1C-VERIFY-codex.md, reproduced here): a
+    # constant 1e-8 pressure offset at N=128 leaves gauge_raw = 1.6384e-4 while
+    # the global metric reads 4.46e-14 and PASSES.  Covers all 17 solves the
+    # driver performs, including the S0 probe and both S-NU solves, which
+    # revision 3 silently excluded.
+    be_rows = list(SOLVES)
+    worst_be = float(finite("S_BACKERR backward_err",
+                            [r["backward_err"] for r in be_rows]).max())
+    worst_mom = float(finite("S_BACKERR mom",
+                             [r["mom_resid"] for r in be_rows]).max())
+    worst_cont = float(finite("S_BACKERR cont",
+                              [r["cont_resid"] for r in be_rows]).max())
+    worst_gauge = float(finite("S_BACKERR gauge",
+                               [r["gauge_resid"] for r in be_rows]).max())
+    worst_gauge_raw = float(np.max(np.abs(finite(
+        "S_BACKERR gauge_raw", [r["gauge_raw"] for r in be_rows]))))
     report["gates"]["S_BACKERR"] = dict(
-        rows=be_rows, n_solves=len(be_rows), worst=float(worst_be),
-        tol=BACKERR_TOL,
-        rule="ASSERTED over EVERY solve in the run: normalised backward error "
-             "||K x - b|| / (||K||_F ||x|| + ||b||) <= 1e-13.  Frozen a "
-             "priori from backward stability of the sparse LU, O(nnz^(1/2) "
-             "u_mach); it does not derive from any quantity it tests, which "
-             "is what the retracted S-EXACT prediction bound could not say.  "
-             "Note ||res||/||rhs|| is ALSO recorded and grows like h^-2 "
-             "because ||K|| does; that unnormalised form is a diagnostic, not "
-             "the gate")
-    log(f" S-BACKERR: worst normalised backward error {worst_be:.3e} over "
-        f"{len(be_rows)} solves (tol {BACKERR_TOL})")
+        rows=be_rows, n_solves=len(be_rows),
+        worst=worst_be, worst_mom_resid=worst_mom,
+        worst_cont_resid=worst_cont, worst_gauge_resid=worst_gauge,
+        worst_gauge_raw=worst_gauge_raw,
+        tol=BACKERR_TOL, mom_tol=BACKERR_TOL, cont_tol=CONT_TOL,
+        gauge_tol=GAUGE_TOL, gauge_raw_tol=GAUGE_RAW_TOL,
+        expected_solves=EXPECTED_ROWS["S_BACKERR"],
+        rule="ASSERTED over EVERY solve_stokes call in the run (all "
+             "17: S0 probe, 6 frozen, 3 generic, 2 S-NU, 5 free-slip).  "
+             "(a) global normalised backward error "
+             "||K x - b|| / (||K||_F ||x|| + ||b||) <= 1e-13; (b) momentum "
+             "block ||r_mom||/(nu||L||_F||u|| + ||Grad||_F||p|| + ||f||) "
+             "<= 1e-13; (c) continuity block "
+             "||r_cont||/(||D||_F||u|| + |lam| sqrt(n_p)) <= 1e-12; (d) gauge "
+             "row |1^T p|/(sqrt(n_p)||p||) <= 1e-12 AND the RAW |1^T p| "
+             "<= 1e-8.  (b)-(d) exist because (a) alone is blind to the "
+             "bordered rows.  All thresholds are FROZEN ENGINEERING "
+             "thresholds -- 1e-13 is about 450 machine epsilons and predates "
+             "the certified artifact -- NOT rigorously derived from "
+             "O(sqrt(nnz) u): that expression gives 1.27e-13 at N=256 and "
+             "sparse-LU pivot growth prevents it being a hard bound.  "
+             "S-BACKERR is REFERENCE-direction independent (it has no "
+             "pathology aligned with the manufactured solution, unlike the "
+             "retracted pred_dev) but not literally perturbation-direction "
+             "independent: it measures ||K dx||, and at N=32 equal 1e-11 "
+             "relative perturbations give 1.99976e-13 (random), 2.78032e-13 "
+             "(alternating high-frequency) and 2.38238e-15 (parallel to "
+             "velocity).  It cannot detect a WRONG K or b that is solved "
+             "accurately.  ||res||/||rhs|| is also recorded and grows like "
+             "h^-2 because ||K|| does; that unnormalised form is a "
+             "diagnostic, not a gate")
+    log(f" S-BACKERR over {len(be_rows)} solves: global {worst_be:.3e} "
+        f"(tol {BACKERR_TOL})  mom {worst_mom:.3e}  cont {worst_cont:.3e}  "
+        f"gauge {worst_gauge:.3e} (raw {worst_gauge_raw:.3e})")
     save()
-    assert worst_be <= BACKERR_TOL, f"S-BACKERR failed: {worst_be}"
+    assert worst_be <= BACKERR_TOL, f"S-BACKERR global failed: {worst_be}"
+    assert worst_mom <= BACKERR_TOL, f"S-BACKERR momentum failed: {worst_mom}"
+    assert worst_cont <= CONT_TOL, f"S-BACKERR continuity failed: {worst_cont}"
+    assert worst_gauge <= GAUGE_TOL, f"S-BACKERR gauge failed: {worst_gauge}"
+    assert worst_gauge_raw <= GAUGE_RAW_TOL, \
+        f"S-BACKERR raw mean-zero gauge failed: {worst_gauge_raw}"
 
-    report["complete"] = True
+    # ---- final manifest + non-finite sweep --------------------------------
+    counts = dict(REF=len(report["gates"]["REF"]["rows"]),
+                  MMSF=len(report["gates"]["MMSF"]["rows"]),
+                  MF=len(report["gates"]["MF"]["rows"]),
+                  S_ADJ=len(report["gates"]["S_ADJ"]["rows"]),
+                  S_STRUCT=len(report["gates"]["S_STRUCT"]["rows"]),
+                  S_PRESS=len(report["gates"]["S_PRESS"]["rows"]),
+                  SYM=len(report["gates"]["SYM"]["rows"]),
+                  S_FOM=len(report["gates"]["S_FOM"]["rows"]),
+                  S_EXACT=len(report["gates"]["S_EXACT"]["rows"]),
+                  S_FOMGEN=len(report["gates"]["S_FOMGEN"]["rows"]),
+                  S_FREESLIP=len(report["gates"]["S_FREESLIP"]["rows"]),
+                  S_RANK_dense=len(report["gates"]["S_RANK"]["dense"]),
+                  S_RANK_indirect=len(report["gates"]["S_RANK"]["indirect"]),
+                  S_BACKERR=len(be_rows))
+    missing = sorted(EXPECTED_GATES - set(report["gates"]))
+    bad_counts = {k: [EXPECTED_ROWS[k], counts[k]] for k in EXPECTED_ROWS
+                  if counts[k] != EXPECTED_ROWS[k]}
+    nonfinite = []
+
+    def _sweep(node, path=""):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                _sweep(v, f"{path}.{k}")
+        elif isinstance(node, (list, tuple)):
+            for i, v in enumerate(node):
+                _sweep(v, f"{path}[{i}]")
+        elif isinstance(node, float) and not np.isfinite(node):
+            nonfinite.append(path)
+
+    _sweep(report["gates"], "gates")
+    _sweep(report["rows"], "rows")
+    report["gates"]["MANIFEST"] = dict(
+        expected_gates=sorted(EXPECTED_GATES), missing_gates=missing,
+        expected_row_counts=EXPECTED_ROWS, observed_row_counts=counts,
+        row_count_mismatch=bad_counts, nonfinite_fields=nonfinite,
+        rule="ASSERTED unless SMOKE=1: every expected gate present, EXACT "
+             "expected row counts (non-empty is not sufficient), and no "
+             "non-finite float anywhere in gates/ or rows/.  Fields that do "
+             "not apply (the closed form on the generic and free-slip arms) "
+             "are recorded as null, never NaN, so this sweep is unambiguous")
+    log(f" MANIFEST: missing {missing or 'none'}  row-count mismatches "
+        f"{bad_counts or 'none'}  non-finite {nonfinite or 'none'}")
+    save()
+    if not SMOKE:
+        assert not missing, f"MANIFEST: missing gates {missing}"
+        assert not bad_counts, f"MANIFEST: row-count mismatch {bad_counts}"
+    assert not nonfinite, f"MANIFEST: non-finite values at {nonfinite}"
+
+    # A SMOKE run NEVER produces a certified artifact: it is not merely
+    # labelled, complete stays false.
+    report["complete"] = not bool(SMOKE)
+    report["certified"] = not bool(SMOKE)
+    if SMOKE:
+        report["incomplete_reason"] = (
+            "SMOKE=1: PRECOND config equality and the MANIFEST row counts "
+            "were not enforced, so this run is not a certified artifact and "
+            "complete stays false by construction")
     report["total_seconds"] = float(time.time() - t_all)
     save()
-    log(f"DONE stk2d FOM gates [{report['total_seconds']:.0f}s] -> {out}")
+    log(f"DONE stk2d FOM gates [{report['total_seconds']:.0f}s] "
+        f"complete={report['complete']} -> {out}")
 
 
 if __name__ == "__main__":

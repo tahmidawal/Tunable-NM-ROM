@@ -383,7 +383,20 @@ def stokes_saddle(g: MacGrid, nu: float = 1.0, ghost: str = "odd",
 def solve_stokes(g: MacGrid, f, nu: float = 1.0, ghost: str = "odd",
                  ops=None):
     """Direct sparse LU solve of the bordered saddle system.  Returns
-    (u, p, info) with p in the mean-zero gauge."""
+    (u, p, info) with p in the mean-zero gauge.
+
+    `info` carries the GLOBAL normalised backward error and, separately, the
+    THREE BLOCKWISE residuals.  The blocks are reported separately because the
+    global metric cannot see the bordered rows: ||K||_F is dominated by the
+    O(h^-2) momentum block, so a violated continuity or mean-zero-gauge row is
+    invisible in it (STOKES-PHASE1C-VERIFY-codex.md: a constant 1e-8 pressure
+    offset at N=128 leaves a gauge-row residual of 1.6384e-4 while the global
+    metric reads 4.46e-14 and passes).
+    """
+    if ops is None:
+        ops = (divergence_matrix(g), gradient_matrix(g),
+               laplacian_matrix(g, ghost))
+    D, Grad, L = ops
     K = stokes_saddle(g, nu=nu, ghost=ghost, ops=ops)
     rhs = np.concatenate([np.asarray(f).ravel(), np.zeros(g.n_p), [0.0]])
     sol = spla.spsolve(K, rhs)
@@ -397,6 +410,12 @@ def solve_stokes(g: MacGrid, f, nu: float = 1.0, ghost: str = "odd",
     # O(nnz^(1/2) * u_mach) independently of the mesh, and it is completely
     # independent of the manufactured solution.
     kf = float(np.sqrt((sp.csr_matrix(K).data ** 2).sum()))
+    fro = lambda A: float(np.sqrt((sp.csr_matrix(A).data ** 2).sum()))  # noqa
+    nu_u, nrm_p, nrm_f = (np.linalg.norm(u), np.linalg.norm(p),
+                          np.linalg.norm(np.asarray(f).ravel()))
+    r_mom = res[:g.n_u]
+    r_cont = res[g.n_u:g.n_u + g.n_p]
+    r_gauge = float(res[-1])                       # == 1^T p, the gauge row
     info = dict(lam=lam,
                 lin_resid_rel=float(np.linalg.norm(res)
                                     / (np.linalg.norm(rhs) + 1e-300)),
@@ -404,6 +423,16 @@ def solve_stokes(g: MacGrid, f, nu: float = 1.0, ghost: str = "odd",
                                    / (kf * np.linalg.norm(sol)
                                       + np.linalg.norm(rhs) + 1e-300)),
                 K_fro=kf,
+                # --- blockwise ---
+                mom_resid=float(np.linalg.norm(r_mom)
+                                / (nu * fro(L) * nu_u + fro(Grad) * nrm_p
+                                   + nrm_f + 1e-300)),
+                cont_resid=float(np.linalg.norm(r_cont)
+                                 / (fro(D) * nu_u
+                                    + abs(lam) * np.sqrt(g.n_p) + 1e-300)),
+                gauge_raw=r_gauge,
+                gauge_resid=float(abs(r_gauge)
+                                  / (np.sqrt(g.n_p) * nrm_p + 1e-300)),
                 p_mean=float(p.mean()),
                 saddle_dim=int(K.shape[0]), saddle_nnz=int(K.nnz))
     return u, p, info

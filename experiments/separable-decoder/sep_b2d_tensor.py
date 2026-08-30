@@ -102,6 +102,14 @@ N_TQ = int(os.environ.get("N_TQ", "32"))
 TA_CHUNK = int(os.environ.get("TA_CHUNK", "64"))
 R_CHECK_STATES = int(os.environ.get("R_CHECK_STATES", "64"))
 POS_TOL = float(os.environ.get("POS_TOL", "1e-9"))   # truth min(u) >= -POS_TOL
+# stretch: head-PCA Tucker compression of the tensor for large R (R=512)
+HEAD_PCA = int(os.environ.get("HEAD_PCA", "0"))
+PCA_TAIL = float(os.environ.get("PCA_TAIL", "1e-8"))   # keep K' with tail energy <= PCA_TAIL
+PCA_T0_TOL = float(os.environ.get("PCA_T0_TOL", "1e-6"))
+# skip the streamed training-truth regeneration (only for checkpoints whose
+# training draw is too large to regenerate in-job, e.g. the 4608-trajectory
+# hfit checkpoint); the positivity assert then covers the test set only
+SKIP_TRAIN_TRUTH = int(os.environ.get("SKIP_TRAIN_TRUTH", "0"))
 # in-job training recipe (sep_burgers.py defaults for the N=256 cell)
 STEPS = int(os.environ.get("STEPS", "60000"))
 LR = float(os.environ.get("LR", "1e-3"))
@@ -260,7 +268,8 @@ def main():
         time_reps=TIME_REPS, burn=BURN, warm=WARM, fom_reps=FOM_REPS,
         pair_reps=PAIR_REPS, newton_tols=NEWTON_TOLS, lin_fracs=LIN_FRACS,
         t_chunk=T_CHUNK, gen_chunk=gen_chunk, feat_chunk=feat_chunk,
-        pos_tol=POS_TOL, x64=True,
+        pos_tol=POS_TOL, head_pca=bool(HEAD_PCA), pca_tail=PCA_TAIL,
+        skip_train_truth=bool(SKIP_TRAIN_TRUTH), x64=True,
         matmul_precision=os.environ.get("JAX_DEFAULT_MATMUL_PRECISION"),
         backend=dev.platform, gpu=getattr(dev, "device_kind", str(dev)),
         jax_version=jax.__version__, commit=git_commit(),
@@ -301,18 +310,37 @@ def main():
         assert n_traj == bc.bf.N_TRAIN + bc.bf.N_VAL, (
             n_traj, bc.bf.N_TRAIN, bc.bf.N_VAL, "set N_TRAIN/N_VAL to the "
             "checkpoint's draw")
-    n_states = n_traj * T
-    rng = np.random.default_rng(SEED0)
-    if n_states > cfg_ms:
-        pick = np.sort(rng.choice(n_states, cfg_ms, replace=False))
+    hfit = (not TRAIN) and cfg.get("hfit_pick") is not None
+    if hfit:
+        # round-5 refined checkpoint: the state ids are recorded, and the
+        # trajectory parameters are the canonical draw plus an appended draw
+        pick = np.asarray(cfg["hfit_pick"], dtype=np.int64)
+        n_traj = int(cfg.get("hfit_n_traj") or n_traj)
+        report["config"]["pick_source"] = "cfg[hfit_pick] (round-5 refined)"
     else:
-        pick = np.arange(n_states)
+        n_states = n_traj * T
+        rng = np.random.default_rng(SEED0)
+        if n_states > cfg_ms:
+            pick = np.sort(rng.choice(n_states, cfg_ms, replace=False))
+        else:
+            pick = np.arange(n_states)
+        report["config"]["pick_source"] = "sep_burgers.py rule (rng(SEED0).choice)"
+    n_states = n_traj * T
     keep_rows = set(int(v) for v in (pick if TRAIN else pick[:R_CHECK_STATES]))
 
     # ---------------- training truth: streamed regeneration + positivity ----
     # (the same draw the checkpoint was trained on; the states are only kept
     # for training or for the R-lite check)
     cx, cy, w, a, nu_tr, _ = bc.bf.sample_params(seed=bc.SEED)
+    ex_seed = int((cfg.get("hfit_extra_seed", 0) if not TRAIN else 0) or 0)
+    ex_traj = int((cfg.get("hfit_extra_traj", 0) if not TRAIN else 0) or 0)
+    if ex_seed:
+        exd = bc.bf.sample_params(seed=ex_seed, m=ex_traj)
+        cx = np.concatenate([cx, exd[0]]); cy = np.concatenate([cy, exd[1]])
+        w = np.concatenate([w, exd[2]]); a = np.concatenate([a, exd[3]])
+        nu_tr = np.concatenate([nu_tr, exd[4]])
+        log(f"  trajectory parameters: canonical {len(cx) - ex_traj} + {ex_traj} "
+            f"appended from seed {ex_seed} (recorded in the checkpoint)")
     assert len(cx) == n_traj, (len(cx), n_traj)
     rollout_fom, res_fn = bc.bf.make_rollout(N)
     chk = jax.jit(jax.vmap(lambda u1, u0, nu_: jnp.linalg.norm(res_fn(u1, u0, nu_))
@@ -321,7 +349,13 @@ def main():
     tr_min, tr_max, worst_tr = np.inf, -np.inf, 0.0
     n_le0 = n_lt0 = n_pts = 0
     t0 = time.time()
-    for s in range(0, n_traj, gen_chunk):
+    gen_range = [] if SKIP_TRAIN_TRUTH else range(0, n_traj, gen_chunk)
+    if SKIP_TRAIN_TRUTH:
+        assert not TRAIN
+        log(f"  TRAIN truth regeneration SKIPPED (SKIP_TRAIN_TRUTH=1; {n_traj} "
+            f"trajectories) -- positivity asserted on the test set only")
+        tr_min, tr_max, worst_tr, n_pts = np.nan, np.nan, np.nan, 1
+    for s in gen_range:
         e = min(s + gen_chunk, n_traj)
         U0 = np.stack([bc.bf.blob_ic(N, cx[i], cy[i], w[i], a[i])
                        for i in range(s, e)])
@@ -343,7 +377,7 @@ def main():
                 if sid in keep_rows:
                     kept[sid] = np.asarray(snaps[t_, b_])
         del snaps
-    if not (np.isfinite(worst_tr) and worst_tr <= 1e-8):
+    if not SKIP_TRAIN_TRUTH and not (np.isfinite(worst_tr) and worst_tr <= 1e-8):
         raise SystemExit(f"TRAIN FOM residual {worst_tr:.2e} > 1e-8")
     report["data"]["train"] = dict(
         n_traj=int(n_traj), n_states=int(n_states), max_fom_rel_residual=worst_tr,
@@ -353,7 +387,8 @@ def main():
     log(f"  TRAIN truth: {n_traj} traj regenerated [{time.time()-t0:.0f}s], "
         f"max FOM rel residual {worst_tr:.2e}; positivity: min u {tr_min:.3e} "
         f"max {tr_max:.3e} frac<=0 {n_le0/n_pts:.2e} frac<0 {n_lt0/n_pts:.2e}")
-    pos_ok = (tr_min >= -POS_TOL) and (report["data"]["test"]["min_u"] >= -POS_TOL)
+    pos_ok = (SKIP_TRAIN_TRUTH or tr_min >= -POS_TOL) and \
+        (report["data"]["test"]["min_u"] >= -POS_TOL)
     report["data"]["positivity_assert"] = dict(
         ok=bool(pos_ok), tol=POS_TOL,
         rule="min over all interior points of all training + test states "
@@ -392,6 +427,8 @@ def main():
         r_rows = pick[:R_CHECK_STATES]
         r_fields = S_tr[:R_CHECK_STATES]
         del S_tr
+    elif SKIP_TRAIN_TRUTH:
+        r_rows, r_fields = pick[:0], None
     else:
         r_rows = pick[:R_CHECK_STATES]
         r_fields = np.stack([kept[int(sid)][interior] for sid in r_rows])
@@ -416,17 +453,20 @@ def main():
     A_j = Phi_j.T @ G_int                                         # (M, R)
     kx_j = jnp.asarray(np.asarray(kx, dtype=np.float64))
     ky_j = jnp.asarray(np.asarray(ky, dtype=np.float64))
-    Hr = np.asarray(jax.vmap(h_fn)(jnp.asarray(Z_tr[:R_CHECK_STATES])))
-    rec = np.asarray(jnp.asarray(Hr) @ G_int.T)
-    r_lite = np.linalg.norm(rec - r_fields, axis=1) / np.linalg.norm(r_fields, axis=1)
-    report["gates"]["R_lite_recon_on_regenerated_states"] = dict(
-        mean=float(np.mean(r_lite)), max=float(np.max(r_lite)),
-        n=int(r_lite.size), state_ids=[int(v) for v in r_rows])
-    log(f"  GATE R-lite (checkpoint codes vs regenerated picked states, "
-        f"{r_lite.size} states): recon rel-L2 mean {np.mean(r_lite):.3e} max "
-        f"{np.max(r_lite):.3e}")
-    assert np.mean(r_lite) < 0.2, "checkpoint/data/pick lineage broken"
-    del rec, r_fields, Hr
+    if r_fields is not None:
+        Hr = np.asarray(jax.vmap(h_fn)(jnp.asarray(Z_tr[:R_CHECK_STATES])))
+        rec = np.asarray(jnp.asarray(Hr) @ G_int.T)
+        r_lite = np.linalg.norm(rec - r_fields, axis=1) / np.linalg.norm(r_fields, axis=1)
+        report["gates"]["R_lite_recon_on_regenerated_states"] = dict(
+            mean=float(np.mean(r_lite)), max=float(np.max(r_lite)),
+            n=int(r_lite.size), state_ids=[int(v) for v in r_rows])
+        log(f"  GATE R-lite (checkpoint codes vs regenerated picked states, "
+            f"{r_lite.size} states): recon rel-L2 mean {np.mean(r_lite):.3e} max "
+            f"{np.max(r_lite):.3e}")
+        assert np.mean(r_lite) < 0.2, "checkpoint/data/pick lineage broken"
+        del rec, r_fields, Hr
+    else:
+        report["gates"]["R_lite_recon_on_regenerated_states"] = None
 
     train_radius = float(np.max(np.linalg.norm(Z_tr - Z_tr.mean(0), axis=1)))
     bc.TR_DELTA = (TR_FACTOR * train_radius) if TR_FACTOR > 0 else np.inf
@@ -566,10 +606,44 @@ def main():
     save()
 
     # ---------------- tensor build + gates TB / TA / T0 / TS ----------------
+    H_all = np.asarray(jnp.concatenate(
+        [jax.vmap(h_fn)(jnp.asarray(Z_tr[s:s + 4096])) for s in range(0, len(Z_tr), 4096)]))
+    if HEAD_PCA:
+        # head-PCA Tucker compression: SVD of the head outputs over the training
+        # codes, keep K' directions with tail energy <= PCA_TAIL, project the
+        # bank (G P) and build the (M, K', K') tensor from it.  h^T T h ==
+        # (P^T h)^T T' (P^T h) exactly for h in span(P); the projection tail is
+        # the only new error (gate T0 becomes RECORDED with tripwire PCA_T0_TOL).
+        HtH = np.asarray(jnp.asarray(H_all).T @ jnp.asarray(H_all))
+        ev, V = np.linalg.eigh(HtH)
+        order = np.argsort(ev)[::-1]
+        ev, V = np.maximum(ev[order], 0.0), V[:, order]
+        sv = np.sqrt(ev)
+        energy = np.cumsum(ev) / np.sum(ev)
+        Kp = int(np.searchsorted(1.0 - energy <= PCA_TAIL, True) + 1)
+        Kp = min(max(Kp, 1), R)
+        P_np = V[:, :Kp]
+        tail_rel = float(np.sqrt(max(1.0 - energy[Kp - 1], 0.0)))
+        Hp = H_all @ P_np @ P_np.T
+        proj_rel = np.linalg.norm(H_all - Hp, axis=1) / (np.linalg.norm(H_all, axis=1) + 1e-300)
+        report["head_pca"] = dict(
+            K_prime=Kp, R=int(R), tail_energy=float(1.0 - energy[Kp - 1]),
+            tail_rel_norm=tail_rel, singular_values=[float(v) for v in sv],
+            energy_cumulative=[float(v) for v in energy],
+            code_projection_rel_l2=stats(proj_rel), n_codes=int(len(H_all)))
+        log(f"  HEAD-PCA: R={R} -> K'={Kp} (tail energy {1.0 - energy[Kp-1]:.2e}, "
+            f"sv[0]={sv[0]:.3e} sv[K'-1]={sv[Kp-1]:.3e} sv[-1]={sv[-1]:.3e}; "
+            f"per-code projection rel-L2 median {np.median(proj_rel):.2e} max "
+            f"{np.max(proj_rel):.2e})")
+        P_j = jnp.asarray(P_np)
+        G_T = G_int @ P_j                                    # (n_i2, K')
+        R_T = Kp
+    else:
+        P_j, G_T, R_T = None, G_int, R
     t0 = time.time()
-    T1 = tc.build_T(Phi_j, G_int, N, chunk=T_CHUNK, reverse=False)
+    T1 = tc.build_T(Phi_j, G_T, N, chunk=T_CHUNK, reverse=False)
     t_build = time.time() - t0
-    T2 = tc.build_T(Phi_j, G_int, N, chunk=max(1000, T_CHUNK // 3 + 7),
+    T2 = tc.build_T(Phi_j, G_T, N, chunk=max(1000, T_CHUNK // 3 + 7),
                     reverse=True)
     gTB = float(np.max(np.abs(T1 - T2)) / np.max(np.abs(T1)))
     Q = tc.symmetrize(T1)
@@ -585,15 +659,19 @@ def main():
     Qj = jnp.asarray(Q)
     DG_j = tc.backward_diff_bank_2d(G_int, N)
 
+    def to_T(h):
+        """head output -> tensor coordinates (identity, or P^T h under HEAD_PCA)"""
+        return h if P_j is None else h @ P_j
+
     @jax.jit
     def ta_chunk(Hc, Gb, Db, Ph, Qq):
         U = Hc @ Gb.T                                          # (c, n_i2)
         q_alg = (U * (Hc @ Db.T)) @ Ph
         q_or = jax.vmap(lambda u: bc.upwind_adv_field(u, N))(U) @ Ph
-        q_T = 0.5 * jnp.einsum("ijk,sj,sk->si", Qq, Hc, Hc)
+        Ht = to_T(Hc)
+        q_T = 0.5 * jnp.einsum("ijk,sj,sk->si", Qq, Ht, Ht)
         return (q_alg, q_or, q_T, jnp.min(U, axis=1),
                 jnp.sum(U <= 0, axis=1), jnp.sum(U < 0, axis=1))
-    H_all = np.asarray(jax.vmap(h_fn)(jnp.asarray(Z_tr)))
     qa, qo, qt, mn, nle, nlt = [], [], [], [], [], []
     for s in range(0, len(H_all), TA_CHUNK):
         o = ta_chunk(jnp.asarray(H_all[s:s + TA_CHUNK]), G_int, DG_j, Phi_j, Qj)
@@ -605,8 +683,20 @@ def main():
     gTA = float(np.max(np.linalg.norm(q_T - q_alg, axis=1) / nq))
     report["gates"]["TA_algebraic_identity_max_rel"] = gTA
     log(f"  GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), {len(H_all)} training "
-        f"states): {gTA:.2e}")
-    assert gTA < 1e-13
+        f"states): {gTA:.2e}" + ("  [HEAD_PCA: includes the projection tail; "
+                                 "recorded]" if HEAD_PCA else ""))
+    if HEAD_PCA:
+        # the exact identity holds on the PROJECTED codes: check it there
+        qa2 = []
+        for s in range(0, len(H_all), TA_CHUNK):
+            Hc = jnp.asarray(H_all[s:s + TA_CHUNK] @ P_np @ P_np.T)
+            qa2.append(np.asarray(ta_chunk(Hc, G_int, DG_j, Phi_j, Qj)[0]))
+        gTAp = float(np.max(np.linalg.norm(q_T - np.concatenate(qa2), axis=1) / nq))
+        report["gates"]["TA_on_projected_codes_max_rel"] = gTAp
+        log(f"  GATE TA' (identity on P P^T h): {gTAp:.2e}")
+        assert gTAp < 1e-12
+    else:
+        assert gTA < 1e-13
     pos_states = minu > 0
     mis = np.linalg.norm(q_T - q_or, axis=1) / nq
     gT0 = float(np.max(mis[pos_states])) if np.any(pos_states) else None
@@ -622,16 +712,20 @@ def main():
         f"{np.median(mis):.2e} max {np.max(mis):.2e}; frac points u<=0 "
         f"{report['TS_train_states']['frac_points_u_le0']:.3%}, min u {minu.min():.2e}")
     if gT0 is not None:
-        assert gT0 < 1e-12
+        if HEAD_PCA:
+            report["gates"]["T0_tripwire"] = PCA_T0_TOL
+            assert gT0 < PCA_T0_TOL, ("HEAD-PCA projection tail too large", gT0)
+        else:
+            assert gT0 < 1e-12
     del q_alg, q_or, q_T, DG_j
     save()
 
     # tensor arm closure
-    Qm = jnp.asarray(Q.reshape(EQ_M * R, R))      # (M*R, R): one matvec, then (M,R)@h
+    Qm = jnp.asarray(Q.reshape(EQ_M * R_T, R_T))  # (M*R', R'): one matvec, then (M,R')@h
 
     def adv_tensor(z):
-        h = h_fn(z)
-        return 0.5 * ((Qm @ h).reshape(EQ_M, R) @ h)
+        h = to_T(h_fn(z))
+        return 0.5 * ((Qm @ h).reshape(EQ_M, R_T) @ h)
     r_T, parts_T = mk_parts(adv_tensor)
 
     # ---------------- gate TQ: tensor vs oracle residual/Jacobian ----------
@@ -767,7 +861,8 @@ def main():
     zt = jnp.asarray(Z_tr[3])
     pc = prev_j(jnp.asarray(Z_tr[5]))
     tolg = STEP_TOL * float(np.sqrt(np.mean(U_test[0, 0][interior] ** 2))) * tol_scale
-    a_ = A_["ex"]["step"](zt, pc, nu_med, tolg, bc.GN_BUDGET, ())
+    arm_ex = A_["ex"] if "ex" in A_ else make_arm(*arm_defs["ex"])
+    a_ = arm_ex["step"](zt, pc, nu_med, tolg, bc.GN_BUDGET, ())
     b_ = step_ss(zt, pc, nu_med, tolg, bc.GN_BUDGET)
     c_ = step_mine12(zt, pc, nu_med, tolg, bc.GN_BUDGET, ())
     d_ = ops_inc["step_jit"](zt, pc, nu_med, tolg, bc.GN_BUDGET)
@@ -788,7 +883,7 @@ def main():
     us0 = jnp.full((bc.NUM_STEPS,), tolg, dtype=F64)
     d0 = jnp.asarray(TRD, dtype=F64)
     Zr, _, nJr, _, _ = roll_ref(z0g, float(nu_test[0]), us0, bc.GN_BUDGET, d0, d0, d0)
-    Zm, _, nJm, attm, _ = A_["ex"]["roll"](z0g, float(nu_test[0]), us0, bc.GN_BUDGET, ())
+    Zm, _, nJm, attm, _ = arm_ex["roll"](z0g, float(nu_test[0]), us0, bc.GN_BUDGET, ())
     rdev = float(jnp.max(jnp.abs(Zr - Zm)))
     report["gates"]["ROLL_aux_vs_make_rollout_v2"] = rdev
     log(f"  GATE ROLL: aux rollout vs make_rollout_v2 max|dZ| {rdev:.2e} "

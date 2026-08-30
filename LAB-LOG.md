@@ -3636,3 +3636,71 @@ promotion of every recorded diagnostic to a real assertion.
 
 **Open:** Stokes phase 2 (bank, decoder, QF residual, S1–S9); the roadmap's remaining eight
 items; merge decisions for nine unmerged experiment branches (now eleven with waves and Stokes).
+
+### Session 2 (cont.) — Stokes phase 1 certified, phase 2a passed the go/no-go, design amended to r4
+
+**Phase 1 (MAC FOM) — certified after four verification rounds** (`09fd6f2`, then `e75352c`).
+The operators were right in the first build and **never changed**; every round found defects in
+the *gates*, not the numerics. S-ADJ exactly 0.0 bit-for-bit at N=8…256 with a sign-flipped
+negative control at 0.7071; both MMS families at second order; `‖D+Gradᵀ‖∞ = ‖DC‖∞ = ‖L−Lᵀ‖max`
+exactly 0; rank D = N²−1, dim ker D = rank C = (N−1)² to N=256; free-slip asserted **to fail**
+(it converges second-order to the *wrong* boundary-value problem, Richardson limits 1.2729591 /
+2.5543888).
+
+**Named failure mode, four instances in phase 1 alone: gates that compare something to itself.**
+A self-normalized S3 control reading exactly `1.000000000000`; `S-SOLVE` at exactly 0.0 (both
+paths call the same SuperLU); `nested_bank_max_diff == 0`; an affine-control POD error using QR
+of the snapshots it reconstructs. **A suspiciously exact value means tautology until proven
+otherwise.** Also found: the design's *original* 1e-2 control floor was equally near-tautological
+under that construction — it only ever tested M ≤ 10⁴. Rebuilt on an independently constructed
+control (analytic ∇χ, never touching `Grad`): now a measurement, 0.9939 at N=8 rising to
+1.000000 at N=256, and falsifiable — flipping `Grad`'s u_y sign collapses it to 0.000000.
+
+Two further harness defects worth keeping: **NaN passed the aggregates silently**
+(`max([finite, nan])` returns the finite value in Python), and **S-BACKERR's global metric passed
+a real gauge violation** — a constant 1e-8 pressure offset gives a gauge residual 1.6384e-4 while
+the global metric reads 4.46e-14, because `‖K‖_F` is dominated by the O(h⁻²) momentum block. Fixed
+with asserted blockwise residuals. A `pred_dev` bound written twice was retracted twice: the first
+version was algebraically wrong, and the corrected version was **tautological** (a consequence of
+the reverse triangle inequality, true for every x). Demoted; the field assertion already implies it.
+
+**Phase 2a — the go/no-go PASSED** (`e41a71b`, 689 s local, 1472 tracked solves). 32 independent
+solenoidal response directions (≥ K+1 = 9); centred snapshot rank 32 (> K = 8); **Jacobian rank of
+µ→u exactly [8,8,8]**; held-out POD-8 3.84e-2, POD-16 3.71e-3. The vacuousness control (in-band
+affine family) reads centred rank exactly 8, POD-8 error 1.7e-14, and **fires the gate** — so the
+check discriminates the case it exists to catch. Independently verified: σ₃₂/σ₁ = 4.02e-5 vs
+σ₃₃/σ₁ = 1.44e-12, rank stable for cutoffs 1e-5…1e-14.
+
+**The 1/σᵢ amplification is real and measured.** ψ-route bank 2.7e-20…1.0e-18; naive Gram POD
+climbs to 2.59e-12 (amplification 9.0e3, tracking σ₁/σ₃₂ = 1.3–2.5e4) — passing the 1e-11 gate by
+only 3.9×, and **failing at 4.2e-9** under 1e-6 gradient contamination where ψ holds at 9.7e-19.
+Use the ψ-route, metric-reorthogonalized. Related and instructive: **a Gram-matrix POD has a rank
+floor of √ε, not ε** — it reported rank 137 (first spurious value 1.42e-8) for a matrix whose
+direct-SVD rank is 32.
+
+**Design amended to r4** (`e75352c`), three frozen-contract entries wrong:
+- **R = {8,16,32}, not …64.** Only solenoidal force drives velocity (gradient atoms give
+  ‖u‖/‖f‖ ≈ 7.1e-17), so response rank ≤ Q_s = 32 at Q=48, gap 2.8e7–9.0e9 at index 32. R=64
+  needs Q ≥ 80 — necessary, not sufficient, and forces a 2a rerun.
+- **The r3 amplitude map was rank-limited.** `θ_q(µ) = exp(−‖c_q−m(µ)‖²/2s(µ)²)` factors through
+  `(m,s)`: rank 3 literally, 4 as implemented — so K=8 was mostly degeneracy. Replaced by a
+  two-blob superposition (4 parameters each), verified to reach 8 generically; the literal form
+  gives Jacobian rank [4,4,4] and fires the gate. Caveat: rank drops to 4 at **coincident blobs**,
+  so 2b must exclude near-collisions or gate their conditioning.
+- **S5's flat 0.5 floor is mesh-dependent** and fails at N=32 (0.4308) for correct code; asserted
+  at N ≥ 64 only. `kmax` clamped to N−1 because k=8 aliases to zero at N=8, which made the
+  *negative control* read 0.134 instead of roundoff. The odd/even separation ratio is robust over
+  this ladder but **not** asymptotically constant (denominator has an εN² floor; 1.5e13 → 8.0e9).
+
+**Phase 2a also found two phase-1 defects by *using* phase 1 rather than auditing it** — its
+continuity normalization collapses on gradient forcing (2.5e-2 on a clean solve) and its 1e-11
+perturbation control does not fire at N=64 (9.2e-14). Both confirmed; **phase 1's numerical
+certification stands** — what is retracted is the generality of those two controls.
+
+**Open / in flight:** phase 2b (decoder, QF residual, S4/S6/S7/S8/S9) launched with the
+verification's eight carried-forward conditions and a **stop gate**: train reconstruction-only
+first and require the held-out nonlinear oracle to beat POD-8 by a **predeclared 3×** in aggregate
+and per-case median; if it sits at the POD-8 floor, stop before residual and timing work. Recorded
+here *before* the result so the bar cannot move. Reminder that this cell **cannot produce a
+positive result** — on a linear problem the direct reduced solve in the `G` span is expected to
+win — its deliverable is verified vector/div-free/pressure-free machinery for NS.

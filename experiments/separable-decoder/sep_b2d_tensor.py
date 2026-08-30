@@ -110,6 +110,13 @@ PCA_T0_TOL = float(os.environ.get("PCA_T0_TOL", "1e-6"))
 # training draw is too large to regenerate in-job, e.g. the 4608-trajectory
 # hfit checkpoint); the positivity assert then covers the test set only
 SKIP_TRAIN_TRUTH = int(os.environ.get("SKIP_TRAIN_TRUTH", "0"))
+SKIP_FOM = int(os.environ.get("SKIP_FOM", "0"))
+# figure dump (runs/b2dtensor/make_figs.py): decoded fields of the selected
+# trajectories at FIGS_TIMES, strided to <= 256^2, error maps, cross-sections
+# through the blob centre, per-step error curves
+FIGS_DUMP = os.environ.get("FIGS_DUMP", "")
+FIGS_TRAJ = os.environ.get("FIGS_TRAJ", "")
+FIGS_TIMES = [int(v) for v in os.environ.get("FIGS_TIMES", "0,10,25,50").split(",")]
 # in-job training recipe (sep_burgers.py defaults for the N=256 cell)
 STEPS = int(os.environ.get("STEPS", "60000"))
 LR = float(os.environ.get("LR", "1e-3"))
@@ -1050,7 +1057,56 @@ def main():
     report["comparison"] = cmp
     save()
 
+    # ---------------- figure dump --------------------------------------------
+    if FIGS_DUMP:
+        e_t = np.array([r_["traj_rel"] for r_ in report["variants"]["tensor"]["per_traj"]])
+        o_ = np.argsort(e_t)
+        sel = ([int(v) for v in FIGS_TRAJ.split(",")] if FIGS_TRAJ
+               else [int(o_[len(o_) // 2 - 1]), int(o_[-1])])
+        stride = max(1, N // 256)
+        cxt, cyt, wtt, att, _, _ = bc.bf.sample_params(seed=bc.TEST_SEED, m=N_TEST)
+
+        def ds(f):
+            return np.asarray(f).reshape(N, N)[::stride, ::stride].astype(np.float32)
+        dump = dict(N=N, stride=stride, times=np.asarray(FIGS_TIMES), sel=np.asarray(sel),
+                    arms=np.asarray(arms), K=K, R=R, ckpt=os.path.basename(CKPT))
+        for i in sel:
+            jc = int(round(cyt[i] * (N - 1)))
+            dump[f"nu_{i}"] = float(nu_test[i])
+            dump[f"center_{i}"] = np.array([cxt[i], cyt[i], wtt[i], att[i]])
+            dump[f"line_j_{i}"] = jc
+            dump[f"truth_{i}"] = np.stack([ds(U_test[i, t]) for t in FIGS_TIMES])
+            dump[f"truth_line_{i}"] = np.stack([U_test[i, t].reshape(N, N)[:, jc]
+                                                for t in FIGS_TIMES])
+            Fs = {a_: np.asarray(last[a_][i][3][0]) for a_ in arms}
+            for a_ in arms:
+                F = Fs[a_]
+                dump[f"{a_}_{i}"] = np.stack([ds(F[t]) for t in FIGS_TIMES])
+                dump[f"{a_}_err_{i}"] = np.stack([ds(np.abs(F[t] - U_test[i, t]))
+                                                  for t in FIGS_TIMES])
+                dump[f"{a_}_line_{i}"] = np.stack([F[t].reshape(N, N)[:, jc]
+                                                   for t in FIGS_TIMES])
+                dump[f"{a_}_curve_{i}"] = np.asarray(
+                    report["variants"][a_]["per_traj"][i]["per_time"])
+                dump[f"{a_}_errmax_{i}"] = np.array(
+                    [float(np.max(np.abs(F[t] - U_test[i, t]))) for t in FIGS_TIMES])
+            if "full" in Fs and "tensor" in Fs:
+                dump[f"tensor_minus_full_{i}"] = np.stack(
+                    [ds(np.abs(Fs["tensor"][t] - Fs["full"][t])) for t in FIGS_TIMES])
+                dump[f"tensor_minus_full_max_{i}"] = np.array(
+                    [float(np.max(np.abs(Fs["tensor"][t] - Fs["full"][t])))
+                     for t in FIGS_TIMES])
+        np.savez_compressed(FIGS_DUMP, **dump)
+        log(f"  FIGS dump -> {FIGS_DUMP} (traj {sel}, times {FIGS_TIMES}, stride {stride})")
+        save()
+
     # ---------------- FOM ladder (standardised tol-Newton, same GPU) --------
+    if SKIP_FOM:
+        report["complete"] = True
+        report["secs_total"] = time.time() - t_all
+        save()
+        log(f"DONE (SKIP_FOM) -> {OUT} [{time.time()-t_all:.0f}s]")
+        return
     tol_newton = make_tol_newton_pc(N)
     base_cfgs = [(nt, max(nt * lf, 1e-12)) for nt in NEWTON_TOLS for lf in LIN_FRACS]
     base_rows = {c_: [] for c_ in base_cfgs}

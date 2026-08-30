@@ -2,6 +2,7 @@
 #SBATCH --job-name=b2dtensor_n64
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:a100:1
+#SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 #SBATCH --time=02:00:00

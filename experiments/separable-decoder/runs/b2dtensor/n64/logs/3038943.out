@@ -1,0 +1,69 @@
+host=pax051 gpu=NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=922ea4531280ff090e27fc46fecddf51804e301b
+jax_backend=gpu device=cuda:0 B2D-TENSOR N=64 K=16 R=64 M=64 m=256 arms=['full', 'ex', 'tensor'] train=0 reps=5 burn=2 stall=0.001
+  test data: 8 fresh trajectories, worst FOM rel residual 9.92e-13
+  TEST positivity: min u 2.827e-33 max 1.953e+00 frac<=0 0.00e+00 frac<0 0.00e+00
+  TRAIN truth: 576 traj regenerated [9s], max FOM rel residual 1.00e-12; positivity: min u -6.826e-31 max 1.993e+00 frac<=0 2.47e-05 frac<0 2.47e-05
+  GATE R-lite (checkpoint codes vs regenerated picked states, 64 states): recon rel-L2 mean 3.976e-02 max 3.010e-01
+  GATE bank==meshfree: 7.33e-16
+  NNLS-EQ exlin N=64 k=16 M=64 m=256 adv-only: pool 3844 support 256 (+0 pad) rel fit 4.98e-03 (row p95 1.7e-01, max 3.7e+01) [11s]
+  GATE 0 (incumbent ops == make_weak_ops): 3.99e-16
+  GATE L (exlin linear == full-grid linear): 0.00e+00
+  GATE A (exlin advection == incumbent advection): 3.03e-13
+  GATE FOMR (full-grid weak residual == wt*Phi^T R_FOM): 8.19e-16
+  GATE TB (two chunkings): 0.00e+00  [Q (64, 64, 64), 2.0 MiB, build 1.17s, T asymmetry 1.35]
+  GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 8192 training states): 1.72e-14
+  GATE T0 (tensor == oracle on the 161 all-positive decoded training states): 1.702242002424634e-15; all states: mismatch median 4.71e-05 max 2.20e-02; frac points u<=0 16.682%, min u -1.02e-01
+  GATE TQ (tensor vs oracle, 32 states, recorded): r rel median 3.33e-06 max 3.49e-04; J rel max 8.58e-04; states with u<=0 32/32
+  learned nodes: 64 continuous nodes from /cluster/tufts/paralab/tawal01/b2dtensor/n64/in/sep_codesign_n_m64_nodes.npz
+  encoder[b2d tensor u0->z0 N=64]: rel-MSE 2.125e-06 on 157 training pairs [6s]
+  IC gram vs full: |dz|/(1+|z|) 6.72e-08, ||r|| rel diff 1.42e-12
+  GATE STEP: aux step vs make_step_lspg_var(stall=0.001) max|dz| 0.00e+00; at 1e-12 vs incumbent _finish_ops 0.00e+00
+  GATE ROLL: aux rollout vs make_rollout_v2 max|dZ| 0.00e+00 (nJ equal True, attempts/traj 118)
+  rep 0 (burn, order ['full', 'ex', 'tensor', 'ex_learned']) done [79s]
+  rep 1 (burn, order ['ex_learned', 'tensor', 'ex', 'full']) done [81s]
+  rep 2 (timed, order ['full', 'ex', 'tensor', 'ex_learned']) done [83s]
+  rep 3 (timed, order ['ex_learned', 'tensor', 'ex', 'full']) done [85s]
+  rep 4 (timed, order ['full', 'ex', 'tensor', 'ex_learned']) done [87s]
+  rep 5 (timed, order ['ex_learned', 'tensor', 'ex', 'full']) done [89s]
+  rep 6 (timed, order ['full', 'ex', 'tensor', 'ex_learned']) done [90s]
+   ARM full        err 2.308651e-02 (max 3.865e-02)  e2e 34.81 ms = ic 1.98 + solve 32.59 + dec 0.40 (split sum 35.23); attempts 113 jac 157; {'stalled': 400}; decoded min u -1.10e-01, states with u<=0 92.6%
+   ARM ex          err 2.319010e-02 (max 3.863e-02)  e2e 30.75 ms = ic 1.98 + solve 28.83 + dec 0.40 (split sum 31.54); attempts 113 jac 157; {'stalled': 400}; decoded min u -1.10e-01, states with u<=0 92.6%
+   ARM tensor      err 2.309414e-02 (max 3.873e-02)  e2e 29.60 ms = ic 1.99 + solve 27.54 + dec 0.40 (split sum 30.30); attempts 113 jac 157; {'stalled': 400}; decoded min u -1.10e-01, states with u<=0 92.6%
+   ARM ex_learned  err 2.730832e-02 (max 4.304e-02)  e2e 29.83 ms = ic 2.00 + solve 27.55 + dec 0.40 (split sum 30.45); attempts 114 jac 158; {'stalled': 400}; decoded min u -1.10e-01, states with u<=0 92.6%
+  [ex vs full] err |diff| max 8.81e-04; err ratio 1.0045; latent dev max 8.97e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.883 solve ratio 0.884
+  [tensor vs full] err |diff| max 7.95e-05; err ratio 1.0003; latent dev max 1.30e-04; stop hist identical True (per traj True, attempts True); e2e ratio 0.850 solve ratio 0.845
+  [ex_learned vs full] err |diff| max 1.03e-02; err ratio 1.1829; latent dev max 8.81e-02; stop hist identical True (per traj True, attempts False); e2e ratio 0.857 solve ratio 0.845
+  [full vs ex] err |diff| max 8.81e-04; err ratio 0.9955; latent dev max 8.97e-03; stop hist identical True (per traj True, attempts True); e2e ratio 1.132 solve ratio 1.131
+  [tensor vs ex] err |diff| max 8.91e-04; err ratio 0.9959; latent dev max 8.98e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.963 solve ratio 0.955
+  [ex_learned vs ex] err |diff| max 9.44e-03; err ratio 1.1776; latent dev max 8.70e-02; stop hist identical True (per traj True, attempts False); e2e ratio 0.970 solve ratio 0.956
+  FOM ladder traj 0 done [94s]
+  FOM ladder traj 1 done [95s]
+  FOM ladder traj 2 done [96s]
+  FOM ladder traj 3 done [97s]
+  FOM ladder traj 4 done [98s]
+  FOM ladder traj 5 done [99s]
+  FOM ladder traj 6 done [100s]
+  FOM ladder traj 7 done [101s]
+   FOM nt=3e-01 lt=1e-02: err 8.885e-01  2.41 ms  newton 0
+   FOM nt=3e-01 lt=1e-01: err 8.885e-01  2.41 ms  newton 0
+   FOM nt=1e-01 lt=5e-03: err 8.586e-01  2.38 ms  newton 0
+   FOM nt=1e-01 lt=5e-02: err 8.586e-01  2.37 ms  newton 0
+   FOM nt=3e-02 lt=2e-03: err 2.799e-01  5.80 ms  newton 12
+   FOM nt=3e-02 lt=1e-02: err 2.825e-01  4.93 ms  newton 12
+   FOM nt=1e-02 lt=5e-04: err 3.456e-02  13.34 ms  newton 40
+   FOM nt=1e-02 lt=5e-03: err 3.460e-02  10.96 ms  newton 40
+   FOM nt=3e-03 lt=2e-04: err 3.538e-04  14.80 ms  newton 50
+   FOM nt=3e-03 lt=2e-03: err 3.746e-04  12.36 ms  newton 50
+   FOM nt=1e-03 lt=5e-05: err 3.140e-04  15.34 ms  newton 50
+   FOM nt=1e-03 lt=5e-04: err 3.172e-04  14.41 ms  newton 50
+   FOM nt=1e-04 lt=5e-06: err 1.350e-04  18.56 ms  newton 54
+   FOM nt=1e-04 lt=5e-05: err 1.349e-04  16.29 ms  newton 54
+  MATCHED paired [full]: ROM 34.64 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.75e-04) 12.36 ms -> 0.36x
+  MATCHED paired [ex]: ROM 30.48 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.75e-04) 12.39 ms -> 0.41x
+  MATCHED paired [tensor]: ROM 29.57 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.75e-04) 12.37 ms -> 0.42x
+  MATCHED paired [ex_learned]: ROM 29.42 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.75e-04) 12.37 ms -> 0.42x
+DONE -> /cluster/tufts/paralab/tawal01/b2dtensor/n64/out/sep_b2d_tensor_n64.json [108s]
+ALL-DONE

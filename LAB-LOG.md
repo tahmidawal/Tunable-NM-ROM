@@ -3468,3 +3468,13 @@ reports gained a Figures section; the deck gained four figure slides (31 slides)
 figures show: fields indistinguishable across truth/oracle/tensor/NNLS; pointwise tensor and
 oracle errors identical while NNLS differs (1D) or equals at the decoder floor (2D);
 |tensor−oracle| 1e-8…1e-7 (1D), 1e-6 (2D); error curves tensor ≡ oracle.
+
+### Session handoff written
+
+`understand/2026-08-30-session-handoff-tensor.md` — pointer document for resuming after a
+context compaction: what is true (Poisson QF, 1D tensor, 2D tensor, figures, deck, ideation),
+the three worktrees/branches and their state, key code paths, the ordered list of open
+experiments (multi-seed → sign-changing family → fixed sine bank → R=512 compression →
+1D positivity assert → 2D rollout-optimization port), and the landmines learned this session
+(codex stdin/sandbox, rsync --delete eating failed logs, GATE_C_TOL, the 17 GB jit closure,
+two A100 models in the pool, render-after-edit for Beamer, "interleaved" only when it is).

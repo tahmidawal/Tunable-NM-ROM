@@ -2,7 +2,7 @@
  "config": {
   "pde": "stokes2d",
   "kind": "staggered_MAC_FOM_phase1",
-  "driver_revision": 3,
+  "driver_revision": 4,
   "discretization": "MAC, N cells, h=1/N, p at N^2 centres (mean-zero gauge), u_x on N(N-1) interior vertical faces, u_y on N(N-1) interior horizontal faces, boundary-normal velocities eliminated, no-slip tangential via ODD ghosts (wall diagonal -5/h^2)",
   "ns": [
    8,
@@ -81,7 +81,7 @@
   },
   "allow_cpu": false,
   "smoke": false,
-  "git_commit": "e4c3231f6bc3228dc24b9cd6a75e0341b496b9cb",
+  "git_commit": "70108729854722fd499176a645cfea99127453d1",
   "hostname": "spark-d69e"
  },
  "gates": {
@@ -102,39 +102,129 @@
   },
   "PRECOND": {
    "debug_asserts_active": true,
-   "allow_cpu": 0,
-   "rank_ns": [
-    32,
-    64
-   ],
-   "freeslip_ns": [
-    8,
-    16,
-    32,
-    64,
-    128
-   ],
-   "ns": [
-    8,
-    16,
-    32,
-    64,
-    128,
-    256
-   ],
-   "ladder": [
-    32,
-    64,
-    128,
-    256
-   ],
-   "generic_ns": [
-    32,
-    64,
-    128
-   ],
    "smoke": 0,
-   "rule": "ASSERTED unless SMOKE=1: python must run WITHOUT -O so assert statements are live; ALLOW_CPU must be 0; and the RANK_NS and FREESLIP_NS ladders must be non-empty.  A SMOKE=1 run records smoke=1 and is not a certified artifact"
+   "frozen_config": {
+    "ns": [
+     8,
+     16,
+     32,
+     64,
+     128,
+     256
+    ],
+    "ladder": [
+     32,
+     64,
+     128,
+     256
+    ],
+    "generic_ns": [
+     32,
+     64,
+     128
+    ],
+    "adj_ns": [
+     8,
+     16,
+     32,
+     64,
+     128,
+     256
+    ],
+    "rank_ns": [
+     32,
+     64
+    ],
+    "freeslip_ns": [
+     8,
+     16,
+     32,
+     64,
+     128
+    ],
+    "M_modes": 64,
+    "nu": 1.0,
+    "allow_cpu": 0
+   },
+   "observed_config": {
+    "ns": [
+     8,
+     16,
+     32,
+     64,
+     128,
+     256
+    ],
+    "ladder": [
+     32,
+     64,
+     128,
+     256
+    ],
+    "generic_ns": [
+     32,
+     64,
+     128
+    ],
+    "adj_ns": [
+     8,
+     16,
+     32,
+     64,
+     128,
+     256
+    ],
+    "rank_ns": [
+     32,
+     64
+    ],
+    "freeslip_ns": [
+     8,
+     16,
+     32,
+     64,
+     128
+    ],
+    "M_modes": 64,
+    "nu": 1.0,
+    "allow_cpu": 0
+   },
+   "config_mismatch": {},
+   "expected_gates": [
+    "MF",
+    "MMSF",
+    "PRECOND",
+    "REF",
+    "S0",
+    "SYM",
+    "S_ADJ",
+    "S_BACKERR",
+    "S_EXACT",
+    "S_FOM",
+    "S_FOMGEN",
+    "S_FREESLIP",
+    "S_NU",
+    "S_PRESS",
+    "S_RANK",
+    "S_STRUCT"
+   ],
+   "expected_row_counts": {
+    "REF": 3,
+    "MMSF": 2,
+    "MF": 6,
+    "S_ADJ": 6,
+    "S_STRUCT": 6,
+    "S_PRESS": 6,
+    "SYM": 6,
+    "S_FOM": 6,
+    "S_EXACT": 6,
+    "S_FOMGEN": 3,
+    "S_FREESLIP": 5,
+    "S_RANK_dense": 2,
+    "S_RANK_indirect": 6,
+    "S_BACKERR": 17
+   },
+   "rule": "ASSERTED unless SMOKE=1: the ENTIRE configuration must equal the frozen contract -- not merely be non-empty, since env overrides could otherwise shorten a ladder and still reach complete=true; the expected gate manifest must be present with the EXACT expected row counts; and no aggregated array may contain a non-finite value (python's max([finite, nan]) returns the finite value, so a NaN could otherwise turn a failed solve into a green run).  Python must run WITHOUT -O, checked by a raise rather than an assert.  A SMOKE=1 run NEVER sets complete=true"
   },
   "REF": {
    "rows": [
@@ -278,6 +368,10 @@
      "struct_DC_inf": 0.0,
      "struct_DC_max": 0.0,
      "struct_DC_nnz": 0,
+     "s3ind_ctl_fro_min": 0.1419859226681177,
+     "s3ind_ctl_fro_max": 0.14285714285714296,
+     "s3ind_matched_cos_min": 0.9939014586768236,
+     "s3ind_offdiag_cos_max": 6.663062399462849e-16,
      "s3_ctl_fro_min": 0.14285714285714268,
      "s3_ctl_fro_max": 0.1428571428571431,
      "s3_ctl_fro_ideal": 0.14285714285714285,
@@ -314,6 +408,10 @@
      "struct_DC_inf": 0.0,
      "struct_DC_max": 0.0,
      "struct_DC_nnz": 0,
+     "s3ind_ctl_fro_min": 0.12491221231239834,
+     "s3ind_ctl_fro_max": 0.12500000000000006,
+     "s3ind_matched_cos_min": 0.999297698499186,
+     "s3ind_offdiag_cos_max": 5.377642775528102e-16,
      "s3_ctl_fro_min": 0.1249999999999993,
      "s3_ctl_fro_max": 0.12500000000000078,
      "s3_ctl_fro_ideal": 0.125,
@@ -350,6 +448,10 @@
      "struct_DC_inf": 0.0,
      "struct_DC_max": 0.0,
      "struct_DC_nnz": 0,
+     "s3ind_ctl_fro_min": 0.12499511582180341,
+     "s3ind_ctl_fro_max": 0.1250000000000005,
+     "s3ind_matched_cos_min": 0.9999609265744279,
+     "s3ind_offdiag_cos_max": 5.195496810550537e-16,
      "s3_ctl_fro_min": 0.12499999999999704,
      "s3_ctl_fro_max": 0.12500000000000125,
      "s3_ctl_fro_ideal": 0.125,
@@ -386,6 +488,10 @@
      "struct_DC_inf": 0.0,
      "struct_DC_max": 0.0,
      "struct_DC_nnz": 0,
+     "s3ind_ctl_fro_min": 0.12499970328998941,
+     "s3ind_ctl_fro_max": 0.1250000000000005,
+     "s3ind_matched_cos_min": 0.9999976263199174,
+     "s3ind_offdiag_cos_max": 4.373671563806525e-16,
      "s3_ctl_fro_min": 0.12499999999999671,
      "s3_ctl_fro_max": 0.12500000000000974,
      "s3_ctl_fro_ideal": 0.125,
@@ -422,6 +528,10 @@
      "struct_DC_inf": 0.0,
      "struct_DC_max": 0.0,
      "struct_DC_nnz": 0,
+     "s3ind_ctl_fro_min": 0.12499998158611902,
+     "s3ind_ctl_fro_max": 0.12500000000000264,
+     "s3ind_matched_cos_min": 0.999999852688953,
+     "s3ind_offdiag_cos_max": 3.3550636227563935e-16,
      "s3_ctl_fro_min": 0.12499999999999412,
      "s3_ctl_fro_max": 0.1250000000000109,
      "s3_ctl_fro_ideal": 0.125,
@@ -458,6 +568,10 @@
      "struct_DC_inf": 0.0,
      "struct_DC_max": 0.0,
      "struct_DC_nnz": 0,
+     "s3ind_ctl_fro_min": 0.12499999885115817,
+     "s3ind_ctl_fro_max": 0.12500000000000627,
+     "s3ind_matched_cos_min": 0.9999999908092677,
+     "s3ind_offdiag_cos_max": 3.9855271860567143e-16,
      "s3_ctl_fro_min": 0.12499999999998714,
      "s3_ctl_fro_max": 0.12500000000002223,
      "s3_ctl_fro_ideal": 0.125,
@@ -667,17 +781,20 @@
      "D_Phi_norm": 1.4625491543135638e-19
     }
    ],
-   "min_ctl_fro": 0.12499999999998714,
-   "min_ctl_fro_scaled": 0.9999999999998971,
-   "min_matched_cos": 0.9999999999999489,
+   "min_ctl_fro_independent": 0.12491221231239834,
+   "min_matched_cos_independent": 0.9939014586768236,
+   "max_offdiag_cos_independent": 6.663062399462849e-16,
+   "min_ctl_fro_selfnorm_diagnostic": 0.12499999999998714,
+   "min_ctl_fro_scaled_selfnorm_diagnostic": 0.9999999999998971,
+   "min_matched_cos_selfnorm_diagnostic": 0.9999999999999489,
    "max_sol_fro": 1.386408720261313e-16,
    "max_sol_cos": 1.452830911130576e-15,
    "worst_D_Phi_norm": 6.75256913477565e-18,
    "floor": 0.01,
    "matched_cos": 0.99,
    "sol_tol": 1e-13,
-   "scaled_floor": 0.99,
-   "rule": "REPAIRED S3 (STOKES-PHASE1-VERIFY-codex.md).  Deterministic p = chi_kl aligned with each of the M control columns: matched-control cosine >= 0.99, control Frobenius metric >= 1e-2 (the design's own floor, = 1/sqrt(M) exactly for a mass-orthonormal control), solenoidal Frobenius metric and cosine <= 1e-13.  The rand_press_* fields are the SUPERSEDED grid-white-random-pressure diagnostic, retained as evidence and NOT gated.  ALSO gated dimensionlessly: sqrt(M) * control metric >= 0.99.  That constant is DERIVED, not chosen: the matched-cosine requirement cos >= 0.99 makes the aligned column alone contribute 0.99/sqrt(M) to the RMS.  It is the form that survives M -> large, where the constant 1e-2 floor would reject a CORRECT aligned control at M > 10^4"
+   "selfnorm_scaled_gated": false,
+   "rule": "REPAIRED S3 (STOKES-PHASE1-VERIFY-codex.md).  Deterministic p = chi_kl aligned with each of the M control columns: matched-control cosine >= 0.99, control Frobenius metric >= 1e-2 (the design's own floor, = 1/sqrt(M) exactly for a mass-orthonormal control), solenoidal Frobenius metric and cosine <= 1e-13.  The rand_press_* fields are the SUPERSEDED grid-white-random-pressure diagnostic, retained as evidence and NOT gated.  THE GATED CONTROL IS THE INDEPENDENT ONE (s3ind_*): the ANALYTIC gradient of the same chi_j sampled on the two face lattices, which never touches the Grad operator.  Its matched cosine is a real measurement (0.9939 at N=8 rising to 1 as h -> 0, because Grad_h chi carries component factors sinc(k pi h/2) != sinc(l pi h/2)) and it collapses to 0 under a v-block sign flip in Grad.  The SELF-NORMALISED control (s3_*, Psi_j = X_j/(h||X_j||)) is retained as a DIAGNOSTIC ONLY: it is a normalised copy of X, so its matched cosine and sqrt(M)*ctl_fro are identically 1 for any nonzero X even if Grad is wrong.  Revisions 2-3 asserted on it; that assertion was TAUTOLOGICAL and is retracted -- see STOKES-NOTES.md retraction 9.  Known blind spot of the cosine form: it is invariant to a global scale or global sign of Grad; those are covered by S-ADJ and S-FOM"
   },
   "SYM": {
    "rows": [
@@ -719,7 +836,7 @@
      "expect_rank_D": 1023,
      "expect_dim_ker_D": 961,
      "expect_rank_C": 961,
-     "seconds": 0.9392573833465576
+     "seconds": 0.8048286437988281
     },
     {
      "N": 64,
@@ -729,7 +846,7 @@
      "expect_rank_D": 4095,
      "expect_dim_ker_D": 3969,
      "expect_rank_C": 3969,
-     "seconds": 110.22580814361572
+     "seconds": 103.0397698879242
     }
    ],
    "indirect": [
@@ -840,7 +957,7 @@
      "p_mean_raw": 1.1102230246251565e-16,
      "saddle_dim": 177,
      "saddle_nnz": 1076,
-     "solve_seconds": 0.0009000301361083984
+     "solve_seconds": 0.0009171962738037109
     },
     {
      "N": 16,
@@ -873,7 +990,7 @@
      "p_mean_raw": -2.220446049250313e-16,
      "saddle_dim": 737,
      "saddle_nnz": 4708,
-     "solve_seconds": 0.003735065460205078
+     "solve_seconds": 0.004113197326660156
     },
     {
      "N": 32,
@@ -906,7 +1023,7 @@
      "p_mean_raw": 1.6653345369377348e-16,
      "saddle_dim": 3009,
      "saddle_nnz": 19652,
-     "solve_seconds": 0.050914764404296875
+     "solve_seconds": 0.052195072174072266
     },
     {
      "N": 64,
@@ -939,7 +1056,7 @@
      "p_mean_raw": -5.551115123125783e-16,
      "saddle_dim": 12161,
      "saddle_nnz": 80260,
-     "solve_seconds": 0.7564079761505127
+     "solve_seconds": 0.6767134666442871
     },
     {
      "N": 128,
@@ -972,7 +1089,7 @@
      "p_mean_raw": 7.216449660063518e-16,
      "saddle_dim": 48897,
      "saddle_nnz": 324356,
-     "solve_seconds": 7.303362607955933
+     "solve_seconds": 6.937910556793213
     },
     {
      "N": 256,
@@ -1005,7 +1122,7 @@
      "p_mean_raw": -7.216449660063518e-16,
      "saddle_dim": 196097,
      "saddle_nnz": 1304068,
-     "solve_seconds": 79.2437059879303
+     "solve_seconds": 75.07713222503662
     }
    ],
    "ladder": [
@@ -1200,12 +1317,12 @@
      "err_p_l2_rel": 0.18339392033469437,
      "err_u_bnd_rel": 0.017403451189052687,
      "err_u_cos_with_uex": 0.9106740517894303,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 0.05094248191174629,
      "err_p_mass_abs": 0.1396054222115464,
      "div_u_abs": 6.850422248736049e-11,
@@ -1217,7 +1334,7 @@
      "p_mean_raw": 5.551115123125783e-17,
      "saddle_dim": 3009,
      "saddle_nnz": 19652,
-     "solve_seconds": 0.09102559089660645
+     "solve_seconds": 0.08786463737487793
     },
     {
      "N": 64,
@@ -1233,12 +1350,12 @@
      "err_p_l2_rel": 0.045773257855541705,
      "err_u_bnd_rel": 0.00432241685506396,
      "err_u_cos_with_uex": 0.9122181643977201,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 0.012625513035523749,
      "err_p_mass_abs": 0.03484409394411091,
      "div_u_abs": 2.397378882689249e-10,
@@ -1250,7 +1367,7 @@
      "p_mean_raw": 1.3877787807814457e-16,
      "saddle_dim": 12161,
      "saddle_nnz": 80260,
-     "solve_seconds": 0.6655828952789307
+     "solve_seconds": 0.6639103889465332
     },
     {
      "N": 128,
@@ -1266,12 +1383,12 @@
      "err_p_l2_rel": 0.011442162949626987,
      "err_u_bnd_rel": 0.0010788904550083631,
      "err_u_cos_with_uex": 0.9125989703819015,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 0.0031495711430643233,
      "err_p_mass_abs": 0.008710146915888764,
      "div_u_abs": 5.2085295552007495e-09,
@@ -1283,7 +1400,7 @@
      "p_mean_raw": -2.7755575615628914e-16,
      "saddle_dim": 48897,
      "saddle_nnz": 324356,
-     "solve_seconds": 7.154098272323608
+     "solve_seconds": 6.933931589126587
     }
    ],
    "orders_u": [
@@ -1374,12 +1491,12 @@
      "err_p_l2_rel": 2.4414574751195635,
      "err_u_bnd_rel": 3.8471485281922977,
      "err_u_cos_with_uex": 0.7647699246545607,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 2.5619074078621864,
      "err_p_mass_abs": 2.4414574751195635,
      "div_u_abs": 6.316904814438727e-13,
@@ -1391,7 +1508,7 @@
      "p_mean_raw": -3.747002708109903e-15,
      "saddle_dim": 177,
      "saddle_nnz": 1076,
-     "solve_seconds": 0.0008141994476318359
+     "solve_seconds": 0.0008788108825683594
     },
     {
      "N": 16,
@@ -1407,12 +1524,12 @@
      "err_p_l2_rel": 2.526697314331028,
      "err_u_bnd_rel": 8.120846406062354,
      "err_u_cos_with_uex": 0.7233749273230476,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 2.4754526340318304,
      "err_p_mass_abs": 2.5266973143310274,
      "div_u_abs": 2.8520087767833903e-12,
@@ -1424,7 +1541,7 @@
      "p_mean_raw": 5.551115123125783e-17,
      "saddle_dim": 737,
      "saddle_nnz": 4708,
-     "solve_seconds": 0.003536224365234375
+     "solve_seconds": 0.0043981075286865234
     },
     {
      "N": 32,
@@ -1440,12 +1557,12 @@
      "err_p_l2_rel": 2.547438580437199,
      "err_u_bnd_rel": 16.953080570718786,
      "err_u_cos_with_uex": 0.712611392681004,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 2.455468954705553,
      "err_p_mass_abs": 2.5474385804371993,
      "div_u_abs": 1.5777677815434544e-11,
@@ -1457,7 +1574,7 @@
      "p_mean_raw": -1.432187701766452e-14,
      "saddle_dim": 3009,
      "saddle_nnz": 19652,
-     "solve_seconds": 0.02047419548034668
+     "solve_seconds": 0.02040553092956543
     },
     {
      "N": 64,
@@ -1473,12 +1590,12 @@
      "err_p_l2_rel": 2.5526482081244044,
      "err_u_bnd_rel": 34.752935625408234,
      "err_u_cos_with_uex": 0.709895153496323,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 2.4505735958150128,
      "err_p_mass_abs": 2.552648208124406,
      "div_u_abs": 1.0823575088180959e-10,
@@ -1490,7 +1607,7 @@
      "p_mean_raw": -4.746203430272544e-14,
      "saddle_dim": 12161,
      "saddle_nnz": 80260,
-     "solve_seconds": 0.21715259552001953
+     "solve_seconds": 0.2511179447174072
     },
     {
      "N": 128,
@@ -1506,12 +1623,12 @@
      "err_p_l2_rel": 2.5539536829552456,
      "err_u_bnd_rel": 70.41963072805088,
      "err_u_cos_with_uex": 0.7092145173001613,
-     "exact_discrete_u_rel": NaN,
-     "exact_discrete_p_rel": NaN,
-     "predicted_err_u": NaN,
-     "predicted_err_p": NaN,
-     "pred_dev_u": NaN,
-     "pred_dev_p": NaN,
+     "exact_discrete_u_rel": null,
+     "exact_discrete_p_rel": null,
+     "predicted_err_u": null,
+     "predicted_err_p": null,
+     "pred_dev_u": null,
+     "pred_dev_p": null,
      "err_u_mass_abs": 2.449356025081473,
      "err_p_mass_abs": 2.553953682955245,
      "div_u_abs": 7.433981662434955e-10,
@@ -1523,7 +1640,7 @@
      "p_mean_raw": 6.750155989720952e-14,
      "saddle_dim": 48897,
      "saddle_nnz": 324356,
-     "solve_seconds": 2.074633836746216
+     "solve_seconds": 2.045261859893799
     }
    ],
    "orders_u": [
@@ -1582,122 +1699,313 @@
   "S_BACKERR": {
    "rows": [
     {
+     "tag": "S0_probe",
      "N": 8,
-     "family": "frozen",
      "ghost": "odd",
+     "nu": 1.0,
      "backward_err": 1.631579507840348e-17,
+     "mom_resid": 1.620949605605083e-17,
+     "cont_resid": 2.1011789684679236e-16,
+     "gauge_resid": 1.0819071842909508e-16,
+     "gauge_raw": 7.105427357601002e-15,
      "lin_resid_rel": 1.1283613298150488e-15,
-     "K_fro": 3160.7391540587464
+     "K_fro": 3160.7391540587464,
+     "lam": 1.5298269064520776e-15
     },
     {
-     "N": 16,
-     "family": "frozen",
-     "ghost": "odd",
-     "backward_err": 9.019696468110538e-18,
-     "lin_resid_rel": 4.771790682731224e-15,
-     "K_fro": 25630.072337002875
-    },
-    {
-     "N": 32,
-     "family": "frozen",
-     "ghost": "odd",
-     "backward_err": 5.966118037719511e-18,
-     "lin_resid_rel": 2.5000857802579437e-14,
-     "K_fro": 206207.64742365884
-    },
-    {
-     "N": 64,
-     "family": "frozen",
-     "ghost": "odd",
-     "backward_err": 3.2884658698910854e-18,
-     "lin_resid_rel": 1.0997527594553017e-13,
-     "K_fro": 1653931.505657958
-    },
-    {
-     "N": 128,
-     "family": "frozen",
-     "ghost": "odd",
-     "backward_err": 2.153447611322875e-18,
-     "lin_resid_rel": 5.757634718879958e-13,
-     "K_fro": 13247757.711716803
-    },
-    {
-     "N": 256,
-     "family": "frozen",
-     "ghost": "odd",
-     "backward_err": 1.3409857827381613e-18,
-     "lin_resid_rel": 2.867739973879487e-12,
-     "K_fro": 106045752.9351891
-    },
-    {
-     "N": 32,
-     "family": "generic",
-     "ghost": "odd",
-     "backward_err": 8.351033642938739e-18,
-     "lin_resid_rel": 8.777297824825499e-15,
-     "K_fro": 206207.64742365884
-    },
-    {
-     "N": 64,
-     "family": "generic",
-     "ghost": "odd",
-     "backward_err": 4.241412718619986e-18,
-     "lin_resid_rel": 3.530213714201656e-14,
-     "K_fro": 1653931.505657958
-    },
-    {
-     "N": 128,
-     "family": "generic",
-     "ghost": "odd",
-     "backward_err": 2.427636267763939e-18,
-     "lin_resid_rel": 1.6133325114195031e-13,
-     "K_fro": 13247757.711716803
-    },
-    {
+     "tag": "frozen/odd",
      "N": 8,
-     "family": "frozen",
-     "ghost": "even",
-     "backward_err": 1.7900825227859528e-17,
-     "lin_resid_rel": 2.4360495317044266e-15,
-     "K_fro": 2855.742285291164
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 1.631579507840348e-17,
+     "mom_resid": 1.620949605605083e-17,
+     "cont_resid": 2.1011789684679236e-16,
+     "gauge_resid": 1.0819071842909508e-16,
+     "gauge_raw": 7.105427357601002e-15,
+     "lin_resid_rel": 1.1283613298150488e-15,
+     "K_fro": 3160.7391540587464,
+     "lam": 1.5298269064520776e-15
     },
     {
+     "tag": "frozen/odd",
      "N": 16,
-     "family": "frozen",
-     "ghost": "even",
-     "backward_err": 6.756827013613375e-18,
-     "lin_resid_rel": 7.60310026010207e-15,
-     "K_fro": 24371.828983480085
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 9.019696468110538e-18,
+     "mom_resid": 9.759377938284375e-18,
+     "cont_resid": 1.259398506788184e-16,
+     "gauge_resid": 3.8996414616801815e-16,
+     "gauge_raw": -1.0047518372857667e-13,
+     "lin_resid_rel": 4.771790682731224e-15,
+     "K_fro": 25630.072337002875,
+     "lam": 1.2129315022056562e-15
     },
     {
+     "tag": "frozen/odd",
      "N": 32,
-     "family": "frozen",
-     "ghost": "even",
-     "backward_err": 4.91202977724913e-18,
-     "lin_resid_rel": 4.517852076105703e-14,
-     "K_fro": 201100.02255594105
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 5.966118037719511e-18,
+     "mom_resid": 6.246722868635474e-18,
+     "cont_resid": 2.4573974600552567e-16,
+     "gauge_resid": 3.983457841329597e-17,
+     "gauge_raw": -4.085620730620576e-14,
+     "lin_resid_rel": 2.5000857802579437e-14,
+     "K_fro": 206207.64742365884,
+     "lam": 7.74962443408098e-15
     },
     {
+     "tag": "frozen/odd",
      "N": 64,
-     "family": "frozen",
-     "ghost": "even",
-     "backward_err": 2.7781827451437495e-18,
-     "lin_resid_rel": 2.0680353005044413e-13,
-     "K_fro": 1633353.5105714255
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 3.2884658698910854e-18,
+     "mom_resid": 3.635226036770981e-18,
+     "cont_resid": 1.36752903918396e-16,
+     "gauge_resid": 1.8559506698623338e-17,
+     "gauge_raw": 7.605027718682322e-14,
+     "lin_resid_rel": 1.0997527594553017e-13,
+     "K_fro": 1653931.505657958,
+     "lam": 1.254599366855501e-14
     },
     {
+     "tag": "frozen/odd",
      "N": 128,
-     "family": "frozen",
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 2.153447611322875e-18,
+     "mom_resid": 2.130644899926754e-18,
+     "cont_resid": 4.696302791118552e-16,
+     "gauge_resid": 5.994019739576269e-16,
+     "gauge_raw": 9.821587987346447e-12,
+     "lin_resid_rel": 5.757634718879958e-13,
+     "K_fro": 13247757.711716803,
+     "lam": 2.6452480777291022e-14
+    },
+    {
+     "tag": "frozen/odd",
+     "N": 256,
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 1.3409857827381613e-18,
+     "mom_resid": 1.3809450384762304e-18,
+     "cont_resid": 4.961738258817233e-16,
+     "gauge_resid": 2.1054338909560916e-15,
+     "gauge_raw": -1.379851788385622e-10,
+     "lin_resid_rel": 2.867739973879487e-12,
+     "K_fro": 106045752.9351891,
+     "lam": 2.0050049122584042e-13
+    },
+    {
+     "tag": "generic/odd",
+     "N": 32,
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 8.351033642938739e-18,
+     "mom_resid": 7.978149475384795e-18,
+     "cont_resid": 3.1696638917127224e-16,
+     "gauge_resid": 9.848099778691389e-17,
+     "gauge_raw": 7.860379014346108e-14,
+     "lin_resid_rel": 8.777297824825499e-15,
+     "K_fro": 206207.64742365884,
+     "lam": 2.1491596107577544e-14
+    },
+    {
+     "tag": "generic/odd",
+     "N": 64,
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 4.241412718619986e-18,
+     "mom_resid": 4.293692354063836e-18,
+     "cont_resid": 1.389951522259541e-16,
+     "gauge_resid": 4.991192726799724e-16,
+     "gauge_raw": 1.560751528018045e-12,
+     "lin_resid_rel": 3.530213714201656e-14,
+     "K_fro": 1653931.505657958,
+     "lam": -9.340307213182828e-15
+    },
+    {
+     "tag": "generic/odd",
+     "N": 128,
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 2.427636267763939e-18,
+     "mom_resid": 2.3102768129816664e-18,
+     "cont_resid": 3.769711627903931e-16,
+     "gauge_resid": 1.2598227315801871e-15,
+     "gauge_raw": 1.5720813539843448e-11,
+     "lin_resid_rel": 1.6133325114195031e-13,
+     "K_fro": 13247757.711716803,
+     "lam": 1.7323158762907495e-13
+    },
+    {
+     "tag": "S_NU/nu=1",
+     "N": 32,
+     "ghost": "odd",
+     "nu": 1.0,
+     "backward_err": 5.966118037719511e-18,
+     "mom_resid": 6.246722868635474e-18,
+     "cont_resid": 2.4573974600552567e-16,
+     "gauge_resid": 3.983457841329597e-17,
+     "gauge_raw": -4.085620730620576e-14,
+     "lin_resid_rel": 2.5000857802579437e-14,
+     "K_fro": 206207.64742365884,
+     "lam": 7.74962443408098e-15
+    },
+    {
+     "tag": "S_NU/nu=7",
+     "N": 32,
+     "ghost": "odd",
+     "nu": 7.0,
+     "backward_err": 2.1077510724189007e-18,
+     "mom_resid": 7.368866760668377e-18,
+     "cont_resid": 2.0501390090015115e-15,
+     "gauge_resid": 1.6107025184497351e-16,
+     "gauge_raw": 1.652011860642233e-13,
+     "lin_resid_rel": 2.953102833335023e-14,
+     "K_fro": 1443318.3745688268,
+     "lam": -2.5241340124475628e-14
+    },
+    {
+     "tag": "frozen/even",
+     "N": 8,
      "ghost": "even",
+     "nu": 1.0,
+     "backward_err": 1.7900825227859528e-17,
+     "mom_resid": 1.9453909512522956e-17,
+     "cont_resid": 1.5701144974036945e-16,
+     "gauge_resid": 1.3815070073203365e-15,
+     "gauge_raw": -2.341460358934455e-13,
+     "lin_resid_rel": 2.4360495317044266e-15,
+     "K_fro": 2855.742285291164,
+     "lam": 7.658606666934654e-15
+    },
+    {
+     "tag": "frozen/even",
+     "N": 16,
+     "ghost": "even",
+     "nu": 1.0,
+     "backward_err": 6.756827013613375e-18,
+     "mom_resid": 7.81140027949181e-18,
+     "cont_resid": 8.808341141265619e-17,
+     "gauge_resid": 1.977247149056135e-17,
+     "gauge_raw": 1.3766765505351941e-14,
+     "lin_resid_rel": 7.60310026010207e-15,
+     "K_fro": 24371.828983480085,
+     "lam": 1.044536321764837e-14
+    },
+    {
+     "tag": "frozen/even",
+     "N": 32,
+     "ghost": "even",
+     "nu": 1.0,
+     "backward_err": 4.91202977724913e-18,
+     "mom_resid": 5.8291140408135194e-18,
+     "cont_resid": 6.029018826482295e-17,
+     "gauge_resid": 5.185432632804215e-15,
+     "gauge_raw": -1.45345957491827e-11,
+     "lin_resid_rel": 4.517852076105703e-14,
+     "K_fro": 201100.02255594105,
+     "lam": -6.9385168163303914e-15
+    },
+    {
+     "tag": "frozen/even",
+     "N": 64,
+     "ghost": "even",
+     "nu": 1.0,
+     "backward_err": 2.7781827451437495e-18,
+     "mom_resid": 3.303264251110043e-18,
+     "cont_resid": 5.138057336235835e-17,
+     "gauge_resid": 1.7103319983771506e-14,
+     "gauge_raw": -1.9206902734936193e-10,
+     "lin_resid_rel": 2.0680353005044413e-13,
+     "K_fro": 1633353.5105714255,
+     "lam": 6.920160280081239e-16
+    },
+    {
+     "tag": "frozen/even",
+     "N": 128,
+     "ghost": "even",
+     "nu": 1.0,
      "backward_err": 1.6290502681423722e-18,
+     "mom_resid": 1.954636470027483e-18,
+     "cont_resid": 4.395940181848518e-17,
+     "gauge_resid": 2.495105846986688e-14,
+     "gauge_raw": 1.1212462069920548e-09,
      "lin_resid_rel": 9.759174051338576e-13,
-     "K_fro": 13165152.524827959
+     "K_fro": 13165152.524827959,
+     "lam": 1.0049197961009028e-14
     }
    ],
-   "n_solves": 14,
+   "n_solves": 17,
    "worst": 1.7900825227859528e-17,
+   "worst_mom_resid": 1.9453909512522956e-17,
+   "worst_cont_resid": 2.0501390090015115e-15,
+   "worst_gauge_resid": 2.495105846986688e-14,
+   "worst_gauge_raw": 1.1212462069920548e-09,
    "tol": 1e-13,
-   "rule": "ASSERTED over EVERY solve in the run: normalised backward error ||K x - b|| / (||K||_F ||x|| + ||b||) <= 1e-13.  Frozen a priori from backward stability of the sparse LU, O(nnz^(1/2) u_mach); it does not derive from any quantity it tests, which is what the retracted S-EXACT prediction bound could not say.  Note ||res||/||rhs|| is ALSO recorded and grows like h^-2 because ||K|| does; that unnormalised form is a diagnostic, not the gate"
+   "mom_tol": 1e-13,
+   "cont_tol": 1e-12,
+   "gauge_tol": 1e-12,
+   "gauge_raw_tol": 1e-08,
+   "expected_solves": 17,
+   "rule": "ASSERTED over EVERY solve_stokes call in the run (all 17: S0 probe, 6 frozen, 3 generic, 2 S-NU, 5 free-slip).  (a) global normalised backward error ||K x - b|| / (||K||_F ||x|| + ||b||) <= 1e-13; (b) momentum block ||r_mom||/(nu||L||_F||u|| + ||Grad||_F||p|| + ||f||) <= 1e-13; (c) continuity block ||r_cont||/(||D||_F||u|| + |lam| sqrt(n_p)) <= 1e-12; (d) gauge row |1^T p|/(sqrt(n_p)||p||) <= 1e-12 AND the RAW |1^T p| <= 1e-8.  (b)-(d) exist because (a) alone is blind to the bordered rows.  All thresholds are FROZEN ENGINEERING thresholds -- 1e-13 is about 450 machine epsilons and predates the certified artifact -- NOT rigorously derived from O(sqrt(nnz) u): that expression gives 1.27e-13 at N=256 and sparse-LU pivot growth prevents it being a hard bound.  S-BACKERR is REFERENCE-direction independent (it has no pathology aligned with the manufactured solution, unlike the retracted pred_dev) but not literally perturbation-direction independent: it measures ||K dx||, and at N=32 equal 1e-11 relative perturbations give 1.99976e-13 (random), 2.78032e-13 (alternating high-frequency) and 2.38238e-15 (parallel to velocity).  It cannot detect a WRONG K or b that is solved accurately.  ||res||/||rhs|| is also recorded and grows like h^-2 because ||K|| does; that unnormalised form is a diagnostic, not a gate"
+  },
+  "MANIFEST": {
+   "expected_gates": [
+    "MF",
+    "MMSF",
+    "PRECOND",
+    "REF",
+    "S0",
+    "SYM",
+    "S_ADJ",
+    "S_BACKERR",
+    "S_EXACT",
+    "S_FOM",
+    "S_FOMGEN",
+    "S_FREESLIP",
+    "S_NU",
+    "S_PRESS",
+    "S_RANK",
+    "S_STRUCT"
+   ],
+   "missing_gates": [],
+   "expected_row_counts": {
+    "REF": 3,
+    "MMSF": 2,
+    "MF": 6,
+    "S_ADJ": 6,
+    "S_STRUCT": 6,
+    "S_PRESS": 6,
+    "SYM": 6,
+    "S_FOM": 6,
+    "S_EXACT": 6,
+    "S_FOMGEN": 3,
+    "S_FREESLIP": 5,
+    "S_RANK_dense": 2,
+    "S_RANK_indirect": 6,
+    "S_BACKERR": 17
+   },
+   "observed_row_counts": {
+    "REF": 3,
+    "MMSF": 2,
+    "MF": 6,
+    "S_ADJ": 6,
+    "S_STRUCT": 6,
+    "S_PRESS": 6,
+    "SYM": 6,
+    "S_FOM": 6,
+    "S_EXACT": 6,
+    "S_FOMGEN": 3,
+    "S_FREESLIP": 5,
+    "S_RANK_dense": 2,
+    "S_RANK_indirect": 6,
+    "S_BACKERR": 17
+   },
+   "row_count_mismatch": {},
+   "nonfinite_fields": [],
+   "rule": "ASSERTED unless SMOKE=1: every expected gate present, EXACT expected row counts (non-empty is not sufficient), and no non-finite float anywhere in gates/ or rows/.  Fields that do not apply (the closed form on the generic and free-slip arms) are recorded as null, never NaN, so this sweep is unambiguous"
   }
  },
  "rows": [
@@ -1732,7 +2040,7 @@
    "p_mean_raw": 1.1102230246251565e-16,
    "saddle_dim": 177,
    "saddle_nnz": 1076,
-   "solve_seconds": 0.0009000301361083984
+   "solve_seconds": 0.0009171962738037109
   },
   {
    "N": 16,
@@ -1765,7 +2073,7 @@
    "p_mean_raw": -2.220446049250313e-16,
    "saddle_dim": 737,
    "saddle_nnz": 4708,
-   "solve_seconds": 0.003735065460205078
+   "solve_seconds": 0.004113197326660156
   },
   {
    "N": 32,
@@ -1798,7 +2106,7 @@
    "p_mean_raw": 1.6653345369377348e-16,
    "saddle_dim": 3009,
    "saddle_nnz": 19652,
-   "solve_seconds": 0.050914764404296875
+   "solve_seconds": 0.052195072174072266
   },
   {
    "N": 64,
@@ -1831,7 +2139,7 @@
    "p_mean_raw": -5.551115123125783e-16,
    "saddle_dim": 12161,
    "saddle_nnz": 80260,
-   "solve_seconds": 0.7564079761505127
+   "solve_seconds": 0.6767134666442871
   },
   {
    "N": 128,
@@ -1864,7 +2172,7 @@
    "p_mean_raw": 7.216449660063518e-16,
    "saddle_dim": 48897,
    "saddle_nnz": 324356,
-   "solve_seconds": 7.303362607955933
+   "solve_seconds": 6.937910556793213
   },
   {
    "N": 256,
@@ -1897,7 +2205,7 @@
    "p_mean_raw": -7.216449660063518e-16,
    "saddle_dim": 196097,
    "saddle_nnz": 1304068,
-   "solve_seconds": 79.2437059879303
+   "solve_seconds": 75.07713222503662
   },
   {
    "N": 32,
@@ -1913,12 +2221,12 @@
    "err_p_l2_rel": 0.18339392033469437,
    "err_u_bnd_rel": 0.017403451189052687,
    "err_u_cos_with_uex": 0.9106740517894303,
-   "exact_discrete_u_rel": NaN,
-   "exact_discrete_p_rel": NaN,
-   "predicted_err_u": NaN,
-   "predicted_err_p": NaN,
-   "pred_dev_u": NaN,
-   "pred_dev_p": NaN,
+   "exact_discrete_u_rel": null,
+   "exact_discrete_p_rel": null,
+   "predicted_err_u": null,
+   "predicted_err_p": null,
+   "pred_dev_u": null,
+   "pred_dev_p": null,
    "err_u_mass_abs": 0.05094248191174629,
    "err_p_mass_abs": 0.1396054222115464,
    "div_u_abs": 6.850422248736049e-11,
@@ -1930,7 +2238,7 @@
    "p_mean_raw": 5.551115123125783e-17,
    "saddle_dim": 3009,
    "saddle_nnz": 19652,
-   "solve_seconds": 0.09102559089660645
+   "solve_seconds": 0.08786463737487793
   },
   {
    "N": 64,
@@ -1946,12 +2254,12 @@
    "err_p_l2_rel": 0.045773257855541705,
    "err_u_bnd_rel": 0.00432241685506396,
    "err_u_cos_with_uex": 0.9122181643977201,
-   "exact_discrete_u_rel": NaN,
-   "exact_discrete_p_rel": NaN,
-   "predicted_err_u": NaN,
-   "predicted_err_p": NaN,
-   "pred_dev_u": NaN,
-   "pred_dev_p": NaN,
+   "exact_discrete_u_rel": null,
+   "exact_discrete_p_rel": null,
+   "predicted_err_u": null,
+   "predicted_err_p": null,
+   "pred_dev_u": null,
+   "pred_dev_p": null,
    "err_u_mass_abs": 0.012625513035523749,
    "err_p_mass_abs": 0.03484409394411091,
    "div_u_abs": 2.397378882689249e-10,
@@ -1963,7 +2271,7 @@
    "p_mean_raw": 1.3877787807814457e-16,
    "saddle_dim": 12161,
    "saddle_nnz": 80260,
-   "solve_seconds": 0.6655828952789307
+   "solve_seconds": 0.6639103889465332
   },
   {
    "N": 128,
@@ -1979,12 +2287,12 @@
    "err_p_l2_rel": 0.011442162949626987,
    "err_u_bnd_rel": 0.0010788904550083631,
    "err_u_cos_with_uex": 0.9125989703819015,
-   "exact_discrete_u_rel": NaN,
-   "exact_discrete_p_rel": NaN,
-   "predicted_err_u": NaN,
-   "predicted_err_p": NaN,
-   "pred_dev_u": NaN,
-   "pred_dev_p": NaN,
+   "exact_discrete_u_rel": null,
+   "exact_discrete_p_rel": null,
+   "predicted_err_u": null,
+   "predicted_err_p": null,
+   "pred_dev_u": null,
+   "pred_dev_p": null,
    "err_u_mass_abs": 0.0031495711430643233,
    "err_p_mass_abs": 0.008710146915888764,
    "div_u_abs": 5.2085295552007495e-09,
@@ -1996,9 +2304,10 @@
    "p_mean_raw": -2.7755575615628914e-16,
    "saddle_dim": 48897,
    "saddle_nnz": 324356,
-   "solve_seconds": 7.154098272323608
+   "solve_seconds": 6.933931589126587
   }
  ],
  "complete": true,
- "total_seconds": 213.7530333995819
+ "certified": true,
+ "total_seconds": 202.0760931968689
 }

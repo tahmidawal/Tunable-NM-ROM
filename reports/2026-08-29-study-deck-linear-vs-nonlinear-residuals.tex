@@ -57,7 +57,7 @@
 \title{Separable NM-ROM: architecture, training,\\ and why linear problems need no quadrature}
 \subtitle{A study deck --- what is learned, what is frozen, what is exact, what is sampled}
 \author{Tunable-NM-ROM project}
-\date{29 August 2026}
+\date{29 August 2026 --- extended the same day with the quadratic-tensor rung}
 
 \begin{document}
 
@@ -88,6 +88,7 @@
         \item How it is trained (stage 1), then frozen.
         \item \textbf{Linear PDE (Poisson):} the whole residual collapses to a small precomputed table --- \emph{no sampling, no decoding, exact}.
         \item \textbf{Nonlinear PDE (Burgers):} one term refuses to collapse --- we \emph{sample} it at a few points and \emph{learn where} (stage 2).
+        \item \textbf{The next rung (new, 29 Aug):} a \emph{quadratic} term collapses too --- into a precomputed table --- so Burgers becomes sample-free, and stage 2 disappears.
       \end{enumerate}
     \end{alertblock}
   \end{columns}
@@ -426,28 +427,195 @@
   \end{columns}
 \end{frame}
 
+
+% -------------------------------------------------------------------
+\section{The next rung: quadratic terms are tabulable}
+\begin{frame}{Extending the linear trick one degree up}
+  \begin{block}{Recall why linear was free}
+    \centering $\Phi\T(G\,h) = (\Phi\T G)\,h = B\,h$ --- a weighted sum of a mix is the mix of the weighted sums.
+  \end{block}
+  \footnotesize A \textbf{quadratic} term is a weighted sum of a product of two mixes. Expand both mixes and you get every \emph{pair} of shapes --- but there are only $R^2 = 1024$ pairs, and none of them depend on $z$:
+  \[
+    \Phi\T\big(u \odot D^- u\big)
+    = \sum_{j,k} h_j\,h_k\;\underbrace{\sum_x \Phi_{xi}\,G_{xj}\,(D^-G)_{xk}}_{T_{ijk}}
+    \;=\; h\T T\, h ,\qquad T \in \R^{M\times R\times R} = 32\times32\times32 .
+  \]
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{exampleblock}{Same shopping analogy, one level up}
+      \footnotesize The cart total now depends on \emph{pairs} of products (``buy $j$ and $k$ together''). There are $32\times32$ pairs; price every pair once, and any cart is a $32\times32$ lookup times the amounts. Still no need to walk the aisles.
+    \end{exampleblock}
+    \column{0.5\textwidth}
+    \begin{block}{What runs online}
+      \footnotesize One contraction $h\T T h$ ($\sim$30k flops) and its Jacobian $(Qh)\,\partial h/\partial z$, $Q = T + T^{(j\leftrightarrow k)}$ ($T$ is not symmetric: bank vs.\ differenced bank). No grid, no sample points, no fitted weights, nothing trained. $T$ is built \textbf{once}, offline --- 304 ms even at $N = 65\,536$.
+    \end{block}
+  \end{columns}
+  \scriptsize Standard precomputed quadratic operator of POD--Galerkin / operator inference; new here only in the setting (nonlinear MLP head over a learned bank). Literature name: \emph{exact projection of a polynomial nonlinearity, no hyper-reduction needed}.
+\end{frame}
+
+\begin{frame}{The obstacle was the stencil, and positivity removes it}
+  \small The FOM's advection is \textbf{sign-upwind}: it looks left where $u>0$ and right where $u<0$. A switch is not a polynomial --- no table can hold it. But the switch decomposes exactly:
+  \[
+    N_{\text{upwind}}(u) \;=\; u\,D^{c}u \;-\; \tfrac{\Delta x}{2}\,|u|\,\Delta_h u .
+  \]
+  Central difference plus a small artificial viscosity: the only non-polynomial piece is $|u|$.
+  \footnotesize
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{On non-negative fields, $|u| = u$}
+      Our 1D family is positive Gaussian blobs with zero walls; viscous Burgers keeps such data $\ge 0$ (max principle), and so does the FOM. So on the \emph{truth}, the backward-difference table $T$ \textbf{is} the full-grid oracle, exactly. Gate T0: on decoded states that are entirely positive, agreement $\le 8\times10^{-15}$.
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{alertblock}{The only deviation: decoded undershoots}
+      The ROM's decoded field dips slightly below zero at $\sim$7\,\% of points (min $\approx -0.02$). There the FOM would flip the stencil and the table does not. The exact discrepancy is
+      \[
+        q_T - q_{\text{or}} = -\Delta x\;\Phi\T\big[\mathbb 1[u\le0]\;u\;\Delta_h u\big],
+      \]
+      \textbf{first} order in the undershoot, times $\Delta x$, times the blob's curvature --- small because $\Delta x$ is small. Bounded; measured at $0.4\times$ the bound.
+    \end{alertblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Architecture with the tensor --- what changes, what does not}
+  \centering
+  \resizebox{!}{0.62\textheight}{%
+  \begin{tikzpicture}[node distance=5mm and 9mm]
+    \node[pl] (z) {latent $z$\\($K$ numbers)};
+    \node[pl, right=58mm of z] (x) {grid coordinates $x$};
+    \node[tr, below=of z] (H) {head $h(z)$ --- \textbf{trained} (stage 1), then frozen\\MLP + linear skip $\to R$ coefficients};
+    \node[fz, below=of x] (G) {bank $g(x)$ --- \textbf{trained} (stage 1), then frozen\\evaluated \textbf{once} on the full grid, cached as $G$};
+    \node[fz, below left=7mm and -8mm of $(H.south)!0.5!(G.south)$] (LIN) {\textbf{linear terms --- exact}\\$B=\Phi\T G$ precomputed once ($M\times R$)\\$\Phi\T u = B\,h(z)$};
+    \node[fz, below right=7mm and -8mm of $(H.south)!0.5!(G.south)$] (TEN) {\textbf{quadratic term --- exact}\\$T=\Phi\T[G\otimes D^-G]$ precomputed once ($M\times R\times R$)\\$\Phi\T(u\,u_x) = h\T T\,h$};
+    \node[pl, below=7mm of $(LIN.south)!0.5!(TEN.south)$] (Rr) {weak residual $r(z)\in\R^{M}$ $\;\to\;$ Levenberg--Marquardt for $z$, every time step\\\emph{the grid is never touched online}};
+    \draw[arr] (z) -- (H); \draw[arr] (x) -- (G);
+    \draw[arr] (H) -- (LIN); \draw[arr] (H) -- (TEN);
+    \draw[arr] (G) -- (LIN); \draw[arr] (G) -- (TEN);
+    \draw[arr] (LIN) -- (Rr); \draw[arr] (TEN) -- (Rr);
+  \end{tikzpicture}}
+
+  \vspace{2mm}
+  \begin{columns}[T]
+    \column{0.5\textwidth}\small
+    \textbf{Training: nothing new.} Stage 1 is unchanged (same loss $L_1$, same 40\,000 steps, same checkpoints --- the results below reuse the \emph{committed} decoders, nothing retrained).
+    \column{0.5\textwidth}\small
+    \textbf{Stage 2 disappears.} No node positions to learn, no NNLS weights to fit, no budget $m$ to choose, no held-out monitoring. The orange ``nodes'' box and the green ``weights'' box of the earlier diagram are gone; the blue path is the whole residual, as for Poisson.
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Results: the tensor lands on the oracle ($N = 128\ldots1024$, committed checkpoints)}
+  \centering\scriptsize
+  \begin{tabular}{@{}rrrrrrrrr@{}}
+    \toprule
+    $N$ & oracle err & \textbf{tensor err} & $|$diff$|$ max/traj & NNLS-32 err & learned-32 err & e2e oracle & \textbf{e2e tensor} & e2e NNLS-32 \\
+    \midrule
+    128  & 5.009e-3 & \textbf{5.009e-3} & 1.2e-6 & 5.480e-3 & 5.021e-3 & 29.0 ms & \textbf{24.4 ms} & 25.0 ms \\
+    256  & 6.165e-3 & \textbf{6.165e-3} & 6.4e-7 & 6.236e-3 & 6.197e-3 & 35.0 ms & \textbf{29.2 ms} & 29.5 ms \\
+    512  & 4.877e-3 & \textbf{4.877e-3} & 2.5e-7 & 5.194e-3 & 4.886e-3 & 30.7 ms & \textbf{27.5 ms} & 26.1 ms \\
+    1024 & 5.537e-3 & \textbf{5.537e-3} & 2.3e-7 & 5.615e-3 & 5.451e-3 & 27.4 ms & \textbf{21.8 ms} & 22.0 ms \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{3mm}
+  \begin{columns}[T]
+    \column{0.33\textwidth}\small
+    \textbf{Accuracy.} Equal to the full-grid oracle per trajectory to $\le 1.2\times10^{-6}$ (direct field difference $\le 9\times10^{-6}$); the solver takes the same number of Jacobian evaluations on 31 of 32 trajectories. Zero sample points.
+    \column{0.33\textwidth}\small
+    \textbf{Versus sampling.} The tensor inherits the oracle's small margin over NNLS-32 --- \emph{not} distinguishable from zero at 8 trajectories (sign test $p\ge0.07$). Equal to learned-32. The gain is exactness and simplicity, not accuracy at this budget.
+    \column{0.33\textwidth}\small
+    \textbf{Cost.} Within $\sim$7\,\% of the sampled rule end-to-end; 10--20\,\% under the oracle. No 1D speedup --- everything here is launch-bound (see next slide). f64 required: in f32 the table's round-off would exceed the undershoot term.
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Results: the latent solve does not grow with $N$}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \centering\scriptsize
+    \textbf{One A100, one process, $N$ alternating, reps outermost} --- latent solve, ms per 50-step trajectory
+    \begin{tabular}{@{}rrrr@{}}
+      \toprule
+      $N$ & oracle (full grid) & NNLS-32 & \textbf{tensor}\\
+      \midrule
+      128  & 21.4 & 16.5 & \textbf{17.1}\\
+      256  & 26.2 & 19.9 & \textbf{20.2}\\
+      512  & 21.7 & 14.8 & \textbf{15.7}\\
+      1024 & 21.3 & 15.5 & \textbf{16.0}\\
+      2048 & 20.4 & 15.9 & \textbf{14.4}\\
+      4096 & 20.8 & 13.6 & \textbf{14.3}\\
+      \midrule
+      exponent & $-0.04$ & $-0.07$ & $\mathbf{-0.08}$\\
+      \bottomrule
+    \end{tabular}
+
+    \vspace{2mm}
+    \textbf{Beyond the launch floor} (separate jobs, same GPU model; decoders trained in-job at the same $3.76\times10^{-3}$ floor)
+    \begin{tabular}{@{}rrrrr@{}}
+      \toprule
+      $N$ & oracle & NNLS-32 & \textbf{tensor} & tensor = oracle to\\
+      \midrule
+      16\,384 & 21.4 & 13.9 & \textbf{14.2} & $5.8\times10^{-10}$\\
+      65\,536 & 32.9 & 13.5 & \textbf{13.8} & $1.7\times10^{-10}$\\
+      \bottomrule
+    \end{tabular}
+    \column{0.45\textwidth}\footnotesize
+    \begin{block}{Why the oracle looks flat at first}
+      Each solver iteration is $\sim$15 tiny GPU operations, each with a 5--10\,$\mu$s launch overhead. Decoding 4096 points takes $<1\,\mu$s of actual work --- invisible. Below $\sim10^4$ points wall time counts \emph{operations}, not bytes: the ``launch floor''.
+    \end{block}
+    \begin{block}{Why the tensor stays flat forever}
+      Its per-iteration work is a $32^3$ table times a 32-vector. $N$ is not in its shape. Only the offline build sees the grid.
+    \end{block}
+    \begin{alertblock}{Honest scope}
+      ``Constant'' = the \emph{latent solve}. The IC projection and the final decode still touch the grid once per trajectory (6--9 ms + $<1$ ms here, flat only because launch-bound). The 16k$\to$65k numbers are a cross-job ratio, not a fitted exponent.
+    \end{alertblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{What five adversarial reviews said (3 Claude, 2 Codex) --- and where the method stops}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{Verdicts: ``legitimate with corrections'' $\times 5$, none blocking}
+      \small
+      \begin{itemize}
+        \item No leakage: $T$ from bank + modes only; oracle is the committed baseline path; truth regenerated from seed, test set seed-disjoint.
+        \item One reviewer reproduced every printed digit on CPU.
+        \item Corrections applied: ``second order'' $\to$ first order with a bound; ``identical decisions'' $\to$ 31/32; ``beats NNLS by 1--9\,\%'' retracted; arm order was sequential, not interleaved; cross-job exponents $\to$ ratios; f64 required.
+        \item Framing: standard quadratic Galerkin/OpInf operator; novelty is the MLP-head-over-learned-bank setting.
+      \end{itemize}
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{alertblock}{Where it stops}
+      \small
+      \begin{itemize}
+        \item \textbf{Sign-changing data:} the $|u|$ term is not tabulated. Routes: a polynomial FOM (centered / skew / Lax--Friedrichs), tabulate the central part and sample only the small $|u|$ term, or lift $v=|u|$.
+        \item \textbf{Non-polynomial physics} (limiters, WENO, $e^u$): no finite table; sampling stays the right tool, or lift.
+        \item \textbf{2D as it stands:} the 2D Burgers bank is $R=512$, so $T$ would be $128\times512^2 \approx 270$ MB --- needs compression (project $h$ onto the $\sim K$ directions it spans) before a 2D port.
+        \item \textbf{Statistics:} single seed, 8 trajectories; multi-seed with paired intervals is still open.
+      \end{itemize}
+    \end{alertblock}
+  \end{columns}
+\end{frame}
+
 % -------------------------------------------------------------------
 \section{Summary}
 \begin{frame}{Linear vs nonlinear, side by side}
   \centering\scriptsize
   \renewcommand{\arraystretch}{1.15}
-  \begin{tabular}{@{}p{0.24\textwidth}p{0.36\textwidth}p{0.36\textwidth}@{}}
+  \begin{tabular}{@{}p{0.17\textwidth}p{0.23\textwidth}p{0.28\textwidth}p{0.28\textwidth}@{}}
     \toprule
-     & \textbf{Linear (Poisson)} & \textbf{Nonlinear (Burgers)}\\
+     & \textbf{Linear (Poisson)} & \textbf{Quadratic, positive data (Burgers, tensor)} & \textbf{Non-polynomial / switched (sampled)}\\
     \midrule
-    Residual in terms of $h(z)$ & $\Lambda B\,h(z)-f_M$: linear in $h$ & linear terms via $B$; advection $u\,u_x$ is quadratic \emph{and} upwind-switched\\
-    Can the grid be folded away? & Yes, entirely: $B=\Phi\T G$ once & Only for the linear terms; advection must be evaluated somewhere\\
-    Online per iteration & head $h(z)$ + a $64\times32$ matvec & head + decode at $m$ nodes + stencil + $M\times m$ matvec\\
-    Sample points & \textbf{0} & $m$ (32 tight, 16 starved, 128 generous)\\
-    Approximation error from the residual & none (matches full grid to $10^{-13}$) & quadrature error; reduced by NNLS weights + learned positions\\
-    Anything to fit or train after stage 1 & nothing & NNLS weights (convex) + node positions (stage 2 gradient)\\
-    Accuracy limit & decoder floor & decoder floor (oracle) $+$ sampling gap\\
-    Cost vs grid size & flat & flat (latent solve measured flat $128\to4096$)\\
+    Residual in $h(z)$ & $\Lambda B\,h-f_M$, linear & $B$-terms $+\;h\T T h$, quadratic & linear terms via $B$; the rest evaluated pointwise\\
+    Grid folded away? & entirely ($B$ once) & entirely ($B$ and $T$ once) & only the linear terms\\
+    Online per iteration & head + $64\times32$ matvec & head + $32^3$ contraction & head + decode at $m$ nodes + stencil + matvec\\
+    Sample points & \textbf{0} & \textbf{0} & $m$ (32 / 16 / 128)\\
+    Residual approximation & none ($10^{-13}$) & none on $u\ge0$; $O(\Delta x\,\delta)$ on undershoots & quadrature error (NNLS + learned nodes)\\
+    After stage 1 & nothing & nothing (build $T$ once) & NNLS weights + stage-2 node positions\\
+    Accuracy limit & decoder floor & decoder floor (= oracle) & decoder floor $+$ sampling gap\\
+    Cost vs grid size & flat & flat (solve $128\to65\,536$) & flat\\
     \bottomrule
   \end{tabular}
   \vspace{2mm}
   \begin{block}{One sentence}
-    \small The decoder is linear in its last stage, so every linear piece of the physics can be pre-projected onto the test modes once; a nonlinear piece cannot, so we sample it at a few points and learn where those points should be.
+    \small The decoder is linear in its last stage, so every \emph{polynomial} piece of the physics can be pre-projected onto the test modes once --- linear into a matrix, quadratic into a 3-index table; only a genuinely non-polynomial piece (a switch, a limiter, $e^u$) must be sampled, and there we learn where to sample.
   \end{block}
 \end{frame}
 
@@ -459,7 +627,10 @@
     \item[Test modes $\Phi$, $M$] The $M$ sine functions the residual is projected onto (weak form); eigenvectors of the discrete Laplacian with eigenvalues $\Lambda$.
     \item[$B=\Phi\T G$] The precomputed $M\times R$ table that turns any linear grid sum into a small matvec.
     \item[Quadrature] Estimating a grid-wide sum from $m$ sample points with weights. \textbf{Quadrature-free} = the sum is computed exactly without points.
-    \item[Full grid / oracle] The residual (Poisson) or the advection term (Burgers) summed over every grid point --- the reference the sampled rules try to match.
+    \item[Full grid / oracle] The residual (Poisson) or the advection term (Burgers) summed over every grid point --- the reference the sampled rules try to match; costs $O(N)$ per evaluation.
+    \item[Tensor $T$ / $Q$] The precomputed $M\times R\times R$ table that gives $\Phi\T(u\,u_x)$ as $h\T T h$; $Q$ its symmetrised form for the Jacobian. Built once offline; makes the quadratic term exact with zero sample points.
+    \item[Undershoot] Decoded field values slightly below zero where the truth is $\ge 0$; the only place the tensor and the sign-upwind oracle differ.
+    \item[Launch floor] The regime where each GPU operation finishes faster than the next can be launched, so wall time counts operations, not data; every arm sits on it below $\sim10^4$ points.
   \end{description}
 \end{frame}
 
@@ -471,7 +642,8 @@
     \item[Tight / starved / generous budget] $m=32$ ($=M$), $16$, $128$ nodes.
     \item[Decoder floor] The error of the best possible latent for each truth snapshot; nothing downstream can beat it.
     \item[Rollout error] Relative $L_2$ error against the full-order truth over the 50 implicit time steps, mean of 8 fresh test trajectories.
-    \item[Gate] An in-job numerical identity check (e.g.\ gate Q: quadrature-free residual $=$ full-grid residual to machine precision at every solution).
+    \item[Gate] An in-job numerical identity check (e.g.\ gate Q: quadrature-free residual $=$ full-grid residual to machine precision at every solution; gate T0: tensor $=$ oracle on all-positive states).
+    \item[LM attempt] One iteration of the Levenberg--Marquardt solver (residual + Jacobian + trial step); $\sim$200 per 50-step trajectory.
   \end{description}
 \end{frame}
 

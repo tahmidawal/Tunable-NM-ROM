@@ -3390,3 +3390,16 @@ sandbox flag.
 (expected failure — needed to make the positivity scope credible); ≥3 seeds × ≥32
 trajectories with paired CIs; assert min(truth) ≥ 0 numerically; fixed-sine-bank stage-1
 test; 2D port only with head-PCA compression; FOM-choice study (user decision).
+
+### Study deck extended with the quadratic-tensor rung
+
+`reports/2026-08-29-study-deck-linear-vs-nonlinear-residuals.{tex,pdf}` now 24 slides: new
+section "The next rung: quadratic terms are tabulable" (the h^T T h derivation with the
+pair-pricing analogy; the sign-upwind decomposition and the first-order undershoot bound;
+architecture diagram with the tensor replacing the nodes/weights boxes — stage 2 gone;
+results table N=128..1024; constant-time tables (one-GPU ladder + N=16384/65536) with the
+launch-floor explanation and the honest scope; the five reviews' verdicts and where the
+method stops), summary table split into linear / quadratic-positive / non-polynomial, glossary
+additions. All numbers copied from the generated tables of
+`reports/2026-08-29-b1d-tensor-sample-free-burgers.md`. Compiles clean; every slide checked
+visually.

@@ -484,8 +484,9 @@
     \node[pl, right=58mm of z] (x) {grid coordinates $x$};
     \node[tr, below=of z] (H) {head $h(z)$ --- \textbf{trained} (stage 1), then frozen\\MLP + linear skip $\to R$ coefficients};
     \node[fz, below=of x] (G) {bank $g(x)$ --- \textbf{trained} (stage 1), then frozen\\evaluated \textbf{once} on the full grid, cached as $G$};
-    \node[fz, below left=7mm and -8mm of $(H.south)!0.5!(G.south)$] (LIN) {\textbf{linear terms --- exact}\\$B=\Phi\T G$ precomputed once ($M\times R$)\\$\Phi\T u = B\,h(z)$};
-    \node[fz, below right=7mm and -8mm of $(H.south)!0.5!(G.south)$] (TEN) {\textbf{quadratic term --- exact}\\$T=\Phi\T[G\otimes D^-G]$ precomputed once ($M\times R\times R$)\\$\Phi\T(u\,u_x) = h\T T\,h$};
+    \coordinate (mid) at ($(H.south)!0.5!(G.south)$);
+    \node[fz] (LIN) at ($(mid)+(-31mm,-14mm)$) {\textbf{linear terms --- exact}\\$B=\Phi\T G$ precomputed once ($M\times R$)\\$\Phi\T u = B\,h(z)$};
+    \node[fz] (TEN) at ($(mid)+(31mm,-14mm)$) {\textbf{quadratic term --- exact}\\$T=\Phi\T[G\otimes D^-G]$ once ($M\times R\times R$)\\$\Phi\T(u\,u_x) = h\T T\,h$};
     \node[pl, below=7mm of $(LIN.south)!0.5!(TEN.south)$] (Rr) {weak residual $r(z)\in\R^{M}$ $\;\to\;$ Levenberg--Marquardt for $z$, every time step\\\emph{the grid is never touched online}};
     \draw[arr] (z) -- (H); \draw[arr] (x) -- (G);
     \draw[arr] (H) -- (LIN); \draw[arr] (H) -- (TEN);

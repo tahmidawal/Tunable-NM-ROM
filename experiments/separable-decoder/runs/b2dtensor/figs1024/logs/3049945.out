@@ -1,0 +1,35 @@
+host=pax007 gpu=NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=8458555adce3b55b989d4db3c0dda024d62b81db
+jax_backend=gpu device=cuda:0 B2D-TENSOR N=1024 K=16 R=64 M=64 m=256 arms=['full', 'ex', 'tensor'] train=0 reps=1 burn=1 stall=0.001
+  test data: 8 fresh trajectories, worst FOM rel residual 9.97e-13
+  TEST positivity: min u 1.108e-34 max 1.955e+00 frac<=0 0.00e+00 frac<0 0.00e+00
+  TRAIN truth regeneration SKIPPED (SKIP_TRAIN_TRUTH=1; 104 trajectories) -- positivity asserted on the test set only
+  TRAIN truth: 104 traj regenerated [0s], max FOM rel residual nan; positivity: min u nan max nan frac<=0 0.00e+00 frac<0 0.00e+00
+  GATE bank==meshfree: 4.13e-16
+  NNLS-EQ exlin N=1024 k=16 M=64 m=256 adv-only: pool 65536 support 256 (+0 pad) rel fit 5.99e-03 (row p95 1.5e-01, max 2.1e+01) [25s]
+  GATE 0 (incumbent ops == make_weak_ops): 3.59e-15
+  GATE L (exlin linear == full-grid linear): 2.16e-16
+  GATE A (exlin advection == incumbent advection): 0.00e+00
+  GATE FOMR (full-grid weak residual == wt*Phi^T R_FOM): 8.30e-16
+  GATE TB (two chunkings): 1.45e-15  [Q (64, 64, 64), 2.0 MiB, build 1.85s, T asymmetry 1.96]
+  GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 2048 training states): 8.71e-15
+  GATE T0 (tensor == oracle on the 66 all-positive decoded training states): 8.748996767151649e-16; all states: mismatch median 2.50e-06 max 5.76e-04; frac points u<=0 15.296%, min u -6.14e-02
+  GATE TQ (tensor vs oracle, 32 states, recorded): r rel median 3.69e-07 max 5.20e-05; J rel max 1.15e-04; states with u<=0 32/32
+  encoder[b2d tensor u0->z0 N=1024]: rel-MSE 7.726e-17 on 44 training pairs [4s]
+  IC gram vs full: |dz|/(1+|z|) 1.61e-12, ||r|| rel diff 1.63e-12
+  GATE STEP: aux step vs make_step_lspg_var(stall=0.001) max|dz| 0.00e+00; at 1e-12 vs incumbent _finish_ops 0.00e+00
+  GATE ROLL: aux rollout vs make_rollout_v2 max|dZ| 0.00e+00 (nJ equal True, attempts/traj 109)
+  rep 0 (burn, order ['full', 'ex', 'tensor']) done [129s]
+  rep 1 (timed, order ['tensor', 'ex', 'full']) done [140s]
+   ARM full        err 6.381071e-02 (max 1.725e-01)  e2e 676.77 ms = ic 4.65 + solve 666.12 + dec 1.08 (split sum 673.96); attempts 109 jac 155; {'stalled': 400}; decoded min u -1.92e-01, states with u<=0 100.0%
+   ARM ex          err 6.390678e-02 (max 1.730e-01)  e2e 33.65 ms = ic 4.67 + solve 28.40 + dec 1.02 (split sum 34.33); attempts 109 jac 155; {'stalled': 400}; decoded min u -1.92e-01, states with u<=0 100.0%
+   ARM tensor      err 6.381432e-02 (max 1.725e-01)  e2e 32.27 ms = ic 4.93 + solve 28.03 + dec 1.05 (split sum 34.33); attempts 109 jac 155; {'stalled': 400}; decoded min u -1.92e-01, states with u<=0 100.0%
+  [ex vs full] err |diff| max 5.31e-04; err ratio 1.0015; latent dev max 4.59e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.050 solve ratio 0.043
+  [tensor vs full] err |diff| max 1.99e-05; err ratio 1.0001; latent dev max 3.37e-04; stop hist identical True (per traj True, attempts True); e2e ratio 0.048 solve ratio 0.042
+  [full vs ex] err |diff| max 5.31e-04; err ratio 0.9985; latent dev max 4.59e-03; stop hist identical True (per traj True, attempts True); e2e ratio 20.111 solve ratio 23.455
+  [tensor vs ex] err |diff| max 5.11e-04; err ratio 0.9986; latent dev max 4.59e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.959 solve ratio 0.987
+  FIGS dump -> /cluster/tufts/paralab/tawal01/b2dtensor/figs1024/out/figdata_n1024.npz (traj [1, 0], times [0, 10, 25, 50], stride 4)
+DONE (SKIP_FOM) -> /cluster/tufts/paralab/tawal01/b2dtensor/figs1024/out/sep_b2d_tensor_figs_n1024.json [164s]
+ALL-DONE

@@ -1,0 +1,97 @@
+host=pax008 gpu=NVIDIA H200, 143771 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=922ea4531280ff090e27fc46fecddf51804e301b
+jax_backend=gpu device=cuda:0 B2D-TENSOR N=512 K=16 R=64 M=64 m=256 arms=['full', 'ex', 'tensor'] train=1 reps=5 burn=2 stall=0.001
+  test data: 8 fresh trajectories, worst FOM rel residual 9.94e-13
+  TEST positivity: min u 1.374e-34 max 1.955e+00 frac<=0 0.00e+00 frac<0 0.00e+00
+  TRAIN truth: 576 traj regenerated [209s], max FOM rel residual 1.00e-12; positivity: min u -1.492e-31 max 1.995e+00 frac<=0 3.43e-05 frac<0 3.43e-05
+  TRAIN in-job: 8192 states x 260100 points, 60000 steps, lr 0.001
+   train[burgers N=512 k=16 r=64] step      1/60000  rel-MSE 1.149e+00  [128s]
+   train[burgers N=512 k=16 r=64] step   2000/60000  rel-MSE 7.155e-03  [238s]
+   train[burgers N=512 k=16 r=64] step   4000/60000  rel-MSE 2.873e-03  [348s]
+   train[burgers N=512 k=16 r=64] step   6000/60000  rel-MSE 1.785e-03  [459s]
+   train[burgers N=512 k=16 r=64] step   8000/60000  rel-MSE 1.383e-03  [569s]
+   train[burgers N=512 k=16 r=64] step  10000/60000  rel-MSE 1.285e-03  [679s]
+   train[burgers N=512 k=16 r=64] step  12000/60000  rel-MSE 1.077e-03  [789s]
+   train[burgers N=512 k=16 r=64] step  14000/60000  rel-MSE 1.018e-03  [900s]
+   train[burgers N=512 k=16 r=64] step  16000/60000  rel-MSE 9.301e-04  [1010s]
+   train[burgers N=512 k=16 r=64] step  18000/60000  rel-MSE 9.727e-04  [1120s]
+   train[burgers N=512 k=16 r=64] step  20000/60000  rel-MSE 8.862e-04  [1230s]
+   train[burgers N=512 k=16 r=64] step  22000/60000  rel-MSE 8.162e-04  [1340s]
+   train[burgers N=512 k=16 r=64] step  24000/60000  rel-MSE 8.121e-04  [1451s]
+   train[burgers N=512 k=16 r=64] step  26000/60000  rel-MSE 7.879e-04  [1561s]
+   train[burgers N=512 k=16 r=64] step  28000/60000  rel-MSE 7.550e-04  [1671s]
+   train[burgers N=512 k=16 r=64] step  30000/60000  rel-MSE 7.495e-04  [1781s]
+   train[burgers N=512 k=16 r=64] step  32000/60000  rel-MSE 7.286e-04  [1891s]
+   train[burgers N=512 k=16 r=64] step  34000/60000  rel-MSE 7.106e-04  [2001s]
+   train[burgers N=512 k=16 r=64] step  36000/60000  rel-MSE 6.991e-04  [2111s]
+   train[burgers N=512 k=16 r=64] step  38000/60000  rel-MSE 6.973e-04  [2222s]
+   train[burgers N=512 k=16 r=64] step  40000/60000  rel-MSE 6.825e-04  [2332s]
+   train[burgers N=512 k=16 r=64] step  42000/60000  rel-MSE 6.760e-04  [2442s]
+   train[burgers N=512 k=16 r=64] step  44000/60000  rel-MSE 6.706e-04  [2552s]
+   train[burgers N=512 k=16 r=64] step  46000/60000  rel-MSE 6.629e-04  [2662s]
+   train[burgers N=512 k=16 r=64] step  48000/60000  rel-MSE 6.576e-04  [2772s]
+   train[burgers N=512 k=16 r=64] step  50000/60000  rel-MSE 6.528e-04  [2882s]
+   train[burgers N=512 k=16 r=64] step  52000/60000  rel-MSE 6.488e-04  [2993s]
+   train[burgers N=512 k=16 r=64] step  54000/60000  rel-MSE 6.448e-04  [3103s]
+   train[burgers N=512 k=16 r=64] step  56000/60000  rel-MSE 6.414e-04  [3213s]
+   train[burgers N=512 k=16 r=64] step  58000/60000  rel-MSE 6.382e-04  [3323s]
+   train[burgers N=512 k=16 r=64] step  60000/60000  rel-MSE 6.353e-04  [3433s]
+   train[burgers N=512 k=16 r=64] done: recon rel-L2 mean 2.472e-02 max 4.320e-01  [3435s]
+  GATE R-lite (checkpoint codes vs regenerated picked states, 64 states): recon rel-L2 mean 4.432e-02 max 3.595e-01
+  GATE bank==meshfree: 4.31e-16
+  NNLS-EQ exlin N=512 k=16 M=64 m=256 adv-only: pool 65536 support 256 (+0 pad) rel fit 5.13e-03 (row p95 1.5e-01, max 1.8e+01) [25s]
+  GATE 0 (incumbent ops == make_weak_ops): 8.13e-16
+  GATE L (exlin linear == full-grid linear): 0.00e+00
+  GATE A (exlin advection == incumbent advection): 1.55e-13
+  GATE FOMR (full-grid weak residual == wt*Phi^T R_FOM): 6.02e-16
+  GATE TB (two chunkings): 6.64e-16  [Q (64, 64, 64), 2.0 MiB, build 1.95s, T asymmetry 1.76]
+  GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 8192 training states): 5.15e-15
+  GATE T0 (tensor == oracle on the 53 all-positive decoded training states): 5.612326605784473e-16; all states: mismatch median 6.25e-06 max 3.52e-03; frac points u<=0 17.151%, min u -1.46e-01
+  GATE TQ (tensor vs oracle, 32 states, recorded): r rel median 4.24e-07 max 4.11e-05; J rel max 1.01e-04; states with u<=0 32/32
+  encoder[b2d tensor u0->z0 N=512]: rel-MSE 2.322e-06 on 157 training pairs [3s]
+  IC gram vs full: |dz|/(1+|z|) 2.63e-13, ||r|| rel diff 2.17e-12
+  GATE STEP: aux step vs make_step_lspg_var(stall=0.001) max|dz| 0.00e+00; at 1e-12 vs incumbent _finish_ops 0.00e+00
+  GATE ROLL: aux rollout vs make_rollout_v2 max|dZ| 0.00e+00 (nJ equal True, attempts/traj 121)
+  rep 0 (burn, order ['full', 'ex', 'tensor']) done [3738s]
+  rep 1 (burn, order ['tensor', 'ex', 'full']) done [3741s]
+  rep 2 (timed, order ['full', 'ex', 'tensor']) done [3743s]
+  rep 3 (timed, order ['tensor', 'ex', 'full']) done [3745s]
+  rep 4 (timed, order ['full', 'ex', 'tensor']) done [3748s]
+  rep 5 (timed, order ['tensor', 'ex', 'full']) done [3750s]
+  rep 6 (timed, order ['full', 'ex', 'tensor']) done [3752s]
+   ARM full        err 2.456215e-02 (max 3.650e-02)  e2e 98.27 ms = ic 1.56 + solve 97.27 + dec 0.50 (split sum 99.22); attempts 113 jac 157; {'stalled': 400}; decoded min u -8.24e-02, states with u<=0 100.0%
+   ARM ex          err 2.449580e-02 (max 3.643e-02)  e2e 22.16 ms = ic 1.60 + solve 20.48 + dec 0.49 (split sum 22.52); attempts 113 jac 157; {'stalled': 400}; decoded min u -8.24e-02, states with u<=0 100.0%
+   ARM tensor      err 2.456235e-02 (max 3.650e-02)  e2e 21.10 ms = ic 1.56 + solve 19.97 + dec 0.49 (split sum 21.83); attempts 113 jac 157; {'stalled': 400}; decoded min u -8.24e-02, states with u<=0 100.0%
+  [ex vs full] err |diff| max 4.24e-04; err ratio 0.9973; latent dev max 4.62e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.226 solve ratio 0.211
+  [tensor vs full] err |diff| max 1.95e-06; err ratio 1.0000; latent dev max 1.74e-05; stop hist identical True (per traj True, attempts True); e2e ratio 0.215 solve ratio 0.205
+  [full vs ex] err |diff| max 4.24e-04; err ratio 1.0027; latent dev max 4.62e-03; stop hist identical True (per traj True, attempts True); e2e ratio 4.434 solve ratio 4.750
+  [tensor vs ex] err |diff| max 4.24e-04; err ratio 1.0027; latent dev max 4.63e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.952 solve ratio 0.975
+  FOM ladder traj 0 done [3763s]
+  FOM ladder traj 1 done [3766s]
+  FOM ladder traj 2 done [3768s]
+  FOM ladder traj 3 done [3771s]
+  FOM ladder traj 4 done [3773s]
+  FOM ladder traj 5 done [3776s]
+  FOM ladder traj 6 done [3778s]
+  FOM ladder traj 7 done [3780s]
+   FOM nt=3e-01 lt=1e-02: err 8.158e-01  2.03 ms  newton 0
+   FOM nt=3e-01 lt=1e-01: err 8.158e-01  2.03 ms  newton 0
+   FOM nt=1e-01 lt=5e-03: err 8.013e-01  2.31 ms  newton 1
+   FOM nt=1e-01 lt=5e-02: err 8.020e-01  2.31 ms  newton 1
+   FOM nt=3e-02 lt=2e-03: err 2.725e-01  8.11 ms  newton 12
+   FOM nt=3e-02 lt=1e-02: err 2.753e-01  6.60 ms  newton 12
+   FOM nt=1e-02 lt=5e-04: err 2.998e-02  21.41 ms  newton 41
+   FOM nt=1e-02 lt=5e-03: err 3.015e-02  16.15 ms  newton 41
+   FOM nt=3e-03 lt=2e-04: err 3.307e-04  23.87 ms  newton 50
+   FOM nt=3e-03 lt=2e-03: err 3.507e-04  21.06 ms  newton 50
+   FOM nt=1e-03 lt=5e-05: err 3.296e-04  24.81 ms  newton 50
+   FOM nt=1e-03 lt=5e-04: err 3.355e-04  22.60 ms  newton 50
+   FOM nt=1e-04 lt=5e-06: err 1.348e-04  31.87 ms  newton 54
+   FOM nt=1e-04 lt=5e-05: err 1.346e-04  27.35 ms  newton 54
+  MATCHED paired [full]: ROM 97.50 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.51e-04) 20.99 ms -> 0.22x
+  MATCHED paired [ex]: ROM 22.87 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.51e-04) 20.98 ms -> 0.92x
+  MATCHED paired [tensor]: ROM 21.50 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.51e-04) 21.01 ms -> 0.98x
+DONE -> /cluster/tufts/paralab/tawal01/b2dtensor/n512/out/sep_b2d_tensor_n512.json [3788s]
+ALL-DONE

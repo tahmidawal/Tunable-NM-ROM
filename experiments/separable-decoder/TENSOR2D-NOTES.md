@@ -37,23 +37,364 @@ modes as explicit jit arguments (no captured constants).
 
 ## What was run
 
-<!-- PROVENANCE -->
+One job per $N$ under `/cluster/tufts/paralab/tawal01/b2dtensor/n<N>/`, `gpu` partition, code commit
+`922ea45` (driver `sep_b2d_tensor.py`, common `b2d_tensor_common.py`), MANIFEST verified in-job,
+`jax_backend=gpu` asserted, `JAX_DEFAULT_MATMUL_PRECISION=highest`, f64 everywhere.  Jobs (T-1):
+**3038943** N=64 (A100-40GB pax051; the first attempt 3038919 on pax007 FAILED the cuInit preflight, exit 42,
+resubmitted with `--exclude=pax007`), **3038921** N=256 (A100-80GB pax007 — a different GPU of the same node,
+preflight passed), **3038922** N=512 (H200 pax008, decoder trained in-job), **3038923** N=1024 (A100-80GB pax106,
+`--constraint=a100-80G`, `--mem 160G`).  All `COMPLETED 0:0`, `RESULTS.sha256` verified on pull, namespace
+deleted, queue empty.
+
+**Checkpoints (frozen stage-1 decoders, K=16 R=64, `sep_burgers.py` recipe).**  N=64
+`runs/sepdec_r1/out/sep_burgers_N64_K16_R64.pkl` (job 2802238, H200, 40k steps, 576 traj / 8192 states);
+N=256 `runs/n256_j2/out/sep_burgers_N256_K16_R64.pkl` (job 2825730, A100, 60k steps, 576 / 8192);
+N=1024 `runs/inherited/n1024_j2/sep_burgers_N1024_K16_R64.pkl` (job 2826213, H200, 40k steps, 96+8 traj / 2048
+states, `max_snaps 2048`; sha256 `eb88629…` matches the cdmm job's input).  The codesign "n"-arm pickles
+(`runs/cd_n_m64`, `runs/cdmm/n256m64`, `runs/cdmm/n1024m64`) were checked leaf-by-leaf against these: every
+parameter and every code is bit-identical (max diff 0.0), so the "n" arm's pickle IS the base decoder and only its
+`_nodes.npz` (learned continuous m=64 nodes, `X`,`w`) is used, as the `ex_learned` arm.  N=512 had no K=16 R=64
+checkpoint of the standard recipe (the sepdec_n512 one used `n_ff=128`), so it was **trained in-job** with the
+N=256 recipe (60k steps, lr 1e-3, 8192 states from 576 trajectories, seed 0; `sc.train_autodecoder`) and saved as
+`runs/b2dtensor/n512/out/sep_b2d_tensor_n512_ckpt.pkl` (recon rel-L2 in T-11's footnote).  Lineage of every
+checkpoint to its data and state pick is confirmed in-job by gate R-lite (the checkpoint's codes reconstruct the
+first 64 regenerated picked training states at the training recon level).
+
+**Protocol.**  8 test trajectories from `TEST_SEED=1` regenerated in-job by the staged (Helmholtz-preconditioned)
+truth generator, worst FOM relative residual ≤ 1e-12 (T-3).  Training truth regenerated (streamed, never held whole)
+for the positivity audit and R-lite.  NNLS m=256 advection-only node set fit in-job (`exlin_common.eq_fit_burgers_adv`,
+candidate cap 65536, EQ seed 20259).  Arms `full` / `ex` / `tensor` (+ `ex_learned` where a node set exists), LM
+with `STALL=1e-3`, `STEP_TOL=1e-9`, budget 30, trust radius 0.01 × training radius, extrapolation 1.0, Gram-space
+IC fit from an encoder initial guess (encoder trained on analytic t=0 states of the training trajectories only).
+Repetitions outermost (2 burn + 5 timed), trajectories next, arms innermost in alternating order; every
+repetition persisted; accuracy read from the last timed repetition's fused e2e output (the split-phase latent path
+and the fused path are bit-identical: `split_vs_fused_latent_dev` = 0 in every JSON row).  The FOM ladder
+(`make_tol_newton_pc`, 7 Newton tolerances × 2 linear fractions) is timed with `balanced_time` on the same GPU,
+5 reps, and each ROM arm is paired AB/BA (3 reps) against the matched rung.
 
 ## Positivity (the tensor's scope)
 
-<!-- POSITIVITY -->
+The truth is non-negative on every regenerated training state and every test state at every $N$: the minimum
+interior value is at worst $-7\times10^{-31}$ (T-2), i.e. roundoff of the preconditioned Newton/BiCGStab solve on
+states that are analytically zero, with a fraction $\le 3.4\times10^{-5}$ of interior points below zero by that
+amount; the assert `min(u) >= -1e-9` passes everywhere.  So the tensor-arm design proceeds (the split
+central-difference form was not needed).
+
+The DECODED fields are a different matter, and this is where 2D differs from 1D: 15–17 % of decoded interior points
+on training states are $\le 0$ (min $u \approx -0.06\ldots-0.15$), only 0.6–3 % of training states are positive
+everywhere, and along the rollouts 93–100 % of the decoded states touch a point with $u\le 0$ (T-2).  In 1D the
+corresponding numbers were 6.7–7 % of points and 60–68 % of LM candidates.  The consequence is visible in gate TQ
+and in the rollouts below: the tensor equals the oracle to machine precision on the positive cone (T0), but the
+rollouts live off it, so tensor-vs-oracle parity is $10^{-6}$–$10^{-4}$ in the error, not $10^{-15}$.
 
 ## Gates
 
-<!-- GATES -->
+Every asserted gate passed at every $N$ (T-3): bank==meshfree, gate 0 (incumbent-form ops vs `make_weak_ops`),
+L (exlin linear part exact), A (exlin advection == incumbent advection; computed in the direct `parts_inc` form
+after the R=512 stretch showed the subtractive form trips the 1e-12 tripwire by cancellation), FOMR (the full-grid
+weak residual equals $w\,\Phi^\top R_{\text{FOM}}$ of the truth generator's own residual on the interior — the
+"FOM truth residual gate"), TB (two chunkings of the tensor build agree to $\le 1.6\times10^{-15}$), TA (the
+algebraic identity $h^\top T h = \Phi^\top[(Gh)\odot(DG\,h)]$ on all training codes to $\le 1.9\times10^{-14}$),
+T0 (tensor == full-grid sign-upwind oracle on the all-positive decoded training states to $\le 1.7\times10^{-15}$),
+STEP (the aux-threaded LM step is bit-identical to `sep_solvers.make_step_lspg_var` at the run's stall and to the
+incumbent `_finish_ops` step at 1e-12) and ROLL (the aux-threaded rollout is bit-identical to
+`make_rollout_v2`).  TQ (recorded, not asserted): at 32 latent states (16 training codes, 16 perturbed by
+$0.05\,\mathcal N$) all 32 decoded fields have $u\le0$ points, and the tensor-vs-oracle residual mismatch is
+median $4\times10^{-7}$–$3\times10^{-6}$, max $4\times10^{-5}$–$3.5\times10^{-4}$, Jacobian max
+$1\times10^{-4}$–$9\times10^{-4}$ — the first-order undershoot term of the 1D report, larger here because the
+2D decoders undershoot more.
 
 ## Results
 
-<!-- RESULTS -->
+**(a) Accuracy.**  The tensor arm reproduces the full-grid oracle's rollout error per trajectory to
+$\le 8\times10^{-5}$ absolute at N=64 and $\le 2\times10^{-6}$ … $2\times10^{-5}$ at N=256–1024 (T-4, T-9), on
+errors of $2.3\times10^{-2}$–$6.4\times10^{-2}$ (error ratio tensor/full 1.00001–1.00033); the stop-reason
+histograms and the LM attempt counts are identical to the oracle's on every trajectory at every $N$ (T-5).
+Against the incumbent sampled rule (`ex`, NNLS m=256) the tensor is indistinguishable (ratio 0.996–1.003), as the
+oracle itself is.  The learned m=64 nodes (`ex_learned`) are 5–18 % worse at N≤256 and tied at N=1024.  The
+absolute error level is the decoder's (K=16, R=64 recon 1.5–4 % on the checked states; the N=1024 checkpoint is
+the coverage-starved 104-trajectory one, hence its 6.4e-2).
+
+**(b) Cost.**  Per trajectory the latent solve of the tensor arm is 0.92–0.98 of the sampled rule's and the fused
+e2e 0.94–0.96 of it at every $N$ (T-6, T-10) — i.e. the same launch-bound cost, a few percent lower.  Against the
+oracle the tensor's solve is 0.85× at N=64, 0.37× at N=256, 0.21× at N=512 and 0.040× at N=1024: the full-grid
+arm's solve grows from 33 ms to 670 ms while the tensor's and the sampled rule's stay at 20–29 ms (each $N$ on its
+own GPU: N=64 on an A100-40GB, N=256/1024 on A100-80GB, N=512 on an H200; ratios within a job are like-for-like,
+numbers across $N$ are not).  The three arms share the IC fit and decode to within noise.  No slope is fitted:
+no three $N$ come from one GPU model in one job, so T-10 presents ratios only.
+
+**(c) FOM.**  The tol-Newton ladder on the same GPU (T-7, T-8): the cheapest rung at least as accurate as the
+ROM is (3e-3, 2e-3) at N=64–512 (err ≈ 3.5e-4 at 12–21 ms) and (1e-2, 5e-3) at N=1024 (err 3.0e-2 at 120 ms).
+Paired AB/BA, tensor vs that rung: 0.42× (N=64), 0.58× (256), 0.98× (512), 3.45× (1024); `ex` 0.41 / 0.56 / 0.92 /
+3.31×; `full` 0.36 / 0.23 / 0.22 / 0.18×.  The ROM at this K=16 R=64 bank is 100× less accurate than the matched
+rung at N≤512 and 2× less accurate at N=1024, so the ratios are "cost at the ROM's own (worse) error", exactly as the
+lab log's earlier K=16 speed ladders; the tightest rung is (1e-4, 5e-5) at 16–231 ms.
+
+**(d) Positivity / undershoot audit** — T-2 and the Positivity section above.
+
+**(e) Slopes** — not fitted (see (b)); T-10 gives the per-$N$ ratios with the GPU named per row.
+
+**(f) Stretch (R=512 headline checkpoint, head-PCA Tucker tensor): STOPPED at the designed tripwire.**  On
+`runs/dn1024/out/sep_hfit_dense_mid_N1024_dense.pkl` (K=32, R=512, N=1024, job 2837430) the SVD of the head outputs
+over the 131 072 training codes decays slowly (T-12: $\sigma_1 = 672$, $\sigma_{512} = 0.028$): capturing
+$1-10^{-8}$ of the energy needs **K' = 499 of 512** directions, so there is essentially no compression
+(Q is $64\times499^2$ = 122 MiB vs 128 MiB dense), and even then the per-code projection residual reaches
+$2.9\times10^{-3}$ and the quadratic term amplifies it: TA on the raw codes is $2\times10^{-3}$ (the exact
+identity holds on the projected codes, TA' $1.7\times10^{-13}$) and **T0 on the 7 all-positive states is
+$4.3\times10^{-5} > 10^{-6}$**, so the run stopped before the arms as instructed.  The projection tail is not
+small; head-PCA is not the compression route for this bank.  The first stretch attempt (job 3039205) failed
+gate A at $2.27\times10^{-12}$ vs the 1e-12 tripwire — the residual-minus-linear form of the incumbent advection
+cancels $\sim|r|\,\epsilon$ and R=512 makes $|r|$ large; the gate was changed to the direct form (4.0e-14 on
+the resubmit 3039255) and that fix is the one permitted resubmission.  Its JSON is partial (the tripwire fired
+before the save; fixed in the driver afterwards) so T-12 is parsed from the job log.
+
+### Generated tables (`runs/b2dtensor/tables.md`)
+
+### T-1 Provenance (one job per N; the GPU differs across N)
+
+| N | job | node | GPU | backend | commit | jax | checkpoint | trained in-job | complete | secs |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 64 | 3038943 | pax051 | NVIDIA A100-PCIE-40GB | gpu | 922ea45312 | 0.10.2 | sep_burgers_N64_K16_R64.pkl | False | True | 108 |
+| 256 | 3038921 | pax007 | NVIDIA A100 80GB PCIe | gpu | 922ea45312 | 0.10.2 | sep_burgers_N256_K16_R64.pkl | False | True | 223 |
+| 512 | 3038922 | pax008 | NVIDIA H200 | gpu | 922ea45312 | 0.10.2 | sep_b2d_tensor_n512_ckpt.pkl | True | True | 3788 |
+| 1024 | 3038923 | pax106 | NVIDIA A100 80GB PCIe | gpu | 922ea45312 | 0.10.2 | sep_burgers_N1024_K16_R64.pkl | False | True | 966 |
+
+### T-2 Positivity audit: truth (training + test states, interior points) and decoded states
+
+| N | train traj / states | truth min u (train) | truth frac<0 (train) | truth min u (test) | truth frac<0 (test) | assert ok | decoded train states: min u / frac points u<=0 / frac all-positive | full-arm rollout: min u / frac states touching u<=0 / frac points u<=0 | tensor-arm rollout: min u / frac states touching u<=0 |
+|---|---|---|---|---|---|---|---|---|---|
+| 64 | 576 / 29376 | -6.83e-31 | 2.5e-05 | 2.83e-33 | 0.0e+00 | True | -1.02e-01 / 16.682% / 2.0% | -1.10e-01 / 92.6% / 17.21% | -1.10e-01 / 92.6% |
+| 256 | 576 / 29376 | -4.76e-31 | 3.0e-05 | 2.11e-34 | 0.0e+00 | True | -1.28e-01 / 16.982% / 0.6% | -8.26e-02 / 98.8% / 18.83% | -8.26e-02 / 98.8% |
+| 512 | 576 / 29376 | -1.49e-31 | 3.4e-05 | 1.37e-34 | 0.0e+00 | True | -1.46e-01 / 17.151% / 0.6% | -8.24e-02 / 100.0% / 18.93% | -8.24e-02 / 100.0% |
+| 1024 | 104 / 5304 | -1.13e-35 | 3.5e-08 | 1.11e-34 | 0.0e+00 | True | -6.14e-02 / 15.296% / 3.2% | -1.92e-01 / 100.0% / 21.88% | -1.92e-01 / 100.0% |
+
+### T-3 Gates (asserted unless marked recorded)
+
+| N | bank==meshfree | gate 0 | L | A | FOMR | TB | TA (states) | T0 (all-positive states) | TQ r rel med / max (recorded) | TQ J rel max (recorded) | TQ states with u<=0 | STEP | ROLL | IC gram vs full dz | R-lite recon mean | test FOM res | train FOM res |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 64 | 7.3e-16 | 4.0e-16 | 0.0e+00 | 3.0e-13 | 8.2e-16 | 0.0e+00 | 1.7e-14 (8192) | 1.7e-15 (161) | 3.3e-06 / 3.5e-04 | 8.6e-04 | 32/32 | 0e+00 | 0e+00 | 6.7e-08 | 3.98e-02 | 9.9e-13 | 1.0e-12 |
+| 256 | 2.9e-16 | 7.2e-16 | 2.1e-16 | 1.1e-13 | 4.2e-16 | 1.6e-15 | 1.9e-14 (8192) | 1.2e-15 (52) | 7.5e-07 / 6.7e-05 | 1.7e-04 | 32/32 | 0e+00 | 0e+00 | 2.1e-13 | 4.10e-02 | 9.9e-13 | 1.0e-12 |
+| 512 | 4.3e-16 | 8.1e-16 | 0.0e+00 | 1.6e-13 | 6.0e-16 | 6.6e-16 | 5.2e-15 (8192) | 5.6e-16 (53) | 4.2e-07 / 4.1e-05 | 1.0e-04 | 32/32 | 0e+00 | 0e+00 | 2.6e-13 | 4.43e-02 | 9.9e-13 | 1.0e-12 |
+| 1024 | 6.9e-16 | 3.5e-15 | 0.0e+00 | 1.9e-13 | 6.0e-16 | 1.4e-15 | 8.8e-15 (2048) | 9.0e-16 (66) | 3.7e-07 / 5.2e-05 | 1.2e-04 | 32/32 | 0e+00 | 0e+00 | 1.6e-12 | 1.53e-02 | 1.0e-12 | 9.9e-13 |
+
+### T-4 Accuracy per arm per N (mean rel-L2 over 8 test trajectories x 51 states; fused e2e output of the last timed rep) and tensor-vs-full per-trajectory max |diff|
+
+| N | full err | ex err | tensor err | ex_learned err | tensor-full max abs diff | tensor/full err ratio | tensor/ex err ratio | tensor-full latent dev max | stop hist identical tensor/full (per traj) | attempts identical |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 64 | 2.308651e-02 | 2.319010e-02 | 2.309414e-02 | 2.730832e-02 | 7.95e-05 | 1.00033 | 0.9959 | 1.3e-04 | True (True) | True |
+| 256 | 2.451134e-02 | 2.449564e-02 | 2.451214e-02 | 2.792914e-02 | 7.30e-06 | 1.00003 | 1.0007 | 4.3e-05 | True (True) | True |
+| 512 | 2.456215e-02 | 2.449580e-02 | 2.456235e-02 | n/a | 1.95e-06 | 1.00001 | 1.0027 | 1.7e-05 | True (True) | True |
+| 1024 | 6.381029e-02 | 6.390634e-02 | 6.381390e-02 | 6.403727e-02 | 1.99e-05 | 1.00006 | 0.9986 | 3.4e-04 | True (True) | True |
+
+### T-5 Stop-reason histograms and LM counts (8 traj x 50 steps)
+
+| N | arm | stop reasons | LM attempts / traj | accepted Jacobians / traj | IC rel err |
+|---|---|---|---|---|---|
+| 64 | full | {'stalled': 400} | 112.6 | 156.9 | 7.545e-02 |
+| 64 | ex | {'stalled': 400} | 112.6 | 156.9 | 7.545e-02 |
+| 64 | tensor | {'stalled': 400} | 112.6 | 156.9 | 7.545e-02 |
+| 64 | ex_learned | {'stalled': 400} | 114.4 | 157.6 | 7.545e-02 |
+| 256 | full | {'stalled': 400} | 113.5 | 157.4 | 7.875e-02 |
+| 256 | ex | {'stalled': 400} | 113.5 | 157.4 | 7.875e-02 |
+| 256 | tensor | {'stalled': 400} | 113.5 | 157.4 | 7.875e-02 |
+| 256 | ex_learned | {'stalled': 400} | 113.1 | 157.1 | 7.875e-02 |
+| 512 | full | {'stalled': 400} | 113.1 | 157.1 | 7.890e-02 |
+| 512 | ex | {'stalled': 400} | 113.1 | 157.1 | 7.890e-02 |
+| 512 | tensor | {'stalled': 400} | 113.1 | 157.1 | 7.890e-02 |
+| 1024 | full | {'stalled': 400} | 108.9 | 154.6 | 1.484e-01 |
+| 1024 | ex | {'stalled': 400} | 108.9 | 154.6 | 1.484e-01 |
+| 1024 | tensor | {'stalled': 400} | 108.9 | 154.6 | 1.484e-01 |
+| 1024 | ex_learned | {'stalled': 400} | 109.6 | 155.1 | 1.484e-01 |
+
+### T-6 Cost split per arm per N (ms per trajectory, median over 8 traj x 5 timed reps; arms interleaved AB/BA; ic / solve / dec are separately blocked phases, e2e is one fused jit)
+
+| N | GPU | arm | ic ms | latent solve ms | decode ms | split sum ms | fused e2e ms | solve ratio vs ex | solve ratio vs full | e2e ratio vs ex | e2e ratio vs full |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 64 | NVIDIA A100-PCIE-40GB | full | 1.98 | 32.59 | 0.40 | 35.23 | 34.81 | 1.131 | n/a | 1.132 | n/a |
+| 64 | NVIDIA A100-PCIE-40GB | ex | 1.98 | 28.83 | 0.40 | 31.54 | 30.75 | n/a | 0.884 | n/a | 0.883 |
+| 64 | NVIDIA A100-PCIE-40GB | tensor | 1.99 | 27.54 | 0.40 | 30.30 | 29.60 | 0.955 | 0.845 | 0.963 | 0.850 |
+| 64 | NVIDIA A100-PCIE-40GB | ex_learned | 2.00 | 27.55 | 0.40 | 30.45 | 29.83 | 0.956 | 0.845 | 0.970 | 0.857 |
+| 256 | NVIDIA A100 80GB PCIe | full | 2.16 | 74.08 | 0.55 | 76.82 | 76.16 | 2.547 | n/a | 2.441 | n/a |
+| 256 | NVIDIA A100 80GB PCIe | ex | 2.18 | 29.08 | 0.55 | 31.76 | 31.20 | n/a | 0.393 | n/a | 0.410 |
+| 256 | NVIDIA A100 80GB PCIe | tensor | 2.16 | 27.70 | 0.54 | 30.34 | 29.84 | 0.952 | 0.374 | 0.956 | 0.392 |
+| 256 | NVIDIA A100 80GB PCIe | ex_learned | 2.19 | 27.60 | 0.53 | 30.36 | 30.20 | 0.949 | 0.373 | 0.968 | 0.397 |
+| 512 | NVIDIA H200 | full | 1.56 | 97.27 | 0.50 | 99.22 | 98.27 | 4.750 | n/a | 4.434 | n/a |
+| 512 | NVIDIA H200 | ex | 1.60 | 20.48 | 0.49 | 22.52 | 22.16 | n/a | 0.211 | n/a | 0.226 |
+| 512 | NVIDIA H200 | tensor | 1.56 | 19.97 | 0.49 | 21.83 | 21.10 | 0.975 | 0.205 | 0.952 | 0.215 |
+| 1024 | NVIDIA A100 80GB PCIe | full | 4.77 | 670.03 | 1.29 | 679.63 | 681.89 | 22.814 | n/a | 19.747 | n/a |
+| 1024 | NVIDIA A100 80GB PCIe | ex | 5.07 | 29.37 | 1.18 | 36.64 | 34.53 | n/a | 0.044 | n/a | 0.051 |
+| 1024 | NVIDIA A100 80GB PCIe | tensor | 4.79 | 27.13 | 1.15 | 33.23 | 32.56 | 0.924 | 0.040 | 0.943 | 0.048 |
+| 1024 | NVIDIA A100 80GB PCIe | ex_learned | 4.86 | 27.46 | 1.15 | 35.20 | 33.37 | 0.935 | 0.041 | 0.966 | 0.049 |
+
+### T-7 FOM cost per N (standardised tol-Newton ladder, same GPU as the ROM arms; matched = cheapest rung at least as accurate as the tensor arm; closest = rung with error closest to the tensor arm's in log; tightest = most accurate rung)
+
+| N | GPU | tensor err / e2e ms | matched rung (nt, lt) err / ms | paired tensor vs matched: ROM ms / FOM ms / speedup | closest rung err / ms | tightest rung (nt, lt) err / ms | paired ex vs matched speedup | paired full vs matched speedup |
+|---|---|---|---|---|---|---|---|---|
+| 64 | NVIDIA A100-PCIE-40GB | 2.309e-02 / 29.60 | (3e-03, 2e-03) 3.75e-04 / 12.36 | 29.57 / 12.37 / 0.42x | 3.46e-02 / 13.34 | (1e-04, 5e-05) 1.35e-04 / 16.29 | 0.41x | 0.36x |
+| 256 | NVIDIA A100 80GB PCIe | 2.451e-02 / 29.84 | (3e-03, 2e-03) 3.54e-04 / 17.26 | 29.53 / 17.24 / 0.58x | 3.05e-02 / 18.91 | (1e-04, 5e-05) 1.33e-04 / 23.61 | 0.56x | 0.23x |
+| 512 | NVIDIA H200 | 2.456e-02 / 21.10 | (3e-03, 2e-03) 3.51e-04 / 21.06 | 21.50 / 21.01 / 0.98x | 3.00e-02 / 21.41 | (1e-04, 5e-05) 1.35e-04 / 27.35 | 0.92x | 0.22x |
+| 1024 | NVIDIA A100 80GB PCIe | 6.381e-02 / 32.56 | (1e-02, 5e-03) 2.97e-02 / 119.99 | 34.11 / 117.69 / 3.45x | 2.97e-02 / 119.99 | (1e-04, 5e-05) 1.39e-04 / 230.72 | 3.31x | 0.18x |
+
+### T-8 Full FOM ladder per N (err = mean rel-L2 vs the 8-Newton truth; ms median over 8 traj x 5 reps)
+
+| N | newton_tol | lin_tol | err | ms | Newton iters / traj |
+|---|---|---|---|---|---|
+| 64 | 3e-01 | 1e-02 | 8.885e-01 | 2.41 | 0 |
+| 64 | 3e-01 | 1e-01 | 8.885e-01 | 2.41 | 0 |
+| 64 | 1e-01 | 5e-03 | 8.586e-01 | 2.38 | 0 |
+| 64 | 1e-01 | 5e-02 | 8.586e-01 | 2.37 | 0 |
+| 64 | 3e-02 | 2e-03 | 2.799e-01 | 5.80 | 12 |
+| 64 | 3e-02 | 1e-02 | 2.825e-01 | 4.93 | 12 |
+| 64 | 1e-02 | 5e-04 | 3.456e-02 | 13.34 | 40 |
+| 64 | 1e-02 | 5e-03 | 3.460e-02 | 10.96 | 40 |
+| 64 | 3e-03 | 2e-04 | 3.538e-04 | 14.80 | 50 |
+| 64 | 3e-03 | 2e-03 | 3.746e-04 | 12.36 | 50 |
+| 64 | 1e-03 | 5e-05 | 3.140e-04 | 15.34 | 50 |
+| 64 | 1e-03 | 5e-04 | 3.172e-04 | 14.41 | 50 |
+| 64 | 1e-04 | 5e-06 | 1.350e-04 | 18.56 | 54 |
+| 64 | 1e-04 | 5e-05 | 1.349e-04 | 16.29 | 54 |
+| 256 | 3e-01 | 1e-02 | 8.241e-01 | 2.31 | 0 |
+| 256 | 3e-01 | 1e-01 | 8.248e-01 | 2.27 | 0 |
+| 256 | 1e-01 | 5e-03 | 8.204e-01 | 2.32 | 0 |
+| 256 | 1e-01 | 5e-02 | 8.099e-01 | 2.32 | 0 |
+| 256 | 3e-02 | 2e-03 | 2.727e-01 | 7.51 | 12 |
+| 256 | 3e-02 | 1e-02 | 2.727e-01 | 6.21 | 12 |
+| 256 | 1e-02 | 5e-04 | 3.050e-02 | 18.91 | 41 |
+| 256 | 1e-02 | 5e-03 | 3.058e-02 | 14.80 | 41 |
+| 256 | 3e-03 | 2e-04 | 3.257e-04 | 21.09 | 50 |
+| 256 | 3e-03 | 2e-03 | 3.538e-04 | 17.26 | 50 |
+| 256 | 1e-03 | 5e-05 | 3.013e-04 | 21.89 | 50 |
+| 256 | 1e-03 | 5e-04 | 3.291e-04 | 19.93 | 50 |
+| 256 | 1e-04 | 5e-06 | 1.327e-04 | 27.23 | 54 |
+| 256 | 1e-04 | 5e-05 | 1.325e-04 | 23.61 | 54 |
+| 512 | 3e-01 | 1e-02 | 8.158e-01 | 2.03 | 0 |
+| 512 | 3e-01 | 1e-01 | 8.158e-01 | 2.03 | 0 |
+| 512 | 1e-01 | 5e-03 | 8.013e-01 | 2.31 | 1 |
+| 512 | 1e-01 | 5e-02 | 8.020e-01 | 2.31 | 1 |
+| 512 | 3e-02 | 2e-03 | 2.725e-01 | 8.11 | 12 |
+| 512 | 3e-02 | 1e-02 | 2.753e-01 | 6.60 | 12 |
+| 512 | 1e-02 | 5e-04 | 2.998e-02 | 21.41 | 41 |
+| 512 | 1e-02 | 5e-03 | 3.015e-02 | 16.15 | 41 |
+| 512 | 3e-03 | 2e-04 | 3.307e-04 | 23.87 | 50 |
+| 512 | 3e-03 | 2e-03 | 3.507e-04 | 21.06 | 50 |
+| 512 | 1e-03 | 5e-05 | 3.296e-04 | 24.81 | 50 |
+| 512 | 1e-03 | 5e-04 | 3.355e-04 | 22.60 | 50 |
+| 512 | 1e-04 | 5e-06 | 1.348e-04 | 31.87 | 54 |
+| 512 | 1e-04 | 5e-05 | 1.346e-04 | 27.35 | 54 |
+| 1024 | 3e-01 | 1e-02 | 8.105e-01 | 6.54 | 1 |
+| 1024 | 3e-01 | 1e-01 | 8.105e-01 | 6.50 | 1 |
+| 1024 | 1e-01 | 5e-03 | 7.899e-01 | 6.63 | 1 |
+| 1024 | 1e-01 | 5e-02 | 7.911e-01 | 6.48 | 1 |
+| 1024 | 3e-02 | 2e-03 | 2.751e-01 | 54.16 | 12 |
+| 1024 | 3e-02 | 1e-02 | 2.752e-01 | 40.63 | 12 |
+| 1024 | 1e-02 | 5e-04 | 2.946e-02 | 172.14 | 41 |
+| 1024 | 1e-02 | 5e-03 | 2.975e-02 | 119.99 | 41 |
+| 1024 | 3e-03 | 2e-04 | 3.363e-04 | 199.22 | 50 |
+| 1024 | 3e-03 | 2e-03 | 3.486e-04 | 171.32 | 50 |
+| 1024 | 1e-03 | 5e-05 | 3.332e-04 | 209.08 | 50 |
+| 1024 | 1e-03 | 5e-04 | 3.399e-04 | 186.33 | 50 |
+| 1024 | 1e-04 | 5e-06 | 1.389e-04 | 279.12 | 54 |
+| 1024 | 1e-04 | 5e-05 | 1.386e-04 | 230.72 | 54 |
+
+### T-9 Per-trajectory tensor vs full vs ex
+
+| N | traj | nu | full err | tensor err | abs diff | latent dev | reasons equal | ex err | ex_learned err |
+|---|---|---|---|---|---|---|---|---|---|
+| 64 | 0 | 0.0420 | 3.865360e-02 | 3.873314e-02 | 7.95e-05 | 1.30e-04 | True | 3.863032e-02 | 4.304280e-02 |
+| 64 | 1 | 0.0598 | 2.512413e-02 | 2.511381e-02 | 1.03e-05 | 4.15e-05 | True | 2.600508e-02 | 3.544234e-02 |
+| 64 | 2 | 0.0410 | 3.173297e-02 | 3.170937e-02 | 2.36e-05 | 4.93e-05 | True | 3.174210e-02 | 4.115690e-02 |
+| 64 | 3 | 0.0827 | 2.935092e-02 | 2.936066e-02 | 9.74e-06 | 1.30e-05 | True | 2.931515e-02 | 2.932627e-02 |
+| 64 | 4 | 0.0110 | 1.126162e-02 | 1.126231e-02 | 6.89e-07 | 9.58e-06 | True | 1.125836e-02 | 1.211858e-02 |
+| 64 | 5 | 0.0338 | 2.245688e-02 | 2.246114e-02 | 4.27e-06 | 5.97e-05 | True | 2.234367e-02 | 2.992400e-02 |
+| 64 | 6 | 0.0288 | 1.619106e-02 | 1.619180e-02 | 7.43e-07 | 8.83e-06 | True | 1.631722e-02 | 1.725647e-02 |
+| 64 | 7 | 0.0115 | 9.920909e-03 | 9.920909e-03 | 5.65e-10 | 2.26e-08 | True | 9.908921e-03 | 1.019920e-02 |
+| 256 | 0 | 0.0420 | 3.566773e-02 | 3.567503e-02 | 7.30e-06 | 4.28e-05 | True | 3.562597e-02 | 3.752441e-02 |
+| 256 | 1 | 0.0598 | 2.931112e-02 | 2.930621e-02 | 4.91e-06 | 1.17e-05 | True | 2.920344e-02 | 4.536309e-02 |
+| 256 | 2 | 0.0410 | 3.645035e-02 | 3.644848e-02 | 1.87e-06 | 2.19e-05 | True | 3.629407e-02 | 4.204298e-02 |
+| 256 | 3 | 0.0827 | 3.047653e-02 | 3.048020e-02 | 3.67e-06 | 3.09e-06 | True | 3.046671e-02 | 3.015629e-02 |
+| 256 | 4 | 0.0110 | 1.370183e-02 | 1.370194e-02 | 1.16e-07 | 3.97e-06 | True | 1.369295e-02 | 1.404276e-02 |
+| 256 | 5 | 0.0338 | 2.140601e-02 | 2.140730e-02 | 1.30e-06 | 1.02e-05 | True | 2.150823e-02 | 2.311774e-02 |
+| 256 | 6 | 0.0288 | 1.798530e-02 | 1.798617e-02 | 8.66e-07 | 3.64e-06 | True | 1.806181e-02 | 1.967567e-02 |
+| 256 | 7 | 0.0115 | 1.109182e-02 | 1.109182e-02 | 7.70e-12 | 1.62e-09 | True | 1.111197e-02 | 1.151021e-02 |
+| 512 | 0 | 0.0420 | 3.649767e-02 | 3.649878e-02 | 1.11e-06 | 1.74e-05 | True | 3.642788e-02 | n/a |
+| 512 | 1 | 0.0598 | 3.019629e-02 | 3.019434e-02 | 1.95e-06 | 6.60e-06 | True | 3.001028e-02 | n/a |
+| 512 | 2 | 0.0410 | 3.605460e-02 | 3.605478e-02 | 1.79e-07 | 1.49e-05 | True | 3.563076e-02 | n/a |
+| 512 | 3 | 0.0827 | 2.891945e-02 | 2.892010e-02 | 6.49e-07 | 1.91e-06 | True | 2.897940e-02 | n/a |
+| 512 | 4 | 0.0110 | 1.384566e-02 | 1.384580e-02 | 1.43e-07 | 1.53e-06 | True | 1.384357e-02 | n/a |
+| 512 | 5 | 0.0338 | 2.240269e-02 | 2.240397e-02 | 1.29e-06 | 5.74e-06 | True | 2.245063e-02 | n/a |
+| 512 | 6 | 0.0288 | 1.797183e-02 | 1.797199e-02 | 1.60e-07 | 1.68e-06 | True | 1.801334e-02 | n/a |
+| 512 | 7 | 0.0115 | 1.060904e-02 | 1.060904e-02 | 2.32e-12 | 1.17e-09 | True | 1.061057e-02 | n/a |
+| 1024 | 0 | 0.0420 | 1.725098e-01 | 1.725297e-01 | 1.99e-05 | 3.37e-04 | True | 1.730410e-01 | 1.730034e-01 |
+| 1024 | 1 | 0.0598 | 3.519681e-02 | 3.519724e-02 | 4.34e-07 | 3.15e-06 | True | 3.533795e-02 | 3.536948e-02 |
+| 1024 | 2 | 0.0410 | 1.290261e-01 | 1.290321e-01 | 5.96e-06 | 3.54e-05 | True | 1.287539e-01 | 1.293086e-01 |
+| 1024 | 3 | 0.0827 | 3.961182e-02 | 3.961151e-02 | 3.09e-07 | 5.22e-06 | True | 3.964823e-02 | 4.003803e-02 |
+| 1024 | 4 | 0.0110 | 2.310262e-02 | 2.310277e-02 | 1.47e-07 | 6.07e-06 | True | 2.313458e-02 | 2.336492e-02 |
+| 1024 | 5 | 0.0338 | 6.017277e-02 | 6.017476e-02 | 1.99e-06 | 3.20e-05 | True | 6.044264e-02 | 5.915221e-02 |
+| 1024 | 6 | 0.0288 | 3.473080e-02 | 3.473110e-02 | 2.97e-07 | 6.05e-06 | True | 3.470563e-02 | 3.575964e-02 |
+| 1024 | 7 | 0.0115 | 1.613159e-02 | 1.613209e-02 | 5.02e-07 | 1.27e-05 | True | 1.618680e-02 | 1.630189e-02 |
+
+### T-10 Cross-N cost ratios (DIFFERENT jobs and GPUs per N -- ratios, not exponents; the GPU is named per row)
+
+| N | GPU | tensor solve ms | ex solve ms | full solve ms | tensor/ex | tensor/full | tensor ic ms | tensor dec ms | tensor e2e ms |
+|---|---|---|---|---|---|---|---|---|---|
+| 64 | NVIDIA A100-PCIE-40GB | 27.54 | 28.83 | 32.59 | 0.955 | 0.845 | 1.99 | 0.40 | 29.60 |
+| 256 | NVIDIA A100 80GB PCIe | 27.70 | 29.08 | 74.08 | 0.952 | 0.374 | 2.16 | 0.54 | 29.84 |
+| 512 | NVIDIA H200 | 19.97 | 20.48 | 97.27 | 0.975 | 0.205 | 1.56 | 0.49 | 21.10 |
+| 1024 | NVIDIA A100 80GB PCIe | 27.13 | 29.37 | 670.03 | 0.924 | 0.040 | 4.79 | 1.15 | 32.56 |
+
+### T-11 Tensor build and NNLS fit (offline costs)
+
+| N | Q shape | Q MiB | build s (one chunking) | T asymmetry rel | TB | NNLS m | NNLS rel fit | NNLS s |
+|---|---|---|---|---|---|---|---|---|
+| 64 | [64, 64, 64] | 2.0 | 1.17 | 1.35 | 0.0e+00 | 256 | 4.98e-03 | 11 |
+| 256 | [64, 64, 64] | 2.0 | 1.77 | 1.76 | 1.6e-15 | 256 | 4.95e-03 | 23 |
+| 512 | [64, 64, 64] | 2.0 | 1.95 | 1.76 | 6.6e-16 | 256 | 5.13e-03 | 25 |
+| 1024 | [64, 64, 64] | 2.0 | 1.86 | 1.96 | 1.4e-15 | 256 | 5.99e-03 | 26 |
+
+In-job training at N=512: recon rel-L2 mean 2.472e-02 max 4.320e-01, 60000 steps, 8192 states, 3435 s.
+
+### T-12 Stretch: R=512 headline checkpoint (dn1024 dense_mid, K=32) with the head-PCA Tucker tensor -- values parsed from the job log (the run stopped at the T0 tripwire before its JSON was written)
+
+| log | line |
+|---|---|
+| 3039255 | `host=pax008 gpu=NVIDIA H200, 143771 MiB` |
+| 3039255 | `GATE A (exlin advection == incumbent advection): 4.01e-14` |
+| 3039255 | `HEAD-PCA: R=512 -> K'=499 (tail energy 8.66e-09, sv[0]=6.715e+02 sv[K'-1]=9.914e-02 sv[-1]=2.767e-02; per-code projection rel-L2 median 1.15e-04 max 2.87e-03)` |
+| 3039255 | `GATE TB (two chunkings): 1.46e-15  [Q (64, 499, 499), 121.6 MiB, build 8.89s, T asymmetry 1.59]` |
+| 3039255 | `GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 131072 training states): 2.01e-03  [HEAD_PCA: includes the projection tail; recorded]` |
+| 3039255 | `GATE TA' (identity on P P^T h): 1.67e-13` |
+| 3039255 | `GATE T0 (tensor == oracle on the 7 all-positive decoded training states): 4.3010692768387743e-05; all states: mismatch median 1.81e-05 max 2.02e-03; frac points u<=0 14.397%, min u -8.61e-02` |
 
 ## What failed, what is provisional, what the 1D reviews imply here
 
-<!-- CAVEATS -->
+- **Failed and lost.**  Job 3038919 (N=64) failed the cuInit preflight on pax007 (exit 42) and was resubmitted
+  excluding that node; stretch 3039205 failed gate A (roundoff, see (f)).  Both failed logs were LOST: I had moved
+  them into `logs_failed_<job>/` on the cluster and the re-stage's `rsync --delete` then removed them.  Their
+  error text (the `RuntimeError: Unable to initialize backend 'cuda'` traceback; `assert … gA < 1e-12` at
+  2.27e-12) is recorded here from the session; `push_b2dtensor.sh` now excludes `logs/` from `--delete`.
+- **Captured-constant warning at N=512.**  The in-job training closed the loss jit over the 17 GB training array
+  (`sc.train_autodecoder`, the inherited trainer; "17.05 GB of constants captured" in `3038922.err`).  It ran to
+  completion on the H200; the ROM arms themselves pass every large array as an explicit jit argument.  Any future
+  in-job training should use the explicit-argument trainer (`sep_solvers.train_autodecoder_v2`).
+- **Single seed, 8 trajectories, one job per N on different GPUs.**  All accuracy numbers are seed-0 / test-seed-1;
+  the tensor-vs-ex and ex_learned-vs-ex differences are within the noise the 1D reviews flagged
+  (no paired CI is claimed).  Cross-$N$ cost comparisons mix an A100-40GB, A100-80GB and an H200; only within-job
+  ratios are like-for-like.
+- **Not bit-exact, and less exact than in 1D.**  The 1D reviews' first-order undershoot bound applies with a larger
+  undershoot: 15–17 % of decoded points are $\le0$ and ~all rollout states touch one, so parity is 1e-6–1e-4 in the
+  error (1D: 1e-6–1e-10).  It is still "the oracle's answer to the fourth digit at the sampled rule's cost", but the
+  scope statement (non-negative data, f64) is load-bearing.
+- **No speed story from the tensor itself.**  The tensor removes the NNLS fit (25 s here) and the node-set
+  choice, and costs 2–8 % less than the sampled rule per trajectory; it does not change where the ROM stands
+  against the FOM.  The 3.45× at N=1024 is the sampled rule's 3.31× at a matched rung that is itself 2× more
+  accurate than the ROM, on the coverage-starved N=1024 K=16 checkpoint.
+- **Stall-dominated stopping** (400/400 `stalled` for every arm) carries low evidential weight for "identical
+  solver decisions", as the 1D reviews noted; the identical attempt counts per trajectory are the finer statistic.
+- **Stretch launched early.**  The R=512 job was submitted while N=512 was still training (N=64/256/1024 were
+  committed); it did not share a directory with anything.
+- **What the K=16/R=64 ladder does NOT say.**  Nothing about the R=512 headline accuracy (8e-3): its tensor needs
+  the dense 128 MiB table or a different compression (e.g. a bank-side SVD, or exploiting that $h$ lives on a
+  32-dimensional manifold — a quadratic in $z$ is not available because $h$ is an MLP).
 
 ## Glossary
 

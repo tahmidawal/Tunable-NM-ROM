@@ -1,0 +1,69 @@
+host=pax007 gpu=NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=922ea4531280ff090e27fc46fecddf51804e301b
+jax_backend=gpu device=cuda:0 B2D-TENSOR N=256 K=16 R=64 M=64 m=256 arms=['full', 'ex', 'tensor'] train=0 reps=5 burn=2 stall=0.001
+  test data: 8 fresh trajectories, worst FOM rel residual 9.92e-13
+  TEST positivity: min u 2.114e-34 max 1.955e+00 frac<=0 0.00e+00 frac<0 0.00e+00
+  TRAIN truth: 576 traj regenerated [100s], max FOM rel residual 1.00e-12; positivity: min u -4.758e-31 max 1.995e+00 frac<=0 3.04e-05 frac<0 3.04e-05
+  GATE R-lite (checkpoint codes vs regenerated picked states, 64 states): recon rel-L2 mean 4.102e-02 max 3.448e-01
+  GATE bank==meshfree: 2.88e-16
+  NNLS-EQ exlin N=256 k=16 M=64 m=256 adv-only: pool 64516 support 256 (+0 pad) rel fit 4.95e-03 (row p95 1.5e-01, max 4.6e+01) [23s]
+  GATE 0 (incumbent ops == make_weak_ops): 7.19e-16
+  GATE L (exlin linear == full-grid linear): 2.10e-16
+  GATE A (exlin advection == incumbent advection): 1.15e-13
+  GATE FOMR (full-grid weak residual == wt*Phi^T R_FOM): 4.17e-16
+  GATE TB (two chunkings): 1.58e-15  [Q (64, 64, 64), 2.0 MiB, build 1.77s, T asymmetry 1.76]
+  GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 8192 training states): 1.85e-14
+  GATE T0 (tensor == oracle on the 52 all-positive decoded training states): 1.2340828829291526e-15; all states: mismatch median 1.12e-05 max 7.71e-03; frac points u<=0 16.982%, min u -1.28e-01
+  GATE TQ (tensor vs oracle, 32 states, recorded): r rel median 7.46e-07 max 6.67e-05; J rel max 1.66e-04; states with u<=0 32/32
+  learned nodes: 64 continuous nodes from /cluster/tufts/paralab/tawal01/b2dtensor/n256/in/sep_codesign_n_N256_m64_nodes.npz
+  encoder[b2d tensor u0->z0 N=256]: rel-MSE 1.630e-06 on 157 training pairs [5s]
+  IC gram vs full: |dz|/(1+|z|) 2.13e-13, ||r|| rel diff 1.32e-12
+  GATE STEP: aux step vs make_step_lspg_var(stall=0.001) max|dz| 0.00e+00; at 1e-12 vs incumbent _finish_ops 0.00e+00
+  GATE ROLL: aux rollout vs make_rollout_v2 max|dZ| 0.00e+00 (nJ equal True, attempts/traj 118)
+  rep 0 (burn, order ['full', 'ex', 'tensor', 'ex_learned']) done [181s]
+  rep 1 (burn, order ['ex_learned', 'tensor', 'ex', 'full']) done [183s]
+  rep 2 (timed, order ['full', 'ex', 'tensor', 'ex_learned']) done [186s]
+  rep 3 (timed, order ['ex_learned', 'tensor', 'ex', 'full']) done [189s]
+  rep 4 (timed, order ['full', 'ex', 'tensor', 'ex_learned']) done [191s]
+  rep 5 (timed, order ['ex_learned', 'tensor', 'ex', 'full']) done [194s]
+  rep 6 (timed, order ['full', 'ex', 'tensor', 'ex_learned']) done [197s]
+   ARM full        err 2.451134e-02 (max 3.645e-02)  e2e 76.16 ms = ic 2.16 + solve 74.08 + dec 0.55 (split sum 76.82); attempts 114 jac 157; {'stalled': 400}; decoded min u -8.26e-02, states with u<=0 98.8%
+   ARM ex          err 2.449564e-02 (max 3.629e-02)  e2e 31.20 ms = ic 2.18 + solve 29.08 + dec 0.55 (split sum 31.76); attempts 114 jac 157; {'stalled': 400}; decoded min u -8.26e-02, states with u<=0 98.8%
+   ARM tensor      err 2.451214e-02 (max 3.645e-02)  e2e 29.84 ms = ic 2.16 + solve 27.70 + dec 0.54 (split sum 30.34); attempts 114 jac 157; {'stalled': 400}; decoded min u -8.26e-02, states with u<=0 98.8%
+   ARM ex_learned  err 2.792914e-02 (max 4.536e-02)  e2e 30.20 ms = ic 2.19 + solve 27.60 + dec 0.53 (split sum 30.36); attempts 113 jac 157; {'stalled': 400}; decoded min u -8.26e-02, states with u<=0 98.5%
+  [ex vs full] err |diff| max 1.56e-04; err ratio 0.9994; latent dev max 3.54e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.410 solve ratio 0.393
+  [tensor vs full] err |diff| max 7.30e-06; err ratio 1.0000; latent dev max 4.28e-05; stop hist identical True (per traj True, attempts True); e2e ratio 0.392 solve ratio 0.374
+  [ex_learned vs full] err |diff| max 1.61e-02; err ratio 1.1394; latent dev max 7.04e-02; stop hist identical True (per traj True, attempts False); e2e ratio 0.397 solve ratio 0.373
+  [full vs ex] err |diff| max 1.56e-04; err ratio 1.0006; latent dev max 3.54e-03; stop hist identical True (per traj True, attempts True); e2e ratio 2.441 solve ratio 2.547
+  [tensor vs ex] err |diff| max 1.54e-04; err ratio 1.0007; latent dev max 3.54e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.956 solve ratio 0.952
+  [ex_learned vs ex] err |diff| max 1.62e-02; err ratio 1.1402; latent dev max 7.08e-02; stop hist identical True (per traj True, attempts False); e2e ratio 0.968 solve ratio 0.949
+  FOM ladder traj 0 done [203s]
+  FOM ladder traj 1 done [205s]
+  FOM ladder traj 2 done [206s]
+  FOM ladder traj 3 done [208s]
+  FOM ladder traj 4 done [209s]
+  FOM ladder traj 5 done [211s]
+  FOM ladder traj 6 done [212s]
+  FOM ladder traj 7 done [214s]
+   FOM nt=3e-01 lt=1e-02: err 8.241e-01  2.31 ms  newton 0
+   FOM nt=3e-01 lt=1e-01: err 8.248e-01  2.27 ms  newton 0
+   FOM nt=1e-01 lt=5e-03: err 8.204e-01  2.32 ms  newton 0
+   FOM nt=1e-01 lt=5e-02: err 8.099e-01  2.32 ms  newton 0
+   FOM nt=3e-02 lt=2e-03: err 2.727e-01  7.51 ms  newton 12
+   FOM nt=3e-02 lt=1e-02: err 2.727e-01  6.21 ms  newton 12
+   FOM nt=1e-02 lt=5e-04: err 3.050e-02  18.91 ms  newton 41
+   FOM nt=1e-02 lt=5e-03: err 3.058e-02  14.80 ms  newton 41
+   FOM nt=3e-03 lt=2e-04: err 3.257e-04  21.09 ms  newton 50
+   FOM nt=3e-03 lt=2e-03: err 3.538e-04  17.26 ms  newton 50
+   FOM nt=1e-03 lt=5e-05: err 3.013e-04  21.89 ms  newton 50
+   FOM nt=1e-03 lt=5e-04: err 3.291e-04  19.93 ms  newton 50
+   FOM nt=1e-04 lt=5e-06: err 1.327e-04  27.23 ms  newton 54
+   FOM nt=1e-04 lt=5e-05: err 1.325e-04  23.61 ms  newton 54
+  MATCHED paired [full]: ROM 75.69 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.54e-04) 17.30 ms -> 0.23x
+  MATCHED paired [ex]: ROM 30.71 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.54e-04) 17.16 ms -> 0.56x
+  MATCHED paired [tensor]: ROM 29.53 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.54e-04) 17.24 ms -> 0.58x
+  MATCHED paired [ex_learned]: ROM 29.24 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.54e-04) 17.21 ms -> 0.59x
+DONE -> /cluster/tufts/paralab/tawal01/b2dtensor/n256/out/sep_b2d_tensor_n256.json [223s]
+ALL-DONE

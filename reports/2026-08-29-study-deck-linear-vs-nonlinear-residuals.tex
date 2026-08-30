@@ -629,6 +629,38 @@
   \end{columns}
 \end{frame}
 
+
+\begin{frame}{2D results: tensor $=$ oracle, and the full-grid cost is now visible}
+  \centering\scriptsize
+  \textbf{2D Burgers, $K{=}16$, $R{=}64$, $M{=}64$; tensor $= 64^3$ (2 MB) covering both axes; truth asserted $\ge 0$ at every $N$}\\[0.5mm]
+  \begin{tabular}{@{}rrrrrrrrr@{}}
+    \toprule
+    $N$ & GPU & oracle err & \textbf{tensor err} & NNLS-256 err & $|$diff$|$ max & oracle solve & NNLS-256 solve & \textbf{tensor solve}\\
+    \midrule
+    64   & A100-40 & 2.309e-2 & \textbf{2.309e-2} & 2.319e-2 & 8e-5 & 32.6 ms & 28.8 & \textbf{27.5}\\
+    256  & A100-80 & 2.451e-2 & \textbf{2.451e-2} & 2.450e-2 & 7e-6 & 74.1 & 29.1 & \textbf{27.7}\\
+    512  & H200    & 2.456e-2 & \textbf{2.456e-2} & 2.450e-2 & 2e-6 & 97.3 & 20.5 & \textbf{20.0}\\
+    1024 & A100-80 & 6.381e-2 & \textbf{6.381e-2} & 6.391e-2 & 2e-5 & 670.0 & 29.4 & \textbf{27.1}\\
+    \bottomrule
+  \end{tabular}
+  \vspace{1mm}
+  \begin{tabular}{@{}rrrrr@{}}
+    \toprule
+    paired vs matched-accuracy FOM & $N{=}64$: $0.42\times$ & $256$: $0.58\times$ & $512$: $0.98\times$ & $\mathbf{1024}$: $\mathbf{3.45\times}$ (sampled rule $3.31\times$)\\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{1mm}
+  \begin{columns}[T]
+    \column{0.33\textwidth}\footnotesize
+    \textbf{Accuracy.} Tensor = oracle at every $N$, with identical stop reasons \emph{and} identical LM attempt counts. Not better than NNLS-256 (ratio 0.996--1.003): at $m = 4M$ sampling was never binding, so the tensor matches it with nothing fitted (build 2 s vs an 11--26 s NNLS fit).
+    \column{0.33\textwidth}\footnotesize
+    \textbf{Cost.} The $O(N)$ oracle climbs $33 \to 670$ ms over $16\times$ in resolution; the tensor stays at 20--28 ms, 2--8\,\% under the sampled rule. Different GPU per $N$ --- within-job ratios, not an exponent. The 2D crossover vs the FOM is unchanged: win at $1024^2$, loss below.
+    \column{0.33\textwidth}\footnotesize
+    \textbf{Limits.} Decoded undershoots are larger in 2D (15--17\,\% of points), so parity is $10^{-4}$--$10^{-6}$. The $R{=}512$ headline bank does \emph{not} compress by head-PCA (499/512 directions needed; tripwire stopped it) --- that configuration stays sampled. The $N{=}1024$ checkpoint is a weak inherited decoder (its $6.4\times10^{-2}$ is the checkpoint, not the residual).
+  \end{columns}
+\end{frame}
+
 \begin{frame}{What five adversarial reviews said (3 Claude, 2 Codex) --- and where the method stops}
   \begin{columns}[T]
     \column{0.5\textwidth}
@@ -647,7 +679,7 @@
       \begin{itemize}
         \item \textbf{Sign-changing data:} the $|u|$ term is not tabulated. Routes: a polynomial FOM (centered / skew / Lax--Friedrichs), tabulate the central part and sample only the small $|u|$ term, or lift $v=|u|$.
         \item \textbf{Non-polynomial physics} (limiters, WENO, $e^u$): no finite table; sampling stays the right tool, or lift.
-        \item \textbf{2D as it stands:} the 2D Burgers bank is $R=512$, so $T$ would be $128\times512^2 \approx 270$ MB --- needs compression (project $h$ onto the $\sim K$ directions it spans) before a 2D port.
+        \item \textbf{2D:} works as-is for the $R=64$ bank. The $R=512$ headline bank needs a 270 MB table; head-PCA compression failed (tried) --- it stays sampled.
         \item \textbf{Statistics:} single seed, 8 trajectories; multi-seed with paired intervals is still open.
       \end{itemize}
     \end{alertblock}
@@ -670,7 +702,7 @@
     Residual approximation & none ($10^{-13}$) & none on $u\ge0$; $O(\Delta x\,\delta)$ on undershoots & quadrature error (NNLS + learned nodes)\\
     After stage 1 & nothing & nothing (build $T$ once) & NNLS weights + stage-2 node positions\\
     Accuracy limit & decoder floor & decoder floor (= oracle) & decoder floor $+$ sampling gap\\
-    Cost vs grid size & flat & flat (solve $128\to65\,536$) & flat\\
+    Cost vs grid size & flat & flat (1D solve $128\to65\,536$; 2D $64^2\to1024^2$ while the oracle grows $25\times$) & flat\\
     \bottomrule
   \end{tabular}
   \vspace{2mm}

@@ -23,7 +23,10 @@ HERE = os.environ.get("TABLES_DIR", os.path.dirname(os.path.abspath(__file__)))
 def load():
     out = {}
     for p in sorted(glob.glob(os.path.join(HERE, "n*", "out", "sep_b2d_tensor_n*.json"))):
-        n = int(re.search(r"_n(\d+)\.json$", p).group(1))
+        mm = re.search(r"_n(\d+)\.json$", p)
+        if mm is None:
+            continue
+        n = int(mm.group(1))
         d = json.load(open(p))
         if d.get("complete"):
             out[n] = d
@@ -219,3 +222,26 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def stretch_tables():
+    """Stretch (R=512 head-PCA): the job stopped at the designed T0 tripwire
+    BEFORE the JSON was saved, so the gate values are parsed verbatim from the
+    job log (generated, not hand-typed)."""
+    logs = sorted(glob.glob(os.path.join(HERE, "n1024r512", "logs", "*.out")))
+    if not logs:
+        return
+    print("\n### T-12 Stretch: R=512 headline checkpoint (dn1024 dense_mid, K=32) with the head-PCA "
+          "Tucker tensor -- values parsed from the job log (the run stopped at the T0 tripwire "
+          "before its JSON was written)\n")
+    print("| log | line |")
+    print("|---|---|")
+    for p in logs:
+        jid = os.path.basename(p).split(".")[0]
+        for line in open(p):
+            if re.search(r"host=|HEAD-PCA|GATE (A|TB|TA|TA'|T0)|Assertion|tripwire", line):
+                print(f"| {jid} | `{line.strip()[:230]}` |")
+
+
+if __name__ == "__main__":
+    stretch_tables()

@@ -1,0 +1,21 @@
+host=pax008 gpu=NVIDIA H200, 143771 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=cdb1fd3de000e5dfc8a3af95e6d341f87c50130b
+jax_backend=gpu device=cuda:0 B2D-TENSOR N=1024 K=32 R=512 M=64 m=256 arms=['full', 'ex', 'tensor'] train=0 reps=5 burn=2 stall=0.001
+  test data: 8 fresh trajectories, worst FOM rel residual 9.97e-13
+  TEST positivity: min u 1.108e-34 max 1.955e+00 frac<=0 0.00e+00 frac<0 0.00e+00
+  trajectory parameters: canonical 576 + 4032 appended from seed 1000 (recorded in the checkpoint)
+  TRAIN truth regeneration SKIPPED (SKIP_TRAIN_TRUTH=1; 4608 trajectories) -- positivity asserted on the test set only
+  TRAIN truth: 4608 traj regenerated [0s], max FOM rel residual nan; positivity: min u nan max nan frac<=0 0.00e+00 frac<0 0.00e+00
+  GATE bank==meshfree: 1.19e-15
+  NNLS-EQ exlin N=1024 k=32 M=64 m=256 adv-only: pool 65536 support 256 (+0 pad) rel fit 4.70e-03 (row p95 1.4e-01, max 1.8e+02) [25s]
+  GATE 0 (incumbent ops == make_weak_ops): 3.28e-15
+  GATE L (exlin linear == full-grid linear): 0.00e+00
+  GATE A (exlin advection == incumbent advection): 4.01e-14
+  GATE FOMR (full-grid weak residual == wt*Phi^T R_FOM): 1.85e-14
+  HEAD-PCA: R=512 -> K'=499 (tail energy 8.66e-09, sv[0]=6.715e+02 sv[K'-1]=9.914e-02 sv[-1]=2.767e-02; per-code projection rel-L2 median 1.15e-04 max 2.87e-03)
+  GATE TB (two chunkings): 1.46e-15  [Q (64, 499, 499), 121.6 MiB, build 8.89s, T asymmetry 1.59]
+  GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 131072 training states): 2.01e-03  [HEAD_PCA: includes the projection tail; recorded]
+  GATE TA' (identity on P P^T h): 1.67e-13
+  GATE T0 (tensor == oracle on the 7 all-positive decoded training states): 4.3010692768387743e-05; all states: mismatch median 1.81e-05 max 2.02e-03; frac points u<=0 14.397%, min u -8.61e-02

@@ -163,3 +163,15 @@
 | 64 | [64, 64, 64] | 2.0 | 1.17 | 1.35 | 0.0e+00 | 256 | 4.98e-03 | 11 |
 | 256 | [64, 64, 64] | 2.0 | 1.77 | 1.76 | 1.6e-15 | 256 | 4.95e-03 | 23 |
 | 1024 | [64, 64, 64] | 2.0 | 1.86 | 1.96 | 1.4e-15 | 256 | 5.99e-03 | 26 |
+
+### T-12 Stretch: R=512 headline checkpoint (dn1024 dense_mid, K=32) with the head-PCA Tucker tensor -- values parsed from the job log (the run stopped at the T0 tripwire before its JSON was written)
+
+| log | line |
+|---|---|
+| 3039255 | `host=pax008 gpu=NVIDIA H200, 143771 MiB` |
+| 3039255 | `GATE A (exlin advection == incumbent advection): 4.01e-14` |
+| 3039255 | `HEAD-PCA: R=512 -> K'=499 (tail energy 8.66e-09, sv[0]=6.715e+02 sv[K'-1]=9.914e-02 sv[-1]=2.767e-02; per-code projection rel-L2 median 1.15e-04 max 2.87e-03)` |
+| 3039255 | `GATE TB (two chunkings): 1.46e-15  [Q (64, 499, 499), 121.6 MiB, build 8.89s, T asymmetry 1.59]` |
+| 3039255 | `GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 131072 training states): 2.01e-03  [HEAD_PCA: includes the projection tail; recorded]` |
+| 3039255 | `GATE TA' (identity on P P^T h): 1.67e-13` |
+| 3039255 | `GATE T0 (tensor == oracle on the 7 all-positive decoded training states): 4.3010692768387743e-05; all states: mismatch median 1.81e-05 max 2.02e-03; frac points u<=0 14.397%, min u -8.61e-02` |

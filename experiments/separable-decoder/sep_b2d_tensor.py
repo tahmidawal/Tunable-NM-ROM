@@ -718,6 +718,7 @@ def main():
         f"decoded training states): {gT0}; all states: mismatch median "
         f"{np.median(mis):.2e} max {np.max(mis):.2e}; frac points u<=0 "
         f"{report['TS_train_states']['frac_points_u_le0']:.3%}, min u {minu.min():.2e}")
+    save()          # persist head_pca / TA / T0 before the tripwire can fire
     if gT0 is not None:
         if HEAD_PCA:
             report["gates"]["T0_tripwire"] = PCA_T0_TOL

@@ -3478,3 +3478,112 @@ experiments (multi-seed → sign-changing family → fixed sine bank → R=512 c
 1D positivity assert → 2D rollout-optimization port), and the landmines learned this session
 (codex stdin/sandbox, rsync --delete eating failed logs, GATE_C_TOL, the 17 GB jit closure,
 two A100 models in the pool, render-after-edit for Beamer, "interleaved" only when it is).
+
+### Session 2 — roadmap agreed; waves designed and RETIRED; Stokes designed (r1→r3) and its FOM built
+
+Sequential-execution session: the user asked for the experiment list run **one after another**
+(overriding the parallelize-by-default rule) with **every conclusion and code file verified by
+an independent Codex `gpt-5.6-sol` pass**, and design documents audited *before* implementation.
+
+**Roadmap** (`understand/2026-08-30-experiment-roadmap.md`, commit `38804ac`). Organizing
+principle: score every PDE by the **degree of the residual as a polynomial in the state** —
+degree 1 and 2 are sample-free, non-polynomial needs sampling. Order: waves → sign-changing
+Burgers → 2D incompressible NS → multi-seed → fixed sine bank → 3D linear → tensor compression
+→ 3D NS → compressible NS via lifting. Two obstacles were identified before any code: the
+`bc(x)` mask destroys divergence-freeness for NS, and the `Λ` diagonal shortcut dies under
+absorbing boundaries. One gate was **retracted from the roadmap itself**: the R-frontier was
+originally required *before* NS; a dense 2D tensor at R=512, M=64 is ~134 MB per component
+block, so it fits an 80 GB A100 and does not block building 2D NS.
+
+**Waves — designed, audited, RETIRED without implementation.** Branch
+`exp/2026-08-30-waves-vector` (`bfde209`) carries `WAVES-DESIGN.md`, the Codex audit, and
+`WAVES-RETIRED.md`. Retired because **this project already did waves twice**:
+`exp/2026-08-14-wave2d-coord-rom` built the `(u,v)` Crank–Nicolson system and already confirmed
+the slow hyperbolic Kolmogorov decay, and `exp/2026-08-16-wave2d-rom-latent-stepping` found the
+ROM **fails structurally** (ceiling 1.72e-1 / ours 8.78e-1 / POD 3.42e-1 at k=8 N=64; end-time
+energy ratio 0.27 vs POD 1.000003; "not fixable by tuning"). That argument is
+architecture-independent, so the separable decoder inherits it. **Lesson: read the lab log
+before proposing a PDE, not after** — the waves cell was proposed, worktree'd and briefed to an
+implementation agent before the prior work was found; the agent was stopped ~1 min in.
+
+The audit (verdicts: items 1/3/5 WRONG, 2/4/6 NEEDS-RESTATEMENT) found, pre-implementation:
+`A = ΦᵀLG = -ΛB` under this repo's `LΦ = -ΦΛ` convention, so gate W1 would have measured **≈2**,
+not 1e-12; Sommerfeld is a **DAE** needing four precomputed matrices, not two; and **gate W0
+could not fail** because Dirichlet sine modes annihilate the boundary residual rows. It also
+flagged the same rollout risk independently.
+
+**What survived and is now the project's statement of the linear claim.** The algebra
+`u = Gh ⟹ PᵀLu = (PᵀLG)h` holds for any fixed linear `L`. But **non-symmetry is not what kills
+the diagonal shortcut** — "even a non-symmetric matrix has a diagonal shortcut if `Pᵀ` consists
+of its left eigenvectors; self-adjointness is sufficient, not necessary". The general form,
+covering DAEs, cross-component coupling and parameter dependence, is
+`R = Pᵀ[E(µ)𝒢Δη/Δt − K(µ)𝒢η̄]`, one precomputed matrix per affine operator component.
+
+**Stokes replaces waves as the NS dress rehearsal.** Steady Stokes is NS minus convection:
+linear (so quadrature-free applies unchanged), vector-valued, divergence-constrained, and
+**steady**, so the structure-preserving latent-stepping failure cannot contaminate it. Branch
+`exp/2026-08-30-stokes-vector`; design taken through **three revisions and two audits**
+(`2f45aab`).
+
+- r1 audit verified the core numerically (`‖D+Gradᵀ‖` and `‖DC‖` exactly 0; normalized
+  `‖ΦᵀGrad p‖` = 5.91e-18; vertex-curl space exactly spans `ker D`) then marked r1
+  unimplementable: gate S5 **could not fail** (second such gate in one session), the absolute
+  S2 threshold of 1e-14 would have rejected correct code (raw `‖DΦ‖` measures 2.3e-13 → 9.1e-13
+  as N goes 64→256), the POD div-free inheritance claim is **numerically false**
+  (`Dgᵢ = (DX)vᵢ/σᵢ` amplifies by `1/σᵢ` in tail modes), the affine mean term was omitted, and
+  the cost claim was false for a non-affine force.
+- r2 audit (verdict IMPLEMENT WITH LISTED FIXES, 2/9 closed) found **the important one**:
+  steady Stokes is linear, so `u` is linear in the force amplitudes and, with independently
+  varying affine amplitudes, **the solution manifold IS a linear subspace and the
+  nonlinear-decoder comparison is vacuous**. Generalization now recorded in the design: *on a
+  linear PDE with affine parameter dependence the nonlinear head can never buy accuracy — its
+  entire value is cost.* That is also the correct framing for the Poisson QF result. Fixed by
+  generating amplitudes through a curved K-parameter map over a fixed affine dictionary. r2 also
+  established that the **incumbent EQ/NNLS arm cannot be inherited** (`sep_poisson_qf.py` uses a
+  weak values-only residual, equivalent to a strong projection only via the Dirichlet sine
+  eigenrelation, which S5 proves fails here).
+- r3 froze every threshold and added S-MEAN (r2 gated the POD modes but not `ū`).
+
+**Stokes phase 1 — MAC FOM built and gated** (`6ca89db`, local, f64 scipy/SuperLU, 196 s).
+`stk2d_common.py`, `stk2d_fom_gates.py`, `stk2d_tables.py`, `runs/stk2d/`. S-ADJ **exactly 0.0**
+bit-for-bit at N=8…256 with a sign-flipped negative control reading 0.7071 (so the gate
+discriminates). S-FOM orders 2.0021/2.0005/2.0001 (u) and 2.0012/2.0003/2.0001 (p), matching the
+audit anchors to their own rounding. `‖D+Gradᵀ‖∞` and `‖DC‖∞` exactly 0; rank D = N²−1,
+dim ker D = rank C = (N−1)² confirmed to N=256.
+
+**The finding: the frozen manufactured solution is degenerate.** With `t = πh` it has a
+**closed-form discrete solution**, `u_h = (t/sin t)² u_ex`, `p_h = (t/sin t) p_ex` for every ν —
+so the "anchors" the audit produced were analytic constants and the agreement was partly
+circular. Verified independently, including at the odd-ghost wall rows. S-FOM still detects
+free-slip decisively (even ghosts **plateau at O(1)**: error ≈1.27, orders 0.0495→0.0007 —
+converging second-order to the *wrong* boundary-value problem, Richardson limits 1.2729591 and
+2.5543888), but its convergence table carries little other information.
+
+**Retracted this session:**
+- The claim (relayed upstream before verification) that the design's S3 ≥1e-2 floor is
+  **unachievable**. It is achievable — the implementer's diagnosis (1/√M and h factors in the
+  Frobenius normalization) is wrong; that metric is the RMS of per-column physical cosines with
+  no residual h factor. The real cause was using **grid-white random noise** as the test
+  pressure against a control spanning only 64 smooth modes. With `p = χ₁₁` the control metric is
+  exactly 0.125 = 1/√64 at every N=32…256. The gate was **under-specified, not impossible**.
+- "NS = Stokes + the tensor on the same code" — the existing `b2d_tensor_common.py` is scalar,
+  collocated and fixed-positive-upwind; MAC NS needs a new staggered skew-symmetric bilinear
+  tensor `T_mjk = ⟨φ_m, ℬ(g_j, g_k)⟩`.
+- "ν is the continuous parameter" for Stokes — a scalar ν only rescales velocity by 1/ν.
+- Two implementer thresholds (S-NU 1e-11, S-EXACT 1e-10) were **wrong, not the discretization**.
+  Proven by permutation alone: S-NU moves 1.077e-11 (COLAMD) → 9.06e-14 (MMD_ATA) → 5.12e-14
+  (NATURAL). A real defect does not vanish under a reordering.
+
+**Recurring failure mode worth naming: gates that cannot fail, and absolute tolerances for
+mesh-scaling quantities.** Both audits and the implementer each caught one instance. The gate
+harness reproduced it — the JSON can report `complete=true` while its own S3 floor fails, and
+S-EXACT's recorded `worst_pred_dev_p` = 2.331e-8 already exceeds its stored 1e-8 tolerance
+without failing anything.
+
+**In flight at the time of writing:** three verified additions dispatched to the phase-1 agent —
+a second *generic* manufactured solution (Codex-supplied and CPU-tested; error/solution cosine
+≈0.912 so it genuinely tests error structure), a deterministic aligned-pressure S3 control, and
+promotion of every recorded diagnostic to a real assertion.
+
+**Open:** Stokes phase 2 (bank, decoder, QF residual, S1–S9); the roadmap's remaining eight
+items; merge decisions for nine unmerged experiment branches (now eleven with waves and Stokes).

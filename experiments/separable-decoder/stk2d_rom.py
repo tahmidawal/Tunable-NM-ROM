@@ -274,12 +274,13 @@ class QFRom:
         g = cell.g
         self.cell, self.R, self.M = cell, int(R), int(M)
         self.nu = float(cell.nu if nu is None else nu)
+        t = time.time()          # the offline clock includes building Phi:
+                                 # the test space is part of the precompute
         Phi, lams, modes = stk.test_modes(g, M)
         self.Phi, self.lams, self.modes = Phi, lams, modes
         h2 = g.h ** 2
         G = cell.G[:, :R]
         self.G = G
-        t = time.time()
         self.A = Phi.T @ ((cell.L @ G) * h2)                     # (M, R)
         self.phi_L_ubar = Phi.T @ ((cell.L @ cell.ubar) * h2)    # (M,)
         self.Bq = Phi.T @ (cell.F * h2)                          # (M, Q)
@@ -518,18 +519,35 @@ def eq_fit_greedy(Psi, tgt, m):
     quadrature rule.  Refitting NNLS inside every greedy step is equivalent
     here and costs minutes per mesh.
     """
-    active, r = [], tgt.copy()
+    Psi = np.asarray(Psi, dtype=float)
+    tgt = np.asarray(tgt, dtype=float)
     nt = np.linalg.norm(tgt) + 1e-300
-    hist = []
-    for _ in range(int(m)):
+    active, hist = [], []
+    r = tgt.copy()
+    # Incremental normal equations with a tiny ridge.  Calling
+    # `np.linalg.lstsq` inside every greedy step uses the SVD driver and takes
+    # minutes per mesh at a 512-node budget; the selection criterion does not
+    # need that accuracy, and the WEIGHTS that are actually used come from the
+    # NNLS in `eq_weights`, not from here.
+    Gm = np.zeros((int(m), int(m)))
+    Pt = np.zeros((int(m), Psi.shape[0]))
+    for step in range(int(m)):
         corr = Psi.T @ r
-        corr[active] = -np.inf
+        if active:
+            corr[active] = -np.inf
         j = int(np.argmax(corr))
         if not np.isfinite(corr[j]) or corr[j] <= 0:
             break
+        col = Psi[:, j]
+        Pt[step] = col
+        Gm[step, :step + 1] = Pt[:step + 1] @ col
+        Gm[:step + 1, step] = Gm[step, :step + 1]
         active.append(j)
-        w, *_ = np.linalg.lstsq(Psi[:, active], tgt, rcond=None)
-        r = tgt - Psi[:, active] @ w
+        n = step + 1
+        A = Gm[:n, :n]
+        w = np.linalg.solve(A + 1e-12 * np.trace(A) / n * np.eye(n),
+                            Pt[:n] @ tgt)
+        r = tgt - Pt[:n].T @ w
         hist.append(float(np.linalg.norm(r) / nt))
     return np.asarray(active, dtype=int), hist
 

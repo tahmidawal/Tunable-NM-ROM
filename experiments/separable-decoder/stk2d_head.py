@@ -44,6 +44,7 @@ a job before (CLAUDE.md).
 """
 from __future__ import annotations
 
+import os
 import time
 
 import numpy as np
@@ -196,6 +197,36 @@ def save_head(path, spec, extra=None):
     np.savez(path, **{k: v for k, v in d.items() if k != "meta"},
              meta=repr(meta))
     return meta
+
+
+def load_head_jax(path, expect=None):
+    """Load a saved head back into the JAX form `oracle_fit` needs, but ONLY if
+    every recorded field matches `expect`.  Returns None otherwise.
+
+    This is what makes a failed run cheap to resume: training a head is
+    deterministic given its seed and configuration, so a head on disk whose
+    entire configuration matches is the same object the run would have
+    produced.  It is a CACHE, exactly like the snapshot cache -- deleting it
+    reproduces everything from the seed -- and the driver records, per rung,
+    whether the head was trained or loaded."""
+    if not os.path.exists(path):
+        return None
+    try:
+        d = np.load(path, allow_pickle=True)
+        meta = eval(str(d["meta"]))
+    except Exception:
+        return None
+    for k, v in (expect or {}).items():
+        if meta.get(k) != v:
+            return None
+    nl = meta["layers"] + 1
+    mlp = [(jnp.asarray(d[f"W{i}"]), jnp.asarray(d[f"b{i}"])) for i in range(nl)]
+    params = dict(mlp=mlp, skip=jnp.asarray(d["skip"]))
+    if "B" in d.files:
+        params["B"] = jnp.asarray(d["B"])
+    spec = dict(params=params, Z=d["Z"], from_cache=True)
+    spec.update(meta)
+    return spec
 
 
 def load_head_np(path):

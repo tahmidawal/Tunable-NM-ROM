@@ -96,17 +96,16 @@ STOP_FACTOR = 3.0          # THE PREDECLARED BAR.  Frozen before any training
 METRIC_TOL = 1e-12         # the coefficient-space identity
 REGR_TOL = 1e-9            # vs the certified phase-2a POD errors
 AFFINE_SCALE = 1e-14       # phase 2a's own affine-identity budget, x N^2
-LINEAR_CTL_BAND = 1.5      # RECORDED, not gated: how close the linear
-                           # control lands to the POD-K floor.  It is not a
-                           # threshold because a head that is affine in the
-                           # PINNED latent spans the image of a linear
-                           # regression, which is a K-dimensional affine
-                           # subspace but NOT the POD-K subspace, so it may sit
-                           # well above the floor while still being unable to
-                           # beat it.  What IS gated is the pair of statements
-                           # that actually follow from that geometry: the
-                           # linear control can never go BELOW the POD-K floor,
-                           # and it can never CLEAR the stop bar
+LINEAR_CTL_BAND = 1.5      # how far the linear control may sit BELOW the
+                           # POD-K floor.  It is a BAND, not a floor, because
+                           # POD-K is fitted to 256 training snapshots while
+                           # the linear control fits an arbitrary
+                           # K-dimensional affine subspace to 16384 samples,
+                           # so on a HELD-OUT cohort the control can
+                           # generalise slightly better than POD-K -- and does
+                           # (retraction 30).  The statement that does follow
+                           # from the geometry, and is gated, is that it can
+                           # never CLEAR the stop bar
 ORACLE_STARTS = 8
 ORACLE_ITERS = 400
 
@@ -289,6 +288,31 @@ def main():
         _, res = head.oracle_fit(spec, Ctarget, **kw)
         return head_stats(cell, R, res, perp2, tot2)
 
+    def train_or_load(path, expect, **kw):
+        """Train a head, or reuse an identical one already on disk.
+
+        Training is deterministic given its seed and configuration, so a saved
+        head whose ENTIRE recorded configuration matches is the object this
+        run would have produced.  `expect` is checked field by field and any
+        mismatch retrains.  Deleting `runs/stk2d/heads/` reproduces everything
+        from the seed; the artifact records per rung whether the head was
+        trained here or loaded, so a reader can tell.  This exists because a
+        gate defect at the END of a two-hour run should not cost the two
+        hours (retraction 30)."""
+        sp = head.load_head_jax(path, expect=expect)
+        if sp is not None:
+            log(f"   head[{os.path.basename(path)}]: loaded from cache")
+            return sp, True
+        sp = head.train_head(**kw)
+        head.save_head(path, sp, extra=dict(
+            smoke=int(SMOKE), producer=os.path.basename(out),
+            N=int(expect["N"]), seed_base=int(SEED),
+            git_commit=git_commit()))
+        sp["from_cache"] = False
+        sp.update(dict(smoke=int(SMOKE), producer=os.path.basename(out),
+                       N=int(expect["N"]), seed_base=int(SEED)))
+        return sp, False
+
     # ======================= S-SELECT: which training form ==================
     # BOTH training forms are run at the primary rung and the primary is chosen
     # on a VALIDATION cohort drawn from the same generator and disjoint from
@@ -302,10 +326,15 @@ def main():
     c_val0 = cell0.coeff_affine(mu_val)[:, :R_STOP]
     val_norm = np.linalg.norm(c_val0, axis=1)
     for mode in ("sup", "auto"):
-        sp = head.train_head(c_fit0, K_LAT, mode=mode, MU=mu_fit, hidden=HID,
-                             layers=LAYERS, steps=STEPS, lr=LR, batch=BATCH,
-                             seed=SEED % 1000, log_every=STEPS // 4,
-                             tag=f"select-{mode}")
+        sp, cached = train_or_load(
+            os.path.join(HERE, HEADS,
+                         f"head_select_{mode}_N{N_PRIMARY}_R{R_STOP}_K{K_LAT}.npz"),
+            dict(mode=mode, hidden=HID, layers=LAYERS, steps=STEPS,
+                 batch=BATCH, n_fit=N_FIT, seed=SEED % 1000, smoke=int(SMOKE),
+                 N=int(N_PRIMARY), R=int(R_STOP), K=int(K_LAT)),
+            Cfit=c_fit0, K=K_LAT, mode=mode, MU=mu_fit, hidden=HID,
+            layers=LAYERS, steps=STEPS, lr=LR, batch=BATCH, seed=SEED % 1000,
+            log_every=STEPS // 4, tag=f"select-{mode}")
         _, rv = head.oracle_fit(sp, c_val0, n_starts=ORACLE_STARTS,
                                 iters=ORACLE_ITERS, seed=SEED + 3)
         sel_rows.append(dict(
@@ -313,6 +342,7 @@ def main():
             train_rel_mse=float(sp["final_rel_mse"]),
             val_oracle_rel=float(np.linalg.norm(rv) / np.linalg.norm(val_norm)),
             val_oracle_median=float(np.median(rv / val_norm)),
+            from_cache=bool(sp.get("from_cache", False)),
             seconds=float(sp["seconds"])))
         log(f"  select[{mode}]: val oracle {sel_rows[-1]['val_oracle_rel']:.3e} "
             f"median {sel_rows[-1]['val_oracle_median']:.3e}")
@@ -381,15 +411,16 @@ def main():
             c_fit = cell.coeff_affine(mu_fit)[:, :R]
             p2, t2 = cell.perp_energy(cell.U_te, R)
             p2tr, t2tr = cell.perp_energy(cell.U_tr, R)
-            spec = head.train_head(c_fit, K_LAT, mode=MODE, MU=mu_fit,
-                                   hidden=HID, layers=LAYERS, steps=STEPS,
-                                   lr=LR, batch=BATCH, seed=SEED % 1000 + R,
-                                   log_every=(STEPS // 2 if N == N_PRIMARY
-                                              else 0), tag=f"N{N}R{R}")
-            head.save_head(os.path.join(HERE, HEADS,
-                                        f"head_N{N}_R{R}_K{K_LAT}.npz"), spec,
-                            extra=dict(smoke=int(SMOKE), producer=os.path.basename(out),
-                                       N=int(N), seed_base=int(SEED)))
+            spec, spec_cached = train_or_load(
+                os.path.join(HERE, HEADS, f"head_N{N}_R{R}_K{K_LAT}.npz"),
+                dict(mode=MODE, hidden=HID, layers=LAYERS, steps=STEPS,
+                     batch=BATCH, n_fit=N_FIT, seed=SEED % 1000 + R,
+                     smoke=int(SMOKE), N=int(N), R=int(R), K=int(K_LAT)),
+                Cfit=c_fit, K=K_LAT, mode=MODE, MU=mu_fit, hidden=HID,
+                layers=LAYERS, steps=STEPS, lr=LR, batch=BATCH,
+                seed=SEED % 1000 + R,
+                log_every=(STEPS // 2 if N == N_PRIMARY else 0),
+                tag=f"N{N}R{R}")
             hs = oracle_field(cell, R, spec, c_te[:, :R], p2, t2,
                               n_starts=ORACLE_STARTS, iters=ORACLE_ITERS,
                               seed=SEED + 7)
@@ -399,10 +430,14 @@ def main():
             # ---- NEGATIVE CONTROL 1: a LINEAR head --------------------------
             # layers=0 makes the whole head affine in z, so its image is a
             # K-dimensional affine subspace and it CANNOT beat POD-K.
-            sp_lin = head.train_head(c_fit, K_LAT, mode=MODE, MU=mu_fit,
-                                     hidden=HID, layers=0, steps=STEPS // 4,
-                                     lr=LR, batch=BATCH, seed=SEED % 1000 + R,
-                                     tag=f"lin-N{N}R{R}")
+            sp_lin, lin_cached = train_or_load(
+                os.path.join(HERE, HEADS, f"head_lin_N{N}_R{R}_K{K_LAT}.npz"),
+                dict(mode=MODE, hidden=HID, layers=0, steps=STEPS // 4,
+                     batch=BATCH, n_fit=N_FIT, seed=SEED % 1000 + R,
+                     smoke=int(SMOKE), N=int(N), R=int(R), K=int(K_LAT)),
+                Cfit=c_fit, K=K_LAT, mode=MODE, MU=mu_fit, hidden=HID,
+                layers=0, steps=STEPS // 4, lr=LR, batch=BATCH,
+                seed=SEED % 1000 + R, tag=f"lin-N{N}R{R}")
             hs_lin = oracle_field(cell, R, sp_lin, c_te[:, :R], p2, t2,
                                   n_starts=ORACLE_STARTS, iters=ORACLE_ITERS,
                                   seed=SEED + 9)
@@ -422,6 +457,8 @@ def main():
                 n_params=int(spec["n_params"]),
                 train_rel_mse=float(spec["final_rel_mse"]),
                 train_seconds=float(spec["seconds"]),
+                head_from_cache=bool(spec_cached),
+                linear_control_from_cache=bool(lin_cached),
                 oracle=hs, oracle_train_cohort=hs_tr,
                 pod_K=podK, pod_R=pods[str(R)],
                 gain_over_podK_agg=float(podK["agg"] / max(hs["agg"], 1e-300)),
@@ -545,11 +582,24 @@ def main():
              f"beat POD-K and the R ladder is not a like-for-like comparison")
     save()
     for r in recon_rows:
-        assert r["linear_control"]["agg"] >= r["pod_K"]["agg"] * (1 - 1e-9), \
+        # RETRACTION 30.  The first version of this assertion required the
+        # linear control to sit at or ABOVE the POD-K floor, on the argument
+        # that a K-dimensional affine subspace cannot beat POD-K.  That is
+        # true on the cohort POD-K was FITTED to and false on a HELD-OUT one:
+        # POD-K here is the first K columns of a bank built from 256 training
+        # snapshots, while the linear head fits an arbitrary K-dimensional
+        # affine subspace to 16384 samples, so it can and does generalise
+        # slightly better (3.738e-2 against 3.849e-2 at N=64).  The gated
+        # statement is the one that actually follows from the geometry: the
+        # linear control cannot come CLOSE to the head, and it cannot clear
+        # the stop bar.  The ratio is recorded either way.
+        assert r["linear_control"]["agg"] >= r["pod_K"]["agg"] / LINEAR_CTL_BAND, \
             (f"S-RECON linear control N={r['N']} R={r['R']}: the linear head "
-             f"reads {r['linear_control']['agg']}, BELOW the POD-K floor "
-             f"{r['pod_K']['agg']} -- a K-dimensional affine subspace cannot "
-             f"beat POD-K, so the metric or the cohort is wrong")
+             f"reads {r['linear_control']['agg']}, more than "
+             f"{LINEAR_CTL_BAND}x below the POD-K floor {r['pod_K']['agg']} "
+             f"-- a K-dimensional affine subspace fitted to this family "
+             f"should land AT the linear ceiling, so the metric or the cohort "
+             f"is wrong")
         assert (r["pod_K"]["agg"] / r["linear_control"]["agg"]) < STOP_FACTOR, \
             (f"S-RECON linear control N={r['N']} R={r['R']} CLEARED the stop "
              f"bar: {r['pod_K']['agg'] / r['linear_control']['agg']:.2f}x >= "

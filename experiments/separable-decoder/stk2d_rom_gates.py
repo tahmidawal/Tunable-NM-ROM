@@ -117,12 +117,21 @@ S4_CTL_FLOOR = 1e2 * S4_TOL    # a control must FAIL by at least two orders.
                            # gate's sensitivity and both are recorded.
 S4_A_PERT = 1e-8           # the gated A-perturbation control
 S4_A_PERT_SMALL = 1e-10    # recorded alongside, as a sensitivity diagnostic
-HEAD_TOL = 1e-13           # numpy head vs the trained JAX head
+HEAD_TOL = 1e-12           # numpy head vs the trained JAX head.  Not 1e-15:
+                           # the two run on different devices (numpy f64 on
+                           # CPU, JAX f64 on GPU) with different reduction
+                           # orders, so three silu layers accumulate a
+                           # relative difference at the 1e-14 level.  A real
+                           # discrepancy in either implementation shows at
+                           # 1e-1, not at 1e-13
 HEAD_FD_TOL = 1e-6         # numpy head Jacobian vs a central difference
 PRESS_TOL = 1e-12          # the pressure-elimination rung, normalised
 EQ_EXACT_TOL = 1e-13       # the EQ machinery with ALL faces and unit weights
 RANK_TOL = 1e-9            # relative singular-value cut for rank(A J_h)
 EQ_CTL_FLOOR = 1e-2        # a shuffled-weight EQ control must exceed this
+BACKERR_TOL = 1e-13        # phase 1's frozen engineering threshold, carried
+CONT_TOL = 1e-12           # forward with phase 2a's CORRECTED continuity
+GAUGE_TOL = 1e-12          # normalisation (carried-forward condition 7)
 
 FROZEN_CONFIG = dict(rom_ns=[32, 64, 128, 256], r_ladder=[8, 16, 32],
                      m_ladder=[32, 64, 128], m_main=64, r_main=32, n_main=64,
@@ -197,10 +206,27 @@ def field_err(cell, u_hat, i):
 
 
 def centred_err(cell, a, i, R):
-    """The centred convention phase 2a used for POD errors."""
+    """(absolute error, reference norm) of a reduced coefficient vector against
+    held-out snapshot i, in the CENTRED mass-weighted convention phase 2a used
+    for POD errors.  The pair is returned rather than the ratio so the cohort
+    aggregate can be the ENERGY-WEIGHTED ||E||_F/||X||_F that the stop gate and
+    phase 2a both report -- an RMS of per-case ratios is a different number and
+    mixing the two across tables would be a silent inconsistency."""
     x = cell.U_te[:, i] - cell.ubar
     e = x - cell.G[:, :R] @ a
-    return float(np.linalg.norm(e) / np.linalg.norm(x))
+    return float(np.linalg.norm(e)), float(np.linalg.norm(x))
+
+
+def cohort_stat(pairs):
+    """Aggregate a list of (abs err, ref norm) pairs the same way every other
+    error in this cell is aggregated."""
+    e = np.asarray([p[0] for p in pairs], dtype=float)
+    x = np.asarray([p[1] for p in pairs], dtype=float)
+    finite("cohort err", e)
+    per = e / x
+    return dict(agg=float(np.linalg.norm(e) / np.linalg.norm(x)),
+                median=float(np.median(per)), max=float(per.max()),
+                n=int(e.size))
 
 
 # ==================================================================== S4 =====
@@ -248,13 +274,16 @@ def gate_s4(cell, R, M, hspec, solve_states, rng):
         d = float(np.linalg.norm(rq - rf))
         rel.append(d / (np.linalg.norm(rf) + 1e-300))
         canc.append(d / sc)
-    # Jacobians, at a subset (each full-grid Jacobian is K stencil applies)
-    Jh_states = states[:8] + states[N_S4_STATES:N_S4_STATES + 8]
-    for kind, i, hz in Jh_states:
-        # the head Jacobian at the latent that produced hz is unavailable for
-        # the seeded states, so a RANDOM full-rank Jh is used: S4 tests the
-        # residual/Jacobian machinery, not the head
-        Jh = rng.standard_normal((R, K_LAT)) / np.sqrt(R)
+    # Jacobians.  Two families, because the design asks for the gradient at the
+    # CAPTURED SOLVE SOLUTIONS and not only at arbitrary states: eight RANDOM
+    # full-rank Jh (which exercise the machinery over general directions) and
+    # the eight ACTUAL head Jacobians dh/dz at the first eight captured solve
+    # latents.  Each full-grid Jacobian costs K stencil applies, which is why
+    # it is a subset rather than every state.
+    Jh_list = [rng.standard_normal((R, K_LAT)) / np.sqrt(R) for _ in range(8)]
+    for _, z in solve_states[:8]:
+        Jh_list.append(rom.head_jac_np(hspec, z)[1])
+    for Jh in Jh_list:
         Jq = qf.nuA @ Jh
         Jf = rom.jac_full_grid(g, Phi_mf, qf.nu, cell.G[:, :R], Jh)
         d = float(np.linalg.norm(Jq - Jf))
@@ -305,6 +334,7 @@ def gate_s4(cell, R, M, hspec, solve_states, rng):
         resid_rel_max=float(finite("S4 rel", rel).max()),
         resid_canc_max=float(finite("S4 canc", canc).max()),
         jac_rel_max=float(finite("S4 jac rel", grel).max()),
+        n_jacobians=len(grel),
         jac_canc_max=float(finite("S4 jac canc", gcanc).max()),
         press_elim_max=float(finite("S4 press", press).max()),
         ctl_evenghost=ctl_even, ctl_dropped_mean=ctl_noubar,
@@ -462,7 +492,52 @@ def gate_s67(cell, R, M, hspec, eq, rng):
         return run
 
     def fom(i):
+        """The FOM per-query cost as this cell's solver actually reports it.
+        NOTE: `SaddleFactor.solve` also forms the blockwise backward-error
+        residual, which a bare production solve would not; `fom_backsub_bare`
+        below is the same solve without that bookkeeping, and both are
+        reported so the FOM is not made to look slower than it is."""
         return fac.solve(cell.F @ cell.Th_te[i])[0]
+
+    def fom_bare(i):
+        rhs = np.concatenate([cell.F @ cell.Th_te[i], np.zeros(g.n_p), [0.0]])
+        return fac.lu.solve(rhs)[:g.n_u]
+
+    # ---- S3's bank-side field path, on REAL solve pressures ---------------
+    # Phase 1's S-PRESS used deterministic constructed pressures; phase 2a left
+    # the bank-side field path to phase 2b.  This is it, and it costs one
+    # matvec: the FOM pressure from an actual saddle solve, tested against the
+    # curl-sine space.  Normalised so it cannot be read as an absolute number:
+    # Phi has mass-normalised columns, so Phi^T M_u v has entries bounded by
+    # ||v||_M and the natural scale is sqrt(M) ||Grad p||_M.
+    press_fom, be, mom, cont, gau, cont_p1 = [], [], [], [], [], []
+    probe = None
+    for i in range(0, S_TEST, 4):
+        f_i = cell.F @ cell.Th_te[i]
+        u_fom, p_fom, info = fac.solve(f_i)
+        be.append(info["backward_err"])
+        mom.append(info["mom_resid"])
+        cont.append(info["cont_resid"])
+        cont_p1.append(info["cont_resid_phase1"])
+        gau.append(info["gauge_resid"])
+        if probe is None:
+            probe = (f_i, u_fom, p_fom, info["lam"])
+        gp = cell.Grad @ p_fom
+        num = float(np.linalg.norm(qf.Phi.T @ (gp * g.h ** 2)))
+        den = float(np.sqrt(M) * g.h * np.linalg.norm(gp) + 1e-300)
+        press_fom.append(num / den)
+
+    # ---- carried-forward condition 7: phase 2a's CORRECTED continuity
+    # normalisation (phase 1's collapses on gradient forcing) and its 1e-9
+    # perturbation control (phase 1's 1e-11 one does not reliably fire).
+    f_i, u_p, p_p, lam_p = probe
+    sol = np.concatenate([u_p, p_p, [lam_p]])
+    rhs = np.concatenate([f_i, np.zeros(g.n_p), [0.0]])
+    rc = np.random.default_rng(SEED + 99)
+    sol_bad = sol * (1.0 + 1e-9 * rc.standard_normal(sol.size))
+    ctl_backerr = float(np.linalg.norm(fac.K @ sol_bad - rhs)
+                        / (fac.K_fro * np.linalg.norm(sol_bad)
+                           + np.linalg.norm(rhs) + 1e-300))
 
     def qf_nl(i):
         b = qf.b_of(cell.Th_te[i])
@@ -511,6 +586,7 @@ def gate_s67(cell, R, M, hspec, eq, rng):
         return nl_solve(qf, hspec, b, z_starts)[0]
 
     subjects = [("fom_backsub", mk(fom)),
+                ("fom_backsub_bare", mk(fom_bare)),
                 ("rom_qf_nonlinear", mk(qf_nl)),
                 ("rom_fullgrid_nonlinear", mk(full_nl)),
                 ("rom_eq_nonlinear", mk(eq_nl)),
@@ -535,28 +611,34 @@ def gate_s67(cell, R, M, hspec, eq, rng):
         fn = rom.force_nonaffine(cell, cell.mu_te[i])
         na_dev.append(float(np.linalg.norm(fa - fn) / np.linalg.norm(fn)))
 
-    def stat(v):
-        v = np.asarray(v, dtype=float)
-        return dict(agg=float(np.sqrt((v ** 2).mean())),
-                    median=float(np.median(v)), max=float(v.max()),
-                    n=int(v.size))
+    err["nl_qf_first8"] = err["nl_qf"][:8]        # like-for-like with the
+    err["podK_first8"] = err["podK"][:8]          # O(n) arms, which run on the
+    err["gspan_direct_first8"] = err["gspan_direct"][:8]   # first 8 only
 
     return dict(
         N=cell.N, R=int(R), M=int(M), n_heldout=int(S_TEST),
-        err={k: stat(v) for k, v in err.items() if len(v)},
+        err={k: cohort_stat(v) for k, v in err.items() if len(v)},
         lm_iters_median=float(np.median(lm_stats)),
         lm_starts=int(LM_STARTS),
         times=times, n_time_queries=len(qidx),
         offline=dict(qf_precompute_s=float(qf.t_offline),
                      eq_setup_s=float(eq["t_setup"]),
-                     fom_factor_s=float(t_factor) if t_factor else None,
-                     lin_pinv_s=None),
+                     fom_factor_s=float(t_factor) if t_factor else None),
         eq=dict(machinery_exact=eq["machinery_exact"],
                 budgets={str(m): {k: v for k, v in d.items() if k != "arm"}
                          for m, d in eq["arms"].items()},
                 candidates=int(EQ_CAND), fit_states=int(EQ_FIT_STATES),
                 psi_shape=eq["Psi_shape"]),
         nonaffine_force_discrepancy=float(np.median(na_dev)),
+        press_elim_fom_pressure=float(finite("S3 fom pressure",
+                                             press_fom).max()),
+        fom_backward_err=float(finite("S6 be", be).max()),
+        fom_mom_resid=float(finite("S6 mom", mom).max()),
+        fom_cont_resid=float(finite("S6 cont", cont).max()),
+        fom_cont_resid_phase1_diagnostic=float(finite("S6 cont p1",
+                                                      cont_p1).max()),
+        fom_gauge_resid=float(finite("S6 gauge", gau).max()),
+        fom_backerr_control=float(ctl_backerr), n_fom_solves_checked=len(be),
         rank_A=int(linR.rankA), cond_A=float(linR.cond),
         solve_states=[(int(i), [float(x) for x in z]) for i, z in solve_states])
 
@@ -664,15 +746,11 @@ def gate_s9(cell, R, M, hspec, rng):
         e_k.append(centred_err(cell, linK.solve_lsq(b), i, min(K_LAT, R)))
     p2, t2 = cell.perp_energy(cell.U_te, R)
     floor = float(np.sqrt(p2.sum() / t2.sum()))
-
-    def stat(v):
-        v = np.asarray(v, dtype=float)
-        return dict(agg=float(np.sqrt((v ** 2).mean())),
-                    median=float(np.median(v)), max=float(v.max()))
     return dict(N=cell.N, R=int(R), M=int(M), K=int(K_LAT),
                 n_params=int(rom.n_params_np(hspec)),
                 truncation_floor=floor,
-                nl_qf=stat(e_nl), gspan_direct=stat(e_g), podK=stat(e_k),
+                nl_qf=cohort_stat(e_nl), gspan_direct=cohort_stat(e_g),
+                podK=cohort_stat(e_k),
                 lm_iters_median=float(np.median(iters)),
                 rank_A=int(linR.rankA), cond_A=float(linR.cond),
                 online_flops_per_lm_iter=int(M * R + M * K_LAT
@@ -710,7 +788,9 @@ def main():
         thresholds=dict(s4_tol=S4_TOL, s4_ctl_floor=S4_CTL_FLOOR,
                         head_tol=HEAD_TOL, head_fd_tol=HEAD_FD_TOL,
                         press_tol=PRESS_TOL, eq_exact_tol=EQ_EXACT_TOL,
-                        rank_tol=RANK_TOL, eq_ctl_floor=EQ_CTL_FLOOR),
+                        rank_tol=RANK_TOL, eq_ctl_floor=EQ_CTL_FLOOR,
+                        backerr_tol=BACKERR_TOL, cont_tol=CONT_TOL,
+                        gauge_tol=GAUGE_TOL),
         numpy=np.__version__, scipy=scipy.__version__,
         python=platform.python_version(), jax=jp, allow_cpu=bool(ALLOW_CPU),
         smoke=bool(SMOKE), git_commit=git_commit(),
@@ -817,10 +897,15 @@ def main():
             assert m.get("producer") == os.path.basename(RECON_ARTIFACT), \
                 (f"head {hp} was produced by {m.get('producer')}, not by the "
                  f"stop-gate artifact {RECON_ARTIFACT}")
-            for k in ("steps", "n_fit", "hidden", "layers", "mode"):
-                assert m[k] == rg["config"][{"hidden": "hid"}.get(k, k)], \
+            for k, ck in (("steps", "steps"), ("n_fit", "n_fit"),
+                          ("hidden", "hid"), ("layers", "layers")):
+                assert m[k] == rg["config"][ck], \
                     (f"head {hp} {k}={m[k]} differs from the stop-gate "
-                     f"configuration {rg['config'][{'hidden': 'hid'}.get(k, k)]}")
+                     f"configuration {rg['config'][ck]}")
+            assert m["mode"] == rg["gates"]["S_SELECT"]["selected"], \
+                (f"head {hp} was trained in the '{m['mode']}' form but the "
+                 f"stop gate selected "
+                 f"'{rg['gates']['S_SELECT']['selected']}'")
 
             # ---- S-HEAD ---------------------------------------------------
             import jax
@@ -990,12 +1075,37 @@ def main():
              f"non-affine arm pays O(M n_u) per query to project a moving-"
              f"blob force that cannot be precomputed.  Timing is "
              f"balanced-order, {REPS} reps after {BURN} warm-ups, every path "
-             f"in numpy on CPU")
+             f"in numpy on CPU.  CARRIED-FORWARD CONDITION 7: the FOM solves "
+             f"this gate makes are checked with PHASE 2a's CORRECTED "
+             f"continuity normalisation (phase 1's collapses on gradient "
+             f"forcing, retraction 15) at {CONT_TOL}, with global and "
+             f"momentum backward errors at {BACKERR_TOL} and the normalised "
+             f"gauge at {GAUGE_TOL}, and with a relative 1e-9 perturbation "
+             f"control -- phase 1's 1e-11 control does not reliably fire "
+             f"(retraction 23).  Phase 1's continuity form is recorded as a "
+             f"diagnostic beside the gated one")
     save()
     for r in s67_rows:
+        # carried-forward condition 7, unchanged from phase 2a
+        assert r["fom_backward_err"] <= BACKERR_TOL, \
+            f"S6 N={r['N']} FOM backward error {r['fom_backward_err']}"
+        assert r["fom_mom_resid"] <= BACKERR_TOL, \
+            f"S6 N={r['N']} momentum residual {r['fom_mom_resid']}"
+        assert r["fom_cont_resid"] <= CONT_TOL, \
+            f"S6 N={r['N']} continuity residual {r['fom_cont_resid']}"
+        assert r["fom_gauge_resid"] <= GAUGE_TOL, \
+            f"S6 N={r['N']} gauge residual {r['fom_gauge_resid']}"
+        assert r["fom_backerr_control"] > BACKERR_TOL, \
+            (f"S6 N={r['N']}: the 1e-9 perturbation control did not fire "
+             f"({r['fom_backerr_control']}); phase 1's 1e-11 control was "
+             f"already shown not to fire at N=64 (phase-2a retraction 23)")
+        assert r["press_elim_fom_pressure"] <= PRESS_TOL, \
+            (f"S6/S3 N={r['N']}: the test space does not annihilate the FOM "
+             f"pressure: {r['press_elim_fom_pressure']}")
         assert r["eq"]["machinery_exact"] <= EQ_EXACT_TOL, \
             f"S6 EQ machinery N={r['N']}: {r['eq']['machinery_exact']}"
-        for k in ("fom_backsub", "rom_qf_nonlinear", "rom_fullgrid_nonlinear",
+        for k in ("fom_backsub", "fom_backsub_bare", "rom_qf_nonlinear",
+                  "rom_fullgrid_nonlinear",
                   "rom_eq_nonlinear", "rom_gspan_direct",
                   "rom_qf_nonlinear_NONAFFINE"):
             assert k in r["times"] and r["times"][k]["median"] > 0, \

@@ -1420,7 +1420,9 @@ $\cos(\ell\pi y)$ at the wall *is* its analytic continuation, so the curl-sine
 modes become exact eigenvectors of $L$ and the residual collapses to roundoff:
 $2.5\times10^{-15}$ at $N=8$ up to $1.24\times10^{-10}$ at $N=256$. The control
 is therefore precisely the bug the gate exists to catch — even/free-slip ghosts
-— and it makes the gate fire by seven to thirteen orders.
+— and it makes the gate fire by ten to thirteen orders (odd-ghost minimum
+over even-ghost maximum: $1.45\times10^{13}$ at $N=8$ falling to
+$7.97\times10^{9}$ at $N=256$).
 
 That control ceiling is itself **mesh-normalised**, at $10^{-13}N^2$. The
 even-ghost residual is a cancellation of two $O(h^{-2})$ terms, so its roundoff
@@ -1593,8 +1595,8 @@ inspection — which is the argument for building the controls first.
     solenoidal part of the force drives velocity, so the solution manifold has
     rank at most $Q_s$. With $Q_s=32$ the measured spectrum shows
     $\sigma_{32}/\sigma_1\approx4\times10^{-5}$ and
-    $\sigma_{33}/\sigma_1\approx10^{-12}$–$10^{-15}$: a clean gap of seven to
-    nine orders at index 32, at every mesh. Reaching $R=64$ would need
+    $\sigma_{33}/\sigma_1=1.4\times10^{-12}$ to $8.7\times10^{-15}$: a clean gap
+    of seven to ten orders at index 32, at every mesh. Reaching $R=64$ would need
     $Q_s\ge64$, hence $Q\ge80$, which contradicts the frozen $Q=48$. The
     certified ladder here is $R\in\{8,16,32\}$ and the conflict is asserted as a
     measured fact rather than worked around.
@@ -1641,7 +1643,7 @@ inspection — which is the argument for building the controls first.
     at $N=256$, because $\sigma_{33}/\sigma_1$ rises from $8.7\times10^{-15}$ at
     $N=32$ to $1.4\times10^{-12}$ at $N=256$ — again the FOM forward error
     $\sim\varepsilon\kappa(K)$. *Resolution:* the cut is $10^{-9}$, which sits
-    in the middle of a gap seven to nine orders wide, **and the gap itself is
+    in the middle of a gap seven to ten orders wide, **and the gap itself is
     asserted** ($\sigma_{Q_s}/\sigma_1\ge10^{-6}$,
     $\sigma_{Q_s+1}/\sigma_1\le10^{-9}$, ratio $\ge10^6$), so the cut level
     cannot silently become the thing that decides the answer.

@@ -594,11 +594,11 @@
   FOM truth (black) with the full-grid oracle (blue dashed), the tensor ROM (orange dotted, 0 sample points) and NNLS-32 (green dash-dot) at steps 0/10/25/50; top row the median-error trajectory ($\nu=0.092$), bottom the worst ($\nu=0.013$, steepest front). All four curves coincide at this scale: the ROMs sit on the decoder floor. Local reproduction of the A100 job, same numbers.
 \end{frame}
 
-\begin{frame}{Seeing it (2/2): where the arms differ --- pointwise errors and error over time}
+\begin{frame}{Seeing it (2/2): where the arms differ}
   \centering
-  \includegraphics[height=0.72\textheight,trim=0 0 0 40,clip]{figs/b1d-tensor-errors-n512.png}
+  \includegraphics[width=0.78\textwidth,trim=0 0 0 40,clip]{figs/b1d-tensor-errors-n512.png}\par
   \vspace{0.5mm}\footnotesize
-  Worst trajectory. Top: $|\text{ROM}-\text{truth}|$ --- tensor and oracle are one curve; NNLS-32 spikes higher at the front. Middle: $|\text{tensor}-\text{oracle}|$ on its own scale, $10^{-8}$--$10^{-7}$. Bottom: relative error per time step (two trajectories and the 8-trajectory mean) --- tensor $\equiv$ oracle; NNLS-32 drifts above after step $\sim$10.
+  Worst trajectory, $N=512$. Top: $|\text{ROM}-\text{truth}|$ --- tensor and oracle are one curve; NNLS-32 spikes higher at the front. Middle: $|\text{tensor}-\text{oracle}|$ on its own scale, $10^{-8}$--$10^{-7}$. Bottom: relative error per time step (two trajectories and the 8-trajectory mean) --- tensor $\equiv$ oracle; NNLS-32 drifts above after step $\sim$10.
 \end{frame}
 
 \begin{frame}{Results: the latent solve does not grow with $N$}

@@ -125,6 +125,19 @@ only; 2D bank is R=512 (tensor 270 MB — needs compression; earlier 2 MB estima
 **Adopt the tensor as the 1D Burgers residual for this family; the 2D port needs
 compression first.**
 
+**2D Burgers tensor ladder — RUN (2026-08-30, branch `exp/2026-08-29-b2d-tensor`, report
+`reports/2026-08-30-b2d-tensor-ladder.md`).** Small bank (K=16, R=64, M=64; T = 64³ = 2 MB
+covering both axes), truth asserted non-negative at every N. Tensor = full-grid oracle to
+2e-6…8e-5 abs with identical stop histograms AND LM attempt counts at N=64/256/512/1024;
+tensor/NNLS-256 error 0.996–1.003 (sampling was not binding at m=4M — no accuracy gain, the
+gain is exactness with nothing fitted); latent solve 20–28 ms vs NNLS 20–29 ms (0.92–0.98)
+while the O(N) oracle grows 33→74→97→670 ms; paired vs matched FOM 0.42×/0.58×/0.98×/3.45×
+(sampled rule 3.31×) — the 2D crossover picture is unchanged. Decoded undershoots are much
+larger than in 1D (15–17 % of points), so parity is 1e-4…1e-6, not 1e-6…1e-7. R=512 headline
+checkpoint: head-PCA gives NO compression (K'=499/512, T0 4.3e-5) — stopped by the tripwire;
+that configuration stays sampled. **Adopt the tensor as the 2D default for R≤~100 banks; the
+R=512 bank needs a different compression or a dense 270 MB table.**
+
 **1D Burgers screening (same branch, same day): node learning transfers to 1D
 and pays exactly where the budget binds.** New self-contained 1D testbed
 (K=8, R=32, M=32, one seed, N=128/256/512, decoders resolution-flat at
@@ -3410,3 +3423,36 @@ sampled and tensor: same 8192-state pick from 512 trajectories × 50 steps, K=8/
 "After stage 1" three-column pipeline diagram (Poisson → B/Λ/fₘ; sampled → B + NNLS +
 stage 2; tensor → B + T). Training facts taken from runs/inherited_qf/README.md,
 b1d_common.train_autodecoder_1d and the driver defaults.
+
+## 2026-08-30
+
+### 2D Burgers tensor ladder (subagent, user-directed)
+
+Worktree `worktrees/2026-08-29-b2d-tensor`, branch `exp/2026-08-29-b2d-tensor` (cut from
+`exp/2026-08-29-b1d-tensor`, user-confirmed), namespace `b2dtensor/` (deleted). Code:
+`b2d_tensor_common.py`, `sep_b2d_tensor.py` (third residual path beside `full` and `ex` in the
+same solver; gates STEP/ROLL bit-identical to the incumbent), `cluster/*_b2dtensor.sh`,
+`run_b2dtensor_n*.sbatch`; results `runs/b2dtensor/`; notes `TENSOR2D-NOTES.md` (generated
+tables). Head `ec2add0`.
+
+**Run:** 3038943 N=64 (A100-40GB; first attempt 3038919 FAILED cuInit preflight exit 42 on
+pax007, resubmitted --exclude), 3038921 N=256 (A100-80GB), 3038922 N=512 (H200, decoder
+trained in-job 60k steps / 3435 s, recon 2.47e-2), 3038923 N=1024 (A100-80GB, 160G),
+3039255 stretch R=512 (H200; first attempt 3039205 failed gate A at 2.3e-12 — subtractive
+cancellation, fixed to direct form 4e-14). All COMPLETED, jax_backend=gpu, checksums OK.
+Checkpoints: sepdec_r1 N64, n256_j2, inherited n1024_j2 (codesign "n" pickles verified
+bit-identical to the base decoders).
+
+**Found:** see the Where-things-stand paragraph. Gates: T0 ≤1.7e-15 on all-positive states,
+TA ≤1.9e-14, TB ≤1.6e-15, L 0, A ≤3e-13, FOMR ≤8e-16. Tensor build 1.2–1.9 s vs NNLS fit
+11–26 s. FOM matched rung (3e-3, 2e-3) at N≤512, (1e-2, 5e-3) at 1024; tightest 16–231 ms.
+
+**Wrong/retracted:** nothing in the numbers. Two failed-attempt logs lost to `rsync --delete`
+(error text kept in notes; push script fixed). The stretch JSON was not written before the
+tripwire (driver now saves first); its table is parsed from the log. The in-job trainer still
+closes its jit over the 17 GB snapshot array (ran on H200; landmine noted, not fixed).
+
+**Open:** merge decisions for `exp/2026-08-29-b1d-tensor` and `exp/2026-08-29-b2d-tensor`
+(ask user); R=512 bank compression (CP/Tucker of T itself, or a dense 270 MB table, or a
+smaller bank); multi-seed; sign-changing family; the N=1024 K16/R64 checkpoint is weak (IC
+err 0.15) — retrain if that cell is ever quoted for accuracy.

@@ -1,6 +1,6 @@
 """PHASE 1 driver: the staggered MAC steady-Stokes FOM and its correctness gates.
 
-Revision 2 (2026-08-30), rewritten against `STOKES-PHASE1-VERIFY-codex.md`
+Revision 3 (2026-08-30), rewritten against `STOKES-PHASE1-VERIFY-codex.md`
 (Codex gpt-5.6-sol), which confirmed the operators, the solver and the
 closed-form claim, and required three additions:
 
@@ -433,7 +433,7 @@ def main():
 
     jp = jax_provenance()
     report = dict(config=dict(
-        pde="stokes2d", kind="staggered_MAC_FOM_phase1", driver_revision=2,
+        pde="stokes2d", kind="staggered_MAC_FOM_phase1", driver_revision=3,
         discretization="MAC, N cells, h=1/N, p at N^2 centres (mean-zero "
                        "gauge), u_x on N(N-1) interior vertical faces, u_y on "
                        "N(N-1) interior horizontal faces, boundary-normal "
@@ -467,7 +467,7 @@ def main():
     def save():
         json.dump(report, open(out, "w"), indent=1, default=float)
 
-    log(f"stk2d FOM gates (driver rev 2) -> {out}")
+    log(f"stk2d FOM gates (driver rev 3) -> {out}")
     log(f"  numpy {np.__version__} scipy {scipy.__version__}  jax {jp}")
 
     # ---- S0: ASSERTED, not merely recorded --------------------------------

@@ -1,3 +1,9 @@
+> **This file holds two reports.** Phase 1 (the MAC full-order solver and its
+> correctness gates) is below; **phase 2a** (the force family, the
+> divergence-free bank, and the test space — gates S1, S2, S-MEAN, S5 and the
+> manifold-richness verdict) starts at *"Stokes 2D — phase 2a"*. Retractions are
+> numbered continuously across both, 1–11 in phase 1 and 12–23 in phase 2a.
+
 # Stokes 2D — phase 1: the MAC full-order solver and its correctness gates
 
 Phase 1 of the 2026-08-30 Stokes cell (`exp/2026-08-30-stokes-vector`), covering
@@ -1004,3 +1010,814 @@ Written for a reader who knows none of this cell's vocabulary.
   supporting ones are `S0`, `REF`, `MF`, `SYM`, `MMSF`.
 - **$\nu$ (viscosity)** — the diffusion coefficient. In steady Stokes it only
   rescales velocity by $1/\nu$; the S-NU gate confirms exactly that.
+
+---
+---
+
+# Stokes 2D — phase 2a: the force family, the divergence-free bank, and the test space
+
+Phase 2a of the 2026-08-30 Stokes cell (`exp/2026-08-30-stokes-vector`), covering
+**only** the data generation, the discretely divergence-free bank, and the test
+space: gates **S1**, **S2**, **S-MEAN**, **S5**, and the manifold-richness
+requirements. No decoder, no training, no residual, no timing — those are phase
+2b. It builds on the phase-1 FOM without modifying a single operator or the
+solver.
+
+**Status of the numbers below: final.** Every one is generated from
+`runs/stk2d/stk2d_bank_gates_bank_nu1.json` by `stk2d_bank_tables.py`; none is
+typed by hand. Every gate is recorded as a **number** and enforced by an
+assertion, and every gate has a **negative control that was run and made to
+fire**.
+
+## The verdict, first, because it is what this phase was for
+
+**Phase 2b is worth running. The manifold is genuinely curved and a linear
+POD-$K$ decoder does not represent it.** Three measurements, at every mesh on
+the frozen ladder:
+
+- **32 independent solenoidal response directions**, against a requirement of
+  $K+1=9$;
+- **centred snapshot numerical rank 32 $>$ K = 8** — i.e. no 8-dimensional
+  *affine* subspace contains the solution manifold;
+- **held-out POD-8 reconstruction error $3.84\times10^{-2}$**. For comparison
+  the same bank gives $3.71\times10^{-3}$ at $R=16$ and $1.9\times10^{-12}$ at
+  $R=32$, where the manifold is exhausted. So a nonlinear $K=8$ head has, in
+  principle, up to ten orders of headroom, and merely beating the *linear*
+  POD-16 error at 8 latents would already be a positive result.
+
+The in-band negative control is the scenario the design feared: an **affine**
+amplitude map with $K$ independently varying amplitudes. It reads centred rank
+**exactly 8** and held-out POD-8 error $1.7$–$5.3\times10^{-14}$ — a linear decoder
+reproduces it to machine precision — and it makes the rank gate fire. So the
+gate is not decoration.
+
+**Two findings go the other way, and both are contract-level.**
+
+1. **The frozen $R$ ladder's $R=64$ rung is unreachable at $Q=48$**, as a matter
+   of algebra rather than of numerics: only the *solenoidal* part of the force
+   drives velocity at all (a pure gradient force is balanced entirely by the
+   pressure and produces $\lVert u\rVert/\lVert f\rVert \approx 10^{-17}$), so
+   the solution manifold has rank at most $Q_s = 32 < 64$. The measured
+   spectrum shows a clean gap at index 32 of $2.8\times10^{7}$ (at $N=256$) to
+   $9.0\times10^{9}$ (at $N=32$). The certified ladder here is
+   $R\in\{8,16,32\}$.
+2. **`STOKES-DESIGN.md`'s S5 floor of 0.5 is mesh-dependent and does not hold on
+   the whole frozen ladder.** Measured minima over $k,\ell\le\min(8,N-1)$:
+   0.0357, 0.1644, 0.4308, 0.7692, 0.9430, 0.9876 at $N=8,16,32,64,128,256$.
+   The design anchored the gate only at $N\ge64$ and then stated the floor flat.
+   The *conclusion* — dense $A$ required — is untouched; the threshold is not.
+
+## What was built
+
+- **`stk2d_bank.py`** — the $Q=48$ affine force dictionary over a 3-D
+  descriptor space, the curved $K=8$ amplitude map, the factor-once/solve-many
+  saddle solver, an exact discrete Hodge splitter, the streamfunction-coordinate
+  POD bank (with the naive velocity-coordinate route built alongside as a
+  diagnostic), metric-correct reorthogonalisation, and the S5 helpers.
+- **`stk2d_bank_gates.py`** — the driver. Runs every gate, asserts every one,
+  runs every negative control in band, writes one JSON.
+- **`stk2d_bank_tables.py`** — generates every table below from that JSON.
+
+Nothing in `stk2d_common.py` was touched. The phase-1 artifact
+`runs/stk2d/stk2d_fom_gates_nu1_M64.json` still certifies the operators and the
+solver; this phase imports them.
+
+```mermaid
+flowchart TB
+  subgraph dict["affine dictionary, Q = 48 (FIXED)"]
+    S["32 solenoidal atoms<br/>f_q = C psi_q<br/>4x4 centres x 2 widths"]:::frozen
+    Gr["16 gradient atoms<br/>f_q = Grad_h chi_q<br/>4x4 centres"]:::frozen
+  end
+  MU["mu in [0,1]^8"]:::param -->|"curved 2-blob kernel"| TH["theta(mu) in R^48"]:::param
+  TH --> F["f(mu) = sum_q theta_q f_q"]:::param
+  S --> F
+  Gr --> F
+  F -->|"ONE LU factorisation per mesh"| U["u(mu), p(mu)"]:::solved
+  U -->|"psi = (C^T C)^-1 C^T u"| PSI["psi snapshots"]:::solved
+  PSI -->|"POD in the induced metric"| G["G = C Psi_pod<br/>EXACTLY divergence-free"]:::bank
+  U -.->|"naive route, DIAGNOSTIC ONLY"| GN["g_i = X v_i / sigma_i<br/>divergence ~ eps/sigma_i"]:::bad
+  classDef frozen fill:#5b5b5b,stroke:#2b2b2b,color:#fff
+  classDef param fill:#1f5f8b,stroke:#0d2f45,color:#fff
+  classDef solved fill:#2e7d5b,stroke:#143d2b,color:#fff
+  classDef bank fill:#6a4c93,stroke:#33254a,color:#fff
+  classDef bad fill:#8b2f2f,stroke:#451616,color:#fff
+```
+
+### The force family
+
+The design's two requirements collide and both are met. **Affine**, so
+$b(\mu)=\sum_q\theta_q(\mu)\,\Phi^\top M_u\mathbf{f}_q$ stays precomputable:
+the dictionary is fixed and only the amplitudes move. **Curved**, or the
+nonlinear-decoder comparison is vacuous: the amplitudes come from a nonlinear
+map of $\mu\in\mathbb{R}^{8}$.
+
+Each dictionary atom carries a fixed **descriptor** $c_q=(x_q,y_q,\tau_q)$ with
+$\tau=\log(\text{blob width})$ — the design's moving centre plus a moving
+*scale*, which is what makes an EIM-style interpolation over the dictionary
+meaningful. 32 solenoidal atoms sit on a $4\times4$ spatial grid at two scale
+levels; 16 gradient atoms sit on the same spatial grid at the coarse level.
+Solenoidal atoms are $C\psi_q$ and gradient atoms are $\mathrm{Grad}_h\chi_q$
+with $\chi_q$ mean-zero, so **both families are exact by construction**, not to
+$O(h^2)$: phase 1 gates $\lVert DC\rVert_\infty$ at exactly 0 and
+$M_u\mathrm{Grad}=-D^\top M_p$ at exactly 0, which makes
+$\mathbb{R}^{n_u}=\operatorname{range}C\oplus_{M_u}\operatorname{range}\mathrm{Grad}$
+an exact discrete Hodge decomposition. Each atom is mass-normalised; the
+gradient atoms then carry a frozen mixture weight $\texttt{GRAD\_MIX}=3.0$,
+chosen so the two Hodge energies come out roughly equal.
+
+$$\theta_q(\mu)=\sum_{b=1}^{2} w_b
+\exp\!\Big(-\tfrac{\lVert(c_q-m_b(\mu))\odot W\rVert^2}{2\,s_b(\mu)^2}\Big),
+\qquad w=(1.0,\,0.7),$$
+
+with each blob contributing four of the eight parameters: its descriptor-space
+centre $m_b\in\mathbb{R}^3$ and its kernel bandwidth $s_b$ (log-uniform on
+$[0.10,0.45]$).
+
+**This deviates from the design's literal formula, and the deviation is the
+point.** `STOKES-DESIGN.md` writes a *single* exponential
+$\theta_q=\exp(-\lVert c_q-m(\mu)\rVert^2/2s(\mu)^2)$. With one blob the map
+$\mu\mapsto\theta$ factors through $(m,s)$, so its image is a three-parameter
+manifold whatever $K$ is, and five of the eight latent directions would be
+exact degeneracy. That is not a hypothetical: running the single-blob form
+through this harness gives **Jacobian rank $[4,4,4]$ instead of 8** and the
+S-RICH parameterisation assertion fires. Two blobs is the smallest
+superposition of the design's *own* kernel that is genuinely eight-dimensional,
+and the unequal weights remove the blob-permutation symmetry.
+
+### The bank, and why it lives in streamfunction coordinates
+
+The design's warning about POD of divergence-free snapshots is correct and it is
+**measured here rather than assumed away**. For a Gram POD $g_i=Xv_i/\sigma_i$,
+$Dg_i=(DX)v_i/\sigma_i$, so a snapshot residual $\varepsilon$ becomes
+$\varepsilon/\sigma_i$ in the tail modes.
+
+The bank is therefore built in **streamfunction coordinates**. Every snapshot
+lies in $\operatorname{range}C=\ker D$, so write $u_i=C\psi_i$ with
+$\psi_i=(C^\top C)^{-1}C^\top u_i$, run the identical POD in $\psi$ coordinates
+under the induced metric $C^\top M_u C$ (identical singular values and modes,
+since the two metrics agree on $\operatorname{range}C$), and set
+$G=C\,\Psi_{\text{pod}}$. Then $DG$ telescopes cell by cell in floating point.
+The affine mean is built the same way, $\bar u=C\bar\psi$.
+
+The naive velocity-coordinate route is built **alongside, as a diagnostic**, so
+the amplification is a number rather than a worry. It is not small.
+
+---
+
+## Gate results
+
+<!-- BEGIN GENERATED PHASE2A (stk2d_bank_tables.py) -->
+<!-- generated by stk2d_bank_tables.py from stk2d_bank_gates_bank_nu1.json (commit 1f514568932c) -- do not edit by hand -->
+
+### S-RICH -- manifold richness: the verdict this phase exists for
+
+| N | K | indep. solenoidal response dirs | required | centred snapshot rank | sigma_K/sigma_0 | Jacobian rank of mu->u | held-out POD-K err | AFFINE CONTROL centred rank | affine control POD-K err |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 8 | 32 | 9 | 32 | 2.739e-02 | [8, 8, 8] | 3.868e-02 | 8 | 1.694e-14 |
+| 64 | 8 | 32 | 9 | 32 | 2.682e-02 | [8, 8, 8] | 3.849e-02 | 8 | 1.714e-14 |
+| 128 | 8 | 32 | 9 | 32 | 2.637e-02 | [8, 8, 8] | 3.849e-02 | 8 | 3.010e-14 |
+| 256 | 8 | 32 | 9 | 32 | 2.587e-02 | [8, 8, 8] | 3.841e-02 | 8 | 5.318e-14 |
+
+Held-out POD-R reconstruction error (mass-weighted relative), from the psi-route bank:
+
+| N | POD-8 | POD-16 | POD-32 |
+|---|---|---|---|
+| 32 | 3.868e-02 | 4.366e-03 | 3.270e-12 |
+| 64 | 3.849e-02 | 3.953e-03 | 2.583e-12 |
+| 128 | 3.849e-02 | 3.800e-03 | 1.039e-12 |
+| 256 | 3.841e-02 | 3.707e-03 | 1.853e-12 |
+
+### S-HODGE -- force mixture, measured
+
+| N | solenoidal energy frac (min/mean/max) | gradient energy frac (min/mean/max) | partition defect | \|\|Grad_h p\|\|/\|\|f\|\| (min/mean/max) |
+|---|---|---|---|---|
+| 32 | 0.2396 / 0.5063 / 0.7768 | 0.2232 / 0.4937 / 0.7604 | 7.994e-15 | 0.6081 / 0.7613 / 0.8962 |
+| 64 | 0.2393 / 0.5096 / 0.7791 | 0.2209 / 0.4904 / 0.7607 | 1.688e-14 | 0.6010 / 0.7570 / 0.8967 |
+| 128 | 0.2401 / 0.5185 / 0.7842 | 0.2158 / 0.4815 / 0.7599 | 3.841e-14 | 0.5758 / 0.7440 / 0.8932 |
+| 256 | 0.2422 / 0.5328 / 0.7920 | 0.2080 / 0.4672 / 0.7578 | 1.179e-13 | 0.5451 / 0.7255 / 0.8897 |
+
+### S-DICT -- the affine dictionary
+
+| N | Q | Q_sol | Q_grad | rank | cond | solenoidal atom div | gradient atom off-family energy | solenoidal atom off-family energy | NEG CTL analytic curl (min/max) |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 48 | 32 | 16 | 48 | 2.579e+01 | 1.315e-18 | 4.509e-33 | 1.714e-29 | 2.380e-05 / 2.356e-03 |
+| 64 | 48 | 32 | 16 | 48 | 2.408e+01 | 6.708e-19 | 2.530e-33 | 1.078e-28 | 1.490e-06 / 8.455e-04 |
+| 128 | 48 | 32 | 16 | 48 | 2.288e+01 | 3.539e-19 | 3.680e-33 | 8.233e-28 | 1.027e-07 / 3.009e-04 |
+| 256 | 48 | 32 | 16 | 48 | 2.229e+01 | 1.571e-19 | 3.355e-33 | 7.770e-27 | 1.676e-08 / 1.067e-04 |
+
+### S1 -- bank divergence per mode, and the 1/sigma_i amplification
+
+| N | R | snapshot div | psi route (raw) | psi route (normalised) | psi route (reorthogonalised) | naive route head | naive route tail | naive amplification | sigma_0/sigma_R | NEG CTL naive (contaminated) | psi under the same control |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 32 | 8 | 6.787e-16 | 7.057e-19 | 1.426e-18 | 6.796e-19 | 1.338e-16 | 7.882e-16 | 5.89e+00 | 2.68e+01 | 3.348e-08 | 7.015e-19 |
+| 32 | 16 | 6.787e-16 | 9.429e-19 | 1.471e-18 | 8.893e-19 | 1.338e-16 | 1.406e-14 | 1.05e+02 | 4.65e+02 | 9.345e-08 | 8.522e-19 |
+| 32 | 32 | 6.787e-16 | 9.813e-19 | 1.496e-18 | 1.000e-18 | 1.338e-16 | 3.549e-13 | 2.65e+03 | 1.29e+04 | 2.401e-06 | 9.730e-19 |
+| 64 | 8 | 4.672e-16 | 2.271e-19 | 6.114e-19 | 2.376e-19 | 9.631e-17 | 4.730e-16 | 4.91e+00 | 2.83e+01 | 1.658e-08 | 2.206e-19 |
+| 64 | 16 | 4.672e-16 | 3.394e-19 | 6.762e-19 | 3.149e-19 | 9.631e-17 | 7.297e-15 | 7.58e+01 | 4.68e+02 | 4.564e-08 | 3.420e-19 |
+| 64 | 32 | 4.672e-16 | 3.444e-19 | 7.331e-19 | 3.521e-19 | 9.631e-17 | 2.834e-13 | 2.94e+03 | 1.62e+04 | 1.432e-06 | 3.725e-19 |
+| 128 | 8 | 2.139e-15 | 7.534e-20 | 3.085e-19 | 7.586e-20 | 1.887e-16 | 2.321e-15 | 1.23e+01 | 2.97e+01 | 8.344e-09 | 7.824e-20 |
+| 128 | 16 | 2.139e-15 | 1.168e-19 | 3.153e-19 | 1.125e-19 | 1.887e-16 | 3.889e-14 | 2.06e+02 | 4.68e+02 | 2.155e-08 | 1.209e-19 |
+| 128 | 32 | 2.139e-15 | 1.424e-19 | 3.333e-19 | 1.380e-19 | 1.887e-16 | 1.696e-12 | 8.99e+03 | 2.00e+04 | 8.277e-07 | 1.334e-19 |
+| 256 | 8 | 4.109e-15 | 2.718e-20 | 1.521e-19 | 2.738e-20 | 3.796e-16 | 4.759e-15 | 1.25e+01 | 3.12e+01 | 4.195e-09 | 2.773e-20 |
+| 256 | 16 | 4.109e-15 | 4.185e-20 | 1.539e-19 | 4.370e-20 | 3.796e-16 | 8.714e-14 | 2.30e+02 | 4.68e+02 | 1.017e-08 | 4.220e-20 |
+| 256 | 32 | 4.109e-15 | 5.312e-20 | 1.634e-19 | 5.166e-20 | 3.796e-16 | 2.591e-12 | 6.82e+03 | 2.49e+04 | 4.679e-07 | 5.218e-20 |
+
+| N | R | orthonormality (raw Gram POD) | its (sigma_0/sigma_R)^2 budget | orthonormality (reorthogonalised) |
+|---|---|---|---|---|
+| 32 | 8 | 7.438e-15 | 7.201e-13 | 4.441e-16 |
+| 32 | 16 | 9.266e-13 | 2.166e-10 | 4.441e-16 |
+| 32 | 32 | 1.555e-09 | 1.666e-07 | 4.441e-16 |
+| 64 | 8 | 1.832e-14 | 7.981e-13 | 6.661e-16 |
+| 64 | 16 | 1.096e-12 | 2.190e-10 | 6.661e-16 |
+| 64 | 32 | 1.775e-09 | 2.619e-07 | 8.882e-16 |
+| 128 | 8 | 5.140e-14 | 8.803e-13 | 4.441e-16 |
+| 128 | 16 | 2.729e-13 | 2.188e-10 | 8.882e-16 |
+| 128 | 32 | 2.013e-09 | 3.984e-07 | 8.882e-16 |
+| 256 | 8 | 1.777e-13 | 9.715e-13 | 4.441e-16 |
+| 256 | 16 | 2.551e-12 | 2.194e-10 | 1.332e-15 |
+| 256 | 32 | 5.905e-09 | 6.189e-07 | 1.332e-15 |
+
+### S-MEAN -- the affine mean
+
+| N | R | \|\|D ubar\|\|/(\|\|D\|\|\|\|ubar\|\|), psi route | same, plain snapshot mean | \|\|ubar - C psibar\|\|/\|\|ubar\|\| | NEG CTL (+1e-6 gradient) |
+|---|---|---|---|---|---|
+| 32 | 32 | 1.894e-19 | 1.220e-16 | 9.126e-15 | 3.514e-08 |
+| 64 | 32 | 6.374e-20 | 9.603e-17 | 1.669e-14 | 1.751e-08 |
+| 128 | 32 | 1.059e-20 | 1.459e-16 | 4.567e-14 | 8.789e-09 |
+| 256 | 32 | 1.859e-21 | 3.055e-16 | 1.811e-13 | 4.377e-09 |
+
+### S2 -- the test space
+
+| N | M | \|\|DC\|\|_inf | \|\|D Phi\|\| per col, unnormalised | \|\|D Phi\|\| per col, mass-normalised | aggregate | NEG CTL analytic k!=l (min) | k==l (max, exact) | \|\|phi\|\|_M/sqrt(lambda) (min/max) |
+|---|---|---|---|---|---|---|---|---|
+| 32 | 32 | 0.000e+00 | 1.163e-18 | 1.671e-18 | 1.337e-18 | 1.678e-06 | 8.005e-18 | 0.500000 / 0.500000 |
+| 32 | 64 | 0.000e+00 | 1.163e-18 | 1.671e-18 | 1.413e-18 | 1.678e-06 | 1.351e-17 | 0.500000 / 0.500000 |
+| 32 | 128 | 0.000e+00 | 1.368e-18 | 1.829e-18 | 1.492e-18 | 1.678e-06 | 1.934e-17 | 0.500000 / 0.500000 |
+| 64 | 32 | 0.000e+00 | 4.518e-19 | 7.097e-19 | 6.251e-19 | 1.041e-07 | 4.499e-18 | 0.500000 / 0.500000 |
+| 64 | 64 | 0.000e+00 | 4.578e-19 | 7.867e-19 | 6.499e-19 | 1.041e-07 | 7.021e-18 | 0.500000 / 0.500000 |
+| 64 | 128 | 0.000e+00 | 6.036e-19 | 8.142e-19 | 6.774e-19 | 1.041e-07 | 9.321e-18 | 0.500000 / 0.500000 |
+| 128 | 32 | 0.000e+00 | 1.655e-19 | 3.357e-19 | 2.994e-19 | 6.482e-09 | 1.989e-18 | 0.500000 / 0.500000 |
+| 128 | 64 | 0.000e+00 | 1.655e-19 | 3.400e-19 | 3.044e-19 | 6.482e-09 | 3.457e-18 | 0.500000 / 0.500000 |
+| 128 | 128 | 0.000e+00 | 2.353e-19 | 3.641e-19 | 3.156e-19 | 6.482e-09 | 4.752e-18 | 0.500000 / 0.500000 |
+| 256 | 32 | 0.000e+00 | 5.900e-20 | 1.562e-19 | 1.449e-19 | 4.044e-10 | 8.035e-19 | 0.500000 / 0.500000 |
+| 256 | 64 | 0.000e+00 | 5.958e-20 | 1.601e-19 | 1.463e-19 | 4.044e-10 | 1.570e-18 | 0.500000 / 0.500000 |
+| 256 | 128 | 0.000e+00 | 8.662e-20 | 1.663e-19 | 1.494e-19 | 4.044e-10 | 2.281e-18 | 0.500000 / 0.500000 |
+
+### S5 -- the curl-sine modes are NOT eigenvectors of the no-slip vector Laplacian
+
+| N | kmax | modes | eigres min | med | max | design anchor (min, max) | 0.5 floor asserted? | NEG CTL even ghosts (max) | its eps N^2 ceiling | odd/even separation |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 8 | 7 | 49 | 0.035653 | 0.164399 | 0.859813 | - | False | 2.452e-15 | 6.400e-12 | 1.45e+13 |
+| 16 | 8 | 64 | 0.164399 | 0.374606 | 0.960995 | - | False | 3.403e-14 | 2.560e-11 | 4.83e+12 |
+| 32 | 8 | 64 | 0.430821 | 0.716620 | 0.990145 | - | False | 2.843e-13 | 1.024e-10 | 1.52e+12 |
+| 64 | 8 | 64 | 0.769233 | 0.921321 | 0.997553 | 0.769, 0.998 | True | 2.639e-12 | 4.096e-10 | 2.91e+11 |
+| 128 | 8 | 64 | 0.942987 | 0.981839 | 0.999392 | 0.943, 0.999 | True | 1.666e-11 | 1.638e-09 | 5.66e+10 |
+| 256 | 8 | 64 | 0.987628 | 0.995809 | 0.999849 | 0.988, 0.99985 | True | 1.240e-10 | 6.554e-09 | 7.97e+09 |
+
+Secondary diagnostic ||A + Lambda B||/||A|| (note the PLUS: the convention here is L Phi = -Phi Lambda, so 0 would mean a diagonal A suffices):
+
+| N | auditor's clamped basis | design anchor | the phase-2a bank | even-ghost control (clamped) | even-ghost control (bank) |
+|---|---|---|---|---|---|
+| 8 | 0.287797 | - | - | 1.185e-15 | - |
+| 16 | 0.344596 | - | - | 7.052e-16 | - |
+| 32 | 0.365426 | - | 0.621359 | 7.909e-16 | 6.517e-16 |
+| 64 | 0.370931 | 0.371 | 0.734607 | 7.767e-16 | 7.234e-16 |
+| 128 | 0.372325 | 0.372 | 0.790248 | 2.483e-15 | 2.506e-15 |
+| 256 | 0.372674 | 0.373 | 0.817148 | 3.813e-15 | 4.541e-15 |
+
+### S-SPEC -- spectrum, rank, and the unreachable R = 64 rung
+
+| N | snapshots | numerical rank (direct SVD) | rank via the Gram route | Gram noise floor | sigma_{Q_sol}/sigma_0 | sigma_{Q_sol+1}/sigma_0 | rank gap | R=64 reachable? | nested-bank max diff |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 256 | 32 | 128 | 1.256e-08 | 7.747e-05 | 8.659e-15 | 8.95e+09 | False | 0.000e+00 |
+| 64 | 256 | 32 | 130 | 1.422e-08 | 6.180e-05 | 1.064e-14 | 5.81e+09 | False | 0.000e+00 |
+| 128 | 256 | 32 | 130 | 1.570e-08 | 5.010e-05 | 1.324e-13 | 3.78e+08 | False | 0.000e+00 |
+| 256 | 256 | 32 | 130 | 1.352e-08 | 4.020e-05 | 1.437e-12 | 2.80e+07 | False | 0.000e+00 |
+
+Singular spectrum at N=256 (mass-weighted, sigma_i/sigma_0):
+
+| i | 1 | 2 | 4 | 8 | 16 | 24 | 32 | 33 | 36 | 40 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| sigma_i/sigma_0 | 1.0000e+00 | 3.8323e-01 | 1.1229e-01 | 3.2082e-02 | 2.1349e-03 | 3.9810e-04 | 4.0198e-05 | 1.4369e-12 | 2.0929e-13 | 1.5292e-13 |
+
+### S-SOLVE -- the factor-once path against the certified solver
+
+| N | n_u | vs certified (u) | vs certified (p) | affine superposition (max / median) | its h^-2 budget | cancellation ratio | factor s | ms / back-substitution | NEG CTL: 1e-9-perturbed solution |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | 1984 | 0.000e+00 | 0.000e+00 | 3.655e-14 / 1.403e-14 | 1.024e-11 | 2.42 | 0.1 | 1 | 1.827e-11 |
+| 64 | 8064 | 0.000e+00 | 0.000e+00 | 4.351e-14 / 1.670e-14 | 4.096e-11 | 2.45 | 0.6 | 13 | 9.185e-12 |
+| 128 | 32512 | 0.000e+00 | 0.000e+00 | 4.331e-13 / 1.347e-13 | 1.638e-10 | 2.46 | 6.8 | 84 | 4.521e-12 |
+| 256 | 130560 | 0.000e+00 | 0.000e+00 | 4.768e-12 / 5.931e-13 | 6.554e-10 | 2.46 | 80.3 | 295 | 2.259e-12 |
+
+| quantity | worst over all solves | rule |
+|---|---|---|
+| global backward error | 2.749e-18 | <= 1e-13 |
+| momentum block | 1.324e-16 | <= 1e-13 |
+| continuity block (blockwise BW error) | 4.805e-16 | <= 1e-12 |
+| continuity, PHASE 1's normalisation | 2.484e-02 | DIAGNOSTIC ONLY -- collapses on gradient atoms |
+| mean-zero gauge (normalised) | 2.512e-14 | <= 1e-12 |
+| mean-zero gauge (raw \|1^T p\|) | 4.246e-10 | RECORDED ONLY -- not scale-free |
+| number of solves | 1472 | all tracked |
+
+### Supporting gates
+
+| gate | value | rule |
+|---|---|---|
+| PRECOND (asserts / config mismatch / smoke) | True / 0 / 0 | asserts live, config == frozen contract, smoke=0 |
+| S0 (dtype / jax x64 / matmul / backend) | float64 / True / highest / gpu | all asserted |
+| MANIFEST (missing / row mismatch / non-finite) | 0 / 0 / 0 | all zero |
+
+run: stk2d_bank_gates_bank_nu1.json | driver rev 1 | complete=True certified=True | commit `1f514568932c` | host `spark-d69e` | numpy 2.4.4 scipy 1.17.1 | jax backend `gpu` x64=True matmul `highest` | total 689 s
+<!-- END GENERATED PHASE2A -->
+
+---
+
+## Reading the gates
+
+### S-RICH — the manifold richness verdict, and its control
+
+Three independent measurements, plus an in-band control designed to make the
+decisive one fire.
+
+**Independent solenoidal response directions.** A gradient force produces
+*exactly zero* velocity: $-\nu L\cdot 0+\mathrm{Grad}\,\chi=\mathrm{Grad}\,\chi$
+with $D\cdot 0=0$, measured at $\lVert u\rVert/\lVert f\rVert\approx10^{-17}$.
+So the count of directions that actually drive flow is
+$\operatorname{rank}(U_{\text{dict}})$, and it reads **32** at every mesh
+against a requirement of 9.
+
+**Centred snapshot rank $>K$.** Snapshots lying in a $K$-dimensional *affine*
+subspace would give centred rank $\le K$. Rank $32>8$ is exactly the statement
+that no 8-dimensional affine subspace contains the manifold — which is precisely
+what a linear POD-$K$ decoder is.
+
+**Jacobian rank of $\mu\mapsto u$.** Reads $[8,8,8]$ at three random interior
+parameter points at every mesh, with smallest singular-value ratio $8.3\times10^{-4}$ to $4.4\times10^{-3}$
+— the parameterisation is genuinely eight-dimensional, not silently degenerate.
+Two ways it could have been degenerate were caught during development: the
+design's single-blob kernel (rank 4), and evaluating the two-blob Jacobian at
+the symmetric point $\mu=(0.5,\dots,0.5)$, where the blobs coincide and the
+derivative pairs collapse (rank 4). The gate now samples interior points at
+random.
+
+**Held-out POD-$K$ error, and a threshold that is mine.** Rank $>K$ is
+*necessary* but not sufficient: a family whose POD-8 error were $10^{-12}$ would
+pass it and still leave a nonlinear head nothing to win. So the held-out
+reconstruction error is gated too, at $10^{-3}$. **That floor is my choice, not
+the design's**, and it is stated as such in the gate's own `rule` string. The
+measured value is $3.84$–$3.87\times10^{-2}$ across the ladder, against
+$\sigma_9/\sigma_1\approx2.6\times10^{-2}$ — so the linear ceiling is real, and it
+sits ten orders above the POD-32 floor ($\sim2\times10^{-12}$), where the
+8-dimensional manifold is exhausted.
+
+### S1 — the $1/\sigma_i$ amplification is real, and it is 4 orders
+
+The two routes give the same bank in exact arithmetic and very different
+divergence in floating point.
+
+- **$\psi$ route**: $2.7\times10^{-20}$ to $1.0\times10^{-18}$, flat across modes and *falling* with refinement, at every mesh and every
+  $R$, and unchanged after mass normalisation and after reorthogonalisation.
+- **Naive route**: rises from $1.3$–$3.8\times10^{-16}$ in mode 1 to
+  $2.59\times10^{-12}$ in mode 32, an amplification of up to $9.0\times10^{3}$,
+  tracking $\sigma_1/\sigma_{32}=1.3$–$2.5\times10^{4}$ as the design predicted.
+
+The naive route still *passes* $10^{-11}$ here — but with only about 4× margin
+at the worst point ($2.59\times10^{-12}$ at $N=256$, $R=32$), on snapshots
+whose own divergence is $4.1\times10^{-15}$. It
+is not gated; it is recorded, because the margin is a property of this
+spectrum's decay and would not survive a slower-decaying family or a larger $R$.
+
+**The paired negative control settles the question.** Contaminating the
+snapshots with a relative $10^{-6}$ gradient — invisible to any field tolerance
+in this cell — pushes the naive route to $4.2\times10^{-9}$, which **fails**
+$10^{-11}$ by more than two orders, while the $\psi$ route stays at
+$\le9.7\times10^{-19}$ because the projection onto $\ker D$ removes the
+contamination entirely. Both halves are asserted.
+
+**Reorthogonalisation had to be done in the right inner product**, and my first
+version was not. A plain `np.linalg.qr` on the $\psi$ modes orthonormalises in
+the $\psi$ 2-norm; the lifted basis then reads
+$\lVert G^\top M_u G-I\rVert_{\max}\approx0.98$. The correct step is
+Cholesky-QR in the induced metric $C^\top M_u C$, two passes, which brings the
+defect to $\le1.33\times10^{-15}$ at every mesh and every $R$ while keeping the
+divergence at $10^{-19}$.
+
+The **raw** Gram-POD basis is gated at
+$10^{-15}\,(\sigma_1/\sigma_R)^2$ rather than at a flat tolerance: a Gram POD
+squares the condition number, and the measured defect runs from
+$7.4\times10^{-15}$ ($N=32$, $R=8$) to $5.9\times10^{-9}$ ($N=256$, $R=32$), tracking that
+budget with a coefficient of $10^{-18}$–$6\times10^{-17}$ across the ladder.
+
+### S5 — the modes are not eigenvectors, and the control proves the gate can tell
+
+The primary number reproduces the audit exactly: minima 0.7692 ($N=64$), 0.9430
+($N=128$), 0.9876 ($N=256$), against the design's stated bands 0.769–0.998,
+0.943–0.999, 0.988–0.99985.
+
+**The negative control is exact rather than constructed, and that is what makes
+it strong.** Under **even** (free-slip) ghosts the even extension of
+$\cos(\ell\pi y)$ at the wall *is* its analytic continuation, so the curl-sine
+modes become exact eigenvectors of $L$ and the residual collapses to roundoff:
+$2.5\times10^{-15}$ at $N=8$ up to $1.24\times10^{-10}$ at $N=256$. The control
+is therefore precisely the bug the gate exists to catch — even/free-slip ghosts
+— and it makes the gate fire by seven to thirteen orders.
+
+That control ceiling is itself **mesh-normalised**, at $10^{-13}N^2$. The
+even-ghost residual is a cancellation of two $O(h^{-2})$ terms, so its roundoff
+floor grows like $\varepsilon N^2$ (measured 0.17× to 8.6× that). A flat
+ceiling here would have been the fourth mesh-scaling absolute tolerance to be
+wrong in this cell.
+
+**`k,l <= 8` is degenerate at $N=8$ and had to be clamped.** $\sin(k\pi x)$
+sampled on the interior vertices $x_i=i/N$ is identically zero for $k=N$, so at
+$N=8$ the $k=8$ modes are $10^{-16}$ noise and the residual becomes a ratio of
+two roundoff quantities: it read **0.0357 (odd) and 0.134 (even)** — i.e. the
+*negative control silently stopped being roundoff*, and the gate stopped meaning
+anything. `kmax` is now clamped to $N-1$ and the per-mode norms are asserted
+non-degenerate.
+
+The secondary diagnostic $\lVert A+\Lambda B\rVert/\lVert A\rVert$ reproduces
+the auditor's mass-normalised anchors — 0.370931 / 0.372325 / 0.372674 against
+0.371 / 0.372 / 0.373 — and the even-ghost control drops it to $\sim10^{-16}$,
+confirming that the "plus" sign and the $L\Phi=-\Phi\Lambda$ convention are
+right and that a *diagonal* $A$ would suffice only under free-slip. On the
+**actual phase-2a bank** the ratio is *larger* still — 0.621, 0.735, 0.790,
+0.817 at $N=32/64/128/256$ — so the design's conclusion holds with more room
+than the auditor's clamped basis suggested. **Dense $A$ is required**, confirmed
+on both bases.
+
+### S2 — the test space, and a control that could not fire
+
+Structural $\lVert DC\rVert_\infty$ is exactly 0 at every mesh. The field path
+is gated **per column**, before and after mass normalisation, and reads
+$5.9\times10^{-20}$ to $1.83\times10^{-18}$ — an aggregate Frobenius form could
+hide one bad column, so the aggregate is recorded but is not the gate.
+
+The mass normalisation the design asks for is justified **exactly**, not
+approximately: $\lVert C\psi_{k\ell}\rVert_{M}/\sqrt{\lambda_{k\ell}}$ measures
+$0.500000$ at every mode and every mesh, because
+$\lVert C\psi\rVert_M^2=\lambda\lVert\psi\rVert_M^2$ and a unit-amplitude sine
+has $\lVert\psi\rVert_M=\tfrac12$. Unnormalised modes really would up-weight the
+high-frequency equations by exactly $\sqrt{\lambda_{k\ell}}$ — a factor of 9
+between the smoothest and the most oscillatory mode *within one rung*
+($\lambda$ runs 19.7 to $1.61\times10^{3}$ at $M=128$).
+
+The negative control is the same curl-sine modes sampled **analytically**: the
+discrete curl carries $2\sin(k\pi h/2)/h$ where the analytic field carries
+$k\pi$, and the mismatch leaves a cell divergence
+$2\cos(k\pi x_c)\cos(\ell\pi y_c)\,[\ell\pi\sin(k\pi h/2)-k\pi\sin(\ell\pi h/2)]$.
+
+**That bracket vanishes identically when $k=\ell$.** So the diagonal modes are
+*exactly* divergence-free even under analytic sampling, and my first version of
+this control — a minimum over all columns — read $2.9\times10^{-18}$ and could
+never have fired. The control is now taken over the off-diagonal modes, every
+one of which must exceed 10× the gate tolerance, and the diagonal modes are
+asserted at the gate tolerance instead, as the exact fact they are.
+
+The control floor is stated as a **multiple of the gate tolerance**, not as an
+absolute number, because it is an $O(h^2)$ consistency error: it falls from
+$1.7\times10^{-6}$ at $N=32$ to $4.0\times10^{-10}$ at $N=256$, so a flat
+$10^{-9}$ floor would have "failed to fire" at the finest mesh purely from
+refinement.
+
+### S-HODGE and S-DICT — the mixture is measured, not assumed
+
+Both dictionary families are exact to their own subspace: the off-family Hodge
+energy of every gradient atom is $\le4.5\times10^{-33}$ and of every solenoidal
+atom $\le7.8\times10^{-27}$ (these are energies, so squared). The snapshot
+forces come out at roughly half solenoidal and half gradient — mean solenoidal
+fraction 0.506 to 0.533 across the ladder, with individual snapshots spanning
+0.24 to 0.79 — and $\lVert\mathrm{Grad}_h p\rVert/\lVert f\rVert$ averages
+0.73–0.76 (range 0.55–0.90). So neither the
+velocity side nor the pressure side of the cell is vacuous, and the assertion
+that both mean fractions lie in $[0.05,0.95]$ has been probed: setting
+$\texttt{GRAD\_MIX}=10^{-6}$ (which leaves the dictionary full rank) drives the
+solenoidal fraction to 0.9999999999998739 and the gate fires.
+
+S-DICT's negative control is the "obvious" wrong way to build a solenoidal
+force: the **analytic** curl of the same Gaussian stream function, which is only
+$O(h^2)$ divergence-free. It reads $1.68\times10^{-8}$ to $2.36\times10^{-3}$
+across the ladder and fails the $10^{-11}$ gate everywhere.
+
+### S-SOLVE — what it does and does not certify
+
+The factor-once/solve-many path is the run's central performance decision: one
+SuperLU factorisation per mesh (80.3 s at $N=256$), then 368 back-substitutions
+at 295 ms each. Without it this phase would need 369 factorisations per mesh at
+$N=256$ — about 8.2 hours instead of the 3.2 minutes the cell actually takes.
+
+**Its agreement with the certified `stk.solve_stokes` reads exactly 0.0, and
+that is expected rather than impressive.** Both paths hand the same bordered
+matrix to the same SuperLU with the same options, so this gate pins the
+*assembly* — that I built the same $K$ and the same right-hand side — and not
+the factorisation. Saying so plainly is the lesson of retraction 9; the gate is
+kept because assembly errors are exactly what it would catch, but it is not
+independent evidence about the solve.
+
+The independent evidence is elsewhere and it is real:
+
+- the **blockwise backward errors** over all 1472 bank solves, computed against
+  the *independently assembled* $D$, $\mathrm{Grad}$, $L$;
+- the **affine superposition identity** $u(\theta)=U_{\text{dict}}\theta$, which
+  recombines 48 separately computed FOM solutions and compares them against 256
+  direct solves. It reads $3.66\times10^{-14}$ to $4.77\times10^{-12}$ and cannot
+  be a tautology. It is also the identity every affine cost claim in phase 2b
+  rests on.
+
+Two normalisations had to be changed from phase 1, both because this phase feeds
+the solver inputs phase 1 never had.
+
+- **Continuity.** Phase 1 normalised by $\lVert D\rVert_F\lVert u\rVert+|\lambda|\sqrt{n_p}$.
+  That denominator **collapses on the 16 gradient dictionary atoms**, whose exact
+  velocity is zero: it reads $2.5\times10^{-2}$ on a solve whose absolute
+  continuity residual is pure roundoff. The gated form here is the standard
+  blockwise normwise backward error for the row block $[D\;|\;0\;|\;1]$; phase
+  1's form is recorded as a diagnostic with that value visible.
+- **The raw mean-zero gauge $|\mathbf{1}^\top p|$ is recorded, not gated.**
+  Phase 1's own forward note says it is not scale-free and that its $10^{-8}$
+  threshold had only 9× margin there. The mass-normalised dictionary here makes
+  $\lVert f\rVert_2$ grow like $1/h$, so the raw form would trip on refinement
+  alone. The *normalised* gauge gate, which phase 1 showed carries the
+  discrimination, is asserted.
+
+## Falsifiability of every assertion
+
+Assertions that have never fired are not evidence. Every gate below was made to
+fail, out of band on a scratch copy, and none of these changes is committed.
+
+| probe | which gate fired, and at what value |
+|---|---|
+| `GRAD_MIX = 1e-6` (dictionary still full rank, but no gradient content) | **S-HODGE**: solenoidal fraction 0.9999999999998739 |
+| the design's literal **single-blob** amplitude map | **S-RICH**: Jacobian rank `[4, 4, 4]` != K = 8 |
+| an **affine** amplitude map, $\theta$ linear in $\mu$, $K$ amplitudes on both families | **S-RICH**: centred snapshot rank 8 <= K = 8 — *"a linear POD-K decoder represents the family exactly and the nonlinear-head comparison is VACUOUS"* |
+| only **4 solenoidal atoms** (Q still 48) | **S-RICH** dirs: 4 independent solenoidal response directions against a required 9 (in the full driver S-SOLVE's affine identity fires first, at $4.5\times10^{-10}$ against its $1.0\times10^{-11}$ budget) |
+| snapshots contaminated with a relative $10^{-6}$ gradient | **S1** naive route $4.2\times10^{-9}$ to $2.4\times10^{-6}$ (fails $10^{-11}$) while the $\psi$ route holds at $\le9.7\times10^{-19}$ — run **in band**, both halves asserted |
+| **even (free-slip) ghosts** in $L$ | **S5**: residual collapses to roundoff — run **in band**, asserted to collapse |
+| the mean plus a relative $10^{-6}$ gradient | **S-MEAN**: $4.38\times10^{-9}$ to $3.51\times10^{-8}$ (fails $10^{-11}$) — run **in band** |
+| the **analytically sampled** curl-sine test modes | **S2**: $4.04\times10^{-10}$ to $3.58\times10^{-4}$ (fails $10^{-11}$) — run **in band** |
+| the **analytic** curl of the dictionary's Gaussian stream functions | **S-DICT**: $1.68\times10^{-8}$ to $2.36\times10^{-3}$ — run **in band** |
+| a relative $10^{-9}$ perturbation of a converged solution | **S-SOLVE** backward error $2.26\times10^{-12}$ to $1.83\times10^{-11}$ (fails $10^{-13}$) — run **in band** |
+| shortened ladders via env without `SMOKE=1` | **PRECOND** aborts, listing every field that differs from `FROZEN_CONFIG` |
+| `python -O` | refuses with `RuntimeError` rather than emitting a JSON whose asserts are all dead |
+| `JAX_DEFAULT_MATMUL_PRECISION` unset | **S0** aborts: `JAX_DEFAULT_MATMUL_PRECISION=None` |
+| `JAX_PLATFORMS=cpu` | **S0** aborts: `jax backend is cpu, not gpu` |
+| a `NaN` injected into an S1 aggregate | `finite()` aborts: *"non-finite value(s) in S1 psi: [nan] (indices [2])"* |
+
+## Retractions and corrections
+
+Numbering continues from phase 1. Items **12–15 and 23** are defects in
+`STOKES-DESIGN.md` or in inherited phase-1 machinery; items **16–22 are mine**,
+every one caught by a gate or a control during development rather than by
+inspection — which is the argument for building the controls first.
+
+12. **`STOKES-DESIGN.md` gate S5's 0.5 floor is mesh-dependent and does not hold
+    on the frozen ladder.** Measured minima 0.0357 / 0.1644 / 0.4308 / 0.7692 /
+    0.9430 / 0.9876 at $N=8/16/32/64/128/256$. The defect lives on $O(N)$
+    boundary-adjacent rows with magnitude $2/h^2$, while $\lVert L\phi\rVert\sim
+    \lambda\lVert\phi\rVert$ stays $O(1)$ for fixed $k,\ell$, so the ratio grows
+    like $N^2/\lambda$. The design anchored the gate only at $N\ge64$ and then
+    stated the floor flat, so **it would have failed at $N=32$**, the coarsest
+    mesh on its own ladder. *Resolution:* the 0.5 floor is asserted only at
+    $N\in\{64,128,256\}$, and the mesh-independent form of the same statement —
+    odd-ghost minimum over even-ghost maximum $\ge10^6$ — is asserted at every
+    mesh. That ratio is what "a roundoff value FAILS" actually means.
+13. **`STOKES-DESIGN.md`'s "$k,\ell\le8$" is degenerate at $N=8$, and the
+    degeneracy silently disables the negative control.** $\sin(8\pi x_i)$ on the
+    interior vertices $x_i=i/8$ is identically zero, so the mode is $10^{-16}$
+    noise and the eigen-residual becomes a ratio of two roundoff quantities:
+    with $k_{\max}=8$ at $N=8$ the even-ghost control read **0.134** instead of
+    $2.5\times10^{-15}$. A control that is not roundoff is not a control.
+    *Resolution:* $k_{\max}$ clamped to $N-1$, and the per-mode norms asserted
+    non-degenerate.
+14. **The frozen $R$ ladder's $R=64$ rung is unreachable at $Q=48$.** Only the
+    solenoidal part of the force drives velocity, so the solution manifold has
+    rank at most $Q_s$. With $Q_s=32$ the measured spectrum shows
+    $\sigma_{32}/\sigma_1\approx4\times10^{-5}$ and
+    $\sigma_{33}/\sigma_1\approx10^{-12}$–$10^{-15}$: a clean gap of seven to
+    nine orders at index 32, at every mesh. Reaching $R=64$ would need
+    $Q_s\ge64$, hence $Q\ge80$, which contradicts the frozen $Q=48$. The
+    certified ladder here is $R\in\{8,16,32\}$ and the conflict is asserted as a
+    measured fact rather than worked around.
+15. **Phase 1's continuity backward-error normalisation collapses on gradient
+    forcing.** $\lVert r_{\text{cont}}\rVert/(\lVert D\rVert_F\lVert u\rVert+
+    |\lambda|\sqrt{n_p})$ reads $2.5\times10^{-2}$ on a roundoff-clean solve
+    whenever $u\approx0$, which is exactly what a pure gradient force produces.
+    Phase 1 never fed it such a right-hand side. *Resolution:* the gated form is
+    the standard blockwise backward error for $[D\;|\;0\;|\;1]$; phase 1's form
+    is recorded as a diagnostic.
+16. **MINE: the first bank was mis-scaled by $h$.** I set the POD normalisation
+    to $\sigma_i/h$ instead of $\sigma_i$, so the modes had unit 2-norm rather
+    than unit *mass* norm. The orthonormality gate read $1-h^2=0.999$ and the
+    held-out POD-$K$ error read 0.999. Caught by the gate, before any run.
+17. **MINE: reorthogonalisation in the wrong inner product.** `np.linalg.qr` on
+    the $\psi$ modes orthonormalises in the $\psi$ 2-norm, not in the induced
+    metric $C^\top M_u C$; the lifted basis read
+    $\lVert G^\top M_u G-I\rVert_{\max}=0.98$. *Resolution:* two-pass
+    Cholesky-QR in the induced metric.
+18. **MINE: the S2 negative control as first written could not fire.** Taken as
+    a minimum over all columns it read $2.9\times10^{-18}$, because the $k=\ell$
+    analytic modes are *exactly* divergence-free — the bracket
+    $\ell\sin(k\pi h/2)-k\sin(\ell\pi h/2)$ vanishes identically there. This is
+    the same class of defect as retraction 9: a control that structurally cannot
+    fail. *Resolution:* the control is the off-diagonal modes; the diagonal ones
+    are asserted at the gate tolerance as the exact fact they are.
+19. **MINE: flat floors for $O(h^2)$ negative controls are wrong.** The analytic
+    curl-sine control falls from $1.7\times10^{-6}$ at $N=32$ to
+    $4.0\times10^{-10}$ at $N=256$; a flat $10^{-9}$ floor "fails to fire" at
+    the finest mesh purely from refinement. *Resolution:* every control floor in
+    this driver is stated as a multiple of the gate tolerance it controls.
+20. **MINE: a flat tolerance on the affine superposition identity passed three
+    meshes and failed the fourth on refinement alone.** $3.7\times10^{-14}$,
+    $4.4\times10^{-14}$, $4.3\times10^{-13}$, $4.8\times10^{-12}$ at
+    $N=32/64/128/256$ against a flat $10^{-12}$. The identity recombines 48
+    independently computed FOM solutions, so its floor is the FOM's own
+    *forward* error, $\text{backward\_err}\times\kappa(K)$ with
+    $\kappa(K)\sim h^{-2}$ — while the cancellation ratio
+    $\sum_q|\theta_q|\lVert u_q\rVert/\lVert u\rVert$ stays flat at 2.46 across
+    the ladder, so cancellation is *not* the cause. *Resolution:* gated at
+    $10^{-14}N^2$.
+21. **MINE: the numerical rank was read at a cut level the noise floor
+    outgrows.** At $\texttt{rtol}=10^{-12}$ the direct SVD reported rank **33**
+    at $N=256$, because $\sigma_{33}/\sigma_1$ rises from $8.7\times10^{-15}$ at
+    $N=32$ to $1.4\times10^{-12}$ at $N=256$ — again the FOM forward error
+    $\sim\varepsilon\kappa(K)$. *Resolution:* the cut is $10^{-9}$, which sits
+    in the middle of a gap seven to nine orders wide, **and the gap itself is
+    asserted** ($\sigma_{Q_s}/\sigma_1\ge10^{-6}$,
+    $\sigma_{Q_s+1}/\sigma_1\le10^{-9}$, ratio $\ge10^6$), so the cut level
+    cannot silently become the thing that decides the answer.
+22. **MINE, and worth stating separately: the Gram POD's numerical-rank floor is
+    $\sqrt{\varepsilon}$, not $\varepsilon$.** Reading the rank off the Gram
+    POD's own singular values reported **128–130** of 256 snapshots for a matrix of
+    true rank 32 (and **48 of 48** in a smaller smoke run), because forming $X^\top X$ square-roots
+    the noise floor to $1.26$–$1.57\times10^{-8}$ relative, measured. Every rank statement in
+    this phase comes from a direct SVD; the Gram-route rank is recorded beside
+    it so the discrepancy is visible rather than folklore.
+23. **Phase 1's own $10^{-11}$ perturbation control for the backward error does
+    not reliably fire at $N=64$.** A random relative $10^{-11}$ perturbation
+    reads $9.2\times10^{-14}$, just *under* the $10^{-13}$ threshold. Phase 1
+    measured $2.0\times10^{-13}$ at $N=32$ and documented that S-BACKERR is
+    reference-direction independent but not *direction* independent; the same
+    perturbation reads $2.4\times10^{-15}$ parallel to the velocity. *Resolution
+    here:* the control uses a relative $10^{-9}$ perturbation, still 10× inside
+    phase 1's own $10^{-8}$ field tolerance, and it fires by two orders. Phase
+    1's number is not retracted; its *control* is not robust across meshes.
+
+Nothing else was retracted. No gate reported here was skipped or estimated.
+
+## Where I disagree with the design, and what I could not do
+
+- **The single-exponential amplitude map cannot support $K=8$.** Stated above
+  and gated; this is the one substantive change I made to the frozen family.
+- **$Q=48$ with $Q_s\ge24$ is inconsistent with $R\in\{8,16,32,64\}$.**
+  Retraction 14. The design should either raise $Q$ to $\ge80$ or drop the
+  $R=64$ rung; I did the latter and recorded the evidence, because $Q=48$ is in
+  the frozen contract and $R$'s use is phase 2b's.
+- **S5's 0.5 floor should be stated per mesh, or as the odd/even separation
+  ratio.** Retraction 12.
+- **"Independently varied gradient content" is only partly implemented.** The
+  gradient atoms share the dictionary's descriptor grid with the solenoidal
+  ones, so the gradient/solenoidal balance *does* vary across $\mu$ (measured
+  solenoidal fraction 0.24–0.79 per snapshot) but it is not driven by its own latent
+  direction — all eight are spent on the two blobs. Adding one would make $K=9$
+  and break the frozen contract. Stated rather than hidden.
+- **Only $\nu=1$ was run.** In steady Stokes $\nu$ rescales velocity by $1/\nu$
+  and nothing else, and phase 1 gate S-NU already confirms that to
+  $1.3\times10^{-13}$. Nothing in this phase depends on it.
+- **The non-affine moving-centre arm was not run.** The design lists it as a
+  separate, separately-reported arm with the $O(Mn_u)$ projection timed inside
+  the pipe; there is no timing in phase 2a, so it belongs with phase 2b's S6.
+- **S-SOLVE's agreement with the certified solver is an assembly check, not an
+  independent solver check**, and it reads exactly 0.0 for that reason. Said in
+  full above.
+
+## What is not done, and what phase 2b inherits
+
+Out of scope and **not run**: S3's bank-side field path, S4 (the quadrature-free
+residual against an independent full-grid implementation), S6 (cost and the EQ
+arm), S7 (the three controls, including the direct reduced solve that is
+expected to win), S8 (the $M$ ladder and $\operatorname{rank}(AJ_h)$), S9 (the
+$R$ frontier). No decoder, no training, no residual assembly, no timing.
+
+Phase 2b inherits:
+
+- a $Q=48$ affine dictionary with **precomputable** $b_q=\Phi^\top M_u f_q$, and
+  the affine superposition identity gated at the FOM's own forward-error budget;
+- nested banks $R\in\{8,16,32\}$ from **one** factorisation, bit-for-bit
+  prefixes, divergence $\sim10^{-19}$ per mode, $M_u$-orthonormal to
+  $1.33\times10^{-15}$ after reorthogonalisation;
+- an affine mean $\bar u=C\bar\psi$ with divergence $\sim10^{-19}$;
+- a mass-normalised curl-sine test space at $M\in\{32,64,128\}$, per-column
+  divergence $\le1.83\times10^{-18}$, with the exact normalisation identity
+  $\lVert C\psi_{k\ell}\rVert_M=\tfrac12\sqrt{\lambda_{k\ell}}$;
+- the settled S5 conclusion: **$A=\Phi^\top M_u L G$ must be dense**;
+- a factor-once saddle solver, gated bit-for-bit against the certified one.
+
+Three forward notes.
+
+- **$R=64$ is not available.** Retraction 14. Any phase-2b sweep over the frozen
+  $R$ ladder must stop at 32 or the dictionary must grow.
+- **The naive velocity-space POD passes S1 here by about 4×, and that margin is
+  a property of this spectrum.** If phase 2b changes the family, the $R$ ladder,
+  or the snapshot count, re-measure rather than assume; the $\psi$ route has no
+  such dependence and should stay the default.
+- **The first thing worth gating in phase 2b is the pressure-eliminated residual
+  identity** $\Phi^\top M_u(-\nu Lu-f)\approx0$ on a solenoidal force. It runs
+  along a path the solver never takes, it is one matvec per snapshot, and it
+  ties S2 and S3 to the FOM. It is S4's natural first rung and it was out of
+  scope here.
+
+## Reproducing
+
+```bash
+cd experiments/separable-decoder
+source /etc/profile.d/jax-mem.sh
+XLA_PYTHON_CLIENT_PREALLOCATE=false XLA_PYTHON_CLIENT_MEM_FRACTION=0.02 \
+JAX_ENABLE_X64=1 JAX_DEFAULT_MATMUL_PRECISION=highest JAXRUN_MAX=48G \
+  jaxrun /home/tahmid/Dev/.venv/bin/python stk2d_bank_gates.py
+/home/tahmid/Dev/.venv/bin/python stk2d_bank_tables.py   # regenerates the tables
+```
+
+Single local process, no cluster job; 689 s wall, peak RSS about 9 GB, dominated by the
+$N=256$ SuperLU factor and the dense SVDs. The numerics are numpy/scipy f64 on
+CPU — a sparse *direct* solve is the right tool — while JAX is imported and
+asserted by S0 because phase 2b trains in it.
+
+Environment knobs: `BANK_NS`, `S5_NS`, `R_LADDER`, `M_LADDER`, `S_TRAIN`,
+`S_TEST`, `NU`, `SEED`, `OUT_TAG`, `OUT_PREFIX`, `ALLOW_CPU`, `SMOKE`. Any of
+them differing from `FROZEN_CONFIG` aborts under PRECOND unless `SMOKE=1`, and a
+`SMOKE=1` run sets `complete=false` by construction.
+
+## Glossary — phase 2a additions
+
+Written for a reader who knows none of this cell's vocabulary. The phase-1
+glossary above still applies.
+
+- **Bank / trial basis $G$** — the fixed set of $R$ velocity fields the reduced
+  model is allowed to build its answer from. Every column is divergence-free, so
+  every combination of them is too.
+- **Snapshot** — one full-order solution $u(\mu_i)$, computed once offline. The
+  bank is distilled from a collection of them.
+- **POD (proper orthogonal decomposition)** — the singular value decomposition
+  of the snapshot collection. Its leading $R$ left singular vectors are the best
+  possible $R$-dimensional *linear* basis in the least-squares sense.
+- **Gram POD** — computing that SVD via the small $S\times S$ matrix
+  $X^\top X$ instead of the tall $X$. Cheap, but it squares the condition
+  number and square-roots the accuracy: its noise floor is
+  $\sqrt{\varepsilon}\approx1.5\times10^{-8}$ relative, not $\varepsilon$.
+- **Centred POD** — subtracting the snapshot mean $\bar u$ first, so the model
+  is $u=\bar u+Gh$. The mean is then an extra object that must itself be
+  divergence-free (gate S-MEAN).
+- **Numerical rank** — how many singular values are genuinely nonzero rather
+  than roundoff. It needs a cut level, and choosing that level badly is how
+  retractions 21 and 22 happened.
+- **Dictionary / atom** — the $Q$ fixed force *shapes*. A force in the family is
+  a weighted sum of them, which is what "affine" means here: the shapes never
+  move, only the weights.
+- **Affine parameter dependence** — the property that
+  $f(\mu)=\sum_q\theta_q(\mu)f_q$ with $f_q$ fixed. It lets every expensive
+  projection $\Phi^\top M_u f_q$ be computed once, offline, instead of per
+  query.
+- **Descriptor $c_q$** — the label attached to each dictionary atom saying where
+  it sits and how wide it is, $(x,y,\log\text{width})$. The amplitude map is a
+  Gaussian kernel over these labels.
+- **Latent dimension $K$** — the number of underlying parameters the family
+  really has. Here $K=8$: two blobs, each with a 3-D descriptor centre and a
+  kernel bandwidth.
+- **Curved vs affine (of the amplitude map)** — if the amplitudes moved
+  *linearly* with the parameters, the whole solution set would be a flat
+  $K$-dimensional slice and a linear decoder would capture it exactly. Curving
+  the map is what leaves anything for a nonlinear decoder to do.
+- **Solution manifold** — the set of all solutions $\{u(\mu)\}$ as $\mu$ ranges
+  over the parameter box. "Curved" means it is not contained in any flat
+  $K$-dimensional subspace.
+- **Solenoidal / gradient (Hodge) split** — every velocity or force field splits
+  uniquely into a divergence-free part and a pressure-gradient part, and here
+  that split is *exact* on the grid. Only the solenoidal part of a force moves
+  the fluid; the gradient part is cancelled entirely by the pressure.
+- **Streamfunction coordinates** — describing a divergence-free field by the
+  scalar $\psi$ it is the curl of. Working there makes divergence-freeness
+  structural instead of something to be checked.
+- **Cholesky-QR** — a way of re-orthogonalising a set of vectors using the small
+  matrix of their mutual inner products. It must be done in the *physical*
+  (mass-weighted) inner product, or the result is orthonormal in the wrong sense
+  (retraction 17).
+- **Backward error** — how much the *problem* would have to be perturbed for the
+  computed answer to be exactly right. Small backward error means the solver did
+  its job; it says nothing about whether the problem was the right one.
+- **Blockwise backward error** — the same idea applied to one row block of the
+  system at a time, so a violated constraint row cannot hide inside a much
+  larger momentum block. Phase 1 learned this the hard way (its retraction 10).
+- **Negative control** — a deliberately broken input that the gate must reject.
+  A gate that has never rejected anything is not evidence that it works.
+- **Jacobian rank** — the number of independent directions the solution actually
+  moves in when the parameters are nudged. If it is less than $K$, some
+  parameters do nothing.
+- **Held-out / test set** — parameter samples never used to build the bank, so
+  the reconstruction error measured on them is not self-congratulatory.
+- **Eigen-residual** — how far a candidate vector is from being an eigenvector
+  of an operator. Here it is *large on purpose*: it is the evidence that the
+  test modes are not eigenvectors of the no-slip Laplacian, hence that the
+  reduced operator $A$ cannot be replaced by a diagonal.
+- **Odd vs even ghost, no-slip vs free-slip** — see the phase-1 glossary. In
+  phase 2a the even-ghost operator is used only as a negative control, because
+  under it the test modes *are* exact eigenvectors.

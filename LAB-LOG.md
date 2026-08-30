@@ -3403,3 +3403,10 @@ method stops), summary table split into linear / quadratic-positive / non-polyno
 additions. All numbers copied from the generated tables of
 `reports/2026-08-29-b1d-tensor-sample-free-burgers.md`. Compiles clean; every slide checked
 visually.
+Deck extended again (26 slides): "How the decoder is trained in each case" table (Poisson
+2D: 512 CG-solved blob-source fields, K=16/R=64–96/M=64, 60–100k steps; Burgers 1D
+sampled and tensor: same 8192-state pick from 512 trajectories × 50 steps, K=8/R=32/M=32,
+40k steps, same committed checkpoints; f64 everywhere; held-out cohorts) and an
+"After stage 1" three-column pipeline diagram (Poisson → B/Λ/fₘ; sampled → B + NNLS +
+stage 2; tensor → B + T). Training facts taken from runs/inherited_qf/README.md,
+b1d_common.train_autodecoder_1d and the driver defaults.

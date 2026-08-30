@@ -178,6 +178,30 @@
   \end{columns}
 \end{frame}
 
+
+\begin{frame}{How the decoder is trained in each case --- one recipe, three data sets}
+  \centering\scriptsize
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabular}{@{}p{0.17\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.22\textwidth}@{}}
+    \toprule
+     & \textbf{Poisson 2D (linear)} & \textbf{Burgers 1D, sampled} & \textbf{Burgers 1D, tensor}\\
+    \midrule
+    What a snapshot is & the solution $u$ of $-\Delta u = f$ for one source $f$ (a Gaussian blob: centre $\sim U(0.15,0.85)^2$, width log-uniform $[0.02,0.1]$, amplitude $U(0.5,2)$) & one time state of one trajectory: 512 trajectories (blob IC, $\nu\sim$ log-U$[0.01,0.1]$) $\times$ 50 steps; 8192 states drawn & \multicolumn{1}{c}{\emph{identical to the sampled case}}\\
+    Truth solver & conjugate gradients to $10^{-13}$ & tridiagonal Newton, backward Euler, residual $\le 10^{-8}$ & \multicolumn{1}{c}{same committed checkpoints}\\
+    Training snapshots & 512 sources $\to$ 512 fields & 8192 states & \multicolumn{1}{c}{\emph{nothing retrained}}\\
+    Sizes $K$ / $R$ / $M$ & 16 / 64--96 / 64 & 8 / 32 / 32 & 8 / 32 / 32\\
+    Loss & $L_1$ (relative recon $+\ \lambda_{\mathrm{orth}}$, $10^{-4}$) & same $L_1$ & same $L_1$\\
+    Optimiser & Adam, warm-up then cosine, 60k--100k steps, seed 0 & Adam, warm-up then cosine $10^{-3}\!\to\!10^{-5}$, 40k steps, seed 0 & same; new $N$ trained in 283 s (16k) / 1012 s (65k)\\
+    Precision & f64, matmul precision \texttt{highest} & f64, \texttt{highest} & f64, \texttt{highest} (f32 would not do)\\
+    Then frozen & yes & yes & yes\\
+    Held out for grading & 16 same-seed held-out sources $+$ 16 fresh-seed sources & 8 fresh trajectories (seed 1; parameter tuples $\ge 0.06$ from any training one) & the same 8\\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{2mm}\small
+  Stage 1 never sees the PDE operator, the test modes, the quadrature, or the tensor: it only learns to \emph{reconstruct snapshots} from a free code per snapshot. Everything PDE-specific happens after freezing --- next slide.
+\end{frame}
+
 \begin{frame}{How the decoder is used online --- it defines a manifold, it does not predict}
   \footnotesize
   \begin{columns}[T]
@@ -501,6 +525,41 @@
     \column{0.5\textwidth}\small
     \textbf{Stage 2 disappears.} No node positions to learn, no NNLS weights to fit, no budget $m$ to choose, no held-out monitoring. The orange ``nodes'' box and the green ``weights'' box of the earlier diagram are gone; the blue path is the whole residual, as for Poisson.
   \end{columns}
+\end{frame}
+
+
+\begin{frame}{After stage 1: what each case builds from the frozen decoder}
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[node distance=4mm and 6mm, every node/.style={font=\scriptsize}]
+    \node[tr] (S1) {\textbf{Stage 1 (all cases)}\\auto-decoder on snapshots\\$\to$ frozen bank $G$, frozen head $h$};
+    % Poisson column
+    \node[fz, below left=9mm and 30mm of S1] (P1) {\textbf{Poisson}\\evaluate $G$ on the full grid once};
+    \node[fz, below=of P1] (P2) {$B=\Phi\T G$, $\Lambda$, $f_M=\Phi\T f$\\(seconds; nothing fitted)};
+    \node[sv, below=of P2] (P3) {online: $r=W\odot[\Lambda B h(z)-f_M]$\\0 sample points};
+    % sampled column
+    \node[fz, below=9mm of S1] (Q1) {\textbf{Burgers, sampled}\\evaluate $G$ on the full grid once};
+    \node[fz, below=of Q1] (Q2) {$B=\Phi\T G$ for the linear terms};
+    \node[sv, below=of Q2] (Q3) {NNLS weights $w\ge0$ at $m$ grid nodes\\(convex fit, 25--37 s)};
+    \node[tr, below=of Q3] (Q4) {\textbf{stage 2:} learn node positions $X$\\(2000 Adam steps, weights re-solved every 500)};
+    \node[pl, below=of Q4] (Q5) {online: linear exact $+$ advection at $m$ nodes};
+    % tensor column
+    \node[fz, below right=9mm and 30mm of S1] (T1) {\textbf{Burgers, tensor}\\evaluate $G$ and $D^-G$ on the full grid once};
+    \node[fz, below=of T1] (T2) {$B=\Phi\T G$ and $T=\Phi\T[G\otimes D^-G]$\\(one blocked contraction; 0.3 s at $N{=}65\,536$)};
+    \node[sv, below=of T2] (T3) {online: linear exact $+$ $h\T T h$\\0 sample points, nothing fitted};
+    \draw[arr] (S1) -- (P1); \draw[arr] (S1) -- (Q1); \draw[arr] (S1) -- (T1);
+    \draw[arr] (P1) -- (P2); \draw[arr] (P2) -- (P3);
+    \draw[arr] (Q1) -- (Q2); \draw[arr] (Q2) -- (Q3); \draw[arr] (Q3) -- (Q4); \draw[arr] (Q4) -- (Q5);
+    \draw[arr] (T1) -- (T2); \draw[arr] (T2) -- (T3);
+  \end{tikzpicture}}
+
+  \vspace{1mm}
+  {\scriptsize \textcolor{trained}{$\blacksquare$} gradient training \quad
+   \textcolor{frozen}{$\blacksquare$} one-time exact precomputation from the frozen bank \quad
+   \textcolor{solved}{$\blacksquare$} convex fit / direct evaluation, no gradients}
+  \vspace{1mm}
+
+  \small The decoder training is the same in all three columns; the columns differ only in what is \emph{derived} from the frozen bank. Linear and quadratic terms are derived exactly; only a term that is neither needs the fitted (green) and learned (orange) steps of the middle column.
 \end{frame}
 
 \begin{frame}{Results: the tensor lands on the oracle ($N = 128\ldots1024$, committed checkpoints)}

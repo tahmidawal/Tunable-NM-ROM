@@ -4,7 +4,7 @@ Design for step 1 of the 2026-08-30 roadmap, **replacing the retired waves cell*
 (`exp/2026-08-30-waves-vector`, `WAVES-RETIRED.md`).
 Branch `exp/2026-08-30-stokes-vector`, cut from `exp/2026-08-29-b2d-tensor`.
 
-**Revision 3**, rewritten against `STOKES-DESIGN-AUDIT-r1-codex-gpt56sol.md` and `-r2-` (Codex
+**Revision 4** (frozen-contract amendments from the phase-2a verification are marked **r4**); revision 3 rewritten against `STOKES-DESIGN-AUDIT-r1-codex-gpt56sol.md` and `-r2-` (Codex
 `gpt-5.6-sol`, xhigh), which marked r1 "should not be implemented as written" and r2 "IMPLEMENT WITH LISTED FIXES" (2 of 9 changes closed, 7 outstanding)
 and supplied numerical checks (archived as `STOKES-AUDIT-mac_check.py`,
 `STOKES-AUDIT-mac_s5_scaling.py`). **Status: r3 closes the r2 audit's seven outstanding fixes. Ready to implement.**
@@ -227,9 +227,10 @@ Nothing below is left to implementation choice.
 | quantity | value |
 |---|---|
 | mesh ladder | $N=32,64,128,256$ cells; $h=1/N$; $n_u=2N(N-1)$ |
+| amplitude map | **two-blob superposition**, 4 parameters each (**r4**); the r3 single-exponential factors through $(m,s)$ and is rank-limited to 3–4, so $K=8$ would be mostly degeneracy |
 | pressure gauge | mean-zero |
 | test modes | $\Phi=C\psi_{k\ell}$, ordered by $\lambda_{k\ell}$ ascending; $M\in\{32,64,128\}$ |
-| bank | nested POD $R\in\{8,16,32,64\}$ from **one** factorization |
+| bank | nested POD $R\in\{8,16,32\}$ from **one** factorization, $\psi$-route (metric-reorthogonalized), **r4** |
 | latent | $K=8$, held fixed across the $R$ sweep |
 | $M$ vs $R$ | $M\ge R$ required (S7c is underdetermined otherwise) |
 | viscosity | $\nu=1$ fixed; a $\nu$ sweep only to confirm the exact $1/\nu$ scaling |
@@ -279,7 +280,13 @@ inherited — S6 needs a newly defined strong-form EQ arm.
   absolute form $\lVert\cdot_{qf}-\cdot_{full}\rVert/(\lVert J_{full}\rVert_F\lVert
   r_{full}\rVert)\le10^{-12}$ applies to **residual and gradient alike**.
 - **S5** primary: operator eigen-residual $\lVert L\phi+\lambda\phi\rVert/\lVert
-  L\phi\rVert\ge 0.5$ for $k,\ell\le8$ (audit-measured 0.769–0.998 at $N=64$, up to
+  L\phi\rVert\ge 0.5$ **at $N\ge64$ only** (**r4**: the flat floor is mesh-dependent and fails at
+  $N=32$ with 0.4308 for correct code; measured minima 0.0357/0.1644/0.4308/0.7692/0.9430/0.9876
+  at $N=8..256$), with $k_{\max}$ clamped to $N-1$ (**r4**: $k=8$ aliases to zero at $N=8$ and the
+  *negative control* then reads 0.134 instead of roundoff), plus a mesh-independent odd/even
+  separation ratio at every mesh — robust over this ladder, **not** asymptotically constant (its
+  denominator has an $\epsilon N^2$ floor; measured $1.5\!\times\!10^{13}\to8.0\!\times\!10^9$).
+  Original wording, for $k,\ell\le8$: (audit-measured 0.769–0.998 at $N=64$, up to
   0.99985 at $N=256$). **A roundoff value FAILS** — it indicates even/free-slip ghosts,
   a wrong $L$, or omitted boundary terms. Secondary diagnostic $\lVert A+\Lambda
   B\rVert/\lVert A\rVert$ expected $0.30$–$0.45$; note the audit re-ran this under r2's

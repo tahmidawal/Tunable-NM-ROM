@@ -12,9 +12,11 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-08-26
+# Where things stand — 2026-08-30
 
-*(The 2026-08-25 block this replaces is in git history, commit c3f1726 and nearby.)*
+*(Dated 2026-08-26 until now; the tensor/Poisson-QF content below was written on 08-27…08-30
+but the header was never advanced. The 2026-08-25 block this replaces is in git history,
+commit c3f1726 and nearby.)*
 
 ## Read this first
 
@@ -181,6 +183,51 @@ Poisson quadrature-free cell RAN 2026-08-27 and is confirmed (see above); adopt 
 Poisson default. Adopt `sep_burgers_exlin.py`'s residual as the default for future Burgers
 solver work.
 
+## Current line of work — the 2026-08-30 roadmap (sequential, Codex-verified)
+
+`understand/2026-08-30-experiment-roadmap.md`. **Score every PDE by the degree of the residual
+as a polynomial in the state**: degree 1 (Poisson, heat, Stokes) and degree 2 (Burgers, NS
+convection) are sample-free; non-polynomial (`|u|` upwinding, `1/ρ`, limiters) needs sampling.
+Order: waves → sign-changing Burgers → 2D incompressible NS → multi-seed → fixed sine bank →
+3D linear → tensor compression → 3D NS → compressible NS via lifting. Run **one after another**
+(user's instruction, overriding parallelize-by-default), with every conclusion and code file
+verified by an independent Codex `gpt-5.6-sol` pass and **design documents audited before
+implementation**.
+
+**The general form of the linear quadrature-free claim** (established by the waves audit, and
+what Stokes/NS are built on) — supersedes the "one `A` plus one `B`" statement:
+`R = Pᵀ[E(µ)𝒢Δη/Δt − K(µ)𝒢η̄]`, one precomputed matrix per affine operator component; covers
+DAEs, cross-component coupling and parameter dependence. Note `A = ΦᵀLG = -ΛB` under this
+repo's `LΦ = -ΦΛ` convention, and **non-symmetry is not what kills the diagonal shortcut** —
+a non-symmetric operator still has one if `Pᵀ` holds its left eigenvectors.
+
+**On a linear PDE with affine parameter dependence the nonlinear head can never buy accuracy;
+its entire value is cost.** The solution manifold is then literally a linear subspace. This is
+the correct framing for the Poisson QF result too, and it means the nonlinear decoder only earns
+its keep on a nonlinear PDE or under non-affine parameter dependence.
+
+**Waves: RETIRED without implementation** (`exp/2026-08-30-waves-vector`, `bfde209`). Already
+done twice here — `exp/2026-08-14-wave2d-coord-rom` confirmed the slow hyperbolic Kolmogorov
+decay, and `exp/2026-08-16-wave2d-rom-latent-stepping` found the ROM **fails structurally**
+(end-time energy ratio 0.27; "not fixable by tuning"), an argument the separable decoder
+inherits. Read `WAVES-RETIRED.md` before ever re-proposing it.
+
+**Stokes: the NS dress rehearsal, phase 1 done** (`exp/2026-08-30-stokes-vector`). Design at r3
+after two audits; MAC FOM built and gated (`6ca89db`): S-ADJ exactly 0.0 bit-for-bit (negative
+control 0.7071), S-FOM orders 2.000–2.002 in u and p, `‖DC‖∞` exactly 0, rank D = N²−1,
+dim ker D = rank C = (N−1)² to N=256. **Caveat: the frozen manufactured solution is degenerate**
+— it has a closed-form discrete solution `u_h = (t/sin t)² u_ex`, `t = πh`, so its convergence
+table carries little information beyond three identities (it *does* detect free-slip decisively:
+even ghosts plateau at O(1)). A second generic MMS is being added. **This cell cannot produce a
+positive result and must not be written up as one** — on a linear problem a direct reduced solve
+in the `G` span should beat the nonlinear head (cf. the 08-16 heat finding). Its deliverable is
+verified vector-valued / div-free / pressure-free machinery for NS.
+
+**Recurring failure mode, named so it stops recurring: gates that cannot fail, and absolute
+tolerances for quantities that scale with the mesh.** Four instances in one session (waves W0,
+Stokes S5, Stokes S2's 1e-14, and a harness that reports `complete=true` while its own floor
+fails). Write every threshold normalized, and build every gate with a negative control.
+
 ## Open
 
 `h` generalisation (capacity + μ-density; test-time refinement untried) · anchor-set-sparsity
@@ -189,7 +236,9 @@ Poisson CG arm · 1D screening multi-seed confirmation (designed, cheap, awaitin
 review) · merge decisions: `exp/2026-08-25-sepdec-consolidated`,
 `exp/2026-08-25-eq-fidelity-ladder` (archive, per user), `exp/2026-08-26-eq-learned`,
 `exp/2026-08-26-codesign`, `exp/2026-08-27-nodes-mm`, and now
-`exp/2026-08-27-b1d-poissonqf` — ask the user ·
+`exp/2026-08-27-b1d-poissonqf`, `exp/2026-08-29-b1d-tensor`, `exp/2026-08-29-b2d-tensor`,
+`exp/2026-08-30-waves-vector` (retired archive), `exp/2026-08-30-stokes-vector` — **eleven
+unmerged branches; ask the user** ·
 certify EQ sets with the ladder, never the NNLS rel-fit.
 
 ---

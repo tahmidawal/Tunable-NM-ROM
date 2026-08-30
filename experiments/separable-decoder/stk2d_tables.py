@@ -78,6 +78,54 @@ def main(path=DEFAULT):
                   e(r["predicted_err_p"], 6), e(r["observed_err_p"], 6)]
                  for r in G["S_EXACT"]["rows"]]))
     print()
+    print(table(["N", "pred_dev_u", "its roundoff bound", "margin",
+                 "pred_dev_p", "its roundoff bound", "margin"],
+                [[r["N"], e(r["pred_dev_u"]), e(r["pred_dev_bound_u"]),
+                  f"{r['pred_margin_u']:.3f}", e(r["pred_dev_p"]),
+                  e(r["pred_dev_bound_p"]), f"{r['pred_margin_p']:.3f}"]
+                 for r in G["S_EXACT"]["rows"]]))
+    print()
+    print(f"worst margin {G['S_EXACT']['worst_pred_margin']:.3f} (must be <= 1)")
+    print()
+
+    print("### S-FOMGEN -- the generic manufactured solution\n")
+    GG = G["S_FOMGEN"]
+    print(table(["N", "err_u (mass-rel)", "verifier value", "rel dev",
+                 "err_p (mass-rel)", "verifier value", "rel dev",
+                 "err/solution cosine", "solve s"],
+                [[r["N"], e(r["err_u_mass_rel"], 6),
+                  e(a["anchor_err_u"], 6) if a else "-",
+                  e(a["rel_dev_u"]) if a else "-",
+                  e(r["err_p_mass_rel"], 6),
+                  e(a["anchor_err_p"], 6) if a else "-",
+                  e(a["rel_dev_p"]) if a else "-",
+                  f"{r['err_u_cos_with_uex']:.4f}",
+                  f"{r['solve_seconds']:.1f}"]
+                 for r in GG["rows"]
+                 for a in [next((x for x in GG["anchors"]
+                                 if x["N"] == r["N"]), None)]]))
+    print()
+    print(table(["refinement", "observed order u", "observed order p"],
+                [[f"{a['coarse']} -> {a['fine']}", f"{a['order']:.4f}",
+                  f"{b['order']:.4f}"]
+                 for a, b in zip(GG["orders_u"], GG["orders_p"])]))
+    print()
+    print(f"worst order deviation {GG['worst_order_deviation']:.4f} "
+          f"(band {GG['band']}); worst deviation from the verifier's values "
+          f"{e(GG['worst_anchor_rel_dev'])} (tol {e(GG['anchor_tol'])}); "
+          f"error/solution cosine {GG['min_err_solution_cosine']:.4f}-"
+          f"{GG['max_err_solution_cosine']:.4f} "
+          f"(must be < {GG['nondegeneracy_ceil']}: this family must not be "
+          f"degenerate)")
+    print()
+
+    print("### gate MMSF -- analytic forcing vs high-accuracy finite differences\n")
+    print(table(["family", "Lap u", "Lap v", "grad p_x", "grad p_y",
+                 "continuous div u", "wall trace"],
+                [[r["family"], e(r["lap_u_rel"]), e(r["lap_v_rel"]),
+                  e(r["grad_px_rel"]), e(r["grad_py_rel"]), e(r["div_rel"]),
+                  e(r["wall_trace_max"])] for r in G["MMSF"]["rows"]]))
+    print()
 
     print("### S-ADJ -- weighted adjointness\n")
     print(table(["N", "primary", "test-projected", "test-proj (op-norm)",
@@ -112,14 +160,25 @@ def main(path=DEFAULT):
                  for r in G["S_RANK"]["indirect"]]))
     print()
 
-    print("### S-PRESS -- pressure annihilation (bonus)\n")
-    print(table(["N", "M", "norm ||Phi^T M_u Grad p||", "same, control basis",
-                 "cos_max solenoidal", "cos_max control",
-                 "ratio control/solenoidal", "||D Phi|| normalized"],
-                [[r["N"], r["M"], e(r["press_annih_norm"]),
-                  e(r["press_control_norm"]), e(r["press_cos_max_solenoidal"]),
-                  e(r["press_cos_max_control"]),
-                  e(r["press_ratio_control_over_sol"]), e(r["D_Phi_norm"])]
+    print("### S-PRESS -- repaired S3, deterministic aligned pressures\n")
+    print(table(["N", "M", "control Frobenius (min over p=chi_j)",
+                 "= 1/sqrt(M)", "matched-control cosine (min)",
+                 "solenoidal Frobenius (max)", "solenoidal cosine (max)",
+                 "||D Phi|| normalized"],
+                [[r["N"], r["M"], f"{r['s3_ctl_fro_min']:.6f}",
+                  f"{r['s3_ctl_fro_ideal']:.6f}",
+                  f"{r['s3_matched_cos_min']:.12f}",
+                  e(r["s3_sol_fro_max"]), e(r["s3_sol_cos_max"]),
+                  e(r["D_Phi_norm"])] for r in G["S_ADJ"]["rows"]]))
+    print()
+    print("SUPERSEDED diagnostic -- the same quantities with a grid-white "
+          "RANDOM pressure (retained as evidence, not gated):\n")
+    print(table(["N", "M", "solenoidal Frobenius", "control Frobenius",
+                 "cos_max solenoidal", "cos_max control"],
+                [[r["N"], r["M"], e(r["rand_press_annih_norm"]),
+                  e(r["rand_press_control_norm"]),
+                  e(r["rand_press_cos_max_solenoidal"]),
+                  e(r["rand_press_cos_max_control"])]
                  for r in G["S_ADJ"]["rows"]]))
     print()
 
@@ -143,7 +202,13 @@ def main(path=DEFAULT):
 
     print("### Supporting gates\n")
     print(table(["gate", "worst value", "rule"],
-                [["REF (operators vs archived auditor reference)",
+                [["S0 (solver dtype / jax x64 / matmul / backend)",
+                  f"{G['S0']['numpy_float64']} / {G['S0']['jax'].get('x64')} / "
+                  f"{G['S0']['jax'].get('matmul_precision')} / "
+                  f"{G['S0']['jax'].get('backend')}", "all asserted"],
+                 ["MMSF (analytic forcing vs 4th-order FD)",
+                  e(G["MMSF"]["worst"]), "<= 1e-6"],
+                 ["REF (operators vs archived auditor reference)",
                   e(G["REF"]["worst_maxdiff"]), "exactly 0"],
                  ["MF (sparse vs independent matrix-free)",
                   e(G["MF"]["worst_rel"]), "<= 1e-13"],

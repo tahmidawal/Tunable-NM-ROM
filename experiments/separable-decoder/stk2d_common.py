@@ -502,3 +502,170 @@ def exact_discrete(g: MacGrid):
     mf = manufactured(g)
     p = mf["p"] - mf["p"].mean()
     return a * mf["u"], b * p, float(a), float(b)
+
+
+# ------------------------------------ generic manufactured solution ----------
+
+def manufactured_generic(g: MacGrid, nu: float = 1.0):
+    r"""The SECOND, GENERIC manufactured solution, added after the phase-1
+    verification (`STOKES-PHASE1-VERIFY-codex.md`) found the frozen one
+    degenerate: its discrete error is a uniform scalar amplitude factor, so its
+    convergence table adds almost nothing beyond the three closed-form
+    identities.  This one has error/solution cosine ~0.912, so it genuinely
+    tests the SPATIAL structure of the discretization error.
+
+        psi_g = sin^2(pi x) sin^2(2 pi y) + 0.3 sin^2(3 pi x) sin^2(pi y)
+        u_g   = ( d psi_g/dy , -d psi_g/dx )
+        p_g   = sin(4 pi x) + 0.37 cos(6 pi y) + 0.21 sin(2 pi x) cos(4 pi y)
+        f_g   = -nu Lap(u_g) + grad(p_g)
+
+    Explicitly,
+
+        u = 2 pi sin^2(pi x) sin(4 pi y) + 0.3 pi sin^2(3 pi x) sin(2 pi y)
+        v = -pi sin(2 pi x) sin^2(2 pi y) - 0.9 pi sin(6 pi x) sin^2(pi y)
+
+    which is divergence-free by construction and vanishes on all four walls
+    (every x-factor vanishes at x=0,1 and every y-factor at y=0,1), i.e.
+    genuine no-slip.  Every derivative below is analytic; gate MMSF in
+    stk2d_fom_gates.py checks each one against a high-accuracy finite
+    difference of u and p, so an algebra slip cannot pass silently.
+    """
+    xu, yu = g.coords_u()
+    xv, yv = g.coords_v()
+    xp, yp = g.coords_p()
+    s, c = np.sin, np.cos
+
+    U = (2 * PI * s(PI * xu) ** 2 * s(4 * PI * yu)
+         + 0.3 * PI * s(3 * PI * xu) ** 2 * s(2 * PI * yu))
+    V = (-PI * s(2 * PI * xv) * s(2 * PI * yv) ** 2
+         - 0.9 * PI * s(6 * PI * xv) * s(PI * yv) ** 2)
+    P = (s(4 * PI * xp) + 0.37 * c(6 * PI * yp)
+         + 0.21 * s(2 * PI * xp) * c(4 * PI * yp))
+
+    # d2/dx2 sin^2(a pi x) = 2 a^2 pi^2 cos(2 a pi x)
+    LapU = (4 * PI ** 3 * c(2 * PI * xu) * s(4 * PI * yu)
+            - 32 * PI ** 3 * s(PI * xu) ** 2 * s(4 * PI * yu)
+            + 5.4 * PI ** 3 * c(6 * PI * xu) * s(2 * PI * yu)
+            - 1.2 * PI ** 3 * s(3 * PI * xu) ** 2 * s(2 * PI * yu))
+    LapV = (4 * PI ** 3 * s(2 * PI * xv) * s(2 * PI * yv) ** 2
+            - 8 * PI ** 3 * s(2 * PI * xv) * c(4 * PI * yv)
+            + 32.4 * PI ** 3 * s(6 * PI * xv) * s(PI * yv) ** 2
+            - 1.8 * PI ** 3 * s(6 * PI * xv) * c(2 * PI * yv))
+    Px = 4 * PI * c(4 * PI * xu) + 0.42 * PI * c(2 * PI * xu) * c(4 * PI * yu)
+    Py = (-2.22 * PI * s(6 * PI * yv)
+          - 0.84 * PI * s(2 * PI * xv) * s(4 * PI * yv))
+
+    FU = -nu * LapU + Px
+    FV = -nu * LapV + Py
+    return dict(U=U, V=V, P=P, FU=FU, FV=FV, LapU=LapU, LapV=LapV,
+                Px=Px, Py=Py,
+                u=g.pack(U, V), p=P.ravel(), f=g.pack(FU, FV))
+
+
+# Point-evaluable forms of the two manufactured families, used ONLY by the
+# forcing-consistency gate (finite differences of u and p at arbitrary points).
+
+def _mms_frozen_point(x, y):
+    s, c = np.sin, np.cos
+    u = PI * s(PI * x) ** 2 * s(2 * PI * y)
+    v = -PI * s(2 * PI * x) * s(PI * y) ** 2
+    p = s(2 * PI * x) + c(2 * PI * y)
+    return u, v, p
+
+
+def _mms_generic_point(x, y):
+    s, c = np.sin, np.cos
+    u = 2 * PI * s(PI * x) ** 2 * s(4 * PI * y) \
+        + 0.3 * PI * s(3 * PI * x) ** 2 * s(2 * PI * y)
+    v = -PI * s(2 * PI * x) * s(2 * PI * y) ** 2 \
+        - 0.9 * PI * s(6 * PI * x) * s(PI * y) ** 2
+    p = s(4 * PI * x) + 0.37 * c(6 * PI * y) \
+        + 0.21 * s(2 * PI * x) * c(4 * PI * y)
+    return u, v, p
+
+
+MMS_FAMILIES = {
+    "frozen": dict(build=manufactured, point=_mms_frozen_point,
+                   label="psi=sin^2(pi x) sin^2(pi y); p=sin(2 pi x)+cos(2 pi y)"
+                         " (STOKES-DESIGN.md frozen contract)"),
+    "generic": dict(build=manufactured_generic, point=_mms_generic_point,
+                    label="psi=sin^2(pi x)sin^2(2 pi y)+0.3 sin^2(3 pi x)"
+                          "sin^2(pi y); p=sin(4 pi x)+0.37 cos(6 pi y)"
+                          "+0.21 sin(2 pi x)cos(4 pi y) (added 2026-08-30 "
+                          "after STOKES-PHASE1-VERIFY-codex.md)"),
+}
+
+
+def mms_forcing_consistency(family: str, n_pts: int = 512, seed: int = 7,
+                            eps: float = 1e-4):
+    """Check the ANALYTIC Laplacian / gradient / divergence / no-slip of a
+    manufactured family against high-accuracy finite differences of its own
+    point-evaluable u, v, p.  Fourth-order central stencils at eps=1e-4 give
+    ~1e-9 relative accuracy in f64, which is far tighter than any algebra slip
+    (a wrong sign or coefficient shows as O(1)).  Returns relative errors."""
+    fam = MMS_FAMILIES[family]
+    pt = fam["point"]
+    rng = np.random.default_rng(seed)
+    x = rng.uniform(0.05, 0.95, n_pts)
+    y = rng.uniform(0.05, 0.95, n_pts)
+
+    def d2(f, ax):
+        dx = eps if ax == 0 else 0.0
+        dy = eps if ax == 1 else 0.0
+        vals = [f(x + k * dx, y + k * dy) for k in (-2, -1, 0, 1, 2)]
+        return [(-a + 16 * b - 30 * c0 + 16 * d - e) / (12 * eps ** 2)
+                for a, b, c0, d, e in zip(*vals)]
+
+    def d1(f, ax):
+        dx = eps if ax == 0 else 0.0
+        dy = eps if ax == 1 else 0.0
+        vals = [f(x + k * dx, y + k * dy) for k in (-2, -1, 1, 2)]
+        return [(a - 8 * b + 8 * d - e) / (12 * eps)
+                for a, b, d, e in zip(*vals)]
+
+    uxx, vxx, pxx = d2(pt, 0)
+    uyy, vyy, pyy = d2(pt, 1)
+    ux, vx, px = d1(pt, 0)
+    uy, vy, py = d1(pt, 1)
+    lap_u_fd, lap_v_fd = uxx + uyy, vxx + vyy
+
+    # analytic forms, evaluated at the same scattered points
+    if family == "frozen":
+        LapU = (2 * PI ** 3 * np.cos(2 * PI * x) * np.sin(2 * PI * y)
+                - 4 * PI ** 3 * np.sin(PI * x) ** 2 * np.sin(2 * PI * y))
+        LapV = (4 * PI ** 3 * np.sin(2 * PI * x) * np.sin(PI * y) ** 2
+                - 2 * PI ** 3 * np.sin(2 * PI * x) * np.cos(2 * PI * y))
+        Px = 2 * PI * np.cos(2 * PI * x)
+        Py = -2 * PI * np.sin(2 * PI * y)
+    else:
+        s, c = np.sin, np.cos
+        LapU = (4 * PI ** 3 * c(2 * PI * x) * s(4 * PI * y)
+                - 32 * PI ** 3 * s(PI * x) ** 2 * s(4 * PI * y)
+                + 5.4 * PI ** 3 * c(6 * PI * x) * s(2 * PI * y)
+                - 1.2 * PI ** 3 * s(3 * PI * x) ** 2 * s(2 * PI * y))
+        LapV = (4 * PI ** 3 * s(2 * PI * x) * s(2 * PI * y) ** 2
+                - 8 * PI ** 3 * s(2 * PI * x) * c(4 * PI * y)
+                + 32.4 * PI ** 3 * s(6 * PI * x) * s(PI * y) ** 2
+                - 1.8 * PI ** 3 * s(6 * PI * x) * c(2 * PI * y))
+        Px = 4 * PI * c(4 * PI * x) + 0.42 * PI * c(2 * PI * x) * c(4 * PI * y)
+        Py = (-2.22 * PI * s(6 * PI * y)
+              - 0.84 * PI * s(2 * PI * x) * s(4 * PI * y))
+
+    def r(a, b):
+        return float(np.linalg.norm(a - b) / (np.linalg.norm(b) + 1e-300))
+
+    # continuous divergence and the wall traces
+    div = ux + vy
+    tb = np.linspace(0.0, 1.0, 257)
+    zeros = np.concatenate([np.concatenate(pt(np.zeros_like(tb), tb)[:2]),
+                            np.concatenate(pt(np.ones_like(tb), tb)[:2]),
+                            np.concatenate(pt(tb, np.zeros_like(tb))[:2]),
+                            np.concatenate(pt(tb, np.ones_like(tb))[:2])])
+    scale = float(np.max(np.abs(np.concatenate(pt(x, y)[:2]))))
+    return dict(
+        family=family, n_pts=int(n_pts), eps=eps,
+        lap_u_rel=r(LapU, lap_u_fd), lap_v_rel=r(LapV, lap_v_fd),
+        grad_px_rel=r(Px, px), grad_py_rel=r(Py, py),
+        div_rel=float(np.linalg.norm(div)
+                      / (np.linalg.norm(np.abs(ux) + np.abs(vy)) + 1e-300)),
+        wall_trace_max=float(np.max(np.abs(zeros)) / scale))

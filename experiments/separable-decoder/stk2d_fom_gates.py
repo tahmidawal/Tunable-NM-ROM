@@ -83,6 +83,7 @@ SEED = int(os.environ.get("SEED", "20260830"))
 OUT_TAG = os.environ.get("OUT_TAG", "")
 OUT_PREFIX = os.environ.get("OUT_PREFIX", "runs/stk2d/")
 ALLOW_CPU = int(os.environ.get("ALLOW_CPU", "0"))
+SMOKE = int(os.environ.get("SMOKE", "0"))   # relaxes PRECOND only; recorded
 
 ORDER_TARGET, ORDER_BAND = 2.00, 0.05
 ADJ_TOL = 1e-14
@@ -91,6 +92,8 @@ S3_FLOOR = 1e-2               # STOKES-DESIGN.md S3 control floor (kept)
 S3_MATCHED_COS = 0.99         # verifier's repaired-control requirement
 S3_SOL_TOL = 1e-13            # verifier's solenoidal requirement
 EXACT_FIELD_TOL = 1e-8
+BACKERR_TOL = 1e-13           # frozen a-priori: backward-stable LU gives ~1e-17
+S3_SCALED_FLOOR = 0.99        # sqrt(M) * control metric; DERIVED, see notes
 MMSF_TOL = 1e-6               # analytic-vs-FD forcing consistency
 ANCHOR_TOL = 1e-3             # anchors are quoted to 4 significant figures
 GEN_ANCHOR_TOL = 1e-5         # verifier quoted 7 significant figures
@@ -285,6 +288,7 @@ def adjoint_gates(N, rng):
         s3_ctl_fro_min=float(ctl_fro_j.min()),
         s3_ctl_fro_max=float(ctl_fro_j.max()),
         s3_ctl_fro_ideal=float(1.0 / np.sqrt(M)),
+        s3_ctl_fro_scaled_min=float(ctl_fro_j.min() * np.sqrt(M)),
         s3_matched_cos_min=float(matched_cos_j.min()),
         s3_sol_fro_max=float(sol_fro_j.max()),
         s3_sol_cos_max=float(Cs.max()),
@@ -393,6 +397,7 @@ def fom_run(N, ghost, nu, family="frozen"):
                 err_p_mass_abs=stk.mass_norm(g, p - pex),
                 div_u_abs=float(np.linalg.norm(du)), div_u_norm=div_norm,
                 lam=info["lam"], lin_resid_rel=info["lin_resid_rel"],
+                backward_err=info["backward_err"], K_fro=info["K_fro"],
                 p_mean_raw=info["p_mean"],
                 saddle_dim=info["saddle_dim"], saddle_nnz=info["saddle_nnz"],
                 solve_seconds=float(dt))
@@ -455,6 +460,7 @@ def main():
                         freeslip_order_ceil=FREESLIP_ORDER_CEIL),
         numpy=np.__version__, scipy=scipy.__version__,
         python=platform.python_version(), jax=jp, allow_cpu=bool(ALLOW_CPU),
+        smoke=bool(SMOKE),
         git_commit=git_commit(), hostname=os.uname().nodename),
         gates=dict(), rows=[], complete=False)
 
@@ -485,6 +491,34 @@ def main():
             f"S0: jax backend is {jp.get('backend')}, not gpu"
     log(f"  S0 asserted: dtype {probe.dtype}, jax x64 {jp.get('x64')}, "
         f"matmul {jp.get('matmul_precision')}, backend {jp.get('backend')}")
+
+    # ---- PRECOND: the harness's own preconditions, ENFORCED ---------------
+    # STOKES-PHASE1B-VERIFY-codex.md: the "complete=true implies every gate
+    # passed" guarantee holds only under these.  They are now asserted rather
+    # than assumed, so a JSON produced with assertions disabled or with an
+    # emptied ladder cannot masquerade as a certified artifact.
+    pre = dict(debug_asserts_active=bool(__debug__), allow_cpu=int(ALLOW_CPU),
+               rank_ns=RANK_NS, freeslip_ns=FREESLIP_NS, ns=NS,
+               ladder=LADDER, generic_ns=GEN_NS, smoke=int(SMOKE),
+               rule="ASSERTED unless SMOKE=1: python must run WITHOUT -O so "
+                    "assert statements are live; ALLOW_CPU must be 0; and the "
+                    "RANK_NS and FREESLIP_NS ladders must be non-empty.  A "
+                    "SMOKE=1 run records smoke=1 and is not a certified "
+                    "artifact")
+    report["gates"]["PRECOND"] = pre
+    save()
+    # NOT an assert: an assert cannot detect its own disablement under -O.
+    if not __debug__:
+        raise RuntimeError("PRECOND: python is running with -O, so every "
+                           "assert in this harness is dead.  Refusing to "
+                           "produce a JSON that would claim complete=true "
+                           "without having checked anything.")
+    if not SMOKE:
+        assert ALLOW_CPU == 0, "PRECOND: ALLOW_CPU=1 is not a certified run"
+        assert RANK_NS, "PRECOND: RANK_NS is empty; S-RANK would not run"
+        assert FREESLIP_NS, "PRECOND: FREESLIP_NS is empty; S-FREESLIP dead"
+    log(f"  PRECOND: asserts_active={__debug__} allow_cpu={ALLOW_CPU} "
+        f"rank_ns={RANK_NS} freeslip_ns={FREESLIP_NS} smoke={SMOKE}")
 
     # ---- gate REF ---------------------------------------------------------
     log(" gate REF: operators vs archived auditor reference")
@@ -556,11 +590,13 @@ def main():
                if k.startswith("s3_") or k.startswith("rand_press_")
                or k.startswith("D_Phi") or k in ("N", "M")} for r in adj],
         min_ctl_fro=float(min(r["s3_ctl_fro_min"] for r in adj)),
+        min_ctl_fro_scaled=float(min(r["s3_ctl_fro_scaled_min"] for r in adj)),
         min_matched_cos=float(min(r["s3_matched_cos_min"] for r in adj)),
         max_sol_fro=float(max(r["s3_sol_fro_max"] for r in adj)),
         max_sol_cos=float(max(r["s3_sol_cos_max"] for r in adj)),
         worst_D_Phi_norm=float(max(r["D_Phi_norm"] for r in adj)),
         floor=S3_FLOOR, matched_cos=S3_MATCHED_COS, sol_tol=S3_SOL_TOL,
+        scaled_floor=S3_SCALED_FLOOR,
         rule="REPAIRED S3 (STOKES-PHASE1-VERIFY-codex.md).  Deterministic "
              "p = chi_kl aligned with each of the M control columns: "
              "matched-control cosine >= 0.99, control Frobenius metric "
@@ -568,7 +604,12 @@ def main():
              "mass-orthonormal control), solenoidal Frobenius metric and "
              "cosine <= 1e-13.  The rand_press_* fields are the SUPERSEDED "
              "grid-white-random-pressure diagnostic, retained as evidence and "
-             "NOT gated")
+             "NOT gated.  ALSO gated dimensionlessly: sqrt(M) * control "
+             "metric >= 0.99.  That constant is DERIVED, not chosen: the "
+             "matched-cosine requirement cos >= 0.99 makes the aligned column "
+             "alone contribute 0.99/sqrt(M) to the RMS.  It is the form that "
+             "survives M -> large, where the constant 1e-2 floor would reject "
+             "a CORRECT aligned control at M > 10^4")
     report["gates"]["SYM"] = dict(
         rows=[dict(N=r["N"], L_sym_max=r["L_sym_max"]) for r in adj],
         worst=float(max(r["L_sym_max"] for r in adj)),
@@ -586,6 +627,8 @@ def main():
     assert report["gates"]["SYM"]["worst"] == 0.0, "L not symmetric"
     assert GP["min_ctl_fro"] >= S3_FLOOR, \
         f"S3 control floor failed: {GP['min_ctl_fro']}"
+    assert GP["min_ctl_fro_scaled"] >= S3_SCALED_FLOOR, \
+        f"S3 dimensionless control floor failed: {GP['min_ctl_fro_scaled']}"
     assert GP["min_matched_cos"] >= S3_MATCHED_COS, \
         f"S3 matched-control cosine failed: {GP['min_matched_cos']}"
     assert GP["max_sol_fro"] <= S3_SOL_TOL, \
@@ -662,53 +705,62 @@ def main():
     assert worst_dev <= ORDER_BAND, f"S-FOM order failed: dev {worst_dev}"
     assert worst_anchor <= ANCHOR_TOL, f"S-FOM anchors failed: {worst_anchor}"
 
-    # ---- S-EXACT: field agreement AND prediction agreement -----------------
+    # ---- S-EXACT: field agreement is the gate; pred_dev is a DIAGNOSTIC ----
     ex = []
     for r in rows:
-        bnd_u = r["exact_discrete_u_rel"] / r["predicted_err_u"]
-        bnd_p = r["exact_discrete_p_rel"] / r["predicted_err_p"]
+        # What the FIELD gate already implies for pred_dev, via the reverse
+        # triangle inequality: | ||x-z||/||z|| - eps | / eps <= a * rho / eps.
+        # Recorded to show pred_dev is a CONSEQUENCE of the field gate, not an
+        # independent test.  It is NOT used as a threshold -- see the rule.
+        a_u = 1.0 + r["predicted_err_u"]
+        a_p = 1.0 + r["predicted_err_p"]
         ex.append(dict(N=r["N"], exact_u_rel=r["exact_discrete_u_rel"],
                        exact_p_rel=r["exact_discrete_p_rel"],
                        predicted_err_u=r["predicted_err_u"],
                        predicted_err_p=r["predicted_err_p"],
                        observed_err_u=r["err_u_mass_rel"],
                        observed_err_p=r["err_p_mass_rel"],
-                       pred_dev_u=r["pred_dev_u"], pred_dev_p=r["pred_dev_p"],
-                       pred_dev_bound_u=float(bnd_u),
-                       pred_dev_bound_p=float(bnd_p),
-                       pred_margin_u=float(r["pred_dev_u"] / bnd_u),
-                       pred_margin_p=float(r["pred_dev_p"] / bnd_p)))
+                       pred_dev_u_diagnostic=r["pred_dev_u"],
+                       pred_dev_p_diagnostic=r["pred_dev_p"],
+                       implied_by_field_gate_u=float(
+                           a_u * EXACT_FIELD_TOL / r["predicted_err_u"]),
+                       implied_by_field_gate_p=float(
+                           a_p * EXACT_FIELD_TOL / r["predicted_err_p"])))
     report["gates"]["S_EXACT"] = dict(
         rows=ex,
         worst_exact_u_rel=float(max(r["exact_u_rel"] for r in ex)),
         worst_exact_p_rel=float(max(r["exact_p_rel"] for r in ex)),
-        worst_pred_dev_u=float(max(r["pred_dev_u"] for r in ex)),
-        worst_pred_dev_p=float(max(r["pred_dev_p"] for r in ex)),
-        worst_pred_margin=float(max(max(r["pred_margin_u"], r["pred_margin_p"])
-                                    for r in ex)),
-        field_tol=EXACT_FIELD_TOL,
+        worst_pred_dev_u_diagnostic=float(max(r["pred_dev_u_diagnostic"]
+                                              for r in ex)),
+        worst_pred_dev_p_diagnostic=float(max(r["pred_dev_p_diagnostic"]
+                                              for r in ex)),
+        field_tol=EXACT_FIELD_TOL, pred_dev_gated=False,
         rule="The discrete saddle system has a CLOSED-FORM solution for this "
              "manufactured data (stk2d_common.exact_discrete): "
-             "u_h = (t/sin t)^2 u_ex, p_h = (t/sin t) p_ex, t = pi h.  "
-             "ASSERTED (a) field agreement ||u_h-u_h^exact||/||.|| <= 1e-8, "
-             "and (b) the observed-vs-predicted ERROR deviation within its own "
-             "roundoff amplification bound, pred_dev <= exact_rel/predicted_err."
-             "  (b) is self-calibrating: comparing errors of size "
-             "predicted_err while the fields carry relative roundoff exact_rel "
-             "amplifies by exactly that ratio.  Revision 1 gated pred_dev at "
-             "the flat 1e-8 field tolerance, which its own recorded "
-             "worst_pred_dev_p = 2.331e-8 EXCEEDED -- a category error in the "
-             "threshold, not a defect; see STOKES-NOTES.md")
+             "u_h = (t/sin t)^2 u_ex, p_h = (t/sin t) p_ex, t = pi h.  THE "
+             "GATE IS THE FIELD ASSERTION: ||u_h - u_h^exact||/||.|| <= 1e-8 "
+             "(and likewise for p), a frozen a-priori tolerance.  "
+             "pred_dev_*_diagnostic (observed vs closed-form-predicted ERROR) "
+             "is RECORDED ONLY and is NOT a gate.  Two earlier attempts to "
+             "gate it were both wrong and are retracted in STOKES-NOTES.md: "
+             "revision 1 used the flat field tolerance, which its own recorded "
+             "2.331e-8 exceeded; revision 2 used pred_dev <= "
+             "exact_rel/predicted_err, which omits a factor a = 1+eps AND is "
+             "circular -- the bound derives from the very error it tests.  "
+             "STOKES-PHASE1B-VERIFY-codex.md showed it is direction-dependent "
+             "and blind: a parallel perturbation INSIDE the field tolerance "
+             "(field error 9.99e-9) gives margin 1.0000251 and FAILS, while a "
+             "10% ORTHOGONAL perturbation gives margin 0.999774 and PASSES.  "
+             "implied_by_field_gate_* is what the field gate alone already "
+             "forces on pred_dev, showing the quantity is redundant as a gate")
     for r in ex:
         log(f"  N={r['N']:4d}  field u {r['exact_u_rel']:.3e} p "
-            f"{r['exact_p_rel']:.3e}   pred_dev u {r['pred_dev_u']:.2e}"
-            f"/bound {r['pred_dev_bound_u']:.1e}  p {r['pred_dev_p']:.2e}"
-            f"/bound {r['pred_dev_bound_p']:.1e}")
+            f"{r['exact_p_rel']:.3e}   [diagnostic] pred_dev u "
+            f"{r['pred_dev_u_diagnostic']:.2e} p "
+            f"{r['pred_dev_p_diagnostic']:.2e}")
     save()
     assert report["gates"]["S_EXACT"]["worst_exact_u_rel"] <= EXACT_FIELD_TOL
     assert report["gates"]["S_EXACT"]["worst_exact_p_rel"] <= EXACT_FIELD_TOL
-    assert report["gates"]["S_EXACT"]["worst_pred_margin"] <= 1.0, \
-        "S-EXACT prediction deviation exceeds its roundoff amplification bound"
 
     # ---- S-FOMGEN: the generic manufactured solution -----------------------
     log(" S-FOMGEN (generic MMS, odd ghosts)")
@@ -819,6 +871,38 @@ def main():
             f"S-FREESLIP too accurate ({min_err}): S-FOM may be blind"
         assert max_ord <= FREESLIP_ORDER_CEIL, \
             f"S-FREESLIP converged (order {max_ord}): S-FOM may be blind"
+
+    # ---- S-BACKERR: an INDEPENDENT, pre-frozen check on the linear algebra -
+    # Replaces the retracted S-EXACT prediction gate.  The normalised backward
+    # error ||K x - b|| / (||K||_F ||x|| + ||b||) is bounded a priori by
+    # O(nnz^(1/2) u_mach) for a backward-stable factorisation.  Its threshold
+    # is a frozen constant that does NOT derive from any error being tested,
+    # and it certifies every solve in the run -- both manufactured families and
+    # the free-slip arm -- not just the closed-form one.
+    be_rows = [dict(N=r["N"], family=r["family"], ghost=r["ghost"],
+                    backward_err=r["backward_err"],
+                    lin_resid_rel=r["lin_resid_rel"], K_fro=r["K_fro"])
+               for r in report["rows"]] + \
+              [dict(N=r["N"], family=r["family"], ghost=r["ghost"],
+                    backward_err=r["backward_err"],
+                    lin_resid_rel=r["lin_resid_rel"], K_fro=r["K_fro"])
+               for r in report["gates"].get("S_FREESLIP", {}).get("rows", [])]
+    worst_be = max(r["backward_err"] for r in be_rows)
+    report["gates"]["S_BACKERR"] = dict(
+        rows=be_rows, n_solves=len(be_rows), worst=float(worst_be),
+        tol=BACKERR_TOL,
+        rule="ASSERTED over EVERY solve in the run: normalised backward error "
+             "||K x - b|| / (||K||_F ||x|| + ||b||) <= 1e-13.  Frozen a "
+             "priori from backward stability of the sparse LU, O(nnz^(1/2) "
+             "u_mach); it does not derive from any quantity it tests, which "
+             "is what the retracted S-EXACT prediction bound could not say.  "
+             "Note ||res||/||rhs|| is ALSO recorded and grows like h^-2 "
+             "because ||K|| does; that unnormalised form is a diagnostic, not "
+             "the gate")
+    log(f" S-BACKERR: worst normalised backward error {worst_be:.3e} over "
+        f"{len(be_rows)} solves (tol {BACKERR_TOL})")
+    save()
+    assert worst_be <= BACKERR_TOL, f"S-BACKERR failed: {worst_be}"
 
     report["complete"] = True
     report["total_seconds"] = float(time.time() - t_all)

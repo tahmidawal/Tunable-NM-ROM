@@ -78,14 +78,16 @@ def main(path=DEFAULT):
                   e(r["predicted_err_p"], 6), e(r["observed_err_p"], 6)]
                  for r in G["S_EXACT"]["rows"]]))
     print()
-    print(table(["N", "pred_dev_u", "its roundoff bound", "margin",
-                 "pred_dev_p", "its roundoff bound", "margin"],
-                [[r["N"], e(r["pred_dev_u"]), e(r["pred_dev_bound_u"]),
-                  f"{r['pred_margin_u']:.3f}", e(r["pred_dev_p"]),
-                  e(r["pred_dev_bound_p"]), f"{r['pred_margin_p']:.3f}"]
+    print("`pred_dev` is a RECORDED DIAGNOSTIC, not a gate (retraction 7). "
+          "`implied by field gate` is what the asserted field tolerance alone "
+          "already forces on it:\n")
+    print(table(["N", "pred_dev_u (diagnostic)", "implied by field gate",
+                 "pred_dev_p (diagnostic)", "implied by field gate"],
+                [[r["N"], e(r["pred_dev_u_diagnostic"]),
+                  e(r["implied_by_field_gate_u"]),
+                  e(r["pred_dev_p_diagnostic"]),
+                  e(r["implied_by_field_gate_p"])]
                  for r in G["S_EXACT"]["rows"]]))
-    print()
-    print(f"worst margin {G['S_EXACT']['worst_pred_margin']:.3f} (must be <= 1)")
     print()
 
     print("### S-FOMGEN -- the generic manufactured solution\n")
@@ -162,11 +164,12 @@ def main(path=DEFAULT):
 
     print("### S-PRESS -- repaired S3, deterministic aligned pressures\n")
     print(table(["N", "M", "control Frobenius (min over p=chi_j)",
-                 "= 1/sqrt(M)", "matched-control cosine (min)",
+                 "= 1/sqrt(M)", "sqrt(M) x metric", "matched-control cosine (min)",
                  "solenoidal Frobenius (max)", "solenoidal cosine (max)",
                  "||D Phi|| normalized"],
                 [[r["N"], r["M"], f"{r['s3_ctl_fro_min']:.6f}",
                   f"{r['s3_ctl_fro_ideal']:.6f}",
+                  f"{r['s3_ctl_fro_scaled_min']:.12f}",
                   f"{r['s3_matched_cos_min']:.12f}",
                   e(r["s3_sol_fro_max"]), e(r["s3_sol_cos_max"]),
                   e(r["D_Phi_norm"])] for r in G["S_ADJ"]["rows"]]))
@@ -202,7 +205,16 @@ def main(path=DEFAULT):
 
     print("### Supporting gates\n")
     print(table(["gate", "worst value", "rule"],
-                [["S0 (solver dtype / jax x64 / matmul / backend)",
+                [["PRECOND (asserts live / ALLOW_CPU / ladders non-empty)",
+                  f"{G['PRECOND']['debug_asserts_active']} / "
+                  f"{G['PRECOND']['allow_cpu']} / "
+                  f"{len(G['PRECOND']['rank_ns'])},"
+                  f"{len(G['PRECOND']['freeslip_ns'])}",
+                  "asserts live, ALLOW_CPU=0, both ladders non-empty"],
+                 ["S-BACKERR (normalised backward error, all "
+                  f"{G['S_BACKERR']['n_solves']} solves)",
+                  e(G["S_BACKERR"]["worst"]), "<= 1e-13"],
+                 ["S0 (solver dtype / jax x64 / matmul / backend)",
                   f"{G['S0']['numpy_float64']} / {G['S0']['jax'].get('x64')} / "
                   f"{G['S0']['jax'].get('matmul_precision')} / "
                   f"{G['S0']['jax'].get('backend')}", "all asserted"],

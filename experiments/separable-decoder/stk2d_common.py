@@ -391,9 +391,19 @@ def solve_stokes(g: MacGrid, f, nu: float = 1.0, ghost: str = "odd",
     p = sol[g.n_u:g.n_u + g.n_p]
     lam = float(sol[-1])
     res = K @ sol - rhs
+    # Normalised BACKWARD error of the linear solve.  Unlike ||res||/||rhs||
+    # (which carries the h^-2 growth of ||K||), this is the standard
+    # scale-free quantity that a backward-stable factorisation bounds by
+    # O(nnz^(1/2) * u_mach) independently of the mesh, and it is completely
+    # independent of the manufactured solution.
+    kf = float(np.sqrt((sp.csr_matrix(K).data ** 2).sum()))
     info = dict(lam=lam,
                 lin_resid_rel=float(np.linalg.norm(res)
                                     / (np.linalg.norm(rhs) + 1e-300)),
+                backward_err=float(np.linalg.norm(res)
+                                   / (kf * np.linalg.norm(sol)
+                                      + np.linalg.norm(rhs) + 1e-300)),
+                K_fro=kf,
                 p_mean=float(p.mean()),
                 saddle_dim=int(K.shape[0]), saddle_nnz=int(K.nnz))
     return u, p, info

@@ -144,6 +144,29 @@ open from the reviews: a sign-changing family (expected failure, needed to make 
 credible), $\ge 3$ seeds $\times \ge 32$ trajectories with paired CIs, and the numerical
 statement that the *truth* is non-negative on every snapshot.
 
+## Figures (visual check, N=512, local reproduction of the A100 job)
+
+Produced by `reports/fig_2026-08-30-b1d-tensor-fields.py` from the committed N=512
+checkpoint and node set, same test seed as the jobs; the local run reproduces the job's
+mean errors (oracle 4.8767e-03, tensor 4.8767e-03, NNLS-32 5.1944e-03;
+numbers in `figs/b1d-tensor-fields-n512.json`).
+
+![Fields at steps 0/10/25/50, median and worst trajectories](figs/b1d-tensor-fields-n512.png)
+
+*FOM truth (black) with the three ROM arms overlaid at four times, for the median-error
+trajectory (traj 0, ν=0.092) and the worst (traj 7, ν=0.013, the
+lowest viscosity — the front steepens most). All four curves overlap at this scale; the
+ROMs are on the decoder floor.*
+
+![Pointwise errors, tensor−oracle difference, and per-step error curves](figs/b1d-tensor-errors-n512.png)
+
+*Top: pointwise |ROM − truth| on the worst trajectory — the tensor (orange dotted) and the
+full-grid oracle (blue dashed) coincide; NNLS-32 (green) has larger spikes at the front.
+Middle: |tensor − oracle| on its own scale, 10⁻⁸–10⁻⁷ (max over all trajectories and steps
+1.0e-06 relative). Bottom: relative-L2 error per time step for two
+trajectories and the 8-trajectory mean — tensor and oracle are one curve; NNLS-32 sits above
+it after step ~10.*
+
 ## Tables
 
 <!-- four-job result (N=128..1024) -->

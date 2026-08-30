@@ -586,6 +586,21 @@
   \end{columns}
 \end{frame}
 
+
+\begin{frame}{Seeing it (1/2): 1D fields, $N=512$ --- truth and the three ROMs overlap}
+  \centering
+  \includegraphics[width=0.98\textwidth,trim=0 0 0 40,clip]{figs/b1d-tensor-fields-n512.png}
+  \vspace{0.5mm}\footnotesize
+  FOM truth (black) with the full-grid oracle (blue dashed), the tensor ROM (orange dotted, 0 sample points) and NNLS-32 (green dash-dot) at steps 0/10/25/50; top row the median-error trajectory ($\nu=0.092$), bottom the worst ($\nu=0.013$, steepest front). All four curves coincide at this scale: the ROMs sit on the decoder floor. Local reproduction of the A100 job, same numbers.
+\end{frame}
+
+\begin{frame}{Seeing it (2/2): where the arms differ --- pointwise errors and error over time}
+  \centering
+  \includegraphics[height=0.72\textheight,trim=0 0 0 40,clip]{figs/b1d-tensor-errors-n512.png}
+  \vspace{0.5mm}\footnotesize
+  Worst trajectory. Top: $|\text{ROM}-\text{truth}|$ --- tensor and oracle are one curve; NNLS-32 spikes higher at the front. Middle: $|\text{tensor}-\text{oracle}|$ on its own scale, $10^{-8}$--$10^{-7}$. Bottom: relative error per time step (two trajectories and the 8-trajectory mean) --- tensor $\equiv$ oracle; NNLS-32 drifts above after step $\sim$10.
+\end{frame}
+
 \begin{frame}{Results: the latent solve does not grow with $N$}
   \begin{columns}[T]
     \column{0.55\textwidth}

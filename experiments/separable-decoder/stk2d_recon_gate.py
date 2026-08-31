@@ -140,6 +140,23 @@ def git_commit():
         return os.environ.get("GIT_COMMIT", "unknown")
 
 
+def git_dirty():
+    """Which tracked files differ from HEAD.
+
+    The `git_commit` field is this project's provenance mechanism and it
+    CANNOT detect uncommitted edits -- a run launched from a dirty tree records
+    a hash that does not describe the code that produced it.  That happened
+    twice in phase 2b (retraction 29), so PRECOND now asserts the tree is
+    clean rather than trusting the hash."""
+    try:
+        out = subprocess.check_output(["git", "-C", HERE, "status",
+                                       "--porcelain", "--untracked-files=no"],
+                                      text=True, stderr=subprocess.DEVNULL)
+        return [l[3:] for l in out.strip().split("\n") if l.strip()]
+    except Exception:
+        return ["<git unavailable>"]
+
+
 def jax_provenance():
     out = dict(imported=False)
     try:
@@ -219,6 +236,7 @@ def main():
         numpy=np.__version__, scipy=scipy.__version__,
         python=platform.python_version(), jax=jp, allow_cpu=bool(ALLOW_CPU),
         smoke=bool(SMOKE), git_commit=git_commit(),
+        git_dirty=git_dirty(),
         hostname=os.uname().nodename), gates=dict(), complete=False)
 
     def save():
@@ -258,18 +276,26 @@ def main():
             if FROZEN_CONFIG[k] != v}
     report["gates"]["PRECOND"] = dict(
         debug_asserts_active=bool(__debug__), smoke=int(SMOKE),
+        git_dirty=git_dirty(),
         frozen_config=FROZEN_CONFIG, observed_config=observed,
         config_mismatch=mism, expected_gates=sorted(EXPECTED_GATES),
         expected_row_counts=EXPECTED_ROWS,
         rule="ASSERTED unless SMOKE=1: the entire configuration equals the "
              "frozen contract; python runs WITHOUT -O (a raise, not an "
-             "assert); a SMOKE=1 run never sets complete=true")
+             "assert); the working tree must be CLEAN, because git_commit "
+             "cannot detect uncommitted edits (retraction 29); and a SMOKE=1 "
+             "run never sets complete=true")
     save()
     if not __debug__:
         raise RuntimeError("PRECOND: python is running with -O, so every assert "
                            "in this harness is dead.")
     if not SMOKE:
         assert not mism, f"PRECOND: configuration differs from frozen: {mism}"
+        dirty = git_dirty()
+        assert not dirty, (
+            f"PRECOND: the working tree is DIRTY ({dirty}), so the git_commit "
+            f"this artifact would record does not describe the code producing "
+            f"it.  Commit first.  This is retraction 29, made impossible.")
     log(f"  PRECOND: asserts={__debug__} smoke={SMOKE} mismatch={mism or 'none'}")
 
     # ---- the certified phase-2a numbers -----------------------------------

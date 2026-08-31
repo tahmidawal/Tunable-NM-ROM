@@ -3704,3 +3704,79 @@ and per-case median; if it sits at the POD-8 floor, stop before residual and tim
 here *before* the result so the bar cannot move. Reminder that this cell **cannot produce a
 positive result** — on a linear problem the direct reduced solve in the `G` span is expected to
 win — its deliverable is verified vector/div-free/pressure-free machinery for NS.
+
+### Session 2 (cont.) — Stokes phase 2b complete; study deck rebuilt to 45 slides
+
+**Phase 2b — decoder, quadrature-free residual, controls** (branch `exp/2026-08-30-stokes-vector`,
+`2c3f1b6`). A **stop gate was predeclared and recorded in the lab log before the result existed**:
+the held-out nonlinear reconstruction oracle had to beat POD-8 by ≥3× in aggregate *and* per-case
+median, else stop before residual and timing work.
+
+**Verdict: PASS, bar unmoved.** Oracle 9.868669e-3 agg vs POD-8 3.8485900e-2 = **3.8998×**;
+median 7.996484e-3 vs 3.7301419e-2 = **4.6647×**. Verified independently by recomputing from the
+artifact: `required_agg`/`required_median` are stored as exactly baseline/3, and the gate is a
+**verdict, not an assertion** — the artifact is written either way and the ROM driver refuses to
+run unless it passed.
+
+**Where the head actually stops — the question phase 2a could not answer: ~1e-2, which is 2.5×
+ABOVE the same bank's linear POD-16 (3.953e-3)**, nowhere near POD-32's ~4e-14 bank-span ceiling.
+Phase 2a's "ten orders of headroom" was the overclaim its verification flagged. At R=8 the oracle
+equals POD-8 to every digit at every mesh — the structural bound (a head cannot beat the POD-$R$
+truncation floor at its own $R$), confirmed rather than assumed.
+
+**Gates.** S4 (quadrature-free vs an *independent* matrix-free reassemble/apply/project, sharing
+no matrix with the QF path — condition 6 met, verified by reading the code): residual
+6.0e-16/1.8e-15/2.3e-15/7.4e-15 and Jacobian 4.7e-16/1.1e-15/1.6e-15/4.8e-15 at N=32/64/128/256,
+controls firing at 9.4e-2 (even ghosts) and 2.1e-2 (dropped affine mean). Pressure elimination
+against the **actual FOM pressure** 7.1e-17…5.4e-16.
+
+**Cost (s/query, one machine, N=32/64/128/256):** FOM 0.0015/0.0114/0.0904/0.412; full-grid ROM
+0.115/0.283/3.065/16.42; EQ 0.0533/0.0555/0.0629/0.0753; **QF ROM 0.0256/0.0342/0.0351/0.0517**
+(flat in N, crosses the FOM at N=128, 8.0× at N=256); direct G-span 4.8e-6…5.8e-6.
+
+**The control won, as predicted and as designed.** Direct reduced solve in the `G` span is
+6.9e9–6.5e11× more accurate and ~5000–9000× cheaper. **This cell is not a positive result and must
+not be written up as one.** Deliverable = verified vector/div-free/pressure-free machinery for NS.
+
+**New findings against the design.** `M ≥ R` is **necessary but not sufficient** — at M=R=32 the
+matrix `A` is numerically rank 28–30, the direct arm degrades to 1e-2, and only the Galerkin
+fallback holds at 1e-14. `cond A` grows 26.7/36.3/45.2/50.9 with mesh, and the ROM lands ~2× above
+its own oracle because it minimises ‖A(h(z)−c)‖ rather than ‖h(z)−c‖. The **EQ rule degrades with
+N** (held-out residual error at m=512: 1.9e-4 → 9.6e-4 → 2.5e-3 → 1.1e-2) while the QF route does
+not. The affine dictionary differs from the physical moving-blob family by O(1)
+(`nonaffine_force_discrepancy` 1.02–1.03) — a **stand-in, not an approximation**.
+
+**Protocol limitation, disclosed by the implementer and then resolved.** The training form was
+selected on validation **aggregate** while the rejected candidate had a 2.6× better **median**, and
+the stop gate needs both. Checked: `sup` agg 1.222e-2 / med 3.515e-3 vs `auto` agg 1.011e-2 / med
+9.207e-3. Selection picked the form that is **worse** on median, so the 4.66× median gain is
+**conservative, not cherry-picked**, and both candidates would very likely have cleared the gate.
+(Validation only; `sup` was never run on held-out.)
+
+Retractions 24–32 include two runs launched from a dirty tree (PRECOND now refuses), a linear
+control whose "cannot beat POD-K" floor proved false on held-out data (cost a 2 h run), and the
+falsifiability probes clobbering the certified artifact (restored from git, byte for byte).
+
+**Verification note.** Two Codex passes on phase 2b were killed by a background wall-clock cap
+before writing output. The three headline items were verified **directly instead** — stop-gate
+arithmetic recomputed from the artifact, S4 independence established by reading the code path,
+forking-paths risk resolved from the S-SELECT table. **Four claims remain unverified by an
+independent model**: the `M ≥ R` insufficiency, the near-collision rank puzzle (family Jacobian
+collapses 8→4 at zero separation while rank(A·J_h) stays 8), S7 timing fairness, and the
+ROM-vs-oracle gap.
+
+**Study deck rebuilt: 31 → 45 slides** (`91c194a`, `f01e7e5`). New: a per-class PDE primer
+(pp. 3–8), a symbol reference card (p. 9), Stokes results (p. 36), four cost-per-resolution
+ladders + a pattern slide (pp. 37–41), and the two framing corrections (p. 18). All numbers come
+from `reports/gen_2026-08-30-cross-pde-cost.py` reading the run JSONs; the sole exception (Heat's
+13–38× aggregate, which exists nowhere as a JSON) is regex-parsed from an earlier report with a
+comment saying so. Heat's per-N cells and all of Waves are **explicitly "not measured"**. The 2D
+Burgers table carries the **GPU model per row** because those four rungs ran on three different
+cards.
+
+**Deck error found and corrected:** the Poisson slides were quoting **Burgers' shapes** — `64×32`
+for `B`, a `32×8` head Jacobian, an `8→32` MLP, "32 products / 2048 numbers". Artifacts say
+Poisson is **K=16, R=96 at N=128 and R=64 at N=256/512, M=64**. Fixed to 64×64 (64×96 at N=128),
+64×16, 16→64, 4096. Also fixed a real overflow on the side-by-side summary slide (third column cut
+mid-word; `tabcolsep` was adding ~36 pt to widths already summing to 0.96). Overfull boxes 7 → 6;
+the remaining six are pre-existing, confirmed by rebuilding the previous commit.

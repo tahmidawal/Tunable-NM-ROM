@@ -5,7 +5,7 @@
 > (the vector-valued decoder, the quadrature-free residual, the reconstruction
 > stop gate, and gates S4, S6, S7, S8, S9) starts at *"Stokes 2D — phase 2b"*.
 > Retractions are numbered continuously across all three: 1–11 in phase 1,
-> 12–23 in phase 2a, 24–31 in phase 2b.
+> 12–23 in phase 2a, 24–32 in phase 2b.
 
 # Stokes 2D — phase 1: the MAC full-order solver and its correctness gates
 
@@ -2544,35 +2544,33 @@ above, the out-of-band ones were run on a scratch copy and are not committed.
 
 | probe | which gate fired, and at what value |
 |---|---|
-| a **LINEAR head** (`layers=0`), whose image is a K-dimensional affine subspace | **S-RECON**: lands within a few percent of the POD-K floor and comes nowhere near clearing the stop bar (1.03x against a required 3x) — run **in band**, asserted. It read 2.9% BELOW the floor, which is retraction 30 |
-| an **UNTRAINED head** | **S-RECON**: no better than POD-K — run **in band**, asserted |
-| **even (free-slip) ghosts** in the full-grid residual path | **S4** — run **in band**, asserted |
-| the **affine-mean constant term dropped** from the quadrature-free residual (the revision-1 design's omission) | **S4** — run **in band**, asserted |
-| a relative **1e-8 perturbation of A** (and a 1e-10 one recorded beside it) | **S4** — run **in band**, asserted |
-| **shuffling** the EQ node-to-weight assignment | EQ held-out residual error rises by **2.5x** (m=64) and **6.3x** (m=128) at N=32 -- a WEAK control, and stated as one: the fitted rule is itself only accurate to ~1e-2, so scrambling its weights has little room to move it. Run out of band |
-| the Pythagorean truncation floor `\|\|x\|\|^2 - \|\|c\|\|^2` | **S-REGR** disagreed with the certified phase-2a POD-32 value by four orders — this is retraction 24, and it is how the bug was found |
+| a **LINEAR head** (`layers=0`), whose image is a K-dimensional affine subspace | **S-RECON**: 3.738e-2 against POD-8's 3.849e-2 at N=64, i.e. 1.03x, against a 3x requirement — run **in band**, asserted. It read 2.9% BELOW the "floor", which is retraction 30 |
+| an **UNTRAINED head** | **S-RECON**: 1.66e-1 to 8.74e-1 across the ladder, 4x to 23x worse than POD-8 — run **in band**, asserted |
+| **even (free-slip) ghosts** in the full-grid residual path | **S4**: 9.36e-2 to 1.70e-1, eleven to twelve orders above the gate — run **in band**, asserted |
+| the **affine-mean constant term dropped** from the quadrature-free residual (the revision-1 design's omission) | **S4**: 2.06e-2 to 3.52e-2 — run **in band**, asserted |
+| **A perturbed by a relative 1e-8** | **S4**: 1.08e-9 to 1.47e-9 — run **in band**, asserted. A relative 1e-10 perturbation is recorded beside it at ~1.3e-11; the margin is set by the perturbation, not by the gate (retraction 27) |
+| **shuffling** the EQ node-to-weight assignment | held-out EQ residual error rises 23x at m=256 and **277x** at m=512 (N=32). Run out of band. At small budgets it is a weak control — 2.5x at m=64 — because the rule itself is then only accurate to ~1e-2 and there is little room to move it |
+| the Pythagorean truncation floor `\|\|x\|\|^2 - \|\|c\|\|^2` | **S-REGR** disagreed with the certified phase-2a POD-32 value by four orders (2.7e-8 against 4.0e-14) — retraction 24, and it is how the bug was found |
 | the pseudo-inverse without its `-nu` factor | **S7** direct G-span arm read a relative error of exactly **2.000000** — retraction 25 |
-| a head trained by a **SMOKE run**, left at the path a certified run reads | ROM driver **PROVENANCE assert**: *"head ... was produced by a SMOKE run"* — retraction 28 |
-| a head whose output dimension does not match the arm's R | ROM driver aborts on the head/arm R check rather than raising a shape error deep inside the LM |
-| `JAX_DEFAULT_MATMUL_PRECISION` unset | **S0** aborts |
-| `JAX_PLATFORMS=cpu` | **S0** aborts: *"jax backend is cpu, not gpu"* |
-| shortened ladders via env without `SMOKE=1` | **PRECOND** aborts, listing every field that differs from `FROZEN_CONFIG` |
-| `python -O` | refuses with `RuntimeError` rather than emitting a JSON whose asserts are all dead |
-| a missing or non-passing stop-gate artifact | **STOPGATE** aborts before any ROM number is computed |
-| launching a driver from a **dirty working tree** | **PRECOND** aborts, listing the modified source files — retraction 29, now a mechanism |
-| a flat 1e-13 on the sparse-vs-matrix-free test space | **S4** failed at N=256 (1.07e-13) after passing N=32/64/128 — retraction 31, found by the run itself |
+| a head trained by a **SMOKE run**, left at the path a certified run reads | ROM driver **PROVENANCE assert**: *"head ... was produced by a SMOKE run"*, with the whole offending metadata printed — retraction 28. Probed by stamping `smoke=1` into a real head and re-running |
+| a head whose output dimension does not match the arm's R | both **S9** and **S6/S7** abort on the head/arm R check (*"head R=32 does not match the arm's R=16"*) rather than raising a shape error deep inside the LM |
+| a **flat 1e-13** on the sparse-vs-matrix-free test space | **S4** failed at N=256 (1.075e-13) after passing N=32/64/128 — retraction 31, found by the run itself, after every expensive computation in it had been done |
+| launching a driver from a **dirty working tree** | **PRECOND** aborts, listing the modified source files — retraction 29, now a mechanism. It fired on its own first version, which included the driver's own output file |
+| a **missing** stop-gate artifact | **STOPGATE** aborts before any ROM number is computed |
+| `python -O` | refuses with `RuntimeError: PRECOND: python is running with -O, every assert in this harness is dead.` |
+| `JAX_DEFAULT_MATMUL_PRECISION` unset | **S0** aborts: `JAX_DEFAULT_MATMUL_PRECISION=None` |
+| `JAX_PLATFORMS=cpu` | **S0** aborts: `backend cpu` |
+| a shortened ladder via env without `SMOKE=1` | **PRECOND** aborts, listing every field that differs from `FROZEN_CONFIG` |
 
 ## Retractions and corrections
 
 Numbering continues from phase 2a. Items **24–26, 28, 30 and 31** are defects
 of mine that a gate, a control or a run caught; **27** is a gate-design
-correction; **29** is a process failure worth recording because the provenance
-mechanism this project relies on would not have caught it. Items **30** and
-**31** are listed before 29 below because they belong with the other numerical
-ones. Two of the six (**30**, **31**) are the *same* defect in different
-clothes — an assertion that is correct in one regime and silently wrong in
-another — and both fired only at the end of a long run, which is why head
-caching now exists.
+correction; **29** and **32** are process failures. Items **30** and **31** are
+listed before 29 below because they belong with the other numerical ones. Two
+of them (**30**, **31**) are the *same* defect in different clothes — an
+assertion that is correct in one regime and silently wrong in another — and
+both fired only at the end of a long run, which is why head caching now exists.
 
 24. **MINE: the POD-$R$ truncation floor must not be computed as
     $\lVert x\rVert^2-\lVert c\rVert^2$.** At $R=32$ the truncation energy is
@@ -2669,6 +2667,19 @@ caching now exists.
     from a dirty tree**. The check looks at *source* files only, because the
     driver writes its own `complete=false` artifact before PRECOND can run and
     would otherwise fire on itself — which it did, on the first attempt.
+
+32. **PROCESS: running the falsifiability probes CLOBBERED the certified ROM
+    artifact.** Each probe invokes the driver with the default `OUT_TAG`, and
+    the driver writes `complete=false` to its output path *before* anything can
+    fail — which is the right behaviour, and is exactly what overwrote the
+    certified file. Nothing was lost, because the artifact was already
+    committed and was restored with `git checkout`; the numbers in this report
+    are that committed file, byte for byte. *Resolution:* probes must set
+    `OUT_TAG`, and the "save complete=false first" rule needs a companion — a
+    driver should not be able to overwrite a `complete=true` artifact at its
+    own output path without being told to. Recorded rather than quietly fixed,
+    because the near-miss is the point: the harness is careful about *what it
+    claims* and was careless about *what it overwrites*.
 
 Nothing else was retracted. No gate reported here was skipped or estimated.
 

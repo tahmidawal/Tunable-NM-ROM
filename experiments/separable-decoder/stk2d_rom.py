@@ -202,7 +202,19 @@ class RomCell:
 # assert the two agree.
 
 def _silu_np(x):
-    sg = 1.0 / (1.0 + np.exp(-x))
+    """silu(x) = x * sigmoid(x), with a branch-stable sigmoid.
+
+    The naive 1/(1+exp(-x)) overflows for x <~ -709 and raises a RuntimeWarning
+    on every LM step that wanders far from the data.  The value it produces is
+    still correct (exp overflows to inf, the sigmoid underflows to 0), but a
+    warning that fires routinely trains the reader to ignore warnings, and the
+    LM DOES wander that far from a cold multi-start."""
+    x = np.asarray(x, dtype=float)
+    sg = np.empty_like(x)
+    pos = x >= 0
+    sg[pos] = 1.0 / (1.0 + np.exp(-x[pos]))
+    e = np.exp(x[~pos])
+    sg[~pos] = e / (1.0 + e)
     return x * sg, sg
 
 

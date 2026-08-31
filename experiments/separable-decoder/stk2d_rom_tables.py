@@ -159,11 +159,13 @@ def main():
                      f"{r['gain_over_podK_agg']:.2f}x",
                      f"{r['gain_over_podK_median']:.2f}x",
                      e(r["linear_control"]["agg"]),
-                     e(r["untrained_control"]["agg"])])
+                     e(r["untrained_control"]["agg"]),
+                     "cache" if r.get("head_from_cache") else "trained"])
     print(table(["N", "R", "K", "head params", "oracle agg", "oracle med",
                  "oracle max", "oracle (train cohort)", "POD-K", "POD-R",
                  "POD-R truncation floor", "gain agg", "gain med",
-                 "NEG CTL linear head", "NEG CTL untrained head"], rows))
+                 "NEG CTL linear head", "NEG CTL untrained head",
+                 "head"], rows))
     print()
 
     print("### S-SELECT -- which training form, chosen on a VALIDATION cohort\n")
@@ -195,13 +197,16 @@ def main():
     print("### S4 -- the quadrature-free residual vs an INDEPENDENT full-grid path\n")
     print(table(["N", "R", "M", "states", "resid rel", "resid "
                  "cancellation-aware", "Jacobian cancellation-aware",
-                 "pressure-elimination rung", "Phi vs matrix-free",
+                 "pressure-elimination rung",
+                 "Phi vs matrix-free / its 1e-15 N budget",
                  "NEG CTL even ghosts", "NEG CTL dropped mean",
                  "NEG CTL A + 1e-10"],
                 [[r["N"], r["R"], r["M"], r["n_states"],
                   e(r["resid_rel_max"]), e(r["resid_canc_max"]),
                   e(r["jac_canc_max"]), e(r["press_elim_max"]),
-                  e(r["phi_vs_matrixfree"]), e(r["ctl_evenghost"]),
+                  e(r["phi_vs_matrixfree"]) + " / "
+                  + e(r.get("phi_vs_matrixfree_budget"), 1),
+                  e(r["ctl_evenghost"]),
                   e(r["ctl_dropped_mean"]), e(r["ctl_perturbed_A"])]
                  for r in Gm["S4"]["rows"]]))
     print()
@@ -217,22 +222,25 @@ def main():
                      e(er["nl_qf"]["agg"]), e(er["nl_qf"]["median"]),
                      e(er["podK"]["agg"]), e(er["podR_galerkin"]["agg"]),
                      e(er["gspan_direct"]["agg"]),
-                     e(er.get("nl_qf_first8", {}).get("agg")),
+                     e(er.get("nl_qf_2start", {}).get("agg")),
                      e(er.get("nl_full", {}).get("agg")),
                      e(er.get("nl_eq", {}).get("agg")),
                      f"{r['lm_iters_median']:.0f}", r["rank_A"],
                      f(r["cond_A"], 2), e(orc.get((r["N"], r["R"])))])
     print(table(["N", "R", "M", "nonlinear QF", "nonlinear QF (median)",
                  "(a) POD-K", "(b) POD-R Galerkin", "(c) direct G-span",
-                 "nonlinear QF, first 8 only", "nonlinear, full-grid residual",
+                 "nonlinear QF, same 8 cases & same 2 starts",
+                 "nonlinear, full-grid residual",
                  "nonlinear, EQ residual", "LM iters (median, all starts)",
                  "rank A", "cond A",
                  "decoder reconstruction ceiling (oracle)"], rows))
     print("\nThe full-grid and EQ nonlinear arms run on the FIRST 8 held-out "
-          "cases only, because each of their LM iterations is O(n_u); the "
-          "quadrature-free arm is repeated on the same 8 for a like-for-like "
-          "column.  They exist to show the residual DEFINITION agrees, not to "
-          "add accuracy information.")
+          "cases with 2 LM starts, because each of their iterations is "
+          "O(n_u); the quadrature-free arm is repeated on exactly those 8 "
+          "cases with exactly those 2 starts for a like-for-like column.  The "
+          "three arms agree on the RESIDUAL to 1e-15 (gate S4), so any "
+          "remaining difference between them is LM path dependence, not a "
+          "difference in the residual definition.")
     print()
 
     # ========================================================== S6 =========
@@ -318,16 +326,25 @@ def main():
     for r in Gm["S9"]["rows"]:
         if r["nl_qf"] is None:
             rows.append([r["N"], r["R"], r["M"], r["n_params"], "-", "-", "-",
-                         "-", "-", "NOT RUN (M < R)"])
+                         "-", "-", "-", "-", "NOT RUN (M < R)"])
             continue
         rows.append([r["N"], r["R"], r["M"], r["n_params"],
                      e(r["truncation_floor"]), e(r["nl_qf"]["agg"]),
                      e(r["nl_qf"]["median"]), e(r["podK"]["agg"]),
                      e(r["gspan_direct"]["agg"]),
+                     e(r["podR_galerkin"]["agg"]),
+                     f"{r['rank_A']}/{r['R']}"
+                     + ("" if r["direct_arm_valid"] else "  (direct arm INVALID)"),
                      f"{r['lm_iters_median']:.0f}"])
     print(table(["N", "R", "M", "head params", "POD-R truncation floor",
                  "nonlinear QF (agg)", "(median)", "(a) POD-K",
-                 "(c) direct G-span", "LM iters"], rows))
+                 "(c) direct G-span", "(b) POD-R Galerkin", "rank A / R",
+                 "LM iters"], rows))
+    print("\n`M >= R` is NECESSARY BUT NOT SUFFICIENT for the direct G-span "
+          "arm.  Where `rank A < R` the least-squares solve is "
+          "underdetermined and the design's own fallback -- a proper "
+          "G-Galerkin reduced Stokes solve -- is the valid arm; it is "
+          "computed and reported at every rung, so no rung is lost.")
     print()
 
     # ================================================== supporting =========
@@ -373,8 +390,8 @@ def main():
                   f"<= {Cc['thresholds']['metric_tol']:g}"],
                  ["S-REGR vs certified phase 2a", e(Gc["S_REGR"]["worst"]),
                   f"<= {Cc['thresholds']['regr_tol']:g}"],
-                 ["S-AFFINE (worst / its budget)",
-                  f(Gc["S_AFFINE"]["worst_ratio"], 3), "<= 1"],
+                 ["S-AFFINE (worst / its 1e-14 N^2 budget)",
+                  e(Gc["S_AFFINE"]["worst_ratio"]), "<= 1"],
                  ["STOPGATE", str(Gm["STOPGATE"]["verdict"]["passed"]),
                   "must be true or this driver refuses to run"],
                  ["PRECOND (asserts / mismatch / smoke), stop gate",

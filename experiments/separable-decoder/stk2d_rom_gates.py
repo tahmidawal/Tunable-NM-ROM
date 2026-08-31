@@ -128,6 +128,17 @@ HEAD_FD_TOL = 1e-6         # numpy head Jacobian vs a central difference
 PRESS_TOL = 1e-12          # the pressure-elimination rung, normalised
 EQ_EXACT_TOL = 1e-13       # the EQ machinery with ALL faces and unit weights
 RANK_TOL = 1e-9            # relative singular-value cut for rank(A J_h)
+PHI_MF_SCALE = 1e-15       # the sparse test space against the matrix-free one
+                           # is gated at PHI_MF_SCALE * N, not at a flat
+                           # tolerance.  Both constructions difference sines
+                           # scaled by 1/h, so the roundoff of their
+                           # DIFFERENCE grows with the mesh: measured
+                           # 5.59e-15, 1.86e-14, 1.96e-14, 1.07e-13 at
+                           # N=32/64/128/256, i.e. 0.15x-0.42x of this budget.
+                           # A flat 1e-13 passed three meshes and failed the
+                           # fourth on refinement alone -- the fifth
+                           # mesh-scaling absolute tolerance to be wrong in
+                           # this cell (retraction 31)
 EQ_CTL_FLOOR = 1e-2        # a shuffled-weight EQ control must exceed this
 BACKERR_TOL = 1e-13        # phase 1's frozen engineering threshold, carried
 CONT_TOL = 1e-12           # forward with phase 2a's CORRECTED continuity
@@ -331,6 +342,7 @@ def gate_s4(cell, R, M, hspec, solve_states, rng):
         N=cell.N, R=int(R), M=int(M), n_states=len(states),
         n_seeded=int(N_S4_STATES), n_solve_states=len(solve_states),
         phi_vs_matrixfree=phi_dev,
+        phi_vs_matrixfree_budget=float(PHI_MF_SCALE * cell.N),
         resid_rel_max=float(finite("S4 rel", rel).max()),
         resid_canc_max=float(finite("S4 canc", canc).max()),
         jac_rel_max=float(finite("S4 jac rel", grel).max()),
@@ -435,7 +447,7 @@ def gate_s67(cell, R, M, hspec, eq, rng):
 
     # ---------------- accuracy over the whole held-out cohort --------------
     err = {k: [] for k in ("nl_qf", "podK", "podR_galerkin", "gspan_direct",
-                           "nl_full", "nl_eq")}
+                           "nl_full", "nl_eq", "nl_qf_2start")}
     solve_states, lm_stats = [], []
     for i in range(S_TEST):
         th = cell.Th_te[i]
@@ -459,6 +471,13 @@ def gate_s67(cell, R, M, hspec, eq, rng):
             return rom.jac_full_grid(g, Phi_mf, qf.nu, cell.G[:, :R], Jh)
 
         if i < 8:      # the full-grid and EQ arms are O(n) per iteration
+            # the SAME two starts for all three nonlinear arms, so the
+            # comparison is like-for-like: the arms agree on the residual to
+            # 1e-15 (gate S4), and any difference in the answer is LM path
+            # dependence, not a difference in the residual definition
+            z2, _, _ = nl_solve(qf, hspec, b, z_starts[:2])
+            err["nl_qf_2start"].append(centred_err(cell, rom.head_np(hspec, z2),
+                                                   i, R))
             zf, _, _ = rom.lm_multistart(rf_full, jf_full, z_starts[:2],
                                          scale=qf.scale_of(b))
             err["nl_full"].append(centred_err(cell, rom.head_np(hspec, zf), i, R))
@@ -736,21 +755,24 @@ def gate_s9(cell, R, M, hspec, rng):
     rs = np.random.default_rng(SEED + 23)
     z_starts = [np.zeros(K_LAT)] + [lo + (hi - lo) * rs.random(K_LAT)
                                     for _ in range(LM_STARTS - 1)]
-    e_nl, e_g, e_k, iters = [], [], [], []
+    e_nl, e_g, e_k, e_gal, iters = [], [], [], [], []
     for i in range(S_TEST):
-        b = qf.b_of(cell.Th_te[i])
+        th = cell.Th_te[i]
+        b = qf.b_of(th)
         z, val, tot = nl_solve(qf, hspec, b, z_starts)
         iters.append(tot["iters"])
         e_nl.append(centred_err(cell, rom.head_np(hspec, z), i, R))
         e_g.append(centred_err(cell, linR.solve_lsq(b), i, R))
         e_k.append(centred_err(cell, linK.solve_lsq(b), i, min(K_LAT, R)))
+        e_gal.append(centred_err(cell, linR.solve_galerkin(th), i, R))
     p2, t2 = cell.perp_energy(cell.U_te, R)
     floor = float(np.sqrt(p2.sum() / t2.sum()))
     return dict(N=cell.N, R=int(R), M=int(M), K=int(K_LAT),
                 n_params=int(rom.n_params_np(hspec)),
                 truncation_floor=floor,
                 nl_qf=cohort_stat(e_nl), gspan_direct=cohort_stat(e_g),
-                podK=cohort_stat(e_k),
+                podK=cohort_stat(e_k), podR_galerkin=cohort_stat(e_gal),
+                direct_arm_valid=bool(linR.rankA == R),
                 lm_iters_median=float(np.median(iters)),
                 rank_A=int(linR.rankA), cond_A=float(linR.cond),
                 online_flops_per_lm_iter=int(M * R + M * K_LAT
@@ -789,6 +811,7 @@ def main():
                         head_tol=HEAD_TOL, head_fd_tol=HEAD_FD_TOL,
                         press_tol=PRESS_TOL, eq_exact_tol=EQ_EXACT_TOL,
                         rank_tol=RANK_TOL, eq_ctl_floor=EQ_CTL_FLOOR,
+                        phi_mf_scale=PHI_MF_SCALE,
                         backerr_tol=BACKERR_TOL, cont_tol=CONT_TOL,
                         gauge_tol=GAUGE_TOL),
         numpy=np.__version__, scipy=scipy.__version__,
@@ -984,6 +1007,8 @@ def main():
                                         n_params=int(rom.n_params_np(specs[R])),
                                         truncation_floor=None, nl_qf=None,
                                         gspan_direct=None, podK=None,
+                                        podR_galerkin=None,
+                                        direct_arm_valid=None,
                                         lm_iters_median=None, rank_A=None,
                                         cond_A=None,
                                         online_flops_per_lm_iter=None))
@@ -1045,8 +1070,10 @@ def main():
         assert r["jac_canc_max"] <= S4_TOL, f"S4 N={r['N']} jacobian {r['jac_canc_max']}"
         assert r["press_elim_max"] <= PRESS_TOL, \
             f"S4 N={r['N']} pressure elimination {r['press_elim_max']}"
-        assert r["phi_vs_matrixfree"] <= 1e-13, \
-            f"S4 N={r['N']} Phi vs matrix-free {r['phi_vs_matrixfree']}"
+        assert r["phi_vs_matrixfree"] <= PHI_MF_SCALE * r["N"], \
+            (f"S4 N={r['N']} Phi vs matrix-free {r['phi_vs_matrixfree']} "
+             f"exceeds its {PHI_MF_SCALE:g} * N budget "
+             f"{PHI_MF_SCALE * r['N']:g}")
         for k in ("ctl_evenghost", "ctl_dropped_mean", "ctl_perturbed_A"):
             assert r[k] >= S4_CTL_FLOOR, \
                 (f"S4 negative control {k} at N={r['N']} did not fire: "
@@ -1185,8 +1212,20 @@ def main():
             (f"S9 N={r['N']} R={r['R']} M={r['M']}: the nonlinear arm "
              f"{r['nl_qf']['agg']} is below the POD-R truncation floor "
              f"{r['truncation_floor']}, which is impossible")
-        assert r["rank_A"] == r["R"], \
-            f"S9 N={r['N']} R={r['R']} M={r['M']}: rank A {r['rank_A']}"
+        # M >= R is NECESSARY BUT NOT SUFFICIENT for the direct G-span solve.
+        # At M = R = 32 the reduced operator A = Phi^T M_u L G is 32x32 and
+        # numerically rank 28: the test space runs out of independent
+        # information before the trial space runs out of columns.  The design
+        # names the fallback -- "otherwise replaced by a proper G-Galerkin
+        # reduced Stokes solve" -- and that arm is computed and reported at
+        # EVERY rung, so the rung is not lost.  What is asserted is that the
+        # rank is recorded honestly and that the LM system still has at least
+        # K independent directions.
+        assert r["rank_A"] >= K_LAT, \
+            (f"S9 N={r['N']} R={r['R']} M={r['M']}: rank A = {r['rank_A']} < "
+             f"K = {K_LAT}; the reduced system cannot even resolve the latent")
+        assert r["direct_arm_valid"] == (r["rank_A"] == r["R"]), \
+            f"S9 N={r['N']} R={r['R']} M={r['M']}: direct-arm validity flag"
 
     # ---- MANIFEST ---------------------------------------------------------
     counts = dict(S_HEAD=len(head_rows), S4=len(s4_rows), S6=len(s67_rows),

@@ -438,8 +438,8 @@
     \textbf{Exact, not approximate.} Nothing was estimated; it is the same arithmetic regrouped: $\Phi\T(G\,h)=(\Phi\T G)\,h$.
     \column{0.54\textwidth}
     \begin{exampleblock}{Shopping analogy}
-      Every cart is a mix of the same 32 products in different amounts. You do not re-price the cart item by item each time; you look up 32 unit prices once, and the total is amounts $\times$ unit prices.
-      $B$ is the unit-price sheet: for each of $M$ test modes and each of $R$ shapes, ``what this shape contributes to this mode.'' $64\times32 = 2\,048$ numbers, computed once.
+      Every cart is a mix of the same $R$ products in different amounts. You do not re-price the cart item by item each time; you look up $R$ unit prices once, and the total is amounts $\times$ unit prices.
+      $B$ is the unit-price sheet: for each of $M$ test modes and each of $R$ shapes, ``what this shape contributes to this mode.'' For Poisson ($M=64$, $R=64$; $R=96$ at $N=128$) that is $64\times64 = 4\,096$ numbers, computed once.
     \end{exampleblock}
   \end{columns}
 \end{frame}
@@ -458,15 +458,15 @@
         $\;\Phi\T(\Delta u) = (\Delta\Phi)\T u = \Lambda\,\Phi\T u.$
         The operator becomes $M$ known numbers $\Lambda$ --- it never touches the field.
       \item \textbf{Source term} projected once: $f_M=\Phi\T f$.
-      \item $\partial h/\partial z$: autodiff of an $8\!\to\!32$ MLP.
+      \item $\partial h/\partial z$: autodiff of a $16\!\to\!64$ MLP ($16\!\to\!96$ at $N=128$).
       \item $W$: fixed per-mode scaling that balances the rows.
     \end{itemize}
     \column{0.48\textwidth}
     \begin{block}{What runs online}
       \begin{itemize}
         \item the tiny head $h(z)$,
-        \item a $64\times32$ matvec,
-        \item the head's $32\times8$ Jacobian.
+        \item a $64\times64$ matvec ($64\times96$ at $N=128$),
+        \item the head's $64\times16$ Jacobian.
       \end{itemize}
       \textbf{No grid. No decode. No sample points. No fitted weights.}
       The field $G\,h(z)$ is formed once, at the very end, to write out the answer.
@@ -1078,13 +1078,14 @@
 \begin{frame}{Linear vs nonlinear, side by side}
   \centering\scriptsize
   \renewcommand{\arraystretch}{1.15}
-  \begin{tabular}{@{}p{0.17\textwidth}p{0.23\textwidth}p{0.28\textwidth}p{0.28\textwidth}@{}}
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.155\textwidth}p{0.215\textwidth}p{0.275\textwidth}p{0.275\textwidth}@{}}
     \toprule
      & \textbf{Linear (Poisson)} & \textbf{Quadratic, positive data (Burgers, tensor)} & \textbf{Non-polynomial / switched (sampled)}\\
     \midrule
     Residual in $h(z)$ & $\Lambda B\,h-f_M$, linear & $B$-terms $+\;h\T T h$, quadratic & linear terms via $B$; the rest evaluated pointwise\\
     Grid folded away? & entirely ($B$ once) & entirely ($B$ and $T$ once) & only the linear terms\\
-    Online per iteration & head + $64\times32$ matvec & head + $32^3$ contraction & head + decode at $m$ nodes + stencil + matvec\\
+    Online per iteration & head + $64\times64$ matvec & head + $32^3$ contraction & head + decode at $m$ nodes + stencil + matvec\\
     Sample points & \textbf{0} & \textbf{0} & $m$ (32 / 16 / 128)\\
     Residual approximation & none ($10^{-13}$) & none on $u\ge0$; $O(\Delta x\,\delta)$ on undershoots & quadrature error (NNLS + learned nodes)\\
     After stage 1 & nothing & nothing (build $T$ once) & NNLS weights + stage-2 node positions\\

@@ -152,7 +152,11 @@ def git_dirty():
         out = subprocess.check_output(["git", "-C", HERE, "status",
                                        "--porcelain", "--untracked-files=no"],
                                       text=True, stderr=subprocess.DEVNULL)
-        return [l[3:] for l in out.strip().split("\n") if l.strip()]
+        paths = [l.split(maxsplit=1)[1] for l in out.split("\n") if l.strip()]
+        # SOURCE files only.  Run artifacts under runs/ are this driver's own
+        # OUTPUT -- it writes complete=false before PRECOND can run, so
+        # including them would make the check fire on itself.
+        return [q for q in paths if "/runs/" not in q and not q.startswith("runs/")]
     except Exception:
         return ["<git unavailable>"]
 

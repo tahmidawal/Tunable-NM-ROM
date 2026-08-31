@@ -2,6 +2,10 @@
 % are quadrature-free while nonlinear ones are sampled.
 % Numbers are copied from reports/2026-08-28-presentation-notes.md, whose tables
 % are generated from the run JSONs by gen_2026-08-27-b1d-nodes-and-poisson-qf.py.
+% The cross-PDE cost ladders and the Stokes tables are \input from tables/, and are
+% generated from the run JSONs by reports/gen_2026-08-30-cross-pde-cost.py.
+% Regenerate them before rebuilding:
+%   /home/tahmid/Dev/.venv/bin/python reports/gen_2026-08-30-cross-pde-cost.py
 % Build: latexmk -pdf 2026-08-29-study-deck-linear-vs-nonlinear-residuals.tex
 \documentclass[10pt,aspectratio=169]{beamer}
 \usetheme{default}
@@ -55,16 +59,18 @@
 \newcommand{\R}{\mathbb{R}}
 
 \title{Separable NM-ROM: architecture, training,\\ and why linear problems need no quadrature}
-\subtitle{A study deck --- what is learned, what is frozen, what is exact, what is sampled}
+\subtitle{A study deck --- what is learned, what is frozen, what is exact, what is sampled,\\ and what each of it costs per resolution}
 \author{Tunable-NM-ROM project}
-\date{29 August 2026 --- extended the same day with the quadratic-tensor rung}
+\date{29 August 2026; revised 30 August 2026 --- added the PDE primer, the symbol reference,\\ the cross-PDE cost ladders, the Stokes rehearsal, and two framing corrections}
 
 \begin{document}
 
 \begin{frame}
   \titlepage
   \begin{center}\scriptsize
-    Numbers: single-seed, f64, gate-checked A100 runs; tables reproduced from the generated presentation notes (28 Aug 2026).
+    Numbers: single-seed, f64, gate-checked runs (A100/H200 for Burgers and Poisson; CPU-timed NumPy paths for Stokes).\\
+    Burgers/Poisson tables reproduced from the generated presentation notes (28 Aug 2026); the cost ladders and Stokes tables\\
+    are \texttt{\textbackslash input} from \texttt{tables/}, emitted from the run JSONs by \texttt{gen\_2026-08-30-cross-pde-cost.py}.
   \end{center}
 \end{frame}
 
@@ -95,7 +101,193 @@
 \end{frame}
 
 % -------------------------------------------------------------------
-\section{Architecture}
+\section{Primer: the PDE classes, and the symbols}
+
+\begin{frame}{Primer 1/6 --- Poisson: steady diffusion}
+  \footnotesize
+  \textbf{How to read the next six slides:} each class is scored by the \emph{degree of its residual
+  as a polynomial in the state}. Degree 1 and degree 2 precompute exactly; anything else must be sampled.
+  \vspace{1mm}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{In plain language}
+      A metal plate with a heater held against it. Wait until nothing changes any more. What you are
+      left with is the Poisson solution: heat spreads until every point is the average of its
+      neighbours, except where the heater puts heat in.\\[3pt]
+      There is no time in it. You ask one question --- ``given this heater, what is the final
+      temperature?'' --- and answer it with one solve.
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{block}{The equation --- \emph{elliptic, linear}}
+      \[ -\Delta u(x) = f(x),\qquad u = 0 \text{ on the boundary} \]
+      $f$ is the heat source, $u$ the temperature, $\Delta$ the Laplacian --- ``how far a point sits
+      below its neighbourhood average''.
+    \end{block}
+    \begin{exampleblock}{Residual degree \textbf{1} --- so, for us}
+      Every term is linear in $u$, so the whole projected residual is a fixed matrix times $h(z)$.
+      \textbf{Zero sample points, exact to machine precision.} The easiest case there is.
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Primer 2/6 --- Heat: the same plate, watched over time}
+  \footnotesize
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{In plain language}
+      The same plate --- but now take the heater away and watch it cool, frame by frame. Sharp
+      features smooth out quickly and never come back: diffusion \emph{forgets}. A hot spot spreads
+      into a broad bump within a few steps.\\[3pt]
+      Because it forgets, a handful of smooth shapes describes almost every state it ever passes
+      through. That is exactly the property a reduced model needs.
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{block}{The equation --- \emph{parabolic, linear}}
+      \[ u_t = \alpha\,\Delta u \]
+      One implicit (backward-Euler) step is a Poisson-like solve:
+      $\big(I - \Delta t\,\alpha\Delta\big)\,u^{n+1} = u^{n}$.
+    \end{block}
+    \begin{exampleblock}{Residual degree \textbf{1} --- so, for us}
+      Poisson plus a time loop: still one precomputed matrix per operator, still zero sample points.
+      \textbf{Honest caveat:} this project has no per-$N$ cost ladder for heat, and on heat a
+      \emph{direct} reduced linear solve already beats the full solver --- see the cost section.
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Primer 3/6 --- Wave: a drum head, and why it defeats us}
+  \footnotesize
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{In plain language}
+      A stretched membrane, struck once. The bump splits, travels, reflects off the rim and comes
+      back --- for ever. Nothing is smoothed away, because \textbf{energy is conserved}.
+    \end{block}
+    \begin{alertblock}{Conservative is exactly the problem}
+      \begin{itemize}
+        \item Diffusion forgets, so few shapes suffice. A wave forgets nothing: placing a travelling
+          front anywhere needs \emph{many} shapes --- the Kolmogorov width decays slowly.
+        \item Every ROM error is likewise conserved: it never decays, it accumulates.
+      \end{itemize}
+    \end{alertblock}
+    \column{0.5\textwidth}
+    \begin{block}{The equation --- \emph{hyperbolic, linear, conservative}}
+      \[ u_{tt} = c^{2}\,\Delta u \]
+    \end{block}
+    \begin{exampleblock}{Residual degree \textbf{1} --- so, for us}
+      The residual machinery would work perfectly here: degree 1, quadrature-free, nothing to sample.
+      \textbf{It is the decoder, not the residual, that fails.} Measured twice in this project
+      (14 and 16 Aug): the rollout loses its energy and the verdict was ``not fixable by tuning''.
+      The cell was \textbf{retired without re-implementation} on 30 Aug.\\[3pt]
+      \emph{Being easy for the residual does not make a PDE easy for a ROM.}
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Primer 4/6 --- Burgers: the simplest nonlinear PDE}
+  \footnotesize
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{In plain language}
+      Traffic on a one-way road where every car drives at a speed equal to the local density.
+      Fast parts of the wave catch the slow parts, the profile steepens, and a near-discontinuity
+      --- a \textbf{shock} --- forms. The viscosity $\nu$ smears that shock across a few grid cells
+      instead of letting it become infinitely sharp.\\[3pt]
+      It is the standard proving ground: nonlinear enough to be interesting, small enough to have a
+      trustworthy reference solution.
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{block}{The equation --- \emph{nonlinear (quadratic), dissipative}}
+      \[ u_t + \underbrace{u\,u_x}_{\text{advection}} \;=\; \underbrace{\nu\,u_{xx}}_{\text{diffusion}} \]
+      The field multiplies its own slope. That product is the entire difficulty.
+    \end{block}
+    \begin{exampleblock}{Residual degree \textbf{2} --- so, for us}
+      Quadratic still precomputes, into a 3-index table instead of a matrix. \textbf{Zero sample
+      points.} The one non-polynomial residue is the upwind switch $|u|$ --- and on non-negative
+      data $|u| = u$, which makes even that exact.
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Primer 5/6 --- Stokes: honey in a box}
+  \footnotesize
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{In plain language}
+      Very slow, very thick flow --- honey, glacier ice, a swimming bacterium. So viscous that
+      inertia is negligible: stop pushing and it stops at once, with no coasting.\\[3pt]
+      Two novelties over everything above. The state is a \textbf{vector} --- a horizontal and a
+      vertical velocity at every point, not one number. And the fluid is \textbf{incompressible}:
+      whatever flows into a cell must flow out of it.
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{block}{The equations --- \emph{linear, vector-valued, constrained}}
+      \[ -\nu\,\Delta \bm{u} + \nabla p = \bm{f},\qquad \nabla\!\cdot\!\bm{u} = 0 \]
+      The pressure $p$ does not evolve: it is the \textbf{Lagrange multiplier} that enforces
+      $\nabla\!\cdot\!\bm{u}=0$. That makes this a \emph{constrained} system, not an ordinary
+      evolution.
+    \end{block}
+    \begin{exampleblock}{Residual degree \textbf{1} --- so, for us}
+      Quadrature-free, exactly as Poisson is. The value of the cell is not speed but
+      \textbf{machinery}: vector-valued decoding, a divergence-free trial space, and eliminating
+      $p$ so the ROM never solves for it --- all of which Navier--Stokes needs.
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Primer 6/6 --- Navier--Stokes: the target}
+  \footnotesize
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{In plain language}
+      Stokes with the inertia put back: real fluid, at speeds where it swirls. Water round a bridge
+      pier, air over a wing, smoke in a room. The new term $(\bm{u}\!\cdot\!\nabla)\bm{u}$ is the
+      fluid \emph{carrying itself along} --- and it is the Burgers nonlinearity in vector form.
+    \end{block}
+    \begin{block}{Why it is the target}
+      It is the PDE people actually want reduced, and the first problem in this deck that is
+      simultaneously nonlinear, vector-valued and constrained.
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{block}{The equations --- \emph{nonlinear (quadratic), vector, constrained}}
+      \[ \bm{u}_t + (\bm{u}\!\cdot\!\nabla)\bm{u} = -\nabla p + \nu\,\Delta\bm{u},
+         \qquad \nabla\!\cdot\!\bm{u} = 0 \]
+    \end{block}
+    \begin{exampleblock}{Residual degree \textbf{2} --- so, for us}
+      Nothing new is required. The linear half is Stokes (degree 1, built and gated); the convective
+      half is Burgers-shaped (degree 2, the tensor, built in 1D and 2D). Navier--Stokes is those two
+      machineries composed --- \textbf{which is why the two cells that cannot each be written up as a
+      positive result are still worth running.} Not run yet.
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{The symbols, once --- a reference card}
+  \centering\scriptsize
+  \renewcommand{\arraystretch}{1.0}
+  \begin{tabular}{@{}lp{0.485\textwidth}p{0.335\textwidth}@{}}
+    \toprule
+    symbol & what it is & typical value here\\
+    \midrule
+    $N$ & \textbf{mesh resolution} --- grid points along one axis & 1D $128\ldots65\,536$; 2D $64\ldots1024$; Stokes $32\ldots256$\\
+    $n$ & \textbf{grid unknowns} --- \emph{all} the numbers the full solver carries; $N$ in 1D, $\sim N^{2}$ in 2D & up to $2.6\times10^{5}$\\
+    $K$ & \textbf{latent size} --- how many numbers stand in for a whole field; what the ROM solves for & $8$ or $16$ (sweeps to $32$)\\
+    $R$ & \textbf{bank width} --- how many fixed spatial shapes the field is mixed from & $32$ (1D Burgers) to $96$ (Poisson); $512$ in the headline 2D bank\\
+    $M$ & \textbf{test modes} --- how many equations the solver is handed per step (weak-form rows) & $32$ or $64$; $M\ge R$ where a direct solve is used\\
+    $\mu$ & \textbf{parameters} --- what changes from one problem instance to the next & viscosity $\nu$; source centre, width, amplitude\\
+    \midrule
+    $G$ & \textbf{the bank table} --- the $R$ shapes evaluated on a point set once, $G_{ij}=bc(x_i)\,g_j(x_i)$ & $G\in\R^{n\times R}$, frozen after stage 1\\
+    $h(z)$ & \textbf{the head} --- the $R$ mixing amounts, from the $K$ latent numbers & a small MLP $+$ linear skip, $\R^{K}\to\R^{R}$\\
+    $u = G\,h(z)$ & \textbf{the field} --- ``a mix of $R$ fixed shapes; only the amounts depend on $z$'' & the identity everything rests on\\
+    $\Phi$ & \textbf{test modes} --- sine modes $=$ eigenvectors of the discrete Laplacian, $L\Phi=-\Phi\Lambda$ & $\Phi\in\R^{n\times M}$, fixed, never trained\\
+    $A = \Phi\T L\,G$ & \textbf{precomputed operator} --- one matrix \emph{per linear operator} $L$: the grid, folded away & $M\times R$; $=-\Lambda B$ with $B=\Phi\T G$\\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.5mm}
+  {\footnotesize The last two rows together: $\Phi\T\big(L\,G\,h(z)\big) = A\,h(z)$ --- the regrouping that makes a linear PDE cost nothing per iteration.}
+\end{frame}
+
 \begin{frame}{The separable decoder}
   \[
     u(x;z) \;=\; bc(x)\,\big\langle\, g(x),\; h(z)\,\big\rangle
@@ -313,6 +505,38 @@
     \textbf{Fastest and flat in $N$:} full grid grows 4$\to$11 ms; quadrature-free stays $\sim$2.9 ms.
     \column{0.33\textwidth}\small
     \textbf{Nothing to fit:} the 25--37 s NNLS quadrature fit disappears; the sampled rule's gradient could even point the wrong way ($\cos<0$).
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Two corrections to the framing --- read these with the Poisson result}
+  \footnotesize
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{alertblock}{1. Non-symmetry is \emph{not} what kills the diagonal shortcut}
+      Poisson gets $\Phi\T(\Delta u)=\Lambda\,\Phi\T u$ because the columns of $\Phi$ are
+      eigenvectors of $\Delta$. It is tempting to conclude that a \emph{non-symmetric} operator can
+      have no such shortcut. \textbf{That is wrong.}\\[3pt]
+      A non-symmetric $L$ still gives $\Phi\T L\,u=\Lambda\,\Phi\T u$ whenever $\Phi$ holds its
+      \textbf{left} eigenvectors, $L\T\Phi=\Phi\Lambda$. Self-adjointness is \emph{sufficient}, never
+      necessary.\\[3pt]
+      What actually kills the shortcut is simply \textbf{$\Phi$ not being eigenvectors of the operator
+      in question} --- and losing it costs nothing. The general form $A=\Phi\T L\,G$, one $M\times R$
+      matrix per affine operator component, is still exact and still independent of $z$. Only the
+      diagonal, an optimisation, goes.
+    \end{alertblock}
+    \column{0.5\textwidth}
+    \begin{alertblock}{2. On a linear PDE the nonlinear head can never buy \emph{accuracy}}
+      If the PDE is linear and its parameter dependence is affine,
+      $L(\mu)=\sum_q\theta_q(\mu)\,L_q$, then the set of all its solutions is \textbf{literally a
+      linear subspace} --- spanned by the solves of finitely many right-hand sides.\\[3pt]
+      A nonlinear decoder therefore cannot represent anything a linear basis of the same width
+      cannot. \textbf{Its entire value on such a problem is cost.}\\[3pt]
+      This is the correct reading of the Poisson quadrature-free result: the solution error is
+      \emph{identical} down all three rows of each block above --- the decoder floor --- and only the
+      milliseconds and the NNLS fit moved. It also predicts the Stokes verdict later in this deck.
+      The nonlinear head earns its keep only on a \textbf{nonlinear} PDE, or under \textbf{non-affine}
+      parameter dependence.
+    \end{alertblock}
   \end{columns}
 \end{frame}
 
@@ -694,6 +918,134 @@
   \end{columns}
   \vspace{0.5mm}\scriptsize
   Left ($N=256$): $|\text{tensor}-\text{truth}|$ and $|\text{NNLS-256}-\text{truth}|$ on a shared $10^{-2}$ scale are the same picture; $|\text{tensor}-\text{oracle}|$ on its own scale is $10^{-6}$ (0 at $t=0$: same IC fit). Right ($N=1024$): error per step is one curve for all arms, tensor--oracle gap $\le 7\times10^{-7}$; cross-sections at $t=25,50$ --- the ROMs coincide and under-resolve the peak slightly (decoder floor, not residual).
+\end{frame}
+
+% -------------------------------------------------------------------
+\section{Stokes: a rehearsal, not a result}
+\begin{frame}{Stokes 2D --- the machinery is exact, and the verdict is negative on purpose}
+  \centering\scriptsize
+  \input{tables/cross-pde-stokes-results.tex}
+
+  \vspace{1.5mm}
+  \begin{columns}[T]
+    \column{0.33\textwidth}\footnotesize
+    \textbf{Exact.} Residual and Jacobian match an \emph{independently written} strong-form
+    full-grid path at machine precision, and eliminating the pressure agrees with the \emph{real
+    FOM pressure} along a path the solver never takes. Vector-valued, divergence-free,
+    pressure-free machinery: verified.
+    \column{0.33\textwidth}\footnotesize
+    \textbf{Accurate --- and beaten.} The nonlinear ROM is a factor of $2.6$--$3.3$ better than POD
+    at the matched online dimension ($K=8$, column 4). But the \textbf{direct reduced solve in the
+    same $G$ span} lands at round-off: up to twelve orders better in error, and $\sim$9\,000$\times$
+    faster (last two columns).
+    \column{0.33\textwidth}\footnotesize
+    \textbf{Read it as a rehearsal.} Stokes is linear with affine parameters, so by correction~2 the
+    nonlinear head could only ever cost more for nothing --- and it did, exactly as the design
+    predicted. \textbf{This cell must not be written up as a positive result.} Its deliverable is
+    the machinery Navier--Stokes needs.
+  \end{columns}
+\end{frame}
+
+% -------------------------------------------------------------------
+\section{Cost per resolution, across the PDE classes}
+
+\begin{frame}{Cost ladder 1/4 --- Poisson 2D: flat, free, and nothing to fit}
+  \centering\scriptsize
+  \input{tables/cross-pde-cost-poisson.tex}
+
+  \vspace{3mm}
+  \begin{columns}[T]
+    \column{0.5\textwidth}\footnotesize
+    \textbf{The $O(n)$ arm moves; the precomputed arm does not.} The full-grid path sums over every
+    point of the mesh and its column climbs steadily with $N$. The quadrature-free path touches no
+    grid point at all, and its column is flat across the whole ladder.
+    \column{0.5\textwidth}\footnotesize
+    \textbf{The offline columns matter as much.} The sampled rule cannot be used until an NNLS fit
+    has been run; the quadrature-free path needs one $M\times R$ matrix product. There is nothing to
+    fit because there is nothing being approximated --- and the sample-point columns say so directly.
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Cost ladder 2/4 --- 1D Burgers: flat, but so is everything else}
+  \centering\scriptsize
+  \input{tables/cross-pde-cost-b1d.tex}
+
+  \vspace{2mm}
+  \begin{columns}[T]
+    \column{0.5\textwidth}\footnotesize
+    \textbf{No crossover in 1D, and the reason is not the method.} Even the full-grid oracle looks
+    flat below $\sim$10\textsuperscript{4} points: each solver iteration is a handful of tiny GPU
+    kernels whose launch overhead dwarfs the arithmetic. Wall time counts \emph{operations}, not grid
+    points --- the launch floor.
+    \column{0.5\textwidth}\footnotesize
+    \textbf{Where the grid finally shows.} Only in the lower block does the oracle begin to climb
+    while the tensor does not move. Those two rows come from \emph{separate jobs}: they are
+    cross-job figures, not a fitted exponent. The exponent in the upper block is fitted inside one
+    job, where it means something.
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Cost ladder 3/4 --- 2D Burgers: a real crossover, on mixed hardware}
+  \centering\scriptsize
+  \input{tables/cross-pde-cost-b2d.tex}
+
+  \vspace{3mm}
+  \begin{columns}[T]
+    \column{0.5\textwidth}\footnotesize
+    \textbf{In 2D the grid is finally big enough to be felt.} At the coarsest rung the full-grid
+    residual is barely worse than the tensor --- still launch-bound. By the finest rung it is more
+    than an order of magnitude slower, and the tensor has not moved.
+    \column{0.5\textwidth}\footnotesize
+    \textbf{The confound is in the table, not in a footnote.} The GPU column is second for a reason:
+    these rungs did not share hardware. The tensor/full and tensor/NNLS ratios are measured
+    \emph{within} one job and are sound; the raw millisecond columns across rows mix cards, so no
+    exponent may be fitted through them.
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Cost ladder 4/4 --- Stokes 2D: the ROM crosses the FOM, and still loses}
+  \centering\scriptsize
+  \input{tables/cross-pde-cost-stokes.tex}
+
+  \vspace{3mm}
+  \begin{columns}[T]
+    \column{0.33\textwidth}\footnotesize
+    \textbf{A crossover does exist here.} The FOM column grows steeply with $N$ --- a bigger
+    back-solve every query --- and the full-grid ROM worse still. The quadrature-free ROM barely
+    moves, and between the second and third rung it passes under the FOM and stays there.
+    \column{0.33\textwidth}\footnotesize
+    \textbf{And it still loses.} The last column is that same quadrature-free ROM measured against
+    the direct reduced solve in the identical span. Being flat in $N$ is not the same thing as being
+    the right algorithm for the problem.
+    \column{0.33\textwidth}\footnotesize
+    \textbf{Read the caption.} These are CPU NumPy seconds, deliberately: the cell was about
+    exactness and structure, not device tuning, and putting a launch-bound GPU path beside a
+    microsecond direct solve would have measured the launcher instead of the method.
+  \end{columns}
+\end{frame}
+
+\begin{frame}{The pattern --- and what is honestly not measured}
+  \centering\scriptsize
+  \resizebox{\textwidth}{!}{\input{tables/cross-pde-cost-coverage.tex}}
+
+  \vspace{3mm}
+  \begin{columns}[T]
+    \column{0.32\textwidth}\footnotesize
+    \textbf{The pattern, in one line.} The precomputed residual is \textbf{flat in $N$}; the
+    full-grid residual is \textbf{$O(n)$}. That holds in every ladder above. Flatness is a property
+    of the \emph{method} --- but where the two arms \emph{cross} is a property of the problem and
+    the machine, and it moves.
+    \column{0.32\textwidth}\footnotesize
+    \textbf{Where they cross.}
+    \textbf{1D: never} --- below the launch floor both arms are dominated by kernel launches.
+    \textbf{2D Burgers: around $N=512$}, where the $O(n)$ arm leaves that floor.
+    \textbf{Stokes: at $N=128$}, against a pre-factored full-order back-solve.
+    \column{0.32\textwidth}\footnotesize
+    \textbf{Two gaps, named not omitted.} \textbf{Heat} has no per-$N$ ladder; its one figure is an
+    aggregate comparing a \emph{direct reduced linear solve} with the FOM, not our residual with
+    itself. \textbf{Waves} has no cost measurement at all --- retired before implementation, because
+    on a conservative PDE it is the decoder, not the residual, that fails.
+  \end{columns}
 \end{frame}
 
 \begin{frame}{What five adversarial reviews said (3 Claude, 2 Codex) --- and where the method stops}

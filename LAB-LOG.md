@@ -32,6 +32,21 @@ arms, verdict below); treat it as a finished experiment archive plus the home of
 `sep_codesign.py` machinery. `exp/2026-08-25-eq-fidelity-ladder` and the older experiment
 branches are read-only archives. Never branch from `main`.
 
+**2026-09-03 — waves REOPENED as a mechanism cell.** The 08-30 retirement rested on three
+arguments; two fell (the n-width argument misread the project's own 08-14 data, architecture
+independence was never established) and the third was re-diagnosed by an independent analysis
+(`understand/2026-09-02-fable-wave-rom-case.md`): a Lagrangian manifold ROM conserves the
+pulled-back energy for any smooth decoder, and the 08-16 failure was a **manifold-quality**
+failure (auto-decoder generalising 2.7x worse than it fit) that conservative dynamics expose;
+quadrature error is dead as a cause (the 08-16 full-grid arms failed identically). Cell:
+`worktrees/2026-09-03-wave2d-mechanism`, branch `exp/2026-09-03-wave2d-mechanism` (cut from
+`exp/2026-08-30-stokes-vector`), design `WAVE2D-DESIGN.md` r3 with two Codex audits, reflective
++ absorbing (first-order Engquist-Majda, ghost-closed damped ODE) on the 08-16 family, three head
+arms (`auto`, `sup` on (mu,t), `auto+vc`), two ROM arms (incumbent LSPG-Newmark, variational
+Verlet), predeclared: reflective arm C passes W3 iff the head passes the manifold gates G0; the
+cost ladder is predeclared as likely lost to POD-R. **Phase 1 (FOM gates, both BCs) ALL PASS at
+N=64 and 128** with three retractions (all mesh-scaling thresholds) — see the 2026-09-03 entry.
+
 ## The method (separable EQ-decoder)
 
 `u(x;z) = bc(x)·⟨g(x), h(z)⟩`: a 512-feature spatial track `g` (random-Fourier lift → SiLU
@@ -3780,3 +3795,139 @@ Poisson is **K=16, R=96 at N=128 and R=64 at N=256/512, M=64**. Fixed to 64×64 
 64×16, 16→64, 4096. Also fixed a real overflow on the side-by-side summary slide (third column cut
 mid-word; `tabcolsep` was adding ~36 pt to widths already summing to 0.96). Overfull boxes 7 → 6;
 the remaining six are pre-existing, confirmed by rebuilding the previous commit.
+
+## 2026-09-02
+
+### Session — self-contained Poisson training-to-prediction explainer
+
+Created `understand/2026-09-02-poisson-rom-training-to-prediction.tex` and its compiled PDF at the
+same basename. This is an educational document, not a new experiment or result report. It separates
+the real N=256 QF configuration (read from the committed run artifact/code: 254² interior points,
+K=16, R=64, M=64, 512 training snapshots, 100,000 optimizer steps) from a deliberately constructed
+4×4-grid teaching example. The toy example carries every number through auto-decoder training,
+`B=Phi^T G`, the sine-mode eigenvalue fold, inverse-eigenvalue residual weighting, a numerical
+residual/Jacobian/update, and the final full-grid prediction; direct multiplication in the document
+verifies that the displayed final field and forcing satisfy the full discrete Poisson equation.
+
+The PDF was rebuilt with `latexmk`, is 12 pages, has no unresolved-reference/overfull-box warnings,
+and its title, dimensions, matrix arithmetic, residual path, final field, and glossary were visually
+checked from rendered pages. An independent Codex pass recomputed every displayed toy matrix and
+vector and checked the production dimensions and architecture against the run artifact and code. It
+caught two presentation omissions before the final build: the definition of `G` needed to show the
+boundary mask and fixed data-RMS scaling, and the deliberately selected two-mode toy test space
+needed to be distinguished from the production complete-eigenshell policy. Both are now explicit.
+Source SHA-256: `412ef7e73ba455d14a822d5c615cf5c37fbf167aa5415b30fe1ec65c87a1f9e2`;
+PDF SHA-256: `1eb65aae88b3ec1757bc2a513495969d21e9311c8b190ef598ea426ef0075462`.
+No PDE jobs were run, no experimental conclusion changed, and the "Where things stand" block was
+therefore left unchanged.
+
+### Session — cleared stale Codex session writer
+
+Diagnosed Codex CLI resume error `thread 01a055e4-67ad-7893-9d4d-53afeca0e7e1 already has an
+active writer`. `lsof` identified the exact writer as Codex PID 1322498 under wrapper PID 1322491
+on `pts/4`; both belonged to the old `codex ... resume` process group. Terminated only that process
+group with `SIGTERM` and verified that the session JSONL had no remaining open handle. The separate
+current Codex process on `pts/1` was left running. No PDE jobs were run and no experimental or
+project status changed.
+
+### Session — persistent P/K/R explanations in the Poisson explainer
+
+Revised `understand/2026-09-02-poisson-rom-training-to-prediction.tex` and its PDF so the three
+decoder sizes are explained in their immediate Poisson-ROM context wherever they occur: `P` is the
+number of interior physical-grid values in one solution, `K` is the number of latent variables the
+online solver adjusts, and `R` is both the number of learned spatial patterns and the number of
+coefficients returned by the latent head. Added a compact reminder to every page footer, expanded
+the production and toy dimension statements, annotated the training matrix shapes and toy
+Jacobian, and explicitly distinguished blackboard-bold real-vector-space `R` from model-size `R`.
+The table of contents now lists sections only, eliminating the nearly empty second contents page;
+the rebuilt document is 11 pages.
+
+A tightly scoped independent Codex audit passed every `P`/`K`/`R` occurrence and caught one
+pre-existing inconsistency outside that request: the opening pointwise decoder equation omitted the
+fixed data-RMS scale `s` that was already present in the definition of each row of `G`. The equation
+was corrected, and a second independent pass returned `PASS`. The final `latexmk` build has no
+unresolved-reference, underfull-box, or overfull-box warnings, and the changed pages and glossary
+were checked from rendered images. Source SHA-256:
+`d36b52cd59c48fafdff7347e46e6af22c21e94a794fe75f21781fc591b5e02e3`; PDF SHA-256:
+`d2f8e00207be1f4572d1bd3a3c785eb94833f79945ae4b3b6547b812dfeee8ca`. No PDE jobs were run and
+no experimental conclusion changed.
+
+## 2026-09-03
+
+### Session — waves reopened; Wave 2D mechanism cell designed (r1→r3, two Codex audits) and phase 1 certified
+
+**Where it landed.** Worktree `worktrees/2026-09-03-wave2d-mechanism`, branch
+`exp/2026-09-03-wave2d-mechanism` (cut from `exp/2026-08-30-stokes-vector` 2c3f1b6, user-approved),
+pushed; commits through `aab43d5`. On `main`: `understand/2026-09-02-fable-wave-rom-case.md` (the
+independent analysis, verbatim, with provenance), `understand/2026-09-02-wave-manifold-check/`
+(its 1D numpy check, two scripts, and this session's reproduction outputs), and the rewritten
+`understand/2026-09-02-handoff-wave2d-cell.md`.
+
+**Why waves came back (retraction of the 08-30 retirement's reasoning, not yet of its verdict).**
+A Fable 5.1 subagent, asked to argue the case adversarially, found from the 08-16 JSONs: (1) the
+full-grid no-EQ arms (`lspg:full:weak64` 0.850, `lspg:full:fd` 0.864) failed identically to the
+EQ arm (0.843) — **quadrature error is dead**; (2) the "energy ratio 0.27" was the kinematic
+recursion, and the dynamic estimate read 8–50 (growth) — the 08-16 energy number is not a
+measurement; (3) the auto-decoder fit 0.070 and held out 0.189 while the 08-14 FiLM on $(\mu,t)$
+reached 0.028 — the manifold is smooth, the auto-decoder did not learn it smoothly; (4) a
+Lagrangian manifold ROM (tangent-space Galerkin of the second-order form, variational
+integrator; Lall–Krysl–Marsden 2003, Carlberg–Tuminaro–Boggs 2015) conserves $E_r$ for any
+smooth $g$ at two $R\times R$ matrices — "structure-preserving latent stepping is open" was
+wrong. Its 1D CPU check, **reproduced this session** (K=6, RS=20; smooth: floor 0.119, arm A
+0.125 / E 0.9995, variational 0.126 / E 1.0000; 15% wrinkle: floor 0.142, A 1.048 / E 0.47,
+variational 1.037 / E 0.9999): fixing the structure removes the energy drift and **does not
+recover the accuracy** — the 08-16 phenomenology is a tangent-space-quality failure. The
+retirement's *verdict* (no result cell here) may still stand: the cell is predeclared as a
+mechanism study whose cost ladder likely loses to POD-$R$.
+
+**Design.** r1 → Codex `gpt-5.6-sol` audit (items 1–3 CORRECT with fixes, 4/8 NEEDS-RESTATEMENT,
+5–7 WRONG) → r2 → re-audit (arm C first step and the $M^{1/2}$-scaled absorbing solve CORRECT;
+W7 compared to the wrong linear scheme — a linear head under arm C is Verlet, not CN; W5 needs
+the time-integrated momentum residual; F3 needs transverse isolation; six controls could not
+separate) → r3. Key design facts: absorbing BC ghost-eliminated to a **damped ODE** $\dot v = c^2
+L_N u - cD_Bv$ (not the DAE of the 1D design), $ML_N$ symmetric, exact CN energy identity
+$E^{n+1}-E^n = -c\Delta t\,\bar v^\top MD_B\bar v$; cosine modes are exact eigenvectors of $L_N$
+but the test operator must be $\Phi^\top M$; the diagonal shortcut dies because of $D_B$, not
+non-symmetry; the discrete reflection coefficient of this closure is $|R|^2 = \tan^4(\theta/4)
+\approx \tfrac{15}{1024}(\Delta x/w)^4$ — **order 4 in energy**, not the order 2 of the one-sided
+1D closure. Causal claim restated as an across-head interaction (reflective arm C passes W3 iff
+G0 passes), absorbing runs demoted to a comparator, mixed outcomes predeclared inconclusive.
+
+**Phase 1 — FOM gates, both BCs, local GB10, N=64 (46 s) and N=128 (59 s): ALL PASS, every
+negative control fires.** Table generated by `wav2d_tables.py` into `WAVE2D-NOTES.md`. Highlights:
+V0 — the new reflective FOM reproduces the frozen 08-14 rollout to 2.9e-15 / 3.4e-15 (data
+bit-comparable with the 08-16 negative); F1a reflective energy drift 2.5e-15 / 6.9e-15 over 4T
+(BE control 0.39 / 0.60); F1b absorbing identity closes to 7.0e-14 / 8.0e-14 over 5075 active
+steps (control 1.5e-5); **F3 reflected fraction / prediction 1.02, 1.005, 1.001, 1.0003 at
+N=64…512, slope 4.01** (the audit's closed form is exact to the roundoff of the measurement);
+F2 spatial order 2.19 / 2.22, temporal 2.010 / 2.011 on a smooth bump; F5 generator spectrum
+max Re −4.5e-15 (anti-damped control +2.83); V1 recurrence vs `splu` block CN 1.8e-10 → 3.0e-11
+(ref) / 2.2e-11 → 1.4e-9 (abs), solver-limited by the two-tolerance ratio (10³–10⁴×).
+
+**Retracted / amended this session (all recorded in `WAVE2D-NOTES.md`, numbered):**
+- *Retraction 1, 3* — V1 threshold 1e-11 → 1e-9 → 1e-8: an absolute bound on CG-tolerance
+  accumulation over 4000 solves, which grows with N. The binding criterion is now the
+  two-tolerance ratio (≥10, read 10³–10⁴).
+- *Retraction 2* — F0a/F0b eigenvector residual normalised by $\|\Phi\Lambda\|$ read 1.1e-13 /
+  1.4e-13 at N=128 (2e-14 at N=64): roundoff amplified by $1/(k\pi\Delta x)^2$; now the
+  backward-error form with $\|L\|_2 = 8/\Delta x^2$. **Three absolute thresholds on mesh-scaling
+  quantities in one phase, in a cell whose design explicitly forbade them.** The lesson from Stokes
+  did not transfer by being written down; it transferred by running N=128.
+- *Amendments 1–4* — F2 on nested grids (the project's N=64/128/256 are not nested); F2 on a
+  smooth centred bump because **the inherited family's blobs are chopped to zero at the walls by
+  the hard mask (reflective) or leave $\partial_n u_0\ne0$ with $v_0=0$ (absorbing)** — the widest
+  family blob converges at spatial order 0.35 (ref) / 1.19 (abs) and temporal 1.67 / 1.73 at
+  N=128, a *data* property that the manifold discussion must see (it also means the 08-16
+  "smooth manifold" carries a 1-cell wall layer); BE control as a separation ratio (its fitted
+  order saturates at 0.6–0.9).
+- The old handoff's framing "if both BCs work, quadrature was the culprit" is **withdrawn**
+  (quadrature was already excluded by the 08-16 data).
+
+**Open / next.** Codex verification of the phase-1 code + JSONs is running at session end (result
+to be folded into `WAVE2D-NOTES.md`). Phase 2 (bank, three head arms, D0–D2, G0a/b) and phase 3
+(arms A/C, W0–W7, G0c) are designed, not yet coded. Open design point for phase 4: a bank at
+N=512 needs 55 GB of training snapshots — prolongation of the N=128 bank or an H200 job; decide
+only if W3 passes. The other session's 56 uncommitted lab-log lines (Poisson explainer) were
+committed together with this entry; its `understand/2026-09-02-poisson-rom-training-to-prediction.*`
+files remain untracked and are not this session's to add. Thirteen-plus experiment branches
+remain unmerged; no merge decision was asked or taken.

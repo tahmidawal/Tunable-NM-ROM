@@ -1,0 +1,15 @@
+wrinkle eps=0.0 freq=0.0: rel amplitude 0.000
+K=6 RS=20 dt=1.0e-03  quad-manifold oracle floor 1.188e-01   POD-6 floor 1.146e-01
+arm                            traj err  E_final/E_0  max|dE/E|   (means over 4 held-out)
+A lspg-newmark(08-16)         1.254e-01       0.9995   6.15e-04
+B galerkin-newtime            1.254e-01       0.9995   6.15e-04
+C variational-verlet          1.255e-01       1.0000   3.69e-05
+D variational-midpoint        1.255e-01       1.0000   7.35e-05
+P pod-galerkin                1.147e-01       1.0000   7.43e-05
+oracle manifold floor         1.188e-01
+POD-K projection floor        1.146e-01
+tangent-space velocity residual (held-out, oracle points): manifold 0.420   POD-K 0.415
+
+real	0m5.578s
+user	0m45.155s
+sys	0m0.080s

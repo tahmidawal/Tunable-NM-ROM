@@ -41,19 +41,22 @@ to the EQ arm. Do not re-propose it.
 
 **Why both boundary conditions on the same IC family.** Reflective is conservative;
 absorbing (first-order Engquist–Majda, ghost-closed, a damped ODE — *not* a DAE in this
-formulation) is dissipative. **Predeclared prediction:** with the incumbent auto-decoder
-head the manifold gates (G0) fail, the reflective ROM fails at 3–5× its floor with energy
-loss, and the absorbing ROM lands within 2× of its floor. With a head that passes G0
-(supervised on (μ,t), or auto-decoder with the velocity-consistency loss) the reflective ROM
-tracks its floor under the variational arm with energy ratio ≈ 1. If reflective fails
-**with** a G0-passing manifold under the variational arm, the structural diagnosis is back
-and the design is wrong — record that.
+formulation) is dissipative. **Predeclared prediction (design r3): the causal claim is an
+across-head interaction, not a per-BC contrast** — after the rank gate D2 and the time-step
+gate W6 pass, reflective arm C passes W3 **iff** the head passes the manifold gates G0.
+Per head: `auto` fails G0 and fails reflective W3; `sup` (on (μ,t)) and `auto+vc` pass both.
+The absorbing runs are the dissipative *comparator* (predicted ≤ 2× their pre-exit floor for
+every head) and are **not** evidence for the causal claim (the absorbing data may be
+intrinsically easier, damping erases error, and the banks differ). Mixed outcomes are
+recorded as inconclusive with the alternatives named, never as a verdict.
 
-**Phases, each gated, in order.** (1) FOM, both BCs: energy *identity* gates (reflective
-drift ≤1e-10; absorbing E^{n+1}−E^n + cΔt v̄ᵀMD_Bv̄ closes to 1e-10 every step), eigenvector
-gates for the sine and cosine test modes, convergence order 2 in space and time
-separately, absorbing reflection as a *convergence* gate, generator spectrum Re ≤ 0, and the
-u-only Newmark elimination certified against the (u,v) FOM. (2) Decoder + **G0 manifold
+**Phases, each gated, in order.** (1) FOM, both BCs — **DONE, ALL PASS at N=64 and 128 on
+2026-09-03** (`runs/wav2d/wav2d_fom_gates_N{64,128}.json`, table in `WAVE2D-NOTES.md`; three
+retractions, all absolute thresholds on mesh-scaling quantities — read them). The absorber's
+reflected-energy fraction matches the discrete prediction tan⁴(θ/4) within 2% at N=64…512,
+slope 4.01. The inherited family's blobs carry a 1-cell wall discontinuity (hard mask), which
+limits convergence order on family trajectories — a data property to keep in mind when
+reading manifold quality. (2) Decoder + **G0 manifold
 gates** per head arm (`auto`, `sup`, `auto+vc`): held-out oracle vs POD-K, train/held-out
 gap, tangent-space velocity residual vs POD-K on the same states, stepdiag from oracle
 starts with the `hold` control. G0 is a prediction about phase 3; every head arm proceeds.
@@ -62,9 +65,12 @@ Newmark residual; ROM arm C = variational): ≤1.5× oracle floor and ≤0.5× P
 energy ratio in [0.9,1.1] reflective; plus W4, arm C energy bounded regardless of accuracy
 (a W4 failure means the implementation is wrong, not the manifold). **If no pair passes W3 on
 the reflective BC, stop, report the negative, do not run the ladder.** (4) Cost ladder
-N∈{64,128,256,512}, both BCs, arms FOM-ref / **FOM-tol (matched accuracy, the fair
-baseline)** / POD-K / POD-R / ours-A / ours-C, one process, balanced order, raw reps kept,
-full-field decode timed separately and excluded from the ROM solve time.
+N∈{64,128,256,512}, both BCs, arms FOM-ref / **FOM-tol (the fastest configuration on a
+predeclared SUBSTEPS × CG-tol grid that meets the ROM's error, with the best available
+solver)** / POD-K / POD-R / ours-A / ours-C, one process, balanced order, raw reps kept, all 16
+cases must complete, K/R/M fixed across the ladder; report **both** the latent-only kernel
+time and the end-to-end time (cold start + stepping + decode at the 51 output times), the
+end-to-end figure being the headline.
 
 **The cost comparison is where this will mislead you.** The linear wave FOM is cheap and a
 POD-R CN ROM is a precomputed R×R recurrence with no iteration. The predeclared expectation
@@ -85,9 +91,9 @@ zero during kinetic/potential exchange — never per-snapshot relative errors. A
 trajectories decay to ~0 late in the horizon — report errors on a fixed pre-exit window as
 well as the full horizon.
 
-**Non-optional rules.** Dated worktree, **ask before creating it and where to branch from**
-(proposal: from `exp/2026-08-30-stokes-vector`, which carries the newest head/LM/timing
-machinery; never from `main`); one session writes to one worktree; never hand-type a number
+**Non-optional rules.** The worktree exists (`worktrees/2026-09-03-wave2d-mechanism`, cut
+from `exp/2026-08-30-stokes-vector` with the user's approval) — work in it; do not create
+another without asking; one session writes to one worktree; never hand-type a number
 into a report — tables from run JSONs by script; verify every conclusion and every code file
 with an independent tightly-scoped `codex exec` pass, and audit designs before
 implementation; **the recurring failure mode is gates, not numerics** — six gates in the

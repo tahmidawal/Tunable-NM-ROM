@@ -44,8 +44,12 @@ quadrature error is dead as a cause (the 08-16 full-grid arms failed identically
 + absorbing (first-order Engquist-Majda, ghost-closed damped ODE) on the 08-16 family, three head
 arms (`auto`, `sup` on (mu,t), `auto+vc`), two ROM arms (incumbent LSPG-Newmark, variational
 Verlet), predeclared: reflective arm C passes W3 iff the head passes the manifold gates G0; the
-cost ladder is predeclared as likely lost to POD-R. **Phase 1 (FOM gates, both BCs) ALL PASS at
-N=64 and 128** with three retractions (all mesh-scaling thresholds) — see the 2026-09-03 entry.
+cost ladder is predeclared as likely lost to POD-R. **Outcome (2026-09-03, all four cells run and
+verified): reflective W3 fails on every head and both ROM arms at N=64 and 128 — the variational arm
+conserves energy to 1e-4 and is no more accurate (4–6× floor); absorbing `sup` passes at both N. The
+mechanism is the tangent-space residual (reflective heads no better than POD-K, absorbing 2–3×
+better). The energy claim of 08-16 is refuted, its verdict stands; the cost ladder was not run
+(gated on a reflective pass).** Eight retractions, all in `WAVE2D-NOTES.md`. See the 2026-09-03 entry.
 
 ## The method (separable EQ-decoder)
 
@@ -3992,10 +3996,59 @@ were 9/16–15/16 complete (the stall misread the verification flagged); correct
 cached heads are jobs **3226045** (p2fix_n64_ref) and **3226046** (p2fix_n64_abs); the two N=128
 cells (3225938/3225939) are finishing phase 2 and will be re-run the same way.
 
-**Open / next.** Pull the p2fix jobs, generate the phase-2/3 tables (`wav2d_tables.py`), read W3 per
-(BC, head, arm) against the predeclared across-head interaction (design r3/r4), re-run N=128 the
-same way, and only if reflective W3 passes run the phase-4 ladder (`wav2d_ladder.py`, written and
-smoke-tested, with bank prolongation across N). Phase 2 (bank, three head arms, D0–D2, G0a/b) and phase 3
+**Phases 2–3, corrected re-runs (jobs 3226045/46 at N=64, 3226059/60 at N=128; pulled, verified,
+cluster dirs deleted; heads/banks/oracles archived in `runs/wav2d/p2fix_*/cache`, 50 MB, committed).
+Every result number below is in `WAVE2D-NOTES.md`'s generated tables.**
+
+- **Reflective: the stop gate W3 fails on every head, both ROM arms, both N.** Arm A (incumbent
+  LSPG-Newmark) at 2.2–5.0× its oracle floor with the dynamic-velocity energy growing 4.5–19× over
+  $T$; on `auto` it reads 0.888 (N=64) against the 08-16 record's 0.878 — the negative reproduced
+  on the separable decoder. **Arm C (forced variational Verlet) conserves the reduced energy to
+  1.00001–1.0007 over $4T$ on every completed rollout, with the deviation shrinking under time-step
+  refinement (0.157 → 0.014 → 0.005 for `auto` at N=128), and its error is the same or worse:
+  4–6× floor (≈1.0 traj-RMS on the free-code heads).** Energy conservation was a symptom.
+- **Absorbing: `sup` passes W3 on both arms at both N** (arm C 1.29× / 1.27× floor, 0.25–0.28×
+  the POD-K CN rollout, 16/16 at every RS); `auto` / `auto+vc` sit at 1.9–3.3× their tighter floors
+  (FAIL on the floor ratio, 2.2–3× better than POD-K).
+- **Why (the gate that saw it): the tangent-space velocity residual.** Reflective heads 0.63–0.74,
+  no better than POD-K's 0.69–0.83 (for `sup` at N=128, worse); absorbing heads 0.23–0.30 vs
+  0.68–0.79. The reflective oracle never beats the bank ceiling (POD-64, 0.064–0.073) by less than
+  3×; `auto+vc` (velocity-consistency loss) changes nothing measurable. G0b was the right gate with
+  a bar (≤ POD-K) too lenient to predict W3; the predicted G0 outcomes were wrong for `auto` and the
+  predicted reflective W3 passes for `sup`/`auto+vc` were wrong.
+- **Decision-table row (design r3/r4): "G0 pass + reflective arm C fail + W4 pass" → INCONCLUSIVE
+  for structural-vs-manifold**, with the alternatives excluded as far as the gates go (W6-C:
+  RS-independent to 1e-5; D2: conditioning 0.07–0.14 along every rollout; G0c: the excess is
+  1.4–1.8× the floor already at 10 intervals from an oracle start). Not inconclusive: (i) "the
+  latent stepping destroys energy on a nonlinear manifold" is refuted — arm C keeps it to 1e-4;
+  (ii) the accuracy failure survives energy conservation, so the 08-16 verdict "does not work on
+  reflective waves" stands, now with the mechanism named: every manifold this project trains on
+  the reflective wave has a tangent space no better than the linear subspace's, and conservative
+  dynamics integrate that error while the absorbing boundary damps it.
+- **Certification that held:** W0 tables vs solver stencil 1e-15 at random states and captured
+  solves; W1 $A=-\Lambda B$ 1e-15 both closures; W7 arm C on a linear head vs the independent POD-K
+  Verlet 1e-12; W2 POD-K CN energy $1\pm10^{-12}$; W5 arm A first-order optimal through the independent
+  path (2e-7 vs 0.48 control); D0 with ARPACK on the full snapshot matrix 2e-13 at N=128 (the 18%
+  the first run showed was the stride-2 subsample). Every control fired except where recorded.
+- **Retractions 7–8:** arm A completion / W5 gradient thresholds 1e-6 → 1e-4 (LM's stall level at
+  fine time steps is 1e-6–5e-6 with healthy conditioning; the "incomplete" RS=40 arm A rows in the
+  tables are that artefact and do not change any verdict — W3-A fails on the error ratio at the
+  finest complete RS, and the affected absorbing `sup` W3-A passes at RS=8); W6 control 20% → 10%.
+  The `sup` head's arm C incompletions at N=64 reflective are genuine Newton stalls (1e-2–1e-1 of
+  the term scale; the manifold is defined on the $(\mu,t)$ box and the ROM leaves it).
+- **Phase 4 (cost ladder) NOT run** — the design gates it on a reflective W3 pass. `wav2d_ladder.py`
+  is written and smoke-tested (matched-accuracy FOM grid with PCG and an exact DST solve, POD-K/R,
+  ours kernel and end-to-end, balanced timing, bank prolongation across N); the N=16 smoke already
+  shows the predicted shape (the matched-accuracy FOM 50× cheaper than the ROM). Running it on the
+  absorbing `sup` arm — the one configuration that passes — is a user decision.
+
+**Open / next.** (1) Fold the Codex verification of the reading (launched at session end) into
+`WAVE2D-NOTES.md`. (2) Decide whether to run the ladder on absorbing `sup` (4 jobs, ~1 h each; the
+staging scripts exist). (3) The FiLM 08-14 comparator on this dataset/metric is still not computed.
+(4) The finding that matters for the roadmap: a tangent-space gate with a *demanding* bar
+(residual well below POD-K's) must precede any conservative-PDE ROM (Euler/acoustics); the
+velocity-consistency loss as implemented does not move it. (5) The 13+ unmerged experiment
+branches remain; no merge was asked or taken.
 (arms A/C, W0–W7, G0c) are designed, not yet coded. Open design point for phase 4: a bank at
 N=512 needs 55 GB of training snapshots — prolongation of the N=128 bank or an H200 job; decide
 only if W3 passes. The other session's 56 uncommitted lab-log lines (Poisson explainer) were

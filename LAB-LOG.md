@@ -3957,10 +3957,45 @@ one directory each, A100, staged at commit f16de63): **3225935** n64_ref, **3225
 at 40k steps) then phase 3 (RS 8/20/40, 4T horizon). A Codex pass on the phase-2/3 code was
 launched before any result exists.
 
-**Open / next.** Pull the four jobs (`cluster/pull_wav2d.sh`), fold the Codex code verification
-into the drivers if it finds defects (re-run if the defect touches a gate), generate the phase-2/3
-tables, read W3 per (BC, head, arm) against the predeclared across-head interaction, and only if
-reflective W3 passes write and run the phase-4 cost ladder (`wav2d_ladder.py`, not yet written). Phase 2 (bank, three head arms, D0–D2, G0a/b) and phase 3
+**Phase-2/3 code verification (Codex, before any result was read):** arms A and C, the POD controls
+and the numpy head CORRECT; W5 a tautology (any $u$-history satisfies the energy-accounting identity);
+W3 compared to POD-K *projection floors* instead of POD-K CN rollouts and post-selected RS on the
+held-out error; W0's "independent" path reused the assembled $L$; D0 bypassed its independent check
+at N=128; several aggregates dropped NaNs; the Newton stall rule was measured against the predictor
+residual. All fixed (design r4 amendments 1–12, notes items 12–15): W5 is now first-order LSPG
+optimality through the solver's stencil; W3 reads the finest complete RS against the POD-K CN
+rollout at the same RS; arm A completes only at first-order optimality (my first "residual ≤
+1e-8·scale" rule completed 0/4 on the smoke — an LSPG residual is not small at the optimum); D0's
+independent path is ARPACK on the full matrix with a near-degenerate-tail rule ($\sigma_{R+1}/\sigma_R$
+= 0.977 / 0.964 / 0.999 / 0.964 for N64ref / N64abs / N128ref / N128abs).
+
+**Retractions 5–6 (from the first N=64 cluster logs, not from any audit):** the D1 control ("a
+shuffled-target head must be worse than POD-K") cannot fire — for free-code arms a row shuffle is
+not a mutation, and any smooth K-manifold fitted per snapshot by the oracle captures about what
+POD-K does; the G0a control ("a shuffled head's gap must exceed 0.05") cannot fire — a head that
+learned nothing has no gap. Replaced by an untrained head (capacity baseline, ≥1.3× worse) and an
+overfit head (4 trajectories). **Both are "controls that cannot fail", the design's own forbidden
+class; they passed two design audits and the N=16 smoke and were caught only by real numbers.**
+
+**Phase 2 at N=64 (jobs 3225935/3225937, heads certified and cached; numbers from the pulled
+JSONs `runs/wav2d/n64_{ref,abs}/out/wav2d_head_gates_*.json`):** bank ceiling POD-64 0.064 (ref) /
+0.018 (abs). Reflective held-out oracle: `sup` 0.246, `auto` 0.186, `auto+vc` 0.187 vs POD-K 0.379 /
+0.302 / 0.302 — every head **3–4× above its own bank ceiling**, and `auto` reproduces the 08-16
+auto-decoder's 0.189 almost exactly; tangent-space velocity residual 0.65 / 0.65 / 0.63 vs POD-K
+0.76 / 0.69 / 0.69 — **no better than the linear subspace's**. Absorbing: oracle 0.125 / 0.075 /
+0.076 vs POD-K 0.47 / 0.34 / 0.34, tangent 0.25 / 0.30 / 0.25 vs POD-K 0.79 / 0.69 / 0.69 — the
+absorbing data are intrinsically easier, as the r1 audit warned. First (pre-correction) phase-3
+numbers on the `sup` head: reflective arm A at 2× its floor with energy ratio 4.5 → 8.1 (RS 8 → 40),
+err(4T) 0.91–0.98; absorbing arm A **on its floor** (0.120 vs 0.125, POD-K 0.47), energy 0.87. The
+08-16 phenomenology, reproduced on the separable decoder. Arm C rollouts under the old Newton rule
+were 9/16–15/16 complete (the stall misread the verification flagged); corrected re-runs on the
+cached heads are jobs **3226045** (p2fix_n64_ref) and **3226046** (p2fix_n64_abs); the two N=128
+cells (3225938/3225939) are finishing phase 2 and will be re-run the same way.
+
+**Open / next.** Pull the p2fix jobs, generate the phase-2/3 tables (`wav2d_tables.py`), read W3 per
+(BC, head, arm) against the predeclared across-head interaction (design r3/r4), re-run N=128 the
+same way, and only if reflective W3 passes run the phase-4 ladder (`wav2d_ladder.py`, written and
+smoke-tested, with bank prolongation across N). Phase 2 (bank, three head arms, D0–D2, G0a/b) and phase 3
 (arms A/C, W0–W7, G0c) are designed, not yet coded. Open design point for phase 4: a bank at
 N=512 needs 55 GB of training snapshots — prolongation of the N=128 bank or an H200 job; decide
 only if W3 passes. The other session's 56 uncommitted lab-log lines (Poisson explainer) were

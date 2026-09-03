@@ -1,0 +1,39 @@
+[00:49:23] phase-1 FOM gates, N=64, backend=gpu
+[00:49:23] == ref ==
+[00:49:23]   F0s    PASS  value=2.430e-16 thr=1e-13  control=3.333e-08 fired=True  [solver stencil vs independent row assembly; control: one coefficient perturbed 1e-6]
+[00:49:23]   F0a    PASS  value=1.198e-16 thr=1e-13  control=2.478e-05 fired=True  [16 modes, closed-form lambda, backward-error normalised by ||L||_2 = 8/dx^2 (retraction 2); control: one lambda perturbed 1%]
+[00:49:23]   F0d    PASS  value=0.000e+00 thr=1e-15  [||ML-(ML)^T||/||ML||; control (abs): M=I]
+[00:49:25]   CN trace ref N=64: 16000 steps in 2s, E0=9.5897e+02, E_end/E0=1.000000
+[00:49:25]   F1a    PASS  value=2.490e-15 thr=1e-10  control=3.867e-01 fired=True  [CN relative energy drift over 4.0T (CG 1e-12); control: backward Euler over T]
+[00:49:26]   F1af   PASS  value=1.186e-16 thr=1e-14  [fwd-difference energy == quadratic form (D_e^T D_e = -L_D)]
+[00:49:26]   F4     PASS  value=4.441e-16 thr=1e-10  [max E^n/E^0 - 1 over 4.0T]
+[00:49:29]   V1     PASS  value=1.810e-10 thr=1e-08  control=1.012e-01 fired=True  [u-only damped Newmark (RS=80, CG 1e-13) vs splu block CN with assembled L; control: a -> 1.01 a (c -> 1.005 c); RETRACTIONS 1+3: threshold 1e-11 -> 1e-9 -> 1e-8 (CG-tolerance accumulation over 4000 solves grows with N); the BINDING criterion is solver-limitedness: CG 1e-11 reads 7.49e-07, ratio loose/tight 4138.4 (must be >= 10)]
+[00:49:32]   F2sp ref [smooth centred bump w=0.1]: errors [0.05238539 0.01257711 0.0025186 ] order 2.189
+[00:49:32]   F2sp ref: order 2.189 -> PASS
+[00:49:34]   F2sp ref [family widest blob w=0.190 cx=0.57 cy=0.62]: errors [0.04399469 0.03557713 0.02716193] order 0.348
+[00:49:37]   F2t  ref: errors [8.08552060e-04 2.01595483e-04 4.98090574e-05] order 2.010; BE control errors [0.10304482 0.05532243 0.02873318] (order 0.92), separation 576.9x -> PASS
+[00:49:39]   F2t  ref [family widest blob, reported]: errors [0.0040425  0.00102441 0.00025367] order 1.997
+[00:49:39] == abs ==
+[00:49:39]   F0s    PASS  value=2.245e-16 thr=1e-13  control=3.080e-08 fired=True  [solver stencil vs independent row assembly; control: one coefficient perturbed 1e-6]
+[00:49:39]   F0b0   PASS  value=3.245e-18 thr=1e-13  [||L_N phi_00|| / (||phi_00|| ||L||_2), ||L||_2 = 8/dx^2]
+[00:49:39]   F0b    PASS  value=8.424e-17 thr=1e-13  control=1.402e-05 fired=True  [16 modes, closed-form lambda, backward-error normalised by ||L||_2 = 8/dx^2 (retraction 2); control: one lambda perturbed 1%]
+[00:49:39]   F0d    PASS  value=0.000e+00 thr=1e-15  control=7.881e-02 fired=True  [||ML-(ML)^T||/||ML||; control (abs): M=I]
+[00:49:41]   F0dS PASS  min eig / max(M) = 2.603e-01
+[00:49:41]   F0c    PASS  value=8.409e-15 thr=1e-12  control=5.775e-02 fired=True  [full ghost row L_N u - D_B v/c vs longhand closed form; controls: corner 4/dx->2/dx (5.8e-02), face 2/dx^2->1/dx^2 (2.7e+00), both must fire]
+[00:49:43]   CN trace abs N=64: 16000 steps in 2s, E0=3.2211e+02, E_end/E0=0.000031
+[00:49:43]   F1b    PASS  value=6.996e-14 thr=1e-10  control=1.510e-05 fired=True  [E^{n+1}-E^n + c dt vbar^T M D_B vbar, rel E0, 5075 active steps; control: v^{n+1} for vbar]
+[00:49:43]   F4     PASS  value=0.000e+00 thr=1e-10  control=1.485e+20 fired=True  [max positive energy increment per step, rel E0, over 4.0T; control: D_B -> -D_B (400 steps)]
+[00:49:47]   V1     PASS  value=2.159e-11 thr=1e-08  control=5.229e+139 fired=True  [u-only damped Newmark (RS=80, CG 1e-13) vs splu block CN with assembled L; control: damping sign flipped; RETRACTIONS 1+3: threshold 1e-11 -> 1e-9 -> 1e-8 (CG-tolerance accumulation over 4000 solves grows with N); the BINDING criterion is solver-limitedness: CG 1e-11 reads 6.07e-08, ratio loose/tight 2811.5 (must be >= 10)]
+[00:49:50]   F2sp abs [smooth centred bump w=0.1]: errors [0.0258003  0.00601581 0.00119681] order 2.215
+[00:49:50]   F2sp abs: order 2.215 -> PASS
+[00:49:53]   F2sp abs [family widest blob w=0.190 cx=0.57 cy=0.62]: errors [0.00877263 0.00385101 0.00168075] order 1.192
+[00:49:56]   F2t  abs: errors [3.99176220e-04 9.94951867e-05 2.45807660e-05] order 2.011; BE control errors [0.05336559 0.02775599 0.01416676] (order 0.96), separation 576.3x -> PASS
+[00:49:59]   F2t  abs [family widest blob, reported]: errors [4.31750095e-04 1.09098803e-04 2.70028180e-05] order 2.000
+[00:50:01]   V0     PASS  value=2.272e-15 thr=1e-13  control=8.090e-06 fired=True  [new 'ref' CN vs frozen 08-14 make_rollout, 4 traj, CG 1e-13 both; energies agree to 4.8e-15; control: dx perturbed 1e-6]
+[00:50:03]   F5     PASS  value=-4.511e-15 thr=1e-12  control=2.828e+00 fired=True  [max Re(lambda)/(c/dx) of the 2n block generator at N=32; control: anti-damping]
+[00:50:04]   F3 N=64: reflected fraction 1.520e-04, prediction 1.488e-04  (1s)
+[00:50:04]   F3 N=128: reflected fraction 9.056e-06, prediction 9.009e-06  (1s)
+[00:50:05]   F3 N=256: reflected fraction 5.550e-07, prediction 5.543e-07  (1s)
+[00:50:07]   F3 N=512: reflected fraction 3.438e-08, prediction 3.437e-08  (2s)
+[00:50:08]   F3: slope 4.010 (target 4+-0.5), ratio to prediction [1.0215051  1.0051969  1.00128343 1.00031928], reflective control 1.000 -> PASS
+[00:50:08] phase 1 ALL PASS  (46s) -> runs/wav2d/wav2d_fom_gates_N64.json

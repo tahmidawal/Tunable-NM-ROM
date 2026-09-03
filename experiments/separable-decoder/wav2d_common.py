@@ -34,6 +34,7 @@ Everything is f64.  Data as explicit jit ARGUMENTS, never closed over.
 """
 from __future__ import annotations
 
+import functools
 import hashlib
 import os
 import time
@@ -343,7 +344,7 @@ def make_cn_fom_stepwise(g: Grid, substeps=SUBSTEPS, cg_tol=CG_TOL):
                                           tol=cg_tol, maxiter=CG_MAXITER)
         return isq * y
 
-    @jax.jit
+    @functools.partial(jax.jit, static_argnums=3)
     def rollout(u0, v0, c, n_steps):
         def step(carry, _):
             u, v, Lu = carry

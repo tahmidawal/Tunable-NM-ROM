@@ -11,14 +11,17 @@ not run.** Read `WAVE2D-NOTES.md` on the branch (reading + generated tables + ei
 the 2026-09-03 lab-log entry before anything else. Summary for a new session:
 
 - Reflective stop gate W3 **fails on every head (`sup`, `auto`, `auto+vc`) and both ROM arms at N=64
-  and 128**. The incumbent arm A sits at 2–5× its floor with energy growing 4.5–19×; the variational
-  arm C conserves the reduced energy to 1e-4 over 4T and is **no more accurate** (4–6× floor). The
-  08-16 energy explanation is refuted; the 08-16 verdict stands, with the mechanism named: the
-  tangent-space velocity residual of every reflective head is no better than POD-K's (0.63–0.74 vs
-  0.69–0.83), while on the absorbing wave it is 0.23–0.30 vs 0.68–0.79 and `sup` passes W3 on both
-  arms at both N (1.05–1.29× floor).
-- The predeclared decision row is "G0 pass + reflective arm C fail + W4 pass → INCONCLUSIVE" for
-  structural-vs-manifold; what is settled is that energy conservation is not the cure.
+  and 128**. The incumbent arm A sits at 2.2–5× its floor with the energy ratio at T of 6.5–19; the
+  variational arm C on `auto+vc` keeps the reduced energy within 6e-3 over 4T (W4 pass) and is **no
+  more accurate** (2.2–5.7× floor across completed rows). Energy loss is therefore not necessary for
+  the failure: the 08-16 *mechanism* is refuted, its verdict stands. The tangent-space velocity
+  residual (reflective heads 0.63–0.74 vs POD-K 0.69–0.83; absorbing 0.23–0.30 vs 0.68–0.79) is the
+  **hypothesis** for why, not a finding — single seed, curvature not excluded. Absorbing `sup` passes
+  W3 on both arms at both N (1.05–1.29× floor).
+- The design's decision row ("all heads") is not met as a bundle (`auto` misses W4 by 3.4% at N=64,
+  `sup` fails W4/G0 at N=128), so structural-vs-manifold is formally INCONCLUSIVE; what is settled is
+  that energy conservation is not the cure. The Codex verification of the reading
+  (`WAVE2D-RESULTS-VERIFY-r1-codex-gpt56sol.md`) corrected the first, overstated version.
 - Phase 4 (`wav2d_ladder.py`, written, smoke-tested, PCG + exact DST FOM, bank prolongation across
   N) is gated on a reflective pass and was **not run**; running it on absorbing `sup` is the user's
   call (`cluster/stage_ladder.sh`, `cluster/make_ladder_sbatch.sh`).

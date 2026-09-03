@@ -46,10 +46,11 @@ arms (`auto`, `sup` on (mu,t), `auto+vc`), two ROM arms (incumbent LSPG-Newmark,
 Verlet), predeclared: reflective arm C passes W3 iff the head passes the manifold gates G0; the
 cost ladder is predeclared as likely lost to POD-R. **Outcome (2026-09-03, all four cells run and
 verified): reflective W3 fails on every head and both ROM arms at N=64 and 128 — the variational arm
-conserves energy to 1e-4 and is no more accurate (4–6× floor); absorbing `sup` passes at both N. The
-mechanism is the tangent-space residual (reflective heads no better than POD-K, absorbing 2–3×
-better). The energy claim of 08-16 is refuted, its verdict stands; the cost ladder was not run
-(gated on a reflective pass).** Eight retractions, all in `WAVE2D-NOTES.md`. See the 2026-09-03 entry.
+keeps energy within 6e-3 on `auto+vc` and is no more accurate (2.2–5.7× floor); absorbing `sup`
+passes at both N. Energy loss is therefore not necessary for the failure (the 08-16 mechanism is
+refuted, its verdict stands); the tangent-space residual (reflective heads no better than POD-K,
+absorbing 2–3× better) is the hypothesis for the next cell, not a finding — the design's decision
+row is formally INCONCLUSIVE. The cost ladder was not run (gated on a reflective pass).** Eight retractions, all in `WAVE2D-NOTES.md`. See the 2026-09-03 entry.
 
 ## The method (separable EQ-decoder)
 
@@ -4001,39 +4002,47 @@ cluster dirs deleted; heads/banks/oracles archived in `runs/wav2d/p2fix_*/cache`
 Every result number below is in `WAVE2D-NOTES.md`'s generated tables.**
 
 - **Reflective: the stop gate W3 fails on every head, both ROM arms, both N.** Arm A (incumbent
-  LSPG-Newmark) at 2.2–5.0× its oracle floor with the dynamic-velocity energy growing 4.5–19× over
-  $T$; on `auto` it reads 0.888 (N=64) against the 08-16 record's 0.878 — the negative reproduced
-  on the separable decoder. **Arm C (forced variational Verlet) conserves the reduced energy to
-  1.00001–1.0007 over $4T$ on every completed rollout, with the deviation shrinking under time-step
-  refinement (0.157 → 0.014 → 0.005 for `auto` at N=128), and its error is the same or worse:
-  4–6× floor (≈1.0 traj-RMS on the free-code heads).** Energy conservation was a symptom.
-- **Absorbing: `sup` passes W3 on both arms at both N** (arm C 1.29× / 1.27× floor, 0.25–0.28×
-  the POD-K CN rollout, 16/16 at every RS); `auto` / `auto+vc` sit at 1.9–3.3× their tighter floors
-  (FAIL on the floor ratio, 2.2–3× better than POD-K).
-- **Why (the gate that saw it): the tangent-space velocity residual.** Reflective heads 0.63–0.74,
-  no better than POD-K's 0.69–0.83 (for `sup` at N=128, worse); absorbing heads 0.23–0.30 vs
-  0.68–0.79. The reflective oracle never beats the bank ceiling (POD-64, 0.064–0.073) by less than
-  3×; `auto+vc` (velocity-consistency loss) changes nothing measurable. G0b was the right gate with
-  a bar (≤ POD-K) too lenient to predict W3; the predicted G0 outcomes were wrong for `auto` and the
-  predicted reflective W3 passes for `sup`/`auto+vc` were wrong.
-- **Decision-table row (design r3/r4): "G0 pass + reflective arm C fail + W4 pass" → INCONCLUSIVE
-  for structural-vs-manifold**, with the alternatives excluded as far as the gates go (W6-C:
-  RS-independent to 1e-5; D2: conditioning 0.07–0.14 along every rollout; G0c: the excess is
-  1.4–1.8× the floor already at 10 intervals from an oracle start). Not inconclusive: (i) "the
-  latent stepping destroys energy on a nonlinear manifold" is refuted — arm C keeps it to 1e-4;
-  (ii) the accuracy failure survives energy conservation, so the 08-16 verdict "does not work on
-  reflective waves" stands, now with the mechanism named: every manifold this project trains on
-  the reflective wave has a tangent space no better than the linear subspace's, and conservative
-  dynamics integrate that error while the absorbing boundary damps it.
-- **Certification that held:** W0 tables vs solver stencil 1e-15 at random states and captured
+  LSPG-Newmark) at 2.2–5.0× its oracle floor with the dynamic-velocity energy ratio at $T$ of
+  6.5–19 at the selected RS; on `auto` at N=64 it reads 0.888 at RS=8 (0.932 at the selected RS=20)
+  beside the 08-16 record's 0.878 — the negative reproduced on the separable decoder. **Arm C
+  (forced variational Verlet) on `auto+vc` keeps the reduced energy within 6e-3 over $4T$ with no
+  secular trend and a deviation shrinking under refinement (W4 pass at both N), and its error is
+  the same as arm A's: 2.2–5.7× floor across the completed arm C rows.** Energy loss is not
+  necessary for the failure. Arm C on `sup` at N=128 completes but drifts 116% (W4 fail); `auto` at
+  N=64 misses W4 by 3.4%.
+- **Absorbing: `sup` passes W3 on both arms at both N** (arm C 1.29× / 1.27× floor at $T$, 0.25–0.28×
+  the POD-K CN rollout, 16/16 at every RS); `auto` / `auto+vc` sit at 2.4–3.3× their tighter floors at
+  $T$ (FAIL on the floor ratio, 2.2–3× better than POD-K).
+- **Hypothesis (consistent with every number, not established by the design's own decision row):
+  the tangent-space velocity residual.** Reflective heads 0.63–0.74 against POD-K's 0.69–0.83;
+  absorbing heads 0.23–0.30 against 0.68–0.79; only absorbing `sup` passes. The reflective oracle is
+  2.6–4× the bank ceiling (POD-64, 0.064–0.073); `auto+vc` does not separate from `auto` in any
+  metric (single seed, no uncertainty estimate). G0b was the gate that sees it, with a bar (≤ POD-K)
+  too lenient to predict W3 — 11/12 cells pass G0 (the exception, reflective `sup` at N=128, fails
+  through its control while its own residual 0.741 is *better* than POD-K's 0.825); the predicted
+  reflective W3 passes for `sup`/`auto+vc` were wrong.
+- **Decision table (design r3/r4): the "G0 pass + reflective W3 fail + W4 pass, all heads" row is
+  not met as a bundle** (it holds for `auto+vc` at both N individually; `auto` misses W4 by 3.4% at
+  N=64; `sup` fails W4 and G0 at N=128; the curvature alternative is excluded by no gate) → the
+  structural-vs-manifold question is **INCONCLUSIVE** by the design's own rule. What stands: (i)
+  **energy loss is not necessary for the failure** — `auto+vc` passes W4 and fails W3 at both N with
+  the same error as the energy-losing arm, so the 08-16 *mechanism* is refuted while its verdict
+  "does not work on reflective waves" stands; (ii) the tangent-space explanation is the hypothesis
+  for the next cell, not a finding of this one. The Codex verification of the reading
+  (`WAVE2D-RESULTS-VERIFY-r1-codex-gpt56sol.md`) caught the first version of this entry overstating
+  exactly this — it had reversed one comparison, quoted an energy median from an incomplete row of
+  the first run, and used $T$-energies while saying $4T$.
+- **Certification that held:** W0 tables vs solver stencil ≤1e-15 at random states and captured
   solves; W1 $A=-\Lambda B$ 1e-15 both closures; W7 arm C on a linear head vs the independent POD-K
-  Verlet 1e-12; W2 POD-K CN energy $1\pm10^{-12}$; W5 arm A first-order optimal through the independent
-  path (2e-7 vs 0.48 control); D0 with ARPACK on the full snapshot matrix 2e-13 at N=128 (the 18%
-  the first run showed was the stride-2 subsample). Every control fired except where recorded.
+  Verlet ≤2e-12; W2 POD-K CN energy deviation 2e-11–5e-11; W5 arm A first-order optimal through the
+  independent path; D0 with ARPACK on the full snapshot matrix 2e-13 at N=128 (the 18% the first run
+  showed was the stride-2 subsample). **The re-runs were launched before retractions 7–8**, so their
+  tables carry the pre-retraction arm A completion rule and W6 control bar; no W3 verdict depends on
+  either (stated in the notes).
 - **Retractions 7–8:** arm A completion / W5 gradient thresholds 1e-6 → 1e-4 (LM's stall level at
-  fine time steps is 1e-6–5e-6 with healthy conditioning; the "incomplete" RS=40 arm A rows in the
-  tables are that artefact and do not change any verdict — W3-A fails on the error ratio at the
-  finest complete RS, and the affected absorbing `sup` W3-A passes at RS=8); W6 control 20% → 10%.
+  fine time steps is 1e-6–5e-6 with healthy conditioning; the INCOMPLETE arm A rows at RS 20/40 in
+  the tables are that artefact and change no verdict — W3-A fails on the error ratio at the finest
+  complete RS, and the absorbing `sup` W3-A pass is read at RS=8); W6 control 20% → 10%.
   The `sup` head's arm C incompletions at N=64 reflective are genuine Newton stalls (1e-2–1e-1 of
   the term scale; the manifold is defined on the $(\mu,t)$ box and the ROM leaves it).
 - **Phase 4 (cost ladder) NOT run** — the design gates it on a reflective W3 pass. `wav2d_ladder.py`

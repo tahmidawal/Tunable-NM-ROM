@@ -1,0 +1,4 @@
+/cluster/tufts/paralab/tawal01/wav2d/p2fix_n128_abs/code/wav2d_head.py:223: RuntimeWarning: invalid value encountered in divide
+  pod = np.sqrt(np.sum(CV[:, K:] ** 2, axis=1) + perpv2) / vnorm
+/cluster/tufts/paralab/tawal01/wav2d/p2fix_n128_abs/code/wav2d_head.py:224: RuntimeWarning: invalid value encountered in divide
+  return out / vnorm, pod, ranks

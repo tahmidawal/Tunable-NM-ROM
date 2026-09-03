@@ -1,0 +1,774 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.82in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+
+\definecolor{navy}{HTML}{17365D}
+\definecolor{blue}{HTML}{2F75B5}
+\definecolor{pale}{HTML}{EAF2F8}
+\definecolor{green}{HTML}{2E7D32}
+\definecolor{gray}{HTML}{555555}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=navy,
+  urlcolor=blue,
+  pdftitle={Poisson ROM: From Training to Residual to Prediction},
+  pdfauthor={Tunable NM-ROM project}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Poisson ROM worked example}
+\rhead{Training $\rightarrow$ residual $\rightarrow$ prediction}
+\lfoot{\scriptsize $P$: interior grid values \quad $K$: latent variables \quad $R$: learned spatial patterns}
+\rfoot{\thepage}
+\setlength{\headheight}{14pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlist[itemize]{itemsep=0.15em,topsep=0.25em}
+\setlist[enumerate]{itemsep=0.2em,topsep=0.3em}
+
+\newcommand{\mat}[1]{\mathbf{#1}}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\keyidea}[1]{%
+  \begin{center}
+  \fcolorbox{blue}{pale}{\begin{minipage}{0.91\textwidth}
+  #1
+  \end{minipage}}
+  \end{center}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{navy} Poisson ROM}\\[0.35em]
+  {\Large From Training to Residual to Final Prediction}\\[0.8em]
+  {\color{gray} A complete numerical walkthrough of the separable-decoder architecture}
+\end{center}
+
+\vspace{0.5em}
+
+\keyidea{\textbf{Purpose of this document.}
+The project dimensions in Section~\ref{sec:real-sizes} are taken from the
+$N=256$ Poisson quadrature-free configuration.  The small matrices later in
+the document are deliberately constructed teaching numbers, not experimental
+measurements.  They use the same algebra as the production implementation and
+are consistent with a real four-point discrete Poisson problem.}
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+
+\section{The problem and the model}
+
+We want to solve the Poisson equation
+\begin{equation}
+  -\Delta u = f,
+  \qquad
+  u=0 \text{ on the boundary}.
+\end{equation}
+Here $f$ is a new source field and $u$ is the solution we want to predict.
+
+The learned decoder has two separate neural networks:
+\begin{equation}
+  u(\vect{x};\vect{z})
+  = s\,b_c(\vect{x})\,
+    \vect{g}(\vect{x})^{\mathsf T}\vect{h}(\vect{z}).
+\end{equation}
+
+The two networks have different jobs:
+\begin{itemize}
+  \item $\vect{g}(\vect{x})$ produces $R$ spatial-pattern values at coordinate
+        $\vect{x}$.  Here $R$ means the number of learned spatial patterns.
+  \item $\vect{h}(\vect{z})$ produces $R$ coefficients, one coefficient for
+        each of those $R$ learned spatial patterns.
+  \item $b_c(\vect{x})$ is zero on the boundary, so every decoded field
+        satisfies the boundary condition automatically.
+\end{itemize}
+
+On all interior grid points at once, the decoder becomes
+\begin{equation}
+  \vect{u}(\vect{z}) = \mat{G}\,\vect{h}(\vect{z}),
+  \qquad
+  \mat{G}\in\R^{P\times R},
+\end{equation}
+Here $P$ is the number of interior grid values in the solution vector, and
+$R$ is the number of learned spatial patterns.  Thus $\mat{G}$ has one row per
+grid value and one column per learned pattern.  In the implementation, row
+$i$ of $\mat{G}$ is
+\begin{equation}
+  G_{i,:}
+  =s\,b_c(\vect{x}_i)\,\vect{g}(\vect{x}_i)^{\mathsf T},
+\end{equation}
+so the fixed training-data scale $s$ and the hard boundary mask are already
+inside the cached bank.
+
+\keyidea{The new forcing $f$ is \emph{not} fed into $\vect{h}$.
+For a new problem, $f$ enters the residual.  A numerical solver changes
+$\vect{z}$ until the decoded field satisfies the projected Poisson equation.}
+
+\keyidea{\textbf{Three sizes to remember throughout the document.}
+$P$ counts physical-grid values in $\vect{u}$; $K$ counts the latent variables
+in $\vect{z}$ that the online solver changes; and $R$ counts both the learned
+spatial patterns in $\mat{G}$ and their coefficients in $\vect{h}(\vect{z})$.
+The same reminder appears in every page footer.}
+
+\section{The real project dimensions}
+\label{sec:real-sizes}
+
+For the $N=256$ Poisson quadrature-free run, the full mesh has
+$256\times256$ points.  Removing the outer boundary leaves
+\begin{equation}
+  P=(256-2)^2=254^2=64{,}516
+\end{equation}
+interior points.  In other words, $P$ is the length of a full interior solution
+vector, not the number of latent variables or learned patterns.
+
+The main dimensions are:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Object & Shape & Meaning \\
+\midrule
+$\vect{z}$ & $16=K$ & latent variables changed by the solver \\
+$\vect{h}(\vect{z})$ & $64=R$ & one coefficient per learned spatial pattern \\
+$\mat{G}$ & $64{,}516\times64=P\times R$ & grid values by learned patterns \\
+$\mat{\Phi}^{\mathsf T}$ & $64\times64{,}516$ & 64 sine test functions \\
+$\mat{B}$ & $64\times64$ & projected spatial bank \\
+$\mat{A}$ & $64\times64$ & projected Poisson operator \\
+$\vect{r}(\vect{z})$ & $64$ & residual seen by the latent solver \\
+$\mat{J}_r$ & $64\times16$ & residual Jacobian with respect to $\vect{z}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The training configuration used 512 training solutions and 100,000 optimizer
+steps, with
+\begin{equation}
+  K=16,\qquad R=64,\qquad M=64.
+\end{equation}
+That means 16 latent variables are adjusted online ($K=16$), the decoder uses
+64 learned spatial patterns and 64 matching coefficients ($R=64$), and the
+residual retains 64 test equations ($M=64$).
+
+\textbf{Notation warning.}  The blackboard-bold symbol $\mathbb{R}$ in an
+expression such as $\mathbb{R}^{16}$ means ``vectors of real numbers.''  It is
+not the model-size symbol $R$.  For example, $\mathbb{R}^{16}$ below is a
+real-valued vector with 16 entries, while $R=64$ counts learned patterns.
+
+The spatial path begins with 64 learned frequency vectors, expanded into 64
+sine values and 64 cosine values.  Its architecture is
+\begin{equation}
+  \R^2
+  \longrightarrow 128\text{ Fourier features}
+  \longrightarrow 128
+  \longrightarrow 128
+  \longrightarrow \R^{64},
+\end{equation}
+with SiLU activations after the two hidden dense layers and a linear final
+layer.  Its output is multiplied by the fixed training-data RMS scale and the
+hard boundary mask when the bank is formed.  The latent path is
+\begin{equation}
+  \R^{16}\longrightarrow128\longrightarrow128\longrightarrow\R^{64},
+\end{equation}
+again with SiLU hidden activations and a linear final layer.  A separate linear
+map from $\R^{16}$ to $\R^{64}$ is added as a skip connection.  In this path,
+the 16 input entries are the $K=16$ latent variables, and the 64 output entries
+are the $R=64$ learned-pattern coefficients.
+
+\section{Offline training}
+
+\subsection{Step 1: generate solution snapshots}
+
+The full-order Poisson solver produces training pairs
+\begin{equation}
+  (\vect{f}_s,\vect{u}_s),
+  \qquad s=1,\ldots,512.
+\end{equation}
+Each $\vect{u}_s$ contains $P=64{,}516$ interior solution values in the
+$N=256$ run; here $P$ again means the number of physical-grid values stored in
+one solution snapshot.
+
+\subsection{Step 2: assign a trainable code to every snapshot}
+
+Because this is an auto-decoder, there is no encoder.  Every training snapshot
+gets its own trainable latent vector:
+\begin{equation}
+  \vect{z}_s\in\R^{16}.
+\end{equation}
+The 16 entries of this vector are the $K=16$ latent variables assigned to that
+snapshot.  The 512 latent codes and the weights of both neural networks are
+optimized together.
+
+\subsection{Step 3: reconstruct every training solution}
+
+At a training step, evaluate the spatial bank below.  It has $P$ rows, one for
+each interior grid value, and $R$ columns, one for each learned spatial pattern:
+\begin{equation}
+  \mat{G}_{\theta_g}
+  = \begin{bmatrix}
+      s\,b_c(\vect{x}_1)\vect{g}_{\theta_g}(\vect{x}_1)^{\mathsf T}\\
+      \vdots\\
+      s\,b_c(\vect{x}_P)\vect{g}_{\theta_g}(\vect{x}_P)^{\mathsf T}
+    \end{bmatrix}
+  \in\R^{P\times R}
+\end{equation}
+The coefficient matrix below has 512 rows, one for each training snapshot, and
+$R$ columns, one coefficient for each learned spatial pattern:
+\begin{equation}
+  \mat{H}_{\theta_h}
+  = \begin{bmatrix}
+      \vect{h}_{\theta_h}(\vect{z}_1)^{\mathsf T}\\
+      \vdots\\
+      \vect{h}_{\theta_h}(\vect{z}_{512})^{\mathsf T}
+    \end{bmatrix}
+  \in\R^{512\times R}.
+\end{equation}
+
+All training reconstructions are produced together by the following matrix.
+It has 512 rows, one reconstructed snapshot per row, and $P$ columns, one for
+each interior grid value:
+\begin{equation}
+  \widehat{\mat{U}}=\mat{H}_{\theta_h}\mat{G}_{\theta_g}^{\mathsf T}
+  \in\R^{512\times P}.
+\end{equation}
+
+The main loss is the global relative mean-square reconstruction error,
+\begin{equation}
+  \mathcal{L}_{\mathrm{recon}}
+  =
+  \frac{\lVert\widehat{\mat{U}}-\mat{U}\rVert_F^2}
+       {\lVert\mat{U}\rVert_F^2},
+\end{equation}
+plus a small feature-Gram regularizer that discourages badly conditioned or
+redundant columns in $\mat{G}$.
+
+Adam updates
+\begin{equation}
+  \theta_g,\qquad \theta_h,\qquad
+  \vect{z}_1,\ldots,\vect{z}_{512}.
+\end{equation}
+
+\subsection{A tiny training calculation}
+
+For the worked example, use only four interior points, two latent variables,
+and three spatial features:
+\begin{equation}
+  P=4,\qquad K=2,\qquad R=3.
+\end{equation}
+Thus $P=4$ means four physical-grid values in each solution, $K=2$ means two
+latent variables for the solver to adjust, and $R=3$ means three learned
+spatial patterns and three matching coefficients.
+
+Suppose one training target is
+\begin{equation}
+  \vect{u}_{\mathrm{train}}
+  =\begin{bmatrix}1&0&1&2\end{bmatrix}^{\mathsf T}.
+\end{equation}
+An early prediction might be
+\begin{equation}
+  \widehat{\vect{u}}
+  =\begin{bmatrix}0.3&-0.1&0.2&0.4\end{bmatrix}^{\mathsf T}.
+\end{equation}
+Its pointwise error and plain mean-square error are
+\begin{align}
+  \widehat{\vect{u}}-\vect{u}_{\mathrm{train}}
+    &=\begin{bmatrix}-0.7&-0.1&-0.8&-1.6\end{bmatrix}^{\mathsf T},\\
+  \mathrm{MSE}
+    &=\frac{0.49+0.01+0.64+2.56}{4}=0.925.
+\end{align}
+This plain MSE is only a small arithmetic illustration; the production loss
+uses the relative normalization written above.
+
+After many updates, suppose training has produced the bank
+\begin{equation}
+\label{eq:Gtoy}
+  \mat{G}
+  =\begin{bmatrix}
+      1&0& 1\\
+      0&1& 1\\
+      1&1& 0\\
+      2&1&-1
+    \end{bmatrix}.
+\end{equation}
+For the training snapshot above, suppose the trained head gives
+\begin{equation}
+  \vect{h}(\vect{z}_{\mathrm{train}})
+  =\begin{bmatrix}1&0&0\end{bmatrix}^{\mathsf T}.
+\end{equation}
+Then
+\begin{equation}
+  \mat{G}\vect{h}(\vect{z}_{\mathrm{train}})
+  =\begin{bmatrix}1&0&1&2\end{bmatrix}^{\mathsf T},
+\end{equation}
+so this teaching snapshot is reconstructed exactly.
+
+\subsection{Step 4: freeze the learned model}
+
+After training, the spatial network, Fourier frequencies, latent network, and
+linear skip are frozen.  The training codes are no longer optimized.  They
+may still be useful for constructing an initial guess for a new solve.
+
+\section{One-time Poisson precomputation}
+
+\subsection{Step 5: evaluate the frozen spatial bank}
+
+Evaluate the frozen spatial network at every interior point, multiply by the
+fixed output scale and hard boundary mask, and build a matrix with $P$ rows
+(one per interior grid value) and $R$ columns (one per learned spatial pattern):
+\begin{equation}
+  \mat{G}\in\R^{P\times R}.
+\end{equation}
+This is the large spatial calculation.  It is not repeated during each latent
+solver iteration.
+
+\subsection{Step 6: construct the sine test functions}
+
+Let
+\begin{equation}
+  \mat{\Phi}
+  =\begin{bmatrix}\vect{\phi}_1&\cdots&\vect{\phi}_M\end{bmatrix}
+  \in\R^{P\times M}
+\end{equation}
+contain the selected discrete sine modes.  The $P$ rows place every test
+function on all $P$ interior grid values; the $M$ columns are the $M$ retained
+test functions.  They are eigenvectors of the
+discrete negative Laplacian $\mat{L}$:
+\begin{equation}
+  \mat{L}\vect{\phi}_m=\lambda_m\vect{\phi}_m.
+\end{equation}
+
+For a general fixed linear operator, the projected matrix would be built as
+\begin{equation}
+  \mat{A}=\mat{\Phi}^{\mathsf T}\mat{L}\mat{G}.
+\end{equation}
+For Poisson sine modes, symmetry and the eigenvector identity give the
+shortcut
+\begin{equation}
+  \mat{A}=\mat{\Lambda}\mat{B},
+  \qquad
+  \mat{B}=\mat{\Phi}^{\mathsf T}\mat{G},
+\end{equation}
+where
+\begin{equation}
+  \mat{\Lambda}=\operatorname{diag}(\lambda_1,\ldots,\lambda_M).
+\end{equation}
+
+\subsection{Step 7: compute every small matrix in the toy example}
+
+Take a $4\times4$ full grid on $[0,1]^2$.  It has a $2\times2$ interior, so
+$P=4$ physical interior-grid values, and its grid spacing is $\Delta x=1/3$.
+For readable arithmetic,
+manually select two test modes, $M=2$.  Their values are
+\begin{equation}
+  \mat{\Phi}^{\mathsf T}
+  =\begin{bmatrix}
+      0.5& 0.5&0.5& 0.5\\
+      0.5&-0.5&0.5&-0.5
+    \end{bmatrix}.
+\end{equation}
+These are actual normalized two-dimensional discrete sine modes on this tiny
+grid.  The production mode selector retains complete eigenvalue shells.  On
+this unusually small grid, requesting two modes would therefore retain the
+second mode's tied partner as a third mode.  The teaching example intentionally
+omits that tied partner to keep every displayed matrix two rows tall; each
+displayed vector remains a valid sine eigenmode.  Their negative-Laplacian
+eigenvalues are
+\begin{equation}
+  \lambda_1=18,
+  \qquad
+  \lambda_2=36,
+  \qquad
+  \mat{\Lambda}=\begin{bmatrix}18&0\\0&36\end{bmatrix}.
+\end{equation}
+
+Projecting the bank in Equation~\eqref{eq:Gtoy} gives
+\begin{align}
+  \mat{B}
+  &=\mat{\Phi}^{\mathsf T}\mat{G}\\[0.25em]
+  &=
+  \begin{bmatrix}
+      0.5& 0.5&0.5& 0.5\\
+      0.5&-0.5&0.5&-0.5
+    \end{bmatrix}
+  \begin{bmatrix}
+      1&0& 1\\
+      0&1& 1\\
+      1&1& 0\\
+      2&1&-1
+    \end{bmatrix}\\[0.25em]
+  &=\begin{bmatrix}
+      2& 1.5&0.5\\
+      0&-0.5&0.5
+    \end{bmatrix}.
+\end{align}
+
+For example, the upper-left entry is
+\begin{equation}
+  B_{11}=0.5(1)+0.5(0)+0.5(1)+0.5(2)=2.
+\end{equation}
+
+The projected Poisson matrix is
+\begin{align}
+  \mat{A}
+  &=\mat{\Lambda}\mat{B}\\
+  &=\begin{bmatrix}18&0\\0&36\end{bmatrix}
+    \begin{bmatrix}2&1.5&0.5\\0&-0.5&0.5\end{bmatrix}\\
+  &=\begin{bmatrix}
+      36& 27& 9\\
+       0&-18&18
+    \end{bmatrix}.
+\end{align}
+
+For the project choice $\alpha=1$, the residual weighting is the inverse
+eigenvalue scaling
+\begin{equation}
+  \mat{W}=\mat{\Lambda}^{-1}
+  =\begin{bmatrix}1/18&0\\0&1/36\end{bmatrix}.
+\end{equation}
+
+At this point, $\mat{G}$, $\mat{\Phi}$, $\mat{B}$, $\mat{A}$,
+$\mat{\Lambda}$, and $\mat{W}$ are mathematically fixed.  The optimized code
+does not need to materialize all of them as separate dense matrices: it stores
+$\mat{B}$, the eigenvalue vector, and the already scaled forcing.
+
+\section{Online solve for a new source}
+
+\subsection{Step 8: receive and project the new forcing}
+
+Suppose the new forcing on the four interior points is
+\begin{equation}
+  \vect{f}=\begin{bmatrix}54&9&9&18\end{bmatrix}^{\mathsf T}.
+\end{equation}
+Project it onto the two test functions once:
+\begin{align}
+  \vect{f}_M
+  &=\mat{\Phi}^{\mathsf T}\vect{f}\\
+  &=\begin{bmatrix}
+      0.5(54)+0.5(9)+0.5(9)+0.5(18)\\
+      0.5(54)-0.5(9)+0.5(9)-0.5(18)
+    \end{bmatrix}\\
+  &=\begin{bmatrix}45\\18\end{bmatrix}.
+\end{align}
+
+This source projection may touch the full grid, but it is performed only once
+per new source, not once per latent iteration.  If the forcing has a known
+affine expansion, the projections of its fixed components can also be
+precomputed.
+
+\textbf{Notation warning.} In this document, $\vect{f}_M$ means the raw
+projection $\mat{\Phi}^{\mathsf T}\vect{f}$.  The implementation variable
+named \texttt{f\_m} instead stores the scaled vector
+$\mat{\Lambda}^{-1}\mat{\Phi}^{\mathsf T}\vect{f}$.
+
+\subsection{Step 9: evaluate one candidate latent state}
+
+Suppose the latent solver proposes
+\begin{equation}
+  \vect{z}=\begin{bmatrix}0.4&-0.7\end{bmatrix}^{\mathsf T}
+\end{equation}
+and the frozen latent MLP returns
+\begin{equation}
+  \vect{c}=\vect{h}(\vect{z})
+  =\begin{bmatrix}2&-1&0.5\end{bmatrix}^{\mathsf T}.
+\end{equation}
+
+The projected left side of the PDE is
+\begin{align}
+  \mat{A}\vect{c}
+  &=\begin{bmatrix}
+      36&27&9\\0&-18&18
+    \end{bmatrix}
+    \begin{bmatrix}2\\-1\\0.5\end{bmatrix}\\
+  &=\begin{bmatrix}
+      36(2)+27(-1)+9(0.5)\\
+      0(2)-18(-1)+18(0.5)
+    \end{bmatrix}\\
+  &=\begin{bmatrix}49.5\\27\end{bmatrix}.
+\end{align}
+
+The raw projected residual is
+\begin{equation}
+  \mat{A}\vect{h}(\vect{z})-\vect{f}_M
+  =\begin{bmatrix}49.5\\27\end{bmatrix}
+   -\begin{bmatrix}45\\18\end{bmatrix}
+  =\begin{bmatrix}4.5\\9\end{bmatrix}.
+\end{equation}
+
+After applying the weights,
+\begin{align}
+  \vect{r}(\vect{z})
+  &=\mat{W}\left(
+      \mat{A}\vect{h}(\vect{z})-\vect{f}_M
+    \right)\\
+  &=\begin{bmatrix}4.5/18\\9/36\end{bmatrix}
+   =\begin{bmatrix}0.25\\0.25\end{bmatrix}.
+\end{align}
+The candidate is therefore not yet a solution.
+
+\subsection{Step 10: compute a latent update}
+
+Automatic differentiation is needed only through the small head.  Suppose its
+local Jacobian is
+\begin{equation}
+  \mat{J}_h
+  =\frac{\partial\vect{h}}{\partial\vect{z}}
+  =\begin{bmatrix}
+      1&0\\
+      0&1\\
+      0.5&-0.5
+    \end{bmatrix}
+  \in\R^{3\times2}.
+\end{equation}
+Its three rows correspond to the $R=3$ learned-pattern coefficients, while its
+two columns correspond to the $K=2$ latent variables being adjusted.
+Then the residual Jacobian is
+\begin{align}
+  \mat{J}_r
+  &=\mat{W}\mat{A}\mat{J}_h\\
+  &=\begin{bmatrix}
+      2.25&1.25\\
+      0.25&-0.75
+    \end{bmatrix}.
+\end{align}
+
+For illustration, an undamped local Newton step solves
+\begin{equation}
+  \mat{J}_r\,\delta\vect{z}=-\vect{r},
+\end{equation}
+which here gives
+\begin{equation}
+  \delta\vect{z}=\begin{bmatrix}-0.25\\0.25\end{bmatrix}.
+\end{equation}
+The production method uses Levenberg--Marquardt damping and a trust-region
+limit, so it may take a smaller step.  It repeats
+\begin{equation}
+  \vect{z}
+  \longrightarrow \vect{h}(\vect{z})
+  \longrightarrow \vect{r}(\vect{z})
+  \longrightarrow \delta\vect{z}
+\end{equation}
+until the residual or progress stopping condition is satisfied.
+
+No spatial network, full-grid Laplacian, or $\mat{\Phi}^{\mathsf T}\mat{G}$
+product is evaluated inside this loop.
+
+\section{Convergence and final prediction}
+
+\subsection{Step 11: reach a zero-residual coefficient vector}
+
+Suppose the final latent state $\vect{z}_\star$ produces
+\begin{equation}
+  \vect{h}(\vect{z}_\star)
+  =\begin{bmatrix}1&0&1\end{bmatrix}^{\mathsf T}.
+\end{equation}
+Then
+\begin{align}
+  \mat{A}\vect{h}(\vect{z}_\star)
+  &=\begin{bmatrix}
+      36(1)+27(0)+9(1)\\
+      0(1)-18(0)+18(1)
+    \end{bmatrix}\\
+  &=\begin{bmatrix}45\\18\end{bmatrix}
+   =\vect{f}_M.
+\end{align}
+Therefore
+\begin{equation}
+  \vect{r}(\vect{z}_\star)=\vect{0}.
+\end{equation}
+
+\subsection{Step 12: decode the full field once}
+
+The final interior prediction is
+\begin{align}
+  \vect{u}_\star
+  &=\mat{G}\vect{h}(\vect{z}_\star)\\
+  &=
+  \begin{bmatrix}
+      1&0& 1\\
+      0&1& 1\\
+      1&1& 0\\
+      2&1&-1
+    \end{bmatrix}
+  \begin{bmatrix}1\\0\\1\end{bmatrix}\\
+  &=\begin{bmatrix}2\\1\\1\\1\end{bmatrix}.
+\end{align}
+
+Restoring the zero boundary gives the $4\times4$ field
+\begin{equation}
+  \mat{U}_\star
+  =\begin{bmatrix}
+      0&0&0&0\\
+      0&2&1&0\\
+      0&1&1&0\\
+      0&0&0&0
+    \end{bmatrix}.
+\end{equation}
+
+For completeness, the full four-point negative-Laplacian matrix is
+\begin{equation}
+  \mat{L}
+  =9\begin{bmatrix}
+      4&-1&-1&0\\
+      -1&4&0&-1\\
+      -1&0&4&-1\\
+      0&-1&-1&4
+    \end{bmatrix}.
+\end{equation}
+Direct multiplication verifies that this deliberately constructed toy
+prediction satisfies the complete grid equation, not only the two retained
+tests:
+\begin{equation}
+  \mat{L}\vect{u}_\star
+  =\begin{bmatrix}54\\9\\9\\18\end{bmatrix}
+  =\vect{f}.
+\end{equation}
+In a general reduced solve, a small retained test set enforces only the
+selected weak equations; this full equality occurs here because the teaching
+example was constructed to make it checkable end to end.
+
+\section{What is fixed, and what changes?}
+
+\begin{center}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.42\textwidth}
+                    >{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\toprule
+Fixed after training/precomputation & Changes for a new source or solver iterate \\
+\midrule
+weights of $\vect{g}$ and $\vect{h}$ & the source field $\vect{f}$ \\
+spatial bank $\mat{G}$ & its projected vector $\vect{f}_M$ changes per source \\
+test functions $\mat{\Phi}$ & current latent vector $\vect{z}$ \\
+eigenvalues $\mat{\Lambda}$ & coefficients $\vect{h}(\vect{z})$ \\
+projected matrices $\mat{B}$ and $\mat{A}$ & residual and residual Jacobian \\
+weighting $\mat{W}$ & final decoded field \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The matrices must be rebuilt if the learned spatial bank, mesh, boundary
+conditions, test space, or PDE operator changes.  A new right-hand side on the
+same problem requires a new $\vect{f}_M$, but not a new $\mat{A}$.
+
+\section{Why the implementation looks slightly shorter}
+
+The slide form is
+\begin{equation}
+  \vect{r}(\vect{z})
+  =\mat{W}\left[
+     \mat{\Lambda}\mat{B}\vect{h}(\vect{z})-\vect{f}_M
+   \right],
+  \qquad
+  \mat{W}=\mat{\Lambda}^{-1}.
+\end{equation}
+Since $\mat{W}\mat{\Lambda}=\mat{I}$, this is exactly
+\begin{equation}
+  \vect{r}(\vect{z})
+  =\mat{B}\vect{h}(\vect{z})
+   -\mat{\Lambda}^{-1}\vect{f}_M.
+\end{equation}
+
+The quadrature-free code uses this second form: it materializes
+$\mat{B}=\mat{\Phi}^{\mathsf T}\mat{G}$, not the conceptual dense matrix
+$\mat{A}$, and stores the forcing after inverse-eigenvalue scaling.  The
+apparent disappearance of $\mat{W}$ and $\mat{\Lambda}$ is only an algebraic
+fold; it does not change the residual.
+
+\section{The entire method in twelve lines}
+
+\begin{enumerate}
+  \item Generate full-order Poisson training solutions.
+  \item Give each training solution a trainable latent code.
+  \item Train $\vect{g}$, $\vect{h}$, and the training codes to reconstruct the solutions.
+  \item Freeze both neural networks.
+  \item Evaluate $\vect{g}$ on the grid to construct $\mat{G}$.
+  \item Construct the sine test functions $\mat{\Phi}$ and eigenvalues $\mat{\Lambda}$.
+  \item Precompute $\mat{B}=\mat{\Phi}^{\mathsf T}\mat{G}$ and, conceptually,
+        $\mat{A}=\mat{\Lambda}\mat{B}$.
+  \item For a new source, compute $\vect{f}_M=\mat{\Phi}^{\mathsf T}\vect{f}$ once.
+  \item Choose an initial latent vector $\vect{z}$.
+  \item Repeatedly evaluate the small head and residual, then update $\vect{z}$.
+  \item Stop at $\vect{z}_\star$ when the residual is sufficiently small.
+  \item Decode once: $\vect{u}_\star=\mat{G}\vect{h}(\vect{z}_\star)$.
+\end{enumerate}
+
+\keyidea{\textbf{The central computational saving:}
+the full grid is used to build the spatial bank, to project a new source, and
+to return the final field.  It is not revisited during every latent-solver
+iteration.  Each iteration uses only the small latent MLP and precomputed
+dense matrices.}
+
+\clearpage
+\section*{Plain-language glossary}
+\addcontentsline{toc}{section}{Plain-language glossary}
+
+\begingroup
+\setlength{\parskip}{0.5em}
+
+\textbf{$K$ --- latent variables.}
+The number of entries in $\vect{z}$ that the online solver adjusts.
+
+\textbf{$R$ --- learned spatial patterns.}
+The number of columns in $\mat{G}$ and, equivalently, the number of
+coefficients returned by $\vect{h}(\vect{z})$.
+
+\textbf{$M$ --- test equations.}
+The number of weak test equations retained by the ROM.
+
+\textbf{$P$ --- physical-grid values.}
+The number of interior grid values stored in one solution vector $\vect{u}$.
+
+\textbf{$\vect{g}(\vect{x})$ --- spatial neural network.}
+Returns the raw learned-pattern values at coordinate $\vect{x}$.
+
+\textbf{$\vect{h}(\vect{z})$ --- latent neural network.}
+Returns the coefficients that combine the learned spatial patterns.
+
+\textbf{$\mat{G}$ --- frozen spatial bank.}
+Contains the learned patterns evaluated at every interior grid point,
+including the fixed output scale and hard boundary mask.
+
+\textbf{$\mat{\Phi}$ --- test-function matrix.}
+Its columns are the selected sine test functions.
+
+\textbf{$\mat{B}$ --- projected bank.}
+This is $\mat{\Phi}^{\mathsf T}\mat{G}$.
+
+\textbf{$\mat{\Lambda}$ --- eigenvalue matrix.}
+The diagonal matrix of Laplacian eigenvalues for the sine test modes.
+
+\textbf{$\mat{A}$ --- projected Poisson operator.}
+This equals $\mat{\Lambda}\mat{B}$ in this setting.
+
+\textbf{$\mat{W}$ --- residual weighting.}
+The fixed inverse-eigenvalue scaling.
+
+\textbf{$\vect{f}_M$ --- projected forcing.}
+The new forcing projected onto the retained test functions.
+
+\textbf{$\vect{r}(\vect{z})$ --- residual.}
+The weighted mismatch between the decoded field's projected Poisson response
+and the projected forcing.
+
+\textbf{Auto-decoder.}
+A decoder trained with one free latent code per training snapshot, without a
+learned encoder.
+
+\textbf{Offline.}
+Training and precomputation performed before solving new source instances.
+
+\textbf{Online.}
+The latent solve and final field reconstruction for a new source.
+
+\endgroup
+
+\end{document}

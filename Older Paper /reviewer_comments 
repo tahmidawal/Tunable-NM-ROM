@@ -1,0 +1,452 @@
+OpenReview
+.net
+Search articles, authors and reviews...
+Notifications20
+Activity
+Tasks
+Tahmid Awal 
+back arrowGo to NeurIPS 2026 Conference homepage
+Tunable Non-linear Manifold ROMs for Elliptic and Parabolic PDEs via Matrix-Free Galerkin Projection
+Download PDF
+Tahmid Awal, Cen-Jhih Li, Aditya Bhaskara, Hari Sundar 
+04 May 2026 (modified: 27 May 2026)
+NeurIPS 2026 Conference Submission
+Conference, Senior Area Chairs, Area Chairs, Reviewers, Authors
+Revisions
+CC BY 4.0
+TL;DR: A tunable NM-ROM for elliptic and parabolic PDEs that exposes a deployment-time accuracy/speed Pareto curve from a single trained model, matching neural-operator accuracy and reaching up to 324x over conjugate gradient.
+Abstract:
+Neural operators such as Fourier Neural Operators and DeepONets deliver one (accuracy, speed) point per trained model and offer no way to tune either at deployment. We present a non-linear manifold reduced order model (NM-ROM) for elliptic and parabolic PDEs that exposes a continuous accuracy/speed Pareto frontier from a single trained decoder, controlled at inference time by three solver-side knobs: the Gauss-Newton iteration cap, the Gauss-Newton tolerance, and the empirical-quadrature (EQ) sample count. The framework combines a matrix-free Galerkin projection of the discrete PDE residual onto a learned manifold, evaluated through JAX forward- and reverse-mode autodiff; NNLS-based EQ hyper-reduction that decouples residual cost from mesh size; exact boundary condition enforcement by a binary decoder mask; and a decoder architecture --- a Vision Transformer encoder feeding a LinearCPDecoder (linear skip + shallow MLP + canonical-polyadic spatial head) --- that we identified by sweeping decoder families against three constraints: cold-start latent Gauss-Newton convergence, EQ compatibility, and sub-cubic parameter scaling in mesh side. Across Poisson and Heat in 2D and 3D at multiple resolutions, the trained-once Pareto frontier matches or beats FNO, DeepONet, and the SMA-NM-ROM baseline on accuracy in most cells and is strictly faster than full-order conjugate gradient, reaching up to 324x wall-clock speedup in some cases.
+
+Checklist Confirmation: I confirm that I have included a paper checklist in the paper PDF.
+Responsible Reviewing: We acknowledge the responsible reviewing obligations as authors.
+Primary Area: AI/ML for physical sciences (e.g., physics, chemistry, Earth sciences, astronomy)
+Secondary Area: Deep learning advancements (e.g., architectures, optimizers, representation learning)
+Contribution Type: General: Most submissions will fall into this type.
+Academic Integrity: I acknowledge that I have read the NeurIPS Handbook and commit to adhering to all policies in the Handbook (https://neurips.cc/Conferences/2026/MainTrackHandbook), the NeurIPS Code of Conduct and the NeurIPS Academic Integrity Policy.
+LLM Usage: Implementing methods where LLM plays an original, non-standard role, Implementing standard methods, Facilitating or running experiments, Visualizing results for submission, Drafting sections of the paper, Editing (e.g., grammar, spelling, word choice)
+Declaration: I confirm that the above information is accurate.
+Reviewer Nomination:  Tahmid Awal
+Submission Number: 25242
+Discussion
+Filter by reply type...
+Filter by author...
+Search keywords...
+
+Sort: Newest First
+16 / 16 replies shown
+Add:
+Official Review of Submission25242 by Reviewer fxe8
+Official Reviewby Reviewer fxe825 Jun 2026, 05:57 (modified: 10 Aug 2026, 03:22)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Authors, Reviewer fxe8Revisions
+Summary:
+This paper proposes a nonlinear manifold reduced-order model (NM-ROM) for solving two- and three-dimensional elliptic and parabolic PDEs. The method first learns a low-dimensional nonlinear solution manifold of full-order solutions using a ViT encoder and a LinearCPDecoder, and then solves the discretized PDE by projecting the residual onto the tangent space of the learned manifold via Galerkin projection. The decoder enforces Dirichlet boundary conditions exactly through a binary mask and supports evaluation only at a small subset of empirically selected quadrature nodes via a CP tensor spatial head. The framework further adopts NNLS-based empirical quadrature for hyper-reduction and leverages JAX JVP/VJP primitives to implement matrix-free projected operators. The central claim of the paper is that, after training, multiple accuracy-speed operating points can be obtained without retraining by simply adjusting the Gauss-Newton iteration limit, convergence tolerance, and the number of empirical quadrature samples during inference. Experiments are conducted on 2D and 3D Poisson and Heat equations, with comparisons against FNO, DeepONet, SMA-NM-ROM, and full-order conjugate gradient solvers.
+
+Contribution Type: General: Most submissions will fall into this type.
+Strengths And Weaknesses:
+Quality
+The overall framework is well engineered. Combining exact boundary-condition enforcement, tangent-space Galerkin projection, empirical quadrature, automatic differentiation, and a node-wise CP decoder constitutes a technically reasonable and practically motivated design. In particular, the binary masking strictly satisfies Dirichlet boundary conditions, the CP spatial head avoids the parameter explosion of dense decoders in 3D, and JAX JVP/VJP naturally enables matrix-free evaluation without explicitly constructing high-dimensional Jacobians.
+
+However, the current version contains several serious issues that directly undermine its main conclusions.
+
+First, the paper's central claim—that a single trained model produces an entire Pareto frontier—is contradicted by its own tables and appendix. In Table 2, the best-accuracy and best-speed operating points often use different latent dimensions or CP ranks. For example, Poisson-3D (N=32) uses different values of (k) (24/8) and (R) (512/128), while Poisson-2D (N=128) and (N=256) also use different CP ranks. Changing (k) or (R) changes the model architecture and parameter tensor dimensions, making it impossible for these operating points to originate from the same decoder. Appendix A further states that the two operating points for Poisson-3D (N=128) were obtained using different training recipes, involving different training and fine-tuning procedures. This directly contradicts the repeated claim in the main paper that only inference-time solver knobs are changed without retraining.
+
+The paper also contains internal inconsistencies in the reported numerical results. For example, the best-speed relative error for Poisson-3D (N=64) is reported as (5.88\times10^{-2}) in Table 1 but (7.69\times10^{-3}) in Table 2, despite both corresponding to the same reported 130× speedup. Furthermore, the authors claim Pareto dominance over all baselines except Poisson-2D (N=64), yet on Heat-3D (N=32), FNO achieves a lower error ((8.17\times10^{-2})) than the best-accuracy NM-ROM ((9.30\times10^{-2})), meaning this case also fails to satisfy the stated Pareto dominance criterion. These are not minor typographical mistakes but contradictions that directly affect the headline claims of the paper.
+
+Second, the derivation of the latent-space time discretization for the heat equation is incomplete and, according to the presented equations, does not appear valid for nonlinear decoders. For a general nonlinear manifold, a consistent backward Euler discretization should satisfy
+
+ 
+
+which is a nonlinear equation in (z_{n+1}). Equation (4), however, directly presents a linear system in (z_{n+1}) by effectively replacing (\tilde u(z)) with (J_D z), omitting the decoder bias, current operating point, and linearization remainder. Such a formulation is generally valid only for homogeneous linear decoders unless one explicitly derives a frozen-Jacobian approximation together with the corresponding correction term on the right-hand side. Moreover, while the methodology section states that each heat-equation time step is solved only with CG, the appendix and hyperparameter tables state that the Heat experiments move along the speed axis by varying the Gauss–Newton iteration limit and tolerance, resulting in inconsistent algorithmic descriptions.
+
+The empirical quadrature component also lacks key algorithmic details needed to support the claimed deployment-time tunability. Standard NNLS in Eq. (5) returns a support set determined by optimization, yet the paper never explains how an arbitrary target sample count is specified, how nested quadrature rules are constructed, whether NNLS is recomputed after reducing the number of quadrature nodes, or whether different quadrature sizes require additional offline optimization. The appendix specifies a minimum support size of 300 nodes, whereas Tables 3 and 4 list (n_{\rm eq}\in{4,\ldots,64}), and Table 2 reports actual values of (N_{\rm eq}) between 512 and 2560. These three definitions cannot be reconciled. Furthermore, once row weights are introduced, the projected operator generally takes the form (J^\top W KJ), which is not guaranteed to remain symmetric. Nevertheless, the paper directly applies conjugate gradient without explaining why symmetry and positive definiteness are preserved.
+
+The experimental comparisons are also insufficient to support the reported order-of-magnitude speedups. Structured constant-coefficient Poisson and Heat equations admit highly optimized FFT/DST solvers, geometric multigrid, algebraic multigrid, and preconditioned Krylov methods, yet the paper compares only against an unpreconditioned CG solver. For the heat equation, one may additionally reuse factorizations or preconditioners across time steps. Consequently, a reported 100–300× speedup over plain CG does not demonstrate superiority over competitive PDE solvers. Meanwhile, the proposed method receives extensive per-cell tuning of architecture, CP rank, training schedule, fine-tuning strategy, and random seed selection, whereas FNO and DeepONet are evaluated only using fixed canonical configurations without problem-specific tuning. DeepONet diverges on every Heat benchmark, and FNO even becomes slower than CG in 3D. These observations suggest that the baseline implementations or training protocols should be investigated more carefully rather than being interpreted as evidence of universal Pareto superiority.
+
+Because one of the paper's main contributions concerns JAX compilation, matrix-free implementation, and wall-clock performance, the timing methodology is particularly important. However, the paper does not specify whether JIT compilation time is included, whether GPU synchronization is enforced, the number of warm-up runs, repeated measurements, numerical precision, or timing variance. The authors further claim that simply treating (\kappa) as a runtime JAX argument improves the Heat-3D (N=128) speedup from 14.7× to 191×, suggesting that the reported results may be highly sensitive to recompilation or tracing overhead. Since neither anonymous code nor checkpoints are provided, these large speedup claims are difficult to verify independently.
+
+Clarity
+The paper is generally well organized. The motivation, overall methodology, and architectural design are easy to follow, and Figure 1 provides a clear overview of the training and inference pipeline. However, several critical implementation details required for reproducibility are missing, particularly regarding how empirical quadrature sample counts become deployment-time knobs, whether the Heat solver actually uses CG or Gauss–Newton iterations, and whether different Pareto operating points genuinely share the same trained checkpoint.
+
+Significance
+Introducing deployment-time computational budget control into learned-manifold ROMs is an interesting and practically relevant problem. For applications requiring repeated PDE solves while maintaining residual-based physical consistency, the proposed framework could serve as a useful compromise between neural operators and traditional reduced-order models. The combination of node-wise CP decoding with hyper-reduction may also prove valuable for large-scale 3D simulations.
+
+Originality
+The main novelty lies in the system-level integration rather than in the individual components. Nonlinear manifold ROMs, Galerkin/LSPG projection, empirical quadrature, automatic differentiation, hard boundary-condition enforcement, ViTs, and CP tensor decompositions are all established techniques. The combination of a linear skip connection, a shallow MLP, and a CP spatial head under the joint design constraints of cold-start convergence, sparse node evaluation, and scalable 3D parameterization represents a meaningful engineering contribution.
+
+Quality: 2: not good
+Clarity: 3: good
+Significance: 3: good
+Originality: 3: good
+Questions:
+See Strengths And Weaknesses
+
+Limitations:
+Yes
+
+Confidence: 2: You are willing to defend your assessment, but it is quite likely that you did not understand the central parts of the submission or that you are unfamiliar with some pieces of related work. Math/other details were not carefully checked.
+Ethical Concerns: NO or VERY MINOR ethics concerns only
+Paper Formatting Concerns:
+NA
+
+Code Of Conduct Acknowledgement: Yes
+Responsible Reviewing Acknowledgement: Yes
+Rebuttal by Authors
+Rebuttalby Authors (Hari Sundar, Aditya Bhaskara, Tahmid Awal, Cen-Jhih Li)28 Jul 2026, 07:53 (modified: 28 Jul 2026, 10:10)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, AuthorsRevisions
+Rebuttal:
+Thank you for the detailed review. To address the concerns you mentioned, and we have run new experiments to address them. The updated results are below, and we then answer each point in turn.
+
+Each Poisson and heat NM-ROM row uses one trained checkpoint; the two NM-ROM columns differ only in solver settings. The wave rows use one frozen basis family; where the two operating points retain different basis sizes k, the cell says so. Speedup ratios are like-for-like: ROM and FOM run in the same framework, precision, and device.
+
+|
+
+
+Cell	NM-ROM best-acc	NM-ROM best-speed	FNO (tuned)	POD-DeepONet	Jacobi-CG / ILU
+Poisson-2D N=64	5.9e-4 @ 1.7x	1.11e-1 @ 7.3x	2.42e-3 @ 1.5x	1.63e-2 @ 28x	3.4 / 9.9 ms
+Poisson-2D N=128	6.9e-4 @ 1.3x	6.19e-2 @ 12.6x	3.30e-3 @ 2.6x	1.64e-2 @ 56x	80 / 281 ms
+Poisson-2D N=256	1.3e-3 @ 2.6x	4.01e-2 @ 24.6x	3.33e-3 @ 10.1x	1.64e-2 @ 112x	519 / 2996 ms
+Poisson-3D N=32	8.41e-3 @ 0.5x	1.54e-1 @ 3.3x	4.30e-3 @ 0.9x	6.25e-2 @ 16x	41 / 313 ms
+Poisson-3D N=64	7.6e-3 @ 1.1x	2.43e-1 @ 8.2x	5.11e-3 @ 1.4x	6.66e-2 @ 27x	752 / 5989 ms
+Poisson-3D N=128	7.1e-3 @ 4.0x	1.59e-1 @ 26.0x	1.61e-2 (a)	--	14.5 / 52.6 s
+Heat-2D N=64 (b)	5.21e-3 @ 39.6x	1.08e-2 @ 68.0x	1.37e-2 @ 1.6x	1.3e-1 (0.07 ms)	10 / 47 ms
+Heat-2D N=128 (b)	3.75e-3 @ 37.8x	1.35e-2 @ 64.2x	5.42e-2 @ 3.4x	1.2e-1 (0.07 ms)	199 / 1748 ms
+Heat-3D N=32 (b)	9.30e-2 @ 176x	(same point)	8.17e-2 @ 1.0x	3.0e-1 (0.07 ms)	141 / 1815 ms
+Heat-3D N=64 (b)	7.49e-2 @ 197x	7.85e-2 @ 269x	2.55e-1 @ 0.6x	2.7e-1 (0.08 ms)	2.1 / 42 s
+Heat-3D N=128 (b)	1.82e-1 @ 126x	1.90e-1 @ 191x	2.95e-1 @ 0.8x	5.6e-1 (0.2 ms)	39 / 487 s
+Burgers-1D N=256	5.9e-3 @ 8.4x	1.0e-2 @ 17.3x	1.15e-2 @ 41x (c)	2.28e-1	--
+Burgers-2D N=64	2.10e-2 @ 3.9x	8.96e-2 @ 15.1x	2.43e-2 @ 566x (c)	3.34e-1	--
+Wave-2D N=64	4.71e-3 @ 0.7x	2.7e-2 @ 1.9x (k=128)	2.18e-1 @ 101x (c)	9.64e-1	--
+Wave-2D N=128	4.94e-3 @ 1.6x	3.0e-2 @ 7.7x	2.24e-1 @ 9.3x	--	--
+Wave-2D N=256	1.63e-2 @ 3.3x	4.4e-2 @ 15.5x	2.27e-1 @ 20.5x	--	--
+(a) FNO value from the original submission for this cell. (b) Heat NM-ROM and FNO numbers are from the submission; plain DeepONet diverged there. Their speedups were measured against the submission's CG solver under the old protocol, so they are not comparable with the corrected Poisson speedups and we will submit them as soon as the experiments are complete within the next few days. (c) Neural- operator inference is a single forward pass, so its speedup over an implicit rollout is limited only by accuracy. Classical columns give time per solve (Poisson) or per 50-step trajectory (heat), measured in a separate serial environment and shown for scale; they are not the denominator of any speedup ratio. On these constant-diagonal operators Jacobi preconditioning leaves CG's iterates unchanged, so the CG reference is equivalent to Jacobi-CG; ILU with BiCGStab was slower on every cell we measured. "--" = not run but we are working on running them and we will update as soon as available. The Poisson numbers differ from the submitted ones partly because we regenerated the data. The original generator built target fields analytically, and at non-integer frequencies those do not satisfy the Dirichlet condition exactly. Ground truth is now the verified discrete solution, and every method was retrained on it.
+
+1. Single trained model. We thank the reviewer for carefully identifying these inconsistencies. In 4 of 11 cells the two operating points used different latent dimensions, CP ranks, or training recipes (Poisson-3D N=32 used k=24/8 and R=512/128; Poisson-2D N=128 and N=256 used different CP ranks; Poisson-3D N=128 used a separate fine-tuning recipe). We initially showed that to show the best possible results achievable by this method however we have updated it now. All four cells were re-trained. One architecture and one checkpoint per cell now produce both operating points, and the only quantities that change between the two columns are the Gauss-Newton iteration cap, the tolerance, and the quadrature set. The revised Table 1 lists one architecture per row, without slashed entries.
+
+2. Internal inconsistencies. We thank the reviewer for carefully identifying these inconsistencies. The conflicting Poisson-3D N=64 numbers (5.88e-2 vs 7.69e-3) are replaced by one consistent pair from the re-run. The bold on Heat-3D N=32 was wrong; FNO is more accurate there (8.17e-2 vs 9.30e-2) and the revised table reflects it. All tables are now generated by a single script from the released result files, which rules out this class of error.
+
+3. Eq. (4). We thank the reviewer for pointing this out: as printed, the equation is only valid for a homogeneous linear decoder. Our implementation never used it; it solves the full nonlinear time-step equation. The issue lies in the presentation of the algorithm in the manuscript rather than in the implementation. We have revised the corresponding passage to accurately reflect the implementation:
+
+A backward-Euler step of size Δt on the manifold requires the fully discrete, nonlinear residual R_n(z) := ũ(z) + Δt κ K ũ(z) − ũ(z_n), whose least-squares solution z_{n+1} = argmin ‖R_n(z)‖ defines the step (an LSPG-type condition; for a linear decoder it coincides with the Galerkin root). We compute it at every time step by a damped Gauss-Newton iteration on R_n, warm-started at z_n.
+
+This also clears up the CG-vs-Gauss-Newton inconsistency you noticed. The heat solver moves along the speed axis through the Gauss-Newton cap and tolerance; the sentence claiming each step is solved with CG was wrong and is removed. Prompted by this comment we also stress-tested our released heat code and found a real bug: the rollout stored the wrong quantity as the next right-hand side, which silently froze the recursion (a 50-step rollout agreed with a 1-step rollout to 6e-8). Fixing it changed the error of the released port by roughly 40x. We verified that the pipeline which produced the submitted numbers does not contain the bug; both the bug and the verification are documented in the revision.
+
+4. Quadrature counts; CG on the projected operator. The three counts that could not be reconciled were three different quantities the paper never separated: the target node count, the achieved node count after NNLS, and the number of residual snapshots used to assemble the selection problem (the small n_eq values in Tables 3-4). Revised text:
+
+(i) Requested vs. achieved counts: the pipeline takes a target count m_eq; when the NNLS support is smaller than m_eq, the node set is padded with the top-ranked remaining nodes by NNLS weight until N_eq = m_eq. All achieved counts ship in the released result files.
+
+Selection happens entirely offline; at deployment we only choose among pre-computed sets. On symmetry: no CG is applied to the projected operator. Each Gauss-Newton step solves a small k-by-k system directly, which is well-posed regardless of the row weights.
+
+5. Classical solvers and baseline tuning. We agree on both. The table carries Jacobi-CG and ILU columns, we withdraw the 324x claim (a direct solve takes milliseconds on these cells), and the corrected speedups against a correctly converging CG are 1.1-26x depending on the accuracy setting. FNO is tuned per cell with the official neuraloperator library (8 configurations per cell), and the table reports where it wins: it is more accurate than us on Poisson-3D N=32 and N=64 and on Heat-3D N=32. DeepONet was replaced by POD-DeepONet using the DeepONet authors' implementation (DeepXDE), tuned per cell; plain DeepONet fails because its autoregressive rollout amplifies one-step errors until the state overflows, which is a structural failure mode rather than a bug in our setup, so re-tuning would not have fixed it.
+
+6. Timing methodology. A new appendix specifies the protocol:
+
+(i) Warm-up: every JIT-compiled kernel is called once on representative inputs and the result discarded, so compilation never contaminates a measurement. (ii) Synchronisation: each measured region is bracketed by device synchronisation. (iii) Aggregation: we report the median over repeated solves; per-case values ship in the released result files. (iv) Isolation: quoted timings come from an otherwise idle, dedicated device. (v) Like-for-like: ROM and FOM run in the same framework and precision for every speedup ratio.
+
+We thank the reviewer for pointing out this issue. The observed κ effect was due to a compilation-caching artifact, which is now explicitly documented in the appendix. We have not yet re-timed the heat block under this protocol (footnote (b) flags its speedups as submission-era); that will submit the results after retiming within the next few days.
+
+ Replying to Rebuttal by Authors
+Official Comment by Area Chair WZTc
+Official Commentby Area Chair WZTc02 Aug 2026, 10:04Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Authors
+Comment:
+Dear Reviewer fxe8,
+
+Please read the authors' responses and respond to them. Since the discussion period ends on 3rd Aug, it is recommended to leave enough time for the authors to respond further.
+
+AC
+
+ Replying to Rebuttal by Authors
+Author AC Confidential Comment by Authors
+Author AC Confidential Commentby Authors (Hari Sundar, Aditya Bhaskara, Tahmid Awal, Cen-Jhih Li)04 Aug 2026, 00:40Program Chairs, Senior Area Chairs, Area Chairs, Authors
+Comment:
+Corrected heat timings, and one accuracy value we got wrong
+
+Our heat full-order reference was not compiled the same way the ROM was, so every heat speedup we reported was measured against a slower reference than it should have been. Compiled identically it returns the same states to 3.9e-7. Every timing below is the median of seven runs, with the first two discarded as warm-up:
+
+cell / arm	rel-L2	speedup
+Heat-3D N=128 acc	1.83e-1	4.12x
+Heat-3D N=128 fast	1.96e-1	3.91x
+These replace the corresponding speedups in the paper. The remaining heat arms have not had the equivalent solver-side work, so we will report them with the revision.
+
+Accuracy is unaffected: seven of the nine arms reproduce to within 4%, and the two that move most come out more accurate than we reported.
+
+On the quadrature question. Reducing the node count does require re-solving the NNLS offline, but it is not a deployment-time knob. The offline solve also returns one admissible support out of several: rebuilding it on a different GPU selects different nodes and moves rel-L2 by about 3%. Both go into the revision.
+
+ Replying to Author AC Confidential Comment by Authors
+Author AC Confidential Comment by Area Chair WZTc
+Author AC Confidential Commentby Area Chair WZTc04 Aug 2026, 00:47Program Chairs, Senior Area Chairs, Area Chairs, Authors
+Comment:
+Dear Authors,
+
+The comment you made above is an Author-AC confidential comment and is not visible to reviewers. If this was not your intention, please repost the comment so the reviewers can see it. If this was intentional, please specify the reason for the confidentiality.
+
+Official Review of Submission25242 by Reviewer GwrW
+Official Reviewby Reviewer GwrW21 Jun 2026, 15:04 (modified: 08 Aug 2026, 04:59)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Authors, Reviewer GwrWRevisions
+Summary:
+This paper develops a neural operator based approach (NM-ROM) for elliptic and parabolic PDEs using a manifold order reduction method implemented in JAX. It claims to outperform other methods such as FNO (in accuracy), and CG (in speed). I was very unclear which PDEs it has actually been tried on (2D-Poisson and 3d-heat are more classes of PDE than actual PDEs. But it seems that it has only been tested on simple well conditioned systems in this case it is very hard to judge whether a speed up or increase in accuracy is really meaningful.
+
+Contribution Type: General: Most submissions will fall into this type.
+Strengths And Weaknesses:
+The paper claims speed up on solving the relevant eqns for Poisson and heat eqn problems
+
+The performance of any method (CG is a good example) is very much dependent on the conditioning of the operator. This in turn depends on the domain (for linear problems) and the domain+solution for nonlinear problems. I suspect from looking at this paper (though it is very unclear) that the authors have considered well conditioned problems only. Can they give results for a less well conditioned system eg., Bergers, or Poisson in a domain with a corner?
+
+Quality: 2: not good
+Clarity: 2: not good
+Significance: 2: not good
+Originality: 2: not good
+Questions:
+Please specify what PDEs you are actually solving. What is the equation? What is the domain? What are the initial conditions (for the heat eqn), what are the boundary conditions and RHS for the Poisson equation. Can you demonstrate PDEs with significant structure that will properly test your method again FNO, CG etc?
+
+Please look at more challenging PDEs than the above eg. Navier-Stokes, Euler, Bergers, Schrodinger, or anything nonlinear
+
+Please do a proper comparison not with just CG, but pre-conditioned CG, or even a direct solver.
+
+Limitations:
+The paper acknowledges that it has only simple PDEs. So the question is, what stopped them from looking at other PDE systems?
+
+Confidence: 5: You are absolutely certain about your assessment. You are very familiar with the related work and checked the math/other details carefully.
+Ethical Concerns: NO or VERY MINOR ethics concerns only
+Paper Formatting Concerns:
+None
+
+Code Of Conduct Acknowledgement: Yes
+Responsible Reviewing Acknowledgement: Yes
+Rebuttal by Authors
+Rebuttalby Authors (Hari Sundar, Aditya Bhaskara, Tahmid Awal, Cen-Jhih Li)28 Jul 2026, 07:53 (modified: 28 Jul 2026, 10:10)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, AuthorsRevisions
+Rebuttal:
+Thank you for the review. You asked for three things: a precise statement of what we solve, harder PDEs, and comparisons against real solvers. We have run new experiments for all three, and answer in that order.
+
+1. What we solve, precisely. We describe the problem setup in Section 5 of the current manuscript, but we will revise the presentation to improve its clarity. Poisson: −Δu = f on the unit square/cube with homogeneous Dirichlet boundary conditions, second-order finite differences; the right-hand side is f(x) = 10 sin(k₁πx) sin(k₂πy) (· sin(k₃πz)) with frequencies drawn uniformly from [1, 3] per instance; 700 training and 140 test instances. Heat: ∂u/∂t = κΔu on the same domains with zero boundary values, initial conditions of one to three random Gaussian bumps, κ drawn log-uniformly from [0.01, 0.5], 50 implicit time steps. Burgers: viscous, ν in [1e-3, 1e-2], safeguarded Newton in the full solver. Wave: Crank-Nicolson on the first-order system. The Poisson ground truth is now the verified discrete solution rather than an analytic target field, since the latter does not satisfy the Dirichlet condition exactly at non-integer frequencies; all Poisson data was regenerated accordingly, for our method and every baseline.
+
+2. Harder problems. To address this concern, we added viscous Burgers (1D and 2D, advection-dominated, ground truth verified against an independent implementation) and the 2D wave equation (no dissipation, so projection errors do not decay). We also added the linear POD-Galerkin control these problems call for, with the same hyper-reduction machinery and rank k swept:
+
+k	Burgers-1D N=256 (POD-Galerkin)	Burgers-2D N=64 (POD-Galerkin)
+16	1.53e-1 @ 13.9x	4.9e-1 @ 320x
+32	3.3e-2 @ 7.5x	1.13 @ 148x
+64	5.3e-3 @ 1.9x	4.0e-1 @ 23.6x
+128	2.0e-4 @ 0.008x	diverges (error~4e4) @ 0.26x
+On 1D Burgers the linear ROM can be very accurate, but only with a large basis: at k=128 it beats our solver on accuracy while running slower than the full-order model. On 2D Burgers it has no usable operating point, with 40% error or worse wherever it is stable and divergence when the basis grows. On the wave equation the picture is similar (1.7e-2 at below-FOM speed at N=64, errors above 100% at N=128 and N=256). Our method against tuned FNO on the same problems:
+
+Cell	NM-ROM best-acc	NM-ROM best-speed	FNO (tuned)
+Burgers-1D N=256	5.9e-3 @ 8.4x	1.0e-2 @ 17.3x	1.15e-2 @ 41x
+Burgers-2D N=64	2.10e-2 @ 3.9x	8.96e-2 @ 15.1x	2.43e-2 @ 566x
+Wave-2D N=64	4.71e-3 @ 0.7x	2.7e-2 @ 1.9x (k=128)	2.18e-1 @ 101x
+Wave-2D N=128	4.94e-3 @ 1.6x	3.0e-2 @ 7.7x	2.24e-1 @ 9.3x
+Wave-2D N=256	1.63e-2 @ 3.3x	4.4e-2 @ 15.5x	2.27e-1 @ 20.5x
+Neural-operator inference is a single forward pass, so FNO's speedup over an implicit rollout is bounded only by its accuracy; on Burgers it is far faster than us at comparable error, while on the wave equation it stays near 22% error at every resolution and we reach 0.5-1.6%, with our speedup growing from about 1x at N=64 to 15x at N=256. One clarification on what produces this: on Burgers-2D and wave our configuration is a frozen POD-type basis with a damped least-squares Gauss-Newton rollout, so the stability gain there comes from the solve formulation rather than from decoder nonlinearity; the learned decoder is used on Poisson, heat, and Burgers-1D. Higher-resolution Burgers runs (2D N=128, 1D N=512) are currently running and we will report back as soon as we have some updated results.
+
+3. Real solver comparisons. To address your concern, we added Jacobi-preconditioned CG and ILU (paired with BiCGStab, since ILU factors are not symmetric), and timed direct solvers as well. Representative Poisson figures, per solve: N=64, 3.4 ms (Jacobi-CG) and 9.9 ms (ILU); N=256, 519 ms and 2996 ms; 3D N=128, 14.5 s and 52.6 s. A fast direct solve finishes the constant-coefficient cells in milliseconds. We therefore withdraw the 324x claim: it was measured against an unpreconditioned CG reference and was misleading. Our corrected speedups against a correctly converging CG are 1.1-26x depending on the accuracy setting, and the case for a reduced model rests on the harder problems above, where no direct solver applies.
+
+On conditioning. The conditioning of the operator is indeed an important factor when interpreting speedup comparisons is. That is part of why the elliptic cells are the weakest evidence in the paper: they are well-conditioned and constant-coefficient, so classical methods are extremely strong there. The advection-dominated problems above are where the comparison is informative.
+
+On a domain with a corner. You asked specifically for a less well-conditioned case, such as Poisson on a domain with a corner, and we have not run that yet. We agree it is the right test. We are currently setting up an L-shaped Poisson cell. If the experiments are completed during the discussion period, we will post the results in this thread.
+
+Why these problems were absent from the submission. There was no technical obstacle; the method ported to Burgers and the wave equation without modification. We simply tested the problems the pipeline was first built on, which, as you point out, is where the comparison means the least. The harder problems are now central to the paper.
+
+ Replying to Rebuttal by Authors
+Official Comment by Reviewer GwrW
+Official Commentby Reviewer GwrW30 Jul 2026, 08:47Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Authors
+Comment:
+I thank the authors for considering the concerns that I have raised. However, I find the response less than convincing. By their own reply they are currently only considering fairly simple problems, and are leaving more realistic examples to later. The baseline examples are not well described, and standard FNO seems to be doing better than their methodology. The comparison with a direct solver (thanks for doing this) shows that, as I suspected, that the latter significantly outperforms the methods described in the paper. I think that the paper needs a much bigger rethink than a rebuttal will allow. Hence I will keep my original score.
+
+ Replying to Official Comment by Reviewer GwrW
+Updated Results
+Author AC Confidential Commentby Authors (Hari Sundar, Aditya Bhaskara, Tahmid Awal, Cen-Jhih Li)04 Aug 2026, 00:01Program Chairs, Senior Area Chairs, Area Chairs, Authors
+Comment:
+Thank you for reading the response. One point in it deserves a direct answer, because our own table understated our results.
+
+On FNO doing better than our method. That was true of the numbers we showed you, but those came from a single fixed basis size sitting on its own projection floor. Sweeping the basis, on one stored artifact per resolution with no retraining between points, gives:
+
+resolution	our best accuracy	at speedup	tuned FNO	our best point that beats FNO	at speedup	fastest point
+N=64	1.34e-3	3.6x	1.45e-2	1.28e-2	7.8x	20.6x
+N=128	3.08e-3	1.0x	1.30e-2	1.29e-2	6.0x	30.3x
+N=256	5.00e-3	0.4x	1.18e-2	8.31e-3	3.3x	99.0x
+N=512	2.11e-2	3.8x	2.73e-2	2.11e-2	3.8x	41.8x
+We are more accurate than tuned FNO at every resolution, and at settings that are still 3.3–7.8x faster than the full-order solve. At the accuracy end we reach roughly ten times FNO's accuracy, though at N=128 and N=256 that end is at or below break-even, where the right thing to do is run the full solver which is a real right-hand edge on the frontier, not a knob.
+
+On the corner domain. We did run it: an L-shaped domain, the unit square minus its upper-right quadrant, re-entrant angle 3pi/2, with the discrete operator verified SPD before any solve.
+
+N	ours, best accuracy	ours, fastest	tuned FNO
+64	5.91e-4 @ 3.7x	3.58e-2 @ 8.2x	2.47e-3 @ 1.6x
+128	1.48e-2 @ 4.8x	2.22e-1 @ 11.3x	2.81e-3 @ 3.9x
+At N=64 we are four times more accurate than FNO and faster; at N=128 FNO is more accurate. The result we did not expect to matter but which does: the fast direct (DST) solver stops applying entirely on this domain, because it is no longer separable — on the square it solves the same problem in 0.11 ms. That is the setting your question was pointing at, and it removes the strongest classical competitor from the comparison.
+
+On conditioning generally, your reading was right, and it is why the smooth elliptic cells are the weakest evidence in the paper. The advection-dominated ladder above is where we think the comparison is informative.
+
+ Replying to Updated Results
+Author AC Confidential Comment by Area Chair WZTc
+Author AC Confidential Commentby Area Chair WZTc04 Aug 2026, 00:47Program Chairs, Senior Area Chairs, Area Chairs, Authors
+Comment:
+Dear Authors,
+
+The comment you made above is an Author-AC confidential comment and is not visible to reviewers. If this was not your intention, please repost the comment so the reviewers can see it. If this was intentional, please specify the reason for the confidentiality.
+
+Official Review of Submission25242 by Reviewer 5mgh
+Official Reviewby Reviewer 5mgh07 Jun 2026, 20:17 (modified: 08 Aug 2026, 17:48)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Authors, Reviewer 5mghRevisions
+Summary:
+The paper presents an intrusive non-linear manifold reduced-order model (NM-ROM) for the Poisson and Heat equations in 2D and 3D. A learned decoder defines the solution manifold (with Dirichlet boundary conditions enforced exactly by masking), the discrete PDE residual is solved on this manifold by Galerkin projection, and empirical quadrature plus a matrix-free JAX implementation keep the cost independent of the full mesh size. Its main contribution is that a single trained model exposes a tunable accuracy/speed frontier at inference via three solver-side knobs, rather than the single fixed operating point of a neural operator. The paper reports 12 to 324 times speedups over full-order conjugate gradient and claims Pareto-dominance over FNO, DeepONet, and SMA-NM-ROM on ten of eleven cells.
+
+Contribution Type: General: Most submissions will fall into this type.
+Strengths And Weaknesses:
+Strengths.
+
+The paper presents a coherent systems contribution: a learned nonlinear manifold, Galerkin projection, empirical-quadrature hyper-reduction, and matrix-free implementation are integrated into a single reduced-order solver.
+
+The most convincing technical ideas are the linear skip connection, which stabilizes cold-start latent Gauss--Newton solves, and the CP-based decoder, which enables efficient pointwise evaluation and makes hyper-reduction practical in 3D.
+
+The matrix-free JAX implementation is technically sound.
+
+Weaknesses.
+
+The empirical evidence does not currently support the paper's strongest claim. The headline "Pareto-dominance over neural operators (
+ cells)" rests on baselines that are broken, untuned, or run as oracles: DeepONet fails catastrophically on every cell -- rel-
+ on Poisson-2D, 
+ on Poisson-3D, and non-finite / 
+ on Heat. This is a non-functional baseline, not a competitive one. SMA-NM-ROM is reported in oracle warm-start or it OOMs / explodes; the fair cold-start protocol is invoked only to motivate the authors' own design. FNO is not tuned per cell (width 
+). Single seed, no variance reported; Heat-3D accuracy is poor (rel-
+ 
+--
+) and degrades from 
+ to 
+. The comparison is intrusive vs non-intrusive (NM-ROM uses 
+ and 
+; the operators do not), so an accuracy/speed head-to-head is not apples-to-apples. The natural intrusive baseline (linear POD-Galerkin + DEIM with the same knobs) is present in the paper but not foregrounded.
+
+The paper does not demonstrate when a non-linear manifold is actually needed. The evaluation is restricted to diffusion-dominated PDEs (Poisson, Heat) -- precisely the setting where low-dimensional linear subspaces are already known to perform well. The paper therefore never exhibits a regime where the non-linear manifold is the enabling ingredient rather than an expensive alternative to linear POD. Relatedly, the method uses Galerkin projection rather than LSPG; Galerkin is known to be unstable for non-symmetric / advection-dominated operators, but this is neither analyzed nor discussed.
+
+Originality is incremental. No component is fundamentally new. A decoder supporting per-node evaluation for hyper-reduction is already the design principle of SMA-NM-ROM and DD-NM-ROM; the new elements are only the CP head and the linear skip. The "deployment-time tunable frontier" is inherent to any solver-based ROM -- Newton/Krylov tolerances and EQ count are standard accuracy/cost knobs -- and is novel only relative to neural operators.
+
+Theoretical guarantees. I do not require a full convergence theory for a systems/methods paper, but the work would be significantly strengthened by some analytical justification of the cold-start GN procedure, the EQ approximation error as a function of 
+ on unseen instances, or the stability of the latent backward-Euler integration.
+
+Quality: 2: not good
+Clarity: 3: good
+Significance: 2: not good
+Originality: 3: good
+Questions:
+The neural-operator comparison drives the headline claim, yet DeepONet diverges on every cell and FNO uses an untuned width-
+ config. Please either tune both per cell (with training curves). This is the single biggest factor for my score.
+Please report SMA-NM-ROM in the same cold-start protocol as NM-ROM (not oracle warm-start), since the divergence you cite is itself the motivation for the linear skip.
+Please add at least one advection-dominated benchmark (Burgers / advection--diffusion) and a linear POD-Galerkin + DEIM baseline with the same knobs, so the comparison shows when the non-linear manifold is actually needed over a linear subspace. Does Galerkin remain stable there, or is LSPG required?
+Please report mean 
+ std over 
+ seeds for the borderline cells, and clarify whether the frontier is truly free from one trained model (does changing 
+ require re-solving the NNLS?).
+Limitations:
+The author enumerated a couple concerns like single seed, no advection, un-swpet baselines etc. The paper should also acknowledge the ntrusive-vs-non-intrusive asymmetry issue.
+
+Confidence: 4: You are confident in your assessment, but not absolutely certain. It is unlikely, but not impossible, that you did not understand some parts of the submission or that you are unfamiliar with some pieces of related work.
+Ethical Concerns: NO or VERY MINOR ethics concerns only
+Paper Formatting Concerns:
+No concern.
+
+Code Of Conduct Acknowledgement: Yes
+Responsible Reviewing Acknowledgement: Yes
+Rebuttal by Authors
+Rebuttalby Authors (Hari Sundar, Aditya Bhaskara, Tahmid Awal, Cen-Jhih Li)28 Jul 2026, 07:55 (modified: 28 Jul 2026, 10:10)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, AuthorsRevisions
+Rebuttal:
+Thank you for the detailed questions. We have run new experiments for each of the four, and answer them in order below.
+
+Q1. Tune both neural baselines per cell. Done, with official implementations: neuraloperator for FNO (8 configurations per cell) and DeepXDE, the DeepONet authors' library, for POD-DeepONet (width, depth, and learning rate swept per cell, selected on held-out validation data). Plain DeepONet was replaced rather than re-tuned because its autoregressive rollout amplifies one-step errors until the state overflows, a structural failure mode rather than a bug in our setup. POD-DeepONet predicts POD coefficients in a single evaluation, so there is no rollout to diverge; it diverges nowhere and is competitive on smooth 2D Poisson.
+
+Cell	NM-ROM best-acc	NM-ROM best-speed	FNO (tuned)	POD-DeepONet
+Poisson-2D N=64	5.9e-4 @ 1.7x	1.11e-1 @ 7.3x	2.42e-3 @ 1.5x	1.63e-2 @ 28x
+Poisson-2D N=128	6.9e-4 @ 1.3x	6.19e-2 @ 12.6x	3.30e-3 @ 2.6x	1.64e-2 @ 56x
+Poisson-2D N=256	1.3e-3 @ 2.6x	4.01e-2 @ 24.6x	3.33e-3 @ 10.1x	1.64e-2 @ 112x
+Poisson-3D N=32	8.41e-3 @ 0.5x	1.54e-1 @ 3.3x	4.30e-3 @ 0.9x	6.25e-2 @ 16x
+Poisson-3D N=64	7.6e-3 @ 1.1x	2.43e-1 @ 8.2x	5.11e-3 @ 1.4x	6.66e-2 @ 27x
+Poisson-3D N=128	7.1e-3 @ 4.0x	1.59e-1 @ 26.0x	1.61e-2 (a)	--
+Heat-2D N=64 (b)	5.21e-3 @ 39.6x	1.08e-2 @ 68.0x	1.37e-2 @ 1.6x	1.3e-1 (0.07 ms)
+Heat-2D N=128 (b)	3.75e-3 @ 37.8x	1.35e-2 @ 64.2x	5.42e-2 @ 3.4x	1.2e-1 (0.07 ms)
+Heat-3D N=32 (b)	9.30e-2 @ 176x	(same point)	8.17e-2 @ 1.0x	3.0e-1 (0.07 ms)
+Heat-3D N=64 (b)	7.49e-2 @ 197x	7.85e-2 @ 269x	2.55e-1 @ 0.6x	2.7e-1 (0.08 ms)
+Heat-3D N=128 (b)	1.82e-1 @ 126x	1.90e-1 @ 191x	2.95e-1 @ 0.8x	5.6e-1 (0.2 ms)
+Burgers-1D N=256	5.9e-3 @ 8.4x	1.0e-2 @ 17.3x	1.15e-2 @ 41x	2.28e-1
+Burgers-2D N=64	2.10e-2 @ 3.9x	8.96e-2 @ 15.1x	2.43e-2 @ 566x	3.34e-1
+Wave-2D N=64	4.71e-3 @ 0.7x	2.7e-2 @ 1.9x (k=128)	2.18e-1 @ 101x	9.64e-1
+Wave-2D N=128	4.94e-3 @ 1.6x	3.0e-2 @ 7.7x	2.24e-1 @ 9.3x	--
+Wave-2D N=256	1.63e-2 @ 3.3x	4.4e-2 @ 15.5x	2.27e-1 @ 20.5x	--
+Each Poisson and heat NM-ROM row uses one checkpoint, the two columns differing only in solver settings. (a) submission-era FNO value. (b) heat rows are submission numbers, whose speedups predate the corrected timing protocol and will be restated; plain DeepONet diverged on those cells. Poisson data was regenerated from verified discrete solutions this round, so the Poisson entries are not directly comparable with the submitted ones.
+
+Q2. SMA-NM-ROM under the same cold-start protocol. Thanks for pointing out. To address your concern, we are rerunning the experiments to report it both ways: cold start (our protocol) as the main number, and warm start marked as an oracle, since its initialisation uses the solution being predicted. We do not yet have the numbers but we will submit them within the next few days.
+
+Q3. When is the nonlinear manifold needed; Galerkin or LSPG? We spent the most effort here. The linear POD-Galerkin control, same hyper-reduction machinery, rank k swept:
+
+k	Burgers-1D N=256	Burgers-2D N=64
+16	1.53e-1 @ 13.9x	4.9e-1 @ 320x
+32	3.3e-2 @ 7.5x	1.13 @ 148x
+64	5.3e-3 @ 1.9x	4.0e-1 @ 23.6x
+128	2.0e-4 @ 0.008x	diverges (error~4e4) @ 0.26x
+On 1D Burgers the linear ROM reaches high accuracy only at basis sizes where it is slower than the full-order model. On 2D Burgers it is unstable at every rank small enough to give a speedup. On the wave equation it is inaccurate at N≥128 and slower than the FOM at N=64. Our solver is stable and accurate on the same problems (see the table above). It matters for your question which part is doing the work, so to be clear: on Burgers-2D and wave our configuration is a frozen POD-type basis with a damped least-squares Gauss-Newton rollout, so the stability gain there comes from the solve formulation, not from decoder nonlinearity; the learned decoder is used on Poisson, heat, and Burgers-1D. On Galerkin vs LSPG, the rule we now state and support is: exact Galerkin projection when the manifold is linear, and a damped least-squares (LSPG-type) Gauss-Newton solve otherwise, which is what stabilises the advection-dominated rollouts. Our wave solver's rollout error is within 1.02-1.24x of the best achievable on its basis, so the solver adds little beyond the basis error. On the smooth elliptic cells we agree with your expectation: linear reduction is very strong there, and the revision includes the full linear-ROM comparison on Poisson and heat.
+
+Q4. Seeds, and is the frontier free from one model? Burgers-1D over three training seeds: 0.55%, 0.64%, 0.59%. The wave and 2D-Burgers configurations use deterministic bases, so there is no training randomness to report on those cells. Quadrature sets are selected once, offline; at deployment we choose among pre-computed sets and change the Gauss-Newton cap and tolerance, and nothing is re-optimised at test time. While checking this we also found and fixed a defect in how padded quadrature points were weighted, now documented in the revision.
+
+Still to come, and we will submit it here. Three items from your review are not finished, and we will add them to this thread as they land during the discussion period: the SMA-NM-ROM cold-start runs (Q2); the matched learned-vs-frozen-chart ablation on an advection-dominated problem (Q3); and seed variance on the genuinely borderline cell, Heat-3D N=32, where the margin against FNO is 8.17e-2 vs 9.30e-2.
+
+Your point on theory is also fair. We do not have convergence guarantees for the cold-start Gauss-Newton procedure or a bound on the quadrature error as a function of N_eq for unseen instances. We have updated the revision to state that these open questions in the limitations.
+
+On originality and the intrusive asymmetry. We accept the characterisation and have aligned the claims: the contribution is the working combination plus the empirical findings, with the frontier claim made only relative to neural operators. The asymmetry is now stated in the introduction before any comparison; revised text:
+
+NM-ROMs are intrusive: they require access to the discrete system at inference. FNO and DeepONet are non-intrusive maps trained purely on data. The trade-off differs accordingly. The intrusive route gives residual consistency (an equation is actually solved, so errors can be checked and reduced), while the non-intrusive route applies even when no solver is available. Our comparisons ask a single question: accuracy per wall-clock at deployment, given that a discretisation exists. Every baseline is evaluated under that condition.
+
+ Replying to Rebuttal by Authors
+Official Comment by Area Chair WZTc
+Official Commentby Area Chair WZTc02 Aug 2026, 10:05Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Authors
+Comment:
+Dear Reviewer 5mgh,
+
+Please read the authors' responses and respond to them. Since the discussion period ends on 3rd Aug, it is recommended to leave enough time for the authors to respond further.
+
+AC
+
+ Replying to Rebuttal by Authors
+Official Comment by Reviewer 5mgh
+Official Commentby Reviewer 5mgh02 Aug 2026, 19:18Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Authors
+Comment:
+The rebuttal substantially improves the empirical evaluation and clarifies the scope of the contribution. However my main conceptual concerns remain. First, the strongest empirical claim is still not fully established. Second, the cold-start SMA comparison remains unavailable. Third, the added advection experiments suggest that the observed stability is primarily due to the solver formulation rather than the nonlinear manifold itself. Thus my overall assessment is unchanged.
+
+ Replying to Official Comment by Reviewer 5mgh
+Updates on some of the results
+Author AC Confidential Commentby Authors (Hari Sundar, Aditya Bhaskara, Tahmid Awal, Cen-Jhih Li)04 Aug 2026, 00:14Program Chairs, Senior Area Chairs, Area Chairs, Authors
+Comment:
+SMA-NM-ROM cold start (Q2). Done on all six Poisson cells. We report SMA's best over a grid of damping, width and latent dimension (8–16 configs per cell). rel-L2:
+
+cell	ours	SMA cold (z0 = 0)	SMA from POD init	SMA from oracle init
+Poisson-2D N=64	5.87e-4	2.69	4.78e-2	4.78e-2
+Poisson-2D N=128	6.90e-4	1.70	2.30e-2	2.29e-2
+Poisson-2D N=256	1.32e-3	2.15	2.11e-2	1.94e-2
+Poisson-3D N=32	8.41e-3	3.33e-1	1.67e-1	1.66e-1
+Poisson-3D N=64	7.57e-3	1.07	4.25e-1	4.10e-1
+Poisson-3D N=128	7.13e-3	1.28	4.03e-1	3.71e-1
+Cold start fails on every cell, under every damping, width, latent dimension and tolerance we tried. POD init recovers it and matches the oracle init, so the failure is the starting point, not a crippled baseline. This is what motivates the linear skip. Our first pass also overstated the gap; the corrected gaps are 15–81x.
+
+Advection-dominated benchmark (Q3). Burgers, four resolutions, against tuned FNO. One stored artifact per resolution, no retraining between points:
+
+resolution	our best accuracy	at speedup	tuned FNO	our best point that beats FNO	at speedup	fastest point
+N=64	1.34e-3	3.6x	1.45e-2	1.28e-2	7.8x	20.6x
+N=128	3.08e-3	1.0x	1.30e-2	1.29e-2	6.0x	30.3x
+N=256	5.00e-3	0.4x	1.18e-2	8.31e-3	3.3x	99.0x
+N=512	2.11e-2	3.8x	2.73e-2	2.11e-2	3.8x	41.8x
+We beat tuned FNO at every resolution, at settings still 3.3–7.8x faster than the full solve. At N=128 and N=256 the accuracy end is at or below break-even, where the right move is to run the full solver.
+
+Q4. Seed variance on Heat-3D N=32 we could not finish in time, so your single-seed caveat stands.
+
+ Replying to Updates on some of the results
+Author AC Confidential Comment by Area Chair WZTc
+Author AC Confidential Commentby Area Chair WZTc04 Aug 2026, 00:46Program Chairs, Senior Area Chairs, Area Chairs, Authors
+Comment:
+Dear Authors,
+
+The comment you made above is an Author-AC confidential comment and is not visible to reviewers. If this was not your intention, please repost the comment so the reviewers can see it. If this was intentional, please specify the reason for the confidentiality.
+
+About OpenReview
+Contact
+FAQ
+Hosting a Venue
+Sponsors
+Terms of Use / Privacy Policy
+All Venues
+Donate
+News
+OpenReview is a long-term project to advance science through improved peer review with legal nonprofit status. We gratefully acknowledge the support of the OpenReview Sponsors. © 2026 OpenReview
+
+Tunable Non-linear Manifold ROMs for Elliptic and Parabolic PDEs via Matrix-Free Galerkin Projection | OpenReview

@@ -71,6 +71,26 @@ carries the value. Old thresholds and design estimates in this list are hand-mai
     F1a-form and F2-spatial gained the negative controls they lacked; F0d-spd is also evaluated at
     the design's N=32; V0's control is described honestly (every Laplacian coefficient is perturbed,
     not one).
+12. **Retraction 5 — D1 control (2026-09-03, seen in the first N=64 cluster logs).** "A head trained
+    on shuffled targets must be worse than POD-K" cannot fire: for the free-code arms a row shuffle
+    is not a mutation at all (the codes are per row, so the shuffled problem is the same problem
+    with permuted labels), and even for `sup` a smooth K-manifold fitted *per snapshot* by the
+    oracle captures about what POD-K does regardless of what it learned. The control is now an
+    **untrained (random-init) head**: the trained head's held-out oracle must beat it by ≥ 1.3×
+    (a capacity baseline). The shuffled head is still reported. The N=64 numbers that exposed
+    this are in the logs of jobs 3225935/3225937 and will be superseded by the re-run.
+13. **Retraction 6 — G0a control.** "The shuffled head's held-out–train gap must exceed 0.05"
+    cannot fire: a head that learned nothing has no generalisation gap by construction. The control
+    is now an **overfit head** (the same arm trained on 4 trajectories), which must show ratio > 1.5
+    or gap > 0.05. **Both retractions are of the "control that cannot fail" kind the design forbade
+    — they slipped through two design audits and the N=16 smoke (where nothing is learned and every
+    head looks alike), and were caught only by real N=64 numbers.**
+14. **Finding, not a retraction — the oracle metric is capacity-dominated for auto-decoders.** At
+    N=64 reflective the `auto` head's held-out oracle (see the phase-2 table) is essentially the
+    08-16 auto-decoder's 0.189, and a head trained on *shuffled* targets reaches the same value:
+    with K free parameters per snapshot the oracle projection measures the manifold's dimension,
+    not what training put into it. D1's bar (≤ 0.5 × POD-K) is therefore the right kind of bar,
+    and G0b (tangent-space residual at the oracle point) is the gate that sees learned structure.
 
 ## Phase 1 — FOM gates (both BCs) — generated table
 

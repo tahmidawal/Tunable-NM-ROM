@@ -148,21 +148,32 @@ def main():
         H["oracle_heldout_per_traj"] = e_te.tolist(); H["oracle_train_per_traj"] = e_tr.tolist()
         H["podK_heldout_per_traj"] = pod_te.tolist(); H["podR_ceiling_per_traj"] = pod_R_te.tolist()
 
-        # D1: held-out oracle vs POD-K (median over trajectories); control: shuffled-target head
+        # D1: held-out oracle vs POD-K (median over trajectories).
+        # Control (RETRACTION 5): an UNTRAINED head (random init, 0 steps) -- its per-snapshot oracle measures the
+        # manifold's CAPACITY alone; the trained head must beat it by >= 1.3x.  The earlier 'shuffled-target head must
+        # be worse than POD-K' could not fire: for free-code arms a row shuffle is not a mutation (the codes are per
+        # row), and any smooth K-manifold fitted per snapshot captures about what POD-K does.
         t0 = time.time()
+        spec_un = wh.train_head(C, traj, mode, K, MU=(MU_tr if mode == "sup" else None),
+                                CV=(CV if mode == "auto+vc" else None), steps=2, tag=mode + "-untrained")   # 2: the schedule needs >= 1 decay step
+        Zun, run_ = wh.oracle(spec_un, Ct, n_starts=ORACLE_STARTS, iters=ORACLE_ITERS)
+        e_un = wh.traj_rms_from_coeffs(run_, perp2t, Ct, trajt)
+        # the shuffled-target head is still REPORTED (it is informative for 'sup', vacuous for free codes)
         rng = np.random.default_rng(123)
         Csh = C[rng.permutation(len(C))]
         spec_sh = wh.train_head(Csh, traj, mode, K, MU=(MU_tr if mode == "sup" else None),
                                 CV=(CV if mode == "auto+vc" else None), steps=max(STEPS // 4, 50), tag=mode + "-shuffled")
         Zsh, rsh = wh.oracle(spec_sh, Ct, n_starts=ORACLE_STARTS, iters=ORACLE_ITERS)
         e_sh = wh.traj_rms_from_coeffs(rsh, perp2t, Ct, trajt)
-        log(f"  shuffled-target control trained+evaluated in {time.time()-t0:.0f}s")
+        log(f"  D1 controls (untrained, shuffled) trained+evaluated in {time.time()-t0:.0f}s")
         H["gates"]["D1"] = gate("D1", np.median(e_te) / np.median(pod_te), 0.5,
-                                control=np.median(e_sh) / np.median(pod_te), control_thr=1.0,
+                                control=np.median(e_un) / np.median(e_te), control_thr=1.3,
                                 note=f"held-out oracle / POD-K, medians ({np.median(e_te):.4f} / {np.median(pod_te):.4f}); "
-                                     f"bank ceiling POD-R {np.median(pod_R_te):.4f}; control: shuffled-target head / POD-K must be >= 1; "
+                                     f"bank ceiling POD-R {np.median(pod_R_te):.4f}; control: UNTRAINED head's oracle {np.median(e_un):.4f} must be >= 1.3x the trained head's "
+                                     f"(retraction 5); shuffled-target head {np.median(e_sh):.4f} reported (vacuous for free-code arms); "
                                      f"FiLM 08-14 comparator NOT recomputed in this pass")
         H["gates"]["D1"]["shuffled_control_heldout_median"] = float(np.median(e_sh))
+        H["gates"]["D1"]["untrained_control_heldout_median"] = float(np.median(e_un))
 
         # D2: J_h conditioning at training codes, oracle points; control: duplicated coordinate
         Ztrain = spec["Z"] if mode != "sup" else MU_tr
@@ -175,15 +186,20 @@ def main():
                                      f"control: duplicated latent coordinate reads {c_dup.max():.1e} (must be ~0)", aggregate="min")
         H["gates"]["D2"].update(cond_train_min=float(c_tr.min()), cond_test_min=float(c_te.min()), cond_test_median=float(np.median(c_te)))
 
-        # G0a: train/held-out gap; control: shuffled head's gap
+        # G0a: train/held-out gap.  Control (RETRACTION 6): an OVERFIT head -- the same arm trained on only 4
+        # trajectories -- must show a large gap (ratio > 1.5 or abs gap > 0.05).  The earlier 'shuffled head's gap'
+        # could not fire: a head that learned nothing has no generalisation gap by construction.
         ratio = float(np.median(e_te) / np.median(e_tr)); absgap = float(np.median(e_te) - np.median(e_tr))
-        e_sh_tr = wh.traj_rms_from_coeffs(wh.oracle(spec_sh, C[tr_sub], n_starts=ORACLE_STARTS, iters=ORACLE_ITERS)[1],
-                                          perp2[tr_sub], C[tr_sub], traj[tr_sub])
-        gap_sh = float(np.median(e_sh) - np.median(e_sh_tr))
-        rec = gate("G0a", max(ratio / 1.5, absgap / 0.05), 1.0, control=gap_sh, control_thr=0.05,
+        small = traj < 4
+        spec_of = wh.train_head(C[small], traj[small], mode, K, MU=(MU_tr[small] if mode == "sup" else None),
+                                CV=(CV[small] if mode == "auto+vc" else None), steps=max(STEPS // 4, 50), tag=mode + "-overfit4")
+        e_of_te = wh.traj_rms_from_coeffs(wh.oracle(spec_of, Ct, n_starts=ORACLE_STARTS, iters=ORACLE_ITERS)[1], perp2t, Ct, trajt)
+        e_of_tr = wh.traj_rms_from_coeffs(wh.oracle(spec_of, C[small], n_starts=ORACLE_STARTS, iters=ORACLE_ITERS)[1], perp2[small], C[small], traj[small])
+        ratio_of = float(np.median(e_of_te) / np.median(e_of_tr)); gap_of = float(np.median(e_of_te) - np.median(e_of_tr))
+        rec = gate("G0a", max(ratio / 1.5, absgap / 0.05), 1.0, control=max(ratio_of / 1.5, gap_of / 0.05), control_thr=1.0,
                    note=f"max(ratio/1.5, absgap/0.05): held-out {np.median(e_te):.4f} vs train {np.median(e_tr):.4f}, ratio {ratio:.3f}, gap {absgap:.4f}; "
-                        f"control: shuffled head's held-out - train gap")
-        rec.update(ratio=ratio, abs_gap=absgap); H["gates"]["G0a"] = rec
+                        f"control: overfit head (4 trajectories) held-out {np.median(e_of_te):.4f} vs train {np.median(e_of_tr):.4f}, ratio {ratio_of:.3f}, gap {gap_of:.4f} (retraction 6)")
+        rec.update(ratio=ratio, abs_gap=absgap, overfit_ratio=ratio_of, overfit_gap=gap_of); H["gates"]["G0a"] = rec
 
         # G0b: tangent-space velocity residual at oracle points with KE >= 10% E; control: random tangent
         tv, pv, ranks = wh.tangent_velocity_residual(spec, Zt, CVt, perpv2t, K)

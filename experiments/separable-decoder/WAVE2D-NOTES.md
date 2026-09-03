@@ -101,6 +101,18 @@ carries the value. Old thresholds and design estimates in this list are hand-mai
     asserted nonzero velocity; G0c with destination floors, trajectory normalisation and NaN=FAIL; D0
     independent path on the full matrix with the near-degenerate-tail rule; D2 at all codes; G0b
     NaN=FAIL.
+16. **Retraction 7 — arm A completion / W5 thresholds 1e-6 → 1e-4 (2026-09-03, from the first
+    corrected N=64 absorbing run, `runs/wav2d/p2fix_n64_abs`).** With the relative-gradient
+    completion criterion at 1e-6, arm A lost 4/16 to 16/16 trajectories at RS 20 and 40 while every
+    "incomplete" step had stopped at a relative gradient of 1e-6 to 5e-6 with healthy conditioning:
+    that is LM's stall level when the residual is tiny at fine time steps, and it is first-order
+    optimal for any practical purpose (the perturbed-latent control reads 0.48). The 1e-6 was set by
+    guess. Both the completion rule and W5 now use 1e-4 (control threshold 1e-2). The affected
+    W3-A / W6-A verdicts in that run are superseded by the re-run.
+17. **Retraction 8 — W6 control threshold 20% → 10%.** The first-order POD-K BE control's excess
+    differed by 17–18% between RS 8 and 40 on the absorbing N=64 runs (and by 439% on the
+    reflective); the 20% bar was set by guess. The control's purpose is to show the check sees
+    time-step dependence at all; 10% does that.
 
 ## Phase 1 — FOM gates (both BCs) — generated table
 

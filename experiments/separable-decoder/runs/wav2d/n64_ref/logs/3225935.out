@@ -1,0 +1,82 @@
+host=pax143 gpu=NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=f16de633ad99ec46f5472fa15429154f7f6cdeb9
+[01:25:21] phase-2 head gates N=64 BC=ref R=64 STEPS=40000 SMOKE=0 backend=gpu
+[01:25:29]   TRAIN FOM ref N=64: 512 traj in 6s, worst drift/growth 3.18e-11
+[01:25:30]   TEST  FOM ref N=64: 16 traj, worst drift/growth 1.21e-11
+[01:25:38]   bank R=64 (eigh) in 3s: sigma_R/sigma_1 2.107e-02, gap 0.977
+[01:25:59]   D0    PASS  orth 1.07e-14 (control 8.00e+00), floor bank/indep 0.0693/0.0693 reldiff 6.6e-13, metric 1.2e-14
+[01:26:00] == head arm sup (K=6) ==
+   train[sup]      1/40000 loss 3.609e+00 [4s]
+   train[sup]   5000/40000 loss 9.247e-02 [21s]
+   train[sup]  10000/40000 loss 5.783e-02 [38s]
+   train[sup]  15000/40000 loss 4.748e-02 [55s]
+   train[sup]  20000/40000 loss 4.238e-02 [71s]
+   train[sup]  25000/40000 loss 3.974e-02 [87s]
+   train[sup]  30000/40000 loss 3.604e-02 [104s]
+   train[sup]  35000/40000 loss 3.719e-02 [120s]
+   train[sup]  40000/40000 loss 3.614e-02 [136s]
+[01:28:18]   trained in 136s, final loss 3.614e-02, params 42560
+[01:28:22]   oracle: 816 held-out + 816 train rows in 4s
+[01:28:56]   shuffled-target control trained+evaluated in 34s
+[01:28:56]   D1    FAIL  value=6.492e-01 thr=5.0e-01  control=9.718e-01 fired=False  [held-out oracle / POD-K, medians (0.2458 / 0.3786); bank ceiling POD-R 0.0639; control: shuffled-target head / POD-K must be >= 1; FiLM 08-14 comparator NOT recomputed in this pass]
+[01:29:06]   D2    PASS  value=-4.260e-03 thr=-1.0e-08  control=-0.000e+00 fired=True  [-(min sigma_min/sigma_max of J_h) over train codes (4.26e-03) and oracle points (5.27e-03); control: duplicated latent coordinate reads 0.0e+00 (must be ~0)]
+[01:29:06]   G0a   FAIL  value=5.423e-01 thr=1.0e+00  control=-6.431e-02 fired=False  [max(ratio/1.5, absgap/0.05): held-out 0.2458 vs train 0.3022, ratio 0.813, gap -0.0564; control: shuffled head's held-out - train gap]
+[01:29:06]   G0b   PASS  value=8.594e-01 thr=1.0e+00  control=9.666e-01 fired=True  [tangent-space velocity residual (median 0.6490) / POD-K on the same 796 states (median 0.7552); J_h ranks [6]; control: random K-dim tangent (median 0.967)]
+[01:29:06]   G0 FAIL (predicted PASS)
+[01:29:06] == head arm auto (K=8) ==
+   train[auto]      1/40000 loss 1.426e+01 [2s]
+   train[auto]   5000/40000 loss 7.162e-02 [15s]
+   train[auto]  10000/40000 loss 4.479e-02 [28s]
+   train[auto]  15000/40000 loss 3.833e-02 [40s]
+   train[auto]  20000/40000 loss 3.544e-02 [53s]
+   train[auto]  25000/40000 loss 3.409e-02 [65s]
+   train[auto]  30000/40000 loss 3.144e-02 [78s]
+   train[auto]  35000/40000 loss 3.272e-02 [91s]
+   train[auto]  40000/40000 loss 3.215e-02 [103s]
+[01:30:50]   trained in 103s, final loss 3.215e-02, params 42944
+[01:30:53]   oracle: 816 held-out + 816 train rows in 3s
+[01:31:19]   shuffled-target control trained+evaluated in 26s
+[01:31:19]   D1    FAIL  value=6.156e-01 thr=5.0e-01  control=6.008e-01 fired=False  [held-out oracle / POD-K, medians (0.1862 / 0.3024); bank ceiling POD-R 0.0639; control: shuffled-target head / POD-K must be >= 1; FiLM 08-14 comparator NOT recomputed in this pass]
+[01:31:27]   D2    PASS  value=-9.990e-02 thr=-1.0e-08  control=-0.000e+00 fired=True  [-(min sigma_min/sigma_max of J_h) over train codes (9.99e-02) and oracle points (1.15e-01); control: duplicated latent coordinate reads 0.0e+00 (must be ~0)]
+[01:31:28]   G0a   FAIL  value=7.461e-01 thr=1.0e+00  control=-2.528e-02 fired=False  [max(ratio/1.5, absgap/0.05): held-out 0.1862 vs train 0.1663, ratio 1.119, gap 0.0198; control: shuffled head's held-out - train gap]
+[01:31:28]   G0b   PASS  value=9.531e-01 thr=1.0e+00  control=9.512e-01 fired=True  [tangent-space velocity residual (median 0.6530) / POD-K on the same 796 states (median 0.6852); J_h ranks [8]; control: random K-dim tangent (median 0.951)]
+[01:31:28]   G0 FAIL (predicted FAIL)
+[01:31:28] == head arm auto+vc (K=8) ==
+   train[auto+vc]      1/40000 loss 2.630e+01 [6s]
+   train[auto+vc]   5000/40000 loss 2.626e-01 [28s]
+   train[auto+vc]  10000/40000 loss 1.920e-01 [50s]
+   train[auto+vc]  15000/40000 loss 1.764e-01 [71s]
+   train[auto+vc]  20000/40000 loss 1.678e-01 [93s]
+   train[auto+vc]  25000/40000 loss 1.612e-01 [115s]
+   train[auto+vc]  30000/40000 loss 1.565e-01 [137s]
+   train[auto+vc]  35000/40000 loss 1.609e-01 [158s]
+   train[auto+vc]  40000/40000 loss 1.586e-01 [180s]
+[01:34:28]   trained in 180s, final loss 1.586e-01, params 42944
+[01:34:29]   oracle: 816 held-out + 816 train rows in 1s
+[01:35:13]   shuffled-target control trained+evaluated in 45s
+[01:35:13]   D1    FAIL  value=6.173e-01 thr=5.0e-01  control=2.437e+00 fired=True  [held-out oracle / POD-K, medians (0.1867 / 0.3024); bank ceiling POD-R 0.0639; control: shuffled-target head / POD-K must be >= 1; FiLM 08-14 comparator NOT recomputed in this pass]
+[01:35:13]   D2    PASS  value=-1.092e-01 thr=-1.0e-08  control=-0.000e+00 fired=True  [-(min sigma_min/sigma_max of J_h) over train codes (1.09e-01) and oracle points (1.59e-01); control: duplicated latent coordinate reads 0.0e+00 (must be ~0)]
+[01:35:14]   G0a   FAIL  value=7.363e-01 thr=1.0e+00  control=-1.854e-02 fired=False  [max(ratio/1.5, absgap/0.05): held-out 0.1867 vs train 0.1690, ratio 1.104, gap 0.0177; control: shuffled head's held-out - train gap]
+[01:35:14]   G0b   PASS  value=9.150e-01 thr=1.0e+00  control=9.512e-01 fired=True  [tangent-space velocity residual (median 0.6269) / POD-K on the same 796 states (median 0.6852); J_h ranks [8]; control: random K-dim tangent (median 0.951)]
+[01:35:14]   G0 FAIL (predicted PASS)
+[01:35:14] phase 2 done (593s) -> /cluster/tufts/paralab/tawal01/wav2d/n64_ref/out/wav2d_head_gates_ref_N64_R64.json
+[01:35:17] phase-3 ROM gates N=64 BC=ref R=64 M=64 RS=[8, 20, 40] heads=['sup', 'auto', 'auto+vc'] SMOKE=0 backend=gpu
+[01:35:21]   W1     PASS  value=1.062e-15 thr=1.0e-12  control=1.091e-15 fired=True  [||A + Lambda B||/||A|| with the M-weighted tables; control: unweighted Phi^T L G (fires for 'abs' where L_N is not Euclidean-symmetric; identical for 'ref', reported)]
+[01:35:26]   4T FOM references (200 intervals x 16) in 5s
+[01:35:28]   same-dt FOM error at RS=8: median 8.539e-03
+[01:35:31]   same-dt FOM error at RS=20: median 1.309e-03
+[01:35:35]   same-dt FOM error at RS=40: median 2.628e-04
+[01:35:41]   W2-6   PASS  value=3.705e-11 thr=1.0e-09  control=-9.264e-01 fired=True  [POD-6 CN reflective energy ratio deviation (max over 16); error median 0.3793 vs floor 0.3786 (reported); control: reduced BE energy ratio 0.9264 must be < 1 - 1e-3]
+[01:35:47]   W2-8   PASS  value=1.647e-11 thr=1.0e-09  control=-9.112e-01 fired=True  [POD-8 CN reflective energy ratio deviation (max over 16); error median 0.3029 vs floor 0.3024 (reported); control: reduced BE energy ratio 0.9112 must be < 1 - 1e-3]
+[01:35:54]   W2-64  PASS  value=4.989e-11 thr=1.0e-09  control=-8.725e-01 fired=True  [POD-64 CN reflective energy ratio deviation (max over 16); error median 0.0652 vs floor 0.0639 (reported); control: reduced BE energy ratio 0.8725 must be < 1 - 1e-3]
+[01:35:54] == head sup (K=6) ==
+[01:35:58]   W0     PASS  value=7.096e-16 thr=1.0e-12  control=1.000e-08 fired=True  [Petrov-table residual vs decode->assembled stencil+boundary rows->Phi^T M, 32 random states; control: B perturbed by 1e-8]
+[01:35:58]   W0g    PASS  value=1.532e-09 thr=1.0e-07  [analytic Jacobian-vector product vs central FD of the FULL-GRID residual (independent path)]
+[01:35:58]   W7     PASS  value=2.400e-13 thr=1.0e-11  control=6.116e-01 fired=True  [arm C with h = [I_K;0] z vs the independent POD-K damped Verlet, RS=8, complete=True; CFL c dt sqrt(lam_max) = 0.184; control: v != 0 state with zdot_0 dropped]
+[01:37:03]   arm A RS=8: 16/16 complete in 65s, err_T median 0.4763 (floor 0.2458, POD-K 0.3786, same-dt FOM 8.54e-03), err_4T 0.9135, E ratio 4.4840
+[01:39:23]   arm A RS=20: 16/16 complete in 140s, err_T median 0.5496 (floor 0.2458, POD-K 0.3786, same-dt FOM 1.31e-03), err_4T 0.9510, E ratio 6.4525
+[01:43:21]   arm A RS=40: 16/16 complete in 239s, err_T median 0.5665 (floor 0.2458, POD-K 0.3786, same-dt FOM 2.63e-04), err_4T 0.9841, E ratio 8.1224
+[01:43:49]   arm C RS=8: 9/16 complete in 28s
+[01:45:41]   arm C RS=20: 15/16 complete in 111s

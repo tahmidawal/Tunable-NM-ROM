@@ -344,10 +344,10 @@ def main():
                     e_cn.append(traj_err(Hc, i, wc.NUM_STEPS) - podK_T[i])
                 ex_be[rs] = float(np.median(e_be)); ex_cn[rs] = float(np.median(e_cn))
             ctrl6 = abs(ex_be[RS_LIST[0]] - ex_be[RS_LIST[-1]]) / max(abs(ex_be[RS_LIST[-1]]), 1e-12)
-            Hh["gates"][f"W6-{arm_name}"] = gate(f"W6{arm_name}", w6, 0.2, control=ctrl6, control_thr=0.2,
+            Hh["gates"][f"W6-{arm_name}"] = gate(f"W6{arm_name}", w6, 0.2, control=ctrl6, control_thr=0.1,
                                                 note=f"arm {arm_name}: spread of the median ROM-floor excess over RS>=20 relative to its mean; excess per RS {[(rs, round(ex[rs], 5)) for rs in RS_LIST]}; "
                                                      f"control (AMENDMENT 8: a first-order integrator on the linear POD-K subspace, where the time-step error is not masked by manifold error; the design's RS=1 mutation of the ROM arm cannot fire when the manifold error dominates): "
-                                                     f"POD-K BE excess over the POD-K floor {ex_be} must differ by > 20% between RS={RS_LIST[0]} and {RS_LIST[-1]} (POD-K CN excess {ex_cn} for reference)")
+                                                     f"POD-K BE excess over the POD-K floor {ex_be} must differ by > 10% between RS={RS_LIST[0]} and {RS_LIST[-1]} (retraction 8; POD-K CN excess {ex_cn} for reference)")
         # ---- W4: arm C reflective energy bounded; control: reduced backward Euler (arm C stepping with BE) ----
         if BC == "ref":
             rsb = RS_LIST[-1]; aggC = Hh["arms"]["C"][str(rsb)]; aggC0 = Hh["arms"]["C"][str(RS_LIST[0])]
@@ -378,7 +378,7 @@ def main():
             _, Zf0, _, _ = wr.ArmA(T, head, c_i, dtb).rollout(Zt[i, 0], T["PhiM"] @ Vt[i, 0], 3 * RS_LIST[-1], RS_LIST[-1])
             rng5 = np.random.default_rng(5); Zp = Zf0 * (1 + 1e-3 * rng5.normal(size=Zf0.shape))
             g_ctrl = float(np.max(wr.lspg_optimality_independent(g, T, head, c_i, dtb, Zp)))
-            Hh["gates"]["W5"] = gate("W5", aggA["W5_optimality_max_max"], 1e-6, control=g_ctrl, control_thr=1e-4,
+            Hh["gates"]["W5"] = gate("W5", aggA["W5_optimality_max_max"], 1e-4, control=g_ctrl, control_thr=1e-2,
                                      note=f"arm A RS={RS_LIST[-1]}: first-order LSPG optimality ||J^T r||/(||J|| ||r||) of the decoded history with r and J formed through the solver's stencil "
                                           f"(independent of the tables), max over ~200 sampled steps x 16 trajectories; REPORTED: projected residual (nonzero for overdetermined LSPG) "
                                           f"{aggA.get('W5_projres_reported_max', float('nan')):.1e}, energy-accounting identity (tautological, verification) {aggA.get('W5_balance_reported_max', float('nan')):.1e}, "

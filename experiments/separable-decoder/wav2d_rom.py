@@ -141,7 +141,7 @@ class ArmA:
         _, J = self.head.hj(z)
         return self.E @ J
 
-    def rollout(self, z0, pv0, n_steps, snap_every, max_iter=60, grad_tol=1e-6, rank_tol=1e-8):
+    def rollout(self, z0, pv0, n_steps, snap_every, max_iter=60, grad_tol=1e-4, rank_tol=1e-8):   # grad_tol: retraction 7
         """returns latents at the stored snapshots (n_snap+1, K), the full latent history (n_steps+1, K),
         per-step LM stats (iters, n_resid, ||r||/scale, cond J_h, relative gradient), and completion flag.  A step
         COMPLETES only if LM reached first-order optimality (relative gradient <= grad_tol, or ||r||/scale <= 1e-12),

@@ -46,7 +46,10 @@ def sup_latents(mu, n_time=None):
     import wav2d_common as wc
     T1 = (n_time or wc.NUM_STEPS + 1)
     tt = 2.0 * np.arange(T1) / (T1 - 1) - 1.0
-    Z = np.concatenate([np.repeat(np.asarray(mu), T1, axis=0), np.tile(tt, len(mu))[:, None]], axis=1)
+    mu = np.asarray(mu, dtype=float)
+    if not (np.all(np.isfinite(mu)) and np.max(np.abs(mu)) <= 1.0 + 1e-12):
+        raise RuntimeError("sup_latents expects mu already affinely mapped to [-1,1]^5 (wav2d_common.sample_params does this)")
+    Z = np.concatenate([np.repeat(mu, T1, axis=0), np.tile(tt, len(mu))[:, None]], axis=1)
     return Z
 
 
@@ -210,10 +213,10 @@ def tangent_velocity_residual(spec, Zstar, CV, perpv2, K):
     J = head_jac(spec, Zstar)                                  # (S,R,K)
     out = np.zeros(len(Zstar)); ranks = np.zeros(len(Zstar), int)
     for s in range(len(Zstar)):
-        Q, Rr = np.linalg.qr(J[s])
-        # rank-revealing: drop columns whose R diagonal is below 1e-10 of the largest
-        d = np.abs(np.diag(Rr)); keep = d >= 1e-10 * d.max()
-        Qk = Q[:, keep]; ranks[s] = keep.sum()
+        # rank-revealing via SVD (verification: unpivoted QR + diagonal filter is not rank-revealing)
+        Uj, sv, _ = np.linalg.svd(J[s], full_matrices=False)
+        keep = sv >= 1e-10 * sv[0]
+        Qk = Uj[:, keep]; ranks[s] = int(keep.sum())
         cv = CV[s]
         out[s] = np.sqrt(np.sum((cv - Qk @ (Qk.T @ cv)) ** 2) + perpv2[s])
     vnorm = np.sqrt(np.sum(CV ** 2, axis=1) + perpv2)

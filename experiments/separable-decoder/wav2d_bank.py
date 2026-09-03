@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import numpy as np
 import scipy.linalg as sla
+import scipy.sparse.linalg as spla
 
 import jax
 import jax.numpy as jnp
@@ -97,11 +98,18 @@ def gate_D0(g: Grid, bank, U_train, U_check, stride=1):
     m = g.mass_diag(); sq = np.sqrt(m)
     orth = float(np.linalg.norm(G.T @ (G * m[:, None]) - np.eye(R)))
     X, _ = snapshots(np.asarray(U_train))
-    if X.shape[1] > 8192 and stride == 1:
-        stride = int(np.ceil(X.shape[1] / 8192))
-    Xs = (X[::stride] * sq[None, :])
-    Ui, si, Vti = sla.svd(Xs, full_matrices=False, lapack_driver="gesdd")
-    Gs_ind = Vti[:R].T                                     # independent top-R subspace (Euclidean, scaled)
+    Xs_full = X * sq[None, :]
+    if X.shape[1] <= 8192:
+        Ui, si, Vti = sla.svd(Xs_full, full_matrices=False, lapack_driver="gesdd")
+        Gs_ind = Vti[:R].T                                 # independent top-R subspace (dense LAPACK)
+        stride = 1
+    else:
+        # ARPACK Lanczos on the FULL matrix (a different algorithm from the Gram eigendecomposition; no subsampling)
+        Ui, si, Vti = spla.svds(Xs_full, k=R + 8, which="LM")
+        order = np.argsort(si)[::-1]; Vti = Vti[order]
+        Gs_ind = Vti[:R].T
+        stride = 0                                          # 0 = 'ARPACK on the full matrix'
+    Xs = Xs_full
     # floors on the check set: || u - P u ||_M / ||u||_M for both projectors
     Uc = np.asarray(U_check).reshape(-1, X.shape[1])
     Ucs = Uc * sq[None, :]
@@ -110,8 +118,10 @@ def gate_D0(g: Grid, bank, U_train, U_check, stride=1):
     fl_ind = np.linalg.norm(Ucs - (Ucs @ Gs_ind) @ Gs_ind.T, axis=1) / np.linalg.norm(Ucs, axis=1)
     # subspace distance (insensitive to rotations inside the span)
     subspace = float(np.linalg.norm(Gs.T @ Gs_ind @ Gs_ind.T @ Gs - np.eye(R)))
-    # negative control: unweighted Gram -> orthonormality in the M metric fails
-    Gram0 = X[::stride].T @ X[::stride]
+    # negative control: unweighted Gram -> orthonormality in the M metric fails (a stride-4 row subsample suffices
+    # for this control at large n; it tests the weighting, not the subspace)
+    Xc = X if X.shape[1] <= 8192 else X[::4]
+    Gram0 = Xc.T @ Xc
     w0, V0 = np.linalg.eigh(Gram0); V0 = V0[:, np.argsort(w0)[::-1]][:, :R]
     orth_ctrl = float(np.linalg.norm(V0.T @ (V0 * m[:, None]) - np.eye(R)))
     # metric identity on 8 snapshots: ||u - G c||_M^2 + ||c - h||^2 form (h := 0.9 c as a stand-in)
@@ -119,14 +129,19 @@ def gate_D0(g: Grid, bank, U_train, U_check, stride=1):
     lhs = np.sum(m[None, :] * (Uc[:8] - h @ G.T) ** 2, axis=1)
     rhs = np.sum((c - h) ** 2, axis=1) + np.sum(m[None, :] * (Uc[:8] - c @ G.T) ** 2, axis=1)
     metric = float(np.max(np.abs(lhs - rhs) / lhs))
-    if stride > 1 and abs(1.0 - stride) > 0:
-        note_sub = f"independent SVD on every {stride}-th snapshot row"
-    else:
-        note_sub = "independent SVD on all snapshot rows"
+    note_sub = "independent dense LAPACK SVD on all snapshot rows" if stride == 1 else "independent ARPACK svds on the full snapshot matrix"
     floor_rel = float(np.max(np.abs(fl_bank - fl_ind) / fl_ind))
+    # ALWAYS gated (verification: the stride>1 bypass could pass N=128 without certifying the subspace); the
+    # projection round-trip on the check fields is compared too, not only residual norms
+    rt = float(np.max(np.linalg.norm((Ucs @ Gs) @ Gs.T - (Ucs @ Gs_ind) @ Gs_ind.T, axis=1) / np.linalg.norm(Ucs, axis=1)))
+    # near-degenerate tail (amendment 9): when sigma_{R+1}/sigma_R > 0.9 the top-R subspace is not numerically unique
+    # and two algorithms legitimately return different R-th directions; the floors then agree only to the energy
+    # of that direction.  Rule: floor reldiff <= 1e-8 for gap <= 0.9, else <= 1e-4, with the round-trip and the
+    # subspace distance REPORTED (they carry the degeneracy).
+    gap = bank["gap_R"]; floor_tol = 1e-8 if gap <= 0.9 else 1e-4
     return dict(orthonormality=orth, orthonormality_control_noM=orth_ctrl,
                 floor_bank_median=float(np.median(fl_bank)), floor_independent_median=float(np.median(fl_ind)),
-                floor_reldiff_max=floor_rel, subspace_distance=subspace, metric_identity=metric,
-                sigma_ratio_R=bank["sigma_ratio_R"], gap_R=bank["gap_R"], svd_stride=stride, note=note_sub,
-                passed=bool(orth <= 1e-12 and orth_ctrl > 1e-3 and metric <= 1e-12 and
-                            (floor_rel <= 1e-8 if stride == 1 else True)))
+                floor_reldiff_max=floor_rel, floor_tolerance=floor_tol, projection_roundtrip_reldiff_max=rt,
+                subspace_distance=subspace, metric_identity=metric,
+                sigma_ratio_R=bank["sigma_ratio_R"], gap_R=gap, svd_stride=stride, note=note_sub,
+                passed=bool(orth <= 1e-12 and orth_ctrl > 1e-3 and metric <= 1e-12 and floor_rel <= floor_tol))

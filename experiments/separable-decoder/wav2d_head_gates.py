@@ -177,7 +177,7 @@ def main():
 
         # D2: J_h conditioning at training codes, oracle points; control: duplicated coordinate
         Ztrain = spec["Z"] if mode != "sup" else MU_tr
-        c_tr = wh.jac_condition(spec, Ztrain[:: max(len(Ztrain) // 2048, 1)])
+        c_tr = np.concatenate([wh.jac_condition(spec, Ztrain[i0:i0 + 4096]) for i0 in range(0, len(Ztrain), 4096)])   # ALL training codes
         c_te = wh.jac_condition(spec, Zt)
         c_dup = wh.jac_condition(wh.duplicated_coordinate_control(spec), np.concatenate([Zt[:64], np.zeros((min(64, len(Zt)), 1))], axis=1))
         val = -min(float(c_tr.min()), float(c_te.min()))           # gate wants value <= thr; use -cond <= -1e-8
@@ -203,12 +203,15 @@ def main():
 
         # G0b: tangent-space velocity residual at oracle points with KE >= 10% E; control: random tangent
         tv, pv, ranks = wh.tangent_velocity_residual(spec, Zt, CVt, perpv2t, K)
-        sel = (ke_frac >= 0.1) & np.isfinite(tv) & np.isfinite(pv)
+        sel = ke_frac >= 0.1                                    # the KE filter is the ONLY exclusion
         precond(sel.sum() >= 32, "too few kinetic-energy-rich held-out states for G0b")
+        nonfinite = int(np.sum(~(np.isfinite(tv[sel]) & np.isfinite(pv[sel]))))
         rnd = wh.random_tangent_residual(CVt[sel], perpv2t[sel], K)
-        rec = gate("G0b", np.median(tv[sel]) / np.median(pv[sel]), 1.0, control=np.median(rnd), control_thr=0.9,
-                   note=f"tangent-space velocity residual (median {np.median(tv[sel]):.4f}) / POD-K on the same {int(sel.sum())} states (median {np.median(pv[sel]):.4f}); "
-                        f"J_h ranks {np.unique(ranks[sel]).tolist()}; control: random K-dim tangent (median {np.median(rnd):.3f})")
+        val = (np.median(tv[sel]) / np.median(pv[sel])) if nonfinite == 0 else float("nan")   # NaN anywhere -> FAIL
+        rec = gate("G0b", val, 1.0, control=np.median(rnd) / np.median(pv[sel]), control_thr=1.2,
+                   note=f"tangent-space velocity residual (median {np.nanmedian(tv[sel]):.4f}) / POD-K on the same {int(sel.sum())} states (median {np.nanmedian(pv[sel]):.4f}); "
+                        f"J_h ranks {np.unique(ranks[sel]).tolist()}; nonfinite states {nonfinite} (any -> FAIL); control: random K-dim tangent / POD-K (median {np.median(rnd):.3f}) must be >= 1.2")
+        rec["nonfinite_states"] = nonfinite
         rec.update(tangent_median=float(np.median(tv[sel])), podK_median=float(np.median(pv[sel])), n_states=int(sel.sum()),
                    tangent_per_state=tv.tolist(), ke_frac=ke_frac.tolist())
         H["gates"]["G0b"] = rec

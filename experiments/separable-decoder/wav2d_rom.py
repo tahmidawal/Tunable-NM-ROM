@@ -96,7 +96,7 @@ def build_tables(g: Grid, G, n_modes):
 
 # ----------------------------- arm A: LSPG on the Petrov residual -----------------------------
 
-def lm_solve(resid, jac, z0, scale, max_iter=60, rtol=1e-12, xtol=1e-12, lam0=1e-6):
+def lm_solve(resid, jac, z0, scale, max_iter=60, rtol=1e-12, xtol=1e-12, lam0=1e-6, gtol=1e-8):
     """damped Levenberg-Marquardt on ||r||; relative stop on scale (the Stokes cell's rule)"""
     z = np.asarray(z0, dtype=float).copy(); r = resid(z); val = float(np.linalg.norm(r)); J = jac(z)
     lam = lam0; it = 0; nres = 1
@@ -105,6 +105,8 @@ def lm_solve(resid, jac, z0, scale, max_iter=60, rtol=1e-12, xtol=1e-12, lam0=1e
         if val <= stop:
             break
         H = J.T @ J; gr = J.T @ r
+        if np.linalg.norm(gr) <= gtol * np.linalg.norm(J) * val:      # first-order optimality reached
+            break
         dz = np.linalg.solve(H + lam * np.diag(np.diag(H)) + 1e-30 * np.eye(len(z)), -gr)
         zn = z + dz; rn = resid(zn); nres += 1; vn = float(np.linalg.norm(rn))
         if np.isfinite(vn) and vn < val:
@@ -115,7 +117,10 @@ def lm_solve(resid, jac, z0, scale, max_iter=60, rtol=1e-12, xtol=1e-12, lam0=1e
             lam = min(lam * 10.0, 1e14)
             if lam >= 1e14:
                 break
-    return z, val, it, nres
+    # first-order optimality: relative gradient ||J^T r|| / (||J||_F ||r||) -- the residual of an overdetermined
+    # LSPG problem is NOT small at the optimum; the gradient is
+    gnorm = float(np.linalg.norm(J.T @ r) / max(np.linalg.norm(J) * val, 1e-300)) if val > 0 else 0.0
+    return z, val, it, nres, gnorm
 
 
 class ArmA:
@@ -136,21 +141,28 @@ class ArmA:
         _, J = self.head.hj(z)
         return self.E @ J
 
-    def rollout(self, z0, pv0, n_steps, snap_every, max_iter=60):
+    def rollout(self, z0, pv0, n_steps, snap_every, max_iter=60, grad_tol=1e-6, rank_tol=1e-8):
         """returns latents at the stored snapshots (n_snap+1, K), the full latent history (n_steps+1, K),
-        per-step LM stats, and completion flag"""
+        per-step LM stats (iters, n_resid, ||r||/scale, cond J_h, relative gradient), and completion flag.  A step
+        COMPLETES only if LM reached first-order optimality (relative gradient <= grad_tol, or ||r||/scale <= 1e-12),
+        the latent is finite, and J_h keeps sigma_min/sigma_max >= rank_tol."""
         h0 = self.head.h(z0); scale = max(float(np.linalg.norm(self.T["B"] @ h0)), 1e-300)
-        z, val, it, nr = lm_solve(lambda zz: self.residual_first(zz, h0, pv0), self.jac, z0, scale, max_iter=max_iter)
-        Zs = [np.asarray(z0).copy(), z.copy()]; stats = [(it, nr, val / scale)]
+
+        def cond(z):
+            sv = np.linalg.svd(self.head.hj(z)[1], compute_uv=False); return float(sv[-1] / sv[0])
+        z, val, it, nr, gn = lm_solve(lambda zz: self.residual_first(zz, h0, pv0), self.jac, z0, scale, max_iter=max_iter)
+        c1 = cond(z)
+        Zs = [np.asarray(z0).copy(), z.copy()]; stats = [(it, nr, val / scale, c1, gn)]
         zm, zn = np.asarray(z0).copy(), z
         hm, hn = h0, self.head.h(zn)
-        ok = np.all(np.isfinite(z))
+        ok = bool(np.all(np.isfinite(z)) and (gn <= grad_tol or val / scale <= 1e-12) and c1 >= rank_tol)
         for k in range(1, n_steps):
             if not ok:
                 break
-            z, val, it, nr = lm_solve(lambda zz: self.residual_gen(zz, hn, hm), self.jac, 2 * zn - zm, scale, max_iter=max_iter)
-            ok = bool(np.all(np.isfinite(z)))
-            Zs.append(z.copy()); stats.append((it, nr, val / scale))
+            z, val, it, nr, gn = lm_solve(lambda zz: self.residual_gen(zz, hn, hm), self.jac, 2 * zn - zm, scale, max_iter=max_iter)
+            ck = cond(z) if np.all(np.isfinite(z)) else float("nan")
+            ok = bool(np.all(np.isfinite(z)) and (gn <= grad_tol or val / scale <= 1e-12) and ck >= rank_tol)
+            Zs.append(z.copy()); stats.append((it, nr, val / scale, ck, gn))
             zm, zn = zn, z; hm, hn = hn, self.head.h(zn)
         Zs = np.array(Zs)
         complete = bool(ok and len(Zs) == n_steps + 1)
@@ -159,11 +171,12 @@ class ArmA:
 
 # ----------------------------- arm C: forced variational Verlet -----------------------------
 
-def newton_solve(F, J, z0, tol=1e-11, accept=1e-8, max_iter=50):
-    """Newton with backtracking on ||F||.  Returns (z, rel residual, iters, ok).
-    ok = converged to tol, or stalled (backtracking cannot reduce ||F||) at a relative residual <= accept,
-    which is roundoff-level stagnation, not failure.  A stall above `accept` is a failure."""
-    z = np.asarray(z0, dtype=float).copy(); f = F(z); f0 = max(float(np.linalg.norm(f)), 1e-300); it = 0
+def newton_solve(F, J, z0, scale, tol=1e-11, accept=1e-8, max_iter=50):
+    """Newton with backtracking on ||F||.  Returns (z, ||F||/scale, iters, ok).
+    `scale` is a TERM-BASED residual scale (the size of the individual terms of F at the predictor, e.g.
+    ||J^T Mr h_n|| + c^2 dt^2 ||J^T Kr h_n||), not ||F(z0)||, so the stop is a backward-error criterion.
+    ok = converged to tol, or stalled (backtracking cannot reduce ||F||) at ||F||/scale <= accept."""
+    z = np.asarray(z0, dtype=float).copy(); f = F(z); f0 = max(float(scale), 1e-300); it = 0
     for it in range(1, max_iter + 1):
         rel = np.linalg.norm(f) / f0
         if rel <= tol:
@@ -196,11 +209,14 @@ class ArmC:
     def _cond(self, J):
         sv = np.linalg.svd(J, compute_uv=False); return sv[-1] / sv[0]
 
+    def _scale(self, Jn, hn):
+        return float(np.linalg.norm(Jn.T @ (self.Mr @ hn)) + self.c ** 2 * self.dt ** 2 * np.linalg.norm(Jn.T @ (self.Kr @ hn)))
+
     def step(self, zm, zn, hm, hn, Jn):
         f_n = self.c ** 2 * self.dt ** 2 * (self.Kr @ hn)
         F = lambda z: Jn.T @ (self.Mr @ (self.head.h(z) - 2 * hn + hm) + f_n + self.s * (self.Dr @ (self.head.h(z) - hm)))
         J = lambda z: Jn.T @ (self.MD @ self.head.hj(z)[1])
-        return newton_solve(F, J, 2 * zn - zm)
+        return newton_solve(F, J, 2 * zn - zm, self._scale(Jn, hn))
 
     def first_step(self, z0, zdot0):
         h0, J0 = self.head.hj(z0)
@@ -208,7 +224,7 @@ class ArmC:
         f0 = 0.5 * self.c ** 2 * self.dt ** 2 * (self.Kr @ h0)
         F = lambda z: J0.T @ (self.Mr @ (self.head.h(z) - h0 - kick) + f0 + self.s * (self.Dr @ (self.head.h(z) - h0)))
         J = lambda z: J0.T @ (self.MD @ self.head.hj(z)[1])
-        return newton_solve(F, J, z0 + self.dt * zdot0)
+        return newton_solve(F, J, z0 + self.dt * zdot0, self._scale(J0, h0))
 
     def zdot_from_velocity(self, z0, cv0):
         """least-squares zdot_0 from the velocity coefficients: min || J_h(z0) zdot - cv0 ||  (Mr = I)"""
@@ -232,11 +248,19 @@ class ArmC:
         complete = bool(ok and len(Zs) == n_steps + 1)
         return Zs[::snap_every] if complete else None, Zs, np.array(stats), np.array(conds), complete
 
-    def energy_reduced(self, Zs):
-        """E_r at interior latent steps with the central-difference velocity  (len(Zs)-2 values)"""
+    def energy_reduced(self, Zs, zdot0=None):
+        """E_r at EVERY latent step (len(Zs) values): central-difference velocity inside, the given zdot0 (or a
+        forward difference) at k=0 and a backward difference at the end -- so E[0] is E(0) and E[-1] is E(4T)."""
         E = []
-        for k in range(1, len(Zs) - 1):
-            h, J = self.head.hj(Zs[k]); zd = (Zs[k + 1] - Zs[k - 1]) / (2 * self.dt)
+        n = len(Zs)
+        for k in range(n):
+            h, J = self.head.hj(Zs[k])
+            if k == 0:
+                zd = np.asarray(zdot0, dtype=float) if zdot0 is not None else (Zs[1] - Zs[0]) / self.dt
+            elif k == n - 1:
+                zd = (Zs[k] - Zs[k - 1]) / self.dt
+            else:
+                zd = (Zs[k + 1] - Zs[k - 1]) / (2 * self.dt)
             v = J @ zd
             E.append(0.5 * v @ (self.Mr @ v) + 0.5 * self.c ** 2 * h @ (self.Kr @ h))
         return np.array(E)
@@ -339,15 +363,56 @@ def dynamic_velocity_energy(g: Grid, T, U_hist, c, dt):
 
 
 def full_grid_residual(g: Grid, T, c, dt, u, un, um, first=False, v0=None):
-    """INDEPENDENT full-grid path for gate W0: decode -> assembled stencil + boundary rows -> project with Phi^T M.
-    r = Phi^T M [ (u - 2 un + um) - a L (u + 2 un + um) + s D_B (u - um) ]   (first: (u-u0) - aL(u+u0) + sD(u-u0) - dt v0)"""
+    """INDEPENDENT full-grid path for gate W0: decode -> the SOLVER'S STENCIL (wav2d_common.lap_fn, i.e. not the
+    assembled L the tables were built from; the two operators are certified equal by F0) + damping rows -> project
+    with Phi^T M.   r = Phi^T M [ (u - 2 un + um) - a L (u + 2 un + um) + s D_B (u - um) ]
+    (first: (u-u0) - aL(u+u0) + sD(u-u0) - dt v0)."""
+    import jax.numpy as jnp
     s = 0.5 * c * dt; a = s * s
-    L, d = T["L"], T["d"]
+    lap = wc.lap_fn(g); d = T["d"]
+    Lf = lambda x: np.asarray(lap(jnp.asarray(x)))
     if first:
-        rf = (u - un) - a * np.asarray(L @ (u + un)) + s * d * (u - un) - dt * v0
+        rf = (u - un) - a * Lf(u + un) + s * d * (u - un) - dt * v0
     else:
-        rf = (u - 2 * un + um) - a * np.asarray(L @ (u + 2 * un + um)) + s * d * (u - um)
+        rf = (u - 2 * un + um) - a * Lf(u + 2 * un + um) + s * d * (u - um)
     return T["PhiM"] @ rf
+
+
+def lspg_optimality_independent(g: Grid, T, head, c, dt, Zf, sample=None):
+    """Gate W5 (restated, arm A): at every step of the ROM's latent history the decoded state must be a
+    first-order-optimal LSPG solution of the residual formed through the INDEPENDENT full-grid path (solver stencil,
+    not the tables):  || J^T r_full || / (||J||_F ||r_full||) with J = (B - aA + sC) J_h(z) built from the Petrov
+    projection of the stencil applied to the decoded Jacobian columns.  Returns the per-step relative gradients."""
+    import jax.numpy as jnp
+    s = 0.5 * c * dt; a = s * s
+    lap = wc.lap_fn(g); d = T["d"]; PM = T["PhiM"]; G = T["G"]
+    Lf = lambda x: np.asarray(lap(jnp.asarray(x)))
+    out = []
+    idx = range(1, len(Zf) - 1) if sample is None else [n for n in sample if 1 <= n <= len(Zf) - 2]
+    for n in idx:                                             # n+1 is the solved step; n, n-1 its TRUE predecessors
+        z = Zf[n + 1]; hz, Jh = head.hj(z); un = G @ head.h(Zf[n]); um = G @ head.h(Zf[n - 1]); u = G @ hz
+        rf = PM @ ((u - 2 * un + um) - a * Lf(u + 2 * un + um) + s * d * (u - um))
+        # Jacobian through the same independent path, column by column (K columns)
+        GJ = G @ Jh
+        Jcols = np.stack([PM @ (GJ[:, k] - a * Lf(GJ[:, k]) + s * d * GJ[:, k]) for k in range(Jh.shape[1])], axis=1)
+        out.append(np.linalg.norm(Jcols.T @ rf) / max(np.linalg.norm(Jcols) * np.linalg.norm(rf), 1e-300))
+    return np.array(out)
+
+
+def projected_momentum_residual(g: Grid, T, c, dt, U_hist, Phi_M=None):
+    """Gate W5 (restated): the ROM's decoded history must satisfy the Petrov-projected damped-Newmark equations
+    on the full grid through the solver's stencil: r_n = Phi^T M [ (u^{n+1} - 2u^n + u^{n-1}) - aL(u^{n+1}+2u^n+u^{n-1})
+    + sD(u^{n+1}-u^{n-1}) ] for n >= 1, normalised by the term scale ||Phi^T M (u^{n+1}+2u^n+u^{n-1})|| a ||L||-ish:
+    we use ||Phi^T M u^n|| (the mass term) as the scale.  Returns the per-step normalised residual norms."""
+    import jax.numpy as jnp
+    s = 0.5 * c * dt; a = s * s
+    lap = wc.lap_fn(g); d = T["d"]; PM = T["PhiM"] if Phi_M is None else Phi_M
+    out = []
+    for n in range(1, len(U_hist) - 1):
+        u, un, um = U_hist[n + 1], U_hist[n], U_hist[n - 1]
+        rf = (u - 2 * un + um) - a * np.asarray(lap(jnp.asarray(u + 2 * un + um))) + s * d * (u - um)
+        out.append(np.linalg.norm(PM @ rf) / max(np.linalg.norm(PM @ un), 1e-300))
+    return np.array(out)
 
 
 def momentum_balance(g: Grid, T, c, dt, U_hist):

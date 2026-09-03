@@ -315,3 +315,54 @@ FOM both BCs, energies), `wav2d_fom_gates.py` (phase 1, JSON), `wav2d_bank.py`,
 this design and its audits, `wav2d_refs/` (the 1D check). Every code file and every
 conclusion gets an independent Codex pass before it is reported. Lab-log entry with the
 decision table filled in.
+
+## r4 amendments (2026-09-03, after the phase-2/3 code verification and the first N=64 numbers)
+
+Applied in the code; the sections above are left as audited and these override them where they differ.
+
+1. **W3 comparator and RS rule.** The POD-$K$ comparator is the **POD-$K$ Galerkin CN rollout error at
+   the same RS** on the same trajectory (the design's intent; the first driver used the instantaneous
+   projection floor, which is stricter). The RS at which W3 is read is **the finest RS that completes
+   16/16** — no selection on the held-out error. Absorbing W3 also applies the $4T$ floor and POD-$K$
+   tests.
+2. **W5 restated (arm A).** The energy-accounting identity of r3 is a tautology for any $u$-history
+   (verification); it is reported, not gated. The gate is **first-order LSPG optimality of the decoded
+   history with the residual and Jacobian formed through the solver's stencil** (independent of the
+   tables), $\|J^\top r\|/(\|J\|\|r\|) \le 10^{-6}$ over ~200 sampled steps × 16 trajectories; control:
+   latents perturbed by $10^{-3}$ must read $\ge 10^{-4}$. (The projected residual itself is *not* small
+   for an overdetermined LSPG problem and is reported.)
+3. **Arm A completion.** A step completes only if LM reached first-order optimality (relative gradient
+   $\le 10^{-6}$, or $\|r\| \le 10^{-12}\,$scale), the latent is finite, and $J_h$ keeps
+   $\sigma_{\min}/\sigma_{\max} \ge 10^{-8}$ (D2 along arm A rollouts too). Arm C's Newton stop is
+   normalised by a term-based scale ($\|J^\top\mathsf M h_n\| + c^2\Delta t^2\|J^\top\mathsf K h_n\|$),
+   converged at $10^{-11}$, stall accepted at $\le 10^{-8}$.
+4. **W6 control.** The design's RS=1 mutation of the ROM arm cannot fire when the manifold error
+   dominates the time-step error (measured: 1–4% change). Control: a first-order integrator (reduced
+   BE) **on the linear POD-$K$ subspace**, where the floor is exact, must show an RS-dependent excess
+   (> 20% between the coarsest and finest RS).
+5. **W4.** Value $= \max(\max|E_r/E_r^0-1|/10^{-2},\ \max|\text{slope}|/10^{-3})\le 1$, $E_r$ with true
+   endpoint energies ($E(0)$ from $\dot z_0$, $E(4T)$ by a backward difference); requires W6-C to have
+   passed and the bound not to grow from RS 8 to 40. Control: first-order reduced-BE stepping on the
+   same head loses $> 10^{-2}$ of $E_r$.
+6. **W0.** The independent full-grid path uses the **solver's stencil** (`lap_fn`), not the assembled
+   $L$ the tables were built from (F0 certifies the two equal); 32 random states **and** the captured
+   solves of a short arm-A rollout, backward-error normalised.
+7. **W7 control.** A right-going Gaussian pulse projected onto the bank (nonzero projected velocity,
+   asserted), stepped with $\dot z_0$ dropped.
+8. **G0c.** Errors at the destination snapshot normalised by the **trajectory** RMS (never per
+   snapshot); excess over the oracle floor **at that destination** per launch; NaN anywhere is FAIL;
+   the wrong-sign control's divergence is read at its last finite state.
+9. **D0 near-degenerate tail.** The independent path is dense LAPACK SVD ($n \le 8192$) or ARPACK
+   `svds` on the **full** snapshot matrix (no subsampling). When $\sigma_{R+1}/\sigma_R > 0.9$ the top-$R$
+   subspace is not numerically unique and the floor agreement is gated at $10^{-4}$ instead of
+   $10^{-8}$, with the subspace distance and projection round-trip reported. (Measured gaps: 0.977 /
+   0.964 at N=64, 0.999 / 0.964 at N=128.)
+10. **D1 / G0a controls** (retractions 5–6 in the notes): untrained head (capacity baseline, must be
+    $\ge 1.3\times$ worse) and overfit head (4 trajectories, must show a gap). D2 is evaluated at **all**
+    training codes. G0b: NaN at a kinetic-energy-rich state is FAIL; control = random tangent / POD-$K$
+    $\ge 1.2$.
+11. **Phase 4 bank across N** (amendment 7 in `wav2d_ladder.py`): $K, R, M$ fixed; at $N \ne$ the source
+    resolution the source bank is prolonged bilinearly and re-orthonormalised in the fine $M$-metric,
+    the source head reused; accuracy is measured against the $N$-FOM and FOM-tol matched to it.
+12. **Known omission.** The 08-14 FiLM comparator on this dataset/metric is not recomputed (reported
+    as such; it is a comparator, not a pass rule).

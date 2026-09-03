@@ -215,8 +215,16 @@ def main():
         Tp = dict(T); Tp["B"] = T["B"] * (1 + 1e-8)
         Ap = wr.ArmA(Tp, head, float(ct_all[0]), dt0)
         ctrl0 = np.linalg.norm(Ap.residual_gen(zz, hn_, hm_) - r_full) / np.linalg.norm(r_full)
-        Hh["gates"]["W0"] = gate("W0", worst, 1e-12, control=ctrl0, control_thr=1e-9,
-                                 note="Petrov-table residual vs decode->assembled stencil+boundary rows->Phi^T M, 32 random states; control: B perturbed by 1e-8")
+        # captured solves: a short arm-A rollout's converged states, backward-error normalised by the mass term
+        Zc, Zcf, stc, okc = A0.rollout(Zt[0, 0], T["PhiM"] @ Vt[0, 0], 3 * rs0, rs0)
+        worst_c = 0.0
+        for k in range(2, len(Zcf)):
+            hz, hn_, hm_ = head.h(Zcf[k]), head.h(Zcf[k - 1]), head.h(Zcf[k - 2])
+            r_tab = A0.residual_gen(Zcf[k], hn_, hm_); r_full = wr.full_grid_residual(g, T, float(ct_all[0]), dt0, G @ hz, G @ hn_, G @ hm_)
+            worst_c = max(worst_c, np.linalg.norm(r_tab - r_full) / max(np.linalg.norm(T["B"] @ hn_), 1e-300))
+        Hh["gates"]["W0"] = gate("W0", max(worst, worst_c), 1e-12, control=ctrl0, control_thr=1e-9,
+                                 note=f"Petrov-table residual vs decode->SOLVER STENCIL+damping rows->Phi^T M: 32 random states (relative, {worst:.1e}) and "
+                                      f"{len(Zcf)-2} captured arm-A solves (backward-error normalised by ||B h_n||, {worst_c:.1e}); control: B perturbed by 1e-8")
         Hh["gates"]["W0-grad"] = gate("W0g", worst_g, 1e-7, note="analytic Jacobian-vector product vs central FD of the FULL-GRID residual (independent path)")
 
         # ---- W7: arm C on a linear head == independent POD-K Verlet; control: traveling state with zdot0 dropped ----
@@ -226,12 +234,19 @@ def main():
         ZL, ZLf, _, _, okL = CL.rollout(q0, np.zeros(K), wc.NUM_STEPS * rs0, rs0)
         QV, QVf = wr.pod_verlet(T, K, float(ct_all[0]), dt0, q0, np.zeros(K), wc.NUM_STEPS * rs0, rs0)
         w7 = np.max(np.abs(ZLf - QVf)) / np.max(np.abs(QVf)) if okL else float("nan")
-        k10 = 10; qv0 = CVt[0, k10, :K]; q0b = Ct[0, k10, :K]                     # a state with v != 0
+        # control: a right-going Gaussian pulse (the F3 traveling state) projected onto the bank; its projected
+        # velocity must be nonzero (asserted), and dropping zdot_0 must separate the two recurrences
+        x_ = np.linspace(0, 1, N); X_, Y_ = np.meshgrid(x_, x_, indexing="ij")
+        Up = np.exp(-((X_ - 0.45) ** 2 + (Y_ - 0.5) ** 2) / (2 * 0.1 ** 2)); Vp = -float(ct_all[0]) * (-(X_ - 0.45) / 0.1 ** 2) * Up
+        if BC == "ref":
+            Up[0, :] = Up[-1, :] = Up[:, 0] = Up[:, -1] = 0; Vp[0, :] = Vp[-1, :] = Vp[:, 0] = Vp[:, -1] = 0
+        q0b = wb.coefficients(g, G, g.full_to_state(Up)[None, :])[0][:K]; qv0 = wb.coefficients(g, G, g.full_to_state(Vp)[None, :])[0][:K]
+        precond(np.linalg.norm(qv0) > 1e-3 * np.linalg.norm(q0b) / wc.DT_SNAP, "W7 control: projected pulse velocity is ~0, the control cannot fire")
         QVb, QVbf = wr.pod_verlet(T, K, float(ct_all[0]), dt0, q0b, qv0, 4 * rs0, rs0)
         _, ZLbf, _, _, _ = CL.rollout(q0b, np.zeros(K), 4 * rs0, rs0)
         w7c = np.max(np.abs(ZLbf - QVbf)) / np.max(np.abs(QVbf))
         Hh["gates"]["W7"] = gate("W7", w7, 1e-11, control=w7c, control_thr=1e-3,
-                                 note=f"arm C with h = [I_K;0] z vs the independent POD-K damped Verlet, RS={rs0}, complete={okL}; CFL c dt sqrt(lam_max) = {CL.cfl():.3f}; control: v != 0 state with zdot_0 dropped")
+                                 note=f"arm C with h = [I_K;0] z vs the independent POD-K damped Verlet, RS={rs0}, complete={okL}; CFL c dt sqrt(lam_max) = {CL.cfl():.3f}; control: traveling pulse (|qv0| = {np.linalg.norm(qv0):.2e}) with zdot_0 dropped")
 
         # ---- rollouts: arms A and C at each RS, 16 test trajectories, 4T horizon ----
         for arm_name in ("A", "C"):
@@ -246,13 +261,20 @@ def main():
                         arm = wr.ArmA(T, head, c_i, dt)
                         pv0 = T["PhiM"] @ Vt[i, 0]
                         Zs, Zf, st, ok = arm.rollout(z0, pv0, n_steps, rs)
-                        iters = float(st[:, 0].mean()) if len(st) else float("nan"); cond_min = float("nan")
+                        iters = float(st[:, 0].mean()) if len(st) else float("nan"); cond_min = float(np.min(st[:, 3])) if len(st) else float("nan")
+                        resid_max = float(np.max(st[:, 4])) if len(st) else float("nan")      # max relative GRADIENT (first-order optimality)
                     else:
                         arm = wr.ArmC(T, head, c_i, dt)
                         zd0 = arm.zdot_from_velocity(z0, CVt[i, 0])
                         Zs, Zf, st, conds, ok = arm.rollout(z0, zd0, n_steps, rs)
                         iters = float(st[:, 0].mean()) if len(st) else float("nan"); cond_min = float(np.min(conds)) if len(conds) else float("nan")
-                    rec = dict(complete=bool(ok), iters_mean=iters, cond_min=cond_min)
+                        resid_max = float(np.max(st[:, 1])) if len(st) else float("nan")
+                    # POD-K CN rollout error at the SAME RS on this trajectory (the design's POD-K comparator is the
+                    # POD-K Galerkin CN control, not the instantaneous projection floor)
+                    Pk = wr.PodCN(T, K, c_i, dt); Qk, _ = Pk.rollout(Ct[i, 0, :K], np.zeros(K), n_steps, rs)
+                    Hk = np.zeros((n_long + 1, R)); Hk[:, :K] = Qk
+                    rec = dict(complete=bool(ok), iters_mean=iters, cond_min=cond_min, resid_max=resid_max,
+                               podK_cn_err_T=traj_err(Hk, i, wc.NUM_STEPS), podK_cn_err_4T=traj_err(Hk, i, n_long))
                     if ok:
                         H = np.array([head.h(z) for z in Zs])
                         rec.update(err_T=traj_err(H, i, wc.NUM_STEPS), err_4T=traj_err(H, i, n_long),
@@ -260,24 +282,37 @@ def main():
                                    err_postexit_E0=(traj_err(H, i, n_long, k_start=int(t_exit_idx[i]), norm_E0=True) if t_exit_idx[i] < n_long else float("nan")),
                                    mean_field_err=float(np.max(np.abs(np.mean(H @ G.T, axis=1) - np.mean(U_long[i], axis=1))) / np.sqrt(E_long[i, 0])))
                         if arm_name == "C":
-                            Er = arm.energy_reduced(Zf)
-                            rec.update(Er_ratio_T=float(Er[min(wc.NUM_STEPS * rs - 1, len(Er) - 1)] / Er[0]), Er_ratio_4T=float(Er[-1] / Er[0]),
+                            Er = arm.energy_reduced(Zf, zdot0=zd0)                 # E[0] = E(0), E[-1] = E(4T)
+                            rec.update(Er_ratio_T=float(Er[wc.NUM_STEPS * rs] / Er[0]), Er_ratio_4T=float(Er[-1] / Er[0]),
                                        Er_max_dev=float(np.max(np.abs(Er / Er[0] - 1))),
                                        Er_secular_slope=float(np.polyfit(np.arange(len(Er)) * dt, Er / Er[0], 1)[0]))
                         Hf = np.array([head.h(z) for z in Zf]) @ G.T
                         Ed = wr.dynamic_velocity_energy(g, T, Hf, c_i, dt)
                         rec.update(Edyn_ratio_T=float(Ed[min(wc.NUM_STEPS * rs, len(Ed) - 1)] / Ed[0]), Edyn_ratio_4T=float(Ed[-1] / Ed[0]))
-                        if BC == "abs":
+                        if arm_name == "A":
+                            # W5 (restated): the decoded history must be first-order optimal for the LSPG residual formed
+                            # through the solver's stencil (independent of the tables); the projected residual itself is
+                            # NOT small for an overdetermined LSPG problem, so it and the tautological energy-accounting
+                            # identity are REPORTED only
+                            gopt = wr.lspg_optimality_independent(g, T, head, c_i, dt, Zf, sample=range(1, len(Zf) - 1, max(1, len(Zf) // 200)))   # ~200 sampled steps, true predecessors
+                            pm = wr.projected_momentum_residual(g, T, c_i, dt, Hf)
                             bal, ctrlb = wr.momentum_balance(g, T, c_i, dt, Hf)
-                            rec.update(W5_balance=float(np.max(np.abs(bal))), W5_control=float(np.max(np.abs(ctrlb))))
+                            rec.update(W5_optimality_max=float(np.max(gopt)), W5_projres_reported=float(np.max(pm)),
+                                       W5_balance_reported=float(np.max(np.abs(bal))), W5_flux_dropped_reported=float(np.max(np.abs(ctrlb))))
                     per.append(rec)
                 n_complete = sum(p["complete"] for p in per)
                 agg = dict(RS=rs, dt=dt, n_complete=int(n_complete), per_traj=per, seconds=time.time() - t0)
                 if n_complete == n_test:
-                    for key in ("err_T", "err_4T", "err_preexit_E0", "Edyn_ratio_T", "Er_ratio_T", "Er_max_dev", "Er_secular_slope", "W5_balance", "W5_control", "cond_min", "iters_mean"):
-                        vals = [p.get(key, float("nan")) for p in per]
-                        if not all(v != v for v in vals):
-                            agg[key + "_median"] = float(np.nanmedian(vals)); agg[key + "_max"] = float(np.nanmax(vals))
+                    for key in ("err_T", "err_4T", "err_preexit_E0", "Edyn_ratio_T", "Er_ratio_T", "Er_ratio_4T", "Er_max_dev", "Er_secular_slope",
+                                "W5_optimality_max", "W5_projres_reported", "W5_balance_reported", "W5_flux_dropped_reported", "cond_min", "iters_mean", "resid_max",
+                                "podK_cn_err_T", "podK_cn_err_4T"):
+                        vals = [p.get(key) for p in per]
+                        if all(v is not None for v in vals):
+                            vals = np.array(vals, dtype=float)
+                            # NaN policy: a nonfinite value anywhere makes the aggregate NaN (never dropped)
+                            agg[key + "_median"] = float(np.median(vals)) if np.all(np.isfinite(vals)) else float("nan")
+                            agg[key + "_max"] = float(np.max(vals)) if np.all(np.isfinite(vals)) else float("nan")
+                            agg[key + "_absmax"] = float(np.max(np.abs(vals))) if np.all(np.isfinite(vals)) else float("nan")
                     agg["excess_over_floor_T_median"] = float(np.median([p["err_T"] - f for p, f in zip(per, floor_T)]))
                 log(f"  arm {arm_name} RS={rs}: {n_complete}/{n_test} complete in {agg['seconds']:.0f}s" +
                     (f", err_T median {agg['err_T_median']:.4f} (floor {np.median(floor_T):.4f}, POD-K {np.median(podK_T):.4f}, same-dt FOM {np.median(samedt[rs]):.2e}), "
@@ -311,27 +346,43 @@ def main():
             ctrl6 = abs(ex_be[RS_LIST[0]] - ex_be[RS_LIST[-1]]) / max(abs(ex_be[RS_LIST[-1]]), 1e-12)
             Hh["gates"][f"W6-{arm_name}"] = gate(f"W6{arm_name}", w6, 0.2, control=ctrl6, control_thr=0.2,
                                                 note=f"arm {arm_name}: spread of the median ROM-floor excess over RS>=20 relative to its mean; excess per RS {[(rs, round(ex[rs], 5)) for rs in RS_LIST]}; "
-                                                     f"control: first-order POD-K BE excess over the POD-K floor {ex_be} must differ by > 20% between RS={RS_LIST[0]} and {RS_LIST[-1]} (POD-K CN excess {ex_cn} for reference)")
+                                                     f"control (AMENDMENT 8: a first-order integrator on the linear POD-K subspace, where the time-step error is not masked by manifold error; the design's RS=1 mutation of the ROM arm cannot fire when the manifold error dominates): "
+                                                     f"POD-K BE excess over the POD-K floor {ex_be} must differ by > 20% between RS={RS_LIST[0]} and {RS_LIST[-1]} (POD-K CN excess {ex_cn} for reference)")
         # ---- W4: arm C reflective energy bounded; control: reduced backward Euler (arm C stepping with BE) ----
         if BC == "ref":
-            rsb = RS_LIST[-1]; aggC = Hh["arms"]["C"][str(rsb)]
+            rsb = RS_LIST[-1]; aggC = Hh["arms"]["C"][str(rsb)]; aggC0 = Hh["arms"]["C"][str(RS_LIST[0])]
             if aggC["n_complete"] == n_test:
-                w4v = max(aggC["Er_max_dev_max"], abs(aggC["Er_secular_slope_max"]) * (HORIZON_MULT * wc.T_FINAL) / 1e-3 * 1e-2)
+                # value = max( max|E_r/E_r0 - 1| / 1e-2 , max|slope| / (1e-3 per T) ) <= 1; the bound must not GROW under
+                # refinement (RS 8 -> 40), and W6-C must have passed for a FAIL to be read as an implementation bug
+                shrink_ok = bool(aggC0["n_complete"] == n_test and np.isfinite(aggC0.get("Er_max_dev_max", np.nan)) and aggC["Er_max_dev_max"] <= 1.05 * aggC0["Er_max_dev_max"])
+                w4v = max(aggC["Er_max_dev_max"] / 1e-2, aggC["Er_secular_slope_absmax"] / 1e-3)
+                if not (shrink_ok and Hh["gates"].get("W6-C", {}).get("passed", False)):
+                    w4v = max(w4v, 2.0)            # cannot pass without W6-C and the shrinking bound
                 # control: first-order reduced-BE stepping on the same head (dissipative): energy must drop by > 1e-2 over 4T
                 i = 0; c_i = float(ct_all[i]); dtb = wc.DT_SNAP / rsb; armc = wr.ArmC(T, head, c_i, dtb)
                 _, _, Eb = wr.armC_backward_euler(T, head, c_i, dtb, Zt[i, 0], armc.zdot_from_velocity(Zt[i, 0], CVt[i, 0]), n_long * rsb, rsb)
                 h0_, J0_ = head.hj(Zt[i, 0]); v0_ = J0_ @ armc.zdot_from_velocity(Zt[i, 0], CVt[i, 0])
                 Eb0 = 0.5 * v0_ @ (T["Mr"] @ v0_) + 0.5 * c_i ** 2 * h0_ @ (T["Kr"] @ h0_)
-                Hh["gates"]["W4"] = gate("W4", w4v, 1e-2, control=1 - Eb[-1] / Eb0, control_thr=1e-2,
-                                         note=f"arm C reflective at RS={rsb}: max |E_r/E_r0 - 1| over 4T (max over 16) {aggC['Er_max_dev_max']:.2e}, secular slope {aggC['Er_secular_slope_max']:.2e}/T; control: first-order reduced-BE stepping on the same head loses {1-Eb[-1]/Eb0:.3f} of E_r")
+                Hh["gates"]["W4"] = gate("W4", w4v, 1.0, control=1 - Eb[-1] / Eb0, control_thr=1e-2,
+                                         note=f"arm C reflective at RS={rsb}: max |E_r/E_r0 - 1| over 4T (max over 16) {aggC['Er_max_dev_max']:.2e} (<= 1e-2), max |secular slope| {aggC['Er_secular_slope_absmax']:.2e}/T (<= 1e-3), "
+                                              f"bound at RS={RS_LIST[0]} {aggC0.get('Er_max_dev_max', float('nan')):.2e} (must not grow under refinement: {shrink_ok}), W6-C passed: {Hh['gates'].get('W6-C', {}).get('passed', False)}; "
+                                              f"control: first-order reduced-BE stepping on the same head loses {1-Eb[-1]/Eb0:.3f} of E_r")
             else:
                 Hh["gates"]["W4"] = dict(value=float("nan"), passed=False, note="arm C rollouts incomplete")
         # ---- W5 (absorbing): momentum balance closes with the residual work ----
-        if BC == "abs":
-            aggA = Hh["arms"]["A"][str(RS_LIST[-1])]
-            if aggA["n_complete"] == n_test:
-                Hh["gates"]["W5"] = gate("W5", aggA["W5_balance_max"], 1e-8, control=aggA["W5_control_max"], control_thr=1e-6,
-                                         note="arm A absorbing: E^{n+1}-E^n + c dt vbar^T M D_B vbar - vbar^T R_m, rel E0, max over steps and trajectories (assembled operators); control: flux term dropped")
+        aggA = Hh["arms"]["A"][str(RS_LIST[-1])]
+        if aggA["n_complete"] == n_test:
+            # control: a latent history that is NOT an LSPG solution -- the arm-A history with every latent perturbed by
+            # 1e-3 relative -- must show an O(1e-3)+ gradient through the same independent path
+            i = 0; c_i = float(ct_all[i]); dtb = wc.DT_SNAP / RS_LIST[-1]
+            _, Zf0, _, _ = wr.ArmA(T, head, c_i, dtb).rollout(Zt[i, 0], T["PhiM"] @ Vt[i, 0], 3 * RS_LIST[-1], RS_LIST[-1])
+            rng5 = np.random.default_rng(5); Zp = Zf0 * (1 + 1e-3 * rng5.normal(size=Zf0.shape))
+            g_ctrl = float(np.max(wr.lspg_optimality_independent(g, T, head, c_i, dtb, Zp)))
+            Hh["gates"]["W5"] = gate("W5", aggA["W5_optimality_max_max"], 1e-6, control=g_ctrl, control_thr=1e-4,
+                                     note=f"arm A RS={RS_LIST[-1]}: first-order LSPG optimality ||J^T r||/(||J|| ||r||) of the decoded history with r and J formed through the solver's stencil "
+                                          f"(independent of the tables), max over ~200 sampled steps x 16 trajectories; REPORTED: projected residual (nonzero for overdetermined LSPG) "
+                                          f"{aggA.get('W5_projres_reported_max', float('nan')):.1e}, energy-accounting identity (tautological, verification) {aggA.get('W5_balance_reported_max', float('nan')):.1e}, "
+                                          f"flux-dropped {aggA.get('W5_flux_dropped_reported_max', float('nan')):.1e}; control: latents perturbed 1e-3 must read >= 1e-4")
         # ---- W3 STOP gate: per ROM arm, at the RS with the smallest median err_T among completed RS ----
         for arm_name in ("A", "C"):
             cands = [(rs, Hh["arms"][arm_name][str(rs)]) for rs in RS_LIST if Hh["arms"][arm_name][str(rs)]["n_complete"] == n_test]
@@ -339,60 +390,90 @@ def main():
                 Hh["gates"][f"W3-{arm_name}"] = dict(value=float("nan"), passed=False, note=f"arm {arm_name}: no RS with 16/16 complete")
                 log(f"  W3-{arm_name} FAIL  no RS with {n_test}/{n_test} complete")
                 continue
-            rs, agg = min(cands, key=lambda t: t[1]["err_T_median"])
+            # PREDECLARED RS: the finest RS that completes 16/16 (no selection on the held-out error; verification)
+            rs, agg = max(cands, key=lambda t: t[0])
             per = agg["per_traj"]
             r_floor_T = np.median([p["err_T"] for p in per]) / np.median(floor_T)
             r_floor_4T = np.median([p["err_4T"] for p in per]) / np.median(floor_4T)
-            r_pod_T = np.median([p["err_T"] for p in per]) / np.median(podK_T)
-            r_pod_4T = np.median([p["err_4T"] for p in per]) / np.median(podK_4T)
+            # the POD-K comparator is the POD-K Galerkin CN ROLLOUT at the same RS (design), per trajectory
+            r_pod_T = np.median([p["err_T"] for p in per]) / np.median([p["podK_cn_err_T"] for p in per])
+            r_pod_4T = np.median([p["err_4T"] for p in per]) / np.median([p["podK_cn_err_4T"] for p in per])
             if BC == "ref":
                 ekey = "Er_ratio_T" if arm_name == "C" else "Edyn_ratio_T"
                 e_med = np.median([p[ekey] for p in per]); e_ok = 0.9 <= e_med <= 1.1
                 val = max(r_floor_T / 1.5, r_floor_4T / 1.5, r_pod_T / 0.5, r_pod_4T / 0.5, (0.0 if e_ok else 2.0))
-                note = (f"arm {arm_name} RS={rs}: err_T/floor {r_floor_T:.3f} (<=1.5), err_4T/floor {r_floor_4T:.3f} (<=1.5), err_T/POD-K {r_pod_T:.3f} (<=0.5), "
-                        f"err_4T/POD-K {r_pod_4T:.3f} (<=0.5), energy ratio at T median {e_med:.4f} (in [0.9,1.1]: {e_ok}); value = max of the normalised ratios")
+                note = (f"arm {arm_name} RS={rs} (finest complete): err_T/floor {r_floor_T:.3f} (<=1.5), err_4T/floor {r_floor_4T:.3f} (<=1.5), err_T/POD-K-CN {r_pod_T:.3f} (<=0.5), "
+                        f"err_4T/POD-K-CN {r_pod_4T:.3f} (<=0.5), energy ratio at T median {e_med:.4f} (in [0.9,1.1]: {e_ok}); value = max of the normalised ratios; "
+                        f"POD-K projection floors T/4T {np.median(podK_T):.4f}/{np.median(podK_4T):.4f} reported")
             else:
                 r_pre = np.median([p["err_preexit_E0"] for p in per]) / np.median([wh.traj_rms_from_coeffs(rl[i][:t_exit_idx[i] + 1], perp2_long[i][:t_exit_idx[i] + 1], C_long[i][:t_exit_idx[i] + 1], np.zeros(t_exit_idx[i] + 1, int))[0] * np.sqrt(np.mean(np.sum(m[None, :] * U_long[i, :t_exit_idx[i] + 1] ** 2, axis=1))) / np.sqrt(E_long[i, 0]) for i in range(n_test)])
-                val = max(r_floor_T / 1.5, r_pod_T / 0.5, r_pre / 1.5)
-                note = (f"arm {arm_name} RS={rs}: err_T/floor {r_floor_T:.3f} (<=1.5), err_T/POD-K {r_pod_T:.3f} (<=0.5), pre-exit err/floor (E0-normalised) {r_pre:.3f} (<=1.5); "
-                        f"post-exit err/sqrt(E0) median {np.nanmedian([p['err_postexit_E0'] for p in per]):.3e} and mean-field err median {np.median([p['mean_field_err'] for p in per]):.2e} reported")
+                val = max(r_floor_T / 1.5, r_floor_4T / 1.5, r_pod_T / 0.5, r_pod_4T / 0.5, r_pre / 1.5)
+                note = (f"arm {arm_name} RS={rs} (finest complete): err_T/floor {r_floor_T:.3f} (<=1.5), err_4T/floor {r_floor_4T:.3f} (<=1.5), err_T/POD-K-CN {r_pod_T:.3f} (<=0.5), err_4T/POD-K-CN {r_pod_4T:.3f} (<=0.5), "
+                        f"pre-exit err/floor (E0-normalised) {r_pre:.3f} (<=1.5); post-exit err/sqrt(E0) median {np.median([p['err_postexit_E0'] for p in per]) if np.all(np.isfinite([p['err_postexit_E0'] for p in per])) else float('nan'):.3e} "
+                        f"and mean-field err median {np.median([p['mean_field_err'] for p in per]):.2e} reported")
             # control: wrong-sign stiffness mutation must blow up (arm C) / drift (arm A) -- one trajectory
             i = 0; c_i = float(ct_all[i]); dt = wc.DT_SNAP / rs; Tm = dict(T); Tm["Kr"] = -T["Kr"]; Tm["A"] = -T["A"]
             if arm_name == "C":
-                armm = wr.ArmC(Tm, head, c_i, dt); Zs, _, _, _, okm = armm.rollout(Zt[i, 0], armm.zdot_from_velocity(Zt[i, 0], CVt[i, 0]), wc.NUM_STEPS * rs, rs)
+                armm = wr.ArmC(Tm, head, c_i, dt); Zs, Zfm, _, _, okm = armm.rollout(Zt[i, 0], armm.zdot_from_velocity(Zt[i, 0], CVt[i, 0]), wc.NUM_STEPS * rs, rs)
             else:
-                Zs, _, _, okm = wr.ArmA(Tm, head, c_i, dt).rollout(Zt[i, 0], T["PhiM"] @ Vt[i, 0], wc.NUM_STEPS * rs, rs)
-            ctrl3 = traj_err(np.array([head.h(z) for z in Zs]), i, wc.NUM_STEPS) if okm else float("inf")
-            rec = gate(f"W3-{arm_name}", val, 1.0, control=min(ctrl3, 1e300), control_thr=1.0, note=note + "; control: wrong-sign stiffness (K -> -K) error must exceed 1 (or blow up)")
-            rec.update(RS=rs, ratio_floor_T=float(r_floor_T), ratio_floor_4T=float(r_floor_4T), ratio_podK_T=float(r_pod_T), ratio_podK_4T=float(r_pod_4T),
+                Zs, Zfm, _, okm = wr.ArmA(Tm, head, c_i, dt).rollout(Zt[i, 0], T["PhiM"] @ Vt[i, 0], wc.NUM_STEPS * rs, rs)
+            if not okm:
+                # last finite latent of the diverged control, compared at its own snapshot time
+                fin = np.all(np.isfinite(Zfm), axis=1); kf = int(np.max(np.where(fin)[0])) if fin.any() else 0
+                ks = kf // rs
+                if ks >= 1:
+                    Hm = np.array([head.h(Zfm[k * rs]) for k in range(ks + 1)])
+                    Zs = None; ctrl_last = traj_err(Hm, i, ks)
+                else:
+                    ctrl_last = float("nan")
+            # the wrong-sign control may diverge: read its error at the LAST FINITE latent (never from a NaN)
+            if okm:
+                ctrl3 = traj_err(np.array([head.h(z) for z in Zs]), i, wc.NUM_STEPS)
+            else:
+                ctrl3 = ctrl_last                      # error at the last finite snapshot of the diverged control
+            rec = gate(f"W3-{arm_name}", val, 1.0, control=ctrl3, control_thr=1.0,
+                       note=note + f"; control: wrong-sign stiffness (K -> -K) error must exceed 1 (control complete: {okm}; a diverged control is recorded as nonfinite, not as fired)")
+            rec.update(RS=rs, ratio_floor_T=float(r_floor_T), ratio_floor_4T=float(r_floor_4T), ratio_podK_cn_T=float(r_pod_T), ratio_podK_cn_4T=float(r_pod_4T),
                        control_nonfinite=bool(not okm))
             Hh["gates"][f"W3-{arm_name}"] = rec
         Hh["W3_passed_any"] = bool(any(Hh["gates"].get(f"W3-{a}", {}).get("passed", False) for a in ("A", "C")))
         res["heads"][mode] = Hh
         # ---- G0c: stepdiag from oracle starts, arm C, H in {1,2,5,10} intervals ----
+        # errors are M-norm at the destination snapshot, normalised by the TRAJECTORY RMS (never per snapshot);
+        # the excess is over the oracle floor AT THAT DESTINATION; NaN anywhere -> FAIL; the wrong-sign control's
+        # divergence is read at its last finite state
         rs = RS_LIST[1] if len(RS_LIST) > 1 else RS_LIST[0]; dt = wc.DT_SNAP / rs
-        Hs = [1, 2, 5, 10]; exc = {H: [] for H in Hs}; hold = {H: [] for H in Hs}; mut = {H: [] for H in Hs}
+        Hs = [1, 2, 5, 10]; exc = {H: [] for H in Hs}; hold = {H: [] for H in Hs}; mut = {H: [] for H in Hs}; flr = {H: [] for H in Hs}
         Tm = dict(T); Tm["Kr"] = -T["Kr"]
+        res_te = orc["res_test"].reshape(n_test, -1)
         for i in range(n_test):
-            c_i = float(ct_all[i])
+            c_i = float(ct_all[i]); rms_i = np.sqrt(np.mean(np.sum(m[None, :] * Ut[i] ** 2, axis=1)))
             for k0 in (0, 10, 20, 30):
                 z0 = Zt[i, k0]; armc = wr.ArmC(T, head, c_i, dt); zd0 = armc.zdot_from_velocity(z0, CVt[i, k0])
-                Zs, _, _, _, ok = armc.rollout(z0, zd0, 10 * rs, rs)
-                armm = wr.ArmC(Tm, head, c_i, dt); Zsm, _, _, _, okm = armm.rollout(z0, zd0, 10 * rs, rs)
+                Zs, Zf, _, _, ok = armc.rollout(z0, zd0, 10 * rs, rs)
+                armm = wr.ArmC(Tm, head, c_i, dt); Zsm, Zfm, _, _, okm = armm.rollout(z0, zd0, 10 * rs, rs)
                 for H in Hs:
                     if k0 + H > wc.NUM_STEPS:
                         continue
-                    fl = np.sqrt(orc["res_test"].reshape(n_test, -1)[i, k0 + H] ** 2 + perp2[i, k0 + H]) / np.sqrt(np.sum(m * Ut[i, k0 + H] ** 2))
-                    ref = np.sqrt(np.sum(m * Ut[i, k0 + H] ** 2))
-                    e = np.sqrt(np.sum(m * (G @ head.h(Zs[H]) - Ut[i, k0 + H]) ** 2)) / ref if ok else float("nan")
-                    eh = np.sqrt(np.sum(m * (G @ head.h(z0) - Ut[i, k0 + H]) ** 2)) / ref
-                    em = np.sqrt(np.sum(m * (G @ head.h(Zsm[H]) - Ut[i, k0 + H]) ** 2)) / ref if okm else float("inf")
-                    exc[H].append(e - fl); hold[H].append(eh); mut[H].append(em)
-        fl10 = np.median([np.sqrt(orc["res_test"].reshape(n_test, -1)[i, 10] ** 2 + perp2[i, 10]) / np.sqrt(np.sum(m * Ut[i, 10] ** 2)) for i in range(n_test)])
-        g0c = gate("G0c", np.nanmedian(exc[10]) / max(fl10, 1e-300), 0.5, control=np.nanmedian(mut[10]), control_thr=1.0,
-                   note=f"stepdiag from oracle starts (arm C, RS={rs}): median excess over floor at H=10 / floor; excess per H {[(H, round(float(np.nanmedian(exc[H])), 5)) for H in Hs]}; "
-                        f"hold comparator per H {[(H, round(float(np.nanmedian(hold[H])), 4)) for H in Hs]}; control: wrong-sign stiffness at H=10 must exceed 1")
-        g0c.update(excess_per_H={str(H): float(np.nanmedian(exc[H])) for H in Hs}, hold_per_H={str(H): float(np.nanmedian(hold[H])) for H in Hs})
+                    fl = np.sqrt(res_te[i, k0 + H] ** 2 + perp2[i, k0 + H]) / rms_i
+                    e = (np.sqrt(np.sum(m * (G @ head.h(Zs[H]) - Ut[i, k0 + H]) ** 2)) / rms_i) if ok else float("nan")
+                    eh = np.sqrt(np.sum(m * (G @ head.h(z0) - Ut[i, k0 + H]) ** 2)) / rms_i
+                    if okm:
+                        em = np.sqrt(np.sum(m * (G @ head.h(Zsm[H]) - Ut[i, k0 + H]) ** 2)) / rms_i
+                    else:
+                        fin = np.all(np.isfinite(Zfm), axis=1); kf = int(np.max(np.where(fin)[0])) if fin.any() else 0
+                        em = (np.sqrt(np.sum(m * (G @ head.h(Zfm[kf]) - Ut[i, k0 + min(H, kf // rs)]) ** 2)) / rms_i) if kf >= rs else float("nan")
+                    exc[H].append(e - fl); hold[H].append(eh); mut[H].append(em); flr[H].append(fl)
+        finite_all = all(np.all(np.isfinite(exc[H])) for H in Hs)
+        val = (np.median(exc[10]) / np.median(flr[10])) if finite_all else float("nan")
+        ctrl = float(np.median(mut[10])) if np.all(np.isfinite(mut[10])) else float("nan")
+        g0c = gate("G0c", val, 0.5, control=ctrl, control_thr=1.0,
+                   note=f"stepdiag from oracle starts (arm C, RS={rs}, 4 launch times x 16 traj): median excess over the destination floor at H=10 / median floor; "
+                        f"excess per H {[(H, round(float(np.median(exc[H])), 5)) for H in Hs]}; floor per H {[(H, round(float(np.median(flr[H])), 5)) for H in Hs]}; "
+                        f"hold comparator per H {[(H, round(float(np.median(hold[H])), 4)) for H in Hs]}; nonfinite launches: {int(sum(np.sum(~np.isfinite(exc[H])) for H in Hs))} (any -> FAIL); "
+                        f"control: wrong-sign stiffness at H=10 (read at its last finite state if diverged) must exceed 1")
+        g0c.update(excess_per_H={str(H): float(np.median(exc[H])) for H in Hs}, floor_per_H={str(H): float(np.median(flr[H])) for H in Hs},
+                   hold_per_H={str(H): float(np.median(hold[H])) for H in Hs})
         Hh["gates"]["G0c"] = g0c
 
     res["wall_s"] = time.time() - t_all

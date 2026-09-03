@@ -91,6 +91,16 @@ carries the value. Old thresholds and design estimates in this list are hand-mai
     with K free parameters per snapshot the oracle projection measures the manifold's dimension,
     not what training put into it. D1's bar (≤ 0.5 × POD-K) is therefore the right kind of bar,
     and G0b (tangent-space residual at the oracle point) is the gate that sees learned structure.
+15. **Amendments 7–12 (design r4 section) after the phase-2/3 code verification
+    (`WAVE2D-PHASE23-VERIFY-r1-codex-gpt56sol.md`):** W3 comparator = POD-K CN rollout at the same RS and
+    the finest complete RS (no held-out selection); W5 restated as independent LSPG optimality (the
+    energy identity was a tautology); arm A completion by first-order optimality (an LSPG residual is
+    not small at the optimum — my first "residual ≤ 1e-8·scale" rule completed 0/4 rollouts on the
+    smoke); W6 control on the linear subspace; W4 with true endpoint energies and the W6/refinement
+    preconditions; W0 through the solver's stencil with captured solves; W7 control on a pulse with
+    asserted nonzero velocity; G0c with destination floors, trajectory normalisation and NaN=FAIL; D0
+    independent path on the full matrix with the near-degenerate-tail rule; D2 at all codes; G0b
+    NaN=FAIL.
 
 ## Phase 1 — FOM gates (both BCs) — generated table
 

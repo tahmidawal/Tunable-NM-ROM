@@ -191,79 +191,81 @@ audit, within a few percent at every resolution, slope 4.01 — the absorber is 
 design says it is. V0 shows the new reflective FOM reproduces the frozen 08-14 rollout to
 roundoff, so the reflective data are bit-comparable with the 08-16 negative.
 
-## Reading of phases 2–3 (written against the generated tables below; every number is in them)
+## Reading of phases 2–3 (rewritten after the Codex verification `WAVE2D-RESULTS-VERIFY-r1-codex-gpt56sol.md`; every result number is in the generated tables below)
+
+**Provenance caveat first.** The four re-runs (`p2fix_*`) were launched with the driver at commit
+003d138, i.e. **before retractions 7–8**: in their JSONs arm A "completes" only at a relative
+gradient ≤ 1e-6 (hence the INCOMPLETE arm A rows at RS 20/40, all of which stopped at gradients
+1e-6–5e-6 with healthy conditioning) and the W6 controls are stored against the 20% bar (they read
+17–18% on absorbing and 439–636% on reflective). Neither changes a W3 verdict: W3-A fails on the error
+ratio at the finest complete RS wherever it fails, and the one W3-A pass (absorbing `sup`, N=64 and
+128) is read at RS=8. The tables are what the code that produced them computed; the retractions are
+recorded, not applied retroactively.
 
 **What was certified before any verdict.** Both FOMs (phase 1, two verification rounds); the bank
-($G^\top MG = I$ to 1e-14, independent-SVD floors agree, ARPACK path at N=128); the Petrov tables
-($A = -\Lambda B$ to 1e-15 for both closures, W1) and the reduced operators; the table residual against
-the solver's stencil at random states and captured solves (W0, 1e-15); arm C on a linear head against
-an independent POD-K Verlet (W7, 1e-12); the POD-K CN control on its reflective energy (W2, $1\pm10^{-12}$);
-arm A's decoded histories first-order optimal through the independent path (W5). Every control fired.
+($G^\top MG = I$ to 1e-14; independent-SVD / ARPACK floors agree to 2e-13 at both N); the Petrov
+tables ($A = -\Lambda B$ to 1e-15 for both closures, W1); the table residual against the solver's
+stencil at random states and captured solves (W0, ≤1e-15); arm C on a linear head against an
+independent POD-K Verlet (W7, ≤2e-12); the POD-K CN control's reflective energy (W2, deviation
+2e-11–5e-11); arm A first-order optimal through the independent path (W5). Controls fired except
+where the tables say otherwise (the N=128 reflective `sup` G0b control at 1.179 against a 1.2 bar; the
+absorbing W6 controls against the pre-retraction 20% bar).
 
-**The manifold gates (phase 2).** All three heads pass G0 (G0a generalisation, G0b tangent space
-≤ POD-K) at both N and both BCs — including `auto`, which the design predicted would fail. The
-prediction was wrong because the G0b bar ("no worse than POD-K") is lenient: on the **reflective**
-wave every head's tangent-space velocity residual is 0.63–0.74, the same as POD-K's 0.69–0.83, i.e.
-two thirds of the velocity lies outside the tangent space; on the **absorbing** wave it is 0.23–0.30
-against POD-K's 0.68–0.79. The reflective heads never beat their bank ceiling by less than 3×
-(oracle 0.19–0.26 vs POD-64 ceiling 0.064–0.073); `auto` reproduces the 08-16 auto-decoder's held-out
-0.189 to two digits, and `auto+vc` (velocity-consistency loss) changes nothing measurable in either
-the oracle or the tangent residual. D1 (oracle ≤ 0.5 × POD-K) fails on every reflective head and
-passes on every absorbing head.
+**Manifold gates (phase 2).** 11 of 12 (head, BC, N) cells pass G0; the exception is reflective
+`sup` at N=128, which fails G0b *through its control* (its own tangent residual, 0.741, is better
+than POD-K's 0.825). Tangent-space velocity residuals: reflective heads 0.63–0.74 against POD-K's
+0.69–0.83; absorbing heads 0.23–0.30 against 0.68–0.79. The reflective oracle is 2.6–4× the bank
+ceiling (POD-64, 0.064–0.073); `auto` at N=64 reads 0.186, next to the 08-16 auto-decoder's 0.189
+(a lab-log number, not recomputed here); `auto+vc` differs from `auto` by less than the spread
+between N=64 and 128 in every phase-2 metric (a single seed; no uncertainty estimate). D1 (oracle ≤
+0.5 × POD-K) fails on every reflective head and passes on every absorbing head.
 
-**The stop gate (phase 3).** Reflective W3 **fails for every head and both arms at both N.**
-Arm A (the incumbent LSPG-Newmark) sits at 2–5× its floor with the dynamic-velocity energy growing
-4.5–15× over $T$ (larger at finer RS: 4.5 → 6.5 → 8.1 for `sup`); on `auto` it reads 0.888 against
-the 08-16 record's 0.878 — the negative is reproduced on the separable decoder. **Arm C (variational)
-conserves $E_r$ to 1.0000–1.0007 over $4T$ on every head that completes, with no secular trend, and
-its error is the same or worse than arm A's: 4–6× floor.** Energy conservation was a symptom, not
-the disease, exactly as the 1D check said. The `sup` head's arm C rollouts stall at N=64 (Newton
-cannot reduce $\|F\|$ below $10^{-2}$–$10^{-1}$ of its term scale on 1–7 of 16 trajectories; the
-manifold is defined on the $(\mu, t)$ box and the ROM leaves it), and complete at N=128 with the
-same verdict.
+**The stop gate (phase 3).** Reflective W3 **fails for every head, both arms, both N** (incomplete
+rollouts count as failures). At the W3-selected RS (finest complete): arm A at 2.2–5.0× its floor with
+the dynamic-velocity energy ratio at $T$ of 6.5–19.1 (4.5–4.7 at RS=8); on `auto` at N=64 it reads
+0.888 at RS=8 and 0.932 at the selected RS=20, beside the 08-16 record's 0.878 (lab-log number).
+Arm C, where 16/16 complete: 2.2–5.7× its floor; at N=128 `sup` it is *better* than arm A (2.23×
+vs 2.59×). Arm C's reduced-energy ratio at $4T$ spans 0.996–1.002 over the completed rows, and W4
+(bounded deviation, no secular trend, refinement) passes on `auto+vc` at both N and on `auto` at
+N=128, fails on `auto` at N=64 by 3.4% (1.034 against 1.0) and fails on `sup` at N=128 with a 116%
+deviation and a secular slope (the `sup` manifold is defined on the $(\mu,t)$ box; arm C leaves it
+and at N=64 stalls on 1–7 of 16 trajectories at $10^{-2}$–$10^{-1}$ of the term scale). For
+`auto`/`auto+vc` the deviation shrinks under refinement (0.157 → 0.014 → 0.005 for `auto` at N=128),
+as a modified-energy bound should.
 
-Absorbing W3 **passes on `sup` (both arms) at N=64**: arm C at 1.29× its floor and 0.25× POD-K's
-rollout error with 16/16 complete at every RS; `auto` / `auto+vc` sit at 2.4–3.3× their (tighter)
-floors and fail the floor ratio while beating POD-K by 2.2–3×. The dissipative comparator behaves as
-predicted: the same stepping that blows up on the reflective wave lands on or near the floor when the
-boundary radiates.
+Absorbing W3 **passes on `sup` at both N for both arms** (arm C 1.29× / 1.27× floor at $T$, 0.25–0.28×
+the POD-K CN rollout, 16/16 at every RS); `auto` / `auto+vc` fail the floor ratio at 2.4–3.3× at $T$
+(4T ratios up to 4.8×) while beating POD-K's rollout by 2.2–3×.
 
-**Verdict against the predeclared decision table (design r3/r4).** The row that obtains is *"G0 pass
-+ reflective arm C fail + W4 pass"* on `auto+vc` (and `auto` up to a 3% margin on W4), which the
-design labels **INCONCLUSIVE for the structural-vs-manifold question** — with the alternatives to
-be excluded: time step (W6-C passes: the excess is RS-independent to 1e-5), rank (D2 passes,
-conditioning 0.07–0.1 along every rollout), initialisation (oracle starts; G0c excess at H=10 is
-1.4–1.8× the floor, i.e. the drift begins within 10 intervals of a perfect start), $4T$ extrapolation
-(the $T$ error already fails). What is **not** inconclusive: (i) "the ROM destroys energy on a
-nonlinear manifold" is refuted — arm C keeps it to $10^{-4}$; (ii) the accuracy failure survives
-energy conservation, so the 08-16 verdict "does not work on reflective waves" stands, for a reason
-the 08-16 log did not name: **the tangent space of every manifold this project trains on the
-reflective wave is no better than the linear subspace's, and conservative dynamics integrate that
-error.** G0b was the right gate with the wrong bar (it should have demanded a tangent residual
-*well below* POD-K's, as on the absorbing data, where 0.25 vs 0.69 goes with a passing ROM).
+**Verdict against the predeclared decision table (design r3/r4).** The design's row "G0 pass +
+reflective W3 fail + W4 pass, all heads" is **not met as a bundle**: it holds for `auto+vc` at both N
+individually; `auto` at N=64 fails W4 by 3.4% (which the design reads as an implementation item to
+resolve, not as a result); `sup` fails W4 at N=128 and G0 at N=128. The curvature alternative the
+design lists is not excluded by any gate here. So the formal outcome for the structural-vs-manifold
+question is **INCONCLUSIVE**, with these facts standing:
 
-**N=128 (both BCs) is flat in N and repeats the N=64 verdicts** (tables below): reflective W3 fails on
-every head and arm (arm A 2.6–4.7× floor with energy 4.7–19×; arm C 2.2–5.3× floor with $E_r$ at
-1.00001–1.0007), absorbing `sup` passes both arms (1.05× / 1.27× floor), `auto` / `auto+vc` fail the
-floor ratio at 1.9–2.9×. Two N=128-specific facts: the `sup` head's arm C completes 16/16 at RS=40
-but its $E_r$ drifts by up to 116% with a secular slope (W4 FAIL) — the variational integrator's
-modified-energy bound holds for a smooth immersion, and the `sup` manifold outside its $(\mu,t)$ box is
-not one (G0b also fails for `sup` at N=128: 0.741 vs POD-K 0.825, i.e. the head's tangent space is
-*worse* than the subspace's); and on `auto` / `auto+vc` the arm C energy deviation shrinks under
-refinement exactly as a modified-energy bound should (0.157 → 0.014 → 0.005 from RS 8 to 40 for
-`auto`). D0's independent path on the full snapshot matrix (ARPACK) agrees with the bank to 2e-13 in
-the floors and 2e-14 in the subspace at N=128 — the 18% discrepancy the first N=128 run showed came
-from the stride-2 subsample, not from the near-degenerate tail, and the tail rule (amendment 9) was
-not exercised.
+1. **Energy loss is not necessary for the accuracy failure**: `auto+vc` passes W4 (energy deviation
+   ≤ 6e-3 over $4T$, no secular trend, shrinking under refinement) and fails W3 at both N with the
+   same error as the energy-losing arm A. The 08-16 explanation ("the recurrence destroys energy on a
+   nonlinear manifold, not fixable by tuning") is refuted as a *mechanism*; its verdict stands.
+2. **Hypothesis, consistent with every number here but not established by the design's own row**:
+   the accuracy failure tracks the tangent-space quality of the manifold (reflective heads no better
+   than POD-K, absorbing heads 2–3× better, and only absorbing `sup` passes). G0b was the gate that
+   sees it, with a bar too lenient to predict W3; a single seed, no uncertainty, no curvature
+   exclusion — it is a hypothesis for the next cell, not a finding of this one.
+3. `auto+vc` (velocity-consistency loss) does not separate from `auto` in any metric here.
 
 **Consequences.** Phase 4 (the cost ladder) is **not run** — the design gates it on a reflective W3
-pass. `wav2d_ladder.py` exists and is smoke-tested; running it on the absorbing `sup` arm would give a
-cost number for a case that passes, and is left as a decision for the user.
+pass ("PASS for at least one (head, ROM arm) pair on the reflective BC or the ladder is not run").
+`wav2d_ladder.py` exists and is smoke-tested; running it on the absorbing `sup` arm (the one
+configuration that passes) is a decision for the user.
 
-**Predictions scored.** Predicted G0: `auto` FAIL (wrong — passed on the lenient bar); `sup`, `auto+vc`
-PASS (right). Predicted reflective W3: `auto` FAIL (right), `sup` / `auto+vc` PASS (wrong). Predicted
-absorbing ≤ 2× floor: `sup` right (1.29×), `auto` / `auto+vc` wrong (2.4–3.3×). Predicted arm C energy
-conservation: right on every completed rollout.
+**Predictions scored.** G0: `auto` predicted FAIL — passed (11/12 overall; the one failure is `sup`
+at N=128 through its control); `sup`/`auto+vc` predicted PASS — right except `sup` at N=128.
+Reflective W3: `auto` FAIL predicted — right; `sup`/`auto+vc` PASS predicted — wrong. Absorbing
+≤ 2× floor: `sup` right (1.27–1.29×), `auto`/`auto+vc` wrong (2.4–3.3× at $T$). Arm C energy
+bounded: right on `auto`/`auto+vc` (W4 pass at N=128, 3.4% miss for `auto` at N=64), wrong on
+`sup` (116% at N=128).
 
 ## Phase 2 — bank and manifold gates (per BC, head arm) — generated table
 

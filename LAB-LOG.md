@@ -3923,8 +3923,44 @@ max Re −4.5e-15 (anti-damped control +2.83); V1 recurrence vs `splu` block CN 
 - The old handoff's framing "if both BCs work, quadrature was the culprit" is **withdrawn**
   (quadrature was already excluded by the 08-16 data).
 
-**Open / next.** Codex verification of the phase-1 code + JSONs is running at session end (result
-to be folded into `WAVE2D-NOTES.md`). Phase 2 (bank, three head arms, D0–D2, G0a/b) and phase 3
+**Phase 1 verification (two Codex rounds, same session).** Round 1 found the FOM mathematics CORRECT
+but the certification unearned: V1's "independent block CN" repeated the same eliminated algebra
+with LU (an effective self-comparison), F4 converted an overflowing anti-damped control into a
+passing value, several gates lacked controls, F3's "slope OR coefficient" could pass a wrong
+coefficient, and a ratio quoted in the notes was hand-typed and wrong (the JSON had 40× where I
+had written 10³–10⁴×). Fixes: V1 rebuilt as V1alg (u-only recurrence by LU vs the true $2n\times2n$
+block CN by LU, gated over the first 10 steps where LU roundoff is ~1e-14 — read 1.6e-14…1.8e-14
+at both N, both BCs, controls 3e-4…1e-2) plus V1cg (CG-tolerance ladder 1e-9/1e-11/1e-13, monotone,
+achieved residual recorded); controls added to F0b0, F0d(ref), F1a-form, F2-spatial (wrong
+reference saturates at order 0.33), F2-temporal (BE order 0.92–0.96 AND separation 575×); F3 AND-rule
+with plateau (1.0000), $y$-invariance (5e-15) and mean-field diagnostics; an exactly compatible
+two-eigenmode datum added to F2 (orders 2.19 / 1.80). **Round 2: "Phase 1 is earned at N=64 and
+N=128 for both boundary conditions"**, wording fixes only (F4's overflow-recording path was
+unreachable behind a precondition — fixed; the row-sum "2-norm bound" was $\|L\|_\infty$ — now
+$\sqrt{\|L\|_1\|L\|_\infty}$; notes 5/7/9/11 qualified; the "nothing hand-typed" claim withdrawn —
+design numbers in the notes are hand-maintained and labelled so). Verifications archived as
+`WAVE2D-PHASE1-VERIFY-r{1,2}-codex-gpt56sol.md`.
+
+**Phases 2–3 coded, smoke-tested at N=16, submitted to Tufts.** `wav2d_bank.py` (M-orthonormal
+POD, independent-SVD gate D0), `wav2d_head.py` (three arms; the vc arm's velocity-consistency
+term via `jax.jvp` with free per-row $\dot z$; oracle; $J_h$ conditioning; tangent-space velocity
+residual), `wav2d_head_gates.py` (D0–D2, G0a/b with shuffled-target, duplicated-coordinate and
+random-tangent controls), `wav2d_rom.py` (arm A LSPG-Newmark; arm C forced variational Verlet
+with the r2-audited first step; POD-K/R CN; an *independent* POD-K Verlet; energies; full-grid
+W0/W5 paths), `wav2d_rom_gates.py` (W0–W7, G0c; W3 is the STOP gate; 16/16 completion required).
+N=16 smoke: W0 8e-16, W0-grad 4e-10, W1 7e-16 (abs: $\|C\|/\|A\|$ 0.12), W7 arm C on a linear head
+vs independent POD-K Verlet 8e-15 (control 0.22), POD-K CN on its floor with energy $1-10^{-12}$,
+and — on a 300-step smoke head — **arm C conserves $E_r$ to 1.0000 while arm A drifts to 1.56 at
+the same error**, the 1D phenomenology in 2D. Jobs (namespace `/cluster/tufts/paralab/tawal01/wav2d/`,
+one directory each, A100, staged at commit f16de63): **3225935** n64_ref, **3225937** n64_abs,
+**3225938** n128_ref, **3225939** n128_abs — each runs phase 2 (data from seed, bank R=64, three heads
+at 40k steps) then phase 3 (RS 8/20/40, 4T horizon). A Codex pass on the phase-2/3 code was
+launched before any result exists.
+
+**Open / next.** Pull the four jobs (`cluster/pull_wav2d.sh`), fold the Codex code verification
+into the drivers if it finds defects (re-run if the defect touches a gate), generate the phase-2/3
+tables, read W3 per (BC, head, arm) against the predeclared across-head interaction, and only if
+reflective W3 passes write and run the phase-4 cost ladder (`wav2d_ladder.py`, not yet written). Phase 2 (bank, three head arms, D0–D2, G0a/b) and phase 3
 (arms A/C, W0–W7, G0c) are designed, not yet coded. Open design point for phase 4: a bank at
 N=512 needs 55 GB of training snapshots — prolongation of the N=128 bank or an H200 job; decide
 only if W3 passes. The other session's 56 uncommitted lab-log lines (Poisson explainer) were

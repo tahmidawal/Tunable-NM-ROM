@@ -46,14 +46,23 @@ def phase1_table():
                 if not (isinstance(v, dict) and "passed" in v):
                     continue
                 if k == "F2-spatial":
-                    val = f"order {fmt(v['order'], 3)} (errors " + ", ".join(fmt(e) for e in v["errors"]) + f"; N {v['N']} vs {v['ref']})"
-                    ctrl = "—"
+                    val = (f"bump order {fmt(v['order'], 3)} (errors " + ", ".join(fmt(e) for e in v["errors"]) +
+                           f"); two-mode order {fmt(v.get('order_modes'), 3)}; N {v['N']} vs {v['ref']}")
+                    ctrl = f"wrong-reference order {fmt(v.get('control_order_wrongref'), 3)}"
                 elif k == "F2-temporal":
                     val = f"order {fmt(v['order'], 3)} (errors " + ", ".join(fmt(e) for e in v["errors"]) + ")"
-                    ctrl = f"BE separation {fmt(v['control_separation'], 1)}x"
+                    ctrl = f"BE order {fmt(v['control_order_BE'], 2)}, separation {fmt(v['control_separation'], 1)}x"
+                elif k == "V1cg":
+                    val = "CG ladder " + ", ".join(fmt(x) for x in v["ladder"].values()) + f" (monotone {v['monotone']}); achieved CG resid {fmt(v['achieved_cg_relresid_1e13'])}"
+                    ctrl = "—"
+                elif k == "V1alg":
+                    val = f"{fmt(v['value'])} over 10 steps; full horizon {fmt(v['value_full_horizon'])}"
+                    ctrl = fmt(v.get("control_value"))
                 elif k == "F3":
                     val = ("slope " + fmt(v["slope"], 3) + "; fraction/prediction " +
-                           ", ".join(fmt(x, 3) for x in v["ratio_to_prediction"]) + f" at N {v['N']}")
+                           ", ".join(fmt(x, 3) for x in v["ratio_to_prediction"]) + f" at N {v['N']}" +
+                           "; plateau/fraction " + ", ".join(fmt(dg["plateau_fraction"] / fr, 3) for dg, fr in zip(v.get("diagnostics", []), v["reflected_fraction"])) +
+                           "; y-var " + ", ".join(fmt(dg["y_invariance"], 1) for dg in v.get("diagnostics", [])))
                     ctrl = f"reflective retains {fmt(v['control_reflective_fraction'], 3)}"
                 elif k == "F0d-spd":
                     val = f"min eig/max(M) = {fmt(v['min_eig_over_maxM'])}"

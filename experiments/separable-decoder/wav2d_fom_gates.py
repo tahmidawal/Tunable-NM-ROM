@@ -1,11 +1,11 @@
-"""Wave 2D phase-1 FOM gates (WAVE2D-DESIGN.md r2, 'Phase 1'), both boundary conditions.
+"""Wave 2D phase-1 FOM gates (WAVE2D-DESIGN.md r3, 'Phase 1'), both boundary conditions.
 
 Every gate records value, threshold, pass, and its NEGATIVE CONTROL (value, must-fire threshold,
 fired).  A gate whose control does not fire is FAIL.  NaN anywhere is FAIL.  Output: one JSON
 per (N) with both BCs at runs/wav2d/wav2d_fom_gates_N{N}.json.
 
 Usage (local GB10, sub-minute at N=64):
-  JAX_DEFAULT_MATMUL_PRECISION=highest jaxrun $PY wav2d_fom_gates.py N=64 [F2_REF=256] [F3_NS=64,128,256]
+  JAX_DEFAULT_MATMUL_PRECISION=highest jaxrun $PY wav2d_fom_gates.py N=64 [F2_REF=257] [F3_NS=64,128,256,512]
 """
 from __future__ import annotations
 
@@ -90,23 +90,30 @@ def gates_F0(g: Grid, c=1.3):
     # RETRACTION 2: backward-error normalisation ||L Phi + Phi Lam||_F / (||L||_2 ||Phi||_F) with
     # ||L||_2 <= 8/dx^2 -- the stencil cancels O(1) terms to produce O(lam), so the raw residual
     # relative to ||Phi Lam|| amplifies roundoff by ~1/(k pi dx)^2 and scales with N
-    Lnorm = 8.0 / g.dx ** 2
+    # ||L||_2 bound: Gershgorin on the assembled rows (valid for the non-symmetric L_N too)
+    Lnorm = float(np.max(np.asarray(abs(L).sum(axis=1)).ravel()))
     res = np.linalg.norm(L @ Phi + Phi * lam[None, :]) / (Lnorm * np.linalg.norm(Phi))
     lam_p = lam.copy(); lam_p[-1] *= 1.01
-    res_p = np.linalg.norm(L @ Phi + Phi * lam_p[None, :]) / (Lnorm * np.linalg.norm(Phi))
+    # the control keeps the lambda-normalised form, which is N-independent (reads ~5e-3 at every N)
+    res_p = np.linalg.norm(L @ Phi + Phi * lam_p[None, :]) / np.linalg.norm(Phi * lam[None, :])
     if g.bc == "abs":                              # (0,0) mode: ||L phi|| directly
         j0 = kl.index((0, 0))
         res00 = np.linalg.norm(L @ Phi[:, j0]) / (np.linalg.norm(Phi[:, j0]) * Lnorm)
-        out["F0b-zero-mode"] = gate("F0b0", res00, 1e-13, note="||L_N phi_00|| / (||phi_00|| ||L||_2), ||L||_2 = 8/dx^2")
+        j1 = kl.index((0, 1)); phi_mix = Phi[:, j0] + 1e-3 * Phi[:, j1]
+        res00_c = np.linalg.norm(L @ phi_mix) / (np.linalg.norm(phi_mix) * Lnorm)
+        out["F0b-zero-mode"] = gate("F0b0", res00, 1e-13, control=res00_c, control_thr=1e-9,
+                                    note="||L_N phi_00|| / (||phi_00|| ||L||_1); control: phi_00 + 1e-3 phi_01")
     out["F0a" if g.bc == "ref" else "F0b"] = gate("F0a" if g.bc == "ref" else "F0b", res, 1e-13,
-                                                   control=res_p, control_thr=1e-9,
-                                                   note="16 modes, closed-form lambda, backward-error normalised by ||L||_2 = 8/dx^2 (retraction 2); control: one lambda perturbed 1%")
+                                                   control=res_p, control_thr=1e-4,
+                                                   note="16 modes, closed-form lambda, backward-error normalised by the Gershgorin bound on ||L|| (retraction 2); control: one lambda perturbed 1%, lambda-normalised (N-independent)")
     m = g.mass_diag()
     ML = sp.diags(m) @ L
     sym = sp.linalg.norm(ML - ML.T) / sp.linalg.norm(ML)
     sym_I = sp.linalg.norm(L - L.T) / sp.linalg.norm(L)
-    out["F0d-sym"] = gate("F0d", sym, 1e-15, control=sym_I if g.bc == "abs" else None,
-                          control_thr=1e-3, note="||ML-(ML)^T||/||ML||; control (abs): M=I")
+    Lo = L.copy().tolil(); Lo[0, 1] *= 1.5; Lo = Lo.tocsr()                # one asymmetric coefficient
+    sym_o = sp.linalg.norm(sp.diags(m) @ Lo - (sp.diags(m) @ Lo).T) / sp.linalg.norm(ML)
+    out["F0d-sym"] = gate("F0d", sym, 1e-15, control=(sym_I if g.bc == "abs" else sym_o),
+                          control_thr=1e-6, note="||ML-(ML)^T||/||ML||; control: M=I (abs) / one asymmetric coefficient (ref)")
     if g.bc == "abs":
         # SPD of the absorbing step matrix at this N (dense eig at N<=64, else Lanczos min-eig)
         dt = wc.DT_SUB; s = 0.5 * dt * c
@@ -115,9 +122,13 @@ def gates_F0(g: Grid, c=1.3):
             mn = float(np.min(np.linalg.eigvalsh(A.toarray())))
         else:
             mn = float(sp.linalg.eigsh(A, k=1, which="SA", return_eigenvectors=False)[0])
-        out["F0d-spd"] = dict(min_eig=mn, min_eig_over_maxM=float(mn / np.max(m)), passed=bool(np.isfinite(mn) and mn > 0),
-                              note="min eigenvalue of M(I + sD_B - aL_N) at dt_FOM must be > 0")
-        log(f"  F0dS {'PASS' if out['F0d-spd']['passed'] else 'FAIL'}  min eig / max(M) = {mn/np.max(m):.3e}")
+        g32 = Grid(32, "abs"); m32 = g32.mass_diag(); L32 = wc.assemble_L_independent(g32)
+        A32 = sp.diags(m32) @ (sp.eye(g32.n) + s * sp.diags(g32.damping_diag()) - (s * s) * L32)
+        mn32 = float(np.min(np.linalg.eigvalsh(A32.toarray())))
+        out["F0d-spd"] = dict(min_eig=mn, min_eig_over_maxM=float(mn / np.max(m)), min_eig_over_maxM_N32=float(mn32 / np.max(m32)),
+                              passed=bool(np.isfinite(mn) and mn > 0 and np.isfinite(mn32) and mn32 > 0),
+                              note="min eigenvalue of M(I + sD_B - aL_N) at dt_FOM must be > 0 (this N and the design's N=32); an eigenvalue fact, no mutation control")
+        log(f"  F0dS {'PASS' if out['F0d-spd']['passed'] else 'FAIL'}  min eig / max(M) = {mn/np.max(m):.3e} (N=32: {mn32/np.max(m32):.3e})")
         # F0c: manufactured field, prescribed v, row-by-row vs closed-form ghost rows
         x = np.linspace(0, 1, g.N); X, Y = np.meshgrid(x, x, indexing="ij")
         U = X ** 2 + 2 * X * Y + 3 * Y ** 2 + 0.5 * np.sin(3 * X) * np.cos(2 * Y)
@@ -226,9 +237,15 @@ def gates_F1_F4(g: Grid, horizon_T=4.0):
         out["F1a"] = gate("F1a", drift, 1e-10, control=drift_be, control_thr=1e-4,
                           note=f"CN relative energy drift over {horizon_T}T (CG 1e-12); control: backward Euler over T")
         e_fd = float(wc.energy_fwd_diff_ref(g, u_end, v_end, ci))
-        out["F1a-form"] = gate("F1af", abs(e_fd - E[-1]) / E[-1], 1e-14, note="fwd-difference energy == quadratic form (D_e^T D_e = -L_D)")
+        # control: the forward-difference sum WITHOUT the boundary edges (D_e^T D_e != -L_D then)
+        Uf = np.pad(np.asarray(u_end).reshape(g.N - 2, g.N - 2), 1); dxg = g.dx
+        gx = (Uf[1:, :] - Uf[:-1, :])[1:-1, :] / dxg; gy = (Uf[:, 1:] - Uf[:, :-1])[:, 1:-1] / dxg
+        e_fd_c = dxg * dxg * (0.5 * np.sum(np.asarray(v_end) ** 2) + 0.5 * ci ** 2 * (np.sum(gx ** 2) + np.sum(gy ** 2)))
+        out["F1a-form"] = gate("F1af", abs(e_fd - E[-1]) / E[-1], 1e-14, control=abs(e_fd_c - E[-1]) / E[-1], control_thr=1e-6,
+                               note="fwd-difference energy == quadratic form (D_e^T D_e = -L_D); control: boundary edges dropped from the sum")
         growth = np.max(E / E[0]) - 1.0
-        out["F4"] = gate("F4", growth, 1e-10, note=f"max E^n/E^0 - 1 over {horizon_T}T")
+        out["F4"] = gate("F4", growth, 1e-10, control=drift_be, control_thr=1e-4,
+                         note=f"max E^n/E^0 - 1 over {horizon_T}T (implied by F1a; same BE control)")
     else:
         ident = (E[1:] - E[:-1]) - flux
         active = np.abs(flux) >= 1e-3 * E[0] * dt
@@ -239,9 +256,12 @@ def gates_F1_F4(g: Grid, horizon_T=4.0):
                           note=f"E^{{n+1}}-E^n + c dt vbar^T M D_B vbar, rel E0, {int(active.sum())} active steps; control: v^{{n+1}} for vbar")
         growth = np.max(np.maximum(np.diff(E), 0.0)) / E[0]
         Ea = np.asarray(energy_trace(_AntiGrid(g), u0, v0, ci, 400)[0])
-        growth_a = (np.max(Ea) - Ea[0]) / Ea[0] if finite(Ea) else float("inf")
-        out["F4"] = gate("F4", growth, 1e-10, control=min(growth_a, 1e300), control_thr=1e-6,
-                         note=f"max positive energy increment per step, rel E0, over {horizon_T}T; control: D_B -> -D_B (400 steps)")
+        # the anti-damped run may overflow; the control fires on the LAST FINITE energy only (never on a NaN/inf)
+        fin = np.isfinite(Ea); n_fin = int(np.argmin(fin)) if not fin.all() else len(Ea)
+        growth_a = float((np.max(Ea[:n_fin]) - Ea[0]) / Ea[0]) if n_fin > 1 else float("nan")
+        out["F4"] = gate("F4", growth, 1e-10, control=growth_a, control_thr=1e-6,
+                         note=f"max positive energy increment per step, rel E0, over {horizon_T}T; control: D_B -> -D_B, growth over its first {n_fin} finite steps of 400 (nonfinite tail: {not fin.all()})")
+        out["F4"]["control_nonfinite_tail"] = bool(not fin.all())
         out["absorbing_energy_ratio_4T"] = float(E[-1] / E[0])
         out["absorbing_energy_ratio_T"] = float(E[int(round(1.0 / dt))] / E[0])
     return out
@@ -304,7 +324,7 @@ def gate_V0(N0, n_traj=4):
     S2, _ = roll2(jnp.asarray(U0), jnp.zeros_like(jnp.asarray(U0)), jnp.asarray(c))
     d2 = np.max(np.abs(np.asarray(S2) - Sf_int)) / np.max(np.abs(Sf_int))
     return {"V0": gate("V0", d, 1e-13, control=d2, control_thr=1e-7,
-                       note=f"new 'ref' CN vs frozen 08-14 make_rollout, {n_traj} traj, CG 1e-13 both; energies agree to {dE:.1e}; control: dx perturbed 1e-6"),
+                       note=f"new 'ref' CN vs frozen 08-14 make_rollout, {n_traj} traj, CG 1e-13 both; energies agree to {dE:.1e}; control: dx perturbed 1e-6 in the stencil (every Laplacian coefficient; the mass also changes but only the state is compared)"),
             "V0_energy_reldiff": float(dE)}
 
 
@@ -325,47 +345,85 @@ class _PerturbedGrid(Grid):
 # ----------------------------- V1: u-only recurrence vs independently assembled block CN -----------------------------
 
 def gate_V1(g: Grid, rs=wc.SUBSTEPS):
-    """Independent path: dense/sparse block CN with the assembled L (scipy splu), not the stencil."""
+    """Three paths, two comparisons:
+      (i)  BLOCK CN: the 2n x 2n system  [[I, -(dt/2)I],[-(dt/2)c^2 L, I+(dt/2)cD]] w1 = [[I,(dt/2)I],[(dt/2)c^2 L, I-(dt/2)cD]] w0
+           solved by splu on the assembled L -- the (u,v) scheme with NO elimination;
+      (ii) the u-only Newmark recurrence solved by LU (no iterative error): must agree with (i) to roundoff
+           -> certifies the ELIMINATION ALGEBRA, tolerance-free;
+      (iii) the JAX/CG recurrence (the solver path) at CG tol 1e-9, 1e-11, 1e-13: must converge monotonically
+           toward (ii) -> certifies the implementation is the same recurrence, solver-limited.
+    Controls: damping sign flipped (abs) / a -> 1.01a (ref) on path (ii) vs (i) must separate."""
     cx, cy, w, a, c, _ = wc.sample_params(m=2)
     i = 1
     u0 = wc.blob_ic(g, cx[i], cy[i], w[i], a[i]); v0 = np.zeros_like(u0); ci = float(c[i])
-    L = wc.assemble_L_independent(g); D = sp.diags(g.damping_diag()); I = sp.eye(g.n)
-    dt = wc.DT_SNAP / rs; s = 0.5 * dt * ci; aa = s * s
-    A = (I + s * D - aa * L).tocsc()
-    lu = sp.linalg.splu(A)
-    Pinv = sp.diags(1.0 / (1.0 + s * g.damping_diag()))
-    u, v = u0.copy(), v0.copy(); S_ref = [u0.copy()]
+    n = g.n
+    L = wc.assemble_L_independent(g).tocsc(); dB = g.damping_diag(); D = sp.diags(dB); I = sp.eye(n)
+    dt = wc.DT_SNAP / rs; s_ = 0.5 * dt * ci; aa = s_ * s_
     n_int = wc.NUM_STEPS * rs
+    # (i) block CN
+    Ablk = sp.bmat([[I, -(dt / 2) * I], [-(dt / 2) * ci ** 2 * L, I + (dt / 2) * ci * D]]).tocsc()
+    Bblk = sp.bmat([[I, (dt / 2) * I], [(dt / 2) * ci ** 2 * L, I - (dt / 2) * ci * D]]).tocsr()
+    lu_blk = sp.linalg.splu(Ablk)
+    wv = np.concatenate([u0, v0]); S_blk = [u0.copy()]; S_blk10 = [u0.copy()]
     for k in range(n_int):
-        u1 = lu.solve(u + s * (g.damping_diag() * u) + dt * v + aa * (L @ u))
-        v = Pinv @ ((1 - s * g.damping_diag()) * v + 0.5 * dt * ci ** 2 * (L @ (u + u1)))
-        u = u1
+        wv = lu_blk.solve(Bblk @ wv)
+        if k < 10: S_blk10.append(wv[:n].copy())
         if (k + 1) % rs == 0:
-            S_ref.append(u.copy())
-    S_ref = np.array(S_ref)
-    nm = wc.make_newmark_fom(g, rs, cg_tol=1e-13)
-    S, E = nm(jnp.asarray(u0), jnp.asarray(v0), ci)
-    S = np.asarray(S)
-    d = np.max(np.abs(S - S_ref)) / np.max(np.abs(S_ref))
-    # CG-tolerance diagnostic (retraction 1): the same recurrence at CG 1e-11 -- if the discrepancy
-    # scales with the CG tolerance it is solver-limited, not an algebra error
-    S_loose, _ = wc.make_newmark_fom(g, rs, cg_tol=1e-11)(jnp.asarray(u0), jnp.asarray(v0), ci)
-    d_loose = np.max(np.abs(np.asarray(S_loose) - S_ref)) / np.max(np.abs(S_ref))
+            S_blk.append(wv[:n].copy())
+    S_blk = np.array(S_blk); S_blk10 = np.array(S_blk10)
+    # (ii) Newmark recurrence by LU
+    def newmark_lu(Lm, dBm, cc):
+        s2 = 0.5 * dt * cc; a2 = s2 * s2
+        A = (I + s2 * sp.diags(dBm) - a2 * Lm).tocsc(); lu = sp.linalg.splu(A)
+        um = u0.copy()
+        u = lu.solve(um + s2 * dBm * um + dt * v0 + a2 * (Lm @ um))
+        out = [u0.copy()]; out10 = [u0.copy(), u.copy()]
+        k = 1
+        if k % rs == 0: out.append(u.copy())
+        while k < n_int:
+            up = lu.solve(2.0 * u - um + a2 * (Lm @ (2.0 * u + um)) + s2 * dBm * um)
+            um, u = u, up; k += 1
+            if k <= 10: out10.append(u.copy())
+            if k % rs == 0: out.append(u.copy())
+        return np.array(out), np.array(out10)
+    S_lu, S_lu10 = newmark_lu(L, dB, ci)
+    scale = np.max(np.abs(S_blk))
+    d_alg_full = np.max(np.abs(S_lu - S_blk)) / scale                  # reported: LU roundoff over 4000 solves
+    d_alg = np.max(np.abs(S_lu10 - S_blk10)) / np.max(np.abs(S_blk10))  # GATED: first 10 steps, roundoff ~1e-14
+    # control on the algebra comparison
     if g.bc == "abs":
-        ga = _AntiGrid(g)
-        S2, _ = wc.make_newmark_fom(ga, rs, cg_tol=1e-13)(jnp.asarray(u0), jnp.asarray(v0), ci)
-        note = "control: damping sign flipped"
+        _, S_ctrl10 = newmark_lu(L, -dB, ci); note = "control: damping sign flipped in the recurrence"
     else:
-        S2, _ = wc.make_newmark_fom(g, rs, cg_tol=1e-13)(jnp.asarray(u0), jnp.asarray(v0), ci * np.sqrt(1.01))
-        note = "control: a -> 1.01 a (c -> 1.005 c)"
-    d2 = np.max(np.abs(np.asarray(S2) - S_ref)) / np.max(np.abs(S_ref))
-    rec = gate("V1", d, 1e-8, control=d2, control_thr=1e-3 if g.bc == "ref" else 1e-2,
-               note=f"u-only damped Newmark (RS={rs}, CG 1e-13) vs splu block CN with assembled L; {note}; "
-                    f"RETRACTIONS 1+3: threshold 1e-11 -> 1e-9 -> 1e-8 (CG-tolerance accumulation over {wc.NUM_STEPS*rs} solves grows with N); "
-                    f"the BINDING criterion is solver-limitedness: CG 1e-11 reads {d_loose:.2e}, ratio loose/tight {d_loose/d:.1f} (must be >= 10)")
-    rec["value_cg1e11"] = float(d_loose); rec["ratio_loose_over_tight"] = float(d_loose / d)
-    rec["passed"] = bool(rec["passed"] and np.isfinite(d_loose) and d_loose / d >= 10.0)
-    return {"V1": rec}
+        _, S_ctrl10 = newmark_lu(L, dB, ci * np.sqrt(1.01)); note = "control: a -> 1.01 a in the recurrence"
+    d_ctrl = np.max(np.abs(S_ctrl10 - S_blk10)) / np.max(np.abs(S_blk10))
+    rec_alg = gate("V1alg", d_alg, 1e-13, control=d_ctrl, control_thr=1e-7,
+                   note=f"u-only Newmark by LU vs the 2n x 2n block CN by LU over the FIRST 10 STEPS (roundoff ~1e-14; an algebraic error is O(dt^2) ~ 1e-7 per step); "
+                        f"full {n_int}-step LU-vs-LU discrepancy {d_alg_full:.2e} reported (LU roundoff accumulation, retraction 4); {note}")
+    rec_alg["value_full_horizon"] = float(d_alg_full)
+    # (iii) CG ladder on the solver path
+    ladder = {}
+    for tol in (1e-9, 1e-11, 1e-13):
+        S_cg, _ = wc.make_newmark_fom(g, rs, cg_tol=tol)(jnp.asarray(u0), jnp.asarray(v0), ci)
+        ladder[tol] = float(np.max(np.abs(np.asarray(S_cg) - S_lu)) / scale)
+    vals = [ladder[t] for t in (1e-9, 1e-11, 1e-13)]
+    monotone = bool(vals[0] > vals[1] > vals[2])
+    # achieved CG residual at one representative solve (the last stored state as rhs surrogate)
+    lap = wc.lap_fn(g)
+    A_op = lambda x: np.asarray(x + s_ * dB * x - aa * np.asarray(lap(jnp.asarray(x))))
+    rhs = S_lu[-1] + s_ * dB * S_lu[-1] + dt * 0.0 + aa * np.asarray(lap(jnp.asarray(S_lu[-1])))
+    sq = np.sqrt(g.mass_diag()); isq = 1 / sq
+    Aj = (lambda y: jnp.sqrt(jnp.asarray(g.mass_diag())) * (isq * y + s_ * dB * (isq * y) - aa * lap(isq * y))) if g.bc == "abs" else \
+         (lambda y: y + s_ * dB * y - aa * lap(y))
+    yy, _ = jax.scipy.sparse.linalg.cg(Aj, jnp.asarray(sq * rhs if g.bc == "abs" else rhs), tol=1e-13, maxiter=wc.CG_MAXITER)
+    x_cg = np.asarray(isq * yy) if g.bc == "abs" else np.asarray(yy)
+    cg_resid = float(np.linalg.norm(A_op(x_cg) - rhs) / np.linalg.norm(rhs))
+    rec_cg = dict(value=vals[2], threshold=1e-8, ladder={str(k): v for k, v in ladder.items()}, monotone=monotone,
+                  achieved_cg_relresid_1e13=cg_resid,
+                  passed=bool(np.isfinite(vals[2]) and vals[2] <= 1e-8 and monotone and cg_resid <= 1e-12),
+                  note="JAX/CG recurrence vs the LU recurrence at CG tol 1e-9/1e-11/1e-13: must decrease monotonically and reach <= 1e-8; "
+                       "achieved relative CG residual at tol 1e-13 recorded (<= 1e-12). RETRACTIONS 1+3 superseded: the algebra is certified by V1alg, tolerance-free.")
+    log(f"  V1cg  {'PASS' if rec_cg['passed'] else 'FAIL'}  ladder {vals} monotone={monotone} achieved CG resid {cg_resid:.1e}")
+    return {"V1alg": rec_alg, "V1cg": rec_cg}
 
 
 # ----------------------------- F2: self-convergence -----------------------------
@@ -399,6 +457,25 @@ def _spatial_order(bc, ic_fn, ci, label):
     return errs, float(p)
 
 
+def _spatial_order_wrongref(bc, ic_fn, ci):
+    """negative control for the spatial study: coarse solutions vs a reference run at 1.01 c"""
+    gref = Grid(F2_REF, bc)
+    Sref, _ = wc.make_cn_fom(gref, cg_tol=1e-12)[0](jnp.asarray(ic_fn(gref))[None], jnp.zeros((1, gref.n)), jnp.asarray([1.01 * ci]))
+    Sref = np.asarray(Sref)[:, 0]
+    errs = []
+    for Nc in F2_NS:
+        g = Grid(Nc, bc)
+        S, _ = wc.make_cn_fom(g, cg_tol=1e-12)[0](jnp.asarray(ic_fn(g))[None], jnp.zeros((1, g.n)), jnp.asarray([ci]))
+        S = np.asarray(S)[:, 0]; m = g.mass_diag(); num = den = 0.0
+        for t in range(S.shape[0]):
+            Rr = g.full_to_state(_restrict(gref.state_to_full(Sref[t]), F2_REF, Nc))
+            num += np.sum(m * (S[t] - Rr) ** 2); den += np.sum(m * Rr ** 2)
+        errs.append(np.sqrt(num / den))
+    errs = np.array(errs); hs = 1.0 / (np.array(F2_NS) - 1)
+    p = np.polyfit(np.log(hs), np.log(errs), 1)[0] if finite(errs) and np.all(errs > 0) else float("nan")
+    return errs, float(p)
+
+
 def gate_F2(bc):
     out = {}
     cx, cy, w, a, c, _ = wc.sample_params(m=16)
@@ -408,10 +485,22 @@ def gate_F2(bc):
     #     so the spatial study measures the scheme's order, not the family's wall discontinuity
     smooth = lambda g: wc.blob_ic(g, 0.5, 0.5, 0.1, 1.0)
     errs, p_sp = _spatial_order(bc, smooth, ci, "smooth centred bump w=0.1")
-    out["F2-spatial"] = dict(N=F2_NS, ref=F2_REF, ic="centred bump w=0.1 (wall-compatible)", c=ci,
-                             errors=[float(e) for e in errs], order=p_sp,
-                             passed=bool(np.isfinite(p_sp) and abs(p_sp - 2.0) <= 0.3))
-    log(f"  F2sp {bc}: order {p_sp:.3f} -> {'PASS' if out['F2-spatial']['passed'] else 'FAIL'}")
+    # an EXACTLY compatible initial datum: a sum of two eigenmodes of the closure (v0 = 0 and, for
+    # 'abs', d u0/dn = 0 exactly) -- its spatial error is the eigenvalue's O(dx^2) phase error
+    def mode_ic(g):
+        Phi, lam, kl = wc.mode_table(g, 4)
+        j1 = kl.index((1, 1)); j2 = kl.index((2, 3)) if (2, 3) in kl else kl.index((2, 1))
+        return Phi[:, j1] + 0.5 * Phi[:, j2]
+    errs_m, p_m = _spatial_order(bc, mode_ic, ci, "exactly compatible two-mode sum")
+    # control: the SAME coarse solutions against a WRONG reference (c -> 1.01 c): the 'error' saturates
+    errs_w, p_w = _spatial_order_wrongref(bc, smooth, ci)
+    out["F2-spatial"] = dict(N=F2_NS, ref=F2_REF, ic="centred bump w=0.1 (wall-compatible) AND exactly compatible two-mode sum", c=ci,
+                             errors=[float(e) for e in errs], order=p_sp, errors_modes=[float(e) for e in errs_m], order_modes=p_m,
+                             control_errors_wrongref=[float(e) for e in errs_w], control_order_wrongref=p_w,
+                             control_fired=bool(np.isfinite(p_w) and abs(p_w - 2.0) > 0.7),
+                             passed=bool(np.isfinite(p_sp) and abs(p_sp - 2.0) <= 0.3 and np.isfinite(p_m) and abs(p_m - 2.0) <= 0.3
+                                         and np.isfinite(p_w) and abs(p_w - 2.0) > 0.7))
+    log(f"  F2sp {bc}: bump order {p_sp:.3f}, modes order {p_m:.3f}, wrong-reference control order {p_w:.3f} -> {'PASS' if out['F2-spatial']['passed'] else 'FAIL'}")
     # (b) REPORTED, not gated: the family's own widest blob.  The inherited family multiplies the
     #     blob by a hard wall mask (ref) or leaves du/dn != 0 with v0 = 0 (abs), so a wide near-wall
     #     blob carries a 1-cell wall discontinuity / a startup wave -> reduced order is a DATA
@@ -443,11 +532,18 @@ def gate_F2(bc):
         errs_be.append(wc.traj_rms(g, np.asarray(Sb), Sref))
     p_be = np.polyfit(np.log(dts), np.log(np.array(errs_be)), 1)[0]
     sep = float(errs_be[-1] / errs_t[-1])          # BE must be far worse than CN at the finest dt
+    ctrl_ok = bool(np.isfinite(sep) and sep >= 10.0 and np.isfinite(p_be) and abs(p_be - 1.0) <= 0.3)
     out["F2-temporal"] = dict(SUBSTEPS=F2_SUBS, ref=F2_SUB_REF, N=N, errors=[float(e) for e in errs_t], order=float(p_t),
                               control_errors_BE=[float(e) for e in errs_be], control_order_BE=float(p_be),
-                              control_separation=sep, control_fired=bool(np.isfinite(sep) and sep >= 10.0),
-                              passed=bool(np.isfinite(p_t) and abs(p_t - 2.0) <= 0.3 and np.isfinite(sep) and sep >= 10.0))
+                              control_separation=sep, control_fired=ctrl_ok,
+                              passed=bool(np.isfinite(p_t) and abs(p_t - 2.0) <= 0.3 and ctrl_ok),
+                              note="control: backward Euler must read order 1 +- 0.3 AND be >= 10x worse at the finest step (amendment 3 restored to both)")
     log(f"  F2t  {bc}: errors {errs_t} order {p_t:.3f}; BE control errors {np.array(errs_be)} (order {p_be:.2f}), separation {sep:.1f}x -> {'PASS' if out['F2-temporal']['passed'] else 'FAIL'}")
+    if bc == "abs":
+        _, ensb = wc.make_cn_fom(g, cg_tol=1e-12)[0](jnp.asarray(u0)[None], jnp.zeros((1, g.n)), jnp.asarray([ci]))
+        ensb = np.asarray(ensb)[:, 0]
+        out["F2-absorbing-energy-ratio-T"] = float(ensb[-1] / ensb[0])
+        log(f"  F2 abs: the smooth-bump study trajectory retains E(T)/E0 = {ensb[-1]/ensb[0]:.3e} (the absorber IS exercised iff this is << 1)")
     # reported: the family blob's temporal order at this N
     u0f = fam(g)
     Sref_f, _ = wc.make_cn_fom(g, substeps=F2_SUB_REF, cg_tol=1e-12)[0](jnp.asarray(u0f)[None], jnp.zeros((1, g.n)), jnp.asarray([ci]))
@@ -514,18 +610,23 @@ def gate_F3(c=1.0, x0=0.45, w=0.05):
     t_exit = (1.0 - x0 + 6 * w) / c
     k_exit = int(np.ceil(t_exit / wc.DT_SNAP))
     precond(k_exit <= wc.NUM_STEPS, "pulse does not exit within T")
-    fracs = []; preds = []
+    fracs = []; preds = []; diag = []
     for Nn in F3_NS:
         g = _XFaceGrid(Nn)
         U0, V0 = _pulse(Nn, x0, w, c)
         roll, _ = wc.make_cn_fom(g, cg_tol=1e-12)
         t0 = time.time()
-        _, ens = roll(jnp.asarray(U0.reshape(-1))[None], jnp.asarray(V0.reshape(-1))[None], jnp.asarray([c]))
-        ens = np.asarray(ens)[:, 0]
+        snaps, ens = roll(jnp.asarray(U0.reshape(-1))[None], jnp.asarray(V0.reshape(-1))[None], jnp.asarray([c]))
+        ens = np.asarray(ens)[:, 0]; snaps = np.asarray(snaps)[:, 0]
         frac = float(ens[k_exit] / ens[0]) if finite(ens) else float("nan")
         pred = (15.0 / 1024.0) * (g.dx / w) ** 4
+        # corroboration: plateau (fraction two snapshots later), y-invariance of the final field, mean-field remainder
+        plateau = float(ens[min(k_exit + 2, wc.NUM_STEPS)] / ens[0])
+        Uf = snaps[k_exit].reshape(Nn, Nn); yvar = float(np.max(np.abs(Uf - Uf[:, :1])) / max(np.max(np.abs(snaps[0])), 1e-300))
+        meanfield = float(np.mean(Uf))
+        diag.append(dict(N=Nn, plateau_fraction=plateau, y_invariance=yvar, mean_field_remainder=meanfield))
         fracs.append(frac); preds.append(pred)
-        log(f"  F3 N={Nn}: reflected fraction {frac:.3e}, prediction {pred:.3e}  ({time.time()-t0:.0f}s)")
+        log(f"  F3 N={Nn}: reflected fraction {frac:.3e}, prediction {pred:.3e}, plateau {plateau:.3e}, y-var {yvar:.1e}, mean {meanfield:.1e}  ({time.time()-t0:.0f}s)")
     fracs = np.array(fracs); preds = np.array(preds)
     hs = 1.0 / (np.array(F3_NS) - 1)
     slope = np.polyfit(np.log(hs), np.log(fracs), 1)[0] if finite(fracs) and np.all(fracs > 0) else float("nan")
@@ -541,9 +642,10 @@ def gate_F3(c=1.0, x0=0.45, w=0.05):
     ensR = np.asarray(ensR)[:, 0]
     fracR = float(ensR[k_exit] / ensR[0])
     out.update(reflected_fraction=[float(f) for f in fracs], prediction=[float(p) for p in preds],
-               ratio_to_prediction=[float(r) for r in ratio], slope=float(slope), t_exit=t_exit,
+               ratio_to_prediction=[float(r) for r in ratio], slope=float(slope), t_exit=t_exit, diagnostics=diag,
                control_reflective_fraction=fracR, control_fired=bool(fracR > 0.9),
-               passed=bool((ok_slope or ok_pred) and fracR > 0.9))
+               passed=bool(ok_slope and ok_pred and fracR > 0.9),
+               note="pass requires BOTH slope 4 +- 0.5 AND coefficient agreement within a factor 2 (an 'or' could pass a wrong coefficient)")
     log(f"  F3: slope {slope:.3f} (target 4+-0.5), ratio to prediction {ratio}, reflective control {fracR:.3f} -> {'PASS' if out['passed'] else 'FAIL'}")
     return {"F3": out}
 

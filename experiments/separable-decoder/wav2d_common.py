@@ -245,7 +245,7 @@ def boundary_flux(g: Grid, vbar, c):
 
 # ----------------------------- CN FOM on (u,v), both BCs -----------------------------
 
-def make_cn_fom(g: Grid, substeps=SUBSTEPS, cg_tol=CG_TOL, store_v=False):
+def make_cn_fom(g: Grid, substeps=SUBSTEPS, cg_tol=CG_TOL, store_v=False, num_steps=NUM_STEPS):
     """Batched Crank-Nicolson rollout of the (u,v) system with per-sample c.
 
     rollout(U0_b, V0_b, c_b) -> (snaps, energies[, vsnaps])
@@ -310,7 +310,7 @@ def make_cn_fom(g: Grid, substeps=SUBSTEPS, cg_tol=CG_TOL, store_v=False):
             out = (u, energy_b(u, v, c_b)) + ((v,) if store_v else ())
             return carry, out
 
-        _, outs = jax.lax.scan(snap_body, (U0_b, V0_b, Lu0), None, length=NUM_STEPS)
+        _, outs = jax.lax.scan(snap_body, (U0_b, V0_b, Lu0), None, length=num_steps)
         snaps = jnp.concatenate([U0_b[None], outs[0]], axis=0)
         e0 = energy_b(U0_b, V0_b, c_b)
         ens = jnp.concatenate([e0[None], outs[1]], axis=0)
@@ -360,7 +360,7 @@ def make_cn_fom_stepwise(g: Grid, substeps=SUBSTEPS, cg_tol=CG_TOL):
     return rollout
 
 
-def make_newmark_fom(g: Grid, rs, cg_tol=1e-12):
+def make_newmark_fom(g: Grid, rs, cg_tol=1e-12, num_steps=NUM_STEPS):
     """u-only three-level recurrence at dt = DT_SNAP/rs (the ROM's operator), both BCs.
     rollout(u0, v0, c) -> (snaps (NUM_STEPS+1, n), energies (NUM_STEPS+1,)) with the energy from
     the CN-CONSISTENT dynamic velocity  v_{k} = (I+sD)^{-1}[(I-sD) v_{k-1} + (dt c^2/2) L(u_{k-1}+u_k)]
@@ -408,7 +408,7 @@ def make_newmark_fom(g: Grid, rs, cg_tol=1e-12):
             um, u, v = carry
             return carry, (u, energy_quadratic(g, u, v, c, lap))
 
-        _, (snaps, ens) = jax.lax.scan(snap_body, (u0, u1, v1), jnp.arange(NUM_STEPS))
+        _, (snaps, ens) = jax.lax.scan(snap_body, (u0, u1, v1), jnp.arange(num_steps))
         snaps = jnp.concatenate([u0[None], snaps], axis=0)
         e0 = energy_quadratic(g, u0, v0, c, lap)
         return snaps, jnp.concatenate([e0[None], ens])

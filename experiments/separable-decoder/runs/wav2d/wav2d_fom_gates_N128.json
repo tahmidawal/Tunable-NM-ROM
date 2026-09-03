@@ -1,7 +1,7 @@
 {
  "N": 128,
  "provenance": {
-  "git_commit": "39130cc0bd939393752eb37a1efb9a78a35f35ea",
+  "git_commit": "b13e7c60681d51da37353139a4ca62bf9a30d368",
   "jax_backend": "gpu",
   "jax_version": "0.10.1",
   "matmul_precision": "highest",
@@ -29,9 +29,9 @@
     "threshold": 1e-13,
     "aggregate": "max",
     "passed": true,
-    "note": "16 modes, closed-form lambda, backward-error normalised by ||L||_2 = 8/dx^2 (retraction 2); control: one lambda perturbed 1%",
-    "control_value": 6.114176035485748e-06,
-    "control_threshold": 1e-09,
+    "note": "16 modes, closed-form lambda, backward-error normalised by the Gershgorin bound on ||L|| (retraction 2); control: one lambda perturbed 1%, lambda-normalised (N-independent)",
+    "control_value": 0.004701104770084851,
+    "control_threshold": 0.0001,
     "control_dir": "ge",
     "control_fired": true
    },
@@ -40,7 +40,11 @@
     "threshold": 1e-15,
     "aggregate": "max",
     "passed": true,
-    "note": "||ML-(ML)^T||/||ML||; control (abs): M=I"
+    "note": "||ML-(ML)^T||/||ML||; control: M=I (abs) / one asymmetric coefficient (ref)",
+    "control_value": 0.0012558692047981751,
+    "control_threshold": 1e-06,
+    "control_dir": "ge",
+    "control_fired": true
    },
    "F1a": {
     "value": 6.942784957617304e-15,
@@ -58,27 +62,47 @@
     "threshold": 1e-14,
     "aggregate": "max",
     "passed": true,
-    "note": "fwd-difference energy == quadratic form (D_e^T D_e = -L_D)"
+    "note": "fwd-difference energy == quadratic form (D_e^T D_e = -L_D); control: boundary edges dropped from the sum",
+    "control_value": 0.007889269575832329,
+    "control_threshold": 1e-06,
+    "control_dir": "ge",
+    "control_fired": true
    },
    "F4": {
     "value": 0.0,
     "threshold": 1e-10,
     "aggregate": "max",
     "passed": true,
-    "note": "max E^n/E^0 - 1 over 4.0T"
+    "note": "max E^n/E^0 - 1 over 4.0T (implied by F1a; same BE control)",
+    "control_value": 0.5982751606391442,
+    "control_threshold": 0.0001,
+    "control_dir": "ge",
+    "control_fired": true
    },
-   "V1": {
-    "value": 2.9909451533276436e-11,
-    "threshold": 1e-08,
+   "V1alg": {
+    "value": 1.7965746969177608e-14,
+    "threshold": 1e-13,
     "aggregate": "max",
     "passed": true,
-    "note": "u-only damped Newmark (RS=80, CG 1e-13) vs splu block CN with assembled L; control: a -> 1.01 a (c -> 1.005 c); RETRACTIONS 1+3: threshold 1e-11 -> 1e-9 -> 1e-8 (CG-tolerance accumulation over 4000 solves grows with N); the BINDING criterion is solver-limitedness: CG 1e-11 reads 2.40e-08, ratio loose/tight 803.7 (must be >= 10)",
-    "control_value": 0.1705877498985646,
-    "control_threshold": 0.001,
+    "note": "u-only Newmark by LU vs the 2n x 2n block CN by LU over the FIRST 10 STEPS (roundoff ~1e-14; an algebraic error is O(dt^2) ~ 1e-7 per step); full 4000-step LU-vs-LU discrepancy 1.04e-11 reported (LU roundoff accumulation, retraction 4); control: a -> 1.01 a in the recurrence",
+    "control_value": 0.001034333315885121,
+    "control_threshold": 1e-07,
     "control_dir": "ge",
     "control_fired": true,
-    "value_cg1e11": 2.403937052671527e-08,
-    "ratio_loose_over_tight": 803.738259792886
+    "value_full_horizon": 1.0440645272865664e-11
+   },
+   "V1cg": {
+    "value": 3.412827550977457e-11,
+    "threshold": 1e-08,
+    "ladder": {
+     "1e-09": 2.697589739338729e-05,
+     "1e-11": 2.4043608091793544e-08,
+     "1e-13": 3.412827550977457e-11
+    },
+    "monotone": true,
+    "achieved_cg_relresid_1e13": 6.11314688389761e-14,
+    "passed": true,
+    "note": "JAX/CG recurrence vs the LU recurrence at CG tol 1e-9/1e-11/1e-13: must decrease monotonically and reach <= 1e-8; achieved relative CG residual at tol 1e-13 recorded (<= 1e-12). RETRACTIONS 1+3 superseded: the algebra is certified by V1alg, tolerance-free."
    },
    "F2-spatial": {
     "N": [
@@ -87,14 +111,27 @@
      129
     ],
     "ref": 257,
-    "ic": "centred bump w=0.1 (wall-compatible)",
+    "ic": "centred bump w=0.1 (wall-compatible) AND exactly compatible two-mode sum",
     "c": 1.195999099323442,
     "errors": [
      0.052385387167562365,
-     0.012577108737146186,
+     0.012577108737146153,
      0.002518601908315009
     ],
     "order": 2.1892347090392974,
+    "errors_modes": [
+     0.010271020257313435,
+     0.0024506433474784303,
+     0.0004903867075317534
+    ],
+    "order_modes": 2.1942579064476355,
+    "control_errors_wrongref": [
+     0.11683792880878162,
+     0.08177210102981963,
+     0.07359033626991736
+    ],
+    "control_order_wrongref": 0.3334602283346093,
+    "control_fired": true,
     "passed": true
    },
    "F2-spatial-family-reported": {
@@ -105,11 +142,11 @@
     "a": 4.025053544910943,
     "c": 1.195999099323442,
     "errors": [
-     0.04399469136497504,
-     0.0355771255928462,
-     0.027161927037631404
+     0.04399469136497507,
+     0.035577125592846204,
+     0.027161927037631397
     ],
-    "order": 0.34787180694314496,
+    "order": 0.3478718069431461,
     "note": "not gated: the family's wall treatment limits the order; see WAVE2D-NOTES"
    },
    "F2-temporal": {
@@ -134,7 +171,8 @@
     "control_order_BE": 0.9208274860439258,
     "control_separation": 574.996944344246,
     "control_fired": true,
-    "passed": true
+    "passed": true,
+    "note": "control: backward Euler must read order 1 +- 0.3 AND be >= 10x worse at the finest step (amendment 3 restored to both)"
    },
    "F2-temporal-family-reported": {
     "errors": [
@@ -150,7 +188,7 @@
     "threshold": 1e-13,
     "aggregate": "max",
     "passed": true,
-    "note": "new 'ref' CN vs frozen 08-14 make_rollout, 4 traj, CG 1e-13 both; energies agree to 1.6e-15; control: dx perturbed 1e-6",
+    "note": "new 'ref' CN vs frozen 08-14 make_rollout, 4 traj, CG 1e-13 both; energies agree to 1.6e-15; control: dx perturbed 1e-6 in the stencil (every Laplacian coefficient; the mass also changes but only the state is compared)",
     "control_value": 9.458755221348364e-06,
     "control_threshold": 1e-07,
     "control_dir": "ge",
@@ -175,16 +213,20 @@
     "threshold": 1e-13,
     "aggregate": "max",
     "passed": true,
-    "note": "||L_N phi_00|| / (||phi_00|| ||L||_2), ||L||_2 = 8/dx^2"
+    "note": "||L_N phi_00|| / (||phi_00|| ||L||_1); control: phi_00 + 1e-3 phi_01",
+    "control_value": 7.678383897965557e-08,
+    "control_threshold": 1e-09,
+    "control_dir": "ge",
+    "control_fired": true
    },
    "F0b": {
     "value": 8.974760450927522e-17,
     "threshold": 1e-13,
     "aggregate": "max",
     "passed": true,
-    "note": "16 modes, closed-form lambda, backward-error normalised by ||L||_2 = 8/dx^2 (retraction 2); control: one lambda perturbed 1%",
-    "control_value": 3.4471325209095815e-06,
-    "control_threshold": 1e-09,
+    "note": "16 modes, closed-form lambda, backward-error normalised by the Gershgorin bound on ||L|| (retraction 2); control: one lambda perturbed 1%, lambda-normalised (N-independent)",
+    "control_value": 0.005251961564498295,
+    "control_threshold": 0.0001,
     "control_dir": "ge",
     "control_fired": true
    },
@@ -193,17 +235,18 @@
     "threshold": 1e-15,
     "aggregate": "max",
     "passed": true,
-    "note": "||ML-(ML)^T||/||ML||; control (abs): M=I",
+    "note": "||ML-(ML)^T||/||ML||; control: M=I (abs) / one asymmetric coefficient (ref)",
     "control_value": 0.05581455721859476,
-    "control_threshold": 0.001,
+    "control_threshold": 1e-06,
     "control_dir": "ge",
     "control_fired": true
    },
    "F0d-spd": {
-    "min_eig": 1.6805942354161524e-05,
-    "min_eig_over_maxM": 0.2710630442302712,
+    "min_eig": 1.680594235416145e-05,
+    "min_eig_over_maxM": 0.27106304423027006,
+    "min_eig_over_maxM_N32": 0.255062875118456,
     "passed": true,
-    "note": "min eigenvalue of M(I + sD_B - aL_N) at dt_FOM must be > 0"
+    "note": "min eigenvalue of M(I + sD_B - aL_N) at dt_FOM must be > 0 (this N and the design's N=32); an eigenvalue fact, no mutation control"
    },
    "F0c": {
     "value": 2.178516027638094e-14,
@@ -232,26 +275,39 @@
     "threshold": 1e-10,
     "aggregate": "max",
     "passed": true,
-    "note": "max positive energy increment per step, rel E0, over 4.0T; control: D_B -> -D_B (400 steps)",
+    "note": "max positive energy increment per step, rel E0, over 4.0T; control: D_B -> -D_B, growth over its first 401 finite steps of 400 (nonfinite tail: False)",
     "control_value": 2.2421001231140633e+45,
     "control_threshold": 1e-06,
     "control_dir": "ge",
-    "control_fired": true
+    "control_fired": true,
+    "control_nonfinite_tail": false
    },
    "absorbing_energy_ratio_4T": 1.5832076685589963e-05,
    "absorbing_energy_ratio_T": 0.0007285305910842776,
-   "V1": {
-    "value": 1.3557839941866496e-09,
-    "threshold": 1e-08,
+   "V1alg": {
+    "value": 1.73786310551522e-14,
+    "threshold": 1e-13,
     "aggregate": "max",
     "passed": true,
-    "note": "u-only damped Newmark (RS=80, CG 1e-13) vs splu block CN with assembled L; control: damping sign flipped; RETRACTIONS 1+3: threshold 1e-11 -> 1e-9 -> 1e-8 (CG-tolerance accumulation over 4000 solves grows with N); the BINDING criterion is solver-limitedness: CG 1e-11 reads 5.44e-08, ratio loose/tight 40.2 (must be >= 10)",
-    "control_value": 1.1487235866873283e+158,
-    "control_threshold": 0.01,
+    "note": "u-only Newmark by LU vs the 2n x 2n block CN by LU over the FIRST 10 STEPS (roundoff ~1e-14; an algebraic error is O(dt^2) ~ 1e-7 per step); full 4000-step LU-vs-LU discrepancy 3.73e-12 reported (LU roundoff accumulation, retraction 4); control: damping sign flipped in the recurrence",
+    "control_value": 0.00967835439600852,
+    "control_threshold": 1e-07,
     "control_dir": "ge",
     "control_fired": true,
-    "value_cg1e11": 5.444197075139586e-08,
-    "ratio_loose_over_tight": 40.15534258025831
+    "value_full_horizon": 3.7256320998353565e-12
+   },
+   "V1cg": {
+    "value": 1.3592107842862459e-09,
+    "threshold": 1e-08,
+    "ladder": {
+     "1e-09": 1.5517337856914992e-05,
+     "1e-11": 5.444196473345775e-08,
+     "1e-13": 1.3592107842862459e-09
+    },
+    "monotone": true,
+    "achieved_cg_relresid_1e13": 2.074897971310868e-15,
+    "passed": true,
+    "note": "JAX/CG recurrence vs the LU recurrence at CG tol 1e-9/1e-11/1e-13: must decrease monotonically and reach <= 1e-8; achieved relative CG residual at tol 1e-13 recorded (<= 1e-12). RETRACTIONS 1+3 superseded: the algebra is certified by V1alg, tolerance-free."
    },
    "F2-spatial": {
     "N": [
@@ -260,14 +316,27 @@
      129
     ],
     "ref": 257,
-    "ic": "centred bump w=0.1 (wall-compatible)",
+    "ic": "centred bump w=0.1 (wall-compatible) AND exactly compatible two-mode sum",
     "c": 1.195999099323442,
     "errors": [
-     0.025800304059832902,
-     0.006015814967554283,
-     0.0011968067546740018
+     0.025800304059832847,
+     0.006015814967554238,
+     0.0011968067546739686
     ],
-    "order": 2.2150629700857083,
+    "order": 2.2150629700857274,
+    "errors_modes": [
+     0.013807969463208468,
+     0.00422617240578233,
+     0.0011321860712229647
+    ],
+    "order_modes": 1.8041590969498476,
+    "control_errors_wrongref": [
+     0.05601453007803995,
+     0.03865626096466823,
+     0.03486864357909684
+    ],
+    "control_order_wrongref": 0.34193543268217214,
+    "control_fired": true,
     "passed": true
    },
    "F2-spatial-family-reported": {
@@ -278,11 +347,11 @@
     "a": 4.025053544910943,
     "c": 1.195999099323442,
     "errors": [
-     0.008772631408945073,
-     0.003851011104539945,
-     0.0016807532238848543
+     0.008772631408945082,
+     0.003851011104539947,
+     0.0016807532238848407
     ],
-    "order": 1.1919508683468203,
+    "order": 1.1919508683468287,
     "note": "not gated: the family's wall treatment limits the order; see WAVE2D-NOTES"
    },
    "F2-temporal": {
@@ -307,8 +376,10 @@
     "control_order_BE": 0.9569938392043613,
     "control_separation": 576.2528305058598,
     "control_fired": true,
-    "passed": true
+    "passed": true,
+    "note": "control: backward Euler must read order 1 +- 0.3 AND be >= 10x worse at the finest step (amendment 3 restored to both)"
    },
+   "F2-absorbing-energy-ratio-T": 0.0010715995353188816,
    "F2-temporal-family-reported": {
     "errors": [
      0.0008301170795441681,
@@ -359,13 +430,40 @@
     ],
     "slope": 4.009580553195201,
     "t_exit": 0.8500000000000001,
+    "diagnostics": [
+     {
+      "N": 64,
+      "plateau_fraction": 0.0001519810815845978,
+      "y_invariance": 5.1718120945372774e-15,
+      "mean_field_remainder": -5.224755478531265e-08
+     },
+     {
+      "N": 128,
+      "plateau_fraction": 9.056232012128721e-06,
+      "y_invariance": 4.184555060134497e-15,
+      "mean_field_remainder": -1.5148346969728325e-10
+     },
+     {
+      "N": 256,
+      "plateau_fraction": 5.5501866797841e-07,
+      "y_invariance": 4.92288736872466e-15,
+      "mean_field_remainder": -1.389491932168038e-10
+     },
+     {
+      "N": 512,
+      "plateau_fraction": 3.43847857487152e-08,
+      "y_invariance": 5.436434194744601e-15,
+      "mean_field_remainder": -1.2346181143677995e-10
+     }
+    ],
     "control_reflective_fraction": 0.9999999999999896,
     "control_fired": true,
-    "passed": true
+    "passed": true,
+    "note": "pass requires BOTH slope 4 +- 0.5 AND coefficient agreement within a factor 2 (an 'or' could pass a wrong coefficient)"
    }
   }
  },
  "all_passed": true,
  "failed": [],
- "wall_s": 59.420613527297974
+ "wall_s": 98.34640169143677
 }

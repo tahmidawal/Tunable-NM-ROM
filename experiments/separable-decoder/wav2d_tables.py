@@ -114,7 +114,7 @@ def _g(v, key="value"):
 def phase2_table(files=None):
     import numpy as _np
     if files is None:
-        files = [f for f in sorted(glob.glob(os.path.join(RUNS, "wav2d_head_gates_*_N*_R*.json"))) if "SMOKE" not in f]
+        files = [f for f in sorted(glob.glob(os.path.join(RUNS, "p2fix_*", "out", "wav2d_head_gates_*_N*_R*.json"))) if "SMOKE" not in f]
     lines = ["| N | BC | head | K | params | final loss | D0 | D1 held-out/POD-K (ctrl shuffled) | D2 min cond (ctrl dup.) | G0a ratio, gap (ctrl) | G0b tangent/POD-K (ctrl random) | G0 | predicted |",
              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     lines2 = ["", "| N | BC | head | held-out oracle median | train oracle median | POD-K median | POD-R ceiling median | G0b tangent median / POD-K median (n states) |", "|---|---|---|---|---|---|---|---|"]
@@ -141,9 +141,9 @@ def phase2_table(files=None):
 def phase3_table(files=None, p2files=None):
     import numpy as _np
     if files is None:
-        files = [f for f in sorted(glob.glob(os.path.join(RUNS, "wav2d_rom_gates_*_N*_R*.json"))) if "SMOKE" not in f]
+        files = [f for f in sorted(glob.glob(os.path.join(RUNS, "p2fix_*", "out", "wav2d_rom_gates_*_N*_R*.json"))) if "SMOKE" not in f]
     if p2files is None:
-        p2files = [f for f in glob.glob(os.path.join(RUNS, "wav2d_head_gates_*_N*_R*.json")) if "SMOKE" not in f]
+        p2files = [f for f in glob.glob(os.path.join(RUNS, "p2fix_*", "out", "wav2d_head_gates_*_N*_R*.json")) if "SMOKE" not in f]
     lines = ["| N | BC | head | arm | RS | complete | err_T median | err_4T median | oracle floor T / 4T | POD-K T / 4T | same-dt FOM | energy ratio T (Er arm C / dyn arm A) | iters |",
              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     glines = ["", "| N | BC | head | gate | value | threshold | control | verdict | note |", "|---|---|---|---|---|---|---|---|---|"]

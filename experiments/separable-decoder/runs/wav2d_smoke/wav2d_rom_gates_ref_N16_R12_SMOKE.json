@@ -1,0 +1,654 @@
+{
+ "N": 16,
+ "bc": "ref",
+ "R": 12,
+ "M": 16,
+ "steps": 300,
+ "smoke": true,
+ "provenance": {
+  "git_commit": "74b49968a03b5205c71ff708365f579d4f833963",
+  "jax_backend": "gpu",
+  "jax_version": "0.10.1",
+  "matmul_precision": "highest",
+  "x64": true
+ },
+ "args": {
+  "N": "16",
+  "BC": "ref",
+  "R": "12",
+  "STEPS": "300",
+  "M": "16",
+  "SMOKE": "1",
+  "N_TRAIN": "24",
+  "N_TEST": "4",
+  "RS": "4,8",
+  "HORIZON": "2",
+  "HEADS": "auto",
+  "OUT": "runs/wav2d_smoke",
+  "CACHE": "cache/wav2d_smoke"
+ },
+ "data_sha256": "8eb494e92a2fe2f81c0f202dc73c7eeb75031b89b557c5ed69aedc0c69fc56b1",
+ "heads": {
+  "auto": {
+   "K": 8,
+   "gates": {
+    "W0": {
+     "value": 8.051556995085038e-16,
+     "threshold": 1e-12,
+     "aggregate": "median",
+     "passed": true,
+     "note": "Petrov-table residual vs decode->assembled stencil+boundary rows->Phi^T M, 32 random states; control: B perturbed by 1e-8",
+     "control_value": 9.99972309346592e-09,
+     "control_threshold": 1e-09,
+     "control_dir": "ge",
+     "control_fired": true
+    },
+    "W0-grad": {
+     "value": 4.148615999740015e-10,
+     "threshold": 1e-07,
+     "aggregate": "median",
+     "passed": true,
+     "note": "analytic Jacobian-vector product vs central FD of the FULL-GRID residual (independent path)"
+    },
+    "W7": {
+     "value": 8.147361918968596e-15,
+     "threshold": 1e-11,
+     "aggregate": "median",
+     "passed": true,
+     "note": "arm C with h = [I_K;0] z vs the independent POD-K damped Verlet, RS=4, complete=True; CFL c dt sqrt(lam_max) = 0.045; control: v != 0 state with zdot_0 dropped",
+     "control_value": 0.21658469614582454,
+     "control_threshold": 0.001,
+     "control_dir": "ge",
+     "control_fired": true
+    },
+    "W6-C": {
+     "value": NaN,
+     "threshold": 0.2,
+     "aggregate": "median",
+     "passed": false,
+     "note": "arm C: spread of the median ROM-floor excess over RS>=20 relative to its mean; excess per RS [(4, 0.08135), (8, 0.08139)]; control: first-order POD-K BE excess over the POD-K floor {4: 0.005901568965916815, 8: 0.004950758539721711} must differ by > 20% between RS=4 and 8 (POD-K CN excess {4: 0.0049192148142780945, 8: 0.004939927445626019} for reference)",
+     "control_value": 0.1920534840401547,
+     "control_threshold": 0.2,
+     "control_dir": "ge",
+     "control_fired": false
+    },
+    "W6-A": {
+     "value": NaN,
+     "threshold": 0.2,
+     "aggregate": "median",
+     "passed": false,
+     "note": "arm A: spread of the median ROM-floor excess over RS>=20 relative to its mean; excess per RS [(4, 0.07823), (8, 0.0799)]; control: first-order POD-K BE excess over the POD-K floor {4: 0.005901568965916815, 8: 0.004950758539721711} must differ by > 20% between RS=4 and 8 (POD-K CN excess {4: 0.0049192148142780945, 8: 0.004939927445626019} for reference)",
+     "control_value": 0.1920534840401547,
+     "control_threshold": 0.2,
+     "control_dir": "ge",
+     "control_fired": false
+    },
+    "W4": {
+     "value": 0.0004836790053959587,
+     "threshold": 0.01,
+     "aggregate": "median",
+     "passed": true,
+     "note": "arm C reflective at RS=8: max |E_r/E_r0 - 1| over 4T (max over 16) 2.73e-04, secular slope 2.42e-05/T; control: first-order reduced-BE stepping on the same head loses 0.137 of E_r",
+     "control_value": 0.13705879993614667,
+     "control_threshold": 0.01,
+     "control_dir": "ge",
+     "control_fired": true
+    },
+    "W3-A": {
+     "value": 3.7984003278657523,
+     "threshold": 1.0,
+     "aggregate": "median",
+     "passed": false,
+     "note": "arm A RS=4: err_T/floor 1.409 (<=1.5), err_4T/floor 1.833 (<=1.5), err_T/POD-K 1.501 (<=0.5), err_4T/POD-K 1.899 (<=0.5), energy ratio at T median 1.5619 (in [0.9,1.1]: False); value = max of the normalised ratios; control: wrong-sign stiffness (K -> -K) error must exceed 1 (or blow up)",
+     "control_value": 80.95565837157726,
+     "control_threshold": 1.0,
+     "control_dir": "ge",
+     "control_fired": true,
+     "RS": 4,
+     "ratio_floor_T": 1.4091150293184,
+     "ratio_floor_4T": 1.832539153556611,
+     "ratio_podK_T": 1.5009190164496407,
+     "ratio_podK_4T": 1.8992001639328762,
+     "control_nonfinite": false
+    },
+    "W3-C": {
+     "value": 3.7968763264745715,
+     "threshold": 1.0,
+     "aggregate": "median",
+     "passed": false,
+     "note": "arm C RS=8: err_T/floor 1.429 (<=1.5), err_4T/floor 1.832 (<=1.5), err_T/POD-K 1.523 (<=0.5), err_4T/POD-K 1.898 (<=0.5), energy ratio at T median 1.0000 (in [0.9,1.1]: True); value = max of the normalised ratios; control: wrong-sign stiffness (K -> -K) error must exceed 1 (or blow up)",
+     "control_value": 81.82372700336605,
+     "control_threshold": 1.0,
+     "control_dir": "ge",
+     "control_fired": true,
+     "RS": 8,
+     "ratio_floor_T": 1.4294558682172482,
+     "ratio_floor_4T": 1.831803898718166,
+     "ratio_podK_T": 1.5225850630665638,
+     "ratio_podK_4T": 1.8984381632372858,
+     "control_nonfinite": false
+    },
+    "G0c": {
+     "value": 0.12563921400114927,
+     "threshold": 0.5,
+     "aggregate": "median",
+     "passed": true,
+     "note": "stepdiag from oracle starts (arm C, RS=8): median excess over floor at H=10 / floor; excess per H [(1, 0.00018), (2, 0.00074), (5, 0.00768), (10, 0.02887)]; hold comparator per H [(1, 0.4295), (2, 0.4275), (5, 0.6511), (10, 1.0189)]; control: wrong-sign stiffness at H=10 must exceed 1",
+     "control_value": 1.3395567642422295,
+     "control_threshold": 1.0,
+     "control_dir": "ge",
+     "control_fired": true,
+     "excess_per_H": {
+      "1": 0.00018224123200944603,
+      "2": 0.0007398050510703663,
+      "5": 0.007680225552981562,
+      "10": 0.028870654006783153
+     },
+     "hold_per_H": {
+      "1": 0.42948840763256535,
+      "2": 0.42745753841055134,
+      "5": 0.6510583842855693,
+      "10": 1.0189169726619458
+     }
+    }
+   },
+   "arms": {
+    "A": {
+     "4": {
+      "RS": 4,
+      "dt": 0.005,
+      "n_complete": 4,
+      "per_traj": [
+       {
+        "complete": true,
+        "iters_mean": 12.0775,
+        "cond_min": NaN,
+        "err_T": 0.36865841492909474,
+        "err_4T": 0.4361521528741141,
+        "err_preexit_E0": 0.09441713656310724,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.057589504402627126,
+        "Edyn_ratio_T": 1.1402055866847587,
+        "Edyn_ratio_4T": 1.81896068439438
+       },
+       {
+        "complete": true,
+        "iters_mean": 10.76,
+        "cond_min": NaN,
+        "err_T": 0.8313920283311056,
+        "err_4T": 0.8737488524186431,
+        "err_preexit_E0": 0.0595010838587748,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.015723383420491614,
+        "Edyn_ratio_T": 1.9836282467356867,
+        "Edyn_ratio_4T": 2.3061642208917377
+       },
+       {
+        "complete": true,
+        "iters_mean": 11.97,
+        "cond_min": NaN,
+        "err_T": 0.2970070483524268,
+        "err_4T": 0.35845804600157644,
+        "err_preexit_E0": 0.07159491707890092,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.028748742250758835,
+        "Edyn_ratio_T": 0.9267436922755962,
+        "Edyn_ratio_4T": 1.264410225505765
+       },
+       {
+        "complete": true,
+        "iters_mean": 11.8125,
+        "cond_min": NaN,
+        "err_T": 0.639155297152191,
+        "err_4T": 0.8309835172887959,
+        "err_preexit_E0": 0.13279649132223115,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.13165607563317555,
+        "Edyn_ratio_T": 3.5896926705089793,
+        "Edyn_ratio_4T": 7.679610332718004
+       }
+      ],
+      "seconds": 1.1385977268218994,
+      "err_T_median": 0.5039068560406429,
+      "err_T_max": 0.8313920283311056,
+      "err_4T_median": 0.633567835081455,
+      "err_4T_max": 0.8737488524186431,
+      "err_preexit_E0_median": 0.08300602682100408,
+      "err_preexit_E0_max": 0.13279649132223115,
+      "Edyn_ratio_T_median": 1.5619169167102227,
+      "Edyn_ratio_T_max": 3.5896926705089793,
+      "iters_mean_median": 11.89125,
+      "iters_mean_max": 12.0775,
+      "excess_over_floor_T_median": 0.07823241726000879
+     },
+     "8": {
+      "RS": 8,
+      "dt": 0.0025,
+      "n_complete": 4,
+      "per_traj": [
+       {
+        "complete": true,
+        "iters_mean": 10.0325,
+        "cond_min": NaN,
+        "err_T": 0.37119339916077304,
+        "err_4T": 0.44325932750633723,
+        "err_preexit_E0": 0.09595568010440704,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.0584100446042739,
+        "Edyn_ratio_T": 1.1905182329976165,
+        "Edyn_ratio_4T": 1.8939590669241406
+       },
+       {
+        "complete": true,
+        "iters_mean": 12.415,
+        "cond_min": NaN,
+        "err_T": 0.8328120646656374,
+        "err_4T": 0.8775793214080594,
+        "err_preexit_E0": 0.059761933479265616,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.015417274581391211,
+        "Edyn_ratio_T": 2.070275376354932,
+        "Edyn_ratio_4T": 2.4700099465990664
+       },
+       {
+        "complete": true,
+        "iters_mean": 11.04,
+        "cond_min": NaN,
+        "err_T": 0.2978140908507923,
+        "err_4T": 0.3678680419755629,
+        "err_preexit_E0": 0.07347437797811977,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.029413923132248245,
+        "Edyn_ratio_T": 0.962118256751316,
+        "Edyn_ratio_4T": 1.3827420210977865
+       },
+       {
+        "complete": true,
+        "iters_mean": 12.00125,
+        "cond_min": NaN,
+        "err_T": 0.6411352803958927,
+        "err_4T": 0.8430453152087282,
+        "err_preexit_E0": 0.13472404392644016,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.13367627899747728,
+        "Edyn_ratio_T": 3.736008786090436,
+        "Edyn_ratio_4T": 8.38381365354395
+       }
+      ],
+      "seconds": 2.1535568237304688,
+      "err_T_median": 0.5061643397783329,
+      "err_T_max": 0.8328120646656374,
+      "err_4T_median": 0.6431523213575328,
+      "err_4T_max": 0.8775793214080594,
+      "err_preexit_E0_median": 0.0847150290412634,
+      "err_preexit_E0_max": 0.13472404392644016,
+      "Edyn_ratio_T_median": 1.6303968046762742,
+      "Edyn_ratio_T_max": 3.736008786090436,
+      "iters_mean_median": 11.520624999999999,
+      "iters_mean_max": 12.415,
+      "excess_over_floor_T_median": 0.07990343062503069
+     }
+    },
+    "C": {
+     "4": {
+      "RS": 4,
+      "dt": 0.005,
+      "n_complete": 4,
+      "per_traj": [
+       {
+        "complete": true,
+        "iters_mean": 3.585,
+        "cond_min": 0.2664828032249196,
+        "err_T": 0.3728493023457939,
+        "err_4T": 0.45170862897851377,
+        "err_preexit_E0": 0.09778476393605698,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.0624521847267098,
+        "Er_ratio_T": 0.9998846431834072,
+        "Er_ratio_4T": 0.999928094313169,
+        "Er_max_dev": 0.00038514598446492965,
+        "Er_secular_slope": -5.768579056251162e-05,
+        "Edyn_ratio_T": 1.2378965329324052,
+        "Edyn_ratio_4T": 1.9346185775956808
+       },
+       {
+        "complete": true,
+        "iters_mean": 3.915,
+        "cond_min": 0.4437963087821548,
+        "err_T": 0.836649774171139,
+        "err_4T": 0.8879155931638586,
+        "err_preexit_E0": 0.060465819236398745,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.014944817324295544,
+        "Er_ratio_T": 0.9997490052713004,
+        "Er_ratio_4T": 0.9998746150397222,
+        "Er_max_dev": 0.0005264516638475714,
+        "Er_secular_slope": 2.9022672008063367e-05,
+        "Edyn_ratio_T": 2.204968094517535,
+        "Edyn_ratio_4T": 2.7051171143828134
+       },
+       {
+        "complete": true,
+        "iters_mean": 3.89,
+        "cond_min": 0.13817503065917408,
+        "err_T": 0.29905049271159756,
+        "err_4T": 0.3855795707204757,
+        "err_preexit_E0": 0.07701190613790622,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.03216227602803732,
+        "Er_ratio_T": 1.0000616949862617,
+        "Er_ratio_4T": 1.0001420300562043,
+        "Er_max_dev": 0.0010445189391787846,
+        "Er_secular_slope": 5.114794251380225e-05,
+        "Edyn_ratio_T": 1.0003833733105543,
+        "Edyn_ratio_4T": 1.4368174778748581
+       },
+       {
+        "complete": true,
+        "iters_mean": 3.9825,
+        "cond_min": 0.17040255112025646,
+        "err_T": 0.6495152128210503,
+        "err_4T": 0.8149732206499376,
+        "err_preexit_E0": 0.1302379433192512,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.09652667289387461,
+        "Er_ratio_T": 1.0000693122255147,
+        "Er_ratio_4T": 1.0002512644507193,
+        "Er_max_dev": 0.0010496217144202458,
+        "Er_secular_slope": 9.722905491327941e-05,
+        "Edyn_ratio_T": 3.849191482820378,
+        "Edyn_ratio_4T": 9.401363686439662
+       }
+      ],
+      "seconds": 0.7493951320648193,
+      "err_T_median": 0.5111822575834221,
+      "err_T_max": 0.836649774171139,
+      "err_4T_median": 0.6333409248142257,
+      "err_4T_max": 0.8879155931638586,
+      "err_preexit_E0_median": 0.0873983350369816,
+      "err_preexit_E0_max": 0.1302379433192512,
+      "Edyn_ratio_T_median": 1.72143231372497,
+      "Edyn_ratio_T_max": 3.849191482820378,
+      "Er_ratio_T_median": 0.9999731690848345,
+      "Er_ratio_T_max": 1.0000693122255147,
+      "Er_max_dev_median": 0.000785485301513178,
+      "Er_max_dev_max": 0.0010496217144202458,
+      "Er_secular_slope_median": 4.008530726093281e-05,
+      "Er_secular_slope_max": 9.722905491327941e-05,
+      "cond_min_median": 0.21844267717258803,
+      "cond_min_max": 0.4437963087821548,
+      "iters_mean_median": 3.9025,
+      "iters_mean_max": 3.9825,
+      "excess_over_floor_T_median": 0.08134958314794374
+     },
+     "8": {
+      "RS": 8,
+      "dt": 0.0025,
+      "n_complete": 4,
+      "per_traj": [
+       {
+        "complete": true,
+        "iters_mean": 3.09125,
+        "cond_min": 0.2664501527178213,
+        "err_T": 0.37287286234827316,
+        "err_4T": 0.45178501353160133,
+        "err_preexit_E0": 0.09780129947470478,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.06246478640428364,
+        "Er_ratio_T": 0.9999711827390464,
+        "Er_ratio_4T": 0.999983468621761,
+        "Er_max_dev": 9.672427432461106e-05,
+        "Er_secular_slope": -1.4389124974815834e-05,
+        "Edyn_ratio_T": 1.2380665144176297,
+        "Edyn_ratio_4T": 1.9350198014390354
+       },
+       {
+        "complete": true,
+        "iters_mean": 3.05375,
+        "cond_min": 0.4438005141456427,
+        "err_T": 0.8366884727253867,
+        "err_4T": 0.8879983370718805,
+        "err_preexit_E0": 0.060471453981664945,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.014952015142703189,
+        "Er_ratio_T": 0.9999371761546308,
+        "Er_ratio_4T": 0.9999646491650256,
+        "Er_max_dev": 0.00013183096084778967,
+        "Er_secular_slope": 7.151995959237769e-06,
+        "Edyn_ratio_T": 2.2061921085375586,
+        "Edyn_ratio_4T": 2.705456504390232
+       },
+       {
+        "complete": true,
+        "iters_mean": 3.08,
+        "cond_min": 0.13822632793444536,
+        "err_T": 0.29911726014480694,
+        "err_4T": 0.38577452327723877,
+        "err_preexit_E0": 0.07705084406185983,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.03215600579743932,
+        "Er_ratio_T": 1.0000153363830664,
+        "Er_ratio_4T": 1.0000371599928208,
+        "Er_max_dev": 0.0002733669886667567,
+        "Er_secular_slope": 1.2793906949515434e-05,
+        "Edyn_ratio_T": 1.0004402452435193,
+        "Edyn_ratio_4T": 1.4366054922600404
+       },
+       {
+        "complete": true,
+        "iters_mean": 3.12,
+        "cond_min": 0.17027129581201195,
+        "err_T": 0.6494888290895392,
+        "err_4T": 0.8148422540519449,
+        "err_preexit_E0": 0.13021701401760802,
+        "err_postexit_E0": NaN,
+        "mean_field_err": 0.09625004288244558,
+        "Er_ratio_T": 1.000017330349014,
+        "Er_ratio_4T": 1.0000607294094097,
+        "Er_max_dev": 0.00026170220495314034,
+        "Er_secular_slope": 2.4183950269797935e-05,
+        "Edyn_ratio_T": 3.8485602214755645,
+        "Edyn_ratio_4T": 9.401954502909039
+       }
+      ],
+      "seconds": 1.2469854354858398,
+      "err_T_median": 0.5111808457189062,
+      "err_T_max": 0.8366884727253867,
+      "err_4T_median": 0.6333136337917731,
+      "err_4T_max": 0.8879983370718805,
+      "err_preexit_E0_median": 0.0874260717682823,
+      "err_preexit_E0_max": 0.13021701401760802,
+      "Edyn_ratio_T_median": 1.7221293114775942,
+      "Edyn_ratio_T_max": 3.8485602214755645,
+      "Er_ratio_T_median": 0.9999932595610563,
+      "Er_ratio_T_max": 1.000017330349014,
+      "Er_max_dev_median": 0.000196766582900465,
+      "Er_max_dev_max": 0.0002733669886667567,
+      "Er_secular_slope_median": 9.972951454376601e-06,
+      "Er_secular_slope_max": 2.4183950269797935e-05,
+      "cond_min_median": 0.21836072426491662,
+      "cond_min_max": 0.4438005141456427,
+      "iters_mean_median": 3.0856250000000003,
+      "iters_mean_max": 3.12,
+      "excess_over_floor_T_median": 0.08139474686578807
+     }
+    }
+   },
+   "floor_T": [
+    0.3021197701531294,
+    0.8026742267910272,
+    0.20708085860837455,
+    0.41309062155546883
+   ],
+   "floor_4T": [
+    0.29305055091450255,
+    0.8022258351782282,
+    0.18572267272751478,
+    0.39841389485389483
+   ],
+   "podK_floor_T": [
+    0.23613138480120058,
+    0.8207512826141953,
+    0.2587431122804586,
+    0.41272130454412526
+   ],
+   "podK_floor_4T": [
+    0.26214500065470847,
+    0.8226025775563288,
+    0.22692095773228552,
+    0.40504937633971905
+   ],
+   "W3_passed_any": false
+  }
+ },
+ "tables": {
+  "W1": {
+   "value": 7.178411580033503e-16,
+   "threshold": 1e-12,
+   "aggregate": "median",
+   "passed": true,
+   "note": "||A + Lambda B||/||A|| with the M-weighted tables; control: unweighted Phi^T L G (fires for 'abs' where L_N is not Euclidean-symmetric; identical for 'ref', reported) -- reflective: control not applicable (M = dx^2 I), pass on the value alone",
+   "control_value": 5.394653892855122e-16,
+   "control_threshold": 1e-300,
+   "control_dir": "ge",
+   "control_fired": true
+  },
+  "lam_max_reduced": 221.91396300852867,
+  "Mr_minus_I": 4.8454338956407645e-15,
+  "C_over_A": 0.0
+ },
+ "t_exit_idx": [
+  100,
+  100,
+  100,
+  100
+ ],
+ "samedt_fom_error": {
+  "4": [
+   0.00025782821515310165,
+   0.007510149514831452,
+   0.0003445428732783041,
+   0.0006106533062051097
+  ],
+  "8": [
+   6.398427591605585e-05,
+   0.0018665640464314377,
+   8.553737529994404e-05,
+   0.00015159132367511548
+  ]
+ },
+ "W2": {
+  "6": {
+   "K": 6,
+   "RS": 8,
+   "error_median": 0.4422969537571245,
+   "floor_median": 0.43041331296562213,
+   "energy_ratio_median": 0.999999999999506,
+   "energy_ratio_max_dev": 1.4336309916984646e-12,
+   "errors": [
+    0.3621469185740291,
+    0.8486993565597813,
+    0.42155544594187894,
+    0.46303846157237005
+   ],
+   "floors": [
+    0.36056760677353994,
+    0.8450999444697472,
+    0.40226286557507585,
+    0.45856376035616847
+   ],
+   "energy_ratios": [
+    0.9999999999985664,
+    0.9999999999994821,
+    0.9999999999995297,
+    0.9999999999999993
+   ],
+   "gate": {
+    "value": 1.4336309916984646e-12,
+    "threshold": 1e-09,
+    "aggregate": "max",
+    "passed": true,
+    "note": "POD-6 CN reflective energy ratio deviation (max over 16); error median 0.4423 vs floor 0.4304 (reported); control: reduced BE energy ratio 0.9446 must be < 1 - 1e-3",
+    "control_value": -0.9446146644772333,
+    "control_threshold": -0.999,
+    "control_dir": "ge",
+    "control_fired": true
+   }
+  },
+  "8": {
+   "K": 8,
+   "RS": 8,
+   "error_median": 0.34324236140741926,
+   "floor_median": 0.3357322084122919,
+   "energy_ratio_median": 0.999999999999676,
+   "energy_ratio_max_dev": 1.3961054534661343e-12,
+   "errors": [
+    0.2377613012880361,
+    0.8246098732098073,
+    0.2677421539750732,
+    0.4187425688397653
+   ],
+   "floors": [
+    0.23613138480120058,
+    0.8207512826141953,
+    0.2587431122804586,
+    0.41272130454412526
+   ],
+   "energy_ratios": [
+    0.9999999999986039,
+    0.9999999999996556,
+    0.9999999999996964,
+    1.0000000000000817
+   ],
+   "gate": {
+    "value": 1.3961054534661343e-12,
+    "threshold": 1e-09,
+    "aggregate": "max",
+    "passed": true,
+    "note": "POD-8 CN reflective energy ratio deviation (max over 16); error median 0.3432 vs floor 0.3357 (reported); control: reduced BE energy ratio 0.9321 must be < 1 - 1e-3",
+    "control_value": -0.9320634940968926,
+    "control_threshold": -0.999,
+    "control_dir": "ge",
+    "control_fired": true
+   }
+  },
+  "12": {
+   "K": 12,
+   "RS": 8,
+   "error_median": 0.2735782248511622,
+   "floor_median": 0.26882954506114193,
+   "energy_ratio_median": 0.9999999999997329,
+   "energy_ratio_max_dev": 1.854849607241249e-12,
+   "errors": [
+    0.20588718174217,
+    0.7909395131508944,
+    0.082494945998444,
+    0.3412692679601544
+   ],
+   "floors": [
+    0.20120861075808796,
+    0.7877633946194504,
+    0.08141915967125772,
+    0.3364504793641959
+   ],
+   "energy_ratios": [
+    0.9999999999981452,
+    0.999999999999534,
+    0.9999999999999318,
+    1.0000000000000477
+   ],
+   "gate": {
+    "value": 1.854849607241249e-12,
+    "threshold": 1e-09,
+    "aggregate": "max",
+    "passed": true,
+    "note": "POD-12 CN reflective energy ratio deviation (max over 16); error median 0.2736 vs floor 0.2688 (reported); control: reduced BE energy ratio 0.9285 must be < 1 - 1e-3",
+    "control_value": -0.9284829336032973,
+    "control_threshold": -0.999,
+    "control_dir": "ge",
+    "control_fired": true
+   }
+  }
+ },
+ "wall_s": 13.753597974777222
+}

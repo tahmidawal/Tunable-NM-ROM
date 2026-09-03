@@ -1,13 +1,16 @@
 # Wave 2D mechanism cell — notes (what ran, what was found, what was retracted)
 
 Branch `exp/2026-09-03-wave2d-mechanism`; design `WAVE2D-DESIGN.md` (r3), its two Codex design
-audits, and the code/result verifications `WAVE2D-PHASE1-VERIFY-r*-codex-gpt56sol.md`. **Every number in this file is spliced in by `wav2d_tables.py` from `runs/wav2d/*.json`;
-nothing is hand-typed.** Retractions and design amendments are numbered and never deleted.
+audits, and the code/result verifications `WAVE2D-PHASE1-VERIFY-r*-codex-gpt56sol.md`. **Every
+result number in this file is spliced in by `wav2d_tables.py` from `runs/wav2d/*.json`.** The
+retraction list below also carries hand-maintained *design* numbers (old thresholds, step counts,
+order-of-magnitude estimates); those are not results and are labelled as such by context.
+Retractions and design amendments are numbered and never deleted.
 
 ## Retractions and amendments (newest last)
 
-Every number quoted here is also in the generated table below; the text names the gate, the table
-carries the value.
+Result numbers quoted here are also in the generated table below; the text names the gate, the table
+carries the value. Old thresholds and design estimates in this list are hand-maintained.
 
 1. **Retraction 1 (superseded by 4) — V1 threshold 1e-11 → 1e-9.** The u-only recurrence vs a block
    solve read above 1e-11 with CG at 1e-13; the design's threshold ignored iterative-solver
@@ -28,9 +31,10 @@ carries the value.
    exceeded 1e-13 at N=128 after passing at N=64: the stencil cancels O(1) values to produce
    O($\lambda$), amplifying roundoff by $\sim 1/(k\pi\Delta x)^2$ — an absolute threshold on a
    mesh-scaling quantity, the failure the design forbids. Now the backward-error form
-   $\|L\Phi+\Phi\Lambda\|_F/(\|L\|\,\|\Phi\|_F)$ with $\|L\|$ the Gershgorin row-sum bound (valid for
-   the non-symmetric $L_N$; verification round 1 rejected the earlier "$8/\Delta x^2$ is the 2-norm"
-   claim); the control keeps the $\lambda$-normalised form, which is N-independent.
+   $\|L\Phi+\Phi\Lambda\|_F/(\|L\|\,\|\Phi\|_F)$ with $\|L\| = \sqrt{\|L\|_1\|L\|_\infty} \ge \|L\|_2$ (a
+   valid 2-norm bound for the non-symmetric $L_N$; verification round 1 rejected "$8/\Delta x^2$ is
+   the 2-norm" and round 2 rejected the plain row sum, which is $\|L\|_\infty$); the control keeps the
+   $\lambda$-normalised form, which is N-independent.
 6. **Retraction 3 (superseded by 4) — V1 threshold 1e-9 → 1e-8 with a two-tolerance ratio.**
    Verification round 1 rejected the ratio as evidence ("$d = d_{\rm alg} + d_{\rm CG}(\tau)$ can give a
    ratio $\ge 10$ with $d_{\rm alg}\ne0$") and found the reference was not a block solve at all but
@@ -40,7 +44,8 @@ carries the value.
 7. **Retraction 4 — V1 rebuilt as V1alg + V1cg (2026-09-03, after verification round 1).**
    V1alg: the u-only recurrence solved by LU vs the **true $2n\times2n$ block CN** solved by LU
    (no elimination, no iterative solver), gated over the **first 10 steps** where LU roundoff is
-   ~1e-14 and an algebraic error would be O($\Delta t^2$) ~ 1e-7; the full-horizon LU-vs-LU
+   ~1e-14 — an empirical LU-roundoff certification whose sensitivity is shown by the mutation
+   controls in the table (they read 1e-4…1e-2 over the same 10 steps); the full-horizon LU-vs-LU
    discrepancy (~1e-11, LU roundoff over 4000 solves) is reported, not gated — the 1e-12
    full-horizon threshold I first set was the same mesh/accumulation mistake a fourth time.
    V1cg: the JAX/CG recurrence vs the LU recurrence at CG tolerances 1e-9, 1e-11, 1e-13 must
@@ -49,16 +54,20 @@ carries the value.
 8. **Amendment 4 — F2 temporal study on the smooth datum.** The family blob's temporal order is
    pre-asymptotic at N=128 (its wall discontinuity excites the high modes whose CN phase error
    dominates at coarse $\Delta t$); gated on the smooth bump, family reported.
-9. **Amendment 5 — head training loss.** The design's "every metric, loss and residual block is in
-   the energy norm" is applied to *metrics*; the training loss is the coefficient ($M$-norm) error
-   with per-trajectory weights, and the vc arm's velocity term likewise (`wav2d_head.py` header).
+9. **Amendment 5 — head training loss (phase 2; not yet exercised by a certified run).** The design's
+   "every metric, loss and residual block is in the energy norm" is applied to *metrics*; the
+   training loss is the coefficient error with per-trajectory weights, and the vc arm's velocity
+   term likewise (`wav2d_head.py` header). Coefficient error equals the $M$-norm field error only
+   because the bank is $M$-orthonormal, which gate D0 asserts.
 10. **Amendment 6 — F3 pass rule.** "slope $4\pm0.5$ **or** coefficient agreement" could pass an
     absorber with the right rate and a wrong coefficient (verification round 1); now **both**.
     Corroborating diagnostics (plateau two snapshots later, $y$-invariance, mean-field remainder)
     are recorded in the JSON.
-11. **Fixed after verification round 1 (not threshold changes):** the F4 absorbing control no longer
-    converts an overflowing anti-damped run into a passing value — it fires only on its last
-    *finite* energy and records that the tail was nonfinite; F0b's zero mode, F0d (reflective),
+11. **Fixed after verification rounds 1–2 (not threshold changes):** the F4 absorbing control no
+    longer converts an overflowing anti-damped run into a passing value — it is read from the
+    *finite prefix* of the diagnostic run (max growth over the finite steps) and a nonfinite tail is
+    recorded, not valued (round 2 found the first version of this path unreachable behind a
+    finiteness precondition; the precondition now guards only the main trace); F0b's zero mode, F0d (reflective),
     F1a-form and F2-spatial gained the negative controls they lacked; F0d-spd is also evaluated at
     the design's N=32; V0's control is described honestly (every Laplacian coefficient is perturbed,
     not one).
@@ -80,8 +89,8 @@ carries the value.
 | 128 | ref | F2-temporal | order 2.0104 (errors 8.14e-04, 2.03e-04, 5.02e-05) | see design | BE order 0.921, separation 575.00x | PASS |
 | 128 | ref | V0 | 3.36e-15 | ≤ 1e-13 | 9.46e-06 | PASS |
 | 128 | abs | F0-stencil | 2.02e-16 | ≤ 1e-13 | 2.81e-08 | PASS |
-| 128 | abs | F0b-zero-mode | 3.27e-18 | ≤ 1e-13 | 7.68e-08 | PASS |
-| 128 | abs | F0b | 8.97e-17 | ≤ 1e-13 | 5.25e-03 | PASS |
+| 128 | abs | F0b-zero-mode | 2.93e-18 | ≤ 1e-13 | 6.87e-08 | PASS |
+| 128 | abs | F0b | 8.03e-17 | ≤ 1e-13 | 5.25e-03 | PASS |
 | 128 | abs | F0d-sym | 0 | ≤ 1e-15 | 0.056 | PASS |
 | 128 | abs | F0d-spd | min eig/max(M) = 0.271 | see design | — | PASS |
 | 128 | abs | F0c | 2.18e-14 | ≤ 1e-12 | 0.058 | PASS |
@@ -92,7 +101,7 @@ carries the value.
 | 128 | abs | F2-spatial | bump order 2.2151 (errors 0.026, 6.02e-03, 1.20e-03); two-mode order 1.8042; N [33, 65, 129] vs 257 | see design | wrong-reference order 0.3419 | PASS |
 | 128 | abs | F2-temporal | order 2.0107 (errors 3.97e-04, 9.91e-05, 2.45e-05) | see design | BE order 0.957, separation 576.25x | PASS |
 | 128 | abs | F5 | -4.51e-15 | ≤ 1e-12 | 2.828 | PASS |
-| 128 | abs | F3 | slope 4.0096; fraction/prediction 1.0215, 1.0052, 1.0013, 1.0003 at N [64, 128, 256, 512]; plateau/fraction 1.0000, 1.0000, 1.0000, 1.0000; y-var 5.2e-15, 4.2e-15, 4.9e-15, 5.4e-15 | see design | reflective retains 1.0000 | PASS |
+| 128 | abs | F3 | slope 4.0096; fraction/prediction 1.0215, 1.0052, 1.0013, 1.0003 at N [64, 128, 256, 512]; plateau/fraction 1.0000, 1.0000, 1.0000, 1.0000; y-var 5.5e-15, 4.2e-15, 6.0e-15, 6.2e-15 | see design | reflective retains 1.0000 | PASS |
 | 64 | ref | F0-stencil | 2.43e-16 | ≤ 1e-13 | 3.33e-08 | PASS |
 | 64 | ref | F0a | 1.20e-16 | ≤ 1e-13 | 4.70e-03 | PASS |
 | 64 | ref | F0d-sym | 0 | ≤ 1e-15 | 2.55e-03 | PASS |
@@ -105,8 +114,8 @@ carries the value.
 | 64 | ref | F2-temporal | order 2.0104 (errors 8.09e-04, 2.02e-04, 4.98e-05) | see design | BE order 0.921, separation 576.87x | PASS |
 | 64 | ref | V0 | 2.35e-15 | ≤ 1e-13 | 8.09e-06 | PASS |
 | 64 | abs | F0-stencil | 2.25e-16 | ≤ 1e-13 | 3.08e-08 | PASS |
-| 64 | abs | F0b-zero-mode | 3.24e-18 | ≤ 1e-13 | 3.13e-07 | PASS |
-| 64 | abs | F0b | 8.42e-17 | ≤ 1e-13 | 5.25e-03 | PASS |
+| 64 | abs | F0b-zero-mode | 2.90e-18 | ≤ 1e-13 | 2.80e-07 | PASS |
+| 64 | abs | F0b | 7.54e-17 | ≤ 1e-13 | 5.25e-03 | PASS |
 | 64 | abs | F0d-sym | 0 | ≤ 1e-15 | 0.079 | PASS |
 | 64 | abs | F0d-spd | min eig/max(M) = 0.260 | see design | — | PASS |
 | 64 | abs | F0c | 8.41e-15 | ≤ 1e-12 | 0.058 | PASS |
@@ -117,7 +126,7 @@ carries the value.
 | 64 | abs | F2-spatial | bump order 2.2151 (errors 0.026, 6.02e-03, 1.20e-03); two-mode order 1.8042; N [33, 65, 129] vs 257 | see design | wrong-reference order 0.3419 | PASS |
 | 64 | abs | F2-temporal | order 2.0107 (errors 3.99e-04, 9.95e-05, 2.46e-05) | see design | BE order 0.957, separation 576.34x | PASS |
 | 64 | abs | F5 | -4.51e-15 | ≤ 1e-12 | 2.828 | PASS |
-| 64 | abs | F3 | slope 4.0096; fraction/prediction 1.0215, 1.0052, 1.0013, 1.0003 at N [64, 128, 256, 512]; plateau/fraction 1.0000, 1.0000, 1.0000, 1.0000; y-var 5.5e-15, 4.2e-15, 6.0e-15, 6.2e-15 | see design | reflective retains 1.0000 | PASS |
+| 64 | abs | F3 | slope 4.0096; fraction/prediction 1.0215, 1.0052, 1.0013, 1.0003 at N [64, 128, 256, 512]; plateau/fraction 1.0000, 1.0000, 1.0000, 1.0000; y-var 5.5e-15, 4.2e-15, 6.0e-15, 5.4e-15 | see design | reflective retains 1.0000 | PASS |
 
 | N | BC | reported quantity | value |
 |---|---|---|---|
@@ -125,12 +134,12 @@ carries the value.
 | 128 | abs | family widest blob (w=0.190) spatial order, NOT gated | 1.1920 (errors 8.77e-03, 3.85e-03, 1.68e-03) |
 | 128 | ref | family widest blob (w=0.190) spatial order, NOT gated | 0.3479 (errors 0.044, 0.036, 0.027) |
 | 128 | ref | V0 energy agreement with the frozen 08-14 FOM | 1.56e-15 |
-| 128 | both | provenance | commit b13e7c60, backend gpu, jax 0.10.1, matmul highest, wall 98.3 s |
+| 128 | both | provenance | commit 74b49968, backend gpu, jax 0.10.1, matmul highest, wall 97.1 s |
 | 64 | abs | family-blob energy ratio E(T)/E0, E(4T)/E0 (F1/F4 trajectory) | 1.00e-03, 3.12e-05 |
 | 64 | abs | family widest blob (w=0.190) spatial order, NOT gated | 1.1920 (errors 8.77e-03, 3.85e-03, 1.68e-03) |
 | 64 | ref | family widest blob (w=0.190) spatial order, NOT gated | 0.3479 (errors 0.044, 0.036, 0.027) |
 | 64 | ref | V0 energy agreement with the frozen 08-14 FOM | 4.79e-15 |
-| 64 | both | provenance | commit b13e7c60, backend gpu, jax 0.10.1, matmul highest, wall 62.1 s |
+| 64 | both | provenance | commit 74b49968, backend gpu, jax 0.10.1, matmul highest, wall 62.4 s |
 <!-- /phase1-table -->
 
 **Reading.** F3 is the strongest single result of phase 1: the reflected-energy fraction of an

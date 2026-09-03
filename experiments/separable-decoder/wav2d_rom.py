@@ -245,6 +245,27 @@ class ArmC:
         return np.array([self.head.h(z) for z in Zs])
 
 
+def armC_backward_euler(T, head, c, dt, z0, zdot0, n_steps, snap_every, fixed_point_iters=3):
+    """CONTROL integrator (never a result): reduced backward Euler on the manifold,
+        z_{n+1} = z_n + dt zdot_{n+1},   J(z_{n+1})^T [ Mr J(z_{n+1}) zdot_{n+1} - Mr J(z_n) zdot_n + dt c^2 Kr h(z_{n+1}) + c dt Dr J(z_{n+1}) zdot_{n+1} ] = 0
+    first order in dt and dissipative: its energy must drift (W4 control) and its error must depend on RS (W6 control)."""
+    z = np.asarray(z0, dtype=float).copy(); zd = np.asarray(zdot0, dtype=float).copy()
+    Zs = [z.copy()]; Er = []
+    for k in range(n_steps):
+        hz, Jz = head.hj(z); mom = T["Mr"] @ (Jz @ zd)
+        zdn = zd.copy()
+        for _ in range(fixed_point_iters):
+            zn_ = z + dt * zdn; hn_, Jn_ = head.hj(zn_)
+            lhs = Jn_.T @ ((T["Mr"] + c * dt * T["Dr"]) @ Jn_)
+            rhs = Jn_.T @ (mom - dt * c ** 2 * (T["Kr"] @ hn_))
+            zdn = np.linalg.solve(lhs, rhs)
+        z = z + dt * zdn; zd = zdn; Zs.append(z.copy())
+        hE, JE = head.hj(z); v = JE @ zd
+        Er.append(0.5 * v @ (T["Mr"] @ v) + 0.5 * c ** 2 * hE @ (T["Kr"] @ hE))
+    Zs = np.array(Zs)
+    return Zs[::snap_every], Zs, np.array(Er)
+
+
 # ----------------------------- linear controls -----------------------------
 
 class PodCN:

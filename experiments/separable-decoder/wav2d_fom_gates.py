@@ -90,8 +90,9 @@ def gates_F0(g: Grid, c=1.3):
     # RETRACTION 2: backward-error normalisation ||L Phi + Phi Lam||_F / (||L||_2 ||Phi||_F) with
     # ||L||_2 <= 8/dx^2 -- the stencil cancels O(1) terms to produce O(lam), so the raw residual
     # relative to ||Phi Lam|| amplifies roundoff by ~1/(k pi dx)^2 and scales with N
-    # ||L||_2 bound: Gershgorin on the assembled rows (valid for the non-symmetric L_N too)
-    Lnorm = float(np.max(np.asarray(abs(L).sum(axis=1)).ravel()))
+    # mesh scale for the backward-error normalisation: sqrt(||L||_1 ||L||_inf), a valid 2-norm upper bound for the
+    # non-symmetric L_N as well (verification round 2: the plain row sum is ||L||_inf, not a 2-norm bound)
+    Lnorm = float(np.sqrt(np.max(np.asarray(abs(L).sum(axis=1)).ravel()) * np.max(np.asarray(abs(L).sum(axis=0)).ravel())))
     res = np.linalg.norm(L @ Phi + Phi * lam[None, :]) / (Lnorm * np.linalg.norm(Phi))
     lam_p = lam.copy(); lam_p[-1] *= 1.01
     # the control keeps the lambda-normalised form, which is N-independent (reads ~5e-3 at every N)
@@ -102,10 +103,10 @@ def gates_F0(g: Grid, c=1.3):
         j1 = kl.index((0, 1)); phi_mix = Phi[:, j0] + 1e-3 * Phi[:, j1]
         res00_c = np.linalg.norm(L @ phi_mix) / (np.linalg.norm(phi_mix) * Lnorm)
         out["F0b-zero-mode"] = gate("F0b0", res00, 1e-13, control=res00_c, control_thr=1e-9,
-                                    note="||L_N phi_00|| / (||phi_00|| ||L||_1); control: phi_00 + 1e-3 phi_01")
+                                    note="||L_N phi_00|| / (||phi_00|| sqrt(||L||_1 ||L||_inf)); control: phi_00 + 1e-3 phi_01 (decays like h^2: certified over N=64/128 only)")
     out["F0a" if g.bc == "ref" else "F0b"] = gate("F0a" if g.bc == "ref" else "F0b", res, 1e-13,
                                                    control=res_p, control_thr=1e-4,
-                                                   note="16 modes, closed-form lambda, backward-error normalised by the Gershgorin bound on ||L|| (retraction 2); control: one lambda perturbed 1%, lambda-normalised (N-independent)")
+                                                   note="16 modes, closed-form lambda, backward-error normalised by sqrt(||L||_1 ||L||_inf) >= ||L||_2 (retraction 2); control: one lambda perturbed 1%, lambda-normalised (N-independent)")
     m = g.mass_diag()
     ML = sp.diags(m) @ L
     sym = sp.linalg.norm(ML - ML.T) / sp.linalg.norm(ML)
@@ -226,8 +227,8 @@ def gates_F1_F4(g: Grid, horizon_T=4.0):
     E, flux, flux_end, u_end, v_end = energy_trace(g, u0, v0, ci, n_steps)
     E = np.asarray(E); flux = np.asarray(flux); flux_end = np.asarray(flux_end)
     lap = wc.lap_fn(g)
+    precond(finite(E, flux), "non-finite energies in the MAIN trace (the gate cannot be read)")
     log(f"  CN trace {g.bc} N={g.N}: {n_steps} steps in {time.time()-t0:.0f}s, E0={E[0]:.4e}, E_end/E0={E[-1]/E[0]:.6f}")
-    precond(finite(E, flux), "non-finite energies")
     dt = wc.DT_SUB
     if g.bc == "ref":
         drift = np.max(np.abs(E - E[0])) / E[0]
@@ -255,13 +256,14 @@ def gates_F1_F4(g: Grid, horizon_T=4.0):
         out["F1b"] = gate("F1b", val, 1e-10, control=ctrl, control_thr=1e-6,
                           note=f"E^{{n+1}}-E^n + c dt vbar^T M D_B vbar, rel E0, {int(active.sum())} active steps; control: v^{{n+1}} for vbar")
         growth = np.max(np.maximum(np.diff(E), 0.0)) / E[0]
-        Ea = np.asarray(energy_trace(_AntiGrid(g), u0, v0, ci, 400)[0])
-        # the anti-damped run may overflow; the control fires on the LAST FINITE energy only (never on a NaN/inf)
+        Ea = np.asarray(energy_trace(_AntiGrid(g), u0, v0, ci, 400)[0])       # diagnostic run: no finiteness precondition
+        # the anti-damped run may overflow: the control is read from its FINITE PREFIX only (max growth over the finite
+        # steps), and a nonfinite tail is recorded, never converted into a value
         fin = np.isfinite(Ea); n_fin = int(np.argmin(fin)) if not fin.all() else len(Ea)
         growth_a = float((np.max(Ea[:n_fin]) - Ea[0]) / Ea[0]) if n_fin > 1 else float("nan")
         out["F4"] = gate("F4", growth, 1e-10, control=growth_a, control_thr=1e-6,
-                         note=f"max positive energy increment per step, rel E0, over {horizon_T}T; control: D_B -> -D_B, growth over its first {n_fin} finite steps of 400 (nonfinite tail: {not fin.all()})")
-        out["F4"]["control_nonfinite_tail"] = bool(not fin.all())
+                         note=f"max positive energy increment per step, rel E0, over {horizon_T}T; control: D_B -> -D_B, max growth over its first {n_fin} finite steps of 400 (nonfinite tail: {not fin.all()})")
+        out["F4"]["control_nonfinite_tail"] = bool(not fin.all()); out["F4"]["control_finite_steps"] = n_fin
         out["absorbing_energy_ratio_4T"] = float(E[-1] / E[0])
         out["absorbing_energy_ratio_T"] = float(E[int(round(1.0 / dt))] / E[0])
     return out
@@ -397,7 +399,7 @@ def gate_V1(g: Grid, rs=wc.SUBSTEPS):
         _, S_ctrl10 = newmark_lu(L, dB, ci * np.sqrt(1.01)); note = "control: a -> 1.01 a in the recurrence"
     d_ctrl = np.max(np.abs(S_ctrl10 - S_blk10)) / np.max(np.abs(S_blk10))
     rec_alg = gate("V1alg", d_alg, 1e-13, control=d_ctrl, control_thr=1e-7,
-                   note=f"u-only Newmark by LU vs the 2n x 2n block CN by LU over the FIRST 10 STEPS (roundoff ~1e-14; an algebraic error is O(dt^2) ~ 1e-7 per step); "
+                   note=f"u-only Newmark by LU vs the 2n x 2n block CN by LU over the FIRST 10 STEPS (empirical LU-roundoff certification; the mutation controls show what an algebraic error reads); "
                         f"full {n_int}-step LU-vs-LU discrepancy {d_alg_full:.2e} reported (LU roundoff accumulation, retraction 4); {note}")
     rec_alg["value_full_horizon"] = float(d_alg_full)
     # (iii) CG ladder on the solver path
@@ -421,7 +423,7 @@ def gate_V1(g: Grid, rs=wc.SUBSTEPS):
                   achieved_cg_relresid_1e13=cg_resid,
                   passed=bool(np.isfinite(vals[2]) and vals[2] <= 1e-8 and monotone and cg_resid <= 1e-12),
                   note="JAX/CG recurrence vs the LU recurrence at CG tol 1e-9/1e-11/1e-13: must decrease monotonically and reach <= 1e-8; "
-                       "achieved relative CG residual at tol 1e-13 recorded (<= 1e-12). RETRACTIONS 1+3 superseded: the algebra is certified by V1alg, tolerance-free.")
+                       "achieved relative CG residual of ONE representative surrogate solve at tol 1e-13 recorded (<= 1e-12; not per-step monitoring). RETRACTIONS 1+3 superseded: the algebra is certified by V1alg.")
     log(f"  V1cg  {'PASS' if rec_cg['passed'] else 'FAIL'}  ladder {vals} monotone={monotone} achieved CG resid {cg_resid:.1e}")
     return {"V1alg": rec_alg, "V1cg": rec_cg}
 

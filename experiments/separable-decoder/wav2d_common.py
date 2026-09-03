@@ -1,4 +1,4 @@
-"""Wave 2D — shared FOM machinery for the 2026-09-03 mechanism cell (design: WAVE2D-DESIGN.md r2).
+"""Wave 2D — shared FOM machinery for the 2026-09-03 mechanism cell (design: WAVE2D-DESIGN.md r3).
 
     u_tt = c^2 lap u  on [0,1]^2,   u(.,0) = blob,  u_t(.,0) = v0 (= 0 for the family).
 

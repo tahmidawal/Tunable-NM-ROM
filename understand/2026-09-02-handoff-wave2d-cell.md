@@ -6,6 +6,37 @@ it refers to is committed on `main` or on the named branches.
 
 ---
 
+**STATUS 2026-09-03 (end of the session that ran it): the cell is DONE through phase 3; phase 4 was
+not run.** Read `WAVE2D-NOTES.md` on the branch (reading + generated tables + eight retractions) and
+the 2026-09-03 lab-log entry before anything else. Summary for a new session:
+
+- Reflective stop gate W3 **fails on every head (`sup`, `auto`, `auto+vc`) and both ROM arms at N=64
+  and 128**. The incumbent arm A sits at 2–5× its floor with energy growing 4.5–19×; the variational
+  arm C conserves the reduced energy to 1e-4 over 4T and is **no more accurate** (4–6× floor). The
+  08-16 energy explanation is refuted; the 08-16 verdict stands, with the mechanism named: the
+  tangent-space velocity residual of every reflective head is no better than POD-K's (0.63–0.74 vs
+  0.69–0.83), while on the absorbing wave it is 0.23–0.30 vs 0.68–0.79 and `sup` passes W3 on both
+  arms at both N (1.05–1.29× floor).
+- The predeclared decision row is "G0 pass + reflective arm C fail + W4 pass → INCONCLUSIVE" for
+  structural-vs-manifold; what is settled is that energy conservation is not the cure.
+- Phase 4 (`wav2d_ladder.py`, written, smoke-tested, PCG + exact DST FOM, bank prolongation across
+  N) is gated on a reflective pass and was **not run**; running it on absorbing `sup` is the user's
+  call (`cluster/stage_ladder.sh`, `cluster/make_ladder_sbatch.sh`).
+- Certified heads/banks/oracles are committed under `runs/wav2d/p2fix_*/cache`; result JSONs and
+  logs under `runs/wav2d/p2fix_*/out,logs`; the cluster namespace `wav2d/` is empty.
+- Eight retractions, three of them absolute thresholds on mesh-scaling quantities and two of them
+  controls that could not fail (caught only by real N=64 numbers, not by two design audits or the
+  N=16 smoke). Read them before writing a gate.
+- Open: fold the Codex verification of the reading (`WAVE2D-RESULTS-VERIFY-codex-gpt56sol.md` if
+  present) into the notes; the FiLM 08-14 comparator on this dataset is not recomputed; a
+  tangent-space gate with a demanding bar should precede any conservative-PDE ROM on the roadmap.
+
+The original handoff text follows for context; its "predeclared prediction" was scored in the
+notes (wrong for `auto`'s G0 and for the `sup`/`auto+vc` reflective W3).
+
+---
+
+
 You are resuming a nonlinear model-order-reduction project to run a **Wave 2D cell**. Read,
 in order, before doing anything:
 

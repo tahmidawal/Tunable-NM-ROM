@@ -335,7 +335,7 @@ Applied in the code; the sections above are left as audited and these override t
    $\le 10^{-6}$, or $\|r\| \le 10^{-12}\,$scale), the latent is finite, and $J_h$ keeps
    $\sigma_{\min}/\sigma_{\max} \ge 10^{-8}$ (D2 along arm A rollouts too). Arm C's Newton stop is
    normalised by a term-based scale ($\|J^\top\mathsf M h_n\| + c^2\Delta t^2\|J^\top\mathsf K h_n\|$),
-   converged at $10^{-11}$, stall accepted at $\le 10^{-8}$.
+   converged at $10^{-12}$, stall accepted at $\le 10^{-10}$ (the initial $\|F\|$ at the predictor is $\sim10^{-6}$ scale, so a stall at $10^{-10}$ is four orders below it).
 4. **W6 control.** The design's RS=1 mutation of the ROM arm cannot fire when the manifold error
    dominates the time-step error (measured: 1–4% change). Control: a first-order integrator (reduced
    BE) **on the linear POD-$K$ subspace**, where the floor is exact, must show an RS-dependent excess

@@ -171,7 +171,7 @@ class ArmA:
 
 # ----------------------------- arm C: forced variational Verlet -----------------------------
 
-def newton_solve(F, J, z0, scale, tol=1e-11, accept=1e-8, max_iter=50):
+def newton_solve(F, J, z0, scale, tol=1e-12, accept=1e-10, max_iter=50):
     """Newton with backtracking on ||F||.  Returns (z, ||F||/scale, iters, ok).
     `scale` is a TERM-BASED residual scale (the size of the individual terms of F at the predictor, e.g.
     ||J^T Mr h_n|| + c^2 dt^2 ||J^T Kr h_n||), not ||F(z0)||, so the stop is a backward-error criterion.

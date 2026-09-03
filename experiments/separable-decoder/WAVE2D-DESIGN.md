@@ -1,9 +1,12 @@
 # Wave 2D — reflective vs absorbing, latent stepping on a separable manifold, cost ladder vs FOM
 
-Design document, **revision r2** (2026-09-03). r1 (`WAVE2D-DESIGN-r1-superseded.md`) was
+Design document, **revision r3** (2026-09-03). r1 (`WAVE2D-DESIGN-r1-superseded.md`) was
 audited by Codex `gpt-5.6-sol` (`WAVE2D-DESIGN-AUDIT-r1-codex-gpt56sol.md`): items 1–3
-CORRECT with fixes, 4 and 8 NEEDS-RESTATEMENT, 5–7 WRONG. Every fix is applied below and
-marked **[r2]**. **Status: DESIGN. No numbers here.** Branch `exp/2026-09-03-wave2d-mechanism`,
+CORRECT with fixes, 4 and 8 NEEDS-RESTATEMENT, 5–7 WRONG; fixes marked **[r2]**. The r2
+re-audit (`WAVE2D-DESIGN-AUDIT-r2-codex-gpt56sol.md`) accepted the arm C first step and the
+absorbing solve and found: W7 compared to the wrong linear scheme, W5 needs the momentum
+residual, F3 needs transverse isolation, the absorbing operator is not DCT-diagonal, and six
+controls could not separate; fixes marked **[r3]**. **Status: DESIGN. No numbers here.** Branch `exp/2026-09-03-wave2d-mechanism`,
 cut from `exp/2026-08-30-stokes-vector` (2c3f1b6). Supersedes the retired 1D design on
 `exp/2026-08-30-waves-vector`.
 
@@ -222,13 +225,13 @@ later change is a numbered retraction.
 |---|---|---|---|
 | V0 | new reflective FOM reproduces `wave2d_film.make_rollout` on 4 trajectories | max rel diff ≤ 1e-13 | perturb one stencil coefficient by 1e-6 → ≥ 1e-7 |
 | F0a | $\|L_D\Phi + \Phi\Lambda\|_F/\|\Phi\Lambda\|_F$, $L_D$ assembled by an **independent stencil routine** (not the solver's), 16 modes | ≤ 1e-13 | hold $\Phi$, perturb one $\lambda$ by 1% → O(1e-3) [r2: not the same wrong $k$ in both] |
-| F0b | same for $L_N$ with cosine modes incl. $(0,0)$ ($\lambda=0$: test $\|L_N\phi\|$ directly, no division), corner rows exercised by $k,\ell \ge 1$ | ≤ 1e-13 | same perturbation |
-| **F0c** [r2] | face/corner ghost-row coefficients: manufactured $u = $ quadratic in $x,y$, compare $L_N u$ row by row against the closed-form ghost formula with a prescribed $v$ | max abs ≤ 1e-12·$\|L_N u\|_\infty$ | corner coefficient $4/\Delta x \to 2/\Delta x$ fires |
+| F0b [r3] | same for $L_N$ with cosine modes incl. $(0,0)$ ($\lambda=0$: test $\|L_N\phi_{00}\|/(\lambda_{\max}\|\phi_{00}\|)$, normalised by the largest tabulated eigenvalue so the threshold does not scale with $\Delta x^{-2}$), corner rows exercised by $k,\ell \ge 1$ | ≤ 1e-13 | same perturbation |
+| **F0c** [r2, r3] | face/corner ghost rows: manufactured smooth $u$ and prescribed $v$, compare the **full ghost-eliminated row $L_N u - D_B v/c$** (the quantity the solver forms) row by row against a longhand closed-form evaluation | max abs ≤ 1e-12·$\|\cdot\|_\infty$ | two mutations, both must fire: corner damping $4/\Delta x \to 2/\Delta x$; one face $L_N$ coefficient $2/\Delta x^2 \to 1/\Delta x^2$ |
 | F0d | $ML_N$ symmetry $\|ML_N-(ML_N)^\top\|_F/\|ML_N\|_F$; absorbing step matrix $M(I + \tfrac{c\Delta t}{2}D_B - aL_N)$ SPD (min eigenvalue > 0 at $N=32$) | ≤ 1e-15; SPD | $M = I$ fires (value reported, no scaling claimed [r2]) |
 | F1a | reflective CN relative energy drift over $T$ and $4T$ (CG tol 1e-12 for this gate) | max ≤ 1e-10 | backward Euler, same $\Delta t$: measured drift must exceed 1e-4 (stated, not assumed [r2]) |
 | F1b | absorbing identity $E^{n+1}-E^n + c\Delta t\,\bar v^\top MD_B\bar v$, relative to $E^0$, every step, during active boundary flux (blob reaching a wall) | max ≤ 1e-10 | replace $\bar v$ by $v^{n+1}$ → O($\Delta t$)·flux, must exceed 1e-6 |
 | F2 [r2] | self-convergence per BC: spatial ($N \in \{64,128,256\}$ vs new $N=512$ reference, $\Delta t$ frozen at the finest), temporal (SUBSTEPS $\in\{10,20,40\}$ vs 320, $N$ frozen) | order $2\pm0.3$ each, per BC | a first-order-in-time scheme (BE) reads $1\pm0.3$ |
-| **F3** [r2] | absorber on an **isolated quasi-1D traveling pulse**, $v_0 = -c\,\partial_x u_0$, $y$-uniform (transverse faces then carry zero flux), reflected energy fraction vs $N\in\{64,128,256,512\}$ against the closed-form prediction $\tan^4(\theta/4)$, i.e. $\approx\tfrac{15}{1024}(\Delta x/w)^4$ | slope $4\pm0.5$ **or** agreement with the discrete prediction within a factor 2 | reflective walls → fraction ≈ 1 |
+| **F3** [r2, r3] | absorber on an **isolated quasi-1D traveling pulse**, $v_0 = -c\,\partial_x u_0$, $y$-uniform, **on a grid whose $y$-faces carry no damping** (Neumann closure only, so the $y$-uniform pulse is exactly compatible with them; with damped $y$-faces $v\ne0$ there would dissipate energy and contaminate the measurement), reflected energy fraction vs $N\in\{64,128,256,512\}$ against the closed-form prediction $\tan^4(\theta/4)$, i.e. $\approx\tfrac{15}{1024}(\Delta x/w)^4$ | slope $4\pm0.5$ **or** agreement with the discrete prediction within a factor 2 | reflective walls → fraction ≈ 1 |
 | F4 [r2] | absorbing: $E^n$ monotone non-increasing every step; reflective: $\max_n E^n/E^0 \le 1+10^{-10}$ over $4T$ | as stated | anti-damping $D_B \to -D_B$ → growth |
 | F5 [r2] | absorbing generator spectrum at $N=32$: $\max\Re\lambda\,/\,(c/\Delta x)$ | ≤ 1e-12 (normalised) | $D_B\to-D_B$ → positive |
 | V1 [r2] | u-only Newmark recurrence (three-level, damped form) at RS=80 vs an **independently assembled block CN solve** at CG tol 1e-13, both BCs | max rel ≤ 1e-11 | absorbing: damping sign flipped → O(1); reflective: $a \to 1.01a$ → O(1e-2) |
@@ -237,8 +240,8 @@ later change is a numbered retraction.
 
 | gate | what | pass | negative control |
 |---|---|---|---|
-| D0 [r2] | bank: $\sigma_R/\sigma_1$ reported; $\|G^\top MG - I\|_F$ ≤ 1e-12; coefficient round-trip $\|G(G^\top M u) - P_R u\|$ ≤ 1e-12 on 32 snapshots | as stated | drop $M$ from the Gram → fails orthonormality |
-| D1 [r2] | held-out oracle reconstruction (traj-RMS, $M$-norm) vs POD-$K$ on the same held-out set and metric; **the 08-14 FiLM comparator recomputed on this dataset and metric** (its checkpoint is on `exp/2026-08-14-wave2d-coord-rom`) | ≤ 0.5× POD-$K$ (median over 16); FiLM comparator reported, exceeding it is a *finding* | POD-$K$ with $K\to K/2$ must be worse |
+| D0 [r2, r3] | bank: $\sigma_R/\sigma_1$ reported; $\|G^\top MG - I\|_F$ ≤ 1e-12; coefficient round-trip $\|G(G^\top M u) - P_R u\|_M/\|u\|_M$ ≤ 1e-12 on 32 snapshots with $P_R u$ from an **independent path** (scipy dense SVD of $M^{1/2}X$, not the bank's own routine) | as stated | drop $M$ from the Gram → fails orthonormality |
+| D1 [r2] | held-out oracle reconstruction (traj-RMS, $M$-norm) vs POD-$K$ on the same held-out set and metric; **the 08-14 FiLM comparator recomputed on this dataset and metric** (its checkpoint is on `exp/2026-08-14-wave2d-coord-rom`) | ≤ 0.5× POD-$K$ (median over 16); FiLM comparator reported, exceeding it is a *finding* | a head trained on **shuffled targets** must be worse than POD-$K$ (**[r3]**; halving the POD rank would make the pass easier, not harder) |
 | **D2** [r2] | $J_h$ conditioning: $\sigma_{\min}(J_h)/\sigma_{\max}(J_h)$ at all training codes, oracle projections and every rollout step | min ≥ 1e-8; a rollout that violates it is **incomplete** (no pseudoinverse, no damping rescue) | a head with $K > $ rank forced (duplicate a latent coordinate) reads 0 |
 | G0a [r2] | train/held-out oracle gap, median over trajectories; **absolute normalised gap** $e_{\rm held} - e_{\rm train}$ also gated | ratio ≤ 1.5 and abs gap ≤ 0.05 | shuffled-label head reads ≫ |
 | G0b [r2] | tangent-space velocity residual $\|(I - P_T)v\|_M/\|v\|_M$ at oracle-projected held-out states with kinetic energy ≥ 10% of $E$ (excludes $v\approx0$ states); $P_T$ rank-revealing $M$-orthogonal projector (QR of $M^{1/2}GJ_h$, tolerance 1e-10); POD-$K$ value on the same states | median ≤ 1.0× POD-$K$ | random-tangent (Gaussian $J$) reads ≈ 1 |
@@ -252,10 +255,10 @@ later change is a numbered retraction.
 | W1 [r2] | reflective and absorbing: $\|A + \Lambda B\|/\|A\|$ ≤ 1e-12 with the $M$-weighted tables. Absorbing: on a **manufactured boundary-active state** ($v$ nonzero on faces), the dropped term $\tfrac{c\Delta t}{2}C\Delta h$ vs $\|r\|$ must be ≥ 1e-2 (the term that kills the diagonal shortcut, measured where it is active) | as stated | unweighted $\Phi^\top L_N G$ reads ≫ 1e-12 |
 | W2 [r2] | POD-$K$ CN control: reflective energy ratio $1\pm10^{-9}$; floor proximity reported | energy | POD-$K$ with BE reads < 1 |
 | **W3 STOP** [r2] | 16/16 complete (finite everywhere, D2 satisfied); traj-RMS vs the 80-substep FOM at $T$ and $4T$, median over 16: ≤ 1.5× oracle floor **and** ≤ 0.5× POD-$K$; reflective: dynamic-velocity energy ratio at $T$ in $[0.9,1.1]$; absorbing: pre-exit window error ≤ 1.5× floor with the $\sqrt{E^0}$ normalisation, post-exit reported | PASS on **reflective** for ≥ 1 (head, ROM arm) pair or the ladder is not run | wrong-sign stiffness mutation → error > 1 |
-| W4 [r2] | arm C, **reflective only**, at the RS that passes W6: $|E_r^n/E_r^0 - 1|$ bounded, no secular trend (linear fit slope over $4T$ ≤ 1e-3/T), max ≤ 1e-2; **and** the bound shrinks under RS refinement (W6) before a FAIL is read as an implementation bug | as stated | arm A on the `auto` head (predicted to drift) |
-| W5 [r2] | absorbing balance closes **with the residual-work term**: arm C forced discrete variational balance; arm A $E^{n+1}-E^n + c\Delta t\bar v^\top MD_B\bar v - \langle r_{\rm full},\bar v\rangle$, relative to $E^0$ | ≤ 1e-8 | drop the residual work → does not close |
-| **W6** [r2] | time-step convergence: RS $\in\{8,20,40\}$, ROM error vs the same-$\Delta t$ FOM error; the ROM–floor excess must be RS-independent within 20% at RS ≥ 20 | as stated | — (reported) |
-| **W7** [r2] | arm C first step and recurrence on a **linear head** ($h = Wz$, $W$ the POD-$K$ coefficients): must reproduce POD-$K$ Galerkin CN to 1e-11 | ≤ 1e-11 | first step with $\dot z_0$ dropped → O($\Delta t$) |
+| W4 [r2, r3] | arm C, **reflective only**, at the RS that passes W6: $|E_r^n/E_r^0 - 1|$ bounded, no secular trend (linear fit slope over $4T$ ≤ 1e-3/T), max ≤ 1e-2; **and** the bound shrinks under RS refinement (W6) before a FAIL is read as an implementation bug | as stated | **deterministic**: the same head stepped with a reduced backward-Euler integrator must show a secular loss > 1e-2 over $4T$ (arm A on `auto` is a prediction, reported, not the control) |
+| W5 [r2, r3] | absorbing balance closes **with the residual-work term**, arm A: $E^{n+1}-E^n + c\Delta t\,\bar v^\top MD_B\bar v = \bar v^\top R_m$ with the **time-integrated momentum residual** $R_m = M(v^{n+1}-v^n) + c\Delta t\,MD_B\bar v + c^2\Delta t\,\mathsf K_{\rm full}\bar u$, $\bar v = (u^{n+1}-u^n)/\Delta t = (v^{n+1}+v^n)/2$ (the CN kinematic relation, exact for the $u$-only rollout by construction), $\bar u = (u^{n+1}+u^n)/2$, all operators from the **independent assembled path** (F0c), not the ROM's tables; arm C: the forced discrete variational balance; relative to $E^0$ | ≤ 1e-8 | drop the **flux** term (O(1) during active flux) → does not close |
+| **W6** [r2, r3] | time-step convergence: RS $\in\{8,20,40\}$, ROM error vs the same-$\Delta t$ FOM error; the ROM–floor excess must be RS-independent within 20% at RS ≥ 20 | as stated | RS $=1$ (one latent step per snapshot) must change the excess by > 20% |
+| **W7** [r2, r3] | arm C first step and recurrence on a **linear head** ($h = Wz$): must reproduce an **independently implemented POD-$K$ damped Störmer–Verlet** recurrence $\mathsf M_K\Delta^2 z_n + c^2\Delta t^2\mathsf K_K z_n + \tfrac{c\Delta t}{2}\mathsf D_K(z_{n+1}-z_{n-1}) = 0$ with the matching half-kick first step — **not** CN (a linear head under arm C is Verlet, which is stiffness-CFL-limited: $c\Delta t\sqrt{\lambda_{\max}(\mathsf M_K^{-1}\mathsf K_K)} \le 2$, checked and reported) | ≤ 1e-11 | run on the F3 traveling pulse ($v_0 \ne 0$) with $\dot z_0$ dropped → O($\Delta t$) (the blob family has $\dot z_0 = 0$, where this control is vacuous) |
 
 **Phase 4 — cost ladder, only if W3 passes; Tufts, one GPU type, one process. [r2 rebuilt per audit 8]**
 
@@ -268,7 +271,7 @@ preconditioner setup):
 | arm | what |
 |---|---|
 | FOM-ref | CN, 80 substeps, CG tol 1e-10 |
-| **FOM-tol** [r2] | the **fastest** configuration on a **predeclared grid** SUBSTEPS $\in\{1,2,4,8,20,40,80\}$ × CG tol $\in\{10^{-4},10^{-6},10^{-8},10^{-10}\}$ whose traj-RMS vs FOM-ref (same metric, same 16 cases, same invocation for accuracy and time) is ≤ the ROM's; with the **best available solver** for the separable operator: Jacobi-preconditioned CG **and** the exact DST/DCT fast solve (the operator is diagonalised by the very modes we use), whichever is faster |
+| **FOM-tol** [r2] | the **fastest** configuration on a **predeclared grid** SUBSTEPS $\in\{1,2,4,8,20,40,80\}$ × CG tol $\in\{10^{-4},10^{-6},10^{-8},10^{-10}\}$ whose traj-RMS vs FOM-ref (same metric, same 16 cases, same invocation for accuracy and time) is ≤ the ROM's; with the **best available solver**: reflective — Jacobi-preconditioned CG **and** the exact DST fast solve ($L_D$ is diagonalised by the sine modes), whichever is faster; absorbing — preconditioned CG only (**[r3]** the absorbing operator is *not* DCT-diagonal because of $D_B$; a DCT-preconditioned CG is allowed and must be verified against the plain solve) |
 | POD-$K$ CN, POD-$R$ CN | precomputed $K\times K$ / $R\times R$ recurrence, same 16 cases |
 | ours-A, ours-C | latent stepping at the RS that meets W3 |
 

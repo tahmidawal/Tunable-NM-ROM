@@ -105,7 +105,97 @@ def splice(notes_path, marker, text):
         open(notes_path, "w").write(src)
 
 
+
+
+def _g(v, key="value"):
+    return fmt(v.get(key)) if isinstance(v, dict) else "—"
+
+
+def phase2_table(files=None):
+    import numpy as _np
+    if files is None:
+        files = [f for f in sorted(glob.glob(os.path.join(RUNS, "wav2d_head_gates_*_N*_R*.json"))) if "SMOKE" not in f]
+    lines = ["| N | BC | head | K | params | final loss | D0 | D1 held-out/POD-K (ctrl shuffled) | D2 min cond (ctrl dup.) | G0a ratio, gap (ctrl) | G0b tangent/POD-K (ctrl random) | G0 | predicted |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    lines2 = ["", "| N | BC | head | held-out oracle median | train oracle median | POD-K median | POD-R ceiling median | G0b tangent median / POD-K median (n states) |", "|---|---|---|---|---|---|---|---|"]
+    for f in files:
+        r = json.load(open(f)); N, bc = r["N"], r["bc"]; D0 = r["D0"]
+        d0 = f"{'PASS' if D0['passed'] else 'FAIL'} (orth {fmt(D0['orthonormality'])}, floor {fmt(D0['floor_bank_median'], 3)}, sigma_R/sigma_1 {fmt(D0['sigma_ratio_R'])})"
+        for mode, H in r["heads"].items():
+            G = H["gates"]
+            lines.append(f"| {N} | {bc} | {mode} | {H['config']['K']} | {H['n_params']} | {fmt(H['final_loss'])} | {d0} | "
+                         f"{fmt(G['D1']['value'], 3)} ({fmt(G['D1'].get('control_value'), 2)}) {fmt(G['D1']['passed'])} | "
+                         f"{fmt(min(G['D2']['cond_train_min'], G['D2']['cond_test_min']))} ({fmt(-G['D2'].get('control_value', float('nan')))}) {fmt(G['D2']['passed'])} | "
+                         f"{fmt(G['G0a']['ratio'], 3)}, {fmt(G['G0a']['abs_gap'], 3)} ({fmt(G['G0a'].get('control_value'), 3)}) {fmt(G['G0a']['passed'])} | "
+                         f"{fmt(G['G0b']['value'], 3)} ({fmt(G['G0b'].get('control_value'), 3)}) {fmt(G['G0b']['passed'])} | "
+                         f"{fmt(H['G0_passed'])} | {fmt(H['predicted_G0'])} |")
+            Gb = G["G0b"]
+            lines2.append(f"| {N} | {bc} | {mode} | {fmt(_np.median(H['oracle_heldout_per_traj']), 4)} | {fmt(_np.median(H['oracle_train_per_traj']), 4)} | "
+                          f"{fmt(_np.median(H['podK_heldout_per_traj']), 4)} | {fmt(_np.median(H['podR_ceiling_per_traj']), 4)} | "
+                          f"{fmt(Gb['tangent_median'], 4)} / {fmt(Gb['podK_median'], 4)} ({Gb['n_states']}) |")
+    txt = "\n".join(lines + lines2) + "\n"
+    open(os.path.join(OUT, "wav2d-phase2-gates.md"), "w").write(txt)
+    return txt
+
+
+def phase3_table(files=None, p2files=None):
+    import numpy as _np
+    if files is None:
+        files = [f for f in sorted(glob.glob(os.path.join(RUNS, "wav2d_rom_gates_*_N*_R*.json"))) if "SMOKE" not in f]
+    if p2files is None:
+        p2files = [f for f in glob.glob(os.path.join(RUNS, "wav2d_head_gates_*_N*_R*.json")) if "SMOKE" not in f]
+    lines = ["| N | BC | head | arm | RS | complete | err_T median | err_4T median | oracle floor T / 4T | POD-K T / 4T | same-dt FOM | energy ratio T (Er arm C / dyn arm A) | iters |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    glines = ["", "| N | BC | head | gate | value | threshold | control | verdict | note |", "|---|---|---|---|---|---|---|---|---|"]
+    for f in files:
+        r = json.load(open(f)); N, bc = r["N"], r["bc"]
+        for k in ("W1", "W1-Cterm"):
+            if k in r["tables"]:
+                v = r["tables"][k]
+                glines.append(f"| {N} | {bc} | — | {k} | {fmt(v['value'])} | {fmt(v.get('threshold'))} | {_g(v, 'control_value')} | {fmt(v['passed'])} | {v.get('note','')[:160]} |")
+        for K_, w2 in r.get("W2", {}).items():
+            gv = w2["gate"]
+            glines.append(f"| {N} | {bc} | — | W2 POD-{K_} | {fmt(gv.get('value'))} | {fmt(gv.get('threshold'))} | {_g(gv, 'control_value')} | {fmt(gv['passed'])} | error {fmt(w2['error_median'], 4)} vs floor {fmt(w2['floor_median'], 4)}, energy ratio {fmt(w2['energy_ratio_median'], 6)} |")
+        for mode, H in r["heads"].items():
+            fT, f4 = _np.median(H["floor_T"]), _np.median(H["floor_4T"]); pT, p4 = _np.median(H["podK_floor_T"]), _np.median(H["podK_floor_4T"])
+            for arm, arm_res in H["arms"].items():
+                for rs, agg in arm_res.items():
+                    if agg["n_complete"] == len(agg["per_traj"]):
+                        e = agg.get("Er_ratio_T_median", agg.get("Edyn_ratio_T_median", float("nan")))
+                        lines.append(f"| {N} | {bc} | {mode} | {arm} | {rs} | {agg['n_complete']}/{len(agg['per_traj'])} | {fmt(agg['err_T_median'], 4)} | {fmt(agg['err_4T_median'], 4)} | "
+                                     f"{fmt(fT, 4)} / {fmt(f4, 4)} | {fmt(pT, 4)} / {fmt(p4, 4)} | {fmt(_np.median(r['samedt_fom_error'][rs]))} | {fmt(e, 4)} | {fmt(agg.get('iters_mean_median'), 1)} |")
+                    else:
+                        lines.append(f"| {N} | {bc} | {mode} | {arm} | {rs} | {agg['n_complete']}/{len(agg['per_traj'])} | INCOMPLETE | | {fmt(fT, 4)} / {fmt(f4, 4)} | {fmt(pT, 4)} / {fmt(p4, 4)} | | | |")
+            for k, v in H["gates"].items():
+                glines.append(f"| {N} | {bc} | {mode} | {k} | {fmt(v.get('value'))} | {fmt(v.get('threshold'))} | {_g(v, 'control_value')} | {fmt(v['passed'])} | {v.get('note','')[:200]} |")
+    dl = ["", "| N | BC | head | G0 (phase 2) | predicted G0 | W3 arm A | W3 arm C | reading |", "|---|---|---|---|---|---|---|---|"]
+    p2 = {}
+    for f in p2files:
+        r = json.load(open(f))
+        for mode, H in r["heads"].items():
+            p2[(r["N"], r["bc"], mode)] = (H["G0_passed"], H["predicted_G0"])
+    for f in files:
+        r = json.load(open(f)); N, bc = r["N"], r["bc"]
+        for mode, H in r["heads"].items():
+            g0, pred = p2.get((N, bc, mode), (None, None))
+            wa = H["gates"].get("W3-A", {}).get("passed"); wcc = H["gates"].get("W3-C", {}).get("passed")
+            if bc == "ref":
+                if g0 is None or wcc is None: reading = "incomplete"
+                elif g0 and wcc: reading = "G0 pass + reflective arm C pass: universal structural failure REFUTED"
+                elif (not g0) and (not wcc): reading = "G0 fail + reflective fail: consistent with the manifold-quality diagnosis (not alone decisive)"
+                elif g0 and not wcc: reading = "G0 pass + reflective arm C fail: INCONCLUSIVE (structural not refuted on this head; check W4/W6/D2)"
+                else: reading = "G0 fail + reflective pass: INCONCLUSIVE (G0 is a proxy)"
+            else:
+                reading = "absorbing: dissipative comparator, not used for the causal verdict"
+            dl.append(f"| {N} | {bc} | {mode} | {fmt(g0) if g0 is not None else '—'} | {fmt(pred) if pred is not None else '—'} | {fmt(wa) if wa is not None else '—'} | {fmt(wcc) if wcc is not None else '—'} | {reading} |")
+    txt = "\n".join(lines + glines + dl) + "\n"
+    open(os.path.join(OUT, "wav2d-phase3-gates.md"), "w").write(txt)
+    return txt
+
+
 if __name__ == "__main__":
     t1 = phase1_table()
     print(t1)
     splice(os.path.join(HERE, "WAVE2D-NOTES.md"), "phase1-table", t1)
+    t2 = phase2_table(); print(t2); splice(os.path.join(HERE, "WAVE2D-NOTES.md"), "phase2-table", t2)
+    t3 = phase3_table(); print(t3); splice(os.path.join(HERE, "WAVE2D-NOTES.md"), "phase3-table", t3)

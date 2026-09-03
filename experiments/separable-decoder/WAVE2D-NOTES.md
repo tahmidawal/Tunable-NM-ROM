@@ -148,3 +148,13 @@ prediction $|R|^2 = \tan^4(\theta/4) \approx \tfrac{15}{1024}(\Delta x/w)^4$ der
 audit, within a few percent at every resolution, slope 4.01 — the absorber is exactly what the
 design says it is. V0 shows the new reflective FOM reproduces the frozen 08-14 rollout to
 roundoff, so the reflective data are bit-comparable with the 08-16 negative.
+
+## Phase 2 — bank and manifold gates (per BC, head arm) — generated table
+
+<!-- phase2-table -->
+<!-- /phase2-table -->
+
+## Phase 3 — ROM gates and the decision table — generated table
+
+<!-- phase3-table -->
+<!-- /phase3-table -->

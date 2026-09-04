@@ -74,7 +74,8 @@ def main():
         log(f"  kernel N={N}: K={K} R={R} M={M}, {len(d['z0'])} trajectories")
     assert len(ks) == 3, "C1 needs exactly the three per-N kernels"
     assert len({(k["K"], k["R"], k["M"]) for k in ks}) == 1, "kernels must share (K, R, M)"
-    assert all(len(k["nu"]) == len(ks[0]["nu"]) == 8 for k in ks), "eight test trajectories per kernel"
+    assert sorted(k["N"] for k in ks) == [33, 65, 129], "C1 needs the distinct N = 33, 65, 129 kernels"
+    assert all(len(k["nu"]) == len(k["z0"]) == len(k["tol"]) == 8 for k in ks), "eight test trajectories per kernel"
     n_test = len(ks[0]["nu"])
     times = {k["N"]: [[] for _ in range(n_test)] for k in ks}
     b3.burn_in(1.5)

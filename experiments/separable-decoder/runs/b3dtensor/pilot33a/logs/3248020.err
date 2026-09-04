@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b3dtensor/pilot33a/code/sep_b3d_tensor.py", line 1351, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b3dtensor/pilot33a/code/sep_b3d_tensor.py", line 632, in main
+    gate("D4_heldout_oracle_validation", d4["mean"], passed, control=d4["control_shuffled_bank_mean"],
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         control_fired=d4["control_shuffled_bank_mean"] > 0.5, **{k_: v for k_, v in d4.items() if k_ != "rows"})
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/b3dtensor/pilot33a/code/sep_b3d_tensor.py", line 358, in gate
+    assert passed, (name, d)
+           ^^^^^^
+AssertionError: ('D4_heldout_oracle_validation', {'value': 0.08627307504925869, 'passed': False, 'mean': 0.08627307504925869, 'worst': 0.2658525480561718, 'mean_k_gt0': 0.07219946609089027, 'worst_k_gt0': 0.2098307721161992, 'n': 256, 'optimality_max': 5.4532653869315354e-05, 'budget_doubling_rel_change_max': 0.0, 'pool_to_full_ratio_max': 1.0000000000000016, 'pool_to_full_ratio_median': 1.0, 'pod_K_floor_mean': 0.16536895431186915, 'oracle_pool_mean': 0.08627307504925869, 'oracle_over_podK': 0.5217005538207394, 'control_shuffled_bank_mean': 0.8882014265986014, 'control': 0.8882014265986014, 'control_fired': True})

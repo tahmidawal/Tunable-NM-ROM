@@ -13,9 +13,10 @@ ST="$HERE/stage/$JOB"
 rm -rf "$ST"; mkdir -p "$ST/code/runs/b3dtensor/tables" "$ST/code/deps/burgers2d-coord-rom" "$ST/in" "$ST/out" "$ST/logs"
 cp "$SRC"/b3d_common.py "$SRC"/b3d_tensor_common.py "$SRC"/b3d_fom_gates.py "$SRC"/sep_b3d_tensor.py "$SRC"/sep_b3d_kernels.py "$ST/code/"
 cp "$SRC/../wave2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py" "$ST/code/deps/burgers2d-coord-rom/"
-# tables: the train table always; the TEST table only when NO_TEST_TABLE is unset (pilot jobs never get it)
+# tables: the train table always; the TEST table NEVER for a pilot job (fail closed: any job whose
+# name starts with "pilot" gets no test table, whatever the environment says)
 cp "$SRC"/runs/b3dtensor/tables/b3d_params_train_*.npz "$ST/code/runs/b3dtensor/tables/"
-[ -n "${NO_TEST_TABLE:-}" ] || cp "$SRC"/runs/b3dtensor/tables/b3d_params_test_*.npz "$ST/code/runs/b3dtensor/tables/"
+case "$JOB" in pilot*) echo "pilot job: test table NOT staged";; *) cp "$SRC"/runs/b3dtensor/tables/b3d_params_test_*.npz "$ST/code/runs/b3dtensor/tables/";; esac
 for p in "$@"; do cp "$p" "$ST/in/"; done
 git -C "$SRC" rev-parse HEAD > "$ST/COMMIT.txt"
 ( cd "$ST" && find code in COMMIT.txt -type f | sort | xargs sha256sum > MANIFEST.sha256 )

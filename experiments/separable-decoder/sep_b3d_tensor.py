@@ -406,6 +406,8 @@ def main():
         rr = cohort_rows[s:e]
         U0 = np.stack([b3.blob_ic_3d(n, tr_tab, j, coords)[interior] for j in rr])
         snaps, res = roll_fom(jnp.asarray(U0), jnp.asarray(tr_tab["nu"][rr]))
+        if not (bool(jnp.all(jnp.isfinite(snaps))) and np.isfinite(float(res))):
+            worst_tr = float("inf")                                    # NaN anywhere is FAIL
         worst_tr = max(worst_tr, float(res))
         si = snaps[:, 1:]
         tr_min = min(tr_min, float(jnp.min(si))); tr_max = max(tr_max, float(jnp.max(snaps)))
@@ -553,7 +555,7 @@ def main():
         The reported misfit and optimality are recomputed EXACTLY on the field
         (||G h(z) - u|| / ||u||, ||J^T r|| / (||J|| ||r||) with J = G J_h), not the
         regularised Gram-space quantities the LM minimises."""
-        def solve(Gb, Lc, u, z0s):
+        def solve(Gb, Lc, Gram, u, z0s):
             b = Gb.T @ u
             y = jax.scipy.linalg.solve_triangular(Lc, b, lower=True)
 
@@ -570,16 +572,16 @@ def main():
             r_ = Gb @ h_fn(z) - u                                        # exact field residual
             Jh = jax.jacfwd(h_fn)(z)                                       # (R, K)
             JTr = Jh.T @ (Gb.T @ r_)                                       # J^T r with J = G J_h
-            Jn = jnp.sqrt(jnp.trace(Jh.T @ (Gb.T @ Gb) @ Jh))              # ||G J_h||_F
+            Jn = jnp.sqrt(jnp.trace(Jh.T @ Gram @ Jh))                     # ||G J_h||_F from the precomputed Gram
             opt = jnp.linalg.norm(JTr) / (Jn * jnp.linalg.norm(r_) + 1e-300)
             return z, jnp.linalg.norm(r_) / jnp.linalg.norm(u), opt, atts[i]
         return jax.jit(solve)
 
     orc = make_oracle(ORACLE_BUDGET)
     orc2 = make_oracle(2 * ORACLE_BUDGET)
-    orc_full = lambda u, z0s: orc(G_int, L_int, u, z0s)
-    orc_full2 = lambda u, z0s: orc2(G_int, L_int, u, z0s)
-    orc_pool = lambda u, z0s: orc(G_pool, L_pool, u, z0s)
+    orc_full = lambda u, z0s: orc(G_int, L_int, Gram_int, u, z0s)
+    orc_full2 = lambda u, z0s: orc2(G_int, L_int, Gram_int, u, z0s)
+    orc_pool = lambda u, z0s: orc(G_pool, L_pool, Gram_pool, u, z0s)
     z0s = jnp.asarray(np.concatenate([np.zeros((1, K)), Z_tr[np.random.default_rng(SEED0 + 5).choice(
         len(Z_tr), ORACLE_STARTS - 1, replace=False)]]))
     d4_rows = []
@@ -617,7 +619,7 @@ def main():
     perm_rows = np.random.default_rng(SEED0 + 9).permutation(n_i)
     G_shuf = G_int[jnp.asarray(perm_rows)]
     L_shuf = jnp.linalg.cholesky(G_shuf.T @ G_shuf + eps_g * jnp.eye(R, dtype=F64))
-    e_sh = [float(orc(G_shuf, L_shuf, jnp.asarray(d4_states[s]), z0s)[1]) for s in d4_keys[:8]]
+    e_sh = [float(orc(G_shuf, L_shuf, G_shuf.T @ G_shuf, jnp.asarray(d4_states[s]), z0s)[1]) for s in d4_keys[:8]]
     del G_shuf, L_shuf
     ep = np.array([r_["oracle_pool_fit"] for r_ in d4_rows])
     d4 = dict(mean=float(np.mean(ef)), worst=float(np.max(ef)), mean_k_gt0=float(np.mean(ef[kk > 0])),
@@ -951,7 +953,7 @@ def main():
         Zh.append(z_new); z_prev2, z_cur = z_cur, z_new
     Zh = np.stack(Zh)
     rdev = float(np.max(np.abs(np.asarray(Zd) - Zh)) / (1.0 + np.max(np.linalg.norm(Zh, axis=1))))
-    rfd = float(np.max([rel(np.asarray(u_full_int(jnp.asarray(np.asarray(Zd)[t_]))), np.asarray(u_full_int(jnp.asarray(Zh[t_])))) for t_ in range(0, b3.NUM_STEPS, 7)]))
+    rfd = float(np.max([rel(np.asarray(u_full_int(jnp.asarray(np.asarray(Zd)[t_]))), np.asarray(u_full_int(jnp.asarray(Zh[t_])))) for t_ in range(b3.NUM_STEPS)]))
     z_prev2, z_cur, Zc = np.asarray(z0g), np.asarray(z0g), []
     for t_ in range(b3.NUM_STEPS):
         pc = prev_j(jnp.asarray(z_cur)); z_ex = z_cur + EXTRAP * (z_cur - z_prev2)
@@ -977,8 +979,15 @@ def main():
         t0 = time.time(); blk(newt(jnp.asarray(U_test[0, 0]), float(tt["nu"][0]), 1e-3, 5e-5)); report["micro_newton_s"] = time.time() - t0
         t0 = time.time(); blk(dfc(jnp.asarray(U_test[0, 0]), float(tt["nu"][0]), 1e-3, 60)); report["micro_defect_s"] = time.time() - t0
         mem_snapshot("after_fom", mem)
-        report["complete"] = True; report["secs_total"] = time.time() - t_all; save()
-        log(f"MICRO DONE -> {OUT} [{time.time()-t_all:.0f}s]")
+        peak = max(v["device_peak_gb"] for v in mem.values())
+        lim = max(v["device_limit_gb"] for v in mem.values())
+        rss = max(v["host_maxrss_gb"] for v in mem.values())
+        report["M1"] = dict(device_peak_gb=peak, device_limit_gb=lim, device_free_gb=lim - peak, host_maxrss_gb=rss,
+                            passed=bool(peak <= 120.0 and (lim - peak) >= 20.0 and rss <= 200.0),
+                            rule="device peak <= 120 GB, >= 20 GB free, host RSS <= 200 GB; wall time projected offline from N=65",
+                            secs_total=time.time() - t_all)
+        report["complete"] = bool(report["M1"]["passed"]); report["secs_total"] = time.time() - t_all; save()
+        log(f"MICRO DONE -> {OUT} M1={report['M1']} [{time.time()-t_all:.0f}s]")
         return
 
     # ---------------- interleaved timing: reps > trajectories > arms ----------
@@ -1132,7 +1141,7 @@ def main():
             for t_ in range(b3.NUM_STEPS):
                 pc = prev_j(jnp.asarray(z))
                 z_ex = z + EXTRAP * (z - z_prev)
-                ra = float(rJ_T(jnp.asarray(z), pc, nu)[0] @ rJ_T(jnp.asarray(z), pc, nu)[0]) ** 0.5
+                ra = float(jnp.linalg.norm(rJ_T(jnp.asarray(z), pc, nu)[0]))
                 rb = float(jnp.linalg.norm(rJ_T(jnp.asarray(z_ex), pc, nu)[0]))
                 zc = z_ex if (np.isfinite(rb) and rb < ra) else z
                 rt, Jt = [np.asarray(v_) for v_ in rJ_T(jnp.asarray(zc), pc, nu)]
@@ -1287,6 +1296,20 @@ def main():
         report["matched"]["arms"][arm] = ent
     save()
 
+    # ---------------- A1: ROM excess over the representation oracle at the SAME test states ----
+    a1 = {}
+    for arm in arms:
+        rat = []
+        for row in report["test_oracle"]["rows"]:
+            e_rom = report["variants"][arm]["per_traj"][row["traj"]]["per_time"][row["k"]]
+            rat.append(e_rom / max(row["oracle"], 1e-300))
+        a1[arm] = dict(excess_ratio_median=float(np.median(rat)), excess_ratio_max=float(np.max(rat)),
+                       rollout_err_mean=report["variants"][arm]["err_traj_rel_mean"],
+                       within_3x=bool(np.median(rat) <= 3.0),
+                       useful=bool(report["variants"][arm]["err_traj_rel_mean"] <= 5e-2))
+    report["A1"] = dict(arms=a1, test_oracle_mean=report["test_oracle"]["mean"],
+                        rule="median over (traj, k in ORACLE_TIMES) of ROM error / oracle error <= 3; rollout mean <= 5e-2")
+
     # ---------------- design-contract validator (result-row preconditions) ----------
     pre = dict(gates_all_pass=all(g.get("passed", True) and g.get("control_fired", True)
                                   for g in report["gates"].values() if isinstance(g, dict) and "passed" in g),
@@ -1297,8 +1320,10 @@ def main():
                nonfinite_anywhere=bool(any(v["n_blowups"] > 0 for v in report["variants"].values())))
     pre["result_rows_allowed"] = {a_: bool(pre["gates_all_pass"] and pre["P1_zero_censored"][a_] and not pre["nonfinite_anywhere"])
                                   for a_ in arms}
+    pre["note"] = ("per-job preconditions; the cross-artifact ones (phase-0 evidence, pilot promotion, C1, M1) are "
+                   "validated by runs/b3dtensor/validate_cell.py before any report row is emitted")
     report["preconditions"] = pre
-    report["complete"] = bool(pre["gates_all_pass"] and not pre["nonfinite_anywhere"])
+    report["complete"] = bool(pre["gates_all_pass"] and not pre["nonfinite_anywhere"] and all(pre["P1_zero_censored"].values()))
     report["secs_total"] = time.time() - t_all
     save()
     log(f"DONE -> {OUT} complete={report['complete']} preconditions={ {k_: v for k_, v in pre.items() if k_ != 'bracket'} } [{time.time()-t_all:.0f}s]")

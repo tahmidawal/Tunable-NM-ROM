@@ -14,11 +14,12 @@ rssh() { timeout 60 ssh -o ConnectTimeout=20 -o BatchMode=yes tufts-login "$@"; 
 echo "--- squeue BEFORE ---"; retry rssh "squeue -u tawal01 -h -o '%i %j %T'" | tee /tmp/sq_before_$JOB.txt
 if grep -q "b3d_$JOB " /tmp/sq_before_$JOB.txt; then echo "ABORT: a job named b3d_$JOB is already queued"; exit 3; fi
 retry rssh "mkdir -p $REM/logs $REM/out"
-# never delete an earlier out/ or logs/; a re-push of a finished job needs a new job dir
-retry rsync -a --delete --exclude=logs/ --exclude=out/ -e "ssh -o ConnectTimeout=20 -o BatchMode=yes" "$HERE/stage/$JOB/" tufts-login:$REM/
+# never delete an earlier out/, logs/, or the submission record; a re-push of a finished job needs a new job dir
+retry rsync -a --delete --exclude=logs/ --exclude=out/ --exclude='JID*' --exclude='.submit.lock' -e "ssh -o ConnectTimeout=20 -o BatchMode=yes" "$HERE/stage/$JOB/" tufts-login:$REM/
 retry rsync -a -e "ssh -o ConnectTimeout=20 -o BatchMode=yes" "$HERE/$SB" tufts-login:$REM/job.sbatch
-# IDEMPOTENT submission: the job id is written to a remote JID file by the same shell that runs
-# sbatch, so a dropped connection after a successful sbatch cannot submit twice
-JID=$(retry rssh "cd $REM && if [ -s JID ]; then cat JID; else sbatch --parsable job.sbatch > JID.tmp && mv JID.tmp JID && cat JID; fi")
+# ATOMIC, IDEMPOTENT submission: one flock-guarded remote transaction; the job id is written to JID
+# by the same shell that ran sbatch (sbatch output goes straight into JID under the lock), so a
+# dropped connection after a successful sbatch, or a concurrent push, cannot submit twice
+JID=$(retry rssh "cd $REM && flock -w 120 .submit.lock -c 'if [ -s JID ]; then cat JID; else sbatch --parsable job.sbatch > JID && cat JID; fi'")
 echo "submitted $JOB -> job $JID"
 echo "--- squeue AFTER ---"; retry rssh "squeue -u tawal01 -h -o '%i %j %T'"

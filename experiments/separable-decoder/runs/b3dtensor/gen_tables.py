@@ -32,6 +32,8 @@ def f(x, fmt="{:.3e}"):
 def load(pattern):
     out = []
     for p in sorted(glob.glob(os.path.join(HERE, pattern))):
+        if "withdrawn" in p or "superseded" in p or "/smoke/" in p:
+            continue
         try:
             out.append((p, json.load(open(p))))
         except Exception as e:  # pragma: no cover
@@ -71,6 +73,9 @@ def arms_table(runs):
         allowed = r.get("preconditions", {}).get("result_rows_allowed", {})
         for a, v in r.get("variants", {}).items():
             if "err_traj_rel_mean" not in v:
+                continue
+            if not allowed.get(a, False):
+                lines.append(f"| {c.get('N')} | {c.get('gpu')} | {a} | **NOT ALLOWED** (censored {v['censored_steps_total']}, gates {r.get('preconditions', {}).get('gates_all_pass')}) | | | | | | | | | | | |")
                 continue
             lines.append(f"| {c.get('N')} | {c.get('gpu')} | {a} | {f(allowed.get(a))} | {f(v['err_traj_rel_mean'], '{:.6e}')} | {f(v['err_traj_rel_max'])} | "
                          f"{f(v['e2e_ms_median'], '{:.2f}')} | {f(v['ic_ms_median'], '{:.2f}')} | {f(v['roll_ms_median'], '{:.2f}')} | "

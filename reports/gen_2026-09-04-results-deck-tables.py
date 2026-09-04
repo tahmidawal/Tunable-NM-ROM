@@ -172,42 +172,42 @@ def poisson_cg():
 def b1d_accuracy():
     h, b = md_table(T["b1t2"])
     rows = [[r[col(h, "N")], sci(r[col(h, "oracle err")]), f"\\textbf{{{sci(r[col(h, 'tensor err')])}}}", sci(r[col(h, "max per-traj")], 2),
-             sci(r[col(h, "NNLS-32 err")]), sci(r[col(h, "learned-32 err")]),
-             num(r[col(h, "e2e oracle")]), f"\\textbf{{{num(r[col(h, 'e2e tensor')])}}}", num(r[col(h, "e2e NNLS-32")]), num(r[col(h, "e2e learned-32")])]
+             num(r[col(h, "e2e oracle")]), f"\\textbf{{{num(r[col(h, 'e2e tensor')])}}}"]
             for r in b]
-    write("results-deck-b1d-accuracy.tex", tabular("rrrrrrrrrr",
-          ["$N$", "oracle err", "\\textbf{tensor err}", "$|$tensor$-$oracle$|$", "NNLS-32 err", "learned-32 err", "e2e oracle", "\\textbf{e2e tensor}", "e2e NNLS-32", "e2e learned-32"], rows,
-          "Rollout error = mean relative $L_2$ over 8 held-out trajectories $\\times$ 51 states; e2e = end-to-end ms per 50-step trajectory (median of 8 traj $\\times$ 5 reps), one A100, resolutions interleaved in one job.", fit=True))
+    write("results-deck-b1d-accuracy.tex", tabular("rrrrrr",
+          ["$N$", "full-grid (oracle) err", "\\textbf{tensor err}", "$|$tensor$-$oracle$|$ max per traj", "e2e oracle ms", "\\textbf{e2e tensor ms}"], rows,
+          "Rollout error = mean relative $L_2$ over 8 held-out trajectories $\\times$ 51 states; e2e = end-to-end ms per 50-step trajectory (median of 8 traj $\\times$ 5 reps), one A100, resolutions interleaved in one job."))
 
 
 def b1d_cost():
     h, b = md_table(T["b1t8"])
-    rows = [[tex_escape(r[col(h, "arm")]), tex_escape(r[col(h, "N range")]), r[col(h, "solve ms")], r[col(h, "ic ms")], r[col(h, "e2e ms")]] for r in b]
+    rows = [[tex_escape(r[col(h, "arm")]), tex_escape(r[col(h, "N range")]), r[col(h, "solve ms")], r[col(h, "ic ms")], r[col(h, "e2e ms")]] for r in b
+            if r[col(h, "arm")] in ("oracle", "tensor")]
     write("results-deck-b1d-exponent.tex", tabular("lrrrr", ["arm", "$N$ range", "solve ms", "IC fit ms", "e2e ms"], rows,
                                                     "Exponent $p$ in ms $\\sim N^{p}$, least-squares fit of $\\log$ ms against $\\log N$ inside one job on one GPU.", fit=True))
     h, b = md_table(T["o2"])
     rows = [[r[col(h, "N")], num(r[col(h, "ROM e2e")]), num(r[col(h, "FOM ms")], 2), ratio(r[col(h, "ROM/FOM")]), num(r[col(h, "amortized")]), sci(r[col(h, "thru err")])] for r in b]
     write("results-deck-b1d-fom.tex", tabular("rrrrrr", ["$N$", "ROM e2e ms", "FOM ms", "ROM/FOM", "ROM ms/traj (batch of 8)", "ROM err"], rows,
-                                               "Optimised 1D rollout (learned 32 nodes) against the tridiagonal tolerance-Newton FOM at ntol $10^{-3}$. Not iso-accuracy: the FOM is more accurate at every $N$. The FOM was not batched.", fit=True))
+                                               "An optimised 1D ROM rollout against the tridiagonal tolerance-Newton FOM at ntol $10^{-3}$. Not iso-accuracy: the FOM is more accurate at every $N$. The FOM was not batched.", fit=True))
 
 
 # ----------------------------------------------------------------------------- Burgers 2D
 def b2d_accuracy():
     h, b = md_table(T["b2t4"])
-    rows = [[r[col(h, "N")], sci(r[col(h, "full err")]), sci(r[col(h, "ex err")]), f"\\textbf{{{sci(r[col(h, 'tensor err')])}}}", sci(r[col(h, "ex_learned")]),
+    rows = [[r[col(h, "N")], sci(r[col(h, "full err")]), f"\\textbf{{{sci(r[col(h, 'tensor err')])}}}",
              sci(r[col(h, "max abs diff")], 2), num(r[col(h, "tensor/full err")], 5), r[col(h, "attempts identical")]] for r in b]
-    write("results-deck-b2d-accuracy.tex", tabular("rrrrrrrr",
-          ["$N$", "full err", "ex err", "\\textbf{tensor err}", "ex\\_learned err", "$|$tensor$-$full$|$ max", "tensor/full", "same LM attempts"], rows,
-          "$K=16$, $R=64$, $M=64$. Rollout error = mean relative $L_2$ over 8 held-out trajectories $\\times$ 51 states. \\emph{full} = advection summed on the whole grid; \\emph{ex} = exact linear terms + NNLS-sampled advection; "
-          "\\emph{tensor} = advection through the precomputed quadratic form; \\emph{ex\\_learned} = sampled arm with learned node positions."))
+    write("results-deck-b2d-accuracy.tex", tabular("rrrrrr",
+          ["$N$", "full-grid err", "\\textbf{tensor err}", "$|$tensor$-$full$|$ max", "tensor/full", "same LM attempts"], rows,
+          "$K=16$, $R=64$, $M=64$. Rollout error = mean relative $L_2$ over 8 held-out trajectories $\\times$ 51 states. \\emph{full} = advection summed on the whole grid every iteration; "
+          "\\emph{tensor} = advection through the precomputed quadratic form."))
 
 
 def b2d_cost():
     h, b = md_table(T["b2t10"])
-    rows = [[r[col(h, "N")], gpu(r[col(h, "GPU")]), num(r[col(h, "full solve")]), num(r[col(h, "ex solve")]), f"\\textbf{{{num(r[col(h, 'tensor solve')])}}}",
-             num(r[col(h, "tensor/full")], 3), num(r[col(h, "tensor/ex")], 3), num(r[col(h, "tensor ic")], 1), num(r[col(h, "tensor dec")], 2), f"\\textbf{{{num(r[col(h, 'tensor e2e')])}}}"] for r in b]
-    write("results-deck-b2d-cost.tex", tabular("rlrrrrrrrr",
-          ["$N$", "\\textbf{GPU}", "full solve", "ex solve", "\\textbf{tensor solve}", "tensor/full", "tensor/ex", "IC fit", "decode", "\\textbf{tensor e2e}"], rows,
+    rows = [[r[col(h, "N")], gpu(r[col(h, "GPU")]), num(r[col(h, "full solve")]), f"\\textbf{{{num(r[col(h, 'tensor solve')])}}}",
+             num(r[col(h, "tensor/full")], 3), num(r[col(h, "tensor ic")], 1), num(r[col(h, "tensor dec")], 2), f"\\textbf{{{num(r[col(h, 'tensor e2e')])}}}"] for r in b]
+    write("results-deck-b2d-cost.tex", tabular("rlrrrrrr",
+          ["$N$", "\\textbf{GPU}", "full-grid solve", "\\textbf{tensor solve}", "tensor/full", "IC fit", "decode", "\\textbf{tensor e2e}"], rows,
           "Latent-solve ms per 50-step trajectory. \\textbf{Each $N$ ran on a different GPU}: the ratios are measured inside one job and are sound; the raw ms across rows mix cards and are not an exponent."))
 
 
@@ -228,16 +228,8 @@ def b2d_fom():
           "FOM = tolerance-Newton with the exact Helmholtz preconditioner, same GPU as the ROM. \\emph{matched} = cheapest rung at least as accurate as the tensor arm; \\emph{paired} = ROM and matched FOM timed alternately (AB/BA) in one job; \\emph{tightest} = most accurate rung run.", fit=True))
 
 
-def b2d_headline():
-    h, b = md_table(T["x1"])
-    rows = [[r[col(h, "N")], tex_escape(r[col(h, "residual")]), gpu(r[col(h, "GPU")]), sci(r[col(h, "base rollout")]), num(r[col(h, "paired ROM")]), num(r[col(h, "paired FOM")]),
-             (lambda s: f"\\textbf{{{s}}}" if float(r[col(h, 'ratio')].rstrip('x')) > 1 else s)(ratio(r[col(h, "ratio")]))] for r in b]
-    write("results-deck-b2d-headline.tex", tabular("rlrrrrr", ["$N$", "residual", "GPU", "rollout err", "paired ROM ms", "paired FOM ms", "\\textbf{ROM/FOM speed}"], rows,
-                                                    "$K=32$, $R=512$ (the larger, sampled configuration): matched-accuracy paired AB/BA against the swept Helmholtz-preconditioned Newton ladder. \\emph{incumbent} = everything sampled by NNLS; \\emph{exact-linear} = linear terms exact, advection sampled."))
-
-
 if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
     poisson_paths(); poisson_gate(); poisson_cg()
     b1d_accuracy(); b1d_cost()
-    b2d_accuracy(); b2d_cost(); b2d_fom(); b2d_headline()
+    b2d_accuracy(); b2d_cost(); b2d_fom()

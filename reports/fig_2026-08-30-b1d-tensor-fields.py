@@ -24,6 +24,11 @@ os.environ.setdefault("CKPT_CACHE", CKPT)
 os.environ.setdefault("NODES_NPZ", NODES)
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figs")
 os.makedirs(OUT, exist_ok=True)
+# ARMS: which ROM arms to draw (default all three); TAG: filename suffix so a
+# reduced-arm rendering (e.g. ARMS=oracle,tensor TAG=-2arms) does not overwrite
+# the full one.  The numbers computed are identical either way.
+ARMS = tuple(a for a in os.environ.get("ARMS", "oracle,tensor,NNLS-32").split(",") if a)
+TAG = os.environ.get("TAG", "")
 
 import numpy as np
 import jax, jax.numpy as jnp
@@ -92,7 +97,7 @@ for r, ti in enumerate(pick):
     for c, t in enumerate(TIMES):
         ax = axes[r, c]
         ax.plot(x_int, U_test[ti, t][interior], color=colors["truth"], label="FOM truth", **styles["truth"])
-        for arm in ("oracle", "tensor", "NNLS-32"):
+        for arm in ARMS:
             ax.plot(x_int, fields[(ti, arm)][t], color=colors[arm],
                     label={"oracle": "full-grid oracle ROM", "tensor": "tensor ROM (0 sample points)",
                            "NNLS-32": "NNLS-32 sampled ROM"}[arm], **styles[arm])
@@ -105,7 +110,7 @@ for r, ti in enumerate(pick):
 axes[0, 0].legend(fontsize=8, loc="upper right")
 fig.suptitle(f"1D Burgers N={N}: FOM truth vs ROM arms (tensor ≡ oracle to the eye; per-trajectory mean rel-L2 in the JSON)", fontsize=11)
 fig.tight_layout()
-f1 = os.path.join(OUT, f"b1d-tensor-fields-n{N}.png")
+f1 = os.path.join(OUT, f"b1d-tensor-fields-n{N}{TAG}.png")
 fig.savefig(f1, dpi=150); plt.close(fig)
 
 # ---- figure 2: pointwise errors, |tensor-oracle|, and error curves -----------
@@ -113,7 +118,7 @@ fig, axes = plt.subplots(3, len(TIMES) - 1, figsize=(4.2 * (len(TIMES) - 1), 8.6
 ti = pick[1]
 for c, t in enumerate(TIMES[1:]):
     ax = axes[0, c]
-    for arm in ("oracle", "tensor", "NNLS-32"):
+    for arm in ARMS:
         ax.plot(x_int, np.abs(fields[(ti, arm)][t] - U_test[ti, t][interior]), color=colors[arm], label=arm, **styles[arm])
     ax.set_title(f"|ROM − truth|, traj {ti}, step {t}", fontsize=9); ax.grid(alpha=0.25)
     ax = axes[1, c]
@@ -124,24 +129,24 @@ axes[0, 0].legend(fontsize=8)
 for c, ti2 in enumerate(pick + [None]):
     ax = axes[2, c]
     if ti2 is None:
-        for arm in ("oracle", "tensor", "NNLS-32"):
+        for arm in ARMS:
             m = np.mean([curves[(k, arm)] for k in range(fc.N_TEST)], axis=0)
             ax.semilogy(range(T), m, color=colors[arm], label=arm, **styles[arm])
         ax.set_title("rel-L2 error vs step, mean over 8 trajectories", fontsize=9)
     else:
-        for arm in ("oracle", "tensor", "NNLS-32"):
+        for arm in ARMS:
             ax.semilogy(range(T), curves[(ti2, arm)], color=colors[arm], label=arm, **styles[arm])
         ax.set_title(f"rel-L2 error vs step, traj {ti2}", fontsize=9)
     ax.set_xlabel("time step"); ax.grid(alpha=0.25, which="both")
 axes[2, 0].legend(fontsize=8)
 fig.suptitle(f"1D Burgers N={N}: pointwise errors and per-step error curves (tensor and oracle overlap; NNLS-32 differs)", fontsize=11)
 fig.tight_layout()
-f2 = os.path.join(OUT, f"b1d-tensor-errors-n{N}.png")
+f2 = os.path.join(OUT, f"b1d-tensor-errors-n{N}{TAG}.png")
 fig.savefig(f2, dpi=150); plt.close(fig)
 
 meta = dict(N=N, ckpt=CKPT, nodes=NODES, backend=jax.default_backend(), times=TIMES,
             picked=dict(median=pick[0], worst=pick[1]), per_traj=summary,
             mean_over_traj={a: float(np.mean([summary[k][a] for k in range(fc.N_TEST)])) for a in ops},
             figures=[f1, f2])
-json.dump(meta, open(os.path.join(OUT, f"b1d-tensor-fields-n{N}.json"), "w"), indent=1)
+json.dump(meta, open(os.path.join(OUT, f"b1d-tensor-fields-n{N}{TAG}.json"), "w"), indent=1)
 print(json.dumps(meta["mean_over_traj"]), "\nwrote", f1, f2)

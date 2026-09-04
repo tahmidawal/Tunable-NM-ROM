@@ -67,7 +67,7 @@
   \titlepage
   \begin{center}\scriptsize
     Every table is generated from the run JSONs (via the source reports named on each slide); nothing is typed by hand.\\
-    Architecture slides are carried over from the 29 August study deck; the rest is the measured results.
+    Architecture slides are adapted from the 29 August study deck (sampled-quadrature arms removed); the rest is the measured results.
   \end{center}
 \end{frame}
 
@@ -82,9 +82,9 @@
     \end{block}
     \begin{block}{The residual arms compared}
       \begin{itemize}
-        \item \textbf{full / oracle}: residual summed on the whole grid --- the reference, cost $O(n)$.
-        \item \textbf{sampled (NNLS, ``eq'', ``ex'')}: residual estimated at a few chosen points.
-        \item \textbf{quadrature-free / tensor}: residual precomputed into a small table --- exact, no grid, no points.
+        \item \textbf{full / oracle}: residual summed on the whole grid every iteration --- the reference, cost $O(n)$.
+        \item \textbf{quadrature-free (Poisson) / tensor (Burgers)}: residual precomputed into a small table --- exact, no grid.
+        \item Poisson also shows a \textbf{sampled} row (residual estimated at 256 chosen points) for contrast.
       \end{itemize}
     \end{block}
     \column{0.5\textwidth}
@@ -136,33 +136,6 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Architecture diagram --- who is trained, who is frozen, who is solved}
-  \centering
-  \resizebox{!}{0.72\textheight}{%
-  \begin{tikzpicture}[node distance=5mm and 9mm]
-    \node[pl] (z) {latent $z$\\($K$ numbers)};
-    \node[pl, right=58mm of z] (x) {grid / sample\\coordinates $x$};
-    \node[tr, below=of z] (H) {head $h(z)$ --- \textbf{trained} (stage 1), then frozen\\MLP + linear skip $\to R$ coefficients};
-    \node[fz, below=of x] (G) {bank $g(x)$ --- \textbf{trained} (stage 1), then frozen\\evaluated \textbf{once} per point set,\\cached as table $G$};
-    \node[pl, below=7mm of $(H.south)!0.5!(G.south)$] (U) {field $u = G\,h(z)$};
-    \node[fz, below left=7mm and -8mm of U] (LIN) {\textbf{linear terms --- exact}\\$B=\Phi\T G$ precomputed once ($M\times R$)\\$\Phi\T u = B\,h(z)$};
-    \node[pl, below right=7mm and -8mm of U] (ADV) {\textbf{nonlinear term} (Burgers $u\,u_x$)\\evaluated at $m$ sample nodes only\\(Poisson has none)};
-    \node[tr, right=6mm of ADV, yshift=5mm] (X) {node positions $X$\\\textbf{trained} (stage 2)};
-    \node[sv, right=6mm of ADV, yshift=-5mm] (W) {node weights $w\ge0$\\\textbf{solved} by NNLS};
-    \node[pl, below=7mm of $(LIN.south)!0.5!(ADV.south)$] (Rr) {weak residual $r(z)\in\R^{M}$ $\;\to\;$ Levenberg--Marquardt for $z$, every time step};
-    \draw[arr] (z) -- (H); \draw[arr] (x) -- (G);
-    \draw[arr] (H) -- (U); \draw[arr] (G) -- (U);
-    \draw[arr] (U) -- (LIN); \draw[arr] (U) -- (ADV);
-    \draw[arr] (X) -- (ADV); \draw[arr] (W) -- (ADV);
-    \draw[arr] (LIN) -- (Rr); \draw[arr] (ADV) -- (Rr);
-  \end{tikzpicture}}
-
-  \vspace{2mm}
-  {\scriptsize \textcolor{trained}{$\blacksquare$} trained by gradient \quad
-   \textcolor{frozen}{$\blacksquare$} frozen / precomputed (exact path) \quad
-   \textcolor{solved}{$\blacksquare$} solved by a convex fit, never gradient-trained}
-\end{frame}
-
 \begin{frame}{Stage 1 --- training the decoder (auto-decoder)}
   \[
     L_1 \;=\; \underbrace{\frac{\operatorname{mean}_s\,\|G\,h(z_s)-u_s\|^2}{\operatorname{mean}\,\|u\|^2}}_{\text{relative reconstruction}}
@@ -206,9 +179,10 @@
       \end{enumerate}
       That is the full-order cost, every iteration.
     \end{block}
-    \begin{block}{Two ways out}
-      \textbf{Exact:} regroup the arithmetic so the grid disappears (works when the term is linear).\\
-      \textbf{Approximate:} estimate the sum from $m\ll n$ sample points with weights --- \emph{quadrature} (needed when the term is nonlinear).
+    \begin{block}{The way out: regroup, so the grid disappears}
+      Because $u = G\,h(z)$ is a mix of $R$ fixed shapes, every sum over the grid can be done \emph{once} for the shapes and stored.
+      \textbf{Linear terms} become an $M\times R$ matrix (Poisson, and the Burgers time and diffusion terms).
+      \textbf{The quadratic term} of Burgers becomes an $M\times R\times R$ table --- the tensor (next slides).
     \end{block}
   \end{columns}
 \end{frame}
@@ -246,26 +220,42 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{What we do for Burgers: exact linear terms + sampled advection}
-  \small Backward-Euler step from $z^n$ to $z$; $N(u)=u\,u_x$ (sign-upwind); $m$ nodes $X$ with weights $w\ge0$; $\Phi_X,G_X$ = test modes and bank evaluated at the nodes:
+\begin{frame}{Burgers: how the tensor is formed, and why it is needed}
+  \footnotesize Backward-Euler step from $z^n$ to $z$, $u = G\,h(z)$, upwind derivative $D^-u$ (valid while $u\ge0$):
   \[
     r(z) \;=\; W\odot\Big[\underbrace{B\big(h(z)-h(z^n)\big)}_{\text{time derivative, exact}}
-    \;+\;\Delta t\Big(\underbrace{\Phi_X\T\big(w\odot N_X(G_X h(z))\big)}_{\text{advection, sampled at } m \text{ nodes}}
-    \;+\;\underbrace{\nu\,\Lambda\,B\,h(z)}_{\text{diffusion, exact}}\Big)\Big]
+    \;+\;\Delta t\Big(\underbrace{\Phi\T\big(u\odot D^-u\big)}_{\text{advection --- the problem}}
+    \;+\;\underbrace{\nu\,\Lambda\,B\,h(z)}_{\text{diffusion, exact}}\Big)\Big],\qquad B=\Phi\T G
   \]
+  \scriptsize
   \begin{columns}[T]
     \column{0.5\textwidth}
-    \begin{block}{The per-iteration cost}
-      Decode at $m$ nodes only ($m\times R$), one upwind stencil on $m$ values, an $M\times m$ matvec, and the exact linear part. \textbf{Independent of the grid size $n$.} Measured: latent solve flat from $N=128$ to $4096$.
+    \begin{block}{Why the linear trick stops}
+      $u$ and $D^-u$ \emph{both} depend on $z$, so their product is not ``a fixed matrix times $h(z)$''.
+      Done directly, each solver iteration decodes $u$ on the grid, applies the stencil, and sums against $M$ modes: $O(n)$, the full-order cost.
     \end{block}
-    \column{0.5\textwidth}
-    \begin{exampleblock}{Choosing the nodes: baseline = NNLS}
-      Given positions $X$, weights are fit by non-negative least squares so the sampled term reproduces the exact full-grid term on training states. Convex, no gradients, always available as a fallback. Positions themselves are the free choice --- stage 2 learns them.
+    \begin{exampleblock}{Why it still collapses}
+      $u = \sum_j h_j\, g_j$ and $D^-u = \sum_k h_k\, D^-g_k$, so
+      \[
+        \Phi\T(u\odot D^-u)_i \;=\; \sum_{j,k} h_j\,h_k \underbrace{\sum_{x}\Phi_{xi}\,G_{xj}\,(D^-G)_{xk}}_{T_{ijk}}
+      \]
+      The grid sum sits inside $T$, which depends only on the frozen bank.
     \end{exampleblock}
+    \column{0.5\textwidth}
+    \begin{block}{Building it, once}
+      $T = \Phi\T[G\otimes D^-G]$: an $M\times R\times R$ table ($64^3$, 2\,MB in 2D), one blocked contraction over the grid after stage 1. Symmetrised, $Q_{ijk}=T_{ijk}+T_{ikj}$, so that
+      $\;q(h) = \tfrac12\,h\T Q\,h,\quad \partial q/\partial h = Q\,h.$
+    \end{block}
+    \begin{block}{Using it, every iteration}
+      the head $h(z)$, two $M\times R$ matvecs, and one $M R^2$ quadratic form. \textbf{No grid, no sample points, no fitted weights, nothing chosen offline.} Exact to round-off (f64 required).
+    \end{block}
+    \begin{alertblock}{The one condition}
+      The upwind stencil switches direction on the sign of $u$; $T$ assumes it does not. Valid on non-negative states, which every family here has (truth asserted $\ge 0$ at every $N$).
+    \end{alertblock}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Architecture with the tensor --- what changes, what does not}
+\begin{frame}{Architecture diagram --- who is trained, who is frozen, what is precomputed}
   \centering
   \resizebox{!}{0.62\textheight}{%
   \begin{tikzpicture}[node distance=5mm and 9mm]
@@ -275,7 +265,7 @@
     \node[fz, below=of x] (G) {bank $g(x)$ --- \textbf{trained} (stage 1), then frozen\\evaluated \textbf{once} on the full grid, cached as $G$};
     \coordinate (mid) at ($(H.south)!0.5!(G.south)$);
     \node[fz] (LIN) at ($(mid)+(-31mm,-14mm)$) {\textbf{linear terms --- exact}\\$B=\Phi\T G$ precomputed once ($M\times R$)\\$\Phi\T u = B\,h(z)$};
-    \node[fz] (TEN) at ($(mid)+(31mm,-14mm)$) {\textbf{quadratic term --- exact}\\$T=\Phi\T[G\otimes D^-G]$ once ($M\times R\times R$)\\$\Phi\T(u\,u_x) = h\T T\,h$};
+    \node[fz] (TEN) at ($(mid)+(31mm,-14mm)$) {\textbf{quadratic term (Burgers only) --- exact}\\$T=\Phi\T[G\otimes D^-G]$ once ($M\times R\times R$)\\$\Phi\T(u\,u_x) = h\T T\,h$};
     \node[pl, below=7mm of $(LIN.south)!0.5!(TEN.south)$] (Rr) {weak residual $r(z)\in\R^{M}$ $\;\to\;$ Levenberg--Marquardt for $z$, every time step\\\emph{the grid is never touched online}};
     \draw[arr] (z) -- (H); \draw[arr] (x) -- (G);
     \draw[arr] (H) -- (LIN); \draw[arr] (H) -- (TEN);
@@ -284,46 +274,41 @@
   \end{tikzpicture}}
 
   \vspace{2mm}
+  {\scriptsize \textcolor{trained}{$\blacksquare$} trained by gradient (stage 1), then frozen \quad
+   \textcolor{frozen}{$\blacksquare$} precomputed once from the frozen bank, exact}
+
+  \vspace{1mm}
   \begin{columns}[T]
     \column{0.5\textwidth}\small
-    \textbf{Training: nothing new.} Stage 1 is unchanged (same loss $L_1$, same 40\,000 steps, same checkpoints --- the results below reuse the \emph{committed} decoders, nothing retrained).
+    \textbf{Two trained pieces, both frozen after stage 1.} The head and the bank are the only things learned. The solver never changes them; it only finds $z$.
     \column{0.5\textwidth}\small
-    \textbf{Stage 2 disappears.} No node positions to learn, no NNLS weights to fit, no budget $m$ to choose, no held-out monitoring. The orange ``nodes'' box and the green ``weights'' box of the earlier diagram are gone; the blue path is the whole residual, as for Poisson.
+    \textbf{Everything the solver touches is a small table.} Poisson uses the left box only; Burgers uses both. In either case the grid appears once, offline, and never online.
   \end{columns}
 \end{frame}
 
 \begin{frame}{After stage 1: what each case builds from the frozen decoder}
   \centering
-  \resizebox{\textwidth}{!}{%
+  \resizebox{0.8\textwidth}{!}{%
   \begin{tikzpicture}[node distance=4mm and 6mm, every node/.style={font=\scriptsize}]
-    \node[tr] (S1) {\textbf{Stage 1 (all cases)}\\auto-decoder on snapshots\\$\to$ frozen bank $G$, frozen head $h$};
-    % Poisson column
-    \node[fz, below left=9mm and 30mm of S1] (P1) {\textbf{Poisson}\\evaluate $G$ on the full grid once};
+    \node[tr] (S1) {\textbf{Stage 1 (both cases)}\\auto-decoder on snapshots\\$\to$ frozen bank $G$, frozen head $h$};
+    \node[fz, below left=9mm and 12mm of S1] (P1) {\textbf{Poisson}\\evaluate $G$ on the full grid once};
     \node[fz, below=of P1] (P2) {$B=\Phi\T G$, $\Lambda$, $f_M=\Phi\T f$\\(seconds; nothing fitted)};
     \node[sv, below=of P2] (P3) {online: $r=W\odot[\Lambda B h(z)-f_M]$\\0 sample points};
-    % sampled column
-    \node[fz, below=9mm of S1] (Q1) {\textbf{Burgers, sampled}\\evaluate $G$ on the full grid once};
-    \node[fz, below=of Q1] (Q2) {$B=\Phi\T G$ for the linear terms};
-    \node[sv, below=of Q2] (Q3) {NNLS weights $w\ge0$ at $m$ grid nodes\\(convex fit, 25--37 s)};
-    \node[tr, below=of Q3] (Q4) {\textbf{stage 2:} learn node positions $X$\\(2000 Adam steps, weights re-solved every 500)};
-    \node[pl, below=of Q4] (Q5) {online: linear exact $+$ advection at $m$ nodes};
-    % tensor column
-    \node[fz, below right=9mm and 30mm of S1] (T1) {\textbf{Burgers, tensor}\\evaluate $G$ and $D^-G$ on the full grid once};
-    \node[fz, below=of T1] (T2) {$B=\Phi\T G$ and $T=\Phi\T[G\otimes D^-G]$\\(one blocked contraction; 0.3 s at $N{=}65\,536$)};
-    \node[sv, below=of T2] (T3) {online: linear exact $+$ $h\T T h$\\0 sample points, nothing fitted};
-    \draw[arr] (S1) -- (P1); \draw[arr] (S1) -- (Q1); \draw[arr] (S1) -- (T1);
+    \node[fz, below right=9mm and 12mm of S1] (T1) {\textbf{Burgers}\\evaluate $G$ and $D^-G$ on the full grid once};
+    \node[fz, below=of T1] (T2) {$B=\Phi\T G$ and $T=\Phi\T[G\otimes D^-G]$\\(one blocked contraction; 0.3 s at $N{=}65\,536$, 2 s in 2D)};
+    \node[sv, below=of T2] (T3) {online: linear exact $+$ $\tfrac12 h\T Q h$\\0 sample points, nothing fitted};
+    \draw[arr] (S1) -- (P1); \draw[arr] (S1) -- (T1);
     \draw[arr] (P1) -- (P2); \draw[arr] (P2) -- (P3);
-    \draw[arr] (Q1) -- (Q2); \draw[arr] (Q2) -- (Q3); \draw[arr] (Q3) -- (Q4); \draw[arr] (Q4) -- (Q5);
     \draw[arr] (T1) -- (T2); \draw[arr] (T2) -- (T3);
   \end{tikzpicture}}
 
   \vspace{1mm}
   {\scriptsize \textcolor{trained}{$\blacksquare$} gradient training \quad
    \textcolor{frozen}{$\blacksquare$} one-time exact precomputation from the frozen bank \quad
-   \textcolor{solved}{$\blacksquare$} convex fit / direct evaluation, no gradients}
-  \vspace{1mm}
+   \textcolor{solved}{$\blacksquare$} direct evaluation online, no gradients, nothing fitted}
+  \vspace{2mm}
 
-  \small The decoder training is the same in all three columns; the columns differ only in what is \emph{derived} from the frozen bank. Linear and quadratic terms are derived exactly; only a term that is neither needs the fitted (green) and learned (orange) steps of the middle column.
+  \small The decoder training is identical in both columns; they differ only in what is \emph{derived} from the frozen bank. A linear term is derived into a matrix, a quadratic term into a tensor. Nothing online ever sees the grid.
 \end{frame}
 
 % -------------------------------------------------------------------
@@ -383,11 +368,11 @@
   \vspace{2mm}
   \begin{columns}[T]
     \column{0.33\textwidth}\small
-    \textbf{Accuracy.} Tensor $=$ oracle per trajectory to $\le 1.2\times10^{-6}$, with zero sample points. Flat across $8\times$ in resolution.
+    \textbf{Accuracy.} Tensor $=$ oracle per trajectory to $\le 1.2\times10^{-6}$, with the grid never touched online. Flat across $8\times$ in resolution.
     \column{0.33\textwidth}\small
-    \textbf{Versus sampling.} NNLS-32 is 2--10\,\% worse than the oracle; learned-32 closes that gap. The tensor's gain here is exactness and simplicity, not a lower error.
+    \textbf{What the error is.} About $5\times10^{-3}$ at every $N$: the decoder's own floor. The residual adds nothing to it --- the oracle and the tensor are the same solver seen through two implementations.
     \column{0.33\textwidth}\small
-    \textbf{Cost.} 22--29 ms end to end, within a few percent of the sampled rule and 10--20\,\% under the oracle. In 1D everything is launch-bound.
+    \textbf{Cost.} 22--29 ms end to end, 10--20\,\% under the oracle. In 1D everything is launch-bound, so no arm's time moves with $N$.
   \end{columns}
   \vspace{1mm}{\tiny Source: \texttt{2026-08-29-b1d-tensor-sample-free-burgers.md}.}
 \end{frame}
@@ -405,18 +390,18 @@
   \vspace{3mm}
   \begin{columns}[T]
     \column{0.5\textwidth}\small
-    \textbf{Flat in $N$ --- and so is everything else.} Every arm's exponent is $\approx 0$ over $128\ldots4096$: below $\sim 10^{4}$ points the GPU time is kernel launches, not arithmetic. Flatness is real; a 1D crossover is not.
+    \textbf{Flat in $N$ --- and so is everything else.} Both arms' exponents are $\approx 0$ over $128\ldots4096$: below $\sim 10^{4}$ points the GPU time is kernel launches, not arithmetic. Flatness is real; a 1D crossover is not.
     \column{0.5\textwidth}\small
-    \textbf{No 1D speedup.} The tridiagonal FOM solves a trajectory in $\sim 8$ ms and is more accurate; the single-query ROM is 2.5--3$\times$ slower. Only batched throughput (8 trajectories at once) brings the ROM to the FOM's per-trajectory time.
+    \textbf{No 1D speedup.} The tridiagonal FOM solves a trajectory in $\sim 8$ ms and is more accurate; the single-query ROM is 2.5--3$\times$ slower. Only batched throughput (8 trajectories at once) brings the ROM to the FOM's per-trajectory time. (Timed on an earlier 1D rollout whose end-to-end time equals the tensor arm's to within a few ms.)
   \end{columns}
   \vspace{1mm}{\tiny Sources: \texttt{2026-08-29-b1d-tensor-sample-free-burgers.md}, \texttt{2026-08-28-b1d-rollout-optimization.md}.}
 \end{frame}
 
 \begin{frame}{Burgers 1D --- seeing it ($N=512$)}
   \centering
-  \includegraphics[width=0.9\textwidth,trim=0 0 0 40,clip]{figs/b1d-tensor-fields-n512.png}
+  \includegraphics[width=0.9\textwidth,trim=0 0 0 40,clip]{figs/b1d-tensor-fields-n512-2arms.png}\par
   \vspace{0.5mm}\footnotesize
-  FOM truth (black), full-grid oracle (blue dashed), tensor ROM (orange dotted) and NNLS-32 (green dash-dot) at steps 0/10/25/50; top the median-error trajectory, bottom the worst. All curves coincide at this scale.
+  FOM truth (black), full-grid oracle (blue dashed) and tensor ROM (orange dotted) at steps 0/10/25/50; top the median-error trajectory, bottom the worst. All curves coincide at this scale.
 \end{frame}
 
 % -------------------------------------------------------------------
@@ -431,7 +416,7 @@
     \column{0.33\textwidth}\small
     \textbf{Tensor $=$ full} at every $N$: same error to 5 digits, same stop reasons, same number of solver attempts.
     \column{0.33\textwidth}\small
-    \textbf{Not better than sampling} at this budget (256 nodes for $M=64$ modes): sampling was never binding, so the tensor matches it with nothing fitted.
+    \textbf{The error is the decoder's floor.} About $2.4\times10^{-2}$ for the $K=16$ decoders; a larger latent lowers it (not shown here).
     \column{0.33\textwidth}\small
     \textbf{The $N=1024$ row} is a weaker inherited decoder; its $6.4\times10^{-2}$ is the checkpoint's floor, not the residual's.
   \end{columns}
@@ -445,9 +430,9 @@
   \vspace{2mm}
   \begin{columns}[T]
     \column{0.5\textwidth}\small
-    \textbf{The $O(n)$ arm moves; the tensor does not.} Full-grid solve climbs $33 \to 670$ ms over $16\times$ in resolution. The tensor stays at 20--28 ms, 2--8\,\% under the sampled rule, with a 2 s build instead of an 11--26 s NNLS fit.
+    \textbf{The $O(n)$ arm moves; the tensor does not.} Full-grid solve climbs $33 \to 670$ ms over $16\times$ in resolution. The tensor stays at 20--28 ms; its one-time build is about 2 s.
     \column{0.5\textwidth}\small
-    \textbf{Mixed hardware.} The four rungs ran on three different cards. Read the within-row ratios (tensor/full, tensor/ex); do not fit an exponent through the ms column.
+    \textbf{Mixed hardware.} The four rungs ran on three different cards. Read the within-row tensor/full ratio; do not fit an exponent through the ms column.
   \end{columns}
   \vspace{1mm}{\tiny Source: \texttt{2026-08-30-b2d-tensor-ladder.md}.}
 \end{frame}
@@ -466,25 +451,11 @@
   \vspace{1mm}{\tiny Source: \texttt{2026-08-30-b2d-tensor-ladder.md}.}
 \end{frame}
 
-\begin{frame}{Burgers 2D --- the larger sampled configuration ($K=32$, $R=512$)}
-  \centering\small
-  \input{tables/results-deck-b2d-headline.tex}
-
-  \vspace{3mm}
-  \begin{columns}[T]
-    \column{0.5\textwidth}\small
-    \textbf{Lower error, same story.} With $K=32$ the rollout error drops to $\sim 8\times10^{-3}$. The ROM still loses at $N=256$ and wins about $1.9\times$ at $N=1024$.
-    \column{0.5\textwidth}\small
-    \textbf{Exact linear terms cost nothing.} Making the diffusion and time terms exact (``exact-linear'') lowers the error by 10\,\% and leaves the time unchanged. This configuration stays sampled: its $R=512$ bank does not compress into a tensor.
-  \end{columns}
-  \vspace{1mm}{\tiny Source: \texttt{2026-08-26-exact-linear-terms-and-gradient-eq.md}.}
-\end{frame}
-
 \begin{frame}{Burgers 2D --- seeing it ($N=256$)}
   \centering
-  \includegraphics[height=0.74\textheight,trim=0 0 0 55,clip]{figs/b2d-tensor-fields_n256_traj5.png}\par
+  \includegraphics[height=0.74\textheight,trim=0 0 0 55,clip]{figs/b2d-tensor-fields_n256_traj5-3cols.png}\par
   \vspace{0.5mm}\footnotesize
-  Truth and the three ROM arms (full, tensor, sampled) on one held-out trajectory; the arms are indistinguishable at this scale.
+  Truth, the full-grid ROM and the tensor ROM on one held-out trajectory; the two ROMs are indistinguishable at this scale.
 \end{frame}
 
 % -------------------------------------------------------------------
@@ -500,7 +471,7 @@
     \addlinespace
     \textbf{Burgers 1D} & $=$ full-grid oracle to $10^{-6}$ & flat, 22--29 ms (launch-bound) & loses 2.5--3$\times$ to the tridiagonal FOM at every $N$\\
     \addlinespace
-    \textbf{Burgers 2D} & $=$ full-grid oracle to $10^{-5}$ & flat, 20--28 ms (full grid grows to 670 ms) & loses below $N=1024$; wins $3.45\times$ ($K=16$) / $1.9\times$ ($K=32$) at $N=1024$\\
+    \textbf{Burgers 2D} & $=$ full-grid oracle to $10^{-5}$ & flat, 20--28 ms (full grid grows to 670 ms) & loses below $N=1024$; wins $3.45\times$ at $N=1024$\\
     \bottomrule
   \end{tabular}
 
@@ -522,10 +493,10 @@
       \item[ROM] reduced-order model: solves for the latent $z$ only.
       \item[$N$] grid points per side; unknowns $\approx N^2$ in 2D.
       \item[$K$, $R$, $M$] latent size, decoder bank width, number of test modes.
-      \item[full / oracle] residual summed on the whole grid.
-      \item[sampled / NNLS / eq] residual estimated at a few points chosen by non-negative least squares.
-      \item[ex / exact-linear] linear terms exact, advection still sampled.
-      \item[learned-32] sampled arm whose 32 node positions were trained.
+      \item[full / oracle] residual summed on the whole grid every iteration.
+      \item[sampled (Poisson row only)] residual estimated at 256 points chosen by non-negative least squares (NNLS).
+      \item[$\Phi$, $B$, $T$/$Q$] test modes; the linear-term matrix $\Phi\T G$; the advection tensor and its symmetrised form.
+      \item[upwind $D^-$] backward difference, the stable derivative for $u\ge0$.
     \end{description}
     \column{0.5\textwidth}
     \begin{description}

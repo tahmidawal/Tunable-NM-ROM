@@ -337,6 +337,8 @@ def main():
                   "(AB/BA); accuracy from the last timed rep's fused e2e output"),
         gates={}, data={}, variants={}, memory=mem, complete=False)
 
+    os.makedirs(os.path.dirname(os.path.abspath(OUT)), exist_ok=True)
+
     def save():
         json.dump(report, open(OUT, "w"), indent=1, default=float)
 

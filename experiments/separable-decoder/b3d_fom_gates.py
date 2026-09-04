@@ -110,6 +110,8 @@ def main():
                               node=os.environ.get("SLURMD_NODENAME", "local")),
                   gates={}, complete=False)
 
+    os.makedirs(os.path.dirname(os.path.abspath(OUT)), exist_ok=True)
+
     def save():
         json.dump(report, open(OUT, "w"), indent=1, default=float)
 

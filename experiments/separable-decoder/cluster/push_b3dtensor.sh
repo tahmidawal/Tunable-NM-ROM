@@ -13,7 +13,7 @@ retry() { for i in 1 2 3 4 5 6; do if "$@"; then return 0; fi; echo "  (retry $i
 rssh() { timeout 60 ssh -o ConnectTimeout=20 -o BatchMode=yes tufts-login "$@"; }
 echo "--- squeue BEFORE ---"; retry rssh "squeue -u tawal01 -h -o '%i %j %T'" | tee /tmp/sq_before_$JOB.txt
 if grep -q "b3d_$JOB " /tmp/sq_before_$JOB.txt; then echo "ABORT: a job named b3d_$JOB is already queued"; exit 3; fi
-retry rssh "mkdir -p $REM/logs"
+retry rssh "mkdir -p $REM/logs $REM/out"
 # never delete an earlier out/ or logs/; a re-push of a finished job needs a new job dir
 retry rsync -a --delete --exclude=logs/ --exclude=out/ -e "ssh -o ConnectTimeout=20 -o BatchMode=yes" "$HERE/stage/$JOB/" tufts-login:$REM/
 retry rsync -a -e "ssh -o ConnectTimeout=20 -o BatchMode=yes" "$HERE/$SB" tufts-login:$REM/job.sbatch

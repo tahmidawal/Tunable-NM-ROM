@@ -102,6 +102,7 @@ def main():
     report["C1"] = dict(max_over_min=float(ratio), passed=bool(ratio <= FLAT_MAX_RATIO), rule=f"max/min median kernel ms <= {FLAT_MAX_RATIO}")
     log(f"  C1 kernel flatness: max/min {ratio:.3f} -> {'PASS' if ratio <= FLAT_MAX_RATIO else 'FAIL'}")
     report["complete"] = bool(ratio <= FLAT_MAX_RATIO)
+    os.makedirs(os.path.dirname(os.path.abspath(OUT)), exist_ok=True)
     json.dump(report, open(OUT, "w"), indent=1, default=float)
     log(f"DONE -> {OUT}")
 

@@ -631,17 +631,26 @@ def main():
     passed = (d4["mean"] <= 5e-2 and d4["worst"] <= 1.5e-1 and d4["pool_to_full_ratio_max"] <= 1.5
               and d4["budget_doubling_rel_change_max"] < 1e-2 and d4["optimality_max"] <= 1e-6
               and d4["oracle_over_podK"] <= 0.5)
-    gate("D4_heldout_oracle_validation", d4["mean"], passed, control=d4["control_shuffled_bank_mean"],
-         control_fired=d4["control_shuffled_bank_mean"] > 0.5, **{k_: v for k_, v in d4.items() if k_ != "rows"})
-    report["D4_rows"] = d4_rows
-    del d4_states
-    mem_snapshot("after_D4", mem)
+    report["D4_rows"] = d4_rows                                  # persisted BEFORE the gate can abort
+    report["pilot_passed"] = bool(passed and report["gates"]["D3_rank_of_A"]["passed"])
     if PILOT:
+        # the pilot scores a configuration; a failing D4 is a valid pilot outcome, not an abort
+        d = dict(value=d4["mean"], passed=bool(passed), control=d4["control_shuffled_bank_mean"],
+                 control_fired=bool(d4["control_shuffled_bank_mean"] > 0.5), **{k_: v for k_, v in d4.items() if k_ != "rows"})
+        report["gates"]["D4_heldout_oracle_validation"] = d
+        log(f"  GATE D4_heldout_oracle_validation: {d4['mean']:.3e} {'PASS' if passed else 'FAIL'}  | control "
+            f"{d['control']:.3e} fired={d['control_fired']}  (pilot: recorded, not asserted)")
+        del d4_states
+        mem_snapshot("after_D4", mem)
         report["complete"] = True
         report["secs_total"] = time.time() - t_all
         save()
-        log(f"PILOT DONE -> {OUT} [{time.time()-t_all:.0f}s]")
+        log(f"PILOT DONE -> {OUT} pilot_passed={report['pilot_passed']} [{time.time()-t_all:.0f}s]")
         return
+    gate("D4_heldout_oracle_validation", d4["mean"], passed, control=d4["control_shuffled_bank_mean"],
+         control_fired=d4["control_shuffled_bank_mean"] > 0.5, **{k_: v for k_, v in d4.items() if k_ != "rows"})
+    del d4_states
+    mem_snapshot("after_D4", mem)
 
     # ---------------- test-state oracle (for A1; recorded) --------------------
     te_or = []

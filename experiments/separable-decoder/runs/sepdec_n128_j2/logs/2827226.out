@@ -1,0 +1,243 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+=== burgers K=16 R=128 K16_R128_S200k_sn16k ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=16 R=128 M=64 m=256 steps=200000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 50s, max Newton rel residual 9.99e-13
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  data: cached to /cluster/tufts/paralab/tawal01/sepdec_n128/j2/data/burgers_n128.npz for later cells in this job
+   train[burgers N=128 k=16 r=128] step      1/200000  rel-MSE 1.373e+00  [21s]
+   train[burgers N=128 k=16 r=128] step   2000/200000  rel-MSE 8.148e-03  [62s]
+   train[burgers N=128 k=16 r=128] step   4000/200000  rel-MSE 2.708e-03  [104s]
+   train[burgers N=128 k=16 r=128] step   6000/200000  rel-MSE 1.555e-03  [146s]
+   train[burgers N=128 k=16 r=128] step   8000/200000  rel-MSE 1.081e-03  [188s]
+   train[burgers N=128 k=16 r=128] step  10000/200000  rel-MSE 8.687e-04  [230s]
+   train[burgers N=128 k=16 r=128] step  12000/200000  rel-MSE 7.460e-04  [271s]
+   train[burgers N=128 k=16 r=128] step  14000/200000  rel-MSE 7.773e-04  [313s]
+   train[burgers N=128 k=16 r=128] step  16000/200000  rel-MSE 6.183e-04  [355s]
+   train[burgers N=128 k=16 r=128] step  18000/200000  rel-MSE 6.184e-04  [397s]
+   train[burgers N=128 k=16 r=128] step  20000/200000  rel-MSE 6.380e-04  [439s]
+   train[burgers N=128 k=16 r=128] step  22000/200000  rel-MSE 4.762e-04  [481s]
+   train[burgers N=128 k=16 r=128] step  24000/200000  rel-MSE 4.638e-04  [523s]
+   train[burgers N=128 k=16 r=128] step  26000/200000  rel-MSE 4.595e-04  [565s]
+   train[burgers N=128 k=16 r=128] step  28000/200000  rel-MSE 4.233e-04  [607s]
+   train[burgers N=128 k=16 r=128] step  30000/200000  rel-MSE 3.881e-04  [648s]
+   train[burgers N=128 k=16 r=128] step  32000/200000  rel-MSE 3.572e-04  [690s]
+   train[burgers N=128 k=16 r=128] step  34000/200000  rel-MSE 3.682e-04  [732s]
+   train[burgers N=128 k=16 r=128] step  36000/200000  rel-MSE 3.471e-04  [774s]
+   train[burgers N=128 k=16 r=128] step  38000/200000  rel-MSE 3.170e-04  [816s]
+   train[burgers N=128 k=16 r=128] step  40000/200000  rel-MSE 3.268e-04  [858s]
+   train[burgers N=128 k=16 r=128] step  42000/200000  rel-MSE 3.255e-04  [900s]
+   train[burgers N=128 k=16 r=128] step  44000/200000  rel-MSE 2.971e-04  [942s]
+   train[burgers N=128 k=16 r=128] step  46000/200000  rel-MSE 2.876e-04  [984s]
+   train[burgers N=128 k=16 r=128] step  48000/200000  rel-MSE 2.817e-04  [1026s]
+   train[burgers N=128 k=16 r=128] step  50000/200000  rel-MSE 3.046e-04  [1067s]
+   train[burgers N=128 k=16 r=128] step  52000/200000  rel-MSE 2.983e-04  [1109s]
+   train[burgers N=128 k=16 r=128] step  54000/200000  rel-MSE 2.815e-04  [1151s]
+   train[burgers N=128 k=16 r=128] step  56000/200000  rel-MSE 2.529e-04  [1193s]
+   train[burgers N=128 k=16 r=128] step  58000/200000  rel-MSE 2.584e-04  [1235s]
+   train[burgers N=128 k=16 r=128] step  60000/200000  rel-MSE 2.677e-04  [1277s]
+   train[burgers N=128 k=16 r=128] step  62000/200000  rel-MSE 2.518e-04  [1319s]
+   train[burgers N=128 k=16 r=128] step  64000/200000  rel-MSE 2.480e-04  [1361s]
+   train[burgers N=128 k=16 r=128] step  66000/200000  rel-MSE 2.270e-04  [1402s]
+   train[burgers N=128 k=16 r=128] step  68000/200000  rel-MSE 2.339e-04  [1444s]
+   train[burgers N=128 k=16 r=128] step  70000/200000  rel-MSE 2.279e-04  [1486s]
+   train[burgers N=128 k=16 r=128] step  72000/200000  rel-MSE 2.202e-04  [1528s]
+   train[burgers N=128 k=16 r=128] step  74000/200000  rel-MSE 2.170e-04  [1570s]
+   train[burgers N=128 k=16 r=128] step  76000/200000  rel-MSE 2.179e-04  [1612s]
+   train[burgers N=128 k=16 r=128] step  78000/200000  rel-MSE 2.258e-04  [1654s]
+   train[burgers N=128 k=16 r=128] step  80000/200000  rel-MSE 2.037e-04  [1696s]
+   train[burgers N=128 k=16 r=128] step  82000/200000  rel-MSE 2.104e-04  [1738s]
+   train[burgers N=128 k=16 r=128] step  84000/200000  rel-MSE 1.989e-04  [1780s]
+   train[burgers N=128 k=16 r=128] step  86000/200000  rel-MSE 2.100e-04  [1821s]
+   train[burgers N=128 k=16 r=128] step  88000/200000  rel-MSE 1.976e-04  [1863s]
+   train[burgers N=128 k=16 r=128] step  90000/200000  rel-MSE 1.948e-04  [1905s]
+   train[burgers N=128 k=16 r=128] step  92000/200000  rel-MSE 1.973e-04  [1947s]
+   train[burgers N=128 k=16 r=128] step  94000/200000  rel-MSE 1.893e-04  [1989s]
+   train[burgers N=128 k=16 r=128] step  96000/200000  rel-MSE 1.888e-04  [2031s]
+   train[burgers N=128 k=16 r=128] step  98000/200000  rel-MSE 1.926e-04  [2073s]
+   train[burgers N=128 k=16 r=128] step 100000/200000  rel-MSE 1.852e-04  [2115s]
+   train[burgers N=128 k=16 r=128] step 102000/200000  rel-MSE 1.808e-04  [2157s]
+   train[burgers N=128 k=16 r=128] step 104000/200000  rel-MSE 1.785e-04  [2198s]
+   train[burgers N=128 k=16 r=128] step 106000/200000  rel-MSE 1.789e-04  [2240s]
+   train[burgers N=128 k=16 r=128] step 108000/200000  rel-MSE 1.835e-04  [2282s]
+   train[burgers N=128 k=16 r=128] step 110000/200000  rel-MSE 1.770e-04  [2324s]
+   train[burgers N=128 k=16 r=128] step 112000/200000  rel-MSE 1.771e-04  [2366s]
+   train[burgers N=128 k=16 r=128] step 114000/200000  rel-MSE 1.733e-04  [2408s]
+   train[burgers N=128 k=16 r=128] step 116000/200000  rel-MSE 1.751e-04  [2450s]
+   train[burgers N=128 k=16 r=128] step 118000/200000  rel-MSE 1.772e-04  [2492s]
+   train[burgers N=128 k=16 r=128] step 120000/200000  rel-MSE 1.727e-04  [2534s]
+   train[burgers N=128 k=16 r=128] step 122000/200000  rel-MSE 1.704e-04  [2576s]
+   train[burgers N=128 k=16 r=128] step 124000/200000  rel-MSE 1.675e-04  [2617s]
+   train[burgers N=128 k=16 r=128] step 126000/200000  rel-MSE 1.697e-04  [2659s]
+   train[burgers N=128 k=16 r=128] step 128000/200000  rel-MSE 1.652e-04  [2701s]
+   train[burgers N=128 k=16 r=128] step 130000/200000  rel-MSE 1.661e-04  [2743s]
+   train[burgers N=128 k=16 r=128] step 132000/200000  rel-MSE 1.671e-04  [2785s]
+   train[burgers N=128 k=16 r=128] step 134000/200000  rel-MSE 1.642e-04  [2827s]
+   train[burgers N=128 k=16 r=128] step 136000/200000  rel-MSE 1.609e-04  [2869s]
+   train[burgers N=128 k=16 r=128] step 138000/200000  rel-MSE 1.604e-04  [2911s]
+   train[burgers N=128 k=16 r=128] step 140000/200000  rel-MSE 1.597e-04  [2953s]
+   train[burgers N=128 k=16 r=128] step 142000/200000  rel-MSE 1.589e-04  [2994s]
+   train[burgers N=128 k=16 r=128] step 144000/200000  rel-MSE 1.583e-04  [3036s]
+   train[burgers N=128 k=16 r=128] step 146000/200000  rel-MSE 1.578e-04  [3078s]
+   train[burgers N=128 k=16 r=128] step 148000/200000  rel-MSE 1.568e-04  [3120s]
+   train[burgers N=128 k=16 r=128] step 150000/200000  rel-MSE 1.559e-04  [3162s]
+   train[burgers N=128 k=16 r=128] step 152000/200000  rel-MSE 1.571e-04  [3204s]
+   train[burgers N=128 k=16 r=128] step 154000/200000  rel-MSE 1.549e-04  [3246s]
+   train[burgers N=128 k=16 r=128] step 156000/200000  rel-MSE 1.542e-04  [3288s]
+   train[burgers N=128 k=16 r=128] step 158000/200000  rel-MSE 1.540e-04  [3330s]
+   train[burgers N=128 k=16 r=128] step 160000/200000  rel-MSE 1.532e-04  [3371s]
+   train[burgers N=128 k=16 r=128] step 162000/200000  rel-MSE 1.526e-04  [3413s]
+   train[burgers N=128 k=16 r=128] step 164000/200000  rel-MSE 1.525e-04  [3455s]
+   train[burgers N=128 k=16 r=128] step 166000/200000  rel-MSE 1.518e-04  [3497s]
+   train[burgers N=128 k=16 r=128] step 168000/200000  rel-MSE 1.513e-04  [3539s]
+   train[burgers N=128 k=16 r=128] step 170000/200000  rel-MSE 1.507e-04  [3581s]
+   train[burgers N=128 k=16 r=128] step 172000/200000  rel-MSE 1.504e-04  [3623s]
+   train[burgers N=128 k=16 r=128] step 174000/200000  rel-MSE 1.498e-04  [3665s]
+   train[burgers N=128 k=16 r=128] step 176000/200000  rel-MSE 1.494e-04  [3707s]
+   train[burgers N=128 k=16 r=128] step 178000/200000  rel-MSE 1.491e-04  [3748s]
+   train[burgers N=128 k=16 r=128] step 180000/200000  rel-MSE 1.487e-04  [3790s]
+   train[burgers N=128 k=16 r=128] step 182000/200000  rel-MSE 1.483e-04  [3832s]
+   train[burgers N=128 k=16 r=128] step 184000/200000  rel-MSE 1.479e-04  [3874s]
+   train[burgers N=128 k=16 r=128] step 186000/200000  rel-MSE 1.476e-04  [3916s]
+   train[burgers N=128 k=16 r=128] step 188000/200000  rel-MSE 1.472e-04  [3958s]
+   train[burgers N=128 k=16 r=128] step 190000/200000  rel-MSE 1.469e-04  [4000s]
+   train[burgers N=128 k=16 r=128] step 192000/200000  rel-MSE 1.466e-04  [4042s]
+   train[burgers N=128 k=16 r=128] step 194000/200000  rel-MSE 1.463e-04  [4084s]
+   train[burgers N=128 k=16 r=128] step 196000/200000  rel-MSE 1.460e-04  [4126s]
+   train[burgers N=128 k=16 r=128] step 198000/200000  rel-MSE 1.457e-04  [4167s]
+   train[burgers N=128 k=16 r=128] step 200000/200000  rel-MSE 1.454e-04  [4209s]
+   train[burgers N=128 k=16 r=128] done: recon rel-L2 mean 1.366e-02 max 2.577e-01  [4212s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 3.80e-03 (per-row median 6.9e-03, p95 4.1e-01, max 8.4e+01) [26s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 4.57e-15
+  IC check traj 0: incumbent 1.412e-01 (20.5s host) vs batched 1.412e-01
+  IC check traj 1: incumbent 6.242e-02 (19.2s host) vs batched 6.242e-02
+   traj 0 sep_cached                 e2e    85.50 ms  err 2.923e-02  (ic   8.30 roll   76.96 dec   0.26)  ic_rel 1.41e-01
+   traj 0 sep_meshfree               e2e   102.03 ms  err 2.923e-02  (ic  14.13 roll   87.69 dec   0.23)  ic_rel 1.41e-01
+   traj 0 fom_newton_tol ntol=3e-02  e2e    30.32 ms  err 2.405e-01
+   traj 0 fom_newton_tol ntol=1e-02  e2e    68.95 ms  err 8.391e-04
+   traj 0 fom_newton_tol ntol=1e-03  e2e    70.09 ms  err 6.463e-04
+   traj 0 fom_newton_tol ntol=1e-05  e2e   110.64 ms  err 1.869e-05
+   traj 0 fom_newton_fixed8          e2e   979.81 ms  err 0.000e+00
+   traj 1 sep_cached                 e2e    87.61 ms  err 2.214e-02  (ic   8.29 roll   79.09 dec   0.18)  ic_rel 6.24e-02
+   traj 1 sep_meshfree               e2e   104.19 ms  err 2.214e-02  (ic  14.16 roll   89.93 dec   0.19)  ic_rel 6.24e-02
+   traj 1 fom_newton_tol ntol=3e-02  e2e    52.05 ms  err 2.128e-01
+   traj 1 fom_newton_tol ntol=1e-02  e2e    92.20 ms  err 3.810e-04
+   traj 1 fom_newton_tol ntol=1e-03  e2e    95.28 ms  err 3.282e-04
+   traj 1 fom_newton_tol ntol=1e-05  e2e   165.24 ms  err 1.664e-05
+   traj 1 fom_newton_fixed8          e2e  1202.34 ms  err 0.000e+00
+   traj 2 sep_cached                 e2e    88.19 ms  err 2.347e-02  (ic   8.28 roll   79.79 dec   0.18)  ic_rel 9.06e-02
+   traj 2 sep_meshfree               e2e   102.10 ms  err 2.347e-02  (ic  14.14 roll   87.89 dec   0.20)  ic_rel 9.06e-02
+   traj 2 fom_newton_tol ntol=3e-02  e2e    23.58 ms  err 3.269e-01
+   traj 2 fom_newton_tol ntol=1e-02  e2e    67.52 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-03  e2e    67.26 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-05  e2e   104.98 ms  err 2.236e-05
+   traj 2 fom_newton_fixed8          e2e  1009.12 ms  err 0.000e+00
+   traj 3 sep_cached                 e2e    71.48 ms  err 1.831e-02  (ic   8.27 roll   62.98 dec   0.18)  ic_rel 5.39e-02
+   traj 3 sep_meshfree               e2e    85.02 ms  err 1.831e-02  (ic  14.15 roll   70.68 dec   0.18)  ic_rel 5.39e-02
+   traj 3 fom_newton_tol ntol=3e-02  e2e    52.62 ms  err 2.183e-01
+   traj 3 fom_newton_tol ntol=1e-02  e2e    98.68 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-03  e2e    98.36 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-05  e2e   149.53 ms  err 2.094e-05
+   traj 3 fom_newton_fixed8          e2e  1332.45 ms  err 0.000e+00
+   traj 4 sep_cached                 e2e    59.40 ms  err 9.602e-03  (ic   8.27 roll   50.98 dec   0.17)  ic_rel 1.57e-02
+   traj 4 sep_meshfree               e2e    72.70 ms  err 9.602e-03  (ic  14.03 roll   58.64 dec   0.17)  ic_rel 1.57e-02
+   traj 4 fom_newton_tol ntol=3e-02  e2e     2.42 ms  err 2.593e-01
+   traj 4 fom_newton_tol ntol=1e-02  e2e    24.65 ms  err 6.553e-02
+   traj 4 fom_newton_tol ntol=1e-03  e2e    41.33 ms  err 4.064e-05
+   traj 4 fom_newton_tol ntol=1e-05  e2e    44.00 ms  err 3.630e-05
+   traj 4 fom_newton_fixed8          e2e   495.13 ms  err 0.000e+00
+   traj 5 sep_cached                 e2e    93.70 ms  err 1.114e-02  (ic   8.28 roll   85.33 dec   0.17)  ic_rel 2.89e-02
+   traj 5 sep_meshfree               e2e   113.30 ms  err 1.114e-02  (ic  14.13 roll   99.05 dec   0.17)  ic_rel 2.89e-02
+   traj 5 fom_newton_tol ntol=3e-02  e2e    26.34 ms  err 2.815e-01
+   traj 5 fom_newton_tol ntol=1e-02  e2e    69.62 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-03  e2e    69.37 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-05  e2e   117.45 ms  err 1.480e-05
+   traj 5 fom_newton_fixed8          e2e   892.06 ms  err 0.000e+00
+   traj 6 sep_cached                 e2e    75.60 ms  err 9.871e-03  (ic   8.28 roll   67.14 dec   0.17)  ic_rel 1.99e-02
+   traj 6 sep_meshfree               e2e    87.31 ms  err 9.871e-03  (ic  14.11 roll   73.15 dec   0.18)  ic_rel 1.99e-02
+   traj 6 fom_newton_tol ntol=3e-02  e2e     6.27 ms  err 4.643e-01
+   traj 6 fom_newton_tol ntol=1e-02  e2e    63.83 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-03  e2e    63.66 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-05  e2e    91.97 ms  err 2.810e-05
+   traj 6 fom_newton_fixed8          e2e   813.19 ms  err 0.000e+00
+   traj 7 sep_cached                 e2e    66.46 ms  err 9.665e-03  (ic   8.26 roll   58.03 dec   0.17)  ic_rel 1.54e-02
+   traj 7 sep_meshfree               e2e    81.46 ms  err 9.665e-03  (ic  14.14 roll   67.06 dec   0.17)  ic_rel 1.54e-02
+   traj 7 fom_newton_tol ntol=3e-02  e2e     2.32 ms  err 2.024e-01
+   traj 7 fom_newton_tol ntol=1e-02  e2e     5.35 ms  err 1.849e-01
+   traj 7 fom_newton_tol ntol=1e-03  e2e    41.65 ms  err 2.208e-05
+   traj 7 fom_newton_tol ntol=1e-05  e2e    44.05 ms  err 1.940e-05
+   traj 7 fom_newton_fixed8          e2e   506.66 ms  err 0.000e+00
+DONE burgers [4500s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j2/out/sep_burgers_K16_R128_S200k_sn16k.json
+=== burgers K=32 R=256 K32_R256_S200k_sn16k ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=32 R=256 M=128 m=512 steps=200000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  data: loaded in-job cache /cluster/tufts/paralab/tawal01/sepdec_n128/j2/data/burgers_n128.npz (regenerated from seed earlier in THIS job)
+   train[burgers N=128 k=32 r=256] step      1/200000  rel-MSE 2.332e+00  [25s]
+   train[burgers N=128 k=32 r=256] step   2000/200000  rel-MSE 8.025e-03  [93s]
+   train[burgers N=128 k=32 r=256] step   4000/200000  rel-MSE 2.633e-03  [161s]
+   train[burgers N=128 k=32 r=256] step   6000/200000  rel-MSE 1.309e-03  [229s]
+   train[burgers N=128 k=32 r=256] step   8000/200000  rel-MSE 8.390e-04  [297s]
+   train[burgers N=128 k=32 r=256] step  10000/200000  rel-MSE 5.908e-04  [365s]
+   train[burgers N=128 k=32 r=256] step  12000/200000  rel-MSE 4.712e-04  [434s]
+   train[burgers N=128 k=32 r=256] step  14000/200000  rel-MSE 4.147e-04  [502s]
+   train[burgers N=128 k=32 r=256] step  16000/200000  rel-MSE 3.090e-04  [570s]
+   train[burgers N=128 k=32 r=256] step  18000/200000  rel-MSE 2.732e-04  [638s]
+   train[burgers N=128 k=32 r=256] step  20000/200000  rel-MSE 2.754e-04  [706s]
+   train[burgers N=128 k=32 r=256] step  22000/200000  rel-MSE 2.504e-04  [775s]
+   train[burgers N=128 k=32 r=256] step  24000/200000  rel-MSE 2.139e-04  [843s]
+   train[burgers N=128 k=32 r=256] step  26000/200000  rel-MSE 1.923e-04  [911s]
+   train[burgers N=128 k=32 r=256] step  28000/200000  rel-MSE 1.950e-04  [979s]
+   train[burgers N=128 k=32 r=256] step  30000/200000  rel-MSE 1.994e-04  [1048s]
+   train[burgers N=128 k=32 r=256] step  32000/200000  rel-MSE 1.778e-04  [1116s]
+   train[burgers N=128 k=32 r=256] step  34000/200000  rel-MSE 1.630e-04  [1184s]
+   train[burgers N=128 k=32 r=256] step  36000/200000  rel-MSE 1.799e-04  [1252s]
+   train[burgers N=128 k=32 r=256] step  38000/200000  rel-MSE 1.662e-04  [1320s]
+   train[burgers N=128 k=32 r=256] step  40000/200000  rel-MSE 1.779e-04  [1389s]
+   train[burgers N=128 k=32 r=256] step  42000/200000  rel-MSE 1.681e-04  [1457s]
+   train[burgers N=128 k=32 r=256] step  44000/200000  rel-MSE 1.588e-04  [1525s]
+   train[burgers N=128 k=32 r=256] step  46000/200000  rel-MSE 1.299e-04  [1593s]
+   train[burgers N=128 k=32 r=256] step  48000/200000  rel-MSE 1.274e-04  [1662s]
+   train[burgers N=128 k=32 r=256] step  50000/200000  rel-MSE 1.318e-04  [1730s]
+   train[burgers N=128 k=32 r=256] step  52000/200000  rel-MSE 1.449e-04  [1798s]
+   train[burgers N=128 k=32 r=256] step  54000/200000  rel-MSE 1.219e-04  [1866s]
+   train[burgers N=128 k=32 r=256] step  56000/200000  rel-MSE 1.292e-04  [1935s]
+   train[burgers N=128 k=32 r=256] step  58000/200000  rel-MSE 1.410e-04  [2003s]
+   train[burgers N=128 k=32 r=256] step  60000/200000  rel-MSE 1.232e-04  [2071s]
+   train[burgers N=128 k=32 r=256] step  62000/200000  rel-MSE 1.065e-04  [2139s]
+   train[burgers N=128 k=32 r=256] step  64000/200000  rel-MSE 1.335e-04  [2207s]
+   train[burgers N=128 k=32 r=256] step  66000/200000  rel-MSE 1.087e-04  [2276s]
+   train[burgers N=128 k=32 r=256] step  68000/200000  rel-MSE 1.113e-04  [2344s]
+   train[burgers N=128 k=32 r=256] step  70000/200000  rel-MSE 1.067e-04  [2412s]
+   train[burgers N=128 k=32 r=256] step  72000/200000  rel-MSE 1.046e-04  [2480s]
+   train[burgers N=128 k=32 r=256] step  74000/200000  rel-MSE 1.087e-04  [2549s]
+   train[burgers N=128 k=32 r=256] step  76000/200000  rel-MSE 1.041e-04  [2617s]
+   train[burgers N=128 k=32 r=256] step  78000/200000  rel-MSE 1.027e-04  [2685s]
+   train[burgers N=128 k=32 r=256] step  80000/200000  rel-MSE 1.019e-04  [2753s]
+   train[burgers N=128 k=32 r=256] step  82000/200000  rel-MSE 9.404e-05  [2822s]
+   train[burgers N=128 k=32 r=256] step  84000/200000  rel-MSE 9.894e-05  [2890s]
+   train[burgers N=128 k=32 r=256] step  86000/200000  rel-MSE 9.381e-05  [2958s]
+   train[burgers N=128 k=32 r=256] step  88000/200000  rel-MSE 8.917e-05  [3026s]
+   train[burgers N=128 k=32 r=256] step  90000/200000  rel-MSE 9.482e-05  [3094s]
+   train[burgers N=128 k=32 r=256] step  92000/200000  rel-MSE 9.560e-05  [3163s]
+   train[burgers N=128 k=32 r=256] step  94000/200000  rel-MSE 8.721e-05  [3231s]
+   train[burgers N=128 k=32 r=256] step  96000/200000  rel-MSE 8.914e-05  [3299s]
+   train[burgers N=128 k=32 r=256] step  98000/200000  rel-MSE 8.927e-05  [3367s]
+   train[burgers N=128 k=32 r=256] step 100000/200000  rel-MSE 8.702e-05  [3436s]
+   train[burgers N=128 k=32 r=256] step 102000/200000  rel-MSE 9.652e-05  [3504s]
+   train[burgers N=128 k=32 r=256] step 104000/200000  rel-MSE 8.496e-05  [3572s]
+   train[burgers N=128 k=32 r=256] step 106000/200000  rel-MSE 8.362e-05  [3640s]
+   train[burgers N=128 k=32 r=256] step 108000/200000  rel-MSE 9.080e-05  [3709s]
+   train[burgers N=128 k=32 r=256] step 110000/200000  rel-MSE 8.470e-05  [3777s]
+   train[burgers N=128 k=32 r=256] step 112000/200000  rel-MSE 8.149e-05  [3845s]
+   train[burgers N=128 k=32 r=256] step 114000/200000  rel-MSE 8.485e-05  [3913s]
+   train[burgers N=128 k=32 r=256] step 116000/200000  rel-MSE 7.978e-05  [3982s]
+   train[burgers N=128 k=32 r=256] step 118000/200000  rel-MSE 8.147e-05  [4050s]
+   train[burgers N=128 k=32 r=256] step 120000/200000  rel-MSE 8.053e-05  [4118s]
+   train[burgers N=128 k=32 r=256] step 122000/200000  rel-MSE 8.155e-05  [4186s]
+   train[burgers N=128 k=32 r=256] step 124000/200000  rel-MSE 7.716e-05  [4254s]
+   train[burgers N=128 k=32 r=256] step 126000/200000  rel-MSE 7.806e-05  [4323s]
+   train[burgers N=128 k=32 r=256] step 128000/200000  rel-MSE 7.911e-05  [4391s]
+   train[burgers N=128 k=32 r=256] step 130000/200000  rel-MSE 7.665e-05  [4459s]
+   train[burgers N=128 k=32 r=256] step 132000/200000  rel-MSE 7.811e-05  [4527s]
+   train[burgers N=128 k=32 r=256] step 134000/200000  rel-MSE 7.702e-05  [4596s]
+   train[burgers N=128 k=32 r=256] step 136000/200000  rel-MSE 7.547e-05  [4664s]
+   train[burgers N=128 k=32 r=256] step 138000/200000  rel-MSE 7.545e-05  [4732s]

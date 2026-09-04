@@ -1,0 +1,653 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+=== poisson K=16 R=96 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=16 R=96 M=64 m=256 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 9s, max rel residual over all samples 2.46e-12
+  truth[held_seed0]: 16 test sources, FOM CG rel residual 2.17e-12
+  truth[fresh_seed1]: 16 test sources, FOM CG rel residual 1.56e-12
+   train[poisson N=128 k=16 r=96] step      1/60000  rel-MSE 1.311e+00  [11s]
+   train[poisson N=128 k=16 r=96] step   2000/60000  rel-MSE 2.378e-03  [15s]
+   train[poisson N=128 k=16 r=96] step   4000/60000  rel-MSE 7.221e-04  [19s]
+   train[poisson N=128 k=16 r=96] step   6000/60000  rel-MSE 3.641e-04  [23s]
+   train[poisson N=128 k=16 r=96] step   8000/60000  rel-MSE 3.298e-04  [27s]
+   train[poisson N=128 k=16 r=96] step  10000/60000  rel-MSE 2.997e-04  [31s]
+   train[poisson N=128 k=16 r=96] step  12000/60000  rel-MSE 1.401e-04  [35s]
+   train[poisson N=128 k=16 r=96] step  14000/60000  rel-MSE 1.596e-04  [39s]
+   train[poisson N=128 k=16 r=96] step  16000/60000  rel-MSE 1.090e-04  [43s]
+   train[poisson N=128 k=16 r=96] step  18000/60000  rel-MSE 8.605e-05  [47s]
+   train[poisson N=128 k=16 r=96] step  20000/60000  rel-MSE 8.459e-05  [51s]
+   train[poisson N=128 k=16 r=96] step  22000/60000  rel-MSE 7.987e-05  [56s]
+   train[poisson N=128 k=16 r=96] step  24000/60000  rel-MSE 8.294e-05  [60s]
+   train[poisson N=128 k=16 r=96] step  26000/60000  rel-MSE 6.492e-05  [64s]
+   train[poisson N=128 k=16 r=96] step  28000/60000  rel-MSE 6.013e-05  [68s]
+   train[poisson N=128 k=16 r=96] step  30000/60000  rel-MSE 5.641e-05  [73s]
+   train[poisson N=128 k=16 r=96] step  32000/60000  rel-MSE 5.620e-05  [77s]
+   train[poisson N=128 k=16 r=96] step  34000/60000  rel-MSE 5.106e-05  [81s]
+   train[poisson N=128 k=16 r=96] step  36000/60000  rel-MSE 5.752e-05  [86s]
+   train[poisson N=128 k=16 r=96] step  38000/60000  rel-MSE 5.889e-05  [90s]
+   train[poisson N=128 k=16 r=96] step  40000/60000  rel-MSE 4.556e-05  [94s]
+   train[poisson N=128 k=16 r=96] step  42000/60000  rel-MSE 4.752e-05  [99s]
+   train[poisson N=128 k=16 r=96] step  44000/60000  rel-MSE 4.315e-05  [103s]
+   train[poisson N=128 k=16 r=96] step  46000/60000  rel-MSE 4.213e-05  [107s]
+   train[poisson N=128 k=16 r=96] step  48000/60000  rel-MSE 4.124e-05  [112s]
+   train[poisson N=128 k=16 r=96] step  50000/60000  rel-MSE 4.005e-05  [116s]
+   train[poisson N=128 k=16 r=96] step  52000/60000  rel-MSE 3.953e-05  [120s]
+   train[poisson N=128 k=16 r=96] step  54000/60000  rel-MSE 3.851e-05  [125s]
+   train[poisson N=128 k=16 r=96] step  56000/60000  rel-MSE 3.785e-05  [129s]
+   train[poisson N=128 k=16 r=96] step  58000/60000  rel-MSE 3.724e-05  [134s]
+   train[poisson N=128 k=16 r=96] step  60000/60000  rel-MSE 3.667e-05  [138s]
+   train[poisson N=128 k=16 r=96] done: recon rel-L2 mean 2.155e-02 max 1.478e-01  [141s]
+  test oracle rel-L2 [held_seed0]: mean 3.524e-02 max 7.103e-02
+  test oracle rel-L2 [fresh_seed1]: mean 1.201e-02 max 1.892e-02
+  NNLS-EQ sep poisson N=128 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.30e-03 (row p95 1.4e-01, max 3.1e+02) [25s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   held_seed0   sep_meshfree tau=1e-03     3.102 ms  jac  14.2  err 3.062e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_meshfree tau=1e-02     2.797 ms  jac  12.1  err 3.113e-02  cens  69%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-03     3.095 ms  jac  14.3  err 3.062e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-02     2.795 ms  jac  12.1  err 3.113e-02  cens  69%  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-01:    3.745 ms  err 1.726e-02  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-02:    4.552 ms  err 4.063e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-02:    5.182 ms  err 1.238e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-03:    5.731 ms  err 4.162e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-03:    6.492 ms  err 1.166e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-04:    7.165 ms  err 2.871e-05  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-04:    7.657 ms  err 7.798e-06  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-06:    9.453 ms  err 7.746e-08  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-03     3.423 ms  jac  15.8  err 2.892e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-02     3.170 ms  jac  13.4  err 2.926e-02  cens  69%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-03     3.409 ms  jac  15.8  err 2.892e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-02     2.966 ms  jac  13.4  err 2.926e-02  cens  69%  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-01:    3.785 ms  err 1.500e-02  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-02:    4.569 ms  err 3.284e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-02:    5.200 ms  err 1.070e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-03:    5.808 ms  err 3.198e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-03:    6.598 ms  err 1.025e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-04:    7.099 ms  err 2.549e-05  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-04:    7.651 ms  err 6.572e-06  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-06:    9.489 ms  err 6.027e-08  dev 0.0e+00
+DONE poisson [353s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_poisson_K16_R96.json
+=== poisson K=8 R=48 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=8 R=48 M=32 m=128 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 9s, max rel residual over all samples 2.46e-12
+  truth[held_seed0]: 16 test sources, FOM CG rel residual 2.17e-12
+  truth[fresh_seed1]: 16 test sources, FOM CG rel residual 1.56e-12
+   train[poisson N=128 k=8 r=48] step      1/60000  rel-MSE 1.078e+00  [10s]
+   train[poisson N=128 k=8 r=48] step   2000/60000  rel-MSE 4.174e-03  [14s]
+   train[poisson N=128 k=8 r=48] step   4000/60000  rel-MSE 1.742e-03  [17s]
+   train[poisson N=128 k=8 r=48] step   6000/60000  rel-MSE 1.238e-03  [20s]
+   train[poisson N=128 k=8 r=48] step   8000/60000  rel-MSE 1.100e-03  [24s]
+   train[poisson N=128 k=8 r=48] step  10000/60000  rel-MSE 6.151e-04  [27s]
+   train[poisson N=128 k=8 r=48] step  12000/60000  rel-MSE 5.691e-04  [30s]
+   train[poisson N=128 k=8 r=48] step  14000/60000  rel-MSE 5.422e-04  [34s]
+   train[poisson N=128 k=8 r=48] step  16000/60000  rel-MSE 4.137e-04  [37s]
+   train[poisson N=128 k=8 r=48] step  18000/60000  rel-MSE 3.963e-04  [41s]
+   train[poisson N=128 k=8 r=48] step  20000/60000  rel-MSE 3.502e-04  [44s]
+   train[poisson N=128 k=8 r=48] step  22000/60000  rel-MSE 3.190e-04  [48s]
+   train[poisson N=128 k=8 r=48] step  24000/60000  rel-MSE 3.048e-04  [51s]
+   train[poisson N=128 k=8 r=48] step  26000/60000  rel-MSE 3.238e-04  [55s]
+   train[poisson N=128 k=8 r=48] step  28000/60000  rel-MSE 2.741e-04  [58s]
+   train[poisson N=128 k=8 r=48] step  30000/60000  rel-MSE 2.560e-04  [62s]
+   train[poisson N=128 k=8 r=48] step  32000/60000  rel-MSE 2.466e-04  [65s]
+   train[poisson N=128 k=8 r=48] step  34000/60000  rel-MSE 2.400e-04  [69s]
+   train[poisson N=128 k=8 r=48] step  36000/60000  rel-MSE 2.303e-04  [72s]
+   train[poisson N=128 k=8 r=48] step  38000/60000  rel-MSE 2.258e-04  [76s]
+   train[poisson N=128 k=8 r=48] step  40000/60000  rel-MSE 2.190e-04  [80s]
+   train[poisson N=128 k=8 r=48] step  42000/60000  rel-MSE 2.136e-04  [83s]
+   train[poisson N=128 k=8 r=48] step  44000/60000  rel-MSE 2.075e-04  [87s]
+   train[poisson N=128 k=8 r=48] step  46000/60000  rel-MSE 2.032e-04  [90s]
+   train[poisson N=128 k=8 r=48] step  48000/60000  rel-MSE 1.996e-04  [94s]
+   train[poisson N=128 k=8 r=48] step  50000/60000  rel-MSE 1.959e-04  [98s]
+   train[poisson N=128 k=8 r=48] step  52000/60000  rel-MSE 1.929e-04  [101s]
+   train[poisson N=128 k=8 r=48] step  54000/60000  rel-MSE 1.903e-04  [105s]
+   train[poisson N=128 k=8 r=48] step  56000/60000  rel-MSE 1.878e-04  [109s]
+   train[poisson N=128 k=8 r=48] step  58000/60000  rel-MSE 1.857e-04  [112s]
+   train[poisson N=128 k=8 r=48] step  60000/60000  rel-MSE 1.837e-04  [116s]
+   train[poisson N=128 k=8 r=48] done: recon rel-L2 mean 4.270e-02 max 2.279e-01  [119s]
+  test oracle rel-L2 [held_seed0]: mean 6.034e-02 max 1.137e-01
+  test oracle rel-L2 [fresh_seed1]: mean 3.030e-02 max 4.545e-02
+  NNLS-EQ sep poisson N=128 k=8 M=32 m=128: pool 4096 support 128 (+0 pad) rel fit 1.88e-03 (row p95 9.8e-02, max 2.3e+01) [10s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   held_seed0   sep_meshfree tau=1e-03     3.203 ms  jac  15.2  err 4.988e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_meshfree tau=1e-02     2.928 ms  jac  13.7  err 5.023e-02  cens  75%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-03     3.215 ms  jac  15.2  err 4.988e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-02     2.925 ms  jac  13.7  err 5.023e-02  cens  75%  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-01:    3.744 ms  err 1.726e-02  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-02:    4.547 ms  err 4.063e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-02:    5.179 ms  err 1.238e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-03:    5.724 ms  err 4.162e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-03:    6.492 ms  err 1.166e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-04:    7.195 ms  err 2.871e-05  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-04:    7.681 ms  err 7.798e-06  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-06:    9.564 ms  err 7.746e-08  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-03     3.258 ms  jac  15.6  err 4.294e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-02     3.102 ms  jac  14.1  err 4.336e-02  cens  75%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-03     3.251 ms  jac  15.6  err 4.294e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-02     3.102 ms  jac  14.1  err 4.336e-02  cens  75%  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-01:    3.782 ms  err 1.500e-02  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-02:    4.564 ms  err 3.284e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-02:    5.200 ms  err 1.070e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-03:    5.801 ms  err 3.198e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-03:    6.594 ms  err 1.025e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-04:    7.134 ms  err 2.549e-05  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-04:    7.686 ms  err 6.572e-06  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-06:    9.602 ms  err 6.027e-08  dev 0.0e+00
+DONE poisson [302s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_poisson_K8_R48.json
+=== poisson K=24 R=144 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=24 R=144 M=96 m=384 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 9s, max rel residual over all samples 2.46e-12
+  truth[held_seed0]: 16 test sources, FOM CG rel residual 2.17e-12
+  truth[fresh_seed1]: 16 test sources, FOM CG rel residual 1.56e-12
+   train[poisson N=128 k=24 r=144] step      1/60000  rel-MSE 1.542e+00  [11s]
+   train[poisson N=128 k=24 r=144] step   2000/60000  rel-MSE 2.211e-03  [16s]
+   train[poisson N=128 k=24 r=144] step   4000/60000  rel-MSE 6.173e-04  [21s]
+   train[poisson N=128 k=24 r=144] step   6000/60000  rel-MSE 2.864e-04  [26s]
+   train[poisson N=128 k=24 r=144] step   8000/60000  rel-MSE 1.960e-04  [31s]
+   train[poisson N=128 k=24 r=144] step  10000/60000  rel-MSE 1.533e-04  [36s]
+   train[poisson N=128 k=24 r=144] step  12000/60000  rel-MSE 1.336e-04  [41s]
+   train[poisson N=128 k=24 r=144] step  14000/60000  rel-MSE 1.077e-04  [46s]
+   train[poisson N=128 k=24 r=144] step  16000/60000  rel-MSE 1.152e-04  [51s]
+   train[poisson N=128 k=24 r=144] step  18000/60000  rel-MSE 7.243e-05  [56s]
+   train[poisson N=128 k=24 r=144] step  20000/60000  rel-MSE 5.537e-05  [61s]
+   train[poisson N=128 k=24 r=144] step  22000/60000  rel-MSE 7.996e-05  [66s]
+   train[poisson N=128 k=24 r=144] step  24000/60000  rel-MSE 5.261e-05  [71s]
+   train[poisson N=128 k=24 r=144] step  26000/60000  rel-MSE 5.703e-05  [77s]
+   train[poisson N=128 k=24 r=144] step  28000/60000  rel-MSE 3.978e-05  [82s]
+   train[poisson N=128 k=24 r=144] step  30000/60000  rel-MSE 3.718e-05  [87s]
+   train[poisson N=128 k=24 r=144] step  32000/60000  rel-MSE 3.683e-05  [92s]
+   train[poisson N=128 k=24 r=144] step  34000/60000  rel-MSE 3.168e-05  [98s]
+   train[poisson N=128 k=24 r=144] step  36000/60000  rel-MSE 3.275e-05  [103s]
+   train[poisson N=128 k=24 r=144] step  38000/60000  rel-MSE 2.988e-05  [108s]
+   train[poisson N=128 k=24 r=144] step  40000/60000  rel-MSE 2.771e-05  [114s]
+   train[poisson N=128 k=24 r=144] step  42000/60000  rel-MSE 2.802e-05  [119s]
+   train[poisson N=128 k=24 r=144] step  44000/60000  rel-MSE 2.575e-05  [124s]
+   train[poisson N=128 k=24 r=144] step  46000/60000  rel-MSE 2.506e-05  [130s]
+   train[poisson N=128 k=24 r=144] step  48000/60000  rel-MSE 2.418e-05  [135s]
+   train[poisson N=128 k=24 r=144] step  50000/60000  rel-MSE 2.331e-05  [140s]
+   train[poisson N=128 k=24 r=144] step  52000/60000  rel-MSE 2.261e-05  [146s]
+   train[poisson N=128 k=24 r=144] step  54000/60000  rel-MSE 2.201e-05  [151s]
+   train[poisson N=128 k=24 r=144] step  56000/60000  rel-MSE 2.152e-05  [157s]
+   train[poisson N=128 k=24 r=144] step  58000/60000  rel-MSE 2.107e-05  [162s]
+   train[poisson N=128 k=24 r=144] step  60000/60000  rel-MSE 2.067e-05  [167s]
+   train[poisson N=128 k=24 r=144] done: recon rel-L2 mean 1.702e-02 max 1.222e-01  [170s]
+  test oracle rel-L2 [held_seed0]: mean 3.655e-02 max 7.393e-02
+  test oracle rel-L2 [fresh_seed1]: mean 1.355e-02 max 2.370e-02
+  NNLS-EQ sep poisson N=128 k=24 M=96 m=384: pool 4096 support 384 (+0 pad) rel fit 9.19e-04 (row p95 2.1e-01, max 8.6e+02) [63s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   held_seed0   sep_meshfree tau=1e-03     5.176 ms  jac  24.8  err 2.994e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_meshfree tau=1e-02     4.233 ms  jac  20.3  err 3.040e-02  cens  75%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-03     5.168 ms  jac  24.8  err 2.994e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-02     4.257 ms  jac  20.3  err 3.040e-02  cens  75%  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-01:    3.732 ms  err 1.726e-02  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-02:    4.539 ms  err 4.063e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-02:    5.163 ms  err 1.238e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-03:    5.710 ms  err 4.162e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-03:    6.485 ms  err 1.166e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-04:    7.123 ms  err 2.871e-05  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-04:    7.619 ms  err 7.798e-06  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-06:    9.568 ms  err 7.746e-08  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-03     4.994 ms  jac  22.9  err 2.753e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-02     4.595 ms  jac  20.4  err 2.760e-02  cens  75%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-03     4.979 ms  jac  22.9  err 2.753e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-02     4.585 ms  jac  20.4  err 2.760e-02  cens  75%  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-01:    3.780 ms  err 1.500e-02  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-02:    4.555 ms  err 3.284e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-02:    5.185 ms  err 1.070e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-03:    5.791 ms  err 3.198e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-03:    6.577 ms  err 1.025e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-04:    7.071 ms  err 2.549e-05  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-04:    7.629 ms  err 6.572e-06  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-06:    9.515 ms  err 6.027e-08  dev 0.0e+00
+DONE poisson [442s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_poisson_K24_R144.json
+=== poisson K=32 R=192 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=32 R=192 M=128 m=512 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 9s, max rel residual over all samples 2.46e-12
+  truth[held_seed0]: 16 test sources, FOM CG rel residual 2.17e-12
+  truth[fresh_seed1]: 16 test sources, FOM CG rel residual 1.56e-12
+   train[poisson N=128 k=32 r=192] step      1/60000  rel-MSE 1.869e+00  [12s]
+   train[poisson N=128 k=32 r=192] step   2000/60000  rel-MSE 2.302e-03  [17s]
+   train[poisson N=128 k=32 r=192] step   4000/60000  rel-MSE 6.242e-04  [22s]
+   train[poisson N=128 k=32 r=192] step   6000/60000  rel-MSE 3.555e-04  [27s]
+   train[poisson N=128 k=32 r=192] step   8000/60000  rel-MSE 1.760e-04  [32s]
+   train[poisson N=128 k=32 r=192] step  10000/60000  rel-MSE 1.253e-04  [38s]
+   train[poisson N=128 k=32 r=192] step  12000/60000  rel-MSE 9.281e-05  [43s]
+   train[poisson N=128 k=32 r=192] step  14000/60000  rel-MSE 1.812e-04  [49s]
+   train[poisson N=128 k=32 r=192] step  16000/60000  rel-MSE 9.601e-05  [54s]
+   train[poisson N=128 k=32 r=192] step  18000/60000  rel-MSE 5.279e-05  [60s]
+   train[poisson N=128 k=32 r=192] step  20000/60000  rel-MSE 7.614e-05  [65s]
+   train[poisson N=128 k=32 r=192] step  22000/60000  rel-MSE 4.616e-05  [71s]
+   train[poisson N=128 k=32 r=192] step  24000/60000  rel-MSE 3.679e-05  [77s]
+   train[poisson N=128 k=32 r=192] step  26000/60000  rel-MSE 3.818e-05  [82s]
+   train[poisson N=128 k=32 r=192] step  28000/60000  rel-MSE 3.580e-05  [88s]
+   train[poisson N=128 k=32 r=192] step  30000/60000  rel-MSE 3.059e-05  [94s]
+   train[poisson N=128 k=32 r=192] step  32000/60000  rel-MSE 2.844e-05  [100s]
+   train[poisson N=128 k=32 r=192] step  34000/60000  rel-MSE 3.011e-05  [105s]
+   train[poisson N=128 k=32 r=192] step  36000/60000  rel-MSE 2.654e-05  [111s]
+   train[poisson N=128 k=32 r=192] step  38000/60000  rel-MSE 2.322e-05  [117s]
+   train[poisson N=128 k=32 r=192] step  40000/60000  rel-MSE 2.215e-05  [122s]
+   train[poisson N=128 k=32 r=192] step  42000/60000  rel-MSE 2.076e-05  [128s]
+   train[poisson N=128 k=32 r=192] step  44000/60000  rel-MSE 1.931e-05  [134s]
+   train[poisson N=128 k=32 r=192] step  46000/60000  rel-MSE 1.873e-05  [140s]
+   train[poisson N=128 k=32 r=192] step  48000/60000  rel-MSE 1.816e-05  [146s]
+   train[poisson N=128 k=32 r=192] step  50000/60000  rel-MSE 1.747e-05  [151s]
+   train[poisson N=128 k=32 r=192] step  52000/60000  rel-MSE 1.693e-05  [157s]
+   train[poisson N=128 k=32 r=192] step  54000/60000  rel-MSE 1.646e-05  [163s]
+   train[poisson N=128 k=32 r=192] step  56000/60000  rel-MSE 1.607e-05  [169s]
+   train[poisson N=128 k=32 r=192] step  58000/60000  rel-MSE 1.571e-05  [175s]
+   train[poisson N=128 k=32 r=192] step  60000/60000  rel-MSE 1.539e-05  [180s]
+   train[poisson N=128 k=32 r=192] done: recon rel-L2 mean 1.531e-02 max 1.501e-01  [183s]
+  test oracle rel-L2 [held_seed0]: mean 3.677e-02 max 6.843e-02
+  test oracle rel-L2 [fresh_seed1]: mean 1.638e-02 max 2.450e-02
+  NNLS-EQ sep poisson N=128 k=32 M=128 m=512: pool 4096 support 512 (+0 pad) rel fit 6.58e-04 (row p95 2.7e-01, max 3.4e+02) [132s]
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   held_seed0   sep_meshfree tau=1e-03     6.306 ms  jac  30.4  err 2.860e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_meshfree tau=1e-02     6.164 ms  jac  25.9  err 2.877e-02  cens  75%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-03     6.253 ms  jac  30.4  err 2.860e-02  cens 100%  dev 0.0e+00
+   held_seed0   sep_cached   tau=1e-02     6.164 ms  jac  25.9  err 2.877e-02  cens  75%  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-01:    3.753 ms  err 1.726e-02  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-02:    4.560 ms  err 4.063e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-02:    5.191 ms  err 1.238e-03  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-03:    5.744 ms  err 4.162e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-03:    6.515 ms  err 1.166e-04  dev 0.0e+00
+   held_seed0   FOM CG tol=3e-04:    7.185 ms  err 2.871e-05  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-04:    7.678 ms  err 7.798e-06  dev 0.0e+00
+   held_seed0   FOM CG tol=1e-06:    9.612 ms  err 7.746e-08  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-03     9.170 ms  jac  35.2  err 2.893e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_meshfree tau=1e-02     9.201 ms  jac  32.4  err 2.901e-02  cens  88%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-03     9.213 ms  jac  35.2  err 2.893e-02  cens 100%  dev 0.0e+00
+   fresh_seed1  sep_cached   tau=1e-02     9.211 ms  jac  32.4  err 2.901e-02  cens  88%  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-01:    3.812 ms  err 1.500e-02  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-02:    4.574 ms  err 3.284e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-02:    5.211 ms  err 1.070e-03  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-03:    5.817 ms  err 3.198e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-03:    6.607 ms  err 1.025e-04  dev 0.0e+00
+   fresh_seed1  FOM CG tol=3e-04:    7.114 ms  err 2.549e-05  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-04:    7.665 ms  err 6.572e-06  dev 0.0e+00
+   fresh_seed1  FOM CG tol=1e-06:    9.551 ms  err 6.027e-08  dev 0.0e+00
+DONE poisson [542s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_poisson_K32_R192.json
+=== burgers K=16 R=96 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=16 R=96 M=64 m=256 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 50s, max Newton rel residual 9.99e-13
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  data: cached to /cluster/tufts/paralab/tawal01/sepdec_n128/j1/data/burgers_n128.npz for later cells in this job
+   train[burgers N=128 k=16 r=96] step      1/60000  rel-MSE 1.277e+00  [18s]
+   train[burgers N=128 k=16 r=96] step   2000/60000  rel-MSE 7.112e-03  [39s]
+   train[burgers N=128 k=16 r=96] step   4000/60000  rel-MSE 2.499e-03  [62s]
+   train[burgers N=128 k=16 r=96] step   6000/60000  rel-MSE 1.659e-03  [86s]
+   train[burgers N=128 k=16 r=96] step   8000/60000  rel-MSE 1.244e-03  [110s]
+   train[burgers N=128 k=16 r=96] step  10000/60000  rel-MSE 9.753e-04  [135s]
+   train[burgers N=128 k=16 r=96] step  12000/60000  rel-MSE 7.618e-04  [160s]
+   train[burgers N=128 k=16 r=96] step  14000/60000  rel-MSE 7.154e-04  [185s]
+   train[burgers N=128 k=16 r=96] step  16000/60000  rel-MSE 6.859e-04  [210s]
+   train[burgers N=128 k=16 r=96] step  18000/60000  rel-MSE 5.827e-04  [236s]
+   train[burgers N=128 k=16 r=96] step  20000/60000  rel-MSE 5.416e-04  [261s]
+   train[burgers N=128 k=16 r=96] step  22000/60000  rel-MSE 5.094e-04  [286s]
+   train[burgers N=128 k=16 r=96] step  24000/60000  rel-MSE 4.924e-04  [311s]
+   train[burgers N=128 k=16 r=96] step  26000/60000  rel-MSE 4.536e-04  [336s]
+   train[burgers N=128 k=16 r=96] step  28000/60000  rel-MSE 4.346e-04  [361s]
+   train[burgers N=128 k=16 r=96] step  30000/60000  rel-MSE 4.249e-04  [386s]
+   train[burgers N=128 k=16 r=96] step  32000/60000  rel-MSE 4.047e-04  [411s]
+   train[burgers N=128 k=16 r=96] step  34000/60000  rel-MSE 3.859e-04  [437s]
+   train[burgers N=128 k=16 r=96] step  36000/60000  rel-MSE 3.709e-04  [462s]
+   train[burgers N=128 k=16 r=96] step  38000/60000  rel-MSE 3.623e-04  [487s]
+   train[burgers N=128 k=16 r=96] step  40000/60000  rel-MSE 3.611e-04  [512s]
+   train[burgers N=128 k=16 r=96] step  42000/60000  rel-MSE 3.498e-04  [537s]
+   train[burgers N=128 k=16 r=96] step  44000/60000  rel-MSE 3.365e-04  [563s]
+   train[burgers N=128 k=16 r=96] step  46000/60000  rel-MSE 3.299e-04  [588s]
+   train[burgers N=128 k=16 r=96] step  48000/60000  rel-MSE 3.240e-04  [613s]
+   train[burgers N=128 k=16 r=96] step  50000/60000  rel-MSE 3.188e-04  [638s]
+   train[burgers N=128 k=16 r=96] step  52000/60000  rel-MSE 3.142e-04  [664s]
+   train[burgers N=128 k=16 r=96] step  54000/60000  rel-MSE 3.102e-04  [689s]
+   train[burgers N=128 k=16 r=96] step  56000/60000  rel-MSE 3.065e-04  [714s]
+   train[burgers N=128 k=16 r=96] step  58000/60000  rel-MSE 3.031e-04  [739s]
+   train[burgers N=128 k=16 r=96] step  60000/60000  rel-MSE 2.999e-04  [765s]
+   train[burgers N=128 k=16 r=96] done: recon rel-L2 mean 1.933e-02 max 3.319e-01  [768s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 4.66e-03 (per-row median 9.0e-03, p95 3.6e-01, max 1.0e+04) [25s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 2.88e-15
+  IC check traj 0: incumbent 1.633e-01 (20.0s host) vs batched 1.633e-01
+  IC check traj 1: incumbent 9.985e-02 (18.2s host) vs batched 9.985e-02
+   traj 0 sep_cached                 e2e    95.87 ms  err 3.504e-02  (ic   8.01 roll   87.67 dec   0.21)  ic_rel 1.63e-01
+   traj 0 sep_meshfree               e2e   112.90 ms  err 3.504e-02  (ic  13.54 roll   99.20 dec   0.26)  ic_rel 1.63e-01
+   traj 0 fom_newton_tol ntol=3e-02  e2e    30.41 ms  err 2.405e-01
+   traj 0 fom_newton_tol ntol=1e-02  e2e    68.51 ms  err 8.391e-04
+   traj 0 fom_newton_tol ntol=1e-03  e2e    70.09 ms  err 6.463e-04
+   traj 0 fom_newton_tol ntol=1e-05  e2e   110.70 ms  err 1.869e-05
+   traj 0 fom_newton_fixed8          e2e  1010.21 ms  err 0.000e+00
+   traj 1 sep_cached                 e2e    92.85 ms  err 2.722e-02  (ic   8.00 roll   84.59 dec   0.21)  ic_rel 9.99e-02
+   traj 1 sep_meshfree               e2e   107.93 ms  err 2.722e-02  (ic  13.49 roll   94.28 dec   0.21)  ic_rel 9.99e-02
+   traj 1 fom_newton_tol ntol=3e-02  e2e    51.98 ms  err 2.128e-01
+   traj 1 fom_newton_tol ntol=1e-02  e2e    91.94 ms  err 3.810e-04
+   traj 1 fom_newton_tol ntol=1e-03  e2e    95.40 ms  err 3.282e-04
+   traj 1 fom_newton_tol ntol=1e-05  e2e   165.37 ms  err 1.664e-05
+   traj 1 fom_newton_fixed8          e2e  1205.76 ms  err 0.000e+00
+   traj 2 sep_cached                 e2e    85.89 ms  err 3.880e-02  (ic   8.03 roll   77.49 dec   0.24)  ic_rel 1.61e-01
+   traj 2 sep_meshfree               e2e   101.78 ms  err 3.880e-02  (ic  13.40 roll   88.13 dec   0.25)  ic_rel 1.61e-01
+   traj 2 fom_newton_tol ntol=3e-02  e2e    23.75 ms  err 3.269e-01
+   traj 2 fom_newton_tol ntol=1e-02  e2e    67.33 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-03  e2e    67.43 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-05  e2e   104.98 ms  err 2.236e-05
+   traj 2 fom_newton_fixed8          e2e  1009.61 ms  err 0.000e+00
+   traj 3 sep_cached                 e2e    83.32 ms  err 2.778e-02  (ic   8.03 roll   75.06 dec   0.23)  ic_rel 8.91e-02
+   traj 3 sep_meshfree               e2e   105.00 ms  err 2.778e-02  (ic  13.42 roll   91.28 dec   0.20)  ic_rel 8.91e-02
+   traj 3 fom_newton_tol ntol=3e-02  e2e    52.58 ms  err 2.183e-01
+   traj 3 fom_newton_tol ntol=1e-02  e2e    98.33 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-03  e2e    98.47 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-05  e2e   149.59 ms  err 2.094e-05
+   traj 3 fom_newton_fixed8          e2e  1324.47 ms  err 0.000e+00
+   traj 4 sep_cached                 e2e    61.89 ms  err 1.023e-02  (ic   8.00 roll   53.72 dec   0.18)  ic_rel 1.56e-02
+   traj 4 sep_meshfree               e2e    76.70 ms  err 1.023e-02  (ic  13.37 roll   63.12 dec   0.18)  ic_rel 1.56e-02
+   traj 4 fom_newton_tol ntol=3e-02  e2e     2.46 ms  err 2.593e-01
+   traj 4 fom_newton_tol ntol=1e-02  e2e    24.76 ms  err 6.553e-02
+   traj 4 fom_newton_tol ntol=1e-03  e2e    41.47 ms  err 4.064e-05
+   traj 4 fom_newton_tol ntol=1e-05  e2e    44.26 ms  err 3.630e-05
+   traj 4 fom_newton_fixed8          e2e   492.17 ms  err 0.000e+00
+   traj 5 sep_cached                 e2e    91.39 ms  err 1.682e-02  (ic   8.01 roll   83.20 dec   0.20)  ic_rel 3.86e-02
+   traj 5 sep_meshfree               e2e   110.27 ms  err 1.682e-02  (ic  13.47 roll   96.53 dec   0.21)  ic_rel 3.86e-02
+   traj 5 fom_newton_tol ntol=3e-02  e2e    26.56 ms  err 2.815e-01
+   traj 5 fom_newton_tol ntol=1e-02  e2e    69.57 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-03  e2e    69.61 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-05  e2e   117.63 ms  err 1.480e-05
+   traj 5 fom_newton_fixed8          e2e   887.03 ms  err 0.000e+00
+   traj 6 sep_cached                 e2e    81.88 ms  err 1.347e-02  (ic   8.01 roll   73.66 dec   0.22)  ic_rel 2.37e-02
+   traj 6 sep_meshfree               e2e    92.73 ms  err 1.347e-02  (ic  13.50 roll   79.02 dec   0.20)  ic_rel 2.37e-02
+   traj 6 fom_newton_tol ntol=3e-02  e2e     6.38 ms  err 4.643e-01
+   traj 6 fom_newton_tol ntol=1e-02  e2e    63.71 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-03  e2e    63.86 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-05  e2e    92.05 ms  err 2.810e-05
+   traj 6 fom_newton_fixed8          e2e   812.03 ms  err 0.000e+00
+   traj 7 sep_cached                 e2e    55.68 ms  err 1.074e-02  (ic   8.00 roll   47.52 dec   0.17)  ic_rel 2.07e-02
+   traj 7 sep_meshfree               e2e    70.88 ms  err 1.074e-02  (ic  13.48 roll   57.22 dec   0.18)  ic_rel 2.07e-02
+   traj 7 fom_newton_tol ntol=3e-02  e2e     2.48 ms  err 2.024e-01
+   traj 7 fom_newton_tol ntol=1e-02  e2e     5.38 ms  err 1.849e-01
+   traj 7 fom_newton_tol ntol=1e-03  e2e    41.83 ms  err 2.208e-05
+   traj 7 fom_newton_tol ntol=1e-05  e2e    44.43 ms  err 1.940e-05
+   traj 7 fom_newton_fixed8          e2e   505.69 ms  err 0.000e+00
+DONE burgers [1059s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_burgers_K16_R96.json
+=== burgers K=8 R=48 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=8 R=48 M=32 m=128 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  data: loaded in-job cache /cluster/tufts/paralab/tawal01/sepdec_n128/j1/data/burgers_n128.npz (regenerated from seed earlier in THIS job)
+   train[burgers N=128 k=8 r=48] step      1/60000  rel-MSE 1.080e+00  [17s]
+   train[burgers N=128 k=8 r=48] step   2000/60000  rel-MSE 1.116e-02  [35s]
+   train[burgers N=128 k=8 r=48] step   4000/60000  rel-MSE 4.950e-03  [54s]
+   train[burgers N=128 k=8 r=48] step   6000/60000  rel-MSE 3.699e-03  [73s]
+   train[burgers N=128 k=8 r=48] step   8000/60000  rel-MSE 2.697e-03  [92s]
+   train[burgers N=128 k=8 r=48] step  10000/60000  rel-MSE 2.309e-03  [113s]
+   train[burgers N=128 k=8 r=48] step  12000/60000  rel-MSE 2.080e-03  [133s]
+   train[burgers N=128 k=8 r=48] step  14000/60000  rel-MSE 1.868e-03  [154s]
+   train[burgers N=128 k=8 r=48] step  16000/60000  rel-MSE 1.834e-03  [175s]
+   train[burgers N=128 k=8 r=48] step  18000/60000  rel-MSE 1.684e-03  [195s]
+   train[burgers N=128 k=8 r=48] step  20000/60000  rel-MSE 1.582e-03  [216s]
+   train[burgers N=128 k=8 r=48] step  22000/60000  rel-MSE 1.486e-03  [237s]
+   train[burgers N=128 k=8 r=48] step  24000/60000  rel-MSE 1.442e-03  [258s]
+   train[burgers N=128 k=8 r=48] step  26000/60000  rel-MSE 1.380e-03  [279s]
+   train[burgers N=128 k=8 r=48] step  28000/60000  rel-MSE 1.342e-03  [299s]
+   train[burgers N=128 k=8 r=48] step  30000/60000  rel-MSE 1.320e-03  [320s]
+   train[burgers N=128 k=8 r=48] step  32000/60000  rel-MSE 1.293e-03  [341s]
+   train[burgers N=128 k=8 r=48] step  34000/60000  rel-MSE 1.262e-03  [362s]
+   train[burgers N=128 k=8 r=48] step  36000/60000  rel-MSE 1.249e-03  [383s]
+   train[burgers N=128 k=8 r=48] step  38000/60000  rel-MSE 1.228e-03  [403s]
+   train[burgers N=128 k=8 r=48] step  40000/60000  rel-MSE 1.206e-03  [424s]
+   train[burgers N=128 k=8 r=48] step  42000/60000  rel-MSE 1.195e-03  [445s]
+   train[burgers N=128 k=8 r=48] step  44000/60000  rel-MSE 1.181e-03  [466s]
+   train[burgers N=128 k=8 r=48] step  46000/60000  rel-MSE 1.171e-03  [487s]
+   train[burgers N=128 k=8 r=48] step  48000/60000  rel-MSE 1.162e-03  [508s]
+   train[burgers N=128 k=8 r=48] step  50000/60000  rel-MSE 1.154e-03  [528s]
+   train[burgers N=128 k=8 r=48] step  52000/60000  rel-MSE 1.147e-03  [549s]
+   train[burgers N=128 k=8 r=48] step  54000/60000  rel-MSE 1.141e-03  [570s]
+   train[burgers N=128 k=8 r=48] step  56000/60000  rel-MSE 1.135e-03  [591s]
+   train[burgers N=128 k=8 r=48] step  58000/60000  rel-MSE 1.130e-03  [612s]
+   train[burgers N=128 k=8 r=48] step  60000/60000  rel-MSE 1.125e-03  [633s]
+   train[burgers N=128 k=8 r=48] done: recon rel-L2 mean 3.417e-02 max 4.877e-01  [636s]
+  NNLS-EQ weak/grid M=32 m=128: support 128 (+0 pad), rel fit 1.38e-02 (per-row median 1.2e-02, p95 3.3e-01, max 7.4e+02) [10s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 1.66e-15
+  IC check traj 0: incumbent 1.828e-01 (17.6s host) vs batched 1.828e-01
+  IC check traj 1: incumbent 1.215e-01 (16.6s host) vs batched 1.215e-01
+   traj 0 sep_cached                 e2e   100.41 ms  err 4.140e-02  (ic   6.30 roll   93.97 dec   0.16)  ic_rel 1.83e-01
+   traj 0 sep_meshfree               e2e   114.60 ms  err 4.140e-02  (ic   8.79 roll  105.85 dec   0.16)  ic_rel 1.83e-01
+   traj 0 fom_newton_tol ntol=3e-02  e2e    30.41 ms  err 2.405e-01
+   traj 0 fom_newton_tol ntol=1e-02  e2e    69.00 ms  err 8.391e-04
+   traj 0 fom_newton_tol ntol=1e-03  e2e    70.53 ms  err 6.463e-04
+   traj 0 fom_newton_tol ntol=1e-05  e2e   111.36 ms  err 1.869e-05
+   traj 0 fom_newton_fixed8          e2e   958.45 ms  err 0.000e+00
+   traj 1 sep_cached                 e2e    92.90 ms  err 4.070e-02  (ic   6.25 roll   86.48 dec   0.16)  ic_rel 1.22e-01
+   traj 1 sep_meshfree               e2e   103.16 ms  err 4.070e-02  (ic   8.61 roll   94.41 dec   0.16)  ic_rel 1.22e-01
+   traj 1 fom_newton_tol ntol=3e-02  e2e    52.10 ms  err 2.128e-01
+   traj 1 fom_newton_tol ntol=1e-02  e2e    92.64 ms  err 3.810e-04
+   traj 1 fom_newton_tol ntol=1e-03  e2e    95.99 ms  err 3.282e-04
+   traj 1 fom_newton_tol ntol=1e-05  e2e   166.45 ms  err 1.664e-05
+   traj 1 fom_newton_fixed8          e2e  1157.24 ms  err 0.000e+00
+   traj 2 sep_cached                 e2e    91.85 ms  err 4.612e-02  (ic   6.25 roll   85.43 dec   0.16)  ic_rel 1.82e-01
+   traj 2 sep_meshfree               e2e   103.76 ms  err 4.612e-02  (ic   8.61 roll   95.06 dec   0.16)  ic_rel 1.82e-01
+   traj 2 fom_newton_tol ntol=3e-02  e2e    23.72 ms  err 3.269e-01
+   traj 2 fom_newton_tol ntol=1e-02  e2e    67.82 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-03  e2e    67.90 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-05  e2e   105.50 ms  err 2.236e-05
+   traj 2 fom_newton_fixed8          e2e   980.13 ms  err 0.000e+00
+   traj 3 sep_cached                 e2e    90.41 ms  err 4.610e-02  (ic   6.27 roll   83.89 dec   0.16)  ic_rel 9.90e-02
+   traj 3 sep_meshfree               e2e    93.15 ms  err 4.610e-02  (ic   8.66 roll   84.38 dec   0.16)  ic_rel 9.90e-02
+   traj 3 fom_newton_tol ntol=3e-02  e2e    52.82 ms  err 2.183e-01
+   traj 3 fom_newton_tol ntol=1e-02  e2e    99.06 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-03  e2e    99.17 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-05  e2e   150.49 ms  err 2.094e-05
+   traj 3 fom_newton_fixed8          e2e  1273.85 ms  err 0.000e+00
+   traj 4 sep_cached                 e2e    57.18 ms  err 1.502e-02  (ic   6.23 roll   50.73 dec   0.16)  ic_rel 1.90e-02
+   traj 4 sep_meshfree               e2e    67.77 ms  err 1.502e-02  (ic   8.74 roll   59.09 dec   0.16)  ic_rel 1.90e-02
+   traj 4 fom_newton_tol ntol=3e-02  e2e     2.39 ms  err 2.593e-01
+   traj 4 fom_newton_tol ntol=1e-02  e2e    24.76 ms  err 6.553e-02
+   traj 4 fom_newton_tol ntol=1e-03  e2e    41.82 ms  err 4.064e-05
+   traj 4 fom_newton_tol ntol=1e-05  e2e    44.45 ms  err 3.630e-05
+   traj 4 fom_newton_fixed8          e2e   471.05 ms  err 0.000e+00
+   traj 5 sep_cached                 e2e   110.21 ms  err 2.781e-02  (ic   6.23 roll  103.69 dec   0.16)  ic_rel 5.99e-02
+   traj 5 sep_meshfree               e2e   128.84 ms  err 2.781e-02  (ic   8.78 roll  120.10 dec   0.15)  ic_rel 5.99e-02
+   traj 5 fom_newton_tol ntol=3e-02  e2e    26.50 ms  err 2.815e-01
+   traj 5 fom_newton_tol ntol=1e-02  e2e    69.99 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-03  e2e    69.98 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-05  e2e   118.18 ms  err 1.480e-05
+   traj 5 fom_newton_fixed8          e2e   857.44 ms  err 0.000e+00
+   traj 6 sep_cached                 e2e    77.13 ms  err 2.318e-02  (ic   6.22 roll   70.76 dec   0.16)  ic_rel 3.46e-02
+   traj 6 sep_meshfree               e2e    91.00 ms  err 2.318e-02  (ic   8.67 roll   82.33 dec   0.15)  ic_rel 3.46e-02
+   traj 6 fom_newton_tol ntol=3e-02  e2e     6.31 ms  err 4.643e-01
+   traj 6 fom_newton_tol ntol=1e-02  e2e    64.05 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-03  e2e    64.23 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-05  e2e    92.56 ms  err 2.810e-05
+   traj 6 fom_newton_fixed8          e2e   772.58 ms  err 0.000e+00
+   traj 7 sep_cached                 e2e    62.52 ms  err 1.314e-02  (ic   6.23 roll   56.10 dec   0.16)  ic_rel 2.32e-02
+   traj 7 sep_meshfree               e2e    69.55 ms  err 1.314e-02  (ic   8.58 roll   60.86 dec   0.15)  ic_rel 2.32e-02
+   traj 7 fom_newton_tol ntol=3e-02  e2e     2.38 ms  err 2.024e-01
+   traj 7 fom_newton_tol ntol=1e-02  e2e     5.37 ms  err 1.849e-01
+   traj 7 fom_newton_tol ntol=1e-03  e2e    42.13 ms  err 2.208e-05
+   traj 7 fom_newton_tol ntol=1e-05  e2e    44.48 ms  err 1.940e-05
+   traj 7 fom_newton_fixed8          e2e   479.58 ms  err 0.000e+00
+DONE burgers [844s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_burgers_K8_R48.json
+=== burgers K=24 R=144 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=24 R=144 M=96 m=384 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  data: loaded in-job cache /cluster/tufts/paralab/tawal01/sepdec_n128/j1/data/burgers_n128.npz (regenerated from seed earlier in THIS job)
+   train[burgers N=128 k=24 r=144] step      1/60000  rel-MSE 1.539e+00  [18s]
+   train[burgers N=128 k=24 r=144] step   2000/60000  rel-MSE 6.234e-03  [45s]
+   train[burgers N=128 k=24 r=144] step   4000/60000  rel-MSE 2.198e-03  [75s]
+   train[burgers N=128 k=24 r=144] step   6000/60000  rel-MSE 1.135e-03  [106s]
+   train[burgers N=128 k=24 r=144] step   8000/60000  rel-MSE 7.583e-04  [137s]
+   train[burgers N=128 k=24 r=144] step  10000/60000  rel-MSE 5.739e-04  [168s]
+   train[burgers N=128 k=24 r=144] step  12000/60000  rel-MSE 4.975e-04  [199s]
+   train[burgers N=128 k=24 r=144] step  14000/60000  rel-MSE 4.330e-04  [230s]
+   train[burgers N=128 k=24 r=144] step  16000/60000  rel-MSE 4.125e-04  [261s]
+   train[burgers N=128 k=24 r=144] step  18000/60000  rel-MSE 3.820e-04  [293s]
+   train[burgers N=128 k=24 r=144] step  20000/60000  rel-MSE 3.540e-04  [324s]
+   train[burgers N=128 k=24 r=144] step  22000/60000  rel-MSE 3.101e-04  [355s]
+   train[burgers N=128 k=24 r=144] step  24000/60000  rel-MSE 2.836e-04  [386s]
+   train[burgers N=128 k=24 r=144] step  26000/60000  rel-MSE 2.833e-04  [418s]
+   train[burgers N=128 k=24 r=144] step  28000/60000  rel-MSE 2.643e-04  [449s]
+   train[burgers N=128 k=24 r=144] step  30000/60000  rel-MSE 2.408e-04  [480s]
+   train[burgers N=128 k=24 r=144] step  32000/60000  rel-MSE 2.423e-04  [511s]
+   train[burgers N=128 k=24 r=144] step  34000/60000  rel-MSE 2.255e-04  [543s]
+   train[burgers N=128 k=24 r=144] step  36000/60000  rel-MSE 2.201e-04  [574s]
+   train[burgers N=128 k=24 r=144] step  38000/60000  rel-MSE 2.119e-04  [605s]
+   train[burgers N=128 k=24 r=144] step  40000/60000  rel-MSE 2.071e-04  [636s]
+   train[burgers N=128 k=24 r=144] step  42000/60000  rel-MSE 2.001e-04  [667s]
+   train[burgers N=128 k=24 r=144] step  44000/60000  rel-MSE 1.966e-04  [699s]
+   train[burgers N=128 k=24 r=144] step  46000/60000  rel-MSE 1.921e-04  [730s]
+   train[burgers N=128 k=24 r=144] step  48000/60000  rel-MSE 1.879e-04  [761s]
+   train[burgers N=128 k=24 r=144] step  50000/60000  rel-MSE 1.846e-04  [793s]
+   train[burgers N=128 k=24 r=144] step  52000/60000  rel-MSE 1.816e-04  [824s]
+   train[burgers N=128 k=24 r=144] step  54000/60000  rel-MSE 1.790e-04  [855s]
+   train[burgers N=128 k=24 r=144] step  56000/60000  rel-MSE 1.766e-04  [887s]
+   train[burgers N=128 k=24 r=144] step  58000/60000  rel-MSE 1.744e-04  [918s]
+   train[burgers N=128 k=24 r=144] step  60000/60000  rel-MSE 1.724e-04  [949s]
+   train[burgers N=128 k=24 r=144] done: recon rel-L2 mean 1.491e-02 max 2.048e-01  [953s]
+  NNLS-EQ weak/grid M=96 m=384: support 384 (+0 pad), rel fit 2.56e-03 (per-row median 8.2e-03, p95 4.4e-01, max 3.9e+02) [62s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 9.74e-16
+  IC check traj 0: incumbent 1.497e-01 (21.8s host) vs batched 1.497e-01
+  IC check traj 1: incumbent 8.668e-02 (19.9s host) vs batched 8.668e-02
+   traj 0 sep_cached                 e2e   129.17 ms  err 3.565e-02  (ic  10.72 roll  118.18 dec   0.18)  ic_rel 1.50e-01
+   traj 0 sep_meshfree               e2e   162.90 ms  err 3.565e-02  (ic  20.09 roll  142.53 dec   0.19)  ic_rel 1.50e-01
+   traj 0 fom_newton_tol ntol=3e-02  e2e    30.27 ms  err 2.405e-01
+   traj 0 fom_newton_tol ntol=1e-02  e2e    68.83 ms  err 8.391e-04
+   traj 0 fom_newton_tol ntol=1e-03  e2e    69.99 ms  err 6.463e-04
+   traj 0 fom_newton_tol ntol=1e-05  e2e   110.61 ms  err 1.869e-05
+   traj 0 fom_newton_fixed8          e2e   992.76 ms  err 0.000e+00
+   traj 1 sep_cached                 e2e   105.47 ms  err 2.055e-02  (ic  10.63 roll   94.50 dec   0.19)  ic_rel 8.67e-02
+   traj 1 sep_meshfree               e2e   133.74 ms  err 2.055e-02  (ic  20.12 roll  113.44 dec   0.21)  ic_rel 8.67e-02
+   traj 1 fom_newton_tol ntol=3e-02  e2e    51.83 ms  err 2.128e-01
+   traj 1 fom_newton_tol ntol=1e-02  e2e    92.14 ms  err 3.810e-04
+   traj 1 fom_newton_tol ntol=1e-03  e2e    95.12 ms  err 3.282e-04
+   traj 1 fom_newton_tol ntol=1e-05  e2e   165.17 ms  err 1.664e-05
+   traj 1 fom_newton_fixed8          e2e  1211.49 ms  err 0.000e+00
+   traj 2 sep_cached                 e2e   102.29 ms  err 4.866e-02  (ic  10.66 roll   91.31 dec   0.24)  ic_rel 1.78e-01
+   traj 2 sep_meshfree               e2e   125.96 ms  err 4.866e-02  (ic  20.11 roll  105.61 dec   0.19)  ic_rel 1.78e-01
+   traj 2 fom_newton_tol ntol=3e-02  e2e    23.63 ms  err 3.269e-01
+   traj 2 fom_newton_tol ntol=1e-02  e2e    67.63 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-03  e2e    67.24 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-05  e2e   104.90 ms  err 2.236e-05
+   traj 2 fom_newton_fixed8          e2e  1017.84 ms  err 0.000e+00
+   traj 3 sep_cached                 e2e    90.30 ms  err 2.126e-02  (ic  10.63 roll   79.48 dec   0.20)  ic_rel 6.64e-02
+   traj 3 sep_meshfree               e2e   115.01 ms  err 2.126e-02  (ic  20.03 roll   94.64 dec   0.20)  ic_rel 6.64e-02
+   traj 3 fom_newton_tol ntol=3e-02  e2e    52.44 ms  err 2.183e-01
+   traj 3 fom_newton_tol ntol=1e-02  e2e    98.43 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-03  e2e    98.30 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-05  e2e   149.50 ms  err 2.094e-05
+   traj 3 fom_newton_fixed8          e2e  1331.05 ms  err 0.000e+00
+   traj 4 sep_cached                 e2e    78.92 ms  err 9.434e-03  (ic  10.61 roll   68.14 dec   0.18)  ic_rel 1.35e-02
+   traj 4 sep_meshfree               e2e   104.07 ms  err 9.434e-03  (ic  20.05 roll   83.83 dec   0.18)  ic_rel 1.35e-02
+   traj 4 fom_newton_tol ntol=3e-02  e2e     2.41 ms  err 2.593e-01
+   traj 4 fom_newton_tol ntol=1e-02  e2e    24.61 ms  err 6.553e-02
+   traj 4 fom_newton_tol ntol=1e-03  e2e    41.38 ms  err 4.064e-05
+   traj 4 fom_newton_tol ntol=1e-05  e2e    44.06 ms  err 3.630e-05
+   traj 4 fom_newton_fixed8          e2e   495.12 ms  err 0.000e+00
+   traj 5 sep_cached                 e2e   133.46 ms  err 1.608e-02  (ic  10.64 roll  122.74 dec   0.22)  ic_rel 2.96e-02
+   traj 5 sep_meshfree               e2e   164.49 ms  err 1.608e-02  (ic  20.02 roll  144.27 dec   0.20)  ic_rel 2.96e-02
+   traj 5 fom_newton_tol ntol=3e-02  e2e    26.51 ms  err 2.815e-01
+   traj 5 fom_newton_tol ntol=1e-02  e2e    69.76 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-03  e2e    69.52 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-05  e2e   117.50 ms  err 1.480e-05
+   traj 5 fom_newton_fixed8          e2e   890.13 ms  err 0.000e+00
+   traj 6 sep_cached                 e2e    90.95 ms  err 1.096e-02  (ic  10.61 roll   80.07 dec   0.18)  ic_rel 1.82e-02
+   traj 6 sep_meshfree               e2e   119.30 ms  err 1.096e-02  (ic  20.01 roll   99.07 dec   0.19)  ic_rel 1.82e-02
+   traj 6 fom_newton_tol ntol=3e-02  e2e     6.30 ms  err 4.643e-01
+   traj 6 fom_newton_tol ntol=1e-02  e2e    63.78 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-03  e2e    63.59 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-05  e2e    91.87 ms  err 2.810e-05
+   traj 6 fom_newton_fixed8          e2e   814.69 ms  err 0.000e+00
+   traj 7 sep_cached                 e2e    80.24 ms  err 7.436e-03  (ic  10.61 roll   69.51 dec   0.17)  ic_rel 1.40e-02
+   traj 7 sep_meshfree               e2e   107.24 ms  err 7.436e-03  (ic  19.99 roll   87.00 dec   0.23)  ic_rel 1.40e-02
+   traj 7 fom_newton_tol ntol=3e-02  e2e     2.39 ms  err 2.024e-01
+   traj 7 fom_newton_tol ntol=1e-02  e2e     5.34 ms  err 1.849e-01
+   traj 7 fom_newton_tol ntol=1e-03  e2e    41.68 ms  err 2.208e-05
+   traj 7 fom_newton_tol ntol=1e-05  e2e    44.10 ms  err 1.940e-05
+   traj 7 fom_newton_fixed8          e2e   502.89 ms  err 0.000e+00
+DONE burgers [1239s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_burgers_K24_R144.json
+=== burgers K=32 R=192 ===
+jax_backend=gpu device=cuda:0 x64=True N=128 K=32 R=192 M=128 m=512 steps=60000 seed=0 arch={'n_ff': 128, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  data: loaded in-job cache /cluster/tufts/paralab/tawal01/sepdec_n128/j1/data/burgers_n128.npz (regenerated from seed earlier in THIS job)
+   train[burgers N=128 k=32 r=192] step      1/60000  rel-MSE 1.884e+00  [18s]
+   train[burgers N=128 k=32 r=192] step   2000/60000  rel-MSE 6.552e-03  [48s]
+   train[burgers N=128 k=32 r=192] step   4000/60000  rel-MSE 2.103e-03  [80s]
+   train[burgers N=128 k=32 r=192] step   6000/60000  rel-MSE 1.082e-03  [113s]
+   train[burgers N=128 k=32 r=192] step   8000/60000  rel-MSE 7.151e-04  [147s]
+   train[burgers N=128 k=32 r=192] step  10000/60000  rel-MSE 4.965e-04  [181s]
+   train[burgers N=128 k=32 r=192] step  12000/60000  rel-MSE 4.090e-04  [215s]
+   train[burgers N=128 k=32 r=192] step  14000/60000  rel-MSE 3.609e-04  [250s]
+   train[burgers N=128 k=32 r=192] step  16000/60000  rel-MSE 2.884e-04  [284s]
+   train[burgers N=128 k=32 r=192] step  18000/60000  rel-MSE 2.601e-04  [318s]
+   train[burgers N=128 k=32 r=192] step  20000/60000  rel-MSE 2.425e-04  [352s]
+   train[burgers N=128 k=32 r=192] step  22000/60000  rel-MSE 2.607e-04  [386s]
+   train[burgers N=128 k=32 r=192] step  24000/60000  rel-MSE 1.997e-04  [420s]
+   train[burgers N=128 k=32 r=192] step  26000/60000  rel-MSE 1.892e-04  [454s]
+   train[burgers N=128 k=32 r=192] step  28000/60000  rel-MSE 1.833e-04  [488s]
+   train[burgers N=128 k=32 r=192] step  30000/60000  rel-MSE 1.722e-04  [522s]
+   train[burgers N=128 k=32 r=192] step  32000/60000  rel-MSE 1.630e-04  [557s]
+   train[burgers N=128 k=32 r=192] step  34000/60000  rel-MSE 1.646e-04  [591s]
+   train[burgers N=128 k=32 r=192] step  36000/60000  rel-MSE 1.544e-04  [625s]
+   train[burgers N=128 k=32 r=192] step  38000/60000  rel-MSE 1.497e-04  [659s]
+   train[burgers N=128 k=32 r=192] step  40000/60000  rel-MSE 1.435e-04  [693s]
+   train[burgers N=128 k=32 r=192] step  42000/60000  rel-MSE 1.388e-04  [728s]
+   train[burgers N=128 k=32 r=192] step  44000/60000  rel-MSE 1.364e-04  [762s]
+   train[burgers N=128 k=32 r=192] step  46000/60000  rel-MSE 1.322e-04  [796s]
+   train[burgers N=128 k=32 r=192] step  48000/60000  rel-MSE 1.301e-04  [830s]
+   train[burgers N=128 k=32 r=192] step  50000/60000  rel-MSE 1.273e-04  [865s]
+   train[burgers N=128 k=32 r=192] step  52000/60000  rel-MSE 1.251e-04  [900s]
+   train[burgers N=128 k=32 r=192] step  54000/60000  rel-MSE 1.233e-04  [934s]
+   train[burgers N=128 k=32 r=192] step  56000/60000  rel-MSE 1.215e-04  [969s]
+   train[burgers N=128 k=32 r=192] step  58000/60000  rel-MSE 1.200e-04  [1003s]
+   train[burgers N=128 k=32 r=192] step  60000/60000  rel-MSE 1.186e-04  [1038s]
+   train[burgers N=128 k=32 r=192] done: recon rel-L2 mean 1.197e-02 max 1.734e-01  [1041s]
+  NNLS-EQ weak/grid M=128 m=512: support 512 (+0 pad), rel fit 1.64e-03 (per-row median 8.0e-03, p95 4.2e-01, max 2.2e+02) [139s]
+  GATE 0 (incumbent vs cached weak r/J identity): max rel dev 2.02e-15
+  IC check traj 0: incumbent 1.217e-01 (23.8s host) vs batched 1.217e-01
+  IC check traj 1: incumbent 9.096e-02 (21.9s host) vs batched 9.096e-02
+   traj 0 sep_cached                 e2e   150.84 ms  err 3.158e-02  (ic  12.06 roll  138.55 dec   0.21)  ic_rel 1.22e-01
+   traj 0 sep_meshfree               e2e   194.42 ms  err 3.158e-02  (ic  24.51 roll  169.76 dec   0.19)  ic_rel 1.22e-01
+   traj 0 fom_newton_tol ntol=3e-02  e2e    30.35 ms  err 2.405e-01
+   traj 0 fom_newton_tol ntol=1e-02  e2e    68.53 ms  err 8.391e-04
+   traj 0 fom_newton_tol ntol=1e-03  e2e    70.06 ms  err 6.463e-04
+   traj 0 fom_newton_tol ntol=1e-05  e2e   110.66 ms  err 1.869e-05
+   traj 0 fom_newton_fixed8          e2e   989.15 ms  err 0.000e+00
+   traj 1 sep_cached                 e2e   115.10 ms  err 1.820e-02  (ic  12.06 roll  102.88 dec   0.19)  ic_rel 9.10e-02
+   traj 1 sep_meshfree               e2e   152.72 ms  err 1.820e-02  (ic  24.49 roll  127.96 dec   0.20)  ic_rel 9.10e-02
+   traj 1 fom_newton_tol ntol=3e-02  e2e    52.23 ms  err 2.128e-01
+   traj 1 fom_newton_tol ntol=1e-02  e2e    91.92 ms  err 3.810e-04
+   traj 1 fom_newton_tol ntol=1e-03  e2e    95.36 ms  err 3.282e-04
+   traj 1 fom_newton_tol ntol=1e-05  e2e   165.42 ms  err 1.664e-05
+   traj 1 fom_newton_fixed8          e2e  1176.83 ms  err 0.000e+00
+   traj 2 sep_cached                 e2e   121.79 ms  err 2.882e-02  (ic  12.03 roll  109.51 dec   0.18)  ic_rel 1.31e-01
+   traj 2 sep_meshfree               e2e   158.73 ms  err 2.882e-02  (ic  24.54 roll  134.01 dec   0.19)  ic_rel 1.31e-01
+   traj 2 fom_newton_tol ntol=3e-02  e2e    23.79 ms  err 3.269e-01
+   traj 2 fom_newton_tol ntol=1e-02  e2e    67.46 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-03  e2e    67.48 ms  err 3.659e-04
+   traj 2 fom_newton_tol ntol=1e-05  e2e   105.12 ms  err 2.236e-05
+   traj 2 fom_newton_fixed8          e2e   993.20 ms  err 0.000e+00
+   traj 3 sep_cached                 e2e   101.06 ms  err 1.365e-02  (ic  12.04 roll   88.75 dec   0.20)  ic_rel 5.84e-02
+   traj 3 sep_meshfree               e2e   134.27 ms  err 1.365e-02  (ic  24.55 roll  109.45 dec   0.20)  ic_rel 5.84e-02
+   traj 3 fom_newton_tol ntol=3e-02  e2e    52.86 ms  err 2.183e-01
+   traj 3 fom_newton_tol ntol=1e-02  e2e    98.44 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-03  e2e    98.42 ms  err 2.913e-04
+   traj 3 fom_newton_tol ntol=1e-05  e2e   149.77 ms  err 2.094e-05
+   traj 3 fom_newton_fixed8          e2e  1302.07 ms  err 0.000e+00
+   traj 4 sep_cached                 e2e    97.38 ms  err 8.022e-03  (ic  12.06 roll   84.97 dec   0.19)  ic_rel 1.25e-02
+   traj 4 sep_meshfree               e2e   124.01 ms  err 8.022e-03  (ic  24.44 roll   99.49 dec   0.19)  ic_rel 1.25e-02
+   traj 4 fom_newton_tol ntol=3e-02  e2e     2.46 ms  err 2.593e-01
+   traj 4 fom_newton_tol ntol=1e-02  e2e    24.57 ms  err 6.553e-02
+   traj 4 fom_newton_tol ntol=1e-03  e2e    41.51 ms  err 4.064e-05
+   traj 4 fom_newton_tol ntol=1e-05  e2e    44.25 ms  err 3.630e-05
+   traj 4 fom_newton_fixed8          e2e   479.47 ms  err 0.000e+00
+   traj 5 sep_cached                 e2e   143.89 ms  err 1.206e-02  (ic  12.09 roll  131.64 dec   0.21)  ic_rel 2.49e-02
+   traj 5 sep_meshfree               e2e   183.34 ms  err 1.206e-02  (ic  24.52 roll  158.52 dec   0.21)  ic_rel 2.49e-02
+   traj 5 fom_newton_tol ntol=3e-02  e2e    26.76 ms  err 2.815e-01
+   traj 5 fom_newton_tol ntol=1e-02  e2e    69.62 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-03  e2e    69.71 ms  err 5.418e-04
+   traj 5 fom_newton_tol ntol=1e-05  e2e   117.61 ms  err 1.480e-05
+   traj 5 fom_newton_fixed8          e2e   871.70 ms  err 0.000e+00
+   traj 6 sep_cached                 e2e   126.43 ms  err 9.644e-03  (ic  11.99 roll  114.23 dec   0.17)  ic_rel 2.12e-02
+   traj 6 sep_meshfree               e2e   159.34 ms  err 9.644e-03  (ic  24.49 roll  134.66 dec   0.19)  ic_rel 2.12e-02
+   traj 6 fom_newton_tol ntol=3e-02  e2e     6.32 ms  err 4.643e-01
+   traj 6 fom_newton_tol ntol=1e-02  e2e    63.70 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-03  e2e    63.80 ms  err 1.571e-04
+   traj 6 fom_newton_tol ntol=1e-05  e2e    92.13 ms  err 2.810e-05
+   traj 6 fom_newton_fixed8          e2e   795.62 ms  err 0.000e+00
+   traj 7 sep_cached                 e2e    89.15 ms  err 8.184e-03  (ic  12.06 roll   76.99 dec   0.18)  ic_rel 1.33e-02
+   traj 7 sep_meshfree               e2e   119.19 ms  err 8.184e-03  (ic  24.46 roll   94.57 dec   0.19)  ic_rel 1.33e-02
+   traj 7 fom_newton_tol ntol=3e-02  e2e     2.43 ms  err 2.024e-01
+   traj 7 fom_newton_tol ntol=1e-02  e2e     5.43 ms  err 1.849e-01
+   traj 7 fom_newton_tol ntol=1e-03  e2e    41.83 ms  err 2.208e-05
+   traj 7 fom_newton_tol ntol=1e-05  e2e    44.29 ms  err 1.940e-05
+   traj 7 fom_newton_fixed8          e2e   495.06 ms  err 0.000e+00
+DONE burgers [1417s] -> /cluster/tufts/paralab/tawal01/sepdec_n128/j1/out/sep_burgers_K32_R192.json
+ALL-DONE

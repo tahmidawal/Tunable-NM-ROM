@@ -1,0 +1,18 @@
+jax_backend=gpu device=cuda:0 B3D-FOM-GATES N=33
+  table[train] built: 576 rows, seed 0, s* on 257^3 [69s] -> /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-03-burgers3d-tensor/experiments/separable-decoder/runs/b3dtensor/tables/b3d_params_train_seed0_m576.npz
+  table[test] built: 8 rows, seed 1, s* on 257^3 [1s] -> /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-03-burgers3d-tensor/experiments/separable-decoder/runs/b3dtensor/tables/b3d_params_test_seed1_m8.npz
+  GATE F9_dst_mm_vs_fft: 3.559e-15 PASS
+  GATE F4_helmholtz_backward_error: 1.472e-15 PASS  | control 1.470e-01 fired=True
+  GATE F2_modes_eigenvectors: 1.100e-16 PASS  | control 1.117e-03 fired=True
+  GATE F3_truth_acceptance: 9.979e-13 PASS  | control 2.891e-10 fired=False
+  GATE F5_nonnegativity_test: 9.395e-21 PASS  | control -5.685e+03 fired=True
+  F10: 0.31 s/traj (chunk 8); 512 traj = 0.04 h
+  GATE F6_stencil_vs_assembled: 1.908e-17 PASS  | control 1.736e-03 fired=True
+  GATE F1_axis_symmetry: 8.932e-17 PASS  | control 4.705e-03 fired=True
+  GATE F8_2d_vs_3d_plateau: 0.000e+00 PASS  | control 0.000e+00 fired=False
+    F7 N=33: worst res 8.98e-13 [1s]
+    F7 N=65: worst res 9.92e-13 [6s]
+    F7 N=129: worst res 1.37e-15 [95s]
+  GATE F7_spatial_order: 8.316e-01 PASS  | control -1.114e+00 fired=True
+DONE -> runs/b3dtensor/local/fom_gates_n33.json  complete=False [212s]
+GATE F3_truth_acceptance CONTROL DID NOT FIRE: {'value': 9.979168451851449e-13, 'passed': True, 'control': 2.8908070281243917e-10, 'control_fired': False}

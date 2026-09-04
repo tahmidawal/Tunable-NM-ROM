@@ -1,0 +1,24 @@
+{
+ "a": {
+  "passed": false,
+  "d4_mean": 0.04878672630543828,
+  "cfg": {
+   "k": 16,
+   "r": 64,
+   "M": 130,
+   "m_nnls": 512
+  }
+ },
+ "b": {
+  "passed": true,
+  "d4_mean": 0.030436511747326356,
+  "cfg": {
+   "k": 32,
+   "r": 128,
+   "M": 256,
+   "m_nnls": 1024
+  }
+ },
+ "promoted": "b",
+ "rule": "smaller if it passes and its D4 mean <= 1.2x the larger's; else larger if it passes; else stop"
+}

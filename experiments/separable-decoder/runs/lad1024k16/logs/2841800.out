@@ -1,0 +1,40 @@
+host=pax009 gpu=NVIDIA H200
+jax_backend=gpu
+stage MANIFEST OK
+e780fd8a678f57354811bd45e67481d16822e49980492d34f72ce99ed343e921  /cluster/tufts/paralab/tawal01/eqladder/lad1024k16/in/sep_burgers_r3_N1024_K16_R512.pkl
+jax_backend=gpu device=cuda:0 EQ-LADDER N=1024 ckpt=sep_burgers_r3_N1024_K16_R512.pkl
+  test data: 4 fresh trajectories, worst FOM rel residual 8.68e-13
+  EQ-fit bank vs meshfree full-interior decode: 4.28e-16
+  NNLS-EQ eq-ladder N=1024 k=16 M=64 m=256: pool 65536 support 256 (+0 pad) rel fit 5.36e-03 (row p95 6.5e-01, max 7.8e+04) [31s]
+  GATE 0 [ctrl]: 1.29e-15
+  GATE F skipped at N=1024 (> FULL_GATE_MAX_N)
+  NNLS-EQ eq-ladder N=1024 k=16 M=256 m=1024: pool 65536 support 1024 (+0 pad) rel fit 5.85e-04 (row p95 3.8e-01, max 8.0e+02) [700s]
+  GATE 0 [M256]: 9.95e-16
+  GATE F skipped at N=1024 (> FULL_GATE_MAX_N)
+  [ctrl] traj 0: rollout err 6.118e-03 (t0 4.61e-03, t1 3.67e-03, t50 1.13e-02), 108 LM iterates recorded [4s]
+  [ctrl] traj 1: rollout err 7.570e-02 (t0 2.29e-01, t1 2.00e-01, t50 3.94e-02), 111 LM iterates recorded [1s]
+  [ctrl] traj 2: rollout err 1.414e-02 (t0 9.33e-03, t1 3.34e-02, t50 1.12e-02), 122 LM iterates recorded [1s]
+  [ctrl] traj 3: rollout err 3.230e-02 (t0 1.53e-02, t1 4.09e-02, t50 3.61e-02), 112 LM iterates recorded [1s]
+  [M256] traj 0: rollout err 5.892e-03 (t0 4.61e-03, t1 3.67e-03, t50 1.04e-02), 107 LM iterates recorded [5s]
+  [M256] traj 1: rollout err 7.041e-02 (t0 2.29e-01, t1 1.99e-01, t50 3.62e-02), 113 LM iterates recorded [2s]
+  [M256] traj 2: rollout err 6.651e-03 (t0 9.33e-03, t1 1.06e-02, t50 7.63e-03), 155 LM iterates recorded [2s]
+  [M256] traj 3: rollout err 9.669e-03 (t0 1.53e-02, t1 1.30e-02, t50 1.39e-02), 155 LM iterates recorded [2s]
+  oracle traj 0: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 1: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 2: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  oracle traj 3: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  training snapshots: 16 states
+  ctrl  solver t= 1- 1 n=  47  (b) 1.27e-01 [lin 1.4e-01 adv 9.0e-02]  (c1) 4.39e-01 cos 0.6039  (c2) 6.71e-03  (c3) 2.16e-01 cos 0.9717
+  ctrl  solver t= 2- 2 n=  12  (b) 2.74e-01 [lin 3.2e-01 adv 1.6e-01]  (c1) 6.37e-01 cos 0.2894  (c2) 7.43e-03  (c3) 6.07e-01 cos 0.7357
+  ctrl  solver t= 3- 4 n=  22  (b) 3.88e-01 [lin 4.1e-01 adv 1.7e-01]  (c1) 6.20e-01 cos 0.3327  (c2) 6.05e-03  (c3) 7.01e-01 cos 0.6468
+  ctrl  solver t= 5- 9 n=  44  (b) 4.93e-01 [lin 4.3e-01 adv 2.6e-01]  (c1) 6.35e-01 cos 0.3745  (c2) 4.62e-03  (c3) 7.26e-01 cos 0.3539
+  ctrl  solver t=10-24 n= 120  (b) 6.09e-01 [lin 4.8e-01 adv 5.2e-01]  (c1) 7.29e-01 cos 0.3272  (c2) 4.03e-03  (c3) 7.50e-01 cos 0.3647
+  ctrl  solver t=25-50 n= 208  (b) 6.08e-01 [lin 4.3e-01 adv 6.0e-01]  (c1) 7.09e-01 cos 0.2911  (c2) 4.37e-03  (c3) 7.99e-01 cos 0.3352
+  M256  solver t= 1- 1 n=  81  (b) 9.04e-02 [lin 8.8e-02 adv 1.2e-02]  (c1) 4.65e-01 cos 0.6316  (c2) 5.87e-04  (c3) 2.95e-01 cos 0.9015
+  M256  solver t= 2- 2 n=  49  (b) 8.91e-02 [lin 8.8e-02 adv 5.4e-03]  (c1) 3.04e-01 cos 0.8496  (c2) 3.15e-04  (c3) 1.37e-01 cos 0.9929
+  M256  solver t= 3- 4 n=  31  (b) 6.98e-02 [lin 6.7e-02 adv 1.1e-02]  (c1) 2.95e-01 cos 0.7650  (c2) 2.70e-04  (c3) 2.79e-01 cos 0.9046
+  M256  solver t= 5- 9 n=  41  (b) 4.43e-02 [lin 4.3e-02 adv 1.7e-02]  (c1) 2.18e-01 cos 0.9256  (c2) 1.78e-04  (c3) 4.02e-01 cos 0.7248
+  M256  solver t=10-24 n= 120  (b) 5.78e-02 [lin 6.3e-02 adv 3.2e-02]  (c1) 3.98e-01 cos 0.8250  (c2) 1.46e-04  (c3) 5.26e-01 cos 0.6236
+  M256  solver t=25-50 n= 208  (b) 6.30e-02 [lin 7.1e-02 adv 3.6e-02]  (c1) 4.68e-01 cos 0.7860  (c2) 1.64e-04  (c3) 5.43e-01 cos 0.4777
+DONE -> /cluster/tufts/paralab/tawal01/eqladder/lad1024k16/out/sep_eq_ladder_N1024_K16_r3d.json [1110s]
+ALL-DONE

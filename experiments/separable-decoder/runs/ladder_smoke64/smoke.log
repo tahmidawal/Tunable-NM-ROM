@@ -1,0 +1,46 @@
+jax_backend=gpu device=cuda:0 EQ-LADDER N=64 ckpt=sep_burgers_N64_K16_R64.pkl
+  test data: 1 fresh trajectories, worst FOM rel residual 9.28e-13
+  EQ-fit bank vs meshfree full-interior decode: 3.84e-16
+  NNLS-EQ eq-ladder N=64 k=16 M=64 m=256: pool 3844 support 256 (+0 pad) rel fit 4.73e-03 (row p95 5.0e-01, max 5.1e+02) [66s]
+  GATE 0 [ctrl]: 4.15e-16
+E0825 16:26:28.230696 3269894 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 1s:
+
+  %dot = f64[19220,128]{1,0} dot(%constant.14, %constant.15), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 16:26:28.398645 3269748 slow_operation_alarm.cc:140] The operation took 1.16845444s
+Constant folding an instruction is taking > 1s:
+
+  %dot = f64[19220,128]{1,0} dot(%constant.14, %constant.15), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 16:26:31.967049 3269894 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 2s:
+
+  %dot_general.11 = f64[19220,128]{1,0} dot(%constant.46, %constant.29), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E0825 16:26:32.547811 3269748 slow_operation_alarm.cc:140] The operation took 2.580959184s
+Constant folding an instruction is taking > 2s:
+
+  %dot_general.11 = f64[19220,128]{1,0} dot(%constant.46, %constant.29), lhs_contracting_dims={1}, rhs_contracting_dims={0}, operand_precision={highest,highest}, metadata={op_name="jit(prev_of)/dot_general" stack_frame_id=13}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+  GATE F (full-grid ref vs make_weak_ops on interior) [ctrl]: 3.07e-16
+  [ctrl] traj 0: rollout err 5.967e-02 (t0 1.20e-01, t1 1.04e-01, t50 4.14e-02), 118 LM iterates recorded [6s]
+  oracle traj 0: codes at t=[0, 1, 2, 3, 5, 10, 25, 50] placed
+  training snapshots: 8 states
+  ctrl  solver t= 1- 1 n=  20  (b) 2.77e-02 [lin 1.5e-02 adv 2.2e-02]  (c1) 1.07e-01 cos 0.9553  (c2) 5.90e-04  (c3) 9.01e-02 cos 0.9704
+  ctrl  solver t= 2- 2 n=   2  (b) 6.57e-02 [lin 5.3e-02 adv 4.2e-02]  (c1) 2.99e-01 cos 0.9084  (c2) 5.81e-04  (c3) 7.08e-01 cos 0.1735
+  ctrl  solver t= 3- 4 n=   4  (b) 7.53e-02 [lin 6.4e-02 adv 4.6e-02]  (c1) 3.64e-01 cos 0.8520  (c2) 5.90e-04  (c3) 5.93e-01 cos 0.3676
+  ctrl  solver t= 5- 9 n=  10  (b) 9.39e-02 [lin 7.7e-02 adv 6.4e-02]  (c1) 4.42e-01 cos 0.7573  (c2) 5.93e-04  (c3) 5.23e-01 cos 0.6787
+  ctrl  solver t=10-24 n=  30  (b) 1.02e-01 [lin 6.4e-02 adv 8.8e-02]  (c1) 4.83e-01 cos 0.6816  (c2) 5.45e-04  (c3) 5.77e-01 cos 0.6673
+  ctrl  solver t=25-50 n=  52  (b) 1.06e-01 [lin 8.5e-02 adv 6.3e-02]  (c1) 5.10e-01 cos 0.8292  (c2) 4.44e-04  (c3) 6.32e-01 cos 0.6100
+DONE -> sep_eq_ladder_smoke64.json [202s]

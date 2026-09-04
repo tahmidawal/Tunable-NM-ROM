@@ -1,0 +1,207 @@
+{
+ "config": {
+  "N": 33,
+  "n_interior": 29791,
+  "dx": 0.03125,
+  "dt": 0.005,
+  "num_steps": 50,
+  "newton_iters": 8,
+  "lin_tol": 1e-10,
+  "lin_maxiter": 2000,
+  "seed": 0,
+  "test_seed": 1,
+  "n_test": 8,
+  "f7_ns": [
+   33,
+   65,
+   129
+  ],
+  "table_train": {
+   "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-03-burgers3d-tensor/experiments/separable-decoder/runs/b3dtensor/tables/b3d_params_train_seed0_m576.npz",
+   "sha256": "8f47325468fefe036089f4265cee09739e13184da66579601db2fa6d691a871a",
+   "m": 576
+  },
+  "table_test": {
+   "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-03-burgers3d-tensor/experiments/separable-decoder/runs/b3dtensor/tables/b3d_params_test_seed1_m8.npz",
+   "sha256": "9a9b16b7c685740f1f5b78c2561f7354f1630f9f316d7fa37f5d5b0fd21e2184",
+   "m": 8
+  },
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "gpu": "NVIDIA GB10",
+  "jax_version": "0.10.1",
+  "commit": "ea1f3c6c45ffad89faeb17b76065fa17fbf43bf1",
+  "slurm_job": null,
+  "node": "local",
+  "dst": "mm"
+ },
+ "gates": {
+  "F9_dst_mm_vs_fft": {
+   "value": 3.559033120039204e-15,
+   "passed": true,
+   "helmholtz_ms": {
+    "mm": 0.43227901915088296,
+    "fft": 0.4402470076456666
+   },
+   "faster": "mm",
+   "control_note": "FFT forward transform without its orthonormal factor",
+   "control": 63.000000000000014,
+   "control_fired": true
+  },
+  "F4_helmholtz_backward_error": {
+   "value": 1.4719461540109675e-15,
+   "passed": true,
+   "control": 0.14704922883185353,
+   "control_fired": true
+  },
+  "F2_modes_eigenvectors": {
+   "value": 1.099781348582127e-16,
+   "passed": true,
+   "M": 256,
+   "column_norm_dev": 4.0523140398818214e-14,
+   "control": 0.0011166317568312937,
+   "control_fired": true
+  },
+  "F3_truth_acceptance": {
+   "value": 9.979148311864784e-13,
+   "passed": true,
+   "control_note": "1 Newton iteration per step (2 iterations converged to 2.9e-10 at N=33)",
+   "control": 4.8749566763925305e-05,
+   "control_fired": true
+  },
+  "F5_nonnegativity_test": {
+   "value": 9.394840275507477e-21,
+   "passed": true,
+   "control_note": "output mutation: one node of state k=25 set to -2e-3 (bar: < -1e-3)",
+   "downwind_diagnostic": {
+    "finite": true,
+    "worst_res": 185893.8194305575,
+    "min_u": -2924.9561072591223,
+    "converged": false,
+    "note": "anti-diffusive scheme: Newton does not converge on it; recorded, not the control"
+   },
+   "control": -0.002,
+   "control_fired": true
+  },
+  "F10_generator_secs_per_traj": {
+   "value": 0.4235643744468689,
+   "chunk": 8,
+   "projected_hours_512": 0.06024026658799913,
+   "projected_hours_256": 0.030120133293999565,
+   "projected_hours_128": 0.015060066646999782
+  },
+  "F6_stencil_vs_assembled": {
+   "value": 1.966957706241391e-17,
+   "passed": true,
+   "control_note": "sign-changing state: the upwind switch is live",
+   "control": 0.0017355681729908045,
+   "control_fired": true
+  },
+  "F1_axis_symmetry": {
+   "value": 8.908962767165908e-17,
+   "passed": true,
+   "control_note": "z-advection coefficient x1.01",
+   "control": 0.00470481452958525,
+   "control_fired": true
+  },
+  "F8_2d_vs_3d_plateau": {
+   "value": 0.0,
+   "passed": true,
+   "residual": 0.0,
+   "jvp": 0.0,
+   "control_note": "x-advection coefficient doubled (x1.01 gave 1.9e-5 under the backward-error normalisation, below the 1e-4 bar)",
+   "z_terms_mutated_on_plane": 0.0,
+   "film_sha256": "51b02f5cccf28b0e3eb9f53310c3a2a020af265d26dfb9d6918be46a2bd672e1",
+   "sign_changing_plane": true,
+   "control": 0.0019044706540410933,
+   "control_fired": true
+  },
+  "F11_manufactured_solution_order": {
+   "value": 0.9297006185044633,
+   "passed": true,
+   "errors": {
+    "33": 0.12433484958189749,
+    "65": 0.06788142867447623,
+    "129": 0.03563552824896422
+   },
+   "order_coarse": 0.8731418891957727,
+   "order_fine": 0.9297006185044633,
+   "worst_res": {
+    "33": 2.0763508506572752e-13,
+    "65": 2.5593771353761034e-13,
+    "129": 3.5122670226300305e-13
+   },
+   "control_note": "forcing sign flipped: O(1) error",
+   "control": 1.2474422351471393,
+   "control_fired": true
+  },
+  "F7_spatial_order": {
+   "value": 0.8315906634346111,
+   "passed": true,
+   "d_coarse_mid": 1.6415789013637048,
+   "d_mid_fine": 0.9224185493887419,
+   "band": [
+    0.7,
+    1.3
+   ],
+   "band_source": "frozen [0.7, 1.3]; F11 reported separately",
+   "p_mms": 0.9297006185044633,
+   "worst_res": {
+    "33": 8.975940808185757e-13,
+    "65": 9.924222969806652e-13,
+    "129": 1.374177733616643e-15
+   },
+   "secs": {
+    "33": 0.9777584075927734,
+    "65": 4.863454103469849,
+    "129": 51.30844712257385
+   },
+   "control_note": "fine solution sampled one fine cell off (index mutation)",
+   "control": 0.21718116654863334,
+   "control_fired": true
+  }
+ },
+ "complete": true,
+ "data": {
+  "test": {
+   "n_test": 8,
+   "max_fom_rel_residual": 9.979148311864784e-13,
+   "min_u": 9.394840275507477e-21,
+   "max_u": 1.75272635036075,
+   "frac_points_le0": 0.0,
+   "gen_secs": 4.444759845733643,
+   "u0_max": [
+    0.6974850057010166,
+    1.662493345425057,
+    1.6668187532004894,
+    1.6922541294757485,
+    1.7339450561170002,
+    1.4408434328850819,
+    1.75272635036075,
+    1.5251570590929875
+   ],
+   "nu": [
+    0.025299561065152496,
+    0.041020722094159835,
+    0.015545913934178719,
+    0.09197522794823429,
+    0.014605191861694712,
+    0.06460622299813103,
+    0.05326888547668803,
+    0.03164874045008572
+   ],
+   "B": [
+    2,
+    2,
+    3,
+    3,
+    3,
+    1,
+    1,
+    2
+   ]
+  }
+ },
+ "secs_total": 208.1749451160431
+}

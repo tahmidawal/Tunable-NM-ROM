@@ -1,0 +1,246 @@
+{
+ "config": {
+  "pde": "burgers3d",
+  "kind": "b3d_tensor",
+  "design": "B3D-DESIGN.md r3",
+  "N": 33,
+  "k": 32,
+  "r": 128,
+  "M": 256,
+  "m_nnls": 1024,
+  "g_hidden": 256,
+  "eq_cand_cap": 65536,
+  "arms": [
+   "full",
+   "ex",
+   "tensor"
+  ],
+  "ckpt": "/cluster/tufts/paralab/tawal01/b3dtensor/pilot33b/out/sep_b3d_pilot_n33_k32_ckpt.pkl",
+  "train_in_job": true,
+  "pilot": true,
+  "micro": false,
+  "n_test": 8,
+  "seed": 0,
+  "test_seed": 1,
+  "n_train_traj": 512,
+  "val_rows": [
+   512,
+   575
+  ],
+  "table_train": {
+   "path": "/cluster/tufts/paralab/tawal01/b3dtensor/pilot33b/code/runs/b3dtensor/tables/b3d_params_train_seed0_m576.npz",
+   "sha256": "8f47325468fefe036089f4265cee09739e13184da66579601db2fa6d691a871a"
+  },
+  "table_test": null,
+  "step_tol": 1e-09,
+  "stall": 0.001,
+  "extrap": 1.0,
+  "tr_factor": 0.01,
+  "gn_budget": 30,
+  "ic_enc_budget": 50,
+  "enc_steps": 12000,
+  "num_steps": 50,
+  "dt": 0.005,
+  "weak_alpha": 1.0,
+  "time_reps": 5,
+  "burn": 2,
+  "warm": 2,
+  "fom_reps": 5,
+  "pair_reps": 5,
+  "newton_tols": [
+   1.0,
+   0.3,
+   0.1,
+   0.03,
+   0.01,
+   0.003,
+   0.001,
+   0.0001
+  ],
+  "lin_fracs": [
+   0.05,
+   0.5
+  ],
+  "defect_fixed": [
+   0,
+   1,
+   2
+  ],
+  "t_chunk": 4096,
+  "gen_chunk": 64,
+  "feat_chunk": 262144,
+  "pool_cap": 250047,
+  "p_sub": 16384,
+  "max_snaps": 8192,
+  "steps": 60000,
+  "lr": 0.001,
+  "pos_tol": 1e-09,
+  "opt_tol": 0.0001,
+  "dst": "mm",
+  "oracle": {
+   "starts": 8,
+   "budget": 200,
+   "times": [
+    0,
+    10,
+    25,
+    50
+   ],
+   "val_traj": 64
+  },
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "jax_version": "0.10.2",
+  "commit": "99b1a5e975a0982c238d1bb47235a6a96dfaa5eb",
+  "slurm_job": "3248039",
+  "node": "pax049",
+  "arm_order": "reps outermost; trajectories; arms forward on even reps, reversed on odd (AB/BA); accuracy from the last timed rep's fused e2e output",
+  "pool_size": 29791,
+  "pick_source": "sep_burgers.py rule (rng(SEED0).choice over cohort x 51 states)",
+  "ckpt_cfg": {
+   "pde": "burgers3d",
+   "N": 33,
+   "k": 32,
+   "r": 128,
+   "M": 256,
+   "m": 1024,
+   "g_hidden": 256,
+   "steps": 60000,
+   "lr": 0.001,
+   "p_sub": 16384,
+   "pool_size": 29791,
+   "max_snaps": 8192,
+   "seed": 0,
+   "n_train_traj": 512,
+   "val_rows": [
+    512,
+    575
+   ],
+   "table_sha256": "8f47325468fefe036089f4265cee09739e13184da66579601db2fa6d691a871a",
+   "x64": true,
+   "backend": "gpu",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "slurm_job": "3248039",
+   "commit": "99b1a5e975a0982c238d1bb47235a6a96dfaa5eb"
+  },
+  "M_requested": 256
+ },
+ "gates": {
+  "F5_nonnegativity_train_val": {
+   "value": 2.1918239292022073e-30,
+   "passed": true
+  },
+  "D1_bank_vs_meshfree_numpy": {
+   "value": 1.2704097602595632e-15,
+   "passed": true,
+   "control": 0.23251825494799933,
+   "control_fired": true
+  },
+  "D2_lineage_rlite": {
+   "value": 0.022897297700567087,
+   "passed": true,
+   "max": 0.06149932550208942,
+   "n": 64,
+   "control": 1.128566648352253,
+   "control_fired": true
+  },
+  "D3_rank_of_A": {
+   "value": 0.0014296392336183613,
+   "passed": true,
+   "M_stability_tail_over_head": 0.0002474898667098944,
+   "M_stability_pass": true,
+   "control": 2.1100825988590908e-18,
+   "control_fired": true
+  },
+  "D4_heldout_oracle_validation": {
+   "value": 0.05146245433056422,
+   "passed": false,
+   "mean": 0.05146245433056422,
+   "worst": 0.16768933585441634,
+   "mean_k_gt0": 0.042106568383943783,
+   "worst_k_gt0": 0.1330687363234466,
+   "n": 256,
+   "optimality_max": 1.0361529434117074e-05,
+   "budget_doubling_rel_change_max": 1.3062717052154273e-12,
+   "pool_to_full_ratio_max": 1.0000000000000013,
+   "pool_to_full_ratio_median": 1.0,
+   "pod_K_floor_mean": 0.08611645310675599,
+   "oracle_pool_mean": 0.05146245433056422,
+   "oracle_over_podK": 0.5975914296745101,
+   "control_shuffled_bank_mean": 0.8849856007963883,
+   "control": 0.8849856007963883,
+   "control_fired": true
+  }
+ },
+ "data": {
+  "train": {
+   "n_traj": 512,
+   "n_val_traj": 64,
+   "n_states": 26112,
+   "max_fom_rel_residual": 9.998636977022482e-13,
+   "min_u": 2.1918239292022073e-30,
+   "max_u": 1.9861369969402647,
+   "frac_points_le0": 0.0,
+   "secs": 37.12835764884949,
+   "pick_size": 8192,
+   "n_d4_states": 256
+  }
+ },
+ "variants": {},
+ "memory": {
+  "start": {
+   "device_peak_gb": 0.0004439353942871094,
+   "device_now_gb": 0.0002219676971435547,
+   "device_limit_gb": 59.439453125,
+   "host_maxrss_gb": 2.5299453735351562,
+   "t": 1788497055.4777014
+  },
+  "after_truth": {
+   "device_peak_gb": 2.219341993331909,
+   "device_now_gb": 0.0004515647888183594,
+   "device_limit_gb": 59.439453125,
+   "host_maxrss_gb": 6.367462158203125,
+   "t": 1788497092.646634
+  },
+  "after_train": {
+   "device_peak_gb": 4.125533819198608,
+   "device_now_gb": 0.0017647743225097656,
+   "device_limit_gb": 59.439453125,
+   "host_maxrss_gb": 8.334659576416016,
+   "t": 1788497996.752706
+  },
+  "after_bank": {
+   "device_peak_gb": 4.125533819198608,
+   "device_now_gb": 0.1503744125366211,
+   "device_limit_gb": 59.439453125,
+   "host_maxrss_gb": 8.341976165771484,
+   "t": 1788498000.7800407
+  },
+  "after_D3": {
+   "device_peak_gb": 4.125533819198608,
+   "device_now_gb": 0.15061402320861816,
+   "device_limit_gb": 59.439453125,
+   "host_maxrss_gb": 8.368988037109375,
+   "t": 1788498007.7554142
+  }
+ },
+ "complete": false,
+ "train": {
+  "final_rel_mse": 0.0007092294692972093,
+  "steps": 60000,
+  "lr": 0.001,
+  "lam_orth": 0.0001,
+  "p_sub": 16384,
+  "used_subsampling": true,
+  "seconds": 900.2759687900543,
+  "recon_rel_l2_mean": 0.02737302728162394,
+  "recon_rel_l2_max": 0.1706103376209327,
+  "n_snapshots": 8192,
+  "n_points": 29791,
+  "arch": {
+   "g_hidden": 256
+  }
+ }
+}

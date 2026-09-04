@@ -1,0 +1,24 @@
+host=pax049 gpu=NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=8d5421a30db59eb69212f99adb195dc86dd054bc
+jax_backend=gpu device=cuda:0 B3D-FOM-GATES N=33
+  GATE F9_dst_mm_vs_fft: 3.559e-15 PASS  | control 6.300e+01 fired=True
+  GATE F4_helmholtz_backward_error: 1.472e-15 PASS  | control 1.470e-01 fired=True
+  GATE F2_modes_eigenvectors: 1.123e-16 PASS  | control 1.117e-03 fired=True
+  GATE F3_truth_acceptance: 9.979e-13 PASS  | control 4.875e-05 fired=True
+  GATE F5_nonnegativity_test: 9.395e-21 PASS  | control -2.000e-03 fired=True
+  F10: 0.08 s/traj (chunk 8); 512 traj = 0.01 h
+  GATE F6_stencil_vs_assembled: 2.456e-17 PASS  | control 1.736e-03 fired=True
+  GATE F1_axis_symmetry: 8.909e-17 PASS  | control 4.705e-03 fired=True
+  GATE F8_2d_vs_3d_plateau: 0.000e+00 PASS  | control 1.904e-03 fired=True
+    F11 N=33: MMS error 1.243e-01 worst res 2.08e-13 [3s]
+    F11 N=65: MMS error 6.788e-02 worst res 2.56e-13 [6s]
+    F11 N=129: MMS error 3.564e-02 worst res 3.51e-13 [32s]
+  GATE F11_manufactured_solution_order: 9.297e-01 PASS  | control 1.247e+00 fired=True
+    F7 N=33: worst res 8.98e-13 [1s]
+    F7 N=65: worst res 9.92e-13 [2s]
+    F7 N=129: worst res 1.37e-15 [5s]
+  GATE F7_spatial_order: 8.316e-01 PASS  | control 2.172e-01 fired=True
+DONE -> /cluster/tufts/paralab/tawal01/b3dtensor/gates33/out/b3d_fom_gates_n33.json  complete=True [83s]
+ALL-DONE

@@ -1,0 +1,24 @@
+host=pax008 gpu=NVIDIA H200
+jax_backend=gpu
+=== burgers N=1024 K=16 R=128 (accuracy push) ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=16 R=128 M=64 m=256 steps=60000 seed=0 n_train=160+8 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 168 trajectories (50 Newton-implicit steps each) in 413s, max Newton rel residual 9.99e-13
+  data check: max FOM rel residual over all trajectories 9.99e-13
+   train[burgers N=1024 k=16 r=128] step      1/60000  rel-MSE 1.356e+00  [7s]
+   train[burgers N=1024 k=16 r=128] step   2000/60000  rel-MSE 6.617e-03  [222s]
+   train[burgers N=1024 k=16 r=128] step   4000/60000  rel-MSE 2.204e-03  [437s]
+   train[burgers N=1024 k=16 r=128] step   6000/60000  rel-MSE 1.240e-03  [653s]
+   train[burgers N=1024 k=16 r=128] step   8000/60000  rel-MSE 9.495e-04  [868s]
+   train[burgers N=1024 k=16 r=128] step  10000/60000  rel-MSE 7.921e-04  [1083s]
+   train[burgers N=1024 k=16 r=128] step  12000/60000  rel-MSE 6.645e-04  [1299s]
+   train[burgers N=1024 k=16 r=128] step  14000/60000  rel-MSE 6.033e-04  [1514s]
+   train[burgers N=1024 k=16 r=128] step  16000/60000  rel-MSE 4.680e-04  [1729s]
+   train[burgers N=1024 k=16 r=128] step  18000/60000  rel-MSE 4.938e-04  [1945s]
+   train[burgers N=1024 k=16 r=128] step  20000/60000  rel-MSE 4.149e-04  [2160s]
+   train[burgers N=1024 k=16 r=128] step  22000/60000  rel-MSE 4.142e-04  [2376s]
+   train[burgers N=1024 k=16 r=128] step  24000/60000  rel-MSE 3.498e-04  [2591s]
+   train[burgers N=1024 k=16 r=128] step  26000/60000  rel-MSE 3.986e-04  [2806s]
+   train[burgers N=1024 k=16 r=128] step  28000/60000  rel-MSE 3.179e-04  [3022s]
+   train[burgers N=1024 k=16 r=128] step  30000/60000  rel-MSE 3.051e-04  [3237s]
+   train[burgers N=1024 k=16 r=128] step  32000/60000  rel-MSE 2.861e-04  [3453s]
+   train[burgers N=1024 k=16 r=128] step  34000/60000  rel-MSE 2.757e-04  [3668s]

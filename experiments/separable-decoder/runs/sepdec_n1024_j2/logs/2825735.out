@@ -1,0 +1,6 @@
+host=pax008 gpu=NVIDIA H200
+jax_backend=gpu
+=== burgers N=1024 K=16 R=64 ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=16 R=64 M=64 m=256 steps=40000 seed=0 n_train=96+8 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 104 trajectories (50 Newton-implicit steps each) in 1628s, max Newton rel residual 8.67e-02
+  WARNING: Newton residual 8.67e-02 above 1e-8 -- raise NEWTON_ITERS/LIN_MAXITER

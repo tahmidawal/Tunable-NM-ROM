@@ -1,0 +1,192 @@
+host=pax105 gpu=NVIDIA A100 80GB PCIe
+jax_backend=gpu
+=== poisson N=1024 K=8 R=32 ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=8 R=32 M=32 m=128 steps=50000 seed=0 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 198s, max rel residual over all samples 4.33e-10
+  truth[held_out_seed0]: 16 sources, FOM CG rel residual 3.89e-10
+  truth[fresh_seed]: 16 sources, FOM CG rel residual 3.52e-10
+   train[poisson N=1024 k=8 r=32] step      1/50000  rel-MSE 1.057e+00  [36s]
+   train[poisson N=1024 k=8 r=32] step   2000/50000  rel-MSE 4.131e-03  [171s]
+   train[poisson N=1024 k=8 r=32] step   4000/50000  rel-MSE 1.724e-03  [306s]
+   train[poisson N=1024 k=8 r=32] step   6000/50000  rel-MSE 1.155e-03  [442s]
+   train[poisson N=1024 k=8 r=32] step   8000/50000  rel-MSE 8.225e-04  [577s]
+   train[poisson N=1024 k=8 r=32] step  10000/50000  rel-MSE 6.866e-04  [713s]
+   train[poisson N=1024 k=8 r=32] step  12000/50000  rel-MSE 6.604e-04  [848s]
+   train[poisson N=1024 k=8 r=32] step  14000/50000  rel-MSE 5.621e-04  [984s]
+   train[poisson N=1024 k=8 r=32] step  16000/50000  rel-MSE 5.444e-04  [1119s]
+   train[poisson N=1024 k=8 r=32] step  18000/50000  rel-MSE 4.794e-04  [1255s]
+   train[poisson N=1024 k=8 r=32] step  20000/50000  rel-MSE 4.676e-04  [1390s]
+   train[poisson N=1024 k=8 r=32] step  22000/50000  rel-MSE 4.557e-04  [1526s]
+   train[poisson N=1024 k=8 r=32] step  24000/50000  rel-MSE 4.633e-04  [1661s]
+   train[poisson N=1024 k=8 r=32] step  26000/50000  rel-MSE 4.504e-04  [1797s]
+   train[poisson N=1024 k=8 r=32] step  28000/50000  rel-MSE 4.498e-04  [1932s]
+   train[poisson N=1024 k=8 r=32] step  30000/50000  rel-MSE 4.258e-04  [2068s]
+   train[poisson N=1024 k=8 r=32] step  32000/50000  rel-MSE 4.259e-04  [2203s]
+   train[poisson N=1024 k=8 r=32] step  34000/50000  rel-MSE 4.245e-04  [2339s]
+   train[poisson N=1024 k=8 r=32] step  36000/50000  rel-MSE 4.154e-04  [2475s]
+   train[poisson N=1024 k=8 r=32] step  38000/50000  rel-MSE 4.128e-04  [2610s]
+   train[poisson N=1024 k=8 r=32] step  40000/50000  rel-MSE 4.113e-04  [2745s]
+   train[poisson N=1024 k=8 r=32] step  42000/50000  rel-MSE 4.089e-04  [2881s]
+   train[poisson N=1024 k=8 r=32] step  44000/50000  rel-MSE 4.070e-04  [3016s]
+   train[poisson N=1024 k=8 r=32] step  46000/50000  rel-MSE 4.056e-04  [3152s]
+   train[poisson N=1024 k=8 r=32] step  48000/50000  rel-MSE 4.043e-04  [3287s]
+   train[poisson N=1024 k=8 r=32] step  50000/50000  rel-MSE 4.031e-04  [3423s]
+   train[poisson N=1024 k=8 r=32] done: recon rel-L2 mean 5.387e-02 max 2.511e-01  [3425s]
+  oracle[held_out_seed0] rel-L2: mean 6.246e-02 max 1.190e-01 (split-vs-direct dev 1.3e-11)
+  oracle[fresh_seed] rel-L2: mean 9.535e-02 max 1.573e-01 (split-vs-direct dev 6.8e-12)
+  NNLS-EQ sep poisson N=1024 k=8 M=32 m=128: pool 4096 support 128 (+0 pad) rel fit 1.17e-03 (row p95 6.9e-02, max 9.2e+01) [11s]
+  jitted weak_source_term vs incumbent: max rel dev 2.56e-16
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   [held_out_seed0] meshfree tau=1e-03  e2e   14.835 ms  jac  15.6  err 5.816e-02  cens 100%  reasons {'stalled': 16}
+   [held_out_seed0] meshfree tau=1e-02  e2e   14.712 ms  jac  14.4  err 5.823e-02  cens  75%  reasons {'stalled': 12, 'tol': 4}
+   [held_out_seed0] cached   tau=1e-03  e2e    3.541 ms  jac  15.6  err 5.816e-02  cens 100%  reasons {'stalled': 16}
+   [held_out_seed0] cached   tau=1e-02  e2e    3.381 ms  jac  14.4  err 5.823e-02  cens  75%  reasons {'stalled': 12, 'tol': 4}
+   [fresh_seed] cached   tau=1e-03  e2e    4.162 ms  jac  18.2  err 8.683e-02  cens 100%  reasons {'stalled': 16}
+   [fresh_seed] cached   tau=1e-02  e2e    4.049 ms  jac  17.4  err 8.693e-02  cens  88%  reasons {'stalled': 14, 'tol': 2}
+   [held_out_seed0] FOM cg tol=1e-01:   99.073 ms  err 4.911e-03
+   [held_out_seed0] FOM cg tol=3e-02:  116.335 ms  err 1.382e-03
+   [held_out_seed0] FOM cg tol=1e-02:  128.378 ms  err 4.898e-04
+   [held_out_seed0] FOM cg tol=3e-03:  145.491 ms  err 1.291e-04
+   [held_out_seed0] FOM cg tol=1e-03:  160.184 ms  err 3.582e-05
+   [held_out_seed0] FOM cg tol=3e-04:  173.191 ms  err 8.574e-06
+   [held_out_seed0] FOM cg tol=1e-04:  183.528 ms  err 2.232e-06
+   [held_out_seed0] FOM cg tol=1e-06:  224.357 ms  err 2.238e-08
+   [held_out_seed0] FOM spectral_dense:    0.637 ms  err 6.993e-15
+   [fresh_seed] FOM cg tol=1e-01:   99.814 ms  err 6.776e-03
+   [fresh_seed] FOM cg tol=3e-02:  117.713 ms  err 1.691e-03
+   [fresh_seed] FOM cg tol=1e-02:  131.019 ms  err 6.016e-04
+   [fresh_seed] FOM cg tol=3e-03:  149.738 ms  err 1.364e-04
+   [fresh_seed] FOM cg tol=1e-03:  161.851 ms  err 4.367e-05
+   [fresh_seed] FOM cg tol=3e-04:  173.706 ms  err 1.102e-05
+   [fresh_seed] FOM cg tol=1e-04:  183.426 ms  err 3.366e-06
+   [fresh_seed] FOM cg tol=1e-06:  224.339 ms  err 3.011e-08
+   [fresh_seed] FOM spectral_dense:    0.639 ms  err 6.884e-15
+   [held_out_seed0] paired ROM(tau=0.01)    3.596 ms vs cg tol=1e-01   98.708 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.575 ms vs cg tol=3e-02  115.998 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.610 ms vs cg tol=1e-02  128.192 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.580 ms vs cg tol=3e-03  145.341 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.598 ms vs cg tol=1e-03  160.025 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.604 ms vs cg tol=3e-04  171.963 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.612 ms vs cg tol=1e-04  183.185 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.607 ms vs cg tol=1e-06  224.251 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.315 ms vs spectral_dense    0.634 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.275 ms vs cg tol=1e-01   99.438 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.320 ms vs cg tol=3e-02  117.865 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.343 ms vs cg tol=1e-02  130.819 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.253 ms vs cg tol=3e-03  149.446 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.243 ms vs cg tol=1e-03  161.404 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.245 ms vs cg tol=3e-04  172.434 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.229 ms vs cg tol=1e-04  183.152 ms
+   [fresh_seed] paired ROM(tau=0.01)    4.309 ms vs cg tol=1e-06  224.269 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.988 ms vs spectral_dense    0.637 ms
+DONE poisson [4335s] -> /cluster/tufts/paralab/tawal01/sepdec_n1024/j1/out/sep_poisson_N1024_K8_R32.json
+=== poisson N=1024 K=16 R=64 ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=16 R=64 M=64 m=256 steps=50000 seed=0 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 196s, max rel residual over all samples 4.33e-10
+  truth[held_out_seed0]: 16 sources, FOM CG rel residual 3.89e-10
+  truth[fresh_seed]: 16 sources, FOM CG rel residual 3.52e-10
+   train[poisson N=1024 k=16 r=64] step      1/50000  rel-MSE 1.152e+00  [38s]
+   train[poisson N=1024 k=16 r=64] step   2000/50000  rel-MSE 2.320e-03  [193s]
+   train[poisson N=1024 k=16 r=64] step   4000/50000  rel-MSE 7.165e-04  [349s]
+   train[poisson N=1024 k=16 r=64] step   6000/50000  rel-MSE 3.731e-04  [506s]
+   train[poisson N=1024 k=16 r=64] step   8000/50000  rel-MSE 2.510e-04  [663s]
+   train[poisson N=1024 k=16 r=64] step  10000/50000  rel-MSE 1.862e-04  [819s]
+   train[poisson N=1024 k=16 r=64] step  12000/50000  rel-MSE 2.447e-04  [975s]
+   train[poisson N=1024 k=16 r=64] step  14000/50000  rel-MSE 1.515e-04  [1132s]
+   train[poisson N=1024 k=16 r=64] step  16000/50000  rel-MSE 1.254e-04  [1288s]
+   train[poisson N=1024 k=16 r=64] step  18000/50000  rel-MSE 1.096e-04  [1445s]
+   train[poisson N=1024 k=16 r=64] step  20000/50000  rel-MSE 1.021e-04  [1601s]
+   train[poisson N=1024 k=16 r=64] step  22000/50000  rel-MSE 9.962e-05  [1758s]
+   train[poisson N=1024 k=16 r=64] step  24000/50000  rel-MSE 1.063e-04  [1914s]
+   train[poisson N=1024 k=16 r=64] step  26000/50000  rel-MSE 8.464e-05  [2070s]
+   train[poisson N=1024 k=16 r=64] step  28000/50000  rel-MSE 8.262e-05  [2227s]
+   train[poisson N=1024 k=16 r=64] step  30000/50000  rel-MSE 7.801e-05  [2383s]
+   train[poisson N=1024 k=16 r=64] step  32000/50000  rel-MSE 7.530e-05  [2540s]
+   train[poisson N=1024 k=16 r=64] step  34000/50000  rel-MSE 7.823e-05  [2696s]
+   train[poisson N=1024 k=16 r=64] step  36000/50000  rel-MSE 7.158e-05  [2853s]
+   train[poisson N=1024 k=16 r=64] step  38000/50000  rel-MSE 7.178e-05  [3009s]
+   train[poisson N=1024 k=16 r=64] step  40000/50000  rel-MSE 6.806e-05  [3165s]
+   train[poisson N=1024 k=16 r=64] step  42000/50000  rel-MSE 6.676e-05  [3322s]
+   train[poisson N=1024 k=16 r=64] step  44000/50000  rel-MSE 6.549e-05  [3478s]
+   train[poisson N=1024 k=16 r=64] step  46000/50000  rel-MSE 6.442e-05  [3635s]
+   train[poisson N=1024 k=16 r=64] step  48000/50000  rel-MSE 6.348e-05  [3791s]
+   train[poisson N=1024 k=16 r=64] step  50000/50000  rel-MSE 6.265e-05  [3947s]
+   train[poisson N=1024 k=16 r=64] done: recon rel-L2 mean 2.679e-02 max 1.623e-01  [3950s]
+  oracle[held_out_seed0] rel-L2: mean 4.221e-02 max 8.195e-02 (split-vs-direct dev 4.2e-11)
+  oracle[fresh_seed] rel-L2: mean 6.388e-02 max 1.223e-01 (split-vs-direct dev 6.5e-11)
+  NNLS-EQ sep poisson N=1024 k=16 M=64 m=256: pool 4096 support 256 (+0 pad) rel fit 1.15e-03 (row p95 1.3e-01, max 7.7e+01) [23s]
+  jitted weak_source_term vs incumbent: max rel dev 2.56e-16
+  GATE 0 (meshfree vs cached weak r/J identity): max rel dev 0.00e+00
+   [held_out_seed0] meshfree tau=1e-03  e2e   15.223 ms  jac  13.1  err 3.476e-02  cens 100%  reasons {'stalled': 16}
+   [held_out_seed0] meshfree tau=1e-02  e2e   14.690 ms  jac  11.0  err 3.500e-02  cens  69%  reasons {'stalled': 11, 'tol': 5}
+   [held_out_seed0] cached   tau=1e-03  e2e    3.502 ms  jac  13.1  err 3.476e-02  cens 100%  reasons {'stalled': 16}
+   [held_out_seed0] cached   tau=1e-02  e2e    2.969 ms  jac  11.0  err 3.500e-02  cens  69%  reasons {'stalled': 11, 'tol': 5}
+   [fresh_seed] cached   tau=1e-03  e2e    3.605 ms  jac  14.8  err 5.059e-02  cens 100%  reasons {'stalled': 16}
+   [fresh_seed] cached   tau=1e-02  e2e    3.131 ms  jac  12.4  err 5.075e-02  cens  75%  reasons {'stalled': 12, 'tol': 4}
+   [held_out_seed0] FOM cg tol=1e-01:   98.314 ms  err 4.911e-03
+   [held_out_seed0] FOM cg tol=3e-02:  115.272 ms  err 1.382e-03
+   [held_out_seed0] FOM cg tol=1e-02:  127.623 ms  err 4.898e-04
+   [held_out_seed0] FOM cg tol=3e-03:  144.607 ms  err 1.291e-04
+   [held_out_seed0] FOM cg tol=1e-03:  159.115 ms  err 3.582e-05
+   [held_out_seed0] FOM cg tol=3e-04:  171.883 ms  err 8.574e-06
+   [held_out_seed0] FOM cg tol=1e-04:  182.046 ms  err 2.232e-06
+   [held_out_seed0] FOM cg tol=1e-06:  223.340 ms  err 2.238e-08
+   [held_out_seed0] FOM spectral_dense:    0.639 ms  err 6.993e-15
+   [fresh_seed] FOM cg tol=1e-01:   99.158 ms  err 6.776e-03
+   [fresh_seed] FOM cg tol=3e-02:  117.106 ms  err 1.691e-03
+   [fresh_seed] FOM cg tol=1e-02:  130.072 ms  err 6.016e-04
+   [fresh_seed] FOM cg tol=3e-03:  148.662 ms  err 1.364e-04
+   [fresh_seed] FOM cg tol=1e-03:  160.841 ms  err 4.367e-05
+   [fresh_seed] FOM cg tol=3e-04:  172.396 ms  err 1.102e-05
+   [fresh_seed] FOM cg tol=1e-04:  182.177 ms  err 3.366e-06
+   [fresh_seed] FOM cg tol=1e-06:  223.203 ms  err 3.011e-08
+   [fresh_seed] FOM spectral_dense:    0.639 ms  err 6.884e-15
+   [held_out_seed0] paired ROM(tau=0.01)    3.171 ms vs cg tol=1e-01   98.369 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.142 ms vs cg tol=3e-02  115.621 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.162 ms vs cg tol=1e-02  127.258 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.161 ms vs cg tol=3e-03  143.765 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.164 ms vs cg tol=1e-03  158.492 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.225 ms vs cg tol=3e-04  172.121 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.201 ms vs cg tol=1e-04  182.993 ms
+   [held_out_seed0] paired ROM(tau=0.01)    3.183 ms vs cg tol=1e-06  223.709 ms
+   [held_out_seed0] paired ROM(tau=0.01)    2.893 ms vs spectral_dense    0.632 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.287 ms vs cg tol=1e-01   98.927 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.325 ms vs cg tol=3e-02  116.948 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.347 ms vs cg tol=1e-02  129.628 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.306 ms vs cg tol=3e-03  148.020 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.338 ms vs cg tol=1e-03  160.585 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.332 ms vs cg tol=3e-04  172.717 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.319 ms vs cg tol=1e-04  182.498 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.326 ms vs cg tol=1e-06  223.134 ms
+   [fresh_seed] paired ROM(tau=0.01)    3.055 ms vs spectral_dense    0.634 ms
+DONE poisson [4875s] -> /cluster/tufts/paralab/tawal01/sepdec_n1024/j1/out/sep_poisson_N1024_K16_R64.json
+=== poisson N=1024 K=16 R=128 ===
+jax_backend=gpu device=cuda:0 x64=True N=1024 K=16 R=128 M=64 m=256 steps=50000 seed=0 arch={'n_ff': 64, 'ff_scale': 4.0, 'g_hidden': 128, 'g_layers': 2, 'h_hidden': 128, 'h_layers': 2}
+  FOM: 576 CG solves in 198s, max rel residual over all samples 4.33e-10
+  truth[held_out_seed0]: 16 sources, FOM CG rel residual 3.89e-10
+  truth[fresh_seed]: 16 sources, FOM CG rel residual 3.52e-10
+   train[poisson N=1024 k=16 r=128] step      1/50000  rel-MSE 1.394e+00  [35s]
+   train[poisson N=1024 k=16 r=128] step   2000/50000  rel-MSE 2.728e-03  [244s]
+   train[poisson N=1024 k=16 r=128] step   4000/50000  rel-MSE 8.066e-04  [455s]
+   train[poisson N=1024 k=16 r=128] step   6000/50000  rel-MSE 3.748e-04  [666s]
+   train[poisson N=1024 k=16 r=128] step   8000/50000  rel-MSE 2.403e-04  [876s]
+   train[poisson N=1024 k=16 r=128] step  10000/50000  rel-MSE 1.713e-04  [1087s]
+   train[poisson N=1024 k=16 r=128] step  12000/50000  rel-MSE 1.512e-04  [1298s]
+   train[poisson N=1024 k=16 r=128] step  14000/50000  rel-MSE 1.135e-04  [1509s]
+   train[poisson N=1024 k=16 r=128] step  16000/50000  rel-MSE 1.094e-04  [1719s]
+   train[poisson N=1024 k=16 r=128] step  18000/50000  rel-MSE 1.181e-04  [1930s]
+   train[poisson N=1024 k=16 r=128] step  20000/50000  rel-MSE 1.040e-04  [2141s]
+   train[poisson N=1024 k=16 r=128] step  22000/50000  rel-MSE 7.620e-05  [2351s]
+   train[poisson N=1024 k=16 r=128] step  24000/50000  rel-MSE 6.566e-05  [2562s]
+   train[poisson N=1024 k=16 r=128] step  26000/50000  rel-MSE 6.835e-05  [2773s]
+   train[poisson N=1024 k=16 r=128] step  28000/50000  rel-MSE 6.546e-05  [2984s]
+   train[poisson N=1024 k=16 r=128] step  30000/50000  rel-MSE 6.153e-05  [3194s]
+   train[poisson N=1024 k=16 r=128] step  32000/50000  rel-MSE 5.486e-05  [3405s]
+   train[poisson N=1024 k=16 r=128] step  34000/50000  rel-MSE 5.034e-05  [3616s]
+   train[poisson N=1024 k=16 r=128] step  36000/50000  rel-MSE 5.181e-05  [3826s]
+   train[poisson N=1024 k=16 r=128] step  38000/50000  rel-MSE 4.632e-05  [4037s]
+   train[poisson N=1024 k=16 r=128] step  40000/50000  rel-MSE 4.545e-05  [4248s]
+   train[poisson N=1024 k=16 r=128] step  42000/50000  rel-MSE 4.355e-05  [4458s]
+   train[poisson N=1024 k=16 r=128] step  44000/50000  rel-MSE 4.234e-05  [4669s]
+   train[poisson N=1024 k=16 r=128] step  46000/50000  rel-MSE 4.116e-05  [4880s]
+   train[poisson N=1024 k=16 r=128] step  48000/50000  rel-MSE 4.020e-05  [5090s]

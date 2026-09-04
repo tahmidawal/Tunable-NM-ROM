@@ -1,14 +1,19 @@
 #!/bin/bash
-# Pull a finished sepdec_n512 job's out/ + logs/ into runs/, verify checksums.
-# Usage: ./pull_job.sh <jobname>            (e.g. j1)
+# Pull a finished sepdec_n1024 job: rsync out/+logs/ into runs/, verify the
+# job's own RESULTS.sha256, and (only after PASS) delete the remote job dir.
+# Usage: ./pull_job.sh <jN> [--delete]
 set -euo pipefail
+J=${1:?usage: pull_job.sh <jN> [--delete]}
+DEL=${2:-}
 HERE="$(cd "$(dirname "$0")" && pwd)"
-SEP="$(dirname "$HERE")"
-JOB=${1:?jobname}
-DEST="$SEP/runs/sepdec_n512_$JOB"
+DEST="$HERE/../runs/sepdec_n1024_$J"
+REMOTE=/cluster/tufts/paralab/tawal01/sepdec_n1024/$J
 mkdir -p "$DEST"
-rsync -a "tufts-login:/cluster/tufts/paralab/tawal01/sepdec_n512/$JOB/out/" "$DEST/out/"
-rsync -a "tufts-login:/cluster/tufts/paralab/tawal01/sepdec_n512/$JOB/logs/" "$DEST/logs/"
-rsync -a "tufts-login:/cluster/tufts/paralab/tawal01/sepdec_n512/$JOB/MANIFEST.sha256" "$DEST/"
-( cd "$DEST/out" && sha256sum -c RESULTS.sha256 --quiet && echo "RESULTS checksums OK" )
-echo "pulled -> $DEST"
+rsync -az "tufts-login:$REMOTE/out/" "$DEST/out/"
+rsync -az "tufts-login:$REMOTE/logs/" "$DEST/logs/"
+( cd "$DEST/out" && sha256sum -c RESULTS.sha256 )
+echo "PULL-VERIFIED $J"
+if [ "$DEL" = "--delete" ]; then
+  ssh -o BatchMode=yes tufts-login "rm -rf $REMOTE"
+  echo "REMOTE-DELETED $REMOTE"
+fi

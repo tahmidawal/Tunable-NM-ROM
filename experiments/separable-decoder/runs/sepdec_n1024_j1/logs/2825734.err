@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/sepdec_n1024/j1/code/sep_poisson.py", line 388, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/sepdec_n1024/j1/code/sep_poisson.py", line 102, in main
+    U_all = np.asarray(mp.build_snapshots(N)[0])
+                       ~~~~~~~~~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/sepdec_n1024/j1/code/deps/poisson2d-rom-objective/deps/ms_parametric.py", line 132, in build_snapshots
+    assert np.isfinite(res_max) and res_max < 1e-10, "FOM not converged"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: FOM not converged

@@ -271,7 +271,7 @@ Applied in code and binding; the r3 text above is read with these substitutions.
 4. `[A54]` F3's control is **one** Newton iteration (two converged to $2.9\times10^{-10}$ at $N = 33$; one fires at
    $4.9\times10^{-5}$); prevalidated at every $N$ the gates run.
 5. `[A55]` F5's asserted control is a **deterministic output mutation** (one interior node of the accepted
-   state $k = 25$ set to $-10^{-3}$, run through the same check). The downwind rollout is recorded as a
+   state $k = 25$ set to $-2\times10^{-3}$, run through the same check, bar $< -10^{-3}$). The downwind rollout is recorded as a
    diagnostic with its finiteness and residual, never as the control, because Newton does not converge on
    the anti-diffusive scheme and a divergent run is not a solver control; a central-difference rollout
    converged but stayed non-negative on this family at cell Péclet 6, so no converged non-monotone
@@ -305,3 +305,7 @@ Applied in code and binding; the r3 text above is read with these substitutions.
     requested one and the tensor is sized by it.
 19. L's control is the diffusion **sign flipped** in the assembled reference (the "dropped" control was below the
     bar at $3.9\times10^{-4}$).
+20. E1's latent criterion is the **normalised** deviation $\max|\Delta z|/(1 + \max_t\|z_t\|) \le 10^{-4}$
+    (the r3 absolute $10^{-6}$ was tighter than the 2D cell's own measured tensor-vs-oracle latent
+    deviations of $10^{-5}$ to $3\times10^{-4}$ and would have failed a run the 2D cell passed; set
+    before any cluster job, from the N = 17 smoke).

@@ -1050,9 +1050,10 @@ def main():
                 ro_, ra_ = vo["per_traj"][i], va["per_traj"][i]
                 Fa, Fo = Fields[(arm, i)], Fields[(ref_arm, i)]
                 fdiff = float(np.max(np.linalg.norm(Fa - Fo, axis=1) / (np.linalg.norm(Fo, axis=1) + 1e-300)))
+                Za_, Zo_ = np.asarray(last[arm][i][3][2]), np.asarray(last[ref_arm][i][3][2])
                 rows.append(dict(traj=i, err_ref=ro_["traj_rel"], err_arm=ra_["traj_rel"],
                                  abs_diff=abs(ra_["traj_rel"] - ro_["traj_rel"]), field_rel_diff_max=fdiff,
-                                 lat_dev=float(np.max(np.abs(np.asarray(last[arm][i][3][2]) - np.asarray(last[ref_arm][i][3][2])))),
+                                 lat_dev=float(np.max(np.abs(Za_ - Zo_)) / (1.0 + np.max(np.linalg.norm(Zo_, axis=1)))),
                                  reasons_equal=(ra_["stop_reasons"] == ro_["stop_reasons"]),
                                  attempts_equal=(ra_["attempts_total"] == ro_["attempts_total"]),
                                  e2e_ratio=ra_["e2e_ms"] / ro_["e2e_ms"], roll_ratio=ra_["roll_ms"] / ro_["roll_ms"]))
@@ -1077,7 +1078,7 @@ def main():
                         pr["r_rel"].append(rel(rt, ro)); pr["J_rel"].append(rel(Jt, Jo))
                         pr["g_scaled"].append(float(np.linalg.norm(Jt.T @ rt - Jo.T @ ro) / (np.linalg.norm(Jo) * np.linalg.norm(ro) + 1e-300)))
                 c["path_fidelity"] = {k_: stats(v_) for k_, v_ in pr.items()}
-                c["E1_pass"] = bool(c["field_rel_diff_max"] <= 1e-3 and c["lat_dev_max"] <= 1e-6 and abs(c["err_ratio"] - 1) <= 1e-2
+                c["E1_pass"] = bool(c["field_rel_diff_max"] <= 1e-3 and c["lat_dev_max"] <= 1e-4 and abs(c["err_ratio"] - 1) <= 1e-2
                                     and c["stop_hist_identical_per_traj"] and c["attempts_identical_per_traj"]
                                     and max(pr["r_rel"]) <= 1e-3 and max(pr["J_rel"]) <= 1e-2 and max(pr["g_scaled"]) <= 1e-3)
             cmp[f"{arm}_vs_{ref_arm}"] = c

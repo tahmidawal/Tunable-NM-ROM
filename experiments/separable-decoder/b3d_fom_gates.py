@@ -198,7 +198,7 @@ def main():
     # F5 control (design r4, [A55]): a DETERMINISTIC solver-output mutation -- one interior node of an
     # accepted k>=1 state set to -1e-3 -- run through the same check; guaranteed to fire.  The
     # downwind (anti-diffusive) rollout is RECORDED as a diagnostic with its finiteness and residual.
-    Umut = U.copy(); Umut[0, 25, Umut.shape[2] // 2] = -1e-3
+    Umut = U.copy(); Umut[0, 25, Umut.shape[2] // 2] = -2e-3
     f5c = float(np.min(Umut[:, 1:]))
     rd = b3.make_control_rollout_adv(n, "downwind", dst)
     sd, wd = rd(jnp.asarray(U0[:1]), jnp.asarray([0.01]))
@@ -208,7 +208,7 @@ def main():
                 converged=bool(np.isfinite(wd) and wd <= 1e-8),
                 note="anti-diffusive scheme: Newton does not converge on it; recorded, not the control")
     gate("F5_nonnegativity_test", umin, np.isfinite(umin) and umin >= -1e-9, control=f5c,
-         control_fired=f5c < -1e-3, control_note="output mutation: one node of state k=25 set to -1e-3",
+         control_fired=f5c < -1e-3, control_note="output mutation: one node of state k=25 set to -2e-3 (bar: < -1e-3)",
          downwind_diagnostic=down)
     # F10: generator cost per trajectory
     t0 = time.time()

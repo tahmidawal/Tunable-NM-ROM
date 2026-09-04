@@ -1,4 +1,4 @@
-"""Burgers 3D — phase 0: the FOM gates of B3D-DESIGN.md r2 (F1..F10), each with
+"""Burgers 3D — phase 0: the FOM gates of B3D-DESIGN.md r3 (F1..F11), each with
 its negative control, at one resolution N (F7 spans F7_NS).
 
     N=33 OUT=runs/b3dtensor/fom_gates_n33.json TABLE_DIR=runs/b3dtensor/tables \
@@ -40,8 +40,10 @@ TEST_SEED = int(os.environ.get("TEST_SEED", "1"))
 F7_NS = [int(v) for v in os.environ.get("F7_NS", "33,65,129").split(",") if v]
 GEN_CHUNK = int(os.environ.get("GEN_CHUNK", "8"))
 F10_TRAJ = int(os.environ.get("F10_TRAJ", "8"))
-FILM_PATH = os.environ.get("FILM_PATH", os.path.join(
-    HERE, "..", "wave2d-rom-latent-stepping", "deps", "burgers2d-coord-rom", "burgers2d_film.py"))
+_FILM_CANDS = [os.path.join(HERE, "deps", "burgers2d-coord-rom", "burgers2d_film.py"),          # staged
+               os.path.join(HERE, "..", "wave2d-rom-latent-stepping", "deps", "burgers2d-coord-rom",
+                            "burgers2d_film.py")]                                                  # worktree
+FILM_PATH = os.environ.get("FILM_PATH", next((c for c in _FILM_CANDS if os.path.exists(c)), _FILM_CANDS[0]))
 
 log = b3.log
 
@@ -144,8 +146,14 @@ def main():
             ts.append(time.perf_counter() - t0)
         tm[nm] = float(np.median(ts) * 1e3)
     f9 = rel(y_ff, y_mm)
-    gate("F9_dst_mm_vs_fft", f9, f9 <= 1e-13, helmholtz_ms=tm,
-         faster="mm" if tm["mm"] <= tm["fft"] else "fft")
+    # control: the FFT path with its orthonormal factor dropped on the forward transform
+    V = jnp.asarray(v).reshape(ni, ni, ni)
+    C_bad = b3.dst3_fft(V, n) / np.sqrt(2.0 / (n - 1)) ** 3
+    y_bad = np.asarray(b3.dst3_fft(C_bad / (1.0 + b3.DT * nu9 * jnp.asarray(b3.lam_3d(n))), n)).reshape(-1)
+    f9c = rel(y_bad, y_mm)
+    gate("F9_dst_mm_vs_fft", f9, f9 <= 1e-13, control=f9c, control_fired=f9c > 1e-3,
+         helmholtz_ms=tm, faster="mm" if tm["mm"] <= tm["fft"] else "fft",
+         control_note="FFT forward transform without its orthonormal factor")
     dst = "mm" if tm["mm"] <= tm["fft"] else "fft"
     hinv = b3.make_helmholtz_inv(n, dst)
     report["config"]["dst"] = dst
@@ -182,10 +190,11 @@ def main():
                                     nu=[float(v_) for v_ in tt["nu"][:N_TEST]],
                                     B=[int(v_) for v_ in tt["B"][:N_TEST]]))
     # F3 control: 2-iteration generator on the first trajectory
-    roll2 = b3.make_truth_rollout_iters(n, 2, dst)
-    _, w2 = roll2(jnp.asarray(U0[:1]), jnp.asarray(tt["nu"][:1]))
-    gate("F3_truth_acceptance", worst, np.isfinite(worst) and worst <= 1e-8, control=float(w2),
-         control_fired=float(w2) > 1e-8)
+    roll1 = b3.make_truth_rollout_iters(n, 1, dst)
+    _, w1 = roll1(jnp.asarray(U0[:1]), jnp.asarray(tt["nu"][:1]))
+    gate("F3_truth_acceptance", worst, np.isfinite(worst) and worst <= 1e-8, control=float(w1),
+         control_fired=float(w1) > 1e-8,
+         control_note="1 Newton iteration per step (2 iterations converged to 2.9e-10 at N=33)")
     # F5 control: downwind stencil at nu = 0.01 on the first test IC
     rd = b3.make_control_rollout_adv(n, "downwind", dst)
     sd, _ = rd(jnp.asarray(U0[:1]), jnp.asarray([0.01]))
@@ -285,11 +294,69 @@ def main():
     J2 = np.asarray(jax.jvp(lambda uu: res2d(uu, jnp.asarray(vp2.reshape(-1)), nu8),
                             (jnp.asarray(v2.reshape(-1)),), (jnp.asarray(dv.reshape(-1)),))[1]).reshape(n, n)
     f8j = bwd(J3[:, :, kmid - 1].reshape(-1), J2[1:-1, 1:-1].reshape(-1), opn8, dU3)
-    R3c = np.asarray(b3.fom_residual_int(jnp.asarray(u3), jnp.asarray(up3), nu8, n, zscale=1.01)).reshape(ni, ni, ni)
+    R3c = np.asarray(b3.fom_residual_int(jnp.asarray(u3), jnp.asarray(up3), nu8, n, xadv=2.0)).reshape(ni, ni, ni)
     f8c = bwd(R3c[:, :, kmid - 1].reshape(-1), plane2.reshape(-1), opn8, u3)
+    # the z terms really vanish on the plane (the reason the r2 control was inert): record it
+    R3z = np.asarray(b3.fom_residual_int(jnp.asarray(u3), jnp.asarray(up3), nu8, n, zscale=1.01, zadv=1.01)).reshape(ni, ni, ni)
+    f8z = bwd(R3z[:, :, kmid - 1].reshape(-1), plane2.reshape(-1), opn8, u3)
     gate("F8_2d_vs_3d_plateau", max(f8r, f8j), max(f8r, f8j) <= 1e-13, control=f8c,
-         control_fired=f8c > 1e-4, residual=f8r, jvp=f8j, control_note="z-Laplacian x1.01",
-         film_sha256=b3.sha256_file(FILM_PATH), sign_changing_plane=bool(v2.min() < 0))
+         control_fired=f8c > 1e-4, residual=f8r, jvp=f8j, control_note="x-advection coefficient doubled (x1.01 gave 1.9e-5 under the backward-error normalisation, below the 1e-4 bar)",
+         z_terms_mutated_on_plane=f8z, film_sha256=b3.sha256_file(FILM_PATH),
+         sign_changing_plane=bool(v2.min() < 0))
+
+    # ---------------- F11: manufactured solution -> the order band ------------
+    p_mms = None
+    if len(F7_NS) >= 3 and N == F7_NS[0]:
+        cm, wm, num = np.array([0.5, 0.5, 0.5]), 0.2, 0.03
+
+        def u_ex(x, t):                                              # (P,3), scalar t -> (P,)
+            mask = 64.0 * x[:, 0] * (1 - x[:, 0]) * x[:, 1] * (1 - x[:, 1]) * x[:, 2] * (1 - x[:, 2])
+            return (1.0 + 0.5 * jnp.sin(2 * jnp.pi * t)) * mask * jnp.exp(
+                -jnp.sum((x - cm[None, :]) ** 2, axis=1) / (2 * wm ** 2))
+
+        def forcing_of(x):
+            """f = u_t + u (u_x+u_y+u_z) - nu lap u at the points x, by autodiff of
+            the closed form (continuum operators; the discrete scheme's error
+            against u_ex is then the discretisation error)."""
+            def f(t):
+                ut = jax.jacfwd(lambda tt_: u_ex(x, tt_))(t)
+                def grad_u(xx):
+                    return jax.grad(lambda q: u_ex(q[None, :], t)[0])(xx)
+                g = jax.vmap(grad_u)(x)                             # (P,3)
+                def lap_u(xx):
+                    Hm = jax.hessian(lambda q: u_ex(q[None, :], t)[0])(xx)
+                    return jnp.trace(Hm)
+                lp = jax.vmap(lap_u)(x)
+                uu = u_ex(x, t)
+                return ut + uu * jnp.sum(g, axis=1) - num * lp
+            return jax.jit(f)
+        errs, errs_c, res11 = {}, {}, {}
+        for n7 in F7_NS:
+            c7 = b3.grid_coords_3d(n7)
+            i7 = b3.interior_indices_3d(n7)
+            xi = jnp.asarray(c7[i7])
+            ff = forcing_of(xi)
+            r11 = b3.make_mms_rollout(n7, ff, dst)
+            u0 = np.asarray(u_ex(xi, 0.0))
+            t0 = time.time()
+            s11, w11 = r11(jnp.asarray(u0), num)
+            uT = np.asarray(u_ex(xi, b3.NUM_STEPS * b3.DT))
+            st = (n7 - 1) // (F7_NS[0] - 1)
+            full = np.zeros(n7 ** 3); full[i7] = np.asarray(s11[-1]); fullT = np.zeros(n7 ** 3); fullT[i7] = uT
+            A_ = full.reshape(n7, n7, n7)[::st, ::st, ::st]; B_ = fullT.reshape(n7, n7, n7)[::st, ::st, ::st]
+            errs[n7] = float(np.linalg.norm(A_ - B_) / np.linalg.norm(B_))
+            res11[n7] = float(w11)
+            if n7 == F7_NS[0]:
+                r11c = b3.make_mms_rollout(n7, jax.jit(lambda t, _f=ff: -_f(t)), dst)
+                s11c, _ = r11c(jnp.asarray(u0), num)
+                fc = np.zeros(n7 ** 3); fc[i7] = np.asarray(s11c[-1])
+                errs_c[n7] = float(np.linalg.norm(fc.reshape(n7, n7, n7) - B_) / np.linalg.norm(B_))
+            log(f"    F11 N={n7}: MMS error {errs[n7]:.3e} worst res {float(w11):.2e} [{time.time()-t0:.0f}s]")
+        p1 = float(np.log2(errs[F7_NS[0]] / errs[F7_NS[1]])); p2 = float(np.log2(errs[F7_NS[1]] / errs[F7_NS[2]]))
+        p_mms = p2
+        gate("F11_manufactured_solution_order", p_mms, 0.7 <= p_mms <= 1.3, control=errs_c[F7_NS[0]],
+             control_fired=errs_c[F7_NS[0]] > 1e-1, errors={str(k): v for k, v in errs.items()},
+             order_coarse=p1, order_fine=p2, worst_res=res11, control_note="forcing sign flipped: O(1) error")
 
     # ---------------- F7: spatial consistency on nested grids ---------------
     if len(F7_NS) >= 3 and N == F7_NS[0]:
@@ -307,26 +374,26 @@ def main():
             s7, w7 = r7(jnp.asarray(u07[i7][None]), jnp.asarray([0.03]))
             full = np.zeros(n7 ** 3); full[i7] = np.asarray(s7[0, -1])
             sols[n7] = (full.reshape(n7, n7, n7), float(w7), time.time() - t0)
-            if n7 == F7_NS[-1]:
-                s7c, _ = r7(jnp.asarray(u07[i7][None]), jnp.asarray([0.03 * 1.5]))
-                fullc = np.zeros(n7 ** 3); fullc[i7] = np.asarray(s7c[0, -1])
-                sols_c[n7] = fullc.reshape(n7, n7, n7)
             log(f"    F7 N={n7}: worst res {float(w7):.2e} [{time.time()-t0:.0f}s]")
         n0 = F7_NS[0]
-        def on_common(A_, n7):
+        def on_common(A_, n7, shift=0):
             st = (n7 - 1) // (n0 - 1)
-            return A_[::st, ::st, ::st]
+            A2 = np.roll(A_, shift, axis=0) if shift else A_
+            return A2[::st, ::st, ::st]
         u_a, u_b, u_c = (on_common(sols[F7_NS[0]][0], F7_NS[0]), on_common(sols[F7_NS[1]][0], F7_NS[1]),
                          on_common(sols[F7_NS[2]][0], F7_NS[2]))
         d1 = np.linalg.norm(u_a - u_b); d2 = np.linalg.norm(u_b - u_c)
         order = float(np.log2(d1 / d2))
-        u_cc = on_common(sols_c[F7_NS[2]], F7_NS[2])
-        d2c = np.linalg.norm(u_b - u_cc)
-        order_c = float(np.log2(d1 / d2c))
-        gate("F7_spatial_order", order, 0.8 <= order <= 1.3, control=order_c,
-             control_fired=not (0.8 <= order_c <= 1.3), d_coarse_mid=float(d1), d_mid_fine=float(d2),
+        # control: index mutation -- the fine solution sampled one fine cell off
+        u_cs = on_common(sols[F7_NS[2]][0], F7_NS[2], shift=1)
+        order_c = float(np.log2(d1 / np.linalg.norm(u_b - u_cs)))
+        lo, hi = (p_mms - 0.3, p_mms + 0.3) if p_mms is not None else (0.7, 1.3)
+        gate("F7_spatial_order", order, lo <= order <= hi, control=order_c,
+             control_fired=not (lo <= order_c <= hi), d_coarse_mid=float(d1), d_mid_fine=float(d2),
+             band=[lo, hi], band_source="F11 p_mms +- 0.3" if p_mms is not None else "default",
              worst_res={str(k): v[1] for k, v in sols.items()},
-             secs={str(k): v[2] for k, v in sols.items()}, control_note="fine solution at 1.5 nu")
+             secs={str(k): v[2] for k, v in sols.items()},
+             control_note="fine solution sampled one fine cell off (index mutation)")
 
     report["complete"] = all(g.get("passed", True) and g.get("control_fired", True)
                              for g in report["gates"].values())

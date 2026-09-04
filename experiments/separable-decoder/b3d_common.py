@@ -102,7 +102,14 @@ def draw_param_table(seed, m):
             rho[j, b] = rng.uniform(0.5, 1.0)
         A[j] = rng.uniform(0.5, 2.0)
         nu[j] = np.exp(rng.uniform(np.log(0.01), np.log(0.1)))
-    return dict(B=B, c=c, w=w, rho=rho, A=A, nu=nu, seed=int(seed), m=int(m))
+    # overlap diagnostic [A11]: min pairwise centre distance over the mean width
+    # (inf for single-blob rows)
+    overlap = np.full(m, np.inf)
+    for j in range(m):
+        if B[j] > 1:
+            dmin = min(np.linalg.norm(c[j, a] - c[j, b_]) for a in range(B[j]) for b_ in range(a + 1, B[j]))
+            overlap[j] = dmin / np.mean(w[j, :B[j]])
+    return dict(B=B, c=c, w=w, rho=rho, A=A, nu=nu, overlap=overlap, seed=int(seed), m=int(m))
 
 
 def _blob_sum(coords, row):
@@ -212,6 +219,32 @@ def head(params, z):
     return apply_mlp(params["h"], z) + z @ params["h_lin"]
 
 
+def features_np(params, x):
+    """INDEPENDENT numpy evaluation of features() (gate D1 reference path)."""
+    p = jax.tree_util.tree_map(np.asarray, params)
+    x = np.asarray(x, dtype=np.float64)
+    ang = 2.0 * np.pi * (x @ p["B"])
+    ff = np.concatenate([np.sin(ang), np.cos(ang)], axis=-1)
+    h = ff
+    for w, b in p["g"][:-1]:
+        a = h @ w + b
+        h = a / (1.0 + np.exp(-a))                          # SiLU
+    w, b = p["g"][-1]
+    out = h @ w + b
+    mask = 64.0 * x[:, 0] * (1 - x[:, 0]) * x[:, 1] * (1 - x[:, 1]) * x[:, 2] * (1 - x[:, 2])
+    return (float(p["out_scale"]) * mask)[:, None] * out
+
+
+def head_np(params, z):
+    p = jax.tree_util.tree_map(np.asarray, params)
+    h = np.asarray(z, dtype=np.float64)
+    for w, b in p["h"][:-1]:
+        a = h @ w + b
+        h = a / (1.0 + np.exp(-a))
+    w, b = p["h"][-1]
+    return h @ w + b + np.asarray(z) @ p["h_lin"]
+
+
 class SeparableDecoder3D:
     def __init__(self, params, k_lat, r_feat):
         self.params = params
@@ -299,16 +332,21 @@ def lap_3d(u_int, n, zscale=1.0):
     return ((lxy + zscale * lz) / dx ** 2).reshape(-1)
 
 
-def fom_residual_int(u_int, up_int, nu, n, adv="upwind", zscale=1.0, zadv=1.0):
-    """Backward-Euler interior residual u - u_prev + dt (N(u) - nu lap u).
-    `adv`, `zscale`, `zadv` exist ONLY for gate controls (defaults = the FOM)."""
-    if adv == "upwind" and zadv == 1.0:
+def fom_residual_int(u_int, up_int, nu, n, adv="upwind", zscale=1.0, zadv=1.0, xadv=1.0,
+                     forcing=None):
+    """Backward-Euler interior residual u - u_prev + dt (N(u) - nu lap u - f).
+
+    `adv`, `zscale`, `zadv`, `xadv` exist ONLY for gate controls and keep their
+    defaults on every FOM path (the generators and ladders never pass them);
+    `forcing` (interior vector) is the manufactured-solution source of gate
+    F11 (None on every FOM path)."""
+    if adv == "upwind" and zadv == 1.0 and xadv == 1.0:
         Nu = upwind_adv_field_3d(u_int, n)
     elif adv == "central":
         Nu = central_adv_field_3d(u_int, n)
     elif adv == "downwind":
         Nu = downwind_adv_field_3d(u_int, n)
-    else:                                                    # upwind with a scaled z term
+    else:                                                    # upwind with a scaled x or z term
         dx = 1.0 / (n - 1)
         U = _pad3(u_int, n)
         c = U[1:-1, 1:-1, 1:-1]
@@ -316,8 +354,11 @@ def fom_residual_int(u_int, up_int, nu, n, adv="upwind", zscale=1.0, zadv=1.0):
         ux = jnp.where(pos, (c - U[:-2, 1:-1, 1:-1]) / dx, (U[2:, 1:-1, 1:-1] - c) / dx)
         uy = jnp.where(pos, (c - U[1:-1, :-2, 1:-1]) / dx, (U[1:-1, 2:, 1:-1] - c) / dx)
         uz = jnp.where(pos, (c - U[1:-1, 1:-1, :-2]) / dx, (U[1:-1, 1:-1, 2:] - c) / dx)
-        Nu = (c * (ux + uy + zadv * uz)).reshape(-1)
-    return u_int - up_int + DT * (Nu - nu * lap_3d(u_int, n, zscale))
+        Nu = (c * (xadv * ux + uy + zadv * uz)).reshape(-1)
+    r = u_int - up_int + DT * (Nu - nu * lap_3d(u_int, n, zscale))
+    if forcing is not None:
+        r = r - DT * forcing
+    return r
 
 
 # ------------------------------- sine basis / DST -----------------------------
@@ -560,49 +601,96 @@ def make_newton_tol_rollout(n, dst="mm"):
     return jax.jit(roll)
 
 
-def make_picard_tol_rollout(n, dst="mm"):
-    """`picard` arm (design [A28]): defect correction with the EXACT Helmholtz
-    inverse, u_{k+1} = u_k - H_nu^{-1} R(u_k), started from the linear
-    extrapolation 2 u^n - u^{n-1} (u^n at the first step), stopped when
-    ||R|| <= ntol ||u_prev|| or after max_iter iterations.  Rungs: (ntol,
-    MAX_PICARD) tolerance rungs, and the fixed-work rungs (0, k): ntol = 0
-    never stops early, so k = 0 is 'extrapolation only' (zero work), k = 1
-    exactly one defect correction, etc.  One stencil evaluation and one
-    DST pair per iteration.  Returns (snaps, iters per step, rel residual)."""
+def make_defect_tol_rollout(n, dst="mm"):
+    """`defect` arm (design r3 [A28, A34, A35]): SAFEGUARDED Helmholtz defect
+    correction.  d = -H_nu^{-1} R(u_k); the first alpha in {1, 1/2, 1/4, 1/8}
+    with ||R(u_k + alpha d)|| < ||R(u_k)|| is taken; if none decreases the
+    residual the iteration stops (stall, recorded as its residual).  Predictor:
+    cubic history extrapolation 4u^n - 6u^{n-1} + 4u^{n-2} - u^{n-3} with an
+    order-reducing bootstrap (u^0; 2u^1 - u^0; 3u^2 - 3u^1 + u^0).  Stops when
+    ||R|| <= ntol ||u_prev|| or after max_iter corrections; ntol = 0 never
+    stops early, so (0, k) is the fixed-work rung with exactly k corrections
+    (k = 0: predictor only, every predictor/output op charged).  Returns
+    (snaps (T+1, n_i), corrections per step, rel residual per step)."""
     hinv = make_helmholtz_inv(n, dst)
+    alphas = jnp.asarray([1.0, 0.5, 0.25, 0.125], dtype=F64)
 
-    def step(u_prev, u_prev2, first, nu, ntol, max_iter):
+    def step(hist, k, nu, ntol, max_iter):
+        u_prev, u1, u2, u3 = hist                             # u^n, u^{n-1}, u^{n-2}, u^{n-3}
         u_scale = jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
-        u0 = jnp.where(first, u_prev, 2.0 * u_prev - u_prev2)
+        u0 = jnp.where(k == 0, u_prev,
+             jnp.where(k == 1, 2.0 * u_prev - u1,
+             jnp.where(k == 2, 3.0 * u_prev - 3.0 * u1 + u2,
+                       4.0 * u_prev - 6.0 * u1 + 4.0 * u2 - u3)))
         rn0 = jnp.linalg.norm(fom_residual_int(u0, u_prev, nu, n))
 
         def cond(s):
-            _, it, rn = s
-            return (rn > ntol * u_scale) & (it < max_iter)
+            _, it, rn, stalled = s
+            return (rn > ntol * u_scale) & (it < max_iter) & (~stalled)
 
         def body(s):
-            u, it, rn = s
+            u, it, rn, _ = s
             r = fom_residual_int(u, u_prev, nu, n)
-            u2 = u - hinv(r, nu)
-            rn2 = jnp.linalg.norm(fom_residual_int(u2, u_prev, nu, n))
-            good = jnp.isfinite(rn2) & jnp.all(jnp.isfinite(u2))
-            u = jnp.where(good, u2, u)
-            rn = jnp.where(good, rn2, rn)
-            it2 = jnp.where(good, it + 1, jnp.int32(MAX_PICARD))
-            return (u, it2, rn)
+            d = -hinv(r, nu)
 
-        u, its, rn = jax.lax.while_loop(cond, body, (u0, jnp.int32(0), rn0))
-        return u, its, rn / u_scale
+            def try_alpha(a):
+                u2_ = u + a * d
+                rn2 = jnp.linalg.norm(fom_residual_int(u2_, u_prev, nu, n))
+                return u2_, jnp.where(jnp.isfinite(rn2), rn2, jnp.inf)
+            us, rns = jax.vmap(try_alpha)(alphas)
+            ok = rns < rn
+            any_ok = jnp.any(ok)
+            first = jnp.argmax(ok)
+            u_new = jnp.where(any_ok, us[first], u)
+            rn_new = jnp.where(any_ok, rns[first], rn)
+            return (u_new, it + 1, rn_new, ~any_ok)
+
+        u, its, rn, stalled = jax.lax.while_loop(cond, body, (u0, jnp.int32(0), rn0, False))
+        return u, its, rn / u_scale, stalled
 
     def roll(u0_int, nu, ntol, max_iter):
         def body(carry, k):
-            u, u2 = carry
-            un, its, rel = step(u, u2, k == 0, nu, ntol, max_iter)
-            return (un, u), (un, its, rel)
-        _, (snaps, its, rels) = jax.lax.scan(body, (u0_int, u0_int), jnp.arange(NUM_STEPS))
-        return jnp.concatenate([u0_int[None], snaps], axis=0), its, rels
+            u, u1, u2, u3 = carry
+            un, its, rel, st = step((u, u1, u2, u3), k, nu, ntol, max_iter)
+            return (un, u, u1, u2), (un, its, rel, st)
+        _, (snaps, its, rels, sts) = jax.lax.scan(body, (u0_int, u0_int, u0_int, u0_int),
+                                                   jnp.arange(NUM_STEPS))
+        return jnp.concatenate([u0_int[None], snaps], axis=0), its, rels, sts
 
     return jax.jit(roll)
+
+
+def make_mms_rollout(n, forcing_fn, dst="mm"):
+    """Gate F11: the truth generator with a time-dependent interior forcing
+    f(t) added to the residual (manufactured solution).  forcing_fn(t) -> (n_i,)
+    jax array, evaluated at t_{k+1} for step k.  Returns (snaps, worst rel res)."""
+    hinv = make_helmholtz_inv(n, dst)
+
+    def newton_step(u_int, up_int, nu, f):
+        def body(u, _):
+            r = fom_residual_int(u, up_int, nu, n, forcing=f)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_int(uu, up_int, nu, n, forcing=f),
+                                   (u,), (v,))[1]
+            du, _ = jax.scipy.sparse.linalg.bicgstab(
+                Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
+            ok = jnp.all(jnp.isfinite(du)) & \
+                (jnp.linalg.norm(r) > 1e-12 * (jnp.linalg.norm(up_int) + 1e-300))
+            return jnp.where(ok, u + du, u), None
+        u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
+        rfin = jnp.linalg.norm(fom_residual_int(u, up_int, nu, n, forcing=f)) \
+            / (jnp.linalg.norm(up_int) + 1e-300)
+        return u, rfin
+
+    def rollout(u0_int, nu):
+        def body(carry, k):
+            u, worst = carry
+            f = forcing_fn((k + 1) * DT)
+            u2, r = newton_step(u, u, nu, f)
+            return (u2, jnp.maximum(worst, r)), u2
+        (uT, worst), traj = jax.lax.scan(body, (u0_int, jnp.asarray(0.0, F64)),
+                                         jnp.arange(NUM_STEPS))
+        return jnp.concatenate([u0_int[None], traj], axis=0), worst
+    return jax.jit(rollout)
 
 
 # ------------------------------- data ------------------------------------------
@@ -888,3 +976,120 @@ def sha256_file(path):
         for blk in iter(lambda: f.read(1 << 20), b""):
             h.update(blk)
     return h.hexdigest()
+
+
+# ------------------------------- tables ----------------------------------------
+
+def get_tables(table_dir, n_train_table, n_test, seed, test_seed, log_fn=log):
+    """Load (or build once and persist) the train and test parameter tables."""
+    os.makedirs(table_dir, exist_ok=True)
+    out = {}
+    for name, sd, m in (("train", seed, n_train_table), ("test", test_seed, n_test)):
+        path = os.path.join(table_dir, f"b3d_params_{name}_seed{sd}_m{m}.npz")
+        if os.path.exists(path):
+            tab = load_param_table(path)
+        else:
+            t0 = time.time()
+            tab = build_param_table(sd, m, path)
+            log_fn(f"  table[{name}] built: {m} rows, seed {sd}, s* on {N_REF}^3 "
+                   f"[{time.time()-t0:.0f}s] -> {path}")
+        tab["path"] = path
+        out[name] = tab
+    return out
+
+
+# ------------------------------- LM (IC fit) -----------------------------------
+
+def make_lm(f, K, budget, trust_delta=np.inf):
+    """Damped LM minimising ||f(z)||: lam0 = 1e-6, /3 on accept, x10 on
+    reject, clamp [1e-12, 1e12]; accept iff finite and strictly decreasing;
+    stop on rel decrease < 1e-12 or step < 1e-13 or lam max (ctol_tol
+    .lm_tau_generic with tau = 0).  Returns (z, rn, rn0, n_jac, attempts,
+    reason)."""
+    rJ = lambda z: (f(z), jax.jacfwd(f)(z))
+    rn_fn = lambda z: jnp.linalg.norm(f(z))
+
+    def lm(z0):
+        r0, J0 = rJ(z0)
+        rn0 = jnp.linalg.norm(r0)
+        init_reason = jnp.where(~jnp.isfinite(rn0), jnp.int32(5), jnp.int32(0))
+        init = (z0, r0, J0, rn0, jnp.asarray(1e-6, F64), jnp.int32(0), jnp.int32(1), init_reason)
+
+        def cond(s):
+            return (s[7] == 0) & (s[5] < budget)
+
+        def body(s):
+            z, r, J, rn, lam, att, n_J, _ = s
+            H = J.T @ J
+            g = J.T @ r
+            D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
+            dz = jnp.linalg.solve(H + lam * D, -g)
+            finite = jnp.all(jnp.isfinite(dz))
+            admissible = finite & (jnp.linalg.norm(dz) <= trust_delta)
+            z_new = z + jnp.where(admissible, dz, 0.0)
+            rn_new = jnp.where(admissible, rn_fn(z_new), jnp.inf)
+            accept = admissible & jnp.isfinite(rn_new) & (rn_new < rn)
+            rel_dec = jnp.where(accept, (rn - rn_new) / rn, 1.0)
+            step = jnp.linalg.norm(dz) / (1.0 + jnp.linalg.norm(z))
+            r2, J2 = jax.lax.cond(accept, lambda: rJ(z_new), lambda: (r, J))
+            z = jnp.where(accept, z_new, z)
+            rn = jnp.where(accept, rn_new, rn)
+            lam = jnp.where(accept, jnp.maximum(lam / 3.0, 1e-12), jnp.minimum(lam * 10.0, 1e12))
+            n_J = n_J + accept.astype(jnp.int32)
+            reason = jnp.where(accept & ((rel_dec < 1e-12) | (step < 1e-13)), jnp.int32(1),
+                               jnp.where((~accept) & (lam >= 1e12),
+                                         jnp.where(finite, jnp.int32(3), jnp.int32(4)), jnp.int32(0)))
+            return (z, r2, J2, rn, lam, att + 1, n_J, reason)
+
+        z, r, J, rn, lam, att, n_J, reason = jax.lax.while_loop(cond, body, init)
+        return z, rn, rn0, n_J, att, reason
+
+    return jax.jit(lm)
+
+
+# ------------------------------- timing ----------------------------------------
+
+def burn_in(seconds=1.5, n=1024):
+    """Spin the GPU before a timing block (ctol_tol.burn_in)."""
+    a = jnp.ones((n, n), F64)
+    t0 = time.perf_counter()
+    while time.perf_counter() - t0 < seconds:
+        a = jax.block_until_ready(a @ a * 1e-3)
+
+
+def time_pair(fa, fb, reps=4, warm=2):
+    """Paired AB | BA | AB ... timing of two subjects (sep_common.time_pair);
+    all raw repetitions returned."""
+    for _ in range(warm):
+        fa(); fb()
+    ta, tb, order = [], [], []
+    for i in range(reps):
+        for side in ("ab" if i % 2 == 0 else "ba"):
+            t0 = time.perf_counter()
+            (fa if side == "a" else fb)()
+            dt = time.perf_counter() - t0
+            (ta if side == "a" else tb).append(dt)
+            order.append(side)
+    return dict(a_ms=float(np.median(ta) * 1e3), b_ms=float(np.median(tb) * 1e3),
+                a_raw_ms=[t * 1e3 for t in ta], b_raw_ms=[t * 1e3 for t in tb],
+                order="".join(order), reps=int(reps), warm=int(warm))
+
+
+def balanced_time(subjects, reps=7, warm=2):
+    """[(name, fn)] timed in a balanced order (forward on even sweeps, reversed
+    on odd); every fn blocks before returning; all raw times returned plus
+    each subject's outputs from its final timed invocation
+    (sep_common.balanced_time)."""
+    raw = {name: [] for name, _ in subjects}
+    results = {}
+    for name, fn in subjects:
+        for _ in range(warm):
+            results[name] = fn()
+    for rep in range(reps):
+        order = subjects if rep % 2 == 0 else list(reversed(subjects))
+        for name, fn in order:
+            t0 = time.perf_counter()
+            res = fn()
+            raw[name].append(time.perf_counter() - t0)
+            results[name] = res
+    return raw, results

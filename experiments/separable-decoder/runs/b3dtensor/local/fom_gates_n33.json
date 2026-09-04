@@ -31,7 +31,7 @@
   "backend": "gpu",
   "gpu": "NVIDIA GB10",
   "jax_version": "0.10.1",
-  "commit": "412935d23ccfa5386196ecf7a34b1223a509e95c",
+  "commit": "071b5c5d700873075ab73b139f5c795ecaee52cb",
   "slurm_job": null,
   "node": "local",
   "dst": "mm"
@@ -41,10 +41,13 @@
    "value": 3.559033120039204e-15,
    "passed": true,
    "helmholtz_ms": {
-    "mm": 0.5508980248123407,
-    "fft": 0.7199230021797121
+    "mm": 0.4196179797872901,
+    "fft": 0.664466992020607
    },
-   "faster": "mm"
+   "faster": "mm",
+   "control_note": "FFT forward transform without its orthonormal factor",
+   "control": 63.000000000000014,
+   "control_fired": true
   },
   "F4_helmholtz_backward_error": {
    "value": 1.4719461540109675e-15,
@@ -61,30 +64,31 @@
    "control_fired": true
   },
   "F3_truth_acceptance": {
-   "value": 9.979168451851449e-13,
+   "value": 9.979148311864784e-13,
    "passed": true,
-   "control": 2.8908070281243917e-10,
-   "control_fired": false
+   "control_note": "1 Newton iteration per step (2 iterations converged to 2.9e-10 at N=33)",
+   "control": 4.874956676392773e-05,
+   "control_fired": true
   },
   "F5_nonnegativity_test": {
-   "value": 9.394840275507535e-21,
+   "value": 9.394840275507477e-21,
    "passed": true,
    "control_note": "downwind (inverted switch) at nu=0.01, t>=1",
    "control": -5685.024649715361,
    "control_fired": true
   },
   "F10_generator_secs_per_traj": {
-   "value": 0.3101455569267273,
+   "value": 0.30824029445648193,
    "chunk": 8,
-   "projected_hours_512": 0.04410959031846788,
-   "projected_hours_256": 0.02205479515923394,
-   "projected_hours_128": 0.01102739757961697
+   "projected_hours_512": 0.04383861965603299,
+   "projected_hours_256": 0.021919309828016494,
+   "projected_hours_128": 0.010959654914008247
   },
   "F6_stencil_vs_assembled": {
-   "value": 1.908265647107314e-17,
+   "value": 1.966957706241391e-17,
    "passed": true,
    "control_note": "sign-changing state: the upwind switch is live",
-   "control": 0.0017355681729908047,
+   "control": 0.0017355681729908045,
    "control_fired": true
   },
   "F1_axis_symmetry": {
@@ -99,41 +103,66 @@
    "passed": true,
    "residual": 0.0,
    "jvp": 0.0,
-   "control_note": "z-Laplacian x1.01",
+   "control_note": "x-advection coefficient doubled (x1.01 gave 1.9e-5 under the backward-error normalisation, below the 1e-4 bar)",
+   "z_terms_mutated_on_plane": 0.0,
    "film_sha256": "51b02f5cccf28b0e3eb9f53310c3a2a020af265d26dfb9d6918be46a2bd672e1",
    "sign_changing_plane": true,
-   "control": 0.0,
-   "control_fired": false
+   "control": 0.0019044706540410933,
+   "control_fired": true
+  },
+  "F11_manufactured_solution_order": {
+   "value": 0.852004358797869,
+   "passed": true,
+   "errors": {
+    "33": 0.1283544748452113,
+    "65": 0.07205811883515821,
+    "129": 0.039921242684053324
+   },
+   "order_coarse": 0.832900699667519,
+   "order_fine": 0.852004358797869,
+   "worst_res": {
+    "33": 2.0447096333786162e-13,
+    "65": 2.523393293641936e-13,
+    "129": 3.5071709554070167e-13
+   },
+   "control_note": "forcing sign flipped: O(1) error",
+   "control": 1.2443912544083497,
+   "control_fired": true
   },
   "F7_spatial_order": {
    "value": 0.831590663434611,
    "passed": true,
    "d_coarse_mid": 1.6415789013637045,
    "d_mid_fine": 0.9224185493887419,
+   "band": [
+    0.5520043587978689,
+    1.152004358797869
+   ],
+   "band_source": "F11 p_mms +- 0.3",
    "worst_res": {
     "33": 8.975934274884144e-13,
     "65": 9.924222969806652e-13,
     "129": 1.3744111670773104e-15
    },
    "secs": {
-    "33": 1.0095114707946777,
-    "65": 6.047344446182251,
-    "129": 53.202555418014526
+    "33": 1.0109055042266846,
+    "65": 4.792286157608032,
+    "129": 58.81555390357971
    },
-   "control_note": "fine solution at 1.5 nu",
-   "control": -1.1139837787209919,
+   "control_note": "fine solution sampled one fine cell off (index mutation)",
+   "control": 0.2171811665486328,
    "control_fired": true
   }
  },
- "complete": false,
+ "complete": true,
  "data": {
   "test": {
    "n_test": 8,
-   "max_fom_rel_residual": 9.979168451851449e-13,
-   "min_u": 9.394840275507535e-21,
+   "max_fom_rel_residual": 9.979148311864784e-13,
+   "min_u": 9.394840275507477e-21,
    "max_u": 1.75272635036075,
    "frac_points_le0": 0.0,
-   "gen_secs": 3.920412063598633,
+   "gen_secs": 3.9508726596832275,
    "u0_max": [
     0.6974850057010166,
     1.662493345425057,
@@ -166,5 +195,5 @@
    ]
   }
  },
- "secs_total": 211.52159357070923
+ "secs_total": 198.69855308532715
 }

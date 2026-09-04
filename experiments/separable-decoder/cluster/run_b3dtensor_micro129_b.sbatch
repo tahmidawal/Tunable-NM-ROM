@@ -20,5 +20,5 @@ export COMMIT=$(cat "$ROOT/COMMIT.txt")
 echo "commit=$COMMIT"
 cd "$ROOT/code"
 env TABLE_DIR="$ROOT/code/runs/b3dtensor/tables" MICRO=1 N=129 K=32 R=128 EQ_M=256 EQ_MQ=1024 SEED0=0 TEST_SEED=1 N_TEST=8 TR_FACTOR=0.01 STEP_TOL=1e-9 STALL=1e-3 EXTRAP=1.0 IC_ENC_BUDGET=50 ENC_STEPS=12000 TIME_REPS=5 BURN=2 FOM_REPS=5 PAIR_REPS=5 WARM=2 STEPS=60000 LR=1e-3 P_SUB=16384 MAX_SNAPS=8192 STEPS=300 N_TRAIN=128 MAX_SNAPS=8192 ORACLE_VAL_TRAJ=8 N_TEST=1 OUT="$ROOT/out/sep_b3d_micro_n129.json" CKPT_OUT="$ROOT/out/sep_b3d_micro_n129_ckpt.pkl" "$PY" sep_b3d_tensor.py
-cd "$ROOT/out" && sha256sum $(ls *.json *.pkl *.npz 2>/dev/null) > RESULTS.sha256
+cd "$ROOT/out" && ls *.json >/dev/null && sha256sum *.json $(ls *.pkl *.npz 2>/dev/null) > RESULTS.sha256
 echo ALL-DONE

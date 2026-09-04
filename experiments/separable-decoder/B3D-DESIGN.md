@@ -309,3 +309,21 @@ Applied in code and binding; the r3 text above is read with these substitutions.
     (the r3 absolute $10^{-6}$ was tighter than the 2D cell's own measured tensor-vs-oracle latent
     deviations of $10^{-5}$ to $3\times10^{-4}$ and would have failed a run the 2D cell passed; set
     before any cluster job, from the N = 17 smoke).
+21. **Retraction (code, pre-result).** The first driver trained on rows 0..N_train−1 **and** the 64
+    validation rows (`cohort_rows = train ∪ validation`), so the pilot's D4 was not held out; found by the
+    Codex code verification (`B3D-CODE-VERIFY-r1-codex-gpt56sol.md`, blocking item). Both pilot jobs
+    (3247407, 3247412) and the three jobs submitted on their promotion (3247827, 3247839, 3247864) were
+    cancelled or discarded; the pilot is re-run with the training cohort = training rows only, the
+    validation truth generated as a separate stream for D4 only, and the pilot job never shipping or
+    opening the test table.
+22. From the same review: D4's and the IC fit's reported misfit and optimality are recomputed **exactly on
+    the field** (the Gram-space LM objective carries the $10^{-13}$ ridge only inside the solve); TA is
+    normalised by the algebraic reference; TB's control drops the actual final (possibly partial) chunk;
+    T0-scope covers four slices of every test trajectory; D3's pass includes the M-stability bar; E1's
+    error-ratio bar is per trajectory; ROLL has a stall control; the oracle and bank-apply jits take the
+    bank as an explicit argument (no captured 2 GB constants at N = 129); `complete` and the result-row
+    permission are set by a final contract validator (all gates and controls, zero censored steps, no
+    non-finite rollout), and the tables print "row allowed"; the kernel job asserts three same-shape
+    eight-trajectory artifacts and fails on C1; the submission is idempotent through a remote job-id
+    file, a re-push never deletes `out/`, the result hash requires the JSON, and pilot stages carry no
+    test table. NaN in any truth chunk fails the build (a Python `max` had hidden it).

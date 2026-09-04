@@ -20,5 +20,5 @@ export COMMIT=$(cat "$ROOT/COMMIT.txt")
 echo "commit=$COMMIT"
 cd "$ROOT/code"
 env TABLE_DIR="$ROOT/code/runs/b3dtensor/tables" KERNELS="$ROOT/in/sep_b3d_tensor_n33_kernel.npz,$ROOT/in/sep_b3d_tensor_n65_kernel.npz,$ROOT/in/sep_b3d_tensor_n129_kernel.npz" TIME_REPS=5 BURN=2 FLAT_MAX_RATIO=1.25 OUT="$ROOT/out/sep_b3d_kernels.json" "$PY" sep_b3d_kernels.py
-cd "$ROOT/out" && sha256sum $(ls *.json *.pkl *.npz 2>/dev/null) > RESULTS.sha256
+cd "$ROOT/out" && ls *.json >/dev/null && sha256sum *.json $(ls *.pkl *.npz 2>/dev/null) > RESULTS.sha256
 echo ALL-DONE

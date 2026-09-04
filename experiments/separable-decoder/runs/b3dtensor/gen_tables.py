@@ -64,14 +64,15 @@ def pilot_table(runs):
 
 
 def arms_table(runs):
-    lines = ["| N | GPU | arm | err mean | err max | e2e ms | ic ms | solve ms | dec ms | attempts | censored | opt max | stop reasons | decoded states u<=0 |",
-             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| N | GPU | arm | row allowed | err mean | err max | e2e ms | ic ms | solve ms | dec ms | attempts | censored | opt max | stop reasons | decoded states u<=0 |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for p, r in runs:
         c = r.get("config", {})
+        allowed = r.get("preconditions", {}).get("result_rows_allowed", {})
         for a, v in r.get("variants", {}).items():
             if "err_traj_rel_mean" not in v:
                 continue
-            lines.append(f"| {c.get('N')} | {c.get('gpu')} | {a} | {f(v['err_traj_rel_mean'], '{:.6e}')} | {f(v['err_traj_rel_max'])} | "
+            lines.append(f"| {c.get('N')} | {c.get('gpu')} | {a} | {f(allowed.get(a))} | {f(v['err_traj_rel_mean'], '{:.6e}')} | {f(v['err_traj_rel_max'])} | "
                          f"{f(v['e2e_ms_median'], '{:.2f}')} | {f(v['ic_ms_median'], '{:.2f}')} | {f(v['roll_ms_median'], '{:.2f}')} | "
                          f"{f(v['dec_ms_median'], '{:.2f}')} | {f(v['attempts_total_mean'], '{:.0f}')} | {v['censored_steps_total']} | "
                          f"{f(v['optimality_max'])} | {v['stop_reasons']} | {f(v['decoded_frac_states_with_u_le0'], '{:.1%}')} |")
@@ -132,11 +133,12 @@ def tr_table(runs):
 
 
 def kernels_table(runs):
-    lines = ["| N | K | R | M | kernel ms median | per-traj ms |", "|---|---|---|---|---|---|"]
+    lines = ["| N | K | R | M | kernel ms median | per-traj ms | LM attempts per traj |", "|---|---|---|---|---|---|---|"]
     for p, r in runs:
         for N, v in r.get("kernels", {}).items():
+            att = [v.get(f"traj{i}_attempts") for i in range(8) if f"traj{i}_attempts" in v]
             lines.append(f"| {N} | {v.get('K')} | {v.get('R')} | {v.get('M')} | {f(v.get('kernel_ms_median'), '{:.2f}')} | "
-                         f"{', '.join(f'{x:.2f}' for x in v.get('per_traj_ms', []))} |")
+                         f"{', '.join(f'{x:.2f}' for x in v.get('per_traj_ms', []))} | {att} |")
         c1 = r.get("C1", {})
         lines.append(f"| C1 | | | | max/min {f(c1.get('max_over_min'), '{:.3f}')} | pass {f(c1.get('passed'))} ({r.get('config', {}).get('gpu')}) |")
     return "\n".join(lines)

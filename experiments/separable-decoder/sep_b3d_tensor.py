@@ -309,10 +309,10 @@ def main():
     mem = {}
     mem_snapshot("start", mem)
 
-    tabs = b3.get_tables(TABLE_DIR, N_TRAIN_TABLE, N_TEST, SEED0, TEST_SEED)
-    tt, tr_tab = tabs["test"], tabs["train"]
+    tabs = b3.get_tables(TABLE_DIR, N_TRAIN_TABLE, N_TEST, SEED0, TEST_SEED, with_test=not PILOT)
+    tt, tr_tab = tabs.get("test"), tabs["train"]
     train_rows = np.arange(N_TRAIN)
-    cohort_rows = np.concatenate([train_rows, VAL_ROWS])
+    cohort_rows = train_rows                                   # TRAINING rows only (validation is never trained on)
     n_traj = cohort_rows.size
 
     report = dict(config=dict(
@@ -368,6 +368,7 @@ def main():
     # ---------------- test truth (NOT in pilot mode) -------------------------
     roll_fom = b3.make_truth_rollout(n, DST)
     if not PILOT:
+        assert tt is not None
         n_test = 1 if MICRO else N_TEST
         U_test, worst_te, umin_te, umax_te, fle_te, secs_te = b3.build_truth(
             n, tt, np.arange(n_test), gen_chunk, roll_fom, coords)        # (n_test, T, n_i)
@@ -395,9 +396,6 @@ def main():
     pick = np.sort(rng.choice(n_states, cfg_ms, replace=False)) if n_states > cfg_ms else np.arange(n_states)
     report["config"]["pick_source"] = "sep_burgers.py rule (rng(SEED0).choice over cohort x 51 states)"
     keep_rows = set(int(v) for v in (pick if TRAIN else pick[:max(R_CHECK_STATES, min(len(pick), 4096))]))
-    # D4 states: validation trajectories x ORACLE_TIMES, full interior
-    val_local = np.arange(N_TRAIN, N_TRAIN + min(ORACLE_VAL_TRAJ, VAL_ROWS.size))
-    d4_ids = set(int(li * T + k_) for li in val_local for k_ in ORACLE_TIMES)
     kept, d4_states = {}, {}
     tr_min, tr_max, worst_tr, n_le0, n_pts = np.inf, -np.inf, 0.0, 0, 0
     t0 = time.time()
@@ -416,11 +414,24 @@ def main():
                 sid = (s + b_) * T + t_
                 if sid in keep_rows:
                     kept[sid] = sn[b_, t_][pool]
-                if sid in d4_ids:
-                    d4_states[sid] = sn[b_, t_]
         del snaps, sn, si
+    # VALIDATION truth (rows 512..575), a separate stream: D4 states only, never trained on
+    val_rows = VAL_ROWS[:ORACLE_VAL_TRAJ]
+    for s in range(0, val_rows.size, gen_chunk):
+        rr = val_rows[s:s + gen_chunk]
+        U0 = np.stack([b3.blob_ic_3d(n, tr_tab, j, coords)[interior] for j in rr])
+        snaps, res = roll_fom(jnp.asarray(U0), jnp.asarray(tr_tab["nu"][rr]))
+        if not bool(jnp.all(jnp.isfinite(snaps))):
+            worst_tr = float("inf")
+        worst_tr = max(worst_tr, float(res))
+        tr_min = min(tr_min, float(jnp.min(snaps[:, 1:])))
+        sn = np.asarray(snaps)
+        for b_ in range(rr.size):
+            for k_ in ORACLE_TIMES:
+                d4_states[int(rr[b_]) * T + k_] = sn[b_, k_]
+        del snaps, sn
     assert np.isfinite(worst_tr) and worst_tr <= 1e-8, ("TRAIN FOM residual", worst_tr)
-    report["data"]["train"] = dict(n_traj=int(n_traj), n_states=int(n_states), max_fom_rel_residual=worst_tr,
+    report["data"]["train"] = dict(n_traj=int(n_traj), n_val_traj=int(val_rows.size), n_states=int(n_states), max_fom_rel_residual=worst_tr,
                                    min_u=tr_min, max_u=tr_max, frac_points_le0=n_le0 / n_pts,
                                    secs=time.time() - t0, pick_size=int(pick.size),
                                    n_d4_states=len(d4_states))
@@ -523,7 +534,7 @@ def main():
         r2 = np.asarray(w2 * (A2_j @ (h - hp) + b3.DT * (q2 + nu_med * lam2_j * (A2_j @ h))))
         head_e.append(float(np.sum(r2[:M_ACT] ** 2))); tail_e.append(float(np.sum(r2[M_ACT:] ** 2)))
     mstab = float(np.sum(tail_e) / np.sum(head_e))
-    gate("D3_rank_of_A", d3, d3 > 1e-8, control=d3c, control_fired=d3c < 1e-12,
+    gate("D3_rank_of_A", d3, d3 > 1e-8 and mstab <= 0.05, control=d3c, control_fired=d3c < 1e-12,
          M_stability_tail_over_head=mstab, M_stability_pass=bool(mstab <= 0.05))
     del Phi2_j, A2_j
     mem_snapshot("after_D3", mem)
@@ -534,13 +545,15 @@ def main():
     L_int = jnp.linalg.cholesky(Gram_int + eps_g * jnp.eye(R, dtype=F64))
     Gram_pool = G_pool.T @ G_pool
     L_pool = jnp.linalg.cholesky(Gram_pool + 1e-13 * jnp.trace(Gram_pool) / R * jnp.eye(R, dtype=F64))
-    lm_full = b3.make_lm(lambda z: None, K, ORACLE_BUDGET)  # placeholder (rebuilt per target below)
 
-    def make_oracle(Gb, Lc, budget):
-        def solve(u, z0s):
+    def make_oracle(budget):
+        """Gram-space multistart LM; Gb and Lc are EXPLICIT jit arguments (never captured).
+        The reported misfit and optimality are recomputed EXACTLY on the field
+        (||G h(z) - u|| / ||u||, ||J^T r|| / (||J|| ||r||) with J = G J_h), not the
+        regularised Gram-space quantities the LM minimises."""
+        def solve(Gb, Lc, u, z0s):
             b = Gb.T @ u
             y = jax.scipy.linalg.solve_triangular(Lc, b, lower=True)
-            c2 = jnp.maximum(u @ u - y @ y, 0.0)
 
             def f(z):
                 return Lc.T @ h_fn(z) - y
@@ -548,17 +561,23 @@ def main():
 
             def one(z0):
                 z, rn, rn0, nJ, att, reason = lm(z0)
-                r_ = f(z); J_ = jax.jacfwd(f)(z)
-                opt = jnp.linalg.norm(J_.T @ r_) / (jnp.linalg.norm(J_) * jnp.linalg.norm(r_) + 1e-300)
-                return z, jnp.sqrt(rn * rn + c2), opt, att
-            zs, rns, opts, atts = jax.vmap(one)(z0s)
+                return z, rn, att
+            zs, rns, atts = jax.vmap(one)(z0s)
             i = jnp.argmin(rns)
-            return zs[i], rns[i] / jnp.linalg.norm(u), opts[i], atts[i]
+            z = zs[i]
+            r_ = Gb @ h_fn(z) - u                                        # exact field residual
+            Jh = jax.jacfwd(h_fn)(z)                                       # (R, K)
+            JTr = Jh.T @ (Gb.T @ r_)                                       # J^T r with J = G J_h
+            Jn = jnp.sqrt(jnp.trace(Jh.T @ (Gb.T @ Gb) @ Jh))              # ||G J_h||_F
+            opt = jnp.linalg.norm(JTr) / (Jn * jnp.linalg.norm(r_) + 1e-300)
+            return z, jnp.linalg.norm(r_) / jnp.linalg.norm(u), opt, atts[i]
         return jax.jit(solve)
 
-    orc_full = make_oracle(G_int, L_int, ORACLE_BUDGET)
-    orc_full2 = make_oracle(G_int, L_int, 2 * ORACLE_BUDGET)
-    orc_pool = make_oracle(G_pool, L_pool, ORACLE_BUDGET)
+    orc = make_oracle(ORACLE_BUDGET)
+    orc2 = make_oracle(2 * ORACLE_BUDGET)
+    orc_full = lambda u, z0s: orc(G_int, L_int, u, z0s)
+    orc_full2 = lambda u, z0s: orc2(G_int, L_int, u, z0s)
+    orc_pool = lambda u, z0s: orc(G_pool, L_pool, u, z0s)
     z0s = jnp.asarray(np.concatenate([np.zeros((1, K)), Z_tr[np.random.default_rng(SEED0 + 5).choice(
         len(Z_tr), ORACLE_STARTS - 1, replace=False)]]))
     d4_rows = []
@@ -596,8 +615,8 @@ def main():
     perm_rows = np.random.default_rng(SEED0 + 9).permutation(n_i)
     G_shuf = G_int[jnp.asarray(perm_rows)]
     L_shuf = jnp.linalg.cholesky(G_shuf.T @ G_shuf + eps_g * jnp.eye(R, dtype=F64))
-    orc_shuf = make_oracle(G_shuf, L_shuf, ORACLE_BUDGET)
-    e_sh = [float(orc_shuf(jnp.asarray(d4_states[s]), z0s)[1]) for s in d4_keys[:8]]
+    e_sh = [float(orc(G_shuf, L_shuf, jnp.asarray(d4_states[s]), z0s)[1]) for s in d4_keys[:8]]
+    del G_shuf, L_shuf
     ep = np.array([r_["oracle_pool_fit"] for r_ in d4_rows])
     d4 = dict(mean=float(np.mean(ef)), worst=float(np.max(ef)), mean_k_gt0=float(np.mean(ef[kk > 0])),
               worst_k_gt0=float(np.max(ef[kk > 0])), n=int(ef.size), optimality_max=float(max(r_["optimality"] for r_ in d4_rows)),
@@ -632,7 +651,8 @@ def main():
     train_radius = float(np.max(np.linalg.norm(Z_tr - Z_tr.mean(0), axis=1)))
     TRD = float(TR_FACTOR * train_radius) if TR_FACTOR > 0 else float("inf")
     report["config"]["trust_delta"] = TRD
-    u_full_int = jax.jit(lambda z: G_int @ h_fn(z))
+    _bank_apply = jax.jit(lambda Gb, z: Gb @ h_fn(z))
+    u_full_int = lambda z: _bank_apply(G_int, z)                   # G_int passed explicitly, never captured
     adv_full = jax.jit(lambda uf: b3.upwind_adv_field_3d(uf, n))
 
     # ---------------- NNLS advection-only node set (ex arm) --------------------
@@ -748,7 +768,8 @@ def main():
     # control: the last chunk dropped
     T_drop = tc.build_T(Phi_j[:n_i - (n_i % T_CHUNK or T_CHUNK)], G_int[:n_i - (n_i % T_CHUNK or T_CHUNK)], n, chunk=T_CHUNK) \
         if False else None
-    Tc = T1 - np.asarray(tc._chunk_T(Phi_j[-T_CHUNK:], G_int[-T_CHUNK:], tc.backward_diff_bank_3d(G_int, n)[-T_CHUNK:]))
+    last_c = n_i - (n_chunks - 1) * T_CHUNK                       # the ACTUAL final (possibly partial) chunk
+    Tc = T1 - np.asarray(tc._chunk_T(Phi_j[-last_c:], G_int[-last_c:], tc.backward_diff_bank_3d(G_int, n)[-last_c:]))
     gTBc = float(np.max(np.abs(T1 - Tc)) / np.max(np.abs(T1)))
     Q = tc.symmetrize(T1)
     del T2, Tc
@@ -777,8 +798,9 @@ def main():
     q_alg, q_or, q_T, q_Tc = [np.concatenate(v) for v in (qa, qo, qt, qtc)]
     minu, n_le = np.concatenate(mn), np.concatenate(nle)
     nq = np.linalg.norm(q_or, axis=1) + 1e-300
-    gTA = float(np.max(np.linalg.norm(q_T - q_alg, axis=1) / nq))
-    gTAc = float(np.min(np.linalg.norm(q_Tc - q_alg, axis=1) / nq))
+    nqa = np.linalg.norm(q_alg, axis=1) + 1e-300
+    gTA = float(np.max(np.linalg.norm(q_T - q_alg, axis=1) / nqa))
+    gTAc = float(np.min(np.linalg.norm(q_Tc - q_alg, axis=1) / nqa))
     gate("TA_algebraic_identity", gTA, gTA < 1e-13, control=gTAc, control_fired=gTAc > 1e-1,
          n_states=int(len(H_all)))
     pos_states = minu > 0
@@ -791,9 +813,12 @@ def main():
     log(f"  T0-decoded (recorded): {int(np.sum(pos_states))} all-positive states; mismatch median "
         f"{np.median(mis):.2e} max {np.max(mis):.2e}; frac points u<=0 {n_le.sum()/(len(H_all)*n_i):.3%}")
     # T0-scope: on truth snapshots (FOM scope check, not a tensor precondition)
-    ut = jnp.asarray(U_test[0, 25])
-    q_up = np.asarray(Phi_j.T @ b3.upwind_adv_field_3d(ut, n)); q_bw = np.asarray(Phi_j.T @ b3.backward_adv_field_3d(ut, n))
-    t0s = rel(q_up, q_bw)
+    t0s = 0.0
+    for i_ in range(n_test):
+        for k_ in (1, 10, 25, 50):
+            ut = jnp.asarray(U_test[i_, k_])
+            t0s = max(t0s, rel(np.asarray(Phi_j.T @ b3.upwind_adv_field_3d(ut, n)),
+                                np.asarray(Phi_j.T @ b3.backward_adv_field_3d(ut, n))))
     us_ = jnp.asarray(U_test[0, 0] - np.roll(U_test[0, 0].reshape(ni, ni, ni), 3, axis=0).reshape(-1))
     t0c = rel(np.asarray(Phi_j.T @ b3.upwind_adv_field_3d(us_, n)), np.asarray(Phi_j.T @ b3.backward_adv_field_3d(us_, n)))
     gate("T0_scope_truth_upwind_eq_backward", t0s, t0s < 1e-13, control=t0c, control_fired=t0c > 1e-3,
@@ -848,13 +873,11 @@ def main():
         z0 = enc_apply(enc_params, u0[idx_j])
         b = Gb.T @ u0
         y = jax.scipy.linalg.solve_triangular(L_all, b, lower=True)
-        c2 = jnp.maximum(u0 @ u0 - y @ y, 0.0)
-
         def f(z):
             return L_all.T @ h_fn(z) - y
         lm = b3.make_lm(f, K, IC_ENC_BUDGET)
         z, rn, _, nJ, *_ = lm(z0)
-        return z, jnp.sqrt(rn * rn + c2), nJ
+        return z, jnp.linalg.norm(Gb @ h_fn(z) - u0), nJ               # EXACT full-grid misfit reported
     ic_gram_j = jax.jit(ic_enc_gram)
     decode_j = jax.jit(lambda Gb, Zf: jax.vmap(h_fn)(Zf) @ Gb.T)
     tol_scale = float(np.sqrt(n_i))
@@ -927,8 +950,17 @@ def main():
     Zh = np.stack(Zh)
     rdev = float(np.max(np.abs(np.asarray(Zd) - Zh)) / (1.0 + np.max(np.linalg.norm(Zh, axis=1))))
     rfd = float(np.max([rel(np.asarray(u_full_int(jnp.asarray(np.asarray(Zd)[t_]))), np.asarray(u_full_int(jnp.asarray(Zh[t_])))) for t_ in range(0, b3.NUM_STEPS, 7)]))
-    gate("ROLL_device_vs_eager", max(rdev, rfd), max(rdev, rfd) <= 1e-8, latent_rel=rdev, field_rel=rfd,
-         note="eager host loop of the same rule, traj 0; normalised latent and decoded-field discrepancy")
+    z_prev2, z_cur, Zc = np.asarray(z0g), np.asarray(z0g), []
+    for t_ in range(b3.NUM_STEPS):
+        pc = prev_j(jnp.asarray(z_cur)); z_ex = z_cur + EXTRAP * (z_cur - z_prev2)
+        ra = float(arm_ex["rn"](jnp.asarray(z_cur), pc, float(tt["nu"][0]), ())); rb = float(arm_ex["rn"](jnp.asarray(z_ex), pc, float(tt["nu"][0]), ()))
+        z_init = z_ex if (np.isfinite(rb) and rb < ra) else z_cur
+        z_new, _, _ = eager_lm_step(arm_ex["rJ"], arm_ex["rn"], z_init, pc, float(tt["nu"][0]), tolg, GN_BUDGET, (), 1e-1, TRD)
+        Zc.append(z_new); z_prev2, z_cur = z_cur, z_new
+    rdevc = float(np.max(np.abs(np.asarray(Zd) - np.stack(Zc))) / (1.0 + np.max(np.linalg.norm(Zh, axis=1))))
+    gate("ROLL_device_vs_eager", max(rdev, rfd), max(rdev, rfd) <= 1e-8, control=rdevc, control_fired=rdevc > 1e-8,
+         latent_rel=rdev, field_rel=rfd,
+         note="eager host loop of the same rule, traj 0; normalised latent and decoded-field discrepancy; control stall 1e-1")
     mem_snapshot("after_gates", mem)
 
     if MICRO:
@@ -1078,7 +1110,8 @@ def main():
                         pr["r_rel"].append(rel(rt, ro)); pr["J_rel"].append(rel(Jt, Jo))
                         pr["g_scaled"].append(float(np.linalg.norm(Jt.T @ rt - Jo.T @ ro) / (np.linalg.norm(Jo) * np.linalg.norm(ro) + 1e-300)))
                 c["path_fidelity"] = {k_: stats(v_) for k_, v_ in pr.items()}
-                c["E1_pass"] = bool(c["field_rel_diff_max"] <= 1e-3 and c["lat_dev_max"] <= 1e-4 and abs(c["err_ratio"] - 1) <= 1e-2
+                c["err_ratio_per_traj_max_dev"] = float(max(abs(r_["err_arm"] / max(r_["err_ref"], 1e-300) - 1.0) for r_ in rows))
+                c["E1_pass"] = bool(c["field_rel_diff_max"] <= 1e-3 and c["lat_dev_max"] <= 1e-4 and c["err_ratio_per_traj_max_dev"] <= 1e-2
                                     and c["stop_hist_identical_per_traj"] and c["attempts_identical_per_traj"]
                                     and max(pr["r_rel"]) <= 1e-3 and max(pr["J_rel"]) <= 1e-2 and max(pr["g_scaled"]) <= 1e-3)
             cmp[f"{arm}_vs_{ref_arm}"] = c
@@ -1104,7 +1137,10 @@ def main():
                 ro, Jo = [np.asarray(v_) for v_ in rJ_full(jnp.asarray(zc), pc, nu, aux_full)]
                 rn_t, rn_o = np.linalg.norm(rt), np.linalg.norm(ro)
                 lam = 1e-6; reason = 0; att = 0
-                cands = [dict(kind="init", r_rel=rel(rt, ro), J_rel=rel(Jt, Jo))]
+                uu0 = np.asarray(u_full_int(jnp.asarray(zc)))
+                cands = [dict(kind="init", r_rel=rel(rt, ro), J_rel=rel(Jt, Jo),
+                              g_scaled=float(np.linalg.norm(Jt.T @ rt - Jo.T @ ro) / (np.linalg.norm(Jo) * np.linalg.norm(ro) + 1e-300)),
+                              n_neg=int(np.sum(uu0 <= 0)))]
                 while reason == 0 and att < GN_BUDGET and rn_t > tol_abs:
                     H = Jt.T @ Jt; g = Jt.T @ rt
                     dz = np.linalg.solve(H + lam * (np.diag(np.diag(H)) + 1e-30 * np.eye(K)), -g)
@@ -1249,10 +1285,21 @@ def main():
         report["matched"]["arms"][arm] = ent
     save()
 
-    report["complete"] = True
+    # ---------------- design-contract validator (result-row preconditions) ----------
+    pre = dict(gates_all_pass=all(g.get("passed", True) and g.get("control_fired", True)
+                                  for g in report["gates"].values() if isinstance(g, dict) and "passed" in g),
+               P1_zero_censored={a_: report["variants"][a_]["censored_steps_total"] == 0 for a_ in arms},
+               E1_pass=report["comparison"].get("tensor_vs_full", {}).get("E1_pass"),
+               bracket={a_: report["matched"]["arms"][a_]["bracket"] for a_ in arms},
+               TR_concern=report["gates"].get("TR_candidate_path", {}).get("concern"),
+               nonfinite_anywhere=bool(any(v["n_blowups"] > 0 for v in report["variants"].values())))
+    pre["result_rows_allowed"] = {a_: bool(pre["gates_all_pass"] and pre["P1_zero_censored"][a_] and not pre["nonfinite_anywhere"])
+                                  for a_ in arms}
+    report["preconditions"] = pre
+    report["complete"] = bool(pre["gates_all_pass"] and not pre["nonfinite_anywhere"])
     report["secs_total"] = time.time() - t_all
     save()
-    log(f"DONE -> {OUT} [{time.time()-t_all:.0f}s]")
+    log(f"DONE -> {OUT} complete={report['complete']} preconditions={ {k_: v for k_, v in pre.items() if k_ != 'bracket'} } [{time.time()-t_all:.0f}s]")
 
 
 def fit_encoder(key, X_np, Z_np, steps, hidden=128, layers=2, lr=1e-3):

@@ -613,8 +613,9 @@ def make_defect_tol_rollout(n, dst="mm"):
     cubic history extrapolation 4u^n - 6u^{n-1} + 4u^{n-2} - u^{n-3} with an
     order-reducing bootstrap (u^0; 2u^1 - u^0; 3u^2 - 3u^1 + u^0).  Stops when
     ||R|| <= ntol ||u_prev|| or after max_iter corrections; ntol = 0 never
-    stops early, so (0, k) is the fixed-work rung with exactly k corrections
-    (k = 0: predictor only, every predictor/output op charged).  Returns
+    stops early, so (0, k) is the fixed-work rung with UP TO k accepted
+    corrections (a step whose line search fails stops early and is flagged;
+    k = 0: predictor only, every predictor/output op charged).  Returns
     (snaps (T+1, n_i), corrections per step, rel residual per step)."""
     hinv = make_helmholtz_inv(n, dst)
     alphas = jnp.asarray([1.0, 0.5, 0.25, 0.125], dtype=F64)
@@ -712,6 +713,8 @@ def build_truth(n, tab, rows, chunk, rollout, coords=None, keep_full=True, log_f
         rr = rows[s:s + chunk]
         U0 = np.stack([blob_ic_3d(n, tab, j, coords)[interior] for j in rr])
         sn, wr = rollout(jnp.asarray(U0), jnp.asarray(tab["nu"][rr]))
+        if not (bool(jnp.all(jnp.isfinite(sn))) and np.isfinite(float(wr))):
+            worst = float("inf")                                     # NaN anywhere is FAIL
         worst = max(worst, float(wr))
         umin = min(umin, float(jnp.min(sn[:, 1:])))
         umax = max(umax, float(jnp.max(sn)))
@@ -999,11 +1002,13 @@ def sha256_file(path):
 
 # ------------------------------- tables ----------------------------------------
 
-def get_tables(table_dir, n_train_table, n_test, seed, test_seed, log_fn=log):
-    """Load (or build once and persist) the train and test parameter tables."""
+def get_tables(table_dir, n_train_table, n_test, seed, test_seed, log_fn=log, with_test=True):
+    """Load (or build once and persist) the train and (unless with_test=False:
+    the pilot never opens it) test parameter tables."""
     os.makedirs(table_dir, exist_ok=True)
     out = {}
-    for name, sd, m in (("train", seed, n_train_table), ("test", test_seed, n_test)):
+    specs = [("train", seed, n_train_table)] + ([("test", test_seed, n_test)] if with_test else [])
+    for name, sd, m in specs:
         path = os.path.join(table_dir, f"b3d_params_{name}_seed{sd}_m{m}.npz")
         if os.path.exists(path):
             tab = load_param_table(path)

@@ -28,6 +28,6 @@ export COMMIT=\$(cat "\$ROOT/COMMIT.txt")
 echo "commit=\$COMMIT"
 cd "\$ROOT/code"
 env TABLE_DIR="\$ROOT/code/runs/b3dtensor/tables" $ENVS "\$PY" $SCRIPT
-cd "\$ROOT/out" && sha256sum \$(ls *.json *.pkl *.npz 2>/dev/null) > RESULTS.sha256
+cd "\$ROOT/out" && ls *.json >/dev/null && sha256sum *.json \$(ls *.pkl *.npz 2>/dev/null) > RESULTS.sha256
 echo ALL-DONE
 SB

@@ -30,7 +30,7 @@ KERNELS = os.environ["KERNELS"].split(",")
 OUT = os.environ.get("OUT", "/tmp/sep_b3d_kernels.json")
 TIME_REPS = int(os.environ.get("TIME_REPS", "5"))
 BURN = int(os.environ.get("BURN", "2"))
-FLAT_MAX_RATIO = float(os.environ.get("FLAT_MAX_RATIO", "1.5"))
+FLAT_MAX_RATIO = float(os.environ.get("FLAT_MAX_RATIO", "1.25"))   # design r4 [A58]
 log = b3.log
 
 
@@ -72,7 +72,10 @@ def main():
         ks.append(dict(N=N, K=K, R=R, M=M, roll=roll, z0=jnp.asarray(d["z0"]), nu=np.asarray(d["nu"]),
                        tol=np.asarray(d["tol_abs"]), budget=int(d["gn_budget"]), path=path))
         log(f"  kernel N={N}: K={K} R={R} M={M}, {len(d['z0'])} trajectories")
-    n_test = min(len(k["nu"]) for k in ks)
+    assert len(ks) == 3, "C1 needs exactly the three per-N kernels"
+    assert len({(k["K"], k["R"], k["M"]) for k in ks}) == 1, "kernels must share (K, R, M)"
+    assert all(len(k["nu"]) == len(ks[0]["nu"]) == 8 for k in ks), "eight test trajectories per kernel"
+    n_test = len(ks[0]["nu"])
     times = {k["N"]: [[] for _ in range(n_test)] for k in ks}
     b3.burn_in(1.5)
     for rep_ in range(BURN + TIME_REPS):
@@ -98,7 +101,7 @@ def main():
     ratio = max(meds.values()) / min(meds.values())
     report["C1"] = dict(max_over_min=float(ratio), passed=bool(ratio <= FLAT_MAX_RATIO), rule=f"max/min median kernel ms <= {FLAT_MAX_RATIO}")
     log(f"  C1 kernel flatness: max/min {ratio:.3f} -> {'PASS' if ratio <= FLAT_MAX_RATIO else 'FAIL'}")
-    report["complete"] = True
+    report["complete"] = bool(ratio <= FLAT_MAX_RATIO)
     json.dump(report, open(OUT, "w"), indent=1, default=float)
     log(f"DONE -> {OUT}")
 

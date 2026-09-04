@@ -74,3 +74,15 @@ controls firing.
     Now $\max|\Delta z|/(1 + \max\|z\|) \le 10^{-4}$.
 
 <!-- tables -->
+
+## 2026-09-04 — pilot run, code verification, pilot invalidated and re-run
+
+12. **Retraction (result).** Pilot A (job 3247407, K=16 R=64 M=130 m=512) and pilot B (3247412, K=32
+    R=128 M=256 m=1024) ran on the cluster; A failed D4 on the worst-state bar (mean 4.9e-2, worst 0.172),
+    B passed every validation gate (D4 mean 3.0e-2, worst 0.111, oracle/POD-K 0.36, optimality 3e-8) and
+    was promoted; n33 / n65 / micro129 were submitted on that promotion. The Codex code verification
+    then found that the training cohort included the 64 validation rows, so the "held-out" D4 was not
+    held out. **Both pilot results are withdrawn** (kept under `runs/b3dtensor/pilot33{a,b}` as
+    superseded evidence, not results), the three follow-on jobs were cancelled and their directories
+    deleted, and the pilot is re-run with the corrected split. Everything else the review flagged is
+    listed as design amendments 21–22 and fixed in the same commit.

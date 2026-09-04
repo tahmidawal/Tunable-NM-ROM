@@ -256,3 +256,52 @@ censored steps; ladder bracket present; C1 measured on one GPU; M1 passed before
 `stage/push/pull_b3dtensor.sh` and `run_b3dtensor_*.sbatch`, `runs/b3dtensor/gen_tables.py`,
 `B3D-NOTES.md`, report `reports/2026-09-XX-b3d-tensor-ladder.md` on `main`, Codex verification of
 every conclusion and code file, lab log entry.
+
+## r4 amendments (2026-09-04, after the r3 audit — 20 items, `B3D-DESIGN-AUDIT-r3-codex-gpt56sol.md`)
+
+Applied in code and binding; the r3 text above is read with these substitutions.
+
+1. `[A51]` `defect` is *monotone finite backtracking* (not Armijo); `its` counts **accepted** corrections and a
+   step whose every $\alpha$ fails is flagged `stalled`; the fixed-work rungs count accepted corrections.
+2. `[A52]` F11's forcing uses the **discrete backward-Euler time quotient** $(u_{\text{ex}}(t) - u_{\text{ex}}(t - \Delta t))/\Delta t$,
+   so the exact slices satisfy the time-discrete equation and the measured order is spatial; the manufactured
+   field's positivity on every slice is asserted.
+3. `[A53]` F7's band is **frozen at $[0.7, 1.3]$** (first-order upwind, second-order diffusion) and does not
+   depend on F11; F11 is reported separately.
+4. `[A54]` F3's control is **one** Newton iteration (two converged to $2.9\times10^{-10}$ at $N = 33$; one fires at
+   $4.9\times10^{-5}$); prevalidated at every $N$ the gates run.
+5. `[A55]` F5's asserted control is a **deterministic output mutation** (one interior node of the accepted
+   state $k = 25$ set to $-10^{-3}$, run through the same check). The downwind rollout is recorded as a
+   diagnostic with its finiteness and residual, never as the control, because Newton does not converge on
+   the anti-diffusive scheme and a divergent run is not a solver control; a central-difference rollout
+   converged but stayed non-negative on this family at cell Péclet 6, so no converged non-monotone
+   witness exists here (scan at $N = 33$, $\nu \in [0.01, 0.03]$, recorded in `B3D-NOTES.md`).
+6. `[A56]` D4 requires the oracle's final optimality $\le 10^{-6}$; the POD-$K$ comparator is the POD of up to
+   4096 training snapshots **on the pool**, held-out validation states restricted to the pool, both the
+   projection and the oracle evaluated on the pool, bar oracle $\le 0.5\times$ POD-$K$ (a baseline, not a floor).
+7. `[A57]` STEP/ROLL gate the **normalised** latent discrepancy $\max|\Delta z|/(1 + \|z\|)$ **and** the decoded-field
+   relative discrepancy ($\le 10^{-10}$ step, $\le 10^{-8}$ rollout).
+8. `[A58]` C1: the three kernels share (K, R, M) after promotion, so the reduced graphs are identical by
+   construction; the job records LM attempts per kernel and the pass rule is $\max_N/\min_N \le 1.25$ with the
+   attempt counts reported beside it; "N-independent" is claimed only for the kernel arithmetic.
+9. `[A59]` C2's lower bound is a **hierarchical bootstrap** of the raw paired times: trajectories resampled with
+   replacement, and within each drawn trajectory its ROM and FOM repetitions resampled with replacement,
+   2000 resamples, 5th percentile of the median speedup; conditions (i) and (ii) stay.
+10. `[A60]` M1 runs the **whole pipeline at the real $N = 129$ shapes** with a short training (the real snapshot
+    count for a few hundred steps), the real D4 multistart batch, the real NNLS fit, the tensor build and one
+    end-to-end per arm plus one 50-step run of each classical arm; device peak and host RSS after every phase.
+11. `[A61]` The production residual has **no mutation knobs**; mutated operators live in `fom_residual_mutated`,
+    used only by the gate driver, and an unknown mutation name raises.
+12. `[A62]` The Fourier matrix $B$ is **fixed**: its gradient is zeroed and bitwise invariance is asserted after
+    training.
+13. `[A63]` The subsampled feature-Gram term is a stochastic regulariser (documented as such).
+14. `[A65]` Flat index $iN^2 + jN + k$: $i/x$ slowest, $k/z$ fastest (docstring corrected; the code was consistent).
+15. `[A67]` F8's control is the $x$-advection coefficient **doubled** (fires at $1.9\times10^{-3}$; × 1.01 gave
+    $1.9\times10^{-5}$).
+16. `[A68]` D3's control **duplicates a column** of $A$ (rank loss guaranteed).
+17. `[A69]` F3 and F5 are asserted on the train, validation and test cohorts by the main driver at every $N$
+    (the phase-0 driver checks the test cohort and the controls).
+18. `[A70]` $M$ is extended to the end of its degenerate eigenshell; the actual $M$ is recorded beside the
+    requested one and the tensor is sized by it.
+19. L's control is the diffusion **sign flipped** in the assembled reference (the "dropped" control was below the
+    bar at $3.9\times10^{-4}$).

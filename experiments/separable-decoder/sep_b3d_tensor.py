@@ -271,10 +271,23 @@ def eager_lm_step(rJ, rn, z0, prev_c, nu, tol_abs, budget, aux, stall_rel, tr_de
     return z, reason, att
 
 
-def bootstrap_lower(vals, rng, n_boot, q=0.05):
-    """trajectory-clustered bootstrap lower bound of the median of per-trajectory values"""
-    vals = np.asarray(vals, dtype=np.float64)
-    meds = [np.median(vals[rng.integers(0, len(vals), len(vals))]) for _ in range(n_boot)]
+def bootstrap_lower(pairs, rng, n_boot, q=0.05):
+    """HIERARCHICAL bootstrap of the median paired speedup [A59]: resample
+    trajectories with replacement, and within each drawn trajectory resample
+    its raw ROM and FOM repetition times with replacement, so both the
+    trajectory-to-trajectory and the timing-repetition variability enter."""
+    A = [np.asarray(p["a_raw_ms"], dtype=np.float64) for p in pairs]
+    B = [np.asarray(p["b_raw_ms"], dtype=np.float64) for p in pairs]
+    nt = len(pairs)
+    meds = []
+    for _ in range(n_boot):
+        ti = rng.integers(0, nt, nt)
+        sp = []
+        for i in ti:
+            a = A[i][rng.integers(0, len(A[i]), len(A[i]))]
+            b = B[i][rng.integers(0, len(B[i]), len(B[i]))]
+            sp.append(np.median(b) / np.median(a))
+        meds.append(np.median(sp))
     return float(np.quantile(meds, q))
 
 
@@ -381,7 +394,7 @@ def main():
     rng = np.random.default_rng(SEED0)
     pick = np.sort(rng.choice(n_states, cfg_ms, replace=False)) if n_states > cfg_ms else np.arange(n_states)
     report["config"]["pick_source"] = "sep_burgers.py rule (rng(SEED0).choice over cohort x 51 states)"
-    keep_rows = set(int(v) for v in (pick if TRAIN else pick[:R_CHECK_STATES]))
+    keep_rows = set(int(v) for v in (pick if TRAIN else pick[:max(R_CHECK_STATES, min(len(pick), 4096))]))
     # D4 states: validation trajectories x ORACLE_TIMES, full interior
     val_local = np.arange(N_TRAIN, N_TRAIN + min(ORACLE_VAL_TRAJ, VAL_ROWS.size))
     d4_ids = set(int(li * T + k_) for li in val_local for k_ in ORACLE_TIMES)
@@ -419,6 +432,7 @@ def main():
     # ---------------- train / load -------------------------------------------
     if TRAIN:
         S_tr = np.stack([kept[int(sid)] for sid in pick])
+        S_pod = S_tr[:min(len(S_tr), 4096)]                      # POD comparator snapshots (pool points) [A56]
         del kept
         log(f"  TRAIN in-job: {S_tr.shape[0]} states x {S_tr.shape[1]} pool points, {STEPS} steps, "
             f"lr {LR}, p_sub {P_SUB}")
@@ -439,6 +453,7 @@ def main():
     else:
         r_rows = pick[:R_CHECK_STATES]
         r_fields = np.stack([kept[int(sid)] for sid in r_rows])
+        S_pod = np.stack([kept[int(sid)] for sid in pick[:min(len(pick), 4096)]]) if len(kept) >= min(len(pick), 4096) else r_fields
         del kept
     report["config"]["ckpt_cfg"] = {k_: v for k_, v in cfg.items()
                                     if isinstance(v, (int, float, str, bool, type(None), list))}
@@ -453,6 +468,11 @@ def main():
     G_all = dec.feat_at(coords, chunk=FEAT_CHUNK)                    # (n^3, R)
     G_int = G_all[interior_j]                                        # (n_i, R)
     kx, ky, kz, Phi_np, lam = b3.test_modes_3d(n, EQ_M)
+    if Phi_np.shape[1] != EQ_M:
+        log(f"  M extended from {EQ_M} to {Phi_np.shape[1]} to complete the degenerate eigenshell [A70]")
+    M_ACT = int(Phi_np.shape[1])
+    report["config"]["M_requested"] = EQ_M
+    report["config"]["M"] = M_ACT
     Phi_j = jnp.asarray(Phi_np)
     lam_j = jnp.asarray(lam, dtype=F64)
     A_j = Phi_j.T @ G_int                                            # (M, R)
@@ -483,11 +503,11 @@ def main():
     # D3: rank of A (+ deterministic control) and M-stability
     sv = np.linalg.svd(A_np, compute_uv=False)
     d3 = float(sv[-1] / sv[0])
-    A_bad = A_np.copy(); A_bad[EQ_M - 1] = A_bad[0]
+    A_bad = A_np.copy(); A_bad[:, R - 1] = A_bad[:, 0]           # duplicated COLUMN: rank loss guaranteed [A68]
     svb = np.linalg.svd(A_bad, compute_uv=False)
     d3c = float(svb[-1] / svb[0])
     # M-stability: energy of the exlin residual in modes M+1..2M vs 1..M at 256 training codes
-    _, _, _, Phi2_np, lam2 = b3.test_modes_3d(n, 2 * EQ_M)
+    _, _, _, Phi2_np, lam2 = b3.test_modes_3d(n, 2 * M_ACT)
     Phi2_j = jnp.asarray(Phi2_np); lam2_j = jnp.asarray(lam2)
     A2_j = Phi2_j.T @ G_int
     mrng = np.random.default_rng(SEED0 + 21)
@@ -501,7 +521,7 @@ def main():
         q2 = Phi2_j.T @ b3.upwind_adv_field_3d(u, n)
         w2 = (1.0 + b3.DT * nu_med * lam2_j) ** (-b3.WEAK_ALPHA)
         r2 = np.asarray(w2 * (A2_j @ (h - hp) + b3.DT * (q2 + nu_med * lam2_j * (A2_j @ h))))
-        head_e.append(float(np.sum(r2[:EQ_M] ** 2))); tail_e.append(float(np.sum(r2[EQ_M:] ** 2)))
+        head_e.append(float(np.sum(r2[:M_ACT] ** 2))); tail_e.append(float(np.sum(r2[M_ACT:] ** 2)))
     mstab = float(np.sum(tail_e) / np.sum(head_e))
     gate("D3_rank_of_A", d3, d3 > 1e-8, control=d3c, control_fired=d3c < 1e-12,
          M_stability_tail_over_head=mstab, M_stability_pass=bool(mstab <= 0.05))
@@ -561,32 +581,33 @@ def main():
         _, e2, _, _ = orc_full2(uf, z0s)
         e1 = [r_["oracle_full"] for r_ in d4_rows if r_["sid"] == sid][0]
         dbl.append(abs(float(e2) - e1) / max(e1, 1e-300))
-    # POD-K comparator on the pool: POD from the training snapshots, held-out projection
-    S_pool = np.stack([d4_states[s][pool] for s in d4_keys])
-    Htr = np.asarray(jax.vmap(h_fn)(jnp.asarray(Z_tr)))
-    Utr_pool = None
-    pod_floor = None
-    try:
-        # training snapshots on the pool are the auto-decoder's training set (regenerate from kept codes is
-        # not possible after del); use the decoder reconstructions' TARGETS: re-read the pick from the
-        # streamed truth is expensive, so the POD comparator uses the D4-independent TRAINING states
-        # reconstructed by the checkpoint codes?  No -- that would be circular.  The comparator is built
-        # from the first R_CHECK_STATES regenerated training states only when S_tr is available (TRAIN=1).
-        pass
-    except Exception:
-        pass
+    # POD-K comparator [A56]: POD of the TRAINING snapshots on the pool (S_pod, kept before training),
+    # held-out validation states restricted to the pool, projected on the leading K modes; the oracle
+    # restricted to the pool is compared with it (both on the pool, so N=129 is well defined)
+    S_val_pool = np.stack([d4_states[s_][pool] for s_ in d4_keys])
+    Xs = S_pod - S_pod.mean(0, keepdims=True) if False else S_pod          # uncentred, as the 2D cells
+    Gm = Xs @ Xs.T
+    ev, V = np.linalg.eigh(Gm)
+    order = np.argsort(ev)[::-1][:K]
+    Upod = (Xs.T @ V[:, order]) / np.sqrt(np.maximum(ev[order], 1e-300))[None, :]      # (P, K) orthonormal
+    proj = S_val_pool - (S_val_pool @ Upod) @ Upod.T
+    pod_floor = np.linalg.norm(proj, axis=1) / np.linalg.norm(S_val_pool, axis=1)
     # control: shuffled bank rows
     perm_rows = np.random.default_rng(SEED0 + 9).permutation(n_i)
     G_shuf = G_int[jnp.asarray(perm_rows)]
     L_shuf = jnp.linalg.cholesky(G_shuf.T @ G_shuf + eps_g * jnp.eye(R, dtype=F64))
     orc_shuf = make_oracle(G_shuf, L_shuf, ORACLE_BUDGET)
     e_sh = [float(orc_shuf(jnp.asarray(d4_states[s]), z0s)[1]) for s in d4_keys[:8]]
+    ep = np.array([r_["oracle_pool_fit"] for r_ in d4_rows])
     d4 = dict(mean=float(np.mean(ef)), worst=float(np.max(ef)), mean_k_gt0=float(np.mean(ef[kk > 0])),
               worst_k_gt0=float(np.max(ef[kk > 0])), n=int(ef.size), optimality_max=float(max(r_["optimality"] for r_ in d4_rows)),
               budget_doubling_rel_change_max=float(np.max(dbl)), pool_to_full_ratio_max=float(np.max(ratio)),
-              pool_to_full_ratio_median=float(np.median(ratio)), rows=d4_rows, control_shuffled_bank_mean=float(np.mean(e_sh)))
+              pool_to_full_ratio_median=float(np.median(ratio)), pod_K_floor_mean=float(np.mean(pod_floor)),
+              oracle_pool_mean=float(np.mean(ep)), oracle_over_podK=float(np.mean(ep) / max(np.mean(pod_floor), 1e-300)),
+              rows=d4_rows, control_shuffled_bank_mean=float(np.mean(e_sh)))
     passed = (d4["mean"] <= 5e-2 and d4["worst"] <= 1.5e-1 and d4["pool_to_full_ratio_max"] <= 1.5
-              and d4["budget_doubling_rel_change_max"] < 1e-2)
+              and d4["budget_doubling_rel_change_max"] < 1e-2 and d4["optimality_max"] <= 1e-6
+              and d4["oracle_over_podK"] <= 0.5)
     gate("D4_heldout_oracle_validation", d4["mean"], passed, control=d4["control_shuffled_bank_mean"],
          control_fired=d4["control_shuffled_bank_mean"] > 0.5, **{k_: v for k_, v in d4.items() if k_ != "rows"})
     report["D4_rows"] = d4_rows
@@ -700,8 +721,8 @@ def main():
         lin_as = wt * (Phi_np.T @ (u - up + b3.DT * nu_t * (-(L_sp @ u))))
         opn = 1.0 + b3.DT * nu_t * Lnorm
         gL.append(float(np.linalg.norm(np.asarray(lin_x) - lin_as) / (opn * np.linalg.norm(u) * np.max(wt) + np.linalg.norm(lin_as) + 1e-300)))
-        lin_nodiff = wt * (Phi_np.T @ (u - up))
-        gLc.append(float(np.linalg.norm(np.asarray(lin_x) - lin_nodiff) / (opn * np.linalg.norm(u) * np.max(wt) + np.linalg.norm(lin_as) + 1e-300)))
+        lin_flip = wt * (Phi_np.T @ (u - up - b3.DT * nu_t * (-(L_sp @ u))))     # diffusion sign flipped
+        gLc.append(float(np.linalg.norm(np.asarray(lin_x) - lin_flip) / (opn * np.linalg.norm(u) * np.max(wt) + np.linalg.norm(lin_as) + 1e-300)))
         adv_i = adv_inc_j(zt)
         gA.append(float(jnp.max(jnp.abs(adv_x - adv_i)) / (jnp.max(jnp.abs(adv_i)) + 1e-300)))
         gAc.append(float(jnp.max(jnp.abs(adv_cen_j(zt) - adv_i)) / (jnp.max(jnp.abs(adv_i)) + 1e-300)))
@@ -710,7 +731,7 @@ def main():
         gF.append(rel(np.asarray(rf), r_direct))
         gFc.append(rel(np.asarray(rf), Phi_np.T @ Rf))
     gate("L_exlin_linear_vs_assembled", float(np.max(gL)), np.max(gL) <= 1e-12, control=float(np.min(gLc)),
-         control_fired=np.min(gLc) > 1e-3)
+         control_fired=np.min(gLc) > 1e-5, control_note="diffusion sign flipped in the assembled reference")
     gate("A_exlin_advection_direct", float(np.max(gA)), np.max(gA) <= 1e-12, control=float(np.min(gAc)),
          control_fired=np.min(gAc) > 1e-6)
     gate("FOMR_fullgrid_weak_vs_fom_residual", float(np.max(gF)), np.max(gF) <= 1e-10, control=float(np.min(gFc)),
@@ -781,11 +802,11 @@ def main():
     mem_snapshot("after_tensor", mem)
     save()
 
-    Qm = jnp.asarray(Q.reshape(EQ_M * R, R))
+    Qm = jnp.asarray(Q.reshape(M_ACT * R, R))
 
     def adv_tensor(z):
         h = h_fn(z)
-        return 0.5 * ((Qm @ h).reshape(EQ_M, R) @ h)
+        return 0.5 * ((Qm @ h).reshape(M_ACT, R) @ h)
     r_T, parts_T = mk_parts(adv_tensor)
 
     # ---------------- TQ: tensor vs oracle at 32 latent states (recorded) ----
@@ -882,11 +903,14 @@ def main():
     assert witness is not None, "no STEP witness with >= 2 accepted LM steps found"
     zt, zp, pc, out_dev = witness
     z_e, reason_e, att_e = eager_lm_step(arm_ex["rJ"], arm_ex["rn"], zt, pc, nu_t, tolg, GN_BUDGET, (), STALL, TRD)
-    sdev = float(np.max(np.abs(np.asarray(out_dev[0]) - z_e)))
+    zn = 1.0 + float(np.linalg.norm(z_e))
+    sdev = float(np.max(np.abs(np.asarray(out_dev[0]) - z_e))) / zn
+    fdev = rel(np.asarray(u_full_int(jnp.asarray(out_dev[0]))), np.asarray(u_full_int(jnp.asarray(z_e))))
     z_c, _, _ = eager_lm_step(arm_ex["rJ"], arm_ex["rn"], zt, pc, nu_t, tolg, GN_BUDGET, (), 1e-1, TRD)
-    sdevc = float(np.max(np.abs(np.asarray(out_dev[0]) - z_c)))
-    gate("STEP_device_vs_eager", sdev, sdev <= 1e-10, control=sdevc, control_fired=sdevc > 1e-10,
-         witness_accepted=int(out_dev[3]), reasons=[int(out_dev[4]), reason_e], note="deviation from the 2D bit-identity gate (r3)")
+    sdevc = float(np.max(np.abs(np.asarray(out_dev[0]) - z_c))) / zn
+    gate("STEP_device_vs_eager", max(sdev, fdev), max(sdev, fdev) <= 1e-10, control=sdevc, control_fired=sdevc > 1e-10,
+         latent_rel=sdev, field_rel=fdev, witness_accepted=int(out_dev[3]), reasons=[int(out_dev[4]), reason_e],
+         note="normalised latent and decoded-field discrepancy; deviation from the 2D bit-identity gate (r3/r4)")
     z0g, _, _ = ic_gram_j(G_all, u00)
     us0 = jnp.full((b3.NUM_STEPS,), tolg, dtype=F64)
     Zd, _, _, _, _ = arm_ex["roll"](z0g, float(tt["nu"][0]), us0, GN_BUDGET, ())
@@ -900,12 +924,17 @@ def main():
         z_init = z_ex if (np.isfinite(rb) and rb < ra) else z_cur
         z_new, _, _ = eager_lm_step(arm_ex["rJ"], arm_ex["rn"], z_init, pc, float(tt["nu"][0]), tolg, GN_BUDGET, (), STALL, TRD)
         Zh.append(z_new); z_prev2, z_cur = z_cur, z_new
-    rdev = float(np.max(np.abs(np.asarray(Zd) - np.stack(Zh))))
-    gate("ROLL_device_vs_eager", rdev, rdev <= 1e-8, note="eager host loop of the same rule, traj 0")
+    Zh = np.stack(Zh)
+    rdev = float(np.max(np.abs(np.asarray(Zd) - Zh)) / (1.0 + np.max(np.linalg.norm(Zh, axis=1))))
+    rfd = float(np.max([rel(np.asarray(u_full_int(jnp.asarray(np.asarray(Zd)[t_]))), np.asarray(u_full_int(jnp.asarray(Zh[t_])))) for t_ in range(0, b3.NUM_STEPS, 7)]))
+    gate("ROLL_device_vs_eager", max(rdev, rfd), max(rdev, rfd) <= 1e-8, latent_rel=rdev, field_rel=rfd,
+         note="eager host loop of the same rule, traj 0; normalised latent and decoded-field discrepancy")
     mem_snapshot("after_gates", mem)
 
     if MICRO:
-        # one e2e per arm, one step of each classical arm, memory, stop
+        # M1 micro-pilot [A60]: everything above ran at the REAL shapes (streamed truth, a trainer with the
+        # real snapshot count for STEPS steps, bank, D4 multistart oracle batch, NNLS fit, tensor build,
+        # STEP/ROLL); here one e2e per arm and one full 50-step rollout of each classical arm, then stop.
         for a_ in arms:
             E = blk(A_[a_]["e2e"](G_all, u00, float(tt["nu"][0]), A_[a_]["aux"]))
             report["variants"][a_] = dict(err_first=rel(np.asarray(E[0])[-1][interior], U_test[0, -1]))
@@ -1123,7 +1152,7 @@ def main():
     save()
 
     # ---------------- kernel export for the same-GPU job (C1) -------------------
-    np.savez(KERNEL_OUT, N=N, K=K, R=R, M=EQ_M, A=A_np, lam=np.asarray(lam), Q=Q, TRD=TRD, stall=STALL,
+    np.savez(KERNEL_OUT, N=N, K=K, R=R, M=M_ACT, A=A_np, lam=np.asarray(lam), Q=Q, TRD=TRD, stall=STALL,
              extrap=EXTRAP, gn_budget=GN_BUDGET,
              z0=np.stack([np.asarray(last["tensor"][i][3][1]) for i in range(n_test)]) if "tensor" in arms else np.zeros((0, K)),
              nu=np.asarray(tt["nu"][:n_test]), tol_abs=np.asarray([float(u[0]) for u in us_dev]),
@@ -1210,7 +1239,7 @@ def main():
             ent["paired"] = dict(rom_ms=float(np.median([p["a_ms"] for p in pairs])), fom_ms=float(np.median([p["b_ms"] for p in pairs])),
                                  per_traj=pairs, speedup_per_traj=[float(v) for v in sp], speedup=float(np.median(sp)),
                                  speedup_min=float(np.min(sp)), all_gt1=bool(np.all(sp > 1)),
-                                 boot_lower95=bootstrap_lower(sp, brng, BOOT), n_boot=BOOT,
+                                 boot_lower95=bootstrap_lower(pairs, brng, BOOT), n_boot=BOOT,
                                  outliers=int(sum(np.sum(np.abs(np.array(p["a_raw_ms"]) - np.median(p["a_raw_ms"])) > 0.5 * np.median(p["a_raw_ms"])) for p in pairs)))
             ent["speed_win"] = bool(bracket and ent["paired"]["all_gt1"] and ent["paired"]["speedup"] > 1.1 and ent["paired"]["boot_lower95"] > 1.0)
             log(f"  MATCHED paired [{arm}]: ROM {ent['paired']['rom_ms']:.2f} ms vs {match[0]}(ntol={match[1]:.0e}, err {fom_err[match]:.2e}) "

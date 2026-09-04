@@ -60,7 +60,7 @@ def log(*a):
 # ------------------------------- grid ---------------------------------------
 
 def grid_coords_3d(n):
-    """(n^3, 3) f64, flat index i*n^2 + j*n + k (x fastest-varying index i)."""
+    """(n^3, 3) f64, flat index i*n^2 + j*n + k: i/x is the SLOWEST-varying index, k/z the fastest."""
     x = np.linspace(0.0, 1.0, n)
     X, Y, Z = np.meshgrid(x, x, x, indexing="ij")
     return np.stack([X.reshape(-1), Y.reshape(-1), Z.reshape(-1)], axis=1)
@@ -332,21 +332,28 @@ def lap_3d(u_int, n, zscale=1.0):
     return ((lxy + zscale * lz) / dx ** 2).reshape(-1)
 
 
-def fom_residual_int(u_int, up_int, nu, n, adv="upwind", zscale=1.0, zadv=1.0, xadv=1.0,
-                     forcing=None):
-    """Backward-Euler interior residual u - u_prev + dt (N(u) - nu lap u - f).
+def fom_residual_int(u_int, up_int, nu, n, forcing=None):
+    """PRODUCTION backward-Euler interior residual u - u_prev + dt (N(u) - nu lap u
+    - f): no mutation knobs (design [A61]).  `forcing` (interior vector) is the
+    manufactured-solution source of gate F11 and is None on every FOM path."""
+    r = u_int - up_int + DT * (upwind_adv_field_3d(u_int, n) - nu * lap_3d(u_int, n))
+    if forcing is not None:
+        r = r - DT * forcing
+    return r
 
-    `adv`, `zscale`, `zadv`, `xadv` exist ONLY for gate controls and keep their
-    defaults on every FOM path (the generators and ladders never pass them);
-    `forcing` (interior vector) is the manufactured-solution source of gate
-    F11 (None on every FOM path)."""
-    if adv == "upwind" and zadv == 1.0 and xadv == 1.0:
-        Nu = upwind_adv_field_3d(u_int, n)
-    elif adv == "central":
+
+def fom_residual_mutated(u_int, up_int, nu, n, adv="upwind", zscale=1.0, zadv=1.0, xadv=1.0):
+    """GATE-CONTROL residual: the same operator with a deliberate mutation
+    (adv = 'upwind' | 'central' | 'downwind'; zscale scales the z-Laplacian;
+    zadv / xadv scale the z / x advection).  Never called on a FOM path; an
+    unknown `adv` raises."""
+    if adv not in ("upwind", "central", "downwind"):
+        raise ValueError(adv)
+    if adv == "central":
         Nu = central_adv_field_3d(u_int, n)
     elif adv == "downwind":
         Nu = downwind_adv_field_3d(u_int, n)
-    else:                                                    # upwind with a scaled x or z term
+    else:
         dx = 1.0 / (n - 1)
         U = _pad3(u_int, n)
         c = U[1:-1, 1:-1, 1:-1]
@@ -355,10 +362,7 @@ def fom_residual_int(u_int, up_int, nu, n, adv="upwind", zscale=1.0, zadv=1.0, x
         uy = jnp.where(pos, (c - U[1:-1, :-2, 1:-1]) / dx, (U[1:-1, 2:, 1:-1] - c) / dx)
         uz = jnp.where(pos, (c - U[1:-1, 1:-1, :-2]) / dx, (U[1:-1, 1:-1, 2:] - c) / dx)
         Nu = (c * (xadv * ux + uy + zadv * uz)).reshape(-1)
-    r = u_int - up_int + DT * (Nu - nu * lap_3d(u_int, n, zscale))
-    if forcing is not None:
-        r = r - DT * forcing
-    return r
+    return u_int - up_int + DT * (Nu - nu * lap_3d(u_int, n, zscale))
 
 
 # ------------------------------- sine basis / DST -----------------------------
@@ -500,15 +504,15 @@ def make_control_rollout_adv(n, adv, dst="mm"):
 
     def newton_step(u_int, up_int, nu):
         def body(u, _):
-            r = fom_residual_int(u, up_int, nu, n, adv=adv)
-            Jv = lambda v: jax.jvp(lambda uu: fom_residual_int(uu, up_int, nu, n, adv=adv),
+            r = fom_residual_mutated(u, up_int, nu, n, adv=adv)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_mutated(uu, up_int, nu, n, adv=adv),
                                    (u,), (v,))[1]
             du, _ = jax.scipy.sparse.linalg.bicgstab(
                 Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
             ok = jnp.all(jnp.isfinite(du))
             return jnp.where(ok, u + du, u), None
         u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
-        rfin = jnp.linalg.norm(fom_residual_int(u, up_int, nu, n, adv=adv)) \
+        rfin = jnp.linalg.norm(fom_residual_mutated(u, up_int, nu, n, adv=adv)) \
             / (jnp.linalg.norm(up_int) + 1e-300)
         return u, rfin
 
@@ -530,8 +534,8 @@ def make_control_rollout_zadv(n, zadv, dst="mm"):
 
     def newton_step(u_int, up_int, nu):
         def body(u, _):
-            r = fom_residual_int(u, up_int, nu, n, zadv=zadv)
-            Jv = lambda v: jax.jvp(lambda uu: fom_residual_int(uu, up_int, nu, n, zadv=zadv),
+            r = fom_residual_mutated(u, up_int, nu, n, zadv=zadv)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_mutated(uu, up_int, nu, n, zadv=zadv),
                                    (u,), (v,))[1]
             du, _ = jax.scipy.sparse.linalg.bicgstab(
                 Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
@@ -539,7 +543,7 @@ def make_control_rollout_zadv(n, zadv, dst="mm"):
                 (jnp.linalg.norm(r) > 1e-12 * (jnp.linalg.norm(up_int) + 1e-300))
             return jnp.where(ok, u + du, u), None
         u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
-        rfin = jnp.linalg.norm(fom_residual_int(u, up_int, nu, n, zadv=zadv)) \
+        rfin = jnp.linalg.norm(fom_residual_mutated(u, up_int, nu, n, zadv=zadv)) \
             / (jnp.linalg.norm(up_int) + 1e-300)
         return u, rfin
 
@@ -643,8 +647,9 @@ def make_defect_tol_rollout(n, dst="mm"):
             first = jnp.argmax(ok)
             u_new = jnp.where(any_ok, us[first], u)
             rn_new = jnp.where(any_ok, rns[first], rn)
-            return (u_new, it + 1, rn_new, ~any_ok)
+            return (u_new, jnp.where(any_ok, it + 1, it), rn_new, ~any_ok)
 
+        # `it` counts ACCEPTED corrections; a step whose every alpha fails stops (stalled=True)
         u, its, rn, stalled = jax.lax.while_loop(cond, body, (u0, jnp.int32(0), rn0, False))
         return u, its, rn / u_scale, stalled
 
@@ -721,13 +726,22 @@ def build_truth(n, tab, rows, chunk, rollout, coords=None, keep_full=True, log_f
 # ------------------------------- weak form -----------------------------------
 
 def test_modes_3d(n, M):
-    """M lowest 3D sine modes by DISCRETE eigenvalue (stable ties).  Returns
-    kx, ky, kz (M,), Phi (n_i, M) with unit-2-norm columns (exact: orthonormal
-    1D factors), lam_disc (M,)."""
+    """The M lowest 3D sine modes by DISCRETE eigenvalue, M extended to the end
+    of its degenerate shell (so the test space has no axis preference).
+    Returns kx, ky, kz (M,), Phi (n_i, M) with unit-2-norm columns (exact:
+    orthonormal 1D factors), lam_disc (M,); M may exceed the request."""
     ni = n - 2
     l1 = lam_1d(n)
     lam = l1[:, None, None] + l1[None, :, None] + l1[None, None, :]
-    order = np.argsort(lam.reshape(-1), kind="stable")[:M]
+    lam_flat = lam.reshape(-1)
+    order_all = np.argsort(lam_flat, kind="stable")
+    # complete the degenerate eigenshell at the cut (design [A70]): extend M so that every mode
+    # whose eigenvalue equals lam[M-1] (to 1e-9 relative) is included
+    if M < lam_flat.size:
+        lam_M = lam_flat[order_all[M - 1]]
+        while M < lam_flat.size and abs(lam_flat[order_all[M]] - lam_M) <= 1e-9 * lam_M:
+            M += 1
+    order = order_all[:M]
     kx, ky, kz = np.unravel_index(order, (ni, ni, ni))
     kx, ky, kz = kx + 1, ky + 1, kz + 1
     S = dst_matrix(n)                                                  # (ni, p)
@@ -884,8 +898,10 @@ def train_autodecoder_3d(key, coords, U, k_lat, r_feat, steps=60000, lr=1e-3,
     """Joint Adam over (g, h, per-snapshot codes Z): the sep_solvers
     train_autodecoder_v2 recipe with the SAME sampling measure at every N
     (design [A24]): p_sub interior points drawn iid per step from the training
-    pool `coords`, an unbiased estimate of the global relative-MSE loss, no
-    full-grid finishing steps, no EMA, no weight decay.  U (S, P) and coords
+    pool `coords`: the reconstruction term is an unbiased estimate of the
+    global relative MSE; the feature-Gram term on the subsample is a
+    STOCHASTIC REGULARISER (its square is biased upward by sampling variance,
+    design [A63]); no full-grid finishing steps, no EMA, no weight decay.  U (S, P) and coords
     (P, 3) are EXPLICIT jit arguments (never captured)."""
     coords = jnp.asarray(coords, dtype=F64)
     U = jnp.asarray(U, dtype=F64)
@@ -893,6 +909,7 @@ def train_autodecoder_3d(key, coords, U, k_lat, r_feat, steps=60000, lr=1e-3,
     key, kz, kp = jax.random.split(key, 3)
     u_rms = float(jnp.sqrt(jnp.mean(U * U)))
     params = init_separable_3d(kp, k_lat, r_feat, out_scale=u_rms, **arch)
+    B0 = params["B"]
     Z = 0.1 * jax.random.normal(kz, (S, k_lat), dtype=F64)
     u_ms = jnp.mean(U * U)
     sched = optax.warmup_cosine_decay_schedule(0.0, lr, min(500, steps // 10 + 1), steps, lr * 1e-2)
@@ -913,6 +930,7 @@ def train_autodecoder_3d(key, coords, U, k_lat, r_feat, steps=60000, lr=1e-3,
     def _apply(pz, st, U_, C_):
         (val, rel), grads = jax.value_and_grad(loss_at, has_aux=True)(pz, U_, C_)
         grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
+        grads[0]["B"] = jnp.zeros_like(grads[0]["B"])          # the Fourier frequencies are FIXED [A62]
         upd, st = opt.update(grads, st)
         return optax.apply_updates(pz, upd), st, rel
 
@@ -938,6 +956,7 @@ def train_autodecoder_3d(key, coords, U, k_lat, r_feat, steps=60000, lr=1e-3,
             log(f"   train3d[{tag}] step {i+1:6d}/{steps}  rel-MSE {float(rel):.3e}  "
                 f"[{time.time()-t0:.0f}s]")
     params, Z = pz
+    assert bool(jnp.all(params["B"] == B0)), "Fourier matrix B changed during training"
     G = features(params, coords)
     H = head(params, Z)
     per = []

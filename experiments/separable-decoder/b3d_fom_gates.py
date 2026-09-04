@@ -195,12 +195,21 @@ def main():
     gate("F3_truth_acceptance", worst, np.isfinite(worst) and worst <= 1e-8, control=float(w1),
          control_fired=float(w1) > 1e-8,
          control_note="1 Newton iteration per step (2 iterations converged to 2.9e-10 at N=33)")
-    # F5 control: downwind stencil at nu = 0.01 on the first test IC
+    # F5 control (design r4, [A55]): a DETERMINISTIC solver-output mutation -- one interior node of an
+    # accepted k>=1 state set to -1e-3 -- run through the same check; guaranteed to fire.  The
+    # downwind (anti-diffusive) rollout is RECORDED as a diagnostic with its finiteness and residual.
+    Umut = U.copy(); Umut[0, 25, Umut.shape[2] // 2] = -1e-3
+    f5c = float(np.min(Umut[:, 1:]))
     rd = b3.make_control_rollout_adv(n, "downwind", dst)
-    sd, _ = rd(jnp.asarray(U0[:1]), jnp.asarray([0.01]))
-    f5c = float(np.nanmin(np.asarray(sd)[:, 1:])) if np.all(np.isfinite(np.asarray(sd))) else -np.inf
+    sd, wd = rd(jnp.asarray(U0[:1]), jnp.asarray([0.01]))
+    sd = np.asarray(sd)
+    down = dict(finite=bool(np.all(np.isfinite(sd))), worst_res=float(wd),
+                min_u=float(np.min(sd[:, 1:])) if np.all(np.isfinite(sd)) else None,
+                converged=bool(np.isfinite(wd) and wd <= 1e-8),
+                note="anti-diffusive scheme: Newton does not converge on it; recorded, not the control")
     gate("F5_nonnegativity_test", umin, np.isfinite(umin) and umin >= -1e-9, control=f5c,
-         control_fired=f5c < -1e-3, control_note="downwind (inverted switch) at nu=0.01, t>=1")
+         control_fired=f5c < -1e-3, control_note="output mutation: one node of state k=25 set to -1e-3",
+         downwind_diagnostic=down)
     # F10: generator cost per trajectory
     t0 = time.time()
     sn_, _ = roll(jnp.asarray(U0[:F10_TRAJ]), jnp.asarray(tt["nu"][:F10_TRAJ]))
@@ -294,10 +303,10 @@ def main():
     J2 = np.asarray(jax.jvp(lambda uu: res2d(uu, jnp.asarray(vp2.reshape(-1)), nu8),
                             (jnp.asarray(v2.reshape(-1)),), (jnp.asarray(dv.reshape(-1)),))[1]).reshape(n, n)
     f8j = bwd(J3[:, :, kmid - 1].reshape(-1), J2[1:-1, 1:-1].reshape(-1), opn8, dU3)
-    R3c = np.asarray(b3.fom_residual_int(jnp.asarray(u3), jnp.asarray(up3), nu8, n, xadv=2.0)).reshape(ni, ni, ni)
+    R3c = np.asarray(b3.fom_residual_mutated(jnp.asarray(u3), jnp.asarray(up3), nu8, n, xadv=2.0)).reshape(ni, ni, ni)
     f8c = bwd(R3c[:, :, kmid - 1].reshape(-1), plane2.reshape(-1), opn8, u3)
     # the z terms really vanish on the plane (the reason the r2 control was inert): record it
-    R3z = np.asarray(b3.fom_residual_int(jnp.asarray(u3), jnp.asarray(up3), nu8, n, zscale=1.01, zadv=1.01)).reshape(ni, ni, ni)
+    R3z = np.asarray(b3.fom_residual_mutated(jnp.asarray(u3), jnp.asarray(up3), nu8, n, zscale=1.01, zadv=1.01)).reshape(ni, ni, ni)
     f8z = bwd(R3z[:, :, kmid - 1].reshape(-1), plane2.reshape(-1), opn8, u3)
     gate("F8_2d_vs_3d_plateau", max(f8r, f8j), max(f8r, f8j) <= 1e-13, control=f8c,
          control_fired=f8c > 1e-4, residual=f8r, jvp=f8j, control_note="x-advection coefficient doubled (x1.01 gave 1.9e-5 under the backward-error normalisation, below the 1e-4 bar)",
@@ -319,7 +328,7 @@ def main():
             the closed form (continuum operators; the discrete scheme's error
             against u_ex is then the discretisation error)."""
             def f(t):
-                ut = jax.jacfwd(lambda tt_: u_ex(x, tt_))(t)
+                ut = (u_ex(x, t) - u_ex(x, t - b3.DT)) / b3.DT      # the DISCRETE BE time quotient [A52]
                 def grad_u(xx):
                     return jax.grad(lambda q: u_ex(q[None, :], t)[0])(xx)
                 g = jax.vmap(grad_u)(x)                             # (P,3)
@@ -338,6 +347,7 @@ def main():
             ff = forcing_of(xi)
             r11 = b3.make_mms_rollout(n7, ff, dst)
             u0 = np.asarray(u_ex(xi, 0.0))
+            assert float(jnp.min(jax.vmap(lambda t_: jnp.min(u_ex(xi, t_)))(jnp.arange(51) * b3.DT))) > 0.0, "MMS field not positive"
             t0 = time.time()
             s11, w11 = r11(jnp.asarray(u0), num)
             uT = np.asarray(u_ex(xi, b3.NUM_STEPS * b3.DT))
@@ -387,10 +397,10 @@ def main():
         # control: index mutation -- the fine solution sampled one fine cell off
         u_cs = on_common(sols[F7_NS[2]][0], F7_NS[2], shift=1)
         order_c = float(np.log2(d1 / np.linalg.norm(u_b - u_cs)))
-        lo, hi = (p_mms - 0.3, p_mms + 0.3) if p_mms is not None else (0.7, 1.3)
+        lo, hi = 0.7, 1.3                                     # frozen theoretically (first-order upwind) [A53]
         gate("F7_spatial_order", order, lo <= order <= hi, control=order_c,
              control_fired=not (lo <= order_c <= hi), d_coarse_mid=float(d1), d_mid_fine=float(d2),
-             band=[lo, hi], band_source="F11 p_mms +- 0.3" if p_mms is not None else "default",
+             band=[lo, hi], band_source="frozen [0.7, 1.3]; F11 reported separately", p_mms=p_mms,
              worst_res={str(k): v[1] for k, v in sols.items()},
              secs={str(k): v[2] for k, v in sols.items()},
              control_note="fine solution sampled one fine cell off (index mutation)")

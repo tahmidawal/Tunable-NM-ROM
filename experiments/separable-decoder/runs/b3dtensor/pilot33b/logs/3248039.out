@@ -1,0 +1,31 @@
+host=pax049 gpu=NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+stage MANIFEST OK
+commit=99b1a5e975a0982c238d1bb47235a6a96dfaa5eb
+jax_backend=gpu device=cuda:0 B3D-TENSOR N=33 K=32 R=128 M=256 m=1024 arms=['full', 'ex', 'tensor'] train=1 pilot=1 micro=0 reps=5 burn=2 stall=0.001
+  [mem start] device peak 0.0 GB (now 0.0, limit 59.4); host maxrss 2.5 GB
+  TRAIN truth: 512 traj [37s], worst res 1.00e-12, min u 2.19e-30, frac<=0 0.00e+00; kept 8192 pool states, 256 D4 states
+  GATE F5_nonnegativity_train_val: 2.192e-30 PASS
+  [mem after_truth] device peak 2.2 GB (now 0.0, limit 59.4); host maxrss 6.4 GB
+  TRAIN in-job: 8192 states x 29791 pool points, 60000 steps, lr 0.001, p_sub 16384
+   train3d[b3d N=33 k=32 r=128] step      1/60000  rel-MSE 1.307e+00  [9s]
+   train3d[b3d N=33 k=32 r=128] step   5000/60000  rel-MSE 4.868e-03  [83s]
+   train3d[b3d N=33 k=32 r=128] step  10000/60000  rel-MSE 2.387e-03  [156s]
+   train3d[b3d N=33 k=32 r=128] step  15000/60000  rel-MSE 1.606e-03  [230s]
+   train3d[b3d N=33 k=32 r=128] step  20000/60000  rel-MSE 1.403e-03  [304s]
+   train3d[b3d N=33 k=32 r=128] step  25000/60000  rel-MSE 1.091e-03  [378s]
+   train3d[b3d N=33 k=32 r=128] step  30000/60000  rel-MSE 1.038e-03  [452s]
+   train3d[b3d N=33 k=32 r=128] step  35000/60000  rel-MSE 8.933e-04  [526s]
+   train3d[b3d N=33 k=32 r=128] step  40000/60000  rel-MSE 8.180e-04  [600s]
+   train3d[b3d N=33 k=32 r=128] step  45000/60000  rel-MSE 7.744e-04  [674s]
+   train3d[b3d N=33 k=32 r=128] step  50000/60000  rel-MSE 7.399e-04  [748s]
+   train3d[b3d N=33 k=32 r=128] step  55000/60000  rel-MSE 7.191e-04  [821s]
+   train3d[b3d N=33 k=32 r=128] step  60000/60000  rel-MSE 7.092e-04  [895s]
+   train3d[b3d N=33 k=32 r=128] done: recon rel-L2 (training pool) mean 2.737e-02 max 1.706e-01 [900s]
+  [mem after_train] device peak 4.1 GB (now 0.0, limit 59.4); host maxrss 8.3 GB
+  [mem after_bank] device peak 4.1 GB (now 0.2, limit 59.4); host maxrss 8.3 GB
+  GATE D1_bank_vs_meshfree_numpy: 1.270e-15 PASS  | control 2.325e-01 fired=True
+  GATE D2_lineage_rlite: 2.290e-02 PASS  | control 1.129e+00 fired=True
+  GATE D3_rank_of_A: 1.430e-03 PASS  | control 2.110e-18 fired=True
+  [mem after_D3] device peak 4.1 GB (now 0.2, limit 59.4); host maxrss 8.4 GB
+  GATE D4_heldout_oracle_validation: 5.146e-02 FAIL  | control 8.850e-01 fired=True

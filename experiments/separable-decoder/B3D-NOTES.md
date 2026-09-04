@@ -86,3 +86,21 @@ controls firing.
     superseded evidence, not results), the three follow-on jobs were cancelled and their directories
     deleted, and the pilot is re-run with the corrected split. Everything else the review flagged is
     listed as design amendments 21–22 and fixed in the same commit.
+
+**Corrected pilot (validation genuinely held out): NEITHER configuration passes D4 — the cell STOPS
+before the test table, as predeclared.** Jobs 3248020 (A: K=16, R=64, M=130, m=512) and 3248039
+(B: K=32, R=128, M=256, m=1024), A100-80GB, 60 000 steps each, held-out oracle on 64 validation
+trajectories × k ∈ {0, 10, 25, 50} (256 states), exact field misfit, 8 starts, budget 200:
+
+- A: mean 8.63e-2 (bar 5e-2), worst 0.266 (bar 0.15), oracle/POD-K 0.52 (bar 0.5), optimality max
+  5.5e-5 (bar 1e-6). Fails four criteria.
+- B: mean 5.15e-2 (bar 5e-2, misses by 3 %), worst 0.168 (bar 0.15), oracle/POD-K 0.60 (bar 0.5),
+  optimality max 1.0e-5 (bar 1e-6); with k = 0 excluded mean 4.2e-2 and worst 0.133. Fails four
+  criteria, each narrowly except the POD-K comparator and the optimality bar.
+
+The withdrawn (leaky) pilots had looked 40 % better (B: 3.0e-2); the difference is the leak. The
+hardest held-out states are the k = 0 initial conditions, although they are the ones aligned with the
+decoder's boundary factor. The nonlinear head buys 1.7× over the linear POD-32 projection on this
+three-blob family at N = 33 (bar: 2×). Some multistart LM solves stop short of first-order optimality
+(1e-5 vs the 1e-6 bar) within 200 attempts. Outcome row: "pilot: neither configuration passes → stop
+before the test table; report the pilot". No ROM was run and the test table was never opened.

@@ -1,0 +1,14 @@
+host=pax008 gpu=NVIDIA H200
+jax_backend=gpu
+manifest OK
+jax_backend=gpu device=cuda:0 x64=True N=512 cells=[{'K': 16, 'R': 64, 'nff': 128, 'ffs': 4.0, 'steps': 60000}, {'K': 8, 'R': 32, 'nff': 128, 'ffs': 4.0, 'steps': 60000}, {'K': 24, 'R': 96, 'nff': 128, 'ffs': 4.0, 'steps': 60000}] seed=0
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 1329s, max Newton rel residual 1.37e-01
+  WARNING: Newton residual 1.37e-01 above 1e-8 -- raise NEWTON_ITERS/LIN_MAXITER
+  data check: max FOM rel residual over all trajectories 1.37e-01 (gen chunk 8)
+    BAD traj 62: nu=0.0835 worst rel res 1.37e-01
+    BAD traj 170: nu=0.0786 worst rel res 3.70e-02
+    BAD traj 198: nu=0.0881 worst rel res 1.79e-02
+    BAD traj 232: nu=0.0898 worst rel res 1.29e-02
+    BAD traj 338: nu=0.0615 worst rel res 1.38e-02
+    BAD traj 455: nu=0.0159 worst rel res 3.25e-02
+    BAD traj 479: nu=0.0191 worst rel res 7.56e-06

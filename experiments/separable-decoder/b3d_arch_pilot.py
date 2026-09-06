@@ -5,6 +5,7 @@ Both production and independent NumPy heads are adapted. Restricted to PILOT=1
 because the inherited rollout/export path assumes the old MLP checkpoint schema.
 """
 import importlib
+import json
 import os
 from pathlib import Path
 import pickle
@@ -15,6 +16,19 @@ import jax.numpy as jnp
 import numpy as np
 
 import b3d_common as b3
+
+
+def promotion_passed(report):
+    required = ['F5_nonnegativity_train_val', 'D1_bank_vs_meshfree_numpy',
+                'D2_lineage_rlite', 'D3_rank_of_A', 'D4_heldout_oracle_validation']
+    gates = report.get('gates', {})
+    if not report.get('complete') or not report.get('pilot_passed'):
+        return False
+    if not all(gates.get(name, {}).get('passed', False) for name in required):
+        return False
+    if not all(gates[name].get('control_fired', False) for name in required[1:]):
+        return False
+    return bool(gates['D3_rank_of_A'].get('M_stability_pass', False))
 
 
 def adapt(payload, module):
@@ -60,6 +74,16 @@ def main():
         driver = importlib.import_module('sep_b3d_tensor')
         assert driver.PILOT == 1 and driver.TRAIN == 0 and Path(driver.CKPT).resolve() == path
         driver.main()
+        output = Path(driver.OUT)
+        report = json.loads(output.read_text())
+        report['inherited_pilot_passed'] = report['pilot_passed']
+        report['pilot_passed'] = promotion_passed(report)
+        report['architecture_adapter'] = dict(model=name, model_sha256=payload['source']['model_sha256'],
+            checkpoint_sha256=b3.sha256_file(path), all_negative_controls_required=True)
+        temporary = output.with_suffix('.writing')
+        temporary.write_text(json.dumps(report, allow_nan=False, indent=1))
+        temporary.replace(output)
+        b3.log(f"Architecture promotion including every control: {report['pilot_passed']}")
     finally:
         b3.load_pkl, b3.head, b3.head_np = original_load, original_head, original_np
 

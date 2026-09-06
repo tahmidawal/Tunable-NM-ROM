@@ -102,6 +102,17 @@ class ArchitectureBenchTests(unittest.TestCase):
         direct_jac = q @ jax.jacfwd(lambda zz: baseline.apply(p, f, zz))(z)
         np.testing.assert_allclose(jac, direct_jac, rtol=1e-12, atol=1e-12)
 
+    def test_promotion_rejects_failed_or_missing_control(self):
+        names = ['F5_nonnegativity_train_val', 'D1_bank_vs_meshfree_numpy',
+                 'D2_lineage_rlite', 'D3_rank_of_A', 'D4_heldout_oracle_validation']
+        report = dict(complete=True, pilot_passed=True, gates={
+            name: dict(passed=True, control_fired=True, M_stability_pass=True) for name in names})
+        self.assertTrue(pilot.promotion_passed(report))
+        report['gates'][names[-1]]['control_fired'] = False
+        self.assertFalse(pilot.promotion_passed(report))
+        del report['gates'][names[-1]]['control_fired']
+        self.assertFalse(pilot.promotion_passed(report))
+
 
 if __name__ == '__main__':
     print('jax_backend='+jax.default_backend(),flush=True)

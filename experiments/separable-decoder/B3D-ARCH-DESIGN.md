@@ -126,6 +126,10 @@ rollout kernel export assumes the old MLP checkpoint schema; a passing candidate
 needs an explicit export/rollout extension before promotion. Adapter smoke tests
 check nonzero nonlinear fields and their derivatives against the orthonormal
 coordinate reference.
+The adapter strengthens the inherited pilot summary by requiring every named
+gate, every negative control, and mode stability before declaring a pass. The
+inherited summary alone omits the D4 negative-control flag; its original value
+is retained separately as `inherited_pilot_passed` for auditability.
 
 ## Execution and review
 

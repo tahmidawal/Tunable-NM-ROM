@@ -10,6 +10,23 @@ import sep_hfit as hf
 
 
 class RepairMathTests(unittest.TestCase):
+    def test_parameter_provenance_rounding_and_negative_controls(self):
+        original = dict(seed=0, m=2, B=np.asarray([1, 2]), c=np.ones((2, 3, 3)),
+                        w=np.ones((2, 3)), rho=np.ones((2, 3)), A=np.ones(2),
+                        nu=np.asarray([.02, .03]), s_star=np.asarray([.8, .9]), sha256='original')
+        generated = {key: np.array(value, copy=True) if isinstance(value, np.ndarray) else value
+                     for key, value in original.items()}
+        generated['sha256'] = 'regenerated'
+        generated['nu'][0] = np.nextafter(generated['nu'][0], np.inf)
+        repair.validate_parameter_manifest(generated, original, 'original')
+        generated['c'][0, 0, 0] += 1e-5
+        with self.assertRaises(AssertionError):
+            repair.validate_parameter_manifest(generated, original, 'original')
+        generated['c'] = original['c'].copy()
+        generated['nu'][0] *= 1.001
+        with self.assertRaises(AssertionError):
+            repair.validate_parameter_manifest(generated, original, 'original')
+
     def test_qr_identity_and_head_round_trip(self):
         rng = np.random.default_rng(42)
         g = rng.normal(size=(31, 5)) * np.logspace(-4, 0, 5)

@@ -124,6 +124,21 @@ The baseline reproduction follows the existing audited design and unchanged
 source. This amendment is pending review. Independent review-agent permission
 has been requested; no independent approval is implied by this document.
 
+### Provenance amendment after the first diagnostic attempt
+
+Exact byte equality between an archived parameter table and a regenerated table
+is not portable for the derived viscosity exponentials and reference-grid peak
+normalizers. The first diagnostic stopped at this check; its failed artifact is
+retained. The raw random draws and membership must remain bit-identical. Only
+the derived positive quantities $\nu$ and $s^\star$ may differ by at most eight
+float64 machine epsilons in relative value. Compare against an archived table
+whose content hash matches the checkpoint's recorded hash, and persist both
+hashes and per-field discrepancies. Negative controls perturb a raw parameter
+and a derived parameter beyond the permitted rounding bound. The archived table
+is provenance metadata; solution data and the table used to generate it are
+still regenerated on the cluster. This changes a provenance compatibility check,
+not the representation or rollout acceptance thresholds.
+
 ## Glossary
 
 - **K:** number of latent unknowns solved online.

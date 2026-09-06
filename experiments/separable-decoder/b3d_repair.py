@@ -27,6 +27,32 @@ def summarize(values):
                 p95=float(np.quantile(x, .95)), worst=float(x.max()))
 
 
+def validate_parameter_manifest(generated, archived, expected_hash):
+    """Exact random draws; tightly bounded rounding only in derived exp/max values.
+
+    The archived metadata is a provenance reference, never the source of truth
+    snapshots. All actual data still use the regenerated table. A changed seed,
+    member, raw parameter or materially changed derived quantity fails closed.
+    """
+    assert archived["sha256"] == expected_hash, 'archived metadata does not belong to checkpoint'
+    result = dict(archived_sha256=archived["sha256"], regenerated_sha256=generated["sha256"],
+                  derived_rtol=8 * np.finfo(float).eps, fields={})
+    for key in ['seed', 'm', 'B', 'c', 'w', 'rho', 'A', 'nu', 's_star']:
+        old, new = np.asarray(archived[key]), np.asarray(generated[key])
+        assert old.shape == new.shape and old.dtype == new.dtype, (key, 'shape/dtype')
+        assert np.all(np.isfinite(old)) and np.all(np.isfinite(new)), (key, 'nonfinite')
+        exact = np.array_equal(old, new)
+        relative = float(np.max(np.abs(old-new) / np.maximum(np.abs(old), 1e-300)))
+        if key in {'nu', 's_star'}:
+            assert np.all(old > 0) and np.all(new > 0)
+            assert relative <= result['derived_rtol'], (key, 'derived value mismatch', relative)
+        else:
+            assert exact, (key, 'random-draw/member mismatch')
+        result['fields'][key] = dict(exact=bool(exact), max_relative=relative,
+                                     different=int(np.sum(old != new)))
+    return result
+
+
 def make_fit(budget=800, gradient_tol=1e-8):
     """Exact coefficient-metric LM with field-normalized stationarity stopping.
 
@@ -133,7 +159,6 @@ def extract(params, cfg, table, n, outdir):
     assert np.linalg.norm(q.T @ q - np.eye(rank)) < 1e-11
     ntrain = int(cfg["n_train_traj"])
     assert ntrain == 512 and cfg["val_rows"] == [512, 575]
-    assert cfg["table_sha256"] == table["sha256"], "checkpoint/data manifest mismatch"
     times = np.asarray([0, 10, 25, 50])
     num_times = b3.NUM_STEPS + 1
     pick = np.sort(np.random.default_rng(int(cfg["seed"])).choice(
@@ -220,6 +245,10 @@ def main():
     save()
     tables = b3.get_tables(os.environ["TABLE_DIR"], 576, 8, 0, 1, with_test=False)
     report["config"]["table_sha256"] = tables["train"]["sha256"]
+    archived = b3.load_param_table(os.environ["REFERENCE_TABLE"])
+    report['parameter_manifest_check'] = validate_parameter_manifest(
+        tables['train'], archived, cfg['table_sha256'])
+    save()
     g, q, r, data, bank_info = extract(params, cfg, tables["train"], 33, out.parent)
     report["bank"] = bank_info
     for split, d in data.items():

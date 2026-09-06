@@ -18,6 +18,7 @@ def main():
     parser.add_argument('label')
     parser.add_argument('--script', choices=['b3d_repair.py', 'sep_b3d_tensor.py'], default='b3d_repair.py')
     parser.add_argument('--checkpoint', type=Path, required=True)
+    parser.add_argument('--reference-table', type=Path)
     parser.add_argument('--env', action='append', default=[])
     parser.add_argument('--hours', type=int, default=2)
     args = parser.parse_args()
@@ -53,6 +54,13 @@ def main():
     for name, content in source_content.items():
         (stage / 'code' / name).write_bytes(content)
     shutil.copy2(args.checkpoint, stage / 'in/checkpoint.pkl')
+    reference_assignment = ''
+    if args.reference_table is not None:
+        assert args.reference_table.is_file()
+        shutil.copy2(args.reference_table, stage / 'in/reference_table.npz')
+        reference_assignment = 'REFERENCE_TABLE="$TASK_ROOT/in/reference_table.npz"'
+    elif args.script == 'b3d_repair.py':
+        raise ValueError('repair diagnostics require --reference-table for provenance')
     (stage / 'COMMIT.txt').write_text(commit + '\n')
     assignments = ' '.join(shlex.quote(f'{key}={value}') for key, value in env.items())
     batch = f'''#!/bin/bash
@@ -85,7 +93,7 @@ trap finish EXIT
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 export COMMIT={commit}
 cd "$TASK_ROOT/code"
-env CKPT="$TASK_ROOT/in/checkpoint.pkl" OUT="$TASK_ROOT/out/result.json" TABLE_DIR="$TASK_ROOT/code/runs/b3dtensor/tables" {assignments} "$PY" -u {args.script}
+env CKPT="$TASK_ROOT/in/checkpoint.pkl" OUT="$TASK_ROOT/out/result.json" TABLE_DIR="$TASK_ROOT/code/runs/b3dtensor/tables" {reference_assignment} {assignments} "$PY" -u {args.script}
 '''
     (stage / 'job.sbatch').write_text(batch)
     files = sorted(p for p in stage.rglob('*') if p.is_file())

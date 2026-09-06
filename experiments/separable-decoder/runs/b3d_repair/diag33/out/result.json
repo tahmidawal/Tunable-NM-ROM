@@ -1,0 +1,58 @@
+{
+ "complete": false,
+ "kind": "b3d_repair_diagnostic",
+ "config": {
+  "source_config": {
+   "pde": "burgers3d",
+   "N": 33,
+   "k": 32,
+   "r": 128,
+   "M": 256,
+   "m": 1024,
+   "g_hidden": 256,
+   "steps": 60000,
+   "lr": 0.001,
+   "p_sub": 16384,
+   "pool_size": 29791,
+   "max_snaps": 8192,
+   "seed": 0,
+   "n_train_traj": 512,
+   "val_rows": [
+    512,
+    575
+   ],
+   "table_sha256": "8f47325468fefe036089f4265cee09739e13184da66579601db2fa6d691a871a",
+   "train": {
+    "final_rel_mse": 0.0007092294692972093,
+    "steps": 60000,
+    "lr": 0.001,
+    "lam_orth": 0.0001,
+    "p_sub": 16384,
+    "used_subsampling": true,
+    "seconds": 900.2759687900543,
+    "recon_rel_l2_mean": 0.02737302728162394,
+    "recon_rel_l2_max": 0.1706103376209327,
+    "n_snapshots": 8192,
+    "n_points": 29791,
+    "arch": {
+     "g_hidden": 256
+    }
+   },
+   "x64": true,
+   "backend": "gpu",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "slurm_job": "3248039",
+   "commit": "99b1a5e975a0982c238d1bb47235a6a96dfaa5eb"
+  },
+  "source_sha256": "441b2b24447708a9ac9747ab924bc15181fc5704d45065d6283150cbd6994204",
+  "commit": "a5748b45ee069bca4b0fe5971e22f7b8ddca6951",
+  "slurm_job": "3328284",
+  "node": "pax105",
+  "backend": "gpu",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "jax_version": "0.10.2",
+  "x64": true,
+  "matmul_precision": "highest",
+  "test_table_opened": false
+ }
+}

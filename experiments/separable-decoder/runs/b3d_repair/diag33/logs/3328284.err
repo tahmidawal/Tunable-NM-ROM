@@ -1,0 +1,13 @@
+E0906 17:59:16.378835  943489 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+E0906 17:59:21.074126  943552 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b3d_repair_20260906/diag33/code/b3d_repair.py", line 275, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b3d_repair_20260906/diag33/code/b3d_repair.py", line 223, in main
+    g, q, r, data, bank_info = extract(params, cfg, tables["train"], 33, out.parent)
+                               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/b3d_repair_20260906/diag33/code/b3d_repair.py", line 136, in extract
+    assert cfg["table_sha256"] == table["sha256"], "checkpoint/data manifest mismatch"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: checkpoint/data manifest mismatch

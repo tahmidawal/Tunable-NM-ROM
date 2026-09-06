@@ -26,7 +26,48 @@ Provisional: job `3328334`, source `4dde0228d95d77e3584772fb8c139fa7fdaec0cd`, G
 | Exact-coordinate LM, budget 400 | 5.1462% | 4.3934% | 12.0816% | 16.7689% | 0 |
 | Exact-coordinate LM, budget 800 | 5.1462% | 4.3934% | 12.0816% | 16.7689% | 0 |
 
+| Group at the larger budget | Mean error | Median error | 95th-percentile error | Worst error | Nonstationary |
+|---|---:|---:|---:|---:|---:|
+| Initial states | 7.9530% | 7.9508% | 15.1885% | 16.7689% | 0 |
+| Later states | 4.2107% | 3.7443% | 8.5429% | 13.3069% | 0 |
+
 Bank condition number: 424.541. Maximum relative error change between the two budgets: 4.76558e-14.
+
+Maximum selected normalized gradient: 9.73133e-09. The unchanged POD-K comparator has mean error 8.611645%, so its ratio criterion requires mean error at most 4.305823% on this full-interior pilot cohort.
+
+[Full per-state and per-start diagnostic](runs/b3d_repair/diag33b/out/result.json).
+
+### head33
+
+Provisional: job `3328417`, source `dd21ccb3fe19f91ed33b406c13a8f1c2112dd4de`, GPU `NVIDIA A100 80GB PCIe`; independent review has not been completed.
+
+| Measurement | Mean error | Median error | 95th-percentile error | Worst error | Nonstationary |
+|---|---:|---:|---:|---:|---:|
+| Unrestricted bank | 2.1822% | 1.8347% | 4.8620% | 8.0134% | — |
+| Exact-coordinate LM, budget 400 | 4.9965% | 4.2163% | 11.5077% | 16.7772% | 2 |
+| Exact-coordinate LM, budget 800 | 4.9965% | 4.2163% | 11.5077% | 16.7772% | 1 |
+
+| Group at the larger budget | Mean error | Median error | 95th-percentile error | Worst error | Nonstationary |
+|---|---:|---:|---:|---:|---:|
+| Initial states | 7.7336% | 7.8901% | 14.4248% | 16.7772% | 1 |
+| Later states | 4.0842% | 3.6168% | 8.5539% | 12.2138% | 0 |
+
+Bank condition number: 424.541. Maximum relative error change between the two budgets: 8.68802e-07.
+
+Maximum selected normalized gradient: 2.99826e-05. The unchanged POD-K comparator has mean error 8.611645%, so its ratio criterion requires mean error at most 4.305823% on this full-interior pilot cohort.
+
+Frozen-bank refinement used 60000 Adam steps, learning rate 0.0003, batch 4096, optimizer seed 200, and the original 8192 training states. The head architecture and global relative field-MSE objective were retained. The training codes were also optimized; no family descriptors entered the head.
+
+| Training measurement | Before | After |
+|---|---:|---:|
+| Mean relative field error | 2.737303% | 2.521548% |
+| Global relative field MSE | 0.000704792424 | 0.000606506366 |
+
+Frozen bank verified unchanged: `True`. Checkpoint coordinate-conversion relative error: 8.67938e-16. Saved checkpoint SHA-256: `611235d3cdedec0954d8fea673f7d94118b7f8c2ee3b7997cea9bdef1bb75784`.
+
+Representation screen: **fails**. This is a provisional screen; the inherited pilot driver and its controls remain necessary before promotion.
+
+[Full per-state and per-start diagnostic](runs/b3d_repair/head33/out/result.json).
 
 ## Provenance compatibility amendment
 
@@ -53,6 +94,11 @@ These tables do not establish a rollout or speedup. Promotion requires the origi
 - **Initial / later:** snapshots at the initial time or subsequent selected times.
 - **Nonstationary:** number of selected fits whose normalized gradient exceeds the unchanged acceptance threshold.
 - **QR:** an orthogonal factorization used to compute exact coordinates and bank error.
+- **Head / codes:** the neural map from latent variables to bank coefficients, and the learned latent variables associated with training states.
+- **POD-K:** projection on the leading K modes computed from training snapshots; the pilot requires the decoder error to be at most half this comparator error.
+- **Global relative field MSE:** total squared reconstruction error divided by total squared field magnitude across the training set.
+- **Adam / learning rate / batch:** the training optimizer, its step-size scale, and the number of sampled training states per update.
+- **Negative control:** a deliberately incorrect case that must trigger rejection.
 - **LM / budget:** damped nonlinear least squares and its maximum iteration attempts per start.
 - **Multistart:** fitting from several fixed training-derived guesses and choosing minimum error.
 - **nu / s_star:** viscosity and the reference-grid initial-field peak normalizer.

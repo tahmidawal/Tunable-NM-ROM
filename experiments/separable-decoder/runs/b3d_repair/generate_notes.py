@@ -36,6 +36,8 @@ def main():
         '| Group | Mean error | Median error | 95th-percentile error | Worst error | Nonstationary |',
         '|---|---:|---:|---:|---:|---:|',
     ]
+    pod_mean = baseline['gates']['D4_heldout_oracle_validation']['pod_K_floor_mean']
+    target_mean = min(.05, .5 * pod_mean)
     for label, group in [('All states', rows), ('Initial states', [r for r in rows if r['k']==0]),
                          ('Later states', [r for r in rows if r['k']>0])]:
         text.append(row(label, [r['oracle_full'] for r in group], [r['optimality'] for r in group]))
@@ -62,10 +64,55 @@ def main():
         text.append(row('Unrestricted bank', floors))
         for fit in data['fits']:
             text.append(row(f"Exact-coordinate LM, budget {fit['budget']}", fit['error'], fit['optimality']))
+        fit = data['fits'][-1]
+        text += ['', '| Group at the larger budget | Mean error | Median error | 95th-percentile error | Worst error | Nonstationary |',
+                 '|---|---:|---:|---:|---:|---:|']
+        for group, mask in [('Initial states', np.asarray(states['sid']) % 51 == 0),
+                            ('Later states', np.asarray(states['sid']) % 51 != 0)]:
+            text.append(row(group, np.asarray(fit['error'])[mask], np.asarray(fit['optimality'])[mask]))
         text += ['', f"Bank condition number: {data['bank']['condition']:.6g}. "
                  f"Maximum relative error change between the two budgets: {data['budget_change_max']:.6g}.", '']
+        text += [f"Maximum selected normalized gradient: {max(fit['optimality']):.6g}. "
+                 f"The unchanged POD-K comparator has mean error {100*pod_mean:.6f}%, "
+                 f"so its ratio criterion requires mean error at most {100*target_mean:.6f}% "
+                 'on this full-interior pilot cohort.', '']
+        if 'refinement' in data:
+            info = data['refinement']
+            text += [f"Frozen-bank refinement used {info['steps_done']} Adam steps, "
+                     f"learning rate {info['lr']}, batch {info['batch']}, optimizer seed {info['seed']}, "
+                     f"and the original {info['training_states']} training states. "
+                     'The head architecture and global relative field-MSE objective were retained. '
+                     'The training codes were also optimized; no family descriptors entered the head.', '',
+                     '| Training measurement | Before | After |', '|---|---:|---:|',
+                     f"| Mean relative field error | {100*info['reconstruction_before']['mean']:.6f}% | {100*info['reconstruction_after']['mean']:.6f}% |",
+                     f"| Global relative field MSE | {info['global_relative_mse_before']:.9g} | {info['global_relative_mse_after']:.9g} |", '',
+                     f"Frozen bank verified unchanged: `{info['bank_unchanged']}`. "
+                     f"Checkpoint coordinate-conversion relative error: {info['conversion_error']:.6g}. "
+                     f"Saved checkpoint SHA-256: `{c['candidate_checkpoint_sha256']}`.", '']
+            screen = (fit['summary']['mean'] <= target_mean and fit['summary']['worst'] <= .15
+                      and max(fit['optimality']) <= 1e-6 and data['budget_change_max'] < .01)
+            text += [f"Representation screen: **{'passes the checked criteria' if screen else 'fails'}**. "
+                     'This is a provisional screen; the inherited pilot driver and its controls '
+                     'remain necessary before promotion.', '']
+        text += [f"[Full per-state and per-start diagnostic](runs/b3d_repair/{label}/out/result.json).", '']
     if not found:
         text += ['No completed new diagnostic has been pulled yet.', '']
+    for path in sorted(HERE.glob('*/out/result.json')):
+        data = json.loads(path.read_text())
+        if not data.get('complete') or 'pilot_passed' not in data:
+            continue
+        label = path.parents[1].name
+        d4 = data['gates']['D4_heldout_oracle_validation']
+        text += [f'## Inherited pilot confirmation: {label}', '',
+                 f"Provisional, pending independent review: job `{data['config']['slurm_job']}`. "
+                 f"The pilot records `pilot_passed={data['pilot_passed']}`. "
+                 f"Mean error {100*d4['mean']:.6f}%, worst {100*d4['worst']:.6f}%, "
+                 f"oracle/POD-K ratio {d4['oracle_over_podK']:.6f}, "
+                 f"maximum normalized gradient {d4['optimality_max']:.6g}.", '',
+                 '| Gate | Passed | Negative control fired |', '|---|---:|---:|']
+        for gate, value in data['gates'].items():
+            text.append(f"| {gate} | {value['passed']} | {value.get('control_fired', '—')} |")
+        text += ['', f"[Full pilot output](runs/b3d_repair/{label}/out/result.json).", '']
     comparison = json.loads((HERE/'reference/parameter_manifest_comparison.json').read_text())
     text += ['## Provenance compatibility amendment', '',
              'The first new diagnostic failed closed because regenerated derived parameters had '
@@ -96,6 +143,15 @@ def main():
              '- **Nonstationary:** number of selected fits whose normalized gradient exceeds the '
              'unchanged acceptance threshold.',
              '- **QR:** an orthogonal factorization used to compute exact coordinates and bank error.',
+             '- **Head / codes:** the neural map from latent variables to bank coefficients, '
+             'and the learned latent variables associated with training states.',
+             '- **POD-K:** projection on the leading K modes computed from training snapshots; '
+             'the pilot requires the decoder error to be at most half this comparator error.',
+             '- **Global relative field MSE:** total squared reconstruction error divided by total '
+             'squared field magnitude across the training set.',
+             '- **Adam / learning rate / batch:** the training optimizer, its step-size scale, '
+             'and the number of sampled training states per update.',
+             '- **Negative control:** a deliberately incorrect case that must trigger rejection.',
              '- **LM / budget:** damped nonlinear least squares and its maximum iteration attempts per start.',
              '- **Multistart:** fitting from several fixed training-derived guesses and choosing minimum error.',
              '- **nu / s_star:** viscosity and the reference-grid initial-field peak normalizer.',

@@ -1,0 +1,21 @@
+jax_backend=gpu
+  table[train] built: 576 rows, seed 0, s* on 257^3 [39s] -> /cluster/tufts/paralab/tawal01/b3d_repair_20260906/head33/code/runs/b3dtensor/tables/b3d_params_train_seed0_m576.npz
+bank rank=128 condition=4.245e+02
+extracted train: 8192 states
+extracted validation: 256 states
+   hfit[b3d_frozen_bank]       1/60000 loss 2.7463e-04 recon 2.7373e-02 [4s]
+   hfit[b3d_frozen_bank]    5000/60000 loss 2.3828e-04 recon 2.6832e-02 [6s]
+   hfit[b3d_frozen_bank]   10000/60000 loss 2.2332e-04 recon 2.6478e-02 [9s]
+   hfit[b3d_frozen_bank]   15000/60000 loss 2.1094e-04 recon 2.6171e-02 [12s]
+   hfit[b3d_frozen_bank]   20000/60000 loss 2.0090e-04 recon 2.5913e-02 [14s]
+   hfit[b3d_frozen_bank]   25000/60000 loss 1.8869e-04 recon 2.5711e-02 [17s]
+   hfit[b3d_frozen_bank]   30000/60000 loss 1.8397e-04 recon 2.5554e-02 [20s]
+   hfit[b3d_frozen_bank]   35000/60000 loss 1.8135e-04 recon 2.5438e-02 [22s]
+   hfit[b3d_frozen_bank]   40000/60000 loss 1.7483e-04 recon 2.5351e-02 [25s]
+   hfit[b3d_frozen_bank]   45000/60000 loss 1.7292e-04 recon 2.5283e-02 [28s]
+   hfit[b3d_frozen_bank]   50000/60000 loss 1.6856e-04 recon 2.5242e-02 [30s]
+   hfit[b3d_frozen_bank]   55000/60000 loss 1.7366e-04 recon 2.5223e-02 [33s]
+   hfit[b3d_frozen_bank]   60000/60000 loss 1.7400e-04 recon 2.5215e-02 [36s]
+fit budget=400 mean=4.996532e-02 worst=1.677721e-01 nonstationary=2
+fit budget=800 mean=4.996532e-02 worst=1.677721e-01 nonstationary=1
+DONE /cluster/tufts/paralab/tawal01/b3d_repair_20260906/head33/out/result.json [148.0s]

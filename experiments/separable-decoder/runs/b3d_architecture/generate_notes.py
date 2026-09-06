@@ -24,7 +24,7 @@ def main():
         'Generated from the linked raw run JSONs. These are provisional validation '
         'results; a representation screen does not establish rollout accuracy or wave transfer.', '',
         'The four new architecture worktrees await base/name confirmation. This initial '
-        'table records the common MLP controls. Update the campaign-status prose when those arms run.', '',
+        'table records the common MLP controls; the four candidate heads have not run.', '',
         '| Model | Width | Optimizer seed | Mean | Median | Worst | Above 15% | Unconverged | Tangent mean | Trainable parameters |',
         '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|']
     details, failures = [], []
@@ -61,6 +61,19 @@ def main():
     lines += ['', 'All rows use the fixed learned bank and common linear initialization. '
         'Equal updates are not equal compute; the wider control has more parameters. '
         'Optimizer repeats share the same data. No cross-job timing comparison is made.', '']
+    lines += ['Independent Codex review accepted the controls as bounded negative representation '
+        'results. Increasing width improved training fits and slightly improved tangent errors, '
+        'but worsened validation mean and worst error in both repeats. All measured selected-fit '
+        'Jacobians retained full latent rank. The wider model\'s unresolved fit is a different '
+        'state from its stationary worst case. These observations do not establish global '
+        'representation minima or rule out gains from other training choices.', '',
+        'The source bank, QR transform and anchor match across jobs. Independent GPU data '
+        'regeneration produced roundoff-level differences in derived parameters and coefficient '
+        'arrays, so shared hashes differ. Raw random draws and state membership match exactly; '
+        'the bounded comparisons and source/output checks are saved in '
+        '[control-provenance.json](runs/b3d_architecture/review/control-provenance.json). '
+        'Logs contain host CPU-affinity warnings; both jobs used the GPU and completed. '
+        'No timing claims use these runs.', '']
     lines += details
     lines += ['', 'Incomplete attempts:'] + ([''] + failures if failures else ['', 'None among the input files.'])
     lines += ['', '## Glossary', '',

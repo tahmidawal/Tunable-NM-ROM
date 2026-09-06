@@ -1,0 +1,182 @@
+{
+  "status": "verified",
+  "jobs": {
+    "mlp128": {
+      "job": "3332190",
+      "source_commit": "8484a9e00b41d0bf79872e14f69ed3c17fc185c9",
+      "source_content_verified": true,
+      "output_and_log_checksums_verified": true,
+      "backend": "gpu",
+      "x64": true,
+      "matmul_precision": "highest",
+      "raw_parameter_draws_exact": true,
+      "parameter_provenance": {
+        "archived_sha256": "8f47325468fefe036089f4265cee09739e13184da66579601db2fa6d691a871a",
+        "regenerated_sha256": "d25b15fd317fb2a8153c551dcb024d89665c6c10647dd4fa2c70a64fedd85a8a",
+        "derived_rtol": 1.7763568394002505e-15,
+        "fields": {
+          "seed": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "m": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "B": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "c": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "w": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "rho": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "A": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "nu": {
+            "exact": false,
+            "max_relative": 2.2135919315542102e-16,
+            "different": 25
+          },
+          "s_star": {
+            "exact": false,
+            "max_relative": 3.056948382772916e-16,
+            "different": 24
+          }
+        }
+      },
+      "host_affinity_warning": true
+    },
+    "mlp192": {
+      "job": "3332191",
+      "source_commit": "8484a9e00b41d0bf79872e14f69ed3c17fc185c9",
+      "source_content_verified": true,
+      "output_and_log_checksums_verified": true,
+      "backend": "gpu",
+      "x64": true,
+      "matmul_precision": "highest",
+      "raw_parameter_draws_exact": true,
+      "parameter_provenance": {
+        "archived_sha256": "8f47325468fefe036089f4265cee09739e13184da66579601db2fa6d691a871a",
+        "regenerated_sha256": "5ff27c8245c0c4acd850c21ea0299e8a0bd4dda4924e325000e2f3da91f02e24",
+        "derived_rtol": 1.7763568394002505e-15,
+        "fields": {
+          "seed": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "m": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "B": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "c": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "w": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "rho": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "A": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          },
+          "nu": {
+            "exact": false,
+            "max_relative": 2.2135919315542102e-16,
+            "different": 25
+          },
+          "s_star": {
+            "exact": true,
+            "max_relative": 0.0,
+            "different": 0
+          }
+        }
+      },
+      "host_affinity_warning": true
+    }
+  },
+  "cross_job": {
+    "shared_anchor": {
+      "exact": true,
+      "max_absolute": 0.0
+    },
+    "shared_center": {
+      "exact": false,
+      "max_absolute": 4.440892098500626e-16
+    },
+    "shared_latent_scale": {
+      "exact": false,
+      "max_absolute": 8.881784197001252e-16
+    },
+    "shared_output_scale": {
+      "exact": true,
+      "max_absolute": 0.0
+    },
+    "validation_target": {
+      "exact": false,
+      "max_absolute": 3.552713678800501e-15
+    },
+    "validation_norm2": {
+      "exact": false,
+      "max_absolute": 4.547473508864641e-13
+    },
+    "validation_perpendicular2": {
+      "exact": false,
+      "max_absolute": 4.440892098500626e-16
+    },
+    "validation_sid": {
+      "exact": true,
+      "max_absolute": 0.0
+    },
+    "validation_blob_count": {
+      "exact": true,
+      "max_absolute": 0.0
+    },
+    "validation_velocity_target": {
+      "exact": false,
+      "max_absolute": 4.263256414560601e-14
+    },
+    "validation_velocity_norm2": {
+      "exact": false,
+      "max_absolute": 2.1827872842550278e-11
+    },
+    "validation_velocity_perpendicular2": {
+      "exact": false,
+      "max_absolute": 2.2737367544323206e-12
+    },
+    "note": "Independent GPU regeneration differs at floating-point rounding level; same raw random draws, membership, source bank, QR matrix and anchor. Shared hashes are not byte-identical."
+  }
+}

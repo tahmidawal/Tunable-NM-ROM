@@ -97,6 +97,20 @@ requires its own correctness and paired-cost checks.
 
 ## Acceptance and downstream work
 
+### First bounded training control
+
+After the bank/head diagnostic, run one warm head-and-code refinement for
+60,000 Adam steps, learning rate $3\times10^{-4}$ with the existing warmup/cosine
+schedule, batch size 4096, and optimizer seed 200. Use the same 8192 training
+states and global relative field-MSE objective. Retain the existing two hidden
+layers of width 128, the linear skip, and all spatial-bank parameters. Disable
+weight decay, code jitter, EMA selection and code-polishing interventions for
+this first control. Save the resulting checkpoint before validation; evaluate
+the declared 400/800-attempt diagnostic with zero plus seven deterministically
+selected updated training codes. Training never receives validation targets.
+Record both training reconstruction and validation errors, and numerically
+verify the output-coordinate conversion and bitwise-frozen bank.
+
 All original D3/D4 criteria remain, including D4 mean relative error at most
 $0.05$, worst at most $0.15$, oracle/POD-$K$ ratio at most $0.5$, exact normalized
 gradient at most $10^{-6}$, pool/full checks and budget stability. The original

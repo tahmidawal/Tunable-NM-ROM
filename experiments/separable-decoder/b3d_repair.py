@@ -220,6 +220,44 @@ def jsonable(x):
     raise TypeError(type(x))
 
 
+def refine_head(params, codes, r, train, *, steps, lr, seed, batch):
+    """Training-only warm refinement; return a drop-in decoder and audit data.
+
+    QR changes the optimizer coordinates, but leaves the global field-MSE
+    objective and represented model class unchanged. The orthogonal term is
+    constant during this fit and is included in the reported objective.
+    """
+    assert steps > 0 and lr > 0 and batch > 0
+    hp = dict(h=params['h'], h_lin=params['h_lin'])
+    qp = hf.to_q(hp, jnp.asarray(r.T))
+    a, p2, n2 = [jnp.asarray(train[key]) for key in ('target', 'perpendicular2', 'norm2')]
+    before = np.asarray(hf.batched_rel(qp, jnp.asarray(codes), a, p2, n2))
+    qp, new_codes, info = hf.fit(
+        jax.random.PRNGKey(seed), a, n2, p2, codes.shape[1], r.shape[0],
+        steps=steps, lr=lr, hidden=params['h'][0][0].shape[1],
+        layers=len(params['h']) - 1, batch=batch, qp0=qp, Z0=codes,
+        norm='global', log_every=5000, tag='b3d_frozen_bank')
+    after = np.asarray(hf.batched_rel(qp, new_codes, a, p2, n2))
+    assert np.all(np.isfinite(after)) and np.all(np.isfinite(new_codes))
+    hp_new = hf.to_h(qp, jnp.asarray(np.linalg.inv(r.T)))
+    new_params = dict(params, **hp_new)
+    for key in params.keys() - {'h', 'h_lin'}:
+        for old, new in zip(jax.tree_util.tree_leaves(params[key]),
+                            jax.tree_util.tree_leaves(new_params[key])):
+            assert np.array_equal(old, new), ('changed frozen bank parameter', key)
+    probe = new_codes[:64]
+    q_values = np.asarray(hf.head_apply(qp, probe))
+    h_values = np.asarray(hf.head_apply(hp_new, probe))
+    identity = np.linalg.norm(q_values - h_values @ r.T) / np.linalg.norm(q_values)
+    assert identity < 1e-12
+    info.update(seed=seed, bank_unchanged=True, conversion_error=float(identity),
+                training_membership_unchanged=True, training_states=len(codes),
+                reconstruction_before=summarize(before), reconstruction_after=summarize(after),
+                global_relative_mse_before=float(np.sum(before**2 * train['norm2']) / np.sum(train['norm2'])),
+                global_relative_mse_after=float(np.sum(after**2 * train['norm2']) / np.sum(train['norm2'])))
+    return new_params, np.asarray(new_codes), qp, info
+
+
 def main():
     started = time.time()
     out = Path(os.environ["OUT"])
@@ -268,6 +306,24 @@ def main():
                                     jnp.asarray(train["perpendicular2"]), jnp.asarray(train["norm2"])))
     report["train_reconstruction"] = summarize(recon)
     save()
+    refine_steps = int(os.environ.get('REFINE_STEPS', '0'))
+    assert refine_steps >= 0
+    report['config']['mode'] = 'frozen_bank_refinement' if refine_steps else 'incumbent_diagnostic'
+    if refine_steps:
+        params, codes, qp, info = refine_head(
+            params, codes, r, train, steps=refine_steps,
+            lr=float(os.environ.get('REFINE_LR', '3e-4')),
+            seed=int(os.environ.get('REFINE_SEED', '200')),
+            batch=int(os.environ.get('REFINE_BATCH', '4096')))
+        report['refinement'] = info
+        candidate = out.parent / 'refined_checkpoint.pkl'
+        candidate_cfg = dict(cfg, refinement=dict(
+            **info, source_checkpoint_sha256=report['config']['source_sha256'],
+            commit=os.environ['COMMIT'], slurm_job=os.environ['SLURM_JOB_ID'],
+            gpu=report['config']['gpu'], table_sha256=tables['train']['sha256']))
+        b3.save_pkl(candidate, params, codes, candidate_cfg)
+        report['config']['candidate_checkpoint_sha256'] = b3.sha256_file(candidate)
+        save()
     val = data["validation"]
     starts = np.concatenate([np.zeros((1, 32)), codes[np.random.default_rng(5).choice(len(codes), 7, replace=False)]])
     stages = fit_states(qp, val["target"], val["perpendicular2"], val["norm2"], starts)

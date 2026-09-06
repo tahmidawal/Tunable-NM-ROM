@@ -10,6 +10,22 @@ import sep_hfit as hf
 
 
 class RepairMathTests(unittest.TestCase):
+    def test_refinement_reduces_training_loss_and_preserves_bank(self):
+        rng = np.random.default_rng(11)
+        hp = hf.init_head(jax.random.PRNGKey(3), 2, 5, hidden=4, layers=1)
+        params = dict(hp, spatial_bank=jnp.asarray(rng.normal(size=(20, 5))))
+        codes = rng.normal(size=(24, 2))
+        target = np.asarray(hf.head_apply(hp, jnp.asarray(codes))) + .2
+        train = dict(target=target, perpendicular2=np.full(24, .1),
+                     norm2=np.sum(target**2, axis=1) + .1)
+        new_params, new_codes, qp, info = repair.refine_head(
+            params, codes, np.eye(5), train, steps=80, lr=.01, seed=8, batch=24)
+        self.assertLess(info['global_relative_mse_after'], info['global_relative_mse_before'])
+        np.testing.assert_array_equal(params['spatial_bank'], new_params['spatial_bank'])
+        np.testing.assert_allclose(hf.head_apply(new_params, new_codes),
+                                   hf.head_apply(qp, new_codes), atol=1e-12)
+        self.assertEqual(info['norm'], 'global')
+
     def test_parameter_provenance_rounding_and_negative_controls(self):
         original = dict(seed=0, m=2, B=np.asarray([1, 2]), c=np.ones((2, 3, 3)),
                         w=np.ones((2, 3)), rho=np.ones((2, 3)), A=np.ones(2),

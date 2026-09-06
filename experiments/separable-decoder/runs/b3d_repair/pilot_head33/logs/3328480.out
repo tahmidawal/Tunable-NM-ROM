@@ -1,0 +1,16 @@
+jax_backend=gpu
+jax_backend=gpu device=cuda:0 B3D-TENSOR N=33 K=32 R=128 M=256 m=1024 arms=['full', 'ex', 'tensor'] train=0 pilot=1 micro=0 reps=5 burn=2 stall=0.001
+  [mem start] device peak 0.0 GB (now 0.0, limit 59.4); host maxrss 2.5 GB
+  table[train] built: 576 rows, seed 0, s* on 257^3 [38s] -> /cluster/tufts/paralab/tawal01/b3d_repair_20260906/pilot_head33/code/runs/b3dtensor/tables/b3d_params_train_seed0_m576.npz
+  TRAIN truth: 512 traj [37s], worst res 1.00e-12, min u 2.19e-30, frac<=0 0.00e+00; kept 4096 pool states, 256 D4 states
+  GATE F5_nonnegativity_train_val: 2.192e-30 PASS
+  [mem after_truth] device peak 2.2 GB (now 0.0, limit 59.4); host maxrss 5.6 GB
+  [mem after_train] device peak 2.2 GB (now 0.0, limit 59.4); host maxrss 6.5 GB
+  [mem after_bank] device peak 2.2 GB (now 0.2, limit 59.4); host maxrss 6.6 GB
+  GATE D1_bank_vs_meshfree_numpy: 1.759e-15 PASS  | control 2.287e-01 fired=True
+  GATE D2_lineage_rlite: 2.105e-02 PASS  | control 1.129e+00 fired=True
+  GATE D3_rank_of_A: 1.430e-03 PASS  | control 2.110e-18 fired=True
+  [mem after_D3] device peak 2.2 GB (now 0.2, limit 59.4); host maxrss 6.6 GB
+  GATE D4_heldout_oracle_validation: 4.997e-02 FAIL  | control 8.834e-01 fired=True  (pilot: recorded, not asserted)
+  [mem after_D4] device peak 2.2 GB (now 0.2, limit 59.4); host maxrss 7.0 GB
+PILOT DONE -> /cluster/tufts/paralab/tawal01/b3d_repair_20260906/pilot_head33/out/result.json pilot_passed=False [102s]

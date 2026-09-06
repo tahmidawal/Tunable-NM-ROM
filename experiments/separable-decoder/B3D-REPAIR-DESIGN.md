@@ -35,9 +35,10 @@ $$
 =\|R h(z)-Q^\top u\|_2^2+\|(I-QQ^\top)u\|_2^2.
 $$
 
-Check the numerical rank of $R$ with a small SVD. Rank deficiency is reported
-and handled by the retained numerical range, with the discarded singular
-values and cutoff recorded; it must not silently be hidden by a Gram ridge.
+Check the numerical rank of $R$ with a small SVD. Rank deficiency stops this
+first implementation before head fitting; a retained-range alternative would
+need its own amendment and checks. Record the singular values and cutoff, and
+never hide rank deficiency with a Gram ridge.
 Use the same unweighted interior-grid norm as the original D4 gate. The
 constant cell-volume weight cancels in relative errors on the uniform mesh.
 

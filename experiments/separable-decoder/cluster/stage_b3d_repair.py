@@ -1,7 +1,9 @@
 """Stage one immutable Burgers-3D repair job; submission is a separate action.
 
-Invoke with the absolute project Python. Stages no solution data or parameter
-tables. Sources must equal committed content; output and logs have a unique path.
+Invoke with the absolute project Python. Stages no solution data. Optional
+archived parameter metadata is only a provenance reference; actual parameters
+and truth are regenerated. Sources must equal committed content; each job has
+a unique output and log path.
 """
 import argparse
 import hashlib

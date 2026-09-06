@@ -1,0 +1,20 @@
+{
+  "label": "pilot_head33",
+  "script": "sep_b3d_tensor.py",
+  "source_commit": "30f851cbb2649d847ba18ae7362023e0dd5cee57",
+  "checkpoint": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/b3d_repair/head33/out/refined_checkpoint.pkl",
+  "checkpoint_sha256": "611235d3cdedec0954d8fea673f7d94118b7f8c2ee3b7997cea9bdef1bb75784",
+  "remote": "/cluster/tufts/paralab/tawal01/b3d_repair_20260906/pilot_head33",
+  "env": {
+    "PILOT": "1",
+    "TRAIN": "0",
+    "N": "33",
+    "K": "32",
+    "R": "128",
+    "EQ_M": "256",
+    "EQ_MQ": "1024",
+    "G_HIDDEN": "256",
+    "GEN_CHUNK": "64",
+    "ORACLE_BUDGET": "800"
+  }
+}

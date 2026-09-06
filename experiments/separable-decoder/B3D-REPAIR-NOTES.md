@@ -56,6 +56,8 @@ Bank condition number: 424.541. Maximum relative error change between the two bu
 
 Maximum selected normalized gradient: 2.99826e-05. The unchanged POD-K comparator has mean error 8.611645%, so its ratio criterion requires mean error at most 4.305823% on this full-interior pilot cohort.
 
+Compared on the same validation states, mean error falls by 2.9092% relative. 188 states improve and 68 worsen. States above the worst-error limit: 4 before, 2 after. The worst state has normalized gradient 9.49266e-09; the remaining nonstationarity and worst-error failure are separate issues.
+
 Frozen-bank refinement used 60000 Adam steps, learning rate 0.0003, batch 4096, optimizer seed 200, and the original 8192 training states. The head architecture and global relative field-MSE objective were retained. The training codes were also optimized; no family descriptors entered the head.
 
 | Training measurement | Before | After |
@@ -68,6 +70,20 @@ Frozen bank verified unchanged: `True`. Checkpoint coordinate-conversion relativ
 Representation screen: **fails**. This is a provisional screen; the inherited pilot driver and its controls remain necessary before promotion.
 
 [Full per-state and per-start diagnostic](runs/b3d_repair/head33/out/result.json).
+
+## Inherited pilot confirmation: pilot_head33
+
+Provisional, pending independent review: job `3328480`. The pilot records `pilot_passed=False`. Mean error 4.996532%, worst 16.777205%, oracle/POD-K ratio 0.580206, maximum normalized gradient 3.03404e-05.
+
+| Gate | Passed | Negative control fired |
+|---|---:|---:|
+| F5_nonnegativity_train_val | True | — |
+| D1_bank_vs_meshfree_numpy | True | True |
+| D2_lineage_rlite | True | True |
+| D3_rank_of_A | True | True |
+| D4_heldout_oracle_validation | False | True |
+
+[Full pilot output](runs/b3d_repair/pilot_head33/out/result.json).
 
 ## Provenance compatibility amendment
 

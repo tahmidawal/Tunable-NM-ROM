@@ -78,6 +78,18 @@ def main():
                  'on this full-interior pilot cohort.', '']
         if 'refinement' in data:
             info = data['refinement']
+            errors = np.asarray(fit['error'])
+            incumbent = json.loads((HERE/'diag33b/out/result.json').read_text())
+            assert incumbent['validation_states']['sid'] == states['sid']
+            old_errors = np.asarray(incumbent['fits'][-1]['error'])
+            text += [f"Compared on the same validation states, mean error falls by "
+                     f"{100*(1-errors.mean()/old_errors.mean()):.4f}% relative. "
+                     f"{int(np.sum(errors < old_errors))} states improve and "
+                     f"{int(np.sum(errors > old_errors))} worsen. "
+                     f"States above the worst-error limit: {int(np.sum(old_errors > .15))} before, "
+                     f"{int(np.sum(errors > .15))} after. "
+                     f"The worst state has normalized gradient {fit['optimality'][int(np.argmax(errors))]:.6g}; "
+                     'the remaining nonstationarity and worst-error failure are separate issues.', '']
             text += [f"Frozen-bank refinement used {info['steps_done']} Adam steps, "
                      f"learning rate {info['lr']}, batch {info['batch']}, optimizer seed {info['seed']}, "
                      f"and the original {info['training_states']} training states. "

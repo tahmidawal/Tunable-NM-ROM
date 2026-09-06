@@ -18,23 +18,29 @@ import subprocess
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('label')
-    parser.add_argument('--script', choices=['b3d_repair.py', 'sep_b3d_tensor.py'], default='b3d_repair.py')
+    parser.add_argument('--script', choices=['b3d_repair.py', 'sep_b3d_tensor.py',
+                        'b3d_arch_bench.py', 'b3d_arch_pilot.py'], default='b3d_repair.py')
     parser.add_argument('--checkpoint', type=Path, required=True)
     parser.add_argument('--reference-table', type=Path)
     parser.add_argument('--env', action='append', default=[])
     parser.add_argument('--hours', type=int, default=2)
+    parser.add_argument('--namespace', default='b3d_repair_20260906')
     args = parser.parse_args()
     assert re.fullmatch(r'[a-z][a-z0-9_]{0,30}', args.label), 'unsafe job label'
     assert 1 <= args.hours <= 20
+    assert re.fullmatch(r'[a-z][a-z0-9_]{0,60}', args.namespace), 'unsafe cluster namespace'
     src = Path(__file__).resolve().parent.parent
     repo = src.parents[1]
     stage = src / 'cluster/stage' / args.label
-    record = src / 'runs/b3d_repair' / args.label
+    architecture = args.script.startswith('b3d_arch_')
+    record = src / ('runs/b3d_architecture' if architecture else 'runs/b3d_repair') / args.label
     assert not stage.exists() and not record.exists(), 'use a new label for every attempt'
     assert args.checkpoint.is_file()
     commit = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
     names = ['b3d_common.py', 'b3d_tensor_common.py', 'sep_b3d_tensor.py',
              'b3d_repair.py', 'sep_hfit.py']
+    if architecture:
+        names += sorted(p.name for p in src.glob('b3d_arch_*.py'))
     source_content = {}
     for name in names:
         content = (src / name).read_bytes()
@@ -47,9 +53,13 @@ def main():
         key, value = item.split('=', 1)
         assert re.fullmatch(r'[A-Z][A-Z0-9_]*', key), key
         assert key not in {'HOME', 'CODEX_HOME', 'CKPT', 'OUT', 'TABLE_DIR', 'COMMIT',
-                           'JAX_DEFAULT_MATMUL_PRECISION', 'JAX_ENABLE_X64'}
+                           'JAX_DEFAULT_MATMUL_PRECISION', 'JAX_ENABLE_X64', 'REFERENCE_TABLE',
+                           'SLURM_JOB_ID', 'SLURMD_NODENAME', 'PYTHONPATH'}
+        assert key not in env, f'duplicate environment setting: {key}'
         env[key] = value
-    remote = f'/cluster/tufts/paralab/tawal01/b3d_repair_20260906/{args.label}'
+    remote = f'/cluster/tufts/paralab/tawal01/{args.namespace}/{args.label}'
+    if args.script in {'b3d_repair.py', 'b3d_arch_bench.py'}:
+        assert args.reference_table is not None, 'diagnostics require --reference-table for provenance'
     for path in ['code', 'in', 'out', 'logs']:
         (stage / path).mkdir(parents=True)
     record.mkdir(parents=True)
@@ -61,12 +71,10 @@ def main():
         assert args.reference_table.is_file()
         shutil.copy2(args.reference_table, stage / 'in/reference_table.npz')
         reference_assignment = 'REFERENCE_TABLE="$TASK_ROOT/in/reference_table.npz"'
-    elif args.script == 'b3d_repair.py':
-        raise ValueError('repair diagnostics require --reference-table for provenance')
     (stage / 'COMMIT.txt').write_text(commit + '\n')
     assignments = ' '.join(shlex.quote(f'{key}={value}') for key, value in env.items())
     batch = f'''#!/bin/bash
-#SBATCH --job-name=ctol_b3dr_{args.label}
+#SBATCH --job-name=ctol_{'b3da' if architecture else 'b3dr'}_{args.label}
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:a100:1
 #SBATCH --constraint=a100-80G
@@ -106,7 +114,7 @@ env CKPT="$TASK_ROOT/in/checkpoint.pkl" OUT="$TASK_ROOT/out/result.json" TABLE_D
     (record / 'submission.json').write_text(json.dumps(dict(
         label=args.label, script=args.script, source_commit=commit, checkpoint=str(args.checkpoint.resolve()),
         checkpoint_sha256=hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
-        remote=remote, env=env), indent=2) + '\n')
+        remote=remote, namespace=args.namespace, env=env), indent=2) + '\n')
     print(stage)
     print(remote)
 

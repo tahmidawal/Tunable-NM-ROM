@@ -53,7 +53,7 @@ def validate_parameter_manifest(generated, archived, expected_hash):
     return result
 
 
-def make_fit(budget=800, gradient_tol=1e-8):
+def make_fit(budget=800, gradient_tol=1e-8, apply_fn=hf.head_apply):
     """Exact coefficient-metric LM with field-normalized stationarity stopping.
 
     Unlike the legacy fit, the stopping rule tests the gradient rather than
@@ -62,7 +62,7 @@ def make_fit(budget=800, gradient_tol=1e-8):
     """
     def fit(qp, target, perpendicular2, norm2, z0):
         def residual(z):
-            return hf.head_apply(qp, z) - target
+            return apply_fn(qp, z) - target
 
         def rj(z):
             return residual(z), jax.jacfwd(residual)(z)
@@ -112,7 +112,8 @@ def make_fit(budget=800, gradient_tol=1e-8):
     return jax.jit(jax.vmap(fit, in_axes=(None, 0, 0, 0, 0)))
 
 
-def fit_states(qp, target, perpendicular2, norm2, starts, budgets=(400, 800), chunk=128):
+def fit_states(qp, target, perpendicular2, norm2, starts, budgets=(400, 800), chunk=128,
+               apply_fn=hf.head_apply, on_stage=None):
     """Same eight starts as the original pilot; never select on optimality."""
     count, ns = len(target), len(starts)
     a = np.repeat(target, ns, axis=0)
@@ -121,7 +122,7 @@ def fit_states(qp, target, perpendicular2, norm2, starts, budgets=(400, 800), ch
     z0 = np.tile(starts, (count, 1))
     stages = []
     for budget in budgets:
-        solve = make_fit(budget)
+        solve = make_fit(budget, apply_fn=apply_fn)
         collected = [[] for _ in range(6)]
         for s in range(0, len(a), chunk):
             args = [jnp.asarray(x[s:s+chunk]) for x in (a, f, u, z0)]
@@ -140,10 +141,12 @@ def fit_states(qp, target, perpendicular2, norm2, starts, budgets=(400, 800), ch
                            best_start=best, all_errors=per_start[0],
                            all_optimality=per_start[1], all_attempts=per_start[2],
                            all_reasons=per_start[4]))
+        if on_stage is not None:
+            on_stage(stages[-1])
     return stages
 
 
-def extract(params, cfg, table, n, outdir):
+def extract(params, cfg, table, n, outdir, include_velocity=False):
     """Regenerate training and validation separately, retain compact coordinates."""
     assert n == 33, "This first diagnostic is the full-interior N=33 pilot only"
     coords = b3.grid_coords_3d(n)
@@ -178,8 +181,12 @@ def extract(params, cfg, table, n, outdir):
 
     datasets = {}
     worst = 0.
+    velocity_identity = 0.
+    rhs = jax.jit(jax.vmap(lambda u, nu: nu * b3.lap_3d(u, n) - b3.upwind_adv_field_3d(u, n)))
     for split, rows in [("train", np.arange(512)), ("validation", np.arange(512, 576))]:
         arrays = {key: [] for key in ["target", "norm2", "perpendicular2", "sid", "blob_count"]}
+        if include_velocity and split == 'validation':
+            arrays.update({key: [] for key in ['velocity_target', 'velocity_norm2', 'velocity_perpendicular2']})
         fields_val = []
         for start in range(0, len(rows), 32):
             rr = rows[start:start+32]
@@ -200,6 +207,20 @@ def extract(params, cfg, table, n, outdir):
             arrays["blob_count"].append(np.asarray(table["B"])[ids[mask] // num_times])
             if split == "validation":
                 fields_val.append(np.asarray(selected))
+                if include_velocity:
+                    vel = rhs(selected, jnp.asarray(table['nu'][ids[mask] // num_times]))
+                    va, vn, vp = project(vel, qj)
+                    for key, value in zip(['velocity_target', 'velocity_norm2', 'velocity_perpendicular2'], (va, vn, vp)):
+                        arrays[key].append(np.asarray(value))
+                    loc = np.flatnonzero(mask)
+                    positive = ids[mask] % num_times > 0
+                    prev = snaps.reshape(-1, len(interior))[jnp.asarray(np.maximum(loc - 1, 0))]
+                    defect = (selected - prev) / b3.DT - vel
+                    # Independent backward-Euler identity at saved positive times.
+                    denom = jnp.linalg.norm(prev, axis=1) / b3.DT + 1e-300
+                    rel = np.asarray(jnp.linalg.norm(defect, axis=1) / denom)
+                    velocity_identity = max(velocity_identity, float(np.max(rel[positive])))
+                    assert velocity_identity < 1e-8
         datasets[split] = {key: np.concatenate(value) for key, value in arrays.items()}
         if split == "validation":
             datasets[split]["fields"] = np.concatenate(fields_val)
@@ -207,7 +228,8 @@ def extract(params, cfg, table, n, outdir):
     assert np.array_equal(datasets["train"]["sid"], pick)
     return g, q, r, datasets, dict(rank=rank, rank_cutoff=float(rank_cutoff),
                                   condition=float(sv[0]/sv[-1]), singular_values=sv.tolist(),
-                                  truth_max_residual=worst)
+                                  truth_max_residual=worst,
+                                  velocity_be_identity_max=velocity_identity if include_velocity else None)
 
 
 def jsonable(x):

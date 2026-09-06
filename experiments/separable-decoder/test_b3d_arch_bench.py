@@ -1,5 +1,6 @@
 """Sub-minute common-evaluator controls; independent full-field references."""
 from types import SimpleNamespace
+import os
 import unittest
 import numpy as np
 import jax
@@ -9,6 +10,13 @@ import b3d_arch_baseline as baseline
 import b3d_arch_bench as bench
 import b3d_arch_pilot as pilot
 import b3d_common as b3
+
+
+def setUpModule():
+    print('jax_backend=' + jax.default_backend(), flush=True)
+    assert jax.default_backend() == 'gpu'
+    assert jax.config.x64_enabled
+    assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
 
 
 class ArchitectureBenchTests(unittest.TestCase):

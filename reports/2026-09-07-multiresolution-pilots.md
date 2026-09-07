@@ -1,6 +1,6 @@
 # Multiresolution development pilots: accuracy and complete-query cost
 
-This report covers the first frozen-network mesh-transfer pilots and bounded numerical improvements of the current separable NM-ROM against efficient FOM solvers. The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.
+This report covers frozen-network mesh-transfer pilots, bounded solver changes and controlled training refinements of the current separable NM-ROM against efficient FOM solvers. The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.
 
 The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. Increasing resolution does not reliably reduce ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.
 
@@ -108,18 +108,131 @@ Cold-fit-only source `0fb42607811425d639ba58714da2210f152cf463`, job `3350594`. 
 | 512 | 5.4672 | 5.4672 | 3.2958 | 3.2836 | 3.2828 | 1.4953 |
 | 1024 | 8.6951 | 8.6951 | 3.8737 | 3.8562 | 3.8549 | 2.2593 |
 
-The table uses a budget of `180` iterations and `4` training-code starting guesses, reporting the worst physical case. The same edge samples give essentially the same result under Gram and QR fitting; fixed physical midpoint or Gauss sampling greatly reduces the finer-grid fitting error. The remaining bank floor also grows with resolution. Thus both the changing sampled objective and a real frozen-bank representation loss matter. The earlier explanation based only on optimizer starting guesses is withdrawn. The clipped initial-condition family has not changed. These are best-recorded nonlinear fits, not stationary or globally optimal certificates. Fixed physical field sampling with charged interpolation is an initialization method, not strong-form PDE collocation. Corrected-initializer rollouts and their complete-query costs remain unmeasured.
+The table uses a budget of `180` iterations and `4` training-code starting guesses, reporting the worst physical case. The same edge samples give essentially the same result under Gram and QR fitting; fixed physical midpoint or Gauss sampling greatly reduces the finer-grid fitting error. The remaining bank floor also grows with resolution. Thus both the changing sampled objective and a real frozen-bank representation loss matter. The earlier explanation based only on optimizer starting guesses is withdrawn. The clipped initial-condition family has not changed. These are best-recorded nonlinear fits, not stationary or globally optimal certificates. Fixed physical field sampling with charged interpolation is an initialization method, not strong-form PDE collocation. Corrected-initializer rollouts were unmeasured at this stage; the continued-development section below now reports them.
 
 [Complete Burgers follow-up findings](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md).
 
 All cost ratios in this report use ratios of per-case timing medians before the cohort median. Some native exploratory reports also retain medians of per-repetition ratios or select configurations by the pooled median across all repetitions under an explicit different label; those statistics are not interchangeable.
 
+## Continued development: controlled training and solver changes
+
+### Heat: broader training coverage improves the unchanged spatial bank
+
+Source `0597f0dd505de537ebbda459d9db330132126d44`, job `3352849`. The spatial bank is exactly unchanged. Each refined head receives 8000 updates, with the same architecture and per-snapshot relative squared-error loss. The original and expanded training cohorts are crossed with the recorded minibatch seeds. All final checkpoints are retained; none was selected by a validation training loss.
+
+| Head endpoint | Training trajectories | Initial median / worst relative error (%) | Later worst reconstruction error (%) | Initial-fit gate |
+|---|---:|---:|---:|---|
+| `frozen` | 32 | 5.0379 / 9.7356 | 6.2355 | Fail |
+| `original_seed790714` | 32 | 4.6531 / 9.4113 | 5.898 | Fail |
+| `original_seed790715` | 32 | 4.6769 / 9.4312 | 5.9152 | Fail |
+| `expanded_seed790714` | 160 | 2.6559 / 3.9531 | 2.1682 | Pass |
+| `expanded_seed790715` | 160 | 2.6697 / 4.0303 | 2.1124 | Pass |
+
+The predeclared gate requires every initial fit to be stationary and below 5% error. Both expanded-cohort endpoints pass; continuing optimization on only the original cohort does not. Each endpoint uses its own training-code initialization library. This demonstrates an improvement in the combined training-and-initialization procedure; it does not isolate better weights from better starting codes. A stationary fit is a local convergence result, not a proof of global optimality.
+
+Full rollouts below use the already tested relaxed solver tolerance. Errors are relative to the current reference on the common observation grid; the same restricted physical family and development cases are retained.
+
+| Intervals | Head endpoint | Worst rollout error (%) | ROM / direct FOM query (ms) | Paired FOM/ROM | Nonstationary initial fits / steps |
+|---|---|---:|---:|---:|---:|
+| 64 | `frozen` | 9.7356 | 13.734 / 1.138 | 0.08166 | 0 / 0 |
+| 64 | `expanded_seed790714` | 3.9531 | 12.382 / 1.138 | 0.09205 | 0 / 0 |
+| 64 | `expanded_seed790715` | 4.0303 | 12.171 / 1.138 | 0.09363 | 0 / 0 |
+| 128 | `frozen` | 9.7356 | 13.716 / 1.2259 | 0.08978 | 0 / 0 |
+| 128 | `expanded_seed790714` | 3.9531 | 12.214 / 1.2259 | 0.09486 | 0 / 0 |
+| 128 | `expanded_seed790715` | 4.0303 | 12.011 / 1.2259 | 0.09656 | 0 / 0 |
+
+The accuracy gain survives evolution on both query meshes, but the efficient direct FOM remains faster. The root independently recomputed all 280 timed outputs; the largest metric disagreement was `0`. The empirical spectral-reference difference is `1.810033e-10`; no rigorous bound is supplied. Saved offline refinement durations include compilation and host work without a dedicated warm-timing protocol; they are observed costs, not a training-speed comparison.
+
+[Complete heat training findings](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/HEAT-HEAD-NOTES.md). [Heat refinement figure](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/figures/heat-head.png).
+
+### Poisson: a guarded small-system solver gives a modest query improvement
+
+Source `20f96592b14c2d9727eb40341d2c6cbcb568f464`, job `3352868`. The unchanged decoder and nonlinear objective are tested with a specialized Gauss–Jordan solve. Its numerical guard and generic-solver fallback are inside the timed query. The table pairs it with the generic compiled solver and the direct FOM in the same job.
+
+| Intervals | Requested / retained modes | tau | Generic / specialized / FOM query (ms) | Paired generic/specialized | Worst physical error (%) |
+|---|---:|---:|---:|---:|---:|
+| 256 | 64 / 64 | 0.01 | 4.1684 / 4.0364 / 1.9248 | 1.0417 | 7.3626 |
+| 256 | 64 / 64 | 0 | 5.2462 / 5.1026 / 1.9248 | 1.0459 | 7.3187 |
+| 256 | 256 / 257 | 0.01 | 4.5543 / 4.0984 / 1.9248 | 1.1084 | 7.2542 |
+| 256 | 256 / 257 | 0 | 4.7529 / 4.3824 / 1.9248 | 1.119 | 7.2542 |
+| 512 | 64 / 64 | 0.01 | 5.0262 / 4.7197 / 2.435 | 1.0581 | 7.363 |
+| 512 | 64 / 64 | 0 | 5.9294 / 5.422 / 2.435 | 1.1063 | 7.3189 |
+| 512 | 256 / 257 | 0.01 | 5.2577 / 4.8576 / 2.435 | 1.0551 | 7.2542 |
+| 512 | 256 / 257 | 0 | 5.7968 / 5.3563 / 2.435 | 1.0625 | 7.2542 |
+
+The specialized solver preserves physical accuracy but does not beat the FOM. The residual-reduction stop may finish before stationarity; the stationary controls disable that stop.
+
+Root independently checks 672 invocation metrics and 1200 saved linear systems. The largest metric difference is `1.387779e-16` and the largest linear backward error is `1.534149e-16`. There are 0 timed fallbacks, 3 solver-counter changes and 0 stop-reason changes. The 3 instrumented-replay counter mismatches are retained; exact trajectory identity is not claimed. These replay checks are numerical evidence, not timing measurements.
+
+[Complete Poisson solver findings](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/FINDINGS.md).
+
+### Burgers: the corrected initial fit improves complete rollouts
+
+Source `d73fb4119057d4826c783d02829dd08835fe7a24`, job `3352857`. The network weights, physical initial-condition family and efficient FOM candidates are unchanged. Fixed physical Gauss sampling charges interpolation from the supplied input field. Both complete-grid and common-grid output errors are preserved, with separate reference-refinement margins for each grid.
+
+| Output intervals | Target (%) | Selected ROM | Worst common / full-grid error (%) | ROM / FOM envelope query (ms) | Paired FOM/ROM | IC budget stops |
+|---|---:|---|---:|---:|---:|---:|
+| 256 | 10 | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | 4.5399 / 4.5399 | 36.676 / 10.277 | 0.29294 | 3 |
+| 256 | 5 | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | 4.5399 / 4.5399 | 36.676 / 10.665 | 0.30413 | 3 |
+| 512 | 10 | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 3.7132 / 3.7133 | 39.676 / 12.098 | 0.31227 | 3 |
+| 512 | 5 | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 3.7132 / 3.7133 | 39.676 / 12.261 | 0.32117 | 3 |
+| 1024 | 10 | `rom_L1024_edge_ic60_dt0.005_stall0.01_starts1` | 8.4972 / 8.6953 | 54.392 / 24.634 | 0.45953 | 3 |
+| 1024 | 5 | `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 3.9109 / 3.9076 | 54.904 / 25.549 | 0.48201 | 0 |
+
+At 1024 intervals, the matched primary rollout's worst complete-grid error changes from 8.6953% with edge initialization to 3.9076% with the larger-budget Gauss fit. The efficient FOM envelope remains faster at every reported target. The envelope permits a cheaper coarse solve and charges interpolation to the requested output. The native report retains every selected FOM configuration.
+
+Budget exits and configured small-improvement stops remain admissible only under the stated empirical physical-error check; they are not stationary-fit certificates. All such counts remain in the native records. The tighter target with an unresolved reference budget is not promoted to qualified evidence.
+
+The owner independently reconstructs 240 complete-grid artifacts representing all 720 timed calls; the largest complete-grid metric disagreement is `4.163336e-17`. Root separately recomputes all common-grid errors, with maximum disagreement `2.775558e-17`. There are 0 nonfinite outputs and 0 FOM tolerance failures. The reference margin is empirical and independent final confirmation remains open.
+
+[Complete corrected Burgers rollout findings](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md).
+
+### Fresh waves: compression and autonomous dynamics both matter
+
+Source `a0c4d0a7d7b59b05615846e61df0499ef5de4f62`, job `3353136`. The learned bank and existing nonlinear head remain frozen. The saved affine control has the same displacement and velocity dimensions as the nonlinear head; the larger affine and full-bank controls use additional coordinates. They all remain inside the learned neural bank. The speed-dependent affine propagator includes the nonzero-offset forcing and is charged inside the query.
+
+| Boundary | Intervals | Method | Displacement / phase dimensions | Median / worst time-max error, initial normalization (%) | Method / same-grid FOM query (ms) | Raw paired FOM/method |
+|---|---:|---|---:|---:|---:|---:|
+| dirichlet | 256 | rom | 16 / 32 | 46.165 / 55.367 | 3334.92 / 13.6384 | 0.0040895 |
+| dirichlet | 256 | affine16 | 16 / 32 | 26.332 / 30.205 | 13.8045 / 13.6384 | 0.98861 |
+| dirichlet | 256 | affine32 | 32 / 64 | 4.3226 / 5.1579 | 13.9311 / 13.6384 | 0.979 |
+| dirichlet | 256 | full64 | 64 / 128 | 3.0506 / 3.2126 | 13.8164 / 13.6384 | 0.98807 |
+| dirichlet | 512 | rom | 16 / 32 | 46.014 / 55.204 | 3380.99 / 62.3308 | 0.018436 |
+| dirichlet | 512 | affine16 | 16 / 32 | 26.332 / 30.205 | 60.6831 / 62.3308 | 1.0272 |
+| dirichlet | 512 | affine32 | 32 / 64 | 4.3395 / 5.1888 | 60.3147 / 62.3308 | 1.0335 |
+| dirichlet | 512 | full64 | 64 / 128 | 3.1116 / 3.2896 | 61.9178 / 62.3308 | 1.0067 |
+| absorbing | 256 | rom | 16 / 32 | 7.5763 / 7.6554 | 3257.96 / 94.7872 | 0.029089 |
+| absorbing | 256 | affine16 | 16 / 32 | 16.826 / 18.676 | 11.0369 / 94.7872 | 8.5845 |
+| absorbing | 256 | affine32 | 32 / 64 | 5.6362 / 5.9237 | 11.4512 / 94.7872 | 8.2736 |
+| absorbing | 256 | full64 | 64 / 128 | 2.8477 / 3.0206 | 11.4077 / 94.7872 | 8.3062 |
+| absorbing | 512 | rom | 16 / 32 | 7.5729 / 7.6543 | 3300.85 / 279.53 | 0.084669 |
+| absorbing | 512 | affine16 | 16 / 32 | 16.817 / 18.666 | 61.6481 / 279.53 | 4.5348 |
+| absorbing | 512 | affine32 | 32 / 64 | 5.6276 / 5.9127 | 54.9659 / 279.53 | 5.1376 |
+| absorbing | 512 | full64 | 64 / 128 | 2.8469 / 3.0201 | 62.5465 / 279.53 | 4.468 |
+
+At equal dimension, the affine control improves reflective rollout error but worsens absorbing rollout error. The larger linear spaces improve both, while the nonlinear head can reconstruct individual snapshots better than its matched affine control. Snapshot reconstruction therefore does not by itself establish accurate autonomous dynamics. These observations do not establish an irreducible error for every nonlinear manifold of the same dimension.
+
+Some linear controls are faster than the listed same-grid FOM, especially for the absorbing problem. Those are classical linear-control results, and the benchmark has not yet swept cheaper coarse FOMs with charged output interpolation. They do not establish a nonlinear-decoder or cost-to-tolerance speed advantage.
+
+| Absorbing output intervals | Method | Final energy-state error / current reference norm, case range |
+|---|---|---:|
+| 512 | rom | 2.92808–4.10705 |
+| 512 | affine16 | 21.4504–46.2361 |
+| 512 | affine32 | 2.69765–3.65008 |
+| 512 | full64 | 1.32915–2.15488 |
+
+The absorbing reference becomes small. Even the full-bank linear control has a final energy-state error larger than the remaining reference; its small initial-normalized error must not be described as accurate relative prediction at late times. Zero-field fits and weak normal-force diagnostics are retained, without attributing the entire failure to either mechanism. The full-bank control represents zero exactly and has no normal-force residual within the bank by construction, yet still has late absorbing error; neither diagnostic alone certifies physical accuracy.
+
+All 8 nonlinear time-step comparisons pass, with maximum required difference `1.04107e-06`. The selected diagnostic fits have 0 nonstationary exits, and maximum longer-budget objective change `0`. The owner independently reconstructs the full-grid ROM fields, affine propagators, coordinate bank, head derivatives, curvature and diagnostic fits. Root separately checks all 156 declared timed calls on the common observation grid, with maximum metric difference `3.108624e-15`. The audit reuses the saved reference trajectories; full-grid FOM metrics at nonreference time steps remain outside its reconstruction scope. Rigorous reference bounds remain unspecified.
+
+[Complete wave dynamics findings](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/FINDINGS.md). [Wave error evolution](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/dynamics-error-evolution.png).
+
 ## Next experiments justified by the diagnostics
 
-- **Burgers:** carry fixed physical sampling into a complete rollout with charged input interpolation; preserve the original initial-condition family and compare against the unchanged efficient FOM envelope. If the frozen-bank boundary gap still blocks accuracy, test boundary-aware training coverage separately. The improved reference supports only the stated development targets.
-- **Heat:** after the measured tolerance improvement, address the nonlinear-head reconstruction gap with controlled original-cohort versus expanded-coverage head refinement. The spatial bank and head architecture can remain fixed for that diagnostic.
-- **Poisson:** the test-mode and representation diagnostics point to bank/head capacity or training coverage for accuracy. A specialized small-matrix solver is a separate remaining runtime test.
-- **Waves:** use matched-dimensional linear and nonlinear controls with a frozen spatial bank to separate compression from autonomous dynamics. Finer rendering alone cannot address the current error.
+- **Burgers:** the corrected full rollout now supports the stated empirical development targets. Test larger reduced time steps against the same physical reference and efficient FOM envelope; the current reduced evolution is still costly. Preserve the initial-condition family and charge full input/output.
+- **Heat:** preserve the expanded-coverage refinement result, then test independent development inputs before selecting a model for final evaluation. Accuracy improved with a fixed bank, but beating the direct FOM still requires a substantial complete-query cost reduction.
+- **Poisson:** finish the separately declared coverage-by-loss refinement study. A later source-projection and field-based initialization ablation should remain distinct from training changes; the small-system solver alone gives only a modest gain.
+- **Waves:** the frozen-bank controls show that the matched-dimensional ordering depends on the boundary, and larger linear spaces improve both cases. Next compare larger nonlinear heads against the matched linear controls, with an explicit late-time accuracy requirement for absorbing fields. A coarse-FOM resolution envelope is also needed before promoting any raw linear-control timing ratio.
 
 These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, independent data/training repeats, validation-selected settings and sealed final evaluation.
 
@@ -154,3 +267,7 @@ Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.p
 - **Bank projection floor / best-recorded fit / Richardson estimate:** smallest error possible in the unrestricted linear feature span / best fit found by the tested nonlinear searches, without proving optimality / remaining reference error estimated by assuming observed refinement rates continue.
 - **Envelope / additive empirical margin / passed reference budget:** least-cost tested method meeting the development target / estimated reference error added to measured ROM or FOM error / that estimate also lies below the predeclared fraction of the target. Empirical passage is not a rigorous certificate.
 - **Commit / manifest / checksum:** saved source revision / inventory of source artifacts / content fingerprint checking exact file bytes.
+- **Endpoint / minibatch seed / per-snapshot relative squared-error loss:** saved weights after the declared training budget / random seed selecting training examples per update / squared reconstruction error divided by that snapshot's squared field norm.
+- **Initialization library / gate / factorial:** stored training codes used to start a solve / a predeclared requirement for continuing an experiment / crossing independently varied choices to distinguish their effects.
+- **Gauss–Jordan / backward error / fallback / solver counter / replay:** elimination for the small latent linear system / residual of the computed linear solution relative to its data / guarded use of the original solver / count of optimization steps or evaluations / instrumented recomputation of a saved solve.
+- **Affine / phase dimension / tangent velocity / normal force / curvature:** linear map plus a constant offset / displacement and velocity coordinate count / velocity representable by local decoder derivatives / weak acceleration outside those derivative directions / acceleration contributed by the bending decoder map.

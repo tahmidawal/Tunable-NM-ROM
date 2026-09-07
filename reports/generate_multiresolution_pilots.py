@@ -27,6 +27,19 @@ FILES = {
     'poisson_followup': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/result.json',
     'poisson_followup_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/summary.json',
     'poisson_followup_audit': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/audit.json',
+    'heat_head': ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot03/archive/outputs/results.json',
+    'heat_head_review': REPAIR/'heat_pilot03_review.json',
+    'poisson_kernel': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/result.json',
+    'poisson_kernel_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/summary.json',
+    'poisson_kernel_review': REPAIR/'poisson_pilot03_review.json',
+    'burgers_rollout': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/out/pilot.json',
+    'burgers_rollout_summary': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/SUMMARY.json',
+    'burgers_rollout_audit': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/AUDIT.json',
+    'burgers_rollout_review': REPAIR/'burgers_rollout04_review.json',
+    'wave_dynamics': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/cluster/out/pilot/result.json',
+    'wave_dynamics_summary': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/summary.json',
+    'wave_dynamics_audit': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/audit.json',
+    'wave_dynamics_review': REPAIR/'wave_dynamics02_review.json',
 }
 
 
@@ -95,7 +108,7 @@ def main():
                 'worst_required_physical_error', 'query_median')
 
     lines = ['# Multiresolution development pilots: accuracy and complete-query cost', '',
-        'This report covers the first frozen-network mesh-transfer pilots and bounded numerical improvements of the current separable NM-ROM against efficient FOM solvers. '
+        'This report covers frozen-network mesh-transfer pilots, bounded solver changes and controlled training refinements of the current separable NM-ROM against efficient FOM solvers. '
         'The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.', '',
         'The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. '
         'Increasing resolution does not reliably reduce ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.', '',
@@ -148,10 +161,10 @@ def main():
         'The rigorous reference-bound field remains unspecified where only empirical refinement is available. '
         'No paper-wide speedup, optimal capacity, optimized training cost, broad-family robustness, or independent confirmation is established.', '',
         '## Next experiments justified by the diagnostics', '',
-        '- **Burgers:** carry fixed physical sampling into a complete rollout with charged input interpolation; preserve the original initial-condition family and compare against the unchanged efficient FOM envelope. If the frozen-bank boundary gap still blocks accuracy, test boundary-aware training coverage separately. The improved reference supports only the stated development targets.',
-        '- **Heat:** after the measured tolerance improvement, address the nonlinear-head reconstruction gap with controlled original-cohort versus expanded-coverage head refinement. The spatial bank and head architecture can remain fixed for that diagnostic.',
-        '- **Poisson:** the test-mode and representation diagnostics point to bank/head capacity or training coverage for accuracy. A specialized small-matrix solver is a separate remaining runtime test.',
-        '- **Waves:** use matched-dimensional linear and nonlinear controls with a frozen spatial bank to separate compression from autonomous dynamics. Finer rendering alone cannot address the current error.', '',
+        '- **Burgers:** the corrected full rollout now supports the stated empirical development targets. Test larger reduced time steps against the same physical reference and efficient FOM envelope; the current reduced evolution is still costly. Preserve the initial-condition family and charge full input/output.',
+        '- **Heat:** preserve the expanded-coverage refinement result, then test independent development inputs before selecting a model for final evaluation. Accuracy improved with a fixed bank, but beating the direct FOM still requires a substantial complete-query cost reduction.',
+        '- **Poisson:** finish the separately declared coverage-by-loss refinement study. A later source-projection and field-based initialization ablation should remain distinct from training changes; the small-system solver alone gives only a modest gain.',
+        '- **Waves:** the frozen-bank controls show that the matched-dimensional ordering depends on the boundary, and larger linear spaces improve both cases. Next compare larger nonlinear heads against the matched linear controls, with an explicit late-time accuracy requirement for absorbing fields. A coarse-FOM resolution envelope is also needed before promoting any raw linear-control timing ratio.', '',
         'These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, '
         'independent data/training repeats, validation-selected settings and sealed final evaluation.', '',
         '## Visual artifacts', '',
@@ -185,7 +198,16 @@ def main():
         '- **Bank projection floor / best-recorded fit / Richardson estimate:** smallest error possible in the unrestricted linear feature span / best fit found by the tested nonlinear searches, without proving optimality / remaining reference error estimated by assuming observed refinement rates continue.',
         '- **Envelope / additive empirical margin / passed reference budget:** least-cost tested method meeting the development target / estimated reference error added to measured ROM or FOM error / that estimate also lies below the predeclared fraction of the target. Empirical passage is not a rigorous certificate.',
         '- **Commit / manifest / checksum:** saved source revision / inventory of source artifacts / content fingerprint checking exact file bytes.', '']
+    lines[-1:-1] = [
+        '- **Endpoint / minibatch seed / per-snapshot relative squared-error loss:** saved weights after the declared training budget / random seed selecting training examples per update / squared reconstruction error divided by that snapshot\'s squared field norm.',
+        '- **Initialization library / gate / factorial:** stored training codes used to start a solve / a predeclared requirement for continuing an experiment / crossing independently varied choices to distinguish their effects.',
+        '- **Gauss–Jordan / backward error / fallback / solver counter / replay:** elimination for the small latent linear system / residual of the computed linear solution relative to its data / guarded use of the original solver / count of optimization steps or evaluations / instrumented recomputation of a saved solve.',
+        '- **Affine / phase dimension / tangent velocity / normal force / curvature:** linear map plus a constant offset / displacement and velocity coordinate count / velocity representable by local decoder derivatives / weak acceleration outside those derivative directions / acceleration contributed by the bending decoder map.',
+    ]
     followup_lines, followup_values = followups(data, manifest)
+    development_lines, development_values = continued_development(data, manifest)
+    followup_lines += development_lines
+    followup_values.update(development_values)
     where = lines.index('## Next experiments justified by the diagnostics')
     lines[where:where] = followup_lines
     (HERE/'2026-09-07-multiresolution-pilots.md').write_text('\n'.join(lines))
@@ -353,8 +375,211 @@ def burgers_followups(data, manifest):
         'The earlier explanation based only on optimizer starting guesses is withdrawn. '
         'The clipped initial-condition family has not changed. These are best-recorded nonlinear fits, not stationary or globally optimal certificates. '
         'Fixed physical field sampling with charged interpolation is an initialization method, not strong-form PDE collocation. '
-        'Corrected-initializer rollouts and their complete-query costs remain unmeasured.', '',
+        'Corrected-initializer rollouts were unmeasured at this stage; the continued-development section below now reports them.', '',
         link(ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md', 'Complete Burgers follow-up findings')+'.', '']
+    return lines, values
+
+
+def continued_development(data, manifest):
+    heat, hr = data['heat_head'], data['heat_head_review']
+    ps, pr = data['poisson_kernel_summary'], data['poisson_kernel_review']
+    assert heat['complete'] and ps['audit']['passed']
+    assert hr['source_json_sha256'] == manifest['heat_head']['sha256']
+    assert ps['source_sha256'] == pr['source_json_sha256'] == manifest['poisson_kernel']['sha256']
+    assert hr['frozen_spatial_parameters_match'] and hr['declared_endpoint_and_repetition_counts_match']
+    settings = heat['settings']
+    models = {r['name']: r for r in heat['models']}
+    values = {'heat_head_reconstruction': [], 'heat_head_rollout': [], 'poisson_kernel': []}
+    lines = ['## Continued development: controlled training and solver changes', '',
+        '### Heat: broader training coverage improves the unchanged spatial bank', '',
+        f"Source `{hr['source_commit']}`, job `{hr['job_id']}`. The spatial bank is exactly unchanged. "
+        f"Each refined head receives {settings['updates']} updates, with the same architecture and per-snapshot relative squared-error loss. "
+        'The original and expanded training cohorts are crossed with the recorded minibatch seeds. All final checkpoints are retained; none was selected by a validation training loss.', '',
+        '| Head endpoint | Training trajectories | Initial median / worst relative error (%) | Later worst reconstruction error (%) | Initial-fit gate |',
+        '|---|---:|---:|---:|---|']
+    for row in hr['reconstruction']:
+        assert row['nonstationary_snapshot_fits'] == 0
+        value = dict(model=row['model'], training_trajectories=models[row['model']]['details']['trajectories'],
+            initial_median=statistics.median(c['initial_error'] for c in row['cases']),
+            initial_worst=max(c['initial_error'] for c in row['cases']),
+            later_worst=max(c['later_worst_error'] for c in row['cases']),
+            gate_passed=row['rollout_gate_passed'])
+        values['heat_head_reconstruction'].append(value)
+        lines.append(f"| `{value['model']}` | {value['training_trajectories']} | {100*value['initial_median']:.5g} / {100*value['initial_worst']:.5g} | {100*value['later_worst']:.5g} | {'Pass' if value['gate_passed'] else 'Fail'} |")
+    lines += ['', f"The predeclared gate requires every initial fit to be stationary and below {100*settings['rollout_gate']['initial_worst_max']:g}% error. "
+        'Both expanded-cohort endpoints pass; continuing optimization on only the original cohort does not. '
+        'Each endpoint uses its own training-code initialization library. This demonstrates an improvement in the combined training-and-initialization procedure; '
+        'it does not isolate better weights from better starting codes. A stationary fit is a local convergence result, not a proof of global optimality.', '',
+        'Full rollouts below use the already tested relaxed solver tolerance. Errors are relative to the current reference on the common observation grid; the same restricted physical family and development cases are retained.', '',
+        '| Intervals | Head endpoint | Worst rollout error (%) | ROM / direct FOM query (ms) | Paired FOM/ROM | Nonstationary initial fits / steps |',
+        '|---|---|---:|---:|---:|---:|']
+    gtol = max(settings['rollout_gradient_tolerances'])
+    for n in settings['rollout_intervals']:
+        baseline = {r['case']: r for r in hr['rows'] if r['intervals'] == n and r['model'] == 'fom'}
+        for model in ['frozen'] + heat['qualified_refinements']:
+            rows = [r for r in hr['rows'] if r['intervals'] == n and r['method'] == f'{model}_gtol{gtol}']
+            assert {r['case'] for r in rows} == baseline.keys()
+            value = dict(intervals=n, model=model, gradient_tolerance=gtol,
+                worst_current_error=max(r['worst_current_error'] for r in rows),
+                rom_ms=1000*statistics.median(r['query_median_seconds'] for r in rows),
+                fom_ms=1000*statistics.median(r['query_median_seconds'] for r in baseline.values()),
+                paired_fom_over_rom=statistics.median(baseline[r['case']]['query_median_seconds']/r['query_median_seconds'] for r in rows),
+                initial_nonstationary=sum(r['initial_nonstationary_repetitions'] for r in rows),
+                steps_nonstationary=sum(r['nonstationary_steps_all_repetitions'] for r in rows))
+            values['heat_head_rollout'].append(value)
+            lines.append(f"| {n} | `{model}` | {100*value['worst_current_error']:.5g} | {value['rom_ms']:.5g} / {value['fom_ms']:.5g} | {value['paired_fom_over_rom']:.4g} | {value['initial_nonstationary']} / {value['steps_nonstationary']} |")
+    lines += ['', 'The accuracy gain survives evolution on both query meshes, but the efficient direct FOM remains faster. '
+        f"The root independently recomputed all {hr['verified_timed_invocations']} timed outputs; the largest metric disagreement was `{hr['maximum_metric_disagreement']:.3g}`. "
+        f"The empirical spectral-reference difference is `{heat['reference_evidence']['empirical_relative_delta']:.7g}`; no rigorous bound is supplied. "
+        'Saved offline refinement durations include compilation and host work without a dedicated warm-timing protocol; they are observed costs, not a training-speed comparison.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/HEAT-HEAD-NOTES.md', 'Complete heat training findings')+'. '+
+        link(ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/figures/heat-head.png', 'Heat refinement figure')+'.', '',
+        '### Poisson: a guarded small-system solver gives a modest query improvement', '',
+        f"Source `{pr['source_commit']}`, job `{pr['job_id']}`. The unchanged decoder and nonlinear objective are tested with a specialized Gauss–Jordan solve. "
+        'Its numerical guard and generic-solver fallback are inside the timed query. The table pairs it with the generic compiled solver and the direct FOM in the same job.', '',
+        '| Intervals | Requested / retained modes | tau | Generic / specialized / FOM query (ms) | Paired generic/specialized | Worst physical error (%) |',
+        '|---|---:|---:|---:|---:|---:|']
+    for row in ps['paired_ratios']:
+        selected = {arm: next(g for g in ps['summaries'] if g['intervals'] == row['intervals'] and g['arm'] == arm
+            and (arm == 'dst' or (g['requested_modes'] == row['requested_modes'] and g['tau'] == row['tau'])))
+            for arm in ('rom_fused', 'rom_gj', 'dst')}
+        assert all(g['invalid_count'] == 0 for g in selected.values())
+        if row['tau'] == 0:
+            assert selected['rom_gj']['nonstationary_count'] == 0
+        value = {**row, 'generic_ms': 1000*selected['rom_fused']['latency_seconds'],
+            'specialized_ms': 1000*selected['rom_gj']['latency_seconds'],
+            'fom_ms': 1000*selected['dst']['latency_seconds'], 'worst_physical_error': selected['rom_gj']['physical_max']}
+        values['poisson_kernel'].append(value)
+        lines.append(f"| {row['intervals']} | {row['requested_modes']} / {row['retained_modes']} | {row['tau']:g} | {value['generic_ms']:.5g} / {value['specialized_ms']:.5g} / {value['fom_ms']:.5g} | {row['rom_fused_over_gj']:.5g} | {100*value['worst_physical_error']:.5g} |")
+    lines += ['', 'The specialized solver preserves physical accuracy but does not beat the FOM. The residual-reduction stop may finish before stationarity; '
+        'the stationary controls disable that stop.', '',
+        f"Root independently checks {pr['verified_invocations']} invocation metrics and {pr['replayed_normal_systems']} saved linear systems. "
+        f"The largest metric difference is `{pr['maximum_metric_disagreement']:.7g}` and the largest linear backward error is `{pr['maximum_linear_backward_error']:.7g}`. "
+        f"There are {ps['audit']['specialized_timed_fallbacks']} timed fallbacks, {ps['agreement']['changed_counters']} solver-counter changes and {ps['agreement']['changed_reasons']} stop-reason changes. "
+        f"The {pr['replay_counter_mismatches']} instrumented-replay counter mismatches are retained; exact trajectory identity is not claimed. "
+        'These replay checks are numerical evidence, not timing measurements.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/FINDINGS.md', 'Complete Poisson solver findings')+'.', '']
+    burgers_lines, burgers_values = corrected_burgers_rollout(data, manifest)
+    lines += burgers_lines
+    values.update(burgers_values)
+    wave_lines, wave_values = wave_dynamics(data, manifest)
+    lines += wave_lines
+    values.update(wave_values)
+    return lines, values
+
+
+def corrected_burgers_rollout(data, manifest):
+    pilot, summary = data['burgers_rollout'], data['burgers_rollout_summary']
+    audit, review = data['burgers_rollout_audit'], data['burgers_rollout_review']
+    assert pilot['complete'] and pilot['network_weights_frozen']
+    assert audit['source_sha256'] == review['source_json_sha256'] == manifest['burgers_rollout']['sha256']
+    assert pilot['checkpoint_sha256'] == data['burgers']['checkpoint_sha256']
+    assert pilot['physical_cases'] == data['burgers']['physical_cases']
+    assert audit['output_checksums_verified'] and audit['source_hashes_against_commits_verified']
+    assert review['verified_invocations'] == audit['invocations_verified'] == len(pilot['invocations'])
+    values = {'burgers_corrected_rollout': []}
+    lines = ['### Burgers: the corrected initial fit improves complete rollouts', '',
+        f"Source `{pilot['commit']}`, job `{pilot['job_id']}`. The network weights, physical initial-condition family and efficient FOM candidates are unchanged. "
+        'Fixed physical Gauss sampling charges interpolation from the supplied input field. Both complete-grid and common-grid output errors are preserved, '
+        'with separate reference-refinement margins for each grid.', '',
+        '| Output intervals | Target (%) | Selected ROM | Worst common / full-grid error (%) | ROM / FOM envelope query (ms) | Paired FOM/ROM | IC budget stops |',
+        '|---|---:|---|---:|---:|---:|---:|']
+    for row in summary['selections']:
+        if row['norm'] != 'dense' or not row['empirical_reference_budget_passed']:
+            continue
+        rom, fom = row['rom'], row['fom']
+        common = next(r for r in summary['selections'] if r['norm'] == 'common'
+            and r['intervals'] == row['intervals'] and r['target'] == row['target'])
+        assert common['rom']['name'] == rom['name'] and common['fom']['name'] == fom['name']
+        case_ratios = [fom['times'][case]/rom['times'][case] for case in rom['times']]
+        assert abs(statistics.median(case_ratios)-row['paired_ratio']) < 1e-14
+        value = dict(intervals=row['intervals'], target=row['target'], selected_rom=rom['name'], selected_fom=fom['name'],
+            common_error=rom['common']['worst'], full_grid_error=rom['dense']['worst'],
+            rom_ms=rom['ms'], fom_ms=fom['ms'], paired_ratio=row['paired_ratio'],
+            initial_budget_stops=rom['initial_budget_stops'], initial_improvement_stops=rom['initial_improvement_stops'],
+            evolution_budget_stops=rom['evolution_budget_stops'], evolution_improvement_stops=rom['evolution_improvement_stops'],
+            reference_margin=row['reference_margin'], rigorous_reference_bound=None)
+        values['burgers_corrected_rollout'].append(value)
+        lines.append(f"| {row['intervals']} | {100*row['target']:g} | `{rom['name']}` | {100*value['common_error']:.5g} / {100*value['full_grid_error']:.5g} | {rom['ms']:.5g} / {fom['ms']:.5g} | {row['paired_ratio']:.5g} | {rom['initial_budget_stops']} |")
+    n = max(r['intervals'] for r in summary['configurations'])
+    edge = next(r for r in summary['configurations'] if r['intervals'] == n and r['cold_rule'] == 'edge')
+    gauss = next(r for r in summary['configurations'] if r['intervals'] == n and r['cold_rule'] == 'fixed_gauss'
+        and r['ic_budget'] == max(a['ic_budget'] for a in pilot['arm_grid']) and r['dt'] == edge['dt'] and r['stall'] == edge['stall'])
+    lines += ['', f"At {n} intervals, the matched primary rollout's worst complete-grid error changes from {100*edge['dense']['worst']:.5g}% with edge initialization "
+        f"to {100*gauss['dense']['worst']:.5g}% with the larger-budget Gauss fit. The efficient FOM envelope remains faster at every reported target. "
+        'The envelope permits a cheaper coarse solve and charges interpolation to the requested output. The native report retains every selected FOM configuration.', '',
+        'Budget exits and configured small-improvement stops remain admissible only under the stated empirical physical-error check; '
+        'they are not stationary-fit certificates. All such counts remain in the native records. '
+        'The tighter target with an unresolved reference budget is not promoted to qualified evidence.', '',
+        f"The owner independently reconstructs {audit['full_grid_artifacts_verified']} complete-grid artifacts representing all {audit['invocations_verified']} timed calls; "
+        f"the largest complete-grid metric disagreement is `{audit['dense_error_recompute_max_difference']:.7g}`. "
+        f"Root separately recomputes all common-grid errors, with maximum disagreement `{review['maximum_metric_disagreement']:.7g}`. "
+        f"There are {audit['nonfinite_invocations']} nonfinite outputs and {audit['fom_nonlinear_tolerance_failures']} FOM tolerance failures. "
+        'The reference margin is empirical and independent final confirmation remains open.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md', 'Complete corrected Burgers rollout findings')+'.', '']
+    return lines, values
+
+
+def wave_dynamics(data, manifest):
+    wave, summary = data['wave_dynamics'], data['wave_dynamics_summary']
+    audit, review = data['wave_dynamics_audit'], data['wave_dynamics_review']
+    assert wave['complete'] and audit['passed'] and not wave['final_test_opened']
+    assert summary['result_sha256'] == audit['result_sha256'] == review['source_json_sha256'] == manifest['wave_dynamics']['sha256']
+    assert summary['audit_sha256'] == manifest['wave_dynamics_audit']['sha256']
+    assert audit['audited_invocations'] == review['verified_invocations'] == len(wave['invocations'])
+    assert all(r['passed'] for r in summary['time_refinement'])
+    cfg = wave['config']
+    values = {'wave_dynamics': [], 'wave_absorbing_final_energy': []}
+    lines = ['### Fresh waves: compression and autonomous dynamics both matter', '',
+        f"Source `{review['source_commit']}`, job `{review['job_id']}`. The learned bank and existing nonlinear head remain frozen. "
+        'The saved affine control has the same displacement and velocity dimensions as the nonlinear head; the larger affine and full-bank controls use additional coordinates. '
+        'They all remain inside the learned neural bank. The speed-dependent affine propagator includes the nonzero-offset forcing and is charged inside the query.', '',
+        '| Boundary | Intervals | Method | Displacement / phase dimensions | Median / worst time-max error, initial normalization (%) | Method / same-grid FOM query (ms) | Raw paired FOM/method |',
+        '|---|---:|---|---:|---:|---:|---:|']
+    for bc in cfg['boundaries']:
+        for n in cfg['meshes']:
+            baseline = {r['case']: r for r in review['rows'] if r['boundary'] == bc and r['intervals'] == n
+                and r['method'] == ('dst' if bc == 'dirichlet' else 'rk4') and r['setting'] == (0 if bc == 'dirichlet' else max(cfg['fom_cfls']))}
+            for method in ('rom', 'affine16', 'affine32', 'full64'):
+                rows = [r for r in review['rows'] if r['boundary'] == bc and r['intervals'] == n and r['method'] == method
+                    and r['setting'] == (max(cfg['rom_dts']) if method == 'rom' else 0)]
+                assert {r['case'] for r in rows} == baseline.keys()
+                k = cfg['latent'] if method == 'rom' else int(method.removeprefix('affine').removeprefix('full'))
+                value = dict(boundary=bc, intervals=n, method=method, displacement_dimension=k, phase_dimension=2*k,
+                    median_error=statistics.median(r['worst_initial_normalized'] for r in rows),
+                    worst_error=max(r['worst_initial_normalized'] for r in rows),
+                    method_ms=1000*statistics.median(r['query_median_seconds'] for r in rows),
+                    fom_ms=1000*statistics.median(r['query_median_seconds'] for r in baseline.values()),
+                    paired_ratio=statistics.median(baseline[r['case']]['query_median_seconds']/r['query_median_seconds'] for r in rows))
+                values['wave_dynamics'].append(value)
+                lines.append(f"| {bc} | {n} | {method} | {k} / {2*k} | {100*value['median_error']:.5g} / {100*value['worst_error']:.5g} | {value['method_ms']:.6g} / {value['fom_ms']:.6g} | {value['paired_ratio']:.5g} |")
+    lines += ['', 'At equal dimension, the affine control improves reflective rollout error but worsens absorbing rollout error. '
+        'The larger linear spaces improve both, while the nonlinear head can reconstruct individual snapshots better than its matched affine control. '
+        'Snapshot reconstruction therefore does not by itself establish accurate autonomous dynamics. These observations do not establish an irreducible error for every nonlinear manifold of the same dimension.', '',
+        'Some linear controls are faster than the listed same-grid FOM, especially for the absorbing problem. '
+        'Those are classical linear-control results, and the benchmark has not yet swept cheaper coarse FOMs with charged output interpolation. '
+        'They do not establish a nonlinear-decoder or cost-to-tolerance speed advantage.', '',
+        '| Absorbing output intervals | Method | Final energy-state error / current reference norm, case range |',
+        '|---|---|---:|']
+    n = max(cfg['meshes'])
+    for method in ('rom', 'affine16', 'affine32', 'full64'):
+        rows = [r for r in review['rows'] if r['boundary'] == 'absorbing' and r['intervals'] == n and r['method'] == method
+            and r['setting'] == (max(cfg['rom_dts']) if method == 'rom' else 0)]
+        ratios = [r['final_current_relative_energy'] for r in rows]
+        value = dict(intervals=n, method=method, minimum=min(ratios), maximum=max(ratios))
+        values['wave_absorbing_final_energy'].append(value)
+        lines.append(f"| {n} | {method} | {min(ratios):.6g}–{max(ratios):.6g} |")
+    lines += ['', 'The absorbing reference becomes small. Even the full-bank linear control has a final energy-state error larger than the remaining reference; '
+        'its small initial-normalized error must not be described as accurate relative prediction at late times. '
+        'Zero-field fits and weak normal-force diagnostics are retained, without attributing the entire failure to either mechanism. '
+        'The full-bank control represents zero exactly and has no normal-force residual within the bank by construction, yet still has late absorbing error; neither diagnostic alone certifies physical accuracy.', '',
+        f"All {len(summary['time_refinement'])} nonlinear time-step comparisons pass, with maximum required difference `{max(r['maximum_required_difference'] for r in summary['time_refinement']):.7g}`. "
+        f"The selected diagnostic fits have {sum(r['selected_fit_nonstationary'] for r in summary['representation'])} nonstationary exits, and maximum longer-budget objective change `{max(r['fit_budget_max_objective_change'] for r in summary['representation'] if r['arm'] == 'mlp16'):.3g}`. "
+        'The owner independently reconstructs the full-grid ROM fields, affine propagators, coordinate bank, head derivatives, curvature and diagnostic fits. '
+        f"Root separately checks all {review['verified_invocations']} declared timed calls on the common observation grid, with maximum metric difference `{review['maximum_metric_disagreement']:.7g}`. "
+        'The audit reuses the saved reference trajectories; full-grid FOM metrics at nonreference time steps remain outside its reconstruction scope. Rigorous reference bounds remain unspecified.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/FINDINGS.md', 'Complete wave dynamics findings')+'. '+
+        link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/dynamics-error-evolution.png', 'Wave error evolution')+'.', '']
     return lines, values
 
 

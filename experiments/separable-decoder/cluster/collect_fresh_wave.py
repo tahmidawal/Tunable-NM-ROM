@@ -26,8 +26,29 @@ def archive(record):
         raise RuntimeError('Archive already exists; refusing to replace it')
     with tarfile.open(path, 'w:gz') as tar:
         tar.add(cluster, arcname='cluster')
-    digest = hashlib.sha256(path.read_bytes()).hexdigest()
-    (record/'ARCHIVE.sha256').write_text(f'{digest}  {path.name}\n')
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    size = path.stat().st_size
+    parts = []
+    if size > 90*1024**2:
+        joined = hashlib.sha256()
+        with path.open('rb') as stream:
+            while chunk := stream.read(90*1024**2):
+                part = record/f'{path.name}.part-{len(parts):03d}'
+                part.write_bytes(chunk)
+                joined.update(chunk)
+                parts.append((part.name, hashlib.sha256(chunk).hexdigest()))
+        if joined.hexdigest() != digest:
+            raise RuntimeError('Split archive does not reconstruct original bytes')
+        path.unlink()
+    else:
+        parts = [(path.name, digest)]
+    (record/'ARCHIVE.sha256').write_text(''.join(f'{sha}  {name}\n' for name,sha in parts))
+    (record/'ARCHIVE.json').write_text(json.dumps(dict(
+        original_name=path.name, original_sha256=digest, original_bytes=size,
+        ordered_parts=[name for name,_ in parts],
+        restore='Concatenate ordered parts byte-for-byte, then extract gzip tar; full PULL.sha256 is inside.'
+    ), indent=2)+'\n')
     return digest
 
 

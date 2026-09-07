@@ -72,7 +72,7 @@ def regenerate_validation(config,grid,manifest,bank,reconstruction):
             invariant_drift=float(np.max(abs(invariant-invariant[0])))
         old_audit=expected['truth_audits'][i]
         energy_parity=relative_max(ee,np.asarray(old_audit['energy_trace']))
-        if balance>=1e-5 or invariant_drift>=1e-10 or energy_parity>1e-10:
+        if not np.all(np.isfinite([balance,invariant_drift,energy_parity])) or balance>=1e-5 or invariant_drift>=1e-10 or energy_parity>1e-10:
             raise RuntimeError('Regenerated FOM balance/invariant/energy parity failed')
         audits.append({'case':i,'max_balance_relative':balance,'invariant_drift':invariant_drift,'energy_trace_relative_parity':energy_parity})
         us.append(u.reshape(observations+1,-1));vs.append(v.reshape(observations+1,-1))
@@ -87,6 +87,9 @@ def regenerate_validation(config,grid,manifest,bank,reconstruction):
     parity['projected_velocity_relative_parity']=relative_max(b,reconstruction['projected_velocity'])
     if max(parity['scales_relative_parity'],parity['projected_displacement_relative_parity'],parity['projected_velocity_relative_parity'])>1e-10:
         raise RuntimeError('Regenerated initial scales/projected truth parity failed')
+    # Keep the original normalizations exactly after auditing regeneration.
+    data['scales']=np.asarray(expected['scales'],dtype=np.float64)
+    data['initial_energy']=np.asarray(expected['initial_energy'],dtype=np.float64)
     return data,parity
 
 

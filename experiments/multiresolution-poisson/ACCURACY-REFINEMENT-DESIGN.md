@@ -1,4 +1,4 @@
-# Controlled Poisson coverage refinement
+# Controlled Poisson coverage and loss-normalization refinement
 
 This approved development experiment retains the compact current separable
 architecture and tests whether additional optimization or broader training
@@ -25,9 +25,9 @@ they never enter the neural head or online initialization.
 `sep_common.train_autodecoder` initializes new weights and codes, so the existing
 entry point cannot be used as a continuation. `sep_solvers.train_autodecoder_v2`
 adds point subsampling, optional AdamW, EMA selection and code polish, but also
-initializes new weights. A small explicit continuation driver should adapt its
-point-sampling pattern while retaining the original global relative-MSE plus
-feature-Gram loss. All inherited parameters except `out_scale` receive gradients,
+initializes new weights. The explicit continuation driver adapts its
+point-sampling pattern and crosses the original global relative-MSE with
+per-snapshot relative-MSE, retaining feature-Gram regularization. All inherited parameters except `out_scale` receive gradients,
 including the Fourier matrix `B`; comments describing fixed frequencies do not
 override the actual inherited gradient path. Keep that behavior equal in all
 continuations. No old encoder, quadrature-fitting or historical evaluation entry
@@ -39,9 +39,10 @@ difference equation used by the inherited CG snapshots; a small parity check
 against tight CG accompanies regeneration. Neither reference manufacturing nor
 oracle fitting supplies an online initialization.
 
-## Frozen proposed budget
+## Frozen approved budget
 
-The machine-readable budget is `accuracy_refinement_proposal.json`. It proposes
+The implemented machine-readable budget is `config04.json`, based on the approved
+`accuracy_refinement_proposal.json`. It fixes
 matched optimizer updates and sample/point batches, the same reset Adam state,
 the same learning-rate schedule, the original objective weights, and no EMA or
 weight decay. The global field-scale denominator is computed from the original
@@ -53,6 +54,23 @@ keeps its original coefficient in every arm. Original codes
 come from the checkpoint. New training codes use a fixed-budget reference-only
 head fit once before all training arms; its cost and failures are recorded as
 offline setup. Initialization uses training answers only.
+
+For a full training field $u_i$, let $d_i$ be its full-grid mean square and $d_0$
+the global mean square on the original training set. The two reconstruction
+losses are
+
+$$L_{\mathrm{global}}=\frac{\operatorname{mean}_{i,x}
+|u_\theta(z_i,x)-u_i(x)|^2}{d_0},\qquad
+L_{\mathrm{relative}}=\operatorname{mean}_i
+\frac{\operatorname{mean}_x|u_\theta(z_i,x)-u_i(x)|^2}{d_i}.$$
+
+Both add the same feature-Gram penalty. Source and point indices are sampled
+uniformly with replacement, giving unbiased estimates of their declared losses.
+The random-key schedule is identical across arms; coverage pairs share exact
+source/point choices across objectives. New-code initialization retains every
+termination and gradient diagnostic; a nonfinite fit falls back to the original
+mean code, with that event recorded. Finite nonstationary initial fits remain
+labeled as such and are subsequently optimized during training.
 
 Each expanded arm samples uniformly from its union. Thus the budget matches
 compute rather than per-example passes; original examples receive fewer updates

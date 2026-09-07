@@ -51,16 +51,18 @@ def generate_data(config, bc, out):
             u, v, flux = integrate_balance(u0, v0, p[5], dt, grid=grid, steps=observations*stride, stride=stride)
             energy_trace=np.asarray(energy(u,v,grid,p[5]))
             u, v, flux = np.asarray(u), np.asarray(v), np.asarray(flux)
-            if not np.all(np.isfinite(u)) or not np.all(np.isfinite(v)):
+            if not all(np.all(np.isfinite(value)) for value in (u,v,flux,energy_trace)):
                 raise RuntimeError("Nonfinite fresh truth")
             e0 = float(energy(u0, v0, grid, p[5]))
+            if not np.isfinite(e0) or e0<=0:
+                raise RuntimeError("Invalid initial truth energy")
             balance=(energy_trace+flux-e0)/e0
             invariant_drift=0.
             if bc=="absorbing":
                 invariant=np.sum(grid.mass()*(v+np.asarray(damping_ratio(grid,p[5]))*u),axis=(-2,-1))
                 invariant_drift=float(np.max(abs(invariant-invariant[0])))
             support_margin=float(min(p[0]-p[2],1-p[0]-p[2],p[1]-p[3],1-p[1]-p[3]))
-            if np.max(abs(balance))>=1e-5 or invariant_drift>=1e-10 or support_margin<.025-1e-12:
+            if not np.isfinite(invariant_drift) or not np.all(np.isfinite(balance)) or np.max(abs(balance))>=1e-5 or invariant_drift>=1e-10 or support_margin<.025-1e-12:
                 raise RuntimeError("Actual truth trajectory balance/invariant/compatibility check failed")
             audits.append({"energy_trace":energy_trace.tolist(),"outflux":flux.tolist(),"max_balance_relative":float(np.max(abs(balance))),"invariant_drift":invariant_drift,"initial_support_wall_margin":support_margin,"initial_boundary_values_and_derivatives":"Exactly zero by compact support strictly inside the domain."})
             uscale = float(np.sqrt(np.sum(grid.mass()*np.asarray(u0)**2)))

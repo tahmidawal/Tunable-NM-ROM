@@ -1,2 +1,5 @@
 __pycache__/
 stages/
+# Complete numerical fields are retained in the checked split archive; restore_archive.py
+# recreates missing extracted files while verifying files already present.
+runs/dynamics02/cluster/out/pilot/*.npz

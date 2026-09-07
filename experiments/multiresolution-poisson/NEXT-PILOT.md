@@ -1,8 +1,8 @@
 # Proposed bounded Poisson follow-up
 
 The first frozen-checkpoint development result and its provisional status are in
-`runs/pilot01/FINDINGS.md`. This proposal is not a submission: root requested a
-pause in Poisson GPU work until heat starts and explicitly reactivates this owner.
+`runs/pilot01/FINDINGS.md`. Root reactivated this bounded proposal after heat started. The implementation is
+`pilot02.py` with frozen `config02.json`; the new attempt is recorded separately.
 
 Keep the existing worktree, namespace, checkpoint, exact source draws and mesh
 conventions. Do not add a new final cohort or train the networks. Request one GPU

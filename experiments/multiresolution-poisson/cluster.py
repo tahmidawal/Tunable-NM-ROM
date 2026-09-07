@@ -38,7 +38,7 @@ def stage(label):
     dest.mkdir(parents=True, exist_ok=False)
     for folder in ("code", "in", "out", "logs"):
         (dest/folder).mkdir(parents=True)
-    files = [*CELL.glob("*.py"), CELL/"config.json",
+    files = [*CELL.glob("*.py"), *CELL.glob("config*.json"),
         TREE/"experiments/separable-decoder/sep_common.py",
         TREE/"experiments/cost-to-tolerance/ctol_tol.py",
         TREE/"experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py"]
@@ -59,6 +59,8 @@ def stage(label):
         "ms_parametric_scope":"Only generic Poisson source family and Laplacian; no old wave physics"}
     write_json(dest/"in/ORIGIN.json",origin)
     remote = NAMESPACE+"/"+label
+    driver = "pilot02.py" if label.startswith("pilot02") else "pilot.py"
+    config_file = "config02.json" if label.startswith("pilot02") else "config.json"
     batch = f'''#!/bin/bash
 #SBATCH --job-name=ctol_mr_poisson_{label}
 #SBATCH --partition=gpu
@@ -89,7 +91,8 @@ finish() {{
 trap finish EXIT
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 "$PY" -u code/test_core.py
-"$PY" -u code/pilot.py --config code/config.json --checkpoint in/model.pkl --out out/pilot
+"$PY" -u code/test_followup.py
+"$PY" -u code/{driver} --config code/{config_file} --checkpoint in/model.pkl --out out/pilot
 '''
     (dest/"job.sbatch").write_text(batch)
     cfg = dict(label=label, source_commit=commit, source_hashes=source_hashes, remote=remote, staged_at=datetime.now(timezone.utc).isoformat())
@@ -152,6 +155,20 @@ def collect(label):
         tar.add(local, arcname="cluster")
     archive_sha = digest(archive)
     (record/"ARCHIVE.sha256").write_text(f"{archive_sha}  {archive.name}\n")
+    if archive.stat().st_size > 99_000_000:
+        pieces=[]
+        with archive.open("rb") as stream:
+            index=0
+            while block := stream.read(48*1024*1024):
+                part=record/(archive.name+f".part{index:03d}")
+                part.write_bytes(block)
+                pieces.append(dict(name=part.name,bytes=len(block),sha256=digest(part)))
+                index+=1
+        rebuilt=hashlib.sha256()
+        for item in pieces: rebuilt.update((record/item["name"]).read_bytes())
+        assert rebuilt.hexdigest()==archive_sha
+        write_json(record/"ARCHIVE.json",dict(archive_name=archive.name,archive_sha256=archive_sha,
+            bytes=archive.stat().st_size,ordered_parts=pieces,parts_reassembly_verified=True))
     ssh(f"test -f {quoted}/PULL.sha256 && rm -rf -- {quoted} && test ! -e {quoted}")
     write_json(record/"cleanup.json", dict(remote=remote, job_id=jid, all_three_manifests_verified=True,
         source_hashes_verified=True, archive_sha256=archive_sha, remote_deleted_and_absence_checked=True,

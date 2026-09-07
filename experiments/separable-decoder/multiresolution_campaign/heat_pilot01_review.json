@@ -1,0 +1,354 @@
+{
+  "scope": "Independent saved-field and query-accounting audit; development only.",
+  "source_sha256": {
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot01/archive/outputs/results.json": "a3334207d5932d3fe655bc6154a88d8b9bec95802e89093825db234f27f23ed2",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot01/archive/outputs/physical_reference.npz": "b261a97b79808281ec6d8f4d868d2e34ea4592c2c7d84b304d40db161a65fc86",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot01/archive/outputs/fields_N64.npz": "3ad6f353fa3c9a54bbafac18fe9980a13566e8eb44ccb462d47b08ad51745d65",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot01/archive/outputs/fields_N128.npz": "dd57302f5e37a5e20f8e9f902b239c034c0492fdfc7d33664c905f01c6d619ff"
+  },
+  "job_id": "3349961",
+  "source_commit": "ad882df3ecb8614d4cafa6a25761e920f3074e3d",
+  "common_observation_intervals": 64,
+  "saved_field_metric_check_passed": true,
+  "maximum_native_metric_disagreement": 0.0,
+  "physical_reference_self_difference": 1.8100328399258268e-10,
+  "reference_limit": "Spectral refinement difference is empirical convergence evidence, not a certified error bound.",
+  "rows": [
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.0009986440418288112,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.0007092112812837499,
+        "relative_initial": 0.0005139935858300105,
+        "absolute_l2": 9.542282145125704e-05
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.027820326038636267,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.09735644633034897,
+        "relative_initial": 0.09735644633034897,
+        "absolute_l2": 0.018074207638813226
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.03634979296475649,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.09735644633034897,
+        "relative_initial": 0.09735644633034897,
+        "absolute_l2": 0.018074207638813226
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.0011947950115427375,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.0006447102786704451,
+        "relative_initial": 0.00046876936472008184,
+        "absolute_l2": 9.250144190469036e-05
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.027790407999418676,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.05042342404617888,
+        "relative_initial": 0.04486180529906045,
+        "absolute_l2": 0.008852501867498414
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.03850807005073875,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.05091545588078156,
+        "relative_initial": 0.045299566851006404,
+        "absolute_l2": 0.008938884591739825
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.0012472629314288497,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.0007056995607416569,
+        "relative_initial": 0.0005169278847805793,
+        "absolute_l2": 9.461291355831142e-05
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.02776014502160251,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.06672728060184675,
+        "relative_initial": 0.06672728060184675,
+        "absolute_l2": 0.01221304289716062
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.03795517503749579,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.06672728060184675,
+        "relative_initial": 0.06672728060184675,
+        "absolute_l2": 0.01221304289716062
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.001615969929844141,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.0006373779699503317,
+        "relative_initial": 0.000464479365900519,
+        "absolute_l2": 0.000103061602839397
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.025102707906626165,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.018678127714164064,
+        "relative_initial": 0.018678127714164064,
+        "absolute_l2": 0.004144420444875051
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.03426094900351018,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.018678127714164064,
+        "relative_initial": 0.018678127714164064,
+        "absolute_l2": 0.004144420444875051
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 0,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.0012775330105796456,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.0001771753191278301,
+        "relative_initial": 0.0001284572280672444,
+        "absolute_l2": 2.3848062458191816e-05
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 0,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.0277092179749161,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.09735644633035377,
+        "relative_initial": 0.09735644633035377,
+        "absolute_l2": 0.018074207638814118
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 0,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.03636770707089454,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.09735644633035377,
+        "relative_initial": 0.09735644633035377,
+        "absolute_l2": 0.018074207638814118
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 1,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.0014607150806114078,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.0001610811890918376,
+        "relative_initial": 0.00011713718003562869,
+        "absolute_l2": 2.311447562366863e-05
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 1,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.02820936602074653,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.05036296001102934,
+        "relative_initial": 0.044808010345151916,
+        "absolute_l2": 0.008841886602981915
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 1,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.03840314596891403,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.050853761319329754,
+        "relative_initial": 0.04524467709577426,
+        "absolute_l2": 0.008928053291985838
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 2,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.0015403160359710455,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.00017628736876863497,
+        "relative_initial": 0.00012918213805876427,
+        "absolute_l2": 2.3644107468916527e-05
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 2,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.027766551007516682,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.06672728060190714,
+        "relative_initial": 0.06672728060190714,
+        "absolute_l2": 0.01221304289717167
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 2,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.037940941052511334,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.06672728060190714,
+        "relative_initial": 0.06672728060190714,
+        "absolute_l2": 0.01221304289717167
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 3,
+      "method": "fom_dst_exact_time",
+      "repetitions": 5,
+      "query_median_seconds": 0.001172156073153019,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.00015923764522817206,
+        "relative_initial": 0.00011605429182065596,
+        "absolute_l2": 2.575085614026963e-05
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 3,
+      "method": "rom_cn_dt0.025",
+      "repetitions": 5,
+      "query_median_seconds": 0.02508711803238839,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.018678127714500736,
+        "relative_initial": 0.018678127714500736,
+        "absolute_l2": 0.004144420444949754
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 128,
+      "case": 3,
+      "method": "rom_cn_dt0.0125",
+      "repetitions": 5,
+      "query_median_seconds": 0.034111996996216476,
+      "common_grid_time_max_errors": {
+        "relative_current": 0.018678127714500736,
+        "relative_initial": 0.018678127714500736,
+        "absolute_l2": 0.004144420444949754
+      },
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    }
+  ]
+}

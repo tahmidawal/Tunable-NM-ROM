@@ -50,18 +50,21 @@ def select(d,summary):
 def main():
     p=argparse.ArgumentParser();p.add_argument('run');p.add_argument('output');a=p.parse_args();run=Path(a.run)
     d=json.loads((run/'out/pilot.json').read_text());audit=json.loads((run/'AUDIT.json').read_text())
-    assert d['complete'] and d['experiment']=='fixed_gauss_rollout'
+    assert d['complete'] and d['experiment'] in ['fixed_gauss_rollout','gauss_timestep_study']
     assert audit['source_sha256']==hashlib.sha256((run/'out/pilot.json').read_bytes()).hexdigest()
     summary,groups=summarize(d);selected=select(d,summary)
     (run/'SUMMARY.json').write_text(json.dumps(dict(configurations=summary,selections=selected),indent=2)+'\n')
     wins=[r for r in selected if r['paired_ratio'] is not None and r['paired_ratio']>1]
     result='A measured development crossover appears in the selections below; it requires independent confirmation.' if wins else 'No tested configuration establishes a complete-query ROM advantage over the eligible efficient FOM envelope.'
     largest=max(r['intervals'] for r in summary)
-    edge=next(r for r in summary if r['name']==f'rom_L{largest}_edge_ic60_dt0.005_stall0.01_starts1')
+    timestep=d['experiment']=='gauss_timestep_study'
+    edge=next((r for r in summary if r['name']==f'rom_L{largest}_edge_ic60_dt0.005_stall0.01_starts1'),None)
     gauss=next(r for r in summary if r['name']==f'rom_L{largest}_fixed_gauss_ic180_dt0.005_stall0.01_starts1')
-    lines=['# Burgers 2D: fixed physical initialization in the complete query','',
+    fastest=min((r for r in summary if r['method']=='rom' and r['intervals']==largest),key=lambda r:r['ms'])
+    lead=(f"At {largest} intervals, the original Gauss step size gives worst complete-grid error {gauss['dense']['worst']:.7g} at {gauss['ms']:.4f} ms. The fastest tested step size {fastest['dt']:g} gives {fastest['dense']['worst']:.7g} at {fastest['ms']:.4f} ms. Accuracy-qualified choices are reported below." if timestep else f"At {largest} intervals, the primary fixed-Gauss rollout lowers worst complete-grid error from {edge['dense']['worst']:.7g} to {gauss['dense']['worst']:.7g}, with complete-query costs {edge['ms']:.4f} and {gauss['ms']:.4f} ms respectively.")
+    lines=['# Burgers 2D: complete-query accuracy and time-step cost' if timestep else '# Burgers 2D: fixed physical initialization in the complete query','',
         'Audited development results for unchanged coordinate-separable network weights across the requested meshes. '+result,'',
-        f"At {largest} intervals, the primary fixed-Gauss rollout lowers worst complete-grid error from {edge['dense']['worst']:.7g} to {gauss['dense']['worst']:.7g}, with complete-query costs {edge['ms']:.4f} and {gauss['ms']:.4f} ms respectively. It meets the empirical development target in the selection table; the unchanged efficient FOM envelope remains cheaper.",'',
+        lead,'',
         f"Source `{d['commit']}`, job `{d['job_id']}`, GPU `{d['gpu']}`; backend `{d['backend']}`, f64 `{d['x64']}`, precision `{d['matmul_precision']}`. Checkpoint SHA-256 `{d['checkpoint_sha256']}`.",'',
         f"The clipped Gaussian family and seed {d['config']['seed']} retain all {d['config']['cases']} physical cases. Each configuration has {d['config']['reps']} timing repetitions; final cases remain unopened. The inherited checkpoint was trained on {d['checkpoint_training_intervals']} intervals and is evaluated at {d['config']['meshes']} intervals.",'',
         r'The scalar equation is $u_t+u(u_x+u_y)=\nu\Delta u$ on the unit square, with zero Dirichlet walls. Both methods use backward Euler and sign-dependent upwinding. The FOM uses adaptive Newton/BiCGStab with exact Helmholtz preconditioning through FFT sine transforms.','',
@@ -77,6 +80,13 @@ def main():
         same=max((x['dense_same_grid_error']['fixed_initial_max'] for x in raw if x['dense_same_grid_error']),default=np.inf)
         current=max((x['dense_physical_error']['current_relative_max'] for x in raw if x['dense_physical_error']),default=np.inf)
         lines.append(f"| {r['intervals']} | `{r['name']}` | {r['ms']:.4f} | {initial:.8g} | {later:.8g} | {same:.8g} | {current:.8g} | {r['initial_budget_stops']} / {r['initial_improvement_stops']} | {r['evolution_budget_stops']} / {r['evolution_improvement_stops']} |")
+    if timestep:
+        lines+=['','All timestep arms use the same fixed physical fitting points and budget. Interpolation of the supplied dense field is charged and can still depend on mesh resolution. The following work and exit counts are from the measured complete invocations; budget exits are retained even when their returned field passes an accuracy target.','',
+            '| Intervals | dt | Steps per query | Median LM attempts per query | Largest final weak residual | Evolution exits: budget / residual / improvement / failed |', '|---|---:|---:|---:|---:|---|']
+        for r in sorted((r for r in summary if r['method']=='rom'),key=lambda r:(r['intervals'],r['dt'])):
+            raw=groups[r['name']];counts=collections.Counter(s for x in raw for s in x['stop_reasons'])
+            residual=max((v for x in raw for v in x['residuals'] if v is not None),default=np.inf)
+            lines.append(f"| {r['intervals']} | {r['dt']:g} | {len(raw[0]['iterations'])} | {np.median([sum(x['iterations']) for x in raw]):.1f} | {residual:.7g} | "+' / '.join(str(counts[i]) for i in range(4))+' |')
     lines+=['','## Reference refinement and empirical eligibility','',
         f"The finest reference has {d['config']['reference_mesh']} intervals and timestep {d['config']['reference_dt']:g}. The largest reference nonlinear relative residual is {max(r['max_relative_residual'] for r in d['reference']):.7g}. Spatial and temporal orders are observed from three levels; the margin is the larger of their raw-difference sum and the Richardson estimate for each case. Qualification also requires this margin to be at most one tenth of the target. These estimates do not supply a rigorous reference bound.",'',
         '| Scoring intervals | Worst empirical margin | Minimum / maximum spatial order | Minimum / maximum time order |', '|---|---:|---|---|']
@@ -105,24 +115,25 @@ def main():
     if diagnostics_path.exists():
         diagnostics=json.loads(diagnostics_path.read_text())
         lines+=['','The next diagnostic uses the same saved primary fields. The near-wall band contains nodes closer to a wall than the training mesh first interior node. Its squared-error fraction locates the error; it does not independently measure a bank projection floor.','',
-            '| Intervals | Case | Cold rule | Initial near-wall squared-error fraction | Target | Target diagnosis |', '|---|---:|---|---:|---:|---|']
+            '| Intervals | Case | Cold rule / dt | Initial near-wall squared-error fraction | Target | Target diagnosis |', '|---|---:|---|---:|---:|---|']
         for r in diagnostics['cases']:
-            lines.append(f"| {r['intervals']} | {r['case']} | {r['cold_rule']} | {r['boundary_band_squared_error_fraction_per_time'][0]:.7g} | {r['target']:g} | {r['target_diagnostic']} |")
+            lines.append(f"| {r['intervals']} | {r['case']} | {r['cold_rule']} / {r.get('dt',.005):g} | {r['boundary_band_squared_error_fraction_per_time'][0]:.7g} | {r['target']:g} | {r['target_diagnostic']} |")
     lines+=['','## Complete measured configuration set' ,'',
         '| Configuration | Query ms | Common-grid median / worst | Complete-grid median / worst | Error outliers common / complete | Timing outliers | Failed calls |', '|---|---:|---|---|---|---:|---:|']
     for r in sorted(summary,key=lambda r:(r['intervals'],r['method'],r['ms'])):
         lines.append(f"| `{r['name']}` | {r['ms']:.4f} | {r['common']['median']:.7g} / {r['common']['worst']:.7g} | {r['dense']['median']:.7g} / {r['dense']['worst']:.7g} | {r['common']['outliers_0p01']} / {r['dense']['outliers_0p01']} | {r['timing_outliers_gt2x_case_median']} | {r['failed_invocations']} |")
     lines+=['','## Runtime components and setup','',
         'Component timings are separately synchronized diagnostic invocations with field parity against the fused query. They do not replace complete-query timing or establish kernel-launch counts.','',
-        '| Intervals | Cold rule / budget | Input ms | Initial fit ms | Evolution ms | Decode ms | Output ms | Staged total ms | LM attempts |', '|---|---|---:|---:|---:|---:|---:|---:|---:|']
-    for L,rule in sorted({(r['intervals'],r['cold_rule']) for r in d['component_profiles']}):
-        raw=[r for r in d['component_profiles'] if r['intervals']==L and r['cold_rule']==rule]
+        '| Intervals | Cold rule / budget / dt | Input ms | Initial fit ms | Evolution ms | Decode ms | Output ms | Staged total ms | LM attempts |', '|---|---|---:|---:|---:|---:|---:|---:|---:|']
+    for L,rule,icb,dt,stall in sorted({(r['intervals'],r['cold_rule'],r['ic_budget'],r.get('dt',.005),r.get('stall',.01)) for r in d['component_profiles']}):
+        raw=[r for r in d['component_profiles'] if (r['intervals'],r['cold_rule'],r['ic_budget'],r.get('dt',.005),r.get('stall',.01))==(L,rule,icb,dt,stall)]
         vals=[1000*np.median([r[k] for r in raw]) for k in ['input_transfer_s','cold_fit_s','evolution_s','dense_decode_s','output_transfer_s','staged_total_s']]
-        lines.append(f"| {L} | {rule} / {raw[0]['ic_budget']} | "+' | '.join(f'{v:.4f}' for v in vals)+f" | {np.median([r['lm_attempts'] for r in raw]):.1f} |")
+        lines.append(f"| {L} | {rule} / {icb} / {dt:g} | "+' | '.join(f'{v:.4f}' for v in vals)+f" | {np.median([r['lm_attempts'] for r in raw]):.1f} |")
     lines+=['','| Intervals | Sampled rank | K / R / M / m | Bank/operator setup s | Gauss setup s | Compilation/warmup s |', '|---|---:|---|---:|---:|---:|']
     for r in d['mesh_setup']:
         lines.append(f"| {r['intervals']} | {r['sampled_bank_rank_relative_1e12']} | {r['K']} / {r['R']} / {r['M']} / {r['m']} | {r['setup_seconds']:.4f} | {r['gauss_cold_setup']['setup_seconds']:.4f} | {r['compilation_warmup_seconds']:.4f} |")
-    lines+=['','The dominant measured reduced phase is evolution. A bounded larger-timestep study is the next controlled cost test, keeping the fitted initializer, checkpoint, field family and FOM envelope fixed. Halving the timestep and tightening the evolution stopping threshold are already measured controls above; neither proves global or stationary optimization. Tighter accuracy also remains sensitive to the initial-fit error, especially on the finest mesh.','', '## Audit and scope','',
+    interpretation=('The timestep sweep is development selection on the same cases. Larger steps can reduce evolution work while increasing temporal error or hitting the unchanged trial budget. The fitted initial field is shared across these controls and remains an accuracy limit; this sweep does not change bank representation or certify stationary optimization.' if timestep else 'The dominant measured reduced phase is evolution. A bounded larger-timestep study is the next controlled cost test, keeping the fitted initializer, checkpoint, field family and FOM envelope fixed. Halving the timestep and tightening the evolution stopping threshold are already measured controls above; neither proves global or stationary optimization. Tighter accuracy also remains sensitive to the initial-fit error, especially on the finest mesh.')
+    lines+=['',interpretation,'', '## Audit and scope','',
         f"The independent NumPy audit checked {audit['invocations_verified']} invocations across {audit['declared_configurations_verified']} configurations and {audit['full_grid_artifacts_verified']} saved complete-grid artifacts. Maximum error-recomputation discrepancies are {audit['common_grid_error_recompute_max_difference']:.6g} on the common grid and {audit['dense_error_recompute_max_difference']:.6g} on complete grids. It found {audit['fom_nonlinear_tolerance_failures']} FOM tolerance failures and {audit['nonfinite_invocations']} nonfinite invocations. {audit['full_output_repetitions_matching_first']} of {audit['invocations_verified']} recorded dense-output hashes match their corresponding first repetitions.",'',
         'Source, checkpoint and closed-output checksums are retained. Every repeated output is checked against an actual complete-grid artifact. Initial clipping and physical cases are preserved. Independent confirmation, rigorous reference bounds and per-resolution weight retraining remain open. The historical cold-only bank-floor diagnostics are not substituted for the returned rollout errors.','',
         '## Plain-language glossary','',
@@ -136,6 +147,7 @@ def main():
         '- **Initial / later / median / worst error:** first returned field / remaining output times / middle case error / largest case error; each is divided by the corresponding initial reference norm.',
         '- **Current-relative error:** discrepancy divided by the current reference field norm, which exposes relative error as the field decays; it is a diagnostic separate from the initial-norm eligibility target.',
         '- **Same-mesh error:** discrepancy from a tightly converged full solve using the same mesh and timestep.',
+        '- **dt / steps / final weak residual:** time-step size / autonomous steps between the first and last requested output / final weighted weak-equation discrepancy for each such solve; it is not a physical field-error norm.',
         '- **Budget / improvement / failed stops:** configured trial cap / small-step or relative-improvement exit / rejected or nonfinite exit. The first two do not prove stationarity.',
         '- **Empirical margin / Richardson / observed order / target / reference budget:** estimated reference error / extrapolation assuming the observed convergence rate continues / that rate inferred from three levels / requested accuracy / allowed fraction of target consumed by reference uncertainty.',
         '- **Envelope / selected / unattained:** least-cost eligible candidate including coarse FOM interpolation / chosen development configuration / no tested configuration meets the stated error condition.',

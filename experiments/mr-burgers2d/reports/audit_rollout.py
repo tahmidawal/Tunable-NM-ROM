@@ -18,7 +18,7 @@ def max_delta(found,saved):return max(float(np.max(np.abs(v-np.asarray(saved[k])
 def main():
     p=argparse.ArgumentParser();p.add_argument('run');a=p.parse_args();run=Path(a.run);out=run/'out'
     d=json.loads((out/'pilot.json').read_text());root=Path(__file__).resolve().parents[3]
-    assert d['complete'] and d['experiment']=='fixed_gauss_rollout'
+    assert d['complete'] and d['experiment'] in ['fixed_gauss_rollout','gauss_timestep_study']
     assert d['backend']=='gpu' and d['x64'] and d['matmul_precision']=='highest' and d['network_weights_frozen']
     assert d['checkpoint_sha256']==d['checkpoint_sha256_after']
     assert d['commit']==(run/'COMMIT.txt').read_text().strip() and str(d['job_id'])==(run/'JOB_ID.txt').read_text().strip()
@@ -65,7 +65,8 @@ def main():
     ref_delta=0.
     for L,dt in settings:
         for case in cases:reference(L,dt,case)
-    for target in meshes:
+    assert set(d['reference_metrics_by_output'])=={str(L) for L in meshes+[obs]}
+    for target in sorted(set(meshes+[obs])):
         metrics=d['reference_metrics_by_output'][str(target)]
         for case in cases:
             def field(L,dt):return reference(L,dt,case)[:,::dense_obs//target,::dense_obs//target]
@@ -95,6 +96,8 @@ def main():
             assert r['output_intervals']==L and r['case']==case and r['field_sha256']==sha
             z=np.load(out/r['observation_artifact']);fc=z['fields'];assert np.array_equal(fc,f[:,::L//obs,::L//obs],equal_nan=True)
             assert np.array_equal(z['iterations'],r['iterations'])
+            assert np.array_equal(z['residuals'],np.asarray(r['residuals'],dtype=float),equal_nan=True)
+            assert len(r['iterations'])==len(r['residuals'])==round(d['output_times'][-1]/r['dt'])
             assert r['seconds']>0 and r['output_bytes']==f.nbytes
             nonfinite+=not r['finite']
             if r['finite']:
@@ -120,8 +123,11 @@ def main():
     for name,case in itertools.product(declared,cases):
         group=[r for r in d['invocations'] if r['name']==name and r['case']==case];first=next(r for r in group if r['rep']==0)
         for r in group:assert r['matches_first_dense_sha256']==(r['field_sha256']==first['field_sha256'])
-    assert len(d['component_profiles'])==len(meshes)*len(cases)*2
-    assert {(r['intervals'],r['case'],r['cold_rule']) for r in d['component_profiles']}==set(itertools.product(meshes,cases,['edge','fixed_gauss']))
+    profiles=d.get('component_profile_configs',[dict(cold_rule='edge',ic_budget=60,dt=.005,stall=.01),dict(cold_rule='fixed_gauss',ic_budget=180,dt=.005,stall=.01)])
+    keys=['cold_rule','ic_budget','dt','stall']
+    expected_profiles={(L,c,*(p[k] for k in keys)) for L,c,p in itertools.product(meshes,cases,profiles)}
+    actual_profiles=[(r['intervals'],r['case'],*(r.get(k,.005 if k=='dt' else .01) for k in keys)) for r in d['component_profiles']]
+    assert len(actual_profiles)==len(expected_profiles) and set(actual_profiles)==expected_profiles
     assert max(r['fused_output_relative_difference'] for r in d['component_profiles'])<1e-8
     result=dict(source_sha256=fingerprint(out/'pilot.json'),output_checksums_verified=True,closed_logs_clean=True,source_hashes_against_commits_verified=True,
         checkpoint_unchanged=True,seed_and_family_verified=True,declared_configurations_verified=len(declared),invocations_verified=len(actual),

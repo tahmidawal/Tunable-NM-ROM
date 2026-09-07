@@ -1,0 +1,145 @@
+{
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA H100 PCIe"
+    ],
+    "host": "pax063",
+    "source_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+    "job_id": "3346494",
+    "numpy_version": "2.5.0"
+  },
+  "coordinator_script_sha256": "f54a1aee7121c0adb7acc9c1dcc2ce7491ba968bfdce2549d15b247878e45fd7",
+  "config": {
+    "reference_approved": true,
+    "reference_status": "Accepted by coordinator and independent numerical reviewer for bounded Gaussian-compact pilot; absorption coverage is empirical/conditional and distinct from ABC modeling error.",
+    "n": 256,
+    "train_seed": 690601,
+    "validation_seed": 690602,
+    "final_seed": 690603,
+    "train_count": 64,
+    "validation_count": 16,
+    "final_count": 16,
+    "end_time": 2.4,
+    "observation_dt": 0.05,
+    "fom_cfl": 0.12,
+    "rank": 64,
+    "latent": 16,
+    "weak_tests": 64,
+    "bank_seed": 691001,
+    "bank_width": 128,
+    "bank_steps": 6000,
+    "bank_batch": 96,
+    "bank_lr": 0.001,
+    "bank_rank_ratio_min": 1e-08,
+    "head_width": 128,
+    "head_steps": 10000,
+    "head_batch": 64,
+    "head_lr": 0.001,
+    "code_lr": 0.003,
+    "code_penalty": 1e-06,
+    "head_input_scaling": "Coefficient PCA on the frozen learned-bank training outputs initializes the common affine head; standardized scores are dimensionless, so latent input scales are one. This does not replace the trained neural spatial bank with POD.",
+    "optimizer_seeds": [
+      691200,
+      691201
+    ],
+    "fit_seed": 692001,
+    "fit_batch": 64,
+    "fit_iterations": 400,
+    "fit_starts": [
+      "affine",
+      "zero",
+      "six equally spaced rows of the trained training-code table"
+    ],
+    "fit_gradient_tolerance": 1e-07,
+    "fit_doubled_budget": "800 iterations from the exact same eight initial starts as the 400-iteration run; select the best finite result uniformly.",
+    "rom_dts": [
+      0.005,
+      0.0025,
+      0.00125
+    ],
+    "rom_primary_dt": 0.0025,
+    "rom_rank_ratio_min": 1e-08,
+    "accuracy_target": 0.1,
+    "accuracy_rule": "At primary dt all16 validation trajectories complete with time-maximum normalized displacement, velocity and energy-state errors <=.10; finest two steps agree within .01 on all three scales; selected fits stationary/rank-valid and 400/800 objective change<=1e-6. Final cohort sealed. This is a provisional engineering target.",
+    "pod_seed": 693030,
+    "pod_algorithm": "Fresh randomized SVD, rank64+24 oversampling, four power iterations, normalized training displacement+velocity only.",
+    "cost_claims": false,
+    "final_test_opened": false,
+    "rom_refinement_target": 0.01,
+    "parameter_ranges": {
+      "support_half_width": [
+        0.36,
+        0.42
+      ],
+      "gaussian_standard_deviation": [
+        0.12,
+        0.16
+      ],
+      "center": "[support+.025,1-support-.025], independently per axis",
+      "amplitude": [
+        0.7,
+        1.3
+      ],
+      "speed": [
+        0.85,
+        1.15
+      ],
+      "velocity_fraction": [
+        -0.5,
+        0.5
+      ]
+    },
+    "fit_budget_stability_tolerance": 1e-06,
+    "reference_evidence": {
+      "job_id": "3338045",
+      "source_commit": "c69bf87439fd2d0ad1673c852e95ec0f322b8c26",
+      "result_sha256": "302aa1452f2375393bf3c822f94abee11cd241e75420884dca7d83ef1b4f333c",
+      "all_gates_passed": true,
+      "gate_count": 334,
+      "worst_observed_contraction_estimate": 0.012881071840545724,
+      "direct_reflective_space_plus_spectral_self": 0.010079872351705089
+    }
+  },
+  "case": 0,
+  "validation_seed": 690602,
+  "final_test_opened": false,
+  "training_performed": false,
+  "rom_recomputed": false,
+  "boundaries": {
+    "reflective": {
+      "bc": "dirichlet",
+      "n": 256,
+      "shape": [
+        255,
+        255
+      ],
+      "dt": 0.0004065040650406504,
+      "observation_dt": 0.05,
+      "frames": 49,
+      "energy_trace_relative_parity": 3.428435697028949e-16,
+      "energy_balance_relative": 4.551076966021077e-12,
+      "parent_manifest_sha256": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809"
+    },
+    "absorbing": {
+      "bc": "absorbing",
+      "n": 256,
+      "shape": [
+        257,
+        257
+      ],
+      "dt": 0.0004065040650406504,
+      "observation_dt": 0.05,
+      "frames": 49,
+      "energy_trace_relative_parity": 0.0,
+      "energy_balance_relative": 1.4288177189152994e-11,
+      "parent_manifest_sha256": "53edc2d730d912a35b30017033f534e812303abafacf71ba7dc5c92b1caf358c"
+    }
+  }
+}

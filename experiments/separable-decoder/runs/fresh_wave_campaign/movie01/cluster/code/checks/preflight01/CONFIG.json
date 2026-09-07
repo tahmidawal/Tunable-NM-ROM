@@ -1,0 +1,34 @@
+{
+  "label": "preflight01",
+  "source_commit": "179ce57e3ac0dc5a4c28a4916e68f83fd02ef1f7",
+  "source_worktree": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-wave-head-transfer",
+  "source_hashes": {
+    "ARCHITECTURE-SOURCE.json": "06d4ba858cc40c4231289437ac9443d947fb6ff4b4d51fe2bad8529f71060a5d",
+    "FRESH-DESIGN.md": "7e586b65e2847f0c4be89468d167ac7e229629a565ad2d2dbf7b4272170cb2e4",
+    "campaign-config.json": "ef4fb8bec2426c5af48fe9bd3d8740836f080c40330fad2bfb41e853aec7cc92",
+    "fresh_campaign.py": "f70c0a4776b3beb11d11179dc0d057a333e2d1b04d8a42b7fd2e1d7b4785ab4a",
+    "fresh_evaluate.py": "01b114eb33162aa649e015062876d1d4b15ece7c1cb6d6ae31a79183ec670778",
+    "fresh_fom.py": "9dc6e3bd14acce20f5cc29497032f07d63806a20ddb78ef3f31a13b607c1adfc",
+    "fresh_learning.py": "32718ab2899ab2bd48b08ad9a41540b494dc7e0436a5974eed7f606c16d538bf",
+    "fresh_models.py": "bef42f5ead734fb6b85b2e17b92790b8327f5f1dc3abce941c62f993de6e5553",
+    "fresh_preflight.py": "1af1b7942d1e445de305bc9ccaf3e0e6b60f997fc39bf127f5fdd5745341172c",
+    "fresh_rom.py": "960aefef2ffb77f2a0ff4ac4c99ae55e8ebd036486ce1c6d460dd5b5b98434ff",
+    "fresh_verify.py": "e6545ce05c8ce7d2aefb123d0b6809712f1411a03ac5cdece1a4cdabd283f0ef",
+    "fresh_verify_final.py": "a58fbfbe206f56a4be1a03c7de9d8c87933205bfe7a89535d68872430cf60de5",
+    "fresh_verify_refined.py": "c6cd6cd949f994dec45bc25cdcef587de46c8850687ec36cf243dc5c911418ef",
+    "test_fresh_fom.py": "302614aaa51fc4cec228c2f5d59c1689032c721ba0a00bbc7fcd203605e293ff",
+    "test_fresh_learning.py": "2055d51ad2aaf566d83a139855fdd912c31e0f2408ad9e3d130b0fba3b23978d",
+    "test_fresh_models.py": "8f22382c999a1289c421baa0277774d0628a4a479a13aaa74dcd24b01ded6ab6"
+  },
+  "remote": "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/preflight01",
+  "entry": "fresh_preflight.py",
+  "arguments": [
+    "--config",
+    "campaign-config.json",
+    "--out",
+    "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/preflight01/out/preflight"
+  ],
+  "gpu": "a100",
+  "constraint": "a100-40G",
+  "inputs": {}
+}

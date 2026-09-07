@@ -1,0 +1,134 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.26:/projects/paralab  4.6T  4.1T  470G  90% /cluster/tufts/paralab
+Mon Sep  7 14:50:07 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000000:D5:00.0 Off |                    0 |
+| N/A   39C    P0             57W /  300W |       0MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+jax_backend=gpu
+..
+----------------------------------------------------------------------
+Ran 2 tests in 9.346s
+
+OK
+jax_backend=gpu device=cuda:0 x64=True precision=highest
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 0, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 0, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 0, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 0, 'gradient_tolerance': 1e-05}
+row 64 0 fom_dst_exact_time 0.0013442810159176588 0.0007092112812837499
+row 64 0 rom_modular_gtol1e-09 0.028248085058294237 0.09735644633034915
+row 64 0 rom_compiled_gtol1e-09 0.027396503021009266 0.09735644633034915
+row 64 0 rom_modular_gtol1e-07 0.019846317009069026 0.09735644633186603
+row 64 0 rom_compiled_gtol1e-07 0.019406292005442083 0.09735644633186603
+row 64 0 rom_modular_gtol1e-06 0.01695282501168549 0.0973564464190398
+row 64 0 rom_compiled_gtol1e-06 0.01677434495650232 0.0973564464190398
+row 64 0 rom_modular_gtol1e-05 0.01417323702480644 0.09735647505409044
+row 64 0 rom_compiled_gtol1e-05 0.013682349934242666 0.09735647505409044
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 1, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 1, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 1, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 1, 'gradient_tolerance': 1e-05}
+row 64 1 fom_dst_exact_time 0.0010501679498702288 0.0006447102786704451
+row 64 1 rom_modular_gtol1e-09 0.028398080030456185 0.05042342404617862
+row 64 1 rom_compiled_gtol1e-09 0.02746892301365733 0.05042342404617862
+row 64 1 rom_modular_gtol1e-07 0.021888274932280183 0.050423428704860725
+row 64 1 rom_compiled_gtol1e-07 0.021303627057932317 0.050423428704860725
+row 64 1 rom_modular_gtol1e-06 0.019500723923556507 0.05042555908787067
+row 64 1 rom_compiled_gtol1e-06 0.019034391967579722 0.05042555908787067
+row 64 1 rom_modular_gtol1e-05 0.01716014905832708 0.05042809554856491
+row 64 1 rom_compiled_gtol1e-05 0.016882968018762767 0.05042809554856491
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 2, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 2, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 2, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 2, 'gradient_tolerance': 1e-05}
+row 64 2 fom_dst_exact_time 0.0010458959732204676 0.0007056995607416569
+row 64 2 rom_modular_gtol1e-09 0.029411110910587013 0.0667272806018466
+row 64 2 rom_compiled_gtol1e-09 0.027188186068087816 0.0667272806018466
+row 64 2 rom_modular_gtol1e-07 0.021070152055472136 0.06672728062896152
+row 64 2 rom_compiled_gtol1e-07 0.020197703037410975 0.06672728062896152
+row 64 2 rom_modular_gtol1e-06 0.018226312939077616 0.06672728395601375
+row 64 2 rom_compiled_gtol1e-06 0.018132064025849104 0.06672728395601375
+row 64 2 rom_modular_gtol1e-05 0.015040606027469039 0.0667276881770626
+row 64 2 rom_compiled_gtol1e-05 0.014672518009319901 0.0667276881770626
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 3, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 3, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 3, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 64, 'case': 3, 'gradient_tolerance': 1e-05}
+row 64 3 fom_dst_exact_time 0.001384209026582539 0.0006373779699503317
+row 64 3 rom_modular_gtol1e-09 0.025406300905160606 0.018678127714164217
+row 64 3 rom_compiled_gtol1e-09 0.02482223801780492 0.018678127714164217
+row 64 3 rom_modular_gtol1e-07 0.018894209060817957 0.018678127762963032
+row 64 3 rom_compiled_gtol1e-07 0.018363654031418264 0.018678127762963032
+row 64 3 rom_modular_gtol1e-06 0.016707252943888307 0.018678133314413346
+row 64 3 rom_compiled_gtol1e-06 0.016058529959991574 0.018678133314413346
+row 64 3 rom_modular_gtol1e-05 0.013954617083072662 0.018678350704104375
+row 64 3 rom_compiled_gtol1e-05 0.013342530932277441 0.018678350704104375
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 0, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 0, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 0, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 0, 'gradient_tolerance': 1e-05}
+row 128 0 fom_dst_exact_time 0.0012882979353889823 0.0001771753191278301
+row 128 0 rom_modular_gtol1e-09 0.028667559032328427 0.09735644633035179
+row 128 0 rom_compiled_gtol1e-09 0.027172557078301907 0.09735644633035179
+row 128 0 rom_modular_gtol1e-07 0.019580675987526774 0.09735644633190223
+row 128 0 rom_compiled_gtol1e-07 0.01913745899219066 0.09735644633190223
+row 128 0 rom_modular_gtol1e-06 0.016797516029328108 0.09735644641820011
+row 128 0 rom_compiled_gtol1e-06 0.016113799065351486 0.09735644641820011
+row 128 0 rom_modular_gtol1e-05 0.01398279401473701 0.0973564750456202
+row 128 0 rom_compiled_gtol1e-05 0.013487240998074412 0.0973564750456202
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 1, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 1, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 1, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 1, 'gradient_tolerance': 1e-05}
+row 128 1 fom_dst_exact_time 0.0015410770429298282 0.0001610811890918376
+row 128 1 rom_modular_gtol1e-09 0.028973942971788347 0.05036296001102932
+row 128 1 rom_compiled_gtol1e-09 0.02732392807956785 0.05036296001102932
+row 128 1 rom_modular_gtol1e-07 0.021545186988078058 0.05036296562233065
+row 128 1 rom_compiled_gtol1e-07 0.02079378697089851 0.05036296562233065
+row 128 1 rom_modular_gtol1e-06 0.019568929099477828 0.050365090156184456
+row 128 1 rom_compiled_gtol1e-06 0.01856960100121796 0.050365090156184456
+row 128 1 rom_modular_gtol1e-05 0.017622494022361934 0.05036775472047674
+row 128 1 rom_compiled_gtol1e-05 0.01677348103839904 0.05036775472047674
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 2, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 2, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 2, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 2, 'gradient_tolerance': 1e-05}
+row 128 2 fom_dst_exact_time 0.00127414392773062 0.00017628736876863497
+row 128 2 rom_modular_gtol1e-09 0.029241119977086782 0.06672728060190726
+row 128 2 rom_compiled_gtol1e-09 0.026849790010601282 0.06672728060190726
+row 128 2 rom_modular_gtol1e-07 0.021314361016266048 0.06672728062647065
+row 128 2 rom_compiled_gtol1e-07 0.020260045072063804 0.06672728062647065
+row 128 2 rom_modular_gtol1e-06 0.01867282995954156 0.06672728392834212
+row 128 2 rom_compiled_gtol1e-06 0.01767506799660623 0.06672728392834212
+row 128 2 rom_modular_gtol1e-05 0.015355758019722998 0.06672768798286806
+row 128 2 rom_compiled_gtol1e-05 0.014778929995372891 0.06672768798286806
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 3, 'gradient_tolerance': 1e-09}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 3, 'gradient_tolerance': 1e-07}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 3, 'gradient_tolerance': 1e-06}
+parity {'field_relative_error': 0.0, 'latent_relative_error': 0.0, 'exact_counter_reason_parity': True, 'initial_counter_mismatches': 0, 'step_counter_mismatches': 0, 'passed': True, 'intervals': 128, 'case': 3, 'gradient_tolerance': 1e-05}
+row 128 3 fom_dst_exact_time 0.001463113003410399 0.00015923764522817206
+row 128 3 rom_modular_gtol1e-09 0.025576852029189467 0.018678127714500694
+row 128 3 rom_compiled_gtol1e-09 0.024204006069339812 0.018678127714500694
+row 128 3 rom_modular_gtol1e-07 0.019300774089060724 0.018678127762645207
+row 128 3 rom_compiled_gtol1e-07 0.018014008994214237 0.018678127762645207
+row 128 3 rom_modular_gtol1e-06 0.01686530699953437 0.018678133321814453
+row 128 3 rom_compiled_gtol1e-06 0.01572549995034933 0.018678133321814453
+row 128 3 rom_modular_gtol1e-05 0.014041383983567357 0.018678350656259182
+row 128 3 rom_compiled_gtol1e-05 0.013756792061030865 0.018678350656259182
+RUNTIME PILOT COMPLETE

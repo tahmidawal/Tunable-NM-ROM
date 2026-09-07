@@ -1,0 +1,16 @@
+{
+  "source_audit": "experiments/mr-heat2d/runs/pilot02/audit.json",
+  "source_audit_sha256": "aacfaa393636a1da327acf868d374074d5cd587aaad6c40603a0ab0d2a67b902",
+  "observation_intervals": 64,
+  "solver_intervals": [
+    64,
+    128
+  ],
+  "gradient_tolerances": [
+    1e-09,
+    1e-07,
+    1e-06,
+    1e-05
+  ],
+  "note": "No rigorous continuum bound; empirical refinement evidence only."
+}

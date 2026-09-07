@@ -1,5 +1,5 @@
 {
-  "campaign_status": "bounded approved campaign complete; no pending jobs or further submissions",
+  "campaign_status": "approved continued separate worktree; rollout04 active",
   "attempts": [
     {
       "attempt": "pilot01",
@@ -57,6 +57,17 @@
       "scheduler_exit_code": "0:0",
       "scheduler_elapsed": "00:03:13",
       "scheduler_node": "pax105"
+    },
+    {
+      "attempt": "rollout04",
+      "job_id": 3352857,
+      "source_commit": "d73fb4119057d4826c783d02829dd08835fe7a24",
+      "namespace": "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/rollout04",
+      "status_at_submit": "PENDING (Priority)",
+      "scheduler_job_name": "ctol_mr_burgers_rollout04",
+      "archive": "runs/rollout04",
+      "audit": "runs/rollout04/AUDIT.json",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589"
     }
   ]
 }

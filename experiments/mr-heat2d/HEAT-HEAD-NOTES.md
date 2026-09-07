@@ -36,6 +36,8 @@ Initial errors are separate from time-maximum errors after the initial state. Th
 
 The unchanged unrestricted bank's worst reconstruction error is 0.0103101. The predeclared rollout gate requires every selected initial fit to be stationary and below 0.05 relative error. This gate does not certify autonomous dynamics. A stationary fit is not proof of a global minimum.
 
+Each endpoint uses its own training-code lookup library. Expanded coverage therefore changes both the fitted head/codes and the available starting-code coverage. This comparison establishes an expanded-coverage pipeline improvement; it does not isolate those mechanisms or certify globally optimal fits.
+
 ## Paired complete-query results
 
 Every cost and error comes from the same saved invocation. Full host input, online initial fitting, evolution, requested dense fields and host output are charged. The frozen original head and direct DST FOM are timed in this same job; no cross-job raw times are compared. Both solver meshes use one shared observation grid. Query times are median case-medians; ratios are medians across cases of median paired-repetition FOM/ROM ratios.

@@ -227,7 +227,11 @@ def generate(r, a, path):
               f"{f(a['reconstruction'][0]['bank_worst'])}. The predeclared rollout gate requires "
               f"every selected initial fit to be stationary and below "
               f"{r['settings']['rollout_gate']['initial_worst_max']} relative error. This gate "
-              "does not certify autonomous dynamics. A stationary fit is not proof of a global minimum.", ""]
+              "does not certify autonomous dynamics. A stationary fit is not proof of a global minimum.", "",
+              "Each endpoint uses its own training-code lookup library. Expanded coverage "
+              "therefore changes both the fitted head/codes and the available starting-code "
+              "coverage. This comparison establishes an expanded-coverage pipeline improvement; "
+              "it does not isolate those mechanisms or certify globally optimal fits.", ""]
     if r["rollout_performed"]:
         lines += ["## Paired complete-query results", "",
                   "Every cost and error comes from the same saved invocation. Full host input, "

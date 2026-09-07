@@ -63,7 +63,6 @@ def stage(label):
 #SBATCH --job-name=ctol_mr_poisson_{label}
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:a100:1
-#SBATCH --constraint=a100-40G
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=96G
 #SBATCH --time=02:00:00

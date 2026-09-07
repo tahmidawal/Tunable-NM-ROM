@@ -22,6 +22,8 @@ for row,norm in enumerate(['common','dense']):
             key='fom' if r['method']=='fom' else r['cold_rule'];color,marker,label=styles[key]
             y=max(e+margin[c] for c,e in r[norm]['case_errors'].items())
             ax.scatter(r['ms'],y,s=52 if key=='fom' else 70,c=color,marker=marker,edgecolors='white',linewidths=.6,label=label if key not in seen else None)
+            if d['experiment']=='gauss_timestep_study' and key!='fom':
+                ax.annotate(f"dt={r['dt']:g}",(r['ms'],y),xytext=(4,5),textcoords='offset points',fontsize=7,color=color)
             seen.add(key)
         for target in [.1,.05,.01]:ax.axhline(target,color='#aeb7c1',lw=.7,ls='--',zorder=0)
         ax.set_xscale('log');ax.set_yscale('log');ax.grid(alpha=.15)
@@ -29,7 +31,8 @@ for row,norm in enumerate(['common','dense']):
         ax.set_title(title,fontsize=10);ax.set_xlabel('Complete query, case-median milliseconds')
     axes[row,0].set_ylabel('Worst case error + empirical reference margin')
 handles,labels=axes[1,-1].get_legend_handles_labels();fig.legend(handles,labels,loc='lower center',ncol=3,frameon=False)
-fig.suptitle(f"Burgers 2D · frozen Gauss initializer in full rollout · job {d['job_id']}")
+study='time-step study with frozen Gauss initialization' if d['experiment']=='gauss_timestep_study' else 'frozen Gauss initializer in full rollout'
+fig.suptitle(f"Burgers 2D · {study} · job {d['job_id']}")
 fig.tight_layout(rect=(0,.06,1,.96));fig.savefig(a.output,metadata={'Date':None});fig.savefig(Path(a.output).with_suffix('.png'),dpi=170);plt.close(fig)
 if Path(a.output).suffix=='.svg':
     Path(a.output).write_text('\n'.join(line.rstrip() for line in Path(a.output).read_text().splitlines())+'\n')

@@ -1,8 +1,8 @@
 # Larger nonlinear wave head with matched linear and time-step controls
 
-This is a proposed bounded follow-up to the audited `dynamics02` result. It contains
+This is the approved bounded follow-up to the audited `dynamics02` result. It contains
 no new training endpoint or numerical finding. `k32-proposal.json` records the
-concrete configuration, job limits and accounting choices before implementation.
+concrete configuration, job limits and accounting choices before implementation and submission.
 
 Use the existing approved wave worktree/branch and a fresh `k32heads03` directory
 in its existing cluster namespace. Keep all four experiment worktrees separate.
@@ -51,11 +51,13 @@ introducing an additional test-space construction would be a separate experiment
 
 ## Separate time-step and complete-query cost controls
 
-Apply all three declared nonlinear time steps to every nonlinear head. The
-primary and finer pair are unchanged; the added coarser step is a separate speed
-control. Every retained repetition supplies its own physical errors and complete
-query time. Compare primary against fine and coarse against primary using the
-same initial displacement/phase-energy scales. Keep failed steps, nonstationary
+Keep the frozen MLP16 at its primary step with three repetitions. Apply the three
+declared timed steps to each new MLP32 endpoint, also with three repetitions.
+Each larger head additionally receives one finer accuracy-only query per case.
+That query charges the complete input/output path and preserves its timing, but
+its latency is explicitly ineligible for speed comparisons or winner selection;
+it may include uncached compilation. Compare each adjacent time-step pair using
+the same initial displacement/phase-energy scales. Keep failed steps, nonstationary
 initial fits and time-refinement failures visible. Smaller error from additional
 coordinates does not itself establish reduced query cost.
 

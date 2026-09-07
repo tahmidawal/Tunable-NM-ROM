@@ -66,7 +66,7 @@ def stage(label):
     for folder in ("code/fresh-wave-head", "code/multiresolution-wave", "in", "out", "logs"):
         (dest/folder).mkdir(parents=True)
     files = [*(TREE/"experiments/fresh-wave-head").glob("*.py"),
-             TREE/"experiments/fresh-wave-head/FROZEN-MATH.json", *CELL.glob("*.py"), CELL/"config.json", CELL/"dynamics-config.json", TREE/"experiments/fresh-wave-head/campaign-config.json"]
+             TREE/"experiments/fresh-wave-head/FROZEN-MATH.json", *CELL.glob("*.py"), CELL/"config.json", CELL/"dynamics-config.json", CELL/"heads32-config.json", TREE/"experiments/fresh-wave-head/campaign-config.json"]
     source_hashes = {}
     for p in files:
         rel = p.relative_to(TREE)
@@ -95,8 +95,9 @@ def stage(label):
             np.savez_compressed(target/"coordinates.npz", qr_r=table["qr_r"], common_linear=common["linear"], common_center=common["center"])
     write_json(dest/"in/ORIGIN.json", origin)
     remote = NAMESPACE+"/"+label
-    driver = "dynamics" if label.startswith("dynamics") else "pilot"
-    configuration = "dynamics-config.json" if driver == "dynamics" else "config.json"
+    driver = "heads32" if label.startswith("k32heads") else "dynamics" if label.startswith("dynamics") else "pilot"
+    configuration = {"heads32": "heads32-config.json", "dynamics": "dynamics-config.json", "pilot": "config.json"}[driver]
+    extra_checks = '"$PY" -u code/multiresolution-wave/test_heads32.py\n"$PY" -u code/multiresolution-wave/smoke_heads32.py --inputs in' if driver == "heads32" else ""
     batch = f'''#!/bin/bash
 #SBATCH --job-name=ctol_mr_wave_{label}
 #SBATCH --partition=gpu
@@ -127,6 +128,7 @@ trap finish EXIT
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 "$PY" -u code/multiresolution-wave/test_pilot.py
 "$PY" -u code/multiresolution-wave/test_dynamics.py
+{extra_checks}
 "$PY" -u code/multiresolution-wave/{driver}.py --config code/multiresolution-wave/{configuration} --inputs in --out out/pilot
 '''
     (dest/"job.sbatch").write_text(batch)

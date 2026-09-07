@@ -90,7 +90,7 @@ def regenerate_ladder(inputs, bc, out, cfg):
     stride = int(np.ceil(original["observation_dt"]/(original["fom_cfl"]*grid.h/1.15)))
     dt = original["observation_dt"]/stride
     nobs = int(round(original["end_time"]/original["observation_dt"]))
-    aa, bb, audits = [], [], []
+    aa, bb, audits, case_scales = [], [], [], []
     uh, vh = hashlib.sha256(), hashlib.sha256()
     start = time.perf_counter()
     for ci, par in enumerate(pars):
@@ -100,6 +100,7 @@ def regenerate_ladder(inputs, bc, out, cfg):
         u, v, flux = np.asarray(u), np.asarray(v), np.asarray(flux)
         uh.update(u.reshape(49, -1).tobytes()); vh.update(v.reshape(49, -1).tobytes())
         aa.append(u.reshape(49, -1) @ gm); bb.append(v.reshape(49, -1) @ gm)
+        case_scales.append((float(np.sqrt(np.sum(grid.mass()*np.asarray(u0)**2))), float(np.sqrt(ee[0]*2))))
         balance = float(np.max(abs(ee+flux-ee[0]))/ee[0])
         invariant = np.sum(grid.mass()*(v+np.asarray(damping_ratio(grid, par[5]))*u), axis=(-2,-1)) if bc == "absorbing" else np.zeros(49)
         drift = float(np.max(abs(invariant-invariant[0])))
@@ -120,7 +121,7 @@ def regenerate_ladder(inputs, bc, out, cfg):
     match = defect < 1e-8 and center_defect < 1e-9
     np.savez_compressed(out/f"training_ladder_{bc}.npz", parameters=pars, a=aa, b=bb, center=center,
         basis=vt.T, singular_values=singular, standardized_linear=linear, scales=scale,
-        covariance=(flat-center).T@(flat-center)/len(flat), saved_linear=saved_linear, saved_center=saved_center)
+        covariance=(flat-center).T@(flat-center)/len(flat), saved_linear=saved_linear, saved_center=saved_center, case_scales=np.asarray(case_scales))
     manifest = dict(boundary=bc, seed=original["train_seed"], count=len(pars), intervals=grid.n, dt=dt,
         construction="Unnormalized training displacement coefficients, centered SVD and population-standard-deviation scaling, original convention.",
         original_u_sha256=expected["u_sha256"], regenerated_u_sha256=uh.hexdigest(),
@@ -146,6 +147,8 @@ def arms_for(bank, inputs, linear, center):
 def fitted_diagnostics(bank, arms, u, v, grid, c, cfg, outpath):
     """Truth-only diagnostics; none of these fitted states initialize a query."""
     idx = np.asarray(cfg["diagnostic_indices"])
+    latent = bank["p"]["linear"].shape[1]
+    model_name = bank.get("model_name", "mlp16")
     u0norm = float(np.sqrt(np.sum(grid.mass()*u[0]**2)))
     phase_scale = float(np.sqrt(2*base.energy_np(u[0], v[0], grid, c)))
     force_scale = u0norm/cfg["end_time"]**2
@@ -157,13 +160,13 @@ def fitted_diagnostics(bank, arms, u, v, grid, c, cfg, outpath):
     velocities = jnp.concatenate((velocities, jnp.zeros((1, 64))))
     aff = (targets-bank["common_center"])@bank["common_inverse"].T
     starts = jnp.concatenate((aff[:, None], jnp.zeros_like(aff[:, None]),
-        jnp.broadcast_to(bank["fixed_codes"], (len(targets), 6, 16))), axis=1)
+        jnp.broadcast_to(bank["fixed_codes"], (len(targets), 6, latent))), axis=1)
     fitted, fits = [], []
     arrays = dict(targets=np.asarray(targets), velocities=np.asarray(velocities), starts=np.asarray(starts),
         diagnostic_indices=idx, truth_u=u[idx], truth_v=v[idx])
     for budget in cfg["diagnostic_fit_budgets"]:
         raw = fit_batch(bank["p"], bank["frozen"], jnp.repeat(targets, 8, axis=0),
-            jnp.full(len(targets)*8, u0norm), starts.reshape(-1,16), kind="mlp", iterations=budget)
+            jnp.full(len(targets)*8, u0norm), starts.reshape(-1,latent), kind="mlp", iterations=budget)
         values = [np.asarray(x).reshape(len(targets), 8, *x.shape[1:]) for x in raw]
         z,obj,grad,count,damp,stat,rank,finite = values
         selected = np.argmin(np.where(finite,obj,np.inf), axis=1)
@@ -179,10 +182,10 @@ def fitted_diagnostics(bank, arms, u, v, grid, c, cfg, outpath):
     best = jnp.asarray(fitted[-1])
     records = []
     stiffness, damping = c*c*bank["k"], c*bank["d"]
-    for arm in [dict(name="mlp16")]+arms:
+    for arm in [dict(name=model_name)]+arms:
         aa,bb,normal,curve,jr = [],[],[],[],[]
         for i in range(len(targets)):
-            if arm["name"] == "mlp16":
+            if arm["name"] == model_name:
                 fun = lambda z: head_apply(bank["p"],bank["frozen"],z,"mlp")
                 jac = jax.jacfwd(fun)(best[i])
                 q, rr = jnp.linalg.qr(jac, mode="reduced")

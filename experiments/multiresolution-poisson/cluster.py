@@ -59,8 +59,10 @@ def stage(label):
         "ms_parametric_scope":"Only generic Poisson source family and Laplacian; no old wave physics"}
     write_json(dest/"in/ORIGIN.json",origin)
     remote = NAMESPACE+"/"+label
-    driver = "pilot02.py" if label.startswith("pilot02") else "pilot.py"
-    config_file = "config02.json" if label.startswith("pilot02") else "config.json"
+    number = "03" if label.startswith("pilot03") else ("02" if label.startswith("pilot02") else "")
+    driver = "pilot"+number+".py"
+    config_file = "config"+number+".json"
+    extra_test = '"$PY" -u code/test_kernel.py' if number == "03" else ""
     batch = f'''#!/bin/bash
 #SBATCH --job-name=ctol_mr_poisson_{label}
 #SBATCH --partition=gpu
@@ -92,6 +94,7 @@ trap finish EXIT
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 "$PY" -u code/test_core.py
 "$PY" -u code/test_followup.py
+{extra_test}
 "$PY" -u code/{driver} --config code/{config_file} --checkpoint in/model.pkl --out out/pilot
 '''
     (dest/"job.sbatch").write_text(batch)

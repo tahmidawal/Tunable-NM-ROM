@@ -1,0 +1,17 @@
+{
+  "kind": "actual_head_pilot_adapter_integration",
+  "tests": 4,
+  "passed": true,
+  "gpu": true,
+  "x64": true,
+  "matmul_precision": "highest",
+  "log_sha256": "4a7f3fcb3f4f423ac87af445a4231f98b73a05183c76cfa93e68684cbde06c5b",
+  "source_sha256": {
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/test_b3d_arch_integration.py": "1ceac3bc374848d2215306f5eb1ce30990ecbdfd59b95288e41c76acd98c93ce",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-anchor/experiments/separable-decoder/b3d_arch_anchor.py": "112ad63bd9693eaaa1d3f855608377a2a48962d7195ada8fb5caaf6a1325a1d4",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-quadratic/experiments/separable-decoder/b3d_arch_quadratic.py": "3160328e7f62cb1cc3f680edb08610b5bc474a70dbc64fad2421cb6760b41708",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-encoder/experiments/separable-decoder/b3d_arch_encoder.py": "daa54d1bb64d2c24dee50ad4ad1f8da2b4a6b4bb0c0fad41cc2bbac68ad8824d",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-mixture/experiments/separable-decoder/b3d_arch_mixture.py": "b66316815a64af2ae5ee3e921204df326de7319767d18e3d6160eae90534a071"
+  },
+  "scope": "Nonzero nonlinear fields, inherited head_fn dispatch, independent NumPy Jacobians and Hessians; not PDE accuracy or rollout."
+}

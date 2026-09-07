@@ -1,10 +1,14 @@
 # Burgers 3D: controlled decoder architecture comparison
 
 Protocol prepared 2026-09-06 for the user-requested Codex subagent campaign.
-This is a design, not a claim of improved accuracy. The completed repair at
-`d5fcdcc` is the proposed branch base; exact parallel worktree names are pending
-the repository-required user confirmation. Shared evaluation code is prepared
-in the already approved repair worktree.
+This is a design, not a claim of improved accuracy. The user confirmed the
+proposed implementation after the explicit base/name question. The four
+worktrees `2026-09-06-b3d-anchor`, `2026-09-06-b3d-quadratic`,
+`2026-09-06-b3d-encoder`, and `2026-09-06-b3d-mixture` branch from repaired
+base `dd77383`, which includes the common evaluator and completed controls.
+Each is assigned to a separate Codex subagent and cluster namespace. The
+coordinator writes only in the existing repair worktree, apart from canonical
+lab-log updates. No merge is authorized.
 
 ## Scope and fixed quantities
 

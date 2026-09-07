@@ -68,6 +68,12 @@ def main():
             paired={(x['case'],x['repetition']):x['total_seconds'] for x in ff}
             e['raw_paired_speedups']=[paired[(x['case'],x['repetition'])]/x['total_seconds'] for x in rr]
             e['median_paired_speedup']=stats.median(e['raw_paired_speedups'])
+            case_ratios=defaultdict(list)
+            for x in rr: case_ratios[x['case']].append(paired[(x['case'],x['repetition'])]/x['total_seconds'])
+            e['per_case_median_paired_speedups']={str(k):stats.median(v) for k,v in case_ratios.items()}
+            e['median_of_case_paired_medians']=stats.median(e['per_case_median_paired_speedups'].values())
+            e['aggregate_median_cost_ratio']=e['speedup']
+            e['speedup_statistic']='legacy speedup field is ratio of aggregate median costs; primary paired statistic is median_of_case_paired_medians'
     summary=dict(source_sha256=hashlib.sha256(src.read_bytes()).hexdigest(),config=cfg,
         provenance=d['provenance'],checkpoint_sha256=d['checkpoint_sha256'],
         summaries=summaries,envelope=envelope,reference=d['references'],setup=d['setup'])
@@ -96,12 +102,14 @@ def main():
         'Intentional tau stops may pass physical qualification before stationarity. Other terminal ROM solves require measured stationarity. '
         'The complete query includes synchronized input, source projection, solve and full output.','',
         '## Cheapest qualifying development configurations','',
-        '| Requested intervals | Target | Selected ROM tau | Selected FOM | ROM ms | FOM ms | FOM/ROM speedup |',
+        '| Requested intervals | Target | Selected ROM tau | Selected FOM | ROM ms | FOM ms | Median paired FOM/ROM ratio |',
         '|---:|---:|---:|---|---:|---:|---:|']
     f=lambda x:'unattained' if x is None else f'{x:.6g}'
     for e in envelope:
-        lines.append(f"| {e['intervals']} | {e['target']} | {f(e['rom_tau'])} | {e['fom_arm'] or 'unattained'} | {f(None if e['rom_seconds'] is None else e['rom_seconds']*1000)} | {f(None if e['fom_seconds'] is None else e['fom_seconds']*1000)} | {f(e['speedup'])} |")
-    lines+=['','Speedup above unity favors the reduced model. Unattained targets have no speedup. '
+        lines.append(f"| {e['intervals']} | {e['target']} | {f(e['rom_tau'])} | {e['fom_arm'] or 'unattained'} | {f(None if e['rom_seconds'] is None else e['rom_seconds']*1000)} | {f(None if e['fom_seconds'] is None else e['fom_seconds']*1000)} | {f(e.get('median_of_case_paired_medians'))} |")
+    lines+=['','The displayed ratio first takes the median FOM/ROM time ratio over paired repetitions within each source, then the median over sources. '
+        'A ratio above unity favors the reduced model. The cost columns are separate aggregate medians, so their quotient need not equal this paired statistic. '
+        'Unattained targets have no qualifying ratio. '
         'The classical envelope searches only the declared same-grid and coarse-grid options. '
         'Selection and evaluation use this development cohort; independent confirmation is still required.','',
         '## Reference and mesh setup','',

@@ -44,18 +44,18 @@ Physical errors use the same nested observation nodes and independently refined 
 
 ## Cheapest qualifying development configurations
 
-| Requested intervals | Target | Selected ROM tau | Selected FOM | ROM ms | FOM ms | FOM/ROM speedup |
+| Requested intervals | Target | Selected ROM tau | Selected FOM | ROM ms | FOM ms | Median paired FOM/ROM ratio |
 |---:|---:|---:|---|---:|---:|---:|
-| 256 | 0.1 | 0.01 | dst | 4.69963 | 2.03371 | 0.432737 |
+| 256 | 0.1 | 0.01 | dst | 4.69963 | 2.03371 | 0.421264 |
 | 256 | 0.05 | unattained | dst | unattained | 2.03371 | unattained |
 | 256 | 0.01 | unattained | dst | unattained | 2.03371 | unattained |
 | 256 | 0.001 | unattained | dst | unattained | 2.03371 | unattained |
-| 512 | 0.1 | 0.01 | dst | 4.95778 | 2.3913 | 0.482333 |
+| 512 | 0.1 | 0.01 | dst | 4.95778 | 2.3913 | 0.499445 |
 | 512 | 0.05 | unattained | dst | unattained | 2.3913 | unattained |
 | 512 | 0.01 | unattained | dst | unattained | 2.3913 | unattained |
 | 512 | 0.001 | unattained | dst | unattained | 2.3913 | unattained |
 
-Speedup above unity favors the reduced model. Unattained targets have no speedup. The classical envelope searches only the declared same-grid and coarse-grid options. Selection and evaluation use this development cohort; independent confirmation is still required.
+The displayed ratio first takes the median FOM/ROM time ratio over paired repetitions within each source, then the median over sources. A ratio above unity favors the reduced model. The cost columns are separate aggregate medians, so their quotient need not equal this paired statistic. Unattained targets have no qualifying ratio. The classical envelope searches only the declared same-grid and coarse-grid options. Selection and evaluation use this development cohort; independent confirmation is still required.
 
 ## Reference and mesh setup
 

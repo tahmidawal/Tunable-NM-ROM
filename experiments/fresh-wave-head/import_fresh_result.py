@@ -26,6 +26,7 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--label',required=True)
     ap.add_argument('--allow-incomplete',action='store_true')
+    ap.add_argument('--type',choices=('campaign','refinement'),default='campaign')
     args=ap.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9_]*',args.label):
         raise ValueError('Unsafe job label')
@@ -34,16 +35,20 @@ def main():
         raise ValueError('Unexpected source namespace')
     submission=json.loads((source/'submission.json').read_text())
     expected_remote='/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/'+args.label
-    if submission['remote']!=expected_remote or submission['entry']!='fresh_campaign.py':
+    entry='fresh_campaign.py' if args.type=='campaign' else 'fresh_checkpoint_refine.py'
+    if submission['remote']!=expected_remote or submission['entry']!=entry:
         raise ValueError('Not a fresh scientific wave campaign job')
     cluster=source/'cluster'
-    outputs=cluster/'out/campaign'
+    output_prefix=Path('out')/args.type
+    outputs=cluster/output_prefix
     result=json.loads((outputs/'result.json').read_text())
     if result.get('final_test_opened') or result['provenance']['jax_backend']!='gpu' or not result['provenance']['x64'] or result['provenance']['matmul_precision']!='highest':
         raise ValueError('Cohort/backend/precision provenance failed')
     if result['provenance']['source_commit']!=submission['source_commit'] or str(result['provenance']['job_id'])!=str(submission['job_id']):
         raise ValueError('Scientific result and submission lineage differ')
-    if not args.allow_incomplete and not result.get('completed'):
+    run_completed=result.get('completed',False) if args.type=='campaign' else result.get('old_fine_parity_passed',False)
+    exit_ok=(cluster/'EXIT_CODE').read_text().strip()=='0'
+    if not args.allow_incomplete and not (run_completed and exit_ok):
         raise ValueError('Job is not a completed campaign; preserve failed attempts explicitly')
     expected={}
     for line in (cluster/'PULL.sha256').read_text().splitlines():
@@ -70,7 +75,7 @@ def main():
     temporary.mkdir(parents=True)
     copied={}
     for path in files:
-        relative=Path('out/campaign')/path.relative_to(outputs)
+        relative=output_prefix/path.relative_to(outputs)
         target=temporary/relative
         target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(path,target)
@@ -84,7 +89,7 @@ def main():
     for name in ('submission.json','ARCHIVE.json','ARCHIVE.sha256'):
         if (source/name).exists():
             shutil.copyfile(source/name,temporary/name)
-    metadata={'source_coordinator_directory':str(source),'complete_raw_archive_branch':'exp/2026-09-06-burgers3d-repair','job_id':submission['job_id'],'source_commit':submission['source_commit'],'copied_scientific_files':copied,'post_copy_checksums_passed':True,'campaign_completed':result.get('completed',False)}
+    metadata={'source_coordinator_directory':str(source),'complete_raw_archive_branch':'exp/2026-09-06-burgers3d-repair','job_id':submission['job_id'],'source_commit':submission['source_commit'],'copied_scientific_files':copied,'post_copy_checksums_passed':True,'type':args.type,'run_completed':run_completed,'exit_ok':exit_ok}
     (temporary/'IMPORT.json').write_text(json.dumps(metadata,indent=2)+'\n')
     temporary.rename(destination)
     print(json.dumps({'destination':str(destination),'files':len(copied),'checksums_passed':True}))

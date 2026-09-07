@@ -18,10 +18,12 @@ def table(headers,rows):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--result",action="append",required=True)
+    ap.add_argument("--refinement",action="append",default=[])
     ap.add_argument("--out",required=True)
     ap.add_argument("--reviewed",action="store_true")
     args=ap.parse_args()
     loaded=[(Path(p),json.loads(Path(p).read_text())) for p in args.result]
+    refined=[(Path(p),json.loads(Path(p).read_text())) for p in args.refinement]
     boundaries={}
     for path,run in loaded:
         if run.get("final_test_opened") or run.get("provenance",{}).get("jax_backend")!="gpu":
@@ -96,9 +98,21 @@ def main():
             initial=arm['validation']['initial_reconstruction']
             diagnostic_rows.append([bc,arm['name'],arm['optimizer_seed'],number(initial['mean'],True),number(initial['median'],True),number(initial['worst'],True),number(arm['zero_state']['mass_norm']),number(balance,True)])
     lines[-2:]=["## Initial fit, zero-state bias and energy balance","",table(['Boundary','Head/objective','Repeat seed','Initial reconstruction mean','Median','Worst','Zero-target fitted mass norm','Primary worst energy-balance defect'],diagnostic_rows),"","The zero-target quantity is an absolute mass norm, distinct from normalized trajectory errors. Energy balance uses each ROM's own initial energy and integrated physical boundary power; small balance defect alone does not establish accurate displacement or phase.","","## Provenance and limits",""]
+    if refined:
+        refinement_rows=[]
+        for path,record in refined:
+            if record['retraining_performed'] or record['initial_fitting_performed'] or record['final_test_opened']:
+                raise RuntimeError('Unexpected checkpoint-refinement scope')
+            fine_dt=record['diagnostic_config']['rom_dts'][-1]
+            fine=next(s for s in record['fine_diagnostic']['summaries'] if s['dt']==fine_dt)
+            parity=max((r.get('max_energy_state_difference',0.) for r in record['old_fine_physical_parity']),default=None)
+            refinement_rows.append([record['boundary'],record['name'],record['optimizer_seed'],str(record['original_accuracy_passed']),str(record['old_fine_parity_passed']),number(parity,True),number(fine_dt),fine['completed'],fine['failed'],number(fine['energy_state']['mean'],True),number(fine['energy_state']['median'],True),number(fine['energy_state']['worst'],True),fine['energy_state']['outliers'],str(record['fine_diagnostic']['refinement_passed'])])
+        lines[-2:]=['## Frozen-checkpoint time-step continuation','',table(['Boundary','Head/objective','Repeat seed','Original primary target passed','Old-fine parity passed','Old-fine energy-state discrepancy','New finest step','Complete','Failed','Finest energy-state mean','Median','Worst','Outliers','New finest-two refinement passed'],refinement_rows),'','These separate numerical follow-ups were selected only because the original time-step refinement failed. They retain the exact trained bank/head and stored initial latent position and velocity, repeat the original finest step for hardware parity, and then evaluate both additional predeclared steps on every validation case. They preserve the original primary-step verdict and cannot be presented as retrained architectural improvements.','', '## Provenance and limits','']
     for path,run in loaded:
         digest=hashlib.sha256(path.read_bytes()).hexdigest()
         lines.append(f"- Source result: `{path}`; SHA-256 `{digest}`; GPU job `{run['provenance'].get('job_id')}`; source commit `{run['provenance'].get('source_commit')}`; devices `{run['provenance'].get('device_kind')}`.")
+    for path,run in refined:
+        lines.append(f"- Frozen-checkpoint continuation: `{path}`; SHA-256 `{hashlib.sha256(path.read_bytes()).hexdigest()}`; GPU job `{run['provenance'].get('job_id')}`; pinned mathematical source `{run['frozen_mathematics']['source_commit']}`.")
     lines += ["","The scope is the declared smooth Gaussian-core compact family in two dimensions. Head weights and learned banks are fresh per PDE/boundary configuration. Initial fitting uses full-field initial-state projections, so this first accuracy campaign makes no grid-independent cold-start or speed claim. Results do not establish three-dimensional wave transfer or performance outside this family.","","## Glossary", "",
               "- **Boundary / fixed wall / absorber:** the physical edge condition; zero wall displacement produces sign-reversing reflection, while the local radiation condition approximates outgoing waves.",
               "- **Bank / head / latent coordinates:** spatial neural features, the coefficient function multiplying them, and its internal coordinates.",

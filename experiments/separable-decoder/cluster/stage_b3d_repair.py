@@ -25,10 +25,17 @@ def main():
     parser.add_argument('--env', action='append', default=[])
     parser.add_argument('--hours', type=int, default=2)
     parser.add_argument('--namespace', default='b3d_repair_20260906')
+    parser.add_argument('--gpu-type', choices=['a100', 'h100', 'h200', 'l40s'], default='a100')
+    parser.add_argument('--gpu-constraint', default=None,
+                        help='Default a100-80G for A100; empty string removes a feature constraint')
     args = parser.parse_args()
     assert re.fullmatch(r'[a-z][a-z0-9_]{0,30}', args.label), 'unsafe job label'
     assert 1 <= args.hours <= 20
     assert re.fullmatch(r'[a-z][a-z0-9_]{0,60}', args.namespace), 'unsafe cluster namespace'
+    constraint = args.gpu_constraint if args.gpu_constraint is not None else (
+        'a100-80G' if args.gpu_type == 'a100' else '')
+    assert not constraint or re.fullmatch(r'[a-zA-Z0-9_-]+', constraint), 'unsafe GPU constraint'
+    constraint_line = f'#SBATCH --constraint={constraint}\n' if constraint else ''
     src = Path(__file__).resolve().parent.parent
     repo = src.parents[1]
     stage = src / 'cluster/stage' / args.label
@@ -76,8 +83,8 @@ def main():
     batch = f'''#!/bin/bash
 #SBATCH --job-name=ctol_{'b3da' if architecture else 'b3dr'}_{args.label}
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:a100:1
-#SBATCH --constraint=a100-80G
+#SBATCH --gres=gpu:{args.gpu_type}:1
+{constraint_line.rstrip()}
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=96G
 #SBATCH --time={args.hours:02}:00:00
@@ -114,7 +121,8 @@ env CKPT="$TASK_ROOT/in/checkpoint.pkl" OUT="$TASK_ROOT/out/result.json" TABLE_D
     (record / 'submission.json').write_text(json.dumps(dict(
         label=args.label, script=args.script, source_commit=commit, checkpoint=str(args.checkpoint.resolve()),
         checkpoint_sha256=hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
-        remote=remote, namespace=args.namespace, env=env), indent=2) + '\n')
+        remote=remote, namespace=args.namespace, gpu_type=args.gpu_type,
+        gpu_constraint=constraint, env=env), indent=2) + '\n')
     print(stage)
     print(remote)
 

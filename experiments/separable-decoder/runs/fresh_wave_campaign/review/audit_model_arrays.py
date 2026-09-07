@@ -121,6 +121,24 @@ def main():
             with np.load(arm/'latent_fits.npz') as fitted:
                 assert fitted['initial_starts'].shape[1] == 8
                 np.testing.assert_array_equal(fitted['initial_starts'], fitted['doubled_initial_starts'])
+                repeated_scales = np.repeat(scales[:, 0], observations)
+                residue = (predictions-saved['projected_truth'])/repeated_scales[:, None]
+                normalized_jac = jac/repeated_scales[:, None, None]
+                gradient = np.einsum('trk,tr->tk', normalized_jac, residue)
+                relative_gradient = np.max(abs(gradient), axis=-1)/np.maximum(1., np.linalg.norm(normalized_jac, axis=(-2, -1))*np.linalg.norm(residue, axis=-1))
+                q, _ = np.linalg.qr(normalized_jac, mode='reduced')
+                projected = np.linalg.norm(np.einsum('trk,tr->tk', q, residue), axis=-1)/np.maximum(np.linalg.norm(residue, axis=-1), 1e-10)
+                chosen = fitted['doubled_selected_start']
+                ids = np.arange(len(chosen))
+                expected = fitted['doubled_projected_stationarity'][ids, chosen]
+                row['gradient_discrepancy'] = float(np.max(abs(relative_gradient-fitted['doubled_gradient'])))
+                row['projected_stationarity_discrepancy'] = float(np.max(abs(projected-expected)))
+                assert row['gradient_discrepancy'] < 1e-9, row
+                assert row['projected_stationarity_discrepancy'] < 1e-7, row
+                np.testing.assert_array_equal(chosen, np.argmin(np.where(fitted['doubled_finite'], fitted['doubled_all_objectives'], np.inf), axis=1))
+                np.testing.assert_array_equal(fitted['initial_starts'][:, 1], np.zeros_like(fitted['initial_starts'][:, 1]))
+                trained_starts = parameters['codes'][fitted['fixed_training_indices']]
+                np.testing.assert_array_equal(fitted['initial_starts'][:, 2:], np.broadcast_to(trained_starts, fitted['initial_starts'][:, 2:].shape))
                 row['identical_eight_starts'] = True
         # Validate all saved physical energies in bank coordinates, using the
         # independently assembled edge stiffness, and only permit masked phase NaNs.

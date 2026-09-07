@@ -72,8 +72,8 @@ def main():
         print(json.dumps({'archive_sha256': digest, 'record': str(record)}))
         return
     jid = str(cfg['job_id'])
-    queue = run(['ssh', 'tufts-login', f'squeue -h -j {jid} -o "%i %T"'])
-    if queue.strip():
+    queue = run(['ssh', 'tufts-login', 'squeue -h -u tawal01 -o "%i %T"'])
+    if any(line.split()[0] == jid for line in queue.splitlines() if line.strip()):
         raise RuntimeError('Job remains queued; do not collect a mutable directory')
     accounting = run(['ssh', 'tufts-login', f'sacct -j {jid} --format=JobID,JobName,State,ExitCode,Elapsed,NodeList,AllocTRES -P'])
     (record/'accounting.txt').write_text(accounting)

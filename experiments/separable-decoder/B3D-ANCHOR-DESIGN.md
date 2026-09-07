@@ -1,9 +1,9 @@
 # Burgers 3D protected-anchor head
 
 This implements the protected-head arm of [the common architecture protocol](B3D-ARCH-DESIGN.md).
-Component validation has passed on the local GPU; no architecture training or
-validation-cohort cluster result is claimed here. Independent implementation review
-and the cluster screen remain pending.
+Component validation passed on the local GPU, and the coordinator reviewed the
+implementation before the common cluster screen. Generated results and their
+remaining independent-review status are in [the screen notes](B3D-ANCHOR-NOTES.md).
 
 ## Construction
 
@@ -75,11 +75,12 @@ source /etc/profile.d/jax-mem.sh
 JAX_DEFAULT_MATMUL_PRECISION=highest timeout 55s jaxrun /home/tahmid/Dev/.venv/bin/python -u test_b3d_arch_anchor.py
 ```
 
-The coordinator reviews the implementation before the common validation-only
+The coordinator reviewed the implementation before the common validation-only
 cluster screen. Frozen-bank dimensions, training membership, optimizer seeds,
 training budget, multistart fitting and acceptance gates remain those in the
-common protocol. Cluster namespace: `b3d_anchor_20260906`. No cluster job has been
-submitted by this implementation session.
+common protocol. Cluster namespace: `b3d_anchor_20260906`. The completed screen
+and the earlier cancellation of an unstarted queued attempt are recorded in the
+generated notes. No pilot or rollout was promoted.
 
 ## Glossary
 

@@ -1,0 +1,329 @@
+{
+  "records": [
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/b3d_architecture/mlp128/out/result.json",
+      "model": "b3d_arch_baseline",
+      "name": "mlp_control",
+      "width": 128,
+      "job": "3332190",
+      "source_commit": "8484a9e00b41d0bf79872e14f69ed3c17fc185c9",
+      "status": "verified",
+      "complete": true,
+      "host_affinity_warning": true,
+      "validation_parity_max_absolute": {
+        "target": 0.0,
+        "norm2": 0.0,
+        "perpendicular2": 0.0,
+        "sid": 0.0,
+        "blob_count": 0.0,
+        "velocity_target": 0.0,
+        "velocity_norm2": 0.0,
+        "velocity_perpendicular2": 0.0
+      },
+      "runs": [
+        {
+          "seed": 200,
+          "status": "verified",
+          "mean": 0.05513714940046935,
+          "median": 0.04672066181923695,
+          "worst": 0.17015734022204385,
+          "outliers": 5,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 2.917104280087097e-08,
+          "maximum_invariant": 2.4829000014911804e-07,
+          "minimum_rank": 32,
+          "tangent_mean": 0.21947347224547897
+        },
+        {
+          "seed": 201,
+          "status": "verified",
+          "mean": 0.05492084396286896,
+          "median": 0.04654377477791426,
+          "worst": 0.17165202425234238,
+          "outliers": 4,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 9.989706608647908e-09,
+          "maximum_invariant": 7.951532813435685e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.22053594280280647
+        }
+      ]
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/b3d_architecture/mlp192/out/result.json",
+      "model": "b3d_arch_baseline",
+      "name": "mlp_control",
+      "width": 192,
+      "job": "3332191",
+      "source_commit": "8484a9e00b41d0bf79872e14f69ed3c17fc185c9",
+      "status": "verified",
+      "complete": true,
+      "host_affinity_warning": true,
+      "validation_parity_max_absolute": {
+        "target": 3.552713678800501e-15,
+        "norm2": 4.547473508864641e-13,
+        "perpendicular2": 4.440892098500626e-16,
+        "sid": 0.0,
+        "blob_count": 0.0,
+        "velocity_target": 4.263256414560601e-14,
+        "velocity_norm2": 2.1827872842550278e-11,
+        "velocity_perpendicular2": 2.2737367544323206e-12
+      },
+      "runs": [
+        {
+          "seed": 200,
+          "status": "verified",
+          "mean": 0.05623399328877682,
+          "median": 0.04599069026059293,
+          "worst": 0.18734846415041076,
+          "outliers": 4,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 9.45258850578943e-09,
+          "maximum_invariant": 6.731785337307519e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.21655484831442157
+        },
+        {
+          "seed": 201,
+          "status": "verified",
+          "mean": 0.05556837184742429,
+          "median": 0.04731979095137262,
+          "worst": 0.20043462911642515,
+          "outliers": 3,
+          "unconverged": 1,
+          "worst_is_stationary": true,
+          "maximum_optimality": 5.504878361266131e-06,
+          "maximum_invariant": 3.8115555605196443e-05,
+          "minimum_rank": 32,
+          "tangent_mean": 0.21586302817938952
+        }
+      ]
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-anchor/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+      "model": "b3d_arch_anchor",
+      "name": "protected_anchor",
+      "width": 128,
+      "job": "3336232",
+      "source_commit": "d0167ee8dca5f2aa58befddc141df101e64db60f",
+      "status": "verified",
+      "complete": true,
+      "host_affinity_warning": false,
+      "validation_parity_max_absolute": {
+        "target": 0.0,
+        "norm2": 0.0,
+        "perpendicular2": 0.0,
+        "sid": 0.0,
+        "blob_count": 0.0,
+        "velocity_target": 0.0,
+        "velocity_norm2": 0.0,
+        "velocity_perpendicular2": 0.0
+      },
+      "runs": [
+        {
+          "seed": 200,
+          "status": "verified",
+          "mean": 0.060720019452262325,
+          "median": 0.05115527029028942,
+          "worst": 0.17703012679632565,
+          "outliers": 5,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 8.74180175505138e-09,
+          "maximum_invariant": 5.718226219758724e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.233853054959321
+        },
+        {
+          "seed": 201,
+          "status": "verified",
+          "mean": 0.059484519456131646,
+          "median": 0.0506659434361101,
+          "worst": 0.17878533234446678,
+          "outliers": 6,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 9.292747153361507e-09,
+          "maximum_invariant": 6.727871246777959e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.2307927078125624
+        }
+      ]
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-quadratic/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+      "model": "b3d_arch_quadratic",
+      "name": "quadratic_head",
+      "width": null,
+      "job": "3336338",
+      "source_commit": "24799fe4c9a7e169a43eebf8d1ad62efe3ce0a2b",
+      "status": "verified",
+      "complete": true,
+      "host_affinity_warning": false,
+      "validation_parity_max_absolute": {
+        "target": 3.552713678800501e-15,
+        "norm2": 4.547473508864641e-13,
+        "perpendicular2": 4.440892098500626e-16,
+        "sid": 0.0,
+        "blob_count": 0.0,
+        "velocity_target": 2.842170943040401e-14,
+        "velocity_norm2": 2.1827872842550278e-11,
+        "velocity_perpendicular2": 2.2737367544323206e-12
+      },
+      "runs": [
+        {
+          "seed": 200,
+          "status": "verified",
+          "mean": 0.04689398583286945,
+          "median": 0.03892390165059892,
+          "worst": 0.20305274049820418,
+          "outliers": 2,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 8.162338869157308e-09,
+          "maximum_invariant": 9.64374953003084e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.18059166891670073
+        },
+        {
+          "seed": 201,
+          "status": "verified",
+          "mean": 0.046886303889181156,
+          "median": 0.03887287810828896,
+          "worst": 0.20272908214411875,
+          "outliers": 2,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 7.687744391409038e-09,
+          "maximum_invariant": 7.537142368652949e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.18051378334356943
+        }
+      ]
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-encoder/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+      "model": "b3d_arch_encoder",
+      "name": "shared_encoder",
+      "width": null,
+      "job": "3336240",
+      "source_commit": "5f54f29642192d1d4dff2c80aaca6b46ae3e09ed",
+      "status": "verified",
+      "complete": true,
+      "host_affinity_warning": false,
+      "validation_parity_max_absolute": {
+        "target": 0.0,
+        "norm2": 0.0,
+        "perpendicular2": 0.0,
+        "sid": 0.0,
+        "blob_count": 0.0,
+        "velocity_target": 0.0,
+        "velocity_norm2": 0.0,
+        "velocity_perpendicular2": 0.0
+      },
+      "runs": [
+        {
+          "seed": 200,
+          "status": "verified",
+          "mean": 0.05409712328349313,
+          "median": 0.04550164603999924,
+          "worst": 0.16158242578030138,
+          "outliers": 2,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 9.368968843463877e-09,
+          "maximum_invariant": 7.280468689204438e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.21566329097270293
+        },
+        {
+          "seed": 201,
+          "status": "verified",
+          "mean": 0.054940396010479134,
+          "median": 0.04676314943390136,
+          "worst": 0.1763650663166873,
+          "outliers": 4,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 9.611860249871239e-09,
+          "maximum_invariant": 7.262946269895887e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.21850406577413745
+        }
+      ]
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-mixture/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+      "model": "b3d_arch_mixture",
+      "name": "smooth_mixture",
+      "width": 128,
+      "job": "3336230",
+      "source_commit": "fd986d8d39483f7a1064d9f61e9593ccc5011fbc",
+      "status": "verified",
+      "complete": true,
+      "host_affinity_warning": false,
+      "validation_parity_max_absolute": {
+        "target": 3.552713678800501e-15,
+        "norm2": 6.821210263296962e-13,
+        "perpendicular2": 8.881784197001252e-16,
+        "sid": 0.0,
+        "blob_count": 0.0,
+        "velocity_target": 2.842170943040401e-14,
+        "velocity_norm2": 5.820766091346741e-11,
+        "velocity_perpendicular2": 7.275957614183426e-12
+      },
+      "runs": [
+        {
+          "seed": 200,
+          "status": "verified",
+          "mean": 0.05519007564843502,
+          "median": 0.04652902990283539,
+          "worst": 0.21265062361742268,
+          "outliers": 4,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 9.511716923466846e-09,
+          "maximum_invariant": 7.158444085269884e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.2117314681636676
+        },
+        {
+          "seed": 201,
+          "status": "verified",
+          "mean": 0.05503607889544912,
+          "median": 0.04619719454744462,
+          "worst": 0.18147213356996142,
+          "outliers": 3,
+          "unconverged": 0,
+          "worst_is_stationary": true,
+          "maximum_optimality": 8.710164047708644e-09,
+          "maximum_invariant": 6.402768048755911e-08,
+          "minimum_rank": 32,
+          "tangent_mean": 0.21178644937605845
+        }
+      ]
+    }
+  ],
+  "attempts_without_output": [
+    {
+      "model": "b3d_arch_anchor",
+      "label": "screen",
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-anchor/experiments/separable-decoder/runs/b3d_architecture/screen/submission.json",
+      "remote": "/cluster/tufts/paralab/tawal01/b3d_anchor_20260906/screen",
+      "status": "no_numerical_output",
+      "note": "Pending/canceled/preflight attempt; inspect preserved submission and accounting records."
+    },
+    {
+      "model": "b3d_arch_encoder",
+      "label": "screen",
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-encoder/experiments/separable-decoder/runs/b3d_architecture/screen/submission.json",
+      "remote": "/cluster/tufts/paralab/tawal01/b3d_encoder_20260906/screen",
+      "status": "no_numerical_output",
+      "note": "Pending/canceled/preflight attempt; inspect preserved submission and accounting records."
+    }
+  ],
+  "missing_models": []
+}

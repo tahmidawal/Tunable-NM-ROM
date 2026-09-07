@@ -59,17 +59,29 @@ def audit(path, reference):
                 content = subprocess.check_output(['git', '-C', str(REPO), 'show',
                     f'{config["commit"]}:experiments/separable-decoder/{name[5:]}'])
                 assert hashlib.sha256(content).hexdigest() == expected, name
+            elif name == 'in/checkpoint.pkl':
+                assert expected == config['source_sha256'], 'staged checkpoint provenance'
+            elif name == 'in/reference_table.npz':
+                original = SRC/'runs/b3d_repair/reference/archived_parameter_manifest.npz'
+                assert hashlib.sha256(original.read_bytes()).hexdigest() == expected
         logs = '\n'.join(p.read_text() for p in (record / 'logs').glob('*'))
         assert 'jax_backend=gpu' in logs and config['backend'] == 'gpu'
         assert config['x64'] and config['matmul_precision'] == 'highest'
         assert config['source_sha256'] == reference['config']['source_sha256']
         assert config['source_config'] == reference['config']['source_config']
         assert config['optimizer_seeds'] == [200, 201]
+        assert config['test_table_opened'] is False
         result['host_affinity_warning'] = 'hwloc_set_cpubind' in logs
         for phrase in ('Captured constant', 'captured constant', 'out of memory', 'No space left'):
             assert phrase not in logs, phrase
         for name in ('seed', 'm', 'B', 'c', 'w', 'rho', 'A'):
             assert report['provenance']['fields'][name]['exact'], name
+        provenance = report['provenance']
+        assert provenance['archived_sha256'] == config['source_config']['table_sha256']
+        assert provenance['derived_rtol'] == 8*np.finfo(float).eps
+        for name in ('nu', 's_star'):
+            difference = provenance['fields'][name]['max_relative']
+            assert np.isfinite(difference) and 0 <= difference <= provenance['derived_rtol'], name
         parity = {}
         for name, array in reference['validation_states'].items():
             actual, expected = np.asarray(report['validation_states'][name]), np.asarray(array)
@@ -80,6 +92,8 @@ def audit(path, reference):
             parity[name] = float(np.max(np.abs(actual-expected)))
         result['validation_parity_max_absolute'] = parity
         result['runs'] = []
+        if report.get('complete'):
+            assert [row['seed'] for row in report['runs']] == config['optimizer_seeds']
         for row in report.get('runs', []):
             checkpoint = path.parent / f'{config["name"]}_seed{row["seed"]}.pkl'
             assert hashlib.sha256(checkpoint.read_bytes()).hexdigest() == row['checkpoint_sha256']
@@ -92,6 +106,7 @@ def audit(path, reference):
             if not row.get('fits'):
                 result['runs'].append(dict(seed=row['seed'], status='incomplete_fit'))
                 continue
+            assert [f['budget'] for f in row['fits']] == [400, 800]
             fit = row['fits'][-1]
             errors, optimality = np.asarray(fit['error']), np.asarray(fit['optimality'])
             assert np.isfinite(errors).all() and np.isfinite(optimality).all()
@@ -101,6 +116,8 @@ def audit(path, reference):
             assert np.asarray(fit['all_errors']).shape == (256, 8)
             np.testing.assert_allclose(np.min(fit['all_errors'], axis=1), errors, rtol=0, atol=0)
             assert_summary([g['tangent_relative'] for g in fit['geometry']], fit['tangent_summary'])
+            budget_change = np.max(np.abs(errors-np.asarray(row['fits'][0]['error'])) / row['fits'][0]['error'])
+            np.testing.assert_allclose(budget_change, row['budget_change_max'], rtol=1e-13, atol=1e-15)
             seed_reference = next(x for x in reference['runs'] if x['seed'] == row['seed'])
             np.testing.assert_array_equal(row['start_snapshot_ids'], seed_reference['start_snapshot_ids'])
             result['runs'].append(dict(seed=row['seed'], status='verified',

@@ -29,6 +29,9 @@ def label(config):
 def main():
     audit = json.loads((HERE/'review/campaign-audit.json').read_text())
     old_pilot = json.loads((SRC/'runs/b3d_repair/pilot_head33/out/result.json').read_text())
+    reference = json.loads((HERE/'mlp128/out/result.json').read_text())
+    cfg = reference['config']['source_config']
+    schedule = reference['runs'][0]['training']
     pod = old_pilot['gates']['D4_heldout_oracle_validation']['pod_K_floor_mean']
     mean_limit = min(.05, .5*pod)
     rows, incomplete = [], []
@@ -57,6 +60,12 @@ def main():
         state + 'Generated from audited raw JSONs across the isolated worktrees. These are bounded '
         'validation results under the recorded training schedule; they do not establish '
         'global representation minima, rollout accuracy, or reflective-wave transfer.', '',
+        f"Grid nodes per axis: {cfg['N']}; latent coordinates: {cfg['k']}; spatial bank size: {cfg['r']}. "
+        f"Each repeat uses {schedule['steps']} updates, learning rate {schedule['lr']:.6g}, "
+        f"batch {schedule['batch']}, {cfg['max_snaps']} training states and "
+        f"{len(reference['validation_states']['sid'])} validation states. "
+        f"The unrestricted bank projection has mean error {pct(reference['bank_error']['mean'])} "
+        f"and worst error {pct(reference['bank_error']['worst'])}.", '',
         f'The inherited POD comparator gives an effective mean-error ceiling of {pct(mean_limit)} '
         f'(POD mean {pct(pod)}). The worst-error ceiling is {pct(.15)}. '
         'Passing this preliminary screen still requires the actual inherited pilot, including '
@@ -102,6 +111,14 @@ def main():
             lines.append(lead + f"minimum sampled Jacobian singular value {d['minimum_jacobian_singular_value']:.6g}; "
                 f"anchor-coordinate recovery error {d['coordinate_recovery_max_absolute']:.6e}; "
                 f"maximum sampled condition number {d['maximum_jacobian_condition']:.6g}.")
+        elif row['config']['model'] == 'b3d_arch_quadratic':
+            report = json.loads(row['path'].read_text())
+            ids = np.asarray(report['validation_states']['sid'])
+            outliers = ids[np.asarray(row['fit']['error']) > .15]
+            lines.append(lead + 'outlier snapshot IDs ' + ', '.join(str(int(x)) for x in outliers) +
+                f"; all are initial states: {bool(np.all(outliers % 51 == 0))}. "
+                'The initial parameters are deterministic, so these repeats vary minibatch randomness '
+                'rather than data or parameter initialization.')
         elif row['config']['model'] == 'b3d_arch_mixture':
             usage = ', '.join(pct(x) for x in d['mean_usage'])
             lines.append(lead + f"average expert weights {usage}; mean routing entropy "
@@ -111,6 +128,28 @@ def main():
                 'these validation codes and are not acceptance gates.')
     if not any(row['run'].get('architecture_diagnostics') for row in rows):
         lines.append('No completed candidate-specific diagnostics yet.')
+    quadratic = [row for row in rows if row['config']['model'] == 'b3d_arch_quadratic']
+    if len(quadratic) == 2:
+        mean_gains, tangent_gains = [], []
+        for row in quadratic:
+            control = next(x for x in rows if x['label'] == 'MLP control 128' and
+                           x['run']['seed'] == row['run']['seed'])
+            mean_gains.append(1-row['fit']['summary']['mean']/control['fit']['summary']['mean'])
+            tangent_gains.append(1-row['fit']['tangent_summary']['mean']/control['fit']['tangent_summary']['mean'])
+        lines += ['', '## Interpretation', '',
+            f"Quadratic lowers mean error by {pct(min(mean_gains))}–{pct(max(mean_gains))} "
+            f"and tangent mean by {pct(min(tangent_gains))}–{pct(max(tangent_gains))} "
+            'relative to the matched narrow MLP. These are relative improvements, not '
+            'percentage-point differences. It is the strongest candidate in this bounded '
+            'screen, but both the effective mean and worst-error conditions remain unsatisfied. '
+            'Its large outliers are unseen initial states; converged local fitting does not '
+            'certify a global minimum.', '',
+            'The fixed protected anchor preserves its intended geometry but worsens state '
+            'and tangent accuracy. Shared encoder training gives an inconsistent reconstruction '
+            'gain across repeats, while direct encoding has a further error gap. The smooth '
+            'mixture improves training and tangent errors without improving validation mean '
+            'or worst error; its declared collapse tests do not explain that failure. '
+            'These findings apply to the tested forms, bank, data and training schedule.', '']
     lines += ['', '## Convergence and provenance', '']
     for row in rows:
         run, fit = row['run'], row['fit']
@@ -131,6 +170,8 @@ def main():
         '[Audit evidence](runs/b3d_architecture/review/campaign-audit.json).', '',
         '## Incomplete or invalid attempts', '']
     lines += incomplete or ['None among the discovered result files.']
+    if audit.get('attempts_without_output'):
+        lines.append('')
     for attempt in audit.get('attempts_without_output', []):
         lines.append(f"- [{attempt['model']}, attempt {attempt['label']}]({attempt['path']}): no numerical output; "
                      'preserved submission/accounting records distinguish queue cancellation from execution failure.')

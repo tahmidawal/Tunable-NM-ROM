@@ -1,0 +1,533 @@
+{
+  "scope": "Root NumPy audit of preserved wave common-grid outputs and paired accounting.\n\nNo production solver import, training or PDE regeneration. The owner separately\naudits full-grid ROM reconstruction, bank weights, affine dynamics and geometry.\nThis checks each declared query configuration and its preserved physical metrics.\n",
+  "source_json": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/cluster/out/pilot/result.json",
+  "source_json_sha256": "e6ffda759faf5bf7e468e789f068b435b4a3e3f7ed6c01b9653f7c8cbac18063",
+  "job_id": "3353136",
+  "source_commit": "a0c4d0a7d7b59b05615846e61df0499ef5de4f62",
+  "configurations_verified": 52,
+  "verified_invocations": 156,
+  "maximum_metric_disagreement": 3.1086244689504383e-15,
+  "rows": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.3295155570376664,
+      "worst_initial_normalized": 0.36963821073882563,
+      "final_current_relative_energy": 0.369626667537965
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.63112620904576,
+      "worst_initial_normalized": 0.3696376317927117,
+      "final_current_relative_energy": 0.3696260886099307
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.013379199896007776,
+      "worst_initial_normalized": 0.22459290158043693,
+      "final_current_relative_energy": 0.21964937447245897
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.013771345955319703,
+      "worst_initial_normalized": 0.03487186363671301,
+      "final_current_relative_energy": 0.034003558724328885
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.01418474002275616,
+      "worst_initial_normalized": 0.028885122964667526,
+      "final_current_relative_energy": 0.02888422092919993
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "method": "dst",
+      "setting": 0.0,
+      "query_median_seconds": 0.013506300980225205,
+      "worst_initial_normalized": 0.003891029511148145,
+      "final_current_relative_energy": 0.0038909080006173154
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.3403341859811917,
+      "worst_initial_normalized": 0.5536707821068044,
+      "final_current_relative_energy": 0.5536487655736985
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.654340712935664,
+      "worst_initial_normalized": 0.5536701845349725,
+      "final_current_relative_energy": 0.5536481680256287
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.014229751075617969,
+      "worst_initial_normalized": 0.3020463943947505,
+      "final_current_relative_energy": 0.3016276730298444
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.014090948970988393,
+      "worst_initial_normalized": 0.051579270300257794,
+      "final_current_relative_energy": 0.05157721926785939
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.013448011013679206,
+      "worst_initial_normalized": 0.032126029806719136,
+      "final_current_relative_energy": 0.03212475232590985
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "method": "dst",
+      "setting": 0.0,
+      "query_median_seconds": 0.013770457007922232,
+      "worst_initial_normalized": 0.005047416429151738,
+      "final_current_relative_energy": 0.0050472157203289075
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.378549162996933,
+      "worst_initial_normalized": 0.368230822701146,
+      "final_current_relative_energy": 0.36821932345072755
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.678109787986614,
+      "worst_initial_normalized": 0.3682302434752825,
+      "final_current_relative_energy": 0.36821874424295237
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.06107374292332679,
+      "worst_initial_normalized": 0.22459962394084748,
+      "final_current_relative_energy": 0.21967816398176818
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.060866462998092175,
+      "worst_initial_normalized": 0.03490172281044984,
+      "final_current_relative_energy": 0.03426059174774725
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.06162455107551068,
+      "worst_initial_normalized": 0.02933630852862336,
+      "final_current_relative_energy": 0.029335392403363535
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "method": "dst",
+      "setting": 0.0,
+      "query_median_seconds": 0.0625522390473634,
+      "worst_initial_normalized": 0.0010988567106486262,
+      "final_current_relative_energy": 0.0010988223951385963
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.3834333119448274,
+      "worst_initial_normalized": 0.5520433855939133,
+      "final_current_relative_energy": 0.5520214337736842
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.681847319938242,
+      "worst_initial_normalized": 0.5520427865864607,
+      "final_current_relative_energy": 0.5520208347900509
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.06029241008218378,
+      "worst_initial_normalized": 0.30204895919633057,
+      "final_current_relative_energy": 0.30163912118105424
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.05976288509555161,
+      "worst_initial_normalized": 0.051888092366904615,
+      "final_current_relative_energy": 0.05188602905430022
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.06221104005817324,
+      "worst_initial_normalized": 0.032896205410851094,
+      "final_current_relative_energy": 0.03289489730426701
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "method": "dst",
+      "setting": 0.0,
+      "query_median_seconds": 0.06210938096046448,
+      "worst_initial_normalized": 0.0014446213838727625,
+      "final_current_relative_energy": 0.0014445639389875499
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.24636480899062,
+      "worst_initial_normalized": 0.07655351803253822,
+      "final_current_relative_energy": 2.9296012482792815
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.471882782992907,
+      "worst_initial_normalized": 0.07655351020992333,
+      "final_current_relative_energy": 2.9296007226496465
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.010901911067776382,
+      "worst_initial_normalized": 0.14976076540668865,
+      "final_current_relative_energy": 21.452048657829515
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.01106802502181381,
+      "worst_initial_normalized": 0.05348826514199955,
+      "final_current_relative_energy": 2.6966415750581683
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.01131010102108121,
+      "worst_initial_normalized": 0.026748078812943263,
+      "final_current_relative_energy": 1.3312384458253759
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "method": "rk4",
+      "setting": 0.45,
+      "query_median_seconds": 0.09027263696771115,
+      "worst_initial_normalized": 0.0007352338415458144,
+      "final_current_relative_energy": 0.002376064991474489
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "method": "rk4",
+      "setting": 0.225,
+      "query_median_seconds": 0.1722262060502544,
+      "worst_initial_normalized": 0.0007347623998958867,
+      "final_current_relative_energy": 0.002384431238146506
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.2695575390243903,
+      "worst_initial_normalized": 0.07497325732245659,
+      "final_current_relative_energy": 4.108230842986142
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.50965623697266,
+      "worst_initial_normalized": 0.07497323533942225,
+      "final_current_relative_energy": 4.1082303136566605
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.011171943042427301,
+      "worst_initial_normalized": 0.1867551540938794,
+      "final_current_relative_energy": 46.23546903013422
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.011834333068691194,
+      "worst_initial_normalized": 0.05923656777773587,
+      "final_current_relative_energy": 3.6502819261066772
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.011505373055115342,
+      "worst_initial_normalized": 0.03020590795225824,
+      "final_current_relative_energy": 2.1565018861737917
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "method": "rk4",
+      "setting": 0.45,
+      "query_median_seconds": 0.09930176206398755,
+      "worst_initial_normalized": 0.0008748139956058673,
+      "final_current_relative_energy": 0.003361509785724254
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "method": "rk4",
+      "setting": 0.225,
+      "query_median_seconds": 0.18846840900368989,
+      "worst_initial_normalized": 0.0008742223482569953,
+      "final_current_relative_energy": 0.0033768827487106108
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.2916232589632273,
+      "worst_initial_normalized": 0.0765434651702043,
+      "final_current_relative_energy": 2.928081319495076
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.505116030923091,
+      "worst_initial_normalized": 0.07654345753618917,
+      "final_current_relative_energy": 2.928080794033083
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.061752910958603024,
+      "worst_initial_normalized": 0.14966955641935367,
+      "final_current_relative_energy": 21.450418612706155
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.04732774698641151,
+      "worst_initial_normalized": 0.05342489120603673,
+      "final_current_relative_energy": 2.697653071071243
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.06229807704221457,
+      "worst_initial_normalized": 0.026735974035822972,
+      "final_current_relative_energy": 1.329149025151539
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "method": "rk4",
+      "setting": 0.45,
+      "query_median_seconds": 0.2608977919444442,
+      "worst_initial_normalized": 0.0001626996915428194,
+      "final_current_relative_energy": 0.000472582013334896
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "method": "rk4",
+      "setting": 0.225,
+      "query_median_seconds": 0.48574145103339106,
+      "worst_initial_normalized": 0.00016261663442034168,
+      "final_current_relative_energy": 0.0004725891184336408
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.0025,
+      "query_median_seconds": 3.310079427086748,
+      "worst_initial_normalized": 0.0749154532226574,
+      "final_current_relative_energy": 4.107045017205204
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "method": "rom",
+      "setting": 0.00125,
+      "query_median_seconds": 6.532724665012211,
+      "worst_initial_normalized": 0.0749154316178633,
+      "final_current_relative_energy": 4.107044489511178
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "method": "affine16",
+      "setting": 0.0,
+      "query_median_seconds": 0.061543195974081755,
+      "worst_initial_normalized": 0.18666429674848337,
+      "final_current_relative_energy": 46.23613329231996
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "method": "affine32",
+      "setting": 0.0,
+      "query_median_seconds": 0.06260399799793959,
+      "worst_initial_normalized": 0.05912747223141068,
+      "final_current_relative_energy": 3.6500767209565996
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "method": "full64",
+      "setting": 0.0,
+      "query_median_seconds": 0.06279492296744138,
+      "worst_initial_normalized": 0.03020143163980105,
+      "final_current_relative_energy": 2.1548827481850252
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "method": "rk4",
+      "setting": 0.45,
+      "query_median_seconds": 0.29816128103993833,
+      "worst_initial_normalized": 0.0001950750965774425,
+      "final_current_relative_energy": 0.0006684177554280649
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "method": "rk4",
+      "setting": 0.225,
+      "query_median_seconds": 0.5317341849440709,
+      "worst_initial_normalized": 0.00019496794085224945,
+      "final_current_relative_energy": 0.0006684191700298103
+    }
+  ],
+  "rigorous_reference_bound": null
+}

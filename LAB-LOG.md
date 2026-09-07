@@ -97,6 +97,9 @@ with matched linear dimensions. All job outputs were checksum-pulled and exact
 remote directories deleted. Native checkpoints are on the wave branch; complete
 archives and independent audits are on the repair branch. No merge performed.
 Canonical generated report: `reports/2026-09-07-fresh-wave-head-transfer.md`.
+The reported accuracy ceiling uses fixed initial-state normalization. New saved-field
+visualizations show that this does not establish accuracy relative to a nearly
+vanished absorbing field; both normalizations are now shown in the same report.
 The final cohort remains unopened. Later incompressible
 NS/further NS cases remain open; waves are not a mathematical prerequisite for them.
 
@@ -6469,3 +6472,17 @@ Next proposed controlled experiment: retain the verified FOM and learned bank, c
 Canonical generated report: `reports/2026-09-07-fresh-wave-head-transfer.md`; source generator, figures and reproducibility manifest are beside it. The report and this closing table derive numerical values directly from immutable JSONs.
 
 Final saved milestones: wave branch `906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e`, repair branch `098933ecc87dbdf69f3637cd98e8446539f39a1c`. Canonical report SHA-256 `878f9723c9786801751c067279a051131ae5bc38364030e300eb6aedb1dfe1d6`; reproduction inputs and generator hashes are recorded in `reports/2026-09-07-fresh-wave-head-transfer.manifest.json`. Independent final review disposition is stored at `worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/final-review-disposition.json`. A read-only merge-tree check found no conflicts; no branch merge was performed.
+
+
+### Spatial wave visualizations and relative-error clarification
+
+User asked whether the errors were relative and requested actual spatial comparisons. Continuing in the existing repair tree, generated displacement and velocity figures from checksum-verified saved truth, bank tables and rollout coefficients. No simulation, training, fitting, new data or cluster job was added. The first validation case and first optimizer repeat were chosen by index identically for both boundaries; these are illustrative snapshots, not a cohort summary. No branch merge was requested or performed.
+
+Earlier campaign errors are normalized by initial-state scales. The new field labels also show instantaneous relative L2 error using the current reference norm; zero reference velocity is labeled undefined. Passing the old initial-normalized ceiling does not establish high relative accuracy for a decayed field. The original metrics and verdicts remain unchanged.
+
+| Boundary | Selected case | Seed | Final saved time | MLP displacement / initial norm | MLP displacement / current norm | Maximum saved-metric audit discrepancy |
+|---|---|---|---|---|---|---|
+| reflective | 0 | 691200 | 2.4 | 0.11978251396022682 | 0.26975450124108941 | 2.7755575615628914e-17 |
+| absorbing | 0 | 691200 | 2.4 | 0.004349636944472754 | 2.2700777687112628 | 3.4694469519536142e-18 |
+
+All numerical entries above were generated from `reports/figures/2026-09-07-fresh-wave-fields.json`. The field plotting script is `reports/plot_2026_09_07_fresh_wave_fields.py`; figures and PDF exports are beside the existing canonical report. Color scales match reference and predictions within each time column; they may vary across time, and errors are not divided pointwise. The generated report now includes both normalization definitions, the snapshot table and spatial images. Its former content hash remains in the preceding historical entry; the updated reproducibility manifest records the current report hash.

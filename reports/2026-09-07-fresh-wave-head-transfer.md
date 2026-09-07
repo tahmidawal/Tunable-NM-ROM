@@ -226,6 +226,33 @@ The first continuation wrapper used regenerated normalization values after check
 
 The scope is the declared smooth Gaussian-core compact family in two dimensions. Head weights and learned banks are fresh per PDE/boundary configuration. Initial fitting uses full-field initial-state projections, so this first accuracy campaign makes no grid-independent cold-start or speed claim. Results do not establish three-dimensional wave transfer or performance outside this family.
 
+## Actual spatial fields and the normalization distinction
+
+The earlier campaign tables use fixed initial-state scales. For displacement, $e_{u,0}(t)=\|u_{\mathrm{ROM}}(t)-u_{\mathrm{ref}}(t)\|_M/\|u_{\mathrm{ref}}(0)\|_M$. A different, instantaneous relative error is $e_{u,t}(t)=\|u_{\mathrm{ROM}}(t)-u_{\mathrm{ref}}(t)\|_M/\|u_{\mathrm{ref}}(t)\|_M$. The latter can be large when an absorbing reference has decayed, even though the absolute difference and initial-normalized error are small. A reference norm that vanishes makes instantaneous relative error undefined; the velocity figures label this explicitly.
+
+These additional diagnostics are computed from the checked saved fields. They do not replace the predeclared campaign metric or its verdicts. In particular, passing the original full-bank linear ceiling does not establish accurate late-time relative reconstruction of a nearly vanished field.
+
+The spatial comparison uses the same first validation case and first optimizer repeat for both boundaries, selected by index before inspecting errors. It is an illustration rather than a cohort summary. No PDE solve, fitting, training, or final-test evaluation was added. The table gives MLP errors at the saved snapshot times:
+
+| Boundary | Case | Optimizer seed | Time | Displacement error / initial norm | Displacement error / current norm | State error / initial energy norm |
+|---|---|---|---|---|---|---|
+| reflective | 0 | 691200 | 0 | 1.8417% | 1.8417% | 4.3843% |
+| reflective | 0 | 691200 | 0.8 | 4.5344% | 6.1669% | 11.6910% |
+| reflective | 0 | 691200 | 1.6 | 8.3924% | 11.5769% | 17.0286% |
+| reflective | 0 | 691200 | 2.4 | 11.9783% | 26.9755% | 36.9295% |
+| absorbing | 0 | 691200 | 0 | 1.6786% | 1.6786% | 4.1595% |
+| absorbing | 0 | 691200 | 0.8 | 1.8147% | 9.5546% | 4.9852% |
+| absorbing | 0 | 691200 | 1.6 | 0.9584% | 48.7477% | 1.9320% |
+| absorbing | 0 | 691200 | 2.4 | 0.4350% | 227.0078% | 0.6548% |
+
+![Reflective spatial displacement comparison](figures/2026-09-07-fresh-wave-reflective-displacement-fields.png)
+
+![Absorbing spatial displacement comparison](figures/2026-09-07-fresh-wave-absorbing-displacement-fields.png)
+
+Rows show reference, unrestricted learned-bank linear evolution, MLP evolution, and absolute MLP difference. Field colors share limits within each time column; limits can change across time. The error range is at least the field amplitude and is expanded when needed to avoid clipping, so small differences are not magnified by an independently stretched color map. The lower row is an absolute difference, never division by individual field values.
+
+Corresponding velocity fields: [reflective](figures/2026-09-07-fresh-wave-reflective-velocity-fields.png), [absorbing](figures/2026-09-07-fresh-wave-absorbing-velocity-fields.png). The labels show both fixed initial-state scaling and normalization by the current velocity norm.
+
 ## Figures
 
 ![Median and worst trajectory-maximum errors](figures/2026-09-07-fresh-wave-results.png)
@@ -257,3 +284,4 @@ These are independently verified reference fields for a predeclared off-center c
 - **Engineering target:** the declared provisional accuracy/completion requirement; satisfying it is specific to this bounded family and reference budget.
 
 - **Interquartile spread / confidence interval:** the middle half of plotted case/repeat values, and an interval describing statistical estimation uncertainty; the figures show only the former.
+- **Fixed-scale / instantaneous relative error:** error divided by an initial reference scale, or by the reference magnitude at the current time. The two answer different accuracy questions when the reference decays.

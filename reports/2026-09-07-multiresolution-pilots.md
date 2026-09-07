@@ -112,6 +112,36 @@ The table uses a budget of `180` iterations and `4` training-code starting guess
 
 [Complete Burgers follow-up findings](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md).
 
+### Burgers: larger steps save some cost but introduce solver-limit effects
+
+Source `ffd57ee68cd1a1a61503556135d74220a0ca2fa0`, job `3353574`. This keeps the frozen decoder, larger-budget Gauss initialization, physical cases and small-improvement stopping rule fixed. Every returned initial field agrees across the step-size controls. Both ROM and efficient same/coarse-grid FOM candidates are measured again within this job.
+
+| Output intervals | ROM step | Worst complete-grid error (%) | Complete query (ms) | Evolution / first-step budget exits |
+|---|---:|---:|---:|---:|
+| 512 | 0.005 | 3.7133 | 40.857 | 0 / 0 |
+| 512 | 0.01 | 4.6194 | 35.73 | 9 / 6 |
+| 512 | 0.025 | 8.585 | 31.94 | 12 / 12 |
+| 512 | 0.05 | 21.841 | 27.438 | 21 / 12 |
+| 1024 | 0.005 | 3.9076 | 54.57 | 0 / 0 |
+| 1024 | 0.01 | 4.6351 | 49.463 | 6 / 6 |
+| 1024 | 0.025 | 8.8998 | 46.457 | 12 / 12 |
+| 1024 | 0.05 | 21.913 | 42.425 | 18 / 12 |
+
+Exit counts include all timing repetitions. Fewer time steps do not produce a proportional reduction in nonlinear work: larger steps require more solver trials, and several hit the configured budget. The existing predictor already extrapolates previous latent states when that reduces the weak residual; it has no previous-step history at startup. The larger-step accuracy changes therefore combine time discretization and incomplete nonlinear solves. They do not establish the error of a fully converged time integrator.
+
+| Output intervals | Empirical target (%) | Selected ROM step | ROM / FOM envelope query (ms) | Paired FOM/ROM |
+|---|---:|---:|---:|---:|
+| 512 | 10 | 0.025 | 31.94 / 12.147 | 0.39096 |
+| 512 | 5 | 0.01 | 35.73 / 12.147 | 0.33999 |
+| 1024 | 10 | 0.025 | 46.457 / 24.903 | 0.55971 |
+| 1024 | 5 | 0.01 | 49.463 / 24.903 | 0.52388 |
+
+The efficient FOM envelope remains faster at the qualified development targets. Physical target qualification uses the explicit empirical reference allowance and is not a stationarity certificate. The native report retains initial/later errors, complete-grid and common-grid margins, staged component diagnostics, every FOM candidate and every configured-stop count.
+
+The owner reconstructs 172 dense output artifacts and verifies repeat hashes for all 516 timed calls; the largest complete-grid metric disagreement is `7.21645e-16`. Root independently checks their common-grid errors, with maximum disagreement `8.326673e-17`. There are 0 nonfinite calls and 0 FOM tolerance failures. Independent final confirmation remains open.
+
+[Complete Burgers timestep findings](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md).
+
 All cost ratios in this report use ratios of per-case timing medians before the cohort median. Some native exploratory reports also retain medians of per-repetition ratios or select configurations by the pooled median across all repetitions under an explicit different label; those statistics are not interchangeable.
 
 ## Continued development: controlled training and solver changes
@@ -227,6 +257,31 @@ All 8 nonlinear time-step comparisons pass, with maximum required difference `1.
 
 [Complete wave dynamics findings](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/FINDINGS.md). [Wave error evolution](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/dynamics-error-evolution.png).
 
+### Absorbing waves: a missing conservation property is a concrete diagnostic
+
+Read-only postprocessing of the archived dynamics run checks a global moment preserved by its full discrete equations:
+
+$$I(t)=\langle 1,v(t)\rangle_M+c\langle 1,u(t)\rangle_B,\qquad \dot I=0.$$
+
+Here $M$ contains area integration weights, $B$ contains outgoing-boundary weights including both corner contributions, and $c$ is the supplied speed. The native diagnostic derives this identity from the actual discrete Laplacian and damping. At 512 intervals, the relative error in projecting the spatial constant into the learned bank is `0.004093844`. The reduced moment-generator rows are nonzero: this bank does not preserve the original invariant for general states.
+
+| Intervals | Case | Method | Initial moment error | Maximum drift from own start | Final moment error |
+|---|---:|---|---:|---:|---:|
+| 512 | 0 | rom | 0.006142049 | 0.01738408 | -0.001512215 |
+| 512 | 0 | affine16 | 0.001467529 | 0.02290407 | 0.006978501 |
+| 512 | 0 | affine32 | -9.881988e-05 | 0.001557765 | -0.0007796877 |
+| 512 | 0 | full64 | 0.0007440567 | 0.0008986995 | -3.089903e-05 |
+| 512 | 1 | rom | 0.01649773 | 0.01823518 | -0.001492485 |
+| 512 | 1 | affine16 | 0.0006066674 | 0.02146288 | 0.01165329 |
+| 512 | 1 | affine32 | 0.0006058239 | 0.001310659 | 0.0002725378 |
+| 512 | 1 | full64 | -0.0009765562 | 0.0007404492 | -0.001598021 |
+
+The saved full references have maximum moment drift `4.336809e-17` on this mesh. The table separates initialization error from subsequent drift; its entries are signed moment errors or absolute drift, not relative field errors. Even unrestricted bank projection changes the input moment. The native findings retain that quantity separately from nonlinear fitting error.
+
+This establishes a missing discrete conservation property. It does not establish how much of the late physical error it causes. Adding a constant test direction and enforcing the initial moment are proposed separate interventions; neither has been tested here, and preserving this moment alone would not certify local-field accuracy.
+
+[Moment formulas, checks and complete traces](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/ABSORBING-MOMENT.md).
+
 ## Next experiments justified by the diagnostics
 
 - **Burgers:** the corrected full rollout now supports the stated empirical development targets. Test larger reduced time steps against the same physical reference and efficient FOM envelope; the current reduced evolution is still costly. Preserve the initial-condition family and charge full input/output.
@@ -271,3 +326,5 @@ Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.p
 - **Initialization library / gate / factorial:** stored training codes used to start a solve / a predeclared requirement for continuing an experiment / crossing independently varied choices to distinguish their effects.
 - **Gauss–Jordan / backward error / fallback / solver counter / replay:** elimination for the small latent linear system / residual of the computed linear solution relative to its data / guarded use of the original solver / count of optimization steps or evaluations / instrumented recomputation of a saved solve.
 - **Affine / phase dimension / tangent velocity / normal force / curvature:** linear map plus a constant offset / displacement and velocity coordinate count / velocity representable by local decoder derivatives / weak acceleration outside those derivative directions / acceleration contributed by the bending decoder map.
+- **Moment / invariant / constant test / drift:** weighted global combination of displacement and velocity / quantity the discrete equations preserve / spatially constant function used to test those equations / change from a method's own initial value.
+- **First-step budget exit / predictor:** iteration limit reached at the first evolution step / proposed next latent state extrapolated from earlier states and checked by the weak residual.

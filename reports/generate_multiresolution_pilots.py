@@ -36,10 +36,15 @@ FILES = {
     'burgers_rollout_summary': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/SUMMARY.json',
     'burgers_rollout_audit': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/AUDIT.json',
     'burgers_rollout_review': REPAIR/'burgers_rollout04_review.json',
+    'burgers_steps': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/steps05/out/pilot.json',
+    'burgers_steps_summary': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/steps05/SUMMARY.json',
+    'burgers_steps_audit': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/steps05/AUDIT.json',
+    'burgers_steps_review': REPAIR/'burgers_steps05_review.json',
     'wave_dynamics': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/cluster/out/pilot/result.json',
     'wave_dynamics_summary': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/summary.json',
     'wave_dynamics_audit': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/audit.json',
     'wave_dynamics_review': REPAIR/'wave_dynamics02_review.json',
+    'wave_moment': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/absorbing-moment.json',
 }
 
 
@@ -203,6 +208,8 @@ def main():
         '- **Initialization library / gate / factorial:** stored training codes used to start a solve / a predeclared requirement for continuing an experiment / crossing independently varied choices to distinguish their effects.',
         '- **Gauss–Jordan / backward error / fallback / solver counter / replay:** elimination for the small latent linear system / residual of the computed linear solution relative to its data / guarded use of the original solver / count of optimization steps or evaluations / instrumented recomputation of a saved solve.',
         '- **Affine / phase dimension / tangent velocity / normal force / curvature:** linear map plus a constant offset / displacement and velocity coordinate count / velocity representable by local decoder derivatives / weak acceleration outside those derivative directions / acceleration contributed by the bending decoder map.',
+        '- **Moment / invariant / constant test / drift:** weighted global combination of displacement and velocity / quantity the discrete equations preserve / spatially constant function used to test those equations / change from a method\'s own initial value.',
+        '- **First-step budget exit / predictor:** iteration limit reached at the first evolution step / proposed next latent state extrapolated from earlier states and checked by the weak residual.',
     ]
     followup_lines, followup_values = followups(data, manifest)
     development_lines, development_values = continued_development(data, manifest)
@@ -273,6 +280,9 @@ def followups(data, manifest):
     burgers_lines, burgers_values = burgers_followups(data, manifest)
     lines += burgers_lines
     values.update(burgers_values)
+    steps_lines, steps_values = burgers_timesteps(data, manifest)
+    lines += steps_lines
+    values.update(steps_values)
     lines += ['All cost ratios in this report use ratios of per-case timing medians before the cohort median. '
         'Some native exploratory reports also retain medians of per-repetition ratios or select configurations by the pooled median across all repetitions under an explicit different label; those statistics are not interchangeable.', '']
     return lines, values
@@ -465,6 +475,9 @@ def continued_development(data, manifest):
     wave_lines, wave_values = wave_dynamics(data, manifest)
     lines += wave_lines
     values.update(wave_values)
+    moment_lines, moment_values = wave_moment(data, manifest)
+    lines += moment_lines
+    values.update(moment_values)
     return lines, values
 
 
@@ -517,6 +530,56 @@ def corrected_burgers_rollout(data, manifest):
         f"There are {audit['nonfinite_invocations']} nonfinite outputs and {audit['fom_nonlinear_tolerance_failures']} FOM tolerance failures. "
         'The reference margin is empirical and independent final confirmation remains open.', '',
         link(ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md', 'Complete corrected Burgers rollout findings')+'.', '']
+    return lines, values
+
+
+def burgers_timesteps(data, manifest):
+    pilot, summary = data['burgers_steps'], data['burgers_steps_summary']
+    audit, review = data['burgers_steps_audit'], data['burgers_steps_review']
+    assert pilot['complete'] and pilot['network_weights_frozen']
+    assert audit['source_sha256'] == review['source_json_sha256'] == manifest['burgers_steps']['sha256']
+    assert pilot['checkpoint_sha256'] == data['burgers_rollout']['checkpoint_sha256']
+    assert pilot['physical_cases'] == data['burgers_rollout']['physical_cases']
+    assert audit['output_checksums_verified'] and audit['source_hashes_against_commits_verified']
+    assert audit['invocations_verified'] == review['verified_invocations'] == len(pilot['invocations'])
+    values = {'burgers_timesteps': [], 'burgers_timestep_envelope': []}
+    lines = ['### Burgers: larger steps save some cost but introduce solver-limit effects', '',
+        f"Source `{pilot['commit']}`, job `{pilot['job_id']}`. This keeps the frozen decoder, larger-budget Gauss initialization, physical cases and small-improvement stopping rule fixed. "
+        'Every returned initial field agrees across the step-size controls. Both ROM and efficient same/coarse-grid FOM candidates are measured again within this job.', '',
+        '| Output intervals | ROM step | Worst complete-grid error (%) | Complete query (ms) | Evolution / first-step budget exits |',
+        '|---|---:|---:|---:|---:|']
+    for row in sorted(summary['configurations'], key=lambda r: (r['intervals'], r['dt'], r['name'])):
+        if row['method'] != 'rom':
+            continue
+        value = dict(intervals=row['intervals'], dt=row['dt'], full_grid_error=row['dense']['worst'],
+            common_error=row['common']['worst'], rom_ms=row['ms'],
+            evolution_budget_stops=row['evolution_budget_stops'], first_step_budget_stops=row['first_step_budget_stops'])
+        values['burgers_timesteps'].append(value)
+        lines.append(f"| {row['intervals']} | {row['dt']:g} | {100*value['full_grid_error']:.5g} | {row['ms']:.5g} | {row['evolution_budget_stops']} / {row['first_step_budget_stops']} |")
+    lines += ['', 'Exit counts include all timing repetitions. Fewer time steps do not produce a proportional reduction in nonlinear work: larger steps require more solver trials, and several hit the configured budget. '
+        'The existing predictor already extrapolates previous latent states when that reduces the weak residual; it has no previous-step history at startup. '
+        'The larger-step accuracy changes therefore combine time discretization and incomplete nonlinear solves. They do not establish the error of a fully converged time integrator.', '',
+        '| Output intervals | Empirical target (%) | Selected ROM step | ROM / FOM envelope query (ms) | Paired FOM/ROM |',
+        '|---|---:|---:|---:|---:|']
+    for row in summary['selections']:
+        if row['norm'] != 'dense' or not row['empirical_reference_budget_passed']:
+            continue
+        rom, fom = row['rom'], row['fom']
+        if rom is None or fom is None:
+            continue
+        assert abs(statistics.median(fom['times'][case]/rom['times'][case] for case in rom['times'])-row['paired_ratio']) < 1e-14
+        value = dict(intervals=row['intervals'], target=row['target'], selected_rom=rom['name'], selected_fom=fom['name'],
+            rom_ms=rom['ms'], fom_ms=fom['ms'], paired_ratio=row['paired_ratio'], reference_margin=row['reference_margin'], rigorous_reference_bound=None)
+        values['burgers_timestep_envelope'].append(value)
+        lines.append(f"| {row['intervals']} | {100*row['target']:g} | {rom['dt']:g} | {rom['ms']:.5g} / {fom['ms']:.5g} | {row['paired_ratio']:.5g} |")
+    lines += ['', 'The efficient FOM envelope remains faster at the qualified development targets. Physical target qualification uses the explicit empirical reference allowance and is not a stationarity certificate. '
+        'The native report retains initial/later errors, complete-grid and common-grid margins, staged component diagnostics, every FOM candidate and every configured-stop count.', '',
+        f"The owner reconstructs {audit['full_grid_artifacts_verified']} dense output artifacts and verifies repeat hashes for all {audit['invocations_verified']} timed calls; "
+        f"the largest complete-grid metric disagreement is `{audit['dense_error_recompute_max_difference']:.7g}`. "
+        f"Root independently checks their common-grid errors, with maximum disagreement `{review['maximum_metric_disagreement']:.7g}`. "
+        f"There are {audit['nonfinite_invocations']} nonfinite calls and {audit['fom_nonlinear_tolerance_failures']} FOM tolerance failures. "
+        'Independent final confirmation remains open.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md', 'Complete Burgers timestep findings')+'.', '']
     return lines, values
 
 
@@ -580,6 +643,91 @@ def wave_dynamics(data, manifest):
         'The audit reuses the saved reference trajectories; full-grid FOM metrics at nonreference time steps remain outside its reconstruction scope. Rigorous reference bounds remain unspecified.', '',
         link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/FINDINGS.md', 'Complete wave dynamics findings')+'. '+
         link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/dynamics-error-evolution.png', 'Wave error evolution')+'.', '']
+    return lines, values
+
+
+def wave_moment(data, manifest):
+    diagnostic = data['wave_moment']
+    assert diagnostic['native_sha256'] == manifest['wave_dynamics']['sha256']
+    n = max(r['intervals'] for r in diagnostic['bank_diagnostics'])
+    bank = next(r for r in diagnostic['bank_diagnostics'] if r['intervals'] == n)
+    selected = [r for r in diagnostic['methods'] if r['intervals'] == n]
+    lines = ['### Absorbing waves: a missing conservation property is a concrete diagnostic', '',
+        'Read-only postprocessing of the archived dynamics run checks a global moment preserved by its full discrete equations:', '',
+        '$$I(t)=\\langle 1,v(t)\\rangle_M+c\\langle 1,u(t)\\rangle_B,\\qquad \\dot I=0.$$', '',
+        'Here $M$ contains area integration weights, $B$ contains outgoing-boundary weights including both corner contributions, and $c$ is the supplied speed. '
+        'The native diagnostic derives this identity from the actual discrete Laplacian and damping. '
+        f"At {n} intervals, the relative error in projecting the spatial constant into the learned bank is `{bank['constant_test_projection_error']:.7g}`. "
+        'The reduced moment-generator rows are nonzero: this bank does not preserve the original invariant for general states.', '',
+        '| Intervals | Case | Method | Initial moment error | Maximum drift from own start | Final moment error |',
+        '|---|---:|---|---:|---:|---:|']
+    for r in selected:
+        lines.append(f"| {n} | {r['case']} | {r['method']} | {r['initial_error']:.7g} | {r['maximum_drift_from_own_initial']:.7g} | {r['final_error']:.7g} |")
+    refs = [r for r in diagnostic['references'] if r['intervals'] == n]
+    lines += ['', f"The saved full references have maximum moment drift `{max(r['reference_max_drift'] for r in refs):.7g}` on this mesh. "
+        'The table separates initialization error from subsequent drift; its entries are signed moment errors or absolute drift, not relative field errors. '
+        'Even unrestricted bank projection changes the input moment. The native findings retain that quantity separately from nonlinear fitting error.', '',
+        'This establishes a missing discrete conservation property. It does not establish how much of the late physical error it causes. '
+        'Adding a constant test direction and enforcing the initial moment are proposed separate interventions; neither has been tested here, and preserving this moment alone would not certify local-field accuracy.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/ABSORBING-MOMENT.md', 'Moment formulas, checks and complete traces')+'.', '']
+    return lines, {'wave_absorbing_moment': dict(bank=bank, references=refs, methods=selected)}
+
+
+def poisson_training_factorial(data, manifest):
+    pilot, summary = data['poisson_training'], data['poisson_training_summary']
+    audit, review = data['poisson_training_audit'], data['poisson_training_review']
+    assert pilot['complete'] and audit['passed']
+    assert summary['source_sha256'] == review['source_json_sha256'] == manifest['poisson_training']['sha256']
+    assert audit['row_count'] == review['verified_invocations'] == len(pilot['rows'])
+    cfg = pilot['config']
+    target = cfg['targets'][1]
+    endpoints = {r['model']: r for r in pilot['checkpoints']}
+    values = {'poisson_training_accuracy': [], 'poisson_training_envelope': []}
+    lines = ['### Poisson: training coverage and relative loss are distinct changes', '',
+        f"Source `{review['source_commit']}`, job `{review['job_id']}`. The factorial crosses original versus expanded training coverage with global versus per-field relative squared-error normalization. "
+        f"The prescribed budget is {cfg['training_steps_each']} updates per continuation, with unchanged architecture and identical initial weights. "
+        f"Evaluation uses {cfg['existing_development_count']} previously inspected and {cfg['additional_development_count']} fresh development sources, outside training. "
+        'The fresh development cohort is now available for method selection; it is not sealed final confirmation.', '',
+        '| Intervals | Development cohort | Endpoint | Training sources / completed updates | Median / worst physical error (%) | Cases failing target (%) | Invalid / nonstationary cases |',
+        '|---|---|---|---:|---:|---:|---:|']
+    for row in summary['summaries']:
+        if row['cohort'] == 'all_development' or row['arm'] != 'rom_modular' or row['tau'] != 0:
+            continue
+        endpoint = endpoints[row['model']]
+        value = dict(intervals=row['intervals'], cohort=row['cohort'], model=row['model'],
+            training_sources=endpoint['training_count'], completed_updates=endpoint['steps_done'],
+            valid_endpoint=endpoint['valid_endpoint'], median_error=row['physical_median'], worst_error=row['physical_max'],
+            target=target, failures=row['targets'][str(target)]['failure_count'], cases=row['case_count'],
+            invalid=row['invalid_count'], nonstationary=row['nonstationary_count'])
+        values['poisson_training_accuracy'].append(value)
+        lines.append(f"| {row['intervals']} | {row['cohort']} | {row['model']} | {value['training_sources']} / {value['completed_updates']} | {100*value['median_error']:.5g} / {100*value['worst_error']:.5g} | {value['failures']} / {value['cases']} at {100*target:g}% | {value['invalid']} / {value['nonstationary']} |")
+    lines += ['', 'These are the tighter generic stationary-control solves. The failure count applies the physical-error target with its empirical reference adjustment and solver/endpoint gates. '
+        'Original and expanded sets share an update/batch budget; the expanded set receives fewer visits per source. '
+        'Both the spatial bank and nonlinear head are refined in this Poisson study. At query time each endpoint uses its own mean training code. '
+        'Thus these results compare complete training procedures under the stated budget, without isolating a universal effect of more data.', '',
+        '| Intervals | All-development target (%) | Selected ROM endpoint / solver / tau | ROM / eligible FOM query (ms) | Paired FOM/ROM |',
+        '|---|---:|---|---:|---:|']
+    for row in summary['envelope']:
+        if row['cohort'] != 'all_development':
+            continue
+        rom, fom = row['rom'], row['fom']
+        value = dict(intervals=row['intervals'], target=row['target'], rom=rom, fom=fom,
+            paired_ratio=row['median_case_cost_ratio'], rigorous_reference_bound=None)
+        values['poisson_training_envelope'].append(value)
+        label = f"{rom['model']} / {rom['arm']} / {rom['tau']:g}" if rom else 'Target unattained'
+        rt = f"{1000*rom['latency_seconds']:.5g}" if rom else '—'
+        ft = f"{1000*fom['latency_seconds']:.5g}" if fom else '—'
+        ratio = f"{row['median_case_cost_ratio']:.5g}" if row['median_case_cost_ratio'] is not None else '—'
+        lines.append(f"| {row['intervals']} | {100*row['target']:g} | {label} | {rt} / {ft} | {ratio} |")
+    lines += ['', 'The complete-query envelope uses every development case and includes the charged coarse-grid FOM option. '
+        'Per-case timing repetition arrays, component medians, outliers, failed gates and paired factorial error contrasts are retained in the native findings. '
+        'Model selection for any later speed experiment must use all cases and both meshes rather than an inspected example. '
+        'Offline training durations include compilation and diagnostics and are not a paired warm training-speed comparison.', '',
+        f"Root independently recomputes {review['verified_invocations']} invocation metrics, checks declared source draws and endpoint accounting, and finds maximum metric disagreement `{review['maximum_metric_disagreement']:.7g}`. "
+        'The owner additionally verifies source/checkpoint history and training normalization samples against an independent CPU reference. '
+        f"There are {audit['specialized_agreement_failures']} specialized-solver agreement failures and {audit['specialized_timed_fallbacks']} timed fallbacks. "
+        'Reference adjustment remains empirical; no continuum certificate or global nonlinear optimum is claimed.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/FINDINGS.md', 'Complete Poisson training findings')+'.', '']
     return lines, values
 
 

@@ -12,45 +12,163 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-08-30
+# Where things stand — 2026-09-07
 
-*(Dated 2026-08-26 until now; the tensor/Poisson-QF content below was written on 08-27…08-30
-but the header was never advanced. The 2026-08-25 block this replaces is in git history,
-commit c3f1726 and nearby.)*
+*(Fork point and mathematical scope refreshed during the 2026-09-04 architecture review.
+The dated chronology below preserves the earlier findings and retractions; the original
+2026-08-25 current-state block is in git history, commit c3f1726 and nearby.)*
 
 ## Read this first
 
-**Consolidated line of descent:** worktree `worktrees/2026-08-25-sepdec-consolidated`, branch
-`exp/2026-08-25-sepdec-consolidated`, with `START-HERE.md` at its root. **The most advanced
-branch is now `exp/2026-08-26-eq-learned`** (worktree `worktrees/2026-08-26-eq-learned`, cut
-from the consolidated branch): it adds the exact-linear residual (`sep_burgers_exlin.py`,
-`exlin_common.py`), the same-target and learned-node quadrature drivers
-(`sep_eq_gradfit.py`, `sep_eq_nodefit.py`), and all 14 result sets of 2026-08-26. Solver- or
-quadrature-side work should branch from it. `exp/2026-08-26-codesign` (cut from eq-learned,
-late 08-26) holds the decoder–quadrature co-design mini-pilot (`sep_codesign.py`, 9 N=64
-arms, verdict below); treat it as a finished experiment archive plus the home of the
-`sep_codesign.py` machinery. `exp/2026-08-25-eq-fidelity-ladder` and the older experiment
-branches are read-only archives. Never branch from `main`.
+**2026-09-06 user override — discard all prior wave experiments as trusted evidence.**
+The user stated: “Discard any old wave experiments. I don't think they were correct
+necessarily.” All earlier wave results, pass/fail verdicts, causal explanations,
+verification labels, trained banks/checkpoints, data and wave implementations are
+historical and untrusted for the new work, including absorbing successes and reflective
+failures. Do not cite them as established evidence or inherit their numerical gates.
+This is an evidence reset at the user's direction, not proof that every old number is
+false. Preserve archives and append-only chronology; do not delete or rewrite history.
+The new wave benchmark starts with fresh independently verified truth, boundary
+operators and data, and uses a learned spatial bank from the outset. The previous
+proposal to reuse old wave infrastructure/POD banks is withdrawn. This override applies
+to every earlier wave statement below, even where its historical wording says verified.
 
-**2026-09-03 — waves REOPENED as a mechanism cell.** The 08-30 retirement rested on three
-arguments; two fell (the n-width argument misread the project's own 08-14 data, architecture
-independence was never established) and the third was re-diagnosed by an independent analysis
-(`understand/2026-09-02-fable-wave-rom-case.md`): a Lagrangian manifold ROM conserves the
-pulled-back energy for any smooth decoder, and the 08-16 failure was a **manifold-quality**
-failure (auto-decoder generalising 2.7x worse than it fit) that conservative dynamics expose;
-quadrature error is dead as a cause (the 08-16 full-grid arms failed identically). Cell:
-`worktrees/2026-09-03-wave2d-mechanism`, branch `exp/2026-09-03-wave2d-mechanism` (cut from
-`exp/2026-08-30-stokes-vector`), design `WAVE2D-DESIGN.md` r3 with two Codex audits, reflective
-+ absorbing (first-order Engquist-Majda, ghost-closed damped ODE) on the 08-16 family, three head
-arms (`auto`, `sup` on (mu,t), `auto+vc`), two ROM arms (incumbent LSPG-Newmark, variational
-Verlet), predeclared: reflective arm C passes W3 iff the head passes the manifold gates G0; the
-cost ladder is predeclared as likely lost to POD-R. **Outcome (2026-09-03, all four cells run and
-verified): reflective W3 fails on every head and both ROM arms at N=64 and 128 — the variational arm
-keeps energy within 6e-3 on `auto+vc` and is no more accurate (2.2–5.7× floor); absorbing `sup`
-passes at both N. Energy loss is therefore not necessary for the failure (the 08-16 mechanism is
-refuted, its verdict stands); the tangent-space residual (reflective heads no better than POD-K,
-absorbing 2–3× better) is the hypothesis for the next cell, not a finding — the design's decision
-row is formally INCONCLUSIVE. The cost ladder was not run (gated on a reflective pass).** Eight retractions, all in `WAVE2D-NOTES.md`. See the 2026-09-03 entry.
+**Current consolidated line of descent:** branch
+`exp/2026-09-04-separable-tensor-consolidated`, worktree
+`worktrees/2026-09-04-separable-tensor-consolidated`, at `da47912` when reviewed.
+It contains the separable/EQ/exact-linear/co-design chain, the 1D and 2D tensors,
+Stokes, the wave mechanism cell, and the stopped Burgers-3D pilot; see the dated
+consolidation entry below for results-only merges and exclusions. New experimental
+work should propose this base, subject to the normal branch/worktree approval rule.
+The inherited `START-HERE.md` still describes the August consolidation and is
+historical where it disagrees with this log. `exp/2026-08-26-eq-learned` is no longer
+the latest fork point. Reports and this canonical log remain on `main`; never use
+`main` as the experiment base.
+
+**2026-09-06 user direction — expand PDEs/use cases, retain the data style:**
+the user clarified that the immediate interest is Burgers 3D, waves and
+Navier–Stokes, while staying with the current kind of data. This supersedes the
+conversation's proposed first focus on broader initial-condition generators.
+The objective is transfer of the separable NM-ROM framework across dimensions
+and physics, with PDE-appropriate states, constraints and operators. Retain
+comparable smooth/localized families adapted to each PDE; Gaussian-descriptor
+conditioning remains excluded. Broad-field training and joint encoder training
+are not the selected next task. Separate learned weights per PDE are a proposed
+first scope; no unchanged-weight cross-PDE capability has been established or
+explicitly required by the latest clarification.
+
+**Current sequence:** Burgers-3D rollout/cost remains gated on its representation
+pilot. The requested absorbing/reflective wave investigation now starts fresh and may
+proceed independently of a Burgers pass. The revised `WAVE-HEAD-TRANSFER-DESIGN.md`
+on repair commit `3f8ccc4` supersedes the inherited-wave proposal at `b460667`.
+First independently verify a new reference solver with analytic solutions, boundary
+checks and spatial/time refinement; then train a new neural spatial bank and compare
+MLP/quadratic heads with and without velocity consistency. No old wave code, data,
+POD bank, acceptance gate or conclusion is a trusted dependency. Fresh POD models may
+serve as explicit baselines only. The initial scope is 2D; 3D remains an extension.
+The user confirmed the revised base/worktree/namespace with “Yes, proceed to do so
+please.” Worktree `worktrees/2026-09-06-wave-head-transfer`, branch
+`exp/2026-09-06-wave-head-transfer`, now exists from approved commit `3f8ccc4`.
+One implementation subagent owns that tree, with independent read-only numerical/ROM
+reviewers; root coordinates in the repair tree. Fresh self-contained code is being
+implemented in `experiments/fresh-wave-head/`. Approved cluster namespace is
+`/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/`. No old wave code/data is
+an implementation dependency. Fresh reference attempts `verify01` and `verify02` failed
+their declared resolution gates; both are retained on repair commit `ca3ecf7`. No scientific neural
+comparison was accepted from either failed reference attempt. A pre-training revision uses a Gaussian core with a
+smooth compact cutoff and explicitly narrower center coverage. Expanded verification
+`verify03` (job `3338045`, source `c69bf87`) passed all declared gates, and independent
+review accepts intervals 256 for the bounded pilot. Raw fine-grid fields and independent
+audits are committed and pushed on repair at `ef08005`. Both full-pipeline smoke
+checks passed. The matched learned-bank/head campaigns completed from frozen source `fdcc649`
+(reflective job `3338483`, absorbing job `3338658`). Independently reviewed results
+establish a negative result for the tested compressed heads:
+`dirichlet`: 0/8 head/repeat runs meet the full target; full-bank linear energy-error median 3.4991%, worst 7.7060%.
+`absorbing`: 0/8 head/repeat runs meet the full target; full-bank linear energy-error median 3.0784%, worst 4.6270%.
+All original trajectories completed. MLP runs pass time refinement but miss the full
+accuracy target. Absorbing quadratic runs also pass time refinement and miss accuracy.
+Separate frozen-checkpoint refinement resolves every reflective quadratic trajectory
+except case 2 of displacement-only seed 691200; all temporally resolved cases still
+miss accuracy. The one unresolved case is explicitly retained. Velocity-tangent
+training improves fitting diagnostics without consistently improving evolution.
+The higher-dimensional full-bank linear comparisons do not isolate compression
+from head dynamics; next proposed test is a fixed-bank latent-dimension ladder
+with matched linear dimensions. All job outputs were checksum-pulled and exact
+remote directories deleted. Native checkpoints are on the wave branch; complete
+archives and independent audits are on the repair branch. No merge performed.
+Canonical generated report: `reports/2026-09-07-fresh-wave-head-transfer.md`.
+The final cohort remains unopened. Later incompressible
+NS/further NS cases remain open; waves are not a mathematical prerequisite for them.
+
+**2026-09-06 approved Burgers-3D implementation — first bounded trial complete:**
+user approved base `exp/2026-09-04-separable-tensor-consolidated` at `da47912`.
+Work is saved on `exp/2026-09-06-burgers3d-repair`, worktree
+`worktrees/2026-09-06-burgers3d-repair`, at `d5fcdcc` when that trial closed;
+later architecture-control work is recorded below. No merge performed.
+Reproduced the corrected pilot, implemented exact QR-coordinate bank/head
+analysis and tighter latent fitting, then refined the same head and training
+codes with the spatial bank frozen. The bank's unrestricted validation mean is
+0.021822143811524652; incumbent latent-fit mean remains
+0.051462454322942844 after tighter convergence. The bounded 60000-step
+refinement reaches validation mean 0.04996531589973463, worst
+0.1677720547241347, with 1 selected fit still above the
+stationarity tolerance. The inherited pilot (job 3328480)
+passes bank/lineage/operator-rank checks and all negative controls, but records
+`pilot_passed=False`: worst error, oracle/POD-K ratio and optimality fail.
+No test data, rollout/cost stage or larger grid was promoted. Five GPU component
+tests passed. Checkpoint, raw results, logs, hashes and generated notes are
+tracked in this worktree; all remote job outputs were pulled with verified
+checksums and their job directories deleted. The next representation target is
+the head on unseen initial states. New results remain provisional pending
+independent review; the optional reviewer request received no response and no
+subagent was spawned. Merge into the consolidated branch awaits the user's
+choice. See the closing chronology entry for exact values and provenance.
+
+**2026-09-06 architecture campaign — implemented, tested and independently reviewed:**
+the user's “Implement and test them for me” confirmed the proposed repaired base
+`dd77383` and four isolated Codex worktrees: `2026-09-06-b3d-anchor`,
+`2026-09-06-b3d-quadratic`, `2026-09-06-b3d-encoder`, and
+`2026-09-06-b3d-mixture`. This bounded comparison reopened offline shared-encoder
+training; no Gaussian-descriptor conditioning was introduced. All four heads,
+checkpoints and raw results are committed and pushed. The coordinator comparison
+is on `exp/2026-09-06-burgers3d-repair` at `ee6e19d`. No merge has occurred;
+merging the completed experiment branches into repair awaits the user's choice.
+
+Each head completed two optimizer repeats on the unchanged bank/data/schedule,
+with matched MLP controls at widths 128 and 192. Quadratic is the strongest bounded
+improvement: means 0.04689398583286945 / 0.046886303889181156,
+medians 0.03892390165059892 / 0.03887287810828896,
+worst errors 0.20305274049820418 / 0.20272908214411875;
+2 outliers above the worst-error ceiling in each repeat,
+both unseen initial states. Relative to the narrow control, mean error improves
+14.6293%–14.9503% and tangent mean improves
+17.7159%–18.1477%. Quadratic uses deterministic initial
+weights, so its repeat seeds vary minibatches, not data or parameter initialization.
+Every new head still fails the effective mean ceiling 0.043058226553377994 and worst
+ceiling 0.15. The protected anchor worsens reconstruction/tangent accuracy;
+encoder gains are inconsistent; smooth mixture improves training/tangent errors
+without improving validation mean/worst. All selected fits for the four new heads
+are stationary and their sampled Jacobians have full latent rank. This does not
+establish global minima, rollout accuracy or reflective-wave transfer.
+
+Twenty-one new architecture component tests and four actual-head integration tests
+passed, in addition to the previously recorded twelve benchmark tests. Root and
+cross-agent code/result reviews accepted the bounded findings. All scientific jobs
+completed on GPU in f64 with highest matmul precision; source/checkpoint/output/log
+hashes and cohort provenance passed audit. Two initial pending jobs were canceled
+before execution and replaced on available A100-40GB nodes; neither produced a
+numerical result. All exact remote job directories were deleted after verified
+pulls, and no campaign job remains queued. The unchanged gates block pilot/rollout,
+cost, larger-grid and final-test promotion. Generic-head rollout/export support
+remains unfinished and gated. The actual-head pilot adapter includes every negative
+control; its earlier D4 aggregation correction did not change the failed outcome.
+Generated comparison: `worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/B3D-ARCH-NOTES.md`.
+
+**Earlier wave mechanism/retirement cells — historical, excluded from current evidence.**
+The August and September wave records remain in the dated chronology and their original
+worktrees. Their asserted passes, failures, operator verification and mechanisms are
+not accepted conclusions for this new direction under the user override above.
+Fresh wave tests must establish their own numerical correctness and architecture results.
 
 ## The method (separable EQ-decoder)
 
@@ -214,23 +332,28 @@ Order: waves → sign-changing Burgers → 2D incompressible NS → multi-seed �
 verified by an independent Codex `gpt-5.6-sol` pass and **design documents audited before
 implementation**.
 
-**The general form of the linear quadrature-free claim** (established by the waves audit, and
-what Stokes/NS are built on) — supersedes the "one `A` plus one `B`" statement:
+**The general form of the linear quadrature-free claim** (its old attribution to a wave
+audit is withdrawn as verification; rederive and test any use in the fresh wave solver)
+— supersedes the "one `A` plus one `B`" statement:
 `R = Pᵀ[E(µ)𝒢Δη/Δt − K(µ)𝒢η̄]`, one precomputed matrix per affine operator component; covers
 DAEs, cross-component coupling and parameter dependence. Note `A = ΦᵀLG = -ΛB` under this
 repo's `LΦ = -ΦΛ` convention, and **non-symmetry is not what kills the diagonal shortcut** —
 a non-symmetric operator still has one if `Pᵀ` holds its left eigenvectors.
 
-**On a linear PDE with affine parameter dependence the nonlinear head can never buy accuracy;
-its entire value is cost.** The solution manifold is then literally a linear subspace. This is
-the correct framing for the Poisson QF result too, and it means the nonlinear decoder only earns
-its keep on a nonlinear PDE or under non-affine parameter dependence.
+**Linear residual precomputation does not imply a linear solution family.** For a fixed,
+invertible steady operator and a finite affine forcing expansion, the solutions lie in
+the corresponding affine solution span; an unrestricted solve in that whole span has
+no representation loss for a nonlinear head to improve. Affine dependence of the
+operator itself does not give that conclusion: its inverse generally depends
+nonlinearly on the parameters. Evolution over time can also trace a curved family.
+The implemented moving-Gaussian Poisson forcing is non-affine (already corrected in
+the September teaching document). Exact precomputation of the projected linear
+operator holds independently of these solution-family questions.
 
-**Waves: RETIRED without implementation** (`exp/2026-08-30-waves-vector`, `bfde209`). Already
-done twice here — `exp/2026-08-14-wave2d-coord-rom` confirmed the slow hyperbolic Kolmogorov
-decay, and `exp/2026-08-16-wave2d-rom-latent-stepping` found the ROM **fails structurally**
-(end-time energy ratio 0.27; "not fixable by tuning"), an argument the separable decoder
-inherits. Read `WAVES-RETIRED.md` before ever re-proposing it.
+**Historical waves retirement — excluded from current evidence by the user.**
+`WAVES-RETIRED.md` and the old mechanism-cell records are archive material. They do not
+supply a structural-failure conclusion, a performance expectation, or a prerequisite
+for proposing the fresh benchmark.
 
 **Stokes: the NS dress rehearsal, phase 1 done** (`exp/2026-08-30-stokes-vector`). Design at r3
 after two audits; MAC FOM built and gated (`6ca89db`): S-ADJ exactly 0.0 bit-for-bit (negative
@@ -4064,3 +4187,2285 @@ only if W3 passes. The other session's 56 uncommitted lab-log lines (Poisson exp
 committed together with this entry; its `understand/2026-09-02-poisson-rom-training-to-prediction.*`
 files remain untracked and are not this session's to add. Thirteen-plus experiment branches
 remain unmerged; no merge decision was asked or taken.
+
+## 2026-09-03
+
+### Session — Poisson teaching PDF extended to general NM-ROM and 1D Burgers
+
+**Where it landed.** Extended the existing source and rebuilt PDF in place:
+`understand/2026-09-02-poisson-rom-training-to-prediction.tex` and
+`understand/2026-09-02-poisson-rom-training-to-prediction.pdf`.  The document is now titled
+``Nonlinear-Manifold ROM (NM-ROM): From Training to Poisson and Burgers Prediction'' and is 21
+pages.  The every-page footer now defines all four working sizes: $P$ physical-grid values, $K$
+latent variables, $R$ learned spatial patterns, and $M$ weak test equations.
+
+**What was added.** A general explanation of why a fixed $G$ bank still defines a nonlinear
+manifold through $u=Gh(z)$; a degree-1 / degree-2 / non-polynomial precomputation table; the actual
+1D Burgers dimensions ($P=254$ at $N=256$, $K=8$, $R=M=32$), training-state count and two MLP
+architectures; the backward-Euler equation; construction of $B=\Phi^T G$ and the
+$M\times R\times R$ tensor; a two-coefficient numerical contraction; the complete weighted
+time-step residual and Jacobian; the initial-condition fit and 50-step rollout; and the precise
+sign-upwind scope.  The fixed backward tensor is described as guaranteed exact on the nonnegative
+cone and generally different after negative values occur.  The split-form $|u|$ stabilizer and
+the separate skew/centered-FOM option are explicitly distinguished.
+
+**Independent verification and correction.** The first tightly scoped Codex `gpt-5.6-sol` pass
+returned FAIL with six specific documentation defects: the implemented Gaussian Poisson source
+family had incorrectly been called affine; the Burgers bank's fixed data-RMS scale was omitted;
+node value $u_i$ was ambiguously written as derivative-like $u_x$; AD was said to traverse only
+the head rather than the complete reduced residual; solver termination paths were incomplete;
+and the upwind guarantee said positive/only-if instead of nonnegative/guaranteed.  All six were
+corrected.  A fresh, scoped second pass returned `PASS`.  `latexmk` completed with no unresolved
+references, overfull boxes, underfull boxes, or remaining warnings; the new pages were visually
+inspected from rendered images.  Final source SHA-256:
+`1fd0138bb921986f2f8c54aaa8dcdd27ad6c2020fb24436cee59668fb7a2f301`; PDF SHA-256:
+`3b7eba7eb2565c0e07afce43f9f5b4e93e6f7bea17f783e9076d4c79a2abdba0`.
+
+**Retracted in this document.** The draft sentence ``the implemented Poisson forcing varies
+affinely, therefore its exact solution family is a low-dimensional linear subspace'' was false:
+the actual center/width-parameterized Gaussian forcing is non-affine.  The corrected text states
+the linear-subspace result conditionally for a finite affine forcing expansion and separates it
+from the still-exact Poisson residual precomputation.  No PDE job was run, no experimental result
+changed, and no branch/worktree/merge operation was performed.  The open experiment and unmerged
+branch decisions are unchanged.
+
+### Session — separable-decoder results digest (one report, every generated table)
+
+User asked to resurface the separable-decoder results after the wave cell. Written on `main`,
+commit `93516b2`: `reports/2026-09-03-separable-decoder-results-digest.md`, assembled by
+`reports/gen_2026-09-03-separable-decoder-digest.py`, which copies the headline tables verbatim
+from the eleven separable-decoder reports (08-24 through 08-30) and the wave cell's generated
+tables, and converts the cross-PDE LaTeX tables in `reports/tables/` mechanically. The prose
+carries no numbers; each table names its source report and generator. Two superseded tables
+(the first four-resolution Burgers speed table and the coverage table written before the wave
+cell) are kept and labelled as such. Artifact page built by
+`reports/build_2026_09_03_digest_html.py`, published at
+https://claude.ai/code/artifact/53fe26c8-819e-4316-bfe5-9917c1aaa451.
+
+No experiments run, nothing retracted. Also answered, in conversation only, why the wave ROM
+fails (underfit head on reflective superpositions, tangent space no better than POD-K, energy
+conservation not sufficient) and what would change the architecture: oscillatory inputs or
+Fourier features for the head, a phase-space decoder producing (u, v) jointly, larger K/R, or a
+coordinate decoder for transport-dominated families. Those are proposals, not a design; the
+next wave cell needs a design document and audit before implementation.
+
+Open, unchanged: absorbing `sup` cost ladder (scripts staged, needs a go-ahead), the reflective
+head-fitting cell, thirteen unmerged experiment branches awaiting merge decisions.
+
+## 2026-09-04
+
+### Session — Burgers 3D tensor cell: design r1→r4 (three Codex audits), phase 0 certified locally, pilot submitted
+
+User asked (2026-09-03) for Burgers 3D experiments with the separable decoder and the tensor
+residual, on new data, to get a better cost result than 2D. Worktree
+`worktrees/2026-09-03-burgers3d-tensor`, branch `exp/2026-09-03-burgers3d-tensor` (cut from
+`exp/2026-08-29-b2d-tensor`, user-approved), all under `experiments/separable-decoder/`.
+
+**Design.** `B3D-DESIGN.md` r3 + r4 amendments. Scalar Burgers on the unit cube, sign-upwind on
+three axes, backward Euler dt=0.005 × 50, interior-only unknowns, exact Helmholtz preconditioner
+in the 3D sine basis (matmul and FFT DSTs, gated). New non-negative family: 1–3 smoothly masked
+Gaussian blobs, resolution-independent peak normalisation on a 257-node reference grid, two
+immutable parameter tables (seed 0: 512 train + 64 validation rows; seed 1: 8 test rows, opened
+only after a validation-only capacity pilot). Nested grids 33/65/129. Arms full / ex / tensor
+(one tensor for three axes); two classical ladders, Newton-BiCGStab and a safeguarded
+Helmholtz defect correction with cubic-history predictor; matched comparison against the cheaper
+arm with a bracket rule, hierarchical bootstrap, and per-step optimality censoring. Three Codex
+`gpt-5.6-sol` audits (33 + 17 + 20 items, all archived beside the design) — every item folded in;
+the mathematics (exact quadratic on the non-negative cone, DST eigenmodes, index conventions,
+bank-derivative axes) was confirmed correct by the auditor.
+
+**Code.** Self-contained `b3d_common.py` (family, FOM, ladders, modes, assembled operators for
+gates, NNLS, decoder, explicit-argument trainer with the same 16 384-point sampling at every N,
+fixed Fourier matrix asserted), `b3d_tensor_common.py`, `b3d_fom_gates.py` (F1–F11 with
+controls), `sep_b3d_tensor.py` (pilot / micro / phases 1–3), `sep_b3d_kernels.py` (same-GPU C1),
+cluster `stage/push/pull_b3dtensor.sh` + `make_b3d_sbatch.sh`, `runs/b3dtensor/gen_tables.py`.
+
+**Phase 0 at N=33 (local GB10, `runs/b3dtensor/local/fom_gates_n33.json`): F1–F11 pass, all
+eleven controls fire.** Symmetry 8.9e-17, eigenmodes 1.1e-16, preconditioner 1.5e-15, stencil vs
+assembled 1.9e-17, 2D-vs-3D plateau identity 0.0, DST implementations 3.6e-15, truth residual
+1.0e-12, min u ≥ 0, manufactured-solution order 0.93 (discrete time quotient), nested-grid order
+0.83 (band [0.7, 1.3] frozen). Generator: 0.31 s/traj at N=33, 51–95 s/traj at N=129 on the GB10.
+
+**Retracted / amended before any cluster job (11 items, `B3D-NOTES.md`):** the central-difference
+F5 control never goes negative on this family (measured, withdrawn); the downwind control goes
+negative only by diverging (recorded as a diagnostic, not a control); the two-iteration F3 control
+converges (now one iteration); the z-Laplacian and ×1.01 x-advection F8 controls were inert or below
+the bar (now x-advection doubled); the F7 band was self-calibrated from F11 (frozen instead); the
+Fourier matrix was being trained (fixed, asserted); D3's row control did not force rank loss (column
+duplication); L's dropped-diffusion control was below the bar (sign flip); STEP/ROLL cannot reuse
+`sep_solvers` (imports the FiLM stack; independent eager LM instead); M is shell-completed; E1's
+absolute latent bar 1e-6 was tighter than the 2D cell's own passing deviations (normalised 1e-4).
+
+**Driver smoke at N=17**: the full pipeline runs end to end; tensor vs full: error ratio 1.0000,
+identical stop histograms and attempt counts, candidate-path decision agreement 100 %, field
+deviation 2.7e-5; D2/D4 fail as expected for a 400-step decoder.
+
+**Submitted (namespace `/cluster/tufts/paralab/tawal01/b3dtensor/`):** `gates33` job 3247393
+(phase 0 on the cluster), `pilot33a` 3247407 (K=16, R=64, M=128, m=512) and `pilot33b` 3247412
+(K=32, R=128, M=256, m=1024), validation-only capacity pilot at N=33. Login node drops every
+other SSH connection today; the push script retries and guards against duplicate submission.
+
+**Open:** pilot promotion → n33 / n65 jobs → micro129 (M1) → n129 → kernels job; N=129 cohort
+from the cluster F10 timing; report on `main` with generated tables; Codex verification of the
+results and code files. Not merged (never merge unasked).
+
+**Update (same session, later on 2026-09-04).** Both pilots ran (A: D4 mean 4.9e-2, worst 0.172 → fails
+the worst-state bar; B: D4 mean 3.0e-2, worst 0.111, oracle/POD-K 0.36 → passes; B promoted) and n33 /
+n65 / micro129 were submitted on that promotion. **Retracted:** the Codex code verification
+(`B3D-CODE-VERIFY-r1-codex-gpt56sol.md`) found the training cohort included the 64 validation rows, so
+the "held-out" D4 was trained on; the three follow-on jobs (3247827, 3247839, 3247864) were cancelled
+and deleted, both pilot results withdrawn (kept as superseded evidence), the split fixed (training rows
+only; validation generated as a separate stream for D4; pilot stages carry no test table), and every
+other review item fixed (exact field misfit/optimality in D4 and the IC fit, explicit-argument oracle
+jits, TA/TB/T0/D3/E1/ROLL details, a final contract validator that sets `complete` and the result-row
+permission, kernel-job asserts, idempotent cluster submission, no `out/` deletion on re-push, NaN in
+truth chunks fails). Pilots resubmitted on the corrected code: `pilot33a` 3247964, `pilot33b` 3247984.
+
+**Outcome (2026-09-04, corrected pilot, jobs 3248020 / 3248039): neither configuration passes the
+held-out oracle gate D4, so the cell stopped before opening the test table, as predeclared.**
+K=16/R=64: mean 8.6e-2, worst 0.27. K=32/R=128: mean 5.15e-2 (bar 5e-2), worst 0.168 (bar 0.15),
+oracle/POD-K 0.60 (bar 0.5), LM optimality 1.0e-5 (bar 1e-6). The leaky pilots had shown 3.0e-2 for
+the same configuration; the difference is the leak. No ROM rollout was run, no test data touched.
+Open decision for the user: add a third pilot rung (larger K/R, longer training, or a re-tuned
+oracle budget) as a numbered design amendment, relax the family, or accept the stop and write it
+up. All artifacts on `exp/2026-09-03-burgers3d-tensor`; cluster namespace empty. Not merged.
+
+### Results deck: Poisson + Burgers, architecture kept, all tables generated
+
+**What was made:** `reports/2026-09-04-results-deck-burgers-poisson.{tex,pdf}`, 23 slides, same Beamer
+style as the 29 August study deck. Title, one orientation slide, eight architecture slides carried over
+verbatim from the study deck (separable decoder, trained/frozen/solved diagram, stage-1 training, weak
+form and the cost question, Poisson residual table, Burgers exact-linear + sampled residual, tensor
+architecture, what each case builds after stage 1), then the results: Poisson 2D (three residual paths,
+exactness gate, CG ladder with the unpreconditioned-CG and spectral-direct caveats), Burgers 1D (tensor
+= oracle, cost exponent, tridiagonal FOM comparison, N=512 fields), Burgers 2D (accuracy per arm, cost
+per N with the GPU column, matched-FOM paired speedups, the K=32 headline pair, N=256 fields), a one-table
+summary, and a glossary.
+
+**Unlike the study deck, no number is typed in the .tex.** `reports/gen_2026-09-04-results-deck-tables.py`
+projects the markdown tables that the digest extractor copies out of the source reports (column pick +
+3-significant-figure re-formatting) into `reports/tables/results-deck-*.tex`, and the deck `\input`s them.
+Rebuild: run the generator, then `latexmk -pdf -cd reports/2026-09-04-results-deck-burgers-poisson.tex`.
+
+Burgers 3D is deliberately absent: the cell stopped at the validation pilot (entry above) and has no
+per-resolution results.
+
+**Deck revised (same session):** the Burgers sampled-quadrature arms (NNLS, ex, ex_learned, learned-32,
+the K=32 incumbent-vs-exact-linear headline) are removed from the results deck so the audience sees only
+full-grid vs tensor for Burgers; a new slide derives the tensor ($T=\Phi^\top[G\otimes D^-G]$, why the
+quadratic term needs it, the $u\ge0$ condition); the trained/frozen diagram is the tensor one; "what each
+case builds" is two columns. Poisson keeps its sampled row for contrast. Figures: 1D N=512 fields
+re-rendered with ARMS=oracle,tensor (new `ARMS`/`TAG` env knobs in `fig_2026-08-30-b1d-tensor-fields.py`,
+output `-2arms` suffix, original untouched); 2D N=256 fields cropped to three columns
+(`b2d-tensor-fields_n256_traj5-3cols.png`). 21 slides. The 1D ROM-vs-FOM table still times the earlier
+optimised (sampled) rollout, stated in a footnote, because no tensor-vs-tridiagonal-FOM pairing was run.
+
+### Consolidated branch for the separable-decoder architecture (fork point for new work)
+
+**Made, on the user's instruction:** `exp/2026-09-04-separable-tensor-consolidated`, worktree
+`worktrees/2026-09-04-separable-tensor-consolidated`, pushed with upstream. Based on the tip of
+`exp/2026-09-03-wave2d-mechanism` (which already contained the whole chain separable-decoder → n256-push →
+burgers-accuracy → sepdec-consolidated → eq-learned → codesign → nodes-mm → b1d-poissonqf → b1d-tensor →
+b2d-tensor → stokes-vector). Merged into it, as recorded merge commits:
+
+- clean: `exp/2026-09-03-burgers3d-tensor`, `exp/2026-08-30-waves-vector`, `exp/2026-08-23-sepdec-n256`;
+- results only: `exp/2026-08-25-eq-fidelity-ladder`, `exp/2026-08-23-sepdec-n{128,512,1024}` — their
+  `runs/`, `cluster/`, summaries and markdown are in; their edits to `sep_burgers.py`, `sep_common.py`,
+  `sep_poisson.py` and `sep_eq_ladder.py` were reset to the tip's versions (the later chain had moved those
+  drivers on and never folded the per-N fixes in; the cells' own code remains on their branches).
+
+Verified: every merged tip is an ancestor of the new HEAD; the only non-artifact files that differ from
+the wave2d tip are the five Burgers-3D files and three `summarize_n*.py`; all `.py` under
+`experiments/separable-decoder` compile. **`main` was deliberately not merged** (user's choice): reports,
+the lab log and CLAUDE.md stay on `main`; the branch is 371 commits ahead of `main`. Not merged either:
+the pre-separable branches (coord-decoder, FiLM, hybrid, cascade lines) and `fix/heat-rollout-warm-start`.
+
+**Next work should branch from this consolidated branch**, not from `main` and not from a leaf.
+
+## 2026-09-04
+
+### Enabled GPT-6 Astra for new local Codex sessions
+
+At the user's request, checked the official OpenAI documentation and tested GPT-6 Astra through
+the installed Codex CLI. The first read-only, ephemeral probe reached the service but was rejected
+because Codex CLI 0.152.1 was too old. `codex update` upgraded the CLI to 0.153.3; the same probe
+then returned `ASTRA_OK`. Updated `/home/tahmid/.codex/config.toml` from `gpt-5.6-sol` to
+`gpt-6-astra`, preserving `model_reasoning_effort = "xhigh"`. A second ephemeral probe with no
+model override reported `model: gpt-6-astra` and returned `DEFAULT_ASTRA_OK`, confirming both
+account access and default-model resolution. Existing sessions are unchanged and need a restart or
+new session to use the new model. No experiment code, branch, worktree, cluster state, numerical
+result, or scientific conclusion changed.
+
+## 2026-09-04
+
+### Session — architectural assessment of the consolidated separable NM-ROM
+
+**Scope and location.** Read-only inspection of the consolidated branch at `da47912`,
+the current reports on `main`, the held-out-head campaign inherited on the consolidated
+branch, and the corrected Burgers-3D pilot JSON. No training, GPU test, cluster action,
+code edit, new worktree, commit, or merge. This log is the only file edited by this
+session; pre-existing changes were preserved. The assessment was requested in
+conversation, so no separate numerical report was created.
+
+**Assessment.** Retain the factorization $u=Gh(z)$: it separates the number of solved
+latent coordinates from the size of the spatial span and permits exact offline
+projection of fixed linear and polynomial operators. The field family remains inside
+$\operatorname{range}(G)$, even though it is generally curved as a function of $z$.
+Local manifold dimension requires the appropriate rank of $GJ_h$; nonlinearity alone
+does not certify a regular manifold. Dense quadratic residual evaluation/storage
+scales as $O(MR^2)$ at fixed bank size, independently of the physical grid count $P$;
+arbitrary full-field input projection and full-field output still involve $P$.
+Low latent dimension does not imply low linear rank of the head-output snapshots.
+
+**Evidence consulted, not remeasured.** The generated exact-linear report gives
+N=1024, K=32 mean rollout error 7.977e-3 and paired end-to-end times 33.6/62.9 ms
+(1.87x). The distinct small-bank tensor checkpoint has error 6.381390e-2 and paired
+3.45x, from the 2D tensor report: these are different accuracy/configuration points,
+not one combined result. The head campaign's N=256 bank floor is 2.124e-4 versus
+7.814e-3 for the incumbent fresh-state latent fit; widening/deepening the head largely
+improves training fit, and latent Fourier features worsened generalisation there.
+The corrected 3D K=32/R=128 pilot JSON records held-out mean 0.05146245433056422,
+worst 0.16768933585441634, and failed optimality bar, so it is a pilot stop, not a
+certified global representation lower bound or a rollout result. The wave mechanism
+cell uses a frozen POD bank (`wav2d_bank.py`); its failures diagnose that bank/head/ROM
+combination, not every possible learned spatial track. Energy conservation alone did
+not repair reflective rollout accuracy; the tangent explanation remains a hypothesis.
+
+**Code/document distinctions.** `sep_common.train_autodecoder`,
+`sep_solvers.train_autodecoder_v2`, and `b1d_common.train_autodecoder_1d` optimize the
+Fourier matrix `B`; comments still call it fixed. This is already acknowledged for
+the older architecture in the August architecture report, not a newly discovered
+numerical defect. `b3d_common.train_autodecoder_3d` explicitly zeros its gradient and
+asserts that it stays fixed: cross-dimensional training recipes differ. Neither choice
+breaks the offline/online factorization once the decoder is frozen. The fixed backward
+Burgers tensor is exact for its fixed stencil on every state, and is guaranteed to
+agree with the sign-upwind FOM on nonnegative fields; nonnegative truth does not
+guarantee nonnegative decoded solver candidates.
+
+**Correction/retraction.** Replaced the current-state block's false blanket claim
+that a linear PDE with affine parameter dependence has a linear solution manifold.
+The narrower fixed-steady-operator/affine-forcing statement and the distinction from
+operator precomputation are now stated there. Also brought the fork-point pointer
+forward to the already-recorded September consolidation and labelled the old wave
+retirement as historical. No measured result was retracted in this session.
+
+**Proposals, not findings or approved experiments.** First compare the nonlinear head
+against a well-posed reduced solve in the same entire bank, using enough test equations
+for its free coefficients; separately compare against a K-mode POD ROM and a fixed
+sine/POD-bank nonlinear head at matched accuracy and cost. For a head-only architecture
+cell, condition $h(z;\mu)$ on known fixed trajectory parameters while still solving
+the evolving $z$ from the PDE. This retains the fixed-bank precomputation and may
+reduce the burden on an unconditional head; improvement is untested. Use whole
+held-out trajectories, distinguish spatial-span error from latent-fit error and rollout
+error, and evaluate tangent quality/conditioning and solver attempts. This is not a
+claim that the previously unsuccessful wave velocity-consistency loss will work if
+repeated, nor that a larger unconstrained head is the next justified lever.
+
+**Literature positioning (brief primary-source check, not a novelty clearance).**
+The separate spatial/coefficient tracks are related to
+[DeepONet](https://doi.org/10.1038/s42256-021-00302-5);
+minimum-residual manifold dynamics to
+[Lee and Carlberg](https://arxiv.org/abs/1812.08373); polynomial offline tensors to
+[tensorial POD](https://arxiv.org/abs/1402.2018). The research case should establish
+the accuracy/cost value of their particular combination with a solved nonlinear
+latent head, rather than claim any of those ingredients is itself new.
+
+**Open.** The requested assessment is complete. Proposed architectural experiments,
+the existing 3D pilot amendment decision, broader baseline/seed confirmation, and
+remaining merge decisions were not executed or resolved by this review.
+
+## 2026-09-04
+
+### Session — exact retained results and improvement requirements
+
+User requested exact current separable-decoder results and what needs to improve. Read the generated reports and original JSONs; computed trajectory medians, maxima and explicitly thresholded tail counts from stored per-trajectory errors. No numerical solver, training, cluster action, code edit, new branch or merge. Only this canonical log was edited. Results below are existing measurements or arithmetic on them, not new experiments.
+
+**Correction to the previous conversation and its log entry:** the N=1024 exact-linear speed-selected variant `gram+stall1e-02` has mean rollout error 0.008008432638459188. The previously quoted 0.007977187129228376 belongs to the reference `base` variant, not the variant selected for paired timing. The source report already separates these correctly; its numbers are unchanged.
+
+Burgers-2D errors below are relative L2 averaged over the 51 states of each trajectory, then mean/median/worst over eight held-out trajectories. Tail counts use explicitly descriptive 1% and 10% trajectory-average thresholds, not newly declared pass gates. Times are medians from the paired end-to-end comparison in the same job; speedup is FOM/ROM. The FOM is the cheapest tested tolerance rung whose mean error is no larger than the ROM error, not an exactly equal-error solve.
+
+| Model | N | K/R | Mean error | Median error | Worst trajectory | >1% / >10% (of 8) | ROM ms | FOM ms | FOM error | FOM/ROM |
+|---|---|---|---|---|---|---|---|---|---|---|
+| exact-linear sampled | 256 | 16/512 | 0.00802804481 | 0.00724314724 | 0.0132764369 | 2/0 | 46.921563 | 16.883343 | 0.000353791161 | 0.359821 |
+| exact-linear sampled | 1024 | 32/512 | 0.00800843264 | 0.00750145818 | 0.011926215 | 2/0 | 33.576618 | 62.942904 | 0.00034855823 | 1.874605 |
+| tensor | 64 | 16/64 | 0.0230941423 | 0.023787478 | 0.0387331368 | 7/0 | 29.568643 | 12.365433 | 0.000374566285 | 0.418194 |
+| tensor | 256 | 16/64 | 0.0245121445 | 0.0253567554 | 0.0364484801 | 8/0 | 29.534122 | 17.244686 | 0.000353791161 | 0.583890 |
+| tensor | 512 | 16/64 | 0.0245623504 | 0.0256620368 | 0.0364987791 | 8/0 | 21.504807 | 21.006766 | 0.000350717519 | 0.976840 |
+| tensor | 1024 | 16/64 | 0.063813903 | 0.0374043745 | 0.172529693 | 8/2 | 34.110139 | 117.688301 | 0.0297455164 | 3.450244 |
+
+All six rows have zero recorded blowups. All tensor steps stop on the stall rule (400/400); the exact-linear selected variants stop on stall in 399/400 steps at N=256 and 400/400 at N=1024, with one N=256 budget stop. These stopping labels do not themselves certify first-order optimality. Source paths: consolidated `runs/b2dtensor/n*/out/sep_b2d_tensor_n*.json` and `runs/xs*dm/out/sep_burgers_exlin_dense_mid_N*_dense_exlin.json`.
+
+**3D validation requirements (unchanged predeclared gates):**
+
+| Criterion | K=16/R=64 | K=32/R=128 | Required |
+|---|---|---|---|
+| Mean oracle error | 0.086273075 | 0.0514624543 | <=0.05 |
+| Worst state oracle error | 0.265852548 | 0.167689336 | <=0.15 |
+| Oracle/POD-K mean error | 0.521700554 | 0.59759143 | <=0.5 |
+| Worst normalized optimality | 5.45326539e-05 | 1.03615294e-05 | <=1e-6 |
+
+For the larger pilot, the POD comparison requires mean error <= 0.0430582265534, tighter than 0.05. The held-out error distribution is stored only as aggregate mean/worst in this JSON; no median is inferred. Both pilots stop before test data and ROM rollout. A failed optimality bar means the measured latent-fit error is not a certified global representation floor.
+
+**Prioritized requirements versus candidate fixes.** (1) Reduce held-out head error and initial-condition error at a small solved dimension; the current timed N=1024 model needs an 8.008432638-fold mean-error reduction to meet the historical 1e-3 target. The older frozen-bank head study demonstrates available span accuracy but is not the identical headline checkpoint. (2) Bring tensor evaluation to an accurate bank, or retain exact-linear plus sampled nonlinear terms: small-bank tensor parity does not remove its decoder error; head-PCA failed to compress the R=512 bank. (3) Reduce online head/Jacobian/LM cost at unchanged output and verify stationarity, then re-match the classical ladder at the improved accuracy. The previously demonstrated 1D kernel optimizations are a candidate for a 2D port, with no promised speedup. (4) Satisfy all 3D pilot gates before scaling. (5) Strengthen matched reduced baselines, seeds and tail reporting; waves need accurate dynamics in addition to energy control. Parameter conditioning, trajectory-aware training and tensor compression are hypotheses, not known fixes. Merely widening the head, repeating code polishing, or further quadrature co-training has negative evidence in the relevant existing cells.
+
+**Other retained results checked.** Poisson-QF tables cover three grid sizes and two cohorts per grid, all 16 sources per cohort censored at requested residual tolerance 1e-3; their solve errors remain representation-limited. The separate earlier N=256 Poisson capacity arm achieved 9.462e-3 fresh-cohort solve error but predates the rank correction; it is not the QF checkpoint. The N=1024 spectral-direct comparator is 0.64 ms with 7.0e-15 error; the old 28.1x claim is only against unpreconditioned CG. The 1D tensor ladder remains flat in latent-solve time at fixed K/R/M and slower than the classical solver; the large-N report additionally records FOM timing/error in the same jobs, but not a balanced tensor/FOM pairing. The wave notes record representative complete variational reflective `auto+vc` terminal medians 0.92778/0.96175 at N=64/128, despite energy control; absorbing supervised heads pass the relative-to-floor gates, not a sub-percent accuracy target. The Stokes CPU same-bank direct comparison already strongly favors the unrestricted coefficient solve on that affine control family; this does not establish the Burgers comparison.
+
+No measured result retracted. The only correction is the previous answer's association of the exact-linear reference error with the selected variant's timing. Requirements and untested remedies are distinguished in the user-facing answer; no experiment was authorized or started by this results request.
+
+## 2026-09-04
+
+### Session — initial plan for improving the separable head
+
+User requested a concrete initial plan, not execution. Read the canonical log, the
+coefficient-space head fitter, and the Burgers family parameter plumbing. No
+experiment, implementation, branch/worktree creation, cluster action, or merge.
+This canonical log is the only file edited. The following is a proposed experiment;
+the user has not yet selected it for implementation and none of its success criteria
+are measurements or retrospective changes to existing gates.
+
+**First target.** Improve held-out Burgers-2D representation and initial/early-time
+accuracy at fixed online latent dimension. Start at N=256, K=16, R=512 using the bank
+underlying the existing dense-mid head, subject to checkpoint/provenance reproduction.
+Proposed base: `exp/2026-09-04-separable-tensor-consolidated`; obtain the normal
+base/worktree approval before creating experimental work. One experiment/worktree/
+cluster namespace, sequential arms. The frozen bank's training membership must be
+included in the data-split audit, not just the head's membership.
+
+**Baseline and diagnosis.** Reproduce the selected incumbent decoder and rollout;
+measure exact bank least-squares error, multistart latent-fit error, and rollout error
+on the same states, including separate initial/early-time metrics, medians, upper
+tails and worst cases. Check latent-fit stationarity and sensitivity to increased
+budget rather than treating a finite-budget optimizer result as a global floor.
+Use the existing exact Gram/whitened coefficient identity in `sep_hfit.py` to keep
+head training independent of the full grid; regeneration/extraction and all real
+training occur on the cluster. If the frozen bank itself cannot support the accuracy
+target, stop this head-only proposal and report that finding before enlarging it.
+
+**One controlled two-factor experiment.** Freeze G, K, R, head hidden width/depth,
+training trajectories, optimizer budget and PDE discretization. Train four arms:
+(A) unconditional control with the current loss, (B) conditional head with the
+current loss, (C) unconditional head with early-state weighting, (D) both changes.
+The incumbent checkpoint is also an untouched reference so extra training cannot
+be mistaken for an architectural gain. Use matched head/code initializations
+between arms; conditional input weights can start at zero so the initial decoder
+matches the unconditional one exactly. Independent confirmation restarts must
+actually change head/code initializations, not merely rerun a deterministic fit.
+
+For conditioning, use $u=G h_\theta(z;\mu)$ with the five supplied, fixed trajectory
+descriptors $\mu=(c_x,c_y,w,a,\nu)$ (initial Gaussian center, width, amplitude and
+viscosity). Normalize using training definitions. Pass them to the head; optimize
+only z during a rollout, holding mu fixed. No time coordinate or solution-derived
+test feature is supplied. This proposal is scoped to the existing parameterized
+Gaussian family, for which these descriptors are available. G and its projected
+operators remain independent of mu; the architecture's precomputation property
+is retained. The conditional head is a hypothesis, not an established fix.
+
+For early-state weighting, the proposed first setting multiplies the existing
+training weights at snapshots 0 through 5 by four and normalizes all weights to
+mean one. Other snapshots retain their original relative weights. This is a
+predeclared small ablation, not a claim that four is optimal or that earlier
+weighting experiments established a benefit. Whole trajectories, with immutable
+parameter/seed manifests, are separated into train/validation/test; the new test
+cohort stays closed until arm selection. Historical test cohorts are regression
+checks, not fresh confirmation evidence.
+
+**Evaluation and proposed promotion rule.** Select on validation only. First use
+full-grid weak residual rollouts at N=256 to separate head effects from quadrature
+effects. A promising head must improve the held-out latent fit and then halve mean
+rollout error relative to its paired unconditional control, with no worsening of
+median or 95th-percentile trajectory error, no new failed/nonfinite solves, and at
+most a 10% median end-to-end latency increase on the deployed sampled path. The
+initial-condition metric must improve for the weighting proposal to count as its
+intended mechanism. Report worst-state error and normalized solver gradients even
+when the aggregate rule passes. These are proposed practical pilot thresholds,
+not guarantees or replacements for the long-term 1e-3 accuracy target.
+
+Restore the deployable exact-linear plus sampled-advection path using the same
+quadrature-fitting procedure and node budget per arm, refit on that arm's training
+decoder outputs as appropriate, and certify against the full-grid weak path. Do not
+assume the old quadrature stays faithful after head training. Time paired arms after
+GPU burn-in in the same job, retaining repetitions and accuracy from the timed
+invocation. If representation improves but rollout does not, investigate the
+rollout-minus-fit gap and tangent/solver conditioning before proposing another
+capacity change. If representation does not improve, report the negative and do
+not promote to a larger grid.
+
+**Only after a pilot win.** Confirm with independently initialized head/code fits
+(proposed three seeds) and at least 32 fresh test trajectories; these are fixed-bank
+head repetitions, not independent end-to-end bank-training seeds. Then repeat at
+N=1024 with K=32 and the existing accurate bank, checking transfer rather than
+assuming it. Compare against the appropriately re-matched classical ladder and a
+well-posed same-bank coefficient ROM. Subsequent cells can target smaller-bank
+accuracy/tensor compression, the measured 1D solver optimizations in 2D, and the
+stopped 3D validation pilot; none are bundled into this first head experiment.
+
+No result or prior numerical conclusion changed or was retracted. The user-facing
+plan explains the intended architectural change, its causal controls, and where
+the decision to continue would be made.
+
+**Plan narrowed before the final response, after checking `HFIT.md`.** The earlier
+campaign already has an `early` weighting arm (fresh oracle 6.503e-3), alongside
+wide-head runs at 6.813e-3 and 6.336e-3. This does not establish a robust weighting
+benefit. The final initial plan therefore uses only arms A and B above (unconditional
+control versus parameter-conditioned head), with the same current loss and a separate
+untouched incumbent reference. The proposed four-arm factorial and new fourfold
+early-state weight are deferred, not part of the first implementation. Initial/early
+accuracy remains a required diagnostic, and initial-condition error must improve for
+promotion. A weighting interaction is worth reconsidering only if conditioning first
+shows a benefit and a remaining early-state gap justifies it. No implementation or
+experiment occurred between the draft plan and this narrowing.
+
+## 2026-09-05
+
+### Session — plain-text mathematical explanation of the method and proposed direction
+
+User requested a simple explanation with math but without LaTeX formatting. Read the
+canonical current-state block and the latest plan, then explained the method in
+plain-text equations. This explicit formatting request takes precedence over the
+normal equation-format guideline for this explanation.
+
+The explanation distinguishes physical field size P, latent unknown count K,
+spatial feature count R, and weak test count M. The decoder is `u = G * h(z)`;
+the boundary factor and fixed data scale are included in G. Offline training learns
+the spatial track, the nonlinear head, and a code for each training snapshot.
+Online, the networks are frozen and the physics solver adjusts z. A toy example
+`h(z) = [z, z*z]` shows that a curved set of fields can lie inside the fixed linear
+span of two patterns. It is illustrative, not a description of the actual MLP head.
+
+Separation lets the projected linear term become `B * h(z)` with B precomputed,
+and a projected fixed-stencil quadratic term become sums of stored tensor entries
+times pairs of head coefficients. This explains the progression from sampled weak
+operators to exact linear tables and the Burgers tensor. The fixed backward tensor
+is guaranteed to match sign-upwind on nonnegative decoded fields; undershoots explain
+the measured approximate rather than bit-exact agreement on the tested decoders.
+The latent iteration avoids the physical grid at fixed reduced sizes; input
+projection and full-field output can still depend on P.
+
+The proposed direction remains the two-arm conditional-head experiment recorded
+on 09-04: compare `h(z)` with `h(z, cx, cy, width, amplitude, viscosity)` at fixed G
+and K, using the supplied fixed trajectory parameters and optimizing only z online.
+Begin with the N=256 bank, K=16, R=512; require improved fresh-trajectory/initial-state
+fit and rollout, then check cost. Halving rollout error with at most 10% median
+latency increase is a proposed first milestone; the historical long-term mean-error
+target remains 0.1%. Conditioning is untested and is not claimed to solve the gap.
+
+No experiments, code changes, branch operations, or merges. No numerical result or
+scientific conclusion changed or was retracted. This log is the only file edited.
+
+## 2026-09-05
+
+### Session — successful results recap, directions deferred
+
+User asked for the results that work and explicitly deferred discussion of future
+directions. Re-read the canonical log and generated result tables. The answer
+collects the existing successful demonstrations with their scope: paired Burgers-2D
+speed/accuracy points, near-oracle 1D/2D tensor evaluation, exact Poisson weak
+operator precomputation, the previous 1D implementation speedup, and the limited
+absorbing-wave rollout pass. It distinguishes operator correctness from field
+accuracy, speed versus a previous ROM from speed versus the FOM, and the accurate
+sampled-advection configuration from the less accurate small-bank tensor model.
+
+The exact-linear headline uses the corrected selected-variant error 0.008008432638459188,
+not the reference-variant error. The previously derived trajectory medians and tail
+counts remain the source for the Burgers-2D error distribution; the tensor result
+at N=1024 still has two of eight trajectory-average errors above 10%. Poisson's
+quadrature-free verification does not establish a win against its spectral-direct
+solver, and 1D tensor results do not establish a speed win against the tridiagonal
+FOM. Tensor/sign-upwind agreement remains conditional on decoded signs, with the
+observed undershoot discrepancy disclosed. Absorbing-wave passes remain relative
+to the manifold floor, not a small-absolute-error claim. No 3D rollout result exists.
+
+No new result, experiment, code change, branch operation, or merge. No findings
+retracted or directions changed. Only this canonical log was appended.
+
+## 2026-09-06
+
+### Session — Codex CLI conversation visibility in the desktop app
+
+User asked why this conversation is absent from the Codex app. Read local session
+metadata: thread `01a07867-837e-7742-ac28-370e4c12e0c1` is an unarchived CLI session
+(originator `codex-tui`, version `0.153.4`) stored under
+`/home/tahmid/.codex/sessions/2026/09/06/` for this repository. The terminal
+reports VS Code and an SSH connection. Official OpenAI documentation confirms
+local transcript storage and documents connecting the desktop app to SSH hosts
+through Settings > Connections. A different host/session store is the likely
+explanation if the app runs on another computer; the desktop app's location and
+connection configuration have not been inspected, so the exact cause remains
+unconfirmed. No Codex configuration changed. No experiments, scientific findings,
+retractions, branch operations, or merges; only this canonical log was appended.
+
+### Session — phone Remote follow-up and local CLI capability correction
+
+User clarified that the missing conversation is being sought on a phone. Checked
+current official Remote documentation and the installed CLI help. The public guide
+describes mobile pairing through a supported desktop host, including SSH projects;
+however, local CLI `0.153.4` also exposes experimental `codex remote-control start`
+and `codex remote-control pair`. This corrects the prior answer's incomplete
+emphasis on desktop-app SSH setup. The read-only `codex app-server daemon version`
+check failed because the managed daemon control socket does not exist; existing
+Codex processes were ordinary terminal sessions. No managed daemon was reachable
+for phone Remote. Starting/pairing was not attempted, and account eligibility or
+automatic discovery of this already-running CLI thread remains unverified. No
+configuration or research code changed; no experiments, scientific retractions,
+branches, or merges. Only the canonical log was appended.
+
+## 2026-09-06
+
+### Session — diagnose Codex mobile Remote “Error loading”
+
+User reported connected Remote sessions failing to load, clarified that all but one
+were affected, then reported that this diagnostic conversation now opens. Read the
+canonical log first, used the openai-docs skill, checked installed CLI help and
+read-only local process/log/database metadata, and fetched official Remote and
+App Server documentation at https://learn.chatgpt.com/docs/remote-connections and
+https://learn.chatgpt.com/docs/app-server.
+
+Managed daemon version check now succeeds: CLI and daemon are both 0.153.4;
+PID 617324 runs `app-server --remote-control --listen unix://`. Its log records a
+successful Remote websocket connection at 20:33:59 UTC. This supersedes the earlier
+same-day observation that no managed daemon was reachable; that was the state
+before the user started Remote. iOS client 1.2026.237 reaches the daemon.
+
+Confirmed specific failure: mobile `thread/resume` requests at 20:47:59–20:51:31 UTC
+repeatedly fail with `thread-store conflict: thread ... already has an active writer`
+for architecture conversation `01a06e7e-c8ca-7653-8855-22f4134d50f8`, titled
+“Look into the architecture and this”. Standalone resumed CLI PID 587334 on
+`pts/4` has both that rollout and its writer-lock file open. The daemon owns the
+locks for availability conversation `01a07867-837e-7742-ac28-370e4c12e0c1` and this
+diagnostic conversation `01a0787a-aef7-7373-a972-5356b54bed19`. A read-only tool call
+also successfully retrieves the most recent completed turn of inactive conversation
+`01a06e70-dd74-78a3-b26b-400ae5cfb3e7`; this is not a test of its mobile UI.
+
+Scope correction: the architecture lock conflict is confirmed, but does not explain
+all reported failures. This diagnostic session recovered without any configuration
+change or restart by this investigation; its earlier failure remains unexplained.
+Requested another failing title and a retry to correlate with server logs. For the
+confirmed conflict, the next step is to exit the owning standalone terminal session
+after its work finishes and retry on mobile. Future terminal access through
+`codex --remote unix:// resume <thread-id>` uses the managed daemon. No process was
+terminated, daemon restarted, lock deleted, or conversation changed. Further mobile
+verification is open. No experiments, scientific changes/retractions, branch
+operations, or merges. Only this canonical log was appended.
+
+## 2026-09-06
+
+### Session — architecture conversation now connected through Remote
+
+User explicitly requested connecting “Look into the architecture and this” and
+then confirmed that it works. Re-read the canonical log and checked live process
+and thread metadata. The former standalone owner PID 587334 has exited. Managed
+Remote daemon PID 617324 now holds the writer-lock file for architecture thread
+`01a06e7e-c8ca-7653-8855-22f4134d50f8`; its version check still succeeds at 0.153.4.
+This establishes that ownership moved to the shared daemon and the prior writer
+conflict cleared. The latest stored turn was interrupted at 20:51:52 UTC; this
+investigation did not interrupt it or start another turn in that conversation.
+
+User confirmation closes the requested architecture-conversation loading issue.
+The transition occurred before any repair mutation by this session; do not credit
+it to an agent-issued restart or process termination. No such action was run.
+Other conversations' earlier transient errors remain unexplained. No scientific
+findings, experiments, retractions, branch operations, or merges. Only this
+canonical log was appended.
+
+## 2026-09-06
+
+### Session — recommended next experiment after the retained-results recap
+
+User asked what to do next, then requested continuation after the interrupted
+read. Re-read the canonical current state and recent scientific entries, the
+exact-linear report's F3/F5/F8 findings, and the consolidated `HFIT.md` generated
+tables. The consolidated branch remains at `da47912`. An inherited report link
+to `reports/2026-08-25-burgers-h-generalisation-wall.md` does not resolve in the
+root; the recommendation instead uses the available generated head-fit tables
+and exact-linear report. No training, solver run, code edit, cluster action,
+worktree creation, branch operation, or merge.
+
+Recommendation remains the narrowed two-arm head experiment from 09-04. First
+reproduce and diagnose the N=256, K=16, R=512 incumbent on identical states:
+unrestricted bank fit, multistart latent fit with optimality checks, and PDE
+rollout, including initial/early states and error tails. Historical bank/head
+gaps motivate this check but do not certify the current checkpoint's floor.
+Then compare unconditional and parameter-conditioned heads at fixed spatial
+bank, latent dimension, hidden width/depth, training trajectories, training
+budget, and loss. Keep the original checkpoint as a separate reference. The
+conditional head receives the supplied fixed Gaussian-family parameters
+(center coordinates, width, amplitude, viscosity); only latent variables are
+solved online. Conditioning is an untested hypothesis. The existing mixed
+early-weighting evidence does not justify adding another factor to this pilot.
+
+Use trajectory-disjoint validation with the bank's own training membership
+included in the split audit, and reserve fresh test trajectories. Separate
+representation from dynamics using full-grid weak residuals for diagnosis;
+then refit/certify the deployed sampled advection for each changed decoder.
+The previously proposed pilot milestone stands: halve mean rollout error
+relative to the equally trained unconditional control, improve initial-state
+fit, do not worsen median or upper-tail error or add failed solves, and allow
+at most a 10% median end-to-end latency increase in same-job paired timings.
+This is a proposed threshold, not a measured outcome; the historical eventual
+mean-error target remains 0.1%. Better state fit alone is not a rollout win.
+
+A passing pilot would receive independent head/code initialization checks and
+fresh-trajectory confirmation before N=1024 transfer and a new classical
+baseline tolerance sweep. Subsequent speed work can test the existing 1D
+kernel optimizations in 2D; accurate-bank tensor work follows evidence that
+the head accuracy is adequate. These are sequential recommendations, not
+authorized or launched experiments. Proposed implementation base remains
+`exp/2026-09-04-separable-tensor-consolidated`; branch/worktree selection is
+required when implementation starts. No numerical finding was changed or
+retracted; only this canonical log was appended.
+
+## 2026-09-06
+
+### Session — Gaussian conditioning scope and revised next-step recommendation
+
+User challenged whether the proposed mu inputs are specific to Gaussian families.
+Confirmed that center coordinates, width and amplitude in the proposed five-input
+vector encode this particular initial-condition parameterization; viscosity is a
+physical PDE parameter with broader applicability. Conditioning as a mathematical
+construction is general, but this descriptor vector cannot describe arbitrary
+initial fields. A win on this ablation would establish a family-conditioned ROM
+improvement, not broad head generalization. The earlier plan already stated its
+Gaussian-family scope, but its promotion as the first general architectural
+improvement was too strong.
+
+Revised recommendation: retain the descriptor-free separable decoder as the main
+architecture reference and start with the previously specified bank-fit,
+converged latent-fit, and rollout diagnosis on the actual incumbent checkpoint.
+Treat Gaussian-parameter conditioning as an optional specialization rather than
+the leading general improvement. Broader initial-condition families require
+explicit train/validation/test coverage and a new bank-span check; removing
+handcrafted descriptors alone does not make a Gaussian-trained decoder general.
+Known physical coefficients or boundary controls can legitimately condition a
+parameterized ROM, but no new conditioning architecture or training change is
+claimed to work or has been selected for execution here.
+
+The current-state block was updated to prevent the earlier conditional-head
+recommendation being carried forward without this qualification. No numerical
+result retracted or changed; the scope and priority of an untested proposal were
+corrected. No experiments, code changes, branches, worktrees, cluster actions,
+or merges. Only the canonical log was edited.
+
+## 2026-09-06
+
+### Session — generalization requirement and a field-based research plan
+
+User rejected family specialization and asked how to ensure generalization.
+Read the canonical log first and inspected `sep_common.py` training,
+`sep_hfit.py`, `sep_solvers.py`'s existing initial-guess encoder, and the wave
+velocity-consistency negative. Asked an optional asynchronous scope question:
+one trained decoder across initial shapes and physical parameters for one PDE,
+or the same weights across PDEs. With no answer received at the time of writing,
+the proposed first target is the former; architecture reuse and unchanged-weight
+cross-PDE transfer are explicitly different claims. Gaussian-descriptor
+conditioning is removed from the recommendation, superseding its prior status
+as an optional specialization in this conversation.
+
+**Proposed generalization mechanisms, not measured improvements.** Train the
+descriptor-free spatial bank and head on a broad distribution of resolved fields
+with specified amplitude, spatial-scale, sign and boundary constraints. Candidate
+training generators include boundary-compatible random trigonometric mixtures,
+smooth localized patterns and combinations, supplemented with training-only PDE
+trajectories to cover transient steepening. Generator coefficients or family
+labels are never decoder inputs. Random field generation here is training-data
+construction, not the prohibited random strong-form collocation method. Broad
+training is still restricted to a declared function class and does not establish
+universal accuracy. Generic-field examples should remain represented during any
+trajectory fine-tuning so the model is not simply re-specialized.
+
+Audit the old bank on this broader class before claiming that a head-only change
+can generalize. Every decoder output lies in the bank span: unrestricted bank
+least-squares error lower-bounds the best achievable decoder error in the same
+norm. Train/enrich a common broad bank if needed, then freeze that bank for a
+controlled head comparison. Start from the prior N=256, K=16, R=512 sizes as a
+pilot, but do not assume they can support the expanded function class; bank and
+latent dimension changes must be reported with their cost/accuracy effects.
+
+The candidate head comparison is existing independently optimized snapshot
+codes versus joint encoder/head reconstruction training using generic observable
+field features (or the exact whitened bank coordinates offline). This differs
+from `fit_code_encoder`, which is already a post-fit regression to training
+codes used only for initialization. Both arms share the broader training data,
+bank and model/training budget. Online networks stay frozen and the weak PDE
+solver still solves z. A deployment encoder must use certified sampled/reduced
+initial-field features to preserve hyper-reduced cold-start requirements; a
+full-grid offline coefficient extraction does not make online input processing
+free. No encoder or dynamics-training benefit is assumed, and the prior failed
+wave velocity-consistency loss is not re-proposed as a known fix.
+
+**Evidence and guarantee scope.** Reserve complete initial-condition generator
+families, trajectories and seeds from every component's training and selection;
+separately test unseen compositions, scale/parameter extrapolation and horizons.
+Use unchanged weights in a transfer test. Report family-specific initial,
+converged latent-fit and rollout errors, medians, upper tails, worst cases and
+failures, followed by matched-cost comparisons and independent training seeds.
+Validation failures can guide offline enrichment; final held-out test data must
+not feed that enrichment. The earlier Gaussian-cohort 0.8% result and its proposed
+halving target cannot be transplanted onto a new distribution as a baseline.
+
+Broad signed Burgers fields require the FOM-exact sign-dependent upwind weak
+advection operator. The existing fixed-backward tensor is not a general signed
+operator. Begin diagnosis with the full-grid weak residual and retain exact
+linear terms plus adequately validated sampled advection for deployment.
+Independent richer weak-test checks can flag some failures, but finite weak
+residuals have blind spots and do not guarantee state accuracy. Rigorous online
+error assurance would require a suitable PDE/time-discretization stability bound
+and a certified residual estimator, including initial and quadrature errors;
+fallback/enrichment would incur separately reported costs. None exists as a new
+result from this session.
+
+**Primary-source context (ordinary research, no Deep Research skill).**
+[Venkat, Smith and Kelley](https://arxiv.org/html/2108.12453v1) use randomized
+smooth training functions; inspected Section 3.1 and results, which support this
+as a precedent, not universal compression or broad signed 2D Burgers success.
+[Lee and Carlberg](https://arxiv.org/html/1812.08373v3) provide manifold-ROM
+autoencoder formulations and conditional a posteriori bounds; inspected Theorem
+4.3's Lipschitz and time-step assumptions. These bounds are not automatically
+certificates for this project's sampled weak residual. Also read the abstract of
+[Otto, Macchio and Rowley](https://arxiv.org/abs/2307.15288), which motivates
+distinguishing transient dynamics from reconstruction; no transfer of its
+constrained architecture or case-study results is claimed.
+
+Only the canonical log was edited, including its current-state planning note.
+No training, solver run, cluster action, code change, experiment branch, worktree,
+or merge. No numerical result retracted; the untested plan was revised to honor
+the generalization requirement. Detailed scope and experiment approval remain
+open; this answer is a recommendation, not an execution request.
+
+## 2026-09-06
+
+### Session — agree on the research direction before selecting experiments
+
+User asked to first understand which direction to push in, steering the
+conversation away from premature architecture and training choices. Read the
+canonical log and narrowed the answer to a proposed research objective:
+learn a reusable low-dimensional representation of a broad, declared class of
+solution fields while retaining physics-driven latent evolution and the
+separable architecture's offline operator precomputation.
+
+The field representation and the PDE solver have distinct roles: frozen spatial
+patterns and the frozen head define the available fields; the governing
+equations determine the latent trajectory. Proposed first generalization
+milestone is unchanged-weight transfer across initial-condition shapes for a
+fixed PDE/domain. Reuse of the same learned representation across PDEs is a
+further research ambition, not established by reuse of the architecture or by
+training separate models. The unanswered scope question is not treated as user
+approval of either scope. No claim of compression of arbitrary fields or of
+universal same-weight cross-PDE accuracy is made.
+
+Success should be judged jointly by breadth of held-out field coverage,
+accurate/stable PDE rollouts including initial conditions, and online cost at
+the required accuracy. The scientific question is how much field diversity a
+single nonlinear representation can support at a given error and cost. The
+earlier joint-encoder proposal, broader training distributions, bank enrichment
+and other interventions remain candidate mechanisms, not an agreed first
+experiment. Updated the top planning block to reflect this direction-first
+steering. No experiments, implementation, cluster action, branch/worktree
+creation, or merge; no numerical finding changed or retracted. Only this
+canonical log was edited.
+
+## 2026-09-06
+
+### Session — harden local Codex Remote session availability
+
+User requested reliable Remote access for every session and prevention of the
+loading error. Scope: normal Codex use on this host; an absolute guarantee against
+all app, network, authentication, or future-version failures is not possible.
+Read the canonical log, reused the openai-docs skill, consulted official App Server
+and config-schema documentation, and inspected installed CLI 0.153.4 help/config.
+The removed `tui_app_server` feature is already true; current interactive clients
+use the shared daemon. Every active writer lock is held by daemon PID 617324.
+
+Host changes (no experimental branch/worktree needed): pinned the existing Bash
+Codex alias to `/home/tahmid/.local/bin/codex`, preserving its existing permission
+flag, so future shells select the managed standalone installation instead of a
+PATH-selected older executable. Backed up `.bashrc` to
+`/home/tahmid/.local/state/codex-remote/backup-20260906T212509Z/bashrc` in a private state directory. Added user units
+`/home/tahmid/.config/systemd/user/codex-remote-keepalive.service` and matching
+`.timer`. About once per minute, the service checks the persisted Remote-enabled
+setting and invokes native `app-server daemon start`, which returns
+`alreadyRunning` for a healthy daemon. It can recover an exited daemon, but does
+not restart a live hung daemon or resume an interrupted model turn. Enabled the
+timer and user lingering (previously off) for boot/logout availability. It uses
+Codex's existing PID-file lifecycle and does not replace the native updater.
+
+Validation: Bash syntax and systemd unit validation passed; a fresh Bash shell
+resolves the pinned alias. The timer is enabled/active, the service completed with
+exit status zero, and the original daemon/updater PIDs and start times are
+unchanged. No existing turn was interrupted by this work. Codex Doctor reported
+all checks OK, including every database integrity check, inventory parity, and
+HTTP/Responses-WebSocket reachability. Read the latest turn from each of the
+102 unarchived saved conversations through the shared app-server tool: 102
+succeeded, none failed. Per-thread evidence is saved at
+`/home/tahmid/.local/state/codex-remote/history-read-check.json`; setup state and
+operation/rollback instructions are alongside it in `setup.json` and `README.md`.
+There were no new writer-conflict errors in the final ten-minute log window.
+
+Limits: history reads do not certify every mobile view, every resume operation,
+or all older history pages. Reboot and forced-crash recovery were not tested
+against live sessions. Existing shells must reload `.bashrc` or be replaced to
+pick up the alias; currently active sessions already share the daemon. Explicit
+old binaries/separate servers/other session stores can bypass the normal setup.
+The broader earlier transient UI error remains unexplained. No research code,
+experiments, scientific findings/retractions, branches, worktrees, or merges.
+Repository write scope was this canonical log; other edits were user host config.
+
+## 2026-09-06
+
+### Session — user selects cross-PDE expansion with the current data style
+
+User clarified the direction: retain the current data type for now and expand
+to Burgers 3D, waves, INS and NS. This supersedes the prior conversational
+recommendation to make initial-condition-family diversity the first milestone.
+Read the canonical log, existing sequential roadmap, consolidated B3D design
+and corrected pilot notes, wave mechanism notes, and Stokes design/notes. The
+consolidated branch remains at `da47912`. No new scientific computation.
+
+Proposed interpretation is a common separable architecture and physics-driven
+latent solver across PDEs, with separately trained weights permitted in the
+first phase and PDE-specific state variables, constraints and projected
+operators. This is a recommendation, not a claim that the user explicitly
+authorized retraining or required one universal pretrained network. The prior
+within-PDE-versus-cross-PDE scope question is superseded by the latest steering;
+asked a narrower optional asynchronous question about "INS and NS":
+incompressible versus compressible, or 2D versus 3D incompressible. No answer
+had arrived at the time of this entry, so no compressible formulation is selected.
+
+Same data style means controlled smooth/localized initial conditions or forcing
+as appropriate to each PDE. It does not mean feeding a scalar Gaussian directly
+into every component of an incompressible velocity field; its divergence and
+boundary constraints must be satisfied. Family metadata is not added to the
+head. The previous broad-generator and jointly trained encoder proposals are
+deferred; they are not implied prerequisites for expanding the PDE portfolio.
+
+**Recommended order and the evidence behind it.** Start by resolving the
+existing scalar Burgers-3D pilot, the nearest extension of the retained 2D
+nonlinear result. Corrected pilot B has mean latent-fit error 5.15e-2 and worst
+0.168, fails the four recorded acceptance criteria including stationarity, and
+has no accepted ROM rollout. The first milestone is a converged, acceptable
+held-out representation followed by accurate rollouts and a paired cost ladder;
+do not begin with larger-grid timing or silently relax its gates. Next propose
+a bounded wave cell focused on rollout accuracy/phase and its gap above the
+representation fit: reflective configurations failed despite energy control,
+and only the absorbing supervised-head cases passed their relative-to-floor
+tests. The current wave bank is POD, so that result does not establish the
+learned spatial-track transfer. No energy-only fix is proposed as sufficient.
+
+Then extend the verified Stokes velocity/divergence/pressure machinery to 2D
+incompressible NS with convection and time evolution. The nonlinear head must
+earn a benefit against a well-posed same-bank reduced baseline and a matched
+classical solver; Stokes' direct-solve superiority remains intact. Divergence-free
+spatial features and the actual boundary treatment must be preserved; a scalar
+boundary mask cannot be carried over without checking divergence. Fixed
+quadratic convection can use offline tensors, but sign-dependent stabilization
+and other non-polynomial discretization terms need their own treatment.
+3D incompressible NS follows a working 2D case; compressible NS, if intended,
+is a further distinct extension rather than a dimension switch. No claim that
+a reciprocal-density variable alone makes arbitrary compressible NS exactly
+quadratic is adopted from the older roadmap shorthand.
+
+This is a proposed sequential research order, not permission to launch several
+cells or an unreviewed amendment of an experimental design. Wave success is
+not a mathematical dependency for INS now that vector machinery is available
+from Stokes; an inconclusive wave cell should be reported and closed at its
+declared scope rather than indefinitely blocking fluid work. Each PDE should
+be judged on representation, accurate/complete dynamics and constraints, then
+cost at the required accuracy against appropriate baselines.
+
+Updated the top planning block to capture the clarified direction. No new
+experiment, training, code edit, cluster action, branch/worktree creation, or
+merge. No numerical findings changed or retracted. Only the canonical log was
+edited; implementation and experimental design selection remain pending.
+
+## 2026-09-06
+
+### Session — Burgers-3D implementation readiness and required branch selection
+
+User requested implementation/testing of the Burgers-3D experiment and asked
+what is needed from them. Read the canonical log first, then the actual root
+and consolidated AGENTS.md files, worktree inventory/status, existing 3D
+driver's training/validation and oracle paths, corrected pilot JSONs and file
+metadata, and the cluster staging/batch scripts. No experiment code was edited.
+
+**Readiness verified.** Consolidated base is clean at
+`da479125b13aaa3e15b5cae33f72709705129838`. Both corrected checkpoints are
+available locally: pilot33a's pickle is 1,605,507 bytes and pilot33b's is
+3,484,556 bytes; their recorded configurations identify the corrected split,
+seed manifest and jobs 3248020/3248039. These were file/JSON reads, not checkpoint
+deserialization or numerical evaluation. A BatchMode SSH check to tufts-login
+succeeded; `squeue -u tawal01` returned no jobs at this check, the paralab share
+reported 470 GB available, and the prescribed cluster Python executable exists.
+This is access readiness, not a GPU-backend preflight on an allocated node.
+
+**Concrete proposed scope.** One sequential Burgers-3D repair/validation cell,
+starting with the corrected N=33, K=32, R=128 checkpoint and the existing
+nonnegative localized multi-blob family. Reproduce validation with per-state
+diagnostics; measure unrestricted bank error, converged multistart latent fit,
+initial-state versus later-state error, and sensitivity to solver termination.
+The stored pilot JSON lacks the per-state rows now emitted by the consolidated
+driver, so those distributions must be regenerated, not inferred. The existing
+four-state budget-doubling check is not a certificate for every difficult state.
+Treat any optimizer defect versus true head/bank deficiency as a question to
+resolve, not a known fix. Retain acceptance thresholds and train/validation/test
+separation; apply targeted training/representation changes only when warranted
+by the diagnosis, without family-parameter inputs to the head. Preserve the
+original checkpoints and publish failed arms as well as any improvements.
+
+After a passing representation pilot, validate full-grid weak, sampled
+exact-linear, and tensor rollouts against the actual sign-upwind operator;
+retain the tensor's decoded-sign qualification. Compare accuracy and cost from
+the same invocation against both existing classical solver ladders on one GPU.
+N=65 follows only on passing prerequisites; N=129 remains behind the existing
+memory/cost preflight. All numerical jobs use the repository's f64/highest
+precision, GPU verification, checksum/provenance, and one-job-per-directory
+rules. Existing design-review requirements apply before implementation of an
+amended experiment. No new design or result is claimed to have been audited.
+
+**Only user input presently required:** confirm the new worktree's base and
+creation, as required explicitly by root AGENTS.md lines 142 and 190. Proposed
+base: `exp/2026-09-04-separable-tensor-consolidated`, since it preserves the
+corrected split and consolidated separable/tensor changes. Proposed worktree:
+`worktrees/2026-09-06-burgers3d-repair`; branch:
+`exp/2026-09-06-burgers3d-repair`; cluster namespace:
+`/cluster/tufts/paralab/tawal01/b3d_repair_20260906/`. Local path/ref and remote
+namespace checks show no collision. Prior recommendations of the base were not
+user approval, and this turn's general implementation request does not select
+one. No credentials, dataset upload or unrelated INS/NS clarification is needed
+to start the proposed Burgers cell once the base is confirmed.
+
+Updated the top planning block with readiness and the pending decision. Only
+the canonical log was edited; `git diff --check -- LAB-LOG.md` passed. No new
+worktree, branch, training, numerical solver run, cluster submission or merge.
+No scientific results changed or were retracted.
+
+## 2026-09-06
+
+### Session — approved Burgers-3D implementation, initial progress
+
+User explicitly approved the proposed base/worktree and requested implementation.
+Created `worktrees/2026-09-06-burgers3d-repair`, branch
+`exp/2026-09-06-burgers3d-repair`, from `da479125b13aaa3e15b5cae33f72709705129838`.
+All experiment writes are confined to that tree; this canonical log is the
+documented exception. No merge has occurred. The design amendment, diagnostic
+implementation, tests, staging utility and completed run artifacts are committed
+there (`a5748b4`, then `4dde022`).
+
+Unchanged-source reproduction job 3328159 (`ctol_b3dr_repro33`, A100-80GB,
+`pax105`) completed successfully with `jax_backend=gpu`, f64 and highest matmul
+precision. Same corrected K=32/R=128 checkpoint, N=33; parameter table and truth
+regenerated from seed on the cluster. Mean D4 error 0.05146245433056414, median
+0.0439340792236358, worst 0.16768933585441637. Initial-state mean
+0.07953011217042522 (64 states), later-state mean 0.042106568383943783 (192).
+Only one of 256 selected multistart fits is nonstationary at the 1e-6 criterion;
+it is also the only selected fit to exhaust 200 attempts. The historical error
+is reproduced to numerical precision. This remains a failed representation
+pilot, not a rollout. Result/log checksums verified locally and the remote job
+directory deleted. Logs contain CPU-affinity `hwloc_set_cpubind` warnings, but
+GPU backend was explicitly verified and no captured-large-constant/OOM warning
+occurred; no timing comparison is inferred from this reproduction.
+
+Implemented `b3d_repair.py`: exact learned-bank QR coordinates, unrestricted
+bank error, multistart coefficient-space LM with field-normalized gradient
+stopping, persisted per-start/per-state errors and reasons, independent direct
+field checks, and initial/later/blob-count summaries. No family metadata enters
+the head. GPU smoke tests against independent linear least squares and the
+field/QR reconstruction identity passed in under a minute via `jaxrun`.
+The initial three tests were extended with parameter-provenance negative
+controls; the current four tests pass. These are local component checks, not
+local scientific training or rollout results.
+
+Diagnostic job 3328284 (`diag33`, A100 GPU verified) failed closed on the
+checkpoint/table byte-hash check before any head fit. The regenerated hash is
+`d25b15fd317fb2a8153c551dcb024d89665c6c10647dd4fa2c70a64fedd85a8a`, versus the
+checkpoint's archived `8f47325468fefe036089f4265cee09739e13184da66579601db2fa6d691a871a`.
+Retrieved the archived parameter metadata from the original 09-03 worktree.
+Raw B/c/w/rho/A draws and seed/membership are bit-identical. Derived viscosity
+differs in 25 entries by at most 2.2135919315542102e-16 relative; reference peak
+normalizers differ in 24 entries by at most 3.056948382772916e-16 relative.
+The diagnostic reached a rank-128 bank with condition about 424.5 before stopping;
+it produced no fit result. Failed JSON/logs and metadata comparison are retained,
+checksums verified (including regenerated npz), remote directory deleted.
+
+**Explicit provenance amendment:** use the archived table only as a reference
+whose content hash must match the checkpoint; actual truth still uses newly
+regenerated parameters. Require exact equality for raw random parameters and
+membership, permit at most eight f64 epsilons relative only for positive derived
+viscosity/peak values, record every discrepancy and both hashes. Perturbed raw
+and materially perturbed derived parameters fail the added controls. This
+replaces the overly strict diagnostic byte-equality gate, not a D4 acceptance
+threshold or a scientific result. A fresh `diag33b` attempt is staged from
+committed sources; its outcome will be recorded when complete.
+
+The optional read-only reviewer request remains unanswered. No subagent has
+been spawned. Work has continued with the primary agent's mathematical/code
+review and independent numerical checks, with independent reviewer status
+explicitly pending rather than falsely marked approved. Further results and
+the closing log entry remain to be appended.
+
+### Session — Burgers-3D bank/head diagnosis completed; bounded refinement running
+
+Diagnostic rerun job 3328334 (`diag33b`, A100-80GB on
+`pax105`, source `4dde0228d95d77e3584772fb8c139fa7fdaec0cd`) completed in GPU/f64/highest mode.
+Truth was regenerated from seed and passed the amended parameter-metadata
+comparison. Output/log checksums were verified locally; the remote job directory
+was deleted. Direct field and exact QR-coordinate errors/gradients agree within
+the asserted tolerances. No test data were opened. The learned bank has rank
+128 and condition 424.54100517626904. Its unrestricted validation
+mean error is 0.021822143811524652, worst
+0.08013365696576606. With the existing head, the 800-attempt
+multistart fit still gives mean 0.051462454322942844, median
+0.043934079223633946, worst 0.16768933585432952. Maximum normalized
+gradient is 9.731325142629033e-09; no selected fit exceeds the unchanged 1e-6
+stationarity criterion. Doubling from 400 to 800 attempts changes relative
+errors by at most 4.7655830415149444e-14. Thus correcting the fit-stopping
+issue does not cure the accuracy failure. A learned-bank span exists below the
+pilot targets, while the current head/learned manifold remains the next target;
+local convergence does not establish its global representation optimum.
+
+Implemented the first bounded frozen-bank head/code refinement, with exact
+field-MSE coordinates, unchanged global reconstruction objective, architecture
+and training membership. Five local GPU component tests now pass, including
+training loss reduction on a controlled fixture and preservation of frozen bank
+parameters. Source and diagnostic artifacts committed as `dd21ccb`. Submitted
+job 3328417 (`head33`) in its own approved namespace directory: 60000 Adam steps,
+learning rate 3e-4, batch 4096, optimizer seed 200. The same 8192 training states
+are regenerated; validation is only used after fitting. The checkpoint will be
+persisted before validation. This job is active at the time of this entry.
+Generated notes live in the approved worktree as `B3D-REPAIR-NOTES.md`, from
+`runs/b3d_repair/generate_notes.py`. New scientific results remain provisional
+pending independent review; no reviewer permission response has arrived.
+No rollout, speedup or gate relaxation is claimed.
+
+## 2026-09-06
+
+### Session — locate existing Telegram-to-Claude launcher
+
+User asked whether another repository on this device still exists that can start
+Claude sessions from Telegram. Read-only inspection found the Git repository
+`/home/tahmid/Dev/Launchable-Scripts` and its `telegram-bridge/` directory.
+`README.md`, `bridge.py`, `run.sh`, a local venv, `.env`, `bridge.log`, and eight
+saved session logs remain present. The code implements text or `/launch <name>`
+starting a Claude Code Remote Control process and replying with its Claude app
+session link; `/list` and `/stop` are also implemented. Configuration has nonempty
+bot-token and allowed-user-ID fields; values were not printed. The configured
+working directory is the existing Launchable-Scripts repository.
+
+At inspection, no bridge, Claude, Node, or Python daemon process was found, and
+no matching Telegram/Claude/bridge system or user service was found. The last
+bridge-log write is 2026-08-26 02:17:39 UTC; its tail includes Telegram
+`NetworkError: Bad Gateway` exceptions. Those historical errors do not establish
+why it is stopped now or whether its Telegram credentials remain valid.
+No bot/network request, message, launch, restart, dependency install, or edit to
+the other repository was performed. Existence/configuration and saved logs are
+confirmed; end-to-end Telegram functionality was not tested. No scientific
+findings, experiments, retractions, branches, worktrees, or merges. Only this
+canonical log was appended.
+
+## 2026-09-06
+
+### Session — Burgers-3D bounded refinement completed and checked; pilot still fails
+
+Completed the approved implementation in the single repair worktree. Final
+commit `d5fcdcc` follows `dd21ccb` (implementation) and `30f851c` (refinement
+artifacts/checkpoint). The worktree is clean. The canonical log is the only
+file written outside it; no main/consolidated merge has occurred.
+
+Refinement job 3328417 (`head33`, source
+`dd21ccb3fe19f91ed33b406c13a8f1c2112dd4de`, GPU `NVIDIA A100 80GB PCIe` on
+`pax105`) completed successfully in f64/highest/GPU mode. It used
+60000 Adam steps, learning rate 0.0003, batch 4096, optimizer
+seed 200, and exactly the original 8192 training snapshots.
+N=33, K=32, R=128, two head hidden layers of width 128, global relative field-MSE
+objective and data family are unchanged. All spatial-bank parameters were
+verified bit-identical, and conversion of the trained QR-coordinate head back
+to the existing decoder has relative error 8.679381015308672e-16. The
+checkpoint SHA-256 is `611235d3cdedec0954d8fea673f7d94118b7f8c2ee3b7997cea9bdef1bb75784`; it is tracked
+at `runs/b3d_repair/head33/out/refined_checkpoint.pkl`, not only in ignored scratch
+storage. Its metadata retains the original training lineage and records the
+refinement source/config/job separately.
+
+Training mean relative field error: 0.02737302728162394 before,
+0.02521548096653635 after. Global relative field MSE:
+0.0007047924242257602 before, 0.000606506366383705 after.
+Validation at the 800-attempt exact-coordinate fit: mean
+0.04996531589973463, median 0.04216299925151718, 95th percentile
+0.11507658483904394, worst 0.1677720547241347. Initial-state mean
+0.07733596866537626; later-state mean 0.04084176497785408.
+Maximum normalized gradient 2.998255340991047e-05; one of 256 selected fits
+remains nonstationary at the unchanged 1e-6 threshold and exhausts its budget.
+The worst-error state is a different, locally stationary fit. The 400/800 budget
+relative-error change is at most 8.688017832873464e-07. Per-start and per-state
+arrays are persisted, including failures; local minima are not certified global
+optima. This is a modest validation improvement, not a successful pilot.
+
+Inherited-driver confirmation job 3328480 (`pilot_head33`,
+source `30f851cbb2649d847ba18ae7362023e0dd5cee57`, same A100-80GB node) uses the saved refined
+checkpoint with `PILOT=1`, `TRAIN=0`, `ORACLE_BUDGET=800` and all unchanged
+acceptance criteria. The truth/data are regenerated from seed again. It passes
+F5, D1, D2 and D3; every applicable negative control fires. D4 has mean
+0.04996531590573097, worst 0.1677720547247265, oracle/POD-K ratio
+0.5802063845313098 against the unchanged maximum 0.5, and maximum
+normalized gradient 3.034043830745019e-05 against 1e-6. The worst limit remains
+0.15; the POD-K mean 0.08611645310675599 makes the effective mean target
+0.043058226553377994. `pilot_passed=False` is confirmed. The exact
+and inherited fit errors differ by at most 1.5236332751022985e-09 across this
+cohort. Pool/full parity and original budget stability checks pass.
+
+Both final jobs exited zero, with `jax_backend=gpu`, f64 and highest precision.
+Output/checkpoint/log checksums were checked locally before deletion of their
+exact remote job directories. The approved namespace is empty and no jobs from
+this session remain queued. CPU-affinity warnings occurred as in the baseline;
+no captured-large-constant, OOM, disk-full or truncated-log issues occurred.
+Five meaningful local GPU smoke tests passed, including QR/field identity,
+independent linear least squares, stopping-reason controls, bounded metadata
+compatibility controls, and training/frozen-bank checks. Independent review
+remains pending because reviewer-agent permission was unanswered; no independent
+approval is claimed. All new scientific outcomes are labeled provisional.
+
+**Retractions/amendments:** no earlier accepted scientific result was retracted.
+The initial diagnostic byte-hash failure is retained, and its bounded derived-
+rounding provenance amendment is explicitly documented above. The implementation
+stops on a rank-deficient bank; the design was corrected to describe this actual
+behavior rather than promise an unimplemented retained-range fallback.
+
+**Outcome/open work:** the bounded refinement is complete and fails promotion.
+No final-test cohort was opened, no online rollout or speedup was measured, and
+N=65/N=129 were not launched. The evidence points to the head/manifold and its
+unseen initial-state representation as the next experimental target; it does
+not show that more head training, a larger bank, or a different architecture
+will necessarily pass. `B3D-REPAIR-NOTES.md` is generated from run JSONs by
+`runs/b3d_repair/generate_notes.py` and includes exact gate outcomes and a glossary.
+The implementation/results are ready for review; merge into the consolidated
+branch requires the user's choice under the repository rule.
+
+## 2026-09-06
+
+### Session — rebase and restore the Telegram-to-Claude launcher
+
+User explicitly requested rebasing the discovered launcher onto the new main and
+making it work again. The target workspace is the separate
+`/home/tahmid/Dev/Launchable-Scripts` repository, not the scientific experiment
+checkout. Read the canonical lab log, target workspace rules/product guidance,
+installed CLI help, and official Claude Remote Control/PTB documentation. The
+new target main changes its local logging rule to automatic logging; that rule
+was followed after rebasing.
+
+Git: fetched origin/main, which was 126 commits ahead with no local tracked
+changes. The Telegram launcher was untracked. Privately backed up source and
+configuration, committed its original source, and rebased cleanly onto c0c8a49
+on `fix/2026-09-06-telegram-bridge`. No untracked-file collisions occurred;
+existing unrelated scratch files and nested app repos were preserved. Final
+commits 2edf239 (original launcher preservation) and f9e447a (repair/tests/log)
+are pushed to the matching origin branch. No merge into main or application
+frontend/backend deployment was performed.
+
+Confirmed causes/scope: no bridge service/process remained; its historical logs
+showed Telegram Bad Gateway exceptions, which do not prove why it stopped.
+Telegram getMe still authenticated @Tahmidplansyncbot, no webhook was present,
+and there were zero pending updates at preflight. A real unattended Claude
+launch then failed at the workspace-trust dialog. Accepted that dialog for the
+explicitly requested Launchable-Scripts directory; Claude 2.1.263 is logged in
+and subsequently produced a live Remote Control session link.
+
+Repair: pinned the Telegram library to its existing 21.11.1 version, installed
+it with --no-deps into `/home/tahmid/Dev/.venv`, and replaced startup's automatic
+venv/package installation with explicit absolute-path environment use. JAX
+verification still reports 0.10.1 and CudaDevice(id=0). Added persisted session
+metadata with boot ID/process start-time checks, atomic registry writes,
+single-instance polling lock, transient startup/send retries, visible send
+failures, and suppression of HTTP client URL logging. Added and enabled
+`telegram-claude-bridge.service` under the user service manager; lingering was
+already enabled. Claude child sessions persist across bridge restarts.
+
+Verification: seven tests pass; six failed first against the original code.
+Bash/systemd validation and Git whitespace checks pass. A real temporary Claude
+Remote session launched successfully. Sent SIGKILL only to the bridge service's
+main process to verify recovery: service restarted from PID 700107 to 701624,
+restart count 1, while the Claude test session survived and remained registered.
+The temporary session was then terminated and no matching Claude test process
+remains. Final service state is active/running. Reboot itself was not tested;
+reboot starts the bot again but does not resume lost Claude agent work.
+
+The user was asked to confirm an incoming Telegram /list reply; no confirmation
+had arrived at closure. Thus bot authentication, running polling application,
+real Claude launch, persisted recovery and crash restart are verified; a reply
+seen on the user's phone is not claimed. Detailed target-workspace entry is in
+Launchable-Scripts/lab/LOG.md (committed/pushed); private backup/evidence is in
+`~/.local/state/telegram-bridge-repair/`. No scientific finding, experiment,
+retraction, cluster action or scientific worktree/branch was changed. This
+canonical log was the only write in the scientific repository.
+
+## 2026-09-06
+
+### Session — discussion of a shared Burgers/reflective-wave decoder limitation
+
+User asked how to distinguish head-mapping limitations from latent-dimension
+limitations, then pointed out that these may also explain reflective-wave
+failures. Read the current canonical state, repair design/notes and the
+consolidated wave notes/results audit from the approved repair worktree.
+No implementation, training, new worktree, merge or cluster submission occurred.
+
+The connection is a hypothesis, not an established common cause. Burgers-3D
+currently establishes a bank-versus-head reconstruction gap. The reflective-wave
+mechanism cell also records weak tangent-space velocity approximation and
+accuracy failure despite bounded energy in the auto+vc variational runs. Its
+formal structural-versus-manifold verdict remains INCONCLUSIVE; curvature and
+other explanations were not excluded. The prior wave velocity-consistency
+training did not clearly separate from the auto-decoder, so adding that loss
+again cannot be presented as an established remedy. No result was retracted.
+
+Proposed direction for discussion: evaluate both state reconstruction and the
+physical time-change directions available through the decoder Jacobian. Keep
+each PDE's own spatial bank and train/validation membership fixed; compare a
+wider head at fixed latent dimension with increased latent dimension, using
+matched training controls and repeated seeds before interpreting improvements.
+A small factorial comparison would help expose interactions. Compare both the
+full bank and the nonlinear head for state/direction errors, and follow any
+apparent improvement with rollout checks; velocity matching alone does not
+certify wave dynamics or curvature. Use PDE/trajectory information without
+Gaussian-family parameter inputs. Recompute the POD-K comparator if K changes;
+the existing K=32 effective threshold cannot be carried to a larger K. More
+latent dimensions affect online cost and do not prove an intrinsic dimension
+requirement merely by improving one fitted model. These are proposed tests,
+not approved/launched new experimental cells. The completed repair branch and
+pending independent-review/merge status are unchanged.
+
+## 2026-09-06 — Telegram launcher extended to Codex
+
+### Codex sessions through the existing shared Remote daemon
+
+User requested using the restored Telegram launcher with Codex too. Extended
+`/home/tahmid/Dev/Launchable-Scripts/telegram-bridge` on the existing rebased
+`fix/2026-09-06-telegram-bridge` branch. `/codex <name>` creates a named Codex
+conversation; `/claude <name>` explicitly selects Claude; plain text and
+`/launch` retain Claude behavior. Both engines appear in `/list`. Codex `/stop`
+archives only the selected bot-created thread and its normal descendants,
+keeping history and leaving the shared daemon and unrelated conversations alone.
+
+Installed-version findings: Codex 0.153.4 closes the local WebSocket handshake
+when compression is offered, so the client disables compression. A completely
+empty thread is readable but absent from its session list. A short initialization
+turn requesting only “Ready,” no tools or work, makes the named session visible.
+The bot returns ChatGPT Remote host/name navigation, not an invented deep link.
+Codex inherits daemon model and permission configuration. Stored thread IDs
+survive bridge restarts, reboots and connection failures; ambiguous creation
+requests are not replayed automatically. Repeating a successful archive is an
+error on this version, so retries now confirm the exact thread in archived
+listings before removing its registry record.
+
+Verification: 21 tests passed, including nine initial failures for missing Codex
+behavior. A real launcher call created thread
+`01a078ec-e9c9-7241-8432-eb21662ba49b`, which replied exactly “Ready” and used no
+tools. Its title and visibility were confirmed through the shared daemon, its
+conversation was readable, a fresh process recovered the saved registry, `/list`
+reported it with connected Remote, and `/stop` archived it successfully. Also
+verified retry reconciliation against the already archived thread. Both temporary
+Codex probes are archived and the active bot registry is clean. Evidence lives in
+`~/.local/state/telegram-bridge-repair/codex-live-check.json`. Unit tests also
+cover authorization, name collisions, transport initialization/notifications,
+RPC timeouts, error redaction and no replay, and failed-stop/outage retention.
+Compilation, Bash/systemd validation and Git whitespace checks passed.
+
+Updated the enabled user service and started the new bot; PID 716309 is active
+and its Telegram polling application initialized successfully. Remote remains
+connected to `spark-d69e`; the shared Codex daemon PID 617324 was not restarted.
+Installed websockets 17.0.1 with `--no-deps` in the existing absolute-path Python
+environment; JAX still reports 0.10.1 and CudaDevice(id=0). No phone UI opening or
+machine reboot was observed. This remains a version-sensitive local integration,
+with a small model initialization exchange for every new Codex session.
+
+Detailed change and validation logged in Launchable-Scripts/lab/LOG.md. Code and
+workspace log are committed/pushed on the repair branch at closure. No scientific
+results, retractions, experiment settings, cluster jobs, or scientific worktrees
+changed; this canonical log is the only write in the scientific repository.
+
+## 2026-09-06
+
+### Session — additional decoder architecture candidates, discussion only
+
+User asked about further architecture changes after the Burgers/reflective-wave
+comparison. Read the existing head implementation, generated HFIT.md campaign
+results, historical accuracy handoff, and wave/repair notes in the approved
+repair worktree. The historical handoff is not current evidence for its strong
+claims about intrinsic dimension or free head capacity. HFIT records prior
+width/depth/latent-size and latent-Fourier trials on 2D Burgers; these do not
+establish their outcomes on the current 3D family. Latent Fourier arms performed
+poorly in that campaign, so they are not a first recommendation merely because
+waves oscillate. The current head already has a linear skip; adding one is not
+a new architecture. No numerical results were changed or retracted.
+
+Candidate structural changes for discussion, retaining the separable decoder:
+(1) protect independent linear latent directions with orthogonal nonlinear
+corrections; (2) compare a quadratic coefficient head with the MLP; (3) reconsider
+a shared solution-based encoder during offline training to organize codes;
+(4) a later small smooth mixture of local heads, routing from latent variables
+rather than family labels. The first bounded structural comparison would keep
+the learned spatial bank and latent dimension fixed and evaluate state error,
+tangent approximation, conditioning and gated rollout accuracy, with matched
+training controls. These are hypotheses, not demonstrated repairs. Independent
+latent directions do not imply accurate wave dynamics; prior wave conditioning
+checks did not establish rank collapse as the cause.
+
+For the protected-head construction, use exact QR field coordinates with an
+orthonormal U and orthogonal complement V: q(z)=Uz+Vf(z). U^T V=0 and U^T U=I
+imply J_q^T J_q=I+J_f^T V^T V J_f, preventing rank loss without guaranteeing a
+small condition number or an accurate manifold. Fold the coordinate transform
+back into the same learned bank; this does not introduce a POD bank. The
+quadratic candidate makes f or h a learned map of pairwise latent products;
+its simpler derivatives are a diagnostic benefit, not a guaranteed accuracy
+improvement. Shared encoder training was previously deferred, so this is an
+option to reconsider, not a claimed change to the agreed active experiment.
+Keep any full-field encoder offline; preserve the hyper-reduced online cold
+start. Smooth mixture routing must be differentiated, and its online cost and
+transitions need evaluation. All inputs can remain solution/latent based with
+no Gaussian-family parameter conditioning.
+
+Primary literature consulted as architectural precedent, not evidence that
+these candidates will fix our cases: Geelen, Wright and Willcox, Operator
+inference for non-intrusive model reduction with quadratic manifolds
+(https://doi.org/10.1016/j.cma.2022.115717); Benner et al., A quadratic decoder
+approach (https://arxiv.org/abs/2209.15412); Lee and Carlberg, nonlinear-manifold
+ROMs with autoencoders (https://arxiv.org/abs/1812.08373); Otto, Macchio and Rowley,
+constrained autoencoders and nonlinear projections
+(https://arxiv.org/abs/2307.15288). Literature formulations using POD or different
+projection methods are not adopted wholesale. No implementation, new worktree,
+subagent, merge or cluster job was started. Existing repair results and their
+pending independent-review/merge status remain unchanged.
+
+## 2026-09-06 — Browser control for both coding agents and iPhone/iMessage check
+
+### Shared browser verification tools on the GB10 host
+
+User requested browser control for Claude Code and Codex concurrently and asked
+about connecting the launcher through iMessage, preferring an iPhone interface.
+Work stayed in the existing Launchable-Scripts repair branch. Added user-level
+Playwright MCP configuration to both agents, with reproducible files under
+`/home/tahmid/Dev/Launchable-Scripts/browser-control/`. Telegram-created sessions
+inherit the browser tools; the Linux host runs the browser while the iPhone
+runs the Claude/ChatGPT conversation.
+
+Installed Microsoft Playwright MCP 0.0.80, its matching Playwright build and
+Chromium 153.0.8010.12. Native browser startup failed under Ubuntu's AppArmor
+user-namespace restriction; sudo requires a password. Resolved with the existing
+Docker service, without changing host AppArmor/sysctl settings or disabling
+Chromium's sandbox. Each MCP connection runs in a separate disposable container
+as the non-root user, with all outer capabilities dropped, no-new-privileges,
+read-only root filesystem, memory/process limits, and only browser code/cache
+plus a private artifact directory mounted. Host networking reaches localhost
+development servers. The official Playwright 1.63.0 Docker image is digest-pinned.
+Its upstream seccomp profile and license are included; the profile additionally
+allows the chroot syscall needed inside Chromium's own user namespace.
+
+Verification: both actual installed MCP configurations ran concurrently and
+exposed 43 tools. Navigation, form entry, button click and resulting page text,
+console capture, network capture and screenshots passed for both. Each wrote the
+same localStorage key on the same origin; a synchronization barrier confirmed
+independent browser state. Both screenshots were visually inspected. Claude's
+MCP health check reports Connected. Reloaded Codex's MCP config through the
+running shared daemon and performed actual browser tool calls in temporary
+thread 01a078fd-3190-7432-925d-8c68602586b5: navigation, fill, click, readback and
+screenshot passed. Closed its browser and deleted only that empty test thread
+(the installed archive API refused it because there was no conversation rollout).
+Confirmed it unloaded and its test container exited. No model task was delegated
+for these checks. Shell/Node syntax and Git whitespace checks passed.
+
+Evidence is in ignored browser-control/artifacts/verification.json and
+~/.local/state/agent-browser/codex-daemon-check.json; screenshots and private
+configuration backups are also under that state directory. Existing sessions
+may need MCP reconnect or reopening to pick up their new tool catalog. Browser
+profiles start fresh. Screenshot filenames should be omitted to use the private
+output directory; explicitly relative filenames resolve to an unmounted
+workspace in this MCP version. File upload fixtures must be staged explicitly.
+
+For iMessage, the existing OpenClaw configuration enables the channel but points
+to missing imsg, with no configured Mac SSH relay. Current imsg sending and
+account integration requires macOS; Linux supports only reading a Messages
+database copied from a Mac. The iPhone can remain the controller, but a Mac relay
+is still missing for that integration. No iMessage was activated, no Messages
+were read/sent, and no OpenClaw settings were changed. Telegram on iPhone remains
+the working launcher route. This entry records host tooling only: no scientific
+findings, retractions, experiments, cluster jobs, Python/JAX packages, or
+scientific branches/worktrees changed. This is the only scientific-repo write.
+
+## 2026-09-06 — iPhone control and sleeping Mac relay follow-up
+
+### Codex session — Mac available; iMessage connection still pending
+
+Owner clarified that a Mac is available but often sleeps, with the iPhone
+preferred for everyday control. Checked Apple's sleep settings and current
+upstream OpenClaw iMessage documentation. A Mac relay can remain awake with its
+display off; actual sleep interrupts prompt command delivery. Current upstream
+documents bounded automatic recovery after interruptions, with a narrower
+window over SSH. The local OpenClaw checkout at 016c8c9968 (package 2026.5.6)
+still documents no catch-up. The local documentation is therefore stale as a
+description of current upstream capabilities; no upgrade or recovery test was
+performed here. Sources are recorded in Launchable-Scripts/lab/LOG.md.
+
+No Mac connection address is configured, so iMessage remains unconnected.
+Mac model/lid-use pattern, remote access, macOS permissions and an end-to-end
+iPhone test remain open. Existing Telegram access runs on Linux and does not
+depend on the Mac. Only the infrastructure log and this canonical log changed;
+no Messages were read or sent, services restarted, or scientific work performed.
+There are no scientific findings or retractions in this follow-up.
+
+## 2026-09-06 — phone session launcher usage
+
+### Codex session — verified commands for the iPhone handoff
+
+Read the installed Telegram bridge README and command handlers; confirmed
+telegram-claude-bridge.service is active. The user can send /codex <name> or
+/claude <name> to @Tahmidplansyncbot, then use ChatGPT Remote on spark-d69e or
+the returned Claude link respectively. Telegram creates and lists sessions;
+task conversation takes place in the corresponding app. No sessions were
+created or messages sent for this check. Only this required canonical log
+was changed; no scientific work or infrastructure changes were performed.
+
+## 2026-09-06
+
+### Session — Codex architecture preparation and matched MLP controls
+
+User explicitly requested implementation/testing through Codex subagents. Asked the
+required base/name question: use the completed repair branch including the shared
+evaluator, with worktrees 2026-09-06-b3d-anchor, -quadratic, -encoder and -mixture.
+That question remains unanswered. No new worktrees were created and no child
+agent wrote code or submitted a job. Read-only agents prepared designs; the
+anchor-head Codex agent independently reviewed shared code and completed results.
+All implementation writes stayed in the already approved repair worktree; the
+canonical log is the documented exception. Four candidate heads remain unfinished.
+
+Implemented common exact-QR evaluator, shared linear initialization, free-code/
+offline-encoder training interface, independent NumPy/JVP checks, truth-velocity
+and coordinate-invariant tangent/stationarity diagnostics, a generic checkpoint
+format and the true-head inherited-pilot adapter. The adapter is pilot-only:
+generic rollout/export remains unfinished and gated. Reviewer found inherited
+pilot_passed omitted D4 control_fired; adapter now requires all named gates,
+all negative controls and mode stability. Prior failed pilot outcome unchanged.
+Twelve local GPU component tests passed in 13.270 seconds with backend preflight,
+f64 and highest precision. Review and test record are saved under
+experiments/separable-decoder/runs/b3d_architecture/review/.
+
+Common-control source commit: 8484a9e00b41d0bf79872e14f69ed3c17fc185c9.
+Final repair branch commit at closure: dd77383. Source refined checkpoint:
+611235d3cdedec0954d8fea673f7d94118b7f8c2ee3b7997cea9bdef1bb75784.
+Two separate GPU job directories in b3d_repair_20260906; each regenerated the
+current N=33, K=32, R=128 data, 8192 training and 256 validation states. Both
+ran 60000 updates per optimizer seed, seeds 200/201, batch 4096 and LR 3e-4.
+These are new common-linear-initialization controls, not continuations of the
+historical warm-refined head; no claim of a like-for-like regression follows.
+
+mlp128: job 3332190, NVIDIA A100 80GB PCIe:
+- seed 200: train mean 0.02576505428587643; validation mean 0.05513714940046935, median 0.04672066181923695, worst 0.17015734022204385; outliers above 0.15: 5; nonstationary selected fits: 0; tangent mean 0.21947347224547897; minimum measured rank 32.
+- seed 201: train mean 0.025762064208323998; validation mean 0.05492084396286896, median 0.04654377477791426, worst 0.17165202425234238; outliers above 0.15: 4; nonstationary selected fits: 0; tangent mean 0.22053594280280647; minimum measured rank 32.
+
+mlp192: job 3332191, NVIDIA A100 80GB PCIe:
+- seed 200: train mean 0.022218639848902415; validation mean 0.05623399328877682, median 0.04599069026059293, worst 0.18734846415041076; outliers above 0.15: 4; nonstationary selected fits: 0; tangent mean 0.21655484831442157; minimum measured rank 32.
+- seed 201: train mean 0.022282682065085838; validation mean 0.05556837184742429, median 0.04731979095137262, worst 0.20043462911642515; outliers above 0.15: 3; nonstationary selected fits: 1; tangent mean 0.21586302817938952; minimum measured rank 32.
+
+Independent reviewer recomputed summaries and gate counts, verified checkpoint/
+output/log checksums and confirmed GPU completion. Wider heads improve training
+fits but worsen validation mean/worst in both repeats; tangent error improves
+slightly. Every selected-fit Jacobian has full latent rank. The unresolved wider
+fit is not its stationary worst case; it cannot explain away the failed gates.
+No pilot/rollout/cost/test promotion occurred. No global-minimum, capacity-
+impossibility, intrinsic-dimension or reflective-wave conclusion is supported.
+
+Provenance audit matched staged source bytes against git history and verified
+f64/highest/backend, checkpoints and all pulled logs/results. Independent GPU
+regeneration yielded different table/shared hashes but only bounded rounding
+differences: raw parameter draws and state IDs match exactly, as do anchor and
+bank QR matrices. Per-field parity details are in control-provenance.json.
+Host CPU-affinity warnings appeared; there were no captured-large-constant, OOM,
+truncated-log, disk-full or CPU-backend failures. No cross-job timing claims.
+Both exact remote job directories were deleted after verification; squeue empty.
+
+Raw JSONs, all four checkpoints, hashes and logs are tracked in the repair tree.
+B3D-ARCH-NOTES.md is generated by runs/b3d_architecture/generate_notes.py.
+B3D-ARCH-DESIGN.md records the common protocol. No scientific finding retracted.
+Open: required worktree/base confirmation; implement/review/train the protected,
+quadratic, shared-encoder and mixture heads; evaluate through unchanged gates;
+only then consider generic rollout/export and separate wave follow-up. No merge
+performed; existing merge choice remains pending.
+
+
+## 2026-09-06 — Burgers architecture campaign: shared encoder implementation
+
+### Session — encoder subagent, implementation ready for coordinator review
+
+User-approved isolated worktree `worktrees/2026-09-06-b3d-encoder`, branch
+`exp/2026-09-06-b3d-encoder`, based on the common campaign commit `dd77383`.
+Committed and pushed implementation at `2968ac4`. Added
+`experiments/separable-decoder/b3d_arch_encoder.py`, independent component tests,
+`B3D-ENCODER-DESIGN.md`, and raw/component-validation artifacts under
+`runs/b3d_arch_encoder/` in that worktree.
+
+The offline shared encoder consumes exact bank projections of training solution
+snapshots. It starts as the common anchor projection with an initially zero
+nonlinear residual. The decoder is exactly the width-128 MLP control, including
+its initialization key and parameters. Reconstruction training updates both
+networks with the common objective; there are no Gaussian descriptors,
+auxiliary losses, individually optimized snapshot codes, or encoder-derived
+primary validation starts. The arm rejects `HEAD_WIDTH` other than 128.
+
+The single local GPU smoke passed 5 tests in
+20.314 seconds; GPU, f64 and highest precision were asserted.
+Checks covered common initialization, independent NumPy and vector/batch
+parity, derivatives, gradient propagation through every layer, brief synthetic
+joint training, frozen-statistic integrity, and an invalid-initialization
+negative control. Raw log and source hashes are retained. These are component
+checks, not Burgers validation results, and establish no architectural gain.
+No cluster jobs were submitted, no test data opened, and no merge performed.
+No scientific finding was retracted in this implementation session. Coordinator
+code/mathematical review and the planned cluster comparison remain open; the
+reserved cluster namespace is `b3d_encoder_20260906`.
+
+
+## 2026-09-06
+
+### Session — Codex protected-anchor head implementation and component validation
+
+User confirmed the coordinator's parallel worktree/base proposal. This subagent
+wrote only `worktrees/2026-09-06-b3d-anchor`, branch
+`exp/2026-09-06-b3d-anchor`, based on the approved repair commit `dd77383`;
+this canonical append is the required exception. Implemented
+`experiments/separable-decoder/b3d_arch_anchor.py` with fixed orthonormal source-skip
+anchor, trainable bias and a width-128 two-hidden-layer SiLU residual projected
+into the anchor's orthogonal complement. The affine initial fields match the
+common MLP control exactly. The independent NumPy head explicitly forms the
+projector; the production head applies narrow matrix products. No Gaussian
+parameter inputs or changes to the learned spatial bank, common evaluator,
+training membership or scientific gates were introduced.
+
+Five local GPU component tests passed in 14.410 seconds under `jaxrun` with a
+55-second timeout, absolute project Python, f64 and highest matmul precision;
+output explicitly reported `jax_backend=gpu`. Tests activated a nonzero residual,
+used nonuniform latent scales, compared full Jacobian/Hessian finite differences
+against independent NumPy evaluation, checked coordinate recovery and Jacobian
+Gram bounds, and caught deliberate projection omission. They also checked common
+initialization, input validation and a short common-trainer update that learns
+the bias while preserving the frozen anchor. Compilation and Git whitespace
+checks passed. This is component evidence, not a Burgers validation result.
+
+Code, tests and `B3D-ANCHOR-DESIGN.md` are committed and pushed at `f9b5c57`.
+No cluster job was staged or submitted; namespace `b3d_anchor_20260906` remains
+reserved for coordinator-reviewed execution. No merge occurred. The geometry
+constraint protects independent latent directions but restricts the manifold to
+a graph over the chosen anchor; it does not guarantee accurate physical tangents,
+small condition numbers or reflective-wave dynamics. No result was retracted.
+Independent coordinator review and the common cluster validation screen remain
+open. The coordinator manages the canonical current-state block and campaign
+merge question.
+
+## 2026-09-06
+
+### Architecture subagent — smooth-mixture implementation and component checks
+
+Under the user's confirmed parallel architecture campaign, implementation stayed
+in `worktrees/2026-09-06-b3d-mixture`, branch
+`exp/2026-09-06-b3d-mixture`, based on the approved common-control commit
+`dd77383`. Commit `13566a22b1b49fc9565dc197e2d920e6d792b4c2` is pushed; the
+worktree is clean. No other experiment worktree was written, and no merge or
+cluster submission occurred. The reserved cluster namespace remains unused by
+this subagent pending coordinator review.
+
+Added `b3d_arch_mixture.py`: two independent width-128/two-hidden-layer SiLU
+residual experts, a smooth affine softmax gate using normalized latent inputs,
+and the shared trainable affine path. Zero expert output layers preserve the
+common initial map exactly. Routing derivatives remain active. No Gaussian
+labels, auxiliary balancing objective, hard routing, or changed training
+schedule were introduced. The plugin returns exact orthonormal-bank
+coefficients and has an independent NumPy path. Validation diagnostics retain
+routing probabilities, entropy, usage, saturation and expert disagreement;
+routing collapse and identical-expert collapse have separate declared,
+descriptive thresholds and are not acceptance gates.
+
+Five meaningful component tests passed in 16.372 seconds using the absolute
+local Python through `jaxrun`, a 55-second timeout, GPU backend, f64, and highest
+matrix precision. Tests verify exact shared affine initialization, independent
+expert hidden weights, NumPy/single/batch parity including saturated gates,
+Jacobian/JVP/Hessian central differences with nonzero expert outputs and active
+routing, detection of a stop-gradient-routing mutation, distinct collapse
+flags, and expert output divergence plus loss reduction through the shared
+short training routine. The test output, metadata and source hashes are tracked
+under `experiments/separable-decoder/runs/b3d_arch/mixture/`; arm design is
+`B3D-MIXTURE-DESIGN.md`. Compilation and Git whitespace checks passed.
+
+These are implementation checks only, not a Burgers scientific accuracy result.
+No held-out architecture screen, pilot, wave experiment, or rollout was run.
+Independent coordinator review and then the unchanged two-seed cluster screen
+remain open. No prior finding is retracted.
+
+
+## 2026-09-06
+
+### Session — quadratic architecture implementation and component verification
+
+The user-authorized quadratic subagent wrote only in
+`worktrees/2026-09-06-b3d-quadratic`, branch
+`exp/2026-09-06-b3d-quadratic`, based on common evaluator commit `dd77383`.
+Implementation and records are committed and pushed at `17f3c52915dc159132347b40501e00013a8a4b17`.
+No common-harness edits, merges, cluster staging, or job submissions occurred.
+
+Implemented `b3d_arch_quadratic.py`: trainable affine map and one undoubled
+lexicographic product per latent-variable pair, with frozen input/output scales.
+The head reproduces the common affine initialization exactly; nonlinear weights
+start at zero. Initialization is deterministic, so the campaign seeds are
+optimizer/minibatch repeats, not random model starts or independent PDE data.
+The actual head parameter count at the campaign dimensions is
+71808; the wider MLP control is needed
+when assessing whether any gain is structural rather than additional capacity.
+The trained quadratic map has no rank-preservation guarantee.
+
+All 6 component tests passed in 12.572082 seconds
+under the capped local `jaxrun` smoke on NVIDIA GB10, JAX
+0.10.1, `jax_backend=gpu`, f64 and
+`JAX_DEFAULT_MATMUL_PRECISION=highest`. Tests used nonzero
+polynomial weights, independent NumPy term accumulation and a separately
+assembled symmetric polynomial tensor, analytic Jacobian/constant Hessian,
+directional and mixed finite differences with nonuniform scales, vector/batch
+and serialized-checkpoint parity, exact initial outputs, deterministic weights,
+invalid-scale controls, and the common training interface. Maximum absolute
+output/Jacobian/Hessian reference differences were respectively
+3.552713678800501e-15, 1.7763568394002505e-15,
+and 3.552713678800501e-15; the mixed finite-difference Hessian
+difference was 2.4363677741945367e-10.
+The synthetic training control reduced its global relative field MSE from
+0.22212135704623684 to 0.003571448188106442 over
+80 updates. These are component-test numbers, not Burgers accuracy.
+
+Raw component JSON, log, and source checksums are tracked in
+`experiments/separable-decoder/runs/b3d_arch_quadratic/`; mathematical design and
+limitations are in `B3D-QUADRATIC-DESIGN.md`. No scientific finding is retracted
+or newly accepted by this implementation step. Independent coordinator review,
+cluster validation screening, inherited pilot gates and any subsequent rollout
+remain open. Root coordinates campaign comparison and merge approval.
+
+
+## 2026-09-06 — Telegram NM-ROM folder shortcut
+
+### Codex session — nmrom claude <name> activated
+
+Implemented the owner's requested plain-text Telegram command
+`nmrom claude <name>` and the `/nmrom claude <name>` alias in the existing
+Launchable-Scripts repair branch. Each launches Claude with cwd set to this
+repository root. The folder is stored per session and shown in the reply and
+/list, including after registry recovery. Ordinary launches retain their
+default folder. Invalid NM-ROM syntax and missing/relative configured folders
+fail without opening another project; authorization is preserved.
+
+Nine new checks initially failed; all 32 launcher tests now pass. A real
+Claude launch through the message handler returned a Remote link, and /proc
+confirmed both the launcher and Claude process had this exact repository cwd.
+An isolated registry recovered the link and folder. No Telegram messages were
+sent by the probe, and only its temporary Claude session was stopped. Evidence
+is under ~/.local/state/telegram-bridge-repair/nmrom-launch-ee5kqdsg/.
+The updated Telegram service is active at PID 820542. The pre-existing managed
+Claude session survived its restart; Codex Remote remained connected through
+the unchanged shared daemon PID 617324. No phone-side opening was observed.
+
+The user can now send `nmrom claude wave-study` to @Tahmidplansyncbot and open
+the returned Claude link. This only selects the repository root; no experiment
+branch/worktree was created, and the repository's scientific operating rules
+still apply to later tasks. Implementation and its log live in
+/home/tahmid/Dev/Launchable-Scripts. Only this canonical log was written in the
+scientific repo; no scientific findings, retractions, jobs or code changes.
+
+
+## 2026-09-06 — Codex added to the Telegram NM-ROM shortcut
+
+### Codex session — nmrom codex <name> activated
+
+Added the owner's requested Codex variant in Launchable-Scripts:
+`nmrom codex <name>` and `/nmrom codex <name>` launch a named Codex thread
+with cwd set to this repository root. The folder persists in the bot registry
+and appears in its replies/listing. Partial-setup recovery retains the NM-ROM
+command; ordinary /codex still opens the default workspace. Sender checks and
+invalid-folder rejection apply before launch. The Claude variant is preserved.
+
+Five new checks first failed; all 40 bridge tests now pass. Real thread
+01a07971-e2af-7073-8e5f-414b289a326e had the exact NM-ROM cwd and requested name
+in thread/read and appeared in the cwd-filtered thread/list. Its initialization
+replied only Ready, with no tools. Registry recovery/listing passed, and only
+that temporary test thread was archived through the bridge. The probe sent no
+Telegram messages. Private evidence is under
+~/.local/state/telegram-bridge-repair/nmrom-codex-wqt9m6i1/.
+
+The updated Telegram service is active and polling at PID 826961. Its existing
+managed Claude session survived the restart; Codex Remote stayed connected
+through shared daemon PID 617324, which was not restarted. The phone flow is
+ChatGPT -> Remote -> spark-d69e -> the supplied name; phone-side opening was
+not observed. No scientific code, results, experiments, jobs, branches or
+worktrees changed. This canonical log is the only scientific-repository write;
+implementation and its infrastructure log are in Launchable-Scripts. There are
+no scientific findings or retractions from this tooling change.
+
+
+## 2026-09-06
+
+### Session — Codex protected-anchor two-seed screen, bounded negative result
+
+Coordinator reviewed the protected-head implementation and authorized the
+unchanged common representation screen in `worktrees/2026-09-06-b3d-anchor`,
+branch `exp/2026-09-06-b3d-anchor`. Original A100-80GB job 3336132 remained pending
+for resources and had no numerical output. After an explicit coordinator resource
+change, the operational GPU-selection helper from repair commit `67a8120` was
+copied into this worktree and committed as `d0167ee`. Only pending numeric ID
+3336132 was cancelled via this worktree's sanctioned cancellation script; sacct
+records zero elapsed time and no assigned node. Its submission/cancellation and
+checked metadata pull remain archived. No scientific model or fitting setting was
+changed for the replacement.
+
+Replacement job 3336232, label `screen40`, ran in the GPU partition on pax051,
+NVIDIA A100-PCIE-40GB, and completed with exit 0. The log explicitly records
+`jax_backend=gpu`; the driver records x64 and highest matmul precision. Stderr is
+empty. Both optimizer seeds used the predeclared 60000 updates, learning rate
+0.0003, batch 4096, common global field-MSE objective and common linear
+initialization. The learned bank, N=33/K=32/R=128, original 8192 training states
+and 256 validation states remained fixed. Truth was regenerated from seed;
+raw parameter draws and membership are exact, with only the already bounded
+nu/s_star provenance allowance. Test data remained closed.
+
+Final-budget validation values, generated from the raw run JSON:
+
+| Optimizer seed | Mean error | Median error | Worst error | States above 0.15 | Nonstationary selected fits | Mean tangent error |
+|---|---:|---:|---:|---:|---:|---:|
+| 200 | 0.060720019452262325 | 0.05115527029028942 | 0.17703012679632565 | 5 | 0 | 0.23385305495932099 |
+| 201 | 0.059484519456131646 | 0.050665943436110097 | 0.17878533234446678 | 6 | 0 | 0.23079270781256239 |
+
+Both seeds fail the necessary mean and worst reconstruction gates. Selected
+fits satisfy the inherited gradient criterion, and budget doubling is stable.
+The coordinate-recovery and derivative identities hold numerically; the sampled
+Jacobian Gram minima exceed unity. Thus the rank-protection mechanism works in
+this implementation, but it does not improve the tested reconstruction or
+physical tangent means versus the matched width-128 MLP controls. This is a
+negative result for this fixed-anchor graph and bounded training protocol, not
+proof that every anchor or graph decoder fails. Local multistart fits remain
+uncertified global minima. No scientific result is retracted, and no pilot,
+rollout, cost test or wave experiment was promoted.
+
+Output/log/metadata pull hashes and checkpoint hashes passed. The local integrity
+auditor checked staged source bytes against their recorded git commit, source-bank
+parameter identity, the anchor derivation, training settings, data IDs and
+precision. Both exact remote job directories were deleted only after verified
+pulls, and their absence was checked. Raw JSON, both trained checkpoints,
+submission/cancellation evidence, generated `B3D-ANCHOR-NOTES.md` and the report
+script are committed and pushed at `f0622144e9517f4023fb8356b202a9cd7c534c63`. This worktree is clean;
+no merge occurred. The canonical current-state block and eventual merge question
+remain with the coordinator. Independent cross-campaign result review remains
+open; the generated notes mark the new results provisional pending that review.
+
+## 2026-09-06
+
+### Architecture subagent — smooth-mixture two-seed screen completed
+
+The coordinator independently reviewed the mixture implementation and authorized
+the unchanged full two-seed screen in the approved mixture worktree. Copied only
+the reviewed GPU-resource staging-helper change from repair commit `67a8120`,
+verified its bytes, and committed it as `fd986d8`. No common numerical file was
+changed. Job 3336230 (`ctol_b3da_screen40`) ran in the `gpu` partition on pax003,
+NVIDIA A100-PCIE-40GB, with f64/highest precision and explicit `jax_backend=gpu`.
+It completed successfully (exit 0; elapsed 00:04:43). A100-40GB was selected under
+the coordinator's explicit resource authorization; no cross-job timing claim is
+made. Queue was checked before/after submission and disk had space. Every job
+had its own directory, and truth/parameters were regenerated from the recorded
+seed in `b3d_mixture_20260906/screen40`.
+
+Both optimizer repeats used the common affine initialization, frozen spatial
+bank, K=32/R=128/N=33, 8192 training states, 256 validation states, 60000 Adam
+updates, learning rate 3e-4, batch 4096, and the same global-relative-MSE objective.
+The mixture has 78786 trainable shared parameters. Raw per-state/per-start arrays,
+both 400/800 fit budgets, histories, diagnostics and both checkpoints are tracked
+under `experiments/separable-decoder/runs/b3d_architecture/screen40/`.
+
+Optimizer seed 200: training mean 0.021606475869440308; validation mean 0.05519007564843502, median 0.04652902990283539, p95 0.12017453945774609, worst 0.21265062361742268. Initial-state mean 0.08554169115879243; later-state mean 0.045072870478315895; tangent mean 0.2117314681636676. Above-15%-error count 4; selected nonstationary count 0; maximum normalized gradient 9.511716923466846e-09; maximum invariant stationarity 7.158444085269884e-08; minimum Jacobian rank 32; budget change 0.0. Mean expert soft usage [0.4972115473886703, 0.5027884526113297]; entropy 0.6722294577487555 nats; >0.95 and >0.99 saturation counts 0 and 0; relative expert disagreement RMS 0.6779165463449933. Routing-collapse flag False; identical-expert flag False.
+
+Optimizer seed 201: training mean 0.021570309839756448; validation mean 0.05503607889544912, median 0.04619719454744462, p95 0.12097519153995506, worst 0.18147213356996142. Initial-state mean 0.0853377147514352; later-state mean 0.044935533610120426; tangent mean 0.21178644937605845. Above-15%-error count 3; selected nonstationary count 0; maximum normalized gradient 8.710164047708644e-09; maximum invariant stationarity 6.402768048755911e-08; minimum Jacobian rank 32; budget change 0.0. Mean expert soft usage [0.5069585198065178, 0.49304148019348204]; entropy 0.682873294719865 nats; >0.95 and >0.99 saturation counts 0 and 0; relative expert disagreement RMS 0.7294068383622675. Routing-collapse flag False; identical-expert flag False.
+
+The bounded representation verdict is negative in both repeats: mean and worst
+limits fail. The mixture lowers training and tangent errors relative to the
+matched width-128 controls, but validation mean is slightly worse and worst
+error is worse in both repeats. The selected fits are locally stationary and
+budget-stable; full latent rank and distinct, balanced experts do not solve this
+representation gap. Local minima are not certified global optima, and healthy
+routing does not prove useful expert specialization. No claim about all mixture
+architectures or reflective waves follows.
+
+The implementation-agent audit verifies every output/log/metadata pull checksum,
+source bytes against the recorded git commit, source/checkpoint hashes, GPU/f64/
+highest settings, common bank and QR, exact state membership, common frozen
+initialization within bounded floating-point rounding, and independent NumPy
+reconstruction and routing values. Independent coefficient error differences are
+at most 1.1102230246251565e-16. Raw random parameter draws match exactly; derived
+truth/projection arrays agree with the controls to declared roundoff tolerances.
+There are no CPU-affinity warnings, captured-constant warnings, OOM, disk-full,
+truncated-log or traceback errors in this job. After the verified pull, the exact
+finished cluster directory was deleted; completion evidence is tracked and no
+mixture job remains.
+
+Final clean/pushed branch `exp/2026-09-06-b3d-mixture` is at
+`9ffaf558e2942a7cb4fb20f1b6c5bfdea54afdb5`. Generated `B3D-MIXTURE-NOTES.md` reads
+all numbers from run JSONs; `audit_mixture.py` and `generate_mixture_notes.py`
+retain the audit/report procedures. The independent coordinator scientific audit
+is pending at this subagent's closure, so results are labeled provisional. No
+pilot, rollout, larger grid, final-test cohort, wave experiment, or merge was
+performed. No prior scientific finding was retracted. The coordinator will
+integrate the four-arm comparison and request any merge decision from the user.
+
+
+## 2026-09-06 — Burgers shared encoder: completed two-repeat cluster screen
+
+### Session — encoder subagent, bounded experiment completed
+
+Coordinator reviewed the encoder implementation and authorized the full
+predeclared screen. Source branch `exp/2026-09-06-b3d-encoder` in
+`worktrees/2026-09-06-b3d-encoder`; result/code artifacts committed and pushed
+at `d2ef9e1`. No merge performed. The operational staging-helper update from
+root commit `67a8120` was copied with authorization into this tree and committed
+as `5f54f29`; no scientific settings or evaluator code changed.
+
+Original A100-80GB request 3336145 remained PENDING. Following coordinator
+resource authorization it was canceled using the guarded numeric-ID helper;
+Slurm records cancellation with zero elapsed runtime. Cancellation metadata
+and hashes are retained under `runs/b3d_architecture/screen/`. Replacement
+job 3336240 used A100-PCIE-40GB on pax051 and completed successfully in 00:04:26
+from source commit `5f54f29642192d1d4dff2c80aaca6b46ae3e09ed`. GPU preflight,
+f64 and highest matrix precision are verified. Seed-zero data were regenerated
+on the cluster; both optimizer repeats used the unchanged 60000-update,
+learning-rate and batch configuration, training cohort and validation cohort.
+No cross-job or cross-GPU wall-time comparison is made.
+
+- Optimizer seed 200: latent-fitted validation mean
+  0.05409712328349313, median 0.04550164603999924, worst
+  0.16158242578030138; 2 states exceed the unchanged
+  worst-error threshold and 0 selected fits fail the normalized-gradient
+  threshold. Tangent mean 0.21566329097270293, maximum budget
+  change 0.0. Direct encoder reconstruction is separate:
+  mean 0.07075874201392404, median 0.05828173752315306, worst
+  0.3043283307673974, with 22 states above the worst-error threshold.
+  Assigned training reconstruction mean 0.027137440277238162.
+- Optimizer seed 201: latent-fitted validation mean
+  0.054940396010479134, median 0.04676314943390136, worst
+  0.1763650663166873; 4 states exceed the unchanged
+  worst-error threshold and 0 selected fits fail the normalized-gradient
+  threshold. Tangent mean 0.21850406577413745, maximum budget
+  change 3.169063992734021e-12. Direct encoder reconstruction is separate:
+  mean 0.07371239474088767, median 0.061065687127809284, worst
+  0.24786266912868465, with 28 states above the worst-error threshold.
+  Assigned training reconstruction mean 0.027193331330825136.
+
+The encoder uses exactly the matched-control decoder function class and its
+common initialization. Shared training improves fitted mean in only one repeat;
+mean tangent error is slightly lower in both. Both repeats still fail mean and
+worst representation gates. Every measured selected-fit Jacobian retains full
+latent rank. These results do not establish global minima, reflectively correct
+wave dynamics, a consistent representation improvement or an online cost gain.
+No inherited pilot, rollout, final-test or larger-grid stage was promoted.
+
+Raw JSON arrays, both complete checkpoints, source/output/log manifests,
+completion/cancellation records and generated `B3D-ENCODER-NOTES.md` are tracked
+in this worktree. `runs/b3d_arch_encoder/verify_screen_result.py` checked this
+encoder result independently with NumPy: reconstructed primary/direct errors,
+analytic decoder Jacobians, gradient optimality and least-squares tangent
+projections. It also verified unchanged source bank, cohort, checkpoint hashes,
+source bytes against recorded git content and bounded parameter provenance.
+The control-only auditor was not used to claim plugin validation. The worker
+checks are explicitly distinct from the coordinator's pending independent
+cross-campaign review. No warning/error appeared in this job's stderr. Both
+exact remote job directories were deleted after verified pulls, and their
+absence was checked. No encoder job remains active. No scientific finding was
+retracted in this session; the shared-encoder architectural suggestion is now
+a bounded negative trial for passing this screen, with the separate direct
+encoder approximation gap recorded. The root coordinator owns subsequent
+comparison/review and any merge question.
+
+
+## 2026-09-06
+
+### Session — quadratic head cluster screen and verified closure
+
+Following independent coordinator approval of the model and component tests, the quadratic
+subagent copied only the resource-options staging helper from repair commit `67a8120`,
+committed that helper as `24799fe`, and ran the approved bounded scientific screen in
+`worktrees/2026-09-06-b3d-quadratic`. No common numerical code was changed.
+Job 3336338 (`ctol_b3da_screen40`) ran in the GPU partition on pax003,
+NVIDIA A100-PCIE-40GB, from content-verified source commit `24799fe4c9a7e169a43eebf8d1ad62efe3ce0a2b`.
+Both optimizer repeats completed successfully with the unchanged training schedule,
+bank, latent dimension, data cohort, and common affine initialization. The quadratic
+initial weights are deterministic; repeat seeds vary minibatches only.
+
+| Optimizer seed | Validation mean | Median | Worst | Above 15% | Nonstationary | Tangent mean | Training mean |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 200 | 0.04689398583286945 | 0.03892390165059892 | 0.20305274049820418 | 2 | 0 | 0.18059166891670073 | 0.021105811829203715 |
+| 201 | 0.046886303889181156 | 0.03887287810828896 | 0.20272908214411875 | 2 | 0 | 0.18051378334356943 | 0.021103562549709586 |
+
+The matched MLP controls remain the primary comparison, not the historical warm-refined
+checkpoint with a different training history. The quadratic improves validation mean,
+median and tangent error against both matched widths in both repeats, but its worst
+error is worse. This is a partial accuracy improvement, not a passing pilot:
+the unchanged effective mean ceiling is 0.043058226553377994 from the
+POD mean 0.08611645310675599, and the worst threshold is 0.15.
+Both repeats fail the effective mean and worst-error requirements. No pilot,
+rollout, cost experiment, larger mesh, or test-data access was promoted.
+
+- Seed 200: worst snapshot ID 28917,
+  normalized gradient 7.596398800909098e-09, invariant stationarity
+  7.867439795357428e-08; maximum invariant stationarity
+  9.643749529069876e-08 over all selected fits.
+  Maximum budget-doubling error change 0.0.
+  Independent objective-Hessian audit found 0
+  selected stationary cases with negative curvature at the declared cutoff.
+  These remain local multistart fits, not certified global minima.
+- Seed 201: worst snapshot ID 28917,
+  normalized gradient 5.951289878317526e-09, invariant stationarity
+  5.6536302109522844e-08; maximum invariant stationarity
+  7.537142335089533e-08 over all selected fits.
+  Maximum budget-doubling error change 0.0.
+  Independent objective-Hessian audit found 0
+  selected stationary cases with negative curvature at the declared cutoff.
+  These remain local multistart fits, not certified global minima.
+
+An independent NumPy audit, importing neither the head nor JAX differentiation,
+reconstructed polynomial outputs, Jacobians, Hessians, error, normalized gradient,
+singular values, tangent error and invariant stationarity from the saved checkpoints.
+It also verified source contents against the recorded git commit, checkpoint hashes,
+bit-identical source-bank parameters, unchanged trajectory/time membership and training
+schedule, GPU/f64/highest, truth/RHS consistency, and raw-parameter provenance.
+The slight derived-parameter rounding differences retain the already approved bound.
+No failed attempt, OOM, captured-constant, traceback, disk-full, or truncated-log outcome
+was observed. Outputs, logs and metadata were pulled with verified checksums;
+only then was the exact remote job directory
+`/cluster/tufts/paralab/tawal01/b3d_quadratic_20260906/screen40` deleted.
+
+Raw per-start and per-state arrays, both checkpoints, source/output manifests, job logs,
+cleanup evidence, generated `B3D-QUADRATIC-NOTES.md`, and the reproducible audit script
+are tracked on the quadratic branch. Current results commit:
+`4dbe77cbb3a6269ee3894d264bbc4769799b1500`. New scientific results remain provisional pending coordinator result
+review. Nothing was retracted, no merge occurred, and the coordinator retains the final
+cross-arm comparison and merge-approval question.
+
+
+## 2026-09-06
+
+### Session — Codex four-head architecture campaign completed and independently reviewed
+
+The user confirmed the exact preceding worktree/base proposal with “Implement and test
+them for me.” Four subagents implemented protected-anchor, quadratic, shared-encoder
+and smooth-mixture heads, each writing only its own worktree and cluster namespace.
+The root coordinated from the approved repair tree. All arms retain the fixed learned
+separable spatial bank, common affine initialization, latent dimension and data cohort.
+No physical/Gaussian family descriptors are supplied to a head or encoder.
+
+Coordinator branch `exp/2026-09-06-burgers3d-repair` closes at `ee6e19d470c6a210039e0c232aa0baa4427699fb`,
+with the generated common comparison, raw-result audit, independent-review record,
+actual-head integration test and recorded test evidence. Completed arm branches:
+
+- `exp/2026-09-06-b3d-anchor` at `f0622144e9517f4023fb8356b202a9cd7c534c63`; clean and pushed.
+- `exp/2026-09-06-b3d-quadratic` at `4dbe77cbb3a6269ee3894d264bbc4769799b1500`; clean and pushed.
+- `exp/2026-09-06-b3d-encoder` at `d2ef9e12f55469c77bc27ea50f4b87dcded304bb`; clean and pushed.
+- `exp/2026-09-06-b3d-mixture` at `9ffaf558e2942a7cb4fb20f1b6c5bfdea54afdb5`; clean and pushed.
+
+Scientific jobs (all successful GPU/f64/highest runs with regenerated data):
+
+- `b3d_arch_anchor`: job 3336232, NVIDIA A100-PCIE-40GB, source `d0167ee8dca5f2aa58befddc141df101e64db60f`; raw result `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-anchor/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json`.
+- `b3d_arch_quadratic`: job 3336338, NVIDIA A100-PCIE-40GB, source `24799fe4c9a7e169a43eebf8d1ad62efe3ce0a2b`; raw result `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-quadratic/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json`.
+- `b3d_arch_encoder`: job 3336240, NVIDIA A100-PCIE-40GB, source `5f54f29642192d1d4dff2c80aaca6b46ae3e09ed`; raw result `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-encoder/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json`.
+- `b3d_arch_mixture`: job 3336230, NVIDIA A100-PCIE-40GB, source `fd986d8d39483f7a1064d9f61e9593ccc5011fbc`; raw result `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-mixture/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json`.
+
+The anchor and encoder first submissions, numeric jobs 3336132 and 3336145, remained
+pending with long A100-80GB queue estimates. The prescribed numeric-ID helper canceled
+only those two IDs before execution; zero-elapsed accounting and input evidence were
+preserved. Resource selection moved to available A100-40GB nodes using new immutable
+`screen40` directories. This changed no numerical setting. The staging helper resource
+option change is `67a8120`; common integration and initial audit code is `1621f2f`.
+Cluster namespaces are `b3d_anchor_20260906`, `b3d_quadratic_20260906`,
+`b3d_encoder_20260906` and `b3d_mixture_20260906`, under paralab. All result/log/checkpoint
+pull manifests passed checksums before deletion. Root independently checked the empty
+campaign queue and absence of all four completed and both canceled remote job directories.
+
+The following table is generated from the audited raw run JSONs via the common notes
+generator; percentages are full-field relative reconstruction errors. “Above 15%” is
+the validation-state outlier count, and “unconverged” is the count above the unchanged
+normalized-gradient tolerance. The controls share the schedule/cohort/initial linear
+map; the historical warm-refined checkpoint is not a matched architecture control.
+
+| Head | Optimizer seed | Training mean | Validation mean | Median | Worst | Above 15% | Unconverged | Preliminary failure |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| MLP control 128 | 200 | 2.5765% | 5.5137% | 4.6721% | 17.0157% | 5 | 0 | mean/POD ratio, worst |
+| MLP control 128 | 201 | 2.5762% | 5.4921% | 4.6544% | 17.1652% | 4 | 0 | mean/POD ratio, worst |
+| MLP control 192 | 200 | 2.2219% | 5.6234% | 4.5991% | 18.7348% | 4 | 0 | mean/POD ratio, worst |
+| MLP control 192 | 201 | 2.2283% | 5.5568% | 4.7320% | 20.0435% | 3 | 1 | mean/POD ratio, worst, stationarity |
+| Protected anchor | 200 | 2.9352% | 6.0720% | 5.1155% | 17.7030% | 5 | 0 | mean/POD ratio, worst |
+| Protected anchor | 201 | 2.9296% | 5.9485% | 5.0666% | 17.8785% | 6 | 0 | mean/POD ratio, worst |
+| Quadratic | 200 | 2.1106% | 4.6894% | 3.8924% | 20.3053% | 2 | 0 | mean/POD ratio, worst |
+| Quadratic | 201 | 2.1104% | 4.6886% | 3.8873% | 20.2729% | 2 | 0 | mean/POD ratio, worst |
+| Shared encoder | 200 | 2.7137% | 5.4097% | 4.5502% | 16.1582% | 2 | 0 | mean/POD ratio, worst |
+| Shared encoder | 201 | 2.7193% | 5.4940% | 4.6763% | 17.6365% | 4 | 0 | mean/POD ratio, worst |
+| Smooth mixture | 200 | 2.1606% | 5.5190% | 4.6529% | 21.2651% | 4 | 0 | mean/POD ratio, worst |
+| Smooth mixture | 201 | 2.1570% | 5.5036% | 4.6197% | 18.1472% | 3 | 0 | mean/POD ratio, worst |
+
+Quadratic is the strongest bounded improvement: mean error falls by
+14.6293%–14.9503% and tangent error by
+17.7159%–18.1477% relative to the same-seed narrow MLP.
+The same two outliers are unseen initial states; the worst fit is stationary, and
+budget doubling does not improve the quadratic selected errors. This remains a local
+multistart result, not a global-minimum certificate. Both quadratic repeats fail the
+unchanged effective mean ceiling 0.043058226553377994 and worst ceiling 0.15. Initial
+quadratic parameters are deterministic, so repeats vary minibatches only. Protected
+geometry checks pass but state/tangent accuracy worsens. Encoder reconstruction gains
+are inconsistent, and direct encoding is separately worse than latent fitting. Mixture
+routing and expert-diversity checks show no declared collapse, but its validation
+mean/worst do not improve. All four new heads' selected fits are stationary with full
+sampled latent rank. The wider MLP control retains one nonstationary selected fit.
+
+Verification: 21 new architecture component tests plus four root actual-head integration
+tests passed, all local bounded GPU/f64/highest checks. The four integration tests exercise
+the real decoder dispatch, independently reconstruct outputs and finite-difference
+Jacobians/Hessians with nonzero nonlinear weights and a nonorthogonal toy spatial bank.
+The previous twelve common-benchmark tests remain recorded separately. Root read all
+implementations and audited source bytes against recorded git contents, checkpoint/output/
+log hashes, regenerated parameter provenance, exact cohort membership, ordered optimizer
+seeds, schedule, fit budgets, per-start selection, per-state error/tangent summaries,
+convergence and unopened final-test tables. Cross-agent independent NumPy reviews of
+encoder/mixture and quadratic accepted the bounded findings. Quadratic polynomial
+outputs, derivatives and objective curvature were independently reconstructed. Review
+hardened audit checks on ordered seeds, fit budgets, parameter bounds and test closure;
+all results passed, and no numerical finding changed.
+
+No scientific result was retracted. Queue rescheduling is recorded as a pre-execution
+operational change. No speedup, global-minimum or reflective-wave claim is made. No
+actual inherited pilot, rollout/cost, larger mesh or final test was promoted because
+all candidate representation gates fail. The remaining scientific target is quadratic
+accuracy on unseen initial states, with generic-head online export still gated. All
+branches/results are saved and pushed; no merge was performed. The user is being asked
+whether to merge all four completed experiment branches into the repaired branch, as
+required by AGENTS.md. Generated notes and audit scripts remain in the repair worktree;
+`runs/b3d_architecture/review/independent-results-review.md` records review scope.
+
+
+## 2026-09-06
+
+### Session — clarify the situations covered by the architecture screen
+
+Read-only review of the repaired worktree's `b3d_common.py`, `b3d_repair.py`,
+`B3D-ARCH-DESIGN.md`, and the saved quadratic result clarified the scope for the
+user: scalar viscous Burgers on a three-dimensional unit cube with zero wall
+values, positive localized Gaussian-blob initial fields, and varying blob
+geometry/amplitude/viscosity within the fixed training family. The current
+comparison measures reconstruction of unseen solution snapshots and tangent
+quality; it does not establish learned time rollouts, wave reflection, vector
+Burgers, incompressible flow or transfer beyond this initial-condition family.
+The initial-versus-later reconstruction breakdown was read directly from the
+existing result JSON. No new experiment, change, retraction or merge occurred.
+
+
+## 2026-09-06
+
+### Session — prepare absorbing and reflective wave head transfer experiment
+
+User asked whether the new architectures can be tested on waves, including reflective
+waves, and whether they could work there. Read the canonical status, existing wave
+mechanism design/results, FOM/data/bank/head/gate/ROM interfaces, and repaired architecture
+modules. No new numerical result was produced. Historical reflective failures and the
+parameter-conditioned absorbing success remain as previously recorded; neither establishes
+performance for the new parameter-free quadratic head. No finding was retracted.
+
+Prepared and committed `experiments/separable-decoder/WAVE-HEAD-TRANSFER-DESIGN.md` on
+`exp/2026-09-06-burgers3d-repair` at `b46066777297db2a421d9bdf9447bc1ade5a7668`. The concrete first experiment compares
+MLP and quadratic heads, each with and without physical-velocity consistency, for both
+boundary closures, using the inherited wave free-code capacity and two optimizer repeats.
+It explicitly labels the existing POD bank as a head/dynamics diagnostic, and requires
+a subsequent learned spatial-bank confirmation before a fully neural wave claim. No
+Gaussian descriptors or time enter the new heads. The proposal starts in two spatial
+dimensions and does not imply unchanged Burgers weights or successful 3D waves.
+
+The existing independent quadratic reviewer completed a read-only interface/method audit.
+Its fixes are included: generic model and persistence adapters, architecture-independent
+negative controls, exact declared multistart counts and stationarity evidence, physical
+velocity saved through the long horizon, separate variational tangent-lift and Newmark
+dynamic velocity definitions, energy norm of the state error, modal phase diagnostics,
+absorbing constant-mode/late-time normalization, zero-state and extrapolation diagnostics.
+The existing Gaussian wall-compatibility defect remains visible. Old historical test
+data cannot be called untouched; the proposal uses the original unused validation rows
+and reserves a new final cohort. Both existing time integrators and refinement ladders
+are retained, with incomplete solves counting as failures and no selection by lowest
+validation error. Existing wave gates/controls remain in force; no Burgers threshold
+is substituted, and cost remains gated on accuracy.
+
+Exact proposed base is repair commit `b46066777297db2a421d9bdf9447bc1ade5a7668`, which includes reviewed wave
+solvers, architecture audit tooling and this design. Proposed worktree
+`worktrees/2026-09-06-wave-head-transfer`, branch `exp/2026-09-06-wave-head-transfer`,
+with its own implementation subagent and paralab namespace
+`/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/`; each job gets a separate
+immutable directory. Quadratic source is pinned to branch commit
+`4dbe77cbb3a6269ee3894d264bbc4769799b1500`. The root remains in its approved repair tree.
+The user is being asked to confirm the exact new base/worktree/namespace as AGENTS.md
+requires. No new worktree, cluster submission or merge occurred. The experiment is
+prepared for approval, not executed; previous Burgers merge questions remain unanswered.
+
+
+## 2026-09-06
+
+### Session — user discards old wave evidence; fresh benchmark replaces inherited proposal
+
+User instruction: “Discard any old wave experiments. I don't think they were correct
+necessarily.” Implemented as a reset of trusted evidence and implementation dependencies,
+with archives preserved rather than destroyed. The canonical current-state block now
+explicitly excludes all old wave passes, failures, claimed verification and causal
+explanations. Historical chronology is unchanged. This does not claim that all old
+numbers have been independently disproved, and does not retract the separately
+reviewed Burgers results.
+
+Rewrote `experiments/separable-decoder/WAVE-HEAD-TRANSFER-DESIGN.md` on the approved
+repair branch at `3f8ccc46ccea7fb57a25e97fe21262c8edd5e988`. It supersedes the proposal at `b460667` to reuse old
+wave solvers, POD spatial banks, cohorts, integrators and numerical gates. The earlier
+statement that those old solvers provide a checked foundation is withdrawn for the new
+work, as is reliance on prior absorbing success or reflective failure. The old agent
+interface review is historical and its reuse recommendations are superseded; the
+reviewer was notified.
+
+The fresh direction retains the generic neural separable architecture and tested
+Burgers coefficient-head modules, retrained on new wave data. First build and verify
+a new reference solver against analytic displacement/velocity solutions, independent
+boundary references, matrix implementations, mutation checks and mesh/time refinement.
+Then train a new spatial coordinate network, freeze its learned span for a matched
+MLP/quadratic comparison, and assess both reconstruction and actual wave evolution.
+Fresh POD references may be comparison baselines only. No Gaussian descriptors or time
+enter the head. New data splits, numerical settings and acceptance criteria must be
+recorded before neural training; old wave thresholds supply no standard. Both absorbing
+and reflective cases remain requested, with 2D first and 3D an extension.
+
+No numerical experiment, new wave worktree, submission or merge occurred in this
+revision. The previous exact base/name question was not answered by the user's
+evidence correction; the inherited-infrastructure proposal is withdrawn. A revised
+implementation worktree/base remains to be confirmed under AGENTS.md. The preparation
+change was checked with `git diff --check`; numerical tests are inapplicable to this
+documentation-only reset.
+
+Revised concrete proposal for confirmation: base
+`exp/2026-09-06-burgers3d-repair` at `3f8ccc46ccea7fb57a25e97fe21262c8edd5e988`,
+worktree `worktrees/2026-09-06-wave-head-transfer`, branch
+`exp/2026-09-06-wave-head-transfer`, and paralab namespace
+`/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/`. This uses the non-wave
+architecture foundation and fresh-benchmark design; legacy wave files in git ancestry
+are excluded from the new implementation's dependency manifest and evidence.
+
+
+## 2026-09-06
+
+### Session checkpoint — approved fresh wave implementation and failed reference trials
+
+User approved the fresh worktree/base/namespace with “Yes, proceed to do so please.”
+Created `exp/2026-09-06-wave-head-transfer` from approved `3f8ccc4`. One implementation
+subagent owns its worktree; root coordinates in the repair worktree and two independent
+read-only reviewers inspect numerical and ROM mathematics. No old wave source, arrays,
+trained bank, criterion or claimed finding is a dependency of this new cell.
+
+Fresh code uses a trapezoidal tensor weak/edge wave discretization with eliminated
+Dirichlet wall DOFs or first-order Sommerfeld face damping including both corner faces.
+A neural coordinate bank and affine-skip MLP/quadratic coefficient heads are being
+implemented with curvature-inclusive weak acceleration dynamics and physical tangent
+velocity. Fresh coefficient-PCA initialization is explicitly distinct from a POD spatial
+bank; fresh randomized POD is only a comparator. Numerical review rejects independent
+position/velocity updates that do not enforce the decoder tangent relation.
+
+The original compact-bump trial `verify01` (job 3337808, source `0d9a4d4`) exited with
+failed plane-pulse convergence gates. Analytic modes, matrix checks and fixed-space
+time order passed, but the family was spatially underresolved. An independent DST
+audit of saved fields agreed with exact semidiscrete propagation while revealing large
+continuum-frequency dispersion; see the raw audit JSON, not old wave explanations.
+No model was trained. Before learning, revised the family to a Gaussian core times
+a compact smooth taper, retaining localized data but explicitly narrowing center
+coverage. The original failed family remains a stress trial.
+
+The extended trial `verify02` (job 3337902, source `31075a6`) also exited with failed
+unchanged gates: its reflected-plane fine order was below the declared threshold,
+and the proposed 128-interval reference narrowly missed the coarse/fine budget.
+The following maximum energy-state differences are generated directly from its JSON:
+
+| Boundary | Control index | 128-to-256 maximum difference |
+|---|---:|---:|
+| dirichlet | 0 | 0.015409187631896864 |
+| dirichlet | 1 | 0.0074871221529861868 |
+| absorbing | 0 | 0.0022836118013970382 |
+| absorbing | 1 | 0.0021178826548588587 |
+
+All values above are failed/provisional reference diagnostics, not neural results or
+a uniform parameter-family certificate. The smoother-family finite/energy/invariant
+checks and FFT resolution/domain checks passed at the tested points. Both attempts
+ran on an A100 GPU in f64/highest; actual device/provenance, logs and every failed
+gate are retained. CPU-affinity warnings are preserved; no timing claim was made.
+Both pulls passed input/output/full-file checksums and both exact cluster job
+directories were deleted with absence checks. Raw arrays and complete archives are
+tracked in repair commit `ca3ecf7` under `runs/fresh_wave_campaign/verify01` and
+`verify02`. Archived source whitespace is retained byte-for-byte for provenance.
+
+New verification `verify03` is submitted as job 3338045 from source `c69bf87` in its
+own approved namespace directory. It extends the original plane refinement and
+tests crossed width combinations, off-center/anisotropic extrema and predetermined
+training/validation rows on nested grids; direct independent sine checks cover every
+validation row. Observed contraction, spectral self-refinement, full-field/mean
+checks and worst-time evidence are required before promoting a new reference.
+The final cohort remains unopened. Learning review identified stronger latent-fit,
+nonfinite/rank, operator-transform and phase-diagnostic checks to finish before the
+first scientific bank/head run. Work remains active; no experiment branch is merged.
+
+## 2026-09-07
+
+### Fresh absorbing and reflective wave head comparison — completed bounded campaign
+
+User-approved wave branch/worktree was created from `3f8ccc4`, using its own cluster namespace. Implementation owner wrote only the wave tree; coordinator wrote only the repair tree plus this canonical log and canonical reports. All old wave code, banks, checkpoints, data and conclusions remain untrusted historical material. Fresh FOM, learned coordinate network, heads and actual reduced evolution were implemented independently. No merge was performed.
+
+Reference attempts `verify01` and `verify02` failed their declared resolution gates and are retained. Before neural training, the localized family was explicitly revised to a Gaussian core with a smooth compact taper and narrower center range; no Gaussian descriptor enters the head. Expanded fresh verification and independent spectral/field audits accepted the bounded pilot. This does not prove uniform accuracy outside its tested family.
+
+Accepted reference job `3338045`, source `c69bf87439fd2d0ad1673c852e95ec0f322b8c26`, passed 334 declared gates. Two cluster full-pipeline preflights and the local GPU component checks also passed before scientific training.
+
+The table below is generated from original primary-run JSONs. Errors are mean / median / worst of each trajectory's maximum energy norm of state error, normalized by the initial energy norm. Outliers include every trajectory above the declared accuracy ceiling; the full acceptance rule also requires displacement, velocity, fit and temporal checks.
+
+| Boundary | Head | Optimizer seed | Energy error mean | Median | Worst | Outliers | Original time check | Full target |
+|---|---|---|---|---|---|---|---|---|
+| dirichlet | mlp | 691200 | 0.52043063528874112 | 0.5244627633324237 | 0.88221576486922815 | 16 | True | False |
+| dirichlet | quadratic | 691200 | 0.94709984212347331 | 0.93365144074857431 | 1.2528528436742281 | 16 | False | False |
+| dirichlet | mlp_velocity | 691200 | 0.50232241004698752 | 0.47239933481236079 | 0.85597600987188094 | 16 | True | False |
+| dirichlet | quadratic_velocity | 691200 | 0.9915497195193459 | 0.99077625319055607 | 1.4068886627682697 | 16 | False | False |
+| dirichlet | mlp | 691201 | 0.53336115702982312 | 0.46880293374953852 | 0.90439581388898693 | 16 | True | False |
+| dirichlet | quadratic | 691201 | 1.0334950749737928 | 1.0695393308831231 | 1.4331683722461284 | 16 | False | False |
+| dirichlet | mlp_velocity | 691201 | 0.48733557689532581 | 0.40290810993666659 | 1.0425278193826331 | 16 | True | False |
+| dirichlet | quadratic_velocity | 691201 | 1.0141569381583451 | 1.0586699084524078 | 1.3726993220554338 | 16 | False | False |
+| absorbing | mlp | 691200 | 0.10509177594067969 | 0.084457018934554692 | 0.21006954213665988 | 6 | True | False |
+| absorbing | quadratic | 691200 | 0.12862977227683231 | 0.10279751687268794 | 0.22206065980872294 | 8 | True | False |
+| absorbing | mlp_velocity | 691200 | 0.10461218910626355 | 0.085338113498490992 | 0.21918078608778394 | 5 | True | False |
+| absorbing | quadratic_velocity | 691200 | 0.2200016585691969 | 0.18375949943800587 | 0.50242535752717343 | 15 | True | False |
+| absorbing | mlp | 691201 | 0.10900708119733427 | 0.085550434697553149 | 0.22105436024437713 | 6 | True | False |
+| absorbing | quadratic | 691201 | 0.12490009290800706 | 0.10332178269388984 | 0.22410752384367633 | 9 | True | False |
+| absorbing | mlp_velocity | 691201 | 0.097171063502375365 | 0.082816237012708682 | 0.20148499026615549 | 4 | True | False |
+| absorbing | quadratic_velocity | 691201 | 0.17416323677721018 | 0.17705120364890944 | 0.28670165075577031 | 14 | True | False |
+
+All original heads fail the full provisional engineering target. All original trajectories complete; completion and a small energy-balance defect do not establish accurate evolution. MLP results pass the original time check. Reflective quadratic cases require the separately reported continuation below.
+
+`reflective01` job `3338483`, device `['NVIDIA A100-PCIE-40GB']`, source `fdcc6491657363005cc9060a0cae21dac320a974`: 256 intervals, learned rank 64, latent 16, training seed 690601 / count 64, validation seed 690602 / count 16. Unrestricted learned-bank linear energy-error median 0.034991362279093149, worst 0.077060456022600102; all its physical-error outlier counts are zero. This higher-dimensional comparator does not isolate head structure from dimension.
+Selected nonstationary snapshot fits: [('quadratic_velocity', 691200, 1), ('quadratic_velocity', 691201, 1)]. These are explicitly retained failures, not discarded observations.
+`absorbing02` job `3338658`, device `['NVIDIA H100 PCIe']`, source `fdcc6491657363005cc9060a0cae21dac320a974`: 256 intervals, learned rank 64, latent 16, training seed 690601 / count 64, validation seed 690602 / count 16. Unrestricted learned-bank linear energy-error median 0.030783727900898332, worst 0.046270465240905542; all its physical-error outlier counts are zero. This higher-dimensional comparator does not isolate head structure from dimension.
+Selected nonstationary snapshot fits: [('mlp_velocity', 691200, 1), ('quadratic_velocity', 691201, 1)]. These are explicitly retained failures, not discarded observations.
+
+#### Frozen-checkpoint numerical continuation
+
+Exact original latent position and velocity, trained heads, learned bank and operators were retained. The old finest step was repeated for cross-GPU parity before the extra steps. No retraining, refitting or final-cohort opening occurred. The original primary-step verdict was not replaced. All input checkpoint hashes were reconciled with the completed parent archive.
+
+| Attempt / job | Finest pair passing cases | Unresolved cases | Worst finest-pair state difference | Finest-step state error median | Worst | Resolved-subset state error median | Resolved-subset outliers |
+|---|---|---|---|---|---|---|---|
+| refquad20001 / 3339304 | 15 / 16 | [2] | 0.073045862826560559 | 0.93368537727653866 | 1.2596438808442822 | 0.9317189847626588 | 15 / 15 |
+| refquadvel20002 / 3339553 | 16 / 16 | [] | 0.00036791346757167407 | 0.99078602922802927 | 1.4138638857612811 | 0.99078602922802927 | 16 / 16 |
+| refquad20101 / 3339615 | 16 / 16 | [] | 0.00040202925729039774 | 1.0695402119037047 | 1.4331285434580505 | 1.0695402119037047 | 16 / 16 |
+| refquadvel20101 / 3339647 | 16 / 16 | [] | 0.00048421877407558007 | 1.0589520073731027 | 1.3692798978602272 | 1.0589520073731027 | 16 / 16 |
+
+The continuation remains a bounded numerical diagnostic; unresolved cases are not claimed globally converged. The first continuation used regenerated scales differing only at roundoff; the independent audit recomputed full-field metrics using original stored normalizations. Later attempts used the stored scales exactly.
+
+Independent reviewers checked primary summaries, fit selection and stationarity, phase masks, completion, energy and refinement aggregation. Coordinator NumPy/SciPy audits independently reconstructed the neural bank, mass/edge-stiffness/face-damping operators, head values/Jacobians, reconstruction and tangent field errors, rollout energies, and continuation field metrics. Audit scripts and JSONs live in the repair campaign `review/` directory. Trained checkpoints and native outputs are tracked on the wave branch; full checked archives, logs, submissions, cancellation records and cleanup receipts are tracked on the repair branch.
+
+Every accepted run logged GPU backend, f64 and highest precision. No cross-job wall-clock comparison is made. Original absorbing job `3338489` was canceled before starting through the numeric-ID helper; its staged source was archived and cleaned. Local stage `refquadvel20001` was never submitted and was superseded by its hardened successor. Every executed cluster directory was checksum-pulled and deleted after completion.
+
+Retractions/limits: no earlier wave finding is reinstated; no new head succeeds at the full target; original reflective quadratic primary trajectories are not globally time converged. Optimizer repeats share one data split, and MLP/quadratic parameter counts differ. The final cohort remains unopened. These are scalar two-dimensional waves with separate learned weights per boundary; no three-dimensional wave, Navier–Stokes or grid-independent online-cost result follows.
+
+Next proposed controlled experiment: retain the verified FOM and learned bank, compare a latent-dimension ladder with matching linear dimensions, then assess wave-state/dynamics-aware training. Velocity-tangent fitting alone is insufficient here. Further architecture experiments and merging the wave branch into the repair branch remain open pending the user's choice.
+
+Canonical generated report: `reports/2026-09-07-fresh-wave-head-transfer.md`; source generator, figures and reproducibility manifest are beside it. The report and this closing table derive numerical values directly from immutable JSONs.
+
+Final saved milestones: wave branch `906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e`, repair branch `098933ecc87dbdf69f3637cd98e8446539f39a1c`. Canonical report SHA-256 `878f9723c9786801751c067279a051131ae5bc38364030e300eb6aedb1dfe1d6`; reproduction inputs and generator hashes are recorded in `reports/2026-09-07-fresh-wave-head-transfer.manifest.json`. Independent final review disposition is stored at `worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/final-review-disposition.json`. A read-only merge-tree check found no conflicts; no branch merge was performed.

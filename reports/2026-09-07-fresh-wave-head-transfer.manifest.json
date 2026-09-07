@@ -1,0 +1,101 @@
+{
+  "command": [
+    "/home/tahmid/Dev/.venv/bin/python",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/gen_2026_09_07_fresh_wave_head_transfer.py",
+    "--result",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/cluster/out/campaign/result.json",
+    "--result",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/absorbing02/cluster/out/campaign/result.json",
+    "--refinement",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquad20001/cluster/out/refinement/result.json",
+    "--refinement",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20002/cluster/out/refinement/result.json",
+    "--refinement",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquad20101/cluster/out/refinement/result.json",
+    "--refinement",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20101/cluster/out/refinement/result.json",
+    "--verification-result",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/verify03/cluster/out/verification/result.json",
+    "--reviewed",
+    "--out",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/2026-09-07-fresh-wave-head-transfer.md"
+  ],
+  "inputs": {
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/cluster/out/campaign/result.json": "5e282204d4e86827ee85e4801674b191c50acb56bbbee52e52b5ba632a3d5e28",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/absorbing02/cluster/out/campaign/result.json": "43477d18df7ea5644843c98673eba74499bbcf426cf82f8c15ea63581cb73aa3",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquad20001/cluster/out/refinement/result.json": "21849028f54fe25c4d4ac30ed20dc883ef325907e5fe81b5d750be9f0624efe8",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20002/cluster/out/refinement/result.json": "d9081c6bd61cdf5bfa620641a3523f8f7eaa1f478af8f02c64f583d91ec21519",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquad20101/cluster/out/refinement/result.json": "1e829480c85b45bac6ddb6db09b97791e6c3e5f96dc41436c6f801f112144854",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20101/cluster/out/refinement/result.json": "808cf8f8980536c0b56d97657dd6b623deb497ee754cc737d4c0ca1fa19081ff",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/verify03/cluster/out/verification/result.json": "302aa1452f2375393bf3c822f94abee11cd241e75420884dca7d83ef1b4f333c"
+  },
+  "copied_sources": {
+    "reports/fresh_wave_report_tables.py": {
+      "source": "worktrees/2026-09-06-wave-head-transfer/experiments/fresh-wave-head/make_fresh_notes.py",
+      "sha256": "f1c5b5d28f8636dee4a6a6b1dbce25eaf4e9de2191ad5dca5cecc2f6e2fe8b8c"
+    },
+    "reports/plot_2026_09_07_fresh_wave_trajectories.py": {
+      "source": "worktrees/2026-09-06-wave-head-transfer/experiments/fresh-wave-head/plot_fresh_wave.py",
+      "sha256": "25ff24a12618606841dcd3c4fabcaa804f5d48c54b6c75b5544ea7418ee34ac1"
+    },
+    "reports/gen_2026_09_07_fresh_wave_head_transfer.py": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/gen_2026_09_07_fresh_wave_head_transfer.py",
+      "sha256": "78f73472e7c30d805d6994250a8e50b19952a2fca3db16f6498093d9c412d12d"
+    },
+    "reports/gen_2026_09_07_fresh_wave_closing.py": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/gen_2026_09_07_fresh_wave_closing.py",
+      "sha256": "0cdf2fa5d9d9ca7aedadecf299530dd6ac80a62829f2a8ce675fab374e08ebc0"
+    },
+    "reports/plot_2026_09_07_fresh_wave_results.py": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/plot_2026_09_07_fresh_wave_results.py",
+      "sha256": "926e0bacd4f95f257e5feeffd7eae5fad82cf06ac9ea7d668e8439772e423a95"
+    },
+    "reports/plot_2026_09_07_fresh_wave_reference.py": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/plot_2026_09_07_fresh_wave_reference.py",
+      "sha256": "c21f431d98d6094be1df3cf98f646223977145b48e38e3a58069323aebf68d2f"
+    },
+    "reports/figures/2026-09-07-fresh-wave-results.png": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/figures/2026-09-07-fresh-wave-results.png",
+      "sha256": "a375e517052184f059359b67c2b953daf008fc44fe4b16249f5b2406fbe72462"
+    },
+    "reports/figures/2026-09-07-fresh-wave-results.pdf": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/figures/2026-09-07-fresh-wave-results.pdf",
+      "sha256": "e7746cf46d3c63120fa6c1f7bdcec93f4cc09f74cd2fc23725c112456a98bdfd"
+    },
+    "reports/figures/2026-09-07-fresh-wave-results.json": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/figures/2026-09-07-fresh-wave-results.json",
+      "sha256": "53bfd5dfd447a221ce68813f36243c2f7189b91fc214c4cea7cd5921d69c684d"
+    },
+    "reports/figures/2026-09-07-fresh-wave-reference.png": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/figures/2026-09-07-fresh-wave-reference.png",
+      "sha256": "883f4f07e19ceb9d77c177b2bb1c3d234f4a46f829a1f976e0e2c27a34b878f6"
+    },
+    "reports/figures/2026-09-07-fresh-wave-reference.pdf": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/figures/2026-09-07-fresh-wave-reference.pdf",
+      "sha256": "c742766c8b623e3cad982864803560f547ffef1b5b1a6e49251bfac37617b75b"
+    },
+    "reports/figures/2026-09-07-fresh-wave-reference.json": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/figures/2026-09-07-fresh-wave-reference.json",
+      "sha256": "367c2a9026e442e7585c1c512f0f5a53fcfd6069f618d76be06d220e854c6826"
+    },
+    "reports/figures/2026-09-07-fresh-wave-error-trajectories.png": {
+      "source": "worktrees/2026-09-06-wave-head-transfer/experiments/fresh-wave-head/figures/fresh-wave-error-trajectories.png",
+      "sha256": "81e4f1ed7d64471fb0756ea29c7be1d329491b669107b5f11e558d632beeb4e3"
+    },
+    "reports/figures/2026-09-07-fresh-wave-error-trajectories.pdf": {
+      "source": "worktrees/2026-09-06-wave-head-transfer/experiments/fresh-wave-head/figures/fresh-wave-error-trajectories.pdf",
+      "sha256": "d00b524b1ffe6fc03ad54a93f2136f94f9e10fd45859d14a73746884875dbaca"
+    },
+    "reports/figures/2026-09-07-fresh-wave-error-trajectories.json": {
+      "source": "worktrees/2026-09-06-wave-head-transfer/experiments/fresh-wave-head/figures/plot-provenance.json",
+      "sha256": "e92523928e76e85f2671a6bbe7a8a501ca151b1527f4aeed5b8732365221c82e"
+    }
+  },
+  "wave_commit": "906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e",
+  "repair_commit": "098933ecc87dbdf69f3637cd98e8446539f39a1c",
+  "report_sha256": "878f9723c9786801751c067279a051131ae5bc38364030e300eb6aedb1dfe1d6",
+  "scientific_math_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+  "status": "independently_reviewed_bounded_negative_result",
+  "review_disposition_path": "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/final-review-disposition.json",
+  "review_disposition_sha256": "f0fde346824b89474deddaa0c6938d92b87a71c8d8cbd356c6c02f5d34585e7c"
+}

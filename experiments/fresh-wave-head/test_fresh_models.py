@@ -104,6 +104,32 @@ class FreshModelTests(unittest.TestCase):
         result = rollout(p, f, jnp.asarray(init[:2]), jnp.asarray(init[2:]), jnp.asarray(stiff), jnp.asarray(damp), .002, kind="quadratic", steps=150, stride=150)
         np.testing.assert_allclose(np.r_[result["z"][-1], result["w"][-1]], ref, atol=1e-11)
 
+    def test_flux_balance_refinement(self):
+        p = {"linear": jnp.array([[1.], [0.]]), "bias": jnp.zeros(2), "quadratic": jnp.array([[0., .8]])}
+        f = {"output_scale": jnp.array(1.)}
+        stiffness, damp = jnp.diag(jnp.array([1.4, 2.3])), jnp.diag(jnp.array([.2, .4]))
+        errors = []
+        initial = float(physical_energy(p, f, jnp.array([.7]), jnp.array([-.9]), stiffness, "quadratic"))
+        for steps in (20, 40, 80):
+            result = rollout(p, f, jnp.array([.7]), jnp.array([-.9]), stiffness, damp, .4/steps, kind="quadratic", steps=steps, stride=steps)
+            final = float(physical_energy(p, f, result["z"][-1], result["w"][-1], stiffness, "quadratic"))
+            errors.append(abs(final+float(result["outflux"][-1])-initial))
+        self.assertGreater(min(np.log2(np.array(errors[:-1])/errors[1:])), 3.5)
+
+    def test_rank_deficiency_and_overflow_fail_and_freeze(self):
+        f = {"output_scale": jnp.array(1.)}
+        stiffness, damp = jnp.eye(2), jnp.eye(2)
+        p = {"linear": jnp.zeros((2, 1)), "bias": jnp.zeros(2), "quadratic": jnp.zeros((1, 2))}
+        result = rollout(p, f, jnp.array([.3]), jnp.array([.2]), stiffness, damp, .01, kind="quadratic", steps=4, stride=1)
+        self.assertFalse(bool(result["completed"][0]))
+        self.assertFalse(bool(result["completed"][-1]))
+        np.testing.assert_array_equal(result["z"], np.full((5, 1), .3))
+        p["linear"] = jnp.array([[1.], [0.]])
+        p["quadratic"] = jnp.array([[0., 1.]])
+        result = rollout(p, f, jnp.array([1e150]), jnp.array([1e150]), stiffness, damp, .01, kind="quadratic", steps=4, stride=1)
+        self.assertFalse(bool(result["completed"][0]))
+        np.testing.assert_array_equal(result["z"], np.full((5, 1), 1e150))
+
 
 if __name__ == "__main__":
     print({"jax_backend": jax.default_backend(), "x64": jax.config.jax_enable_x64, "matmul_precision": str(jax.config.jax_default_matmul_precision)}, flush=True)

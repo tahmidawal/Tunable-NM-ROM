@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "campaign": "four_pde_multiresolution_20260907",
+  "authorization": "User: Okay. go ahead and get that started. Continue autonomously.",
+  "main_method": "continuous_coordinate_separable_nmrom",
+  "primary_comparator": "efficient_fom_at_matched_physical_accuracy_and_output",
+  "excluded_architecture": "vit_cp",
+  "studies": ["frozen_network_mesh_transfer", "per_resolution_optimization"],
+  "mesh_unit": "intervals_per_axis",
+  "proposed_full_ladder": [64, 128, 256, 512, 1024],
+  "proposed_error_targets": [0.1, 0.05, 0.01, 0.001],
+  "reference_uncertainty_fraction_of_target": 0.1,
+  "initial_job_walltime_hours_max": 2,
+  "initial_concurrent_jobs_per_owner_max": 1,
+  "hard_total_gpu_hour_budget": null,
+  "budget_policy": "Bounded development pilots, then internal review of measured cost/accuracy before expansion; no user deadline or total budget supplied.",
+  "max_concurrent_child_agents": 3,
+  "precision": {"x64": true, "matmul_precision": "highest", "backend": "gpu"},
+  "error_population": "All declared cases; preserve nonfinite, nonstationary and unresolved cases as failures.",
+  "timing_contract": "Same invocation supplies output/errors/time; same-job same-GPU paired repeated timing after burn-in and synchronization; complete requested input/output included.",
+  "final_cohort_policy": "Never open existing sealed final cohorts during pilots or validation model selection.",
+  "owners": {
+    "wave2d": {"worktree": "2026-09-07-mr-wave2d", "branch": "exp/2026-09-07-mr-wave2d", "base": "906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e", "namespace": "/cluster/tufts/paralab/tawal01/mr_wave2d_20260907"},
+    "burgers2d": {"worktree": "2026-09-07-mr-burgers2d", "branch": "exp/2026-09-07-mr-burgers2d", "base": "da479125b13aaa3e15b5cae33f72709705129838", "namespace": "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907"},
+    "poisson2d": {"worktree": "2026-09-07-mr-poisson2d", "branch": "exp/2026-09-07-mr-poisson2d", "base": "da479125b13aaa3e15b5cae33f72709705129838", "namespace": "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907"},
+    "heat2d": {"worktree": "2026-09-07-mr-heat2d", "branch": "exp/2026-09-07-mr-heat2d", "base": "da479125b13aaa3e15b5cae33f72709705129838", "namespace": "/cluster/tufts/paralab/tawal01/mr_heat2d_20260907"}
+  }
+}

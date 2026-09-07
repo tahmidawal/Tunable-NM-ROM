@@ -1,9 +1,11 @@
 # Four-PDE multiresolution study for the NM-ROM paper
 
-Proposed protocol dated 2026-09-07; no new experimental results are reported here.
+Pilot protocol dated 2026-09-07; no new experimental results are reported here.
 The user has selected the current separable decoder and FOM comparison; the older
-ViT + CP pipeline is excluded. Experiment bases/names and compute budget remain
-pending. The canonical repository-root `LAB-LOG.md` remains the project record.
+ViT + CP pipeline is excluded. The user approved the named experiment bases,
+worktrees, agents and namespaces with "Okay. go ahead and get that started.
+Continue autonomously." All four worktrees have been created. The canonical
+repository-root `LAB-LOG.md` remains the project record.
 
 ## Question and scope
 
@@ -69,6 +71,9 @@ plotting/selection targets, not promises that any model reaches them. Require
 reference uncertainty comfortably below the target (proposed budget: one tenth
 of the target); otherwise label that target unresolved. Preserve historical gates
 and report new criteria separately rather than revising old verdicts.
+For physical-accuracy qualification, the observed error plus a defensible reference
+uncertainty allowance must meet the target. A small reference difference alone is
+not a certified bound; specify the convergence evidence and unresolved assumptions.
 
 ## Reference and baseline work
 
@@ -155,9 +160,9 @@ ratios and hardware-free operation/iteration counts; do not fit cross-job raw ti
 
 ## Stages and concrete artifacts
 
-1. With the architecture and FOM objective confirmed, settle study scope,
-   worktree bases/names and pilot budget.
-   Create a shared immutable protocol/config and common result schema.
+1. Architecture, FOM objective and experiment ownership are approved. Use both
+   studies, begin with bounded development pilots, and record shared protocol/config
+   and a common result-accounting schema. No hard total budget or deadline was supplied.
 2. In isolated PDE trees, reproduce references and baselines, then run a small
    pilot. For waves, include the matched affine/nonlinear dimension comparison;
    for heat, establish the new separable port's correctness before timing claims.
@@ -176,10 +181,10 @@ No accuracy or speedup value is promised. A PDE where the classical solver wins
 remains a result and identifies where further improvement is needed.
 Do not launch the full combinatorial search before pilot cost/accuracy is known.
 
-## Proposed ownership and bases — approval required before creation
+## Approved ownership and bases
 
 Root coordinates in the already existing `2026-09-06-burgers3d-repair` tree.
-The following are proposed new trees under the repository's `worktrees/` directory;
+The following trees were created under the repository's `worktrees/` directory;
 each has branch `exp/<directory-name>`, its own named subagent and its own namespace
 under `/cluster/tufts/paralab/tawal01/`.
 
@@ -204,20 +209,21 @@ with backend preflight, recorded provenance, checksummed collection and exact
 remote-directory cleanup. Follow the repository cancellation helper rules.
 Ask whether to merge completed experiment branches when they finish.
 
-## Decisions requested
+## Resolved choices and autonomous pilot defaults
 
 - Resolved: current continuous-coordinate separable decoder versus efficient FOM;
   older ViT + CP excluded from this campaign.
-- Both frozen-weight transfer and per-resolution optimization, or only one.
-  Recommendation: both, reported separately.
-- Paper deadline and total compute budget. Recommendation: a capped pilot before
-  committing to the full campaign, using measured costs to set its size.
-- Approval of the concrete worktree/base/subagent/namespace table above.
+- Both frozen-weight transfer and per-resolution optimization, reported separately,
+  are the working scope under the user's approval to proceed autonomously.
+- No hard paper deadline or total compute budget was supplied. Initially allow
+  one cluster GPU job per owner at a time, with at most two hours requested per
+  job. Root reviews measured pilot cost and accuracy before larger extensions.
+- The concrete worktree/base/subagent/namespace table above is approved and created.
 
-The repository AGENTS.md explicitly requires: "Propose the names and get
-confirmation before creating any of them" and "Starting new work: ask where to
-branch from." This approval is for new parallel experiment ownership, not for
-read-only inspection or preparation of this reviewable protocol.
+The repository's required base/name/ownership confirmation has been obtained for
+this table. Do not ask again for routine implementation, fixes, verification or
+submissions inside this scope. Additional experiment worktrees outside this table
+and merging completed branches remain subject to the repository rules.
 
 ## Plain-language glossary
 

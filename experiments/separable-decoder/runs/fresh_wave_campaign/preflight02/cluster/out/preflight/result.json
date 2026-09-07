@@ -1,0 +1,821 @@
+{
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA A100-PCIE-40GB"
+    ],
+    "host": "pax052",
+    "source_commit": "0a09ed1041156bd89d95fd6d9c6c51e40c0c8419",
+    "job_id": "3338177",
+    "numpy_version": "2.5.0"
+  },
+  "status": "engineering_smoke_only_not_a_scientific_result",
+  "config": {
+    "reference_approved": true,
+    "reference_status": "Accepted by coordinator and independent numerical reviewer for bounded Gaussian-compact pilot; absorption coverage is empirical/conditional and distinct from ABC modeling error.",
+    "n": 16,
+    "train_seed": 690601,
+    "validation_seed": 690602,
+    "final_seed": 690603,
+    "train_count": 4,
+    "validation_count": 2,
+    "final_count": 16,
+    "end_time": 0.1,
+    "observation_dt": 0.05,
+    "fom_cfl": 0.12,
+    "rank": 8,
+    "latent": 2,
+    "weak_tests": 8,
+    "bank_seed": 691001,
+    "bank_width": 32,
+    "bank_steps": 4,
+    "bank_batch": 8,
+    "bank_lr": 0.001,
+    "bank_rank_ratio_min": 1e-08,
+    "head_width": 16,
+    "head_steps": 4,
+    "head_batch": 8,
+    "head_lr": 0.001,
+    "code_lr": 0.003,
+    "code_penalty": 1e-06,
+    "head_input_scaling": "Coefficient PCA on the frozen learned-bank training outputs initializes the common affine head; standardized scores are dimensionless, so latent input scales are one. This does not replace the trained neural spatial bank with POD.",
+    "optimizer_seeds": [
+      691200,
+      691201
+    ],
+    "fit_seed": 692001,
+    "fit_batch": 8,
+    "fit_iterations": 12,
+    "fit_starts": [
+      "affine",
+      "zero",
+      "six equally spaced rows of the trained training-code table"
+    ],
+    "fit_gradient_tolerance": 1e-07,
+    "fit_doubled_budget": "800 iterations from the exact same eight initial starts as the 400-iteration run; select the best finite result uniformly.",
+    "rom_dts": [
+      0.01,
+      0.005,
+      0.0025
+    ],
+    "rom_primary_dt": 0.0025,
+    "rom_rank_ratio_min": 1e-08,
+    "accuracy_target": 0.1,
+    "accuracy_rule": "At primary dt all16 validation trajectories complete with time-maximum normalized displacement, velocity and energy-state errors <=.10; finest two steps agree within .01 on all three scales; selected fits stationary/rank-valid and 400/800 objective change<=1e-6. Final cohort sealed. This is a provisional engineering target.",
+    "pod_seed": 693030,
+    "pod_algorithm": "Fresh randomized SVD, rank64+24 oversampling, four power iterations, normalized training displacement+velocity only.",
+    "cost_claims": false,
+    "final_test_opened": false,
+    "rom_refinement_target": 0.01,
+    "parameter_ranges": {
+      "support_half_width": [
+        0.36,
+        0.42
+      ],
+      "gaussian_standard_deviation": [
+        0.12,
+        0.16
+      ],
+      "center": "[support+.025,1-support-.025], independently per axis",
+      "amplitude": [
+        0.7,
+        1.3
+      ],
+      "speed": [
+        0.85,
+        1.15
+      ],
+      "velocity_fraction": [
+        -0.5,
+        0.5
+      ]
+    },
+    "fit_budget_stability_tolerance": 1e-06,
+    "reference_evidence": {
+      "job_id": "3338045",
+      "source_commit": "c69bf87439fd2d0ad1673c852e95ec0f322b8c26",
+      "result_sha256": "302aa1452f2375393bf3c822f94abee11cd241e75420884dca7d83ef1b4f333c",
+      "all_gates_passed": true,
+      "gate_count": 334,
+      "worst_observed_contraction_estimate": 0.012881071840545724,
+      "direct_reflective_space_plus_spectral_self": 0.010079872351705089
+    }
+  },
+  "heads": {
+    "mlp": {
+      "fit": {
+        "nonstationary": 0,
+        "maximum_gradient": 3.871822985921508e-10,
+        "maximum_projected_stationarity": 4.9931642360359386e-08,
+        "selected_rank_failures": 0,
+        "max_doubled_objective_change": 0.0,
+        "selected_start_counts": [
+          1,
+          1,
+          0,
+          0,
+          2,
+          2,
+          0,
+          0
+        ]
+      },
+      "reconstruction": {
+        "reconstruction": {
+          "count": 6,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.721174330964307,
+          "median": 0.7565819073066542,
+          "worst": 0.8569452256350744,
+          "outlier_threshold": 0.1,
+          "outliers": 6
+        },
+        "tangent": {
+          "count": 6,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.4823146310891613,
+          "median": 0.5501200182445409,
+          "worst": 0.8400797491879506,
+          "outlier_threshold": 0.1,
+          "outliers": 5
+        },
+        "initial_reconstruction": {
+          "count": 2,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.8527029934703699,
+          "median": 0.8527029934703699,
+          "worst": 0.8569452256350744,
+          "outlier_threshold": 0.1,
+          "outliers": 2
+        },
+        "initial_tangent": {
+          "count": 2,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.0637751200420112,
+          "median": 0.0637751200420112,
+          "worst": 0.1275502400840224,
+          "outlier_threshold": 0.1,
+          "outliers": 1
+        },
+        "minimum_jacobian_ratio": 0.7332874115858597,
+        "rank_failures": 0,
+        "nonfinite_predictions": 0,
+        "nonfinite_tangent": 0
+      },
+      "rollout": {
+        "cases": [
+          {
+            "case": 0,
+            "dt": 0.01,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7324925677903792,
+            "max_displacement_error": 0.8569452256350744,
+            "max_velocity_error": 0.8981864765352947,
+            "max_energy_state_error": 1.204949672424419,
+            "max_defined_modal_phase_error": 1.480235092218586,
+            "max_unwrapped_valid_segment_phase_error": 1.480235092218586,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.03342855746301092,
+            "final_rom_energy_fraction": 0.5334012031853876,
+            "final_truth_energy_fraction": 0.9999113770475233,
+            "max_energy_balance_relative": 5.639944334934937e-07
+          },
+          {
+            "case": 1,
+            "dt": 0.01,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7316479415521342,
+            "max_displacement_error": 0.8484607613056655,
+            "max_velocity_error": 0.8797881122006547,
+            "max_energy_state_error": 1.2397063311563836,
+            "max_defined_modal_phase_error": 1.2500972615078971,
+            "max_unwrapped_valid_segment_phase_error": 1.2500972615078971,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.02122056922063667,
+            "final_rom_energy_fraction": 0.6626213358353119,
+            "final_truth_energy_fraction": 0.9998654427412421,
+            "max_energy_balance_relative": 8.530021089614338e-07
+          },
+          {
+            "case": 0,
+            "dt": 0.005,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7324946994636043,
+            "max_displacement_error": 0.8569452256350744,
+            "max_velocity_error": 0.8981854067677578,
+            "max_energy_state_error": 1.204949672424419,
+            "max_defined_modal_phase_error": 1.4802386877620408,
+            "max_unwrapped_valid_segment_phase_error": 1.4802386877620408,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.03342876061016645,
+            "final_rom_energy_fraction": 0.5333999117617735,
+            "final_truth_energy_fraction": 0.9999113770475233,
+            "max_energy_balance_relative": 9.255249891242412e-08
+          },
+          {
+            "case": 1,
+            "dt": 0.005,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7316209686604328,
+            "max_displacement_error": 0.8484607613056655,
+            "max_velocity_error": 0.8797852679506044,
+            "max_energy_state_error": 1.2397063311563836,
+            "max_defined_modal_phase_error": 1.250116036006775,
+            "max_unwrapped_valid_segment_phase_error": 1.250116036006775,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.021220849016676133,
+            "final_rom_energy_fraction": 0.6626179483536482,
+            "final_truth_energy_fraction": 0.9998654427412421,
+            "max_energy_balance_relative": 2.1901581730286339e-07
+          },
+          {
+            "case": 0,
+            "dt": 0.0025,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7324934849807385,
+            "max_displacement_error": 0.8569452256350744,
+            "max_velocity_error": 0.8981853268808312,
+            "max_energy_state_error": 1.204949672424419,
+            "max_defined_modal_phase_error": 1.4802389420759736,
+            "max_unwrapped_valid_segment_phase_error": 1.4802389420759736,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.03342877291823227,
+            "final_rom_energy_fraction": 0.5333997941085291,
+            "final_truth_energy_fraction": 0.9999113770475233,
+            "max_energy_balance_relative": 8.278286618617123e-09
+          },
+          {
+            "case": 1,
+            "dt": 0.0025,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.731621165575745,
+            "max_displacement_error": 0.8484607613056655,
+            "max_velocity_error": 0.8797850700122073,
+            "max_energy_state_error": 1.2397063311563836,
+            "max_defined_modal_phase_error": 1.2501172108532823,
+            "max_unwrapped_valid_segment_phase_error": 1.2501172108532823,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.021220865431611266,
+            "final_rom_energy_fraction": 0.6626176413834057,
+            "final_truth_energy_fraction": 0.9998654427412421,
+            "max_energy_balance_relative": 1.8900305557438886e-08
+          }
+        ],
+        "summaries": [
+          {
+            "dt": 0.01,
+            "completed": 2,
+            "failed": 0,
+            "displacement": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8527029934703699,
+              "median": 0.8527029934703699,
+              "worst": 0.8569452256350744,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "velocity": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8889872943679746,
+              "median": 0.8889872943679746,
+              "worst": 0.8981864765352947,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "energy_state": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 1.2223280017904012,
+              "median": 1.2223280017904012,
+              "worst": 1.2397063311563836,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            }
+          },
+          {
+            "dt": 0.005,
+            "completed": 2,
+            "failed": 0,
+            "displacement": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8527029934703699,
+              "median": 0.8527029934703699,
+              "worst": 0.8569452256350744,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "velocity": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8889853373591812,
+              "median": 0.8889853373591812,
+              "worst": 0.8981854067677578,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "energy_state": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 1.2223280017904012,
+              "median": 1.2223280017904012,
+              "worst": 1.2397063311563836,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            }
+          },
+          {
+            "dt": 0.0025,
+            "completed": 2,
+            "failed": 0,
+            "displacement": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8527029934703699,
+              "median": 0.8527029934703699,
+              "worst": 0.8569452256350744,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "velocity": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8889851984465192,
+              "median": 0.8889851984465192,
+              "worst": 0.8981853268808312,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "energy_state": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 1.2223280017904012,
+              "median": 1.2223280017904012,
+              "worst": 1.2397063311563836,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            }
+          }
+        ],
+        "finest_two_refinement": [
+          {
+            "case": 0,
+            "coarse_dt": 0.005,
+            "fine_dt": 0.0025,
+            "both_completed": true,
+            "max_displacement_difference": 2.0547553947561033e-07,
+            "max_velocity_difference": 2.5514048124556734e-07,
+            "max_energy_state_difference": 5.285358597448946e-07,
+            "passed": true
+          },
+          {
+            "case": 1,
+            "coarse_dt": 0.005,
+            "fine_dt": 0.0025,
+            "both_completed": true,
+            "max_displacement_difference": 3.8614842558898087e-07,
+            "max_velocity_difference": 7.003730114253888e-07,
+            "max_energy_state_difference": 1.081469937446361e-06,
+            "passed": true
+          }
+        ],
+        "refinement_passed": true,
+        "primary_dt": 0.005,
+        "selection_rule": "Middle predeclared dt is primary; all three are reported; failed solves are failures."
+      }
+    },
+    "quadratic": {
+      "fit": {
+        "nonstationary": 0,
+        "maximum_gradient": 5.494645118672009e-10,
+        "maximum_projected_stationarity": 7.371301620683082e-08,
+        "selected_rank_failures": 0,
+        "max_doubled_objective_change": 0.0,
+        "selected_start_counts": [
+          2,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1
+        ]
+      },
+      "reconstruction": {
+        "reconstruction": {
+          "count": 6,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.721080202650926,
+          "median": 0.7564206900994501,
+          "worst": 0.8568292834944397,
+          "outlier_threshold": 0.1,
+          "outliers": 6
+        },
+        "tangent": {
+          "count": 6,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.48245099214534637,
+          "median": 0.5501608113372036,
+          "worst": 0.8407636436901627,
+          "outlier_threshold": 0.1,
+          "outliers": 5
+        },
+        "initial_reconstruction": {
+          "count": 2,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.8525068420377074,
+          "median": 0.8525068420377074,
+          "worst": 0.8568292834944397,
+          "outlier_threshold": 0.1,
+          "outliers": 2
+        },
+        "initial_tangent": {
+          "count": 2,
+          "nonfinite": 0,
+          "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+          "mean": 0.06368861842420981,
+          "median": 0.06368861842420981,
+          "worst": 0.12737723684841962,
+          "outlier_threshold": 0.1,
+          "outliers": 1
+        },
+        "minimum_jacobian_ratio": 0.7128440401529392,
+        "rank_failures": 0,
+        "nonfinite_predictions": 0,
+        "nonfinite_tangent": 0
+      },
+      "rollout": {
+        "cases": [
+          {
+            "case": 0,
+            "dt": 0.01,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7147174121982857,
+            "max_displacement_error": 0.8568292834944397,
+            "max_velocity_error": 0.8978178935572846,
+            "max_energy_state_error": 1.2030540510207341,
+            "max_defined_modal_phase_error": 1.4697738550669246,
+            "max_unwrapped_valid_segment_phase_error": 1.4697738550669246,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.032761103000709654,
+            "final_rom_energy_fraction": 0.5307005793231735,
+            "final_truth_energy_fraction": 0.9999113770475233,
+            "max_energy_balance_relative": 9.056497392818982e-07
+          },
+          {
+            "case": 1,
+            "dt": 0.01,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7129368015286797,
+            "max_displacement_error": 0.8481844005809752,
+            "max_velocity_error": 0.8830623276818518,
+            "max_energy_state_error": 1.2402797887973795,
+            "max_defined_modal_phase_error": 1.2430391118702167,
+            "max_unwrapped_valid_segment_phase_error": 1.2430391118702167,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.02022115146360911,
+            "final_rom_energy_fraction": 0.6656086808913144,
+            "final_truth_energy_fraction": 0.9998654427412421,
+            "max_energy_balance_relative": 1.5252198255470211e-06
+          },
+          {
+            "case": 0,
+            "dt": 0.005,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7147145633403597,
+            "max_displacement_error": 0.8568292834944397,
+            "max_velocity_error": 0.8978169597248001,
+            "max_energy_state_error": 1.2030540510207341,
+            "max_defined_modal_phase_error": 1.4697770297797206,
+            "max_unwrapped_valid_segment_phase_error": 1.4697770297797206,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.0327613126056875,
+            "final_rom_energy_fraction": 0.5306995909688951,
+            "final_truth_energy_fraction": 0.9999113770475233,
+            "max_energy_balance_relative": 5.580723433422696e-08
+          },
+          {
+            "case": 1,
+            "dt": 0.005,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7129366685216588,
+            "max_displacement_error": 0.8481844005809752,
+            "max_velocity_error": 0.8830597304317942,
+            "max_energy_state_error": 1.2402797887973795,
+            "max_defined_modal_phase_error": 1.2430550750727816,
+            "max_unwrapped_valid_segment_phase_error": 1.2430550750727816,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.02022144732671949,
+            "final_rom_energy_fraction": 0.6656059603371873,
+            "final_truth_energy_fraction": 0.9998654427412421,
+            "max_energy_balance_relative": 1.441329950333882e-07
+          },
+          {
+            "case": 0,
+            "dt": 0.0025,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7147142030806389,
+            "max_displacement_error": 0.8568292834944397,
+            "max_velocity_error": 0.8978168876669457,
+            "max_energy_state_error": 1.2030540510207341,
+            "max_defined_modal_phase_error": 1.4697772523527086,
+            "max_unwrapped_valid_segment_phase_error": 1.4697772523527086,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.03276132534201462,
+            "final_rom_energy_fraction": 0.5306994926442576,
+            "final_truth_energy_fraction": 0.9999113770475233,
+            "max_energy_balance_relative": 5.954801174364031e-09
+          },
+          {
+            "case": 1,
+            "dt": 0.0025,
+            "completed": true,
+            "first_failed_observation": null,
+            "minimum_jacobian_ratio": 0.7129366537169491,
+            "max_displacement_error": 0.8481844005809752,
+            "max_velocity_error": 0.8830595470560973,
+            "max_energy_state_error": 1.2402797887973795,
+            "max_defined_modal_phase_error": 1.243056080161473,
+            "max_unwrapped_valid_segment_phase_error": 1.243056080161473,
+            "vanished_mode_observations": 4,
+            "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+            "wall_strip_peak_time_difference": -0.1,
+            "wall_strip_peak_truth_time": 0.1,
+            "final_mean_error": 0.020221464737097614,
+            "final_rom_energy_fraction": 0.6656056981656568,
+            "final_truth_energy_fraction": 0.9998654427412421,
+            "max_energy_balance_relative": 1.4034485927220775e-08
+          }
+        ],
+        "summaries": [
+          {
+            "dt": 0.01,
+            "completed": 2,
+            "failed": 0,
+            "displacement": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8525068420377074,
+              "median": 0.8525068420377074,
+              "worst": 0.8568292834944397,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "velocity": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8904401106195682,
+              "median": 0.8904401106195682,
+              "worst": 0.8978178935572846,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "energy_state": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 1.2216669199090568,
+              "median": 1.2216669199090568,
+              "worst": 1.2402797887973795,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            }
+          },
+          {
+            "dt": 0.005,
+            "completed": 2,
+            "failed": 0,
+            "displacement": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8525068420377074,
+              "median": 0.8525068420377074,
+              "worst": 0.8568292834944397,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "velocity": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8904383450782971,
+              "median": 0.8904383450782971,
+              "worst": 0.8978169597248001,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "energy_state": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 1.2216669199090568,
+              "median": 1.2216669199090568,
+              "worst": 1.2402797887973795,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            }
+          },
+          {
+            "dt": 0.0025,
+            "completed": 2,
+            "failed": 0,
+            "displacement": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8525068420377074,
+              "median": 0.8525068420377074,
+              "worst": 0.8568292834944397,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "velocity": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 0.8904382173615215,
+              "median": 0.8904382173615215,
+              "worst": 0.8978168876669457,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            },
+            "energy_state": {
+              "count": 2,
+              "nonfinite": 0,
+              "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+              "mean": 1.2216669199090568,
+              "median": 1.2216669199090568,
+              "worst": 1.2402797887973795,
+              "outlier_threshold": 0.1,
+              "outliers": 2
+            }
+          }
+        ],
+        "finest_two_refinement": [
+          {
+            "case": 0,
+            "coarse_dt": 0.005,
+            "fine_dt": 0.0025,
+            "both_completed": true,
+            "max_displacement_difference": 2.0789812672293125e-07,
+            "max_velocity_difference": 2.33943481583179e-07,
+            "max_energy_state_difference": 5.229565950709101e-07,
+            "passed": true
+          },
+          {
+            "case": 1,
+            "coarse_dt": 0.005,
+            "fine_dt": 0.0025,
+            "both_completed": true,
+            "max_displacement_difference": 3.919275836223697e-07,
+            "max_velocity_difference": 6.499344361357845e-07,
+            "max_energy_state_difference": 1.0573803719841937e-06,
+            "passed": true
+          }
+        ],
+        "refinement_passed": true,
+        "primary_dt": 0.005,
+        "selection_rule": "Middle predeclared dt is primary; all three are reported; failed solves are failures."
+      }
+    }
+  },
+  "baseline": {
+    "label": "smoke_randomized_pod",
+    "rank": 2,
+    "integrator": "independent exact matrix exponential of linear Galerkin system",
+    "cases": [
+      {
+        "case": 0,
+        "max_displacement_error": 0.31458920540689267,
+        "max_velocity_error": 0.4973054494121622,
+        "max_energy_state_error": 0.6390307067281198,
+        "max_defined_modal_phase_error": 1.8129734360686995,
+        "max_unwrapped_valid_segment_phase_error": 1.8129734360686995,
+        "vanished_mode_observations": 1,
+        "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+        "wall_strip_peak_time_difference": -0.1,
+        "wall_strip_peak_truth_time": 0.1,
+        "final_mean_error": 0.02758775135506225,
+        "final_rom_energy_fraction": 1.0686314935236498,
+        "final_truth_energy_fraction": 0.9999113770475233
+      },
+      {
+        "case": 1,
+        "max_displacement_error": 0.40566340351320446,
+        "max_velocity_error": 0.6579358519044689,
+        "max_energy_state_error": 0.7955991328299483,
+        "max_defined_modal_phase_error": 0.8635236510391946,
+        "max_unwrapped_valid_segment_phase_error": 0.8635236510391946,
+        "vanished_mode_observations": 1,
+        "phase_interpretation": "Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes.",
+        "wall_strip_peak_time_difference": -0.05,
+        "wall_strip_peak_truth_time": 0.1,
+        "final_mean_error": 0.02486757188297266,
+        "final_rom_energy_fraction": 0.7011194768591525,
+        "final_truth_energy_fraction": 0.9998654427412421
+      }
+    ],
+    "displacement": {
+      "count": 2,
+      "nonfinite": 0,
+      "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+      "mean": 0.36012630446004856,
+      "median": 0.36012630446004856,
+      "worst": 0.40566340351320446,
+      "outlier_threshold": 0.1,
+      "outliers": 2
+    },
+    "velocity": {
+      "count": 2,
+      "nonfinite": 0,
+      "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+      "mean": 0.5776206506583156,
+      "median": 0.5776206506583156,
+      "worst": 0.6579358519044689,
+      "outlier_threshold": 0.1,
+      "outliers": 2
+    },
+    "energy_state": {
+      "count": 2,
+      "nonfinite": 0,
+      "summary_population": "Finite cases only; nonfinite cases count as failures and outliers.",
+      "mean": 0.717314919779034,
+      "median": 0.717314919779034,
+      "worst": 0.7955991328299483,
+      "outlier_threshold": 0.1,
+      "outliers": 2
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "boundary_dir": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/preflight02/cluster/out/preflight/small_pipeline",
+  "bc": "absorbing",
+  "intervals": 16,
+  "bank_operator_discrepancies": {
+    "bank_export": 4.0149257711400225e-16,
+    "mass_identity": 3.0872991448880783e-16,
+    "stiffness_edges": 5.461363270687325e-16,
+    "damping_faces": 3.078404611617817e-16
+  },
+  "heads": [
+    {
+      "arm": "mlp",
+      "independent_prediction_error": 0.0,
+      "independent_tangent_error": 5.670597640162645e-17,
+      "identical_eight_starts": true
+    },
+    {
+      "arm": "quadratic",
+      "independent_prediction_error": 0.0,
+      "independent_tangent_error": 0.0,
+      "identical_eight_starts": true
+    }
+  ],
+  "passed": true
+}

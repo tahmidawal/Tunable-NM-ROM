@@ -1,0 +1,15 @@
+{
+  "label": "screen40",
+  "script": "b3d_arch_bench.py",
+  "source_commit": "fd986d8d39483f7a1064d9f61e9593ccc5011fbc",
+  "checkpoint": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-mixture/experiments/separable-decoder/runs/b3d_repair/head33/out/refined_checkpoint.pkl",
+  "checkpoint_sha256": "611235d3cdedec0954d8fea673f7d94118b7f8c2ee3b7997cea9bdef1bb75784",
+  "remote": "/cluster/tufts/paralab/tawal01/b3d_mixture_20260906/screen40",
+  "namespace": "b3d_mixture_20260906",
+  "gpu_type": "a100",
+  "gpu_constraint": "a100-40G",
+  "env": {
+    "MODEL": "b3d_arch_mixture",
+    "OPT_SEEDS": "200,201"
+  }
+}

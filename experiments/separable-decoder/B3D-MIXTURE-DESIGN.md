@@ -1,8 +1,8 @@
 # Smooth mixture head for the Burgers 3D architecture screen
 
 This arm implements the user-approved smooth mixture within the shared
-`B3D-ARCH-DESIGN.md` protocol. Scientific performance is unmeasured; component
-verification is recorded separately and does not establish improved PDE accuracy.
+`B3D-ARCH-DESIGN.md` protocol. This file records the design and component
+verification; the completed scientific screen is in `B3D-MIXTURE-NOTES.md`.
 
 ## Architecture and initialization
 
@@ -68,9 +68,10 @@ are made based on these diagnostics in this bounded comparison.
 
 The component run passed through the repository's local GPU guard, in double
 precision with highest matrix-multiplication precision. The retained command
-output is `runs/b3d_arch/mixture/component.log`. Root review is required before
-the two-seed cluster screen. No cluster training, held-out scientific result,
-pilot promotion, wave test, or rollout is claimed by this implementation record.
+output is `runs/b3d_arch/mixture/component.log`. The coordinator reviewed this
+implementation before authorizing the two-seed cluster screen. Its generated
+notes retain the scientific outcomes separately; no pilot promotion, wave test,
+or rollout has occurred for this arm.
 
 ## Glossary
 

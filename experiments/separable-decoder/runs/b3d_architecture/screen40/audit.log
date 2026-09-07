@@ -1,0 +1,76 @@
+{
+  "status": "verified_by_implementation_agent",
+  "independent_coordinator_audit": "pending",
+  "source_commit": "fd986d8d39483f7a1064d9f61e9593ccc5011fbc",
+  "job": "3336230",
+  "gpu": "NVIDIA A100-PCIE-40GB",
+  "output_and_log_checksums_verified": true,
+  "source_hashes": {
+    "code/b3d_arch_baseline.py": "43b5f0ae4a30f4d08e60d7d1ad3be8061d82a5a9c53f364cec1c8906ffe13566",
+    "code/b3d_arch_bench.py": "c6e3b68bd62e9b5442fe3e2298ed1aff3fba53384ad4e140f557f91c31a08d0b",
+    "code/b3d_arch_mixture.py": "b66316815a64af2ae5ee3e921204df326de7319767d18e3d6160eae90534a071",
+    "code/b3d_arch_pilot.py": "cdb583464861934bb3e2deb89897e36b7f2d56e23631a185cc3630bd96c0e0f2",
+    "code/b3d_common.py": "c5e36b4c6fc148f795613b0d5547014b6ffd43ad4b1f62db3768d8d733a6814f",
+    "code/b3d_repair.py": "28f165f4fd9cae0945189651ddf207c360a6c697125ff56c88e72a3e0bab8eb3",
+    "code/b3d_tensor_common.py": "18712d0ab9af30e66c652cee0ea3e82776d1a8678f5446608ad296ff934b628a",
+    "code/sep_b3d_tensor.py": "8c44fae3b4a66715e2a39e8f0da89ca367f4c11dc68d276e808d4e3ada07af79",
+    "code/sep_hfit.py": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8"
+  },
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "same_bank_and_qr_as_control": true,
+  "same_state_membership_as_control": true,
+  "cross_job_validation": {
+    "target": {
+      "exact": false,
+      "max_absolute": 3.552713678800501e-15
+    },
+    "norm2": {
+      "exact": false,
+      "max_absolute": 6.821210263296962e-13
+    },
+    "perpendicular2": {
+      "exact": false,
+      "max_absolute": 8.881784197001252e-16
+    },
+    "sid": {
+      "exact": true,
+      "max_absolute": 0.0
+    },
+    "blob_count": {
+      "exact": true,
+      "max_absolute": 0.0
+    },
+    "velocity_target": {
+      "exact": false,
+      "max_absolute": 2.842170943040401e-14
+    },
+    "velocity_norm2": {
+      "exact": false,
+      "max_absolute": 5.820766091346741e-11
+    },
+    "velocity_perpendicular2": {
+      "exact": false,
+      "max_absolute": 7.275957614183426e-12
+    }
+  },
+  "host_affinity_warning": false,
+  "runs": [
+    {
+      "seed": 200,
+      "trainable_parameters": 78786,
+      "independent_error_difference_max": 1.1102230246251565e-16,
+      "routing_and_disagreement_independently_verified": true,
+      "rank_min": 32
+    },
+    {
+      "seed": 201,
+      "trainable_parameters": 78786,
+      "independent_error_difference_max": 1.0061396160665481e-16,
+      "routing_and_disagreement_independently_verified": true,
+      "rank_min": 32
+    }
+  ],
+  "remote_directory_deleted_after_verified_pull": true
+}

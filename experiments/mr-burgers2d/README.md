@@ -1,6 +1,6 @@
 # Burgers 2D frozen-network multiresolution pilot
 
-This is an approved development pilot for the current coordinate-separable NM-ROM versus efficient FOM solvers. The bounded campaign is complete; audited development results and the cold-only diagnostic are generated in [the numerical report](reports/2026-09-07-burgers2d-multiresolution.md). The checkpoint and family are inherited from the consolidated branch; the validation cohort is new and the final cohort remains unopened.
+This is an approved development pilot for the current coordinate-separable NM-ROM versus efficient FOM solvers. The corrected full-rollout study is complete; audited development results are generated in [the numerical report](reports/2026-09-07-burgers2d-multiresolution.md). The checkpoint and family are inherited from the consolidated branch; the validation cohort is new and the final cohort remains unopened.
 
 The scalar PDE is
 
@@ -22,17 +22,17 @@ Compilation, bank/operator construction, quadrature fitting, memory, singular-va
 
 `cluster/stage.py` verifies every staged byte against a commit, `submit.sh` directly copies into a unique approved paralab attempt, and `collect.sh` checksums outputs and closed logs before deleting only that exact attempt directory. Job names begin with `ctol_` so the repository numeric cancellation guard applies.
 
-The complete-query pilot found no speed advantage over the eligible FOM envelope. The follow-up cold-only diagnostic identifies sampling-coordinate/objective drift and a growing frozen-bank projection floor under the full-grid initial-field norm. Fixed physical midpoint/Gauss sampling improves the initial fit; its corrected rollout accuracy and latency remain unmeasured. The fixed common observation grid omits additional fine nodes, so its error is distinct from complete-grid error. More starts and larger budgets do not establish a globally optimal fit or remove the bank floor. No sole-optimizer-basin explanation is supported.
+The complete-query pilot found no speed advantage over the eligible FOM envelope. The follow-up cold-only diagnostic identifies sampling-coordinate/objective drift and a growing frozen-bank projection floor under the full-grid initial-field norm. Fixed physical Gauss sampling now improves both initial fitting and finer-mesh full rollouts under the empirical development target; complete-query latency remains above the eligible FOM envelope. The fixed common observation grid omits additional fine nodes, so its error is distinct from complete-grid error. More starts and larger budgets do not establish a globally optimal fit or remove the bank floor. No sole-optimizer-basin explanation is supported.
 
-All jobs completed on the required GPU backend, their logs and checksums were audited, and their exact remote attempt directories were removed. [Campaign status](SUBMISSION.json) names the immutable sources and archives. The original query costs and errors remain paired within each invocation; the cold-only diagnostic never replaces their initial errors. Every retained observation field was independently audited. Fine full-grid cold error scalars and projection floors were computed in the job but cannot be independently reconstructed from the restricted field archive alone.
+All jobs completed on the required GPU backend, their logs and checksums were audited, and their exact remote attempt directories were removed. [Campaign status](SUBMISSION.json) names the immutable sources and archives. The query costs and errors remain paired within each invocation. The historical cold-only diagnostic never replaces rollout errors. The corrected rollout archive retains complete requested-grid fields and finer reference samples, so every complete/common-grid error is now independently audited. The older cold-only bank projection floors retain their separately labeled scalar-archive limitation.
 
 Reproduce the generated report with the local absolute Python environment:
 
 ```bash
-/home/tahmid/Dev/.venv/bin/python experiments/mr-burgers2d/reports/generate.py experiments/mr-burgers2d/runs/pilot02/out/pilot.json experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md --cold experiments/mr-burgers2d/runs/cold03/out/cold_fit.json
+/home/tahmid/Dev/.venv/bin/python experiments/mr-burgers2d/reports/generate_rollout.py experiments/mr-burgers2d/runs/rollout04 experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md
 ```
 
-`reports/audit.py` checks the saved complete-query fields; `reports/audit_cold.py` checks the cold-only fields, complete configuration coverage and source/case lineage. Both run without JAX. All final-cohort cases remain unopened, and mesh-specific weight retraining remains untested.
+`reports/audit_rollout.py` checks the corrected complete-query fields, dense hashes, configuration/repetition coverage and reference metrics; `reports/analyze_rollout.py` localizes initial/evolution errors from those saved fields. Earlier `audit.py` and `audit_cold.py` retain the historical checks. All run without JAX. All final-cohort cases remain unopened, and mesh-specific weight retraining remains untested.
 
 ## Plain-language glossary
 

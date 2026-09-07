@@ -1,0 +1,4044 @@
+{
+  "configurations": [
+    {
+      "name": "fom_L128_out256_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.016631648992188275,
+        "1": 0.0181711990153417,
+        "2": 0.019010812044143677,
+        "3": 0.017246671952307224
+      },
+      "ms": 17.70893548382446,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.010251323393450897,
+          "2": 0.05811260756816272,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05811260756816272,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.010251323393450897,
+          "2": 0.05811260756816272,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05811260756816272,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out256_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.01752726500853896,
+        "1": 0.018741452950052917,
+        "2": 0.01969295891467482,
+        "3": 0.0176275729900226
+      },
+      "ms": 18.18451297003776,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006173534156628433,
+          "1": 0.008867355691388384,
+          "2": 0.02943455904200588,
+          "3": 0.01573510909629777
+        },
+        "worst": 0.02943455904200588,
+        "median": 0.012301232393843077,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.006173534156628433,
+          "1": 0.008867355691388384,
+          "2": 0.02943455904200588,
+          "3": 0.01573510909629777
+        },
+        "worst": 0.02943455904200588,
+        "median": 0.012301232393843077,
+        "outliers_0p01": 2
+      }
+    },
+    {
+      "name": "rom_L256_edge_ic60_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.04018844594247639,
+        "1": 0.03652196400798857,
+        "2": 0.036830338067375124,
+        "3": 0.03373620402999222
+      },
+      "ms": 36.67615103768185,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 3,
+      "initial_improvement_stops": 9,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.012374129387342836,
+          "1": 0.013105574348547087,
+          "2": 0.04539875427830062,
+          "3": 0.028404349043086717
+        },
+        "worst": 0.04539875427830062,
+        "median": 0.020754961695816903,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.012374129387342836,
+          "1": 0.013105574348547087,
+          "2": 0.04539875427830062,
+          "3": 0.028404349043086717
+        },
+        "worst": 0.04539875427830062,
+        "median": 0.020754961695816903,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out256_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.03163520700763911,
+        "1": 0.03172914695460349,
+        "2": 0.03119463089387864,
+        "3": 0.03193698904942721
+      },
+      "ms": 31.6821769811213,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006942562972995007,
+          "1": 0.004460353183523567,
+          "2": 0.027217181068938334,
+          "3": 0.016505690863039785
+        },
+        "worst": 0.027217181068938334,
+        "median": 0.011724126918017396,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.006942562972995007,
+          "1": 0.004460353183523567,
+          "2": 0.027217181068938334,
+          "3": 0.016505690863039785
+        },
+        "worst": 0.027217181068938334,
+        "median": 0.011724126918017396,
+        "outliers_0p01": 2
+      }
+    },
+    {
+      "name": "fom_L128_out256_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.010370820993557572,
+        "1": 0.011948929051868618,
+        "2": 0.016730381059460342,
+        "3": 0.014598339912481606
+      },
+      "ms": 13.273634482175112,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.023257537858826127,
+          "2": 0.07306104809148177,
+          "3": 0.048200187725727
+        },
+        "worst": 0.07306104809148177,
+        "median": 0.035728862792276564,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.023257537858826127,
+          "2": 0.07306104809148177,
+          "3": 0.048200187725727
+        },
+        "worst": 0.07306104809148177,
+        "median": 0.035728862792276564,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out256_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.009538308950141072,
+        "1": 0.010328243020921946,
+        "2": 0.011271997937001288,
+        "3": 0.010225081932730973
+      },
+      "ms": 10.27666247682646,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.019275050915097774,
+          "2": 0.05795443538665323,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05795443538665323,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.019275050915097774,
+          "2": 0.05795443538665323,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05795443538665323,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out256_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.017436956986784935,
+        "1": 0.016761904931627214,
+        "2": 0.016788203036412597,
+        "3": 0.017874578945338726
+      },
+      "ms": 17.112580011598766,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006046226053803414,
+          "1": 0.010728396056871158,
+          "2": 0.024736873566385036,
+          "3": 0.01538673915075067
+        },
+        "worst": 0.024736873566385036,
+        "median": 0.013057567603810914,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.006046226053803414,
+          "1": 0.010728396056871158,
+          "2": 0.024736873566385036,
+          "3": 0.01538673915075067
+        },
+        "worst": 0.024736873566385036,
+        "median": 0.013057567603810914,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L256_fixed_gauss_ic180_dt0.005_stall0.001_starts1",
+      "method": "rom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.048341669025830925,
+        "1": 0.03866383899003267,
+        "2": 0.038366202963516116,
+        "3": 0.037709630909375846
+      },
+      "ms": 38.515020976774395,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.005,
+      "stall": 0.001,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.012908535505940595,
+          "1": 0.013112349987191508,
+          "2": 0.04554226731887367,
+          "3": 0.028777146529353148
+        },
+        "worst": 0.04554226731887367,
+        "median": 0.020944748258272326,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.012908535505940595,
+          "1": 0.013112349987191508,
+          "2": 0.04554226731887367,
+          "3": 0.028777146529353148
+        },
+        "worst": 0.04554226731887367,
+        "median": 0.020944748258272326,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "rom_L256_fixed_gauss_ic60_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.03961149405222386,
+        "1": 0.036755547975189984,
+        "2": 0.037280343007296324,
+        "3": 0.03566054499242455
+      },
+      "ms": 37.017945491243154,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 60,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 3,
+      "initial_improvement_stops": 9,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.011007205434356663,
+          "1": 0.013085102917544618,
+          "2": 0.04550700126195471,
+          "3": 0.028620634363356073
+        },
+        "worst": 0.04550700126195471,
+        "median": 0.020852868640450346,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.011007205434356663,
+          "1": 0.013085102917544618,
+          "2": 0.04550700126195471,
+          "3": 0.028620634363356073
+        },
+        "worst": 0.04550700126195471,
+        "median": 0.020852868640450346,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out256_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.030579712009057403,
+        "1": 0.029976640944369137,
+        "2": 0.029372205957770348,
+        "3": 0.03032396303024143
+      },
+      "ms": 30.150301987305284,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.007665982731683237,
+          "2": 0.05708145645933058,
+          "3": 0.03626108628649771
+        },
+        "worst": 0.05708145645933058,
+        "median": 0.027777284590907232,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.007665982731683237,
+          "2": 0.05708145645933058,
+          "3": 0.03626108628649771
+        },
+        "worst": 0.05708145645933058,
+        "median": 0.027777284590907232,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L128_out256_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.017100697965361178,
+        "1": 0.01650807005353272,
+        "2": 0.01621886109933257,
+        "3": 0.01659125497099012
+      },
+      "ms": 16.54966251226142,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.00915950356675247,
+          "2": 0.054827792241842456,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.054827792241842456,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.00915950356675247,
+          "2": 0.054827792241842456,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.054827792241842456,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L256_fixed_gauss_ic180_dt0.0025_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.06680973502807319,
+        "1": 0.059122886043041945,
+        "2": 0.05559508490841836,
+        "3": 0.05534797394648194
+      },
+      "ms": 57.35898547573015,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.0025,
+      "stall": 0.01,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 1200,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01106458807459291,
+          "1": 0.013020739867071324,
+          "2": 0.04163582771560162,
+          "3": 0.02562870770661062
+        },
+        "worst": 0.04163582771560162,
+        "median": 0.019324723786840973,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.01106458807459291,
+          "1": 0.013020739867071324,
+          "2": 0.04163582771560162,
+          "3": 0.02562870770661062
+        },
+        "worst": 0.04163582771560162,
+        "median": 0.019324723786840973,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out256_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.01042523595970124,
+        "1": 0.010620097978971899,
+        "2": 0.011965758982114494,
+        "3": 0.010710302041843534
+      },
+      "ms": 10.665200010407716,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.008736047462908394,
+          "1": 0.019163781029243973,
+          "2": 0.03616819325823788,
+          "3": 0.020934244174320004
+        },
+        "worst": 0.03616819325823788,
+        "median": 0.02004901260178199,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.008736047462908394,
+          "1": 0.019163781029243973,
+          "2": 0.03616819325823788,
+          "3": 0.020934244174320004
+        },
+        "worst": 0.03616819325823788,
+        "median": 0.02004901260178199,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L256_fixed_gauss_ic180_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.045817855978384614,
+        "1": 0.036896610050462186,
+        "2": 0.03700692602433264,
+        "3": 0.0353298420086503
+      },
+      "ms": 36.951768037397414,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.012899594514233143,
+          "1": 0.013085102917544618,
+          "2": 0.04550700126195471,
+          "3": 0.028620634363356073
+        },
+        "worst": 0.04550700126195471,
+        "median": 0.020852868640450346,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.012899594514233143,
+          "1": 0.013085102917544618,
+          "2": 0.04550700126195471,
+          "3": 0.028620634363356073
+        },
+        "worst": 0.04550700126195471,
+        "median": 0.020852868640450346,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out256_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 256,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.011303490959107876,
+        "1": 0.01327706198208034,
+        "2": 0.018436766928061843,
+        "3": 0.015512009034864604
+      },
+      "ms": 14.394535508472472,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.007889963290861886,
+          "1": 0.022771313104331125,
+          "2": 0.05054089157715715,
+          "3": 0.034831788074300034
+        },
+        "worst": 0.05054089157715715,
+        "median": 0.028801550589315578,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.007889963290861886,
+          "1": 0.022771313104331125,
+          "2": 0.05054089157715715,
+          "3": 0.034831788074300034
+        },
+        "worst": 0.05054089157715715,
+        "median": 0.028801550589315578,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L256_out512_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.011686132056638598,
+        "1": 0.01283686002716422,
+        "2": 0.01337743690237403,
+        "3": 0.01147840404883027
+      },
+      "ms": 12.26149604190141,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.008736047462908394,
+          "1": 0.019163781029243973,
+          "2": 0.03616819325823788,
+          "3": 0.020934244174320004
+        },
+        "worst": 0.03616819325823788,
+        "median": 0.02004901260178199,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.013646085538026386,
+          "1": 0.01914603133300923,
+          "2": 0.03627495049430578,
+          "3": 0.02520692103496644
+        },
+        "worst": 0.03627495049430578,
+        "median": 0.022176476183987832,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "rom_L512_fixed_gauss_ic180_dt0.0025_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.06654399388935417,
+        "1": 0.061523325042799115,
+        "2": 0.05742675601504743,
+        "3": 0.056328710983507335
+      },
+      "ms": 59.47504052892327,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.0025,
+      "stall": 0.01,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 1200,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.009024395757566323,
+          "1": 0.013019289000096064,
+          "2": 0.034482938694802824,
+          "3": 0.026150554549034446
+        },
+        "worst": 0.034482938694802824,
+        "median": 0.019584921774565254,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.012581488284596893,
+          "1": 0.013015672429318571,
+          "2": 0.03448412192073904,
+          "3": 0.03283585071342821
+        },
+        "worst": 0.03448412192073904,
+        "median": 0.022925761571373392,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out512_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.01788413990288973,
+        "1": 0.019712103996425867,
+        "2": 0.02098093496169895,
+        "3": 0.018646356998942792
+      },
+      "ms": 19.17923049768433,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.010251323393450897,
+          "2": 0.05811260756816272,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05811260756816272,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.025523055738214562,
+          "1": 0.010262884141245864,
+          "2": 0.0581537690995011,
+          "3": 0.04715696003469255
+        },
+        "worst": 0.0581537690995011,
+        "median": 0.03634000788645356,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L512_out512_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.026797355036251247,
+        "1": 0.029259893926791847,
+        "2": 0.03259603807236999,
+        "3": 0.028158609988167882
+      },
+      "ms": 28.709251957479864,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.004553721793665676,
+          "1": 0.009235216646558074,
+          "2": 0.019151430449025415,
+          "3": 0.010406822532595901
+        },
+        "worst": 0.019151430449025415,
+        "median": 0.009821019589576988,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.004552859467875149,
+          "1": 0.009235208809686946,
+          "2": 0.01915143044865507,
+          "3": 0.010400098135852581
+        },
+        "worst": 0.01915143044865507,
+        "median": 0.009817653472769763,
+        "outliers_0p01": 2
+      }
+    },
+    {
+      "name": "fom_L128_out512_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.018107146956026554,
+        "1": 0.018265736987814307,
+        "2": 0.018366309930570424,
+        "3": 0.018772521056234837
+      },
+      "ms": 18.316023459192365,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.00915950356675247,
+          "2": 0.054827792241842456,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.054827792241842456,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.025523055738214562,
+          "1": 0.009144627766731455,
+          "2": 0.05487061573759182,
+          "3": 0.04715696003469255
+        },
+        "worst": 0.05487061573759182,
+        "median": 0.03634000788645356,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L256_out512_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.012401242973282933,
+        "1": 0.014644605107605457,
+        "2": 0.019879000959917903,
+        "3": 0.01678926800377667
+      },
+      "ms": 15.716936555691063,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.007889963290861886,
+          "1": 0.022771313104331125,
+          "2": 0.05054089157715715,
+          "3": 0.034831788074300034
+        },
+        "worst": 0.05054089157715715,
+        "median": 0.028801550589315578,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.013646085538026386,
+          "1": 0.022759486420870955,
+          "2": 0.050598773710833087,
+          "3": 0.034857460274316195
+        },
+        "worst": 0.050598773710833087,
+        "median": 0.028808473347593573,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out512_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.011144976015202701,
+        "1": 0.012068742071278393,
+        "2": 0.012708371970802546,
+        "3": 0.012126388028264046
+      },
+      "ms": 12.09756504977122,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.019275050915097774,
+          "2": 0.05795443538665323,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05795443538665323,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.025523055738214562,
+          "1": 0.01926852903914395,
+          "2": 0.05798938065425259,
+          "3": 0.04715696003469255
+        },
+        "worst": 0.05798938065425259,
+        "median": 0.03634000788645356,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L512_out512_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.016054505947977304,
+        "1": 0.017002289067022502,
+        "2": 0.019547548959963024,
+        "3": 0.015968870953656733
+      },
+      "ms": 16.528397507499903,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.00954380902464396,
+          "1": 0.019558146067354367,
+          "2": 0.03304612711752491,
+          "3": 0.02189529377794388
+        },
+        "worst": 0.03304612711752491,
+        "median": 0.02072671992264912,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.009542001739683628,
+          "1": 0.019558129470593665,
+          "2": 0.033046127116885864,
+          "3": 0.02188114607421652
+        },
+        "worst": 0.033046127116885864,
+        "median": 0.02071963777240509,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L512_fixed_gauss_ic180_dt0.005_stall0.001_starts1",
+      "method": "rom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.04917498503345996,
+        "1": 0.04384203697554767,
+        "2": 0.04187500395346433,
+        "3": 0.037986192968674004
+      },
+      "ms": 42.858520464506,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.005,
+      "stall": 0.001,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.009810983722241973,
+          "1": 0.013019289000096064,
+          "2": 0.037160901415221916,
+          "3": 0.028008751848384188
+        },
+        "worst": 0.037160901415221916,
+        "median": 0.020514020424240127,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.012581488284596893,
+          "1": 0.013015672429318571,
+          "2": 0.03716185487744953,
+          "3": 0.03283585071342821
+        },
+        "worst": 0.03716185487744953,
+        "median": 0.022925761571373392,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "rom_L512_fixed_gauss_ic180_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.04550314601510763,
+        "1": 0.04052952292840928,
+        "2": 0.039483443018980324,
+        "3": 0.03626332897692919
+      },
+      "ms": 40.0064829736948,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.009815860114306902,
+          "1": 0.013019289000096064,
+          "2": 0.03713245395348607,
+          "3": 0.028308572734964375
+        },
+        "worst": 0.03713245395348607,
+        "median": 0.02066393086753022,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.012581488284596893,
+          "1": 0.013015672429318571,
+          "2": 0.037133407989122076,
+          "3": 0.03283585071342821
+        },
+        "worst": 0.037133407989122076,
+        "median": 0.022925761571373392,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out512_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.031878105946816504,
+        "1": 0.031696318998001516,
+        "2": 0.032021375955082476,
+        "3": 0.03197248897049576
+      },
+      "ms": 31.925297458656132,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.007665982731683237,
+          "2": 0.05708145645933058,
+          "3": 0.03626108628649771
+        },
+        "worst": 0.05708145645933058,
+        "median": 0.027777284590907232,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.025523055738214562,
+          "1": 0.007688426725634198,
+          "2": 0.057126196511429715,
+          "3": 0.04715696003469255
+        },
+        "worst": 0.057126196511429715,
+        "median": 0.03634000788645356,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.043793711927719414,
+        "1": 0.03980258805677295,
+        "2": 0.03954884805716574,
+        "3": 0.03588891797699034
+      },
+      "ms": 39.675718056969345,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 60,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 3,
+      "initial_improvement_stops": 9,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.009174043760286868,
+          "1": 0.013019289000096064,
+          "2": 0.03713245395348607,
+          "3": 0.028308572734964375
+        },
+        "worst": 0.03713245395348607,
+        "median": 0.02066393086753022,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.012963032901812636,
+          "1": 0.013015672429318571,
+          "2": 0.037133407989122076,
+          "3": 0.03283585071342821
+        },
+        "worst": 0.037133407989122076,
+        "median": 0.022925761571373392,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "rom_L512_edge_ic60_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.04146853997372091,
+        "1": 0.0400124549632892,
+        "2": 0.039509063004516065,
+        "3": 0.03506842802744359
+      },
+      "ms": 39.76075898390263,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 3,
+      "initial_improvement_stops": 9,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.025183060943564227,
+          "1": 0.013043200213451043,
+          "2": 0.03716674164736616,
+          "3": 0.05274054987202855
+        },
+        "worst": 0.05274054987202855,
+        "median": 0.031174901295465192,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.0256227715054352,
+          "1": 0.013035273115600696,
+          "2": 0.03716769365308211,
+          "3": 0.05467108986475144
+        },
+        "worst": 0.05467108986475144,
+        "median": 0.03139523257925866,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out512_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.019116439973004162,
+        "1": 0.020520736929029226,
+        "2": 0.022638678085058928,
+        "3": 0.019730776082724333
+      },
+      "ms": 20.12575650587678,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006173534156628433,
+          "1": 0.008867355691388384,
+          "2": 0.02943455904200588,
+          "3": 0.01573510909629777
+        },
+        "worst": 0.02943455904200588,
+        "median": 0.012301232393843077,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.013646085538026386,
+          "1": 0.008855116924329982,
+          "2": 0.029476284452088525,
+          "3": 0.02520692103496644
+        },
+        "worst": 0.029476284452088525,
+        "median": 0.019426503286496415,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L512_out512_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.02727360709104687,
+        "1": 0.026449683005921543,
+        "2": 0.02629053604323417,
+        "3": 0.0269457190297544
+      },
+      "ms": 26.69770101783797,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.004553721793665676,
+          "1": 0.01227478349412129,
+          "2": 0.020638062837743696,
+          "3": 0.012032104731252373
+        },
+        "worst": 0.020638062837743696,
+        "median": 0.012153444112686831,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.004552859467875149,
+          "1": 0.01227477307791757,
+          "2": 0.02063806283734459,
+          "3": 0.012024330153988303
+        },
+        "worst": 0.02063806283734459,
+        "median": 0.012149551615952936,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L128_out512_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.011986554018221796,
+        "1": 0.01384995598345995,
+        "2": 0.018190891947597265,
+        "3": 0.016540591954253614
+      },
+      "ms": 15.195273968856782,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.023257537858826127,
+          "2": 0.07306104809148177,
+          "3": 0.048200187725727
+        },
+        "worst": 0.07306104809148177,
+        "median": 0.035728862792276564,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.025523055738214562,
+          "1": 0.02325498560375945,
+          "2": 0.07311454012803895,
+          "3": 0.04821642174097379
+        },
+        "worst": 0.07311454012803895,
+        "median": 0.03686973873959418,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out512_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.018870122963562608,
+        "1": 0.018885403987951577,
+        "2": 0.019338738988153636,
+        "3": 0.01903044304344803
+      },
+      "ms": 18.957923515699804,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006046226053803414,
+          "1": 0.010728396056871158,
+          "2": 0.024736873566385036,
+          "3": 0.01538673915075067
+        },
+        "worst": 0.024736873566385036,
+        "median": 0.013057567603810914,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.013646085538026386,
+          "1": 0.010693350786929063,
+          "2": 0.024780394507324166,
+          "3": 0.02520692103496644
+        },
+        "worst": 0.02520692103496644,
+        "median": 0.019213240022675278,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L512_out512_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.04829839803278446,
+        "1": 0.048321128939278424,
+        "2": 0.048373806988820434,
+        "3": 0.04868528398219496
+      },
+      "ms": 48.34746796404943,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.0028082226131268787,
+          "1": 0.0052997503615089476,
+          "2": 0.011342446184722924,
+          "3": 0.0069489674085865755
+        },
+        "worst": 0.011342446184722924,
+        "median": 0.0061243588850477615,
+        "outliers_0p01": 1
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.0028076908277816746,
+          "1": 0.005299745864218298,
+          "2": 0.011342446184503533,
+          "3": 0.006944477314363287
+        },
+        "worst": 0.011342446184503533,
+        "median": 0.006122111589290793,
+        "outliers_0p01": 1
+      }
+    },
+    {
+      "name": "fom_L512_out512_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.016791166039183736,
+        "1": 0.02013144502416253,
+        "2": 0.028581172926351428,
+        "3": 0.024357498972676694
+      },
+      "ms": 22.244471998419613,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.007745401379173384,
+          "1": 0.022901603268544114,
+          "2": 0.04168594733850748,
+          "3": 0.027933519999771304
+        },
+        "worst": 0.04168594733850748,
+        "median": 0.02541756163415771,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.007743934653785506,
+          "1": 0.022901583834573018,
+          "2": 0.04168594733770137,
+          "3": 0.02791547067975691
+        },
+        "worst": 0.04168594733770137,
+        "median": 0.025408527257164963,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L256_out512_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 512,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.032981756958179176,
+        "1": 0.03292181994765997,
+        "2": 0.03311943891458213,
+        "3": 0.03311869397293776
+      },
+      "ms": 33.05022546555847,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006942562972995007,
+          "1": 0.004460353183523567,
+          "2": 0.027217181068938334,
+          "3": 0.016505690863039785
+        },
+        "worst": 0.027217181068938334,
+        "median": 0.011724126918017396,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.013646085538026386,
+          "1": 0.004448172928308621,
+          "2": 0.027266914351436168,
+          "3": 0.02520692103496644
+        },
+        "worst": 0.027266914351436168,
+        "median": 0.019426503286496415,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L512_out1024_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.03951731696724892,
+        "1": 0.03967546205967665,
+        "2": 0.03904610394965857,
+        "3": 0.039450504002161324
+      },
+      "ms": 39.48391048470512,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.004553721793665676,
+          "1": 0.01227478349412129,
+          "2": 0.020638062837743696,
+          "3": 0.012032104731252373
+        },
+        "worst": 0.020638062837743696,
+        "median": 0.012153444112686831,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.009649582414698519,
+          "1": 0.012264586476424305,
+          "2": 0.020614127355711335,
+          "3": 0.017819003045385057
+        },
+        "worst": 0.020614127355711335,
+        "median": 0.01504179476090468,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.06032935797702521,
+        "1": 0.0547744850628078,
+        "2": 0.0550331479171291,
+        "3": 0.05025694495998323
+      },
+      "ms": 54.90381648996845,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.010495824067219392,
+          "1": 0.013019449845225047,
+          "2": 0.03501425498852439,
+          "3": 0.03910892209779746
+        },
+        "worst": 0.03910892209779746,
+        "median": 0.024016852416874717,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.016289100365910067,
+          "1": 0.013028026922542518,
+          "2": 0.035015236477470624,
+          "3": 0.03907620325223174
+        },
+        "worst": 0.03907620325223174,
+        "median": 0.025652168421690345,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L1024_out1024_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.07504328002687544,
+        "1": 0.0808115330291912,
+        "2": 0.09243355097714812,
+        "3": 0.0774535199161619
+      },
+      "ms": 79.13252647267655,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.005133887740598506,
+          "1": 0.009683668621396116,
+          "2": 0.016565590865781094,
+          "3": 0.01133396903465451
+        },
+        "worst": 0.016565590865781094,
+        "median": 0.010508818828025313,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.005132433591983312,
+          "1": 0.009683656398914742,
+          "2": 0.016565590865307293,
+          "3": 0.011323018755074545
+        },
+        "worst": 0.016565590865307293,
+        "median": 0.010503337576994645,
+        "outliers_0p01": 2
+      }
+    },
+    {
+      "name": "fom_L128_out1024_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.024372193031013012,
+        "1": 0.024895214941352606,
+        "2": 0.0250934399664402,
+        "3": 0.024315082002431154
+      },
+      "ms": 24.63370398618281,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.019275050915097774,
+          "2": 0.05795443538665323,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05795443538665323,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.028535061477547002,
+          "1": 0.01926688415761418,
+          "2": 0.05799809897956864,
+          "3": 0.052707165490335224
+        },
+        "worst": 0.05799809897956864,
+        "median": 0.04062111348394111,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out1024_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.02479396795388311,
+        "1": 0.027312585967592895,
+        "2": 0.03237301204353571,
+        "3": 0.02954872406553477
+      },
+      "ms": 28.430655016563833,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.007889963290861886,
+          "1": 0.022771313104331125,
+          "2": 0.05054089157715715,
+          "3": 0.034831788074300034
+        },
+        "worst": 0.05054089157715715,
+        "median": 0.028801550589315578,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.018051441083779946,
+          "1": 0.022756515617858807,
+          "2": 0.050613208134021384,
+          "3": 0.034858316234526725
+        },
+        "worst": 0.050613208134021384,
+        "median": 0.028807415926192764,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L256_out1024_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.03150170994922519,
+        "1": 0.03171826002653688,
+        "2": 0.03154602902941406,
+        "3": 0.031212265021167696
+      },
+      "ms": 31.523869489319623,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006046226053803414,
+          "1": 0.010728396056871158,
+          "2": 0.024736873566385036,
+          "3": 0.01538673915075067
+        },
+        "worst": 0.024736873566385036,
+        "median": 0.013057567603810914,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.018051441083779946,
+          "1": 0.010684551005338643,
+          "2": 0.024791222470104693,
+          "3": 0.033335810486694456
+        },
+        "worst": 0.033335810486694456,
+        "median": 0.021421331776942318,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L1024_out1024_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.04724540701135993,
+        "1": 0.05032355501316488,
+        "2": 0.056418620981276035,
+        "3": 0.04727023805025965
+      },
+      "ms": 48.796896531712264,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.010430672092280989,
+          "1": 0.019866151822202166,
+          "2": 0.02891918263337723,
+          "3": 0.0236094805152957
+        },
+        "worst": 0.02891918263337723,
+        "median": 0.02173781616874893,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.010427717655374898,
+          "1": 0.019866126747647983,
+          "2": 0.02891918263255008,
+          "3": 0.023586670287781757
+        },
+        "worst": 0.02891918263255008,
+        "median": 0.021726398517714872,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out1024_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.024265307001769543,
+        "1": 0.027208267943933606,
+        "2": 0.031195673043839633,
+        "3": 0.028528586961328983
+      },
+      "ms": 27.868427452631295,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.023257537858826127,
+          "2": 0.07306104809148177,
+          "3": 0.048200187725727
+        },
+        "worst": 0.07306104809148177,
+        "median": 0.035728862792276564,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.028535061477547002,
+          "1": 0.02325433441713746,
+          "2": 0.07312789063375308,
+          "3": 0.052707165490335224
+        },
+        "worst": 0.07312789063375308,
+        "median": 0.04062111348394111,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L1024_out1024_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.04894836898893118,
+        "1": 0.05892455508001149,
+        "2": 0.08312496694270521,
+        "3": 0.07124407810624689
+      },
+      "ms": 65.08431659312919,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.00849299269993261,
+          "1": 0.023063601584422982,
+          "2": 0.03812569544963901,
+          "3": 0.02477380938720231
+        },
+        "worst": 0.03812569544963901,
+        "median": 0.023918705485812645,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.008490587101250505,
+          "1": 0.023063572474128095,
+          "2": 0.03812569544854853,
+          "3": 0.024749874246915243
+        },
+        "worst": 0.03812569544854853,
+        "median": 0.02390672336052167,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L256_out1024_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.025032798992469907,
+        "1": 0.02606504806317389,
+        "2": 0.026993136038072407,
+        "3": 0.02453368401620537
+      },
+      "ms": 25.5489235278219,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.008736047462908394,
+          "1": 0.019163781029243973,
+          "2": 0.03616819325823788,
+          "3": 0.020934244174320004
+        },
+        "worst": 0.03616819325823788,
+        "median": 0.02004901260178199,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.018051441083779946,
+          "1": 0.01914157722428131,
+          "2": 0.036301526502395313,
+          "3": 0.033335810486694456
+        },
+        "worst": 0.036301526502395313,
+        "median": 0.026238693855487882,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L1024_out1024_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.07554842892568558,
+        "1": 0.074402438942343,
+        "2": 0.07477695099078119,
+        "3": 0.0751579130301252
+      },
+      "ms": 74.9674320104532,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.005133887740598506,
+          "1": 0.013227534849771315,
+          "2": 0.02389936524556968,
+          "3": 0.013306154857719016
+        },
+        "worst": 0.02389936524556968,
+        "median": 0.013266844853745165,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.005132433591983312,
+          "1": 0.013227518154311429,
+          "2": 0.023899365244886107,
+          "3": 0.013293299156827636
+        },
+        "worst": 0.023899365244886107,
+        "median": 0.013260408655569532,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L512_out1024_dt0.01_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.029508128063753247,
+        "1": 0.03007011697627604,
+        "2": 0.03286808601114899,
+        "3": 0.029187630978412926
+      },
+      "ms": 29.789122520014644,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.00954380902464396,
+          "1": 0.019558146067354367,
+          "2": 0.03304612711752491,
+          "3": 0.02189529377794388
+        },
+        "worst": 0.03304612711752491,
+        "median": 0.02072671992264912,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.009649582414698519,
+          "1": 0.01955234324758017,
+          "2": 0.03307222867921171,
+          "3": 0.021861669015238415
+        },
+        "worst": 0.03307222867921171,
+        "median": 0.020707006131409293,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L256_out1024_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.032382166013121605,
+        "1": 0.03269856201950461,
+        "2": 0.03514081798493862,
+        "3": 0.03197016101330519
+      },
+      "ms": 32.540364016313106,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006173534156628433,
+          "1": 0.008867355691388384,
+          "2": 0.02943455904200588,
+          "3": 0.01573510909629777
+        },
+        "worst": 0.02943455904200588,
+        "median": 0.012301232393843077,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.018051441083779946,
+          "1": 0.00885203064051089,
+          "2": 0.029486673412523045,
+          "3": 0.033335810486694456
+        },
+        "worst": 0.033335810486694456,
+        "median": 0.023769057248151496,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L512_out1024_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.061951410956680775,
+        "1": 0.06170873797964305,
+        "2": 0.06120071897748858,
+        "3": 0.06091053504496813
+      },
+      "ms": 61.45472847856581,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.0028082226131268787,
+          "1": 0.0052997503615089476,
+          "2": 0.011342446184722924,
+          "3": 0.0069489674085865755
+        },
+        "worst": 0.011342446184722924,
+        "median": 0.0061243588850477615,
+        "outliers_0p01": 1
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.009649582414698519,
+          "1": 0.0052913291791117575,
+          "2": 0.011353532442072385,
+          "3": 0.017819003045385057
+        },
+        "worst": 0.017819003045385057,
+        "median": 0.010501557428385452,
+        "outliers_0p01": 2
+      }
+    },
+    {
+      "name": "fom_L512_out1024_dt0.01_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.02977230795659125,
+        "1": 0.03426002699416131,
+        "2": 0.04145908902864903,
+        "3": 0.03689486894290894
+      },
+      "ms": 35.577447968535125,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.01,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.007745401379173384,
+          "1": 0.022901603268544114,
+          "2": 0.04168594733850748,
+          "3": 0.027933519999771304
+        },
+        "worst": 0.04168594733850748,
+        "median": 0.02541756163415771,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.009649582414698519,
+          "1": 0.02289743480691954,
+          "2": 0.0417088762527433,
+          "3": 0.02791816676225349
+        },
+        "worst": 0.0417088762527433,
+        "median": 0.025407800784586515,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L1024_fixed_gauss_ic180_dt0.0025_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.08053514698985964,
+        "1": 0.07603897992521524,
+        "2": 0.07248827291186899,
+        "3": 0.07118045701645315
+      },
+      "ms": 74.26362641854212,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.0025,
+      "stall": 0.01,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 1200,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.009826402456741209,
+          "1": 0.013019449845225047,
+          "2": 0.03362619528278989,
+          "3": 0.03710933567426542
+        },
+        "worst": 0.03710933567426542,
+        "median": 0.02332282256400747,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.016289100365910067,
+          "1": 0.013028026922542518,
+          "2": 0.033627447317402144,
+          "3": 0.03856220012580149
+        },
+        "worst": 0.03856220012580149,
+        "median": 0.024958273841656105,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L512_out1024_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 512,
+      "times": {
+        "0": 0.04025744693353772,
+        "1": 0.0407654830487445,
+        "2": 0.045261855935677886,
+        "3": 0.04028013104107231
+      },
+      "ms": 40.522807044908404,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.004553721793665676,
+          "1": 0.009235216646558074,
+          "2": 0.019151430449025415,
+          "3": 0.010406822532595901
+        },
+        "worst": 0.019151430449025415,
+        "median": 0.009821019589576988,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.009649582414698519,
+          "1": 0.009229032914714642,
+          "2": 0.019179618390586826,
+          "3": 0.017819003045385057
+        },
+        "worst": 0.019179618390586826,
+        "median": 0.013734292730041788,
+        "outliers_0p01": 2
+      }
+    },
+    {
+      "name": "rom_L1024_fixed_gauss_ic60_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.058204069966450334,
+        "1": 0.05539714498445392,
+        "2": 0.05677272297907621,
+        "3": 0.05026807694230229
+      },
+      "ms": 56.08493398176506,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 60,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 3,
+      "initial_improvement_stops": 9,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.010013520821980605,
+          "1": 0.013019449845225047,
+          "2": 0.03501425498852439,
+          "3": 0.03910892209779746
+        },
+        "worst": 0.03910892209779746,
+        "median": 0.024016852416874717,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.01655923842638187,
+          "1": 0.013028026922542518,
+          "2": 0.035015236477470624,
+          "3": 0.03907620325223174
+        },
+        "worst": 0.03907620325223174,
+        "median": 0.025787237451926247,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L1024_out1024_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.13264742691535503,
+        "1": 0.13110581506043673,
+        "2": 0.1314181899651885,
+        "3": 0.13190451101399958
+      },
+      "ms": 131.66135048959404,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.002428989392962685,
+          "1": 0.006147690031578221,
+          "2": 0.010487768182251994,
+          "3": 0.0063546701168871724
+        },
+        "worst": 0.010487768182251994,
+        "median": 0.006251180074232697,
+        "outliers_0p01": 1
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.002428301393593091,
+          "1": 0.006147682272119542,
+          "2": 0.010487768181952017,
+          "3": 0.006348530571751725
+        },
+        "worst": 0.010487768181952017,
+        "median": 0.006248106421935634,
+        "outliers_0p01": 1
+      }
+    },
+    {
+      "name": "fom_L128_out1024_dt0.005_ntol0.01",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.03103485400788486,
+        "1": 0.0309751060558483,
+        "2": 0.031205291976220906,
+        "3": 0.031015346059575677
+      },
+      "ms": 31.02510003373027,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.00915950356675247,
+          "2": 0.054827792241842456,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.054827792241842456,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.028535061477547002,
+          "1": 0.009140881727247013,
+          "2": 0.054881299732699965,
+          "3": 0.052707165490335224
+        },
+        "worst": 0.054881299732699965,
+        "median": 0.04062111348394111,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "rom_L1024_fixed_gauss_ic180_dt0.005_stall0.001_starts1",
+      "method": "rom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.06368514010682702,
+        "1": 0.058004181017167866,
+        "2": 0.05649540899321437,
+        "3": 0.05021571496035904
+      },
+      "ms": 57.24979500519112,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "dt": 0.005,
+      "stall": 0.001,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 12,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.010496613778598682,
+          "1": 0.013019449845225047,
+          "2": 0.03501405952362276,
+          "3": 0.03889607369722563
+        },
+        "worst": 0.03889607369722563,
+        "median": 0.024016754684423904,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.016289100365910067,
+          "1": 0.013028026922542518,
+          "2": 0.03501504098715405,
+          "3": 0.03886344412734122
+        },
+        "worst": 0.03886344412734122,
+        "median": 0.02565207067653206,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "rom_L1024_edge_ic60_dt0.005_stall0.01_starts1",
+      "method": "rom",
+      "intervals": 1024,
+      "solver_intervals": 1024,
+      "times": {
+        "0": 0.060402145027182996,
+        "1": 0.05444014898966998,
+        "2": 0.05434325500391424,
+        "3": 0.05025853298138827
+      },
+      "ms": 54.39170199679211,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "dt": 0.005,
+      "stall": 0.01,
+      "initial_budget_stops": 3,
+      "initial_improvement_stops": 9,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 600,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.05031010674039875,
+          "1": 0.013374917222627045,
+          "2": 0.03502701291400925,
+          "3": 0.08497163947830301
+        },
+        "worst": 0.08497163947830301,
+        "median": 0.042668559827204,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.05047602681223671,
+          "1": 0.013357991842765074,
+          "2": 0.035027990853301064,
+          "3": 0.08695336903464104
+        },
+        "worst": 0.08695336903464104,
+        "median": 0.04275200883276889,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out1024_dt0.005_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.03092286898754537,
+        "1": 0.03209302690811455,
+        "2": 0.03376322204712778,
+        "3": 0.03186988492961973
+      },
+      "ms": 31.98145591886714,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.005,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.010251323393450897,
+          "2": 0.05811260756816272,
+          "3": 0.03566807007658123
+        },
+        "worst": 0.05811260756816272,
+        "median": 0.027480776485948988,
+        "outliers_0p01": 4
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.028535061477547002,
+          "1": 0.010265751131014758,
+          "2": 0.05816403954532803,
+          "3": 0.052707165490335224
+        },
+        "worst": 0.05816403954532803,
+        "median": 0.04062111348394111,
+        "outliers_0p01": 4
+      }
+    },
+    {
+      "name": "fom_L128_out1024_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 128,
+      "times": {
+        "0": 0.044139516074210405,
+        "1": 0.04496632900554687,
+        "2": 0.043927235994488,
+        "3": 0.04477308294735849
+      },
+      "ms": 44.45629951078445,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.01929348289531675,
+          "1": 0.007665982731683237,
+          "2": 0.05708145645933058,
+          "3": 0.03626108628649771
+        },
+        "worst": 0.05708145645933058,
+        "median": 0.027777284590907232,
+        "outliers_0p01": 3
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.028535061477547002,
+          "1": 0.007694018079830957,
+          "2": 0.05713736004350888,
+          "3": 0.052707165490335224
+        },
+        "worst": 0.05713736004350888,
+        "median": 0.04062111348394111,
+        "outliers_0p01": 3
+      }
+    },
+    {
+      "name": "fom_L256_out1024_dt0.0025_ntol0.003",
+      "method": "fom",
+      "intervals": 1024,
+      "solver_intervals": 256,
+      "times": {
+        "0": 0.04662203893531114,
+        "1": 0.046124216984026134,
+        "2": 0.04558886808808893,
+        "3": 0.04545299301389605
+      },
+      "ms": 45.85654253605753,
+      "valid": true,
+      "timing_outliers_gt2x_case_median": 0,
+      "cold_rule": null,
+      "ic_budget": null,
+      "dt": 0.0025,
+      "stall": null,
+      "initial_budget_stops": 0,
+      "initial_improvement_stops": 0,
+      "evolution_budget_stops": 0,
+      "evolution_improvement_stops": 0,
+      "failed_invocations": 0,
+      "common": {
+        "case_errors": {
+          "0": 0.006942562972995007,
+          "1": 0.004460353183523567,
+          "2": 0.027217181068938334,
+          "3": 0.016505690863039785
+        },
+        "worst": 0.027217181068938334,
+        "median": 0.011724126918017396,
+        "outliers_0p01": 2
+      },
+      "dense": {
+        "case_errors": {
+          "0": 0.018051441083779946,
+          "1": 0.0044450777640369955,
+          "2": 0.027279296853110927,
+          "3": 0.033335810486694456
+        },
+        "worst": 0.033335810486694456,
+        "median": 0.022665368968445437,
+        "outliers_0p01": 3
+      }
+    }
+  ],
+  "selections": [
+    {
+      "norm": "common",
+      "intervals": 256,
+      "target": 0.1,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L256_edge_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 256,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.04018844594247639,
+          "1": 0.03652196400798857,
+          "2": 0.036830338067375124,
+          "3": 0.03373620402999222
+        },
+        "ms": 36.67615103768185,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "edge",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L128_out256_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 256,
+        "solver_intervals": 128,
+        "times": {
+          "0": 0.009538308950141072,
+          "1": 0.010328243020921946,
+          "2": 0.011271997937001288,
+          "3": 0.010225081932730973
+        },
+        "ms": 10.27666247682646,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.2929423366551859,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 256,
+      "target": 0.05,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L256_edge_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 256,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.04018844594247639,
+          "1": 0.03652196400798857,
+          "2": 0.036830338067375124,
+          "3": 0.03373620402999222
+        },
+        "ms": 36.67615103768185,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "edge",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L256_out256_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 256,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.01042523595970124,
+          "1": 0.010620097978971899,
+          "2": 0.011965758982114494,
+          "3": 0.010710302041843534
+        },
+        "ms": 10.665200010407716,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        }
+      },
+      "paired_ratio": 0.30412933108695733,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 256,
+      "target": 0.01,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": false,
+      "rom": null,
+      "fom": null,
+      "paired_ratio": null,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 512,
+      "target": 0.1,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 512,
+        "solver_intervals": 512,
+        "times": {
+          "0": 0.043793711927719414,
+          "1": 0.03980258805677295,
+          "2": 0.03954884805716574,
+          "3": 0.03588891797699034
+        },
+        "ms": 39.675718056969345,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "fixed_gauss",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.009174043760286868,
+            "1": 0.013019289000096064,
+            "2": 0.03713245395348607,
+            "3": 0.028308572734964375
+          },
+          "worst": 0.03713245395348607,
+          "median": 0.02066393086753022,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012963032901812636,
+            "1": 0.013015672429318571,
+            "2": 0.037133407989122076,
+            "3": 0.03283585071342821
+          },
+          "worst": 0.037133407989122076,
+          "median": 0.022925761571373392,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L128_out512_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 512,
+        "solver_intervals": 128,
+        "times": {
+          "0": 0.011144976015202701,
+          "1": 0.012068742071278393,
+          "2": 0.012708371970802546,
+          "3": 0.012126388028264046
+        },
+        "ms": 12.09756504977122,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.025523055738214562,
+            "1": 0.01926852903914395,
+            "2": 0.05798938065425259,
+            "3": 0.04715696003469255
+          },
+          "worst": 0.05798938065425259,
+          "median": 0.03634000788645356,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.3122742820507729,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 512,
+      "target": 0.05,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 512,
+        "solver_intervals": 512,
+        "times": {
+          "0": 0.043793711927719414,
+          "1": 0.03980258805677295,
+          "2": 0.03954884805716574,
+          "3": 0.03588891797699034
+        },
+        "ms": 39.675718056969345,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "fixed_gauss",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.009174043760286868,
+            "1": 0.013019289000096064,
+            "2": 0.03713245395348607,
+            "3": 0.028308572734964375
+          },
+          "worst": 0.03713245395348607,
+          "median": 0.02066393086753022,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012963032901812636,
+            "1": 0.013015672429318571,
+            "2": 0.037133407989122076,
+            "3": 0.03283585071342821
+          },
+          "worst": 0.037133407989122076,
+          "median": 0.022925761571373392,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L256_out512_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 512,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.011686132056638598,
+          "1": 0.01283686002716422,
+          "2": 0.01337743690237403,
+          "3": 0.01147840404883027
+        },
+        "ms": 12.26149604190141,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.013646085538026386,
+            "1": 0.01914603133300923,
+            "2": 0.03627495049430578,
+            "3": 0.02520692103496644
+          },
+          "worst": 0.03627495049430578,
+          "median": 0.022176476183987832,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.32117231607685703,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 512,
+      "target": 0.01,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": false,
+      "rom": null,
+      "fom": null,
+      "paired_ratio": null,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 1024,
+      "target": 0.1,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L1024_edge_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 1024,
+        "solver_intervals": 1024,
+        "times": {
+          "0": 0.060402145027182996,
+          "1": 0.05444014898966998,
+          "2": 0.05434325500391424,
+          "3": 0.05025853298138827
+        },
+        "ms": 54.39170199679211,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "edge",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.05031010674039875,
+            "1": 0.013374917222627045,
+            "2": 0.03502701291400925,
+            "3": 0.08497163947830301
+          },
+          "worst": 0.08497163947830301,
+          "median": 0.042668559827204,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.05047602681223671,
+            "1": 0.013357991842765074,
+            "2": 0.035027990853301064,
+            "3": 0.08695336903464104
+          },
+          "worst": 0.08695336903464104,
+          "median": 0.04275200883276889,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L128_out1024_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 1024,
+        "solver_intervals": 128,
+        "times": {
+          "0": 0.024372193031013012,
+          "1": 0.024895214941352606,
+          "2": 0.0250934399664402,
+          "3": 0.024315082002431154
+        },
+        "ms": 24.63370398618281,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.028535061477547002,
+            "1": 0.01926688415761418,
+            "2": 0.05799809897956864,
+            "3": 0.052707165490335224
+          },
+          "worst": 0.05799809897956864,
+          "median": 0.04062111348394111,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.4595266308257044,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 1024,
+      "target": 0.05,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 1024,
+        "solver_intervals": 1024,
+        "times": {
+          "0": 0.06032935797702521,
+          "1": 0.0547744850628078,
+          "2": 0.0550331479171291,
+          "3": 0.05025694495998323
+        },
+        "ms": 54.90381648996845,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "fixed_gauss",
+        "ic_budget": 180,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 12,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.010495824067219392,
+            "1": 0.013019449845225047,
+            "2": 0.03501425498852439,
+            "3": 0.03910892209779746
+          },
+          "worst": 0.03910892209779746,
+          "median": 0.024016852416874717,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.016289100365910067,
+            "1": 0.013028026922542518,
+            "2": 0.035015236477470624,
+            "3": 0.03907620325223174
+          },
+          "worst": 0.03907620325223174,
+          "median": 0.025652168421690345,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L256_out1024_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 1024,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.025032798992469907,
+          "1": 0.02606504806317389,
+          "2": 0.026993136038072407,
+          "3": 0.02453368401620537
+        },
+        "ms": 25.5489235278219,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.018051441083779946,
+            "1": 0.01914157722428131,
+            "2": 0.036301526502395313,
+            "3": 0.033335810486694456
+          },
+          "worst": 0.036301526502395313,
+          "median": 0.026238693855487882,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.4820130869878014,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "common",
+      "intervals": 1024,
+      "target": 0.01,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": false,
+      "rom": null,
+      "fom": null,
+      "paired_ratio": null,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 256,
+      "target": 0.1,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L256_edge_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 256,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.04018844594247639,
+          "1": 0.03652196400798857,
+          "2": 0.036830338067375124,
+          "3": 0.03373620402999222
+        },
+        "ms": 36.67615103768185,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "edge",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L128_out256_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 256,
+        "solver_intervals": 128,
+        "times": {
+          "0": 0.009538308950141072,
+          "1": 0.010328243020921946,
+          "2": 0.011271997937001288,
+          "3": 0.010225081932730973
+        },
+        "ms": 10.27666247682646,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.2929423366551859,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 256,
+      "target": 0.05,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L256_edge_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 256,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.04018844594247639,
+          "1": 0.03652196400798857,
+          "2": 0.036830338067375124,
+          "3": 0.03373620402999222
+        },
+        "ms": 36.67615103768185,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "edge",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012374129387342836,
+            "1": 0.013105574348547087,
+            "2": 0.04539875427830062,
+            "3": 0.028404349043086717
+          },
+          "worst": 0.04539875427830062,
+          "median": 0.020754961695816903,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L256_out256_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 256,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.01042523595970124,
+          "1": 0.010620097978971899,
+          "2": 0.011965758982114494,
+          "3": 0.010710302041843534
+        },
+        "ms": 10.665200010407716,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        }
+      },
+      "paired_ratio": 0.30412933108695733,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 256,
+      "target": 0.01,
+      "reference_margin": 0.003736669160624032,
+      "empirical_reference_budget_passed": false,
+      "rom": null,
+      "fom": null,
+      "paired_ratio": null,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 512,
+      "target": 0.1,
+      "reference_margin": 0.003736669160551792,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 512,
+        "solver_intervals": 512,
+        "times": {
+          "0": 0.043793711927719414,
+          "1": 0.03980258805677295,
+          "2": 0.03954884805716574,
+          "3": 0.03588891797699034
+        },
+        "ms": 39.675718056969345,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "fixed_gauss",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.009174043760286868,
+            "1": 0.013019289000096064,
+            "2": 0.03713245395348607,
+            "3": 0.028308572734964375
+          },
+          "worst": 0.03713245395348607,
+          "median": 0.02066393086753022,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012963032901812636,
+            "1": 0.013015672429318571,
+            "2": 0.037133407989122076,
+            "3": 0.03283585071342821
+          },
+          "worst": 0.037133407989122076,
+          "median": 0.022925761571373392,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L128_out512_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 512,
+        "solver_intervals": 128,
+        "times": {
+          "0": 0.011144976015202701,
+          "1": 0.012068742071278393,
+          "2": 0.012708371970802546,
+          "3": 0.012126388028264046
+        },
+        "ms": 12.09756504977122,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.025523055738214562,
+            "1": 0.01926852903914395,
+            "2": 0.05798938065425259,
+            "3": 0.04715696003469255
+          },
+          "worst": 0.05798938065425259,
+          "median": 0.03634000788645356,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.3122742820507729,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 512,
+      "target": 0.05,
+      "reference_margin": 0.003736669160551792,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 512,
+        "solver_intervals": 512,
+        "times": {
+          "0": 0.043793711927719414,
+          "1": 0.03980258805677295,
+          "2": 0.03954884805716574,
+          "3": 0.03588891797699034
+        },
+        "ms": 39.675718056969345,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "fixed_gauss",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.009174043760286868,
+            "1": 0.013019289000096064,
+            "2": 0.03713245395348607,
+            "3": 0.028308572734964375
+          },
+          "worst": 0.03713245395348607,
+          "median": 0.02066393086753022,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.012963032901812636,
+            "1": 0.013015672429318571,
+            "2": 0.037133407989122076,
+            "3": 0.03283585071342821
+          },
+          "worst": 0.037133407989122076,
+          "median": 0.022925761571373392,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L256_out512_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 512,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.011686132056638598,
+          "1": 0.01283686002716422,
+          "2": 0.01337743690237403,
+          "3": 0.01147840404883027
+        },
+        "ms": 12.26149604190141,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.013646085538026386,
+            "1": 0.01914603133300923,
+            "2": 0.03627495049430578,
+            "3": 0.02520692103496644
+          },
+          "worst": 0.03627495049430578,
+          "median": 0.022176476183987832,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.32117231607685703,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 512,
+      "target": 0.01,
+      "reference_margin": 0.003736669160551792,
+      "empirical_reference_budget_passed": false,
+      "rom": null,
+      "fom": null,
+      "paired_ratio": null,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 1024,
+      "target": 0.1,
+      "reference_margin": 0.0037366691605171818,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L1024_edge_ic60_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 1024,
+        "solver_intervals": 1024,
+        "times": {
+          "0": 0.060402145027182996,
+          "1": 0.05444014898966998,
+          "2": 0.05434325500391424,
+          "3": 0.05025853298138827
+        },
+        "ms": 54.39170199679211,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "edge",
+        "ic_budget": 60,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 3,
+        "initial_improvement_stops": 9,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.05031010674039875,
+            "1": 0.013374917222627045,
+            "2": 0.03502701291400925,
+            "3": 0.08497163947830301
+          },
+          "worst": 0.08497163947830301,
+          "median": 0.042668559827204,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.05047602681223671,
+            "1": 0.013357991842765074,
+            "2": 0.035027990853301064,
+            "3": 0.08695336903464104
+          },
+          "worst": 0.08695336903464104,
+          "median": 0.04275200883276889,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L128_out1024_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 1024,
+        "solver_intervals": 128,
+        "times": {
+          "0": 0.024372193031013012,
+          "1": 0.024895214941352606,
+          "2": 0.0250934399664402,
+          "3": 0.024315082002431154
+        },
+        "ms": 24.63370398618281,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.01929348289531675,
+            "1": 0.019275050915097774,
+            "2": 0.05795443538665323,
+            "3": 0.03566807007658123
+          },
+          "worst": 0.05795443538665323,
+          "median": 0.027480776485948988,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.028535061477547002,
+            "1": 0.01926688415761418,
+            "2": 0.05799809897956864,
+            "3": 0.052707165490335224
+          },
+          "worst": 0.05799809897956864,
+          "median": 0.04062111348394111,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.4595266308257044,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 1024,
+      "target": 0.05,
+      "reference_margin": 0.0037366691605171818,
+      "empirical_reference_budget_passed": true,
+      "rom": {
+        "name": "rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1",
+        "method": "rom",
+        "intervals": 1024,
+        "solver_intervals": 1024,
+        "times": {
+          "0": 0.06032935797702521,
+          "1": 0.0547744850628078,
+          "2": 0.0550331479171291,
+          "3": 0.05025694495998323
+        },
+        "ms": 54.90381648996845,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": "fixed_gauss",
+        "ic_budget": 180,
+        "dt": 0.005,
+        "stall": 0.01,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 12,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 600,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.010495824067219392,
+            "1": 0.013019449845225047,
+            "2": 0.03501425498852439,
+            "3": 0.03910892209779746
+          },
+          "worst": 0.03910892209779746,
+          "median": 0.024016852416874717,
+          "outliers_0p01": 4
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.016289100365910067,
+            "1": 0.013028026922542518,
+            "2": 0.035015236477470624,
+            "3": 0.03907620325223174
+          },
+          "worst": 0.03907620325223174,
+          "median": 0.025652168421690345,
+          "outliers_0p01": 4
+        }
+      },
+      "fom": {
+        "name": "fom_L256_out1024_dt0.01_ntol0.01",
+        "method": "fom",
+        "intervals": 1024,
+        "solver_intervals": 256,
+        "times": {
+          "0": 0.025032798992469907,
+          "1": 0.02606504806317389,
+          "2": 0.026993136038072407,
+          "3": 0.02453368401620537
+        },
+        "ms": 25.5489235278219,
+        "valid": true,
+        "timing_outliers_gt2x_case_median": 0,
+        "cold_rule": null,
+        "ic_budget": null,
+        "dt": 0.01,
+        "stall": null,
+        "initial_budget_stops": 0,
+        "initial_improvement_stops": 0,
+        "evolution_budget_stops": 0,
+        "evolution_improvement_stops": 0,
+        "failed_invocations": 0,
+        "common": {
+          "case_errors": {
+            "0": 0.008736047462908394,
+            "1": 0.019163781029243973,
+            "2": 0.03616819325823788,
+            "3": 0.020934244174320004
+          },
+          "worst": 0.03616819325823788,
+          "median": 0.02004901260178199,
+          "outliers_0p01": 3
+        },
+        "dense": {
+          "case_errors": {
+            "0": 0.018051441083779946,
+            "1": 0.01914157722428131,
+            "2": 0.036301526502395313,
+            "3": 0.033335810486694456
+          },
+          "worst": 0.036301526502395313,
+          "median": 0.026238693855487882,
+          "outliers_0p01": 4
+        }
+      },
+      "paired_ratio": 0.4820130869878014,
+      "rigorous_reference_bound": null
+    },
+    {
+      "norm": "dense",
+      "intervals": 1024,
+      "target": 0.01,
+      "reference_margin": 0.0037366691605171818,
+      "empirical_reference_budget_passed": false,
+      "rom": null,
+      "fom": null,
+      "paired_ratio": null,
+      "rigorous_reference_bound": null
+    }
+  ]
+}

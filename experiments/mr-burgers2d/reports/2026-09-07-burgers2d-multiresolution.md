@@ -1,234 +1,234 @@
-# Burgers 2D frozen-network resolution transfer and complete-query cost
+# Burgers 2D: fixed physical initialization in the complete query
 
-Development results; the frozen-network ROM does not establish a complete-query advantage over the efficient FOM envelope. All tables are generated from saved invocation records, and physical-error qualifications remain empirical rather than certified.
+Audited development results for unchanged coordinate-separable network weights across the requested meshes. No tested configuration establishes a complete-query ROM advantage over the eligible efficient FOM envelope.
 
-Source commit `9a2025c1f0624db91fb8ecbcfef0d0d433373187`, job `3350134`, GPU `NVIDIA A100 80GB PCIe`. Backend `gpu`, f64 `True`, matmul precision `highest`. Checkpoint SHA-256 `18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589`.
+At 1024 intervals, the primary fixed-Gauss rollout lowers worst complete-grid error from 0.08695337 to 0.0390762, with complete-query costs 54.3917 and 54.9038 ms respectively. It meets the empirical development target in the selection table; the unchanged efficient FOM envelope remains cheaper.
 
-The frozen checkpoint was trained on 255 intervals (256 nodes per axis). The new validation seed is 7090702, with 4 physical cases; the final cohort is unopened.
+Source `d73fb4119057d4826c783d02829dd08835fe7a24`, job `3352857`, GPU `NVIDIA A100 80GB PCIe`; backend `gpu`, f64 `True`, precision `highest`. Checkpoint SHA-256 `18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589`.
 
-The query starts with a dense initial field in host memory and ends with all requested dense fields in host memory. Input handling, cold fitting, evolution, output reconstruction/interpolation and transfers are included. Compilation and reusable setup are separate. FOM candidates use sign-upwind backward Euler with adaptive Newton/BiCGStab and FFT sine-transform Helmholtz preconditioning. ROM quadrature retains sign-dependent upwinding on decoded undershoots.
+The clipped Gaussian family and seed 7090702 retain all 4 physical cases. Each configuration has 3 timing repetitions; final cases remain unopened. The inherited checkpoint was trained on 255 intervals and is evaluated at 256,512,1024 intervals.
 
-## Reference refinement
+The scalar equation is $u_t+u(u_x+u_y)=\nu\Delta u$ on the unit square, with zero Dirichlet walls. Both methods use backward Euler and sign-dependent upwinding. The FOM uses adaptive Newton/BiCGStab with exact Helmholtz preconditioning through FFT sine transforms.
 
-The finest reference uses 4096 intervals and timestep 0.0003125. The largest final nonlinear relative residual over all saved reference solves is 9.25201e-12.
+The query starts with the supplied dense host field and viscosity, and ends with all requested dense host fields. Fixed Gauss sampling charges bilinear interpolation from that input. Weak evolution, sign-dependent upwinding and nonnegative advection quadrature remain unchanged. Initial fit, evolution, input/output transfers and requested dense reconstruction are included in query cost. Setup and compilation are separate.
 
-| Case | Spatial difference | Time difference | Sum estimate |
-|---|---:|---:|---:|
-| 0 | 0.000598323 | 0.000378638 | 0.000976961 |
-| 1 | 0.000349528 | 0.000869916 | 0.00121944 |
-| 2 | 0.00226861 | 0.00133939 | 0.003608 |
-| 3 | 0.00137635 | 0.000889014 | 0.00226536 |
+Output times are [0, 0.05, 0.1, 0.15, 0.2, 0.25]. The common-grid metric observes 256 intervals; the complete-grid metric scores every node on the requested mesh. Both divide by the initial reference-field norm. Configuration cost is the median of per-case repetition medians. Each paired ratio is the median of per-case FOM/ROM median-time ratios from this job. GPU burn-in precedes every timed call, and the recorded configuration-order seed is 89004.
 
-| Case | Observed spatial order | Observed time order | Empirical Richardson estimate |
-|---|---:|---:|---:|
-| 0 | 0.9938 | 0.9923 | 0.000985155 |
-| 1 | 0.9946 | 0.9852 | 0.00123919 |
-| 2 | 0.9737 | 0.9702 | 0.00373667 |
-| 3 | 0.9868 | 0.9820 | 0.0023078 |
+## Initial fitting and subsequent evolution
 
-The worst empirical additive margin is 0.00373667; it passes the reference budget for target 0.05 and does not pass the budget for target 0.01. Eligibility additionally requires the measured case error plus this margin to meet the target.
+The table scores actual returned fields. Initial and later errors use the same initial-field normalization. A later error increase does not by itself isolate spatial representation, the nonlinear head, quadrature or optimization.
 
-These are differences between independently converged refinement levels, not rigorous continuum-error bounds. The physical norm uses exact nested-node restriction onto the observation grid and the initial-state reference norm. Current-field normalization is reported separately.
+| Intervals | ROM setting | Query ms | Initial complete-grid worst | Later complete-grid worst | Complete-grid same-mesh worst | Current-relative complete-grid worst | IC budget / improvement stops | Evolution budget / improvement stops |
+|---|---|---:|---:|---:|---:|---:|---|---|
+| 256 | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | 36.6762 | 0.026004511 | 0.045398754 | 0.026004511 | 0.058684175 | 3 / 9 | 0 / 600 |
+| 256 | `rom_L256_fixed_gauss_ic180_dt0.0025_stall0.01_starts1` | 57.3590 | 0.025628708 | 0.041635828 | 0.025628708 | 0.052333088 | 0 / 12 | 0 / 1200 |
+| 256 | `rom_L256_fixed_gauss_ic180_dt0.005_stall0.001_starts1` | 38.5150 | 0.025628708 | 0.045542267 | 0.025628708 | 0.058871669 | 0 / 12 | 0 / 600 |
+| 256 | `rom_L256_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 36.9518 | 0.025628708 | 0.045507001 | 0.025628708 | 0.058806982 | 0 / 12 | 0 / 600 |
+| 256 | `rom_L256_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 37.0179 | 0.025628708 | 0.045507001 | 0.025628708 | 0.058806982 | 3 / 9 | 0 / 600 |
+| 512 | `rom_L512_edge_ic60_dt0.005_stall0.01_starts1` | 39.7608 | 0.05467109 | 0.043777122 | 0.05467109 | 0.05467109 | 3 / 9 | 0 / 600 |
+| 512 | `rom_L512_fixed_gauss_ic180_dt0.0025_stall0.01_starts1` | 59.4750 | 0.032835851 | 0.034484122 | 0.032835851 | 0.043208555 | 0 / 12 | 0 / 1200 |
+| 512 | `rom_L512_fixed_gauss_ic180_dt0.005_stall0.001_starts1` | 42.8585 | 0.032835851 | 0.037161855 | 0.032835851 | 0.046563751 | 0 / 12 | 0 / 600 |
+| 512 | `rom_L512_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 40.0065 | 0.032835851 | 0.037133408 | 0.032835851 | 0.046528107 | 0 / 12 | 0 / 600 |
+| 512 | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 39.6757 | 0.032835851 | 0.037133408 | 0.032835851 | 0.046528107 | 3 / 9 | 0 / 600 |
+| 1024 | `rom_L1024_edge_ic60_dt0.005_stall0.01_starts1` | 54.3917 | 0.086953369 | 0.066847426 | 0.086953369 | 0.086953369 | 3 / 9 | 0 / 600 |
+| 1024 | `rom_L1024_fixed_gauss_ic180_dt0.0025_stall0.01_starts1` | 74.2636 | 0.0385622 | 0.037079305 | 0.0385622 | 0.042135143 | 0 / 12 | 0 / 1200 |
+| 1024 | `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.001_starts1` | 57.2498 | 0.0385622 | 0.038863444 | 0.0385622 | 0.043873796 | 0 / 12 | 0 / 600 |
+| 1024 | `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 54.9038 | 0.0385622 | 0.039076203 | 0.0385622 | 0.043874041 | 0 / 12 | 0 / 600 |
+| 1024 | `rom_L1024_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 56.0849 | 0.0385622 | 0.039076203 | 0.0385622 | 0.043874041 | 3 / 9 | 0 / 600 |
 
-## Mesh setup
+## Reference refinement and empirical eligibility
 
-| Intervals | Interior unknowns | K / R / M / m | Sampled bank rank | Setup s | Stored arrays MiB | Quadrature fit |
-|---|---:|---|---:|---:|---:|---:|
-| 256 | 65025 | 16 / 512 / 64 / 256 | 512 | 30.848 | 303.477 | 0.0051591 |
-| 512 | 261121 | 16 / 512 / 64 / 256 | 512 | 25.041 | 1069.477 | 0.00515699 |
-| 1024 | 1046529 | 16 / 512 / 64 / 256 | 512 | 26.242 | 4137.477 | 0.0073836 |
+The finest reference has 4096 intervals and timestep 0.0003125. The largest reference nonlinear relative residual is 9.252006e-12. Spatial and temporal orders are observed from three levels; the margin is the larger of their raw-difference sum and the Richardson estimate for each case. Qualification also requires this margin to be at most one tenth of the target. These estimates do not supply a rigorous reference bound.
 
-## Measured configurations
+| Scoring intervals | Worst empirical margin | Minimum / maximum spatial order | Minimum / maximum time order |
+|---|---:|---|---|
+| 256 | 0.0037366692 | 0.97372 / 0.99459 | 0.97016 / 0.99226 |
+| 512 | 0.0037366692 | 0.97372 / 0.99459 | 0.97016 / 0.99226 |
+| 1024 | 0.0037366692 | 0.97372 / 0.99459 | 0.97016 / 0.99226 |
+
+Every eligible case must satisfy measured error plus its reference margin at the target. The FOM envelope retains all declared coarse solves and the same-mesh solve, charging output interpolation. Configurations may be selected separately for each metric and requested resolution.
+
+| Norm | Output intervals | Target | Reference budget | Selected ROM | Selected FOM | ROM / FOM ms | Paired FOM/ROM |
+|---|---:|---:|---|---|---|---|---:|
+| common | 256 | 0.1 | empirical pass | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | `fom_L128_out256_dt0.01_ntol0.01` | 36.6762 / 10.2767 | 0.29294 |
+| common | 256 | 0.05 | empirical pass | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | `fom_L256_out256_dt0.01_ntol0.01` | 36.6762 / 10.6652 | 0.30413 |
+| common | 256 | 0.01 | unresolved | `unattained` | `unattained` | — / — | — |
+| common | 512 | 0.1 | empirical pass | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | `fom_L128_out512_dt0.01_ntol0.01` | 39.6757 / 12.0976 | 0.31227 |
+| common | 512 | 0.05 | empirical pass | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | `fom_L256_out512_dt0.01_ntol0.01` | 39.6757 / 12.2615 | 0.32117 |
+| common | 512 | 0.01 | unresolved | `unattained` | `unattained` | — / — | — |
+| common | 1024 | 0.1 | empirical pass | `rom_L1024_edge_ic60_dt0.005_stall0.01_starts1` | `fom_L128_out1024_dt0.01_ntol0.01` | 54.3917 / 24.6337 | 0.45953 |
+| common | 1024 | 0.05 | empirical pass | `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | `fom_L256_out1024_dt0.01_ntol0.01` | 54.9038 / 25.5489 | 0.48201 |
+| common | 1024 | 0.01 | unresolved | `unattained` | `unattained` | — / — | — |
+| dense | 256 | 0.1 | empirical pass | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | `fom_L128_out256_dt0.01_ntol0.01` | 36.6762 / 10.2767 | 0.29294 |
+| dense | 256 | 0.05 | empirical pass | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | `fom_L256_out256_dt0.01_ntol0.01` | 36.6762 / 10.6652 | 0.30413 |
+| dense | 256 | 0.01 | unresolved | `unattained` | `unattained` | — / — | — |
+| dense | 512 | 0.1 | empirical pass | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | `fom_L128_out512_dt0.01_ntol0.01` | 39.6757 / 12.0976 | 0.31227 |
+| dense | 512 | 0.05 | empirical pass | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | `fom_L256_out512_dt0.01_ntol0.01` | 39.6757 / 12.2615 | 0.32117 |
+| dense | 512 | 0.01 | unresolved | `unattained` | `unattained` | — / — | — |
+| dense | 1024 | 0.1 | empirical pass | `rom_L1024_edge_ic60_dt0.005_stall0.01_starts1` | `fom_L128_out1024_dt0.01_ntol0.01` | 54.3917 / 24.6337 | 0.45953 |
+| dense | 1024 | 0.05 | empirical pass | `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | `fom_L256_out1024_dt0.01_ntol0.01` | 54.9038 / 25.5489 | 0.48201 |
+| dense | 1024 | 0.01 | unresolved | `unattained` | `unattained` | — / — | — |
 
 ![Complete-query accuracy and cost](accuracy-cost.svg)
 
-Errors are maximum-in-observation-time values, aggregated over every declared case and repetition. A configured budget exit is retained as an early stop; a small-step/relative-improvement stop is not a stationarity certificate. Failed/nonfinite solver stops are excluded from target eligibility. Outliers count cases above relative error 0.01. Failed invocations are retained. Wall times are medians over all cases/repetitions in the same job.
+## Where the primary Gauss error appears
 
-| Configuration | Query ms | Physical median | Physical worst | Current-relative worst | Same-grid worst | Outliers | Failed invocations | IC budget / stall | LM budget / stall |
-|---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| `fom_L128_out256_dt0.01_ntol0.01` | 9.975 | 0.0274808 | 0.0579544 | 0.0819259 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out256_dt0.01_ntol0.01` | 10.359 | 0.020049 | 0.0361682 | 0.0423984 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out256_dt0.01_ntol0.003` | 13.311 | 0.0357289 | 0.073061 | 0.102169 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out256_dt0.01_ntol0.003` | 14.081 | 0.0288016 | 0.0505409 | 0.0702504 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out256_dt0.005_ntol0.01` | 16.639 | 0.0274808 | 0.0548278 | 0.077506 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out256_dt0.005_ntol0.01` | 17.190 | 0.0130576 | 0.0247369 | 0.0349687 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out256_dt0.005_ntol0.003` | 17.660 | 0.0274808 | 0.0581126 | 0.0821495 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out256_dt0.005_ntol0.003` | 18.302 | 0.0123012 | 0.0294346 | 0.0416095 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out256_dt0.0025_ntol0.003` | 30.405 | 0.0277773 | 0.0570815 | 0.0806919 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out256_dt0.0025_ntol0.003` | 31.325 | 0.0117241 | 0.0272172 | 0.0384749 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `rom_L256_dt0.005_stall0.01_starts1` | 36.418 | 0.020755 | 0.0453988 | 0.0586842 | 0.0260045 | 4 / 4 | 0 | 3 / 9 | 0 / 600 |
-| `rom_L256_dt0.005_stall0.01_starts4` | 38.717 | 0.0208767 | 0.0453989 | 0.0586842 | 0.0260048 | 4 / 4 | 0 | 0 / 12 | 0 / 600 |
-| `rom_L256_dt0.005_stall0.001_starts1` | 38.967 | 0.0209095 | 0.0454302 | 0.0587421 | 0.0260045 | 4 / 4 | 0 | 3 / 9 | 0 / 600 |
-| `rom_L256_dt0.005_stall0.001_starts4` | 41.193 | 0.0210266 | 0.0454303 | 0.0587422 | 0.0260048 | 4 / 4 | 0 | 0 / 12 | 0 / 600 |
-| `rom_L256_dt0.0025_stall0.01_starts1` | 56.427 | 0.0195388 | 0.0415383 | 0.0522023 | 0.0260045 | 4 / 4 | 0 | 3 / 9 | 0 / 1200 |
-| `rom_L256_dt0.0025_stall0.001_starts1` | 58.129 | 0.0195388 | 0.0415534 | 0.0522256 | 0.0260045 | 4 / 4 | 0 | 3 / 9 | 0 / 1200 |
-| `rom_L256_dt0.0025_stall0.01_starts4` | 58.999 | 0.0195389 | 0.0415385 | 0.0522023 | 0.0260048 | 4 / 4 | 0 | 0 / 12 | 0 / 1200 |
-| `rom_L256_dt0.0025_stall0.001_starts4` | 60.286 | 0.0195389 | 0.0415535 | 0.0522257 | 0.0260048 | 4 / 4 | 0 | 0 / 12 | 0 / 1200 |
-| `fom_L256_out512_dt0.01_ntol0.01` | 12.140 | 0.020049 | 0.0361682 | 0.0423984 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out512_dt0.01_ntol0.01` | 12.236 | 0.0274808 | 0.0579544 | 0.0819259 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out512_dt0.01_ntol0.003` | 15.540 | 0.0357289 | 0.073061 | 0.102169 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out512_dt0.01_ntol0.003` | 15.825 | 0.0288016 | 0.0505409 | 0.0702504 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out512_dt0.01_ntol0.01` | 16.739 | 0.0207267 | 0.0330461 | 0.0385881 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out512_dt0.005_ntol0.01` | 18.713 | 0.0274808 | 0.0548278 | 0.077506 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out512_dt0.005_ntol0.01` | 19.202 | 0.0130576 | 0.0247369 | 0.0349687 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out512_dt0.005_ntol0.003` | 19.801 | 0.0274808 | 0.0581126 | 0.0821495 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out512_dt0.005_ntol0.003` | 20.006 | 0.0123012 | 0.0294346 | 0.0416095 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out512_dt0.01_ntol0.003` | 22.841 | 0.0254176 | 0.0416859 | 0.0527866 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out512_dt0.005_ntol0.01` | 27.059 | 0.0121534 | 0.0206381 | 0.0240991 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out512_dt0.005_ntol0.003` | 28.524 | 0.00982102 | 0.0191514 | 0.0220206 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out512_dt0.0025_ntol0.003` | 32.382 | 0.0277773 | 0.0570815 | 0.0806919 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out512_dt0.0025_ntol0.003` | 32.951 | 0.0117241 | 0.0272172 | 0.0384749 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out512_dt0.0025_ntol0.003` | 48.840 | 0.00612436 | 0.0113424 | 0.016034 | — | 1 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `rom_L512_dt0.005_stall0.01_starts1` | 39.980 | 0.0311749 | 0.0527405 | 0.0527405 | 0.0527405 | 4 / 4 | 0 | 3 / 9 | 0 / 600 |
-| `rom_L512_dt0.005_stall0.01_starts4` | 42.713 | 0.0310307 | 0.0527411 | 0.0527411 | 0.0527411 | 4 / 4 | 0 | 0 / 12 | 0 / 600 |
-| `rom_L512_dt0.005_stall0.001_starts1` | 43.232 | 0.0311896 | 0.0527405 | 0.0527405 | 0.0527405 | 4 / 4 | 0 | 3 / 9 | 0 / 600 |
-| `rom_L512_dt0.005_stall0.001_starts4` | 45.100 | 0.0310454 | 0.0527411 | 0.0527411 | 0.0527411 | 4 / 4 | 0 | 0 / 12 | 0 / 600 |
-| `rom_L512_dt0.0025_stall0.01_starts1` | 60.091 | 0.0298578 | 0.0527405 | 0.0527405 | 0.0527405 | 4 / 4 | 0 | 3 / 9 | 0 / 1200 |
-| `rom_L512_dt0.0025_stall0.001_starts1` | 60.463 | 0.0298646 | 0.0527405 | 0.0527405 | 0.0527405 | 4 / 4 | 0 | 3 / 9 | 0 / 1200 |
-| `rom_L512_dt0.0025_stall0.01_starts4` | 62.342 | 0.0297138 | 0.0527411 | 0.0527411 | 0.0527411 | 4 / 4 | 0 | 0 / 12 | 0 / 1200 |
-| `rom_L512_dt0.0025_stall0.001_starts4` | 62.705 | 0.0297206 | 0.0527411 | 0.0527411 | 0.0527411 | 4 / 4 | 0 | 0 / 12 | 0 / 1200 |
-| `fom_L128_out1024_dt0.01_ntol0.01` | 24.969 | 0.0274808 | 0.0579544 | 0.0819259 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out1024_dt0.01_ntol0.01` | 25.047 | 0.020049 | 0.0361682 | 0.0423984 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out1024_dt0.01_ntol0.003` | 28.401 | 0.0357289 | 0.073061 | 0.102169 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out1024_dt0.01_ntol0.003` | 28.517 | 0.0288016 | 0.0505409 | 0.0702504 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out1024_dt0.01_ntol0.01` | 29.686 | 0.0207267 | 0.0330461 | 0.0385881 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out1024_dt0.005_ntol0.01` | 31.251 | 0.0274808 | 0.0548278 | 0.077506 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out1024_dt0.005_ntol0.01` | 31.698 | 0.0130576 | 0.0247369 | 0.0349687 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out1024_dt0.005_ntol0.003` | 32.535 | 0.0123012 | 0.0294346 | 0.0416095 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out1024_dt0.005_ntol0.003` | 32.569 | 0.0274808 | 0.0581126 | 0.0821495 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out1024_dt0.01_ntol0.003` | 35.548 | 0.0254176 | 0.0416859 | 0.0527866 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out1024_dt0.005_ntol0.01` | 39.647 | 0.0121534 | 0.0206381 | 0.0240991 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out1024_dt0.005_ntol0.003` | 41.455 | 0.00982102 | 0.0191514 | 0.0220206 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L128_out1024_dt0.0025_ntol0.003` | 45.089 | 0.0277773 | 0.0570815 | 0.0806919 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L256_out1024_dt0.0025_ntol0.003` | 46.198 | 0.0117241 | 0.0272172 | 0.0384749 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L1024_out1024_dt0.01_ntol0.01` | 48.842 | 0.0217378 | 0.0289192 | 0.033769 | — | 4 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L512_out1024_dt0.0025_ntol0.003` | 61.829 | 0.00612436 | 0.0113424 | 0.016034 | — | 1 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L1024_out1024_dt0.01_ntol0.003` | 64.619 | 0.0239187 | 0.0381257 | 0.0451372 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L1024_out1024_dt0.005_ntol0.01` | 73.728 | 0.0132668 | 0.0238994 | 0.0279074 | — | 3 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L1024_out1024_dt0.005_ntol0.003` | 77.762 | 0.0105088 | 0.0165656 | 0.0180387 | — | 2 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `fom_L1024_out1024_dt0.0025_ntol0.003` | 128.985 | 0.00625118 | 0.0104878 | 0.0122466 | — | 1 / 4 | 0 | 0 / 0 | 0 / 0 |
-| `rom_L1024_dt0.005_stall0.01_starts1` | 55.544 | 0.0426686 | 0.0849716 | 0.0849716 | 0.0849716 | 4 / 4 | 0 | 3 / 9 | 0 / 600 |
-| `rom_L1024_dt0.005_stall0.01_starts4` | 57.045 | 0.042426 | 0.0849689 | 0.0849689 | 0.0849689 | 4 / 4 | 0 | 0 / 12 | 0 / 600 |
-| `rom_L1024_dt0.005_stall0.001_starts1` | 57.356 | 0.0426685 | 0.0849716 | 0.0849716 | 0.0849716 | 4 / 4 | 0 | 3 / 9 | 0 / 600 |
-| `rom_L1024_dt0.005_stall0.001_starts4` | 59.487 | 0.0424259 | 0.0849689 | 0.0849689 | 0.0849689 | 4 / 4 | 0 | 0 / 12 | 0 / 600 |
-| `rom_L1024_dt0.0025_stall0.01_starts1` | 74.549 | 0.0419788 | 0.0849716 | 0.0849716 | 0.0849716 | 4 / 4 | 0 | 3 / 9 | 0 / 1200 |
-| `rom_L1024_dt0.0025_stall0.001_starts1` | 76.541 | 0.0419846 | 0.0849716 | 0.0849716 | 0.0849716 | 4 / 4 | 0 | 3 / 9 | 0 / 1200 |
-| `rom_L1024_dt0.0025_stall0.01_starts4` | 76.672 | 0.0417366 | 0.0849689 | 0.0849689 | 0.0849689 | 4 / 4 | 0 | 0 / 12 | 0 / 1200 |
-| `rom_L1024_dt0.0025_stall0.001_starts4` | 78.056 | 0.0417423 | 0.0849689 | 0.0849689 | 0.0849689 | 4 / 4 | 0 | 0 / 12 | 0 / 1200 |
+The primary corrected setting uses the predeclared larger fitting budget with one start and the original loose evolution threshold. This table distinguishes an initial target miss from a miss that appears later. A configured improvement stop is not a stationary or globally optimal fit.
 
-## Target-qualified validation selections
+| Intervals | Case | Initial complete-grid error | Later complete-grid maximum | Time of maximum |
+|---|---:|---:|---:|---:|
+| 256 | 0 | 0.0083172873 | 0.012899595 | 0.25 |
+| 256 | 1 | 0.01302074 | 0.013085103 | 0.05 |
+| 256 | 2 | 0.015053412 | 0.045507001 | 0.15 |
+| 256 | 3 | 0.025628708 | 0.028620634 | 0.25 |
+| 512 | 0 | 0.012581488 | 0.0098268462 | 0 |
+| 512 | 1 | 0.013015672 | 0.01281491 | 0 |
+| 512 | 2 | 0.015055721 | 0.037133408 | 0.15 |
+| 512 | 3 | 0.032835851 | 0.028292717 | 0 |
+| 1024 | 0 | 0.0162891 | 0.010502314 | 0 |
+| 1024 | 1 | 0.013028027 | 0.012954762 | 0 |
+| 1024 | 2 | 0.01505597 | 0.035015236 | 0.15 |
+| 1024 | 3 | 0.0385622 | 0.039076203 | 0.05 |
 
-Both methods may choose a configuration within the declared pilot search, using the pooled median over all case/repetition query times shown above. This native selection statistic differs from taking the median of per-case medians; the final speed ratio itself uses per-case paired medians. Eligibility includes the measured reference estimate as an additive error margin. The margin is the larger of the raw spatial-plus-time difference and the empirical Richardson estimate. The FOM envelope includes coarser solves with aligned interpolation to the same requested dense output. Solver choices are tuned per resolution; both neural networks remain frozen. This does not test retraining benefits.
+The next diagnostic uses the same saved primary fields. The near-wall band contains nodes closer to a wall than the training mesh first interior node. Its squared-error fraction locates the error; it does not independently measure a bank projection floor.
 
-| Output intervals | Target | Qualification | Selected ROM | Selected FOM envelope | Envelope speedup |
-|---|---:|---|---|---|---:|
-| 256 | 0.1 | provisional refinement budget passed | rom_L256_dt0.005_stall0.01_starts1 | fom_L128_out256_dt0.01_ntol0.01 | 0.275x |
-| 256 | 0.05 | provisional refinement budget passed | rom_L256_dt0.005_stall0.01_starts1 | fom_L256_out256_dt0.01_ntol0.01 | 0.287x |
-| 256 | 0.01 | unresolved reference uncertainty/order; ROM target unattained; FOM target unattained | — | — | — |
-| 256 | 0.001 | unresolved reference uncertainty/order; ROM target unattained; FOM target unattained | — | — | — |
-| 512 | 0.1 | provisional refinement budget passed | rom_L512_dt0.005_stall0.01_starts1 | fom_L256_out512_dt0.01_ntol0.01 | 0.324x |
-| 512 | 0.05 | provisional refinement budget passed; ROM target unattained | — | fom_L256_out512_dt0.01_ntol0.01 | — |
-| 512 | 0.01 | unresolved reference uncertainty/order; ROM target unattained; FOM target unattained | — | — | — |
-| 512 | 0.001 | unresolved reference uncertainty/order; ROM target unattained; FOM target unattained | — | — | — |
-| 1024 | 0.1 | provisional refinement budget passed | rom_L1024_dt0.005_stall0.01_starts1 | fom_L128_out1024_dt0.01_ntol0.01 | 0.456x |
-| 1024 | 0.05 | provisional refinement budget passed; ROM target unattained | — | fom_L256_out1024_dt0.01_ntol0.01 | — |
-| 1024 | 0.01 | unresolved reference uncertainty/order; ROM target unattained; FOM target unattained | — | — | — |
-| 1024 | 0.001 | unresolved reference uncertainty/order; ROM target unattained; FOM target unattained | — | — | — |
+| Intervals | Case | Cold rule | Initial near-wall squared-error fraction | Target | Target diagnosis |
+|---|---:|---|---:|---:|---|
+| 256 | 0 | edge | 0.05412623 | 0.05 | measured error plus margin meets target |
+| 256 | 0 | fixed_gauss | 0.179391 | 0.05 | measured error plus margin meets target |
+| 256 | 1 | edge | 0.0105309 | 0.05 | measured error plus margin meets target |
+| 256 | 1 | fixed_gauss | 0.01614473 | 0.05 | measured error plus margin meets target |
+| 256 | 2 | edge | 0.008698409 | 0.05 | measured error plus margin meets target |
+| 256 | 2 | fixed_gauss | 0.00889775 | 0.05 | measured error plus margin meets target |
+| 256 | 3 | edge | 0.1202537 | 0.05 | measured error plus margin meets target |
+| 256 | 3 | fixed_gauss | 0.1717976 | 0.05 | measured error plus margin meets target |
+| 512 | 0 | edge | 0.1504951 | 0.05 | measured error plus margin meets target |
+| 512 | 0 | fixed_gauss | 0.555251 | 0.05 | measured error plus margin meets target |
+| 512 | 1 | edge | 0.01452451 | 0.05 | measured error plus margin meets target |
+| 512 | 1 | fixed_gauss | 0.01158765 | 0.05 | measured error plus margin meets target |
+| 512 | 2 | edge | 0.007215595 | 0.05 | measured error plus margin meets target |
+| 512 | 2 | fixed_gauss | 0.00722158 | 0.05 | measured error plus margin meets target |
+| 512 | 3 | edge | 0.1673018 | 0.05 | initial field already exceeds target |
+| 512 | 3 | fixed_gauss | 0.4416153 | 0.05 | measured error plus margin meets target |
+| 1024 | 0 | edge | 0.1549664 | 0.05 | initial field already exceeds target |
+| 1024 | 0 | fixed_gauss | 0.7082176 | 0.05 | measured error plus margin meets target |
+| 1024 | 1 | edge | 0.02539713 | 0.05 | measured error plus margin meets target |
+| 1024 | 1 | fixed_gauss | 0.01117442 | 0.05 | measured error plus margin meets target |
+| 1024 | 2 | edge | 0.006191251 | 0.05 | measured error plus margin meets target |
+| 1024 | 2 | fixed_gauss | 0.006120309 | 0.05 | measured error plus margin meets target |
+| 1024 | 3 | edge | 0.1520296 | 0.05 | initial field already exceeds target |
+| 1024 | 3 | fixed_gauss | 0.5778798 | 0.05 | measured error plus margin meets target |
 
-## Runtime components
+## Complete measured configuration set
 
-Separate synchronized component invocations are diagnostic; their timings never replace the fused complete-query measurements. Each phase record comes from the same staged invocation and its field output was checked against the fused function.
+| Configuration | Query ms | Common-grid median / worst | Complete-grid median / worst | Error outliers common / complete | Timing outliers | Failed calls |
+|---|---:|---|---|---|---:|---:|
+| `fom_L128_out256_dt0.01_ntol0.01` | 10.2767 | 0.02748078 / 0.05795444 | 0.02748078 / 0.05795444 | 4 / 4 | 0 | 0 |
+| `fom_L256_out256_dt0.01_ntol0.01` | 10.6652 | 0.02004901 / 0.03616819 | 0.02004901 / 0.03616819 | 3 / 3 | 0 | 0 |
+| `fom_L128_out256_dt0.01_ntol0.003` | 13.2736 | 0.03572886 / 0.07306105 | 0.03572886 / 0.07306105 | 4 / 4 | 0 | 0 |
+| `fom_L256_out256_dt0.01_ntol0.003` | 14.3945 | 0.02880155 / 0.05054089 | 0.02880155 / 0.05054089 | 3 / 3 | 0 | 0 |
+| `fom_L128_out256_dt0.005_ntol0.01` | 16.5497 | 0.02748078 / 0.05482779 | 0.02748078 / 0.05482779 | 3 / 3 | 0 | 0 |
+| `fom_L256_out256_dt0.005_ntol0.01` | 17.1126 | 0.01305757 / 0.02473687 | 0.01305757 / 0.02473687 | 3 / 3 | 0 | 0 |
+| `fom_L128_out256_dt0.005_ntol0.003` | 17.7089 | 0.02748078 / 0.05811261 | 0.02748078 / 0.05811261 | 4 / 4 | 0 | 0 |
+| `fom_L256_out256_dt0.005_ntol0.003` | 18.1845 | 0.01230123 / 0.02943456 | 0.01230123 / 0.02943456 | 2 / 2 | 0 | 0 |
+| `fom_L128_out256_dt0.0025_ntol0.003` | 30.1503 | 0.02777728 / 0.05708146 | 0.02777728 / 0.05708146 | 3 / 3 | 0 | 0 |
+| `fom_L256_out256_dt0.0025_ntol0.003` | 31.6822 | 0.01172413 / 0.02721718 | 0.01172413 / 0.02721718 | 2 / 2 | 0 | 0 |
+| `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | 36.6762 | 0.02075496 / 0.04539875 | 0.02075496 / 0.04539875 | 4 / 4 | 0 | 0 |
+| `rom_L256_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 36.9518 | 0.02085287 / 0.045507 | 0.02085287 / 0.045507 | 4 / 4 | 0 | 0 |
+| `rom_L256_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 37.0179 | 0.02085287 / 0.045507 | 0.02085287 / 0.045507 | 4 / 4 | 0 | 0 |
+| `rom_L256_fixed_gauss_ic180_dt0.005_stall0.001_starts1` | 38.5150 | 0.02094475 / 0.04554227 | 0.02094475 / 0.04554227 | 4 / 4 | 0 | 0 |
+| `rom_L256_fixed_gauss_ic180_dt0.0025_stall0.01_starts1` | 57.3590 | 0.01932472 / 0.04163583 | 0.01932472 / 0.04163583 | 4 / 4 | 0 | 0 |
+| `fom_L128_out512_dt0.01_ntol0.01` | 12.0976 | 0.02748078 / 0.05795444 | 0.03634001 / 0.05798938 | 4 / 4 | 0 | 0 |
+| `fom_L256_out512_dt0.01_ntol0.01` | 12.2615 | 0.02004901 / 0.03616819 | 0.02217648 / 0.03627495 | 3 / 4 | 0 | 0 |
+| `fom_L128_out512_dt0.01_ntol0.003` | 15.1953 | 0.03572886 / 0.07306105 | 0.03686974 / 0.07311454 | 4 / 4 | 0 | 0 |
+| `fom_L256_out512_dt0.01_ntol0.003` | 15.7169 | 0.02880155 / 0.05054089 | 0.02880847 / 0.05059877 | 3 / 4 | 0 | 0 |
+| `fom_L512_out512_dt0.01_ntol0.01` | 16.5284 | 0.02072672 / 0.03304613 | 0.02071964 / 0.03304613 | 3 / 3 | 0 | 0 |
+| `fom_L128_out512_dt0.005_ntol0.01` | 18.3160 | 0.02748078 / 0.05482779 | 0.03634001 / 0.05487062 | 3 / 3 | 0 | 0 |
+| `fom_L256_out512_dt0.005_ntol0.01` | 18.9579 | 0.01305757 / 0.02473687 | 0.01921324 / 0.02520692 | 3 / 4 | 0 | 0 |
+| `fom_L128_out512_dt0.005_ntol0.003` | 19.1792 | 0.02748078 / 0.05811261 | 0.03634001 / 0.05815377 | 4 / 4 | 0 | 0 |
+| `fom_L256_out512_dt0.005_ntol0.003` | 20.1258 | 0.01230123 / 0.02943456 | 0.0194265 / 0.02947628 | 2 / 3 | 0 | 0 |
+| `fom_L512_out512_dt0.01_ntol0.003` | 22.2445 | 0.02541756 / 0.04168595 | 0.02540853 / 0.04168595 | 3 / 3 | 0 | 0 |
+| `fom_L512_out512_dt0.005_ntol0.01` | 26.6977 | 0.01215344 / 0.02063806 | 0.01214955 / 0.02063806 | 3 / 3 | 0 | 0 |
+| `fom_L512_out512_dt0.005_ntol0.003` | 28.7093 | 0.00982102 / 0.01915143 | 0.009817653 / 0.01915143 | 2 / 2 | 0 | 0 |
+| `fom_L128_out512_dt0.0025_ntol0.003` | 31.9253 | 0.02777728 / 0.05708146 | 0.03634001 / 0.0571262 | 3 / 3 | 0 | 0 |
+| `fom_L256_out512_dt0.0025_ntol0.003` | 33.0502 | 0.01172413 / 0.02721718 | 0.0194265 / 0.02726691 | 2 / 3 | 0 | 0 |
+| `fom_L512_out512_dt0.0025_ntol0.003` | 48.3475 | 0.006124359 / 0.01134245 | 0.006122112 / 0.01134245 | 1 / 1 | 0 | 0 |
+| `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 39.6757 | 0.02066393 / 0.03713245 | 0.02292576 / 0.03713341 | 3 / 4 | 0 | 0 |
+| `rom_L512_edge_ic60_dt0.005_stall0.01_starts1` | 39.7608 | 0.0311749 / 0.05274055 | 0.03139523 / 0.05467109 | 4 / 4 | 0 | 0 |
+| `rom_L512_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 40.0065 | 0.02066393 / 0.03713245 | 0.02292576 / 0.03713341 | 3 / 4 | 0 | 0 |
+| `rom_L512_fixed_gauss_ic180_dt0.005_stall0.001_starts1` | 42.8585 | 0.02051402 / 0.0371609 | 0.02292576 / 0.03716185 | 3 / 4 | 0 | 0 |
+| `rom_L512_fixed_gauss_ic180_dt0.0025_stall0.01_starts1` | 59.4750 | 0.01958492 / 0.03448294 | 0.02292576 / 0.03448412 | 3 / 4 | 0 | 0 |
+| `fom_L128_out1024_dt0.01_ntol0.01` | 24.6337 | 0.02748078 / 0.05795444 | 0.04062111 / 0.0579981 | 4 / 4 | 0 | 0 |
+| `fom_L256_out1024_dt0.01_ntol0.01` | 25.5489 | 0.02004901 / 0.03616819 | 0.02623869 / 0.03630153 | 3 / 4 | 0 | 0 |
+| `fom_L128_out1024_dt0.01_ntol0.003` | 27.8684 | 0.03572886 / 0.07306105 | 0.04062111 / 0.07312789 | 4 / 4 | 0 | 0 |
+| `fom_L256_out1024_dt0.01_ntol0.003` | 28.4307 | 0.02880155 / 0.05054089 | 0.02880742 / 0.05061321 | 3 / 4 | 0 | 0 |
+| `fom_L512_out1024_dt0.01_ntol0.01` | 29.7891 | 0.02072672 / 0.03304613 | 0.02070701 / 0.03307223 | 3 / 3 | 0 | 0 |
+| `fom_L128_out1024_dt0.005_ntol0.01` | 31.0251 | 0.02748078 / 0.05482779 | 0.04062111 / 0.0548813 | 3 / 3 | 0 | 0 |
+| `fom_L256_out1024_dt0.005_ntol0.01` | 31.5239 | 0.01305757 / 0.02473687 | 0.02142133 / 0.03333581 | 3 / 4 | 0 | 0 |
+| `fom_L128_out1024_dt0.005_ntol0.003` | 31.9815 | 0.02748078 / 0.05811261 | 0.04062111 / 0.05816404 | 4 / 4 | 0 | 0 |
+| `fom_L256_out1024_dt0.005_ntol0.003` | 32.5404 | 0.01230123 / 0.02943456 | 0.02376906 / 0.03333581 | 2 / 3 | 0 | 0 |
+| `fom_L512_out1024_dt0.01_ntol0.003` | 35.5774 | 0.02541756 / 0.04168595 | 0.0254078 / 0.04170888 | 3 / 3 | 0 | 0 |
+| `fom_L512_out1024_dt0.005_ntol0.01` | 39.4839 | 0.01215344 / 0.02063806 | 0.01504179 / 0.02061413 | 3 / 3 | 0 | 0 |
+| `fom_L512_out1024_dt0.005_ntol0.003` | 40.5228 | 0.00982102 / 0.01915143 | 0.01373429 / 0.01917962 | 2 / 2 | 0 | 0 |
+| `fom_L128_out1024_dt0.0025_ntol0.003` | 44.4563 | 0.02777728 / 0.05708146 | 0.04062111 / 0.05713736 | 3 / 3 | 0 | 0 |
+| `fom_L256_out1024_dt0.0025_ntol0.003` | 45.8565 | 0.01172413 / 0.02721718 | 0.02266537 / 0.03333581 | 2 / 3 | 0 | 0 |
+| `fom_L1024_out1024_dt0.01_ntol0.01` | 48.7969 | 0.02173782 / 0.02891918 | 0.0217264 / 0.02891918 | 4 / 4 | 0 | 0 |
+| `fom_L512_out1024_dt0.0025_ntol0.003` | 61.4547 | 0.006124359 / 0.01134245 | 0.01050156 / 0.017819 | 1 / 2 | 0 | 0 |
+| `fom_L1024_out1024_dt0.01_ntol0.003` | 65.0843 | 0.02391871 / 0.0381257 | 0.02390672 / 0.0381257 | 3 / 3 | 0 | 0 |
+| `fom_L1024_out1024_dt0.005_ntol0.01` | 74.9674 | 0.01326684 / 0.02389937 | 0.01326041 / 0.02389937 | 3 / 3 | 0 | 0 |
+| `fom_L1024_out1024_dt0.005_ntol0.003` | 79.1325 | 0.01050882 / 0.01656559 | 0.01050334 / 0.01656559 | 2 / 2 | 0 | 0 |
+| `fom_L1024_out1024_dt0.0025_ntol0.003` | 131.6614 | 0.00625118 / 0.01048777 | 0.006248106 / 0.01048777 | 1 / 1 | 0 | 0 |
+| `rom_L1024_edge_ic60_dt0.005_stall0.01_starts1` | 54.3917 | 0.04266856 / 0.08497164 | 0.04275201 / 0.08695337 | 4 / 4 | 0 | 0 |
+| `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 54.9038 | 0.02401685 / 0.03910892 | 0.02565217 / 0.0390762 | 4 / 4 | 0 | 0 |
+| `rom_L1024_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 56.0849 | 0.02401685 / 0.03910892 | 0.02578724 / 0.0390762 | 4 / 4 | 0 | 0 |
+| `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.001_starts1` | 57.2498 | 0.02401675 / 0.03889607 | 0.02565207 / 0.03886344 | 4 / 4 | 0 | 0 |
+| `rom_L1024_fixed_gauss_ic180_dt0.0025_stall0.01_starts1` | 74.2636 | 0.02332282 / 0.03710934 | 0.02495827 / 0.0385622 | 3 / 4 | 0 | 0 |
 
-| Intervals | Cold starts | Input ms | Cold fit ms | Evolve ms | Dense decode ms | Output ms | Staged total ms | LM attempts median |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 256 | 1 | 0.484 | 4.273 | 31.984 | 0.519 | 0.932 | 39.624 | 146.5 |
-| 256 | 4 | 0.555 | 6.762 | 32.492 | 0.540 | 0.887 | 42.076 | 146.5 |
-| 512 | 1 | 1.090 | 4.692 | 32.513 | 1.126 | 2.655 | 44.215 | 145.5 |
-| 512 | 4 | 0.917 | 6.583 | 33.528 | 1.062 | 2.394 | 45.752 | 152.5 |
-| 1024 | 1 | 1.886 | 5.871 | 33.812 | 3.019 | 14.528 | 59.593 | 154.0 |
-| 1024 | 4 | 1.961 | 6.837 | 33.851 | 2.919 | 14.318 | 60.251 | 157.0 |
+## Runtime components and setup
 
-LM attempts count reduced-solver trial steps, not GPU kernel launches; kernel launch counts were not profiled.
+Component timings are separately synchronized diagnostic invocations with field parity against the fused query. They do not replace complete-query timing or establish kernel-launch counts.
 
-The independent query audit recomputed 828 invocation errors with maximum discrepancy 4.16334e-17. It found 0 FOM nonlinear-tolerance failures and 0 failed/nonfinite ROM evolution stops. The configured initial-fit budget exits remain visible in the table.
+| Intervals | Cold rule / budget | Input ms | Initial fit ms | Evolution ms | Decode ms | Output ms | Staged total ms | LM attempts |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| 256 | edge / 60 | 0.3772 | 4.4698 | 29.6202 | 0.4507 | 0.8094 | 36.9800 | 134.5 |
+| 256 | fixed_gauss / 180 | 0.3783 | 4.3283 | 30.5095 | 0.3388 | 0.7960 | 36.8133 | 137.5 |
+| 512 | edge / 60 | 0.6616 | 4.2567 | 29.4065 | 0.9651 | 2.3498 | 39.4365 | 133.0 |
+| 512 | fixed_gauss / 180 | 0.7158 | 4.2158 | 30.2155 | 0.8549 | 2.2790 | 39.5054 | 137.0 |
+| 1024 | edge / 60 | 1.8101 | 4.7388 | 31.2849 | 2.8484 | 13.6647 | 51.9814 | 140.5 |
+| 1024 | fixed_gauss / 180 | 2.3538 | 4.2871 | 30.2663 | 2.8709 | 11.2916 | 54.7053 | 134.5 |
 
-## Frozen-bank initial-state fitting diagnostic
+| Intervals | Sampled rank | K / R / M / m | Bank/operator setup s | Gauss setup s | Compilation/warmup s |
+|---|---:|---|---:|---:|---:|
+| 256 | 512 | 16 / 512 / 64 / 256 | 29.6502 | 2.9875 | 27.6207 |
+| 512 | 512 | 16 / 512 / 64 / 256 | 23.7956 | 1.1035 | 28.9022 |
+| 1024 | 512 | 16 / 512 / 64 / 256 | 25.1429 | 1.0828 | 34.6809 |
 
-A separate cold-only run, job `3350594` at source `0fb42607811425d639ba58714da2210f152cf463`, retained the same checkpoint and all 4 physical cases. It fitted initial states only. The complete-query table above still contains the original initializer, and no cost or error below is substituted into that table.
+The dominant measured reduced phase is evolution. A bounded larger-timestep study is the next controlled cost test, keeping the fitted initializer, checkpoint, field family and FOM envelope fixed. Halving the timestep and tightening the evolution stopping threshold are already measured controls above; neither proves global or stationary optimization. Tighter accuracy also remains sensitive to the initial-fit error, especially on the finest mesh.
 
-The original rule samples 48 equally weighted positions per axis between the first and last interior grid nodes. Those physical coordinates move toward the walls with mesh refinement. The fixed midpoint and weighted Gauss–Legendre rules keep their physical coordinates fixed and charge bilinear interpolation from the supplied field. These rules fit field values, never a pointwise PDE residual. The edge QR control changes only the numerical factorization; full-grid QR is a dense diagnostic within the original learned bank, with no POD replacement.
+## Audit and scope
 
-The next table uses budget 180 and 4 starts for every rule. Entries are worst-case initial-field errors on each complete requested grid, normalized by that grid's initial-field norm. The unrestricted bank floor allows arbitrary linear feature coefficients and is less restrictive than the nonlinear head. Returned local fits are not stationary or globally optimal oracles.
+The independent NumPy audit checked 720 invocations across 60 configurations and 240 saved complete-grid artifacts. Maximum error-recomputation discrepancies are 4.16334e-17 on the common grid and 4.16334e-17 on complete grids. It found 0 FOM tolerance failures and 0 nonfinite invocations. 720 of 720 recorded dense-output hashes match their corresponding first repetitions.
 
-| Intervals | Edge Gram | Edge QR | Fixed midpoint | Fixed Gauss | Full-grid QR | Bank projection floor |
-|---|---:|---:|---:|---:|---:|---:|
-| 256 | 0.026004771 | 0.026004771 | 0.025466842 | 0.025628715 | 0.025446628 | 0.0018980278 |
-| 512 | 0.054671614 | 0.054671614 | 0.032958472 | 0.032835851 | 0.032828466 | 0.014953484 |
-| 1024 | 0.086950746 | 0.086950746 | 0.038736854 | 0.038562198 | 0.038548927 | 0.022593 |
-
-Across every control, changing Gram to QR on the same edge samples changes the full-grid error by at most 2.46008e-11. At 1024 intervals, the largest casewise difference between fixed Gauss and full-grid QR is 1.3271e-05. The sampled objective's coordinate/weight drift therefore contributes materially; Cholesky regularization does not explain the transfer failure. The growing unrestricted bank floor also shows genuine representation loss under the full-grid norm. The continuous hard-wall bank and clipped Gaussian initial data make additional near-wall nodes a plausible contributor, but this diagnostic does not isolate the spatial location or separate all nonlinear-head and local-optimization limitations.
-
-The query benchmark observes the fixed 256-interval grid. It can miss errors at additional fine near-wall nodes. This is visible when the same returned fit is scored under both norms:
-
-| Intervals | Rule | Full-grid worst | Common-grid worst | Full-grid median |
-|---|---|---:|---:|---:|
-| 256 | `edge_gram` | 0.026004771 | 0.026004771 | 0.014063611 |
-| 256 | `fixed_gauss` | 0.025628715 | 0.025628715 | 0.014037077 |
-| 256 | `full_qr` | 0.025446628 | 0.025446628 | 0.014035163 |
-| 512 | `edge_gram` | 0.054671614 | 0.052741118 | 0.020189301 |
-| 512 | `fixed_gauss` | 0.032835851 | 0.025686942 | 0.014035696 |
-| 512 | `full_qr` | 0.032828466 | 0.025604895 | 0.014035561 |
-| 1024 | `edge_gram` | 0.086950746 | 0.084968854 | 0.032527162 |
-| 1024 | `fixed_gauss` | 0.038562198 | 0.025886147 | 0.015672538 |
-| 1024 | `full_qr` | 0.038548927 | 0.02572399 | 0.015669635 |
-
-Budget/start controls at the largest grid, 1024 intervals, retain every case:
-
-| Rule | Iteration budget | Starts | Full-grid worst | Budget exits | Improvement stops | Failed stops |
-|---|---:|---:|---:|---:|---:|---:|
-| `edge_gram` | 60 | 1 | 0.086953369 | 1 | 3 | 0 |
-| `edge_gram` | 60 | 4 | 0.086950746 | 0 | 4 | 0 |
-| `edge_gram` | 180 | 1 | 0.086953369 | 0 | 4 | 0 |
-| `edge_gram` | 180 | 4 | 0.086950746 | 0 | 4 | 0 |
-| `fixed_gauss` | 60 | 1 | 0.0385622 | 1 | 3 | 0 |
-| `fixed_gauss` | 60 | 4 | 0.038562198 | 0 | 4 | 0 |
-| `fixed_gauss` | 180 | 1 | 0.0385622 | 0 | 4 | 0 |
-| `fixed_gauss` | 180 | 4 | 0.038562198 | 0 | 4 | 0 |
-| `full_qr` | 60 | 1 | 0.038548927 | 1 | 3 | 0 |
-| `full_qr` | 60 | 4 | 0.038548927 | 0 | 4 | 0 |
-| `full_qr` | 180 | 1 | 0.038548927 | 0 | 4 | 0 |
-| `full_qr` | 180 | 4 | 0.038548927 | 0 | 4 | 0 |
-
-The largest normalized gradient diagnostic among the selected fits is 6.3445e-06; small-step/improvement stopping is not a stationarity certificate. Across all 240 returned fits, 15 exhausted their budget and 0 failed. Longer budgets and more starts do not remove the worst-case objective bias or bank floor. Timings in the raw cold records contain one warmed call per case and are diagnostic only; no repeated cold-fit cost frontier is claimed.
-
-The independent audit checked all 240 declared fits, source/checkpoint hashes, unchanged cases and collection checksums. It recomputed each retained common-grid error with maximum discrepancy 2.77556e-17; the incumbent cold fields agree with the original query run within 5.19029e-14. Full-grid errors at finer resolutions and bank projection floors are in-job scalar diagnostics: the archive retains restricted fields, so those full norms are not independently reconstructed. The corrected initializer's evolution accuracy and complete-query latency remain unmeasured.
-
-No strict physical-error certificate or rigorous reference bound is supplied by the empirical refinement estimates. No final-cohort result, unchanged-weight cross-PDE transfer, universal speed advantage, or fully optimized per-resolution training claim is established by this bounded pilot. Raw invocation arrays and fields remain the source of truth.
+Source, checkpoint and closed-output checksums are retained. Every repeated output is checked against an actual complete-grid artifact. Initial clipping and physical cases are preserved. Independent confirmation, rigorous reference bounds and per-resolution weight retraining remain open. The historical cold-only bank-floor diagnostics are not substituted for the returned rollout errors.
 
 ## Plain-language glossary
 
-- **Intervals / interior unknowns:** grid cells along an axis / non-wall values solved for.
-- **K / R / M / m:** latent coordinates / learned spatial features / smooth weak test functions / advection quadrature points.
-- **Sampled bank rank:** independent feature directions on deterministic rows, with a relative singular-value cutoff of 1e-12.
-- **Setup s / stored arrays MiB:** mesh-specific preparation seconds / stored numerical-array memory in binary megabytes.
-- **Quadrature fit:** normalized residual of nonnegative fitting on decoder-output advection training rows; it is not a physical accuracy certificate.
-- **Configuration / dt / stall / ntol:** solver setting name / timestep / ROM relative-improvement stopping threshold / FOM relative nonlinear-residual tolerance.
-- **Query ms:** median complete input-to-output latency in milliseconds, including transfers and requested dense output.
-- **Physical median / physical worst:** median / maximum over casewise time-maximum errors against the refined reference, normalized by initial reference norm.
-- **Current-relative worst:** maximum error normalized by the current reference field norm, which can grow as the field decays.
-- **Same-grid worst:** maximum ROM discrepancy from tightly converged FOM on the same grid and timestep, with initial-state normalization.
-- **IC budget / stall; LM budget / stall:** initial-fit and evolution stops at their declared iteration budget / small-step or relative-improvement threshold. These counts cover all retained invocations; neither is a proven stationary optimum.
-- **Outliers / failed invocations:** cases exceeding the stated error threshold / timed calls with nonfinite output, failed ROM fitting/evolution stops, or unmet FOM nonlinear tolerance.
-- **Edge Gram / edge QR:** original mesh-dependent initial-field samples with Cholesky regularization / the same samples with orthogonal triangular factorization.
-- **Fixed midpoint / fixed Gauss:** physical quadrature coordinates and weights kept unchanged across meshes, with charged input-field interpolation.
-- **Full-grid QR / bank projection floor:** dense initial-fit objective within the learned bank / smallest error allowing unrestricted linear bank coefficients. Neither replaces the bank with POD or certifies a globally optimal nonlinear fit.
-- **Full-grid / common-grid initial error:** initial-field discrepancy at all requested nodes / only at the fixed observation nodes, divided by the corresponding initial-field norm.
-- **Normalized gradient:** objective-gradient norm divided by Jacobian norm times residual norm; a diagnostic of local optimization, not a global optimality guarantee.
-- **Observed spatial/time order / Richardson estimate:** convergence rates inferred from three refinement levels / extrapolated remaining error assuming that rate continues; these are empirical diagnostics, not rigorous error bounds.
-- **Cold starts / input / cold fit / evolve / dense decode / output / staged total / LM attempts:** number of training-code initial guesses / transfer into GPU memory / initial latent optimization / autonomous reduced evolution / dense-field reconstruction / transfer to host / all staged phases / actual Levenberg–Marquardt trial steps.
-- **Spatial difference / time difference / sum estimate:** observed reference changes after spatial / temporal refinement / their sum; these diagnose uncertainty without proving a bound.
-- **Qualification / target / selected ROM / selected FOM envelope / envelope speedup:** development accuracy status / requested error limit / cheapest eligible reduced configuration / cheapest eligible full configuration including coarser solves / median of per-case paired ratios (FOM median query time divided by ROM median query time).
-- **Frozen / validation / final:** unchanged network weights / cases used for development selection / separate unopened confirmation cases.
-- **FOM / ROM / sign-upwind / NNLS:** full model / reduced model / sign-selected spatial differences / nonnegative least squares.
-- **Newton / BiCGStab / FFT sine transform / Helmholtz preconditioning:** nonlinear iteration / iterative linear solve / fast transform / exact inversion of the diffusion-plus-identity part to help that solve.
-- **Commit / SHA-256 / backend / f64:** saved source revision / content fingerprint / execution device type / 64-bit floating-point arithmetic.
+- **Intervals / complete grid / common grid:** cells per axis / every requested output node / fixed observation nodes shared by all resolutions.
+- **FOM / ROM / frozen checkpoint:** full spatial model / nonlinear-manifold reduced model / saved neural weights kept unchanged.
+- **Bank / head / IC:** learned coordinate-dependent spatial features / nonlinear map from latent coordinates to feature coefficients / initial condition.
+- **Newton / BiCGStab / Helmholtz preconditioning / FFT:** nonlinear iteration / iterative linear solution / inversion of the diffusion-plus-identity part to help that solve / fast Fourier transform.
+- **Gauss / edge / QR / cold:** fixed physical Gaussian quadrature / original mesh-dependent initial samples / orthogonal triangular factorization / initial reduced-state fitting.
+- **K / R / M / m / sampled rank:** latent coordinates / learned spatial features / smooth weak tests / advection quadrature nodes / independently resolved bank directions on deterministic sampled rows.
+- **Query ms / case median / paired FOM/ROM:** complete host-input-to-host-output latency in milliseconds / middle timing repetition for one physical case / casewise full-model time divided by reduced-model time, then a cohort median.
+- **Initial / later / median / worst error:** first returned field / remaining output times / middle case error / largest case error; each is divided by the corresponding initial reference norm.
+- **Current-relative error:** discrepancy divided by the current reference field norm, which exposes relative error as the field decays; it is a diagnostic separate from the initial-norm eligibility target.
+- **Same-mesh error:** discrepancy from a tightly converged full solve using the same mesh and timestep.
+- **Budget / improvement / failed stops:** configured trial cap / small-step or relative-improvement exit / rejected or nonfinite exit. The first two do not prove stationarity.
+- **Empirical margin / Richardson / observed order / target / reference budget:** estimated reference error / extrapolation assuming the observed convergence rate continues / that rate inferred from three levels / requested accuracy / allowed fraction of target consumed by reference uncertainty.
+- **Envelope / selected / unattained:** least-cost eligible candidate including coarse FOM interpolation / chosen development configuration / no tested configuration meets the stated error condition.
+- **Weak evolution / sign-upwind / nonnegative quadrature:** PDE equations averaged against smooth functions / local-sign-selected differences / positive weighted sampling of advection.
+- **Input / initial fit / evolution / decode / output / staged total / LM attempts:** device transfer / initial latent optimization / reduced timestepping / dense reconstruction / host transfer / sum of diagnostic phases / actual Levenberg–Marquardt trial steps.
+- **Error / timing outliers:** physical cases above relative error 0.01 / calls taking more than twice that case’s timing median. All outliers remain in the results.
+- **Near-wall squared-error fraction:** share of total squared field discrepancy at nodes closer to the boundary than the first interior node of the training mesh.
+- **Setup / compilation / artifact / hash / parity:** reusable numerical preparation / executable preparation / saved numerical file / content fingerprint / agreement of two implementations or outputs.
+- **Validation / final / f64 / highest / backend:** development cases / reserved independent cases / double precision / required matrix arithmetic precision / execution device type.

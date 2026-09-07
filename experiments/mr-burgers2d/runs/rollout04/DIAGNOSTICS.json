@@ -1,0 +1,1389 @@
+{
+  "source_sha256": "5b685f83e85d424bf0541f320f0ae24bd677926e8060e13ca606925d8a0ed83a",
+  "scope": "postprocessing of actual archived full-query fields; no new fitting or solve",
+  "cases": [
+    {
+      "intervals": 256,
+      "case": 0,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.0009851547451324753,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.008567292170818213,
+        0.009647435115859011,
+        0.009404560820337431,
+        0.010783264737351894,
+        0.011892298694560481,
+        0.012374129387342836
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0019931843398357297,
+        0.0016994899558079775,
+        0.0008812992537422762,
+        0.0007204726745021035,
+        0.0005308948174760304,
+        0.00042376927412006633
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.054126229767788775,
+        0.031032264738398808,
+        0.008781521438207873,
+        0.0044641059407687185,
+        0.001992899298549526,
+        0.0011728153011552258
+      ]
+    },
+    {
+      "intervals": 256,
+      "case": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.0009851547451324753,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.008317287337549736,
+        0.009685046905738631,
+        0.009993822775986459,
+        0.011449256726172722,
+        0.012353805288786747,
+        0.012899594514233143
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0035227518464742012,
+        0.0014378319004528135,
+        0.000579734603769308,
+        0.0004103003813033779,
+        0.0003383506347521258,
+        0.00037391400827667046
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.17939101692004905,
+        0.02204006002291274,
+        0.0033650781923892765,
+        0.0012842490521052046,
+        0.0007501230089904822,
+        0.0008402167862678604
+      ]
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.001239188456780308,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.013073031121668341,
+        0.01310557434854709,
+        0.009661738895424253,
+        0.006740598450115156,
+        0.005087310287462087,
+        0.004142345404291772
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0013415567620113993,
+        0.0003490427117722692,
+        0.00021751272689620523,
+        0.00018588649804981172,
+        0.0002216609212047233,
+        0.0002316250352721793
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.010530900639268797,
+        0.0007093246151571915,
+        0.0005068258445760502,
+        0.0007604992307708852,
+        0.0018984615834781065,
+        0.0031266435920847832
+      ]
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.001239188456780308,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.013020739867071328,
+        0.013085102917544621,
+        0.009629081784652029,
+        0.0067069451421432145,
+        0.005057063366553396,
+        0.004116852957173813
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0016544399229487946,
+        0.0003490297914422656,
+        0.00021596058863433419,
+        0.00018494143188133746,
+        0.00022082731423348533,
+        0.00023086191081105194
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.016144725963849013,
+        0.0007114931281309698,
+        0.0005030130521755339,
+        0.0007603594068752675,
+        0.0019068160109769149,
+        0.0031446611908842745
+      ]
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.003736669160624032,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.01505418414766924,
+        0.030073176982029215,
+        0.04188206850876963,
+        0.0453987542783006,
+        0.04310961052717692,
+        0.041513202643303014
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0014040324021255153,
+        0.0007404550022134784,
+        0.000959571796229826,
+        0.00086950897720128,
+        0.0005750989885730022,
+        0.0006978850215527716
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.008698408766299973,
+        0.0006062318123817574,
+        0.0005249267486631664,
+        0.00036682613340530216,
+        0.0001779659876466693,
+        0.0002826150436923715
+      ]
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.003736669160624032,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.015053412493795269,
+        0.03021338214320735,
+        0.041984157373397155,
+        0.04550700126195469,
+        0.04320983917102976,
+        0.04160007619652332
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.001419956554171314,
+        0.0007443121043566063,
+        0.0009554599827770141,
+        0.0008679479064874259,
+        0.0005737641216197009,
+        0.0006958427065018356
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.008897749783288705,
+        0.0006068920884953984,
+        0.0005179097919616318,
+        0.00036377335352900665,
+        0.00017631995875125152,
+        0.00027979110717932617
+      ]
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.0023078042317456896,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.02600451092369257,
+        0.02658194690921053,
+        0.026299568251097673,
+        0.028254921344826815,
+        0.028341143588303717,
+        0.028404349043086724
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.00901774534563777,
+        0.0026664564302408002,
+        0.0010375834586064225,
+        0.0015351557155112935,
+        0.0015788704879377035,
+        0.0012289277745021903
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.12025372927689051,
+        0.010062257126613298,
+        0.0015564989827283572,
+        0.0029520021019971876,
+        0.0031035466180169948,
+        0.0018719016958555833
+      ]
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.0023078042317456896,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.025628707706610625,
+        0.024395765922853016,
+        0.02527249425294393,
+        0.028192921300313523,
+        0.028447578123471772,
+        0.028620634363356077
+      ],
+      "training_unseen_boundary_band_nodes": 1016,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.010622707089154292,
+        0.0018713910780700292,
+        0.0010888078370942624,
+        0.0016109181771637414,
+        0.0016337992181971132,
+        0.0012722786986525021
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.17179756213486752,
+        0.005884372998157839,
+        0.0018561209108860816,
+        0.00326487686106179,
+        0.003298426190815956,
+        0.0019760867267305153
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 0,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.0009849681890725976,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.0256227715054352,
+        0.014376701403475132,
+        0.011040800134747338,
+        0.010402305744182404,
+        0.010131501586130099,
+        0.009737758956089557
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.009940020813885219,
+        0.003385367260826002,
+        0.0006800869021295116,
+        0.00038749023115982944,
+        0.00028949188072897126,
+        0.00025504993975730087
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.15049510701747282,
+        0.05544891778634925,
+        0.0037942655726796535,
+        0.0013875935983837233,
+        0.0008164416316375018,
+        0.0006860131024091963
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.0009849681890725976,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.012581488284596893,
+        0.009826846191297275,
+        0.008846774751935514,
+        0.009250019035875788,
+        0.009366932960732488,
+        0.00923906389484595
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.009375117117112579,
+        0.0015183024041785168,
+        0.0005312015690982083,
+        0.0003607257539992467,
+        0.0002569200681114076,
+        0.0002575582731847671
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.5552510244235128,
+        0.02387196902554758,
+        0.0036053610183428664,
+        0.0015207892947375992,
+        0.0007523176190347299,
+        0.0007771324936918373
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 1,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.0012391874052227326,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.013035273115600701,
+        0.012775323741448002,
+        0.009151632410637418,
+        0.006356399229210775,
+        0.004887650516587993,
+        0.004055920403504163
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0015709805813254889,
+        0.0003057918720715903,
+        0.00022004368208105793,
+        0.0001659464265667322,
+        0.0001951330915220597,
+        0.0002060261975513976
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.014524505779652728,
+        0.0005729385524712792,
+        0.0005781235645339404,
+        0.0006815747252272422,
+        0.0015939017987037342,
+        0.00258027531416579
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 1,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.0012391874052227326,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.013015672429318576,
+        0.012814910309747754,
+        0.009188056850275536,
+        0.006380698824807996,
+        0.004902211654480924,
+        0.004064360931585453
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0014010840938131549,
+        0.00030572454992094423,
+        0.00022068693105593124,
+        0.00016611506471059814,
+        0.00019528775405373884,
+        0.00020611559330324723
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.011587645097353532,
+        0.0005691535994033568,
+        0.0005769070990806316,
+        0.0006777687602739377,
+        0.001586959725793663,
+        0.0025717998189295813
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 2,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.003736669160551792,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.015056852410202565,
+        0.02524597904002282,
+        0.035000231043461984,
+        0.037167693653082125,
+        0.033458557222090575,
+        0.02914331789323812
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.001278999206808598,
+        0.0006744076238711029,
+        0.0009081994585201245,
+        0.0008105982208053169,
+        0.0005787124034291103,
+        0.0006992994166072206
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.007215595241684132,
+        0.0007136093104892873,
+        0.0006733186667828567,
+        0.0004756418575914116,
+        0.0002991652609575173,
+        0.0005757690880186111
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 2,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.003736669160551792,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.015055720615290903,
+        0.02521290575852703,
+        0.03496161655343086,
+        0.0371334079891221,
+        0.03343604605798994,
+        0.02913002235429197
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.001279433369793589,
+        0.0006751092756932608,
+        0.0009094954798509836,
+        0.0008112087636650854,
+        0.0005796834122712039,
+        0.0007000575868343519
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.007221580440475796,
+        0.000716972253625092,
+        0.0006767341289993307,
+        0.0004772386945664865,
+        0.0003005743500613149,
+        0.0005775450918044685
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 3,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.002306313037755683,
+      "target_diagnostic": "initial field already exceeds target",
+      "complete_grid_error_per_time": [
+        0.05467108986475143,
+        0.04377712235883362,
+        0.03307345995151304,
+        0.02640691520474136,
+        0.022885850117949264,
+        0.020473041005677015
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.02236186900443167,
+        0.005073510366100519,
+        0.001501846758838221,
+        0.0012943455251198965,
+        0.0013354745973074066,
+        0.00098386639397685
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.16730184673641646,
+        0.013431443313504314,
+        0.002062015768111557,
+        0.0024025094876230523,
+        0.003405157186358967,
+        0.0023094445571273325
+      ]
+    },
+    {
+      "intervals": 512,
+      "case": 3,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.002306313037755683,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.032835850713428205,
+        0.028292716587477507,
+        0.024609127627358292,
+        0.022630779738621362,
+        0.0213680855080187,
+        0.020340469816135794
+      ],
+      "training_unseen_boundary_band_nodes": 4072,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.02182078229629267,
+        0.0022598897595072077,
+        0.0009421171013987754,
+        0.0013970307885420136,
+        0.0014768494763971521,
+        0.0011219159096237622
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.4416152760782852,
+        0.0063800665667518314,
+        0.0014656063474458331,
+        0.003810771595296589,
+        0.0047768460057876164,
+        0.0030422762961912126
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.0009848757048613694,
+      "target_diagnostic": "initial field already exceeds target",
+      "complete_grid_error_per_time": [
+        0.05047602681223671,
+        0.021171522243953408,
+        0.014969060274989163,
+        0.012284035121663461,
+        0.01036556650555441,
+        0.008814992356205935
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.019870280245082687,
+        0.004734753449923896,
+        0.0009958781150088791,
+        0.0004993681510934108,
+        0.00045927244752438673,
+        0.0003894949716885737
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.15496644131196324,
+        0.05001388233427579,
+        0.00442612120963748,
+        0.0016525689235543594,
+        0.001963155493043143,
+        0.0019523596827680093
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.0009848757048613694,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.016289100365910067,
+        0.010502313819970114,
+        0.008452826602940057,
+        0.00808341769115875,
+        0.008085392361733853,
+        0.007809695808091944
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.01370820100722914,
+        0.0012074850142029215,
+        0.000376712999179272,
+        0.00033856984120521875,
+        0.0003188521221688952,
+        0.0003915794092006049
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.7082176232416013,
+        0.01321884518971836,
+        0.00198617400181542,
+        0.001754310645094284,
+        0.0015551648222135572,
+        0.002514035796748443
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.0012391868927078868,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.013357991842765092,
+        0.012945103351104627,
+        0.009281933010012258,
+        0.00652384695595632,
+        0.005131446036520968,
+        0.004313509944562006
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0021287933268903433,
+        0.0002793247522821759,
+        0.00018225848771410166,
+        0.00014484564046568762,
+        0.00017468669295008185,
+        0.00018704548817917403
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.025397130614030216,
+        0.00046559445598990724,
+        0.00038556594273316306,
+        0.0004929505190773682,
+        0.001158884392684907,
+        0.0018803247667423075
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.0012391868927078868,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.013028026922542537,
+        0.012954762102055947,
+        0.009336036431111937,
+        0.00656698541924052,
+        0.005158210234904707,
+        0.004330546852007282
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.001377181272736527,
+        0.00027806552481241545,
+        0.0001847842253990681,
+        0.00014755053111695316,
+        0.0001766077626270056,
+        0.00018801082756187115
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.01117441823646921,
+        0.00046071824433255445,
+        0.0003917461274578145,
+        0.0005048349923766442,
+        0.0011722533961986432,
+        0.001884864951519205
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.0037366691605171818,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.015057135170860061,
+        0.022959192866198696,
+        0.033535737483524654,
+        0.03502799085330108,
+        0.029071201287214687,
+        0.02436081287718139
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0011847631511538448,
+        0.0006707369892582657,
+        0.0008854929989674216,
+        0.000749336389229003,
+        0.0005644844644768157,
+        0.0006679534912856251
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.0061912505277323575,
+        0.0008534759380813951,
+        0.0006971954449241469,
+        0.00045763917216548296,
+        0.00037703184349198595,
+        0.0007518113824832153
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.0037366691605171818,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.015055969920970712,
+        0.02298272948190823,
+        0.03353605647214771,
+        0.03501523647747064,
+        0.029066925250308292,
+        0.024363689959466722
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.0011778647594906848,
+        0.0006683886040543165,
+        0.0008866716306106754,
+        0.0007493741792735531,
+        0.0005650110731490261,
+        0.0006687119335104543
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.006120309430746196,
+        0.000845775036902077,
+        0.0006990393796724228,
+        0.00045801881852576174,
+        0.0003778467847228524,
+        0.000753341718580474
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "cold_rule": "edge",
+      "ic_budget": 60,
+      "target": 0.05,
+      "reference_margin": 0.002305574553734145,
+      "target_diagnostic": "initial field already exceeds target",
+      "complete_grid_error_per_time": [
+        0.08695336903464104,
+        0.06684742570709111,
+        0.048834653457395946,
+        0.03907666961691707,
+        0.032394089809705866,
+        0.0260935382649339
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.03390396344708991,
+        0.013471442113783271,
+        0.002160295947133461,
+        0.0016482385562231088,
+        0.0013389451715439798,
+        0.0008952161762721656
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.15202958682446488,
+        0.040612413944703184,
+        0.0019569074262095936,
+        0.0017791192227390581,
+        0.0017084175459558895,
+        0.0011770364065689062
+      ]
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "cold_rule": "fixed_gauss",
+      "ic_budget": 180,
+      "target": 0.05,
+      "reference_margin": 0.002305574553734145,
+      "target_diagnostic": "measured error plus margin meets target",
+      "complete_grid_error_per_time": [
+        0.03856220012580149,
+        0.03907620325223174,
+        0.03600897881121372,
+        0.030384132834653455,
+        0.026043029744688643,
+        0.021233059738396926
+      ],
+      "training_unseen_boundary_band_nodes": 16304,
+      "training_unseen_boundary_band_threshold": 0.00392156862745098,
+      "boundary_band_error_per_time": [
+        0.029314369491216807,
+        0.0029244739079061473,
+        0.0010715018492010405,
+        0.0012086395593009487,
+        0.0012718674586636438,
+        0.0009688650480060878
+      ],
+      "boundary_band_squared_error_fraction_per_time": [
+        0.5778797907683767,
+        0.005601067185547384,
+        0.0008854504015690224,
+        0.0015823404033289646,
+        0.0023850676273057905,
+        0.002082099187159147
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "intervals": 256,
+      "case": 0,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.006350389760393761,
+        0.00536290286368766,
+        0.005620641327948985,
+        0.0053310608931163555,
+        0.004658084662722976,
+        0.0040612689736810375
+      ],
+      "primary_worst": 0.012899594514233143,
+      "control_worst": 0.011007205434356663
+    },
+    {
+      "intervals": 256,
+      "case": 0,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0019340673433170482,
+        0.003472113003742278,
+        0.004225270585011171,
+        0.004139179198637208,
+        0.0037698911198456152
+      ],
+      "primary_worst": 0.012899594514233143,
+      "control_worst": 0.01106458807459291
+    },
+    {
+      "intervals": 256,
+      "case": 0,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        2.2091381603987066e-05,
+        2.2737384532479476e-05,
+        5.630597795624238e-05,
+        4.867166448827167e-05,
+        3.6567146662010394e-05
+      ],
+      "primary_worst": 0.012899594514233143,
+      "control_worst": 0.012908535505940595
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.013085102917544621,
+      "control_worst": 0.013085102917544621
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0066123532954009984,
+        0.004939079910579533,
+        0.0036155803638361532,
+        0.00287278140545963,
+        0.0024171090839480297
+      ],
+      "primary_worst": 0.013085102917544621,
+      "control_worst": 0.013020739867071328
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.00011794179200508622,
+        9.561498832369366e-05,
+        7.730058588254237e-05,
+        6.394147112971257e-05,
+        5.475731975560801e-05
+      ],
+      "primary_worst": 0.013085102917544621,
+      "control_worst": 0.013112349987191511
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.04550700126195469,
+      "control_worst": 0.04550700126195469
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.006882458045081791,
+        0.00866337122724101,
+        0.008198773422462379,
+        0.0077171246323480625,
+        0.00706130406864022
+      ],
+      "primary_worst": 0.04550700126195469,
+      "control_worst": 0.0416358277156016
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        6.773258857313647e-05,
+        6.522091683034671e-05,
+        6.384239441036602e-05,
+        6.294644459230239e-05,
+        6.123052477082286e-05
+      ],
+      "primary_worst": 0.04550700126195469,
+      "control_worst": 0.04554226731887365
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.028620634363356077,
+      "control_worst": 0.028620634363356077
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.003872367285434725,
+        0.005560584344946155,
+        0.006051827806005797,
+        0.006016927728175795,
+        0.005602197705608602
+      ],
+      "primary_worst": 0.028620634363356077,
+      "control_worst": 0.025628707706610625
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.00024039432167125563,
+        0.00022467663188310315,
+        0.00021697569869584074,
+        0.0002155803133120123,
+        0.00021555773779858087
+      ],
+      "primary_worst": 0.028620634363356077,
+      "control_worst": 0.028777146529353155
+    },
+    {
+      "intervals": 512,
+      "case": 0,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0029809398363465278,
+        0.0031488421753134935,
+        0.0037646963310794795,
+        0.004452982849409454,
+        0.004603889597548703,
+        0.0035771813392955756
+      ],
+      "primary_worst": 0.012581488284596893,
+      "control_worst": 0.012963032901812636
+    },
+    {
+      "intervals": 512,
+      "case": 0,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.001755203487878841,
+        0.003041512626937742,
+        0.004584289770596483,
+        0.005175036025171608,
+        0.004533994821367116
+      ],
+      "primary_worst": 0.012581488284596893,
+      "control_worst": 0.012581488284596893
+    },
+    {
+      "intervals": 512,
+      "case": 0,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        1.8958307430700587e-05,
+        2.1055460763079354e-05,
+        4.75118748678004e-05,
+        9.979279727584817e-05,
+        7.983017751695488e-05
+      ],
+      "primary_worst": 0.012581488284596893,
+      "control_worst": 0.012581488284596893
+    },
+    {
+      "intervals": 512,
+      "case": 1,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.013015672429318576,
+      "control_worst": 0.013015672429318576
+    },
+    {
+      "intervals": 512,
+      "case": 1,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.006610061296933333,
+        0.0049523987872612035,
+        0.0036853485585011943,
+        0.002957770471723353,
+        0.002480820171691018
+      ],
+      "primary_worst": 0.013015672429318576,
+      "control_worst": 0.013015672429318576
+    },
+    {
+      "intervals": 512,
+      "case": 1,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.000516395957049492,
+        0.0004085484251451698,
+        0.0003314863826363902,
+        0.0002750281787876545,
+        0.0002345552831483248
+      ],
+      "primary_worst": 0.013015672429318576,
+      "control_worst": 0.013015672429318576
+    },
+    {
+      "intervals": 512,
+      "case": 2,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.0371334079891221,
+      "control_worst": 0.0371334079891221
+    },
+    {
+      "intervals": 512,
+      "case": 2,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0071150368811040785,
+        0.009195505931035935,
+        0.008951163938589381,
+        0.008813196063278619,
+        0.007881617901288957
+      ],
+      "primary_worst": 0.0371334079891221,
+      "control_worst": 0.034484121920739054
+    },
+    {
+      "intervals": 512,
+      "case": 2,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        6.966595545507395e-05,
+        6.737949213321713e-05,
+        6.312253999308826e-05,
+        6.158304320291458e-05,
+        6.004860248784618e-05
+      ],
+      "primary_worst": 0.0371334079891221,
+      "control_worst": 0.037161854877449545
+    },
+    {
+      "intervals": 512,
+      "case": 3,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.032835850713428205,
+      "control_worst": 0.032835850713428205
+    },
+    {
+      "intervals": 512,
+      "case": 3,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.003951463314499222,
+        0.005624625606196479,
+        0.006294044659983255,
+        0.006170289853672647,
+        0.005751851599091537
+      ],
+      "primary_worst": 0.032835850713428205,
+      "control_worst": 0.032835850713428205
+    },
+    {
+      "intervals": 512,
+      "case": 3,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0005659876800895778,
+        0.0004892401308821242,
+        0.0004474234893828002,
+        0.0004384566311334819,
+        0.0004386836306878437
+      ],
+      "primary_worst": 0.032835850713428205,
+      "control_worst": 0.032835850713428205
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0028743111729311083,
+        0.0034523905439121324,
+        0.004317151292479937,
+        0.004357603608857202,
+        0.004609763083709711,
+        0.004241023303263909
+      ],
+      "primary_worst": 0.016289100365910067,
+      "control_worst": 0.01655923842638187
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0016996646338421867,
+        0.00238144377803954,
+        0.00273045777635964,
+        0.002896346096570232,
+        0.0028748698570928545
+      ],
+      "primary_worst": 0.016289100365910067,
+      "control_worst": 0.016289100365910067
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        9.577191615608803e-06,
+        1.1499727849344576e-05,
+        9.783690730600495e-06,
+        8.982425509842898e-06,
+        8.450611544015421e-06
+      ],
+      "primary_worst": 0.016289100365910067,
+      "control_worst": 0.016289100365910067
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.013028026922542537,
+      "control_worst": 0.013028026922542537
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.006616496796067526,
+        0.004930059005288765,
+        0.003649629867401993,
+        0.0029131945005593947,
+        0.0024253387869983926
+      ],
+      "primary_worst": 0.013028026922542537,
+      "control_worst": 0.013028026922542537
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0002441444716862213,
+        0.00018361602813908373,
+        0.00015025653484041976,
+        0.00011961397133247785,
+        0.00010365261723417161
+      ],
+      "primary_worst": 0.013028026922542537,
+      "control_worst": 0.013028026922542537
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.03501523647747064,
+      "control_worst": 0.03501523647747064
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.007062884610222474,
+        0.009187747694452108,
+        0.008961748503282999,
+        0.00901609219646245,
+        0.00816999427822878
+      ],
+      "primary_worst": 0.03501523647747064,
+      "control_worst": 0.033627447317402165
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        1.3384303831168378e-06,
+        1.8513946696553344e-06,
+        1.5769421384457486e-06,
+        1.5018691310379857e-06
+      ],
+      "primary_worst": 0.03501523647747064,
+      "control_worst": 0.03501504098715407
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "control": "fit_budget",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_worst": 0.03907620325223174,
+      "control_worst": 0.03907620325223174
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "control": "time_step",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.0037909441088501204,
+        0.005514994637270748,
+        0.006347763674982543,
+        0.0062911166982556315,
+        0.0060399236616426166
+      ],
+      "primary_worst": 0.03907620325223174,
+      "control_worst": 0.03856220012580149
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "control": "evolution_stopping",
+      "relative_field_difference_per_time": [
+        0.0,
+        0.00042255166462179273,
+        0.0003723908741847473,
+        0.00038349762312813997,
+        0.0003503491312841672,
+        0.0003194386617804162
+      ],
+      "primary_worst": 0.03907620325223174,
+      "control_worst": 0.03886344412734122
+    }
+  ],
+  "limitation": "Boundary-band errors locate returned-field loss at points closer to the wall than the training mesh first interior node; they do not independently identify a bank projection floor or prove causality. Evolution controls distinguish measured effects without proving an optimizer is stationary."
+}

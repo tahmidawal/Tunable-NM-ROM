@@ -31,4 +31,6 @@ for row,norm in enumerate(['common','dense']):
 handles,labels=axes[1,-1].get_legend_handles_labels();fig.legend(handles,labels,loc='lower center',ncol=3,frameon=False)
 fig.suptitle(f"Burgers 2D · frozen Gauss initializer in full rollout · job {d['job_id']}")
 fig.tight_layout(rect=(0,.06,1,.96));fig.savefig(a.output,metadata={'Date':None});fig.savefig(Path(a.output).with_suffix('.png'),dpi=170);plt.close(fig)
+if Path(a.output).suffix=='.svg':
+    Path(a.output).write_text('\n'.join(line.rstrip() for line in Path(a.output).read_text().splitlines())+'\n')
 print(a.output)

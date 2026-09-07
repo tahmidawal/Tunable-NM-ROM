@@ -1,0 +1,17 @@
+{
+  "source_sha256": "19d127527b46f17a730ece91ed0512f5cbcbdf29a750c2df48fe032fdca1da3c",
+  "output_checksums_verified": true,
+  "closed_logs_clean": true,
+  "source_hashes_against_commits_verified": true,
+  "checkpoint_and_physical_cases_match_pilot": true,
+  "declared_fits_verified": 240,
+  "common_grid_error_recompute_max_difference": 2.7755575615628914e-17,
+  "analytic_truth_max_difference": 2.220446049250313e-16,
+  "original_pilot_cold_field_max_difference": 5.190292640122607e-14,
+  "stop_reason_counts": {
+    "0": 15,
+    "2": 225
+  },
+  "full_grid_fields_independently_recomputed_only_at_intervals": 256,
+  "limitation": "Fine-grid full-field errors and bank floors are same-invocation scalar diagnostics; fine fields were restricted before archival, so their full norms are not independently reconstructed here. Every retained common-grid field is independently checked. A configured stall is not stationarity; no corrected-initializer rollout was run."
+}

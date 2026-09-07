@@ -1,6 +1,6 @@
 # Burgers 2D frozen-network multiresolution pilot
 
-This is an approved development pilot for the current coordinate-separable NM-ROM versus efficient FOM solvers. Scientific results are pending. The checkpoint and family are inherited from the consolidated branch; the validation cohort is new and the final cohort remains unopened.
+This is an approved development pilot for the current coordinate-separable NM-ROM versus efficient FOM solvers. The bounded campaign is complete; audited development results and the cold-only diagnostic are generated in [the numerical report](reports/2026-09-07-burgers2d-multiresolution.md). The checkpoint and family are inherited from the consolidated branch; the validation cohort is new and the final cohort remains unopened.
 
 The scalar PDE is
 
@@ -14,7 +14,7 @@ The FOM uses backward Euler with tolerance-adaptive Newton and matrix-free BiCGS
 
 The input/output contract starts with a host-resident dense initial field on the requested grid and a viscosity scalar, and ends with six host-resident dense fields at fixed physical output times. Every timed call includes input transfer, input handling, cold latent fitting where needed, autonomous evolution, dense decoding/interpolation, and output transfer. FOM candidates may solve on a coarser nested mesh and interpolate onto the requested output grid. Cold initialization uses a bounded regular set of input values, followed by a local fit in latent coordinates. No learned Gaussian-descriptor encoder or POD replacement is introduced.
 
-The common observation grid is the smaller requested mesh. The refined reference is restricted exactly onto its nested nodes. Spatial and temporal refinement differences are saved separately; their sum is a conservative diagnostic estimate, not a rigorous continuum error bound. A target is unresolved when that estimate exceeds one tenth of the requested error target. The primary error is the largest observation-time field discrepancy normalized by the initial reference norm. Current-field relative errors are reported separately. Same-grid tight-FOM discrepancies are also retained for each reduced timestep.
+The common observation grid is the smaller requested mesh. The refined reference is restricted exactly onto its nested nodes. Spatial and temporal refinement differences are saved separately; the larger of their sum and the observed-order Richardson estimate is an empirical margin, not a rigorous continuum error bound. A target is unresolved when that margin exceeds one tenth of the requested error target or three-level refinement does not decrease. Eligibility also requires measured error plus margin to meet the target. The primary error is the largest observation-time field discrepancy normalized by the initial reference norm. Current-field relative errors are reported separately. Same-grid tight-FOM discrepancies are also retained for each reduced timestep.
 
 The bounded per-resolution search varies timestep and nonlinear-solver stalling tolerance while preserving the checkpoint. This is solver configuration selection on validation, and does not establish the benefit of retraining at each resolution. The module accepts any compatible native separable checkpoint; new weight training is deferred until these measured costs/errors locate its value.
 
@@ -22,7 +22,17 @@ Compilation, bank/operator construction, quadrature fitting, memory, singular-va
 
 `cluster/stage.py` verifies every staged byte against a commit, `submit.sh` directly copies into a unique approved paralab attempt, and `collect.sh` checksums outputs and closed logs before deleting only that exact attempt directory. Job names begin with `ctol_` so the repository numeric cancellation guard applies.
 
-The report generator reads the saved JSON and writes all numerical tables. Completed results will remain development evidence until reference checks, convergence, provenance, and independent review pass.
+The complete-query pilot found no speed advantage over the eligible FOM envelope. The follow-up cold-only diagnostic identifies sampling-coordinate/objective drift and a growing frozen-bank projection floor under the full-grid initial-field norm. Fixed physical midpoint/Gauss sampling improves the initial fit; its corrected rollout accuracy and latency remain unmeasured. The fixed common observation grid omits additional fine nodes, so its error is distinct from complete-grid error. More starts and larger budgets do not establish a globally optimal fit or remove the bank floor. No sole-optimizer-basin explanation is supported.
+
+All jobs completed on the required GPU backend, their logs and checksums were audited, and their exact remote attempt directories were removed. [Campaign status](SUBMISSION.json) names the immutable sources and archives. The original query costs and errors remain paired within each invocation; the cold-only diagnostic never replaces their initial errors. Every retained observation field was independently audited. Fine full-grid cold error scalars and projection floors were computed in the job but cannot be independently reconstructed from the restricted field archive alone.
+
+Reproduce the generated report with the local absolute Python environment:
+
+```bash
+/home/tahmid/Dev/.venv/bin/python experiments/mr-burgers2d/reports/generate.py experiments/mr-burgers2d/runs/pilot02/out/pilot.json experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md --cold experiments/mr-burgers2d/runs/cold03/out/cold_fit.json
+```
+
+`reports/audit.py` checks the saved complete-query fields; `reports/audit_cold.py` checks the cold-only fields, complete configuration coverage and source/case lineage. Both run without JAX. All final-cohort cases remain unopened, and mesh-specific weight retraining remains untested.
 
 ## Plain-language glossary
 

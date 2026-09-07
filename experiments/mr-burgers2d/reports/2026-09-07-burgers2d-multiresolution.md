@@ -1,6 +1,6 @@
 # Burgers 2D frozen-network resolution transfer and complete-query cost
 
-Development pilot; all tables below are generated from the saved invocation records. Physical-error qualifications remain provisional wherever the measured reference-refinement estimate misses the target budget.
+Development results; the frozen-network ROM does not establish a complete-query advantage over the efficient FOM envelope. All tables are generated from saved invocation records, and physical-error qualifications remain empirical rather than certified.
 
 Source commit `9a2025c1f0624db91fb8ecbcfef0d0d433373187`, job `3350134`, GPU `NVIDIA A100 80GB PCIe`. Backend `gpu`, f64 `True`, matmul precision `highest`. Checkpoint SHA-256 `18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589`.
 
@@ -9,6 +9,8 @@ The frozen checkpoint was trained on 255 intervals (256 nodes per axis). The new
 The query starts with a dense initial field in host memory and ends with all requested dense fields in host memory. Input handling, cold fitting, evolution, output reconstruction/interpolation and transfers are included. Compilation and reusable setup are separate. FOM candidates use sign-upwind backward Euler with adaptive Newton/BiCGStab and FFT sine-transform Helmholtz preconditioning. ROM quadrature retains sign-dependent upwinding on decoded undershoots.
 
 ## Reference refinement
+
+The finest reference uses 4096 intervals and timestep 0.0003125. The largest final nonlinear relative residual over all saved reference solves is 9.25201e-12.
 
 | Case | Spatial difference | Time difference | Sum estimate |
 |---|---:|---:|---:|
@@ -23,6 +25,8 @@ The query starts with a dense initial field in host memory and ends with all req
 | 1 | 0.9946 | 0.9852 | 0.00123919 |
 | 2 | 0.9737 | 0.9702 | 0.00373667 |
 | 3 | 0.9868 | 0.9820 | 0.0023078 |
+
+The worst empirical additive margin is 0.00373667; it passes the reference budget for target 0.05 and does not pass the budget for target 0.01. Eligibility additionally requires the measured case error plus this margin to meet the target.
 
 These are differences between independently converged refinement levels, not rigorous continuum-error bounds. The physical norm uses exact nested-node restriction onto the observation grid and the initial-state reference norm. Current-field normalization is reported separately.
 
@@ -114,7 +118,7 @@ Errors are maximum-in-observation-time values, aggregated over every declared ca
 
 ## Target-qualified validation selections
 
-Both methods may choose a configuration within the declared pilot search. Eligibility includes the measured reference estimate as an additive error margin. The margin is the larger of the raw spatial-plus-time difference and the empirical Richardson estimate. The FOM envelope includes coarser solves with aligned interpolation to the same requested dense output. Solver choices are tuned per resolution; both neural networks remain frozen. This does not test retraining benefits.
+Both methods may choose a configuration within the declared pilot search, using the pooled median over all case/repetition query times shown above. This native selection statistic differs from taking the median of per-case medians; the final speed ratio itself uses per-case paired medians. Eligibility includes the measured reference estimate as an additive error margin. The margin is the larger of the raw spatial-plus-time difference and the empirical Richardson estimate. The FOM envelope includes coarser solves with aligned interpolation to the same requested dense output. Solver choices are tuned per resolution; both neural networks remain frozen. This does not test retraining benefits.
 
 | Output intervals | Target | Qualification | Selected ROM | Selected FOM envelope | Envelope speedup |
 |---|---:|---|---|---|---:|
@@ -144,6 +148,61 @@ Separate synchronized component invocations are diagnostic; their timings never 
 | 1024 | 1 | 1.886 | 5.871 | 33.812 | 3.019 | 14.528 | 59.593 | 154.0 |
 | 1024 | 4 | 1.961 | 6.837 | 33.851 | 2.919 | 14.318 | 60.251 | 157.0 |
 
+LM attempts count reduced-solver trial steps, not GPU kernel launches; kernel launch counts were not profiled.
+
+The independent query audit recomputed 828 invocation errors with maximum discrepancy 4.16334e-17. It found 0 FOM nonlinear-tolerance failures and 0 failed/nonfinite ROM evolution stops. The configured initial-fit budget exits remain visible in the table.
+
+## Frozen-bank initial-state fitting diagnostic
+
+A separate cold-only run, job `3350594` at source `0fb42607811425d639ba58714da2210f152cf463`, retained the same checkpoint and all 4 physical cases. It fitted initial states only. The complete-query table above still contains the original initializer, and no cost or error below is substituted into that table.
+
+The original rule samples 48 equally weighted positions per axis between the first and last interior grid nodes. Those physical coordinates move toward the walls with mesh refinement. The fixed midpoint and weighted Gauss–Legendre rules keep their physical coordinates fixed and charge bilinear interpolation from the supplied field. These rules fit field values, never a pointwise PDE residual. The edge QR control changes only the numerical factorization; full-grid QR is a dense diagnostic within the original learned bank, with no POD replacement.
+
+The next table uses budget 180 and 4 starts for every rule. Entries are worst-case initial-field errors on each complete requested grid, normalized by that grid's initial-field norm. The unrestricted bank floor allows arbitrary linear feature coefficients and is less restrictive than the nonlinear head. Returned local fits are not stationary or globally optimal oracles.
+
+| Intervals | Edge Gram | Edge QR | Fixed midpoint | Fixed Gauss | Full-grid QR | Bank projection floor |
+|---|---:|---:|---:|---:|---:|---:|
+| 256 | 0.026004771 | 0.026004771 | 0.025466842 | 0.025628715 | 0.025446628 | 0.0018980278 |
+| 512 | 0.054671614 | 0.054671614 | 0.032958472 | 0.032835851 | 0.032828466 | 0.014953484 |
+| 1024 | 0.086950746 | 0.086950746 | 0.038736854 | 0.038562198 | 0.038548927 | 0.022593 |
+
+Across every control, changing Gram to QR on the same edge samples changes the full-grid error by at most 2.46008e-11. At 1024 intervals, the largest casewise difference between fixed Gauss and full-grid QR is 1.3271e-05. The sampled objective's coordinate/weight drift therefore contributes materially; Cholesky regularization does not explain the transfer failure. The growing unrestricted bank floor also shows genuine representation loss under the full-grid norm. The continuous hard-wall bank and clipped Gaussian initial data make additional near-wall nodes a plausible contributor, but this diagnostic does not isolate the spatial location or separate all nonlinear-head and local-optimization limitations.
+
+The query benchmark observes the fixed 256-interval grid. It can miss errors at additional fine near-wall nodes. This is visible when the same returned fit is scored under both norms:
+
+| Intervals | Rule | Full-grid worst | Common-grid worst | Full-grid median |
+|---|---|---:|---:|---:|
+| 256 | `edge_gram` | 0.026004771 | 0.026004771 | 0.014063611 |
+| 256 | `fixed_gauss` | 0.025628715 | 0.025628715 | 0.014037077 |
+| 256 | `full_qr` | 0.025446628 | 0.025446628 | 0.014035163 |
+| 512 | `edge_gram` | 0.054671614 | 0.052741118 | 0.020189301 |
+| 512 | `fixed_gauss` | 0.032835851 | 0.025686942 | 0.014035696 |
+| 512 | `full_qr` | 0.032828466 | 0.025604895 | 0.014035561 |
+| 1024 | `edge_gram` | 0.086950746 | 0.084968854 | 0.032527162 |
+| 1024 | `fixed_gauss` | 0.038562198 | 0.025886147 | 0.015672538 |
+| 1024 | `full_qr` | 0.038548927 | 0.02572399 | 0.015669635 |
+
+Budget/start controls at the largest grid, 1024 intervals, retain every case:
+
+| Rule | Iteration budget | Starts | Full-grid worst | Budget exits | Improvement stops | Failed stops |
+|---|---:|---:|---:|---:|---:|---:|
+| `edge_gram` | 60 | 1 | 0.086953369 | 1 | 3 | 0 |
+| `edge_gram` | 60 | 4 | 0.086950746 | 0 | 4 | 0 |
+| `edge_gram` | 180 | 1 | 0.086953369 | 0 | 4 | 0 |
+| `edge_gram` | 180 | 4 | 0.086950746 | 0 | 4 | 0 |
+| `fixed_gauss` | 60 | 1 | 0.0385622 | 1 | 3 | 0 |
+| `fixed_gauss` | 60 | 4 | 0.038562198 | 0 | 4 | 0 |
+| `fixed_gauss` | 180 | 1 | 0.0385622 | 0 | 4 | 0 |
+| `fixed_gauss` | 180 | 4 | 0.038562198 | 0 | 4 | 0 |
+| `full_qr` | 60 | 1 | 0.038548927 | 1 | 3 | 0 |
+| `full_qr` | 60 | 4 | 0.038548927 | 0 | 4 | 0 |
+| `full_qr` | 180 | 1 | 0.038548927 | 0 | 4 | 0 |
+| `full_qr` | 180 | 4 | 0.038548927 | 0 | 4 | 0 |
+
+The largest normalized gradient diagnostic among the selected fits is 6.3445e-06; small-step/improvement stopping is not a stationarity certificate. Across all 240 returned fits, 15 exhausted their budget and 0 failed. Longer budgets and more starts do not remove the worst-case objective bias or bank floor. Timings in the raw cold records contain one warmed call per case and are diagnostic only; no repeated cold-fit cost frontier is claimed.
+
+The independent audit checked all 240 declared fits, source/checkpoint hashes, unchanged cases and collection checksums. It recomputed each retained common-grid error with maximum discrepancy 2.77556e-17; the incumbent cold fields agree with the original query run within 5.19029e-14. Full-grid errors at finer resolutions and bank projection floors are in-job scalar diagnostics: the archive retains restricted fields, so those full norms are not independently reconstructed. The corrected initializer's evolution accuracy and complete-query latency remain unmeasured.
+
 No strict physical-error certificate or rigorous reference bound is supplied by the empirical refinement estimates. No final-cohort result, unchanged-weight cross-PDE transfer, universal speed advantage, or fully optimized per-resolution training claim is established by this bounded pilot. Raw invocation arrays and fields remain the source of truth.
 
 ## Plain-language glossary
@@ -159,7 +218,12 @@ No strict physical-error certificate or rigorous reference bound is supplied by 
 - **Current-relative worst:** maximum error normalized by the current reference field norm, which can grow as the field decays.
 - **Same-grid worst:** maximum ROM discrepancy from tightly converged FOM on the same grid and timestep, with initial-state normalization.
 - **IC budget / stall; LM budget / stall:** initial-fit and evolution stops at their declared iteration budget / small-step or relative-improvement threshold. These counts cover all retained invocations; neither is a proven stationary optimum.
-- **Outliers / failed invocations:** cases exceeding the stated error threshold / timed calls with nonfinite output or unmet FOM nonlinear tolerance.
+- **Outliers / failed invocations:** cases exceeding the stated error threshold / timed calls with nonfinite output, failed ROM fitting/evolution stops, or unmet FOM nonlinear tolerance.
+- **Edge Gram / edge QR:** original mesh-dependent initial-field samples with Cholesky regularization / the same samples with orthogonal triangular factorization.
+- **Fixed midpoint / fixed Gauss:** physical quadrature coordinates and weights kept unchanged across meshes, with charged input-field interpolation.
+- **Full-grid QR / bank projection floor:** dense initial-fit objective within the learned bank / smallest error allowing unrestricted linear bank coefficients. Neither replaces the bank with POD or certifies a globally optimal nonlinear fit.
+- **Full-grid / common-grid initial error:** initial-field discrepancy at all requested nodes / only at the fixed observation nodes, divided by the corresponding initial-field norm.
+- **Normalized gradient:** objective-gradient norm divided by Jacobian norm times residual norm; a diagnostic of local optimization, not a global optimality guarantee.
 - **Observed spatial/time order / Richardson estimate:** convergence rates inferred from three refinement levels / extrapolated remaining error assuming that rate continues; these are empirical diagnostics, not rigorous error bounds.
 - **Cold starts / input / cold fit / evolve / dense decode / output / staged total / LM attempts:** number of training-code initial guesses / transfer into GPU memory / initial latent optimization / autonomous reduced evolution / dense-field reconstruction / transfer to host / all staged phases / actual Levenberg–Marquardt trial steps.
 - **Spatial difference / time difference / sum estimate:** observed reference changes after spatial / temporal refinement / their sum; these diagnose uncertainty without proving a bound.

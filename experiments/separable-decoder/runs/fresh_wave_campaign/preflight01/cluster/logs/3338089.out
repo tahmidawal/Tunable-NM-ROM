@@ -1,0 +1,24 @@
+jax_backend=gpu
+data absorbing train 4
+data absorbing validation 2
+bank absorbing 0 0.4490163612649879
+bank absorbing 3 0.43608760281228254
+head mlp 1.0 691200 0 0.017303380810261813 0.0030570102523030593 0.014245443897196963
+head mlp 1.0 691200 3 0.008431809059245246 0.005279986664104258 0.003150659586744144
+rollout absorbing mlp 0.01 0
+rollout absorbing mlp 0.01 1
+rollout absorbing mlp 0.005 0
+rollout absorbing mlp 0.005 1
+rollout absorbing mlp 0.0025 0
+rollout absorbing mlp 0.0025 1
+head quadratic 1.0 691200 0 0.017303380810261813 0.0030570102523030593 0.014245443897196963
+head quadratic 1.0 691200 3 0.007989778122780393 0.004969354134324833 0.003019261179724664
+rollout absorbing quadratic 0.01 0
+rollout absorbing quadratic 0.01 1
+rollout absorbing quadratic 0.005 0
+rollout absorbing quadratic 0.005 1
+rollout absorbing quadratic 0.0025 0
+rollout absorbing quadratic 0.0025 1
+bank dirichlet 0 0.031298491054808704
+bank dirichlet 17 0.0035954251524043636
+fresh_preflight_complete

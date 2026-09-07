@@ -28,7 +28,8 @@
     "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquad20101/cluster/out/refinement/result.json": "1e829480c85b45bac6ddb6db09b97791e6c3e5f96dc41436c6f801f112144854",
     "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20101/cluster/out/refinement/result.json": "808cf8f8980536c0b56d97657dd6b623deb497ee754cc737d4c0ca1fa19081ff",
     "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/verify03/cluster/out/verification/result.json": "302aa1452f2375393bf3c822f94abee11cd241e75420884dca7d83ef1b4f333c",
-    "reports/figures/2026-09-07-fresh-wave-fields.json": "b4e4f88c8e870bab54af2086d322f9d49e56fbe1cbab3e688434adc5f73e7e61"
+    "reports/figures/2026-09-07-fresh-wave-fields.json": "b4e4f88c8e870bab54af2086d322f9d49e56fbe1cbab3e688434adc5f73e7e61",
+    "reports/animations/2026-09-07-wave-evolution.json": "6041362fe8ad68d1ebeece2dc52511cc7a20d184eb6071333c3d0beb339f0d6c"
   },
   "copied_sources": {
     "reports/fresh_wave_report_tables.py": {
@@ -41,7 +42,7 @@
     },
     "reports/gen_2026_09_07_fresh_wave_head_transfer.py": {
       "source": "worktrees/2026-09-06-burgers3d-repair/reports/gen_2026_09_07_fresh_wave_head_transfer.py",
-      "sha256": "c3681247d559d259ad21602790651fd3e9b699b38cccea5f4f645ed3a7db8075"
+      "sha256": "5b3e5822c94de8fe34e9146e4af5fdf6a755b917c0d8afa082e5de78ad793a8a"
     },
     "reports/gen_2026_09_07_fresh_wave_closing.py": {
       "source": "worktrees/2026-09-06-burgers3d-repair/reports/gen_2026_09_07_fresh_wave_closing.py",
@@ -130,11 +131,47 @@
     "reports/figures/2026-09-07-fresh-wave-fields.json": {
       "source": "worktrees/2026-09-06-burgers3d-repair/reports/figures/2026-09-07-fresh-wave-fields.json",
       "sha256": "b4e4f88c8e870bab54af2086d322f9d49e56fbe1cbab3e688434adc5f73e7e61"
+    },
+    "reports/animate_2026_09_07_fresh_waves.py": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animate_2026_09_07_fresh_waves.py",
+      "sha256": "aeb09b807b3d7a309a5d430f25cc180d7f899bd8aaa3252d972c8ae47232279c"
+    },
+    "reports/export_fresh_wave_movie_data.py": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/export_fresh_wave_movie_data.py",
+      "sha256": "f54a1aee7121c0adb7acc9c1dcc2ce7491ba968bfdce2549d15b247878e45fd7"
+    },
+    "reports/animations/2026-09-07-wave-evolution.json": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animations/2026-09-07-wave-evolution.json",
+      "sha256": "6041362fe8ad68d1ebeece2dc52511cc7a20d184eb6071333c3d0beb339f0d6c"
+    },
+    "reports/animations/2026-09-07-reflective-wave-surface.gif": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animations/2026-09-07-reflective-wave-surface.gif",
+      "sha256": "69ac6cdcc99489f4f69494c55d5520cb0b398f7258fd8b6bbc7ffddac1641eca"
+    },
+    "reports/animations/2026-09-07-absorbing-wave-surface.gif": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animations/2026-09-07-absorbing-wave-surface.gif",
+      "sha256": "8acd69e5acb7099199a4415f994eeaa3c705d89bc9d0e0297e16aa7cf54c3140"
+    },
+    "reports/animations/2026-09-07-wave-evolution-checks.json": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animations/2026-09-07-wave-evolution-checks.json",
+      "sha256": "3108e9d3de33d80230599f101ad9336cbb1a179b6065402cb3bdccb5ce22eba6"
+    },
+    "reports/animations/2026-09-07-reflective-wave-top.gif": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animations/2026-09-07-reflective-wave-top.gif",
+      "sha256": "d85bc1f39a3f9c3cb3e0463e9beda70ce150d5e11e66bee2d83db285fe2746ab"
+    },
+    "reports/animations/2026-09-07-absorbing-wave-top.gif": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animations/2026-09-07-absorbing-wave-top.gif",
+      "sha256": "c1ff5aff3eb339ae8459e2759892e7805795082eeb9f888d545378c415b87a94"
+    },
+    "reports/animations/2026-09-07-wave-evolution.html": {
+      "source": "worktrees/2026-09-06-burgers3d-repair/reports/animations/2026-09-07-wave-evolution.html",
+      "sha256": "0f52f8fd54beba7901dcc2625620807feef45e1d5597580a4fdd60ed95044cf7"
     }
   },
   "wave_commit": "906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e",
-  "repair_commit": "622687bf9eb26bac957bdc5b16864cbec0ca6e7e",
-  "report_sha256": "98ad66704a5afb969a9fadacf27bea85eab2c768a214e3f252311f9096075edf",
+  "repair_commit": "3cfd5f64fa18bab530007fc9affa240be7fc066b",
+  "report_sha256": "6f934f13469e48134b9dfcad30ee9f89ca6f2971cad4cc3d7ecbd7d1d4b02939",
   "scientific_math_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
   "status": "independently_reviewed_bounded_negative_result",
   "review_disposition_path": "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/final-review-disposition.json",
@@ -146,5 +183,13 @@
     "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign",
     "--out",
     "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/figures"
+  ],
+  "animation_command": [
+    "/home/tahmid/Dev/.venv/bin/python",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/animate_2026_09_07_fresh_waves.py",
+    "--runs",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign",
+    "--out",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/animations"
   ]
 }

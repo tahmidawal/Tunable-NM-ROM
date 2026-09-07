@@ -226,6 +226,18 @@ The first continuation wrapper used regenerated normalization values after check
 
 The scope is the declared smooth Gaussian-core compact family in two dimensions. Head weights and learned banks are fresh per PDE/boundary configuration. Initial fitting uses full-field initial-state projections, so this first accuracy campaign makes no grid-independent cold-start or speed claim. Results do not establish three-dimensional wave transfer or performance outside this family.
 
+## Animated wave evolution
+
+[Open the interactive wave viewer](animations/2026-09-07-wave-evolution.html) to play, pause, scrub time, change playback speed, and switch between boundary conditions and surface/top views.
+
+These movies show the actual reference and MLP trajectory at 49 observation times from 0 to 2.4, without temporal interpolation. Reference job `3346494` regenerated only the same illustrated validation case from the original seed, frozen FOM and original time step. Saved snapshots and all trajectory error metrics were checked against the original campaign. The MLP coefficients were reused without refitting, retraining or recomputing the reduced trajectory. The final cohort remains closed.
+
+![Reflective wave evolution](animations/2026-09-07-reflective-wave-surface.gif)
+
+![Absorbing wave evolution](animations/2026-09-07-absorbing-wave-surface.gif)
+
+The reference is on the left and the decoder on the right. Height and color show displacement with fixed amplitude limits throughout each movie. The surface is a view of the same two-dimensional wave field, not an additional spatial dimension in the PDE. An absorbing wave consequently fades on the fixed scale. The top-view animations are also available in the viewer.
+
 ## Actual spatial fields and the normalization distinction
 
 The earlier campaign tables use fixed initial-state scales. For displacement, $e_{u,0}(t)=\|u_{\mathrm{ROM}}(t)-u_{\mathrm{ref}}(t)\|_M/\|u_{\mathrm{ref}}(0)\|_M$. A different, instantaneous relative error is $e_{u,t}(t)=\|u_{\mathrm{ROM}}(t)-u_{\mathrm{ref}}(t)\|_M/\|u_{\mathrm{ref}}(t)\|_M$. The latter can be large when an absorbing reference has decayed, even though the absolute difference and initial-normalized error are small. A reference norm that vanishes makes instantaneous relative error undefined; the velocity figures label this explicitly.
@@ -285,3 +297,4 @@ These are independently verified reference fields for a predeclared off-center c
 
 - **Interquartile spread / confidence interval:** the middle half of plotted case/repeat values, and an interval describing statistical estimation uncertainty; the figures show only the former.
 - **Fixed-scale / instantaneous relative error:** error divided by an initial reference scale, or by the reference magnitude at the current time. The two answer different accuracy questions when the reference decays.
+- **Surface / top view / time scrubbing:** display the two-dimensional displacement as height, display it as a color map, or move directly to a chosen recorded time.

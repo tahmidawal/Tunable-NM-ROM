@@ -97,6 +97,9 @@ with matched linear dimensions. All job outputs were checksum-pulled and exact
 remote directories deleted. Native checkpoints are on the wave branch; complete
 archives and independent audits are on the repair branch. No merge performed.
 Canonical generated report: `reports/2026-09-07-fresh-wave-head-transfer.md`.
+Animated surface and top views, with a standalone play/pause/time-slider viewer, are
+now available at `reports/animations/2026-09-07-wave-evolution.html`. They compare
+the same validation reference and decoder with fixed amplitude scales.
 The reported accuracy ceiling uses fixed initial-state normalization. New saved-field
 visualizations show that this does not establish accuracy relative to a nearly
 vanished absorbing field; both normalizations are now shown in the same report.
@@ -6486,3 +6489,17 @@ Earlier campaign errors are normalized by initial-state scales. The new field la
 | absorbing | 0 | 691200 | 2.4 | 0.004349636944472754 | 2.2700777687112628 | 3.4694469519536142e-18 |
 
 All numerical entries above were generated from `reports/figures/2026-09-07-fresh-wave-fields.json`. The field plotting script is `reports/plot_2026_09_07_fresh_wave_fields.py`; figures and PDF exports are beside the existing canonical report. Color scales match reference and predictions within each time column; they may vary across time, and errors are not divided pointwise. The generated report now includes both normalization definitions, the snapshot table and spatial images. Its former content hash remains in the preceding historical entry; the updated reproducibility manifest records the current report hash.
+
+
+### Animated wave evolution requested after the static figures
+
+User clarified that they wanted the wave evolving over time. Created looping surface and top-view animations plus a standalone interactive HTML viewer with play/pause, restart, speed and time controls. Each movie places the reference on the left and the saved MLP evolution on the right. Surface height represents the same two-dimensional displacement field; it is not a three-dimensional wave experiment. The snapshot-only interpretation of the requested visualization is superseded; existing static figures remain valid.
+
+Reference export job `3346494` used frozen wave source `fdcc6491657363005cc9060a0cae21dac320a974` and committed coordinator supplement `4587721c416e05430d97b880df54c4bb6858dc08`. It regenerated only the same selected validation case from the original seed, mesh and FOM step. No training, refitting, ROM recomputation or final-cohort opening occurred. Job logged GPU/f64/highest, device `['NVIDIA H100 PCIe']`, with no numerical tripwire warnings. All input/output/pull manifests verified and the exact remote job directory was deleted.
+
+| Boundary | Case | Frames | Start time | End time | Cached snapshot maximum absolute difference | Maximum original trajectory metric difference |
+|---|---|---|---|---|---|---|
+| reflective | 0 | 49 | 0 | 2.4 | 0 | 5.5511151231257827e-17 |
+| absorbing | 0 | 49 | 0 | 2.4 | 0 | 6.9388939039072284e-18 |
+
+These values are generated from `reports/animations/2026-09-07-wave-evolution.json`. Every GIF frame was decoded and checked; browser playback/pause/restart/slider/speed and both boundary/view choices worked. The temporary preview server was stopped. The amplitude scales are fixed throughout each movie, and frames are actual observations with no temporal interpolation. The renderer and export script live in `reports/`; raw frames, checked cluster archive, provenance and cleanup receipt are tracked on the repair branch. The same canonical wave report now links the animations and viewer. No branch merge was requested or performed.

@@ -89,6 +89,10 @@ def main():
         errors['stiffness_edges'] = relative(stiffness, table['stiffness_unit'])
         errors['damping_faces'] = relative(damping, table['damping_unit']) if not reflective else float(np.max(abs(table['damping_unit'])))
     assert max(errors.values()) < 1e-10, errors
+    with np.load(directory/'truth_spotchecks.npz') as source:
+        truth_u, truth_v, times = source['u'], source['v'], source['times']
+    scales = np.asarray(manifest['splits']['validation']['scales'])
+    case_count = len(scales)
     head_rows = []
     for path in sorted(directory.glob('*/reconstruction.npz')):
         arm = path.parent
@@ -102,10 +106,51 @@ def main():
                        independent_tangent_error=relative(tangent, saved['reconstructed_velocity']))
             assert row['independent_prediction_error'] < 1e-10, row
             assert row['independent_tangent_error'] < 1e-10, row
+            observations = len(predictions)//case_count
+            indices = np.rint(times/times[-1]*(observations-1)).astype(int)
+            selected_u = predictions.reshape(case_count, observations, -1)[:, indices]@g.T
+            selected_v = tangent.reshape(case_count, observations, -1)[:, indices]@g.T
+            du = np.sqrt(np.sum((selected_u-truth_u)**2*mass, axis=-1))/scales[:, 0, None]
+            dv = np.sqrt(np.sum((selected_v-truth_v)**2*mass, axis=-1))/scales[:, 1, None]
+            stored_u = saved['displacement_error'].reshape(case_count, observations)[:, indices]
+            stored_v = saved['tangent_error'].reshape(case_count, observations)[:, indices]
+            row['reconstruction_field_metric_discrepancy'] = float(np.max(abs(du-stored_u)))
+            row['tangent_field_metric_discrepancy'] = float(np.max(abs(dv-stored_v)))
+            assert row['reconstruction_field_metric_discrepancy'] < 1e-10, row
+            assert row['tangent_field_metric_discrepancy'] < 1e-10, row
             with np.load(arm/'latent_fits.npz') as fitted:
                 assert fitted['initial_starts'].shape[1] == 8
                 np.testing.assert_array_equal(fitted['initial_starts'], fitted['doubled_initial_starts'])
                 row['identical_eight_starts'] = True
+        # Validate all saved physical energies in bank coordinates, using the
+        # independently assembled edge stiffness, and only permit masked phase NaNs.
+        if (arm/'rollouts.npz').exists():
+            with np.load(arm/'rollouts.npz') as runs:
+                maximum_energy_discrepancy = 0.
+                checked_rollouts = 0
+                parameters = manifest['splits']['validation']['parameters']
+                for key in runs.files:
+                    if key.endswith('_unwrapped_phase_error_valid_segments'):
+                        prefix = key.removesuffix('_unwrapped_phase_error_valid_segments')
+                        mask = runs[prefix+'_modal_phase_defined']
+                        assert np.all(np.isfinite(runs[key][mask]))
+                        assert np.all(np.isnan(runs[key][~mask]))
+                    if not key.endswith('_coefficients') or key.endswith('_physical_velocity_coefficients'):
+                        continue
+                    prefix = key.removesuffix('_coefficients')
+                    case = int(prefix.split('_case')[-1])
+                    if not np.all(runs[prefix+'_completed']):
+                        continue
+                    aa, bb = runs[key], runs[prefix+'_physical_velocity_coefficients']
+                    c = parameters[case][5]
+                    energy = .5*(np.sum(bb*bb, axis=-1)+c*c*np.einsum('tr,rs,ts->t', aa, stiffness, aa))
+                    stored = runs[prefix+'_rom_energy']
+                    discrepancy = float(np.max(abs(energy-stored))/manifest['splits']['validation']['initial_energy'][case])
+                    assert discrepancy < 1e-10, (arm.name, prefix, discrepancy)
+                    maximum_energy_discrepancy = max(maximum_energy_discrepancy, discrepancy)
+                    checked_rollouts += 1
+                row['rollout_energies_checked'] = checked_rollouts
+                row['maximum_rollout_energy_discrepancy'] = maximum_energy_discrepancy
         head_rows.append(row)
     report = dict(boundary_dir=str(directory.resolve()), bc=bc, intervals=n,
                   bank_operator_discrepancies=errors, heads=head_rows, passed=True)

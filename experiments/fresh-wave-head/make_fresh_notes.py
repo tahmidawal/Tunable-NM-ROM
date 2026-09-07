@@ -31,12 +31,18 @@ def main():
                 raise RuntimeError("Duplicate BC; select one declared campaign invocation per BC")
             boundaries[bc]=(path,run,value)
     status="independently reviewed" if args.reviewed else "provisional pending independent result review"
-    lines=["# Fresh waves: learned spatial bank, coefficient heads and actual evolution",f"This report covers newly verified absorbing and fixed-wall scalar waves, learned-bank reconstruction and actual reduced trajectories. The numerical results below are {status}; all earlier wave experiments are excluded from this evidence.","", "## Scope and reference",""]
+    lines=["# Fresh waves: learned spatial bank, coefficient heads and actual evolution",f"This report covers newly verified absorbing and fixed-wall scalar waves, learned-bank reconstruction and actual reduced trajectories. The numerical results below are {status}; all earlier wave experiments are excluded from this evidence.",""]
+    for bc,(_,run,entry) in boundaries.items():
+        accepted=sum(bool(arm['accuracy_passed']) for arm in entry['arms'])
+        full=next((b for b in entry['linear_baselines'] if b['label']=='learned_bank_linear_r'),None)
+        linear_pass=full is not None and all(full[key]['outliers']==0 and full[key]['nonfinite']==0 for key in ('displacement','velocity','energy_state'))
+        lines.append(f"For `{bc}`, {accepted} of {len(entry['arms'])} head/repeat runs meet the predeclared engineering target. The unrestricted full-bank linear baseline {'meets' if linear_pass else 'does not meet'} the same physical-error ceiling; its time propagation is independent of the nonlinear head.")
+    lines += ["", "## Scope and reference",""]
     for bc,(path,run,entry) in boundaries.items():
         config=run["config"]
         ref=config["reference_evidence"]
         lines.append(f"The `{bc}` run uses {config['n']} intervals per axis, {config['rank']} learned bank functions, {config['latent']} latent coordinates, {config['train_count']} training trajectories and {config['validation_count']} validation trajectories through time {number(config['end_time'])}. Its final cohort remains closed. Reference job `{ref['job_id']}` and source `{ref['source_commit']}` precede training; reference uncertainty and the absorber's boundary-model error remain distinct from reduced-model error.")
-    lines += ["", "All tabulated relative errors use the initial displacement mass norm or initial state energy as fixed trajectory scales. A time-maximum is the largest stored-time error; error-state energy is not the difference between two solution energies. The first-order absorbing condition has physical/model reflection at oblique incidence. Every latent decoder is parameter-free: no wave-family descriptors or time enter the head.","","## Learned bank and fresh linear baselines",""]
+    lines += ["", "All tabulated relative errors use the initial displacement mass norm or initial state energy as fixed trajectory scales. A time-maximum is the largest stored-time error; error-state energy is not the difference between two solution energies. The first-order absorbing condition has physical/model reflection at oblique incidence. Heads receive only latent coordinates: no physical family descriptor or time enters the head.","","## Learned bank and fresh linear baselines",""]
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
         bank=entry["bank"]
@@ -46,8 +52,10 @@ def main():
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
         for baseline in entry["linear_baselines"]:
-            rows.append([bc,baseline["label"],baseline["rank"],number(baseline["displacement"]["mean"],True),number(baseline["velocity"]["mean"],True),number(baseline["energy_state"]["mean"],True),number(baseline["energy_state"]["worst"],True),baseline["energy_state"]["outliers"]])
-    lines += [table(["Boundary","Fresh baseline","Dimension","Max-over-time displacement mean","Velocity mean","Energy-state mean","Energy-state worst","Energy outliers"],rows),"","Randomized POD is an explicitly approximate linear comparator trained from the fresh training data. Its linear dynamics and the unrestricted learned-bank dynamics use independent matrix-exponential propagation.","","## Unseen-state representation",""]
+            for metric in ('displacement','velocity','energy_state'):
+                summary=baseline[metric]
+                rows.append([bc,baseline["label"],baseline["rank"],metric,number(summary["mean"],True),number(summary["median"],True),number(summary["worst"],True),summary["outliers"]])
+    lines += [table(["Boundary","Fresh baseline","Dimension","Time-maximum metric","Mean","Median","Worst","Outliers"],rows),"","Randomized POD is an explicitly approximate linear comparator trained from the fresh training data. Its linear dynamics and the unrestricted learned-bank dynamics use independent matrix-exponential propagation.","","## Unseen-state representation",""]
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
         for arm in entry["arms"]:
@@ -59,8 +67,15 @@ def main():
         for arm in entry["arms"]:
             rollout=arm["rollout"]
             primary=next(s for s in rollout["summaries"] if s["dt"]==rollout["primary_dt"])
-            rows.append([bc,arm["name"],arm["optimizer_seed"],number(primary["dt"]),primary["completed"],primary["failed"],number(primary["displacement"]["mean"],True),number(primary["velocity"]["mean"],True),number(primary["energy_state"]["mean"],True),number(primary["energy_state"]["median"],True),number(primary["energy_state"]["worst"],True),primary["energy_state"]["outliers"],str(arm["accuracy_passed"])])
-    lines += [table(["Boundary","Head/objective","Repeat seed","Primary step","Complete","Failed","Displacement mean","Velocity mean","Energy-state mean","Median","Worst","Energy outliers","Engineering target passed"],rows),"","These values summarize each trajectory's maximum error over time. Means, medians and worst values are conditional on finite cases; failed/nonfinite trajectories count as outliers and prevent acceptance. The primary step was fixed before training. Physical velocity is the decoder Jacobian applied to the latent velocity; no finite-difference replacement or phase alignment is used.","","## Time-step refinement and phase diagnostics",""]
+            rows.append([bc,arm["name"],arm["optimizer_seed"],number(primary["dt"]),primary["completed"],primary["failed"],number(primary["energy_state"]["mean"],True),number(primary["energy_state"]["median"],True),number(primary["energy_state"]["worst"],True),primary["energy_state"]["outliers"],str(arm["accuracy_passed"])])
+    lines += [table(["Boundary","Head/objective","Repeat seed","Primary step","Complete","Failed","Energy-state mean","Median","Worst","Energy outliers","Engineering target passed"],rows),""]
+    rows=[]
+    for bc,(_,run,entry) in boundaries.items():
+        for arm in entry['arms']:
+            primary=next(s for s in arm['rollout']['summaries'] if s['dt']==arm['rollout']['primary_dt'])
+            d,v=primary['displacement'],primary['velocity']
+            rows.append([bc,arm['name'],arm['optimizer_seed'],number(d['mean'],True),number(d['median'],True),number(d['worst'],True),d['outliers'],number(v['mean'],True),number(v['median'],True),number(v['worst'],True),v['outliers']])
+    lines += [table(['Boundary','Head/objective','Repeat seed','Displacement mean','Median','Worst','Outliers','Velocity mean','Median','Worst','Outliers'],rows),"","These values summarize each trajectory's maximum error over time. Means, medians and worst values are conditional on finite cases; failed/nonfinite trajectories count as outliers and prevent acceptance. The primary step was fixed before training. Physical velocity is the decoder Jacobian applied to the latent velocity; no finite-difference replacement or phase alignment is used.","","## Time-step refinement and phase diagnostics",""]
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
         for arm in entry["arms"]:
@@ -73,12 +88,21 @@ def main():
             vanished=sum(x["vanished_mode_observations"] for x in primary)
             rows.append([bc,arm["name"],arm["optimizer_seed"],number(maximum,True),len(valid),str(rollout["refinement_passed"]),number(phase),vanished])
     lines += [table(["Boundary","Head/objective","Repeat seed","Finest-two energy-state difference","Both-step completions","Refinement passed","Worst defined phase error (radians)","Vanished-mode observations"],rows),"","Reflective phases use semidiscrete standing-mode frequencies. Absorbing sine projections are diagnostic coordinates, not absorbing-system eigenmodes. Vanished predicted amplitudes have undefined phase and explicit flags. Raw files also preserve valid-segment unwrapped phase drift, wall-strip peak-time differences, absorbing means, physical boundary power and integrated energy balance.","","## Provenance and limits",""]
+    diagnostic_rows=[]
+    for bc,(_,run,entry) in boundaries.items():
+        for arm in entry['arms']:
+            primary=[r for r in arm['rollout']['cases'] if r['dt']==arm['rollout']['primary_dt'] and r['completed']]
+            balance=max((r['max_energy_balance_relative'] for r in primary),default=None)
+            initial=arm['validation']['initial_reconstruction']
+            diagnostic_rows.append([bc,arm['name'],arm['optimizer_seed'],number(initial['mean'],True),number(initial['median'],True),number(initial['worst'],True),number(arm['zero_state']['mass_norm']),number(balance,True)])
+    lines[-2:]=["## Initial fit, zero-state bias and energy balance","",table(['Boundary','Head/objective','Repeat seed','Initial reconstruction mean','Median','Worst','Zero-target fitted mass norm','Primary worst energy-balance defect'],diagnostic_rows),"","The zero-target quantity is an absolute mass norm, distinct from normalized trajectory errors. Energy balance uses each ROM's own initial energy and integrated physical boundary power; small balance defect alone does not establish accurate displacement or phase.","","## Provenance and limits",""]
     for path,run in loaded:
         digest=hashlib.sha256(path.read_bytes()).hexdigest()
         lines.append(f"- Source result: `{path}`; SHA-256 `{digest}`; GPU job `{run['provenance'].get('job_id')}`; source commit `{run['provenance'].get('source_commit')}`; devices `{run['provenance'].get('device_kind')}`.")
     lines += ["","The scope is the declared smooth Gaussian-core compact family in two dimensions. Head weights and learned banks are fresh per PDE/boundary configuration. Initial fitting uses full-field initial-state projections, so this first accuracy campaign makes no grid-independent cold-start or speed claim. Results do not establish three-dimensional wave transfer or performance outside this family.","","## Glossary", "",
               "- **Boundary / fixed wall / absorber:** the physical edge condition; zero wall displacement produces sign-reversing reflection, while the local radiation condition approximates outgoing waves.",
               "- **Bank / head / latent coordinates:** spatial neural features, the coefficient function multiplying them, and its internal coordinates.",
+              "- **MLP / quadratic / velocity objective:** a multilayer SiLU neural coefficient map, an affine map plus unique quadratic latent products, and an added training penalty for physical velocities outside the decoder tangent space.",
               "- **Rank ratio / parameters / seed:** smallest-to-largest singular value, number of trainable head coefficients, and the recorded optimizer-repeat random seed.",
               "- **Training / validation / final cohort:** data used to fit models, unseen development trajectories, and reserved unopened trajectories.",
               "- **POD / PCA / QR:** an approximate linear data subspace, a statistical coordinate initialization, and an orthonormal change of basis.",

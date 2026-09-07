@@ -41,7 +41,10 @@ def main():
         p.error('entry must be a relative Python source inside fresh cell')
     commit = subprocess.check_output(['git', '-C', str(APPROVED), 'rev-parse', 'HEAD'], text=True).strip()
     source = {}
-    for f in sorted(cell.rglob('*')):
+    tracked_names = subprocess.check_output([
+        'git', '-C', str(APPROVED), 'ls-tree', '-r', '--name-only', commit,
+        '--', 'experiments/fresh-wave-head'], text=True).splitlines()
+    for f in [APPROVED/name for name in tracked_names]:
         if not f.is_file() or any(part in {'runs', 'cache', 'data', '__pycache__', '.pytest_cache'} for part in f.relative_to(cell).parts):
             continue
         if f.suffix not in {'.py', '.json', '.md'}:

@@ -1,0 +1,1217 @@
+{
+  "scope": "Accounting and native artifact hashes only; no independent full-state wave error audit.",
+  "pairs": [
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_256_0.00125_rk4_0.225.json",
+      "pair_sha256": "936cdbbec68873daa8801ed856bc783053a97ca52d6a0bd951fa78566ef3a070",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 6.38524705695454,
+              "valid": true,
+              "max_required_error": 0.07655351020992333
+            },
+            "fom": {
+              "query_median_seconds": 0.17217183101456612,
+              "valid": true,
+              "max_required_error": 0.0007347623998958866
+            },
+            "raw_speedup_ratio_of_case_medians": 0.02696400459979757
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 6.429694432998076,
+              "valid": true,
+              "max_required_error": 0.07497323533942225
+            },
+            "fom": {
+              "query_median_seconds": 0.1894482980715111,
+              "valid": true,
+              "max_required_error": 0.0008742223482569951
+            },
+            "raw_speedup_ratio_of_case_medians": 0.02946458809912278
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.028214296349460176,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.0757633727746728,
+          "median_finite": 0.0757633727746728,
+          "worst_finite": 0.07655351020992333
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.0008044923740764408,
+          "median_finite": 0.0008044923740764408,
+          "worst_finite": 0.0008742223482569951
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_256_0.00125_rk4_0.45.json",
+      "pair_sha256": "8b5f944fa8a170b5248336be55f43ff6ba4e822a92b840ca0459a9883f9988c4",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 6.38524705695454,
+              "valid": true,
+              "max_required_error": 0.07655351020992333
+            },
+            "fom": {
+              "query_median_seconds": 0.09065911604557186,
+              "valid": true,
+              "max_required_error": 0.0007352338415458144
+            },
+            "raw_speedup_ratio_of_case_medians": 0.014198215861801275
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 6.429694432998076,
+              "valid": true,
+              "max_required_error": 0.07497323533942225
+            },
+            "fom": {
+              "query_median_seconds": 0.09930906898807734,
+              "valid": true,
+              "max_required_error": 0.0008748139956058676
+            },
+            "raw_speedup_ratio_of_case_medians": 0.015445379251369948
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.014821797556585612,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.0757633727746728,
+          "median_finite": 0.0757633727746728,
+          "worst_finite": 0.07655351020992333
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.000805023918575841,
+          "median_finite": 0.000805023918575841,
+          "worst_finite": 0.0008748139956058676
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_256_0.0025_rk4_0.225.json",
+      "pair_sha256": "51154de7c6ac467131c482af26652e671156cc2bb4ee2ce8873f73ec9271a8f0",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 3.210096588009037,
+              "valid": true,
+              "max_required_error": 0.07655351803253826
+            },
+            "fom": {
+              "query_median_seconds": 0.17217183101456612,
+              "valid": true,
+              "max_required_error": 0.0007347623998958866
+            },
+            "raw_speedup_ratio_of_case_medians": 0.053634470581880644
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 3.2324194570537657,
+              "valid": true,
+              "max_required_error": 0.07497325732245662
+            },
+            "fom": {
+              "query_median_seconds": 0.1894482980715111,
+              "valid": true,
+              "max_required_error": 0.0008742223482569951
+            },
+            "raw_speedup_ratio_of_case_medians": 0.05860882245900921
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.05612164652044493,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.07576338767749743,
+          "median_finite": 0.07576338767749743,
+          "worst_finite": 0.07655351803253826
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.0008044923740764408,
+          "median_finite": 0.0008044923740764408,
+          "worst_finite": 0.0008742223482569951
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_256_0.0025_rk4_0.45.json",
+      "pair_sha256": "a3bf44ea854e7113ba1246a226ef42f727254c3ca0b1b2a29bcf86330b69dace",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 3.210096588009037,
+              "valid": true,
+              "max_required_error": 0.07655351803253826
+            },
+            "fom": {
+              "query_median_seconds": 0.09065911604557186,
+              "valid": true,
+              "max_required_error": 0.0007352338415458144
+            },
+            "raw_speedup_ratio_of_case_medians": 0.028241865489100553
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 3.2324194570537657,
+              "valid": true,
+              "max_required_error": 0.07497325732245662
+            },
+            "fom": {
+              "query_median_seconds": 0.09930906898807734,
+              "valid": true,
+              "max_required_error": 0.0008748139956058676
+            },
+            "raw_speedup_ratio_of_case_medians": 0.030722828614140937
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.029482347051620745,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.07576338767749743,
+          "median_finite": 0.07576338767749743,
+          "worst_finite": 0.07655351803253826
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.000805023918575841,
+          "median_finite": 0.000805023918575841,
+          "worst_finite": 0.0008748139956058676
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_512_0.00125_rk4_0.225.json",
+      "pair_sha256": "8948aea2a0ad5d815c8d1b7c462f3a6cfbd9fda9cb666dbf15a922044fee5f80",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 6.441626293002628,
+              "valid": true,
+              "max_required_error": 0.07654345740931967
+            },
+            "fom": {
+              "query_median_seconds": 0.5044656710233539,
+              "valid": true,
+              "max_required_error": 0.00016261663442034168
+            },
+            "raw_speedup_ratio_of_case_medians": 0.0783134022492646
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 6.4831486829789355,
+              "valid": true,
+              "max_required_error": 0.07491543170187695
+            },
+            "fom": {
+              "query_median_seconds": 0.5492720659822226,
+              "valid": true,
+              "max_required_error": 0.00019496794085224945
+            },
+            "raw_speedup_ratio_of_case_medians": 0.08472304012158458
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.0815182211854246,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.07572944455559831,
+          "median_finite": 0.07572944455559831,
+          "worst_finite": 0.07654345740931967
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.00017879228763629558,
+          "median_finite": 0.00017879228763629558,
+          "worst_finite": 0.00019496794085224945
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_512_0.00125_rk4_0.45.json",
+      "pair_sha256": "09de433cf99b6e42c37b0e3fa89c9fcae06c1eeb0f631544be1023e4a8e7f261",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 6.441626293002628,
+              "valid": true,
+              "max_required_error": 0.07654345740931967
+            },
+            "fom": {
+              "query_median_seconds": 0.2853358070133254,
+              "valid": true,
+              "max_required_error": 0.0001626996915428194
+            },
+            "raw_speedup_ratio_of_case_medians": 0.044295616360619725
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 6.4831486829789355,
+              "valid": true,
+              "max_required_error": 0.07491543170187695
+            },
+            "fom": {
+              "query_median_seconds": 0.30905839102342725,
+              "valid": true,
+              "max_required_error": 0.00019507509657744248
+            },
+            "raw_speedup_ratio_of_case_medians": 0.04767103241590602
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.04598332438826287,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.07572944455559831,
+          "median_finite": 0.07572944455559831,
+          "worst_finite": 0.07654345740931967
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.00017888739406013096,
+          "median_finite": 0.00017888739406013096,
+          "worst_finite": 0.00019507509657744248
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_512_0.0025_rk4_0.225.json",
+      "pair_sha256": "304fab3b7c1c5402efa7324b614ec4e770e769afa5a414bedcc1497aaa76a3d5",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 3.2645480760838836,
+              "valid": true,
+              "max_required_error": 0.0765434650433347
+            },
+            "fom": {
+              "query_median_seconds": 0.5044656710233539,
+              "valid": true,
+              "max_required_error": 0.00016261663442034168
+            },
+            "raw_speedup_ratio_of_case_medians": 0.15452848580147285
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 3.2840682880487293,
+              "valid": true,
+              "max_required_error": 0.07491545330667158
+            },
+            "fom": {
+              "query_median_seconds": 0.5492720659822226,
+              "valid": true,
+              "max_required_error": 0.00019496794085224945
+            },
+            "raw_speedup_ratio_of_case_medians": 0.16725354584772642
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.16089101582459964,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.07572945917500315,
+          "median_finite": 0.07572945917500315,
+          "worst_finite": 0.0765434650433347
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.00017879228763629558,
+          "median_finite": 0.00017879228763629558,
+          "worst_finite": 0.00019496794085224945
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_absorbing_512_0.0025_rk4_0.45.json",
+      "pair_sha256": "baac9a39ea76621f22f4f15066a5e9141029f3cef46bc5e47212b968286f1d9c",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 3.2645480760838836,
+              "valid": true,
+              "max_required_error": 0.0765434650433347
+            },
+            "fom": {
+              "query_median_seconds": 0.2853358070133254,
+              "valid": true,
+              "max_required_error": 0.0001626996915428194
+            },
+            "raw_speedup_ratio_of_case_medians": 0.08740438197363327
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 3.2840682880487293,
+              "valid": true,
+              "max_required_error": 0.07491545330667158
+            },
+            "fom": {
+              "query_median_seconds": 0.30905839102342725,
+              "valid": true,
+              "max_required_error": 0.00019507509657744248
+            },
+            "raw_speedup_ratio_of_case_medians": 0.09410839358856883
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.09075638778110105,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.07572945917500315,
+          "median_finite": 0.07572945917500315,
+          "worst_finite": 0.0765434650433347
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.00017888739406013096,
+          "median_finite": 0.00017888739406013096,
+          "worst_finite": 0.00019507509657744248
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 0,
+              "fom": 0
+            },
+            "matched_reference_accuracy": true,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_dirichlet_256_0.00125_dst_0.0.json",
+      "pair_sha256": "a7a909b1d6f706f60e41fe9a9a61051677cdadc642878f356ca86cb87d514616",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 6.565847844001837,
+              "valid": true,
+              "max_required_error": 0.36963763179271203
+            },
+            "fom": {
+              "query_median_seconds": 0.014422451960854232,
+              "valid": true,
+              "max_required_error": 0.0038910295111481445
+            },
+            "raw_speedup_ratio_of_case_medians": 0.002196586382066364
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 6.571279844967648,
+              "valid": true,
+              "max_required_error": 0.5536701845349743
+            },
+            "fom": {
+              "query_median_seconds": 0.013625602005049586,
+              "valid": true,
+              "max_required_error": 0.0050474164291517375
+            },
+            "raw_speedup_ratio_of_case_medians": 0.0020735081029130435
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.002135047242489704,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.46165390816384316,
+          "median_finite": 0.46165390816384316,
+          "worst_finite": 0.5536701845349743
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.004469222970149941,
+          "median_finite": 0.004469222970149941,
+          "worst_finite": 0.0050474164291517375
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 2
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_dirichlet_256_0.0025_dst_0.0.json",
+      "pair_sha256": "d878ba046c5756ffb1b9e5c22e5a1ae5c74cd4965b4cbb9fe52b9701fde76a06",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 3.2993333800695837,
+              "valid": true,
+              "max_required_error": 0.3696382107388256
+            },
+            "fom": {
+              "query_median_seconds": 0.014422451960854232,
+              "valid": true,
+              "max_required_error": 0.0038910295111481445
+            },
+            "raw_speedup_ratio_of_case_medians": 0.004371323021788741
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 3.30142892699223,
+              "valid": true,
+              "max_required_error": 0.553670782106805
+            },
+            "fom": {
+              "query_median_seconds": 0.013625602005049586,
+              "valid": true,
+              "max_required_error": 0.0050474164291517375
+            },
+            "raw_speedup_ratio_of_case_medians": 0.004127183200476529
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.004249253111132635,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.4616544964228153,
+          "median_finite": 0.4616544964228153,
+          "worst_finite": 0.553670782106805
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.004469222970149941,
+          "median_finite": 0.004469222970149941,
+          "worst_finite": 0.0050474164291517375
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 2
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_dirichlet_512_0.00125_dst_0.0.json",
+      "pair_sha256": "043f51b46efa0dd99f1a12e0782e934b4c9b96a0f185e5a3d00f00591c894250",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 6.610703556914814,
+              "valid": true,
+              "max_required_error": 0.3682302436576835
+            },
+            "fom": {
+              "query_median_seconds": 0.06463770102709532,
+              "valid": true,
+              "max_required_error": 0.0010988567106486266
+            },
+            "raw_speedup_ratio_of_case_medians": 0.00977773401432955
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 6.62298635893967,
+              "valid": true,
+              "max_required_error": 0.5520427865864597
+            },
+            "fom": {
+              "query_median_seconds": 0.06442987103946507,
+              "valid": true,
+              "max_required_error": 0.0014446213838727622
+            },
+            "raw_speedup_ratio_of_case_medians": 0.009728220405059116
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.009752977209694333,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.46013651512207154,
+          "median_finite": 0.46013651512207154,
+          "worst_finite": 0.5520427865864597
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.0012717390472606945,
+          "median_finite": 0.0012717390472606945,
+          "worst_finite": 0.0014446213838727622
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 2
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    },
+    {
+      "pair": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/pair_dirichlet_512_0.0025_dst_0.0.json",
+      "pair_sha256": "16fc2a2e8def6bae6e522d326766d5c19e380c51746682df6008a8a8cce63cb9",
+      "result": {
+        "accounting_audit_passed": true,
+        "scope": "Accounting only; independently audit native operators and field errors before accepting science.",
+        "case_results": {
+          "0": {
+            "nmrom": {
+              "query_median_seconds": 3.3547930490458384,
+              "valid": true,
+              "max_required_error": 0.3682308228835421
+            },
+            "fom": {
+              "query_median_seconds": 0.06463770102709532,
+              "valid": true,
+              "max_required_error": 0.0010988567106486266
+            },
+            "raw_speedup_ratio_of_case_medians": 0.019267269271789927
+          },
+          "1": {
+            "nmrom": {
+              "query_median_seconds": 3.3537547579035163,
+              "valid": true,
+              "max_required_error": 0.552043385593914
+            },
+            "fom": {
+              "query_median_seconds": 0.06442987103946507,
+              "valid": true,
+              "max_required_error": 0.0014446213838727622
+            },
+            "raw_speedup_ratio_of_case_medians": 0.019211264892767883
+          }
+        },
+        "raw_speedup_median_of_case_ratios": 0.019239267082278903,
+        "nmrom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.460137104238728,
+          "median_finite": 0.460137104238728,
+          "worst_finite": 0.552043385593914
+        },
+        "fom_error_summary": {
+          "count": 2,
+          "nonfinite": 0,
+          "mean_finite": 0.0012717390472606945,
+          "median_finite": 0.0012717390472606945,
+          "worst_finite": 0.0014446213838727622
+        },
+        "targets": [
+          {
+            "target": 0.1,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.05,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.01,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 0
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          },
+          {
+            "target": 0.001,
+            "failed_or_above_target_cases": {
+              "nmrom": 2,
+              "fom": 2
+            },
+            "matched_reference_accuracy": false,
+            "physical_reference_budget_met": false,
+            "failed_or_above_target_with_reference_margin": null,
+            "qualified_complete_query_speedup": null,
+            "independent_confirmation": false
+          }
+        ]
+      }
+    }
+  ]
+}

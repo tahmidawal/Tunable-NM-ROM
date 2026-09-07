@@ -1,0 +1,27 @@
+{
+  "date": "2026-09-07",
+  "execution": "source /etc/profile.d/jax-mem.sh; JAX_DEFAULT_MATMUL_PRECISION=highest jaxrun /home/tahmid/Dev/.venv/bin/python",
+  "backend": "gpu",
+  "x64": true,
+  "component_checks_passed": 7,
+  "dst_dense_max_absolute": 2.4424906541753444e-15,
+  "helmholtz_relative": 2.7205063373289206e-16,
+  "fom_dense_newton_relative": 1.1471350817161907e-18,
+  "weak_diffusion_relative": 5.221649507651083e-16,
+  "gj_relative_by_condition_number_1_1e4_1e8": [0.0, 5.932393965994378e-14, 9.533544875453698e-10],
+  "actual_checkpoint_smoke": {
+    "intervals": 24,
+    "checkpoint": "experiments/separable-decoder/runs/b2dtensor/n512/out/sep_b2d_tensor_n512_ckpt.pkl",
+    "elapsed_seconds": 17.21594730298966,
+    "output_shape": [6, 25, 25],
+    "finite_and_zero_boundaries": true,
+    "eq_fit": 0.011492834942489007,
+    "ic_iterations": 7,
+    "ic_reason": 2,
+    "interpretation": "implementation smoke only; coarse reduced quadrature setup is not a scientific pilot result"
+  },
+  "initial_test_only_failures": [
+    "Incorrect step-return unpacking in test wrapper, corrected before passing run.",
+    "Read-only NumPy view in independent dense Newton test wrapper, corrected with explicit copy."
+  ]
+}

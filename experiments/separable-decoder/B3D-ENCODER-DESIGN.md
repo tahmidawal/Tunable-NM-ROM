@@ -2,7 +2,8 @@
 
 This implements the encoder arm of `B3D-ARCH-DESIGN.md` in the approved
 `exp/2026-09-06-b3d-encoder` worktree, based on `dd77383`. Scientific accuracy
-results are pending; component checks validate implementation only.
+results are recorded separately in `B3D-ENCODER-NOTES.md`; component checks
+validate implementation only.
 
 ## Architecture and normalization
 
@@ -49,11 +50,14 @@ matrix precision. Its raw log is retained at
 `runs/b3d_arch_encoder/component-test.log`. These synthetic checks do not measure
 the Burgers validation error or establish an architectural improvement.
 
-The coordinator must review the implementation before any cluster submission.
+The coordinator reviewed the implementation before cluster submission.
 Scientific comparisons retain the common two optimizer repeats, cohort,
 multistart budgets, reconstruction and tangent diagnostics, and all inherited
 pilot gates. No wave accuracy or rollout claim follows from these component
-checks. No cluster job has been submitted by this implementation session.
+checks. The full predeclared cluster screen is complete; both repeats fail
+the preliminary representation gates. Raw results and generated notes are
+retained, and coordinator independent result review remains pending. No pilot,
+rollout or wave experiment was promoted.
 
 ## Glossary
 

@@ -35,6 +35,26 @@
     "wave_review": {
       "path": "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/wave_pilot01_accounting_review.json",
       "sha256": "e954049d7e6f37f20dd671496ac28bae7c17d3b5406b3e97b3daa75a1be83bef"
+    },
+    "heat_runtime": {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot02/archive/outputs/results.json",
+      "sha256": "6b7d50abe64c1bf588c2c45fc568e659cbdb44f8b724863ae52c27e3f03ed727"
+    },
+    "heat_runtime_audit": {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot02/audit.json",
+      "sha256": "aacfaa393636a1da327acf868d374074d5cd587aaad6c40603a0ab0d2a67b902"
+    },
+    "poisson_followup": {
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/result.json",
+      "sha256": "37776edbe08140b47828ba79242bb55755b2ca04ae98add8a8f606b283ad8fc8"
+    },
+    "poisson_followup_summary": {
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/summary.json",
+      "sha256": "5a2c467126dd29923579aaeb0291fdda8e459f8008caeb0ba9308dd39b73bace"
+    },
+    "poisson_followup_audit": {
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/audit.json",
+      "sha256": "f32b574766f085def2460de65e4ebdcee7bf4cb9a6ef2bb6c7528c883cafa9fe"
     }
   },
   "comparisons": [
@@ -168,5 +188,77 @@
       "fom_ms": 297.1970990183763,
       "raw_paired_ratio": 0.09075638778110105
     }
-  ]
+  ],
+  "followups": {
+    "heat_runtime": [
+      {
+        "intervals": 64,
+        "strict_ms": 28.32308254437521,
+        "relaxed_ms": 14.177433971781284,
+        "paired_case_median_improvement": 1.9543311753492776,
+        "fom_ms": 1.1972244828939438,
+        "worst_current_error": 0.09735647505409044,
+        "maximum_field_drift": 0.00034727161989894285
+      },
+      {
+        "intervals": 128,
+        "strict_ms": 28.820751002058387,
+        "relaxed_ms": 14.267861028201878,
+        "paired_case_median_improvement": 1.918892217905368,
+        "fom_ms": 1.3757054693996906,
+        "worst_current_error": 0.0973564750456202,
+        "maximum_field_drift": 0.0003473234840286016
+      }
+    ],
+    "poisson_modes": [
+      {
+        "intervals": 256,
+        "requested_modes": 64,
+        "retained_modes": 64,
+        "worst_physical_error": 0.07318650974659041,
+        "rom_ms": 4.966762004187331,
+        "fom_ms": 1.4807610132265836
+      },
+      {
+        "intervals": 256,
+        "requested_modes": 128,
+        "retained_modes": 129,
+        "worst_physical_error": 0.07254605974837681,
+        "rom_ms": 4.6038269938435405,
+        "fom_ms": 1.4807610132265836
+      },
+      {
+        "intervals": 256,
+        "requested_modes": 256,
+        "retained_modes": 257,
+        "worst_physical_error": 0.07254236511261516,
+        "rom_ms": 4.434183239936829,
+        "fom_ms": 1.4807610132265836
+      },
+      {
+        "intervals": 512,
+        "requested_modes": 64,
+        "retained_modes": 64,
+        "worst_physical_error": 0.07318908053377536,
+        "rom_ms": 5.1562662702053785,
+        "fom_ms": 1.9171367457602173
+      },
+      {
+        "intervals": 512,
+        "requested_modes": 128,
+        "retained_modes": 129,
+        "worst_physical_error": 0.07254593380425169,
+        "rom_ms": 5.041676515247673,
+        "fom_ms": 1.9171367457602173
+      },
+      {
+        "intervals": 512,
+        "requested_modes": 256,
+        "retained_modes": 257,
+        "worst_physical_error": 0.07254231243507787,
+        "rom_ms": 4.862169997068122,
+        "fom_ms": 1.9171367457602173
+      }
+    ]
+  }
 }

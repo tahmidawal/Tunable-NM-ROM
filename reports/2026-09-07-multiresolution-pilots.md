@@ -1,6 +1,6 @@
-# Initial multiresolution pilots: accuracy and complete-query cost
+# Multiresolution development pilots: accuracy and complete-query cost
 
-This report covers the first frozen-network mesh-transfer pilots of the current separable NM-ROM against efficient FOM solvers. The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.
+This report covers the first frozen-network mesh-transfer pilots and bounded numerical improvements of the current separable NM-ROM against efficient FOM solvers. The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.
 
 The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. Increasing resolution mostly preserves the ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.
 
@@ -46,11 +46,52 @@ All first-pilot outputs were checksum-collected and their exact remote job direc
 
 The rigorous reference-bound field remains unspecified where only empirical refinement is available. No paper-wide speedup, optimal capacity, optimized training cost, broad-family robustness, or independent confirmation is established.
 
+## Bounded improvements with unchanged network weights
+
+These follow-ups retain the first-pilot physical cases and checkpoints. They provide development evidence about specific numerical changes; no new training or final-cohort evaluation is included.
+
+### Heat: less stringent stopping reduces cost
+
+Source `06f8ed98653e95bbf094c42212171d0db3519541`, job `3350258`. The native audit verifies 504 timed invocations; compiled and modular fields, latent states and iteration counters agree at each matched tolerance. The original strict control is measured again in the same job, so the improvement does not compare clocks across jobs.
+
+| Intervals | Strict modular ms | Relaxed compiled ms | Paired improvement | FOM ms | ROM worst current error (%) | Maximum field drift |
+|---|---:|---:|---:|---:|---:|---:|
+| 64 | 28.323 | 14.177 | 1.954 | 1.1972 | 9.7356 | 0.000347272 |
+| 128 | 28.821 | 14.268 | 1.919 | 1.3757 | 9.7356 | 0.000347323 |
+
+The relaxed normalized-gradient tolerance is `1e-05`; the strict tolerance is `1e-09`. Field drift is relative to the current reference norm and stays below the predeclared `0.001` ceiling. Fewer nonlinear iterations account for most of the gain; compiling the query alone gives a smaller improvement. The FOM remains faster, and the head reconstruction error remains.
+
+[Complete heat runtime findings](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/HEAT-RUNTIME-NOTES.md).
+
+### Poisson: more weak modes do not remove the bank limitation
+
+Source `0175877d40c96bc4c0e28cd2c8e2e3b0f6cbc966`, job `3350408`. The native audit recomputes 672 timed errors and verifies the compiled-query parity controls. The following table uses stationary solves with the early residual-reduction stop disabled.
+
+| Intervals | Requested / retained weak modes | Worst physical error (%) | Compiled query ms | Direct FOM ms |
+|---|---:|---:|---:|---:|
+| 256 | 64 / 64 | 7.3187 | 4.9668 | 1.4808 |
+| 256 | 128 / 129 | 7.2546 | 4.6038 | 1.4808 |
+| 256 | 256 / 257 | 7.2542 | 4.4342 | 1.4808 |
+| 512 | 64 / 64 | 7.3189 | 5.1563 | 1.9171 |
+| 512 | 128 / 129 | 7.2546 | 5.0417 | 1.9171 |
+| 512 | 256 / 257 | 7.2542 | 4.8622 | 1.9171 |
+
+| Intervals | Worst full-bank projection error (%) | Worst best-recorded head-fit error (%) |
+|---|---:|---:|
+| 256 | 5.7465 | 7.2635 |
+| 512 | 5.7388 | 7.2564 |
+
+These reference-only reconstruction diagnostics use the same-grid field norm and cannot initialize a deployed query. The unrestricted bank already has a difficult-source error larger than the next all-case target; more weak modes cannot repair missing spatial directions. Compiling the unchanged solver gives only small timing changes. A stronger bank/training study and a specialized small-system linear solve remain distinct next tests.
+
+[Complete Poisson follow-up findings](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/FINDINGS.md).
+
+All cost ratios in this report use ratios of per-case timing medians before the cohort median. Some native exploratory reports also retain medians of per-repetition ratios under an explicit different label; those statistics are not interchangeable.
+
 ## Next experiments justified by the diagnostics
 
 - **Burgers:** resolve reference space/time error; compare the original cold start with several training-code guesses; retain the efficient same-grid and coarse-grid FOMs.
-- **Heat:** keep the checkpoint fixed and compare solver tolerances and compiled full-query execution. Treat the separate nonlinear-head reconstruction gap as an accuracy task.
-- **Poisson:** increase smooth test-mode coverage and measure full-bank projection versus best recorded nonlinear-head fits; compare compiled and segmented queries.
+- **Heat:** after the measured tolerance improvement, address the nonlinear-head reconstruction gap with controlled original-cohort versus expanded-coverage head refinement. The spatial bank and head architecture can remain fixed for that diagnostic.
+- **Poisson:** the test-mode and representation diagnostics point to bank/head capacity or training coverage for accuracy. A specialized small-matrix solver is a separate remaining runtime test.
 - **Waves:** use matched-dimensional linear and nonlinear controls with a frozen spatial bank to separate compression from autonomous dynamics. Finer rendering alone cannot address the current error.
 
 These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, independent data/training repeats, validation-selected settings and sealed final evaluation.
@@ -79,4 +120,6 @@ Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.p
 - **Reference refinement / uncertainty / qualification:** comparing finer trusted solves / remaining reference error / meeting accuracy and numerical-validity requirements with that uncertainty included.
 - **Development / validation / sealed final / provisional:** preliminary experiment data / data used to select settings / untouched independent confirmation data / evidence with the stated limitations.
 - **Compiled / segmented / projection / compression:** one prepared executable / separately launched stages / representing a field in a spatial span / constraining that representation through fewer latent coordinates.
+- **Strict / relaxed / gradient tolerance / field drift:** more demanding stopping control / less demanding stopping setting / required smallness of the objective derivative / change from the strict-control trajectory divided by the current reference norm.
+- **Paired improvement / requested modes / retained modes:** strict-control time divided by changed-method time, summarized across cases / desired minimum number of weak tests / actual number when tied sine eigenmodes are retained together.
 - **Commit / manifest / checksum:** saved source revision / inventory of source artifacts / content fingerprint checking exact file bytes.

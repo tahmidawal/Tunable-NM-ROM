@@ -18,6 +18,11 @@ FILES = {
     'wave': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/summary.json',
     'wave_native': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/cluster/out/pilot/result.json',
     'wave_review': REPAIR/'wave_pilot01_accounting_review.json',
+    'heat_runtime': ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot02/archive/outputs/results.json',
+    'heat_runtime_audit': ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot02/audit.json',
+    'poisson_followup': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/result.json',
+    'poisson_followup_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/summary.json',
+    'poisson_followup_audit': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/audit.json',
 }
 
 
@@ -85,8 +90,8 @@ def main():
                 pick('dst', 0.) if boundary == 'dirichlet' else pick('rk4', .45),
                 'worst_required_physical_error', 'query_median')
 
-    lines = ['# Initial multiresolution pilots: accuracy and complete-query cost', '',
-        'This report covers the first frozen-network mesh-transfer pilots of the current separable NM-ROM against efficient FOM solvers. '
+    lines = ['# Multiresolution development pilots: accuracy and complete-query cost', '',
+        'This report covers the first frozen-network mesh-transfer pilots and bounded numerical improvements of the current separable NM-ROM against efficient FOM solvers. '
         'The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.', '',
         'The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. '
         'Increasing resolution mostly preserves the ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.', '',
@@ -138,8 +143,8 @@ def main():
         'No paper-wide speedup, optimal capacity, optimized training cost, broad-family robustness, or independent confirmation is established.', '',
         '## Next experiments justified by the diagnostics', '',
         '- **Burgers:** resolve reference space/time error; compare the original cold start with several training-code guesses; retain the efficient same-grid and coarse-grid FOMs.',
-        '- **Heat:** keep the checkpoint fixed and compare solver tolerances and compiled full-query execution. Treat the separate nonlinear-head reconstruction gap as an accuracy task.',
-        '- **Poisson:** increase smooth test-mode coverage and measure full-bank projection versus best recorded nonlinear-head fits; compare compiled and segmented queries.',
+        '- **Heat:** after the measured tolerance improvement, address the nonlinear-head reconstruction gap with controlled original-cohort versus expanded-coverage head refinement. The spatial bank and head architecture can remain fixed for that diagnostic.',
+        '- **Poisson:** the test-mode and representation diagnostics point to bank/head capacity or training coverage for accuracy. A specialized small-matrix solver is a separate remaining runtime test.',
         '- **Waves:** use matched-dimensional linear and nonlinear controls with a frozen spatial bank to separate compression from autonomous dynamics. Finer rendering alone cannot address the current error.', '',
         'These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, '
         'independent data/training repeats, validation-selected settings and sealed final evaluation.', '',
@@ -167,9 +172,74 @@ def main():
         '- **Reference refinement / uncertainty / qualification:** comparing finer trusted solves / remaining reference error / meeting accuracy and numerical-validity requirements with that uncertainty included.',
         '- **Development / validation / sealed final / provisional:** preliminary experiment data / data used to select settings / untouched independent confirmation data / evidence with the stated limitations.',
         '- **Compiled / segmented / projection / compression:** one prepared executable / separately launched stages / representing a field in a spatial span / constraining that representation through fewer latent coordinates.',
+        '- **Strict / relaxed / gradient tolerance / field drift:** more demanding stopping control / less demanding stopping setting / required smallness of the objective derivative / change from the strict-control trajectory divided by the current reference norm.',
+        '- **Paired improvement / requested modes / retained modes:** strict-control time divided by changed-method time, summarized across cases / desired minimum number of weak tests / actual number when tied sine eigenmodes are retained together.',
         '- **Commit / manifest / checksum:** saved source revision / inventory of source artifacts / content fingerprint checking exact file bytes.', '']
+    followup_lines, followup_values = followups(data, manifest)
+    where = lines.index('## Next experiments justified by the diagnostics')
+    lines[where:where] = followup_lines
     (HERE/'2026-09-07-multiresolution-pilots.md').write_text('\n'.join(lines))
-    (HERE/'2026-09-07-multiresolution-pilots.json').write_text(json.dumps({'artifacts': manifest, 'comparisons': comparisons}, indent=2)+'\n')
+    (HERE/'2026-09-07-multiresolution-pilots.json').write_text(json.dumps({'artifacts': manifest, 'comparisons': comparisons, 'followups': followup_values}, indent=2)+'\n')
+
+
+def followups(data, manifest):
+    heat, ha = data['heat_runtime'], data['heat_runtime_audit']
+    poisson, ps, pa = data['poisson_followup'], data['poisson_followup_summary'], data['poisson_followup_audit']
+    assert heat['complete'] and ha['passed'] and poisson['complete'] and pa['passed']
+    assert heat['checkpoint_sha256'] == data['heat']['checkpoint_sha256']
+    assert poisson['checkpoint_sha256'] == data['poisson']['checkpoint_sha256']
+    assert ps['source_sha256'] == manifest['poisson_followup']['sha256']
+    values = {'heat_runtime': [], 'poisson_modes': []}
+    lines = ['## Bounded improvements with unchanged network weights', '',
+        'These follow-ups retain the first-pilot physical cases and checkpoints. They provide development evidence about specific numerical changes; no new training or final-cohort evaluation is included.', '',
+        '### Heat: less stringent stopping reduces cost', '',
+        f"Source `{ha['source_commit']}`, job `{heat['metadata']['job_id']}`. The native audit verifies {ha['invocations']} timed invocations; compiled and modular fields, latent states and iteration counters agree at each matched tolerance. "
+        'The original strict control is measured again in the same job, so the improvement does not compare clocks across jobs.', '',
+        '| Intervals | Strict modular ms | Relaxed compiled ms | Paired improvement | FOM ms | ROM worst current error (%) | Maximum field drift |',
+        '|---|---:|---:|---:|---:|---:|---:|']
+    for n in sorted({g['intervals'] for g in ha['groups']}):
+        select = lambda method: next(g for g in ha['groups'] if g['intervals'] == n and g['method'] == method)
+        strict = select('rom_modular_gtol1e-09')
+        relaxed = select('rom_compiled_gtol1e-05')
+        fom = select('fom_dst_exact_time')
+        assert relaxed['all_valid'] and relaxed['all_parity'] and relaxed['drift_within_predeclared_ceiling']
+        case_time = lambda g: {c['case']: statistics.median(r['query_seconds'] for r in c['repetitions']) for c in g['cases']}
+        st, rt = case_time(strict), case_time(relaxed)
+        value = dict(intervals=n, strict_ms=1000*strict['median_query_seconds'],
+                     relaxed_ms=1000*relaxed['median_query_seconds'],
+                     paired_case_median_improvement=statistics.median(st[c]/rt[c] for c in st),
+                     fom_ms=1000*fom['median_query_seconds'], worst_current_error=relaxed['error_worst'],
+                     maximum_field_drift=max(r['field_drift_from_strict'] for c in relaxed['cases'] for r in c['repetitions']))
+        values['heat_runtime'].append(value)
+        lines.append(f"| {n} | {value['strict_ms']:.5g} | {value['relaxed_ms']:.5g} | {value['paired_case_median_improvement']:.4g} | {value['fom_ms']:.5g} | {100*value['worst_current_error']:.5g} | {value['maximum_field_drift']:.6g} |")
+    lines += ['', f"The relaxed normalized-gradient tolerance is `{max(heat['settings']['gradient_tolerances'])}`; the strict tolerance is `{min(heat['settings']['gradient_tolerances'])}`. "
+        f"Field drift is relative to the current reference norm and stays below the predeclared `{ha['drift_ceiling']}` ceiling. "
+        'Fewer nonlinear iterations account for most of the gain; compiling the query alone gives a smaller improvement. The FOM remains faster, and the head reconstruction error remains.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/HEAT-RUNTIME-NOTES.md', 'Complete heat runtime findings')+'.', '',
+        '### Poisson: more weak modes do not remove the bank limitation', '',
+        f"Source `{pa['source_commit']}`, job `{pa['job_id']}`. The native audit recomputes {pa['row_count']} timed errors and verifies the compiled-query parity controls. "
+        'The following table uses stationary solves with the early residual-reduction stop disabled.', '',
+        '| Intervals | Requested / retained weak modes | Worst physical error (%) | Compiled query ms | Direct FOM ms |',
+        '|---|---:|---:|---:|---:|']
+    for row in ps['summaries']:
+        if row['arm'] != 'rom_fused' or row['tau'] != 0:
+            continue
+        assert row['nonstationary_count'] == 0 and row['invalid_count'] == 0
+        baseline = next(g for g in ps['summaries'] if g['intervals'] == row['intervals'] and g['arm'] == 'dst')
+        value = dict(intervals=row['intervals'], requested_modes=row['requested_modes'], retained_modes=row['retained_modes'],
+                     worst_physical_error=row['physical_max'], rom_ms=1000*row['latency_seconds'], fom_ms=1000*baseline['latency_seconds'])
+        values['poisson_modes'].append(value)
+        lines.append(f"| {value['intervals']} | {value['requested_modes']} / {value['retained_modes']} | {100*value['worst_physical_error']:.5g} | {value['rom_ms']:.5g} | {value['fom_ms']:.5g} |")
+    lines += ['', '| Intervals | Worst full-bank projection error (%) | Worst best-recorded head-fit error (%) |', '|---|---:|---:|']
+    for n in sorted({r['intervals'] for r in ps['oracles']}):
+        rows = [r for r in ps['oracles'] if r['intervals'] == n]
+        lines.append(f"| {n} | {100*max(r['full_bank_same_grid_error'] for r in rows):.5g} | {100*max(r['best_same_grid_error'] for r in rows):.5g} |")
+    lines += ['', 'These reference-only reconstruction diagnostics use the same-grid field norm and cannot initialize a deployed query. '
+        'The unrestricted bank already has a difficult-source error larger than the next all-case target; more weak modes cannot repair missing spatial directions. '
+        'Compiling the unchanged solver gives only small timing changes. A stronger bank/training study and a specialized small-system linear solve remain distinct next tests.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/FINDINGS.md', 'Complete Poisson follow-up findings')+'.', '',
+        'All cost ratios in this report use ratios of per-case timing medians before the cohort median. Some native exploratory reports also retain medians of per-repetition ratios under an explicit different label; those statistics are not interchangeable.', '']
+    return lines, values
 
 
 if __name__ == '__main__':

@@ -1,0 +1,28 @@
+{
+  "source_sha256": "5b685f83e85d424bf0541f320f0ae24bd677926e8060e13ca606925d8a0ed83a",
+  "output_checksums_verified": true,
+  "closed_logs_clean": true,
+  "source_hashes_against_commits_verified": true,
+  "checkpoint_unchanged": true,
+  "seed_and_family_verified": true,
+  "declared_configurations_verified": 60,
+  "invocations_verified": 720,
+  "full_grid_artifacts_verified": 240,
+  "common_grid_error_recompute_max_difference": 4.163336342344337e-17,
+  "dense_error_recompute_max_difference": 1.942890293094024e-16,
+  "same_grid_error_recompute_max_difference": 7.632783294297951e-17,
+  "reference_metric_recompute_max_difference": 3.3306690738754696e-16,
+  "analytic_initial_max_difference": 2.220446049250313e-16,
+  "fom_nonlinear_tolerance_failures": 0,
+  "nonfinite_invocations": 0,
+  "ic_stop_reason_counts": {
+    "0": 18,
+    "2": 162
+  },
+  "lm_stop_reason_counts": {
+    "2": 10800
+  },
+  "full_output_repetitions_matching_first": 720,
+  "note": "All complete requested-grid norms are independently reconstructed from actual saved outputs; repeated outputs are linked by exact full-field hashes. Reference qualification remains empirical; configured stalls are not stationarity certificates.",
+  "scope": "CPU regression of generalized timestep audit against archived rollout04; eight BLAS threads; no new PDE or fitting solves"
+}

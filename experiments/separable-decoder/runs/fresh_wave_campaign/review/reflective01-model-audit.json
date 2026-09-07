@@ -1,0 +1,110 @@
+{
+  "boundary_dir": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/cluster/out/campaign/dirichlet",
+  "bc": "dirichlet",
+  "intervals": 256,
+  "bank_operator_discrepancies": {
+    "bank_export": 6.470634637282163e-16,
+    "mass_identity": 7.779597147399818e-16,
+    "stiffness_edges": 6.588668574821174e-16,
+    "damping_faces": 0.0
+  },
+  "heads": [
+    {
+      "arm": "mlp_691200",
+      "independent_prediction_error": 4.608466403058801e-17,
+      "independent_tangent_error": 2.5091304899554875e-16,
+      "reconstruction_field_metric_discrepancy": 1.8041124150158794e-16,
+      "tangent_field_metric_discrepancy": 1.457167719820518e-16,
+      "gradient_discrepancy": 1.614780575926726e-17,
+      "projected_stationarity_discrepancy": 1.3333157269432966e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 7.633090241642964e-15
+    },
+    {
+      "arm": "mlp_691201",
+      "independent_prediction_error": 4.509512700583237e-17,
+      "independent_tangent_error": 2.4847723072834157e-16,
+      "reconstruction_field_metric_discrepancy": 2.0122792321330962e-16,
+      "tangent_field_metric_discrepancy": 1.942890293094024e-16,
+      "gradient_discrepancy": 2.2104973588055727e-17,
+      "projected_stationarity_discrepancy": 1.8463545304306026e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 7.77872875849102e-15
+    },
+    {
+      "arm": "mlp_velocity_691200",
+      "independent_prediction_error": 6.042962227382996e-17,
+      "independent_tangent_error": 2.751468751427443e-16,
+      "reconstruction_field_metric_discrepancy": 1.6653345369377348e-16,
+      "tangent_field_metric_discrepancy": 1.3877787807814457e-16,
+      "gradient_discrepancy": 5.161145971890736e-17,
+      "projected_stationarity_discrepancy": 1.915996520562667e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 8.15515339323083e-15
+    },
+    {
+      "arm": "mlp_velocity_691201",
+      "independent_prediction_error": 6.284599194637114e-17,
+      "independent_tangent_error": 2.716034981859341e-16,
+      "reconstruction_field_metric_discrepancy": 1.5265566588595902e-16,
+      "tangent_field_metric_discrepancy": 1.457167719820518e-16,
+      "gradient_discrepancy": 3.644471078748217e-17,
+      "projected_stationarity_discrepancy": 3.686153594949718e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 7.74849594458714e-15
+    },
+    {
+      "arm": "quadratic_691200",
+      "independent_prediction_error": 1.0613376552402037e-16,
+      "independent_tangent_error": 2.132480068164785e-16,
+      "reconstruction_field_metric_discrepancy": 1.3877787807814457e-16,
+      "tangent_field_metric_discrepancy": 1.249000902703301e-16,
+      "gradient_discrepancy": 3.9091372622486196e-17,
+      "projected_stationarity_discrepancy": 1.7007302438584791e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 8.357216261637142e-15
+    },
+    {
+      "arm": "quadratic_691201",
+      "independent_prediction_error": 1.0623404408068236e-16,
+      "independent_tangent_error": 2.129299932480795e-16,
+      "reconstruction_field_metric_discrepancy": 1.8735013540549517e-16,
+      "tangent_field_metric_discrepancy": 2.0816681711721685e-16,
+      "gradient_discrepancy": 4.0852403595568274e-17,
+      "projected_stationarity_discrepancy": 1.3040681557306385e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 8.324604460841267e-15
+    },
+    {
+      "arm": "quadratic_velocity_691200",
+      "independent_prediction_error": 1.2388153431485093e-16,
+      "independent_tangent_error": 2.145828444357088e-16,
+      "reconstruction_field_metric_discrepancy": 1.5959455978986625e-16,
+      "tangent_field_metric_discrepancy": 1.6653345369377348e-16,
+      "gradient_discrepancy": 4.266896666698985e-17,
+      "projected_stationarity_discrepancy": 1.6145062073553724e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 6.542648778551112e-15
+    },
+    {
+      "arm": "quadratic_velocity_691201",
+      "independent_prediction_error": 1.2176510180778962e-16,
+      "independent_tangent_error": 2.161838433121175e-16,
+      "reconstruction_field_metric_discrepancy": 1.6653345369377348e-16,
+      "tangent_field_metric_discrepancy": 1.942890293094024e-16,
+      "gradient_discrepancy": 3.411220364467511e-17,
+      "projected_stationarity_discrepancy": 4.605918839399912e-15,
+      "identical_eight_starts": true,
+      "rollout_energies_checked": 48,
+      "maximum_rollout_energy_discrepancy": 6.231094074810583e-15
+    }
+  ],
+  "passed": true
+}

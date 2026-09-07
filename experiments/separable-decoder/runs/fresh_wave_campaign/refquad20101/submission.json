@@ -1,0 +1,95 @@
+{
+  "label": "refquad20101",
+  "source_commit": "1e4a489882c8181d56966be87cae01539e4150a3",
+  "source_worktree": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-wave-head-transfer",
+  "source_hashes": {
+    "ARCHITECTURE-SOURCE.json": "06d4ba858cc40c4231289437ac9443d947fb6ff4b4d51fe2bad8529f71060a5d",
+    "FRESH-DESIGN.md": "a02e48c4e05964944a946668aa11e476ac24b1437beaa6e54dfa420880b56102",
+    "FROZEN-MATH.json": "0b157e432d932b8b63b3f3a7c2d84bec9fb0c78425ed30a3c3b50984946973f1",
+    "campaign-config.json": "8db8fb9ac036e3611231df487c14c9fdf5fad7b3fd96a9b8351fe077cbd93dad",
+    "checks/preflight01/ARCHIVE.json": "76aee0bb573e29fe8001daf438470509ef4227671a3b13fbefaa671530991e7a",
+    "checks/preflight01/CONFIG.json": "9329705039fed1dbb5924e3411d6544ce259bd3c33c69a2ae9eddac8eaeab3e7",
+    "checks/preflight01/result.json": "0f2787e4f44a87dc09d8daf91de5690eae8bbf977cc587a204753dc39d42d45e",
+    "checks/preflight01/submission.json": "785398bf970bbd51ebf497083a5f0ce473015874d41997386e9f383ba3979e1f",
+    "checks/verify01/CONFIG.json": "fb837e57f0a1ec27a69074aecf463ad57f05289cc79a812c6980ce0df0f81788",
+    "checks/verify01/result.json": "f45fa75c0d360d38fa16f22752eac635662fc408386e9495003b637f07058365",
+    "checks/verify01/submission.json": "dfb822b7ee10b6e2d98d200d5a5403ed6e0c4542daf36d845afb69ee7a75d575",
+    "checks/verify02/CONFIG.json": "976b143f63487c3b34742cf46c12748e6112877b7c4c5d2244b4b7eaa17df890",
+    "checks/verify02/result.json": "9b35b403c82dbc308901058254a335dfc4729564a840ea29246d4fe41253f16a",
+    "checks/verify02/submission.json": "7da65f6977ca111e219c68f51b2b4fa73a973c463649308c4f04c01b59012ace",
+    "checks/verify03/ARCHIVE.json": "e1f10b805e7a65f43fd8fe1f8e4d2765368bb871d4e41b5298d229aca7388636",
+    "checks/verify03/CONFIG.json": "e631b759a25bfb50940967e812d2c2bdffb544695aea21c3e4dd22e23190098d",
+    "checks/verify03/result.json": "302aa1452f2375393bf3c822f94abee11cd241e75420884dca7d83ef1b4f333c",
+    "checks/verify03/submission.json": "64f7f147e1f2920dab9b9e82b304b347ce4775ddd6f8dc55ddfaf76e17561304",
+    "fresh_campaign.py": "f1caa0f2d3b7ad5baa0761a1d2039a2afa31c4f679b040cc13e7552162ec74b5",
+    "fresh_checkpoint_refine.py": "7bfffd1ed1bd38029dca2bc148fe513eff4fa8ec007104ea41fd4acd9bbe3659",
+    "fresh_evaluate.py": "67bf89e8df5654fdcd29040ec737607762e5762d33d6e9996e6a5772be27f7e1",
+    "fresh_fom.py": "9dc6e3bd14acce20f5cc29497032f07d63806a20ddb78ef3f31a13b607c1adfc",
+    "fresh_learning.py": "239f0df304781ca29ea0afc2b67fefa6a9163ab18fbdd81e95c76a08a72dd8c8",
+    "fresh_models.py": "bef42f5ead734fb6b85b2e17b92790b8327f5f1dc3abce941c62f993de6e5553",
+    "fresh_preflight.py": "4c5051de285c4c9a962852e3a142e0dc79705d7ab701897160451b9fcec8bcdd",
+    "fresh_rom.py": "960aefef2ffb77f2a0ff4ac4c99ae55e8ebd036486ce1c6d460dd5b5b98434ff",
+    "fresh_verify.py": "e6545ce05c8ce7d2aefb123d0b6809712f1411a03ac5cdece1a4cdabd283f0ef",
+    "fresh_verify_final.py": "a58fbfbe206f56a4be1a03c7de9d8c87933205bfe7a89535d68872430cf60de5",
+    "fresh_verify_refined.py": "c6cd6cd949f994dec45bc25cdcef587de46c8850687ec36cf243dc5c911418ef",
+    "import_fresh_result.py": "d14549fe56579a091864db0c8fb560b9655f6375222521956a58bac638892954",
+    "make_fresh_notes.py": "7c3401465db05413e6ca0ab5e8560de7cdbe1ccf83316c8c485555b669634029",
+    "plot_fresh_wave.py": "efa9924bec5eef39ed0e4b0240d418e1dc77b4db6af081feebdd457ee873259e",
+    "test_fresh_evaluate.py": "d31822c25dceafdb8ffe7363e114ecf94d71a19db9ee2ec2ddf809f26470b799",
+    "test_fresh_fom.py": "302614aaa51fc4cec228c2f5d59c1689032c721ba0a00bbc7fcd203605e293ff",
+    "test_fresh_learning.py": "2055d51ad2aaf566d83a139855fdd912c31e0f2408ad9e3d130b0fba3b23978d",
+    "test_fresh_models.py": "8f22382c999a1289c421baa0277774d0628a4a479a13aaa74dcd24b01ded6ab6"
+  },
+  "remote": "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/refquad20101",
+  "entry": "fresh_checkpoint_refine.py",
+  "arguments": [
+    "--config",
+    "campaign-config.json",
+    "--inputs",
+    "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/refquad20101/in",
+    "--out",
+    "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/refquad20101/out/refinement",
+    "--kind",
+    "quadratic",
+    "--bc",
+    "reflective",
+    "--seed",
+    "691201"
+  ],
+  "gpu": "h100",
+  "constraint": "h100-80G",
+  "inputs": {
+    "bank_tables.npz": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/closed_checkpoints/quadratic_691201/bank_tables.npz",
+      "sha256": "6f773c0942c91e8b320ae452499e1d217479d3bbbb255bec7995dda770b3e122"
+    },
+    "head.npz": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/closed_checkpoints/quadratic_691201/head.npz",
+      "sha256": "2fa661464f4c8114533f20f5c4f884d0dca73af808228f7630f9c0de53638b5d"
+    },
+    "reconstruction.npz": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/closed_checkpoints/quadratic_691201/reconstruction.npz",
+      "sha256": "a6e0217cda49522596ea6fa2f3463811c2a08913f0200b84e6dcb2694ee1ee5c"
+    },
+    "rollouts.npz": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/closed_checkpoints/quadratic_691201/rollouts.npz",
+      "sha256": "6a2c84b002631bd8bc965831369b942d319a2abe8f58dc63833e3b9b52b80962"
+    },
+    "data_manifest.json": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/closed_checkpoints/quadratic_691201/data_manifest.json",
+      "sha256": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809"
+    },
+    "arm_result.json": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/closed_checkpoints/quadratic_691201/arm_result.json",
+      "sha256": "d1c12a711266b80b43a0dab6c268a6069257e41cd88f41e42446af69d773c7a1"
+    },
+    "origin.json": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/closed_checkpoints/quadratic_691201/ORIGIN.json",
+      "sha256": "6fd630761dad6d598cf9c774d5d6bc5f75efd7d197e45618c9240664e1af76f1"
+    }
+  },
+  "queue_before": "             JOBID                           NAME    STATE     NODELIST(REASON)\n           3339553        ctol_fw_refquadvel20002  RUNNING               pax011\n           3339304           ctol_fw_refquad20001  RUNNING               pax063\n",
+  "job_id": "3339615",
+  "submitted_at_utc": "2026-09-07T04:48:19.546194+00:00",
+  "queue_after": "             JOBID                           NAME    STATE     NODELIST(REASON)\n           3339615           ctol_fw_refquad20101  PENDING           (Priority)\n           3339553        ctol_fw_refquadvel20002  RUNNING               pax011\n           3339304           ctol_fw_refquad20001  RUNNING               pax063\n"
+}

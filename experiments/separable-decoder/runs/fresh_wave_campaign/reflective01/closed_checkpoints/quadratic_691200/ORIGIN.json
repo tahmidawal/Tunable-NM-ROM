@@ -1,0 +1,37 @@
+{
+  "parent_label": "reflective01",
+  "parent_job": "3338483",
+  "source_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+  "remote": "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/reflective01",
+  "arm": "quadratic_691200",
+  "bc": "dirichlet",
+  "hashes_before_after_equal": true,
+  "files": {
+    "bank_tables.npz": {
+      "remote_relative": "out/campaign/dirichlet/bank_tables.npz",
+      "sha256": "6f773c0942c91e8b320ae452499e1d217479d3bbbb255bec7995dda770b3e122"
+    },
+    "data_manifest.json": {
+      "remote_relative": "out/campaign/dirichlet/data_manifest.json",
+      "sha256": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809"
+    },
+    "head.npz": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_691200/head.npz",
+      "sha256": "fbd9a94fe0360f68bce1b5519346ec7c031482224d6f70c8b56ea1e65af3eb82"
+    },
+    "reconstruction.npz": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_691200/reconstruction.npz",
+      "sha256": "2ef2528f36db1d274c2ff2c8f9860cf17b946f8ff2a3f7f46b98c263f8e75aa3"
+    },
+    "rollouts.npz": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_691200/rollouts.npz",
+      "sha256": "891010b356afa2b317e2a2bd9a6304f686aa72c817136e5acdc24aca47e8453c"
+    },
+    "arm_result.json": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_691200/result.json",
+      "sha256": "0a62d632208ef7355938c3f1dc067269cf78510b8a5634ba3f62ce3ed50f424e"
+    }
+  },
+  "parent_campaign_still_running": true,
+  "acceptance": "Checkpoint transfer only; reconcile every hash with the final parent archive before scientific acceptance."
+}

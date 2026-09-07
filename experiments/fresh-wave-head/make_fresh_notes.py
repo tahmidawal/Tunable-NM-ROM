@@ -19,11 +19,13 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--result",action="append",required=True)
     ap.add_argument("--refinement",action="append",default=[])
+    ap.add_argument("--verification-result")
     ap.add_argument("--out",required=True)
     ap.add_argument("--reviewed",action="store_true")
     args=ap.parse_args()
     loaded=[(Path(p),json.loads(Path(p).read_text())) for p in args.result]
     refined=[(Path(p),json.loads(Path(p).read_text())) for p in args.refinement]
+    verification=None if args.verification_result is None else json.loads(Path(args.verification_result).read_text())
     boundaries={}
     for path,run in loaded:
         if run.get("final_test_opened") or run.get("provenance",{}).get("jax_backend")!="gpu":
@@ -44,6 +46,18 @@ def main():
         config=run["config"]
         ref=config["reference_evidence"]
         lines.append(f"The `{bc}` run uses {config['n']} intervals per axis, {config['rank']} learned bank functions, {config['latent']} latent coordinates, {config['train_count']} training trajectories and {config['validation_count']} validation trajectories through time {number(config['end_time'])}. Its final cohort remains closed. Reference job `{ref['job_id']}` and source `{ref['source_commit']}` precede training; reference uncertainty and the absorber's boundary-model error remain distinct from reduced-model error.")
+        lines.append(f"The provisional engineering target requires every validation trajectory to complete with time-maximum displacement, velocity and error-state-energy errors at most {number(config['accuracy_target'],True)}. The finest two predeclared steps must agree within {number(config['rom_refinement_target'],True)} on all three physical scales; latent-fit stationarity, rank and budget-stability checks also remain mandatory.")
+    if verification is not None:
+        reference_rows=[]
+        for bc in ('dirichlet','absorbing'):
+            estimates=[r['conditional_256_error_estimate'] for r in verification['contraction_estimates'] if r['bc']==bc]
+            reference_rows.append([bc,number(max(estimates),True),'Conditional observed-contraction estimate on the declared empirical sample'])
+        sine=verification['independent_sine_all_validation']+verification['independent_sine_extremes']
+        spatial=max(r['max_discrete_reference_error'] for r in sine)
+        spectral=max(r['max_spectral_self_error'] for r in sine)
+        temporal=max(s['semidiscrete_state_error'] for r in verification['smooth_family'] if r.get('bc')=='dirichlet' and r.get('n')==256 for s in r['independent_sine'])
+        reference_rows.append(['dirichlet',number(spatial+spectral+temporal,True),'Independent continuum-sine discrepancy plus spectral-self and measured RK4 contributions'])
+        lines += ['',table(['Boundary','Reference uncertainty measure','Scope'],reference_rows),'']
     lines += ["", "All tabulated relative errors use the initial displacement mass norm or initial state energy as fixed trajectory scales. A time-maximum is the largest stored-time error; error-state energy is not the difference between two solution energies. The first-order absorbing condition has physical/model reflection at oblique incidence. Heads receive only latent coordinates: no physical family descriptor or time enters the head.","","## Learned bank and fresh linear baselines",""]
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
@@ -108,6 +122,17 @@ def main():
             parity=max((r.get('max_energy_state_difference',0.) for r in record['old_fine_physical_parity']),default=None)
             refinement_rows.append([record['boundary'],record['name'],record['optimizer_seed'],str(record['original_accuracy_passed']),str(record['old_fine_parity_passed']),number(parity,True),number(fine_dt),fine['completed'],fine['failed'],number(fine['energy_state']['mean'],True),number(fine['energy_state']['median'],True),number(fine['energy_state']['worst'],True),fine['energy_state']['outliers'],str(record['fine_diagnostic']['refinement_passed'])])
         lines[-2:]=['## Frozen-checkpoint time-step continuation','',table(['Boundary','Head/objective','Repeat seed','Original primary target passed','Old-fine parity passed','Old-fine energy-state discrepancy','New finest step','Complete','Failed','Finest energy-state mean','Median','Worst','Outliers','New finest-two refinement passed'],refinement_rows),'','These separate numerical follow-ups were selected only because the original time-step refinement failed. They retain the exact trained bank/head and stored initial latent position and velocity, repeat the original finest step for hardware parity, and then evaluate both additional predeclared steps on every validation case. They preserve the original primary-step verdict and cannot be presented as retrained architectural improvements.','', '## Provenance and limits','']
+        adjacent_rows=[]
+        normalization_rows=[]
+        for path,record in refined:
+            steps=record['diagnostic_config']['rom_dts']
+            for first,second in zip(steps[:-1],steps[1:]):
+                cases=[r for r in record['adjacent_refinement'] if r['coarse_dt']==first and r['fine_dt']==second]
+                complete=[r for r in cases if r['both_completed']]
+                maxima=[max((r.get(key) for r in complete if r.get(key) is not None),default=None) for key in ('max_displacement_difference','max_velocity_difference','max_energy_state_difference')]
+                adjacent_rows.append([record['name'],record['optimizer_seed'],number(first),number(second),len(complete),*[number(x,True) for x in maxima],sum(not r['passed'] for r in cases)])
+            normalization_rows.append([record['name'],record['optimizer_seed'],record['provenance']['source_commit'],number(record['truth_parity']['scales_relative_parity']),str(record['truth_parity']['bit_identical_truth'])])
+        lines[-2:]=[table(['Frozen head/objective','Repeat seed','Coarser step','Finer step','Both-step completions','Worst displacement difference','Worst velocity difference','Worst energy-state difference','Refinement failures'],adjacent_rows),'',table(['Frozen head/objective','Repeat seed','Continuation source','Regenerated-vs-original relative scale discrepancy','Bit-identical regenerated truth'],normalization_rows),'','The first continuation wrapper used regenerated normalization values after checking their agreement; its successor restores the original recorded values exactly after the same check. This bookkeeping distinction is retained with source hashes and measured scale discrepancies. Neither version changes the trained coefficients or initial latent position/velocity; the original trajectory verdict remains fixed.','', '## Provenance and limits','']
     for path,run in loaded:
         digest=hashlib.sha256(path.read_bytes()).hexdigest()
         lines.append(f"- Source result: `{path}`; SHA-256 `{digest}`; GPU job `{run['provenance'].get('job_id')}`; source commit `{run['provenance'].get('source_commit')}`; devices `{run['provenance'].get('device_kind')}`.")

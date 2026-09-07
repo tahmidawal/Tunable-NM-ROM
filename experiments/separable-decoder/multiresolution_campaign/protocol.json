@@ -16,7 +16,7 @@
   "budget_policy": "Bounded development pilots, then internal review of measured cost/accuracy before expansion; no user deadline or total budget supplied.",
   "max_concurrent_child_agents": 3,
   "precision": {"x64": true, "matmul_precision": "highest", "backend": "gpu"},
-  "error_population": "All declared cases; preserve nonfinite, nonstationary and unresolved cases as failures.",
+  "error_population": "All declared cases; preserve nonfinite, failed and unresolved cases. Nonstationary optimization does not certify a converged fit; deliberate predeclared accuracy-based early stopping may qualify only through independently measured physical error and explicit stop reason.",
   "timing_contract": "Same invocation supplies output/errors/time; same-job same-GPU paired repeated timing after burn-in and synchronization; complete requested input/output included.",
   "final_cohort_policy": "Never open existing sealed final cohorts during pilots or validation model selection.",
   "owners": {

@@ -121,6 +121,10 @@ new independent final cohorts. Do not consume the existing sealed wave cohort
 during pilots. Plan independent data/training repeats for confirmation rather than
 reporting only optimizer repeats on one split; the number and budget will be fixed
 after the pilot and before confirmation. Retain failed and nonstationary cases.
+An intentionally early-stopped solve may qualify for cost-to-accuracy if its
+predeclared stopping rule and independently measured physical error support it;
+that does not certify a stationary fit. Budget exhaustion or a numerical failure
+must not be silently relabeled as successful early stopping.
 
 ## Cost accounting
 

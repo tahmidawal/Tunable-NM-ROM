@@ -21,7 +21,7 @@
   "weak_bank_equations": 64,
   "new_latent_dimension": 32,
   "new_phase_dimension": 64,
-  "weak_overdetermination_note": "64 fixed weak bank equations for32 new latent coordinates; ratio2, still strictly overdetermined. This differs from the incumbent ratio4; no new weak test space orbank is introduced.",
+  "weak_overdetermination_note": "64 fixed weak bank equations for 32 new latent coordinates; ratio 2, still strictly overdetermined. This differs from the incumbent ratio 4; no new weak test space or bank is introduced.",
   "training": {
     "n": 256,
     "train_seed": 690601,
@@ -100,12 +100,12 @@
     "weak normal force with fixed initial physical scale",
     "zero-field fit"
   ],
-  "cost_control": "The same three time steps apply independently to each nonlinear head. Every time-step output is scored andtimed in the same invocation; larger dimension is not assumed faster. Primary .0025 versus .00125 must agree within original .01 required-error scale; report .005 separately with its own refinement comparison.",
-  "query_contract": "Full host u0,v0 and scalar speed to49 dense host u,v outputs at0:.05:2.4. All full input projection/fitting, speed preparation, evolution, decoding and transfer charged.",
+  "cost_control": "The same three time steps apply independently to each nonlinear head. Every time-step output is scored and timed in the same invocation; larger dimension is not assumed faster. Primary .0025 versus .00125 must agree within original .01 required-error scale; report .005 separately with its own refinement comparison.",
+  "query_contract": "Full host u0,v0 and scalar speed to 49 dense host u,v outputs at 0:.05:2.4. All full input projection/fitting, speed preparation, evolution, decoding and transfer charged.",
   "expected_timed_invocations": 276,
   "expected_warmup_queries": 92,
   "runtime_budget_estimate": {
-    "basis": "Measured dynamics02 timings, with a conservative factor4 forK32 nonlinear evolution andexplicit allowance forregeneration, training, compilation, diagnosis andsaving.",
+    "basis": "Measured dynamics02 timings, with a conservative factor 4 for K32 nonlinear evolution and explicit allowance for regeneration, training, compilation, diagnosis andsaving.",
     "anticipated_minutes": [
       45,
       85
@@ -120,7 +120,7 @@
       10
     ]
   },
-  "training_regeneration": "Regenerate original seed/count atoriginal training mesh/CFL oncluster; stream coefficients/scales andoriginal field hashes. Prior saved coefficients are audit lineage only; do notupload them as training data.",
-  "acceptance": "Finite/frozen-bank/provenance gates required. Preserve all nonstationary fits, rank failures, failed rollouts andunderresolved time steps explicitly; no relaxed acceptance oradditional training byvalidation selection. No final cohort opened.",
-  "claims": "Development K32 representation/evolution/time-step comparisons only. Same-grid FOM ratios are notan efficient coarse-FOM envelope. Absorber current-relative errors andvanishing flags remain required beside fixed-scale errors."
+  "training_regeneration": "Regenerate original seed/count at original training mesh/CFL on cluster; stream coefficients/scales and original field hashes. Prior saved coefficients are audit lineage only; do not upload them as training data.",
+  "acceptance": "Finite/frozen-bank/provenance gates required. Preserve all nonstationary fits, rank failures, failed rollouts and underresolved time steps explicitly; no relaxed acceptance or additional training by validation selection. No final cohort opened.",
+  "claims": "Development K32 representation/evolution/time-step comparisons only. Same-grid FOM ratios are not an efficient coarse-FOM envelope. Absorber current-relative errors and vanishing flags remain required beside fixed-scale errors."
 }

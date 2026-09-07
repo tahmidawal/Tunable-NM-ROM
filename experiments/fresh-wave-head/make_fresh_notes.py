@@ -9,7 +9,9 @@ import statistics
 def number(value,percent=False):
     if value is None:
         return "—"
-    return f"{100*value:.4f}%" if percent else f"{value:.8g}"
+    if percent:
+        return f"{100*value:.4e}%" if value!=0 and abs(value)<1e-6 else f"{100*value:.4f}%"
+    return f"{value:.8g}"
 
 
 def table(headers,rows):
@@ -53,7 +55,12 @@ def main():
                 base=next(a for a in entry['arms'] if a['name']==arm['name'].removesuffix('_velocity') and a['optimizer_seed']==arm['optimizer_seed'])
                 primary=lambda a:next(s for s in a['rollout']['summaries'] if s['dt']==a['rollout']['primary_dt'])
                 pairs.append((arm['validation']['tangent']['mean']<base['validation']['tangent']['mean'],primary(arm)['energy_state']['median']>primary(base)['energy_state']['median'],arm['name']))
-        lines.append(f"In `{bc}`, the MLP has {capacities['mlp']} head parameters and the quadratic head has {capacities['quadratic']}; this is not a parameter-matched architecture comparison. The {repeats} optimizer repeats share the same data. The velocity penalty improves mean tangent fitting in {sum(p[0] for p in pairs)} of {len(pairs)} matched comparisons, while median trajectory energy-state error worsens in {sum(p[1] for p in pairs)}. Selected latent fits include {selected_nonstationary} nonstationary states; these remain failures of the declared fitting gate.")
+        unresolved=sum(not a['rollout']['refinement_passed'] for a in entry['arms'])
+        lines.append(f"In `{bc}`, the MLP has {capacities['mlp']} head parameters and the quadratic head has {capacities['quadratic']}; this is not a parameter-matched architecture comparison. The {repeats} optimizer repeats share the same data. The velocity penalty improves mean tangent fitting in {sum(p[0] for p in pairs)} of {len(pairs)} matched comparisons, while median trajectory energy-state error worsens in {sum(p[1] for p in pairs)} at the original primary step. The latter comparison is qualified by {unresolved} head/repeat runs failing the original timestep check; their temporal accuracy remains unresolved at that step. Selected latent fits include {selected_nonstationary} nonstationary states; these remain failures of the declared fitting gate.")
+    if refined:
+        fine_cases=[case for _,record in refined for case in record['fine_diagnostic']['finest_two_refinement']]
+        fine_passes=sum(record['fine_diagnostic']['refinement_passed'] for _,record in refined)
+        lines += ["",f"The frozen-checkpoint continuation passes the additional finest-pair timestep check in {fine_passes} of {len(refined)} selected head/repeat runs and {sum(case['passed'] for case in fine_cases)} of {len(fine_cases)} case/repeat comparisons. Remaining failures stay temporally unresolved. These checks preserve the original primary-step verdict; the converged follow-ups still have large physical trajectory errors."]
     lines += ["", "A proposed next controlled test is a latent-dimension ladder using the same frozen spatial bank and MLP training setup, alongside linear models at each matching dimension. That would separate compression from nonlinear evolution before adding more elaborate heads. This proposal has not been run."]
     lines += ["", "## Scope and reference",""]
     for bc,(path,run,entry) in boundaries.items():
@@ -97,15 +104,17 @@ def main():
         for arm in entry["arms"]:
             rollout=arm["rollout"]
             primary=next(s for s in rollout["summaries"] if s["dt"]==rollout["primary_dt"])
-            rows.append([bc,arm["name"],arm["optimizer_seed"],number(primary["dt"]),primary["completed"],primary["failed"],number(primary["energy_state"]["mean"],True),number(primary["energy_state"]["median"],True),number(primary["energy_state"]["worst"],True),primary["energy_state"]["outliers"],str(arm["accuracy_passed"])])
-    lines += [table(["Boundary","Head/objective","Repeat seed","Primary step","Complete","Failed","Energy-state mean","Median","Worst","Energy outliers","Engineering target passed"],rows),""]
+            temporal='Pairwise check passed' if rollout['refinement_passed'] else 'Time unresolved'
+            rows.append([bc,arm["name"],arm["optimizer_seed"],number(primary["dt"]),temporal,primary["completed"],primary["failed"],number(primary["energy_state"]["mean"],True),number(primary["energy_state"]["median"],True),number(primary["energy_state"]["worst"],True),primary["energy_state"]["outliers"],str(arm["accuracy_passed"])])
+    lines += [table(["Boundary","Head/objective","Repeat seed","Primary step","Original temporal status","Complete","Failed","Energy-state mean","Median","Worst","Energy outliers","Engineering target passed"],rows),""]
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
         for arm in entry['arms']:
             primary=next(s for s in arm['rollout']['summaries'] if s['dt']==arm['rollout']['primary_dt'])
             d,v=primary['displacement'],primary['velocity']
-            rows.append([bc,arm['name'],arm['optimizer_seed'],number(d['mean'],True),number(d['median'],True),number(d['worst'],True),d['outliers'],number(v['mean'],True),number(v['median'],True),number(v['worst'],True),v['outliers']])
-    lines += [table(['Boundary','Head/objective','Repeat seed','Displacement mean','Median','Worst','Outliers','Velocity mean','Median','Worst','Outliers'],rows),"","These values summarize each trajectory's maximum error over time. Means, medians and worst values are conditional on finite cases; failed/nonfinite trajectories count as outliers and prevent acceptance. The primary step was fixed before training. Physical velocity is the decoder Jacobian applied to the latent velocity; no finite-difference replacement or phase alignment is used.","","## Time-step refinement and phase diagnostics",""]
+            temporal='Pairwise check passed' if arm['rollout']['refinement_passed'] else 'Time unresolved'
+            rows.append([bc,arm['name'],arm['optimizer_seed'],temporal,number(d['mean'],True),number(d['median'],True),number(d['worst'],True),d['outliers'],number(v['mean'],True),number(v['median'],True),number(v['worst'],True),v['outliers']])
+    lines += [table(['Boundary','Head/objective','Repeat seed','Original temporal status','Displacement mean','Median','Worst','Outliers','Velocity mean','Median','Worst','Outliers'],rows),"","These values summarize each trajectory's maximum error over time. Means, medians and worst values are conditional on finite cases; failed/nonfinite trajectories count as outliers and prevent acceptance. The primary step was fixed before training. Physical velocity is the decoder Jacobian applied to the latent velocity; no finite-difference replacement or phase alignment is used.","","## Time-step refinement and phase diagnostics",""]
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
         for arm in entry["arms"]:

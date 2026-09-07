@@ -1,5 +1,6 @@
 """Plot saved physical error trajectories, with no new model evaluation or fitting."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import numpy as np
@@ -20,14 +21,17 @@ def main():
         path=Path(name)
         result=json.loads(path.read_text())
         for bc,entry in result['boundary_results'].items():
-            datasets.append((path.parent,bc,entry,result['config']))
+            source={'result_path':str(path),'result_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'source_commit':result['provenance']['source_commit'],'job_id':result['provenance']['job_id']}
+            datasets.append((path.parent,bc,entry,result['config'],source))
     figure,axes=plt.subplots(len(datasets),3,figsize=(13,4*len(datasets)),squeeze=False,sharex=True)
     metrics=[('displacement_error','Displacement error'),('velocity_error','Physical velocity error'),('energy_state_error','Error-state energy norm')]
     metadata=[]
-    for row,(base,bc,entry,config) in enumerate(datasets):
+    for row,(base,bc,entry,config,source) in enumerate(datasets):
         t=np.arange(int(round(config['end_time']/config['observation_dt']))+1)*config['observation_dt']
         for name,color in COLORS.items():
             arms=[arm for arm in entry['arms'] if arm['name']==name]
+            temporal_unresolved=any(not arm['rollout']['refinement_passed'] for arm in arms)
+            curve_label=name+(' [time unresolved]' if temporal_unresolved else '')
             collected={metric:[] for metric,_ in metrics}
             failures=[]
             for arm in arms:
@@ -48,16 +52,16 @@ def main():
                     values=np.stack(collected[metric])
                     middle=np.median(values,axis=0)
                     lower,upper=np.quantile(values,[.25,.75],axis=0)
-                    ax.plot(t,middle,label=name,color=color,lw=1.8)
+                    ax.plot(t,middle,label=curve_label,color=color,lw=1.8)
                     ax.fill_between(t,lower,upper,color=color,alpha=.12)
                 ax.axhline(config['accuracy_target'],color='#777777',linestyle='--',linewidth=.8)
                 ax.set_title(f'{bc}: {label}')
                 ax.set_ylabel('Initial-state-normalized error')
                 ax.set_xlabel('Time')
                 ax.grid(alpha=.2)
-            metadata.append({'boundary':bc,'head':name,'finite_completed_case_repeat_count':len(collected['displacement_error']),'failed_cases':failures,'interpretation':'Median and interquartile range across completed trajectory-repeat observations; descriptive spread, not confidence intervals. Failed trajectories excluded from curves and counted explicitly here and in the report.'})
+            metadata.append({'source':source,'boundary':bc,'head':name,'optimizer_seeds':[arm['optimizer_seed'] for arm in arms],'original_time_refinement_unresolved':temporal_unresolved,'finite_completed_case_repeat_count':len(collected['displacement_error']),'failed_cases':failures,'interpretation':'Median and interquartile range pooling completed case records from optimizer repeats on the same data; descriptive spread, not independent-data replicates or confidence intervals. Failed trajectories excluded from curves and counted explicitly here and in the report.'})
         axes[row,0].legend(fontsize=8)
-    figure.suptitle('Fresh wave rollouts: predeclared primary time step\nBands show descriptive interquartile spread among completed cases; failures are reported separately',fontsize=11)
+    figure.suptitle('Fresh wave rollouts: predeclared primary time step\nMedians and IQR pool case records and optimizer repeats on the same data\nReflective quadratic curves fail the original timestep check; labels mark unresolved temporal accuracy',fontsize=11)
     figure.tight_layout(rect=(0,0,1,.94))
     out=Path(args.out)
     out.mkdir(parents=True,exist_ok=True)

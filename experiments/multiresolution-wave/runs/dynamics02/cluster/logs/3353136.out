@@ -1,0 +1,349 @@
+jax_backend=gpu
+{'jax_backend': 'gpu', 'x64': True}
+{'jax_backend': 'gpu', 'x64': True}
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100 80GB PCIe"], "host": "pax050", "source_commit": "a0c4d0a7d7b59b05615846e61df0499ef5de4f62", "job_id": "3353136", "numpy_version": "2.5.0"}
+training_coefficients dirichlet 0
+training_coefficients dirichlet 1
+training_coefficients dirichlet 2
+training_coefficients dirichlet 3
+training_coefficients dirichlet 4
+training_coefficients dirichlet 5
+training_coefficients dirichlet 6
+training_coefficients dirichlet 7
+training_coefficients dirichlet 8
+training_coefficients dirichlet 9
+training_coefficients dirichlet 10
+training_coefficients dirichlet 11
+training_coefficients dirichlet 12
+training_coefficients dirichlet 13
+training_coefficients dirichlet 14
+training_coefficients dirichlet 15
+training_coefficients dirichlet 16
+training_coefficients dirichlet 17
+training_coefficients dirichlet 18
+training_coefficients dirichlet 19
+training_coefficients dirichlet 20
+training_coefficients dirichlet 21
+training_coefficients dirichlet 22
+training_coefficients dirichlet 23
+training_coefficients dirichlet 24
+training_coefficients dirichlet 25
+training_coefficients dirichlet 26
+training_coefficients dirichlet 27
+training_coefficients dirichlet 28
+training_coefficients dirichlet 29
+training_coefficients dirichlet 30
+training_coefficients dirichlet 31
+training_coefficients dirichlet 32
+training_coefficients dirichlet 33
+training_coefficients dirichlet 34
+training_coefficients dirichlet 35
+training_coefficients dirichlet 36
+training_coefficients dirichlet 37
+training_coefficients dirichlet 38
+training_coefficients dirichlet 39
+training_coefficients dirichlet 40
+training_coefficients dirichlet 41
+training_coefficients dirichlet 42
+training_coefficients dirichlet 43
+training_coefficients dirichlet 44
+training_coefficients dirichlet 45
+training_coefficients dirichlet 46
+training_coefficients dirichlet 47
+training_coefficients dirichlet 48
+training_coefficients dirichlet 49
+training_coefficients dirichlet 50
+training_coefficients dirichlet 51
+training_coefficients dirichlet 52
+training_coefficients dirichlet 53
+training_coefficients dirichlet 54
+training_coefficients dirichlet 55
+training_coefficients dirichlet 56
+training_coefficients dirichlet 57
+training_coefficients dirichlet 58
+training_coefficients dirichlet 59
+training_coefficients dirichlet 60
+training_coefficients dirichlet 61
+training_coefficients dirichlet 62
+training_coefficients dirichlet 63
+warmup dirichlet 256 0 rom 0.0025
+warmup dirichlet 256 0 rom 0.00125
+warmup dirichlet 256 0 affine16 0.0
+warmup dirichlet 256 0 affine32 0.0
+warmup dirichlet 256 0 full64 0.0
+warmup dirichlet 256 0 dst 0.0
+timed dirichlet 256 0 0 rom 0.0025
+timed dirichlet 256 0 0 rom 0.00125
+timed dirichlet 256 0 0 affine16 0.0
+timed dirichlet 256 0 0 affine32 0.0
+timed dirichlet 256 0 0 full64 0.0
+timed dirichlet 256 0 0 dst 0.0
+timed dirichlet 256 0 1 dst 0.0
+timed dirichlet 256 0 1 full64 0.0
+timed dirichlet 256 0 1 affine32 0.0
+timed dirichlet 256 0 1 affine16 0.0
+timed dirichlet 256 0 1 rom 0.00125
+timed dirichlet 256 0 1 rom 0.0025
+timed dirichlet 256 0 2 rom 0.0025
+timed dirichlet 256 0 2 rom 0.00125
+timed dirichlet 256 0 2 affine16 0.0
+timed dirichlet 256 0 2 affine32 0.0
+timed dirichlet 256 0 2 full64 0.0
+timed dirichlet 256 0 2 dst 0.0
+diagnostics dirichlet 256 0
+warmup dirichlet 256 1 rom 0.0025
+warmup dirichlet 256 1 rom 0.00125
+warmup dirichlet 256 1 affine16 0.0
+warmup dirichlet 256 1 affine32 0.0
+warmup dirichlet 256 1 full64 0.0
+warmup dirichlet 256 1 dst 0.0
+timed dirichlet 256 1 0 rom 0.0025
+timed dirichlet 256 1 0 rom 0.00125
+timed dirichlet 256 1 0 affine16 0.0
+timed dirichlet 256 1 0 affine32 0.0
+timed dirichlet 256 1 0 full64 0.0
+timed dirichlet 256 1 0 dst 0.0
+timed dirichlet 256 1 1 dst 0.0
+timed dirichlet 256 1 1 full64 0.0
+timed dirichlet 256 1 1 affine32 0.0
+timed dirichlet 256 1 1 affine16 0.0
+timed dirichlet 256 1 1 rom 0.00125
+timed dirichlet 256 1 1 rom 0.0025
+timed dirichlet 256 1 2 rom 0.0025
+timed dirichlet 256 1 2 rom 0.00125
+timed dirichlet 256 1 2 affine16 0.0
+timed dirichlet 256 1 2 affine32 0.0
+timed dirichlet 256 1 2 full64 0.0
+timed dirichlet 256 1 2 dst 0.0
+diagnostics dirichlet 256 1
+warmup dirichlet 512 0 rom 0.0025
+warmup dirichlet 512 0 rom 0.00125
+warmup dirichlet 512 0 affine16 0.0
+warmup dirichlet 512 0 affine32 0.0
+warmup dirichlet 512 0 full64 0.0
+warmup dirichlet 512 0 dst 0.0
+timed dirichlet 512 0 0 rom 0.0025
+timed dirichlet 512 0 0 rom 0.00125
+timed dirichlet 512 0 0 affine16 0.0
+timed dirichlet 512 0 0 affine32 0.0
+timed dirichlet 512 0 0 full64 0.0
+timed dirichlet 512 0 0 dst 0.0
+timed dirichlet 512 0 1 dst 0.0
+timed dirichlet 512 0 1 full64 0.0
+timed dirichlet 512 0 1 affine32 0.0
+timed dirichlet 512 0 1 affine16 0.0
+timed dirichlet 512 0 1 rom 0.00125
+timed dirichlet 512 0 1 rom 0.0025
+timed dirichlet 512 0 2 rom 0.0025
+timed dirichlet 512 0 2 rom 0.00125
+timed dirichlet 512 0 2 affine16 0.0
+timed dirichlet 512 0 2 affine32 0.0
+timed dirichlet 512 0 2 full64 0.0
+timed dirichlet 512 0 2 dst 0.0
+diagnostics dirichlet 512 0
+warmup dirichlet 512 1 rom 0.0025
+warmup dirichlet 512 1 rom 0.00125
+warmup dirichlet 512 1 affine16 0.0
+warmup dirichlet 512 1 affine32 0.0
+warmup dirichlet 512 1 full64 0.0
+warmup dirichlet 512 1 dst 0.0
+timed dirichlet 512 1 0 rom 0.0025
+timed dirichlet 512 1 0 rom 0.00125
+timed dirichlet 512 1 0 affine16 0.0
+timed dirichlet 512 1 0 affine32 0.0
+timed dirichlet 512 1 0 full64 0.0
+timed dirichlet 512 1 0 dst 0.0
+timed dirichlet 512 1 1 dst 0.0
+timed dirichlet 512 1 1 full64 0.0
+timed dirichlet 512 1 1 affine32 0.0
+timed dirichlet 512 1 1 affine16 0.0
+timed dirichlet 512 1 1 rom 0.00125
+timed dirichlet 512 1 1 rom 0.0025
+timed dirichlet 512 1 2 rom 0.0025
+timed dirichlet 512 1 2 rom 0.00125
+timed dirichlet 512 1 2 affine16 0.0
+timed dirichlet 512 1 2 affine32 0.0
+timed dirichlet 512 1 2 full64 0.0
+timed dirichlet 512 1 2 dst 0.0
+diagnostics dirichlet 512 1
+training_coefficients absorbing 0
+training_coefficients absorbing 1
+training_coefficients absorbing 2
+training_coefficients absorbing 3
+training_coefficients absorbing 4
+training_coefficients absorbing 5
+training_coefficients absorbing 6
+training_coefficients absorbing 7
+training_coefficients absorbing 8
+training_coefficients absorbing 9
+training_coefficients absorbing 10
+training_coefficients absorbing 11
+training_coefficients absorbing 12
+training_coefficients absorbing 13
+training_coefficients absorbing 14
+training_coefficients absorbing 15
+training_coefficients absorbing 16
+training_coefficients absorbing 17
+training_coefficients absorbing 18
+training_coefficients absorbing 19
+training_coefficients absorbing 20
+training_coefficients absorbing 21
+training_coefficients absorbing 22
+training_coefficients absorbing 23
+training_coefficients absorbing 24
+training_coefficients absorbing 25
+training_coefficients absorbing 26
+training_coefficients absorbing 27
+training_coefficients absorbing 28
+training_coefficients absorbing 29
+training_coefficients absorbing 30
+training_coefficients absorbing 31
+training_coefficients absorbing 32
+training_coefficients absorbing 33
+training_coefficients absorbing 34
+training_coefficients absorbing 35
+training_coefficients absorbing 36
+training_coefficients absorbing 37
+training_coefficients absorbing 38
+training_coefficients absorbing 39
+training_coefficients absorbing 40
+training_coefficients absorbing 41
+training_coefficients absorbing 42
+training_coefficients absorbing 43
+training_coefficients absorbing 44
+training_coefficients absorbing 45
+training_coefficients absorbing 46
+training_coefficients absorbing 47
+training_coefficients absorbing 48
+training_coefficients absorbing 49
+training_coefficients absorbing 50
+training_coefficients absorbing 51
+training_coefficients absorbing 52
+training_coefficients absorbing 53
+training_coefficients absorbing 54
+training_coefficients absorbing 55
+training_coefficients absorbing 56
+training_coefficients absorbing 57
+training_coefficients absorbing 58
+training_coefficients absorbing 59
+training_coefficients absorbing 60
+training_coefficients absorbing 61
+training_coefficients absorbing 62
+training_coefficients absorbing 63
+warmup absorbing 256 0 rom 0.0025
+warmup absorbing 256 0 rom 0.00125
+warmup absorbing 256 0 affine16 0.0
+warmup absorbing 256 0 affine32 0.0
+warmup absorbing 256 0 full64 0.0
+warmup absorbing 256 0 rk4 0.45
+warmup absorbing 256 0 rk4 0.225
+timed absorbing 256 0 0 rom 0.0025
+timed absorbing 256 0 0 rom 0.00125
+timed absorbing 256 0 0 affine16 0.0
+timed absorbing 256 0 0 affine32 0.0
+timed absorbing 256 0 0 full64 0.0
+timed absorbing 256 0 0 rk4 0.45
+timed absorbing 256 0 0 rk4 0.225
+timed absorbing 256 0 1 rk4 0.225
+timed absorbing 256 0 1 rk4 0.45
+timed absorbing 256 0 1 full64 0.0
+timed absorbing 256 0 1 affine32 0.0
+timed absorbing 256 0 1 affine16 0.0
+timed absorbing 256 0 1 rom 0.00125
+timed absorbing 256 0 1 rom 0.0025
+timed absorbing 256 0 2 rom 0.0025
+timed absorbing 256 0 2 rom 0.00125
+timed absorbing 256 0 2 affine16 0.0
+timed absorbing 256 0 2 affine32 0.0
+timed absorbing 256 0 2 full64 0.0
+timed absorbing 256 0 2 rk4 0.45
+timed absorbing 256 0 2 rk4 0.225
+diagnostics absorbing 256 0
+warmup absorbing 256 1 rom 0.0025
+warmup absorbing 256 1 rom 0.00125
+warmup absorbing 256 1 affine16 0.0
+warmup absorbing 256 1 affine32 0.0
+warmup absorbing 256 1 full64 0.0
+warmup absorbing 256 1 rk4 0.45
+warmup absorbing 256 1 rk4 0.225
+timed absorbing 256 1 0 rom 0.0025
+timed absorbing 256 1 0 rom 0.00125
+timed absorbing 256 1 0 affine16 0.0
+timed absorbing 256 1 0 affine32 0.0
+timed absorbing 256 1 0 full64 0.0
+timed absorbing 256 1 0 rk4 0.45
+timed absorbing 256 1 0 rk4 0.225
+timed absorbing 256 1 1 rk4 0.225
+timed absorbing 256 1 1 rk4 0.45
+timed absorbing 256 1 1 full64 0.0
+timed absorbing 256 1 1 affine32 0.0
+timed absorbing 256 1 1 affine16 0.0
+timed absorbing 256 1 1 rom 0.00125
+timed absorbing 256 1 1 rom 0.0025
+timed absorbing 256 1 2 rom 0.0025
+timed absorbing 256 1 2 rom 0.00125
+timed absorbing 256 1 2 affine16 0.0
+timed absorbing 256 1 2 affine32 0.0
+timed absorbing 256 1 2 full64 0.0
+timed absorbing 256 1 2 rk4 0.45
+timed absorbing 256 1 2 rk4 0.225
+diagnostics absorbing 256 1
+warmup absorbing 512 0 rom 0.0025
+warmup absorbing 512 0 rom 0.00125
+warmup absorbing 512 0 affine16 0.0
+warmup absorbing 512 0 affine32 0.0
+warmup absorbing 512 0 full64 0.0
+warmup absorbing 512 0 rk4 0.45
+warmup absorbing 512 0 rk4 0.225
+timed absorbing 512 0 0 rom 0.0025
+timed absorbing 512 0 0 rom 0.00125
+timed absorbing 512 0 0 affine16 0.0
+timed absorbing 512 0 0 affine32 0.0
+timed absorbing 512 0 0 full64 0.0
+timed absorbing 512 0 0 rk4 0.45
+timed absorbing 512 0 0 rk4 0.225
+timed absorbing 512 0 1 rk4 0.225
+timed absorbing 512 0 1 rk4 0.45
+timed absorbing 512 0 1 full64 0.0
+timed absorbing 512 0 1 affine32 0.0
+timed absorbing 512 0 1 affine16 0.0
+timed absorbing 512 0 1 rom 0.00125
+timed absorbing 512 0 1 rom 0.0025
+timed absorbing 512 0 2 rom 0.0025
+timed absorbing 512 0 2 rom 0.00125
+timed absorbing 512 0 2 affine16 0.0
+timed absorbing 512 0 2 affine32 0.0
+timed absorbing 512 0 2 full64 0.0
+timed absorbing 512 0 2 rk4 0.45
+timed absorbing 512 0 2 rk4 0.225
+diagnostics absorbing 512 0
+warmup absorbing 512 1 rom 0.0025
+warmup absorbing 512 1 rom 0.00125
+warmup absorbing 512 1 affine16 0.0
+warmup absorbing 512 1 affine32 0.0
+warmup absorbing 512 1 full64 0.0
+warmup absorbing 512 1 rk4 0.45
+warmup absorbing 512 1 rk4 0.225
+timed absorbing 512 1 0 rom 0.0025
+timed absorbing 512 1 0 rom 0.00125
+timed absorbing 512 1 0 affine16 0.0
+timed absorbing 512 1 0 affine32 0.0
+timed absorbing 512 1 0 full64 0.0
+timed absorbing 512 1 0 rk4 0.45
+timed absorbing 512 1 0 rk4 0.225
+timed absorbing 512 1 1 rk4 0.225
+timed absorbing 512 1 1 rk4 0.45
+timed absorbing 512 1 1 full64 0.0
+timed absorbing 512 1 1 affine32 0.0
+timed absorbing 512 1 1 affine16 0.0
+timed absorbing 512 1 1 rom 0.00125
+timed absorbing 512 1 1 rom 0.0025
+timed absorbing 512 1 2 rom 0.0025
+timed absorbing 512 1 2 rom 0.00125
+timed absorbing 512 1 2 affine16 0.0
+timed absorbing 512 1 2 affine32 0.0
+timed absorbing 512 1 2 full64 0.0
+timed absorbing 512 1 2 rk4 0.45
+timed absorbing 512 1 2 rk4 0.225
+diagnostics absorbing 512 1
+wave_dynamics_complete

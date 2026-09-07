@@ -1,0 +1,940 @@
+{
+  "passed": true,
+  "scope": "Independent CPU reconstruction and accounting audit of the dynamics pilot.\n\nNo JAX or experiment solver imports. Reconstructs all first-repeat ROM full fields\nfrom saved bank/coefficients, and common fields for every method. Full-mesh timed\nFOM errors at the finer grid are not reconstructable for the nonreference CFL;\nthose are explicitly outside this audit. References are retained, not regenerated.\n",
+  "result_sha256": "e6ffda759faf5bf7e468e789f068b435b4a3e3f7ed6c01b9653f7c8cbac18063",
+  "training": [
+    {
+      "boundary": "dirichlet",
+      "saved_projector_defect": 2.0206917125155344e-14,
+      "saved_center_defect": 3.3009861731851044e-17,
+      "data_hashes_match": true,
+      "basis_covariance_verified": true
+    },
+    {
+      "boundary": "absorbing",
+      "saved_projector_defect": 1.3515891318707761e-14,
+      "saved_center_defect": 3.212538491824539e-17,
+      "data_hashes_match": true,
+      "basis_covariance_verified": true
+    }
+  ],
+  "bank_checks": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "maximum_coordinate_bank_difference": 8.135766366157426e-14
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "maximum_coordinate_bank_difference": 2.9288724223697216e-13
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "maximum_coordinate_bank_difference": 1.1129985821867194e-13
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "maximum_coordinate_bank_difference": 2.9198865547641617e-13
+    }
+  ],
+  "fit_checks": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 4.065758146820642e-18,
+      "maximum_gradient_difference": 7.214187725889697e-17
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 4.065758146820642e-18,
+      "maximum_gradient_difference": 7.214187725889697e-17
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.3010426069826053e-17,
+      "maximum_gradient_difference": 1.3078142610966763e-16
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.3010426069826053e-17,
+      "maximum_gradient_difference": 1.3078142610966763e-16
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 4.445228907190568e-18,
+      "maximum_gradient_difference": 1.1119201885049296e-16
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 4.445228907190568e-18,
+      "maximum_gradient_difference": 1.1119201885049296e-16
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.1275702593849246e-17,
+      "maximum_gradient_difference": 3.022716237597495e-16
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.1275702593849246e-17,
+      "maximum_gradient_difference": 3.022716237597495e-16
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.7889335846010823e-18,
+      "maximum_gradient_difference": 1.286989317608394e-17
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.7889335846010823e-18,
+      "maximum_gradient_difference": 1.286989317608394e-17
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 2.927345865710862e-18,
+      "maximum_gradient_difference": 1.1528662283383781e-17
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 2.927345865710862e-18,
+      "maximum_gradient_difference": 1.1528662283383781e-17
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.3552527156068805e-18,
+      "maximum_gradient_difference": 2.1091014753082916e-17
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 1.3552527156068805e-18,
+      "maximum_gradient_difference": 2.1091014753082916e-17
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "budget": 400,
+      "starts_checked": 48,
+      "maximum_objective_difference": 6.288372600415926e-18,
+      "maximum_gradient_difference": 7.425557733237589e-18
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "budget": 800,
+      "starts_checked": 48,
+      "maximum_objective_difference": 6.288372600415926e-18,
+      "maximum_gradient_difference": 7.425557733237589e-18
+    }
+  ],
+  "reconstructed_queries": [
+    {
+      "invocation_id": "dirichlet_256_0_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_dst_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_dst_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_dst_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_dst_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rk4_0.45",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rk4_0.225",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rk4_0.45",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rk4_0.225",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rk4_0.45",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rk4_0.225",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rom_0.0025",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rom_0.00125",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_affine16_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_affine32_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_full64_0.0",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": 0.0,
+      "common_field_difference": 0.0
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rk4_0.45",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rk4_0.225",
+      "repetitions_verified": 3,
+      "physical_metric_difference": 0.0,
+      "native_grid_ROM_metric_difference": null,
+      "common_field_difference": null
+    }
+  ],
+  "linear_controls": [
+    {
+      "invocation_id": "dirichlet_256_0_0_affine16_0.0",
+      "generator_difference": 5.684341886080802e-14,
+      "state_difference": 9.464429240324534e-12
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_affine32_0.0",
+      "generator_difference": 8.182343691487404e-14,
+      "state_difference": 2.4529489550673134e-11
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 7.277511926417901e-14
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_affine16_0.0",
+      "generator_difference": 5.684341886080802e-14,
+      "state_difference": 9.190870287056896e-12
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_affine32_0.0",
+      "generator_difference": 1.213473765915296e-13,
+      "state_difference": 4.553157850750722e-11
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 9.769962616701378e-14
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_affine16_0.0",
+      "generator_difference": 1.1368683772161603e-13,
+      "state_difference": 9.796607969292381e-12
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_affine32_0.0",
+      "generator_difference": 1.7053025658242404e-13,
+      "state_difference": 1.2008172234345693e-11
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 8.823497488208432e-14
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_affine16_0.0",
+      "generator_difference": 5.684341886080802e-14,
+      "state_difference": 8.501643833369599e-12
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_affine32_0.0",
+      "generator_difference": 1.1368683772161603e-13,
+      "state_difference": 5.2438053899095394e-11
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 4.873879078104437e-14
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_affine16_0.0",
+      "generator_difference": 6.861178292183467e-14,
+      "state_difference": 3.247180302423658e-12
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_affine32_0.0",
+      "generator_difference": 1.7674750552032492e-13,
+      "state_difference": 2.6858515411731787e-12
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 2.6145752229922437e-14
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_affine16_0.0",
+      "generator_difference": 5.684341886080802e-14,
+      "state_difference": 3.651745572597065e-12
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_affine32_0.0",
+      "generator_difference": 4.4875214655348827e-13,
+      "state_difference": 6.338041202980094e-12
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 2.4445723223465166e-14
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_affine16_0.0",
+      "generator_difference": 5.684341886080802e-14,
+      "state_difference": 4.6629367034256575e-12
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_affine32_0.0",
+      "generator_difference": 2.2737367544323206e-13,
+      "state_difference": 2.3092638912203256e-12
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 3.1405433809084116e-14
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_affine16_0.0",
+      "generator_difference": 1.1368683772161603e-13,
+      "state_difference": 2.6005864128819667e-12
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_affine32_0.0",
+      "generator_difference": 3.7925218521195347e-13,
+      "state_difference": 3.915090474038152e-12
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_full64_0.0",
+      "generator_difference": 0.0,
+      "state_difference": 1.8540724511240114e-14
+    }
+  ],
+  "diagnostics": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0026665849610098347
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "arm": "affine16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 5.563069128098678e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "arm": "affine32",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 1.3126820452429358e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 0,
+      "arm": "full64",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0026665849610098343
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "arm": "affine16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 5.563069128098678e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "arm": "affine32",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 1.3126820452429358e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 256,
+      "case": 1,
+      "arm": "full64",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0026665849574244362
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "arm": "affine16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 5.563069116413399e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "arm": "affine32",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 1.3126820470124139e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 0,
+      "arm": "full64",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0026665849574244362
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "arm": "affine16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 5.563069116413399e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "arm": "affine32",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 1.3126820470124139e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 512,
+      "case": 1,
+      "arm": "full64",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0003105915042539239
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "arm": "affine16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0006282534284029181
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "arm": "affine32",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 9.067716388309274e-05
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 0,
+      "arm": "full64",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0003105915042539238
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "arm": "affine16",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0006282534284029181
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "arm": "affine32",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 9.067716388309274e-05
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 256,
+      "case": 1,
+      "arm": "full64",
+      "snapshot_metric_difference": 0.0,
+      "zero_mass_norm": 0.0
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 1.3877787807814457e-17,
+      "zero_mass_norm": 0.0003105751422158418
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "arm": "affine16",
+      "snapshot_metric_difference": 8.673617379884035e-19,
+      "zero_mass_norm": 0.0006281482054386378
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "arm": "affine32",
+      "snapshot_metric_difference": 6.938893903907228e-18,
+      "zero_mass_norm": 9.066225434418961e-05
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 0,
+      "arm": "full64",
+      "snapshot_metric_difference": 6.938893903907228e-18,
+      "zero_mass_norm": 0.0
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "arm": "mlp16",
+      "snapshot_metric_difference": 1.3877787807814457e-17,
+      "zero_mass_norm": 0.0003105751422158418
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "arm": "affine16",
+      "snapshot_metric_difference": 2.7755575615628914e-17,
+      "zero_mass_norm": 0.0006281482054386378
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "arm": "affine32",
+      "snapshot_metric_difference": 8.673617379884035e-19,
+      "zero_mass_norm": 9.066225434418961e-05
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 512,
+      "case": 1,
+      "arm": "full64",
+      "snapshot_metric_difference": 1.3877787807814457e-17,
+      "zero_mass_norm": 0.0
+    }
+  ],
+  "audited_invocations": 156,
+  "file_hashes": 78,
+  "maximum_physical_metric_difference": 0.0,
+  "maximum_ROM_native_grid_metric_difference": 0,
+  "final_cohort_opened": false
+}

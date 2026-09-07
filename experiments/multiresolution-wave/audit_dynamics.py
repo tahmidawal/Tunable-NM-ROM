@@ -8,6 +8,7 @@ those are explicitly outside this audit. References are retained, not regenerate
 import argparse
 from collections import defaultdict
 import hashlib
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -65,6 +66,42 @@ def geometry(head,transform,z,w=None):
     curvature=transform@(scale*((s2*t2*t2+d2*((s1*t1*t1)@head['p/l2/w']))@head['p/out/w']))
     return a,jac@w,jac,curvature
 
+def parameter_rows(seed,count):
+    rng=np.random.default_rng(seed);rows=[]
+    for i in range(count):
+        sx,sy=rng.uniform(.36,.42,2);cx,cy=rng.uniform(sx+.025,1-sx-.025),rng.uniform(sy+.025,1-sy-.025)
+        amp,c=rng.uniform(.7,1.3),rng.uniform(.85,1.15);vx,vy=rng.uniform(-.5,.5,2)
+        if i%4==0:vx=vy=0.
+        sigx,sigy=rng.uniform(.12,.16,2);rows.append((cx,cy,sx,sy,amp,c,vx,vy,sigx,sigy))
+    return np.asarray(rows)
+
+def initial_fields(par,n,bc):
+    axis=np.linspace(0,1,n+1)
+    if bc=='dirichlet':axis=axis[1:-1]
+    x,y=np.meshgrid(axis,axis,indexing='ij');cx,cy,sx,sy,amp,c,vx,vy,sigx,sigy=par
+    a,b=(x-cx)/sx,(y-cy)/sy;ra,rb=np.maximum(1-a*a,1e-30),np.maximum(1-b*b,1e-30)
+    u=amp*np.where(abs(a)<1,np.exp(1-1/ra),0)*np.where(abs(b)<1,np.exp(1-1/rb),0)*np.exp(-.5*(((x-cx)/sigx)**2+((y-cy)/sigy)**2))
+    dx=-2*a/(sx*ra*ra)-(x-cx)/sigx**2;dy=-2*b/(sy*rb*rb)-(y-cy)/sigy**2
+    return u,-c*u*(vx*dx+vy*dy)
+
+def audit_bank(inputs,mesh,n,bc):
+    with np.load(inputs/'bank_parameters.npz') as f:p={k:f[k] for k in f.files}
+    with np.load(inputs/'coordinates.npz') as f:inverse=np.linalg.inv(f['qr_r'])@np.linalg.inv(mesh['transform'])
+    axis=np.linspace(0,1,n+1)
+    if bc=='dirichlet':axis=axis[1:-1]
+    coordinates=np.stack(np.meshgrid(axis,axis,indexing='ij'),axis=-1).reshape(-1,2)
+    maximum=0.
+    for start in range(0,len(coordinates),8192):
+        xy=coordinates[start:start+8192];phase=2*np.pi*(xy@p['frequency'].T)
+        h=np.concatenate((2*xy-1,np.sin(phase),np.cos(phase)),axis=1)
+        for layer in ('l1','l2'):
+            h=h@p[f'p/{layer}/w']+p[f'p/{layer}/b'];h=h/(1+np.exp(-h))
+        raw=h@p['p/out/w']+p['p/out/b']
+        if bc=='dirichlet':raw*=np.prod(np.sin(np.pi*xy),axis=1)[:,None]
+        maximum=max(maximum,float(np.max(abs(raw@inverse-mesh['g'][start:start+8192]))))
+    assert maximum<1e-8,maximum
+    return maximum
+
 def audit(record):
     cluster=record/'cluster';native=cluster/'out/pilot';out=record/'analysis';out.mkdir(exist_ok=True)
     result=json.loads((native/'result.json').read_text());cfg=result['config'];meta=result['provenance']
@@ -81,10 +118,25 @@ def audit(record):
         relative='experiments/'+str(Path(path).relative_to('code'))
         payload=subprocess.check_output(['git','show',submission['source_commit']+':'+relative],cwd=Path(__file__).resolve().parents[2])
         assert hashlib.sha256(payload).hexdigest()==sha
+    origin=json.loads((cluster/'in/ORIGIN.json').read_text())
+    checkpoint_blobs={}
+    for path,expected in origin['sources'].items():
+        payload=subprocess.check_output(['git','show',origin['checkpoint_commit']+':'+path],cwd=Path(__file__).resolve().parents[2])
+        assert hashlib.sha256(payload).hexdigest()==expected
+        checkpoint_blobs[path]=payload
+    for bc,label in (('dirichlet','reflective01'),('absorbing','absorbing02')):
+        prefix=f'experiments/fresh-wave-head/runs/{label}/out/campaign/{bc}/'
+        for name,source in (('bank_parameters.npz','bank_parameters.npz'),('head.npz','mlp_691200/head.npz'),('data_manifest.json','data_manifest.json')):
+            assert (cluster/'in'/bc/name).read_bytes()==checkpoint_blobs[prefix+source]
+        with np.load(io.BytesIO(checkpoint_blobs[prefix+'bank_tables.npz'])) as table,np.load(io.BytesIO(checkpoint_blobs[prefix+'common_initialization.npz'])) as common,np.load(cluster/'in'/bc/'coordinates.npz') as supplied:
+            np.testing.assert_array_equal(supplied['qr_r'],table['qr_r'])
+            np.testing.assert_array_equal(supplied['common_linear'],common['linear'])
+            np.testing.assert_array_equal(supplied['common_center'],common['center'])
     for name,sha in result['output_sha256'].items():assert digest(native/name)==sha
     groups=defaultdict(list)
     for row in result['invocations']:groups[row['boundary'],row['intervals'],row['case'],row['method'],row['setting']].append(row)
-    reconstruction=[];diagnostics=[];linear_checks=[];training=[]
+    reconstruction=[];diagnostics=[];linear_checks=[];training=[];bank_checks=[];fit_checks=[]
+    validation_parameters=parameter_rows(cfg['validation_seed'],max(cfg['validation_indices'])+1)
     for bc in cfg['boundaries']:
         with np.load(native/f'training_ladder_{bc}.npz') as tt:
             a=tt['a'].reshape(-1,64);center=a.mean(axis=0)
@@ -99,15 +151,20 @@ def audit(record):
         for n in cfg['meshes']:
             with np.load(native/f'mesh_{bc}_{n}.npz') as mm:mesh={k:mm[k] for k in mm.files}
             g=mesh['g'];m=mesh['mass']
+            bank_checks.append(dict(boundary=bc,intervals=n,maximum_coordinate_bank_difference=audit_bank(cluster/'in'/bc,mesh,n,bc)))
             np.testing.assert_allclose(g.T@(m[:,None]*g),np.eye(64),atol=2e-10)
             for ci in cfg['validation_indices']:
-                with np.load(native/f'samegrid_{bc}_{n}_{ci}.npz') as ss:su,sv=ss['u'],ss['v']
+                with np.load(native/f'samegrid_{bc}_{n}_{ci}.npz') as ss:
+                    su,sv=ss['u'],ss['v']
+                    initial=initial_fields(validation_parameters[ci],n,bc)
+                    np.testing.assert_allclose(initial[0],ss['u0'],atol=1e-14);np.testing.assert_allclose(initial[1],ss['v0'],atol=1e-13)
                 with np.load(native/f'reference_{bc}_{ci}.npz') as rr:ut,vt=rr['u'],rr['v']
                 for key,rows in groups.items():
                     if key[:3]!=(bc,n,ci):continue
                     assert sorted(r['repetition'] for r in rows)==list(range(cfg['repetitions']))
                     assert len({json.dumps(r['output_sha256'],sort_keys=True) for r in rows})==1
                     first=next(r for r in rows if r['repetition']==0);c=first['parameters'][5]
+                    np.testing.assert_array_equal(first['parameters'],validation_parameters[ci])
                     with np.load(native/(first['invocation_id']+'.npz')) as ff:field={k:ff[k] for k in ff.files}
                     u,v=field['u'],field['v']
                     physical=recompute(u,v,ut,vt,cfg['comparison_intervals'],bc,c)
@@ -140,6 +197,20 @@ def audit(record):
                     reconstruction.append(dict(invocation_id=first['invocation_id'],repetitions_verified=len(rows),physical_metric_difference=discrepancy,native_grid_ROM_metric_difference=native_difference,common_field_difference=field_difference))
                 drow=next(x for x in result['diagnostics'] if (x['boundary'],x['intervals'],x['case'])==(bc,n,ci))
                 with np.load(native/f'diagnostic_{bc}_{n}_{ci}.npz') as ff:fit={k:ff[k] for k in ff.files}
+                for budget in cfg['diagnostic_fit_budgets']:
+                    selected_fit=fit[f'fit_{budget}_selected']
+                    np.testing.assert_array_equal(selected_fit,np.argmin(np.where(fit[f'fit_{budget}_finite'],fit[f'fit_{budget}_objective'],np.inf),axis=1))
+                    maximum_objective_difference=0.;maximum_gradient_difference=0.
+                    for ti in range(len(selected_fit)):
+                        for si in range(8):
+                            zz=fit[f'fit_{budget}_z'][ti,si];aa,jj=geometry(head,mesh['transform'],zz)
+                            residual=(aa-fit['targets'][ti])/drow['displacement_scale'];jac=jj/drow['displacement_scale']
+                            objective=float(residual@residual)
+                            gradient=float(np.max(abs(jac.T@residual))/max(1.,np.linalg.norm(jac)*np.linalg.norm(residual)))
+                            maximum_objective_difference=max(maximum_objective_difference,abs(objective-fit[f'fit_{budget}_objective'][ti,si]))
+                            maximum_gradient_difference=max(maximum_gradient_difference,abs(gradient-fit[f'fit_{budget}_gradient'][ti,si]))
+                    assert maximum_objective_difference<1e-10 and maximum_gradient_difference<1e-9
+                    fit_checks.append(dict(boundary=bc,intervals=n,case=ci,budget=budget,starts_checked=len(selected_fit)*8,maximum_objective_difference=maximum_objective_difference,maximum_gradient_difference=maximum_gradient_difference))
                 budget=cfg['diagnostic_fit_budgets'][-1];selected=fit[f'fit_{budget}_selected'];z=fit[f'fit_{budget}_z'][np.arange(len(selected)),selected]
                 for i,zi in enumerate(z):
                     a,jac=geometry(head,mesh['transform'],zi)
@@ -156,7 +227,7 @@ def audit(record):
                     assert difference<2e-9
                     assert abs(np.linalg.norm(a[-1])-arm['zero_field_mass_norm'])<1e-12
                     diagnostics.append(dict(boundary=bc,intervals=n,case=ci,arm=name,snapshot_metric_difference=difference,zero_mass_norm=float(np.linalg.norm(a[-1]))))
-    report=dict(passed=True,scope=__doc__,result_sha256=digest(native/'result.json'),training=training,
+    report=dict(passed=True,scope=__doc__,result_sha256=digest(native/'result.json'),training=training,bank_checks=bank_checks,fit_checks=fit_checks,
         reconstructed_queries=reconstruction,linear_controls=linear_checks,diagnostics=diagnostics,
         audited_invocations=sum(x['repetitions_verified'] for x in reconstruction),file_hashes=len(result['output_sha256']),
         maximum_physical_metric_difference=max(x['physical_metric_difference'] for x in reconstruction),

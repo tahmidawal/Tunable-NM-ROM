@@ -143,6 +143,14 @@ def main():
         '- **Waves:** use matched-dimensional linear and nonlinear controls with a frozen spatial bank to separate compression from autonomous dynamics. Finer rendering alone cannot address the current error.', '',
         'These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, '
         'independent data/training repeats, validation-selected settings and sealed final evaluation.', '',
+        '## Visual artifacts', '',
+        link(REPAIR/'heat-pilot01-accuracy-cost.png', 'Heat accuracy and complete-query cost')+'. '+
+        link(REPAIR/'dirichlet-wave-evolution-case1.png', 'Reflective wave evolving')+'. '+
+        link(REPAIR/'absorbing-wave-evolution-case1.png', 'Absorbing wave evolving')+'.', '',
+        'The wave still sequences show reference displacement, predicted displacement and absolute difference with fixed scales. '
+        'They use saved fields from an actual finer-mesh ROM solve; the display resolution is labeled. '
+        'Displacement pictures do not replace the velocity, energy or vanishing-field diagnostics. '
+        'PDF exports and figure source/provenance are beside the images.', '',
         '## Reproduction', '',
         'Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.py` from a checkout with the recorded experiment worktrees. '
         'The adjacent JSON manifest identifies every source artifact by content hash. All numerical table values are generated; none are hand-entered.', '',

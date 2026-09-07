@@ -55,6 +55,12 @@ The rigorous reference-bound field remains unspecified where only empirical refi
 
 These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, independent data/training repeats, validation-selected settings and sealed final evaluation.
 
+## Visual artifacts
+
+[Heat accuracy and complete-query cost](../worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/heat-pilot01-accuracy-cost.png). [Reflective wave evolving](../worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/dirichlet-wave-evolution-case1.png). [Absorbing wave evolving](../worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/absorbing-wave-evolution-case1.png).
+
+The wave still sequences show reference displacement, predicted displacement and absolute difference with fixed scales. They use saved fields from an actual finer-mesh ROM solve; the display resolution is labeled. Displacement pictures do not replace the velocity, energy or vanishing-field diagnostics. PDF exports and figure source/provenance are beside the images.
+
 ## Reproduction
 
 Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.py` from a checkout with the recorded experiment worktrees. The adjacent JSON manifest identifies every source artifact by content hash. All numerical table values are generated; none are hand-entered.

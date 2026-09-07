@@ -66,7 +66,7 @@ def stage(label):
     for folder in ("code/fresh-wave-head", "code/multiresolution-wave", "in", "out", "logs"):
         (dest/folder).mkdir(parents=True)
     files = [*(TREE/"experiments/fresh-wave-head").glob("*.py"),
-             TREE/"experiments/fresh-wave-head/FROZEN-MATH.json", *CELL.glob("*.py"), CELL/"config.json"]
+             TREE/"experiments/fresh-wave-head/FROZEN-MATH.json", *CELL.glob("*.py"), CELL/"config.json", CELL/"dynamics-config.json", TREE/"experiments/fresh-wave-head/campaign-config.json"]
     source_hashes = {}
     for p in files:
         rel = p.relative_to(TREE)
@@ -82,17 +82,21 @@ def stage(label):
         target.mkdir()
         prefix = f"experiments/fresh-wave-head/runs/{original}/out/campaign/{bc}"
         source = {}
-        for name in ("bank_parameters.npz", "bank_tables.npz", "common_initialization.npz", "mlp_691200/head.npz"):
+        for name in ("bank_parameters.npz", "bank_tables.npz", "common_initialization.npz", "mlp_691200/head.npz", "data_manifest.json"):
             path = prefix+"/"+name
             payload = subprocess.check_output(["git", "show", origin["checkpoint_commit"]+":"+path], cwd=TREE)
             source[name] = payload
             origin["sources"][path] = hashlib.sha256(payload).hexdigest()
         for name in ("bank_parameters.npz", "head.npz"):
             (target/name).write_bytes(source[name if name != "head.npz" else "mlp_691200/head.npz"])
+        (target/"data_manifest.json").write_bytes(source["data_manifest.json"])
+        (target/"campaign-config.json").write_bytes((dest/"code/fresh-wave-head/campaign-config.json").read_bytes())
         with np.load(io.BytesIO(source["bank_tables.npz"])) as table, np.load(io.BytesIO(source["common_initialization.npz"])) as common:
             np.savez_compressed(target/"coordinates.npz", qr_r=table["qr_r"], common_linear=common["linear"], common_center=common["center"])
     write_json(dest/"in/ORIGIN.json", origin)
     remote = NAMESPACE+"/"+label
+    driver = "dynamics" if label.startswith("dynamics") else "pilot"
+    configuration = "dynamics-config.json" if driver == "dynamics" else "config.json"
     batch = f'''#!/bin/bash
 #SBATCH --job-name=ctol_mr_wave_{label}
 #SBATCH --partition=gpu
@@ -122,7 +126,8 @@ finish() {{
 trap finish EXIT
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 "$PY" -u code/multiresolution-wave/test_pilot.py
-"$PY" -u code/multiresolution-wave/pilot.py --config code/multiresolution-wave/config.json --inputs in --out out/pilot
+"$PY" -u code/multiresolution-wave/test_dynamics.py
+"$PY" -u code/multiresolution-wave/{driver}.py --config code/multiresolution-wave/{configuration} --inputs in --out out/pilot
 '''
     (dest/"job.sbatch").write_text(batch)
     cfg = dict(label=label, source_commit=commit, source_hashes=source_hashes, remote=remote, staged_at=datetime.now(timezone.utc).isoformat())

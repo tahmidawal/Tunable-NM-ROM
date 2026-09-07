@@ -1,0 +1,88 @@
+{
+  "kind": "quadratic_component_checks",
+  "scientific_accuracy_result": false,
+  "passed": true,
+  "tests_run": 6,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 12.572081565856934,
+  "jax_backend": "gpu",
+  "jax_version": "0.10.1",
+  "gpu": "NVIDIA GB10",
+  "x64": true,
+  "matmul_precision": "highest",
+  "source_sha256": {
+    "b3d_arch_quadratic.py": "3160328e7f62cb1cc3f680edb08610b5bc474a70dbc64fad2421cb6760b41708",
+    "test_b3d_arch_quadratic.py": "6cac1c730d9e0f99ce4556b4e167fbb1520c1044f0fa1425c11dfa965c07f080",
+    "b3d_arch_bench.py": "c6e3b68bd62e9b5442fe3e2298ed1aff3fba53384ad4e140f557f91c31a08d0b"
+  },
+  "checks": {
+    "synthetic_training": {
+      "seed": 200,
+      "steps": 80,
+      "lr": 0.02,
+      "batch": 16,
+      "norm": "global",
+      "mode": "codes",
+      "initial": {
+        "n": 32,
+        "mean": 0.3000818401373667,
+        "median": 0.23114484646581068,
+        "p95": 0.5727239962919436,
+        "worst": 0.6909341042748146
+      },
+      "final": {
+        "n": 32,
+        "mean": 0.09286298746582305,
+        "median": 0.08486769320164265,
+        "p95": 0.17007456984347546,
+        "worst": 0.1971945544812114
+      },
+      "global_mse_initial": 0.22212135704623684,
+      "global_mse_final": 0.003571448188106442,
+      "trainable_parameter_count": 30,
+      "optimized_code_count": 64,
+      "frozen_hash": "ed87be1390829cc1f2033b5d4d9a51ffe478a47a717b84273aa125a2ed6a8ef9",
+      "history": [
+        {
+          "step": 1,
+          "coefficient_loss": 0.1548972916855767,
+          "reconstruction": {
+            "n": 32,
+            "mean": 0.3000818401373667,
+            "median": 0.23114484646581068,
+            "p95": 0.5727239962919436,
+            "worst": 0.6909341042748146
+          },
+          "seconds": 0.5061759948730469
+        },
+        {
+          "step": 80,
+          "coefficient_loss": 0.0006499609742907996,
+          "reconstruction": {
+            "n": 32,
+            "mean": 0.09286298746582305,
+            "median": 0.08486769320164265,
+            "p95": 0.17007456984347546,
+            "worst": 0.1971945544812114
+          },
+          "seconds": 0.5176823139190674
+        }
+      ],
+      "seconds": 0.5196616649627686,
+      "initialization_code_max_difference": 0.0,
+      "initialization_field_max_difference": 0.0
+    },
+    "trained_model_checks": {
+      "numpy_relative": 3.9515004526804265e-18,
+      "jvp_relative": 6.325467318001887e-12,
+      "batch_single_parity": true
+    },
+    "jacobian_max_absolute_error": 1.7763568394002505e-15,
+    "hessian_max_absolute_error": 3.552713678800501e-15,
+    "finite_difference_hessian_max_absolute_error": 2.4363677741945367e-10,
+    "output_max_absolute_error": 3.552713678800501e-15,
+    "trainable_parameter_count_K32_R128": 71808,
+    "deterministic_initialization_across_optimizer_seeds": true
+  }
+}

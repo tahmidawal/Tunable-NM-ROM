@@ -1,0 +1,15 @@
+jax_backend=gpu
+test_common_training_decreases_synthetic_polynomial_loss (__main__.QuadraticTests.test_common_training_decreases_synthetic_polynomial_loss) ... quadratic_head seed=200 step=1/80 train_mean=3.000818e-01
+quadratic_head seed=200 step=80/80 train_mean=9.286299e-02
+ok
+test_each_mixed_product_once_and_diagonal_factor_two (__main__.QuadraticTests.test_each_mixed_product_once_and_diagonal_factor_two) ... ok
+test_invalid_scales_fail_before_training (__main__.QuadraticTests.test_invalid_scales_fail_before_training) ... ok
+test_jacobian_constant_hessian_and_finite_differences (__main__.QuadraticTests.test_jacobian_constant_hessian_and_finite_differences) ... ok
+test_output_batch_and_checkpoint_against_symmetric_polynomial (__main__.QuadraticTests.test_output_batch_and_checkpoint_against_symmetric_polynomial) ... ok
+test_zero_quadratic_common_initialization_and_parameter_count (__main__.QuadraticTests.test_zero_quadratic_common_initialization_and_parameter_count) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 12.572s
+
+OK
+component_record=/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-b3d-quadratic/experiments/separable-decoder/runs/b3d_arch_quadratic/component_tests.json

@@ -1,0 +1,18 @@
+{
+  "kind": "component_validation",
+  "accepted_scientific_result": false,
+  "tests": 5,
+  "seconds": 20.314,
+  "passed": true,
+  "jax_backend": "gpu",
+  "x64_asserted": true,
+  "highest_precision_asserted": true,
+  "command": "source /etc/profile.d/jax-mem.sh; JAX_DEFAULT_MATMUL_PRECISION=highest timeout 55s jaxrun /home/tahmid/Dev/.venv/bin/python test_b3d_arch_encoder.py",
+  "base_commit": "dd77383",
+  "cluster_jobs_submitted": false,
+  "sha256": {
+    "b3d_arch_encoder.py": "daa54d1bb64d2c24dee50ad4ad1f8da2b4a6b4bb0c0fad41cc2bbac68ad8824d",
+    "test_b3d_arch_encoder.py": "e3774d552e13c9a137582f2e7711322cf81d836778eedf10525f03f03e33d907",
+    "runs/b3d_arch_encoder/component-test.log": "b2358498459be91eef1e96d05f5349c3b9fecc62249d23563299ceaee5dc110c"
+  }
+}

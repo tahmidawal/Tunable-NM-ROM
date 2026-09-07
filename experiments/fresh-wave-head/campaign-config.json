@@ -1,7 +1,7 @@
 {
   "reference_approved": false,
   "reference_status": "Awaiting verify02 and independent uncertainty review; no training authorized by this config yet.",
-  "n": 128,
+  "n": 256,
   "train_seed": 690601,
   "validation_seed": 690602,
   "final_seed": 690603,
@@ -19,28 +19,63 @@
   "bank_steps": 6000,
   "bank_batch": 96,
   "bank_lr": 0.001,
-  "bank_rank_ratio_min": 1e-8,
+  "bank_rank_ratio_min": 1e-08,
   "head_width": 128,
   "head_steps": 10000,
   "head_batch": 64,
   "head_lr": 0.001,
   "code_lr": 0.003,
-  "code_penalty": 1e-6,
-  "head_input_scaling": "Dimensionless standardized PCA coefficient scores; input latent scales are all one after common affine initialization.",
-  "optimizer_seeds": [691200, 691201],
+  "code_penalty": 1e-06,
+  "head_input_scaling": "Coefficient PCA on the frozen learned-bank training outputs initializes the common affine head; standardized scores are dimensionless, so latent input scales are one. This does not replace the trained neural spatial bank with POD.",
+  "optimizer_seeds": [
+    691200,
+    691201
+  ],
   "fit_seed": 692001,
   "fit_batch": 64,
-  "fit_iterations": 120,
-  "fit_starts": ["affine", "zero", "affine_plus_fixed_gaussian_0.2_a", "affine_plus_fixed_gaussian_0.2_b"],
-  "fit_gradient_tolerance": 1e-7,
-  "fit_doubled_budget": "240 extra LM iterations from the best of four starts; doubled result used uniformly.",
-  "rom_dts": [0.005, 0.0025, 0.00125],
+  "fit_iterations": 400,
+  "fit_starts": [
+    "affine",
+    "zero",
+    "six equally spaced rows of the trained training-code table"
+  ],
+  "fit_gradient_tolerance": 1e-07,
+  "fit_doubled_budget": "800 iterations from the exact same eight initial starts as the 400-iteration run; select the best finite result uniformly.",
+  "rom_dts": [
+    0.005,
+    0.0025,
+    0.00125
+  ],
   "rom_primary_dt": 0.0025,
-  "rom_rank_ratio_min": 1e-8,
-  "accuracy_target": 0.10,
+  "rom_rank_ratio_min": 1e-08,
+  "accuracy_target": 0.1,
   "accuracy_rule": "At primary dt every validation rollout completes, has max normalized displacement/velocity/energy-state error <=0.10, selected fits stationary, and Jacobians full rank. Other steps reported separately.",
   "pod_seed": 693030,
   "pod_algorithm": "Fresh randomized SVD, rank64+24 oversampling, four power iterations, normalized training displacement+velocity only.",
   "cost_claims": false,
-  "final_test_opened": false
+  "final_test_opened": false,
+  "rom_refinement_target": 0.01,
+  "parameter_ranges": {
+    "support_half_width": [
+      0.36,
+      0.42
+    ],
+    "gaussian_standard_deviation": [
+      0.12,
+      0.16
+    ],
+    "center": "[support+.025,1-support-.025], independently per axis",
+    "amplitude": [
+      0.7,
+      1.3
+    ],
+    "speed": [
+      0.85,
+      1.15
+    ],
+    "velocity_fraction": [
+      -0.5,
+      0.5
+    ]
+  }
 }

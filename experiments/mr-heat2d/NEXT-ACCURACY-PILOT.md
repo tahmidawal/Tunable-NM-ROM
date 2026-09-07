@@ -1,7 +1,8 @@
-# Proposed fixed-bank head refinement with additional training coverage
+# Fixed-bank head refinement with additional training coverage
 
-This is an unlaunched bounded accuracy experiment following the frozen runtime
-pilot. The current nonlinear head's initial-state fit remains much worse than the
+This protocol was implemented in `pilot03`; generated findings are in
+`HEAT-HEAD-NOTES.md`. The prospective design below is retained as the record of
+the approved comparison following the frozen runtime pilot. The current nonlinear head's initial-state fit remains much worse than the
 unrestricted spatial bank. Faster stopping improves query cost but cannot alter
 that representable-state gap. The proposal isolates additional head optimization
 from additional training coverage while preserving the current architecture.

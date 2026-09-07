@@ -1,0 +1,128 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.32:/projects/paralab  4.6T  4.1T  470G  90% /cluster/tufts/paralab
+Mon Sep  7 18:12:16 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000000:52:00.0 Off |                    0 |
+| N/A   36C    P0             55W /  300W |       0MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+jax_backend=gpu
+.refine 33 3 {'update': 1, 'loss': 0.03802976796471816, 'seconds': 1.0325845279730856}
+.
+----------------------------------------------------------------------
+Ran 2 tests in 13.228s
+
+OK
+jax_backend=gpu x64=True precision=highest
+refine 790714 192 {'update': 1, 'loss': 6.0267419899212945e-05, 'seconds': 3.457563186995685}
+refine 790714 192 {'update': 1000, 'loss': 6.06206329139452e-05, 'seconds': 3.940532993990928}
+refine 790714 192 {'update': 2000, 'loss': 0.00023642035063704868, 'seconds': 4.422020717058331}
+refine 790714 192 {'update': 3000, 'loss': 0.00040490151832102384, 'seconds': 4.903319376055151}
+refine 790714 192 {'update': 4000, 'loss': 6.766748514590475e-05, 'seconds': 5.384847825043835}
+refine 790714 192 {'update': 5000, 'loss': 4.80244840847726e-05, 'seconds': 5.8676186830271035}
+refine 790714 192 {'update': 6000, 'loss': 4.7976234630516584e-05, 'seconds': 6.352505887974985}
+refine 790714 192 {'update': 7000, 'loss': 4.371316755154835e-05, 'seconds': 6.836075579049066}
+refine 790714 192 {'update': 8000, 'loss': 4.975431336706179e-05, 'seconds': 7.321401008055545}
+refine 790715 192 {'update': 1, 'loss': 5.999480190957709e-05, 'seconds': 0.13002866099122912}
+refine 790715 192 {'update': 1000, 'loss': 7.4909055347546e-05, 'seconds': 0.6268820749828592}
+refine 790715 192 {'update': 2000, 'loss': 7.272146145551328e-05, 'seconds': 1.1276045949198306}
+refine 790715 192 {'update': 3000, 'loss': 6.672593591151286e-05, 'seconds': 1.6081855359952897}
+refine 790715 192 {'update': 4000, 'loss': 6.358145725932388e-05, 'seconds': 2.08951632399112}
+refine 790715 192 {'update': 5000, 'loss': 5.023122689518264e-05, 'seconds': 2.589418296935037}
+refine 790715 192 {'update': 6000, 'loss': 4.991397969723408e-05, 'seconds': 3.0869642859324813}
+refine 790715 192 {'update': 7000, 'loss': 4.730132228098291e-05, 'seconds': 3.565906970994547}
+refine 790715 192 {'update': 8000, 'loss': 4.423129060828968e-05, 'seconds': 4.04487074597273}
+refine 790714 960 {'update': 1, 'loss': 0.039405369126607734, 'seconds': 0.9049259049352258}
+refine 790714 960 {'update': 1000, 'loss': 0.001228217776355935, 'seconds': 1.4015024629188702}
+refine 790714 960 {'update': 2000, 'loss': 0.0009582742639132172, 'seconds': 1.8830480499891564}
+refine 790714 960 {'update': 3000, 'loss': 0.0005325238180256768, 'seconds': 2.3601038469932973}
+refine 790714 960 {'update': 4000, 'loss': 0.0005012121191742421, 'seconds': 2.842202326981351}
+refine 790714 960 {'update': 5000, 'loss': 0.0004090311013086901, 'seconds': 3.3280472449259833}
+refine 790714 960 {'update': 6000, 'loss': 0.00038307637852427143, 'seconds': 3.826210994971916}
+refine 790714 960 {'update': 7000, 'loss': 0.0003190844480022751, 'seconds': 4.307561489986256}
+refine 790714 960 {'update': 8000, 'loss': 0.000329065025313997, 'seconds': 4.790611304924823}
+refine 790715 960 {'update': 1, 'loss': 0.03926000694709531, 'seconds': 0.7908897820161656}
+refine 790715 960 {'update': 1000, 'loss': 0.0012284227559976693, 'seconds': 1.274049437022768}
+refine 790715 960 {'update': 2000, 'loss': 0.000919577714465384, 'seconds': 1.7583640279481187}
+refine 790715 960 {'update': 3000, 'loss': 0.0006728742146632288, 'seconds': 2.2464970119763166}
+refine 790715 960 {'update': 4000, 'loss': 0.00044228571579890837, 'seconds': 2.73056794796139}
+refine 790715 960 {'update': 5000, 'loss': 0.00045693425579818514, 'seconds': 3.216191289946437}
+refine 790715 960 {'update': 6000, 'loss': 0.0003820820810579242, 'seconds': 3.702647445956245}
+refine 790715 960 {'update': 7000, 'loss': 0.00029721492666290577, 'seconds': 4.194227110012434}
+refine 790715 960 {'update': 8000, 'loss': 0.0002852803209305255, 'seconds': 4.680285118985921}
+reconstruction frozen initial [0.09735644633034898, 0.034030383691257944, 0.06672728060184656, 0.018678127714162617] rollout_gate False
+reconstruction original_seed790714 initial [0.09411331829950832, 0.036096455483557444, 0.05696562588460689, 0.01760119078035213] rollout_gate False
+reconstruction original_seed790715 initial [0.09431187804098927, 0.036231367179755856, 0.05730644154148197, 0.017604587937078395] rollout_gate False
+reconstruction expanded_seed790714 initial [0.03953051176420248, 0.017329587585247153, 0.03578885806930762, 0.009671709943295356] rollout_gate True
+reconstruction expanded_seed790715 initial [0.04030311890518996, 0.01717456532027588, 0.03621949028675525, 0.009780806161638844] rollout_gate True
+timed 64 0 fom_dst_exact_time 0.001041789073497057
+timed 64 0 frozen_gtol1e-09 0.027399473008699715
+timed 64 0 frozen_gtol1e-05 0.01316634495742619
+timed 64 0 expanded_seed790714_gtol1e-09 0.025769644998945296
+timed 64 0 expanded_seed790714_gtol1e-05 0.013987374026328325
+timed 64 0 expanded_seed790715_gtol1e-09 0.025040047010406852
+timed 64 0 expanded_seed790715_gtol1e-05 0.014372518984600902
+timed 64 1 fom_dst_exact_time 0.00107661506626755
+timed 64 1 frozen_gtol1e-09 0.027521220035851002
+timed 64 1 frozen_gtol1e-05 0.016311865067109466
+timed 64 1 expanded_seed790714_gtol1e-09 0.01987178297713399
+timed 64 1 expanded_seed790714_gtol1e-05 0.012247786042280495
+timed 64 1 expanded_seed790715_gtol1e-09 0.01909583096858114
+timed 64 1 expanded_seed790715_gtol1e-05 0.011670860927551985
+timed 64 2 fom_dst_exact_time 0.0012040110304951668
+timed 64 2 frozen_gtol1e-09 0.027299688081257045
+timed 64 2 frozen_gtol1e-05 0.014301644987426698
+timed 64 2 expanded_seed790714_gtol1e-09 0.021517266053706408
+timed 64 2 expanded_seed790714_gtol1e-05 0.012517208000645041
+timed 64 2 expanded_seed790715_gtol1e-09 0.02084375300910324
+timed 64 2 expanded_seed790715_gtol1e-05 0.012671894044615328
+timed 64 3 fom_dst_exact_time 0.0011992850340902805
+timed 64 3 frozen_gtol1e-09 0.024614983005449176
+timed 64 3 frozen_gtol1e-05 0.013021878083236516
+timed 64 3 expanded_seed790714_gtol1e-09 0.01928587898146361
+timed 64 3 expanded_seed790714_gtol1e-05 0.011645579943433404
+timed 64 3 expanded_seed790715_gtol1e-09 0.018539380049332976
+timed 64 3 expanded_seed790715_gtol1e-05 0.011597439995966852
+timed 128 0 fom_dst_exact_time 0.0012808780884370208
+timed 128 0 frozen_gtol1e-09 0.027083053020760417
+timed 128 0 frozen_gtol1e-05 0.0130522430408746
+timed 128 0 expanded_seed790714_gtol1e-09 0.02509825595188886
+timed 128 0 expanded_seed790714_gtol1e-05 0.01375938393175602
+timed 128 0 expanded_seed790715_gtol1e-09 0.024298221105709672
+timed 128 0 expanded_seed790715_gtol1e-05 0.013991374988108873
+timed 128 1 fom_dst_exact_time 0.001146413036622107
+timed 128 1 frozen_gtol1e-09 0.02705340599641204
+timed 128 1 frozen_gtol1e-05 0.016163307009264827
+timed 128 1 expanded_seed790714_gtol1e-09 0.019424199010245502
+timed 128 1 expanded_seed790714_gtol1e-05 0.012116739992052317
+timed 128 1 expanded_seed790715_gtol1e-09 0.018736595986410975
+timed 128 1 expanded_seed790715_gtol1e-05 0.01157162303570658
+timed 128 2 fom_dst_exact_time 0.0011709160171449184
+timed 128 2 frozen_gtol1e-09 0.026554629090242088
+timed 128 2 frozen_gtol1e-05 0.014379134052433074
+timed 128 2 expanded_seed790714_gtol1e-09 0.020993500016629696
+timed 128 2 expanded_seed790714_gtol1e-05 0.012310480000451207
+timed 128 2 expanded_seed790715_gtol1e-09 0.020942984032444656
+timed 128 2 expanded_seed790715_gtol1e-05 0.012449383037164807
+timed 128 3 fom_dst_exact_time 0.0013501700013875961
+timed 128 3 frozen_gtol1e-09 0.024079721071757376
+timed 128 3 frozen_gtol1e-05 0.012937215040437877
+timed 128 3 expanded_seed790714_gtol1e-09 0.018974983016960323
+timed 128 3 expanded_seed790714_gtol1e-05 0.01136730401776731
+timed 128 3 expanded_seed790715_gtol1e-09 0.018083297996781766
+timed 128 3 expanded_seed790715_gtol1e-05 0.01135429902933538
+HEAD PILOT COMPLETE

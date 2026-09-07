@@ -285,3 +285,45 @@ def errors(field,reference,Lobs=256):
     return dict(fixed_initial_per_time=(e/n0).tolist(),current_relative_per_time=(e/np.maximum(nr,1e-300)).tolist(),
                 fixed_initial_max=float(np.max(e/n0)),current_relative_max=float(np.max(e/np.maximum(nr,1e-300))),
                 absolute_rms_max=float(np.max(e)/(Lobs+1)))
+
+
+def sample_field(field,xy,L):
+    """Aligned bilinear interpolation of a supplied dense field; charged online."""
+    x=xy*L;lo=jnp.minimum(jnp.floor(x).astype(jnp.int32),L-1);t=x-lo
+    i,j=lo[:,0],lo[:,1];a,b=t[:,0],t[:,1]
+    return (1-a)*(1-b)*field[i,j]+a*(1-b)*field[i+1,j]+(1-a)*b*field[i,j+1]+a*b*field[i+1,j+1]
+
+
+def build_gauss_cold(params,candidate_Z,axis_points=48):
+    """Frozen physical state-fitting quadrature, independent of the query mesh."""
+    begin=time.perf_counter();axis,weights=np.polynomial.legendre.leggauss(axis_points)
+    axis=(axis+1)/2;weights=weights/2
+    xy=np.stack(np.meshgrid(axis,axis,indexing='ij'),-1).reshape(-1,2)
+    w=np.sqrt(np.outer(weights,weights).ravel())
+    Gi=sc.features(params,jnp.asarray(xy))*jnp.asarray(w)[:,None]
+    Q,R=jnp.linalg.qr(Gi,mode='reduced');Hrot=sc.head(params,candidate_Z)@R.T
+    data=jax.block_until_ready((jnp.asarray(xy),jnp.asarray(w),Q,R,Hrot,jnp.sum(Hrot*Hrot,1)))
+    return data,dict(rule='fixed_gauss',axis_points=axis_points,points=len(xy),setup_seconds=time.perf_counter()-begin,
+        array_bytes=sum(x.nbytes for x in data),xy=xy.tolist(),weights=(w*w).tolist(),
+        interpretation='state fitting from charged dense-input interpolation; no PDE collocation or descriptor encoding')
+
+
+def make_gauss_rom(params,L,dt,trust,stall=1e-3,budget=30,ic_budget=180,ic_starts=1,return_parts=False):
+    """Original weak evolution with a fixed-physical Gauss cold initializer."""
+    _,parts=make_rom(params,L,dt,trust,stall=stall,budget=budget,return_parts=True)
+    K=params['h_lin'].shape[0]
+    ic_lm=make_lm(lambda z,y,R:R@sc.head(params,z)-y,K,ic_budget,stall=1e-7)
+    def initialize(u0,data,cold):
+        xy,w,Q,R,Hrot,Hnorm=cold
+        ui=sample_field(u0,xy,L)*w;y=Q.T@ui
+        ids=jnp.argsort(Hnorm-2*Hrot@y)[:ic_starts]
+        fits=jax.vmap(lambda z:ic_lm(z,(y,R),0.))(data[7][ids]);best=jnp.argmin(fits[1])
+        # Match the incumbent sample-count scaling of the absolute weak tolerance.
+        return fits[0][best],fits[2][best],fits[3][best],jnp.linalg.norm(ui)*jnp.sqrt(len(w))
+    def query(u0,nu,data,cold):
+        z,icit,reason,scale=initialize(u0,data,cold)
+        Z,it,rn,reasons=parts['evolve'](z,nu,scale,data)
+        return parts['decode'](Z,data),it,rn,reasons,Z,icit,reason
+    fused=jax.jit(query)
+    if return_parts:return fused,dict(initialize=jax.jit(initialize),evolve=parts['evolve'],decode=parts['decode'])
+    return fused

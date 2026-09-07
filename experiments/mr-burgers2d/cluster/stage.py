@@ -12,6 +12,7 @@ files={
 'experiments/mr-burgers2d/engines.py':'code/engines.py',
 'experiments/mr-burgers2d/pilot.py':'code/pilot.py',
 'experiments/mr-burgers2d/cold_fit.py':'code/cold_fit.py',
+'experiments/mr-burgers2d/rollout.py':'code/rollout.py',
 'experiments/mr-burgers2d/tests/check_kernels.py':'code/check_kernels.py',
 'experiments/separable-decoder/sep_common.py':'code/sep_common.py',
 'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl':'in/checkpoint.pkl',
@@ -53,6 +54,8 @@ cd "$TASK_ROOT"
 find out logs -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 printf 'ALL-DONE\\n'
 '''.replace('ATTEMPT',attempt).replace('REMOTE',remote).replace('PILOT_ARGS', '--meshes 256,512,1024 --reference-mesh 4096 --reference-dt .0003125 --order-audit --ic-starts 1,4' if attempt=='pilot02' else '')
+if attempt.startswith('rollout'):
+    script=script.replace('code/pilot.py','code/rollout.py')
 if attempt.startswith('cold'):
     script=script.replace('#SBATCH --time=02:00:00','#SBATCH --time=00:30:00')
     script=script.replace('"$PY" code/pilot.py --checkpoint in/checkpoint.pkl --out out --cases 4 --reps 3 ', '"$PY" code/cold_fit.py --checkpoint in/checkpoint.pkl --out out --cases 4 ')

@@ -1,5 +1,5 @@
 {
-  "campaign_status": "steps05 timestep study running; rollout04 archived; separate worktree retained",
+  "campaign_status": "steps05 complete, audited and archived; stop for review with all worktrees separate and no new submission",
   "attempts": [
     {
       "attempt": "pilot01",
@@ -84,14 +84,23 @@
       "source_commit": "ffd57ee68cd1a1a61503556135d74220a0ca2fa0",
       "namespace": "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/steps05",
       "status_at_submit": "PENDING (Priority)",
-      "status": "RUNNING",
+      "status": "COMPLETED",
       "scheduler_job_name": "ctol_mr_burgers_steps05",
       "scheduler_node": "pax050",
       "archive": "runs/steps05",
       "audit": "runs/steps05/AUDIT.json",
       "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
       "local_smoke": "tests/TIMESTEP-CHECK.json",
-      "design": "TIMESTEP-DESIGN.md"
+      "design": "TIMESTEP-DESIGN.md",
+      "exit_code": "0:0",
+      "scheduler_state": "COMPLETED",
+      "scheduler_exit_code": "0:0",
+      "scheduler_elapsed": "00:23:53",
+      "output_checksums_verified": true,
+      "exact_remote_attempt_directory_deleted": true,
+      "result_sha256": "689a2abab1efd920d0a5ad74debb17b126c4601706cbb24225571f4c17d1d865",
+      "summary": "runs/steps05/SUMMARY.json",
+      "diagnostics": "runs/steps05/DIAGNOSTICS.json"
     }
   ]
 }

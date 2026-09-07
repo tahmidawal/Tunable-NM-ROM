@@ -17,6 +17,7 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--config",required=True)
     ap.add_argument("--out",required=True)
+    ap.add_argument("--skip-cost",action="store_true")
     args=ap.parse_args()
     out=Path(args.out)
     out.mkdir(parents=True,exist_ok=False)
@@ -50,6 +51,10 @@ def main():
         result["heads"][kind]={"fit":fit,"reconstruction":recon,"rollout":roll}
     pod,singular=randomized_pod(config,grid,data["train"])
     result["baseline"]=linear_baseline(config,grid,pod[:,:config["latent"]],data["validation"],"smoke_randomized_pod",bout)
+    if args.skip_cost:
+        (out/"result.json").write_text(json.dumps(result,indent=2,allow_nan=False)+"\n")
+        print("fresh_preflight_complete",flush=True)
+        return
     # Full production-size bank update cost uses synthetic smooth fields only.
     big={**base,"n":256,"bank_steps":18,"measure_bank_updates":True}
     bigout=out/"synthetic_bank_cost"

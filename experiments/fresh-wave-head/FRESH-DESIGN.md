@@ -71,3 +71,37 @@ The coefficient heads and the weak manifold dynamics are being implemented indep
 $$\ddot z=\arg\min_a\|J_h(z)a+H_h(z)[\dot z,\dot z]+D_rJ_h(z)\dot z+K_rh(z)\|_2^2.$$
 
 Thus physical velocity is always $GJ_h(z)\dot z$. QR solves the overdetermined weak system with a stage-wise singular-value rank guard and no hidden ridge. Classical RK4 integrates $(z,\dot z)$ and same-stage boundary power. It has no exact discrete energy-conservation claim. The curved-map analytic acceleration and energy identity, independent DOP853 propagation, and a nonorthogonal linear-head matrix-exponential reference are separate component tests.
+
+## Frozen bounded learning and evaluation protocol
+
+Reference mesh selection is complete before training: use intervals 256. The initial compact-only trial and the subsequent intervals-128 Gaussian trial retain their failed gates. `campaign-config.json` records the accepted new verification job, source/result hashes, measured evidence and independent-review scope. Exact semidiscrete versus refined continuum sine propagation and measured RK4 error support the reflective uncertainty budget; the absorbing estimate is conditional on observed contraction in the declared empirical sample, with boundary-model error assessed separately.
+
+The bank has 64 outputs and two SiLU hidden layers of width 128, with a fixed coordinate-only Fourier lift. Train it by differentiating the mass-QR projection error of normalized training displacement and velocity, for 6000 Adam updates with minibatches of 96 and cosine-decayed learning rate from 0.001 to one tenth of that value. Reject nonfinite or rank-deficient raw banks before QR; the minimum raw singular-value ratio is $10^{-8}$. Check preservation of the learned span, mass orthogonality, exact transformed stiffness, positive semidefinite frozen operators, and decoded-field/operator-table parity.
+
+The frozen bank feeds a latent dimension of 16. A PCA of training *coefficient vectors* provides the common affine head initialization and dimensionless standardized latent scores; the spatial bank remains the trained coordinate network. The MLP has two SiLU layers of width 128 with a zero-initialized nonlinear output and affine skip. The quadratic uses one undoubled product per latent pair. Compare displacement-only and unit-weight velocity-tangent objectives for each architecture, with a common $10^{-6}$ mean-square code penalty. Each arm receives 10000 Adam updates, minibatches of 64, head learning rate 0.001 and code learning rate 0.003, both cosine-decayed to one tenth. Use the final fixed-budget checkpoint, without validation checkpoint selection. Optimizer seeds are 691200 and 691201.
+
+Every unseen snapshot receives eight initial latent guesses: its common affine fit, zero, and six evenly spaced rows of that arm's trained training-code table. Run independent 400- and 800-iteration LM budgets from the exact same eight guesses; save all initial guesses, fitted codes, objectives, gradients, projected-residual stationarity, ranks, finiteness, damping and stopping reasons. The longer budget's best finite result is the common reporting rule. The normalized raw-gradient tolerance is $10^{-7}$ and the projected-residual stationarity tolerance is $10^{-6}$, with a separate near-zero residual tolerance. Report nonstationary and rank-deficient cases as failures; local multistart stationarity is not a global optimum certificate.
+
+For initial-state energy $E_0=E(u_{\mathrm{FOM}}(0),v_{\mathrm{FOM}}(0))$, the physical error scales are
+
+$$\epsilon_u(t)=\frac{\|u_{\mathrm{ROM}}(t)-u_{\mathrm{FOM}}(t)\|_M}{\|u_{\mathrm{FOM}}(0)\|_M},\qquad
+\epsilon_v(t)=\frac{\|v_{\mathrm{ROM}}(t)-v_{\mathrm{FOM}}(t)\|_M}{\sqrt{2E_0}},$$
+
+$$\epsilon_E(t)=\sqrt{\frac{E(u_{\mathrm{ROM}}(t)-u_{\mathrm{FOM}}(t),v_{\mathrm{ROM}}(t)-v_{\mathrm{FOM}}(t))}{E_0}}.$$
+
+The provisional engineering target is that all 16 validation trajectories complete and their time-maximum values of all three errors are at most 0.10. Persist means, medians, worst cases and outlier counts; any finite-only summary is labeled conditional and never makes a failed trajectory disappear. The predeclared RK4 steps are 0.005, 0.0025 and 0.00125. The middle step is primary, with no selection by best accuracy; the finest two must additionally agree within 0.01 on all three trajectory scales. Every generated FOM trajectory records same-stage flux/energy balance, absorbing invariant, finiteness and initial compact-support margin. Every RK stage checks latent rank and finite power; failed trajectories freeze and retain their failure status. Nonfinite decoded energy also fails the trajectory.
+
+Physical velocity is $GJ_h(z)\dot z$. Reflective modal phases use the semidiscrete frequencies; absorbing sine projections are labeled diagnostics, not eigenmodes. Vanishing predicted modes have undefined phase and explicit flags; phase drift is reported over contiguous valid segments without alignment. The wall-strip energy peak is labeled as a peak-time proxy, not an exact wavefront arrival. Absorbing mean displacement is assessed separately from energy.
+
+Fresh randomized POD of normalized training displacement and velocity is an explicitly approximate linear baseline with fixed oversampling and power iterations. Both latent-sized and bank-sized POD baselines, and the unrestricted learned-bank linear dynamics, evolve with independent matrix exponentials. Initial ROM fits in this accuracy experiment use full-field initial-state projections; a grid-independent cold start remains required before any online-cost claim. The final-test generator is never called during this campaign.
+
+## Additional glossary
+
+- **PCA coefficient initialization:** a linear statistical initialization inside the already learned spatial span, shared by all heads.
+- **Variable projection:** solve the linear coefficients exactly while optimizing the spatial network.
+- **Projected stationarity:** the remaining residual component along the decoder's available derivative directions.
+- **Rank ratio:** smallest divided by largest singular value, used to detect collapsed derivative directions or bank features.
+- **Conditional error estimate:** an estimate assuming the measured refinement trend continues, not a proven upper bound.
+- **Time-maximum error:** the largest error over the stored trajectory times, normalized using its initial physical state.
+- **Phase / vanished mode:** an oscillation angle / an amplitude too small for that angle to be meaningful.
+- **Matrix exponential:** an independent exact time propagator, up to numerical roundoff, for a linear finite-dimensional system.

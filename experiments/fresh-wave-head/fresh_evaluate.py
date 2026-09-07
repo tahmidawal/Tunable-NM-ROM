@@ -13,7 +13,12 @@ from fresh_rom import rollout
 def stats(values, threshold=.10):
     x = np.asarray(values, dtype=float).ravel()
     finite = x[np.isfinite(x)]
-    return {"count": int(len(x)), "nonfinite": int(len(x)-len(finite)), "mean": None if not len(finite) else float(finite.mean()), "median": None if not len(finite) else float(np.median(finite)), "worst": None if not len(finite) else float(finite.max()), "outlier_threshold": threshold, "outliers": int(np.sum(~np.isfinite(x) | (x > threshold)))}
+    return {"count": int(len(x)), "nonfinite": int(len(x)-len(finite)), "summary_population":"Finite cases only; nonfinite cases count as failures and outliers.", "mean": None if not len(finite) else float(finite.mean()), "median": None if not len(finite) else float(np.median(finite)), "worst": None if not len(finite) else float(finite.max()), "outlier_threshold": threshold, "outliers": int(np.sum(~np.isfinite(x) | (x > threshold)))}
+
+
+def physical_metrics_finite(metrics):
+    """Call before adding masked/undefined phase arrays to the diagnostics."""
+    return all(np.all(np.isfinite(value)) for value in metrics.values())
 
 
 @partial(jax.jit, static_argnames=("kind",))
@@ -37,7 +42,7 @@ def reconstruction_metrics(p, frozen, z, projected, kind, out):
     verr = np.sqrt(np.sum((tangent-b)**2, axis=-1)+projected["v_floor_squared"].ravel())/projected["v_scale"]
     np.savez_compressed(out/"reconstruction.npz", fitted_z=z, tangent_w=w, predictions=predicted, projected_truth=a, projected_velocity=b, reconstructed_velocity=tangent, displacement_error=uerr, tangent_error=verr, jacobian_rank_ratio=rank)
     shape = projected["a"].shape[:2]
-    return {"reconstruction": stats(uerr), "tangent": stats(verr), "initial_reconstruction": stats(uerr.reshape(shape)[:, 0]), "initial_tangent": stats(verr.reshape(shape)[:, 0]), "minimum_jacobian_ratio": float(np.min(rank)), "rank_failures": int(np.sum(rank <= 1e-8))}, w.reshape(*shape, -1)
+    return {"reconstruction": stats(uerr), "tangent": stats(verr), "initial_reconstruction": stats(uerr.reshape(shape)[:, 0]), "initial_tangent": stats(verr.reshape(shape)[:, 0]), "minimum_jacobian_ratio": float(np.min(rank)), "rank_failures": int(np.sum(~np.isfinite(rank) | (rank <= 1e-8))),"nonfinite_predictions":int(np.sum(~np.isfinite(predicted))),"nonfinite_tangent":int(np.sum(~np.isfinite(tangent)))}, w.reshape(*shape, -1)
 
 
 @partial(jax.jit, static_argnames=("grid",))
@@ -66,17 +71,37 @@ def field_metrics(a, b, g, truth_u, truth_v, grid, c, initial_energy, uscale, vs
             "truth_modal_u": modal_ut, "truth_modal_v": modal_vt, "rom_wall_strip": arrival_p, "truth_wall_strip": arrival_t}
 
 
-def physical_summary(metrics, c, dt_observe):
-    omega = c*np.pi*np.sqrt(np.array([2., 5., 5.]))
+def physical_summary(metrics, grid, c, dt_observe):
+    if grid.bx=="dirichlet":
+        indices=np.array([[1.,1.],[1.,2.],[2.,1.]])
+        omega=2*c/grid.h*np.sqrt(np.sum(np.sin(np.pi*indices/(2*grid.n))**2,axis=1))
+        interpretation="Semidiscrete Dirichlet standing-mode phase."
+    else:
+        omega = c*np.pi*np.sqrt(np.array([2., 5., 5.]))
+        interpretation="Sine-projection phase diagnostic only; these are not absorbing-system eigenmodes."
     phasep = np.arctan2(-metrics["rom_modal_v"]/omega, metrics["rom_modal_u"])
     phaset = np.arctan2(-metrics["truth_modal_v"]/omega, metrics["truth_modal_u"])
     amplitude = np.sqrt(metrics["truth_modal_u"]**2+(metrics["truth_modal_v"]/omega)**2)
-    mask = amplitude > .05*np.max(amplitude)
+    prediction_amplitude=np.sqrt(metrics["rom_modal_u"]**2+(metrics["rom_modal_v"]/omega)**2)
+    threshold=.05*np.max(amplitude)
+    reference_valid=amplitude>threshold
+    prediction_valid=prediction_amplitude>threshold
+    mask = reference_valid & prediction_valid
     phaseerror = abs(np.angle(np.exp(1j*(phasep-phaset))))
+    unwrapped=np.full_like(phaseerror,np.nan)
+    for mode in range(mask.shape[1]):
+        starts=np.flatnonzero(mask[:,mode]&~np.r_[False,mask[:-1,mode]])
+        ends=np.flatnonzero(mask[:,mode]&~np.r_[mask[1:,mode],False])+1
+        for start,end in zip(starts,ends):
+            unwrapped[start:end,mode]=np.unwrap(np.angle(np.exp(1j*(phasep[start:end,mode]-phaset[start:end,mode]))))
+    metrics["rom_modal_amplitude"],metrics["truth_modal_amplitude"]=prediction_amplitude,amplitude
+    metrics["modal_phase_defined"],metrics["vanished_rom_modes"]=mask,reference_valid&~prediction_valid
+    metrics["unwrapped_phase_error_valid_segments"]=unwrapped
     first = int(round(1.2/dt_observe))+1
     ip, it = int(np.argmax(metrics["rom_wall_strip"][:first])), int(np.argmax(metrics["truth_wall_strip"][:first]))
     return {"max_displacement_error": float(np.max(metrics["displacement_error"])), "max_velocity_error": float(np.max(metrics["velocity_error"])), "max_energy_state_error": float(np.max(metrics["energy_state_error"])),
             "max_defined_modal_phase_error": float(np.max(phaseerror[mask])) if np.any(mask) else None,
+            "max_unwrapped_valid_segment_phase_error":float(np.max(abs(unwrapped[mask]))) if np.any(mask) else None,"vanished_mode_observations":int(np.sum(reference_valid&~prediction_valid)),"phase_interpretation":interpretation,
             "wall_strip_peak_time_difference": float((ip-it)*dt_observe), "wall_strip_peak_truth_time": it*dt_observe,
             "final_mean_error": float(abs(metrics["rom_mean"][-1]-metrics["truth_mean"][-1])),
             "final_rom_energy_fraction": float(metrics["rom_energy"][-1]/metrics["truth_energy"][0]), "final_truth_energy_fraction": float(metrics["truth_energy"][-1]/metrics["truth_energy"][0])}
@@ -108,12 +133,36 @@ def nonlinear_rollouts(config, grid, bank, data, p, frozen, zs, ws, kind, out):
                 arrays[key+"_coefficients"], arrays[key+"_physical_velocity_coefficients"] = np.asarray(a), np.asarray(b)
                 mm = {k: np.asarray(v) for k,v in field_metrics(a, b, g, jnp.asarray(data["u"][i]), jnp.asarray(data["v"][i]), grid, pars[5], data["initial_energy"][i], *data["scales"][i]).items()}
                 balance = (mm["rom_energy"]+result["outflux"]-mm["rom_energy"][0])/max(mm["rom_energy"][0], 1e-30)
-                row.update(physical_summary(mm, pars[5], config["observation_dt"]))
-                row["max_energy_balance_relative"] = float(np.max(abs(balance)))
+                metrics_finite=physical_metrics_finite(mm) and np.all(np.isfinite(balance))
+                if metrics_finite:
+                    row.update(physical_summary(mm, grid, pars[5], config["observation_dt"]))
+                    row["max_energy_balance_relative"] = float(np.max(abs(balance)))
+                else:
+                    row["completed"]=False
+                    row["failure_reason"]="Nonfinite decoded physical field/energy/diagnostic."
                 for field, value in mm.items():
                     arrays[key+"_"+field] = value
                 arrays[key+"_energy_balance_relative"] = balance
             cases.append(row)
+    refinements=[]
+    middle,fine=config["rom_dts"][-2:]
+    for i,pars in enumerate(data["parameters"]):
+        first=next(x for x in cases if x["case"]==i and x["dt"]==middle)
+        second=next(x for x in cases if x["case"]==i and x["dt"]==fine)
+        row={"case":i,"coarse_dt":middle,"fine_dt":fine,"both_completed":first["completed"] and second["completed"]}
+        if row["both_completed"]:
+            ka,kb=f"dt{middle}_case{i}",f"dt{fine}_case{i}"
+            da=arrays[ka+"_coefficients"]-arrays[kb+"_coefficients"]
+            db=arrays[ka+"_physical_velocity_coefficients"]-arrays[kb+"_physical_velocity_coefficients"]
+            du=np.linalg.norm(da,axis=-1)/data["scales"][i,0]
+            dv=np.linalg.norm(db,axis=-1)/data["scales"][i,1]
+            de=np.sqrt(np.maximum(0.,(np.sum(db*db,axis=-1)+np.einsum("tr,rs,ts->t",da,pars[5]**2*bank["stiffness_unit"],da))/(2*data["initial_energy"][i])))
+            row.update(max_displacement_difference=float(du.max()),max_velocity_difference=float(dv.max()),max_energy_state_difference=float(de.max()))
+            row["passed"]=bool(max(du.max(),dv.max(),de.max())<=config["rom_refinement_target"])
+            arrays[f"refinement_case{i}_displacement"],arrays[f"refinement_case{i}_velocity"],arrays[f"refinement_case{i}_energy_state"]=du,dv,de
+        else:
+            row["passed"]=False
+        refinements.append(row)
     np.savez_compressed(out/"rollouts.npz", **arrays)
     summaries = []
     for dt in config["rom_dts"]:
@@ -123,7 +172,7 @@ def nonlinear_rollouts(config, grid, bank, data, p, frozen, zs, ws, kind, out):
                           "displacement": stats([row.get("max_displacement_error", np.nan) for row in selected]),
                           "velocity": stats([row.get("max_velocity_error", np.nan) for row in selected]),
                           "energy_state": stats([row.get("max_energy_state_error", np.nan) for row in selected])})
-    return {"cases": cases, "summaries": summaries, "primary_dt": config["rom_dts"][1], "selection_rule": "Middle predeclared dt is primary; all three are reported; failed solves are failures."}
+    return {"cases": cases, "summaries": summaries,"finest_two_refinement":refinements,"refinement_passed":all(x["passed"] for x in refinements), "primary_dt": config["rom_dts"][1], "selection_rule": "Middle predeclared dt is primary; all three are reported; failed solves are failures."}
 
 
 def randomized_pod(config, grid, train):
@@ -162,7 +211,9 @@ def linear_baseline(config, grid, g, validation, label, out):
         trajectory = np.asarray(trajectory)
         a,b = trajectory[:,:rank], trajectory[:,rank:]
         mm = {key:np.asarray(value) for key,value in field_metrics(jnp.asarray(a),jnp.asarray(b),jnp.asarray(g),jnp.asarray(validation["u"][i]),jnp.asarray(validation["v"][i]),grid,pars[5],validation["initial_energy"][i],*validation["scales"][i]).items()}
-        rows.append({"case":i,**physical_summary(mm,pars[5],config["observation_dt"])})
+        if not physical_metrics_finite(mm):
+            raise RuntimeError("Nonfinite linear-baseline physical metrics")
+        rows.append({"case":i,**physical_summary(mm,grid,pars[5],config["observation_dt"])})
         for key,value in mm.items():
             arrays[f"case{i}_"+key]=value
         arrays[f"case{i}_a"],arrays[f"case{i}_b"]=a,b

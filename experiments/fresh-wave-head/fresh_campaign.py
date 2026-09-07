@@ -81,10 +81,13 @@ def main():
                 train_pred=np.asarray(head_apply(p,frozen,jnp.asarray(codes),kind))
                 training_error=np.sqrt(np.sum((train_pred-projected["train"]["a"].reshape(train_pred.shape))**2,axis=-1)+projected["train"]["u_floor_squared"].ravel())/projected["train"]["u_scale"]
                 arm["training_reconstruction"]=stats(training_error)
+                trainout=armout/"training_geometry"
+                trainout.mkdir()
+                arm["training_geometry"],_=reconstruction_metrics(p,frozen,codes,projected["train"],kind,trainout)
                 zs=z.reshape(*pj["a"].shape[:2],config["latent"])
                 arm["rollout"]=nonlinear_rollouts(config,grid,bank,data["validation"],p,frozen,zs,w,kind,armout)
                 primary=[s for s in arm["rollout"]["summaries"] if s["dt"]==arm["rollout"]["primary_dt"]][0]
-                arm["accuracy_passed"]=(primary["failed"]==0 and all(primary[key]["outliers"]==0 for key in ("displacement","velocity","energy_state")) and fit["nonstationary"]==0 and arm["validation"]["rank_failures"]==0)
+                arm["accuracy_passed"]=(primary["failed"]==0 and all(primary[key]["outliers"]==0 for key in ("displacement","velocity","energy_state")) and fit["nonstationary"]==0 and fit["max_doubled_objective_change"]<=config["fit_budget_stability_tolerance"] and arm["validation"]["rank_failures"]==0 and arm["training_geometry"]["rank_failures"]==0 and arm["rollout"]["refinement_passed"])
                 # Zero displacement is a separate diagnostic for affine bias and
                 # absorbing late-time behavior; not a training/test example.
                 zeroout=armout/"zero_state"

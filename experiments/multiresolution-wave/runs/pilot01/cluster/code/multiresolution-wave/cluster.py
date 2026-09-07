@@ -32,33 +32,6 @@ def write_json(p, v):
     p.write_text(json.dumps(v, indent=2)+"\n")
 
 
-def split_archive(record):
-    archive = record/"verified-cluster.tar.gz"
-    original_hash = digest(archive)
-    size = archive.stat().st_size
-    parts = []
-    joined = hashlib.sha256()
-    if size > 90*1024**2:
-        with archive.open("rb") as source:
-            while payload := source.read(90*1024**2):
-                part = record/f"{archive.name}.part-{len(parts):03d}"
-                if part.exists():
-                    raise RuntimeError("Archive part already exists")
-                part.write_bytes(payload)
-                joined.update(payload)
-                parts.append((part.name, digest(part)))
-        if joined.hexdigest() != original_hash:
-            raise RuntimeError("Archive split reconstruction mismatch")
-        archive.unlink()
-    else:
-        parts = [(archive.name, original_hash)]
-    (record/"ARCHIVE.sha256").write_text("".join(f"{sha}  {name}\n" for name,sha in parts))
-    write_json(record/"ARCHIVE.json", dict(original_name=archive.name, original_sha256=original_hash,
-        original_bytes=size, ordered_parts=[name for name,_ in parts],
-        restore="Concatenate ordered parts byte-for-byte and extract the gzip tar; all original manifests are inside."))
-    return original_hash
-
-
 def stage(label):
     commit = run(["git", "rev-parse", "HEAD"], cwd=TREE).strip()
     dest = CELL/"stages"/label
@@ -97,6 +70,7 @@ def stage(label):
 #SBATCH --job-name=ctol_mr_wave_{label}
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:a100:1
+#SBATCH --constraint=a100-40G
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=96G
 #SBATCH --time=02:00:00
@@ -183,7 +157,8 @@ def collect(label):
     archive = record/"verified-cluster.tar.gz"
     with tarfile.open(archive, "w:gz") as tar:
         tar.add(local, arcname="cluster")
-    archive_sha = split_archive(record)
+    archive_sha = digest(archive)
+    (record/"ARCHIVE.sha256").write_text(f"{archive_sha}  {archive.name}\n")
     ssh(f"test -f {quoted}/PULL.sha256 && rm -rf -- {quoted} && test ! -e {quoted}")
     write_json(record/"cleanup.json", dict(remote=remote, job_id=jid, all_three_manifests_verified=True,
         source_hashes_verified=True, archive_sha256=archive_sha, remote_deleted_and_absence_checked=True,

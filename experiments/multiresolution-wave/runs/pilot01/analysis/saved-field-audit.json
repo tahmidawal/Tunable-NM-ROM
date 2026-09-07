@@ -1,0 +1,508 @@
+{
+  "passed": true,
+  "scope": "Independent NumPy reconstruction audit of stored ROM field observations.\n\nThis audits coefficient/gauge/output correspondence at the saved observation\nmesh. It does not independently regenerate the fine-grid truth trajectories.\n",
+  "reconstruction": [
+    {
+      "invocation_id": "dirichlet_256_0_0_rom_0.0025",
+      "maximum_displacement_difference": 1.429412144204889e-15,
+      "maximum_velocity_difference": 1.5987211554602254e-14
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_rom_0.00125",
+      "maximum_displacement_difference": 1.3600232051658168e-15,
+      "maximum_velocity_difference": 1.532107773982716e-14
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_rom_0.0025",
+      "maximum_displacement_difference": 9.992007221626409e-16,
+      "maximum_velocity_difference": 1.4432899320127035e-14
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_rom_0.00125",
+      "maximum_displacement_difference": 1.1102230246251565e-15,
+      "maximum_velocity_difference": 1.3988810110276972e-14
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_rom_0.0025",
+      "maximum_displacement_difference": 1.4016565685892601e-15,
+      "maximum_velocity_difference": 1.6209256159527285e-14
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_rom_0.00125",
+      "maximum_displacement_difference": 1.4432899320127035e-15,
+      "maximum_velocity_difference": 1.607047828144914e-14
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_rom_0.0025",
+      "maximum_displacement_difference": 1.1102230246251565e-15,
+      "maximum_velocity_difference": 1.3766765505351941e-14
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_rom_0.00125",
+      "maximum_displacement_difference": 1.1102230246251565e-15,
+      "maximum_velocity_difference": 1.3988810110276972e-14
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rom_0.0025",
+      "maximum_displacement_difference": 7.350457048582726e-15,
+      "maximum_velocity_difference": 5.6288307348495437e-14
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rom_0.00125",
+      "maximum_displacement_difference": 7.341783431202842e-15,
+      "maximum_velocity_difference": 5.651035195342047e-14
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rom_0.0025",
+      "maximum_displacement_difference": 6.5479306005089555e-15,
+      "maximum_velocity_difference": 5.152128723651117e-14
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rom_0.00125",
+      "maximum_displacement_difference": 6.5479306005089555e-15,
+      "maximum_velocity_difference": 5.099393129981422e-14
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rom_0.0025",
+      "maximum_displacement_difference": 1.754846268298138e-14,
+      "maximum_velocity_difference": 1.0331319133527472e-13
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rom_0.00125",
+      "maximum_displacement_difference": 1.754109010820848e-14,
+      "maximum_velocity_difference": 1.0253603521803711e-13
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rom_0.0025",
+      "maximum_displacement_difference": 2.571922709526664e-14,
+      "maximum_velocity_difference": 2.1048440768112187e-13
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rom_0.00125",
+      "maximum_displacement_difference": 2.573332172350895e-14,
+      "maximum_velocity_difference": 2.1073420786166253e-13
+    }
+  ],
+  "query_accounting": [
+    {
+      "invocation_id": "dirichlet_256_0_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_0_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_1_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_0_2_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_0_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_1_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_256_1_2_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_0_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_1_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_0_2_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_0_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_1_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "dirichlet_512_1_2_dst_0.0",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_0_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_1_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_1_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_2_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_0_2_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_0_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_1_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_1_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_2_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_256_1_2_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_0_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_1_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_1_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_2_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_0_2_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_0_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_1_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_1_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_1_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_1_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_2_rom_0.0025",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_2_rom_0.00125",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_2_rk4_0.45",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    },
+    {
+      "invocation_id": "absorbing_512_1_2_rk4_0.225",
+      "timing_sum_difference": 0.0,
+      "output_bytes_match": true
+    }
+  ]
+}

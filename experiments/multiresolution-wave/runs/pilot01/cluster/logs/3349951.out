@@ -1,0 +1,124 @@
+jax_backend=gpu
+{'jax_backend': 'gpu', 'x64': True}
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100 80GB PCIe"], "host": "pax105", "source_commit": "a02aacd9578f46a9bee0dcb093acd35e62d10739", "job_id": "3349951", "numpy_version": "2.5.0"}
+reference dirichlet 0
+reference dirichlet 1
+rebuild dirichlet 256
+warmup dirichlet 256 0 rom 0.0025
+warmup dirichlet 256 0 rom 0.00125
+warmup dirichlet 256 0 dst 0.0
+timed dirichlet 256 0 0 rom 0.0025
+timed dirichlet 256 0 0 rom 0.00125
+timed dirichlet 256 0 0 dst 0.0
+timed dirichlet 256 0 1 dst 0.0
+timed dirichlet 256 0 1 rom 0.00125
+timed dirichlet 256 0 1 rom 0.0025
+timed dirichlet 256 0 2 rom 0.0025
+timed dirichlet 256 0 2 rom 0.00125
+timed dirichlet 256 0 2 dst 0.0
+warmup dirichlet 256 1 rom 0.0025
+warmup dirichlet 256 1 rom 0.00125
+warmup dirichlet 256 1 dst 0.0
+timed dirichlet 256 1 0 rom 0.0025
+timed dirichlet 256 1 0 rom 0.00125
+timed dirichlet 256 1 0 dst 0.0
+timed dirichlet 256 1 1 dst 0.0
+timed dirichlet 256 1 1 rom 0.00125
+timed dirichlet 256 1 1 rom 0.0025
+timed dirichlet 256 1 2 rom 0.0025
+timed dirichlet 256 1 2 rom 0.00125
+timed dirichlet 256 1 2 dst 0.0
+rebuild dirichlet 512
+warmup dirichlet 512 0 rom 0.0025
+warmup dirichlet 512 0 rom 0.00125
+warmup dirichlet 512 0 dst 0.0
+timed dirichlet 512 0 0 rom 0.0025
+timed dirichlet 512 0 0 rom 0.00125
+timed dirichlet 512 0 0 dst 0.0
+timed dirichlet 512 0 1 dst 0.0
+timed dirichlet 512 0 1 rom 0.00125
+timed dirichlet 512 0 1 rom 0.0025
+timed dirichlet 512 0 2 rom 0.0025
+timed dirichlet 512 0 2 rom 0.00125
+timed dirichlet 512 0 2 dst 0.0
+warmup dirichlet 512 1 rom 0.0025
+warmup dirichlet 512 1 rom 0.00125
+warmup dirichlet 512 1 dst 0.0
+timed dirichlet 512 1 0 rom 0.0025
+timed dirichlet 512 1 0 rom 0.00125
+timed dirichlet 512 1 0 dst 0.0
+timed dirichlet 512 1 1 dst 0.0
+timed dirichlet 512 1 1 rom 0.00125
+timed dirichlet 512 1 1 rom 0.0025
+timed dirichlet 512 1 2 rom 0.0025
+timed dirichlet 512 1 2 rom 0.00125
+timed dirichlet 512 1 2 dst 0.0
+reference absorbing 0
+reference absorbing 1
+rebuild absorbing 256
+warmup absorbing 256 0 rom 0.0025
+warmup absorbing 256 0 rom 0.00125
+warmup absorbing 256 0 rk4 0.45
+warmup absorbing 256 0 rk4 0.225
+timed absorbing 256 0 0 rom 0.0025
+timed absorbing 256 0 0 rom 0.00125
+timed absorbing 256 0 0 rk4 0.45
+timed absorbing 256 0 0 rk4 0.225
+timed absorbing 256 0 1 rk4 0.225
+timed absorbing 256 0 1 rk4 0.45
+timed absorbing 256 0 1 rom 0.00125
+timed absorbing 256 0 1 rom 0.0025
+timed absorbing 256 0 2 rom 0.0025
+timed absorbing 256 0 2 rom 0.00125
+timed absorbing 256 0 2 rk4 0.45
+timed absorbing 256 0 2 rk4 0.225
+warmup absorbing 256 1 rom 0.0025
+warmup absorbing 256 1 rom 0.00125
+warmup absorbing 256 1 rk4 0.45
+warmup absorbing 256 1 rk4 0.225
+timed absorbing 256 1 0 rom 0.0025
+timed absorbing 256 1 0 rom 0.00125
+timed absorbing 256 1 0 rk4 0.45
+timed absorbing 256 1 0 rk4 0.225
+timed absorbing 256 1 1 rk4 0.225
+timed absorbing 256 1 1 rk4 0.45
+timed absorbing 256 1 1 rom 0.00125
+timed absorbing 256 1 1 rom 0.0025
+timed absorbing 256 1 2 rom 0.0025
+timed absorbing 256 1 2 rom 0.00125
+timed absorbing 256 1 2 rk4 0.45
+timed absorbing 256 1 2 rk4 0.225
+rebuild absorbing 512
+warmup absorbing 512 0 rom 0.0025
+warmup absorbing 512 0 rom 0.00125
+warmup absorbing 512 0 rk4 0.45
+warmup absorbing 512 0 rk4 0.225
+timed absorbing 512 0 0 rom 0.0025
+timed absorbing 512 0 0 rom 0.00125
+timed absorbing 512 0 0 rk4 0.45
+timed absorbing 512 0 0 rk4 0.225
+timed absorbing 512 0 1 rk4 0.225
+timed absorbing 512 0 1 rk4 0.45
+timed absorbing 512 0 1 rom 0.00125
+timed absorbing 512 0 1 rom 0.0025
+timed absorbing 512 0 2 rom 0.0025
+timed absorbing 512 0 2 rom 0.00125
+timed absorbing 512 0 2 rk4 0.45
+timed absorbing 512 0 2 rk4 0.225
+warmup absorbing 512 1 rom 0.0025
+warmup absorbing 512 1 rom 0.00125
+warmup absorbing 512 1 rk4 0.45
+warmup absorbing 512 1 rk4 0.225
+timed absorbing 512 1 0 rom 0.0025
+timed absorbing 512 1 0 rom 0.00125
+timed absorbing 512 1 0 rk4 0.45
+timed absorbing 512 1 0 rk4 0.225
+timed absorbing 512 1 1 rk4 0.225
+timed absorbing 512 1 1 rk4 0.45
+timed absorbing 512 1 1 rom 0.00125
+timed absorbing 512 1 1 rom 0.0025
+timed absorbing 512 1 2 rom 0.0025
+timed absorbing 512 1 2 rom 0.00125
+timed absorbing 512 1 2 rk4 0.45
+timed absorbing 512 1 2 rk4 0.225
+multiresolution_wave_complete

@@ -107,6 +107,15 @@ def analyze(record):
         final_cohort_opened=False, fit_budget_stability_rechecked=False,
         offline_training_repeated=False, mesh_assembly=data["meshes"], bank_projection=data.get("bank_projection_diagnostic", []),
         reference_warning="Self-refinement is empirical. Absorber continuation estimates assume the observed contraction persists; neither is a proven continuum bound.")
+    summary["checkpoint_storage"] = []
+    for bc in cfg["boundaries"]:
+        with np.load(cluster/"in"/bc/"bank_parameters.npz") as bank, np.load(cluster/"in"/bc/"head.npz") as head:
+            summary["checkpoint_storage"].append(dict(boundary=bc,
+                bank_trained_parameters=sum(bank[k].size for k in bank.files if k.startswith("p/")),
+                head_trained_parameters=sum(head[k].size for k in head.files if k.startswith("p/")),
+                decoder_parameter_bytes=sum(bank[k].nbytes for k in bank.files if k.startswith("p/"))+sum(head[k].nbytes for k in head.files if k.startswith("p/")),
+                cold_start_fixed_code_bytes=head["codes"][np.linspace(0, len(head["codes"])-1, 6, dtype=int)].nbytes,
+                immutable_checkpoint_file_bytes=sum(p.stat().st_size for p in (cluster/"in"/bc).glob("*.npz"))))
     groups = defaultdict(list)
     for row in data["invocations"]:
         groups[row["boundary"], row["intervals"], row["method"], row["setting"]].append(row)

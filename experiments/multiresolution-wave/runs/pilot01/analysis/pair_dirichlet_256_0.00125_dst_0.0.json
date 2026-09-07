@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "stage": "development",
+  "reference_kind": "refined_physical",
+  "configuration_selection": "predeclared",
+  "source_artifact_sha256": {
+    "../cluster/out/pilot/result.json": "d969c32607dacdd0d87e7a411eb8c426ed4dc98fcabe0d993261f753c10e86c5"
+  },
+  "provenance": {
+    "backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest",
+    "job_id": "3349951",
+    "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+    "source_commit": "a02aacd9578f46a9bee0dcb093acd35e62d10739"
+  },
+  "case_ids": [
+    "0",
+    "1"
+  ],
+  "repetitions": 3,
+  "required_error_metrics": [
+    "displacement",
+    "velocity",
+    "energy_state"
+  ],
+  "output_contract_id": "host_phase_fields_256_all_observations",
+  "reference_uncertainty_bound": null,
+  "reference_uncertainty_fraction": 0.1,
+  "reference_uncertainty_note": "Empirical self-differences and conditional contraction estimates are supplied in summary.json; no proven uncertainty bound is asserted.",
+  "targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "independent_final_cohort": false,
+  "invocations": [
+    {
+      "case_id": "0",
+      "repeat": 0,
+      "method": "nmrom",
+      "invocation_id": "dirichlet_256_0_0_rom_0.00125",
+      "metric_invocation_id": "dirichlet_256_0_0_rom_0.00125",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 6.565847844001837,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": false,
+      "errors": {
+        "displacement": 0.15103923198094943,
+        "velocity": 0.3181776848967652,
+        "energy_state": 0.36963763179271203
+      }
+    },
+    {
+      "case_id": "0",
+      "repeat": 0,
+      "method": "fom",
+      "invocation_id": "dirichlet_256_0_0_dst_0.0",
+      "metric_invocation_id": "dirichlet_256_0_0_dst_0.0",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 0.01574414095375687,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": null,
+      "errors": {
+        "displacement": 0.0012104884737808414,
+        "velocity": 0.0027694544846325873,
+        "energy_state": 0.0038910295111481445
+      }
+    },
+    {
+      "case_id": "0",
+      "repeat": 1,
+      "method": "fom",
+      "invocation_id": "dirichlet_256_0_1_dst_0.0",
+      "metric_invocation_id": "dirichlet_256_0_1_dst_0.0",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 0.013861787971109152,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": null,
+      "errors": {
+        "displacement": 0.0012104884737808414,
+        "velocity": 0.0027694544846325873,
+        "energy_state": 0.0038910295111481445
+      }
+    },
+    {
+      "case_id": "0",
+      "repeat": 1,
+      "method": "nmrom",
+      "invocation_id": "dirichlet_256_0_1_rom_0.00125",
+      "metric_invocation_id": "dirichlet_256_0_1_rom_0.00125",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 6.549484788090922,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": false,
+      "errors": {
+        "displacement": 0.15103923198094943,
+        "velocity": 0.3181776848967652,
+        "energy_state": 0.36963763179271203
+      }
+    },
+    {
+      "case_id": "0",
+      "repeat": 2,
+      "method": "nmrom",
+      "invocation_id": "dirichlet_256_0_2_rom_0.00125",
+      "metric_invocation_id": "dirichlet_256_0_2_rom_0.00125",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 6.56918884802144,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": false,
+      "errors": {
+        "displacement": 0.15103923198094943,
+        "velocity": 0.3181776848967652,
+        "energy_state": 0.36963763179271203
+      }
+    },
+    {
+      "case_id": "0",
+      "repeat": 2,
+      "method": "fom",
+      "invocation_id": "dirichlet_256_0_2_dst_0.0",
+      "metric_invocation_id": "dirichlet_256_0_2_dst_0.0",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 0.014422451960854232,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": null,
+      "errors": {
+        "displacement": 0.0012104884737808414,
+        "velocity": 0.0027694544846325873,
+        "energy_state": 0.0038910295111481445
+      }
+    },
+    {
+      "case_id": "1",
+      "repeat": 0,
+      "method": "nmrom",
+      "invocation_id": "dirichlet_256_1_0_rom_0.00125",
+      "metric_invocation_id": "dirichlet_256_1_0_rom_0.00125",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 6.571279844967648,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": false,
+      "errors": {
+        "displacement": 0.2867166082721474,
+        "velocity": 0.3545532046609549,
+        "energy_state": 0.5536701845349743
+      }
+    },
+    {
+      "case_id": "1",
+      "repeat": 0,
+      "method": "fom",
+      "invocation_id": "dirichlet_256_1_0_dst_0.0",
+      "metric_invocation_id": "dirichlet_256_1_0_dst_0.0",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 0.0142745889024809,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": null,
+      "errors": {
+        "displacement": 0.0015042440211373677,
+        "velocity": 0.003660244921155187,
+        "energy_state": 0.0050474164291517375
+      }
+    },
+    {
+      "case_id": "1",
+      "repeat": 1,
+      "method": "fom",
+      "invocation_id": "dirichlet_256_1_1_dst_0.0",
+      "metric_invocation_id": "dirichlet_256_1_1_dst_0.0",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 0.013625602005049586,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": null,
+      "errors": {
+        "displacement": 0.0015042440211373677,
+        "velocity": 0.003660244921155187,
+        "energy_state": 0.0050474164291517375
+      }
+    },
+    {
+      "case_id": "1",
+      "repeat": 1,
+      "method": "nmrom",
+      "invocation_id": "dirichlet_256_1_1_rom_0.00125",
+      "metric_invocation_id": "dirichlet_256_1_1_rom_0.00125",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 6.576852489961311,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": false,
+      "errors": {
+        "displacement": 0.2867166082721474,
+        "velocity": 0.3545532046609549,
+        "energy_state": 0.5536701845349743
+      }
+    },
+    {
+      "case_id": "1",
+      "repeat": 2,
+      "method": "nmrom",
+      "invocation_id": "dirichlet_256_1_2_rom_0.00125",
+      "metric_invocation_id": "dirichlet_256_1_2_rom_0.00125",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 6.566794526996091,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": false,
+      "errors": {
+        "displacement": 0.2867166082721474,
+        "velocity": 0.3545532046609549,
+        "energy_state": 0.5536701845349743
+      }
+    },
+    {
+      "case_id": "1",
+      "repeat": 2,
+      "method": "fom",
+      "invocation_id": "dirichlet_256_1_2_dst_0.0",
+      "metric_invocation_id": "dirichlet_256_1_2_dst_0.0",
+      "job_id": "3349951",
+      "gpu_identity": "pax105:NVIDIA A100 80GB PCIe",
+      "output_contract_id": "host_phase_fields_256_all_observations",
+      "query_includes_input_and_output": true,
+      "query_seconds": 0.013299896963872015,
+      "warmup_and_burnin_complete": true,
+      "device_synchronized": true,
+      "completed": true,
+      "numerically_valid": true,
+      "fit_budget_stability_rechecked": null,
+      "errors": {
+        "displacement": 0.0015042440211373677,
+        "velocity": 0.003660244921155187,
+        "energy_state": 0.0050474164291517375
+      }
+    }
+  ]
+}

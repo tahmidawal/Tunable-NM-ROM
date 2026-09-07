@@ -22,6 +22,7 @@ def main():
     p = argparse.ArgumentParser(__doc__)
     p.add_argument('label')
     p.add_argument('--entry', required=True)
+    p.add_argument('--coordinator-entry', type=Path, help='Committed supplemental coordinator script; leaves frozen wave sources unchanged')
     p.add_argument('--commit', help='Explicit immutable source commit; permits ongoing owner edits after that milestone')
     p.add_argument('--arg', action='append', default=[])
     p.add_argument('--gpu', choices=['a100', 'h100', 'h200', 'l40s'], default='a100')
@@ -63,6 +64,17 @@ def main():
                 if any(name.startswith(('wav2d', 'wave2d', 'stk2d')) for name in imports):
                     raise RuntimeError(f'legacy dependency in {rel}: {imports}')
         source[f.relative_to(cell).as_posix()] = payload
+    supplement = None
+    if a.coordinator_entry:
+        coordinator_tree = Path(__file__).resolve().parents[3]
+        supplied = a.coordinator_entry.resolve()
+        relative = supplied.relative_to(coordinator_tree).as_posix()
+        coordinator_commit = subprocess.check_output(['git', '-C', str(coordinator_tree), 'rev-parse', 'HEAD'], text=True).strip()
+        payload = subprocess.check_output(['git', '-C', str(coordinator_tree), 'show', f'{coordinator_commit}:{relative}'])
+        if payload != supplied.read_bytes() or entry.name != supplied.name or entry.as_posix() in source:
+            raise RuntimeError('Supplement must match committed coordinator source and cannot overwrite frozen sources')
+        source[entry.as_posix()] = payload
+        supplement = dict(commit=coordinator_commit, path=relative, sha256=hashlib.sha256(payload).hexdigest())
     if entry.as_posix() not in source:
         raise RuntimeError('entry not among committed fresh sources')
     stage = coordinator/'cluster/stage'/f'fresh_{a.label}'
@@ -89,6 +101,7 @@ def main():
         (stage/'in'/name).write_bytes(path.read_bytes())
     remote = f'{NAMESPACE}/{a.label}'
     cfg = dict(label=a.label, source_commit=commit, source_worktree=str(APPROVED),
+               coordinator_supplement=supplement,
                source_hashes={name: hashlib.sha256(payload).hexdigest() for name,payload in source.items()},
                remote=remote, entry=a.entry, arguments=a.arg, gpu=a.gpu, constraint=a.constraint,
                inputs={name: dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest()) for name,path in inputs.items()})

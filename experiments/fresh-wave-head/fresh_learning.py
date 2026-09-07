@@ -66,6 +66,8 @@ def generate_data(config, bc, out):
                 raise RuntimeError("Actual truth trajectory balance/invariant/compatibility check failed")
             audits.append({"energy_trace":energy_trace.tolist(),"outflux":flux.tolist(),"max_balance_relative":float(np.max(abs(balance))),"invariant_drift":invariant_drift,"initial_support_wall_margin":support_margin,"initial_boundary_values_and_derivatives":"Exactly zero by compact support strictly inside the domain."})
             uscale = float(np.sqrt(np.sum(grid.mass()*np.asarray(u0)**2)))
+            if not np.isfinite(uscale) or uscale<=0:
+                raise RuntimeError("Invalid initial displacement normalization")
             displacement.append(u.reshape(len(u), -1))
             velocity.append(v.reshape(len(v), -1))
             energies.append(e0)

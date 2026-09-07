@@ -1,0 +1,50 @@
+{
+  "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/verify01/cluster/out/verification/reference_arrays.npz",
+  "source_sha256": "00b4fc5db0b635cb46c0fe32db2d47e20338ca6d9bd84513cdbba1c5d82e9bd7",
+  "all_saved_arrays_finite": true,
+  "rows": [
+    {
+      "parameter_index": 0,
+      "n_intervals": 32,
+      "time": 2.4,
+      "semidiscrete_relative_energy_error": 0.0003020083313845787,
+      "continuum_frequency_interpolant_relative_energy_error": 0.6604995292233484
+    },
+    {
+      "parameter_index": 0,
+      "n_intervals": 64,
+      "time": 2.4,
+      "semidiscrete_relative_energy_error": 0.0001755423380605137,
+      "continuum_frequency_interpolant_relative_energy_error": 0.43935156053590013
+    },
+    {
+      "parameter_index": 0,
+      "n_intervals": 128,
+      "time": 2.4,
+      "semidiscrete_relative_energy_error": 5.292396970435274e-05,
+      "continuum_frequency_interpolant_relative_energy_error": 0.25332807320801204
+    },
+    {
+      "parameter_index": 1,
+      "n_intervals": 32,
+      "time": 2.4,
+      "semidiscrete_relative_energy_error": 0.00014014772333438804,
+      "continuum_frequency_interpolant_relative_energy_error": 0.47159506037088594
+    },
+    {
+      "parameter_index": 1,
+      "n_intervals": 64,
+      "time": 2.4,
+      "semidiscrete_relative_energy_error": 6.930384950047776e-05,
+      "continuum_frequency_interpolant_relative_energy_error": 0.2988343384849077
+    },
+    {
+      "parameter_index": 1,
+      "n_intervals": 128,
+      "time": 2.4,
+      "semidiscrete_relative_energy_error": 1.7529715416236317e-05,
+      "continuum_frequency_interpolant_relative_energy_error": 0.15338726150521714
+    }
+  ],
+  "interpretation": "Exact semidiscrete sine evolution nearly agrees with saved RK4 fields. The much larger continuum-frequency difference isolates spatial dispersion; sampled continuum interpolation is not a mesh-converged truth certificate."
+}

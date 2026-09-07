@@ -1,0 +1,9 @@
+jax_backend=gpu
+verification standing
+verification periodic
+verification manufactured_absorber
+verification temporal
+verification plane_reflection
+verification plane_absorption
+verification actual_family
+{"gates": {"standing_space": true, "periodic_space": true, "manufactured_space": true, "temporal": true, "rk4_stability": true, "plane_reflection_converges": false, "plane_absorption_converges": false}, "passed": false}

@@ -89,7 +89,7 @@ def main():
         lines.append(f"| {r['tag']} | {r['coverage_count']} | {r['steps_done']} | {r['valid_endpoint']} | {r['compile_seconds']:.6g} | {r['optimizer_loop_seconds']:.6g} | {r['elapsed_seconds_including_compile']:.6g} | {r['training_metrics']['median_relative_l2']:.9g} | {r['training_metrics']['worst_relative_l2']:.9g} |")
     lines+=['',f"Total offline elapsed including source generation, training-code fitting, compilation and training diagnostics is {d['training']['offline_seconds_including_data_codefit_compilation_and_diagnostics']:.6g} s. "
         f"Training truth DST/CG discrepancy is {d['training']['cg_check']['relative_dst_discrepancy']:.9g} at CG tolerance {d['training']['cg_check']['tolerance']:.6g}.",'',
-        'Global-loss arms share the original training set\'s full-field mean-square denominator. Relative-loss arms use each training field\'s fixed full-grid mean square. Coverage pairs share exact initial weights, training codes and random-key schedule across objectives. The larger set receives fewer passes per source at this matched update/batch budget. In-sample errors cover different source sets across coverage arms and are not held-out accuracy measurements. Fixed scheduled endpoints are reported; none was selected by intermediate validation.','',
+        'Global-loss arms share the original training set\'s full-field mean-square denominator. Relative-loss arms use each training field\'s fixed full-grid mean square. Coverage pairs share exact initial weights, training codes and random-key schedule across objectives. The larger set receives fewer passes per source at this matched update/batch budget. In-sample errors cover different source sets across coverage arms and are not held-out accuracy measurements. Fixed scheduled endpoints are reported; none was selected by intermediate validation. Offline durations are actual observed costs including compilation, without a separate warm training-speed measurement.','',
         '## Deployed stationary-control accuracy','',
         '| Intervals | Development cohort | Model | Median physical error | Worst physical error | Invalid | Nonstationary | Generic modular latency ms |',
         '|---:|---|---|---:|---:|---:|---:|---:|']
@@ -125,6 +125,21 @@ def main():
         f"Specialized agreement failures: {audit['specialized_agreement_failures']}; timed fallbacks: {audit['specialized_timed_fallbacks']}. "
         f"Maximum final reference refinement difference is {max(r['reference_delta'] for r in d['references']):.9g}. "
         'Original generic controls and the guarded specialized query share each job\'s GPU and return a full host field. The lookup/projection speed proposal is separate and absent from these endpoints.','',
+        '## Selected-query component costs','',
+        '| Intervals | Model | Arm | Tau | Input ms | Projection/init ms | Solver ms | Fused device ms | Output ms |',
+        '|---:|---|---|---:|---:|---:|---:|---:|---:|']
+    selected=set()
+    for e in envelopes:
+        if e['cohort']!='all_development' or e['rom'] is None:continue
+        for choice in (e['rom'],e['fom']):
+            selected.add((e['intervals'],choice['model'],choice['arm'],choice['tau']))
+        selected.add((e['intervals'],e['rom']['model'],'rom_modular',e['rom']['tau']))
+    for row in summaries:
+        key=(row['intervals'],row['model'],row['arm'],row['tau'])
+        if row['cohort']!='all_development' or key not in selected:continue
+        cc=row['components_seconds'];values=' | '.join('—' if k not in cc else f'{1000*cc[k]:.6g}' for k in ('input_seconds','projection_init_seconds','solver_seconds','fused_device_seconds','output_seconds'))
+        lines.append(f"| {row['intervals']} | {row['model'] or '—'} | {row['arm']} | {row['tau'] if row['tau'] is not None else '—'} | {values} |")
+    lines+=['','The selected full-query implementation and its generic modular control each supply their own component medians. Fused device time includes projection, solve, charged guards/fallback and decoding; separated control times are never substituted into a fused invocation. Component medians need not sum to the total median.','',
         '## Generated figures','',
         '![Common-observation accuracy by fixed endpoint](accuracy-factorial.png)','',
         '![Training objectives on the fixed schedules](training-objectives.png)','',

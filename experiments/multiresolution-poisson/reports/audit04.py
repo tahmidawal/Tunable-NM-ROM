@@ -56,12 +56,13 @@ log=(run/(sub['job_id']+'.out')).read_text()+(run/(sub['job_id']+'.err')).read_t
 assert 'jax_backend=gpu' in log and 'ALL-DONE' in log and (run/'EXIT_CODE').read_text().strip()=='0'
 for bad in ['cuInit','captured constant','large constant','OUT_OF_MEMORY','No space left','Traceback']:assert bad not in log,bad
 # Independent host regeneration of same-grid source and discrete DST reference.
-truth={}
+truth={};source_hashes={}
 for n in cfg['intervals']:
     x=np.arange(1,n)/n
     lam1=4*n*n*np.sin(np.pi*np.arange(1,n)/(2*n))**2
     for case,(cx,cy,width,amp) in enumerate(d['cohort']['parameters']):
         f=amp*np.exp(-((x[:,None]-cx)**2+(x[None,:]-cy)**2)/(2*width*width))
+        source_hashes[(n,case)]=sha(np.ascontiguousarray(np.pad(f,1)).tobytes())
         truth[(n,case)]=np.pad(dstn(dstn(f,type=1,norm='ortho')/(lam1[:,None]+lam1[None,:]),type=1,norm='ortho'),1)
 rel=lambda x,y:float(np.linalg.norm(x-y)/np.linalg.norm(y))
 def sample(seed,count):
@@ -110,12 +111,15 @@ def metrics(field_hash,n,case):
     key=(field_hash,n,case)
     if key not in cache:
         field=fields[field_hash];fine=reference[case]['observation'];coarser=reference[case]['coarser_observation']
+        assert field.shape==(n+1,n+1) and field.dtype==np.float64
+        assert np.count_nonzero(field[[0,-1]])==0 and np.count_nonzero(field[:,[0,-1]])==0
         delta=rel(coarser,fine);error=rel(field[::n//cfg['observation_intervals'],::n//cfg['observation_intervals']],fine)
         cache[key]=dict(physical_error=error,reference_delta=delta,conservative_physical_error=(error+delta)/(1-delta),same_grid_error=rel(field,truth[(n,case)]))
     return cache[key]
 for row in d['rows']:
     key=(row['intervals'],row['case'],row['model'],row['arm'],row['requested_modes'],row['tau'],row['repetition'])
     assert key not in keys;keys.add(key)
+    assert row['source_sha256']==source_hashes[(row['intervals'],row['case'])]
     names=['input_seconds','fused_device_seconds','output_seconds'] if row['arm'] in ('rom_fused','rom_gj') else ['input_seconds','projection_init_seconds','solver_seconds','output_seconds']
     assert abs(row['total_seconds']-sum(row[k] for k in names))<1e-10;components+=1
     computed=metrics(row['field_sha256'],row['intervals'],row['case'])

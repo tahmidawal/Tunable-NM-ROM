@@ -22,11 +22,33 @@ status. The weak objective, damping, trust-radius rule and stopping criteria
 remain fixed, and failures or different local minima remain visible.
 
 A controlled factorial would cross these two changes while preserving the
-original projection/mean-code baseline. Freeze checkpoint selection using the
-completed training study before choosing the next experiment's configuration.
-Retain the original checkpoint as a control so an improved implementation cannot
-be confused with an improved model. The coordinator will review a bounded source,
-case, mesh and timing budget before this proposal is implemented or submitted.
+original projection/mean-code baseline. The proposed budget is frozen in
+`speed_factorial_proposal.json`; actual endpoint selection awaits the completed
+training study and coordinator review. Retain the original checkpoint and select
+one scheduled continuation using every development case on both meshes. Among
+complete endpoints whose tighter generic weak solves are all solver-valid,
+minimize the worst empirically reference-adjusted physical error across those
+cases and meshes, breaking ties by their median error and then model name. The
+chosen endpoint and content hash will be generated from the full run JSON, with
+no selection based only on an inspected hard case.
+
+The main factorial uses the enlarged smooth test space and the guarded fused
+solver. Original generic modular/fused queries remain paired controls for each
+checkpoint. The original checkpoint's smaller-test mean-code query remains an
+additional incumbent cost control, alongside same-grid and coarse-grid DST.
+Every source in both development cohorts is retained and no new training runs.
+
+Projection variants must satisfy a frozen coefficient-agreement tolerance and
+scale-aware final-field agreement for the same initialization. Initialization
+variants are allowed to take different trajectories or reach different local
+minima; their fields, objective values, gradients and stop statuses are evaluated
+directly. The existing residual-reduction target is relative to each query's own
+initial residual, so changing initialization also changes its absolute stopping
+threshold. Preserve that original rule, report the threshold explicitly, and use
+the tighter stationary control to isolate initialization effects at convergence.
+
+The coordinator will review the concrete selected checkpoint and complete
+budget before this proposal is implemented or submitted.
 
 ## Plain-language glossary
 

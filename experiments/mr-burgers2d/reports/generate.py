@@ -38,6 +38,8 @@ lines=['# Burgers 2D frozen-network resolution transfer and complete-query cost'
     '| Case | Spatial difference | Time difference | Sum estimate |','|---|---:|---:|---:|']
 for r in d['reference_uncertainty']:lines.append(f"| {r['case']} | {r['space_difference']['fixed_initial_max']:.6g} | {r['time_difference']['fixed_initial_max']:.6g} | {r['conservative_difference_sum']:.6g} |")
 unc=max(r['conservative_difference_sum'] for r in d['reference_uncertainty'])
+richardson=[r['empirical_richardson_estimate'] for r in d.get('reference_order_audit',[]) if r['empirical_richardson_estimate'] is not None]
+if richardson:unc=max(unc,max(richardson))
 order_ok=bool(d.get('reference_order_audit')) and all(r['asymptotic_decrease_observed'] for r in d['reference_order_audit'])
 if d.get('reference_order_audit'):
     lines+=['','| Case | Observed spatial order | Observed time order | Empirical Richardson estimate |','|---|---:|---:|---:|']
@@ -48,14 +50,14 @@ lines+=['','These are differences between independently converged refinement lev
 '## Mesh setup','',
 '| Intervals | Interior unknowns | K / R / M / m | Sampled bank rank | Setup s | Stored arrays MiB | Quadrature fit |','|---|---:|---|---:|---:|---:|---:|']
 for r in d['mesh_setup']:lines.append(f"| {r['intervals']} | {r['interior_unknowns']} | {r['K']} / {r['R']} / {r['M']} / {r['m']} | {r['sampled_bank_rank_relative_1e12']} | {r['setup_seconds']:.3f} | {r['array_bytes']/2**20:.3f} | {r['eq_relative_fit']:.6g} |")
-lines+=['','## Measured configurations','',
+lines+=['','## Measured configurations','', '![Complete-query accuracy and cost](accuracy-cost.svg)','',
 'Errors are maximum-in-observation-time values, aggregated over every declared case and repetition. A configured budget exit is retained as an early stop; a small-step/relative-improvement stop is not a stationarity certificate. Failed/nonfinite solver stops are excluded from target eligibility. Outliers count cases above relative error 0.01. Failed invocations are retained. Wall times are medians over all cases/repetitions in the same job.','',
 '| Configuration | Query ms | Physical median | Physical worst | Current-relative worst | Same-grid worst | Outliers | Failed invocations | IC budget / stall | LM budget / stall |','|---|---:|---:|---:|---:|---:|---:|---:|---|---|']
 for r in sorted(summary,key=lambda r:(r['output'],r['method'],r['ms'])):
     same=f"{r['same']:.6g}" if r['same'] is not None else '—'
     lines.append(f"| `{r['name']}` | {r['ms']:.3f} | {r['err']:.6g} | {r['worst']:.6g} | {r['current']:.6g} | {same} | {r['outliers']} / {r['cases']} | {r['failures']} | {r['ic_budget']} / {r['ic_stall']} | {r['lm_budget']} / {r['lm_stall']} |")
 lines+=['','## Target-qualified validation selections','',
-'Both methods may choose a configuration within the declared pilot search. Eligibility includes the measured reference estimate as an additive error margin. The FOM envelope includes coarser solves with aligned interpolation to the same requested dense output. Solver choices are tuned per resolution; both neural networks remain frozen. This does not test retraining benefits.','',
+'Both methods may choose a configuration within the declared pilot search. Eligibility includes the measured reference estimate as an additive error margin. The margin is the larger of the raw spatial-plus-time difference and the empirical Richardson estimate. The FOM envelope includes coarser solves with aligned interpolation to the same requested dense output. Solver choices are tuned per resolution; both neural networks remain frozen. This does not test retraining benefits.','',
 '| Output intervals | Target | Qualification | Selected ROM | Selected FOM envelope | Envelope speedup |','|---|---:|---|---|---|---:|']
 for L in sorted(set(r['output'] for r in summary)):
     for target in [.1,.05,.01,.001]:
@@ -80,7 +82,7 @@ if d.get('component_profiles'):
         group=[r for r in d['component_profiles'] if r['intervals']==L and r['ic_starts']==starts]
         vals=[np.median([r[k] for r in group])*1000 for k in ['input_transfer_s','cold_fit_s','evolution_s','dense_decode_s','output_transfer_s','staged_total_s']]
         lines.append('| '+str(L)+' | '+str(starts)+' | '+' | '.join(f'{v:.3f}' for v in vals)+f" | {np.median([r['lm_attempts'] for r in group]):.1f} |")
-lines+=['','No final-cohort result, unchanged-weight cross-PDE transfer, universal speed advantage, or fully optimized per-resolution training claim is established by this bounded pilot. Raw invocation arrays and fields remain the source of truth.','',
+lines+=['','No strict physical-error certificate or rigorous reference bound is supplied by the empirical refinement estimates. No final-cohort result, unchanged-weight cross-PDE transfer, universal speed advantage, or fully optimized per-resolution training claim is established by this bounded pilot. Raw invocation arrays and fields remain the source of truth.','',
 '## Plain-language glossary','',
 '- **Intervals / interior unknowns:** grid cells along an axis / non-wall values solved for.',
 '- **K / R / M / m:** latent coordinates / learned spatial features / smooth weak test functions / advection quadrature points.',

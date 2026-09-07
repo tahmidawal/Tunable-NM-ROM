@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import statistics
 
 
 def number(value,percent=False):
@@ -41,6 +42,19 @@ def main():
         full=next((b for b in entry['linear_baselines'] if b['label']=='learned_bank_linear_r'),None)
         linear_pass=full is not None and all(full[key]['outliers']==0 and full[key]['nonfinite']==0 for key in ('displacement','velocity','energy_state'))
         lines.append(f"For `{bc}`, {accepted} of {len(entry['arms'])} head/repeat runs meet the predeclared engineering target. The unrestricted full-bank linear baseline {'meets' if linear_pass else 'does not meet'} the same physical-error ceiling; its time propagation is independent of the nonlinear head.")
+    lines += ["", "The learned spatial span supports accurate linear evolution at its full dimension. The compressed nonlinear heads have larger representation and trajectory errors; this comparison leaves the smaller state dimension and nonlinear dynamics coupled. It does not isolate a defective spatial bank or establish that nonlinear heads cannot work."]
+    for bc,(_,run,entry) in boundaries.items():
+        capacities={a['kind']:a['parameter_count'] for a in entry['arms']} if all('kind' in a for a in entry['arms']) else {a['name'].removesuffix('_velocity'):a['parameter_count'] for a in entry['arms']}
+        repeats=len({a['optimizer_seed'] for a in entry['arms']})
+        selected_nonstationary=sum(a['latent_fit']['nonstationary'] for a in entry['arms'])
+        pairs=[]
+        for arm in entry['arms']:
+            if arm['name'].endswith('_velocity'):
+                base=next(a for a in entry['arms'] if a['name']==arm['name'].removesuffix('_velocity') and a['optimizer_seed']==arm['optimizer_seed'])
+                primary=lambda a:next(s for s in a['rollout']['summaries'] if s['dt']==a['rollout']['primary_dt'])
+                pairs.append((arm['validation']['tangent']['mean']<base['validation']['tangent']['mean'],primary(arm)['energy_state']['median']>primary(base)['energy_state']['median'],arm['name']))
+        lines.append(f"In `{bc}`, the MLP has {capacities['mlp']} head parameters and the quadratic head has {capacities['quadratic']}; this is not a parameter-matched architecture comparison. The {repeats} optimizer repeats share the same data. The velocity penalty improves mean tangent fitting in {sum(p[0] for p in pairs)} of {len(pairs)} matched comparisons, while median trajectory energy-state error worsens in {sum(p[1] for p in pairs)}. Selected latent fits include {selected_nonstationary} nonstationary states; these remain failures of the declared fitting gate.")
+    lines += ["", "A proposed next controlled test is a latent-dimension ladder using the same frozen spatial bank and MLP training setup, alongside linear models at each matching dimension. That would separate compression from nonlinear evolution before adding more elaborate heads. This proposal has not been run."]
     lines += ["", "## Scope and reference",""]
     for bc,(path,run,entry) in boundaries.items():
         config=run["config"]
@@ -58,7 +72,7 @@ def main():
         temporal=max(s['semidiscrete_state_error'] for r in verification['smooth_family'] if r.get('bc')=='dirichlet' and r.get('n')==256 for s in r['independent_sine'])
         reference_rows.append(['dirichlet',number(spatial+spectral+temporal,True),'Independent continuum-sine discrepancy plus spectral-self and measured RK4 contributions'])
         lines += ['',table(['Boundary','Reference uncertainty measure','Scope'],reference_rows),'']
-    lines += ["", "All tabulated relative errors use the initial displacement mass norm or initial state energy as fixed trajectory scales. A time-maximum is the largest stored-time error; error-state energy is not the difference between two solution energies. The first-order absorbing condition has physical/model reflection at oblique incidence. Heads receive only latent coordinates: no physical family descriptor or time enters the head.","","## Learned bank and fresh linear baselines",""]
+    lines += ["", r"Write $E(u,v)=\tfrac12(v^TMv+u^TKu)$, $U_0=\sqrt{u_0^TMu_0}$ and $V_0=\sqrt{2E(u_0,v_0)}$. The pointwise-in-time normalized errors are $e_u=\sqrt{\delta u^TM\delta u}/U_0$, $e_v=\sqrt{\delta v^TM\delta v}/V_0$, and $e_E=\sqrt{E(\delta u,\delta v)/E(u_0,v_0)}$. These fixed trajectory scales also normalize timestep differences. Error-state energy is the energy of the state difference, rather than a difference of solution energies.","", "Representation means and medians pool the stored validation states; rollout means and medians summarize each trajectory's maximum over stored times. They are not time-RMS errors or continuous-time supremum bounds. The first-order absorbing condition has physical/model reflection at oblique incidence. Heads receive only latent coordinates: no physical family descriptor or time enters the head.","","## Learned bank and fresh linear baselines",""]
     rows=[]
     for bc,(_,run,entry) in boundaries.items():
         bank=entry["bank"]
@@ -98,12 +112,12 @@ def main():
             rollout=arm["rollout"]
             refinement=rollout["finest_two_refinement"]
             valid=[x for x in refinement if x["both_completed"]]
-            maximum=max((x["max_energy_state_difference"] for x in valid),default=None)
+            maxima=[max((x[key] for x in valid),default=None) for key in ('max_displacement_difference','max_velocity_difference','max_energy_state_difference')]
             primary=[x for x in rollout["cases"] if x["dt"]==rollout["primary_dt"] and x["completed"]]
             phase=max((x["max_defined_modal_phase_error"] for x in primary if x["max_defined_modal_phase_error"] is not None),default=None)
             vanished=sum(x["vanished_mode_observations"] for x in primary)
-            rows.append([bc,arm["name"],arm["optimizer_seed"],number(maximum,True),len(valid),str(rollout["refinement_passed"]),number(phase),vanished])
-    lines += [table(["Boundary","Head/objective","Repeat seed","Finest-two energy-state difference","Both-step completions","Refinement passed","Worst defined phase error (radians)","Vanished-mode observations"],rows),"","Reflective phases use semidiscrete standing-mode frequencies. Absorbing sine projections are diagnostic coordinates, not absorbing-system eigenmodes. Vanished predicted amplitudes have undefined phase and explicit flags. Raw files also preserve valid-segment unwrapped phase drift, wall-strip peak-time differences, absorbing means, physical boundary power and integrated energy balance.","","## Provenance and limits",""]
+            rows.append([bc,arm["name"],arm["optimizer_seed"],*[number(x,True) for x in maxima],len(valid),sum(x['passed'] for x in refinement),','.join(str(x['case']) for x in refinement if not x['passed']) or '—',str(rollout["refinement_passed"]),number(phase),vanished])
+    lines += [table(["Boundary","Head/objective","Repeat seed","Finest-two displacement difference","Velocity difference","Energy-state difference","Both-step completions","Cases passing refinement","Unresolved case indices","Refinement passed","Worst defined phase error (radians)","Vanished-mode observations"],rows),"","A failed timestep gate leaves that trajectory's temporal accuracy unresolved and prevents attributing its error entirely to the trained architecture. Case indices are zero-based. Reflective phases use semidiscrete standing-mode frequencies. Absorbing sine projections are diagnostic coordinates, not absorbing-system eigenmodes. Vanished predicted amplitudes have undefined phase and explicit flags. Raw files also preserve valid-segment unwrapped phase drift, wall-strip peak-time differences, absorbing means, physical boundary power and integrated energy balance.","","## Provenance and limits",""]
     diagnostic_rows=[]
     for bc,(_,run,entry) in boundaries.items():
         for arm in entry['arms']:
@@ -124,15 +138,19 @@ def main():
         lines[-2:]=['## Frozen-checkpoint time-step continuation','',table(['Boundary','Head/objective','Repeat seed','Original primary target passed','Old-fine parity passed','Old-fine energy-state discrepancy','New finest step','Complete','Failed','Finest energy-state mean','Median','Worst','Outliers','New finest-two refinement passed'],refinement_rows),'','These separate numerical follow-ups were selected only because the original time-step refinement failed. They retain the exact trained bank/head and stored initial latent position and velocity, repeat the original finest step for hardware parity, and then evaluate both additional predeclared steps on every validation case. They preserve the original primary-step verdict and cannot be presented as retrained architectural improvements.','', '## Provenance and limits','']
         adjacent_rows=[]
         normalization_rows=[]
+        contraction_rows=[]
         for path,record in refined:
             steps=record['diagnostic_config']['rom_dts']
             for first,second in zip(steps[:-1],steps[1:]):
                 cases=[r for r in record['adjacent_refinement'] if r['coarse_dt']==first and r['fine_dt']==second]
                 complete=[r for r in cases if r['both_completed']]
                 maxima=[max((r.get(key) for r in complete if r.get(key) is not None),default=None) for key in ('max_displacement_difference','max_velocity_difference','max_energy_state_difference')]
-                adjacent_rows.append([record['name'],record['optimizer_seed'],number(first),number(second),len(complete),*[number(x,True) for x in maxima],sum(not r['passed'] for r in cases)])
+                adjacent_rows.append([record['name'],record['optimizer_seed'],number(first),number(second),len(complete),sum(r['passed'] for r in cases),','.join(str(r['case']) for r in cases if not r['passed']) or '—',*[number(x,True) for x in maxima],sum(not r['passed'] for r in cases)])
             normalization_rows.append([record['name'],record['optimizer_seed'],record['provenance']['source_commit'],number(record['truth_parity']['scales_relative_parity']),str(record['truth_parity']['bit_identical_truth'])])
-        lines[-2:]=[table(['Frozen head/objective','Repeat seed','Coarser step','Finer step','Both-step completions','Worst displacement difference','Worst velocity difference','Worst energy-state difference','Refinement failures'],adjacent_rows),'',table(['Frozen head/objective','Repeat seed','Continuation source','Regenerated-vs-original relative scale discrepancy','Bit-identical regenerated truth'],normalization_rows),'','The first continuation wrapper used regenerated normalization values after checking their agreement; its successor restores the original recorded values exactly after the same check. This bookkeeping distinction is retained with source hashes and measured scale discrepancies. Neither version changes the trained coefficients or initial latent position/velocity; the original trajectory verdict remains fixed.','', '## Provenance and limits','']
+            orders=[r['observed_order'] for r in record['observed_contraction'] if r.get('observed_order') is not None]
+            ratios=[r['energy_difference_ratio'] for r in record['observed_contraction'] if r.get('energy_difference_ratio') is not None]
+            contraction_rows.append([record['name'],record['optimizer_seed'],len(orders),number(statistics.median(ratios)) if ratios else '—',number(min(orders)) if orders else '—',number(statistics.median(orders)) if orders else '—',number(max(orders)) if orders else '—'])
+        lines[-2:]=[table(['Frozen head/objective','Repeat seed','Coarser step','Finer step','Both-step completions','Cases passing refinement','Unresolved case indices','Worst displacement difference','Worst velocity difference','Worst energy-state difference','Refinement failures'],adjacent_rows),'',table(['Frozen head/objective','Repeat seed','Defined-order cases','Median difference contraction','Minimum observed order','Median observed order','Maximum observed order'],contraction_rows),'','Contraction divides each case\'s finer energy-state difference by its preceding difference; observed order is the negative base-two logarithm of this ratio. It need not be asymptotic, and small roundoff-scale differences can make the order uninformative.','',table(['Frozen head/objective','Repeat seed','Continuation source','Regenerated-vs-original relative scale discrepancy','Bit-identical regenerated truth'],normalization_rows),'','The first continuation wrapper used regenerated normalization values after checking their agreement; its successor restores the original recorded values exactly after the same check. This bookkeeping distinction is retained with source hashes and measured scale discrepancies. Neither version changes the trained coefficients or initial latent position/velocity; the original trajectory verdict remains fixed. Passing a pairwise threshold is empirical timestep agreement, not a rigorous integration-error bound. Cases still failing this bounded continuation remain temporally unresolved; no further refinement was used to select a preferred architecture.','', '## Provenance and limits','']
     for path,run in loaded:
         digest=hashlib.sha256(path.read_bytes()).hexdigest()
         lines.append(f"- Source result: `{path}`; SHA-256 `{digest}`; GPU job `{run['provenance'].get('job_id')}`; source commit `{run['provenance'].get('source_commit')}`; devices `{run['provenance'].get('device_kind')}`.")
@@ -148,7 +166,7 @@ def main():
               "- **Mass norm / energy-state error:** a spatially weighted field norm, and the energy norm of the difference in displacement and physical velocity.",
               "- **Reconstruction / tangent / nonstationary:** fitted displacement accuracy, representable physical-velocity accuracy, and a latent fit that has not met its declared first-order optimality check.",
               "- **Mean / median / worst / outlier:** average, middle value, largest finite value, and a case exceeding the predeclared threshold or failing numerically.",
-              "- **Primary step / refinement / completion:** the predetermined reported time step, comparison after reducing it, and successful finite integration through every required step.",
+              "- **Primary step / refinement / completion / contraction / observed order:** the predetermined reported time step, comparison after reducing it, successful finite integration through every required step, reduction in successive timestep differences, and its measured power-law rate.",
               "- **Phase / vanished mode / wall-strip peak:** oscillation angle, an amplitude too small to define that angle, and a boundary-neighborhood signal peak used only as a timing proxy.",
               "- **Boundary power / energy balance / absorbing mean:** instantaneous dissipative power, energy plus integrated power relative to its initial value, and average residual displacement that energy alone cannot control.",
               "- **Engineering target:** the declared provisional accuracy/completion requirement; satisfying it is specific to this bounded family and reference budget.",""]

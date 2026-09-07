@@ -1,0 +1,11 @@
+jax_backend=gpu [CudaDevice(id=0)]
+projection_and_lookup {'coefficient_relative': 2.1234740169378905e-16, 'thin_selected_code_index': 86, 'dst_selected_code_index': 86, 'lookup_index_matches': True, 'thin_squared_distance_gap': 8.460703233482253e-06, 'dst_squared_distance_gap': 8.460703233482186e-06, 'coefficient_scope': 'same scaled weak sine coefficients; floating-point FFT and matrix-product roundoff may differ'}
+.field_projection_agreement 0.01 mean_training_code {'field_relative': 6.651444608131624e-16, 'latent_relative': 1.293218110208505e-15, 'objective_scaled_difference': 6.003997496485434e-17, 'candidate_stationarity': 1.7450499203849038e-09, 'control_stationarity': 1.7450536196828754e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+field_projection_agreement 0.01 nearest_cached_scaled_weak_prediction {'field_relative': 1.0884201537253146e-15, 'latent_relative': 3.7748091747953975e-15, 'objective_scaled_difference': 1.7549509408759967e-16, 'candidate_stationarity': 4.438131450169592e-10, 'control_stationarity': 4.4381460298726436e-10, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+field_projection_agreement 0.0 mean_training_code {'field_relative': 6.651444608131624e-16, 'latent_relative': 1.293218110208505e-15, 'objective_scaled_difference': 6.003997496485434e-17, 'candidate_stationarity': 1.7450499203849038e-09, 'control_stationarity': 1.7450536196828754e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+field_projection_agreement 0.0 nearest_cached_scaled_weak_prediction {'field_relative': 1.0884201537253146e-15, 'latent_relative': 3.7748091747953975e-15, 'objective_scaled_difference': 1.7549509408759967e-16, 'candidate_stationarity': 4.438131450169592e-10, 'control_stationarity': 4.4381460298726436e-10, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+..
+----------------------------------------------------------------------
+Ran 3 tests in 10.987s
+
+OK

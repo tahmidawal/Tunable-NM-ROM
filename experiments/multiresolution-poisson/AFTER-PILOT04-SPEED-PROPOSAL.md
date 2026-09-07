@@ -32,11 +32,13 @@ cases and meshes, breaking ties by their median error and then model name. The
 chosen endpoint and content hash will be generated from the full run JSON, with
 no selection based only on an inspected hard case.
 
-The main factorial uses the enlarged smooth test space and the guarded fused
-solver. Original generic modular/fused queries remain paired controls for each
-checkpoint. The original checkpoint's smaller-test mean-code query remains an
-additional incumbent cost control, alongside same-grid and coarse-grid DST.
-Every source in both development cohorts is retained and no new training runs.
+The main factorial uses the enlarged smooth test space and one shared guarded
+fused solver. Primary timing covers the projection-by-initialization variants
+alongside same-grid and coarse-grid DST. Direct coefficient and final-field
+agreement checks accompany the panel. Separate fully recorded single-call
+stationary controls cover every model, implementation variant, case and mesh;
+those calls do not enter speed selection. Every source in both development
+cohorts is retained, with the checkpoints frozen throughout.
 
 Projection variants must satisfy a frozen coefficient-agreement tolerance and
 scale-aware final-field agreement for the same initialization. Initialization

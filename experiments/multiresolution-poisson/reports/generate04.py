@@ -82,6 +82,8 @@ def main():
     lines=['# Poisson training coverage and loss-normalization findings','',
         'These generated results are provisional development evidence from a fixed-compute continuation factorial, retaining the unchanged compact checkpoint. They separate training coverage from loss normalization and evaluate the resulting bank, head and deployed weak solve on original and fresh development sources.','',
         f"Job `{d['provenance']['job_id']}`, source `{d['provenance']['commit']}`, GPU `{d['provenance']['gpu']}`. Evaluation contains {cfg['existing_development_count']} existing and {cfg['additional_development_count']} fresh development sources, with {cfg['repetitions']} full-query repetitions. Sealed final cohorts remain closed.",'',
+        f"Training uses {cfg['training_nodes_per_axis']} nodes per axis, or {cfg['training_nodes_per_axis']-1} intervals. Query meshes use {cfg['intervals']} intervals, with one more node per axis. "
+        f"The architecture retains latent dimension {d['checkpoint_config']['k']} and {d['checkpoint_config']['r']} spatial features. Each scheduled checkpoint is frozen across both query meshes; operators are rebuilt. All numerical work uses GPU float64 and highest matrix precision.",'',
         '## Fixed training endpoints','',
         '| Model | Training sources | Updates | Complete endpoint | Compile s | Optimizer loop s | Actual train elapsed s | Training median relative error | Training worst relative error |',
         '|---|---:|---:|---|---:|---:|---:|---:|---:|']

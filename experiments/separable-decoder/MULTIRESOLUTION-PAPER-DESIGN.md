@@ -1,8 +1,9 @@
 # Four-PDE multiresolution study for the NM-ROM paper
 
 Proposed protocol dated 2026-09-07; no new experimental results are reported here.
-Architecture choice, experiment bases/names and compute budget await the user's
-answers. The canonical repository-root `LAB-LOG.md` remains the project record.
+The user has selected the current separable decoder and FOM comparison; the older
+ViT + CP pipeline is excluded. Experiment bases/names and compute budget remain
+pending. The canonical repository-root `LAB-LOG.md` remains the project record.
 
 ## Question and scope
 
@@ -13,10 +14,23 @@ accuracy target, together with failures and uncertainty. Publication readiness
 requires a supported methodological contribution as well as these experiments;
 more PDE names alone do not establish novelty or guarantee acceptance.
 
-Default proposal: the continuous-coordinate separable decoder is the main method;
-the older ViT + CP method is a corrected comparator. This is explicitly pending
-because the canonical chronology records interest in both architectures. Do not
-substitute the older method silently or inherit its headline numbers as verified.
+Confirmed direction: optimize the current continuous-coordinate separable decoder
+to establish an advantage over efficient FOM solvers at matched physical accuracy.
+The proposed older ViT + CP comparator is withdrawn at the user's request. No
+older-decoder training, correction, mesh-transfer or comparison campaign is in scope.
+
+For each resolution and declared error target, select configurations on validation
+and compare complete query costs under the same input/output contract. With
+$C_A(N,\varepsilon)$ denoting the cost of the selected validated configuration of
+method $A$ meeting error target $\varepsilon$, the desired result is
+
+$$S(N,\varepsilon)=\frac{C_{\mathrm{FOM}}(N,\varepsilon)}
+{C_{\mathrm{NMROM}}(N,\varepsilon)}>1.$$
+
+Confirm selected configurations on independent held-out cases. An unattained
+accuracy target has no qualifying speedup. Also show error at a matched time
+budget and the resolution at which savings begin. This defines the improvement
+to pursue; it is not an assumption that every PDE or resolution will show a win.
 
 Keep the current localized data style and exclude Gaussian-descriptor inputs to
 the head. Preserve each PDE's physical parameters and initial/source-field draws
@@ -60,7 +74,7 @@ and report new criteria separately rather than revising old verdicts.
 
 | PDE | Starting point | Required comparison and first check |
 |---|---|---|
-| Waves | Fresh wave branch and its frozen mathematical source | Re-establish spatial/time accuracy on the mesh ladder. Use independent standing-mode checks for fixed walls and boundary/energy/refinement checks for the absorber. Compare compressed heads with matching-dimensional affine/POD models and the full learned bank. Current compressed heads miss the full target. |
+| Waves | Fresh wave branch and its frozen mathematical source | Re-establish spatial/time accuracy on the mesh ladder. Use independent standing-mode checks for fixed walls and boundary/energy/refinement checks for the absorber. Use same-bank linear diagnostics as needed to identify compression/dynamics failures; the primary performance comparison is the FOM. Current compressed heads miss the full target. |
 | Burgers | Consolidated separable/exact-linear implementation | Use tolerance-adaptive FOM solves with the same upwind discretization. Keep the sampled weak nonlinear operator as the general path. Audit tensor-versus-upwind differences on actual decoded states before claiming exactness; decoded negative values can invalidate the positive-field tensor identity. |
 | Poisson | Consolidated quadrature-free exact weak operator | Generate discretely consistent truth. Include the fast direct sine-transform solver for the current constant-coefficient rectangular problem, plus a properly preconditioned iterative solver where useful. Unpreconditioned CG alone is not the primary speed baseline. |
 | Heat | Separable bank infrastructure plus an explicitly verified heat port | Reproduce analytic eigenmode decay and actual state advancement, verify space/time refinement, and compare with efficient transform-based propagation/implicit solves for the declared operator. Public frozen-rollout code is not a behavioral reference. |
@@ -70,13 +84,11 @@ read-only reference material, not interchangeable algorithms or automatic source
 of accepted speed numbers. The separable heat port must have its own verification.
 The old wave evidence reset remains in force.
 
-Include same-bank affine heads and fresh POD at matched latent/state dimensions,
-then include the unrestricted bank as a larger-capacity diagnostic. Record head
-parameter counts; equal update counts are not equal compute. If the older CP
-method is included, correct its rollout/data inconsistencies, distinguish its
-residual from the new weak residual, and label any interpolated axis-factor mesh
-transfer separately from newly trained CP factors. Avoid a comparison that changes
-the bank, residual and optimizer together without controlled ablations.
+Use same-bank affine heads and the unrestricted bank only as focused diagnostics
+when needed to locate a representation or dynamics bottleneck. A separate campaign
+ranking reduced-model architectures is not the paper's primary benchmark. Record
+head parameter counts; equal update counts are not equal compute. Avoid attributing
+an improvement to one change when the bank, residual and optimizer changed together.
 
 ## Accuracy accounting
 
@@ -143,7 +155,8 @@ ratios and hardware-free operation/iteration counts; do not fit cross-job raw ti
 
 ## Stages and concrete artifacts
 
-1. Agree on the architecture, study scope, worktree bases/names and pilot budget.
+1. With the architecture and FOM objective confirmed, settle study scope,
+   worktree bases/names and pilot budget.
    Create a shared immutable protocol/config and common result schema.
 2. In isolated PDE trees, reproduce references and baselines, then run a small
    pilot. For waves, include the matched affine/nonlinear dimension comparison;
@@ -159,8 +172,8 @@ ratios and hardware-free operation/iteration counts; do not fit cross-job raw ti
    Save representative and failure-case still sequences for evolving PDEs. Generate
    every results table from JSON and collect a reproducible report and artifact manifest.
 
-No accuracy or speedup value is promised. A PDE where the classical or affine
-baseline wins remains a result and informs which contribution the paper can defend.
+No accuracy or speedup value is promised. A PDE where the classical solver wins
+remains a result and identifies where further improvement is needed.
 Do not launch the full combinatorial search before pilot cost/accuracy is known.
 
 ## Proposed ownership and bases — approval required before creation
@@ -181,8 +194,8 @@ Wave's base owns the fresh implementation and checkpoints. The consolidated base
 owns the current non-wave separable, exact-linear and tensor work; starting on main
 would lose those corrections. For heat, read the correction branch
 `fix/heat-rollout-warm-start` at `292c8d9bc316d0ec77d162015d883144910cc99f` and the
-archived solver without merging either automatically. If the user chooses the older
-CP pipeline as primary, revise this base proposal before creating the worktrees.
+archived solver as references for correct state advancement and physical operators,
+without importing or benchmarking the old CP architecture or merging automatically.
 
 Schedule at most three child agents concurrently alongside root; queue the fourth
 PDE owner as a slot becomes available. Never share a job directory or silently reuse
@@ -193,8 +206,8 @@ Ask whether to merge completed experiment branches when they finish.
 
 ## Decisions requested
 
-- Main architecture: current continuous-coordinate separable decoder, older ViT +
-  CP, or both as equal primary methods. Recommendation: current decoder with CP baseline.
+- Resolved: current continuous-coordinate separable decoder versus efficient FOM;
+  older ViT + CP excluded from this campaign.
 - Both frozen-weight transfer and per-resolution optimization, or only one.
   Recommendation: both, reported separately.
 - Paper deadline and total compute budget. Recommendation: a capped pilot before
@@ -215,8 +228,8 @@ read-only inspection or preparation of this reviewable protocol.
   axis / field values actually solved for. These counts are not interchangeable.
 - **Bank / head / latent dimension:** spatial functions / map producing their
   coefficients / number of compressed coordinates. **Affine:** linear plus offset.
-- **ViT / CP / POD:** vision-transformer encoder / products of learned axis factors /
-  a data-derived linear reduced basis.
+- **ViT / CP:** vision-transformer encoder / products of learned axis factors;
+  these name the excluded older architecture.
 - **Frozen transfer / per-resolution optimization:** unchanged network weights on
   new meshes / separately selecting or training a model for each mesh.
 - **Weak residual / test modes / quadrature:** PDE equations averaged against
@@ -227,6 +240,9 @@ read-only inspection or preparation of this reviewable protocol.
   comparison solution / difference from the discrete full model on the ROM mesh.
 - **Accuracy–cost envelope:** least measured cost meeting each declared error target.
   **Ablation:** controlled change to one part of a method to assess its effect.
+- **C / S / epsilon:** cost of a qualifying selected configuration / FOM cost
+  divided by NM-ROM cost / prescribed error target. A speedup exceeds one only
+  when the NM-ROM is cheaper while meeting the same accuracy requirement.
 - **Latency / throughput / amortization:** time for one query / queries completed
   per unit time / how repeated savings offset setup cost.
 - **Median / worst / failure count:** middle measured result / largest error /

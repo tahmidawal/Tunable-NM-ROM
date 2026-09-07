@@ -137,7 +137,7 @@ def make_lm(fun,K,budget,trust=np.inf,stall=1e-3,linear='gj'):
     solve=gj_solve if linear=='gj' else jnp.linalg.solve
     def lm(z0,args,tol):
         r=fun(z0,*args); J=jax.jacfwd(fun)(z0,*args); rn=jnp.linalg.norm(r)
-        # reason: 0 budget; 1 residual tolerance; 2 stationary/stall; 3 nonfinite/rejected.
+        # reason: 0 budget; 1 residual tolerance; 2 small step/relative improvement; 3 nonfinite/rejected. Stalling is not stationarity.
         reason=jnp.where(jnp.isfinite(rn),jnp.where(rn<=tol,1,0),3).astype(jnp.int32)
         def body(s):
             z,r,J,rn,lam,it,reason=s
@@ -230,32 +230,42 @@ def weak(z,prev,nu,data,params,L,dt):
     return (ah-prev+dt*(Pq.T@adv+nu*lam*ah))/(1+dt*nu*lam)
 
 
-def make_rom(params,L,dt,trust,stall=1e-3,budget=30,linear='gj',ic_starts=1):
+def make_rom(params,L,dt,trust,stall=1e-3,budget=30,linear='gj',ic_starts=1,return_parts=False):
     K=params['h_lin'].shape[0];substeps=int(round(.05/dt));assert abs(substeps*dt-.05)<1e-12
     def fitfun(z,y,data):return data[6].T@sc.head(params,z)-y
     ic_lm=make_lm(fitfun,K,60,stall=1e-7,linear=linear)
     step_lm=make_lm(lambda z,p,nu,data:weak(z,p,nu,data,params,L,dt),K,budget,trust,stall,linear)
-    def query(u0,nu,data):
+    def initialize(u0,data):
         G,A,lam,G5,Pq,Gi,chol,Zc,Hc,norm,ii,jj=data
         ui=u0[ii,jj]/jnp.sqrt(len(ii));b=Gi.T@ui
         y=jax.scipy.linalg.solve_triangular(chol,b,lower=True)
         score=norm-2*Hc@b;inds=jnp.argsort(score)[:ic_starts]
         fits=jax.vmap(lambda z:ic_lm(z,(y,data),0.))(Zc[inds])
         best=jnp.argmin(fits[1]);z0=fits[0][best]
+        scale=jnp.linalg.norm(ui)*np.sqrt(len(ii))
+        return z0,fits[2][best],fits[3][best],scale
+    def evolve(z0,nu,scale,data):
+        A=data[1]
         def step(carry,_):
             z,zprev=carry;p=A@sc.head(params,z);ze=z+(z-zprev)
             r0=jnp.linalg.norm(weak(z,p,nu,data,params,L,dt));re=jnp.linalg.norm(weak(ze,p,nu,data,params,L,dt))
             zi=jnp.where(jnp.isfinite(re)&(re<r0),ze,z)
-            z2,rn,it,reason=step_lm(zi,(p,nu,data),1e-9*jnp.linalg.norm(ui)*np.sqrt(len(ii)))
+            z2,rn,it,reason=step_lm(zi,(p,nu,data),1e-9*scale)
             return (z2,z),(z2,rn,it,reason)
         def block(carry,_):
             carry,details=jax.lax.scan(step,carry,None,length=substeps)
             return carry,(carry[0],details[1],details[2],details[3])
         _,(Z,rn,it,reason)=jax.lax.scan(block,(z0,z0),None,length=5)
-        Z=jnp.concatenate((z0[None],Z))
-        fields=jax.vmap(lambda z:output_field(G@sc.head(params,z),L,L))(Z)
-        return fields,it.reshape(-1),rn.reshape(-1),reason.reshape(-1),Z,fits[2][best],fits[3][best]
-    return jax.jit(query)
+        return jnp.concatenate((z0[None],Z)),it.reshape(-1),rn.reshape(-1),reason.reshape(-1)
+    def decode(Z,data):
+        return jax.vmap(lambda z:output_field(data[0]@sc.head(params,z),L,L))(Z)
+    def query(u0,nu,data):
+        z0,icit,icreason,scale=initialize(u0,data)
+        Z,it,rn,reason=evolve(z0,nu,scale,data)
+        return decode(Z,data),it,rn,reason,Z,icit,icreason
+    fused=jax.jit(query)
+    if return_parts:return fused,dict(initialize=jax.jit(initialize),evolve=jax.jit(evolve),decode=jax.jit(decode))
+    return fused
 
 
 def burn(seconds=.4):

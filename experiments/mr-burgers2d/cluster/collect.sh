@@ -6,8 +6,8 @@ JOB=${2:?numeric job id}
 HERE=$(cd "$(dirname "$0")" && pwd)
 REMOTE=/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/$ATTEMPT
 DST=$HERE/../runs/$ATTEMPT
-ACTIVE=$(ssh tufts-login "squeue -h -j '$JOB' -o '%i'")
-[[ -z "$ACTIVE" ]] || { echo "Job still queued; refusing collection/cleanup"; exit 3; }
+ACTIVE=$(ssh tufts-login "squeue -u tawal01 -h -o '%i'")
+[[ ! "$ACTIVE" =~ (^|[[:space:]])$JOB($|[[:space:]]) ]] || { echo "Job still queued; refusing collection/cleanup"; exit 3; }
 # Create checksums after the scheduler closes logs, including failed attempts.
 ssh tufts-login "cd '$REMOTE' && find out logs -type f -print0 | sort -z | xargs -0 sha256sum > COLLECT.sha256"
 mkdir -p "$DST"

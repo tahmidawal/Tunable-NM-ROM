@@ -23,6 +23,7 @@ def main():
     p.add_argument('--cases',type=int,default=4);p.add_argument('--reps',type=int,default=3)
     p.add_argument('--seed',type=int,default=7090702);p.add_argument('--meshes',default='256,512')
     p.add_argument('--reference-mesh',type=int,default=1024);p.add_argument('--reference-dt',type=float,default=.000625)
+    p.add_argument('--order-audit',action='store_true');p.add_argument('--ic-starts',default='1')
     p.add_argument('--candidate-cap',type=int,default=8192);p.add_argument('--fit-states',type=int,default=64)
     args=p.parse_args();out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
     assert jax.default_backend()=='gpu';assert os.environ['JAX_DEFAULT_MATMUL_PRECISION']=='highest'
@@ -38,13 +39,15 @@ def main():
         network_weights_frozen=True,physical_cases=physical.tolist(),cohort_role='new validation-only development cohort; final cohort unopened',
         output_times=[0,.05,.10,.15,.20,.25],observation_intervals=obs,
         timing_contract='host dense initial field and viscosity to six host dense output fields; all transfers included; compile/setup excluded',
-        reference=[],mesh_setup=[],invocations=[],complete=False)
+        reference=[],mesh_setup=[],invocations=[],component_profiles=[],complete=False)
     path=out/'pilot.json'
     def save():save_json(path,report)
     save()
     references={};same_grid={};ref_fields={}
     # Three independently converged FOM settings: spatial and temporal comparisons.
     settings=[(args.reference_mesh//2,args.reference_dt),(args.reference_mesh,2*args.reference_dt),(args.reference_mesh,args.reference_dt)]
+    if args.order_audit:
+        settings += [(args.reference_mesh//4,2*args.reference_dt),(args.reference_mesh//2,2*args.reference_dt),(args.reference_mesh,4*args.reference_dt)]
     for L,dt in settings:
         print(f'REFERENCE L={L} dt={dt}',flush=True);q,_=e.make_fom(L,dt)
         for case,phys in enumerate(physical):
@@ -66,6 +69,21 @@ def main():
         report['reference_uncertainty'].append(dict(case=case,space_difference=space,time_difference=temporal,
             conservative_difference_sum=space['fixed_initial_max']+temporal['fixed_initial_max'],
             interpretation='refinement estimate, not a rigorous continuum error bound; tighter targets remain provisional'))
+    if args.order_audit:
+        report['reference_order_audit']=[]
+        for case in range(args.cases):
+            Rf=args.reference_mesh;dtr=args.reference_dt
+            # Three same-dt spatial levels, and three same-mesh temporal levels.
+            spatial_coarse=e.errors(ref_fields[Rf//4,2*dtr,case],ref_fields[Rf//2,2*dtr,case],obs)['fixed_initial_max']
+            spatial_fine=e.errors(ref_fields[Rf//2,2*dtr,case],ref_fields[Rf,2*dtr,case],obs)['fixed_initial_max']
+            temporal_coarse=e.errors(ref_fields[Rf,4*dtr,case],ref_fields[Rf,2*dtr,case],obs)['fixed_initial_max']
+            temporal_fine=e.errors(ref_fields[Rf,2*dtr,case],ref_fields[Rf,dtr,case],obs)['fixed_initial_max']
+            ps=float(np.log2(spatial_coarse/spatial_fine));pt=float(np.log2(temporal_coarse/temporal_fine))
+            report['reference_order_audit'].append(dict(case=case,spatial_coarse_difference=spatial_coarse,
+                spatial_fine_difference=spatial_fine,observed_spatial_order=ps,temporal_coarse_difference=temporal_coarse,
+                temporal_fine_difference=temporal_fine,observed_temporal_order=pt,
+                asymptotic_decrease_observed=bool(spatial_fine<spatial_coarse and temporal_fine<temporal_coarse),
+                empirical_richardson_estimate=(spatial_fine/(2**ps-1)+temporal_fine/(2**pt-1)) if ps>0 and pt>0 else None))
     save()
     for L in meshes:
         print(f'BUILD ROM L={L} K={K} R={R} M={M} m={m}',flush=True)
@@ -101,10 +119,11 @@ def main():
         subjects=[]
         for dt in [.005,.0025]:
             for stall in [1e-3,1e-2]:
-                name=f'rom_L{L}_dt{dt}_stall{stall}'
-                fun=e.make_rom(params,L,dt,info['trust_radius'],stall=stall)
-                subjects.append((name,dict(method='rom',solver_intervals=L,output_intervals=L,dt=dt,stall=stall),fun))
-        for grid in [g for g in [128,256,512] if g<=L]:
+                for starts in [int(x) for x in args.ic_starts.split(',')]:
+                    name=f'rom_L{L}_dt{dt}_stall{stall}_starts{starts}'
+                    fun=e.make_rom(params,L,dt,info['trust_radius'],stall=stall,ic_starts=starts)
+                    subjects.append((name,dict(method='rom',solver_intervals=L,output_intervals=L,dt=dt,stall=stall,ic_starts=starts),fun))
+        for grid in [g for g in [128,256,512,1024] if g<=L]:
             for dt,ntol in [(.01,.01),(.01,.003),(.005,.01),(.005,.003),(.0025,.003)]:
                 name=f'fom_L{grid}_out{L}_dt{dt}_ntol{ntol}'
                 fun,_=e.make_fom(grid,dt,target=L)
@@ -139,6 +158,26 @@ def main():
                     np.savez_compressed(out/artifact,fields=f[:,::L//obs,::L//obs],iterations=it,residuals=rn)
                     row['observation_artifact']=artifact;report['invocations'].append(row)
             print(f'TIMED L={L} rep={rep} subjects={len(subjects)} elapsed={time.perf_counter()-start:.1f}s',flush=True);save()
+        for starts in [int(x) for x in args.ic_starts.split(',')]:
+            fused,parts=e.make_rom(params,L,.005,info['trust_radius'],ic_starts=starts,return_parts=True)
+            warm=jnp.asarray(input_fields[0]);zi,ii,ir,scale=parts['initialize'](warm,data)
+            Zp,itp,rnp,rsp=parts['evolve'](zi,float(physical[0,4]),scale,data)
+            jax.block_until_ready(parts['decode'](Zp,data));jax.block_until_ready(fused(warm,float(physical[0,4]),data))
+            for case in range(args.cases):
+                e.burn(.4);t=time.perf_counter();uj=jnp.asarray(input_fields[case]);jax.block_until_ready(uj);t1=time.perf_counter()
+                zi,ii,ir,scale=jax.block_until_ready(parts['initialize'](uj,data));t2=time.perf_counter()
+                Zp,itp,rnp,rsp=jax.block_until_ready(parts['evolve'](zi,float(physical[case,4]),scale,data));t3=time.perf_counter()
+                Fp=jax.block_until_ready(parts['decode'](Zp,data));t4=time.perf_counter()
+                fp=np.asarray(Fp);t5=time.perf_counter()
+                fused_value=host(fused(uj,float(physical[case,4]),data))
+                parity=float(np.linalg.norm(fp-fused_value[0])/(np.linalg.norm(fused_value[0])+1e-300))
+                assert parity<1e-8,(L,case,starts,parity)
+                report['component_profiles'].append(dict(intervals=L,case=case,ic_starts=starts,dt=.005,
+                    input_transfer_s=t1-t,cold_fit_s=t2-t1,evolution_s=t3-t2,dense_decode_s=t4-t3,output_transfer_s=t5-t4,
+                    staged_total_s=t5-t,fused_output_relative_difference=parity,physical_error=e.errors(fp,references[case],obs),
+                    time_steps=int(len(itp)),lm_attempts=int(np.asarray(itp).sum()),ic_selected_attempts=int(ii),ic_selected_reason=int(ir),
+                    interpretation='separately synchronized components of one staged invocation; diagnostic timings, not substituted into fused query results'))
+            save()
         del data,G,subjects,same_grid
         same_grid={};jax.clear_caches()
     report['checkpoint_sha256_after']=sha(args.checkpoint)

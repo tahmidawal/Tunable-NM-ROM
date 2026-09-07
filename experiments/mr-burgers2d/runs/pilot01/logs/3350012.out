@@ -1,0 +1,17 @@
+host=pax105 commit=96befb8815a4c20c8d9f2862502e454ab8402032
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+{'jax_backend': 'gpu', 'x64': True, 'dst_dense_abs': np.float64(2.4424906541753444e-15), 'helmholtz_relative': 2.7205063373289206e-16, 'fom_dense_newton_relative': np.float64(1.1471350817161906e-18), 'weak_diffusion_relative': np.float64(5.380583936834182e-16), 'gj_relative': [0.0, 1.3804917550737822e-13, 2.7726945582463317e-10], 'checks_passed': 7}
+REFERENCE L=512 dt=0.000625
+REFERENCE L=1024 dt=0.00125
+REFERENCE L=1024 dt=0.000625
+BUILD ROM L=256 K=16 R=512 M=64 m=256
+TIMED L=256 rep=0 subjects=14 elapsed=94.5s
+TIMED L=256 rep=1 subjects=14 elapsed=102.8s
+TIMED L=256 rep=2 subjects=14 elapsed=111.0s
+BUILD ROM L=512 K=16 R=512 M=64 m=256
+TIMED L=512 rep=0 subjects=19 elapsed=179.0s
+TIMED L=512 rep=1 subjects=19 elapsed=191.0s
+TIMED L=512 rep=2 subjects=19 elapsed=203.1s
+ALL-DONE out/pilot.json seconds=203.5
+ALL-DONE

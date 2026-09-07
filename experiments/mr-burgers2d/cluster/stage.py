@@ -47,11 +47,11 @@ echo "host=$(hostname) commit=$COMMIT"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 "$PY" code/check_kernels.py
-"$PY" code/pilot.py --checkpoint in/checkpoint.pkl --out out --cases 4 --reps 3
+"$PY" code/pilot.py --checkpoint in/checkpoint.pkl --out out --cases 4 --reps 3 PILOT_ARGS
 cd "$TASK_ROOT"
 find out logs -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 printf 'ALL-DONE\\n'
-'''.replace('ATTEMPT',attempt).replace('REMOTE',remote)
+'''.replace('ATTEMPT',attempt).replace('REMOTE',remote).replace('PILOT_ARGS', '--meshes 256,512,1024 --reference-mesh 4096 --reference-dt .0003125 --order-audit --ic-starts 1,4' if attempt=='pilot02' else '')
 (dst/'run.sbatch').write_text(script)
 manifest=[]
 for file in sorted(dst.rglob('*')):

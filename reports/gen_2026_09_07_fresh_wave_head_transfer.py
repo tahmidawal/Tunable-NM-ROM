@@ -30,7 +30,7 @@ These are independently verified reference fields for a predeclared off-center c
 
 '''
     assert text.count('## Glossary')==1
-    out.write_text(text.replace('## Glossary', figures+'## Glossary'))
+    out.write_text(text.replace('## Glossary', figures+'## Glossary')+'\n- **Interquartile spread / confidence interval:** the middle half of plotted case/repeat values, and an interval describing statistical estimation uncertainty; the figures show only the former.\n')
 
 
 if __name__=='__main__':

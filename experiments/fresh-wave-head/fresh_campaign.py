@@ -75,7 +75,7 @@ def main():
                 arm={"name":name,"kind":kind,"velocity_weight":velocity_weight,"optimizer_seed":seed,"parameter_count":count_parameters(p),"training_history":history}
                 pj=projected["validation"]
                 targets=pj["a"].reshape(-1,config["rank"])
-                z,fit=latent_fits(config,p,frozen,targets,pj["u_scale"],common,kind,armout)
+                z,fit=latent_fits(config,p,frozen,targets,pj["u_scale"],common,kind,armout,codes)
                 arm["latent_fit"]=fit
                 arm["validation"],w=reconstruction_metrics(p,frozen,z,pj,kind,armout)
                 train_pred=np.asarray(head_apply(p,frozen,jnp.asarray(codes),kind))
@@ -89,7 +89,7 @@ def main():
                 # absorbing late-time behavior; not a training/test example.
                 zeroout=armout/"zero_state"
                 zeroout.mkdir()
-                zz,zero_fit=latent_fits(config,p,frozen,np.zeros((1,config["rank"])),np.ones(1)*float(np.median(pj["u_scale"])),common,kind,zeroout)
+                zz,zero_fit=latent_fits(config,p,frozen,np.zeros((1,config["rank"])),np.ones(1)*float(np.median(pj["u_scale"])),common,kind,zeroout,codes)
                 arm["zero_state"]={"fit":zero_fit,"mass_norm":float(np.linalg.norm(np.asarray(head_apply(p,frozen,jnp.asarray(zz[0]),kind))))}
                 entry["arms"].append(arm)
                 save_json(armout/"result.json",arm)

@@ -57,7 +57,8 @@ def generate_data(config, bc, out):
         manifest["splits"][split] = {"parameters": data["parameters"].tolist(), "dt": data["dt"], "u_sha256": hashlib.sha256(data["u"].tobytes()).hexdigest(), "v_sha256": hashlib.sha256(data["v"].tobytes()).hexdigest(), "initial_energy": data["initial_energy"].tolist(), "scales": data["scales"].tolist()}
     (out/"data_manifest.json").write_text(json.dumps(manifest, indent=2)+"\n")
     val = arrays["validation"]
-    np.savez_compressed(out/"truth_spotchecks.npz", parameters=val["parameters"], times=np.arange(49)[[0,7,24,48]]*.05, u=val["u"][:, [0,7,24,48]], v=val["v"][:, [0,7,24,48]])
+    saved_times = np.unique(np.linspace(0, val["u"].shape[1]-1, 4, dtype=int))
+    np.savez_compressed(out/"truth_spotchecks.npz", parameters=val["parameters"], times=saved_times*config["observation_dt"], u=val["u"][:, saved_times], v=val["v"][:, saved_times])
     return grid, arrays
 
 
@@ -98,16 +99,24 @@ def train_bank(config, grid, data, out):
     weighted = raw*np.asarray(sqrtmass)[:, None]
     q, rr = np.linalg.qr(weighted, mode="reduced")
     singular = np.linalg.svd(weighted, compute_uv=False)
+    if not np.all(np.isfinite(singular)) or singular[0] <= 0:
+        raise RuntimeError("Nonfinite or zero raw learned bank")
     condition_ratio = float(singular[-1]/singular[0])
     if condition_ratio <= config["bank_rank_ratio_min"]:
         raise RuntimeError(f"Learned raw bank loses rank: ratio={condition_ratio}")
     g = q/np.asarray(sqrtmass)[:, None]
+    if np.linalg.norm(g@rr-raw)/np.linalg.norm(raw) > 1e-10:
+        raise RuntimeError("QR changed the learned spatial span")
     # Columns are reshaped as (R,nx,ny) before the FOM's last-two-axis operator.
     lg = np.asarray(positive_laplacian(jnp.asarray(g.T.reshape(config["rank"], *grid.shape)), grid)).reshape(config["rank"], -1).T
     mass = grid.mass().ravel()
     stiffness = g.T@(mass[:, None]*lg)
     damp1 = np.asarray(damping_ratio(grid, 1.)).ravel()
     damping = g.T@((mass*damp1)[:, None]*g)
+    raw_lg = np.asarray(positive_laplacian(jnp.asarray(raw.T.reshape(config["rank"], *grid.shape)), grid)).reshape(config["rank"], -1).T
+    raw_stiffness = raw.T@(mass[:, None]*raw_lg)
+    if np.linalg.norm(rr.T@stiffness@rr-raw_stiffness)/np.linalg.norm(raw_stiffness) > 1e-10:
+        raise RuntimeError("QR stiffness-coordinate identity failed")
     defect = float(np.linalg.norm(g.T@(mass[:, None]*g)-np.eye(config["rank"])))
     if defect > 1e-10 or np.max(abs(stiffness-stiffness.T)) > 1e-9:
         raise RuntimeError("Mass QR/table symmetry check failed")
@@ -210,7 +219,13 @@ def fit_batch(p, frozen, targets, scales, starts, *, kind, iterations):
             lam = jnp.where(active, jnp.clip(jnp.where(accepted, lam/3, lam*5), 1e-12, 1e12), lam)
             stop_iteration = jnp.where(~done & converged, i, stop_iteration)
             return z, lam, done | converged, stop_iteration
-        z, lam, done, count = jax.lax.fori_loop(0, iterations, step, (start, jnp.array(1e-3), jnp.array(False), jnp.array(iterations)))
+        def condition(state):
+            i, payload = state
+            return (i < iterations) & ~payload[2]
+        def advance(state):
+            i, payload = state
+            return i+1, step(i, payload)
+        _, (z, lam, done, count) = jax.lax.while_loop(condition, advance, (jnp.array(0), (start, jnp.array(1e-3), jnp.array(False), jnp.array(iterations))))
         r = residual(z)
         jac = jax.jacfwd(residual)(z)
         grad = jac.T@r
@@ -219,13 +234,14 @@ def fit_batch(p, frozen, targets, scales, starts, *, kind, iterations):
     return jax.vmap(one)(targets, scales, starts)
 
 
-def latent_fits(config, p, frozen, targets, scales, common, kind, out):
+def latent_fits(config, p, frozen, targets, scales, common, kind, out, trained_codes):
     linear, center, _, _ = common
     affine = (targets-center)@np.linalg.pinv(linear).T
-    rng = np.random.default_rng(config["fit_seed"])
-    starts = np.stack((affine, np.zeros_like(affine), affine+.2*rng.normal(size=affine.shape), affine+.2*rng.normal(size=affine.shape)), axis=1)
+    training_indices = np.linspace(0, len(trained_codes)-1, 6, dtype=int)
+    fixed = np.broadcast_to(trained_codes[training_indices][None], (len(targets), 6, affine.shape[-1]))
+    starts = np.concatenate((affine[:,None], np.zeros_like(affine)[:,None], fixed), axis=1)
     all_results = []
-    for si in range(4):
+    for si in range(8):
         batches = []
         for begin in range(0, len(targets), config["fit_batch"]):
             sl = slice(begin, begin+config["fit_batch"])
@@ -235,10 +251,17 @@ def latent_fits(config, p, frozen, targets, scales, common, kind, out):
     selected = np.argmin(objective, axis=1)
     best = z[np.arange(len(z)), selected]
     doubled = []
-    for begin in range(0, len(targets), config["fit_batch"]):
-        sl = slice(begin, begin+config["fit_batch"])
-        doubled.append(tuple(np.asarray(x) for x in fit_batch(p, frozen, jnp.asarray(targets[sl]), jnp.asarray(scales[sl]), jnp.asarray(best[sl]), kind=kind, iterations=config["fit_iterations"]*2)))
-    dz, dobj, dgrad, dcount, ddamp = [np.concatenate([b[j] for b in doubled]) for j in range(5)]
-    np.savez_compressed(out/"latent_fits.npz", initial_starts=starts, fitted_z=z, objectives=objective, gradients=grad, iterations=count, damping=damping, selected_start=selected, selected_z=best, doubled_z=dz, doubled_objective=dobj, doubled_gradient=dgrad, doubled_iterations=dcount)
+    for si in range(8):
+        batches = []
+        for begin in range(0, len(targets), config["fit_batch"]):
+            sl = slice(begin, begin+config["fit_batch"])
+            batches.append(tuple(np.asarray(x) for x in fit_batch(p, frozen, jnp.asarray(targets[sl]), jnp.asarray(scales[sl]), jnp.asarray(starts[sl,si]), kind=kind, iterations=config["fit_iterations"]*2)))
+        doubled.append(tuple(np.concatenate([b[j] for b in batches]) for j in range(5)))
+    dz_all, dobj_all, dgrad_all, dcount_all, ddamp_all = [np.stack([b[j] for b in doubled], axis=1) for j in range(5)]
+    dselected = np.argmin(dobj_all, axis=1)
+    ii = np.arange(len(targets))
+    dz, dobj, dgrad = dz_all[ii,dselected], dobj_all[ii,dselected], dgrad_all[ii,dselected]
+    stopped = np.where(np.isfinite(dgrad_all), np.where(dgrad_all <= config["fit_gradient_tolerance"], "stationary", "budget"), "nonfinite")
+    np.savez_compressed(out/"latent_fits.npz", initial_starts=starts, fixed_training_indices=training_indices, fitted_z=z, objectives=objective, gradients=grad, iterations=count, damping=damping, selected_start=selected, selected_z=best, doubled_all_z=dz_all, doubled_all_objectives=dobj_all, doubled_all_gradients=dgrad_all, doubled_all_iterations=dcount_all, doubled_all_damping=ddamp_all, doubled_stop_reasons=stopped, doubled_selected_start=dselected, doubled_z=dz, doubled_objective=dobj, doubled_gradient=dgrad)
     # The doubled result is used by a declared common rule, never a best-arm selector.
-    return dz, {"nonstationary": int(np.sum(dgrad > 1e-7)), "maximum_gradient": float(np.max(dgrad)), "max_doubled_objective_change": float(np.max(abs(dobj-objective[np.arange(len(z)), selected]))), "selected_start_counts": np.bincount(selected, minlength=4).tolist()}
+    return dz, {"nonstationary": int(np.sum(~np.isfinite(dgrad) | (dgrad > 1e-7))), "maximum_gradient": float(np.max(dgrad)), "max_doubled_objective_change": float(np.max(abs(dobj-objective[ii,selected]))), "selected_start_counts": np.bincount(dselected, minlength=8).tolist()}

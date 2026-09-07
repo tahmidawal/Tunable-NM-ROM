@@ -26,6 +26,7 @@ def family_check(parameters, meshes, name, out):
     rows, arrays, gates = [], {}, {}
     for bc in ("dirichlet", "absorbing"):
         for pi, p in enumerate(parameters):
+            arrays = {}
             solutions = {}
             for n in meshes:
                 print("family", name, bc, pi, n, flush=True)
@@ -69,7 +70,13 @@ def family_check(parameters, meshes, name, out):
                 ur, vr = uf[:, sl, sl], vf[:, sl, sl]
                 errors = np.sqrt(np.maximum(0., np.asarray(energy(jnp.asarray(u-ur), jnp.asarray(v-vr), g, p[5])))/ee[0])
                 rows.append({"family": name, "bc": bc, "parameter_index": pi, "coarse_n": coarse, "fine_n": fine, "state_difference_array": errors.tolist(), "max_energy_state_difference": float(errors.max()), "final_energy_state_difference": float(errors[-1])})
-    np.savez_compressed(out/(name+"_arrays.npz"), **arrays)
+                worst = int(np.argmax(errors))
+                arrays[f"difference_{coarse}_{fine}_worst_index"] = worst
+                arrays[f"difference_{coarse}_{fine}_coarse_u"] = u[worst]
+                arrays[f"difference_{coarse}_{fine}_coarse_v"] = v[worst]
+                arrays[f"difference_{coarse}_{fine}_fine_u"] = uf[worst]
+                arrays[f"difference_{coarse}_{fine}_fine_v"] = vf[worst]
+            np.savez_compressed(out/(f"{name}_{bc}_{pi}_arrays.npz"), **arrays)
     return rows, gates
 
 
@@ -85,7 +92,9 @@ def fft_self_check(parameters):
             e0 = float(energy(u0, v0, grid, p[5]))
             def error(u, v):
                 return float(np.sqrt(max(0., float(energy(jnp.asarray(u), jnp.asarray(v), grid, p[5])))/e0))
-            rows.append({"parameter_index": pi, "time": time, "resolution_difference": error(u128-u256[::2, ::2], v128-v256[::2, ::2]), "domain_difference": error(u128-u6, v128-v6)})
+            uscale = norm(np.asarray(u0),grid)
+            du_mesh,du_box=u128-u256[::2,::2],u128-u6
+            rows.append({"parameter_index": pi, "time": time, "resolution_difference": error(du_mesh, v128-v256[::2, ::2]), "domain_difference": error(du_box, v128-v6),"resolution_l2_difference":norm(du_mesh,grid)/uscale,"domain_l2_difference":norm(du_box,grid)/uscale,"resolution_mean_difference":float(abs(np.sum(grid.mass()*du_mesh)))/uscale,"domain_mean_difference":float(abs(np.sum(grid.mass()*du_box)))/uscale})
     return rows
 
 

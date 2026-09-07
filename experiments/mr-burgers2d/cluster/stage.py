@@ -54,8 +54,10 @@ cd "$TASK_ROOT"
 find out logs -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 printf 'ALL-DONE\\n'
 '''.replace('ATTEMPT',attempt).replace('REMOTE',remote).replace('PILOT_ARGS', '--meshes 256,512,1024 --reference-mesh 4096 --reference-dt .0003125 --order-audit --ic-starts 1,4' if attempt=='pilot02' else '')
-if attempt.startswith('rollout'):
+if attempt.startswith('rollout') or attempt.startswith('steps'):
     script=script.replace('code/pilot.py','code/rollout.py')
+if attempt.startswith('steps'):
+    script=script.replace('--cases 4 --reps 3 ', '--cases 4 --reps 3 --study timestep --meshes 512,1024 --observation-intervals 256 ')
 if attempt.startswith('cold'):
     script=script.replace('#SBATCH --time=02:00:00','#SBATCH --time=00:30:00')
     script=script.replace('"$PY" code/pilot.py --checkpoint in/checkpoint.pkl --out out --cases 4 --reps 3 ', '"$PY" code/cold_fit.py --checkpoint in/checkpoint.pkl --out out --cases 4 ')

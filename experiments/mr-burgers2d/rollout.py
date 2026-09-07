@@ -22,14 +22,18 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--checkpoint',required=True);p.add_argument('--out',required=True)
     p.add_argument('--cases',type=int,default=4);p.add_argument('--reps',type=int,default=3)
     p.add_argument('--seed',type=int,default=7090702);p.add_argument('--meshes',default='256,512,1024')
+    p.add_argument('--study',choices=['cold','timestep'],default='cold');p.add_argument('--observation-intervals',type=int,default=256)
     p.add_argument('--reference-mesh',type=int,default=4096);p.add_argument('--reference-dt',type=float,default=.0003125)
     p.add_argument('--order-audit',action='store_true',default=True);p.add_argument('--ic-starts',default='1')
     p.add_argument('--candidate-cap',type=int,default=8192);p.add_argument('--fit-states',type=int,default=64)
     args=p.parse_args();out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
     assert jax.default_backend()=='gpu';assert os.environ['JAX_DEFAULT_MATMUL_PRECISION']=='highest'
-    start=time.perf_counter();meshes=[int(x) for x in args.meshes.split(',')];obs=min(meshes)
+    start=time.perf_counter();meshes=[int(x) for x in args.meshes.split(',')];obs=args.observation_intervals
+    assert all(L%obs==0 for L in meshes) and args.reference_mesh//4>=max(meshes)
     physical=e.params_draw(args.seed,args.cases)
-    dense_obs=max(meshes);timing_rng=np.random.default_rng(89004)
+    dense_obs=max(meshes);timing_seed=89004 if args.study=='cold' else 89005;timing_rng=np.random.default_rng(timing_seed)
+    arms=[('edge',60,.005,.01),('fixed_gauss',60,.005,.01),('fixed_gauss',180,.005,.01),('fixed_gauss',180,.005,.001),('fixed_gauss',180,.0025,.01)] if args.study=='cold' else [('fixed_gauss',180,dt,.01) for dt in [.005,.01,.025,.05]]
+    profiles=[('edge',60,.005,.01),('fixed_gauss',180,.005,.01)] if args.study=='cold' else arms
     ck=pickle.load(open(args.checkpoint,'rb'));params=jax.tree_util.tree_map(jnp.asarray,ck['params']);Z=ck['Z_tr']
     K,R=Z.shape[1],ck['params']['h_lin'].shape[1];M=4*K;m=4*M
     report=dict(config=vars(args),commit=os.environ.get('COMMIT'),job_id=os.environ.get('SLURM_JOB_ID'),
@@ -37,14 +41,15 @@ def main():
         matmul_precision=os.environ['JAX_DEFAULT_MATMUL_PRECISION'],jax_version=jax.__version__,
         checkpoint_sha256=sha(args.checkpoint),checkpoint_training_nodes=ck['cfg']['N'],
         checkpoint_training_intervals=ck['cfg']['N']-1,checkpoint_cfg={k:v for k,v in ck['cfg'].items() if k not in ['hfit_pick','train']},
-        network_weights_frozen=True,physical_cases=physical.tolist(),cohort_role='new validation-only development cohort; final cohort unopened',
+        network_weights_frozen=True,physical_cases=physical.tolist(),cohort_role='fixed validation development cohort; final cohort unopened',
         output_times=[0,.05,.10,.15,.20,.25],observation_intervals=obs,
         timing_contract='host dense initial field and viscosity to six host dense output fields; all transfers included; compile/setup excluded',
         reference=[],mesh_setup=[],invocations=[],component_profiles=[],declared_subjects=[],timing_order=[],complete=False,
-        experiment='fixed_gauss_rollout',dense_observation_intervals=dense_obs,timing_order_seed=89004,
+        experiment='fixed_gauss_rollout' if args.study=='cold' else 'gauss_timestep_study',dense_observation_intervals=dense_obs,timing_order_seed=timing_seed,
         arm_grid=[dict(cold_rule=rule,ic_budget=icb,ic_starts=1,dt=dt,stall=stall) for rule,icb,dt,stall in
-            [('edge',60,.005,.01),('fixed_gauss',60,.005,.01),('fixed_gauss',180,.005,.01),('fixed_gauss',180,.005,.001),('fixed_gauss',180,.0025,.01)]],
-        arm_rationale='cold03 supports one-start and budget180 quality control; retain budget60 matched edge/Gauss and original evolution settings')
+            arms],
+        component_profile_configs=[dict(cold_rule=rule,ic_budget=icb,ic_starts=1,dt=dt,stall=stall) for rule,icb,dt,stall in profiles],
+        arm_rationale='cold03 supports one-start and budget180 quality control; retain budget60 matched edge/Gauss and original evolution settings' if args.study=='cold' else 'rollout04 validates fixed-Gauss fitting; test temporal over-resolution with unchanged initialization, weak modes and FOM envelope')
     path=out/'pilot.json'
     def save():save_json(path,report)
     save()
@@ -93,7 +98,7 @@ def main():
     # Each requested-grid norm receives its own empirical reference margin.
     dense_references={case:ref_dense[args.reference_mesh,args.reference_dt,case] for case in range(args.cases)}
     report['reference_metrics_by_output']={}
-    for target in meshes:
+    for target in sorted(set(meshes+[obs])):
         fields={key:f[:,::dense_obs//target,::dense_obs//target] for key,f in ref_dense.items()}
         uncertainty=[];orders=[]
         for case in range(args.cases):
@@ -136,7 +141,7 @@ def main():
         info['held_training_operator_audit']=op;report['mesh_setup'].append(info);save()
         del full_adv,sample_adv,P,Phi,sample
         # Tight same-grid FOM at each ROM timestep; same physical cases, no fitting on these fields.
-        for dt in [.005,.0025]:
+        for dt in sorted({r['dt'] for r in report['arm_grid']}):
             q,_=e.make_fom(L,dt)
             for case,phys in enumerate(physical):
                 f,it,res=host(q(jnp.asarray(e.initial(L,phys)),float(phys[4]),1e-11,1e-9))
@@ -204,10 +209,11 @@ def main():
                     row['matches_first_dense_sha256']=row['field_sha256']==first_dense[key][0]
                     report['invocations'].append(row)
             print(f'TIMED L={L} rep={rep} subjects={len(subjects)} elapsed={time.perf_counter()-start:.1f}s',flush=True);save()
-        for rule,icb in [('edge',60),('fixed_gauss',180)]:
+        for profile in report['component_profile_configs']:
+            rule,icb,dt,stall=profile['cold_rule'],profile['ic_budget'],profile['dt'],profile['stall']
             maker=e.make_rom if rule=='edge' else e.make_gauss_rom
             extra={} if rule=='edge' else dict(ic_budget=icb)
-            fused,parts=maker(params,L,.005,info['trust_radius'],stall=.01,return_parts=True,**extra)
+            fused,parts=maker(params,L,dt,info['trust_radius'],stall=stall,return_parts=True,**extra)
             def init(u):return parts['initialize'](u,data) if rule=='edge' else parts['initialize'](u,data,cold)
             def query(u,nu):return fused(u,nu,data) if rule=='edge' else fused(u,nu,data,cold)
             warm=jnp.asarray(input_fields[0]);zi,ii,ir,scale=init(warm)
@@ -220,7 +226,7 @@ def main():
                 Fp=jax.block_until_ready(parts['decode'](Zp,data));t4=time.perf_counter()
                 fp=np.asarray(Fp);t5=time.perf_counter();fused_value=host(query(uj,float(physical[case,4])))
                 parity=float(np.linalg.norm(fp-fused_value[0])/(np.linalg.norm(fused_value[0])+1e-300));assert parity<1e-8
-                report['component_profiles'].append(dict(intervals=L,case=case,cold_rule=rule,ic_budget=icb,ic_starts=1,dt=.005,stall=.01,
+                report['component_profiles'].append(dict(intervals=L,case=case,**profile,
                     input_transfer_s=t1-t,cold_fit_s=t2-t1,evolution_s=t3-t2,dense_decode_s=t4-t3,output_transfer_s=t5-t4,
                     staged_total_s=t5-t,fused_output_relative_difference=parity,physical_error=e.errors(fp,references[case],obs),
                     time_steps=int(len(itp)),lm_attempts=int(np.asarray(itp).sum()),ic_selected_attempts=int(ii),ic_selected_reason=int(ir),

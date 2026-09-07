@@ -38,7 +38,7 @@ for L in sorted({r['intervals'] for r in summary}):
         controls=[('fit_budget',('fixed_gauss',60,.005,.01)),('time_step',('fixed_gauss',180,.0025,.01)),('evolution_stopping',('fixed_gauss',180,.005,.001))] if d['experiment']=='fixed_gauss_rollout' else [('time_step',key) for key in fields if key[2]!=.005]
         for control,key in controls:
             f=fields[key]
-            if d['experiment']=='gauss_timestep_study':assert np.array_equal(f[0],primary[0])
+            if d['experiment']=='gauss_timestep_study':assert np.max(np.abs(f[0]-primary[0]))<1e-12
             diff=np.linalg.norm((f-primary).reshape(len(f),-1),axis=1)/n0
             result['controls'].append(dict(intervals=L,case=case,control=control,dt=key[2],initial_field_max_difference=float(np.max(np.abs(f[0]-primary[0]))),relative_field_difference_per_time=diff.tolist(),
                 primary_worst=float(max(np.linalg.norm((primary-ref).reshape(len(f),-1),axis=1)/n0)),

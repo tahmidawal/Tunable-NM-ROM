@@ -22,6 +22,7 @@ def main():
     p = argparse.ArgumentParser(__doc__)
     p.add_argument('label')
     p.add_argument('--entry', required=True)
+    p.add_argument('--commit', help='Explicit immutable source commit; permits ongoing owner edits after that milestone')
     p.add_argument('--arg', action='append', default=[])
     p.add_argument('--gpu', choices=['a100', 'h100', 'h200', 'l40s'], default='a100')
     p.add_argument('--constraint', default='a100-40G')
@@ -39,20 +40,21 @@ def main():
     entry = Path(a.entry)
     if entry.is_absolute() or '..' in entry.parts or entry.suffix != '.py':
         p.error('entry must be a relative Python source inside fresh cell')
-    commit = subprocess.check_output(['git', '-C', str(APPROVED), 'rev-parse', 'HEAD'], text=True).strip()
+    if a.commit and not re.fullmatch(r'[0-9a-f]{7,40}', a.commit):
+        p.error('commit must be a hexadecimal commit ID')
+    commit = subprocess.check_output(['git', '-C', str(APPROVED), 'rev-parse', (a.commit or 'HEAD')+'^{commit}'], text=True).strip()
     source = {}
     tracked_names = subprocess.check_output([
         'git', '-C', str(APPROVED), 'ls-tree', '-r', '--name-only', commit,
         '--', 'experiments/fresh-wave-head'], text=True).splitlines()
     for f in [APPROVED/name for name in tracked_names]:
-        if not f.is_file() or any(part in {'runs', 'cache', 'data', '__pycache__', '.pytest_cache'} for part in f.relative_to(cell).parts):
+        if any(part in {'runs', 'cache', 'data', '__pycache__', '.pytest_cache'} for part in f.relative_to(cell).parts):
             continue
         if f.suffix not in {'.py', '.json', '.md'}:
             continue
         rel = f.relative_to(APPROVED).as_posix()
-        payload = f.read_bytes()
-        tracked = subprocess.check_output(['git', '-C', str(APPROVED), 'show', f'{commit}:{rel}'])
-        if payload != tracked:
+        payload = subprocess.check_output(['git', '-C', str(APPROVED), 'show', f'{commit}:{rel}'])
+        if not a.commit and (not f.is_file() or payload != f.read_bytes()):
             raise RuntimeError(f'commit source before staging: {rel}')
         if f.suffix == '.py':
             for node in ast.walk(ast.parse(payload)):

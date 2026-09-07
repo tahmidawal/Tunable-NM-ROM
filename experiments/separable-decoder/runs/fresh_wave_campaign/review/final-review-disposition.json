@@ -1,0 +1,86 @@
+{
+  "status": "accepted_as_independently_reviewed_bounded_negative_result",
+  "reviewers": [
+    "fresh_wave_review: numerical reference, reflective primary arrays, all continuation arrays and bounded interpretation",
+    "quadratic_head: absorbing raw summary, fitting and acceptance audit"
+  ],
+  "coordinator_audits": {
+    "absorbing02-model-audit.json": {
+      "sha256": "f57d39d6dc58de3423d8dc6071dc0c6e88126e0bc0a48514a2c9c45a01b085b3",
+      "passed": true
+    },
+    "reflective01-model-audit.json": {
+      "sha256": "617b525496bc94b6ea6739181683905c6eea7fa8a35c6af7a4da8e38bbbdb777",
+      "passed": true
+    },
+    "refquad20001-audit.json": {
+      "sha256": "3072f01d3541fc7767f01807abb43b187cc31542b3adb8b0772f75d22f423de4",
+      "passed": true
+    },
+    "refquad20101-audit.json": {
+      "sha256": "2e78e7d064a6b55104e07d27cc0e0c265d757f2181b3729224ba881f4a91d361",
+      "passed": true
+    },
+    "refquadvel20002-audit.json": {
+      "sha256": "5a00fa4be0ac7b78e32a76031cab44b70c0523ed73e205baaa861ed9effdcbda",
+      "passed": true
+    },
+    "refquadvel20101-audit.json": {
+      "sha256": "696ec411c4b7dbe4c428a9838e93cdc47644cfaaf768dab87f7f2e4cce441ebc",
+      "passed": true
+    }
+  },
+  "primary": {
+    "reflective01": {
+      "accepted_heads": 0,
+      "head_repeat_count": 8,
+      "completed_integrations": 384,
+      "nonstationary_snapshot_fits": 2,
+      "final_test_opened": false
+    },
+    "absorbing02": {
+      "accepted_heads": 0,
+      "head_repeat_count": 8,
+      "completed_integrations": 384,
+      "nonstationary_snapshot_fits": 2,
+      "final_test_opened": false
+    }
+  },
+  "continuations": {
+    "refquad20001": {
+      "finest_pair_pass_count": 15,
+      "case_count": 16,
+      "unresolved_cases": [
+        2
+      ],
+      "old_fine_parity_passed": true
+    },
+    "refquadvel20002": {
+      "finest_pair_pass_count": 16,
+      "case_count": 16,
+      "unresolved_cases": [],
+      "old_fine_parity_passed": true
+    },
+    "refquad20101": {
+      "finest_pair_pass_count": 16,
+      "case_count": 16,
+      "unresolved_cases": [],
+      "old_fine_parity_passed": true
+    },
+    "refquadvel20101": {
+      "finest_pair_pass_count": 16,
+      "case_count": 16,
+      "unresolved_cases": [],
+      "old_fine_parity_passed": true
+    }
+  },
+  "limits": [
+    "All old wave evidence remains excluded.",
+    "Only optimizer randomness is repeated; data split is shared.",
+    "Nonstationary snapshot fits remain explicit gate failures.",
+    "The displacement-only quadratic first-seed case 2 remains temporally unresolved after the bounded continuation.",
+    "Full-bank linear comparators have a larger state dimension.",
+    "No final-cohort, speed or three-dimensional-wave claim."
+  ],
+  "all_job_manifests_verified_and_remote_directories_deleted": true
+}

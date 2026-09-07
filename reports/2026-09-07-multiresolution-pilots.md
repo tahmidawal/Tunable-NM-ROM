@@ -2,7 +2,7 @@
 
 This report covers the first frozen-network mesh-transfer pilots and bounded numerical improvements of the current separable NM-ROM against efficient FOM solvers. The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.
 
-The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. Increasing resolution mostly preserves the ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.
+The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. Increasing resolution does not reliably reduce ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.
 
 The older ViT + CP architecture is excluded. Waves use only the fresh verified lineage. The final cohorts remain unopened. Different rows use different physical error definitions, stated below; they must not be ranked as a common cross-PDE accuracy score.
 
@@ -27,11 +27,11 @@ All timings include the supplied host field, initialization/source projection, s
 
 **Heat:** errors are maxima over output times relative to the current reference norm, evaluated on the common observation grid. This is a newly verified, restricted single-bump development family. It does not yet cover the broader heat use case.
 
-**Burgers:** errors use the initial reference norm. The first reference refinement estimate leaves target qualification unresolved. Cold-fit budget exits are retained in the native records and independent audit; an observed small error is not proof of a stationary initial fit. The follow-up separately tests more starting guesses and a finer reference.
+**Burgers:** errors use the initial reference norm and the common observation grid. The first reference refinement estimate leaves target qualification unresolved. Cold-fit budget exits are retained in the native records and independent audit; an observed small error is not proof of a stationary initial fit. The follow-ups below test more starting guesses, a finer reference and the initial fitting objective.
 
-**Poisson:** errors are relative solution norms for each steady source. Tighter stationary solves still leave a worst-case error floor. The reference has empirical refinement evidence; development qualification is not an independent final-cohort result.
+**Poisson:** errors are relative solution norms for each steady source on the common observation grid. Tighter stationary solves still leave a worst-case error floor. The reference has empirical refinement evidence; development qualification is not an independent final-cohort result.
 
-**Waves:** the reported metric is the maximum of initial-normalized displacement, velocity and energy-state errors. Absorbing errors relative to the small remaining field are substantially larger and must also be reported. The time-step pair is resolved for these cases, so a smaller step does not remedy the observed error.
+**Waves:** the reported metric is the maximum of displacement, velocity and energy-state errors on the common observation grid. Displacement is divided by the initial displacement L2 norm; velocity and energy-state error use the initial phase-energy scale $\sqrt{2E(0)}$. Here $E(0)$ is the initial wave energy, including displacement gradients and velocity; the initial velocity alone can be zero. Absorbing errors relative to the small remaining field are substantially larger and must also be reported. The time-step pair is resolved for these cases, so a smaller step does not remedy the observed error.
 
 ## Evidence and limitations
 
@@ -85,11 +85,38 @@ These reference-only reconstruction diagnostics use the same-grid field norm and
 
 [Complete Poisson follow-up findings](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/FINDINGS.md).
 
-All cost ratios in this report use ratios of per-case timing medians before the cohort median. Some native exploratory reports also retain medians of per-repetition ratios under an explicit different label; those statistics are not interchangeable.
+### Burgers: a finer reference and a resolution-dependent initial-fit defect
+
+Full-query source `9a2025c1f0624db91fb8ecbcfef0d0d433373187`, job `3350134`. The native audit independently recomputes 828 invocation errors from preserved observation fields. The largest empirical reference estimate is `0.003736669`, allowing development checks at the targets shown; stricter targets remain unresolved. The additive margin uses the larger of the spatial-plus-time difference and the Richardson estimate for each case. The initial analytic norm is fixed. These are empirical development checks, not rigorous reference bounds.
+
+| Output intervals | Target (%) | Selected ROM | Selected FOM envelope | ROM / FOM ms | Paired FOM/ROM |
+|---|---:|---|---|---:|---:|
+| 256 | 10 | `rom_L256_dt0.005_stall0.01_starts1` | `fom_L128_out256_dt0.01_ntol0.01` | 36.547 / 9.7213 | 0.2755 |
+| 256 | 5 | `rom_L256_dt0.005_stall0.01_starts1` | `fom_L256_out256_dt0.01_ntol0.01` | 36.547 / 10.121 | 0.2871 |
+| 512 | 10 | `rom_L512_dt0.005_stall0.01_starts1` | `fom_L128_out512_dt0.01_ntol0.01` | 39.98 / 12.164 | 0.3162 |
+| 512 | 5 | Target unattained | `fom_L256_out512_dt0.01_ntol0.01` | — / 12.308 | — |
+| 1024 | 10 | `rom_L1024_dt0.005_stall0.01_starts1` | `fom_L128_out1024_dt0.01_ntol0.01` | 55.073 / 24.702 | 0.4558 |
+| 1024 | 5 | Target unattained | `fom_L256_out1024_dt0.01_ntol0.01` | — / 24.866 | — |
+
+Selections minimize the cohort median of case-median query times, including coarse-FOM interpolation to the requested output. The native Burgers report also supplies selections using pooled repetition medians; closely timed FOM choices can differ. All 36 cold-fit budget exits remain visible across the full pilot search. Configured budget or small-improvement exits are explicit early stops, not proof of stationary fitting. More initial guesses did not remove the error increase with resolution, and no tested envelope establishes a ROM advantage.
+
+Cold-fit-only source `0fb42607811425d639ba58714da2210f152cf463`, job `3350594`. The audit checks 240 declared fits, retained fields, unchanged cases and checkpoint bytes. The following full-grid initial-error diagnostics are provisional: finer-grid full norms and bank floors were computed in the GPU job, but only the common-grid fields were retained for independent reconstruction. These fits do not include a PDE rollout.
+
+| Intervals | Edge Gram (%) | Edge QR (%) | Fixed midpoint (%) | Fixed Gauss (%) | Full-grid QR (%) | Unrestricted bank floor (%) |
+|---|---:|---:|---:|---:|---:|---:|
+| 256 | 2.6005 | 2.6005 | 2.5467 | 2.5629 | 2.5447 | 0.1898 |
+| 512 | 5.4672 | 5.4672 | 3.2958 | 3.2836 | 3.2828 | 1.4953 |
+| 1024 | 8.6951 | 8.6951 | 3.8737 | 3.8562 | 3.8549 | 2.2593 |
+
+The table uses a budget of `180` iterations and `4` training-code starting guesses, reporting the worst physical case. The same edge samples give essentially the same result under Gram and QR fitting; fixed physical midpoint or Gauss sampling greatly reduces the finer-grid fitting error. The remaining bank floor also grows with resolution. Thus both the changing sampled objective and a real frozen-bank representation loss matter. The earlier explanation based only on optimizer starting guesses is withdrawn. The clipped initial-condition family has not changed. These are best-recorded nonlinear fits, not stationary or globally optimal certificates. Fixed physical field sampling with charged interpolation is an initialization method, not strong-form PDE collocation. Corrected-initializer rollouts and their complete-query costs remain unmeasured.
+
+[Complete Burgers follow-up findings](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md).
+
+All cost ratios in this report use ratios of per-case timing medians before the cohort median. Some native exploratory reports also retain medians of per-repetition ratios or select configurations by the pooled median across all repetitions under an explicit different label; those statistics are not interchangeable.
 
 ## Next experiments justified by the diagnostics
 
-- **Burgers:** resolve reference space/time error; compare the original cold start with several training-code guesses; retain the efficient same-grid and coarse-grid FOMs.
+- **Burgers:** carry fixed physical sampling into a complete rollout with charged input interpolation; preserve the original initial-condition family and compare against the unchanged efficient FOM envelope. If the frozen-bank boundary gap still blocks accuracy, test boundary-aware training coverage separately. The improved reference supports only the stated development targets.
 - **Heat:** after the measured tolerance improvement, address the nonlinear-head reconstruction gap with controlled original-cohort versus expanded-coverage head refinement. The spatial bank and head architecture can remain fixed for that diagnostic.
 - **Poisson:** the test-mode and representation diagnostics point to bank/head capacity or training coverage for accuracy. A specialized small-matrix solver is a separate remaining runtime test.
 - **Waves:** use matched-dimensional linear and nonlinear controls with a frozen spatial bank to separate compression from autonomous dynamics. Finer rendering alone cannot address the current error.
@@ -112,7 +139,8 @@ Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.p
 - **Frozen / intervals / cases:** unchanged network weights / grid cells along one axis / distinct physical inputs. Timing repetitions are not additional cases.
 - **ROM setting / dt / CN / stall / tau:** chosen solver configuration / time step / Crank–Nicolson time formula / relative improvement stopping rule / requested weak-residual reduction.
 - **Current L2 / initial L2 / steady L2:** field error divided by the current reference norm / initial reference norm / steady reference solution norm.
-- **Initial wave state / energy-state error:** the separately normalized displacement, velocity and energy measures / error combining displacement gradients with velocity.
+- **Initial wave state / energy-state error:** displacement normalized by its initial L2 norm and velocity/energy error normalized by the initial phase-energy scale / error combining displacement gradients with velocity.
+- **Common observation grid / same-grid norm:** fixed physical sampling locations shared by different query resolutions / error measured over the full grid at the stated resolution. These measures need not coincide.
 - **Median / worst / query ms / paired ratio:** middle case result / largest case error / complete input-to-output milliseconds / per-case FOM time divided by ROM time, then a cohort median.
 - **Bank / head / latent / weak test mode:** learned spatial features / their nonlinear coefficient map / compressed state coordinates / smooth function averaging the PDE equation.
 - **Cold start / stationary / budget exit:** initial reduced-state fitting / meeting a local derivative convergence check / exhausting allowed iterations.
@@ -122,4 +150,7 @@ Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.p
 - **Compiled / segmented / projection / compression:** one prepared executable / separately launched stages / representing a field in a spatial span / constraining that representation through fewer latent coordinates.
 - **Strict / relaxed / gradient tolerance / field drift:** more demanding stopping control / less demanding stopping setting / required smallness of the objective derivative / change from the strict-control trajectory divided by the current reference norm.
 - **Paired improvement / requested modes / retained modes:** strict-control time divided by changed-method time, summarized across cases / desired minimum number of weak tests / actual number when tied sine eigenmodes are retained together.
+- **Edge Gram / edge QR / midpoint / Gauss / full-grid QR:** fitting on grid-dependent edge-inclusive samples using normal equations / a stable factorization on those same samples / fixed equally spaced physical midpoints / fixed weighted Gaussian quadrature points / least-squares fitting using every grid value.
+- **Bank projection floor / best-recorded fit / Richardson estimate:** smallest error possible in the unrestricted linear feature span / best fit found by the tested nonlinear searches, without proving optimality / remaining reference error estimated by assuming observed refinement rates continue.
+- **Envelope / additive empirical margin / passed reference budget:** least-cost tested method meeting the development target / estimated reference error added to measured ROM or FOM error / that estimate also lies below the predeclared fraction of the target. Empirical passage is not a rigorous certificate.
 - **Commit / manifest / checksum:** saved source revision / inventory of source artifacts / content fingerprint checking exact file bytes.

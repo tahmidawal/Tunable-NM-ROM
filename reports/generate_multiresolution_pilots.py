@@ -1,4 +1,4 @@
-"""Generate the initial four-PDE pilot comparison from immutable run artifacts."""
+"""Generate the four-PDE pilot comparison from immutable run artifacts."""
 from collections import defaultdict
 import hashlib
 import json
@@ -13,6 +13,10 @@ FILES = {
     'heat_review': REPAIR/'heat_pilot01_review.json',
     'burgers': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/pilot01/out/pilot.json',
     'burgers_review': REPAIR/'burgers_pilot01_review.json',
+    'burgers_followup': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/pilot02/out/pilot.json',
+    'burgers_followup_audit': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/pilot02/AUDIT.json',
+    'burgers_cold': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/cold03/out/cold_fit.json',
+    'burgers_cold_audit': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/cold03/AUDIT.json',
     'poisson': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot01/result.json',
     'poisson_review': REPAIR/'poisson_pilot01_review.json',
     'wave': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/summary.json',
@@ -94,7 +98,7 @@ def main():
         'This report covers the first frozen-network mesh-transfer pilots and bounded numerical improvements of the current separable NM-ROM against efficient FOM solvers. '
         'The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.', '',
         'The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. '
-        'Increasing resolution mostly preserves the ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.', '',
+        'Increasing resolution does not reliably reduce ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.', '',
         'The older ViT + CP architecture is excluded. Waves use only the fresh verified lineage. '
         'The final cohorts remain unopened. Different rows use different physical error definitions, stated below; they must not be ranked as a common cross-PDE accuracy score.', '',
         '## Primary configurations from the first pilots', '',
@@ -113,12 +117,14 @@ def main():
         'raw wall times must not be compared across PDE jobs as a hardware-normalized ranking.', '',
         '**Heat:** errors are maxima over output times relative to the current reference norm, evaluated on the common observation grid. '
         'This is a newly verified, restricted single-bump development family. It does not yet cover the broader heat use case.', '',
-        '**Burgers:** errors use the initial reference norm. The first reference refinement estimate leaves target qualification unresolved. '
+        '**Burgers:** errors use the initial reference norm and the common observation grid. The first reference refinement estimate leaves target qualification unresolved. '
         'Cold-fit budget exits are retained in the native records and independent audit; an observed small error is not proof of a stationary initial fit. '
-        'The follow-up separately tests more starting guesses and a finer reference.', '',
-        '**Poisson:** errors are relative solution norms for each steady source. Tighter stationary solves still leave a worst-case error floor. '
+        'The follow-ups below test more starting guesses, a finer reference and the initial fitting objective.', '',
+        '**Poisson:** errors are relative solution norms for each steady source on the common observation grid. Tighter stationary solves still leave a worst-case error floor. '
         'The reference has empirical refinement evidence; development qualification is not an independent final-cohort result.', '',
-        '**Waves:** the reported metric is the maximum of initial-normalized displacement, velocity and energy-state errors. '
+        '**Waves:** the reported metric is the maximum of displacement, velocity and energy-state errors on the common observation grid. '
+        'Displacement is divided by the initial displacement L2 norm; velocity and energy-state error use the initial phase-energy scale $\\sqrt{2E(0)}$. '
+        'Here $E(0)$ is the initial wave energy, including displacement gradients and velocity; the initial velocity alone can be zero. '
         'Absorbing errors relative to the small remaining field are substantially larger and must also be reported. '
         'The time-step pair is resolved for these cases, so a smaller step does not remedy the observed error.', '',
         '## Evidence and limitations', '',
@@ -142,7 +148,7 @@ def main():
         'The rigorous reference-bound field remains unspecified where only empirical refinement is available. '
         'No paper-wide speedup, optimal capacity, optimized training cost, broad-family robustness, or independent confirmation is established.', '',
         '## Next experiments justified by the diagnostics', '',
-        '- **Burgers:** resolve reference space/time error; compare the original cold start with several training-code guesses; retain the efficient same-grid and coarse-grid FOMs.',
+        '- **Burgers:** carry fixed physical sampling into a complete rollout with charged input interpolation; preserve the original initial-condition family and compare against the unchanged efficient FOM envelope. If the frozen-bank boundary gap still blocks accuracy, test boundary-aware training coverage separately. The improved reference supports only the stated development targets.',
         '- **Heat:** after the measured tolerance improvement, address the nonlinear-head reconstruction gap with controlled original-cohort versus expanded-coverage head refinement. The spatial bank and head architecture can remain fixed for that diagnostic.',
         '- **Poisson:** the test-mode and representation diagnostics point to bank/head capacity or training coverage for accuracy. A specialized small-matrix solver is a separate remaining runtime test.',
         '- **Waves:** use matched-dimensional linear and nonlinear controls with a frozen spatial bank to separate compression from autonomous dynamics. Finer rendering alone cannot address the current error.', '',
@@ -164,7 +170,8 @@ def main():
         '- **Frozen / intervals / cases:** unchanged network weights / grid cells along one axis / distinct physical inputs. Timing repetitions are not additional cases.',
         '- **ROM setting / dt / CN / stall / tau:** chosen solver configuration / time step / Crank–Nicolson time formula / relative improvement stopping rule / requested weak-residual reduction.',
         '- **Current L2 / initial L2 / steady L2:** field error divided by the current reference norm / initial reference norm / steady reference solution norm.',
-        '- **Initial wave state / energy-state error:** the separately normalized displacement, velocity and energy measures / error combining displacement gradients with velocity.',
+        '- **Initial wave state / energy-state error:** displacement normalized by its initial L2 norm and velocity/energy error normalized by the initial phase-energy scale / error combining displacement gradients with velocity.',
+        '- **Common observation grid / same-grid norm:** fixed physical sampling locations shared by different query resolutions / error measured over the full grid at the stated resolution. These measures need not coincide.',
         '- **Median / worst / query ms / paired ratio:** middle case result / largest case error / complete input-to-output milliseconds / per-case FOM time divided by ROM time, then a cohort median.',
         '- **Bank / head / latent / weak test mode:** learned spatial features / their nonlinear coefficient map / compressed state coordinates / smooth function averaging the PDE equation.',
         '- **Cold start / stationary / budget exit:** initial reduced-state fitting / meeting a local derivative convergence check / exhausting allowed iterations.',
@@ -174,6 +181,9 @@ def main():
         '- **Compiled / segmented / projection / compression:** one prepared executable / separately launched stages / representing a field in a spatial span / constraining that representation through fewer latent coordinates.',
         '- **Strict / relaxed / gradient tolerance / field drift:** more demanding stopping control / less demanding stopping setting / required smallness of the objective derivative / change from the strict-control trajectory divided by the current reference norm.',
         '- **Paired improvement / requested modes / retained modes:** strict-control time divided by changed-method time, summarized across cases / desired minimum number of weak tests / actual number when tied sine eigenmodes are retained together.',
+        '- **Edge Gram / edge QR / midpoint / Gauss / full-grid QR:** fitting on grid-dependent edge-inclusive samples using normal equations / a stable factorization on those same samples / fixed equally spaced physical midpoints / fixed weighted Gaussian quadrature points / least-squares fitting using every grid value.',
+        '- **Bank projection floor / best-recorded fit / Richardson estimate:** smallest error possible in the unrestricted linear feature span / best fit found by the tested nonlinear searches, without proving optimality / remaining reference error estimated by assuming observed refinement rates continue.',
+        '- **Envelope / additive empirical margin / passed reference budget:** least-cost tested method meeting the development target / estimated reference error added to measured ROM or FOM error / that estimate also lies below the predeclared fraction of the target. Empirical passage is not a rigorous certificate.',
         '- **Commit / manifest / checksum:** saved source revision / inventory of source artifacts / content fingerprint checking exact file bytes.', '']
     followup_lines, followup_values = followups(data, manifest)
     where = lines.index('## Next experiments justified by the diagnostics')
@@ -237,8 +247,114 @@ def followups(data, manifest):
     lines += ['', 'These reference-only reconstruction diagnostics use the same-grid field norm and cannot initialize a deployed query. '
         'The unrestricted bank already has a difficult-source error larger than the next all-case target; more weak modes cannot repair missing spatial directions. '
         'Compiling the unchanged solver gives only small timing changes. A stronger bank/training study and a specialized small-system linear solve remain distinct next tests.', '',
-        link(ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/FINDINGS.md', 'Complete Poisson follow-up findings')+'.', '',
-        'All cost ratios in this report use ratios of per-case timing medians before the cohort median. Some native exploratory reports also retain medians of per-repetition ratios under an explicit different label; those statistics are not interchangeable.', '']
+        link(ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/FINDINGS.md', 'Complete Poisson follow-up findings')+'.', '']
+    burgers_lines, burgers_values = burgers_followups(data, manifest)
+    lines += burgers_lines
+    values.update(burgers_values)
+    lines += ['All cost ratios in this report use ratios of per-case timing medians before the cohort median. '
+        'Some native exploratory reports also retain medians of per-repetition ratios or select configurations by the pooled median across all repetitions under an explicit different label; those statistics are not interchangeable.', '']
+    return lines, values
+
+
+def burgers_followups(data, manifest):
+    pilot, audit = data['burgers_followup'], data['burgers_followup_audit']
+    cold, ca = data['burgers_cold'], data['burgers_cold_audit']
+    assert pilot['complete'] and cold['complete']
+    assert audit['source_sha256'] == manifest['burgers_followup']['sha256']
+    assert ca['source_sha256'] == manifest['burgers_cold']['sha256']
+    assert pilot['checkpoint_sha256'] == cold['checkpoint_sha256'] == data['burgers']['checkpoint_sha256']
+    assert pilot['physical_cases'] == cold['physical_cases'] == data['burgers']['physical_cases']
+    assert audit['output_checksums_verified'] and ca['output_checksums_verified']
+    assert audit['reference_solvers_converged'] and ca['checkpoint_and_physical_cases_match_pilot']
+    cases = set(range(len(pilot['physical_cases'])))
+    reference = {r['case']: r['conservative_difference_sum'] for r in pilot['reference_uncertainty']}
+    for row in pilot['reference_order_audit']:
+        assert row['asymptotic_decrease_observed']
+        reference[row['case']] = max(reference[row['case']], row['empirical_richardson_estimate'])
+    grouped = defaultdict(list)
+    for row in pilot['invocations']:
+        grouped[row['name']].append(row)
+    # Declared pilot.py search at the recorded source commit, independent of which rows survived.
+    expected_names = set()
+    for n in map(int, pilot['config']['meshes'].split(',')):
+        for dt in (.005, .0025):
+            for stall in (.001, .01):
+                for starts in map(int, pilot['config']['ic_starts'].split(',')):
+                    expected_names.add(f'rom_L{n}_dt{dt}_stall{stall}_starts{starts}')
+        for grid in (g for g in (128, 256, 512, 1024) if g <= n):
+            for dt, ntol in ((.01, .01), (.01, .003), (.005, .01), (.005, .003), (.0025, .003)):
+                expected_names.add(f'fom_L{grid}_out{n}_dt{dt}_ntol{ntol}')
+    assert set(grouped) == expected_names
+    assert len(pilot['invocations']) == audit['invocations_verified'] == len(expected_names)*len(cases)*pilot['config']['reps']
+    groups = []
+    for name, rows in grouped.items():
+        assert {(r['case'], r['rep']) for r in rows} == {(c, r) for c in cases for r in range(pilot['config']['reps'])}
+        assert len(rows) == len(cases)*pilot['config']['reps']
+        times = {c: statistics.median(r['seconds'] for r in rows if r['case'] == c) for c in cases}
+        valid = all(r['finite'] and (r['nonlinear_tolerance_satisfied'] if r['method'] == 'fom'
+                    else r['ic_reason'] != 3 and 3 not in r['stop_reasons']) for r in rows)
+        groups.append(dict(name=name, method=rows[0]['method'], intervals=rows[0]['output_intervals'],
+                           valid=valid, times=times, ms=1000*statistics.median(times.values()),
+                           error=max(r['physical_error']['fixed_initial_max'] for r in rows),
+                           empirical_error_margin=max(r['physical_error']['fixed_initial_max']+reference[r['case']] for r in rows)))
+    values = {'burgers_envelope': [], 'burgers_initial_fit': [], 'burgers_empirical_reference_max': max(reference.values())}
+    lines = ['### Burgers: a finer reference and a resolution-dependent initial-fit defect', '',
+        f"Full-query source `{pilot['commit']}`, job `{pilot['job_id']}`. The native audit independently recomputes {audit['invocations_verified']} invocation errors from preserved observation fields. "
+        f"The largest empirical reference estimate is `{max(reference.values()):.7g}`, allowing development checks at the targets shown; stricter targets remain unresolved. "
+        'The additive margin uses the larger of the spatial-plus-time difference and the Richardson estimate for each case. The initial analytic norm is fixed. '
+        'These are empirical development checks, not rigorous reference bounds.', '',
+        '| Output intervals | Target (%) | Selected ROM | Selected FOM envelope | ROM / FOM ms | Paired FOM/ROM |',
+        '|---|---:|---|---|---:|---:|']
+    for n in sorted({r['intervals'] for r in pilot['mesh_setup']}):
+        for target in (.1, .05):
+            assert max(reference.values()) <= .1*target
+            selected = {}
+            for method in ('rom', 'fom'):
+                eligible = [g for g in groups if g['method'] == method and g['intervals'] == n and g['valid']
+                            and g['empirical_error_margin'] <= target]
+                selected[method] = min(eligible, key=lambda g: (g['ms'], g['name'])) if eligible else None
+            rom, fom = selected['rom'], selected['fom']
+            ratio = statistics.median(fom['times'][c]/rom['times'][c] for c in cases) if rom and fom else None
+            values['burgers_envelope'].append(dict(intervals=n, target=target, rom=rom, fom=fom, paired_ratio=ratio,
+                qualification='empirical reference budget passed; independent confirmation absent',
+                rigorous_reference_bound=None))
+            rom_name = f"`{rom['name']}`" if rom else 'Target unattained'
+            fom_name = f"`{fom['name']}`" if fom else 'Target unattained'
+            rom_time = f"{rom['ms']:.5g}" if rom else '—'
+            fom_time = f"{fom['ms']:.5g}" if fom else '—'
+            ratio_text = f'{ratio:.4g}' if ratio is not None else '—'
+            lines.append(f'| {n} | {100*target:g} | {rom_name} | {fom_name} | {rom_time} / {fom_time} | {ratio_text} |')
+    lines += ['', 'Selections minimize the cohort median of case-median query times, including coarse-FOM interpolation to the requested output. '
+        'The native Burgers report also supplies selections using pooled repetition medians; closely timed FOM choices can differ. '
+        f"All {audit['ic_budget_exits_across_all_rom_invocations']} cold-fit budget exits remain visible across the full pilot search. "
+        'Configured budget or small-improvement exits are explicit early stops, not proof of stationary fitting. '
+        'More initial guesses did not remove the error increase with resolution, and no tested envelope establishes a ROM advantage.', '',
+        f"Cold-fit-only source `{cold['commit']}`, job `{cold['job_id']}`. The audit checks {ca['declared_fits_verified']} declared fits, retained fields, unchanged cases and checkpoint bytes. "
+        'The following full-grid initial-error diagnostics are provisional: finer-grid full norms and bank floors were computed in the GPU job, '
+        'but only the common-grid fields were retained for independent reconstruction. These fits do not include a PDE rollout.', '',
+        '| Intervals | Edge Gram (%) | Edge QR (%) | Fixed midpoint (%) | Fixed Gauss (%) | Full-grid QR (%) | Unrestricted bank floor (%) |',
+        '|---|---:|---:|---:|---:|---:|---:|']
+    budget, starts = max(r['budget'] for r in cold['rows']), max(r['starts'] for r in cold['rows'])
+    rules = ('edge_gram', 'edge_qr', 'fixed_midpoint', 'fixed_gauss', 'full_qr')
+    for n in sorted({r['intervals'] for r in cold['rows']}):
+        rows = [r for r in cold['rows'] if r['intervals'] == n and r['budget'] == budget and r['starts'] == starts]
+        errors = {}
+        for rule in rules:
+            chosen = [r for r in rows if r['rule'] == rule]
+            assert {r['case'] for r in chosen} == cases
+            errors[rule] = max(r['relative_full_grid_error'] for r in chosen)
+        floor = max(r['unrestricted_bank_floor'] for r in rows)
+        values['burgers_initial_fit'].append(dict(intervals=n, budget=budget, starts=starts,
+            worst_full_grid_errors=errors, worst_unrestricted_bank_floor=floor))
+        lines.append(f'| {n} | '+ ' | '.join(f'{100*errors[rule]:.5g}' for rule in rules)+f' | {100*floor:.5g} |')
+    lines += ['', f"The table uses a budget of `{budget}` iterations and `{starts}` training-code starting guesses, reporting the worst physical case. "
+        'The same edge samples give essentially the same result under Gram and QR fitting; fixed physical midpoint or Gauss sampling greatly reduces the finer-grid fitting error. '
+        'The remaining bank floor also grows with resolution. Thus both the changing sampled objective and a real frozen-bank representation loss matter. '
+        'The earlier explanation based only on optimizer starting guesses is withdrawn. '
+        'The clipped initial-condition family has not changed. These are best-recorded nonlinear fits, not stationary or globally optimal certificates. '
+        'Fixed physical field sampling with charged interpolation is an initialization method, not strong-form PDE collocation. '
+        'Corrected-initializer rollouts and their complete-query costs remain unmeasured.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md', 'Complete Burgers follow-up findings')+'.', '']
     return lines, values
 
 

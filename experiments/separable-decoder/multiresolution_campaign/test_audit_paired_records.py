@@ -56,13 +56,15 @@ class AccountingTests(unittest.TestCase):
         self.assertIsNone(audit(record)['targets'][0]['qualified_complete_query_speedup'])
 
     def test_reference_uncertainty_requires_margin_at_threshold(self):
-        record = fixture()
-        record['invocations'][0]['errors']['u'] = .00995
-        result = audit(record)['targets'][0]
-        self.assertTrue(result['matched_reference_accuracy'])
-        self.assertTrue(result['physical_reference_budget_met'])
-        self.assertEqual(result['failed_or_above_target_with_reference_margin']['nmrom'], 1)
-        self.assertIsNone(result['qualified_complete_query_speedup'])
+        for observed in [.00995, .0098995]:
+            with self.subTest(observed=observed):
+                record = fixture()
+                record['invocations'][0]['errors']['u'] = observed
+                result = audit(record)['targets'][0]
+                self.assertTrue(result['matched_reference_accuracy'])
+                self.assertTrue(result['physical_reference_budget_met'])
+                self.assertEqual(result['failed_or_above_target_with_reference_margin']['nmrom'], 1)
+                self.assertIsNone(result['qualified_complete_query_speedup'])
 
     def test_missing_reference_bound_preserves_times_without_accuracy_claim(self):
         record = fixture()

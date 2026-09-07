@@ -74,6 +74,10 @@ and report new criteria separately rather than revising old verdicts.
 For physical-accuracy qualification, the observed error plus a defensible reference
 uncertainty allowance must meet the target. A small reference difference alone is
 not a certified bound; specify the convergence evidence and unresolved assumptions.
+When both error and reference uncertainty are normalized by the approximate
+reference norm, use the conservative bound $(e+\delta)/(1-\delta)$ for
+$\delta<1$, including uncertainty in the true denominator. For an exactly known
+fixed denominator, the additive allowance suffices.
 
 ## Reference and baseline work
 

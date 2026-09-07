@@ -103,7 +103,7 @@ def audit(record):
         case_data[case] = entry
     target_rows = []
     ref_bound = record.get('reference_uncertainty_bound')
-    require(ref_bound is None or (finite_number(ref_bound) and ref_bound >= 0), 'invalid reference uncertainty')
+    require(ref_bound is None or (finite_number(ref_bound) and 0 <= ref_bound < 1), 'invalid reference uncertainty')
     fraction = record['reference_uncertainty_fraction']
     require(finite_number(fraction) and 0 < fraction < 1, 'invalid reference allocation')
     for target in record['targets']:
@@ -115,12 +115,15 @@ def audit(record):
         }
         eligible = not any(failure_counts.values())
         physical = record['reference_kind'] == 'refined_physical' and ref_bound is not None and ref_bound <= fraction*target
-        # The triangle inequality needs margin for the reference uncertainty;
+        # The bound is relative to the reference norm. The triangle inequality
+        # and reverse triangle inequality give (observed + delta)/(1-delta).
+        # This also conservatively covers an exactly known fixed denominator.
+        # Both error and normalization need margin for reference uncertainty;
         # merely making that uncertainty a small fraction of the target is not
         # sufficient when the observed error lies immediately below the target.
         bounded_failure_counts = {
             method: sum(not entry[method]['valid'] or
-                        entry[method]['max_required_error'] + ref_bound > target
+                        (entry[method]['max_required_error'] + ref_bound)/(1-ref_bound) > target
                         for entry in case_data.values())
             for method in ('nmrom', 'fom')
         } if physical else None

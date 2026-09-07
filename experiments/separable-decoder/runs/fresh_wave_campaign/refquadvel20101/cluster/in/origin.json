@@ -1,0 +1,37 @@
+{
+  "parent_label": "reflective01",
+  "parent_job": "3338483",
+  "source_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+  "remote": "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/reflective01",
+  "arm": "quadratic_velocity_691201",
+  "bc": "dirichlet",
+  "hashes_before_after_equal": true,
+  "files": {
+    "bank_tables.npz": {
+      "remote_relative": "out/campaign/dirichlet/bank_tables.npz",
+      "sha256": "6f773c0942c91e8b320ae452499e1d217479d3bbbb255bec7995dda770b3e122"
+    },
+    "data_manifest.json": {
+      "remote_relative": "out/campaign/dirichlet/data_manifest.json",
+      "sha256": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809"
+    },
+    "head.npz": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_velocity_691201/head.npz",
+      "sha256": "bc4105bbaf98c867c2262dbb0655f8b49d176ee5240d2ee047118b1e7fd9b822"
+    },
+    "reconstruction.npz": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_velocity_691201/reconstruction.npz",
+      "sha256": "3cc63dc1d26c3b3aceb54d2fc8197e498bada55bca9c3a776de9d0445b1cc325"
+    },
+    "rollouts.npz": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_velocity_691201/rollouts.npz",
+      "sha256": "db8c1130311f0c12b29f8205172274f62e4e40b44b902fb2d7cee7fd1928533c"
+    },
+    "arm_result.json": {
+      "remote_relative": "out/campaign/dirichlet/quadratic_velocity_691201/result.json",
+      "sha256": "e76c862ac3c6b5c75cf2c7ce5c25957f390ffb8db157eb327dd3db6dc713d050"
+    }
+  },
+  "parent_campaign_still_running": true,
+  "acceptance": "Checkpoint transfer only; reconcile every hash with the final parent archive before scientific acceptance."
+}

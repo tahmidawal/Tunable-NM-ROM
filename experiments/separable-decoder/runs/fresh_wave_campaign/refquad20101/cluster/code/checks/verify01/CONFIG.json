@@ -1,0 +1,20 @@
+{
+  "label": "verify01",
+  "source_commit": "0d9a4d436c932f99be3cf92869ca4da0083cdea9",
+  "source_worktree": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-wave-head-transfer",
+  "source_hashes": {
+    "FRESH-DESIGN.md": "78b5b984b624769186b96104cb25d28bc5071ae07d7b5f0d2466b7ddcbaa659c",
+    "fresh_fom.py": "5df52440e1b85457754290408c912f727fd13a37cd7247e7aa731c8696a90049",
+    "fresh_verify.py": "bb61f6dca25f0295f4599d6f34a43b73ae41aeb9727a43df90cb67e2822f07ce",
+    "test_fresh_fom.py": "302614aaa51fc4cec228c2f5d59c1689032c721ba0a00bbc7fcd203605e293ff"
+  },
+  "remote": "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/verify01",
+  "entry": "fresh_verify.py",
+  "arguments": [
+    "--out",
+    "/cluster/tufts/paralab/tawal01/wave_head_transfer_20260906/verify01/out/verification"
+  ],
+  "gpu": "a100",
+  "constraint": "a100-40G",
+  "inputs": {}
+}

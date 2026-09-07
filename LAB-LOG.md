@@ -97,6 +97,11 @@ with matched linear dimensions. All job outputs were checksum-pulled and exact
 remote directories deleted. Native checkpoints are on the wave branch; complete
 archives and independent audits are on the repair branch. No merge performed.
 Canonical generated report: `reports/2026-09-07-fresh-wave-head-transfer.md`.
+Dated handoff snapshot: `reports/2026-09-07-nmrom-handoff.md` covers the architecture,
+Burgers-3D screen, fresh waves, exact result locations, branch ownership and proposed
+next experiment. This lab log remains canonical. A newly arranged still-image sequence
+of the wave evolving remains open after the user's latest visualization wording;
+the handoff request interrupted that follow-up. Existing static grids remain available.
 Animated surface and top views, with a standalone play/pause/time-slider viewer, are
 now available at `reports/animations/2026-09-07-wave-evolution.html`. They compare
 the same validation reference and decoder with fixed amplitude scales.
@@ -6503,3 +6508,31 @@ Reference export job `3346494` used frozen wave source `fdcc6491657363005cc9060a
 | absorbing | 0 | 49 | 0 | 2.4 | 0 | 6.9388939039072284e-18 |
 
 These values are generated from `reports/animations/2026-09-07-wave-evolution.json`. Every GIF frame was decoded and checked; browser playback/pause/restart/slider/speed and both boundary/view choices worked. The temporary preview server was stopped. The amplitude scales are fixed throughout each movie, and frames are actual observations with no temporal interpolation. The renderer and export script live in `reports/`; raw frames, checked cluster archive, provenance and cleanup receipt are tracked on the repair branch. The same canonical wave report now links the animations and viewer. No branch merge was requested or performed.
+
+
+## 2026-09-07 — NM-ROM handoff document
+
+### Handoff of the completed architecture screen and fresh-wave campaign
+
+User requested a handoff based on the work so far. Created the dated snapshot
+`reports/2026-09-07-nmrom-handoff.md` with its source generator and reproducibility
+manifest. It covers the user's PDE-transfer direction, the separable decoder and
+wave-state equations, all completed Burgers-3D architecture comparisons, fresh linear
+wave baselines and nonlinear rollouts, frozen-checkpoint continuations, normalization
+limits, saved artifacts, branch ownership, operating rules and a proposed fixed-bank
+latent-dimension study. The canonical log remains the authoritative project record.
+
+The tables and numerical prose were generated from 21 saved JSON inputs.
+All recorded input hashes and 36 local document links checked successfully;
+regeneration was byte-identical. Handoff SHA-256: `ddf08b14227710abc7e761a9d46b34ca7b4daac9b582fb2fbc86c7ca1e8a2214`.
+The generator was authored in the existing repair worktree and copied to canonical
+reports on main. No training, fitting, PDE solve, new cluster submission, experiment
+worktree creation, final-cohort opening or branch merge occurred in this session.
+
+No scientific result or earlier retraction changed. Old wave experiments remain
+excluded, every tested compressed head still misses its full target, and the retained
+reflective quadratic refinement failure stays unresolved. Further architecture jobs
+and merging wave into repair remain open. The user's preceding image wording was
+interpreted as requesting still images of successive evolution times; that follow-up
+was interrupted by this handoff request, so no newly arranged still-image sequence
+was produced. Existing still grids, animations and the interactive viewer are linked.

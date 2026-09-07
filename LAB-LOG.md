@@ -6536,3 +6536,50 @@ and merging wave into repair remain open. The user's preceding image wording was
 interpreted as requesting still images of successive evolution times; that follow-up
 was interrupted by this handoff request, so no newly arranged still-image sequence
 was produced. Existing still grids, animations and the interactive viewer are linked.
+
+
+## 2026-09-07 — multiple-Gaussian applicability
+
+### Existing coverage clarified after the handoff
+
+User asked whether the architecture would work for Gaussian fields with two or three
+peaks. Read the canonical log, Burgers generator and saved per-component-count results,
+and the fresh wave generator. No numerical experiment, new branch or cluster job was run.
+
+Burgers `b3d_common.py` draws one to three positive Gaussian components, applies the
+Dirichlet polynomial mask and normalizes amplitude. Training and validation already
+include these mixtures. Component count is not a guarantee of the same number of
+visible local maxima when bumps overlap, especially after evolution. The quadratic
+screen's stored relative L2 reconstruction results are grouped below by the initial
+Gaussian component count. Rows summarize initial and later snapshots together;
+counts are snapshots, not independent trajectories. These are reconstruction results,
+not a demonstrated Burgers rollout. Threshold outliers remain part of the result.
+
+| Optimizer seed | Initial Gaussian components | Snapshots | Mean | Median | Worst | Above 0.15 |
+|---|---|---|---|---|---|---|
+| 200 | 1 | 104 | 0.037133512538733912 | 0.026741788708286977 | 0.13414021766138784 | 0 |
+| 200 | 2 | 72 | 0.048353147371109642 | 0.041673851322753933 | 0.15126340008173095 | 1 |
+| 200 | 3 | 80 | 0.058269355730829496 | 0.05287975381859096 | 0.20305274049820418 | 1 |
+| 201 | 1 | 104 | 0.037121340668937505 | 0.026751860153091438 | 0.13404425667041542 | 0 |
+| 201 | 2 | 72 | 0.048327461147664716 | 0.04166651718404759 | 0.15047324076814178 | 1 |
+| 201 | 3 | 80 | 0.0582837145428627 | 0.052837245186835156 | 0.20272908214411875 | 1 |
+
+Generated directly from `worktrees/2026-09-06-b3d-quadratic/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json`;
+SHA-256 `e9502ca582f2197a54c4688a47d0ac5e71d39509b295392ff86c621d81c58a20`. Both repeats use the same data.
+
+Fresh wave `parameter_rows` and `localized_initial` use one Gaussian core with a
+compact smooth cutoff per initial displacement; they do not implement a multi-bump
+initial-condition cohort. Subsequent reflection/interference does not change that
+training-family fact. Multi-peak fresh wave rollout accuracy is untested. The full
+linear spatial span is closed under summation, but a compressed nonlinear head's
+output set need not contain the sum of two represented states. The linear wave
+superposition argument requires the same physical speed, boundary operators and
+consistent addition of displacement and velocity initial conditions; it does not
+transfer to nonlinear Burgers dynamics or establish nonlinear-head accuracy.
+
+Possible future diagnostic: distinguish separated, overlapping and unequal-amplitude
+mixtures; evaluate bank projection, compressed representation and actual evolution
+separately, with results grouped by component count. Broader placement or narrower
+widths would require renewed reference checks. This is explanatory guidance, not a
+new experiment authorization. No previous verdict or wave evidence reset is retracted;
+the handoff remains a dated snapshot and the final cohort stays sealed.

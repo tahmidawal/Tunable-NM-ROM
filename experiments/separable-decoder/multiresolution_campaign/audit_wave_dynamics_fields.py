@@ -52,20 +52,32 @@ def audit(path):
     assert result['complete'] and not result['final_test_opened']
     assert provenance['jax_backend'] == 'gpu' and provenance['x64']
     assert provenance['matmul_precision'] == 'highest'
-    rows = result['invocations']
+    larger_heads = 'new_latent_dimension' in cfg
+    rows = result['invocations'] + result.get('accuracy_controls', [])
     groups = defaultdict(list)
     for row in rows:
-        groups[row['boundary'], row['intervals'], row['case'], row['method'], row['setting']].append(row)
+        role = row.get('measurement_role', 'timed_comparison')
+        if larger_heads:
+            assert row['comparison_eligible'] == (role == 'timed_comparison')
+            assert row['warmup_performed'] == (role == 'timed_comparison')
+        groups[row['boundary'], row['intervals'], row['case'], row['method'], row['setting'], role].append(row)
     expected = set()
     for bc, n, case in itertools.product(cfg['boundaries'], cfg['meshes'], cfg['validation_indices']):
-        choices = [('rom', dt) for dt in cfg['rom_dts']]
-        choices += [(name, 0.) for name in ('affine16', 'affine32', 'full64')]
+        if larger_heads:
+            heads = [f'new_mlp32_seed{seed}' for seed in cfg['training']['optimizer_seeds']]
+            choices = [('frozen_mlp16_seed691200', cfg['primary_dt']), ('affine32', 0.)]
+            choices += [(name, dt) for name, dt in itertools.product(heads, cfg['nonlinear_dts'])]
+            expected.update((bc, n, case, name, cfg['accuracy_only_dt'], 'accuracy_refinement_only') for name in heads)
+        else:
+            choices = [('rom', dt) for dt in cfg['rom_dts']]
+            choices += [(name, 0.) for name in ('affine16', 'affine32', 'full64')]
         choices += [('dst', 0.)] if bc == 'dirichlet' else [('rk4', cfl) for cfl in cfg['fom_cfls']]
-        expected.update((bc, n, case, method, setting) for method, setting in choices)
+        expected.update((bc, n, case, method, setting, 'timed_comparison') for method, setting in choices)
     assert set(groups) == expected
-    verified, discrepancies, summaries = 0, [], []
-    for (bc, n, case, method, setting), calls in groups.items():
-        assert sorted(r['repetition'] for r in calls) == list(range(cfg['repetitions']))
+    verified, accuracy_verified, discrepancies, summaries = 0, 0, [], []
+    for (bc, n, case, method, setting, role), calls in groups.items():
+        repetitions = cfg['repetitions'] if role == 'timed_comparison' else 1
+        assert sorted(r['repetition'] for r in calls) == list(range(repetitions))
         first = next(r for r in calls if r['repetition'] == 0)
         assert all(r['completed'] and r['output_sha256'] == first['output_sha256'] for r in calls)
         file = path.parent/(first['invocation_id']+'.npz')
@@ -87,14 +99,18 @@ def audit(path):
             assert all(v > 0 for v in parts.values())
             size = n-1 if bc == 'dirichlet' else n+1
             assert call['output_bytes'] == 2*8*cfg['query_observations']*size**2
-            verified += 1
+            if role == 'timed_comparison':
+                verified += 1
+            else:
+                accuracy_verified += 1
         summaries.append(dict(boundary=bc, intervals=n, case=case, method=method, setting=setting,
+            measurement_role=role, comparison_eligible=role == 'timed_comparison',
             query_median_seconds=statistics.median(r['seconds']['complete_query'] for r in calls),
             worst_initial_normalized=max(float(np.max(m['initial_normalized'])) for m in actual.values()),
             final_current_relative_energy=float(actual['energy_state']['absolute'][-1]/actual['energy_state']['reference_norm'][-1])))
     return dict(scope=__doc__, source_json=str(path), source_json_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
         job_id=provenance['job_id'], source_commit=provenance['source_commit'],
-        configurations_verified=len(groups), verified_invocations=verified,
+        configurations_verified=len(groups), verified_invocations=verified, verified_accuracy_controls=accuracy_verified,
         maximum_metric_disagreement=max(discrepancies), rows=summaries, rigorous_reference_bound=None)
 
 

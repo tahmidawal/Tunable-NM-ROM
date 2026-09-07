@@ -170,9 +170,13 @@ def localized_initial(grid, parameters):
     Physical translation derivative v0=-c*(vx*u_x+vy*u_y), evaluated by AD.
     The compact support lies strictly inside both physical domains.
     """
-    cx, cy, sx, sy, amp, c, vx, vy = parameters
+    cx, cy, sx, sy, amp, c, vx, vy = parameters[:8]
     def field(xy):
-        return amp*bump((xy[0]-cx)/sx)*bump((xy[1]-cy)/sy)
+        value = amp*bump((xy[0]-cx)/sx)*bump((xy[1]-cy)/sy)
+        if len(parameters) == 10:
+            sigx, sigy = parameters[8:]
+            value = value*jnp.exp(-.5*(((xy[0]-cx)/sigx)**2+((xy[1]-cy)/sigy)**2))
+        return value
     xy = jnp.asarray(grid.coordinates()).reshape(-1, 2)
     u = jax.vmap(field)(xy)
     grad = jax.vmap(jax.grad(field))(xy)
@@ -184,5 +188,6 @@ def provenance():
     import os, platform
     return {"jax_backend": jax.default_backend(), "jax_version": jax.__version__,
             "x64": bool(jax.config.jax_enable_x64), "matmul_precision": str(jax.config.jax_default_matmul_precision),
-            "devices": [str(d) for d in jax.devices()], "host": platform.node(),
+            "devices": [str(d) for d in jax.devices()], "device_kind": [d.device_kind for d in jax.devices()], "host": platform.node(),
+            "source_commit": os.environ.get("COMMIT", os.environ.get("SOURCE_COMMIT")),
             "job_id": os.environ.get("SLURM_JOB_ID"), "numpy_version": np.__version__}

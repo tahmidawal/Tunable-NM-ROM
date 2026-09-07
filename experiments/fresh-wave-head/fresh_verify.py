@@ -107,13 +107,13 @@ def time_and_stability():
     return {"rows": rows, "joint_orders": orders(rows, "joint_relative_error"), "rk4_amplification_max_at_cfl_0_2": float(np.max(abs(ampl))), "eigenvalue_real_max": float(np.max(eig.real))}
 
 
-def plane_pulse(kind):
+def plane_pulse(kind, meshes=(32, 64, 128)):
     rows = []
     c, end = 1., .9
     def f(x):
         return bump((x-.35)/.22)
     fp = jax.vmap(jax.grad(f))
-    for n in (32, 64, 128):
+    for n in meshes:
         grid = Grid(n, "dirichlet" if kind == "reflective" else "absorbing", "periodic")
         x = jnp.asarray(grid.axis(grid.bx))
         u0, v0 = f(x), -c*fp(x)
@@ -132,16 +132,17 @@ def plane_pulse(kind):
     return {"rows": rows, "joint_orders": orders(rows, "joint_relative_error")}
 
 
-def fft_open_reference(n, parameters, time):
+def fft_open_reference(n, parameters, time, length=4):
     """Independent continuum Fourier propagation in a 4x4 periodic box.
 
     Image separation exceeds propagation reach through t=2.4 at c<=1.15.
     The desired unit-square samples have offset 1.5 in the enlarged box.
     """
-    size = 4*n
-    x = np.arange(size)/n-1.5
+    size = length*n
+    offset = (length-1)/2
+    x = np.arange(size)/n-offset
     xx, yy = np.meshgrid(x, x, indexing="ij")
-    cx, cy, sx, sy, amp, c, vx, vy = parameters
+    cx, cy, sx, sy, amp, c, vx, vy = parameters[:8]
     def bn(r):
         out = np.zeros_like(r)
         inside = abs(r) < 1
@@ -155,6 +156,11 @@ def fft_open_reference(n, parameters, time):
     rx, ry = (xx-cx)/sx, (yy-cy)/sy
     u0 = amp*bn(rx)*bn(ry)
     v0 = -c*amp*(vx*dbn(rx)*bn(ry)/sx+vy*bn(rx)*dbn(ry)/sy)
+    if len(parameters) == 10:
+        sigx, sigy = parameters[8:]
+        factor = np.exp(-.5*(((xx-cx)/sigx)**2+((yy-cy)/sigy)**2))
+        v0 = factor*(v0+c*u0*(vx*(xx-cx)/sigx**2+vy*(yy-cy)/sigy**2))
+        u0 = factor*u0
     freq = 2*np.pi*np.fft.fftfreq(size, d=1/n)
     omega = c*np.sqrt(freq[:, None]**2+freq[None, :]**2)
     co, si = np.cos(omega*time), np.sin(omega*time)
@@ -163,7 +169,7 @@ def fft_open_reference(n, parameters, time):
     uh, vh = np.fft.fft2(u0), np.fft.fft2(v0)
     u = np.fft.ifft2(co*uh+sinc*vh).real
     v = np.fft.ifft2(-omega*si*uh+co*vh).real
-    begin = int(1.5*n)
+    begin = int(offset*n)
     return u[begin:begin+n+1, begin:begin+n+1], v[begin:begin+n+1, begin:begin+n+1]
 
 

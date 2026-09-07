@@ -57,3 +57,17 @@ The concrete bank/head optimizer settings, weak dynamics/time integrator and neu
 - **QR:** a coordinate change that makes the bank orthonormal under the mass-weighted inner product.
 - **Tangent consistency:** whether a physical velocity lies in the decoder's local derivative directions.
 - **Final cohort:** unused trajectories reserved for later evaluation after model choices are frozen.
+
+## Pre-training revision after failed reference verification
+
+The first committed reference trial failed the unchanged compact-plane spatial-order checks. Independent sine-transform propagation of the saved reflected fields isolates a large spatial-dispersion error while agreeing closely with the semidiscrete time evolution. No bank or head was trained and the failed original family remains recorded.
+
+Before training, revise the localized family to a Gaussian core multiplied by the same smooth compact taper. The two Gaussian standard deviations are uniform in $[0.12,0.16]$; support half-widths are independently uniform in $[0.36,0.42]$. Centers remain in $[s+0.025,1-s-0.025]$, so the new center coverage is explicitly narrower than the original family. Amplitude, speed, velocity direction, counts, seeds and horizon remain unchanged. The field and all derivatives remain exactly zero at the walls initially. This revision suppresses high-frequency edge content; its suitability is itself subject to new verification.
+
+`fresh_verify_refined.py` retains and extends the original plane controls to intervals 128, 256, 512 and the original narrow reflected-family control to intervals 128, 256. It compares RK4 with independently assembled sine-transform modal propagation using both semidiscrete and continuum frequencies. The new Gaussian-core family receives intervals 32, 64, 128, 256, same-stage energy balance/invariant/finiteness checks, and independent enlarged-domain FFT resolution and box-size checks. A semidiscrete time error below $2\times10^{-4}$ is required for these sharper controls; this is distinct from the fixed-space fourth-order RK4 test. The physical-reference target is at most 2% energy-state uncertainty over the full horizon; a second-order coarse/fine difference below 1.5% is a necessary estimate for the coarse-grid target, subject to observed refinement. If intervals 128 do not meet it, further mesh verification is required before learning.
+
+The coefficient heads and the weak manifold dynamics are being implemented independently while these checks run. The fresh online ODE minimizes the weak acceleration residual in the orthonormal learned-bank test coordinates:
+
+$$\ddot z=\arg\min_a\|J_h(z)a+H_h(z)[\dot z,\dot z]+D_rJ_h(z)\dot z+K_rh(z)\|_2^2.$$
+
+Thus physical velocity is always $GJ_h(z)\dot z$. QR solves the overdetermined weak system with a stage-wise singular-value rank guard and no hidden ridge. Classical RK4 integrates $(z,\dot z)$ and same-stage boundary power. It has no exact discrete energy-conservation claim. The curved-map analytic acceleration and energy identity, independent DOP853 propagation, and a nonorthogonal linear-head matrix-exponential reference are separate component tests.

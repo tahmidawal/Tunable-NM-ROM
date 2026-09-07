@@ -1,0 +1,172 @@
+{
+  "artifacts": {
+    "heat": {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot01/archive/outputs/results.json",
+      "sha256": "a3334207d5932d3fe655bc6154a88d8b9bec95802e89093825db234f27f23ed2"
+    },
+    "heat_review": {
+      "path": "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/heat_pilot01_review.json",
+      "sha256": "7370085ec385791bcc1a833a3e5dbf3aa86d21663034cfbc72381a303d29f1bd"
+    },
+    "burgers": {
+      "path": "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/pilot01/out/pilot.json",
+      "sha256": "a32a243b91e83fb686ea0f8d51bec6e06155eb4d006e0c4cca548483abe0a42d"
+    },
+    "burgers_review": {
+      "path": "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/burgers_pilot01_review.json",
+      "sha256": "fc7a07f430335d6559b160032adde6446c5808aafc854c93ff9d232e12cbb876"
+    },
+    "poisson": {
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot01/result.json",
+      "sha256": "f9c97554649ae87f316bc872fddd136518e94b333f4697b669b21a8e5c3fe8bd"
+    },
+    "poisson_review": {
+      "path": "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/poisson_pilot01_review.json",
+      "sha256": "1fa189b9149593e560a5a71164a90c8dd15406997445790e9b76acece95cefc8"
+    },
+    "wave": {
+      "path": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/analysis/summary.json",
+      "sha256": "5c6cf95ed717735e101f06f21fd2f77a8da7b91b24c784182fc554e67aba2b18"
+    },
+    "wave_native": {
+      "path": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/pilot01/cluster/out/pilot/result.json",
+      "sha256": "d969c32607dacdd0d87e7a411eb8c426ed4dc98fcabe0d993261f753c10e86c5"
+    },
+    "wave_review": {
+      "path": "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/wave_pilot01_accounting_review.json",
+      "sha256": "e954049d7e6f37f20dd671496ac28bae7c17d3b5406b3e97b3daa75a1be83bef"
+    }
+  },
+  "comparisons": [
+    {
+      "pde": "Heat",
+      "intervals": 64,
+      "setting": "CN dt=0.025",
+      "metric": "Current L2",
+      "cases": 4,
+      "rom_error_median": 0.058575352324012814,
+      "rom_error_worst": 0.09735644633034897,
+      "fom_error_worst": 0.0007092112812837499,
+      "rom_ms": 27.775276510510594,
+      "fom_ms": 1.2210289714857936,
+      "raw_paired_ratio": 0.043961529067815974
+    },
+    {
+      "pde": "Heat",
+      "intervals": 128,
+      "setting": "CN dt=0.025",
+      "metric": "Current L2",
+      "cases": 4,
+      "rom_error_median": 0.05854512030646824,
+      "rom_error_worst": 0.09735644633035377,
+      "fom_error_worst": 0.0001771753191278301,
+      "rom_ms": 27.73788449121639,
+      "fom_ms": 1.3691240455955267,
+      "raw_paired_ratio": 0.049252316958335346
+    },
+    {
+      "pde": "Burgers",
+      "intervals": 256,
+      "setting": "dt=0.005; stall=0.001",
+      "metric": "Initial L2",
+      "cases": 4,
+      "rom_error_median": 0.019538771022680448,
+      "rom_error_worst": 0.039608783282479326,
+      "fom_error_worst": 0.022260489047899956,
+      "rom_ms": 39.28364044986665,
+      "fom_ms": 18.415699538309127,
+      "raw_paired_ratio": 0.4917050495160554
+    },
+    {
+      "pde": "Burgers",
+      "intervals": 512,
+      "setting": "dt=0.005; stall=0.001",
+      "metric": "Initial L2",
+      "cases": 4,
+      "rom_error_median": 0.028801480329261185,
+      "rom_error_worst": 0.05274054987202855,
+      "fom_error_worst": 0.01581816041769422,
+      "rom_ms": 42.37876401748508,
+      "fom_ms": 27.875467552803457,
+      "raw_paired_ratio": 0.6954287935235188
+    },
+    {
+      "pde": "Poisson",
+      "intervals": 256,
+      "setting": "tau=0.01",
+      "metric": "Steady L2",
+      "cases": 6,
+      "rom_error_median": 0.008927073193755224,
+      "rom_error_worst": 0.0736259009050308,
+      "fom_error_worst": 0.0001545997763344007,
+      "rom_ms": 4.825671028811485,
+      "fom_ms": 2.060686267213896,
+      "raw_paired_ratio": 0.39495751309203975
+    },
+    {
+      "pde": "Poisson",
+      "intervals": 512,
+      "setting": "tau=0.01",
+      "metric": "Steady L2",
+      "cases": 6,
+      "rom_error_median": 0.008927876972873974,
+      "rom_error_worst": 0.07362955168655816,
+      "fom_error_worst": 3.676657601989594e-05,
+      "rom_ms": 4.885869740974158,
+      "fom_ms": 2.440574753563851,
+      "raw_paired_ratio": 0.4995046213006047
+    },
+    {
+      "pde": "Reflective wave",
+      "intervals": 256,
+      "setting": "dt=0.0025",
+      "metric": "Initial wave state",
+      "cases": 2,
+      "rom_error_median": 0.4616544964228153,
+      "rom_error_worst": 0.553670782106805,
+      "fom_error_worst": 0.0050474164291517375,
+      "rom_ms": 3300.381153530907,
+      "fom_ms": 14.02402698295191,
+      "raw_paired_ratio": 0.004249253111132635
+    },
+    {
+      "pde": "Reflective wave",
+      "intervals": 512,
+      "setting": "dt=0.0025",
+      "metric": "Initial wave state",
+      "cases": 2,
+      "rom_error_median": 0.460137104238728,
+      "rom_error_worst": 0.552043385593914,
+      "fom_error_worst": 0.0014446213838727622,
+      "rom_ms": 3354.2739034746774,
+      "fom_ms": 64.5337860332802,
+      "raw_paired_ratio": 0.019239267082278903
+    },
+    {
+      "pde": "Absorbing wave",
+      "intervals": 256,
+      "setting": "dt=0.0025",
+      "metric": "Initial wave state",
+      "cases": 2,
+      "rom_error_median": 0.07576338767749743,
+      "rom_error_worst": 0.07655351803253826,
+      "fom_error_worst": 0.0008748139956058676,
+      "rom_ms": 3221.2580225314014,
+      "fom_ms": 94.9840925168246,
+      "raw_paired_ratio": 0.029482347051620745
+    },
+    {
+      "pde": "Absorbing wave",
+      "intervals": 512,
+      "setting": "dt=0.0025",
+      "metric": "Initial wave state",
+      "cases": 2,
+      "rom_error_median": 0.07572945917500315,
+      "rom_error_worst": 0.0765434650433347,
+      "fom_error_worst": 0.00019507509657744248,
+      "rom_ms": 3274.3081820663065,
+      "fom_ms": 297.1970990183763,
+      "raw_paired_ratio": 0.09075638778110105
+    }
+  ]
+}

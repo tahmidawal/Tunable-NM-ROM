@@ -267,11 +267,11 @@ Here $M$ contains area integration weights, $B$ contains outgoing-boundary weigh
 
 | Intervals | Case | Method | Initial moment error | Maximum drift from own start | Final moment error |
 |---|---:|---|---:|---:|---:|
-| 512 | 0 | rom | 0.006142049 | 0.01738408 | -0.001512215 |
+| 512 | 0 | frozen MLP16, dt=0.0025 | 0.006142049 | 0.01738408 | -0.001512215 |
 | 512 | 0 | affine16 | 0.001467529 | 0.02290407 | 0.006978501 |
 | 512 | 0 | affine32 | -9.881988e-05 | 0.001557765 | -0.0007796877 |
 | 512 | 0 | full64 | 0.0007440567 | 0.0008986995 | -3.089903e-05 |
-| 512 | 1 | rom | 0.01649773 | 0.01823518 | -0.001492485 |
+| 512 | 1 | frozen MLP16, dt=0.0025 | 0.01649773 | 0.01823518 | -0.001492485 |
 | 512 | 1 | affine16 | 0.0006066674 | 0.02146288 | 0.01165329 |
 | 512 | 1 | affine32 | 0.0006058239 | 0.001310659 | 0.0002725378 |
 | 512 | 1 | full64 | -0.0009765562 | 0.0007404492 | -0.001598021 |
@@ -282,12 +282,96 @@ This establishes a missing discrete conservation property. It does not establish
 
 [Moment formulas, checks and complete traces](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/ABSORBING-MOMENT.md).
 
+### Poisson: training coverage and relative loss are distinct changes
+
+Source `0ed8384c30ff150d0f25adfe1dead41a8a739c26`, job `3353137`. The factorial crosses original versus expanded training coverage with global versus per-field relative squared-error normalization. The prescribed budget is 10000 updates per continuation, with unchanged architecture and identical initial weights. Evaluation uses 6 previously inspected and 24 fresh development sources, outside training. The fresh development cohort is now available for method selection; it is not sealed final confirmation.
+
+| Intervals | Development cohort | Endpoint | Training sources / completed updates | Median / worst physical error (%) | Failures at target | Invalid / nonstationary cases |
+|---|---|---|---:|---:|---:|---:|
+| 256 | existing_development | original_frozen | 512 / 0 | 0.76019 / 7.2542 | 1 / 6 at 5% | 0 / 0 |
+| 256 | existing_development | original_global | 512 / 10000 | 0.75819 / 7.1918 | 1 / 6 at 5% | 0 / 0 |
+| 256 | existing_development | expanded_global | 2048 / 10000 | 0.90515 / 7.4612 | 1 / 6 at 5% | 0 / 0 |
+| 256 | existing_development | original_relative | 512 / 10000 | 1.3192 / 6.0846 | 1 / 6 at 5% | 0 / 0 |
+| 256 | existing_development | expanded_relative | 2048 / 10000 | 1.3618 / 5.7675 | 1 / 6 at 5% | 0 / 0 |
+| 256 | fresh_development | original_frozen | 512 / 0 | 1.9545 / 7.6688 | 6 / 24 at 5% | 0 / 0 |
+| 256 | fresh_development | original_global | 512 / 10000 | 1.9465 / 7.7635 | 6 / 24 at 5% | 0 / 0 |
+| 256 | fresh_development | expanded_global | 2048 / 10000 | 1.8541 / 8.5 | 5 / 24 at 5% | 0 / 0 |
+| 256 | fresh_development | original_relative | 512 / 10000 | 2.0831 / 6.8016 | 5 / 24 at 5% | 0 / 0 |
+| 256 | fresh_development | expanded_relative | 2048 / 10000 | 1.8473 / 7.4745 | 3 / 24 at 5% | 0 / 0 |
+| 512 | existing_development | original_frozen | 512 / 0 | 0.76017 / 7.2542 | 1 / 6 at 5% | 0 / 0 |
+| 512 | existing_development | original_global | 512 / 10000 | 0.75817 / 7.1918 | 1 / 6 at 5% | 0 / 0 |
+| 512 | existing_development | expanded_global | 2048 / 10000 | 0.90513 / 7.4612 | 1 / 6 at 5% | 0 / 0 |
+| 512 | existing_development | original_relative | 512 / 10000 | 1.3192 / 6.0846 | 1 / 6 at 5% | 0 / 0 |
+| 512 | existing_development | expanded_relative | 2048 / 10000 | 1.3618 / 5.7675 | 1 / 6 at 5% | 0 / 0 |
+| 512 | fresh_development | original_frozen | 512 / 0 | 1.9545 / 7.6688 | 6 / 24 at 5% | 0 / 0 |
+| 512 | fresh_development | original_global | 512 / 10000 | 1.9465 / 7.7635 | 6 / 24 at 5% | 0 / 0 |
+| 512 | fresh_development | expanded_global | 2048 / 10000 | 1.8541 / 8.5 | 5 / 24 at 5% | 0 / 0 |
+| 512 | fresh_development | original_relative | 512 / 10000 | 2.0831 / 6.8016 | 5 / 24 at 5% | 0 / 0 |
+| 512 | fresh_development | expanded_relative | 2048 / 10000 | 1.8473 / 7.4745 | 3 / 24 at 5% | 0 / 0 |
+
+These are the tighter generic stationary-control solves. The failure count applies the physical-error target with its empirical reference adjustment and solver/endpoint gates. Original and expanded sets share an update/batch budget; the expanded set receives fewer visits per source. Both the spatial bank and nonlinear head are refined in this Poisson study. At query time each endpoint uses its own mean training code. Thus these results compare complete training procedures under the stated budget, without isolating a universal effect of more data.
+
+| Intervals | All-development target (%) | Selected ROM endpoint / solver / tau | ROM / eligible FOM query (ms) | Paired FOM/ROM |
+|---|---:|---|---:|---:|
+| 256 | 10 | original_global / rom_gj / 0.01 | 4.3097 / 1.7825 | 0.41362 |
+| 256 | 5 | Target unattained | — / 1.7825 | — |
+| 256 | 1 | Target unattained | — / 1.7825 | — |
+| 256 | 0.1 | Target unattained | — / 1.7825 | — |
+| 512 | 10 | original_frozen / rom_gj / 0.01 | 4.6255 / 2.1976 | 0.46878 |
+| 512 | 5 | Target unattained | — / 2.1976 | — |
+| 512 | 1 | Target unattained | — / 2.1976 | — |
+| 512 | 0.1 | Target unattained | — / 2.1976 | — |
+
+The complete-query envelope uses every development case and includes the charged coarse-grid FOM option. Per-case timing repetition arrays, component medians, outliers, failed gates and paired factorial error contrasts are retained in the native findings. Model selection for any later speed experiment must use all cases and both meshes rather than an inspected example. Offline training durations include compilation and diagnostics and are not a paired warm training-speed comparison.
+
+Root independently recomputes 7680 invocation metrics, checks declared source draws and endpoint accounting, and finds maximum metric disagreement `2.359224e-16`. The owner additionally verifies source/checkpoint history and training normalization samples against an independent CPU reference. There are 0 specialized-solver agreement failures and 0 timed fallbacks. Reference adjustment remains empirical; no continuum certificate or global nonlinear optimum is claimed.
+
+[Complete Poisson training findings](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/FINDINGS.md).
+
+### Fresh waves: larger nonlinear heads improve accuracy, with a remaining cost gap
+
+Source `0351e9865ac4559c9e9dbd7bfe4b8a52596e143c`, job `3353701`. Each boundary receives 2 fixed reconstruction-only endpoints with 32 displacement coordinates, each trained for 10000 updates on the original 64 regenerated training trajectories. The spatial bank stays fixed with 64 weak equations. The equations-to-coordinate ratio changes from 4 to 2; the nonlinear system remains overdetermined. No velocity or rollout loss is added.
+
+The table shows the finer requested mesh (512 intervals). The native findings retain both meshes, every repeated step-size setting and both seeds.
+
+| Boundary | Method | Step | Median / worst time-max error, initial normalization (%) | Method / same-grid FOM query (ms) | Raw paired FOM/method |
+|---|---|---:|---:|---:|---:|
+| dirichlet | frozen_mlp16_seed691200 | 0.0025 | 46.014 / 55.204 | 3373.82 / 61.584 | 0.018253 |
+| dirichlet | new_mlp32_seed691200 | 0.01 | 5.2687 / 6.2029 | 1217.24 / 61.584 | 0.050593 |
+| dirichlet | new_mlp32_seed691200 | 0.0025 | 5.2698 / 6.2044 | 4603.88 / 61.584 | 0.013377 |
+| dirichlet | new_mlp32_seed691201 | 0.01 | 5.5303 / 6.7742 | 1216.63 / 61.584 | 0.050619 |
+| dirichlet | new_mlp32_seed691201 | 0.0025 | 5.5339 / 6.7794 | 4605.2 / 61.584 | 0.013373 |
+| dirichlet | affine32 | 0 | 4.3395 / 5.1888 | 59.5704 / 61.584 | 1.0338 |
+| absorbing | frozen_mlp16_seed691200 | 0.0025 | 7.5729 / 7.6543 | 3288.12 / 277.79 | 0.084483 |
+| absorbing | new_mlp32_seed691200 | 0.01 | 5.5122 / 5.9132 | 1336.64 / 277.79 | 0.20786 |
+| absorbing | new_mlp32_seed691200 | 0.0025 | 5.5121 / 5.9129 | 5094.42 / 277.79 | 0.054531 |
+| absorbing | new_mlp32_seed691201 | 0.01 | 5.5495 / 6.1811 | 1328.15 / 277.79 | 0.20919 |
+| absorbing | new_mlp32_seed691201 | 0.0025 | 5.5495 / 6.1811 | 5050.13 / 277.79 | 0.055013 |
+| absorbing | affine32 | 0 | 5.6276 / 5.9127 | 51.6608 / 277.79 | 5.4807 |
+
+At the same step, the larger nonlinear heads improve initial-normalized rollout error but increase query cost. Using their larger tested step recovers some cost, while the efficient same-grid FOM remains faster. At the finer mesh shown, the larger nonlinear heads do not improve the all-case worst error of their matched affine control. A finer time integrator alone does not close the physical-error gap.
+
+All 48 adjacent nonlinear step comparisons pass the unchanged `0.01` development criterion; their maximum required difference is `0.0003036077`. The 16 finest-step queries are separately audited accuracy controls, excluded from every timing summary and selection. Their saved single-call latencies may include uncached compilation.
+
+| Absorbing method | Step | Final energy-state error / current reference norm, case range |
+|---|---:|---:|
+| frozen_mlp16_seed691200 | 0.0025 | 2.92808–4.10705 |
+| new_mlp32_seed691200 | 0.01 | 2.92709–3.22814 |
+| new_mlp32_seed691201 | 0.01 | 3.12151–4.66729 |
+| affine32 | 0 | 2.69765–3.65008 |
+
+Late absorbing errors remain larger than the remaining reference field. Improved error relative to the initial state does not establish accurate relative prediction at late times. The separate moment diagnostic has not been corrected in this experiment.
+
+The native audit verifies 228 timed calls and 16 fine controls, with 0 failed timed trajectories and 0 failed fine trajectories. It reconstructs full-grid ROM fields, head derivatives and fitting diagnostics, verifies training/checkpoint lineage, and checks the affine generator. Root independently recomputes all common-field metrics and accounting roles, maximum disagreement `3.108624e-15`. Reference bounds remain empirical; the full-grid timed FOM reconstruction limitation from the prior wave audit remains. No coarse-FOM envelope, new development cohort or sealed-final confirmation is included.
+
+[Complete larger-head wave findings](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/FINDINGS.md). [Larger-head wave error evolution](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/heads32-error-evolution.png).
+
 ## Next experiments justified by the diagnostics
 
-- **Burgers:** the corrected full rollout now supports the stated empirical development targets. Test larger reduced time steps against the same physical reference and efficient FOM envelope; the current reduced evolution is still costly. Preserve the initial-condition family and charge full input/output.
-- **Heat:** preserve the expanded-coverage refinement result, then test independent development inputs before selecting a model for final evaluation. Accuracy improved with a fixed bank, but beating the direct FOM still requires a substantial complete-query cost reduction.
-- **Poisson:** finish the separately declared coverage-by-loss refinement study. A later source-projection and field-based initialization ablation should remain distinct from training changes; the small-system solver alone gives only a modest gain.
-- **Waves:** the frozen-bank controls show that the matched-dimensional ordering depends on the boundary, and larger linear spaces improve both cases. Next compare larger nonlinear heads against the matched linear controls, with an explicit late-time accuracy requirement for absorbing fields. A coarse-FOM resolution envelope is also needed before promoting any raw linear-control timing ratio.
+- **Burgers:** larger steps partly reduce cost but also expose iteration caps, especially at startup. A later bounded startup-solve or time-formula control should separate those effects before further architectural changes. The existing latent extrapolator is already present; adding it again is not a new intervention.
+- **Heat:** extend both frozen expanded-coverage endpoints over a wider mesh ladder and fresh development inputs, including an efficient coarse-FOM envelope with charged interpolation. Keep the original and fresh cohorts separate and preserve complete-grid errors.
+- **Poisson:** relative loss helps the worst development sources, while expanded coverage at matched updates is not uniformly beneficial. Test source-projection cost and field-based initialization separately with frozen checkpoints selected from all development cases; the small-system solver alone gives only a modest gain.
+- **Waves:** the larger nonlinear heads greatly improve reflective accuracy but remain costly and leave late absorbing error. Separate constant-test and initial-moment interventions are justified as later controls by the conservation diagnostic, without assuming they solve the full problem. A coarse-FOM resolution envelope is still needed before promoting any raw linear-control timing ratio.
 
 These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, independent data/training repeats, validation-selected settings and sealed final evaluation.
 

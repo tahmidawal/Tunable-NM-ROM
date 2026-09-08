@@ -32,6 +32,10 @@ FILES = {
     'poisson_kernel': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/result.json',
     'poisson_kernel_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/summary.json',
     'poisson_kernel_review': REPAIR/'poisson_pilot03_review.json',
+    'poisson_training': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/result.json',
+    'poisson_training_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/summary.json',
+    'poisson_training_audit': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/audit.json',
+    'poisson_training_review': REPAIR/'poisson_pilot04_review.json',
     'burgers_rollout': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/out/pilot.json',
     'burgers_rollout_summary': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/SUMMARY.json',
     'burgers_rollout_audit': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/AUDIT.json',
@@ -45,6 +49,10 @@ FILES = {
     'wave_dynamics_audit': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/audit.json',
     'wave_dynamics_review': REPAIR/'wave_dynamics02_review.json',
     'wave_moment': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/absorbing-moment.json',
+    'wave_heads': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/result.json',
+    'wave_heads_summary': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/summary.json',
+    'wave_heads_audit': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/audit.json',
+    'wave_heads_review': REPAIR/'wave_k32heads03_review.json',
 }
 
 
@@ -166,10 +174,10 @@ def main():
         'The rigorous reference-bound field remains unspecified where only empirical refinement is available. '
         'No paper-wide speedup, optimal capacity, optimized training cost, broad-family robustness, or independent confirmation is established.', '',
         '## Next experiments justified by the diagnostics', '',
-        '- **Burgers:** the corrected full rollout now supports the stated empirical development targets. Test larger reduced time steps against the same physical reference and efficient FOM envelope; the current reduced evolution is still costly. Preserve the initial-condition family and charge full input/output.',
-        '- **Heat:** preserve the expanded-coverage refinement result, then test independent development inputs before selecting a model for final evaluation. Accuracy improved with a fixed bank, but beating the direct FOM still requires a substantial complete-query cost reduction.',
-        '- **Poisson:** finish the separately declared coverage-by-loss refinement study. A later source-projection and field-based initialization ablation should remain distinct from training changes; the small-system solver alone gives only a modest gain.',
-        '- **Waves:** the frozen-bank controls show that the matched-dimensional ordering depends on the boundary, and larger linear spaces improve both cases. Next compare larger nonlinear heads against the matched linear controls, with an explicit late-time accuracy requirement for absorbing fields. A coarse-FOM resolution envelope is also needed before promoting any raw linear-control timing ratio.', '',
+        '- **Burgers:** larger steps partly reduce cost but also expose iteration caps, especially at startup. A later bounded startup-solve or time-formula control should separate those effects before further architectural changes. The existing latent extrapolator is already present; adding it again is not a new intervention.',
+        '- **Heat:** extend both frozen expanded-coverage endpoints over a wider mesh ladder and fresh development inputs, including an efficient coarse-FOM envelope with charged interpolation. Keep the original and fresh cohorts separate and preserve complete-grid errors.',
+        '- **Poisson:** relative loss helps the worst development sources, while expanded coverage at matched updates is not uniformly beneficial. Test source-projection cost and field-based initialization separately with frozen checkpoints selected from all development cases; the small-system solver alone gives only a modest gain.',
+        '- **Waves:** the larger nonlinear heads greatly improve reflective accuracy but remain costly and leave late absorbing error. Separate constant-test and initial-moment interventions are justified as later controls by the conservation diagnostic, without assuming they solve the full problem. A coarse-FOM resolution envelope is still needed before promoting any raw linear-control timing ratio.', '',
         'These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, '
         'independent data/training repeats, validation-selected settings and sealed final evaluation.', '',
         '## Visual artifacts', '',
@@ -478,6 +486,12 @@ def continued_development(data, manifest):
     moment_lines, moment_values = wave_moment(data, manifest)
     lines += moment_lines
     values.update(moment_values)
+    training_lines, training_values = poisson_training_factorial(data, manifest)
+    lines += training_lines
+    values.update(training_values)
+    heads_lines, heads_values = wave_larger_heads(data, manifest)
+    lines += heads_lines
+    values.update(heads_values)
     return lines, values
 
 
@@ -662,7 +676,8 @@ def wave_moment(data, manifest):
         '| Intervals | Case | Method | Initial moment error | Maximum drift from own start | Final moment error |',
         '|---|---:|---|---:|---:|---:|']
     for r in selected:
-        lines.append(f"| {n} | {r['case']} | {r['method']} | {r['initial_error']:.7g} | {r['maximum_drift_from_own_initial']:.7g} | {r['final_error']:.7g} |")
+        label = f"frozen MLP16, dt={r['setting']:g}" if r['method'] == 'rom' else r['method']
+        lines.append(f"| {n} | {r['case']} | {label} | {r['initial_error']:.7g} | {r['maximum_drift_from_own_initial']:.7g} | {r['final_error']:.7g} |")
     refs = [r for r in diagnostic['references'] if r['intervals'] == n]
     lines += ['', f"The saved full references have maximum moment drift `{max(r['reference_max_drift'] for r in refs):.7g}` on this mesh. "
         'The table separates initialization error from subsequent drift; its entries are signed moment errors or absolute drift, not relative field errors. '
@@ -671,6 +686,71 @@ def wave_moment(data, manifest):
         'Adding a constant test direction and enforcing the initial moment are proposed separate interventions; neither has been tested here, and preserving this moment alone would not certify local-field accuracy.', '',
         link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/ABSORBING-MOMENT.md', 'Moment formulas, checks and complete traces')+'.', '']
     return lines, {'wave_absorbing_moment': dict(bank=bank, references=refs, methods=selected)}
+
+
+def wave_larger_heads(data, manifest):
+    pilot, summary = data['wave_heads'], data['wave_heads_summary']
+    audit, review = data['wave_heads_audit'], data['wave_heads_review']
+    assert pilot['complete'] and audit['passed'] and not pilot['final_test_opened']
+    assert summary['result_sha256'] == audit['result_sha256'] == review['source_json_sha256'] == manifest['wave_heads']['sha256']
+    assert summary['audit_sha256'] == manifest['wave_heads_audit']['sha256']
+    assert review['verified_invocations'] == audit['audited_comparison_invocations'] == len(pilot['invocations'])
+    assert review['verified_accuracy_controls'] == audit['audited_accuracy_only_invocations'] == len(pilot['accuracy_controls'])
+    assert all(not r['comparison_eligible'] for r in pilot['accuracy_controls'])
+    cfg = pilot['config']
+    n = max(cfg['meshes'])
+    values = {'wave_larger_heads': [], 'wave_larger_absorbing_final': []}
+    lines = ['### Fresh waves: larger nonlinear heads improve accuracy, with a remaining cost gap', '',
+        f"Source `{review['source_commit']}`, job `{review['job_id']}`. Each boundary receives {len(cfg['training']['optimizer_seeds'])} fixed reconstruction-only endpoints with {cfg['new_latent_dimension']} displacement coordinates, "
+        f"each trained for {cfg['training']['head_steps']} updates on the original {cfg['train_count']} regenerated training trajectories. "
+        f"The spatial bank stays fixed with {cfg['weak_bank_equations']} weak equations. The equations-to-coordinate ratio changes from {cfg['weak_bank_equations']/cfg['latent']:g} to {cfg['weak_bank_equations']/cfg['new_latent_dimension']:g}; "
+        'the nonlinear system remains overdetermined. No velocity or rollout loss is added.', '',
+        f'The table shows the finer requested mesh ({n} intervals). The native findings retain both meshes, every repeated step-size setting and both seeds.', '',
+        '| Boundary | Method | Step | Median / worst time-max error, initial normalization (%) | Method / same-grid FOM query (ms) | Raw paired FOM/method |',
+        '|---|---|---:|---:|---:|---:|']
+    for g in summary['groups']:
+        if g['intervals'] != n or g['method'] in ('dst', 'rk4'):
+            continue
+        if g['method'].startswith('new_') and g['setting'] not in (min(cfg['nonlinear_dts']), max(cfg['nonlinear_dts'])):
+            continue
+        rows = [r for r in review['rows'] if r['comparison_eligible'] and
+            (r['boundary'], r['intervals'], r['method'], r['setting']) == (g['boundary'], n, g['method'], g['setting'])]
+        assert len(rows) == len(cfg['validation_indices'])
+        assert abs(max(r['worst_initial_normalized'] for r in rows)-g['physical_error_worst']) < 1e-12
+        baseline = next(b for b in summary['groups'] if b['boundary'] == g['boundary'] and b['intervals'] == n and
+            (b['method'], b['setting']) == (('dst', 0.) if g['boundary'] == 'dirichlet' else ('rk4', max(cfg['fom_cfls']))))
+        value = dict(boundary=g['boundary'], intervals=n, method=g['method'], dt=g['setting'],
+            median_error=g['physical_error_median'], worst_error=g['physical_error_worst'], method_ms=1000*g['query_median'],
+            fom_ms=1000*baseline['query_median'], raw_paired_ratio=g['paired_FOM_over_method_ratio'],
+            failed_cases=g['failed_cases'], nonstationary_cases=g['nonstationary_cases'], unresolved_cases=g['time_refinement_failed_cases'])
+        values['wave_larger_heads'].append(value)
+        lines.append(f"| {g['boundary']} | {g['method']} | {g['setting']:g} | {100*value['median_error']:.5g} / {100*value['worst_error']:.5g} | {value['method_ms']:.6g} / {value['fom_ms']:.6g} | {value['raw_paired_ratio']:.5g} |")
+        if g['boundary'] == 'absorbing' and (not g['method'].startswith('new_') or g['setting'] == max(cfg['nonlinear_dts'])):
+            final = [c['final_current_relative']['energy_state'] for c in g['cases']]
+            values['wave_larger_absorbing_final'].append(dict(method=g['method'], dt=g['setting'], minimum=min(final), maximum=max(final)))
+    lines += ['', 'At the same step, the larger nonlinear heads improve initial-normalized rollout error but increase query cost. '
+        'Using their larger tested step recovers some cost, while the efficient same-grid FOM remains faster. '
+        'At the finer mesh shown, the larger nonlinear heads do not improve the all-case worst error of their matched affine control. '
+        'A finer time integrator alone does not close the physical-error gap.', '',
+        f"All {len(summary['time_refinement'])} adjacent nonlinear step comparisons pass the unchanged `{summary['time_refinement_target']:g}` development criterion; "
+        f"their maximum required difference is `{max(r['maximum_required_difference'] for r in summary['time_refinement']):.7g}`. "
+        f"The {review['verified_accuracy_controls']} finest-step queries are separately audited accuracy controls, excluded from every timing summary and selection. "
+        'Their saved single-call latencies may include uncached compilation.', '',
+        '| Absorbing method | Step | Final energy-state error / current reference norm, case range |',
+        '|---|---:|---:|']
+    for r in values['wave_larger_absorbing_final']:
+        lines.append(f"| {r['method']} | {r['dt']:g} | {r['minimum']:.6g}–{r['maximum']:.6g} |")
+    lines += ['', 'Late absorbing errors remain larger than the remaining reference field. Improved error relative to the initial state does not establish accurate relative prediction at late times. '
+        'The separate moment diagnostic has not been corrected in this experiment.', '',
+        f"The native audit verifies {audit['audited_comparison_invocations']} timed calls and {audit['audited_accuracy_only_invocations']} fine controls, "
+        f"with {audit['failed_comparison_invocations']} failed timed trajectories and {audit['failed_accuracy_only_invocations']} failed fine trajectories. "
+        'It reconstructs full-grid ROM fields, head derivatives and fitting diagnostics, verifies training/checkpoint lineage, and checks the affine generator. '
+        f"Root independently recomputes all common-field metrics and accounting roles, maximum disagreement `{review['maximum_metric_disagreement']:.7g}`. "
+        'Reference bounds remain empirical; the full-grid timed FOM reconstruction limitation from the prior wave audit remains. '
+        'No coarse-FOM envelope, new development cohort or sealed-final confirmation is included.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/FINDINGS.md', 'Complete larger-head wave findings')+'. '+
+        link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/heads32-error-evolution.png', 'Larger-head wave error evolution')+'.', '']
+    return lines, values
 
 
 def poisson_training_factorial(data, manifest):
@@ -688,7 +768,7 @@ def poisson_training_factorial(data, manifest):
         f"The prescribed budget is {cfg['training_steps_each']} updates per continuation, with unchanged architecture and identical initial weights. "
         f"Evaluation uses {cfg['existing_development_count']} previously inspected and {cfg['additional_development_count']} fresh development sources, outside training. "
         'The fresh development cohort is now available for method selection; it is not sealed final confirmation.', '',
-        '| Intervals | Development cohort | Endpoint | Training sources / completed updates | Median / worst physical error (%) | Cases failing target (%) | Invalid / nonstationary cases |',
+        '| Intervals | Development cohort | Endpoint | Training sources / completed updates | Median / worst physical error (%) | Failures at target | Invalid / nonstationary cases |',
         '|---|---|---|---:|---:|---:|---:|']
     for row in summary['summaries']:
         if row['cohort'] == 'all_development' or row['arm'] != 'rom_modular' or row['tau'] != 0:

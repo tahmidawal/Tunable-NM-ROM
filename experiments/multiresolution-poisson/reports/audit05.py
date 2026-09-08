@@ -95,7 +95,7 @@ for setup in d['setup']:
         distances=np.sum((cache['predictions']-target[None,:])**2,axis=1)
         index=int(np.argmin(distances));closest=distances[index];distances[index]=np.inf
         lookup[tag,n,case]=(index,float(np.sqrt(closest)),float(distances.min()-closest))
-keys=set();errors=[];field_errors=[];residual_errors=[];gradient_errors=[];lookup_errors=[];native_source={};metric_cache={};reconstruction_cache={}
+keys=set();errors=[];field_errors=[];residual_errors=[];gradient_errors=[];lookup_errors=[];native_source={};metric_cache={};reconstruction_cache={};rowmap={}
 rows=d['rows']+d['stationary_rows']
 assert len(d['rows'])==cfg['expected_timed_invocations'] and len(d['stationary_rows'])==cfg['expected_stationary_invocations']
 for row in rows:
@@ -113,6 +113,7 @@ for row in rows:
     parts=['input_seconds','fused_device_seconds','output_seconds'] if tag else ['input_seconds','projection_init_seconds','solver_seconds','output_seconds']
     assert abs(sum(row[k] for k in parts)-row['total_seconds'])<1e-10
     if tag:
+        rowmap[row['panel'],n,case,tag,row['projection'],row['initialization'],row['repetition']]=row
         p=models[tag]['params'];z=np.asarray(row['latent']);z0=np.asarray(row['initial_latent']);cache=caches[tag,n];target=fm[tag,n,case]
         expected_start=models[tag]['Z_tr'].mean(0)
         if row['initialization']=='nearest_cached_scaled_weak_prediction':
@@ -127,6 +128,8 @@ for row in rows:
         residual_errors.extend([abs(initial-row['initial_residual'])/(initial+1e-300),abs(final-row['residual'])/(initial+1e-300)])
         assert max(residual_errors[-2:])<1e-10
         assert row['absolute_tau_threshold']==row['tau']*row['initial_residual']
+        assert row['tau_reached']==(row['reason']==2)
+        if row['tau_reached']:assert row['tau']>0 and row['residual']<=row['absolute_tau_threshold']
         jac=cache['B']@head_jac(p,z).T
         gradient=float(np.linalg.norm(jac.T@r)/(np.linalg.norm(jac)*final+1e-300))
         gradient_errors.append(abs(gradient-row['stationarity']));assert gradient_errors[-1]<1e-8
@@ -137,12 +140,27 @@ for row in rows:
         assert row['stationary']==(row['stationarity']<=cfg['stationarity_tolerance'])
         assert row['solver_valid']==(row['finite'] and row['parity_passed'] and row['max_linear_backward_error']<=cfg['linear_backward_error_limit'] and (row['tau_reached'] or row['stationary']))
         assert 0<=row['fallback_count']<=row['attempts']
+parity_differences=[]
+for pair in d['projection_parity']:
+    panel,n,case,tag,init,rep=[pair[k] for k in ('panel','intervals','case','model','initialization','repetition')]
+    left,right=[rowmap[panel,n,case,tag,proj,init,rep] for proj in cfg['projection']]
+    field=relative(fields[right['field_sha256']],fields[left['field_sha256']])
+    latent=relative(np.asarray(right['latent']),np.asarray(left['latent']))
+    residual=abs(right['residual']-left['residual'])/(left['initial_residual']+1e-300)
+    parity_differences.extend([abs(field-pair['field_relative']),abs(latent-pair['latent_relative']),abs(residual-pair['objective_scaled_difference'])])
+    limits=cfg['agreement_limits']
+    coefficient=next(x for x in d['coefficient_checks'] if x['intervals']==n and x['case']==case and x['model']==tag)
+    expected=(coefficient['coefficient_passed'] and pair['indices_match'] and pair['initial_latent_relative']<=cfg['initial_latent_relative_tolerance']
+        and field<=limits['field_relative'] and latent<=limits['latent_relative'] and residual<=limits['objective_initial_scaled'])
+    assert pair['passed']==left['parity_passed']==right['parity_passed']==expected
+assert max(parity_differences)<1e-10
 report=dict(passed=True,job_id=sub['job_id'],source_commit=sub['source_commit'],archive_sha256=clean['archive_sha256'],
     primary_invocations=len(d['rows']),stationary_invocations=len(d['stationary_rows']),distinct_preserved_field_hashes=len(fields),
     maximum_independent_cpu_metric_difference=max(errors),maximum_decoder_field_relative_difference=max(field_errors),
     maximum_cpu_cache_prediction_relative_difference=max(cache_errors),maximum_cpu_bank_operator_relative_difference=max(operator_errors),
     maximum_initial_scaled_residual_difference=max(residual_errors),maximum_stationarity_absolute_difference=max(gradient_errors),
     maximum_nearest_distance_relative_difference=max(lookup_errors),
+    maximum_projection_parity_metric_difference=max(parity_differences),
     parameter_regeneration_absolute_difference=float(np.max(np.abs(independent-draws))),all_declared_draws_match_pilot04_exactly=True,
     source_checkpoint_and_result_match_archive_and_git=True,recorded_source_hashes_stable=True,training_only_cache_and_all_selected_codes_verified=True,
     projection_gate_failures=sum(not x['passed'] for x in d['projection_parity']),lookup_index_mismatches=sum(not x['lookup_index_matches'] for x in d['coefficient_checks']),

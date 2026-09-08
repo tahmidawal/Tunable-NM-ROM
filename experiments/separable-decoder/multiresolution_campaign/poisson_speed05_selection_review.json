@@ -1,0 +1,32 @@
+{
+  "source_selection": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/SPEED-SELECTION.json",
+  "source_selection_sha256": "17e49f6060fbfccb679ecbebf764185ccda5ba735d461f6f566e8ed50e36337d",
+  "source_summary_sha256": "4c2630d668bacb2f697e0bbe876d3694bf6f50acbbaaba0a9b5dab33ecc91ec7",
+  "candidate_scores": {
+    "original_global": [
+      0.07764273716893383,
+      0.018495115225446786,
+      "original_global"
+    ],
+    "expanded_global": [
+      0.08500779107633252,
+      0.016423952956638448,
+      "expanded_global"
+    ],
+    "original_relative": [
+      0.06801967271652216,
+      0.018497968908620856,
+      "original_relative"
+    ],
+    "expanded_relative": [
+      0.07475323721818594,
+      0.016421504485336417,
+      "expanded_relative"
+    ]
+  },
+  "selected_endpoint": "original_relative",
+  "selected_checkpoint": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/checkpoints/original_relative.pkl",
+  "selected_checkpoint_sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a",
+  "all_case_mesh_count": 60,
+  "review": "All development cases on both meshes, completed endpoints and solver-valid stationary generic outputs; independent minimax then median then name selection agrees. Eligible for the bounded source-projection by initialization study; no speed result exists yet."
+}

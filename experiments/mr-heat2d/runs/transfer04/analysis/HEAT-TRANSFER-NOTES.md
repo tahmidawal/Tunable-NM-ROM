@@ -14,6 +14,8 @@ Every FOM returns the exact supplied initial field. Host coarse restriction, GPU
 
 The run took 10.786947 minutes. The audit found 0 selected nonstationary initial fits and 0 nonstationary evolution steps across all repetitions. Failures remain in raw records and cannot qualify for target selection.
 
+There were 0 timing repetitions above three times their own case/configuration median. Every repetition remains in the archive and in timing summaries.
+
 Costs below are medians of per-case timing medians. All errors are maxima over every case, repetition and output time in the named cohort. Each head remains separately visible; this experiment changes neither its representation nor its training coverage.
 
 | Cohort | Output intervals | Method | Query ms | Full current error % | Common current error % | Initial full error % | Invalid cases |

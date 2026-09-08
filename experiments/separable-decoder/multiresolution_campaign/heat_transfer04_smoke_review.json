@@ -1,0 +1,93 @@
+{
+  "scope": "Independent CPU audit of frozen heat transfer outputs and full-query accounting.\n\nRecomputes all saved physical/common/discrete errors, seeded memberships, frozen\ncheckpoint bytes, repeated-output hashes and initial-output policy. References\nare retained spectral trajectories; this is not a rigorous continuum bound.\n",
+  "source_json": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/smoke/outputs/results.json",
+  "source_json_sha256": "0457fb0f62bdd79021a43f6998d24dd59102279b1abee525df39e76abbdd71a9",
+  "source_commit": "2cf26508563216ea88d6263f4a6ae0373676af79",
+  "job_id": null,
+  "verified_timed_invocations": 4,
+  "maximum_metric_disagreement": 0.0,
+  "artifact_hashes": {
+    "fields/9bec7e00960759e67e350a14cc1a50fc9c7c15947afdb6d5dea9399923ec82ef.npz": "1261eba02229af8a5b8b41e793dcd65dca2741d97ee7422e87efe9064e4879de",
+    "fields/1f3d7dfc82f131cf3ad380173de433f1aeb5442adc69982a93bf530309beebe3.npz": "c511a68ce29c13e8229b20fbd31d88d9a4486efa956362334320e571ff408d81",
+    "fields/d7b303abc280638a28015fd23e7881e2d832d88a828734686c6fef0c80d0b93d.npz": "b5cf125c4b466c3c48882c1ec803b1bb322f0824663a17b404144baa5124a7ac",
+    "fields/b0f8eb3ee558a34ab42d05e0448b51f5fec4e5cb036f5512b034150a1e403369.npz": "f917a93d3fce66d6bdbe23883dc6c10c0e5eaa2471f860f742a59c6daf7ad0f1",
+    "fields/28979292630e9939cab2c096122313f4318f688a49e34e53f35ff03a4af3118e.npz": "188f865ca33db2e79bef3ac92044ae48b96704a4739ead7b92e4fe4805789690",
+    "fields/7399cc21d49f66481912d13031540c67c7acfff81d1bc4d60c883f81baea851a.npz": "9c253834c3f58cce41a12efba3ee4677636c7b6377e021e8af9efe6a8fd3c769",
+    "fields/09fa459d14e02987b3e006e14aaed0ebc34dd9c467aaebdaa50b59c3faa18810.npz": "a1234a40eb5357263a8570c1cf4a1087171ba5cf289e6d728f4f21adb46eff6e",
+    "fields/bc3efc9638ea7cc91968ddd85b4e28ab15d841003d675871f0bb08e72f0cffc0.npz": "15d71d235ecfd890343755e5660bfc922de1c8d316971cf376972866252babb3"
+  },
+  "declared_checkpoint_case_and_repetition_counts_match": true,
+  "frozen_spatial_parameters_match": true,
+  "fom_initial_passthrough_verified": true,
+  "rows": [
+    {
+      "intervals": 64,
+      "case": 0,
+      "cohort": "smoke",
+      "method": "fom_dst_16",
+      "model": "fom",
+      "solver_intervals": 16,
+      "median_query_seconds": 0.004970587993739173,
+      "timing_repetitions": [
+        0.004970587993739173
+      ],
+      "timing_outliers_above_twice_case_median": 0,
+      "worst_full_grid_error": 0.020429492551757855,
+      "worst_common_error": 0.020429492551757855,
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "cohort": "smoke",
+      "method": "fom_dst_64",
+      "model": "fom",
+      "solver_intervals": 64,
+      "median_query_seconds": 0.0037669969897251576,
+      "timing_repetitions": [
+        0.0037669969897251576
+      ],
+      "timing_outliers_above_twice_case_median": 0,
+      "worst_full_grid_error": 0.0006364913818105974,
+      "worst_common_error": 0.0006364913818105974,
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "cohort": "smoke",
+      "method": "expanded_seed790714",
+      "model": "expanded_seed790714",
+      "solver_intervals": 64,
+      "median_query_seconds": 0.012344451999524608,
+      "timing_repetitions": [
+        0.012344451999524608
+      ],
+      "timing_outliers_above_twice_case_median": 0,
+      "worst_full_grid_error": 0.03213912784388027,
+      "worst_common_error": 0.03213912784388027,
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "cohort": "smoke",
+      "method": "expanded_seed790715",
+      "model": "expanded_seed790715",
+      "solver_intervals": 64,
+      "median_query_seconds": 0.014954468002542853,
+      "timing_repetitions": [
+        0.014954468002542853
+      ],
+      "timing_outliers_above_twice_case_median": 0,
+      "worst_full_grid_error": 0.03275145786892205,
+      "worst_common_error": 0.03275145786892205,
+      "initial_nonstationary_repetitions": 0,
+      "nonstationary_steps_all_repetitions": 0
+    }
+  ],
+  "rigorous_reference_bound": null
+}

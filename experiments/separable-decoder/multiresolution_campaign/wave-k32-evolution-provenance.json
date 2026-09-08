@@ -1,0 +1,47 @@
+{
+  "source_result_sha256": "b76064e45af70de38b75f1f3f7e383982017c82effefbfd04ad7d8ac75ca4851",
+  "job_id": "3353701",
+  "source_commit": "0351e9865ac4559c9e9dbd7bfe4b8a52596e143c",
+  "solver_intervals": 512,
+  "display_intervals": 256,
+  "case": 1,
+  "method": "new_mlp32_seed691200",
+  "dt": 0.01,
+  "frames": [
+    0,
+    8,
+    16,
+    24,
+    32,
+    40,
+    48
+  ],
+  "sources": {
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/reference_dirichlet_1.npz": "8939b0844da44acfebd15e35eee6130745b5d0a8f73e634cace035210af6897e",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/dirichlet_512_1_0_frozen_mlp16_seed691200_0.0025.npz": "691b3ed12625cd9db7c1c33f7442d4c7246111ec4e63fa05beea308d4d6802a6",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/dirichlet_512_1_0_new_mlp32_seed691200_0.01.npz": "51ec9b44226839505d4a039d4a3e9a2ec2e854103105a3292cc8ac38f4e8dac9",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/reference_absorbing_1.npz": "158291b3e3544f8a0a46eb2b9f5a92295df5ef760747d8a39d2951940c7dedd7",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/absorbing_512_1_0_frozen_mlp16_seed691200_0.0025.npz": "6d0955c46cd6bc46fdbe693ce78da05efbfd9bddf97c35f6d57d909c43db7072",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/absorbing_512_1_0_new_mlp32_seed691200_0.01.npz": "0fee226d69fdf62c7f994db6f7fabe26d7978320e87ef46c10e9f906d4c624bb"
+  },
+  "figures": [
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/dirichlet-wave-k32-evolution-case1.png",
+      "sha256": "9dd3f7802e059e086bdcdbaab85985366bcf0bc6385604a88966b7578b2c0cae"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/dirichlet-wave-k32-evolution-case1.pdf",
+      "sha256": "ab62e01cee9b0d65fc3b0ba75ee88be9f2799060f80d20b9e9b84e7edca022bf"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/absorbing-wave-k32-evolution-case1.png",
+      "sha256": "f26923304eefc3067e239194b7f3910aa06edc037e82ad8bfb0ff40dd6dd08ba"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/absorbing-wave-k32-evolution-case1.pdf",
+      "sha256": "051215dd2591930967a2b08dcd1de7ad09d4c4a093389315e0228a11605170b0"
+    }
+  ],
+  "selection": "Same last declared development case used in earlier still plots; first predeclared optimizer seed and largest repeated timestep. Both seeds and all cases remain in numeric tables.",
+  "limitation": "Displacement only. Fixed color scales can hide late absorbing relative errors; velocity and energy-state metrics are retained in the report."
+}

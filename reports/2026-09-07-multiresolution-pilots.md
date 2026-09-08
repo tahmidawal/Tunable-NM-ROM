@@ -2,9 +2,27 @@
 
 This report covers frozen-network mesh-transfer pilots, bounded solver changes and controlled training refinements of the current separable NM-ROM against efficient FOM solvers. The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.
 
-The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. Increasing resolution does not reliably reduce ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.
+The tested frozen decoders produce solutions on new meshes, but the completed nonlinear-ROM studies have not established a complete-query advantage over efficient FOMs. Increasing resolution does not reliably reduce ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.
 
 The older ViT + CP architecture is excluded. Waves use only the fresh verified lineage. The final cohorts remain unopened. Different rows use different physical error definitions, stated below; they must not be ranked as a common cross-PDE accuracy score.
+
+## Latest audited development results
+
+These rows show the finest requested mesh from each latest completed study. Heat, Burgers and Poisson use their declared development cost-to-accuracy selections. Wave rows show the first predeclared larger-head seed at the largest repeated step; both seeds and all tested steps are retained in the detailed findings. Different physical norms and cohorts are explicit and must not be ranked as one cross-PDE accuracy score.
+
+| PDE | Output intervals | Cases | Error norm | Worst error (%) | ROM / FOM query (ms) | Paired FOM/ROM | Timing outliers, ROM / FOM | FOM comparison |
+|---|---:|---:|---|---:|---:|---:|---:|---|
+| Heat | 1024 | 12 | Current L2, full grid | 4.5555 | 27.733 / 21.4106 | 0.76673 | 0 / 0 | Tested envelope |
+| Burgers | 1024 | 4 | Initial L2, full grid | 4.6351 | 49.463 / 24.9034 | 0.52388 | 0 / 0 | Tested envelope |
+| Poisson | 512 | 30 | Steady L2, common grid | 6.8016 | 4.01824 / 2.26715 | 0.56129 | 0 / 0 | Tested envelope |
+| Reflective wave | 512 | 2 | Initial wave state, common grid | 6.2029 | 1217.24 / 61.584 | 0.050593 | 0 / 0 | Same grid only |
+| Absorbing wave | 512 | 2 | Initial wave state, common grid | 5.9132 | 1336.64 / 277.79 | 0.20786 | 0 / 0 | Same grid only |
+
+The cost-to-accuracy targets shown are Heat 5%, Burgers 5%, Poisson 10%, with explicitly empirical reference allowances. Wave costs are raw same-grid comparisons, without a coarse-FOM envelope. Ratios above one would favor ROM; none of these rows does. The absorbing wave still has large late error relative to its remaining field. These are development results, not independent final confirmation.
+
+Query costs are medians of per-case repetition medians, including supplied host input and requested host outputs. Paired ratios are medians of per-case FOM/ROM ratios. Timing outliers count repetitions longer than twice their own case/configuration median; none is discarded. All comparisons pair methods within the same GPU job.
+
+The earlier pilot table and the controlled changes below preserve how these conclusions were obtained; earlier rows are not the current best settings.
 
 ## Primary configurations from the first pilots
 
@@ -146,7 +164,7 @@ All cost ratios in this report use ratios of per-case timing medians before the 
 
 ## Continued development: controlled training and solver changes
 
-### Heat: broader training coverage improves the unchanged spatial bank
+### Heat: broader training coverage improves accuracy with the unchanged spatial bank
 
 Source `0597f0dd505de537ebbda459d9db330132126d44`, job `3352849`. The spatial bank is exactly unchanged. Each refined head receives 8000 updates, with the same architecture and per-snapshot relative squared-error loss. The original and expanded training cohorts are crossed with the recorded minibatch seeds. All final checkpoints are retained; none was selected by a validation training loss.
 
@@ -366,14 +384,103 @@ The native audit verifies 228 timed calls and 16 fine controls, with 0 failed ti
 
 [Complete larger-head wave findings](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/FINDINGS.md). [Larger-head wave error evolution](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/heads32-error-evolution.png).
 
+### Poisson: field-based initialization saves some cost; the FOM remains faster
+
+Source `20893525a16603a99f527dbd9e10affcdc206b9d`, job `3354845`. Both checkpoints are frozen: the original model and the relative-loss continuation selected using all development sources on both meshes. The factorial crosses two equivalent sine-source projections with mean-code versus nearest-training-code initialization. Nearest lookup compares supplied-field weak coefficients with cached decoder predictions from training codes; it uses no Gaussian descriptors or evaluation answers.
+
+| Intervals | Checkpoint | Projection | Initialization | Median / worst physical error (%) | Query (ms) | Median solver attempts |
+|---|---|---|---|---:|---:|---:|
+| 256 | original_frozen | sine products | mean code | 1.905 / 7.6688 | 4.36125 | 12 |
+| 256 | original_frozen | sine products | nearest code | 1.905 / 7.6688 | 3.79992 | 8 |
+| 256 | original_frozen | DST gather | mean code | 1.905 / 7.6688 | 4.17404 | 12 |
+| 256 | original_frozen | DST gather | nearest code | 1.905 / 7.6688 | 3.90369 | 8 |
+| 256 | original_relative | sine products | mean code | 1.8495 / 6.8016 | 4.36739 | 12 |
+| 256 | original_relative | sine products | nearest code | 1.8495 / 6.8016 | 3.93937 | 7.5 |
+| 256 | original_relative | DST gather | mean code | 1.8495 / 6.8016 | 4.34453 | 12 |
+| 256 | original_relative | DST gather | nearest code | 1.8495 / 6.8016 | 3.73487 | 7.5 |
+| 512 | original_frozen | sine products | mean code | 1.905 / 7.6688 | 4.68915 | 12 |
+| 512 | original_frozen | sine products | nearest code | 1.905 / 7.6688 | 4.18059 | 8 |
+| 512 | original_frozen | DST gather | mean code | 1.905 / 7.6688 | 4.59367 | 12 |
+| 512 | original_frozen | DST gather | nearest code | 1.905 / 7.6688 | 4.32107 | 8 |
+| 512 | original_relative | sine products | mean code | 1.8494 / 6.8016 | 4.60523 | 12 |
+| 512 | original_relative | sine products | nearest code | 1.8494 / 6.8016 | 4.01824 | 7.5 |
+| 512 | original_relative | DST gather | mean code | 1.8494 / 6.8016 | 4.8363 | 12 |
+| 512 | original_relative | DST gather | nearest code | 1.8494 / 6.8016 | 4.20458 | 7.5 |
+
+Paired mean-start/nearest-start cost ratios range from 1.08629 to 1.15832; ratios above one favor nearest starts. Paired sine-product/DST-gather ratios range from 0.950756 to 1.00211, so there is no consistent projection-cost gain. A projector selected by aggregate median latency can differ from the one favored by the median paired ratio; the native report retains both statistics.
+
+The stopping threshold stays $\tau\|r(z_0)\|_2$ for each call's own initial code. A nearer start can require a tighter absolute residual, and may finish by stationarity rather than the relative-reduction stop. The target is never re-anchored. Cost changes therefore describe initialization together with the existing stopping procedure, not an isolated iteration-count effect.
+
+| Intervals | All-development target (%) | Selected checkpoint / projection / initialization | ROM / FOM envelope query (ms) | Paired FOM/ROM |
+|---|---:|---|---:|---:|
+| 256 | 10 | original_relative / DST gather / nearest code | 3.73487 / 1.75097 | 0.45678 |
+| 256 | 5 | Target unattained | — / 1.75097 | — |
+| 256 | 1 | Target unattained | — / 1.75097 | — |
+| 256 | 0.1 | Target unattained | — / 1.75097 | — |
+| 512 | 10 | original_relative / sine products / nearest code | 4.01824 / 2.26715 | 0.56129 |
+| 512 | 5 | Target unattained | — / 2.26715 | — |
+| 512 | 1 | Target unattained | — / 2.26715 | — |
+| 512 | 0.1 | Target unattained | — / 2.26715 | — |
+
+All 480 single-call stationary controls are retained separately, with 0 invalid case/configuration outputs. They never enter the speed envelope. Projection parity compares the same initialization; different minima between mean and nearest starts are allowed and judged by their physical errors and solver checks.
+
+Timed outputs include the full field plus returned stop reasons, counters, latent states, guard results and initialization metadata. Stationarity is independently recomputed afterward from the same invocation, alongside physical-error and parity diagnostics. Offline cache/operator construction and compilation remain outside the query.
+
+The owner audits all 2280 outputs and reconstructs the coordinate bank, decoder, cache, residuals and gradients. Root recomputes their saved field errors, maximum disagreement `3.469447e-16`, and independently replays 120 source-field lookup panels. There are 0 lookup mismatches, 0 projection-gate failures and 0 timed guarded-solver fallbacks. The efficient tested FOM envelope remains faster. Reference allowance is empirical and sealed-final confirmation remains unopened.
+
+[Complete Poisson projection and initialization findings](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot05/FINDINGS.md).
+
+### Heat: the refined heads transfer across the wider mesh ladder
+
+Source `88ae5905d3f1ec424edbc4d7b8027e19eebe296b`, job `3354958`. Both expanded-coverage heads and their training-code libraries remain byte-identical to the prior endpoints. This run repeats 4 original development inputs and adds 8 fresh draws from the same restricted family. The requested intervals are `[64, 128, 256, 512, 1024]`, with shared observations at 64 intervals and complete-grid errors also checked. There is no new training or final-cohort evaluation.
+
+| Output intervals | Cohort | Frozen endpoint | Full-grid median / worst current-relative error (%) | Common-grid worst error (%) | Complete query (ms) |
+|---|---|---|---:|---:|---:|
+| 64 | fresh | expanded_seed790714 | 3.4811 / 4.56 | 4.56 | 12.7703 |
+| 64 | fresh | expanded_seed790715 | 3.4745 / 4.5593 | 4.5593 | 12.7522 |
+| 64 | original | expanded_seed790714 | 2.6559 / 3.9531 | 3.9531 | 12.3313 |
+| 64 | original | expanded_seed790715 | 2.6697 / 4.0303 | 4.0303 | 11.737 |
+| 128 | fresh | expanded_seed790714 | 3.4795 / 4.56 | 4.56 | 12.4394 |
+| 128 | fresh | expanded_seed790715 | 3.4728 / 4.5563 | 4.5563 | 12.5188 |
+| 128 | original | expanded_seed790714 | 2.6559 / 3.9531 | 3.9531 | 12.0604 |
+| 128 | original | expanded_seed790715 | 2.6697 / 4.0303 | 4.0303 | 11.7758 |
+| 256 | fresh | expanded_seed790714 | 3.4792 / 4.56 | 4.56 | 13.2836 |
+| 256 | fresh | expanded_seed790715 | 3.4726 / 4.5557 | 4.5557 | 13.733 |
+| 256 | original | expanded_seed790714 | 2.6559 / 3.9531 | 3.9531 | 12.7622 |
+| 256 | original | expanded_seed790715 | 2.6697 / 4.0304 | 4.0303 | 12.4077 |
+| 512 | fresh | expanded_seed790714 | 3.4791 / 4.56 | 4.56 | 15.0555 |
+| 512 | fresh | expanded_seed790715 | 3.4725 / 4.5555 | 4.5555 | 16.2106 |
+| 512 | original | expanded_seed790714 | 2.6559 / 3.9531 | 3.9531 | 14.9218 |
+| 512 | original | expanded_seed790715 | 2.6697 / 4.0304 | 4.0303 | 15.5772 |
+| 1024 | fresh | expanded_seed790714 | 3.4791 / 4.56 | 4.56 | 28.1776 |
+| 1024 | fresh | expanded_seed790715 | 3.4725 / 4.5555 | 4.5555 | 27.8552 |
+| 1024 | original | expanded_seed790714 | 2.6559 / 3.9531 | 3.9531 | 28.1483 |
+| 1024 | original | expanded_seed790715 | 2.6697 / 4.0304 | 4.0303 | 27.1513 |
+
+Every FOM returns the supplied initial field exactly, then evolves a restricted initial field and interpolates later outputs where required. Host input restriction, GPU work, interpolation and complete contiguous host output are charged. The ROM returns its actual fitted initial field and charges full-field projection, fitting, evolution and readout. The FOM envelope tests solver intervals `[16, 32, 64, 128]` where no larger than the requested mesh, plus the same-grid solve. Exact duplicate choices are timed once with explicit aliases.
+
+| Output intervals | Union full-grid current-relative target (%) | Selected ROM / FOM solver | ROM / FOM query (ms) | Paired FOM/ROM |
+|---|---:|---|---:|---:|
+| 64 | 5 | expanded_seed790715 / fom_dst_64 | 12.5659 / 0.509903 | 0.040695 |
+| 128 | 5 | expanded_seed790714 / fom_dst_64 | 12.2602 / 0.6732 | 0.056624 |
+| 256 | 5 | expanded_seed790714 / fom_dst_64 | 13.2078 / 1.16413 | 0.087957 |
+| 512 | 5 | expanded_seed790714 / fom_dst_16 | 14.9861 / 4.51582 | 0.29134 |
+| 1024 | 5 | expanded_seed790715 / fom_dst_16 | 27.733 / 21.4106 | 0.76673 |
+
+At the union-cohort 5% target with empirical reference adjustment, a head qualifies on 5 of 5 meshes and beats the tested FOM envelope on 0. The full-output contract limits how much spatial compression alone can save; the native figure separates input, device and output cost components. This study measures frozen-weight mesh transfer, not per-resolution retraining.
+
+The native audit checks 1152 invocations and independently reproduces FOM propagation/interpolation to `6.446909e-16` relative disagreement, and spectral reference trajectories to `1.104404e-15`. Root recomputes every saved norm and checks source draws, frozen weights, repetitions and the initial-output policy, maximum metric difference `0`. There are 0 nonstationary selected initial fits and 0 nonstationary evolution steps across repetitions. The observed spectral reference discrepancy is `1.628109e-12`, with no rigorous bound. Both cohorts, all candidates, raw timing arrays and outliers remain in the native audit.
+
+[Complete wider heat-transfer findings](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/HEAT-TRANSFER-NOTES.md). [Heat accuracy and cost across resolution](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/heat-transfer.png). [Heat query cost components](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/heat-transfer-components.png).
+
 ## Next experiments justified by the diagnostics
 
 - **Burgers:** larger steps partly reduce cost but also expose iteration caps, especially at startup. A later bounded startup-solve or time-formula control should separate those effects before further architectural changes. The existing latent extrapolator is already present; adding it again is not a new intervention.
-- **Heat:** extend both frozen expanded-coverage endpoints over a wider mesh ladder and fresh development inputs, including an efficient coarse-FOM envelope with charged interpolation. Keep the original and fresh cohorts separate and preserve complete-grid errors.
-- **Poisson:** relative loss helps the worst development sources, while expanded coverage at matched updates is not uniformly beneficial. Test source-projection cost and field-based initialization separately with frozen checkpoints selected from all development cases; the small-system solver alone gives only a modest gain.
+- **Heat:** both frozen expanded-coverage endpoints now pass the wider mesh ladder and fresh inputs in the restricted family. Complete output and initialization costs still matter. Broader inputs, tighter accuracy and separately measured per-resolution training are the remaining scientific controls; any runtime change must keep the charged coarse-FOM envelope.
+- **Poisson:** relative loss improves the worst development sources, and field-based initialization gives a modest cost reduction. Equivalent source projections give no consistent gain. The remaining accuracy floor and nonlinear solve cost require further representation or solver controls; expanded coverage at matched updates is not uniformly beneficial.
 - **Waves:** the larger nonlinear heads greatly improve reflective accuracy but remain costly and leave late absorbing error. Separate constant-test and initial-moment interventions are justified as later controls by the conservation diagnostic, without assuming they solve the full problem. A coarse-FOM resolution envelope is still needed before promoting any raw linear-control timing ratio.
 
-These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, independent data/training repeats, validation-selected settings and sealed final evaluation.
+These are directions for a later bounded round; every GPU job in this report is complete. The complete study still needs wider mesh ladders for the remaining PDEs, separately labeled per-resolution training, independent data/training repeats, validation-selected settings and sealed final evaluation.
 
 ## Visual artifacts
 
@@ -414,3 +521,4 @@ Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.p
 - **Affine / phase dimension / tangent velocity / normal force / curvature:** linear map plus a constant offset / displacement and velocity coordinate count / velocity representable by local decoder derivatives / weak acceleration outside those derivative directions / acceleration contributed by the bending decoder map.
 - **Moment / invariant / constant test / drift:** weighted global combination of displacement and velocity / quantity the discrete equations preserve / spatially constant function used to test those equations / change from a method's own initial value.
 - **First-step budget exit / predictor:** iteration limit reached at the first evolution step / proposed next latent state extrapolated from earlier states and checked by the weak residual.
+- **Timing outlier:** a repetition longer than twice its own case/configuration median in the latest-results table. It remains in all reported calculations.

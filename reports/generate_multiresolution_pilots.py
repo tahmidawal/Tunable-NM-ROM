@@ -29,6 +29,9 @@ FILES = {
     'poisson_followup_audit': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot02/audit.json',
     'heat_head': ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/pilot03/archive/outputs/results.json',
     'heat_head_review': REPAIR/'heat_pilot03_review.json',
+    'heat_transfer': ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/archive/outputs/results.json',
+    'heat_transfer_audit': ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/audit.json',
+    'heat_transfer_review': REPAIR/'heat_transfer04_review.json',
     'poisson_kernel': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/result.json',
     'poisson_kernel_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/summary.json',
     'poisson_kernel_review': REPAIR/'poisson_pilot03_review.json',
@@ -36,6 +39,10 @@ FILES = {
     'poisson_training_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/summary.json',
     'poisson_training_audit': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/audit.json',
     'poisson_training_review': REPAIR/'poisson_pilot04_review.json',
+    'poisson_speed': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot05/result.json',
+    'poisson_speed_summary': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot05/summary.json',
+    'poisson_speed_audit': ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot05/audit.json',
+    'poisson_speed_review': REPAIR/'poisson_pilot05_review.json',
     'burgers_rollout': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/out/pilot.json',
     'burgers_rollout_summary': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/SUMMARY.json',
     'burgers_rollout_audit': ROOT/'worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/rollout04/AUDIT.json',
@@ -124,7 +131,7 @@ def main():
     lines = ['# Multiresolution development pilots: accuracy and complete-query cost', '',
         'This report covers frozen-network mesh-transfer pilots, bounded solver changes and controlled training refinements of the current separable NM-ROM against efficient FOM solvers. '
         'The numbers are provisional development evidence; independent confirmation and the full resolution study remain open.', '',
-        'The tested frozen decoders produce solutions on new meshes, but these primary configurations have not established a complete-query advantage over efficient FOMs. '
+        'The tested frozen decoders produce solutions on new meshes, but the completed nonlinear-ROM studies have not established a complete-query advantage over efficient FOMs. '
         'Increasing resolution does not reliably reduce ROM error in these pilots. Further work must address representation, initialization or reduced-solver cost, according to the PDE.', '',
         'The older ViT + CP architecture is excluded. Waves use only the fresh verified lineage. '
         'The final cohorts remain unopened. Different rows use different physical error definitions, stated below; they must not be ranked as a common cross-PDE accuracy score.', '',
@@ -176,10 +183,10 @@ def main():
         'No paper-wide speedup, optimal capacity, optimized training cost, broad-family robustness, or independent confirmation is established.', '',
         '## Next experiments justified by the diagnostics', '',
         '- **Burgers:** larger steps partly reduce cost but also expose iteration caps, especially at startup. A later bounded startup-solve or time-formula control should separate those effects before further architectural changes. The existing latent extrapolator is already present; adding it again is not a new intervention.',
-        '- **Heat:** extend both frozen expanded-coverage endpoints over a wider mesh ladder and fresh development inputs, including an efficient coarse-FOM envelope with charged interpolation. Keep the original and fresh cohorts separate and preserve complete-grid errors.',
-        '- **Poisson:** relative loss helps the worst development sources, while expanded coverage at matched updates is not uniformly beneficial. Test source-projection cost and field-based initialization separately with frozen checkpoints selected from all development cases; the small-system solver alone gives only a modest gain.',
+        '- **Heat:** both frozen expanded-coverage endpoints now pass the wider mesh ladder and fresh inputs in the restricted family. Complete output and initialization costs still matter. Broader inputs, tighter accuracy and separately measured per-resolution training are the remaining scientific controls; any runtime change must keep the charged coarse-FOM envelope.',
+        '- **Poisson:** relative loss improves the worst development sources, and field-based initialization gives a modest cost reduction. Equivalent source projections give no consistent gain. The remaining accuracy floor and nonlinear solve cost require further representation or solver controls; expanded coverage at matched updates is not uniformly beneficial.',
         '- **Waves:** the larger nonlinear heads greatly improve reflective accuracy but remain costly and leave late absorbing error. Separate constant-test and initial-moment interventions are justified as later controls by the conservation diagnostic, without assuming they solve the full problem. A coarse-FOM resolution envelope is still needed before promoting any raw linear-control timing ratio.', '',
-        'These are development decisions. The complete study still needs the full mesh ladder, separately labeled per-resolution training, '
+        'These are directions for a later bounded round; every GPU job in this report is complete. The complete study still needs wider mesh ladders for the remaining PDEs, separately labeled per-resolution training, '
         'independent data/training repeats, validation-selected settings and sealed final evaluation.', '',
         '## Visual artifacts', '',
         link(REPAIR/'heat-pilot01-accuracy-cost.png', 'Heat accuracy and complete-query cost')+'. '+
@@ -223,15 +230,19 @@ def main():
         '- **Affine / phase dimension / tangent velocity / normal force / curvature:** linear map plus a constant offset / displacement and velocity coordinate count / velocity representable by local decoder derivatives / weak acceleration outside those derivative directions / acceleration contributed by the bending decoder map.',
         '- **Moment / invariant / constant test / drift:** weighted global combination of displacement and velocity / quantity the discrete equations preserve / spatially constant function used to test those equations / change from a method\'s own initial value.',
         '- **First-step budget exit / predictor:** iteration limit reached at the first evolution step / proposed next latent state extrapolated from earlier states and checked by the weak residual.',
+        '- **Timing outlier:** a repetition longer than twice its own case/configuration median in the latest-results table. It remains in all reported calculations.',
     ]
     followup_lines, followup_values = followups(data, manifest)
     development_lines, development_values = continued_development(data, manifest)
     followup_lines += development_lines
     followup_values.update(development_values)
+    overview_lines, overview_values = latest_overview(data)
+    where = lines.index('## Primary configurations from the first pilots')
+    lines[where:where] = overview_lines
     where = lines.index('## Next experiments justified by the diagnostics')
     lines[where:where] = followup_lines
     (HERE/'2026-09-07-multiresolution-pilots.md').write_text('\n'.join(lines))
-    (HERE/'2026-09-07-multiresolution-pilots.json').write_text(json.dumps({'artifacts': manifest, 'comparisons': comparisons, 'followups': followup_values}, indent=2)+'\n')
+    (HERE/'2026-09-07-multiresolution-pilots.json').write_text(json.dumps({'artifacts': manifest, 'latest_comparisons': overview_values, 'comparisons': comparisons, 'followups': followup_values}, indent=2)+'\n')
 
 
 def followups(data, manifest):
@@ -414,7 +425,7 @@ def continued_development(data, manifest):
     models = {r['name']: r for r in heat['models']}
     values = {'heat_head_reconstruction': [], 'heat_head_rollout': [], 'poisson_kernel': []}
     lines = ['## Continued development: controlled training and solver changes', '',
-        '### Heat: broader training coverage improves the unchanged spatial bank', '',
+        '### Heat: broader training coverage improves accuracy with the unchanged spatial bank', '',
         f"Source `{hr['source_commit']}`, job `{hr['job_id']}`. The spatial bank is exactly unchanged. "
         f"Each refined head receives {settings['updates']} updates, with the same architecture and per-snapshot relative squared-error loss. "
         'The original and expanded training cohorts are crossed with the recorded minibatch seeds. All final checkpoints are retained; none was selected by a validation training loss.', '',
@@ -497,6 +508,12 @@ def continued_development(data, manifest):
     heads_lines, heads_values = wave_larger_heads(data, manifest)
     lines += heads_lines
     values.update(heads_values)
+    speed_lines, speed_values = poisson_source_initialization(data, manifest)
+    lines += speed_lines
+    values.update(speed_values)
+    transfer_lines, transfer_values = heat_wider_transfer(data, manifest)
+    lines += transfer_lines
+    values.update(transfer_values)
     return lines, values
 
 
@@ -691,6 +708,187 @@ def wave_moment(data, manifest):
         'Adding a constant test direction and enforcing the initial moment are proposed separate interventions; neither has been tested here, and preserving this moment alone would not certify local-field accuracy.', '',
         link(ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/ABSORBING-MOMENT.md', 'Moment formulas, checks and complete traces')+'.', '']
     return lines, {'wave_absorbing_moment': dict(bank=bank, references=refs, methods=selected)}
+
+
+def latest_overview(data):
+    rows = []
+
+    def timing_counts(rom_cases, fom_cases):
+        counts = {}
+        for label, cases in [('rom', rom_cases), ('fom', fom_cases)]:
+            assert cases and all(len(times) > 1 for times in cases)
+            counts[f'{label}_timing_outliers'] = sum(t > 2*statistics.median(times) for times in cases for t in times)
+            counts[f'{label}_timing_repetitions'] = sum(map(len, cases))
+        return counts
+
+    heat = data['heat_transfer_audit']
+    n = max(data['heat_transfer']['settings']['requested_intervals'])
+    selection = next(s for s in heat['selections'] if s['cohort'] == 'union' and s['norm'] == 'full' and s['target'] == data['heat_transfer']['config']['accuracy_targets'][1] and s['intervals'] == n)
+    group = next(g for g in heat['groups'] if g['cohort'] == 'union' and g['intervals'] == n and g['method'] == selection['rom'])
+    rows.append(dict(pde='Heat', intervals=n, setting=selection['rom'], cases=len(group['cases']),
+        metric='Current L2, full grid', worst_error=group['full_error'], rom_ms=1000*selection['rom_seconds'],
+        fom_ms=1000*selection['fom_seconds'], paired_ratio=selection['paired_fom_over_rom'], baseline='Tested envelope', target=selection['target']))
+    rows[-1].update(timing_counts(*[
+        [r['timing_repetitions'] for r in data['heat_transfer_review']['rows'] if r['intervals'] == n and r['method'] == selection[method]]
+        for method in ('rom', 'fom')]))
+    n = max(r['intervals'] for r in data['burgers_steps_summary']['configurations'])
+    selection = next(s for s in data['burgers_steps_summary']['selections'] if s['norm'] == 'dense' and s['intervals'] == n and s['target'] == .05)
+    rom, fom = selection['rom'], selection['fom']
+    rows.append(dict(pde='Burgers', intervals=n, setting=rom['name'], cases=len(rom['times']),
+        metric='Initial L2, full grid', worst_error=rom['dense']['worst'], rom_ms=rom['ms'], fom_ms=fom['ms'],
+        paired_ratio=selection['paired_ratio'], baseline='Tested envelope', target=selection['target']))
+    groups = {method['name']: defaultdict(list) for method in (rom, fom)}
+    for r in data['burgers_steps']['invocations']:
+        if r['name'] in groups:
+            groups[r['name']][r['case']].append(r['seconds'])
+    rows[-1].update(timing_counts(*[list(groups[method['name']].values()) for method in (rom, fom)]))
+    n = max(data['poisson_speed']['config']['intervals'])
+    selection = next(s for s in data['poisson_speed_summary']['envelope'] if s['cohort'] == 'all_development' and s['intervals'] == n and s['target'] == data['poisson_speed']['config']['targets'][0])
+    rom, fom = selection['rom'], selection['fom']
+    rows.append(dict(pde='Poisson', intervals=n, setting=f"{rom['model']} / {rom['projection']} / {rom['initialization']}",
+        cases=len(data['poisson_speed']['cohort']['parameters']), metric='Steady L2, common grid', worst_error=rom['physical_max'],
+        rom_ms=1000*rom['latency_seconds'], fom_ms=1000*fom['latency_seconds'], paired_ratio=selection['median_case_cost_ratio'],
+        baseline='Tested envelope', target=selection['target']))
+    panels = [next(g for g in data['poisson_speed_summary']['summaries'] if g['cohort'] == 'all_development' and g['panel'] == 'primary' and g['intervals'] == n
+        and all(g[k] == method[k] for k in ('model', 'arm', 'projection', 'initialization'))) for method in (rom, fom)]
+    rows[-1].update(timing_counts(*[[c['raw_seconds'] for c in g['cases']] for g in panels]))
+    cfg = data['wave_heads']['config']; n = max(cfg['meshes'])
+    method = f"new_mlp32_seed{cfg['training']['optimizer_seeds'][0]}"
+    for bc in cfg['boundaries']:
+        g = next(r for r in data['wave_heads_summary']['groups'] if (r['boundary'],r['intervals'],r['method'],r['setting']) == (bc,n,method,max(cfg['nonlinear_dts'])))
+        f = next(r for r in data['wave_heads_summary']['groups'] if (r['boundary'],r['intervals'],r['method'],r['setting']) == (bc,n,'dst' if bc=='dirichlet' else 'rk4',0. if bc=='dirichlet' else max(cfg['fom_cfls'])))
+        rows.append(dict(pde='Reflective wave' if bc=='dirichlet' else 'Absorbing wave',intervals=n,
+            setting=f"{method}, dt={g['setting']:g}",cases=len(g['cases']),metric='Initial wave state, common grid',
+            worst_error=g['physical_error_worst'],rom_ms=1000*g['query_median'],fom_ms=1000*f['query_median'],
+            paired_ratio=g['paired_FOM_over_method_ratio'],baseline='Same grid only',target=None))
+        rows[-1].update(timing_counts(*[[c['query_repetitions'] for c in group['cases']] for group in (g, f)]))
+    lines = ['## Latest audited development results', '',
+        'These rows show the finest requested mesh from each latest completed study. Heat, Burgers and Poisson use their declared development cost-to-accuracy selections. '
+        'Wave rows show the first predeclared larger-head seed at the largest repeated step; both seeds and all tested steps are retained in the detailed findings. '
+        'Different physical norms and cohorts are explicit and must not be ranked as one cross-PDE accuracy score.', '',
+        '| PDE | Output intervals | Cases | Error norm | Worst error (%) | ROM / FOM query (ms) | Paired FOM/ROM | Timing outliers, ROM / FOM | FOM comparison |',
+        '|---|---:|---:|---|---:|---:|---:|---:|---|']
+    for r in rows:
+        lines.append(f"| {r['pde']} | {r['intervals']} | {r['cases']} | {r['metric']} | {100*r['worst_error']:.5g} | {r['rom_ms']:.6g} / {r['fom_ms']:.6g} | {r['paired_ratio']:.5g} | {r['rom_timing_outliers']} / {r['fom_timing_outliers']} | {r['baseline']} |")
+    targets = ', '.join(f"{r['pde']} {100*r['target']:g}%" for r in rows if r['target'] is not None)
+    lines += ['', f'The cost-to-accuracy targets shown are {targets}, with explicitly empirical reference allowances. '
+        'Wave costs are raw same-grid comparisons, without a coarse-FOM envelope. Ratios above one would favor ROM; none of these rows does. '
+        'The absorbing wave still has large late error relative to its remaining field. These are development results, not independent final confirmation.', '',
+        'Query costs are medians of per-case repetition medians, including supplied host input and requested host outputs. Paired ratios are medians of per-case FOM/ROM ratios. '
+        'Timing outliers count repetitions longer than twice their own case/configuration median; none is discarded. All comparisons pair methods within the same GPU job.', '',
+        'The earlier pilot table and the controlled changes below preserve how these conclusions were obtained; earlier rows are not the current best settings.', '']
+    return lines, rows
+
+
+def poisson_source_initialization(data, manifest):
+    pilot, summary = data['poisson_speed'], data['poisson_speed_summary']
+    audit, review = data['poisson_speed_audit'], data['poisson_speed_review']
+    assert pilot['complete'] and audit['passed'] and audit['remote_deleted']
+    assert summary['source_sha256'] == review['source_json_sha256'] == manifest['poisson_speed']['sha256']
+    assert len(pilot['rows']) == review['verified_timed_invocations'] == audit['primary_invocations']
+    assert len(pilot['stationary_rows']) == review['verified_accuracy_controls'] == audit['stationary_invocations']
+    cfg = pilot['config']
+    projections = {'skinny_sine_products': 'sine products', 'forward_dst_and_gather': 'DST gather'}
+    initializers = {'mean_training_code': 'mean code', 'nearest_cached_scaled_weak_prediction': 'nearest code'}
+    values = {'poisson_speed_factorial': [], 'poisson_speed_envelope': [], 'poisson_speed_contrasts': summary['factorial_cost_contrasts']}
+    lines = ['### Poisson: field-based initialization saves some cost; the FOM remains faster', '',
+        f"Source `{review['source_commit']}`, job `{review['job_id']}`. Both checkpoints are frozen: the original model and the relative-loss continuation selected using all development sources on both meshes. "
+        'The factorial crosses two equivalent sine-source projections with mean-code versus nearest-training-code initialization. '
+        'Nearest lookup compares supplied-field weak coefficients with cached decoder predictions from training codes; it uses no Gaussian descriptors or evaluation answers.', '',
+        '| Intervals | Checkpoint | Projection | Initialization | Median / worst physical error (%) | Query (ms) | Median solver attempts |',
+        '|---|---|---|---|---:|---:|---:|']
+    for r in summary['summaries']:
+        if r['cohort'] != 'all_development' or r['panel'] != 'primary' or not r['model']:
+            continue
+        value = {k:r[k] for k in ('intervals','model','projection','initialization','physical_median','physical_max','latency_seconds','attempt_median','invalid_count','nonstationary_count','initial_residual_median','absolute_tau_threshold_median','final_residual_median')}
+        values['poisson_speed_factorial'].append(value)
+        lines.append(f"| {r['intervals']} | {r['model']} | {projections[r['projection']]} | {initializers[r['initialization']]} | {100*r['physical_median']:.5g} / {100*r['physical_max']:.5g} | {1000*r['latency_seconds']:.6g} | {r['attempt_median']:.5g} |")
+    init_effect = [r['median_case_cost_ratio'] for r in summary['factorial_cost_contrasts'] if r['contrast'] == 'mean_over_nearest_initialization']
+    projection_effect = [r['median_case_cost_ratio'] for r in summary['factorial_cost_contrasts'] if r['contrast'] == 'thin_over_dst_projection']
+    lines += ['', f"Paired mean-start/nearest-start cost ratios range from {min(init_effect):.6g} to {max(init_effect):.6g}; ratios above one favor nearest starts. "
+        f"Paired sine-product/DST-gather ratios range from {min(projection_effect):.6g} to {max(projection_effect):.6g}, so there is no consistent projection-cost gain. "
+        'A projector selected by aggregate median latency can differ from the one favored by the median paired ratio; the native report retains both statistics.', '',
+        r"The stopping threshold stays $\tau\|r(z_0)\|_2$ for each call's own initial code. A nearer start can require a tighter absolute residual, and may finish by stationarity rather than the relative-reduction stop. The target is never re-anchored. Cost changes therefore describe initialization together with the existing stopping procedure, not an isolated iteration-count effect.", '',
+        '| Intervals | All-development target (%) | Selected checkpoint / projection / initialization | ROM / FOM envelope query (ms) | Paired FOM/ROM |',
+        '|---|---:|---|---:|---:|']
+    for r in summary['envelope']:
+        if r['cohort'] != 'all_development':
+            continue
+        values['poisson_speed_envelope'].append(r)
+        rom, fom = r['rom'], r['fom']
+        label = 'Target unattained' if rom is None else f"{rom['model']} / {projections[rom['projection']]} / {initializers[rom['initialization']]}"
+        rt = '—' if rom is None else f"{1000*rom['latency_seconds']:.6g}"
+        ft = '—' if fom is None else f"{1000*fom['latency_seconds']:.6g}"
+        ratio = '—' if r['median_case_cost_ratio'] is None else f"{r['median_case_cost_ratio']:.5g}"
+        lines.append(f"| {r['intervals']} | {100*r['target']:g} | {label} | {rt} / {ft} | {ratio} |")
+    stationary = [r for r in summary['summaries'] if r['cohort'] == 'all_development' and r['panel'] == 'stationary']
+    lines += ['', f"All {review['verified_accuracy_controls']} single-call stationary controls are retained separately, with {sum(r['invalid_count'] for r in stationary)} invalid case/configuration outputs. "
+        'They never enter the speed envelope. Projection parity compares the same initialization; different minima between mean and nearest starts are allowed and judged by their physical errors and solver checks.', '',
+        'Timed outputs include the full field plus returned stop reasons, counters, latent states, guard results and initialization metadata. '
+        'Stationarity is independently recomputed afterward from the same invocation, alongside physical-error and parity diagnostics. '
+        'Offline cache/operator construction and compilation remain outside the query.', '',
+        f"The owner audits all {audit['primary_invocations']+audit['stationary_invocations']} outputs and reconstructs the coordinate bank, decoder, cache, residuals and gradients. "
+        f"Root recomputes their saved field errors, maximum disagreement `{review['maximum_metric_disagreement']:.7g}`, and independently replays {review['independent_nearest_lookup_panels']} source-field lookup panels. "
+        f"There are {audit['lookup_index_mismatches']} lookup mismatches, {audit['projection_gate_failures']} projection-gate failures and {audit['timed_fallbacks']} timed guarded-solver fallbacks. "
+        'The efficient tested FOM envelope remains faster. Reference allowance is empirical and sealed-final confirmation remains unopened.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot05/FINDINGS.md', 'Complete Poisson projection and initialization findings')+'.', '']
+    return lines, values
+
+
+def heat_wider_transfer(data, manifest):
+    pilot, audit, review = data['heat_transfer'], data['heat_transfer_audit'], data['heat_transfer_review']
+    assert pilot['complete'] and audit['passed'] and not pilot['final_cohort_opened']
+    assert audit['results_sha256'] == review['source_json_sha256'] == manifest['heat_transfer']['sha256']
+    assert audit['timed_invocations'] == review['verified_timed_invocations'] == pilot['timed_invocations']
+    cfg, settings = pilot['config'], pilot['settings']
+    target = cfg['accuracy_targets'][1]
+    values = {'heat_transfer_accuracy': [], 'heat_transfer_envelope': []}
+    lines = ['### Heat: the refined heads transfer across the wider mesh ladder', '',
+        f"Source `{review['source_commit']}`, job `{review['job_id']}`. Both expanded-coverage heads and their training-code libraries remain byte-identical to the prior endpoints. "
+        f"This run repeats {settings['cohorts'][0]['count']} original development inputs and adds {settings['cohorts'][1]['count']} fresh draws from the same restricted family. "
+        f"The requested intervals are `{settings['requested_intervals']}`, with shared observations at {settings['observation_intervals']} intervals and complete-grid errors also checked. "
+        'There is no new training or final-cohort evaluation.', '',
+        '| Output intervals | Cohort | Frozen endpoint | Full-grid median / worst current-relative error (%) | Common-grid worst error (%) | Complete query (ms) |',
+        '|---|---|---|---:|---:|---:|']
+    for g in sorted(audit['groups'], key=lambda r: (r['intervals'], r['cohort'], r['method'])):
+        if g['cohort'] == 'union' or g['model'] == 'fom':
+            continue
+        rows = [r for r in review['rows'] if (r['intervals'], r['cohort'], r['method']) == (g['intervals'], g['cohort'], g['method'])]
+        assert {r['case'] for r in rows} == set(g['cases'])
+        assert abs(max(r['worst_full_grid_error'] for r in rows)-g['full_error']) < 1e-12
+        value = dict(intervals=g['intervals'], cohort=g['cohort'], model=g['model'], cases=len(rows),
+            full_grid_median_error=statistics.median(r['worst_full_grid_error'] for r in rows), full_grid_worst_error=g['full_error'],
+            common_worst_error=g['common_error'], query_ms=1000*g['cost_seconds'], valid=g['valid'],
+            nonstationary_initial=g['nonstationary_initial'], nonstationary_steps=g['nonstationary_steps'])
+        values['heat_transfer_accuracy'].append(value)
+        lines.append(f"| {g['intervals']} | {g['cohort']} | {g['model']} | {100*value['full_grid_median_error']:.5g} / {100*g['full_error']:.5g} | {100*g['common_error']:.5g} | {value['query_ms']:.6g} |")
+    lines += ['', 'Every FOM returns the supplied initial field exactly, then evolves a restricted initial field and interpolates later outputs where required. '
+        'Host input restriction, GPU work, interpolation and complete contiguous host output are charged. The ROM returns its actual fitted initial field and charges full-field projection, fitting, evolution and readout. '
+        f"The FOM envelope tests solver intervals `{settings['coarse_solver_intervals']}` where no larger than the requested mesh, plus the same-grid solve. Exact duplicate choices are timed once with explicit aliases.", '',
+        '| Output intervals | Union full-grid current-relative target (%) | Selected ROM / FOM solver | ROM / FOM query (ms) | Paired FOM/ROM |',
+        '|---|---:|---|---:|---:|']
+    selected = [s for s in audit['selections'] if s['cohort'] == 'union' and s['norm'] == 'full' and s['target'] == target]
+    for s in selected:
+        values['heat_transfer_envelope'].append(s)
+        rt = '—' if s['rom_seconds'] is None else f"{1000*s['rom_seconds']:.6g}"
+        ft = '—' if s['fom_seconds'] is None else f"{1000*s['fom_seconds']:.6g}"
+        ratio = '—' if s['paired_fom_over_rom'] is None else f"{s['paired_fom_over_rom']:.5g}"
+        lines.append(f"| {s['intervals']} | {100*s['target']:g} | {s['rom'] or 'Unattained'} / {s['fom'] or 'Unattained'} | {rt} / {ft} | {ratio} |")
+    qualified = [s for s in selected if s['rom'] is not None and s['fom'] is not None]
+    wins = sum(s['paired_fom_over_rom'] > 1 for s in qualified)
+    lines += ['', f"At the union-cohort {100*target:g}% target with empirical reference adjustment, a head qualifies on {len(qualified)} of {len(selected)} meshes and beats the tested FOM envelope on {wins}. "
+        'The full-output contract limits how much spatial compression alone can save; the native figure separates input, device and output cost components. '
+        'This study measures frozen-weight mesh transfer, not per-resolution retraining.', '',
+        f"The native audit checks {audit['timed_invocations']} invocations and independently reproduces FOM propagation/interpolation to `{audit['independent_fom_kernel_relative_disagreement']:.7g}` relative disagreement, "
+        f"and spectral reference trajectories to `{audit['independent_spectral_reference_relative_disagreement']:.7g}`. "
+        f"Root recomputes every saved norm and checks source draws, frozen weights, repetitions and the initial-output policy, maximum metric difference `{review['maximum_metric_disagreement']:.7g}`. "
+        f"There are {audit['nonstationary_initial']} nonstationary selected initial fits and {audit['nonstationary_steps']} nonstationary evolution steps across repetitions. "
+        f"The observed spectral reference discrepancy is `{audit['reference_empirical_delta']:.7g}`, with no rigorous bound. "
+        'Both cohorts, all candidates, raw timing arrays and outliers remain in the native audit.', '',
+        link(ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/HEAT-TRANSFER-NOTES.md', 'Complete wider heat-transfer findings')+'. '+
+        link(ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/heat-transfer.png', 'Heat accuracy and cost across resolution')+'. '+
+        link(ROOT/'worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/heat-transfer-components.png', 'Heat query cost components')+'.', '']
+    return lines, values
 
 
 def wave_larger_heads(data, manifest):

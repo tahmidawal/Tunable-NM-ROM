@@ -75,6 +75,8 @@ summary=dict(source_sha256=hashlib.sha256(payload).hexdigest(),provenance=d['pro
 (run/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
 shortp={'skinny_sine_products':'sine products','forward_dst_and_gather':'DST gather'}
 shorti={'mean_training_code':'mean code','nearest_cached_scaled_weak_prediction':'nearest code'}
+nearest_ratios=[r['median_case_cost_ratio'] for r in effects if r['contrast']=='mean_over_nearest_initialization']
+projection_ratios=[r['median_case_cost_ratio'] for r in effects if r['contrast']=='thin_over_dst_projection']
 lines=['# Poisson source projection and initialization findings','',
     'These generated results are provisional development evidence from the approved frozen-checkpoint factorial. They compare complete query costs and errors under the existing per-start residual stopping rule; the final cohort stays closed.','',
     f"Job `{d['provenance']['job_id']}`, source `{d['provenance']['commit']}`, GPU `{d['provenance']['gpu']}`. The primary panel contains {audit['primary_invocations']} calls with {cfg['repetitions']} repetitions; separate stationary controls contain {audit['stationary_invocations']} single calls excluded from speed selection. All source draws and both frozen checkpoint hashes are checked against the preceding audited training study.",'',
@@ -85,14 +87,17 @@ lines=['# Poisson source projection and initialization findings','',
 for s in summaries:
     if s['cohort']!='all_development' or s['panel']!='primary' or not s['model']:continue
     lines.append(f"| {s['intervals']} | {s['model']} | {shortp[s['projection']]} | {shorti[s['initialization']]} | {1000*s['latency_seconds']:.7g} | {s['physical_median']:.8g} / {s['physical_max']:.8g} | {s['invalid_count']} | {s['nonstationary_count']} | {s['same_grid_dst_median_case_cost_ratio']:.7g} |")
-lines+=['','Errors include failed outputs and use common observation nodes divided by the fine reference norm. Full requested-mesh same-grid discrepancies, both cohort summaries, raw repetition times and outliers remain in JSON. A nonstationary primary call may meet its intentional residual-reduction stop; it is not labeled stationary. Same-grid ratios above unity favor ROM and are raw cost comparisons, not a substitute for target qualification.','',
+lines+=['',f"Across the matched checkpoint/mesh/projection contrasts, median case ratios of mean-start to nearest-start cost range from {min(nearest_ratios):.7g} to {max(nearest_ratios):.7g}. "
+    f"Median sine-product/DST-projection ratios range from {min(projection_ratios):.7g} to {max(projection_ratios):.7g}. "
+    'The paired projection comparisons do not establish a consistent DST-projection speed gain. Aggregate latency and the median paired ratio summarize different aspects of the case distribution and can order configurations differently; medians and ratios do not commute. The envelope selects by aggregate case-median latency, while every reported paired ratio uses case-wise ratios.','',
+    'Errors include failed outputs and use common observation nodes divided by the fine reference norm. Full requested-mesh same-grid discrepancies, both cohort summaries, raw repetition times and outliers remain in JSON. A nonstationary primary call may meet its intentional residual-reduction stop; it is not labeled stationary. Same-grid ratios above unity favor ROM and are raw cost comparisons, not a substitute for target qualification.','',
     '## Initialization and unchanged stopping procedure','',
     '| Intervals | Checkpoint | Projection | Initialization | Median initial residual | Median absolute tau threshold | Median final residual | Median attempts | Case stop reasons |',
     '|---:|---|---|---|---:|---:|---:|---:|---|']
 for s in summaries:
     if s['cohort']!='all_development' or s['panel']!='primary' or not s['model']:continue
     lines.append(f"| {s['intervals']} | {s['model']} | {shortp[s['projection']]} | {shorti[s['initialization']]} | {s['initial_residual_median']:.7g} | {s['absolute_tau_threshold_median']:.7g} | {s['final_residual_median']:.7g} | {s['attempt_median']:.6g} | `{json.dumps(s['reason_counts'],sort_keys=True)}` |")
-lines+=['',r'The threshold is $\tau\|r(z_0)\|_2$ for each call\'s own start. A nearer start can impose a tighter absolute target and require a stationary exit. Neither target nor residual is re-anchored. Cost differences therefore describe the complete initialization and existing stopping procedure. Every selected cache index, nearest distance, runner-up gap and near-tie flag is retained; the cache uses training-code predictions only.','',
+lines+=['',r"The threshold is $\tau\|r(z_0)\|_2$ for each call's own start. A nearer start can impose a tighter absolute target and require a stationary exit. Neither target nor residual is re-anchored. Cost differences therefore describe the complete initialization and existing stopping procedure. Every selected cache index, nearest distance, runner-up gap and near-tie flag is retained; the cache uses training-code predictions only.",'',
     '## Separate stationary accuracy controls','',
     '| Intervals | Checkpoint | Projection | Initialization | Median / worst physical error | Invalid | Nonstationary | Median attempts |',
     '|---:|---|---|---|---:|---:|---:|---:|']
@@ -110,6 +115,20 @@ for e in envelopes:
     ratio='—' if e['median_case_cost_ratio'] is None else f"{e['median_case_cost_ratio']:.7g}"
     lines.append(f"| {e['intervals']} | {e['target']} | {label} | {f['arm'] if f else 'unattained'} | {rt} / {ft} | {ratio} |")
 lines+=['',r'Eligibility requires every case to satisfy the solver and parity gates, $(e+\delta)/(1-\delta)\leq\epsilon$, and the declared reference allowance. Reference differences are empirical estimates, not rigorous continuum bounds. The FOM envelope includes same-grid DST and the charged coarse-grid solve with interpolation. Latencies are medians of case-median repetitions; paired ratios are medians of ratios of case medians. Selection remains development-only.','',
+    '## Recorded primary cost components','',
+    '| Intervals | Checkpoint / solver | Projection | Initialization | Input ms | Fused device ms | FOM solve/interpolation ms | Output ms |',
+    '|---:|---|---|---|---:|---:|---:|---:|']
+for s in summaries:
+    if s['cohort']!='all_development' or s['panel']!='primary':continue
+    parts=s['components_seconds'];fmt=lambda key:'—' if key not in parts else f'{1000*parts[key]:.7g}'
+    lines.append(f"| {s['intervals']} | {s['model'] or s['arm']} | {shortp.get(s['projection'],'—')} | {shorti.get(s['initialization'],'—')} | {fmt('input_seconds')} | {fmt('fused_device_seconds')} | {fmt('solver_seconds')} | {fmt('output_seconds')} |")
+lines+=['','Each component is a median of case-median values from the same primary invocations. Component medians need not sum to the total median.','',
+    '| Intervals | Checkpoint | Bank build s | Weak assembly s | Cache build including compile s | Cache MiB |',
+    '|---:|---|---:|---:|---:|---:|']
+for setup in d['setup']:
+    cache=setup['cache'];size=(cache['prediction_bytes']+cache['code_bytes'])/(1024**2)
+    lines.append(f"| {setup['intervals']} | {setup['model']} | {setup['bank_build_seconds']:.7g} | {setup['weak_assembly_seconds']:.7g} | {cache['setup_seconds_including_compile']:.7g} | {size:.7g} |")
+lines+=['','Setup values are actual observed offline durations including applicable compilation; they are not separately warmed speed comparisons. Query warm-up durations remain in native JSON.','',
     '## Timing scope and artifact audit','',audit['timing_boundary'],'',
     'Input, fused device and host-output intervals belong to each exact measured invocation. The fused device interval includes projection, optional lookup, guarded LM and decoding; those operations have no separately substituted component measurements. Offline cache/operator setup and compilation/warm-up records remain separate. Physical error, stationarity and numerical parity diagnostics use the actual output but are not included in query cost.','',
     f"The independent CPU audit checks {audit['distinct_preserved_field_hashes']} preserved full fields. Maximum physical-metric disagreement is {audit['maximum_independent_cpu_metric_difference']:.9g}, decoded-field relative disagreement {audit['maximum_decoder_field_relative_difference']:.9g}, cached-prediction disagreement {audit['maximum_cpu_cache_prediction_relative_difference']:.9g}, and stationarity difference {audit['maximum_stationarity_absolute_difference']:.9g}. Projection gate failures: {audit['projection_gate_failures']}; nearest-index mismatches: {audit['lookup_index_mismatches']}; near-tie calls: {audit['near_tie_invocations']}; primary/stationary fallback totals: {audit['timed_fallbacks']}/{audit['stationary_fallbacks']}. Source/checkpoint/archive checks and exact remote deletion passed.",'',

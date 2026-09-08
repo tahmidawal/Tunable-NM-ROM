@@ -45,7 +45,7 @@ for e in s5['envelope']:
     rt='—' if not r else f"{1000*r['latency_seconds']:.9g}";ft='—' if not f else f"{1000*f['latency_seconds']:.9g}"
     ratio='—' if e['median_case_cost_ratio'] is None else f"{e['median_case_cost_ratio']:.9g}"
     lines.append(f"| {e['intervals']} | {e['target']} | {label} | {rt} / {ft} | {ratio} |")
-lines+=['',f"The speed-study CPU audit reconstructs {s5['audit']['distinct_preserved_field_hashes']} full fields from saved coordinates and weights, verifies the training-only cache and selected codes, and recomputes physical errors, residuals and stationarity. "
+lines+=['',f"The speed-study CPU audit checks {s5['audit']['distinct_preserved_field_hashes']} preserved full fields, reconstructs neural outputs from saved coordinates and weights, verifies the training-only cache and selected codes, and recomputes physical errors, residuals and stationarity. "
     f"Maximum query-metric discrepancy is {s5['audit']['maximum_independent_cpu_metric_difference']:.9g}, decoded-field relative discrepancy {s5['audit']['maximum_decoder_field_relative_difference']:.9g}, and stationarity discrepancy {s5['audit']['maximum_stationarity_absolute_difference']:.9g}. "
     f"Projection-gate failures: {s5['audit']['projection_gate_failures']}; primary fallbacks: {s5['audit']['timed_fallbacks']}; stationary fallbacks: {s5['audit']['stationary_fallbacks']}. "
     'All failures remain in native records and errors. The audit distinguishes exact saved source-parameter hashes from tiny cross-architecture exponential roundoff in independent seed regeneration.','']

@@ -1,0 +1,76 @@
+jax_backend=gpu
+jax_backend=gpu [CudaDevice(id=0)]
+jax_backend=gpu [CudaDevice(id=0)]
+parity 0.01 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+parity 0.0 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+jax_backend=gpu [CudaDevice(id=0)]
+projection_and_lookup {'coefficient_relative': 2.1170648776217953e-16, 'thin_selected_code_index': 86, 'dst_selected_code_index': 86, 'lookup_index_matches': True, 'thin_squared_distance_gap': 8.460703233482267e-06, 'dst_squared_distance_gap': 8.460703233482226e-06, 'coefficient_scope': 'same scaled weak sine coefficients; floating-point FFT and matrix-product roundoff may differ'}
+field_projection_agreement 0.01 mean_training_code {'field_relative': 1.4897177471170016e-15, 'latent_relative': 2.0305743092145132e-15, 'objective_scaled_difference': 2.2872371415182602e-17, 'candidate_stationarity': 1.745049486518781e-09, 'control_stationarity': 1.7450580313032033e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+field_projection_agreement 0.01 nearest_cached_scaled_weak_prediction {'field_relative': 1.139990133966558e-15, 'latent_relative': 1.6879794626114063e-15, 'objective_scaled_difference': 5.849836469586661e-16, 'candidate_stationarity': 4.438153436002631e-10, 'control_stationarity': 4.4381437728718726e-10, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+field_projection_agreement 0.0 mean_training_code {'field_relative': 1.4897177471170016e-15, 'latent_relative': 2.0305743092145132e-15, 'objective_scaled_difference': 2.2872371415182602e-17, 'candidate_stationarity': 1.745049486518781e-09, 'control_stationarity': 1.7450580313032033e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+field_projection_agreement 0.0 nearest_cached_scaled_weak_prediction {'field_relative': 1.139990133966558e-15, 'latent_relative': 1.6879794626114063e-15, 'objective_scaled_difference': 5.849836469586661e-16, 'candidate_stationarity': 4.438153436002631e-10, 'control_stationarity': 4.4381437728718726e-10, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True}
+evaluation 32 0 existing_development
+evaluation 32 1 fresh_development
+ALL-DONE
+DRIVER-SMOKE-PASSED 20 16
+evaluation 256 0 existing_development
+evaluation 256 1 existing_development
+evaluation 256 2 existing_development
+evaluation 256 3 existing_development
+evaluation 256 4 existing_development
+evaluation 256 5 existing_development
+evaluation 256 6 fresh_development
+evaluation 256 7 fresh_development
+evaluation 256 8 fresh_development
+evaluation 256 9 fresh_development
+evaluation 256 10 fresh_development
+evaluation 256 11 fresh_development
+evaluation 256 12 fresh_development
+evaluation 256 13 fresh_development
+evaluation 256 14 fresh_development
+evaluation 256 15 fresh_development
+evaluation 256 16 fresh_development
+evaluation 256 17 fresh_development
+evaluation 256 18 fresh_development
+evaluation 256 19 fresh_development
+evaluation 256 20 fresh_development
+evaluation 256 21 fresh_development
+evaluation 256 22 fresh_development
+evaluation 256 23 fresh_development
+evaluation 256 24 fresh_development
+evaluation 256 25 fresh_development
+evaluation 256 26 fresh_development
+evaluation 256 27 fresh_development
+evaluation 256 28 fresh_development
+evaluation 256 29 fresh_development
+evaluation 512 0 existing_development
+evaluation 512 1 existing_development
+evaluation 512 2 existing_development
+evaluation 512 3 existing_development
+evaluation 512 4 existing_development
+evaluation 512 5 existing_development
+evaluation 512 6 fresh_development
+evaluation 512 7 fresh_development
+evaluation 512 8 fresh_development
+evaluation 512 9 fresh_development
+evaluation 512 10 fresh_development
+evaluation 512 11 fresh_development
+evaluation 512 12 fresh_development
+evaluation 512 13 fresh_development
+evaluation 512 14 fresh_development
+evaluation 512 15 fresh_development
+evaluation 512 16 fresh_development
+evaluation 512 17 fresh_development
+evaluation 512 18 fresh_development
+evaluation 512 19 fresh_development
+evaluation 512 20 fresh_development
+evaluation 512 21 fresh_development
+evaluation 512 22 fresh_development
+evaluation 512 23 fresh_development
+evaluation 512 24 fresh_development
+evaluation 512 25 fresh_development
+evaluation 512 26 fresh_development
+evaluation 512 27 fresh_development
+evaluation 512 28 fresh_development
+evaluation 512 29 fresh_development
+ALL-DONE

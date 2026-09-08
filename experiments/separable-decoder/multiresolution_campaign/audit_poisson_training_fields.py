@@ -34,11 +34,20 @@ def audit(path):
         sample(cfg['additional_training_seed'], cfg['additional_training_count'])))
     validation = np.concatenate((sample(cfg['existing_development_seed'], cfg['existing_development_count']),
         sample(cfg['additional_development_seed'], cfg['additional_development_count'])))
-    for actual, key in ((original, 'original_full_draw_parameters'), (training, 'union_parameters')):
-        np.testing.assert_array_equal(actual, result['training'][key])
-    np.testing.assert_array_equal(validation, result['cohort']['parameters'])
-    assert array_hash(training) == result['training']['union_sha256']
-    assert array_hash(validation) == result['cohort']['parameter_sha256']
+    recorded_original = np.asarray(result['training']['original_full_draw_parameters'])
+    recorded_training = np.asarray(result['training']['union_parameters'])
+    recorded_validation = np.asarray(result['cohort']['parameters'])
+    parameter_differences = []
+    for actual, recorded in ((original, recorded_original), (training, recorded_training), (validation, recorded_validation)):
+        # Uniform draws remain exact; exp(log-width) differs by a few ULPs
+        # between the cluster x86 and local ARM NumPy implementations.
+        np.testing.assert_array_equal(actual[:, [0, 1, 3]], recorded[:, [0, 1, 3]])
+        np.testing.assert_allclose(actual[:, 2], recorded[:, 2], rtol=4*np.finfo(np.float64).eps, atol=0)
+        parameter_differences.append(float(np.max(np.abs(actual-recorded))))
+    np.testing.assert_array_equal(recorded_training[:cfg['original_training_prefix_count']], recorded_original[:cfg['original_training_prefix_count']])
+    assert array_hash(recorded_original) == result['training']['original_draw_sha256']
+    assert array_hash(recorded_training) == result['training']['union_sha256']
+    assert array_hash(recorded_validation) == result['cohort']['parameter_sha256']
     cohort_names = ['existing_development']*cfg['existing_development_count'] + ['fresh_development']*cfg['additional_development_count']
     assert result['cohort']['groups'] == cohort_names
     checkpoints = {r['model']: r for r in result['checkpoints']}
@@ -112,6 +121,8 @@ def audit(path):
         job_id=provenance['job_id'], source_commit=provenance['commit'], verified_invocations=len(observed),
         distinct_field_hashes=len({r['field_sha256'] for r in result['rows']}),
         maximum_metric_disagreement=maximum_difference, declared_draws_and_repetitions_match=True,
+        maximum_parameter_regeneration_difference=max(parameter_differences),
+        parameter_regeneration_scope='Exact uniform draws, persisted draw hashes and training prefix; independent exp(log-width) regeneration agrees within four float64 eps relative across architectures.',
         endpoints=endpoint_records, rigorous_reference_bound=None)
 
 

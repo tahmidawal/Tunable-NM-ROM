@@ -1,0 +1,40 @@
+{
+  "scope": "Independent NumPy audit of Poisson training-factorial fields and membership.\n\nChecks all declared output/configuration/repetition combinations, saved hashes,\nphysical errors, source-draw membership and fixed training endpoint accounting.\nDoes not regenerate PDE truth, prove a continuum bound or audit gradients.\n",
+  "source_json": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/cluster/out/pilot/result.json",
+  "source_json_sha256": "eea771f0ee04d224d84d6a12301401b942a1c3f0b06680525d9d844f383eab3e",
+  "job_id": "3353137",
+  "source_commit": "0ed8384c30ff150d0f25adfe1dead41a8a739c26",
+  "verified_invocations": 7680,
+  "distinct_field_hashes": 896,
+  "maximum_metric_disagreement": 2.3592239273284576e-16,
+  "declared_draws_and_repetitions_match": true,
+  "maximum_parameter_regeneration_difference": 1.3877787807814457e-17,
+  "parameter_regeneration_scope": "Exact uniform draws, persisted draw hashes and training prefix; independent exp(log-width) regeneration agrees within four float64 eps relative across architectures.",
+  "endpoints": [
+    {
+      "model": "original_global",
+      "complete": true,
+      "updates": 10000,
+      "training_count": 512
+    },
+    {
+      "model": "expanded_global",
+      "complete": true,
+      "updates": 10000,
+      "training_count": 2048
+    },
+    {
+      "model": "original_relative",
+      "complete": true,
+      "updates": 10000,
+      "training_count": 512
+    },
+    {
+      "model": "expanded_relative",
+      "complete": true,
+      "updates": 10000,
+      "training_count": 2048
+    }
+  ],
+  "rigorous_reference_bound": null
+}

@@ -21,7 +21,7 @@ def main():
                 physical_error=max(x['physical_error'] for x in rs),same_grid_error=max(x['same_grid_error'] for x in rs),
                 adjusted_error=max(x['conservative_physical_error'] for x in rs),reference_delta=r['reference_delta'],
                 solver_valid=all(x['solver_valid'] for x in rs),stationary=all(x['stationary'] for x in rs),
-                stationarity=max(x['stationarity'] for x in rs),reason=r['reason'],attempts=r['attempts'],
+                stationarity=max((x['stationarity'] for x in rs if x['stationarity'] is not None),default=None),reason=r['reason'],attempts=r['attempts'],
                 parity_passed=all(x['parity_passed'] for x in rs),distinct_repetition_fields=len({x['field_sha256'] for x in rs})))
         latency=st.median(x['median_seconds'] for x in cases)
         components=('input_seconds','fused_device_seconds','output_seconds') if arm in ('rom_fused','rom_gj') else ('input_seconds','projection_init_seconds','solver_seconds','output_seconds')
@@ -83,7 +83,8 @@ def main():
         'These generated results are provisional development evidence from a fixed-compute continuation factorial, retaining the unchanged compact checkpoint. They separate training coverage from loss normalization and evaluate the resulting bank, head and deployed weak solve on original and fresh development sources.','',
         f"Job `{d['provenance']['job_id']}`, source `{d['provenance']['commit']}`, GPU `{d['provenance']['gpu']}`. Evaluation contains {cfg['existing_development_count']} existing and {cfg['additional_development_count']} fresh development sources, with {cfg['repetitions']} full-query repetitions. Sealed final cohorts remain closed.",'',
         f"Training uses {cfg['training_nodes_per_axis']} nodes per axis, or {cfg['training_nodes_per_axis']-1} intervals. Query meshes use {cfg['intervals']} intervals, with one more node per axis. "
-        f"The architecture retains latent dimension {d['checkpoint_config']['k']} and {d['checkpoint_config']['r']} spatial features. Each scheduled checkpoint is frozen across both query meshes; operators are rebuilt. All numerical work uses GPU float64 and highest matrix precision.",'',
+        f"The architecture retains latent dimension {d['checkpoint_config']['k']} and {d['checkpoint_config']['r']} spatial features. Each scheduled checkpoint is frozen across both query meshes; operators are rebuilt. "
+        f"All assemblies retain bank ranks {sorted({r['retained_bank_rank'] for r in d['setup']})} and smooth-test counts {sorted({r['retained_modes'] for r in d['setup']})}; complete tied shells can increase the requested count. All numerical work uses GPU float64 and highest matrix precision.",'',
         '## Fixed training endpoints','',
         '| Model | Training sources | Updates | Complete endpoint | Compile s | Optimizer loop s | Actual train elapsed s | Training median relative error | Training worst relative error |',
         '|---|---:|---:|---|---:|---:|---:|---:|---:|']

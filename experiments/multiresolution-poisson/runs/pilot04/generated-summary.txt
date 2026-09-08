@@ -1,0 +1,236 @@
+{
+  "training_endpoints": [
+    {
+      "model": "original_global",
+      "steps": 10000,
+      "valid": true
+    },
+    {
+      "model": "expanded_global",
+      "steps": 10000,
+      "valid": true
+    },
+    {
+      "model": "original_relative",
+      "steps": 10000,
+      "valid": true
+    },
+    {
+      "model": "expanded_relative",
+      "steps": 10000,
+      "valid": true
+    }
+  ],
+  "envelope": [
+    {
+      "intervals": 256,
+      "cohort": "all_development",
+      "target": 0.1,
+      "rom": {
+        "model": "original_global",
+        "arm": "rom_gj",
+        "tau": 0.01,
+        "requested_modes": 256,
+        "retained_modes": 257,
+        "latency_seconds": 0.004309708223445341,
+        "physical_max": 0.07763485214720206
+      },
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.001782450737664476,
+        "physical_max": 0.0001545997763344007
+      },
+      "median_case_cost_ratio": 0.4136190942932741,
+      "per_case_cost_ratios": [
+        0.35638735601181376,
+        0.4844606271429881,
+        0.39280553276728797,
+        0.48880316458990597,
+        0.34589728317755747,
+        0.3386752164770017,
+        0.23015929581908362,
+        0.38668030141168486,
+        0.48892383558902175,
+        0.45257819976235497,
+        0.39748982933955257,
+        0.43291908914249794,
+        0.5621028845051954,
+        0.4081780535179728,
+        0.33814138376974723,
+        0.42062030314540816,
+        0.338739951811552,
+        0.350848971070733,
+        0.4815161264357265,
+        0.42738001122618424,
+        0.4375706010299877,
+        0.41906013506857537,
+        0.4404453029060534,
+        0.42052648570251927,
+        0.3886632164574404,
+        0.35265636839366477,
+        0.38840111326379867,
+        0.37013897505601595,
+        0.42528612553813805,
+        0.4338624277437336
+      ],
+      "ratio_of_aggregate_latencies": 0.41358965508795364
+    },
+    {
+      "intervals": 256,
+      "cohort": "all_development",
+      "target": 0.05,
+      "rom": null,
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.001782450737664476,
+        "physical_max": 0.0001545997763344007
+      },
+      "median_case_cost_ratio": null
+    },
+    {
+      "intervals": 256,
+      "cohort": "all_development",
+      "target": 0.01,
+      "rom": null,
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.001782450737664476,
+        "physical_max": 0.0001545997763344007
+      },
+      "median_case_cost_ratio": null
+    },
+    {
+      "intervals": 256,
+      "cohort": "all_development",
+      "target": 0.001,
+      "rom": null,
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.001782450737664476,
+        "physical_max": 0.0001545997763344007
+      },
+      "median_case_cost_ratio": null
+    },
+    {
+      "intervals": 512,
+      "cohort": "all_development",
+      "target": 0.1,
+      "rom": {
+        "model": "original_frozen",
+        "arm": "rom_gj",
+        "tau": 0.01,
+        "requested_modes": 256,
+        "retained_modes": 257,
+        "latency_seconds": 0.004625523462891579,
+        "physical_max": 0.07668751548301743
+      },
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.0021976017742417753,
+        "physical_max": 3.676657601989594e-05
+      },
+      "median_case_cost_ratio": 0.4687820395667213,
+      "per_case_cost_ratios": [
+        0.49217526787395727,
+        0.5209815184348919,
+        0.4448191353863153,
+        0.48809365888892614,
+        0.4976507172895232,
+        0.44541041923202945,
+        0.3453252574067538,
+        0.44102827970606945,
+        0.562310580927455,
+        0.5666478519732424,
+        0.46988968127791086,
+        0.6602079415604589,
+        0.5942589865916984,
+        0.40019958299342584,
+        0.44055289613007176,
+        0.43179482997922025,
+        0.4689095585298435,
+        0.36797196977680285,
+        0.5623852417286043,
+        0.4455216605742074,
+        0.4792181951803117,
+        0.4022685099080968,
+        0.59553507868689,
+        0.47816224722783857,
+        0.4226115884032892,
+        0.46865452060359913,
+        0.42770850626491896,
+        0.46337862749280145,
+        0.4403337574283346,
+        0.48891317879681934
+      ],
+      "ratio_of_aggregate_latencies": 0.4751033676236022
+    },
+    {
+      "intervals": 512,
+      "cohort": "all_development",
+      "target": 0.05,
+      "rom": null,
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.0021976017742417753,
+        "physical_max": 3.676657601989594e-05
+      },
+      "median_case_cost_ratio": null
+    },
+    {
+      "intervals": 512,
+      "cohort": "all_development",
+      "target": 0.01,
+      "rom": null,
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.0021976017742417753,
+        "physical_max": 3.676657601989594e-05
+      },
+      "median_case_cost_ratio": null
+    },
+    {
+      "intervals": 512,
+      "cohort": "all_development",
+      "target": 0.001,
+      "rom": null,
+      "fom": {
+        "model": null,
+        "arm": "dst",
+        "tau": null,
+        "requested_modes": null,
+        "retained_modes": null,
+        "latency_seconds": 0.0021976017742417753,
+        "physical_max": 3.676657601989594e-05
+      },
+      "median_case_cost_ratio": null
+    }
+  ]
+}

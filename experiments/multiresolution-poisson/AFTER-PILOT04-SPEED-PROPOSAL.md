@@ -46,11 +46,16 @@ variants are allowed to take different trajectories or reach different local
 minima; their fields, objective values, gradients and stop statuses are evaluated
 directly. The existing residual-reduction target is relative to each query's own
 initial residual, so changing initialization also changes its absolute stopping
-threshold. Preserve that original rule, report the threshold explicitly, and use
-the tighter stationary control to isolate initialization effects at convergence.
+threshold. A nearer start can tighten that absolute threshold enough to require
+stationarity instead of an early residual-reduction exit. Preserve the original
+rule and report initial/final residuals, the absolute threshold and stop reasons.
+Interpret cost changes as those of the complete initialization and existing
+stopping procedure. Use the tighter stationary control to compare convergence;
+a baseline-anchored or source-normalized target would be a separate experiment.
 
-The coordinator will review the concrete selected checkpoint and complete
-budget before this proposal is implemented or submitted.
+Generic projection and cache utilities may be implemented and smoke-tested
+while the training study finishes. The coordinator will review the concrete
+selected checkpoint before endpoint staging or submission.
 
 ## Plain-language glossary
 

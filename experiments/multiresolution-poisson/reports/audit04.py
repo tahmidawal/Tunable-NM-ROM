@@ -70,13 +70,20 @@ def sample(seed,count):
     return np.column_stack((rng.uniform(.15,.85,count),rng.uniform(.15,.85,count),
         np.exp(rng.uniform(np.log(.02),np.log(.1),count)),rng.uniform(.5,2.,count)))
 original=sample(cfg['original_draw_seed'],cfg['original_draw_count'])
-np.testing.assert_array_equal(original,d['training']['original_full_draw_parameters'])
+recorded_original=np.asarray(d['training']['original_full_draw_parameters'])
+parameter_differences=[float(np.max(np.abs(original-recorded_original)))]
+np.testing.assert_allclose(original,recorded_original,rtol=5e-14,atol=1e-15)
 union=np.concatenate((original[:cfg['original_training_prefix_count']],sample(cfg['additional_training_seed'],cfg['additional_training_count'])))
-np.testing.assert_array_equal(union,d['training']['union_parameters'])
+recorded_union=np.asarray(d['training']['union_parameters'])
+parameter_differences.append(float(np.max(np.abs(union-recorded_union))))
+np.testing.assert_allclose(union,recorded_union,rtol=5e-14,atol=1e-15)
+np.testing.assert_array_equal(recorded_original[:cfg['original_training_prefix_count']],recorded_union[:cfg['original_training_prefix_count']])
 draws=np.concatenate((sample(cfg['existing_development_seed'],cfg['existing_development_count']),sample(cfg['additional_development_seed'],cfg['additional_development_count'])))
-np.testing.assert_array_equal(draws,d['cohort']['parameters'])
-assert sha(np.ascontiguousarray(union).tobytes())==d['training']['union_sha256']
-assert sha(np.ascontiguousarray(draws).tobytes())==d['cohort']['parameter_sha256']
+recorded_draws=np.asarray(d['cohort']['parameters']);parameter_differences.append(float(np.max(np.abs(draws-recorded_draws))))
+np.testing.assert_allclose(draws,recorded_draws,rtol=5e-14,atol=1e-15)
+assert sha(np.ascontiguousarray(recorded_original).tobytes())==d['training']['original_draw_sha256']
+assert sha(np.ascontiguousarray(recorded_union).tobytes())==d['training']['union_sha256']
+assert sha(np.ascontiguousarray(recorded_draws).tobytes())==d['cohort']['parameter_sha256']
 den=np.asarray(d['training']['data']['mean_squares'])
 assert np.all(den>0)
 normalizer=d['training']['shared_global_normalizer']
@@ -106,7 +113,7 @@ for checkpoint in d['checkpoints']:
         assert checkpoint['valid_endpoint']==record['valid_endpoint']==valid
         assert record['elapsed_seconds_including_compile']>=record['compile_seconds']+record['optimizer_loop_seconds']
         endpoints.append(dict(model=checkpoint['model'],steps=record['steps_done'],valid=valid))
-errors=[];keys=set();components=0;cache={}
+errors=[];keys=set();components=0;cache={};recorded_source_hashes={};cross_machine_source_matches=set()
 def metrics(field_hash,n,case):
     key=(field_hash,n,case)
     if key not in cache:
@@ -119,7 +126,10 @@ def metrics(field_hash,n,case):
 for row in d['rows']:
     key=(row['intervals'],row['case'],row['model'],row['arm'],row['requested_modes'],row['tau'],row['repetition'])
     assert key not in keys;keys.add(key)
-    assert row['source_sha256']==source_hashes[(row['intervals'],row['case'])]
+    source_key=(row['intervals'],row['case'])
+    if source_key in recorded_source_hashes:assert row['source_sha256']==recorded_source_hashes[source_key]
+    recorded_source_hashes[source_key]=row['source_sha256']
+    if row['source_sha256']==source_hashes[source_key]:cross_machine_source_matches.add(source_key)
     names=['input_seconds','fused_device_seconds','output_seconds'] if row['arm'] in ('rom_fused','rom_gj') else ['input_seconds','projection_init_seconds','solver_seconds','output_seconds']
     assert abs(row['total_seconds']-sum(row[k] for k in names))<1e-10;components+=1
     computed=metrics(row['field_sha256'],row['intervals'],row['case'])
@@ -145,9 +155,15 @@ for item in d['oracles']:
     assert max(x['qr_identity_absolute'] for x in item['rows'])<1e-10
 assert max(oracle_errors)<1e-10
 report=dict(passed=True,job_id=sub['job_id'],source_commit=sub['source_commit'],archive_sha256=clean['archive_sha256'],
-    row_count=len(keys),distinct_preserved_field_hashes=len(fields),same_invocation_components_checked=components,
+    row_count=len(keys),distinct_preserved_field_hashes=len(fields),
+    distinct_timed_field_hashes=len({r['field_sha256'] for r in d['rows']}),
+    diagnostic_panels=len(d['oracles']),same_invocation_components_checked=components,
     maximum_independent_cpu_metric_difference=max(errors),maximum_oracle_cpu_error_difference=max(oracle_errors),
-    exact_source_draws_and_training_prefix_verified=True,training_denominator_cpu_sample_relative_difference_max=max(training_norm_differences),
+    persisted_draw_hashes_and_exact_training_prefix_verified=True,maximum_independent_parameter_regeneration_difference=max(parameter_differences),
+    recorded_source_hashes_stable_across_all_models_and_repetitions=True,
+    cross_machine_exact_source_hash_matches=len(cross_machine_source_matches),distinct_recorded_source_hashes=len(recorded_source_hashes),
+    source_regeneration_note='Independent CPU exp evaluations need not be bitwise identical across architectures. Persisted draw bytes/prefixes and within-job source digests are exact; independent regeneration and field metrics use floating-point numerical tolerances.',
+    training_denominator_cpu_sample_relative_difference_max=max(training_norm_differences),
     shared_initialization_across_objectives_verified=True,training_endpoints=endpoints,
     all_training_endpoints_complete=all(x['valid'] for x in endpoints),trained_checkpoint_hashes_and_metadata_verified=True,
     source_checkpoint_and_result_match_archive_and_git=True,all_reference_differences_recomputed=True,

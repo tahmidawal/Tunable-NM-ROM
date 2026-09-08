@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "job_id": "3353137",
+  "source_commit": "0ed8384c30ff150d0f25adfe1dead41a8a739c26",
+  "archive_sha256": "486713c64ffb9cbc60c51fe31f828af61b30b0efd51895e17b3374e723edb4e0",
+  "row_count": 7680,
+  "distinct_preserved_field_hashes": 1496,
+  "distinct_timed_field_hashes": 896,
+  "diagnostic_panels": 300,
+  "same_invocation_components_checked": 7680,
+  "maximum_independent_cpu_metric_difference": 5.300844090478437e-16,
+  "maximum_oracle_cpu_error_difference": 9.71445146547012e-17,
+  "persisted_draw_hashes_and_exact_training_prefix_verified": true,
+  "maximum_independent_parameter_regeneration_difference": 1.3877787807814457e-17,
+  "recorded_source_hashes_stable_across_all_models_and_repetitions": true,
+  "cross_machine_exact_source_hash_matches": 0,
+  "distinct_recorded_source_hashes": 60,
+  "source_regeneration_note": "Independent CPU exp evaluations need not be bitwise identical across architectures. Persisted draw bytes/prefixes and within-job source digests are exact; independent regeneration and field metrics use floating-point numerical tolerances.",
+  "training_denominator_cpu_sample_relative_difference_max": 1.7763568394002505e-15,
+  "shared_initialization_across_objectives_verified": true,
+  "training_endpoints": [
+    {
+      "model": "original_global",
+      "steps": 10000,
+      "valid": true
+    },
+    {
+      "model": "expanded_global",
+      "steps": 10000,
+      "valid": true
+    },
+    {
+      "model": "original_relative",
+      "steps": 10000,
+      "valid": true
+    },
+    {
+      "model": "expanded_relative",
+      "steps": 10000,
+      "valid": true
+    }
+  ],
+  "all_training_endpoints_complete": true,
+  "trained_checkpoint_hashes_and_metadata_verified": true,
+  "source_checkpoint_and_result_match_archive_and_git": true,
+  "all_reference_differences_recomputed": true,
+  "all_original_fusion_parity_passed": true,
+  "specialized_agreement_failures": 0,
+  "specialized_field_relative_max": 6.566063792736024e-10,
+  "specialized_latent_relative_max": 1.5386438072910403e-08,
+  "specialized_timed_fallbacks": 0,
+  "remote_deleted": true,
+  "reference_limit": "Fine observation artifacts audited; no rigorous continuum bound established",
+  "oracle_limit": "All starts saved, but stationary local fits do not prove global minima"
+}

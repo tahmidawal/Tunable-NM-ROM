@@ -68,6 +68,9 @@ def speed_query(host_source,ops,cache,tau,kernel,projection,initialization):
         stationarity=stationarity,latent=z.tolist(),initial_latent=np.asarray(z0).tolist(),
         selected_training_code_index=int(index),cache_distance=float(distance) if nearest else None,
         cache_squared_distance_gap=float(gap) if nearest else None,
+        cache_relative_squared_gap=float(gap/(distance*distance+1e-300)) if nearest else None,
+        cache_near_tie=bool(gap<=1e-12*(distance*distance+1e-300)) if nearest else None,
+        cache_near_tie_relative_threshold=1e-12 if nearest else None,
         max_linear_backward_error=float(stats[0]),fallback_count=int(stats[1]),max_proposed_backward_error=float(stats[2]),
         component_note='Source projection, optional nearest lookup, guarded LM and decoding share the charged device interval; initialization metadata is copied to host before the timer ends.')
 

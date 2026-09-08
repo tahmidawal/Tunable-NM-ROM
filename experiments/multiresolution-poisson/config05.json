@@ -1,0 +1,61 @@
+{
+  "intervals": [
+    256,
+    512
+  ],
+  "requested_modes": 256,
+  "projection": [
+    "skinny_sine_products",
+    "forward_dst_and_gather"
+  ],
+  "initialization": [
+    "mean_training_code",
+    "nearest_cached_scaled_weak_prediction"
+  ],
+  "repetitions": 3,
+  "warmup": 3,
+  "burn_seconds": 0.3,
+  "projection_relative_tolerance": 1e-11,
+  "linear_backward_error_limit": 1e-12,
+  "stationarity_tolerance": 1e-06,
+  "lm_budget": 150,
+  "targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "reference_intervals": [
+    512,
+    1024,
+    2048
+  ],
+  "observation_intervals": 256,
+  "reference_fraction": 0.1,
+  "expected_timed_invocations": 1800,
+  "models": [
+    "original_frozen",
+    "original_relative"
+  ],
+  "checkpoint_sha256": {
+    "original_frozen": "013e96424f1d39282f90f65a217079acb55501ad9ad5d5e9f07c58766f7daa68",
+    "original_relative": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a"
+  },
+  "selected_checkpoint": "experiments/multiresolution-poisson/runs/pilot04/checkpoints/original_relative.pkl",
+  "selected_training_source_commit": "0ed8384c30ff150d0f25adfe1dead41a8a739c26",
+  "selection_rule": "minimize worst adjusted physical error across all30 cases and both meshes among complete endpoints with all tighter generic solves valid; tie median error then name",
+  "primary_tau": 0.01,
+  "coarse_intervals": 128,
+  "existing_development_seed": 7090703,
+  "existing_development_count": 6,
+  "fresh_development_seed": 7090732,
+  "fresh_development_count": 24,
+  "parameter_sha256": "8bd369190679e4ebb6df47c7b38d7b4a09fe3d6d2a95331643ae056d081dfb55",
+  "agreement_limits": {
+    "field_relative": 1e-06,
+    "latent_relative": 0.0001,
+    "objective_initial_scaled": 1e-05
+  },
+  "initial_latent_relative_tolerance": 1e-12,
+  "expected_stationary_invocations": 480
+}

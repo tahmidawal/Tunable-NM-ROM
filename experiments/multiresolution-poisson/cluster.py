@@ -34,6 +34,7 @@ def write_json(p, v):
 
 def stage(label):
     commit = run(["git", "rev-parse", "HEAD"], cwd=TREE).strip()
+    number = next((x for x in ("05", "04", "03", "02") if label.startswith("pilot"+x)), "")
     dest = CELL/"stages"/label
     dest.mkdir(parents=True, exist_ok=False)
     for folder in ("code", "in", "out", "logs"):
@@ -57,13 +58,22 @@ def stage(label):
     origin={"checkpoint_path":checkpoint,"checkpoint_source_commit":commit,
         "checkpoint_sha256":hashlib.sha256(payload).hexdigest(),
         "ms_parametric_scope":"Only generic Poisson source family and Laplacian; no old wave physics"}
+    if number == "05":
+        speed_config=json.loads((CELL/"config05.json").read_text())
+        selected=speed_config['selected_checkpoint']
+        selected_bytes=subprocess.check_output(["git","show",f"{commit}:{selected}"],cwd=TREE)
+        selected_sha=hashlib.sha256(selected_bytes).hexdigest()
+        assert selected_sha==speed_config['checkpoint_sha256']['original_relative']
+        (dest/"in/selected.pkl").write_bytes(selected_bytes)
+        origin.update(selected_checkpoint_path=selected,selected_checkpoint_sha256=selected_sha)
     write_json(dest/"in/ORIGIN.json",origin)
     remote = NAMESPACE+"/"+label
-    number = next((x for x in ("04", "03", "02") if label.startswith("pilot"+x)), "")
     driver = "pilot"+number+".py"
     config_file = "config"+number+".json"
     extra_test = '"$PY" -u code/test_kernel.py' if number in ("03", "04") else ""
     if number == "04": extra_test += '\n"$PY" -u code/test_training.py'
+    if number == "05": extra_test = '"$PY" -u code/test_speed.py\n"$PY" -u code/test_pilot05.py'
+    driver_extra=' --selected-checkpoint in/selected.pkl' if number == "05" else ''
     batch = f'''#!/bin/bash
 #SBATCH --job-name=ctol_mr_poisson_{label}
 #SBATCH --partition=gpu
@@ -96,7 +106,7 @@ trap finish EXIT
 "$PY" -u code/test_core.py
 "$PY" -u code/test_followup.py
 {extra_test}
-"$PY" -u code/{driver} --config code/{config_file} --checkpoint in/model.pkl --out out/pilot
+"$PY" -u code/{driver} --config code/{config_file} --checkpoint in/model.pkl{driver_extra} --out out/pilot
 '''
     (dest/"job.sbatch").write_text(batch)
     cfg = dict(label=label, source_commit=commit, source_hashes=source_hashes, remote=remote, staged_at=datetime.now(timezone.utc).isoformat())

@@ -106,6 +106,17 @@ def render(s,audit,path):
         'Both new heads use the original reconstruction-only training protocol and cohort, with the bank frozen. Their common affine32 initializer is the matched linear control. The unchanged MLP16 is retained at its original primary time step. The fixed weak bank has more equations than latent coordinates, with the explicitly changed overdetermination ratio recorded in the configuration.','',
         '| Boundary | Endpoint | Head coordinates | Seed | Updates | Training seconds | Final recorded training objective |','|---|---|---:|---:|---:|---:|---:|']
     for t in s['head_training']:lines.append(f"| {t['boundary']} | {t['name']} | {t['configuration_dimension']} | {t['optimizer_seed']} | {t['training']['head_steps']} | {t['training_seconds_including_first_compile']:.9g} | {t['history'][-1][1]:.9g} |")
+    fine=max(cfg['meshes'])
+    for bc in cfg['boundaries']:
+        groups=[g for g in s['groups'] if (g['boundary'],g['intervals'])==(bc,fine)]
+        frozen=next(g for g in groups if g['method'].startswith('frozen_'))
+        affine=next(g for g in groups if g['method']=='affine32')
+        coarse=[g for g in groups if g['method'].startswith('new_') and g['setting']==cfg['nonlinear_dts'][0]]
+        primary=[g for g in groups if g['method'].startswith('new_') and g['setting']==frozen['setting']]
+        error_range=f"{100*min(g['physical_error_worst'] for g in coarse):.6g}%–{100*max(g['physical_error_worst'] for g in coarse):.6g}%"
+        cost_range=f"{min(g['query_median'] for g in primary):.6g}–{max(g['query_median'] for g in primary):.6g}"
+        lines += ['',f"At `{fine}` intervals for `{bc}`, the two larger heads at the coarsest repeated step have worst required errors `{error_range}`, versus `{100*frozen['physical_error_worst']:.6g}%` for the frozen smaller head and `{100*affine['physical_error_worst']:.6g}%` for affine32. At the unchanged primary step, the larger heads cost `{cost_range}` seconds versus `{frozen['query_median']:.6g}` seconds for the smaller head. The faster larger-head rows use a larger time step; increasing dimension alone does not improve speed."]
+    lines += ['', 'No nonlinear configuration is faster than the same-job requested-mesh FOM. The two larger-head seeds also fail the declared all-case accuracy targets below their reported worst errors. These results support an accuracy improvement over the smaller head, not an established nonlinear advantage over the matched affine model or FOM.']
     lines += ['', 'Training times include compilation and host work and are not paired warm-GPU training-speed measurements. Both fixed endpoints are reported. No velocity, tangent, curvature, force, energy, rollout or validation objective is added. Original seed data are regenerated on the cluster; saved prior coefficients are lineage checks only.','',
         '| Boundary | Intervals | Method | dt / CFL | Query median ms | Time-max error median | Time-max error worst | Raw same-grid FOM/method | Failed / nonstationary / unresolved cases |','|---|---:|---|---:|---:|---:|---:|---:|---|']
     for g in s['groups']:
@@ -159,8 +170,8 @@ def plot(summary,data,out):
             if not rows:continue
             rows=sorted(rows,key=lambda g:g['query_median'])
             ax.plot([g['query_median']*1000 for g in rows],[g['physical_error_worst']*100 for g in rows],'-o',color=colors[method],label=labels[method])
-            if method.startswith('new_'):
-                for g in rows:ax.annotate(f"dt={g['setting']}",(g['query_median']*1000,g['physical_error_worst']*100),xytext=(3,4),textcoords='offset points',fontsize=7)
+        step_labels=', '.join(f'{dt:g}' for dt in summary['config']['nonlinear_dts'])
+        ax.text(.97,.45,'K32 dt, left to right:\n'+step_labels,transform=ax.transAxes,ha='right',fontsize=8)
         ax.set_xscale('log');ax.set_yscale('log');ax.grid(alpha=.2);ax.set_title('Reflective' if bc=='dirichlet' else 'Absorbing')
         ax.set_xlabel('Complete query median (ms)');ax.set_ylabel('Worst required time-max error (%)');ax.legend(fontsize=7)
     fig.suptitle(f'Fixed learned bank, larger nonlinear heads and time-step controls\n{n} intervals; two development cases per boundary; fine controls excluded from speed plots')

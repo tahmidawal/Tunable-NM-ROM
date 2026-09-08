@@ -121,6 +121,17 @@ def audit(record):
                         np.testing.assert_allclose(np.stack([x[1] for x in values]),field['velocity_coefficients'],atol=2e-10,rtol=2e-11)
                         assert first['completed']==bool(np.all(field['rollout_completed']) and np.all(np.isfinite(field['u'])) and np.all(np.isfinite(field['v'])))
                         assert first['minimum_dynamic_rank_ratio']==float(np.min(field['rollout_rank_ratio']))
+                        target=g.T@(mesh['mass']*u0.ravel());scale0=np.sqrt(np.sum(mesh['mass']*u0.ravel()**2))
+                        aa,jj=geometry(heads[name],mesh['transform'],field['rollout_z'][0]);residual=(aa-target)/scale0;jj/=scale0
+                        q=np.linalg.qr(jj)[0];singular=np.linalg.svd(jj,compute_uv=False)
+                        cold_values=dict(objective=float(residual@residual),gradient=float(np.max(abs(jj.T@residual))/max(1.,np.linalg.norm(jj)*np.linalg.norm(residual))),
+                            stationarity=float(np.linalg.norm(q.T@residual)/max(np.linalg.norm(residual),1e-10)),rank_ratio=float(singular[-1]/singular[0]))
+                        for row in rows:
+                            cold=row['cold_fit'];si=cold['selected']
+                            assert si==int(np.argmin(np.where(cold['finite'],cold['objective'],np.inf)))
+                            assert max(abs(cold_values[k]-cold[k][si]) for k in cold_values)<2e-8
+                            stationary=bool(cold['finite'][si] and cold_values['rank_ratio']>1e-8 and cold_values['gradient']<=1e-7 and (cold_values['stationarity']<=1e-6 or cold_values['objective']<=1e-20))
+                            assert row['fit_stationary']==stationary
                     elif name=='affine32':
                         basis,offset=mesh['affine32_basis'],mesh['affine32_center'];dim=32
                         generator=np.zeros((65,65));generator[:32,32:64]=np.eye(32)
@@ -139,14 +150,20 @@ def audit(record):
                     with np.load(native/f'diagnostic_{bc}_{n}_{ci}_{model}.npz') as f:fit={k:f[k] for k in f.files}
                     for budget in cfg['diagnostic_fit_budgets']:
                         selected=fit[f'fit_{budget}_selected'];np.testing.assert_array_equal(selected,np.argmin(np.where(fit[f'fit_{budget}_finite'],fit[f'fit_{budget}_objective'],np.inf),axis=1))
-                        od=gd=0.
+                        od=gd=sd=rd=0.
                         for ti in range(len(selected)):
                             for si in range(8):
                                 aa,jj=geometry(head,mesh['transform'],fit[f'fit_{budget}_z'][ti,si]);residual=(aa-fit['targets'][ti])/diag['displacement_scale'];jj/=diag['displacement_scale']
                                 objective=float(residual@residual);gradient=float(np.max(abs(jj.T@residual))/max(1.,np.linalg.norm(jj)*np.linalg.norm(residual)))
                                 od=max(od,abs(objective-fit[f'fit_{budget}_objective'][ti,si]));gd=max(gd,abs(gradient-fit[f'fit_{budget}_gradient'][ti,si]))
-                        assert od<1e-8 and gd<1e-8
-                        report['fit_checks'].append(dict(boundary=bc,intervals=n,case=ci,model=model,budget=budget,endpoints=len(selected)*8,objective_difference=od,gradient_difference=gd))
+                                singular=np.linalg.svd(jj,compute_uv=False);rank_ratio=singular[-1]/singular[0]
+                                stationarity=np.linalg.norm(np.linalg.qr(jj)[0].T@residual)/max(np.linalg.norm(residual),1e-10)
+                                sd=max(sd,abs(stationarity-fit[f'fit_{budget}_stationarity'][ti,si]));rd=max(rd,abs(rank_ratio-fit[f'fit_{budget}_rank_ratio'][ti,si]))
+                        assert od<1e-8 and gd<1e-8 and sd<2e-8 and rd<2e-8
+                        selected_index=(np.arange(len(selected)),selected)
+                        expected_stationary=(fit[f'fit_{budget}_gradient'][selected_index]<=1e-7)&((fit[f'fit_{budget}_stationarity'][selected_index]<=1e-6)|(fit[f'fit_{budget}_objective'][selected_index]<=1e-20))&(fit[f'fit_{budget}_rank_ratio'][selected_index]>1e-8)&fit[f'fit_{budget}_finite'][selected_index]
+                        np.testing.assert_array_equal(expected_stationary,next(f for f in diag['fitting'] if f['budget']==budget)['selected_stationary'])
+                        report['fit_checks'].append(dict(boundary=bc,intervals=n,case=ci,model=model,budget=budget,endpoints=len(selected)*8,objective_difference=od,gradient_difference=gd,projected_stationarity_difference=sd,rank_ratio_difference=rd))
                     budget=cfg['diagnostic_fit_budgets'][-1];selected=fit[f'fit_{budget}_selected'];z=fit[f'fit_{budget}_z'][np.arange(len(selected)),selected]
                     curvature_difference=normal_difference=0.
                     for i,zz in enumerate(z):

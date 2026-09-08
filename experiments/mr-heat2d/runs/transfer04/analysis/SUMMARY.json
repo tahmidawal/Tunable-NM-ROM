@@ -1,0 +1,89 @@
+{
+  "heads": [
+    {
+      "method": "expanded_seed790714",
+      "worst_full": 0.04560008974667365,
+      "worst_common": 0.045600011827844115,
+      "worst_initial": 0.04560008974667365,
+      "all_valid": true
+    },
+    {
+      "method": "expanded_seed790715",
+      "worst_full": 0.04559260371319408,
+      "worst_common": 0.04559260371319408,
+      "worst_initial": 0.045451823140067196,
+      "all_valid": true
+    }
+  ],
+  "union_full_5pct": [
+    {
+      "cohort": "union",
+      "intervals": 64,
+      "norm": "full",
+      "target": 0.05,
+      "fom": "fom_dst_64",
+      "rom": "expanded_seed790715",
+      "fom_seconds": 0.0005099029513075948,
+      "rom_seconds": 0.012565908546093851,
+      "paired_fom_over_rom": 0.04069544732152669
+    },
+    {
+      "cohort": "union",
+      "intervals": 128,
+      "norm": "full",
+      "target": 0.05,
+      "fom": "fom_dst_64",
+      "rom": "expanded_seed790714",
+      "fom_seconds": 0.0006732000038027763,
+      "rom_seconds": 0.012260173505637795,
+      "paired_fom_over_rom": 0.05662371291034367
+    },
+    {
+      "cohort": "union",
+      "intervals": 256,
+      "norm": "full",
+      "target": 0.05,
+      "fom": "fom_dst_64",
+      "rom": "expanded_seed790714",
+      "fom_seconds": 0.0011641320306807756,
+      "rom_seconds": 0.013207776995841414,
+      "paired_fom_over_rom": 0.08795712435993203
+    },
+    {
+      "cohort": "union",
+      "intervals": 512,
+      "norm": "full",
+      "target": 0.05,
+      "fom": "fom_dst_16",
+      "rom": "expanded_seed790714",
+      "fom_seconds": 0.00451582350069657,
+      "rom_seconds": 0.014986074471380562,
+      "paired_fom_over_rom": 0.2913386068595295
+    },
+    {
+      "cohort": "union",
+      "intervals": 1024,
+      "norm": "full",
+      "target": 0.05,
+      "fom": "fom_dst_16",
+      "rom": "expanded_seed790715",
+      "fom_seconds": 0.02141056244727224,
+      "rom_seconds": 0.027732991031371057,
+      "paired_fom_over_rom": 0.7667300094524467
+    }
+  ],
+  "native_audit": {
+    "passed": true,
+    "results_sha256": "9efffdee15de45d5c375703877eb52654dc6569ea22ada919af0b56224886a76",
+    "archive_files_checked": 553,
+    "full_fields_checked": 528,
+    "timed_invocations": 1152,
+    "max_metric_disagreement": 5.262457136723242e-14,
+    "independent_fom_kernel_relative_disagreement": 6.446909241773887e-16,
+    "independent_spectral_reference_relative_disagreement": 1.1044037432982074e-15,
+    "reference_empirical_delta": 1.6281088458585425e-12,
+    "rigorous_relative_bound": null,
+    "nonstationary_initial": 0,
+    "nonstationary_steps": 0
+  }
+}

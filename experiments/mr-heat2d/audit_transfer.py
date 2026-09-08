@@ -230,8 +230,13 @@ def report(result, audited):
     number = lambda value, scale=1: "—" if value is None else f"{value*scale:.6f}"
     for s in audited["selections"]:
         text.append(f"| {s['cohort']} | {s['intervals']} | {s['norm']} | {s['target']*100:g} | {s['fom'] or '—'} | {s['rom'] or '—'} | {number(s['fom_seconds'], 1000)} | {number(s['rom_seconds'], 1000)} | {number(s['paired_fom_over_rom'])} |")
+    text += ["", "The coordinate bank, full-input QR projection and weak operator were rebuilt at every requested mesh. The following setup durations are observed wall times including first compilation and host work; they are outside paired online query cost and do not include the separate operator-verification work. Bank plus projection bytes are array storage, not peak device allocation.", "",
+        "| Output intervals | Interior unknowns | Bank rank | Bank + projection MiB | Bank evaluation s | QR/operator s | Operator discrepancy | Jacobian discrepancy |",
+        "|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    for setup in result["setups"]:
+        text.append(f"| {setup['intervals']} | {setup['interior_unknowns']} | {setup['rank']} | {(setup['bank_bytes']+setup['initialization_projection_bytes'])/1024**2:.6f} | {setup['bank_evaluation_seconds']:.6f} | {setup['operator_qr_seconds']:.6f} | {setup['exact_weak_operator_relative_error']:.6g} | {setup['exact_weak_jacobian_relative_error']:.6g} |")
     text += ["", "The reference and supplied initial field are preserved at complete requested resolution. Same-grid semidiscrete discrepancies are separate from discrete-versus-spectral spatial errors in the raw results. ROM-versus-discrete error includes representation, nonlinear solve and Crank–Nicolson time error; it is not a pure solver error. Prior timestep validation is retained, but this transfer study does not independently separate those three contributions. Current and initial normalization, absolute errors, state advancement and energy/decay diagnostics remain in each raw invocation.", "",
-        "Mesh setup, compilation and reference generation are outside online query cost. All checkpoints and code libraries are byte-identical to the declared inputs. Large extracted fields can be restored from the checked tracked archive chunks using `restore_transfer.py`; metadata and generated audit are also tracked directly.", "",
+        "Mesh setup, compilation and reference generation are outside online query cost. GPU capacity figures in the planning config are live-array estimates; peak device allocation was not profiled, and the configured JAX allocator reserves a fraction of device memory. Detailed Slurm host-memory accounting is preserved separately. All checkpoints and code libraries are byte-identical to the declared inputs. Large extracted fields can be restored from the checked tracked archive chunks using `restore_transfer.py`; metadata and generated audit are also tracked directly.", "",
         "## Plain-language glossary", "",
         "- **Cohort / original / fresh / union:** a group of physical inputs / repeated earlier development inputs / new independently seeded development inputs / both groups together.",
         "- **Output intervals / common grid:** cells per axis on the fully returned grid / fixed shared physical observation nodes for mesh comparison.",
@@ -243,8 +248,20 @@ def report(result, audited):
         "- **Invalid cases / stationarity / multistart:** inputs with any failed validity check / the configured small-gradient stopping condition / fitting from both a nearby library code and the mean code.",
         "- **Empirical adjustment / target / selected envelope:** reference allowance inferred from observed refinement / required physical error / cheapest configuration satisfying the same cohort and target.",
         "- **QR / weak operator / Crank–Nicolson:** exact full-field least-squares compression / heat equations tested against smooth functions / fixed second-order time formula.",
+        "- **Interior unknowns / bank rank / MiB / operator and Jacobian discrepancies:** scalar field values excluding known boundaries / number of independent spatial bank columns / binary megabytes of array storage / relative differences from the explicit discrete stencil and its derivative.",
         "- **Frozen / checkpoint / code library / final:** unchanged model parameters / complete saved model / unchanged training starting codes / reserved independent evaluation not used here.", ""]
     return "\n".join(text)
+
+
+def compact_summary(audited):
+    summary = dict(heads=[], union_full_5pct=[s for s in audited["selections"] if s["cohort"] == "union" and s["norm"] == "full" and s["target"] == .05])
+    names = sorted({r["method"] for r in audited["groups"] if r["model"] != "fom"})
+    for name in names:
+        rows = [r for r in audited["groups"] if r["cohort"] == "union" and r["method"] == name]
+        summary["heads"].append(dict(method=name, worst_full=max(r["full_error"] for r in rows),
+            worst_common=max(r["common_error"] for r in rows), worst_initial=max(r["full_initial_error"] for r in rows), all_valid=all(r["valid"] for r in rows)))
+    summary["native_audit"] = {k: v for k, v in audited.items() if k not in ("case_rows", "groups", "selections")}
+    return summary
 
 
 if __name__ == "__main__":
@@ -254,4 +271,5 @@ if __name__ == "__main__":
     (args.out/"audit.json").write_text(json.dumps(audited, indent=2, allow_nan=False)+"\n")
     result = json.loads((args.archive/"outputs/results.json").read_text())
     (args.out/"HEAT-TRANSFER-NOTES.md").write_text(report(result, audited))
+    (args.out/"SUMMARY.json").write_text(json.dumps(compact_summary(audited), indent=2, allow_nan=False)+"\n")
     print(json.dumps({k: v for k, v in audited.items() if k not in ("case_rows", "groups", "selections")}))

@@ -45,7 +45,7 @@ def plot(analysis):
     # Complete-query decomposition exposes output and input costs as the mesh grows.
     rows = [r for r in groups if r["cohort"] == "union"]
     ns = sorted({r["intervals"] for r in rows})
-    fig, axes = plt.subplots(1, 3, figsize=(12, 3.5), constrained_layout=True)
+    fig, axes = plt.subplots(1, 3, figsize=(12, 3.5), constrained_layout=True, sharey=True)
     for ax, method in zip(axes, [*colors, "fom_dst_16"]):
         arm = sorted((r for r in rows if r["method"] == method), key=lambda r: r["intervals"])
         bottom = np.zeros(len(arm))

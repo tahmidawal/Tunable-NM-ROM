@@ -210,9 +210,15 @@ def audit(archive):
 
 
 def report(result, audited):
+    union = [g for g in audited["groups"] if g["cohort"] == "union" and g["model"] != "fom"]
+    qualified = [s for s in audited["selections"] if s["cohort"] == "union" and s["norm"] == "full" and s["target"] == .05 and s["paired_fom_over_rom"] is not None]
+    advantage = sum(s["paired_fom_over_rom"] > 1 for s in qualified)
     text = ["# Frozen heat transfer and efficient full-output cost", "",
         "These bounded development results are checked against preserved full fields. They use both frozen expanded-coverage heads and unchanged initializer libraries on original and fresh inputs from the restricted single-bump family; final confirmation remains unopened.", "",
+        f"Across the union cohort and all requested meshes, the largest head current-relative physical error was {max(g['full_error'] for g in union)*100:.6f}%. At the empirically adjusted full-grid 5% target, a head qualified at {len(qualified)} meshes and beat the selected efficient FOM at {advantage} of those meshes. This describes this restricted development family only.", "",
         f"The native independent NumPy audit checked {audited['timed_invocations']} invocations and {audited['full_fields_checked']} field files; maximum metric disagreement was {audited['max_metric_disagreement']:.12g}. The empirical spectral refinement discrepancy was {audited['reference_empirical_delta']:.12g}. This is observed convergence evidence, with no rigorous physical error certificate.", "",
+        f"Independent SciPy propagation and NumPy physical interpolation reproduce the stored FOM fields to relative discrepancy {audited['independent_fom_kernel_relative_disagreement']:.12g}, and the continuum-spectral reference trajectories to {audited['independent_spectral_reference_relative_disagreement']:.12g}.", "",
+        "[Accuracy and complete-query figure](heat-transfer.png) · [Input, device and output cost figure](heat-transfer-components.png)", "",
         "Every FOM returns the exact supplied initial field. Host coarse restriction, GPU propagation, physically aligned interpolation and complete contiguous host output construction are charged. ROM outputs include its actual fitted initial state; full input projection, nonlinear fitting, evolution and full readout are charged. Both use the same requested host output grids and times.", "",
         f"The run took {result['elapsed_seconds']/60:.6f} minutes. The audit found {audited['nonstationary_initial']} selected nonstationary initial fits and {audited['nonstationary_steps']} nonstationary evolution steps across all repetitions. Failures remain in raw records and cannot qualify for target selection.", "",
         "Costs below are medians of per-case timing medians. All errors are maxima over every case, repetition and output time in the named cohort. Each head remains separately visible; this experiment changes neither its representation nor its training coverage.", "",

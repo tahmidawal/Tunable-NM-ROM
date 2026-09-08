@@ -12,6 +12,7 @@ FILES = ["experiments/separable-decoder/sep_common.py"]+["experiments/mr-heat2d/
 
 
 def stage(destination, commit, smoke=False):
+    commit = subprocess.check_output(["git", "rev-parse", commit]).decode().strip()
     destination.mkdir(parents=True, exist_ok=False)
     provenance = {}; hashes = {}
     def content(name, origin_commit, git_path):

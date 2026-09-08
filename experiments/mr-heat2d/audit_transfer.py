@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 import numpy as np
+from scipy.fft import dstn, idstn
 from audit_runtime import metrics, restrict
 from restore_transfer import sha256
 
@@ -60,6 +61,14 @@ def audit(archive):
     assert all(g["passed"] and g["exact_counter_reason_parity"] for g in result["parity_gates"])
     assert len(result["parity_gates"]) == len(expected_cases)*len(settings["requested_intervals"])*len(settings["checkpoints"])
     disagreement = 0.; fields_checked = set(); timed = 0; case_rows = []; reference_delta = []
+    fom_kernel_disagreement = 0.; reference_kernel_disagreement = 0.
+    def independent_evolution(u0, n, continuum):
+        spectrum = dstn(u0, type=1, norm="ortho")
+        modes = np.arange(1, n, dtype=np.float64)
+        one = (np.pi*modes)**2 if continuum else 4*n*n*np.sin(np.pi*modes/(2*n))**2
+        lam = one[:, None]+one[None, :]
+        for t in cfg["times"][1:]:
+            yield idstn(spectrum*np.exp(-cfg["diffusivity"]*t*lam), type=1, norm="ortho")
     def field(record):
         a = np.load(out/record["path"])["field"]
         assert array_hash(a) == record["sha256_array"]
@@ -73,12 +82,17 @@ def audit(archive):
             error = float(np.max(abs(np.asarray(saved[key])-values)))
             disagreement = max(disagreement, error)
             np.testing.assert_allclose(saved[key], values, rtol=1e-12, atol=1e-14)
-        if "vanishing_truth" in saved:
-            np.testing.assert_array_equal(saved["vanishing_truth"], actual["truth_norm_over_initial"] < 1e-3)
+        if "vanished_below_1e-3_initial" in saved:
+            np.testing.assert_array_equal(saved["vanished_below_1e-3_initial"], actual["truth_norm_over_initial"] < 1e-3)
     local_index = {(r["intervals"], r["case"]): r for r in result["case_fields"]}
     for cid, reference in enumerate(result["reference_fields"]):
         fine, coarse = field(reference["fine"]), field(reference["coarse"])
         nf, nc = reference["fine_intervals"], reference["coarse_intervals"]
+        for nref, trajectory in ((nf, fine), (nc, coarse)):
+            for observed, expected in zip(trajectory[1:], independent_evolution(trajectory[0], nref, True)):
+                error = float(np.linalg.norm(observed-expected)/np.linalg.norm(expected))
+                reference_kernel_disagreement = max(reference_kernel_disagreement, error)
+                assert error < 1e-12
         refined = metrics(coarse, restrict(fine, nf, nc), nc)
         check(reference["refinement"], refined)
         reference_delta.append(float(max(refined["relative_current"])))
@@ -120,6 +134,19 @@ def audit(archive):
                     if row["model"] == "fom":
                         np.testing.assert_array_equal(a[0], initial)
                         assert not rep["solver"]
+                        if number == 0:
+                            solver = row["solver_intervals"]; stride = n//solver
+                            coarse_initial = initial[stride-1::stride, stride-1::stride]
+                            for observed, expected in zip(a[1:], independent_evolution(coarse_initial, solver, False)):
+                                if solver != n:
+                                    positions = np.arange(1, n, dtype=np.float64)/stride
+                                    lower = np.floor(positions).astype(int); w = positions-lower
+                                    padded = np.pad(expected, 1)
+                                    along_x = padded[lower, :]*(1-w)[:, None]+padded[lower+1, :]*w[:, None]
+                                    expected = along_x[:, lower]*(1-w)[None, :]+along_x[:, lower+1]*w[None, :]
+                                error = float(np.linalg.norm(observed-expected)/np.linalg.norm(expected))
+                                fom_kernel_disagreement = max(fom_kernel_disagreement, error)
+                                assert error < 1e-12
                     else:
                         info = np.asarray(rep["solver"]["initial_fits"]); steps = np.asarray(rep["solver"]["steps"])
                         best_index = int(np.argmin(info[:, 3])); selected = info[best_index]; tol = row["gradient_tolerance"]
@@ -175,6 +202,8 @@ def audit(archive):
                         paired_fom_over_rom=float(np.median([f["case_times"][i]/r["case_times"][i] for i in f["cases"]])) if f and r else None))
     return dict(passed=True, results_sha256=sha256(out/"results.json"), archive_files_checked=checked_files,
                 full_fields_checked=len(fields_checked), timed_invocations=timed, max_metric_disagreement=disagreement,
+                independent_fom_kernel_relative_disagreement=fom_kernel_disagreement,
+                independent_spectral_reference_relative_disagreement=reference_kernel_disagreement,
                 reference_empirical_delta=max(reference_delta), rigorous_relative_bound=None,
                 nonstationary_initial=sum(r["nonstationary_initial"] for r in case_rows), nonstationary_steps=sum(r["nonstationary_steps"] for r in case_rows),
                 case_rows=case_rows, groups=groups, selections=selections)

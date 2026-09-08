@@ -53,6 +53,7 @@ FILES = {
     'wave_heads_summary': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/summary.json',
     'wave_heads_audit': ROOT/'worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/analysis/audit.json',
     'wave_heads_review': REPAIR/'wave_k32heads03_review.json',
+    'wave_heads_figures': REPAIR/'wave-k32-evolution-provenance.json',
 }
 
 
@@ -188,6 +189,10 @@ def main():
         'They use saved fields from an actual finer-mesh ROM solve; the display resolution is labeled. '
         'Displacement pictures do not replace the velocity, energy or vanishing-field diagnostics. '
         'PDF exports and figure source/provenance are beside the images.', '',
+        link(REPAIR/'dirichlet-wave-k32-evolution-case1.png', 'Larger-head reflective wave evolving')+'. '+
+        link(REPAIR/'absorbing-wave-k32-evolution-case1.png', 'Larger-head absorbing wave evolving')+'. '+
+        'These updated sequences compare the reference, the earlier smaller head and the first declared larger-head seed within the same audited run. '
+        'The same development-case index is used as in the original still sequences. Small displacement discrepancies can coexist with larger velocity or gradient-based energy errors; fixed scales can also hide late absorbing relative error.', '',
         '## Reproduction', '',
         'Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.py` from a checkout with the recorded experiment worktrees. '
         'The adjacent JSON manifest identifies every source artifact by content hash. All numerical table values are generated; none are hand-entered.', '',
@@ -697,6 +702,10 @@ def wave_larger_heads(data, manifest):
     assert review['verified_invocations'] == audit['audited_comparison_invocations'] == len(pilot['invocations'])
     assert review['verified_accuracy_controls'] == audit['audited_accuracy_only_invocations'] == len(pilot['accuracy_controls'])
     assert all(not r['comparison_eligible'] for r in pilot['accuracy_controls'])
+    figures = data['wave_heads_figures']
+    assert figures['source_result_sha256'] == manifest['wave_heads']['sha256']
+    for figure in figures['figures']:
+        assert hashlib.sha256(Path(figure['path']).read_bytes()).hexdigest() == figure['sha256']
     cfg = pilot['config']
     n = max(cfg['meshes'])
     values = {'wave_larger_heads': [], 'wave_larger_absorbing_final': []}

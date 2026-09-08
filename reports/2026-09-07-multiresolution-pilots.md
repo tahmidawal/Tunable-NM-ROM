@@ -381,6 +381,8 @@ These are development decisions. The complete study still needs the full mesh la
 
 The wave still sequences show reference displacement, predicted displacement and absolute difference with fixed scales. They use saved fields from an actual finer-mesh ROM solve; the display resolution is labeled. Displacement pictures do not replace the velocity, energy or vanishing-field diagnostics. PDF exports and figure source/provenance are beside the images.
 
+[Larger-head reflective wave evolving](../worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/dirichlet-wave-k32-evolution-case1.png). [Larger-head absorbing wave evolving](../worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/absorbing-wave-k32-evolution-case1.png). These updated sequences compare the reference, the earlier smaller head and the first declared larger-head seed within the same audited run. The same development-case index is used as in the original still sequences. Small displacement discrepancies can coexist with larger velocity or gradient-based energy errors; fixed scales can also hide late absorbing relative error.
+
 ## Reproduction
 
 Run `/home/tahmid/Dev/.venv/bin/python reports/generate_multiresolution_pilots.py` from a checkout with the recorded experiment worktrees. The adjacent JSON manifest identifies every source artifact by content hash. All numerical table values are generated; none are hand-entered.

@@ -1,0 +1,251 @@
+{
+  "status": "Proposed strategy; no new GPU measurements. Derived diagnostics from provisional archived development results.",
+  "catalog": {
+    "path": "reports/2026-09-07-multiresolution-pilots.json",
+    "sha256": "50ec5190550753f684063b5c4c89853d4b79fd9cadab53bacc49ec5550ee1778"
+  },
+  "verified_catalog_artifacts": 52,
+  "direct_sources": {
+    "heat_transfer": {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/archive/outputs/results.json",
+      "sha256": "9efffdee15de45d5c375703877eb52654dc6569ea22ada919af0b56224886a76"
+    },
+    "poisson_training_summary": {
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/summary.json",
+      "sha256": "a972b79be044b2ea922e66f82d59ce38a4e4b14661ba8e6d573d0b38c585efe7"
+    },
+    "burgers_steps_summary": {
+      "path": "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/steps05/SUMMARY.json",
+      "sha256": "0d052811d38f73cc6c5f9085b73291d491c173254925f5e55b3f3887494279b1"
+    },
+    "wave_heads": {
+      "path": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/result.json",
+      "sha256": "b76064e45af70de38b75f1f3f7e383982017c82effefbfd04ad7d8ac75ca4851"
+    }
+  },
+  "latest_comparisons": [
+    {
+      "pde": "Heat",
+      "intervals": 1024,
+      "setting": "expanded_seed790715",
+      "cases": 12,
+      "metric": "Current L2, full grid",
+      "worst_error": 0.04555479479880719,
+      "rom_ms": 27.732991031371057,
+      "fom_ms": 21.41056244727224,
+      "paired_ratio": 0.7667300094524467,
+      "baseline": "Tested envelope",
+      "target": 0.05,
+      "rom_timing_outliers": 0,
+      "rom_timing_repetitions": 36,
+      "fom_timing_outliers": 0,
+      "fom_timing_repetitions": 36
+    },
+    {
+      "pde": "Burgers",
+      "intervals": 1024,
+      "setting": "rom_L1024_fixed_gauss_ic180_dt0.01_stall0.01_starts1",
+      "cases": 4,
+      "metric": "Initial L2, full grid",
+      "worst_error": 0.046351173283721805,
+      "rom_ms": 49.4630069588311,
+      "fom_ms": 24.903443991206586,
+      "paired_ratio": 0.523878979508877,
+      "baseline": "Tested envelope",
+      "target": 0.05,
+      "rom_timing_outliers": 0,
+      "rom_timing_repetitions": 12,
+      "fom_timing_outliers": 0,
+      "fom_timing_repetitions": 12
+    },
+    {
+      "pde": "Poisson",
+      "intervals": 512,
+      "setting": "original_relative / skinny_sine_products / nearest_cached_scaled_weak_prediction",
+      "cases": 30,
+      "metric": "Steady L2, common grid",
+      "worst_error": 0.06801557399516912,
+      "rom_ms": 4.018242529127747,
+      "fom_ms": 2.2671520127914846,
+      "paired_ratio": 0.5612880281538819,
+      "baseline": "Tested envelope",
+      "target": 0.1,
+      "rom_timing_outliers": 0,
+      "rom_timing_repetitions": 90,
+      "fom_timing_outliers": 0,
+      "fom_timing_repetitions": 90
+    },
+    {
+      "pde": "Reflective wave",
+      "intervals": 512,
+      "setting": "new_mlp32_seed691200, dt=0.01",
+      "cases": 2,
+      "metric": "Initial wave state, common grid",
+      "worst_error": 0.06202946881545114,
+      "rom_ms": 1217.2424364835024,
+      "fom_ms": 61.58400001004338,
+      "paired_ratio": 0.05059289925211524,
+      "baseline": "Same grid only",
+      "target": null,
+      "rom_timing_outliers": 0,
+      "rom_timing_repetitions": 6,
+      "fom_timing_outliers": 0,
+      "fom_timing_repetitions": 6
+    },
+    {
+      "pde": "Absorbing wave",
+      "intervals": 512,
+      "setting": "new_mlp32_seed691200, dt=0.01",
+      "cases": 2,
+      "metric": "Initial wave state, common grid",
+      "worst_error": 0.05913207237519442,
+      "rom_ms": 1336.6387729765847,
+      "fom_ms": 277.78968203347176,
+      "paired_ratio": 0.2078559776959641,
+      "baseline": "Same grid only",
+      "target": null,
+      "rom_timing_outliers": 0,
+      "rom_timing_repetitions": 6,
+      "fom_timing_outliers": 0,
+      "fom_timing_repetitions": 6
+    }
+  ],
+  "poisson_representation": {
+    "intervals": 512,
+    "cohort": "all_development",
+    "model": "original_relative",
+    "case_count": 30,
+    "bank_physical_median": 0.01535306030532519,
+    "bank_physical_max": 0.055001392938214606,
+    "bank_same_grid_max": 0.05502432027676972,
+    "head_physical_median": 0.018494279259427322,
+    "head_physical_max": 0.06801549984860561,
+    "head_nonstationary_count": 0,
+    "head_stationarity_max": 8.656417833199166e-09
+  },
+  "heat_current_steps": 20,
+  "heat_later_outputs": 5,
+  "burgers_fine_step_saving_to_match_current_cost": 0.09358556086157344,
+  "wave_zero_evolution_counterfactual": [
+    {
+      "boundary": "Reflective",
+      "case": 0,
+      "intervals": 512,
+      "method": "new_mlp32_seed691200",
+      "dt": 0.01,
+      "non_evolution_seconds": [
+        0.08817332005128264,
+        0.08420960593502969,
+        0.08619489707052708
+      ],
+      "fom_complete_seconds": [
+        0.061802912037819624,
+        0.061676125042140484,
+        0.06179399695247412
+      ],
+      "non_evolution_median_ms": 86.19489707052708,
+      "fom_median_ms": 61.79399695247412,
+      "rom_invocations": [
+        "dirichlet_512_0_0_new_mlp32_seed691200_0.01",
+        "dirichlet_512_0_1_new_mlp32_seed691200_0.01",
+        "dirichlet_512_0_2_new_mlp32_seed691200_0.01"
+      ],
+      "fom_invocations": [
+        "dirichlet_512_0_0_dst_0.0",
+        "dirichlet_512_0_1_dst_0.0",
+        "dirichlet_512_0_2_dst_0.0"
+      ]
+    },
+    {
+      "boundary": "Reflective",
+      "case": 1,
+      "intervals": 512,
+      "method": "new_mlp32_seed691200",
+      "dt": 0.01,
+      "non_evolution_seconds": [
+        0.08403076196555048,
+        0.08458049490582198,
+        0.08290596993174404
+      ],
+      "fom_complete_seconds": [
+        0.06212316092569381,
+        0.06137400306761265,
+        0.06127527204807848
+      ],
+      "non_evolution_median_ms": 84.03076196555048,
+      "fom_median_ms": 61.37400306761265,
+      "rom_invocations": [
+        "dirichlet_512_1_0_new_mlp32_seed691200_0.01",
+        "dirichlet_512_1_1_new_mlp32_seed691200_0.01",
+        "dirichlet_512_1_2_new_mlp32_seed691200_0.01"
+      ],
+      "fom_invocations": [
+        "dirichlet_512_1_0_dst_0.0",
+        "dirichlet_512_1_1_dst_0.0",
+        "dirichlet_512_1_2_dst_0.0"
+      ]
+    },
+    {
+      "boundary": "Absorbing",
+      "case": 0,
+      "intervals": 512,
+      "method": "new_mlp32_seed691200",
+      "dt": 0.01,
+      "non_evolution_seconds": [
+        0.0875647570937872,
+        0.08705771900713444,
+        0.08795791398733854
+      ],
+      "fom_complete_seconds": [
+        0.2732111179502681,
+        0.27367476699873805,
+        0.2741324519738555
+      ],
+      "non_evolution_median_ms": 87.5647570937872,
+      "fom_median_ms": 273.67476699873805,
+      "rom_invocations": [
+        "absorbing_512_0_0_new_mlp32_seed691200_0.01",
+        "absorbing_512_0_1_new_mlp32_seed691200_0.01",
+        "absorbing_512_0_2_new_mlp32_seed691200_0.01"
+      ],
+      "fom_invocations": [
+        "absorbing_512_0_0_rk4_0.45",
+        "absorbing_512_0_1_rk4_0.45",
+        "absorbing_512_0_2_rk4_0.45"
+      ]
+    },
+    {
+      "boundary": "Absorbing",
+      "case": 1,
+      "intervals": 512,
+      "method": "new_mlp32_seed691200",
+      "dt": 0.01,
+      "non_evolution_seconds": [
+        0.07325387990567833,
+        0.07465653901454061,
+        0.07524815003853291
+      ],
+      "fom_complete_seconds": [
+        0.28136357094626874,
+        0.28459698194637895,
+        0.2819045970682055
+      ],
+      "non_evolution_median_ms": 74.65653901454061,
+      "fom_median_ms": 281.9045970682055,
+      "rom_invocations": [
+        "absorbing_512_1_0_new_mlp32_seed691200_0.01",
+        "absorbing_512_1_1_new_mlp32_seed691200_0.01",
+        "absorbing_512_1_2_new_mlp32_seed691200_0.01"
+      ],
+      "fom_invocations": [
+        "absorbing_512_1_0_rk4_0.45",
+        "absorbing_512_1_1_rk4_0.45",
+        "absorbing_512_1_2_rk4_0.45"
+      ]
+    }
+  ],
+  "proposed_gates_not_measurements": {
+    "bank_or_initial_worst_error": 0.03,
+    "complete_error": 0.05
+  }
+}

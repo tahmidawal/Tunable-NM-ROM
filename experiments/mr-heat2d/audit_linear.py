@@ -112,13 +112,25 @@ def audit(record):
             if name == "linear_weak_cn":
                 summary["worst_half_step_current_delta"] = max(max(r["vs_half_step"]["relative_current"]) for r in reps)
             summaries.append(summary)
+    prior_out = record.parent/"transfer04/archive/outputs"
+    prior = json.loads((prior_out/"results.json").read_text())
+    prior_rows = {(r["intervals"], r["case"]): r for r in prior["rows"] if r["method"] == result["settings"]["checkpoint"]}
+    nmrom_parity = []
+    for row in result["rows"]:
+        if row["method"] != "nmrom": continue
+        old_rep = prior_rows[row["intervals"], row["case"]]["repetitions"][0]
+        b = np.load(prior_out/old_rep["field"]["path"])["field"]
+        a = field(row["repetitions"][0]["field"])
+        relative = float(np.linalg.norm(a.reshape(-1)-b.reshape(-1))/np.linalg.norm(b))
+        assert relative < 1e-9
+        nmrom_parity.append(dict(intervals=row["intervals"], case=row["case"], relative_difference=relative))
     output = dict(passed=True, result_sha256=hashlib.sha256((out/"results.json").read_bytes()).hexdigest(),
         metadata=result["metadata"], source_commit=source["source_commit"], settings=result["settings"],
         unique_fields_checked=len(checked), timed_invocations_checked=sum(counts.values()),
         metric_entries_checked=metric_count, maximum_metric_difference=largest_delta,
         maximum_reference_refinement=max_reference_delta, operator_errors=operator_errors,
         outlier_rule="Above 1.5 times the median of the same case/method/mesh repetition group; none excluded.",
-        summaries=summaries)
+        summaries=summaries, prior_nmrom_field_parity=nmrom_parity)
     analysis = record/"analysis"; analysis.mkdir(exist_ok=True)
     (analysis/"audit.json").write_text(json.dumps(output, indent=2)+"\n")
     print(json.dumps(output, indent=2))

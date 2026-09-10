@@ -1,0 +1,181 @@
+\section{2026-05-26}
+
+\sessionhead{1}{morning}{heat3d-n128-push}{eq-dof-scaling-cp}{(uncommitted)}
+
+\subsubsection*{Summary}
+Pushed the 3D Heat NM-ROM at $N=128$ from a failure (ROM rel-$L^2$ mean
+$8.86\mathrm{e}{-2}$, worse than $N=64$) to the new champion
+(ROM rel-$L^2$ mean $2.36\mathrm{e}{-2}$, $1.55\times$ \emph{better} than
+$N=64$ hi3). The original failure was \emph{not} a modelling issue ---
+it was two undertuned hyperparameters: (1) the autoencoder was cut
+short before convergence and (2) the empirical-quadrature (EQ) node
+count was inherited from $N=64$ and never scaled with the grid.
+
+\subsubsection*{Files touched}
+\begin{itemize}
+  \item \texttt{2026-05-21-heat/src/tunable\_rom\_heat/utils/dataset\_io.py} --- new \texttt{.dir} streaming dataset layout: memmap-backed \texttt{.npy} files written batch-by-batch. The \texttt{.npz} path peaked at ${\sim}860$\,GB host RAM at $N=128$ and stalled indefinitely; streaming caps host RAM at a few GB per chunk.
+  \item \texttt{2026-05-21-heat/scripts/generate\_data.py} --- writes \texttt{.dir} layout when output suffix is \texttt{.dir}.
+  \item \texttt{2026-05-21-heat/scripts/train.py} + \texttt{utils/training.py} --- added \texttt{-{}-init-ckpt} CLI flag for warm-starting from a prior checkpoint with a fresh cosine schedule; \texttt{eval\_loss} now accepts host arrays so a 21\,GB $N=128$ val set is chunked to the device on demand.
+  \item \texttt{2026-05-21-heat/scripts/run\_rom.py} --- CLI overrides \texttt{-{}-min-eq-points}, \texttt{-{}-n-eq-samples}, \texttt{-{}-max-candidates}, \texttt{-{}-eq-seed} for EQ sweeps without config edits.
+  \item \texttt{2026-05-21-heat/src/tunable\_rom\_heat/eq/nnls.py} --- NNLS design-matrix build now chunks host$\to$device transfer (the previous code pushed all 2048 $\times$ $128^3$ snapshots = 34\,GB onto the GPU at once and OOM'd on a busy A100 shared with other users).
+  \item \texttt{2026-05-21-heat/configs/heat3d\_n128\_hi.yaml, hi2.yaml, hi3.yaml, hi4.yaml, hi\_cont.yaml, hi\_cont2.yaml, hi\_cont3.yaml, hi\_cont\_big.yaml, hi\_cont\_big2.yaml, hi\_cont\_big3.yaml, more.yaml} --- 11 new $N=128$ configs.
+  \item \texttt{2026-05-21-heat/scripts/n128\_*\_job.sh} --- 10 new SLURM jobs (data-gen, training, warm-start chain, EQ sweeps).
+  \item \texttt{Experiments/accuracy\_vs\_N\_3d\_heat.\{pdf,png\}} --- final plot: ROM rel-$L^2$ vs grid resolution for $N \in \{32, 64, 128\}$.
+\end{itemize}
+
+\subsubsection*{Decisions / surprises}
+\begin{itemize}
+  \item \textbf{Stacked warm-starts beat capacity bumps.} The first three retrains pushed encoder/decoder capacity (rank $2048 \to 4096 \to 6144$, embed $192 \to 256 \to 320$). All three were \emph{worse} than the original \texttt{hi}. Inspecting the training-loss histories showed the train/val gap was constant at ${\sim}3.3\times$ across all architectures: bigger models simply trained slower at the same epoch budget. \texttt{hi}'s best val landed at epoch $261$k of $300$k, still actively improving. The real limiter was undertraining, not under-capacity.
+  \item \textbf{EQ density was the silent bottleneck on the ROM side.} At $N=64$ the default 2048 EQ nodes is 0.78\% of the grid; at $N=128$ the same count is 0.10\% --- an 8$\times$ sparser hyper-reduction. AE val kept improving but ROM rel-$L^2$ plateaued, signalling that the GN solver was minimizing the wrong loss. Rebuilding EQ at $\geq$8192 nodes on the existing \texttt{hi\_cont\_big} checkpoint dropped ROM rel-$L^2$ from $5.23\mathrm{e}{-2} \to 2.92\mathrm{e}{-2}$ with no retraining. This was the moment $N=128$ first beat $N=64$ hi3.
+  \item \textbf{NNLS subsample seed matters.} Two \texttt{min\_eq=8192} runs with different \texttt{max\_candidates} gave $2.85\mathrm{e}{-2}$ vs $3.48\mathrm{e}{-2}$ --- not a knob effect, but a random-subsample-of-the-residual-equations effect. Added \texttt{-{}-eq-seed} so this can be averaged over going forward.
+  \item \textbf{Hardware shape changed mid-run.} The first $N=128$ attempt requested $1500$\,G on H200 and never started; all 32 H200 GPUs were allocated for 1--2 days. The streaming \texttt{.dir} fix dropped the memory request to $400$\,G and let the job land on the much-more-available A100 nodes.
+\end{itemize}
+
+\subsubsection*{Results / metrics}
+3D Heat NM-ROM, EQ-tuned champions at each resolution.
+Backward Euler, $dt = 0.005$, 50 steps, Dirichlet BC.
+
+\begin{center}
+\begin{tabular}{l r r r r}
+  \textbf{grid} & \textbf{AE val} & \textbf{ROM mean rel-$L^2$} & \textbf{vs $N=64$ hi3} & \textbf{ckpt} \\
+  \hline
+  $N=32$  hi                    & $3.91\mathrm{e}{-3}$ & $3.81\mathrm{e}{-2}$ & $1.04\times$ worse & \texttt{heat3d\_n32\_hi.pkl} \\
+  $N=64$  hi3                   & $2.45\mathrm{e}{-3}$ & $3.65\mathrm{e}{-2}$ & baseline           & \texttt{heat3d\_n64\_hi3.pkl} \\
+  $N=128$ hi\_cont\_big2 @ EQ=8192 & $2.76\mathrm{e}{-3}$ & $\mathbf{2.36\mathrm{e}{-2}}$ & $\mathbf{1.55\times}$ \textbf{better} & \texttt{heat3d\_n128\_hi\_cont\_big2.pkl} \\
+\end{tabular}
+\end{center}
+
+$N=128$ continuation chain (same hi-arch: rank 2048, embed 192, latent
+56; \texttt{-{}-init-ckpt} warm-starts).
+
+\begin{center}
+\begin{tabular}{l l r r r r}
+  \textbf{tag} & \textbf{init from} & \textbf{epochs} & \textbf{batch} & \textbf{peak\_lr} & \textbf{AE val} \\
+  \hline
+  hi              & --             & 300k & 4  & $1.2\mathrm{e}{-3}$ & $1.31\mathrm{e}{-2}$ \\
+  hi\_cont        & hi             & 300k & 4  & $6.0\mathrm{e}{-4}$ & $7.24\mathrm{e}{-3}$ \\
+  hi\_cont2       & hi\_cont       & 300k & 4  & $3.0\mathrm{e}{-4}$ & $5.45\mathrm{e}{-3}$ \\
+  hi\_cont3       & hi\_cont2      & 200k & 8  & $1.5\mathrm{e}{-4}$ & $4.64\mathrm{e}{-3}$ \\
+  hi\_cont\_big   & hi\_cont       & 400k & 16 & $8.0\mathrm{e}{-4}$ & $3.45\mathrm{e}{-3}$ \\
+  hi\_cont\_big2  & hi\_cont\_big  & 400k & 16 & $4.0\mathrm{e}{-4}$ & $\mathbf{2.76\mathrm{e}{-3}}$ \\
+\end{tabular}
+\end{center}
+
+$N=128$ EQ density sweep on \texttt{hi\_cont\_big} (val $3.45\mathrm{e}{-3}$).
+No retraining; just rebuild the EQ quadrature.
+
+\begin{center}
+\begin{tabular}{r r r r r}
+  \textbf{min\_eq} & \textbf{n\_samples} & \textbf{max\_cand} & \textbf{ROM mean} & \textbf{median speedup} \\
+  \hline
+  2048   & 512  & 16k  & $5.23\mathrm{e}{-2}$ & $0.45\times$ \\
+  4096   & 1024 & 32k  & $3.69\mathrm{e}{-2}$ & $0.33\times$ \\
+  6144   & 1536 & 65k  & $3.57\mathrm{e}{-2}$ & $0.26\times$ \\
+  8192   & 2048 & 49k  & $\mathbf{2.85\mathrm{e}{-2}}$ & $0.20\times$ \\
+  9216   & 2304 & 74k  & $3.09\mathrm{e}{-2}$ & $0.19\times$ \\
+  10240  & 2560 & 98k  & $\mathbf{2.69\mathrm{e}{-2}}$ & $0.18\times$ \\
+  12288  & 3072 & 131k & $3.65\mathrm{e}{-2}$ & $0.15\times$ \\
+  16384  & 2048 & 131k & $3.24\mathrm{e}{-2}$ & $0.12\times$ \\
+\end{tabular}
+\end{center}
+
+\subsubsection*{Plot}
+ROM rel-$L^2$ vs grid resolution: see
+\texttt{Experiments/accuracy\_vs\_N\_3d\_heat.pdf}.
+Monotonic decrease $3.81\mathrm{e}{-2} \to 3.65\mathrm{e}{-2} \to 2.36\mathrm{e}{-2}$
+as $N$ goes 32 $\to$ 64 $\to$ 128.
+
+\subsubsection*{Heat-3D: previous error, current error, training changes}
+
+\paragraph{Previous error (paper draft).}
+\texttt{paper/tahmids\_paper\_proposals.tex}, Tables 1 and 2:
+\begin{center}
+\begin{tabular}{l r r r}
+  \textbf{grid} & \textbf{rel-$L^2$} & $n_\mathrm{train}$ & $N_\mathrm{eq}$ \\
+  \hline
+  $N=32$  & $9.30\mathrm{e}{-2}$ & 500  & 512  \\
+  $N=64$  & $7.49\mathrm{e}{-2}$ & 500  & 2560 \\
+  $N=128$ & $1.82\mathrm{e}{-1}$ & 100  & 1280 \\
+\end{tabular}
+\end{center}
+Error \emph{increases} with $N$ ($N=128$ is the worst row). All three are
+engineering-grade. Architecture $k{=}40$, $R{=}512$, embed $64$;
+$40$k epochs, batch $32$, peak LR $2\mathrm{e}{-3}$, one shot.
+
+\paragraph{Current error (this session).}
+\begin{center}
+\begin{tabular}{l r r r r}
+  \textbf{grid} & \textbf{rel-$L^2$} & $n_\mathrm{train}$ & $N_\mathrm{eq}$ & \textbf{ratio vs paper} \\
+  \hline
+  $N=32$  & $3.81\mathrm{e}{-2}$ & 500  & 2048 & $\mathbf{2.4\times}$ better \\
+  $N=64$  & $3.65\mathrm{e}{-2}$ & 3200 & 2048 & $\mathbf{2.1\times}$ better \\
+  $N=128$ & $\mathbf{2.36\mathrm{e}{-2}}$ & 1000 & 8192 & $\mathbf{7.7\times}$ better \\
+\end{tabular}
+\end{center}
+Error \emph{decreases} with $N$ (monotone, as it should be). Architecture
+$k{=}56$, $R{=}2048$, embed $192$ (same linear-skip-into-CP topology as
+the paper, just larger).
+
+\paragraph{Changes that moved error down.}
+\begin{enumerate}
+  \item \textbf{Lifted the $N=128$ data ceiling.} The paper's
+  $n_\mathrm{train}{=}100$ was set ``due to memory'' (paper draft, line
+  650). Root cause: \texttt{np.savez} on the full $428$\,GB dataset
+  needed ${\sim}860$\,GB peak host RAM and stalled. New streaming
+  \texttt{.dir} layout (\texttt{utils/dataset\_io.py}) writes each
+  batch directly into a memmapped \texttt{.npy} file; host RAM peak
+  drops to a few GB per chunk. Lets us train $N=128$ on $1000$
+  trajectories at $400$\,G SLURM mem instead of failing at $1500$\,G.
+  \item \textbf{Stacked warm-starts replace the one-shot $40$k-epoch
+  schedule.} Added \texttt{-{}-init-ckpt} to \texttt{scripts/train.py}
+  so a prior checkpoint warm-starts the AE while the optax
+  warmup-cosine schedule restarts fresh. Six rounds of $300$k--$400$k
+  epochs each, peak LR halved each round
+  ($1.2\mathrm{e}{-3} \to 6\mathrm{e}{-4} \to \ldots \to 2\mathrm{e}{-4}$).
+  AE val: $1.31\mathrm{e}{-2} \to 7.24\mathrm{e}{-3} \to
+  5.45\mathrm{e}{-3} \to 3.45\mathrm{e}{-3} \to 2.76\mathrm{e}{-3}$.
+  \item \textbf{Bigger batch in the late-stage rounds.} Decoder peak
+  intermediate at rank $2048$, $N{=}128$ is only $134$\,MB/sample, so
+  batch $4 \to 16$ fits comfortably on 80\,GB A100. Cleaner gradients
+  let the cosine schedule actually converge; this was the round that
+  broke AE val below $4\mathrm{e}{-3}$.
+  \item \textbf{Scaled EQ-node count with grid.} The paper used
+  $N_\mathrm{eq}{=}1280$ for $N{=}128$ --- $0.06\%$ of the grid versus
+  $0.78\%$ at $N{=}64$, so the hyper-reduction was sampling $8\times$
+  less densely. Added CLI overrides
+  \texttt{-{}-min-eq-points}, \texttt{-{}-n-eq-samples}, \texttt{-{}-max-candidates},
+  \texttt{-{}-eq-seed} to \texttt{scripts/run\_rom.py}. Bumping to
+  $8192$ EQ nodes on the same trained checkpoint dropped ROM from
+  $5.23\mathrm{e}{-2}$ to $2.85\mathrm{e}{-2}$ with no retraining.
+  This is what made $N=128$ first beat $N=64$.
+  \item \textbf{Chunked NNLS design-matrix transfer.} The previous
+  \texttt{eq/nnls.py} pushed all $2048 \times 128^3$ snapshots
+  ($34$\,GB) onto the GPU before computing residuals, which OOM'd on a
+  shared A100. Refactored to stage host $\to$ device per chunk;
+  enabled the dense EQ sweeps above.
+\end{enumerate}
+
+\paragraph{Caveats.} (i) The paper reports $191\times$ speedup at
+$N{=}128$ at the cheap $N_\mathrm{eq}{=}1280$ setting; this session's
+$2.36\mathrm{e}{-2}$ runs at $\sim$$0.20\times$ at
+$N_\mathrm{eq}{=}8192$. The comparison above is accuracy-only.
+Refreshing the Pareto curve on \texttt{hi\_cont\_big2} (sweep GN cap
+and $N_\mathrm{eq}$ jointly) is the natural next step. (ii) The new
+$N=32$ and $N=64$ numbers come from existing checkpoints
+(\texttt{heat3d\_n32\_hi.pkl}, \texttt{heat3d\_n64\_hi3.pkl}) trained
+earlier on this branch with EQ density already raised; the EQ density
+fix landed at the same time as the $N{=}128$ chain.
+
+\subsubsection*{Loss / optimizer (for the record)}
+Reconstruction loss is per-sample squared relative $L^2$,
+\[
+\mathcal{L}(\theta) = \frac{1}{|B|} \sum_{u \in B}
+  \frac{\|f_\theta(u) - u\|_2^2}{\|u\|_2^2 + 10^{-6}},
+\]
+with $f_\theta = D_\theta \circ E_\theta$ the ViT encoder + CP-tensor
+decoder.  Optimizer is \texttt{optax.adamw}, weight decay
+$5\mathrm{e}{-3}$, warmup-cosine-decay schedule
+(\texttt{init=0}, \texttt{peak\_value=peak\_lr}, \texttt{end=1e-6}),
+default Adam betas/eps.  Each \texttt{-{}-init-ckpt} restart reinitializes
+the LR schedule from epoch 0 (fresh warmup + cosine), with a
+successively lower \texttt{peak\_lr} ceiling each round.

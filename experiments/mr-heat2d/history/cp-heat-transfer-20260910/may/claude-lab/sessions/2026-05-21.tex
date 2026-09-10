@@ -1,0 +1,94 @@
+\section{2026-05-21}
+
+\sessionhead{1}{19:04}{spike}{inr-siren-speed-accuracy}{03bcb6b, a3e1205, 2265ed8, f8a3949, 7451d99, d7ded1b, 5718a8f, c709721, 5a3d29d}
+
+\subsubsection*{Summary}
+Built a new experiment to find where the empirical-quadrature (EQ) node
+count \texttt{n\_eq} stops buying ROM accuracy, swept it across 3 NM-ROM
+decoders. Fixed several bugs; the CP-decoder curve is the one clean,
+verified result.
+
+\subsubsection*{Files touched}
+\begin{itemize}
+  \item \texttt{Experiments/2026-05-21-EQ-DIMINISHING-RETURNS/src/eq\_dr/eq\_build.py} --- new in-process EQ-rule builder; replaces the silently-zero-padding sweep builder.
+  \item \texttt{Experiments/2026-05-21-EQ-DIMINISHING-RETURNS/src/eq\_dr/adapters.py} --- 3 decoder adapters (\texttt{siren}, \texttt{linaff}, \texttt{cp}); SIREN rewired to the cross-composite cold-start solver.
+  \item \texttt{Experiments/2026-05-21-EQ-DIMINISHING-RETURNS/scripts/cp\_neq\_runner.py} --- CP runner rebuilt from the verified \texttt{best-results/Poisson-2D/N64/ACC} reference; adds random densification above the snapshot ceiling.
+  \item \texttt{Experiments/2026-05-21-EQ-DIMINISHING-RETURNS/scripts/plot\_cp\_curve.py} --- dedicated CP curve plot.
+  \item \texttt{Experiments/2026-05-21-EQ-\{CP,SIREN,LINAFF\}/} --- 3 new per-decoder autoresearch folders, each self-contained with an \texttt{AUTORESEARCH.md} brief.
+\end{itemize}
+
+\subsubsection*{Decisions / surprises}
+\begin{itemize}
+  \item The core bug: the EQ builder silently zero-padded --- when a target \texttt{n\_eq} exceeded the node count NNLS returned, it appended index entries with weight exactly 0.0. Zero-weight nodes are inert, so every ``\texttt{n\_eq}=500/2000/16384'' cell secretly used the same $\sim$200-node rule; the SIREN and linaff sweeps measured nothing. New builder never zero-pads: truncate-to-top-$k$ below the NNLS count, per-target NNLS in range, random densification above the snapshot ceiling, full-domain at DOF.
+  \item SIREN's single-stage cold-start solve fails (rel-L2 $\sim$1.5, the known $z{=}0$ basin stall); fixed by switching the adapter to the cross-composite solver (coarse anchor checkpoint cold-seeds a fine lap-checkpoint warm solve).
+  \item CP adapter was first pointed at a regressed multires checkpoint (rel-L2 floored at 0.39 even at full domain); fixed by rebuilding the CP runner from the verified \texttt{best-results} reference (rel-L2 4.84e-4).
+  \item linaff numbers are currently untrustworthy --- a 0.188 rel-L2 anomaly at \texttt{n\_eq}=100--200 appears in the full multi-decoder sweep, but every isolated diagnostic of the same adapter/checkpoint gives $\sim$1e-3. Five hypotheses refuted; not root-caused. User decision: linaff's autoresearch folder is debug-first.
+  \item For the CP decoder, aggressive hyper-reduction does not pay off --- accuracy improves monotonically to full-domain integration (no knee), and wall-clock is nearly flat (2.5--4.7 ms across the full 2000$\times$ \texttt{n\_eq} range), so integrating over the whole domain costs almost nothing.
+\end{itemize}
+
+\subsubsection*{Results / metrics}
+CP decoder \texttt{n\_eq} sweep, N=64, DOF=4096 (15 cells; selected rows):
+
+\begin{center}
+\begin{tabular}{r r l}
+  \textbf{\texttt{n\_eq}} & \textbf{rel-L2} & \textbf{regime} \\
+  \hline
+  2    & 45.5      & total collapse \\
+  8    & 0.154     & collapse edge \\
+  16   & 1.03e-2   & revival \\
+  32   & 6.9e-3    & first usable \\
+  200  & 2.16e-3   & \\
+  700  & 1.01e-3   & \\
+  2048 & 4.6e-4    & \\
+  4096 & \textbf{3.96e-4} & full domain \\
+\end{tabular}
+\end{center}
+
+\labfig{2026-05-21-cp-neq-curve}{CP decoder \texttt{n\_eq} sweep (N=64, DOF=4096): ROM rel-L2 (top) and solve wall-clock (bottom) vs number of EQ quadrature nodes. Collapse below \texttt{n\_eq}$\sim$16; accuracy improves monotonically to full domain --- no diminishing-returns knee.}
+
+\sessionhead{2}{20:08}{linaff-debug}{inr-siren-speed-accuracy}{1b38163}
+
+\subsubsection*{Summary}
+Phase-1 debug of the \texttt{linaff} (\texttt{LinearAffineZ}) decoder's
+EQ \texttt{n\_eq} sweep, per the \texttt{2026-05-21-EQ-LINAFF}
+autoresearch brief. Root-caused the unexplained rel-L2 spike at
+\texttt{n\_eq}=100--200 and produced a verified-correct \texttt{n\_eq}
+curve. The spike is genuine, not a bug.
+
+\subsubsection*{Files touched}
+\begin{itemize}
+  \item \texttt{Experiments/2026-05-21-EQ-LINAFF/run\_eq\_sweep\_l40s.slurm} --- isolated \texttt{--only linaff} sweep on a free l40s GPU (ROM-only debug; no A100 needed).
+  \item \texttt{.../scripts/bisect\_spike.py} --- per-cell mechanism dump: rule regime, weight ratio, generalisation error, and the GN-vs-encoder EQ-loss comparison that exposes the spurious reduced minimum.
+  \item \texttt{.../scripts/verify\_fix.py}, \texttt{verify\_weights.py}, \texttt{verify\_selection.py} --- three falsification tests for candidate fixes.
+  \item \texttt{.../FINDINGS.md} --- the Phase-1 writeup; \texttt{results.csv}, \texttt{plots/}, per-cell JSON committed.
+\end{itemize}
+
+\subsubsection*{Decisions / surprises}
+\begin{itemize}
+  \item The spike reproduces deterministically in a fresh, single-decoder, isolated process --- so it is not a 3-decoder-job artifact, state leak, ordering effect, or hardware effect. The brief's framing (``every isolated diagnostic gave $\sim$1e-3'') came from diagnostics that happened to hit lucky NNLS rules; the honest full-driver curve has the spike.
+  \item \texttt{results\_BUGGY\_865541.csv.bak} in the origin folder is mislabeled --- it is a stale pre-865541 CSV from the old zero-padding builder (\texttt{n\_eq}=50/100/200 collapse to one identical 0.188 row), not job 865541's output. Job 865541's real per-cell JSONs show distinct genuine rules.
+  \item Mechanism: the linaff manifold can represent every test solution (encoder $z$ gives rel-L2 3--6e-3), but the EQ-reduced Gauss-Newton objective $\tfrac12\sum_{j\in\text{EQ}}w_j R(z)_j^2$, sampled at \texttt{n\_eq}$\sim$100--700 of 16384 nodes, has spurious minima --- GN converges to a $z$ with \emph{lower} EQ residual than the true solution yet full-domain rel-L2 0.2--0.4.
+  \item Three EQ-rule fixes were tested and \emph{all rejected}: NNLS rank headroom, EQ weight conditioning (uniform/clipped/sqrt), and node selection (NNLS-top-k / random / uniform sub-lattice). No node set of size 100--700, however chosen or weighted, recovers the solve. The failure is intrinsic to sparse residual sampling for the affine decoder, not a defect of the EQ-rule construction.
+  \item The verified curve has a genuine \emph{valley of failure} at \texttt{n\_eq}$\sim$100--700: linaff works at \texttt{n\_eq}$\le$64 and at \texttt{n\_eq}$\ge$4096, but not in between. That valley is the correct, reproducible result, not an artifact to be removed.
+\end{itemize}
+
+\subsubsection*{Results / metrics}
+linaff \texttt{n\_eq} sweep, N=128, DOF=16384, 160-sample cold-start
+test set, commit \texttt{1b38163} (selected rows):
+
+\begin{center}
+\begin{tabular}{r r l}
+  \textbf{\texttt{n\_eq}} & \textbf{rel-L2} & \textbf{regime} \\
+  \hline
+  2     & 8.55e-1   & collapse \\
+  32    & 4.65e-2   & truncated \\
+  64    & \textbf{1.68e-2} & truncated (best small-\texttt{n\_eq}) \\
+  100   & \textbf{3.87e-1} & nnls --- valley \\
+  200   & \textbf{2.34e-1} & nnls --- valley \\
+  700   & \textbf{1.55e-1} & nnls --- valley \\
+  4096  & 3.31e-3   & densified \\
+  16384 & \textbf{6.12e-4} & full domain \\
+\end{tabular}
+\end{center}
+
+\labfig{2026-05-21-linaff-neq-curve}{linaff decoder \texttt{n\_eq} sweep (N=128, DOF=16384): verified-correct ROM rel-L2 vs EQ node count. The non-monotone valley at \texttt{n\_eq}$\sim$100--700 is an intrinsic failure of EQ hyper-reduction for the affine decoder --- the reduced Gauss-Newton objective has spurious minima for any sparse node set of that size. Accuracy is good at \texttt{n\_eq}$\le$64 and at \texttt{n\_eq}$\ge$4096.}

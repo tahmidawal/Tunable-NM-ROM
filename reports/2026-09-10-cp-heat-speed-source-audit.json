@@ -99,6 +99,7 @@
     "Archived Heat-2D invokes its encoder before the named rollout timer, without a separate completion block, so it does not establish fully charged initialization. It grades final states; the current experiment charges initialization and all requested full outputs and grades every requested time.",
     "The archived Heat-2D rollout advances the decoded state correctly. The frozen public-package regression cannot invalidate the paper run by itself.",
     "The CP decoder factors through a fixed spatial bank and nonlinear coefficient map. Fixed linear weak operators can be preassembled for it as for the current coordinate-bank model.",
-    "Factorized spatial reconstruction is a potential further transfer to the current bank; it requires its own accuracy and cost test. No such compression was implemented in this turn."
+    "Factorized spatial reconstruction is a potential further transfer to the current bank; it requires its own accuracy and cost test. No such compression was implemented in this turn.",
+    "The new heat comparison uses fixed diffusivity and the current single-bump family. It does not reproduce the paper's variable-diffusivity, multi-bump cases. Its nonlinear query factory captures diffusivity; reuse across changing diffusivity without recompilation is a separate untested extension."
   ]
 }

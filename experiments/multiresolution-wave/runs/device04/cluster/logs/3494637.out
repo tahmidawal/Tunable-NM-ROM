@@ -1,0 +1,117 @@
+jax_backend=gpu
+{'jax_backend': 'gpu', 'x64': True}
+{'jax_backend': 'gpu', 'x64': True}
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100-PCIE-40GB"], "host": "pax003", "source_commit": "c729df09cfe02de93ee09e34163578961762bc90", "job_id": "3494637", "numpy_version": "2.5.0"}
+warmup dirichlet 256 0 frozen_mlp32_seed691200
+warmup dirichlet 256 0 frozen_mlp16_seed691200
+warmup dirichlet 256 0 dst
+timed dirichlet 256 0 0 frozen_mlp32_seed691200
+timed dirichlet 256 0 0 frozen_mlp16_seed691200
+timed dirichlet 256 0 0 dst
+timed dirichlet 256 0 1 dst
+timed dirichlet 256 0 1 frozen_mlp16_seed691200
+timed dirichlet 256 0 1 frozen_mlp32_seed691200
+timed dirichlet 256 0 2 frozen_mlp32_seed691200
+timed dirichlet 256 0 2 frozen_mlp16_seed691200
+timed dirichlet 256 0 2 dst
+accuracy_refinement dirichlet 256 0 frozen_mlp32_seed691200
+accuracy_refinement dirichlet 256 0 frozen_mlp16_seed691200
+warmup dirichlet 256 1 frozen_mlp32_seed691200
+warmup dirichlet 256 1 frozen_mlp16_seed691200
+warmup dirichlet 256 1 dst
+timed dirichlet 256 1 0 frozen_mlp32_seed691200
+timed dirichlet 256 1 0 frozen_mlp16_seed691200
+timed dirichlet 256 1 0 dst
+timed dirichlet 256 1 1 dst
+timed dirichlet 256 1 1 frozen_mlp16_seed691200
+timed dirichlet 256 1 1 frozen_mlp32_seed691200
+timed dirichlet 256 1 2 frozen_mlp32_seed691200
+timed dirichlet 256 1 2 frozen_mlp16_seed691200
+timed dirichlet 256 1 2 dst
+accuracy_refinement dirichlet 256 1 frozen_mlp32_seed691200
+accuracy_refinement dirichlet 256 1 frozen_mlp16_seed691200
+warmup dirichlet 512 0 frozen_mlp32_seed691200
+warmup dirichlet 512 0 frozen_mlp16_seed691200
+warmup dirichlet 512 0 dst
+timed dirichlet 512 0 0 frozen_mlp32_seed691200
+timed dirichlet 512 0 0 frozen_mlp16_seed691200
+timed dirichlet 512 0 0 dst
+timed dirichlet 512 0 1 dst
+timed dirichlet 512 0 1 frozen_mlp16_seed691200
+timed dirichlet 512 0 1 frozen_mlp32_seed691200
+timed dirichlet 512 0 2 frozen_mlp32_seed691200
+timed dirichlet 512 0 2 frozen_mlp16_seed691200
+timed dirichlet 512 0 2 dst
+accuracy_refinement dirichlet 512 0 frozen_mlp32_seed691200
+accuracy_refinement dirichlet 512 0 frozen_mlp16_seed691200
+warmup dirichlet 512 1 frozen_mlp32_seed691200
+warmup dirichlet 512 1 frozen_mlp16_seed691200
+warmup dirichlet 512 1 dst
+timed dirichlet 512 1 0 frozen_mlp32_seed691200
+timed dirichlet 512 1 0 frozen_mlp16_seed691200
+timed dirichlet 512 1 0 dst
+timed dirichlet 512 1 1 dst
+timed dirichlet 512 1 1 frozen_mlp16_seed691200
+timed dirichlet 512 1 1 frozen_mlp32_seed691200
+timed dirichlet 512 1 2 frozen_mlp32_seed691200
+timed dirichlet 512 1 2 frozen_mlp16_seed691200
+timed dirichlet 512 1 2 dst
+accuracy_refinement dirichlet 512 1 frozen_mlp32_seed691200
+accuracy_refinement dirichlet 512 1 frozen_mlp16_seed691200
+warmup absorbing 256 0 frozen_mlp32_seed691200
+warmup absorbing 256 0 frozen_mlp16_seed691200
+warmup absorbing 256 0 rk4
+timed absorbing 256 0 0 frozen_mlp32_seed691200
+timed absorbing 256 0 0 frozen_mlp16_seed691200
+timed absorbing 256 0 0 rk4
+timed absorbing 256 0 1 rk4
+timed absorbing 256 0 1 frozen_mlp16_seed691200
+timed absorbing 256 0 1 frozen_mlp32_seed691200
+timed absorbing 256 0 2 frozen_mlp32_seed691200
+timed absorbing 256 0 2 frozen_mlp16_seed691200
+timed absorbing 256 0 2 rk4
+accuracy_refinement absorbing 256 0 frozen_mlp32_seed691200
+accuracy_refinement absorbing 256 0 frozen_mlp16_seed691200
+warmup absorbing 256 1 frozen_mlp32_seed691200
+warmup absorbing 256 1 frozen_mlp16_seed691200
+warmup absorbing 256 1 rk4
+timed absorbing 256 1 0 frozen_mlp32_seed691200
+timed absorbing 256 1 0 frozen_mlp16_seed691200
+timed absorbing 256 1 0 rk4
+timed absorbing 256 1 1 rk4
+timed absorbing 256 1 1 frozen_mlp16_seed691200
+timed absorbing 256 1 1 frozen_mlp32_seed691200
+timed absorbing 256 1 2 frozen_mlp32_seed691200
+timed absorbing 256 1 2 frozen_mlp16_seed691200
+timed absorbing 256 1 2 rk4
+accuracy_refinement absorbing 256 1 frozen_mlp32_seed691200
+accuracy_refinement absorbing 256 1 frozen_mlp16_seed691200
+warmup absorbing 512 0 frozen_mlp32_seed691200
+warmup absorbing 512 0 frozen_mlp16_seed691200
+warmup absorbing 512 0 rk4
+timed absorbing 512 0 0 frozen_mlp32_seed691200
+timed absorbing 512 0 0 frozen_mlp16_seed691200
+timed absorbing 512 0 0 rk4
+timed absorbing 512 0 1 rk4
+timed absorbing 512 0 1 frozen_mlp16_seed691200
+timed absorbing 512 0 1 frozen_mlp32_seed691200
+timed absorbing 512 0 2 frozen_mlp32_seed691200
+timed absorbing 512 0 2 frozen_mlp16_seed691200
+timed absorbing 512 0 2 rk4
+accuracy_refinement absorbing 512 0 frozen_mlp32_seed691200
+accuracy_refinement absorbing 512 0 frozen_mlp16_seed691200
+warmup absorbing 512 1 frozen_mlp32_seed691200
+warmup absorbing 512 1 frozen_mlp16_seed691200
+warmup absorbing 512 1 rk4
+timed absorbing 512 1 0 frozen_mlp32_seed691200
+timed absorbing 512 1 0 frozen_mlp16_seed691200
+timed absorbing 512 1 0 rk4
+timed absorbing 512 1 1 rk4
+timed absorbing 512 1 1 frozen_mlp16_seed691200
+timed absorbing 512 1 1 frozen_mlp32_seed691200
+timed absorbing 512 1 2 frozen_mlp32_seed691200
+timed absorbing 512 1 2 frozen_mlp16_seed691200
+timed absorbing 512 1 2 rk4
+accuracy_refinement absorbing 512 1 frozen_mlp32_seed691200
+accuracy_refinement absorbing 512 1 frozen_mlp16_seed691200
+fresh_wave_device_replay_complete

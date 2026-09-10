@@ -1,7 +1,9 @@
 # Modified CP and empirical quadrature for fresh two-dimensional waves
 
-This implements the user-approved single-seed architecture pilot. Numerical results
-are pending; implementation checks do not establish accuracy or speed advantages.
+This implements the user-approved single-seed architecture pilot. Training, validation
+and frozen evaluation are complete and checksum-collected; generated results and the
+independent physical audit are recorded in the canonical
+[comparison report](../../../../reports/2026-09-10-modified-cp-eq-comparison.md) on main.
 
 ## Frozen comparison
 

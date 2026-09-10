@@ -51,6 +51,7 @@ def build(cfg, settings):
     specs = {
         "nmrom_adaptive": (adaptive, original_rollout, False),
         "exp_project_full": (initialize, projected_full, True),
+        "exp_project_full_adaptive": (adaptive, projected_full, True),
         "exp_project2": (initialize, projected_two, True),
         "exp_project2_adaptive": (adaptive, projected_two, True),
     }

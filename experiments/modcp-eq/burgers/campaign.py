@@ -46,6 +46,12 @@ def checkpoint_load(path):
     return jax.tree_util.tree_map(jnp.asarray,p['params']),jnp.asarray(p['Z']),DecoderConfig(**p['config'])
 
 
+def stage_complete(path,steps,total_updates=None):
+    if not Path(path).exists():return False
+    with Path(path).open('rb') as f:extra=pickle.load(f).get('extra',{})
+    return extra.get('steps')==steps or (total_updates is not None and extra.get('updates')==total_updates)
+
+
 class Campaign:
     def __init__(self,args):
         self.args=args;self.out=Path(args.out);self.out.mkdir(parents=True,exist_ok=True)
@@ -112,7 +118,10 @@ class Campaign:
     def training(self):
         self.status='training';self.save()
         ck=self.out/'checkpoints';ck.mkdir(exist_ok=True)
-        if all((ck/f'{arm}.pkl').exists() for arm in ('cp','modcp','film')):
+        presteps=self.config['training_updates']['cp_initialization'];steps=self.config['training_updates']['comparison']
+        filmsteps=self.config['training_updates']['film']
+        if (all(stage_complete(ck/f'{arm}.pkl',steps,presteps+steps) for arm in ('cp','modcp'))
+            and stage_complete(ck/'film.pkl',filmsteps,filmsteps)):
             return
         fields,physical,_,_=self.dataset('train',self.L,.00125)
         states=jnp.asarray(fields.reshape((-1,(self.L+1)**2,1)))
@@ -121,20 +130,19 @@ class Campaign:
         scale=np.sqrt(np.mean(fields[:,0]**2,axis=(1,2)))
         scales=jnp.asarray(np.repeat(scale,6)[:,None]);xy=jnp.asarray(fom.coords(self.L,False))
         codes=initial_codes(len(states),self.cfg.k,self.seeds['train']+11)
-        presteps=self.config['training_updates']['cp_initialization'];steps=self.config['training_updates']['comparison']
-        if (ck/'cp_pretrain.pkl').exists():p,preZ,_=checkpoint_load(ck/'cp_pretrain.pkl')
+        if stage_complete(ck/'cp_pretrain.pkl',presteps):p,preZ,_=checkpoint_load(ck/'cp_pretrain.pkl')
         else:
             p=init_decoder(jax.random.PRNGKey(self.seeds['train']+7),self.cfg)
             p,preZ,_=train(p,codes,states,xy,self.cfg,steps=presteps,seed=self.seeds['train']+101,
                           scales=scales,out_dir=ck,stage_name='cp_pretrain')
         for arm in ('cp','modcp'):
-            if (ck/f'{arm}.pkl').exists():continue
+            if stage_complete(ck/f'{arm}.pkl',steps,presteps+steps):continue
             cfg=replace(self.cfg,architecture=arm)
             params=p if arm=='cp' else add_modulation(p,cfg,jax.random.PRNGKey(self.seeds['train']+13))
             trained,Z,hist=train(params,preZ,states,xy,cfg,steps=steps,seed=self.seeds['train']+102,
                                 scales=scales,out_dir=ck,stage_name=arm)
             save_checkpoint(ck/f'{arm}.pkl',trained,Z,cfg,dict(training_cases=len(physical),updates=presteps+steps,parent='cp_pretrain',history=hist))
-        if not (ck/'film.pkl').exists():
+        if not stage_complete(ck/'film.pkl',filmsteps,filmsteps):
             cfg=replace(self.cfg,architecture='film');p=init_decoder(jax.random.PRNGKey(self.seeds['train']+7),cfg)
             p,Z,hist=train(p,codes,states,xy,cfg,steps=self.config['training_updates']['film'],seed=self.seeds['train']+103,
                           scales=scales,out_dir=ck,stage_name='film')

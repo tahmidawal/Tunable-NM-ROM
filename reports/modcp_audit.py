@@ -149,6 +149,8 @@ def summarize_rows(rows, expected_cases, expected_repetitions, target):
     timing_outliers = sum(r['seconds'] > 2*median(x['seconds'] for x in by_case[c])
                           for c in expected_cases for r in by_case[c])
     worst = max((row_error(r) for r in rows), default=math.inf)
+    median_case_error = median(max((row_error(r) for r in by_case[c]), default=math.inf)
+                               for c in expected_cases)
     component_maxima = {}
     for name in ('displacement', 'velocity', 'energy_state'):
         if not any(name in (row.get('errors') or {}) for row in rows):
@@ -161,6 +163,7 @@ def summarize_rows(rows, expected_cases, expected_repetitions, target):
             'timing_outlier_invocations': timing_outliers,
             'median_seconds': median(per_case_seconds) if per_case_seconds else None,
             'worst_error': worst if math.isfinite(worst) else None,
+            'median_case_error': median_case_error if math.isfinite(median_case_error) else None,
             'worst_error_by_component': component_maxima,
             'qualified': coverage and not failed and not outliers,
             'qualified_and_converged': coverage and not failed and not outliers and not nonstationary,

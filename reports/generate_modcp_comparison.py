@@ -352,6 +352,7 @@ def main():
             rows.append([row['case_name'], row['intervals'], row['method'],
                          f"{100*row['target']:g}%" if row['target'] is not None else 'diagnostic', row['configuration'],
                          f"{1e3*row['median_seconds']:.6g}" if row['median_seconds'] is not None else 'missing',
+                         f"{100*row['median_case_error']:.6g}%" if row['median_case_error'] is not None else 'failed/nonfinite',
                          f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
                          row['outlier_cases'] if row['target'] is not None else '—', row['failed_cases'],
                          row['nonstationary_cases'] if row['method'] in ('cp', 'modcp', 'film') else '—',
@@ -365,7 +366,7 @@ def main():
                 missing_selection_keys.add(key)
                 rows.append([source['case_name'], selection['intervals'], selection['method'],
                              f"{100*selection['target']:g}%", 'No validation-qualified setting',
-                             '—', '—', '—', '—', '—', '—', 'no'])
+                             '—', '—', '—', '—', '—', '—', '—', 'no'])
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
     comparisons = []
@@ -421,7 +422,7 @@ def main():
              'Queries start with full GPU-resident initial fields and return full GPU-resident output trajectories. '
              'Timing includes initialization, evolution, and reconstruction. Compilation, offline setup, and host transfers are excluded.', '',
              table(['Case', 'Intervals/axis', 'Method', 'Target', 'Configuration', 'Median query ms',
-                    'Worst error', 'Outlier cases', 'Failed cases', 'Nonstationary cases',
+                    'Median case error', 'Worst error', 'Outlier cases', 'Failed cases', 'Nonstationary cases',
                     'Timing outliers', 'Target attained'], rows) if rows else
              'No validation-selected evaluation measurements are available yet.', '',
              'Worst error is the maximum over evaluation cases, stored times, and recorded repetitions; '
@@ -570,6 +571,7 @@ def main():
              '- **Validation-selected configuration:** solver and quadrature settings frozen before evaluation fields are examined.',
              '- **Target / target attained:** the declared error ceiling, and whether every expected invocation completes below it.',
              '- **Median query ms:** median across cases of each case\'s median recorded duration, in milliseconds.',
+             '- **Median case error:** median across the declared cases of each case\'s worst error across times, components, and repetitions; invalid or missing cases enter as infinite errors rather than being dropped.',
              '- **Worst error:** the largest fixed-initial-normalized error across the reported cases, times, state components, and repetitions.',
              '- **Outlier cases:** cases with any error above the target or invalid error values.',
              '- **Failed cases:** cases with any incomplete/nonfinite solve or missing trajectory.',

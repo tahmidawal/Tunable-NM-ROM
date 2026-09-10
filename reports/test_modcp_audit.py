@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import numpy as np
 
-from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows, row_error
+from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows, row_error, audit_field_archive, digest
 from generate_modcp_comparison import summarize_input
 
 
@@ -90,6 +90,32 @@ class AuditTests(unittest.TestCase):
             path.write_text(json.dumps(document))
             with self.assertRaisesRegex(ValueError, 'backend or precision'):
                 summarize_input(path)
+
+    def test_shared_wave_truth_requires_checksum_and_matching_geometry(self):
+        n = 8
+        x = np.arange(1, n)/n
+        truth_u = np.stack([np.sin(np.pi*x)[:, None]*np.sin(np.pi*x)[None, :]]*2)
+        truth_v = np.zeros_like(truth_u)
+        u, v = truth_u*1.01, truth_v.copy()
+        metadata = dict(intervals=n, boundary='dirichlet', speed=1.)
+        errors = wave_metrics(u, v, truth_u, truth_v, n, 'dirichlet', 1.)
+        with tempfile.TemporaryDirectory() as folder:
+            predicted, reference = Path(folder)/'prediction.npz', Path(folder)/'reference.npz'
+            np.savez(predicted, u=u, v=v, **metadata)
+            np.savez(reference, truth_u=truth_u, truth_v=truth_v, **metadata)
+            audited = audit_field_archive(predicted, 'wave_reflective', errors,
+                expected_shape=(2, n-1, n-1), expected_intervals=n,
+                reference_path=reference, reference_sha256=digest(reference))
+            self.assertEqual(audited['errors'], errors)
+            self.assertEqual(audited['output_sha256']['u'], hashlib.sha256(u.tobytes()).hexdigest())
+            with self.assertRaisesRegex(ValueError, 'checksum mismatch'):
+                audit_field_archive(predicted, 'wave_reflective', errors,
+                    reference_path=reference, reference_sha256='wrong reference')
+            metadata['speed'] = 2.
+            np.savez(reference, truth_u=truth_u, truth_v=truth_v, **metadata)
+            with self.assertRaisesRegex(ValueError, 'metadata differ'):
+                audit_field_archive(predicted, 'wave_reflective', errors,
+                    reference_path=reference, reference_sha256=digest(reference))
 
     def test_timing_record_must_match_the_independently_audited_output(self):
         truth = np.ones((2, 3, 3), dtype=np.float64)

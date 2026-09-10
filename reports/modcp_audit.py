@@ -167,29 +167,49 @@ def summarize_rows(rows, expected_cases, expected_repetitions, target):
             'observed_invocations': len(rows), 'expected_invocations': len(expected)}
 
 
+def load_field_archive(path, reference_path=None, reference_sha256=None):
+    """Materialize each NPZ array once; verify any explicitly shared reference."""
+    with np.load(path, allow_pickle=False) as archive:
+        data = {name: archive[name] for name in archive.files}
+    if reference_path is not None:
+        if not reference_sha256 or digest(reference_path) != reference_sha256:
+            raise ValueError('Shared reference checksum mismatch')
+        with np.load(reference_path, allow_pickle=False) as archive:
+            reference = {name: archive[name] for name in archive.files}
+        for key in ('intervals', 'boundary', 'speed'):
+            if key not in data or key not in reference or not np.array_equal(data[key], reference[key]):
+                raise ValueError('Prediction and shared reference metadata differ')
+        if 'truth_u' in data or 'truth_v' in data:
+            raise ValueError('Shared-reference prediction unexpectedly embeds another truth')
+        data.update(truth_u=reference['truth_u'], truth_v=reference['truth_v'])
+    return data
+
+
 def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10,
-                        expected_shape=None, expected_intervals=None):
-    """Audit self-contained full-grid NPZ; metadata is scalar, fields include t=0."""
-    with np.load(path, allow_pickle=False) as data:
-        required_fields = ('u', 'truth_u') if case_name == 'burgers2d' else ('u', 'v', 'truth_u', 'truth_v')
-        if any(data[name].dtype != np.float64 for name in required_fields):
-            raise ValueError(f'Archived scientific fields are not float64: {path}')
-        if expected_shape is not None and data['u'].shape != tuple(expected_shape):
-            raise ValueError(f'Archived field mesh/time shape differs from invocation: {path}')
-        if case_name != 'burgers2d':
-            expected_boundary = 'dirichlet' if case_name == 'wave_reflective' else 'absorbing'
-            if str(data['boundary']) != expected_boundary or (expected_intervals is not None and int(data['intervals']) != expected_intervals):
-                raise ValueError(f'Archived wave metadata differs from invocation: {path}')
-        output_hashes = {name: hashlib.sha256(np.ascontiguousarray(data[name]).view(np.uint8)).hexdigest()
-                         for name in ('u', 'v') if name in data}
-        if case_name == 'burgers2d':
-            series = burgers_error_series(data['u'], data['truth_u'])
-        else:
-            series = wave_error_series(data['u'], data['v'], data['truth_u'], data['truth_v'],
-                                  int(data['intervals']), str(data['boundary']), float(data['speed']))
-        actual = {name: float(values.max()) for name, values in series.items()}
+                        expected_shape=None, expected_intervals=None,
+                        reference_path=None, reference_sha256=None):
+    """Audit full-grid NPZ with embedded or checksummed shared reference."""
+    data = load_field_archive(path, reference_path, reference_sha256)
+    required_fields = ('u', 'truth_u') if case_name == 'burgers2d' else ('u', 'v', 'truth_u', 'truth_v')
+    if any(data[name].dtype != np.float64 for name in required_fields):
+        raise ValueError(f'Archived scientific fields are not float64: {path}')
+    if expected_shape is not None and data['u'].shape != tuple(expected_shape):
+        raise ValueError(f'Archived field mesh/time shape differs from invocation: {path}')
+    if case_name != 'burgers2d':
+        expected_boundary = 'dirichlet' if case_name == 'wave_reflective' else 'absorbing'
+        if str(data['boundary']) != expected_boundary or (expected_intervals is not None and int(data['intervals']) != expected_intervals):
+            raise ValueError(f'Archived wave metadata differs from invocation: {path}')
+    output_hashes = {name: hashlib.sha256(np.ascontiguousarray(data[name]).view(np.uint8)).hexdigest()
+                     for name in ('u', 'v') if name in data}
+    if case_name == 'burgers2d':
+        series = burgers_error_series(data['u'], data['truth_u'])
+    else:
+        series = wave_error_series(data['u'], data['v'], data['truth_u'], data['truth_v'],
+                              int(data['intervals']), str(data['boundary']), float(data['speed']))
+    actual = {name: float(values.max()) for name, values in series.items()}
     for name, value in actual.items():
         if name not in expected_errors or not np.isclose(value, expected_errors[name], rtol=rtol, atol=atol):
             raise ValueError(f'Independent field error mismatch: {path}: {name}: {value} vs {expected_errors.get(name)}')
     return {'path': str(path), 'sha256': digest(path), 'errors': actual, 'output_sha256': output_hashes,
+            'shared_reference': {'path': str(reference_path), 'sha256': reference_sha256} if reference_path else None,
             'error_series': {name: values.tolist() for name, values in series.items()}}

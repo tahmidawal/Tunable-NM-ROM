@@ -12,9 +12,10 @@ import json
 from pathlib import Path
 import numpy as np
 
-from modcp_audit import audit_field_archive, digest, summarize_rows
+from modcp_audit import audit_field_archive, digest, summarize_rows, load_field_archive
 
 ROOT = Path(__file__).resolve().parents[1]
+FULL_GRID_KINDS = ('self_contained_full_grid', 'full_grid_with_shared_truth')
 
 
 def table(headers, rows):
@@ -96,19 +97,23 @@ def summarize_input(path):
     audits, seen, field_groups = [], {}, {}
     for row in data.get('invocations', []):
         artifact = row.get('field_artifact')
-        if not artifact or row.get('field_artifact_kind') != 'self_contained_full_grid' or not row.get('finite'):
+        if not artifact or row.get('field_artifact_kind') not in FULL_GRID_KINDS or not row.get('finite'):
             continue
         full = (path.parent / artifact).resolve()
+        reference = ((path.parent/row['reference_artifact']).resolve()
+                     if row['field_artifact_kind'] == 'full_grid_with_shared_truth' else None)
+        reference_hash = row.get('reference_sha256') if reference else None
         n = row['intervals']
         nt = len(config['output_times']) if data['case_name'] == 'burgers2d' else int(round(config['end_time']/config['observation_dt']))+1
         side = n-1 if data['case_name'] == 'wave_reflective' else n+1
         # One saved deterministic result can serve several repetitions only when
         # the owner records that each actual repetition has the same field hash.
-        key = str(full), data['case_name'], n, nt, side, tuple((name, row['errors'][name]) for name in
+        key = str(full), str(reference), reference_hash, data['case_name'], n, nt, side, tuple((name, row['errors'][name]) for name in
                               ('displacement', 'velocity', 'energy_state') if name in row['errors'])
         if key not in seen:
             seen[key] = audit_field_archive(full, data['case_name'], row['errors'],
-                                           expected_shape=(nt, side, side), expected_intervals=n)
+                                           expected_shape=(nt, side, side), expected_intervals=n,
+                                           reference_path=reference, reference_sha256=reference_hash)
             audits.append(seen[key])
         field_groups[row['split'], row['method'], row['configuration'], row['intervals'], row['case'], row['rep']] = seen[key]
     paired_fields = 0
@@ -243,11 +248,12 @@ def representative_plots(paths, stem):
             chosen.append((method, row))
         fields, truth = [], None
         for method, row in chosen:
-            if row is None or row.get('field_artifact_kind') != 'self_contained_full_grid':
+            if row is None or row.get('field_artifact_kind') not in FULL_GRID_KINDS:
                 fields.append((method+'\nmissing full field', None))
                 continue
-            with np.load(source_path.parent/row['field_artifact'], allow_pickle=False) as archive:
-                u, reference = archive['u'].copy(), archive['truth_u'].copy()
+            reference_path = source_path.parent/row['reference_artifact'] if row['field_artifact_kind'] == 'full_grid_with_shared_truth' else None
+            archive = load_field_archive(source_path.parent/row['field_artifact'], reference_path, row.get('reference_sha256'))
+            u, reference = archive['u'], archive['truth_u']
             if truth is not None and not np.array_equal(truth, reference):
                 raise ValueError('Representative fields do not share the same reference')
             truth = reference

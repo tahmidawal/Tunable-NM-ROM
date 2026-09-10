@@ -425,8 +425,25 @@ def main():
         candidates = [s for s in sources if s['case_name'] == source['case_name'] and
                       any(r['split'] == split and r['intervals'] == intervals for r in s['references'])]
         return reference_status(candidates[0] if candidates else source, split, intervals, target)
-    rows, missing_selection_keys = [], set()
+    rows, validation_rows, missing_selection_keys = [], [], set()
     for source in sources:
+        for selection in source['selections']:
+            if selection.get('configuration') is None:
+                continue
+            matches = [r for r in source['summaries'] if r['split'] == 'validation' and
+                       (r['method'], r['configuration'], r['intervals']) ==
+                       (selection['method'], selection['configuration'], selection['intervals']) and
+                       r['target'] == (selection['target'] if selection['target'] is not None else source['config']['targets'][0])]
+            if not matches:
+                continue
+            row = matches[0]
+            validation_rows.append([source['case_name'], row['intervals'], row['method'],
+                f"{100*selection['target']:g}% target" if selection['target'] is not None else 'best-error diagnostic',
+                row['configuration'],
+                f"{100*row['median_case_error']:.6g}%" if row['median_case_error'] is not None else 'failed/nonfinite',
+                f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
+                f"{1e3*row['median_seconds']:.6g}" if row['median_seconds'] is not None else 'missing',
+                row['failed_cases'], row['nonstationary_cases'] if row['method'] in ('cp', 'modcp', 'film') else '—'])
         for row in source['summaries']:
             if row['split'] != 'evaluation':
                 continue
@@ -509,6 +526,17 @@ def main():
     lines = ['# Modified CP with empirical quadrature: Burgers and waves', '',
              'This report compares the original CP decoder, latent-modulated CP factors, and a FiLM coordinate decoder. '+status,
              '', outcome,
+             '', '## Frozen validation settings', '',
+             table(['Case', 'Intervals/axis', 'Method', 'Selection role', 'Configuration',
+                    'Median case error', 'Worst error', 'Median query ms', 'Failed cases',
+                    'Nonstationary cases'], validation_rows) if validation_rows else 'No complete validation panel is available yet.', '',
+             'These are the frozen settings carried forward from validation. Best-error diagnostics '
+             'did not necessarily meet either accuracy target. Errors and times above use the complete '
+             'validation cohort, with one paired measured invocation per case and setting; '
+             'timing-based selection used the separately retained seven repetitions of the predetermined '
+             'proxy case. Evaluation repeats every frozen setting on every untouched case. '
+             'Rows for different targets may reuse one configuration. These validation times are not '
+             'combined with evaluation times from another allocation.', '',
              '', '## Evaluation of validation-selected configurations', '',
              'Queries start with full GPU-resident initial fields and return full GPU-resident output trajectories. '
              'Timing includes initialization, evolution, and reconstruction. Compilation, offline setup, and host transfers are excluded.', '',

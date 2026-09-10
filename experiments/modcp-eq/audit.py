@@ -10,6 +10,12 @@ import numpy as np
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def parameter_arrays(tree):
+    if isinstance(tree,dict):return [x for value in tree.values() for x in parameter_arrays(value)]
+    if isinstance(tree,(list,tuple)):return [x for value in tree for x in parameter_arrays(value)]
+    return [np.asarray(tree)]
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('directory');args=parser.parse_args()
     root=Path(args.directory);handoff=json.loads((root/'handoff.json').read_text())
@@ -52,7 +58,10 @@ def main():
         if actual!=expected:errors.append('changed checkpoint '+arm)
         with p.open('rb') as f:model=pickle.load(f)
         if not np.isfinite(model['Z']).all():errors.append('nonfinite training codes '+arm)
+        arrays=parameter_arrays(model['params'])
+        if not all(np.isfinite(x).all() and x.dtype==np.dtype('float64') for x in arrays):errors.append('parameters are nonfinite or not float64 '+arm)
         models.append(dict(architecture=arm,sha256=actual,latent_codes_shape=list(model['Z'].shape),
+                           parameter_count=sum(x.size for x in arrays),parameter_bytes=sum(x.nbytes for x in arrays),
                            recorded_stage_steps=model['extra'].get('steps'),recorded_total_updates=model['extra'].get('updates')))
     output=dict(passed=not errors,errors=errors,field_checks=fieldchecks,proxy_hash_mismatches=mismatches,
                 invocation_count=len(rows),proxy_count=len(proxy),identities=[list(x) for x in identities],models=models,

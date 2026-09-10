@@ -96,7 +96,7 @@ def summarize_input(path):
         if not declared or declared != observed:
             raise ValueError('Completed campaign is missing a selected evaluation configuration or invocation')
     evaluation_freeze = verify_evaluation_freeze(path, data)
-    audits, seen, field_groups = [], {}, {}
+    audits, seen, field_groups, reference_groups = [], {}, {}, {}
     for row in data.get('invocations', []):
         artifact = row.get('field_artifact')
         if not artifact or row.get('field_artifact_kind') not in FULL_GRID_KINDS or not row.get('finite'):
@@ -117,7 +117,13 @@ def summarize_input(path):
                                            expected_shape=(nt, side, side), expected_intervals=n,
                                            reference_path=reference, reference_sha256=reference_hash)
             audits.append(seen[key])
+        reference_key = row['split'], row['intervals'], row['case']
+        reference_identity = seen[key]['reference_sha256'], seen[key]['reference_metadata']
+        if reference_key in reference_groups and reference_groups[reference_key] != reference_identity:
+            raise ValueError('Methods or repetitions use different reference fields for the same case')
+        reference_groups[reference_key] = reference_identity
         field_groups[row['split'], row['method'], row['configuration'], row['intervals'], row['case'], row['rep']] = seen[key]
+    usable_fields = dict(field_groups)
     paired_fields = 0
     for row in data.get('invocations', []):
         if row['split'] != 'evaluation' or not row.get('finite'):
@@ -132,12 +138,13 @@ def summarize_input(path):
         for component, error in audit['errors'].items():
             if not np.isclose(row['errors'][component], error, rtol=1e-8, atol=1e-10):
                 raise ValueError('Timed invocation error differs from its audited field')
+        usable_fields[key] = audit
         paired_fields += 1
     for summary in summaries:
         repetitions = config.get(f"{summary['split']}_repetitions", config['repetitions'])
         keys = [(summary['split'], summary['method'], summary['configuration'], summary['intervals'], case, rep)
                 for case in config[f"{summary['split']}_case_ids"] for rep in range(repetitions)]
-        group_audits = [field_groups.get(key, field_groups.get((*key[:-1], 0))) for key in keys]
+        group_audits = [usable_fields.get(key) for key in keys]
         complete = all(audit is not None for audit in group_audits)
         for label, index in (('initial', 0), ('final', -1)):
             summary[f'worst_{label}_error'] = max(

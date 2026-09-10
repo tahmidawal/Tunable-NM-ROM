@@ -10,6 +10,7 @@ import numpy as np
 from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows, row_error, audit_field_archive, digest
 from generate_modcp_comparison import summarize_input
 from modcp_freeze import verify_evaluation_freeze
+from seal_modcp_validation import verify_selection_rules
 
 
 def synthetic_burgers_freeze(folder, document):
@@ -28,6 +29,9 @@ def synthetic_burgers_freeze(folder, document):
     entry = dict(handoff_sha256=digest(validation_path), selection_proof_sha256=proofs,
                  evaluation_seed=123, source_commit='test', validation_job_id='test',
                  selected_configurations=document['selections'])
+    rule = folder/'synthetic_rule.json'
+    rule.write_text('{}')
+    entry['quadrature_sha256'] = {rule.name: digest(rule)}
     seal_path = folder/'global_validation_seal.json'
     seal_path.write_text(json.dumps(dict(schema='modcp-global-validation-seal-v1', evaluation_generated=False,
         cases={name: entry for name in ('burgers2d', 'wave_reflective', 'wave_absorbing')})))
@@ -187,6 +191,54 @@ class AuditTests(unittest.TestCase):
             document['selections'][0]['configuration'] = 'chosen-after-evaluation'
             with self.assertRaisesRegex(ValueError, 'changed after validation freeze'):
                 verify_evaluation_freeze(path, document)
+
+    def test_freeze_cannot_hide_qualified_settings_or_select_a_slower_one(self):
+        row = dict(finite=True, completed=True, errors={'displacement': .001})
+        groups = {(256, 'cp', name): [dict(row)] for name in ('fast', 'slow')}
+        proxies = {key: [dict(row, seconds=1. if key[2] == 'fast' else 2.)] for key in groups}
+        selection = dict(intervals=256, method='cp', configuration='fast', target=.01)
+        data = dict(case_name='burgers2d', selections=[selection])
+        verify_selection_rules(data, groups, proxies)
+        for changed in (None, 'slow'):
+            selection['configuration'] = changed
+            with self.assertRaisesRegex(ValueError, 'proxy ordering'):
+                verify_selection_rules(data, groups, proxies)
+
+    def test_methods_must_share_each_cases_reference_and_failed_reps_have_no_phase_error(self):
+        truth = np.ones((2, 3, 3), dtype=np.float64)
+        field = truth*1.001
+        row = dict(split='evaluation', method='modcp', configuration='frozen', intervals=2,
+                   case=0, rep=0, seconds=.1, errors={'displacement': .001}, finite=True,
+                   completed=True, stationary=True, field_artifact='field.npz',
+                   field_artifact_kind='self_contained_full_grid',
+                   field_sha256=hashlib.sha256(field.tobytes()).hexdigest())
+        document = dict(case_name='burgers2d', status='complete',
+            provenance=dict(commit='test', job_id='test', gpu='test', backend='gpu', x64=True, matmul_precision='highest'),
+            config=dict(evaluation_case_ids=[0], repetitions=1, targets=[.01], output_times=[0, .05]),
+            selections=[dict(method='modcp', configuration='frozen', intervals=2, target=.01)], invocations=[row])
+        with tempfile.TemporaryDirectory() as folder:
+            folder = Path(folder)
+            path = folder/'handoff.json'
+            np.savez(folder/'field.npz', u=field, truth_u=truth)
+            different = dict(row, method='newton_bicgstab', field_artifact='other.npz',
+                             field_sha256=hashlib.sha256((field*2).tobytes()).hexdigest())
+            document['invocations'].append(different)
+            document['selections'].append(dict(method='newton_bicgstab', configuration='frozen', intervals=2, target=.01))
+            np.savez(folder/'other.npz', u=field*2, truth_u=truth*2)
+            synthetic_burgers_freeze(folder, document)
+            path.write_text(json.dumps(document))
+            with self.assertRaisesRegex(ValueError, 'different reference fields'):
+                summarize_input(path)
+            document['invocations'] = [row, dict(row, rep=1, finite=False, completed=False, errors=None,
+                                                field_artifact=None, field_sha256=None)]
+            document['selections'] = document['selections'][:1]
+            document['config']['repetitions'] = 2
+            synthetic_burgers_freeze(folder, document)
+            path.write_text(json.dumps(document))
+            result = summarize_input(path)['summaries'][0]
+            self.assertFalse(result['qualified'])
+            self.assertIsNone(result['worst_initial_error'])
+            self.assertIsNone(result['worst_final_error'])
 
 
 if __name__ == '__main__':

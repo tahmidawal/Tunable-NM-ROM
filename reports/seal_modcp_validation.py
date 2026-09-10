@@ -11,12 +11,48 @@ from datetime import datetime, timezone
 import json
 from math import prod, isclose
 from pathlib import Path
+from statistics import median
 
 from generate_modcp_comparison import provenance_check, relative
 from modcp_audit import digest, summarize_rows, row_error
 
 
 CASES = {'burgers2d', 'wave_reflective', 'wave_absorbing'}
+
+
+def verify_selection_rules(data, groups, proxies):
+    """Recompute the declared validation-only choice, including losing arms."""
+    burgers = data['case_name'] == 'burgers2d'
+    for mesh, method in sorted({(n, arm) for n, arm, _ in groups}):
+        candidates = []
+        for key, rows in groups.items():
+            if key[:2] != (mesh, method):
+                continue
+            proxy = proxies[key]
+            completed = all(row['finite'] and row['completed'] for row in rows)
+            completed &= all(row['finite'] and row.get('completed', completed) for row in proxy)
+            error = max(row_error(row) for row in rows+proxy)
+            candidates.append(dict(name=key[2], completed=completed, error=error,
+                                   cost=median(row['seconds'] for row in proxy)))
+        declarations = [s for s in data['selections'] if (s['intervals'], s['method']) == (mesh, method)]
+        any_target = False
+        for selection in (s for s in declarations if s['target'] is not None):
+            eligible = [c for c in candidates if c['completed'] and c['error'] <= selection['target']]
+            ordering = (lambda c: (c['cost'], c['name'])) if burgers else (lambda c: (c['cost'], c['error'], c['name']))
+            chosen = min(eligible, key=ordering)['name'] if eligible else None
+            if selection['configuration'] != chosen:
+                raise ValueError('Frozen target selection differs from declared validation proxy ordering')
+            any_target |= chosen is not None
+        diagnostics = [s for s in declarations if s['target'] is None]
+        expected_count = int(not any_target) if burgers else 1
+        if len(diagnostics) != expected_count:
+            raise ValueError('Frozen selection omits or duplicates the declared diagnostic')
+        if diagnostics:
+            eligible = candidates if burgers else [c for c in candidates if c['completed'] and c['error'] < float('inf')]
+            chosen = (min(eligible, key=lambda c: (c['error'], c['cost'], c['name'])) if eligible else
+                      min(candidates, key=lambda c: (c['error'], c['name'])))
+            if diagnostics[0]['configuration'] != chosen['name']:
+                raise ValueError('Frozen diagnostic differs from declared validation error ordering')
 
 
 def entry(path):
@@ -37,6 +73,9 @@ def entry(path):
         if row['split'] != 'validation':
             raise ValueError('Evaluation was opened before the global seal')
         groups[row['intervals'], row['method'], row['configuration']].append(row)
+        if case != 'burgers2d' and row['finite'] and not all(
+                key in (row.get('errors') or {}) for key in ('displacement', 'velocity', 'energy_state')):
+            raise ValueError('Wave validation omits a required physical error component')
         if 'provenance' in row and any(str(row['provenance'][k]) != str(data['provenance'][k]) for k in ('job_id', 'gpu', 'commit')):
             raise ValueError('Validation timing panel mixes allocations or source versions')
     for rows in groups.values():
@@ -65,6 +104,9 @@ def entry(path):
     proxies = defaultdict(list)
     for row in data['selection_timings']:
         proxies[row['intervals'], row['method'], row['configuration']].append(row)
+        if case != 'burgers2d' and row['finite'] and not all(
+                key in (row.get('errors') or {}) for key in ('displacement', 'velocity', 'energy_state')):
+            raise ValueError('Wave selection proxy omits a required physical error component')
         if 'provenance' in row and any(str(row['provenance'][k]) != str(data['provenance'][k]) for k in ('job_id', 'gpu', 'commit')):
             raise ValueError('Selection proxy mixes allocations or source versions')
     if proxies.keys() != groups.keys():
@@ -82,6 +124,7 @@ def entry(path):
                 raise ValueError('Selection proxy completion differs from its validation case')
             if 'field_sha256' in row and row['field_sha256'] != base.get('field_sha256'):
                 raise ValueError('Selection proxy field hash differs from its validation case')
+    verify_selection_rules(data, groups, proxies)
     for selection in data['selections']:
         key = selection['intervals'], selection['method'], selection.get('configuration')
         if key[-1] is not None and key not in groups:
@@ -93,7 +136,14 @@ def entry(path):
         f'frozen_selection_{n}.json' for n in cfg['meshes']]
     proofs = {name: digest(path.parent/name) for name in names}
     evidence = {}
+    quadrature = {}
     if case == 'burgers2d':
+        expected_rules = {f'rules/{arm}_L{n}_q{q}.pkl' for arm in ('cp', 'modcp', 'film')
+                          for n in cfg['meshes'] for q in (4, 8)}
+        actual_rules = {str(p.relative_to(path.parent)) for p in (path.parent/'rules').glob('*.pkl')}
+        if actual_rules != expected_rules:
+            raise ValueError('Frozen Burgers rule inventory differs from the declared sweep')
+        quadrature = {name: digest(path.parent/name) for name in sorted(expected_rules)}
         if json.loads((path.parent/names[0]).read_text()) != data['selections']:
             raise ValueError('Burgers proof selections differ from handoff')
         freeze = json.loads((path.parent/names[1]).read_text())
@@ -126,9 +176,11 @@ def entry(path):
             for artifact, expected in freeze['quadrature_sha256'].items():
                 if digest(path.parent/artifact) != expected:
                     raise ValueError('Wave frozen quadrature hash mismatch')
+                quadrature[artifact] = expected
     seed = cfg['seeds']['evaluation'] if case == 'burgers2d' else cfg['evaluation_seed']
     return case, dict(handoff_sha256=digest(path), selection_proof_sha256=proofs,
                       validation_evidence_sha256=evidence,
+                      quadrature_sha256=quadrature,
                       evaluation_seed=seed, source_commit=data['provenance']['commit'],
                       validation_job_id=data['provenance']['job_id'], source=relative(path),
                       selected_configurations=data['selections'])

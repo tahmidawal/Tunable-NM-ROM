@@ -50,6 +50,11 @@ def verify_evaluation_freeze(path, data):
     for name, expected in entry['selection_proof_sha256'].items():
         if digest(bundle/name) != expected:
             raise ValueError('Saved selection proof differs from global freeze')
+    if not entry.get('quadrature_sha256'):
+        raise ValueError('Global freeze lacks quadrature file identities')
+    for name, expected in entry['quadrature_sha256'].items():
+        if Path(name).is_absolute() or '..' in Path(name).parts or digest(folder/name) != expected:
+            raise ValueError('Evaluation quadrature differs from frozen validation')
     actual_hash = digest(seal_path)
     recorded_hash = (data['provenance'].get('global_validation_seal_sha256') if burgers else
                      data.get('imported_validation_proof', {}).get('seal_sha256'))

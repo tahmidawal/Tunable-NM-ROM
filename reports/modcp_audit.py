@@ -201,6 +201,8 @@ def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10,
             raise ValueError(f'Archived wave metadata differs from invocation: {path}')
     output_hashes = {name: hashlib.sha256(np.ascontiguousarray(data[name]).view(np.uint8)).hexdigest()
                      for name in ('u', 'v') if name in data}
+    reference_hashes = {name: hashlib.sha256(np.ascontiguousarray(data[name]).view(np.uint8)).hexdigest()
+                        for name in ('truth_u', 'truth_v') if name in data}
     if case_name == 'burgers2d':
         series = burgers_error_series(data['u'], data['truth_u'])
     else:
@@ -211,5 +213,7 @@ def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10,
         if name not in expected_errors or not np.isclose(value, expected_errors[name], rtol=rtol, atol=atol):
             raise ValueError(f'Independent field error mismatch: {path}: {name}: {value} vs {expected_errors.get(name)}')
     return {'path': str(path), 'sha256': digest(path), 'errors': actual, 'output_sha256': output_hashes,
+            'reference_sha256': reference_hashes,
+            'reference_metadata': {key: data[key].item() for key in ('intervals', 'boundary', 'speed') if key in data},
             'shared_reference': {'path': str(reference_path), 'sha256': reference_sha256} if reference_path else None,
             'error_series': {name: values.tolist() for name, values in series.items()}}

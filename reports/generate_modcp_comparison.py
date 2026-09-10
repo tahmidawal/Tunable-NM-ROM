@@ -51,7 +51,7 @@ def summarize_input(path):
     summaries = []
     for (split, method, setting, intervals), rows in groups.items():
         membership = config[f'{split}_case_ids']
-        repetitions = config.get(f'{split}_repetitions', config['repetitions'])
+        repetitions = config[f'{split}_repetitions'] if f'{split}_repetitions' in config else config['repetitions']
         if split == 'evaluation':
             declarations = [s for s in data['selections'] if
                             (s['method'], s['configuration'], s['intervals']) == (method, setting, intervals)]
@@ -149,6 +149,11 @@ def main():
                          f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
                          row['outlier_cases'], row['failed_cases'],
                          'yes' if row['qualified'] else 'no'])
+        for selection in source['selections']:
+            if selection.get('configuration') is None:
+                rows.append([source['case_name'], selection['intervals'], selection['method'],
+                             f"{100*selection['target']:g}%", 'No validation-qualified setting',
+                             '—', '—', '—', '—', 'no'])
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
     incomplete = any(s['status'] != 'complete' for s in sources)

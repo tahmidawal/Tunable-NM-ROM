@@ -1,8 +1,12 @@
 """Small CPU checks of independent physics norms and all-case qualification."""
 import unittest
+import json
+from pathlib import Path
+import tempfile
 import numpy as np
 
 from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows
+from generate_modcp_comparison import summarize_input
 
 
 class AuditTests(unittest.TestCase):
@@ -41,6 +45,27 @@ class AuditTests(unittest.TestCase):
         row = dict(case=0, rep=0, seconds=.1, errors={'displacement': .001}, finite=True, completed=True)
         with self.assertRaises(ValueError):
             summarize_rows([row, row], [0], 2, .01)
+
+    def test_evaluation_requires_predeclared_validation_selection(self):
+        # Synthetic fixtures only: these values are never scientific results.
+        document = dict(case_name='burgers2d', status='complete',
+            provenance=dict(commit='test', job_id='test', gpu='test', backend='gpu', x64=True, matmul_precision='highest'),
+            config=dict(evaluation_case_ids=[0], repetitions=1, targets=[.01]), selections=[],
+            invocations=[dict(split='evaluation', method='modcp', configuration='unselected', intervals=8,
+                              case=0, rep=0, seconds=.1, errors={'displacement': .001}, finite=True, completed=True)])
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'handoff.json'
+            path.write_text(json.dumps(document))
+            with self.assertRaisesRegex(ValueError, 'lacks validation-frozen selection'):
+                summarize_input(path)
+
+    def test_cpu_fallback_cannot_be_reported_as_scientific_gpu_run(self):
+        document = dict(provenance=dict(commit='test', job_id='test', gpu='test', backend='cpu', x64=True, matmul_precision='highest'))
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'handoff.json'
+            path.write_text(json.dumps(document))
+            with self.assertRaisesRegex(ValueError, 'backend or precision'):
+                summarize_input(path)
 
 
 if __name__ == '__main__':

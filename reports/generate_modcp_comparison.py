@@ -446,6 +446,26 @@ def main():
              'CP and modified CP share the same initial CP training stage. FiLM uses the full update budget '
              'from its own initialization. Training update budgets match; parameter counts and training costs differ. '
              'This pilot compares the declared architectures without a parameter-matched or exhaustive tuning claim.', '',
+             'For each output component, the CP family represents', '',
+             r'$$\widetilde u(z;x,y)=m(x,y)\left[\beta+\sum_{r=1}^{R}c_r(z)a_r(x;z)b_r(y;z)\right].$$', '',
+             r'Here $z$ is the solved latent state, $R$ is the CP rank, $c_r$ is the nonlinear coefficient head '
+             r'with a linear skip, and $m$ enforces the boundary. Original CP uses factors independent of $z$. '
+             'Modified CP adds a latent-conditioned nonlinear correction to each one-dimensional factor; '
+             'its zero correction exactly recovers the shared CP initialization. FiLM instead conditions a '
+             'two-dimensional coordinate network on the latent state and includes its own linear latent skip. '
+             'Coordinate-only features are cached offline for all three decoders. Dirichlet mesh transfer '
+             'uses a boundary strip that preserves training-node values and avoids interpolating untrained '
+             'masked endpoint parameters into new interior nodes.', '',
+             'Each reduced implicit step minimizes the scaled weak discrete residual,', '',
+             r'$$z_{n+1}\approx\operatorname*{arg\,min}_z\frac12\left\|W_{\mathrm{EQ}}'
+             r'\,\mathcal R_n(\widetilde u(z);\widetilde u(z_n),\mu)\right\|_2^2.$$', '',
+             r'$\mathcal R_n$ is the fully discrete PDE residual, $\mu$ contains physical parameters, '
+             r'and $W_{\mathrm{EQ}}$ applies the smooth test functions, fitted quadrature, and fixed scaling. '
+             'The weak residual and its latent Jacobian use JAX automatic differentiation; damped '
+             'Gauss–Newton solves small dense systems and warm-starts each time step from the preceding latent state. '
+             'The initial latent fit uses the supplied field at sampled locations and stored starting codes. '
+             'The full-solver CG comparison belongs to the SPD wave discretization; nonlinear Burgers uses '
+             'Newton–BiCGStab.', '',
              'CP precontracts its fixed spatial factors with the selected EQ weights for weak linear terms. '
              'The quadrature approximation is preserved. Burgers still evaluates the nonlinear upwind term '
              'on its sampled stencil. Modified CP and FiLM retain state-dependent spatial evaluation. '
@@ -517,6 +537,13 @@ def main():
              '- **Weak residual:** the PDE mismatch integrated against smooth spatial test functions.',
              '- **Latent state:** the small vector of unknowns solved inside the decoder.',
              '- **CP rank:** the number of spatial product terms, separate from the latent dimension.',
+             '- **Linear skip:** a direct linear dependence on latent coordinates added to the nonlinear decoder head.',
+             '- **FiLM conditioning:** latent-dependent scales and shifts applied to hidden coordinate features.',
+             '- **Jacobian / automatic differentiation:** respectively derivatives with respect to latent coordinates and their computation by differentiating the implemented numerical operations.',
+             '- **Gauss–Newton / damping:** local least-squares iteration using that Jacobian, with regularization and acceptance checks to control the step.',
+             '- **CG / SPD:** conjugate gradients and the symmetric positive-definite matrix property required by that solver.',
+             '- **Newton–BiCGStab:** nonlinear Newton iteration with a Krylov linear solver that allows nonsymmetric systems.',
+             '- **Crank–Nicolson / backward Euler:** implicit time-stepping rules used here for waves and Burgers respectively.',
              '- **Decoder parameters:** trained weights in the field decoder, excluding training-only snapshot codes.',
              '- **Training updates:** optimizer steps completed before validation and evaluation.',
              '- **Affine spatial image:** the fixed CP bias plus every linear combination of its learned spatial products.',

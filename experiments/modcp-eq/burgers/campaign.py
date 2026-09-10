@@ -80,6 +80,7 @@ class Campaign:
         if cp.exists():assert json.loads(cp.read_text())==clean(self.config)
         else:write_json(cp,self.config)
         self.rows=[];self.finished=set();self.log=self.out/'invocations.jsonl'
+        self.physical_cases=json.loads((self.out/'physical_cases.json').read_text()) if (self.out/'physical_cases.json').exists() else {}
         if self.log.exists():
             for line in self.log.read_text().splitlines():
                 row=json.loads(line);self.rows.append(row);self.finished.add(self.row_id(row))
@@ -111,6 +112,7 @@ class Campaign:
         checkpoints={p.stem:sha(p) for p in self.out.glob('checkpoints/*.pkl') if not p.stem.endswith('trainstate')}
         write_json(self.out/'handoff.json',dict(case_name='burgers2d',status=self.status,config=self.config,
           provenance=self.provenance,checkpoint_hashes=checkpoints,invocations=self.rows,selections=self.selections,selection_timings=self.selection_timings,timing_archives=self.timing_archives,
+          physical_cases=self.physical_cases,physical_parameter_columns=['center_x','center_y','width','amplitude','viscosity'],
           artifacts=dict(raw_invocations='invocations.jsonl',training='checkpoints',rules='rules',fields='fields',references='references')))
 
     def append(self,row):
@@ -123,8 +125,11 @@ class Campaign:
         dest=self.out/'references';dest.mkdir(exist_ok=True)
         path=dest/f'{split}_L{L}_dt{dt}.npz'
         if path.exists():
-            loaded=np.load(path);return loaded['fields'],loaded['physical'],loaded['iterations'],loaded['residuals']
+            loaded=np.load(path);self.physical_cases[split]=loaded['physical'].tolist()
+            write_json(self.out/'physical_cases.json',self.physical_cases)
+            return loaded['fields'],loaded['physical'],loaded['iterations'],loaded['residuals']
         physical=fom.params_draw(self.seeds[split],self.counts[split]);q,_=fom.make_fom(L,dt)
+        self.physical_cases[split]=physical.tolist();write_json(self.out/'physical_cases.json',self.physical_cases)
         fields=[];iterations=[];residuals=[]
         for case,p in enumerate(physical):
             print(f'DATA {split} L={L} dt={dt} case={case}',flush=True)

@@ -9,6 +9,7 @@ already be frozen using validation. This generator never selects on evaluation.
 import argparse
 from collections import defaultdict
 import json
+import pickle
 from pathlib import Path
 import numpy as np
 
@@ -50,7 +51,16 @@ def summarize_input(path):
     if config.get('smoke') or config.get('smoke_only') or data.get('phase') == 'development' or data['status'] == 'complete_smoke':
         raise ValueError('Smoke-test outputs are not scientific pilot measurements')
     references, reference_artifacts = list(data.get('references', [])), []
+    eq_audits = list(data.get('eq_audits', []))
     if data['case_name'] == 'burgers2d':
+        for artifact in sorted((path.parent/'rules').glob('*.pkl')):
+            with artifact.open('rb') as handle:
+                rule = pickle.load(handle)
+            arm = artifact.name.split('_L')[0]
+            if rule['checkpoint_hash'] != data['checkpoint_hashes'][arm]:
+                raise ValueError('Burgers quadrature uses a different decoder checkpoint')
+            eq_audits.append(dict(architecture=arm, rule_artifact=relative(artifact), sha256=digest(artifact),
+                **{key: value for key, value in rule['info'].items() if key not in ('weights', 'indices', 'mode_ids')}))
         for split in ('validation', 'evaluation'):
             for n in config.get('meshes', []):
                 artifact = path.parent/'references'/f'{split}_L{n}_uncertainty.json'
@@ -168,7 +178,7 @@ def summarize_input(path):
                 audited_paired_evaluation_invocations=paired_fields,
                 audited_paired_validation_invocations=paired_validation_fields,
                 references=references, reference_artifacts=reference_artifacts,
-                eq_audits=data.get('eq_audits', []),
+                eq_audits=eq_audits,
                 full_weak_audits=data.get('full_weak_audits', []),
                 representation_diagnostics=data.get('representation_diagnostics', []),
                 checkpoint_hashes=data.get('checkpoint_hashes', data.get('checkpoint_sha256', {})))
@@ -242,6 +252,26 @@ def reference_table(sources):
     return table(['Case', 'Cohort', 'Intervals/axis', 'Reference', 'Worst temporal difference',
                   'Worst nested space/time difference', 'Worst energy balance defect',
                   'Worst invariant drift'], rows) if rows else 'Reference diagnostics have not been collected yet.'
+
+
+def quadrature_table(sources):
+    rows, seen = [], set()
+    for source in sources:
+        for audit in source['eq_audits']:
+            volume = audit.get('volume', audit)
+            requested = audit.get('volume_target', volume['target_nodes'])
+            key = source['case_name'], audit['intervals'], audit['architecture'], requested
+            if key in seen:
+                continue
+            seen.add(key)
+            faces = audit.get('faces', [])
+            rows.append([*key[:3], audit.get('weak_modes', audit.get('M')), requested,
+                         volume['selected_nodes'], volume['positive_nodes'],
+                         sum(face['selected_nodes'] for face in faces), volume['fit_rows'],
+                         f"{volume['relative_fit']:.6g}"])
+    return table(['Case', 'Intervals/axis', 'Decoder', 'Test modes/component', 'Requested volume nodes',
+                  'Stored volume nodes', 'Positive volume weights', 'Stored boundary entries',
+                  'Volume fit rows', 'Relative volume fit defect'], rows) if rows else 'Quadrature records are not available yet.'
 
 
 def representative_plots(paths, stem):
@@ -526,6 +556,14 @@ def main():
              'whose numerical parity was checked separately. The final timing ratios come entirely from '
              'that evaluation allocation. The older validation timings do not establish the fastest '
              'configuration for the optimized implementation.', '',
+             '## Frozen quadrature rules', '', quadrature_table(sources), '',
+             'Quadrature is fitted offline using decoded training snapshots. Each mesh and test space has '
+             'its own frozen rule; evaluation imports the exact weights used for validation. Requested '
+             'nodes, stored support, positive weights, and fitting-system rows are different quantities. '
+             'Boundary entries count separate physical faces, including both corner contributions; '
+             'they are not a count of unique decoder coordinates. Burgers also evaluates the neighbors '
+             'required by its exact sign-upwind stencil. The offline fit defect is not an unseen-case '
+             'quadrature error bound.', '',
              '## Diagnosis of the Burgers validation failure', '',
              table(['Validation case', 'Decoder', 'Intervals/axis', 'Online initial error',
                     'Best tested initial fit', 'Best tested final-snapshot fit', 'Online final error',
@@ -581,6 +619,10 @@ def main():
              '- **Modified CP:** CP factors with small nonlinear changes conditioned on the solved latent state.',
              '- **FiLM / INR:** feature-wise modulation of a neural coordinate-to-field decoder.',
              '- **EQ:** empirical quadrature, an offline-selected set of spatial samples and nonnegative integration weights.',
+             '- **Test modes/component:** smooth spatial functions against which each state component\'s residual is integrated.',
+             '- **Requested / stored / positive volume nodes:** respectively the target sample count, stored quadrature entries, and entries with strictly positive weight.',
+             '- **Stored boundary entries:** the sum of samples on separate absorbing faces, counting a shared corner once per face.',
+             '- **Volume fit rows / relative fit defect:** the number of offline fitting constraints and their relative residual on the fitted decoder snapshots.',
              '- **FOM:** the full-order numerical PDE solver used as a speed comparison.',
              '- **Weak residual:** the PDE mismatch integrated against smooth spatial test functions.',
              '- **Latent state:** the small vector of unknowns solved inside the decoder.',

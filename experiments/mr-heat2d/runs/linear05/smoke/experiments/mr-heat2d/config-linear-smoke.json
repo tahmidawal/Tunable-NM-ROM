@@ -1,0 +1,25 @@
+{
+  "schema": "heat-linear-bank-v1",
+  "checkpoint": "expanded_seed790715",
+  "requested_intervals": [
+    64
+  ],
+  "cohorts": [
+    {
+      "name": "smoke",
+      "seed": 790711,
+      "count": 1
+    }
+  ],
+  "timing_repetitions": 1,
+  "dt": 0.025,
+  "gradient_tolerance": 1e-05,
+  "reference_pair": [
+    64,
+    128
+  ],
+  "coarse_solver_intervals": 16,
+  "primary_method": "linear_weak_exact",
+  "accuracy_target": 0.05,
+  "final_cohort_opened": false
+}

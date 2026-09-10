@@ -16,6 +16,12 @@ The Poisson owner uses the existing `2026-09-07-mr-poisson2d` worktree and appro
 
 Each owner copies historical source and checkpoint bytes into an isolated replay cell, records hashes, and leaves archived worktrees unchanged. Each PDE's mesh ladder runs sequentially in one GPU allocation so its scaling comparison is on one device. Existing branches remain separate; no new worktree or merge is part of this request.
 
+## User-requested fresh-wave follow-up
+
+The user subsequently requested the wave comparisons after Burgers and Poisson. Apply the same device-resident timing contract to reflective and absorbing waves in the existing approved `2026-09-07-mr-wave2d` worktree and namespace. Use the fresh, independently verified post-reset wave operators, data families and trained checkpoints. The earlier wave evidence reset remains in force.
+
+Start with the already validated mesh and observation-time settings, frozen first-seed nonlinear heads and their declared control. Include full supplied-field projection, initial fitting, evolution and matching full device outputs in each query. Retain the current verified same-grid wave FOMs, both current-field and initial-field error normalizations, and the required time-refinement checks. The Burgers/Poisson GPU runs finish before wave submission. This follow-up changes the timing comparison; it does not assume the nonlinear wave model will beat its FOM or meet its accuracy target.
+
 ## Evidence required
 
 Preserve original numerical algorithms and report every instrumentation change. Use float64, highest matrix precision, a verified GPU backend, regenerated seeded inputs, GPU burn-in, retained raw timing repetitions and accuracy from timed invocations. A source commit alone does not establish staged provenance; retain content manifests and checkpoint hashes. Collect result checksums before deleting the exact remote attempt directory.

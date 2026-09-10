@@ -66,23 +66,50 @@ Initial fields and reconstructed output trajectories remain on the GPU; the
 charged region includes sampled initialization, evolution and dense decoding.
 Setup, training, compilation and host transfers are excluded. Every measured
 region is preceded by GPU burn-in. Time and errors come from the same invocation;
-raw repetition arrays, per-run provenance and output hashes are retained. Complete
-fields/truth are saved for the first deterministic repetition per configuration.
+raw repetition arrays, per-run provenance and output hashes are retained. Every
+timed repetition links to its actual complete field/truth artifact. Identical
+output hashes reuse the same saved field; any distinct output gets a separate
+file, even if it occurs only in a later repetition.
 
-The full validation grid completes before target configurations are frozen. The
-evaluation seed is not drawn until the freeze artifact exists. An unattained
+The full validation grid completes before target configurations are frozen.
+Burgers and both wave boundary panels must finish both meshes before the
+coordinator creates the global validation seal. No scientific evaluation seed is
+drawn until that seal exists and its identities pass verification. The guard binds
+the copied validation handoff, selections, checkpoint hashes, configuration and
+all frozen quadrature rules; final evaluation cannot refit a missing rule. An unattained
 1%/5% target is explicit; the best-validation-error diagnostic is then retained
 without claiming target success. Nested references provide empirical uncertainty,
 not a rigorous continuum error bound.
 
 ## Execution and result files
 
-`cluster/submit.sh <attempt> <smoke|train|all>` stages committed code directly to
-the approved namespace, verifies content hashes, checks the queue around submit,
-and runs the mandatory GPU preflight. Scientific defaults are never reduced by
-the smoke profile. The campaign saves resumable optimizer states, independently
-generated seeded data, quadrature weights, invocation JSONL and `handoff.json`.
-The latter supports the coordinator's independent field audit and generated report.
+The Burgers interface is `cluster/submit.sh <attempt> <phase> [resume-out] [global-seal]`.
+Use `train` first, `validate` with the collected training output, and `evaluate`
+with the collected validation output and coordinator seal. For example:
+
+```bash
+bash experiments/modcp-eq/cluster/submit.sh train01 train
+bash experiments/modcp-eq/cluster/submit.sh validation01 validate experiments/modcp-eq/runs/train01/out
+bash experiments/modcp-eq/cluster/submit.sh evaluation01 evaluate experiments/modcp-eq/runs/validation01/out /absolute/path/to/global_validation_seal.json
+```
+
+Staging copies only the frozen checkpoints, quadrature, configuration and selection
+proofs between phases. Evaluation also receives `validation_handoff.json` and
+`global_validation_seal.json`; it regenerates its untouched cohort from the sealed
+seed. It never uploads the collected validation fields or reference arrays.
+
+The utility stages committed code directly to the approved namespace, verifies
+content hashes, checks the queue around submit, and runs the mandatory GPU
+preflight. The separate `smoke` profile does not alter scientific defaults. The
+campaign saves resumable optimizer states, seeded data, quadrature weights,
+invocation JSONL and `handoff.json` for independent field audits and reports.
+
+`cluster/collect.sh <attempt> <numeric-job-id>` transfers a single raw tar after
+the job ends, verifies its transport checksum and every raw member, and only then
+deletes that exact cluster attempt. `RAW_ARCHIVE.json` records the tar's path,
+hash, size and extraction instructions. Raw timing/error JSON, proofs, audits and
+checkpoints are tracked; the full field/reference archives stay outside Git and
+are anchored by the coordinator before any worktree cleanup.
 
 ## Glossary
 

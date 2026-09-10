@@ -66,9 +66,13 @@ def compact_evaluation_table(sources):
             rows.append([source['case_name'], n, *cells])
     if not rows:
         return ''
+    targets = {max(source['config']['targets']) for source in sources}
+    target_label = f'{100*next(iter(targets)):g}%' if len(targets) == 1 else 'largest target'
     return '\n\n'.join([
-        table(['Case', 'Intervals/axis', 'CP', 'Modified CP', 'FiLM', 'Full solver: largest-target selection'], rows),
+        table(['Case', 'Intervals/axis', 'CP', 'Modified CP', 'FiLM', f'Full solver ({target_label} selection)'], rows),
         'Each cell gives worst trajectory error / median complete-query time on the untouched cohort. '
+        'Worst error includes all cases, stored times, repetitions, and the largest physical component '
+        'for waves, using fixed initial reference scales. '
         'Decoder columns use the best-error diagnostic setting frozen during validation; '
         'the full-solver column uses its validation-selected setting for the largest declared target. '
         'These errors differ, so the table is a cost-and-error comparison, not a matched-accuracy speedup. '

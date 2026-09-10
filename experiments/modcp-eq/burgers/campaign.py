@@ -180,13 +180,13 @@ class Campaign:
         if path.exists():
             with path.open('rb') as f:s=pickle.load(f)
             assert s['checkpoint_hash']==sha(self.out/'checkpoints'/f'{arm}.pkl')
-            return p,Z,cfg,jax.tree_util.tree_map(jnp.asarray,s['data']),s['info']
+            return p,Z,cfg,k.precontract_mass(jax.tree_util.tree_map(jnp.asarray,s['data']),cfg),s['info']
         print(f'RULE {arm} L={L} multiplier={multiplier}',flush=True)
         data,info=k.build_rule(p,Z,cfg,L,4*cfg.k,multiplier*4*cfg.k,
                               fit_states=4 if self.smoke else 32,candidate_cap=8192)
         with path.open('wb') as f:pickle.dump(dict(data=host(data),info=info,checkpoint_hash=sha(self.out/'checkpoints'/f'{arm}.pkl')),f,protocol=5)
         write_json(path.with_suffix('.json'),info)
-        return p,Z,cfg,data,info
+        return p,Z,cfg,k.precontract_mass(data,cfg),info
 
     def references(self,split,L):
         # Same-grid tight discrete reference is primary for a solver architecture
@@ -282,6 +282,7 @@ class Campaign:
                                  field_sha256=hashlib.sha256(fields.tobytes()).hexdigest(),output_bytes=fields.nbytes,
                                  provenance=self.provenance)
                         row['stationary']=bool(detail['converged'])
+                        row['linear_mass_precontracted']=arm=='cp'
                         if rep==0:
                             # Full output/truth retained once for each deterministic
                             # configuration/case; all repetitions retain output hash.

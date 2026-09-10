@@ -3,7 +3,7 @@ import time
 import jax
 import jax.numpy as jnp
 import numpy as np
-from common.decoders import decode_grid,decode_points,prepare_points,decode_cached
+from common.decoders import decode_grid,decode_points,prepare_points,decode_cached,coefficients
 from common.lm import make_lm
 from common.quadrature import fit_quadrature
 from . import fom
@@ -50,9 +50,27 @@ def build_rule(params,Z,cfg,L,M,m,*,fit_states=32,candidate_cap=8192):
     return dict(cache=cache,Pq=jnp.asarray(Phi[pos]*w[:,None]),lam=jnp.asarray(lam)),info
 
 
+def precontract_mass(data,cfg):
+    """Optimize the static CP linear moment using exactly the existing EQ rule.
+
+    There is no full-grid projection or refit here. Nonlinear upwind values still
+    use all selected stencils; only their state-independent linear mass map is
+    contracted offline. This leaves the sampled objective unchanged.
+    """
+    if cfg.architecture!='cp':return data
+    a,b,mask=data['cache'];G=(a*b*mask[:,None,None])[:,0,:].reshape((-1,5,cfg.rank))
+    result=dict(data)
+    result['linear_mass']=data['Pq'].T@G[:,0,:]
+    result['linear_bias']=data['Pq'].T@mask.reshape((-1,5))[:,0]
+    return result
+
+
 def moments(params,z,data,cfg):
     us=decode_cached(params,z,data['cache'],cfg)[:,0].reshape((-1,5))
-    return data['Pq'].T@us[:,0],us
+    if cfg.architecture=='cp' and 'linear_mass' in data:
+        mass=data['linear_mass']@coefficients(params,z,cfg)[0]+data['linear_bias']*params['bias'][0]
+    else:mass=data['Pq'].T@us[:,0]
+    return mass,us
 
 
 def weak(z,prev,nu,params,data,cfg,L,dt,scale=1.):

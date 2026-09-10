@@ -38,6 +38,15 @@ the rule. Candidate pools are deterministic grid subsets; targets always use the
 complete grid. Diffusion is transferred onto sine test functions. Final latent
 steps are audited against full-grid weak residuals after timing.
 
+Before final timing, the coordinator approved a stronger static-CP implementation:
+precontract its linear mass map and boundary-masked bias using the identical
+selected quadrature nodes and weights. Diffusion uses this same map through the
+test eigenvalues, while nonlinear upwind terms still evaluate the sampled
+stencils. This changes no residual objective, checkpoint or quadrature fit. GPU
+tests cover residual, latent-Jacobian and whole-query parity. The running original
+validation allocation is retained; final rows identify the precontracted path and
+use the previously selected settings on a fresh allocation with all comparators.
+
 ## Solver and measurement contract
 
 Burgers uses backward Euler, weak damped Gauss–Newton and a corrected full-order

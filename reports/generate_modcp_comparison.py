@@ -329,7 +329,7 @@ def main():
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
     comparisons = []
-    phase_errors = []
+    phase_errors, wave_components = [], []
     for source in sources:
         seen_phase = set()
         for row in source['summaries']:
@@ -340,6 +340,11 @@ def main():
             phase_errors.append([source['case_name'], row['intervals'], row['method'], row['configuration'],
                                  *[f"{100*row[name]:.6g}%" if row.get(name) is not None else 'incomplete/nonfinite'
                                    for name in ('worst_initial_error', 'worst_final_error', 'worst_error')]])
+            if source['case_name'] != 'burgers2d':
+                wave_components.append([source['case_name'], row['intervals'], row['method'], row['configuration'],
+                                        *[f"{100*row['worst_error_by_component'][name]:.6g}%"
+                                          if row['worst_error_by_component'].get(name) is not None else 'incomplete/nonfinite'
+                                          for name in ('displacement', 'velocity', 'energy_state')]])
         evaluated = [r for r in source['summaries'] if r['split'] == 'evaluation' and r['qualified']]
         for rom in [r for r in evaluated if r['method'] in ('cp', 'modcp', 'film')]:
             for fom in [r for r in evaluated if r['method'] not in ('cp', 'modcp', 'film')
@@ -383,6 +388,8 @@ def main():
              'so the maximizing case may differ between columns. Every time uses the same initial-reference '
              'normalization. These are measured field discrepancies; local snapshot-fitting diagnostics do '
              'not establish a mathematical best-approximation floor.', '',
+             table(['Wave case', 'Intervals/axis', 'Method', 'Configuration', 'Worst displacement error',
+                    'Worst velocity error', 'Worst energy-state error'], wave_components) if wave_components else '', '',
              '## Matched-accuracy full-solver comparisons', '',
              table(['Case', 'Intervals/axis', 'Target', 'ROM', 'Full solver', 'Median-time ratio FOM/ROM',
                     'ROM nonstationary cases'], comparisons) if comparisons else
@@ -416,6 +423,14 @@ def main():
              'Timing ratios must use the same job and GPU, and an FOM configuration meeting the same accuracy target. '
              'This report does not substitute timings from separate jobs.', '',
              '## Numerical reference checks', '', reference_table(sources), '',
+             r'The Burgers system is $\partial_t u+u(\partial_xu+\partial_yu)=\nu\Delta u$ on the unit square '
+             'with homogeneous Dirichlet boundaries and localized Gaussian initial fields. '
+             'The full solver uses backward Euler, sign-dependent upwinding, and Newton–BiCGStab. '
+             r'The wave system is $\partial_t u=v$, $\partial_t v=c^2\Delta u$, with reflective $u=0$ '
+             r'or absorbing $\partial_t u+c\partial_nu=0$ boundaries and the fresh localized Gaussian-core family. '
+             'Its implicit comparison uses a symmetric positive-definite Crank–Nicolson elimination solved by CG. '
+             'Direct and explicit wave controls are reported separately. Exact parameter generators and recorded '
+             'cohort parameters remain in the source artifacts indexed above.', '',
              'Burgers is scored against a finer-grid trajectory restricted to the output grid; '
              'its nested difference also contains spatial discretization error. Wave errors use '
              'the same-grid discrete system: reflective propagation is exact for that system, '

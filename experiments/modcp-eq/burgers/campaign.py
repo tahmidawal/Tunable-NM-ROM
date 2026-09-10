@@ -292,7 +292,7 @@ class Campaign:
                             artifact=fielddir/f'{split}_{name}_L{L}_case{case}.npz'
                             np.savez_compressed(artifact,u=fields,truth_u=truth[case],same_grid_u=same[case])
                             row.update(field_artifact=str(artifact.relative_to(self.out)),field_artifact_kind='self_contained_full_grid')
-                            if arm!='newton_bicgstab':
+                            if arm!='newton_bicgstab' and finite and np.isfinite(Zo).all() and np.isfinite(Zsteps).all():
                                 p,Z,cfg,data,info,ic=objects[name]
                                 prev=jnp.asarray(Zo[-2]);last=jnp.asarray(Zo[-1])
                                 # Last physical output-to-output interval is not one
@@ -302,10 +302,14 @@ class Campaign:
                                 full=np.asarray(k.full_weak(last,prev,float(physical[case,4]),p,cfg,L,4*cfg.k,settings['dt'],float(initial[4])))
                                 sampled=np.asarray(k.weak(last,prevm,float(physical[case,4]),p,data,cfg,L,settings['dt'],float(initial[4])))
                                 J=np.asarray(jax.jacfwd(lambda z:k.weak(z,prevm,float(physical[case,4]),p,data,cfg,L,settings['dt'],float(initial[4])))(last))
-                                singular=np.linalg.svd(J,compute_uv=False)
+                                try:singular=np.linalg.svd(J,compute_uv=False) if np.isfinite(J).all() else np.array([])
+                                except np.linalg.LinAlgError:singular=np.array([])
                                 row['weak_audit']=dict(full_norm=float(np.linalg.norm(full)),sampled_norm=float(np.linalg.norm(sampled)),difference_norm=float(np.linalg.norm(full-sampled)),
                                    relative_difference=float(np.linalg.norm(full-sampled)/max(np.linalg.norm(full),1e-30)),tangent_singular_values=singular.tolist(),
-                                   tangent_rank=int(np.sum(singular>max(singular[0]*1e-10,1e-24))),audit_latent_step=len(Zsteps))
+                                   tangent_rank=int(np.sum(singular>max(singular[0]*1e-10,1e-24))) if len(singular) else None,
+                                   audit_latent_step=len(Zsteps),finite_jacobian=bool(np.isfinite(J).all()))
+                            elif arm!='newton_bicgstab':
+                                row['weak_audit']=dict(status='not_evaluated_nonfinite_latent_or_fields',tangent_rank=None)
                         self.append(row)
                     print(f'TIMED {split} L={L} rep={rep} case={case} rows={len(self.rows)}',flush=True);self.save()
             if split=='validation':

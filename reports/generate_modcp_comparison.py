@@ -596,7 +596,7 @@ def main():
              'Every finite final evaluation invocation is instead checked against full-grid fields, with '
              'independently recomputed errors and matching output hashes.', '',
              '## Numerical reference checks', '', reference_table(sources), '',
-             r'The Burgers system is $\partial_t u+u(\partial_xu+\partial_yu)=\nu\Delta u$ on the unit square '
+             r'The scalar Burgers equation is $\partial_t u+u(\partial_xu+\partial_yu)=\nu\Delta u$ on the unit square '
              'with homogeneous Dirichlet boundaries and localized Gaussian initial fields. '
              'The full solver uses backward Euler, sign-dependent upwinding, and Newton–BiCGStab. '
              r'The wave system is $\partial_t u=v$, $\partial_t v=c^2\Delta u$, with reflective $u=0$ '

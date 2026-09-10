@@ -198,6 +198,29 @@ class AuditTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'changed after validation freeze'):
                 verify_evaluation_freeze(path, document)
 
+    def test_unqualified_diagnostic_keeps_physical_outlier_count(self):
+        truth = np.ones((2, 3, 3), dtype=np.float64)
+        field = truth*2.5
+        row = dict(split='evaluation', method='film', configuration='diagnostic', intervals=2,
+                   case=0, rep=0, seconds=.1, errors={'displacement': 1.5}, finite=True,
+                   completed=True, stationary=True, field_artifact='field.npz',
+                   field_artifact_kind='self_contained_full_grid',
+                   field_sha256=hashlib.sha256(field.tobytes()).hexdigest())
+        document = dict(case_name='burgers2d', status='complete',
+            provenance=dict(commit='test', job_id='test', gpu='test', backend='gpu', x64=True, matmul_precision='highest'),
+            config=dict(evaluation_case_ids=[0], repetitions=1, targets=[.01, .05], output_times=[0, .05]),
+            selections=[dict(method='film', configuration='diagnostic', intervals=2, target=None)], invocations=[row])
+        with tempfile.TemporaryDirectory() as folder:
+            folder = Path(folder)
+            np.savez(folder/'field.npz', u=field, truth_u=truth)
+            synthetic_burgers_freeze(folder, document)
+            path = folder/'handoff.json'
+            path.write_text(json.dumps(document))
+            result = summarize_input(path)['summaries'][0]
+            self.assertEqual(result['outlier_cases'], 1)
+            self.assertEqual(result['failed_cases'], 0)
+            self.assertFalse(result['qualified'])
+
     def test_freeze_cannot_hide_qualified_settings_or_select_a_slower_one(self):
         row = dict(finite=True, completed=True, errors={'displacement': .001})
         groups = {(256, 'cp', name): [dict(row)] for name in ('fast', 'slow')}

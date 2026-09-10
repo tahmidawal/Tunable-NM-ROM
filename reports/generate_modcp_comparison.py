@@ -92,7 +92,7 @@ def summarize_input(path):
             declarations = [{'target': target} for target in config['targets']]
         for selection in declarations:
             summary = summarize_rows(rows, membership, repetitions,
-                                     selection['target'] if selection['target'] is not None else float('inf'))
+                                     selection['target'] if selection['target'] is not None else max(config['targets']))
             if selection['target'] is None:
                 summary['qualified'] = summary['qualified_and_converged'] = False
             summaries.append(dict(case_name=data['case_name'], split=split, method=method,
@@ -452,7 +452,7 @@ def main():
                          f"{1e3*row['median_seconds']:.6g}" if row['median_seconds'] is not None else 'missing',
                          f"{100*row['median_case_error']:.6g}%" if row['median_case_error'] is not None else 'failed/nonfinite',
                          f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
-                         row['outlier_cases'] if row['target'] is not None else '—', row['failed_cases'],
+                         row['outlier_cases'], row['failed_cases'],
                          row['nonstationary_cases'] if row['method'] in ('cp', 'modcp', 'film') else '—',
                          row['timing_outlier_invocations'],
                          'yes' if row['qualified'] else 'no',
@@ -548,6 +548,8 @@ def main():
              'for waves it is also the maximum over displacement, velocity, and energy-state errors. '
              'All expected cases and repetitions must be present for a target to qualify. '
              'Failure counts retain numerical breakdowns and incomplete trajectories. '
+             'Diagnostic settings still count physical outliers against the largest declared target, '
+             'even though those settings cannot establish a target-qualified speedup. '
              'Iteration-capped or small-step exits may attain a physical accuracy target, but are separately counted '
              'as nonstationary and never described as converged PDE solves. Stationarity concerns the weak '
              'least-squares objective; physical accuracy and full-residual diagnostics are assessed separately.', '',
@@ -723,7 +725,7 @@ def main():
              '- **Median query ms:** median across cases of each case\'s median recorded duration, in milliseconds.',
              '- **Median case error:** median across the declared cases of each case\'s worst error across times, components, and repetitions; nonfinite errors and incomplete repetition coverage enter as infinite errors rather than being dropped.',
              '- **Worst error:** the largest fixed-initial-normalized error across the reported cases, times, state components, and repetitions.',
-             '- **Outlier cases:** cases with any error above the target or invalid error values.',
+             '- **Outlier cases:** cases with any error above the target or invalid error values; diagnostic settings use the largest declared target for this count.',
              '- **Failed cases:** cases with any incomplete/nonfinite solve or missing trajectory.',
              '- **Nonstationary cases:** ROM cases with any latent fit or weak time step lacking the declared gradient condition; accurate capped rollouts remain labeled. Classical methods show a dash because they use their own completion checks.',
              '- **Timing outliers:** invocations taking more than twice their own case\'s repetition median; retained in all summaries.',

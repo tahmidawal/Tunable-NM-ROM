@@ -404,6 +404,11 @@ def main():
              'affects approximation and sampled initialization. Solver iteration limits, tolerance, and time step '
              'continue to change work. Full-field output cost grows with the requested mesh for every decoder. '
              'This implementation uses EQ-fitted operators, and does not establish an exact quadrature-free operator claim.', '',
+             'Burgers validation preceded the equivalent CP mass contraction and GPU scalar preloading. '
+             'Its final evaluation keeps those validation-selected settings and uses the optimized runner, '
+             'whose numerical parity was checked separately. The final timing ratios come entirely from '
+             'that evaluation allocation. The older validation timings do not establish the fastest '
+             'configuration for the optimized implementation.', '',
              '## Provenance and independent review', '',
              table(['Case', 'Campaign status', 'Job ID', 'GPU', 'Source commit', 'Full-field audits'], provenance_rows), '',
              'Raw repetition records, validation sweeps, selection declarations, source hashes, and field-audit results '

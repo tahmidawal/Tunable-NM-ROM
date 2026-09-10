@@ -8,6 +8,7 @@ already be frozen using validation. This generator never selects on evaluation.
 """
 import argparse
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 import json
 import pickle
 from pathlib import Path
@@ -432,8 +433,11 @@ def main():
     parser.add_argument('--input', action='append', type=Path, required=True)
     parser.add_argument('--date', required=True)
     parser.add_argument('--training-audit', type=Path, default=ROOT/'reports'/'2026-09-10-modified-cp-training-audit.json')
+    parser.add_argument('--audit-workers', type=int, choices=(1, 2, 3), default=1,
+                        help='Independent CPU field-audit workers; rendering remains serial.')
     args = parser.parse_args()
-    sources = [summarize_input(path) for path in args.input]
+    with ThreadPoolExecutor(max_workers=args.audit_workers) as workers:
+        sources = list(workers.map(summarize_input, args.input))
     seal_hashes = {source['evaluation_freeze']['sha256'] for source in sources if source['evaluation_freeze']}
     if len(seal_hashes) > 1:
         raise ValueError('Evaluation panels do not share the same global validation freeze')

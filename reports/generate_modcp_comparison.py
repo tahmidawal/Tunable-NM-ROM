@@ -571,7 +571,7 @@ def main():
              '- **Validation-selected configuration:** solver and quadrature settings frozen before evaluation fields are examined.',
              '- **Target / target attained:** the declared error ceiling, and whether every expected invocation completes below it.',
              '- **Median query ms:** median across cases of each case\'s median recorded duration, in milliseconds.',
-             '- **Median case error:** median across the declared cases of each case\'s worst error across times, components, and repetitions; invalid or missing cases enter as infinite errors rather than being dropped.',
+             '- **Median case error:** median across the declared cases of each case\'s worst error across times, components, and repetitions; nonfinite errors and incomplete repetition coverage enter as infinite errors rather than being dropped.',
              '- **Worst error:** the largest fixed-initial-normalized error across the reported cases, times, state components, and repetitions.',
              '- **Outlier cases:** cases with any error above the target or invalid error values.',
              '- **Failed cases:** cases with any incomplete/nonfinite solve or missing trajectory.',

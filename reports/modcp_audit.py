@@ -149,8 +149,9 @@ def summarize_rows(rows, expected_cases, expected_repetitions, target):
     timing_outliers = sum(r['seconds'] > 2*median(x['seconds'] for x in by_case[c])
                           for c in expected_cases for r in by_case[c])
     worst = max((row_error(r) for r in rows), default=math.inf)
-    median_case_error = median(max((row_error(r) for r in by_case[c]), default=math.inf)
-                               for c in expected_cases)
+    median_case_error = median(max(row_error(r) for r in by_case[c])
+                               if {r['rep'] for r in by_case[c]} == set(range(expected_repetitions))
+                               else math.inf for c in expected_cases)
     component_maxima = {}
     for name in ('displacement', 'velocity', 'energy_state'):
         if not any(name in (row.get('errors') or {}) for row in rows):

@@ -18,6 +18,7 @@ for source in files:
     target=dst/'code'/Path(source).relative_to('experiments/modcp-eq');target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
     provenance.append(dict(source=source,staged=str(target.relative_to(dst)),sha256=hashlib.sha256(data).hexdigest(),commit=commit))
 (dst/'COMMIT.txt').write_text(commit+'\n');(dst/'PROVENANCE.json').write_text(json.dumps(provenance,indent=2)+'\n')
+(dst/'RESUME_ARTIFACTS.json').write_text('[]\n')
 if resume is not None:
     assert resume.is_dir()
     # Only learned/fitted artifacts and frozen selection records move phases.

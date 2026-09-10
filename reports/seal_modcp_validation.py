@@ -1,7 +1,9 @@
 """Seal all three validation panels before owners may draw evaluation cohorts.
 
 This records identities, coverage, and the already-selected settings. It never
-selects configurations. Run only after the independent field/selection audits.
+selects configurations. Run after source/reference/selection audits. Wave
+validation stores bounded observations, so independent recomputation of every
+full-grid field error applies to final evaluation, not unsaved validation fields.
 """
 import argparse
 from collections import defaultdict

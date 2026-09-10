@@ -320,7 +320,7 @@ def main():
                          f"{100*row['target']:g}%" if row['target'] is not None else 'diagnostic', row['configuration'],
                          f"{1e3*row['median_seconds']:.6g}" if row['median_seconds'] is not None else 'missing',
                          f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
-                         row['outlier_cases'], row['failed_cases'],
+                         row['outlier_cases'] if row['target'] is not None else '—', row['failed_cases'],
                          row['nonstationary_cases'] if row['method'] in ('cp', 'modcp', 'film') else '—',
                          row['timing_outlier_invocations'],
                          'yes' if row['qualified'] else 'no'])
@@ -383,6 +383,8 @@ def main():
              'keeps the corresponding continuum-accuracy interpretation provisional. '
              'No configuration is chosen using evaluation accuracy or timing.', '',
              f'![Validation and evaluation error versus query time]({plots[0]})' if plots else '', '',
+             'Configurations with nonfinite errors have no finite position on the logarithmic axes; '
+             'their failures remain in the summary tables and raw records.', '',
              '## Initial fitting and subsequent evolution', '',
              table(['Case', 'Intervals/axis', 'Method', 'Configuration', 'Worst initial error',
                     'Worst final error', 'Worst trajectory error'], phase_errors) if phase_errors else
@@ -425,6 +427,11 @@ def main():
              f'are indexed in [{stem.name}.json]({stem.name}.json). '
              'Timing ratios must use the same job and GPU, and an FOM configuration meeting the same accuracy target. '
              'This report does not substitute timings from separate jobs.', '',
+             'Wave validation retains full-grid metrics and output hashes but only bounded observation fields. '
+             'Its audit checks source, reference operators, selection records, and saved observations; '
+             'the unsaved full-grid validation errors cannot be independently recomputed from those observations. '
+             'Every finite final evaluation invocation is instead checked against full-grid fields, with '
+             'independently recomputed errors and matching output hashes.', '',
              '## Numerical reference checks', '', reference_table(sources), '',
              r'The Burgers system is $\partial_t u+u(\partial_xu+\partial_yu)=\nu\Delta u$ on the unit square '
              'with homogeneous Dirichlet boundaries and localized Gaussian initial fields. '

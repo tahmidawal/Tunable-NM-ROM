@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "errors": [],
+  "field_checks": [],
+  "proxy_hash_mismatches": [],
+  "invocation_count": 0,
+  "proxy_count": 0,
+  "identities": [],
+  "models": [
+    {
+      "architecture": "cp",
+      "sha256": "31d3317d5c7ec114de400575d2c1c875cdde0b1394ba80080983d1609e6c9df2",
+      "latent_codes_shape": [
+        384,
+        16
+      ],
+      "recorded_stage_steps": null,
+      "recorded_total_updates": 16000
+    },
+    {
+      "architecture": "cp_pretrain",
+      "sha256": "379ad2b3d250a7e699e87ac6f676dff392aaba20de5715bef212db3229157b67",
+      "latent_codes_shape": [
+        384,
+        16
+      ],
+      "recorded_stage_steps": 6000,
+      "recorded_total_updates": null
+    },
+    {
+      "architecture": "film",
+      "sha256": "87caf24a131cb197ffac9d1762e97e9b42b37737b691981ddf1ce3ee921fdf18",
+      "latent_codes_shape": [
+        384,
+        16
+      ],
+      "recorded_stage_steps": null,
+      "recorded_total_updates": 16000
+    },
+    {
+      "architecture": "modcp",
+      "sha256": "f862d5ce220cef2f2920b86e92f481f7f083f762e9631d2393e899388eb85eb4",
+      "latent_codes_shape": [
+        384,
+        16
+      ],
+      "recorded_stage_steps": null,
+      "recorded_total_updates": 16000
+    }
+  ],
+  "handoff_sha256": "4ede6385083cd807e577a817079d62f60a9fd5db291608a21ab035cd2393586e",
+  "audit_kind": "independent NumPy field metrics and immutable model/proxy provenance; not PDE reference proof"
+}

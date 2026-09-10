@@ -1,0 +1,155 @@
+{
+  "passed": true,
+  "errors": [],
+  "field_checks": [
+    {
+      "artifact": "fields/validation_cp_cap10_dt0.005_q4_tol0.0001_L16_case0.npz",
+      "error": 0.9537310916534912,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/validation_modcp_cap10_dt0.005_q4_tol0.0001_L16_case0.npz",
+      "error": 0.9534184682831559,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/validation_film_cap10_dt0.005_q4_tol0.0001_L16_case0.npz",
+      "error": 0.8562428010654304,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/validation_newton_bicgstab_dt0.005_ltol0.1_ntol0.0001_L16_case0.npz",
+      "error": 0.02656421510137418,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/validation_cp_cap10_dt0.005_q4_tol0.0001_L32_case0.npz",
+      "error": 0.9528968002446142,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/validation_modcp_cap10_dt0.005_q4_tol0.0001_L32_case0.npz",
+      "error": 0.952634784403408,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/validation_film_cap10_dt0.005_q4_tol0.0001_L32_case0.npz",
+      "error": 0.8541719701914987,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/validation_newton_bicgstab_dt0.005_ltol0.1_ntol0.0001_L32_case0.npz",
+      "error": 0.017287274923582056,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_cp_cap10_dt0.005_q4_tol0.0001_L16_case0.npz",
+      "error": 0.9245465992860002,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_modcp_cap10_dt0.005_q4_tol0.0001_L16_case0.npz",
+      "error": 0.9280588249568603,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_film_cap10_dt0.005_q4_tol0.0001_L16_case0.npz",
+      "error": 0.8220450899006542,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_newton_bicgstab_dt0.005_ltol0.1_ntol0.0001_L16_case0.npz",
+      "error": 0.01522934519009186,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_cp_cap10_dt0.005_q4_tol0.0001_L32_case0.npz",
+      "error": 0.9242913107981311,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_modcp_cap10_dt0.005_q4_tol0.0001_L32_case0.npz",
+      "error": 0.9280644231167688,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_film_cap10_dt0.005_q4_tol0.0001_L32_case0.npz",
+      "error": 0.8160123038139034,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    },
+    {
+      "artifact": "fields/evaluation_newton_bicgstab_dt0.005_ltol0.1_ntol0.0001_L32_case0.npz",
+      "error": 0.007885365633596878,
+      "absolute_defect": 0.0,
+      "hash_verified": true
+    }
+  ],
+  "proxy_hash_mismatches": [],
+  "invocation_count": 16,
+  "proxy_count": 8,
+  "identities": [
+    [
+      "3500334",
+      "NVIDIA A100-PCIE-40GB"
+    ]
+  ],
+  "models": [
+    {
+      "architecture": "cp",
+      "sha256": "50835227a142f1656c35bb66e8aa576140c5cdcf73bd310347e5aa1ab20b15f6",
+      "latent_codes_shape": [
+        12,
+        4
+      ],
+      "recorded_stage_steps": null,
+      "recorded_total_updates": 40
+    },
+    {
+      "architecture": "cp_pretrain",
+      "sha256": "48ac7e845c65d486cada3ff5fcae0fcd9796fc8360e0bdd818656b64148f7a33",
+      "latent_codes_shape": [
+        12,
+        4
+      ],
+      "recorded_stage_steps": 20,
+      "recorded_total_updates": null
+    },
+    {
+      "architecture": "film",
+      "sha256": "37e35fe081a0344c3b867bae2104ceb2d606b927f011261873af213dba30d596",
+      "latent_codes_shape": [
+        12,
+        4
+      ],
+      "recorded_stage_steps": null,
+      "recorded_total_updates": 40
+    },
+    {
+      "architecture": "modcp",
+      "sha256": "aff8e308669f2fbfdf60239d02d410b27e37962398b7eb3998c0b863334fdc6a",
+      "latent_codes_shape": [
+        12,
+        4
+      ],
+      "recorded_stage_steps": null,
+      "recorded_total_updates": 40
+    }
+  ],
+  "handoff_sha256": "8ac2eaec0fb94dc99a678c6e34faf72b4bb79764395bddc487d4d93ad4d34fd0",
+  "audit_kind": "independent NumPy field metrics and immutable model/proxy provenance; not PDE reference proof"
+}

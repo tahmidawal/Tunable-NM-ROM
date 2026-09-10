@@ -1,0 +1,130 @@
+{
+  "case_name": "burgers2d",
+  "status": "trained",
+  "config": {
+    "decoder": {
+      "architecture": "cp",
+      "k": 16,
+      "rank": 64,
+      "outputs": 1,
+      "intervals": 256,
+      "boundary": "dirichlet",
+      "width": 64,
+      "inr_width": 128,
+      "head_width": 256,
+      "frequencies": 8
+    },
+    "meshes": [
+      256,
+      512
+    ],
+    "counts": {
+      "train": 64,
+      "validation": 16,
+      "evaluation": 16
+    },
+    "seeds": {
+      "train": 2609101701,
+      "validation": 2609101702,
+      "evaluation": 2609101703
+    },
+    "validation_case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "evaluation_case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "repetitions": 7,
+    "split_repetitions": {
+      "validation": 1,
+      "evaluation": 7
+    },
+    "selection_proxy_case": 0,
+    "selection_proxy_repetitions": 7,
+    "validation_repetitions": 1,
+    "evaluation_repetitions": 7,
+    "discarded_warmups": 2,
+    "targets": [
+      0.01,
+      0.05
+    ],
+    "output_times": [
+      0,
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25
+    ],
+    "training_updates": {
+      "cp_initialization": 6000,
+      "comparison": 10000,
+      "film": 16000
+    },
+    "training_batch_size": 64,
+    "point_batch": 256,
+    "lr_initial": 0.001,
+    "lr_final": 0.0001,
+    "stage_cosine_schedule": "reset for each6k/10k stage; paired CP/modCP share6k initialization",
+    "timing_contract": "GPU resident supplied dense field+viscosity to six GPU dense output fields; initialization+evolution+decoding included; transfer/setup/compile excluded",
+    "boundary_transfer": "clipped training-interior coordinates and linear boundary strip; exact training-node predictions, no masked endpoint leakage"
+  },
+  "provenance": {
+    "commit": "972e866b2309c550e905e850986d3116c15b8860",
+    "job_id": "3500536",
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest",
+    "jax_version": "0.10.2",
+    "training_seed": 2609101701,
+    "smoke": false
+  },
+  "checkpoint_hashes": {
+    "cp": "31d3317d5c7ec114de400575d2c1c875cdde0b1394ba80080983d1609e6c9df2",
+    "cp_pretrain": "379ad2b3d250a7e699e87ac6f676dff392aaba20de5715bef212db3229157b67",
+    "film": "87caf24a131cb197ffac9d1762e97e9b42b37737b691981ddf1ce3ee921fdf18",
+    "modcp": "f862d5ce220cef2f2920b86e92f481f7f083f762e9631d2393e899388eb85eb4"
+  },
+  "invocations": [],
+  "selections": [],
+  "selection_timings": [],
+  "timing_archives": [],
+  "artifacts": {
+    "raw_invocations": "invocations.jsonl",
+    "training": "checkpoints",
+    "rules": "rules",
+    "fields": "fields",
+    "references": "references"
+  }
+}

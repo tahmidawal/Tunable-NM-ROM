@@ -1,0 +1,49 @@
+NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+PASS decoder parity, transfer, autodiff, exact weak/upwind, LM reasons, FFT/FOM
+DATA train L=16 dt=0.00125 case=0
+DATA train L=16 dt=0.00125 case=1
+TRAIN cp_pretrain step=20/20 loss=0.35102481 seconds=2.5
+TRAIN cp step=20/20 loss=0.23633129 seconds=1.4
+TRAIN modcp step=20/20 loss=0.22929319 seconds=3.1
+TRAIN film step=40/40 loss=0.23872558 seconds=3.8
+DATA validation L=16 dt=0.000625 case=0
+DATA validation L=32 dt=0.0003125 case=0
+DATA validation L=16 dt=0.00125 case=0
+RULE cp L=16 multiplier=4
+RULE modcp L=16 multiplier=4
+RULE film L=16 multiplier=4
+WARM validation L=16 cp_cap10_dt0.005_q4_tol0.0001 seconds=2.459
+WARM validation L=16 modcp_cap10_dt0.005_q4_tol0.0001 seconds=2.943
+WARM validation L=16 film_cap10_dt0.005_q4_tol0.0001 seconds=3.083
+WARM validation L=16 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=0.784
+TIMED validation L=16 rep=0 case=0 rows=4
+DATA validation L=32 dt=0.000625 case=0
+DATA validation L=64 dt=0.0003125 case=0
+DATA validation L=32 dt=0.00125 case=0
+RULE cp L=32 multiplier=4
+RULE modcp L=32 multiplier=4
+RULE film L=32 multiplier=4
+WARM validation L=32 cp_cap10_dt0.005_q4_tol0.0001 seconds=2.117
+WARM validation L=32 modcp_cap10_dt0.005_q4_tol0.0001 seconds=2.681
+WARM validation L=32 film_cap10_dt0.005_q4_tol0.0001 seconds=2.593
+WARM validation L=32 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=0.788
+TIMED validation L=32 rep=0 case=0 rows=8
+DATA evaluation L=16 dt=0.000625 case=0
+DATA evaluation L=32 dt=0.0003125 case=0
+DATA evaluation L=16 dt=0.00125 case=0
+WARM evaluation L=16 cp_cap10_dt0.005_q4_tol0.0001 seconds=1.708
+WARM evaluation L=16 modcp_cap10_dt0.005_q4_tol0.0001 seconds=2.152
+WARM evaluation L=16 film_cap10_dt0.005_q4_tol0.0001 seconds=1.874
+WARM evaluation L=16 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=0.867
+TIMED evaluation L=16 rep=0 case=0 rows=12
+DATA evaluation L=32 dt=0.000625 case=0
+DATA evaluation L=64 dt=0.0003125 case=0
+DATA evaluation L=32 dt=0.00125 case=0
+WARM evaluation L=32 cp_cap10_dt0.005_q4_tol0.0001 seconds=1.655
+WARM evaluation L=32 modcp_cap10_dt0.005_q4_tol0.0001 seconds=2.134
+WARM evaluation L=32 film_cap10_dt0.005_q4_tol0.0001 seconds=1.925
+WARM evaluation L=32 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=0.825
+TIMED evaluation L=32 rep=0 case=0 rows=16
+ALL-DONE complete_smoke
+ALL-DONE

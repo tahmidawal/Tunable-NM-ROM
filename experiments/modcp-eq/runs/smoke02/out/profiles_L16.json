@@ -1,0 +1,89 @@
+[
+  {
+    "configuration": "cp_cap10_dt0.005_q4_tol0.0001",
+    "intervals": 16,
+    "case": 0,
+    "repetitions": [
+      {
+        "rep": 0,
+        "initialization_s": 0.0054182789754122496,
+        "evolution_s": 0.03232597000896931,
+        "reconstruction_s": 0.0003860481083393097,
+        "residual_s": 0.00027694692835211754,
+        "jacobian_s": 0.0003032910171896219,
+        "physical_error": {
+          "displacement": 0.9245465992860002,
+          "per_time": [
+            0.9245465992860002,
+            0.716566931163108,
+            0.5718562746213786,
+            0.4694814107060844,
+            0.396235716864988,
+            0.34446434005050275
+          ],
+          "initial": 0.9245465992860002
+        }
+      }
+    ],
+    "includes_component_compilation": false,
+    "interpretation": "separately synchronized warmed components; never replace fused query timing"
+  },
+  {
+    "configuration": "modcp_cap10_dt0.005_q4_tol0.0001",
+    "intervals": 16,
+    "case": 0,
+    "repetitions": [
+      {
+        "rep": 0,
+        "initialization_s": 0.007084226002916694,
+        "evolution_s": 0.03641492500901222,
+        "reconstruction_s": 0.0005670539103448391,
+        "residual_s": 0.0002960509154945612,
+        "jacobian_s": 0.00031988508999347687,
+        "physical_error": {
+          "displacement": 0.9280588249568603,
+          "per_time": [
+            0.9280588249568603,
+            0.7228711473390798,
+            0.5855572510434033,
+            0.49396279420750555,
+            0.43448016323935956,
+            0.39859755357148907
+          ],
+          "initial": 0.9280588249568603
+        }
+      }
+    ],
+    "includes_component_compilation": false,
+    "interpretation": "separately synchronized warmed components; never replace fused query timing"
+  },
+  {
+    "configuration": "film_cap10_dt0.005_q4_tol0.0001",
+    "intervals": 16,
+    "case": 0,
+    "repetitions": [
+      {
+        "rep": 0,
+        "initialization_s": 0.005200668005272746,
+        "evolution_s": 0.03448321600444615,
+        "reconstruction_s": 0.004320636158809066,
+        "residual_s": 0.0002875938080251217,
+        "jacobian_s": 0.00023497408255934715,
+        "physical_error": {
+          "displacement": 0.8220450899006542,
+          "per_time": [
+            0.8220450899006542,
+            0.6645075441120409,
+            0.5564177784671519,
+            0.4804468808101697,
+            0.42497613778525034,
+            0.3831649119510462
+          ],
+          "initial": 0.8220450899006542
+        }
+      }
+    ],
+    "includes_component_compilation": false,
+    "interpretation": "separately synchronized warmed components; never replace fused query timing"
+  }
+]

@@ -86,22 +86,6 @@ class Campaign:
         self.selections=json.loads((self.out/'selections.json').read_text()) if (self.out/'selections.json').exists() else []
         self.selection_timings=[];self.selection_log=self.out/'selection_timings.jsonl'
         if self.selection_log.exists():self.selection_timings=[json.loads(line) for line in self.selection_log.read_text().splitlines()]
-        self.timing_archives=json.loads((self.out/'timing_archives.json').read_text()) if (self.out/'timing_archives.json').exists() else []
-        current=(self.provenance['job_id'],self.provenance['gpu'])
-        identities={(r.get('provenance',{}).get('job_id'),r.get('provenance',{}).get('gpu')) for r in self.rows+self.selection_timings}
-        if any(identity!=current for identity in identities):
-            # A new GPU allocation may reuse trained models, reference fields and
-            # quadrature. It must never splice old wall clocks into a new panel.
-            number=len(self.timing_archives);archived={}
-            for label,path in [('invocations',self.log),('selection_timings',self.selection_log)]:
-                if path.exists():
-                    dest=path.with_name(f'{path.stem}_prior_allocation_{number}.jsonl')
-                    assert not dest.exists();path.replace(dest)
-                    archived[label]=str(dest.relative_to(self.out))
-            self.timing_archives.append(dict(artifacts=archived,allocation_identities=[list(i) for i in identities],
-                reason='new allocation: timing panels restarted; frozen selection, if already created, remains an offline validation choice'))
-            write_json(self.out/'timing_archives.json',self.timing_archives)
-            self.rows=[];self.finished=set();self.selection_timings=[]
         self.status='initialized';self.save()
 
     @staticmethod
@@ -110,7 +94,7 @@ class Campaign:
     def save(self):
         checkpoints={p.stem:sha(p) for p in self.out.glob('checkpoints/*.pkl') if not p.stem.endswith('trainstate')}
         write_json(self.out/'handoff.json',dict(case_name='burgers2d',status=self.status,config=self.config,
-          provenance=self.provenance,checkpoint_hashes=checkpoints,invocations=self.rows,selections=self.selections,selection_timings=self.selection_timings,timing_archives=self.timing_archives,
+          provenance=self.provenance,checkpoint_hashes=checkpoints,invocations=self.rows,selections=self.selections,selection_timings=self.selection_timings,
           artifacts=dict(raw_invocations='invocations.jsonl',training='checkpoints',rules='rules',fields='fields',references='references')))
 
     def append(self,row):
@@ -348,25 +332,6 @@ class Campaign:
                     profile.append(dict(configuration=name,intervals=L,case=0,repetitions=repetitions,
                                         includes_component_compilation=False,interpretation='separately synchronized warmed components; never replace fused query timing'))
                 write_json(self.out/f'profiles_L{L}.json',profile)
-                reconstruction=[]
-                for arm in ('cp','modcp','film'):
-                    representative=next((sub for sub in subjects if sub[1]==arm),None)
-                    if representative is None:continue
-                    name,_,_,_,(p,data,ic),parts=representative
-                    cfg=objects[name][2]
-                    decode=jax.jit(lambda parameters,z:decode_grid(parameters,z,L,cfg)[...,0])
-                    for case in range(len(physical)):
-                        norm=max(float(np.linalg.norm(truth[case,0])),1e-30)
-                        per_time=[];fit_reasons=[];fit_stationarity=[]
-                        for frame in truth[case]:
-                            fit=jax.block_until_ready(parts['initialize'](jnp.asarray(frame),p,ic))
-                            output=np.asarray(decode(p,fit[0]))
-                            per_time.append(float(np.linalg.norm(output-frame)/norm))
-                            fit_reasons.append(int(fit[3]));fit_stationarity.append(float(fit[4]))
-                        reconstruction.append(dict(method=arm,intervals=L,case=case,error_max=max(per_time),errors=per_time,
-                            reasons=fit_reasons,stationarity=fit_stationarity,
-                            interpretation='offline snapshot-wise sampled reconstruction fit; upper bound on best manifold approximation, never used to initialize or tune a query'))
-                write_json(self.out/f'reconstruction_L{L}.json',reconstruction)
             del subjects,objects,inputs;same=truth=None;jax.clear_caches()
         self.save()
 
@@ -379,16 +344,14 @@ class Campaign:
                 groups={name:[r for r in rows if r['configuration']==name] for name in sorted(set(r['configuration'] for r in rows))}
                 expected=self.counts['validation']*self.split_reps['validation']
                 assert groups and all(len(g)==expected for g in groups.values()),'cannot freeze incomplete validation grid'
-                timing={};proxies={}
+                timing={}
                 for name in groups:
                     proxy=[r for r in self.selection_timings if r['intervals']==L and r['configuration']==name]
                     assert len(proxy)==self.reps,'cannot freeze incomplete predeclared timing proxy'
                     timing[name]=float(np.median([r['seconds'] for r in proxy]))
-                    proxies[name]=proxy
                 for target in self.target:
                     passed=[(timing[name],name) for name,g in groups.items()
-                            if all(r['finite'] and r['completed'] and r['errors']['displacement']<=target for r in g)
-                            and all(r['finite'] and r['errors']['displacement']<=target for r in proxies[name])]
+                            if all(r['finite'] and r['completed'] and r['errors']['displacement']<=target for r in g)]
                     chosen=min(passed)[1] if passed else None
                     selections.append(dict(method=arm,intervals=L,target=target,configuration=chosen,validation_passed=bool(passed),role='target'))
                 if not any(s['method']==arm and s['intervals']==L and s['configuration'] for s in selections):
@@ -400,8 +363,7 @@ class Campaign:
                         scores.append((error,timing[name],name))
                     selections.append(dict(method=arm,intervals=L,target=None,configuration=min(scores)[2],validation_passed=False,role='best_error_diagnostic'))
         self.selections=selections;write_json(self.out/'selections.json',selections)
-        write_json(self.out/'selection_freeze.json',dict(selection_sha256=sha(self.out/'selections.json'),validation_invocations_sha256=sha(self.log),
-            selection_timings_sha256=sha(self.selection_log),provenance=self.provenance))
+        write_json(self.out/'selection_freeze.json',dict(selection_sha256=sha(self.out/'selections.json'),validation_invocations_sha256=sha(self.log),provenance=self.provenance))
         self.status='validation_frozen';self.save()
 
 

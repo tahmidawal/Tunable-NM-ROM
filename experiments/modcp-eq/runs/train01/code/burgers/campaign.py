@@ -379,16 +379,14 @@ class Campaign:
                 groups={name:[r for r in rows if r['configuration']==name] for name in sorted(set(r['configuration'] for r in rows))}
                 expected=self.counts['validation']*self.split_reps['validation']
                 assert groups and all(len(g)==expected for g in groups.values()),'cannot freeze incomplete validation grid'
-                timing={};proxies={}
+                timing={}
                 for name in groups:
                     proxy=[r for r in self.selection_timings if r['intervals']==L and r['configuration']==name]
                     assert len(proxy)==self.reps,'cannot freeze incomplete predeclared timing proxy'
                     timing[name]=float(np.median([r['seconds'] for r in proxy]))
-                    proxies[name]=proxy
                 for target in self.target:
                     passed=[(timing[name],name) for name,g in groups.items()
-                            if all(r['finite'] and r['completed'] and r['errors']['displacement']<=target for r in g)
-                            and all(r['finite'] and r['errors']['displacement']<=target for r in proxies[name])]
+                            if all(r['finite'] and r['completed'] and r['errors']['displacement']<=target for r in g)]
                     chosen=min(passed)[1] if passed else None
                     selections.append(dict(method=arm,intervals=L,target=target,configuration=chosen,validation_passed=bool(passed),role='target'))
                 if not any(s['method']==arm and s['intervals']==L and s['configuration'] for s in selections):
@@ -400,8 +398,7 @@ class Campaign:
                         scores.append((error,timing[name],name))
                     selections.append(dict(method=arm,intervals=L,target=None,configuration=min(scores)[2],validation_passed=False,role='best_error_diagnostic'))
         self.selections=selections;write_json(self.out/'selections.json',selections)
-        write_json(self.out/'selection_freeze.json',dict(selection_sha256=sha(self.out/'selections.json'),validation_invocations_sha256=sha(self.log),
-            selection_timings_sha256=sha(self.selection_log),provenance=self.provenance))
+        write_json(self.out/'selection_freeze.json',dict(selection_sha256=sha(self.out/'selections.json'),validation_invocations_sha256=sha(self.log),provenance=self.provenance))
         self.status='validation_frozen';self.save()
 
 

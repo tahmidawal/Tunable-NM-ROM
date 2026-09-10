@@ -1,0 +1,68 @@
+{
+  "decoder": {
+    "architecture": "cp",
+    "k": 4,
+    "rank": 8,
+    "outputs": 1,
+    "intervals": 16,
+    "boundary": "dirichlet",
+    "width": 12,
+    "inr_width": 24,
+    "head_width": 24,
+    "frequencies": 8
+  },
+  "meshes": [
+    16,
+    32
+  ],
+  "counts": {
+    "train": 2,
+    "validation": 1,
+    "evaluation": 1
+  },
+  "seeds": {
+    "train": 2609101701,
+    "validation": 2609101702,
+    "evaluation": 2609101703
+  },
+  "validation_case_ids": [
+    0
+  ],
+  "evaluation_case_ids": [
+    0
+  ],
+  "repetitions": 1,
+  "split_repetitions": {
+    "validation": 1,
+    "evaluation": 1
+  },
+  "selection_proxy_case": 0,
+  "selection_proxy_repetitions": 1,
+  "validation_repetitions": 1,
+  "evaluation_repetitions": 1,
+  "discarded_warmups": 2,
+  "targets": [
+    0.01,
+    0.05
+  ],
+  "output_times": [
+    0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "training_updates": {
+    "cp_initialization": 20,
+    "comparison": 20,
+    "film": 40
+  },
+  "training_batch_size": 64,
+  "point_batch": 256,
+  "lr_initial": 0.001,
+  "lr_final": 0.0001,
+  "stage_cosine_schedule": "reset for each6k/10k stage; paired CP/modCP share6k initialization",
+  "timing_contract": "GPU resident supplied dense field+viscosity to six GPU dense output fields; initialization+evolution+decoding included; transfer/setup/compile excluded",
+  "boundary_transfer": "clipped training-interior coordinates and linear boundary strip; exact training-node predictions, no masked endpoint leakage"
+}

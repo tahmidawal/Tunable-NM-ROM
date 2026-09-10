@@ -138,10 +138,13 @@ def summarize_rows(rows, expected_cases, expected_repetitions, target):
         return row.get('stationary', row.get('completed', False)) is True
     nonstationary = [case for case in expected_cases if case not in by_case or any(not stationary(r) for r in by_case[case])]
     per_case_seconds = [median(r['seconds'] for r in by_case[c]) for c in expected_cases if c in by_case]
+    timing_outliers = sum(r['seconds'] > 2*median(x['seconds'] for x in by_case[c])
+                          for c in expected_cases for r in by_case[c])
     worst = max((row_error(r) for r in rows), default=math.inf)
     return {'complete_coverage': coverage, 'cases': len(expected_cases),
             'failed_cases': len(failed), 'outlier_cases': len(outliers),
             'nonstationary_cases': len(nonstationary),
+            'timing_outlier_invocations': timing_outliers,
             'median_seconds': median(per_case_seconds) if per_case_seconds else None,
             'worst_error': worst if math.isfinite(worst) else None,
             'qualified': coverage and not failed and not outliers,

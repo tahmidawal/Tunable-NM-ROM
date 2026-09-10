@@ -58,6 +58,17 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(row_error({'errors': {'displacement': .01, 'per_time': [.01, .001], 'initial': .005}}), .01)
         self.assertTrue(np.isinf(row_error({'errors': None})))
 
+    def test_slow_repetition_is_retained_and_counted_within_its_case(self):
+        rows = [dict(case=case, rep=rep, seconds=duration, errors={'displacement': .001},
+                     finite=True, completed=True)
+                for case, durations in enumerate(([1., 1., 3.], [10., 10., 10.]))
+                for rep, duration in enumerate(durations)]
+        result = summarize_rows(rows, [0, 1], 3, .01)
+        self.assertEqual(result['timing_outlier_invocations'], 1)
+        self.assertEqual(result['observed_invocations'], 6)
+        self.assertEqual(result['median_seconds'], 5.5)
+        self.assertTrue(result['qualified'])
+
     def test_evaluation_requires_predeclared_validation_selection(self):
         # Synthetic fixtures only: these values are never scientific results.
         document = dict(case_name='burgers2d', status='complete',

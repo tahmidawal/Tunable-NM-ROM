@@ -10,6 +10,7 @@ import argparse
 from collections import defaultdict
 import json
 from pathlib import Path
+import numpy as np
 
 from modcp_audit import audit_field_archive, digest, summarize_rows
 
@@ -93,7 +94,12 @@ def summarize_input(path):
     return dict(source=relative(path), sha256=digest(path), status=data['status'],
                 case_name=data['case_name'], provenance=data['provenance'], config=config,
                 selections=data.get('selections', []), summaries=summaries,
-                field_audits=audits, owner_artifacts=data.get('artifacts', {}))
+                field_audits=audits, owner_artifacts=data.get('artifacts', {}),
+                references=data.get('references', []),
+                eq_audits=data.get('eq_audits', []),
+                full_weak_audits=data.get('full_weak_audits', []),
+                representation_diagnostics=data.get('representation_diagnostics', []),
+                checkpoint_hashes=data.get('checkpoint_hashes', {}))
 
 
 def frontier_plot(sources, stem):
@@ -143,6 +149,70 @@ def frontier_plot(sources, stem):
     return output
 
 
+def representative_plots(paths, stem):
+    """Fixed evaluation case zero; use only validation-selected configurations."""
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    output = []
+    for source_path in paths:
+        source_path = Path(source_path).resolve()
+        data = json.loads(source_path.read_text())
+        rows = [r for r in data['invocations'] if r['split'] == 'evaluation' and r['case'] == 0
+                and r['rep'] == 0 and r['method'] in ('cp', 'modcp', 'film') and r.get('finite')
+                and r.get('field_artifact_kind') == 'self_contained_full_grid']
+        if not rows:
+            continue
+        n = max(r['intervals'] for r in rows)
+        chosen = []
+        for method in ('cp', 'modcp', 'film'):
+            declared = [s for s in data['selections'] if s['method'] == method and s['intervals'] == n
+                        and s.get('configuration') is not None]
+            # Prefer the predeclared best-validation-accuracy diagnostic, else
+            # the tightest validation target. Evaluation values never rank it.
+            declared.sort(key=lambda s: -1 if s.get('target') is None else s['target'])
+            if not declared:
+                continue
+            row = next((r for r in rows if r['method'] == method and r['intervals'] == n
+                        and r['configuration'] == declared[0]['configuration']), None)
+            if row:
+                chosen.append(row)
+        if not chosen:
+            continue
+        fields, truth = [], None
+        for row in chosen:
+            with np.load(source_path.parent/row['field_artifact'], allow_pickle=False) as archive:
+                u, reference = archive['u'].copy(), archive['truth_u'].copy()
+            if truth is not None and not np.array_equal(truth, reference):
+                raise ValueError('Representative fields do not share the same reference')
+            truth = reference
+            fields.append((row['method'], u))
+        indices = np.unique(np.linspace(0, len(truth)-1, min(4, len(truth)), dtype=int))
+        fields = [('reference', truth), *fields]
+        bound = max(float(np.max(np.abs(field[indices]))) for _, field in fields)
+        bound = max(bound, np.finfo(float).tiny)
+        fig, axes = plt.subplots(len(indices), len(fields), squeeze=False,
+                                 figsize=(3*len(fields), 2.5*len(indices)), constrained_layout=True)
+        dt = data['config'].get('observation_dt', .05)
+        for i, frame in enumerate(indices):
+            for j, (method, field) in enumerate(fields):
+                ax = axes[i, j]
+                plot = ax.imshow(field[frame].T, origin='lower', extent=(0, 1, 0, 1),
+                                 vmin=-bound, vmax=bound, cmap='RdBu_r', interpolation='nearest')
+                ax.set_title(f'{method}, t={frame*dt:g}', fontsize=9)
+                ax.set(xlabel='x', ylabel='y')
+        fig.colorbar(plot, ax=axes.ravel().tolist(), shrink=.7, label='Displacement / scalar field')
+        fig.suptitle(f"{data['case_name']} — evaluation case zero — {n} intervals\n"
+                     'Validation-selected configurations; common field scale includes all predictions')
+        for extension in ('png', 'pdf'):
+            path = stem.with_name(stem.name+'-'+data['case_name']+'-fields').with_suffix('.'+extension)
+            fig.savefig(path, dpi=160, metadata={'CreationDate': None, 'ModDate': None} if extension == 'pdf' else None)
+            if extension == 'png':
+                output.append((data['case_name'], path.name))
+        plt.close(fig)
+    return output
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', action='append', type=Path, required=True)
@@ -151,6 +221,7 @@ def main():
     sources = [summarize_input(path) for path in args.input]
     stem = ROOT/'reports'/f'{args.date}-modified-cp-eq-comparison'
     plots = frontier_plot(sources, stem)
+    field_plots = representative_plots(args.input, stem)
     rows = []
     for source in sources:
         for row in source['summaries']:
@@ -161,12 +232,13 @@ def main():
                          f"{1e3*row['median_seconds']:.6g}" if row['median_seconds'] is not None else 'missing',
                          f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
                          row['outlier_cases'], row['failed_cases'], row['nonstationary_cases'],
+                         row['timing_outlier_invocations'],
                          'yes' if row['qualified'] else 'no'])
         for selection in source['selections']:
             if selection.get('configuration') is None:
                 rows.append([source['case_name'], selection['intervals'], selection['method'],
                              f"{100*selection['target']:g}%", 'No validation-qualified setting',
-                             '—', '—', '—', '—', '—', 'no'])
+                             '—', '—', '—', '—', '—', '—', 'no'])
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
     comparisons = []
@@ -179,7 +251,11 @@ def main():
                                     rom['method'], fom['method'],
                                     f"{fom['median_seconds']/rom['median_seconds']:.6g}×",
                                     rom['nonstationary_cases']])
-    incomplete = any(s['status'] != 'complete' for s in sources)
+    evaluated_cases = {s['case_name'] for s in sources if s['status'] == 'complete'
+                       and any(r['split'] == 'evaluation' for r in s['summaries'])}
+    expected_cases = {'burgers2d', 'wave_reflective', 'wave_absorbing'}
+    incomplete = not expected_cases.issubset(evaluated_cases) or any(s['status'] not in ('complete', 'validation_frozen') or
+                     s['case_name'] not in evaluated_cases for s in sources)
     status = 'Provisional: one or more owner campaigns is incomplete.' if incomplete else (
         'Completed single-seed pilot; accuracy and speed claims are limited to the declared families and cohorts.')
     lines = ['# Modified CP with empirical quadrature: Burgers and waves', '',
@@ -188,7 +264,8 @@ def main():
              'Queries start with full GPU-resident initial fields and return full GPU-resident output trajectories. '
              'Timing includes initialization, evolution, and reconstruction. Compilation, offline setup, and host transfers are excluded.', '',
              table(['Case', 'Intervals/axis', 'Method', 'Target', 'Configuration', 'Median query ms',
-                    'Worst error', 'Outlier cases', 'Failed cases', 'Nonstationary cases', 'Target attained'], rows) if rows else
+                    'Worst error', 'Outlier cases', 'Failed cases', 'Nonstationary cases',
+                    'Timing outliers', 'Target attained'], rows) if rows else
              'No validation-selected evaluation measurements are available yet.', '',
              'Worst error is the maximum over evaluation cases, stored times, and recorded repetitions; '
              'for waves it is also the maximum over displacement, velocity, and energy-state errors. '
@@ -216,6 +293,7 @@ def main():
              'The new wave decoder represents displacement and velocity jointly. Its latent dimension is not '
              'the phase-state dimension of the earlier displacement-manifold experiments; changes relative to '
              'those earlier results do not isolate decoder architecture.', '',
+             *[f'![{name}: reference and decoder fields]({path})\n' for name, path in field_plots],
              '## Glossary', '',
              '- **CP:** a sum of products of learned one-dimensional spatial factors.',
              '- **Modified CP:** CP factors with small nonlinear changes conditioned on the solved latent state.',
@@ -232,6 +310,7 @@ def main():
              '- **Outlier cases:** cases with any error above the target or invalid error values.',
              '- **Failed cases:** cases with any incomplete/nonfinite solve or missing trajectory.',
              '- **Nonstationary cases:** cases with any latent fit or time step lacking the declared convergence condition; accurate capped rollouts remain labeled.',
+             '- **Timing outliers:** invocations taking more than twice their own case\'s repetition median; retained in all summaries.',
              '- **Median-time ratio FOM/ROM:** the full solver\'s median query duration divided by the ROM\'s, for paired qualifying configurations.',
              '- **Energy-state error:** the physical energy norm of the displacement/velocity error, scaled by the initial reference energy.',
              '- **Full-field audit:** independent NumPy recomputation from a saved full-grid prediction and reference.',

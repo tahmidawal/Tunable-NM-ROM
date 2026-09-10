@@ -320,7 +320,8 @@ def main():
                          f"{100*row['target']:g}%" if row['target'] is not None else 'diagnostic', row['configuration'],
                          f"{1e3*row['median_seconds']:.6g}" if row['median_seconds'] is not None else 'missing',
                          f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
-                         row['outlier_cases'], row['failed_cases'], row['nonstationary_cases'],
+                         row['outlier_cases'], row['failed_cases'],
+                         row['nonstationary_cases'] if row['method'] in ('cp', 'modcp', 'film') else '—',
                          row['timing_outlier_invocations'],
                          'yes' if row['qualified'] else 'no'])
         for selection in source['selections']:
@@ -461,7 +462,7 @@ def main():
              '- **Worst error:** the largest fixed-initial-normalized error across the reported cases, times, state components, and repetitions.',
              '- **Outlier cases:** cases with any error above the target or invalid error values.',
              '- **Failed cases:** cases with any incomplete/nonfinite solve or missing trajectory.',
-             '- **Nonstationary cases:** cases with any latent fit or time step lacking the declared convergence condition; accurate capped rollouts remain labeled.',
+             '- **Nonstationary cases:** ROM cases with any latent fit or weak time step lacking the declared gradient condition; accurate capped rollouts remain labeled. Classical methods show a dash because they use their own completion checks.',
              '- **Timing outliers:** invocations taking more than twice their own case\'s repetition median; retained in all summaries.',
              '- **Temporal difference:** discrepancy after refining the reference time step, on fixed initial physical scales.',
              '- **Nested space/time difference:** discrepancy against a finer spatial grid and time step, restricted back to the reported grid.',

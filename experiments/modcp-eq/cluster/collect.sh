@@ -10,6 +10,7 @@ LOCAL="$HERE/../runs/$ATTEMPT"
 SSH_OPTIONS=(-o Hostname=login-p02.pax.tufts.edu -o HostKeyAlias=login-prod.pax.tufts.edu -o BatchMode=yes -o ConnectTimeout=15)
 QUEUED=$(ssh "${SSH_OPTIONS[@]}" tufts-login "squeue -h -u tawal01 -o '%i'")
 if rg -qx "$JOB" <<< "$QUEUED"; then echo 'job is still queued/running' >&2; exit 2; fi
+ssh "${SSH_OPTIONS[@]}" tufts-login "test -f '$REMOTE/logs/$JOB.out'"
 ssh "${SSH_OPTIONS[@]}" tufts-login "cd '$REMOTE' && sed '/  out\//d' MANIFEST.sha256 | sha256sum -c --quiet && find out logs code -type f -print0 | sort -z | xargs -0 sha256sum > COLLECT.sha256"
 mkdir -p "$LOCAL"
 for NAME in out logs code COMMIT.txt PROVENANCE.json MANIFEST.sha256 COLLECT.sha256 run.sbatch; do

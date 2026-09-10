@@ -74,7 +74,7 @@ def wave_energy_squared(u, v, n, boundary, speed):
     return np.sum(mass * v * v, axis=(-2, -1)) + speed**2 * potential
 
 
-def wave_metrics(u, v, truth_u, truth_v, n, boundary, speed):
+def wave_error_series(u, v, truth_u, truth_v, n, boundary, speed):
     arrays = tuple(np.asarray(x, dtype=np.float64) for x in (u, v, truth_u, truth_v))
     u, v, truth_u, truth_v = arrays
     if len({a.shape for a in arrays}) != 1 or u.ndim != 3:
@@ -90,18 +90,26 @@ def wave_metrics(u, v, truth_u, truth_v, n, boundary, speed):
     error_u = norm(u - truth_u) / scale_u
     error_v = norm(v - truth_v) / scale_energy
     error_e = np.sqrt(wave_energy_squared(u-truth_u, v-truth_v, n, boundary, speed)) / scale_energy
-    return {'displacement': float(error_u.max()), 'velocity': float(error_v.max()),
-            'energy_state': float(error_e.max())}
+    return {'displacement': error_u, 'velocity': error_v, 'energy_state': error_e}
 
 
-def burgers_metrics(u, truth):
+def wave_metrics(u, v, truth_u, truth_v, n, boundary, speed):
+    return {name: float(values.max()) for name, values in
+            wave_error_series(u, v, truth_u, truth_v, n, boundary, speed).items()}
+
+
+def burgers_error_series(u, truth):
     u, truth = np.asarray(u), np.asarray(truth)
     if u.shape != truth.shape or u.ndim != 3 or not np.isfinite(u).all() or not np.isfinite(truth).all():
         raise ValueError('Expected finite matching time,x,y Burgers trajectories')
     scale = np.linalg.norm(truth[0])
     if scale <= 0:
         raise ValueError('Degenerate initial Burgers field')
-    return {'displacement': float(np.max(np.linalg.norm((u-truth).reshape(len(u), -1), axis=1)) / scale)}
+    return {'displacement': np.linalg.norm((u-truth).reshape(len(u), -1), axis=1) / scale}
+
+
+def burgers_metrics(u, truth):
+    return {name: float(values.max()) for name, values in burgers_error_series(u, truth).items()}
 
 
 def row_error(row):
@@ -165,11 +173,13 @@ def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10,
         output_hashes = {name: hashlib.sha256(np.ascontiguousarray(data[name]).view(np.uint8)).hexdigest()
                          for name in ('u', 'v') if name in data}
         if case_name == 'burgers2d':
-            actual = burgers_metrics(data['u'], data['truth_u'])
+            series = burgers_error_series(data['u'], data['truth_u'])
         else:
-            actual = wave_metrics(data['u'], data['v'], data['truth_u'], data['truth_v'],
+            series = wave_error_series(data['u'], data['v'], data['truth_u'], data['truth_v'],
                                   int(data['intervals']), str(data['boundary']), float(data['speed']))
+        actual = {name: float(values.max()) for name, values in series.items()}
     for name, value in actual.items():
         if name not in expected_errors or not np.isclose(value, expected_errors[name], rtol=rtol, atol=atol):
             raise ValueError(f'Independent field error mismatch: {path}: {name}: {value} vs {expected_errors.get(name)}')
-    return {'path': str(path), 'sha256': digest(path), 'errors': actual, 'output_sha256': output_hashes}
+    return {'path': str(path), 'sha256': digest(path), 'errors': actual, 'output_sha256': output_hashes,
+            'error_series': {name: values.tolist() for name, values in series.items()}}

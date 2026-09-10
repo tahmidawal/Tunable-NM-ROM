@@ -126,6 +126,13 @@ def summarize_input(path):
             if not np.isclose(row['errors'][component], error, rtol=1e-8, atol=1e-10):
                 raise ValueError('Timed invocation error differs from its audited field')
         paired_fields += 1
+    for summary in summaries:
+        keys = [(summary['split'], summary['method'], summary['configuration'], summary['intervals'], case)
+                for case in config[f"{summary['split']}_case_ids"]]
+        complete = all(key in field_groups for key in keys)
+        for label, index in (('initial', 0), ('final', -1)):
+            summary[f'worst_{label}_error'] = max(
+                values[index] for key in keys for values in field_groups[key]['error_series'].values()) if complete else None
     return dict(source=relative(path), sha256=digest(path), status=data['status'],
                 case_name=data['case_name'], provenance=data['provenance'], config=config,
                 selections=data.get('selections', []), summaries=summaries,
@@ -322,7 +329,17 @@ def main():
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
     comparisons = []
+    phase_errors = []
     for source in sources:
+        seen_phase = set()
+        for row in source['summaries']:
+            key = row['method'], row['configuration'], row['intervals']
+            if row['split'] != 'evaluation' or key in seen_phase:
+                continue
+            seen_phase.add(key)
+            phase_errors.append([source['case_name'], row['intervals'], row['method'], row['configuration'],
+                                 *[f"{100*row[name]:.6g}%" if row.get(name) is not None else 'incomplete/nonfinite'
+                                   for name in ('worst_initial_error', 'worst_final_error', 'worst_error')]])
         evaluated = [r for r in source['summaries'] if r['split'] == 'evaluation' and r['qualified']]
         for rom in [r for r in evaluated if r['method'] in ('cp', 'modcp', 'film')]:
             for fom in [r for r in evaluated if r['method'] not in ('cp', 'modcp', 'film')
@@ -358,6 +375,14 @@ def main():
              'keeps the corresponding continuum-accuracy interpretation provisional. '
              'No configuration is chosen using evaluation accuracy or timing.', '',
              f'![Validation and evaluation error versus query time]({plots[0]})' if plots else '', '',
+             '## Initial fitting and subsequent evolution', '',
+             table(['Case', 'Intervals/axis', 'Method', 'Configuration', 'Worst initial error',
+                    'Worst final error', 'Worst trajectory error'], phase_errors) if phase_errors else
+             'Independent evaluation field decompositions are not available yet.', '',
+             'Each column takes its own maximum over the complete evaluation cohort and physical components, '
+             'so the maximizing case may differ between columns. Every time uses the same initial-reference '
+             'normalization. These are measured field discrepancies; local snapshot-fitting diagnostics do '
+             'not establish a mathematical best-approximation floor.', '',
              '## Matched-accuracy full-solver comparisons', '',
              table(['Case', 'Intervals/axis', 'Target', 'ROM', 'Full solver', 'Median-time ratio FOM/ROM',
                     'ROM nonstationary cases'], comparisons) if comparisons else

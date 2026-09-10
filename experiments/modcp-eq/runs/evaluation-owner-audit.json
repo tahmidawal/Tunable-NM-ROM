@@ -1,0 +1,87 @@
+{
+  "interpretation": "Owner provenance, seal, coverage and reference-link audit. Full-field physical errors and energy/invariant histories are independently recomputed by the coordinator.",
+  "panels": [
+    {
+      "passed": true,
+      "case_name": "wave_reflective",
+      "job_id": "3518421",
+      "source_commit": "7a571324213c7c761c7f6e3de19937a167fbd729",
+      "gpu": [
+        "NVIDIA A100 80GB PCIe"
+      ],
+      "handoff_sha256": "cb7c52581cdb2661e97bc9a4977405b9f5ff200008c8829bdaed63a079774be9",
+      "global_seal_sha256": "48881620001affec08010aac56866b19f413777f9fdaefca902a81f0f20b1d90",
+      "archive_sha256": "11933f53190c9729aca52efd855b7cf26f2800f52fdb60e1026e3006ca378874",
+      "archive_bytes": 53227530240,
+      "source_files_verified_against_git": 26,
+      "remote_cleanup_complete": true,
+      "panels": {
+        "256": {
+          "configurations": 12,
+          "invocations": 1344,
+          "numerically_completed": 1344,
+          "stationary": 1316,
+          "prediction_files": 192,
+          "reference_files": 16,
+          "artifact_relations": {
+            "actual_first_timed_output": 192,
+            "identical_full_field_hash_verified": 1152
+          }
+        },
+        "512": {
+          "configurations": 12,
+          "invocations": 1344,
+          "numerically_completed": 1344,
+          "stationary": 1302,
+          "prediction_files": 192,
+          "reference_files": 16,
+          "artifact_relations": {
+            "actual_first_timed_output": 192,
+            "identical_full_field_hash_verified": 1152
+          }
+        }
+      }
+    },
+    {
+      "passed": true,
+      "case_name": "wave_absorbing",
+      "job_id": "3518429",
+      "source_commit": "7a571324213c7c761c7f6e3de19937a167fbd729",
+      "gpu": [
+        "NVIDIA A100-PCIE-40GB"
+      ],
+      "handoff_sha256": "bc5a6af1602625657d7f07abfafefe642b91f005b016892077c6dc1f4a1a8658",
+      "global_seal_sha256": "48881620001affec08010aac56866b19f413777f9fdaefca902a81f0f20b1d90",
+      "archive_sha256": "9490ab5556714b7023237adee2551afb72f46a2ec066935ffb6ade156f5e0260",
+      "archive_bytes": 37208576000,
+      "source_files_verified_against_git": 26,
+      "remote_cleanup_complete": true,
+      "panels": {
+        "256": {
+          "configurations": 8,
+          "invocations": 896,
+          "numerically_completed": 896,
+          "stationary": 854,
+          "prediction_files": 128,
+          "reference_files": 16,
+          "artifact_relations": {
+            "actual_first_timed_output": 128,
+            "identical_full_field_hash_verified": 768
+          }
+        },
+        "512": {
+          "configurations": 8,
+          "invocations": 896,
+          "numerically_completed": 896,
+          "stationary": 861,
+          "prediction_files": 128,
+          "reference_files": 16,
+          "artifact_relations": {
+            "actual_first_timed_output": 128,
+            "identical_full_field_hash_verified": 768
+          }
+        }
+      }
+    }
+  ]
+}

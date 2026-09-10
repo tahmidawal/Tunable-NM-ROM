@@ -54,6 +54,11 @@ def main():
             paired_rom = np.asarray([p["timed_output_errors"]["a"]["per_time"] for p in pair["per_traj"]])
             paired_fom = np.asarray([p["timed_output_errors"]["b"]["per_time"] for p in pair["per_traj"]])
             check_close(paired_rom, per_time, f"N{n}:{arm}:paired/main errors", checks)
+            match = data["matched"]["arms"][arm]["matched"]
+            rung = next(f for f in data["fom"] if f["newton_tol"] == match["newton_tol"]
+                        and f["lin_tol"] == match["lin_tol"])
+            check_close(paired_fom, [p["per_time"] for p in rung["per_traj"]],
+                        f"N{n}:{arm}:paired/ladder FOM errors", checks)
             old_per_time = np.asarray([r["per_time"] for r in old["variants"][arm]["per_traj"]])
             rows.append(dict(N=n, arm=arm, paired_rom_ms=float(median_a), paired_fom_ms=float(median_b),
                              paired_fom_over_rom=float(median_b / median_a),

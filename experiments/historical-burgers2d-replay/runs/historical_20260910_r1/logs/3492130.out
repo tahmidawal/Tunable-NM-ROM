@@ -1,0 +1,11 @@
+NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB
+jax_backend=gpu
+BEGIN N=64 checkpoint=sep_burgers_N64_K16_R64.pkl
+END N=64 returncode=0 seconds=166.2
+BEGIN N=256 checkpoint=sep_burgers_N256_K16_R64.pkl
+END N=256 returncode=0 seconds=306.9
+BEGIN N=512 checkpoint=sep_b2d_tensor_n512_ckpt.pkl
+END N=512 returncode=0 seconds=764.4
+BEGIN N=1024 checkpoint=sep_burgers_N1024_K16_R64.pkl
+END N=1024 returncode=0 seconds=1117.9
+ALL-DONE

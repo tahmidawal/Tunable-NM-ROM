@@ -1,0 +1,59 @@
+jax_backend=gpu device=cuda:0 B2D-TENSOR N=512 K=16 R=64 M=64 m=256 arms=['full', 'ex', 'tensor'] train=0 reps=5 burn=2 stall=0.001
+  test data: 8 fresh trajectories, worst FOM rel residual 9.94e-13
+  TEST positivity: min u 1.374e-34 max 1.955e+00 frac<=0 0.00e+00 frac<0 0.00e+00
+  TRAIN truth: 576 traj regenerated [519s], max FOM rel residual 1.00e-12; positivity: min u -1.492e-31 max 1.995e+00 frac<=0 3.43e-05 frac<0 3.43e-05
+  GATE R-lite (checkpoint codes vs regenerated picked states, 64 states): recon rel-L2 mean 4.432e-02 max 3.595e-01
+  GATE bank==meshfree: 0.00e+00
+  NNLS-EQ exlin N=512 k=16 M=64 m=256 adv-only: pool 65536 support 256 (+0 pad) rel fit 5.13e-03 (row p95 1.5e-01, max 1.8e+01) [23s]
+  GATE 0 (incumbent ops == make_weak_ops): 7.84e-16
+  GATE L (exlin linear == full-grid linear): 1.73e-16
+  GATE A (exlin advection == incumbent advection): 7.49e-14
+  GATE FOMR (full-grid weak residual == wt*Phi^T R_FOM): 4.88e-16
+  GATE TB (two chunkings): 8.54e-16  [Q (64, 64, 64), 2.0 MiB, build 1.65s, T asymmetry 1.76]
+  GATE TA (h^T T h == Phi^T(u (D-x u + D-y u)), 8192 training states): 9.10e-15
+  GATE T0 (tensor == oracle on the 53 all-positive decoded training states): 8.583701930547717e-16; all states: mismatch median 6.25e-06 max 3.52e-03; frac points u<=0 17.151%, min u -1.46e-01
+  GATE TQ (tensor vs oracle, 32 states, recorded): r rel median 4.24e-07 max 4.11e-05; J rel max 1.01e-04; states with u<=0 32/32
+  encoder[b2d tensor u0->z0 N=512]: rel-MSE 2.322e-06 on 157 training pairs [5s]
+  IC gram vs full: |dz|/(1+|z|) 2.63e-13, ||r|| rel diff 2.16e-12
+  GATE STEP: aux step vs make_step_lspg_var(stall=0.001) max|dz| 0.00e+00; at 1e-12 vs incumbent _finish_ops 0.00e+00
+  GATE ROLL: aux rollout vs make_rollout_v2 max|dZ| 0.00e+00 (nJ equal True, attempts/traj 121)
+  rep 0 (burn, order ['full', 'ex', 'tensor']) done [603s]
+  rep 1 (burn, order ['tensor', 'ex', 'full']) done [607s]
+  rep 2 (timed, order ['full', 'ex', 'tensor']) done [611s]
+  rep 3 (timed, order ['tensor', 'ex', 'full']) done [615s]
+  rep 4 (timed, order ['full', 'ex', 'tensor']) done [620s]
+  rep 5 (timed, order ['tensor', 'ex', 'full']) done [624s]
+  rep 6 (timed, order ['full', 'ex', 'tensor']) done [628s]
+   ARM full        err 2.456215e-02 (max 3.650e-02)  e2e 200.75 ms = ic 2.10 + solve 198.20 + dec 0.56 (split sum 200.61); attempts 113 jac 157; {'stalled': 400}; decoded min u -8.24e-02, states with u<=0 100.0%
+   ARM ex          err 2.449580e-02 (max 3.643e-02)  e2e 31.18 ms = ic 2.15 + solve 29.61 + dec 0.56 (split sum 32.29); attempts 113 jac 157; {'stalled': 400}; decoded min u -8.24e-02, states with u<=0 100.0%
+   ARM tensor      err 2.456235e-02 (max 3.650e-02)  e2e 29.74 ms = ic 2.27 + solve 27.86 + dec 0.56 (split sum 30.40); attempts 113 jac 157; {'stalled': 400}; decoded min u -8.24e-02, states with u<=0 100.0%
+  [ex vs full] err |diff| max 4.24e-04; err ratio 0.9973; latent dev max 4.62e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.155 solve ratio 0.149
+  [tensor vs full] err |diff| max 1.95e-06; err ratio 1.0000; latent dev max 1.74e-05; stop hist identical True (per traj True, attempts True); e2e ratio 0.148 solve ratio 0.141
+  [full vs ex] err |diff| max 4.24e-04; err ratio 1.0027; latent dev max 4.62e-03; stop hist identical True (per traj True, attempts True); e2e ratio 6.439 solve ratio 6.693
+  [tensor vs ex] err |diff| max 4.24e-04; err ratio 1.0027; latent dev max 4.63e-03; stop hist identical True (per traj True, attempts True); e2e ratio 0.954 solve ratio 0.941
+  FOM ladder traj 0 done [643s]
+  FOM ladder traj 1 done [648s]
+  FOM ladder traj 2 done [654s]
+  FOM ladder traj 3 done [659s]
+  FOM ladder traj 4 done [664s]
+  FOM ladder traj 5 done [671s]
+  FOM ladder traj 6 done [676s]
+  FOM ladder traj 7 done [681s]
+   FOM nt=3e-01 lt=1e-02: err 8.158e-01  2.65 ms  newton 0
+   FOM nt=3e-01 lt=1e-01: err 8.158e-01  2.60 ms  newton 0
+   FOM nt=1e-01 lt=5e-03: err 8.013e-01  3.11 ms  newton 1
+   FOM nt=1e-01 lt=5e-02: err 8.020e-01  3.10 ms  newton 1
+   FOM nt=3e-02 lt=2e-03: err 2.725e-01  14.73 ms  newton 12
+   FOM nt=3e-02 lt=1e-02: err 2.753e-01  11.70 ms  newton 12
+   FOM nt=1e-02 lt=5e-04: err 2.998e-02  41.25 ms  newton 41
+   FOM nt=1e-02 lt=5e-03: err 3.015e-02  30.11 ms  newton 41
+   FOM nt=3e-03 lt=2e-04: err 3.307e-04  46.38 ms  newton 50
+   FOM nt=3e-03 lt=2e-03: err 3.507e-04  40.36 ms  newton 50
+   FOM nt=1e-03 lt=5e-05: err 3.296e-04  48.24 ms  newton 50
+   FOM nt=1e-03 lt=5e-04: err 3.355e-04  43.55 ms  newton 50
+   FOM nt=1e-04 lt=5e-06: err 1.348e-04  62.10 ms  newton 54
+   FOM nt=1e-04 lt=5e-05: err 1.346e-04  52.80 ms  newton 54
+  MATCHED paired [full]: ROM 200.62 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.51e-04) 41.21 ms -> 0.21x
+  MATCHED paired [ex]: ROM 30.94 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.51e-04) 40.05 ms -> 1.29x
+  MATCHED paired [tensor]: ROM 29.63 ms vs tol-Newton(nt=3e-03,lt=2e-03, err 3.51e-04) 40.16 ms -> 1.36x
+DONE -> /cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/historical_20260910_r1/out/n512/sep_b2d_tensor_n512.json [761s]

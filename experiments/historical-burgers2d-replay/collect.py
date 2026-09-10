@@ -27,12 +27,14 @@ def main():
     subprocess.run(["ssh", "tufts-login", command], check=True)
     subprocess.run(["scp", "-rq", f"tufts-login:{remote}/.", str(target)], check=True)
     subprocess.run(["sha256sum", "-c", "COLLECTION.sha256", "--quiet"], cwd=target, check=True)
+    print(f"CHECKSUM_LOCAL {target}", flush=True)
     subprocess.run([PY, str(HERE / "audit.py"), str(target)], check=True)
     subprocess.run(["ssh", "tufts-login", f"rm -rf -- {shlex.quote(remote)}; test ! -e {shlex.quote(remote)}"], check=True)
     state = json.loads((HERE / "SUBMISSION.json").read_text())
     state.update(state="complete, checksum-collected, audited", collection_pending=False,
                  remote_deleted=True, local_run=str(target.relative_to(HERE)))
     (HERE / "SUBMISSION.json").write_text(json.dumps(state, indent=2) + "\n")
+    print(f"COLLECTED_AUDITED_REMOVED {remote}", flush=True)
 
 
 if __name__ == "__main__":

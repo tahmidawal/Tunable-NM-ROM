@@ -1,0 +1,1204 @@
+{
+  "job": "3492130",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "rows": [
+    {
+      "N": 64,
+      "arm": "full",
+      "paired_rom_ms": 35.14621313661337,
+      "paired_fom_ms": 12.489492888562381,
+      "paired_fom_over_rom": 0.3553581388702023,
+      "mean_error": 0.02308651031096807,
+      "median_error": 0.016859654306048216,
+      "worst_error": 0.17910756178838483,
+      "paired_fom_mean_error": 0.0003745662846273576,
+      "paired_fom_worst_error": 0.0013098175333966886,
+      "latent_ms": 33.034815452992916,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.0715369404041866e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.00037456628462735755,
+        "ms": 12.230407446622849
+      }
+    },
+    {
+      "N": 64,
+      "arm": "ex",
+      "paired_rom_ms": 30.87851300369948,
+      "paired_fom_ms": 12.424512999132276,
+      "paired_fom_over_rom": 0.4023675945031331,
+      "mean_error": 0.023190104253941694,
+      "median_error": 0.01696706063249059,
+      "worst_error": 0.17910756178838483,
+      "paired_fom_mean_error": 0.0003745662846273576,
+      "paired_fom_worst_error": 0.0013098175333966886,
+      "latent_ms": 29.123667045496404,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.419449611299143e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.00037456628462735755,
+        "ms": 12.230407446622849
+      }
+    },
+    {
+      "N": 64,
+      "arm": "tensor",
+      "paired_rom_ms": 29.401578474789858,
+      "paired_fom_ms": 12.366274604573846,
+      "paired_fom_over_rom": 0.4205990033894679,
+      "mean_error": 0.023094142324973595,
+      "median_error": 0.016864084195341453,
+      "worst_error": 0.17910756178838483,
+      "paired_fom_mean_error": 0.0003745662846273576,
+      "paired_fom_worst_error": 0.0013098175333966886,
+      "latent_ms": 27.694556978531182,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.073625547469263e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.00037456628462735755,
+        "ms": 12.230407446622849
+      }
+    },
+    {
+      "N": 64,
+      "arm": "ex_learned",
+      "paired_rom_ms": 29.478198965080082,
+      "paired_fom_ms": 12.376015074551105,
+      "paired_fom_over_rom": 0.41983620129614263,
+      "mean_error": 0.0273083201848077,
+      "median_error": 0.021815551671526066,
+      "worst_error": 0.17910756178838483,
+      "paired_fom_mean_error": 0.0003745662846273576,
+      "paired_fom_worst_error": 0.0013098175333966886,
+      "latent_ms": 27.416946017183363,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.318308293755791e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.00037456628462735755,
+        "ms": 12.230407446622849
+      }
+    },
+    {
+      "N": 256,
+      "arm": "full",
+      "paired_rom_ms": 75.71164739783853,
+      "paired_fom_ms": 17.34693651087582,
+      "paired_fom_over_rom": 0.22911846600990818,
+      "mean_error": 0.024511336327146527,
+      "median_error": 0.018927887663156624,
+      "worst_error": 0.16398139290118555,
+      "paired_fom_mean_error": 0.0003537911612317772,
+      "paired_fom_worst_error": 0.0012267880792443903,
+      "latent_ms": 74.07390198204666,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 2.4537941123448093e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.0003537911612317772,
+        "ms": 17.238214029930532
+      }
+    },
+    {
+      "N": 256,
+      "arm": "ex",
+      "paired_rom_ms": 30.9682636288926,
+      "paired_fom_ms": 17.436588066630065,
+      "paired_fom_over_rom": 0.5630470043648871,
+      "mean_error": 0.02449564457266848,
+      "median_error": 0.019003036569080478,
+      "worst_error": 0.16398139290118555,
+      "paired_fom_mean_error": 0.0003537911612317772,
+      "paired_fom_worst_error": 0.0012267880792443903,
+      "latent_ms": 29.08778702840209,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 2.4214658056465055e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.0003537911612317772,
+        "ms": 17.238214029930532
+      }
+    },
+    {
+      "N": 256,
+      "arm": "tensor",
+      "paired_rom_ms": 29.638364096172154,
+      "paired_fom_ms": 17.223948962055147,
+      "paired_fom_over_rom": 0.5811369651228372,
+      "mean_error": 0.024512144519494242,
+      "median_error": 0.01891994118457893,
+      "worst_error": 0.16398139290118555,
+      "paired_fom_mean_error": 0.0003537911612317772,
+      "paired_fom_worst_error": 0.0012267880792443903,
+      "latent_ms": 27.39361592102796,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 2.453891256859464e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.0003537911612317772,
+        "ms": 17.238214029930532
+      }
+    },
+    {
+      "N": 256,
+      "arm": "ex_learned",
+      "paired_rom_ms": 29.58453237079084,
+      "paired_fom_ms": 17.227672040462494,
+      "paired_fom_over_rom": 0.5823202416906065,
+      "mean_error": 0.027929144828486154,
+      "median_error": 0.021157483707668734,
+      "worst_error": 0.16398139290118555,
+      "paired_fom_mean_error": 0.0003537911612317772,
+      "paired_fom_worst_error": 0.0012267880792443903,
+      "latent_ms": 27.290281024761498,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 2.9845154125851536e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.0003537911612317772,
+        "ms": 17.238214029930532
+      }
+    },
+    {
+      "N": 512,
+      "arm": "full",
+      "paired_rom_ms": 200.61613991856575,
+      "paired_fom_ms": 41.20801901444793,
+      "paired_fom_over_rom": 0.20540729689632706,
+      "mean_error": 0.02456215305724348,
+      "median_error": 0.018749677498545926,
+      "worst_error": 0.1557794359892697,
+      "paired_fom_mean_error": 0.00035071751879796684,
+      "paired_fom_worst_error": 0.0012290935597913434,
+      "latent_ms": 198.20388790685683,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 7.034976767794632e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.0003507175187979669,
+        "ms": 40.36053956951946
+      }
+    },
+    {
+      "N": 512,
+      "arm": "ex",
+      "paired_rom_ms": 30.94107494689524,
+      "paired_fom_ms": 40.04775651264936,
+      "paired_fom_over_rom": 1.2943233737478121,
+      "mean_error": 0.02449580184188733,
+      "median_error": 0.018737659493770566,
+      "worst_error": 0.1557794359892697,
+      "paired_fom_mean_error": 0.00035071751879796684,
+      "paired_fom_worst_error": 0.0012290935597913434,
+      "latent_ms": 29.613927006721497,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 6.582207001670781e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.0003507175187979669,
+        "ms": 40.36053956951946
+      }
+    },
+    {
+      "N": 512,
+      "arm": "tensor",
+      "paired_rom_ms": 29.634085367433727,
+      "paired_fom_ms": 40.15807248651981,
+      "paired_fom_over_rom": 1.3551311602365628,
+      "mean_error": 0.024562350368439335,
+      "median_error": 0.01874819181446423,
+      "worst_error": 0.1557794359892697,
+      "paired_fom_mean_error": 0.00035071751879796684,
+      "paired_fom_worst_error": 0.0012290935597913434,
+      "latent_ms": 27.855643536895514,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 7.039452354362652e-12,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.003,
+        "lin_tol": 0.0015,
+        "err": 0.0003507175187979669,
+        "ms": 40.36053956951946
+      }
+    },
+    {
+      "N": 1024,
+      "arm": "full",
+      "paired_rom_ms": 684.0272679692134,
+      "paired_fom_ms": 122.5215494632721,
+      "paired_fom_over_rom": 0.17911793169740498,
+      "mean_error": 0.06381070059480029,
+      "median_error": 0.0355175696089047,
+      "worst_error": 0.3372469584965923,
+      "paired_fom_mean_error": 0.029745516418027477,
+      "paired_fom_worst_error": 0.367006349665523,
+      "latent_ms": 673.4412756050006,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.437402369717903e-06,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.01,
+        "lin_tol": 0.005,
+        "err": 0.02974551641802748,
+        "ms": 120.88586750905961
+      }
+    },
+    {
+      "N": 1024,
+      "arm": "ex",
+      "paired_rom_ms": 35.435658995993435,
+      "paired_fom_ms": 118.95899288356304,
+      "paired_fom_over_rom": 3.357041924830952,
+      "mean_error": 0.06390676666119957,
+      "median_error": 0.035460063146005576,
+      "worst_error": 0.3372469584965923,
+      "paired_fom_mean_error": 0.029745516418027477,
+      "paired_fom_worst_error": 0.367006349665523,
+      "latent_ms": 28.896844014525414,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.750569763138258e-06,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.01,
+        "lin_tol": 0.005,
+        "err": 0.02974551641802748,
+        "ms": 120.88586750905961
+      }
+    },
+    {
+      "N": 1024,
+      "arm": "tensor",
+      "paired_rom_ms": 33.81483198609203,
+      "paired_fom_ms": 118.73118847142905,
+      "paired_fom_over_rom": 3.511216276936196,
+      "mean_error": 0.06381431039530931,
+      "median_error": 0.03551795906176854,
+      "worst_error": 0.3372469584965923,
+      "paired_fom_mean_error": 0.029745516418027477,
+      "paired_fom_worst_error": 0.367006349665523,
+      "latent_ms": 26.712907943874598,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.41621835750683e-06,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.01,
+        "lin_tol": 0.005,
+        "err": 0.02974551641802748,
+        "ms": 120.88586750905961
+      }
+    },
+    {
+      "N": 1024,
+      "arm": "ex_learned",
+      "paired_rom_ms": 34.22167699318379,
+      "paired_fom_ms": 118.56359604280442,
+      "paired_fom_over_rom": 3.4645758612711965,
+      "mean_error": 0.06403771442160583,
+      "median_error": 0.035725145350708074,
+      "worst_error": 0.3372469584965923,
+      "paired_fom_mean_error": 0.029745516418027477,
+      "paired_fom_worst_error": 0.367006349665523,
+      "latent_ms": 27.091662399470806,
+      "rom_outliers": 0,
+      "fom_outliers": 0,
+      "historical_per_time_max_difference": 5.773361939465094e-06,
+      "blowups": 0,
+      "stop_reasons": {
+        "stalled": 400
+      },
+      "matched": {
+        "newton_tol": 0.01,
+        "lin_tol": 0.005,
+        "err": 0.02974551641802748,
+        "ms": 120.88586750905961
+      }
+    }
+  ],
+  "checks": [
+    {
+      "label": "N64:full:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:full:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:full:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:full:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:full:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:full:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:tensor:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:tensor:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:tensor:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:tensor:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:tensor:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:tensor:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex_learned:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex_learned:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex_learned:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex_learned:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex_learned:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:ex_learned:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.3:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.3:0.15",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.1:0.005000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.1:0.05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.03:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.03:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.01:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.01:0.005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.003:0.00015000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.003:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.001:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.0001:5e-06",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:FOM:0.0001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:full timed case0:rom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N64:full timed case0:fom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex:mean",
+      "absolute_difference": 6.938893903907228e-18,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:tensor:mean",
+      "absolute_difference": 3.469446951953614e-18,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:tensor:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:tensor:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:tensor:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:tensor:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:tensor:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex_learned:mean",
+      "absolute_difference": 3.469446951953614e-18,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex_learned:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex_learned:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex_learned:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex_learned:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:ex_learned:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.3:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.3:0.15",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.1:0.005000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.1:0.05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.03:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.03:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.01:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.01:0.005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.003:0.00015000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.003:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.001:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.0001:5e-06",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:FOM:0.0001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full timed case0:rom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N256:full timed case0:fom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:ex:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:ex:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:ex:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:ex:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:ex:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:ex:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:tensor:mean",
+      "absolute_difference": 3.469446951953614e-18,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:tensor:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:tensor:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:tensor:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:tensor:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:tensor:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.3:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.3:0.15",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.1:0.005000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.1:0.05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.03:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.03:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.01:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.01:0.005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.003:0.00015000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.003:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.001:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.0001:5e-06",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:FOM:0.0001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full timed case0:rom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N512:full timed case0:fom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full:mean",
+      "absolute_difference": 1.3877787807814457e-17,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:tensor:mean",
+      "absolute_difference": 1.3877787807814457e-17,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:tensor:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:tensor:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:tensor:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:tensor:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:tensor:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex_learned:mean",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex_learned:paired ROM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex_learned:paired FOM",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex_learned:ratio",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex_learned:paired/main errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:ex_learned:paired/ladder FOM errors",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.3:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.3:0.15",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.1:0.005000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.1:0.05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.03:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.03:0.015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.01:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.01:0.005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.003:0.00015000000000000001",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.003:0.0015",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.001:0.0005",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.0001:5e-06",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:FOM:0.0001:5e-05",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full timed case0:rom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    },
+    {
+      "label": "N1024:full timed case0:fom",
+      "absolute_difference": 0.0,
+      "tolerance": 2e-12
+    }
+  ],
+  "source_files": [
+    {
+      "path": "out/n64/sep_b2d_tensor_n64.json",
+      "sha256": "fba8fbc829cfe573514980940b3ede6c9145fc8d490f96c0aeff804949a650aa"
+    },
+    {
+      "path": "out/n64/sep_b2d_tensor_n64_tensor_full_case0.npz",
+      "sha256": "d1f6a2d237cfe6c3a8d09eb518b80a91c07780bc5c778df3950063aaf6fadc40"
+    },
+    {
+      "path": "out/n256/sep_b2d_tensor_n256.json",
+      "sha256": "4004d86de1adbd3ff5f3f8d28da4a2c2a21eef6763f3bed667d8fe54c7010add"
+    },
+    {
+      "path": "out/n256/sep_b2d_tensor_n256_tensor_full_case0.npz",
+      "sha256": "2a31a5d35edefece7636733045019213b4a14163d1d45a3fe39996fb776906f7"
+    },
+    {
+      "path": "out/n512/sep_b2d_tensor_n512.json",
+      "sha256": "cb88ecce0f55080bc793a6c65d942b1370f76568413f657ab1f2dcc7e4c87d8f"
+    },
+    {
+      "path": "out/n512/sep_b2d_tensor_n512_tensor_full_case0.npz",
+      "sha256": "c77300f59a014df650a4431deff412f6f1aa6e6672a7a23338548181903ee961"
+    },
+    {
+      "path": "out/n1024/sep_b2d_tensor_n1024.json",
+      "sha256": "9e3c9eb2eb8ce596fda21d77d8c84cd942d1aa720756fb818b60cad04cd227e2"
+    },
+    {
+      "path": "out/n1024/sep_b2d_tensor_n1024_tensor_full_case0.npz",
+      "sha256": "952d4f4584c0f7c1aa233fa0416c06bb527ac589bca1e058727d554b249ed17b"
+    }
+  ],
+  "outlier_rule": "retained repetition >2 times its own case median",
+  "full_field_audit": "predeclared case0 only; all other cases retain native timed-output errors"
+}

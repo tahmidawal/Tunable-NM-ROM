@@ -1,6 +1,6 @@
 # Replay of the original Burgers tensor comparison
 
-This cell restores the archived Burgers comparison at the user's request. New measurements are pending; the historical source and checkpoint payloads are frozen copies, while timing-output capture is instrumented explicitly below.
+This cell restores the archived Burgers comparison at the user's request. The historical source and checkpoint payloads are frozen copies, while timing-output capture is instrumented explicitly below; collected measurements and their independent arithmetic/field checks live in the run archive.
 
 The four archived stages contain the same numerical source bytes. `HISTORICAL-SOURCES.json` records their original source commit, file hashes, checkpoint hashes and original locations. Each mesh reuses its own original $K=16$, $R=64$, $M=64$ checkpoint. At $N=512$, the original run trained its checkpoint in the job; this replay loads that exact resulting checkpoint. The encoder uses the same independent seed, training state selection, regenerated initial fields, fitted nodes and update count. Data are regenerated on the cluster.
 
@@ -19,6 +19,8 @@ Instrumentation changes are restricted to `code/sep_b2d_tensor.py` and `code/sep
 `prepare.py <historical_attempt>` creates a private staged payload and hash manifest. `run_ladder.py` runs all four meshes sequentially inside one GPU allocation, so within-ladder times share one physical GPU. Real runs require the cluster absolute Python environment, GPU preflight, float64 and highest matrix-multiplication precision. Inputs are in `in/`; results are collected under `runs/<attempt>/out/n<N>/`. No old result or checkpoint is edited.
 
 The replay keeps mesh-specific learned weights; it does not measure frozen-weight transfer. Report the full cohort mean, median and worst per-time error, timing medians, retained repetition arrays and outlier counts. Historical and newly replayed absolute times belong to different allocations and must not be subtracted as an isolated algorithm effect.
+
+The [collected run audit](runs/historical_20260910_r1/AUDIT.json) derives every result from its raw timings and actual timed fields. `COLLECTION.sha256` preserves the initial remote-copy verification, including incidental Python bytecode caches. `PRESERVED.sha256` covers the scientific files retained in git, excluding those regenerable caches. The initial fields, initialization networks, selected controls, native logs, provenance and input checkpoint copies are retained. The complete new source/data hashes and canonical cross-PDE write-up remain available through the root reports and lab log.
 
 ## Plain-language glossary
 

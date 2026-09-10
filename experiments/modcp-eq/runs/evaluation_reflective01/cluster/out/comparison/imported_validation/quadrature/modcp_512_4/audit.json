@@ -1,0 +1,90 @@
+{
+  "architecture": "modcp",
+  "intervals": 512,
+  "weak_modes": 128,
+  "fit_code_indices": [
+    0,
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    809,
+    910,
+    1011,
+    1112,
+    1213,
+    1314,
+    1415,
+    1516,
+    1618,
+    1719,
+    1820,
+    1921,
+    2022,
+    2123,
+    2224,
+    2325,
+    2427,
+    2528,
+    2629,
+    2730,
+    2831,
+    2932,
+    3033,
+    3135
+  ],
+  "fit_rule": "training_decoder_outputs_only",
+  "volume": {
+    "target_nodes": 512,
+    "selected_nodes": 512,
+    "positive_nodes": 512,
+    "relative_fit": 0.0012107827508806776,
+    "maximum_scaled_row_error": 0.0005874627572918859,
+    "seconds": 63.070088404929265,
+    "weight_sum": 0.9960998604422361,
+    "minimum_weight": 3.706242695990413e-05,
+    "candidate_count": 8100,
+    "fit_rows": 8193,
+    "nnls_method": "qr",
+    "selected_support_original_space_kkt": {
+      "objective": 7.011536662204165e-05,
+      "residual_norm": 0.008373491901354037,
+      "relative_residual": 0.0012107827508806776,
+      "minimum_weight": 3.706242695990413e-05,
+      "positive_nodes": 512,
+      "active_gradient_max": 3.6913823913723895e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 2.6577271855680516e-17,
+      "complementarity_max": 8.916552731502017e-16
+    },
+    "expected_measure": 0.9960975646972656,
+    "measure_error": 2.295744970459701e-06,
+    "row_scaling": "full_grid_mass_weighted_RMS_of_decoder_output_times_test"
+  },
+  "faces": [],
+  "volume_target": 512,
+  "face_target_each": 0,
+  "total_selected_nodes_including_face_duplicates": 512,
+  "corner_rule": "Separate physical faces retain both corner half-weights.",
+  "perturbed_mass_moment_relative": [
+    [
+      0.0009732139703698596,
+      0.0022411885506164746
+    ],
+    [
+      0.001011330261948816,
+      0.0010705570339210016
+    ],
+    [
+      0.0012189897443897085,
+      0.0011983978386466742
+    ],
+    [
+      0.0009606022855725074,
+      0.0010729296729899585
+    ]
+  ]
+}

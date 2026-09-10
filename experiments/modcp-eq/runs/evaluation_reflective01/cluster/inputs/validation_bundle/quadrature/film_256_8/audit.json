@@ -1,0 +1,90 @@
+{
+  "architecture": "film",
+  "intervals": 256,
+  "weak_modes": 128,
+  "fit_code_indices": [
+    0,
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    809,
+    910,
+    1011,
+    1112,
+    1213,
+    1314,
+    1415,
+    1516,
+    1618,
+    1719,
+    1820,
+    1921,
+    2022,
+    2123,
+    2224,
+    2325,
+    2427,
+    2528,
+    2629,
+    2730,
+    2831,
+    2932,
+    3033,
+    3135
+  ],
+  "fit_rule": "training_decoder_outputs_only",
+  "volume": {
+    "target_nodes": 1024,
+    "selected_nodes": 1024,
+    "positive_nodes": 1024,
+    "relative_fit": 2.317131585435787e-05,
+    "maximum_scaled_row_error": 1.1600989471309857e-05,
+    "seconds": 280.1874614870176,
+    "weight_sum": 0.9922028651874458,
+    "minimum_weight": 1.3295478072862169e-05,
+    "candidate_count": 8100,
+    "fit_rows": 8193,
+    "nnls_method": "qr",
+    "selected_support_original_space_kkt": {
+      "objective": 2.5616131910042575e-08,
+      "residual_norm": 0.00016005040427953494,
+      "relative_residual": 2.317131585435787e-05,
+      "minimum_weight": 1.3295478072862169e-05,
+      "positive_nodes": 1024,
+      "active_gradient_max": 4.0798763707659673e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 2.1623887812425742e-17,
+      "complementarity_max": 5.861627672570043e-16
+    },
+    "expected_measure": 0.9922027587890625,
+    "measure_error": 1.0639838332604512e-07,
+    "row_scaling": "full_grid_mass_weighted_RMS_of_decoder_output_times_test"
+  },
+  "faces": [],
+  "volume_target": 1024,
+  "face_target_each": 0,
+  "total_selected_nodes_including_face_duplicates": 1024,
+  "corner_rule": "Separate physical faces retain both corner half-weights.",
+  "perturbed_mass_moment_relative": [
+    [
+      1.2798591165578587e-05,
+      3.148368959866074e-05
+    ],
+    [
+      2.584558276229677e-05,
+      3.669787112963248e-05
+    ],
+    [
+      1.2659450510109077e-05,
+      2.4889152715295584e-05
+    ],
+    [
+      1.6275860987539513e-05,
+      2.2907763262758954e-05
+    ]
+  ]
+}

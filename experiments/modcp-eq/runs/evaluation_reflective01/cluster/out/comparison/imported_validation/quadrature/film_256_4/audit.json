@@ -1,0 +1,90 @@
+{
+  "architecture": "film",
+  "intervals": 256,
+  "weak_modes": 128,
+  "fit_code_indices": [
+    0,
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    809,
+    910,
+    1011,
+    1112,
+    1213,
+    1314,
+    1415,
+    1516,
+    1618,
+    1719,
+    1820,
+    1921,
+    2022,
+    2123,
+    2224,
+    2325,
+    2427,
+    2528,
+    2629,
+    2730,
+    2831,
+    2932,
+    3033,
+    3135
+  ],
+  "fit_rule": "training_decoder_outputs_only",
+  "volume": {
+    "target_nodes": 512,
+    "selected_nodes": 512,
+    "positive_nodes": 512,
+    "relative_fit": 0.0010281536515769872,
+    "maximum_scaled_row_error": 0.0006025566755464248,
+    "seconds": 69.19048119708896,
+    "weight_sum": 0.9922271061541965,
+    "minimum_weight": 8.293777150446805e-05,
+    "candidate_count": 8100,
+    "fit_rows": 8193,
+    "nnls_method": "qr",
+    "selected_support_original_space_kkt": {
+      "objective": 5.043455590832053e-05,
+      "residual_norm": 0.007101729078775149,
+      "relative_residual": 0.0010281536515769872,
+      "minimum_weight": 8.293777150446805e-05,
+      "positive_nodes": 512,
+      "active_gradient_max": 4.0833683116435757e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 3.0266667504682277e-17,
+      "complementarity_max": 9.990326327457739e-16
+    },
+    "expected_measure": 0.9922027587890625,
+    "measure_error": 2.4347365134014254e-05,
+    "row_scaling": "full_grid_mass_weighted_RMS_of_decoder_output_times_test"
+  },
+  "faces": [],
+  "volume_target": 512,
+  "face_target_each": 0,
+  "total_selected_nodes_including_face_duplicates": 512,
+  "corner_rule": "Separate physical faces retain both corner half-weights.",
+  "perturbed_mass_moment_relative": [
+    [
+      0.0005663080805753339,
+      0.001919676942154666
+    ],
+    [
+      0.0011451201285484936,
+      0.0013078706811640493
+    ],
+    [
+      0.0006443380225310375,
+      0.0009407376671173272
+    ],
+    [
+      0.0006640150810900008,
+      0.0009260419826775203
+    ]
+  ]
+}

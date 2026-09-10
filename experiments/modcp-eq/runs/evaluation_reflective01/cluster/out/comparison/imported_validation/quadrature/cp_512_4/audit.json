@@ -1,0 +1,90 @@
+{
+  "architecture": "cp",
+  "intervals": 512,
+  "weak_modes": 128,
+  "fit_code_indices": [
+    0,
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    809,
+    910,
+    1011,
+    1112,
+    1213,
+    1314,
+    1415,
+    1516,
+    1618,
+    1719,
+    1820,
+    1921,
+    2022,
+    2123,
+    2224,
+    2325,
+    2427,
+    2528,
+    2629,
+    2730,
+    2831,
+    2932,
+    3033,
+    3135
+  ],
+  "fit_rule": "training_decoder_outputs_only",
+  "volume": {
+    "target_nodes": 512,
+    "selected_nodes": 512,
+    "positive_nodes": 512,
+    "relative_fit": 0.0011425491250299795,
+    "maximum_scaled_row_error": 0.0004532185606071215,
+    "seconds": 65.31911610905081,
+    "weight_sum": 0.9960976580442297,
+    "minimum_weight": 3.9042513611324664e-05,
+    "candidate_count": 8100,
+    "fit_rows": 8193,
+    "nnls_method": "qr",
+    "selected_support_original_space_kkt": {
+      "objective": 6.240932547230939e-05,
+      "residual_norm": 0.007899957308258659,
+      "relative_residual": 0.0011425491250299795,
+      "minimum_weight": 3.9042513611324664e-05,
+      "positive_nodes": 512,
+      "active_gradient_max": 3.860584847235626e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 2.835275179390167e-17,
+      "complementarity_max": 1.015328110422508e-15
+    },
+    "expected_measure": 0.9960975646972656,
+    "measure_error": 9.334696404739162e-08,
+    "row_scaling": "full_grid_mass_weighted_RMS_of_decoder_output_times_test"
+  },
+  "faces": [],
+  "volume_target": 512,
+  "face_target_each": 0,
+  "total_selected_nodes_including_face_duplicates": 512,
+  "corner_rule": "Separate physical faces retain both corner half-weights.",
+  "perturbed_mass_moment_relative": [
+    [
+      0.0012834838097071264,
+      0.0017736407873354923
+    ],
+    [
+      0.0012348201695665942,
+      0.0009990218522080959
+    ],
+    [
+      0.0011653270283661793,
+      0.0010727355672388605
+    ],
+    [
+      0.000984215542299146,
+      0.0009770216798918208
+    ]
+  ]
+}

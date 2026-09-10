@@ -106,7 +106,7 @@ def audit(record):
                 key = contract+"_seconds"
                 values = [rep["phases"][key] for rep in reps]
                 summary[contract+"_median_ms"] = float(np.median(values)*1000)
-                summary[contract+"_outliers"] = sum(sum(rep["phases"][key]>1.5*np.median([r["phases"][key] for r in row["repetitions"]]) for rep in row["repetitions"]) for row in rows)
+                summary[contract+"_outliers"] = int(sum(sum(rep["phases"][key]>1.5*np.median([r["phases"][key] for r in row["repetitions"]]) for rep in row["repetitions"]) for row in rows))
             summary["nonstationary_fit_count"] = sum(int(np.any(np.asarray(rep["solver"]["initial_fits"])[:, 2] != 1)) for rep in reps if rep["solver"])
             summary["nonstationary_step_count"] = sum(int(np.sum(np.asarray(rep["solver"]["steps"])[:, 2] != 1)) for rep in reps if rep["solver"])
             if name == "linear_weak_cn":

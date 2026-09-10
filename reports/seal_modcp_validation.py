@@ -92,14 +92,23 @@ def entry(path):
     names = ['selections.json', 'selection_freeze.json'] if case == 'burgers2d' else [
         f'frozen_selection_{n}.json' for n in cfg['meshes']]
     proofs = {name: digest(path.parent/name) for name in names}
+    evidence = {}
     if case == 'burgers2d':
         if json.loads((path.parent/names[0]).read_text()) != data['selections']:
             raise ValueError('Burgers proof selections differ from handoff')
         freeze = json.loads((path.parent/names[1]).read_text())
         if freeze['selection_sha256'] != proofs['selections.json']:
             raise ValueError('Burgers frozen selection hash mismatch')
-        for field, name in (('validation_invocations_sha256', 'invocations.jsonl'), ('selection_timings_sha256', 'selection_timings.jsonl')):
-            if freeze[field] != digest(path.parent/name):
+        for field, name, key in (('validation_invocations_sha256', 'invocations.jsonl', 'invocations'),
+                                 ('selection_timings_sha256', 'selection_timings.jsonl', 'selection_timings')):
+            evidence[name] = digest(path.parent/name)
+            records = [json.loads(line) for line in (path.parent/name).read_text().splitlines()]
+            if records != data[key]:
+                raise ValueError('Burgers raw validation records differ from frozen handoff')
+            # The immutable initial validation source predates a separate proxy
+            # hash. Its handoff already embeds every proxy. Attest both raw files
+            # in this coordinator seal without rewriting the original proof.
+            if (field in freeze or key == 'invocations') and freeze[field] != evidence[name]:
                 raise ValueError('Burgers frozen validation evidence hash mismatch')
     else:
         for name in names:
@@ -119,6 +128,7 @@ def entry(path):
                     raise ValueError('Wave frozen quadrature hash mismatch')
     seed = cfg['seeds']['evaluation'] if case == 'burgers2d' else cfg['evaluation_seed']
     return case, dict(handoff_sha256=digest(path), selection_proof_sha256=proofs,
+                      validation_evidence_sha256=evidence,
                       evaluation_seed=seed, source_commit=data['provenance']['commit'],
                       validation_job_id=data['provenance']['job_id'], source=relative(path),
                       selected_configurations=data['selections'])

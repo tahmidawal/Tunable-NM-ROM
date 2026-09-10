@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 
 from modcp_audit import audit_field_archive, digest, summarize_rows, load_field_archive
+from modcp_freeze import verify_evaluation_freeze
 
 ROOT = Path(__file__).resolve().parents[1]
 FULL_GRID_KINDS = ('self_contained_full_grid', 'full_grid_with_shared_truth')
@@ -94,6 +95,7 @@ def summarize_input(path):
                     if s['split'] == 'evaluation' and s['complete_coverage']}
         if not declared or declared != observed:
             raise ValueError('Completed campaign is missing a selected evaluation configuration or invocation')
+    evaluation_freeze = verify_evaluation_freeze(path, data)
     audits, seen, field_groups = [], {}, {}
     for row in data.get('invocations', []):
         artifact = row.get('field_artifact')
@@ -143,6 +145,7 @@ def summarize_input(path):
     return dict(source=relative(path), sha256=digest(path), status=data['status'],
                 case_name=data['case_name'], provenance=data['provenance'], config=config,
                 selections=data.get('selections', []), summaries=summaries,
+                evaluation_freeze=evaluation_freeze,
                 field_audits=audits, owner_artifacts=data.get('artifacts', {}),
                 audited_paired_evaluation_invocations=paired_fields,
                 references=references, reference_artifacts=reference_artifacts,
@@ -302,6 +305,9 @@ def main():
     parser.add_argument('--training-audit', type=Path, default=ROOT/'reports'/'2026-09-10-modified-cp-training-audit.json')
     args = parser.parse_args()
     sources = [summarize_input(path) for path in args.input]
+    seal_hashes = {source['evaluation_freeze']['sha256'] for source in sources if source['evaluation_freeze']}
+    if len(seal_hashes) > 1:
+        raise ValueError('Evaluation panels do not share the same global validation freeze')
     training = json.loads(args.training_audit.read_text())
     training_rows = []
     for checkpoint in training['checkpoints']:

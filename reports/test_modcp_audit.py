@@ -2,12 +2,36 @@
 import unittest
 import json
 import hashlib
+import copy
 from pathlib import Path
 import tempfile
 import numpy as np
 
 from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows, row_error, audit_field_archive, digest
 from generate_modcp_comparison import summarize_input
+from modcp_freeze import verify_evaluation_freeze
+
+
+def synthetic_burgers_freeze(folder, document):
+    """Write integrity fixtures, never experimental results."""
+    document['config']['seeds'] = {'evaluation': 123}
+    document['checkpoint_hashes'] = {name: name+'-synthetic-hash' for name in ('cp', 'modcp', 'film')}
+    old = copy.deepcopy(document)
+    old.update(status='validation_frozen', invocations=[])
+    validation_path = folder/'validation_handoff.json'
+    validation_path.write_text(json.dumps(old))
+    proofs = {}
+    for name in ('selections.json', 'selection_freeze.json'):
+        path = folder/name
+        path.write_text(json.dumps(document['selections']))
+        proofs[name] = digest(path)
+    entry = dict(handoff_sha256=digest(validation_path), selection_proof_sha256=proofs,
+                 evaluation_seed=123, source_commit='test', validation_job_id='test',
+                 selected_configurations=document['selections'])
+    seal_path = folder/'global_validation_seal.json'
+    seal_path.write_text(json.dumps(dict(schema='modcp-global-validation-seal-v1', evaluation_generated=False,
+        cases={name: entry for name in ('burgers2d', 'wave_reflective', 'wave_absorbing')})))
+    document['provenance']['global_validation_seal_sha256'] = digest(seal_path)
 
 
 class AuditTests(unittest.TestCase):
@@ -132,6 +156,7 @@ class AuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder)/'handoff.json'
             np.savez(Path(folder)/'field.npz', u=field, truth_u=truth)
+            synthetic_burgers_freeze(Path(folder), document)
             path.write_text(json.dumps(document))
             self.assertEqual(summarize_input(path)['audited_paired_evaluation_invocations'], 1)
             row['field_sha256'] = 'another invocation'
@@ -147,6 +172,21 @@ class AuditTests(unittest.TestCase):
             path.write_text(json.dumps(document))
             with self.assertRaisesRegex(ValueError, 'missing a selected evaluation'):
                 summarize_input(path)
+
+    def test_evaluation_selection_is_bound_to_saved_global_freeze(self):
+        document = dict(case_name='burgers2d', status='complete', config={},
+                        provenance=dict(commit='test', job_id='test'),
+                        selections=[dict(method='cp', configuration='frozen', intervals=8, target=.01)],
+                        invocations=[dict(split='evaluation')])
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'handoff.json'
+            with self.assertRaisesRegex(ValueError, 'lacks the saved global'):
+                verify_evaluation_freeze(path, document)
+            synthetic_burgers_freeze(Path(folder), document)
+            self.assertIsNotNone(verify_evaluation_freeze(path, document))
+            document['selections'][0]['configuration'] = 'chosen-after-evaluation'
+            with self.assertRaisesRegex(ValueError, 'changed after validation freeze'):
+                verify_evaluation_freeze(path, document)
 
 
 if __name__ == '__main__':

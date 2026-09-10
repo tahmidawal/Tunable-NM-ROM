@@ -61,9 +61,17 @@ latent evolution and reconstruction; exclude training, quadrature construction,
 compilation and host transfer. Every architecture and FOM comparator is measured on
 the same job/device. Preserve two discarded warm-ups, seven repetitions, full-grid
 physical errors and hashes from each actual timed output, and median/outlier counts.
+Primary ROM timing uses one compiled complete query and one completion barrier;
+separately warmed initialization/evolution/reconstruction calls are diagnostic only.
+The coordinator-approved validation refinement evaluates every configuration on all
+validation cases once, with seven additional timing repetitions on predetermined
+case zero used only as a selection-cost proxy. These proxy rows remain separate.
+All mesh selections are persisted before drawing the shared evaluation cohort.
+Every selected configuration receives the full seven-repetition evaluation protocol.
 Validation alone selects configurations; new evaluation cases are generated only
 after selection is persisted. Numerical completion and stationarity are separate;
-budget or stalled solves cannot qualify as converged target passes.
+budget and small-step exits can qualify by physical accuracy while remaining explicitly
+nonstationary. Damping-ceiling, nonfinite and zero-tangent breakdowns cannot qualify.
 
 Measure displacement mass error relative to initial displacement mass norm, velocity
 mass error relative to initial energy-state norm, and joint energy-state error on

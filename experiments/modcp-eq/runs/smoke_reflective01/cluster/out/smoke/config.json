@@ -1,0 +1,67 @@
+{
+  "name": "development_only_wave_smoke",
+  "train_intervals": 256,
+  "meshes": [
+    16
+  ],
+  "boundaries": [
+    "dirichlet",
+    "absorbing"
+  ],
+  "train_seed": 910601,
+  "validation_seed": 910611,
+  "evaluation_seed": 910612,
+  "model_seed": 910700,
+  "train_count": 64,
+  "validation_count": 2,
+  "evaluation_count": 2,
+  "latent": 32,
+  "rank": 64,
+  "weak_modes": 128,
+  "modulation_width": 64,
+  "inr_width": 128,
+  "pretrain_steps": 6000,
+  "comparison_steps": 10000,
+  "batch_size": 64,
+  "point_batch": 256,
+  "learning_rate": 0.001,
+  "code_lr_factor": 3.0,
+  "end_time": 0.01,
+  "observation_dt": 0.005,
+  "reference_cfl": 0.12,
+  "reference_refinement_cfl": 0.06,
+  "reference_temporal_target": 0.0001,
+  "time_steps": [
+    0.005
+  ],
+  "gn_caps": [
+    2
+  ],
+  "gn_tolerances": [
+    0.001
+  ],
+  "eq_multipliers": [
+    4
+  ],
+  "eq_fit_codes": 4,
+  "eq_candidate_count": 4096,
+  "initial_fit_cap": 3,
+  "initial_fit_tolerance": 1e-06,
+  "initial_fit_starts": 2,
+  "cg_tolerances": [
+    1e-06
+  ],
+  "cg_maxiter": 1000,
+  "rk4_cfls": [
+    0.3
+  ],
+  "targets": [
+    0.01,
+    0.05
+  ],
+  "warmups": 1,
+  "repetitions": 2,
+  "continuum_claim": "Provisional: primary errors use the verified semidiscrete PDE. New seed temporal references are checked. The inherited conditional spatial refinement does not certify a universal one-percent continuum target.",
+  "query_contract": "GPU resident full initial displacement/velocity to GPU resident all49 full output displacement/velocity fields; initialization, evolution and decoding charged; offline model and quadrature setup excluded.",
+  "smoke_only": true
+}

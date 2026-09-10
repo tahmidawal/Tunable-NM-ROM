@@ -1,0 +1,56 @@
+jax_backend=gpu
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100 80GB PCIe"], "host": "pax049", "source_commit": "bd9149d9948264772e4337e16454e7dc41064eae", "job_id": "3501173", "numpy_version": "2.5.0"}
+EQ_VOLUME cp dirichlet 16 512
+EQ_VOLUME modcp dirichlet 16 512
+EQ_VOLUME film dirichlet 16 512
+WARM 16 cp_eq4_cap2_tol0.001_dt0.005
+WARM 16 modcp_eq4_cap2_tol0.001_dt0.005
+WARM 16 film_eq4_cap2_tol0.001_dt0.005
+WARM 16 cg_tol1e-06_dt0.005
+WARM 16 rk4_cfl0.3
+WARM 16 spectral_exact_semidiscrete
+WARM 16 cn_direct_dt0.005
+VALIDATE 16 0 cp_eq4_cap2_tol0.001_dt0.005
+VALIDATE 16 0 modcp_eq4_cap2_tol0.001_dt0.005
+VALIDATE 16 0 film_eq4_cap2_tol0.001_dt0.005
+VALIDATE 16 0 cg_tol1e-06_dt0.005
+VALIDATE 16 0 rk4_cfl0.3
+VALIDATE 16 0 spectral_exact_semidiscrete
+VALIDATE 16 0 cn_direct_dt0.005
+VALIDATE 16 1 cn_direct_dt0.005
+VALIDATE 16 1 spectral_exact_semidiscrete
+VALIDATE 16 1 rk4_cfl0.3
+VALIDATE 16 1 cg_tol1e-06_dt0.005
+VALIDATE 16 1 film_eq4_cap2_tol0.001_dt0.005
+VALIDATE 16 1 modcp_eq4_cap2_tol0.001_dt0.005
+VALIDATE 16 1 cp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 0 0 cp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 0 0 modcp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 0 0 film_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 0 0 cg_tol1e-06_dt0.005
+EVALUATE 16 0 0 rk4_cfl0.3
+EVALUATE 16 0 0 spectral_exact_semidiscrete
+EVALUATE 16 0 0 cn_direct_dt0.005
+EVALUATE 16 0 1 cn_direct_dt0.005
+EVALUATE 16 0 1 spectral_exact_semidiscrete
+EVALUATE 16 0 1 rk4_cfl0.3
+EVALUATE 16 0 1 cg_tol1e-06_dt0.005
+EVALUATE 16 0 1 film_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 0 1 modcp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 0 1 cp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 1 0 cp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 1 0 modcp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 1 0 film_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 1 0 cg_tol1e-06_dt0.005
+EVALUATE 16 1 0 rk4_cfl0.3
+EVALUATE 16 1 0 spectral_exact_semidiscrete
+EVALUATE 16 1 0 cn_direct_dt0.005
+EVALUATE 16 1 1 cn_direct_dt0.005
+EVALUATE 16 1 1 spectral_exact_semidiscrete
+EVALUATE 16 1 1 rk4_cfl0.3
+EVALUATE 16 1 1 cg_tol1e-06_dt0.005
+EVALUATE 16 1 1 film_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 1 1 modcp_eq4_cap2_tol0.001_dt0.005
+EVALUATE 16 1 1 cp_eq4_cap2_tol0.001_dt0.005
+WAVE_COMPARISON_COMPLETE dirichlet
+WAVE_END_TO_END_SMOKE_PASSED dirichlet

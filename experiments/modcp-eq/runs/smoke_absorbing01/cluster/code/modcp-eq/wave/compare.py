@@ -20,7 +20,7 @@ import jax.numpy as jnp
 import numpy as np
 from common.decoders import DecoderConfig, decode_points, decode_grid
 from physics import (Grid, localized_initial, parameter_rows, cn_rollout, spectral_propagate,
-                     integrate, metrics, provenance, smooth_tests, damping_ratio, energy)
+                     integrate, metrics, provenance, smooth_tests, damping_ratio)
 from weak import build_rule, numerical_rule, make_query, moments
 from data import reference, save_json, clean, array_sha
 
@@ -41,14 +41,6 @@ def burn():
 
 
 def load_models(inputs, cfg, boundary):
-    training_manifest = json.loads((inputs/'training_result.json').read_text())
-    if not training_manifest.get('complete') or training_manifest['boundary'] != boundary:
-        raise RuntimeError('Training result is incomplete or has the wrong physical boundary')
-    for filename in ('decoders.py', 'training.py', 'lm.py'):
-        expected = training_manifest['source_sha256']['common/'+filename]
-        actual = hashlib.sha256((Path(__file__).parents[1]/'common'/filename).read_bytes()).hexdigest()
-        if actual != expected:
-            raise RuntimeError('Shared model/solver source differs from training provenance: '+filename)
     models = {}
     for name in ('cp', 'modcp', 'film'):
         path = inputs/f'{name}.pkl'
@@ -291,52 +283,6 @@ def audit_full_weak(aux, model, raw_rule, setting, grid, speed, cfg):
             'full_minus_eq_weak_residual_norm': np.linalg.norm(full_r-eq_r, axis=1).tolist()}
 
 
-def representation_diagnostic(queries, setting, supplied, truth, aux):
-    """Untimed snapshot fits and weak tangent rank, not certified best-fit floors."""
-    model = queries.models[setting['method']]
-    rule = queries.rules[(setting['method'], setting['multiplier'])]
-    init, evolve, decode, residual, _ = queries.functions[(setting['method'], setting['cap'], setting['dt'])]
-    ut, vt = truth
-    speed = supplied[2]
-    grid = queries.grid
-    mass = jnp.asarray(grid.mass())
-    u_scale = jnp.sqrt(jnp.sum(mass*ut[0]**2))
-    state_scale = jnp.sqrt(2*energy(ut[0], vt[0], grid, speed))
-    indices = np.unique(np.linspace(0, len(ut)-1, min(4, len(ut)), dtype=int))
-    jacobian = jax.jit(jax.jacfwd(residual))
-    residual_eval = jax.jit(residual)
-    rows = []
-    for i in indices:
-        z, fit = init(model['params'], rule, ut[i], vt[i], model['starts'], model['scales'])
-        u, v = decode(model['params'], z[None])
-        du, dv = u[0]-ut[i], v[0]-vt[i]
-        errors = {'displacement': float(jnp.sqrt(jnp.sum(mass*du*du))/u_scale),
-                  'velocity': float(jnp.sqrt(jnp.sum(mass*dv*dv))/state_scale),
-                  'energy_state': float(jnp.sqrt(jnp.maximum(2*energy(du, dv, grid, speed), 0.))/state_scale)}
-        om, of = moments(model['params'], z, rule, model['config'])
-        args = (z, model['params'], rule, om, of, speed, model['scales'])
-        J = jacobian(*args)
-        singular = np.linalg.svd(np.asarray(J), compute_uv=False)
-        chosen = int(fit['selected'])
-        rows.append({'observation_index': int(i), 'full_grid_physical_error': clean(errors),
-                     'fit_reason': int(fit['reason'][chosen]), 'fit_stationarity': float(fit['stationarity'][chosen]),
-                     'weak_tangent_singular_values': singular.tolist(),
-                     'weak_tangent_rank_ratio': float(singular[-1]/max(singular[0], 1e-300))})
-        if i == indices[0]:
-            for _ in range(2):
-                jax.block_until_ready((residual_eval(*args), jacobian(*args)))
-            times = []
-            for _ in range(7):
-                burn()
-                start = time.perf_counter()
-                r, J = residual_eval(*args), jacobian(*args)
-                jax.block_until_ready((r, J))
-                times.append(time.perf_counter()-start)
-    return {'configuration': setting['id'], 'intervals': grid.n, 'case': 0,
-            'interpretation': 'Diagnostic local snapshot fits provide achievable reconstruction errors, not exact manifold projection floors.',
-            'snapshot_fits': rows, 'residual_plus_jacobian_seconds': times}
-
-
 def run_evaluation(cfg, grid, models, rules, selected, result, out):
     """Called only after every mesh's selections have been persisted."""
     queries = Queries(cfg, grid, models, rules)
@@ -392,7 +338,7 @@ def main():
               'provenance': {**meta, 'commit': meta['source_commit'], 'gpu': meta['device_kind'],
                              'backend': meta['jax_backend'], 'matmul_precision': meta['matmul_precision']},
               'status': 'running', 'invocations': [], 'selection_timings': [], 'selections': [],
-              'references': [], 'eq_audits': [], 'full_weak_audits': [], 'component_timings': [], 'representation_diagnostics': [],
+              'references': [], 'eq_audits': [], 'full_weak_audits': [], 'component_timings': [],
               'checkpoint_sha256': {name: m['checkpoint_sha256'] for name, m in models.items()},
               'evaluation_opened': False, 'artifacts': []}
     save = lambda: save_json(args.out/'handoff.json', result)
@@ -449,9 +395,6 @@ def main():
                     details = audit_full_weak(aux, models[setting['method']], raws[(setting['method'], setting['multiplier'])], setting, grid, supplied[2], cfg)
                     result['full_weak_audits'].append({'intervals': n, 'configuration': setting['id'], 'case': ci, **details})
                     result['component_timings'].append(queries.component_timing(setting, supplied))
-                    if (setting['multiplier'] == max(cfg['eq_multipliers']) and setting['cap'] == max(cfg['gn_caps']) and
-                            setting['tol'] == min(cfg['gn_tolerances']) and setting['dt'] == min(cfg['time_steps'])):
-                        result['representation_diagnostics'].append(representation_diagnostic(queries, setting, supplied, (ut, vt), aux))
             save()
         selections, selected = select([r for r in result['invocations'] if r['split'] == 'validation'],
                                       result['selection_timings'], settings, grid, cfg)

@@ -1,0 +1,226 @@
+{
+  "intervals": 16,
+  "selections": [
+    {
+      "method": "cg",
+      "intervals": 16,
+      "target": 0.01,
+      "configuration": "cg_tol1e-06_dt0.005",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "cg",
+      "intervals": 16,
+      "target": 0.05,
+      "configuration": "cg_tol1e-06_dt0.005",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "cg",
+      "intervals": 16,
+      "target": null,
+      "configuration": "cg_tol1e-06_dt0.005",
+      "validation_passed": true,
+      "diagnostic": "best_validation_accuracy"
+    },
+    {
+      "method": "cn_direct",
+      "intervals": 16,
+      "target": 0.01,
+      "configuration": "cn_direct_dt0.005",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "cn_direct",
+      "intervals": 16,
+      "target": 0.05,
+      "configuration": "cn_direct_dt0.005",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "cn_direct",
+      "intervals": 16,
+      "target": null,
+      "configuration": "cn_direct_dt0.005",
+      "validation_passed": true,
+      "diagnostic": "best_validation_accuracy"
+    },
+    {
+      "method": "cp",
+      "intervals": 16,
+      "target": 0.01,
+      "configuration": null,
+      "validation_passed": false,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "cp",
+      "intervals": 16,
+      "target": 0.05,
+      "configuration": null,
+      "validation_passed": false,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "cp",
+      "intervals": 16,
+      "target": null,
+      "configuration": "cp_eq4_cap2_tol0.001_dt0.005",
+      "validation_passed": true,
+      "diagnostic": "best_validation_accuracy"
+    },
+    {
+      "method": "film",
+      "intervals": 16,
+      "target": 0.01,
+      "configuration": null,
+      "validation_passed": false,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "film",
+      "intervals": 16,
+      "target": 0.05,
+      "configuration": null,
+      "validation_passed": false,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "film",
+      "intervals": 16,
+      "target": null,
+      "configuration": "film_eq4_cap2_tol0.001_dt0.005",
+      "validation_passed": true,
+      "diagnostic": "best_validation_accuracy"
+    },
+    {
+      "method": "modcp",
+      "intervals": 16,
+      "target": 0.01,
+      "configuration": null,
+      "validation_passed": false,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "modcp",
+      "intervals": 16,
+      "target": 0.05,
+      "configuration": null,
+      "validation_passed": false,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "modcp",
+      "intervals": 16,
+      "target": null,
+      "configuration": "modcp_eq4_cap2_tol0.001_dt0.005",
+      "validation_passed": true,
+      "diagnostic": "best_validation_accuracy"
+    },
+    {
+      "method": "rk4",
+      "intervals": 16,
+      "target": 0.01,
+      "configuration": "rk4_cfl0.3",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "rk4",
+      "intervals": 16,
+      "target": 0.05,
+      "configuration": "rk4_cfl0.3",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "rk4",
+      "intervals": 16,
+      "target": null,
+      "configuration": "rk4_cfl0.3",
+      "validation_passed": true,
+      "diagnostic": "best_validation_accuracy"
+    },
+    {
+      "method": "spectral",
+      "intervals": 16,
+      "target": 0.01,
+      "configuration": "spectral_exact_semidiscrete",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "spectral",
+      "intervals": 16,
+      "target": 0.05,
+      "configuration": "spectral_exact_semidiscrete",
+      "validation_passed": true,
+      "selection_cost_source": "predetermined_validation_case_zero_seven_repetition_proxy"
+    },
+    {
+      "method": "spectral",
+      "intervals": 16,
+      "target": null,
+      "configuration": "spectral_exact_semidiscrete",
+      "validation_passed": true,
+      "diagnostic": "best_validation_accuracy"
+    }
+  ],
+  "selected_settings": [
+    {
+      "method": "cp",
+      "multiplier": 4,
+      "cap": 2,
+      "tol": 0.001,
+      "dt": 0.005,
+      "id": "cp_eq4_cap2_tol0.001_dt0.005"
+    },
+    {
+      "method": "modcp",
+      "multiplier": 4,
+      "cap": 2,
+      "tol": 0.001,
+      "dt": 0.005,
+      "id": "modcp_eq4_cap2_tol0.001_dt0.005"
+    },
+    {
+      "method": "film",
+      "multiplier": 4,
+      "cap": 2,
+      "tol": 0.001,
+      "dt": 0.005,
+      "id": "film_eq4_cap2_tol0.001_dt0.005"
+    },
+    {
+      "method": "cg",
+      "tol": 1e-06,
+      "dt": 0.005,
+      "id": "cg_tol1e-06_dt0.005"
+    },
+    {
+      "method": "rk4",
+      "cfl": 0.3,
+      "id": "rk4_cfl0.3"
+    },
+    {
+      "method": "spectral",
+      "id": "spectral_exact_semidiscrete"
+    },
+    {
+      "method": "cn_direct",
+      "dt": 0.005,
+      "tol": 1e-12,
+      "id": "cn_direct_dt0.005"
+    }
+  ],
+  "evaluation_opened_at_selection": false,
+  "training_sha256": {
+    "cp": "98f88123e90331143129a738ae58215dfcb0998dc0a01e6ebcb1a9f658b23021",
+    "modcp": "49c3fc9a44fbc3ba8d722c1d3af9b3635ea8392cdcee256cefaab0c8d2faaeed",
+    "film": "751236329027571655b018d1faa4e6ae855e09525013ae56636a036520cd1d33"
+  }
+}

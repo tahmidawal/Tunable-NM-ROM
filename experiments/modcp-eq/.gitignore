@@ -1,2 +1,5 @@
 /stages/
 __pycache__/
+# Scientific full-field extracts are durable in tracked checksum-verified
+# archive parts; avoid duplicate >100MB individual NPZ blobs in Git.
+/runs/*/cluster/out/comparison/fields/

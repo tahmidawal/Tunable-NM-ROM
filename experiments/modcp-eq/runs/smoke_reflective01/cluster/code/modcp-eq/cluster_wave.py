@@ -163,25 +163,9 @@ def collect(label):
     extracted.mkdir(exist_ok=False)
     subprocess.run(['tar', '-xzf', str(archive), '-C', str(extracted)], check=True)
     subprocess.run(['sha256sum', '-c', 'RESULTS.sha256', '--quiet'], cwd=extracted, check=True)
-    size = archive.stat().st_size
-    parts = []
-    if size > 90*1024**2:
-        joined = hashlib.sha256()
-        with archive.open('rb') as stream:
-            while payload := stream.read(90*1024**2):
-                part = record/f'{archive.name}.part-{len(parts):04d}'
-                part.write_bytes(payload)
-                joined.update(payload)
-                parts.append({'path': part.name, 'sha256': sha(part)})
-        if joined.hexdigest() != checksum:
-            raise RuntimeError('Split archive hash mismatch')
-        archive.unlink()
-    else:
-        parts.append({'path': archive.name, 'sha256': checksum})
-    write(record/'ARCHIVE.json', {'sha256': checksum, 'bytes': size, 'ordered_parts': parts,
+    write(record/'ARCHIVE.json', {'sha256': checksum, 'bytes': archive.stat().st_size,
                                 'source_commit': metadata['source_commit'], 'job_id': metadata['job_id'],
-                                'excluded_regenerated_data': 'out/training/data/training_fields.npy',
-                                'restore': 'Concatenate ordered_parts in their recorded order; verify sha256 of resulting gzip tar; extract. RESULTS.sha256 authenticates each result.'})
+                                'excluded_regenerated_data': 'out/training/data/training_fields.npy'})
     # Exact directory and exact archive, only after BOTH independent checks pass.
     run(SSH+[f'rm -rf -- {q} {shlex.quote(NAMESPACE+"/"+label+".tar.gz")} && test ! -e {q}'], timeout=60)
     metadata['remote_cleanup_complete'] = True

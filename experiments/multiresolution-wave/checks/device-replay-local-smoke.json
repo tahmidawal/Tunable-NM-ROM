@@ -1,0 +1,8 @@
+{
+  "smoke_passed": true,
+  "elapsed_seconds": 29.97992965701269,
+  "jax_backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "command": "source /etc/profile.d/jax-mem.sh; JAX_DEFAULT_MATMUL_PRECISION=highest timeout 58s jaxrun /home/tahmid/Dev/.venv/bin/python experiments/multiresolution-wave/smoke_device.py"
+}

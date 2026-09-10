@@ -1,8 +1,19 @@
 # Modified CP with empirical quadrature: Burgers and waves
 
-This report compares the original CP decoder, latent-modulated CP factors, and a FiLM coordinate decoder. Provisional: one or more owner campaigns is incomplete.
+This report compares the original CP decoder, latent-modulated CP factors, and a FiLM coordinate decoder. Completed single-seed pilot; accuracy and speed claims are limited to the declared families and cohorts.
 
-Final architectural conclusions await the remaining frozen evaluation panels.
+None of the tested decoder configurations established a validation-selected, evaluation-qualified operating point at the declared accuracy targets. This pilot therefore establishes no ROM speedup over a full solver at matched target accuracy. Diagnostic timings remain useful for understanding cost, with their measured errors shown alongside them.
+
+| Case | Intervals/axis | CP | Modified CP | FiLM | Full solver (5% selection) |
+| --- | --- | --- | --- | --- | --- |
+| burgers2d | 256 | 45.29% / 29.46 ms | 34.58% / 55.77 ms | 9.839% / 108.8 ms | Newton–BiCGStab: 3.561% / 27.93 ms |
+| burgers2d | 512 | 45.27% / 29.58 ms | 34.55% / 56.7 ms | 12.11% / 161.1 ms | Newton–BiCGStab: 3.203% / 43.46 ms |
+| wave_reflective | 256 | 209% / 413.3 ms | 230.1% / 642 ms | 3.296e+04% / 1026 ms | CG: 2.118% / 109.1 ms |
+| wave_reflective | 512 | 208.5% / 413.1 ms | 204.5% / 835.9 ms | 1.173e+07% / 1992 ms | CG: 4.056% / 184.5 ms |
+| wave_absorbing | 256 | 28.77% / 357.5 ms | 61.54% / 1656 ms | 4724% / 1593 ms | CG: 1.407% / 134.6 ms |
+| wave_absorbing | 512 | 21.31% / 359.1 ms | 63% / 1624 ms | 1959% / 1598 ms | CG: 1.447% / 271.5 ms |
+
+Each cell gives worst trajectory error / median complete-query time on the untouched cohort. Worst error includes all cases, stored times, repetitions, and the largest physical component for waves, using fixed initial reference scales. Decoder columns use the best-error diagnostic setting frozen during validation; the full-solver column uses its validation-selected setting for the largest declared target. These errors differ, so the table is a cost-and-error comparison, not a matched-accuracy speedup. Finite numerical completion and weak stationarity do not establish physical accuracy or stability. The detailed tables also include the direct, spectral, and explicit wave controls.
 
 ## Frozen validation settings
 
@@ -112,6 +123,63 @@ Queries start with full GPU-resident initial fields and return full GPU-resident
 | wave_absorbing | 512 | film | 5% | No validation-qualified setting | — | — | — | — | — | — | — | no | semidiscrete only |
 | wave_absorbing | 512 | modcp | 1% | No validation-qualified setting | — | — | — | — | — | — | — | no | semidiscrete only |
 | wave_absorbing | 512 | modcp | 5% | No validation-qualified setting | — | — | — | — | — | — | — | no | semidiscrete only |
+| burgers2d | 256 | cp | diagnostic | cp_cap10_dt0.005_q4_tol0.0001 | 29.4558 | 13.7722% | 45.2893% | 15 | 0 | 1 | 0 | no | diagnostic |
+| burgers2d | 256 | modcp | diagnostic | modcp_cap30_dt0.005_q4_tol0.0001 | 55.774 | 6.72179% | 34.5799% | 12 | 0 | 2 | 0 | no | diagnostic |
+| burgers2d | 256 | film | diagnostic | film_cap10_dt0.005_q4_tol0.0001 | 108.789 | 5.51731% | 9.83892% | 9 | 0 | 2 | 0 | no | diagnostic |
+| burgers2d | 256 | newton_bicgstab | 5% | newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 | 27.9348 | 1.21461% | 3.56112% | 0 | 0 | — | 0 | yes | provisional continuum (10/16 flagged) |
+| burgers2d | 512 | cp | diagnostic | cp_cap10_dt0.005_q4_tol0.0001 | 29.5804 | 14.0145% | 45.2739% | 15 | 0 | 0 | 0 | no | diagnostic |
+| burgers2d | 512 | modcp | diagnostic | modcp_cap30_dt0.005_q4_tol0.0001 | 56.6995 | 7.59602% | 34.5494% | 13 | 0 | 2 | 0 | no | diagnostic |
+| burgers2d | 512 | film | diagnostic | film_cap10_dt0.005_q4_tol0.0001 | 161.124 | 6.42367% | 12.1124% | 9 | 0 | 2 | 0 | no | diagnostic |
+| burgers2d | 512 | newton_bicgstab | 5% | newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 | 43.4578 | 0.985373% | 3.20343% | 0 | 0 | — | 0 | yes | provisional continuum (7/16 flagged) |
+| burgers2d | 512 | newton_bicgstab | 1% | newton_bicgstab_dt0.00125_ltol0.1_ntol0.0001 | 100.214 | 0.30707% | 1.32707% | 1 | 0 | — | 0 | no | provisional continuum (16/16 flagged) |
+| wave_reflective | 256 | cp | diagnostic | cp_eq8_cap10_tol1e-06_dt0.005 | 413.326 | 46.5836% | 208.966% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_reflective | 256 | modcp | diagnostic | modcp_eq4_cap10_tol0.0001_dt0.005 | 641.983 | 43.0144% | 230.11% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_reflective | 256 | film | diagnostic | film_eq4_cap10_tol0.0001_dt0.005 | 1025.9 | 155.061% | 32956.3% | 16 | 0 | 4 | 0 | no | diagnostic |
+| wave_reflective | 256 | cg | 5% | cg_tol1e-06_dt0.005 | 109.062 | 1.21176% | 2.11762% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | cg | 1% | cg_tol1e-06_dt0.0025 | 114.496 | 0.304069% | 0.496033% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | cg | diagnostic | cg_tol1e-06_dt0.00125 | 226.624 | 0.0769731% | 0.126725% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_reflective | 256 | rk4 | 1% | rk4_cfl0.6 | 20.772 | 0.00138608% | 0.00384732% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | rk4 | 5% | rk4_cfl0.6 | 20.772 | 0.00138608% | 0.00384732% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | rk4 | diagnostic | rk4_cfl0.12 | 91.3218 | 2.5675e-06% | 7.59101e-06% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_reflective | 256 | spectral | 1% | spectral_exact_semidiscrete | 4.41521 | 2.51344e-12% | 2.73149e-12% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | spectral | 5% | spectral_exact_semidiscrete | 4.41521 | 2.51344e-12% | 2.73149e-12% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | spectral | diagnostic | spectral_exact_semidiscrete | 4.41521 | 2.51344e-12% | 2.73149e-12% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_reflective | 256 | cn_direct | 5% | cn_direct_dt0.005 | 42.099 | 1.34438% | 2.23648% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | cn_direct | 1% | cn_direct_dt0.0025 | 81.0727 | 0.364054% | 0.565493% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 256 | cn_direct | diagnostic | cn_direct_dt0.00125 | 158.248 | 0.100307% | 0.149331% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_reflective | 512 | cp | diagnostic | cp_eq4_cap30_tol1e-06_dt0.005 | 413.117 | 46.7885% | 208.466% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_reflective | 512 | modcp | diagnostic | modcp_eq4_cap30_tol1e-06_dt0.005 | 835.934 | 42.4925% | 204.541% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_reflective | 512 | film | diagnostic | film_eq8_cap10_tol1e-06_dt0.005 | 1991.53 | 287.895% | 1.17277e+07% | 16 | 0 | 6 | 0 | no | diagnostic |
+| wave_reflective | 512 | cg | 5% | cg_tol0.0001_dt0.005 | 184.549 | 2.55509% | 4.05641% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | cg | 1% | cg_tol1e-06_dt0.0025 | 212.822 | 0.292315% | 0.506292% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | cg | diagnostic | cg_tol1e-06_dt0.00125 | 272.809 | 0.0773389% | 0.140878% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_reflective | 512 | rk4 | 1% | rk4_cfl0.6 | 91.8363 | 0.000121411% | 0.000355485% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | rk4 | 5% | rk4_cfl0.6 | 91.8363 | 0.000121411% | 0.000355485% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | rk4 | diagnostic | rk4_cfl0.12 | 439.121 | 2.11075e-07% | 6.29009e-07% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_reflective | 512 | spectral | 1% | spectral_exact_semidiscrete | 6.24066 | 4.62102e-12% | 5.07857e-12% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | spectral | 5% | spectral_exact_semidiscrete | 6.24066 | 4.62102e-12% | 5.07857e-12% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | spectral | diagnostic | spectral_exact_semidiscrete | 6.24066 | 4.62102e-12% | 5.07857e-12% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_reflective | 512 | cn_direct | 5% | cn_direct_dt0.005 | 62.2681 | 1.3458% | 2.23756% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | cn_direct | 1% | cn_direct_dt0.0025 | 119.773 | 0.365718% | 0.565897% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_reflective | 512 | cn_direct | diagnostic | cn_direct_dt0.00125 | 235.113 | 0.102335% | 0.150942% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_absorbing | 256 | cp | diagnostic | cp_eq8_cap30_tol0.0001_dt0.005 | 357.515 | 15.8756% | 28.7683% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_absorbing | 256 | modcp | diagnostic | modcp_eq8_cap10_tol1e-06_dt0.005 | 1655.82 | 11.4881% | 61.5366% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_absorbing | 256 | film | diagnostic | film_eq8_cap10_tol0.0001_dt0.005 | 1593.05 | 117.266% | 4724.05% | 16 | 0 | 6 | 0 | no | diagnostic |
+| wave_absorbing | 256 | cg | 5% | cg_tol0.0001_dt0.005 | 134.603 | 0.93919% | 1.40683% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 256 | cg | 1% | cg_tol1e-06_dt0.005 | 174.282 | 0.260804% | 0.356975% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 256 | cg | diagnostic | cg_tol1e-08_dt0.00125 | 357.758 | 0.0165701% | 0.0253553% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_absorbing | 256 | rk4 | 1% | rk4_cfl0.6 | 74.8719 | 0.000399281% | 0.000974151% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 256 | rk4 | 5% | rk4_cfl0.6 | 74.8719 | 0.000399281% | 0.000974151% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 256 | rk4 | diagnostic | rk4_cfl0.12 | 359.741 | 5.93062e-07% | 1.59695e-06% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_absorbing | 512 | cp | diagnostic | cp_eq8_cap30_tol0.0001_dt0.005 | 359.125 | 15.2465% | 21.3109% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_absorbing | 512 | modcp | diagnostic | modcp_eq8_cap10_tol1e-06_dt0.005 | 1623.64 | 11.5001% | 63% | 16 | 0 | 0 | 0 | no | diagnostic |
+| wave_absorbing | 512 | film | diagnostic | film_eq4_cap10_tol0.0001_dt0.005 | 1597.97 | 120.127% | 1959.48% | 16 | 0 | 5 | 0 | no | diagnostic |
+| wave_absorbing | 512 | cg | 5% | cg_tol0.0001_dt0.005 | 271.532 | 0.939099% | 1.44656% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 512 | cg | 1% | cg_tol1e-06_dt0.00125 | 351.906 | 0.106894% | 0.138252% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 512 | cg | diagnostic | cg_tol1e-08_dt0.00125 | 545.469 | 0.0170969% | 0.0280348% | 0 | 0 | — | 0 | no | diagnostic |
+| wave_absorbing | 512 | rk4 | 1% | rk4_cfl0.6 | 212.688 | 3.19937e-05% | 8.1633e-05% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 512 | rk4 | 5% | rk4_cfl0.6 | 212.688 | 3.19937e-05% | 8.1633e-05% | 0 | 0 | — | 0 | yes | semidiscrete only |
+| wave_absorbing | 512 | rk4 | diagnostic | rk4_cfl0.12 | 1036.36 | 4.58004e-08% | 1.26646e-07% | 0 | 0 | — | 0 | no | diagnostic |
 
 Worst error is the maximum over evaluation cases, stored times, and recorded repetitions; for waves it is also the maximum over displacement, velocity, and energy-state errors. All expected cases and repetitions must be present for a target to qualify. Failure counts retain numerical breakdowns and incomplete trajectories. Diagnostic settings still count physical outliers against the largest declared target, even though those settings cannot establish a target-qualified speedup. Iteration-capped or small-step exits may attain a physical accuracy target, but are separately counted as nonstationary and never described as converged PDE solves. Stationarity concerns the weak least-squares objective; physical accuracy and full-residual diagnostics are assessed separately.
 
@@ -123,13 +191,145 @@ Configurations with nonfinite errors have no finite position on the logarithmic 
 
 ## Initial fitting and subsequent evolution
 
-Independent evaluation field decompositions are not available yet.
+| Case | Intervals/axis | Method | Configuration | Worst initial error | Worst final error | Worst trajectory error |
+| --- | --- | --- | --- | --- | --- | --- |
+| burgers2d | 256 | cp | cp_cap10_dt0.005_q4_tol0.0001 | 45.2893% | 12.1189% | 45.2893% |
+| burgers2d | 256 | modcp | modcp_cap30_dt0.005_q4_tol0.0001 | 34.5799% | 9.92624% | 34.5799% |
+| burgers2d | 256 | film | film_cap10_dt0.005_q4_tol0.0001 | 9.78651% | 5.78702% | 9.83892% |
+| burgers2d | 256 | newton_bicgstab | newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 | 0% | 2.44539% | 3.56112% |
+| burgers2d | 512 | cp | cp_cap10_dt0.005_q4_tol0.0001 | 45.2739% | 13.0943% | 45.2739% |
+| burgers2d | 512 | modcp | modcp_cap30_dt0.005_q4_tol0.0001 | 34.5494% | 9.92003% | 34.5494% |
+| burgers2d | 512 | film | film_cap10_dt0.005_q4_tol0.0001 | 9.76452% | 7.91317% | 12.1124% |
+| burgers2d | 512 | newton_bicgstab | newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 | 0% | 1.86119% | 3.20343% |
+| burgers2d | 512 | newton_bicgstab | newton_bicgstab_dt0.00125_ltol0.1_ntol0.0001 | 0% | 1.03702% | 1.32707% |
+| wave_reflective | 256 | cp | cp_eq8_cap10_tol1e-06_dt0.005 | 23.1219% | 208.966% | 208.966% |
+| wave_reflective | 256 | modcp | modcp_eq4_cap10_tol0.0001_dt0.005 | 18.1353% | 210.17% | 230.11% |
+| wave_reflective | 256 | film | film_eq4_cap10_tol0.0001_dt0.005 | 23.0667% | 32956.3% | 32956.3% |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.005 | 0% | 2.11762% | 2.11762% |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.0025 | 0% | 0.496033% | 0.496033% |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.00125 | 0% | 0.126725% | 0.126725% |
+| wave_reflective | 256 | rk4 | rk4_cfl0.6 | 0% | 0.00384732% | 0.00384732% |
+| wave_reflective | 256 | rk4 | rk4_cfl0.12 | 0% | 7.59101e-06% | 7.59101e-06% |
+| wave_reflective | 256 | spectral | spectral_exact_semidiscrete | 2.20354e-12% | 2.4956e-12% | 2.73149e-12% |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.005 | 0% | 2.23648% | 2.23648% |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.0025 | 0% | 0.565493% | 0.565493% |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.00125 | 0% | 0.149331% | 0.149331% |
+| wave_reflective | 512 | cp | cp_eq4_cap30_tol1e-06_dt0.005 | 23.1406% | 208.466% | 208.466% |
+| wave_reflective | 512 | modcp | modcp_eq4_cap30_tol1e-06_dt0.005 | 18.2295% | 188.114% | 204.541% |
+| wave_reflective | 512 | film | film_eq8_cap10_tol1e-06_dt0.005 | 23.0847% | 1.17277e+07% | 1.17277e+07% |
+| wave_reflective | 512 | cg | cg_tol0.0001_dt0.005 | 0% | 4.05641% | 4.05641% |
+| wave_reflective | 512 | cg | cg_tol1e-06_dt0.0025 | 0% | 0.506292% | 0.506292% |
+| wave_reflective | 512 | cg | cg_tol1e-06_dt0.00125 | 0% | 0.140878% | 0.140878% |
+| wave_reflective | 512 | rk4 | rk4_cfl0.6 | 0% | 0.000355485% | 0.000355485% |
+| wave_reflective | 512 | rk4 | rk4_cfl0.12 | 0% | 6.29009e-07% | 6.29009e-07% |
+| wave_reflective | 512 | spectral | spectral_exact_semidiscrete | 3.76026e-12% | 4.78021e-12% | 5.07857e-12% |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.005 | 0% | 2.23756% | 2.23756% |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.0025 | 0% | 0.565897% | 0.565897% |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.00125 | 0% | 0.150942% | 0.150942% |
+| wave_absorbing | 256 | cp | cp_eq8_cap30_tol0.0001_dt0.005 | 19.0925% | 24.6805% | 28.7683% |
+| wave_absorbing | 256 | modcp | modcp_eq8_cap10_tol1e-06_dt0.005 | 10.2143% | 60.7605% | 61.5366% |
+| wave_absorbing | 256 | film | film_eq8_cap10_tol0.0001_dt0.005 | 10.1752% | 4724.05% | 4724.05% |
+| wave_absorbing | 256 | cg | cg_tol0.0001_dt0.005 | 0% | 0.982223% | 1.40683% |
+| wave_absorbing | 256 | cg | cg_tol1e-06_dt0.005 | 0% | 0.0172414% | 0.356975% |
+| wave_absorbing | 256 | cg | cg_tol1e-08_dt0.00125 | 0% | 0.00173537% | 0.0253553% |
+| wave_absorbing | 256 | rk4 | rk4_cfl0.6 | 0% | 0.000128929% | 0.000974151% |
+| wave_absorbing | 256 | rk4 | rk4_cfl0.12 | 0% | 5.23194e-07% | 1.59695e-06% |
+| wave_absorbing | 512 | cp | cp_eq8_cap30_tol0.0001_dt0.005 | 19.1187% | 18.7373% | 21.3109% |
+| wave_absorbing | 512 | modcp | modcp_eq8_cap10_tol1e-06_dt0.005 | 10.3545% | 60.528% | 63% |
+| wave_absorbing | 512 | film | film_eq4_cap10_tol0.0001_dt0.005 | 10.1802% | 1959.48% | 1959.48% |
+| wave_absorbing | 512 | cg | cg_tol0.0001_dt0.005 | 0% | 0.925562% | 1.44656% |
+| wave_absorbing | 512 | cg | cg_tol1e-06_dt0.00125 | 0% | 0.107369% | 0.138252% |
+| wave_absorbing | 512 | cg | cg_tol1e-08_dt0.00125 | 0% | 0.00117961% | 0.0280348% |
+| wave_absorbing | 512 | rk4 | rk4_cfl0.6 | 0% | 3.34252e-06% | 8.1633e-05% |
+| wave_absorbing | 512 | rk4 | rk4_cfl0.12 | 0% | 6.5709e-09% | 1.26646e-07% |
 
 Each column takes its own maximum over the complete evaluation cohort and physical components, so the maximizing case may differ between columns. Every time uses the same initial-reference normalization. These are measured field discrepancies; local snapshot-fitting diagnostics do not establish a mathematical best-approximation floor.
 
+| Wave case | Intervals/axis | Method | Configuration | Worst displacement error | Worst velocity error | Worst energy-state error |
+| --- | --- | --- | --- | --- | --- | --- |
+| wave_reflective | 256 | cp | cp_eq8_cap10_tol1e-06_dt0.005 | 113.845% | 154.106% | 208.966% |
+| wave_reflective | 256 | modcp | modcp_eq4_cap10_tol0.0001_dt0.005 | 72.3932% | 143.005% | 230.11% |
+| wave_reflective | 256 | film | film_eq4_cap10_tol0.0001_dt0.005 | 7787.81% | 18067.4% | 32956.3% |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.005 | 1.0031% | 1.65636% | 2.11762% |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.0025 | 0.283839% | 0.394598% | 0.496033% |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.00125 | 0.0875244% | 0.102295% | 0.126725% |
+| wave_reflective | 256 | rk4 | rk4_cfl0.6 | 0.000121436% | 0.00273252% | 0.00384732% |
+| wave_reflective | 256 | rk4 | rk4_cfl0.12 | 2.22548e-07% | 5.33234e-06% | 7.59101e-06% |
+| wave_reflective | 256 | spectral | spectral_exact_semidiscrete | 4.61789e-14% | 1.84108e-12% | 2.73149e-12% |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.005 | 0.976265% | 1.73283% | 2.23648% |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.0025 | 0.244156% | 0.437408% | 0.565493% |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.00125 | 0.0610494% | 0.110088% | 0.149331% |
+| wave_reflective | 512 | cp | cp_eq4_cap30_tol1e-06_dt0.005 | 103.213% | 163.395% | 208.466% |
+| wave_reflective | 512 | modcp | modcp_eq4_cap30_tol1e-06_dt0.005 | 85.248% | 146.732% | 204.541% |
+| wave_reflective | 512 | film | film_eq8_cap10_tol1e-06_dt0.005 | 2.20564e+06% | 3.34646e+06% | 1.17277e+07% |
+| wave_reflective | 512 | cg | cg_tol0.0001_dt0.005 | 1.98688% | 3.2059% | 4.05641% |
+| wave_reflective | 512 | cg | cg_tol1e-06_dt0.0025 | 0.270894% | 0.400681% | 0.506292% |
+| wave_reflective | 512 | cg | cg_tol1e-06_dt0.00125 | 0.0792876% | 0.11365% | 0.140878% |
+| wave_reflective | 512 | rk4 | rk4_cfl0.6 | 9.14002e-06% | 0.000248231% | 0.000355485% |
+| wave_reflective | 512 | rk4 | rk4_cfl0.12 | 1.58733e-08% | 4.32659e-07% | 6.29009e-07% |
+| wave_reflective | 512 | spectral | spectral_exact_semidiscrete | 5.0462e-14% | 3.03021e-12% | 5.07857e-12% |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.005 | 0.976181% | 1.73372% | 2.23756% |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.0025 | 0.244144% | 0.43833% | 0.565897% |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.00125 | 0.061045% | 0.110389% | 0.150942% |
+| wave_absorbing | 256 | cp | cp_eq8_cap30_tol0.0001_dt0.005 | 21.7903% | 22.0943% | 28.7683% |
+| wave_absorbing | 256 | modcp | modcp_eq8_cap10_tol1e-06_dt0.005 | 34.9739% | 44.1067% | 61.5366% |
+| wave_absorbing | 256 | film | film_eq8_cap10_tol0.0001_dt0.005 | 4485.64% | 2977.03% | 4724.05% |
+| wave_absorbing | 256 | cg | cg_tol0.0001_dt0.005 | 1.05789% | 1.05005% | 1.40683% |
+| wave_absorbing | 256 | cg | cg_tol1e-06_dt0.005 | 0.130666% | 0.251983% | 0.356975% |
+| wave_absorbing | 256 | cg | cg_tol1e-08_dt0.00125 | 0.00881605% | 0.0178979% | 0.0253553% |
+| wave_absorbing | 256 | rk4 | rk4_cfl0.6 | 2.81216e-05% | 0.000687801% | 0.000974151% |
+| wave_absorbing | 256 | rk4 | rk4_cfl0.12 | 4.41601e-08% | 1.12541e-06% | 1.59695e-06% |
+| wave_absorbing | 512 | cp | cp_eq8_cap30_tol0.0001_dt0.005 | 14.1222% | 15.8343% | 21.3109% |
+| wave_absorbing | 512 | modcp | modcp_eq8_cap10_tol1e-06_dt0.005 | 34.5959% | 44.7123% | 63% |
+| wave_absorbing | 512 | film | film_eq4_cap10_tol0.0001_dt0.005 | 867.047% | 1155.4% | 1959.48% |
+| wave_absorbing | 512 | cg | cg_tol0.0001_dt0.005 | 0.640789% | 1.32485% | 1.44656% |
+| wave_absorbing | 512 | cg | cg_tol1e-06_dt0.00125 | 0.138252% | 0.0989558% | 0.128509% |
+| wave_absorbing | 512 | cg | cg_tol1e-08_dt0.00125 | 0.00836595% | 0.0197935% | 0.0280348% |
+| wave_absorbing | 512 | rk4 | rk4_cfl0.6 | 1.96705e-06% | 5.76752e-05% | 8.1633e-05% |
+| wave_absorbing | 512 | rk4 | rk4_cfl0.12 | 3.02506e-09% | 8.94635e-08% | 1.26646e-07% |
 
-
-
+| Wave case | Intervals/axis | Method | Configuration | Energy discrepancy / reference initial energy | Reflective energy drift / reference initial energy | Absorbing invariant error | Absorbing invariant drift |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| wave_reflective | 256 | cp | cp_eq8_cap10_tol1e-06_dt0.005 | 2.93724 | 2.92736 | — | — |
+| wave_reflective | 256 | modcp | modcp_eq4_cap10_tol0.0001_dt0.005 | 4.05875 | 4.04319 | — | — |
+| wave_reflective | 256 | film | film_eq4_cap10_tol0.0001_dt0.005 | 108615 | 108615 | — | — |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.005 | 0.000139489 | 0.000139489 | — | — |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.0025 | 8.52322e-05 | 8.52322e-05 | — | — |
+| wave_reflective | 256 | cg | cg_tol1e-06_dt0.00125 | 2.12614e-05 | 2.12614e-05 | — | — |
+| wave_reflective | 256 | rk4 | rk4_cfl0.6 | 2.69198e-08 | 2.69198e-08 | — | — |
+| wave_reflective | 256 | rk4 | rk4_cfl0.12 | 9.59491e-12 | 9.5951e-12 | — | — |
+| wave_reflective | 256 | spectral | spectral_exact_semidiscrete | 6.69049e-16 | 4.46033e-16 | — | — |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.005 | 2.76552e-13 | 2.76552e-13 | — | — |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.0025 | 1.2766e-12 | 1.2766e-12 | — | — |
+| wave_reflective | 256 | cn_direct | cn_direct_dt0.00125 | 5.11293e-12 | 5.11278e-12 | — | — |
+| wave_reflective | 512 | cp | cp_eq4_cap30_tol1e-06_dt0.005 | 2.73614 | 2.72657 | — | — |
+| wave_reflective | 512 | modcp | modcp_eq4_cap30_tol1e-06_dt0.005 | 3.06092 | 3.04483 | — | — |
+| wave_reflective | 512 | film | film_eq8_cap10_tol1e-06_dt0.005 | 1.37539e+10 | 1.37539e+10 | — | — |
+| wave_reflective | 512 | cg | cg_tol0.0001_dt0.005 | 0.00276013 | 0.00276013 | — | — |
+| wave_reflective | 512 | cg | cg_tol1e-06_dt0.0025 | 5.5277e-05 | 5.5277e-05 | — | — |
+| wave_reflective | 512 | cg | cg_tol1e-06_dt0.00125 | 2.13949e-05 | 2.13949e-05 | — | — |
+| wave_reflective | 512 | rk4 | rk4_cfl0.6 | 9.23478e-10 | 9.23478e-10 | — | — |
+| wave_reflective | 512 | rk4 | rk4_cfl0.12 | 3.21823e-13 | 3.21823e-13 | — | — |
+| wave_reflective | 512 | spectral | spectral_exact_semidiscrete | 7.08134e-16 | 5.00191e-16 | — | — |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.005 | 3.6012e-13 | 3.59963e-13 | — | — |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.0025 | 1.65282e-12 | 1.65271e-12 | — | — |
+| wave_reflective | 512 | cn_direct | cn_direct_dt0.00125 | 5.43363e-12 | 5.43347e-12 | — | — |
+| wave_absorbing | 256 | cp | cp_eq8_cap30_tol0.0001_dt0.005 | 0.0827462 | — | 0.0928989 | 0.0894562 |
+| wave_absorbing | 256 | modcp | modcp_eq8_cap10_tol1e-06_dt0.005 | 0.375533 | — | 0.397775 | 0.397869 |
+| wave_absorbing | 256 | film | film_eq8_cap10_tol0.0001_dt0.005 | 2231.69 | — | 64.8609 | 64.8634 |
+| wave_absorbing | 256 | cg | cg_tol0.0001_dt0.005 | 0.004806 | — | 0.00708658 | 0.00708658 |
+| wave_absorbing | 256 | cg | cg_tol1e-06_dt0.005 | 0.00206145 | — | 0.000338449 | 0.000338449 |
+| wave_absorbing | 256 | cg | cg_tol1e-08_dt0.00125 | 0.000111914 | — | 2.07231e-05 | 2.07231e-05 |
+| wave_absorbing | 256 | rk4 | rk4_cfl0.6 | 7.03221e-08 | — | 2.22045e-16 | 1.52656e-16 |
+| wave_absorbing | 256 | rk4 | rk4_cfl0.12 | 1.14118e-10 | — | 2.22045e-16 | 1.52656e-16 |
+| wave_absorbing | 512 | cp | cp_eq8_cap30_tol0.0001_dt0.005 | 0.0566191 | — | 0.0802108 | 0.0904051 |
+| wave_absorbing | 512 | modcp | modcp_eq8_cap10_tol1e-06_dt0.005 | 0.393802 | — | 0.422537 | 0.422655 |
+| wave_absorbing | 512 | film | film_eq4_cap10_tol0.0001_dt0.005 | 383.955 | — | 15.2596 | 15.2622 |
+| wave_absorbing | 512 | cg | cg_tol0.0001_dt0.005 | 0.00357037 | — | 0.00541529 | 0.00541529 |
+| wave_absorbing | 512 | cg | cg_tol1e-06_dt0.00125 | 0.000371278 | — | 0.00118354 | 0.00118354 |
+| wave_absorbing | 512 | cg | cg_tol1e-08_dt0.00125 | 0.000117647 | — | 1.41673e-05 | 1.41673e-05 |
+| wave_absorbing | 512 | rk4 | rk4_cfl0.6 | 4.45338e-09 | — | 2.22045e-16 | 1.66533e-16 |
+| wave_absorbing | 512 | rk4 | rk4_cfl0.12 | 7.1528e-12 | — | 2.22045e-16 | 1.66533e-16 |
 
 These independently reconstructed diagnostics distinguish energy discrepancies from the energy norm of state error. Energy drift measures change from the prediction's own initial energy; energy discrepancy includes its initial mismatch. The absorbing signed invariant is $I(u,v)=\int_\Omega v\,dx+c\int_{\partial\Omega}u\,ds$, using the discrete area and edge weights with both corner contributions. Invariant error and drift are absolute quantities, not percentages. The table takes the largest absolute defect across the complete cohort, stored times, and repetitions. Close energies alone do not prove that the remaining state discrepancy is a phase error; no boundary-flux accuracy claim is inferred from coarse observation times.
 
@@ -227,6 +427,42 @@ For validation case 3, independent full-grid least squares over the 64 learned C
 
 ![Independent CP reconstruction diagnostic](2026-09-10-modified-cp-span-audit.png)
 
+## Wave snapshot and weak-residual diagnostics
+
+| Wave case | Intervals/axis | Validation case | Diagnostic configuration | Initial snapshot fit error | Worst sampled later fit error | Final snapshot fit error | Minimum tangent singular-value ratio | Nonstationary fits |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| wave_reflective | 256 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 15.6493% | 13.5464% | 13.5464% | 0.0955905 | 0 |
+| wave_reflective | 256 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 12.3569% | 10.4414% | 10.4414% | 0.0688921 | 0 |
+| wave_reflective | 256 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 15.3746% | 21.1337% | 17.3075% | 0.0385205 | 0 |
+| wave_reflective | 512 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 15.6778% | 13.5568% | 13.5568% | 0.0955881 | 0 |
+| wave_reflective | 512 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 12.4794% | 10.5094% | 10.5094% | 0.0688884 | 0 |
+| wave_reflective | 512 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 15.361% | 21.0744% | 17.2924% | 0.0385225 | 0 |
+| wave_absorbing | 256 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 12.3351% | 6.74973% | 1.09668% | 0.0181893 | 0 |
+| wave_absorbing | 256 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 7.60346% | 3.71782% | 0.729309% | 0.0112007 | 0 |
+| wave_absorbing | 256 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 4.9836% | 2.82826% | 0.576205% | 0.0107422 | 0 |
+| wave_absorbing | 512 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 12.3746% | 6.74524% | 1.09626% | 0.0181859 | 0 |
+| wave_absorbing | 512 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 7.72078% | 3.73628% | 0.731197% | 0.011199 | 0 |
+| wave_absorbing | 512 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 4.98583% | 2.82633% | 0.576629% | 0.0107422 | 0 |
+
+Each snapshot is fitted separately to a known reference state. Errors take the largest physical component on the same fixed initial normalization as the rollout. These local achieved errors are not global reconstruction floors. The tangent ratio is the smallest singular value divided by the largest for the sampled weak decoder map; it does not certify global conditioning.
+
+| Wave case | Intervals/axis | Validation case | Diagnostic configuration | Maximum full weak residual norm | Maximum EQ weak residual norm | Maximum full-minus-EQ residual norm | Maximum mass-moment discrepancy |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| wave_reflective | 256 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 0.00243639 | 0.0024377 | 6.21818e-05 | 0.000489412 |
+| wave_reflective | 256 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 0.00244265 | 0.00244217 | 5.51201e-05 | 0.000485319 |
+| wave_reflective | 256 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 0.188231 | 0.189266 | 0.00490535 | 0.0395269 |
+| wave_reflective | 512 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 0.00244201 | 0.00244533 | 4.94927e-05 | 0.000385623 |
+| wave_reflective | 512 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 0.00242498 | 0.002424 | 5.06875e-05 | 0.000385899 |
+| wave_reflective | 512 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 0.567305 | 0.56714 | 0.0222526 | 0.183683 |
+| wave_absorbing | 256 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 0.000744374 | 0.000744608 | 6.51071e-05 | 0.000714106 |
+| wave_absorbing | 256 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 0.000542544 | 0.00054075 | 4.60081e-05 | 0.000532669 |
+| wave_absorbing | 256 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 0.0135835 | 0.0135684 | 6.87826e-05 | 0.000750154 |
+| wave_absorbing | 512 | 0 | cp_eq8_cap30_tol1e-06_dt0.00125 | 0.0007448 | 0.000746131 | 5.28468e-05 | 0.000549278 |
+| wave_absorbing | 512 | 0 | modcp_eq8_cap30_tol1e-06_dt0.00125 | 0.000543151 | 0.000544143 | 4.12718e-05 | 0.000443165 |
+| wave_absorbing | 512 | 0 | film_eq8_cap30_tol1e-06_dt0.00125 | 0.00573532 | 0.00573629 | 1.25644e-05 | 0.000196506 |
+
+These checks use actual consecutive integration states from the matching validation rollout. Each column takes its own maximum over the audited times; the maxima need not occur together. Residual and moment values use the stored fixed weak scaling, not the physical error norm. The diagnostics cover the predetermined first validation case, use owner-computed full-grid quantities from verified source, and are excluded from online cost and model selection. They cannot certify quadrature accuracy or explain all failures elsewhere in the cohort.
+
 ## Provenance and independent review
 
 | Case | Campaign status | Job ID | GPU | Source commit | Full-field audits |
@@ -234,6 +470,9 @@ For validation case 3, independent full-grid least squares over the 64 learned C
 | burgers2d | validation_frozen | 3500795 | NVIDIA A100-PCIE-40GB | b229e8521fa94d7229bbd745290beebbb7c89ae6 | 2592 |
 | wave_reflective | validation_frozen | 3503439 | ['NVIDIA A100 80GB PCIe'] | df737ba306f1edac21054939b9241f4f3f221320 | 0 |
 | wave_absorbing | validation_frozen | 3503457 | ['NVIDIA A100-PCIE-40GB'] | df737ba306f1edac21054939b9241f4f3f221320 | 0 |
+| burgers2d | complete | 3518411 | NVIDIA A100-PCIE-40GB | 890a67b5ef313001d546735f8b32101f75849910 | 144 |
+| wave_reflective | complete | 3518421 | ['NVIDIA A100 80GB PCIe'] | 7a571324213c7c761c7f6e3de19937a167fbd729 | 384 |
+| wave_absorbing | complete | 3518429 | ['NVIDIA A100-PCIE-40GB'] | 7a571324213c7c761c7f6e3de19937a167fbd729 | 256 |
 
 Raw repetition records, validation sweeps, selection declarations, source hashes, and field-audit results are indexed in [2026-09-10-modified-cp-eq-comparison.json](2026-09-10-modified-cp-eq-comparison.json). Timing ratios must use the same job and GPU, and an FOM configuration meeting the same accuracy target. This report does not substitute timings from separate jobs. Every evaluation panel is bound to the same saved global validation freeze, including its unchanged cohort seed, checkpoint identities, selected settings, and quadrature file hashes. Reference arrays must agree across every method and repetition for each case.
 
@@ -251,6 +490,12 @@ Wave validation retains full-grid metrics and output hashes but only bounded obs
 | wave_reflective | validation | 512 | exact_semidiscrete_sine | — | — | — | semidiscrete only | 7.78349e-16 | — |
 | wave_absorbing | validation | 256 | fresh_RK4_with_balance | 3.56623e-08 | — | — | semidiscrete only | 3.2316e-11 | 1.25741e-16 |
 | wave_absorbing | validation | 512 | fresh_RK4_with_balance | 2.97842e-09 | — | — | semidiscrete only | 2.12567e-12 | 1.05601e-16 |
+| burgers2d | evaluation | 256 | nested_finer_reference | 0.00360827 | 0.0194247 | 0.0230329 | 1%: provisional continuum (16/16 flagged); 5%: provisional continuum (10/16 flagged) | — | — |
+| burgers2d | evaluation | 512 | nested_finer_reference | 0.00387735 | 0.0109849 | 0.0148622 | 1%: provisional continuum (16/16 flagged); 5%: provisional continuum (7/16 flagged) | — | — |
+| wave_reflective | evaluation | 256 | exact_semidiscrete_sine | — | — | — | semidiscrete only | 1.02504e-15 | — |
+| wave_reflective | evaluation | 512 | exact_semidiscrete_sine | — | — | — | semidiscrete only | 9.51988e-16 | — |
+| wave_absorbing | evaluation | 256 | fresh_RK4_with_balance | 3.1318e-08 | — | — | semidiscrete only | 3.60739e-11 | 1.11022e-16 |
+| wave_absorbing | evaluation | 512 | fresh_RK4_with_balance | 2.57882e-09 | — | — | semidiscrete only | 2.36684e-12 | 1.02132e-16 |
 
 The scalar Burgers equation is $\partial_t u+u(\partial_xu+\partial_yu)=\nu\Delta u$ on the unit square with homogeneous Dirichlet boundaries and localized Gaussian initial fields. The full solver uses backward Euler, sign-dependent upwinding, and Newton–BiCGStab. The wave system is $\partial_t u=v$, $\partial_t v=c^2\Delta u$, with reflective $u=0$ or absorbing $\partial_t u+c\partial_nu=0$ boundaries and the fresh localized Gaussian-core family. Its implicit comparison uses a symmetric positive-definite Crank–Nicolson elimination solved by CG. Direct and explicit wave controls are reported separately. Exact parameter generators and recorded cohort parameters remain in the source artifacts indexed above.
 
@@ -259,6 +504,14 @@ Burgers is scored against a finer-grid trajectory restricted to the output grid;
 The Burgers empirical indicator is each case's nested space/time difference plus its temporal refinement difference; the table reports the maximum of these per-case sums. A case is flagged when its indicator exceeds one tenth of the target. These flags identify reference-sensitive continuum interpretations, not proven error bounds. Missing reference records are labeled unassessed, and an unflagged target still has no certified continuum bound.
 
 The new wave decoder represents displacement and velocity jointly. Its latent dimension is not the phase-state dimension of the earlier displacement-manifold experiments; changes relative to those earlier results do not isolate decoder architecture.
+
+The representative figures share one color scale across methods. Their captions identify any symmetric logarithmic scale used to display large excursions together with the reference without clipping. This display choice does not change the fields or numerical errors.
+
+![burgers2d: reference and decoder fields](2026-09-10-modified-cp-eq-comparison-burgers2d-fields.png)
+
+![wave_reflective: reference and decoder fields](2026-09-10-modified-cp-eq-comparison-wave_reflective-fields.png)
+
+![wave_absorbing: reference and decoder fields](2026-09-10-modified-cp-eq-comparison-wave_absorbing-fields.png)
 
 ## Glossary
 
@@ -286,6 +539,9 @@ The new wave decoder represents displacement and velocity jointly. Its latent di
 - **Affine spatial image:** the fixed CP bias plus every linear combination of its learned spatial products.
 - **Reconstruction floor:** the smallest error in the specified fixed linear/affine space, giving a lower bound for a decoder restricted to that space.
 - **Snapshot fit:** a local latent optimization against one known reference field; its achieved error is not a proof of the best possible decoder error.
+- **Tangent singular-value ratio:** the smallest divided by the largest singular value of the sampled weak decoder Jacobian at a fitted state; a local rank/conditioning diagnostic.
+- **Mass-moment discrepancy:** the fixed-scale difference between full-grid and quadrature integration of decoder fields against smooth test functions.
+- **Full-minus-EQ weak residual norm:** the norm of the difference between full-grid and quadrature weak residual vectors at the same actual integration step.
 - **Intervals/axis:** subdivisions of the unit domain; the number of stored nodes depends on boundary conditions.
 - **Validation-selected configuration:** solver and quadrature settings frozen before evaluation fields are examined.
 - **Target / target attained:** the declared error ceiling, and whether every expected invocation completes below it.
@@ -308,5 +564,6 @@ The new wave decoder represents displacement and velocity jointly. Its latent di
 - **Energy discrepancy / reflective drift:** respectively the absolute prediction-minus-reference energy difference and change from the prediction's own start, divided by reference initial energy.
 - **Absorbing invariant error / drift:** absolute difference of the conserved area-plus-boundary moment from the reference or from the prediction's own start.
 - **Full-field audit:** independent NumPy recomputation from a saved full-grid prediction and reference.
+- **Symmetric logarithmic color scale:** a color mapping that is linear near zero and logarithmic for larger positive or negative values.
 - **Campaign status / job ID / GPU / source commit:** completion state and identifiers of the recorded scientific execution.
 - **Single-seed pilot:** an initial comparison using one training random seed, without a training-variance claim.

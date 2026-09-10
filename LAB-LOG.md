@@ -20,58 +20,41 @@ The dated chronology below preserves the earlier findings and retractions; the o
 
 ## Read this first
 
-**2026-09-10 modified CP + EQ pilot — validation sealed, evaluation submitted.**
-In the `ideate` session the user approved a bounded comparison of original CP+EQ,
-latent-modulated CP factors+EQ, and FiLM-INR+EQ on Burgers 2D, reflective waves,
-and absorbing waves, then explicitly requested implementation. This is a separate
-architecture study from the completed separable/tensor replays below. Train at
-256 intervals and evaluate frozen weights at 256/512, with separate weights per
-PDE/boundary, new training/validation/evaluation cohorts, and 1%/5% accuracy targets.
-The approved bases/worktrees are `b4eddc8` → `2026-09-10-modcp-burgers2d` and
-`906cbe6` → `2026-09-10-modcp-wave2d`, each with matching `exp/` branch and
-its own owner. Cluster namespaces are `modcp_burgers2d_20260910` and
-`modcp_wave2d_20260910`. Burgers retains sign-upwind Newton–BiCGStab;
-the new joint displacement/velocity weak wave ROM uses Crank–Nicolson, with a
-verified SPD CG full-order step and fresh RK4/direct controls. All comparisons
-charge GPU-resident supplied fields through full GPU output. Shared decoder
-source is content-hashed between owners. Root coordinates reports/independent
-review on main. Full training completed in jobs `3500536`, `3500562`, and
-`3500623`; all nine checkpoints passed the independent float64, finiteness,
-shape, and completed-budget audit in `reports/2026-09-10-modified-cp-training-audit.json`.
-Burgers validation job `3500795` completed; its collected sources, frozen selections,
-quadrature identities, and every saved full-grid validation field passed owner and
-independent audits. Its checksum-verified archive is retained locally and the exact
-remote run directory was removed. No Burgers ROM qualifies at either declared
-target on either mesh. Wave comparison attempts
-`3501595`/`3501652` were stopped during offline fitting, before scientific
-validation or evaluation rows, to add a verified contraction of the same EQ
-weights for CP's fixed spatial factors. Completed offline work is archived.
-Replacement wave validation jobs `3503439`/`3503457` completed from `df737ba`,
-using checked CP contractions and the verified exact-QR NNLS option for new fits.
-Both passed source, frozen-selection and saved-observation audits. Their verified
-archives are retained under main and their exact remote directories were removed.
-All three validation panels are bound by
-`reports/2026-09-10-modified-cp-validation-seal.json` (SHA256
-`48881620001affec08010aac56866b19f413777f9fdaefca902a81f0f20b1d90`).
-No ROM meets either declared target over its full validation cohort; some wave
-rollouts have large physical errors despite numerical completion. Final frozen
-evaluations are submitted as Burgers `3518411`, reflective wave `3518421`, and
-absorbing wave `3518429`. Full-grid evaluation checks and final timing claims
-remain open.
-Only the post-reset fresh wave reference is used. Validation retains every case/setting,
-with one paired invocation per case plus seven repetitions on predetermined case
-zero for timing selection; untouched evaluation retains seven repetitions on
-every case. All pilot validation selections, across both PDEs and wave boundaries,
-must be sealed before any untouched evaluation draw. Accuracy qualification and
-latent stationarity are reported separately.
-An independently reconstructed CP affine-span diagnostic confirms substantial
-initial-representation error on one Burgers validation case; source, numerical
-audit, and figure are `reports/audit_modcp_cp_span.py` and
-`reports/2026-09-10-modified-cp-span-audit.{json,png,pdf}`. This is a checkpoint-specific
-validation diagnosis, excluded from online selection and timing. Large raw archives
-are retained under main at `artifacts/modcp-eq/2026-09-10/raw/`, indexed by
-`reports/2026-09-10-modified-cp-raw-artifacts.json`, and kept out of Git history.
-No final evaluation performance result is established yet. No merge is authorized.
+**2026-09-10 modified CP + EQ pilot — complete and independently audited.**
+The approved `ideate` comparison of original CP+EQ, latent-modulated CP factors+EQ,
+and FiLM-INR+EQ is complete on scalar Burgers 2D, reflective Dirichlet waves, and
+absorbing Sommerfeld waves. All 9 trained checkpoints were frozen across the
+requested meshes; validation across every panel was sealed before any final draw.
+All 5,488 final paired invocations and 784 distinct full predictions passed
+independent NumPy physical-error, reference, output-hash, coverage, and freeze checks.
+No tested ROM established a validation-selected operating point at either declared
+accuracy target, so no ROM speedup at matched target accuracy is established.
+CP is the fastest of the tested diagnostic ROM settings; modified CP improves
+Burgers error but does not resolve its accuracy failure and is worse on absorbing
+waves. FiLM improves Burgers accuracy but costs more and has large wave errors.
+At 512 Burgers intervals, worst errors are CP 45.2739%,
+modified CP 34.5494%, and FiLM 12.1124%.
+These are fixed-initial-normalized errors against the recorded numerical reference.
+All final queries completed numerically; weak stationarity and physical accuracy
+remain separate, including the large finite wave excursions. The classical
+largest-target selections pass; the tighter Burgers selection has a held-out failure.
+Final jobs were Burgers `3518411`, reflective `3518421`, and absorbing `3518429`.
+Their checksum-verified archives are retained under main at
+`artifacts/modcp-eq/2026-09-10/raw/`; exact remote run directories were removed.
+The generated report is `reports/2026-09-10-modified-cp-eq-comparison.md`, with raw
+records, audits, figures, source proofs and retention manifests linked beside it.
+Only the fresh post-reset wave reference is used. This is a single-training-seed,
+capacity-unmatched pilot with separate weights per PDE/boundary, not the older ViT
+training pipeline. Burgers continuum interpretation remains provisional under its
+recorded empirical refinement flags; wave targets are against semidiscrete truth.
+This EQ study does not establish an exact quadrature-free operator claim, and full
+field output still grows with mesh size. Accuracy improvement, wave robustness,
+training-seed/capacity controls, and the separate operator-paper claims remain open.
+Both approved experiment branches remain separate; no merge or worktree cleanup
+has been performed. A scoped integration is prepared in
+`reports/2026-09-10-modified-cp-integration.json`; the required user merge decision
+remains pending. The dated chronology below preserves all earlier provisional
+states, fixes, retractions and the checkpoint-specific CP representation diagnosis.
 
 **2026-09-06 user override — discard all prior wave experiments as trusted evidence.**
 The user stated: “Discard any old wave experiments. I don't think they were correct
@@ -6883,3 +6866,46 @@ owner commits. No merge or worktree cleanup is authorized or performed; original
 worktree paths and verified raw archives must remain available for existing reports.
 No scientific result is retracted; all new numerical evidence remains validation-only
 until the final evaluation jobs complete and pass their full-field audits.
+
+## 2026-09-10 — Completed modified-CP Burgers and wave pilot
+
+### ideate — frozen final evaluation, independent acceptance, and retained evidence
+
+The approved implementation and bounded comparison are complete. All 9 checkpoints passed the training audit. The global validation seal `48881620001affec08010aac56866b19f413777f9fdaefca902a81f0f20b1d90` was imported unchanged into every final evaluation. No checkpoint, quadrature rule, selected setting, cohort seed, or scientific solver was retuned after opening evaluation.
+
+Independent final checks accepted 5,488 paired invocations and 784 distinct full predictions. Each actual repetition is bound to its preserved output hash; every method uses the same reference for its case. Collection/source checks confirmed GPU, float64, highest matmul precision, private job directories, recorded seeds and immutable source commits. The owner and independent accounting reviews passed.
+
+- scalar Burgers 2D: job `3518411`, source `890a67b5ef313001d546735f8b32101f75849910`, GPU `NVIDIA A100-PCIE-40GB`; 1,008 invocations / 144 distinct full predictions. Handoff SHA256 `622d06a1643eef310564e8ab68962fd8897adb8105434168f76c906c7e1660e0`.
+- reflective Dirichlet waves: job `3518421`, source `7a571324213c7c761c7f6e3de19937a167fbd729`, GPU `['NVIDIA A100 80GB PCIe']`; 2,688 invocations / 384 distinct full predictions. Handoff SHA256 `cb7c52581cdb2661e97bc9a4977405b9f5ff200008c8829bdaed63a079774be9`.
+- absorbing Sommerfeld waves: job `3518429`, source `7a571324213c7c761c7f6e3de19937a167fbd729`, GPU `['NVIDIA A100-PCIE-40GB']`; 1,792 invocations / 256 distinct full predictions. Handoff SHA256 `bc5a6af1602625657d7f07abfafefe642b91f005b016892077c6dc1f4a1a8658`.
+
+| Case | Intervals/axis | CP | Modified CP | FiLM | Full solver (5% selection) |
+| --- | --- | --- | --- | --- | --- |
+| burgers2d | 256 | 45.29% / 29.46 ms | 34.58% / 55.77 ms | 9.839% / 108.8 ms | Newton–BiCGStab: 3.561% / 27.93 ms |
+| burgers2d | 512 | 45.27% / 29.58 ms | 34.55% / 56.7 ms | 12.11% / 161.1 ms | Newton–BiCGStab: 3.203% / 43.46 ms |
+| wave_reflective | 256 | 209% / 413.3 ms | 230.1% / 642 ms | 3.296e+04% / 1026 ms | CG: 2.118% / 109.1 ms |
+| wave_reflective | 512 | 208.5% / 413.1 ms | 204.5% / 835.9 ms | 1.173e+07% / 1992 ms | CG: 4.056% / 184.5 ms |
+| wave_absorbing | 256 | 28.77% / 357.5 ms | 61.54% / 1656 ms | 4724% / 1593 ms | CG: 1.407% / 134.6 ms |
+| wave_absorbing | 512 | 21.31% / 359.1 ms | 63% / 1624 ms | 1959% / 1598 ms | CG: 1.447% / 271.5 ms |
+
+Each cell gives worst trajectory error / median complete-query time on the untouched cohort. Worst error includes all cases, stored times, repetitions, and the largest physical component for waves, using fixed initial reference scales. Decoder columns use the best-error diagnostic setting frozen during validation; the full-solver column uses its validation-selected setting for the largest declared target. These errors differ, so the table is a cost-and-error comparison, not a matched-accuracy speedup. Finite numerical completion and weak stationarity do not establish physical accuracy or stability. The detailed tables also include the direct, spectral, and explicit wave controls.
+
+No ROM qualified at either target on validation, and no final diagnostic ROM passed the largest target across its full cohort. There is therefore no matched-target ROM speedup. Classical largest-target selections pass on all panels. The Burgers 512-interval classical configuration frozen for 1% fails evaluation at 1.32707% worst error (1/16 cases above target); it is retained as a failed target selection, not relabeled using evaluation data.
+
+Numerical completion does not establish physical stability. Burgers nonstationarity occurs in some initial fits; its subsequent recorded time steps are stationary. All reflective and absorbing CP/modified-CP queries are stationary yet physically inaccurate. FiLM also has capped wave evolution steps and large finite errors. The report separates initial, final, trajectory, displacement, velocity, energy-state, energy-balance and invariant diagnostics.
+
+Reference interpretation remains limited: Burgers refinement flags are empirical sensitivity checks, not error bounds; they use the appropriate validation or evaluation cohort and do not change the frozen reference-based qualification. Wave targets concern the verified semidiscrete reference. Wave validation retained bounded observations rather than full grids; the final wave fields, unlike those earlier observations, support complete independent physical-error recomputation.
+
+The final numerical results supersede the earlier provisional-only report. No universal modified-CP or FiLM advantage, continuous accuracy frontier, constant full-output cost, or exact quadrature-free claim is established by this pilot. Burgers validation timings preceded the checked equivalent CP mass contraction and cannot establish the fastest setting for its optimized final runner. No historical wave result is reinstated.
+
+All final archives were downloaded, independently hashed, checked by member, anchored under main, and removed from their exact remote attempt directories only after verification. Large fields stay outside Git; code, checkpoints, quadrature identities, proof files, raw timing arrays and audit metadata remain durable.
+
+- `artifacts/modcp-eq/2026-09-10/raw/burgers2d-evaluation01.tar`: 4,960,747,520 bytes; SHA256 `f39290ebcf47a962d5ef8664882101cb2abe5c52e7d1ef5f6f7f40855ccade9f`.
+- `artifacts/modcp-eq/2026-09-10/raw/wave-reflective-evaluation01.tar`: 53,227,530,240 bytes; SHA256 `11933f53190c9729aca52efd855b7cf26f2800f52fdb60e1026e3006ca378874`.
+- `artifacts/modcp-eq/2026-09-10/raw/wave-absorbing-evaluation01.tar`: 37,208,576,000 bytes; SHA256 `9490ab5556714b7023237adee2551afb72f46a2ec066935ffb6ade156f5e0260`.
+
+The final report and all tables are generated from run JSONs. The fixed evaluation-case-zero figures preserve the selected configurations and actual fields; a labeled symmetric logarithmic color scale exposes reflective FiLM excursions while keeping the reference visible, without clipping or changing numerical metrics.
+
+Burgers branch is `214671eee17b6c9930c1581e4d206b5d0110985a`; wave branch is `ab084c977ae668b3f637033752cd7a5786195ebb`. The prepared scoped integration manifest lists 1,026 files and 556,912,115 bytes with no existing main-path conflicts. It includes the required fresh-wave FOM dependencies and preserves both protocols; it does not apply files, merge histories or authorize deleting worktrees.
+
+Open: improve initial representation/fitting and wave evolution before claiming useful accuracy/speed trade-offs; assess training variance and matched capacity; investigate the separate exact/precomputed-operator method on its own scope. The approved bounded pilot has no remaining scientific run or collection task. Both worktrees and raw archives are retained, and the required user decision about integrating the completed benchmark remains pending.

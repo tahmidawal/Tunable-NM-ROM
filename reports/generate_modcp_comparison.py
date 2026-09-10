@@ -358,6 +358,7 @@ def representative_plots(paths, stem):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    from matplotlib.colors import Normalize, SymLogNorm
     output = []
     for source_path in paths:
         source_path = Path(source_path).resolve()
@@ -400,6 +401,14 @@ def representative_plots(paths, stem):
         fields = [('reference', truth), *fields]
         bound = max(float(np.max(np.abs(field[indices]))) for _, field in fields if field is not None)
         bound = max(bound, np.finfo(float).tiny)
+        reference_bound = max(float(np.max(np.abs(truth[indices]))), np.finfo(float).tiny)
+        if bound > 20*reference_bound:
+            threshold = .01*reference_bound
+            normalizer = SymLogNorm(linthresh=threshold, vmin=-bound, vmax=bound, base=10)
+            scale_label = f'Common symmetric log color scale; linear within ±{threshold:.3g}; no clipping'
+        else:
+            normalizer = Normalize(vmin=-bound, vmax=bound)
+            scale_label = 'Common linear field scale includes every shown prediction'
         fig, axes = plt.subplots(len(indices), len(fields), squeeze=False,
                                  figsize=(3*len(fields), 2.5*len(indices)), constrained_layout=True)
         dt = data['config'].get('observation_dt', .05)
@@ -411,12 +420,12 @@ def representative_plots(paths, stem):
                     ax.set_axis_off()
                     continue
                 plot = ax.imshow(field[frame].T, origin='lower', extent=(0, 1, 0, 1),
-                                 vmin=-bound, vmax=bound, cmap='RdBu_r', interpolation='nearest')
+                                 norm=normalizer, cmap='RdBu_r', interpolation='nearest')
                 ax.set_title(f'{method}, t={frame*dt:g}', fontsize=9)
                 ax.set(xlabel='x', ylabel='y')
         fig.colorbar(plot, ax=axes.ravel().tolist(), shrink=.7, label='Displacement / scalar field')
         fig.suptitle(f"{data['case_name']} — evaluation case zero — {n} intervals\n"
-                     'Validation-selected configurations; common field scale includes all predictions')
+                     f'Validation-selected configurations\n{scale_label}')
         for extension in ('png', 'pdf'):
             path = stem.with_name(stem.name+'-'+data['case_name']+'-fields').with_suffix('.'+extension)
             fig.savefig(path, dpi=160, metadata={'CreationDate': None, 'ModDate': None} if extension == 'pdf' else None)
@@ -804,6 +813,9 @@ def render_report(sources, args):
              'The new wave decoder represents displacement and velocity jointly. Its latent dimension is not '
              'the phase-state dimension of the earlier displacement-manifold experiments; changes relative to '
              'those earlier results do not isolate decoder architecture.', '',
+             'The representative figures share one color scale across methods. Their captions identify '
+             'any symmetric logarithmic scale used to display large excursions together with the reference '
+             'without clipping. This display choice does not change the fields or numerical errors.', '',
              *[f'![{name}: reference and decoder fields]({path})\n' for name, path in field_plots],
              '## Glossary', '',
              '- **CP:** a sum of products of learned one-dimensional spatial factors.',
@@ -855,6 +867,7 @@ def render_report(sources, args):
              '- **Energy discrepancy / reflective drift:** respectively the absolute prediction-minus-reference energy difference and change from the prediction\'s own start, divided by reference initial energy.',
              '- **Absorbing invariant error / drift:** absolute difference of the conserved area-plus-boundary moment from the reference or from the prediction\'s own start.',
              '- **Full-field audit:** independent NumPy recomputation from a saved full-grid prediction and reference.',
+             '- **Symmetric logarithmic color scale:** a color mapping that is linear near zero and logarithmic for larger positive or negative values.',
              '- **Campaign status / job ID / GPU / source commit:** completion state and identifiers of the recorded scientific execution.',
              '- **Single-seed pilot:** an initial comparison using one training random seed, without a training-variance claim.', '']
     stem.with_suffix('.json').write_text(json.dumps({'sources': sources,

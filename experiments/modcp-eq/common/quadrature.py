@@ -9,8 +9,10 @@ def solve_nnls(design,target,*,method='direct',maxiter=None):
     """Exact fixed-support positive least squares, optionally after economy QR.
 
     For a tall matrix A=QR, the original squared objective equals
-    ||Rw-Q.T b||² plus the constant ||(I-QQ.T)b||². The QR path changes neither
-    rank nor weights nor regularization. Returned norm is always ||Aw-b|| on
+    ||Rw-Q.T b||² plus the constant ||(I-QQ.T)b||². The QR path preserves the
+    feasible set and objective without truncation or regularization. Nonunique
+    optima or floating-point ties may produce different weights/supports.
+    Returned norm is always ||Aw-b|| on
     the original matrix, never the smaller transformed residual norm.
     """
     A=np.asarray(design,dtype=np.float64);b=np.asarray(target,dtype=np.float64)
@@ -50,6 +52,8 @@ def fit_quadrature(design,target,m,*,candidate_ids=None,nnls_method='direct'):
     A=np.asarray(design,dtype=np.float64);b=np.asarray(target,dtype=np.float64)
     assert A.ndim==2 and b.shape==(A.shape[0],) and np.isfinite(A).all() and np.isfinite(b).all()
     assert m<=A.shape[1]
+    if nnls_method not in ('direct','qr'):raise ValueError(f'unknown NNLS method {nnls_method}')
+    if nnls_method=='qr' and m>A.shape[0]:raise ValueError('QR fit requires target support no wider than the row count')
     start=time.perf_counter();support=[];weights=np.empty(0);r=b.copy()
     # Block additions reduce expensive host NNLS iterations without changing the
     # positive least-squares objective. Every active support gets a final refit.

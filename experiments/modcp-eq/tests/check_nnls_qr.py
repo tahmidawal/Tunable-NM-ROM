@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import numpy as np
-from common.quadrature import solve_nnls,nnls_diagnostics
+from common.quadrature import solve_nnls,nnls_diagnostics,fit_quadrature
 
 
 def main():
@@ -24,6 +24,11 @@ def main():
         assert dq['scaled_kkt']<1e-10
         if name=='full_rank':np.testing.assert_allclose(direct,qr,atol=1e-10,rtol=1e-9)
         print(name,dd['objective'],dq['objective'],dq['scaled_kkt'])
+    for action in (lambda:solve_nnls(np.ones((3,4)),np.ones(3),method='qr'),
+                   lambda:fit_quadrature(np.ones((3,8)),np.ones(3),4,nnls_method='qr')):
+        try:action()
+        except ValueError:pass
+        else:raise AssertionError('wide QR support was not rejected')
     print('PASS original objective, fitted values, nonnegativity and KKT; no support truncation or Gram system')
 
 

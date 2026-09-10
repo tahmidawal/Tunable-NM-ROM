@@ -107,6 +107,7 @@ def main():
             later = coarse(low, eigenvalues, ts[1:], nu, ix, wt)
             return jnp.concatenate((u0[None], later))
         names = ["nmrom"]+list(nonlinear_paths)+list(maps)+["fom_same_grid", "fom_coarse16"]
+        if "methods" in settings: names = settings["methods"]
         for case in result["cases"]:
             cid = case["case"]
             u0 = np.ascontiguousarray(hc.initial_field(jnp.asarray(hc.coords(n)), case["draw"])).reshape(n-1, n-1)

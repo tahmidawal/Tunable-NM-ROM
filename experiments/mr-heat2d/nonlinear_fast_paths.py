@@ -46,7 +46,7 @@ def make_projected_rollout(head_fn, budget, tolerance, outputs):
 def build(cfg, settings):
     initialize, original_rollout, readout = hc.make_query(cfg, settings["dt"])
     adaptive = make_adaptive_initialize(cfg, settings["initial_gate"])
-    projected_full = make_projected_rollout(hc.sc.head, cfg["step_budget"], cfg["gradient_tolerance"], len(cfg["times"]))
+    projected_full = make_projected_rollout(hc.sc.head, settings.get("full_projection_budget", cfg["step_budget"]), cfg["gradient_tolerance"], len(cfg["times"]))
     projected_two = make_projected_rollout(hc.sc.head, settings["projection_budget"], cfg["gradient_tolerance"], len(cfg["times"]))
     specs = {
         "nmrom_adaptive": (adaptive, original_rollout, False),

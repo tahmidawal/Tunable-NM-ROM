@@ -16,6 +16,10 @@ Every returned field remains $G h(z)$; free coefficients are only an intermediat
 
 Retain all finite outputs, residuals, gradients and termination reasons. A budget exit remains nonstationary even if its physical error meets a development target. Compare errors at every requested time, maximum error, initial error, energy decay, and speed against the rerun controls. The bounded variants do not silently invoke a fallback or use reference information. If a bounded variant fails, use the full-budget result to diagnose the loss rather than hide it. No test-case retraining or retrospective setting sweep.
 
+## Convergence follow-up
+
+The completed first development run exposed correction-budget exits in the full-budget projection control. A follow-up uses `config-nonlinear-convergence.json` to increase only that correction budget, keeping the original initializer and rerunning the original NMROM, free-bank model and both FOMs in the same allocation. This is a development follow-up selected from the earlier diagnostics, not independent paper confirmation. Accuracy and timing are regenerated together; no cost ratio mixes allocations.
+
 ## Glossary
 
 - **NMROM / FOM:** nonlinear-manifold reduced model / full-grid model.

@@ -134,7 +134,7 @@ def audit(record):
             if "refined_field" in rep:
                 check_metrics(pred, field(rep["refined_field"]), row["intervals"], rep["vs_half_step"])
     ns = result["settings"]["requested_intervals"]
-    assert len(counts) == len(ns)*len(result["cases"])*9
+    assert len(counts) == len(ns)*len(result["cases"])*len(result["settings"].get("methods",list({r["method"] for r in result["rows"]})))
     assert sum(counts.values()) == result["timed_invocations"]
     operator_errors = []
     for n in ns:

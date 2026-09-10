@@ -182,8 +182,7 @@ def collect(label):
     # provenance, source and actual requested result fields all remain durable.
     # Archive once without further compression. Individual NPZ serialization is
     # recorded in each result row; recompression can dominate large-panel I/O.
-    run(SSH+[f'cd {q} && tar --exclude=./out/training/data/training_fields.npy -cf ../{label}.tar . && sha256sum ../{label}.tar'], timeout=3600)
-    checksum = run(SSH+[f'sha256sum {shlex.quote(NAMESPACE+"/"+label+".tar")}'], timeout=1800).split()[0]
+    checksum = run(SSH+[f'cd {q} && tar --exclude=./out/training/data/training_fields.npy -cf ../{label}.tar . && sha256sum ../{label}.tar'], timeout=3600).split()[0]
     archive = record/'verified-cluster.tar'
     subprocess.run(['scp', *CONNECTION, '-q', 'tufts-login:'+NAMESPACE+'/'+label+'.tar', str(archive)], check=True, timeout=7200)
     if sha(archive) != checksum:

@@ -12,13 +12,56 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-09-07
+# Where things stand — 2026-09-10
 
 *(Fork point and mathematical scope refreshed during the 2026-09-04 architecture review.
 The dated chronology below preserves the earlier findings and retractions; the original
 2026-08-25 current-state block is in git history, commit c3f1726 and nearby.)*
 
 ## Read this first
+
+**2026-09-10 modified CP + EQ pilot — validation running, no final comparison yet.**
+In the `ideate` session the user approved a bounded comparison of original CP+EQ,
+latent-modulated CP factors+EQ, and FiLM-INR+EQ on Burgers 2D, reflective waves,
+and absorbing waves, then explicitly requested implementation. This is a separate
+architecture study from the completed separable/tensor replays below. Train at
+256 intervals and evaluate frozen weights at 256/512, with separate weights per
+PDE/boundary, new training/validation/evaluation cohorts, and 1%/5% accuracy targets.
+The approved bases/worktrees are `b4eddc8` → `2026-09-10-modcp-burgers2d` and
+`906cbe6` → `2026-09-10-modcp-wave2d`, each with matching `exp/` branch and
+its own owner. Cluster namespaces are `modcp_burgers2d_20260910` and
+`modcp_wave2d_20260910`. Burgers retains sign-upwind Newton–BiCGStab;
+the new joint displacement/velocity weak wave ROM uses Crank–Nicolson, with a
+verified SPD CG full-order step and fresh RK4/direct controls. All comparisons
+charge GPU-resident supplied fields through full GPU output. Shared decoder
+source is content-hashed between owners. Root coordinates reports/independent
+review on main. Full training completed in jobs `3500536`, `3500562`, and
+`3500623`; all nine checkpoints passed the independent float64, finiteness,
+shape, and completed-budget audit in `reports/2026-09-10-modified-cp-training-audit.json`.
+Burgers validation job `3500795` completed; its collected sources, frozen selections,
+quadrature identities, and every saved full-grid validation field passed owner and
+independent audits. Its checksum-verified archive is retained locally and the exact
+remote run directory was removed. No Burgers ROM qualifies at either declared
+target on either mesh. Wave comparison attempts
+`3501595`/`3501652` were stopped during offline fitting, before scientific
+validation or evaluation rows, to add a verified contraction of the same EQ
+weights for CP's fixed spatial factors. Completed offline work is archived.
+Replacement wave validation jobs `3503439`/`3503457` now run from `df737ba`,
+using checked CP contractions and the verified exact-QR NNLS option for new fits.
+Only the post-reset fresh wave reference is used. Validation retains every case/setting,
+with one paired invocation per case plus seven repetitions on predetermined case
+zero for timing selection; untouched evaluation retains seven repetitions on
+every case. All pilot validation selections, across both PDEs and wave boundaries,
+must be sealed before any untouched evaluation draw. Accuracy qualification and
+latent stationarity are reported separately.
+An independently reconstructed CP affine-span diagnostic confirms substantial
+initial-representation error on one Burgers validation case; source, numerical
+audit, and figure are `reports/audit_modcp_cp_span.py` and
+`reports/2026-09-10-modified-cp-span-audit.{json,png,pdf}`. This is a checkpoint-specific
+validation diagnosis, excluded from online selection and timing. Large raw archives
+are retained under main at `artifacts/modcp-eq/2026-09-10/raw/`, indexed by
+`reports/2026-09-10-modified-cp-raw-artifacts.json`, and kept out of Git history.
+No final evaluation performance result is established yet. No merge is authorized.
 
 **2026-09-06 user override — discard all prior wave experiments as trusted evidence.**
 The user stated: “Discard any old wave experiments. I don't think they were correct
@@ -6583,3 +6626,203 @@ separately, with results grouped by component count. Broader placement or narrow
 widths would require renewed reference checks. This is explanatory guidance, not a
 new experiment authorization. No previous verdict or wave evidence reset is retracted;
 the handoff remains a dated snapshot and the final cohort stays sealed.
+
+
+## 2026-09-10
+
+### ideate — modified CP + EQ implementation and independent review
+
+The user selected absorbing as the second wave boundary case, PDE-appropriate
+FOM comparisons, a three-arm/two-mesh pilot, 1% and 5% targets, and the proposed
+Burgers/wave bases. They then explicitly requested implementation. Created
+`exp/2026-09-10-modcp-burgers2d` from `b4eddc8` and
+`exp/2026-09-10-modcp-wave2d` from `906cbe6`; separate owners implement each.
+Root writes reporting/audit code on main. Shared decoder/training/LM source is
+owned by Burgers and copied with hashes into the wave tree. No merge authorized.
+
+Implemented independent NumPy field norms and qualification checks, generated
+report/frontier/paired-FOM comparison support, and nine passing CPU unit checks
+in `reports/modcp_audit.py`, `reports/generate_modcp_comparison.py`, and
+`reports/test_modcp_audit.py` (root commits `3415366`, `c7fc861`, `58d118a`).
+No scientific result table has been generated. Owner GPU component tests and
+an independent read-only review check decoder values/Jacobians, exact zero-mod
+CP recovery, cached versus direct evaluation, transferred meshes, full-support
+weak residual parity for sign-upwind Burgers and both fresh wave boundaries,
+and the symmetric CN wave step against separately assembled mass/stiffness/damping
+matrices. These are implementation checks, not accuracy/speed evidence.
+
+Review found and owners corrected masked CP endpoint parameters leaking into
+finer-grid interpolation, empty face-cache feature reshaping, derivative-finiteness
+handling, and completion/provenance/resume issues. The Dirichlet extension clamps
+coordinates within one training cell of a wall and multiplies the entire decoded
+field, including bias, by a linear boundary strip; training-grid predictions
+are preserved. Absorbing boundaries retain their full physical face operators.
+
+Implementation refinement: retain all solver settings and all validation cases,
+but measure each validation configuration/case once; use seven repetitions on
+predetermined validation case zero as a selection-time proxy. Final untouched
+evaluation retains two discarded warm-ups and seven paired timing/error repetitions
+on every selected configuration/case. Proxy timings are separate records and not
+final speed claims. This replaces redundant sevenfold timing of every rejected
+validation candidate, following both owners' runtime estimates. No configuration,
+physical family or cohort was removed. Physical target attainment and solver
+stationarity are separate: accurate capped finite rollouts may be frontier points,
+but are visibly nonstationary and never described as converged PDE solves.
+
+Cluster staging uses only approved separate paralab namespaces; intermittent
+load-balanced SSH failures are being retried with checksum and queue checks.
+Burgers smoke job `3500334` is queued at this entry. No scientific training result
+or speed claim exists yet. Training, evaluation, independent field audit, the
+generated final comparison, checksum collection/cleanup, and merge decision
+remain open.
+
+
+## 2026-09-10 — Modified CP pilot implementation checkpoint
+
+### ideate — training archived, validation running, evaluation sealed
+
+All nine trained decoder checkpoints are archived in the two approved worktrees.
+Root independently checked their float64 arrays, finiteness, code dimensions,
+completed update metadata, and hashes; the generated record is
+`reports/2026-09-10-modified-cp-training-audit.json` (root `e243983`).
+Training jobs were Burgers `3500536`, reflective `3500562`, absorbing `3500623`;
+owner checksum collection and exact remote cleanup completed. These are training
+completion results, not rollout accuracy evidence.
+
+Original wave comparison attempts `3501595`/`3501652` were explicitly cancelled
+while still fitting quadrature, before any scientific query timing or evaluation.
+Completed offline rules and immutable source were checksum-archived. The replacement
+source contracts fixed CP factors against the SAME selected EQ weights for weak
+linear terms; independent values/Jacobians and full-query checks passed. Burgers
+retains sampled FOM-exact nonlinear upwinding. This is an equivalent implementation
+of the EQ objective, not the exact quadrature-free method of the separate study.
+Full-field output still costs work proportional to requested field size.
+
+An optional economy-QR reduction before fixed-support NNLS was independently
+reviewed and checked on actual wave design matrices, including near dependency.
+The original-space residual and KKT diagnostics are preserved; no normal equations,
+jitter, rank truncation, or objective change is introduced. New wave fits explicitly
+use QR; completed direct fits remain unchanged with their original provenance.
+Local implementation-probe timings are not scientific cluster speed claims.
+
+Burgers validation `3500795` continues unchanged. Wave validation replacements
+`3503439`/`3503457` run from `df737ba` on separate GPU allocations with confirmed
+GPU/f64/highest preflight. Each boundary panel compares all methods within its
+own job; no cross-job wall-clock ratio is allowed. The complete coarse Burgers
+validation cohort has substantial ROM field error despite reported stationary
+solves. This is a partial validation finding; the owner is decomposing initialization
+and evolution error from stored fields, and the finer mesh remains in progress.
+No final evaluation cohort has been opened and no final speed/accuracy table exists.
+
+Root added fixed maximum-mesh, fixed-case representative plots; paired actual-field
+hash/error checks; declared mesh/horizon checks; selected-configuration coverage;
+reference diagnostics; timing outlier counts; and training parameter/budget tables.
+Twelve CPU checks pass, including independent wave energy norms, failure/coverage
+handling, wrong-output rejection, and incomplete/short-trajectory rejection. Root
+commits include `6954ea3`, `ca279e8`, `3eceb29`, and `4972438`.
+
+All three validation panels must finish and pass independent source-field/selection
+audits before `reports/seal_modcp_validation.py` creates the global cohort seal.
+Evaluation imports exact validation handoff/proof hashes and refuses an absent or
+inconsistent seal; each final evaluation panel re-times all chosen ROM/FOM settings
+on one allocation. Global sealing, final evaluations, collection/audits, generated
+comparison report, and merge decision remain open. No scientific result has been
+retracted at this checkpoint; smoke/cancelled attempts are excluded from claims.
+No merge is authorized. Unrelated dirty files on main remain untouched.
+
+
+## 2026-09-10 — Modified CP pilot validation diagnosis and acceptance checks
+
+### ideate — independent reconstruction bound and frozen-evaluation integrity
+
+The original CP checkpoint cannot represent one narrow Burgers validation initial
+field to the declared targets even with unrestricted spatial coefficients. Root
+and the independent reviewer reconstructed its affine spatial image directly from
+the saved factor tables, without importing the owner decoder. Full-grid least
+squares gives initial relative error 0.380448912540189,
+rank 64, and condition number 45.5976336887162.
+The generated audit and figure are
+`reports/2026-09-10-modified-cp-span-audit.{json,png,pdf}`; the reproducible script
+is `reports/audit_modcp_cp_span.py`. This is a lower bound for this frozen CP
+checkpoint on this validation field, not a universal CP limitation or a bound for
+modified CP/FiLM. Local multi-start snapshot fits for the latter remain achieved
+errors, not certified projection floors. Diagnostic job `3504454` used validation
+only, changed no trained checkpoint or online setting, and was collected and
+cleaned. Its archive and diagnostic inputs are anchored outside the worktrees
+through `reports/2026-09-10-modified-cp-raw-artifacts.json`.
+
+Independent report review found and fixed acceptance gaps before final data:
+null target declarations now require that no candidate qualifies; chosen settings
+must match the predetermined validation proxy ordering; all wave components are
+mandatory; every case must share the same reference arrays across methods and
+repetitions; nonfinite repetitions cannot borrow a successful initial/final error.
+The global seal binds all decoder checkpoints, configurations, cohort seeds,
+selection proofs and every quadrature file. The older immutable Burgers proof
+predates a separate proxy-file hash, so the coordinator checks both raw JSONL
+files against their embedded handoff arrays and records their hashes without
+rewriting original evidence. Independent CPU tests and serializer compatibility
+checks passed; root reporting commits are `458593d`, `03ce9fd`, `b85249f`, and
+`c9dc265`. Owner evaluation guards enforce the same frozen rule identities.
+
+Final wave predictions use lossless stored NPZ files with one checksummed full-grid
+reference per case/mesh. Every actual repetition retains its prediction hashes;
+identical outputs share a file, while distinct outputs retain separate files.
+Serialization occurs after timing. Root independently loads and checks both old
+self-contained and shared-reference formats. Wave validation retains bounded
+observation fields, so its unsaved full-grid validation errors cannot be
+independently reconstructed; full-grid independent error checks apply to final
+evaluation. This limit is stated explicitly in the report generator.
+
+Burgers validation `3500795`, reflective validation `3503439`, and absorbing
+validation `3503457` remain in progress. No final evaluation seed has been drawn.
+The cohort seal, final same-job comparisons, full result collection and acceptance,
+generated scientific comparison, and user merge decision remain open. No final
+accuracy/speed claim is made; no scientific result is retracted at this checkpoint.
+
+
+## 2026-09-10 — Completed Burgers validation and provisional comparison
+
+### ideate — accepted validation evidence, wave panels and evaluation still open
+
+Burgers validation job `3500795` completed on its recorded A100 allocation. Owner and
+root independently accepted the immutable handoff, frozen selections, quadrature
+identities and all 2592 paired full-field outputs. The retained archive is
+`artifacts/modcp-eq/2026-09-10/raw/burgers2d-validation01.tar`; the checksum manifest
+is `reports/2026-09-10-modified-cp-raw-artifacts.json`. The exact remote run directory
+was deleted after transport and member verification. Owner evidence is committed
+at `890a67b`; root acceptance is `af23a5c`.
+
+The following table is generated from the audited validation JSON. Each method
+uses its smallest worst-case error among the declared settings; this is a descriptive
+validation summary, not a new evaluation selection or a speed comparison.
+
+| Intervals | Method | Median case error | Worst case error | Failed cases | Nonstationary cases |
+| --- | --- | --- | --- | --- | --- |
+| 256 | cp | 0.113794368802 | 0.564571120654 | 0 | 0 |
+| 256 | modcp | 0.0708915083255 | 0.503952241499 | 0 | 0 |
+| 256 | film | 0.0442208069531 | 0.232941920269 | 0 | 0 |
+| 256 | newton_bicgstab | 0.00337924905167 | 0.0153352931667 | 0 | 0 |
+| 512 | cp | 0.11413403375 | 0.564476689132 | 0 | 0 |
+| 512 | modcp | 0.0729469311384 | 0.503540817967 | 0 | 2 |
+| 512 | film | 0.0531831193247 | 0.232758068844 | 0 | 0 |
+| 512 | newton_bicgstab | 0.00236118337729 | 0.00979636586929 | 0 | 0 |
+
+No ROM attained either declared target over the complete validation cohort.
+The largest ROM errors occur at initialization. Fine-grid modified-CP initial-fit
+cap exits are retained separately from numerical failures; its subsequent time
+steps satisfy the stored stationarity condition. The checkpoint-specific CP affine
+span bound remains a validation diagnosis only.
+
+The provisional generated report is
+`reports/2026-09-10-modified-cp-eq-comparison.md` (root `a36cc81`). It explicitly
+leaves final evaluation claims open. Root `81c05dc` exposes reference-refinement
+flags beside target claims without changing qualification against the fixed finer
+numerical reference; the indicators are not certified continuum error bounds.
+Root `618d809` adds frozen validation operating-point tables for the next rendering.
+
+Reflective validation `3503439` has entered its remaining fine-grid case sweep;
+absorbing validation `3503457` is completing fine-grid timing proxies. Both remain
+on immutable staged source `df737ba`; transport switched to verified login-p03
+after login-p02 banner timeouts. No scientific allocation changed. The global
+validation seal, untouched evaluation, final generated report and merge decision
+remain open. No final speedup is established and no scientific result is retracted.

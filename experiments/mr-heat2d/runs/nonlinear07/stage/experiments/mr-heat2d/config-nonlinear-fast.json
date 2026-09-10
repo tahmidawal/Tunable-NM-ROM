@@ -1,0 +1,33 @@
+{
+  "schema": "heat-nonlinear-fast-v1",
+  "checkpoint": "expanded_seed790715",
+  "requested_intervals": [
+    64,
+    1024
+  ],
+  "cohorts": [
+    {
+      "name": "original",
+      "seed": 790711,
+      "count": 4
+    },
+    {
+      "name": "fresh",
+      "seed": 790716,
+      "count": 8
+    }
+  ],
+  "timing_repetitions": 3,
+  "dt": 0.025,
+  "gradient_tolerance": 1e-05,
+  "reference_pair": [
+    1024,
+    2048
+  ],
+  "coarse_solver_intervals": 16,
+  "primary_method": "exp_project_full_adaptive",
+  "accuracy_target": 0.05,
+  "final_cohort_opened": false,
+  "initial_gate": 0.04,
+  "projection_budget": 2
+}

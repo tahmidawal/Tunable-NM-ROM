@@ -1,0 +1,61 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.30:/projects/paralab  4.6T  4.2T  449G  91% /cluster/tufts/paralab
+Thu Sep 10 18:37:11 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  |   00000000:1E:00.0 Off |                    0 |
+| N/A   40C    P0             43W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+reference passed 0
+reference passed 1
+reference passed 2
+reference passed 3
+reference passed 4
+reference passed 5
+reference passed 6
+reference passed 7
+reference passed 8
+reference passed 9
+reference passed 10
+reference passed 11
+timed 64 0 {'nmrom': np.float64(13.7892), 'exp_project_full': np.float64(25.3777), 'linear_weak_exact': np.float64(0.105), 'fom_same_grid': np.float64(0.1883), 'fom_coarse16': np.float64(0.1771)}
+timed 64 1 {'nmrom': np.float64(11.4397), 'exp_project_full': np.float64(6.1293), 'linear_weak_exact': np.float64(0.1147), 'fom_same_grid': np.float64(0.1746), 'fom_coarse16': np.float64(0.1776)}
+timed 64 2 {'nmrom': np.float64(12.7211), 'exp_project_full': np.float64(9.1114), 'linear_weak_exact': np.float64(0.1131), 'fom_same_grid': np.float64(0.1888), 'fom_coarse16': np.float64(0.1692)}
+timed 64 3 {'nmrom': np.float64(10.9912), 'exp_project_full': np.float64(5.6656), 'linear_weak_exact': np.float64(0.1088), 'fom_same_grid': np.float64(0.1745), 'fom_coarse16': np.float64(0.1707)}
+timed 64 4 {'nmrom': np.float64(12.8932), 'exp_project_full': np.float64(6.4558), 'linear_weak_exact': np.float64(0.115), 'fom_same_grid': np.float64(0.1892), 'fom_coarse16': np.float64(0.1798)}
+timed 64 5 {'nmrom': np.float64(12.3499), 'exp_project_full': np.float64(6.2277), 'linear_weak_exact': np.float64(0.1087), 'fom_same_grid': np.float64(0.1809), 'fom_coarse16': np.float64(0.1691)}
+timed 64 6 {'nmrom': np.float64(13.8256), 'exp_project_full': np.float64(9.9899), 'linear_weak_exact': np.float64(0.1194), 'fom_same_grid': np.float64(0.215), 'fom_coarse16': np.float64(0.183)}
+timed 64 7 {'nmrom': np.float64(12.2877), 'exp_project_full': np.float64(6.164), 'linear_weak_exact': np.float64(0.1144), 'fom_same_grid': np.float64(0.1863), 'fom_coarse16': np.float64(0.1772)}
+timed 64 8 {'nmrom': np.float64(13.5682), 'exp_project_full': np.float64(14.7565), 'linear_weak_exact': np.float64(0.1079), 'fom_same_grid': np.float64(0.1802), 'fom_coarse16': np.float64(0.169)}
+timed 64 9 {'nmrom': np.float64(13.5479), 'exp_project_full': np.float64(6.6961), 'linear_weak_exact': np.float64(0.1122), 'fom_same_grid': np.float64(0.1825), 'fom_coarse16': np.float64(0.1795)}
+timed 64 10 {'nmrom': np.float64(16.55), 'exp_project_full': np.float64(10.7495), 'linear_weak_exact': np.float64(0.1139), 'fom_same_grid': np.float64(0.1826), 'fom_coarse16': np.float64(0.169)}
+timed 64 11 {'nmrom': np.float64(12.7443), 'exp_project_full': np.float64(6.9155), 'linear_weak_exact': np.float64(0.1164), 'fom_same_grid': np.float64(0.1848), 'fom_coarse16': np.float64(0.175)}
+timed 1024 0 {'nmrom': np.float64(14.2271), 'exp_project_full': np.float64(25.5581), 'linear_weak_exact': np.float64(0.5887), 'fom_same_grid': np.float64(1.0661), 'fom_coarse16': np.float64(0.5309)}
+timed 1024 1 {'nmrom': np.float64(12.0246), 'exp_project_full': np.float64(6.7458), 'linear_weak_exact': np.float64(0.5876), 'fom_same_grid': np.float64(1.1409), 'fom_coarse16': np.float64(0.3527)}
+timed 1024 2 {'nmrom': np.float64(12.8506), 'exp_project_full': np.float64(9.3407), 'linear_weak_exact': np.float64(0.6202), 'fom_same_grid': np.float64(1.0849), 'fom_coarse16': np.float64(0.3151)}
+timed 1024 3 {'nmrom': np.float64(11.5804), 'exp_project_full': np.float64(6.015), 'linear_weak_exact': np.float64(0.5703), 'fom_same_grid': np.float64(0.9892), 'fom_coarse16': np.float64(0.3854)}
+timed 1024 4 {'nmrom': np.float64(13.0462), 'exp_project_full': np.float64(6.8118), 'linear_weak_exact': np.float64(0.6141), 'fom_same_grid': np.float64(1.1644), 'fom_coarse16': np.float64(0.5521)}
+timed 1024 5 {'nmrom': np.float64(12.3105), 'exp_project_full': np.float64(6.7474), 'linear_weak_exact': np.float64(0.6119), 'fom_same_grid': np.float64(1.1489), 'fom_coarse16': np.float64(0.4226)}
+timed 1024 6 {'nmrom': np.float64(13.3724), 'exp_project_full': np.float64(9.7064), 'linear_weak_exact': np.float64(0.5721), 'fom_same_grid': np.float64(1.1591), 'fom_coarse16': np.float64(0.352)}
+timed 1024 7 {'nmrom': np.float64(12.177), 'exp_project_full': np.float64(6.6672), 'linear_weak_exact': np.float64(0.6028), 'fom_same_grid': np.float64(1.0562), 'fom_coarse16': np.float64(0.3698)}
+timed 1024 8 {'nmrom': np.float64(13.4363), 'exp_project_full': np.float64(10.3699), 'linear_weak_exact': np.float64(0.6773), 'fom_same_grid': np.float64(1.0853), 'fom_coarse16': np.float64(0.34)}
+timed 1024 9 {'nmrom': np.float64(14.1914), 'exp_project_full': np.float64(7.1846), 'linear_weak_exact': np.float64(0.5826), 'fom_same_grid': np.float64(1.051), 'fom_coarse16': np.float64(0.2893)}
+timed 1024 10 {'nmrom': np.float64(16.0802), 'exp_project_full': np.float64(10.918), 'linear_weak_exact': np.float64(0.5956), 'fom_same_grid': np.float64(1.0648), 'fom_coarse16': np.float64(0.3209)}
+timed 1024 11 {'nmrom': np.float64(12.4836), 'exp_project_full': np.float64(7.2611), 'linear_weak_exact': np.float64(0.6623), 'fom_same_grid': np.float64(1.1084), 'fom_coarse16': np.float64(0.2873)}
+NONLINEAR FAST HEAT COMPLETE

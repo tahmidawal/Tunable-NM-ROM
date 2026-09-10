@@ -1,0 +1,623 @@
+{
+  "date": "2026-09-10",
+  "session": "Historical Poisson protocol replay",
+  "question": "Restore the original device-resident quadrature-free comparison against same-grid CG",
+  "owner_worktree": "worktrees/2026-09-07-mr-poisson2d",
+  "source_commit": "54a70f8c451c3f9804235b817fd960dcf9769c42",
+  "final_job": 3492398,
+  "gpu": "NVIDIA A100-PCIE-40GB",
+  "meshes": [
+    128,
+    256,
+    512,
+    1024
+  ],
+  "execution_order": [
+    1024,
+    128,
+    256,
+    512
+  ],
+  "primary_tau": 0.001,
+  "secondary_tau": 0.01,
+  "sources_per_cohort": 16,
+  "repetitions_per_subject_source": 12,
+  "comparison_scope": "Same GPU allocation; original frozen per-mesh checkpoints and original source cohorts; GPU input/output query with source projection, trust-LM and full interior decode; no transfer or setup charged",
+  "primary_results": [
+    {
+      "N": 128,
+      "cohort": "heldout_seed0",
+      "tau": 0.001,
+      "rom_ms": 3.2681082375347614,
+      "cg_ms": 4.057029669638723,
+      "cg_tol": 0.1,
+      "cg_over_rom": 1.2414000316889964,
+      "spectral_ms": 0.12287718709558249,
+      "spectral_over_rom": 0.03759887315980473,
+      "mean_error": 0.03062619669856106,
+      "median_error": 0.022518681363014867,
+      "worst_error": 0.08080006339921576,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    },
+    {
+      "N": 128,
+      "cohort": "fresh_seed1",
+      "tau": 0.001,
+      "rom_ms": 3.630614432040602,
+      "cg_ms": 4.093332507181913,
+      "cg_tol": 0.1,
+      "cg_over_rom": 1.1274489714627278,
+      "spectral_ms": 0.1232801005244255,
+      "spectral_over_rom": 0.033955712685011116,
+      "mean_error": 0.02891571667420742,
+      "median_error": 0.013774492257306314,
+      "worst_error": 0.15768373902487917,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    },
+    {
+      "N": 256,
+      "cohort": "heldout_seed0",
+      "tau": 0.001,
+      "rom_ms": 2.9708872898481786,
+      "cg_ms": 8.458120457362384,
+      "cg_tol": 0.1,
+      "cg_over_rom": 2.8470014619082433,
+      "spectral_ms": 0.13578968355432153,
+      "spectral_over_rom": 0.045706777237335315,
+      "mean_error": 0.03141493026083182,
+      "median_error": 0.026246353395314358,
+      "worst_error": 0.0758560252967887,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    },
+    {
+      "N": 256,
+      "cohort": "fresh_seed777",
+      "tau": 0.001,
+      "rom_ms": 2.996761992108077,
+      "cg_ms": 8.478691976051778,
+      "cg_tol": 0.1,
+      "cg_over_rom": 2.8292844070968175,
+      "spectral_ms": 0.135483976919204,
+      "spectral_over_rom": 0.045210122550939584,
+      "mean_error": 0.038067897278489915,
+      "median_error": 0.03669817071731279,
+      "worst_error": 0.09482503596048777,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    },
+    {
+      "N": 512,
+      "cohort": "heldout_seed0",
+      "tau": 0.001,
+      "rom_ms": 3.217455290723592,
+      "cg_ms": 25.68776928819716,
+      "cg_tol": 0.1,
+      "cg_over_rom": 7.983877619763316,
+      "spectral_ms": 0.21803949493914843,
+      "spectral_over_rom": 0.06776768447032942,
+      "mean_error": 0.03153807389931013,
+      "median_error": 0.02527970366538544,
+      "worst_error": 0.0805651733253863,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    },
+    {
+      "N": 512,
+      "cohort": "fresh_seed20260823",
+      "tau": 0.001,
+      "rom_ms": 2.98159581143409,
+      "cg_ms": 25.88130277581513,
+      "cg_tol": 0.1,
+      "cg_over_rom": 8.68035254026156,
+      "spectral_ms": 0.21759048104286194,
+      "spectral_over_rom": 0.07297785977845371,
+      "mean_error": 0.04597076273189116,
+      "median_error": 0.040122223607918464,
+      "worst_error": 0.11360919442598866,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    },
+    {
+      "N": 1024,
+      "cohort": "heldout_seed0",
+      "tau": 0.001,
+      "rom_ms": 4.005349415820092,
+      "cg_ms": 101.34215647121891,
+      "cg_tol": 0.1,
+      "cg_over_rom": 25.30170178685127,
+      "spectral_ms": 0.7215052610263228,
+      "spectral_over_rom": 0.18013541045297174,
+      "mean_error": 0.03476481458572767,
+      "median_error": 0.029001279098508616,
+      "worst_error": 0.08240432434482799,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    },
+    {
+      "N": 1024,
+      "cohort": "fresh_seed20260823",
+      "tau": 0.001,
+      "rom_ms": 4.144062229897827,
+      "cg_ms": 102.14200796326622,
+      "cg_tol": 0.1,
+      "cg_over_rom": 24.647797812096215,
+      "spectral_ms": 0.7210715557448566,
+      "spectral_over_rom": 0.17400114084740345,
+      "mean_error": 0.050570475938246,
+      "median_error": 0.0453406256624854,
+      "worst_error": 0.12268335302355492,
+      "censored_fraction": 1.0,
+      "stop_reasons": {
+        "1": 16
+      }
+    }
+  ],
+  "checks": {
+    "meshes": [
+      {
+        "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n1024.json",
+        "result_sha256": "fd1d5f1aefa23e6ac83e7acbf23480183b4c5eb14d74cdc5400de504e04d77d4",
+        "fields_sha256": "1b75deededbfd68a7f275591a898d484d33e2e83bc41dd46f027eb5355e9f865",
+        "N": 1024,
+        "job": "3492398",
+        "reconstructed_timed_field_errors": 416,
+        "maximum_differences": {
+          "error": 2.7755575615628914e-17,
+          "timing_ms": 0.0
+        },
+        "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+        "passed": true
+      },
+      {
+        "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n128.json",
+        "result_sha256": "1edea8feb6b426e8c334396a837f7c43071e4129283b5dc2251317abd7d7bea3",
+        "fields_sha256": "5710d11763e3cebb3698c3a2b1b1a3ceb7e46255cbaa9fb51ea772bc48275eba",
+        "N": 128,
+        "job": "3492398",
+        "reconstructed_timed_field_errors": 416,
+        "maximum_differences": {
+          "error": 2.7755575615628914e-17,
+          "timing_ms": 0.0
+        },
+        "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+        "passed": true
+      },
+      {
+        "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n256.json",
+        "result_sha256": "b2398620623dc49826a107ec089d3dfcaf688419a2760c439a95bc00f5b21397",
+        "fields_sha256": "ad4d0c4edf4369267bd19087510378442d6f9d1d0fa94fe3c23eb450d70e7640",
+        "N": 256,
+        "job": "3492398",
+        "reconstructed_timed_field_errors": 416,
+        "maximum_differences": {
+          "error": 1.3877787807814457e-17,
+          "timing_ms": 0.0
+        },
+        "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+        "passed": true
+      },
+      {
+        "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n512.json",
+        "result_sha256": "2b6103569354f9c4aa90f8a77944e7aa9bb687f47b85f3b7c8361c1c76cb740c",
+        "fields_sha256": "322818ffb8925469f36e6ac7a597b22783d8b224c0e6c05d2cddc984fe28e09b",
+        "N": 512,
+        "job": "3492398",
+        "reconstructed_timed_field_errors": 416,
+        "maximum_differences": {
+          "error": 2.7755575615628914e-17,
+          "timing_ms": 0.0
+        },
+        "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+        "passed": true
+      }
+    ],
+    "complete_four_mesh_ladder": true,
+    "reconstructed_timed_field_errors": 1664,
+    "passed": true
+  },
+  "historical_accuracy": {
+    "compared_rows": 24,
+    "rows": [
+      {
+        "N": 128,
+        "method": "full",
+        "tau": 0.001,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 2.240568841571644e-14,
+          "err_rel_l2_max": 4.579669976578771e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": false,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 128,
+        "method": "full",
+        "tau": 0.001,
+        "cohort": "fresh_seed1",
+        "differences": {
+          "err_rel_l2": 4.191091917959966e-15,
+          "err_rel_l2_max": 3.3306690738754696e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 128,
+        "method": "full",
+        "tau": 0.01,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 4.163336342344337e-17,
+          "err_rel_l2_max": 4.579669976578771e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 128,
+        "method": "full",
+        "tau": 0.01,
+        "cohort": "fresh_seed1",
+        "differences": {
+          "err_rel_l2": 2.42861286636753e-17,
+          "err_rel_l2_max": 3.3306690738754696e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 128,
+        "method": "qf",
+        "tau": 0.001,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 1.734723475976807e-17,
+          "err_rel_l2_max": 1.3877787807814457e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 128,
+        "method": "qf",
+        "tau": 0.001,
+        "cohort": "fresh_seed1",
+        "differences": {
+          "err_rel_l2": 9.200973316580985e-15,
+          "err_rel_l2_max": 2.498001805406602e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 128,
+        "method": "qf",
+        "tau": 0.01,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 1.0408340855860843e-17,
+          "err_rel_l2_max": 1.3877787807814457e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 128,
+        "method": "qf",
+        "tau": 0.01,
+        "cohort": "fresh_seed1",
+        "differences": {
+          "err_rel_l2": 9.13852327144582e-15,
+          "err_rel_l2_max": 2.498001805406602e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json",
+        "historical_sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258"
+      },
+      {
+        "N": 256,
+        "method": "full",
+        "tau": 0.001,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 2.0816681711721685e-17,
+          "err_rel_l2_max": 5.551115123125783e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 256,
+        "method": "full",
+        "tau": 0.001,
+        "cohort": "fresh_seed777",
+        "differences": {
+          "err_rel_l2": 2.7755575615628914e-17,
+          "err_rel_l2_max": 1.3877787807814457e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 256,
+        "method": "full",
+        "tau": 0.01,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 2.1510571102112408e-16,
+          "err_rel_l2_max": 5.551115123125783e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 256,
+        "method": "full",
+        "tau": 0.01,
+        "cohort": "fresh_seed777",
+        "differences": {
+          "err_rel_l2": 3.469446951953614e-17,
+          "err_rel_l2_max": 1.096345236817342e-15,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 256,
+        "method": "qf",
+        "tau": 0.001,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 7.084680064828319e-13,
+          "err_rel_l2_max": 2.7755575615628914e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 256,
+        "method": "qf",
+        "tau": 0.001,
+        "cohort": "fresh_seed777",
+        "differences": {
+          "err_rel_l2": 1.3877787807814457e-17,
+          "err_rel_l2_max": 2.3592239273284576e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 256,
+        "method": "qf",
+        "tau": 0.01,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 7.049916206369744e-13,
+          "err_rel_l2_max": 2.7755575615628914e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 256,
+        "method": "qf",
+        "tau": 0.01,
+        "cohort": "fresh_seed777",
+        "differences": {
+          "err_rel_l2": 2.7755575615628914e-17,
+          "err_rel_l2_max": 1.0824674490095276e-15,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json",
+        "historical_sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1"
+      },
+      {
+        "N": 512,
+        "method": "full",
+        "tau": 0.001,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 6.938893903907228e-18,
+          "err_rel_l2_max": 6.938893903907228e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      },
+      {
+        "N": 512,
+        "method": "full",
+        "tau": 0.001,
+        "cohort": "fresh_seed20260823",
+        "differences": {
+          "err_rel_l2": 6.938893903907228e-18,
+          "err_rel_l2_max": 2.0816681711721685e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      },
+      {
+        "N": 512,
+        "method": "full",
+        "tau": 0.01,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 1.3877787807814457e-17,
+          "err_rel_l2_max": 6.938893903907228e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      },
+      {
+        "N": 512,
+        "method": "full",
+        "tau": 0.01,
+        "cohort": "fresh_seed20260823",
+        "differences": {
+          "err_rel_l2": 6.938893903907228e-18,
+          "err_rel_l2_max": 2.0816681711721685e-16,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      },
+      {
+        "N": 512,
+        "method": "qf",
+        "tau": 0.001,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 1.131733595727269e-14,
+          "err_rel_l2_max": 6.938893903907228e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      },
+      {
+        "N": 512,
+        "method": "qf",
+        "tau": 0.001,
+        "cohort": "fresh_seed20260823",
+        "differences": {
+          "err_rel_l2": 0.0,
+          "err_rel_l2_max": 1.3877787807814457e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      },
+      {
+        "N": 512,
+        "method": "qf",
+        "tau": 0.01,
+        "cohort": "heldout_seed0",
+        "differences": {
+          "err_rel_l2": 1.1261824806041432e-14,
+          "err_rel_l2_max": 6.938893903907228e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      },
+      {
+        "N": 512,
+        "method": "qf",
+        "tau": 0.01,
+        "cohort": "fresh_seed20260823",
+        "differences": {
+          "err_rel_l2": 6.938893903907228e-18,
+          "err_rel_l2_max": 1.3877787807814457e-17,
+          "censored_frac": 0.0
+        },
+        "stop_reasons_match": true,
+        "historical_source": "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json",
+        "historical_sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566"
+      }
+    ],
+    "max_mean_error_difference": 7.084680064828319e-13,
+    "max_worst_error_difference": 1.096345236817342e-15,
+    "note": "Accuracy and stopping fidelity only; timing from different jobs is not compared. N1024 QF is an extension.",
+    "passed": true
+  },
+  "initial_attempt": {
+    "job_id": 3492150,
+    "status": "failed_at_N1024_truth_gate_before_any_N1024_timing",
+    "completed_meshes": [
+      128,
+      256,
+      512
+    ],
+    "failed_mesh": 1024,
+    "observed_truth_residual": 3.893633676811303e-10,
+    "incorrectly_inherited_through512_gate": 1e-10,
+    "original_N1024_gate": 1e-09,
+    "original_gate_source": "reference/sep_poisson_N1024_K16_R64.json",
+    "no_N1024_timed_results": true,
+    "correction": "Restore original N1024 gate and add independent dense-spectral field agreement before timing; retain CG tol1e-13",
+    "superseded_by": "replay02"
+  },
+  "retraction": "Attempt01 never produced N1024 timings and does not supply any primary-table row; the final table uses only complete replay02",
+  "limitations": [
+    "N1024 QF is an extension, because old QF ladder ended at512",
+    "Direct spectral baseline remains faster on this constant-coefficient rectangular Poisson problem",
+    "Primary tau.001 solves stop outside the accepted residual-reduction reason; actual errors and stop reasons remain reported",
+    "Historical development cohorts and per-mesh weights; not newly sealed final confirmation or frozen-weight transfer"
+  ],
+  "remote_cleanup": [
+    {
+      "remote": "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/historical_replay01",
+      "results_and_metadata_checksum_verified": true,
+      "source_stage_checksum_verified": true,
+      "exact_remote_directory_deleted": true,
+      "verified_absent": true
+    },
+    {
+      "remote": "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/historical_replay02",
+      "results_and_metadata_checksum_verified": true,
+      "source_stage_checksum_verified": true,
+      "exact_remote_directory_deleted": true,
+      "verified_absent": true
+    }
+  ],
+  "archive": "ARCHIVE.json plus ARCHIVE.sha256 and archive/ parts; extracted full float64 NPZs available locally",
+  "left_open": "Paper confirmation and broader use cases; no additional GPU study submitted in this session",
+  "merge_status": "Existing approved branch kept separate; no merge performed"
+}

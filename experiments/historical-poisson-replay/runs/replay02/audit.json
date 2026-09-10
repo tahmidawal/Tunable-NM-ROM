@@ -1,0 +1,63 @@
+{
+  "meshes": [
+    {
+      "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n1024.json",
+      "result_sha256": "fd1d5f1aefa23e6ac83e7acbf23480183b4c5eb14d74cdc5400de504e04d77d4",
+      "fields_sha256": "1b75deededbfd68a7f275591a898d484d33e2e83bc41dd46f027eb5355e9f865",
+      "N": 1024,
+      "job": "3492398",
+      "reconstructed_timed_field_errors": 416,
+      "maximum_differences": {
+        "error": 2.7755575615628914e-17,
+        "timing_ms": 0.0
+      },
+      "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+      "passed": true
+    },
+    {
+      "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n128.json",
+      "result_sha256": "1edea8feb6b426e8c334396a837f7c43071e4129283b5dc2251317abd7d7bea3",
+      "fields_sha256": "5710d11763e3cebb3698c3a2b1b1a3ceb7e46255cbaa9fb51ea772bc48275eba",
+      "N": 128,
+      "job": "3492398",
+      "reconstructed_timed_field_errors": 416,
+      "maximum_differences": {
+        "error": 2.7755575615628914e-17,
+        "timing_ms": 0.0
+      },
+      "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+      "passed": true
+    },
+    {
+      "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n256.json",
+      "result_sha256": "b2398620623dc49826a107ec089d3dfcaf688419a2760c439a95bc00f5b21397",
+      "fields_sha256": "ad4d0c4edf4369267bd19087510378442d6f9d1d0fa94fe3c23eb450d70e7640",
+      "N": 256,
+      "job": "3492398",
+      "reconstructed_timed_field_errors": 416,
+      "maximum_differences": {
+        "error": 1.3877787807814457e-17,
+        "timing_ms": 0.0
+      },
+      "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+      "passed": true
+    },
+    {
+      "result": "experiments/historical-poisson-replay/runs/replay02/out/poisson_n512.json",
+      "result_sha256": "2b6103569354f9c4aa90f8a77944e7aa9bb687f47b85f3b7c8361c1c76cb740c",
+      "fields_sha256": "322818ffb8925469f36e6ac7a597b22783d8b224c0e6c05d2cddc984fe28e09b",
+      "N": 512,
+      "job": "3492398",
+      "reconstructed_timed_field_errors": 416,
+      "maximum_differences": {
+        "error": 2.7755575615628914e-17,
+        "timing_ms": 0.0
+      },
+      "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+      "passed": true
+    }
+  ],
+  "complete_four_mesh_ladder": true,
+  "reconstructed_timed_field_errors": 1664,
+  "passed": true
+}

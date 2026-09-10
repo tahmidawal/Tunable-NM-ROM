@@ -98,6 +98,33 @@ def wave_metrics(u, v, truth_u, truth_v, n, boundary, speed):
             wave_error_series(u, v, truth_u, truth_v, n, boundary, speed).items()}
 
 
+def absorbing_invariant(u, v, n, speed):
+    """Area integral of velocity plus speed times the physical boundary integral."""
+    mass, axis = wave_weights(n, 'absorbing')
+    if u.shape != v.shape or u.shape[-2:] != mass.shape:
+        raise ValueError('Absorbing invariant field shape does not match mesh')
+    edges = (np.sum((u[..., 0, :]+u[..., -1, :])*axis, axis=-1) +
+             np.sum((u[..., :, 0]+u[..., :, -1])*axis, axis=-1))
+    return np.sum(mass*v, axis=(-2, -1))+speed*edges
+
+
+def wave_balance_diagnostics(u, v, truth_u, truth_v, n, boundary, speed):
+    predicted = wave_energy_squared(u, v, n, boundary, speed)
+    reference = wave_energy_squared(truth_u, truth_v, n, boundary, speed)
+    scale = float(reference[0])
+    result = dict(predicted_energy_over_reference_initial=(predicted/scale).tolist(),
+                  reference_energy_over_reference_initial=(reference/scale).tolist(),
+                  maximum_reference_scaled_energy_discrepancy=float(np.max(np.abs(predicted-reference))/scale),
+                  maximum_reference_scaled_energy_change_from_own_start=float(np.max(np.abs(predicted-predicted[0]))/scale))
+    if boundary == 'absorbing':
+        observed = absorbing_invariant(u, v, n, speed)
+        target = absorbing_invariant(truth_u, truth_v, n, speed)
+        result.update(predicted_invariant=observed.tolist(), reference_invariant=target.tolist(),
+                      maximum_absolute_invariant_error=float(np.max(np.abs(observed-target))),
+                      maximum_absolute_invariant_drift=float(np.max(np.abs(observed-observed[0]))))
+    return result
+
+
 def burgers_error_series(u, truth):
     u, truth = np.asarray(u), np.asarray(truth)
     if u.shape != truth.shape or u.ndim != 3 or not np.isfinite(u).all() or not np.isfinite(truth).all():
@@ -213,11 +240,15 @@ def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10,
         series = wave_error_series(data['u'], data['v'], data['truth_u'], data['truth_v'],
                               int(data['intervals']), str(data['boundary']), float(data['speed']))
     actual = {name: float(values.max()) for name, values in series.items()}
+    balance = None if case_name == 'burgers2d' else wave_balance_diagnostics(
+        data['u'], data['v'], data['truth_u'], data['truth_v'],
+        int(data['intervals']), str(data['boundary']), float(data['speed']))
     for name, value in actual.items():
         if name not in expected_errors or not np.isclose(value, expected_errors[name], rtol=rtol, atol=atol):
             raise ValueError(f'Independent field error mismatch: {path}: {name}: {value} vs {expected_errors.get(name)}')
     return {'path': str(path), 'sha256': digest(path), 'errors': actual, 'output_sha256': output_hashes,
             'reference_sha256': reference_hashes,
             'reference_metadata': {key: data[key].item() for key in ('intervals', 'boundary', 'speed') if key in data},
+            'wave_balance': balance,
             'shared_reference': {'path': str(reference_path), 'sha256': reference_sha256} if reference_path else None,
             'error_series': {name: values.tolist() for name, values in series.items()}}

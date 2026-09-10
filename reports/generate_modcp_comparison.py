@@ -149,6 +149,12 @@ def summarize_input(path):
         for label, index in (('initial', 0), ('final', -1)):
             summary[f'worst_{label}_error'] = max(
                 values[index] for audit in group_audits for values in audit['error_series'].values()) if complete else None
+        if data['case_name'] != 'burgers2d':
+            for key in ('maximum_reference_scaled_energy_discrepancy',
+                        'maximum_reference_scaled_energy_change_from_own_start',
+                        'maximum_absolute_invariant_error', 'maximum_absolute_invariant_drift'):
+                values = [audit['wave_balance'].get(key) for audit in group_audits] if complete else []
+                summary[key] = max(values) if values and all(value is not None for value in values) else None
     return dict(source=relative(path), sha256=digest(path), status=data['status'],
                 case_name=data['case_name'], provenance=data['provenance'], config=config,
                 selections=data.get('selections', []), summaries=summaries,
@@ -370,7 +376,7 @@ def main():
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
     comparisons = []
-    phase_errors, wave_components = [], []
+    phase_errors, wave_components, wave_balances = [], [], []
     for source in sources:
         seen_phase = set()
         for row in source['summaries']:
@@ -386,6 +392,13 @@ def main():
                                         *[f"{100*row['worst_error_by_component'][name]:.6g}%"
                                           if row['worst_error_by_component'].get(name) is not None else 'incomplete/nonfinite'
                                           for name in ('displacement', 'velocity', 'energy_state')]])
+                wave_balances.append([source['case_name'], row['intervals'], row['method'], row['configuration'],
+                    f"{row['maximum_reference_scaled_energy_discrepancy']:.6g}"
+                    if row['maximum_reference_scaled_energy_discrepancy'] is not None else 'incomplete/nonfinite',
+                    f"{row['maximum_reference_scaled_energy_change_from_own_start']:.6g}"
+                    if source['case_name'] == 'wave_reflective' and row['maximum_reference_scaled_energy_change_from_own_start'] is not None else '—',
+                    *[f'{row[name]:.6g}' if row[name] is not None else '—' for name in
+                      ('maximum_absolute_invariant_error', 'maximum_absolute_invariant_drift')]])
         evaluated = [r for r in source['summaries'] if r['split'] == 'evaluation' and r['qualified']]
         for rom in [r for r in evaluated if r['method'] in ('cp', 'modcp', 'film')]:
             for fom in [r for r in evaluated if r['method'] not in ('cp', 'modcp', 'film')
@@ -448,6 +461,17 @@ def main():
              'not establish a mathematical best-approximation floor.', '',
              table(['Wave case', 'Intervals/axis', 'Method', 'Configuration', 'Worst displacement error',
                     'Worst velocity error', 'Worst energy-state error'], wave_components) if wave_components else '', '',
+             table(['Wave case', 'Intervals/axis', 'Method', 'Configuration', 'Energy discrepancy / reference initial energy',
+                    'Reflective energy drift / reference initial energy', 'Absorbing invariant error',
+                    'Absorbing invariant drift'], wave_balances) if wave_balances else '', '',
+             'These independently reconstructed diagnostics distinguish energy discrepancies from the energy norm '
+             'of state error. Energy drift measures change from the prediction\'s own initial energy; '
+             'energy discrepancy includes its initial mismatch. The absorbing signed invariant is '
+             r'$I(u,v)=\int_\Omega v\,dx+c\int_{\partial\Omega}u\,ds$, using the discrete area and edge weights '
+             'with both corner contributions. Invariant error and drift are absolute quantities, not percentages. '
+             'The table takes the largest absolute defect across the complete cohort, stored times, and repetitions. '
+             'Close energies alone do not prove that the remaining state discrepancy is a phase error; '
+             'no boundary-flux accuracy claim is inferred from coarse observation times.', '',
              '## Matched-accuracy full-solver comparisons', '',
              table(['Case', 'Intervals/axis', 'Target', 'ROM', 'Full solver', 'Median-time ratio FOM/ROM',
                     'ROM nonstationary cases'], comparisons) if comparisons else
@@ -584,6 +608,8 @@ def main():
              '- **Semidiscrete / continuum:** respectively the spatially discretized PDE and the original PDE before spatial discretization.',
              '- **Median-time ratio FOM/ROM:** the full solver\'s median query duration divided by the ROM\'s, for paired qualifying configurations.',
              '- **Energy-state error:** the physical energy norm of the displacement/velocity error, scaled by the initial reference energy.',
+             '- **Energy discrepancy / reflective drift:** respectively the absolute prediction-minus-reference energy difference and change from the prediction\'s own start, divided by reference initial energy.',
+             '- **Absorbing invariant error / drift:** absolute difference of the conserved area-plus-boundary moment from the reference or from the prediction\'s own start.',
              '- **Full-field audit:** independent NumPy recomputation from a saved full-grid prediction and reference.',
              '- **Campaign status / job ID / GPU / source commit:** completion state and identifiers of the recorded scientific execution.',
              '- **Single-seed pilot:** an initial comparison using one training random seed, without a training-variance claim.', '']

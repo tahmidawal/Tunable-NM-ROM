@@ -7,7 +7,7 @@ from pathlib import Path
 import tempfile
 import numpy as np
 
-from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows, row_error, audit_field_archive, digest
+from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows, row_error, audit_field_archive, digest, absorbing_invariant
 from generate_modcp_comparison import summarize_input
 from modcp_freeze import verify_evaluation_freeze
 from seal_modcp_validation import verify_selection_rules
@@ -50,6 +50,12 @@ class AuditTests(unittest.TestCase):
         x = np.linspace(0, 1, n+1)
         u = x[:, None] + 2*x[None, :]
         self.assertAlmostEqual(float(wave_energy_squared(u, np.zeros_like(u), n, 'absorbing', 2)), 20)
+
+    def test_absorbing_invariant_includes_both_corner_face_contributions(self):
+        n = 8
+        u = np.full((n+1, n+1), 7.)
+        v = np.full_like(u, 3.)
+        self.assertAlmostEqual(float(absorbing_invariant(u, v, n, 1.1)), 3.+1.1*4.*7.)
 
     def test_zero_initial_velocity_has_finite_error_normalization(self):
         n = 8

@@ -224,6 +224,7 @@ class Campaign:
         for L in self.meshes:
             same,truth,physical=self.references(split,L)
             inputs=[jnp.asarray(fom.initial(L,p)) for p in physical]
+            viscosities=[jnp.asarray(p[4],dtype=jnp.float64) for p in physical]
             subjects=[];objects={};compiled={};rule_cache={}
             selected=set(s['configuration'] for s in self.selections if s['intervals']==L and s['configuration'] is not None)
             for arm in ('cp','modcp','film'):
@@ -246,10 +247,12 @@ class Campaign:
                 if split=='evaluation' and name not in selected:continue
                 fun,_=fom.make_fom(L,settings['dt'])
                 subjects.append((name,'newton_bicgstab',settings,fun,(),None))
+            controls={sub[0]:{key:jnp.asarray(value,dtype=jnp.float64) for key,value in sub[2].items() if key in ('tol','ntol','ltol')} for sub in subjects}
+            jax.block_until_ready((inputs,viscosities,controls))
             def invoke(sub,case):
-                name,arm,settings,fun,packed,_=sub;nu=float(physical[case,4])
-                if arm=='newton_bicgstab':return fun(inputs[case],nu,settings['ntol'],settings['ltol'])
-                return fun(inputs[case],nu,*packed,settings['tol'])
+                name,arm,settings,fun,packed,_=sub;nu=viscosities[case];control=controls[name]
+                if arm=='newton_bicgstab':return fun(inputs[case],nu,control['ntol'],control['ltol'])
+                return fun(inputs[case],nu,*packed,control['tol'])
             # Compile and two explicit discarded calls for every configuration.
             for sub in subjects:
                 if all((split,sub[0],L,c,r) in self.finished for c in range(len(physical)) for r in range(reps)):continue
@@ -342,19 +345,19 @@ class Campaign:
                     rfun=jax.jit(parts['residual']);jfun=jax.jit(jax.jacfwd(parts['residual']))
                     def staged():
                         ini=jax.block_until_ready(parts['initialize'](inputs[0],p,ic))
-                        zz,detail=jax.block_until_ready(parts['evolve'](ini[0],float(physical[0,4]),ini[1],p,data,settings['tol']))
+                        zz,detail=jax.block_until_ready(parts['evolve'](ini[0],viscosities[0],ini[1],p,data,controls[name]['tol']))
                         f=jax.block_until_ready(parts['reconstruct'](zz,p))
                         return ini,zz,detail,f
                     for _ in range(2):ini,zz,detail,f=staged()
                     z=zz[-1];previous=detail[0][-2] if len(detail[0])>1 else zz[0]
                     prevm,_=k.moments(p,previous,data,objects[name][2])
-                    rargs=(z,prevm,float(physical[0,4]),p,data,ini[1])
+                    rargs=(z,prevm,viscosities[0],p,data,ini[1])
                     for _ in range(2):jax.block_until_ready((rfun(*rargs),jfun(*rargs)))
                     repetitions=[]
                     for rep in range(self.reps):
                         k.burn(.05 if self.smoke else .75)
                         t=time.perf_counter();ini=jax.block_until_ready(parts['initialize'](inputs[0],p,ic));t1=time.perf_counter()
-                        zz,detail=jax.block_until_ready(parts['evolve'](ini[0],float(physical[0,4]),ini[1],p,data,settings['tol']));t2=time.perf_counter()
+                        zz,detail=jax.block_until_ready(parts['evolve'](ini[0],viscosities[0],ini[1],p,data,controls[name]['tol']));t2=time.perf_counter()
                         f=jax.block_until_ready(parts['reconstruct'](zz,p));t3=time.perf_counter()
                         rr=jax.block_until_ready(rfun(*rargs));t4=time.perf_counter()
                         jj=jax.block_until_ready(jfun(*rargs));t5=time.perf_counter()

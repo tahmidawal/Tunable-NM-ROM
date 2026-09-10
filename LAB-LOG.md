@@ -20,7 +20,7 @@ The dated chronology below preserves the earlier findings and retractions; the o
 
 ## Read this first
 
-**2026-09-10 modified CP + EQ pilot — validation running, no final comparison yet.**
+**2026-09-10 modified CP + EQ pilot — validation sealed, evaluation submitted.**
 In the `ideate` session the user approved a bounded comparison of original CP+EQ,
 latent-modulated CP factors+EQ, and FiLM-INR+EQ on Burgers 2D, reflective waves,
 and absorbing waves, then explicitly requested implementation. This is a separate
@@ -46,8 +46,18 @@ target on either mesh. Wave comparison attempts
 `3501595`/`3501652` were stopped during offline fitting, before scientific
 validation or evaluation rows, to add a verified contraction of the same EQ
 weights for CP's fixed spatial factors. Completed offline work is archived.
-Replacement wave validation jobs `3503439`/`3503457` now run from `df737ba`,
+Replacement wave validation jobs `3503439`/`3503457` completed from `df737ba`,
 using checked CP contractions and the verified exact-QR NNLS option for new fits.
+Both passed source, frozen-selection and saved-observation audits. Their verified
+archives are retained under main and their exact remote directories were removed.
+All three validation panels are bound by
+`reports/2026-09-10-modified-cp-validation-seal.json` (SHA256
+`48881620001affec08010aac56866b19f413777f9fdaefca902a81f0f20b1d90`).
+No ROM meets either declared target over its full validation cohort; some wave
+rollouts have large physical errors despite numerical completion. Final frozen
+evaluations are submitted as Burgers `3518411`, reflective wave `3518421`, and
+absorbing wave `3518429`. Full-grid evaluation checks and final timing claims
+remain open.
 Only the post-reset fresh wave reference is used. Validation retains every case/setting,
 with one paired invocation per case plus seven repetitions on predetermined case
 zero for timing selection; untouched evaluation retains seven repetitions on
@@ -6826,3 +6836,50 @@ on immutable staged source `df737ba`; transport switched to verified login-p03
 after login-p02 banner timeouts. No scientific allocation changed. The global
 validation seal, untouched evaluation, final generated report and merge decision
 remain open. No final speedup is established and no scientific result is retracted.
+
+
+## 2026-09-10 — Global modified-CP validation seal and untouched evaluation
+
+### ideate — resumed after usage interruption; all final jobs submitted
+
+Both automatic wave collectors completed during the session usage interruption.
+User requested continuation. Existing owners resumed in their approved worktrees;
+no architecture, trained weight, quadrature, cohort seed or solver selection changed.
+Root source audits accepted the committed staged files; selection and saved-field
+audits accepted every validation panel. Wave validation has only bounded observation
+fields, so its full-grid physical errors remain owner-computed until the independent
+full-field final evaluation audit. All raw archives have verified durable root links.
+
+| Case | Audited full fields | Audited observation fields | Handoff SHA256 |
+| --- | --- | --- | --- |
+| burgers2d | 2592 | 0 | 5f8d73be24bd6be5510185237756ca441684fc08aafd05249d8f1991bacc618c |
+| wave_reflective | 0 | 3008 | 69744cd2ff3c17288da654743b70a7a8457e043a38f1dcd5ada06c16fa4ab538 |
+| wave_absorbing | 0 | 2880 | 707468e76ab033b1b3aad9596a7e07c2f2dc2034b3c4aa7fc82c5abd8c0f032d |
+
+Root `fe17d60` stores the completed validation audits and immutable global seal:
+`reports/2026-09-10-modified-cp-validation-seal.json`, SHA256
+`48881620001affec08010aac56866b19f413777f9fdaefca902a81f0f20b1d90`.
+No ROM qualified at either declared target over any complete validation cohort.
+The full wave cohorts contain large physical errors that were not apparent from
+first-case summaries; numerical completion and latent stationarity are not physical
+accuracy or stability guarantees. Diagnostic outlier counts now use the largest
+declared target while diagnostic settings remain ineligible for qualified speedups.
+All independent audit tests pass after that reporting correction.
+
+Final jobs: Burgers `evaluation01` / `3518411` from `890a67b`; reflective wave
+`evaluation_reflective01` / `3518421` and absorbing wave `evaluation_absorbing01` /
+`3518429` from `7a57132`. The wave jobs are running with GPU preflight passed.
+Every job imports the same seal and exact frozen rules and regenerates its untouched
+evaluation cohort. Full-field seven-repetition timing/error records, collection,
+independent final audits and completed comparison remain open.
+
+Root prepared a scoped integration manifest in
+`reports/2026-09-10-modified-cp-integration.json` with generator
+`reports/prepare_modcp_integration.py` (`7b29b20`, `c431b21`). Independent read-only
+review confirmed the required sibling fresh-wave implementation/test dependencies,
+identical shared numerical modules, and safe live design/ignore-file combination.
+Archived sources remain byte-identical. The proposal must be refreshed after final
+owner commits. No merge or worktree cleanup is authorized or performed; original
+worktree paths and verified raw archives must remain available for existing reports.
+No scientific result is retracted; all new numerical evidence remains validation-only
+until the final evaluation jobs complete and pass their full-field audits.

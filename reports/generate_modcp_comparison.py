@@ -188,7 +188,9 @@ def frontier_plot(sources, stem):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    colors = {'cp': '#0072B2', 'modcp': '#D55E00', 'film': '#009E73'}
+    colors = {'cp': '#0072B2', 'modcp': '#D55E00', 'film': '#009E73',
+              'newton_bicgstab': '#666666', 'cg': '#7B3294', 'rk4': '#A6761D',
+              'spectral': '#222222', 'cn_direct': '#CC79A7'}
     panels = [(source, n) for source in sources for n in sorted({s['intervals'] for s in source['summaries']})]
     if not panels:
         return []
@@ -199,6 +201,10 @@ def frontier_plot(sources, stem):
     for ax, (source, n) in zip(axes.flat, panels):
         ax.set_visible(True)
         unique = {(r['split'], r['method'], r['configuration']): r for r in source['summaries'] if r['intervals'] == n}
+        unplottable = sum(r['median_seconds'] is None or r['worst_error'] is None for r in unique.values())
+        if unplottable:
+            ax.text(.02, .02, f'{unplottable} configurations lack finite plot coordinates; retained in JSON',
+                    transform=ax.transAxes, fontsize=7, va='bottom')
         methods = sorted({r['method'] for r in unique.values()})
         for method in methods:
             for split in ('validation', 'evaluation'):
@@ -245,13 +251,40 @@ def reference_table(sources):
                 if 'temporal_refinement' in r:
                     r['temporal_difference'] = r['temporal_refinement']['maximum']
             balance_key = 'max_relative_energy_drift' if kind == 'exact_semidiscrete_sine' else 'max_relative_energy_balance'
+            flags = '; '.join(f'{100*t:g}%: {reference_status(source, split, n, t)}'
+                              for t in source['config']['targets']) if source['case_name'] == 'burgers2d' else 'semidiscrete only'
             rows.append([source['case_name'], split, n, kind,
                          largest(records, 'temporal_difference'),
                          largest(records, 'nested_space_time_difference'),
+                         largest(records, 'empirical_uncertainty'), flags,
                          largest(records, balance_key), largest(records, 'max_invariant_drift')])
     return table(['Case', 'Cohort', 'Intervals/axis', 'Reference', 'Worst temporal difference',
-                  'Worst nested space/time difference', 'Worst energy balance defect',
+                  'Worst nested space/time difference', 'Largest per-case empirical indicator',
+                  'Continuum target interpretation', 'Worst energy balance defect',
                   'Worst invariant drift'], rows) if rows else 'Reference diagnostics have not been collected yet.'
+
+
+def reference_status(source, split, intervals, target):
+    """Separate fixed-reference qualification from empirical reference sensitivity."""
+    if target is None:
+        return 'diagnostic'
+    if source['case_name'] != 'burgers2d':
+        return 'semidiscrete only'
+    expected = set(source['config'][f'{split}_case_ids'])
+    records = [r for r in source['references'] if r['split'] == split and r['intervals'] == intervals
+               and r['kind'] == 'nested_finer_reference']
+    if {r.get('case') for r in records} != expected or len(records) != len(expected):
+        return 'reference sensitivity not assessed'
+    if any(r.get('empirical_uncertainty') is None or r.get('provisional_targets') is None for r in records):
+        return 'reference sensitivity not assessed'
+    for r in records:
+        indicator = r['empirical_uncertainty']
+        if (not np.isfinite(indicator) or indicator < 0 or
+                not np.isclose(indicator, r['nested_space_time_difference']+r['temporal_difference'], rtol=1e-12, atol=1e-15) or
+                (target in r['provisional_targets']) != (indicator > .1*target)):
+            raise ValueError('Reference-sensitivity flags disagree with their empirical indicator')
+    count = sum(target in r['provisional_targets'] for r in records)
+    return f'provisional continuum ({count}/{len(expected)} flagged)' if count else 'unflagged; continuum uncertified'
 
 
 def quadrature_table(sources):
@@ -386,6 +419,12 @@ def main():
     stem = ROOT/'reports'/f'{args.date}-modified-cp-eq-comparison'
     plots = frontier_plot(sources, stem)
     field_plots = representative_plots(args.input, stem)
+    def status_for(source, split, intervals, target):
+        # Null selections belong to validation even when repeated in an evaluation
+        # handoff. Never apply validation uncertainty to the untouched cohort.
+        candidates = [s for s in sources if s['case_name'] == source['case_name'] and
+                      any(r['split'] == split and r['intervals'] == intervals for r in s['references'])]
+        return reference_status(candidates[0] if candidates else source, split, intervals, target)
     rows, missing_selection_keys = [], set()
     for source in sources:
         for row in source['summaries']:
@@ -399,7 +438,8 @@ def main():
                          row['outlier_cases'] if row['target'] is not None else '—', row['failed_cases'],
                          row['nonstationary_cases'] if row['method'] in ('cp', 'modcp', 'film') else '—',
                          row['timing_outlier_invocations'],
-                         'yes' if row['qualified'] else 'no'])
+                         'yes' if row['qualified'] else 'no',
+                         status_for(source, 'evaluation', row['intervals'], row['target'])])
         for selection in source['selections']:
             if selection.get('configuration') is None:
                 key = source['case_name'], selection['intervals'], selection['method'], selection['target']
@@ -408,7 +448,8 @@ def main():
                 missing_selection_keys.add(key)
                 rows.append([source['case_name'], selection['intervals'], selection['method'],
                              f"{100*selection['target']:g}%", 'No validation-qualified setting',
-                             '—', '—', '—', '—', '—', '—', '—', 'no'])
+                             '—', '—', '—', '—', '—', '—', '—', 'no',
+                             status_for(source, 'validation', selection['intervals'], selection['target'])])
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
     comparisons = []
@@ -442,7 +483,8 @@ def main():
                 comparisons.append([source['case_name'], rom['intervals'], f"{100*rom['target']:g}%",
                                     rom['method'], fom['method'],
                                     f"{fom['median_seconds']/rom['median_seconds']:.6g}×",
-                                    rom['nonstationary_cases']])
+                                    rom['nonstationary_cases'],
+                                    status_for(source, 'evaluation', rom['intervals'], rom['target'])])
     evaluated_cases = {s['case_name'] for s in sources if s['status'] == 'complete'
                        and any(r['split'] == 'evaluation' for r in s['summaries'])}
     expected_cases = {'burgers2d', 'wave_reflective', 'wave_absorbing'}
@@ -472,7 +514,7 @@ def main():
              'Timing includes initialization, evolution, and reconstruction. Compilation, offline setup, and host transfers are excluded.', '',
              table(['Case', 'Intervals/axis', 'Method', 'Target', 'Configuration', 'Median query ms',
                     'Median case error', 'Worst error', 'Outlier cases', 'Failed cases', 'Nonstationary cases',
-                    'Timing outliers', 'Target attained'], rows) if rows else
+                    'Timing outliers', 'Target attained vs numerical reference', 'Reference interpretation'], rows) if rows else
              'No validation-selected evaluation measurements are available yet.', '',
              'Worst error is the maximum over evaluation cases, stored times, and recorded repetitions; '
              'for waves it is also the maximum over displacement, velocity, and energy-state errors. '
@@ -483,6 +525,9 @@ def main():
              'least-squares objective; physical accuracy and full-residual diagnostics are assessed separately.', '',
              'These errors compare against the declared numerical reference. Any unresolved reference uncertainty '
              'keeps the corresponding continuum-accuracy interpretation provisional. '
+             'Reference flags use the evaluation cohort for evaluated settings and the validation cohort for '
+             'settings that never qualified for evaluation. They do not change the frozen numerical-reference '
+             'qualification or configuration selection. '
              'No configuration is chosen using evaluation accuracy or timing.', '',
              f'![Validation and evaluation error versus query time]({plots[0]})' if plots else '', '',
              'Configurations with nonfinite errors have no finite position on the logarithmic axes; '
@@ -510,7 +555,7 @@ def main():
              'no boundary-flux accuracy claim is inferred from coarse observation times.', '',
              '## Matched-accuracy full-solver comparisons', '',
              table(['Case', 'Intervals/axis', 'Target', 'ROM', 'Full solver', 'Median-time ratio FOM/ROM',
-                    'ROM nonstationary cases'], comparisons) if comparisons else
+                    'ROM nonstationary cases', 'Reference interpretation'], comparisons) if comparisons else
              'No paired evaluation configurations currently qualify at a common declared target.', '',
              'Each ratio uses the same owner job and GPU and two validation-selected configurations '
              'that both attain the target on the untouched cohort. A ratio above unity means a smaller '
@@ -610,6 +655,11 @@ def main():
              'and absorbing references have temporal refinement and energy/boundary balance checks. '
              'These checks do not establish a rigorous continuum error bound. Differences and energy '
              'balance defects are dimensionless; invariant drift is an absolute signed-moment magnitude.', '',
+             'The Burgers empirical indicator is each case\'s nested space/time difference plus its '
+             'temporal refinement difference; the table reports the maximum of these per-case sums. '
+             'A case is flagged when its indicator exceeds one tenth of the target. These flags identify '
+             'reference-sensitive continuum interpretations, not proven error bounds. Missing reference '
+             'records are labeled unassessed, and an unflagged target still has no certified continuum bound.', '',
              'The new wave decoder represents displacement and velocity jointly. Its latent dimension is not '
              'the phase-state dimension of the earlier displacement-manifold experiments; changes relative to '
              'those earlier results do not isolate decoder architecture.', '',
@@ -651,6 +701,8 @@ def main():
              '- **Timing outliers:** invocations taking more than twice their own case\'s repetition median; retained in all summaries.',
              '- **Temporal difference:** discrepancy after refining the reference time step, on fixed initial physical scales.',
              '- **Nested space/time difference:** discrepancy against a finer spatial grid and time step, restricted back to the reported grid.',
+             '- **Empirical indicator / reference flag:** a Burgers case\'s summed nested space/time and temporal differences, and whether that sum exceeds one tenth of a target; a sensitivity check, not a certified error bound.',
+             '- **Reference interpretation:** whether the result is limited to a semidiscrete reference, has flagged continuum sensitivity, or lacks an assessment; separate from attaining the target against the stored numerical reference.',
              '- **Energy balance defect:** relative failure of reference energy conservation, or energy plus outgoing boundary flux conservation.',
              '- **Invariant drift:** change in the absorbing reference\'s area integral of velocity plus speed times its boundary integral of displacement.',
              '- **Semidiscrete / continuum:** respectively the spatially discretized PDE and the original PDE before spatial discretization.',

@@ -20,5 +20,6 @@ if ssh "${SSH_OPTIONS[@]}" tufts-login "test -f '$REMOTE/RESUME_ARTIFACTS.json'"
   scp "${SSH_OPTIONS[@]}" "tufts-login:$REMOTE/RESUME_ARTIFACTS.json" "$LOCAL/"
 fi
 (cd "$LOCAL" && sha256sum -c COLLECT.sha256 --quiet)
+/home/tahmid/Dev/.venv/bin/python "$HERE/archive_raw.py" "$LOCAL"
 ssh "${SSH_OPTIONS[@]}" tufts-login "test -d '$REMOTE' && rm -rf -- '$REMOTE' && test ! -e '$REMOTE'"
 printf '%s\n' "$LOCAL"

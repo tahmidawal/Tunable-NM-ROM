@@ -1,4 +1,9 @@
 # Full regenerated cohort datasets remain checksum-covered local archives.
-# Learned weights, raw results and individual timed output artifacts are tracked.
+# Learned weights and raw timing/error JSON are tracked. Full scientific fields
+# are preserved in verified local tar archives, indexed by RAW_ARCHIVE.json.
 runs/**/out/references/*.npz
+runs/validation*/out/fields/
+runs/evaluation*/out/fields/
+diagnostics/validation_initial/*.npz
+raw-archives/
 cluster/stage/

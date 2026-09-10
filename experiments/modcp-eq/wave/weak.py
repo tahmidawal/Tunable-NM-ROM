@@ -134,7 +134,7 @@ def make_query(dc, grid, cfg, cap, dt):
         # Training-code candidate selection uses sampled supplied fields only.
         results = jax.lax.map(lambda z: fit(z, (params, rule, values, scales), cfg['initial_fit_tolerance']), starts)
         norms = results[4]
-        valid = jnp.isfinite(norms) & (results[2] != 3) & (results[2] != 5)
+        valid = jnp.isfinite(norms) & (results[2] != 3) & (results[2] != 4) & (results[2] != 5)
         selected = jnp.argmin(jnp.where(valid, norms, jnp.inf))
         return results[0][selected], {'iterations': results[1], 'reason': results[2],
                                       'stationarity': results[3], 'residual_norm': results[4], 'selected': selected}
@@ -147,13 +147,14 @@ def make_query(dc, grid, cfg, cap, dt):
                 z, alive = s
                 oldmass, oldface = moments(params, z, rule, dc)
                 zn, it, reason, stationarity, rn = solve(z, (params, rule, oldmass, oldface, speed, scales), tolerance)
-                valid = jnp.all(jnp.isfinite(zn)) & (reason != 3) & (reason != 5)
+                valid = jnp.all(jnp.isfinite(zn)) & (reason != 3) & (reason != 4) & (reason != 5)
                 alive = alive & valid
-                return (zn, alive), (it, reason, stationarity, rn, alive)
+                return (zn, alive), (it, reason, stationarity, rn, alive, z)
             (z, alive), diagnostic = jax.lax.scan(one, (z, alive), None, length=stride)
             return (z, alive), (z, diagnostic)
         _, (z, diagnostics) = jax.lax.scan(block, (z0, jnp.asarray(True)), None, length=blocks)
-        return jnp.concatenate((z0[None], z)), tuple(x.reshape(-1) for x in diagnostics)
+        return (jnp.concatenate((z0[None], z)),
+                tuple(x.reshape(-1) for x in diagnostics[:5])+(diagnostics[5].reshape(-1, dc.k),))
 
     @jax.jit
     def reconstruct(params, codes):

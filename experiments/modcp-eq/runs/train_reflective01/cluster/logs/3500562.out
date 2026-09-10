@@ -1,0 +1,487 @@
+jax_backend=gpu
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100 80GB PCIe"], "host": "pax049", "source_commit": "46a8c8b08abc6047af2e3c472693300200f757e3", "job_id": "3500562", "numpy_version": "2.5.0"}
+DATA dirichlet train 0
+DATA dirichlet train 1
+DATA dirichlet train 2
+DATA dirichlet train 3
+DATA dirichlet train 4
+DATA dirichlet train 5
+DATA dirichlet train 6
+DATA dirichlet train 7
+DATA dirichlet train 8
+DATA dirichlet train 9
+DATA dirichlet train 10
+DATA dirichlet train 11
+DATA dirichlet train 12
+DATA dirichlet train 13
+DATA dirichlet train 14
+DATA dirichlet train 15
+DATA dirichlet train 16
+DATA dirichlet train 17
+DATA dirichlet train 18
+DATA dirichlet train 19
+DATA dirichlet train 20
+DATA dirichlet train 21
+DATA dirichlet train 22
+DATA dirichlet train 23
+DATA dirichlet train 24
+DATA dirichlet train 25
+DATA dirichlet train 26
+DATA dirichlet train 27
+DATA dirichlet train 28
+DATA dirichlet train 29
+DATA dirichlet train 30
+DATA dirichlet train 31
+DATA dirichlet train 32
+DATA dirichlet train 33
+DATA dirichlet train 34
+DATA dirichlet train 35
+DATA dirichlet train 36
+DATA dirichlet train 37
+DATA dirichlet train 38
+DATA dirichlet train 39
+DATA dirichlet train 40
+DATA dirichlet train 41
+DATA dirichlet train 42
+DATA dirichlet train 43
+DATA dirichlet train 44
+DATA dirichlet train 45
+DATA dirichlet train 46
+DATA dirichlet train 47
+DATA dirichlet train 48
+DATA dirichlet train 49
+DATA dirichlet train 50
+DATA dirichlet train 51
+DATA dirichlet train 52
+DATA dirichlet train 53
+DATA dirichlet train 54
+DATA dirichlet train 55
+DATA dirichlet train 56
+DATA dirichlet train 57
+DATA dirichlet train 58
+DATA dirichlet train 59
+DATA dirichlet train 60
+DATA dirichlet train 61
+DATA dirichlet train 62
+DATA dirichlet train 63
+TRAIN cp_pretrain step=100/6000 loss=0.43814537 seconds=4.7
+TRAIN cp_pretrain step=200/6000 loss=0.33645512 seconds=4.7
+TRAIN cp_pretrain step=300/6000 loss=0.27175048 seconds=4.8
+TRAIN cp_pretrain step=400/6000 loss=0.17971441 seconds=4.8
+TRAIN cp_pretrain step=500/6000 loss=0.14826565 seconds=4.8
+TRAIN cp_pretrain step=600/6000 loss=0.14121859 seconds=4.9
+TRAIN cp_pretrain step=700/6000 loss=0.13045389 seconds=4.9
+TRAIN cp_pretrain step=800/6000 loss=0.11458169 seconds=4.9
+TRAIN cp_pretrain step=900/6000 loss=0.099817419 seconds=5.0
+TRAIN cp_pretrain step=1000/6000 loss=0.091293696 seconds=5.0
+TRAIN cp_pretrain step=1100/6000 loss=0.080106066 seconds=5.1
+TRAIN cp_pretrain step=1200/6000 loss=0.066680859 seconds=5.1
+TRAIN cp_pretrain step=1300/6000 loss=0.054125943 seconds=5.1
+TRAIN cp_pretrain step=1400/6000 loss=0.053639082 seconds=5.2
+TRAIN cp_pretrain step=1500/6000 loss=0.042851799 seconds=5.2
+TRAIN cp_pretrain step=1600/6000 loss=0.040761268 seconds=5.2
+TRAIN cp_pretrain step=1700/6000 loss=0.041692454 seconds=5.3
+TRAIN cp_pretrain step=1800/6000 loss=0.038688362 seconds=5.3
+TRAIN cp_pretrain step=1900/6000 loss=0.03414578 seconds=5.3
+TRAIN cp_pretrain step=2000/6000 loss=0.025228467 seconds=5.4
+TRAIN cp_pretrain step=2100/6000 loss=0.022908344 seconds=5.4
+TRAIN cp_pretrain step=2200/6000 loss=0.023288589 seconds=5.5
+TRAIN cp_pretrain step=2300/6000 loss=0.023947252 seconds=5.5
+TRAIN cp_pretrain step=2400/6000 loss=0.020957719 seconds=5.5
+TRAIN cp_pretrain step=2500/6000 loss=0.021357178 seconds=5.6
+TRAIN cp_pretrain step=2600/6000 loss=0.020672606 seconds=5.6
+TRAIN cp_pretrain step=2700/6000 loss=0.019754934 seconds=5.6
+TRAIN cp_pretrain step=2800/6000 loss=0.016862689 seconds=5.7
+TRAIN cp_pretrain step=2900/6000 loss=0.020112493 seconds=5.7
+TRAIN cp_pretrain step=3000/6000 loss=0.018604766 seconds=5.7
+TRAIN cp_pretrain step=3100/6000 loss=0.01397845 seconds=5.8
+TRAIN cp_pretrain step=3200/6000 loss=0.016017043 seconds=5.8
+TRAIN cp_pretrain step=3300/6000 loss=0.01408943 seconds=5.9
+TRAIN cp_pretrain step=3400/6000 loss=0.01357237 seconds=5.9
+TRAIN cp_pretrain step=3500/6000 loss=0.013610578 seconds=5.9
+TRAIN cp_pretrain step=3600/6000 loss=0.012382194 seconds=6.0
+TRAIN cp_pretrain step=3700/6000 loss=0.011241123 seconds=6.0
+TRAIN cp_pretrain step=3800/6000 loss=0.012032274 seconds=6.0
+TRAIN cp_pretrain step=3900/6000 loss=0.010303916 seconds=6.1
+TRAIN cp_pretrain step=4000/6000 loss=0.011298972 seconds=6.1
+TRAIN cp_pretrain step=4100/6000 loss=0.00952693 seconds=6.2
+TRAIN cp_pretrain step=4200/6000 loss=0.010345518 seconds=6.2
+TRAIN cp_pretrain step=4300/6000 loss=0.01128203 seconds=6.2
+TRAIN cp_pretrain step=4400/6000 loss=0.0088988735 seconds=6.3
+TRAIN cp_pretrain step=4500/6000 loss=0.010387026 seconds=6.3
+TRAIN cp_pretrain step=4600/6000 loss=0.0095202579 seconds=6.3
+TRAIN cp_pretrain step=4700/6000 loss=0.0093128854 seconds=6.4
+TRAIN cp_pretrain step=4800/6000 loss=0.0094244051 seconds=6.4
+TRAIN cp_pretrain step=4900/6000 loss=0.0081847691 seconds=6.4
+TRAIN cp_pretrain step=5000/6000 loss=0.0085025117 seconds=6.5
+TRAIN cp_pretrain step=5100/6000 loss=0.0081373568 seconds=6.5
+TRAIN cp_pretrain step=5200/6000 loss=0.0071182552 seconds=6.6
+TRAIN cp_pretrain step=5300/6000 loss=0.0080930674 seconds=6.6
+TRAIN cp_pretrain step=5400/6000 loss=0.007233182 seconds=6.6
+TRAIN cp_pretrain step=5500/6000 loss=0.0071092817 seconds=6.7
+TRAIN cp_pretrain step=5600/6000 loss=0.0069647902 seconds=6.7
+TRAIN cp_pretrain step=5700/6000 loss=0.0073950181 seconds=6.7
+TRAIN cp_pretrain step=5800/6000 loss=0.0076434581 seconds=6.8
+TRAIN cp_pretrain step=5900/6000 loss=0.0063085116 seconds=6.8
+TRAIN cp_pretrain step=6000/6000 loss=0.0074008494 seconds=6.8
+TRAIN cp step=100/10000 loss=0.014609507 seconds=1.2
+TRAIN cp step=200/10000 loss=0.013819535 seconds=1.2
+TRAIN cp step=300/10000 loss=0.016892837 seconds=1.3
+TRAIN cp step=400/10000 loss=0.012356973 seconds=1.3
+TRAIN cp step=500/10000 loss=0.012653548 seconds=1.3
+TRAIN cp step=600/10000 loss=0.00981389 seconds=1.4
+TRAIN cp step=700/10000 loss=0.010540248 seconds=1.4
+TRAIN cp step=800/10000 loss=0.0088607941 seconds=1.4
+TRAIN cp step=900/10000 loss=0.0092492256 seconds=1.5
+TRAIN cp step=1000/10000 loss=0.0087052789 seconds=1.5
+TRAIN cp step=1100/10000 loss=0.0084484888 seconds=1.6
+TRAIN cp step=1200/10000 loss=0.0088772437 seconds=1.6
+TRAIN cp step=1300/10000 loss=0.0082334844 seconds=1.6
+TRAIN cp step=1400/10000 loss=0.0066799213 seconds=1.7
+TRAIN cp step=1500/10000 loss=0.0071186829 seconds=1.7
+TRAIN cp step=1600/10000 loss=0.0074359052 seconds=1.7
+TRAIN cp step=1700/10000 loss=0.0069954179 seconds=1.8
+TRAIN cp step=1800/10000 loss=0.0058503956 seconds=1.8
+TRAIN cp step=1900/10000 loss=0.0083942489 seconds=1.9
+TRAIN cp step=2000/10000 loss=0.0068454467 seconds=1.9
+TRAIN cp step=2100/10000 loss=0.0064434353 seconds=2.0
+TRAIN cp step=2200/10000 loss=0.0060046243 seconds=2.0
+TRAIN cp step=2300/10000 loss=0.0055781919 seconds=2.0
+TRAIN cp step=2400/10000 loss=0.0054104296 seconds=2.1
+TRAIN cp step=2500/10000 loss=0.00525631 seconds=2.1
+TRAIN cp step=2600/10000 loss=0.0058583098 seconds=2.1
+TRAIN cp step=2700/10000 loss=0.0057836229 seconds=2.2
+TRAIN cp step=2800/10000 loss=0.005329699 seconds=2.2
+TRAIN cp step=2900/10000 loss=0.0051394169 seconds=2.2
+TRAIN cp step=3000/10000 loss=0.0043334626 seconds=2.3
+TRAIN cp step=3100/10000 loss=0.0044627977 seconds=2.4
+TRAIN cp step=3200/10000 loss=0.004020785 seconds=2.4
+TRAIN cp step=3300/10000 loss=0.0047180921 seconds=2.4
+TRAIN cp step=3400/10000 loss=0.0042735918 seconds=2.5
+TRAIN cp step=3500/10000 loss=0.0038658061 seconds=2.5
+TRAIN cp step=3600/10000 loss=0.0042700446 seconds=2.5
+TRAIN cp step=3700/10000 loss=0.0040262954 seconds=2.6
+TRAIN cp step=3800/10000 loss=0.0035639773 seconds=2.6
+TRAIN cp step=3900/10000 loss=0.003472456 seconds=2.6
+TRAIN cp step=4000/10000 loss=0.0034634506 seconds=2.7
+TRAIN cp step=4100/10000 loss=0.0035910916 seconds=2.7
+TRAIN cp step=4200/10000 loss=0.003230101 seconds=2.8
+TRAIN cp step=4300/10000 loss=0.0032825758 seconds=2.8
+TRAIN cp step=4400/10000 loss=0.0033911747 seconds=2.8
+TRAIN cp step=4500/10000 loss=0.003482537 seconds=2.9
+TRAIN cp step=4600/10000 loss=0.0027640107 seconds=2.9
+TRAIN cp step=4700/10000 loss=0.0028527674 seconds=2.9
+TRAIN cp step=4800/10000 loss=0.003066267 seconds=3.0
+TRAIN cp step=4900/10000 loss=0.0028450287 seconds=3.0
+TRAIN cp step=5000/10000 loss=0.0030826867 seconds=3.0
+TRAIN cp step=5100/10000 loss=0.0025030921 seconds=3.1
+TRAIN cp step=5200/10000 loss=0.0029537923 seconds=3.1
+TRAIN cp step=5300/10000 loss=0.0024068196 seconds=3.2
+TRAIN cp step=5400/10000 loss=0.0024111903 seconds=3.2
+TRAIN cp step=5500/10000 loss=0.0023456372 seconds=3.2
+TRAIN cp step=5600/10000 loss=0.0020004161 seconds=3.3
+TRAIN cp step=5700/10000 loss=0.0026016552 seconds=3.3
+TRAIN cp step=5800/10000 loss=0.0022114438 seconds=3.3
+TRAIN cp step=5900/10000 loss=0.0025055521 seconds=3.4
+TRAIN cp step=6000/10000 loss=0.002307882 seconds=3.4
+TRAIN cp step=6100/10000 loss=0.0019970537 seconds=3.5
+TRAIN cp step=6200/10000 loss=0.0022142502 seconds=3.5
+TRAIN cp step=6300/10000 loss=0.0018962927 seconds=3.5
+TRAIN cp step=6400/10000 loss=0.0019934132 seconds=3.6
+TRAIN cp step=6500/10000 loss=0.0019332075 seconds=3.6
+TRAIN cp step=6600/10000 loss=0.0017474095 seconds=3.6
+TRAIN cp step=6700/10000 loss=0.0017299034 seconds=3.7
+TRAIN cp step=6800/10000 loss=0.0019878767 seconds=3.7
+TRAIN cp step=6900/10000 loss=0.0017404058 seconds=3.7
+TRAIN cp step=7000/10000 loss=0.0019174528 seconds=3.8
+TRAIN cp step=7100/10000 loss=0.0017293771 seconds=3.9
+TRAIN cp step=7200/10000 loss=0.0016362843 seconds=3.9
+TRAIN cp step=7300/10000 loss=0.0017506187 seconds=3.9
+TRAIN cp step=7400/10000 loss=0.0017259689 seconds=4.0
+TRAIN cp step=7500/10000 loss=0.0015554848 seconds=4.0
+TRAIN cp step=7600/10000 loss=0.0018356243 seconds=4.0
+TRAIN cp step=7700/10000 loss=0.0017729949 seconds=4.1
+TRAIN cp step=7800/10000 loss=0.0016383822 seconds=4.1
+TRAIN cp step=7900/10000 loss=0.0016451278 seconds=4.1
+TRAIN cp step=8000/10000 loss=0.0015107509 seconds=4.2
+TRAIN cp step=8100/10000 loss=0.0014536106 seconds=4.2
+TRAIN cp step=8200/10000 loss=0.0013814452 seconds=4.3
+TRAIN cp step=8300/10000 loss=0.0014078901 seconds=4.3
+TRAIN cp step=8400/10000 loss=0.0015755872 seconds=4.3
+TRAIN cp step=8500/10000 loss=0.0015980495 seconds=4.4
+TRAIN cp step=8600/10000 loss=0.0014016577 seconds=4.4
+TRAIN cp step=8700/10000 loss=0.0013594656 seconds=4.4
+TRAIN cp step=8800/10000 loss=0.0012907032 seconds=4.5
+TRAIN cp step=8900/10000 loss=0.0015180883 seconds=4.5
+TRAIN cp step=9000/10000 loss=0.0013784574 seconds=4.5
+TRAIN cp step=9100/10000 loss=0.0014900105 seconds=4.6
+TRAIN cp step=9200/10000 loss=0.0014592982 seconds=4.7
+TRAIN cp step=9300/10000 loss=0.0015118238 seconds=4.7
+TRAIN cp step=9400/10000 loss=0.0012328414 seconds=4.7
+TRAIN cp step=9500/10000 loss=0.0013028249 seconds=4.8
+TRAIN cp step=9600/10000 loss=0.0012948603 seconds=4.8
+TRAIN cp step=9700/10000 loss=0.0012098515 seconds=4.8
+TRAIN cp step=9800/10000 loss=0.0012700967 seconds=4.9
+TRAIN cp step=9900/10000 loss=0.0012287852 seconds=4.9
+TRAIN cp step=10000/10000 loss=0.0011606167 seconds=4.9
+TRAIN modcp step=100/10000 loss=0.013729882 seconds=5.2
+TRAIN modcp step=200/10000 loss=0.014207316 seconds=5.2
+TRAIN modcp step=300/10000 loss=0.016661287 seconds=5.3
+TRAIN modcp step=400/10000 loss=0.010220792 seconds=5.4
+TRAIN modcp step=500/10000 loss=0.010266093 seconds=5.5
+TRAIN modcp step=600/10000 loss=0.0084566028 seconds=5.5
+TRAIN modcp step=700/10000 loss=0.0087100226 seconds=5.6
+TRAIN modcp step=800/10000 loss=0.006751183 seconds=5.7
+TRAIN modcp step=900/10000 loss=0.0074146068 seconds=5.7
+TRAIN modcp step=1000/10000 loss=0.0063413188 seconds=5.8
+TRAIN modcp step=1100/10000 loss=0.0067254742 seconds=5.9
+TRAIN modcp step=1200/10000 loss=0.0070760323 seconds=6.0
+TRAIN modcp step=1300/10000 loss=0.0055532595 seconds=6.1
+TRAIN modcp step=1400/10000 loss=0.0051957316 seconds=6.1
+TRAIN modcp step=1500/10000 loss=0.0052204346 seconds=6.2
+TRAIN modcp step=1600/10000 loss=0.0060863877 seconds=6.3
+TRAIN modcp step=1700/10000 loss=0.0049901411 seconds=6.3
+TRAIN modcp step=1800/10000 loss=0.0044782412 seconds=6.4
+TRAIN modcp step=1900/10000 loss=0.0056318926 seconds=6.5
+TRAIN modcp step=2000/10000 loss=0.0057515288 seconds=6.6
+TRAIN modcp step=2100/10000 loss=0.0046017159 seconds=6.7
+TRAIN modcp step=2200/10000 loss=0.0040332056 seconds=6.7
+TRAIN modcp step=2300/10000 loss=0.0046005275 seconds=6.8
+TRAIN modcp step=2400/10000 loss=0.0041006019 seconds=6.9
+TRAIN modcp step=2500/10000 loss=0.0037306829 seconds=6.9
+TRAIN modcp step=2600/10000 loss=0.003919071 seconds=7.0
+TRAIN modcp step=2700/10000 loss=0.0038897615 seconds=7.1
+TRAIN modcp step=2800/10000 loss=0.0038535487 seconds=7.2
+TRAIN modcp step=2900/10000 loss=0.0038597581 seconds=7.2
+TRAIN modcp step=3000/10000 loss=0.003276305 seconds=7.3
+TRAIN modcp step=3100/10000 loss=0.0031332595 seconds=7.4
+TRAIN modcp step=3200/10000 loss=0.002719519 seconds=7.5
+TRAIN modcp step=3300/10000 loss=0.0031652617 seconds=7.5
+TRAIN modcp step=3400/10000 loss=0.0030750264 seconds=7.6
+TRAIN modcp step=3500/10000 loss=0.002965935 seconds=7.7
+TRAIN modcp step=3600/10000 loss=0.0027339342 seconds=7.8
+TRAIN modcp step=3700/10000 loss=0.0029292109 seconds=7.8
+TRAIN modcp step=3800/10000 loss=0.0030393059 seconds=7.9
+TRAIN modcp step=3900/10000 loss=0.0024410888 seconds=8.0
+TRAIN modcp step=4000/10000 loss=0.0025277948 seconds=8.0
+TRAIN modcp step=4100/10000 loss=0.0026885507 seconds=8.2
+TRAIN modcp step=4200/10000 loss=0.0024401442 seconds=8.2
+TRAIN modcp step=4300/10000 loss=0.0022378328 seconds=8.3
+TRAIN modcp step=4400/10000 loss=0.0024518702 seconds=8.4
+TRAIN modcp step=4500/10000 loss=0.0025609969 seconds=8.4
+TRAIN modcp step=4600/10000 loss=0.0018962492 seconds=8.5
+TRAIN modcp step=4700/10000 loss=0.0018988017 seconds=8.6
+TRAIN modcp step=4800/10000 loss=0.002160962 seconds=8.6
+TRAIN modcp step=4900/10000 loss=0.001940053 seconds=8.7
+TRAIN modcp step=5000/10000 loss=0.0020405692 seconds=8.8
+TRAIN modcp step=5100/10000 loss=0.0015823434 seconds=8.9
+TRAIN modcp step=5200/10000 loss=0.001919451 seconds=9.0
+TRAIN modcp step=5300/10000 loss=0.0014808025 seconds=9.0
+TRAIN modcp step=5400/10000 loss=0.0016731133 seconds=9.1
+TRAIN modcp step=5500/10000 loss=0.0016119456 seconds=9.2
+TRAIN modcp step=5600/10000 loss=0.0013388972 seconds=9.2
+TRAIN modcp step=5700/10000 loss=0.0016608664 seconds=9.3
+TRAIN modcp step=5800/10000 loss=0.0014688745 seconds=9.4
+TRAIN modcp step=5900/10000 loss=0.0016191996 seconds=9.5
+TRAIN modcp step=6000/10000 loss=0.0014698884 seconds=9.5
+TRAIN modcp step=6100/10000 loss=0.0013721203 seconds=9.6
+TRAIN modcp step=6200/10000 loss=0.0014700445 seconds=9.7
+TRAIN modcp step=6300/10000 loss=0.0013000234 seconds=9.8
+TRAIN modcp step=6400/10000 loss=0.0013358638 seconds=9.9
+TRAIN modcp step=6500/10000 loss=0.001311772 seconds=9.9
+TRAIN modcp step=6600/10000 loss=0.001125996 seconds=10.0
+TRAIN modcp step=6700/10000 loss=0.0011212661 seconds=10.1
+TRAIN modcp step=6800/10000 loss=0.0011430771 seconds=10.1
+TRAIN modcp step=6900/10000 loss=0.0011385974 seconds=10.2
+TRAIN modcp step=7000/10000 loss=0.0012403872 seconds=10.3
+TRAIN modcp step=7100/10000 loss=0.0010537353 seconds=10.4
+TRAIN modcp step=7200/10000 loss=0.0010150526 seconds=10.5
+TRAIN modcp step=7300/10000 loss=0.0010760176 seconds=10.5
+TRAIN modcp step=7400/10000 loss=0.0010887397 seconds=10.6
+TRAIN modcp step=7500/10000 loss=0.0010367825 seconds=10.7
+TRAIN modcp step=7600/10000 loss=0.0010664697 seconds=10.7
+TRAIN modcp step=7700/10000 loss=0.0010670684 seconds=10.8
+TRAIN modcp step=7800/10000 loss=0.00095475307 seconds=10.9
+TRAIN modcp step=7900/10000 loss=0.00099616922 seconds=11.0
+TRAIN modcp step=8000/10000 loss=0.0009402664 seconds=11.0
+TRAIN modcp step=8100/10000 loss=0.00091986119 seconds=11.1
+TRAIN modcp step=8200/10000 loss=0.00082324739 seconds=11.2
+TRAIN modcp step=8300/10000 loss=0.00089206627 seconds=11.3
+TRAIN modcp step=8400/10000 loss=0.00093223135 seconds=11.3
+TRAIN modcp step=8500/10000 loss=0.001016 seconds=11.4
+TRAIN modcp step=8600/10000 loss=0.00089002037 seconds=11.5
+TRAIN modcp step=8700/10000 loss=0.00081317823 seconds=11.6
+TRAIN modcp step=8800/10000 loss=0.00081400801 seconds=11.6
+TRAIN modcp step=8900/10000 loss=0.00095778756 seconds=11.7
+TRAIN modcp step=9000/10000 loss=0.00085626435 seconds=11.8
+TRAIN modcp step=9100/10000 loss=0.00095847173 seconds=11.9
+TRAIN modcp step=9200/10000 loss=0.0008965744 seconds=11.9
+TRAIN modcp step=9300/10000 loss=0.00088477292 seconds=12.0
+TRAIN modcp step=9400/10000 loss=0.00075982491 seconds=12.1
+TRAIN modcp step=9500/10000 loss=0.00081277903 seconds=12.2
+TRAIN modcp step=9600/10000 loss=0.00074925344 seconds=12.2
+TRAIN modcp step=9700/10000 loss=0.00077271061 seconds=12.3
+TRAIN modcp step=9800/10000 loss=0.00081218706 seconds=12.4
+TRAIN modcp step=9900/10000 loss=0.00075232573 seconds=12.4
+TRAIN modcp step=10000/10000 loss=0.00074629584 seconds=12.5
+TRAIN film step=100/16000 loss=0.43938725 seconds=5.1
+TRAIN film step=200/16000 loss=0.32842568 seconds=5.2
+TRAIN film step=300/16000 loss=0.2624056 seconds=5.2
+TRAIN film step=400/16000 loss=0.17647027 seconds=5.3
+TRAIN film step=500/16000 loss=0.15442176 seconds=5.3
+TRAIN film step=600/16000 loss=0.13839377 seconds=5.4
+TRAIN film step=700/16000 loss=0.12163482 seconds=5.4
+TRAIN film step=800/16000 loss=0.09138021 seconds=5.5
+TRAIN film step=900/16000 loss=0.072613032 seconds=5.5
+TRAIN film step=1000/16000 loss=0.056127362 seconds=5.6
+TRAIN film step=1100/16000 loss=0.053131957 seconds=5.7
+TRAIN film step=1200/16000 loss=0.047484532 seconds=5.7
+TRAIN film step=1300/16000 loss=0.04656457 seconds=5.8
+TRAIN film step=1400/16000 loss=0.039859241 seconds=5.8
+TRAIN film step=1500/16000 loss=0.032351478 seconds=5.9
+TRAIN film step=1600/16000 loss=0.031557738 seconds=5.9
+TRAIN film step=1700/16000 loss=0.028619194 seconds=6.0
+TRAIN film step=1800/16000 loss=0.026148236 seconds=6.0
+TRAIN film step=1900/16000 loss=0.026106719 seconds=6.1
+TRAIN film step=2000/16000 loss=0.026042892 seconds=6.1
+TRAIN film step=2100/16000 loss=0.021682714 seconds=6.2
+TRAIN film step=2200/16000 loss=0.019895145 seconds=6.3
+TRAIN film step=2300/16000 loss=0.021205041 seconds=6.3
+TRAIN film step=2400/16000 loss=0.017096485 seconds=6.4
+TRAIN film step=2500/16000 loss=0.016631195 seconds=6.4
+TRAIN film step=2600/16000 loss=0.016069564 seconds=6.5
+TRAIN film step=2700/16000 loss=0.016806638 seconds=6.5
+TRAIN film step=2800/16000 loss=0.015442385 seconds=6.6
+TRAIN film step=2900/16000 loss=0.014059536 seconds=6.6
+TRAIN film step=3000/16000 loss=0.013548775 seconds=6.7
+TRAIN film step=3100/16000 loss=0.013657174 seconds=6.8
+TRAIN film step=3200/16000 loss=0.011779789 seconds=6.8
+TRAIN film step=3300/16000 loss=0.012790432 seconds=6.9
+TRAIN film step=3400/16000 loss=0.012091059 seconds=6.9
+TRAIN film step=3500/16000 loss=0.013309853 seconds=7.0
+TRAIN film step=3600/16000 loss=0.011312298 seconds=7.0
+TRAIN film step=3700/16000 loss=0.0093879131 seconds=7.1
+TRAIN film step=3800/16000 loss=0.01012827 seconds=7.1
+TRAIN film step=3900/16000 loss=0.0093961725 seconds=7.2
+TRAIN film step=4000/16000 loss=0.0085889715 seconds=7.2
+TRAIN film step=4100/16000 loss=0.0088748415 seconds=7.3
+TRAIN film step=4200/16000 loss=0.010980456 seconds=7.4
+TRAIN film step=4300/16000 loss=0.0084894228 seconds=7.4
+TRAIN film step=4400/16000 loss=0.0090341848 seconds=7.5
+TRAIN film step=4500/16000 loss=0.0085669385 seconds=7.5
+TRAIN film step=4600/16000 loss=0.0080679124 seconds=7.6
+TRAIN film step=4700/16000 loss=0.0077427172 seconds=7.6
+TRAIN film step=4800/16000 loss=0.0078542981 seconds=7.7
+TRAIN film step=4900/16000 loss=0.0082892666 seconds=7.7
+TRAIN film step=5000/16000 loss=0.0072944482 seconds=7.8
+TRAIN film step=5100/16000 loss=0.0067405465 seconds=7.9
+TRAIN film step=5200/16000 loss=0.0073794596 seconds=7.9
+TRAIN film step=5300/16000 loss=0.0069361797 seconds=8.0
+TRAIN film step=5400/16000 loss=0.0061595478 seconds=8.0
+TRAIN film step=5500/16000 loss=0.0077696495 seconds=8.1
+TRAIN film step=5600/16000 loss=0.0060170844 seconds=8.1
+TRAIN film step=5700/16000 loss=0.0065905507 seconds=8.2
+TRAIN film step=5800/16000 loss=0.005780418 seconds=8.2
+TRAIN film step=5900/16000 loss=0.005496596 seconds=8.3
+TRAIN film step=6000/16000 loss=0.0059480953 seconds=8.3
+TRAIN film step=6100/16000 loss=0.0049892142 seconds=8.4
+TRAIN film step=6200/16000 loss=0.0059224143 seconds=8.5
+TRAIN film step=6300/16000 loss=0.0048468451 seconds=8.5
+TRAIN film step=6400/16000 loss=0.0049392425 seconds=8.6
+TRAIN film step=6500/16000 loss=0.0046612524 seconds=8.6
+TRAIN film step=6600/16000 loss=0.0053609637 seconds=8.7
+TRAIN film step=6700/16000 loss=0.006134287 seconds=8.7
+TRAIN film step=6800/16000 loss=0.004878187 seconds=8.8
+TRAIN film step=6900/16000 loss=0.006311629 seconds=8.8
+TRAIN film step=7000/16000 loss=0.0050707372 seconds=8.9
+TRAIN film step=7100/16000 loss=0.0055884935 seconds=9.0
+TRAIN film step=7200/16000 loss=0.0043838537 seconds=9.0
+TRAIN film step=7300/16000 loss=0.004575608 seconds=9.1
+TRAIN film step=7400/16000 loss=0.0046320588 seconds=9.1
+TRAIN film step=7500/16000 loss=0.0044921932 seconds=9.2
+TRAIN film step=7600/16000 loss=0.0040108773 seconds=9.2
+TRAIN film step=7700/16000 loss=0.0046651671 seconds=9.3
+TRAIN film step=7800/16000 loss=0.0047222178 seconds=9.3
+TRAIN film step=7900/16000 loss=0.0046401357 seconds=9.4
+TRAIN film step=8000/16000 loss=0.0038956376 seconds=9.4
+TRAIN film step=8100/16000 loss=0.0046174573 seconds=9.5
+TRAIN film step=8200/16000 loss=0.0041556946 seconds=9.6
+TRAIN film step=8300/16000 loss=0.003459618 seconds=9.6
+TRAIN film step=8400/16000 loss=0.0038335698 seconds=9.7
+TRAIN film step=8500/16000 loss=0.0038868598 seconds=9.7
+TRAIN film step=8600/16000 loss=0.0035804048 seconds=9.8
+TRAIN film step=8700/16000 loss=0.0032564835 seconds=9.8
+TRAIN film step=8800/16000 loss=0.0037189046 seconds=9.9
+TRAIN film step=8900/16000 loss=0.0033944921 seconds=9.9
+TRAIN film step=9000/16000 loss=0.0037351553 seconds=10.0
+TRAIN film step=9100/16000 loss=0.0032610661 seconds=10.1
+TRAIN film step=9200/16000 loss=0.0033271735 seconds=10.1
+TRAIN film step=9300/16000 loss=0.0033142802 seconds=10.2
+TRAIN film step=9400/16000 loss=0.003528497 seconds=10.2
+TRAIN film step=9500/16000 loss=0.0035305496 seconds=10.3
+TRAIN film step=9600/16000 loss=0.0029306875 seconds=10.3
+TRAIN film step=9700/16000 loss=0.0032667546 seconds=10.4
+TRAIN film step=9800/16000 loss=0.003201282 seconds=10.4
+TRAIN film step=9900/16000 loss=0.0033360178 seconds=10.5
+TRAIN film step=10000/16000 loss=0.0031272351 seconds=10.5
+TRAIN film step=10100/16000 loss=0.0032027164 seconds=10.6
+TRAIN film step=10200/16000 loss=0.0026660676 seconds=10.7
+TRAIN film step=10300/16000 loss=0.0027459076 seconds=10.7
+TRAIN film step=10400/16000 loss=0.0030160511 seconds=10.8
+TRAIN film step=10500/16000 loss=0.0027606204 seconds=10.8
+TRAIN film step=10600/16000 loss=0.0026635989 seconds=10.9
+TRAIN film step=10700/16000 loss=0.0027622704 seconds=10.9
+TRAIN film step=10800/16000 loss=0.0027808833 seconds=11.0
+TRAIN film step=10900/16000 loss=0.0025730668 seconds=11.0
+TRAIN film step=11000/16000 loss=0.0028323235 seconds=11.1
+TRAIN film step=11100/16000 loss=0.002997045 seconds=11.2
+TRAIN film step=11200/16000 loss=0.002698598 seconds=11.2
+TRAIN film step=11300/16000 loss=0.0024149289 seconds=11.3
+TRAIN film step=11400/16000 loss=0.0026219385 seconds=11.3
+TRAIN film step=11500/16000 loss=0.0026798647 seconds=11.4
+TRAIN film step=11600/16000 loss=0.0021746521 seconds=11.4
+TRAIN film step=11700/16000 loss=0.0023040788 seconds=11.5
+TRAIN film step=11800/16000 loss=0.0026121933 seconds=11.5
+TRAIN film step=11900/16000 loss=0.0024777105 seconds=11.6
+TRAIN film step=12000/16000 loss=0.0024280355 seconds=11.6
+TRAIN film step=12100/16000 loss=0.0022209832 seconds=11.7
+TRAIN film step=12200/16000 loss=0.0024607479 seconds=11.8
+TRAIN film step=12300/16000 loss=0.0025729499 seconds=11.8
+TRAIN film step=12400/16000 loss=0.0025038271 seconds=11.9
+TRAIN film step=12500/16000 loss=0.0024233673 seconds=11.9
+TRAIN film step=12600/16000 loss=0.0025187319 seconds=12.0
+TRAIN film step=12700/16000 loss=0.0023193484 seconds=12.0
+TRAIN film step=12800/16000 loss=0.0020384777 seconds=12.1
+TRAIN film step=12900/16000 loss=0.0025301439 seconds=12.1
+TRAIN film step=13000/16000 loss=0.0019957416 seconds=12.2
+TRAIN film step=13100/16000 loss=0.0022955349 seconds=12.3
+TRAIN film step=13200/16000 loss=0.0020650744 seconds=12.3
+TRAIN film step=13300/16000 loss=0.0024731597 seconds=12.4
+TRAIN film step=13400/16000 loss=0.0021641098 seconds=12.4
+TRAIN film step=13500/16000 loss=0.0022928515 seconds=12.5
+TRAIN film step=13600/16000 loss=0.0020500553 seconds=12.5
+TRAIN film step=13700/16000 loss=0.0020812515 seconds=12.6
+TRAIN film step=13800/16000 loss=0.0018890285 seconds=12.6
+TRAIN film step=13900/16000 loss=0.0022612206 seconds=12.7
+TRAIN film step=14000/16000 loss=0.0022663817 seconds=12.7
+TRAIN film step=14100/16000 loss=0.001983882 seconds=12.8
+TRAIN film step=14200/16000 loss=0.002001734 seconds=12.9
+TRAIN film step=14300/16000 loss=0.0019598844 seconds=12.9
+TRAIN film step=14400/16000 loss=0.0025174495 seconds=13.0
+TRAIN film step=14500/16000 loss=0.0020783115 seconds=13.0
+TRAIN film step=14600/16000 loss=0.0023965534 seconds=13.1
+TRAIN film step=14700/16000 loss=0.0021918925 seconds=13.1
+TRAIN film step=14800/16000 loss=0.0019734647 seconds=13.2
+TRAIN film step=14900/16000 loss=0.0020378322 seconds=13.2
+TRAIN film step=15000/16000 loss=0.002065765 seconds=13.3
+TRAIN film step=15100/16000 loss=0.0019976139 seconds=13.4
+TRAIN film step=15200/16000 loss=0.0018624434 seconds=13.4
+TRAIN film step=15300/16000 loss=0.0019641836 seconds=13.5
+TRAIN film step=15400/16000 loss=0.0020764613 seconds=13.5
+TRAIN film step=15500/16000 loss=0.0018481882 seconds=13.6
+TRAIN film step=15600/16000 loss=0.001952549 seconds=13.6
+TRAIN film step=15700/16000 loss=0.0019839083 seconds=13.7
+TRAIN film step=15800/16000 loss=0.0018790427 seconds=13.7
+TRAIN film step=15900/16000 loss=0.0019371069 seconds=13.8
+TRAIN film step=16000/16000 loss=0.0019812426 seconds=13.9
+WAVE_TRAINING_COMPLETE dirichlet

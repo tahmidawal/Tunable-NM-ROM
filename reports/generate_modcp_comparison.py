@@ -56,6 +56,10 @@ def compact_evaluation_table(sources):
                     cells.append('Incomplete/nonfinite')
                     continue
                 cell = f"{100*row['worst_error']:.4g}% / {1e3*row['median_seconds']:.4g} ms"
+                if row['failed_cases'] or not row['complete_coverage']:
+                    cell += f"; {row['failed_cases']} failed cases"
+                    if not row['complete_coverage']:
+                        cell += '; incomplete coverage'
                 if method == baseline:
                     cell = ('Newton–BiCGStab' if baseline == 'newton_bicgstab' else 'CG')+': '+cell
                 cells.append(cell)
@@ -68,6 +72,7 @@ def compact_evaluation_table(sources):
         'Decoder columns use the best-error diagnostic setting frozen during validation; '
         'the full-solver column uses its validation-selected setting for the largest declared target. '
         'These errors differ, so the table is a cost-and-error comparison, not a matched-accuracy speedup. '
+        'Finite numerical completion and weak stationarity do not establish physical accuracy or stability. '
         'The detailed tables also include the direct, spectral, and explicit wave controls.'])
 
 
@@ -482,6 +487,14 @@ def main():
     seal_hashes = {source['evaluation_freeze']['sha256'] for source in sources if source['evaluation_freeze']}
     if len(seal_hashes) > 1:
         raise ValueError('Evaluation panels do not share the same global validation freeze')
+    render_report(sources, args)
+
+
+def render_report(sources, args):
+    """Render already audited sources without repeating expensive field audits."""
+    for source in sources:
+        if digest(ROOT/source['source']) != source['sha256']:
+            raise ValueError('Handoff changed after its independent field audit')
     training = json.loads(args.training_audit.read_text())
     training_rows = []
     for checkpoint in training['checkpoints']:

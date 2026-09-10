@@ -244,16 +244,18 @@ class Campaign:
                             detail=dict(iterations=it.tolist(),residuals=rn.tolist(),converged=completed)
                         else:
                             Zo,(Zsteps,it,reason,stat,rn),initial=h[1:]
-                            completed=bool(finite and np.isfinite(stat).all() and not np.isin(reason,[3,4,5]).any() and int(initial[1]) not in [3,4,5])
-                            stationary=bool(completed and np.all(reason==1) and int(initial[1])==1)
-                            stop='stationary' if stationary else ('budget_or_small_step' if completed else 'solver_failure')
+                            numerical_full_horizon=bool(finite and np.isfinite(stat).all() and not np.isin(reason,[3,4,5]).any() and int(initial[1]) not in [3,4,5])
+                            stationary=bool(numerical_full_horizon and np.all(reason==1) and int(initial[1])==1)
+                            completed=numerical_full_horizon
+                            stop='stationary' if stationary else ('budget_or_small_step' if numerical_full_horizon else 'solver_failure')
                             detail=dict(iterations=it.tolist(),reasons=reason.tolist(),stationarity=stat.tolist(),residuals=rn.tolist(),initial_fit=list(initial),
-                                        converged=stationary,latent_max_norm=float(np.max(np.linalg.norm(Zsteps,axis=1))),latent_output_states=Zo.tolist())
+                                        converged=stationary,numerical_full_horizon=numerical_full_horizon,latent_max_norm=float(np.max(np.linalg.norm(Zsteps,axis=1))),latent_output_states=Zo.tolist())
                         row=dict(split=split,method=arm,configuration=name,settings=settings,intervals=L,case=case,rep=rep,seconds=elapsed,
                                  errors=k.errors(fields,truth[case]) if finite else None,same_grid_errors=k.errors(fields,same[case]) if finite else None,
                                  finite=finite,completed=completed,stop_reason=stop,solver=detail,
                                  field_sha256=hashlib.sha256(fields.tobytes()).hexdigest(),output_bytes=fields.nbytes,
                                  provenance=self.provenance)
+                        row['stationary']=bool(detail['converged'])
                         if rep==0:
                             # Full output/truth retained once for each deterministic
                             # configuration/case; all repetitions retain output hash.

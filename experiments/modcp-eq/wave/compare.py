@@ -387,12 +387,18 @@ def run_evaluation(cfg, grid, models, rules, selected, result, out):
                 if rep == 0:
                     path, kind = save_fields(out, f'evaluation_{n}_{ci}_{setting["id"]}', host_u, host_v, (ut, vt), grid, supplied[2], True, shared_reference=True)
                     first[setting['id']] = (sha, path, kind)
+                    relation = 'actual_first_timed_output'
                 elif sha != first[setting['id']][0]:
-                    raise RuntimeError('Nonidentical repetitions: cannot deduplicate the actual output artifact')
-                row.update(field_artifact=first[setting['id']][1], field_artifact_kind=first[setting['id']][2],
+                    path, kind = save_fields(out, f'evaluation_{n}_{ci}_{setting["id"]}_rep{rep}', host_u, host_v,
+                                             (ut, vt), grid, supplied[2], True, shared_reference=True)
+                    relation = 'actual_distinct_timed_output'
+                else:
+                    _, path, kind = first[setting['id']]
+                    relation = 'identical_full_field_hash_verified'
+                row.update(field_artifact=path, field_artifact_kind=kind,
                            reference_artifact=reference_path, reference_sha256=reference_hash,
                            field_serialization='numpy_npz_stored_lossless',
-                           artifact_relation='actual_first_timed_output' if rep == 0 else 'identical_full_field_hash_verified')
+                           artifact_relation=relation)
                 result['invocations'].append(row)
             save()
 

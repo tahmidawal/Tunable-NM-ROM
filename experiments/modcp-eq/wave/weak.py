@@ -96,6 +96,7 @@ def numerical_rule(params, dc, rule):
             'projection': jnp.asarray(rule['test'].T*rule['weight'][None, :]),
             'face_cache': prepare_points(params, jnp.asarray(rule['face_xy']), dc),
             'face_projection': jnp.asarray(rule['face_test'].T*rule['face_weight'][None, :]),
+            'fit_weights': jnp.asarray(rule['weight']/max(float(np.sum(rule['weight'])), 1e-30)),
             'eigen': jnp.asarray(rule['eigen']), 'ids': jnp.asarray(rule['active_ids'])}
 
 

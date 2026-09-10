@@ -60,6 +60,7 @@ def main():
         save_checkpoint(args.out/'checkpoints'/f'{name}.pkl', p, z, conf,
                         {'fixed_component_scales': scales.tolist(), 'training_seed': cfg['train_seed'],
                          'model_seed': cfg['model_seed'], 'training_data_sha256': manifest['array_sha256'],
+                         'complete': True, 'total_training_steps': cfg['pretrain_steps']+cfg['comparison_steps'],
                          'nt': int(round(cfg['end_time']/cfg['observation_dt']))+1})
     result.update(complete=True, fixed_component_scales=scales.tolist(), data_manifest='data/training_data.json',
                   checkpoints={a: f'checkpoints/{a}.pkl' for a in ('cp', 'modcp', 'film')})

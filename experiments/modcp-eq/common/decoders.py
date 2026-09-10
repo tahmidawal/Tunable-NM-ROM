@@ -39,8 +39,8 @@ def _apply(layer, x):
 def features(x, frequencies=8):
     x = jnp.asarray(x)
     phase = jnp.pi * x[..., None] * jnp.arange(1, frequencies + 1)
-    return jnp.concatenate((x, jnp.sin(phase).reshape(x.shape[:-1] + (-1,)),
-                            jnp.cos(phase).reshape(x.shape[:-1] + (-1,))), axis=-1)
+    shape=x.shape[:-1]+(x.shape[-1]*frequencies,)
+    return jnp.concatenate((x,jnp.sin(phase).reshape(shape),jnp.cos(phase).reshape(shape)),axis=-1)
 
 
 def init_decoder(key, cfg):

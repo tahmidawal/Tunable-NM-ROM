@@ -63,6 +63,7 @@ def reference(grid, parameter, cfg, refine=False):
             audit['temporal_refinement'] = clean(discrepancy)
             audit['fine'] = fine
             audit['temporal_reference_passed'] &= float(discrepancy['maximum']) <= cfg['reference_temporal_target']
+            audit['temporal_reference_passed'] &= fine['max_relative_energy_balance'] < 1e-5 and fine['max_invariant_drift'] < 1e-10
             u, v = uf, vf
     if not audit['temporal_reference_passed'] or not bool(jnp.all(jnp.isfinite(u)) & jnp.all(jnp.isfinite(v))):
         raise RuntimeError(f'Fresh reference failed: {clean(audit)}')
@@ -77,14 +78,19 @@ def training_data(cfg, bc, out):
     pars = parameter_rows(cfg['train_seed'], cfg['train_count'])
     nt = int(round(cfg['end_time']/cfg['observation_dt']))+1
     shape = (len(pars)*nt, int(np.prod(grid.shape)), 2)
+    data_config = {name: cfg[name] for name in ('train_seed', 'train_count', 'train_intervals', 'end_time',
+                                               'observation_dt', 'reference_cfl')}
     path = out/'training_fields.npy'
     # Every cluster attempt regenerates from its recorded seed. A resumed stage
     # can reuse only this exact attempt's checksummed complete data.
     manifest_path = out/'training_data.json'
     if path.exists() and manifest_path.exists():
         manifest = json.loads(manifest_path.read_text())
-        if manifest['complete'] and manifest['seed'] == cfg['train_seed'] and manifest['intervals'] == grid.n and manifest['boundary'] == bc:
-            return grid, np.load(path, mmap_mode='r'), np.asarray(manifest['fixed_component_scales']), manifest
+        cached = np.load(path, mmap_mode='r')
+        if (manifest['complete'] and manifest.get('data_config') == data_config and manifest['boundary'] == bc
+                and cached.shape == shape and cached.dtype == np.float64 and array_sha(cached) == manifest['array_sha256']):
+            return grid, cached, np.asarray(manifest['fixed_component_scales']), manifest
+        del cached
     states = np.lib.format.open_memmap(path, mode='w+', dtype=np.float64, shape=shape)
     audits, scales = [], []
     for i, p in enumerate(pars):
@@ -101,6 +107,6 @@ def training_data(cfg, bc, out):
     manifest = {'complete': True, 'seed': cfg['train_seed'], 'intervals': grid.n,
                 'boundary': bc, 'shape': shape, 'parameters': pars.tolist(), 'audits': audits,
                 'fixed_component_scales': fixed_scales.tolist(), 'case_scales': scales,
-                'array_sha256': array_sha(states), 'evaluation_generated': False}
+                'array_sha256': array_sha(states), 'evaluation_generated': False, 'data_config': data_config}
     save_json(manifest_path, manifest)
     return grid, states, fixed_scales, manifest

@@ -1,6 +1,7 @@
 """Small CPU checks of independent physics norms and all-case qualification."""
 import unittest
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import numpy as np
@@ -88,6 +89,37 @@ class AuditTests(unittest.TestCase):
             path = Path(folder)/'handoff.json'
             path.write_text(json.dumps(document))
             with self.assertRaisesRegex(ValueError, 'backend or precision'):
+                summarize_input(path)
+
+    def test_timing_record_must_match_the_independently_audited_output(self):
+        truth = np.ones((2, 3, 3), dtype=np.float64)
+        field = truth*1.001
+        row = dict(split='evaluation', method='modcp', configuration='frozen', intervals=2,
+                   case=0, rep=0, seconds=.1, errors={'displacement': .001}, finite=True,
+                   completed=True, stationary=False, field_artifact='field.npz',
+                   field_artifact_kind='self_contained_full_grid',
+                   field_sha256=hashlib.sha256(field.tobytes()).hexdigest())
+        document = dict(case_name='burgers2d', status='complete',
+            provenance=dict(commit='test', job_id='test', gpu='test', backend='gpu', x64=True, matmul_precision='highest'),
+            config=dict(evaluation_case_ids=[0], repetitions=1, targets=[.01], output_times=[0, .05]),
+            selections=[dict(method='modcp', configuration='frozen', intervals=2, target=.01)], invocations=[row])
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'handoff.json'
+            np.savez(Path(folder)/'field.npz', u=field, truth_u=truth)
+            path.write_text(json.dumps(document))
+            self.assertEqual(summarize_input(path)['audited_paired_evaluation_invocations'], 1)
+            row['field_sha256'] = 'another invocation'
+            path.write_text(json.dumps(document))
+            with self.assertRaisesRegex(ValueError, 'output hash differs'):
+                summarize_input(path)
+            row['field_sha256'] = hashlib.sha256(field.tobytes()).hexdigest()
+            path.write_text(json.dumps(document))
+            np.savez(Path(folder)/'field.npz', u=field[:1], truth_u=truth[:1])
+            with self.assertRaisesRegex(ValueError, 'mesh/time shape differs'):
+                summarize_input(path)
+            document['selections'].append(dict(method='modcp', configuration='missing', intervals=2, target=.05))
+            path.write_text(json.dumps(document))
+            with self.assertRaisesRegex(ValueError, 'missing a selected evaluation'):
                 summarize_input(path)
 
 

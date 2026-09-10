@@ -152,9 +152,18 @@ def summarize_rows(rows, expected_cases, expected_repetitions, target):
             'observed_invocations': len(rows), 'expected_invocations': len(expected)}
 
 
-def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10):
+def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10,
+                        expected_shape=None, expected_intervals=None):
     """Audit self-contained full-grid NPZ; metadata is scalar, fields include t=0."""
     with np.load(path, allow_pickle=False) as data:
+        if expected_shape is not None and data['u'].shape != tuple(expected_shape):
+            raise ValueError(f'Archived field mesh/time shape differs from invocation: {path}')
+        if case_name != 'burgers2d':
+            expected_boundary = 'dirichlet' if case_name == 'wave_reflective' else 'absorbing'
+            if str(data['boundary']) != expected_boundary or (expected_intervals is not None and int(data['intervals']) != expected_intervals):
+                raise ValueError(f'Archived wave metadata differs from invocation: {path}')
+        output_hashes = {name: hashlib.sha256(np.ascontiguousarray(data[name]).view(np.uint8)).hexdigest()
+                         for name in ('u', 'v') if name in data}
         if case_name == 'burgers2d':
             actual = burgers_metrics(data['u'], data['truth_u'])
         else:
@@ -163,4 +172,4 @@ def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10)
     for name, value in actual.items():
         if name not in expected_errors or not np.isclose(value, expected_errors[name], rtol=rtol, atol=atol):
             raise ValueError(f'Independent field error mismatch: {path}: {name}: {value} vs {expected_errors.get(name)}')
-    return {'path': str(path), 'sha256': digest(path), 'errors': actual}
+    return {'path': str(path), 'sha256': digest(path), 'errors': actual, 'output_sha256': output_hashes}

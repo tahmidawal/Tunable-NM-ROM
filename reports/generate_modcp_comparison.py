@@ -45,8 +45,17 @@ def summarize_input(path):
     data = json.loads(path.read_text())
     provenance_check(data['provenance'])
     config = data['config']
-    if config.get('smoke') or data['status'] == 'complete_smoke':
+    if config.get('smoke') or config.get('smoke_only') or data.get('phase') == 'development' or data['status'] == 'complete_smoke':
         raise ValueError('Smoke-test outputs are not scientific pilot measurements')
+    references, reference_artifacts = list(data.get('references', [])), []
+    if data['case_name'] == 'burgers2d':
+        for split in ('validation', 'evaluation'):
+            for n in config.get('meshes', []):
+                artifact = path.parent/'references'/f'{split}_L{n}_uncertainty.json'
+                if artifact.exists():
+                    references.extend(dict(split=split, kind='nested_finer_reference', **r)
+                                      for r in json.loads(artifact.read_text()))
+                    reference_artifacts.append(dict(path=relative(artifact), sha256=digest(artifact)))
     groups = defaultdict(list)
     for row in data.get('invocations', []):
         if 'provenance' in row:
@@ -77,7 +86,14 @@ def summarize_input(path):
             summaries.append(dict(case_name=data['case_name'], split=split, method=method,
                                   configuration=setting, intervals=intervals,
                                   target=selection['target'], **summary))
-    audits, seen = [], set()
+    if data['status'] == 'complete':
+        declared = {(s['method'], s['configuration'], s['intervals']) for s in data['selections']
+                    if s.get('configuration') is not None}
+        observed = {(s['method'], s['configuration'], s['intervals']) for s in summaries
+                    if s['split'] == 'evaluation' and s['complete_coverage']}
+        if not declared or declared != observed:
+            raise ValueError('Completed campaign is missing a selected evaluation configuration or invocation')
+    audits, seen, field_groups = [], {}, {}
     for row in data.get('invocations', []):
         artifact = row.get('field_artifact')
         if not artifact or row.get('field_artifact_kind') != 'self_contained_full_grid' or not row.get('finite'):
@@ -87,19 +103,39 @@ def summarize_input(path):
         # the owner records that each actual repetition has the same field hash.
         key = str(full), tuple((name, row['errors'][name]) for name in
                               ('displacement', 'velocity', 'energy_state') if name in row['errors'])
-        if key in seen:
+        if key not in seen:
+            n = row['intervals']
+            nt = len(config['output_times']) if data['case_name'] == 'burgers2d' else int(round(config['end_time']/config['observation_dt']))+1
+            side = n-1 if data['case_name'] == 'wave_reflective' else n+1
+            seen[key] = audit_field_archive(full, data['case_name'], row['errors'],
+                                           expected_shape=(nt, side, side), expected_intervals=n)
+            audits.append(seen[key])
+        field_groups[row['split'], row['method'], row['configuration'], row['intervals'], row['case']] = seen[key]
+    paired_fields = 0
+    for row in data.get('invocations', []):
+        if row['split'] != 'evaluation' or not row.get('finite'):
             continue
-        audits.append(audit_field_archive(full, data['case_name'], row['errors']))
-        seen.add(key)
+        key = row['split'], row['method'], row['configuration'], row['intervals'], row['case']
+        if key not in field_groups:
+            raise ValueError('Finite evaluation invocation lacks an independently auditable full field')
+        audit = field_groups[key]
+        recorded = {'u': row.get('field_sha256')} if data['case_name'] == 'burgers2d' else row.get('output_sha256')
+        if recorded != audit['output_sha256']:
+            raise ValueError('Timed invocation output hash differs from its audited field')
+        for component, error in audit['errors'].items():
+            if not np.isclose(row['errors'][component], error, rtol=1e-8, atol=1e-10):
+                raise ValueError('Timed invocation error differs from its audited field')
+        paired_fields += 1
     return dict(source=relative(path), sha256=digest(path), status=data['status'],
                 case_name=data['case_name'], provenance=data['provenance'], config=config,
                 selections=data.get('selections', []), summaries=summaries,
                 field_audits=audits, owner_artifacts=data.get('artifacts', {}),
-                references=data.get('references', []),
+                audited_paired_evaluation_invocations=paired_fields,
+                references=references, reference_artifacts=reference_artifacts,
                 eq_audits=data.get('eq_audits', []),
                 full_weak_audits=data.get('full_weak_audits', []),
                 representation_diagnostics=data.get('representation_diagnostics', []),
-                checkpoint_hashes=data.get('checkpoint_hashes', {}))
+                checkpoint_hashes=data.get('checkpoint_hashes', data.get('checkpoint_sha256', {})))
 
 
 def frontier_plot(sources, stem):
@@ -149,6 +185,29 @@ def frontier_plot(sources, stem):
     return output
 
 
+def reference_table(sources):
+    rows = []
+    def largest(records, key):
+        values = [r[key] for r in records if r.get(key) is not None]
+        return f'{max(values):.6g}' if values else '—'
+    for source in sources:
+        groups = defaultdict(list)
+        for record in source['references']:
+            groups[record['split'], record['intervals'], record['kind']].append(record)
+        for (split, n, kind), records in sorted(groups.items()):
+            for r in records:
+                if 'temporal_refinement' in r:
+                    r['temporal_difference'] = r['temporal_refinement']['maximum']
+            balance_key = 'max_relative_energy_drift' if kind == 'exact_semidiscrete_sine' else 'max_relative_energy_balance'
+            rows.append([source['case_name'], split, n, kind,
+                         largest(records, 'temporal_difference'),
+                         largest(records, 'nested_space_time_difference'),
+                         largest(records, balance_key), largest(records, 'max_invariant_drift')])
+    return table(['Case', 'Cohort', 'Intervals/axis', 'Reference', 'Worst temporal difference',
+                  'Worst nested space/time difference', 'Worst energy balance defect',
+                  'Worst invariant drift'], rows) if rows else 'Reference diagnostics have not been collected yet.'
+
+
 def representative_plots(paths, stem):
     """Fixed evaluation case zero; use only validation-selected configurations."""
     import matplotlib
@@ -159,11 +218,10 @@ def representative_plots(paths, stem):
         source_path = Path(source_path).resolve()
         data = json.loads(source_path.read_text())
         rows = [r for r in data['invocations'] if r['split'] == 'evaluation' and r['case'] == 0
-                and r['rep'] == 0 and r['method'] in ('cp', 'modcp', 'film') and r.get('finite')
-                and r.get('field_artifact_kind') == 'self_contained_full_grid']
+                and r['rep'] == 0 and r['method'] in ('cp', 'modcp', 'film')]
         if not rows:
             continue
-        n = max(r['intervals'] for r in rows)
+        n = max(data['config']['meshes'])
         chosen = []
         for method in ('cp', 'modcp', 'film'):
             declared = [s for s in data['selections'] if s['method'] == method and s['intervals'] == n
@@ -171,25 +229,30 @@ def representative_plots(paths, stem):
             # Prefer the predeclared best-validation-accuracy diagnostic, else
             # the tightest validation target. Evaluation values never rank it.
             declared.sort(key=lambda s: -1 if s.get('target') is None else s['target'])
-            if not declared:
-                continue
             row = next((r for r in rows if r['method'] == method and r['intervals'] == n
-                        and r['configuration'] == declared[0]['configuration']), None)
-            if row:
-                chosen.append(row)
-        if not chosen:
-            continue
+                        and declared and r['configuration'] == declared[0]['configuration']), None)
+            chosen.append((method, row))
         fields, truth = [], None
-        for row in chosen:
+        for method, row in chosen:
+            if row is None or row.get('field_artifact_kind') != 'self_contained_full_grid':
+                fields.append((method+'\nmissing full field', None))
+                continue
             with np.load(source_path.parent/row['field_artifact'], allow_pickle=False) as archive:
                 u, reference = archive['u'].copy(), archive['truth_u'].copy()
             if truth is not None and not np.array_equal(truth, reference):
                 raise ValueError('Representative fields do not share the same reference')
             truth = reference
-            fields.append((row['method'], u))
+            if not np.isfinite(u).all():
+                fields.append((method+'\nnonfinite rollout', None))
+            else:
+                fields.append((method+('' if row.get('completed') else '\nsolver failure'), u))
+        if truth is None:
+            # No reference can be drawn from an incomplete source. Never fill
+            # the gap with an invented field or a smaller surviving mesh.
+            continue
         indices = np.unique(np.linspace(0, len(truth)-1, min(4, len(truth)), dtype=int))
         fields = [('reference', truth), *fields]
-        bound = max(float(np.max(np.abs(field[indices]))) for _, field in fields)
+        bound = max(float(np.max(np.abs(field[indices]))) for _, field in fields if field is not None)
         bound = max(bound, np.finfo(float).tiny)
         fig, axes = plt.subplots(len(indices), len(fields), squeeze=False,
                                  figsize=(3*len(fields), 2.5*len(indices)), constrained_layout=True)
@@ -197,6 +260,10 @@ def representative_plots(paths, stem):
         for i, frame in enumerate(indices):
             for j, (method, field) in enumerate(fields):
                 ax = axes[i, j]
+                if field is None:
+                    ax.text(.5, .5, method, ha='center', va='center', transform=ax.transAxes)
+                    ax.set_axis_off()
+                    continue
                 plot = ax.imshow(field[frame].T, origin='lower', extent=(0, 1, 0, 1),
                                  vmin=-bound, vmax=bound, cmap='RdBu_r', interpolation='nearest')
                 ax.set_title(f'{method}, t={frame*dt:g}', fontsize=9)
@@ -217,8 +284,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', action='append', type=Path, required=True)
     parser.add_argument('--date', required=True)
+    parser.add_argument('--training-audit', type=Path, default=ROOT/'reports'/'2026-09-10-modified-cp-training-audit.json')
     args = parser.parse_args()
     sources = [summarize_input(path) for path in args.input]
+    training = json.loads(args.training_audit.read_text())
+    training_rows = []
+    for checkpoint in training['checkpoints']:
+        cfg = checkpoint['configuration']
+        if digest(ROOT/checkpoint['path']) != checkpoint['sha256']:
+            raise ValueError('Training checkpoint changed after its independent audit')
+        for source in sources:
+            if source['case_name'] == checkpoint['case_name'] and source['checkpoint_hashes'].get(cfg['architecture']) != checkpoint['sha256']:
+                raise ValueError('Campaign decoder differs from the independently audited training checkpoint')
+        training_rows.append([checkpoint['case_name'], cfg['architecture'], cfg['intervals'], cfg['k'],
+                              cfg['rank'] if cfg['architecture'] != 'film' else '—',
+                              checkpoint['parameter_count'], checkpoint['completed_updates']])
     stem = ROOT/'reports'/f'{args.date}-modified-cp-eq-comparison'
     plots = frontier_plot(sources, stem)
     field_plots = representative_plots(args.input, stem)
@@ -272,7 +352,8 @@ def main():
              'All expected cases and repetitions must be present for a target to qualify. '
              'Failure counts retain numerical breakdowns and incomplete trajectories. '
              'Iteration-capped or small-step exits may attain a physical accuracy target, but are separately counted '
-             'as nonstationary and never described as converged PDE solves.', '',
+             'as nonstationary and never described as converged PDE solves. Stationarity concerns the weak '
+             'least-squares objective; physical accuracy and full-residual diagnostics are assessed separately.', '',
              'These errors compare against the declared numerical reference. Any unresolved reference uncertainty '
              'keeps the corresponding continuum-accuracy interpretation provisional. '
              'No configuration is chosen using evaluation accuracy or timing.', '',
@@ -284,12 +365,33 @@ def main():
              'Each ratio uses the same owner job and GPU and two validation-selected configurations '
              'that both attain the target on the untouched cohort. A ratio above unity means a smaller '
              'median ROM query time. Numerical completion and latent convergence remain separate.', '',
+             '## Trained models and online work', '',
+             table(['Case', 'Decoder', 'Training intervals/axis', 'Latent dimension', 'CP rank',
+                    'Decoder parameters', 'Completed training updates'], training_rows), '',
+             'Each PDE/boundary has separately trained weights, frozen for both evaluation meshes. '
+             'CP and modified CP share the same initial CP training stage. FiLM uses the full update budget '
+             'from its own initialization. Training update budgets match; parameter counts and training costs differ. '
+             'This pilot compares the declared architectures without a parameter-matched or exhaustive tuning claim.', '',
+             'CP precontracts its fixed spatial factors with the selected EQ weights for weak linear terms. '
+             'The quadrature approximation is preserved. Burgers still evaluates the nonlinear upwind term '
+             'on its sampled stencil. Modified CP and FiLM retain state-dependent spatial evaluation. '
+             'On waves, CP\'s contracted evolution dimensions stay fixed when EQ count changes; EQ count still '
+             'affects approximation and sampled initialization. Solver iteration limits, tolerance, and time step '
+             'continue to change work. Full-field output cost grows with the requested mesh for every decoder. '
+             'This implementation uses EQ-fitted operators, and does not establish an exact quadrature-free operator claim.', '',
              '## Provenance and independent review', '',
              table(['Case', 'Campaign status', 'Job ID', 'GPU', 'Source commit', 'Full-field audits'], provenance_rows), '',
              'Raw repetition records, validation sweeps, selection declarations, source hashes, and field-audit results '
              f'are indexed in [{stem.name}.json]({stem.name}.json). '
              'Timing ratios must use the same job and GPU, and an FOM configuration meeting the same accuracy target. '
              'This report does not substitute timings from separate jobs.', '',
+             '## Numerical reference checks', '', reference_table(sources), '',
+             'Burgers is scored against a finer-grid trajectory restricted to the output grid; '
+             'its nested difference also contains spatial discretization error. Wave errors use '
+             'the same-grid discrete system: reflective propagation is exact for that system, '
+             'and absorbing references have temporal refinement and energy/boundary balance checks. '
+             'These checks do not establish a rigorous continuum error bound. Differences and energy '
+             'balance defects are dimensionless; invariant drift is an absolute signed-moment magnitude.', '',
              'The new wave decoder represents displacement and velocity jointly. Its latent dimension is not '
              'the phase-state dimension of the earlier displacement-manifold experiments; changes relative to '
              'those earlier results do not isolate decoder architecture.', '',
@@ -302,6 +404,9 @@ def main():
              '- **FOM:** the full-order numerical PDE solver used as a speed comparison.',
              '- **Weak residual:** the PDE mismatch integrated against smooth spatial test functions.',
              '- **Latent state:** the small vector of unknowns solved inside the decoder.',
+             '- **CP rank:** the number of spatial product terms, separate from the latent dimension.',
+             '- **Decoder parameters:** trained weights in the field decoder, excluding training-only snapshot codes.',
+             '- **Training updates:** optimizer steps completed before validation and evaluation.',
              '- **Intervals/axis:** subdivisions of the unit domain; the number of stored nodes depends on boundary conditions.',
              '- **Validation-selected configuration:** solver and quadrature settings frozen before evaluation fields are examined.',
              '- **Target / target attained:** the declared error ceiling, and whether every expected invocation completes below it.',
@@ -311,12 +416,19 @@ def main():
              '- **Failed cases:** cases with any incomplete/nonfinite solve or missing trajectory.',
              '- **Nonstationary cases:** cases with any latent fit or time step lacking the declared convergence condition; accurate capped rollouts remain labeled.',
              '- **Timing outliers:** invocations taking more than twice their own case\'s repetition median; retained in all summaries.',
+             '- **Temporal difference:** discrepancy after refining the reference time step, on fixed initial physical scales.',
+             '- **Nested space/time difference:** discrepancy against a finer spatial grid and time step, restricted back to the reported grid.',
+             '- **Energy balance defect:** relative failure of reference energy conservation, or energy plus outgoing boundary flux conservation.',
+             '- **Invariant drift:** change in the absorbing reference\'s area integral of velocity plus speed times its boundary integral of displacement.',
+             '- **Semidiscrete / continuum:** respectively the spatially discretized PDE and the original PDE before spatial discretization.',
              '- **Median-time ratio FOM/ROM:** the full solver\'s median query duration divided by the ROM\'s, for paired qualifying configurations.',
              '- **Energy-state error:** the physical energy norm of the displacement/velocity error, scaled by the initial reference energy.',
              '- **Full-field audit:** independent NumPy recomputation from a saved full-grid prediction and reference.',
              '- **Campaign status / job ID / GPU / source commit:** completion state and identifiers of the recorded scientific execution.',
              '- **Single-seed pilot:** an initial comparison using one training random seed, without a training-variance claim.', '']
-    stem.with_suffix('.json').write_text(json.dumps({'sources': sources}, indent=2, allow_nan=False)+'\n')
+    stem.with_suffix('.json').write_text(json.dumps({'sources': sources,
+        'training_audit': {'path': relative(args.training_audit), 'sha256': digest(args.training_audit),
+                           'checkpoints': training['checkpoints']}}, indent=2, allow_nan=False)+'\n')
     stem.with_suffix('.md').write_text('\n'.join(lines))
     print(relative(stem.with_suffix('.md')))
 

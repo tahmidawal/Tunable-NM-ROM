@@ -436,8 +436,13 @@ def main():
     parser.add_argument('--audit-workers', type=int, choices=(1, 2, 3), default=1,
                         help='Independent CPU field-audit workers; rendering remains serial.')
     args = parser.parse_args()
+    def audit_panel(path):
+        result = summarize_input(path)
+        print(json.dumps(dict(audited_source=result['source'], full_fields=len(result['field_audits']),
+                              evaluation_invocations=result['audited_paired_evaluation_invocations'])), flush=True)
+        return result
     with ThreadPoolExecutor(max_workers=args.audit_workers) as workers:
-        sources = list(workers.map(summarize_input, args.input))
+        sources = list(workers.map(audit_panel, args.input))
     seal_hashes = {source['evaluation_freeze']['sha256'] for source in sources if source['evaluation_freeze']}
     if len(seal_hashes) > 1:
         raise ValueError('Evaluation panels do not share the same global validation freeze')

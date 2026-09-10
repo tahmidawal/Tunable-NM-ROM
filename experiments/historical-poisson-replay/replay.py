@@ -46,6 +46,9 @@ def run_mesh(n, outdir, ns, reps, warm, gate_nz):
     budget = int(cfg.get("gn_iters", 60))
     tr_factor = float(cfg.get("tr_factor", 1.0))
     fresh_seed = int(cfg.get("fresh_seed", 777))
+    # The original N1024 CG comparison explicitly used this guard; the QF
+    # archive stopped at N512. Keep the numerical truth CG tolerance unchanged.
+    truth_res_tol = 1e-9 if n == 1024 else 1e-10
     taus = [0.001, 0.01]
     cg_tols = [0.1, 0.03, 0.01, 0.003, 0.001, 0.0003, 0.0001, 1e-6]
     dev = jax.devices()[0]
@@ -56,6 +59,7 @@ def run_mesh(n, outdir, ns, reps, warm, gate_nz):
         n_src_per_cohort=ns, reps=reps, burn=warm, gate_nz=gate_nz,
         taus=taus, cg_tolerances=cg_tols, cg_truth_tol=mp.CG_TOL,
         cg_maxiter=mp.CG_MAXITER, ckpt_sha256=sha(ckpt), ckpt_cfg=cfg,
+        fom_res_tol=truth_res_tol,
         objective="original alpha=1 weak form; exact matrix B; original mean-code initialization",
         timer="GPU input -> source projection -> trust-LM -> full interior GPU output; excludes transfers",
         fields="last captured timed invocation for each source and subject; unmodified float64",
@@ -94,8 +98,18 @@ def run_mesh(n, outdir, ns, reps, warm, gate_nz):
     truth = np.stack([np.asarray(truth_solve(f)) for f in fdev])
     truth_res = max(rel(np.asarray(mp.neg_lap_interior(jnp.asarray(u), n)), f)
                     for u, f in zip(truth, sources))
-    assert truth_res < 1e-10, truth_res
     report["gates"]["truth_residual_max"] = truth_res
+    if n == 1024:
+        direct_check = jax.jit(lambda f, s, lam: s @ ((s.T @ f @ s)/lam) @ s.T)
+        sine_check, lam_check = jnp.asarray(grid.S), jnp.asarray(grid.lam)
+        direct_deviation = max(rel(u, np.asarray(direct_check(f, sine_check, lam_check)))
+                               for u, f in zip(truth, fdev))
+        report["gates"]["truth_vs_direct_relative_max"] = direct_deviation
+        save()
+        sc.log(f"N=1024 truth preflight: CG/direct field discrepancy {direct_deviation:.3e}; "
+               f"CG recomputed residual {truth_res:.3e}; original guard {truth_res_tol:.0e}")
+        assert direct_deviation < 1e-11, direct_deviation
+    assert truth_res < truth_res_tol, truth_res
     tnorm = np.linalg.norm(truth.reshape(2*ns, -1), axis=1)
     spec = dict(kind="weak", alpha=1.0, M=modes)
     mask = np.asarray(grid.mode_mask(modes)).astype(bool)

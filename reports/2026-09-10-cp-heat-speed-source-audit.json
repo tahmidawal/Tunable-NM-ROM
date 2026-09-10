@@ -1,0 +1,104 @@
+{
+  "scope": "Read-only source review, no new CP benchmark or accepted historical performance measurement.",
+  "sources": {
+    "Older Paper /reviewer_comments ": {
+      "sha256": "f760dab84c8b6bcff0d3da1d88999291977e84f4e80b4c8d9a84392cf042cbb6",
+      "locations": [
+        {
+          "needle": "Our heat full-order reference was not compiled the same way",
+          "line": 162
+        },
+        {
+          "needle": "These replace the corresponding speedups",
+          "line": 167
+        }
+      ]
+    },
+    "Older Paper /neurips26__Copy_ (1).zip": {
+      "sha256": "54f309164c27c8e64e740ae76682a1f407808bbefcccec24fd8eefc78ea65ffd",
+      "main_tex_sha256": "e1d9827d4b0c9a695a1e853ef0c6a6f4ed314e2df03df0d95c39f882cf9a024a"
+    },
+    "best-results/Heat-2D/N64/ACC/experiment.py": {
+      "sha256": "0a8d8b4b75b3c552816515ae683ff6f3f635a51669a208ed870ccea2f8bd87a7",
+      "locations": [
+        {
+          "needle": "Use dense residual (no EQ sparsification)",
+          "line": 315
+        },
+        {
+          "needle": "Original rom_step had Python loop",
+          "line": 327
+        },
+        {
+          "needle": "class LinearCPDecoder",
+          "line": 104
+        },
+        {
+          "needle": "t0 = time.perf_counter()",
+          "line": 406
+        },
+        {
+          "needle": "u_n = sc_n * constrained_decode_normalised",
+          "line": 385
+        }
+      ]
+    },
+    "best-results/Heat-3D/N128/FAST/experiment.py": {
+      "sha256": "282b5ae379f855fd327d45216ef35628fe8615406d6c72811fa5730ea46f16e9",
+      "locations": [
+        {
+          "needle": "def run_fom",
+          "line": 119
+        },
+        {
+          "needle": "for _ in range(steps):",
+          "line": 123
+        },
+        {
+          "needle": "def _rollout_rt",
+          "line": 1308
+        },
+        {
+          "needle": "snapshots = jnp.stack([u0_flat, u_final])",
+          "line": 1338
+        }
+      ]
+    },
+    "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/heat_core.py": {
+      "sha256": "414084aa849b4259e17b66b97af4f3f4bcd2d67e920590746fc6234e966997a2",
+      "locations": [
+        {
+          "needle": "jax.lax.while_loop",
+          "line": 116
+        },
+        {
+          "needle": "jax.lax.scan",
+          "line": 132
+        },
+        {
+          "needle": "target = factor*",
+          "line": 129
+        }
+      ]
+    },
+    "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runtime_paths.py": {
+      "sha256": "5eb79fcc74f3c2119324db00d2e07d83e3830ab541fe8b8228833604f67edd9a",
+      "locations": [
+        {
+          "needle": "def compiled",
+          "line": 12
+        }
+      ]
+    }
+  },
+  "findings": [
+    "The archived heat ROM uses fully compiled device loops with diffusivity as a runtime argument; current heat already uses compiled loops and explicit array inputs.",
+    "Archived Heat-2D explicitly uses a dense residual without EQ. Do not attribute that cell speedup to empirical quadrature.",
+    "The archived Heat-3D FOM uses a Python loop of CG solves and retains every snapshot, whereas the ROM returns initial and final fields. The author correction explicitly reports an unfair FOM compilation setup.",
+    "The manuscript compares against CG; the current heat benchmark includes a stronger direct spectral FOM and a coarse interpolated control.",
+    "Archived Heat-2D invokes its encoder before the named rollout timer, without a separate completion block, so it does not establish fully charged initialization. It grades final states; the current experiment charges initialization and all requested full outputs and grades every requested time.",
+    "The archived Heat-2D rollout advances the decoded state correctly. The frozen public-package regression cannot invalidate the paper run by itself.",
+    "The CP decoder factors through a fixed spatial bank and nonlinear coefficient map. Fixed linear weak operators can be preassembled for it as for the current coordinate-bank model.",
+    "Factorized spatial reconstruction is a potential further transfer to the current bank; it requires its own accuracy and cost test. No such compression was implemented in this turn."
+  ]
+}

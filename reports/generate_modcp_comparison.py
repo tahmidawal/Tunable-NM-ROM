@@ -400,8 +400,23 @@ def main():
                      s['case_name'] not in evaluated_cases for s in sources)
     status = 'Provisional: one or more owner campaigns is incomplete.' if incomplete else (
         'Completed single-seed pilot; accuracy and speed claims are limited to the declared families and cohorts.')
+    evaluated_rom_targets = [row for source in sources for row in source['summaries']
+                             if row['split'] == 'evaluation' and row['method'] in ('cp', 'modcp', 'film')
+                             and row['target'] is not None]
+    if incomplete:
+        outcome = 'Final architectural conclusions await the remaining frozen evaluation panels.'
+    elif not any(row['qualified'] for row in evaluated_rom_targets):
+        outcome = ('None of the tested decoder configurations established a validation-selected, '
+                   'evaluation-qualified operating point at the declared accuracy targets. '
+                   'This pilot therefore establishes no ROM speedup over a full solver at matched target accuracy. '
+                   'Diagnostic timings remain useful for understanding cost, with their measured errors shown alongside them.')
+    else:
+        outcome = ('Some frozen ROM configurations attain a declared target on the untouched cohort. '
+                   'The paired table below identifies the qualifying cases and their full-solver comparisons; '
+                   'unqualified methods and cases remain visible.')
     lines = ['# Modified CP with empirical quadrature: Burgers and waves', '',
              'This report compares the original CP decoder, latent-modulated CP factors, and a FiLM coordinate decoder. '+status,
+             '', outcome,
              '', '## Evaluation of validation-selected configurations', '',
              'Queries start with full GPU-resident initial fields and return full GPU-resident output trajectories. '
              'Timing includes initialization, evolution, and reconstruction. Compilation, offline setup, and host transfers are excluded.', '',

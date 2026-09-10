@@ -3,7 +3,8 @@ import hashlib,json,subprocess,sys
 from pathlib import Path
 root=Path(__file__).resolve().parents[3]
 attempt=sys.argv[1];phase=sys.argv[2]
-assert attempt.isalnum() and phase in ('smoke','train','all')
+resume=Path(sys.argv[3]).resolve() if len(sys.argv)>3 else None
+assert attempt.isalnum() and phase in ('smoke','train','validate','evaluate','all')
 dst=root/'experiments/modcp-eq/cluster/stage'/attempt
 assert not dst.exists()
 for name in ('code','out','logs'):(dst/name).mkdir(parents=True,exist_ok=True)
@@ -17,6 +18,22 @@ for source in files:
     target=dst/'code'/Path(source).relative_to('experiments/modcp-eq');target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
     provenance.append(dict(source=source,staged=str(target.relative_to(dst)),sha256=hashlib.sha256(data).hexdigest(),commit=commit))
 (dst/'COMMIT.txt').write_text(commit+'\n');(dst/'PROVENANCE.json').write_text(json.dumps(provenance,indent=2)+'\n')
+if resume is not None:
+    assert resume.is_dir()
+    # Only learned/fitted artifacts and frozen selection records move phases.
+    # No local truth/data array is staged: every phase regenerates seeded fields.
+    selected=[]
+    for directory in ('checkpoints','rules'):
+        if (resume/directory).exists():selected+=list((resume/directory).rglob('*'))
+    for name in ('config.json','selections.json','selection_freeze.json'):
+        if (resume/name).exists():selected.append(resume/name)
+    copied=[]
+    for source in selected:
+        if not source.is_file():continue
+        rel=source.relative_to(resume);target=dst/'out'/rel;target.parent.mkdir(parents=True,exist_ok=True)
+        data=source.read_bytes();target.write_bytes(data)
+        copied.append(dict(source=str(source),staged=str(target.relative_to(dst)),sha256=hashlib.sha256(data).hexdigest()))
+    (dst/'RESUME_ARTIFACTS.json').write_text(json.dumps(copied,indent=2)+'\n')
 remote=f'/cluster/tufts/paralab/tawal01/modcp_burgers2d_20260910/{attempt}'
 script='''#!/bin/bash
 #SBATCH --job-name=ctol_modcp_b2d_ATTEMPT

@@ -380,6 +380,53 @@ def representative_plots(paths, stem):
     return output
 
 
+def wave_diagnostic_tables(sources):
+    fits, residuals, seen = [], [], set()
+    for source in sources:
+        if source['case_name'] == 'burgers2d':
+            continue
+        for record in source['representation_diagnostics']:
+            key = source['case_name'], record['intervals'], record['case'], record['configuration']
+            if key in seen:
+                continue
+            seen.add(key)
+            snapshots = sorted(record['snapshot_fits'], key=lambda r: r['observation_index'])
+            errors = [max(r['full_grid_physical_error'][component] for component in
+                          ('displacement', 'velocity', 'energy_state')) for r in snapshots]
+            fits.append([*key, f'{100*errors[0]:.6g}%', f'{100*max(errors[1:]):.6g}%',
+                         f'{100*errors[-1]:.6g}%',
+                         f"{min(r['weak_tangent_rank_ratio'] for r in snapshots):.6g}",
+                         sum(r['fit_reason'] != 1 for r in snapshots)])
+            matches = [r for r in source['full_weak_audits'] if
+                       (r['intervals'], r['case'], r['configuration']) == key[1:]]
+            if len(matches) != 1:
+                raise ValueError('Wave snapshot diagnostic lacks its matching full-weak rollout audit')
+            audit = matches[0]
+            residuals.append([*key, *[f'{max(audit[name]):.6g}' for name in
+                             ('full_weak_residual_norm', 'eq_weak_residual_norm',
+                              'full_minus_eq_weak_residual_norm')],
+                              f"{audit['maximum_fixed_scale_mass_moment_difference']:.6g}"])
+    if not fits:
+        return 'Wave validation diagnostics have not been collected yet.'
+    return '\n\n'.join([
+        table(['Wave case', 'Intervals/axis', 'Validation case', 'Diagnostic configuration',
+               'Initial snapshot fit error', 'Worst sampled later fit error', 'Final snapshot fit error',
+               'Minimum tangent singular-value ratio', 'Nonstationary fits'], fits),
+        'Each snapshot is fitted separately to a known reference state. Errors take the largest physical '
+        'component on the same fixed initial normalization as the rollout. These local achieved errors '
+        'are not global reconstruction floors. The tangent ratio is the smallest singular value divided '
+        'by the largest for the sampled weak decoder map; it does not certify global conditioning.',
+        table(['Wave case', 'Intervals/axis', 'Validation case', 'Diagnostic configuration',
+               'Maximum full weak residual norm', 'Maximum EQ weak residual norm',
+               'Maximum full-minus-EQ residual norm', 'Maximum mass-moment discrepancy'], residuals),
+        'These checks use actual consecutive integration states from the matching validation rollout. '
+        'Each column takes its own maximum over the audited times; the maxima need not occur together. '
+        'Residual and moment values use the stored fixed weak scaling, not the physical error norm. '
+        'The diagnostics cover the predetermined first validation case, use owner-computed full-grid '
+        'quantities from verified source, and are excluded from online cost and model selection. '
+        'They cannot certify quadrature accuracy or explain all failures elsewhere in the cohort.'])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', action='append', type=Path, required=True)
@@ -653,6 +700,7 @@ def main():
              'Later-time snapshot fitting uses the reference solution and is excluded from online timings, '
              'initialization, and configuration selection. These cases were chosen to diagnose validation failures.', '',
              '![Independent CP reconstruction diagnostic](2026-09-10-modified-cp-span-audit.png)', '',
+             '## Wave snapshot and weak-residual diagnostics', '', wave_diagnostic_tables(sources), '',
              '## Provenance and independent review', '',
              table(['Case', 'Campaign status', 'Job ID', 'GPU', 'Source commit', 'Full-field audits'], provenance_rows), '',
              'Raw repetition records, validation sweeps, selection declarations, source hashes, and field-audit results '
@@ -719,6 +767,9 @@ def main():
              '- **Affine spatial image:** the fixed CP bias plus every linear combination of its learned spatial products.',
              '- **Reconstruction floor:** the smallest error in the specified fixed linear/affine space, giving a lower bound for a decoder restricted to that space.',
              '- **Snapshot fit:** a local latent optimization against one known reference field; its achieved error is not a proof of the best possible decoder error.',
+             '- **Tangent singular-value ratio:** the smallest divided by the largest singular value of the sampled weak decoder Jacobian at a fitted state; a local rank/conditioning diagnostic.',
+             '- **Mass-moment discrepancy:** the fixed-scale difference between full-grid and quadrature integration of decoder fields against smooth test functions.',
+             '- **Full-minus-EQ weak residual norm:** the norm of the difference between full-grid and quadrature weak residual vectors at the same actual integration step.',
              '- **Intervals/axis:** subdivisions of the unit domain; the number of stored nodes depends on boundary conditions.',
              '- **Validation-selected configuration:** solver and quadrature settings frozen before evaluation fields are examined.',
              '- **Target / target attained:** the declared error ceiling, and whether every expected invocation completes below it.',

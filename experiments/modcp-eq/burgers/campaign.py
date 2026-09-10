@@ -315,6 +315,21 @@ class Campaign:
                                    audit_latent_step=len(Zsteps),finite_jacobian=bool(np.isfinite(J).all()))
                             elif arm!='newton_bicgstab':
                                 row['weak_audit']=dict(status='not_evaluated_nonfinite_latent_or_fields',tangent_rank=None)
+                        else:
+                            # Every measured invocation has auditable field data.
+                            # Reuse only a byte-identical prior output; an unexpected
+                            # nondeterministic result gets its own full artifact.
+                            prior=next((r for r in reversed(self.rows) if r['split']==split and r['configuration']==name
+                                        and r['intervals']==L and r['case']==case and r.get('field_artifact')
+                                        and r['field_sha256']==row['field_sha256']),None)
+                            if prior is not None:
+                                row.update(field_artifact=prior['field_artifact'],field_artifact_kind='self_contained_full_grid',
+                                           field_deduplicated_by_sha256=True)
+                            else:
+                                artifact=fielddir/f'{split}_{name}_L{L}_case{case}_rep{rep}.npz'
+                                np.savez_compressed(artifact,u=fields,truth_u=truth[case],same_grid_u=same[case])
+                                row.update(field_artifact=str(artifact.relative_to(self.out)),field_artifact_kind='self_contained_full_grid',
+                                           field_deduplicated_by_sha256=False)
                         self.append(row)
                     print(f'TIMED {split} L={L} rep={rep} case={case} rows={len(self.rows)}',flush=True);self.save()
             if split=='validation':

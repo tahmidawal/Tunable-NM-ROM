@@ -1,0 +1,49 @@
+{
+  "meshes": [
+    {
+      "result": "experiments/historical-poisson-replay/runs/replay01/out/poisson_n128.json",
+      "result_sha256": "cff7614f60d8441790699137d89308ed2ee6ecc8b44f2961853736ef84ad9dce",
+      "fields_sha256": "c8e4a35f98514372c5240ff693fe94ec746f9dcfc760095cc916722d7e826ed5",
+      "N": 128,
+      "job": "3492150",
+      "reconstructed_timed_field_errors": 416,
+      "maximum_differences": {
+        "error": 2.7755575615628914e-17,
+        "timing_ms": 0.0
+      },
+      "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+      "passed": true
+    },
+    {
+      "result": "experiments/historical-poisson-replay/runs/replay01/out/poisson_n256.json",
+      "result_sha256": "f9529b025d754655b19ccfef0300555a7b23e3470cc12add7ca7187436e38ae0",
+      "fields_sha256": "91a20fc9d66e5e9aed5a1463cd020fed9ee6fd2f1b291160a43406454550f4bf",
+      "N": 256,
+      "job": "3492150",
+      "reconstructed_timed_field_errors": 416,
+      "maximum_differences": {
+        "error": 2.7755575615628914e-17,
+        "timing_ms": 0.0
+      },
+      "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+      "passed": true
+    },
+    {
+      "result": "experiments/historical-poisson-replay/runs/replay01/out/poisson_n512.json",
+      "result_sha256": "e8cf0a8a975127887c51c05f4091a06c59755e96a47416e762e564438e70a2ca",
+      "fields_sha256": "080b29a8eda70e9949fb0702e6016557aec8ee9404faffb7f899cdd70eb94b07",
+      "N": 512,
+      "job": "3492150",
+      "reconstructed_timed_field_errors": 416,
+      "maximum_differences": {
+        "error": 4.163336342344337e-17,
+        "timing_ms": 0.0
+      },
+      "checks": "full float64 timed fields, every raw timing, error aggregates, stop reasons, CG selection",
+      "passed": true
+    }
+  ],
+  "complete_four_mesh_ladder": false,
+  "reconstructed_timed_field_errors": 1248,
+  "passed": true
+}

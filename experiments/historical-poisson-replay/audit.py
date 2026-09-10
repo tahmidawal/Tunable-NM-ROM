@@ -24,6 +24,9 @@ def audit(path):
     assert cfg["x64"] and cfg["backend"] == "gpu"
     assert cfg["matmul_precision"] == "highest"
     assert cfg["slurm_job"], "local smoke artifacts are not research results"
+    assert report["gates"]["truth_residual_max"] < cfg.get("fom_res_tol", 1e-10)
+    if cfg["N"] == 1024:
+        assert report["gates"]["truth_vs_direct_relative_max"] < 1e-11
     fields = path.parent / report["fields_file"]
     assert sha(fields) == report["fields_sha256"]
     maxima = dict(error=0.0, timing_ms=0.0)
@@ -76,8 +79,10 @@ def audit(path):
 def main():
     run = Path(sys.argv[1])
     audits = [audit(p) for p in sorted((run / "out").glob("poisson_n*.json"))]
-    assert len(audits) == 4
+    expected_meshes = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+    assert len(audits) == expected_meshes
     result = dict(meshes=audits,
+                  complete_four_mesh_ladder=bool(len(audits) == 4),
                   reconstructed_timed_field_errors=sum(x["reconstructed_timed_field_errors"] for x in audits),
                   passed=True)
     (run / "audit.json").write_text(json.dumps(result, indent=2)+"\n")

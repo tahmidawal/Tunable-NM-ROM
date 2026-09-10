@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/historical_replay01/replay.py", line 309, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/historical_replay01/replay.py", line 303, in main
+    run_mesh(n, outdir, ns, reps, warm, gate_nz)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/historical_replay01/replay.py", line 97, in run_mesh
+    assert truth_res < 1e-10, truth_res
+           ^^^^^^^^^^^^^^^^^
+AssertionError: 3.893633676811303e-10

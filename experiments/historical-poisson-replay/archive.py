@@ -43,7 +43,8 @@ def main():
         manifest["files"].append(dict(path=str(field.relative_to(run)), size=field.stat().st_size,
                                       sha256=expected, parts=parts, reconstruction_verified=True))
         print(field.name, len(parts), "parts; reconstructed hash matches", flush=True)
-    assert len(manifest["files"]) == 4
+    expected_meshes = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+    assert len(manifest["files"]) == expected_meshes
     (run / "ARCHIVE.json").write_text(json.dumps(manifest, indent=2)+"\n")
     (run / "ARCHIVE.sha256").write_text("".join(
         f"{part['sha256']}  {part['path']}\n" for item in manifest["files"] for part in item["parts"]))

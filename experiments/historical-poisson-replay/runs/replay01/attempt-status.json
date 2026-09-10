@@ -1,0 +1,17 @@
+{
+  "job_id": 3492150,
+  "status": "failed_at_N1024_truth_gate_before_any_N1024_timing",
+  "completed_meshes": [
+    128,
+    256,
+    512
+  ],
+  "failed_mesh": 1024,
+  "observed_truth_residual": 3.893633676811303e-10,
+  "incorrectly_inherited_through512_gate": 1e-10,
+  "original_N1024_gate": 1e-09,
+  "original_gate_source": "reference/sep_poisson_N1024_K16_R64.json",
+  "no_N1024_timed_results": true,
+  "correction": "Restore original N1024 gate and add independent dense-spectral field agreement before timing; retain CG tol1e-13",
+  "superseded_by": "replay02"
+}

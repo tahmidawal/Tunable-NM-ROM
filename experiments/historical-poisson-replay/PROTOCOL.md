@@ -4,6 +4,15 @@ This cell restores the historical frozen-checkpoint, same-grid, device-resident
 comparison requested on 2026-09-10. Results are provisional until the GPU logs,
 source checksums and captured timed fields have been audited.
 
+The final comparison is assigned to `runs/replay02/`. The preceding attempt is retained
+under `runs/replay01/` with a structured failure record: it completed the original
+QF mesh range but applied that range's reference-residual gate to the larger-grid
+extension. The correction restores the original larger-grid CG study's documented
+guard, with its source, batch script and result copied under `reference/`. The
+numerical CG truth tolerance is unchanged. An additional check compares every
+larger-grid truth field against the original direct solver before any ROM timing.
+Only one complete allocation supplies the final mesh ladder.
+
 The source provenance map is `SOURCES.json`. Files in `vendor/` are byte copies
 of the archived quadrature-free cell's staged dependencies; `in/` contains the
 archived mesh-specific checkpoints. No model training occurs. The historical

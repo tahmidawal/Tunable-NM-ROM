@@ -1,0 +1,17 @@
+{
+  "sha256": "3183d50289173492043cca1ade538345afcaaf14ef7f7146ed11f272426226cb",
+  "bytes": 19001743360,
+  "ordered_parts": [
+    {
+      "path": "verified-cluster.tar",
+      "sha256": "3183d50289173492043cca1ade538345afcaaf14ef7f7146ed11f272426226cb"
+    }
+  ],
+  "format": "tar",
+  "compression": "none",
+  "retention": "Full checksummed local archive retained outside Git; coordinator must verify durable main/artifacts copy before worktree cleanup.",
+  "source_commit": "df737ba306f1edac21054939b9241f4f3f221320",
+  "job_id": "3503439",
+  "excluded_regenerated_data": "out/training/data/training_fields.npy",
+  "restore": "Concatenate ordered_parts in their recorded order; verify sha256 of resulting uncompressed tar; extract. RESULTS.sha256 authenticates each result."
+}

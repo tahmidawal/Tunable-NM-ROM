@@ -1,0 +1,79 @@
+{
+  "interpretation": "Source, runtime, reference-gate and coverage audit. Full-mesh validation errors are not independently reconstructed from the saved observation-grid fields. Archive and member hashes were verified by the collector before remote cleanup.",
+  "panels": [
+    {
+      "case_name": "wave_reflective",
+      "job_id": "3503439",
+      "source_commit": "df737ba306f1edac21054939b9241f4f3f221320",
+      "handoff": "runs/validation_reflective02/cluster/out/comparison/handoff.json",
+      "handoff_sha256": "69744cd2ff3c17288da654743b70a7a8457e043a38f1dcd5ada06c16fa4ab538",
+      "archive_sha256": "3183d50289173492043cca1ade538345afcaaf14ef7f7146ed11f272426226cb",
+      "archive_bytes": 19001743360,
+      "source_files_verified_against_git": 22,
+      "gpu": [
+        "NVIDIA A100 80GB PCIe"
+      ],
+      "panels": {
+        "256": {
+          "configuration_count": 94,
+          "cohort_rows": 1504,
+          "selection_proxy_rows": 658,
+          "numerically_completed_rows": 1504,
+          "stationary_rows": 1310,
+          "selected_configuration_count": 12,
+          "selection_proof_sha256": "03b845944d22ac163c4c68f66c9060bdf8da01ffb682d420f71bb4381130b79b"
+        },
+        "512": {
+          "configuration_count": 94,
+          "cohort_rows": 1504,
+          "selection_proxy_rows": 658,
+          "numerically_completed_rows": 1504,
+          "stationary_rows": 1303,
+          "selected_configuration_count": 12,
+          "selection_proof_sha256": "cee0da0399d8b689325e0501458196f1174a1d8de3cbcf27ccf85c4dafb515f2"
+        }
+      },
+      "references_passed": 32,
+      "evaluation_opened": false,
+      "remote_cleanup_complete": true,
+      "passed": true
+    },
+    {
+      "case_name": "wave_absorbing",
+      "job_id": "3503457",
+      "source_commit": "df737ba306f1edac21054939b9241f4f3f221320",
+      "handoff": "runs/validation_absorbing02/cluster/out/comparison/handoff.json",
+      "handoff_sha256": "707468e76ab033b1b3aad9596a7e07c2f2dc2034b3c4aa7fc82c5abd8c0f032d",
+      "archive_sha256": "5e18b47ce2aebbe6aa09f0f9c5043469ab7ea139f16fdf30af25ee6ae7c2c20e",
+      "archive_bytes": 17960181760,
+      "source_files_verified_against_git": 22,
+      "gpu": [
+        "NVIDIA A100-PCIE-40GB"
+      ],
+      "panels": {
+        "256": {
+          "configuration_count": 90,
+          "cohort_rows": 1440,
+          "selection_proxy_rows": 630,
+          "numerically_completed_rows": 1440,
+          "stationary_rows": 1290,
+          "selected_configuration_count": 8,
+          "selection_proof_sha256": "d54c5e0d1ee69e2fe8174567069930353c446bbacee9b5e1483366f269b6704a"
+        },
+        "512": {
+          "configuration_count": 90,
+          "cohort_rows": 1440,
+          "selection_proxy_rows": 630,
+          "numerically_completed_rows": 1440,
+          "stationary_rows": 1318,
+          "selected_configuration_count": 8,
+          "selection_proof_sha256": "30d23440f454f2193a034e8dbfea658cc9f379d01d07ab180d4cfcf8864615f4"
+        }
+      },
+      "references_passed": 32,
+      "evaluation_opened": false,
+      "remote_cleanup_complete": true,
+      "passed": true
+    }
+  ]
+}

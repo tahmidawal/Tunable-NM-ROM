@@ -1,0 +1,85 @@
+{
+  "architecture": "cp",
+  "intervals": 256,
+  "weak_modes": 128,
+  "fit_code_indices": [
+    0,
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    809,
+    910,
+    1011,
+    1112,
+    1213,
+    1314,
+    1415,
+    1516,
+    1618,
+    1719,
+    1820,
+    1921,
+    2022,
+    2123,
+    2224,
+    2325,
+    2427,
+    2528,
+    2629,
+    2730,
+    2831,
+    2932,
+    3033,
+    3135
+  ],
+  "fit_rule": "training_decoder_outputs_only",
+  "volume": {
+    "target_nodes": 512,
+    "selected_nodes": 512,
+    "positive_nodes": 512,
+    "relative_fit": 0.0013805963115757329,
+    "maximum_scaled_row_error": 0.0004461999714946152,
+    "seconds": 94.76691811811179,
+    "weight_sum": 0.9922094970107196,
+    "minimum_weight": 6.742679417195238e-05,
+    "candidate_count": 8100,
+    "fit_rows": 8193,
+    "expected_measure": 0.9922027587890625,
+    "measure_error": 6.738221657087706e-06,
+    "row_scaling": "full_grid_mass_weighted_RMS_of_decoder_output_times_test",
+    "nnls_method": "direct"
+  },
+  "faces": [],
+  "volume_target": 512,
+  "face_target_each": 0,
+  "total_selected_nodes_including_face_duplicates": 512,
+  "corner_rule": "Separate physical faces retain both corner half-weights.",
+  "perturbed_mass_moment_relative": [
+    [
+      0.0014799593790261482,
+      0.0017521579764406844
+    ],
+    [
+      0.001336513046814014,
+      0.0013685553296750301
+    ],
+    [
+      0.0014378086243561996,
+      0.001266020016011489
+    ],
+    [
+      0.0012901004482419258,
+      0.0011300640991192404
+    ]
+  ],
+  "reused_offline_rule": {
+    "source_job_id": "3501595",
+    "source_commit": "989d8c3812c9452cbdfc59a645b212da974b276f",
+    "rule_sha256": "80eaaa9eb7ce1d4e948c5671a9e8fdc0f78fcfc32eba944e4403e4d8f806dd25",
+    "timing_or_selection_reused": false
+  }
+}

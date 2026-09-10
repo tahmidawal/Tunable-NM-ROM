@@ -41,7 +41,9 @@ def verify_evaluation_freeze(path, data):
             str(entry['validation_job_id']) != str(old['provenance']['job_id'])):
         raise ValueError('Evaluation seed or validation source differs from global freeze')
     checkpoints = lambda value: value.get('checkpoint_hashes', value.get('checkpoint_sha256', {}))
-    if set(checkpoints(old)) != {'cp', 'modcp', 'film'} or checkpoints(old) != checkpoints(data):
+    # Burgers also retains its shared CP pretraining checkpoint. Bind every
+    # recorded checkpoint while requiring all three deployed decoder arms.
+    if not {'cp', 'modcp', 'film'} <= set(checkpoints(old)) or checkpoints(old) != checkpoints(data):
         raise ValueError('Evaluation checkpoint identities differ from frozen validation')
     names = {'selections.json', 'selection_freeze.json'} if burgers else {
         f'frozen_selection_{n}.json' for n in data['config']['meshes']}

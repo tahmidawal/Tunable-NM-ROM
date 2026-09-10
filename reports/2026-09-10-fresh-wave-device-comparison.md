@@ -22,18 +22,18 @@ The reflective FOM uses an exact propagator for the discrete spatial operator, e
 
 | Boundary | Intervals/axis | Method | Query ms | Initialization / evolution / output ms | FOM / method | Timing outliers |
 | --- | --- | --- | --- | --- | --- | --- |
-| Reflective | 256 | MLP32 | 4504.968 | 18.638 / 4485.558 / 0.802 | 0.001 | 0/6 |
-| Reflective | 256 | MLP16 | 3296.770 | 11.382 / 3284.948 / 0.822 | 0.001 | 0/6 |
-| Reflective | 256 | DST FOM | 4.145 | 0.428 / 3.592 / 0.000 | 1.000 | 0/6 |
-| Reflective | 512 | MLP32 | 4504.802 | 18.883 / 4484.886 / 0.814 | 0.001 | 0/6 |
-| Reflective | 512 | MLP16 | 3300.307 | 11.018 / 3288.326 / 0.815 | 0.002 | 0/6 |
-| Reflective | 512 | DST FOM | 5.832 | 0.329 / 5.517 / 0.000 | 1.000 | 0/6 |
-| Absorbing | 256 | MLP32 | 5003.072 | 22.692 / 4979.392 / 0.728 | 0.018 | 0/6 |
-| Absorbing | 256 | MLP16 | 3222.057 | 10.584 / 3210.820 / 0.711 | 0.028 | 0/6 |
-| Absorbing | 256 | RK4 FOM | 89.256 | 0.013 / 89.240 / 0.000 | 1.000 | 0/6 |
-| Absorbing | 512 | MLP32 | 4999.115 | 22.833 / 4974.652 / 0.872 | 0.052 | 0/6 |
-| Absorbing | 512 | MLP16 | 3218.860 | 10.674 / 3207.516 / 0.847 | 0.081 | 0/6 |
-| Absorbing | 512 | RK4 FOM | 259.308 | 0.014 / 259.294 / 0.000 | 1.000 | 0/6 |
+| Reflective | 256 | MLP32 | 4504.968 | 18.638 / 4485.558 / 0.802 | 0.000920046 | 0/6 |
+| Reflective | 256 | MLP16 | 3296.770 | 11.382 / 3284.948 / 0.822 | 0.00125722 | 0/6 |
+| Reflective | 256 | DST FOM | 4.145 | 0.428 / 3.592 / 0.000 | 1 | 0/6 |
+| Reflective | 512 | MLP32 | 4504.802 | 18.883 / 4484.886 / 0.814 | 0.00129467 | 0/6 |
+| Reflective | 512 | MLP16 | 3300.307 | 11.018 / 3288.326 / 0.815 | 0.00176718 | 0/6 |
+| Reflective | 512 | DST FOM | 5.832 | 0.329 / 5.517 / 0.000 | 1 | 0/6 |
+| Absorbing | 256 | MLP32 | 5003.072 | 22.692 / 4979.392 / 0.728 | 0.0178401 | 0/6 |
+| Absorbing | 256 | MLP16 | 3222.057 | 10.584 / 3210.820 / 0.711 | 0.0277014 | 0/6 |
+| Absorbing | 256 | RK4 FOM | 89.256 | 0.013 / 89.240 / 0.000 | 1 | 0/6 |
+| Absorbing | 512 | MLP32 | 4999.115 | 22.833 / 4974.652 / 0.872 | 0.0518708 | 0/6 |
+| Absorbing | 512 | MLP16 | 3218.860 | 10.674 / 3207.516 / 0.847 | 0.0805589 | 0/6 |
+| Absorbing | 512 | RK4 FOM | 259.308 | 0.014 / 259.294 / 0.000 | 1 | 0/6 |
 
 Times are medians across cases of per-case medians from 3 repetitions. Component medians need not sum exactly to the query median. Timing outliers exceed 1.5 times their own case's repetition median; this diagnostic does not remove any measurement. FOM/method above one means less raw device-query time, independently of accuracy.
 
@@ -58,9 +58,11 @@ Displacement error uses the mass-weighted L2 norm. Current-relative divides by t
 | Absorbing | 512 | MLP16 | 64.909 / 64.909 / 312.540 | 3.872 | 323.617 | 410.612 | 2/2; 2/2 |
 | Absorbing | 512 | RK4 FOM | 0.000 / 0.000 / 0.000 | 0.000 | 0.000 | 0.000 | 2/2; n/a |
 
-Mean averages cases and times; median case is the median of case time means; worst is the maximum across all cases and output times. A nonstationary initial fit still returns a scored field but does not certify a converged minimizer.
+Mean averages valid case-time entries; median case is the median of case time means; worst is the maximum across all cases and output times. A nonstationary initial fit still returns a scored field but does not certify a converged minimizer.
 
 ![Costs and both displacement-error normalizations](2026-09-10-fresh-wave-device-comparison-scaling.png)
+
+[Download the figure as PDF](2026-09-10-fresh-wave-device-comparison-scaling.pdf). Both figure rows use logarithmic vertical axes.
 
 ## Temporal checks and independent audit
 

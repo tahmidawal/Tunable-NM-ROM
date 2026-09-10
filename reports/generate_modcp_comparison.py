@@ -308,10 +308,24 @@ def main():
         training_rows.append([checkpoint['case_name'], cfg['architecture'], cfg['intervals'], cfg['k'],
                               cfg['rank'] if cfg['architecture'] != 'film' else '—',
                               checkpoint['parameter_count'], checkpoint['completed_updates']])
+    diagnosis_path = ROOT/'worktrees'/'2026-09-10-modcp-burgers2d'/'experiments'/'modcp-eq'/'runs'/'diagnose01'/'out'/'diagnosis.json'
+    span_path = ROOT/'reports'/'2026-09-10-modified-cp-span-audit.json'
+    diagnosis, span = json.loads(diagnosis_path.read_text()), json.loads(span_path.read_text())
+    provenance_check(diagnosis['provenance'])
+    if not diagnosis['validation_only'] or not diagnosis['accuracy_only'] or diagnosis['checkpoints_modified'] or diagnosis['query_algorithms_modified']:
+        raise ValueError('Unexpected scope of validation-only reconstruction diagnostic')
+    diagnostic_rows = []
+    for row in diagnosis['rows']:
+        diagnostic_rows.append([row['case'], row['method'], row['intervals'],
+                                *[f'{100*value:.6g}%' for value in (
+                                    row['recorded_query_fine_error'][0], row['snapshots'][0]['best_oracle_error'],
+                                    row['snapshots'][-1]['best_oracle_error'], row['recorded_query_fine_error'][-1])],
+                                f"{100*row['unconstrained_CP_spatial_span']['errors'][0]:.6g}%"
+                                if 'unconstrained_CP_spatial_span' in row else 'not established'])
     stem = ROOT/'reports'/f'{args.date}-modified-cp-eq-comparison'
     plots = frontier_plot(sources, stem)
     field_plots = representative_plots(args.input, stem)
-    rows = []
+    rows, missing_selection_keys = [], set()
     for source in sources:
         for row in source['summaries']:
             if row['split'] != 'evaluation':
@@ -326,6 +340,10 @@ def main():
                          'yes' if row['qualified'] else 'no'])
         for selection in source['selections']:
             if selection.get('configuration') is None:
+                key = source['case_name'], selection['intervals'], selection['method'], selection['target']
+                if key in missing_selection_keys:
+                    continue
+                missing_selection_keys.add(key)
                 rows.append([source['case_name'], selection['intervals'], selection['method'],
                              f"{100*selection['target']:g}%", 'No validation-qualified setting',
                              '—', '—', '—', '—', '—', '—', 'no'])
@@ -421,6 +439,20 @@ def main():
              'whose numerical parity was checked separately. The final timing ratios come entirely from '
              'that evaluation allocation. The older validation timings do not establish the fastest '
              'configuration for the optimized implementation.', '',
+             '## Diagnosis of the Burgers validation failure', '',
+             table(['Validation case', 'Decoder', 'Intervals/axis', 'Online initial error',
+                    'Best tested initial fit', 'Best tested final-snapshot fit', 'Online final error',
+                    'CP affine-image initial floor'], diagnostic_rows), '',
+             f"For validation case {span['case']}, independent full-grid least squares over the "
+             f"{span['rank']} learned CP spatial products gives an initial error floor of "
+             f"{100*span['relative_projection_errors'][0]:.6g}%. Its factor matrix has condition number "
+             f"{span['condition_number']:.6g}. This limits this frozen checkpoint even with freely chosen "
+             'spatial coefficients; changing only quadrature or nonlinear iteration settings cannot overcome it. '
+             'The same conclusion is not established for modified CP or FiLM. Their tested stationary '
+             'snapshot fits are achieved reconstruction errors, which can exceed the unknown global minimum. '
+             'Later-time snapshot fitting uses the reference solution and is excluded from online timings, '
+             'initialization, and configuration selection. These cases were chosen to diagnose validation failures.', '',
+             '![Independent CP reconstruction diagnostic](2026-09-10-modified-cp-span-audit.png)', '',
              '## Provenance and independent review', '',
              table(['Case', 'Campaign status', 'Job ID', 'GPU', 'Source commit', 'Full-field audits'], provenance_rows), '',
              'Raw repetition records, validation sweeps, selection declarations, source hashes, and field-audit results '
@@ -462,6 +494,9 @@ def main():
              '- **CP rank:** the number of spatial product terms, separate from the latent dimension.',
              '- **Decoder parameters:** trained weights in the field decoder, excluding training-only snapshot codes.',
              '- **Training updates:** optimizer steps completed before validation and evaluation.',
+             '- **Affine spatial image:** the fixed CP bias plus every linear combination of its learned spatial products.',
+             '- **Reconstruction floor:** the smallest error in the specified fixed linear/affine space, giving a lower bound for a decoder restricted to that space.',
+             '- **Snapshot fit:** a local latent optimization against one known reference field; its achieved error is not a proof of the best possible decoder error.',
              '- **Intervals/axis:** subdivisions of the unit domain; the number of stored nodes depends on boundary conditions.',
              '- **Validation-selected configuration:** solver and quadrature settings frozen before evaluation fields are examined.',
              '- **Target / target attained:** the declared error ceiling, and whether every expected invocation completes below it.',
@@ -482,6 +517,8 @@ def main():
              '- **Campaign status / job ID / GPU / source commit:** completion state and identifiers of the recorded scientific execution.',
              '- **Single-seed pilot:** an initial comparison using one training random seed, without a training-variance claim.', '']
     stem.with_suffix('.json').write_text(json.dumps({'sources': sources,
+        'validation_diagnosis': {'source': relative(diagnosis_path), 'sha256': digest(diagnosis_path), 'data': diagnosis,
+                                'independent_span_audit': relative(span_path), 'independent_span_sha256': digest(span_path)},
         'training_audit': {'path': relative(args.training_audit), 'sha256': digest(args.training_audit),
                            'checkpoints': training['checkpoints']}}, indent=2, allow_nan=False)+'\n')
     stem.with_suffix('.md').write_text('\n'.join(lines))

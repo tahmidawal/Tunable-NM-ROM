@@ -1,0 +1,1482 @@
+{
+  "accuracy_only": true,
+  "validation_only": true,
+  "checkpoints_modified": false,
+  "query_algorithms_modified": false,
+  "interpretation": "offline oracle reconstruction upper bounds, excluded from selection and online comparisons; no speed claim",
+  "provenance": {
+    "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16",
+    "job_id": "3504454",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest"
+  },
+  "rows": [
+    {
+      "method": "cp",
+      "case": 3,
+      "intervals": 256,
+      "input_artifact_sha256": "647eb6545947a943d9b834b7b054b199315c85e14fade26b82175b376c564746",
+      "checkpoint_sha256": "31d3317d5c7ec114de400575d2c1c875cdde0b1394ba80080983d1609e6c9df2",
+      "checkpoint_dtype": [
+        "float64"
+      ],
+      "recorded_query_fine_error": [
+        0.5645711206541807,
+        0.20097736551155992,
+        0.10242068790682698,
+        0.06818837539187125,
+        0.05338045823977533,
+        0.045449155450322326
+      ],
+      "independently_same_grid_error": [
+        0.5645711206541807,
+        0.20047067755313971,
+        0.10304937873434976,
+        0.06946889390807133,
+        0.05486472568322695,
+        0.046925797361417415
+      ],
+      "same_grid_vs_finer_reference": [
+        0.0,
+        0.0027077494816667535,
+        0.00259836964642586,
+        0.0023770475162151815,
+        0.002179017128309559,
+        0.002006586287423468
+      ],
+      "query_evolution_norm": 0.5698030972497369,
+      "snapshots": [
+        {
+          "frame": 0,
+          "time": 0.0,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.5645711206541807,
+              "iterations": 33,
+              "reason": 1,
+              "stationarity": 8.756848337952701e-07,
+              "sampled_residual": 0.566569378724697
+            },
+            {
+              "training_code_index": 345,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5645711287703744,
+              "iterations": 36,
+              "reason": 1,
+              "stationarity": 8.297170807538687e-07,
+              "sampled_residual": 0.566569378724608
+            },
+            {
+              "training_code_index": 346,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5645711290045542,
+              "iterations": 34,
+              "reason": 1,
+              "stationarity": 8.789029798578317e-07,
+              "sampled_residual": 0.5665693787247036
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5645711204257138,
+              "iterations": 38,
+              "reason": 1,
+              "stationarity": 9.237112822008842e-07,
+              "sampled_residual": 0.5665693787247953
+            },
+            {
+              "training_code_index": 347,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5645711210834592,
+              "iterations": 23,
+              "reason": 1,
+              "stationarity": 7.85448348236519e-07,
+              "sampled_residual": 0.5665693787245267
+            }
+          ],
+          "best_oracle_error": 0.5645711204257138
+        },
+        {
+          "frame": 1,
+          "time": 0.05,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.1957705570692499,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 8.368285238562427e-07,
+              "sampled_residual": 0.29585630293633003
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.1957705563480052,
+              "iterations": 19,
+              "reason": 1,
+              "stationarity": 4.921833405743972e-07,
+              "sampled_residual": 0.29585630293590764
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.1957705540951443,
+              "iterations": 14,
+              "reason": 1,
+              "stationarity": 5.847420768268529e-07,
+              "sampled_residual": 0.2958563029359995
+            },
+            {
+              "training_code_index": 358,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.19577055638459642,
+              "iterations": 19,
+              "reason": 1,
+              "stationarity": 5.096704046846184e-07,
+              "sampled_residual": 0.29585630293592385
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.1957705535437873,
+              "iterations": 13,
+              "reason": 1,
+              "stationarity": 8.481327275911294e-07,
+              "sampled_residual": 0.29585630293634757
+            }
+          ],
+          "best_oracle_error": 0.1957705535437873
+        },
+        {
+          "frame": 2,
+          "time": 0.1,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.08737337523135194,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 9.562613143664524e-07,
+              "sampled_residual": 0.1653547101273875
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.08737337783120061,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 6.215082156852195e-07,
+              "sampled_residual": 0.16535471012690794
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.08737337622039504,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 3.523950186872191e-07,
+              "sampled_residual": 0.1653547101266691
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.0873733776277195,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 4.988872143133983e-07,
+              "sampled_residual": 0.16535471012678235
+            },
+            {
+              "training_code_index": 358,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.08737337627485729,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 3.1944769851454295e-07,
+              "sampled_residual": 0.1653547101266488
+            }
+          ],
+          "best_oracle_error": 0.08737337523135194
+        },
+        {
+          "frame": 3,
+          "time": 0.15000000000000002,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.04686772174138459,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 4.928683546797552e-07,
+              "sampled_residual": 0.10389265123810675
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.04686772207361653,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 1.0131863008859355e-07,
+              "sampled_residual": 0.10389265123801215
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.04686772209326843,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 1.8269793508614994e-07,
+              "sampled_residual": 0.10389265123800759
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.04686772216285589,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 9.727723597270857e-08,
+              "sampled_residual": 0.10389265123800678
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.04686772219781221,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 6.733618792814804e-07,
+              "sampled_residual": 0.10389265123840505
+            }
+          ],
+          "best_oracle_error": 0.04686772174138459
+        },
+        {
+          "frame": 4,
+          "time": 0.2,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.0314233597673004,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 7.672639280152364e-08,
+              "sampled_residual": 0.0787110915946717
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.031423359759320854,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 2.3512389828640795e-07,
+              "sampled_residual": 0.07871109159469362
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03142335976549417,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 1.8515529972251438e-07,
+              "sampled_residual": 0.07871109159468573
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03142336030079361,
+              "iterations": 5,
+              "reason": 1,
+              "stationarity": 6.583098020495672e-07,
+              "sampled_residual": 0.07871109159487777
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03142335975210346,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 3.1844818006587207e-07,
+              "sampled_residual": 0.07871109159471203
+            }
+          ],
+          "best_oracle_error": 0.03142335975210346
+        },
+        {
+          "frame": 5,
+          "time": 0.25,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.025591892198073344,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 1.8776063413718554e-07,
+              "sampled_residual": 0.07090958222954986
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.025591892169188533,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 3.875518877120436e-07,
+              "sampled_residual": 0.07090958222961183
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.025591892198394237,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 1.7616946438417736e-07,
+              "sampled_residual": 0.07090958222954596
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.025591892179621732,
+              "iterations": 6,
+              "reason": 1,
+              "stationarity": 3.233652976081304e-07,
+              "sampled_residual": 0.07090958222958854
+            },
+            {
+              "training_code_index": 113,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.02559189219940354,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 1.7595761918813604e-07,
+              "sampled_residual": 0.07090958222954742
+            }
+          ],
+          "best_oracle_error": 0.025591892169188533
+        }
+      ],
+      "unconstrained_CP_spatial_span": {
+        "rank": 64,
+        "singular_values": [
+          284.55604834541344,
+          266.4093602875624,
+          231.51000761813964,
+          230.62833581240773,
+          224.15165091966315,
+          212.98404504240108,
+          204.54639933162716,
+          200.20313664444944,
+          184.29591483650665,
+          180.56141279554632,
+          173.60174419964852,
+          168.75638999596603,
+          158.92109229457043,
+          150.52068810202823,
+          140.61724758246254,
+          135.83904660553642,
+          133.5208661264297,
+          126.89933910932773,
+          120.16853361101073,
+          114.34332334620916,
+          100.9820909505075,
+          95.21783863497663,
+          93.78226023564473,
+          89.70238073243368,
+          80.9889279535945,
+          78.74133381430019,
+          76.31087633178383,
+          69.17471513255765,
+          64.09597853577965,
+          60.79777767644507,
+          57.07364052158257,
+          53.822057730200164,
+          53.43954251693907,
+          52.37913688286012,
+          49.65103635259603,
+          46.527851148684015,
+          44.98637699711554,
+          43.45888786581872,
+          42.47193562276495,
+          41.15620037826291,
+          40.51692901305253,
+          38.030500653159095,
+          36.453719737190276,
+          35.7724244453505,
+          33.201351763212024,
+          31.810313022499727,
+          31.19650256125041,
+          28.95256055398958,
+          28.23977712331035,
+          27.380942630768725,
+          24.718242152361878,
+          22.525306828632807,
+          22.06649606453239,
+          21.415607986138408,
+          20.34021258646269,
+          19.903994170929483,
+          18.263510123153125,
+          16.871308416959824,
+          14.106153117577401,
+          12.61306113379307,
+          10.855657680306296,
+          10.182574362387424,
+          8.440703272875533,
+          6.240588059634969
+        ],
+        "errors": [
+          0.38044891254018787,
+          0.09095827830671638,
+          0.029233867415475484,
+          0.012290962713602319,
+          0.0070624051300668626,
+          0.005239870772575964
+        ],
+        "interpretation": "unconstrained R-coefficient full-grid least-squares floor; a lower bound on this fixed-CP manifold error, not an online ROM result"
+      }
+    },
+    {
+      "method": "modcp",
+      "case": 3,
+      "intervals": 256,
+      "input_artifact_sha256": "4062dd047aa3b4ca240abb40e0e86b77e39a53b5bdc22d51a7e55f46d0611359",
+      "checkpoint_sha256": "f862d5ce220cef2f2920b86e92f481f7f083f762e9631d2393e899388eb85eb4",
+      "checkpoint_dtype": [
+        "float64"
+      ],
+      "recorded_query_fine_error": [
+        0.5039522414994934,
+        0.18533807830262902,
+        0.10275242314079056,
+        0.07469828403764492,
+        0.06194955968454281,
+        0.05392460496063893
+      ],
+      "independently_same_grid_error": [
+        0.5039522414994934,
+        0.18527242178192388,
+        0.1038995328482439,
+        0.07634831257184807,
+        0.06366306529933125,
+        0.055570110648589216
+      ],
+      "same_grid_vs_finer_reference": [
+        0.0,
+        0.0027077494816667535,
+        0.00259836964642586,
+        0.0023770475162151815,
+        0.002179017128309559,
+        0.002006586287423468
+      ],
+      "query_evolution_norm": 0.6312033064415176,
+      "snapshots": [
+        {
+          "frame": 0,
+          "time": 0.0,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.5039522414994934,
+              "iterations": 29,
+              "reason": 1,
+              "stationarity": 8.328070129470978e-07,
+              "sampled_residual": 0.5070024015177971
+            },
+            {
+              "training_code_index": 346,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5039522340097506,
+              "iterations": 28,
+              "reason": 1,
+              "stationarity": 7.371291976825974e-07,
+              "sampled_residual": 0.5070024015176589
+            },
+            {
+              "training_code_index": 345,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5039522696258739,
+              "iterations": 25,
+              "reason": 1,
+              "stationarity": 8.872249553309023e-07,
+              "sampled_residual": 0.5070024015183278
+            },
+            {
+              "training_code_index": 344,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5039522448224935,
+              "iterations": 26,
+              "reason": 1,
+              "stationarity": 7.868658966204816e-07,
+              "sampled_residual": 0.5070024015179669
+            },
+            {
+              "training_code_index": 347,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.5039522569812697,
+              "iterations": 29,
+              "reason": 1,
+              "stationarity": 8.423054753712969e-07,
+              "sampled_residual": 0.5070024015177846
+            }
+          ],
+          "best_oracle_error": 0.5039522340097506
+        },
+        {
+          "frame": 1,
+          "time": 0.05,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.17171552991769068,
+              "iterations": 12,
+              "reason": 1,
+              "stationarity": 6.174184306503515e-07,
+              "sampled_residual": 0.26081271623999286
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.171715537897188,
+              "iterations": 12,
+              "reason": 1,
+              "stationarity": 3.714786513867102e-07,
+              "sampled_residual": 0.2608127162397259
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.1717155318913705,
+              "iterations": 13,
+              "reason": 1,
+              "stationarity": 3.859218957685831e-07,
+              "sampled_residual": 0.26081271623973096
+            },
+            {
+              "training_code_index": 358,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.17171554286187174,
+              "iterations": 11,
+              "reason": 1,
+              "stationarity": 5.284016390093318e-07,
+              "sampled_residual": 0.2608127162399895
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.17171553144616578,
+              "iterations": 13,
+              "reason": 1,
+              "stationarity": 4.3406034719166704e-07,
+              "sampled_residual": 0.2608127162397755
+            }
+          ],
+          "best_oracle_error": 0.17171552991769068
+        },
+        {
+          "frame": 2,
+          "time": 0.1,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.07032400153325653,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 7.262355000355668e-07,
+              "sampled_residual": 0.13429393921588856
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.0703239936534862,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 3.5435998312932986e-07,
+              "sampled_residual": 0.13429393921538813
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07032399408810404,
+              "iterations": 11,
+              "reason": 1,
+              "stationarity": 2.7325614538160845e-07,
+              "sampled_residual": 0.13429393921536179
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07032399260021167,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 5.428868612286977e-07,
+              "sampled_residual": 0.13429393921548058
+            },
+            {
+              "training_code_index": 358,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07032400058587546,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 9.173731050144498e-07,
+              "sampled_residual": 0.13429393921579827
+            }
+          ],
+          "best_oracle_error": 0.07032399260021167
+        },
+        {
+          "frame": 3,
+          "time": 0.15000000000000002,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.031552081580585416,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 6.750733636941777e-07,
+              "sampled_residual": 0.0706193070473145
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03155207752151885,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 3.772813081964373e-07,
+              "sampled_residual": 0.07061930704713533
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03155208043133985,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 4.3110624521341444e-07,
+              "sampled_residual": 0.07061930704719152
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.031552077222880906,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 4.3075567024864334e-07,
+              "sampled_residual": 0.0706193070471666
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.0315520753206056,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 7.959724970882983e-07,
+              "sampled_residual": 0.07061930704753147
+            }
+          ],
+          "best_oracle_error": 0.0315520753206056
+        },
+        {
+          "frame": 4,
+          "time": 0.2,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.020722437828112932,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 4.636381953559173e-07,
+              "sampled_residual": 0.05150903255025339
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.020722437664960815,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 3.339492901747081e-07,
+              "sampled_residual": 0.05150903255018957
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.02072243764996568,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 3.2657760653532075e-07,
+              "sampled_residual": 0.051509032550185956
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.020722438320055603,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 8.613281245355681e-07,
+              "sampled_residual": 0.05150903255057374
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.020722437856677517,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 4.791976892914998e-07,
+              "sampled_residual": 0.051509032550263865
+            }
+          ],
+          "best_oracle_error": 0.02072243764996568
+        },
+        {
+          "frame": 5,
+          "time": 0.25,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.01791969968446861,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 6.53459214625733e-07,
+              "sampled_residual": 0.04901459788891429
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.01791969970664138,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 4.974936178488416e-07,
+              "sampled_residual": 0.049014597888744904
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.017919699746019885,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 1.5862245781417092e-07,
+              "sampled_residual": 0.04901459788853685
+            },
+            {
+              "training_code_index": 113,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.017919699646061812,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 9.782630960053066e-07,
+              "sampled_residual": 0.0490145978894134
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.017919699702522378,
+              "iterations": 7,
+              "reason": 1,
+              "stationarity": 5.274054809055313e-07,
+              "sampled_residual": 0.04901459788877294
+            }
+          ],
+          "best_oracle_error": 0.017919699646061812
+        }
+      ]
+    },
+    {
+      "method": "film",
+      "case": 3,
+      "intervals": 256,
+      "input_artifact_sha256": "8e581a264933e876a5fb819722fe006017de6a0f645ca2aa281189c41eefccb9",
+      "checkpoint_sha256": "87caf24a131cb197ffac9d1762e97e9b42b37737b691981ddf1ce3ee921fdf18",
+      "checkpoint_dtype": [
+        "float64"
+      ],
+      "recorded_query_fine_error": [
+        0.23294192026893207,
+        0.08726794955690811,
+        0.06247279317240604,
+        0.05026673749205558,
+        0.04300419401148967,
+        0.03801687477269817
+      ],
+      "independently_same_grid_error": [
+        0.23294192026893207,
+        0.08787385341306599,
+        0.06383128947747074,
+        0.0518958239246734,
+        0.044643536983420856,
+        0.03956030329843792
+      ],
+      "same_grid_vs_finer_reference": [
+        0.0,
+        0.0027077494816667535,
+        0.00259836964642586,
+        0.0023770475162151815,
+        0.002179017128309559,
+        0.002006586287423468
+      ],
+      "query_evolution_norm": 0.7518152547557223,
+      "snapshots": [
+        {
+          "frame": 0,
+          "time": 0.0,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.23294192026893207,
+              "iterations": 49,
+              "reason": 1,
+              "stationarity": 6.79755806452003e-07,
+              "sampled_residual": 0.23646552559770284
+            },
+            {
+              "training_code_index": 345,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.23294193605996252,
+              "iterations": 56,
+              "reason": 1,
+              "stationarity": 8.303830363416405e-07,
+              "sampled_residual": 0.23646552560034653
+            },
+            {
+              "training_code_index": 346,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.2329419360659965,
+              "iterations": 56,
+              "reason": 1,
+              "stationarity": 8.086376747888626e-07,
+              "sampled_residual": 0.2364655256002336
+            },
+            {
+              "training_code_index": 347,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.23294192691029342,
+              "iterations": 52,
+              "reason": 1,
+              "stationarity": 7.87439171558525e-07,
+              "sampled_residual": 0.2364655255976112
+            },
+            {
+              "training_code_index": 344,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.23294193613797615,
+              "iterations": 56,
+              "reason": 1,
+              "stationarity": 8.143399009475132e-07,
+              "sampled_residual": 0.23646552560027526
+            }
+          ],
+          "best_oracle_error": 0.23294192026893207
+        },
+        {
+          "frame": 1,
+          "time": 0.05,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.06227162093516667,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 6.774745354295884e-07,
+              "sampled_residual": 0.09812756167398974
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06227162414724728,
+              "iterations": 18,
+              "reason": 1,
+              "stationarity": 5.728835578649401e-07,
+              "sampled_residual": 0.09812756167370072
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06227161859798605,
+              "iterations": 17,
+              "reason": 1,
+              "stationarity": 6.395139088051427e-07,
+              "sampled_residual": 0.09812756167394088
+            },
+            {
+              "training_code_index": 358,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06227161738049727,
+              "iterations": 17,
+              "reason": 1,
+              "stationarity": 8.61356453002973e-07,
+              "sampled_residual": 0.09812756167498969
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06227162491012527,
+              "iterations": 18,
+              "reason": 1,
+              "stationarity": 6.886545913073501e-07,
+              "sampled_residual": 0.09812756167418704
+            }
+          ],
+          "best_oracle_error": 0.06227161738049727
+        },
+        {
+          "frame": 2,
+          "time": 0.1,
+          "fits": [
+            {
+              "training_code_index": 342,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.03091556026911684,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 4.121623171920901e-07,
+              "sampled_residual": 0.06027177371871061
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.030915560036246754,
+              "iterations": 11,
+              "reason": 1,
+              "stationarity": 4.847376550385135e-07,
+              "sampled_residual": 0.06027177371899021
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.030915564005139878,
+              "iterations": 11,
+              "reason": 1,
+              "stationarity": 4.358797688580996e-07,
+              "sampled_residual": 0.06027177371880685
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.030915559611983088,
+              "iterations": 11,
+              "reason": 1,
+              "stationarity": 5.51958711521719e-07,
+              "sampled_residual": 0.060271773719268056
+            },
+            {
+              "training_code_index": 358,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.030915564290432213,
+              "iterations": 11,
+              "reason": 1,
+              "stationarity": 4.947467810031264e-07,
+              "sampled_residual": 0.060271773718993074
+            }
+          ],
+          "best_oracle_error": 0.030915559611983088
+        },
+        {
+          "frame": 3,
+          "time": 0.15000000000000002,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.020045397037568267,
+              "iterations": 14,
+              "reason": 1,
+              "stationarity": 3.2450101118269806e-07,
+              "sampled_residual": 0.045630156699846776
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.020045392433433732,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 4.6177985994310577e-07,
+              "sampled_residual": 0.04563015670014517
+            },
+            {
+              "training_code_index": 359,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.020045396625712874,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 2.4593783343710136e-07,
+              "sampled_residual": 0.045630156699733894
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.020045391654424653,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 5.96800848053643e-07,
+              "sampled_residual": 0.04563015670053128
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.02004539952697627,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 7.553799281037606e-07,
+              "sampled_residual": 0.04563015670109447
+            }
+          ],
+          "best_oracle_error": 0.020045391654424653
+        },
+        {
+          "frame": 4,
+          "time": 0.2,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.015146822179501447,
+              "iterations": 14,
+              "reason": 1,
+              "stationarity": 3.0390661421007415e-07,
+              "sampled_residual": 0.03963853569341813
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.015146818179636005,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 8.802220657164593e-07,
+              "sampled_residual": 0.039638535694858014
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.015146820325605015,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 2.514104699421139e-07,
+              "sampled_residual": 0.03963853569336597
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.015146822898860103,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 5.088007622915771e-07,
+              "sampled_residual": 0.03963853569377037
+            },
+            {
+              "training_code_index": 113,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.015146822431663333,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 3.8486210127680477e-07,
+              "sampled_residual": 0.039638535693523276
+            }
+          ],
+          "best_oracle_error": 0.015146818179636005
+        },
+        {
+          "frame": 5,
+          "time": 0.25,
+          "fits": [
+            {
+              "training_code_index": 0,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.013260786248608514,
+              "iterations": 13,
+              "reason": 1,
+              "stationarity": 6.215313534451419e-07,
+              "sampled_residual": 0.03926167658768912
+            },
+            {
+              "training_code_index": 35,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.013260784271407217,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 9.45786033138134e-07,
+              "sampled_residual": 0.03926167658990051
+            },
+            {
+              "training_code_index": 59,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.013260785902823922,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 2.6194456190836946e-07,
+              "sampled_residual": 0.039261676586714235
+            },
+            {
+              "training_code_index": 113,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.013260786480436517,
+              "iterations": 12,
+              "reason": 1,
+              "stationarity": 9.096354655888431e-07,
+              "sampled_residual": 0.03926167658893179
+            },
+            {
+              "training_code_index": 34,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.013260785246789199,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 2.4504838761758407e-07,
+              "sampled_residual": 0.039261676586693585
+            }
+          ],
+          "best_oracle_error": 0.013260784271407217
+        }
+      ]
+    },
+    {
+      "method": "film",
+      "case": 9,
+      "intervals": 256,
+      "input_artifact_sha256": "3f548067a1ce95917cf5525592d2de3db0a3bad61cc330c4b1d7d546281dbe7d",
+      "checkpoint_sha256": "87caf24a131cb197ffac9d1762e97e9b42b37737b691981ddf1ce3ee921fdf18",
+      "checkpoint_dtype": [
+        "float64"
+      ],
+      "recorded_query_fine_error": [
+        0.02774720727283656,
+        0.04947939180425186,
+        0.0739772978784743,
+        0.09000619560378367,
+        0.09882720776200288,
+        0.10276295036557555
+      ],
+      "independently_same_grid_error": [
+        0.02774720727283656,
+        0.048959721319027746,
+        0.0733702188785376,
+        0.0890873727468142,
+        0.09863912844689984,
+        0.1027667096382236
+      ],
+      "same_grid_vs_finer_reference": [
+        0.0,
+        0.005830476071855145,
+        0.012546021622621402,
+        0.013302092322241433,
+        0.011215479373083698,
+        0.009297126163888133
+      ],
+      "query_evolution_norm": 0.6395205054520819,
+      "snapshots": [
+        {
+          "frame": 0,
+          "time": 0.0,
+          "fits": [
+            {
+              "training_code_index": 294,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.02774720727283656,
+              "iterations": 9,
+              "reason": 1,
+              "stationarity": 3.59952988613473e-07,
+              "sampled_residual": 0.028381413301201152
+            },
+            {
+              "training_code_index": 295,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.027747210767553876,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 8.259039933645363e-07,
+              "sampled_residual": 0.028381413301839683
+            },
+            {
+              "training_code_index": 296,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.027747209046731645,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 6.481497159168986e-07,
+              "sampled_residual": 0.028381413301487093
+            },
+            {
+              "training_code_index": 297,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.027747209702327708,
+              "iterations": 8,
+              "reason": 1,
+              "stationarity": 8.054687486698906e-07,
+              "sampled_residual": 0.028381413301690573
+            }
+          ],
+          "best_oracle_error": 0.02774720727283656
+        },
+        {
+          "frame": 1,
+          "time": 0.05,
+          "fits": [
+            {
+              "training_code_index": 294,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.03490377958254337,
+              "iterations": 12,
+              "reason": 1,
+              "stationarity": 2.835945228767623e-07,
+              "sampled_residual": 0.039534611366184025
+            },
+            {
+              "training_code_index": 297,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03490378099429109,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 4.0828500570847916e-07,
+              "sampled_residual": 0.039534611366253816
+            },
+            {
+              "training_code_index": 296,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03490378113464044,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 4.1673673004623207e-07,
+              "sampled_residual": 0.03953461136624991
+            },
+            {
+              "training_code_index": 298,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03490378406709756,
+              "iterations": 10,
+              "reason": 1,
+              "stationarity": 6.959779074362075e-07,
+              "sampled_residual": 0.03953461136653296
+            },
+            {
+              "training_code_index": 299,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.03490378036259289,
+              "iterations": 11,
+              "reason": 1,
+              "stationarity": 3.594151389220195e-07,
+              "sampled_residual": 0.039534611366223896
+            }
+          ],
+          "best_oracle_error": 0.03490377958254337
+        },
+        {
+          "frame": 2,
+          "time": 0.1,
+          "fits": [
+            {
+              "training_code_index": 72,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.061213275642675716,
+              "iterations": 19,
+              "reason": 1,
+              "stationarity": 4.69874443380041e-07,
+              "sampled_residual": 0.06960820898352582
+            },
+            {
+              "training_code_index": 298,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06121328072306129,
+              "iterations": 14,
+              "reason": 1,
+              "stationarity": 9.027195933263977e-07,
+              "sampled_residual": 0.06960820898426688
+            },
+            {
+              "training_code_index": 299,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.0612132711298635,
+              "iterations": 14,
+              "reason": 1,
+              "stationarity": 5.572959181771096e-07,
+              "sampled_residual": 0.06960820898348714
+            },
+            {
+              "training_code_index": 297,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.061213238925805234,
+              "iterations": 15,
+              "reason": 1,
+              "stationarity": 5.993335028057424e-07,
+              "sampled_residual": 0.06960820898366558
+            },
+            {
+              "training_code_index": 296,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06121323250345283,
+              "iterations": 17,
+              "reason": 1,
+              "stationarity": 4.515745306550294e-07,
+              "sampled_residual": 0.06960820898378402
+            }
+          ],
+          "best_oracle_error": 0.06121323250345283
+        },
+        {
+          "frame": 3,
+          "time": 0.15000000000000002,
+          "fits": [
+            {
+              "training_code_index": 90,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.07348770993875213,
+              "iterations": 20,
+              "reason": 1,
+              "stationarity": 5.980822317517602e-07,
+              "sampled_residual": 0.09241093876215624
+            },
+            {
+              "training_code_index": 299,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07348776513702952,
+              "iterations": 20,
+              "reason": 1,
+              "stationarity": 6.305706803946216e-07,
+              "sampled_residual": 0.09241093876220675
+            },
+            {
+              "training_code_index": 298,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07348776304110935,
+              "iterations": 20,
+              "reason": 1,
+              "stationarity": 5.839837703019713e-07,
+              "sampled_residual": 0.09241093876213269
+            },
+            {
+              "training_code_index": 297,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07348776605433432,
+              "iterations": 17,
+              "reason": 1,
+              "stationarity": 6.491233046268137e-07,
+              "sampled_residual": 0.09241093876223593
+            },
+            {
+              "training_code_index": 123,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07348776893354532,
+              "iterations": 19,
+              "reason": 1,
+              "stationarity": 7.163108445348703e-07,
+              "sampled_residual": 0.09241093876235955
+            }
+          ],
+          "best_oracle_error": 0.07348770993875213
+        },
+        {
+          "frame": 4,
+          "time": 0.2,
+          "fits": [
+            {
+              "training_code_index": 90,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.07094174346211009,
+              "iterations": 18,
+              "reason": 1,
+              "stationarity": 6.916906928746032e-07,
+              "sampled_residual": 0.10057385476676421
+            },
+            {
+              "training_code_index": 299,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07094180999679525,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 5.675436053074736e-07,
+              "sampled_residual": 0.1005738547665384
+            },
+            {
+              "training_code_index": 298,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.0709418226176053,
+              "iterations": 17,
+              "reason": 1,
+              "stationarity": 8.839983553018461e-07,
+              "sampled_residual": 0.10057385476721965
+            },
+            {
+              "training_code_index": 123,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.07094168787961708,
+              "iterations": 13,
+              "reason": 1,
+              "stationarity": 8.925755474051785e-07,
+              "sampled_residual": 0.10057385477021169
+            },
+            {
+              "training_code_index": 124,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.0709417539211448,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 6.061686333241195e-07,
+              "sampled_residual": 0.10057385476660426
+            }
+          ],
+          "best_oracle_error": 0.07094168787961708
+        },
+        {
+          "frame": 5,
+          "time": 0.25,
+          "fits": [
+            {
+              "training_code_index": 90,
+              "start_role": "supplied_field_nearest_training_initial",
+              "physical_error": 0.06340991157636786,
+              "iterations": 17,
+              "reason": 1,
+              "stationarity": 8.428908691118539e-07,
+              "sampled_residual": 0.10089494881842549
+            },
+            {
+              "training_code_index": 299,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06340989439828228,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 9.764716541432377e-07,
+              "sampled_residual": 0.10089494881636772
+            },
+            {
+              "training_code_index": 124,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06340989668299792,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 8.667103051476675e-07,
+              "sampled_residual": 0.1008949488160832
+            },
+            {
+              "training_code_index": 125,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.06340990291212387,
+              "iterations": 16,
+              "reason": 1,
+              "stationarity": 6.771426247540533e-07,
+              "sampled_residual": 0.1008949488156806
+            },
+            {
+              "training_code_index": 298,
+              "start_role": "oracle_best_training_snapshot_start",
+              "physical_error": 0.0634099555211807,
+              "iterations": 17,
+              "reason": 1,
+              "stationarity": 9.464731812686405e-07,
+              "sampled_residual": 0.10089494881630034
+            }
+          ],
+          "best_oracle_error": 0.06340989439828228
+        }
+      ]
+    }
+  ]
+}

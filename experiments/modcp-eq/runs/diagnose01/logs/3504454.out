@@ -1,0 +1,9 @@
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+PASS decoder parity, transfer, autodiff, exact weak/upwind, LM reasons, FFT/FOM
+DIAG cp case=3 initial=0.5645711206541807 best_oracle=0.5645711204257138
+DIAG modcp case=3 initial=0.5039522414994934 best_oracle=0.5039522340097506
+DIAG film case=3 initial=0.23294192026893207 best_oracle=0.23294192026893207
+DIAG film case=9 initial=0.02774720727283656 best_oracle=0.02774720727283656
+ALL-DONE accuracy-only validation diagnosis
+ALL-DONE

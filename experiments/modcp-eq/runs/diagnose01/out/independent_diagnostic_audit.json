@@ -1,0 +1,353 @@
+{
+  "passed": true,
+  "kind": "independent NumPy input/hash/CP-span audit; validation only; no query changes",
+  "diagnostic_sha256": "f56eae59f71e64fb673d2364cefa17eec79496d086e04a531794a267e23c3fd9",
+  "cases": [
+    {
+      "method": "cp",
+      "case": 3,
+      "input_hash_verified": true,
+      "seeded_initial_field_verified": true,
+      "physical_parameters": [
+        0.7111202615400638,
+        0.6405887572095407,
+        0.053410981375772326,
+        0.7980176161916293,
+        0.03504028876856759
+      ],
+      "parameter_columns": [
+        "center_x",
+        "center_y",
+        "width",
+        "amplitude",
+        "viscosity"
+      ],
+      "nearest_training_initial_fields": [
+        {
+          "training_case": 57,
+          "relative_field_distance": 1.040871995375575,
+          "parameters": [
+            0.6719148882143977,
+            0.6111450337773259,
+            0.11585305700477733,
+            0.5405962257799974,
+            0.0175700657855691
+          ]
+        },
+        {
+          "training_case": 59,
+          "relative_field_distance": 1.1362577419375206,
+          "parameters": [
+            0.7943138521301395,
+            0.6535516434601256,
+            0.09154668742560336,
+            0.6840658376620942,
+            0.026172825670352874
+          ]
+        },
+        {
+          "training_case": 0,
+          "relative_field_distance": 1.344303530068408,
+          "parameters": [
+            0.15960106566769483,
+            0.6940826170101342,
+            0.07499529939072394,
+            0.5109831334881711,
+            0.039545536320178945
+          ]
+        },
+        {
+          "training_case": 35,
+          "relative_field_distance": 1.4029758080155297,
+          "parameters": [
+            0.4284751361847766,
+            0.4796751726909929,
+            0.0585206723494119,
+            0.7168763443970294,
+            0.01168435224664377
+          ]
+        },
+        {
+          "training_case": 19,
+          "relative_field_distance": 1.504804220963066,
+          "parameters": [
+            0.2993623087723027,
+            0.16135207662580403,
+            0.07000964128049127,
+            0.6848136910072529,
+            0.016377341518187188
+          ]
+        }
+      ],
+      "nearest_center_distance": 0.0431235762686663,
+      "nearest_center_training_case": 13,
+      "training_width_range": [
+        0.05258983848432102,
+        0.1994676478159122
+      ],
+      "independent_cp_span": {
+        "errors": [
+          0.3804489125401886,
+          0.0909582783067166,
+          0.029233867415475543,
+          0.012290962713602319,
+          0.007062405130066882,
+          0.005239870772575948
+        ],
+        "rank": 64,
+        "rcond": 1e-12,
+        "normalized_orthogonality": 9.943225857492687e-15,
+        "coefficients_and_full_residual": "cp_case3_free_span_projection.npz"
+      }
+    },
+    {
+      "method": "modcp",
+      "case": 3,
+      "input_hash_verified": true,
+      "seeded_initial_field_verified": true,
+      "physical_parameters": [
+        0.7111202615400638,
+        0.6405887572095407,
+        0.053410981375772326,
+        0.7980176161916293,
+        0.03504028876856759
+      ],
+      "parameter_columns": [
+        "center_x",
+        "center_y",
+        "width",
+        "amplitude",
+        "viscosity"
+      ],
+      "nearest_training_initial_fields": [
+        {
+          "training_case": 57,
+          "relative_field_distance": 1.040871995375575,
+          "parameters": [
+            0.6719148882143977,
+            0.6111450337773259,
+            0.11585305700477733,
+            0.5405962257799974,
+            0.0175700657855691
+          ]
+        },
+        {
+          "training_case": 59,
+          "relative_field_distance": 1.1362577419375206,
+          "parameters": [
+            0.7943138521301395,
+            0.6535516434601256,
+            0.09154668742560336,
+            0.6840658376620942,
+            0.026172825670352874
+          ]
+        },
+        {
+          "training_case": 0,
+          "relative_field_distance": 1.344303530068408,
+          "parameters": [
+            0.15960106566769483,
+            0.6940826170101342,
+            0.07499529939072394,
+            0.5109831334881711,
+            0.039545536320178945
+          ]
+        },
+        {
+          "training_case": 35,
+          "relative_field_distance": 1.4029758080155297,
+          "parameters": [
+            0.4284751361847766,
+            0.4796751726909929,
+            0.0585206723494119,
+            0.7168763443970294,
+            0.01168435224664377
+          ]
+        },
+        {
+          "training_case": 19,
+          "relative_field_distance": 1.504804220963066,
+          "parameters": [
+            0.2993623087723027,
+            0.16135207662580403,
+            0.07000964128049127,
+            0.6848136910072529,
+            0.016377341518187188
+          ]
+        }
+      ],
+      "nearest_center_distance": 0.0431235762686663,
+      "nearest_center_training_case": 13,
+      "training_width_range": [
+        0.05258983848432102,
+        0.1994676478159122
+      ]
+    },
+    {
+      "method": "film",
+      "case": 3,
+      "input_hash_verified": true,
+      "seeded_initial_field_verified": true,
+      "physical_parameters": [
+        0.7111202615400638,
+        0.6405887572095407,
+        0.053410981375772326,
+        0.7980176161916293,
+        0.03504028876856759
+      ],
+      "parameter_columns": [
+        "center_x",
+        "center_y",
+        "width",
+        "amplitude",
+        "viscosity"
+      ],
+      "nearest_training_initial_fields": [
+        {
+          "training_case": 57,
+          "relative_field_distance": 1.040871995375575,
+          "parameters": [
+            0.6719148882143977,
+            0.6111450337773259,
+            0.11585305700477733,
+            0.5405962257799974,
+            0.0175700657855691
+          ]
+        },
+        {
+          "training_case": 59,
+          "relative_field_distance": 1.1362577419375206,
+          "parameters": [
+            0.7943138521301395,
+            0.6535516434601256,
+            0.09154668742560336,
+            0.6840658376620942,
+            0.026172825670352874
+          ]
+        },
+        {
+          "training_case": 0,
+          "relative_field_distance": 1.344303530068408,
+          "parameters": [
+            0.15960106566769483,
+            0.6940826170101342,
+            0.07499529939072394,
+            0.5109831334881711,
+            0.039545536320178945
+          ]
+        },
+        {
+          "training_case": 35,
+          "relative_field_distance": 1.4029758080155297,
+          "parameters": [
+            0.4284751361847766,
+            0.4796751726909929,
+            0.0585206723494119,
+            0.7168763443970294,
+            0.01168435224664377
+          ]
+        },
+        {
+          "training_case": 19,
+          "relative_field_distance": 1.504804220963066,
+          "parameters": [
+            0.2993623087723027,
+            0.16135207662580403,
+            0.07000964128049127,
+            0.6848136910072529,
+            0.016377341518187188
+          ]
+        }
+      ],
+      "nearest_center_distance": 0.0431235762686663,
+      "nearest_center_training_case": 13,
+      "training_width_range": [
+        0.05258983848432102,
+        0.1994676478159122
+      ]
+    },
+    {
+      "method": "film",
+      "case": 9,
+      "input_hash_verified": true,
+      "seeded_initial_field_verified": true,
+      "physical_parameters": [
+        0.430009034156393,
+        0.7696644896689727,
+        0.15169414020293318,
+        1.9603743333856145,
+        0.012151044129650224
+      ],
+      "parameter_columns": [
+        "center_x",
+        "center_y",
+        "width",
+        "amplitude",
+        "viscosity"
+      ],
+      "nearest_training_initial_fields": [
+        {
+          "training_case": 49,
+          "relative_field_distance": 0.4240942539720387,
+          "parameters": [
+            0.3720890791410909,
+            0.7040139374163848,
+            0.1744383282796666,
+            1.2699467844849197,
+            0.014247975839045132
+          ]
+        },
+        {
+          "training_case": 20,
+          "relative_field_distance": 0.5699275169171911,
+          "parameters": [
+            0.5265460251974339,
+            0.6864491633059615,
+            0.13798688041957285,
+            1.9180653166484734,
+            0.03414505635546216
+          ]
+        },
+        {
+          "training_case": 12,
+          "relative_field_distance": 0.6002142162341852,
+          "parameters": [
+            0.4050922893518204,
+            0.8451744301199662,
+            0.12875468754083602,
+            1.1101049691346094,
+            0.024929457319805674
+          ]
+        },
+        {
+          "training_case": 1,
+          "relative_field_distance": 0.6748564165980376,
+          "parameters": [
+            0.30209776212181383,
+            0.7773459871882583,
+            0.16844397386539295,
+            0.7624674678898595,
+            0.027002590629408147
+          ]
+        },
+        {
+          "training_case": 38,
+          "relative_field_distance": 0.7181997989320086,
+          "parameters": [
+            0.5318573890042054,
+            0.6350694289786953,
+            0.14777062055580592,
+            1.91482174650731,
+            0.020046398503875764
+          ]
+        }
+      ],
+      "nearest_center_distance": 0.06834812365800225,
+      "nearest_center_training_case": 24,
+      "training_width_range": [
+        0.05258983848432102,
+        0.1994676478159122
+      ]
+    }
+  ]
+}

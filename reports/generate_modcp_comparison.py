@@ -35,6 +35,42 @@ def relative(path):
         return str(path)
 
 
+def compact_evaluation_table(sources):
+    rows = []
+    for source in sources:
+        evaluated = [row for row in source['summaries'] if row['split'] == 'evaluation']
+        for n in sorted({row['intervals'] for row in evaluated}):
+            cells = []
+            baseline = 'newton_bicgstab' if source['case_name'] == 'burgers2d' else 'cg'
+            for method in ('cp', 'modcp', 'film', baseline):
+                target = None if method != baseline else max(source['config']['targets'])
+                matches = [row for row in evaluated if
+                           (row['intervals'], row['method'], row['target']) == (n, method, target)]
+                if len(matches) > 1:
+                    raise ValueError('Ambiguous frozen setting in compact evaluation table')
+                if not matches:
+                    cells.append('No frozen setting')
+                    continue
+                row = matches[0]
+                if row['worst_error'] is None or row['median_seconds'] is None:
+                    cells.append('Incomplete/nonfinite')
+                    continue
+                cell = f"{100*row['worst_error']:.4g}% / {1e3*row['median_seconds']:.4g} ms"
+                if method == baseline:
+                    cell = ('Newton–BiCGStab' if baseline == 'newton_bicgstab' else 'CG')+': '+cell
+                cells.append(cell)
+            rows.append([source['case_name'], n, *cells])
+    if not rows:
+        return ''
+    return '\n\n'.join([
+        table(['Case', 'Intervals/axis', 'CP', 'Modified CP', 'FiLM', 'Full solver: largest-target selection'], rows),
+        'Each cell gives worst trajectory error / median complete-query time on the untouched cohort. '
+        'Decoder columns use the best-error diagnostic setting frozen during validation; '
+        'the full-solver column uses its validation-selected setting for the largest declared target. '
+        'These errors differ, so the table is a cost-and-error comparison, not a matched-accuracy speedup. '
+        'The detailed tables also include the direct, spectral, and explicit wave controls.'])
+
+
 def provenance_check(provenance):
     required = ('commit', 'job_id', 'gpu', 'backend', 'x64', 'matmul_precision')
     missing = [key for key in required if not provenance.get(key)]
@@ -582,6 +618,7 @@ def main():
     lines = ['# Modified CP with empirical quadrature: Burgers and waves', '',
              'This report compares the original CP decoder, latent-modulated CP factors, and a FiLM coordinate decoder. '+status,
              '', outcome,
+             '', compact_evaluation_table(sources),
              '', '## Frozen validation settings', '',
              table(['Case', 'Intervals/axis', 'Method', 'Selection role', 'Configuration',
                     'Median case error', 'Worst error', 'Median query ms', 'Failed cases',

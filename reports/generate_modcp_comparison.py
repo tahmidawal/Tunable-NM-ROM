@@ -46,6 +46,13 @@ def summarize_input(path):
     config = data['config']
     groups = defaultdict(list)
     for row in data.get('invocations', []):
+        if 'provenance' in row:
+            for field in ('job_id', 'gpu'):
+                if str(row['provenance'].get(field)) != str(data['provenance'][field]):
+                    raise ValueError(f'Mixed-allocation timing panel: {field}')
+        if row.get('finite') and data['case_name'] != 'burgers2d' and not all(
+                name in (row.get('errors') or {}) for name in ('displacement', 'velocity', 'energy_state')):
+            raise ValueError('Wave invocation omits a required physical error component')
         key = row['split'], row['method'], row['configuration'], row['intervals']
         groups[key].append(row)
     summaries = []
@@ -70,12 +77,13 @@ def summarize_input(path):
     audits, seen = [], set()
     for row in data.get('invocations', []):
         artifact = row.get('field_artifact')
-        if not artifact or row.get('field_artifact_kind') != 'self_contained_full_grid':
+        if not artifact or row.get('field_artifact_kind') != 'self_contained_full_grid' or not row.get('finite'):
             continue
         full = (path.parent / artifact).resolve()
         # One saved deterministic result can serve several repetitions only when
         # the owner records that each actual repetition has the same field hash.
-        key = str(full), tuple(sorted(row['errors'].items()))
+        key = str(full), tuple((name, row['errors'][name]) for name in
+                              ('displacement', 'velocity', 'energy_state') if name in row['errors'])
         if key in seen:
             continue
         audits.append(audit_field_archive(full, data['case_name'], row['errors']))

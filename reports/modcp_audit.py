@@ -75,7 +75,8 @@ def burgers_metrics(u, truth):
 
 
 def row_error(row):
-    values = list(row.get('errors', {}).values())
+    errors = row.get('errors') or {}
+    values = [errors[key] for key in ('displacement', 'velocity', 'energy_state') if key in errors]
     if not values or any(x is None or not math.isfinite(float(x)) or x < 0 for x in values):
         return math.inf
     return max(values)

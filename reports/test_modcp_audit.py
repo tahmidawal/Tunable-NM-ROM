@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import numpy as np
 
-from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows
+from modcp_audit import wave_energy_squared, wave_metrics, summarize_rows, row_error
 from generate_modcp_comparison import summarize_input
 
 
@@ -53,6 +53,10 @@ class AuditTests(unittest.TestCase):
         self.assertTrue(result['qualified'])
         self.assertFalse(result['qualified_and_converged'])
         self.assertEqual(result['nonstationary_cases'], 1)
+
+    def test_owner_diagnostic_traces_do_not_become_target_components(self):
+        self.assertEqual(row_error({'errors': {'displacement': .01, 'per_time': [.01, .001], 'initial': .005}}), .01)
+        self.assertTrue(np.isinf(row_error({'errors': None})))
 
     def test_evaluation_requires_predeclared_validation_selection(self):
         # Synthetic fixtures only: these values are never scientific results.

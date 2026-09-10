@@ -82,7 +82,10 @@ def main(record):
                             repetitions=len(rows), full_field_hashes=expected_hash))
     summary = dict(config=cfg, provenance=meta, result_sha256=sha(native/'result.json'),
                    audited_invocations=sum(r['repetitions'] for r in audited), field_checks=audited,
-                   references=data['references'], time_refinement=data['time_refinement'], groups=[])
+                   references=data['references'], time_refinement=data['time_refinement'], groups=[],
+                   integrity_audit_passed=True,
+                   all_reference_refinement_gates_passed=all(r['refinement_passed'] for r in data['references']),
+                   reference_gate_scope='Recorded same-grid temporal self-refinement; no continuum bound. The two reference fields are not both archived, so this is reported solver-side evidence, separate from the independent timed-field audit.')
     panels = defaultdict(list)
     for key, rows in groups.items():
         bc,n,ci,method,role = key
@@ -99,6 +102,21 @@ def main(record):
         fm = 'dst' if bc=='dirichlet' else 'rk4'
         ratios = [next(f['query_median'] for f in panels[bc,n,fm] if f['case']==c['case'])/c['query_median'] for c in cases]
         refinements = [r for r in data['time_refinement'] if (r['boundary'],r['intervals'],r['method'])==(bc,n,method)]
+        references = [r for r in data['references'] if (r['boundary'],r['intervals'])==(bc,n)]
+        qualification = {}
+        for target in cfg['accuracy_targets']:
+            passed = []
+            for case in cases:
+                ref_ok = next(r['refinement_passed'] for r in references if r['case']==case['case'])
+                time_ok = all(r['passed'] for r in refinements if r['case']==case['case'])
+                initial_ok = all(case['errors'][name]['max_initial_normalized']<=target for name in NAMES)
+                current_ok = all(case['errors'][name]['max_current_relative']<=target for name in NAMES)
+                passed.append(dict(case=case['case'],
+                    numerical_gates_passed=bool(ref_ok and time_ok and case['completed'] and case['fit_stationary']),
+                    initial_accuracy_passed=initial_ok, current_accuracy_passed=current_ok))
+            qualification[str(target)] = dict(cases=passed,
+                all_initial_qualified=all(c['numerical_gates_passed'] and c['initial_accuracy_passed'] for c in passed),
+                all_current_qualified=all(c['numerical_gates_passed'] and c['current_accuracy_passed'] for c in passed))
         error_summary = {}
         for name in NAMES:
             initial = [c['errors'][name]['max_initial_normalized'] for c in cases]
@@ -113,6 +131,8 @@ def main(record):
             errors=error_summary, failed_cases=sum(not c['completed'] for c in cases),
             nonstationary_cases=sum(not c['fit_stationary'] for c in cases),
             time_refinement_failed_cases=sum(not r['passed'] for r in refinements),
+            reference_refinement_failed_cases=sum(not r['refinement_passed'] for r in references),
+            accuracy_qualification_by_target=qualification,
             timing_outliers=sum(c['timing_outliers_above_twice_case_median'] for c in cases)))
     write(analysis/'summary.json', summary)
     lines = ['# Fresh-wave device-resident comparison', '',
@@ -124,6 +144,7 @@ def main(record):
         current=' / '.join(f'{g["errors"][k]["current_max_worst"]:.6g}' for k in NAMES)
         lines.append(f'| {g["boundary"]} | {g["intervals"]} | {g["method"]} | {1000*g["query_median"]:.6g} | {g["paired_fom_over_method_median"]:.6g} | {initial} | {current} | {g["failed_cases"]} / {g["nonstationary_cases"]} / {g["time_refinement_failed_cases"]} |')
     lines += ['', 'Ratios compare complete device queries to the named same-grid FOM. Cold initialization, all projection, speed preparation, evolution and full GPU fields are charged. Host transfers are outside this timer. Inspect the adjacent errors and failure counts before interpreting a ratio as useful acceleration.', '',
+        f'All recorded same-grid reference refinement gates passed: **{summary["all_reference_refinement_gates_passed"]}**. Integrity checks and completed execution do not establish numerical-gate or target-accuracy acceptance. The JSON explicitly qualifies each target using reference refinement, ROM refinement, completed evolution, fit stationarity and all three error components.', '',
         'The summary JSON retains component timings, every repetition, per-case error curves, reference temporal refinement and separate nonlinear time refinement. A timing outlier is a repetition above twice its case median. Error-outlier counts are retained for each predeclared target. Reference refinement is empirical and does not establish a continuum bound.', '',
         '## Glossary', '',
         '- **Intervals / method:** spatial cells per axis / the named frozen reduced model or full solver.',

@@ -1,0 +1,3694 @@
+{
+  "passed": true,
+  "case_name": "burgers2d",
+  "handoff_sha256": "622d06a1643eef310564e8ab68962fd8897adb8105434168f76c906c7e1660e0",
+  "provenance": {
+    "commit": "890a67b5ef313001d546735f8b32101f75849910",
+    "job_id": "3518411",
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest",
+    "jax_version": "0.10.2",
+    "training_seed": 2609101701,
+    "smoke": false,
+    "global_validation_seal_sha256": "48881620001affec08010aac56866b19f413777f9fdaefca902a81f0f20b1d90",
+    "validation_handoff_sha256": "5f8d73be24bd6be5510185237756ca441684fc08aafd05249d8f1991bacc618c",
+    "validation_source_commit": "b229e8521fa94d7229bbd745290beebbb7c89ae6",
+    "validation_job_id": "3500795"
+  },
+  "global_seal_binding_verified": true,
+  "invocation_count": 1008,
+  "unique_full_field_artifacts": 144,
+  "coverage": "All frozen non-null configurations, all evaluation cases, every recorded repetition; no evaluation selection.",
+  "metric": "Maximum over output times of full-grid error L2 divided by true initial-field L2, against the fixed finer numerical reference.",
+  "timing": "Median across cases of the seven paired invocation medians; high outlier means greater than three times its own case median.",
+  "interpretation": "Targets qualify only a validation-selected configuration passing every evaluation case. Continuum accuracy is provisional where refinement flags apply.",
+  "summaries": [
+    {
+      "intervals": 256,
+      "method": "cp",
+      "configuration": "cp_cap10_dt0.005_q4_tol0.0001",
+      "median_case_median_seconds": 0.02945578598883003,
+      "median_case_error": 0.13772202094028546,
+      "worst_case_error": 0.4528933704189124,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 15,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 0,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 1,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.02871523005887866,
+          "repetition_seconds": [
+            0.038222613045945764,
+            0.03060244396328926,
+            0.02871523005887866,
+            0.028287451015785336,
+            0.027875002939254045,
+            0.02898803004063666,
+            0.028653949964791536
+          ],
+          "worst_repetition_error": 0.20362472548292718,
+          "initial_error": 0.20362472548292718,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.034430115949362516,
+          "repetition_seconds": [
+            0.03875628602690995,
+            0.034430115949362516,
+            0.03438094211742282,
+            0.03396537504158914,
+            0.0346651750151068,
+            0.034188824938610196,
+            0.03443558304570615
+          ],
+          "worst_repetition_error": 0.1532033433006021,
+          "initial_error": 0.1532033433006021,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.03111020801588893,
+          "repetition_seconds": [
+            0.03560972702689469,
+            0.03111020801588893,
+            0.031029141042381525,
+            0.03117322106845677,
+            0.031170709058642387,
+            0.03095788392238319,
+            0.031060740118846297
+          ],
+          "worst_repetition_error": 0.1689954906142403,
+          "initial_error": 0.1689954906142403,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.028728993143886328,
+          "repetition_seconds": [
+            0.03309101308695972,
+            0.028484742855653167,
+            0.028778923908248544,
+            0.028547139139845967,
+            0.0282154050655663,
+            0.028728993143886328,
+            0.028772322926670313
+          ],
+          "worst_repetition_error": 0.14712157023869565,
+          "initial_error": 0.14712157023869565,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.028498617932200432,
+          "repetition_seconds": [
+            0.032984786899760365,
+            0.028697069035843015,
+            0.028485293965786695,
+            0.027811887906864285,
+            0.028718195855617523,
+            0.028406544122844934,
+            0.028498617932200432
+          ],
+          "worst_repetition_error": 0.058607949126503946,
+          "initial_error": 0.058607949126503946,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.03346517588943243,
+          "repetition_seconds": [
+            0.03870575502514839,
+            0.0335311449598521,
+            0.03329199692234397,
+            0.03346517588943243,
+            0.03353718016296625,
+            0.03298723022453487,
+            0.0330436029471457
+          ],
+          "worst_repetition_error": 0.10738760548078932,
+          "initial_error": 0.10738760548078932,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.027490910841152072,
+          "repetition_seconds": [
+            0.03493673796765506,
+            0.02680419711396098,
+            0.02753347996622324,
+            0.027203885838389397,
+            0.027045824099332094,
+            0.027490910841152072,
+            0.027578207897022367
+          ],
+          "worst_repetition_error": 0.031447284189739626,
+          "initial_error": 0.031447284189739626,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.030182578833773732,
+          "repetition_seconds": [
+            0.034865717869251966,
+            0.029492866015061736,
+            0.03027516300790012,
+            0.030038217082619667,
+            0.03043998102657497,
+            0.030182578833773732,
+            0.03017129097133875
+          ],
+          "worst_repetition_error": 0.09680619169347002,
+          "initial_error": 0.09680619169347002,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.036961751990020275,
+          "repetition_seconds": [
+            0.04253451805561781,
+            0.036946540931239724,
+            0.036910600028932095,
+            0.03698289697058499,
+            0.03711975598707795,
+            0.03677657013759017,
+            0.036961751990020275
+          ],
+          "worst_repetition_error": 0.3299687086753266,
+          "initial_error": 0.3299687086753266,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.027386673958972096,
+          "repetition_seconds": [
+            0.03203057707287371,
+            0.027386673958972096,
+            0.027745807077735662,
+            0.0270830150693655,
+            0.028397283982485533,
+            0.02690568589605391,
+            0.02697167103178799
+          ],
+          "worst_repetition_error": 0.07427528086527796,
+          "initial_error": 0.07427528086527796,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.03786365897394717,
+          "repetition_seconds": [
+            0.04485396598465741,
+            0.03732554195448756,
+            0.03786365897394717,
+            0.037499330937862396,
+            0.03800159599632025,
+            0.037704851012676954,
+            0.037887186044827104
+          ],
+          "worst_repetition_error": 0.4528933704189124,
+          "initial_error": 0.4528933704189124,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.031011587008833885,
+          "repetition_seconds": [
+            0.03968197316862643,
+            0.03111709700897336,
+            0.030667793937027454,
+            0.03100640792399645,
+            0.03125062002800405,
+            0.030910789035260677,
+            0.031011587008833885
+          ],
+          "worst_repetition_error": 0.33849700382343484,
+          "initial_error": 0.33849700382343484,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.027643345994874835,
+          "repetition_seconds": [
+            0.03277310403063893,
+            0.027567591052502394,
+            0.0280900988727808,
+            0.027374482015147805,
+            0.027697550831362605,
+            0.02711035800166428,
+            0.027643345994874835
+          ],
+          "worst_repetition_error": 0.09976168123844528,
+          "initial_error": 0.09976168123844528,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.038008707109838724,
+          "repetition_seconds": [
+            0.042214589891955256,
+            0.03742220695130527,
+            0.03818584815599024,
+            0.03791318298317492,
+            0.038008707109838724,
+            0.038151755928993225,
+            0.038003065157681704
+          ],
+          "worst_repetition_error": 0.3175645748874478,
+          "initial_error": 0.3175645748874478,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.027617599116638303,
+          "repetition_seconds": [
+            0.03216988407075405,
+            0.027636263985186815,
+            0.027508853003382683,
+            0.027239870047196746,
+            0.027617599116638303,
+            0.02746962895616889,
+            0.02767744706943631
+          ],
+          "worst_repetition_error": 0.12832247164187527,
+          "initial_error": 0.12832247164187527,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.02769614104181528,
+          "repetition_seconds": [
+            0.03261863789521158,
+            0.027503295801579952,
+            0.02803846192546189,
+            0.02771342103369534,
+            0.02769614104181528,
+            0.027542600873857737,
+            0.027607551077380776
+          ],
+          "worst_repetition_error": 0.06545632925084881,
+          "initial_error": 0.06545632925084881,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "method": "film",
+      "configuration": "film_cap10_dt0.005_q4_tol0.0001",
+      "median_case_median_seconds": 0.10878908156882972,
+      "median_case_error": 0.05517311683163068,
+      "worst_case_error": 0.09838924321322477,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 14,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 0,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 7,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.10678595979698002,
+          "repetition_seconds": [
+            0.1068069888278842,
+            0.11099717393517494,
+            0.10583695187233388,
+            0.10678595979698002,
+            0.1064170419704169,
+            0.10654757590964437,
+            0.10680719208903611
+          ],
+          "worst_repetition_error": 0.04784438299744438,
+          "initial_error": 0.04381233647977911,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.12286396091803908,
+          "repetition_seconds": [
+            0.12378131411969662,
+            0.12248721299692988,
+            0.12337114894762635,
+            0.12256211088970304,
+            0.12286396091803908,
+            0.12266638409346342,
+            0.12324870098382235
+          ],
+          "worst_repetition_error": 0.058785650346019576,
+          "initial_error": 0.04289315696377283,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.12337077618576586,
+          "repetition_seconds": [
+            0.12406871118582785,
+            0.12276273686438799,
+            0.12320213788188994,
+            0.12337077618576586,
+            0.1234243051148951,
+            0.12353267800062895,
+            0.12326391716487706
+          ],
+          "worst_repetition_error": 0.09838924321322477,
+          "initial_error": 0.08039052837477115,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.1049860599450767,
+          "repetition_seconds": [
+            0.10586690786294639,
+            0.10524587496183813,
+            0.10447981301695108,
+            0.10477262106724083,
+            0.1049860599450767,
+            0.10511246393434703,
+            0.10477387392893434
+          ],
+          "worst_repetition_error": 0.05156058331724179,
+          "initial_error": 0.05156058331724179,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.10455204593017697,
+          "repetition_seconds": [
+            0.10542920604348183,
+            0.10439787805080414,
+            0.10460979212075472,
+            0.1045687859877944,
+            0.103944290895015,
+            0.1043400289490819,
+            0.10455204593017697
+          ],
+          "worst_repetition_error": 0.03042986025395026,
+          "initial_error": 0.03042986025395026,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.11074150702916086,
+          "repetition_seconds": [
+            0.11183963902294636,
+            0.1104817041195929,
+            0.11074150702916086,
+            0.11053010099567473,
+            0.11091175582259893,
+            0.11078612180426717,
+            0.11062634899280965
+          ],
+          "worst_repetition_error": 0.05993842458499717,
+          "initial_error": 0.04212484339324411,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.10314690810628235,
+          "repetition_seconds": [
+            0.10407799598760903,
+            0.10333872912451625,
+            0.10271691996604204,
+            0.10256747505627573,
+            0.10314690810628235,
+            0.10321468696929514,
+            0.10298151383176446
+          ],
+          "worst_repetition_error": 0.02004053394998571,
+          "initial_error": 0.01658896349125195,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.1042392470408231,
+          "repetition_seconds": [
+            0.10527395503595471,
+            0.10447759996168315,
+            0.1041509029455483,
+            0.1042392470408231,
+            0.1040569010656327,
+            0.10430785990320146,
+            0.10411373293027282
+          ],
+          "worst_repetition_error": 0.032007752397033525,
+          "initial_error": 0.032007752397033525,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.1212810028810054,
+          "repetition_seconds": [
+            0.12225491786375642,
+            0.12063340586610138,
+            0.12083013192750514,
+            0.12128553399816155,
+            0.12135270005092025,
+            0.12092661298811436,
+            0.1212810028810054
+          ],
+          "worst_repetition_error": 0.07493401140052426,
+          "initial_error": 0.07380856801045553,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.09962980798445642,
+          "repetition_seconds": [
+            0.10099449311383069,
+            0.09925875905901194,
+            0.09955806587822735,
+            0.09917252999730408,
+            0.10037395288236439,
+            0.0999183941166848,
+            0.09962980798445642
+          ],
+          "worst_repetition_error": 0.02330758907410875,
+          "initial_error": 0.02330758907410875,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.11582515691407025,
+          "repetition_seconds": [
+            0.1173917199485004,
+            0.11582515691407025,
+            0.11615049513056874,
+            0.11590264295227826,
+            0.11569628189317882,
+            0.11537975398823619,
+            0.11544647393748164
+          ],
+          "worst_repetition_error": 0.0978651426494749,
+          "initial_error": 0.0978651426494749,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.12854337599128485,
+          "repetition_seconds": [
+            0.12970743491314352,
+            0.12831929279491305,
+            0.1284259131643921,
+            0.12854337599128485,
+            0.12872988008894026,
+            0.1280417290981859,
+            0.1289461909327656
+          ],
+          "worst_repetition_error": 0.08690993900092621,
+          "initial_error": 0.07010755082465861,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.10944232204928994,
+          "repetition_seconds": [
+            0.1109910209197551,
+            0.10936608584597707,
+            0.1093579949811101,
+            0.10949101787991822,
+            0.10920795612037182,
+            0.1097341610584408,
+            0.10944232204928994
+          ],
+          "worst_repetition_error": 0.03276067745631717,
+          "initial_error": 0.03276067745631717,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.10813584108836949,
+          "repetition_seconds": [
+            0.10908603598363698,
+            0.10813584108836949,
+            0.10848728683777153,
+            0.10808675014413893,
+            0.10813048202544451,
+            0.10828646295703948,
+            0.10810246015898883
+          ],
+          "worst_repetition_error": 0.07124731493444113,
+          "initial_error": 0.07124731493444113,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.11652753013186157,
+          "repetition_seconds": [
+            0.11761861806735396,
+            0.11651892215013504,
+            0.11677116784267128,
+            0.11618731287308037,
+            0.11652753013186157,
+            0.11603184696286917,
+            0.11679326207377017
+          ],
+          "worst_repetition_error": 0.09147640673891189,
+          "initial_error": 0.04789608588124418,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.1031777320895344,
+          "repetition_seconds": [
+            0.10543849598616362,
+            0.10265182284638286,
+            0.1031777320895344,
+            0.10305728018283844,
+            0.1031967499293387,
+            0.10337558900937438,
+            0.10310297086834908
+          ],
+          "worst_repetition_error": 0.021135448975965598,
+          "initial_error": 0.021135448975965598,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "method": "modcp",
+      "configuration": "modcp_cap30_dt0.005_q4_tol0.0001",
+      "median_case_median_seconds": 0.055773965548723936,
+      "median_case_error": 0.06721785321924523,
+      "worst_case_error": 0.3457987923815061,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 14,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 0,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 4,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.0669282057788223,
+          "repetition_seconds": [
+            0.06823799596168101,
+            0.06900324183516204,
+            0.06695068301633,
+            0.06608985411003232,
+            0.06674367818050086,
+            0.0669282057788223,
+            0.06673037493601441
+          ],
+          "worst_repetition_error": 0.14210500434943002,
+          "initial_error": 0.14210500434943002,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.07742912485264242,
+          "repetition_seconds": [
+            0.07885766099207103,
+            0.07694591302424669,
+            0.07742912485264242,
+            0.07736265705898404,
+            0.07773697795346379,
+            0.07711240206845105,
+            0.07746842713095248
+          ],
+          "worst_repetition_error": 0.099673729291495,
+          "initial_error": 0.099673729291495,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.055937265045940876,
+          "repetition_seconds": [
+            0.0573178690392524,
+            0.05563342594541609,
+            0.056054732063785195,
+            0.055937265045940876,
+            0.056190334958955646,
+            0.055717132054269314,
+            0.05578295304439962
+          ],
+          "worst_repetition_error": 0.09677734053718899,
+          "initial_error": 0.09677734053718899,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.04777496005408466,
+          "repetition_seconds": [
+            0.04885038803331554,
+            0.047157010063529015,
+            0.04819277301430702,
+            0.04745838209055364,
+            0.04777496005408466,
+            0.04728274792432785,
+            0.048128007212653756
+          ],
+          "worst_repetition_error": 0.06431272493744743,
+          "initial_error": 0.06431272493744743,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.055610666051506996,
+          "repetition_seconds": [
+            0.056589127983897924,
+            0.05546696996316314,
+            0.05566643504425883,
+            0.05541710299439728,
+            0.0558198899962008,
+            0.05531889898702502,
+            0.055610666051506996
+          ],
+          "worst_repetition_error": 0.03209346309138963,
+          "initial_error": 0.03209346309138963,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.05790659296326339,
+          "repetition_seconds": [
+            0.05915532191284001,
+            0.05750004085712135,
+            0.05798663315363228,
+            0.05790659296326339,
+            0.057812978979200125,
+            0.057361535960808396,
+            0.057963805040344596
+          ],
+          "worst_repetition_error": 0.06390054315957398,
+          "initial_error": 0.05206053775094219,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.04844479798339307,
+          "repetition_seconds": [
+            0.049558518920093775,
+            0.04808863298967481,
+            0.04880567896179855,
+            0.0482026319950819,
+            0.048586051911115646,
+            0.04844479798339307,
+            0.04830275406129658
+          ],
+          "worst_repetition_error": 0.017961558738973787,
+          "initial_error": 0.017961558738973787,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.05474992608651519,
+          "repetition_seconds": [
+            0.05634450609795749,
+            0.05469937599264085,
+            0.054608730133622885,
+            0.05487971706315875,
+            0.054720494197681546,
+            0.05474992608651519,
+            0.055020920000970364
+          ],
+          "worst_repetition_error": 0.05072429518209253,
+          "initial_error": 0.05072429518209253,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.06207102979533374,
+          "repetition_seconds": [
+            0.06308724801056087,
+            0.061993160052224994,
+            0.062183961970731616,
+            0.06198952510021627,
+            0.06229356094263494,
+            0.06177956913597882,
+            0.06207102979533374
+          ],
+          "worst_repetition_error": 0.2126571608644068,
+          "initial_error": 0.2126571608644068,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.05065678805112839,
+          "repetition_seconds": [
+            0.05211853818036616,
+            0.05033924989402294,
+            0.05014684982597828,
+            0.05041085905395448,
+            0.051971811102703214,
+            0.05065678805112839,
+            0.0506661559920758
+          ],
+          "worst_repetition_error": 0.03553692048924206,
+          "initial_error": 0.03553692048924206,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.07931455411016941,
+          "repetition_seconds": [
+            0.08074085204862058,
+            0.07931455411016941,
+            0.07956348196603358,
+            0.0784670680295676,
+            0.07920929184183478,
+            0.07862738892436028,
+            0.0794468407984823
+          ],
+          "worst_repetition_error": 0.3457987923815061,
+          "initial_error": 0.3457987923815061,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.0638323740568012,
+          "repetition_seconds": [
+            0.06513098394498229,
+            0.06363380211405456,
+            0.06383146205917001,
+            0.0638323740568012,
+            0.0641621109098196,
+            0.06359123182483017,
+            0.0640472499653697
+          ],
+          "worst_repetition_error": 0.24187574116450233,
+          "initial_error": 0.24187574116450233,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.0501859940122813,
+          "repetition_seconds": [
+            0.051291425013914704,
+            0.04994068411178887,
+            0.05015528481453657,
+            0.0501859940122813,
+            0.05038265720941126,
+            0.049892731942236423,
+            0.050325928023085
+          ],
+          "worst_repetition_error": 0.05783203335214853,
+          "initial_error": 0.05783203335214853,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.06235719402320683,
+          "repetition_seconds": [
+            0.0637550950050354,
+            0.06235719402320683,
+            0.06266038888134062,
+            0.06172124785371125,
+            0.06231101602315903,
+            0.06242640595883131,
+            0.06194415292702615
+          ],
+          "worst_repetition_error": 0.15131673394446973,
+          "initial_error": 0.15131673394446973,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.0517204268835485,
+          "repetition_seconds": [
+            0.052707697032019496,
+            0.05145785887725651,
+            0.0517204268835485,
+            0.05116503103636205,
+            0.051960094133391976,
+            0.05147359590046108,
+            0.05180086591280997
+          ],
+          "worst_repetition_error": 0.07012298150104301,
+          "initial_error": 0.056564094534463594,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.04766473500058055,
+          "repetition_seconds": [
+            0.04900159314274788,
+            0.04745010915212333,
+            0.04761867201887071,
+            0.04766473500058055,
+            0.04786263010464609,
+            0.04746659705415368,
+            0.047810246935114264
+          ],
+          "worst_repetition_error": 0.04689940146888581,
+          "initial_error": 0.04689940146888581,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "method": "newton_bicgstab",
+      "configuration": "newton_bicgstab_dt0.005_ltol0.1_ntol0.0001",
+      "median_case_median_seconds": 0.02793477091472596,
+      "median_case_error": 0.012146115898480563,
+      "worst_case_error": 0.03561121445692332,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 16,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 7,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 16,
+          "validation_selected_for_target": true,
+          "whole_cohort_qualified": true
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.027876430889591575,
+          "repetition_seconds": [
+            0.027876430889591575,
+            0.027767740888521075,
+            0.02808724995702505,
+            0.027864387026056647,
+            0.028510284144431353,
+            0.028057374991476536,
+            0.02760722511447966
+          ],
+          "worst_repetition_error": 0.016661401232586096,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.029142535058781505,
+          "repetition_seconds": [
+            0.029988163150846958,
+            0.028531116899102926,
+            0.029324000934138894,
+            0.028915297938510776,
+            0.02852914109826088,
+            0.029168574139475822,
+            0.029142535058781505
+          ],
+          "worst_repetition_error": 0.025832811396268827,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.02971706702373922,
+          "repetition_seconds": [
+            0.02985488111153245,
+            0.029082251014187932,
+            0.029708198038861156,
+            0.029353908030316234,
+            0.029872208135202527,
+            0.029737520962953568,
+            0.02971706702373922
+          ],
+          "worst_repetition_error": 0.00781953890281711,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.027804546989500523,
+          "repetition_seconds": [
+            0.027701016049832106,
+            0.027772441040724516,
+            0.02786057791672647,
+            0.027623510919511318,
+            0.027870021993294358,
+            0.027905367081984878,
+            0.027804546989500523
+          ],
+          "worst_repetition_error": 0.007292585169746254,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.02781771798618138,
+          "repetition_seconds": [
+            0.02811828814446926,
+            0.027462978847324848,
+            0.028261336032301188,
+            0.02781771798618138,
+            0.027482429053634405,
+            0.02767665102146566,
+            0.02949392586015165
+          ],
+          "worst_repetition_error": 0.009058607126046456,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.02817817614413798,
+          "repetition_seconds": [
+            0.028287617955356836,
+            0.027925071073696017,
+            0.02818033890798688,
+            0.02813502191565931,
+            0.02801035181619227,
+            0.028179005021229386,
+            0.02817817614413798
+          ],
+          "worst_repetition_error": 0.0166223455142216,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.027659016894176602,
+          "repetition_seconds": [
+            0.027737081982195377,
+            0.027737522963434458,
+            0.027600764064118266,
+            0.027797152986750007,
+            0.027294861851260066,
+            0.027556478045880795,
+            0.027659016894176602
+          ],
+          "worst_repetition_error": 0.004322588770286641,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.0277553778141737,
+          "repetition_seconds": [
+            0.027620329055935144,
+            0.02798925992101431,
+            0.02725668507628143,
+            0.027867618016898632,
+            0.027831463143229485,
+            0.0277553778141737,
+            0.027663890970870852
+          ],
+          "worst_repetition_error": 0.01779465411222821,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.029186717001721263,
+          "repetition_seconds": [
+            0.02891290606930852,
+            0.028865212108939886,
+            0.029292521998286247,
+            0.02888044691644609,
+            0.02949705603532493,
+            0.02920953300781548,
+            0.029186717001721263
+          ],
+          "worst_repetition_error": 0.01121463079225457,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.025659703882411122,
+          "repetition_seconds": [
+            0.025664792861789465,
+            0.025780515978112817,
+            0.025659703882411122,
+            0.025454844115301967,
+            0.025720862904563546,
+            0.025648670038208365,
+            0.025626974878832698
+          ],
+          "worst_repetition_error": 0.004436937427611885,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.02949741412885487,
+          "repetition_seconds": [
+            0.02934912103228271,
+            0.029503501020371914,
+            0.029435656033456326,
+            0.02968868101015687,
+            0.02949741412885487,
+            0.02902914909645915,
+            0.02949834312312305
+          ],
+          "worst_repetition_error": 0.015328123010424442,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.03307007998228073,
+          "repetition_seconds": [
+            0.03436747984960675,
+            0.032823671121150255,
+            0.03307007998228073,
+            0.032861888874322176,
+            0.03274919115938246,
+            0.03437139489687979,
+            0.033310721162706614
+          ],
+          "worst_repetition_error": 0.03561121445692332,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.02769582881592214,
+          "repetition_seconds": [
+            0.02800647309049964,
+            0.027837473899126053,
+            0.027655849931761622,
+            0.027368044015020132,
+            0.02787273400463164,
+            0.02769582881592214,
+            0.027587047079578042
+          ],
+          "worst_repetition_error": 0.004608252594736283,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.029795791022479534,
+          "repetition_seconds": [
+            0.029578370042145252,
+            0.029795791022479534,
+            0.029590785037726164,
+            0.02992379805073142,
+            0.02986033889465034,
+            0.029734767973423004,
+            0.02984885685145855
+          ],
+          "worst_repetition_error": 0.013077601004706556,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.027993110939860344,
+          "repetition_seconds": [
+            0.02834939816966653,
+            0.027975093107670546,
+            0.02832716703414917,
+            0.02771110786125064,
+            0.028131498023867607,
+            0.027498331852257252,
+            0.027993110939860344
+          ],
+          "worst_repetition_error": 0.013716868229762863,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.027771797962486744,
+          "repetition_seconds": [
+            0.02792492602020502,
+            0.027792160166427493,
+            0.02744432515464723,
+            0.02743224403820932,
+            0.027904209913685918,
+            0.027421736856922507,
+            0.027771797962486744
+          ],
+          "worst_repetition_error": 0.00553582643864026,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 512,
+      "method": "cp",
+      "configuration": "cp_cap10_dt0.005_q4_tol0.0001",
+      "median_case_median_seconds": 0.029580398462712765,
+      "median_case_error": 0.14014464005815175,
+      "worst_case_error": 0.45273899688732056,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 16,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 0,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 1,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.028518956853076816,
+          "repetition_seconds": [
+            0.03356796293519437,
+            0.02954138396307826,
+            0.028518956853076816,
+            0.028293046867474914,
+            0.028431233018636703,
+            0.028524058870971203,
+            0.028405332006514072
+          ],
+          "worst_repetition_error": 0.2036533514160819,
+          "initial_error": 0.2036533514160819,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.03403780306689441,
+          "repetition_seconds": [
+            0.03845603787340224,
+            0.03452644404023886,
+            0.03398047690279782,
+            0.03474271413870156,
+            0.0336508140899241,
+            0.03403780306689441,
+            0.03395304293371737
+          ],
+          "worst_repetition_error": 0.15358618319766462,
+          "initial_error": 0.15358618319766462,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.031187518034130335,
+          "repetition_seconds": [
+            0.03656255593523383,
+            0.0308945057913661,
+            0.0314261051826179,
+            0.03155041788704693,
+            0.031160225858911872,
+            0.03089178493246436,
+            0.031187518034130335
+          ],
+          "worst_repetition_error": 0.17082266962140985,
+          "initial_error": 0.17082266962140985,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.028919260017573833,
+          "repetition_seconds": [
+            0.03430921281687915,
+            0.028916961047798395,
+            0.028919260017573833,
+            0.029132217168807983,
+            0.028810930904000998,
+            0.029003324918448925,
+            0.028610292123630643
+          ],
+          "worst_repetition_error": 0.14876366533004973,
+          "initial_error": 0.14876366533004973,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.028859060956165195,
+          "repetition_seconds": [
+            0.03369099390693009,
+            0.029305909061804414,
+            0.028660021955147386,
+            0.02874997491016984,
+            0.028923955047503114,
+            0.028859060956165195,
+            0.028719780035316944
+          ],
+          "worst_repetition_error": 0.06004526261007064,
+          "initial_error": 0.06004526261007064,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.03435437404550612,
+          "repetition_seconds": [
+            0.04054998513311148,
+            0.03462249506264925,
+            0.0342568289488554,
+            0.03524976293556392,
+            0.03435437404550612,
+            0.033956150989979506,
+            0.0342935340013355
+          ],
+          "worst_repetition_error": 0.11001013870480585,
+          "initial_error": 0.11001013870480585,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.02766072121448815,
+          "repetition_seconds": [
+            0.032900086836889386,
+            0.02798908995464444,
+            0.027313124854117632,
+            0.027857739944010973,
+            0.027208290994167328,
+            0.027561058988794684,
+            0.02766072121448815
+          ],
+          "worst_repetition_error": 0.0316441605229949,
+          "initial_error": 0.0316441605229949,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.030241536907851696,
+          "repetition_seconds": [
+            0.03451017988845706,
+            0.03051463421434164,
+            0.02999429195187986,
+            0.029974099015817046,
+            0.030437354929745197,
+            0.030241536907851696,
+            0.029916892061010003
+          ],
+          "worst_repetition_error": 0.09681837610090184,
+          "initial_error": 0.09681837610090184,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.03665850218385458,
+          "repetition_seconds": [
+            0.04105990496464074,
+            0.0370609478559345,
+            0.03661672095768154,
+            0.03665850218385458,
+            0.03686857409775257,
+            0.03660594881512225,
+            0.03661874704994261
+          ],
+          "worst_repetition_error": 0.3300841047419283,
+          "initial_error": 0.3300841047419283,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.027896120911464095,
+          "repetition_seconds": [
+            0.03303872584365308,
+            0.027896120911464095,
+            0.028089906089007854,
+            0.02797744399867952,
+            0.02774131391197443,
+            0.027815214823931456,
+            0.027748837135732174
+          ],
+          "worst_repetition_error": 0.07600490349183152,
+          "initial_error": 0.07600490349183152,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.03759076981805265,
+          "repetition_seconds": [
+            0.04153343685902655,
+            0.037176028126850724,
+            0.03752662497572601,
+            0.03776781400665641,
+            0.03759076981805265,
+            0.03740925597958267,
+            0.03759565716609359
+          ],
+          "worst_repetition_error": 0.45273899688732056,
+          "initial_error": 0.45273899688732056,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.031208101892843843,
+          "repetition_seconds": [
+            0.035390115110203624,
+            0.03160465182736516,
+            0.031114305136725307,
+            0.03127350099384785,
+            0.031208101892843843,
+            0.03113851393572986,
+            0.03112334804609418
+          ],
+          "worst_repetition_error": 0.33825859019021814,
+          "initial_error": 0.33825859019021814,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.02842298918403685,
+          "repetition_seconds": [
+            0.03301860694773495,
+            0.028271745890378952,
+            0.02842298918403685,
+            0.02849767287261784,
+            0.028436333872377872,
+            0.028228863840922713,
+            0.02822224795818329
+          ],
+          "worst_repetition_error": 0.09964434951281995,
+          "initial_error": 0.09964434951281995,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.038293801015242934,
+          "repetition_seconds": [
+            0.042289201868698,
+            0.038384570041671395,
+            0.03809607494622469,
+            0.03835474792867899,
+            0.03813609899953008,
+            0.03820958291180432,
+            0.038293801015242934
+          ],
+          "worst_repetition_error": 0.3183861073037756,
+          "initial_error": 0.3183861073037756,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.02778191096149385,
+          "repetition_seconds": [
+            0.037749168928712606,
+            0.02763029490597546,
+            0.02778191096149385,
+            0.027939735911786556,
+            0.02771365293301642,
+            0.027552247047424316,
+            0.028193810023367405
+          ],
+          "worst_repetition_error": 0.13152561478625377,
+          "initial_error": 0.13152561478625377,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.0280298818834126,
+          "repetition_seconds": [
+            0.03241099417209625,
+            0.02792655793018639,
+            0.028889885870739818,
+            0.0280298818834126,
+            0.027861177921295166,
+            0.02812690893188119,
+            0.027917468920350075
+          ],
+          "worst_repetition_error": 0.06584841714688466,
+          "initial_error": 0.06584841714688466,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 512,
+      "method": "film",
+      "configuration": "film_cap10_dt0.005_q4_tol0.0001",
+      "median_case_median_seconds": 0.16112429194618016,
+      "median_case_error": 0.06423666557162282,
+      "worst_case_error": 0.12112362462516173,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 14,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 0,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 7,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.15884162322618067,
+          "repetition_seconds": [
+            0.15903870714828372,
+            0.16278709308244288,
+            0.15887940395623446,
+            0.15867764595896006,
+            0.15841926401481032,
+            0.15827328898012638,
+            0.15884162322618067
+          ],
+          "worst_repetition_error": 0.04526012378383358,
+          "initial_error": 0.04445585639113595,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.1755958111025393,
+          "repetition_seconds": [
+            0.17593701416626573,
+            0.1755958111025393,
+            0.17595550883561373,
+            0.1751976718660444,
+            0.17510874406434596,
+            0.1752420598641038,
+            0.17565632704645395
+          ],
+          "worst_repetition_error": 0.05950121916114394,
+          "initial_error": 0.050221913627881955,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.18618740607053041,
+          "repetition_seconds": [
+            0.18652933416888118,
+            0.1856377311050892,
+            0.18684288999065757,
+            0.18618740607053041,
+            0.18585082702338696,
+            0.1859720698557794,
+            0.18635896313935518
+          ],
+          "worst_repetition_error": 0.11622908286953795,
+          "initial_error": 0.09208922666884119,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.1577796251513064,
+          "repetition_seconds": [
+            0.1587656291667372,
+            0.15768785495311022,
+            0.1580653521232307,
+            0.15760546503588557,
+            0.15737609402276576,
+            0.1577796251513064,
+            0.1579423921648413
+          ],
+          "worst_repetition_error": 0.0689721119821017,
+          "initial_error": 0.06180789951991798,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.15775713697075844,
+          "repetition_seconds": [
+            0.159236024832353,
+            0.15747679118067026,
+            0.15791987720876932,
+            0.15771205513738096,
+            0.15741479280404747,
+            0.1581447240896523,
+            0.15775713697075844
+          ],
+          "worst_repetition_error": 0.04107399356837414,
+          "initial_error": 0.04107399356837414,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.16981784906238317,
+          "repetition_seconds": [
+            0.170706775970757,
+            0.1697032288648188,
+            0.16974448203109205,
+            0.16981784906238317,
+            0.17092733387835324,
+            0.16974686412140727,
+            0.17053009197115898
+          ],
+          "worst_repetition_error": 0.10685930336831514,
+          "initial_error": 0.059362992720735384,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.15558298397809267,
+          "repetition_seconds": [
+            0.15746870101429522,
+            0.15522712003439665,
+            0.15558298397809267,
+            0.15576605289243162,
+            0.1550485878251493,
+            0.15554726985283196,
+            0.15565491002053022
+          ],
+          "worst_repetition_error": 0.020538671912890633,
+          "initial_error": 0.017881603145230962,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.15771479811519384,
+          "repetition_seconds": [
+            0.15875256806612015,
+            0.15688685211353004,
+            0.15833590901456773,
+            0.15751064009964466,
+            0.15771479811519384,
+            0.15787696512416005,
+            0.15718507301062346
+          ],
+          "worst_repetition_error": 0.033020482015030016,
+          "initial_error": 0.033020482015030016,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.16818619216792285,
+          "repetition_seconds": [
+            0.16918702702969313,
+            0.16826567193493247,
+            0.1680981309618801,
+            0.16768635506741703,
+            0.16818619216792285,
+            0.1678499688860029,
+            0.16820828802883625
+          ],
+          "worst_repetition_error": 0.07679607514585823,
+          "initial_error": 0.07679607514585823,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.15823071193881333,
+          "repetition_seconds": [
+            0.15928366011939943,
+            0.15930659603327513,
+            0.15823071193881333,
+            0.15774358995258808,
+            0.15827530599199235,
+            0.15819353191182017,
+            0.15765564399771392
+          ],
+          "worst_repetition_error": 0.0450793755270017,
+          "initial_error": 0.0450793755270017,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.1769636778626591,
+          "repetition_seconds": [
+            0.17755605978891253,
+            0.17699498613364995,
+            0.1769001509528607,
+            0.17683355091139674,
+            0.17709098407067358,
+            0.17664534086361527,
+            0.1769636778626591
+          ],
+          "worst_repetition_error": 0.09764519384217069,
+          "initial_error": 0.09764519384217069,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.18104482209309936,
+          "repetition_seconds": [
+            0.1821347309742123,
+            0.18132988805882633,
+            0.18116630404256284,
+            0.1807632150594145,
+            0.1806414439342916,
+            0.18104482209309936,
+            0.18097107694484293
+          ],
+          "worst_repetition_error": 0.09935615901745648,
+          "initial_error": 0.07006160714250664,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.1605298318900168,
+          "repetition_seconds": [
+            0.16147709800861776,
+            0.1605298318900168,
+            0.16074974206276238,
+            0.1602023469749838,
+            0.1605105330236256,
+            0.16063706506974995,
+            0.1604807828553021
+          ],
+          "worst_repetition_error": 0.03278641213296159,
+          "initial_error": 0.03278641213296159,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.16171875200234354,
+          "repetition_seconds": [
+            0.16257569496519864,
+            0.16177886701188982,
+            0.16202950896695256,
+            0.1612423500046134,
+            0.16158959991298616,
+            0.16171875200234354,
+            0.16164624597877264
+          ],
+          "worst_repetition_error": 0.0811152172496478,
+          "initial_error": 0.0811152172496478,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.16991809313185513,
+          "repetition_seconds": [
+            0.17168172704987228,
+            0.16996935312636197,
+            0.16991809313185513,
+            0.1694734268821776,
+            0.16987807000987232,
+            0.16974111297167838,
+            0.17029164195992053
+          ],
+          "worst_repetition_error": 0.12112362462516173,
+          "initial_error": 0.08038055969768818,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.1570902590174228,
+          "repetition_seconds": [
+            0.15841013006865978,
+            0.1570902590174228,
+            0.15668499283492565,
+            0.1569986790418625,
+            0.15723873092792928,
+            0.15708619402721524,
+            0.15729182492941618
+          ],
+          "worst_repetition_error": 0.02456608516490001,
+          "initial_error": 0.02456608516490001,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 512,
+      "method": "modcp",
+      "configuration": "modcp_cap30_dt0.005_q4_tol0.0001",
+      "median_case_median_seconds": 0.056699521373957396,
+      "median_case_error": 0.07596017625688425,
+      "worst_case_error": 0.34549370286817016,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 14,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 0,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 3,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.06874399399384856,
+          "repetition_seconds": [
+            0.06952812103554606,
+            0.0690678870305419,
+            0.06893815915100276,
+            0.06874399399384856,
+            0.0685699600726366,
+            0.068024932872504,
+            0.06853613094426692
+          ],
+          "worst_repetition_error": 0.14220963440407527,
+          "initial_error": 0.14220963440407527,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.0781467140186578,
+          "repetition_seconds": [
+            0.07870415295474231,
+            0.0785239280667156,
+            0.07857480994425714,
+            0.07814641296863556,
+            0.07763877301476896,
+            0.07735910103656352,
+            0.0781467140186578
+          ],
+          "worst_repetition_error": 0.10253032185871831,
+          "initial_error": 0.10253032185871831,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.056548573076725006,
+          "repetition_seconds": [
+            0.05677812802605331,
+            0.055788107914850116,
+            0.056996208149939775,
+            0.0567730029579252,
+            0.056548573076725006,
+            0.05598256713710725,
+            0.056493232026696205
+          ],
+          "worst_repetition_error": 0.10099680686910649,
+          "initial_error": 0.10099680686910649,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.049536856124177575,
+          "repetition_seconds": [
+            0.050191167974844575,
+            0.04962608707137406,
+            0.04983585001900792,
+            0.04953438998199999,
+            0.049536856124177575,
+            0.049182442016899586,
+            0.04943012888543308
+          ],
+          "worst_repetition_error": 0.0686214889609996,
+          "initial_error": 0.0686214889609996,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.05664436588995159,
+          "repetition_seconds": [
+            0.05760881491005421,
+            0.05696484004147351,
+            0.05629780003800988,
+            0.05718514695763588,
+            0.05647723702713847,
+            0.05596189992502332,
+            0.05664436588995159
+          ],
+          "worst_repetition_error": 0.036423147401131,
+          "initial_error": 0.036423147401131,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.0602154741063714,
+          "repetition_seconds": [
+            0.06076426710933447,
+            0.06059414707124233,
+            0.0602154741063714,
+            0.06079683010466397,
+            0.060077938018366694,
+            0.059634160017594695,
+            0.06019609794020653
+          ],
+          "worst_repetition_error": 0.06855407086029629,
+          "initial_error": 0.060220647174197436,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.04831019300036132,
+          "repetition_seconds": [
+            0.049385868944227695,
+            0.04800303187221289,
+            0.048373179975897074,
+            0.04848238918930292,
+            0.0477619799785316,
+            0.04787144297733903,
+            0.04831019300036132
+          ],
+          "worst_repetition_error": 0.018606687588133955,
+          "initial_error": 0.018606687588133955,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.056754676857963204,
+          "repetition_seconds": [
+            0.057434384943917394,
+            0.05701503506861627,
+            0.05681617301888764,
+            0.05653962097130716,
+            0.05660428013652563,
+            0.056535713840276,
+            0.056754676857963204
+          ],
+          "worst_repetition_error": 0.051093601135523026,
+          "initial_error": 0.051093601135523026,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.06260893889702857,
+          "repetition_seconds": [
+            0.06354001979343593,
+            0.0624778987839818,
+            0.06272001913748682,
+            0.062403437215834856,
+            0.06262807897292078,
+            0.062230387004092336,
+            0.06260893889702857
+          ],
+          "worst_repetition_error": 0.2127930627921991,
+          "initial_error": 0.2127930627921991,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.052550786873325706,
+          "repetition_seconds": [
+            0.053344191052019596,
+            0.05214275908656418,
+            0.052568020997568965,
+            0.05230299383401871,
+            0.052550786873325706,
+            0.052553456043824553,
+            0.05238405801355839
+          ],
+          "worst_repetition_error": 0.05096250341777675,
+          "initial_error": 0.05096250341777675,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.07890960993245244,
+          "repetition_seconds": [
+            0.07993498304858804,
+            0.07887952914461493,
+            0.07917951699346304,
+            0.07886262005195022,
+            0.07860235800035298,
+            0.07923277304507792,
+            0.07890960993245244
+          ],
+          "worst_repetition_error": 0.34549370286817016,
+          "initial_error": 0.34549370286817016,
+          "finite": true,
+          "completed": true,
+          "stationary": false,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "budget_or_small_step": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.06605089199729264,
+          "repetition_seconds": [
+            0.06730750808492303,
+            0.06571985385380685,
+            0.06605089199729264,
+            0.06601445004343987,
+            0.06619842583313584,
+            0.06638618698343635,
+            0.06590569904074073
+          ],
+          "worst_repetition_error": 0.2417171608620808,
+          "initial_error": 0.2417171608620808,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.05124536110088229,
+          "repetition_seconds": [
+            0.05236577498726547,
+            0.051014065044000745,
+            0.051249605137854815,
+            0.05119029199704528,
+            0.05124536110088229,
+            0.05167721211910248,
+            0.05110998102463782
+          ],
+          "worst_repetition_error": 0.057699991532684645,
+          "initial_error": 0.057699991532684645,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.06511921505443752,
+          "repetition_seconds": [
+            0.0660457001067698,
+            0.06498839799314737,
+            0.06503394595347345,
+            0.06496662995778024,
+            0.06511921505443752,
+            0.06534968805499375,
+            0.06521584303118289
+          ],
+          "worst_repetition_error": 0.15380480154496617,
+          "initial_error": 0.15380480154496617,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.056223119143396616,
+          "repetition_seconds": [
+            0.057387446984648705,
+            0.056319060968235135,
+            0.05537633504718542,
+            0.05566596798598766,
+            0.05586507800035179,
+            0.056223119143396616,
+            0.05629911320284009
+          ],
+          "worst_repetition_error": 0.08329886355276891,
+          "initial_error": 0.07324002800226857,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.04832726716995239,
+          "repetition_seconds": [
+            0.04931059502996504,
+            0.04875710094347596,
+            0.04844566294923425,
+            0.047838053898885846,
+            0.04827687190845609,
+            0.04832726716995239,
+            0.04816812719218433
+          ],
+          "worst_repetition_error": 0.04697841851577323,
+          "initial_error": 0.04697841851577323,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "stationary": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 512,
+      "method": "newton_bicgstab",
+      "configuration": "newton_bicgstab_dt0.00125_ltol0.1_ntol0.0001",
+      "median_case_median_seconds": 0.10021432349458337,
+      "median_case_error": 0.0030706958927022815,
+      "worst_case_error": 0.013270684860611068,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 16,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 15,
+          "validation_selected_for_target": true,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 16,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.1157328870613128,
+          "repetition_seconds": [
+            0.1160450300667435,
+            0.11522102798335254,
+            0.11538737104274333,
+            0.11490483488887548,
+            0.11604679794982076,
+            0.1157328870613128,
+            0.1159150330349803
+          ],
+          "worst_repetition_error": 0.005318997595673615,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.13993669883348048,
+          "repetition_seconds": [
+            0.13993669883348048,
+            0.14134614588692784,
+            0.13980552181601524,
+            0.1394941450562328,
+            0.13962855306454003,
+            0.13995551085099578,
+            0.1399615788832307
+          ],
+          "worst_repetition_error": 0.008856172528740795,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.09787617204710841,
+          "repetition_seconds": [
+            0.09789371793158352,
+            0.09815723402425647,
+            0.0973768609110266,
+            0.09745980519801378,
+            0.09787617204710841,
+            0.0980058298446238,
+            0.09780977200716734
+          ],
+          "worst_repetition_error": 0.0009126416226613092,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.09115299885161221,
+          "repetition_seconds": [
+            0.09091848297975957,
+            0.09115299885161221,
+            0.09108402580022812,
+            0.09081486100330949,
+            0.09144020499661565,
+            0.09133023885078728,
+            0.09136492596007884
+          ],
+          "worst_repetition_error": 0.0016330005648283344,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.0956147569231689,
+          "repetition_seconds": [
+            0.09595161397010088,
+            0.09573133289813995,
+            0.09533934411592782,
+            0.09575325297191739,
+            0.0951927350834012,
+            0.0956147569231689,
+            0.09532705112360418
+          ],
+          "worst_repetition_error": 0.001625524817298971,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.131342857144773,
+          "repetition_seconds": [
+            0.1312102279625833,
+            0.13159332401119173,
+            0.13393485802225769,
+            0.1318409440573305,
+            0.13094837800599635,
+            0.13121775910258293,
+            0.131342857144773
+          ],
+          "worst_repetition_error": 0.0056914357606587624,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.08952900301665068,
+          "repetition_seconds": [
+            0.08980527613312006,
+            0.08943993388675153,
+            0.09014954208396375,
+            0.08953069290146232,
+            0.08923581009730697,
+            0.08917977707460523,
+            0.08952900301665068
+          ],
+          "worst_repetition_error": 0.0007032820709341758,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.11915278690867126,
+          "repetition_seconds": [
+            0.11893066810443997,
+            0.11915278690867126,
+            0.11884935200214386,
+            0.119549544993788,
+            0.11930882115848362,
+            0.11941974610090256,
+            0.11893636384047568
+          ],
+          "worst_repetition_error": 0.005830139206392639,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.10255247494205832,
+          "repetition_seconds": [
+            0.10252681793645024,
+            0.10290495189838111,
+            0.1032612610142678,
+            0.1028124950826168,
+            0.10255247494205832,
+            0.10253009106963873,
+            0.10239039594307542
+          ],
+          "worst_repetition_error": 0.0028596310110590773,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.08990914095193148,
+          "repetition_seconds": [
+            0.08987808600068092,
+            0.09000491793267429,
+            0.08994909888133407,
+            0.08990914095193148,
+            0.08982623205520213,
+            0.09000500803813338,
+            0.0898687350563705
+          ],
+          "worst_repetition_error": 0.0008513680515556664,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.11355644604191184,
+          "repetition_seconds": [
+            0.11328765796497464,
+            0.11381425289437175,
+            0.11386688798666,
+            0.1136406809091568,
+            0.11340174893848598,
+            0.11355644604191184,
+            0.1132879201322794
+          ],
+          "worst_repetition_error": 0.004582520906744356,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.13813049998134375,
+          "repetition_seconds": [
+            0.1379862679168582,
+            0.1383756948634982,
+            0.13793546590022743,
+            0.1387380608357489,
+            0.13813049998134375,
+            0.13822330185212195,
+            0.13778664404526353
+          ],
+          "worst_repetition_error": 0.013270684860611068,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.08956542680971324,
+          "repetition_seconds": [
+            0.08947357814759016,
+            0.08937993412837386,
+            0.09049329115077853,
+            0.08961629681289196,
+            0.08956542680971324,
+            0.09132783906534314,
+            0.08916022186167538
+          ],
+          "worst_repetition_error": 0.0011612557556157951,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.11436714790761471,
+          "repetition_seconds": [
+            0.113995302002877,
+            0.11462992103770375,
+            0.11451013595797122,
+            0.11454699607565999,
+            0.11431184899993241,
+            0.11416958598420024,
+            0.11436714790761471
+          ],
+          "worst_repetition_error": 0.0032817607743454856,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.0969479950144887,
+          "repetition_seconds": [
+            0.0974011430516839,
+            0.0965631389990449,
+            0.09740911796689034,
+            0.09706881898455322,
+            0.09682526905089617,
+            0.09643347607925534,
+            0.0969479950144887
+          ],
+          "worst_repetition_error": 0.0039986152055061855,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.08944826992228627,
+          "repetition_seconds": [
+            0.08976392401382327,
+            0.08919921307824552,
+            0.08911515097133815,
+            0.08944826992228627,
+            0.08923299983143806,
+            0.08945370698347688,
+            0.08947461005300283
+          ],
+          "worst_repetition_error": 0.0009704501920042906,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        }
+      ]
+    },
+    {
+      "intervals": 512,
+      "method": "newton_bicgstab",
+      "configuration": "newton_bicgstab_dt0.005_ltol0.1_ntol0.0001",
+      "median_case_median_seconds": 0.04345775651745498,
+      "median_case_error": 0.009853727668684278,
+      "worst_case_error": 0.03203426615011101,
+      "finite_cases": 16,
+      "completed_cases": 16,
+      "stationary_cases": 16,
+      "high_timing_outliers": 0,
+      "targets": [
+        {
+          "target": 0.01,
+          "cases_passing": 8,
+          "validation_selected_for_target": false,
+          "whole_cohort_qualified": false
+        },
+        {
+          "target": 0.05,
+          "cases_passing": 16,
+          "validation_selected_for_target": true,
+          "whole_cohort_qualified": true
+        }
+      ],
+      "cases": [
+        {
+          "case": 0,
+          "median_seconds": 0.043060371885076165,
+          "repetition_seconds": [
+            0.04289879184216261,
+            0.043060371885076165,
+            0.04319898481480777,
+            0.043092909967526793,
+            0.042854650877416134,
+            0.043199602980166674,
+            0.04304348700679839
+          ],
+          "worst_repetition_error": 0.013974462522860753,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 1,
+          "median_seconds": 0.04574417392723262,
+          "repetition_seconds": [
+            0.045933722984045744,
+            0.045216343132779,
+            0.04647450800985098,
+            0.04574417392723262,
+            0.04573604301549494,
+            0.0458906888961792,
+            0.04520563594996929
+          ],
+          "worst_repetition_error": 0.02237345176032963,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 2,
+          "median_seconds": 0.04575146408751607,
+          "repetition_seconds": [
+            0.045627861050888896,
+            0.045500882901251316,
+            0.04575146408751607,
+            0.045716896886006,
+            0.04576263879425824,
+            0.045956892892718315,
+            0.04583095200359821
+          ],
+          "worst_repetition_error": 0.007329945181502738,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 3,
+          "median_seconds": 0.04309315490536392,
+          "repetition_seconds": [
+            0.04307911894284189,
+            0.04247962683439255,
+            0.04309315490536392,
+            0.04302599583752453,
+            0.043365295976400375,
+            0.04331057192757726,
+            0.043251829920336604
+          ],
+          "worst_repetition_error": 0.005666810429741833,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 4,
+          "median_seconds": 0.043032384011894464,
+          "repetition_seconds": [
+            0.043032384011894464,
+            0.042565990006551147,
+            0.04302133293822408,
+            0.04299617512151599,
+            0.04307529702782631,
+            0.043196169892326,
+            0.043083037016913295
+          ],
+          "worst_repetition_error": 0.007594637407019179,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 5,
+          "median_seconds": 0.04364253603853285,
+          "repetition_seconds": [
+            0.04347622417844832,
+            0.04357991390861571,
+            0.04463793314062059,
+            0.043560461839661,
+            0.04364253603853285,
+            0.04366153012961149,
+            0.043765655951574445
+          ],
+          "worst_repetition_error": 0.014115566198568252,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 6,
+          "median_seconds": 0.042898105923086405,
+          "repetition_seconds": [
+            0.04246236593462527,
+            0.043073792941868305,
+            0.043069577077403665,
+            0.04290488199330866,
+            0.04250568407587707,
+            0.042898105923086405,
+            0.04271854809485376
+          ],
+          "worst_repetition_error": 0.004011399742811326,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 7,
+          "median_seconds": 0.0434022550471127,
+          "repetition_seconds": [
+            0.04317944683134556,
+            0.043843687046319246,
+            0.043740359833464026,
+            0.04315825994126499,
+            0.04318707901984453,
+            0.0434022550471127,
+            0.043639169074594975
+          ],
+          "worst_repetition_error": 0.014753714347257814,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 8,
+          "median_seconds": 0.04490322503261268,
+          "repetition_seconds": [
+            0.044662479078397155,
+            0.04499032883904874,
+            0.04498209408484399,
+            0.04439128912054002,
+            0.044704542960971594,
+            0.04490322503261268,
+            0.04496910283342004
+          ],
+          "worst_repetition_error": 0.009266824517881031,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 9,
+          "median_seconds": 0.04031253419816494,
+          "repetition_seconds": [
+            0.040019932901486754,
+            0.04081149585545063,
+            0.040995473973453045,
+            0.040435579139739275,
+            0.040118352975696325,
+            0.04031253419816494,
+            0.04008730291388929
+          ],
+          "worst_repetition_error": 0.004808848678739074,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 10,
+          "median_seconds": 0.0460259651299566,
+          "repetition_seconds": [
+            0.04547517793253064,
+            0.04639902082271874,
+            0.046217259019613266,
+            0.0460259651299566,
+            0.04575947788543999,
+            0.04587953304871917,
+            0.047159096924588084
+          ],
+          "worst_repetition_error": 0.014228284773619038,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 11,
+          "median_seconds": 0.05330858193337917,
+          "repetition_seconds": [
+            0.05330858193337917,
+            0.053262403002008796,
+            0.05373712000437081,
+            0.05327560007572174,
+            0.053333592833951116,
+            0.05339115113019943,
+            0.05287693301215768
+          ],
+          "worst_repetition_error": 0.03203426615011101,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 12,
+          "median_seconds": 0.04287342308089137,
+          "repetition_seconds": [
+            0.0424194720108062,
+            0.04335764097049832,
+            0.043534230906516314,
+            0.043089031940326095,
+            0.0422150248195976,
+            0.04287342308089137,
+            0.04218435403890908
+          ],
+          "worst_repetition_error": 0.003997893950723774,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 13,
+          "median_seconds": 0.046618809923529625,
+          "repetition_seconds": [
+            0.046618809923529625,
+            0.046608780045062304,
+            0.04667853098362684,
+            0.046657263999804854,
+            0.04643697198480368,
+            0.046124659944325686,
+            0.0478046250063926
+          ],
+          "worst_repetition_error": 0.012481487304055041,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 14,
+          "median_seconds": 0.04351325798779726,
+          "repetition_seconds": [
+            0.04334846907295287,
+            0.04351325798779726,
+            0.04386092792265117,
+            0.0437254689168185,
+            0.043398345122113824,
+            0.04338616109453142,
+            0.0447056598495692
+          ],
+          "worst_repetition_error": 0.010440630819487524,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        },
+        {
+          "case": 15,
+          "median_seconds": 0.04306063102558255,
+          "repetition_seconds": [
+            0.04264123784378171,
+            0.04286825004965067,
+            0.04351506405510008,
+            0.04306063102558255,
+            0.043269851012155414,
+            0.0430451319552958,
+            0.04325583507306874
+          ],
+          "worst_repetition_error": 0.0047149257063777445,
+          "initial_error": 0.0,
+          "finite": true,
+          "completed": true,
+          "stationary": true,
+          "high_timing_outliers": 0,
+          "distinct_output_hashes": 1,
+          "stop_reasons": {
+            "converged": 7
+          }
+        }
+      ]
+    }
+  ],
+  "reference_uncertainty": [
+    {
+      "intervals": 256,
+      "cases": 16,
+      "strict_continuum_bound": false,
+      "provisional_target_cases": {
+        "0.01": 16,
+        "0.05": 10
+      }
+    },
+    {
+      "intervals": 512,
+      "cases": 16,
+      "strict_continuum_bound": false,
+      "provisional_target_cases": {
+        "0.01": 16,
+        "0.05": 7
+      }
+    }
+  ],
+  "component_profiles": [
+    {
+      "intervals": 256,
+      "configuration": "cp_cap10_dt0.005_q4_tol0.0001",
+      "case": 0,
+      "repetitions": 7,
+      "median_seconds": {
+        "initialization_s": 0.0030380841344594955,
+        "evolution_s": 0.02541194506920874,
+        "reconstruction_s": 0.00034074392169713974,
+        "residual_s": 0.0001684790477156639,
+        "jacobian_s": 0.00019505806267261505
+      }
+    },
+    {
+      "intervals": 256,
+      "configuration": "modcp_cap30_dt0.005_q4_tol0.0001",
+      "case": 0,
+      "repetitions": 7,
+      "median_seconds": {
+        "initialization_s": 0.008489629020914435,
+        "evolution_s": 0.058780665043741465,
+        "reconstruction_s": 0.0004650650080293417,
+        "residual_s": 0.0002340148203074932,
+        "jacobian_s": 0.0003595000598579645
+      }
+    },
+    {
+      "intervals": 256,
+      "configuration": "film_cap10_dt0.005_q4_tol0.0001",
+      "case": 0,
+      "repetitions": 7,
+      "median_seconds": {
+        "initialization_s": 0.006533340085297823,
+        "evolution_s": 0.05855999514460564,
+        "reconstruction_s": 0.04201171896420419,
+        "residual_s": 0.00023056496866047382,
+        "jacobian_s": 0.00033055408857762814
+      }
+    },
+    {
+      "intervals": 512,
+      "configuration": "cp_cap10_dt0.005_q4_tol0.0001",
+      "case": 0,
+      "repetitions": 7,
+      "median_seconds": {
+        "initialization_s": 0.0030748939607292414,
+        "evolution_s": 0.024994216859340668,
+        "reconstruction_s": 0.00037852395325899124,
+        "residual_s": 0.00017454498447477818,
+        "jacobian_s": 0.00020344904623925686
+      }
+    },
+    {
+      "intervals": 512,
+      "configuration": "modcp_cap30_dt0.005_q4_tol0.0001",
+      "case": 0,
+      "repetitions": 7,
+      "median_seconds": {
+        "initialization_s": 0.009916857816278934,
+        "evolution_s": 0.05777157796546817,
+        "reconstruction_s": 0.0005143301095813513,
+        "residual_s": 0.0002036290243268013,
+        "jacobian_s": 0.0003551230765879154
+      }
+    },
+    {
+      "intervals": 512,
+      "configuration": "film_cap10_dt0.005_q4_tol0.0001",
+      "case": 0,
+      "repetitions": 7,
+      "median_seconds": {
+        "initialization_s": 0.005887121893465519,
+        "evolution_s": 0.05880767502821982,
+        "reconstruction_s": 0.09369035181589425,
+        "residual_s": 0.00039342092350125313,
+        "jacobian_s": 0.00033032894134521484
+      }
+    }
+  ],
+  "component_profile_caveat": "Separately compiled warmed case-zero components are diagnostics; their sum is not the paired end-to-end query time."
+}

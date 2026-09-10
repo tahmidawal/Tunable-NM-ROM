@@ -1,0 +1,334 @@
+NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+PASS decoder parity, transfer, autodiff, exact weak/upwind, LM reasons, FFT/FOM
+DATA evaluation L=256 dt=0.000625 case=0
+DATA evaluation L=256 dt=0.000625 case=1
+DATA evaluation L=256 dt=0.000625 case=2
+DATA evaluation L=256 dt=0.000625 case=3
+DATA evaluation L=256 dt=0.000625 case=4
+DATA evaluation L=256 dt=0.000625 case=5
+DATA evaluation L=256 dt=0.000625 case=6
+DATA evaluation L=256 dt=0.000625 case=7
+DATA evaluation L=256 dt=0.000625 case=8
+DATA evaluation L=256 dt=0.000625 case=9
+DATA evaluation L=256 dt=0.000625 case=10
+DATA evaluation L=256 dt=0.000625 case=11
+DATA evaluation L=256 dt=0.000625 case=12
+DATA evaluation L=256 dt=0.000625 case=13
+DATA evaluation L=256 dt=0.000625 case=14
+DATA evaluation L=256 dt=0.000625 case=15
+DATA evaluation L=512 dt=0.0003125 case=0
+DATA evaluation L=512 dt=0.0003125 case=1
+DATA evaluation L=512 dt=0.0003125 case=2
+DATA evaluation L=512 dt=0.0003125 case=3
+DATA evaluation L=512 dt=0.0003125 case=4
+DATA evaluation L=512 dt=0.0003125 case=5
+DATA evaluation L=512 dt=0.0003125 case=6
+DATA evaluation L=512 dt=0.0003125 case=7
+DATA evaluation L=512 dt=0.0003125 case=8
+DATA evaluation L=512 dt=0.0003125 case=9
+DATA evaluation L=512 dt=0.0003125 case=10
+DATA evaluation L=512 dt=0.0003125 case=11
+DATA evaluation L=512 dt=0.0003125 case=12
+DATA evaluation L=512 dt=0.0003125 case=13
+DATA evaluation L=512 dt=0.0003125 case=14
+DATA evaluation L=512 dt=0.0003125 case=15
+DATA evaluation L=256 dt=0.00125 case=0
+DATA evaluation L=256 dt=0.00125 case=1
+DATA evaluation L=256 dt=0.00125 case=2
+DATA evaluation L=256 dt=0.00125 case=3
+DATA evaluation L=256 dt=0.00125 case=4
+DATA evaluation L=256 dt=0.00125 case=5
+DATA evaluation L=256 dt=0.00125 case=6
+DATA evaluation L=256 dt=0.00125 case=7
+DATA evaluation L=256 dt=0.00125 case=8
+DATA evaluation L=256 dt=0.00125 case=9
+DATA evaluation L=256 dt=0.00125 case=10
+DATA evaluation L=256 dt=0.00125 case=11
+DATA evaluation L=256 dt=0.00125 case=12
+DATA evaluation L=256 dt=0.00125 case=13
+DATA evaluation L=256 dt=0.00125 case=14
+DATA evaluation L=256 dt=0.00125 case=15
+WARM evaluation L=256 cp_cap10_dt0.005_q4_tol0.0001 seconds=4.517
+WARM evaluation L=256 modcp_cap30_dt0.005_q4_tol0.0001 seconds=5.515
+WARM evaluation L=256 film_cap10_dt0.005_q4_tol0.0001 seconds=5.666
+WARM evaluation L=256 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=0.842
+TIMED evaluation L=256 rep=0 case=0 rows=4
+TIMED evaluation L=256 rep=0 case=1 rows=8
+TIMED evaluation L=256 rep=0 case=2 rows=12
+TIMED evaluation L=256 rep=0 case=3 rows=16
+TIMED evaluation L=256 rep=0 case=4 rows=20
+TIMED evaluation L=256 rep=0 case=5 rows=24
+TIMED evaluation L=256 rep=0 case=6 rows=28
+TIMED evaluation L=256 rep=0 case=7 rows=32
+TIMED evaluation L=256 rep=0 case=8 rows=36
+TIMED evaluation L=256 rep=0 case=9 rows=40
+TIMED evaluation L=256 rep=0 case=10 rows=44
+TIMED evaluation L=256 rep=0 case=11 rows=48
+TIMED evaluation L=256 rep=0 case=12 rows=52
+TIMED evaluation L=256 rep=0 case=13 rows=56
+TIMED evaluation L=256 rep=0 case=14 rows=60
+TIMED evaluation L=256 rep=0 case=15 rows=64
+TIMED evaluation L=256 rep=1 case=0 rows=68
+TIMED evaluation L=256 rep=1 case=1 rows=72
+TIMED evaluation L=256 rep=1 case=2 rows=76
+TIMED evaluation L=256 rep=1 case=3 rows=80
+TIMED evaluation L=256 rep=1 case=4 rows=84
+TIMED evaluation L=256 rep=1 case=5 rows=88
+TIMED evaluation L=256 rep=1 case=6 rows=92
+TIMED evaluation L=256 rep=1 case=7 rows=96
+TIMED evaluation L=256 rep=1 case=8 rows=100
+TIMED evaluation L=256 rep=1 case=9 rows=104
+TIMED evaluation L=256 rep=1 case=10 rows=108
+TIMED evaluation L=256 rep=1 case=11 rows=112
+TIMED evaluation L=256 rep=1 case=12 rows=116
+TIMED evaluation L=256 rep=1 case=13 rows=120
+TIMED evaluation L=256 rep=1 case=14 rows=124
+TIMED evaluation L=256 rep=1 case=15 rows=128
+TIMED evaluation L=256 rep=2 case=0 rows=132
+TIMED evaluation L=256 rep=2 case=1 rows=136
+TIMED evaluation L=256 rep=2 case=2 rows=140
+TIMED evaluation L=256 rep=2 case=3 rows=144
+TIMED evaluation L=256 rep=2 case=4 rows=148
+TIMED evaluation L=256 rep=2 case=5 rows=152
+TIMED evaluation L=256 rep=2 case=6 rows=156
+TIMED evaluation L=256 rep=2 case=7 rows=160
+TIMED evaluation L=256 rep=2 case=8 rows=164
+TIMED evaluation L=256 rep=2 case=9 rows=168
+TIMED evaluation L=256 rep=2 case=10 rows=172
+TIMED evaluation L=256 rep=2 case=11 rows=176
+TIMED evaluation L=256 rep=2 case=12 rows=180
+TIMED evaluation L=256 rep=2 case=13 rows=184
+TIMED evaluation L=256 rep=2 case=14 rows=188
+TIMED evaluation L=256 rep=2 case=15 rows=192
+TIMED evaluation L=256 rep=3 case=0 rows=196
+TIMED evaluation L=256 rep=3 case=1 rows=200
+TIMED evaluation L=256 rep=3 case=2 rows=204
+TIMED evaluation L=256 rep=3 case=3 rows=208
+TIMED evaluation L=256 rep=3 case=4 rows=212
+TIMED evaluation L=256 rep=3 case=5 rows=216
+TIMED evaluation L=256 rep=3 case=6 rows=220
+TIMED evaluation L=256 rep=3 case=7 rows=224
+TIMED evaluation L=256 rep=3 case=8 rows=228
+TIMED evaluation L=256 rep=3 case=9 rows=232
+TIMED evaluation L=256 rep=3 case=10 rows=236
+TIMED evaluation L=256 rep=3 case=11 rows=240
+TIMED evaluation L=256 rep=3 case=12 rows=244
+TIMED evaluation L=256 rep=3 case=13 rows=248
+TIMED evaluation L=256 rep=3 case=14 rows=252
+TIMED evaluation L=256 rep=3 case=15 rows=256
+TIMED evaluation L=256 rep=4 case=0 rows=260
+TIMED evaluation L=256 rep=4 case=1 rows=264
+TIMED evaluation L=256 rep=4 case=2 rows=268
+TIMED evaluation L=256 rep=4 case=3 rows=272
+TIMED evaluation L=256 rep=4 case=4 rows=276
+TIMED evaluation L=256 rep=4 case=5 rows=280
+TIMED evaluation L=256 rep=4 case=6 rows=284
+TIMED evaluation L=256 rep=4 case=7 rows=288
+TIMED evaluation L=256 rep=4 case=8 rows=292
+TIMED evaluation L=256 rep=4 case=9 rows=296
+TIMED evaluation L=256 rep=4 case=10 rows=300
+TIMED evaluation L=256 rep=4 case=11 rows=304
+TIMED evaluation L=256 rep=4 case=12 rows=308
+TIMED evaluation L=256 rep=4 case=13 rows=312
+TIMED evaluation L=256 rep=4 case=14 rows=316
+TIMED evaluation L=256 rep=4 case=15 rows=320
+TIMED evaluation L=256 rep=5 case=0 rows=324
+TIMED evaluation L=256 rep=5 case=1 rows=328
+TIMED evaluation L=256 rep=5 case=2 rows=332
+TIMED evaluation L=256 rep=5 case=3 rows=336
+TIMED evaluation L=256 rep=5 case=4 rows=340
+TIMED evaluation L=256 rep=5 case=5 rows=344
+TIMED evaluation L=256 rep=5 case=6 rows=348
+TIMED evaluation L=256 rep=5 case=7 rows=352
+TIMED evaluation L=256 rep=5 case=8 rows=356
+TIMED evaluation L=256 rep=5 case=9 rows=360
+TIMED evaluation L=256 rep=5 case=10 rows=364
+TIMED evaluation L=256 rep=5 case=11 rows=368
+TIMED evaluation L=256 rep=5 case=12 rows=372
+TIMED evaluation L=256 rep=5 case=13 rows=376
+TIMED evaluation L=256 rep=5 case=14 rows=380
+TIMED evaluation L=256 rep=5 case=15 rows=384
+TIMED evaluation L=256 rep=6 case=0 rows=388
+TIMED evaluation L=256 rep=6 case=1 rows=392
+TIMED evaluation L=256 rep=6 case=2 rows=396
+TIMED evaluation L=256 rep=6 case=3 rows=400
+TIMED evaluation L=256 rep=6 case=4 rows=404
+TIMED evaluation L=256 rep=6 case=5 rows=408
+TIMED evaluation L=256 rep=6 case=6 rows=412
+TIMED evaluation L=256 rep=6 case=7 rows=416
+TIMED evaluation L=256 rep=6 case=8 rows=420
+TIMED evaluation L=256 rep=6 case=9 rows=424
+TIMED evaluation L=256 rep=6 case=10 rows=428
+TIMED evaluation L=256 rep=6 case=11 rows=432
+TIMED evaluation L=256 rep=6 case=12 rows=436
+TIMED evaluation L=256 rep=6 case=13 rows=440
+TIMED evaluation L=256 rep=6 case=14 rows=444
+TIMED evaluation L=256 rep=6 case=15 rows=448
+DATA evaluation L=512 dt=0.000625 case=0
+DATA evaluation L=512 dt=0.000625 case=1
+DATA evaluation L=512 dt=0.000625 case=2
+DATA evaluation L=512 dt=0.000625 case=3
+DATA evaluation L=512 dt=0.000625 case=4
+DATA evaluation L=512 dt=0.000625 case=5
+DATA evaluation L=512 dt=0.000625 case=6
+DATA evaluation L=512 dt=0.000625 case=7
+DATA evaluation L=512 dt=0.000625 case=8
+DATA evaluation L=512 dt=0.000625 case=9
+DATA evaluation L=512 dt=0.000625 case=10
+DATA evaluation L=512 dt=0.000625 case=11
+DATA evaluation L=512 dt=0.000625 case=12
+DATA evaluation L=512 dt=0.000625 case=13
+DATA evaluation L=512 dt=0.000625 case=14
+DATA evaluation L=512 dt=0.000625 case=15
+DATA evaluation L=1024 dt=0.0003125 case=0
+DATA evaluation L=1024 dt=0.0003125 case=1
+DATA evaluation L=1024 dt=0.0003125 case=2
+DATA evaluation L=1024 dt=0.0003125 case=3
+DATA evaluation L=1024 dt=0.0003125 case=4
+DATA evaluation L=1024 dt=0.0003125 case=5
+DATA evaluation L=1024 dt=0.0003125 case=6
+DATA evaluation L=1024 dt=0.0003125 case=7
+DATA evaluation L=1024 dt=0.0003125 case=8
+DATA evaluation L=1024 dt=0.0003125 case=9
+DATA evaluation L=1024 dt=0.0003125 case=10
+DATA evaluation L=1024 dt=0.0003125 case=11
+DATA evaluation L=1024 dt=0.0003125 case=12
+DATA evaluation L=1024 dt=0.0003125 case=13
+DATA evaluation L=1024 dt=0.0003125 case=14
+DATA evaluation L=1024 dt=0.0003125 case=15
+DATA evaluation L=512 dt=0.00125 case=0
+DATA evaluation L=512 dt=0.00125 case=1
+DATA evaluation L=512 dt=0.00125 case=2
+DATA evaluation L=512 dt=0.00125 case=3
+DATA evaluation L=512 dt=0.00125 case=4
+DATA evaluation L=512 dt=0.00125 case=5
+DATA evaluation L=512 dt=0.00125 case=6
+DATA evaluation L=512 dt=0.00125 case=7
+DATA evaluation L=512 dt=0.00125 case=8
+DATA evaluation L=512 dt=0.00125 case=9
+DATA evaluation L=512 dt=0.00125 case=10
+DATA evaluation L=512 dt=0.00125 case=11
+DATA evaluation L=512 dt=0.00125 case=12
+DATA evaluation L=512 dt=0.00125 case=13
+DATA evaluation L=512 dt=0.00125 case=14
+DATA evaluation L=512 dt=0.00125 case=15
+WARM evaluation L=512 cp_cap10_dt0.005_q4_tol0.0001 seconds=2.365
+WARM evaluation L=512 modcp_cap30_dt0.005_q4_tol0.0001 seconds=3.371
+WARM evaluation L=512 film_cap10_dt0.005_q4_tol0.0001 seconds=3.386
+WARM evaluation L=512 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=0.931
+WARM evaluation L=512 newton_bicgstab_dt0.00125_ltol0.1_ntol0.0001 seconds=1.085
+TIMED evaluation L=512 rep=0 case=0 rows=453
+TIMED evaluation L=512 rep=0 case=1 rows=458
+TIMED evaluation L=512 rep=0 case=2 rows=463
+TIMED evaluation L=512 rep=0 case=3 rows=468
+TIMED evaluation L=512 rep=0 case=4 rows=473
+TIMED evaluation L=512 rep=0 case=5 rows=478
+TIMED evaluation L=512 rep=0 case=6 rows=483
+TIMED evaluation L=512 rep=0 case=7 rows=488
+TIMED evaluation L=512 rep=0 case=8 rows=493
+TIMED evaluation L=512 rep=0 case=9 rows=498
+TIMED evaluation L=512 rep=0 case=10 rows=503
+TIMED evaluation L=512 rep=0 case=11 rows=508
+TIMED evaluation L=512 rep=0 case=12 rows=513
+TIMED evaluation L=512 rep=0 case=13 rows=518
+TIMED evaluation L=512 rep=0 case=14 rows=523
+TIMED evaluation L=512 rep=0 case=15 rows=528
+TIMED evaluation L=512 rep=1 case=0 rows=533
+TIMED evaluation L=512 rep=1 case=1 rows=538
+TIMED evaluation L=512 rep=1 case=2 rows=543
+TIMED evaluation L=512 rep=1 case=3 rows=548
+TIMED evaluation L=512 rep=1 case=4 rows=553
+TIMED evaluation L=512 rep=1 case=5 rows=558
+TIMED evaluation L=512 rep=1 case=6 rows=563
+TIMED evaluation L=512 rep=1 case=7 rows=568
+TIMED evaluation L=512 rep=1 case=8 rows=573
+TIMED evaluation L=512 rep=1 case=9 rows=578
+TIMED evaluation L=512 rep=1 case=10 rows=583
+TIMED evaluation L=512 rep=1 case=11 rows=588
+TIMED evaluation L=512 rep=1 case=12 rows=593
+TIMED evaluation L=512 rep=1 case=13 rows=598
+TIMED evaluation L=512 rep=1 case=14 rows=603
+TIMED evaluation L=512 rep=1 case=15 rows=608
+TIMED evaluation L=512 rep=2 case=0 rows=613
+TIMED evaluation L=512 rep=2 case=1 rows=618
+TIMED evaluation L=512 rep=2 case=2 rows=623
+TIMED evaluation L=512 rep=2 case=3 rows=628
+TIMED evaluation L=512 rep=2 case=4 rows=633
+TIMED evaluation L=512 rep=2 case=5 rows=638
+TIMED evaluation L=512 rep=2 case=6 rows=643
+TIMED evaluation L=512 rep=2 case=7 rows=648
+TIMED evaluation L=512 rep=2 case=8 rows=653
+TIMED evaluation L=512 rep=2 case=9 rows=658
+TIMED evaluation L=512 rep=2 case=10 rows=663
+TIMED evaluation L=512 rep=2 case=11 rows=668
+TIMED evaluation L=512 rep=2 case=12 rows=673
+TIMED evaluation L=512 rep=2 case=13 rows=678
+TIMED evaluation L=512 rep=2 case=14 rows=683
+TIMED evaluation L=512 rep=2 case=15 rows=688
+TIMED evaluation L=512 rep=3 case=0 rows=693
+TIMED evaluation L=512 rep=3 case=1 rows=698
+TIMED evaluation L=512 rep=3 case=2 rows=703
+TIMED evaluation L=512 rep=3 case=3 rows=708
+TIMED evaluation L=512 rep=3 case=4 rows=713
+TIMED evaluation L=512 rep=3 case=5 rows=718
+TIMED evaluation L=512 rep=3 case=6 rows=723
+TIMED evaluation L=512 rep=3 case=7 rows=728
+TIMED evaluation L=512 rep=3 case=8 rows=733
+TIMED evaluation L=512 rep=3 case=9 rows=738
+TIMED evaluation L=512 rep=3 case=10 rows=743
+TIMED evaluation L=512 rep=3 case=11 rows=748
+TIMED evaluation L=512 rep=3 case=12 rows=753
+TIMED evaluation L=512 rep=3 case=13 rows=758
+TIMED evaluation L=512 rep=3 case=14 rows=763
+TIMED evaluation L=512 rep=3 case=15 rows=768
+TIMED evaluation L=512 rep=4 case=0 rows=773
+TIMED evaluation L=512 rep=4 case=1 rows=778
+TIMED evaluation L=512 rep=4 case=2 rows=783
+TIMED evaluation L=512 rep=4 case=3 rows=788
+TIMED evaluation L=512 rep=4 case=4 rows=793
+TIMED evaluation L=512 rep=4 case=5 rows=798
+TIMED evaluation L=512 rep=4 case=6 rows=803
+TIMED evaluation L=512 rep=4 case=7 rows=808
+TIMED evaluation L=512 rep=4 case=8 rows=813
+TIMED evaluation L=512 rep=4 case=9 rows=818
+TIMED evaluation L=512 rep=4 case=10 rows=823
+TIMED evaluation L=512 rep=4 case=11 rows=828
+TIMED evaluation L=512 rep=4 case=12 rows=833
+TIMED evaluation L=512 rep=4 case=13 rows=838
+TIMED evaluation L=512 rep=4 case=14 rows=843
+TIMED evaluation L=512 rep=4 case=15 rows=848
+TIMED evaluation L=512 rep=5 case=0 rows=853
+TIMED evaluation L=512 rep=5 case=1 rows=858
+TIMED evaluation L=512 rep=5 case=2 rows=863
+TIMED evaluation L=512 rep=5 case=3 rows=868
+TIMED evaluation L=512 rep=5 case=4 rows=873
+TIMED evaluation L=512 rep=5 case=5 rows=878
+TIMED evaluation L=512 rep=5 case=6 rows=883
+TIMED evaluation L=512 rep=5 case=7 rows=888
+TIMED evaluation L=512 rep=5 case=8 rows=893
+TIMED evaluation L=512 rep=5 case=9 rows=898
+TIMED evaluation L=512 rep=5 case=10 rows=903
+TIMED evaluation L=512 rep=5 case=11 rows=908
+TIMED evaluation L=512 rep=5 case=12 rows=913
+TIMED evaluation L=512 rep=5 case=13 rows=918
+TIMED evaluation L=512 rep=5 case=14 rows=923
+TIMED evaluation L=512 rep=5 case=15 rows=928
+TIMED evaluation L=512 rep=6 case=0 rows=933
+TIMED evaluation L=512 rep=6 case=1 rows=938
+TIMED evaluation L=512 rep=6 case=2 rows=943
+TIMED evaluation L=512 rep=6 case=3 rows=948
+TIMED evaluation L=512 rep=6 case=4 rows=953
+TIMED evaluation L=512 rep=6 case=5 rows=958
+TIMED evaluation L=512 rep=6 case=6 rows=963
+TIMED evaluation L=512 rep=6 case=7 rows=968
+TIMED evaluation L=512 rep=6 case=8 rows=973
+TIMED evaluation L=512 rep=6 case=9 rows=978
+TIMED evaluation L=512 rep=6 case=10 rows=983
+TIMED evaluation L=512 rep=6 case=11 rows=988
+TIMED evaluation L=512 rep=6 case=12 rows=993
+TIMED evaluation L=512 rep=6 case=13 rows=998
+TIMED evaluation L=512 rep=6 case=14 rows=1003
+TIMED evaluation L=512 rep=6 case=15 rows=1008
+ALL-DONE complete
+ALL-DONE

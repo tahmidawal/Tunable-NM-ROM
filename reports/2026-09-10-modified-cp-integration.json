@@ -1,7 +1,7 @@
 {
   "status": "Review proposal only: no merge, branch creation, file application, or worktree cleanup performed.",
   "strategy": "Integrate only the listed experiment files and required fresh-wave dependencies; preserve both designs.",
-  "main_head": "4f8c0b57282bf60a866dbfe660f7eda8ce18f0e6",
+  "main_head": "3462a546103147cbab603826ea3bbc4055ac22ea",
   "sources": {
     "burgers": {
       "branch": "exp/2026-09-10-modcp-burgers2d",
@@ -16,6 +16,12 @@
   "total_file_bytes": 329875555,
   "existing_main_conflicts": [],
   "retention": "Keep the source worktrees and root raw archives until report paths and immutable provenance are deliberately migrated.",
+  "replay_limits": [
+    "Tracked hashes and run metadata do not restore ignored full-field payloads; extract the verified raw archives before replaying field audits.",
+    "The historical Burgers cluster diagnose phase expects the already-collected remote validation01 fields; restore inputs or use diagnose_initial.py with explicit local field and checkpoint paths.",
+    "Existing report and audit paths refer to original worktrees. Integration alone neither relocates those references nor authorizes worktree cleanup.",
+    "Keep modcp-eq and fresh-wave-head as sibling experiment directories for the verified wave imports."
+  ],
   "review": "Re-run this manifest after final evaluation commits, inspect all listed paths and generated text, and obtain the required user merge decision.",
   "files": {
     "experiments/fresh-wave-head/fresh_fom.py": {

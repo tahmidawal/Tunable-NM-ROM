@@ -109,6 +109,11 @@ def main():
         file_count=len(proposed), total_file_bytes=sum(r['bytes'] for r in proposed.values()),
         existing_main_conflicts=conflicts,
         retention='Keep the source worktrees and root raw archives until report paths and immutable provenance are deliberately migrated.',
+        replay_limits=[
+            'Tracked hashes and run metadata do not restore ignored full-field payloads; extract the verified raw archives before replaying field audits.',
+            'The historical Burgers cluster diagnose phase expects the already-collected remote validation01 fields; restore inputs or use diagnose_initial.py with explicit local field and checkpoint paths.',
+            'Existing report and audit paths refer to original worktrees. Integration alone neither relocates those references nor authorizes worktree cleanup.',
+            'Keep modcp-eq and fresh-wave-head as sibling experiment directories for the verified wave imports.'],
         review='Re-run this manifest after final evaluation commits, inspect all listed paths and generated text, and obtain the required user merge decision.',
         files=dict(sorted(proposed.items())))
     args.output.write_text(json.dumps(result, indent=2)+'\n')

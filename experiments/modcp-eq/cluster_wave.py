@@ -13,7 +13,7 @@ CELL = Path(__file__).resolve().parent
 TREE = CELL.parents[1]
 NAMESPACE = '/cluster/tufts/paralab/tawal01/modcp_wave2d_20260910'
 CONNECTION = ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
-              '-o', 'Hostname=login-p02.pax.tufts.edu', '-o', 'HostKeyAlias=login-prod.pax.tufts.edu']
+              '-o', 'Hostname=login-p03.pax.tufts.edu', '-o', 'HostKeyAlias=login-prod.pax.tufts.edu']
 SSH = ['ssh', *CONNECTION, 'tufts-login']
 
 

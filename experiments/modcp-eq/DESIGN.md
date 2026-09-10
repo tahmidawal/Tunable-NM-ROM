@@ -53,6 +53,14 @@ separate positive face rules, retaining both corner half-weights. Supports are r
 per frozen checkpoint, mesh and requested budget. Perturbed latent states and full
 weak residual checks diagnose quadrature mismatch.
 
+For original CP only, contract these same approximate EQ weights with the frozen
+spatial factors offline. Online weak moments then multiply the resulting small maps
+by the nonlinear coefficient head; include the masked bias contribution. This is an
+algebraically equivalent optimization of the EQ residual, not a switch to exact
+full-grid operators. Sampled cold initialization remains charged. ModCP and FiLM
+retain state-dependent sampled evaluation. Sparse-rule value and latent-Jacobian
+parity tests cover both boundaries and the finer-grid boundary strip.
+
 ## Timing and acceptance
 
 The primary query begins with full initial fields on the GPU and ends with all
@@ -66,7 +74,11 @@ separately warmed initialization/evolution/reconstruction calls are diagnostic o
 The coordinator-approved validation refinement evaluates every configuration on all
 validation cases once, with seven additional timing repetitions on predetermined
 case zero used only as a selection-cost proxy. These proxy rows remain separate.
-All mesh selections are persisted before drawing the shared evaluation cohort.
+Validation and evaluation run in separate allocations. All Burgers and both wave
+boundary/mesh selections are persisted and globally sealed before drawing any
+shared evaluation cohort. Evaluation imports hashes of the complete global seal,
+its own validation handoff, and both mesh selection proofs. Validation timings
+remain in the imported proof; final timing rows all come from the new allocation.
 Every selected configuration receives the full seven-repetition evaluation protocol.
 Validation alone selects configurations; new evaluation cases are generated only
 after selection is persisted. Numerical completion and stationarity are separate;
@@ -80,6 +92,14 @@ every component for every evaluation trajectory. Primary reference is the verifi
 semidiscrete PDE. Absorbing temporal refinement is rechecked per new reference case.
 The inherited conditional spatial estimate does not universally certify one-percent
 continuum accuracy; continuum claims remain provisional until supported by refinement.
+
+New wave EQ fits use economy QR on each selected support before positive least
+squares. The greedy residual remains in the original integrand coordinates, and
+final metadata records its original-space objective and support KKT conditions.
+Actual decoder-integrand and near-dependent-support checks are stored under
+`checks/nnls-probe02/`. This is an offline implementation choice; its local
+timings are implementation probes. Previously completed direct fits are reused
+unchanged with original source and rule hashes.
 
 ## Glossary
 

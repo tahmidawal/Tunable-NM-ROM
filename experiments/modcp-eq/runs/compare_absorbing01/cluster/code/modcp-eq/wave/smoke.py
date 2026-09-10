@@ -22,7 +22,7 @@ def main():
     path = args.out/'config.json'
     path.write_text(json.dumps(cfg, indent=2)+'\n')
     sys.argv = ['compare.py', '--config', str(path), '--inputs', str(args.inputs),
-                '--boundary', args.boundary, '--out', str(args.out/'comparison'), '--phase', 'development']
+                '--boundary', args.boundary, '--out', str(args.out/'comparison')]
     compare.main()
     result = json.loads((args.out/'comparison/handoff.json').read_text())
     if result['status'] != 'complete' or len(result['checkpoint_sha256']) != 3:

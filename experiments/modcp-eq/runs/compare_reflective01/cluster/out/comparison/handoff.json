@@ -1,0 +1,234 @@
+{
+  "case_name": "wave_reflective",
+  "config": {
+    "name": "modcp-wave2d-single-seed-pilot",
+    "train_intervals": 256,
+    "meshes": [
+      256,
+      512
+    ],
+    "boundaries": [
+      "dirichlet",
+      "absorbing"
+    ],
+    "train_seed": 910601,
+    "validation_seed": 910602,
+    "evaluation_seed": 910603,
+    "model_seed": 910700,
+    "train_count": 64,
+    "validation_count": 16,
+    "evaluation_count": 16,
+    "latent": 32,
+    "rank": 64,
+    "weak_modes": 128,
+    "modulation_width": 64,
+    "inr_width": 128,
+    "pretrain_steps": 6000,
+    "comparison_steps": 10000,
+    "batch_size": 64,
+    "point_batch": 256,
+    "learning_rate": 0.001,
+    "code_lr_factor": 3.0,
+    "end_time": 2.4,
+    "observation_dt": 0.05,
+    "reference_cfl": 0.12,
+    "reference_refinement_cfl": 0.06,
+    "reference_temporal_target": 0.0001,
+    "time_steps": [
+      0.005,
+      0.0025,
+      0.00125
+    ],
+    "gn_caps": [
+      10,
+      30
+    ],
+    "gn_tolerances": [
+      0.0001,
+      1e-06
+    ],
+    "eq_multipliers": [
+      4,
+      8
+    ],
+    "eq_fit_codes": 32,
+    "eq_candidate_count": 8192,
+    "initial_fit_cap": 100,
+    "initial_fit_tolerance": 1e-06,
+    "initial_fit_starts": 8,
+    "cg_tolerances": [
+      0.001,
+      0.0001,
+      1e-06,
+      1e-08,
+      1e-10
+    ],
+    "cg_maxiter": 1000,
+    "rk4_cfls": [
+      0.6,
+      0.3,
+      0.12
+    ],
+    "targets": [
+      0.01,
+      0.05
+    ],
+    "warmups": 2,
+    "repetitions": 7,
+    "continuum_claim": "Provisional: primary errors use the verified semidiscrete PDE. New seed temporal references are checked. The inherited conditional spatial refinement does not certify a universal one-percent continuum target.",
+    "query_contract": "GPU resident full initial displacement/velocity to GPU resident all49 full output displacement/velocity fields; initialization, evolution and decoding charged; offline model and quadrature setup excluded.",
+    "validation_case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "evaluation_case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "validation_repetitions": 1
+  },
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "host": "pax049",
+    "source_commit": "989d8c3812c9452cbdfc59a645b212da974b276f",
+    "job_id": "3501595",
+    "numpy_version": "2.5.0",
+    "commit": "989d8c3812c9452cbdfc59a645b212da974b276f",
+    "gpu": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "backend": "gpu"
+  },
+  "status": "running",
+  "invocations": [],
+  "selection_timings": [],
+  "selections": [],
+  "references": [],
+  "eq_audits": [
+    {
+      "architecture": "cp",
+      "intervals": 256,
+      "weak_modes": 128,
+      "fit_code_indices": [
+        0,
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        809,
+        910,
+        1011,
+        1112,
+        1213,
+        1314,
+        1415,
+        1516,
+        1618,
+        1719,
+        1820,
+        1921,
+        2022,
+        2123,
+        2224,
+        2325,
+        2427,
+        2528,
+        2629,
+        2730,
+        2831,
+        2932,
+        3033,
+        3135
+      ],
+      "fit_rule": "training_decoder_outputs_only",
+      "volume": {
+        "target_nodes": 512,
+        "selected_nodes": 512,
+        "positive_nodes": 512,
+        "relative_fit": 0.0013805963115757329,
+        "maximum_scaled_row_error": 0.0004461999714946152,
+        "seconds": 94.76691811811179,
+        "weight_sum": 0.9922094970107196,
+        "minimum_weight": 6.742679417195238e-05,
+        "candidate_count": 8100,
+        "fit_rows": 8193,
+        "expected_measure": 0.9922027587890625,
+        "measure_error": 6.738221657087706e-06,
+        "row_scaling": "full_grid_mass_weighted_RMS_of_decoder_output_times_test"
+      },
+      "faces": [],
+      "volume_target": 512,
+      "face_target_each": 0,
+      "total_selected_nodes_including_face_duplicates": 512,
+      "corner_rule": "Separate physical faces retain both corner half-weights.",
+      "perturbed_mass_moment_relative": [
+        [
+          0.0014799593790261482,
+          0.0017521579764406844
+        ],
+        [
+          0.001336513046814014,
+          0.0013685553296750301
+        ],
+        [
+          0.0014378086243561996,
+          0.001266020016011489
+        ],
+        [
+          0.0012901004482419258,
+          0.0011300640991192404
+        ]
+      ]
+    }
+  ],
+  "full_weak_audits": [],
+  "component_timings": [],
+  "representation_diagnostics": [],
+  "checkpoint_sha256": {
+    "cp": "98f88123e90331143129a738ae58215dfcb0998dc0a01e6ebcb1a9f658b23021",
+    "modcp": "49c3fc9a44fbc3ba8d722c1d3af9b3635ea8392cdcee256cefaab0c8d2faaeed",
+    "film": "751236329027571655b018d1faa4e6ae855e09525013ae56636a036520cd1d33"
+  },
+  "evaluation_opened": false,
+  "artifacts": []
+}

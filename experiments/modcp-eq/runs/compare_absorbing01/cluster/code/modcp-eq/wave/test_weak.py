@@ -10,7 +10,7 @@ import jax.numpy as jnp
 from common.decoders import (DecoderConfig, init_decoder, add_modulation,
                              decode_points, decode_grid, prepare_points, decode_cached)
 from physics import Grid, smooth_tests, face_data
-from weak import numerical_rule, make_query, moments
+from weak import numerical_rule, make_query
 from test_fresh_fom import independent_matrices
 
 
@@ -25,47 +25,6 @@ def full_rule(grid, count):
 
 
 class WeakTests(unittest.TestCase):
-    def test_precontracted_cp_eq_value_and_jacobian_parity(self):
-        rng = np.random.default_rng(91064)
-        cfg = {'observation_dt': .01, 'end_time': .02, 'initial_fit_cap': 10, 'initial_fit_tolerance': 1e-6}
-        for bc in ('dirichlet', 'absorbing'):
-            dc = DecoderConfig(k=3, rank=4, outputs=2, intervals=8,
-                               boundary='dirichlet' if bc == 'dirichlet' else 'free', head_width=8)
-            p = init_decoder(jax.random.PRNGKey(91065), dc)
-            p['bias'] = jnp.asarray([.3, -.2])
-            grid = Grid(16, bc, bc)
-            raw = full_rule(grid, 8)
-            # Arbitrary positive sparse weights make the test sensitive to an
-            # accidental exact/full-grid shortcut, including boundary-strip bias.
-            ids = np.arange(0, len(raw['weight']), 3)
-            for key in ('xy', 'active_ids', 'weight', 'test'):
-                raw[key] = raw[key][ids]
-            raw['weight'] *= 2.7
-            rule = numerical_rule(p, dc, raw)
-            z = jnp.asarray(rng.normal(size=dc.k))
-            def sampled(zz):
-                mass = rule['projection']@decode_cached(p, zz, rule['cache'], dc)
-                face = rule['face_projection']@decode_cached(p, zz, rule['face_cache'], dc)
-                return jnp.concatenate((mass.ravel(), face.ravel()))
-            def contracted(zz):
-                mass, face = moments(p, zz, rule, dc)
-                return jnp.concatenate((mass.ravel(), face.ravel()))
-            np.testing.assert_allclose(contracted(z), sampled(z), atol=2e-14, rtol=2e-13)
-            np.testing.assert_allclose(jax.jacfwd(contracted)(z), jax.jacfwd(sampled)(z), atol=2e-14, rtol=2e-13)
-            _, _, _, residual = make_query(dc, grid, cfg, 10, .01)
-            oldm, oldf = moments(p, z*.7, rule, dc)
-            scale = jnp.asarray([.2, 1.7])
-            def sampled_residual(zz):
-                both = sampled(zz)
-                mass, face = both[:16].reshape(8, 2), both[16:].reshape(8, 2)
-                ru = mass[:, 0]-oldm[:, 0]-.01*(mass[:, 1]+oldm[:, 1])/2
-                rv = (mass[:, 1]-oldm[:, 1]+.01*1.07*(face[:, 1]+oldf[:, 1])/2+
-                      .01*1.07**2*rule['eigen']*(mass[:, 0]+oldm[:, 0])/2)
-                return jnp.concatenate((ru/scale[0], rv/scale[1]))
-            actual = lambda zz: residual(zz, p, rule, oldm, oldf, 1.07, scale)
-            np.testing.assert_allclose(actual(z), sampled_residual(z), atol=2e-14)
-            np.testing.assert_allclose(jax.jacfwd(actual)(z), jax.jacfwd(sampled_residual)(z), atol=2e-14)
-
     def test_independent_weak_cn_and_tangent(self):
         cfg = {'observation_dt': .01, 'end_time': .02, 'initial_fit_cap': 10, 'initial_fit_tolerance': 1e-6}
         rng = np.random.default_rng(91061)

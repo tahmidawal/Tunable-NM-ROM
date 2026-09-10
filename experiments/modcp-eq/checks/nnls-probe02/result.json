@@ -1,0 +1,92 @@
+{
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.1",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA GB10"
+    ],
+    "host": "spark-d69e",
+    "source_commit": null,
+    "job_id": null,
+    "numpy_version": "2.4.4"
+  },
+  "matrix_shape": [
+    8193,
+    512
+  ],
+  "checkpoint_sha256": "98f88123e90331143129a738ae58215dfcb0998dc0a01e6ebcb1a9f658b23021",
+  "fixed_support": true,
+  "existing_weights": {
+    "objective": 9.076185331311466e-05,
+    "residual_norm": 0.009526901558907527,
+    "relative_residual": 0.0013805963115756964,
+    "minimum_weight": 6.742679417195238e-05,
+    "positive_nodes": 512,
+    "active_gradient_max": 2.1877291644933905e-13,
+    "inactive_negative_gradient_max": 0.0,
+    "scaled_kkt": 1.5885694487298087e-17,
+    "complementarity_max": 5.680815810218587e-16
+  },
+  "methods": {
+    "direct": {
+      "seconds": 0.845803861040622,
+      "returned_residual": 0.009526901558907513,
+      "objective": 9.076185331311486e-05,
+      "residual_norm": 0.009526901558907537,
+      "relative_residual": 0.001380596311575698,
+      "minimum_weight": 6.742679417304178e-05,
+      "positive_nodes": 512,
+      "active_gradient_max": 3.2459191584566227e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 2.356949887517276e-17,
+      "complementarity_max": 7.345599296262999e-16
+    },
+    "qr": {
+      "seconds": 0.18635766202351078,
+      "returned_residual": 0.009526901558907728,
+      "objective": 9.076185331311851e-05,
+      "residual_norm": 0.009526901558907728,
+      "relative_residual": 0.0013805963115757257,
+      "minimum_weight": 6.742679416938402e-05,
+      "positive_nodes": 512,
+      "active_gradient_max": 6.836683996702675e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 4.96430157080108e-17,
+      "complementarity_max": 2.2814344295607947e-15
+    }
+  },
+  "relative_objective_norm_difference": 2.0029553278949836e-14,
+  "relative_weight_difference": 3.6939121728514694e-13,
+  "passed": true,
+  "near_dependent_actual_design": {
+    "direct": {
+      "objective": 4.076528856789553e-07,
+      "residual_norm": 0.0006384770048161134,
+      "relative_residual": 0.0007145007918175122,
+      "minimum_weight": 0.0,
+      "positive_nodes": 31,
+      "active_gradient_max": 2.8658932982847463e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 4.806011149645678e-16,
+      "complementarity_max": 8.59774006452912e-16
+    },
+    "qr": {
+      "objective": 4.0765288567895547e-07,
+      "residual_norm": 0.0006384770048161136,
+      "relative_residual": 0.0007145007918175125,
+      "minimum_weight": 0.0,
+      "positive_nodes": 31,
+      "active_gradient_max": 1.3499509954231194e-13,
+      "inactive_negative_gradient_max": 0.0,
+      "scaled_kkt": 2.2638245252751827e-16,
+      "complementarity_max": 3.412969678883747e-16
+    },
+    "relative_fitted_value_difference": 4.233798426243433e-15,
+    "passed": true
+  }
+}

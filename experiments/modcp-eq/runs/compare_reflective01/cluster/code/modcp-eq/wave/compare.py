@@ -12,7 +12,6 @@ import itertools
 import json
 from pathlib import Path
 import pickle
-import shutil
 import sys
 import time
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -24,7 +23,6 @@ from physics import (Grid, localized_initial, parameter_rows, cn_rollout, spectr
                      integrate, metrics, provenance, smooth_tests, damping_ratio, energy)
 from weak import build_rule, numerical_rule, make_query, moments
 from data import reference, save_json, clean, array_sha
-from seal import verify_validation_bundle
 
 
 @jax.jit
@@ -102,38 +100,6 @@ def configurations(cfg, boundary):
         for dt in cfg['time_steps']:
             result.append({'method': 'cn_direct', 'dt': dt, 'tol': 1e-12, 'id': f'cn_direct_dt{dt:g}'})
     return result
-
-
-def load_reusable_rule(inputs, out, name, n, multiplier, model, cfg, boundary):
-    old = inputs/'eq_reuse'
-    folder = old/'quadrature'/f'{name}_{n}_{multiplier}'
-    if not (folder/'rule.npz').exists():
-        return None
-    previous = json.loads((old/'handoff.json').read_text())
-    keys = ('train_intervals', 'train_seed', 'model_seed', 'weak_modes', 'eq_fit_codes', 'eq_candidate_count')
-    if (any(previous['config'][key] != cfg[key] for key in keys) or
-            previous['checkpoint_sha256'][name] != model['checkpoint_sha256'] or
-            previous['case_name'] != ('wave_reflective' if boundary == 'dirichlet' else 'wave_absorbing')):
-        raise RuntimeError('Offline EQ reuse is incompatible with this frozen checkpoint/configuration')
-    audit = json.loads((folder/'audit.json').read_text())
-    audit['volume'].setdefault('nnls_method', 'direct')
-    for face in audit['faces']:
-        face.setdefault('nnls_method', 'direct')
-    if (audit['architecture'] != name or audit['intervals'] != n or audit['weak_modes'] != cfg['weak_modes'] or
-            audit['volume_target'] != cfg['weak_modes']*multiplier):
-        raise RuntimeError('Offline EQ rule metadata mismatch')
-    with np.load(folder/'rule.npz') as a:
-        raw = {key: a[key] for key in a.files}
-    target = out/'quadrature'/folder.name
-    target.mkdir(parents=True, exist_ok=False)
-    shutil.copy2(folder/'rule.npz', target/'rule.npz')
-    audit['reused_offline_rule'] = {'source_job_id': previous['provenance']['job_id'],
-                                    'source_commit': previous['provenance']['commit'],
-                                    'rule_sha256': hashlib.sha256((folder/'rule.npz').read_bytes()).hexdigest(),
-                                    'timing_or_selection_reused': False}
-    save_json(target/'audit.json', audit)
-    print('REUSE_OFFLINE_EQ_ONLY', name, n, multiplier, flush=True)
-    return raw, audit
 
 
 class Queries:
@@ -412,11 +378,8 @@ def main():
     ap.add_argument('--boundary', choices=('dirichlet', 'absorbing'), required=True)
     ap.add_argument('--inputs', type=Path, required=True)
     ap.add_argument('--out', type=Path, required=True)
-    ap.add_argument('--phase', choices=('validation', 'evaluation', 'development'), default='validation')
     args = ap.parse_args()
     cfg = json.loads(args.config.read_text())
-    if args.phase == 'development' and (not cfg.get('smoke_only') or cfg['evaluation_seed'] == 910603):
-        raise RuntimeError('Development bypass cannot draw scientific evaluation cohort')
     args.out.mkdir(parents=True, exist_ok=False)
     meta = provenance()
     print(json.dumps(meta), flush=True)
@@ -428,7 +391,7 @@ def main():
                          'evaluation_case_ids': list(range(cfg['evaluation_count'])), 'validation_repetitions': 1},
               'provenance': {**meta, 'commit': meta['source_commit'], 'gpu': meta['device_kind'],
                              'backend': meta['jax_backend'], 'matmul_precision': meta['matmul_precision']},
-              'status': 'running', 'phase': args.phase, 'invocations': [], 'selection_timings': [], 'selections': [],
+              'status': 'running', 'invocations': [], 'selection_timings': [], 'selections': [],
               'references': [], 'eq_audits': [], 'full_weak_audits': [], 'component_timings': [], 'representation_diagnostics': [],
               'checkpoint_sha256': {name: m['checkpoint_sha256'] for name, m in models.items()},
               'evaluation_opened': False, 'artifacts': []}
@@ -436,26 +399,13 @@ def main():
     save()
     settings = configurations(cfg, args.boundary)
     frozen_panels = {}
-    if args.phase == 'evaluation':
-        bundle = args.inputs/'validation_bundle'
-        old, frozen_panels, proof = verify_validation_bundle(bundle, cfg, result['case_name'], result['checkpoint_sha256'])
-        result['imported_validation_proof'] = proof
-        result['selections'] = old['selections']
-        # Old timings remain explicitly separate evidence from another job.
-        # The evaluation handoff contains only its own same-allocation rows.
-        shutil.copytree(bundle, args.out/'imported_validation')
-        shutil.copytree(bundle/'quadrature', args.out/'quadrature')
-        result['artifacts'].append('imported_validation/global_seal.json')
-        save()
-    for n in ([] if args.phase == 'evaluation' else cfg['meshes']):
+    for n in cfg['meshes']:
         grid = Grid(n, args.boundary, args.boundary)
         rules, raws = {}, {}
         for name, model in models.items():
             for multiplier in cfg['eq_multipliers']:
-                cached = load_reusable_rule(args.inputs, args.out, name, n, multiplier, model, cfg, args.boundary)
-                raw, audit = cached if cached is not None else build_rule(
-                    model['params'], model['codes'], model['config'], grid, cfg,
-                    multiplier, args.out/'quadrature'/f'{name}_{n}_{multiplier}')
+                raw, audit = build_rule(model['params'], model['codes'], model['config'], grid, cfg,
+                                        multiplier, args.out/'quadrature'/f'{name}_{n}_{multiplier}')
                 raws[(name, multiplier)] = raw
                 rules[(name, multiplier)] = numerical_rule(model['params'], model['config'], raw)
                 result['eq_audits'].append(audit); save()
@@ -507,19 +457,12 @@ def main():
                                       result['selection_timings'], settings, grid, cfg)
         result['selections'].extend(selections)
         freeze = {'intervals': n, 'selections': selections, 'selected_settings': selected,
-                  'evaluation_opened_at_selection': False, 'training_sha256': result['checkpoint_sha256'],
-                  'quadrature_sha256': {str(p.relative_to(args.out)): hashlib.sha256(p.read_bytes()).hexdigest()
-                                         for p in sorted((args.out/'quadrature').glob(f'*_{n}_*/rule.npz'))}}
+                  'evaluation_opened_at_selection': False, 'training_sha256': result['checkpoint_sha256']}
         save_json(args.out/f'frozen_selection_{n}.json', freeze)
         save()
         frozen_panels[n] = selected
         del rules, raws, queries
         jax.clear_caches()
-    if args.phase == 'validation':
-        result['status'] = 'validation_frozen'
-        save()
-        print('WAVE_VALIDATION_COMPLETE_EVALUATION_SEALED', args.boundary, flush=True)
-        return
     # The shared physical evaluation cohort remains unopened until all meshes
     # have their validation-only configuration selections fixed on disk.
     result['evaluation_opened'] = True

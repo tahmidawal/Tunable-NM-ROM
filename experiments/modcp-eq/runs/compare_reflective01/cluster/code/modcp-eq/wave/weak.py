@@ -6,14 +6,14 @@ import json
 import numpy as np
 import jax
 import jax.numpy as jnp
-from common.decoders import decode_points, decode_grid, prepare_points, decode_cached, coefficients
-from common.quadrature import fit_quadrature, nnls_diagnostics
+from common.decoders import decode_points, decode_grid, prepare_points, decode_cached
+from common.quadrature import fit_quadrature
 from common.lm import make_lm
 from physics import Grid, smooth_tests, face_data, active_fields
 from data import save_json
 
 
-def fit_integrands(values, tests, masses, candidates, count, nnls_method='direct'):
+def fit_integrands(values, tests, masses, candidates, count):
     """Row RMS normalization is independent of potentially cancelling targets."""
     total = float(masses.sum())
     target = np.einsum('pm,spc,p->scm', tests, values, masses, optimize=True).reshape(-1)
@@ -25,9 +25,7 @@ def fit_integrands(values, tests, masses, candidates, count, nnls_method='direct
     target /= scale
     design = np.vstack((np.ones((1, len(candidates))), design))
     target = np.r_[total, target]
-    selected, weights, info = fit_quadrature(design, target, count, nnls_method=nnls_method)
-    info['selected_support_original_space_kkt'] = nnls_diagnostics(design[:, selected], target, weights)
-    ids = candidates[selected]
+    ids, weights, info = fit_quadrature(design, target, count, candidate_ids=candidates)
     info['expected_measure'] = total
     info['measure_error'] = float(abs(weights.sum()-total))
     # Report every original, unsummed weak row. This is not a residual-snapshot fit.
@@ -56,7 +54,7 @@ def build_rule(params, codes, dc, grid, cfg, multiplier, out):
     if len(candidates) < m:
         candidates = np.arange(len(points))
     print('EQ_VOLUME', dc.architecture, grid.bx, grid.n, m, flush=True)
-    ids, weights, info = fit_integrands(values, phi, mass, candidates, min(m, len(candidates)), cfg.get('eq_nnls_method', 'direct'))
+    ids, weights, info = fit_integrands(values, phi, mass, candidates, min(m, len(candidates)))
     face_rules, face_infos = [], []
     faces = face_data(grid, modes)
     fbudget = min(grid.n+1, multiplier*max(int(np.max(modes)), 4))
@@ -64,7 +62,7 @@ def build_rule(params, codes, dc, grid, cfg, multiplier, out):
         fv = np.asarray(jax.jit(lambda p, z, xy: jax.vmap(lambda zz: decode_points(p, zz, xy, dc))(z))(
             params, jnp.asarray(codes[chosen]), jnp.asarray(fxy)))
         print('EQ_FACE', dc.architecture, grid.n, multiplier, fi, fbudget, flush=True)
-        inds, w, diagnostics = fit_integrands(fv, ft, fw, np.arange(len(fxy)), fbudget, cfg.get('eq_nnls_method', 'direct'))
+        inds, w, diagnostics = fit_integrands(fv, ft, fw, np.arange(len(fxy)), fbudget)
         face_rules.append((fxy[inds], w, ft[inds]))
         face_infos.append(diagnostics)
     rule = {'xy': points[ids], 'active_ids': ids, 'weight': weights, 'test': phi[ids], 'eigen': eigen,
@@ -94,29 +92,15 @@ def build_rule(params, codes, dc, grid, cfg, multiplier, out):
 
 
 def numerical_rule(params, dc, rule):
-    result = {'cache': prepare_points(params, jnp.asarray(rule['xy']), dc),
+    return {'cache': prepare_points(params, jnp.asarray(rule['xy']), dc),
             'projection': jnp.asarray(rule['test'].T*rule['weight'][None, :]),
             'face_cache': prepare_points(params, jnp.asarray(rule['face_xy']), dc),
             'face_projection': jnp.asarray(rule['face_test'].T*rule['face_weight'][None, :]),
             'fit_weights': jnp.asarray(rule['weight']/max(float(np.sum(rule['weight'])), 1e-30)),
             'eigen': jnp.asarray(rule['eigen']), 'ids': jnp.asarray(rule['active_ids'])}
-    if dc.architecture == 'cp':
-        # Exact contraction of the SAME APPROXIMATE EQ rule. This does not use
-        # full-grid weak operators or alter the quadrature/solution at all.
-        for prefix, cache, projection in (('mass', result['cache'], result['projection']),
-                                          ('face', result['face_cache'], result['face_projection'])):
-            a, b, mask = cache
-            result['cp_'+prefix+'_map'] = jnp.einsum('mp,pcr->mcr', projection, a*b*mask[:, None, None])
-            result['cp_'+prefix+'_bias'] = projection@mask
-    return result
 
 
 def moments(params, z, rule, dc):
-    if dc.architecture == 'cp':
-        h = coefficients(params, z, dc)
-        mass = jnp.einsum('mcr,cr->mc', rule['cp_mass_map'], h)+rule['cp_mass_bias'][:, None]*params['bias']
-        face = jnp.einsum('mcr,cr->mc', rule['cp_face_map'], h)+rule['cp_face_bias'][:, None]*params['bias']
-        return mass, face
     q = decode_cached(params, z, rule['cache'], dc)
     mass = rule['projection']@q
     if rule['face_projection'].shape[1]:

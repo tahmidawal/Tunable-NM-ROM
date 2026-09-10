@@ -33,7 +33,7 @@ def write(path, obj):
     path.write_text(json.dumps(obj, indent=2)+'\n')
 
 
-def stage(label, boundary, kind, inputs=None, reuse_eq=None, phase='validation', validation=None, seal=None):
+def stage(label, boundary, kind, inputs=None):
     commit = run(['git', 'rev-parse', 'HEAD'], cwd=TREE).strip()
     dest = CELL/'stages'/label
     dest.mkdir(parents=True, exist_ok=False)
@@ -62,33 +62,6 @@ def stage(label, boundary, kind, inputs=None, reuse_eq=None, phase='validation',
         shutil.copy2(training_result, dest/'inputs'/'training_result.json')
         write(dest/'inputs'/'ORIGIN.json', {'training_result_sha256': sha(training_result),
                                           'checkpoint_sha256': {name: sha(inputs/name) for name in ('cp.pkl', 'modcp.pkl', 'film.pkl')}})
-        if reuse_eq is not None:
-            reuse_eq = Path(reuse_eq).resolve()
-            target = dest/'inputs'/'eq_reuse'
-            target.mkdir()
-            shutil.copy2(reuse_eq/'handoff.json', target/'handoff.json')
-            for rule in (reuse_eq/'quadrature').glob('*'):
-                if (rule/'rule.npz').exists() and (rule/'audit.json').exists():
-                    (target/'quadrature'/rule.name).mkdir(parents=True)
-                    for name in ('rule.npz', 'audit.json'):
-                        shutil.copy2(rule/name, target/'quadrature'/rule.name/name)
-        if kind == 'compare' and phase == 'evaluation':
-            if validation is None or seal is None:
-                raise ValueError('Evaluation requires immutable validation directory and global cohort seal')
-            validation, seal = Path(validation).resolve(), Path(seal).resolve()
-            target = dest/'inputs'/'validation_bundle'
-            target.mkdir()
-            for name in ('handoff.json', 'frozen_selection_256.json', 'frozen_selection_512.json'):
-                shutil.copy2(validation/name, target/name)
-            shutil.copy2(seal, target/'global_seal.json')
-            shutil.copytree(validation/'quadrature', target/'quadrature')
-            # Host-only integrity guard: refuse to upload/open an unsealed panel.
-            import sys
-            sys.path.insert(0, str(CELL/'wave'))
-            from seal import verify_validation_bundle
-            cfg = json.loads((CELL/'wave/config.json').read_text())
-            expected = {name: sha(inputs/f'{name}.pkl') for name in ('cp', 'modcp', 'film')}
-            verify_validation_bundle(target, cfg, 'wave_reflective' if boundary == 'dirichlet' else 'wave_absorbing', expected)
     remote = NAMESPACE+'/'+label
     commands = '"$PY" -u code/modcp-eq/wave/test_physics.py\n'
     if (CELL/'wave/test_weak.py').exists():
@@ -96,7 +69,7 @@ def stage(label, boundary, kind, inputs=None, reuse_eq=None, phase='validation',
     if kind == 'train':
         commands += f'"$PY" -u code/modcp-eq/wave/train_wave.py --config code/modcp-eq/wave/config.json --boundary {boundary} --out out/training\n'
     elif kind == 'compare':
-        commands += f'"$PY" -u code/modcp-eq/wave/compare.py --config code/modcp-eq/wave/config.json --boundary {boundary} --inputs inputs --out out/comparison --phase {phase}\n'
+        commands += f'"$PY" -u code/modcp-eq/wave/compare.py --config code/modcp-eq/wave/config.json --boundary {boundary} --inputs inputs --out out/comparison\n'
     else:
         commands += f'"$PY" -u code/modcp-eq/wave/smoke.py --inputs inputs --boundary {boundary} --out out/smoke\n'
     batch = f'''#!/bin/bash
@@ -131,7 +104,7 @@ trap finish EXIT
 {commands}
 '''
     (dest/'job.sbatch').write_text(batch)
-    metadata = {'label': label, 'boundary': boundary, 'kind': kind, 'phase': phase if kind == 'compare' else None, 'source_commit': commit,
+    metadata = {'label': label, 'boundary': boundary, 'kind': kind, 'source_commit': commit,
                 'source_sha256': sources, 'remote': remote, 'staged_at': datetime.now(timezone.utc).isoformat()}
     write(dest/'CONFIG.json', metadata)
     (dest/'MANIFEST.sha256').write_text(''.join(f'{sha(p)}  {p.relative_to(dest)}\n'
@@ -223,14 +196,10 @@ if __name__ == '__main__':
     ap.add_argument('--boundary', choices=('dirichlet', 'absorbing'), default='dirichlet')
     ap.add_argument('--kind', choices=('train', 'compare', 'smoke'), default='train')
     ap.add_argument('--inputs', type=Path)
-    ap.add_argument('--reuse-eq', type=Path)
-    ap.add_argument('--phase', choices=('validation', 'evaluation'), default='validation')
-    ap.add_argument('--validation', type=Path)
-    ap.add_argument('--seal', type=Path)
     args = ap.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9_]{1,30}', args.label):
         ap.error('Use a private simple attempt label')
     if args.action == 'stage':
-        stage(args.label, args.boundary, args.kind, args.inputs, args.reuse_eq, args.phase, args.validation, args.seal)
+        stage(args.label, args.boundary, args.kind, args.inputs)
     else:
         globals()[args.action](args.label)

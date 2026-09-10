@@ -1,0 +1,307 @@
+NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+PASS decoder parity, transfer, autodiff, exact weak/upwind, LM reasons, FFT/FOM
+DATA validation L=256 dt=0.000625 case=0
+DATA validation L=256 dt=0.000625 case=1
+DATA validation L=256 dt=0.000625 case=2
+DATA validation L=256 dt=0.000625 case=3
+DATA validation L=256 dt=0.000625 case=4
+DATA validation L=256 dt=0.000625 case=5
+DATA validation L=256 dt=0.000625 case=6
+DATA validation L=256 dt=0.000625 case=7
+DATA validation L=256 dt=0.000625 case=8
+DATA validation L=256 dt=0.000625 case=9
+DATA validation L=256 dt=0.000625 case=10
+DATA validation L=256 dt=0.000625 case=11
+DATA validation L=256 dt=0.000625 case=12
+DATA validation L=256 dt=0.000625 case=13
+DATA validation L=256 dt=0.000625 case=14
+DATA validation L=256 dt=0.000625 case=15
+DATA validation L=512 dt=0.0003125 case=0
+DATA validation L=512 dt=0.0003125 case=1
+DATA validation L=512 dt=0.0003125 case=2
+DATA validation L=512 dt=0.0003125 case=3
+DATA validation L=512 dt=0.0003125 case=4
+DATA validation L=512 dt=0.0003125 case=5
+DATA validation L=512 dt=0.0003125 case=6
+DATA validation L=512 dt=0.0003125 case=7
+DATA validation L=512 dt=0.0003125 case=8
+DATA validation L=512 dt=0.0003125 case=9
+DATA validation L=512 dt=0.0003125 case=10
+DATA validation L=512 dt=0.0003125 case=11
+DATA validation L=512 dt=0.0003125 case=12
+DATA validation L=512 dt=0.0003125 case=13
+DATA validation L=512 dt=0.0003125 case=14
+DATA validation L=512 dt=0.0003125 case=15
+DATA validation L=256 dt=0.00125 case=0
+DATA validation L=256 dt=0.00125 case=1
+DATA validation L=256 dt=0.00125 case=2
+DATA validation L=256 dt=0.00125 case=3
+DATA validation L=256 dt=0.00125 case=4
+DATA validation L=256 dt=0.00125 case=5
+DATA validation L=256 dt=0.00125 case=6
+DATA validation L=256 dt=0.00125 case=7
+DATA validation L=256 dt=0.00125 case=8
+DATA validation L=256 dt=0.00125 case=9
+DATA validation L=256 dt=0.00125 case=10
+DATA validation L=256 dt=0.00125 case=11
+DATA validation L=256 dt=0.00125 case=12
+DATA validation L=256 dt=0.00125 case=13
+DATA validation L=256 dt=0.00125 case=14
+DATA validation L=256 dt=0.00125 case=15
+RULE cp L=256 multiplier=4
+RULE cp L=256 multiplier=8
+RULE modcp L=256 multiplier=4
+RULE modcp L=256 multiplier=8
+RULE film L=256 multiplier=4
+RULE film L=256 multiplier=8
+WARM validation L=256 cp_cap10_dt0.005_q4_tol0.0001 seconds=4.689
+WARM validation L=256 cp_cap10_dt0.005_q4_tol1e-06 seconds=0.126
+WARM validation L=256 cp_cap30_dt0.005_q4_tol0.0001 seconds=1.799
+WARM validation L=256 cp_cap30_dt0.005_q4_tol1e-06 seconds=0.118
+WARM validation L=256 cp_cap10_dt0.0025_q4_tol0.0001 seconds=1.831
+WARM validation L=256 cp_cap10_dt0.0025_q4_tol1e-06 seconds=0.140
+WARM validation L=256 cp_cap30_dt0.0025_q4_tol0.0001 seconds=1.921
+WARM validation L=256 cp_cap30_dt0.0025_q4_tol1e-06 seconds=0.140
+WARM validation L=256 cp_cap10_dt0.00125_q4_tol0.0001 seconds=1.809
+WARM validation L=256 cp_cap10_dt0.00125_q4_tol1e-06 seconds=0.276
+WARM validation L=256 cp_cap30_dt0.00125_q4_tol0.0001 seconds=1.833
+WARM validation L=256 cp_cap30_dt0.00125_q4_tol1e-06 seconds=0.276
+WARM validation L=256 cp_cap10_dt0.005_q8_tol0.0001 seconds=3.551
+WARM validation L=256 cp_cap10_dt0.005_q8_tol1e-06 seconds=0.146
+WARM validation L=256 cp_cap30_dt0.005_q8_tol0.0001 seconds=2.041
+WARM validation L=256 cp_cap30_dt0.005_q8_tol1e-06 seconds=0.147
+WARM validation L=256 cp_cap10_dt0.0025_q8_tol0.0001 seconds=1.732
+WARM validation L=256 cp_cap10_dt0.0025_q8_tol1e-06 seconds=0.144
+WARM validation L=256 cp_cap30_dt0.0025_q8_tol0.0001 seconds=1.725
+WARM validation L=256 cp_cap30_dt0.0025_q8_tol1e-06 seconds=0.144
+WARM validation L=256 cp_cap10_dt0.00125_q8_tol0.0001 seconds=1.846
+WARM validation L=256 cp_cap10_dt0.00125_q8_tol1e-06 seconds=0.284
+WARM validation L=256 cp_cap30_dt0.00125_q8_tol0.0001 seconds=2.075
+WARM validation L=256 cp_cap30_dt0.00125_q8_tol1e-06 seconds=0.283
+WARM validation L=256 modcp_cap10_dt0.005_q4_tol0.0001 seconds=5.149
+WARM validation L=256 modcp_cap10_dt0.005_q4_tol1e-06 seconds=0.179
+WARM validation L=256 modcp_cap30_dt0.005_q4_tol0.0001 seconds=2.560
+WARM validation L=256 modcp_cap30_dt0.005_q4_tol1e-06 seconds=0.150
+WARM validation L=256 modcp_cap10_dt0.0025_q4_tol0.0001 seconds=2.520
+WARM validation L=256 modcp_cap10_dt0.0025_q4_tol1e-06 seconds=0.252
+WARM validation L=256 modcp_cap30_dt0.0025_q4_tol0.0001 seconds=2.679
+WARM validation L=256 modcp_cap30_dt0.0025_q4_tol1e-06 seconds=0.252
+WARM validation L=256 modcp_cap10_dt0.00125_q4_tol0.0001 seconds=2.815
+WARM validation L=256 modcp_cap10_dt0.00125_q4_tol1e-06 seconds=0.481
+WARM validation L=256 modcp_cap30_dt0.00125_q4_tol0.0001 seconds=2.695
+WARM validation L=256 modcp_cap30_dt0.00125_q4_tol1e-06 seconds=0.481
+WARM validation L=256 modcp_cap10_dt0.005_q8_tol0.0001 seconds=3.971
+WARM validation L=256 modcp_cap10_dt0.005_q8_tol1e-06 seconds=0.178
+WARM validation L=256 modcp_cap30_dt0.005_q8_tol0.0001 seconds=2.548
+WARM validation L=256 modcp_cap30_dt0.005_q8_tol1e-06 seconds=0.194
+WARM validation L=256 modcp_cap10_dt0.0025_q8_tol0.0001 seconds=2.571
+WARM validation L=256 modcp_cap10_dt0.0025_q8_tol1e-06 seconds=0.327
+WARM validation L=256 modcp_cap30_dt0.0025_q8_tol0.0001 seconds=2.537
+WARM validation L=256 modcp_cap30_dt0.0025_q8_tol1e-06 seconds=0.328
+WARM validation L=256 modcp_cap10_dt0.00125_q8_tol0.0001 seconds=3.245
+WARM validation L=256 modcp_cap10_dt0.00125_q8_tol1e-06 seconds=0.636
+WARM validation L=256 modcp_cap30_dt0.00125_q8_tol0.0001 seconds=2.989
+WARM validation L=256 modcp_cap30_dt0.00125_q8_tol1e-06 seconds=0.636
+WARM validation L=256 film_cap10_dt0.005_q4_tol0.0001 seconds=5.387
+WARM validation L=256 film_cap10_dt0.005_q4_tol1e-06 seconds=0.244
+WARM validation L=256 film_cap30_dt0.005_q4_tol0.0001 seconds=2.337
+WARM validation L=256 film_cap30_dt0.005_q4_tol1e-06 seconds=0.244
+WARM validation L=256 film_cap10_dt0.0025_q4_tol0.0001 seconds=2.608
+WARM validation L=256 film_cap10_dt0.0025_q4_tol1e-06 seconds=0.391
+WARM validation L=256 film_cap30_dt0.0025_q4_tol0.0001 seconds=2.699
+WARM validation L=256 film_cap30_dt0.0025_q4_tol1e-06 seconds=0.391
+WARM validation L=256 film_cap10_dt0.00125_q4_tol0.0001 seconds=2.825
+WARM validation L=256 film_cap10_dt0.00125_q4_tol1e-06 seconds=0.685
+WARM validation L=256 film_cap30_dt0.00125_q4_tol0.0001 seconds=2.734
+WARM validation L=256 film_cap30_dt0.00125_q4_tol1e-06 seconds=0.687
+WARM validation L=256 film_cap10_dt0.005_q8_tol0.0001 seconds=4.214
+WARM validation L=256 film_cap10_dt0.005_q8_tol1e-06 seconds=0.308
+WARM validation L=256 film_cap30_dt0.005_q8_tol0.0001 seconds=2.386
+WARM validation L=256 film_cap30_dt0.005_q8_tol1e-06 seconds=0.308
+WARM validation L=256 film_cap10_dt0.0025_q8_tol0.0001 seconds=2.472
+WARM validation L=256 film_cap10_dt0.0025_q8_tol1e-06 seconds=0.505
+WARM validation L=256 film_cap30_dt0.0025_q8_tol0.0001 seconds=2.576
+WARM validation L=256 film_cap30_dt0.0025_q8_tol1e-06 seconds=0.505
+WARM validation L=256 film_cap10_dt0.00125_q8_tol0.0001 seconds=3.310
+WARM validation L=256 film_cap10_dt0.00125_q8_tol1e-06 seconds=0.909
+WARM validation L=256 film_cap30_dt0.00125_q8_tol0.0001 seconds=3.121
+WARM validation L=256 film_cap30_dt0.00125_q8_tol1e-06 seconds=0.911
+WARM validation L=256 newton_bicgstab_dt0.005_ltol0.1_ntol0.01 seconds=1.032
+WARM validation L=256 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=1.001
+WARM validation L=256 newton_bicgstab_dt0.005_ltol0.1_ntol1e-06 seconds=1.051
+WARM validation L=256 newton_bicgstab_dt0.0025_ltol0.1_ntol0.01 seconds=0.985
+WARM validation L=256 newton_bicgstab_dt0.0025_ltol0.1_ntol0.0001 seconds=1.108
+WARM validation L=256 newton_bicgstab_dt0.0025_ltol0.1_ntol1e-06 seconds=1.048
+WARM validation L=256 newton_bicgstab_dt0.00125_ltol0.1_ntol0.01 seconds=0.978
+WARM validation L=256 newton_bicgstab_dt0.00125_ltol0.1_ntol0.0001 seconds=1.140
+WARM validation L=256 newton_bicgstab_dt0.00125_ltol0.1_ntol1e-06 seconds=1.219
+TIMED validation L=256 rep=0 case=0 rows=81
+TIMED validation L=256 rep=0 case=1 rows=162
+TIMED validation L=256 rep=0 case=2 rows=243
+TIMED validation L=256 rep=0 case=3 rows=324
+TIMED validation L=256 rep=0 case=4 rows=405
+TIMED validation L=256 rep=0 case=5 rows=486
+TIMED validation L=256 rep=0 case=6 rows=567
+TIMED validation L=256 rep=0 case=7 rows=648
+TIMED validation L=256 rep=0 case=8 rows=729
+TIMED validation L=256 rep=0 case=9 rows=810
+TIMED validation L=256 rep=0 case=10 rows=891
+TIMED validation L=256 rep=0 case=11 rows=972
+TIMED validation L=256 rep=0 case=12 rows=1053
+TIMED validation L=256 rep=0 case=13 rows=1134
+TIMED validation L=256 rep=0 case=14 rows=1215
+TIMED validation L=256 rep=0 case=15 rows=1296
+DATA validation L=512 dt=0.000625 case=0
+DATA validation L=512 dt=0.000625 case=1
+DATA validation L=512 dt=0.000625 case=2
+DATA validation L=512 dt=0.000625 case=3
+DATA validation L=512 dt=0.000625 case=4
+DATA validation L=512 dt=0.000625 case=5
+DATA validation L=512 dt=0.000625 case=6
+DATA validation L=512 dt=0.000625 case=7
+DATA validation L=512 dt=0.000625 case=8
+DATA validation L=512 dt=0.000625 case=9
+DATA validation L=512 dt=0.000625 case=10
+DATA validation L=512 dt=0.000625 case=11
+DATA validation L=512 dt=0.000625 case=12
+DATA validation L=512 dt=0.000625 case=13
+DATA validation L=512 dt=0.000625 case=14
+DATA validation L=512 dt=0.000625 case=15
+DATA validation L=1024 dt=0.0003125 case=0
+DATA validation L=1024 dt=0.0003125 case=1
+DATA validation L=1024 dt=0.0003125 case=2
+DATA validation L=1024 dt=0.0003125 case=3
+DATA validation L=1024 dt=0.0003125 case=4
+DATA validation L=1024 dt=0.0003125 case=5
+DATA validation L=1024 dt=0.0003125 case=6
+DATA validation L=1024 dt=0.0003125 case=7
+DATA validation L=1024 dt=0.0003125 case=8
+DATA validation L=1024 dt=0.0003125 case=9
+DATA validation L=1024 dt=0.0003125 case=10
+DATA validation L=1024 dt=0.0003125 case=11
+DATA validation L=1024 dt=0.0003125 case=12
+DATA validation L=1024 dt=0.0003125 case=13
+DATA validation L=1024 dt=0.0003125 case=14
+DATA validation L=1024 dt=0.0003125 case=15
+DATA validation L=512 dt=0.00125 case=0
+DATA validation L=512 dt=0.00125 case=1
+DATA validation L=512 dt=0.00125 case=2
+DATA validation L=512 dt=0.00125 case=3
+DATA validation L=512 dt=0.00125 case=4
+DATA validation L=512 dt=0.00125 case=5
+DATA validation L=512 dt=0.00125 case=6
+DATA validation L=512 dt=0.00125 case=7
+DATA validation L=512 dt=0.00125 case=8
+DATA validation L=512 dt=0.00125 case=9
+DATA validation L=512 dt=0.00125 case=10
+DATA validation L=512 dt=0.00125 case=11
+DATA validation L=512 dt=0.00125 case=12
+DATA validation L=512 dt=0.00125 case=13
+DATA validation L=512 dt=0.00125 case=14
+DATA validation L=512 dt=0.00125 case=15
+RULE cp L=512 multiplier=4
+RULE cp L=512 multiplier=8
+RULE modcp L=512 multiplier=4
+RULE modcp L=512 multiplier=8
+RULE film L=512 multiplier=4
+RULE film L=512 multiplier=8
+WARM validation L=512 cp_cap10_dt0.005_q4_tol0.0001 seconds=2.811
+WARM validation L=512 cp_cap10_dt0.005_q4_tol1e-06 seconds=0.106
+WARM validation L=512 cp_cap30_dt0.005_q4_tol0.0001 seconds=2.001
+WARM validation L=512 cp_cap30_dt0.005_q4_tol1e-06 seconds=0.131
+WARM validation L=512 cp_cap10_dt0.0025_q4_tol0.0001 seconds=1.893
+WARM validation L=512 cp_cap10_dt0.0025_q4_tol1e-06 seconds=0.180
+WARM validation L=512 cp_cap30_dt0.0025_q4_tol0.0001 seconds=1.910
+WARM validation L=512 cp_cap30_dt0.0025_q4_tol1e-06 seconds=0.148
+WARM validation L=512 cp_cap10_dt0.00125_q4_tol0.0001 seconds=1.980
+WARM validation L=512 cp_cap10_dt0.00125_q4_tol1e-06 seconds=0.271
+WARM validation L=512 cp_cap30_dt0.00125_q4_tol0.0001 seconds=1.905
+WARM validation L=512 cp_cap30_dt0.00125_q4_tol1e-06 seconds=0.271
+WARM validation L=512 cp_cap10_dt0.005_q8_tol0.0001 seconds=2.026
+WARM validation L=512 cp_cap10_dt0.005_q8_tol1e-06 seconds=0.104
+WARM validation L=512 cp_cap30_dt0.005_q8_tol0.0001 seconds=1.992
+WARM validation L=512 cp_cap30_dt0.005_q8_tol1e-06 seconds=0.148
+WARM validation L=512 cp_cap10_dt0.0025_q8_tol0.0001 seconds=1.958
+WARM validation L=512 cp_cap10_dt0.0025_q8_tol1e-06 seconds=0.174
+WARM validation L=512 cp_cap30_dt0.0025_q8_tol0.0001 seconds=1.908
+WARM validation L=512 cp_cap30_dt0.0025_q8_tol1e-06 seconds=0.144
+WARM validation L=512 cp_cap10_dt0.00125_q8_tol0.0001 seconds=2.080
+WARM validation L=512 cp_cap10_dt0.00125_q8_tol1e-06 seconds=0.282
+WARM validation L=512 cp_cap30_dt0.00125_q8_tol0.0001 seconds=1.832
+WARM validation L=512 cp_cap30_dt0.00125_q8_tol1e-06 seconds=0.282
+WARM validation L=512 modcp_cap10_dt0.005_q4_tol0.0001 seconds=2.595
+WARM validation L=512 modcp_cap10_dt0.005_q4_tol1e-06 seconds=0.149
+WARM validation L=512 modcp_cap30_dt0.005_q4_tol0.0001 seconds=2.427
+WARM validation L=512 modcp_cap30_dt0.005_q4_tol1e-06 seconds=0.165
+WARM validation L=512 modcp_cap10_dt0.0025_q4_tol0.0001 seconds=2.408
+WARM validation L=512 modcp_cap10_dt0.0025_q4_tol1e-06 seconds=0.262
+WARM validation L=512 modcp_cap30_dt0.0025_q4_tol0.0001 seconds=2.533
+WARM validation L=512 modcp_cap30_dt0.0025_q4_tol1e-06 seconds=0.259
+WARM validation L=512 modcp_cap10_dt0.00125_q4_tol0.0001 seconds=2.788
+WARM validation L=512 modcp_cap10_dt0.00125_q4_tol1e-06 seconds=0.501
+WARM validation L=512 modcp_cap30_dt0.00125_q4_tol0.0001 seconds=2.645
+WARM validation L=512 modcp_cap30_dt0.00125_q4_tol1e-06 seconds=0.502
+WARM validation L=512 modcp_cap10_dt0.005_q8_tol0.0001 seconds=2.470
+WARM validation L=512 modcp_cap10_dt0.005_q8_tol1e-06 seconds=0.183
+WARM validation L=512 modcp_cap30_dt0.005_q8_tol0.0001 seconds=2.442
+WARM validation L=512 modcp_cap30_dt0.005_q8_tol1e-06 seconds=0.184
+WARM validation L=512 modcp_cap10_dt0.0025_q8_tol0.0001 seconds=2.735
+WARM validation L=512 modcp_cap10_dt0.0025_q8_tol1e-06 seconds=0.342
+WARM validation L=512 modcp_cap30_dt0.0025_q8_tol0.0001 seconds=2.632
+WARM validation L=512 modcp_cap30_dt0.0025_q8_tol1e-06 seconds=0.342
+WARM validation L=512 modcp_cap10_dt0.00125_q8_tol0.0001 seconds=2.967
+WARM validation L=512 modcp_cap10_dt0.00125_q8_tol1e-06 seconds=0.649
+WARM validation L=512 modcp_cap30_dt0.00125_q8_tol0.0001 seconds=2.917
+WARM validation L=512 modcp_cap30_dt0.00125_q8_tol1e-06 seconds=0.652
+WARM validation L=512 film_cap10_dt0.005_q4_tol0.0001 seconds=2.321
+WARM validation L=512 film_cap10_dt0.005_q4_tol1e-06 seconds=0.347
+WARM validation L=512 film_cap30_dt0.005_q4_tol0.0001 seconds=2.343
+WARM validation L=512 film_cap30_dt0.005_q4_tol1e-06 seconds=0.348
+WARM validation L=512 film_cap10_dt0.0025_q4_tol0.0001 seconds=2.439
+WARM validation L=512 film_cap10_dt0.0025_q4_tol1e-06 seconds=0.490
+WARM validation L=512 film_cap30_dt0.0025_q4_tol0.0001 seconds=2.574
+WARM validation L=512 film_cap30_dt0.0025_q4_tol1e-06 seconds=0.491
+WARM validation L=512 film_cap10_dt0.00125_q4_tol0.0001 seconds=2.941
+WARM validation L=512 film_cap10_dt0.00125_q4_tol1e-06 seconds=0.781
+WARM validation L=512 film_cap30_dt0.00125_q4_tol0.0001 seconds=2.929
+WARM validation L=512 film_cap30_dt0.00125_q4_tol1e-06 seconds=0.782
+WARM validation L=512 film_cap10_dt0.005_q8_tol0.0001 seconds=2.338
+WARM validation L=512 film_cap10_dt0.005_q8_tol1e-06 seconds=0.422
+WARM validation L=512 film_cap30_dt0.005_q8_tol0.0001 seconds=2.446
+WARM validation L=512 film_cap30_dt0.005_q8_tol1e-06 seconds=0.421
+WARM validation L=512 film_cap10_dt0.0025_q8_tol0.0001 seconds=2.402
+WARM validation L=512 film_cap10_dt0.0025_q8_tol1e-06 seconds=0.620
+WARM validation L=512 film_cap30_dt0.0025_q8_tol0.0001 seconds=2.306
+WARM validation L=512 film_cap30_dt0.0025_q8_tol1e-06 seconds=0.620
+WARM validation L=512 film_cap10_dt0.00125_q8_tol0.0001 seconds=2.735
+WARM validation L=512 film_cap10_dt0.00125_q8_tol1e-06 seconds=1.011
+WARM validation L=512 film_cap30_dt0.00125_q8_tol0.0001 seconds=2.832
+WARM validation L=512 film_cap30_dt0.00125_q8_tol1e-06 seconds=1.011
+WARM validation L=512 newton_bicgstab_dt0.005_ltol0.1_ntol0.01 seconds=0.894
+WARM validation L=512 newton_bicgstab_dt0.005_ltol0.1_ntol0.0001 seconds=0.976
+WARM validation L=512 newton_bicgstab_dt0.005_ltol0.1_ntol1e-06 seconds=1.055
+WARM validation L=512 newton_bicgstab_dt0.0025_ltol0.1_ntol0.01 seconds=0.884
+WARM validation L=512 newton_bicgstab_dt0.0025_ltol0.1_ntol0.0001 seconds=1.099
+WARM validation L=512 newton_bicgstab_dt0.0025_ltol0.1_ntol1e-06 seconds=1.168
+WARM validation L=512 newton_bicgstab_dt0.00125_ltol0.1_ntol0.01 seconds=0.922
+WARM validation L=512 newton_bicgstab_dt0.00125_ltol0.1_ntol0.0001 seconds=1.183
+WARM validation L=512 newton_bicgstab_dt0.00125_ltol0.1_ntol1e-06 seconds=1.374
+TIMED validation L=512 rep=0 case=0 rows=1377
+TIMED validation L=512 rep=0 case=1 rows=1458
+TIMED validation L=512 rep=0 case=2 rows=1539
+TIMED validation L=512 rep=0 case=3 rows=1620
+TIMED validation L=512 rep=0 case=4 rows=1701
+TIMED validation L=512 rep=0 case=5 rows=1782
+TIMED validation L=512 rep=0 case=6 rows=1863
+TIMED validation L=512 rep=0 case=7 rows=1944
+TIMED validation L=512 rep=0 case=8 rows=2025
+TIMED validation L=512 rep=0 case=9 rows=2106
+TIMED validation L=512 rep=0 case=10 rows=2187
+TIMED validation L=512 rep=0 case=11 rows=2268
+TIMED validation L=512 rep=0 case=12 rows=2349
+TIMED validation L=512 rep=0 case=13 rows=2430
+TIMED validation L=512 rep=0 case=14 rows=2511
+TIMED validation L=512 rep=0 case=15 rows=2592
+ALL-DONE validation_frozen
+ALL-DONE

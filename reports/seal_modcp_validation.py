@@ -177,6 +177,10 @@ def entry(path):
                 if digest(path.parent/artifact) != expected:
                     raise ValueError('Wave frozen quadrature hash mismatch')
                 quadrature[artifact] = expected
+        expected_rules = {f'quadrature/{arm}_{n}_{q}/rule.npz' for arm in ('cp', 'modcp', 'film')
+                          for n in cfg['meshes'] for q in cfg['eq_multipliers']}
+        if set(quadrature) != expected_rules:
+            raise ValueError('Frozen wave rule inventory differs from the declared sweep')
     seed = cfg['seeds']['evaluation'] if case == 'burgers2d' else cfg['evaluation_seed']
     return case, dict(handoff_sha256=digest(path), selection_proof_sha256=proofs,
                       validation_evidence_sha256=evidence,

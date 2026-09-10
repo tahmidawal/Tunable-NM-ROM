@@ -477,7 +477,13 @@ def main():
              'Raw repetition records, validation sweeps, selection declarations, source hashes, and field-audit results '
              f'are indexed in [{stem.name}.json]({stem.name}.json). '
              'Timing ratios must use the same job and GPU, and an FOM configuration meeting the same accuracy target. '
-             'This report does not substitute timings from separate jobs.', '',
+             'This report does not substitute timings from separate jobs. '
+             'Every evaluation panel is bound to the same saved global validation freeze, including its '
+             'unchanged cohort seed, checkpoint identities, selected settings, and quadrature file hashes. '
+             'Reference arrays must agree across every method and repetition for each case.', '',
+             'The [source audit](2026-09-10-modified-cp-source-audit.json) compares collected code with immutable Git objects. '
+             'The [raw archive manifest](2026-09-10-modified-cp-raw-artifacts.json) identifies retained field archives '
+             'and explains checksum verification and extraction. Large raw fields are retained outside Git history.', '',
              'Wave validation retains full-grid metrics and output hashes but only bounded observation fields. '
              'Its audit checks source, reference operators, selection records, and saved observations; '
              'the unsaved full-grid validation errors cannot be independently recomputed from those observations. '

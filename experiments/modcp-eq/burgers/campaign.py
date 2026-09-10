@@ -123,6 +123,8 @@ class Campaign:
 
     def dataset(self,split,L,dt):
         assert split!='evaluation' or (self.out/'selections.json').exists(),'final cohort stays sealed until frozen selection'
+        if split=='evaluation' and not self.smoke:
+            self.provenance.update(verify_validation_seal(self.out,'burgers2d',self.seeds['evaluation']))
         dest=self.out/'references';dest.mkdir(exist_ok=True)
         path=dest/f'{split}_L{L}_dt{dt}.npz'
         if path.exists():

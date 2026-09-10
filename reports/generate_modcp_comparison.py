@@ -60,7 +60,10 @@ def summarize_input(path):
         else:
             declarations = [{'target': target} for target in config['targets']]
         for selection in declarations:
-            summary = summarize_rows(rows, membership, repetitions, selection['target'])
+            summary = summarize_rows(rows, membership, repetitions,
+                                     selection['target'] if selection['target'] is not None else float('inf'))
+            if selection['target'] is None:
+                summary['qualified'] = summary['qualified_and_converged'] = False
             summaries.append(dict(case_name=data['case_name'], split=split, method=method,
                                   configuration=setting, intervals=intervals,
                                   target=selection['target'], **summary))
@@ -144,18 +147,28 @@ def main():
             if row['split'] != 'evaluation':
                 continue
             rows.append([row['case_name'], row['intervals'], row['method'],
-                         f"{100*row['target']:g}%", row['configuration'],
+                         f"{100*row['target']:g}%" if row['target'] is not None else 'diagnostic', row['configuration'],
                          f"{1e3*row['median_seconds']:.6g}" if row['median_seconds'] is not None else 'missing',
                          f"{100*row['worst_error']:.6g}%" if row['worst_error'] is not None else 'failed/nonfinite',
-                         row['outlier_cases'], row['failed_cases'],
+                         row['outlier_cases'], row['failed_cases'], row['nonstationary_cases'],
                          'yes' if row['qualified'] else 'no'])
         for selection in source['selections']:
             if selection.get('configuration') is None:
                 rows.append([source['case_name'], selection['intervals'], selection['method'],
                              f"{100*selection['target']:g}%", 'No validation-qualified setting',
-                             '—', '—', '—', '—', 'no'])
+                             '—', '—', '—', '—', '—', 'no'])
     provenance_rows = [[s['case_name'], s['status'], s['provenance']['job_id'], s['provenance']['gpu'],
                         s['provenance']['commit'], len(s['field_audits'])] for s in sources]
+    comparisons = []
+    for source in sources:
+        evaluated = [r for r in source['summaries'] if r['split'] == 'evaluation' and r['qualified']]
+        for rom in [r for r in evaluated if r['method'] in ('cp', 'modcp', 'film')]:
+            for fom in [r for r in evaluated if r['method'] not in ('cp', 'modcp', 'film')
+                        and (r['intervals'], r['target']) == (rom['intervals'], rom['target'])]:
+                comparisons.append([source['case_name'], rom['intervals'], f"{100*rom['target']:g}%",
+                                    rom['method'], fom['method'],
+                                    f"{fom['median_seconds']/rom['median_seconds']:.6g}×",
+                                    rom['nonstationary_cases']])
     incomplete = any(s['status'] != 'complete' for s in sources)
     status = 'Provisional: one or more owner campaigns is incomplete.' if incomplete else (
         'Completed single-seed pilot; accuracy and speed claims are limited to the declared families and cohorts.')
@@ -165,16 +178,25 @@ def main():
              'Queries start with full GPU-resident initial fields and return full GPU-resident output trajectories. '
              'Timing includes initialization, evolution, and reconstruction. Compilation, offline setup, and host transfers are excluded.', '',
              table(['Case', 'Intervals/axis', 'Method', 'Target', 'Configuration', 'Median query ms',
-                    'Worst error', 'Outlier cases', 'Failed cases', 'Target attained'], rows) if rows else
+                    'Worst error', 'Outlier cases', 'Failed cases', 'Nonstationary cases', 'Target attained'], rows) if rows else
              'No validation-selected evaluation measurements are available yet.', '',
              'Worst error is the maximum over evaluation cases, stored times, and recorded repetitions; '
              'for waves it is also the maximum over displacement, velocity, and energy-state errors. '
              'All expected cases and repetitions must be present for a target to qualify. '
-             'Failure counts retain nonfinite, stalled, and budget-limited solves according to the recorded completion criterion.', '',
+             'Failure counts retain numerical breakdowns and incomplete trajectories. '
+             'Iteration-capped or small-step exits may attain a physical accuracy target, but are separately counted '
+             'as nonstationary and never described as converged PDE solves.', '',
              'These errors compare against the declared numerical reference. Any unresolved reference uncertainty '
              'keeps the corresponding continuum-accuracy interpretation provisional. '
              'No configuration is chosen using evaluation accuracy or timing.', '',
              f'![Validation and evaluation error versus query time]({plots[0]})' if plots else '', '',
+             '## Matched-accuracy full-solver comparisons', '',
+             table(['Case', 'Intervals/axis', 'Target', 'ROM', 'Full solver', 'Median-time ratio FOM/ROM',
+                    'ROM nonstationary cases'], comparisons) if comparisons else
+             'No paired evaluation configurations currently qualify at a common declared target.', '',
+             'Each ratio uses the same owner job and GPU and two validation-selected configurations '
+             'that both attain the target on the untouched cohort. A ratio above unity means a smaller '
+             'median ROM query time. Numerical completion and latent convergence remain separate.', '',
              '## Provenance and independent review', '',
              table(['Case', 'Campaign status', 'Job ID', 'GPU', 'Source commit', 'Full-field audits'], provenance_rows), '',
              'Raw repetition records, validation sweeps, selection declarations, source hashes, and field-audit results '
@@ -199,6 +221,8 @@ def main():
              '- **Worst error:** the largest fixed-initial-normalized error across the reported cases, times, state components, and repetitions.',
              '- **Outlier cases:** cases with any error above the target or invalid error values.',
              '- **Failed cases:** cases with any incomplete/nonfinite solve or missing trajectory.',
+             '- **Nonstationary cases:** cases with any latent fit or time step lacking the declared convergence condition; accurate capped rollouts remain labeled.',
+             '- **Median-time ratio FOM/ROM:** the full solver\'s median query duration divided by the ROM\'s, for paired qualifying configurations.',
              '- **Energy-state error:** the physical energy norm of the displacement/velocity error, scaled by the initial reference energy.',
              '- **Full-field audit:** independent NumPy recomputation from a saved full-grid prediction and reference.',
              '- **Campaign status / job ID / GPU / source commit:** completion state and identifiers of the recorded scientific execution.',

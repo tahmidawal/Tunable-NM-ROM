@@ -46,6 +46,14 @@ class AuditTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             summarize_rows([row, row], [0], 2, .01)
 
+    def test_accurate_capped_rollout_is_not_called_converged(self):
+        row = dict(case=0, rep=0, method='modcp', seconds=.1, errors={'displacement': .001},
+                   finite=True, completed=True, stationary=False)
+        result = summarize_rows([row], [0], 1, .01)
+        self.assertTrue(result['qualified'])
+        self.assertFalse(result['qualified_and_converged'])
+        self.assertEqual(result['nonstationary_cases'], 1)
+
     def test_evaluation_requires_predeclared_validation_selection(self):
         # Synthetic fixtures only: these values are never scientific results.
         document = dict(case_name='burgers2d', status='complete',

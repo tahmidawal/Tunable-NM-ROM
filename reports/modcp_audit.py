@@ -101,13 +101,20 @@ def summarize_rows(rows, expected_cases, expected_repetitions, target):
     failed = [case for case in expected_cases if case not in by_case or any(
         not r.get('finite', False) or not r.get('completed', False) for r in by_case[case])]
     outliers = [case for case in expected_cases if case not in by_case or any(row_error(r) > target for r in by_case[case])]
+    def stationary(row):
+        if row.get('method') in ('cp', 'modcp', 'film'):
+            return row.get('stationary', row.get('solver', {}).get('stationary', False)) is True
+        return row.get('stationary', row.get('completed', False)) is True
+    nonstationary = [case for case in expected_cases if case not in by_case or any(not stationary(r) for r in by_case[case])]
     per_case_seconds = [median(r['seconds'] for r in by_case[c]) for c in expected_cases if c in by_case]
     worst = max((row_error(r) for r in rows), default=math.inf)
     return {'complete_coverage': coverage, 'cases': len(expected_cases),
             'failed_cases': len(failed), 'outlier_cases': len(outliers),
+            'nonstationary_cases': len(nonstationary),
             'median_seconds': median(per_case_seconds) if per_case_seconds else None,
             'worst_error': worst if math.isfinite(worst) else None,
             'qualified': coverage and not failed and not outliers,
+            'qualified_and_converged': coverage and not failed and not outliers and not nonstationary,
             'observed_invocations': len(rows), 'expected_invocations': len(expected)}
 
 

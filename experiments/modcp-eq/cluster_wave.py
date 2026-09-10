@@ -180,8 +180,8 @@ def collect(label):
     run(SSH+[f'cd {q} && test -f EXIT_CODE && sha256sum -c RESULTS.sha256 --quiet'], timeout=3600)
     # Reproducible data is not transferred. Checkpoints, optimizer states,
     # provenance, source and actual requested result fields all remain durable.
-    # Numerical field NPZs are already compressed. Recompressing a large panel
-    # wastes host time and used to exceed the collection timeout.
+    # Archive once without further compression. Individual NPZ serialization is
+    # recorded in each result row; recompression can dominate large-panel I/O.
     run(SSH+[f'cd {q} && tar --exclude=./out/training/data/training_fields.npy -cf ../{label}.tar . && sha256sum ../{label}.tar'], timeout=3600)
     checksum = run(SSH+[f'sha256sum {shlex.quote(NAMESPACE+"/"+label+".tar")}'], timeout=1800).split()[0]
     archive = record/'verified-cluster.tar'
@@ -198,7 +198,7 @@ def collect(label):
     # worktree cleanup. Metadata and every timing/proof/checkpoint stay in Git.
     parts = [{'path': archive.name, 'sha256': checksum}]
     write(record/'ARCHIVE.json', {'sha256': checksum, 'bytes': size, 'ordered_parts': parts,
-                                'format': 'tar', 'compression': 'none; contained NPZ field artifacts are compressed',
+                                'format': 'tar', 'compression': 'none',
                                 'retention': 'Full checksummed local archive retained outside Git; coordinator must verify durable main/artifacts copy before worktree cleanup.',
                                 'source_commit': metadata['source_commit'], 'job_id': metadata['job_id'],
                                 'excluded_regenerated_data': 'out/training/data/training_fields.npy',

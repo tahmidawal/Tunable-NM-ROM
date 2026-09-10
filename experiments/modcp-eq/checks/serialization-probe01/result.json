@@ -1,0 +1,40 @@
+{
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.1",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA GB10"
+    ],
+    "host": "spark-d69e",
+    "source_commit": null,
+    "job_id": null,
+    "numpy_version": "2.4.4"
+  },
+  "training_codes_only": true,
+  "evaluation_generated": false,
+  "shape": [
+    49,
+    511,
+    511,
+    2
+  ],
+  "checkpoint_sha256": "98f88123e90331143129a738ae58215dfcb0998dc0a01e6ebcb1a9f658b23021",
+  "scope": "Local serialization implementation probe; not cluster or query timing evidence.",
+  "methods": {
+    "stored": {
+      "seconds": 0.11980059201596305,
+      "bytes": 204719354,
+      "exact": true
+    },
+    "deflate": {
+      "seconds": 4.808874666981865,
+      "bytes": 193973584,
+      "exact": true
+    }
+  }
+}

@@ -25,6 +25,7 @@ from physics import (Grid, localized_initial, parameter_rows, cn_rollout, spectr
 from weak import build_rule, numerical_rule, make_query, moments
 from data import reference, save_json, clean, array_sha
 from seal import verify_validation_bundle
+from fields import save_fields, save_reference
 
 
 @jax.jit
@@ -267,21 +268,6 @@ def select(rows, proxies, settings, grid, cfg):
     return selections, [s for s in settings if s['id'] in chosen]
 
 
-def save_fields(out, label, u, v, truth, grid, speed, full):
-    ut, vt = truth
-    path = out/'fields'/f'{label}.npz'
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if full:
-        np.savez_compressed(path, u=np.asarray(u), v=np.asarray(v), truth_u=np.asarray(ut), truth_v=np.asarray(vt),
-                            intervals=grid.n, boundary=grid.bx, speed=float(speed))
-        return str(path.relative_to(out)), 'self_contained_full_grid'
-    inds = np.unique(np.linspace(0, grid.shape[0]-1, min(65, grid.shape[0]), dtype=int))
-    take = lambda f: np.asarray(f)[:, inds[:, None], inds]
-    np.savez_compressed(path, u=take(u), v=take(v), truth_u=take(ut), truth_v=take(vt),
-                        active_axis_indices=inds, intervals=grid.n, boundary=grid.bx, speed=float(speed))
-    return str(path.relative_to(out)), 'observation_grid_only_full_metrics_computed_before_subsampling'
-
-
 def audit_full_weak(aux, model, raw_rule, setting, grid, speed, cfg):
     """Untimed full-grid weak audit on actual latent states, without rollout fixes."""
     if 'codes' not in aux:
@@ -381,7 +367,9 @@ def run_evaluation(cfg, grid, models, rules, selected, result, out):
         ut, vt, audit = reference(grid, parameter, cfg, refine=True)
         supplied = (ut[0], vt[0], jnp.asarray(parameter[5]))
         jax.block_until_ready((supplied, ut, vt))
-        result['references'].append({'split': 'evaluation', 'intervals': n, 'case': ci, 'parameters': parameter.tolist(), **audit})
+        reference_path, reference_hash = save_reference(out, f'reference_{n}_{ci}', (ut, vt), grid, supplied[2])
+        result['references'].append({'split': 'evaluation', 'intervals': n, 'case': ci, 'parameters': parameter.tolist(),
+                                     'reference_artifact': reference_path, 'reference_sha256': reference_hash, **audit})
         for setting in selected:
             for _ in range(cfg['warmups']):
                 queries.query(setting, supplied)
@@ -393,14 +381,17 @@ def run_evaluation(cfg, grid, models, rules, selected, result, out):
                 burn()
                 u, v, row, aux = queries.query(setting, supplied)
                 score = queries.metric(u, v, ut, vt, supplied[2])
-                sha = {'u': array_sha(np.asarray(u)), 'v': array_sha(np.asarray(v))}
+                host_u, host_v = np.asarray(u), np.asarray(v)
+                sha = {'u': array_sha(host_u), 'v': array_sha(host_v)}
                 row.update(split='evaluation', case=ci, rep=rep, errors=error_maxima(score), output_sha256=sha)
                 if rep == 0:
-                    path, kind = save_fields(out, f'evaluation_{n}_{ci}_{setting["id"]}', u, v, (ut, vt), grid, supplied[2], True)
+                    path, kind = save_fields(out, f'evaluation_{n}_{ci}_{setting["id"]}', host_u, host_v, (ut, vt), grid, supplied[2], True, shared_reference=True)
                     first[setting['id']] = (sha, path, kind)
                 elif sha != first[setting['id']][0]:
                     raise RuntimeError('Nonidentical repetitions: cannot deduplicate the actual output artifact')
                 row.update(field_artifact=first[setting['id']][1], field_artifact_kind=first[setting['id']][2],
+                           reference_artifact=reference_path, reference_sha256=reference_hash,
+                           field_serialization='numpy_npz_stored_lossless',
                            artifact_relation='actual_first_timed_output' if rep == 0 else 'identical_full_field_hash_verified')
                 result['invocations'].append(row)
             save()

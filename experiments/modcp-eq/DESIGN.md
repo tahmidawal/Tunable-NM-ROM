@@ -80,6 +80,11 @@ shared evaluation cohort. Evaluation imports hashes of the complete global seal,
 its own validation handoff, and both mesh selection proofs. Validation timings
 remain in the imported proof; final timing rows all come from the new allocation.
 Every selected configuration receives the full seven-repetition evaluation protocol.
+Final prediction fields preserve all original values in lossless stored NPZ files.
+One shared full reference file per case and mesh is identified by its SHA256 in
+every associated timing row. Validation observation-grid fields retain their
+bounded format. Full local archives remain outside Git with tracked manifests;
+the coordinator verifies a durable main/artifacts copy before any worktree cleanup.
 Validation alone selects configurations; new evaluation cases are generated only
 after selection is persisted. Numerical completion and stationarity are separate;
 budget and small-step exits can qualify by physical accuracy while remaining explicitly

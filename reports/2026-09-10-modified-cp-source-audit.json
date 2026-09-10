@@ -1,0 +1,524 @@
+{
+  "scope": "Collected source content against immutable Git objects; source provenance only, not numerical accuracy.",
+  "runs": {
+    "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01": {
+      "passed": true,
+      "files_checked": 19,
+      "source_commits": [
+        "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+      ],
+      "files": [
+        {
+          "source": "experiments/modcp-eq/DESIGN.md",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/DESIGN.md",
+          "sha256": "d71bb6ec6bc41ea9dfdca202a72503957f1153e4e3ff7e8d09ea35efe99bdab3",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/audit.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/audit.py",
+          "sha256": "2060345851b4cbc3fd663df9fb9db947e4ab045c9db879c8c4f9cfd97c4922d8",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/__init__.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/burgers/__init__.py",
+          "sha256": "82116bb118ff12c7dbf1b0a10440bb79c756dcdde4870605536d61449a433649",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/campaign.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/burgers/campaign.py",
+          "sha256": "c5fac11384305ac7447aab22314da7b0d463ccd4868c6db411d43c81261feaa0",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/diagnose_initial.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/burgers/diagnose_initial.py",
+          "sha256": "59efd3e4eb84154769c482073e6d77bd7ffe092258235eb665c5ae8d0f411210",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/fom.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/burgers/fom.py",
+          "sha256": "7c4558a9989252cf2fb73c200d60c6cb953a264823473c5529515ba759df96f0",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/kernels.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/burgers/kernels.py",
+          "sha256": "2992e21a14b6d23629c70bc3f33080857a34a7ed9ce76fa6039f5640737c0090",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/cluster/collect.sh",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/cluster/collect.sh",
+          "sha256": "ae642a4b3a793a69177c59783438c6614717f05ceef32b484bb9121fe9a9595c",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/cluster/stage.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/cluster/stage.py",
+          "sha256": "cf4ee4664de60946b69fb887898c41d70ba915d7e4fcf2ac020828e7426ffb7d",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/cluster/submit.sh",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/cluster/submit.sh",
+          "sha256": "92b8615abb7030a4b2fd5acb485635889fc8aaadcb789858ea999bcbace0e7c2",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/common/__init__.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/common/__init__.py",
+          "sha256": "3b5a1d3f1d5c88df262d385ee3bccc8dc894787acb9a5ad8290da32cdb196a9b",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/common/decoders.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/common/decoders.py",
+          "sha256": "c60ebc254f5e9cb580ee715ff7c43a5c6674eb5aaf8452aecc2b4e2f29422444",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/common/lm.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/common/lm.py",
+          "sha256": "b5016a176f433c7515f12b1a827c2fbdfc7f09951cecd51dd54ac93cdf2eb915",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/common/quadrature.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/common/quadrature.py",
+          "sha256": "0ee954ce9b7ed83c96fd340d81f1ae598d075a733f33edc125c6c02dd2bcc1ad",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/common/seal.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/common/seal.py",
+          "sha256": "3fad22a992f6218695b2e608630a6d4b2ebd6fec98f35363f868773ec27d99a5",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/common/training.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/common/training.py",
+          "sha256": "9d32526b04fa2262fe2c439f9917fcbeacd1aa4cf95b085254d1ef907c1c43a6",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/tests/check_burgers.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/tests/check_burgers.py",
+          "sha256": "184955b072a90c58fa1e7b3222b7e39fd7aae70f7747eb414e01c9a1c2f97535",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/tests/check_nnls_qr.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/tests/check_nnls_qr.py",
+          "sha256": "1b52d523b4d0906c45c22b01907a05fd69b7ade5ddf0067515c00e1dcb1ba15e",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        },
+        {
+          "source": "experiments/modcp-eq/tests/check_seal.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/diagnose01/code/tests/check_seal.py",
+          "sha256": "90322fcbc75e0d00f6be219d5ed6c3af3fe0493faafddaad5e3b7ff66055100b",
+          "commit": "a7c687b8fb8ec7d849bdb61d285cfd95da847e16"
+        }
+      ]
+    },
+    "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01": {
+      "passed": true,
+      "files_checked": 17,
+      "source_commits": [
+        "bd9149d9948264772e4337e16454e7dc41064eae"
+      ],
+      "files": [
+        {
+          "source": "experiments/modcp-eq/cluster_wave.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/cluster_wave.py",
+          "sha256": "15dcc4318d54b3f535d8de6e8a5ec28a8f4eaf8cb92c02dee9fc3360f6a7cedd",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/common/__init__.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/common/__init__.py",
+          "sha256": "3b5a1d3f1d5c88df262d385ee3bccc8dc894787acb9a5ad8290da32cdb196a9b",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/common/lm.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/common/lm.py",
+          "sha256": "b5016a176f433c7515f12b1a827c2fbdfc7f09951cecd51dd54ac93cdf2eb915",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/common/training.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/common/training.py",
+          "sha256": "9d32526b04fa2262fe2c439f9917fcbeacd1aa4cf95b085254d1ef907c1c43a6",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/common/quadrature.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/common/quadrature.py",
+          "sha256": "a6a1e26bf68b1791beb357c6a1113a944c330a755d6883fcbfca2ee110b4b117",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/common/decoders.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/common/decoders.py",
+          "sha256": "c60ebc254f5e9cb580ee715ff7c43a5c6674eb5aaf8452aecc2b4e2f29422444",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/weak.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/weak.py",
+          "sha256": "b66d2bdf17165d53a493de198881f5dcddba31201cfe76f83b99e5bb3fa13647",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/data.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/data.py",
+          "sha256": "78adddbfa9d7f7446b00262ac26c52fbd1f02c98c8d0a94911b0cf8c3c1693d8",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/train_wave.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/train_wave.py",
+          "sha256": "7b8f5dc6659950416b9093e15a082a95a06b2c1c94f53f1bc6ad7610cac17870",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/test_weak.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/test_weak.py",
+          "sha256": "c522bb7c9478673a4585d7a4948ec44860b8bf04f8064efd9a0673fc626fc857",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/compare.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/compare.py",
+          "sha256": "064ac82b69135c74fcb22d7fc0016a742315a910b58bae121a8a140ba25351b9",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/smoke.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/smoke.py",
+          "sha256": "4ae18c2068c13065bb9e43c0beeb4194fd50ddf849977cb71afcf6c57fa74141",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/test_physics.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/test_physics.py",
+          "sha256": "a18f24cb3ec7cf3398d4088ad82cd307db02c3131c184c3a7822c99e6b344d7c",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/physics.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/physics.py",
+          "sha256": "e28602b53cd35d956a35838403ecb0bd4a9c991db0ffb1e9d1fa7ce660696128",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/config.json",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/modcp-eq/wave/config.json",
+          "sha256": "baed9fc4428663c4ef44e4761474acbabcd3bd9fd380f4057d0616b5045a35d5",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/fresh-wave-head/fresh_fom.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/fresh-wave-head/fresh_fom.py",
+          "sha256": "9dc6e3bd14acce20f5cc29497032f07d63806a20ddb78ef3f31a13b607c1adfc",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        },
+        {
+          "source": "experiments/fresh-wave-head/test_fresh_fom.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/smoke_reflective01/cluster/code/fresh-wave-head/test_fresh_fom.py",
+          "sha256": "302614aaa51fc4cec228c2f5d59c1689032c721ba0a00bbc7fcd203605e293ff",
+          "commit": "bd9149d9948264772e4337e16454e7dc41064eae"
+        }
+      ]
+    },
+    "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01": {
+      "passed": true,
+      "files_checked": 13,
+      "source_commits": [
+        "972e866b2309c550e905e850986d3116c15b8860"
+      ],
+      "files": [
+        {
+          "source": "experiments/modcp-eq/DESIGN.md",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/DESIGN.md",
+          "sha256": "b066d0169ee95dff71e7367ab08f9d5e6823d4a2caa865fc60b02efba5fdee9c",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/__init__.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/burgers/__init__.py",
+          "sha256": "82116bb118ff12c7dbf1b0a10440bb79c756dcdde4870605536d61449a433649",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/campaign.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/burgers/campaign.py",
+          "sha256": "23073e5f3c451b063eb0ec1dcf9b77966ef5f13c2f2d35c81091e0e434116ebb",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/fom.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/burgers/fom.py",
+          "sha256": "7c4558a9989252cf2fb73c200d60c6cb953a264823473c5529515ba759df96f0",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/burgers/kernels.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/burgers/kernels.py",
+          "sha256": "23f8314c7169211b87225f4ea1052dd90d41f36e25bb3872c2a77464f4228d58",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/cluster/stage.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/cluster/stage.py",
+          "sha256": "38100406bfb011abec93f488a7148c9f5bdcf6fc4d312a7d6d096c3613563cca",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/cluster/submit.sh",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/cluster/submit.sh",
+          "sha256": "39e5e27a4e131b530903104be589628cda678bde614ead5249746a4f8af575df",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/common/__init__.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/common/__init__.py",
+          "sha256": "3b5a1d3f1d5c88df262d385ee3bccc8dc894787acb9a5ad8290da32cdb196a9b",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/common/decoders.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/common/decoders.py",
+          "sha256": "c60ebc254f5e9cb580ee715ff7c43a5c6674eb5aaf8452aecc2b4e2f29422444",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/common/lm.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/common/lm.py",
+          "sha256": "b5016a176f433c7515f12b1a827c2fbdfc7f09951cecd51dd54ac93cdf2eb915",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/common/quadrature.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/common/quadrature.py",
+          "sha256": "a6a1e26bf68b1791beb357c6a1113a944c330a755d6883fcbfca2ee110b4b117",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/common/training.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/common/training.py",
+          "sha256": "9d32526b04fa2262fe2c439f9917fcbeacd1aa4cf95b085254d1ef907c1c43a6",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        },
+        {
+          "source": "experiments/modcp-eq/tests/check_burgers.py",
+          "staged": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/code/tests/check_burgers.py",
+          "sha256": "9483f8cb6547e64df198469d729816fa29ace50850d9d072542a42e0b492bcf3",
+          "commit": "972e866b2309c550e905e850986d3116c15b8860"
+        }
+      ]
+    },
+    "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01": {
+      "passed": true,
+      "files_checked": 15,
+      "source_commits": [
+        "46a8c8b08abc6047af2e3c472693300200f757e3"
+      ],
+      "files": [
+        {
+          "source": "experiments/modcp-eq/cluster_wave.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/cluster_wave.py",
+          "sha256": "a969ecb688da97acc084db2b8830690e46830c020025f16169537bf687db1a5b",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/__init__.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/common/__init__.py",
+          "sha256": "3b5a1d3f1d5c88df262d385ee3bccc8dc894787acb9a5ad8290da32cdb196a9b",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/lm.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/common/lm.py",
+          "sha256": "b5016a176f433c7515f12b1a827c2fbdfc7f09951cecd51dd54ac93cdf2eb915",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/training.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/common/training.py",
+          "sha256": "9d32526b04fa2262fe2c439f9917fcbeacd1aa4cf95b085254d1ef907c1c43a6",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/quadrature.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/common/quadrature.py",
+          "sha256": "a6a1e26bf68b1791beb357c6a1113a944c330a755d6883fcbfca2ee110b4b117",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/decoders.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/common/decoders.py",
+          "sha256": "c60ebc254f5e9cb580ee715ff7c43a5c6674eb5aaf8452aecc2b4e2f29422444",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/weak.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/wave/weak.py",
+          "sha256": "51e656a1c045673397a4bdd05c53368dd2ce4af82088e16e0e8d2b0404fa35ad",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/data.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/wave/data.py",
+          "sha256": "78adddbfa9d7f7446b00262ac26c52fbd1f02c98c8d0a94911b0cf8c3c1693d8",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/train_wave.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/wave/train_wave.py",
+          "sha256": "7b8f5dc6659950416b9093e15a082a95a06b2c1c94f53f1bc6ad7610cac17870",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/test_weak.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/wave/test_weak.py",
+          "sha256": "c522bb7c9478673a4585d7a4948ec44860b8bf04f8064efd9a0673fc626fc857",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/test_physics.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/wave/test_physics.py",
+          "sha256": "a18f24cb3ec7cf3398d4088ad82cd307db02c3131c184c3a7822c99e6b344d7c",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/physics.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/wave/physics.py",
+          "sha256": "e28602b53cd35d956a35838403ecb0bd4a9c991db0ffb1e9d1fa7ce660696128",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/config.json",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/modcp-eq/wave/config.json",
+          "sha256": "baed9fc4428663c4ef44e4761474acbabcd3bd9fd380f4057d0616b5045a35d5",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/fresh-wave-head/fresh_fom.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/fresh-wave-head/fresh_fom.py",
+          "sha256": "9dc6e3bd14acce20f5cc29497032f07d63806a20ddb78ef3f31a13b607c1adfc",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/fresh-wave-head/test_fresh_fom.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/code/fresh-wave-head/test_fresh_fom.py",
+          "sha256": "302614aaa51fc4cec228c2f5d59c1689032c721ba0a00bbc7fcd203605e293ff",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        }
+      ]
+    },
+    "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01": {
+      "passed": true,
+      "files_checked": 15,
+      "source_commits": [
+        "46a8c8b08abc6047af2e3c472693300200f757e3"
+      ],
+      "files": [
+        {
+          "source": "experiments/modcp-eq/cluster_wave.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/cluster_wave.py",
+          "sha256": "a969ecb688da97acc084db2b8830690e46830c020025f16169537bf687db1a5b",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/__init__.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/common/__init__.py",
+          "sha256": "3b5a1d3f1d5c88df262d385ee3bccc8dc894787acb9a5ad8290da32cdb196a9b",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/lm.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/common/lm.py",
+          "sha256": "b5016a176f433c7515f12b1a827c2fbdfc7f09951cecd51dd54ac93cdf2eb915",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/training.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/common/training.py",
+          "sha256": "9d32526b04fa2262fe2c439f9917fcbeacd1aa4cf95b085254d1ef907c1c43a6",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/quadrature.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/common/quadrature.py",
+          "sha256": "a6a1e26bf68b1791beb357c6a1113a944c330a755d6883fcbfca2ee110b4b117",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/common/decoders.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/common/decoders.py",
+          "sha256": "c60ebc254f5e9cb580ee715ff7c43a5c6674eb5aaf8452aecc2b4e2f29422444",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/weak.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/wave/weak.py",
+          "sha256": "51e656a1c045673397a4bdd05c53368dd2ce4af82088e16e0e8d2b0404fa35ad",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/data.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/wave/data.py",
+          "sha256": "78adddbfa9d7f7446b00262ac26c52fbd1f02c98c8d0a94911b0cf8c3c1693d8",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/train_wave.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/wave/train_wave.py",
+          "sha256": "7b8f5dc6659950416b9093e15a082a95a06b2c1c94f53f1bc6ad7610cac17870",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/test_weak.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/wave/test_weak.py",
+          "sha256": "c522bb7c9478673a4585d7a4948ec44860b8bf04f8064efd9a0673fc626fc857",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/test_physics.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/wave/test_physics.py",
+          "sha256": "a18f24cb3ec7cf3398d4088ad82cd307db02c3131c184c3a7822c99e6b344d7c",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/physics.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/wave/physics.py",
+          "sha256": "e28602b53cd35d956a35838403ecb0bd4a9c991db0ffb1e9d1fa7ce660696128",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/modcp-eq/wave/config.json",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/modcp-eq/wave/config.json",
+          "sha256": "baed9fc4428663c4ef44e4761474acbabcd3bd9fd380f4057d0616b5045a35d5",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/fresh-wave-head/fresh_fom.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/fresh-wave-head/fresh_fom.py",
+          "sha256": "9dc6e3bd14acce20f5cc29497032f07d63806a20ddb78ef3f31a13b607c1adfc",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        },
+        {
+          "source": "experiments/fresh-wave-head/test_fresh_fom.py",
+          "staged": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/code/fresh-wave-head/test_fresh_fom.py",
+          "sha256": "302614aaa51fc4cec228c2f5d59c1689032c721ba0a00bbc7fcd203605e293ff",
+          "commit": "46a8c8b08abc6047af2e3c472693300200f757e3"
+        }
+      ]
+    }
+  }
+}

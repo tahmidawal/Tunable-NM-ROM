@@ -195,5 +195,16 @@
       "The archived CP speed ratio does not transfer automatically from iterative CG to the current direct spectral/coarse FOM comparisons."
     ],
     "scope": "Read-only scientific-source comparison. No numerical job, architecture change or new worktree started."
+  },
+  "expanded_historical_review": {
+    "scope": "Expanded after user pointed outside the current repository; historical data audit only.",
+    "local_root": "/home/tahmid/Dev/Neurips",
+    "original_may_root": "/cluster/tufts/paralab/tawal01/NMROM-Apr8/20260423-NEURIPS/Tunable-ROM/2026-05-21-heat",
+    "preserved_inventory": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/history/cp-heat-transfer-20260910/SOURCE-MANIFEST.json",
+    "report": "reports/2026-07-30-cp-heat-optimization-transfer.md",
+    "aggregate_audit": "reports/2026-07-30-cp-heat-optimization-transfer.json",
+    "correction": "The earlier review covered frozen paper-driver copies but omitted the later reduced-Gram, Cholesky and graph studies. Encoder/amplitude are not the only missing transfer opportunities.",
+    "priority": "Compare Cholesky and contracted normal equations on the existing weak solver before architecture or time-integration changes; measured gains in the current model remain unestablished.",
+    "limits": "Historical July summary arrays are arithmetically verified, not independently field-validated. Their compiled iterative-CG FOM, final-error aggregate and mixed precision differ from the current protocol. The original May sources and checkpoints were preserved; no historical speedup is newly validated."
   }
 }

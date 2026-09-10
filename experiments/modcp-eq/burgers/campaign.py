@@ -21,6 +21,7 @@ import jax.numpy as jnp
 import numpy as np
 from common.decoders import DecoderConfig,init_decoder,add_modulation,initial_codes,decode_grid
 from common.training import train,save_checkpoint
+from common.seal import verify_validation_seal
 from burgers import fom,kernels as k
 
 
@@ -214,6 +215,8 @@ class Campaign:
     def name(arm,settings):return arm+'_'+('_'.join(f'{a}{settings[a]}' for a in sorted(settings)))
 
     def run_split(self,split):
+        if split=='evaluation' and not self.smoke:
+            self.provenance.update(verify_validation_seal(self.out,'burgers2d',self.seeds['evaluation']))
         self.status=split;self.save();fielddir=self.out/'fields';fielddir.mkdir(exist_ok=True)
         reps=self.split_reps[split]
         for L in self.meshes:

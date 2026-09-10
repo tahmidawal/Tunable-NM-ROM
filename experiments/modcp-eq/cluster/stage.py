@@ -4,6 +4,7 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[3]
 attempt=sys.argv[1];phase=sys.argv[2]
 resume=Path(sys.argv[3]).resolve() if len(sys.argv)>3 else None
+global_seal=Path(sys.argv[4]).resolve() if len(sys.argv)>4 else None
 assert attempt.isalnum() and phase in ('smoke','train','validate','evaluate','all')
 dst=root/'experiments/modcp-eq/cluster/stage'/attempt
 assert not dst.exists()
@@ -35,6 +36,14 @@ if resume is not None:
         data=source.read_bytes();target.write_bytes(data)
         copied.append(dict(source=str(source),staged=str(target.relative_to(dst)),sha256=hashlib.sha256(data).hexdigest()))
     (dst/'RESUME_ARTIFACTS.json').write_text(json.dumps(copied,indent=2)+'\n')
+if phase=='evaluate':
+    assert resume is not None and global_seal is not None and global_seal.is_file(),'evaluation staging requires resume artifacts and a global seal'
+    (dst/'out'/'validation_handoff.json').write_bytes((resume/'handoff.json').read_bytes())
+    (dst/'out'/'global_validation_seal.json').write_bytes(global_seal.read_bytes())
+    sys.path.insert(0,str(root/'experiments/modcp-eq'))
+    from common.seal import verify_validation_seal
+    conf=json.loads((dst/'out'/'config.json').read_text())
+    verify_validation_seal(dst/'out','burgers2d',conf['seeds']['evaluation'])
 remote=f'/cluster/tufts/paralab/tawal01/modcp_burgers2d_20260910/{attempt}'
 script='''#!/bin/bash
 #SBATCH --job-name=ctol_modcp_b2d_ATTEMPT

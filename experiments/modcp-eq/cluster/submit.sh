@@ -5,7 +5,10 @@ PHASE=${2:?phase required}
 [[ "$ATTEMPT" =~ ^[a-zA-Z0-9]+$ ]] || exit 2
 HERE=$(cd "$(dirname "$0")" && pwd)
 RESUME=${3:-}
-if [[ -n "$RESUME" ]]; then
+GLOBAL_SEAL=${4:-}
+if [[ -n "$GLOBAL_SEAL" ]]; then
+  STAGE=$(/home/tahmid/Dev/.venv/bin/python "$HERE/stage.py" "$ATTEMPT" "$PHASE" "$RESUME" "$GLOBAL_SEAL")
+elif [[ -n "$RESUME" ]]; then
   STAGE=$(/home/tahmid/Dev/.venv/bin/python "$HERE/stage.py" "$ATTEMPT" "$PHASE" "$RESUME")
 else
   STAGE=$(/home/tahmid/Dev/.venv/bin/python "$HERE/stage.py" "$ATTEMPT" "$PHASE")

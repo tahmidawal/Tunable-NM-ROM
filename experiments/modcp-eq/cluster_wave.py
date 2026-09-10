@@ -180,15 +180,17 @@ def collect(label):
     run(SSH+[f'cd {q} && test -f EXIT_CODE && sha256sum -c RESULTS.sha256 --quiet'], timeout=120)
     # Reproducible data is not transferred. Checkpoints, optimizer states,
     # provenance, source and actual requested result fields all remain durable.
-    run(SSH+[f'cd {q} && tar --exclude=./out/training/data/training_fields.npy -czf ../{label}.tar.gz . && sha256sum ../{label}.tar.gz'], timeout=600)
-    checksum = run(SSH+[f'sha256sum {shlex.quote(NAMESPACE+"/"+label+".tar.gz")}'], timeout=30).split()[0]
-    archive = record/'verified-cluster.tar.gz'
-    subprocess.run(['scp', *CONNECTION, '-q', 'tufts-login:'+NAMESPACE+'/'+label+'.tar.gz', str(archive)], check=True, timeout=600)
+    # Numerical field NPZs are already compressed. Recompressing a large panel
+    # wastes host time and used to exceed the collection timeout.
+    run(SSH+[f'cd {q} && tar --exclude=./out/training/data/training_fields.npy -cf ../{label}.tar . && sha256sum ../{label}.tar'], timeout=3600)
+    checksum = run(SSH+[f'sha256sum {shlex.quote(NAMESPACE+"/"+label+".tar")}'], timeout=1800).split()[0]
+    archive = record/'verified-cluster.tar'
+    subprocess.run(['scp', *CONNECTION, '-q', 'tufts-login:'+NAMESPACE+'/'+label+'.tar', str(archive)], check=True, timeout=7200)
     if sha(archive) != checksum:
         raise RuntimeError('Archive checksum mismatch')
     extracted = record/'cluster'
     extracted.mkdir(exist_ok=False)
-    subprocess.run(['tar', '-xzf', str(archive), '-C', str(extracted)], check=True)
+    subprocess.run(['tar', '-xf', str(archive), '-C', str(extracted)], check=True)
     subprocess.run(['sha256sum', '-c', 'RESULTS.sha256', '--quiet'], cwd=extracted, check=True)
     size = archive.stat().st_size
     parts = []
@@ -206,11 +208,12 @@ def collect(label):
     else:
         parts.append({'path': archive.name, 'sha256': checksum})
     write(record/'ARCHIVE.json', {'sha256': checksum, 'bytes': size, 'ordered_parts': parts,
+                                'format': 'tar', 'compression': 'none; contained NPZ field artifacts are compressed',
                                 'source_commit': metadata['source_commit'], 'job_id': metadata['job_id'],
                                 'excluded_regenerated_data': 'out/training/data/training_fields.npy',
-                                'restore': 'Concatenate ordered_parts in their recorded order; verify sha256 of resulting gzip tar; extract. RESULTS.sha256 authenticates each result.'})
+                                'restore': 'Concatenate ordered_parts in their recorded order; verify sha256 of resulting uncompressed tar; extract. RESULTS.sha256 authenticates each result.'})
     # Exact directory and exact archive, only after BOTH independent checks pass.
-    run(SSH+[f'rm -rf -- {q} {shlex.quote(NAMESPACE+"/"+label+".tar.gz")} && test ! -e {q}'], timeout=60)
+    run(SSH+[f'rm -rf -- {q} {shlex.quote(NAMESPACE+"/"+label+".tar")} && test ! -e {q}'], timeout=60)
     metadata['remote_cleanup_complete'] = True
     write(record/'submission.json', metadata)
     print(json.dumps(metadata, indent=2))

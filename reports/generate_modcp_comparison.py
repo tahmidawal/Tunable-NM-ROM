@@ -443,6 +443,8 @@ def main():
              table(['Case', 'Decoder', 'Training intervals/axis', 'Latent dimension', 'CP rank',
                     'Decoder parameters', 'Completed training updates'], training_rows), '',
              'Each PDE/boundary has separately trained weights, frozen for both evaluation meshes. '
+             'Training jointly optimizes decoder weights and a latent code for each training snapshot; '
+             'this pilot does not reproduce the older ViT encoder training pipeline. '
              'CP and modified CP share the same initial CP training stage. FiLM uses the full update budget '
              'from its own initialization. Training update budgets match; parameter counts and training costs differ. '
              'This pilot compares the declared architectures without a parameter-matched or exhaustive tuning claim.', '',

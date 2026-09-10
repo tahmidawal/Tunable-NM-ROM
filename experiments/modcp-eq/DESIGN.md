@@ -48,7 +48,11 @@ tolerances $10^{-2}/10^{-4}/10^{-6}$ are swept with relative Krylov tolerance 0.
 Every stopping reason and actual full-order residual is retained. Budget or small
 step exits are not described as converged; a zero tangent is a separate failure.
 
-Two warmups and seven timed repetitions are retained in validation and evaluation.
+Every configuration runs on all 16 validation cases once. A predeclared case-0
+proxy supplies two discarded warmups and seven recorded selection timings. The
+coordinator approved this bounded validation-timing refinement before scientific
+launch; it retains the complete accuracy cohort and solver grid. Final evaluation
+retains two warmups and seven timed repetitions on every one of its 16 cases.
 Initial fields and reconstructed output trajectories remain on the GPU; the
 charged region includes sampled initialization, evolution and dense decoding.
 Setup, training, compilation and host transfers are excluded. Every measured

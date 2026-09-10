@@ -1,7 +1,8 @@
 """Resumable train/validate/frozen-test Burgers2D architecture campaign.
 
 No final-test parameter draw occurs until selections.json has been frozen.
-Seven same-invocation timing/error repetitions are retained even in validation.
+Full-cohort validation is measured once, with a predeclared seven-repeat case0
+selection timing proxy. Frozen final evaluation retains seven repetitions/case.
 """
 import argparse
 from dataclasses import replace
@@ -61,7 +62,7 @@ class Campaign:
         self.seeds={'train':2609101701,'validation':2609101702,'evaluation':2609101703}
         self.cfg=DecoderConfig(intervals=self.L,k=4 if args.smoke else 16,rank=8 if args.smoke else 64,
                                head_width=24 if args.smoke else 256,width=12 if args.smoke else 64,inr_width=24 if args.smoke else 128)
-        self.reps=1 if args.smoke else 7;self.target=[.01,.05]
+        self.reps=1 if args.smoke else 7;self.split_reps={'validation':1,'evaluation':self.reps};self.target=[.01,.05]
         self.provenance=dict(commit=os.environ.get('COMMIT'),job_id=os.environ.get('SLURM_JOB_ID'),
           gpu=jax.devices()[0].device_kind,backend=jax.default_backend(),x64=jax.config.jax_enable_x64,
           matmul_precision=os.environ.get('JAX_DEFAULT_MATMUL_PRECISION'),jax_version=jax.__version__,
@@ -69,7 +70,8 @@ class Campaign:
         assert self.provenance['backend']=='gpu' and self.provenance['x64'] and self.provenance['matmul_precision']=='highest'
         self.config=dict(decoder=self.cfg.to_dict(),meshes=self.meshes,counts=self.counts,seeds=self.seeds,
           validation_case_ids=list(range(self.counts['validation'])),evaluation_case_ids=list(range(self.counts['evaluation'])),
-          repetitions=self.reps,discarded_warmups=2,targets=self.target,output_times=[0,.05,.10,.15,.20,.25],
+          repetitions=self.reps,split_repetitions=self.split_reps,selection_proxy_case=0,selection_proxy_repetitions=self.reps,
+          validation_repetitions=1,evaluation_repetitions=self.reps,discarded_warmups=2,targets=self.target,output_times=[0,.05,.10,.15,.20,.25],
           training_updates=dict(cp_initialization=20 if args.smoke else 6000,comparison=20 if args.smoke else 10000,film=40 if args.smoke else 16000),
           training_batch_size=64,point_batch=256,lr_initial=.001,lr_final=.0001,stage_cosine_schedule='reset for each6k/10k stage; paired CP/modCP share6k initialization',
           timing_contract='GPU resident supplied dense field+viscosity to six GPU dense output fields; initialization+evolution+decoding included; transfer/setup/compile excluded',
@@ -82,6 +84,8 @@ class Campaign:
             for line in self.log.read_text().splitlines():
                 row=json.loads(line);self.rows.append(row);self.finished.add(self.row_id(row))
         self.selections=json.loads((self.out/'selections.json').read_text()) if (self.out/'selections.json').exists() else []
+        self.selection_timings=[];self.selection_log=self.out/'selection_timings.jsonl'
+        if self.selection_log.exists():self.selection_timings=[json.loads(line) for line in self.selection_log.read_text().splitlines()]
         self.status='initialized';self.save()
 
     @staticmethod
@@ -90,7 +94,7 @@ class Campaign:
     def save(self):
         checkpoints={p.stem:sha(p) for p in self.out.glob('checkpoints/*.pkl') if not p.stem.endswith('trainstate')}
         write_json(self.out/'handoff.json',dict(case_name='burgers2d',status=self.status,config=self.config,
-          provenance=self.provenance,checkpoint_hashes=checkpoints,invocations=self.rows,selections=self.selections,
+          provenance=self.provenance,checkpoint_hashes=checkpoints,invocations=self.rows,selections=self.selections,selection_timings=self.selection_timings,
           artifacts=dict(raw_invocations='invocations.jsonl',training='checkpoints',rules='rules',fields='fields',references='references')))
 
     def append(self,row):
@@ -190,6 +194,7 @@ class Campaign:
 
     def run_split(self,split):
         self.status=split;self.save();fielddir=self.out/'fields';fielddir.mkdir(exist_ok=True)
+        reps=self.split_reps[split]
         for L in self.meshes:
             same,truth,physical=self.references(split,L)
             inputs=[jnp.asarray(fom.initial(L,p)) for p in physical]
@@ -221,11 +226,11 @@ class Campaign:
                 return fun(inputs[case],nu,*packed,settings['tol'])
             # Compile and two explicit discarded calls for every configuration.
             for sub in subjects:
-                if all((split,sub[0],L,c,r) in self.finished for c in range(len(physical)) for r in range(self.reps)):continue
+                if all((split,sub[0],L,c,r) in self.finished for c in range(len(physical)) for r in range(reps)):continue
                 t=time.perf_counter()
                 for _ in range(2):jax.block_until_ready(invoke(sub,0))
                 print(f'WARM {split} L={L} {sub[0]} seconds={time.perf_counter()-t:.3f}',flush=True)
-            for rep in range(self.reps):
+            for rep in range(reps):
                 k.burn(.25 if self.smoke else .75)
                 order=subjects if rep%2==0 else subjects[::-1]
                 for case in range(len(physical)):
@@ -278,6 +283,23 @@ class Campaign:
                                    tangent_rank=int(np.sum(singular>max(singular[0]*1e-10,1e-24))),audit_latent_step=len(Zsteps))
                         self.append(row)
                     print(f'TIMED {split} L={L} rep={rep} case={case} rows={len(self.rows)}',flush=True);self.save()
+            if split=='validation':
+                existing={(x['intervals'],x['configuration'],x['rep']) for x in self.selection_timings}
+                for rep in range(self.reps):
+                    for sub in (subjects if rep%2==0 else subjects[::-1]):
+                        name,arm,settings,_,_,_=sub
+                        if (L,name,rep) in existing:continue
+                        k.burn(.05 if self.smoke else .75)
+                        jax.block_until_ready(inputs[0]);t=time.perf_counter()
+                        result=jax.block_until_ready(invoke(sub,0));seconds=time.perf_counter()-t
+                        fields=np.asarray(result[0]);finite=bool(np.isfinite(fields).all())
+                        row=clean(dict(intervals=L,configuration=name,method=arm,case=0,rep=rep,seconds=seconds,
+                            errors=k.errors(fields,truth[0]) if finite else None,finite=finite,
+                            role='predeclared validation case0 selection timing proxy; not final claim',provenance=self.provenance,
+                            field_sha256=hashlib.sha256(fields.tobytes()).hexdigest()))
+                        with self.selection_log.open('a') as f:f.write(json.dumps(row,allow_nan=False)+'\n')
+                        self.selection_timings.append(row)
+                    self.save()
             # Explicit component timings of the same staged query, never used in
             # the complete-query time or cross-job speedup denominator.
             if split=='evaluation':
@@ -286,12 +308,29 @@ class Campaign:
                     name,arm,settings,_,packed,parts=sub
                     if parts is None:continue
                     p,data,ic=packed
-                    k.burn(.25)
-                    t=time.perf_counter();ini=jax.block_until_ready(parts['initialize'](inputs[0],p,ic));t1=time.perf_counter()
-                    zz,detail=jax.block_until_ready(parts['evolve'](ini[0],float(physical[0,4]),ini[1],p,data,settings['tol']));t2=time.perf_counter()
-                    f=jax.block_until_ready(parts['reconstruct'](zz,p));t3=time.perf_counter()
-                    profile.append(dict(configuration=name,intervals=L,initialization_s=t1-t,evolution_s=t2-t1,reconstruction_s=t3-t2,
-                                        includes_component_compilation=True,interpretation='first staged calls include separate compilation; diagnostic only, no performance claim'))
+                    rfun=jax.jit(parts['residual']);jfun=jax.jit(jax.jacfwd(parts['residual']))
+                    def staged():
+                        ini=jax.block_until_ready(parts['initialize'](inputs[0],p,ic))
+                        zz,detail=jax.block_until_ready(parts['evolve'](ini[0],float(physical[0,4]),ini[1],p,data,settings['tol']))
+                        f=jax.block_until_ready(parts['reconstruct'](zz,p))
+                        return ini,zz,detail,f
+                    for _ in range(2):ini,zz,detail,f=staged()
+                    z=zz[-1];previous=detail[0][-2] if len(detail[0])>1 else zz[0]
+                    prevm,_=k.moments(p,previous,data,objects[name][2])
+                    rargs=(z,prevm,float(physical[0,4]),p,data,ini[1])
+                    for _ in range(2):jax.block_until_ready((rfun(*rargs),jfun(*rargs)))
+                    repetitions=[]
+                    for rep in range(self.reps):
+                        k.burn(.05 if self.smoke else .75)
+                        t=time.perf_counter();ini=jax.block_until_ready(parts['initialize'](inputs[0],p,ic));t1=time.perf_counter()
+                        zz,detail=jax.block_until_ready(parts['evolve'](ini[0],float(physical[0,4]),ini[1],p,data,settings['tol']));t2=time.perf_counter()
+                        f=jax.block_until_ready(parts['reconstruct'](zz,p));t3=time.perf_counter()
+                        rr=jax.block_until_ready(rfun(*rargs));t4=time.perf_counter()
+                        jj=jax.block_until_ready(jfun(*rargs));t5=time.perf_counter()
+                        repetitions.append(dict(rep=rep,initialization_s=t1-t,evolution_s=t2-t1,reconstruction_s=t3-t2,
+                           residual_s=t4-t3,jacobian_s=t5-t4,physical_error=k.errors(np.asarray(f),truth[0])))
+                    profile.append(dict(configuration=name,intervals=L,case=0,repetitions=repetitions,
+                                        includes_component_compilation=False,interpretation='separately synchronized warmed components; never replace fused query timing'))
                 write_json(self.out/f'profiles_L{L}.json',profile)
             del subjects,objects,inputs;same=truth=None;jax.clear_caches()
         self.save()
@@ -303,10 +342,15 @@ class Campaign:
             for arm in ('cp','modcp','film','newton_bicgstab'):
                 rows=[r for r in self.rows if r['split']=='validation' and r['intervals']==L and r['method']==arm]
                 groups={name:[r for r in rows if r['configuration']==name] for name in sorted(set(r['configuration'] for r in rows))}
-                expected=self.counts['validation']*self.reps
+                expected=self.counts['validation']*self.split_reps['validation']
                 assert groups and all(len(g)==expected for g in groups.values()),'cannot freeze incomplete validation grid'
+                timing={}
+                for name in groups:
+                    proxy=[r for r in self.selection_timings if r['intervals']==L and r['configuration']==name]
+                    assert len(proxy)==self.reps,'cannot freeze incomplete predeclared timing proxy'
+                    timing[name]=float(np.median([r['seconds'] for r in proxy]))
                 for target in self.target:
-                    passed=[(float(np.median([r['seconds'] for r in g])),name) for name,g in groups.items()
+                    passed=[(timing[name],name) for name,g in groups.items()
                             if all(r['finite'] and r['completed'] and r['errors']['displacement']<=target for r in g)]
                     chosen=min(passed)[1] if passed else None
                     selections.append(dict(method=arm,intervals=L,target=target,configuration=chosen,validation_passed=bool(passed),role='target'))
@@ -316,7 +360,7 @@ class Campaign:
                     scores=[]
                     for name,g in groups.items():
                         error=max(r['errors']['displacement'] if r['errors'] else float('inf') for r in g)
-                        scores.append((error,float(np.median([r['seconds'] for r in g])),name))
+                        scores.append((error,timing[name],name))
                     selections.append(dict(method=arm,intervals=L,target=None,configuration=min(scores)[2],validation_passed=False,role='best_error_diagnostic'))
         self.selections=selections;write_json(self.out/'selections.json',selections)
         write_json(self.out/'selection_freeze.json',dict(selection_sha256=sha(self.out/'selections.json'),validation_invocations_sha256=sha(self.log),provenance=self.provenance))

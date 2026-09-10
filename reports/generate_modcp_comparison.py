@@ -99,14 +99,14 @@ def summarize_input(path):
         if not artifact or row.get('field_artifact_kind') != 'self_contained_full_grid' or not row.get('finite'):
             continue
         full = (path.parent / artifact).resolve()
+        n = row['intervals']
+        nt = len(config['output_times']) if data['case_name'] == 'burgers2d' else int(round(config['end_time']/config['observation_dt']))+1
+        side = n-1 if data['case_name'] == 'wave_reflective' else n+1
         # One saved deterministic result can serve several repetitions only when
         # the owner records that each actual repetition has the same field hash.
-        key = str(full), tuple((name, row['errors'][name]) for name in
+        key = str(full), data['case_name'], n, nt, side, tuple((name, row['errors'][name]) for name in
                               ('displacement', 'velocity', 'energy_state') if name in row['errors'])
         if key not in seen:
-            n = row['intervals']
-            nt = len(config['output_times']) if data['case_name'] == 'burgers2d' else int(round(config['end_time']/config['observation_dt']))+1
-            side = n-1 if data['case_name'] == 'wave_reflective' else n+1
             seen[key] = audit_field_archive(full, data['case_name'], row['errors'],
                                            expected_shape=(nt, side, side), expected_intervals=n)
             audits.append(seen[key])

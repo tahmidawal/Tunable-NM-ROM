@@ -32,7 +32,8 @@ norm, truth state, physical initial-condition descriptors or time enters a decod
 ## PDE and quadrature
 
 Use the independently verified post-reset edge-stiffness and trapezoid-mass wave
-operators, with first-order Crank–Nicolson for both ROM and CG FOM. The full solve is
+operators, with Crank–Nicolson on the first-order displacement/velocity system
+for both ROM and CG FOM. The full solve is
 
 $$
 \left(M+\frac{\Delta t}{2}C+\frac{\Delta t^2}{4}K\right)u_{n+1}

@@ -1,0 +1,44 @@
+{
+  "interpretation": "Implementation transport probe only; no PDE solve or scientific timing was modified.",
+  "source": "/cluster/tufts/paralab/tawal01/modcp_wave2d_20260910/evaluation_reflective01/out/comparison/fields/evaluation_512_0_cp_eq4_cap30_tol1e-06_dt0.005.npz",
+  "source_sha256": "a7a27a58f8bda2b06c84e229347b8202b3671f7ca3b028544ed16a67a51a4f1d",
+  "ordering": "default,large,large,default",
+  "default_documented_window": {
+    "nrequests": 64,
+    "buffer": 32768
+  },
+  "large_window": {
+    "nrequests": 128,
+    "buffer": 262144
+  },
+  "transfers": [
+    {
+      "window": "default",
+      "seconds": 4.475063520949334,
+      "bytes": 204720146,
+      "sha256": "a7a27a58f8bda2b06c84e229347b8202b3671f7ca3b028544ed16a67a51a4f1d",
+      "megabytes_per_second": 45.74686929953811
+    },
+    {
+      "window": "large",
+      "seconds": 4.57626609998988,
+      "bytes": 204720146,
+      "sha256": "a7a27a58f8bda2b06c84e229347b8202b3671f7ca3b028544ed16a67a51a4f1d",
+      "megabytes_per_second": 44.73519273725204
+    },
+    {
+      "window": "large",
+      "seconds": 3.8749410409945995,
+      "bytes": 204720146,
+      "sha256": "a7a27a58f8bda2b06c84e229347b8202b3671f7ca3b028544ed16a67a51a4f1d",
+      "megabytes_per_second": 52.83180926733623
+    },
+    {
+      "window": "default",
+      "seconds": 2.3200506839784794,
+      "bytes": 204720146,
+      "sha256": "a7a27a58f8bda2b06c84e229347b8202b3671f7ca3b028544ed16a67a51a4f1d",
+      "megabytes_per_second": 88.23951451307991
+    }
+  ]
+}

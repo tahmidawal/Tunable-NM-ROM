@@ -164,6 +164,9 @@ def audit_field_archive(path, case_name, expected_errors, rtol=1e-8, atol=1e-10,
                         expected_shape=None, expected_intervals=None):
     """Audit self-contained full-grid NPZ; metadata is scalar, fields include t=0."""
     with np.load(path, allow_pickle=False) as data:
+        required_fields = ('u', 'truth_u') if case_name == 'burgers2d' else ('u', 'v', 'truth_u', 'truth_v')
+        if any(data[name].dtype != np.float64 for name in required_fields):
+            raise ValueError(f'Archived scientific fields are not float64: {path}')
         if expected_shape is not None and data['u'].shape != tuple(expected_shape):
             raise ValueError(f'Archived field mesh/time shape differs from invocation: {path}')
         if case_name != 'burgers2d':

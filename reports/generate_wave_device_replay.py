@@ -144,7 +144,7 @@ def figures(rows, curves, cfg, dest):
             times = np.arange(len(initial))*cfg['observation_dt']
             axes[1, col].plot(times, 100*current, color=colors[name], label=name+' / current norm')
             axes[1, col].plot(times, 100*initial, '--', color=colors[name], label=name+' / initial norm')
-        axes[1, col].set(xlabel='Time', ylabel='Worst displacement error across cases (%)',
+        axes[1, col].set(xlabel='Time', ylabel='Worst displacement error across cases (%)', yscale='log',
                         title=f"{max(cfg['meshes'])} intervals: both normalizations")
         axes[1, col].legend(fontsize=7)
     for ax in axes.flat:
@@ -314,30 +314,47 @@ def main():
                 source_sha256=manifest, curves=curves, time_refinement=result['time_refinement'],
                 reference_acceptance=all(x['refinement_passed'] for x in result['references']))
     figures(rows, [c for c in curves if c['primary']], cfg, args.out)
+    headline = []
+    evolution_share = []
+    for r in rows:
+        if r['method'] == NAMES[cfg['primary_method']] and r['intervals'] == max(cfg['meshes']):
+            ratio = r['fom_over_rom']
+            relation = f'{ratio:.3f} times faster' if ratio > 1 else f'{1/ratio:.3f} times slower'
+            headline.append(f"{BOUNDARIES[r['boundary']]}: the primary head is {relation} than its named FOM, "
+                f"with mean/worst current-relative displacement error "
+                f"{100*r['errors']['displacement']['current_relative']['mean']:.3f}% / "
+                f"{100*r['errors']['displacement']['current_relative']['worst']:.3f}%.")
+            evolution_share.append(f"{BOUNDARIES[r['boundary']].lower()} "
+                f"{100*r['timing_components_ms']['evolution']/r['query_ms']:.3f}%")
     lines = ['# Fresh reflective and absorbing wave comparison on the GPU', '',
         'This report measures the fresh, verified wave models under the user-requested device-resident comparison. Numbers are provisional development results from existing validation cases; they do not establish final paper accuracy or a continuum-error guarantee.', '',
+        f"At {max(cfg['meshes'])} intervals per axis: "+' '.join(headline), '',
         f"All rows use allocation {prov['job_id']} on {', '.join(prov['device_kind'])}, f64 and highest matrix precision. Source commit: `{prov['source_commit']}`. Only post-reset wave mathematics and checkpoints are used; the discarded earlier wave experiments remain excluded.", '',
         f"The frozen learned spatial bank has rank {cfg['frozen_bank_rank']}. MLP32 is the preselected primary head and MLP16 is its control, both using optimizer seed {cfg['primary_method'].split('seed')[-1]}. Neither head is retrained for these meshes. Each boundary uses {len(cfg['validation_indices'])} existing development cases, generated from seed {cfg['validation_seed']}, indices {cfg['validation_indices']}.", '',
         f"The unit-square wave starts from a Gaussian core with a smooth compact cutoff, with varying position, width, amplitude, propagation speed and initial velocity. Both displacement and velocity fields are supplied to the ROM. The horizon is {cfg['end_time']:g}, with {round(cfg['end_time']/cfg['observation_dt'])+1} full outputs. The primary ROM step is {cfg['primary_dt']:g}; {cfg['accuracy_only_dt']:g} is an accuracy-only refinement, excluded from speed selection.", '',
         'The timer starts with ready full input fields on the GPU and includes full projection, every initial-fit start, speed-dependent operator preparation, evolution, and full GPU displacement/velocity outputs. Mesh-only assembly, compilation and host copies are excluded. Reflective Dirichlet boundaries store interior unknowns with prescribed zero boundary values; absorbing boundaries include boundary unknowns. Intervals per axis therefore differ from stored nodes per axis.', '',
+        'Reduced stiffness and boundary-damping matrices are preassembled; no empirical quadrature fit occurs in these queries. The reduced evolution uses fixed model dimensions, while full-field projection and decoding grow with the mesh.', '',
+        'The replay encloses projection and every initial-fit start in one compiled initializer. A frozen-head GPU smoke check verified numerical parity with the earlier fresh-wave query algorithm. This also changes execution overhead; a difference from earlier host-query timings cannot be attributed only to omitted host transfers. All speed ratios below compare the methods within this allocation.', '',
         '## Same-grid query costs', '',
         'The reflective FOM uses an exact propagator for the discrete spatial operator, evaluated by sine transforms. The absorbing FOM uses the verified boundary-damped RK4 solver. These are named same-grid comparisons; there is no coarse-grid FOM selection.', '',
         table(['Boundary', 'Intervals/axis', 'Method', 'Query ms', 'Initialization / evolution / output ms', 'FOM / method', 'Timing outliers'],
               [[BOUNDARIES[r['boundary']], r['intervals'], r['method'], f"{r['query_ms']:.3f}",
                 ' / '.join(f"{r['timing_components_ms'][k]:.3f}" for k in ('initialization_and_parameter_projection', 'evolution', 'dense_device_output')),
-                f"{r['fom_over_rom']:.3f}", f"{r['timing_outliers']}/{cfg['repetitions']*r['case_count']}"] for r in rows]), '',
+                f"{r['fom_over_rom']:.6g}", f"{r['timing_outliers']}/{cfg['repetitions']*r['case_count']}"] for r in rows]), '',
         f"Times are medians across cases of per-case medians from {cfg['repetitions']} repetitions. Component medians need not sum exactly to the query median. Timing outliers exceed 1.5 times their own case's repetition median; this diagnostic does not remove any measurement. FOM/method above one means less raw device-query time, independently of accuracy.", '',
+        f"At the largest mesh, reduced evolution accounts for the following ratios of median component time to median primary query time: {', '.join(evolution_share)}. The frozen RK4 implementation evaluates decoder geometry, QR and SVD at every stage: {4*round(cfg['end_time']/cfg['primary_dt'])+1} evaluations per primary trajectory, including initialization. The timer establishes evolution as the bottleneck. It does not separately identify the contributions of those operations; that requires profiling or a controlled follow-up. Their repeated cost is independent of the full spatial mesh, but it can still exceed a named FOM's cost.", '',
         '## Accuracy of those timed outputs', '',
         'Displacement error uses the mass-weighted L2 norm. Current-relative divides by the reference field at that time; initial-normalized divides by its initial displacement norm. The energy-state norm combines displacement-gradient and velocity error. Velocity initial normalization uses the initial energy-state norm so zero initial velocity is defined. Undefined current-relative zero-reference entries remain null in the evidence JSON; vanishing reference fields are flagged rather than hidden.', '',
-        table(['Boundary', 'Intervals', 'Method', 'Displacement current mean / median case / worst (%)', 'Displacement initial worst (%)', 'Velocity current worst (%)', 'Energy-state current worst (%)', 'Stationary initial fits'],
+        table(['Boundary', 'Intervals', 'Method', 'Displacement current mean / median case / worst (%)', 'Displacement initial worst (%)', 'Velocity current worst (%)', 'Energy-state current worst (%)', 'Completed; stationary initial fits'],
               [[BOUNDARIES[r['boundary']], r['intervals'], r['method'],
                 ' / '.join(f"{100*r['errors']['displacement']['current_relative'][k]:.3f}" for k in ('mean', 'median_case_mean', 'worst')),
                 f"{100*r['errors']['displacement']['initial_normalized']['worst']:.3f}",
                 f"{100*r['errors']['velocity']['current_relative']['worst']:.3f}",
                 f"{100*r['errors']['energy_state']['current_relative']['worst']:.3f}",
-                'n/a' if r['stationary_fits'] is None else f"{r['stationary_fits']}/{r['case_count']}"] for r in rows]), '',
-        'Mean averages cases and times; median case is the median of case time means; worst is the maximum across all cases and output times. A nonstationary initial fit still returns a scored field but does not certify a converged minimizer.', '',
+                f"{r['completed_cases']}/{r['case_count']}; "+('n/a' if r['stationary_fits'] is None else f"{r['stationary_fits']}/{r['case_count']}")] for r in rows]), '',
+        'Mean averages valid case-time entries; median case is the median of case time means; worst is the maximum across all cases and output times. A nonstationary initial fit still returns a scored field but does not certify a converged minimizer.', '',
         f"![Costs and both displacement-error normalizations]({args.out.stem}-scaling.png)", '',
+        f"[Download the figure as PDF]({args.out.stem}-scaling.pdf). Both figure rows use logarithmic vertical axes.", '',
         '## Temporal checks and independent audit', '',
         f"The absorbing timing CFL is {cfg['fom_cfl']:g}. Its scoring reference uses CFL {cfg['reference_refinement_cfl']:g}, checked against {cfg['reference_cfl']:g} on the same mesh; the declared maximum initial-normalized difference target is {cfg['reference_refinement_target']:g}. The recorded reference checks pass: {data['reference_acceptance']}. Reflective scoring is exact in time for the discrete spatial operator.", '',
         table(['Boundary', 'Intervals', 'Case', 'Method', 'Step-halving displacement / velocity / energy difference (%)', 'Pass'],
@@ -353,6 +370,7 @@ def main():
         '- Frozen bank / head: learned spatial functions and nonlinear map whose weights are unchanged for this comparison. Rank is the number of bank functions.',
         '- Reflective / Dirichlet: zero boundary displacement, so outgoing waves reflect. Absorbing: the verified damping boundary operator allows energy to leave.',
         '- DST: discrete sine transform, used to propagate the reflective discrete wave exactly in time. RK4: fourth-order Runge–Kutta stepping. CFL: a step-size factor relative to grid spacing and wave speed.',
+        '- QR / SVD: matrix factorizations used to solve the tangent-space equation and check whether the decoder Jacobian is close to losing rank. Decoder geometry includes its value, tangent and directional curvature.',
         '- Device-resident query: ready GPU input through ready full GPU output. Initial fitting finds latent coordinates from the supplied field. Stationary indicates the configured optimization and conditioning checks passed.',
         '- Same-grid: both methods refer to the same spatially discrete equation. Intervals are mesh cells per axis; prescribed reflective boundary values are omitted from stored unknowns.',
         '- Current-relative / initial-normalized: error divided by the current reference norm / the named initial reference scale. Mean, median case and worst use the aggregation described beside the table.',

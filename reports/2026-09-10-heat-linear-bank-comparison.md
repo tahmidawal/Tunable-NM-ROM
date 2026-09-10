@@ -4,6 +4,8 @@ Completed and audited development comparison of a linear ROM using the frozen le
 
 At the finest requested mesh, freeing the bank coefficients changes worst current-relative error from 4.555479% to 1.675830% and GPU query time from 12.318828 ms to 0.561659 ms. The measured speed ratio is 21.933× versus the current NMROM and 1.842× versus the same-grid direct FOM. These ratios compare medians within this allocation; they do not imply matched FOM error.
 
+The coarse direct FOM takes 0.313116 ms on the GPU with worst error 2.577910%. The linear ROM and this coarse FOM both meet the declared 5% development target. This run therefore does not establish a linear-ROM GPU advantage over the coarse-FOM control, although the linear ROM is more accurate.
+
 The linear ROM evolves 32 free bank coefficients; the NMROM evolves 8 nonlinear latent variables. Both use the same frozen learned spatial weights and 64 smooth sine test moments. This is a linear learned-basis ROM, not the original nonlinear-manifold method and not a matched-dimension comparison.
 
 ## Finest mesh: 1024 intervals per axis

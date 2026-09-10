@@ -20,8 +20,9 @@ def main():
     assert audit["passed"] and result["complete"] and cleanup["remote_absent"]
     assert audit["result_sha256"] == hashlib.sha256(native.read_bytes()).hexdigest()
     rows = audit["summaries"]; ns = result["settings"]["requested_intervals"]; finest = max(ns)
-    cfg = result["config"]; settings = result["settings"]; coarse = lookup[finest, "fom_coarse16"]
+    cfg = result["config"]; settings = result["settings"]
     lookup = {(r["intervals"], r["method"]): r for r in rows}
+    coarse = lookup[finest, "fom_coarse16"]
     exact = lookup[finest, "linear_weak_exact"]; nm = lookup[finest, "nmrom"]; fom = lookup[finest, "fom_same_grid"]
     lines = ["# Direct linear heat evolution in the learned spatial bank", "",
         "Completed and audited development comparison of a linear ROM using the frozen learned bank, the current nonlinear ROM, and direct heat FOMs. These are provisional scientific findings because the cohort is used for development; final paper cases remain unopened.", "",

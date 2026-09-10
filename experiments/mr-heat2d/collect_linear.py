@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 
-from restore_transfer import restore
+from restore_linear import restore
 
 
 REMOTE = "/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/linear05"
@@ -22,12 +22,12 @@ def collect(record, job):
     command = f"cd {REMOTE} && find . -type f ! -path './jax-cache/*' ! -path '*/__pycache__/*' ! -name ARCHIVE.sha256 -print0 | sort -z | xargs -0 sha256sum > ARCHIVE.sha256"
     subprocess.run(["ssh", "tufts-login", command], check=True)
     parts_dir = record/"parts"; parts_dir.mkdir(exist_ok=False)
-    process = subprocess.Popen(["ssh", "tufts-login", f"cd {REMOTE} && tar --exclude='./jax-cache' --exclude='*/__pycache__' -czf - ."], stdout=subprocess.PIPE)
+    process = subprocess.Popen(["ssh", "tufts-login", f"cd {REMOTE} && tar --exclude='./jax-cache' --exclude='*/__pycache__' -cf - ."], stdout=subprocess.PIPE)
     joined = hashlib.sha256(); parts = []; total = 0; limit = 90*1024*1024
     while True:
         first = process.stdout.read(1024*1024)
         if not first: break
-        path = parts_dir/f"archive.tar.gz.part{len(parts):04d}"
+        path = parts_dir/f"archive.tar.part{len(parts):04d}"
         digest = hashlib.sha256(); size = 0
         with path.open("xb") as handle:
             chunk = first

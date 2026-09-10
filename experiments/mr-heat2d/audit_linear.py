@@ -100,7 +100,8 @@ def audit(record):
             summary = dict(intervals=n, method=name, cases=len(rows), invocations=len(reps),
                 worst_physical_error=max(max(r["vs_physical"]["relative_current"]) for r in reps),
                 worst_initial_error=max(r["vs_physical"]["relative_current"][0] for r in reps),
-                worst_same_grid_error=max(max(r["vs_same_grid"]["relative_current"]) for r in reps))
+                worst_same_grid_error=max(max(r["vs_same_grid"]["relative_current"]) for r in reps),
+                largest_energy_increase=max(float(np.max(np.diff(r["vs_physical"]["energy"]))) for r in reps))
             for contract in ("device", "host"):
                 key = contract+"_seconds"
                 values = [rep["phases"][key] for rep in reps]

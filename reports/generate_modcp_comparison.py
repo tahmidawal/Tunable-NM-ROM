@@ -110,15 +110,15 @@ def summarize_input(path):
             seen[key] = audit_field_archive(full, data['case_name'], row['errors'],
                                            expected_shape=(nt, side, side), expected_intervals=n)
             audits.append(seen[key])
-        field_groups[row['split'], row['method'], row['configuration'], row['intervals'], row['case']] = seen[key]
+        field_groups[row['split'], row['method'], row['configuration'], row['intervals'], row['case'], row['rep']] = seen[key]
     paired_fields = 0
     for row in data.get('invocations', []):
         if row['split'] != 'evaluation' or not row.get('finite'):
             continue
-        key = row['split'], row['method'], row['configuration'], row['intervals'], row['case']
-        if key not in field_groups:
+        key = row['split'], row['method'], row['configuration'], row['intervals'], row['case'], row['rep']
+        audit = field_groups.get(key, field_groups.get((*key[:-1], 0)))
+        if audit is None:
             raise ValueError('Finite evaluation invocation lacks an independently auditable full field')
-        audit = field_groups[key]
         recorded = {'u': row.get('field_sha256')} if data['case_name'] == 'burgers2d' else row.get('output_sha256')
         if recorded != audit['output_sha256']:
             raise ValueError('Timed invocation output hash differs from its audited field')
@@ -127,12 +127,14 @@ def summarize_input(path):
                 raise ValueError('Timed invocation error differs from its audited field')
         paired_fields += 1
     for summary in summaries:
-        keys = [(summary['split'], summary['method'], summary['configuration'], summary['intervals'], case)
-                for case in config[f"{summary['split']}_case_ids"]]
-        complete = all(key in field_groups for key in keys)
+        repetitions = config.get(f"{summary['split']}_repetitions", config['repetitions'])
+        keys = [(summary['split'], summary['method'], summary['configuration'], summary['intervals'], case, rep)
+                for case in config[f"{summary['split']}_case_ids"] for rep in range(repetitions)]
+        group_audits = [field_groups.get(key, field_groups.get((*key[:-1], 0))) for key in keys]
+        complete = all(audit is not None for audit in group_audits)
         for label, index in (('initial', 0), ('final', -1)):
             summary[f'worst_{label}_error'] = max(
-                values[index] for key in keys for values in field_groups[key]['error_series'].values()) if complete else None
+                values[index] for audit in group_audits for values in audit['error_series'].values()) if complete else None
     return dict(source=relative(path), sha256=digest(path), status=data['status'],
                 case_name=data['case_name'], provenance=data['provenance'], config=config,
                 selections=data.get('selections', []), summaries=summaries,

@@ -1,0 +1,61 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.34:/projects/paralab  4.6T  4.1T  470G  90% /cluster/tufts/paralab
+Thu Sep 10 18:24:39 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000000:D1:00.0 Off |                    0 |
+| N/A   37C    P0             55W /  300W |       0MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+reference passed 0
+reference passed 1
+reference passed 2
+reference passed 3
+reference passed 4
+reference passed 5
+reference passed 6
+reference passed 7
+reference passed 8
+reference passed 9
+reference passed 10
+reference passed 11
+timed 64 0 {'nmrom': np.float64(14.2797), 'nmrom_adaptive': np.float64(14.9582), 'exp_project_full': np.float64(12.8421), 'exp_project_full_adaptive': np.float64(13.6979), 'exp_project2': np.float64(4.812), 'exp_project2_adaptive': np.float64(5.7564), 'linear_weak_exact': np.float64(0.1239), 'fom_same_grid': np.float64(0.189), 'fom_coarse16': np.float64(0.186)}
+timed 64 1 {'nmrom': np.float64(11.6957), 'nmrom_adaptive': np.float64(11.7798), 'exp_project_full': np.float64(6.008), 'exp_project_full_adaptive': np.float64(7.294), 'exp_project2': np.float64(4.3116), 'exp_project2_adaptive': np.float64(3.9835), 'linear_weak_exact': np.float64(0.1389), 'fom_same_grid': np.float64(0.1911), 'fom_coarse16': np.float64(0.1786)}
+timed 64 2 {'nmrom': np.float64(13.1267), 'nmrom_adaptive': np.float64(11.1075), 'exp_project_full': np.float64(8.9667), 'exp_project_full_adaptive': np.float64(7.872), 'exp_project2': np.float64(4.51), 'exp_project2_adaptive': np.float64(3.3533), 'linear_weak_exact': np.float64(0.1237), 'fom_same_grid': np.float64(0.1973), 'fom_coarse16': np.float64(0.1748)}
+timed 64 3 {'nmrom': np.float64(11.834), 'nmrom_adaptive': np.float64(10.1201), 'exp_project_full': np.float64(5.6748), 'exp_project_full_adaptive': np.float64(4.857), 'exp_project2': np.float64(3.8166), 'exp_project2_adaptive': np.float64(3.0762), 'linear_weak_exact': np.float64(0.1223), 'fom_same_grid': np.float64(0.1806), 'fom_coarse16': np.float64(0.1706)}
+timed 64 4 {'nmrom': np.float64(12.8412), 'nmrom_adaptive': np.float64(10.8259), 'exp_project_full': np.float64(6.3975), 'exp_project_full_adaptive': np.float64(5.0218), 'exp_project2': np.float64(4.8482), 'exp_project2_adaptive': np.float64(3.4249), 'linear_weak_exact': np.float64(0.1243), 'fom_same_grid': np.float64(0.1976), 'fom_coarse16': np.float64(0.1897)}
+timed 64 5 {'nmrom': np.float64(12.203), 'nmrom_adaptive': np.float64(10.4209), 'exp_project_full': np.float64(5.8394), 'exp_project_full_adaptive': np.float64(4.89), 'exp_project2': np.float64(4.0864), 'exp_project2_adaptive': np.float64(3.1794), 'linear_weak_exact': np.float64(0.1037), 'fom_same_grid': np.float64(0.1585), 'fom_coarse16': np.float64(0.1791)}
+timed 64 6 {'nmrom': np.float64(12.9405), 'nmrom_adaptive': np.float64(11.9157), 'exp_project_full': np.float64(9.9418), 'exp_project_full_adaptive': np.float64(8.4085), 'exp_project2': np.float64(4.3407), 'exp_project2_adaptive': np.float64(3.1236), 'linear_weak_exact': np.float64(0.1434), 'fom_same_grid': np.float64(0.1902), 'fom_coarse16': np.float64(0.172)}
+timed 64 7 {'nmrom': np.float64(13.7841), 'nmrom_adaptive': np.float64(13.9871), 'exp_project_full': np.float64(6.0878), 'exp_project_full_adaptive': np.float64(7.8702), 'exp_project2': np.float64(4.3498), 'exp_project2_adaptive': np.float64(6.1036), 'linear_weak_exact': np.float64(0.137), 'fom_same_grid': np.float64(0.2133), 'fom_coarse16': np.float64(0.1951)}
+timed 64 8 {'nmrom': np.float64(13.0337), 'nmrom_adaptive': np.float64(17.467), 'exp_project_full': np.float64(10.2928), 'exp_project_full_adaptive': np.float64(6.5674), 'exp_project2': np.float64(4.8805), 'exp_project2_adaptive': np.float64(3.336), 'linear_weak_exact': np.float64(0.1381), 'fom_same_grid': np.float64(0.1931), 'fom_coarse16': np.float64(0.1697)}
+timed 64 9 {'nmrom': np.float64(15.4029), 'nmrom_adaptive': np.float64(14.8628), 'exp_project_full': np.float64(6.6106), 'exp_project_full_adaptive': np.float64(7.7718), 'exp_project2': np.float64(4.5851), 'exp_project2_adaptive': np.float64(5.7427), 'linear_weak_exact': np.float64(0.1345), 'fom_same_grid': np.float64(0.1902), 'fom_coarse16': np.float64(0.1811)}
+timed 64 10 {'nmrom': np.float64(16.6553), 'nmrom_adaptive': np.float64(9.5296), 'exp_project_full': np.float64(11.0212), 'exp_project_full_adaptive': np.float64(4.5863), 'exp_project2': np.float64(9.5959), 'exp_project2_adaptive': np.float64(3.4387), 'linear_weak_exact': np.float64(0.1388), 'fom_same_grid': np.float64(0.1887), 'fom_coarse16': np.float64(0.1739)}
+timed 64 11 {'nmrom': np.float64(12.4817), 'nmrom_adaptive': np.float64(11.3107), 'exp_project_full': np.float64(6.8694), 'exp_project_full_adaptive': np.float64(5.9866), 'exp_project2': np.float64(4.1228), 'exp_project2_adaptive': np.float64(3.2641), 'linear_weak_exact': np.float64(0.1269), 'fom_same_grid': np.float64(0.2002), 'fom_coarse16': np.float64(0.207)}
+timed 1024 0 {'nmrom': np.float64(14.5082), 'nmrom_adaptive': np.float64(15.2754), 'exp_project_full': np.float64(13.1685), 'exp_project_full_adaptive': np.float64(14.233), 'exp_project2': np.float64(5.2238), 'exp_project2_adaptive': np.float64(6.5487), 'linear_weak_exact': np.float64(0.5418), 'fom_same_grid': np.float64(0.8962), 'fom_coarse16': np.float64(0.5029)}
+timed 1024 1 {'nmrom': np.float64(12.0524), 'nmrom_adaptive': np.float64(11.9394), 'exp_project_full': np.float64(6.421), 'exp_project_full_adaptive': np.float64(7.8203), 'exp_project2': np.float64(4.8023), 'exp_project2_adaptive': np.float64(4.6858), 'linear_weak_exact': np.float64(0.5301), 'fom_same_grid': np.float64(0.9252), 'fom_coarse16': np.float64(0.4923)}
+timed 1024 2 {'nmrom': np.float64(13.1414), 'nmrom_adaptive': np.float64(11.4607), 'exp_project_full': np.float64(9.3854), 'exp_project_full_adaptive': np.float64(8.1278), 'exp_project2': np.float64(4.89), 'exp_project2_adaptive': np.float64(3.8449), 'linear_weak_exact': np.float64(0.5437), 'fom_same_grid': np.float64(1.0097), 'fom_coarse16': np.float64(0.3283)}
+timed 1024 3 {'nmrom': np.float64(12.0522), 'nmrom_adaptive': np.float64(10.7508), 'exp_project_full': np.float64(6.0614), 'exp_project_full_adaptive': np.float64(5.4466), 'exp_project2': np.float64(4.3534), 'exp_project2_adaptive': np.float64(3.7062), 'linear_weak_exact': np.float64(0.5557), 'fom_same_grid': np.float64(1.0051), 'fom_coarse16': np.float64(0.3379)}
+timed 1024 4 {'nmrom': np.float64(13.7077), 'nmrom_adaptive': np.float64(11.7255), 'exp_project_full': np.float64(6.8125), 'exp_project_full_adaptive': np.float64(5.5338), 'exp_project2': np.float64(5.341), 'exp_project2_adaptive': np.float64(4.3999), 'linear_weak_exact': np.float64(0.5393), 'fom_same_grid': np.float64(0.9359), 'fom_coarse16': np.float64(0.5211)}
+timed 1024 5 {'nmrom': np.float64(12.6054), 'nmrom_adaptive': np.float64(11.5608), 'exp_project_full': np.float64(6.4676), 'exp_project_full_adaptive': np.float64(5.5949), 'exp_project2': np.float64(4.7319), 'exp_project2_adaptive': np.float64(3.8966), 'linear_weak_exact': np.float64(0.5136), 'fom_same_grid': np.float64(1.077), 'fom_coarse16': np.float64(0.4588)}
+timed 1024 6 {'nmrom': np.float64(13.8534), 'nmrom_adaptive': np.float64(12.3309), 'exp_project_full': np.float64(9.8342), 'exp_project_full_adaptive': np.float64(8.7315), 'exp_project2': np.float64(4.866), 'exp_project2_adaptive': np.float64(3.8627), 'linear_weak_exact': np.float64(0.5266), 'fom_same_grid': np.float64(0.9239), 'fom_coarse16': np.float64(0.5246)}
+timed 1024 7 {'nmrom': np.float64(12.9221), 'nmrom_adaptive': np.float64(13.9808), 'exp_project_full': np.float64(6.219), 'exp_project_full_adaptive': np.float64(8.114), 'exp_project2': np.float64(4.5602), 'exp_project2_adaptive': np.float64(6.4688), 'linear_weak_exact': np.float64(0.5334), 'fom_same_grid': np.float64(1.0287), 'fom_coarse16': np.float64(0.5001)}
+timed 1024 8 {'nmrom': np.float64(13.7132), 'nmrom_adaptive': np.float64(16.3493), 'exp_project_full': np.float64(10.5285), 'exp_project_full_adaptive': np.float64(7.0718), 'exp_project2': np.float64(5.0691), 'exp_project2_adaptive': np.float64(3.577), 'linear_weak_exact': np.float64(0.5255), 'fom_same_grid': np.float64(0.945), 'fom_coarse16': np.float64(0.4924)}
+timed 1024 9 {'nmrom': np.float64(14.0081), 'nmrom_adaptive': np.float64(15.2255), 'exp_project_full': np.float64(7.2125), 'exp_project_full_adaptive': np.float64(8.5534), 'exp_project2': np.float64(5.0033), 'exp_project2_adaptive': np.float64(6.5695), 'linear_weak_exact': np.float64(0.5274), 'fom_same_grid': np.float64(1.0624), 'fom_coarse16': np.float64(0.4382)}
+timed 1024 10 {'nmrom': np.float64(16.3112), 'nmrom_adaptive': np.float64(10.1486), 'exp_project_full': np.float64(11.5465), 'exp_project_full_adaptive': np.float64(5.2053), 'exp_project2': np.float64(10.1957), 'exp_project2_adaptive': np.float64(4.2999), 'linear_weak_exact': np.float64(0.5343), 'fom_same_grid': np.float64(0.9337), 'fom_coarse16': np.float64(0.6315)}
+timed 1024 11 {'nmrom': np.float64(12.8049), 'nmrom_adaptive': np.float64(11.8088), 'exp_project_full': np.float64(7.1788), 'exp_project_full_adaptive': np.float64(6.5377), 'exp_project2': np.float64(4.5828), 'exp_project2_adaptive': np.float64(3.8645), 'linear_weak_exact': np.float64(0.549), 'fom_same_grid': np.float64(0.9958), 'fom_coarse16': np.float64(0.3537)}
+NONLINEAR FAST HEAT COMPLETE

@@ -177,7 +177,7 @@ def collect(label):
     queued = run(SSH+['squeue -h -u tawal01 -o %i'], timeout=30).split()
     if str(metadata['job_id']) in queued:
         raise RuntimeError('Job is still queued/running')
-    run(SSH+[f'cd {q} && test -f EXIT_CODE && sha256sum -c RESULTS.sha256 --quiet'], timeout=120)
+    run(SSH+[f'cd {q} && test -f EXIT_CODE && sha256sum -c RESULTS.sha256 --quiet'], timeout=3600)
     # Reproducible data is not transferred. Checkpoints, optimizer states,
     # provenance, source and actual requested result fields all remain durable.
     # Numerical field NPZs are already compressed. Recompressing a large panel
@@ -193,22 +193,13 @@ def collect(label):
     subprocess.run(['tar', '-xf', str(archive), '-C', str(extracted)], check=True)
     subprocess.run(['sha256sum', '-c', 'RESULTS.sha256', '--quiet'], cwd=extracted, check=True)
     size = archive.stat().st_size
-    parts = []
-    if size > 90*1024**2:
-        joined = hashlib.sha256()
-        with archive.open('rb') as stream:
-            while payload := stream.read(90*1024**2):
-                part = record/f'{archive.name}.part-{len(parts):04d}'
-                part.write_bytes(payload)
-                joined.update(payload)
-                parts.append({'path': part.name, 'sha256': sha(part)})
-        if joined.hexdigest() != checksum:
-            raise RuntimeError('Split archive hash mismatch')
-        archive.unlink()
-    else:
-        parts.append({'path': archive.name, 'sha256': checksum})
+    # Keep potentially very large raw-field archives out of source history.
+    # The coordinator anchors a second durable main/artifacts copy before any
+    # worktree cleanup. Metadata and every timing/proof/checkpoint stay in Git.
+    parts = [{'path': archive.name, 'sha256': checksum}]
     write(record/'ARCHIVE.json', {'sha256': checksum, 'bytes': size, 'ordered_parts': parts,
                                 'format': 'tar', 'compression': 'none; contained NPZ field artifacts are compressed',
+                                'retention': 'Full checksummed local archive retained outside Git; coordinator must verify durable main/artifacts copy before worktree cleanup.',
                                 'source_commit': metadata['source_commit'], 'job_id': metadata['job_id'],
                                 'excluded_regenerated_data': 'out/training/data/training_fields.npy',
                                 'restore': 'Concatenate ordered_parts in their recorded order; verify sha256 of resulting uncompressed tar; extract. RESULTS.sha256 authenticates each result.'})

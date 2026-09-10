@@ -1,5 +1,6 @@
 /stages/
 __pycache__/
-# Scientific full-field extracts are durable in tracked checksum-verified
-# archive parts; avoid duplicate >100MB individual NPZ blobs in Git.
+# Full-field extracts and large archives are retained locally with tracked
+# checksums. Coordinator anchors main/artifacts before worktree cleanup.
 /runs/*/cluster/out/comparison/fields/
+/runs/*/verified-cluster.tar

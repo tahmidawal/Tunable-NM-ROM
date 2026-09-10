@@ -20,22 +20,26 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('directory');args=parser.parse_args()
     root=Path(args.directory);handoff=json.loads((root/'handoff.json').read_text())
     rows=handoff['invocations'];proxy=handoff.get('selection_timings',[])
-    fieldchecks=[];errors=[]
+    fieldchecks=[];errors=[];fieldcache={}
     identities={(r['provenance']['job_id'],r['provenance']['gpu']) for r in rows+proxy}
     if len(identities)>1:errors.append('active timing rows mix job/GPU allocations')
     case0={(r['intervals'],r['configuration']):r for r in rows if r['split']=='validation' and r['case']==0 and r['rep']==0}
     for row in rows:
         if not np.isfinite(row['seconds']) or row['seconds']<=0:errors.append(f'invalid time {row["configuration"]}')
         if not row.get('field_artifact'):continue
-        data=np.load(root/row['field_artifact']);u=data['u'];truth=data['truth_u']
-        hashed=hashlib.sha256(u.tobytes()).hexdigest()
+        path=row['field_artifact']
+        if path not in fieldcache:
+            with np.load(root/path) as data:u=data['u'];truth=data['truth_u']
+            hashed=hashlib.sha256(u.tobytes()).hexdigest();finite=bool(np.isfinite(u).all())
+            measured=float(np.max(np.linalg.norm((u-truth).reshape(len(u),-1),axis=1))/max(np.linalg.norm(truth[0]),1e-30)) if finite else None
+            fieldcache[path]=(hashed,finite,measured)
+        hashed,finite,measured=fieldcache[path]
         if hashed!=row['field_sha256']:errors.append('field hash mismatch '+row['field_artifact'])
-        measured=None;defect=None
-        if np.isfinite(u).all():
-            measured=float(np.max(np.linalg.norm((u-truth).reshape(len(u),-1),axis=1))/max(np.linalg.norm(truth[0]),1e-30))
+        defect=None
+        if finite:
             defect=abs(measured-row['errors']['displacement'])
             if defect>1e-10:errors.append('field error mismatch '+row['field_artifact'])
-        elif row['finite']:errors.append('nonfinite output labeled finite '+row['field_artifact'])
+        if finite!=row['finite']:errors.append('field finiteness mismatch '+row['field_artifact'])
         fieldchecks.append(dict(artifact=row['field_artifact'],error=measured,absolute_defect=defect,hash_verified=hashed==row['field_sha256']))
     mismatches=[]
     for row in proxy:

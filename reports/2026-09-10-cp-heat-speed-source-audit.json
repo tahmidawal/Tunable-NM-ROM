@@ -40,6 +40,18 @@
         {
           "needle": "u_n = sc_n * constrained_decode_normalised",
           "line": 385
+        },
+        {
+          "needle": "def encode(self, u_flat):",
+          "line": 152
+        },
+        {
+          "needle": "zs0 = jnp.concatenate",
+          "line": 342
+        },
+        {
+          "needle": "z0 = model.apply",
+          "line": 403
         }
       ]
     },
@@ -61,6 +73,22 @@
         {
           "needle": "snapshots = jnp.stack([u0_flat, u_final])",
           "line": 1338
+        },
+        {
+          "needle": "# Precompute V_eq (CP basis",
+          "line": 1129
+        },
+        {
+          "needle": "def _solve_step_rt",
+          "line": 1239
+        },
+        {
+          "needle": "def run_rom(u0_flat, kappa, steps):",
+          "line": 468
+        },
+        {
+          "needle": "u_new_phys_eq = s_f * u_new_eq_norm",
+          "line": 1208
         }
       ]
     },
@@ -78,6 +106,18 @@
         {
           "needle": "target = factor*",
           "line": 129
+        },
+        {
+          "needle": "def initialize(params, projection",
+          "line": 146
+        },
+        {
+          "needle": "zs, infos = jax.vmap",
+          "line": 150
+        },
+        {
+          "needle": "def propagate(u0, lam, times, diffusivity):",
+          "line": 61
         }
       ]
     },
@@ -87,6 +127,32 @@
         {
           "needle": "def compiled",
           "line": 12
+        }
+      ]
+    },
+    "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/run_pilot.py": {
+      "sha256": "f2aa43298ecf46dd749ac3a316faaf1db0630e5c5ae356a6320169a575fb36a7",
+      "locations": [
+        {
+          "needle": "def assemble(params, codes",
+          "line": 75
+        },
+        {
+          "needle": "matrix = block(hc.mode_matrix",
+          "line": 83
+        }
+      ]
+    },
+    "worktrees/2026-09-07-mr-heat2d/experiments/separable-decoder/sep_common.py": {
+      "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "locations": [
+        {
+          "needle": "def head(params, z):",
+          "line": 123
+        },
+        {
+          "needle": "out_scale=jnp.asarray(float(out_scale)",
+          "line": 108
         }
       ]
     }
@@ -101,5 +167,33 @@
     "The CP decoder factors through a fixed spatial bank and nonlinear coefficient map. Fixed linear weak operators can be preassembled for it as for the current coordinate-bank model.",
     "Factorized spatial reconstruction is a potential further transfer to the current bank; it requires its own accuracy and cost test. No such compression was implemented in this turn.",
     "The new heat comparison uses fixed diffusivity and the current single-bump family. It does not reproduce the paper's variable-diffusivity, multi-bump cases. Its nonlinear query factory captures diffusivity; reuse across changing diffusivity without recompilation is a separate untested extension."
-  ]
+  ],
+  "direct_transfer_review": {
+    "reason": "User redirected the next investigation to copying the archived CP mechanisms rather than changing the time integrator.",
+    "already_present": [
+      "Precomputed spatial work and reduced weak residual/Jacobian algebra.",
+      "Device-compiled latent iterations and rollout.",
+      "Full decoder readout only for requested output times in the current ROM."
+    ],
+    "missing_features": [
+      {
+        "feature": "Learned initial-state encoder",
+        "archived": "A trained encoder maps the supplied field to an initial latent state.",
+        "current": "Two nonlinear least-squares initial fits; adaptive screen conditionally skips one. No equivalent trained encoder.",
+        "test": "Train a compatible encoder from field-derived compressed features; include its full input processing and any correction in timing."
+      },
+      {
+        "feature": "Explicit amplitude coordinate",
+        "archived": "Decode a normalized field and solve jointly for latent coordinates and a separate scale.",
+        "current": "Amplitude is represented through latent/head coefficients. out_scale is a fixed bank parameter, not an evolving amplitude state.",
+        "test": "Compare a trained normalized-head plus explicit-scale NMROM using the existing weak time integrator; report the added coordinate and any training changes."
+      }
+    ],
+    "not_proven": [
+      "The current saved head is not a normalized-shape model; the old encoder/scale weights cannot simply be transplanted.",
+      "No new CP-port timing or accuracy gain is established by this source review.",
+      "The archived CP speed ratio does not transfer automatically from iterative CG to the current direct spectral/coarse FOM comparisons."
+    ],
+    "scope": "Read-only scientific-source comparison. No numerical job, architecture change or new worktree started."
+  }
 }

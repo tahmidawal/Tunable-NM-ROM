@@ -124,14 +124,16 @@ def summarize_input(path):
         reference_groups[reference_key] = reference_identity
         field_groups[row['split'], row['method'], row['configuration'], row['intervals'], row['case'], row['rep']] = seen[key]
     usable_fields = dict(field_groups)
-    paired_fields = 0
+    paired_fields, paired_validation_fields = 0, 0
     for row in data.get('invocations', []):
-        if row['split'] != 'evaluation' or not row.get('finite'):
+        if not row.get('finite'):
             continue
         key = row['split'], row['method'], row['configuration'], row['intervals'], row['case'], row['rep']
         audit = field_groups.get(key, field_groups.get((*key[:-1], 0)))
         if audit is None:
-            raise ValueError('Finite evaluation invocation lacks an independently auditable full field')
+            if row['split'] == 'evaluation' or data['case_name'] == 'burgers2d':
+                raise ValueError('Finite invocation lacks an independently auditable full field')
+            continue
         recorded = {'u': row.get('field_sha256')} if data['case_name'] == 'burgers2d' else row.get('output_sha256')
         if recorded != audit['output_sha256']:
             raise ValueError('Timed invocation output hash differs from its audited field')
@@ -139,7 +141,10 @@ def summarize_input(path):
             if not np.isclose(row['errors'][component], error, rtol=1e-8, atol=1e-10):
                 raise ValueError('Timed invocation error differs from its audited field')
         usable_fields[key] = audit
-        paired_fields += 1
+        if row['split'] == 'evaluation':
+            paired_fields += 1
+        else:
+            paired_validation_fields += 1
     for summary in summaries:
         repetitions = config.get(f"{summary['split']}_repetitions", config['repetitions'])
         keys = [(summary['split'], summary['method'], summary['configuration'], summary['intervals'], case, rep)
@@ -161,6 +166,7 @@ def summarize_input(path):
                 evaluation_freeze=evaluation_freeze,
                 field_audits=audits, owner_artifacts=data.get('artifacts', {}),
                 audited_paired_evaluation_invocations=paired_fields,
+                audited_paired_validation_invocations=paired_validation_fields,
                 references=references, reference_artifacts=reference_artifacts,
                 eq_audits=data.get('eq_audits', []),
                 full_weak_audits=data.get('full_weak_audits', []),

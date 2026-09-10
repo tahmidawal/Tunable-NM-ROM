@@ -184,6 +184,7 @@ class Campaign:
             with path.open('rb') as f:s=pickle.load(f)
             assert s['checkpoint_hash']==sha(self.out/'checkpoints'/f'{arm}.pkl')
             return p,Z,cfg,k.precontract_mass(jax.tree_util.tree_map(jnp.asarray,s['data']),cfg),s['info']
+        if self.status=='evaluation':raise RuntimeError(f'final evaluation may not refit a missing frozen quadrature rule: {path.name}')
         print(f'RULE {arm} L={L} multiplier={multiplier}',flush=True)
         data,info=k.build_rule(p,Z,cfg,L,4*cfg.k,multiplier*4*cfg.k,
                               fit_states=4 if self.smoke else 32,candidate_cap=8192)

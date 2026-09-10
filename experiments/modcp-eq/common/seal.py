@@ -44,6 +44,14 @@ def verify_validation_seal(directory,case_name,evaluation_seed):
         source=root/'checkpoints'/f'{name}.pkl'
         if not source.exists() or hashlib.sha256(source.read_bytes()).hexdigest()!=expected:
             raise RuntimeError(f'staged checkpoint differs from sealed validation: {name}')
+    quadrature=own.get('quadrature_sha256',{})
+    required_rules={f'rules/{arm}_L{mesh}_q{multiplier}.pkl'
+                    for arm in ('cp','modcp','film') for mesh in metadata['config']['meshes'] for multiplier in (4,8)}
+    if set(quadrature)!=required_rules:raise RuntimeError('global seal lacks the exact frozen quadrature inventory')
+    for name,expected in quadrature.items():
+        source=root/name
+        if not source.exists() or hashlib.sha256(source.read_bytes()).hexdigest()!=expected:
+            raise RuntimeError(f'staged quadrature differs from sealed validation: {name}')
     proof=own.get('selection_proof_sha256',{})
     if not proof:raise RuntimeError('global seal lacks frozen selection proofs')
     for name,expected in proof.items():

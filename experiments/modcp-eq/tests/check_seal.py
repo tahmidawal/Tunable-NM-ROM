@@ -16,7 +16,7 @@ def main():
             except RuntimeError:return
             raise AssertionError('invalid global seal was accepted')
         rejected()
-        config=dict(seeds=dict(evaluation=42));(p/'config.json').write_text(json.dumps(config))
+        config=dict(seeds=dict(evaluation=42),meshes=[256,512]);(p/'config.json').write_text(json.dumps(config))
         (p/'checkpoints').mkdir()
         for arm in ('cp','modcp','film'):(p/'checkpoints'/f'{arm}.pkl').write_bytes(arm.encode())
         checkpoints={arm:hashlib.sha256(arm.encode()).hexdigest() for arm in ('cp','modcp','film')}
@@ -26,7 +26,12 @@ def main():
         (p/'selections.json').write_text('[]')
         (p/'selection_freeze.json').write_text('{}')
         digest=lambda file:hashlib.sha256((p/file).read_bytes()).hexdigest()
-        entry=dict(handoff_sha256=digest('validation_handoff.json'),selection_proof_sha256={x:digest(x) for x in ('selections.json','selection_freeze.json')},evaluation_seed=42,source_commit='source',validation_job_id='123')
+        (p/'rules').mkdir();quadrature={}
+        for arm in ('cp','modcp','film'):
+            for mesh in config['meshes']:
+                for q in (4,8):
+                    name=f'rules/{arm}_L{mesh}_q{q}.pkl';(p/name).write_bytes(name.encode());quadrature[name]=digest(name)
+        entry=dict(handoff_sha256=digest('validation_handoff.json'),selection_proof_sha256={x:digest(x) for x in ('selections.json','selection_freeze.json')},evaluation_seed=42,source_commit='source',validation_job_id='123',quadrature_sha256=quadrature)
         seal=dict(schema='modcp-global-validation-seal-v1',evaluation_generated=False,cases={c:dict(entry) for c in ('burgers2d','wave_reflective','wave_absorbing')})
         path=p/'global_validation_seal.json';path.write_text(json.dumps(seal))
         verified=verify_validation_seal(p,'burgers2d',42)
@@ -37,6 +42,9 @@ def main():
         seal['evaluation_generated']=False;path.write_text(json.dumps(seal))
         (p/'checkpoints/cp.pkl').write_bytes(b'changed');rejected()
         (p/'checkpoints/cp.pkl').write_bytes(b'cp')
+        name=next(iter(quadrature));(p/name).write_bytes(b'changed');rejected();(p/name).write_bytes(name.encode())
+        seal['cases']['burgers2d']['quadrature_sha256']={};path.write_text(json.dumps(seal));rejected()
+        seal['cases']['burgers2d']['quadrature_sha256']=quadrature;path.write_text(json.dumps(seal))
         (p/'config.json').write_text('{}');rejected();(p/'config.json').write_text(json.dumps(config))
         for key,value in [('case_name','wave_reflective'),('status','complete'),('evaluation_opened',True),
                           ('invocations',[dict(split='evaluation')]),('physical_cases',dict(evaluation=[[1]]))]:

@@ -7,6 +7,7 @@ from collections import defaultdict
 import hashlib
 import math
 from pathlib import Path
+import pickle
 from statistics import median
 
 import numpy as np
@@ -18,6 +19,35 @@ def digest(path):
         for block in iter(lambda: handle.read(8 * 1024**2), b''):
             h.update(block)
     return h.hexdigest()
+
+
+def audit_checkpoint(path):
+    """Check a trusted, locally generated pilot checkpoint without importing JAX."""
+    path = Path(path)
+    with path.open('rb') as handle:
+        data = pickle.load(handle)
+    cfg, codes, extra = data['config'], data['Z'], data['extra']
+    def leaves(value):
+        if isinstance(value, dict):
+            for child in value.values():
+                yield from leaves(child)
+        elif isinstance(value, (tuple, list)):
+            for child in value:
+                yield from leaves(child)
+        else:
+            yield np.asarray(value)
+    arrays = list(leaves(data['params']))
+    if codes.ndim != 2 or codes.shape[1] != cfg['k']:
+        raise ValueError('Checkpoint code shape disagrees with architecture')
+    if any(a.dtype != np.float64 or not np.isfinite(a).all() for a in arrays+[codes]):
+        raise ValueError('Checkpoint contains nonfinite or non-f64 model arrays')
+    updates = extra.get('total_training_steps', extra.get('updates'))
+    if not updates:
+        raise ValueError('Checkpoint is missing completed update metadata')
+    return {'path': str(path), 'sha256': digest(path), 'configuration': cfg,
+            'code_shape': list(codes.shape), 'parameter_count': sum(a.size for a in arrays),
+            'completed_updates': updates, 'metadata': {k: v for k, v in extra.items() if k != 'history'},
+            'finite_f64': True}
 
 
 def wave_weights(n, boundary):

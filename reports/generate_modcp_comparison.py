@@ -44,6 +44,8 @@ def summarize_input(path):
     data = json.loads(path.read_text())
     provenance_check(data['provenance'])
     config = data['config']
+    if config.get('smoke') or data['status'] == 'complete_smoke':
+        raise ValueError('Smoke-test outputs are not scientific pilot measurements')
     groups = defaultdict(list)
     for row in data.get('invocations', []):
         if 'provenance' in row:

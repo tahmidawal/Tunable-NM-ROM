@@ -1,6 +1,6 @@
 # Poisson capacity job handoff
 
-Status: RUNNING and UNAUDITED. Job 3564896 passed GPU preflight, all focused controls and the complete cluster integration smoke. The real r128 training has started cleanly; its bank phase and initial rank/function/Jacobian checks passed, and its head phase is complete at this handoff snapshot. Do not read the first `CAPACITY ACCURACY COMPLETE` marker as study completion: it belongs to `out/smoke`. Accept only `out/pilot/result.json` complete, terminal successful accounting and `EXIT_CODE=0`, then independent audit/retention.
+Status: RUNNING and UNAUDITED. Job 3564896 passed GPU preflight, all focused controls and the complete cluster integration smoke. All six real training phases and reference generation have completed cleanly; multiresolution evaluation is next at this handoff snapshot. Initial and trained bank rank/function/Jacobian checks passed. Do not read the first `CAPACITY ACCURACY COMPLETE` marker as study completion: it belongs to `out/smoke`. Accept only `out/pilot/result.json` complete, terminal successful accounting and `EXIT_CODE=0`, then independent audit/retention.
 
 - Scientific source: `f3e3c21a440a31eb97b06fdb9ab9951662e17935`.
 - Slurm job: `3564896` on `pax049`, GPU partition, one-hour allocation.

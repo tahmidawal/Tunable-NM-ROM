@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import numpy as np
 from scipy.fft import dstn,idstn
-from audit_dynamics import recompute,compare_metrics,geometry,NAMES,energy2
+from audit_dynamics import recompute,compare_metrics,geometry,NAMES,energy2,mass
 
 
 def modal_fields(u0,v0,c,n,times,dt=None):
@@ -106,6 +106,20 @@ def extra_audit(record,data):
                         for z,w in zip(f['rollout_z'],f['rollout_w']):
                             a,b,jac,curvature=geometry(head,mesh['transform'],z,w)
                             aa.append(a);bb.append(b);sv=np.linalg.svd(jac,compute_uv=False);rank.append(float(sv[-1]/sv[0]))
+                        a0,b0,j0,curve0=geometry(head,mesh['transform'],f['rollout_z'][0],f['rollout_w'][0])
+                        target=mesh['g'].T@(mesh['mass']*u0.reshape(-1))
+                        vtarget=mesh['g'].T@(mesh['mass']*v0.reshape(-1))
+                        scale=np.sqrt(np.sum(mesh['mass']*u0.reshape(-1)**2))
+                        residual=(a0-target)/scale;jscaled=j0/scale
+                        gradient=float(np.max(abs(jscaled.T@residual))/max(1.,np.linalg.norm(jscaled)*np.linalg.norm(residual)))
+                        q,_=np.linalg.qr(jscaled,mode='reduced')
+                        stationarity=float(np.linalg.norm(q.T@residual)/max(np.linalg.norm(residual),1e-10))
+                        fits=rows[0]['cold_fit'];selected=fits['selected']
+                        selected_objective=float(residual@residual)
+                        fit_delta=max(abs(gradient-fits['gradient'][selected]),abs(stationarity-fits['stationarity'][selected]),abs(selected_objective-fits['objective'][selected]))
+                        assert fit_delta<1e-9,fit_delta
+                        np.testing.assert_allclose(np.linalg.lstsq(j0,vtarget,rcond=None)[0],f['rollout_w'][0],atol=1e-9,rtol=1e-9)
+                        rec.update(selected_fit_independent_gradient=gradient,selected_fit_independent_stationarity=stationarity,selected_fit_diagnostic_discrepancy=fit_delta)
                         discrepancy=max(float(np.max(abs(np.asarray(aa)-f['coefficients']))),float(np.max(abs(np.asarray(bb)-f['velocity_coefficients']))))
                         assert discrepancy<1e-8,discrepancy
                         assert np.all(f['rollout_completed'])==rows[0]['completed']
@@ -124,6 +138,18 @@ def extra_audit(record,data):
                             with np.load(prior) as old:
                                 parity=recompute(u,v,old['u'],old['v'],n,bc,c)
                             parities.append(dict(boundary=bc,intervals=n,case=ci,max_initial_differences={k:float(np.max(parity[k]['initial_normalized'])) for k in NAMES}))
+                    energy=energy2(u,v,n,bc,c)/2
+                    rec['maximum_energy_over_initial']=float(np.max(energy/max(energy[0],1e-300)))
+                    if method.startswith('frozen_mlp'):
+                        rec['maximum_relative_energy_balance_defect']=float(np.max(abs(energy+f['rollout_outflux']-energy[0]))/energy[0])
+                    if bc=='absorbing':
+                        w=np.ones(n+1)/n;w[[0,-1]]*=.5
+                        boundary=(u[:,0,:]+u[:,-1,:])@w+(u[:,:,0]+u[:,:,-1])@w
+                        invariant=np.sum(mass(n,bc)*v,axis=(-2,-1))+c*boundary
+                        truth_boundary=(ut[:,0,:]+ut[:,-1,:])@w+(ut[:,:,0]+ut[:,:,-1])@w
+                        truth_inv=np.sum(mass(n,bc)*vt,axis=(-2,-1))+c*truth_boundary
+                        rec['maximum_absorbing_invariant_drift']=float(np.max(abs(invariant-invariant[0])))
+                        rec['initial_absorbing_invariant_error']=float(abs(invariant[0]-truth_inv[0]))
                     all_groups.append(rec)
         del mesh
     return dict(passed=True,lineage_hashes_checked=lineage_checks,bank_checks=bank_checks,reference_checks=ref_checks,method_checks=all_groups,rom_refinement=rom_refinements,prior_frozen_trajectory_parity=parities,limitation='Independent CG large-grid checks score saved fields and modal solutions; per-internal-step true residuals are retained runner evidence, not independently reconstructed because internal full fields are not archived. Bank identity is sampled at fixed physical indices; output fields and physical errors are checked in full.')

@@ -84,6 +84,7 @@ def main(record):
                             repetitions=len(rows), full_field_hashes=expected_hash))
     summary = dict(config=cfg, provenance=meta, result_sha256=sha(native/'result.json'),
                    audited_invocations=sum(r['repetitions'] for r in audited), field_checks=audited,
+                   gpu_assignment_proof=dict(path='gpu-assignment.txt',sha256=sha(record/'gpu-assignment.txt'),contents=(record/'gpu-assignment.txt').read_text()),
                    extra_independent_audit=extra, references=data['references'], time_refinement=data['time_refinement'], groups=[],
                    integrity_audit_passed=True,
                    all_reference_refinement_gates_passed=all(r['refinement_passed'] for r in data['references']),
@@ -132,6 +133,7 @@ def main(record):
                 current_max_median=float(np.median(current)), current_max_worst=max(current),
                 outliers_by_initial_target={str(target):sum(e>target for e in initial) for target in cfg['accuracy_targets']},
                 outliers_by_current_target={str(target):sum(e>target for e in current) for target in cfg['accuracy_targets']})
+        component_gate_by_target={str(target): {name: dict(all_initial_passed=all(c['errors'][name]['max_initial_normalized']<=target for c in cases),all_current_passed=all(c['errors'][name]['max_current_relative']<=target for c in cases)) for name in NAMES} for target in cfg['accuracy_targets']}
         summary['groups'].append(dict(boundary=bc, intervals=n, method=method, cases=cases,
             query_median=float(np.median([c['query_median'] for c in cases])),
             device_plus_output_transfer_median=float(np.median([c['device_plus_output_transfer_median'] for c in cases])),
@@ -144,6 +146,7 @@ def main(record):
             nonstationary_cases=sum(not c['fit_stationary'] for c in cases),
             time_refinement_failed_cases=sum(not r['passed'] for r in refinements),
             reference_refinement_failed_cases=sum(not r['refinement_passed'] for r in references),
+            component_accuracy_by_target=component_gate_by_target,
             accuracy_qualification_by_target=qualification,
             timing_outliers=sum(c['timing_outliers_above_twice_case_median'] for c in cases)))
     write(analysis/'summary.json', summary)

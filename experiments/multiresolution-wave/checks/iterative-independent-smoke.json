@@ -38,9 +38,14 @@
       "intervals": 32,
       "case": 0,
       "method": "frozen_mlp32_seed691200",
+      "selected_fit_independent_gradient": 2.940931494149717e-11,
+      "selected_fit_independent_stationarity": 2.1299991315857904e-07,
+      "selected_fit_diagnostic_discrepancy": 8.038046816716702e-15,
       "head_coefficient_max_absolute": 1.249000902703301e-16,
       "minimum_observed_rank_ratio": 0.015429570537146973,
-      "minimum_all_stages_recorded_rank_ratio": 0.015429570537146978
+      "minimum_all_stages_recorded_rank_ratio": 0.015429570537146978,
+      "maximum_energy_over_initial": 1.0,
+      "maximum_relative_energy_balance_defect": 5.074102477683652e-11
     },
     {
       "boundary": "dirichlet",
@@ -50,7 +55,8 @@
       "cg_max_true_relative": 3.129242169383465e-07,
       "cg_max_iterations": 2,
       "cg_converged": true,
-      "maximum_initial_energy_difference_from_exact_midpoint": 3.415003607422511e-08
+      "maximum_initial_energy_difference_from_exact_midpoint": 3.415003607422511e-08,
+      "maximum_energy_over_initial": 1.0
     },
     {
       "boundary": "dirichlet",
@@ -60,22 +66,31 @@
       "cg_max_true_relative": 0.00018176531311129917,
       "cg_max_iterations": 1,
       "cg_converged": true,
-      "maximum_initial_energy_difference_from_exact_midpoint": 2.0601269830581417e-05
+      "maximum_initial_energy_difference_from_exact_midpoint": 2.0601269830581417e-05,
+      "maximum_energy_over_initial": 1.0000000042776966
     },
     {
       "boundary": "dirichlet",
       "intervals": 32,
       "case": 0,
-      "method": "dst"
+      "method": "dst",
+      "maximum_energy_over_initial": 1.0
     },
     {
       "boundary": "absorbing",
       "intervals": 32,
       "case": 0,
       "method": "frozen_mlp32_seed691200",
+      "selected_fit_independent_gradient": 9.558003645998921e-12,
+      "selected_fit_independent_stationarity": 2.504678091312692e-07,
+      "selected_fit_diagnostic_discrepancy": 1.8656026394729073e-14,
       "head_coefficient_max_absolute": 5.551115123125783e-17,
       "minimum_observed_rank_ratio": 0.013295243270922423,
-      "minimum_all_stages_recorded_rank_ratio": 0.013295243270922302
+      "minimum_all_stages_recorded_rank_ratio": 0.013295243270922302,
+      "maximum_energy_over_initial": 1.0,
+      "maximum_relative_energy_balance_defect": 3.3158236441207977e-10,
+      "maximum_absorbing_invariant_drift": 0.00010182949367185264,
+      "initial_absorbing_invariant_error": 0.00037075351133440367
     },
     {
       "boundary": "absorbing",
@@ -84,7 +99,10 @@
       "method": "cg_1e-06",
       "cg_max_true_relative": 3.1317775586026536e-07,
       "cg_max_iterations": 2,
-      "cg_converged": true
+      "cg_converged": true,
+      "maximum_energy_over_initial": 1.0,
+      "maximum_absorbing_invariant_drift": 1.4114576119985547e-10,
+      "initial_absorbing_invariant_error": 0.0
     },
     {
       "boundary": "absorbing",
@@ -93,13 +111,19 @@
       "method": "cg_0.01",
       "cg_max_true_relative": 0.0001817653131113003,
       "cg_max_iterations": 1,
-      "cg_converged": true
+      "cg_converged": true,
+      "maximum_energy_over_initial": 1.0000000042776993,
+      "maximum_absorbing_invariant_drift": 4.201517150205081e-10,
+      "initial_absorbing_invariant_error": 0.0
     },
     {
       "boundary": "absorbing",
       "intervals": 32,
       "case": 0,
-      "method": "rk4"
+      "method": "rk4",
+      "maximum_energy_over_initial": 1.0,
+      "maximum_absorbing_invariant_drift": 3.0021993004971637e-19,
+      "initial_absorbing_invariant_error": 0.0
     }
   ],
   "rom_refinement": [

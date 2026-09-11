@@ -35,7 +35,9 @@ def make_lm_kernel(ops,budget,specialized=True,trace=False,residual_limit=1e-12,
 
     Returns (same original seven outputs, [max backward error, fallbacks,
     max proposed backward error], optional trajectory arrays). Trace is a
-    validation replay, not included in production timing.
+    validation replay, not included in production timing. Optional stationarity_tol
+    activates a normalized-gradient stop (reason 6); None is the unchanged
+    incumbent schedule. The post-query audit threshold remains separate.
     """
     B,params=ops['B'],ops['params'];K=ops['z0'].shape[0];trust=ops['info']['trust_delta']
     def r_of(z,fm):

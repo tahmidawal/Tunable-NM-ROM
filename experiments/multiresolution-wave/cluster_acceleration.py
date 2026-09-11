@@ -3,6 +3,9 @@ import argparse
 import json
 import re
 import subprocess
+import hashlib
+import io
+import numpy as np
 import cluster as transport
 import cluster_iterative
 
@@ -16,8 +19,30 @@ def stage(label, configuration):
     assert payload==cfgpath.read_bytes()
     target=dest/'code/multiresolution-wave'/configuration;target.write_bytes(payload)
     metadata['source_hashes'][str(target.relative_to(dest))]=transport.digest(target)
+    cfg=json.loads(payload)
+    assert not cfg.get('pending_capacity_screen',False),'Freeze the capacity selection before staging fresh development confirmation'
+    if cfg.get('frozen_head_inputs'):
+        parent=cfg['head_source_run'];prefix='experiments/multiresolution-wave/runs/'+parent+'/cluster/out/pilot/'
+        parent_bytes=subprocess.check_output(['git','show',metadata['source_commit']+':'+prefix+'result.json'],cwd=transport.TREE)
+        parent_result=json.loads(parent_bytes)
+        origin=json.loads((dest/'in/ORIGIN.json').read_text())
+        origin['new_head_origin']=dict(commit=metadata['source_commit'],result_path=prefix+'result.json',
+            result_sha256=hashlib.sha256(parent_bytes).hexdigest(),sources={},training=parent_result['head_training'])
+        for name,filename in cfg['frozen_head_inputs'].items():
+            source=prefix+f'head_{name}.npz';head=subprocess.check_output(['git','show',metadata['source_commit']+':'+source],cwd=transport.TREE)
+            assert hashlib.sha256(head).hexdigest()==parent_result['output_sha256'][f'head_{name}.npz']
+            (dest/'in/dirichlet'/filename).write_bytes(head)
+            origin['new_head_origin']['sources'][source]=hashlib.sha256(head).hexdigest()
+        source=prefix+'fixed_encoder_training.npz'
+        coefficients=subprocess.check_output(['git','show',metadata['source_commit']+':'+source],cwd=transport.TREE)
+        assert hashlib.sha256(coefficients).hexdigest()==parent_result['output_sha256']['fixed_encoder_training.npz']
+        with np.load(io.BytesIO(coefficients)) as f:
+            np.savez_compressed(dest/'in/dirichlet/trained_initializer32.npz',linear=f['linear'],center=f['center'])
+        origin['new_head_origin']['sources'][source]=hashlib.sha256(coefficients).hexdigest()
+        transport.write_json(dest/'in/ORIGIN.json',origin)
     text=(dest/'job.sbatch').read_text().replace('iterative_replay.py --config code/multiresolution-wave/iterative-config.json',
         'acceleration_replay.py --config code/multiresolution-wave/'+configuration)
+    text=text.replace('#SBATCH --time=01:00:00','#SBATCH --time='+cfg.get('walltime','01:00:00'))
     (dest/'job.sbatch').write_text(text)
     metadata.update(protocol='reflective_wave_geometry_and_timestep_screen',configuration=configuration)
     for p in (dest/'CONFIG.json',record/'submission.json'):transport.write_json(p,metadata)
@@ -30,4 +55,10 @@ if __name__=='__main__':
     ap.add_argument('--config',default='acceleration-screen-config.json');args=ap.parse_args()
     assert re.fullmatch(r'accel[a-z0-9_]{0,19}',args.label)
     if args.action=='stage':stage(args.label,args.config)
+    elif args.action=='collect':
+        config=json.loads((transport.CELL/'stages'/args.label/'code/multiresolution-wave'/json.loads((transport.CELL/'runs'/args.label/'submission.json').read_text())['configuration']).read_text())
+        if 1024 in config['meshes']:
+            import collect_iterative
+            collect_iterative.collect(args.label)
+        else:transport.collect(args.label)
     else:getattr(transport,args.action)(args.label)

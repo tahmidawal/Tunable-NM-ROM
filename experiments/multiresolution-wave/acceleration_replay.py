@@ -11,13 +11,15 @@ import acceleration as fast
 import modal_projection as modal
 from fresh_fom import provenance
 from fresh_models import head_geometry
+from fresh_models import tree_from_npz
 from fresh_rom import weak_acceleration
 
 
 def query(method, setting, supplied, c, grid, cfg, bank):
     if method.startswith('trained_'):
         u,v,row,aux=query('chol_guard',setting,supplied,c,grid,cfg,bank)
-        row.update(method=method,internal_configuration_dimension=32,internal_phase_dimension=64)
+        latent=bank['p']['linear'].shape[1]
+        row.update(method=method,internal_configuration_dimension=latent,internal_phase_dimension=2*latent)
         return u,v,row,aux
     if method.startswith('projected_') or method=='linear_bank64':
         return modal.device_query(method,bank,supplied,grid,cfg)
@@ -58,7 +60,7 @@ def query(method, setting, supplied, c, grid, cfg, bank):
         minimum_dynamic_rank_ratio=float(np.min(aux['rollout']['rank_ratio'])),
         rank_diagnostic_kind='Exact singular-value ratio' if method=='shared_svd_r' else 'Conservative lower bound, or exact ratio on fallback',
         total_guard_fallbacks=int(aux['rollout']['fallback_count'][-1]),
-        maximum_normal_backward_error=float(aux['rollout']['normal_backward_error'][-1]), configuration_dimension=32)
+        maximum_normal_backward_error=float(aux['rollout']['normal_backward_error'][-1]), configuration_dimension=bank['p']['linear'].shape[1])
     return up, vp, row, aux
 
 
@@ -102,15 +104,27 @@ def main():
         meshes=[], references=[], invocations=[], accuracy_controls=[], warmups=[], geometry_checks=[],
         profiles=[], parity=[], time_refinement=[], projection_kinematics=[], final_test_opened=False, complete=False)
     save = lambda: base.save_json(out/'result.json', data)
-    endpoints={}
+    endpoints={};initializers={}
     if 'head_training' in cfg:
         import head_accuracy
         endpoints,linear,center,manifest,records=head_accuracy.train_endpoints(args.inputs,out,cfg)
+        initializers.update({name:(linear,center) for name in endpoints})
         data.update(training_manifest=manifest,head_training=records);save()
+    if cfg.get('frozen_head_inputs'):
+        with np.load(args.inputs/'dirichlet/trained_initializer32.npz') as f:linear,center=f['linear'],f['center']
+        endpoints.update({name:tree_from_npz(args.inputs/'dirichlet'/path) for name,path in cfg['frozen_head_inputs'].items()})
+        initializers.update({name:(linear,center) for name in cfg['frozen_head_inputs']})
+        data['frozen_head_origin']=json.loads((args.inputs/'ORIGIN.json').read_text())['new_head_origin'];save()
     for n in cfg['meshes']:
         grid = base.Grid(n, 'dirichlet', 'dirichlet')
         full, models = previous.load_models(args.inputs/'dirichlet', grid); bank = models[cfg['primary_method']]
-        trained_models={name:previous.numerical_bank(previous.adapt_model(full,endpoint,linear,center,name)) for name,endpoint in endpoints.items()}
+        trained_models={}
+        for name,endpoint in endpoints.items():
+            linear,center=initializers[name];transform=jnp.asarray(full['transform']);latent=endpoint['p']['linear'].shape[1]
+            candidate=dict(full,p=base.transform_head(endpoint['p'],transform),frozen=endpoint['frozen'],
+                common_inverse=jnp.linalg.pinv(transform@jnp.asarray(linear[:,:latent])),common_center=transform@jnp.asarray(center),
+                fixed_codes=endpoint['codes'][np.linspace(0,len(endpoint['codes'])-1,6,dtype=int)])
+            trained_models[name]=previous.numerical_bank(candidate)
         if any(a['method'].startswith('projected_') or a['method']=='linear_bank64' for a in cfg['arms']):
             bank=dict(bank,prepared_l2=modal.prepare(bank,'l2'),prepared_h1=modal.prepare(bank,'h1'))
         np.savez_compressed(out/f'mesh_dirichlet_{n}.npz', g=np.asarray(bank['g']), mass=np.asarray(bank['mass']),

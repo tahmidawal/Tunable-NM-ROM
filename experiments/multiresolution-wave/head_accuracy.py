@@ -30,15 +30,18 @@ def train_endpoints(inputs,out,cfg):
     original=json.loads((inputs/bc/'campaign-config.json').read_text())
     bank=base.rebuild(inputs/bc,base.Grid(original['n']))
     transform=jnp.asarray(bank['transform']);stiffness=transform.T@bank['k']@transform
-    inverse=np.linalg.pinv(linear[:,:32]);aa,bb=a.reshape(-1,64),b.reshape(-1,64)
+    latent=tc.get('latent_dimension',32)
+    inverse=np.linalg.pinv(linear[:,:latent]);aa,bb=a.reshape(-1,64),b.reshape(-1,64)
     z=(aa-center)@inverse.T;w=bb@inverse.T
     scale=float(np.sqrt(np.mean(np.sum(aa*aa,axis=1))/64))
     tensors=tuple(map(jnp.asarray,(z,w,aa,bb,np.repeat(scales[:,0],frames),np.repeat(scales[:,1],frames),np.repeat(parameters[:,5],frames))))
-    np.savez_compressed(out/'fixed_encoder_training.npz',linear=linear[:,:32],center=center,inverse=inverse,
+    np.savez_compressed(out/'fixed_encoder_training.npz',linear=linear[:,:latent],center=center,inverse=inverse,
         z=z,w=w,stiffness=np.asarray(stiffness),parameters=parameters,initial_scales=scales)
-    initial,frozen=head_init(jax.random.PRNGKey(tc['seed']),linear[:,:32],center,scale,'mlp',width=128)
+    initial,frozen=head_init(jax.random.PRNGKey(tc['seed']),linear[:,:latent],center,scale,'mlp',width=128)
     endpoints={};records=[]
-    for name,weights in [('trained_field',(1.,0.,0.)),('trained_phase',(1.,1.,1.))]:
+    arms=tc.get('objective_arms',[dict(name='trained_field',weights=[1.,0.,0.]),dict(name='trained_phase',weights=[1.,1.,1.])])
+    for arm in arms:
+        name,weights=arm['name'],arm['weights']
         p=initial;optimizer=optax.adam(optax.cosine_decay_schedule(tc['learning_rate'],tc['steps'],alpha=.1));state=optimizer.init(p)
         objective_weights=jnp.asarray(weights)
         def objective(p,frozen,batch,stiffness,weights):
@@ -63,7 +66,7 @@ def train_endpoints(inputs,out,cfg):
         endpoints[name]=endpoint
         records.append(dict(method=name,seed=tc['seed'],steps=tc['steps'],batch_size=tc['batch_size'],learning_rate=tc['learning_rate'],
             objective_weights=weights,history=history,seconds_including_compilation=time.perf_counter()-start,
-            checkpoint_path=dest.name,checkpoint_sha256=base.sha(dest),internal_configuration_dimension=32,internal_phase_dimension=64,
+            checkpoint_path=dest.name,checkpoint_sha256=base.sha(dest),internal_configuration_dimension=latent,internal_phase_dimension=2*latent,
             encoder='FixedPCAaffine leftinverse on original bank coefficients; codes and their time derivatives fixed consistently.',
             scale_definitions='Field uses original suppliedu0 massL2; energy and tangent use sqrt(2 original supplied initial physical energy); stiffness displacement factor includes querycase speed squared.',
             training_codes_sha256=base.array_sha(z),training_velocities_sha256=base.array_sha(w),training_only=True))

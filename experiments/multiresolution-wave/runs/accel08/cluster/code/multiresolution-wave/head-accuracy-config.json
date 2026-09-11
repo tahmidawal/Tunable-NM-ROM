@@ -1,0 +1,126 @@
+{
+  "meshes": [
+    64
+  ],
+  "boundaries": [
+    "dirichlet"
+  ],
+  "validation_seed": 690602,
+  "validation_indices": [
+    0,
+    1
+  ],
+  "end_time": 2.4,
+  "observation_dt": 0.05,
+  "repetitions": 3,
+  "fit_iterations": 800,
+  "primary_dt": 0.0025,
+  "accuracy_only_dt": 0.00125,
+  "fom_cfl": 0.45,
+  "reference_cfl": 0.1125,
+  "reference_refinement_cfl": 0.05625,
+  "vanishing_fraction": 0.001,
+  "rom_refinement_target": 0.01,
+  "reference_refinement_target": 0.0001,
+  "accuracy_targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "primary_method": "frozen_mlp32_seed691200",
+  "control_method": null,
+  "frozen_bank_rank": 64,
+  "final_test_opened": false,
+  "expected_timed_invocations": 60,
+  "expected_accuracy_only_queries": 8,
+  "input_output_contract": "Full GPU-resident displacement, velocity and scalar physical wave speed to both full GPU-resident fields at all 49 observations. Include projection, every cold-fit start, parameter preparation, evolution and dense output; exclude host transfers, compilation and mesh-only assembly.",
+  "selection": "Two predeclared10k training endpoints with matchedseed/init/batches, fixedencoder and consistent codevelocities. Select by all-state5%physicalgate, finite/rank-valid complete trajectory, stationary cold fits and<=1%halfstep discrepancy; require no worse than original head on all-state errors if neitherpasses. Report fastestpassingCG within testedtimestep/tolerancepairs. No bestepoch selection and no finalcases.",
+  "claim_scope": "True32configuration/64phase-coordinate nonlinear manifold dynamics, unchanged spatialbank. Compare field-only fixedencoder training against identical field+energy+tangent training and original learnedcode checkpoint. Both newtraining procedures are separate from frozenhead geometry optimizations and64coefficient hybrid.",
+  "walltime": "01:00:00",
+  "estimated_runtime_minutes": [
+    15,
+    35
+  ],
+  "cg_tolerances": [
+    1e-06,
+    0.01
+  ],
+  "cg_max_iterations": 1000,
+  "cohorts": [
+    {
+      "name": "opened",
+      "seed": 690602,
+      "indices": [
+        0,
+        1
+      ]
+    }
+  ],
+  "profile_repetitions": 0,
+  "parity_target": 1e-08,
+  "arms": [
+    {
+      "method": "baseline",
+      "dt": 0.0025
+    },
+    {
+      "method": "chol_guard",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_field",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase",
+      "dt": 0.01
+    }
+  ],
+  "refinement_arms": [
+    {
+      "method": "baseline",
+      "dt": 0.0025
+    },
+    {
+      "method": "chol_guard",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_field",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase",
+      "dt": 0.01
+    }
+  ],
+  "cg_timestep_arms": [
+    {
+      "dt": 0.005,
+      "tolerance": 1e-06
+    },
+    {
+      "dt": 0.005,
+      "tolerance": 0.01
+    },
+    {
+      "dt": 0.01,
+      "tolerance": 1e-06
+    }
+  ],
+  "head_training": {
+    "seed": 691211,
+    "steps": 10000,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "bank_frozen": true,
+    "latent_dimension": 32,
+    "arms": [
+      "field_only",
+      "field_energy_tangent"
+    ],
+    "fixed_encoder": true,
+    "final_cohort_opened": false
+  }
+}

@@ -42,7 +42,7 @@ class PartWriter(io.RawIOBase):
 
 
 def collect(label):
-    assert re.fullmatch(r'iterative[a-z0-9_]{0,15}',label)
+    assert re.fullmatch(r'(?:iterative|accel)[a-z0-9_]{0,15}',label)
     record=transport.CELL/'runs'/label;cfg=json.loads((record/'submission.json').read_text())
     jid=cfg['job_id'];remote=transport.NAMESPACE+'/'+label
     assert cfg['remote']==remote and re.fullmatch(r'[0-9]+',jid)

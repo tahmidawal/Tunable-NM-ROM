@@ -2,6 +2,7 @@
 import argparse
 from collections import defaultdict
 import hashlib
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -96,7 +97,9 @@ def audit(record):
         assert bad not in logs,bad
     assert (cluster/'EXIT_CODE').read_text().strip()=='0'
     origin=json.loads((cluster/'in/ORIGIN.json').read_text())
-    for lineage in [dict(commit=origin['checkpoint_commit'],sources=origin['sources']),origin['head32_origin']]:
+    lineages=[dict(commit=origin['checkpoint_commit'],sources=origin['sources']),origin['head32_origin']]
+    if 'new_head_origin' in origin:lineages.append(origin['new_head_origin'])
+    for lineage in lineages:
         for path,expected in lineage['sources'].items():
             if '/training_ladder_' in path:
                 # Large original arrays are content-addressed by the committed,
@@ -113,7 +116,27 @@ def audit(record):
     for row in result['invocations']:groups[row['intervals'],row['case'],row['method'],row['setting']].append(row)
     countcases=sum(len(c['indices']) for c in cfg['cohorts'])
     assert len(result['invocations'])==len(cfg['meshes'])*countcases*(len(cfg['arms'])+len(cfg['cg_tolerances'])+len(cfg.get('cg_timestep_arms',[]))+1)*cfg['repetitions']
-    checked=[];references=[];banks=[];parities=[];refinements=[]
+    training_audit=None
+    if result.get('head_training'):
+        assert result['training_manifest']['data_hashes_match'] and result['training_manifest']['saved_initialization_matched']
+        with np.load(native/'training_ladder_dirichlet.npz') as f,np.load(native/'fixed_encoder_training.npz') as encoder:
+            a,b=f['a'].reshape(-1,64),f['b'].reshape(-1,64)
+            independent_z=(a-encoder['center'])@np.linalg.pinv(encoder['linear']).T
+            independent_w=b@np.linalg.pinv(encoder['linear']).T
+            code_delta=max(float(np.max(abs(independent_z-encoder['z']))),float(np.max(abs(independent_w-encoder['w']))))
+            assert code_delta<1e-8
+            path=next(p for p in origin['sources'] if 'reflective01' in p and p.endswith('bank_tables.npz'))
+            payload=subprocess.check_output(['git','show',origin['checkpoint_commit']+':'+path],cwd=root)
+            with np.load(io.BytesIO(payload)) as table:
+                stiffness_delta=float(np.linalg.norm(encoder['stiffness']-table['stiffness_unit'])/np.linalg.norm(table['stiffness_unit']))
+            assert stiffness_delta<1e-10
+            for rec in result['head_training']:
+                assert rec['steps']==cfg['head_training']['steps'] and rec['seed']==cfg['head_training']['seed']
+                assert sha(native/rec['checkpoint_path'])==rec['checkpoint_sha256']
+                with np.load(native/rec['checkpoint_path']) as hh:np.testing.assert_allclose(hh['codes'],encoder['z'],atol=0,rtol=0)
+            training_audit=dict(fixed_encoder_code_and_velocity_max_absolute=code_delta,
+                original_stiffness_relative_error=stiffness_delta,endpoint_count=len(result['head_training']),original_truth_hashes_matched=True)
+    checked=[];references=[];banks=[];parities=[];refinements=[];kinematics=[]
     for n in cfg['meshes']:
         with np.load(native/f'mesh_dirichlet_{n}.npz') as f:mesh={k:f[k] for k in f.files}
         banks.append(dict(intervals=n,sampled_bank_error=sample_bank(cluster/'in/dirichlet',mesh,n,'dirichlet')))
@@ -144,19 +167,21 @@ def audit(record):
                     item=dict(intervals=n,case=case,method=row['method'],setting=row['setting'],full_field_metric_disagreement=delta)
                     row_head=head
                     if row['method'].startswith('trained_'):
-                        with np.load(native/f"head_{row['method']}.npz") as f:row_head={k:f[k] for k in f.files}
+                        head_path=(cluster/'in/dirichlet'/cfg['frozen_head_inputs'][row['method']]) if row['method'] in cfg.get('frozen_head_inputs',{}) else native/f"head_{row['method']}.npz"
+                        with np.load(head_path) as f:row_head={k:f[k] for k in f.files}
                     if 'projection_coefficients' in field:
                         item['projection_audit']=projection_check(field,row,mesh,head,u0,v0,c)
                     if 'coefficients' in field:
-                        aa=[];bb=[];rank=[];acceleration_delta=[];backwards=[];bound_defects=[]
+                        aa=[];bb=[];rank=[];acceleration_delta=[];backwards=[];bound_defects=[];normal_force=[]
                         for z,w in zip(field['rollout_z'],field['rollout_w']):
                             a,b,jac,curve=geometry(row_head,mesh['transform'],z,w)
                             aa.append(a);bb.append(b)
                             singular=np.linalg.svd(jac,compute_uv=False);rank.append(singular[-1]/singular[0])
                             force=curve+c*c*mesh['stiffness']@a+c*mesh['damping']@b
                             q,rr=np.linalg.qr(jac,mode='reduced');exact=scipy.linalg.solve_triangular(rr,-q.T@force)
+                            normal_force.append(float(np.linalg.norm(jac@exact+force)/max(np.linalg.norm(force),1e-12)))
                             lower=np.linalg.cholesky(jac.T@jac)
-                            bound=1/(np.linalg.norm(jac)*np.linalg.norm(scipy.linalg.solve_triangular(lower,np.eye(32),lower=True)))
+                            bound=1/(np.linalg.norm(jac)*np.linalg.norm(scipy.linalg.solve_triangular(lower,np.eye(jac.shape[1]),lower=True)))
                             bound_defects.append(max(0.,bound-rank[-1]))
                             normal=scipy.linalg.cho_solve((lower,True),-jac.T@force)
                             acceleration_delta.append(np.linalg.norm(normal-exact)/max(np.linalg.norm(exact),1e-10))
@@ -182,6 +207,8 @@ def audit(record):
                         item.update(head_coefficient_max_absolute=coefficient_delta,full_decode_max_absolute=decode_error,
                             min_observed_exact_rank_ratio=float(min(rank)),max_cholesky_qr_acceleration_relative=float(max(acceleration_delta)),
                             max_observed_normal_backward_error=float(max(backwards)),initial_fit_diagnostic_error=float(fitdelta),
+                            observed_weak_normal_force_relative=normal_force,max_observed_weak_normal_force_relative=max(normal_force),
+                            weak_equations=jac.shape[0],latent_dimension=jac.shape[1],weak_to_latent_ratio=jac.shape[0]/jac.shape[1],
                             max_relative_energy_balance_defect=float(np.max(abs(energy2(u,v,n,'dirichlet',c)-energy2(u[0],v[0],n,'dirichlet',c)))/energy2(u[0],v[0],n,'dirichlet',c)))
                         if row['method']!='baseline':
                             assert row['maximum_normal_backward_error']<1e-10
@@ -207,9 +234,21 @@ def audit(record):
                     saved=next(r for r in result['time_refinement'] if (r['intervals'],r['case'],r['method'],r['dt'])==(n,case,row['method'],row['setting']*2))
                     assert max(abs(maxima[name]-saved['maxima'][name]) for name in NAMES)<1e-10
                     refinements.append(dict(intervals=n,case=case,method=row['method'],dt=row['setting']*2,maxima=maxima,passed=saved['passed']))
+                for row in result.get('projection_kinematics',[]):
+                    if (row['intervals'],row['case'])!=(n,case):continue
+                    timed=next(r for r in result['invocations'] if (r['intervals'],r['case'],r['method'])==(n,case,row['method']))
+                    with np.load(native/timed['field_artifact']) as f,np.load(native/row['artifact']) as near:
+                        a0,b0=f['projection_a0'],f['projection_b0'];scale=np.sqrt(b0@b0+c*c*a0@mesh['stiffness']@a0)
+                        for check in row['checks']:
+                            delta=check['delta'];derivative=(near[f'plus_{delta}']-near[f'minus_{delta}'])/(2*delta)
+                            norm=np.linalg.norm(derivative-f['projection_velocity_coefficients'],axis=1)
+                            actual=float(np.max(norm)/scale)
+                            assert abs(actual-check['max_initial_velocity_scaled_difference'])<1e-10
+                            kinematics.append(dict(intervals=n,case=case,method=row['method'],delta=delta,max_initial_scaled_difference=actual,
+                                neighboring_fit_scope='Saved neighboring coefficients and reported stationarity; full timed projection stationarity/Hessian audited independently.'))
     output=dict(passed=True,source_commit=submission['source_commit'],job_id=meta['job_id'],
         timed_invocations=len(result['invocations']),distinct_timed_fields=len(groups),accuracy_control_fields=len(result['accuracy_controls']),
-        banks=banks,references=references,fields=checked,parities=parities,refinements=refinements)
+        banks=banks,references=references,fields=checked,parities=parities,refinements=refinements,kinematics=kinematics,training=training_audit)
     (record/'audit.json').write_text(json.dumps(output,indent=2)+'\n');print(json.dumps({k:v for k,v in output.items() if not isinstance(v,list)},indent=2))
 
 

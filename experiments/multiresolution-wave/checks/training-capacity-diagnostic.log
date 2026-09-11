@@ -1,0 +1,37 @@
+{
+  "scope": "Only originaltrainingcohort affineprojection insidefrozenbank; outside-bank physicalerrors omitted, no onlineevolution or heldoutclaim.",
+  "source_sha256": {
+    "training_ladder_dirichlet.npz": "f3dbef483a46c9dc3569311f60e16750b00b09e4a0330c07e4a917f8b6ab4ea4",
+    "fixed_encoder_training.npz": "214e9a00447c67579e93b99e80bc28a9750f6b447c802ed8eac2aab020b6b941"
+  },
+  "records": [
+    {
+      "latent": 32,
+      "worst_field_percent": 3.001682133972014,
+      "worst_velocity_percent": 7.305465444204789,
+      "worst_energy_percent": 8.400393892618965,
+      "median_case_energy_percent": 3.9183084756559556
+    },
+    {
+      "latent": 40,
+      "worst_field_percent": 1.6059280955741617,
+      "worst_velocity_percent": 4.715156945349818,
+      "worst_energy_percent": 5.049116692532596,
+      "median_case_energy_percent": 2.271436328156696
+    },
+    {
+      "latent": 48,
+      "worst_field_percent": 0.7787897157425763,
+      "worst_velocity_percent": 2.1758028007391816,
+      "worst_energy_percent": 2.6471905825003206,
+      "median_case_energy_percent": 1.4301645712467554
+    },
+    {
+      "latent": 56,
+      "worst_field_percent": 0.44137982393608344,
+      "worst_velocity_percent": 1.3339407127283798,
+      "worst_energy_percent": 1.5353215145548686,
+      "median_case_energy_percent": 0.777593019720248
+    }
+  ]
+}

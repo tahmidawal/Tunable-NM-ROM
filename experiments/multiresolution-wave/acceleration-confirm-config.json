@@ -1,0 +1,133 @@
+{
+  "meshes": [
+    64,
+    256,
+    1024
+  ],
+  "boundaries": [
+    "dirichlet"
+  ],
+  "validation_seed": 690602,
+  "validation_indices": [
+    0,
+    1
+  ],
+  "end_time": 2.4,
+  "observation_dt": 0.05,
+  "repetitions": 3,
+  "fit_iterations": 800,
+  "primary_dt": 0.0025,
+  "accuracy_only_dt": 0.00125,
+  "fom_cfl": 0.45,
+  "reference_cfl": 0.1125,
+  "reference_refinement_cfl": 0.05625,
+  "vanishing_fraction": 0.001,
+  "rom_refinement_target": 0.01,
+  "reference_refinement_target": 0.0001,
+  "accuracy_targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "primary_method": "frozen_mlp32_seed691200",
+  "control_method": null,
+  "frozen_bank_rank": 64,
+  "final_test_opened": false,
+  "expected_timed_invocations": 324,
+  "expected_accuracy_only_queries": 36,
+  "input_output_contract": "Full GPU-resident displacement, velocity and scalar physical wave speed to both full GPU-resident fields at all 49 observations. Include projection, every cold-fit start, parameter preparation, evolution and dense output; exclude host transfers, compilation and mesh-only assembly.",
+  "selection": "All settings andtrainedphasecheckpoint frozen fromacceptedopenedcohortscreen before freshdevelopmentcases. No parameter/epoch/settingsselection on confirmation data. Report each cohort separately andpooled worstcase; all-state5%miss remains explicit.",
+  "claim_scope": "True32-coordinate originalandphase-trained nonlinear manifolds on3meshes; originalbaseline vsCholeskygeometry+dt.01 andphasehead+sameoptimizedmethod. Allhead/checkpointchoicesfrozen, opened2plusseparateseededfreshdevelopment2, finalpapercohortclosed. NamedCGtimestep/tolerancebaselinesanddirectDSTpairedwithinthisjob.",
+  "walltime": "02:00:00",
+  "estimated_runtime_minutes": [
+    15,
+    35
+  ],
+  "cg_tolerances": [
+    1e-06,
+    0.01
+  ],
+  "cg_max_iterations": 1000,
+  "cohorts": [
+    {
+      "name": "opened",
+      "seed": 690602,
+      "indices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "fresh_development",
+      "seed": 691115,
+      "indices": [
+        0,
+        1
+      ]
+    }
+  ],
+  "profile_repetitions": 0,
+  "parity_target": 1e-08,
+  "arms": [
+    {
+      "method": "baseline",
+      "dt": 0.0025
+    },
+    {
+      "method": "chol_guard",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase",
+      "dt": 0.01
+    }
+  ],
+  "refinement_arms": [
+    {
+      "method": "baseline",
+      "dt": 0.0025
+    },
+    {
+      "method": "chol_guard",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase",
+      "dt": 0.01
+    }
+  ],
+  "cg_timestep_arms": [
+    {
+      "dt": 0.005,
+      "tolerance": 1e-06
+    },
+    {
+      "dt": 0.005,
+      "tolerance": 0.01
+    },
+    {
+      "dt": 0.01,
+      "tolerance": 1e-06
+    }
+  ],
+  "head_source_run": "accel08",
+  "frozen_head_inputs": {
+    "trained_phase": "trained_phase.npz"
+  },
+  "selection_frozen": {
+    "source_result_sha256": "050bf263e25a9e2be05c244723fd6907b11090fe87de7b0b8353c6d4a8e71153",
+    "selected_method": "trained_phase",
+    "dt": 0.01,
+    "physical5percent_pass": false,
+    "selection_criterion": "Lowest complete-cohort worst fixed-initial all-state error among numericallyeligible predeclaredtrainedheads; no globallyoptimal claim.",
+    "fresh_development_seed": 691115,
+    "fresh_development_indices": [
+      0,
+      1
+    ],
+    "frozen_before_confirmation": true,
+    "checkpoint_sha256": "eb4151fb61b250e49afdc328d74dcef478ce54d381559874d79beadaba5729d3"
+  },
+  "pending_capacity_screen": true
+}

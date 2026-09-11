@@ -128,8 +128,8 @@ def main():
             if row['method']=='rom':
                 p=weights[row['model']]['params'];op=ops[row['model']];states=saved['internal_latents'];assert states.shape==(51,16)
                 for rr in rows:assert np.array_equal(states,np.array(rr['internal_latents'])) and np.array_equal(states[::10],np.array(rr['latent_states']))
-                pred=(gsample@ai.head(p,states[::10]).T).T.reshape(6,len(ids),len(ids));actual=f[:,ids[:,None],ids[None,:]]
-                maxima['sampled_decoder_relative_delta']=max(maxima['sampled_decoder_relative_delta'],float(np.linalg.norm(pred-actual)/np.linalg.norm(actual)))
+                pred=(gsample@ai.head(p,states[::10]).T).T.reshape(6,len(ids),len(ids));sampled_actual=f[:,ids[:,None],ids[None,:]]
+                maxima['sampled_decoder_relative_delta']=max(maxima['sampled_decoder_relative_delta'],float(np.linalg.norm(pred-sampled_actual)/np.linalg.norm(sampled_actual)))
                 h,Jh=head_jac(p,states[0])
                 complex_jac=np.column_stack([complex_head(p,states[0].astype(complex)+1e-25j*np.eye(16)[j]).imag/1e-25 for j in range(16)])
                 maxima['complex_head_jacobian_relative_delta']=max(maxima['complex_head_jacobian_relative_delta'],float(np.linalg.norm(Jh-complex_jac)/np.linalg.norm(complex_jac)))

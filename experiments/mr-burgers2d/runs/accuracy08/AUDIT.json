@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "result_sha256": "056ba0ae8b16bf8737ac370cef6219414fecff3e693592fc4f15f67cdd41cb7e",
+  "audit_script_sha256": "6476be6e1908204ed7d4aa44b536a428bdd83bb656f305a0fe502f1542f7a40c",
+  "audit_dependency_sha256": {
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/audit_iterative.py": "ffe8d1076aca10610ee838947fe5accfefa113c30ef10b9375ca312a0bbaa90e"
+  },
+  "normalized_gradient_agreement_bound": 2e-09,
+  "threshold_classification_disagreements": [],
+  "classification_policy": "A state is stationary only when charged, posthoc and independent NumPy values all meet the unchanged threshold; disagreements fail convergence conservatively.",
+  "job_id": "3565181",
+  "source_commit": "47b783429500b559f6a509448ca11f164183b658",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "invocations": 324,
+  "distinct_full_fields": 108,
+  "audited_rom_states_with_repetitions": 11016,
+  "audited_fom_output_steps_with_repetitions": 540,
+  "reference_metric_max_delta": 3.3306690738754696e-16,
+  "maxima": {
+    "full_error_metric_delta": 1.3877787807814457e-16,
+    "fom_output_residual_delta": 1.3010426069826053e-17,
+    "sampled_decoder_relative_delta": 4.013483238258604e-14,
+    "complex_head_jacobian_relative_delta": 8.987980864878725e-15,
+    "complex_weak_jacobian_relative_delta": 4.9869533322248325e-14,
+    "weak_residual_delta": 1.9948487306464813e-12,
+    "normalized_gradient_delta": 1.111548846758024e-10,
+    "charged_cpu_normalized_gradient_delta": 9.152275332866842e-11,
+    "charged_posthoc_normalized_gradient_delta": 1.592395832763786e-10
+  },
+  "frozen_control_parity": [
+    {
+      "intervals": 64,
+      "case": 0,
+      "relative_field_delta": 1.8338581238738038e-14,
+      "counters_equal": true,
+      "max_latent_delta": 9.404144130087388e-13
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "relative_field_delta": 2.056585807725425e-14,
+      "counters_equal": true,
+      "max_latent_delta": 5.062061880778401e-13
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "relative_field_delta": 5.2406660926392105e-14,
+      "counters_equal": true,
+      "max_latent_delta": 6.179085021429387e-13
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "relative_field_delta": 2.507040800262475e-14,
+      "counters_equal": true,
+      "max_latent_delta": 4.35235181228677e-13
+    },
+    {
+      "intervals": 256,
+      "case": 0,
+      "relative_field_delta": 2.050144518755866e-14,
+      "counters_equal": true,
+      "max_latent_delta": 1.3651302310790925e-12
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "relative_field_delta": 2.2204754462761144e-14,
+      "counters_equal": true,
+      "max_latent_delta": 1.4527823388732486e-12
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "relative_field_delta": 6.168414504006481e-14,
+      "counters_equal": true,
+      "max_latent_delta": 7.26113613680468e-13
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "relative_field_delta": 2.9657346296690594e-14,
+      "counters_equal": true,
+      "max_latent_delta": 7.397138457321262e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "relative_field_delta": 2.117155124143013e-14,
+      "counters_equal": true,
+      "max_latent_delta": 1.5319967516802535e-12
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "relative_field_delta": 1.9249809901728738e-14,
+      "counters_equal": true,
+      "max_latent_delta": 1.1249334797014399e-12
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "relative_field_delta": 5.721920040636509e-14,
+      "counters_equal": true,
+      "max_latent_delta": 6.339373470609644e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "relative_field_delta": 3.2820283746537096e-14,
+      "counters_equal": true,
+      "max_latent_delta": 7.07489622442381e-13
+    }
+  ],
+  "scope": "Independent full saved-field norms, cold/stencil decoder identities, every weak state residual and analytic Jacobian stationarity; FOM output-step residuals; source/provenance and training bytes. Inner linear correction residuals checked from records, not reconstructed unavailable Newton states."
+}

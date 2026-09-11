@@ -6909,3 +6909,9 @@ The final report and all tables are generated from run JSONs. The fixed evaluati
 Burgers branch is `214671eee17b6c9930c1581e4d206b5d0110985a`; wave branch is `ab084c977ae668b3f637033752cd7a5786195ebb`. The prepared scoped integration manifest lists 1,026 files and 556,912,115 bytes with no existing main-path conflicts. It includes the required fresh-wave FOM dependencies and preserves both protocols; it does not apply files, merge histories or authorize deleting worktrees.
 
 Open: improve initial representation/fitting and wave evolution before claiming useful accuracy/speed trade-offs; assess training variance and matched capacity; investigate the separate exact/precomputed-operator method on its own scope. The approved bounded pilot has no remaining scientific run or collection task. Both worktrees and raw archives are retained, and the required user decision about integrating the completed benchmark remains pending.
+
+## 2026-09-10 — Interpreting FOM timings in the completed CP pilot
+
+### ideate — raw runtime exception and accuracy qualification
+
+The user asked whether the FOM is faster in every case. The selected largest-target classical solver is faster than all diagnostic ROMs in 5/6 cells. The raw-time exception is burgers2d at 512 intervals: cp takes 29.5804 ms versus FOM 43.4578 ms (FOM/ROM time ratio 1.46914), but worst errors are 45.2739% and 3.20343% respectively. Modified CP and FiLM are slower than the selected classical solver in every cell. This raw-time exception does not establish a matched-accuracy speedup; no ROM meets the cohort accuracy target. The interpretation concerns this completed CP/EQ pilot, not the separate precomputed-operator work. No new experiments, settings, results, or merges were introduced.

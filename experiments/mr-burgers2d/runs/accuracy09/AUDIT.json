@@ -1,0 +1,321 @@
+{
+  "passed": true,
+  "result_sha256": "cf7409cbb553a78662ee8eb5b6e33d52ec89228f511a74eb2170562f4eeb9c33",
+  "audit_script_sha256": "c1391a222921ce652d4698ffe1aa022375a74b250e5fa4181910231568dbca94",
+  "audit_dependency_sha256": {
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/audit_iterative.py": "ffe8d1076aca10610ee838947fe5accfefa113c30ef10b9375ca312a0bbaa90e"
+  },
+  "normalized_gradient_agreement_bound": 2e-09,
+  "threshold_classification_disagreements": [],
+  "classification_policy": "A state is stationary only when charged, posthoc and independent NumPy values all meet the unchanged threshold; disagreements fail convergence conservatively.",
+  "job_id": "3571954",
+  "source_commit": "9bd640437f8ba1d830806d950fd34949dbbb8bfc",
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "invocations": 270,
+  "distinct_full_fields": 90,
+  "audited_rom_states_with_repetitions": 8262,
+  "audited_fom_output_steps_with_repetitions": 540,
+  "reference_metric_max_delta": 3.3306690738754696e-16,
+  "maxima": {
+    "full_error_metric_delta": 1.3877787807814457e-16,
+    "sampled_decoder_relative_delta": 3.903906933817865e-14,
+    "complex_head_jacobian_relative_delta": 8.70039037876778e-15,
+    "complex_weak_jacobian_relative_delta": 4.9560804237173025e-14,
+    "weak_residual_delta": 1.5148438059497948e-12,
+    "normalized_gradient_delta": 1.0138159733995714e-10,
+    "charged_cpu_normalized_gradient_delta": 9.15227607341716e-11,
+    "charged_posthoc_normalized_gradient_delta": 1.592395916264294e-10,
+    "fom_output_residual_delta": 1.3010426069826053e-17
+  },
+  "frozen_control_parity": [
+    {
+      "intervals": 64,
+      "case": 0,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 0,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 0,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 1,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 2,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 3,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 4,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 4,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 5,
+      "name": "frozen_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 256,
+      "case": 5,
+      "name": "trained576_stationary",
+      "relative_field_delta": 0.0,
+      "counters_equal": true,
+      "max_latent_delta": 0.0
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "name": "frozen_stationary",
+      "relative_field_delta": 2.102489111775816e-14,
+      "counters_equal": true,
+      "max_latent_delta": 1.1055184545583074e-12
+    },
+    {
+      "intervals": 1024,
+      "case": 0,
+      "name": "trained576_stationary",
+      "relative_field_delta": 1.3066454901276677e-14,
+      "counters_equal": true,
+      "max_latent_delta": 2.991218384096328e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "name": "trained576_stationary",
+      "relative_field_delta": 1.9143538204078185e-14,
+      "counters_equal": true,
+      "max_latent_delta": 9.122286259710677e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 1,
+      "name": "frozen_stationary",
+      "relative_field_delta": 1.2989650267819806e-14,
+      "counters_equal": true,
+      "max_latent_delta": 9.69793689797882e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "name": "trained576_stationary",
+      "relative_field_delta": 2.144342448406647e-14,
+      "counters_equal": true,
+      "max_latent_delta": 1.422750806057138e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 2,
+      "name": "frozen_stationary",
+      "relative_field_delta": 6.896580182440975e-14,
+      "counters_equal": true,
+      "max_latent_delta": 7.772255061766487e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "name": "trained576_stationary",
+      "relative_field_delta": 1.8302423368708984e-14,
+      "counters_equal": true,
+      "max_latent_delta": 3.1816216328195424e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 3,
+      "name": "frozen_stationary",
+      "relative_field_delta": 3.167594557556777e-14,
+      "counters_equal": true,
+      "max_latent_delta": 6.172284905403558e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 4,
+      "name": "frozen_stationary",
+      "relative_field_delta": 4.454647250309366e-14,
+      "counters_equal": true,
+      "max_latent_delta": 6.127875984418552e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 4,
+      "name": "trained576_stationary",
+      "relative_field_delta": 2.592937969193067e-14,
+      "counters_equal": true,
+      "max_latent_delta": 3.725353359129713e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 5,
+      "name": "frozen_stationary",
+      "relative_field_delta": 3.7721849527268007e-14,
+      "counters_equal": true,
+      "max_latent_delta": 6.505351812791105e-13
+    },
+    {
+      "intervals": 1024,
+      "case": 5,
+      "name": "trained576_stationary",
+      "relative_field_delta": 2.2080832770872334e-14,
+      "counters_equal": true,
+      "max_latent_delta": 1.4058199049316045e-13
+    }
+  ],
+  "scope": "Independent full saved-field norms, cold/stencil decoder identities, every weak state residual and analytic Jacobian stationarity; FOM output-step residuals; source/provenance and training bytes. Inner linear correction residuals checked from records, not reconstructed unavailable Newton states."
+}

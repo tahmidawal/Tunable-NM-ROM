@@ -1,0 +1,162 @@
+{
+  "passed": true,
+  "source_result_sha256": "4993f0d12cfb4c6c6a7529fa93123e729252a2f81e2e4c09456e744823472cad",
+  "owner_audit_sha256": "07579a69353d605bef2caa48554a3943165aa3c125b8d515b7f4cdaec8ae1dfa",
+  "source_script_sha256": "6eaeb218f052563612323430eb63b10d7d669218d8a4e8a0ae98e25e23ef9b8f",
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "host": "pax049",
+    "source_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+    "job_id": "3565786",
+    "numpy_version": "2.5.0"
+  },
+  "source_result_path": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel12/cluster/out/pilot/result.json",
+  "checked_trajectories": 9,
+  "endpoints": [
+    {
+      "intervals": 64,
+      "method": "baseline",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.018123748190538663,
+        "velocity": 0.04167162057531008,
+        "energy_state": 0.06223986057830845
+      },
+      "complex_step_decoded_uv_max_absolute": 8.215650382226158e-15,
+      "independent_modal_reference_max_absolute": 1.84297022087776e-14,
+      "field_artifact_sha256": "838f0f89cd51249a5f61854f4330d23d050cc5020da7ab1572ba809a907df288",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 64,
+      "method": "chol_guard",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.018109156741339262,
+        "velocity": 0.04167481412007671,
+        "energy_state": 0.06223098674856692
+      },
+      "complex_step_decoded_uv_max_absolute": 8.548717289613705e-15,
+      "independent_modal_reference_max_absolute": 1.84297022087776e-14,
+      "field_artifact_sha256": "5f9708639c61131ad6c5eba4ef1f7b01f70e62631c47cee25c7e80c5e0483e77",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 64,
+      "method": "trained_nested40",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.014779065499100782,
+        "velocity": 0.03260997024411474,
+        "energy_state": 0.05041070829673452
+      },
+      "complex_step_decoded_uv_max_absolute": 9.381384558082573e-15,
+      "independent_modal_reference_max_absolute": 1.84297022087776e-14,
+      "field_artifact_sha256": "f072af32a43c7dc25b1f082e804573bb4cd85a68ade379e90b7273a131efd190",
+      "checkpoint_sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3"
+    },
+    {
+      "intervals": 256,
+      "method": "baseline",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.017939412029423653,
+        "velocity": 0.042121071037536484,
+        "energy_state": 0.06211970417893801
+      },
+      "complex_step_decoded_uv_max_absolute": 1.021405182655144e-14,
+      "independent_modal_reference_max_absolute": 1.255662240851052e-13,
+      "field_artifact_sha256": "abd868a3abc106e1dd47e4d6c1568fc4c8f2b527d5bddd753268ac9401a17b94",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 256,
+      "method": "chol_guard",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.017918711286181672,
+        "velocity": 0.04212644008497976,
+        "energy_state": 0.062101704952690816
+      },
+      "complex_step_decoded_uv_max_absolute": 1.021405182655144e-14,
+      "independent_modal_reference_max_absolute": 1.255662240851052e-13,
+      "field_artifact_sha256": "23ea4949e4f3a18646170e7a5a2a56366c4488bec01804b7b1b07bae148990c6",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 256,
+      "method": "trained_nested40",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.01542840760186941,
+        "velocity": 0.034190164014416755,
+        "energy_state": 0.05136114487320719
+      },
+      "complex_step_decoded_uv_max_absolute": 9.381384558082573e-15,
+      "independent_modal_reference_max_absolute": 1.255662240851052e-13,
+      "field_artifact_sha256": "0318f6f9cfb1ecc041c6739f833fdc6cb5243048dcb014a4628a2b75a7e89901",
+      "checkpoint_sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3"
+    },
+    {
+      "intervals": 1024,
+      "method": "baseline",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.017961971927351057,
+        "velocity": 0.04204148258805979,
+        "energy_state": 0.062137809157110334
+      },
+      "complex_step_decoded_uv_max_absolute": 9.880984919163893e-15,
+      "independent_modal_reference_max_absolute": 6.5580874064608e-13,
+      "field_artifact_sha256": "3e014b206dd096401603fb6959bcaef8ff6661aa8c7696d01ae3e4f5a4af84f7",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 1024,
+      "method": "chol_guard",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.017940928459492928,
+        "velocity": 0.04204697018179836,
+        "energy_state": 0.06211926494233397
+      },
+      "complex_step_decoded_uv_max_absolute": 9.769962616701378e-15,
+      "independent_modal_reference_max_absolute": 6.5580874064608e-13,
+      "field_artifact_sha256": "777e03f15887a0879edd3fb14e94fded0368677b83156b4929e656ce0efe3faa",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 1024,
+      "method": "trained_nested40",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.015464678060351853,
+        "velocity": 0.03421021637964114,
+        "energy_state": 0.05145194102181968
+      },
+      "complex_step_decoded_uv_max_absolute": 1.1546319456101628e-14,
+      "independent_modal_reference_max_absolute": 6.5580874064608e-13,
+      "field_artifact_sha256": "c2ea933bdde88caa2dd6721a9df8d2c0fc864dae6197e61f40740bd74cd83438",
+      "checkpoint_sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3"
+    }
+  ],
+  "scope": "Worst energy-state trajectory per ROM arm/mesh: all saved output errors with spectral energy; selected modal-reference times; sampled decoder values and complex-step tangent velocities. Full owner audit remains required. No new solves or timings."
+}

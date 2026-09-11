@@ -1,0 +1,329 @@
+{
+  "passed": true,
+  "source_result_sha256": "cf7409cbb553a78662ee8eb5b6e33d52ec89228f511a74eb2170562f4eeb9c33",
+  "owner_audit_sha256": "8ae6fb0988164e0828bf2f81716e727d2e12389191eb8da31f56ea6addd1612c",
+  "source_script_sha256": "f1db06a05f7a2f6087ab5a1267343ed90a9c1332a82904ad5a57c5484cb3141a",
+  "helper_sha256": {
+    "audit_burgers_stationarity.py": "85be7b967848e06acb50901634e5fa8e04657c49d8286ac8289b5ce3d7cede0f",
+    "audit_poisson_online_tuning.py": "2658004009c3f5da2fffdb2eba1dd14f45d73afb4056cd787f0528340489e154"
+  },
+  "source_result_path": "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/accuracy09/archive/out/result.json",
+  "job_id": "3571954",
+  "source_commit": "9bd640437f8ba1d830806d950fd34949dbbb8bfc",
+  "scope": "Worst trajectory per model/mesh: all output errors and decoded samples; initial, first, last and largest recorded-gradient weak states. Full owner audit remains required. No new solve or timing.",
+  "checked_trajectories": 9,
+  "endpoints": [
+    {
+      "model": "frozen_stationary",
+      "intervals": 64,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.1085697931783108,
+      "decoder_relative_error": 2.7048517543839286e-14,
+      "field_sha256": "1df3b2d08c79ed06fea8c61fe2dc2b70534ed59605792ae708b8bae3d8cc67cf",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 9.55675838636197e-07,
+          "posthoc": 9.556757712974063e-07,
+          "charged": 9.556757721483574e-07
+        },
+        {
+          "step": 1,
+          "cpu": 6.967607336150074e-08,
+          "posthoc": 6.967651376681202e-08,
+          "charged": 6.967660525755374e-08
+        },
+        {
+          "step": 13,
+          "cpu": 9.357013040393424e-07,
+          "posthoc": 9.356978436687701e-07,
+          "charged": 9.35702484010815e-07
+        },
+        {
+          "step": 50,
+          "cpu": 6.03176063309825e-09,
+          "posthoc": 6.047702888156315e-09,
+          "charged": 6.040397258978216e-09
+        }
+      ]
+    },
+    {
+      "model": "frozen_stationary",
+      "intervals": 256,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.04554610883324433,
+      "decoder_relative_error": 2.8672361089929484e-14,
+      "field_sha256": "49d9cbac9843a559b10fde17fd3f1171087ee53e7f112fc4f6c69a9540e960b6",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 6.121281061152403e-07,
+          "posthoc": 6.121281183185769e-07,
+          "charged": 6.121281183668157e-07
+        },
+        {
+          "step": 1,
+          "cpu": 9.7114872638688e-07,
+          "posthoc": 9.711496150374784e-07,
+          "charged": 9.71146709073932e-07
+        },
+        {
+          "step": 50,
+          "cpu": 1.1594564262068381e-08,
+          "posthoc": 1.1584128397168724e-08,
+          "charged": 1.1580587011411218e-08
+        }
+      ]
+    },
+    {
+      "model": "frozen_stationary",
+      "intervals": 1024,
+      "case": 3,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.03884679626406284,
+      "decoder_relative_error": 1.828238155444945e-14,
+      "field_sha256": "b0039bd4bc88df676bea8216e5a748e88c0bccf9db783404e69d34acd5cfe37b",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 6.520672369799963e-07,
+          "posthoc": 6.520672354926504e-07,
+          "charged": 6.520672353716768e-07
+        },
+        {
+          "step": 1,
+          "cpu": 3.286352731528935e-07,
+          "posthoc": 3.286350440241451e-07,
+          "charged": 3.286354409010857e-07
+        },
+        {
+          "step": 15,
+          "cpu": 9.458908578465326e-07,
+          "posthoc": 9.458908383921074e-07,
+          "charged": 9.45889627685981e-07
+        },
+        {
+          "step": 50,
+          "cpu": 2.6349826610064577e-08,
+          "posthoc": 2.6351372932802268e-08,
+          "charged": 2.6348921428324545e-08
+        }
+      ]
+    },
+    {
+      "model": "trained576_stationary",
+      "intervals": 64,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.11045567817453053,
+      "decoder_relative_error": 1.4348129592685895e-14,
+      "field_sha256": "18f6c393290d3792073c078c3e8a8f666e6b7762e991c3e9e92e97325ecb1aac",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 7.864362120842416e-07,
+          "posthoc": 7.864362329809885e-07,
+          "charged": 7.864362328795164e-07
+        },
+        {
+          "step": 1,
+          "cpu": 8.653361267041621e-07,
+          "posthoc": 8.653361228836937e-07,
+          "charged": 8.65336026750429e-07
+        },
+        {
+          "step": 10,
+          "cpu": 8.719800169982423e-07,
+          "posthoc": 8.719793029449842e-07,
+          "charged": 8.719792871637145e-07
+        },
+        {
+          "step": 50,
+          "cpu": 4.67749133414332e-07,
+          "posthoc": 4.677470292505377e-07,
+          "charged": 4.6774640235970653e-07
+        }
+      ]
+    },
+    {
+      "model": "trained576_stationary",
+      "intervals": 256,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.05794181698687688,
+      "decoder_relative_error": 1.2010896741818825e-14,
+      "field_sha256": "88a23295c92e433a5a50c7d72c7603cd82080d9330eefd140b6ef6db04ff357b",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 8.666177898834163e-07,
+          "posthoc": 8.666177871741662e-07,
+          "charged": 8.666177871452743e-07
+        },
+        {
+          "step": 1,
+          "cpu": 5.621957022404431e-07,
+          "posthoc": 5.62195707715086e-07,
+          "charged": 5.621957691739147e-07
+        },
+        {
+          "step": 49,
+          "cpu": 9.305744111126071e-07,
+          "posthoc": 9.305742766168128e-07,
+          "charged": 9.305745803863175e-07
+        },
+        {
+          "step": 50,
+          "cpu": 8.89689537360102e-07,
+          "posthoc": 8.896892417479752e-07,
+          "charged": 8.896905113303843e-07
+        }
+      ]
+    },
+    {
+      "model": "trained576_stationary",
+      "intervals": 1024,
+      "case": 3,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.05459553761006669,
+      "decoder_relative_error": 1.4005996455072415e-14,
+      "field_sha256": "f732a7ec1a3c62e1a37fdb84e0e7cf25365c999b0a70415c6c8b569dcb049056",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 3.991500429531227e-07,
+          "posthoc": 3.9915005988634705e-07,
+          "charged": 3.9915006040491465e-07
+        },
+        {
+          "step": 1,
+          "cpu": 4.529808280268057e-07,
+          "posthoc": 4.529808678889947e-07,
+          "charged": 4.5298088423307647e-07
+        },
+        {
+          "step": 15,
+          "cpu": 8.941619984546801e-07,
+          "posthoc": 8.941616306817312e-07,
+          "charged": 8.94161231371889e-07
+        },
+        {
+          "step": 50,
+          "cpu": 6.984131670572897e-08,
+          "posthoc": 6.984184303006752e-08,
+          "charged": 6.98422806068165e-08
+        }
+      ]
+    },
+    {
+      "model": "trained4608_stationary",
+      "intervals": 64,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.10936768611658601,
+      "decoder_relative_error": 1.5362020149114467e-14,
+      "field_sha256": "668a909bc27ec43b5424f73e36952cf0857620e67a2e12b44ebb7ced50b74ec4",
+      "checkpoint_sha256": "20b48d4ecdc868931b8898c92e8aced1084ee2aa316786eea25d3ba398b8ea9e",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 7.369469669898234e-07,
+          "posthoc": 7.369469739502894e-07,
+          "charged": 7.369469740351204e-07
+        },
+        {
+          "step": 1,
+          "cpu": 9.039122672047958e-07,
+          "posthoc": 9.03912400924785e-07,
+          "charged": 9.039123220451466e-07
+        },
+        {
+          "step": 50,
+          "cpu": 3.516252143550666e-07,
+          "posthoc": 3.5162123438155165e-07,
+          "charged": 3.5162249339929124e-07
+        }
+      ]
+    },
+    {
+      "model": "trained4608_stationary",
+      "intervals": 256,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.05308770363074655,
+      "decoder_relative_error": 1.29833430120177e-14,
+      "field_sha256": "6919bbb2acf964c7372b8a27872a7f251737ac33bbdb10b7e3de06f269e20eab",
+      "checkpoint_sha256": "20b48d4ecdc868931b8898c92e8aced1084ee2aa316786eea25d3ba398b8ea9e",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 8.102563562934619e-07,
+          "posthoc": 8.10256348224021e-07,
+          "charged": 8.102563484886872e-07
+        },
+        {
+          "step": 1,
+          "cpu": 9.610142420439205e-07,
+          "posthoc": 9.610140499783326e-07,
+          "charged": 9.610139959481213e-07
+        },
+        {
+          "step": 11,
+          "cpu": 9.67489045733543e-07,
+          "posthoc": 9.674886779677817e-07,
+          "charged": 9.674889031451314e-07
+        },
+        {
+          "step": 50,
+          "cpu": 1.9346190475813857e-08,
+          "posthoc": 1.9345692410204505e-08,
+          "charged": 1.934623589056679e-08
+        }
+      ]
+    },
+    {
+      "model": "trained4608_stationary",
+      "intervals": 1024,
+      "case": 3,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.05277322641301152,
+      "decoder_relative_error": 1.2812442303631562e-14,
+      "field_sha256": "9f18e480a280d0556a6418515bc03220497568a7c916f843eca3ffdae1a8c93a",
+      "checkpoint_sha256": "20b48d4ecdc868931b8898c92e8aced1084ee2aa316786eea25d3ba398b8ea9e",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 5.86929859904727e-07,
+          "posthoc": 5.869298735627811e-07,
+          "charged": 5.869298738250646e-07
+        },
+        {
+          "step": 1,
+          "cpu": 4.858569641468235e-07,
+          "posthoc": 4.85856924465587e-07,
+          "charged": 4.858569753841199e-07
+        },
+        {
+          "step": 17,
+          "cpu": 9.389694029825068e-07,
+          "posthoc": 9.389699850809284e-07,
+          "charged": 9.38969542089571e-07
+        },
+        {
+          "step": 50,
+          "cpu": 2.815081056495679e-08,
+          "posthoc": 2.8150483291903954e-08,
+          "charged": 2.815045529979902e-08
+        }
+      ]
+    }
+  ]
+}

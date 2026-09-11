@@ -77,7 +77,7 @@ Bank projection uses the full same-grid field norm; the online physical error us
 
 The capacity arm widens the learned spatial bank without changing its initial decoded function or latent dimension. The added head outputs start at zero. Both sizes undergo bank, head and joint stages, with the smaller control matched to each larger-model phase's measured optimizer time. This isolates bank capacity from a simultaneous latent increase or difficult-case reweighting.
 
-All cases in this comparison were already opened during development. The head-projection diagnostic uses stationary full-field fits and is a best-found value, not a proof of the global nonlinear minimum. All recorded online solves are stationary.
+All cases in this comparison were already opened during development. The head-projection diagnostic uses stationary full-field fits and is a best-found value, not a proof of the global nonlinear minimum. It was run only on the middle mesh; dashes on other meshes mean it was not evaluated there. All recorded online solves are stationary.
 
 | Intervals | Model | Latent / bank size | Bank projection error % | Best-found head error % | Online physical error % | GPU ms | GPU outliers | 5% physical target |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -238,11 +238,46 @@ Nested correction directions: all comparisons below use this screen's own paired
 | cgdt_0.01_tol_1e-06 | 1e-06 | 44.453260 | 3.144053 / 5.874126 / 8.153122 | 0 | Fail |
 | dst | 0.0 | 3.860532 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
 
-The nested head reaches 5.041071% worst energy-state error and 199.464938 GPU ms on the opened screen. Its 22.601361× acceleration is relative to the same-job original ROM, not a qualified FOM speedup. It still misses the all-state target. Its weights, initializer, step and solver are frozen before multiresolution evaluation on additional development cases.
+The nested head reaches 5.041071% worst energy-state error and 199.464938 GPU ms on the opened screen. Its 22.601361× acceleration is relative to the same-job original ROM, not a qualified FOM speedup. It still misses the all-state target. Its weights, initializer, step and solver were frozen before multiresolution evaluation on additional development cases.
+
+## Reflective waves: frozen multiresolution confirmation
+
+The selected nested decoder, initializer and integration step were frozen before introducing the new development cases. The original head, its accelerated implementation, named CG controls and direct DST are retimed together in this confirmation job. The phase-only head and independently retrained larger head were not confirmed across these meshes.
+
+| Intervals | Method | GPU ms | Worst initial-scaled u / v / energy-state error % | GPU outliers | Physical and numerical criteria |
+| --- | --- | --- | --- | --- | --- |
+| 64 | baseline | 4485.909332 | 1.812375 / 4.167162 / 6.223986 | 0 | Fail |
+| 64 | chol_guard | 178.981540 | 1.810916 / 4.167481 / 6.223099 | 0 | Fail |
+| 64 | trained_nested40 | 199.438048 | 1.477907 / 3.260997 / 5.041071 | 0 | Fail |
+| 64 | cgdt_0.005_tol_0.01 | 42.195606 | 1.213408 / 1.418882 / 1.923893 | 0 | Pass |
+| 64 | dst | 3.760324 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
+| 256 | baseline | 4472.278085 | 1.793941 / 4.212107 / 6.211970 | 0 | Fail |
+| 256 | chol_guard | 179.116437 | 1.791871 / 4.212644 / 6.210170 | 0 | Fail |
+| 256 | trained_nested40 | 200.158698 | 1.542841 / 3.419016 / 5.136114 | 0 | Fail |
+| 256 | cgdt_0.005_tol_1e-06 | 138.838246 | 0.806122 / 1.572060 / 2.203322 | 0 | Pass |
+| 256 | dst | 4.422321 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
+| 1024 | baseline | 4477.732209 | 1.796197 / 4.204148 / 6.213781 | 0 | Fail |
+| 1024 | chol_guard | 183.441437 | 1.794093 / 4.204697 / 6.211926 | 0 | Fail |
+| 1024 | trained_nested40 | 202.941565 | 1.546468 / 3.421022 / 5.145194 | 0 | Fail |
+| 1024 | cgdt_0.005_tol_0.01 | 601.496361 | 2.106725 / 2.889742 / 3.531910 | 0 | Pass |
+| 1024 | dst | 16.732217 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
+
+At 1024 intervals on all 4 cases, the selected ROM takes 202.941565 GPU ms versus 4477.732209 ms for the same-job original ROM (22.064145× acceleration). The fastest tested passing CG setting takes 601.496361 ms, a 2.963889× timing ratio. The ROM still misses the all-state target at 5.145194% energy-state error, so this is not an accuracy-qualified speedup at that target. Direct DST remains faster.
+
+The pooled comparator must pass over the complete cohort. A fast CG setting that fails physical accuracy on an intermediate mesh is excluded even when its algebraic residual test passes. Retained repetitions and all rejected CG settings remain in the normalized JSON.
+
+| Fine-grid cohort | Method | Initial-scaled u / v / energy-state error % | Current-relative u / v error % | Physical and numerical criteria |
+| --- | --- | --- | --- | --- |
+| opened | baseline | 1.796197 / 4.204148 / 6.213781 | 3.568422 / 7.813101 | Fail |
+| opened | trained_nested40 | 1.546468 / 3.421022 / 5.145194 | 2.519641 / 5.557525 | Fail |
+| fresh_development | baseline | 1.565365 / 3.933681 / 5.147017 | 4.384534 / 6.730975 | Fail |
+| fresh_development | trained_nested40 | 1.106656 / 2.697065 / 3.853874 | 2.703948 / 4.710923 | Pass |
+
+The new development cohort stays separate from the opened selection cases; neither cohort is the paper's sealed final test. Every returned trajectory and refinement comparison passed the recorded numerical checks. A configuration-key error stopped the first confirmation attempt before any query cases were generated; the retry changed only that operational lookup and retained the frozen scientific configuration.
 
 ## Work still in progress
 
-A nested Poisson correction family and a broader Burgers training-coverage comparison are being prepared. Frozen wave multiresolution confirmation has completed its GPU job and is undergoing collection and acceptance auditing. Completed audits will be added here, including unsuccessful arms.
+The final nested Poisson correction family is being submitted. The broader Burgers training-coverage comparison has passed field/gradient auditing and is completing archive acceptance. Heat and reflective-wave work are complete; remaining accepted results will be added here, including unsuccessful arms.
 
 ## Reproduction and evidence
 
@@ -257,6 +292,7 @@ Heat job `3563072` contains the paired GPU measurements; scientific source and c
 - [Wave training audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel08/audit.json)
 - [Wave larger-head audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel09/audit.json)
 - [Wave correction-head audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel10/audit.json)
+- [Wave multiresolution confirmation audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel12/audit.json)
 - [Normalized values, repetition arrays and source hashes](2026-09-11-accuracy-improvements-and-wave-speed.json)
 
 Run `reports/generate_accuracy_campaign.py` with the repository Python environment to rebuild. All source hashes and generator identity are embedded in the adjacent JSON. These are single-training-seed development studies on the recorded families; they do not establish broad PDE generalization or final paper performance.

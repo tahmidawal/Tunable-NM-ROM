@@ -1,5 +1,5 @@
 {
-  "status": "submitted_pending_not_a_result",
+  "status": "running_gpu_preflight_passed_not_a_result",
   "job_id": "3563072",
   "source_commit": "c7cc18d4a12820f471076fcbb5e95cce3c6c75c4",
   "remote": "/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/accuracy10",
@@ -25,5 +25,7 @@
     "first": "55s time cap after training/reconstruction, before timing; no numerical exception",
     "full": "smoke02 complete within55s; all4 head paths, linear control, direct FOM; unmodified CG fixtures deferred to mandatory real-job verification",
     "focused": "test_accuracy.py passed within55s: exact compressed/full objective and gradient parity,4 fine-diagnostic models and96 stored starts"
-  }
+  },
+  "node": "pax106",
+  "gpu_preflight_verified": true
 }

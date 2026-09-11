@@ -30,7 +30,7 @@ def guarded_gj(A,b,residual_limit=1e-12):
     return result,backward_error(A,result,b),(~good).astype(jnp.int32),eta
 
 
-def make_lm_kernel(ops,budget,specialized=True,trace=False,residual_limit=1e-12):
+def make_lm_kernel(ops,budget,specialized=True,trace=False,residual_limit=1e-12,stationarity_tol=None):
     """Incumbent LM schedules/stops, changed linear solve plus diagnostics.
 
     Returns (same original seven outputs, [max backward error, fallbacks,
@@ -45,6 +45,9 @@ def make_lm_kernel(ops,budget,specialized=True,trace=False,residual_limit=1e-12)
     def lm(z0,fm,tau):
         r0,J0=rJ(z0,fm);v0=jnp.linalg.norm(r0);tol=tau*v0
         reason=jnp.where(~jnp.isfinite(v0),jnp.int32(5),jnp.where((tau>0)&(v0<=tol),jnp.int32(2),jnp.int32(0)))
+        if stationarity_tol is not None:
+            gradient=jnp.linalg.norm(J0.T@r0)/(jnp.linalg.norm(J0)*v0+1e-300)
+            reason=jnp.where((reason==0)&(gradient<=stationarity_tol),jnp.int32(6),reason)
         init=(z0,J0,r0,v0,jnp.asarray(1e-6,jnp.float64),jnp.int32(0),jnp.int32(0),jnp.int32(1),reason,
               jnp.asarray(0.,jnp.float64),jnp.int32(0),jnp.asarray(0.,jnp.float64))
         if trace:
@@ -74,6 +77,9 @@ def make_lm_kernel(ops,budget,specialized=True,trace=False,residual_limit=1e-12)
             reason=jnp.where(accept&(tau>0)&(val<=tol),jnp.int32(2),
                 jnp.where(accept&((rel_dec<1e-12)|(step<1e-13)),jnp.int32(1),
                     jnp.where((~accept)&(lam_new>=1e12),jnp.int32(3),jnp.int32(0))))
+            if stationarity_tol is not None:
+                gradient=jnp.linalg.norm(J2.T@r2)/(jnp.linalg.norm(J2)*val+1e-300)
+                reason=jnp.where((reason==0)&(gradient<=stationarity_tol),jnp.int32(6),reason)
             result=(z_final,J2,r2,val,lam_new,att+1,acc,nJ,reason,
                 jnp.maximum(s[9],eta),s[10]+fallback,jnp.maximum(s[11],jnp.nan_to_num(proposed_eta,nan=jnp.inf)))
             if trace:

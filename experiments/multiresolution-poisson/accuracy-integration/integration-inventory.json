@@ -1,0 +1,676 @@
+{
+  "status": "scoped integration inventory only; experiment branch remains separate",
+  "branch": "exp/2026-09-07-mr-poisson2d",
+  "scope": "Current-network Poisson staged training, bank expansion, then one frozen nested linear correction family; no final cases opened",
+  "implementations": [
+    {
+      "path": "experiments/multiresolution-poisson/core.py",
+      "sha256": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+      "last_change_commit": "82d2c3261126cb150bb83220ec3edbcf0dd5f489"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/speed_core.py",
+      "sha256": "3f701fed25ff7cbb9b537e54e38af6c13b97cf4735408d601d8cc1c6805942a4",
+      "last_change_commit": "20893525a16603a99f527dbd9e10affcdc206b9d"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/kernel_solver.py",
+      "sha256": "b2d7881b6c6dd8f53db15f1a8f39515fe5e9b1350db5883c91bcaa71a2d3b975",
+      "last_change_commit": "f0e1a1a207a6a5bf778c8905e92df97423ed948b"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/iterative_core.py",
+      "sha256": "6e01472a48be675f5b3838bb15be74631c9afc7ea34b230938dbf9549da49119",
+      "last_change_commit": "958a825fb4ce1fe02fa0a54ef4a0ecda87939782"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/tuning_core.py",
+      "sha256": "d8d6dcbe8ad6a4cc2646822c8f1fb2a50c6895edf5f44538358b96c6e6a455fc",
+      "last_change_commit": "9528b214d8535c2798f9a8ea423615abc8f5ad66"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/pilot.py",
+      "sha256": "0d75d2ae845647f155a7b093ed0f439cd1a1b408759bc02b95fb8602b4bfc963",
+      "last_change_commit": "82d2c3261126cb150bb83220ec3edbcf0dd5f489"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/staged_oracles.py",
+      "sha256": "60723d346e92356c0840233a2a3f1cfacc8d03e2b53793b0bd0aa52324f691e2",
+      "last_change_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/staged_cluster.py",
+      "sha256": "f38f6208e126bac1c0e3de8d248ae689ed2177a17e495e372b60e667ff942aba",
+      "last_change_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/capacity_cluster.py",
+      "sha256": "a7a9fe87e17f5061cb14e8e3a44cfa4c04c8c2c4d6dade5646518fdfbc05bd3e",
+      "last_change_commit": "f3e3c21a440a31eb97b06fdb9ab9951662e17935"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/test_staged_training.py",
+      "sha256": "6a9ea39ecc2de8c1a237c495bb4b8a22691ab4ce8b1dceea93d883af8d7b524d",
+      "last_change_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/staged_accuracy.py",
+      "sha256": "4755cdde3987e59049a437d01479395a7e0bdc7cbac8643a1ab2325929565774",
+      "last_change_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/staged_training.py",
+      "sha256": "f9445307d2d9dbe431abf4fc5a6016b43e421fff1192ab48f66d24d5353b422b",
+      "last_change_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/capacity_accuracy.py",
+      "sha256": "fb0b118b8bc9091e2db4c504674d59250305a348e1c8a5ee432bb73f9e8614d1",
+      "last_change_commit": "f3e3c21a440a31eb97b06fdb9ab9951662e17935"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/widen_bank.py",
+      "sha256": "28aab09542445abc6421557a9e9ac8986b56ad52d85bfd3bd992a57ebbdf2281",
+      "last_change_commit": "f3e3c21a440a31eb97b06fdb9ab9951662e17935"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/correction_core.py",
+      "sha256": "70738422a31393fe4bdc7d22acf7f03cf7d8f76804410c073a803f85e32e795c",
+      "last_change_commit": "d5146f31268f6c4302c745280420d857c98ebcef"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/correction_accuracy.py",
+      "sha256": "4493390781f42ebf54592d41695b7bdb0b313d464b0ac1cea9f77c285945e792",
+      "last_change_commit": "d5146f31268f6c4302c745280420d857c98ebcef"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/correction_cluster.py",
+      "sha256": "4b1b7edc1b4bf4f984c798a76c605deabfe7ab8ed6e23a43cfc620846f703612",
+      "last_change_commit": "1254bfd5d39b355dbf2e33b667f4909d26a88a58"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/test_corrections.py",
+      "sha256": "f8e94554d121caa452ba64ead80a635120ec083890f1bb5c42c1673007444a87",
+      "last_change_commit": "d5146f31268f6c4302c745280420d857c98ebcef"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/config-staged-accuracy.json",
+      "sha256": "9c038fbeb2c22eb08190b14793eeefa7c87db2656603bf65e6878610854a8fe0",
+      "last_change_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/config-capacity-accuracy.json",
+      "sha256": "ceb9b249bdb4bff4105c38d4ae1b1ab88d4d7ec93c44d22a7a0b8cb37510d319",
+      "last_change_commit": "f3e3c21a440a31eb97b06fdb9ab9951662e17935"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/config-correction-accuracy.json",
+      "sha256": "01b2285cf417aa7a5d7f1fa41754bcd8b48e1d37165429e388f7e3a87683cb18",
+      "last_change_commit": "d5146f31268f6c4302c745280420d857c98ebcef"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/STAGED-ACCURACY-DESIGN.md",
+      "sha256": "cba565069913eb581837d581937f8267dd179773ffcb855d8d3bd18b16f75175",
+      "last_change_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/CAPACITY-ACCURACY-DESIGN.md",
+      "sha256": "ff89f2f9a97712bc849e369567a8441d2203d77b20905d60fbed6f872db1f6f1",
+      "last_change_commit": "f3e3c21a440a31eb97b06fdb9ab9951662e17935"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/CORRECTION-ACCURACY-DESIGN.md",
+      "sha256": "72615e0820feb896ed3ca35ef9ff021d45d46c6507e61e60428f3ceb81bbe77e",
+      "last_change_commit": "d5146f31268f6c4302c745280420d857c98ebcef"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/reports/audit_staged_accuracy.py",
+      "sha256": "e9affaa6a35243bf4f7399627b4cecdd035a409893882f16f9f164bfbcdc37be",
+      "last_change_commit": "3d4b607313108ad01db94070288c1504400ccedc"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/reports/audit_capacity_accuracy.py",
+      "sha256": "d4022536169493b96732c00707e4c73476288c7a658efad2b326ca494031b63c",
+      "last_change_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/reports/audit_capacity_training.py",
+      "sha256": "f004bb7018c51130beed0b58125a56ce60733aaedef4aad79befc2b1947869b6",
+      "last_change_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/reports/audit_correction_accuracy.py",
+      "sha256": "4ae9337ea4209a9ff77a14bbf717a681a8ee372394e003891240b3b27cd06966",
+      "last_change_commit": "715f702721e939ac4b09029ca844313df138d3d4"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/reports/diagnose_head_corrections.py",
+      "sha256": "b558ee61e1cc867d7015fe1484b5ace693e9a22ecb1760a5a1b3eee13aa29eed",
+      "last_change_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/reports/summarize_correction_accuracy.py",
+      "sha256": "03c8ea0ba29a01921f902822b641ec0ce5cec5aa4088c2139452b5596469d8ef",
+      "last_change_commit": "715f702721e939ac4b09029ca844313df138d3d4"
+    },
+    {
+      "path": "experiments/multiresolution-poisson/reports/verify_split_archive.py",
+      "sha256": "9da4b7e31fb59becd34268f9ec6d809c50f89be21bfdc3fb9a2a1b0aae6326be",
+      "last_change_commit": "3d4b607313108ad01db94070288c1504400ccedc"
+    }
+  ],
+  "runs": [
+    {
+      "name": "staged_accuracy08",
+      "scientific_source_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e",
+      "archive_commit": "3d4b607313108ad01db94070288c1504400ccedc",
+      "result_path": "experiments/multiresolution-poisson/runs/staged_accuracy08/result.json",
+      "result_sha256": "a0518d3e8ab97565776154354c9c664a2430ab0be7d9c7b0bd23d098a22b0fe2",
+      "panel_path": "experiments/multiresolution-poisson/runs/staged_accuracy08/panel.json",
+      "audit_path": "experiments/multiresolution-poisson/runs/staged_accuracy08/audit.json",
+      "restoration_path": "experiments/multiresolution-poisson/runs/staged_accuracy08/restoration-audit.json",
+      "archive_manifest": "experiments/multiresolution-poisson/runs/staged_accuracy08/ARCHIVE.json",
+      "archive_sha256": "f450da176f6d41fb42ade88d293e0cb8c0352ef1a47bc8f86425360cec903017",
+      "cleanup_path": "experiments/multiresolution-poisson/runs/staged_accuracy08/cleanup.json",
+      "checkpoints": [
+        {
+          "id": "original_relative",
+          "path": "experiments/multiresolution-poisson/runs/staged_accuracy08/checkpoints/original_relative.pkl",
+          "sha256": "aabc49b5f4a45417c50931b571828c9c5434e9e5410981fa7f8807293e07fa66",
+          "archive_commit": "3d4b607313108ad01db94070288c1504400ccedc"
+        },
+        {
+          "id": "staged_bank",
+          "path": "experiments/multiresolution-poisson/runs/staged_accuracy08/checkpoints/staged_bank.pkl",
+          "sha256": "279030ef681a7f1fb45b284227eef3f8e7a4d5a57fd99bdd25e5ef3d43807867",
+          "archive_commit": "3d4b607313108ad01db94070288c1504400ccedc"
+        },
+        {
+          "id": "staged_head",
+          "path": "experiments/multiresolution-poisson/runs/staged_accuracy08/checkpoints/staged_head.pkl",
+          "sha256": "3b0a7dcd94d0781825ef12fe2b0cb2a6a086a3831e22b78d2045e0d3b77914ca",
+          "archive_commit": "3d4b607313108ad01db94070288c1504400ccedc"
+        },
+        {
+          "id": "staged_joint",
+          "path": "experiments/multiresolution-poisson/runs/staged_accuracy08/checkpoints/staged_joint.pkl",
+          "sha256": "efbca88157ffd46598440adddb0fafd10f8a780d7656ee4cfbded42e868868d3",
+          "archive_commit": "3d4b607313108ad01db94070288c1504400ccedc"
+        },
+        {
+          "id": "joint_matched",
+          "path": "experiments/multiresolution-poisson/runs/staged_accuracy08/checkpoints/joint_matched.pkl",
+          "sha256": "59ef7cc008054005429ea18c6d0ab9eb078cd3837aec14e218f3c1d6a0a88202",
+          "archive_commit": "3d4b607313108ad01db94070288c1504400ccedc"
+        }
+      ],
+      "finest_intervals": 1024,
+      "all_opened_development_cases": 42,
+      "finest_results": {
+        "cg_1e-01": {
+          "gpu_median_ms": 82.84329599700868,
+          "host_median_ms": 86.9912524940446,
+          "worst_relative_error": 0.011826428565722377,
+          "worst_adjusted_relative_error": 0.011834372788575574,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "cg_1e-06": {
+          "gpu_median_ms": 185.36889902316034,
+          "host_median_ms": 189.28137747570872,
+          "worst_relative_error": 7.851934585574002e-06,
+          "worst_adjusted_relative_error": 1.570336543026616e-05,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "cg_3e-02": {
+          "gpu_median_ms": 96.68455156497657,
+          "host_median_ms": 100.62231798656285,
+          "worst_relative_error": 0.002695172597468545,
+          "worst_adjusted_relative_error": 0.0027030125723859714,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "dst": {
+          "gpu_median_ms": 0.31936203595250845,
+          "host_median_ms": 4.563092952594161,
+          "worst_relative_error": 7.851307552723396e-06,
+          "worst_adjusted_relative_error": 1.5702738392492484e-05,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "joint_matched": {
+          "gpu_median_ms": 2.545561408624053,
+          "host_median_ms": 6.116467993706465,
+          "worst_relative_error": 0.07571198615265955,
+          "worst_adjusted_relative_error": 0.07572039703885934,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0
+        },
+        "original_relative": {
+          "gpu_median_ms": 2.6130909100174904,
+          "host_median_ms": 6.211456027813256,
+          "worst_relative_error": 0.07280247641666444,
+          "worst_adjusted_relative_error": 0.07281086455369383,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0
+        },
+        "staged_head": {
+          "gpu_median_ms": 2.5977500481531024,
+          "host_median_ms": 6.231383536942303,
+          "worst_relative_error": 0.0775747167064986,
+          "worst_adjusted_relative_error": 0.07758314215720535,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0
+        },
+        "staged_joint": {
+          "gpu_median_ms": 2.5653450284153223,
+          "host_median_ms": 6.163463927805424,
+          "worst_relative_error": 0.07660328204633635,
+          "worst_adjusted_relative_error": 0.07661169990149105,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0
+        }
+      },
+      "bank_diagnostics": {
+        "original_relative": {
+          "worst_same_grid_relative_error": 0.06489096124704413,
+          "worst_physical_error": 0.06488582688784521,
+          "all_ranks_valid": true
+        },
+        "joint_matched": {
+          "worst_same_grid_relative_error": 0.06936344319838521,
+          "worst_physical_error": 0.06935812374598484,
+          "all_ranks_valid": true
+        },
+        "staged_head": {
+          "worst_same_grid_relative_error": 0.069811791709849,
+          "worst_physical_error": 0.06980642448563229,
+          "all_ranks_valid": true
+        },
+        "staged_joint": {
+          "worst_same_grid_relative_error": 0.06966506025157362,
+          "worst_physical_error": 0.06965972879935074,
+          "all_ranks_valid": true
+        }
+      }
+    },
+    {
+      "name": "capacity_accuracy09",
+      "scientific_source_commit": "f3e3c21a440a31eb97b06fdb9ab9951662e17935",
+      "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d",
+      "result_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/result.json",
+      "result_sha256": "e1bb9f840794ec79bf6d33e209f1d612ea08f431cf7d573f9727156f80be3d34",
+      "panel_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/panel.json",
+      "audit_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/audit.json",
+      "restoration_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/restoration-audit.json",
+      "archive_manifest": "experiments/multiresolution-poisson/runs/capacity_accuracy09/ARCHIVE.json",
+      "archive_sha256": "d937404a353abc1da24c963bd46c308cb47825f7edb341c801ac471d6bb9ca6b",
+      "cleanup_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/cleanup.json",
+      "checkpoints": [
+        {
+          "id": "original_relative",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/original_relative.pkl",
+          "sha256": "aabc49b5f4a45417c50931b571828c9c5434e9e5410981fa7f8807293e07fa66",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        },
+        {
+          "id": "r128_initial",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r128_initial.pkl",
+          "sha256": "683032a518cf2bb52b3328d7875a090f477ab74c6274ed63cf776abdaeaf2c95",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        },
+        {
+          "id": "r128_bank",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r128_bank.pkl",
+          "sha256": "c6611fa984d661cee115c43b12d93023a490f2e3f3f33401dbce37b5e7a6eaff",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        },
+        {
+          "id": "r128_head",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r128_head.pkl",
+          "sha256": "3691a856923cbf3373740aa17bbc0be6d1a6ffbd64db5819faaf200f8ba2e124",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        },
+        {
+          "id": "r128_joint",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r128_joint.pkl",
+          "sha256": "a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        },
+        {
+          "id": "r64_bank",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r64_bank.pkl",
+          "sha256": "350ebd9984a9b8d88f2a009e062feea4a45f49acbb49db0e8f6e5b493c4e9957",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        },
+        {
+          "id": "r64_head",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r64_head.pkl",
+          "sha256": "b05eebf21cd5f44a04e7a607374f89128d7727e471bc2182d454f91e193f8fbf",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        },
+        {
+          "id": "r64_joint",
+          "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r64_joint.pkl",
+          "sha256": "fd26e1512268307bdcca0227cd85821776c2d20b22394b19a79d9387a84581ae",
+          "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d"
+        }
+      ],
+      "finest_intervals": 1024,
+      "all_opened_development_cases": 42,
+      "finest_results": {
+        "cg_1e-01": {
+          "gpu_median_ms": 83.92224553972483,
+          "host_median_ms": 87.62598945759237,
+          "worst_relative_error": 0.011826428569903019,
+          "worst_adjusted_relative_error": 0.011834372792756249,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "cg_1e-06": {
+          "gpu_median_ms": 186.9902334874496,
+          "host_median_ms": 190.89778792113066,
+          "worst_relative_error": 7.851934586639191e-06,
+          "worst_adjusted_relative_error": 1.570336543133136e-05,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "cg_3e-02": {
+          "gpu_median_ms": 97.86847897339612,
+          "host_median_ms": 101.79444297682494,
+          "worst_relative_error": 0.002695201012229846,
+          "worst_adjusted_relative_error": 0.0027030409873694443,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "dst": {
+          "gpu_median_ms": 0.32805895898491144,
+          "host_median_ms": 4.505652585066855,
+          "worst_relative_error": 7.851307552723396e-06,
+          "worst_adjusted_relative_error": 1.5702738392492484e-05,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "original_relative": {
+          "gpu_median_ms": 2.6102724950760603,
+          "host_median_ms": 6.245763972401619,
+          "worst_relative_error": 0.07280247641666446,
+          "worst_adjusted_relative_error": 0.07281086455369384,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "no_gpu_cost_regression_vs_frozen": true,
+          "no_host_cost_regression_vs_frozen": true
+        },
+        "r128_head": {
+          "gpu_median_ms": 2.8704843716695905,
+          "host_median_ms": 6.464139558374882,
+          "worst_relative_error": 0.07386210144222718,
+          "worst_adjusted_relative_error": 0.07387049786436041,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "no_gpu_cost_regression_vs_frozen": false,
+          "no_host_cost_regression_vs_frozen": false
+        },
+        "r128_joint": {
+          "gpu_median_ms": 2.849252545274794,
+          "host_median_ms": 6.453854497522116,
+          "worst_relative_error": 0.07553764804375597,
+          "worst_adjusted_relative_error": 0.07554605756682324,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "no_gpu_cost_regression_vs_frozen": false,
+          "no_host_cost_regression_vs_frozen": false
+        },
+        "r64_head": {
+          "gpu_median_ms": 2.6239349972456694,
+          "host_median_ms": 6.214081542566419,
+          "worst_relative_error": 0.07785384212268835,
+          "worst_adjusted_relative_error": 0.07786226975584928,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "no_gpu_cost_regression_vs_frozen": false,
+          "no_host_cost_regression_vs_frozen": true
+        },
+        "r64_joint": {
+          "gpu_median_ms": 2.584366942755878,
+          "host_median_ms": 6.217931513674557,
+          "worst_relative_error": 0.0768165298787715,
+          "worst_adjusted_relative_error": 0.07682494940129003,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "no_gpu_cost_regression_vs_frozen": true,
+          "no_host_cost_regression_vs_frozen": true
+        }
+      },
+      "bank_diagnostics": {
+        "original_relative": {
+          "worst_same_grid_relative_error": 0.06489096124704413,
+          "worst_physical_error": 0.0648858268878452,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r64_head": {
+          "worst_same_grid_relative_error": 0.06987864374206292,
+          "worst_physical_error": 0.06987326681196812,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r64_joint": {
+          "worst_same_grid_relative_error": 0.0698400356362785,
+          "worst_physical_error": 0.06983469695345153,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r128_head": {
+          "worst_same_grid_relative_error": 0.04536675968780699,
+          "worst_physical_error": 0.04536192952214579,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r128_joint": {
+          "worst_same_grid_relative_error": 0.043545628041909375,
+          "worst_physical_error": 0.04354093118443389,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        }
+      }
+    },
+    {
+      "name": "correction_accuracy10",
+      "scientific_source_commit": "d5146f31268f6c4302c745280420d857c98ebcef",
+      "archive_commit": "0f5683124099eeab3f6e736d3f71c6c7e6a1a22b",
+      "result_path": "experiments/multiresolution-poisson/runs/correction_accuracy10/result.json",
+      "result_sha256": "4113d0fc72cf1dc9bad1e684c7b1b9bdb86532f12f4d0279aeca85aab1ddf1a7",
+      "panel_path": "experiments/multiresolution-poisson/runs/correction_accuracy10/panel.json",
+      "audit_path": "experiments/multiresolution-poisson/runs/correction_accuracy10/audit.json",
+      "restoration_path": "experiments/multiresolution-poisson/runs/correction_accuracy10/restoration-audit.json",
+      "archive_manifest": "experiments/multiresolution-poisson/runs/correction_accuracy10/ARCHIVE.json",
+      "archive_sha256": "dd0744d7e118a93185bb3a804b5ea5cdafddd5c7433a65e3750c9e994b5988c6",
+      "cleanup_path": "experiments/multiresolution-poisson/runs/correction_accuracy10/cleanup.json",
+      "checkpoints": [
+        {
+          "id": "original_relative",
+          "path": "experiments/multiresolution-poisson/runs/correction_accuracy10/checkpoints/original_relative.pkl",
+          "sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a",
+          "archive_commit": "0f5683124099eeab3f6e736d3f71c6c7e6a1a22b"
+        },
+        {
+          "id": "r128_joint",
+          "path": "experiments/multiresolution-poisson/runs/correction_accuracy10/checkpoints/r128_joint.pkl",
+          "sha256": "a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c",
+          "archive_commit": "0f5683124099eeab3f6e736d3f71c6c7e6a1a22b"
+        }
+      ],
+      "finest_intervals": 1024,
+      "all_opened_development_cases": 42,
+      "finest_results": {
+        "cg_1e-01": {
+          "gpu_median_ms": 89.20530450996011,
+          "host_median_ms": 96.3144974084571,
+          "worst_relative_error": 0.011826428569903019,
+          "worst_adjusted_relative_error": 0.011834372792756249,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "cg_1e-06": {
+          "gpu_median_ms": 251.53378397226334,
+          "host_median_ms": 258.3384894533083,
+          "worst_relative_error": 7.851934586639191e-06,
+          "worst_adjusted_relative_error": 1.570336543133136e-05,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "cg_3e-02": {
+          "gpu_median_ms": 103.61853044014424,
+          "host_median_ms": 110.95298640429974,
+          "worst_relative_error": 0.002695201012229846,
+          "worst_adjusted_relative_error": 0.0027030409873694443,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "dst": {
+          "gpu_median_ms": 0.3953679697588086,
+          "host_median_ms": 8.098021964542568,
+          "worst_relative_error": 7.851307552723396e-06,
+          "worst_adjusted_relative_error": 1.5702738392492484e-05,
+          "all_cases_pass_target": true,
+          "invalid_invocations": 0
+        },
+        "original_relative": {
+          "gpu_median_ms": 3.9271219866350293,
+          "host_median_ms": 11.218029540032148,
+          "worst_relative_error": 0.07280247641666436,
+          "worst_adjusted_relative_error": 0.07281086455369375,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "correction_count": 0,
+          "nominal_latent_dimension": 16,
+          "nonlinear_optimizer_dimension": 16,
+          "no_gpu_cost_regression_vs_frozen": true,
+          "no_host_cost_regression_vs_frozen": true
+        },
+        "r128_q0": {
+          "gpu_median_ms": 4.412962472997606,
+          "host_median_ms": 11.692038620822132,
+          "worst_relative_error": 0.07553764804375596,
+          "worst_adjusted_relative_error": 0.07554605756682323,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "correction_count": 0,
+          "nominal_latent_dimension": 16,
+          "nonlinear_optimizer_dimension": 16,
+          "no_gpu_cost_regression_vs_frozen": false,
+          "no_host_cost_regression_vs_frozen": false
+        },
+        "r128_q16": {
+          "gpu_median_ms": 5.232792464084923,
+          "host_median_ms": 12.490236549638212,
+          "worst_relative_error": 0.07032119180683288,
+          "worst_adjusted_relative_error": 0.070329560542942,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "correction_count": 16,
+          "nominal_latent_dimension": 32,
+          "nonlinear_optimizer_dimension": 16,
+          "no_gpu_cost_regression_vs_frozen": false,
+          "no_host_cost_regression_vs_frozen": false
+        },
+        "r128_q32": {
+          "gpu_median_ms": 6.043163011781871,
+          "host_median_ms": 13.092478970065713,
+          "worst_relative_error": 0.06110576109285837,
+          "worst_adjusted_relative_error": 0.06110976471643232,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "correction_count": 32,
+          "nominal_latent_dimension": 48,
+          "nonlinear_optimizer_dimension": 16,
+          "no_gpu_cost_regression_vs_frozen": false,
+          "no_host_cost_regression_vs_frozen": false
+        },
+        "r128_q8": {
+          "gpu_median_ms": 5.031712935306132,
+          "host_median_ms": 12.25132797844708,
+          "worst_relative_error": 0.07207505094942993,
+          "worst_adjusted_relative_error": 0.07208343339879114,
+          "all_cases_pass_target": false,
+          "invalid_invocations": 0,
+          "correction_count": 8,
+          "nominal_latent_dimension": 24,
+          "nonlinear_optimizer_dimension": 16,
+          "no_gpu_cost_regression_vs_frozen": false,
+          "no_host_cost_regression_vs_frozen": false
+        }
+      },
+      "bank_diagnostics": {
+        "original_relative": {
+          "base_model": "original_relative",
+          "shared_unchanged_bank": true,
+          "worst_same_grid_relative_error": 0.06489096124704413,
+          "worst_physical_error": 0.06488582688784521,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r128_q0": {
+          "base_model": "r128_joint",
+          "shared_unchanged_bank": true,
+          "worst_same_grid_relative_error": 0.043545628041909375,
+          "worst_physical_error": 0.04354093118443389,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r128_q8": {
+          "base_model": "r128_joint",
+          "shared_unchanged_bank": true,
+          "worst_same_grid_relative_error": 0.043545628041909375,
+          "worst_physical_error": 0.04354093118443389,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r128_q16": {
+          "base_model": "r128_joint",
+          "shared_unchanged_bank": true,
+          "worst_same_grid_relative_error": 0.043545628041909375,
+          "worst_physical_error": 0.04354093118443389,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        },
+        "r128_q32": {
+          "base_model": "r128_joint",
+          "shared_unchanged_bank": true,
+          "worst_same_grid_relative_error": 0.043545628041909375,
+          "worst_physical_error": 0.04354093118443389,
+          "all_ranks_valid": true,
+          "proposed_bank_target": 0.03,
+          "passes_proposed_bank_target": false
+        }
+      }
+    }
+  ],
+  "correction_basis": {
+    "path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/r128_joint-training-correction-basis.npz",
+    "sha256": "88d088d0665ea6bafc949433a1764b3032e8773a47a45f94e4bb0fc1036f5456",
+    "archive_commit": "787f1beac4fd496ab0b3e1d6366e44747632431d",
+    "diagnostic_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/head-correction-diagnostic.json"
+  },
+  "integration_notes": [
+    "Do not merge automatically; root presents the requested merge decision",
+    "Staged08 and capacity09 are accepted numerical evidence of target failures, not successful physical-accuracy methods",
+    "Correction10 remains one frozen family with 32 primary; its target and cost outcomes below are authoritative, regardless of acceptance of numerical audits",
+    "No training or source-family descriptors are needed online; exact supplied-source contraction and source-based training-code initialization are retained",
+    "Correction intervention adds linear capacity and analytic elimination; q0 parity and old-manifold inclusion are audited",
+    "All correction prefixes share the fixed128 bank and retain the separate 3% bank diagnostic target",
+    "Original 5% adjusted physical/numerical target is never relaxed; no universal FOM speed advantage is claimed",
+    "All full fields, repetitions, references and raw checkpoints restore from ordered archive parts"
+  ]
+}

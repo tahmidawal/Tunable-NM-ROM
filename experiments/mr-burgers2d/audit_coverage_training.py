@@ -31,6 +31,12 @@ def main():
     assert all(training[k]>0 for k in ['feature_qr_seconds','field_projection_seconds','code_fit_seconds','optimizer_loop_seconds'])
     assert np.allclose(physical,tar['physical'],rtol=2e-15,atol=0)
     physical=tar['physical'];assert np.array_equal(physical,np.array(training['physical_cases']))
+    fit_arrays=[np.concatenate([np.asarray(batch[i]) for batch in training['code_fit']]) for i in range(4)]
+    residuals,iterations,reasons,gradients=fit_arrays
+    assert all(v.shape==(n,) and np.isfinite(v).all() for v in fit_arrays)
+    assert np.all(iterations>=0) and np.all(iterations<=cfg['code_fit_budget']) and set(reasons)<=set(range(5))
+    assert np.all(gradients[reasons==4]<=1e-6*(1+1e-7))
+    fit_summary=dict(cases=n,stationary=int(np.sum(gradients<=1e-6)),nonstationary=int(np.sum(gradients>1e-6)),reason_counts={str(int(k)):int(np.sum(reasons==k)) for k in np.unique(reasons)},maximum_recorded_normalized_gradient=float(gradients.max()),maximum_iterations=int(iterations.max()),failures_retained_without_filtering=True)
     ids=np.sort(np.random.default_rng(cfg['seed']).choice(len(old['Z_tr']),cfg['replay_cases'],replace=False));assert np.array_equal(ids,tar['replay_ids'])
     assert np.array_equal(tar['Z_replay'],old['Z_tr'][ids])
     expected_replay=ai.head(old['params'],tar['Z_replay'])@R.T
@@ -62,7 +68,7 @@ def main():
     assert abs(trace[-1]['replay_relative_squared_loss']-np.mean(replay_relative**2))<1e-10
     def stats(x):return dict(median=float(np.median(x)),mean=float(np.mean(x)),maximum=float(np.max(x)))
     result=dict(passed=True,status='independent full N1024 NumPy training audit',training_examples=n,interior_nodes=(L-1)**2,spatial_bank_byte_identical=True,
-        R_rank=rank,R_condition2=condition,R_min_singular_value=float(singular[-1]),R_max_singular_value=float(singular[0]),direct_gram_relative_delta=gram_delta,
+        initial_code_fit=fit_summary,R_rank=rank,R_condition2=condition,R_min_singular_value=float(singular[-1]),R_max_singular_value=float(singular[0]),direct_gram_relative_delta=gram_delta,
         direct_projection_moment_relative_delta=moment_delta,direct_field_norm_relative_max_delta=norm_delta,perpendicular_squared_error_normalized_max_delta=floor2_delta,
         perpendicular_relative_max_delta=floor_relative_delta,initial_before_relative_max_delta=before_delta,initial_after_relative_max_delta=after_delta,
         replay_target_relative_delta=replay_target_delta,replay_error_relative_max_delta=replay_error_delta,

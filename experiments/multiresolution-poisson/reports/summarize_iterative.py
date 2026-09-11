@@ -37,8 +37,8 @@ def main():
                 worst_common64_observation_error=max(r['common_observation_error'] for r in rows),maximum_reference_delta=max(r['reference_delta'] for r in rows),
                 development_target=cfg['development_target'],all_cases_pass_target=all(eligible),target_failed_cases=sum(not x for x in eligible),
                 invalid_invocations=sum(not r['solver_valid'] for r in rows),invalid_cases=sum(not all(r['solver_valid'] for r in g) for g in groups.values()),
-                gpu_outlier_count=sum(r['fused_device_seconds']*1000>1.5*gpu[case] for case,g in groups.items() for r in g),
-                host_outlier_count=sum(r['total_seconds']*1000>1.5*host[case] for case,g in groups.items() for r in g),
+                gpu_outlier_count=int(sum(r['fused_device_seconds']*1000>1.5*gpu[case] for case,g in groups.items() for r in g)),
+                host_outlier_count=int(sum(r['total_seconds']*1000>1.5*host[case] for case,g in groups.items() for r in g)),
                 stop_reason_counts=dict(Counter(str(r['reason']) for r in rows)),invocations=len(rows))
             if method=='nmrom':
                 item.update(stationary_invocations=sum(r['stationary'] for r in rows),residual_target_invocations=sum(r['reason']==2 for r in rows),

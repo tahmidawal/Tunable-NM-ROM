@@ -95,11 +95,8 @@ def primary_page(panels):
         for n in p["intervals"]:
             rom, fom = [lookup(p, n, p[k]) for k in ("primary_rom", "primary_fom")]
             rows.append((esc(p["label"]), n, num(rom["gpu_ms"]), num(fom["gpu_ms"]),
-                         num(fom["gpu_ms"]/rom["gpu_ms"]), pct(rom["worst_error"]), pct(fom["worst_error"]),
-                         status(p, rom) + " / " + status(p, fom)))
-    assert len({p['target'] for p in panels}) == 1
-    target = pct(panels[0]['target']) + r"\% + gates"
-    body += table(["Problem", "$N$", "ROM ms", "FOM ms", "FOM/ROM", r"ROM error \%", r"FOM error \%", target + ": ROM / FOM"], rows, "lrrrrrrl")
+                         num(fom["gpu_ms"]/rom["gpu_ms"]), pct(rom["worst_error"])))
+    body += table(["Problem", "$N$", "ROM ms", "FOM ms", "FOM/ROM", r"ROM error \%"], rows, "lrrrrr")
     body += r"\vspace{3mm}" + "\n"
     norms = {
         "poisson": "Current-relative solution",
@@ -109,7 +106,7 @@ def primary_page(panels):
     }
     rows = [(esc(p["label"]), esc(lookup(p, p["intervals"][0], p["primary_fom"])["label"]), norms[p["key"]], f"{p['cases']} / {p['repetitions']}") for p in panels]
     body += table(["Problem", "Primary FOM", "Displayed error norm", "Cases / repeats"], rows, "lLLr")
-    body += r"\note{The target also includes each panel's original numerical and reference checks. $^{\dagger}$Burgers accepts stall exits under its recorded stopping rule; stationarity is unmeasured. Reflective-wave qualification checks velocity and energy-state errors as well as displacement. Different error norms cannot be ranked across PDEs.}"
+    body += r"\note{Burgers accepts stall exits under its recorded stopping rule; stationarity is unmeasured. Reflective-wave qualification checks velocity and energy-state errors as well as displacement. Different error norms cannot be ranked across PDEs.}"
     body += r"\note{These are development results with final cases unopened. Training, mesh assembly and compilation are excluded; supplied-input processing, solves and full-field device outputs are included. Pair timings within a job, never across different GPUs.}"
     return body
 
@@ -172,12 +169,12 @@ def controls_page(panels):
         for n in p["intervals"]:
             rom, fom = lookup(p, n, p["primary_rom"]), fastest(p, n)
             if fom is None:
-                rows.append((esc(p["label"]), n, "none", "---", "---", "---", "---"))
+                rows.append((esc(p["label"]), n, "none", "---", "---", "---"))
                 continue
             host = fom["host_ms"]/rom["host_ms"] if fom.get("host_ms") and rom.get("host_ms") else None
-            rows.append((esc(p["label"]), n, esc(fom["label"]), num(fom["gpu_ms"]), pct(fom["worst_error"]),
+            rows.append((esc(p["label"]), n, esc(fom["label"]), num(fom["gpu_ms"]),
                          num(fom["gpu_ms"]/rom["gpu_ms"]), num(host)))
-    body += table(["Problem", "$N$", "Passing FOM", "FOM ms", r"FOM error \%", "GPU FOM/ROM", "Host FOM/ROM"], rows, "lrLrrrr")
+    body += table(["Problem", "$N$", "Passing FOM", "FOM ms", "GPU FOM/ROM", "Host FOM/ROM"], rows, "lrLrrr")
     body += r"\note{Ratios use the baseline ROM on page 1. A ratio alone is diagnostic when that ROM fails its target. Host timing includes input/output transfers where measured; the wave study measured only output transfer, so its complete host ratio is unavailable. All selections use opened development cases.}"
     body += r"\vspace{1mm}\textbf{Direct-transform controls at the largest mesh}\par" + "\n"
     rows = []

@@ -21,20 +21,20 @@
 Poisson 2D, heat 2D, Burgers 2D and reflective waves. Frozen-network baseline configurations.\par\vspace{4mm}
 Median complete GPU query time; worst error over all cases, times and repetitions. $N$ is intervals per axis. FOM/ROM values above one favor the ROM against that named solver.
 
-\noindent\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrrl@{}}
-\toprule Problem & $N$ & ROM ms & FOM ms & FOM/ROM & ROM error \% & FOM error \% & 5\% + gates: ROM / FOM \\ \midrule
-Poisson 2D & 64 & 2.468 & 5.734 & 2.324 & 6.803 & 0.2572 & fail / pass \\
-Poisson 2D & 256 & 2.355 & 22.279 & 9.460 & 6.802 & 0.01546 & fail / pass \\
-Poisson 2D & 1024 & 2.495 & 188.212 & 75.448 & 6.802 & 0.0007351 & fail / pass \\
-Heat 2D & 64 & 11.227 & 5.506 & 0.490 & 4.559 & 0.06738 & pass / pass \\
-Heat 2D & 256 & 11.341 & 20.997 & 1.851 & 4.556 & 0.03126 & pass / pass \\
-Heat 2D & 1024 & 12.206 & 210.596 & 17.253 & 4.555 & 0.03491 & pass / pass \\
-Burgers 2D & 64 & 36.226 & 78.240 & 2.160 & 10.85 & 10.99 & fail$^{\dagger}$ / fail \\
-Burgers 2D & 256 & 35.747 & 117.473 & 3.286 & 4.551 & 4.027 & pass$^{\dagger}$ / pass \\
-Burgers 2D & 1024 & 41.677 & 605.747 & 14.534 & 3.908 & 2.142 & pass$^{\dagger}$ / pass \\
-Reflective waves & 64 & 4,510.116 & 110.527 & 0.025 & 3.641 & 0.3521 & fail / pass \\
-Reflective waves & 256 & 4,530.336 & 135.462 & 0.030 & 3.569 & 0.3534 & fail / pass \\
-Reflective waves & 1024 & 4,532.594 & 1,053.343 & 0.232 & 3.568 & 0.3532 & fail / pass \\
+\noindent\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrr@{}}
+\toprule Problem & $N$ & ROM ms & FOM ms & FOM/ROM & ROM error \% \\ \midrule
+Poisson 2D & 64 & 2.468 & 5.734 & 2.324 & 6.803 \\
+Poisson 2D & 256 & 2.355 & 22.279 & 9.460 & 6.802 \\
+Poisson 2D & 1024 & 2.495 & 188.212 & 75.448 & 6.802 \\
+Heat 2D & 64 & 11.227 & 5.506 & 0.490 & 4.559 \\
+Heat 2D & 256 & 11.341 & 20.997 & 1.851 & 4.556 \\
+Heat 2D & 1024 & 12.206 & 210.596 & 17.253 & 4.555 \\
+Burgers 2D & 64 & 36.226 & 78.240 & 2.160 & 10.85 \\
+Burgers 2D & 256 & 35.747 & 117.473 & 3.286 & 4.551 \\
+Burgers 2D & 1024 & 41.677 & 605.747 & 14.534 & 3.908 \\
+Reflective waves & 64 & 4,510.116 & 110.527 & 0.025 & 3.641 \\
+Reflective waves & 256 & 4,530.336 & 135.462 & 0.030 & 3.569 \\
+Reflective waves & 1024 & 4,532.594 & 1,053.343 & 0.232 & 3.568 \\
 \bottomrule\end{tabular*}\par
 \vspace{3mm}
 \noindent\begin{tabularx}{\linewidth}{@{}lLLr@{}}
@@ -44,7 +44,7 @@ Heat 2D & CN-CG, tolerance 1e-6 & Current-relative field & 12 / 3 \\
 Burgers 2D & Newton 1e-06 / linear 1e-08; FFT & Fixed-initial-relative field & 4 / 3 \\
 Reflective waves & Midpoint CG, tolerance 1e-06 & Current-relative displacement & 2 / 3 \\
 \bottomrule\end{tabularx}\par
-\note{The target also includes each panel's original numerical and reference checks. $^{\dagger}$Burgers accepts stall exits under its recorded stopping rule; stationarity is unmeasured. Reflective-wave qualification checks velocity and energy-state errors as well as displacement. Different error norms cannot be ranked across PDEs.}\note{These are development results with final cases unopened. Training, mesh assembly and compilation are excluded; supplied-input processing, solves and full-field device outputs are included. Pair timings within a job, never across different GPUs.}
+\note{Burgers accepts stall exits under its recorded stopping rule; stationarity is unmeasured. Reflective-wave qualification checks velocity and energy-state errors as well as displacement. Different error norms cannot be ranked across PDEs.}\note{These are development results with final cases unopened. Training, mesh assembly and compilation are excluded; supplied-input processing, solves and full-field device outputs are included. Pair timings within a job, never across different GPUs.}
 \newpage
 {\LARGE\bfseries\color{ink} Poisson: online speed--accuracy tuning}\\[2mm]
 Same frozen network. Baseline and FOM controls are retimed together in a new Poisson allocation.\par\vspace{4mm}
@@ -77,20 +77,20 @@ Same frozen network. Baseline and FOM controls are retimed together in a new Poi
 \newpage
 {\LARGE\bfseries\color{ink} How the FOM tolerance changes the comparison}\\[2mm]
 Fastest tested iterative FOM passing the same development target and original numerical checks.\par\vspace{4mm}
-\noindent\begin{tabularx}{\linewidth}{@{}lrLrrrr@{}}
-\toprule Problem & $N$ & Passing FOM & FOM ms & FOM error \% & GPU FOM/ROM & Host FOM/ROM \\ \midrule
-Poisson 2D & 64 & CG, tolerance 3e-02 & 3.223 & 1.135 & 1.306 & 1.175 \\
-Poisson 2D & 256 & CG, tolerance 1e-01 & 9.685 & 2.272 & 4.112 & 3.223 \\
-Poisson 2D & 1024 & CG, tolerance 1e-01 & 84.584 & 1.019 & 33.907 & 14.901 \\
-Heat 2D & 64 & CN-CG, tolerance 1e-2 & 2.504 & 1.586 & 0.223 & 0.257 \\
-Heat 2D & 256 & CN-CG, tolerance 1e-2 & 6.939 & 0.9255 & 0.612 & 0.655 \\
-Heat 2D & 1024 & CN-CG, tolerance 1e-2 & 59.178 & 0.7707 & 4.848 & 2.267 \\
-Burgers 2D & 64 & none & --- & --- & --- & --- \\
-Burgers 2D & 256 & Newton 3e-03 / linear 5e-01; dense DST & 13.963 & 2.943 & 0.391 & 0.429 \\
-Burgers 2D & 1024 & Newton 1e-02 / linear 5e-01; FFT & 68.044 & 2.39 & 1.633 & 1.442 \\
-Reflective waves & 64 & Midpoint CG, tolerance 1e-02 & 82.648 & 0.5961 & 0.018 & --- \\
-Reflective waves & 256 & Midpoint CG, tolerance 1e-06 & 135.462 & 0.3534 & 0.030 & --- \\
-Reflective waves & 1024 & Midpoint CG, tolerance 1e-06 & 1,053.343 & 0.3532 & 0.232 & --- \\
+\noindent\begin{tabularx}{\linewidth}{@{}lrLrrr@{}}
+\toprule Problem & $N$ & Passing FOM & FOM ms & GPU FOM/ROM & Host FOM/ROM \\ \midrule
+Poisson 2D & 64 & CG, tolerance 3e-02 & 3.223 & 1.306 & 1.175 \\
+Poisson 2D & 256 & CG, tolerance 1e-01 & 9.685 & 4.112 & 3.223 \\
+Poisson 2D & 1024 & CG, tolerance 1e-01 & 84.584 & 33.907 & 14.901 \\
+Heat 2D & 64 & CN-CG, tolerance 1e-2 & 2.504 & 0.223 & 0.257 \\
+Heat 2D & 256 & CN-CG, tolerance 1e-2 & 6.939 & 0.612 & 0.655 \\
+Heat 2D & 1024 & CN-CG, tolerance 1e-2 & 59.178 & 4.848 & 2.267 \\
+Burgers 2D & 64 & none & --- & --- & --- \\
+Burgers 2D & 256 & Newton 3e-03 / linear 5e-01; dense DST & 13.963 & 0.391 & 0.429 \\
+Burgers 2D & 1024 & Newton 1e-02 / linear 5e-01; FFT & 68.044 & 1.633 & 1.442 \\
+Reflective waves & 64 & Midpoint CG, tolerance 1e-02 & 82.648 & 0.018 & --- \\
+Reflective waves & 256 & Midpoint CG, tolerance 1e-06 & 135.462 & 0.030 & --- \\
+Reflective waves & 1024 & Midpoint CG, tolerance 1e-06 & 1,053.343 & 0.232 & --- \\
 \bottomrule\end{tabularx}\par
 \note{Ratios use the baseline ROM on page 1. A ratio alone is diagnostic when that ROM fails its target. Host timing includes input/output transfers where measured; the wave study measured only output transfer, so its complete host ratio is unavailable. All selections use opened development cases.}\vspace{1mm}\textbf{Direct-transform controls at the largest mesh}\par
 \noindent\begin{tabularx}{\linewidth}{@{}lrLrr@{}}

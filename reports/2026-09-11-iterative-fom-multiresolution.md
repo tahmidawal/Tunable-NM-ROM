@@ -2,6 +2,8 @@
 
 Audited development results for the current frozen separable models, using same-grid iterative full-order solvers. Paper claims remain provisional because these are existing development cohorts, with one frozen trained model per panel and independent final cases unopened.
 
+[Table PDF](2026-09-11-iterative-fom-multiresolution.pdf) · [Editable LaTeX](2026-09-11-iterative-fom-multiresolution.tex) · [Separate scaling figure](2026-09-11-iterative-fom-multiresolution-scaling.pdf). The displayed problems are Poisson, heat, Burgers and reflective waves.
+
 GPU times include input projection or initial fitting, the solve or full rollout, and every requested full-field device output. Where available, complete input/output transfers are measured separately from the same invocation; wave records measure output transfer only, so their complete host times are unavailable. Each PDE ladder uses a single allocation; compare each ROM with its paired FOM, not absolute wall times across PDEs.
 
 ![Resolution scaling of runtime and field error](2026-09-11-iterative-fom-multiresolution.png)
@@ -24,9 +26,78 @@ The FOM tolerance is fixed across each resolution ladder. Times are medians of a
 | Reflective waves | 64 | 4510.116 | 110.527 | 0.025 | 3.64074 / 0.352078 | fail / pass |
 | Reflective waves | 256 | 4530.336 | 135.462 | 0.030 | 3.56899 / 0.353387 | fail / pass |
 | Reflective waves | 1024 | 4532.594 | 1053.343 | 0.232 | 3.56842 / 0.353176 | fail / pass |
-| Absorbing waves | 64 | 5026.590 | 171.361 | 0.034 | 246.291 / 1.7263 | fail / fail |
-| Absorbing waves | 256 | 5039.759 | 331.497 | 0.066 | 246.539 / 0.200499 | fail / pass |
-| Absorbing waves | 1024 | 5028.499 | 3619.963 | 0.720 | 246.557 / 0.230577 | fail / pass |
+
+## Poisson: fastest and most accurate online settings
+
+17 frozen-checkpoint settings screened at 64 intervals on all 30 Gaussian-source development cases. The fixed shortlist is confirmed at every requested mesh with 3 repeats; endpoint selection remains developmental.
+
+No tested configuration meets the original physical and numerical target on every development case. *Most accurate is restricted to settings with every selected solve stationary at the original threshold; an unrestricted accuracy winner is shown separately when different. The largest reduction in worst error from baseline is 0.00008462 percentage points across the confirmed meshes.
+
+Timings and CG comparators in this section come from the new tuning job. They are not combined with FOM timings from the earlier Poisson allocation.
+
+| Intervals/axis | Selection | Setting | ROM GPU ms | Worst / adjusted error (%) | Stationary invocations | Target + numerical gates | Tight / fastest passing CG to ROM ratio |
+| ---: | --- | --- | ---: | ---: | ---: | --- | ---: |
+| 64 | Baseline | `nmrom_baseline` (actual M=257) | 2.361 | 6.80256 / 6.80296 | 90/90 | fail | 2.439 / 1.376 |
+| 64 | Fastest tested | `budget_1` (actual M=257) | 1.488 | 30.0699 / 30.0704 | 0/90 | fail | 3.869 / 2.182 |
+| 64 | Fastest stationary | `stationarity_1e-06` (actual M=257) | 2.210 | 6.80256 / 6.80296 | 90/90 | fail | 2.605 / 1.470 |
+| 64 | Most accurate* | `multistart4_M1024` (actual M=1024) | 6.427 | 6.80247 / 6.80288 | 90/90 | fail | 0.896 / 0.505 |
+| 64 | Fastest passing | none | — | — | — | — | — |
+| 256 | Baseline | `nmrom_baseline` (actual M=257) | 2.616 | 6.80156 / 6.80197 | 90/90 | fail | 9.797 / 4.353 |
+| 256 | Fastest tested | `budget_1` (actual M=257) | 1.673 | 29.9995 / 30 | 0/90 | fail | 15.321 / 6.808 |
+| 256 | Fastest stationary | `stationarity_1e-06` (actual M=257) | 2.347 | 6.80156 / 6.80197 | 90/90 | fail | 10.920 / 4.852 |
+| 256 | Most accurate* | `multistart4_M1024` (actual M=1025) | 6.636 | 6.80155 / 6.80196 | 90/90 | fail | 3.862 / 1.716 |
+| 256 | Fastest passing | none | — | — | — | — | — |
+| 1024 | Baseline | `nmrom_baseline` (actual M=257) | 2.943 | 6.80156 / 6.80196 | 90/90 | fail | 63.140 / 28.428 |
+| 1024 | Fastest tested | `budget_1` (actual M=257) | 1.970 | 29.9951 / 29.9956 | 0/90 | fail | 94.335 / 42.473 |
+| 1024 | Fastest stationary | `stationarity_1e-06` (actual M=257) | 2.614 | 6.80156 / 6.80196 | 90/90 | fail | 71.083 / 32.004 |
+| 1024 | Most accurate* | `multistart4_M1024` (actual M=1025) | 6.942 | 6.80155 / 6.80195 | 90/90 | fail | 26.768 / 12.052 |
+| 1024 | Fastest passing | none | — | — | — | — | — |
+
+Frozen k16/r64 decoder; no retraining or online empirical quadrature. M is the actual retained weak-mode count. These are preassembled, precompiled presets: operators and code caches are prepared for each mesh and M; budgets and gradient thresholds select compiled kernels. New unprepared settings incur offline work. The original stationarity gate is 1e-06; in-loop checks are charged, post-query auditing is excluded for every method.
+
+### Complete Poisson tuning screen
+
+These are the complete coarse-screen measurements, kept separate from confirmation timings. Settings are ranked over the whole cohort; online initialization and selection among starting guesses use the weak objective, never the true field error.
+
+| Setting | Actual / requested M | Iteration budget | Residual reduction threshold | In-loop stationarity threshold | Starts | GPU / host ms | Worst error (%) | Stationary / invocations | Failed target cases | Exit reasons | GPU / host outliers |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+| `budget_1` | 257 / 256 | 1 | 0 | disabled | 1 | 1.786 / 2.696 | 30.0699 | 0 / 90 | 30 | budget exhausted: 90 | 2 / 1 |
+| `budget_3` | 257 / 256 | 3 | 0 | disabled | 1 | 2.091 / 3.080 | 6.80639 | 0 / 90 | 30 | budget exhausted: 90 | 0 / 0 |
+| `budget_8` | 257 / 256 | 8 | 0 | disabled | 1 | 2.726 / 3.675 | 6.80256 | 87 / 90 | 6 | small accepted improvement or step: 75; budget exhausted: 15 | 0 / 0 |
+| `multistart4_M1024` | 1024 / 1024 | 300 | 0 | 1e-08 | 4 | 6.720 / 7.696 | 6.80247 | 90 / 90 | 6 | small accepted improvement or step: 87; explicit configured stationarity threshold: 3 | 0 / 0 |
+| `multistart4_M256` | 257 / 256 | 300 | 0 | 1e-08 | 4 | 6.421 / 7.440 | 6.80256 | 90 / 90 | 6 | small accepted improvement or step: 87; explicit configured stationarity threshold: 3 | 0 / 0 |
+| `nmrom_baseline` | 257 / 256 | 150 | 0.01 | disabled | 1 | 2.760 / 3.738 | 6.80256 | 90 / 90 | 6 | small accepted improvement or step: 90 | 1 / 1 |
+| `residual_tau_0.2` | 257 / 256 | 150 | 0.2 | disabled | 1 | 1.968 / 2.977 | 6.80256 | 18 / 90 | 6 | relative residual target: 72; small accepted improvement or step: 18 | 1 / 0 |
+| `residual_tau_0.5` | 257 / 256 | 150 | 0.5 | disabled | 1 | 1.825 / 2.802 | 12.9025 | 0 / 90 | 14 | relative residual target: 90 | 1 / 0 |
+| `stationarity_1e-02` | 257 / 256 | 150 | 0 | 1e-02 | 1 | 2.069 / 3.071 | 6.80639 | 0 / 90 | 30 | explicit configured stationarity threshold: 90 | 1 / 1 |
+| `stationarity_1e-03` | 257 / 256 | 150 | 0 | 1e-03 | 1 | 2.143 / 3.078 | 6.80266 | 0 / 90 | 30 | explicit configured stationarity threshold: 90 | 1 / 0 |
+| `stationarity_1e-04` | 257 / 256 | 150 | 0 | 1e-04 | 1 | 2.275 / 3.211 | 6.80255 | 0 / 90 | 30 | explicit configured stationarity threshold: 90 | 1 / 0 |
+| `stationarity_1e-06` | 257 / 256 | 150 | 0 | 1e-06 | 1 | 2.486 / 3.503 | 6.80256 | 90 / 90 | 6 | explicit configured stationarity threshold: 90 | 0 / 0 |
+| `strict_M1024` | 1024 / 1024 | 300 | 0 | 1e-08 | 1 | 2.796 / 3.777 | 6.80247 | 90 / 90 | 6 | small accepted improvement or step: 57; explicit configured stationarity threshold: 33 | 0 / 0 |
+| `strict_M128` | 129 / 128 | 300 | 0 | 1e-08 | 1 | 2.695 / 3.676 | 6.80336 | 90 / 90 | 6 | small accepted improvement or step: 63; explicit configured stationarity threshold: 27 | 0 / 0 |
+| `strict_M256` | 257 / 256 | 300 | 0 | 1e-08 | 1 | 2.748 / 3.725 | 6.80256 | 90 / 90 | 6 | small accepted improvement or step: 57; explicit configured stationarity threshold: 33 | 0 / 0 |
+| `strict_M512` | 512 / 512 | 300 | 0 | 1e-08 | 1 | 2.812 / 3.795 | 6.80248 | 90 / 90 | 6 | small accepted improvement or step: 57; explicit configured stationarity threshold: 33 | 1 / 0 |
+| `strict_M64` | 64 / 64 | 300 | 0 | 1e-08 | 1 | 2.709 / 3.718 | 6.8999 | 90 / 90 | 6 | small accepted improvement or step: 57; explicit configured stationarity threshold: 33 | 1 / 0 |
+
+### Poisson confirmation configurations and exits
+
+| Intervals/axis | Setting | Actual M | GPU / host ms | Worst error (%) | Stationary / invocations | Failed target cases | Exit reasons | GPU / host outliers |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+| 64 | `budget_1` | 257 | 1.488 / 2.463 | 30.0699 | 0 / 90 | 30 | budget exhausted: 90 | 1 / 0 |
+| 64 | `multistart4_M1024` | 1024 | 6.427 / 7.414 | 6.80247 | 90 / 90 | 6 | small accepted improvement or step: 87; explicit configured stationarity threshold: 3 | 0 / 0 |
+| 64 | `nmrom_baseline` | 257 | 2.361 / 3.354 | 6.80256 | 90 / 90 | 6 | small accepted improvement or step: 90 | 1 / 1 |
+| 64 | `stationarity_1e-06` | 257 | 2.210 / 3.223 | 6.80256 | 90 / 90 | 6 | explicit configured stationarity threshold: 90 | 0 / 0 |
+| 256 | `budget_1` | 257 | 1.673 / 2.780 | 29.9995 | 0 / 90 | 30 | budget exhausted: 90 | 2 / 1 |
+| 256 | `multistart4_M1024` | 1025 | 6.636 / 7.789 | 6.80155 | 90 / 90 | 6 | small accepted improvement or step: 84; explicit configured stationarity threshold: 6 | 0 / 0 |
+| 256 | `nmrom_baseline` | 257 | 2.616 / 3.616 | 6.80156 | 90 / 90 | 6 | small accepted improvement or step: 90 | 1 / 1 |
+| 256 | `stationarity_1e-06` | 257 | 2.347 / 3.462 | 6.80156 | 90 / 90 | 6 | explicit configured stationarity threshold: 90 | 0 / 0 |
+| 1024 | `budget_1` | 257 | 1.970 / 5.476 | 29.9951 | 0 / 90 | 30 | budget exhausted: 90 | 0 / 0 |
+| 1024 | `multistart4_M1024` | 1025 | 6.942 / 10.419 | 6.80155 | 90 / 90 | 6 | small accepted improvement or step: 84; explicit configured stationarity threshold: 6 | 0 / 0 |
+| 1024 | `nmrom_baseline` | 257 | 2.943 / 6.525 | 6.80156 | 90 / 90 | 6 | small accepted improvement or step: 90 | 1 / 0 |
+| 1024 | `stationarity_1e-06` | 257 | 2.614 / 6.130 | 6.80156 | 90 / 90 | 6 | explicit configured stationarity threshold: 90 | 0 / 0 |
+
+Tuning job `3548866`, NVIDIA A100 80GB PCIe, scientific source `9528b214d8535c2798f9a8ea423615abc8f5ad66`. [full records](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/online_tuning07/result.json) / [owner audit](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/online_tuning07/audit.json) / [independent endpoint audit](../reports/2026-09-11-poisson-online-tuning.coordinator-audit.json) / [checksum collection and cleanup](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/online_tuning07/cleanup.json).
+
 
 ## Effect of relaxing the full solver tolerance
 
@@ -46,13 +117,10 @@ This table selects the fastest tested iterative FOM that meets the panel's physi
 | Reflective waves | 64 | Midpoint CG, tolerance 1e-02 | 82.648 | 0.596143 | 0.018 | unavailable |
 | Reflective waves | 256 | Midpoint CG, tolerance 1e-06 | 135.462 | 0.353387 | 0.030 | unavailable |
 | Reflective waves | 1024 | Midpoint CG, tolerance 1e-06 | 1053.343 | 0.353176 | 0.232 | unavailable |
-| Absorbing waves | 64 | none | — | — | — | — |
-| Absorbing waves | 256 | Midpoint CG, tolerance 1e-06 | 331.497 | 0.200499 | 0.066 | unavailable |
-| Absorbing waves | 1024 | Midpoint CG, tolerance 1e-06 | 3619.963 | 0.230577 | 0.720 | unavailable |
 
 ## What each panel measures
 
-The percentages below use different explicitly named norms. They should not be ranked across PDEs. Error relative to the current wave state can become large after energy leaves an absorbing domain; initial-normalized wave errors are additional diagnostics, not substitutes for the current-relative result.
+The percentages below use different explicitly named norms. They should not be ranked across PDEs. The displayed wave panel uses reflective boundaries; the numerical archive retains the complete original experiment.
 
 | Problem | Development cases × timing repeats | Error norm | Error target (%) | Primary ROM | Primary iterative FOM |
 | --- | ---: | --- | ---: | --- | --- |
@@ -60,7 +128,6 @@ The percentages below use different explicitly named norms. They should not be r
 | Heat 2D | 12 × 3 | current-relative field L2 | 5 | NMROM (Cholesky) | CN-CG, tolerance 1e-6 |
 | Burgers 2D | 4 × 3 | fixed-initial field L2 | 5 | Frozen sampled-upwind NMROM | Newton 1e-06 / linear 1e-08; FFT |
 | Reflective waves | 2 × 3 | current-relative displacement L2; gate checks all three wave components | 5 | Frozen MLP32 NMROM | Midpoint CG, tolerance 1e-06 |
-| Absorbing waves | 2 × 3 | current-relative displacement L2; gate checks all three wave components | 5 | Frozen MLP32 NMROM | Midpoint CG, tolerance 1e-06 |
 
 **Poisson 2D.** Frozen relative-loss separable decoder with exact reduced weak algebra, sine-product source projection and nearest-code initialization. Compiled unpreconditioned CG starts from zero on the same requested grid; final true-residual verification is charged. Full requested-mesh error against a restricted 2048-interval finite-difference sine-transform reference. The gate uses $(e+\delta)/(1-\delta)$ and the declared reference-allowance check, where $e$ is measured error and $\delta$ is reference refinement; this is empirical. All 30 previously opened development sources are retained. A solve may validly stop at its declared residual target without satisfying the separate stationarity threshold. Main tables here use pooled repetition medians; native owner tables additionally report medians of case medians.
 
@@ -70,9 +137,7 @@ The percentages below use different explicitly named norms. They should not be r
 
 **Burgers 2D.** Frozen $k=16$, $r=512$ decoder with 64 weak modes and 256 fitted quadrature samples, refitted for each mesh. Linear weak terms are preassembled; sign-upwind advection is sampled and is not the historical small-bank polynomial tensor. Compiled Newton–BiCGStab with FFT sine-transform preconditioning at the same 0.005 step size. Tight tolerances are the primary control; looser tolerances and the historical dense-transform preconditioner are retained. Regenerated 4096-interval implicit upwind reference with spatial and temporal refinement checks; the gate adds the empirical refinement margin. Physical accuracy and nonlinear stationarity are distinct. The original ROM stopping contract accepts a small-step/improvement stall; such exits have unmeasured stationarity and are labeled explicitly here. Timing charges inner true-residual checks and diagnostic output-step predecessor fields on the GPU. Complete host timing transfers public fields; remaining diagnostic transfers occur afterward. Outliers exceed twice the same-case median; none are excluded.
 
-**Reflective waves.** Frozen nonlinear head with configuration dimension 32 and spatial bank rank 64; the original RK4 latent dynamics are retained. New implicit-midpoint CG control at the same 0.0025 time step and 49 output times; this is an iterative control, not a replay of a historical wave algorithm. Same-grid semidiscrete wave reference: independent modal solution for reflective boundaries, refined explicit stepping for absorbing boundaries. No continuum accuracy claim. The target gate requires displacement, velocity and energy errors, reference/ROM refinement, initial-fit stationarity and successful evolution/linear solves. Initial-normalized qualification is reported separately. Only output transfers were measured; complete host times are unavailable. Native timing outliers exceed twice the same-case median, and all are retained.
-
-**Absorbing waves.** Frozen nonlinear head with configuration dimension 32 and spatial bank rank 64; the original RK4 latent dynamics are retained. New implicit-midpoint CG control at the same 0.0025 time step and 49 output times; this is an iterative control, not a replay of a historical wave algorithm. Same-grid semidiscrete wave reference: independent modal solution for reflective boundaries, refined explicit stepping for absorbing boundaries. No continuum accuracy claim. The target gate requires displacement, velocity and energy errors, reference/ROM refinement, initial-fit stationarity and successful evolution/linear solves. Initial-normalized qualification is reported separately. Only output transfers were measured; complete host times are unavailable. Native timing outliers exceed twice the same-case median, and all are retained.
+**Reflective waves.** Frozen nonlinear head with configuration dimension 32 and spatial bank rank 64; the original RK4 latent dynamics are retained. New implicit-midpoint CG control at the same 0.0025 time step and 49 output times; this is an iterative control, not a replay of a historical wave algorithm. Same-grid semidiscrete wave reference from an independent modal solution. No continuum accuracy claim. The target gate requires displacement, velocity and energy errors, reference/ROM refinement, initial-fit stationarity and successful evolution/linear solves. Initial-normalized qualification is reported separately. Only output transfers were measured; complete host times are unavailable. Native timing outliers exceed twice the same-case median, and all are retained.
 
 ## Additional wave accuracy diagnostics
 
@@ -92,18 +157,6 @@ These errors use the same timed outputs as the main table. The displacement colu
 | Reflective waves | 1024 | Direct sine-transform FOM | 0 / 0 / 0 | 0 / 0 / 0 | yes / yes |
 | Reflective waves | 1024 | Midpoint CG, tolerance 1e-06 | 0.353176 / 0.79011 / 0.607856 | 0.203836 / 0.426563 / 0.607856 | yes / yes |
 | Reflective waves | 1024 | Midpoint CG, tolerance 1e-02 | 17.1077 / 24.8137 / 13.1735 | 7.69918 / 10.6497 / 13.1735 | no / no |
-| Absorbing waves | 64 | Frozen MLP32 NMROM | 246.291 / 295.057 / 312.066 | 2.14912 / 4.26224 / 5.919 | no / no |
-| Absorbing waves | 64 | Explicit RK4 FOM | 0.67202 / 15.099 / 12.723 | 0.00110079 / 0.0136805 / 0.017701 | no / yes |
-| Absorbing waves | 64 | Midpoint CG, tolerance 1e-06 | 1.7263 / 35.0678 / 30.3935 | 0.0285579 / 0.0614907 / 0.0865223 | no / yes |
-| Absorbing waves | 64 | Midpoint CG, tolerance 1e-02 | 226.247 / 37.2439 / 29.7031 | 0.762001 / 0.779742 / 1.0753 | no / yes |
-| Absorbing waves | 256 | Frozen MLP32 NMROM | 246.539 / 295.848 / 322.436 | 2.13979 / 4.25544 / 5.9136 | no / no |
-| Absorbing waves | 256 | Explicit RK4 FOM | 0.000658535 / 0.0403405 / 0.037026 | 1.10135e-05 / 0.000263401 / 0.000371916 | yes / yes |
-| Absorbing waves | 256 | Midpoint CG, tolerance 1e-06 | 0.200499 / 0.498989 / 0.521 | 0.0286947 / 0.0703976 / 0.0997667 | yes / yes |
-| Absorbing waves | 256 | Midpoint CG, tolerance 1e-02 | 1344.56 / 1046.27 / 962.024 | 3.76895 / 5.24928 / 7.34411 | no / no |
-| Absorbing waves | 1024 | Frozen MLP32 NMROM | 246.557 / 295.689 / 322.823 | 2.13922 / 4.25504 / 5.9135 | no / no |
-| Absorbing waves | 1024 | Explicit RK4 FOM | 3.17779e-07 / 1.04295e-05 / 1.09675e-05 | 5.10808e-08 / 1.49446e-06 / 2.11324e-06 | yes / yes |
-| Absorbing waves | 1024 | Midpoint CG, tolerance 1e-06 | 0.230577 / 0.490361 / 0.50984 | 0.028663 / 0.0714399 / 0.101236 | yes / yes |
-| Absorbing waves | 1024 | Midpoint CG, tolerance 1e-02 | 1995.15 / 787.988 / 704.5 | 4.04198 / 2.10936 / 2.97068 | no / yes |
 
 ## Controls included in this comparison and solver exits
 
@@ -174,18 +227,6 @@ The listed failures are counts of the named fit or solve events, including all r
 | Reflective waves | 1024 | Midpoint CG, tolerance 1e-06 | 1053.343 / unavailable | 0.353176 | none | 0 / unavailable |
 | Reflective waves | 1024 | Direct sine-transform FOM | 16.624 / unavailable | 0 | none | 0 / unavailable |
 | Reflective waves | 1024 | Frozen MLP32 NMROM | 4532.594 / unavailable | 3.56842 | none | 0 / unavailable |
-| Absorbing waves | 64 | Midpoint CG, tolerance 1e-02 | 93.489 / unavailable | 226.247 | none | 0 / unavailable |
-| Absorbing waves | 64 | Midpoint CG, tolerance 1e-06 | 171.361 / unavailable | 1.7263 | none | 0 / unavailable |
-| Absorbing waves | 64 | Frozen MLP32 NMROM | 5026.590 / unavailable | 246.291 | none | 0 / unavailable |
-| Absorbing waves | 64 | Explicit RK4 FOM | 14.395 / unavailable | 0.67202 | none | 0 / unavailable |
-| Absorbing waves | 256 | Midpoint CG, tolerance 1e-02 | 161.525 / unavailable | 1344.56 | none | 0 / unavailable |
-| Absorbing waves | 256 | Midpoint CG, tolerance 1e-06 | 331.497 / unavailable | 0.200499 | none | 0 / unavailable |
-| Absorbing waves | 256 | Frozen MLP32 NMROM | 5039.759 / unavailable | 246.539 | none | 0 / unavailable |
-| Absorbing waves | 256 | Explicit RK4 FOM | 86.336 / unavailable | 0.000658535 | none | 0 / unavailable |
-| Absorbing waves | 1024 | Midpoint CG, tolerance 1e-02 | 1508.310 / unavailable | 1995.15 | none | 0 / unavailable |
-| Absorbing waves | 1024 | Midpoint CG, tolerance 1e-06 | 3619.963 / unavailable | 0.230577 | none | 0 / unavailable |
-| Absorbing waves | 1024 | Frozen MLP32 NMROM | 5028.499 / unavailable | 246.557 | none | 0 / unavailable |
-| Absorbing waves | 1024 | Explicit RK4 FOM | 2315.017 / unavailable | 3.17779e-07 | none | 0 / unavailable |
 
 ## Reproducibility and scope
 
@@ -197,7 +238,6 @@ All results require GPU preflight, float64, highest matrix precision, a private 
 | Heat 2D | 3529772 | NVIDIA A100-PCIE-40GB | `7e6d2e39aafdf90afc53fad03af8eca6799574bc` | [results](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/iterative_cg09/archive/outputs/results.json) / [audit](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/iterative_cg09/analysis/audit.json) / [archive](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/iterative_cg09/ARCHIVE.json) |
 | Burgers 2D | 3534502 | NVIDIA A100-PCIE-40GB | `46ced2fd6bdd45758cc978f90d572d9fe09e3d80` | [results](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/iterative06/archive/out/result.json) / [audit](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/iterative06/AUDIT.json) / [archive](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/iterative06/ARCHIVE.json) |
 | Reflective waves | 3534457 | NVIDIA A100 80GB PCIe | `e1d377928913fc94c06c6052459a4ab4847c1eb1` | [results](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/cluster/out/pilot/result.json) / [audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/analysis/summary.json) / [archive](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/cleanup.json) |
-| Absorbing waves | 3534457 | NVIDIA A100 80GB PCIe | `e1d377928913fc94c06c6052459a4ab4847c1eb1` | [results](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/cluster/out/pilot/result.json) / [audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/analysis/summary.json) / [archive](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/cleanup.json) |
 
 A separate coordinator implementation recomputed displacement errors for 4 full largest-grid predictions, covering 12 timed-output identities, with maximum metric difference 0. This is an additional first-case cross-check of both boundaries and the NMROM/tight-CG pair; the owner audit covers the complete cohort, velocity and energy. [Coordinator evidence](../reports/2026-09-11-iterative-fom-multiresolution.coordinator-audit.json).
 
@@ -227,3 +267,6 @@ The adjacent [2026-09-11-iterative-fom-multiresolution.json](2026-09-11-iterativ
 - **Fit or solve event / invocation / outlier:** an individual optimization or equation solve / one complete timed query / an unusually slow retained timing under the native stated rule.
 - **Iterative / direct / diagnostic:** repeated equation-solving updates / an algebraic transform or factorization solution / a control reported to interpret the main comparison.
 - **Source hash / checksum archive:** content-based identification of the executed code / preserved run files whose collected bytes were verified.
+- **Tuning screen / frozen shortlist / confirmation:** the first comparison of all settings / a fixed subset selected before follow-up timing / a repeat comparison of that subset on the requested meshes; all use development cases here.
+- **Iteration budget / residual reduction / in-loop stop / starts:** maximum attempted solver updates / target residual divided by the starting residual / a gradient check performed and charged during the solve / initial latent guesses optimized and compared by weak residual.
+- **Fastest tested / most accurate / fastest passing:** lowest cohort median time among tested finite settings, including diagnostic early exits / lowest worst field error among configurations whose selected solves all satisfy the original stationarity threshold / lowest time among configurations passing every physical and numerical gate. None means no tested eligible configuration; these are not global optimality claims.

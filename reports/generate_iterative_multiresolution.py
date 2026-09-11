@@ -176,7 +176,9 @@ def wave_panels():
     cfg = result["config"]
     assert .05 in cfg["accuracy_targets"]
     panels = []
-    for boundary, label in (("dirichlet", "Reflective waves"), ("absorbing", "Absorbing waves")):
+    # Presentation scope requested by the user. The complete two-boundary
+    # scientific archive and its audit remain immutable.
+    for boundary, label in (("dirichlet", "Reflective waves"),):
         diagnostic = "dst" if boundary == "dirichlet" else "rk4"
         methods = {cfg["primary_method"]: "Frozen MLP32 NMROM", diagnostic: "Direct sine-transform FOM" if boundary == "dirichlet" else "Explicit RK4 FOM"}
         methods.update({f"cg_{tol:g}": f"Midpoint CG, tolerance {tol:.0e}" for tol in cfg["cg_tolerances"]})
@@ -224,7 +226,7 @@ def wave_panels():
             target=.05, error_norm="current-relative displacement L2; gate checks all three wave components",
             wave_components=True,
             coordinator_check=dict(path=str(coordinator_path), **coordinator),
-            reference="Same-grid semidiscrete wave reference: independent modal solution for reflective boundaries, refined explicit stepping for absorbing boundaries. No continuum accuracy claim.",
+            reference="Same-grid semidiscrete wave reference from an independent modal solution. No continuum accuracy claim.",
             model=f"Frozen nonlinear head with configuration dimension {result['invocations'][0]['configuration_dimension']} and spatial bank rank {cfg['frozen_bank_rank']}; the original RK4 latent dynamics are retained.",
             baseline=f"New implicit-midpoint CG control at the same {cfg['primary_dt']:.6g} time step and {round(cfg['end_time']/cfg['observation_dt'])+1} output times; this is an iterative control, not a replay of a historical wave algorithm.",
             notes="The target gate requires displacement, velocity and energy errors, reference/ROM refinement, initial-fit stationarity and successful evolution/linear solves. Initial-normalized qualification is reported separately. Only output transfers were measured; complete host times are unavailable. Native timing outliers exceed twice the same-case median, and all are retained.",
@@ -362,17 +364,18 @@ def plot(panels):
     handles.append(axes[1, 0].get_lines()[-1])
     labels.append(f"{100*panels[0]['target']:.6g}% error threshold")
     fig.legend(handles, labels, loc="outside lower center", ncol=4, fontsize=9)
-    paths = [ROOT / f"reports/{STEM}.{ext}" for ext in ("png", "pdf")]
+    paths = [ROOT / f"reports/{STEM}.png", ROOT / f"reports/{STEM}-scaling.pdf"]
     for path in paths:
         fig.savefig(path, dpi=180)
     plt.close(fig)
     return paths
 
 
-def render(panels):
+def render(panels, tuning=None):
     lines = [
         "# Multiresolution NMROM versus iterative FOM comparisons", "",
         "Audited development results for the current frozen separable models, using same-grid iterative full-order solvers. Paper claims remain provisional because these are existing development cohorts, with one frozen trained model per panel and independent final cases unopened.", "",
+        f"[Table PDF]({STEM}.pdf) · [Editable LaTeX]({STEM}.tex) · [Separate scaling figure]({STEM}-scaling.pdf). The displayed problems are Poisson, heat, Burgers and reflective waves.", "",
         "GPU times include input projection or initial fitting, the solve or full rollout, and every requested full-field device output. Where available, complete input/output transfers are measured separately from the same invocation; wave records measure output transfer only, so their complete host times are unavailable. Each PDE ladder uses a single allocation; compare each ROM with its paired FOM, not absolute wall times across PDEs.", "",
         f"![Resolution scaling of runtime and field error]({STEM}.png)", "",
         "## Primary iterative comparisons", "",
@@ -385,6 +388,9 @@ def render(panels):
             rom, fom = [lookup(panel, n, panel[k]) for k in ("primary_rom", "primary_fom")]
             status = " / ".join(row.get("gate_label") or ("pass" if qualifies(panel, row) else "fail") for row in (rom, fom))
             lines.append(f"| {panel['label']} | {n} | {rom['gpu_ms']:.3f} | {fom['gpu_ms']:.3f} | {fom['gpu_ms']/rom['gpu_ms']:.3f} | {100*rom['worst_error']:.6g} / {100*fom['worst_error']:.6g} | {status} |")
+    if tuning is not None:
+        from normalize_poisson_tuning import markdown
+        lines += ["", markdown(tuning)]
     lines += ["", "## Effect of relaxing the full solver tolerance", "",
         "This table selects the fastest tested iterative FOM that meets the panel's physical error target and stopping rules, using the same development cohort. This is a disclosed development selection, not a global optimum or independent final confirmation. A ratio remains diagnostic if the ROM fails its own target or convergence check.", "",
         "| Problem | Intervals/axis | Fastest passing tested FOM | FOM GPU ms | FOM worst error (%) | FOM/ROM GPU | FOM/ROM including transfers |",
@@ -399,7 +405,7 @@ def render(panels):
             host = f"{fom['host_ms']/rom['host_ms']:.3f}" if fom.get("host_ms") and rom.get("host_ms") else "unavailable"
             lines.append(f"| {panel['label']} | {n} | {fom['label']} | {fom['gpu_ms']:.3f} | {100*fom['worst_error']:.6g} | {fom['gpu_ms']/rom['gpu_ms']:.3f} | {host} |")
     lines += ["", "## What each panel measures", "",
-        "The percentages below use different explicitly named norms. They should not be ranked across PDEs. Error relative to the current wave state can become large after energy leaves an absorbing domain; initial-normalized wave errors are additional diagnostics, not substitutes for the current-relative result.", "",
+        "The percentages below use different explicitly named norms. They should not be ranked across PDEs. The displayed wave panel uses reflective boundaries; the numerical archive retains the complete original experiment.", "",
         "| Problem | Development cases × timing repeats | Error norm | Error target (%) | Primary ROM | Primary iterative FOM |",
         "| --- | ---: | --- | ---: | --- | --- |",
     ]
@@ -477,6 +483,9 @@ def render(panels):
         "- **Fit or solve event / invocation / outlier:** an individual optimization or equation solve / one complete timed query / an unusually slow retained timing under the native stated rule.",
         "- **Iterative / direct / diagnostic:** repeated equation-solving updates / an algebraic transform or factorization solution / a control reported to interpret the main comparison.",
         "- **Source hash / checksum archive:** content-based identification of the executed code / preserved run files whose collected bytes were verified.",
+        "- **Tuning screen / frozen shortlist / confirmation:** the first comparison of all settings / a fixed subset selected before follow-up timing / a repeat comparison of that subset on the requested meshes; all use development cases here.",
+        "- **Iteration budget / residual reduction / in-loop stop / starts:** maximum attempted solver updates / target residual divided by the starting residual / a gradient check performed and charged during the solve / initial latent guesses optimized and compared by weak residual.",
+        "- **Fastest tested / most accurate / fastest passing:** lowest cohort median time among tested finite settings, including diagnostic early exits / lowest worst field error among configurations whose selected solves all satisfy the original stationarity threshold / lowest time among configurations passing every physical and numerical gate. None means no tested eligible configuration; these are not global optimality claims.",
     ]
     return "\n".join(lines) + "\n"
 
@@ -484,6 +493,7 @@ def render(panels):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--heat-check", action="store_true", help="Verify only the reused heat adapter; do not publish a partial report.")
+    parser.add_argument("--draft-without-tuning", action="store_true", help="Explicit interim table PDF while the requested tuning experiment is running.")
     args = parser.parse_args()
     heat = heat_panel()
     if args.heat_check:
@@ -498,33 +508,52 @@ def main():
         for n in panel["intervals"]:
             lookup(panel, n, panel["primary_rom"])
             lookup(panel, n, panel["primary_fom"])
+    tuning = None
+    if not args.draft_without_tuning:
+        from normalize_poisson_tuning import load_tuning
+        tuning = load_tuning(read, SOURCES)
+        adapter = Path(__file__).with_name("normalize_poisson_tuning.py")
+        SOURCES[str(adapter.relative_to(ROOT))] = hashlib.sha256(adapter.read_bytes()).hexdigest()
     figures = plot(panels)
     output = ROOT / "reports" / STEM
     script = Path(__file__).resolve()
     SOURCES[str(script.relative_to(ROOT))] = hashlib.sha256(script.read_bytes()).hexdigest()
     payload = dict(
-        schema="iterative-fom-multiresolution-v1", status="audited development results",
+        schema="iterative-fom-multiresolution-v2", status="audited development results" if tuning is not None else "audited original results; requested Poisson tuning pending",
         date="2026-09-11", aggregation="Median of all retained repetitions, with equal repeats per case; ratios of those medians.",
         target_status="Scientific integrity is audited separately from physical accuracy and solver stopping rules.",
         source_sha256=SOURCES, panels=panels,
+        poisson_tuning=tuning,
     )
     output.with_suffix(".json").write_text(json.dumps(payload, indent=2, allow_nan=False) + "\n")
-    output.with_suffix(".md").write_text(render(panels))
-    columns = ["problem", "intervals", "method", "gpu_ms", "host_ms", "worst_error", "error_norm", "target", "qualified", "solver_converged", "stationarity_status", "stalled_initial_fits", "stalled_steps", "gpu_outliers", "host_outliers", "invocations", "job_id"]
+    output.with_suffix(".md").write_text(render(panels, tuning))
+    from render_iterative_tables import build_tables
+    table_artifacts = build_tables(payload, output)
+    renderer = Path(__file__).with_name("render_iterative_tables.py")
+    SOURCES[str(renderer.relative_to(ROOT))] = hashlib.sha256(renderer.read_bytes()).hexdigest()
+    # Capture the renderer in the numerical bundle as well as the manifest.
+    output.with_suffix(".json").write_text(json.dumps(payload, indent=2, allow_nan=False) + "\n")
+    columns = ["problem", "phase", "intervals", "method", "gpu_ms", "host_ms", "worst_error", "error_norm", "target", "qualified", "solver_converged", "stationarity_status", "stalled_initial_fits", "stalled_steps", "gpu_outliers", "host_outliers", "invocations", "job_id"]
     with output.with_suffix(".csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=columns, lineterminator="\n")
         writer.writeheader()
         for panel in panels:
             for row in panel["rows"]:
                 writer.writerow(dict(
-                    problem=panel["label"], error_norm=panel["error_norm"], target=panel["target"],
+                    problem=panel["label"], phase="original comparison", error_norm=panel["error_norm"], target=panel["target"],
                     qualified=qualifies(panel, row), job_id=panel["metadata"]["job_id"],
                     solver_converged=row["converged"], stationarity_status=row.get("stationarity_status", "see native solver audit"),
                     stalled_initial_fits=row.get("stalled_events", {}).get("initial_fits", 0),
                     stalled_steps=row.get("stalled_events", {}).get("steps", 0),
                     **{key: row[key] for key in ["intervals", "method", "gpu_ms", "host_ms", "worst_error", "gpu_outliers", "host_outliers", "invocations"]},
                 ))
-    artifacts = [output.with_suffix(ext) for ext in (".md", ".json", ".csv")] + figures
+        if tuning is not None:
+            for row in tuning["rows"]:
+                writer.writerow(dict(problem="Poisson 2D tuning", error_norm="current-relative solution L2", target=tuning["target"],
+                                     qualified=row["qualified"], job_id=tuning["job_id"], solver_converged=row["converged"],
+                                     stationarity_status=(f"{row['stationary_invocations']}/{row['invocations']} stationary" if "preset" in row else "not applicable"),
+                                     **{key: row[key] for key in ["phase", "intervals", "method", "gpu_ms", "host_ms", "worst_error", "gpu_outliers", "host_outliers", "invocations"]}))
+    artifacts = [output.with_suffix(ext) for ext in (".md", ".json", ".csv")] + figures + table_artifacts
     manifest = dict(
         source_sha256=SOURCES,
         generated_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in artifacts},

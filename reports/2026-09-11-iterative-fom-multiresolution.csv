@@ -1,76 +1,117 @@
-problem,intervals,method,gpu_ms,host_ms,worst_error,error_norm,target,qualified,solver_converged,stationarity_status,stalled_initial_fits,stalled_steps,gpu_outliers,host_outliers,invocations,job_id
-Poisson 2D,64,nmrom,2.4676764151081443,3.3395346254110336,0.06802558226391782,current-relative solution L2,0.05,False,True,see native solver audit,0,0,2,1,90,3534456
-Poisson 2D,64,dst,0.13037188909947872,1.4264225028455257,0.002572172851689943,current-relative solution L2,0.05,True,True,see native solver audit,0,0,3,2,90,3534456
-Poisson 2D,64,cg_1e-06,5.734171019867063,6.4725244883447886,0.0025721658257001046,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,64,cg_1e-04,4.837378510273993,5.577788455411792,0.002573000966782946,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,64,cg_1e-02,3.5380745539441705,4.329343908466399,0.004030522952679789,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,64,cg_3e-02,3.2234055688604712,3.924144431948662,0.011347920341766318,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,64,cg_1e-01,2.777187037281692,3.5313934786245227,0.08816888062280737,current-relative solution L2,0.05,False,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,256,nmrom,2.355025033466518,3.3197260927408934,0.06801564300500436,current-relative solution L2,0.05,False,True,see native solver audit,0,0,1,1,90,3534456
-Poisson 2D,256,dst,0.1303255558013916,1.4400980435311794,0.0001545997763344007,current-relative solution L2,0.05,True,True,see native solver audit,0,0,4,0,90,3534456
-Poisson 2D,256,cg_1e-06,22.27921551093459,23.281399509869516,0.00015459738356351157,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,256,cg_1e-04,18.488761852495372,19.48313950560987,0.00015547091128564674,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,256,cg_1e-02,13.000422972254455,13.967743841931224,0.0015375579305341915,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,256,cg_3e-02,11.443202500231564,12.345286435447633,0.005485740626675056,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,256,cg_1e-01,9.684676537290215,10.697955964133143,0.02272479940606718,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,1024,nmrom,2.4946074699983,5.917179514653981,0.0680155626158244,current-relative solution L2,0.05,False,True,see native solver audit,0,0,1,1,90,3534456
-Poisson 2D,1024,dst,0.3166665555909276,4.102599574252963,7.351177051312655e-06,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,1024,cg_1e-06,188.21220693644136,191.95414101704955,7.3514400837445744e-06,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,1024,cg_1e-04,154.84085050411522,158.39844348374754,9.670793890069143e-06,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,1024,cg_1e-02,108.83984307292849,112.43735358584672,0.0008402540028172918,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,1024,cg_3e-02,98.0874439701438,101.91319952718914,0.002552703774974023,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Poisson 2D,1024,cg_1e-01,84.58422846160829,88.16900954116136,0.010191728736439297,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
-Heat 2D,64,fom_cg_cn,5.505837965756655,6.023616413585842,0.0006737856413173462,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,64,fom_cg_cn_tol1e2,2.503836411051452,2.997430507093668,0.015860306094822633,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,64,fom_cg_cn_tol1e3,2.65499041415751,3.165223402902484,0.0049245139394787285,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,64,fom_same_grid,0.177714042365551,0.5437779473140836,0.000897485037432332,current-relative field L2,0.05,True,True,see native solver audit,0,0,12,12,36,3529772
-Heat 2D,64,nmrom_cholesky,11.226765462197363,11.685870005749166,0.04559260371319415,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,256,fom_cg_cn,20.997201558202505,22.424818482249975,0.0003126076669711945,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,256,fom_cg_cn_tol1e2,6.938944570720196,8.353524026460946,0.009254642451452147,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,256,fom_cg_cn_tol1e3,8.354508434422314,9.793593548238277,0.0034296953838732452,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,256,fom_same_grid,0.2620250452309847,1.4372965088114142,5.6020916596720584e-05,current-relative field L2,0.05,True,True,see native solver audit,0,0,9,9,36,3529772
-Heat 2D,256,nmrom_cholesky,11.341399629600346,12.74859404657036,0.04555681208224373,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,1024,fom_cg_cn,210.5955354636535,235.20259244833142,0.00034908539218443045,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,1024,fom_cg_cn_tol1e2,59.1779820388183,83.50166003219783,0.007706845902824921,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,1024,fom_cg_cn_tol1e3,83.22693896479905,107.81514353584498,0.002157746087242216,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,1024,fom_same_grid,1.2359034735709429,25.920844869688153,3.501026827628017e-06,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Heat 2D,1024,nmrom_cholesky,12.206228449940681,36.841067019850016,0.045554794798807384,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
-Burgers 2D,64,nmrom,36.22636804357171,37.82176552340388,0.10854648110955394,fixed-initial field L2,0.05,False,,unmeasured: small-improvement/step exits are not stationarity certificates,12,600,0,0,12,3534502
-Burgers 2D,64,fft_loose,13.895599520765245,15.236963052302599,0.10391989296894667,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,64,fft_medium,14.041299116797745,15.617916942574084,0.10469240327480868,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,64,fft_tight,78.23955256026238,79.78611649014056,0.10989131074463117,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,64,dense_medium,11.087928549386561,12.849353952333331,0.10469240327480864,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,256,nmrom,35.74702958576381,38.35238900501281,0.045507001261942716,fixed-initial field L2,0.05,True,,unmeasured: small-improvement/step exits are not stationarity certificates,12,600,0,0,12,3534502
-Burgers 2D,256,fft_loose,15.84670611191541,18.36025097873062,0.024736873566384775,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,256,fft_medium,17.472705454565585,20.098447101190686,0.029434559042005756,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,256,fft_tight,117.47287947218865,119.92221011314541,0.0402651465711523,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,256,dense_medium,13.963493052870035,16.439873026683927,0.02943455904200593,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,1024,nmrom,41.676780325360596,60.09758752770722,0.039076203252235465,fixed-initial field L2,0.05,True,,unmeasured: small-improvement/step exits are not stationarity certificates,12,600,0,0,12,3534502
-Burgers 2D,1024,fft_loose,68.04365944117308,86.67373354546726,0.023899365244885784,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,1024,fft_medium,79.15743463672698,97.92245540302247,0.016565590865307404,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,1024,fft_tight,605.7469940278679,624.4373864028603,0.021416109568868053,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Burgers 2D,1024,dense_medium,115.68444699514657,134.51277848798782,0.016565590865307723,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
-Reflective waves,64,frozen_mlp32_seed691200,4510.115586454049,,0.03640744983324231,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,64,dst,3.680776571854949,,0.0,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,64,cg_1e-06,110.52655254025012,,0.0035207798835244827,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,64,cg_0.01,82.64786005020142,,0.005961433080698862,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,256,frozen_mlp32_seed691200,4530.3358705714345,,0.03568985985050851,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,256,dst,4.031282966025174,,0.0,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,256,cg_1e-06,135.46218047849834,,0.003533874161276299,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,256,cg_0.01,98.62901747692376,,0.1810739876290988,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,1024,frozen_mlp32_seed691200,4532.594208954833,,0.03568421725882041,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,1024,dst,16.624295501969755,,0.0,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,1024,cg_1e-06,1053.3427144400775,,0.00353176376635732,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Reflective waves,1024,cg_0.01,758.1938673974946,,0.17107706282139845,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,64,frozen_mlp32_seed691200,5026.589921559207,,2.4629094777217673,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,64,rk4,14.395135105587542,,0.006720195210556424,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,64,cg_1e-06,171.36108700651675,,0.017263034119300174,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,64,cg_0.01,93.4885994065553,,2.2624667601349433,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,256,frozen_mlp32_seed691200,5039.758513914421,,2.4653939293272478,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,256,rk4,86.33552049286664,,6.585353581265828e-06,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,256,cg_1e-06,331.4968044869602,,0.0020049885914619446,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,256,cg_0.01,161.5250159520656,,13.445570560980007,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,1024,frozen_mlp32_seed691200,5028.499461943284,,2.465566775581009,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,1024,rk4,2315.0170806329697,,3.177792036780526e-09,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,1024,cg_1e-06,3619.963461533189,,0.0023057730262848472,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
-Absorbing waves,1024,cg_0.01,1508.31007596571,,19.951529523585968,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
+problem,phase,intervals,method,gpu_ms,host_ms,worst_error,error_norm,target,qualified,solver_converged,stationarity_status,stalled_initial_fits,stalled_steps,gpu_outliers,host_outliers,invocations,job_id
+Poisson 2D,original comparison,64,nmrom,2.4676764151081443,3.3395346254110336,0.06802558226391782,current-relative solution L2,0.05,False,True,see native solver audit,0,0,2,1,90,3534456
+Poisson 2D,original comparison,64,dst,0.13037188909947872,1.4264225028455257,0.002572172851689943,current-relative solution L2,0.05,True,True,see native solver audit,0,0,3,2,90,3534456
+Poisson 2D,original comparison,64,cg_1e-06,5.734171019867063,6.4725244883447886,0.0025721658257001046,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,64,cg_1e-04,4.837378510273993,5.577788455411792,0.002573000966782946,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,64,cg_1e-02,3.5380745539441705,4.329343908466399,0.004030522952679789,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,64,cg_3e-02,3.2234055688604712,3.924144431948662,0.011347920341766318,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,64,cg_1e-01,2.777187037281692,3.5313934786245227,0.08816888062280737,current-relative solution L2,0.05,False,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,256,nmrom,2.355025033466518,3.3197260927408934,0.06801564300500436,current-relative solution L2,0.05,False,True,see native solver audit,0,0,1,1,90,3534456
+Poisson 2D,original comparison,256,dst,0.1303255558013916,1.4400980435311794,0.0001545997763344007,current-relative solution L2,0.05,True,True,see native solver audit,0,0,4,0,90,3534456
+Poisson 2D,original comparison,256,cg_1e-06,22.27921551093459,23.281399509869516,0.00015459738356351157,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,256,cg_1e-04,18.488761852495372,19.48313950560987,0.00015547091128564674,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,256,cg_1e-02,13.000422972254455,13.967743841931224,0.0015375579305341915,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,256,cg_3e-02,11.443202500231564,12.345286435447633,0.005485740626675056,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,256,cg_1e-01,9.684676537290215,10.697955964133143,0.02272479940606718,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,1024,nmrom,2.4946074699983,5.917179514653981,0.0680155626158244,current-relative solution L2,0.05,False,True,see native solver audit,0,0,1,1,90,3534456
+Poisson 2D,original comparison,1024,dst,0.3166665555909276,4.102599574252963,7.351177051312655e-06,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,1024,cg_1e-06,188.21220693644136,191.95414101704955,7.3514400837445744e-06,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,1024,cg_1e-04,154.84085050411522,158.39844348374754,9.670793890069143e-06,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,1024,cg_1e-02,108.83984307292849,112.43735358584672,0.0008402540028172918,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,1024,cg_3e-02,98.0874439701438,101.91319952718914,0.002552703774974023,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Poisson 2D,original comparison,1024,cg_1e-01,84.58422846160829,88.16900954116136,0.010191728736439297,current-relative solution L2,0.05,True,True,see native solver audit,0,0,0,0,90,3534456
+Heat 2D,original comparison,64,fom_cg_cn,5.505837965756655,6.023616413585842,0.0006737856413173462,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,64,fom_cg_cn_tol1e2,2.503836411051452,2.997430507093668,0.015860306094822633,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,64,fom_cg_cn_tol1e3,2.65499041415751,3.165223402902484,0.0049245139394787285,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,64,fom_same_grid,0.177714042365551,0.5437779473140836,0.000897485037432332,current-relative field L2,0.05,True,True,see native solver audit,0,0,12,12,36,3529772
+Heat 2D,original comparison,64,nmrom_cholesky,11.226765462197363,11.685870005749166,0.04559260371319415,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,256,fom_cg_cn,20.997201558202505,22.424818482249975,0.0003126076669711945,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,256,fom_cg_cn_tol1e2,6.938944570720196,8.353524026460946,0.009254642451452147,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,256,fom_cg_cn_tol1e3,8.354508434422314,9.793593548238277,0.0034296953838732452,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,256,fom_same_grid,0.2620250452309847,1.4372965088114142,5.6020916596720584e-05,current-relative field L2,0.05,True,True,see native solver audit,0,0,9,9,36,3529772
+Heat 2D,original comparison,256,nmrom_cholesky,11.341399629600346,12.74859404657036,0.04555681208224373,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,1024,fom_cg_cn,210.5955354636535,235.20259244833142,0.00034908539218443045,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,1024,fom_cg_cn_tol1e2,59.1779820388183,83.50166003219783,0.007706845902824921,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,1024,fom_cg_cn_tol1e3,83.22693896479905,107.81514353584498,0.002157746087242216,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,1024,fom_same_grid,1.2359034735709429,25.920844869688153,3.501026827628017e-06,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Heat 2D,original comparison,1024,nmrom_cholesky,12.206228449940681,36.841067019850016,0.045554794798807384,current-relative field L2,0.05,True,True,see native solver audit,0,0,0,0,36,3529772
+Burgers 2D,original comparison,64,nmrom,36.22636804357171,37.82176552340388,0.10854648110955394,fixed-initial field L2,0.05,False,,unmeasured: small-improvement/step exits are not stationarity certificates,12,600,0,0,12,3534502
+Burgers 2D,original comparison,64,fft_loose,13.895599520765245,15.236963052302599,0.10391989296894667,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,64,fft_medium,14.041299116797745,15.617916942574084,0.10469240327480868,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,64,fft_tight,78.23955256026238,79.78611649014056,0.10989131074463117,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,64,dense_medium,11.087928549386561,12.849353952333331,0.10469240327480864,fixed-initial field L2,0.05,False,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,256,nmrom,35.74702958576381,38.35238900501281,0.045507001261942716,fixed-initial field L2,0.05,True,,unmeasured: small-improvement/step exits are not stationarity certificates,12,600,0,0,12,3534502
+Burgers 2D,original comparison,256,fft_loose,15.84670611191541,18.36025097873062,0.024736873566384775,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,256,fft_medium,17.472705454565585,20.098447101190686,0.029434559042005756,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,256,fft_tight,117.47287947218865,119.92221011314541,0.0402651465711523,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,256,dense_medium,13.963493052870035,16.439873026683927,0.02943455904200593,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,1024,nmrom,41.676780325360596,60.09758752770722,0.039076203252235465,fixed-initial field L2,0.05,True,,unmeasured: small-improvement/step exits are not stationarity certificates,12,600,0,0,12,3534502
+Burgers 2D,original comparison,1024,fft_loose,68.04365944117308,86.67373354546726,0.023899365244885784,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,1024,fft_medium,79.15743463672698,97.92245540302247,0.016565590865307404,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,1024,fft_tight,605.7469940278679,624.4373864028603,0.021416109568868053,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Burgers 2D,original comparison,1024,dense_medium,115.68444699514657,134.51277848798782,0.016565590865307723,fixed-initial field L2,0.05,True,True,full-grid nonlinear residual and true linear correction residual checked,0,0,0,0,12,3534502
+Reflective waves,original comparison,64,frozen_mlp32_seed691200,4510.115586454049,,0.03640744983324231,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,64,dst,3.680776571854949,,0.0,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,64,cg_1e-06,110.52655254025012,,0.0035207798835244827,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,64,cg_0.01,82.64786005020142,,0.005961433080698862,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,256,frozen_mlp32_seed691200,4530.3358705714345,,0.03568985985050851,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,256,dst,4.031282966025174,,0.0,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,256,cg_1e-06,135.46218047849834,,0.003533874161276299,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,256,cg_0.01,98.62901747692376,,0.1810739876290988,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,1024,frozen_mlp32_seed691200,4532.594208954833,,0.03568421725882041,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,1024,dst,16.624295501969755,,0.0,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,1024,cg_1e-06,1053.3427144400775,,0.00353176376635732,current-relative displacement L2; gate checks all three wave components,0.05,True,True,see native solver audit,0,0,0,,6,3534457
+Reflective waves,original comparison,1024,cg_0.01,758.1938673974946,,0.17107706282139845,current-relative displacement L2; gate checks all three wave components,0.05,False,True,see native solver audit,0,0,0,,6,3534457
+Poisson 2D tuning,screen,64,budget_1,1.7856149934232235,2.695656497962773,0.300699262710687,current-relative solution L2,0.05,False,False,0/90 stationary,,,2,1,90,3548866
+Poisson 2D tuning,screen,64,budget_3,2.0908848382532597,3.0797739746049047,0.06806393678565231,current-relative solution L2,0.05,False,False,0/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,budget_8,2.7263954980298877,3.6746285622939467,0.06802556937227565,current-relative solution L2,0.05,False,False,87/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,cg_1e-01,3.055769484490156,3.9596285205334425,0.08816888062280737,current-relative solution L2,0.05,False,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,cg_1e-02,3.784458967857063,4.682561499066651,0.004030522952679789,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,cg_1e-04,5.103471456095576,5.999710992909968,0.002573000966782946,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,cg_1e-06,5.970069556497037,6.840709480457008,0.0025721658257001046,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,cg_3e-02,3.4003229811787605,4.330652998760343,0.011347920341766318,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,dst,0.13907859101891518,1.712488941848278,0.002572172851689943,current-relative solution L2,0.05,True,True,not applicable,,,5,0,90,3548866
+Poisson 2D tuning,screen,64,multistart4_M1024,6.719828932546079,7.696207030676305,0.0680247360249142,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,multistart4_M256,6.4210385316982865,7.439989480189979,0.06802558226391778,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,nmrom_baseline,2.7598239248618484,3.738324041478336,0.06802558226391779,current-relative solution L2,0.05,False,True,90/90 stationary,,,1,1,90,3548866
+Poisson 2D tuning,screen,64,residual_tau_0.2,1.9678991520777345,2.976566436700523,0.06802558226391779,current-relative solution L2,0.05,False,True,18/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,screen,64,residual_tau_0.5,1.8251134315505624,2.8017680160701275,0.12902515340301682,current-relative solution L2,0.05,False,True,0/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,screen,64,stationarity_1e-02,2.0692889811471105,3.0706815887242556,0.06806393678565231,current-relative solution L2,0.05,False,False,0/90 stationary,,,1,1,90,3548866
+Poisson 2D tuning,screen,64,stationarity_1e-03,2.1431725472211838,3.0783938709646463,0.06802663251150329,current-relative solution L2,0.05,False,False,0/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,screen,64,stationarity_1e-04,2.2753054508939385,3.2105884747579694,0.06802545790832379,current-relative solution L2,0.05,False,False,0/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,screen,64,stationarity_1e-06,2.4856479139998555,3.502717590890825,0.06802558107061522,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,strict_M1024,2.7955789119005203,3.777096513658762,0.06802473602491421,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,strict_M128,2.6952020125463605,3.675704007036984,0.06803358653396036,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,strict_M256,2.7475409442558885,3.725055023096502,0.06802558226391779,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,screen,64,strict_M512,2.8119804337620735,3.795043914578855,0.06802482097369157,current-relative solution L2,0.05,False,True,90/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,screen,64,strict_M64,2.7087489143013954,3.7184528773650527,0.06899900135966508,current-relative solution L2,0.05,False,True,90/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,confirmation,64,budget_1,1.4883034164085984,2.462943666614592,0.300699262710687,current-relative solution L2,0.05,False,False,0/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,confirmation,64,cg_1e-01,2.8690805193036795,3.7315405206754804,0.08816888062280737,current-relative solution L2,0.05,False,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,64,cg_1e-02,3.5426124231889844,4.490719409659505,0.004030522952679789,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,64,cg_1e-04,4.856751067563891,5.69555361289531,0.002573000966782946,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,64,cg_1e-06,5.758677609264851,6.587019539438188,0.0025721658257001046,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,64,cg_3e-02,3.2480974914506078,4.109863541088998,0.011347920341766318,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,64,dst,0.13700849376618862,1.493282150477171,0.002572172851689943,current-relative solution L2,0.05,True,True,not applicable,,,2,1,90,3548866
+Poisson 2D tuning,confirmation,64,multistart4_M1024,6.426691426895559,7.413681480102241,0.0680247360249142,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,64,nmrom_baseline,2.3613565135747194,3.3539854921400547,0.06802558226391779,current-relative solution L2,0.05,False,True,90/90 stationary,,,1,1,90,3548866
+Poisson 2D tuning,confirmation,64,stationarity_1e-06,2.2102600196376443,3.2227624906226993,0.06802558107061522,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,256,budget_1,1.6726985340937972,2.7799869421869516,0.2999948456425738,current-relative solution L2,0.05,False,False,0/90 stationary,,,2,1,90,3548866
+Poisson 2D tuning,confirmation,256,cg_1e-01,11.387377511709929,12.505871127359569,0.02272479940606718,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,256,cg_1e-02,14.961264445446432,15.959594980813563,0.0015375579305341915,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,256,cg_1e-04,21.220861934125423,22.3669339902699,0.00015547091128564674,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,256,cg_1e-06,25.626842980273068,26.865694555453956,0.00015459738356351157,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,256,cg_3e-02,13.251699041575193,14.334290055558085,0.005485740626675056,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,256,dst,0.1385440118610859,1.8107530195266008,0.0001545997763344007,current-relative solution L2,0.05,True,True,not applicable,,,3,0,90,3548866
+Poisson 2D tuning,confirmation,256,multistart4_M1024,6.636181031353772,7.789318566210568,0.06801553229412984,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,256,nmrom_baseline,2.6157451793551445,3.6159049486741424,0.06801564300500441,current-relative solution L2,0.05,False,True,90/90 stationary,,,1,1,90,3548866
+Poisson 2D tuning,confirmation,256,stationarity_1e-06,2.3467325372621417,3.461685497313738,0.06801564318068065,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,budget_1,1.9696959061548114,5.475586513057351,0.2999510721460888,current-relative solution L2,0.05,False,False,0/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,cg_1e-01,83.65917264018208,87.31254341546446,0.01019172872182308,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,cg_1e-02,107.46684891637415,111.35100841056556,0.0008402619811672522,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,cg_1e-04,152.75730460416526,156.25964500941336,9.670783693451653e-06,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,cg_1e-06,185.81041193101555,189.53241605777293,7.351440087108739e-06,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,cg_3e-02,96.93414496723562,100.48897855449468,0.0025527037957419904,current-relative solution L2,0.05,True,True,not applicable,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,dst,0.31903048511594534,4.492335603572428,7.351177051312655e-06,current-relative solution L2,0.05,True,True,not applicable,,,4,0,90,3548866
+Poisson 2D tuning,confirmation,1024,multistart4_M1024,6.941578001715243,10.419410071335733,0.06801549768015695,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866
+Poisson 2D tuning,confirmation,1024,nmrom_baseline,2.9428480193018913,6.524563999846578,0.06801556261582448,current-relative solution L2,0.05,False,True,90/90 stationary,,,1,0,90,3548866
+Poisson 2D tuning,confirmation,1024,stationarity_1e-06,2.6139820693060756,6.129781133495271,0.06801556287945475,current-relative solution L2,0.05,False,True,90/90 stationary,,,0,0,90,3548866

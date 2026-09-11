@@ -1,0 +1,133 @@
+% Generated from audited JSON; do not edit numerical cells by hand.
+% Portable build: latexmk -pdf -interaction=nonstopmode -halt-on-error FILE.tex
+\documentclass[10pt,a4paper,landscape]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,booktabs,tabularx,array,xcolor,geometry,fancyhdr,hyperref}
+\geometry{left=16mm,right=16mm,top=15mm,bottom=17mm}
+\definecolor{ink}{HTML}{172B3A}
+\definecolor{teal}{HTML}{087E8B}
+\definecolor{muted}{HTML}{536776}
+\hypersetup{colorlinks=true,urlcolor=teal,linkcolor=teal,pdftitle={NMROM multiresolution results: tables}}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[L]{\footnotesize\color{muted}Separable NMROM | Audited development results | 11 September 2026}
+\fancyfoot[R]{\footnotesize\thepage}
+\setlength{\parindent}{0pt}\setlength{\parskip}{2mm}
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.16}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcommand{\note}[1]{{\small\color{muted}#1\par}}
+\begin{document}
+{\LARGE\bfseries\color{ink} Accuracy and speed across resolutions}\\[2mm]
+Poisson 2D, heat 2D, Burgers 2D and reflective waves. Frozen-network baseline configurations.\par\vspace{4mm}
+Median complete GPU query time; worst error over all cases, times and repetitions. $N$ is intervals per axis. FOM/ROM values above one favor the ROM against that named solver.
+
+\noindent\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrrl@{}}
+\toprule Problem & $N$ & ROM ms & FOM ms & FOM/ROM & ROM error \% & FOM error \% & 5\% + gates: ROM / FOM \\ \midrule
+Poisson 2D & 64 & 2.468 & 5.734 & 2.324 & 6.803 & 0.2572 & fail / pass \\
+Poisson 2D & 256 & 2.355 & 22.279 & 9.460 & 6.802 & 0.01546 & fail / pass \\
+Poisson 2D & 1024 & 2.495 & 188.212 & 75.448 & 6.802 & 0.0007351 & fail / pass \\
+Heat 2D & 64 & 11.227 & 5.506 & 0.490 & 4.559 & 0.06738 & pass / pass \\
+Heat 2D & 256 & 11.341 & 20.997 & 1.851 & 4.556 & 0.03126 & pass / pass \\
+Heat 2D & 1024 & 12.206 & 210.596 & 17.253 & 4.555 & 0.03491 & pass / pass \\
+Burgers 2D & 64 & 36.226 & 78.240 & 2.160 & 10.85 & 10.99 & fail$^{\dagger}$ / fail \\
+Burgers 2D & 256 & 35.747 & 117.473 & 3.286 & 4.551 & 4.027 & pass$^{\dagger}$ / pass \\
+Burgers 2D & 1024 & 41.677 & 605.747 & 14.534 & 3.908 & 2.142 & pass$^{\dagger}$ / pass \\
+Reflective waves & 64 & 4,510.116 & 110.527 & 0.025 & 3.641 & 0.3521 & fail / pass \\
+Reflective waves & 256 & 4,530.336 & 135.462 & 0.030 & 3.569 & 0.3534 & fail / pass \\
+Reflective waves & 1024 & 4,532.594 & 1,053.343 & 0.232 & 3.568 & 0.3532 & fail / pass \\
+\bottomrule\end{tabular*}\par
+\vspace{3mm}
+\noindent\begin{tabularx}{\linewidth}{@{}lLLr@{}}
+\toprule Problem & Primary FOM & Displayed error norm & Cases / repeats \\ \midrule
+Poisson 2D & CG, tolerance 1e-06 & Current-relative solution & 30 / 3 \\
+Heat 2D & CN-CG, tolerance 1e-6 & Current-relative field & 12 / 3 \\
+Burgers 2D & Newton 1e-06 / linear 1e-08; FFT & Fixed-initial-relative field & 4 / 3 \\
+Reflective waves & Midpoint CG, tolerance 1e-06 & Current-relative displacement & 2 / 3 \\
+\bottomrule\end{tabularx}\par
+\note{The target also includes each panel's original numerical and reference checks. $^{\dagger}$Burgers accepts stall exits under its recorded stopping rule; stationarity is unmeasured. Reflective-wave qualification checks velocity and energy-state errors as well as displacement. Different error norms cannot be ranked across PDEs.}\note{These are development results with final cases unopened. Training, mesh assembly and compilation are excluded; supplied-input processing, solves and full-field device outputs are included. Pair timings within a job, never across different GPUs.}
+\newpage
+{\LARGE\bfseries\color{ink} Poisson: online speed--accuracy tuning}\\[2mm]
+Same frozen network. Baseline and FOM controls are retimed together in a new Poisson allocation.\par\vspace{4mm}
+17 frozen-checkpoint settings screened at 64 intervals on all 30 Gaussian-source development cases. The fixed shortlist is confirmed at every requested mesh with 3 repeats; endpoint selection remains developmental.\par
+\noindent\begin{tabularx}{\linewidth}{@{}rlLrrrlrlr@{}}
+\toprule $N$ & Selection & Configuration & ROM ms & Error \% & Adjusted \% & Stationary & Outliers & 5\% gate & CG/ROM \\ \midrule
+64 & Baseline & Baseline; M257 & 2.361 & 6.802558 & 6.802961 & 90/90 & 1 & fail & 2.439 \\
+64 & Fastest tested & Budget 1; M257 & 1.488 & 30.069926 & 30.070417 & 0/90 & 1 & fail & 3.869 \\
+64 & Fastest stationary & Stop 1e-06; M257 & 2.210 & 6.802558 & 6.802961 & 90/90 & 0 & fail & 2.605 \\
+64 & Most accurate* & 4 starts; M1024 & 6.427 & 6.802474 & 6.802877 & 90/90 & 0 & fail & 0.896 \\
+256 & Baseline & Baseline; M257 & 2.616 & 6.801564 & 6.801967 & 90/90 & 1 & fail & 9.797 \\
+256 & Fastest tested & Budget 1; M257 & 1.673 & 29.999485 & 29.999975 & 0/90 & 2 & fail & 15.321 \\
+256 & Fastest stationary & Stop 1e-06; M257 & 2.347 & 6.801564 & 6.801967 & 90/90 & 0 & fail & 10.920 \\
+256 & Most accurate* & 4 starts; M1025 & 6.636 & 6.801553 & 6.801956 & 90/90 & 0 & fail & 3.862 \\
+1024 & Baseline & Baseline; M257 & 2.943 & 6.801556 & 6.801959 & 90/90 & 1 & fail & 63.140 \\
+1024 & Fastest tested & Budget 1; M257 & 1.970 & 29.995107 & 29.995598 & 0/90 & 0 & fail & 94.335 \\
+1024 & Fastest stationary & Stop 1e-06; M257 & 2.614 & 6.801556 & 6.801959 & 90/90 & 0 & fail & 71.083 \\
+1024 & Most accurate* & 4 starts; M1025 & 6.942 & 6.801550 & 6.801953 & 90/90 & 0 & fail & 26.768 \\
+\bottomrule\end{tabularx}\par
+\note{CG/ROM uses same-job CG at tolerance 1e-06. ``Fastest'' includes diagnostic early exits; check stationarity and target columns. ``Most accurate'' minimizes the worst complete-cohort field error under the stated selection rule. Neither label claims a global optimum. Adjusted error includes the empirical reference allowance. GPU timing outliers are retained.}No tested configuration meets the original physical and numerical target on every development case. *Most accurate is restricted to settings with every selected solve stationary at the original threshold; an unrestricted accuracy winner is shown separately when different. The largest reduction in worst error from baseline is 0.00008462 percentage points across the confirmed meshes.\par
+\noindent\begin{tabularx}{\linewidth}{@{}rrrrLr@{}}
+\toprule $N$ & Tight CG ms & Fast passing CG ms & Fast CG error \% & Fast CG setting & Direct DST ms \\ \midrule
+64 & 5.759 & 3.248 & 1.135 & CG 3e-02 & 0.137 \\
+256 & 25.627 & 11.387 & 2.272 & CG 1e-01 & 0.139 \\
+1024 & 185.810 & 83.659 & 1.019 & CG 1e-01 & 0.319 \\
+\bottomrule\end{tabularx}\par
+\note{Frozen k16/r64 decoder; no retraining or online empirical quadrature. M is the actual retained weak-mode count. These are preassembled, precompiled presets: operators and code caches are prepared for each mesh and M; budgets and gradient thresholds select compiled kernels. New unprepared settings incur offline work. The original stationarity gate is 1e-06; in-loop checks are charged, post-query auditing is excluded for every method.}
+\newpage
+{\LARGE\bfseries\color{ink} How the FOM tolerance changes the comparison}\\[2mm]
+Fastest tested iterative FOM passing the same development target and original numerical checks.\par\vspace{4mm}
+\noindent\begin{tabularx}{\linewidth}{@{}lrLrrrr@{}}
+\toprule Problem & $N$ & Passing FOM & FOM ms & FOM error \% & GPU FOM/ROM & Host FOM/ROM \\ \midrule
+Poisson 2D & 64 & CG, tolerance 3e-02 & 3.223 & 1.135 & 1.306 & 1.175 \\
+Poisson 2D & 256 & CG, tolerance 1e-01 & 9.685 & 2.272 & 4.112 & 3.223 \\
+Poisson 2D & 1024 & CG, tolerance 1e-01 & 84.584 & 1.019 & 33.907 & 14.901 \\
+Heat 2D & 64 & CN-CG, tolerance 1e-2 & 2.504 & 1.586 & 0.223 & 0.257 \\
+Heat 2D & 256 & CN-CG, tolerance 1e-2 & 6.939 & 0.9255 & 0.612 & 0.655 \\
+Heat 2D & 1024 & CN-CG, tolerance 1e-2 & 59.178 & 0.7707 & 4.848 & 2.267 \\
+Burgers 2D & 64 & none & --- & --- & --- & --- \\
+Burgers 2D & 256 & Newton 3e-03 / linear 5e-01; dense DST & 13.963 & 2.943 & 0.391 & 0.429 \\
+Burgers 2D & 1024 & Newton 1e-02 / linear 5e-01; FFT & 68.044 & 2.39 & 1.633 & 1.442 \\
+Reflective waves & 64 & Midpoint CG, tolerance 1e-02 & 82.648 & 0.5961 & 0.018 & --- \\
+Reflective waves & 256 & Midpoint CG, tolerance 1e-06 & 135.462 & 0.3534 & 0.030 & --- \\
+Reflective waves & 1024 & Midpoint CG, tolerance 1e-06 & 1,053.343 & 0.3532 & 0.232 & --- \\
+\bottomrule\end{tabularx}\par
+\note{Ratios use the baseline ROM on page 1. A ratio alone is diagnostic when that ROM fails its target. Host timing includes input/output transfers where measured; the wave study measured only output transfer, so its complete host ratio is unavailable. All selections use opened development cases.}\vspace{1mm}\textbf{Direct-transform controls at the largest mesh}\par
+\noindent\begin{tabularx}{\linewidth}{@{}lrLrr@{}}
+\toprule Problem & $N$ & Control & GPU ms & Error \% \\ \midrule
+Poisson 2D & 1024 & Direct sine-transform FOM & 0.317 & 0.0007351 \\
+Heat 2D & 1024 & Direct sine-transform FOM & 1.236 & 0.0003501 \\
+Reflective waves & 1024 & Direct sine-transform FOM & 16.624 & 0 \\
+\bottomrule\end{tabularx}\par
+\note{A win against iterative CG does not imply a win against a direct sine-transform solver. These controls retain their original measurement contract. Full control rows, retained timing outliers and raw JSON links are in the adjacent Markdown report.}
+\newpage
+{\LARGE\bfseries\color{ink} Accuracy checks and provenance}\\[2mm]
+The tables preserve the existing definitions and stopping limitations.\par\vspace{4mm}
+\noindent\begin{tabularx}{\linewidth}{@{}Lrrrl@{}}
+\toprule Reflective-wave $N$ & Displacement error \% & Velocity error \% & Energy-state error \% & All-state target \\ \midrule
+64 & 3.641 & 7.715 & 6.224 & fail \\
+256 & 3.569 & 7.819 & 6.212 & fail \\
+1024 & 3.568 & 7.813 & 6.214 & fail \\
+\bottomrule\end{tabularx}\par
+\vspace{2mm}\noindent\begin{tabularx}{\linewidth}{@{}llLlll@{}}
+\toprule Panel & Cluster job & GPU & Scientific source & ROM outliers & Tight FOM outliers \\ \midrule
+Poisson 2D & 3534456 & NVIDIA A100 80GB PCIe & \texttt{085e318ea894} & 2/1/1 & 0/0/0 \\
+Heat 2D & 3529772 & NVIDIA A100-PCIE-40GB & \texttt{7e6d2e39aafd} & 0/0/0 & 0/0/0 \\
+Burgers 2D & 3534502 & NVIDIA A100-PCIE-40GB & \texttt{46ced2fd6bdd} & 0/0/0 & 0/0/0 \\
+Reflective waves & 3534457 & NVIDIA A100 80GB PCIe & \texttt{e1d377928913} & 0/0/0 & 0/0/0 \\
+Poisson tuning & 3548866 & NVIDIA A100 80GB PCIe & \texttt{9528b214d853} & see page 2 & 0/0/0 \\
+\bottomrule\end{tabularx}\par
+\note{Outlier counts follow ascending mesh order and include all repetitions. Every panel uses float64 and highest matrix precision, verified GPU execution, burn-in, retained timing arrays, source hashes and checksum-collected full fields. Errors and costs refer to the same solver invocation. Medians pool equal repeats per case; every outlier remains included.}\textbf{Glossary}\par
+{\small\renewcommand{\arraystretch}{1.05}\noindent\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule Term & Plain-language meaning \\ \midrule
+NMROM / ROM / FOM & Nonlinear-manifold reduced model / reduced model / full-grid numerical solver. \\
+$N$ / ms / FOM/ROM & Intervals along each axis / milliseconds / ratio of paired median query times. \\
+Current / fixed-initial relative error & Field error divided by the reference field norm at the same time / by the fixed initial norm. The field norm is a spatial $L^2$ norm. \\
+Worst / adjusted error / target & Maximum over every case, output and repeat / includes empirical reference-refinement allowance / physical error plus original solver and refinement checks. \\
+Stationarity / residual / stall & Small objective gradient / mismatch in the equation / updates or improvements too small to continue, which need not imply stationarity. \\
+CG / BiCGStab / Newton / preconditioner & Iterative linear solver / nonsymmetric linear solver / nonlinear equation iterations / transformation used to help a linear solver. \\
+Crank--Nicolson / midpoint / DST / FFT & Implicit time-stepping formulas / midpoint time stepping / discrete sine transform / fast Fourier transform. \\
+$k$ / $r$ / $M$ / checkpoint / weak modes & Latent dimension / learned spatial-bank size / test-mode count / frozen trained weights / smooth functions used to test the PDE residual. \\
+Development / reference / outlier & Cases already used to select methods / numerical grading solution, with empirical refinement checks / unusually slow retained timing under the native audit's rule. \\
+\bottomrule\end{tabularx}\par
+}
+
+\end{document}

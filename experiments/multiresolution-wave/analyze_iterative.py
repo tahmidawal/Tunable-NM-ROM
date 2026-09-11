@@ -57,6 +57,7 @@ def main(record):
         np.testing.assert_allclose(iv, v0, atol=1e-13, rtol=1e-12)
         with np.load(native/rows[0]['field_artifact']) as f:
             u, v = f['u'], f['v']
+            assert u.dtype==np.float64 and v.dtype==np.float64
             expected_hash = {name: hashlib.sha256(value.tobytes()).hexdigest() for name, value in (('u', u), ('v', v))}
             if method.startswith('frozen_mlp'):
                 with np.load(native/f'mesh_{bc}_{n}.npz') as mesh:
@@ -141,6 +142,7 @@ def main(record):
             cg_max_step_iterations=max(c['cg_max_step_iterations'] for c in cases),
             cg_total_iterations=sum(c['cg_total_iterations'] for c in cases),
             maximum_cg_true_relative=max(c['maximum_cg_true_relative'] for c in cases),
+            fom_over_method_ratio_of_cohort_medians=float(np.median([x['query_median'] for x in panels[bc,n,fm]])/np.median([x['query_median'] for x in cases])),
             paired_fom_over_method_median=float(np.median(ratios)), paired_ratios=ratios,
             errors=error_summary, failed_cases=sum(not c['completed'] for c in cases),
             nonstationary_cases=sum(not c['fit_stationary'] for c in cases),

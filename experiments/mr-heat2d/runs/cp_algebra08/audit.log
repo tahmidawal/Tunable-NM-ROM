@@ -1,0 +1,405 @@
+audited_case 64 0
+audited_case 64 1
+audited_case 64 2
+audited_case 64 3
+audited_case 64 4
+audited_case 64 5
+audited_case 64 6
+audited_case 64 7
+audited_case 64 8
+audited_case 64 9
+audited_case 64 10
+audited_case 64 11
+audited_case 1024 0
+audited_case 1024 1
+audited_case 1024 2
+audited_case 1024 3
+audited_case 1024 4
+audited_case 1024 5
+audited_case 1024 6
+audited_case 1024 7
+audited_case 1024 8
+audited_case 1024 9
+audited_case 1024 10
+audited_case 1024 11
+{
+  "passed": true,
+  "result_sha256": "3ec4b1e8cd0026fe4d2e0b0313c824ba1a478e1a8f33d7146d5a32214a4e917e",
+  "metadata": {
+    "job_id": "3528798",
+    "node": "pax007",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "x64": true,
+    "precision": "highest",
+    "jax": "0.10.2"
+  },
+  "source_commit": "8af2f6bbc1083701b83fbe2852a598a52e38bef1",
+  "settings": {
+    "schema": "heat-cp-algebra-v1",
+    "checkpoint": "expanded_seed790715",
+    "requested_intervals": [
+      64,
+      1024
+    ],
+    "cohorts": [
+      {
+        "name": "original",
+        "seed": 790711,
+        "count": 4
+      },
+      {
+        "name": "fresh",
+        "seed": 790716,
+        "count": 8
+      }
+    ],
+    "timing_repetitions": 3,
+    "dt": 0.025,
+    "gradient_tolerance": 1e-05,
+    "reference_pair": [
+      1024,
+      2048
+    ],
+    "coarse_solver_intervals": 16,
+    "primary_method": "nmrom_gram_cholesky",
+    "accuracy_target": 0.05,
+    "final_cohort_opened": false,
+    "methods": [
+      "nmrom",
+      "nmrom_cholesky",
+      "nmrom_gram_lu",
+      "nmrom_gram_cholesky",
+      "linear_weak_exact",
+      "fom_same_grid",
+      "fom_coarse16"
+    ],
+    "field_parity_tolerance": 1e-08,
+    "latent_parity_tolerance": 1e-06
+  },
+  "unique_fields_checked": 228,
+  "timed_invocations_checked": 504,
+  "metric_entries_checked": 36720,
+  "maximum_metric_difference": 5.262457136723242e-14,
+  "maximum_reference_refinement": 1.6281088458585425e-12,
+  "operator_errors": [
+    {
+      "intervals": 64,
+      "operator": "generator",
+      "relative_error": 2.1638707744891748e-14
+    },
+    {
+      "intervals": 64,
+      "operator": "cn_step",
+      "relative_error": 4.585687214971494e-15
+    },
+    {
+      "intervals": 64,
+      "operator": "initial_gram",
+      "relative_error": 0.0
+    },
+    {
+      "intervals": 64,
+      "operator": "weak_gram",
+      "relative_error": 0.0
+    },
+    {
+      "intervals": 1024,
+      "operator": "generator",
+      "relative_error": 2.005742627219319e-14
+    },
+    {
+      "intervals": 1024,
+      "operator": "cn_step",
+      "relative_error": 4.2414298303319156e-15
+    },
+    {
+      "intervals": 1024,
+      "operator": "initial_gram",
+      "relative_error": 0.0
+    },
+    {
+      "intervals": 1024,
+      "operator": "weak_gram",
+      "relative_error": 0.0
+    }
+  ],
+  "outlier_rule": "Above 1.5 times the median of the same case/method/mesh repetition group; none excluded.",
+  "summaries": [
+    {
+      "intervals": 64,
+      "method": "fom_coarse16",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.025853553337853087,
+      "worst_initial_error": 0.0,
+      "worst_same_grid_error": 0.02623290771717203,
+      "largest_energy_increase": -0.0005707366510999436,
+      "device_median_ms": 0.16340502770617604,
+      "device_outliers": 12,
+      "host_median_ms": 0.5257704760879278,
+      "host_outliers": 12,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 0,
+      "total_step_attempts": 0,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 64,
+      "method": "fom_same_grid",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.000897485037432332,
+      "worst_initial_error": 0.0,
+      "worst_same_grid_error": 0.0,
+      "largest_energy_increase": -0.000585852710764819,
+      "device_median_ms": 0.16748951748013496,
+      "device_outliers": 0,
+      "host_median_ms": 0.5076599773019552,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 0,
+      "total_step_attempts": 0,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 64,
+      "method": "linear_weak_exact",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.016757537550577573,
+      "worst_initial_error": 0.016757537550577573,
+      "worst_same_grid_error": 0.016757537550577573,
+      "largest_energy_increase": -0.0005858648337689881,
+      "device_median_ms": 0.11081097181886435,
+      "device_outliers": 0,
+      "host_median_ms": 0.4508239799179137,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 0,
+      "total_step_attempts": 0,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 64,
+      "method": "nmrom",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.04559260371319429,
+      "worst_initial_error": 0.045451740454208404,
+      "worst_same_grid_error": 0.045542457913599475,
+      "largest_energy_increase": -0.0005851084320341775,
+      "device_median_ms": 13.282338506542146,
+      "device_outliers": 0,
+      "host_median_ms": 14.238902949728072,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1812,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 64,
+      "method": "nmrom_cholesky",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.045592603713194145,
+      "worst_initial_error": 0.04545174045420838,
+      "worst_same_grid_error": 0.04554245791359933,
+      "largest_energy_increase": -0.0005851084320341818,
+      "device_median_ms": 12.282823969144374,
+      "device_outliers": 0,
+      "host_median_ms": 12.853771564550698,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1812,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 64,
+      "method": "nmrom_gram_cholesky",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.04559260371319454,
+      "worst_initial_error": 0.04545174045420867,
+      "worst_same_grid_error": 0.045542457913599725,
+      "largest_energy_increase": -0.0005851084320341845,
+      "device_median_ms": 12.091856449842453,
+      "device_outliers": 0,
+      "host_median_ms": 12.777536059729755,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1812,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 64,
+      "method": "nmrom_gram_lu",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.045592603713194214,
+      "worst_initial_error": 0.04545174045420836,
+      "worst_same_grid_error": 0.04554245791359941,
+      "largest_energy_increase": -0.0005851084320341845,
+      "device_median_ms": 12.775359442457557,
+      "device_outliers": 0,
+      "host_median_ms": 13.26874049846083,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1812,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 1024,
+      "method": "fom_coarse16",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.025779101152592007,
+      "worst_initial_error": 0.0,
+      "worst_same_grid_error": 0.02578073242827199,
+      "largest_energy_increase": -0.0005691480038451805,
+      "device_median_ms": 0.28775300597772,
+      "device_outliers": 9,
+      "host_median_ms": 16.085625044070184,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 0,
+      "total_step_attempts": 0,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 1024,
+      "method": "fom_same_grid",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 3.501026827628017e-06,
+      "worst_initial_error": 0.0,
+      "worst_same_grid_error": 0.0,
+      "largest_energy_increase": -0.0005852658605002155,
+      "device_median_ms": 0.885449000634253,
+      "device_outliers": 0,
+      "host_median_ms": 16.66280848439783,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 0,
+      "total_step_attempts": 0,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 1024,
+      "method": "linear_weak_exact",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.016758304893223035,
+      "worst_initial_error": 0.016758304893223035,
+      "worst_same_grid_error": 0.016758304893223035,
+      "largest_energy_increase": -0.000585279067188717,
+      "device_median_ms": 0.51404646364972,
+      "device_outliers": 0,
+      "host_median_ms": 16.184805484954268,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 0,
+      "total_step_attempts": 0,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 1024,
+      "method": "nmrom",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.04555479479880748,
+      "worst_initial_error": 0.04545182314006738,
+      "worst_same_grid_error": 0.04555461377197969,
+      "largest_energy_increase": -0.0005843719899763077,
+      "device_median_ms": 13.465231517329812,
+      "device_outliers": 0,
+      "host_median_ms": 28.791182558052242,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1821,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 1024,
+      "method": "nmrom_cholesky",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.04555479479880748,
+      "worst_initial_error": 0.045451823140067536,
+      "worst_same_grid_error": 0.04555461377197969,
+      "largest_energy_increase": -0.0005843719899763181,
+      "device_median_ms": 12.396388978231698,
+      "device_outliers": 0,
+      "host_median_ms": 27.967276924755424,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1821,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 1024,
+      "method": "nmrom_gram_cholesky",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.045554794798807474,
+      "worst_initial_error": 0.04545182314006738,
+      "worst_same_grid_error": 0.04555461377197968,
+      "largest_energy_increase": -0.0005843719899763147,
+      "device_median_ms": 12.91594747453928,
+      "device_outliers": 0,
+      "host_median_ms": 28.38988247094676,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1821,
+      "skipped_second_initializations": 0
+    },
+    {
+      "intervals": 1024,
+      "method": "nmrom_gram_lu",
+      "cases": 12,
+      "invocations": 36,
+      "worst_physical_error": 0.04555479479880728,
+      "worst_initial_error": 0.04545182314006757,
+      "worst_same_grid_error": 0.04555461377197949,
+      "largest_energy_increase": -0.0005843719899763112,
+      "device_median_ms": 13.471693964675069,
+      "device_outliers": 0,
+      "host_median_ms": 29.283634037710726,
+      "host_outliers": 0,
+      "nonstationary_fit_count": 0,
+      "nonstationary_step_count": 0,
+      "total_initial_attempts": 810,
+      "total_step_attempts": 1821,
+      "skipped_second_initializations": 0
+    }
+  ],
+  "nonlinear_decoder_checks": 288,
+  "maximum_sampled_decoder_error": 4.535937976668386e-16,
+  "time_step_weak_checks": 5760,
+  "maximum_time_step_weak_difference": 9.968070070537002e-16,
+  "initial_fit_weak_checks": 576,
+  "maximum_initial_fit_weak_difference": 1.6861512186494565e-15,
+  "initial_target_audit": "Recovered by independent QR from sampled linear initial projection; not a full-grid independent projection reconstruction.",
+  "algebra_parity_passed": true,
+  "all_counts_equal": true
+}

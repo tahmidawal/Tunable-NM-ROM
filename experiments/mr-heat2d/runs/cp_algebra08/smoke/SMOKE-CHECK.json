@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "elapsed_seconds": 24.83180364803411,
+  "verification": {
+    "analytic_eigenmode_error": 0.0,
+    "independent_cn_error": 1.2039170891498076e-13,
+    "nonlinear_head_exact_least_squares_errors": {
+      "explicit_lu": 1.829786674151601e-10,
+      "explicit_chol": 1.8297865266412162e-10,
+      "gram_lu": 1.829785355888738e-10,
+      "gram_cholesky": 1.8297843486226645e-10
+    }
+  },
+  "parity": {
+    "nmrom": {
+      "field_relative_difference": 0.0,
+      "latent_relative_difference": 0.0,
+      "initial_counts_equal": true,
+      "step_counts_equal": true
+    },
+    "nmrom_cholesky": {
+      "field_relative_difference": 1.3314557846779447e-15,
+      "latent_relative_difference": 9.060943895796594e-15,
+      "initial_counts_equal": true,
+      "step_counts_equal": true
+    },
+    "nmrom_gram_lu": {
+      "field_relative_difference": 1.0026131655211493e-15,
+      "latent_relative_difference": 1.1995119838477742e-14,
+      "initial_counts_equal": true,
+      "step_counts_equal": true
+    },
+    "nmrom_gram_cholesky": {
+      "field_relative_difference": 1.1009328189965098e-15,
+      "latent_relative_difference": 1.2014995604638126e-14,
+      "initial_counts_equal": true,
+      "step_counts_equal": true
+    }
+  },
+  "note": "Local smoke only; no accepted benchmark timing."
+}

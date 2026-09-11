@@ -1,0 +1,61 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.24:/projects/paralab  4.6T  4.1T  464G  91% /cluster/tufts/paralab
+Thu Sep 10 22:24:17 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000000:57:00.0 Off |                    0 |
+| N/A   40C    P0             56W /  300W |       0MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+reference passed 0
+reference passed 1
+reference passed 2
+reference passed 3
+reference passed 4
+reference passed 5
+reference passed 6
+reference passed 7
+reference passed 8
+reference passed 9
+reference passed 10
+reference passed 11
+timed 64 0 {'nmrom': np.float64(14.4265), 'nmrom_cholesky': np.float64(13.4385), 'nmrom_gram_lu': np.float64(13.9898), 'nmrom_gram_cholesky': np.float64(13.4357), 'linear_weak_exact': np.float64(0.1089), 'fom_same_grid': np.float64(0.1681), 'fom_coarse16': np.float64(0.1651)}
+timed 64 1 {'nmrom': np.float64(12.2514), 'nmrom_cholesky': np.float64(10.9388), 'nmrom_gram_lu': np.float64(11.8003), 'nmrom_gram_cholesky': np.float64(11.0164), 'linear_weak_exact': np.float64(0.1201), 'fom_same_grid': np.float64(0.1832), 'fom_coarse16': np.float64(0.1689)}
+timed 64 2 {'nmrom': np.float64(13.0994), 'nmrom_cholesky': np.float64(12.0064), 'nmrom_gram_lu': np.float64(12.6349), 'nmrom_gram_cholesky': np.float64(12.0206), 'linear_weak_exact': np.float64(0.111), 'fom_same_grid': np.float64(0.1622), 'fom_coarse16': np.float64(0.1509)}
+timed 64 3 {'nmrom': np.float64(11.5632), 'nmrom_cholesky': np.float64(10.8377), 'nmrom_gram_lu': np.float64(11.5977), 'nmrom_gram_cholesky': np.float64(10.8693), 'linear_weak_exact': np.float64(0.1116), 'fom_same_grid': np.float64(0.1701), 'fom_coarse16': np.float64(0.1834)}
+timed 64 4 {'nmrom': np.float64(13.2126), 'nmrom_cholesky': np.float64(12.363), 'nmrom_gram_lu': np.float64(12.7478), 'nmrom_gram_cholesky': np.float64(12.0663), 'linear_weak_exact': np.float64(0.1117), 'fom_same_grid': np.float64(0.1659), 'fom_coarse16': np.float64(0.2004)}
+timed 64 5 {'nmrom': np.float64(12.6462), 'nmrom_cholesky': np.float64(11.7799), 'nmrom_gram_lu': np.float64(12.4945), 'nmrom_gram_cholesky': np.float64(11.9773), 'linear_weak_exact': np.float64(0.1126), 'fom_same_grid': np.float64(0.1745), 'fom_coarse16': np.float64(0.1647)}
+timed 64 6 {'nmrom': np.float64(13.6565), 'nmrom_cholesky': np.float64(12.6621), 'nmrom_gram_lu': np.float64(13.2278), 'nmrom_gram_cholesky': np.float64(12.4023), 'linear_weak_exact': np.float64(0.1143), 'fom_same_grid': np.float64(0.1669), 'fom_coarse16': np.float64(0.1586)}
+timed 64 7 {'nmrom': np.float64(12.664), 'nmrom_cholesky': np.float64(11.9352), 'nmrom_gram_lu': np.float64(12.3887), 'nmrom_gram_cholesky': np.float64(11.6987), 'linear_weak_exact': np.float64(0.1117), 'fom_same_grid': np.float64(0.1639), 'fom_coarse16': np.float64(0.1532)}
+timed 64 8 {'nmrom': np.float64(13.7531), 'nmrom_cholesky': np.float64(12.3792), 'nmrom_gram_lu': np.float64(12.9105), 'nmrom_gram_cholesky': np.float64(12.5978), 'linear_weak_exact': np.float64(0.1105), 'fom_same_grid': np.float64(0.1779), 'fom_coarse16': np.float64(0.1621)}
+timed 64 9 {'nmrom': np.float64(14.8659), 'nmrom_cholesky': np.float64(13.3844), 'nmrom_gram_lu': np.float64(14.0163), 'nmrom_gram_cholesky': np.float64(13.2223), 'linear_weak_exact': np.float64(0.1121), 'fom_same_grid': np.float64(0.1823), 'fom_coarse16': np.float64(0.1768)}
+timed 64 10 {'nmrom': np.float64(16.858), 'nmrom_cholesky': np.float64(15.2331), 'nmrom_gram_lu': np.float64(16.1212), 'nmrom_gram_cholesky': np.float64(15.2617), 'linear_weak_exact': np.float64(0.1011), 'fom_same_grid': np.float64(0.1648), 'fom_coarse16': np.float64(0.1517)}
+timed 64 11 {'nmrom': np.float64(13.3748), 'nmrom_cholesky': np.float64(12.2646), 'nmrom_gram_lu': np.float64(12.794), 'nmrom_gram_cholesky': np.float64(11.9886), 'linear_weak_exact': np.float64(0.1064), 'fom_same_grid': np.float64(0.1708), 'fom_coarse16': np.float64(0.1561)}
+timed 1024 0 {'nmrom': np.float64(14.7686), 'nmrom_cholesky': np.float64(13.5773), 'nmrom_gram_lu': np.float64(14.8045), 'nmrom_gram_cholesky': np.float64(13.9788), 'linear_weak_exact': np.float64(0.5096), 'fom_same_grid': np.float64(0.8546), 'fom_coarse16': np.float64(0.2751)}
+timed 1024 1 {'nmrom': np.float64(12.0293), 'nmrom_cholesky': np.float64(11.1696), 'nmrom_gram_lu': np.float64(12.285), 'nmrom_gram_cholesky': np.float64(11.5881), 'linear_weak_exact': np.float64(0.5055), 'fom_same_grid': np.float64(0.85), 'fom_coarse16': np.float64(0.2566)}
+timed 1024 2 {'nmrom': np.float64(13.2753), 'nmrom_cholesky': np.float64(12.0585), 'nmrom_gram_lu': np.float64(13.2389), 'nmrom_gram_cholesky': np.float64(12.5083), 'linear_weak_exact': np.float64(0.5139), 'fom_same_grid': np.float64(0.8772), 'fom_coarse16': np.float64(0.3352)}
+timed 1024 3 {'nmrom': np.float64(12.1206), 'nmrom_cholesky': np.float64(11.0598), 'nmrom_gram_lu': np.float64(12.0316), 'nmrom_gram_cholesky': np.float64(11.5539), 'linear_weak_exact': np.float64(0.515), 'fom_same_grid': np.float64(1.027), 'fom_coarse16': np.float64(0.2706)}
+timed 1024 4 {'nmrom': np.float64(13.7477), 'nmrom_cholesky': np.float64(12.4772), 'nmrom_gram_lu': np.float64(13.6747), 'nmrom_gram_cholesky': np.float64(12.9616), 'linear_weak_exact': np.float64(0.5785), 'fom_same_grid': np.float64(0.8746), 'fom_coarse16': np.float64(0.2986)}
+timed 1024 5 {'nmrom': np.float64(12.7898), 'nmrom_cholesky': np.float64(11.9296), 'nmrom_gram_lu': np.float64(13.155), 'nmrom_gram_cholesky': np.float64(12.5235), 'linear_weak_exact': np.float64(0.5105), 'fom_same_grid': np.float64(0.8832), 'fom_coarse16': np.float64(0.5087)}
+timed 1024 6 {'nmrom': np.float64(13.5846), 'nmrom_cholesky': np.float64(12.5514), 'nmrom_gram_lu': np.float64(13.9526), 'nmrom_gram_cholesky': np.float64(13.1812), 'linear_weak_exact': np.float64(0.5199), 'fom_same_grid': np.float64(0.8633), 'fom_coarse16': np.float64(0.4498)}
+timed 1024 7 {'nmrom': np.float64(12.9607), 'nmrom_cholesky': np.float64(11.837), 'nmrom_gram_lu': np.float64(13.0358), 'nmrom_gram_cholesky': np.float64(12.5623), 'linear_weak_exact': np.float64(0.5188), 'fom_same_grid': np.float64(0.9866), 'fom_coarse16': np.float64(0.3183)}
+timed 1024 8 {'nmrom': np.float64(13.5156), 'nmrom_cholesky': np.float64(12.5935), 'nmrom_gram_lu': np.float64(13.7687), 'nmrom_gram_cholesky': np.float64(13.0963), 'linear_weak_exact': np.float64(0.5033), 'fom_same_grid': np.float64(0.854), 'fom_coarse16': np.float64(0.2522)}
+timed 1024 9 {'nmrom': np.float64(14.6976), 'nmrom_cholesky': np.float64(13.3526), 'nmrom_gram_lu': np.float64(14.6941), 'nmrom_gram_cholesky': np.float64(13.7162), 'linear_weak_exact': np.float64(0.5123), 'fom_same_grid': np.float64(0.8879), 'fom_coarse16': np.float64(0.2531)}
+timed 1024 10 {'nmrom': np.float64(16.7), 'nmrom_cholesky': np.float64(15.1226), 'nmrom_gram_lu': np.float64(16.8052), 'nmrom_gram_cholesky': np.float64(16.0306), 'linear_weak_exact': np.float64(0.5254), 'fom_same_grid': np.float64(0.8894), 'fom_coarse16': np.float64(0.3652)}
+timed 1024 11 {'nmrom': np.float64(13.4004), 'nmrom_cholesky': np.float64(12.0513), 'nmrom_gram_lu': np.float64(13.3582), 'nmrom_gram_cholesky': np.float64(12.5282), 'linear_weak_exact': np.float64(0.5121), 'fom_same_grid': np.float64(0.9017), 'fom_coarse16': np.float64(0.2546)}
+CP ALGEBRA HEAT COMPLETE

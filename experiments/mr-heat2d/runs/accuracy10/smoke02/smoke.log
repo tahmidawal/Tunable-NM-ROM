@@ -1,0 +1,11 @@
+jax_backend=gpu x64=True precision=highest
+accuracy_train uniform {'update': 1, 'loss': 0.00029744643677803034, 'seconds': 6.515495000996452}
+accuracy_train initial_only {'update': 1, 'loss': 0.0006028876373579351, 'seconds': 1.6950036819980596}
+accuracy_train initial_tail {'update': 1, 'loss': 0.0008166404012422135, 'seconds': 1.7916127290009172}
+accuracy_reconstruction frozen initial_worst 0.03275091479221834 later_worst 0.018665275736478127
+accuracy_reconstruction uniform initial_worst 0.031175137847464836 later_worst 0.01930620100360598
+accuracy_reconstruction initial_only initial_worst 0.03316612047283543 later_worst 0.019521501814175234
+accuracy_reconstruction initial_tail initial_worst 0.030766077476778883 later_worst 0.019679875305710783
+reference passed 0
+timed 64 0 {'nmrom_frozen': np.float64(13.8715), 'nmrom_uniform': np.float64(12.3224), 'nmrom_initial_only': np.float64(14.063), 'nmrom_initial_tail': np.float64(11.6376), 'linear_weak_exact': np.float64(0.3983), 'fom_same_grid': np.float64(1.0135)}
+ACCURACY HEAT COMPLETE

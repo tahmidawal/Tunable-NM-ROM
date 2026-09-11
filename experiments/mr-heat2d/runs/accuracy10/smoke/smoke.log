@@ -1,0 +1,9 @@
+jax_backend=gpu x64=True precision=highest
+accuracy_train uniform {'update': 1, 'loss': 0.0002974464367780362, 'seconds': 9.620645597002294}
+accuracy_train initial_only {'update': 1, 'loss': 0.0006028876373579367, 'seconds': 1.77037292499881}
+accuracy_train initial_tail {'update': 1, 'loss': 0.0008166404012422073, 'seconds': 1.7150766609993298}
+accuracy_reconstruction frozen initial_worst 0.03275091479221816 later_worst 0.01866527573647809
+accuracy_reconstruction uniform initial_worst 0.031175137847464868 later_worst 0.019306201003605947
+accuracy_reconstruction initial_only initial_worst 0.033166120472835466 later_worst 0.01952150181417519
+accuracy_reconstruction initial_tail initial_worst 0.03076607747677901 later_worst 0.019679875305710807
+reference passed 0

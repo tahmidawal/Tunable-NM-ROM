@@ -1,0 +1,29 @@
+{
+  "status": "submitted_pending_not_a_result",
+  "job_id": "3563072",
+  "source_commit": "c7cc18d4a12820f471076fcbb5e95cce3c6c75c4",
+  "remote": "/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/accuracy10",
+  "stdout": "/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/accuracy10/job-3563072.log",
+  "remote_result": "/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/accuracy10/outputs/results.json",
+  "worktree": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-heat2d",
+  "local_record": "experiments/mr-heat2d/runs/accuracy10",
+  "checkpoint_source_commit": "8df5ecf6f8261147d9c6d3b418d8e7f57254ed02",
+  "checkpoint_source_path": "experiments/mr-heat2d/runs/pilot03/archive/outputs/checkpoints/expanded_seed790715.pkl",
+  "checkpoint_sha256": "970436e5891f94f04491615caa1a7338b182b0e5e54c1b3214f221da55376851",
+  "collect_command": "/home/tahmid/Dev/.venv/bin/python experiments/mr-heat2d/collect_accuracy.py experiments/mr-heat2d/runs/accuracy10 --job 3563072",
+  "audit_command": "/home/tahmid/Dev/.venv/bin/python experiments/mr-heat2d/audit_accuracy.py experiments/mr-heat2d/runs/accuracy10",
+  "remaining": [
+    "Monitor squeue and stdout for GPU preflight, bank gate, all scheduled endpoints and completion.",
+    "If bank gate fails, preserve results.json diagnostic; do not change training or bank without root review.",
+    "Collect completed job through ordered checksum-verified archive parts and restore before removing the exact remote attempt.",
+    "Run independent NumPy/SciPy field, sampled decoder, all fine-fit gradients and weak-step audits; add independent regenerated Gaussian input checks against every saved case/mesh.",
+    "Compare frozen control to prior accepted current Cholesky fields and verify exact unchanged spatial parameters across endpoints.",
+    "Summarize medians, worst errors, outliers, all solver exits, old versus new development cohort; promote only stationary physical improvements with complete paired costs.",
+    "Commit audited raw/archive checkpoints and generated summary, append canonical closure, and tell root final evidence paths. No branch merge."
+  ],
+  "smoke": {
+    "first": "55s time cap after training/reconstruction, before timing; no numerical exception",
+    "full": "smoke02 complete within55s; all4 head paths, linear control, direct FOM; unmodified CG fixtures deferred to mandatory real-job verification",
+    "focused": "test_accuracy.py passed within55s: exact compressed/full objective and gradient parity,4 fine-diagnostic models and96 stored starts"
+  }
+}

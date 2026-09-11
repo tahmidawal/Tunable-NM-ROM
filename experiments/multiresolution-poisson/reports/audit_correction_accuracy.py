@@ -70,7 +70,7 @@ def main():
                 if digest not in cachefields:
                     field=np.load(out/'fields'/(digest+'.npz'))['field'];assert array_sha(field)==digest and field.shape==(n+1,n+1) and field.dtype==np.float64 and np.isfinite(field).all();assert not np.count_nonzero(field[[0,-1]]) and not np.count_nonzero(field[:,[0,-1]]);cachefields[digest]=field
                 return cachefields[digest]
-            assert len({r['source_sha256'] for r in groups[n,case]})==1
+            assert len({r['source_sha256'] for r in groups[n,case]})==1;assert groups[n,case][0]['source_sha256']==previous_rows[n,case,'dst']['source_sha256']
             for row in groups[n,case]:
                 field=field_load(row['field_sha256']);error=relative(field,fine);stride=n//cfg['observation_intervals'];values=dict(physical_error=error,same_grid_error=relative(field,same),reference_delta=delta,conservative_physical_error=(error+delta)/(1-delta),common_observation_error=relative(field[::stride,::stride],fine[::stride,::stride]));check('physical_metrics',max(abs(row[k]-v) for k,v in values.items()),1e-10);assert row['finite'];ident=row['method']
                 if ident in ops:

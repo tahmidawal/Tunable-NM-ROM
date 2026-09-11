@@ -8,7 +8,7 @@ def features_at(p,coords):
 
 
 def audit_training(d,out,models):
-    cfg=d['config'];train=np.asarray(d['training']['parameters']);n=cfg['training_nodes']-1;U=np.array([truth(n,param)[1:-1,1:-1].ravel() for param in train]);denom=np.sum(U*U,axis=1);meta={x['id']:x for x in d['checkpoints']};metrics=[];blocks_verified=0
+    cfg=d['config'];train=np.asarray(d['training']['parameters']);n=cfg['training_nodes']-1;U=np.array([truth(n,param)[1:-1,1:-1].ravel() for param in train]);denom=np.sum(U*U,axis=1);meta={x['id']:x for x in d['checkpoints']};metrics=[];blocks_verified=0;representation=[]
     orig,oz=models['original_relative'];wide,wz=models['r128_initial'];same_tree(oz,wz)
     for key in ['B','out_scale']:same_tree(orig[key],wide[key])
     for key in ['g','h']:same_tree(orig[key][:-1],wide[key][:-1])
@@ -26,6 +26,9 @@ def audit_training(d,out,models):
     phases={x['tag']:x for x in d['training']['phases']};assert list(phases)==[a+'_'+phase['phase'] for a in ['r128','r64'] for phase in cfg['training_phases']]
     for ident,(p,z) in models.items():
         same_tree(p['out_scale'],orig['out_scale']);G=bank(p,n);err=np.linalg.norm(head(p,z)@G.T-U,axis=1)/np.sqrt(denom);info=meta[ident]['training_metrics'];diff=float(np.max(np.abs(err-info['per_snapshot_relative_l2'])));metrics.append(diff);assert diff<1e-10;assert abs(max(err)-info['worst_relative_l2'])<1e-10 and abs(np.median(err)-info['median_relative_l2'])<1e-10
+        q,r=np.linalg.qr(G,mode='reduced');sv=np.linalg.svd(r,compute_uv=False);rank=int(np.count_nonzero(sv>sv[0]*max(G.shape)*np.finfo(float).eps));assert rank==G.shape[1]
+        projected=(U@q)@q.T;bank_error=np.linalg.norm(U-projected,axis=1)/np.sqrt(denom);inside=np.sqrt(np.maximum(0.,err*err-bank_error*bank_error));assert np.min(err*err-bank_error*bank_error)>=-1e-12
+        representation.append(dict(model=ident,training_cases=len(train),rank=rank,worst_bank_projection_error=float(max(bank_error)),worst_checkpoint_reconstruction_error=float(max(err)),worst_field_error_inside_bank=float(max(inside)),per_snapshot_bank_error=bank_error.tolist(),per_snapshot_checkpoint_error=err.tolist(),per_snapshot_inside_bank_error=inside.tolist(),scope='independent training-only field decomposition of saved codes; no extra fit or training'))
     def metric_data(p,path,info):
         f=dict(np.load(out/path));G=bank(p,n);q,r=np.linalg.qr(G,mode='reduced');sv=np.linalg.svd(r,compute_uv=False);rank=np.count_nonzero(sv>sv[0]*max(G.shape)*np.finfo(float).eps);assert rank==G.shape[1] and info['rank_valid'] and info['rank']==rank
         target=U@q;perp=np.sum((U-target@q.T)**2,axis=1);optimal=np.linalg.solve(r,target.T).T;assert relative(optimal,f['optimal'])<1e-8 and relative(G.T@G,f['R'].T@f['R'])<1e-10;assert relative(sv,np.asarray(info['singular_values']))<1e-10
@@ -52,4 +55,4 @@ def audit_training(d,out,models):
             if arm=='r128':assert done==options['steps'] and r['matched_optimizer_seconds'] is None
             else:assert r['matched_optimizer_seconds']==target and elapsed-r['optimizer_blocks'][-1]['seconds']<target<=elapsed and abs(elapsed-target-r['control_optimizer_overshoot_seconds'])<1e-12
             previous=tag
-    return dict(passed=True,optimizer_blocks_verified=blocks_verified,maximum_reconstruction_metric_difference=max(metrics),function_preserving_widening_verified=True,every_phase_independently_time_matched=True)
+    return dict(passed=True,optimizer_blocks_verified=blocks_verified,maximum_reconstruction_metric_difference=max(metrics),function_preserving_widening_verified=True,every_phase_independently_time_matched=True,training_representation=representation)

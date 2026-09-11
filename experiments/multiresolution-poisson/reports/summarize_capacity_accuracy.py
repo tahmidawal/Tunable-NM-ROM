@@ -9,7 +9,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('run',type=Path);a=ap.parse_args();run=a.run.resolve();d=json.loads((run/'result.json').read_text());audit=json.loads((run/'audit.json').read_text());assert audit['passed'] and d['complete'];cfg=d['config']
     panel=dict(pde='poisson2d',status='audited bank-capacity comparison on42already-opened development cases; no fresh independent or sealed final confirmation',source_commit=d['provenance']['commit'],job_id=d['provenance']['job_id'],provenance=d['provenance'],config=cfg,
         run_path=str(run),source_result_path=str(run/'result.json'),audit_path=str(run/'audit.json'),archive_path=str(run/'ARCHIVE.json'),cleanup_path=str(run/'cleanup.json'),
-        training=d['training'],checkpoints=d['checkpoints'],cohort=d['cohort'],validation_status=cfg['validation_status'],primary_model='r128_joint',matched_control='r64_joint',timed_invocations=len(d['rows']),timing_statistic='pooled median over all equal-count case/repetition samples',
+        training=d['training'],training_representation=audit['training_representation'],checkpoints=d['checkpoints'],cohort=d['cohort'],validation_status=cfg['validation_status'],primary_model='r128_joint',matched_control='r64_joint',timed_invocations=len(d['rows']),timing_statistic='pooled median over all equal-count case/repetition samples',
         error_definition='worst current-relative full-field L2 versus restricted 2048 FD-DST truth; empirical 1024 reference allowance retained separately',
         groups=[],limitations=['Development cohorts only; fixed staged endpoints rather than development-selected checkpoints','Optimizer-loop time matched on one GPU within a declared block; not equal FLOPs or a convergence proof','SVD/POD and reference-only bank/head fits are diagnostics, never online models or initial guesses','All preassembled operators and checkpoint-specific setup are offline and reported separately','No universal FOM advantage; direct DST remains a named control'])
     checkpoint_configs={x['id']:pickle.loads((run/'cluster/out/pilot'/x['path']).read_bytes())['cfg'] for x in d['checkpoints']}
@@ -28,6 +28,11 @@ def main():
                     valid=[x for x in h if x['best_found_stationary_index'] is not None]
                     head[model]=dict(cases=len(h),cases_without_stationary_fit=len(h)-len(valid),worst_stationary_same_grid_error=max(x['candidates'][x['best_found_stationary_index']]['same_grid_relative_error'] for x in valid) if len(valid)==len(h) else None,
                         worst_best_any_same_grid_error=max(min(c['same_grid_relative_error'] for c in x['candidates']) for x in h),candidate_stop_reasons=[c['reason'] for x in h for c in x['candidates']])
+                    head[model]['same_grid_decomposition']=[]
+                    for x in h:
+                        b=next(y for y in o if y['case']==x['case']);idx=x['best_found_stationary_index'];fit=None if idx is None else x['candidates'][idx]['same_grid_relative_error'];floor=b['same_grid_relative_error']
+                        if fit is not None:assert fit*fit-floor*floor>=-1e-12
+                        head[model]['same_grid_decomposition'].append(dict(case=x['case'],bank_projection_error=floor,best_found_stationary_head_error=fit,field_error_inside_bank=None if fit is None else max(0.,fit*fit-floor*floor)**.5))
             passing=[m for m in methods if m.startswith('cg_') and methods[m]['all_cases_pass_target']];cg=min(passing,key=lambda m:methods[m]['gpu_median_ms']) if passing else None
             for model in cfg['trained_model_ids']:
                 m=methods[model];m['speedup_vs_tight_cg']=methods['cg_1e-06']['gpu_median_ms']/m['gpu_median_ms'];m['speedup_vs_fastest_passing_cg']=methods[cg]['gpu_median_ms']/m['gpu_median_ms'] if cg else None;m['speedup_vs_dst']=methods['dst']['gpu_median_ms']/m['gpu_median_ms'];m['no_gpu_cost_regression_vs_frozen']=m['gpu_median_ms']<=methods['original_relative']['gpu_median_ms'];m['no_host_cost_regression_vs_frozen']=m['host_median_ms']<=methods['original_relative']['host_median_ms']

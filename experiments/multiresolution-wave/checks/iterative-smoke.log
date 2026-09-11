@@ -1,0 +1,20 @@
+{"jax_backend": "gpu", "jax_version": "0.10.1", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA GB10"], "host": "spark-d69e", "source_commit": null, "job_id": null, "numpy_version": "2.4.4"}
+warmup dirichlet 32 0 frozen_mlp32_seed691200
+warmup dirichlet 32 0 cg_1e-06
+warmup dirichlet 32 0 cg_0.01
+warmup dirichlet 32 0 dst
+timed dirichlet 32 0 0 frozen_mlp32_seed691200
+timed dirichlet 32 0 0 cg_1e-06
+timed dirichlet 32 0 0 cg_0.01
+timed dirichlet 32 0 0 dst
+accuracy_refinement dirichlet 32 0 frozen_mlp32_seed691200
+warmup absorbing 32 0 frozen_mlp32_seed691200
+warmup absorbing 32 0 cg_1e-06
+warmup absorbing 32 0 cg_0.01
+warmup absorbing 32 0 rk4
+timed absorbing 32 0 0 frozen_mlp32_seed691200
+timed absorbing 32 0 0 cg_1e-06
+timed absorbing 32 0 0 cg_0.01
+timed absorbing 32 0 0 rk4
+accuracy_refinement absorbing 32 0 frozen_mlp32_seed691200
+fresh_wave_iterative_multires_complete

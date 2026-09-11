@@ -1,0 +1,50 @@
+{
+  "meshes": [
+    32
+  ],
+  "boundaries": [
+    "dirichlet",
+    "absorbing"
+  ],
+  "validation_seed": 690602,
+  "validation_indices": [
+    0
+  ],
+  "end_time": 0.01,
+  "observation_dt": 0.005,
+  "repetitions": 1,
+  "fit_iterations": 800,
+  "primary_dt": 0.0025,
+  "accuracy_only_dt": 0.00125,
+  "fom_cfl": 0.45,
+  "reference_cfl": 0.1125,
+  "reference_refinement_cfl": 0.05625,
+  "vanishing_fraction": 0.001,
+  "rom_refinement_target": 0.01,
+  "reference_refinement_target": 0.0001,
+  "accuracy_targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "primary_method": "frozen_mlp32_seed691200",
+  "control_method": null,
+  "frozen_bank_rank": 64,
+  "final_test_opened": false,
+  "expected_timed_invocations": 8,
+  "expected_accuracy_only_queries": 2,
+  "input_output_contract": "Full GPU-resident displacement, velocity and scalar physical wave speed to both full GPU-resident fields at all 49 observations. Include projection, every cold-fit start, parameter preparation, evolution and dense output; exclude host transfers, compilation and mesh-only assembly.",
+  "selection": "Frozen MLP32 with same primary time grid; unpreconditioned warm-started CG with declared tolerances, full compiled solve and counted true residuals. No tolerance selection on evaluation.",
+  "claim_scope": "Two existing development inputs per boundary; same-grid semidiscrete references only. FOM uses matched implicit-midpoint time grid; nonlinear ROM retains verified RK4 dynamics. No continuum or matched-accuracy claim.",
+  "walltime": "01:00:00",
+  "estimated_runtime_minutes": [
+    15,
+    35
+  ],
+  "cg_tolerances": [
+    1e-06,
+    0.01
+  ],
+  "cg_max_iterations": 1000
+}

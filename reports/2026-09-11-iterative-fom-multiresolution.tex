@@ -48,23 +48,25 @@ Reflective waves & Midpoint CG, tolerance 1e-06 & Current-relative displacement 
 \newpage
 {\LARGE\bfseries\color{ink} Poisson: online speed--accuracy tuning}\\[2mm]
 Same frozen network. Baseline and FOM controls are retimed together in a new Poisson allocation.\par\vspace{4mm}
+\textbf{Fastest stationary NMROM at $N=1024$: 32.004494$\times$ faster than the fastest tested passing CG FOM.}\par
+\note{ROM 2.613982 ms versus 83.659173 ms for CG 1e-01. ROM worst error: 6.801556\%; does not meet the 5\% accuracy gate. This is a measured runtime ratio.}
 17 frozen-checkpoint settings screened at 64 intervals on all 30 Gaussian-source development cases. The fixed shortlist is confirmed at every requested mesh with 3 repeats; endpoint selection remains developmental.\par
-\noindent\begin{tabularx}{\linewidth}{@{}rlLrrrlrlr@{}}
-\toprule $N$ & Selection & Configuration & ROM ms & Error \% & Adjusted \% & Stationary & Outliers & 5\% gate & CG/ROM \\ \midrule
-64 & Baseline & Baseline; M257 & 2.361 & 6.802558 & 6.802961 & 90/90 & 1 & fail & 2.439 \\
-64 & Fastest tested & Budget 1; M257 & 1.488 & 30.069926 & 30.070417 & 0/90 & 1 & fail & 3.869 \\
-64 & Fastest stationary & Stop 1e-06; M257 & 2.210 & 6.802558 & 6.802961 & 90/90 & 0 & fail & 2.605 \\
-64 & Most accurate* & 4 starts; M1024 & 6.427 & 6.802474 & 6.802877 & 90/90 & 0 & fail & 0.896 \\
-256 & Baseline & Baseline; M257 & 2.616 & 6.801564 & 6.801967 & 90/90 & 1 & fail & 9.797 \\
-256 & Fastest tested & Budget 1; M257 & 1.673 & 29.999485 & 29.999975 & 0/90 & 2 & fail & 15.321 \\
-256 & Fastest stationary & Stop 1e-06; M257 & 2.347 & 6.801564 & 6.801967 & 90/90 & 0 & fail & 10.920 \\
-256 & Most accurate* & 4 starts; M1025 & 6.636 & 6.801553 & 6.801956 & 90/90 & 0 & fail & 3.862 \\
-1024 & Baseline & Baseline; M257 & 2.943 & 6.801556 & 6.801959 & 90/90 & 1 & fail & 63.140 \\
-1024 & Fastest tested & Budget 1; M257 & 1.970 & 29.995107 & 29.995598 & 0/90 & 0 & fail & 94.335 \\
-1024 & Fastest stationary & Stop 1e-06; M257 & 2.614 & 6.801556 & 6.801959 & 90/90 & 0 & fail & 71.083 \\
-1024 & Most accurate* & 4 starts; M1025 & 6.942 & 6.801550 & 6.801953 & 90/90 & 0 & fail & 26.768 \\
+\noindent\begin{tabularx}{\linewidth}{@{}rlLrrrlrlll@{}}
+\toprule $N$ & Selection & Configuration & ROM ms & Error \% & Adjusted \% & Stationary & Outliers & 5\% gate & \shortstack[l]{ROM vs\\tight CG} & \shortstack[l]{ROM vs\\passing CG} \\ \midrule
+64 & Baseline & Baseline; M257 & 2.361 & 6.802558 & 6.802961 & 90/90 & 1 & fail & 2.439$\times$ faster & 1.376$\times$ faster \\
+64 & Fastest tested & Budget 1; M257 & 1.488 & 30.069926 & 30.070417 & 0/90 & 1 & fail & 3.869$\times$ faster & 2.182$\times$ faster \\
+64 & Fastest stationary & Stop 1e-06; M257 & 2.210 & 6.802558 & 6.802961 & 90/90 & 0 & fail & 2.605$\times$ faster & 1.470$\times$ faster \\
+64 & Most accurate* & 4 starts; M1024 & 6.427 & 6.802474 & 6.802877 & 90/90 & 0 & fail & 1.116$\times$ slower & 1.979$\times$ slower \\
+256 & Baseline & Baseline; M257 & 2.616 & 6.801564 & 6.801967 & 90/90 & 1 & fail & 9.797$\times$ faster & 4.353$\times$ faster \\
+256 & Fastest tested & Budget 1; M257 & 1.673 & 29.999485 & 29.999975 & 0/90 & 2 & fail & 15.321$\times$ faster & 6.808$\times$ faster \\
+256 & Fastest stationary & Stop 1e-06; M257 & 2.347 & 6.801564 & 6.801967 & 90/90 & 0 & fail & 10.920$\times$ faster & 4.852$\times$ faster \\
+256 & Most accurate* & 4 starts; M1025 & 6.636 & 6.801553 & 6.801956 & 90/90 & 0 & fail & 3.862$\times$ faster & 1.716$\times$ faster \\
+1024 & Baseline & Baseline; M257 & 2.943 & 6.801556 & 6.801959 & 90/90 & 1 & fail & 63.140$\times$ faster & 28.428$\times$ faster \\
+1024 & Fastest tested & Budget 1; M257 & 1.970 & 29.995107 & 29.995598 & 0/90 & 0 & fail & 94.335$\times$ faster & 42.473$\times$ faster \\
+1024 & Fastest stationary & Stop 1e-06; M257 & 2.614 & 6.801556 & 6.801959 & 90/90 & 0 & fail & 71.083$\times$ faster & 32.004$\times$ faster \\
+1024 & Most accurate* & 4 starts; M1025 & 6.942 & 6.801550 & 6.801953 & 90/90 & 0 & fail & 26.768$\times$ faster & 12.052$\times$ faster \\
 \bottomrule\end{tabularx}\par
-\note{CG/ROM uses same-job CG at tolerance 1e-06. ``Fastest'' includes diagnostic early exits; check stationarity and target columns. ``Most accurate'' minimizes the worst complete-cohort field error under the stated selection rule. Neither label claims a global optimum. Adjusted error includes the empirical reference allowance. GPU timing outliers are retained.}No tested configuration meets the original physical and numerical target on every development case. *Most accurate is restricted to settings with every selected solve stationary at the original threshold; an unrestricted accuracy winner is shown separately when different. The largest reduction in worst error from baseline is 0.00008462 percentage points across the confirmed meshes.\par
+\note{Tight CG uses tolerance 1e-06; passing CG is the fastest tested iterative FOM meeting the target, with its setting listed below. ``Times faster'' divides FOM by ROM median time; ``times slower'' reverses that ratio. All timings are paired within this job. ``Fastest tested'' includes nonstationary early exits. Adjusted error includes the empirical reference allowance. GPU timing outliers are retained.}No tested configuration meets the original physical and numerical target on every development case. *Most accurate is restricted to settings with every selected solve stationary at the original threshold; an unrestricted accuracy winner is shown separately when different. The largest reduction in worst error from baseline is 0.00008462 percentage points across the confirmed meshes.\par
 \noindent\begin{tabularx}{\linewidth}{@{}rrrrLr@{}}
 \toprule $N$ & Tight CG ms & Fast passing CG ms & Fast CG error \% & Fast CG setting & Direct DST ms \\ \midrule
 64 & 5.759 & 3.248 & 1.135 & CG 3e-02 & 0.137 \\

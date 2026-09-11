@@ -40,6 +40,13 @@ def pct(value):
     return f"{100 * value:.4g}"
 
 
+def speed_comparison(fom_ms, rom_ms):
+    ratio = fom_ms / rom_ms
+    if ratio >= 1:
+        return f"{ratio:.3f}" + r"$\times$ faster"
+    return f"{1 / ratio:.3f}" + r"$\times$ slower"
+
+
 def status(panel, row):
     s = "pass" if qualifies(panel, row) else "fail"
     return s + (r"$^{\dagger}$" if row.get("stalled_events") else "")
@@ -114,6 +121,24 @@ def tuning_page(tuning):
     # A report adapter supplies selection rows only after source, output and
     # collection checks. Every comparator here belongs to the tuning job.
     assert tuning["audited"]
+    fine = max(tuning["configuration"]["intervals"])
+    fastest_stationary = next(s for s in tuning["selections"]
+                              if s["intervals"] == fine and s["role"] == "Fastest stationary")
+    if fastest_stationary["row"] is not None:
+        row = fastest_stationary["row"]
+        comparator = next(c for c in tuning["comparators"] if c["intervals"] == fine)
+        ratio = fastest_stationary["fastest_fom_ms"] / row["gpu_ms"]
+        direction = "faster" if ratio >= 1 else "slower"
+        factor = ratio if ratio >= 1 else 1 / ratio
+        body += (r"\textbf{Fastest stationary NMROM at $N=" + str(fine) + "$: "
+                 + f"{factor:.6f}" + r"$\times$ " + direction
+                 + r" than the fastest tested passing CG FOM.}\par" + "\n")
+        gate = "passes" if row["qualified"] else "does not meet"
+        body += (r"\note{ROM " + f"{row['gpu_ms']:.6f}" + " ms versus "
+                 + f"{fastest_stationary['fastest_fom_ms']:.6f}" + " ms for "
+                 + esc(comparator["fast_label"]) + ". ROM worst error: "
+                 + f"{100*row['worst_error']:.6f}" + r"\%; " + gate + " the "
+                 + pct(tuning["target"]) + r"\% accuracy gate. This is a measured runtime ratio.}" + "\n")
     body += esc(tuning["scope"]) + r"\par" + "\n"
     rows = []
     for s in tuning["selections"]:
@@ -122,14 +147,16 @@ def tuning_page(tuning):
             if s["role"] == "Fastest passing":
                 # Absence is stated explicitly in the finding below the table.
                 continue
-            rows.append((s["intervals"], esc(s["role"]), "none", "---", "---", "---", "---", "---", "---", "---"))
+            rows.append((s["intervals"], esc(s["role"]), "none", "---", "---", "---", "---", "---", "---", "---", "---"))
             continue
         rows.append((s["intervals"], esc(s["role"]), esc(r["short_label"]),
                      num(r["gpu_ms"]), f"{100*r['worst_error']:.6f}", f"{100*r['adjusted_error']:.6f}",
                      f"{r['stationary_invocations']}/{r['invocations']}",
-                     r["gpu_outliers"], "pass" if r["qualified"] else "fail", num(s["tight_fom_ms"]/r["gpu_ms"])))
-    body += table(["$N$", "Selection", "Configuration", "ROM ms", r"Error \%", r"Adjusted \%", "Stationary", "Outliers", pct(tuning['target'])+r"\% gate", "CG/ROM"], rows, "rlLrrrlrlr")
-    body += r"\note{CG/ROM uses same-job CG at tolerance " + esc(f"{tuning['configuration']['primary_cg_tolerance']:.0e}") + r". ``Fastest'' includes diagnostic early exits; check stationarity and target columns. ``Most accurate'' minimizes the worst complete-cohort field error under the stated selection rule. Neither label claims a global optimum. Adjusted error includes the empirical reference allowance. GPU timing outliers are retained.}"
+                     r["gpu_outliers"], "pass" if r["qualified"] else "fail",
+                     speed_comparison(s["tight_fom_ms"], r["gpu_ms"]),
+                     speed_comparison(s["fastest_fom_ms"], r["gpu_ms"])))
+    body += table(["$N$", "Selection", "Configuration", "ROM ms", r"Error \%", r"Adjusted \%", "Stationary", "Outliers", pct(tuning['target'])+r"\% gate", r"\shortstack[l]{ROM vs\\tight CG}", r"\shortstack[l]{ROM vs\\passing CG}"], rows, "rlLrrrlrlll")
+    body += r"\note{Tight CG uses tolerance " + esc(f"{tuning['configuration']['primary_cg_tolerance']:.0e}") + r"; passing CG is the fastest tested iterative FOM meeting the target, with its setting listed below. ``Times faster'' divides FOM by ROM median time; ``times slower'' reverses that ratio. All timings are paired within this job. ``Fastest tested'' includes nonstationary early exits. Adjusted error includes the empirical reference allowance. GPU timing outliers are retained.}"
     body += esc(tuning["finding"]) + r"\par" + "\n"
     rows = [(r["intervals"], num(r["tight_ms"]), num(r["fast_ms"]), pct(r["fast_error"]),
              esc(r["fast_label"]), num(r["direct_ms"])) for r in tuning["comparators"]]

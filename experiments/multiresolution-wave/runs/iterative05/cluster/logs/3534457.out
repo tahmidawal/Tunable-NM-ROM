@@ -1,0 +1,209 @@
+jax_backend=gpu
+{'jax_backend': 'gpu', 'x64': True}
+{'jax_backend': 'gpu', 'x64': True}
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100 80GB PCIe"], "host": "pax049", "source_commit": "e1d377928913fc94c06c6052459a4ab4847c1eb1", "job_id": "3534457", "numpy_version": "2.5.0"}
+warmup dirichlet 64 0 frozen_mlp32_seed691200
+warmup dirichlet 64 0 cg_1e-06
+warmup dirichlet 64 0 cg_0.01
+warmup dirichlet 64 0 dst
+timed dirichlet 64 0 0 frozen_mlp32_seed691200
+timed dirichlet 64 0 0 cg_1e-06
+timed dirichlet 64 0 0 cg_0.01
+timed dirichlet 64 0 0 dst
+timed dirichlet 64 0 1 dst
+timed dirichlet 64 0 1 cg_0.01
+timed dirichlet 64 0 1 cg_1e-06
+timed dirichlet 64 0 1 frozen_mlp32_seed691200
+timed dirichlet 64 0 2 frozen_mlp32_seed691200
+timed dirichlet 64 0 2 cg_1e-06
+timed dirichlet 64 0 2 cg_0.01
+timed dirichlet 64 0 2 dst
+accuracy_refinement dirichlet 64 0 frozen_mlp32_seed691200
+warmup dirichlet 64 1 frozen_mlp32_seed691200
+warmup dirichlet 64 1 cg_1e-06
+warmup dirichlet 64 1 cg_0.01
+warmup dirichlet 64 1 dst
+timed dirichlet 64 1 0 frozen_mlp32_seed691200
+timed dirichlet 64 1 0 cg_1e-06
+timed dirichlet 64 1 0 cg_0.01
+timed dirichlet 64 1 0 dst
+timed dirichlet 64 1 1 dst
+timed dirichlet 64 1 1 cg_0.01
+timed dirichlet 64 1 1 cg_1e-06
+timed dirichlet 64 1 1 frozen_mlp32_seed691200
+timed dirichlet 64 1 2 frozen_mlp32_seed691200
+timed dirichlet 64 1 2 cg_1e-06
+timed dirichlet 64 1 2 cg_0.01
+timed dirichlet 64 1 2 dst
+accuracy_refinement dirichlet 64 1 frozen_mlp32_seed691200
+warmup dirichlet 256 0 frozen_mlp32_seed691200
+warmup dirichlet 256 0 cg_1e-06
+warmup dirichlet 256 0 cg_0.01
+warmup dirichlet 256 0 dst
+timed dirichlet 256 0 0 frozen_mlp32_seed691200
+timed dirichlet 256 0 0 cg_1e-06
+timed dirichlet 256 0 0 cg_0.01
+timed dirichlet 256 0 0 dst
+timed dirichlet 256 0 1 dst
+timed dirichlet 256 0 1 cg_0.01
+timed dirichlet 256 0 1 cg_1e-06
+timed dirichlet 256 0 1 frozen_mlp32_seed691200
+timed dirichlet 256 0 2 frozen_mlp32_seed691200
+timed dirichlet 256 0 2 cg_1e-06
+timed dirichlet 256 0 2 cg_0.01
+timed dirichlet 256 0 2 dst
+accuracy_refinement dirichlet 256 0 frozen_mlp32_seed691200
+warmup dirichlet 256 1 frozen_mlp32_seed691200
+warmup dirichlet 256 1 cg_1e-06
+warmup dirichlet 256 1 cg_0.01
+warmup dirichlet 256 1 dst
+timed dirichlet 256 1 0 frozen_mlp32_seed691200
+timed dirichlet 256 1 0 cg_1e-06
+timed dirichlet 256 1 0 cg_0.01
+timed dirichlet 256 1 0 dst
+timed dirichlet 256 1 1 dst
+timed dirichlet 256 1 1 cg_0.01
+timed dirichlet 256 1 1 cg_1e-06
+timed dirichlet 256 1 1 frozen_mlp32_seed691200
+timed dirichlet 256 1 2 frozen_mlp32_seed691200
+timed dirichlet 256 1 2 cg_1e-06
+timed dirichlet 256 1 2 cg_0.01
+timed dirichlet 256 1 2 dst
+accuracy_refinement dirichlet 256 1 frozen_mlp32_seed691200
+warmup dirichlet 1024 0 frozen_mlp32_seed691200
+warmup dirichlet 1024 0 cg_1e-06
+warmup dirichlet 1024 0 cg_0.01
+warmup dirichlet 1024 0 dst
+timed dirichlet 1024 0 0 frozen_mlp32_seed691200
+timed dirichlet 1024 0 0 cg_1e-06
+timed dirichlet 1024 0 0 cg_0.01
+timed dirichlet 1024 0 0 dst
+timed dirichlet 1024 0 1 dst
+timed dirichlet 1024 0 1 cg_0.01
+timed dirichlet 1024 0 1 cg_1e-06
+timed dirichlet 1024 0 1 frozen_mlp32_seed691200
+timed dirichlet 1024 0 2 frozen_mlp32_seed691200
+timed dirichlet 1024 0 2 cg_1e-06
+timed dirichlet 1024 0 2 cg_0.01
+timed dirichlet 1024 0 2 dst
+accuracy_refinement dirichlet 1024 0 frozen_mlp32_seed691200
+warmup dirichlet 1024 1 frozen_mlp32_seed691200
+warmup dirichlet 1024 1 cg_1e-06
+warmup dirichlet 1024 1 cg_0.01
+warmup dirichlet 1024 1 dst
+timed dirichlet 1024 1 0 frozen_mlp32_seed691200
+timed dirichlet 1024 1 0 cg_1e-06
+timed dirichlet 1024 1 0 cg_0.01
+timed dirichlet 1024 1 0 dst
+timed dirichlet 1024 1 1 dst
+timed dirichlet 1024 1 1 cg_0.01
+timed dirichlet 1024 1 1 cg_1e-06
+timed dirichlet 1024 1 1 frozen_mlp32_seed691200
+timed dirichlet 1024 1 2 frozen_mlp32_seed691200
+timed dirichlet 1024 1 2 cg_1e-06
+timed dirichlet 1024 1 2 cg_0.01
+timed dirichlet 1024 1 2 dst
+accuracy_refinement dirichlet 1024 1 frozen_mlp32_seed691200
+warmup absorbing 64 0 frozen_mlp32_seed691200
+warmup absorbing 64 0 cg_1e-06
+warmup absorbing 64 0 cg_0.01
+warmup absorbing 64 0 rk4
+timed absorbing 64 0 0 frozen_mlp32_seed691200
+timed absorbing 64 0 0 cg_1e-06
+timed absorbing 64 0 0 cg_0.01
+timed absorbing 64 0 0 rk4
+timed absorbing 64 0 1 rk4
+timed absorbing 64 0 1 cg_0.01
+timed absorbing 64 0 1 cg_1e-06
+timed absorbing 64 0 1 frozen_mlp32_seed691200
+timed absorbing 64 0 2 frozen_mlp32_seed691200
+timed absorbing 64 0 2 cg_1e-06
+timed absorbing 64 0 2 cg_0.01
+timed absorbing 64 0 2 rk4
+accuracy_refinement absorbing 64 0 frozen_mlp32_seed691200
+warmup absorbing 64 1 frozen_mlp32_seed691200
+warmup absorbing 64 1 cg_1e-06
+warmup absorbing 64 1 cg_0.01
+warmup absorbing 64 1 rk4
+timed absorbing 64 1 0 frozen_mlp32_seed691200
+timed absorbing 64 1 0 cg_1e-06
+timed absorbing 64 1 0 cg_0.01
+timed absorbing 64 1 0 rk4
+timed absorbing 64 1 1 rk4
+timed absorbing 64 1 1 cg_0.01
+timed absorbing 64 1 1 cg_1e-06
+timed absorbing 64 1 1 frozen_mlp32_seed691200
+timed absorbing 64 1 2 frozen_mlp32_seed691200
+timed absorbing 64 1 2 cg_1e-06
+timed absorbing 64 1 2 cg_0.01
+timed absorbing 64 1 2 rk4
+accuracy_refinement absorbing 64 1 frozen_mlp32_seed691200
+warmup absorbing 256 0 frozen_mlp32_seed691200
+warmup absorbing 256 0 cg_1e-06
+warmup absorbing 256 0 cg_0.01
+warmup absorbing 256 0 rk4
+timed absorbing 256 0 0 frozen_mlp32_seed691200
+timed absorbing 256 0 0 cg_1e-06
+timed absorbing 256 0 0 cg_0.01
+timed absorbing 256 0 0 rk4
+timed absorbing 256 0 1 rk4
+timed absorbing 256 0 1 cg_0.01
+timed absorbing 256 0 1 cg_1e-06
+timed absorbing 256 0 1 frozen_mlp32_seed691200
+timed absorbing 256 0 2 frozen_mlp32_seed691200
+timed absorbing 256 0 2 cg_1e-06
+timed absorbing 256 0 2 cg_0.01
+timed absorbing 256 0 2 rk4
+accuracy_refinement absorbing 256 0 frozen_mlp32_seed691200
+warmup absorbing 256 1 frozen_mlp32_seed691200
+warmup absorbing 256 1 cg_1e-06
+warmup absorbing 256 1 cg_0.01
+warmup absorbing 256 1 rk4
+timed absorbing 256 1 0 frozen_mlp32_seed691200
+timed absorbing 256 1 0 cg_1e-06
+timed absorbing 256 1 0 cg_0.01
+timed absorbing 256 1 0 rk4
+timed absorbing 256 1 1 rk4
+timed absorbing 256 1 1 cg_0.01
+timed absorbing 256 1 1 cg_1e-06
+timed absorbing 256 1 1 frozen_mlp32_seed691200
+timed absorbing 256 1 2 frozen_mlp32_seed691200
+timed absorbing 256 1 2 cg_1e-06
+timed absorbing 256 1 2 cg_0.01
+timed absorbing 256 1 2 rk4
+accuracy_refinement absorbing 256 1 frozen_mlp32_seed691200
+warmup absorbing 1024 0 frozen_mlp32_seed691200
+warmup absorbing 1024 0 cg_1e-06
+warmup absorbing 1024 0 cg_0.01
+warmup absorbing 1024 0 rk4
+timed absorbing 1024 0 0 frozen_mlp32_seed691200
+timed absorbing 1024 0 0 cg_1e-06
+timed absorbing 1024 0 0 cg_0.01
+timed absorbing 1024 0 0 rk4
+timed absorbing 1024 0 1 rk4
+timed absorbing 1024 0 1 cg_0.01
+timed absorbing 1024 0 1 cg_1e-06
+timed absorbing 1024 0 1 frozen_mlp32_seed691200
+timed absorbing 1024 0 2 frozen_mlp32_seed691200
+timed absorbing 1024 0 2 cg_1e-06
+timed absorbing 1024 0 2 cg_0.01
+timed absorbing 1024 0 2 rk4
+accuracy_refinement absorbing 1024 0 frozen_mlp32_seed691200
+warmup absorbing 1024 1 frozen_mlp32_seed691200
+warmup absorbing 1024 1 cg_1e-06
+warmup absorbing 1024 1 cg_0.01
+warmup absorbing 1024 1 rk4
+timed absorbing 1024 1 0 frozen_mlp32_seed691200
+timed absorbing 1024 1 0 cg_1e-06
+timed absorbing 1024 1 0 cg_0.01
+timed absorbing 1024 1 0 rk4
+timed absorbing 1024 1 1 rk4
+timed absorbing 1024 1 1 cg_0.01
+timed absorbing 1024 1 1 cg_1e-06
+timed absorbing 1024 1 1 frozen_mlp32_seed691200
+timed absorbing 1024 1 2 frozen_mlp32_seed691200
+timed absorbing 1024 1 2 cg_1e-06
+timed absorbing 1024 1 2 cg_0.01
+timed absorbing 1024 1 2 rk4
+accuracy_refinement absorbing 1024 1 frozen_mlp32_seed691200
+fresh_wave_iterative_multires_complete

@@ -15,10 +15,6 @@ from fresh_rom import weak_acceleration
 
 
 def query(method, setting, supplied, c, grid, cfg, bank):
-    if method.startswith('trained_'):
-        u,v,row,aux=query('chol_guard',setting,supplied,c,grid,cfg,bank)
-        row.update(method=method,internal_configuration_dimension=32,internal_phase_dimension=64)
-        return u,v,row,aux
     if method.startswith('projected_') or method=='linear_bank64':
         return modal.device_query(method,bank,supplied,grid,cfg)
     if method.startswith('cgdt_'):
@@ -102,15 +98,9 @@ def main():
         meshes=[], references=[], invocations=[], accuracy_controls=[], warmups=[], geometry_checks=[],
         profiles=[], parity=[], time_refinement=[], projection_kinematics=[], final_test_opened=False, complete=False)
     save = lambda: base.save_json(out/'result.json', data)
-    endpoints={}
-    if 'head_training' in cfg:
-        import head_accuracy
-        endpoints,linear,center,manifest,records=head_accuracy.train_endpoints(args.inputs,out,cfg)
-        data.update(training_manifest=manifest,head_training=records);save()
     for n in cfg['meshes']:
         grid = base.Grid(n, 'dirichlet', 'dirichlet')
         full, models = previous.load_models(args.inputs/'dirichlet', grid); bank = models[cfg['primary_method']]
-        trained_models={name:previous.numerical_bank(previous.adapt_model(full,endpoint,linear,center,name)) for name,endpoint in endpoints.items()}
         if any(a['method'].startswith('projected_') or a['method']=='linear_bank64' for a in cfg['arms']):
             bank=dict(bank,prepared_l2=modal.prepare(bank,'l2'),prepared_h1=modal.prepare(bank,'h1'))
         np.savez_compressed(out/f'mesh_dirichlet_{n}.npz', g=np.asarray(bank['g']), mass=np.asarray(bank['mass']),
@@ -135,12 +125,12 @@ def main():
             first = {}; outputs = {}
             for name, dt in methods:
                 print('warmup', n, case, name, dt, flush=True)
-                _, _, row, _ = query(name, dt, supplied, float(par[5]), grid, cfg, trained_models.get(name,bank))
+                _, _, row, _ = query(name, dt, supplied, float(par[5]), grid, cfg, bank)
                 data['warmups'].append(dict(case=case, **row))
             for rep in range(cfg['repetitions']):
                 for order, (name, dt) in enumerate(methods if rep%2==0 else methods[::-1]):
                     print('timed', n, case, rep, name, dt, flush=True); base.burn()
-                    u, v, row, aux = query(name, dt, supplied, float(par[5]), grid, cfg, trained_models.get(name,bank))
+                    u, v, row, aux = query(name, dt, supplied, float(par[5]), grid, cfg, bank)
                     ident = f'{n}_{case}_{name}_{dt:g}'
                     row.update(case=case, cohort=cohort['name'], seed=cohort['seed'], parameters=par,
                         repetition=rep, order=order, invocation_id=f'{ident}_{rep}', comparison_eligible=True,
@@ -184,7 +174,7 @@ def main():
             for arm in cfg['refinement_arms']:
                 name, dt = arm['method'], arm['dt']; fine_dt = dt/2
                 print('refinement', n, case, name, dt, flush=True); base.burn()
-                u, v, row, aux = query(name, fine_dt, supplied, float(par[5]), grid, cfg, trained_models.get(name,bank))
+                u, v, row, aux = query(name, fine_dt, supplied, float(par[5]), grid, cfg, bank)
                 ident = f'{n}_{case}_{name}_{dt:g}_refined'
                 row.update(case=case, cohort=cohort['name'], seed=cohort['seed'], parameters=par,
                     comparison_eligible=False, invocation_id=ident, field_artifact=ident+'.npz',

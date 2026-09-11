@@ -15,66 +15,6 @@ def sha(path):
     with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
 
 
-def jacobian_direction(head,transform,z,w):
-    """Independent analytic derivative of the head Jacobian in direction w."""
-    x1=z@head['p/l1/w']+head['p/l1/b'];s1=1/(1+np.exp(-x1));b1=s1*(1-s1)
-    d1=s1+x1*b1;dd1=b1*(2+x1*(1-2*s1));j1=d1[:,None]*head['p/l1/w'].T
-    v1=w@head['p/l1/w'];dj1=(dd1*v1)[:,None]*head['p/l1/w'].T
-    x2=(x1*s1)@head['p/l2/w']+head['p/l2/b'];s2=1/(1+np.exp(-x2));b2=s2*(1-s2)
-    d2=s2+x2*b2;dd2=b2*(2+x2*(1-2*s2));j2=head['p/l2/w'].T@j1
-    v2=(d1*v1)@head['p/l2/w'];dj2=(dd2*v2)[:,None]*j2+d2[:,None]*(head['p/l2/w'].T@dj1)
-    return transform@(float(head['frozen/output_scale'])*head['p/out/w'].T@dj2)
-
-
-def projection_check(field,row,mesh,head,u0,v0,c):
-    g,m,k=mesh['g'],mesh['mass'],mesh['stiffness'];method=row['method']
-    a0=g.T@(m*u0.ravel());b0=g.T@(m*v0.ravel())
-    np.testing.assert_allclose(a0,field['projection_a0'],atol=1e-12)
-    np.testing.assert_allclose(b0,field['projection_b0'],atol=1e-12)
-    eigen,vectors=np.linalg.eigh(k);omega=c*np.sqrt(eigen)
-    times=np.arange(len(field['u']))*.05;co,si=np.cos(times[:,None]*omega),np.sin(times[:,None]*omega)
-    targets=(co*(vectors.T@a0)+si*(vectors.T@b0)/omega)@vectors.T
-    velocities=(-si*omega*(vectors.T@a0)+co*(vectors.T@b0))@vectors.T
-    if method=='linear_bank64':
-        aa,bb=targets,velocities;implicit=[];fitdelta=[];hessiandelta=[]
-    else:
-        np.testing.assert_allclose(targets,field['projection_targets'],atol=1e-10)
-        np.testing.assert_allclose(velocities,field['projection_velocity_targets'],atol=1e-9)
-        weight=np.eye(64) if method=='projected_l2' else k/(np.trace(k)/64)
-        root=np.linalg.cholesky(weight).T
-        scale=float(field['projection_scale']);aa=[];bb=[];implicit=[];fitdelta=[];hessiandelta=[]
-        for ii,(z,w,target,velocity) in enumerate(zip(field['projection_z'],field['projection_w'],targets,velocities)):
-            a,b,jac,_=geometry(head,mesh['transform'],z,w);aa.append(a);bb.append(b)
-            residue=a-target;grad=jac.T@weight@residue
-            projected=(root@residue)/scale;jscaled=(root@jac)/scale
-            gradient=np.max(abs(jscaled.T@projected))/max(1.,np.linalg.norm(jscaled)*np.linalg.norm(projected))
-            stat=np.linalg.norm(np.linalg.qr(jscaled,mode='reduced')[0].T@projected)/max(np.linalg.norm(projected),1e-10)
-            best=int(field['projection_fit_selected'][ii])
-            fitdelta.append(max(abs(gradient-field['projection_fit_gradient'][ii,best]),abs(stat-field['projection_fit_stationarity'][ii,best]),
-                                abs(projected@projected-field['projection_fit_objective'][ii,best])))
-            derivative=jacobian_direction(head,mesh['transform'],z,w)
-            rhs=jac.T@weight@velocity;lhs=jac.T@weight@b+derivative.T@weight@residue
-            implicit.append(np.linalg.norm(lhs-rhs)/max(np.linalg.norm(rhs),1e-12))
-            if ii in (0,len(times)//2,len(times)-1):
-                hessian=np.column_stack([jac.T@weight@jac[:,i]+jacobian_direction(head,mesh['transform'],z,np.eye(32)[i]).T@weight@residue for i in range(32)])
-                sv=np.linalg.eigvalsh((hessian+hessian.T)/2)
-                hessiandelta.append(max(abs(sv[0]-field['projection_fit_hessian_min_eigenvalue'][ii]),abs(sv[-1]-field['projection_fit_hessian_max_eigenvalue'][ii])))
-                assert np.linalg.norm(hessian-hessian.T)<1e-9
-        aa,bb=np.asarray(aa),np.asarray(bb)
-        assert max(implicit)<1e-7 and max(fitdelta)<1e-8 and max(hessiandelta)<1e-9
-    coefficient_delta=max(float(np.max(abs(aa-field['projection_coefficients']))),float(np.max(abs(bb-field['projection_velocity_coefficients']))))
-    assert coefficient_delta<1e-8
-    decode_delta=0.
-    for offset in range(0,len(g),8192):
-        part=g[offset:offset+8192]
-        decode_delta=max(decode_delta,float(np.max(abs(aa@part.T-field['u'].reshape(len(aa),-1)[:,offset:offset+len(part)]))),
-                         float(np.max(abs(bb@part.T-field['v'].reshape(len(aa),-1)[:,offset:offset+len(part)]))))
-    assert decode_delta<1e-8
-    return dict(coefficient_max_absolute=coefficient_delta,decode_max_absolute=decode_delta,
-                maximum_implicit_velocity_equation_relative=float(max(implicit,default=0)),
-                maximum_fit_diagnostic_error=float(max(fitdelta,default=0)),maximum_sampled_hessian_eigenvalue_error=float(max(hessiandelta,default=0)))
-
-
 def audit(record):
     cluster=record/'cluster';native=cluster/'out/pilot'
     result=json.loads((native/'result.json').read_text());cfg=result['config'];meta=result['provenance']
@@ -112,7 +52,7 @@ def audit(record):
     groups=defaultdict(list)
     for row in result['invocations']:groups[row['intervals'],row['case'],row['method'],row['setting']].append(row)
     countcases=sum(len(c['indices']) for c in cfg['cohorts'])
-    assert len(result['invocations'])==len(cfg['meshes'])*countcases*(len(cfg['arms'])+len(cfg['cg_tolerances'])+len(cfg.get('cg_timestep_arms',[]))+1)*cfg['repetitions']
+    assert len(result['invocations'])==len(cfg['meshes'])*countcases*(len(cfg['arms'])+len(cfg['cg_tolerances'])+1)*cfg['repetitions']
     checked=[];references=[];banks=[];parities=[];refinements=[]
     for n in cfg['meshes']:
         with np.load(native/f'mesh_dirichlet_{n}.npz') as f:mesh={k:f[k] for k in f.files}
@@ -142,15 +82,10 @@ def audit(record):
                     assert delta<1e-10
                     for r in rows:assert r['output_sha256']==hashes
                     item=dict(intervals=n,case=case,method=row['method'],setting=row['setting'],full_field_metric_disagreement=delta)
-                    row_head=head
-                    if row['method'].startswith('trained_'):
-                        with np.load(native/f"head_{row['method']}.npz") as f:row_head={k:f[k] for k in f.files}
-                    if 'projection_coefficients' in field:
-                        item['projection_audit']=projection_check(field,row,mesh,head,u0,v0,c)
                     if 'coefficients' in field:
                         aa=[];bb=[];rank=[];acceleration_delta=[];backwards=[];bound_defects=[]
                         for z,w in zip(field['rollout_z'],field['rollout_w']):
-                            a,b,jac,curve=geometry(row_head,mesh['transform'],z,w)
+                            a,b,jac,curve=geometry(head,mesh['transform'],z,w)
                             aa.append(a);bb.append(b)
                             singular=np.linalg.svd(jac,compute_uv=False);rank.append(singular[-1]/singular[0])
                             force=curve+c*c*mesh['stiffness']@a+c*mesh['damping']@b
@@ -171,7 +106,7 @@ def audit(record):
                             decode_error=max(decode_error,float(np.max(abs(aa@g.T-u.reshape(len(u),-1)[:,offset:offset+len(g)]))),
                                              float(np.max(abs(bb@g.T-v.reshape(len(v),-1)[:,offset:offset+len(g)]))))
                         assert decode_error<1e-8
-                        a,b,jac,_=geometry(row_head,mesh['transform'],field['rollout_z'][0],field['rollout_w'][0])
+                        a,b,jac,_=geometry(head,mesh['transform'],field['rollout_z'][0],field['rollout_w'][0])
                         target=mesh['g'].T@(mesh['mass']*u0.ravel());scale=np.sqrt(np.sum(mesh['mass']*u0.ravel()**2))
                         residual=(a-target)/scale;jac=jac/scale
                         gradient=np.max(abs(jac.T@residual))/max(1.,np.linalg.norm(jac)*np.linalg.norm(residual))

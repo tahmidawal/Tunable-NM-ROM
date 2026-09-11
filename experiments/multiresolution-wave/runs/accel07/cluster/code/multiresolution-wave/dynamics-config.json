@@ -1,0 +1,80 @@
+{
+  "meshes": [
+    256,
+    512
+  ],
+  "boundaries": [
+    "dirichlet",
+    "absorbing"
+  ],
+  "validation_seed": 690602,
+  "validation_indices": [
+    0,
+    1
+  ],
+  "end_time": 2.4,
+  "observation_dt": 0.05,
+  "rom_dts": [
+    0.0025,
+    0.00125
+  ],
+  "fom_cfls": [
+    0.45,
+    0.225
+  ],
+  "absorbing_reference_n": 1024,
+  "reference_cfl": 0.1125,
+  "spectral_reference_meshes": [
+    512,
+    1024
+  ],
+  "comparison_intervals": 256,
+  "saved_intervals": 64,
+  "repetitions": 3,
+  "fit_iterations": 800,
+  "accuracy_targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "reference_budget_fraction": 0.1,
+  "vanishing_fraction": 0.001,
+  "rank": 64,
+  "latent": 16,
+  "weak_tests": 64,
+  "head": "mlp_691200",
+  "frozen_math_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+  "checkpoint_commit": "906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e",
+  "final_test_opened": false,
+  "claim_scope": "Two predetermined validation trajectories per boundary; development pilot only, no final-cohort confirmation.",
+  "input_output_contract": "One host-resident displacement and velocity field, scalar physical wave speed; return displacement and physical velocity on the requested mesh at all 49 observation times, on host. Homogeneous unforced equation.",
+  "arms": [
+    "mlp16_dt0.0025",
+    "mlp16_dt0.00125",
+    "affine16",
+    "affine32",
+    "full64"
+  ],
+  "diagnostic_indices": [
+    0,
+    12,
+    24,
+    36,
+    48
+  ],
+  "diagnostic_fit_budgets": [
+    400,
+    800
+  ],
+  "train_seed": 690601,
+  "train_count": 64,
+  "training_intervals": 256,
+  "training_cfl": 0.12,
+  "force_scale": "initial displacement mass-L2 norm / horizon squared",
+  "zero_field_diagnostic": true,
+  "affine_forcing": "Retained exactly, including nonzero offset. Supplied speed enters timed setup and propagation.",
+  "query_observations": 49,
+  "full_field_audit": "All full-grid same-grid references and learned bank tables plus every first-repetition ROM coefficient state saved; common-grid outputs retained for every method. Repetition hashes retained.",
+  "reference_bound": null
+}

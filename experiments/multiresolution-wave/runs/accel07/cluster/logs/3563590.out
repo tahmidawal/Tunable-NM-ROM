@@ -1,0 +1,135 @@
+jax_backend=gpu
+{'jax_backend': 'gpu', 'x64': True}
+{'jax_backend': 'gpu', 'x64': True}
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100 80GB PCIe"], "host": "pax007", "source_commit": "b55fe991cff4512063c8109dcdcc72d3ed21d060", "job_id": "3563590", "numpy_version": "2.5.0"}
+warmup 64 opened_0 baseline 0.0025
+warmup 64 opened_0 chol_guard 0.01
+warmup 64 opened_0 chol_guard 0.025
+warmup 64 opened_0 linear_bank64 0.0
+warmup 64 opened_0 projected_l2 0.0
+warmup 64 opened_0 projected_h1 0.0
+warmup 64 opened_0 cg_1e-06 1e-06
+warmup 64 opened_0 cg_0.01 0.01
+warmup 64 opened_0 cgdt_0.005_tol_1e-06 1e-06
+warmup 64 opened_0 cgdt_0.005_tol_0.01 0.01
+warmup 64 opened_0 cgdt_0.01_tol_1e-06 1e-06
+warmup 64 opened_0 cgdt_0.01_tol_0.01 0.01
+warmup 64 opened_0 cgdt_0.025_tol_1e-06 1e-06
+warmup 64 opened_0 cgdt_0.025_tol_0.01 0.01
+warmup 64 opened_0 dst 0.0
+timed 64 opened_0 0 baseline 0.0025
+timed 64 opened_0 0 chol_guard 0.01
+timed 64 opened_0 0 chol_guard 0.025
+timed 64 opened_0 0 linear_bank64 0.0
+timed 64 opened_0 0 projected_l2 0.0
+timed 64 opened_0 0 projected_h1 0.0
+timed 64 opened_0 0 cg_1e-06 1e-06
+timed 64 opened_0 0 cg_0.01 0.01
+timed 64 opened_0 0 cgdt_0.005_tol_1e-06 1e-06
+timed 64 opened_0 0 cgdt_0.005_tol_0.01 0.01
+timed 64 opened_0 0 cgdt_0.01_tol_1e-06 1e-06
+timed 64 opened_0 0 cgdt_0.01_tol_0.01 0.01
+timed 64 opened_0 0 cgdt_0.025_tol_1e-06 1e-06
+timed 64 opened_0 0 cgdt_0.025_tol_0.01 0.01
+timed 64 opened_0 0 dst 0.0
+timed 64 opened_0 1 dst 0.0
+timed 64 opened_0 1 cgdt_0.025_tol_0.01 0.01
+timed 64 opened_0 1 cgdt_0.025_tol_1e-06 1e-06
+timed 64 opened_0 1 cgdt_0.01_tol_0.01 0.01
+timed 64 opened_0 1 cgdt_0.01_tol_1e-06 1e-06
+timed 64 opened_0 1 cgdt_0.005_tol_0.01 0.01
+timed 64 opened_0 1 cgdt_0.005_tol_1e-06 1e-06
+timed 64 opened_0 1 cg_0.01 0.01
+timed 64 opened_0 1 cg_1e-06 1e-06
+timed 64 opened_0 1 projected_h1 0.0
+timed 64 opened_0 1 projected_l2 0.0
+timed 64 opened_0 1 linear_bank64 0.0
+timed 64 opened_0 1 chol_guard 0.025
+timed 64 opened_0 1 chol_guard 0.01
+timed 64 opened_0 1 baseline 0.0025
+timed 64 opened_0 2 baseline 0.0025
+timed 64 opened_0 2 chol_guard 0.01
+timed 64 opened_0 2 chol_guard 0.025
+timed 64 opened_0 2 linear_bank64 0.0
+timed 64 opened_0 2 projected_l2 0.0
+timed 64 opened_0 2 projected_h1 0.0
+timed 64 opened_0 2 cg_1e-06 1e-06
+timed 64 opened_0 2 cg_0.01 0.01
+timed 64 opened_0 2 cgdt_0.005_tol_1e-06 1e-06
+timed 64 opened_0 2 cgdt_0.005_tol_0.01 0.01
+timed 64 opened_0 2 cgdt_0.01_tol_1e-06 1e-06
+timed 64 opened_0 2 cgdt_0.01_tol_0.01 0.01
+timed 64 opened_0 2 cgdt_0.025_tol_1e-06 1e-06
+timed 64 opened_0 2 cgdt_0.025_tol_0.01 0.01
+timed 64 opened_0 2 dst 0.0
+projection_kinematics 64 opened_0 projected_l2
+projection_kinematics 64 opened_0 projected_h1
+refinement 64 opened_0 baseline 0.0025
+refinement 64 opened_0 chol_guard 0.01
+refinement 64 opened_0 chol_guard 0.025
+warmup 64 opened_1 baseline 0.0025
+warmup 64 opened_1 chol_guard 0.01
+warmup 64 opened_1 chol_guard 0.025
+warmup 64 opened_1 linear_bank64 0.0
+warmup 64 opened_1 projected_l2 0.0
+warmup 64 opened_1 projected_h1 0.0
+warmup 64 opened_1 cg_1e-06 1e-06
+warmup 64 opened_1 cg_0.01 0.01
+warmup 64 opened_1 cgdt_0.005_tol_1e-06 1e-06
+warmup 64 opened_1 cgdt_0.005_tol_0.01 0.01
+warmup 64 opened_1 cgdt_0.01_tol_1e-06 1e-06
+warmup 64 opened_1 cgdt_0.01_tol_0.01 0.01
+warmup 64 opened_1 cgdt_0.025_tol_1e-06 1e-06
+warmup 64 opened_1 cgdt_0.025_tol_0.01 0.01
+warmup 64 opened_1 dst 0.0
+timed 64 opened_1 0 baseline 0.0025
+timed 64 opened_1 0 chol_guard 0.01
+timed 64 opened_1 0 chol_guard 0.025
+timed 64 opened_1 0 linear_bank64 0.0
+timed 64 opened_1 0 projected_l2 0.0
+timed 64 opened_1 0 projected_h1 0.0
+timed 64 opened_1 0 cg_1e-06 1e-06
+timed 64 opened_1 0 cg_0.01 0.01
+timed 64 opened_1 0 cgdt_0.005_tol_1e-06 1e-06
+timed 64 opened_1 0 cgdt_0.005_tol_0.01 0.01
+timed 64 opened_1 0 cgdt_0.01_tol_1e-06 1e-06
+timed 64 opened_1 0 cgdt_0.01_tol_0.01 0.01
+timed 64 opened_1 0 cgdt_0.025_tol_1e-06 1e-06
+timed 64 opened_1 0 cgdt_0.025_tol_0.01 0.01
+timed 64 opened_1 0 dst 0.0
+timed 64 opened_1 1 dst 0.0
+timed 64 opened_1 1 cgdt_0.025_tol_0.01 0.01
+timed 64 opened_1 1 cgdt_0.025_tol_1e-06 1e-06
+timed 64 opened_1 1 cgdt_0.01_tol_0.01 0.01
+timed 64 opened_1 1 cgdt_0.01_tol_1e-06 1e-06
+timed 64 opened_1 1 cgdt_0.005_tol_0.01 0.01
+timed 64 opened_1 1 cgdt_0.005_tol_1e-06 1e-06
+timed 64 opened_1 1 cg_0.01 0.01
+timed 64 opened_1 1 cg_1e-06 1e-06
+timed 64 opened_1 1 projected_h1 0.0
+timed 64 opened_1 1 projected_l2 0.0
+timed 64 opened_1 1 linear_bank64 0.0
+timed 64 opened_1 1 chol_guard 0.025
+timed 64 opened_1 1 chol_guard 0.01
+timed 64 opened_1 1 baseline 0.0025
+timed 64 opened_1 2 baseline 0.0025
+timed 64 opened_1 2 chol_guard 0.01
+timed 64 opened_1 2 chol_guard 0.025
+timed 64 opened_1 2 linear_bank64 0.0
+timed 64 opened_1 2 projected_l2 0.0
+timed 64 opened_1 2 projected_h1 0.0
+timed 64 opened_1 2 cg_1e-06 1e-06
+timed 64 opened_1 2 cg_0.01 0.01
+timed 64 opened_1 2 cgdt_0.005_tol_1e-06 1e-06
+timed 64 opened_1 2 cgdt_0.005_tol_0.01 0.01
+timed 64 opened_1 2 cgdt_0.01_tol_1e-06 1e-06
+timed 64 opened_1 2 cgdt_0.01_tol_0.01 0.01
+timed 64 opened_1 2 cgdt_0.025_tol_1e-06 1e-06
+timed 64 opened_1 2 cgdt_0.025_tol_0.01 0.01
+timed 64 opened_1 2 dst 0.0
+projection_kinematics 64 opened_1 projected_l2
+projection_kinematics 64 opened_1 projected_h1
+refinement 64 opened_1 baseline 0.0025
+refinement 64 opened_1 chol_guard 0.01
+refinement 64 opened_1 chol_guard 0.025
+wave_acceleration_complete

@@ -124,12 +124,18 @@ def main():
                 assert row['finite']
                 if row['method']=='nmrom':
                     z=np.asarray(row['latent']);z0=np.asarray(row['initial_latent']);assert row['selected_training_code_index']==nearest
+                    distance=float(np.sqrt(distances[nearest]));gap=float(np.partition(distances,1)[1]-distances[nearest])
+                    assert abs(distance-row['cache_distance'])/(distance+1e-300)<1e-10
+                    assert abs(gap-row['cache_squared_distance_gap'])/(distance*distance+1e-300)<1e-10
+                    assert row['cache_near_tie']==(row['cache_relative_squared_gap']<=row['cache_near_tie_relative_threshold'])
                     np.testing.assert_array_equal(z0,codes[nearest]);r=B@head(p,z)-target;r0=B@head(p,z0)-target
                     initial=np.linalg.norm(r0);final=np.linalg.norm(r);J=B@head_jac(p,z).T
                     gradient=np.linalg.norm(J.T@r)/(np.linalg.norm(J)*final+1e-300)
                     residual_errors.extend([abs(initial-row['initial_residual'])/(initial+1e-300),abs(final-row['residual'])/(initial+1e-300)]);assert max(residual_errors[-2:])<1e-10
                     gradient_errors.append(abs(gradient-row['stationarity']));assert gradient_errors[-1]<1e-8
                     assert row['stationary']==(row['stationarity']<=cfg['stationarity_tolerance'])
+                    assert row['absolute_tau_threshold']==cfg['tau']*row['initial_residual']
+                    if row['reason']==2:assert row['residual']<=row['absolute_tau_threshold']
                     valid=row['finite'] and row['max_linear_backward_error']<=cfg['linear_backward_error_limit'] and (row['stationary'] or row['reason']==2)
                     assert row['solver_valid']==valid and 0<=row['fallback_count']<=row['attempts']
                     if row['repetition']==0:

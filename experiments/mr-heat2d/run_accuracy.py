@@ -59,7 +59,8 @@ def main():
         for draw in hc.sample_family(cohort["seed"], cohort["count"], cfg):
             result["cases"].append(dict(case=len(result["cases"]), cohort=cohort["name"], seed=cohort["seed"], draw=draw.tolist()))
     training_arrays, training_setup = assemble(params, codes, cfg["train_intervals"], cfg)
-    models, result["models"], result["reconstruction"] = at.prepare(params, codes, cfg, settings, training_arrays, result["cases"], out, save_field)
+    models, result["models"], result["reconstruction"] = at.prepare(params, codes, cfg, settings, training_arrays, result["cases"], out, save_field,
+        lambda data:(result.update(data),dump(out/"results.json",result)))
     result["training_setup"] = training_setup
     dump(out/"results.json", result)
     del training_arrays
@@ -168,7 +169,10 @@ def main():
                         vs_physical=hc.error_metrics(fields, truth, n))
                     rows[name]["repetitions"].append(record)
                 del captured
-            result["rows"].extend(rows.values()); dump(out/"results.json", result)
+            result["rows"].extend(rows.values())
+            if n == max(settings["requested_intervals"]):
+                result.setdefault("fine_reconstruction",[]).append(at.fine_diagnostic(models,arrays,discrete,truth,n,cid,settings,save_field))
+            dump(out/"results.json", result)
             print("timed", n, cid, {name: round(np.median([r["phases"]["device_seconds"] for r in row["repetitions"]])*1000, 4) for name, row in rows.items()}, flush=True)
         del arrays, maps, fine_maps
         jax.clear_caches()

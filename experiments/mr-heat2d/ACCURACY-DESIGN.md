@@ -8,7 +8,12 @@ The current model has eight latent coordinates and 32 spatial functions. Earlier
 unrestricted-bank dynamics motivates checking the bank first on every current
 development case and output time. At the training mesh, compare its exact
 orthogonal field projection and four-start stationary nonlinear field fits.
-These are best-found fits, never certified global nonlinear optima. If any bank
+These are best-found fits, never certified global nonlinear optima. At the finest confirmation mesh, repeat full-field bank and
+strict head fits for every case and every output time. Their fit targets are
+exact semidiscrete trajectories; errors against the separate refined continuum
+reference are also saved. These truth-informed controls run outside timing and
+never supply online starting states. The bank gate and initial training metrics
+are saved before an abort or any continuation. If any bank
 projection exceeds the declared 3% current-relative threshold, halt this
 head-only experiment and report the case before changing the bank.
 

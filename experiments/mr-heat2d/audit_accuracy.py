@@ -297,13 +297,45 @@ def audit(record):
             worst_later_error=max(max(m["relative_current"][1:]) for m in record_fit["metrics"]),
             nonstationary_selected=int(np.sum(selected[:,2] != 1)),
             maximum_gradient_difference=max(fit_gradient_deltas)))
+    fine_summaries=[]
+    assert result['bank_gate']['passed']
+    fine_records=result['fine_reconstruction']
+    assert len(fine_records)==len(result['cases'])
+    for diagnostic in fine_records:
+        n,cid=diagnostic['intervals'],diagnostic['case']; ref=refs[n,cid]
+        exact=field(ref['discrete']); physical=field(ref['physical'])
+        projected=field(diagnostic['bank_projection']); targets=field(diagnostic['target'])
+        check_metrics(projected,exact,n,diagnostic['bank_same_grid'])
+        check_metrics(projected,physical,n,diagnostic['bank_physical'])
+        op=operators[n]; sampled_q=scipy.linalg.solve_triangular(op['triangular'].T,sampled_bank.T,lower=True).T
+        stride=n//64
+        np.testing.assert_allclose(targets@sampled_q.T,projected[:,stride-1::stride,stride-1::stride].reshape(len(exact),-1),rtol=1e-9,atol=1e-11)
+        for fit in diagnostic['models']:
+            params=models[fit['name']]['params']; predicted=field(fit['reconstructed'])
+            all_zs=np.asarray(fit['all_latents']); infos=np.asarray(fit['fits']); best=np.asarray(fit['best'])
+            zs=np.asarray(fit['latents'])
+            np.testing.assert_array_equal(best,np.argmin(infos[:,:,3],axis=1))
+            np.testing.assert_array_equal(zs,all_zs[np.arange(len(zs)),best])
+            np.testing.assert_allclose(head(zs)@sampled_bank.T,predicted[:,stride-1::stride,stride-1::stride].reshape(len(exact),-1),rtol=1e-9,atol=1e-11)
+            max_delta=0.
+            for target,zstarts,infostarts in zip(targets,all_zs,infos):
+                for z,saved in zip(zstarts,infostarts):
+                    scale=max(np.linalg.norm(target),1e-14)
+                    residual=(op['triangular']@head(z)-target)/scale; jac=op['triangular']@head_jacobian(z)/scale
+                    actual=np.array([np.linalg.norm(residual),np.linalg.norm(jac.T@residual)/max(np.linalg.norm(jac),1e-30)])
+                    np.testing.assert_allclose(actual,saved[[3,4]],rtol=1e-7,atol=1e-10)
+                    max_delta=max(max_delta,float(np.max(np.abs(actual-saved[[3,4]]))))
+            check_metrics(predicted,exact,n,fit['vs_same_grid']); check_metrics(predicted,physical,n,fit['vs_physical'])
+            fine_summaries.append(dict(intervals=n,case=cid,model=fit['name'],
+                initial_error=fit['vs_same_grid']['relative_current'][0],later_worst=max(fit['vs_same_grid']['relative_current'][1:]),
+                nonstationary_selected=int(np.sum(infos[np.arange(len(zs)),best,2]!=1)),maximum_diagnostic_difference=max_delta))
     output = dict(passed=True, result_sha256=hashlib.sha256((out/"results.json").read_bytes()).hexdigest(),
         metadata=result["metadata"], source_commit=source["source_commit"], settings=result["settings"],
         unique_fields_checked=len(checked), timed_invocations_checked=sum(counts.values()),
         metric_entries_checked=metric_count, maximum_metric_difference=largest_delta,
         maximum_reference_refinement=max_reference_delta, operator_errors=operator_errors,
         outlier_rule="Above 1.5 times the median of the same case/method/mesh repetition group; none excluded.",
-        summaries=summaries, representation_summaries=representation_summaries, prior_nmrom_field_parity=nmrom_parity,
+        summaries=summaries, representation_summaries=representation_summaries, fine_representation_summaries=fine_summaries, prior_nmrom_field_parity=nmrom_parity,
         nonlinear_decoder_checks=len(manifold_checks), maximum_sampled_decoder_error=max(manifold_checks),
         time_step_weak_checks=len(weak_checks), maximum_time_step_weak_difference=max(weak_checks),
         initial_fit_weak_checks=len(initial_checks), maximum_initial_fit_weak_difference=max(initial_checks),

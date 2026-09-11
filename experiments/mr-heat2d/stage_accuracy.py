@@ -8,7 +8,7 @@ import subprocess
 
 FILES = ["experiments/separable-decoder/sep_common.py"]+["experiments/mr-heat2d/"+name for name in (
     "heat_core.py", "run_pilot.py", "runtime_paths.py", "verify_heat.py", "config-pilot.json", "config-transfer.json",
-    "transfer_core.py", "linear_paths.py", "cp_algebra_paths.py", "cg_paths.py", "run_accuracy.py", "accuracy_training.py", "head_refine.py", "config-accuracy.json", "cluster/accuracy.sbatch", "ACCURACY-DESIGN.md")]
+    "transfer_core.py", "linear_paths.py", "cp_algebra_paths.py", "cg_paths.py", "run_accuracy.py", "audit_accuracy.py", "accuracy_training.py", "head_refine.py", "config-accuracy.json", "cluster/accuracy.sbatch", "ACCURACY-DESIGN.md")]
 
 
 def stage(destination, commit, smoke=False):

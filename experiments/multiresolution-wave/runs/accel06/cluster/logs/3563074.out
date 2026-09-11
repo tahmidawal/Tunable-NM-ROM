@@ -1,0 +1,81 @@
+jax_backend=gpu
+{'jax_backend': 'gpu', 'x64': True}
+{'jax_backend': 'gpu', 'x64': True}
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100 80GB PCIe"], "host": "pax049", "source_commit": "2826ce49f385d34a65229798893ec1f2977c714a", "job_id": "3563074", "numpy_version": "2.5.0"}
+warmup 64 opened_0 baseline 0.0025
+warmup 64 opened_0 shared_svd_r 0.0025
+warmup 64 opened_0 qr_guard 0.0025
+warmup 64 opened_0 chol_guard 0.0025
+warmup 64 opened_0 chol_guard 0.005
+warmup 64 opened_0 chol_guard 0.01
+warmup 64 opened_0 cg_1e-06 1e-06
+warmup 64 opened_0 cg_0.01 0.01
+warmup 64 opened_0 dst 0.0
+timed 64 opened_0 0 baseline 0.0025
+timed 64 opened_0 0 shared_svd_r 0.0025
+timed 64 opened_0 0 qr_guard 0.0025
+timed 64 opened_0 0 chol_guard 0.0025
+timed 64 opened_0 0 chol_guard 0.005
+timed 64 opened_0 0 chol_guard 0.01
+timed 64 opened_0 0 cg_1e-06 1e-06
+timed 64 opened_0 0 cg_0.01 0.01
+timed 64 opened_0 0 dst 0.0
+timed 64 opened_0 1 dst 0.0
+timed 64 opened_0 1 cg_0.01 0.01
+timed 64 opened_0 1 cg_1e-06 1e-06
+timed 64 opened_0 1 chol_guard 0.01
+timed 64 opened_0 1 chol_guard 0.005
+timed 64 opened_0 1 chol_guard 0.0025
+timed 64 opened_0 1 qr_guard 0.0025
+timed 64 opened_0 1 shared_svd_r 0.0025
+timed 64 opened_0 1 baseline 0.0025
+timed 64 opened_0 2 baseline 0.0025
+timed 64 opened_0 2 shared_svd_r 0.0025
+timed 64 opened_0 2 qr_guard 0.0025
+timed 64 opened_0 2 chol_guard 0.0025
+timed 64 opened_0 2 chol_guard 0.005
+timed 64 opened_0 2 chol_guard 0.01
+timed 64 opened_0 2 cg_1e-06 1e-06
+timed 64 opened_0 2 cg_0.01 0.01
+timed 64 opened_0 2 dst 0.0
+refinement 64 opened_0 baseline 0.0025
+refinement 64 opened_0 chol_guard 0.01
+warmup 64 opened_1 baseline 0.0025
+warmup 64 opened_1 shared_svd_r 0.0025
+warmup 64 opened_1 qr_guard 0.0025
+warmup 64 opened_1 chol_guard 0.0025
+warmup 64 opened_1 chol_guard 0.005
+warmup 64 opened_1 chol_guard 0.01
+warmup 64 opened_1 cg_1e-06 1e-06
+warmup 64 opened_1 cg_0.01 0.01
+warmup 64 opened_1 dst 0.0
+timed 64 opened_1 0 baseline 0.0025
+timed 64 opened_1 0 shared_svd_r 0.0025
+timed 64 opened_1 0 qr_guard 0.0025
+timed 64 opened_1 0 chol_guard 0.0025
+timed 64 opened_1 0 chol_guard 0.005
+timed 64 opened_1 0 chol_guard 0.01
+timed 64 opened_1 0 cg_1e-06 1e-06
+timed 64 opened_1 0 cg_0.01 0.01
+timed 64 opened_1 0 dst 0.0
+timed 64 opened_1 1 dst 0.0
+timed 64 opened_1 1 cg_0.01 0.01
+timed 64 opened_1 1 cg_1e-06 1e-06
+timed 64 opened_1 1 chol_guard 0.01
+timed 64 opened_1 1 chol_guard 0.005
+timed 64 opened_1 1 chol_guard 0.0025
+timed 64 opened_1 1 qr_guard 0.0025
+timed 64 opened_1 1 shared_svd_r 0.0025
+timed 64 opened_1 1 baseline 0.0025
+timed 64 opened_1 2 baseline 0.0025
+timed 64 opened_1 2 shared_svd_r 0.0025
+timed 64 opened_1 2 qr_guard 0.0025
+timed 64 opened_1 2 chol_guard 0.0025
+timed 64 opened_1 2 chol_guard 0.005
+timed 64 opened_1 2 chol_guard 0.01
+timed 64 opened_1 2 cg_1e-06 1e-06
+timed 64 opened_1 2 cg_0.01 0.01
+timed 64 opened_1 2 dst 0.0
+refinement 64 opened_1 baseline 0.0025
+refinement 64 opened_1 chol_guard 0.01
+wave_acceleration_complete

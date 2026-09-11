@@ -1,0 +1,41 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.23:/projects/paralab  4.6T  4.2T  451G  91% /cluster/tufts/paralab
+
+{
+  "label": "correction_accuracy10",
+  "source_commit": "d5146f31268f6c4302c745280420d857c98ebcef",
+  "source_hashes": {
+    "code/core.py": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+    "code/speed_core.py": "3f701fed25ff7cbb9b537e54e38af6c13b97cf4735408d601d8cc1c6805942a4",
+    "code/kernel_solver.py": "b2d7881b6c6dd8f53db15f1a8f39515fe5e9b1350db5883c91bcaa71a2d3b975",
+    "code/pilot.py": "0d75d2ae845647f155a7b093ed0f439cd1a1b408759bc02b95fb8602b4bfc963",
+    "code/iterative_core.py": "6e01472a48be675f5b3838bb15be74631c9afc7ea34b230938dbf9549da49119",
+    "code/tuning_core.py": "d8d6dcbe8ad6a4cc2646822c8f1fb2a50c6895edf5f44538358b96c6e6a455fc",
+    "code/correction_core.py": "70738422a31393fe4bdc7d22acf7f03cf7d8f76804410c073a803f85e32e795c",
+    "code/correction_accuracy.py": "4493390781f42ebf54592d41695b7bdb0b313d464b0ac1cea9f77c285945e792",
+    "code/test_corrections.py": "f8e94554d121caa452ba64ead80a635120ec083890f1bb5c42c1673007444a87",
+    "code/config-correction-accuracy.json": "01b2285cf417aa7a5d7f1fa41754bcd8b48e1d37165429e388f7e3a87683cb18",
+    "code/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+    "code/ctol_tol.py": "7bf2a76d195e4cd44ed65b5765bc1197f195fd05915a8abc1037a7d1a02e32f0",
+    "code/ms_parametric.py": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+  },
+  "inputs": {
+    "in/head.pkl": {
+      "source_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r128_joint.pkl",
+      "sha256": "a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c"
+    },
+    "in/original.pkl": {
+      "source_path": "experiments/multiresolution-poisson/runs/pilot04/checkpoints/original_relative.pkl",
+      "sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a"
+    },
+    "in/basis.npz": {
+      "source_path": "experiments/multiresolution-poisson/runs/capacity_accuracy09/r128_joint-training-correction-basis.npz",
+      "sha256": "88d088d0665ea6bafc949433a1764b3032e8773a47a45f94e4bb0fc1036f5456"
+    }
+  },
+  "remote": "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/correction_accuracy10",
+  "staged_at": "2026-09-11T20:19:59.748840+00:00",
+  "queue_before": "             JOBID                                NAME    STATE     NODELIST(REASON)\n",
+  "job_id": "3572754",
+  "queue_after": "             JOBID                                NAME    STATE     NODELIST(REASON)\n           3572754 ctol_mr_poisson_correction_accuracy  PENDING           (Priority)\n"
+}

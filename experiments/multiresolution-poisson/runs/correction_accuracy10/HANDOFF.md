@@ -1,0 +1,7 @@
+# Final Poisson correction family — active
+
+Job `3572754` is running in the mandatory GPU partition on `pax144`. Scientific source is `d5146f31268f6c4302c745280420d857c98ebcef`. All cluster algebra, legacy-q0 solve and integration smokes passed. The real run passed the strict recorded original30 parameter hash check. This is the final approved family, with no further search: frozen r128_joint head, one training-only32-direction basis, nested8/16/32 prefixes,32 primary.
+
+Private remote: `/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/correction_accuracy10`; logs `logs/3572754.out` and `.err`; native result `out/pilot/result.json`. Submission metadata is in `submission.json`. Partial local `provisional-progress.json` is monitoring evidence only and may be incomplete; it must not feed accepted tables.
+
+Owner continues monitoring, checked collection, every-field CPU auditing, independent archive restoration and exact remote deletion. After a terminal job record, run `correction_cluster.py collect correction_accuracy10`, then `reports/audit_correction_accuracy.py` and `reports/verify_split_archive.py` against this run. Generate final `panel.json` and `summary.md` with `reports/summarize_correction_accuracy.py` only after successful full audit. Root has a separate endpoint checker and must be told when collection is ready. Preserve explicit checkpoints and correction basis plus all tracked archive parts and hash manifests. Final closure must include the scoped integration inventory and canonical lab-log append. No merge.

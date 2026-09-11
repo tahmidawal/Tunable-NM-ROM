@@ -1,0 +1,132 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.25:/projects/paralab  4.6T  4.2T  451G  91% /cluster/tufts/paralab
+Fri Sep 11 11:54:20 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000000:4F:00.0 Off |                    0 |
+| N/A   36C    P0             53W /  300W |       0MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+accuracy_train uniform {'update': 1, 'loss': 0.0002974464367780157, 'seconds': 4.638356541050598}
+accuracy_train uniform {'update': 2000, 'loss': 0.0002726498629036545, 'seconds': 5.641960283042863}
+accuracy_train uniform {'update': 4000, 'loss': 0.000273496662357316, 'seconds': 6.646658550947905}
+accuracy_train uniform {'update': 6000, 'loss': 0.0002556772907492252, 'seconds': 7.641733360011131}
+accuracy_train uniform {'update': 8000, 'loss': 0.00021398101115254847, 'seconds': 8.641950733959675}
+accuracy_train uniform {'update': 10000, 'loss': 0.00022337484517140767, 'seconds': 9.64872692595236}
+accuracy_train uniform {'update': 12000, 'loss': 0.00019041425747165887, 'seconds': 10.656348499003798}
+accuracy_train uniform {'update': 14000, 'loss': 0.00017984933180367112, 'seconds': 11.664458940038458}
+accuracy_train uniform {'update': 16000, 'loss': 0.00023076029635789278, 'seconds': 12.664034557994455}
+accuracy_train uniform {'update': 18000, 'loss': 0.00017618265001197948, 'seconds': 13.665186208905652}
+accuracy_train uniform {'update': 20000, 'loss': 0.00016653471763462076, 'seconds': 14.668339787051082}
+accuracy_train uniform {'update': 22000, 'loss': 0.00015855469788760964, 'seconds': 15.672395181842148}
+accuracy_train uniform {'update': 24000, 'loss': 0.00018257304913490687, 'seconds': 16.676856671925634}
+accuracy_train initial_only {'update': 1, 'loss': 0.0006028876373579933, 'seconds': 2.6105805039405823}
+accuracy_train initial_only {'update': 2000, 'loss': 0.00046060028912237955, 'seconds': 3.671476087998599}
+accuracy_train initial_only {'update': 4000, 'loss': 0.0004470444362603896, 'seconds': 4.699410531902686}
+accuracy_train initial_only {'update': 6000, 'loss': 0.0004296844941100382, 'seconds': 5.721664822893217}
+accuracy_train initial_only {'update': 8000, 'loss': 0.0003241847340476685, 'seconds': 6.743229371961206}
+accuracy_train initial_only {'update': 10000, 'loss': 0.0002604836523416488, 'seconds': 7.767126708989963}
+accuracy_train initial_only {'update': 12000, 'loss': 0.0002748348461200067, 'seconds': 8.792543418938294}
+accuracy_train initial_only {'update': 14000, 'loss': 0.0002931607118936931, 'seconds': 9.821109940996394}
+accuracy_train initial_only {'update': 16000, 'loss': 0.00029094604398156176, 'seconds': 10.844979319954291}
+accuracy_train initial_only {'update': 18000, 'loss': 0.00025491418319098524, 'seconds': 11.868291096994653}
+accuracy_train initial_only {'update': 20000, 'loss': 0.00029226583206899833, 'seconds': 12.888228505849838}
+accuracy_train initial_only {'update': 22000, 'loss': 0.0002433991152219061, 'seconds': 13.912125970004126}
+accuracy_train initial_only {'update': 24000, 'loss': 0.0002830802811333335, 'seconds': 14.937993277795613}
+accuracy_train initial_tail {'update': 1, 'loss': 0.0008166404012422667, 'seconds': 2.4460262118373066}
+accuracy_train initial_tail {'update': 2000, 'loss': 0.0005881498974062694, 'seconds': 3.4932098879944533}
+accuracy_train initial_tail {'update': 4000, 'loss': 0.0005301449015155252, 'seconds': 4.541324487887323}
+accuracy_train initial_tail {'update': 6000, 'loss': 0.0005253463428161599, 'seconds': 5.603994101053104}
+accuracy_train initial_tail {'update': 8000, 'loss': 0.0004105151707939058, 'seconds': 6.663432980887592}
+accuracy_train initial_tail {'update': 10000, 'loss': 0.00034056475678628296, 'seconds': 7.719201081898063}
+accuracy_train initial_tail {'update': 12000, 'loss': 0.00037767278879063666, 'seconds': 8.778762503992766}
+accuracy_train initial_tail {'update': 14000, 'loss': 0.0003818026022185583, 'seconds': 9.837552962824702}
+accuracy_train initial_tail {'update': 16000, 'loss': 0.0003674815208803492, 'seconds': 10.891667271964252}
+accuracy_train initial_tail {'update': 18000, 'loss': 0.00033024577178431404, 'seconds': 11.945087675005198}
+accuracy_train initial_tail {'update': 20000, 'loss': 0.00038318591602744224, 'seconds': 13.008036779006943}
+accuracy_train initial_tail {'update': 22000, 'loss': 0.000322150351468636, 'seconds': 14.067903173854575}
+accuracy_train initial_tail {'update': 24000, 'loss': 0.0003528540943842673, 'seconds': 15.131349524017423}
+accuracy_reconstruction frozen initial_worst 0.07595337323115837 later_worst 0.03451457590720533
+accuracy_reconstruction uniform initial_worst 0.05335266285121818 later_worst 0.02753778704044681
+accuracy_reconstruction initial_only initial_worst 0.048674032289649664 later_worst 0.027262432082769385
+accuracy_reconstruction initial_tail initial_worst 0.04762499009932826 later_worst 0.027050428874389153
+reference passed 0
+reference passed 1
+reference passed 2
+reference passed 3
+reference passed 4
+reference passed 5
+reference passed 6
+reference passed 7
+reference passed 8
+reference passed 9
+reference passed 10
+reference passed 11
+reference passed 12
+reference passed 13
+reference passed 14
+reference passed 15
+timed 64 0 {'nmrom_frozen': np.float64(13.3075), 'nmrom_uniform': np.float64(9.3225), 'nmrom_initial_only': np.float64(10.2601), 'nmrom_initial_tail': np.float64(10.6224), 'fom_cg_cn': np.float64(5.1866), 'fom_cg_cn_tol1e2': np.float64(2.3262), 'linear_weak_exact': np.float64(0.1177), 'fom_same_grid': np.float64(0.193)}
+timed 64 1 {'nmrom_frozen': np.float64(10.4724), 'nmrom_uniform': np.float64(19.5448), 'nmrom_initial_only': np.float64(11.8774), 'nmrom_initial_tail': np.float64(11.901), 'fom_cg_cn': np.float64(5.122), 'fom_cg_cn_tol1e2': np.float64(2.332), 'linear_weak_exact': np.float64(0.1113), 'fom_same_grid': np.float64(0.194)}
+timed 64 2 {'nmrom_frozen': np.float64(11.7024), 'nmrom_uniform': np.float64(10.6584), 'nmrom_initial_only': np.float64(10.475), 'nmrom_initial_tail': np.float64(10.6081), 'fom_cg_cn': np.float64(5.1272), 'fom_cg_cn_tol1e2': np.float64(2.2684), 'linear_weak_exact': np.float64(0.1087), 'fom_same_grid': np.float64(0.1697)}
+timed 64 3 {'nmrom_frozen': np.float64(10.7898), 'nmrom_uniform': np.float64(10.8459), 'nmrom_initial_only': np.float64(10.956), 'nmrom_initial_tail': np.float64(10.6758), 'fom_cg_cn': np.float64(4.9403), 'fom_cg_cn_tol1e2': np.float64(2.2885), 'linear_weak_exact': np.float64(0.1066), 'fom_same_grid': np.float64(0.164)}
+timed 64 4 {'nmrom_frozen': np.float64(12.1101), 'nmrom_uniform': np.float64(10.7494), 'nmrom_initial_only': np.float64(11.0905), 'nmrom_initial_tail': np.float64(11.6179), 'fom_cg_cn': np.float64(5.2138), 'fom_cg_cn_tol1e2': np.float64(2.3255), 'linear_weak_exact': np.float64(0.1001), 'fom_same_grid': np.float64(0.1602)}
+timed 64 5 {'nmrom_frozen': np.float64(11.8221), 'nmrom_uniform': np.float64(12.1702), 'nmrom_initial_only': np.float64(10.5821), 'nmrom_initial_tail': np.float64(10.3119), 'fom_cg_cn': np.float64(5.3213), 'fom_cg_cn_tol1e2': np.float64(2.3158), 'linear_weak_exact': np.float64(0.113), 'fom_same_grid': np.float64(0.1687)}
+timed 64 6 {'nmrom_frozen': np.float64(12.4546), 'nmrom_uniform': np.float64(11.9534), 'nmrom_initial_only': np.float64(11.2848), 'nmrom_initial_tail': np.float64(10.9798), 'fom_cg_cn': np.float64(5.2761), 'fom_cg_cn_tol1e2': np.float64(2.3016), 'linear_weak_exact': np.float64(0.1172), 'fom_same_grid': np.float64(0.1666)}
+timed 64 7 {'nmrom_frozen': np.float64(11.1959), 'nmrom_uniform': np.float64(11.9475), 'nmrom_initial_only': np.float64(12.6299), 'nmrom_initial_tail': np.float64(12.2898), 'fom_cg_cn': np.float64(5.243), 'fom_cg_cn_tol1e2': np.float64(2.2744), 'linear_weak_exact': np.float64(0.1178), 'fom_same_grid': np.float64(0.1909)}
+timed 64 8 {'nmrom_frozen': np.float64(12.7774), 'nmrom_uniform': np.float64(11.0994), 'nmrom_initial_only': np.float64(11.8887), 'nmrom_initial_tail': np.float64(11.1591), 'fom_cg_cn': np.float64(5.4371), 'fom_cg_cn_tol1e2': np.float64(2.3353), 'linear_weak_exact': np.float64(0.114), 'fom_same_grid': np.float64(0.1736)}
+timed 64 9 {'nmrom_frozen': np.float64(13.0053), 'nmrom_uniform': np.float64(12.3992), 'nmrom_initial_only': np.float64(12.534), 'nmrom_initial_tail': np.float64(12.0388), 'fom_cg_cn': np.float64(5.2126), 'fom_cg_cn_tol1e2': np.float64(2.2533), 'linear_weak_exact': np.float64(0.1117), 'fom_same_grid': np.float64(0.1685)}
+timed 64 10 {'nmrom_frozen': np.float64(15.6329), 'nmrom_uniform': np.float64(15.5721), 'nmrom_initial_only': np.float64(12.0098), 'nmrom_initial_tail': np.float64(15.275), 'fom_cg_cn': np.float64(5.231), 'fom_cg_cn_tol1e2': np.float64(2.3439), 'linear_weak_exact': np.float64(0.1066), 'fom_same_grid': np.float64(0.1757)}
+timed 64 11 {'nmrom_frozen': np.float64(11.7809), 'nmrom_uniform': np.float64(11.8227), 'nmrom_initial_only': np.float64(10.5803), 'nmrom_initial_tail': np.float64(9.7236), 'fom_cg_cn': np.float64(5.0414), 'fom_cg_cn_tol1e2': np.float64(2.2637), 'linear_weak_exact': np.float64(0.1079), 'fom_same_grid': np.float64(0.1657)}
+timed 64 12 {'nmrom_frozen': np.float64(12.4838), 'nmrom_uniform': np.float64(11.5483), 'nmrom_initial_only': np.float64(10.7595), 'nmrom_initial_tail': np.float64(11.4999), 'fom_cg_cn': np.float64(5.0637), 'fom_cg_cn_tol1e2': np.float64(2.2605), 'linear_weak_exact': np.float64(0.1148), 'fom_same_grid': np.float64(0.1981)}
+timed 64 13 {'nmrom_frozen': np.float64(10.0125), 'nmrom_uniform': np.float64(10.758), 'nmrom_initial_only': np.float64(10.2954), 'nmrom_initial_tail': np.float64(10.3686), 'fom_cg_cn': np.float64(5.0966), 'fom_cg_cn_tol1e2': np.float64(2.3071), 'linear_weak_exact': np.float64(0.1087), 'fom_same_grid': np.float64(0.1807)}
+timed 64 14 {'nmrom_frozen': np.float64(11.8987), 'nmrom_uniform': np.float64(10.7862), 'nmrom_initial_only': np.float64(10.2219), 'nmrom_initial_tail': np.float64(10.234), 'fom_cg_cn': np.float64(5.231), 'fom_cg_cn_tol1e2': np.float64(2.3012), 'linear_weak_exact': np.float64(0.111), 'fom_same_grid': np.float64(0.1672)}
+timed 64 15 {'nmrom_frozen': np.float64(12.438), 'nmrom_uniform': np.float64(11.0852), 'nmrom_initial_only': np.float64(12.0543), 'nmrom_initial_tail': np.float64(11.915), 'fom_cg_cn': np.float64(5.1044), 'fom_cg_cn_tol1e2': np.float64(2.1937), 'linear_weak_exact': np.float64(0.113), 'fom_same_grid': np.float64(0.1842)}
+timed 256 0 {'nmrom_frozen': np.float64(13.0253), 'nmrom_uniform': np.float64(9.1285), 'nmrom_initial_only': np.float64(10.0449), 'nmrom_initial_tail': np.float64(10.3949), 'fom_cg_cn': np.float64(20.6443), 'fom_cg_cn_tol1e2': np.float64(6.6763), 'linear_weak_exact': np.float64(0.1313), 'fom_same_grid': np.float64(0.2016)}
+timed 256 1 {'nmrom_frozen': np.float64(10.715), 'nmrom_uniform': np.float64(18.9162), 'nmrom_initial_only': np.float64(11.68), 'nmrom_initial_tail': np.float64(11.5609), 'fom_cg_cn': np.float64(20.2291), 'fom_cg_cn_tol1e2': np.float64(6.5493), 'linear_weak_exact': np.float64(0.1264), 'fom_same_grid': np.float64(0.199)}
+timed 256 2 {'nmrom_frozen': np.float64(11.5864), 'nmrom_uniform': np.float64(10.3946), 'nmrom_initial_only': np.float64(10.2382), 'nmrom_initial_tail': np.float64(10.4641), 'fom_cg_cn': np.float64(18.9759), 'fom_cg_cn_tol1e2': np.float64(6.3864), 'linear_weak_exact': np.float64(0.1274), 'fom_same_grid': np.float64(0.186)}
+timed 256 3 {'nmrom_frozen': np.float64(10.6395), 'nmrom_uniform': np.float64(10.5772), 'nmrom_initial_only': np.float64(10.8966), 'nmrom_initial_tail': np.float64(10.6915), 'fom_cg_cn': np.float64(18.3674), 'fom_cg_cn_tol1e2': np.float64(6.3984), 'linear_weak_exact': np.float64(0.1287), 'fom_same_grid': np.float64(0.1979)}
+timed 256 4 {'nmrom_frozen': np.float64(12.0913), 'nmrom_uniform': np.float64(10.3294), 'nmrom_initial_only': np.float64(10.9717), 'nmrom_initial_tail': np.float64(11.2967), 'fom_cg_cn': np.float64(20.3683), 'fom_cg_cn_tol1e2': np.float64(6.5923), 'linear_weak_exact': np.float64(0.1298), 'fom_same_grid': np.float64(0.1904)}
+timed 256 5 {'nmrom_frozen': np.float64(11.1414), 'nmrom_uniform': np.float64(11.6159), 'nmrom_initial_only': np.float64(10.7296), 'nmrom_initial_tail': np.float64(10.0285), 'fom_cg_cn': np.float64(21.5906), 'fom_cg_cn_tol1e2': np.float64(6.7554), 'linear_weak_exact': np.float64(0.1438), 'fom_same_grid': np.float64(0.2139)}
+timed 256 6 {'nmrom_frozen': np.float64(11.9742), 'nmrom_uniform': np.float64(11.4664), 'nmrom_initial_only': np.float64(10.8284), 'nmrom_initial_tail': np.float64(10.7762), 'fom_cg_cn': np.float64(20.4318), 'fom_cg_cn_tol1e2': np.float64(6.462), 'linear_weak_exact': np.float64(0.1299), 'fom_same_grid': np.float64(0.2111)}
+timed 256 7 {'nmrom_frozen': np.float64(11.0637), 'nmrom_uniform': np.float64(12.0016), 'nmrom_initial_only': np.float64(12.2534), 'nmrom_initial_tail': np.float64(11.9081), 'fom_cg_cn': np.float64(20.4944), 'fom_cg_cn_tol1e2': np.float64(6.5266), 'linear_weak_exact': np.float64(0.1285), 'fom_same_grid': np.float64(0.2312)}
+timed 256 8 {'nmrom_frozen': np.float64(11.9943), 'nmrom_uniform': np.float64(10.726), 'nmrom_initial_only': np.float64(11.7035), 'nmrom_initial_tail': np.float64(11.0774), 'fom_cg_cn': np.float64(20.0632), 'fom_cg_cn_tol1e2': np.float64(6.5479), 'linear_weak_exact': np.float64(0.1327), 'fom_same_grid': np.float64(0.1961)}
+timed 256 9 {'nmrom_frozen': np.float64(12.8813), 'nmrom_uniform': np.float64(12.4276), 'nmrom_initial_only': np.float64(12.1291), 'nmrom_initial_tail': np.float64(11.6241), 'fom_cg_cn': np.float64(19.0865), 'fom_cg_cn_tol1e2': np.float64(6.3332), 'linear_weak_exact': np.float64(0.1334), 'fom_same_grid': np.float64(0.2113)}
+timed 256 10 {'nmrom_frozen': np.float64(14.4527), 'nmrom_uniform': np.float64(15.1966), 'nmrom_initial_only': np.float64(11.7372), 'nmrom_initial_tail': np.float64(14.8245), 'fom_cg_cn': np.float64(21.0954), 'fom_cg_cn_tol1e2': np.float64(6.6727), 'linear_weak_exact': np.float64(0.1317), 'fom_same_grid': np.float64(0.2031)}
+timed 256 11 {'nmrom_frozen': np.float64(11.5948), 'nmrom_uniform': np.float64(11.647), 'nmrom_initial_only': np.float64(10.4295), 'nmrom_initial_tail': np.float64(9.427), 'fom_cg_cn': np.float64(19.2836), 'fom_cg_cn_tol1e2': np.float64(6.52), 'linear_weak_exact': np.float64(0.1344), 'fom_same_grid': np.float64(0.2073)}
+timed 256 12 {'nmrom_frozen': np.float64(12.0109), 'nmrom_uniform': np.float64(11.3302), 'nmrom_initial_only': np.float64(10.4348), 'nmrom_initial_tail': np.float64(10.9555), 'fom_cg_cn': np.float64(18.7859), 'fom_cg_cn_tol1e2': np.float64(6.331), 'linear_weak_exact': np.float64(0.1341), 'fom_same_grid': np.float64(0.2209)}
+timed 256 13 {'nmrom_frozen': np.float64(9.8473), 'nmrom_uniform': np.float64(10.6214), 'nmrom_initial_only': np.float64(10.3199), 'nmrom_initial_tail': np.float64(9.5457), 'fom_cg_cn': np.float64(19.8832), 'fom_cg_cn_tol1e2': np.float64(6.5876), 'linear_weak_exact': np.float64(0.1324), 'fom_same_grid': np.float64(0.2102)}
+timed 256 14 {'nmrom_frozen': np.float64(11.4658), 'nmrom_uniform': np.float64(10.6355), 'nmrom_initial_only': np.float64(9.8945), 'nmrom_initial_tail': np.float64(9.9144), 'fom_cg_cn': np.float64(21.0699), 'fom_cg_cn_tol1e2': np.float64(6.6817), 'linear_weak_exact': np.float64(0.137), 'fom_same_grid': np.float64(0.1906)}
+timed 256 15 {'nmrom_frozen': np.float64(11.5933), 'nmrom_uniform': np.float64(11.0027), 'nmrom_initial_only': np.float64(11.7329), 'nmrom_initial_tail': np.float64(11.4906), 'fom_cg_cn': np.float64(18.0843), 'fom_cg_cn_tol1e2': np.float64(6.2633), 'linear_weak_exact': np.float64(0.1262), 'fom_same_grid': np.float64(0.209)}
+timed 1024 0 {'nmrom_frozen': np.float64(12.8932), 'nmrom_uniform': np.float64(9.7279), 'nmrom_initial_only': np.float64(10.8177), 'nmrom_initial_tail': np.float64(11.0285), 'fom_cg_cn': np.float64(198.5629), 'fom_cg_cn_tol1e2': np.float64(54.4728), 'linear_weak_exact': np.float64(0.5081), 'fom_same_grid': np.float64(0.8813)}
+timed 1024 1 {'nmrom_frozen': np.float64(10.819), 'nmrom_uniform': np.float64(19.4063), 'nmrom_initial_only': np.float64(12.1759), 'nmrom_initial_tail': np.float64(12.1148), 'fom_cg_cn': np.float64(193.0192), 'fom_cg_cn_tol1e2': np.float64(54.5359), 'linear_weak_exact': np.float64(0.5359), 'fom_same_grid': np.float64(0.8791)}
+timed 1024 2 {'nmrom_frozen': np.float64(11.6086), 'nmrom_uniform': np.float64(11.0933), 'nmrom_initial_only': np.float64(11.194), 'nmrom_initial_tail': np.float64(11.2405), 'fom_cg_cn': np.float64(181.1946), 'fom_cg_cn_tol1e2': np.float64(53.2423), 'linear_weak_exact': np.float64(0.5163), 'fom_same_grid': np.float64(0.8636)}
+timed 1024 3 {'nmrom_frozen': np.float64(10.5996), 'nmrom_uniform': np.float64(11.1114), 'nmrom_initial_only': np.float64(11.2378), 'nmrom_initial_tail': np.float64(11.1879), 'fom_cg_cn': np.float64(176.1933), 'fom_cg_cn_tol1e2': np.float64(52.9992), 'linear_weak_exact': np.float64(0.5426), 'fom_same_grid': np.float64(0.8985)}
+timed 1024 4 {'nmrom_frozen': np.float64(11.9098), 'nmrom_uniform': np.float64(11.0195), 'nmrom_initial_only': np.float64(11.3116), 'nmrom_initial_tail': np.float64(11.9242), 'fom_cg_cn': np.float64(193.8077), 'fom_cg_cn_tol1e2': np.float64(55.0563), 'linear_weak_exact': np.float64(0.5227), 'fom_same_grid': np.float64(0.8682)}
+timed 1024 5 {'nmrom_frozen': np.float64(11.2909), 'nmrom_uniform': np.float64(12.1149), 'nmrom_initial_only': np.float64(11.0466), 'nmrom_initial_tail': np.float64(10.956), 'fom_cg_cn': np.float64(202.4352), 'fom_cg_cn_tol1e2': np.float64(56.3257), 'linear_weak_exact': np.float64(0.5291), 'fom_same_grid': np.float64(0.866)}
+timed 1024 6 {'nmrom_frozen': np.float64(12.0261), 'nmrom_uniform': np.float64(12.0651), 'nmrom_initial_only': np.float64(11.5203), 'nmrom_initial_tail': np.float64(11.2452), 'fom_cg_cn': np.float64(194.9626), 'fom_cg_cn_tol1e2': np.float64(53.1787), 'linear_weak_exact': np.float64(0.5286), 'fom_same_grid': np.float64(0.8814)}
+timed 1024 7 {'nmrom_frozen': np.float64(11.3419), 'nmrom_uniform': np.float64(12.3604), 'nmrom_initial_only': np.float64(12.6185), 'nmrom_initial_tail': np.float64(12.7024), 'fom_cg_cn': np.float64(193.9947), 'fom_cg_cn_tol1e2': np.float64(53.8274), 'linear_weak_exact': np.float64(0.5175), 'fom_same_grid': np.float64(0.9367)}
+timed 1024 8 {'nmrom_frozen': np.float64(12.3553), 'nmrom_uniform': np.float64(11.3479), 'nmrom_initial_only': np.float64(12.2231), 'nmrom_initial_tail': np.float64(11.7607), 'fom_cg_cn': np.float64(189.6379), 'fom_cg_cn_tol1e2': np.float64(54.5937), 'linear_weak_exact': np.float64(0.523), 'fom_same_grid': np.float64(0.8803)}
+timed 1024 9 {'nmrom_frozen': np.float64(13.0817), 'nmrom_uniform': np.float64(12.8661), 'nmrom_initial_only': np.float64(12.8416), 'nmrom_initial_tail': np.float64(12.4441), 'fom_cg_cn': np.float64(178.4826), 'fom_cg_cn_tol1e2': np.float64(51.5851), 'linear_weak_exact': np.float64(0.5235), 'fom_same_grid': np.float64(0.9445)}
+timed 1024 10 {'nmrom_frozen': np.float64(15.3278), 'nmrom_uniform': np.float64(15.6537), 'nmrom_initial_only': np.float64(12.3715), 'nmrom_initial_tail': np.float64(15.854), 'fom_cg_cn': np.float64(201.7423), 'fom_cg_cn_tol1e2': np.float64(54.6615), 'linear_weak_exact': np.float64(0.5364), 'fom_same_grid': np.float64(0.9207)}
+timed 1024 11 {'nmrom_frozen': np.float64(12.187), 'nmrom_uniform': np.float64(12.0522), 'nmrom_initial_only': np.float64(10.9724), 'nmrom_initial_tail': np.float64(10.4012), 'fom_cg_cn': np.float64(185.8808), 'fom_cg_cn_tol1e2': np.float64(53.2334), 'linear_weak_exact': np.float64(0.5293), 'fom_same_grid': np.float64(0.9689)}
+timed 1024 12 {'nmrom_frozen': np.float64(12.4062), 'nmrom_uniform': np.float64(11.728), 'nmrom_initial_only': np.float64(11.2081), 'nmrom_initial_tail': np.float64(11.6242), 'fom_cg_cn': np.float64(173.5147), 'fom_cg_cn_tol1e2': np.float64(52.5954), 'linear_weak_exact': np.float64(0.5276), 'fom_same_grid': np.float64(0.8811)}
+timed 1024 13 {'nmrom_frozen': np.float64(10.758), 'nmrom_uniform': np.float64(11.1205), 'nmrom_initial_only': np.float64(10.7124), 'nmrom_initial_tail': np.float64(10.4378), 'fom_cg_cn': np.float64(184.5361), 'fom_cg_cn_tol1e2': np.float64(54.3062), 'linear_weak_exact': np.float64(0.5454), 'fom_same_grid': np.float64(0.8927)}
+timed 1024 14 {'nmrom_frozen': np.float64(11.994), 'nmrom_uniform': np.float64(11.2915), 'nmrom_initial_only': np.float64(10.6514), 'nmrom_initial_tail': np.float64(10.5426), 'fom_cg_cn': np.float64(201.9756), 'fom_cg_cn_tol1e2': np.float64(54.1823), 'linear_weak_exact': np.float64(0.5203), 'fom_same_grid': np.float64(0.9477)}
+timed 1024 15 {'nmrom_frozen': np.float64(12.2176), 'nmrom_uniform': np.float64(11.5123), 'nmrom_initial_only': np.float64(12.3872), 'nmrom_initial_tail': np.float64(12.3719), 'fom_cg_cn': np.float64(168.6721), 'fom_cg_cn_tol1e2': np.float64(51.7762), 'linear_weak_exact': np.float64(0.5323), 'fom_same_grid': np.float64(0.8629)}
+ACCURACY HEAT COMPLETE

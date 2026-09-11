@@ -1,0 +1,45 @@
+{
+  "status": "complete_owner_audit_and_restoration_passed",
+  "source_commit": "c7cc18d4a12820f471076fcbb5e95cce3c6c75c4",
+  "audit_source_commit": "afae026",
+  "job_id": "3563072",
+  "root_endpoint_audit": "reports/2026-09-11-heat-accuracy.coordinator-audit.json on main",
+  "parts": 128,
+  "archive_bytes": 12030341120,
+  "archive_joined_sha256": "ed6950b2c443675e1cf8f98fe329fd74130c8e5f582696ecd881fff3827c9807",
+  "restored_members": 633,
+  "artifacts": {
+    "ARCHIVE.json": "7ddafd21566d60f35d1af40b79a1b8dfe5bcb4c89432fd22a8e8f87469b0d0aa",
+    "archive/outputs/results.json": "c13d00247e44b87328f5b2d980fbe57b9841fb70c59232c0a2b594f6d2cecfca",
+    "analysis/audit.json": "f56f9d2a96d4e8eb2e5f54eaed35995ec2fe3098e0872ddc67f5f8b3a99c7e17",
+    "analysis/panel.json": "df8872d21a3ab25a8ae730b193655ea9a43253ca1c4311b5f6cd08f58f7596d6",
+    "analysis/summary.md": "bf44edee5305a33f5228734815b09006e3a306dc1fd11b9140f9436b393efad4",
+    "REMOTE-CLEANUP.json": "aeb7abbfa80c1576af40bd2c6783319e26ec8702077db67365dac461e0661371"
+  },
+  "checkpoints": [
+    {
+      "path": "archive/outputs/checkpoints/frozen.pkl",
+      "sha256": "c919c7c01190c6bb8b1800256b5e3d6427503fb7d9c0b82f6a35bcb0f1144a93",
+      "name": "frozen"
+    },
+    {
+      "path": "archive/outputs/checkpoints/uniform.pkl",
+      "sha256": "557ba4bf63d00d5c2fc8eadecf5739ba933bc25aefcede3a330a683151350b27",
+      "name": "uniform"
+    },
+    {
+      "path": "archive/outputs/checkpoints/initial_only.pkl",
+      "sha256": "ca9ebcc085a95af389c7a20e994c038e63f6f71f9af3700e07ba30fb17cb7f94",
+      "name": "initial_only"
+    },
+    {
+      "path": "archive/outputs/checkpoints/initial_tail.pkl",
+      "sha256": "cb4786b0f3dcfbcf4eccd9704a60b0180d9d5b6244b46f12594e3afd90d0d369",
+      "name": "initial_tail"
+    }
+  ],
+  "full_field_policy": "Exact full fields are stored in the checked tracked archive parts; restored NPZ files are ignored to avoid duplicate binary storage.",
+  "restore_command": "/home/tahmid/Dev/.venv/bin/python experiments/mr-heat2d/restore_linear.py experiments/mr-heat2d/runs/accuracy10",
+  "final_cohort_opened": false,
+  "merged": false
+}

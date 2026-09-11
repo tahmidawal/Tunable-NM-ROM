@@ -26,7 +26,7 @@ def summarize(record):
                     physical_error_median=float(np.median(case_errors)),physical_error_worst=max(case_errors),
                     initial_error_worst=max(p['vs_physical']['relative_current'][0] for p in reps),
                     later_error_worst=max(max(p['vs_physical']['relative_current'][1:]) for p in reps),
-                    initial_nonstationary_fits=0,step_nonstationary_fits=0,total_initial_attempts=0,total_step_attempts=0,
+                    initial_nonstationary_fits=0,step_nonstationary_fits=0,skipped_initial_fits=0,total_initial_attempts=0,total_step_attempts=0,
                     initial_exit_counts={},step_exit_counts={},cg_nonconverged_steps=0,
                     empirical_gate_failed_cases=[],numerical_gate_failed_cases=[])
                 for r in native:
@@ -36,9 +36,12 @@ def summarize(record):
                         empirical_fail|=(max(p['vs_physical']['relative_current'])+delta)/(1-delta)>result['settings']['accuracy_target']
                         if p['solver']:
                             for prefix,key in [('initial','initial_fits'),('step','steps')]:
-                                infos=np.asarray(p['solver'][key]); failed=int(np.sum(infos[:,2]!=1))
+                                infos=np.asarray(p['solver'][key])
+                                attempted=(infos[:,2]!=-1) if prefix=='initial' else np.ones(len(infos),dtype=bool)
+                                if prefix=='initial':row['skipped_initial_fits']+=int(np.sum(~attempted))
+                                failed=int(np.sum((infos[:,2]!=1)&attempted))
                                 row[prefix+'_nonstationary_fits']+=failed; numerical_fail|=failed>0
-                                row['total_'+prefix+'_attempts']+=int(np.sum(infos[:,0]))
+                                row['total_'+prefix+'_attempts']+=int(np.sum(infos[attempted,0]))
                                 for reason in infos[:,2]:
                                     reason=str(int(reason)); counts=row[prefix+'_exit_counts']; counts[reason]=counts.get(reason,0)+1
                         if 'cg_steps' in p:

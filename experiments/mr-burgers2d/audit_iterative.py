@@ -176,7 +176,7 @@ def main():
         output_fom_residual_pairs=fom_pairs,output_fom_residual_max_delta=worst_fom,initial_reference_max_delta=worst_initial,
         scope='Saved full-field and source audit; independent output-step FOM residuals and every weak-step residual; linear inner residuals checked from source/records, not rebuilt from unavailable Newton corrections.')
     (record/'AUDIT.json').write_text(json.dumps(audit,indent=2)+'\n')
-    panel=dict(pde='burgers2d',status='audited development',source_commit=d['commit'],job_id=d['job_id'],gpu=d['gpu'],config=cfg,checkpoint_sha256=d['checkpoint_sha256'],
+    panel=dict(pde='burgers2d',status='audited development',primary_fom=json.loads((record/'PRIMARY-SELECTION.json').read_text())['primary_fom'],source_commit=d['commit'],job_id=d['job_id'],gpu=d['gpu'],config=cfg,checkpoint_sha256=d['checkpoint_sha256'],
         model=dict(K=d['K'],R=d['R'],M=d['M'],m=d['m'],operator='preassembled linear weak operators and sampled full sign-upwind advection; not historical r64 polynomial tensor'),
         norm='fixed initial L2 primary; current-relative also reported',reference='regenerated refined implicit upwind FOM, empirical continuum refinement margins',reference_metrics=d['reference_metrics'],
         timing_contract=d['timing_contract'],aggregation='median of per-case repetition medians; ratio of cohort medians and median paired ratios separately',rows=summary,comparisons=comparisons,audit=audit)

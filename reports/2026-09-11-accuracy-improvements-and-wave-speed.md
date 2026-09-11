@@ -136,6 +136,34 @@ An earlier attempt failed an overly tight diagnostic equality between two floati
 
 Burgers errors are divided by the reference initial-field norm and maximized over saved times. Its physical criterion includes the empirical reference-refinement allowance; the coarse mesh remains unqualified. The FFT-labeled FOM is an iterative Newton–BiCGStab solve using an FFT preconditioner, not a direct nonlinear solution.
 
+## Burgers: broader initial coverage does not repair trajectory accuracy
+
+The final bounded training arm expands the initial-condition draw while retaining the spatial bank, head size, replay weight, update count, batch sizes and strict solver. More training codes also enlarge the initial-guess library and optimizer state, so this compares complete training procedures rather than isolated head weights. EQ is refitted using the same old training-code indices; the added initial codes are not substituted into its fitting set.
+
+| Intervals | Strict method | Worst trajectory error % | Worst initial error % | GPU ms | Host ms | GPU outliers | Physical and numerical criteria |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 64 | frozen_stationary | 10.856979 | 3.956378 | 52.257794 | 54.049926 | 0 | Fail |
+| 64 | trained576_stationary | 11.045568 | 4.868142 | 44.811392 | 46.187700 | 0 | Fail |
+| 64 | trained4608_stationary | 10.936769 | 4.411058 | 43.433198 | 45.114398 | 0 | Fail |
+| 64 | fft_loose | 10.391989 | 0.000000 | 13.026291 | 14.623495 | 0 | Fail |
+| 64 | fft_tight | 10.989131 | 0.000000 | 69.699107 | 71.376884 | 0 | Fail |
+| 256 | frozen_stationary | 4.554611 | 2.562872 | 51.693426 | 54.547014 | 0 | Pass |
+| 256 | trained576_stationary | 5.794182 | 4.544334 | 44.711987 | 47.535326 | 0 | Fail |
+| 256 | trained4608_stationary | 5.308770 | 2.287985 | 47.097540 | 49.796811 | 0 | Fail |
+| 256 | fft_loose | 2.473687 | 0.000000 | 16.259475 | 19.176364 | 0 | Pass |
+| 256 | fft_tight | 4.026515 | 0.000000 | 97.495110 | 100.472711 | 0 | Pass |
+| 1024 | frozen_stationary | 3.884680 | 3.856220 | 55.924140 | 76.348107 | 0 | Pass |
+| 1024 | trained576_stationary | 5.459554 | 4.592752 | 49.021904 | 69.911559 | 0 | Fail |
+| 1024 | trained4608_stationary | 5.277323 | 2.824662 | 49.600265 | 70.179544 | 0 | Fail |
+| 1024 | fft_loose | 2.389937 | 0.000000 | 68.086457 | 89.113863 | 0 | Pass |
+| 1024 | fft_tight | 2.141611 | 0.000000 | 512.905665 | 533.218171 | 0 | Pass |
+
+At 1024 intervals, the broader head improves the unsuccessful smaller-training arm from 5.459554% to 5.277323% worst trajectory error, but the original strict head remains better at 3.884680%. All online strict solves meet stationarity. Both retrained heads are rejected as replacements for the original.
+
+On case 3, initial reconstruction improves from 3.856220% to 2.824662%, while trajectory error worsens from 3.884680% to 5.277323%. This identifies a limitation of improving initial-field reconstruction alone. Because the decoder, initial-guess library and refitted EQ weights change together, the experiment does not uniquely attribute the later error to one mechanism.
+
+Both inherited controls reproduce their saved parent trajectories and solver counters. Training and reference bytes have explicit inherited provenance; all displayed query costs and errors were rerun in this job. No runtime ratio crosses GPU allocations. Initial code-fit failures are retained in the training audit; passing online stationarity does not certify every offline training fit. The next accuracy direction would require trajectory-aware training and a controlled quadrature-fidelity comparison; neither was added after seeing these results.
+
 ## Reflective waves: geometry and time-step screens
 
 These screens use the same 2 opened reflective Dirichlet cases at 64 intervals, with 3 timed repetitions per case. They are development screens, not a large independent test set.
@@ -277,7 +305,7 @@ The new development cohort stays separate from the opened selection cases; neith
 
 ## Work still in progress
 
-The final nested Poisson correction family is being submitted. The broader Burgers training-coverage comparison has passed field/gradient auditing and is completing archive acceptance. Heat and reflective-wave work are complete; remaining accepted results will be added here, including unsuccessful arms.
+The final nested Poisson correction family is queued or running. Heat, Burgers and reflective-wave experiments are complete and audited. The remaining accepted result will be added here, including any unsuccessful prefixes.
 
 ## Reproduction and evidence
 
@@ -287,6 +315,7 @@ Heat job `3563072` contains the paired GPU measurements; scientific source and c
 - [Poisson fixed-capacity panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/staged_accuracy08/panel.json)
 - [Poisson larger-bank panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/capacity_accuracy09/panel.json)
 - [Burgers training and solver panel](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/accuracy08/PANEL.json)
+- [Burgers broader-coverage panel](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/accuracy09/PANEL.json)
 - [Wave geometry audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel06/audit.json)
 - [Wave follow-up audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel07/audit.json)
 - [Wave training audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel08/audit.json)
@@ -309,6 +338,7 @@ Run `reports/generate_accuracy_campaign.py` with the repository Python environme
 - **CG / DST:** iterative conjugate-gradient solver / direct discrete sine-transform solver. A CG tolerance is its stopping threshold, not its measured field error.
 - **Stationarity:** sufficiently small gradient of the reduced solve objective. This does not itself guarantee physical accuracy.
 - **Tail emphasis:** training loss that assigns more influence to large reconstruction errors within a training batch.
+- **EQ / replay / coverage:** fitted quadrature weights approximating weak sums / preserving old decoded outputs during training / the range and number of training initial conditions.
 - **All-state / energy-state:** checking displacement, velocity and their combined energy norm / the norm combining velocity and spatial-gradient error.
 - **Guard / parity / refinement:** a numerical check with a more robust fallback / agreement with unchanged equations / agreement after reducing the integration step.
 - **Cholesky / tangent velocity:** a factorization for solving a positive-definite small matrix system / the decoder Jacobian multiplied by latent velocity.

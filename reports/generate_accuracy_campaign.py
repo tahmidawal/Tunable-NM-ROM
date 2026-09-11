@@ -163,7 +163,10 @@ def burgers(run_name, coordinator_file):
         assert np.isclose(max(r["error"]["current_relative_max"] for r in reps), row["worst_current_relative"], rtol=1e-14)
         assert np.isclose(max(r["error"]["fixed_initial_per_time"][0] for r in reps), row["worst_initial_error"], rtol=1e-14)
         row["gpu_repetitions_ms"], row["host_repetitions_ms"] = times, host
-    return dict(panel, run=str(run), collection=collection, cleanup=cleanup)
+    cases = [dict(intervals=r["intervals"], method=r["name"], case=r["case"], cohort=r["cohort"],
+                  initial_error=r["error"]["fixed_initial_per_time"][0], worst_error=r["error"]["fixed_initial_max"])
+             for r in raw["invocations"] if r["rep"] == 0]
+    return dict(panel, run=str(run), collection=collection, cleanup=cleanup, case_errors=cases)
 
 
 def wave_confirmation_lines(w):
@@ -213,9 +216,10 @@ def build():
     assert pc_diagnostic["source_result_sha256"] == SOURCES[str(Path(pc["run"])/"result.json")]
     assert pc_diagnostic["source_audit_sha256"] == SOURCES[str(Path(pc["run"])/"audit.json")]
     b = burgers("accuracy08", "reports/2026-09-11-burgers-accuracy.coordinator-audit.json")
-    normalized = dict(status="Audited heat, staged/capacity Poisson, initial Burgers and wave screens; nested Poisson, broader Burgers coverage and wave confirmation remain active.",
+    bc = burgers("accuracy09", "reports/2026-09-11-burgers-coverage.coordinator-audit.json")
+    normalized = dict(status="Heat, Burgers and reflective waves complete and audited; staged/capacity Poisson audited; only the final nested Poisson family remains active.",
                       heat=h, poisson_staged=ps, poisson_capacity=pc, poisson_training_correction_diagnostic=pc_diagnostic,
-                      burgers_initial=b, wave_confirmation=wf, wave_confirmation_coordinator_audit=wf_coordinator,
+                      burgers_initial=b, burgers_coverage=bc, wave_confirmation=wf, wave_confirmation_coordinator_audit=wf_coordinator,
                       wave_screens={"accel06": w6, "accel07": w7, "accel08": w8, "accel09": w9, "accel10": w10},
                       wave_correction_coordinator_audit=w10_coordinator)
     lines = ["# Accuracy improvements and reflective-wave speed", "",
@@ -305,6 +309,23 @@ def build():
               "The old stopping contract accepted small-progress exits; those saved results are preserved. The added gradient audit reveals that they were not stationary under the stricter criterion. Stricter solving makes convergence explicit but barely changes the physical error. The retraining improves its training initial fields while worsening development trajectories, motivating a separate broader-training-coverage comparison.", "",
               "An earlier attempt failed an overly tight diagnostic equality between two floating-point gradient evaluations. Its training checkpoint and references were preserved with audited lineage, then reused unchanged in this replay. All reported costs and predictions were regenerated together in the replay job. The stationarity threshold was unchanged; charged, posthoc and independent CPU gradients must all pass, and no threshold classification disagreement occurred.", "",
               "Burgers errors are divided by the reference initial-field norm and maximized over saved times. Its physical criterion includes the empirical reference-refinement allowance; the coarse mesh remains unqualified. The FFT-labeled FOM is an iterative Newton–BiCGStab solve using an FFT preconditioner, not a direct nonlinear solution.", "",
+              "## Burgers: broader initial coverage does not repair trajectory accuracy", "",
+              "The final bounded training arm expands the initial-condition draw while retaining the spatial bank, head size, replay weight, update count, batch sizes and strict solver. More training codes also enlarge the initial-guess library and optimizer state, so this compares complete training procedures rather than isolated head weights. EQ is refitted using the same old training-code indices; the added initial codes are not substituted into its fitting set.", ""]
+    rows = []
+    for r in bc["rows"]:
+        if r["cohort"] == "all":
+            rows.append([r["intervals"], r["name"], f"{100*r['worst_fixed_initial']:.6f}",
+                         f"{100*r['worst_initial_error']:.6f}", f"{r['gpu_ms']:.6f}", f"{r['host_ms']:.6f}",
+                         r["timing_outliers_gt2x_case_median"], "Pass" if r["physical_and_numerical_pass"] else "Fail"])
+    lines += table(["Intervals", "Strict method", "Worst trajectory error %", "Worst initial error %", "GPU ms", "Host ms", "GPU outliers", "Physical and numerical criteria"], rows)
+    n = max(bc["config"]["meshes"])
+    fine_coverage = {r["name"]: r for r in bc["rows"] if r["cohort"] == "all" and r["intervals"] == n}
+    old_b, small_b, broad_b = (fine_coverage[k] for k in ("frozen_stationary", "trained576_stationary", "trained4608_stationary"))
+    worst = max((r for r in bc["case_errors"] if r["intervals"] == n and r["method"] == "trained4608_stationary"), key=lambda r: r["worst_error"])
+    same = next(r for r in bc["case_errors"] if (r["intervals"], r["method"], r["case"]) == (n, "frozen_stationary", worst["case"]))
+    lines += [f"At {n} intervals, the broader head improves the unsuccessful smaller-training arm from {100*small_b['worst_fixed_initial']:.6f}% to {100*broad_b['worst_fixed_initial']:.6f}% worst trajectory error, but the original strict head remains better at {100*old_b['worst_fixed_initial']:.6f}%. All online strict solves meet stationarity. Both retrained heads are rejected as replacements for the original.", "",
+              f"On case {worst['case']}, initial reconstruction improves from {100*same['initial_error']:.6f}% to {100*worst['initial_error']:.6f}%, while trajectory error worsens from {100*same['worst_error']:.6f}% to {100*worst['worst_error']:.6f}%. This identifies a limitation of improving initial-field reconstruction alone. Because the decoder, initial-guess library and refitted EQ weights change together, the experiment does not uniquely attribute the later error to one mechanism.", "",
+              "Both inherited controls reproduce their saved parent trajectories and solver counters. Training and reference bytes have explicit inherited provenance; all displayed query costs and errors were rerun in this job. No runtime ratio crosses GPU allocations. Initial code-fit failures are retained in the training audit; passing online stationarity does not certify every offline training fit. The next accuracy direction would require trajectory-aware training and a controlled quadrature-fidelity comparison; neither was added after seeing these results.", "",
               "## Reflective waves: geometry and time-step screens", "",
               f"These screens use the same {w6['case_count']} opened reflective Dirichlet cases at {w6['panels'][0]['intervals']} intervals, with {w6['repetitions']} timed repetitions per case. They are development screens, not a large independent test set.", "",
               "Shared analytic decoder derivatives and guarded Cholesky solves remove repeated work in latent evolution. At the original step, these preserve the mathematical trajectory to audited floating-point parity. Larger steps are a separate integration change and require refinement checks.", ""]
@@ -362,13 +383,14 @@ def build():
     lines += [f"The nested head reaches {nested['worst_initial_errors_percent']['energy_state']:.6f}% worst energy-state error and {nested['median_gpu_ms']:.6f} GPU ms on the opened screen. Its {nested_original['median_gpu_ms']/nested['median_gpu_ms']:.6f}× acceleration is relative to the same-job original ROM, not a qualified FOM speedup. It still misses the all-state target. Its weights, initializer, step and solver were frozen before multiresolution evaluation on additional development cases.", ""]
     lines += wave_confirmation_lines(wf)
     lines += ["## Work still in progress", "",
-              "The final nested Poisson correction family is being submitted. The broader Burgers training-coverage comparison has passed field/gradient auditing and is completing archive acceptance. Heat and reflective-wave work are complete; remaining accepted results will be added here, including unsuccessful arms.", "",
+              "The final nested Poisson correction family is queued or running. Heat, Burgers and reflective-wave experiments are complete and audited. The remaining accepted result will be added here, including any unsuccessful prefixes.", "",
               "## Reproduction and evidence", "",
               f"Heat job `{h['metadata']['job_id']}` contains the paired GPU measurements; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.", "",
               f"- [Heat complete panel](../{h['run']}/analysis/summary.md)",
               f"- [Poisson fixed-capacity panel](../{ps['run']}/panel.json)",
               f"- [Poisson larger-bank panel](../{pc['run']}/panel.json)",
               f"- [Burgers training and solver panel](../{b['run']}/PANEL.json)",
+              f"- [Burgers broader-coverage panel](../{bc['run']}/PANEL.json)",
               f"- [Wave geometry audit](../{w6['run']}/audit.json)",
               f"- [Wave follow-up audit](../{w7['run']}/audit.json)",
               f"- [Wave training audit](../{w8['run']}/audit.json)",
@@ -388,6 +410,7 @@ def build():
               "- **CG / DST:** iterative conjugate-gradient solver / direct discrete sine-transform solver. A CG tolerance is its stopping threshold, not its measured field error.",
               "- **Stationarity:** sufficiently small gradient of the reduced solve objective. This does not itself guarantee physical accuracy.",
               "- **Tail emphasis:** training loss that assigns more influence to large reconstruction errors within a training batch.",
+              "- **EQ / replay / coverage:** fitted quadrature weights approximating weak sums / preserving old decoded outputs during training / the range and number of training initial conditions.",
               "- **All-state / energy-state:** checking displacement, velocity and their combined energy norm / the norm combining velocity and spatial-gradient error.",
               "- **Guard / parity / refinement:** a numerical check with a more robust fallback / agreement with unchanged equations / agreement after reducing the integration step.",
               "- **Cholesky / tangent velocity:** a factorization for solving a positive-definite small matrix system / the decoder Jacobian multiplied by latent velocity.",

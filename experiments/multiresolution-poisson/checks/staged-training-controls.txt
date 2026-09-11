@@ -1,0 +1,22 @@
+training smoke_bank {'updates': 1, 'loss': 0.00021136778517375415, 'reconstruction': 0.0002100433372621565, 'orth': 0.013244479115976636, 'optimizer_seconds': 0.0023913379991427064, 'block_seconds': 0.0023913379991427064, 'learning_rate': 2.9999999999999997e-06}
+training smoke_bank {'updates': 2, 'loss': 0.0010211978803527175, 'reconstruction': 0.0010198900157698707, 'orth': 0.013078645828469076, 'optimizer_seconds': 0.0031803169986233115, 'block_seconds': 0.0007889789994806051, 'learning_rate': 0.00015625965926939082}
+training smoke_head {'updates': 1, 'loss': 0.00038922223785874306, 'reconstruction': 0.00038922223785874306, 'orth': 0.0, 'optimizer_seconds': 0.0018899759961641394, 'block_seconds': 0.0018899759961641394, 'learning_rate': 2.9999999999999997e-06}
+training smoke_head {'updates': 2, 'loss': 0.0005879769207096854, 'reconstruction': 0.0005879769207096854, 'orth': 0.0, 'optimizer_seconds': 0.002451866996125318, 'block_seconds': 0.0005618909999611787, 'learning_rate': 0.00015625965926939082}
+training smoke_joint {'updates': 1, 'loss': 0.00076889867020622, 'reconstruction': 0.0007675739164722593, 'orth': 0.013247537339606416, 'optimizer_seconds': 0.003106717995251529, 'block_seconds': 0.003106717995251529, 'learning_rate': 2.9999999999999997e-06}
+training smoke_joint {'updates': 2, 'loss': 0.0017721265871107944, 'reconstruction': 0.0017708186618851129, 'orth': 0.013079252256815593, 'optimizer_seconds': 0.003960961999837309, 'block_seconds': 0.0008542440045857802, 'learning_rate': 0.00015625965926939082}
+training smoke_time_control {'updates': 1, 'loss': 0.00018886454576503179, 'reconstruction': 0.00018754009785343413, 'orth': 0.013244479115976636, 'optimizer_seconds': 0.0029863160016248003, 'block_seconds': 0.0029863160016248003, 'learning_rate': 2.9999999999999997e-06}
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "field_metric_absolute_difference": 0.0,
+  "pod_orthogonality_error": 3.0233835850850924e-15,
+  "bank_rank": 64,
+  "frozen_subtree_checks": true,
+  "matched_updates": 1
+}
+{
+  "rank_deficiency_detected": true,
+  "head_oracle_full_field_residual_verified": true,
+  "head_oracle_candidates": 2
+}

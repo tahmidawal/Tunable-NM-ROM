@@ -1,6 +1,6 @@
 # Poisson staged-accuracy job handoff
 
-Status: RUNNING, incomplete and unaudited. The GPU preflight, focused training/rank/oracle controls and complete integration smoke passed. The real run has completed its bank phase and entered head training. Do not interpret the first `STAGED ACCURACY COMPLETE` log marker as the real study: it belongs to `out/smoke`. Real completion requires `out/pilot/result.json` with `complete=true`, successful accounting and `EXIT_CODE=0`.
+Status: RUNNING, incomplete and unaudited. The GPU preflight, focused training/rank/oracle controls and complete integration smoke passed. The real run has completed all staged phases and the matched joint control, generated all references, and begun multiresolution evaluation at N64. Do not interpret the first `STAGED ACCURACY COMPLETE` log marker as the real study: it belongs to `out/smoke`. Real completion requires `out/pilot/result.json` with `complete=true`, successful accounting and `EXIT_CODE=0`.
 
 - Source commit: `db66d194efa56a9fecbee9f0c116f42d7f356e7e`.
 - Attempt: `staged_accuracy08`; Slurm job: `3563323` on `pax049`.

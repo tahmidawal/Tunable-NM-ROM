@@ -1,0 +1,171 @@
+audit training diagnostics
+audit banks 64
+audit case 64 0
+audit case 64 1
+audit case 64 2
+audit case 64 3
+audit case 64 4
+audit case 64 5
+audit case 64 6
+audit case 64 7
+audit case 64 8
+audit case 64 9
+audit case 64 10
+audit case 64 11
+audit case 64 12
+audit case 64 13
+audit case 64 14
+audit case 64 15
+audit case 64 16
+audit case 64 17
+audit case 64 18
+audit case 64 19
+audit case 64 20
+audit case 64 21
+audit case 64 22
+audit case 64 23
+audit case 64 24
+audit case 64 25
+audit case 64 26
+audit case 64 27
+audit case 64 28
+audit case 64 29
+audit case 64 30
+audit case 64 31
+audit case 64 32
+audit case 64 33
+audit case 64 34
+audit case 64 35
+audit case 64 36
+audit case 64 37
+audit case 64 38
+audit case 64 39
+audit case 64 40
+audit case 64 41
+audit banks 256
+audit case 256 0
+audit case 256 1
+audit case 256 2
+audit case 256 3
+audit case 256 4
+audit case 256 5
+audit case 256 6
+audit case 256 7
+audit case 256 8
+audit case 256 9
+audit case 256 10
+audit case 256 11
+audit case 256 12
+audit case 256 13
+audit case 256 14
+audit case 256 15
+audit case 256 16
+audit case 256 17
+audit case 256 18
+audit case 256 19
+audit case 256 20
+audit case 256 21
+audit case 256 22
+audit case 256 23
+audit case 256 24
+audit case 256 25
+audit case 256 26
+audit case 256 27
+audit case 256 28
+audit case 256 29
+audit case 256 30
+audit case 256 31
+audit case 256 32
+audit case 256 33
+audit case 256 34
+audit case 256 35
+audit case 256 36
+audit case 256 37
+audit case 256 38
+audit case 256 39
+audit case 256 40
+audit case 256 41
+audit banks 1024
+audit case 1024 0
+audit case 1024 1
+audit case 1024 2
+audit case 1024 3
+audit case 1024 4
+audit case 1024 5
+audit case 1024 6
+audit case 1024 7
+audit case 1024 8
+audit case 1024 9
+audit case 1024 10
+audit case 1024 11
+audit case 1024 12
+audit case 1024 13
+audit case 1024 14
+audit case 1024 15
+audit case 1024 16
+audit case 1024 17
+audit case 1024 18
+audit case 1024 19
+audit case 1024 20
+audit case 1024 21
+audit case 1024 22
+audit case 1024 23
+audit case 1024 24
+audit case 1024 25
+audit case 1024 26
+audit case 1024 27
+audit case 1024 28
+audit case 1024 29
+audit case 1024 30
+audit case 1024 31
+audit case 1024 32
+audit case 1024 33
+audit case 1024 34
+audit case 1024 35
+audit case 1024 36
+audit case 1024 37
+audit case 1024 38
+audit case 1024 39
+audit case 1024 40
+audit case 1024 41
+{
+  "passed": true,
+  "source_commit": "db66d194efa56a9fecbee9f0c116f42d7f356e7e",
+  "job_id": "3563323",
+  "archive_sha256": "f450da176f6d41fb42ade88d293e0cb8c0352ef1a47bc8f86425360cec903017",
+  "result_sha256": "a0518d3e8ab97565776154354c9c664a2430ab0be7d9c7b0bd23d098a22b0fe2",
+  "audit_script_sha256": "e9affaa6a35243bf4f7399627b4cecdd035a409893882f16f9f164bfbcdc37be",
+  "timed_invocations": 3024,
+  "distinct_full_fields": 1848,
+  "online_start_records": 1512,
+  "head_oracle_candidates": 336,
+  "training_checkpoints": 5,
+  "optimizer_blocks_verified": 627,
+  "maximum_metric_disagreement": 2.636779683484747e-16,
+  "maximum_reference_disagreement": 4.1162344561390437e-16,
+  "maximum_cpu_bank_operator_relative": 7.315999681463807e-16,
+  "maximum_cpu_cache_prediction_relative": 1.7742707412725522e-16,
+  "maximum_decoder_field_relative": 4.605020994897834e-15,
+  "maximum_initial_scaled_residual_difference": 8.097402160533829e-15,
+  "maximum_stationarity_absolute_difference": 1.879006980861832e-14,
+  "maximum_true_cg_residual_absolute_difference": 1.9012569296705806e-15,
+  "maximum_bank_projection_field_relative": 7.541247112669024e-14,
+  "maximum_head_oracle_decoder_relative": 3.555626033010827e-15,
+  "maximum_previous_baseline_field_relative_difference": 2.931658721425864e-15,
+  "maximum_training_reconstruction_metric_difference": 6.938893903907228e-16,
+  "normalized_pod_invariant_subspace_relative": 7.839191623702878e-16,
+  "all_training_freezes_verified": true,
+  "all_optimizer_time_blocks_and_matching_verified": true,
+  "normalized_training_average_optimal_pod_verified": true,
+  "pod_is_not_a_minimax_bound": true,
+  "all_fields_hashed_and_independently_scored": true,
+  "all_source_checkpoint_hashes_match_git": true,
+  "all_timing_components_sum": true,
+  "all_expected_invocations_present": true,
+  "all_rank_checks_pass": true,
+  "all_head_oracle_selection_gates_verified": true,
+  "remote_deleted": true,
+  "invalid_online_invocations": 0,
+  "head_cases_without_stationary_fit": 0,
+  "limitation": "Development cohorts only; normalized POD optimizes training average, not worst-case span accuracy. Nonlinear head fits are best-found stationary diagnostics, not global minima. Reference refinement is empirical."
+}

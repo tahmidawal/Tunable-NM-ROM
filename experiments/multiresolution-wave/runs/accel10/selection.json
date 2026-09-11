@@ -1,0 +1,166 @@
+{
+  "source_result_sha256": "334a8144d5bc8dd75a979bc9579a168ddba8207b163585cb45c38bc8f6d8e40a",
+  "source_audit_sha256": "db9e81072fe8902d773dd16d7d71003bd36ad7e21284cb86d58803ebb25dc32c",
+  "scientific_source_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+  "job_id": "3565033",
+  "selected_method": "trained_nested40",
+  "dt": 0.01,
+  "internal_configuration_dimension": 40,
+  "internal_phase_dimension": 80,
+  "weak_equations": 64,
+  "physical5percent_pass": false,
+  "selected_worst_fixed_initial_errors_percent": {
+    "displacement": 1.4779065499100805,
+    "velocity": 3.260997024411479,
+    "energy_state": 5.0410708296734486
+  },
+  "existing_halfstep_worst_fixed_initial_errors_percent": {
+    "displacement": 1.4822321425177034,
+    "velocity": 3.2726154951787594,
+    "energy_state": 5.053093248368519
+  },
+  "selection_criterion": "Lowest complete-cohort worst fixed-initial all-state error among the three numerically eligible final-screen trained/enriched heads; not a global optimum.",
+  "frozen_before_confirmation": true,
+  "fresh_development_seed": 691115,
+  "fresh_development_indices": [
+    0,
+    1
+  ],
+  "checkpoint_sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3",
+  "initializer_sha256": "154ec67eae3da47f97b16cd4838de52b685c22fd7e6e02c978294e0de45fbc60",
+  "initializer_limitation": "Training-library appended PCA scores are not residual-corrected for existing head contributions; all forty initial coordinates are nevertheless fitted to supplied fields.",
+  "candidates": [
+    {
+      "intervals": 64,
+      "cohort": "opened",
+      "method": "trained_phase",
+      "setting": 0.01,
+      "median_gpu_ms": 182.9788200557232,
+      "timing_ms": [
+        181.97172391228378,
+        182.52481799572706,
+        183.19588713347912,
+        182.80890421010554,
+        183.14873590134084,
+        183.84420592337847
+      ],
+      "outliers_above_twice_median": 0,
+      "worst_initial_errors_percent": {
+        "displacement": 1.7663245622045112,
+        "velocity": 4.1340087216168175,
+        "energy_state": 6.103805844803443
+      },
+      "worst_current_errors_percent": {
+        "displacement": 3.681008950957274,
+        "velocity": 6.417502616306884,
+        "energy_state": 6.103805844803442
+      },
+      "worst_defined_sine_projection_phase_radians": 0.013965752209946336,
+      "max_energy_drift_from_returned_initial_percent": 0.0051952786256470596,
+      "all_state_5percent_pass": false,
+      "all_completed": true,
+      "all_initial_fits_stationary": true,
+      "all_projection_fits_stationary": true,
+      "all_cg_converged": true,
+      "numerical_gate_pass": true,
+      "time_refinement_pass": true,
+      "projection_kinematic_pass": null,
+      "physical_and_numerical_pass": false,
+      "max_normal_backward": 5.66010196478053e-17,
+      "fastest_tested_passing_cg": {
+        "method": "cgdt_0.005_tol_0.01",
+        "tolerance": 0.01,
+        "median_gpu_ms": 42.01709304470569
+      },
+      "fastest_passing_cg_over_method": 0.22962817790556347
+    },
+    {
+      "intervals": 64,
+      "cohort": "opened",
+      "method": "trained_phase40",
+      "setting": 0.01,
+      "median_gpu_ms": 204.3891919311136,
+      "timing_ms": [
+        250.78137684613466,
+        202.94367312453687,
+        204.25814692862332,
+        205.11798188090324,
+        204.52023693360388,
+        204.0451020002365
+      ],
+      "outliers_above_twice_median": 0,
+      "worst_initial_errors_percent": {
+        "displacement": 2.1095306938044835,
+        "velocity": 4.252749399772053,
+        "energy_state": 6.167913332518649
+      },
+      "worst_current_errors_percent": {
+        "displacement": 4.425313129502431,
+        "velocity": 8.205165317995496,
+        "energy_state": 6.167913332518648
+      },
+      "worst_defined_sine_projection_phase_radians": 0.006256493614417852,
+      "max_energy_drift_from_returned_initial_percent": 0.005276981826585203,
+      "all_state_5percent_pass": false,
+      "all_completed": true,
+      "all_initial_fits_stationary": true,
+      "all_projection_fits_stationary": true,
+      "all_cg_converged": true,
+      "numerical_gate_pass": true,
+      "time_refinement_pass": true,
+      "projection_kinematic_pass": null,
+      "physical_and_numerical_pass": false,
+      "max_normal_backward": 4.655405776864284e-17,
+      "fastest_tested_passing_cg": {
+        "method": "cgdt_0.005_tol_0.01",
+        "tolerance": 0.01,
+        "median_gpu_ms": 42.01709304470569
+      },
+      "fastest_passing_cg_over_method": 0.20557394766190445
+    },
+    {
+      "intervals": 64,
+      "cohort": "opened",
+      "method": "trained_nested40",
+      "setting": 0.01,
+      "median_gpu_ms": 199.46493790484965,
+      "timing_ms": [
+        197.33041990548372,
+        197.74758513085544,
+        198.2995809521526,
+        200.6302948575467,
+        201.61192887462676,
+        200.98564494401217
+      ],
+      "outliers_above_twice_median": 0,
+      "worst_initial_errors_percent": {
+        "displacement": 1.4779065499100805,
+        "velocity": 3.260997024411479,
+        "energy_state": 5.0410708296734486
+      },
+      "worst_current_errors_percent": {
+        "displacement": 2.5546007647651523,
+        "velocity": 5.289309361244295,
+        "energy_state": 5.041070829673448
+      },
+      "worst_defined_sine_projection_phase_radians": 0.012617978824379872,
+      "max_energy_drift_from_returned_initial_percent": 0.0052918429960358004,
+      "all_state_5percent_pass": false,
+      "all_completed": true,
+      "all_initial_fits_stationary": true,
+      "all_projection_fits_stationary": true,
+      "all_cg_converged": true,
+      "numerical_gate_pass": true,
+      "time_refinement_pass": true,
+      "projection_kinematic_pass": null,
+      "physical_and_numerical_pass": false,
+      "max_normal_backward": 5.878780551723846e-17,
+      "fastest_tested_passing_cg": {
+        "method": "cgdt_0.005_tol_0.01",
+        "tolerance": 0.01,
+        "median_gpu_ms": 42.01709304470569
+      },
+      "fastest_passing_cg_over_method": 0.21064901674473244
+    }
+  ]
+}

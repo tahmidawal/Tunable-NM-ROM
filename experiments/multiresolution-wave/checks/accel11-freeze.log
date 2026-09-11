@@ -1,0 +1,32 @@
+{
+  "source_result_sha256": "334a8144d5bc8dd75a979bc9579a168ddba8207b163585cb45c38bc8f6d8e40a",
+  "source_audit_sha256": "db9e81072fe8902d773dd16d7d71003bd36ad7e21284cb86d58803ebb25dc32c",
+  "scientific_source_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+  "job_id": "3565033",
+  "selected_method": "trained_nested40",
+  "dt": 0.01,
+  "internal_configuration_dimension": 40,
+  "internal_phase_dimension": 80,
+  "weak_equations": 64,
+  "physical5percent_pass": false,
+  "selected_worst_fixed_initial_errors_percent": {
+    "displacement": 1.4779065499100805,
+    "velocity": 3.260997024411479,
+    "energy_state": 5.0410708296734486
+  },
+  "existing_halfstep_worst_fixed_initial_errors_percent": {
+    "displacement": 1.4822321425177034,
+    "velocity": 3.2726154951787594,
+    "energy_state": 5.053093248368519
+  },
+  "selection_criterion": "Lowest complete-cohort worst fixed-initial all-state error among the three numerically eligible final-screen trained/enriched heads; not a global optimum.",
+  "frozen_before_confirmation": true,
+  "fresh_development_seed": 691115,
+  "fresh_development_indices": [
+    0,
+    1
+  ],
+  "checkpoint_sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3",
+  "initializer_sha256": "154ec67eae3da47f97b16cd4838de52b685c22fd7e6e02c978294e0de45fbc60",
+  "initializer_limitation": "Training-library appended PCA scores are not residual-corrected for existing head contributions; all forty initial coordinates are nevertheless fitted to supplied fields."
+}

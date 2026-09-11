@@ -1,10 +1,10 @@
-# Frozen reflective-wave acceleration and phase-head confirmation
+# Frozen reflective-wave acceleration and nested-head confirmation
 
-Planned confirmation after the accepted opened-cohort screens and the pending bounded capacity test. The current draft cannot be submitted until the capacity selection is frozen. The retained geometry/timestep and selected phase-trained checkpoint will be frozen before the separately seeded fresh development inputs. No final-paper cases are opened and the existing accuracy target is unchanged.
+Frozen confirmation after the accepted opened-cohort geometry, training and bounded capacity screens. The retained geometry/timestep and selected nested-head checkpoint are frozen before the separately seeded fresh development inputs. No final-paper cases are opened and the existing accuracy target is unchanged.
 
-`acceleration-confirm-config.json` records all exact settings and the source result/checkpoint hashes. Compare the original latent RK4 implementation, the original head with guarded Cholesky geometry and the retained timestep, and the selected phase-supervised head with the same optimized geometry/timestep. These all retain 32 nonlinear configuration coordinates and 64 phase coordinates in the unchanged 64-function spatial bank. The field-only fixed-encoder training control and larger linear/hybrid controls remain in their complete screen archives; they are not silently relabeled as the selected method.
+`acceleration-confirm-config.json` records all exact settings and the source result, audit, checkpoint and initializer hashes. `freeze_acceleration.py` derives the selected endpoint from the accepted final screen. Compare the original latent RK4 implementation, the original head with guarded Cholesky geometry and the retained timestep, and the selected nested head with the same optimized geometry/timestep. The original controls have 32 configuration and 64 phase coordinates. The nested head preserves the accepted phase-trained decoder and adds eight linear coordinates, giving 40 configuration and 80 phase coordinates in the unchanged 64-function spatial bank. Its actual nonlinear latent dynamics remain curvature-inclusive. The field-only, phase-only, retrained larger head and larger linear/hybrid controls remain in their complete screen archives.
 
-Use 64, 256 and 1024 intervals per axis; both previously opened cases; and fresh development seed 691115, indices 0 and 1. Three repeated full-device queries per method/case/mesh are charged. Do not select parameters or checkpoints on the confirmation inputs. Report opened and fresh development cohorts separately, and their combined worst cases. The screen's modest accuracy improvement does not establish an all-state 5% pass.
+Use 64, 256 and 1024 intervals per axis; both previously opened cases; and fresh development seed 691115, indices 0 and 1. Three repeated full-device queries per method/case/mesh are charged. Do not select parameters or checkpoints on the confirmation inputs. Report opened and fresh development cohorts separately, and their combined worst cases. The selected screen endpoint still misses the all-state 5% target. Its existing halved-step control is slightly less accurate, so the already-tested timestep is retained without borrowing any accuracy-only timing.
 
 Each same-job comparison retains original CG tolerances, larger CG timesteps at their declared tolerances, and exact semidiscrete DST. The best passing iterative FOM is the fastest complete-cohort setting satisfying the unchanged physical and numerical requirements; the original tightly solved FOM remains a named comparator, not the sole comparator. CG timestep choices receive the same opportunity to reduce work as the ROM. Every nonlinear method also receives a halved-timestep accuracy-only control. These controls are scored but their compilation-inclusive timing is excluded from speed selection.
 
@@ -12,10 +12,13 @@ All geometry guards, cold-start stationarity criteria and full displacement/phys
 
 Training checkpoints and the frozen affine initializer are transferred by content hash from the accepted training archive. Query fields and references regenerate from the declared seeds. Large full-field arrays are stored in the verified cluster archive and archived in bounded-size uncompressed tar parts; extracted large arrays are excluded from duplicate git tracking, not discarded. Collection verifies all manifests and removes the exact completed remote directory before accepting results.
 
+The nested library seeds append the original training-PCA scores directly. These scores are not corrected for any component already represented by the nonlinear head; this is a frozen initializer limitation. Every initial coordinate is subsequently fitted to supplied displacement/velocity, with the unchanged stationarity and rank checks. No development reference is used to choose an initial state.
+
 ## Glossary
 
 - **Confirmation:** evaluation of already frozen settings; no fresh-case tuning.
 - **Phase-trained head:** the selected fixed-encoder network trained with field, displacement-energy and tangent-velocity losses.
+- **Nested head:** the phase-trained decoder plus additional freely solved fixed linear training directions, preserving the smaller decoder at zero added coordinates.
 - **Current-relative / fixed-initial:** normalization by the reference norm at each time / by a fixed supplied initial physical scale.
 - **All-state target:** joint displacement, physical-velocity and energy-state requirement.
 - **CG / DST:** iterative conjugate-gradient midpoint and direct discrete-sine-transform FOMs.

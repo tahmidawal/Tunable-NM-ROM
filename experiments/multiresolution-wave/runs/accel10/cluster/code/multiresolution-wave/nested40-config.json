@@ -1,0 +1,130 @@
+{
+  "meshes": [
+    64
+  ],
+  "boundaries": [
+    "dirichlet"
+  ],
+  "validation_seed": 690602,
+  "validation_indices": [
+    0,
+    1
+  ],
+  "end_time": 2.4,
+  "observation_dt": 0.05,
+  "repetitions": 3,
+  "fit_iterations": 800,
+  "primary_dt": 0.0025,
+  "accuracy_only_dt": 0.00125,
+  "fom_cfl": 0.45,
+  "reference_cfl": 0.1125,
+  "reference_refinement_cfl": 0.05625,
+  "vanishing_fraction": 0.001,
+  "rom_refinement_target": 0.01,
+  "reference_refinement_target": 0.0001,
+  "accuracy_targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "primary_method": "frozen_mlp32_seed691200",
+  "control_method": null,
+  "frozen_bank_rank": 64,
+  "final_test_opened": false,
+  "expected_timed_invocations": 66,
+  "expected_accuracy_only_queries": 10,
+  "input_output_contract": "Full GPU-resident displacement, velocity and scalar physical wave speed to both full GPU-resident fields at all 49 observations. Include projection, every cold-fit start, parameter preparation, evolution and dense output; exclude host transfers, compilation and mesh-only assembly.",
+  "selection": "Finalboundedwavearchitecturescreen: additive8fixedlineartraining-PCAdirectionsaroundaccepted32phasehead; exactnestedinclusionchecked. Preserveoriginaloldhead,32phaseand40retrainedcontrols; allphysical/numerical/halfstepgatesunchanged. Afterthisscreenfreeze besteligibletrueNMROMbefore3-mesh+freshdevelopmentconfirmation; nofurtherwaveconfigurationsearchinthisround.",
+  "claim_scope": "Nested40-coordinate nonlinear manifold isdistinctarchitecturefromretrained40head; nohead/banktraininginthisarm. Allbasis/initializer/libraryderivedonlyfromacceptedtrainingartifacts. Opened2casesN64only; finalcohortsealed.",
+  "walltime": "01:00:00",
+  "estimated_runtime_minutes": [
+    15,
+    35
+  ],
+  "cg_tolerances": [
+    1e-06,
+    0.01
+  ],
+  "cg_max_iterations": 1000,
+  "cohorts": [
+    {
+      "name": "opened",
+      "seed": 690602,
+      "indices": [
+        0,
+        1
+      ]
+    }
+  ],
+  "profile_repetitions": 0,
+  "parity_target": 1e-08,
+  "arms": [
+    {
+      "method": "baseline",
+      "dt": 0.0025
+    },
+    {
+      "method": "chol_guard",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase40",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_nested40",
+      "dt": 0.01
+    }
+  ],
+  "refinement_arms": [
+    {
+      "method": "baseline",
+      "dt": 0.0025
+    },
+    {
+      "method": "chol_guard",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_phase40",
+      "dt": 0.01
+    },
+    {
+      "method": "trained_nested40",
+      "dt": 0.01
+    }
+  ],
+  "cg_timestep_arms": [
+    {
+      "dt": 0.005,
+      "tolerance": 1e-06
+    },
+    {
+      "dt": 0.005,
+      "tolerance": 0.01
+    },
+    {
+      "dt": 0.01,
+      "tolerance": 1e-06
+    }
+  ],
+  "head_source_run": "accel08",
+  "frozen_head_inputs": {
+    "trained_phase": "trained_phase.npz",
+    "trained_phase40": "trained_phase40.npz"
+  },
+  "head_source_runs": {
+    "trained_phase": "accel08",
+    "trained_phase40": "accel09"
+  },
+  "nested_enrichment": true
+}

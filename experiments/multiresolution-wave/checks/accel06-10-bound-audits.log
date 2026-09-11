@@ -1,0 +1,144 @@
+accel06
+{
+  "passed": true,
+  "source_commit": "2826ce49f385d34a65229798893ec1f2977c714a",
+  "job_id": "3563074",
+  "result_sha256": "6d0a8ae00d22a69c0d95d27bf8c419f769260756cb0b3bd082b55ca8b46fce18",
+  "audit_script_sha256": "d4cfc6a2099e748ceedc310dfe22d726e0d9065e296d3035c727ab95d7761b85",
+  "audit_script_path": "experiments/multiresolution-wave/audit_acceleration.py",
+  "source_and_job_match": true,
+  "timed_invocations": 54,
+  "distinct_timed_fields": 18,
+  "accuracy_control_fields": 4,
+  "training": null,
+  "nested": null
+}
+64 opened baseline 0.0025 4466.021625092253 {'displacement': 1.8123748190538647, 'velocity': 4.167162057531009, 'energy_state': 6.223986057830844}
+64 opened shared_svd_r 0.0025 2898.490385035984 {'displacement': 1.8123748190538642, 'velocity': 4.167162057531011, 'energy_state': 6.223986057830843}
+64 opened qr_guard 0.0025 1119.0133905038238 {'displacement': 1.8123748190538642, 'velocity': 4.167162057531011, 'energy_state': 6.223986057830843}
+64 opened chol_guard 0.0025 644.4713999517262 {'displacement': 1.8123748190538536, 'velocity': 4.167162057531016, 'energy_state': 6.223986057830838}
+64 opened chol_guard 0.005 333.70540605392307 {'displacement': 1.8122838535300883, 'velocity': 4.167207419643939, 'energy_state': 6.223947890673317}
+64 opened chol_guard 0.01 178.68832603562623 {'displacement': 1.8109156741339227, 'velocity': 4.167481412007671, 'energy_state': 6.2230986748566846}
+64 opened cg_1e-06 1e-06 110.47035490628332 {'displacement': 0.19968993121321169, 'velocity': 0.4129713502754628, 'energy_state': 0.5744954653826815}
+64 opened cg_0.01 0.01 82.72554946597666 {'displacement': 0.303316410119362, 'velocity': 0.3587233967945483, 'energy_state': 0.48592521621477947}
+64 opened dst 0.0 3.851749817840755 {'displacement': 0.0, 'velocity': 0.0, 'energy_state': 0.0}
+accel07
+{
+  "passed": true,
+  "source_commit": "b55fe991cff4512063c8109dcdcc72d3ed21d060",
+  "job_id": "3563590",
+  "result_sha256": "3638e00ac97d9daf9811f82a97bf9e7117705f46add3103417867f0a1c94256b",
+  "audit_script_sha256": "d4cfc6a2099e748ceedc310dfe22d726e0d9065e296d3035c727ab95d7761b85",
+  "audit_script_path": "experiments/multiresolution-wave/audit_acceleration.py",
+  "source_and_job_match": true,
+  "timed_invocations": 90,
+  "distinct_timed_fields": 30,
+  "accuracy_control_fields": 6,
+  "training": null,
+  "nested": null
+}
+64 opened baseline 0.0025 4506.736030511092 {'displacement': 1.8123748190538576, 'velocity': 4.167162057531001, 'energy_state': 6.2239860578308335}
+64 opened chol_guard 0.01 182.21996945794672 {'displacement': 1.810915674133913, 'velocity': 4.167481412007671, 'energy_state': 6.223098674856681}
+64 opened chol_guard 0.025 86.57793002203107 {'displacement': 1.804827581769727, 'velocity': 4.201964014807817, 'energy_state': 6.2607390421742295}
+64 opened linear_bank64 0.0 1.4472620678134263 {'displacement': 0.7826268920301641, 'velocity': 2.1697683639800727, 'energy_state': 3.211301378885772}
+64 opened projected_l2 0.0 377.39671050803736 {'displacement': 1.4870633387780599, 'velocity': 3.7717085190546404, 'energy_state': 5.5386622055493895}
+64 opened projected_h1 0.0 413.628282956779 {'displacement': 1.5076378023241668, 'velocity': 3.8393392191367677, 'energy_state': 5.566893686093173}
+64 opened cg_1e-06 1e-06 110.08173954905942 {'displacement': 0.19968993121321169, 'velocity': 0.4129713502754628, 'energy_state': 0.5744954653826815}
+64 opened cg_0.01 0.01 82.22958602709696 {'displacement': 0.303316410119362, 'velocity': 0.3587233967945483, 'energy_state': 0.48592521621477947}
+64 opened cgdt_0.005_tol_1e-06 1e-06 69.39518003491685 {'displacement': 0.7948785284378338, 'velocity': 1.548111901099276, 'energy_state': 2.16295342099367}
+64 opened cgdt_0.005_tol_0.01 0.01 41.904818499460816 {'displacement': 1.2134079222417593, 'velocity': 1.4188816917803715, 'energy_state': 1.9238927571122142}
+64 opened cgdt_0.01_tol_1e-06 1e-06 45.23528349818662 {'displacement': 3.144052525237716, 'velocity': 5.874125862545752, 'energy_state': 8.153121939487129}
+64 opened cgdt_0.01_tol_0.01 0.01 22.983202012255788 {'displacement': 4.694635111375897, 'velocity': 5.865361104104502, 'energy_state': 7.941749094987448}
+64 opened cgdt_0.025_tol_1e-06 1e-06 39.998863998334855 {'displacement': 18.43703678592933, 'velocity': 33.157363390085564, 'energy_state': 45.789822882856804}
+64 opened cgdt_0.025_tol_0.01 0.01 16.095903469249606 {'displacement': 22.146597161282642, 'velocity': 31.840653829579413, 'energy_state': 43.55656407957313}
+64 opened dst 0.0 3.7370030186139047 {'displacement': 0.0, 'velocity': 0.0, 'energy_state': 0.0}
+accel08
+{
+  "passed": true,
+  "source_commit": "2514d3954d7a8c83429d698f4788f3176a2816fd",
+  "job_id": "3563875",
+  "result_sha256": "050bf263e25a9e2be05c244723fd6907b11090fe87de7b0b8353c6d4a8e71153",
+  "audit_script_sha256": "d4cfc6a2099e748ceedc310dfe22d726e0d9065e296d3035c727ab95d7761b85",
+  "audit_script_path": "experiments/multiresolution-wave/audit_acceleration.py",
+  "source_and_job_match": true,
+  "timed_invocations": 60,
+  "distinct_timed_fields": 20,
+  "accuracy_control_fields": 8,
+  "training": {
+    "fixed_encoder_code_and_velocity_max_absolute": 5.684341886080801e-13,
+    "original_stiffness_relative_error": 2.1212462368961524e-15,
+    "endpoint_count": 2,
+    "original_truth_hashes_matched": true
+  },
+  "nested": null
+}
+64 opened baseline 0.0025 4519.760249066167 {'displacement': 1.81237481905386, 'velocity': 4.167162057531016, 'energy_state': 6.223986057830841}
+64 opened chol_guard 0.01 182.91171704186127 {'displacement': 1.8109156741339287, 'velocity': 4.1674814120076755, 'energy_state': 6.223098674856696}
+64 opened trained_field 0.01 184.2404925264418 {'displacement': 1.9014488394925046, 'velocity': 4.587520242914211, 'energy_state': 6.263938886480493}
+64 opened trained_phase 0.01 182.7549624722451 {'displacement': 1.7663245622045132, 'velocity': 4.1340087216168175, 'energy_state': 6.1038058448034445}
+64 opened cg_1e-06 1e-06 109.97220047283918 {'displacement': 0.19968993121321169, 'velocity': 0.4129713502754628, 'energy_state': 0.5744954653826815}
+64 opened cg_0.01 0.01 82.67817547312006 {'displacement': 0.303316410119362, 'velocity': 0.3587233967945483, 'energy_state': 0.48592521621477947}
+64 opened cgdt_0.005_tol_1e-06 1e-06 69.67361294664443 {'displacement': 0.7948785284378338, 'velocity': 1.548111901099276, 'energy_state': 2.16295342099367}
+64 opened cgdt_0.005_tol_0.01 0.01 42.02541196718812 {'displacement': 1.2134079222417593, 'velocity': 1.4188816917803715, 'energy_state': 1.9238927571122142}
+64 opened cgdt_0.01_tol_1e-06 1e-06 44.376265024766326 {'displacement': 3.144052525237716, 'velocity': 5.874125862545752, 'energy_state': 8.153121939487129}
+64 opened dst 0.0 3.881786426063627 {'displacement': 0.0, 'velocity': 0.0, 'energy_state': 0.0}
+accel09
+{
+  "passed": true,
+  "source_commit": "160b338a7d61a5111e46bff0b168610ae4a77282",
+  "job_id": "3564476",
+  "result_sha256": "f61c0240a5e08f789a1907be96ac2cf79d9d5cc26323c7a18267150294443a4e",
+  "audit_script_sha256": "d4cfc6a2099e748ceedc310dfe22d726e0d9065e296d3035c727ab95d7761b85",
+  "audit_script_path": "experiments/multiresolution-wave/audit_acceleration.py",
+  "source_and_job_match": true,
+  "timed_invocations": 60,
+  "distinct_timed_fields": 20,
+  "accuracy_control_fields": 8,
+  "training": {
+    "fixed_encoder_code_and_velocity_max_absolute": 1.3020695632803836e-12,
+    "original_stiffness_relative_error": 2.1213259596476766e-15,
+    "endpoint_count": 1,
+    "original_truth_hashes_matched": true
+  },
+  "nested": null
+}
+64 opened baseline 0.0025 4496.899827034213 {'displacement': 1.812374819053866, 'velocity': 4.167162057531016, 'energy_state': 6.2239860578308495}
+64 opened chol_guard 0.01 182.03115102369338 {'displacement': 1.8109156741339287, 'velocity': 4.167481412007678, 'energy_state': 6.223098674856698}
+64 opened trained_phase 0.01 181.88091652700678 {'displacement': 1.7663245622045192, 'velocity': 4.134008721616824, 'energy_state': 6.103805844803449}
+64 opened trained_phase40 0.01 202.700617024675 {'displacement': 2.1095306938044893, 'velocity': 4.252749399772059, 'energy_state': 6.167913332518656}
+64 opened cg_1e-06 1e-06 110.55840254994109 {'displacement': 0.19968993121321169, 'velocity': 0.4129713502754628, 'energy_state': 0.5744954653826815}
+64 opened cg_0.01 0.01 82.59607153013349 {'displacement': 0.303316410119362, 'velocity': 0.3587233967945483, 'energy_state': 0.48592521621477947}
+64 opened cgdt_0.005_tol_1e-06 1e-06 69.76564804790542 {'displacement': 0.7948785284378338, 'velocity': 1.548111901099276, 'energy_state': 2.16295342099367}
+64 opened cgdt_0.005_tol_0.01 0.01 42.04503400251269 {'displacement': 1.2134079222417593, 'velocity': 1.4188816917803715, 'energy_state': 1.9238927571122142}
+64 opened cgdt_0.01_tol_1e-06 1e-06 44.6507494780235 {'displacement': 3.144052525237716, 'velocity': 5.874125862545752, 'energy_state': 8.153121939487129}
+64 opened dst 0.0 3.876941977068782 {'displacement': 0.0, 'velocity': 0.0, 'energy_state': 0.0}
+accel10
+{
+  "passed": true,
+  "source_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+  "job_id": "3565033",
+  "result_sha256": "334a8144d5bc8dd75a979bc9579a168ddba8207b163585cb45c38bc8f6d8e40a",
+  "audit_script_sha256": "d4cfc6a2099e748ceedc310dfe22d726e0d9065e296d3035c727ab95d7761b85",
+  "audit_script_path": "experiments/multiresolution-wave/audit_acceleration.py",
+  "source_and_job_match": true,
+  "timed_invocations": 66,
+  "distinct_timed_fields": 22,
+  "accuracy_control_fields": 10,
+  "training": null,
+  "nested": {
+    "original_parameters_exact": true,
+    "independent_inclusion_max_absolute": 6.938893903907228e-18,
+    "independent_minimum_sampled_rank_ratio": 0.004645808558337119
+  }
+}
+64 opened baseline 0.0025 4508.179158903658 {'displacement': 1.812374819053861, 'velocity': 4.167162057531015, 'energy_state': 6.223986057830842}
+64 opened chol_guard 0.01 183.17558954004198 {'displacement': 1.8109156741339265, 'velocity': 4.167481412007674, 'energy_state': 6.22309867485669}
+64 opened trained_phase 0.01 182.9788200557232 {'displacement': 1.7663245622045112, 'velocity': 4.1340087216168175, 'energy_state': 6.103805844803443}
+64 opened trained_phase40 0.01 204.3891919311136 {'displacement': 2.1095306938044835, 'velocity': 4.252749399772053, 'energy_state': 6.167913332518649}
+64 opened trained_nested40 0.01 199.46493790484965 {'displacement': 1.4779065499100805, 'velocity': 3.260997024411479, 'energy_state': 5.0410708296734486}
+64 opened cg_1e-06 1e-06 110.32642854843289 {'displacement': 0.19968993121321169, 'velocity': 0.4129713502754628, 'energy_state': 0.5744954653826815}
+64 opened cg_0.01 0.01 82.65917643439025 {'displacement': 0.303316410119362, 'velocity': 0.3587233967945483, 'energy_state': 0.48592521621477947}
+64 opened cgdt_0.005_tol_1e-06 1e-06 69.83977346681058 {'displacement': 0.7948785284378338, 'velocity': 1.548111901099276, 'energy_state': 2.16295342099367}
+64 opened cgdt_0.005_tol_0.01 0.01 42.01709304470569 {'displacement': 1.2134079222417593, 'velocity': 1.4188816917803715, 'energy_state': 1.9238927571122142}
+64 opened cgdt_0.01_tol_1e-06 1e-06 44.45326037239283 {'displacement': 3.144052525237716, 'velocity': 5.874125862545752, 'energy_state': 8.153121939487129}
+64 opened dst 0.0 3.86053160764277 {'displacement': 0.0, 'velocity': 0.0, 'energy_state': 0.0}

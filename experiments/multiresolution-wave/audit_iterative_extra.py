@@ -45,7 +45,18 @@ def extra_audit(record,data):
     root=Path(__file__).resolve().parents[2]
     for commit,sources in ((origin['checkpoint_commit'],origin['sources']),(origin['head32_origin']['commit'],origin['head32_origin']['sources'])):
         for path,expected in sources.items():
-            value=subprocess.check_output(['git','show',commit+':'+path],cwd=root)
+            if '/training_ladder_' in path:
+                proof=origin['head32_origin']
+                result_bytes=subprocess.check_output(['git','show',commit+':'+proof['result_path']],cwd=root)
+                assert hashlib.sha256(result_bytes).hexdigest()==proof['result_sha256']
+                assert json.loads(result_bytes)['output_sha256'][Path(path).name]==expected
+                value=(root/path).read_bytes()
+                bc=Path(path).stem.removeprefix('training_ladder_')
+                with np.load(root/path) as original,np.load(cluster/'in'/bc/'initializer32.npz') as supplied:
+                    np.testing.assert_array_equal(original['standardized_linear'][:,:32],supplied['linear'])
+                    np.testing.assert_array_equal(original['center'],supplied['center'])
+            else:
+                value=subprocess.check_output(['git','show',commit+':'+path],cwd=root)
             assert hashlib.sha256(value).hexdigest()==expected
             lineage_checks+=1
     all_groups=[];bank_checks=[];ref_checks=[];rom_refinements=[];parities=[]

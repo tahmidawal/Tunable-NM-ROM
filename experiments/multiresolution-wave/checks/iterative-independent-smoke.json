@@ -1,0 +1,133 @@
+{
+  "passed": true,
+  "lineage_hashes_checked": 14,
+  "bank_checks": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "sampled_bank_max_absolute": 4.04121180963557e-14,
+      "samples_per_axis": 31
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "sampled_bank_max_absolute": 2.1538326677728037e-14,
+      "samples_per_axis": 31
+    }
+  ],
+  "reference_checks": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "modal_reference_max_absolute": 9.43689570931383e-15,
+      "passed": true
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "maximum_initial_normalized_refinement": 5.567568909450382e-09,
+      "metric_discrepancy": 0.0,
+      "passed": true
+    }
+  ],
+  "method_checks": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "head_coefficient_max_absolute": 1.249000902703301e-16,
+      "minimum_observed_rank_ratio": 0.015429570537146973,
+      "minimum_all_stages_recorded_rank_ratio": 0.015429570537146978
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "method": "cg_1e-06",
+      "cg_max_true_relative": 3.129242169383465e-07,
+      "cg_max_iterations": 2,
+      "cg_converged": true,
+      "maximum_initial_energy_difference_from_exact_midpoint": 3.415003607422511e-08
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "method": "cg_0.01",
+      "cg_max_true_relative": 0.00018176531311129917,
+      "cg_max_iterations": 1,
+      "cg_converged": true,
+      "maximum_initial_energy_difference_from_exact_midpoint": 2.0601269830581417e-05
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "method": "dst"
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "head_coefficient_max_absolute": 5.551115123125783e-17,
+      "minimum_observed_rank_ratio": 0.013295243270922423,
+      "minimum_all_stages_recorded_rank_ratio": 0.013295243270922302
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "method": "cg_1e-06",
+      "cg_max_true_relative": 3.1317775586026536e-07,
+      "cg_max_iterations": 2,
+      "cg_converged": true
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "method": "cg_0.01",
+      "cg_max_true_relative": 0.0001817653131113003,
+      "cg_max_iterations": 1,
+      "cg_converged": true
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "method": "rk4"
+    }
+  ],
+  "rom_refinement": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "maxima": {
+        "displacement": 1.7084831103035903e-10,
+        "velocity": 2.3154126759559172e-09,
+        "energy_state": 2.349035883970969e-09
+      },
+      "passed": true
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "maxima": {
+        "displacement": 2.1028158263596287e-10,
+        "velocity": 3.154172617002575e-09,
+        "energy_state": 3.1922495736667605e-09
+      },
+      "passed": true
+    }
+  ],
+  "prior_frozen_trajectory_parity": [],
+  "limitation": "Independent CG large-grid checks score saved fields and modal solutions; per-internal-step true residuals are retained runner evidence, not independently reconstructed because internal full fields are not archived. Bank identity is sampled at fixed physical indices; output fields and physical errors are checked in full."
+}

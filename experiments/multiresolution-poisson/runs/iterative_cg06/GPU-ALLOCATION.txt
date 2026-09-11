@@ -1,0 +1,35 @@
+JobId=3534456 JobName=ctol_mr_poisson_iterative_cg06
+   UserId=tawal01(34493) GroupId=tawal01_g(1034493) MCS_label=N/A
+   Priority=699 Nice=0 Account=default QOS=normal
+   JobState=RUNNING Reason=None Dependency=(null)
+   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   DerivedExitCode=0:0
+   RunTime=00:02:31 TimeLimit=00:45:00 TimeMin=N/A
+   SubmitTime=2026-09-11T00:52:36 EligibleTime=2026-09-11T00:52:36
+   AccrueTime=2026-09-11T00:52:36
+   StartTime=2026-09-11T00:53:03 EndTime=2026-09-11T01:38:03 Deadline=N/A
+   PreemptEligibleTime=2026-09-11T00:53:03 PreemptTime=None
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-09-11T00:53:03 Scheduler=Backfill
+   Partition=gpu AllocNode:Sid=login-p01:293159
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=pax049
+   BatchHost=pax049
+   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=8,mem=96G,node=1,billing=8,gres/gpu=1
+   AllocTRES=cpu=8,mem=96G,node=1,billing=8,gres/gpu=1
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   JOB_GRES=gpu:a100:1
+     Nodes=pax049 CPU_IDs=32-39 Mem=98304 GRES=gpu:a100:1(IDX:4)
+   MinCPUsNode=8 MinMemoryNode=96G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
+   Command=/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/iterative_cg06/job.sbatch
+   WorkDir=/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/iterative_cg06
+   StdErr=/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/iterative_cg06/logs/3534456.err
+   StdIn=/dev/null
+   StdOut=/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/iterative_cg06/logs/3534456.out
+   Power=
+   TresPerNode=gres/gpu:a100:1
+   TresPerTask=cpu:8
+   
+

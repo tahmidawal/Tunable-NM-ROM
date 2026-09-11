@@ -1,0 +1,12 @@
+{
+  "archive": "verified-cluster.tar.gz",
+  "sha256": "72e7fb5cb7a0e6db5bb03ebc60150e6b497c043c611b77646f068610c3ab6462",
+  "bytes": 2278918990,
+  "parts": 46,
+  "scientific_source_commit": "085e318ea8946e0443ce6a129171d09a16d34cbe",
+  "job_id": "3534456",
+  "all_output_fields_and_repetitions_archived": true,
+  "restore_command": "/home/tahmid/Dev/.venv/bin/python experiments/multiresolution-poisson/restore_iterative.py experiments/multiresolution-poisson/runs/iterative_cg06",
+  "audit_command": "OPENBLAS_NUM_THREADS=8 /home/tahmid/Dev/.venv/bin/python experiments/multiresolution-poisson/reports/audit_iterative.py experiments/multiresolution-poisson/runs/iterative_cg06",
+  "summary_command": "/home/tahmid/Dev/.venv/bin/python experiments/multiresolution-poisson/reports/summarize_iterative.py experiments/multiresolution-poisson/runs/iterative_cg06"
+}

@@ -14,6 +14,7 @@ import scipy.fft
 
 
 def audit(record):
+    audit_source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     archive = record/"archive"; out = archive/"outputs"
     result = json.loads((out/"results.json").read_text())
     assert result["complete"] and result["metadata"]["backend"] == "gpu"
@@ -85,7 +86,7 @@ def audit(record):
     features = np.concatenate((np.sin(angle), np.cos(angle)), -1)
     mask = 16*xy[:,0]*(1-xy[:,0])*xy[:,1]*(1-xy[:,1])
     sampled_bank = (params["out_scale"]*mask)[:, None]*mlp(params["g"], features)
-    manifold_checks = []; weak_checks = []; initial_checks = []; parity_checks = []
+    manifold_checks = []; weak_checks = []; initial_checks = []
     initial_targets = {}; operators = {}
     checked = set(); largest_delta = 0.; metric_count = 0
     @lru_cache(maxsize=8)
@@ -387,7 +388,7 @@ def audit(record):
             fine_summaries.append(dict(intervals=n,case=cid,model=fit['name'],
                 initial_error=fit['vs_same_grid']['relative_current'][0],later_worst=max(fit['vs_same_grid']['relative_current'][1:]),
                 nonstationary_selected=int(np.sum(infos[np.arange(len(zs)),best,2]!=1)),maximum_diagnostic_difference=max_delta))
-    output = dict(passed=True, result_sha256=hashlib.sha256((out/"results.json").read_bytes()).hexdigest(),
+    output = dict(passed=True, audit_source_sha256=audit_source_sha256, result_sha256=hashlib.sha256((out/"results.json").read_bytes()).hexdigest(),
         metadata=result["metadata"], source_commit=source["source_commit"], settings=result["settings"],
         unique_fields_checked=len(checked), timed_invocations_checked=sum(counts.values()),
         metric_entries_checked=metric_count, maximum_metric_difference=largest_delta,
@@ -399,8 +400,6 @@ def audit(record):
         time_step_weak_checks=len(weak_checks), maximum_time_step_weak_difference=max(weak_checks),
         initial_fit_weak_checks=len(initial_checks), maximum_initial_fit_weak_difference=max(initial_checks),
         initial_target_audit="Recovered by independent QR from sampled linear initial projection; not a full-grid independent projection reconstruction.",
-        algebra_parity=parity_checks, algebra_parity_passed=all(p['field_pass'] and p['latent_pass'] for p in parity_checks),
-        all_counts_equal=all(p['initial_counts_equal'] and p['step_counts_equal'] for p in parity_checks),
         cg_checks=cg_checks,
         cg_reference="Independent NumPy/SciPy sine transform of the exact matching finite-difference theta-method; every CG output checked. Full internal CG fields are not stored for independent per-step true-residual reconstruction.")
     analysis = record/"analysis"; analysis.mkdir(exist_ok=True)

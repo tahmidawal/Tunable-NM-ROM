@@ -52,7 +52,7 @@ def summarize(record):
                     key=phase+'_seconds'; values=[p['phases'][key] for p in reps]
                     row[phase+'_median_ms']=float(np.median(values)*1000)
                     row[phase+'_median_case_medians_ms']=float(np.median([np.median([p['phases'][key] for p in r['repetitions']]) for r in native])*1000)
-                    row[phase+'_outliers']=sum(sum(p['phases'][key]>1.5*np.median([q['phases'][key] for q in r['repetitions']]) for p in r['repetitions']) for r in native)
+                    row[phase+'_outliers']=int(sum(sum(p['phases'][key]>1.5*np.median([q['phases'][key] for q in r['repetitions']]) for p in r['repetitions']) for r in native))
                     for comparator in ['nmrom_frozen','fom_cg_cn','fom_cg_cn_tol1e2','fom_same_grid']:
                         other=[lookup[n,r['case'],comparator] for r in native]
                         med=float(np.median([p['phases'][key] for r in other for p in r['repetitions']]))

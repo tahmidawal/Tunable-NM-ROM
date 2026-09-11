@@ -45,6 +45,26 @@ def audit(record):
             for a,b in zip(leaves(params[key]),leaves(item["params"][key])): np.testing.assert_array_equal(a,b)
         assert item["config"] == result["config"]
         models[model["name"]] = item
+        if model['name']=='frozen':
+            for key in params:
+                for a,b in zip(leaves(params[key]),leaves(item['params'][key])): np.testing.assert_array_equal(a,b)
+            np.testing.assert_array_equal(checkpoint['codes'],item['codes'])
+        else:
+            assert model['details']['updates']==result['settings']['updates']
+            assert model['details']['sampled_snapshots']==result['settings']['updates']*result['settings']['batch_size']
+    def draws(seed,count):
+        rng=np.random.default_rng(seed); cfg=result['config']
+        return np.column_stack((rng.uniform(*cfg['center_range'],(count,2)),rng.uniform(*cfg['width_range'],count),rng.uniform(*cfg['amplitude_range'],count)))
+    expected_cases=[]
+    for cohort in result['settings']['cohorts']:
+        expected_cases.extend((cohort['name'],draw) for draw in draws(cohort['seed'],cohort['count']))
+    assert len(expected_cases)==len(result['cases'])
+    for (name,draw),case in zip(expected_cases,result['cases']):
+        assert name==case['cohort']; np.testing.assert_array_equal(draw,case['draw'])
+    training=dict(np.load(out/'training_compression.npz'))
+    expected_training=np.concatenate((draws(result['config']['train_seed'],result['config']['n_train']),draws(790713,128)))
+    np.testing.assert_array_equal(expected_training,training['training_draws'])
+    assert not any(np.array_equal(a,b['draw']) for a in expected_training for b in result['cases'])
     def mlp(layers, x):
         for w, b in layers[:-1]:
             x = x@w+b; x = x*expit(x)
@@ -100,6 +120,33 @@ def audit(record):
         check_metrics(coarse, fine, max(result["settings"]["requested_intervals"]), case["reference_refinement"])
         max_reference_delta = max(max_reference_delta, max(case["reference_refinement"]["relative_current"]))
     refs = {(r["intervals"], r["case"]): r for r in result["case_fields"]}
+    def generated_initial(n,draw):
+        axis=np.arange(1,n,dtype=np.float64)/n
+        x,y=axis[:,None],axis[None,:]; cx,cy,width,amplitude=draw
+        return amplitude*16*x*(1-x)*y*(1-y)*np.exp(-((x-cx)**2+(y-cy)**2)/(2*width**2))
+    source_checks=[]; reference_checks=[]
+    largest=max(result['settings']['requested_intervals'])
+    for (n,cid),spec in refs.items():
+        saved=field(spec['initial']); expected=generated_initial(n,result['cases'][cid]['draw'])
+        relative=float(np.linalg.norm(saved-expected)/np.linalg.norm(expected))
+        assert relative<1e-13
+        source_checks.append(dict(intervals=n,case=cid,relative_difference=relative))
+    # Independent NumPy/SciPy reconstruction of both continuum-spectral references
+    # from the recorded seed/draw, at their original meshes, before restriction.
+    for case in result['cases']:
+        for nf,key in zip(result['settings']['reference_pair'],['reference_coarse','reference_fine']):
+            initial=generated_initial(nf,case['draw']); spectrum=scipy.fft.dstn(initial,type=1,norm='ortho')
+            eig=(np.pi*np.arange(1,nf,dtype=np.float64))**2
+            lam=eig[:,None]+eig[None,:]; saved=field(case[key]); stride=nf//largest
+            errors=[]
+            for index,time_value in enumerate(result['config']['times']):
+                predicted=initial if index==0 else scipy.fft.idstn(spectrum*np.exp(-result['config']['diffusivity']*time_value*lam),type=1,norm='ortho')
+                predicted=predicted[stride-1::stride,stride-1::stride]
+                relative=float(np.linalg.norm(predicted-saved[index])/np.linalg.norm(saved[index]))
+                assert relative<1e-11
+                errors.append(relative)
+            reference_checks.append(dict(case=case['case'],reference_intervals=nf,relative_differences=errors))
+        print('independent_reference',case['case'],flush=True)
     linear_rows = {(r["intervals"], r["case"]): r for r in result["rows"] if r["method"] == "linear_weak_exact"}
     for n in result["settings"]["requested_intervals"]:
         op = dict(np.load(out/"assembly"/f"n{n}.npz")); operators[n] = op
@@ -276,6 +323,17 @@ def audit(record):
     # fields, every selected fit's objective/gradient, and orthogonal projection.
     triangular=operators[64]["triangular"]
     qbank=scipy.linalg.solve_triangular(triangular.T,sampled_bank.T,lower=True).T
+    np.testing.assert_allclose(qbank.T@qbank,np.eye(result['config']['r']),atol=1e-10,rtol=1e-10)
+    training_metrics=[]
+    for model in result['models']:
+        params=models[model['name']]['params']; codes=models[model['name']]['codes']
+        residual=head(codes)@training['triangular'].T-training['target']
+        errors2=(np.sum(residual**2,axis=1)+training['perpendicular2'])/training['norm2']
+        actual=dict(full_relative_mse=float(np.mean(errors2)),initial_relative_mse=float(np.mean(errors2[::6])),
+                    later_relative_mse=float(np.mean(errors2[np.arange(len(errors2))%6!=0])))
+        expected=result['training_baseline'] if model['name']=='frozen' else model['details']
+        for key,value in actual.items(): np.testing.assert_allclose(value,expected[key],rtol=1e-10,atol=1e-13)
+        training_metrics.append(dict(model=model['name'],**actual))
     flat=truth.reshape(-1,63*63); targets=flat@qbank
     np.testing.assert_allclose((targets@qbank.T).reshape(truth.shape),projected,rtol=1e-10,atol=1e-12)
     for record_fit in reconstruction["models"]:
@@ -334,6 +392,7 @@ def audit(record):
         unique_fields_checked=len(checked), timed_invocations_checked=sum(counts.values()),
         metric_entries_checked=metric_count, maximum_metric_difference=largest_delta,
         maximum_reference_refinement=max_reference_delta, operator_errors=operator_errors,
+        independent_source_checks=source_checks,independent_reference_checks=reference_checks,training_metric_checks=training_metrics,
         outlier_rule="Above 1.5 times the median of the same case/method/mesh repetition group; none excluded.",
         summaries=summaries, representation_summaries=representation_summaries, fine_representation_summaries=fine_summaries, prior_nmrom_field_parity=nmrom_parity,
         nonlinear_decoder_checks=len(manifold_checks), maximum_sampled_decoder_error=max(manifold_checks),

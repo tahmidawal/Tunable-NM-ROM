@@ -1,0 +1,21 @@
+{
+  "job_id": "3565181",
+  "remote": "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy08",
+  "source_commit": "47b783429500b559f6a509448ca11f164183b658",
+  "parent_attempt": "accuracy07",
+  "parent_job": "3563749",
+  "inherited_files_verified": 40,
+  "partition": "gpu",
+  "gpu_request": "a100:1",
+  "time_limit": "01:00:00",
+  "other_jobs_before_submit": [
+    "3565033",
+    "3564896"
+  ],
+  "state_observed": "RUNNING",
+  "node": "pax049",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "backend_preflight": "jax_backend=gpu",
+  "stage_observed": "ASSEMBLE 64",
+  "stderr_observed_empty": true
+}

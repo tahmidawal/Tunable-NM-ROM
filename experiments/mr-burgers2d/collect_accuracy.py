@@ -44,6 +44,12 @@ def collect(record, job, allow_failed=False):
     metadata = dict(job_id=job, remote=REMOTE, job_completed_successfully=completed, job_terminal_state=lines[0][2], joined_sha256=joined.hexdigest(), bytes=total, parts=parts)
     (record/"ARCHIVE.json").write_text(json.dumps(metadata, indent=2)+"\n")
     checked = restore(record)
+    commit=(record/"archive/COMMIT.txt").read_text().strip()
+    submitted=json.loads((record/"SUBMISSION.json").read_text())
+    assert submitted['source_commit']==commit and submitted['job_id']==job
+    metadata['source_commit']=commit
+    (record/"ARCHIVE.json").write_text(json.dumps(metadata,indent=2)+"\n")
+    checked.update(source_commit=commit,job_id=job)
     (record/"COLLECTION-CHECK.json").write_text(json.dumps(checked, indent=2)+"\n")
     print(json.dumps(dict(**checked, bytes=total, parts=len(parts))), flush=True)
 

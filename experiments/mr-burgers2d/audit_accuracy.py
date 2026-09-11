@@ -36,7 +36,21 @@ def main():
     for p in json.loads((run/'PROVENANCE.json').read_text()):
         data=subprocess.check_output(['git','show',p['commit']+':'+p['source']],cwd=root)
         assert hashlib.sha256(data).hexdigest()==p['sha256']==ai.sha(run/p['staged'])
-    assert json.loads((record/'COLLECTION-CHECK.json').read_text())['archive_verified']
+    collection=json.loads((record/'COLLECTION-CHECK.json').read_text());archive_metadata=json.loads((record/'ARCHIVE.json').read_text());submission=json.loads((record/'SUBMISSION.json').read_text())
+    assert collection['archive_verified']
+    assert d['commit']==collection['source_commit']==archive_metadata['source_commit']==submission['source_commit']
+    assert str(d['job_id'])==collection['job_id']==archive_metadata['job_id']==submission['job_id']
+    if 'training_and_reference_lineage' in d:
+        lineage=d['training_and_reference_lineage'];assert lineage==json.loads((run/'in/reuse/INHERITED.json').read_text())
+        parent_record=record.parent/'accuracy07';parent_archive=json.loads((parent_record/'ARCHIVE.json').read_text());parent_result=json.loads((parent_record/'archive/out/result.json').read_text())
+        assert lineage['parent_archive_sha256']==parent_archive['joined_sha256'] and lineage['parent_job_id']==parent_result['job_id'] and lineage['parent_source_commit']==parent_result['commit']
+        assert lineage['parent_gpu']==parent_result['gpu'] and lineage['parent_reference_seed']==cfg['seed'] and lineage['parent_reference_fresh_seed']==cfg['fresh_seed']
+        assert len(lineage['files'])==40
+        for item in lineage['files']:
+            assert ai.sha(run/'in/reuse'/item['destination'])==item['sha256']==ai.sha(parent_record/'archive'/item['source'])
+        for row in d['reference']:assert ai.sha(out/row['artifact'])==row['source_sha256']==ai.sha(run/'in/reuse'/row['artifact'])
+        assert not d['training_rerun'] and not d['failures']
+
     stdout='\n'.join(p.read_text() for p in (run/'logs').glob('*.out'));stderr='\n'.join(p.read_text() for p in (run/'logs').glob('*.err'))
     assert 'jax_backend=gpu' in stdout and 'ACCURACY BURGERS COMPLETE' in stdout and 'ALL-DONE' in stdout and not stderr.strip(),stderr
     training_audit_path=record/'TRAINING-AUDIT.json'
@@ -174,6 +188,7 @@ def main():
                     assert rr['linear_converged']==bool(all(max(v[:int(n)],default=0)<=rr['ltol']*(1+1e-7) for v,n in zip(rr['linear_relative_residuals'],rr['iterations'])))
                     assert np.array_equal(f[0],truth[0]);fom_count+=5
         print('AUDITED_MESH',L,flush=True)
+    assert maxima['charged_cpu_normalized_gradient_delta']<2e-9
     assert maxima['complex_head_jacobian_relative_delta']<1e-11 and maxima['complex_weak_jacobian_relative_delta']<1e-10
     assert maxima['full_error_metric_delta']<1e-11 and maxima['sampled_decoder_relative_delta']<2e-11 and maxima['weak_residual_delta']<2e-10 and maxima['normalized_gradient_delta']<2e-9 and maxima['fom_output_residual_delta']<2e-10
     summary=[]
@@ -198,7 +213,7 @@ def main():
         rows=[r for r in summary if r['intervals']==L and r['cohort']==cohort]
         for rom,fom in itertools.product([r for r in rows if r['method']=='rom'],[r for r in rows if r['method']=='fom']):
             comparisons.append(dict(intervals=L,cohort=cohort,rom=rom['name'],fom=fom['name'],gpu_ratio=fom['gpu_ms']/rom['gpu_ms'],host_ratio=fom['host_ms']/rom['host_ms'],both_physical_and_numerical_pass=rom['physical_and_numerical_pass'] and fom['physical_and_numerical_pass']))
-    audit=dict(passed=True,threshold_classification_disagreements=threshold_disagreements,classification_policy='A state is stationary only when charged, posthoc and independent NumPy values all meet the unchanged threshold; disagreements fail convergence conservatively.',job_id=d['job_id'],source_commit=d['commit'],gpu=d['gpu'],invocations=len(actual),distinct_full_fields=len(grouped),audited_rom_states_with_repetitions=state_count,audited_fom_output_steps_with_repetitions=fom_count,reference_metric_max_delta=ref_delta,maxima=dict(maxima),frozen_control_parity=parities,
+    audit=dict(passed=True,result_sha256=ai.sha(out/'result.json'),audit_script_sha256=ai.sha(Path(__file__)),audit_dependency_sha256={str(Path(ai.__file__)):ai.sha(Path(ai.__file__))},normalized_gradient_agreement_bound=2e-9,threshold_classification_disagreements=threshold_disagreements,classification_policy='A state is stationary only when charged, posthoc and independent NumPy values all meet the unchanged threshold; disagreements fail convergence conservatively.',job_id=d['job_id'],source_commit=d['commit'],gpu=d['gpu'],invocations=len(actual),distinct_full_fields=len(grouped),audited_rom_states_with_repetitions=state_count,audited_fom_output_steps_with_repetitions=fom_count,reference_metric_max_delta=ref_delta,maxima=dict(maxima),frozen_control_parity=parities,
         scope='Independent full saved-field norms, cold/stencil decoder identities, every weak state residual and analytic Jacobian stationarity; FOM output-step residuals; source/provenance and training bytes. Inner linear correction residuals checked from records, not reconstructed unavailable Newton states.')
     dump(record/'AUDIT.json',audit);dump(record/'PANEL.json',dict(status='audited development',pde='burgers2d',job_id=d['job_id'],source_commit=d['commit'],config=cfg,gpu=d['gpu'],rows=summary,comparisons=comparisons,training=ta,operator_checks=operator_checks,reference_metrics=d['reference_metrics'],audit=audit))
     print(json.dumps(audit),flush=True)

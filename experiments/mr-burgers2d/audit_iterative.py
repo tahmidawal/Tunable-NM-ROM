@@ -67,7 +67,9 @@ def main():
             assert all(r[k]==v for k,v in declared.items())
     rng=np.random.default_rng(cfg['seed']);n=cfg['cases']
     physical=np.stack([rng.uniform(.15,.85,n),rng.uniform(.15,.85,n),rng.uniform(.05,.2,n),rng.uniform(.5,2.,n),np.exp(rng.uniform(np.log(.01),np.log(.1),n))],1)
-    assert np.array_equal(physical,np.array(d['physical_cases']))
+    physical_regeneration_delta=float(np.max(abs((physical-np.array(d['physical_cases']))/np.array(d['physical_cases']))))
+    assert np.allclose(physical,np.array(d['physical_cases']),rtol=2e-15,atol=0.)
+    physical=np.array(d['physical_cases'])
     order_rng=np.random.default_rng(cfg['order_seed'])
     for L,rep,case in itertools.product(meshes,reps,cases):
         assert [names[i] for i in order_rng.permutation(len(names))]==[r['name'] for r in d['invocations'] if (r['intervals'],r['rep'],r['case'])==(L,rep,case)]
@@ -127,8 +129,8 @@ def main():
             if row['method']=='rom':
                 internal=z['internal_latents'];assert np.array_equal(internal,np.array(row['internal_latents']))
                 states=internal[::int(round(.05/row['dt']))];assert np.array_equal(states,np.array(row['latent_states']))
-                heads=head(params,internal);pred=(g@head(params,states).T).T.reshape(6,len(ids),len(ids));actual=f[:,ids[:,None],ids[None,:]]
-                worst_decoder=max(worst_decoder,float(np.linalg.norm(pred-actual)/np.linalg.norm(actual)))
+                heads=head(params,internal);pred=(g@head(params,states).T).T.reshape(6,len(ids),len(ids));sampled_actual=f[:,ids[:,None],ids[None,:]]
+                worst_decoder=max(worst_decoder,float(np.linalg.norm(pred-sampled_actual)/np.linalg.norm(sampled_actual)))
                 weak=[]
                 for i in range(len(internal)-1):
                     h0,h1=heads[i:i+2];us=np.einsum('msr,r->ms',ops['G5'],h1);c,xp,xm,yp,ym=us.T
@@ -151,7 +153,7 @@ def main():
                     fom_pairs+=5;worst_fom=max(worst_fom,float(np.max(abs(np.array(output_r)-np.array(r['residuals'])[int(round(.05/r['dt']))-1::int(round(.05/r['dt']))]))))
                     assert r['nonlinear_converged']==bool(max(r['residuals'])<=r['ntol']*(1+1e-9))
                     assert r['linear_converged']==bool(all(max(x[:int(n)],default=0.)<=r['ltol']*(1+1e-7) for x,n in zip(r['linear_relative_residuals'],r['iterations'])))
-                    assert np.array_equal(f[0],u0)
+                    assert np.array_equal(f[0],truth[0])  # exact same generated input; local exp is checked to roundoff above
         for name in names:
             rows=[r for r in d['invocations'] if r['intervals']==L and r['name']==name];first=rows[0];case_gpu=[];case_host=[];outliers=0
             for case in cases:
@@ -185,11 +187,12 @@ def main():
                 median_paired_gpu_ratio=float(np.median(np.array(fom['case_gpu_ms'])/rom['case_gpu_ms'])),both_eligible=rom['eligible_development_5percent'] and fom['eligible_development_5percent']))
     audit=dict(passed=True,job_id=d['job_id'],source_commit=d['commit'],gpu=d['gpu'],invocations=len(actual),unique_fields=len(groups),full_metric_max_delta=worst_metric,
         reference_metric_max_delta=ref_delta,sampled_decoder_relative_max_delta=worst_decoder,weak_residual_pairs=weak_pairs,weak_residual_max_delta=worst_weak,
-        output_fom_residual_pairs=fom_pairs,output_fom_residual_max_delta=worst_fom,initial_reference_max_delta=worst_initial,
+        output_fom_residual_pairs=fom_pairs,output_fom_residual_max_delta=worst_fom,initial_reference_max_delta=worst_initial,physical_regeneration_max_relative_delta=physical_regeneration_delta,
         scope='Saved full-field and source audit; independent output-step FOM residuals and every weak-step residual; linear inner residuals checked from source/records, not rebuilt from unavailable Newton corrections.')
     (record/'AUDIT.json').write_text(json.dumps(audit,indent=2)+'\n')
     panel=dict(pde='burgers2d',status='audited development',primary_fom=json.loads((record/'PRIMARY-SELECTION.json').read_text())['primary_fom'],source_commit=d['commit'],job_id=d['job_id'],gpu=d['gpu'],config=cfg,checkpoint_sha256=d['checkpoint_sha256'],
-        model=dict(K=d['K'],R=d['R'],M=d['M'],m=d['m'],operator='preassembled linear weak operators and sampled full sign-upwind advection; not historical r64 polynomial tensor'),
+        model=dict(K=d['K'],R=d['R'],M=d['M'],m=d['m'],training_nodes_per_axis=d['checkpoint_cfg']['N'],training_intervals_per_axis=d['checkpoint_cfg']['N']-1,operator='preassembled linear weak operators and sampled full sign-upwind advection; not historical r64 polynomial tensor'),
+        family='single clipped Gaussian, homogeneous Dirichlet walls, original center/width/amplitude/log-viscosity ranges; descriptors regenerate inputs only',
         norm='fixed initial L2 primary; current-relative also reported',reference='regenerated refined implicit upwind FOM, empirical continuum refinement margins',reference_metrics=d['reference_metrics'],
         timing_contract=d['timing_contract'],aggregation='median of per-case repetition medians; ratio of cohort medians and median paired ratios separately',rows=summary,comparisons=comparisons,audit=audit)
     (record/'PANEL.json').write_text(json.dumps(panel,indent=2)+'\n');print(json.dumps(audit),flush=True)

@@ -1,0 +1,14 @@
+{
+  "attempt": "iterative06", "meshes": [64, 256, 1024], "seed": 7090702,
+  "cases": 4, "reps": 3, "dt": 0.005, "candidate_cap": 8192, "fit_states": 64,
+  "reference_mesh": 4096, "reference_dt": 0.0003125,
+  "order_seed": 910706, "burn_seconds": 0.25,
+  "fom_settings": [
+    {"name": "fft_loose", "preconditioner": "fft", "ntol": 0.01, "ltol": 0.5},
+    {"name": "fft_medium", "preconditioner": "fft", "ntol": 0.003, "ltol": 0.5},
+    {"name": "fft_tight", "preconditioner": "fft", "ntol": 0.000001, "ltol": 0.00000001},
+    {"name": "dense_medium", "preconditioner": "dense", "ntol": 0.003, "ltol": 0.5}
+  ],
+  "target_fixed_initial": 0.05,
+  "reference_margin_fraction": 0.1
+}

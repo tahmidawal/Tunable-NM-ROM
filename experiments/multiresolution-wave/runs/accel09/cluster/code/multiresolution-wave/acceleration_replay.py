@@ -11,7 +11,7 @@ import acceleration as fast
 import modal_projection as modal
 from fresh_fom import provenance
 from fresh_models import head_geometry
-from fresh_models import tree_from_npz,tree_to_npz
+from fresh_models import tree_from_npz
 from fresh_rom import weak_acceleration
 
 
@@ -111,19 +111,10 @@ def main():
         initializers.update({name:(linear,center) for name in endpoints})
         data.update(training_manifest=manifest,head_training=records);save()
     if cfg.get('frozen_head_inputs'):
-        for name,path in cfg['frozen_head_inputs'].items():
-            with np.load(args.inputs/'dirichlet'/f'initializer_{name}.npz') as f:linear,center=f['linear'],f['center']
-            endpoints[name]=tree_from_npz(args.inputs/'dirichlet'/path);initializers[name]=(linear,center)
-            (out/f'head_{name}.npz').write_bytes((args.inputs/'dirichlet'/path).read_bytes())
+        with np.load(args.inputs/'dirichlet/trained_initializer32.npz') as f:linear,center=f['linear'],f['center']
+        endpoints.update({name:tree_from_npz(args.inputs/'dirichlet'/path) for name,path in cfg['frozen_head_inputs'].items()})
+        initializers.update({name:(linear,center) for name in cfg['frozen_head_inputs']})
         data['frozen_head_origin']=json.loads((args.inputs/'ORIGIN.json').read_text())['new_head_origin'];save()
-    if cfg.get('nested_enrichment'):
-        import nested_head
-        endpoint,initializer,record=nested_head.build(endpoints,initializers,out)
-        endpoints['trained_nested40']=endpoint;initializers['trained_nested40']=initializer
-        data['nested_architecture']=record;save()
-    for name,endpoint in endpoints.items():
-        linear,center=initializers[name];latent=endpoint['p']['linear'].shape[1]
-        np.savez_compressed(out/f'initializer_{name}.npz',linear=np.asarray(linear)[:,:latent],center=np.asarray(center))
     for n in cfg['meshes']:
         grid = base.Grid(n, 'dirichlet', 'dirichlet')
         full, models = previous.load_models(args.inputs/'dirichlet', grid); bank = models[cfg['primary_method']]

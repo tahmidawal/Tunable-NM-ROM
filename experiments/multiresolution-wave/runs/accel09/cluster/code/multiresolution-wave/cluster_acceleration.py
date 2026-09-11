@@ -22,26 +22,23 @@ def stage(label, configuration):
     cfg=json.loads(payload)
     assert not cfg.get('pending_capacity_screen',False),'Freeze the capacity selection before staging fresh development confirmation'
     if cfg.get('frozen_head_inputs'):
+        parent=cfg['head_source_run'];prefix='experiments/multiresolution-wave/runs/'+parent+'/cluster/out/pilot/'
+        parent_bytes=subprocess.check_output(['git','show',metadata['source_commit']+':'+prefix+'result.json'],cwd=transport.TREE)
+        parent_result=json.loads(parent_bytes)
         origin=json.loads((dest/'in/ORIGIN.json').read_text())
-        origin['new_head_origin']=dict(commit=metadata['source_commit'],sources={},training=[],parent_results={})
+        origin['new_head_origin']=dict(commit=metadata['source_commit'],result_path=prefix+'result.json',
+            result_sha256=hashlib.sha256(parent_bytes).hexdigest(),sources={},training=parent_result['head_training'])
         for name,filename in cfg['frozen_head_inputs'].items():
-            parent=cfg.get('head_source_runs',{}).get(name,cfg.get('head_source_run'))
-            prefix='experiments/multiresolution-wave/runs/'+parent+'/cluster/out/pilot/'
-            parent_bytes=subprocess.check_output(['git','show',metadata['source_commit']+':'+prefix+'result.json'],cwd=transport.TREE)
-            parent_result=json.loads(parent_bytes)
-            origin['new_head_origin']['parent_results'][parent]=dict(result_path=prefix+'result.json',result_sha256=hashlib.sha256(parent_bytes).hexdigest())
-            origin['new_head_origin']['training'].extend(parent_result.get('head_training',[]))
             source=prefix+f'head_{name}.npz';head=subprocess.check_output(['git','show',metadata['source_commit']+':'+source],cwd=transport.TREE)
             assert hashlib.sha256(head).hexdigest()==parent_result['output_sha256'][f'head_{name}.npz']
             (dest/'in/dirichlet'/filename).write_bytes(head)
             origin['new_head_origin']['sources'][source]=hashlib.sha256(head).hexdigest()
-            initializer=f'initializer_{name}.npz' if f'initializer_{name}.npz' in parent_result['output_sha256'] else 'fixed_encoder_training.npz'
-            source=prefix+initializer
-            coefficients=subprocess.check_output(['git','show',metadata['source_commit']+':'+source],cwd=transport.TREE)
-            assert hashlib.sha256(coefficients).hexdigest()==parent_result['output_sha256'][initializer]
-            with np.load(io.BytesIO(coefficients)) as f:
-                np.savez_compressed(dest/'in/dirichlet'/f'initializer_{name}.npz',linear=f['linear'],center=f['center'])
-            origin['new_head_origin']['sources'][source]=hashlib.sha256(coefficients).hexdigest()
+        source=prefix+'fixed_encoder_training.npz'
+        coefficients=subprocess.check_output(['git','show',metadata['source_commit']+':'+source],cwd=transport.TREE)
+        assert hashlib.sha256(coefficients).hexdigest()==parent_result['output_sha256']['fixed_encoder_training.npz']
+        with np.load(io.BytesIO(coefficients)) as f:
+            np.savez_compressed(dest/'in/dirichlet/trained_initializer32.npz',linear=f['linear'],center=f['center'])
+        origin['new_head_origin']['sources'][source]=hashlib.sha256(coefficients).hexdigest()
         transport.write_json(dest/'in/ORIGIN.json',origin)
     text=(dest/'job.sbatch').read_text().replace('iterative_replay.py --config code/multiresolution-wave/iterative-config.json',
         'acceleration_replay.py --config code/multiresolution-wave/'+configuration)

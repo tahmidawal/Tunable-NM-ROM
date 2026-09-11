@@ -99,9 +99,6 @@ def audit(record):
     origin=json.loads((cluster/'in/ORIGIN.json').read_text())
     lineages=[dict(commit=origin['checkpoint_commit'],sources=origin['sources']),origin['head32_origin']]
     if 'new_head_origin' in origin:lineages.append(origin['new_head_origin'])
-    for parent in origin.get('new_head_origin',{}).get('parent_results',{}).values():
-        payload=subprocess.check_output(['git','show',origin['new_head_origin']['commit']+':'+parent['result_path']],cwd=root)
-        assert hashlib.sha256(payload).hexdigest()==parent['result_sha256']
     for lineage in lineages:
         for path,expected in lineage['sources'].items():
             if '/training_ladder_' in path:
@@ -119,27 +116,6 @@ def audit(record):
     for row in result['invocations']:groups[row['intervals'],row['case'],row['method'],row['setting']].append(row)
     countcases=sum(len(c['indices']) for c in cfg['cohorts'])
     assert len(result['invocations'])==len(cfg['meshes'])*countcases*(len(cfg['arms'])+len(cfg['cg_tolerances'])+len(cfg.get('cg_timestep_arms',[]))+1)*cfg['repetitions']
-    nested_audit=None
-    if result.get('nested_architecture'):
-        with np.load(native/'head_trained_nested40.npz') as f:enriched={k:f[k] for k in f.files}
-        with np.load(cluster/'in/dirichlet'/cfg['frozen_head_inputs']['trained_phase']) as f:old={k:f[k] for k in f.files}
-        with np.load(native/'nested_basis.npz') as f:basis=f['basis']
-        for key in ('p/l1/b','p/l2/w','p/l2/b','p/out/w','p/out/b','p/bias','frozen/output_scale'):
-            np.testing.assert_array_equal(enriched[key],old[key])
-        np.testing.assert_array_equal(enriched['p/l1/w'][:32],old['p/l1/w'])
-        np.testing.assert_array_equal(enriched['p/l1/w'][32:],0.)
-        np.testing.assert_array_equal(enriched['p/linear'][:,:32],old['p/linear'])
-        np.testing.assert_array_equal(enriched['p/linear'][:,32:],basis)
-        np.testing.assert_array_equal(enriched['codes'][:,:32],old['codes'])
-        errors=[];ranks=[];rng=np.random.default_rng(691217)
-        for idx in np.linspace(0,len(old['codes'])-1,6,dtype=int):
-            z,w=old['codes'][idx],rng.normal(size=32)
-            a,b,j,c=geometry(old,np.eye(64),z,w)
-            aa,bb,jj,cc=geometry(enriched,np.eye(64),np.r_[z,np.zeros(8)],np.r_[w,np.zeros(8)])
-            errors.append(max(np.max(abs(a-aa)),np.max(abs(b-bb)),np.max(abs(j-jj[:,:32])),np.max(abs(c-cc))))
-            singular=np.linalg.svd(jj,compute_uv=False);ranks.append(singular[-1]/singular[0])
-        assert max(errors)<1e-10 and min(ranks)>1e-8
-        nested_audit=dict(original_parameters_exact=True,independent_inclusion_max_absolute=float(max(errors)),independent_minimum_sampled_rank_ratio=float(min(ranks)))
     training_audit=None
     if result.get('head_training'):
         assert result['training_manifest']['data_hashes_match'] and result['training_manifest']['saved_initialization_matched']
@@ -272,7 +248,7 @@ def audit(record):
                                 neighboring_fit_scope='Saved neighboring coefficients and reported stationarity; full timed projection stationarity/Hessian audited independently.'))
     output=dict(passed=True,source_commit=submission['source_commit'],job_id=meta['job_id'],
         timed_invocations=len(result['invocations']),distinct_timed_fields=len(groups),accuracy_control_fields=len(result['accuracy_controls']),
-        banks=banks,references=references,fields=checked,parities=parities,refinements=refinements,kinematics=kinematics,training=training_audit,nested=nested_audit)
+        banks=banks,references=references,fields=checked,parities=parities,refinements=refinements,kinematics=kinematics,training=training_audit)
     (record/'audit.json').write_text(json.dumps(output,indent=2)+'\n');print(json.dumps({k:v for k,v in output.items() if not isinstance(v,list)},indent=2))
 
 

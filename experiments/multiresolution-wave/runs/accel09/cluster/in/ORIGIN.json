@@ -1,0 +1,800 @@
+{
+  "checkpoint_commit": "906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e",
+  "sources": {
+    "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/bank_parameters.npz": "4be766c4f2386005dddac89346f32b6351051d014406242e1ec40bf8f343c600",
+    "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/bank_tables.npz": "6f773c0942c91e8b320ae452499e1d217479d3bbbb255bec7995dda770b3e122",
+    "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/common_initialization.npz": "3f2dc1f5c7ae61890241350a46b180d894b9fad2330a34715ea8d32c4ebfdf1a",
+    "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691200/head.npz": "985e8707e6b549e4ae5ea299c3d703ab58ff171849027d5f9189cc8e6930d845",
+    "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/data_manifest.json": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809",
+    "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/bank_parameters.npz": "a9254afa4b94483f7204c6c9d08126890c1aee927609f926865dadaa9c7ecc74",
+    "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/bank_tables.npz": "04d94905fc708e565f0d2b28809d40253005890e659443c4bb09b7ecaeee9862",
+    "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/common_initialization.npz": "67ed39e63aec87436da34328c0d016840a672dc249cb30cefaaf72e52fd2a200",
+    "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691200/head.npz": "86d55abfed15ca778ca145b1a11ba7e4d30560bedc0f8cf95026111a51f4702a",
+    "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/data_manifest.json": "53edc2d730d912a35b30017033f534e812303abafacf71ba7dc5c92b1caf358c"
+  },
+  "head32_origin": {
+    "commit": "77af541a5995e3870583e6e957f9579d116a2760",
+    "result_path": "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/result.json",
+    "result_sha256": "b76064e45af70de38b75f1f3f7e383982017c82effefbfd04ad7d8ac75ca4851",
+    "sources": {
+      "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_dirichlet_new_mlp32_seed691200/head.npz": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e",
+      "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/training_ladder_dirichlet.npz": "b92cc737bfdf68dcfdad4c0feddc6d0fd8edb35bbe8e560887dfc8d6829653c9",
+      "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_absorbing_new_mlp32_seed691200/head.npz": "4cef675ccaec28aedd887a085ff4f3fc1c95494a7ba44fd0a4369b651d88645a",
+      "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/training_ladder_absorbing.npz": "f943364915777ccb2825cf512c6458e62e5e46bb5ad5008418a7bec48e5db838"
+    }
+  },
+  "initializer32_note": "Only the frozen fitted PCA map and center are extracted from checksum-audited training lineage. No training trajectories or coefficient snapshots are uploaded; there is no retraining. Query fields and references regenerate from seed on the cluster.",
+  "new_head_origin": {
+    "commit": "160b338a7d61a5111e46bff0b168610ae4a77282",
+    "result_path": "experiments/multiresolution-wave/runs/accel08/cluster/out/pilot/result.json",
+    "result_sha256": "050bf263e25a9e2be05c244723fd6907b11090fe87de7b0b8353c6d4a8e71153",
+    "sources": {
+      "experiments/multiresolution-wave/runs/accel08/cluster/out/pilot/head_trained_phase.npz": "eb4151fb61b250e49afdc328d74dcef478ce54d381559874d79beadaba5729d3",
+      "experiments/multiresolution-wave/runs/accel08/cluster/out/pilot/fixed_encoder_training.npz": "214e9a00447c67579e93b99e80bc28a9750f6b447c802ed8eac2aab020b6b941"
+    },
+    "training": [
+      {
+        "method": "trained_field",
+        "seed": 691211,
+        "steps": 10000,
+        "batch_size": 64,
+        "learning_rate": 0.001,
+        "objective_weights": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "history": [
+          {
+            "step": 0,
+            "objective": 0.00011371989642402297,
+            "field": 0.00011371989642402297,
+            "energy": 0.0008276059784165835,
+            "tangent": 0.0009138959047381523
+          },
+          {
+            "step": 200,
+            "objective": 0.001274045380490108,
+            "field": 0.001274045380490108,
+            "energy": 0.009145232174711032,
+            "tangent": 0.005572935734830546
+          },
+          {
+            "step": 400,
+            "objective": 0.007290569883306178,
+            "field": 0.007290569883306178,
+            "energy": 0.04551815420186329,
+            "tangent": 0.023781767870496556
+          },
+          {
+            "step": 600,
+            "objective": 0.002838237579591479,
+            "field": 0.002838237579591479,
+            "energy": 0.018789693223798403,
+            "tangent": 0.009868237231722629
+          },
+          {
+            "step": 800,
+            "objective": 0.004250363773347658,
+            "field": 0.004250363773347658,
+            "energy": 0.031189839024289286,
+            "tangent": 0.012401079340281788
+          },
+          {
+            "step": 1000,
+            "objective": 0.004789010801278366,
+            "field": 0.004789010801278366,
+            "energy": 0.03337441030294387,
+            "tangent": 0.012435982737606616
+          },
+          {
+            "step": 1200,
+            "objective": 0.00497582362341617,
+            "field": 0.00497582362341617,
+            "energy": 0.033441666345941146,
+            "tangent": 0.02215666231906193
+          },
+          {
+            "step": 1400,
+            "objective": 0.0040488948542957695,
+            "field": 0.0040488948542957695,
+            "energy": 0.028527033210914474,
+            "tangent": 0.012165626749562574
+          },
+          {
+            "step": 1600,
+            "objective": 0.0012094188970223126,
+            "field": 0.0012094188970223126,
+            "energy": 0.008305399552149742,
+            "tangent": 0.00443944578319931
+          },
+          {
+            "step": 1800,
+            "objective": 0.0026414434825209935,
+            "field": 0.0026414434825209935,
+            "energy": 0.0197265022678415,
+            "tangent": 0.0094412843782773
+          },
+          {
+            "step": 2000,
+            "objective": 0.0028152240027469327,
+            "field": 0.0028152240027469327,
+            "energy": 0.0199852782808324,
+            "tangent": 0.011777798441056841
+          },
+          {
+            "step": 2200,
+            "objective": 0.0051137721624586446,
+            "field": 0.0051137721624586446,
+            "energy": 0.03368888799309051,
+            "tangent": 0.014840537585451917
+          },
+          {
+            "step": 2400,
+            "objective": 0.0029356550306357584,
+            "field": 0.0029356550306357584,
+            "energy": 0.019852646164535786,
+            "tangent": 0.009421012438913929
+          },
+          {
+            "step": 2600,
+            "objective": 0.0008975813069992218,
+            "field": 0.0008975813069992218,
+            "energy": 0.006944576250732922,
+            "tangent": 0.003226525007190832
+          },
+          {
+            "step": 2800,
+            "objective": 0.0029982849056153604,
+            "field": 0.0029982849056153604,
+            "energy": 0.022436383618605206,
+            "tangent": 0.01022418393587819
+          },
+          {
+            "step": 3000,
+            "objective": 0.0016330640228724035,
+            "field": 0.0016330640228724035,
+            "energy": 0.010930102730498326,
+            "tangent": 0.005485340129126897
+          },
+          {
+            "step": 3200,
+            "objective": 0.004550872909875188,
+            "field": 0.004550872909875188,
+            "energy": 0.03179554594422896,
+            "tangent": 0.01574663696134916
+          },
+          {
+            "step": 3400,
+            "objective": 0.0009443216317726372,
+            "field": 0.0009443216317726372,
+            "energy": 0.0064550179763298516,
+            "tangent": 0.003740097609944584
+          },
+          {
+            "step": 3600,
+            "objective": 0.0016328556472929418,
+            "field": 0.0016328556472929418,
+            "energy": 0.010740696243533672,
+            "tangent": 0.006409872431508741
+          },
+          {
+            "step": 3800,
+            "objective": 0.000489108034146511,
+            "field": 0.000489108034146511,
+            "energy": 0.0035320876007912776,
+            "tangent": 0.002206908034206562
+          },
+          {
+            "step": 4000,
+            "objective": 0.0010628680659052743,
+            "field": 0.0010628680659052743,
+            "energy": 0.007954096285360802,
+            "tangent": 0.004057054499835001
+          },
+          {
+            "step": 4200,
+            "objective": 0.001237957769338173,
+            "field": 0.001237957769338173,
+            "energy": 0.008232452846737749,
+            "tangent": 0.00452324841158706
+          },
+          {
+            "step": 4400,
+            "objective": 0.0009664764112827032,
+            "field": 0.0009664764112827032,
+            "energy": 0.006053182902839144,
+            "tangent": 0.003939114390415187
+          },
+          {
+            "step": 4600,
+            "objective": 0.000775736897809017,
+            "field": 0.000775736897809017,
+            "energy": 0.005752770719074176,
+            "tangent": 0.003118036186271545
+          },
+          {
+            "step": 4800,
+            "objective": 0.0006646837260531893,
+            "field": 0.0006646837260531893,
+            "energy": 0.0050942592941294875,
+            "tangent": 0.0029232761366400194
+          },
+          {
+            "step": 5000,
+            "objective": 0.000481928746009452,
+            "field": 0.000481928746009452,
+            "energy": 0.0036163164744624793,
+            "tangent": 0.0023884893302035005
+          },
+          {
+            "step": 5200,
+            "objective": 0.0005972723235648158,
+            "field": 0.0005972723235648158,
+            "energy": 0.004272321444338156,
+            "tangent": 0.0021556717463898597
+          },
+          {
+            "step": 5400,
+            "objective": 0.00051055540276553,
+            "field": 0.00051055540276553,
+            "energy": 0.003713849679535867,
+            "tangent": 0.0023162379513216253
+          },
+          {
+            "step": 5600,
+            "objective": 0.0005407093366623096,
+            "field": 0.0005407093366623096,
+            "energy": 0.003969921761110715,
+            "tangent": 0.0022709926232145575
+          },
+          {
+            "step": 5800,
+            "objective": 0.0005656601856999482,
+            "field": 0.0005656601856999482,
+            "energy": 0.0039218294967047485,
+            "tangent": 0.0018079328976071043
+          },
+          {
+            "step": 6000,
+            "objective": 0.0004061477448916139,
+            "field": 0.0004061477448916139,
+            "energy": 0.0028894504520128724,
+            "tangent": 0.0015191463505076417
+          },
+          {
+            "step": 6200,
+            "objective": 0.0005686815078331357,
+            "field": 0.0005686815078331357,
+            "energy": 0.003988851736730187,
+            "tangent": 0.002072179211483477
+          },
+          {
+            "step": 6400,
+            "objective": 0.0003132143233122871,
+            "field": 0.0003132143233122871,
+            "energy": 0.0022828600619029336,
+            "tangent": 0.0012268029885586307
+          },
+          {
+            "step": 6600,
+            "objective": 0.00034555588884867836,
+            "field": 0.00034555588884867836,
+            "energy": 0.0026194094504785846,
+            "tangent": 0.001505978976498846
+          },
+          {
+            "step": 6800,
+            "objective": 0.000238017299212366,
+            "field": 0.000238017299212366,
+            "energy": 0.00173862920241154,
+            "tangent": 0.0010693305337306212
+          },
+          {
+            "step": 7000,
+            "objective": 0.00020541637718865448,
+            "field": 0.00020541637718865448,
+            "energy": 0.0015510529974008891,
+            "tangent": 0.0009976749217217827
+          },
+          {
+            "step": 7200,
+            "objective": 0.00021309568447033897,
+            "field": 0.00021309568447033897,
+            "energy": 0.0015640658824729878,
+            "tangent": 0.0011901155464637497
+          },
+          {
+            "step": 7400,
+            "objective": 0.00017723713481876467,
+            "field": 0.00017723713481876467,
+            "energy": 0.00130841042632482,
+            "tangent": 0.0009858418752538992
+          },
+          {
+            "step": 7600,
+            "objective": 0.00016974774562552786,
+            "field": 0.00016974774562552786,
+            "energy": 0.0013074519142455706,
+            "tangent": 0.0009617114759565757
+          },
+          {
+            "step": 7800,
+            "objective": 0.00015495702563877458,
+            "field": 0.00015495702563877458,
+            "energy": 0.0011987021885498993,
+            "tangent": 0.0007514455330308865
+          },
+          {
+            "step": 8000,
+            "objective": 0.00015528646657472043,
+            "field": 0.00015528646657472043,
+            "energy": 0.0012050079634291985,
+            "tangent": 0.0008430236413467203
+          },
+          {
+            "step": 8200,
+            "objective": 0.0001657763930685867,
+            "field": 0.0001657763930685867,
+            "energy": 0.0012699539266091183,
+            "tangent": 0.0008572156184933286
+          },
+          {
+            "step": 8400,
+            "objective": 0.00012635621002905838,
+            "field": 0.00012635621002905838,
+            "energy": 0.0009570370157332487,
+            "tangent": 0.0007815293127472504
+          },
+          {
+            "step": 8600,
+            "objective": 0.0001469435025200405,
+            "field": 0.0001469435025200405,
+            "energy": 0.0011007483504309463,
+            "tangent": 0.0008057712375029079
+          },
+          {
+            "step": 8800,
+            "objective": 0.00012550715699801088,
+            "field": 0.00012550715699801088,
+            "energy": 0.0009523695824500229,
+            "tangent": 0.0006277482228881834
+          },
+          {
+            "step": 9000,
+            "objective": 0.00011740506734250346,
+            "field": 0.00011740506734250346,
+            "energy": 0.0008981874186668356,
+            "tangent": 0.0007780695959059938
+          },
+          {
+            "step": 9200,
+            "objective": 0.00011101422244071153,
+            "field": 0.00011101422244071153,
+            "energy": 0.0008237183329557073,
+            "tangent": 0.0006809100122574132
+          },
+          {
+            "step": 9400,
+            "objective": 0.00010341483838201558,
+            "field": 0.00010341483838201558,
+            "energy": 0.0007978889355316921,
+            "tangent": 0.000661224385164917
+          },
+          {
+            "step": 9600,
+            "objective": 9.963223923509111e-05,
+            "field": 9.963223923509111e-05,
+            "energy": 0.0007314556931082485,
+            "tangent": 0.0006832982364727616
+          },
+          {
+            "step": 9800,
+            "objective": 0.00010552109883378472,
+            "field": 0.00010552109883378472,
+            "energy": 0.0007942651802688919,
+            "tangent": 0.0005740243991603183
+          },
+          {
+            "step": 9999,
+            "objective": 0.00012132006129601922,
+            "field": 0.00012132006129601922,
+            "energy": 0.0009095619214619366,
+            "tangent": 0.0007299494130258993
+          }
+        ],
+        "seconds_including_compilation": 65.99010773492046,
+        "checkpoint_path": "head_trained_field.npz",
+        "checkpoint_sha256": "002f7bc844692c0a12244a2317135256a2b630ae70628370cde17ad8897b9964",
+        "internal_configuration_dimension": 32,
+        "internal_phase_dimension": 64,
+        "encoder": "FixedPCAaffine leftinverse on original bank coefficients; codes and their time derivatives fixed consistently.",
+        "scale_definitions": "Field uses original suppliedu0 massL2; energy and tangent use sqrt(2 original supplied initial physical energy); stiffness displacement factor includes querycase speed squared.",
+        "training_codes_sha256": "e5940846dcc99b72c6e40295cc58411e0331b83bbd8ad05fc84b34d20c9f8df9",
+        "training_velocities_sha256": "c3a4a6067418d34f833741d201369c6a1c67aefb23b0e8fe58e9e1ce836496e2",
+        "training_only": true
+      },
+      {
+        "method": "trained_phase",
+        "seed": 691211,
+        "steps": 10000,
+        "batch_size": 64,
+        "learning_rate": 0.001,
+        "objective_weights": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "history": [
+          {
+            "step": 0,
+            "objective": 0.0018552217795787585,
+            "field": 0.00011371989642402297,
+            "energy": 0.0008276059784165835,
+            "tangent": 0.0009138959047381523
+          },
+          {
+            "step": 200,
+            "objective": 0.03199559192685949,
+            "field": 0.0018822221450568982,
+            "energy": 0.0217324246859752,
+            "tangent": 0.008380945095827392
+          },
+          {
+            "step": 400,
+            "objective": 0.03869673726068228,
+            "field": 0.002351117295985034,
+            "energy": 0.028774224093755806,
+            "tangent": 0.007571395870941443
+          },
+          {
+            "step": 600,
+            "objective": 0.022701903866625364,
+            "field": 0.0013823791989650074,
+            "energy": 0.016005629480951383,
+            "tangent": 0.005313895186708975
+          },
+          {
+            "step": 800,
+            "objective": 0.015445675606954104,
+            "field": 0.0010413012043515232,
+            "energy": 0.011134108029248878,
+            "tangent": 0.003270266373353704
+          },
+          {
+            "step": 1000,
+            "objective": 0.06023950741441641,
+            "field": 0.003660037290149804,
+            "energy": 0.04603284512769332,
+            "tangent": 0.010546624996573288
+          },
+          {
+            "step": 1200,
+            "objective": 0.030105136252259253,
+            "field": 0.0018790396080600779,
+            "energy": 0.022854358963040455,
+            "tangent": 0.0053717376811587185
+          },
+          {
+            "step": 1400,
+            "objective": 0.024070622926281433,
+            "field": 0.0014163948535687925,
+            "energy": 0.018498518705773466,
+            "tangent": 0.004155709366939173
+          },
+          {
+            "step": 1600,
+            "objective": 0.010950280214924193,
+            "field": 0.0007030398307842853,
+            "energy": 0.007861429374567304,
+            "tangent": 0.002385811009572604
+          },
+          {
+            "step": 1800,
+            "objective": 0.02347054977312442,
+            "field": 0.0015264434229303445,
+            "energy": 0.01761859566252834,
+            "tangent": 0.004325510687665738
+          },
+          {
+            "step": 2000,
+            "objective": 0.24193397186653545,
+            "field": 0.013133893891817815,
+            "energy": 0.16878944092210002,
+            "tangent": 0.06001063705261762
+          },
+          {
+            "step": 2200,
+            "objective": 0.00594614564465972,
+            "field": 0.0004145444211238117,
+            "energy": 0.004002930751298996,
+            "tangent": 0.0015286704722369112
+          },
+          {
+            "step": 2400,
+            "objective": 0.0026509574816415546,
+            "field": 0.00019708484197997873,
+            "energy": 0.001582443888991545,
+            "tangent": 0.0008714287506700305
+          },
+          {
+            "step": 2600,
+            "objective": 0.0038768399663471676,
+            "field": 0.0002900975156060508,
+            "energy": 0.0025144938758889577,
+            "tangent": 0.001072248574852159
+          },
+          {
+            "step": 2800,
+            "objective": 0.020218319144752944,
+            "field": 0.0012919261634142685,
+            "energy": 0.015079092963416254,
+            "tangent": 0.0038473000179224228
+          },
+          {
+            "step": 3000,
+            "objective": 0.04461649888080433,
+            "field": 0.0026189132346862197,
+            "energy": 0.031467966771929895,
+            "tangent": 0.010529618874188214
+          },
+          {
+            "step": 3200,
+            "objective": 0.012433101466269086,
+            "field": 0.0007930877369682755,
+            "energy": 0.008668407425349373,
+            "tangent": 0.0029716063039514377
+          },
+          {
+            "step": 3400,
+            "objective": 0.0033126756039695508,
+            "field": 0.00023097234450238435,
+            "energy": 0.0020796609137032525,
+            "tangent": 0.0010020423457639139
+          },
+          {
+            "step": 3600,
+            "objective": 0.00389298710588031,
+            "field": 0.00027378451616597596,
+            "energy": 0.0024414134687298977,
+            "tangent": 0.0011777891209844363
+          },
+          {
+            "step": 3800,
+            "objective": 0.005719052643185708,
+            "field": 0.00037995480007608714,
+            "energy": 0.003952189560975881,
+            "tangent": 0.0013869082821337405
+          },
+          {
+            "step": 4000,
+            "objective": 0.02538505494226713,
+            "field": 0.0015403020933458605,
+            "energy": 0.01829206135763785,
+            "tangent": 0.005552691491283416
+          },
+          {
+            "step": 4200,
+            "objective": 0.02087763115936895,
+            "field": 0.0011437618245755754,
+            "energy": 0.014812022960022231,
+            "tangent": 0.004921846374771141
+          },
+          {
+            "step": 4400,
+            "objective": 0.004732151416494025,
+            "field": 0.0003157600236737056,
+            "energy": 0.003310694723705334,
+            "tangent": 0.0011056966691149852
+          },
+          {
+            "step": 4600,
+            "objective": 0.01212005144119746,
+            "field": 0.0007304094211865518,
+            "energy": 0.009551149353183987,
+            "tangent": 0.0018384926668269215
+          },
+          {
+            "step": 4800,
+            "objective": 0.008240883580108209,
+            "field": 0.0005187342763683569,
+            "energy": 0.0058231175264219885,
+            "tangent": 0.0018990317773178624
+          },
+          {
+            "step": 5000,
+            "objective": 0.0020904181351736133,
+            "field": 0.00014256256882102047,
+            "energy": 0.0012628947902031946,
+            "tangent": 0.0006849607761493981
+          },
+          {
+            "step": 5200,
+            "objective": 0.002602135380534924,
+            "field": 0.0001867933597795932,
+            "energy": 0.0016754861454846496,
+            "tangent": 0.0007398558752706815
+          },
+          {
+            "step": 5400,
+            "objective": 0.00269710443549308,
+            "field": 0.0001877024592689267,
+            "energy": 0.0017215117591294394,
+            "tangent": 0.0007878902170947138
+          },
+          {
+            "step": 5600,
+            "objective": 0.0029238226174733025,
+            "field": 0.00019987601254881123,
+            "energy": 0.0018341222912160488,
+            "tangent": 0.0008898243137084426
+          },
+          {
+            "step": 5800,
+            "objective": 0.004013647543866407,
+            "field": 0.00025432431032731923,
+            "energy": 0.002733086813100501,
+            "tangent": 0.0010262364204385868
+          },
+          {
+            "step": 6000,
+            "objective": 0.005345053744479674,
+            "field": 0.00035197113567764454,
+            "energy": 0.0038684437916140027,
+            "tangent": 0.0011246388171880267
+          },
+          {
+            "step": 6200,
+            "objective": 0.003894829129528221,
+            "field": 0.000274072714051326,
+            "energy": 0.0025832806701934366,
+            "tangent": 0.0010374757452834582
+          },
+          {
+            "step": 6400,
+            "objective": 0.0032988426851895594,
+            "field": 0.00021956320593813946,
+            "energy": 0.0022206645741235567,
+            "tangent": 0.000858614905127863
+          },
+          {
+            "step": 6600,
+            "objective": 0.0017537832279891185,
+            "field": 0.00012165576488575773,
+            "energy": 0.00105794917227128,
+            "tangent": 0.0005741782908320808
+          },
+          {
+            "step": 6800,
+            "objective": 0.0026763190055603078,
+            "field": 0.00017015789389810467,
+            "energy": 0.00178876679380323,
+            "tangent": 0.0007173943178589731
+          },
+          {
+            "step": 7000,
+            "objective": 0.0019149370407620166,
+            "field": 0.00012936762004052586,
+            "energy": 0.001173723527082568,
+            "tangent": 0.0006118458936389228
+          },
+          {
+            "step": 7200,
+            "objective": 0.0015840325006971053,
+            "field": 0.00010698361556669929,
+            "energy": 0.0009700614885960746,
+            "tangent": 0.0005069873965343314
+          },
+          {
+            "step": 7400,
+            "objective": 0.0014729059668481693,
+            "field": 9.974562982030888e-05,
+            "energy": 0.0008145486116849558,
+            "tangent": 0.0005586117253429045
+          },
+          {
+            "step": 7600,
+            "objective": 0.001454334077289165,
+            "field": 9.95258585156045e-05,
+            "energy": 0.0008352713559183001,
+            "tangent": 0.0005195368628552605
+          },
+          {
+            "step": 7800,
+            "objective": 0.001211916112546007,
+            "field": 8.369573352642125e-05,
+            "energy": 0.0007003697831287198,
+            "tangent": 0.00042785059589086586
+          },
+          {
+            "step": 8000,
+            "objective": 0.0012420430036255603,
+            "field": 8.587340302066874e-05,
+            "energy": 0.0006920240236106964,
+            "tangent": 0.0004641455769941952
+          },
+          {
+            "step": 8200,
+            "objective": 0.0013332260769529842,
+            "field": 9.632591434919995e-05,
+            "energy": 0.0007658806337975222,
+            "tangent": 0.00047101952880626206
+          },
+          {
+            "step": 8400,
+            "objective": 0.0012034206643225637,
+            "field": 8.339548583476987e-05,
+            "energy": 0.0006646998597431401,
+            "tangent": 0.00045532531874465374
+          },
+          {
+            "step": 8600,
+            "objective": 0.0011990687103935957,
+            "field": 8.429061214910752e-05,
+            "energy": 0.0006897344781346367,
+            "tangent": 0.00042504362010985155
+          },
+          {
+            "step": 8800,
+            "objective": 0.0010867655395591384,
+            "field": 7.715593008400659e-05,
+            "energy": 0.0006319354902093934,
+            "tangent": 0.0003776741192657385
+          },
+          {
+            "step": 9000,
+            "objective": 0.001083856326511402,
+            "field": 7.057679587459459e-05,
+            "energy": 0.0005750169380402741,
+            "tangent": 0.00043826259259653323
+          },
+          {
+            "step": 9200,
+            "objective": 0.0010225736471169348,
+            "field": 7.156761553896908e-05,
+            "energy": 0.0005773122405540111,
+            "tangent": 0.0003736937910239547
+          },
+          {
+            "step": 9400,
+            "objective": 0.0009970168355670102,
+            "field": 7.07866897099861e-05,
+            "energy": 0.0005583835885653727,
+            "tangent": 0.0003678465572916514
+          },
+          {
+            "step": 9600,
+            "objective": 0.0010204914802372541,
+            "field": 6.825584127005776e-05,
+            "energy": 0.0005372131837144615,
+            "tangent": 0.00041502245525273484
+          },
+          {
+            "step": 9800,
+            "objective": 0.0009630070129246145,
+            "field": 6.902500012163168e-05,
+            "energy": 0.0005561096173112453,
+            "tangent": 0.0003378723954917376
+          },
+          {
+            "step": 9999,
+            "objective": 0.001153964727568525,
+            "field": 7.822683804105657e-05,
+            "energy": 0.0006307330831930959,
+            "tangent": 0.00044500480633437246
+          }
+        ],
+        "seconds_including_compilation": 63.596838051918894,
+        "checkpoint_path": "head_trained_phase.npz",
+        "checkpoint_sha256": "eb4151fb61b250e49afdc328d74dcef478ce54d381559874d79beadaba5729d3",
+        "internal_configuration_dimension": 32,
+        "internal_phase_dimension": 64,
+        "encoder": "FixedPCAaffine leftinverse on original bank coefficients; codes and their time derivatives fixed consistently.",
+        "scale_definitions": "Field uses original suppliedu0 massL2; energy and tangent use sqrt(2 original supplied initial physical energy); stiffness displacement factor includes querycase speed squared.",
+        "training_codes_sha256": "e5940846dcc99b72c6e40295cc58411e0331b83bbd8ad05fc84b34d20c9f8df9",
+        "training_velocities_sha256": "c3a4a6067418d34f833741d201369c6a1c67aefb23b0e8fe58e9e1ce836496e2",
+        "training_only": true
+      }
+    ]
+  }
+}

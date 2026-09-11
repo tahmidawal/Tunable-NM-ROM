@@ -50,5 +50,12 @@ trap finish EXIT
     record=CELL/'runs'/label;record.mkdir(parents=True,exist_ok=False);write_json(record/'submission.json',info);print(json.dumps(info,indent=2))
 
 
+_collect_checked = collect
+
+def collect(label):
+    """Require independent full archive restoration before exact remote cleanup."""
+    return _collect_checked(label, verify_restoration=True)
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=['stage','submit','collect']);parser.add_argument('label');a=parser.parse_args();assert re.fullmatch(r'correction_accuracy[0-9a-z_]+',a.label);globals()[a.action](a.label)

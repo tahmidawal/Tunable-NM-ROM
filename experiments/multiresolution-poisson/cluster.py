@@ -142,7 +142,7 @@ def submit(label):
     print(json.dumps(cfg, indent=2))
 
 
-def collect(label):
+def collect(label, verify_restoration=False):
     record = CELL/"runs"/label
     cfg = json.loads((record/"submission.json").read_text())
     jid, remote = cfg["job_id"], NAMESPACE+"/"+label
@@ -183,6 +183,10 @@ def collect(label):
         assert rebuilt.hexdigest()==archive_sha
         write_json(record/"ARCHIVE.json",dict(archive_name=archive.name,archive_sha256=archive_sha,
             bytes=archive.stat().st_size,ordered_parts=pieces,parts_reassembly_verified=True))
+    if verify_restoration:
+        subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(CELL/'reports/verify_split_archive.py'),str(record)],check=True)
+        restoration=json.loads((record/'restoration-audit.json').read_text())
+        assert restoration['passed'] and restoration['archive_sha256']==archive_sha
     ssh(f"test -f {quoted}/PULL.sha256 && rm -rf -- {quoted} && test ! -e {quoted}")
     write_json(record/"cleanup.json", dict(remote=remote, job_id=jid, all_three_manifests_verified=True,
         source_hashes_verified=True, archive_sha256=archive_sha, remote_deleted_and_absence_checked=True,

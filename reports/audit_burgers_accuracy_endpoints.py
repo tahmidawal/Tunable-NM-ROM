@@ -1,4 +1,5 @@
 """Second CPU implementation of worst Burgers trajectories and selected gradients."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -17,24 +18,32 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def audit():
-    out = RUN/"archive/out"
+def audit(run):
+    run = run.resolve()
+    out = run/"archive/out"
     result_path = out/"result.json"
     d = json.loads(result_path.read_text())
-    owner_path = RUN/"AUDIT.json"
+    owner_path = run/"AUDIT.json"
     owner = json.loads(owner_path.read_text())
     assert d["complete"] and owner["passed"]
+    assert owner["result_sha256"] == sha(result_path)
     assert d["backend"] == "gpu" and d["x64"] and d["matmul_precision"] == "highest"
     assert d["final_cohort_unopened"]
-    checkpoints = {"frozen": RUN/"archive/in/checkpoint.pkl", "trained": out/"trained_checkpoint.pkl"}
+    checkpoints = {"frozen": run/"archive/in/checkpoint.pkl", "trained": out/"trained_checkpoint.pkl"}
     assert sha(checkpoints["frozen"]) == d["checkpoint_sha256"]
     assert sha(checkpoints["trained"]) == d["trained_checkpoint_sha256"]
+    if d.get("coverage_training_performed"):
+        checkpoints["trained576"] = checkpoints.pop("trained")
+        checkpoints["trained4608"] = out/"coverage_training/trained_checkpoint.pkl"
+        assert sha(checkpoints["trained4608"]) == d["coverage_trained_checkpoint_sha256"]
     evidence = []
     for model, checkpoint in checkpoints.items():
         p = pickle.loads(checkpoint.read_bytes())["params"]
         for n in d["config"]["meshes"]:
             op = dict(np.load(out/f"operators_{model}_L{n}.npz"))
-            for solver in ("accepted", "stationary"):
+            solvers = sorted({r["solver"] for r in d["invocations"] if r.get("model") == model and r["intervals"] == n})
+            assert solvers
+            for solver in solvers:
                 name = model+"_"+solver
                 rows = [r for r in d["invocations"] if r["intervals"] == n and r["name"] == name]
                 row = max(rows, key=lambda r: r["error"]["fixed_initial_max"])
@@ -102,5 +111,8 @@ def audit():
 
 
 if __name__ == "__main__":
-    path = ROOT/"reports/2026-09-11-burgers-accuracy.coordinator-audit.json"
-    path.write_text(json.dumps(audit(), indent=2)+"\n")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run", type=Path, default=RUN)
+    parser.add_argument("--output", type=Path, default=ROOT/"reports/2026-09-11-burgers-accuracy.coordinator-audit.json")
+    args = parser.parse_args()
+    args.output.write_text(json.dumps(audit(args.run), indent=2)+"\n")

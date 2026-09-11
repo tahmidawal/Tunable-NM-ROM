@@ -73,6 +73,34 @@ Matched joint continuation slightly improves the earlier cases but worsens the l
 
 Bank projection uses the full same-grid field norm; the online physical error uses a refined-grid reference. These columns are related diagnostics, not an additive error decomposition. A larger learned-bank experiment is now separate from this unsuccessful fixed-capacity comparison. Normalized training-snapshot POD projections motivate that experiment but do not prove a worst-case lower bound for every possible bank.
 
+## Poisson: more spatial features help the bank, but not yet the complete solver
+
+The capacity arm widens the learned spatial bank without changing its initial decoded function or latent dimension. The added head outputs start at zero. Both sizes undergo bank, head and joint stages, with the smaller control matched to each larger-model phase's measured optimizer time. This isolates bank capacity from a simultaneous latent increase or difficult-case reweighting.
+
+All cases in this comparison were already opened during development. The head-projection diagnostic uses stationary full-field fits and is a best-found value, not a proof of the global nonlinear minimum. All recorded online solves are stationary.
+
+| Intervals | Model | Latent / bank size | Bank projection error % | Best-found head error % | Online physical error % | GPU ms | GPU outliers | 5% physical target |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 64 | original_relative | 16 / 64 | 6.668704 | — | 7.281747 | 2.403331 | 1 | Fail |
+| 64 | r64_head | 16 / 64 | 7.175609 | — | 7.786738 | 2.438977 | 2 | Fail |
+| 64 | r64_joint | 16 / 64 | 7.170453 | — | 7.683120 | 2.359436 | 0 | Fail |
+| 64 | r128_head | 16 / 128 | 4.706641 | — | 7.387691 | 2.396871 | 0 | Fail |
+| 64 | r128_joint | 16 / 128 | 4.519957 | — | 7.555330 | 2.355760 | 0 | Fail |
+| 256 | original_relative | 16 / 64 | 6.499383 | 7.291654 | 7.280264 | 2.368029 | 1 | Fail |
+| 256 | r64_head | 16 / 64 | 6.998636 | 7.796886 | 7.785401 | 2.364624 | 0 | Fail |
+| 256 | r64_joint | 16 / 64 | 6.994698 | 7.693113 | 7.681675 | 2.311711 | 1 | Fail |
+| 256 | r128_head | 16 / 128 | 4.546357 | 7.397654 | 7.386228 | 2.355973 | 0 | Fail |
+| 256 | r128_joint | 16 / 128 | 4.363977 | 7.565149 | 7.553790 | 2.306459 | 0 | Fail |
+| 1024 | original_relative | 16 / 64 | 6.489096 | — | 7.280248 | 2.610272 | 1 | Fail |
+| 1024 | r64_head | 16 / 64 | 6.987864 | — | 7.785384 | 2.623935 | 0 | Fail |
+| 1024 | r64_joint | 16 / 64 | 6.984004 | — | 7.681653 | 2.584367 | 0 | Fail |
+| 1024 | r128_head | 16 / 128 | 4.536676 | — | 7.386210 | 2.870484 | 0 | Fail |
+| 1024 | r128_joint | 16 / 128 | 4.354563 | — | 7.553765 | 2.849253 | 0 | Fail |
+
+At 1024 intervals on all 42 cases, the expanded joint endpoint lowers the bank projection error from 6.489096% to 4.354563%, but complete online error changes from 7.280248% to 7.553765%. GPU query time also rises from 2.610272 to 2.849253 ms. Thus this endpoint is not accepted as an online accuracy or speed improvement.
+
+The proposed bank target is 3%, separately from the 5% online physical target; both remain missed. A subsequent training-only residual decomposition motivates fixed correction directions. It uses saved optimized training codes, not independently certified stationary training fits, and its truth-assisted corrections are reconstruction diagnostics rather than online PDE results.
+
 ## Burgers: stricter solves work; initial-field retraining regressed
 
 The fixed-bank comparison crosses the original and refined heads with the earlier stall-based optimizer and explicit stationarity stopping. The refined head trains on regenerated initial fields in the fine-grid physical norm, while replay preserves original decoded outputs at old training codes. Replay targets are not new PDE trajectories.
@@ -214,7 +242,7 @@ The nested head reaches 5.041071% worst energy-state error and 199.464938 GPU ms
 
 ## Work still in progress
 
-Poisson bank-capacity results are undergoing acceptance auditing. A training-only correction-direction diagnostic and a broader Burgers training-coverage comparison are being prepared. Frozen wave multiresolution confirmation is running. Completed audits will be added here, including unsuccessful arms.
+A nested Poisson correction family and a broader Burgers training-coverage comparison are being prepared. Frozen wave multiresolution confirmation has completed its GPU job and is undergoing collection and acceptance auditing. Completed audits will be added here, including unsuccessful arms.
 
 ## Reproduction and evidence
 
@@ -222,6 +250,7 @@ Heat job `3563072` contains the paired GPU measurements; scientific source and c
 
 - [Heat complete panel](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/analysis/summary.md)
 - [Poisson fixed-capacity panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/staged_accuracy08/panel.json)
+- [Poisson larger-bank panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/capacity_accuracy09/panel.json)
 - [Burgers training and solver panel](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/accuracy08/PANEL.json)
 - [Wave geometry audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel06/audit.json)
 - [Wave follow-up audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel07/audit.json)
@@ -247,5 +276,5 @@ Run `reports/generate_accuracy_campaign.py` with the repository Python environme
 - **All-state / energy-state:** checking displacement, velocity and their combined energy norm / the norm combining velocity and spatial-gradient error.
 - **Guard / parity / refinement:** a numerical check with a more robust fallback / agreement with unchanged equations / agreement after reducing the integration step.
 - **Cholesky / tangent velocity:** a factorization for solving a positive-definite small matrix system / the decoder Jacobian multiplied by latent velocity.
-- **Outlier:** heat repetition above one-and-a-half times its case median; wave repetition above twice its panel median. Counts and every duration are retained.
+- **Outlier:** heat and Poisson repetition above one-and-a-half times its case median; Burgers repetition above twice its case median; wave repetition above twice its panel median. Counts and every duration are retained.
 - **Development / sealed final:** cases used in diagnosis and method selection / untouched cases reserved for the paper's later final evaluation.

@@ -14,7 +14,7 @@ def sha(path):
 def errors(f,t):
     delta=np.linalg.norm((f-t).reshape(len(f),-1),axis=1);n0=np.linalg.norm(t[0]);norm=np.linalg.norm(t.reshape(len(t),-1),axis=1)
     return dict(fixed_initial_per_time=(delta/n0).tolist(),current_relative_per_time=(delta/np.maximum(norm,1e-300)).tolist(),
-        fixed_initial_max=float(max(delta/n0)),current_relative_max=float(max(delta/np.maximum(norm,1e-300)))),delta
+        fixed_initial_max=float(max(delta/n0)),current_relative_max=float(max(delta/np.maximum(norm,1e-300))),absolute_rms_max=float(max(delta)/f.shape[-1])),delta
 
 def mlp(layers,x):
     for i,(w,b) in enumerate(layers):
@@ -46,6 +46,7 @@ def main():
     d=json.loads((out/'result.json').read_text());cfg=d['config'];root=Path(__file__).resolve().parents[2]
     assert d['complete'] and d['backend']=='gpu' and d['x64'] and d['matmul_precision']=='highest' and d['network_weights_frozen']
     assert d['checkpoint_sha256']==d['checkpoint_sha256_after']==sha(run/'in/checkpoint.pkl')
+    assert cfg==json.loads((run/'code/config-iterative.json').read_text())
     assert d['commit']==(run/'COMMIT.txt').read_text().strip() and str(d['job_id'])==json.loads((record/'SUBMISSION.json').read_text())['job_id']
     for r in json.loads((run/'PROVENANCE.json').read_text()):
         saved=subprocess.check_output(['git','show',r['commit']+':'+r['source']],cwd=root)
@@ -58,6 +59,12 @@ def main():
     names=['nmrom']+[s['name'] for s in cfg['fom_settings']]
     actual=[(r['intervals'],r['name'],r['case'],r['rep']) for r in d['invocations']]
     expected=set(itertools.product(meshes,names,cases,reps));assert len(actual)==len(expected) and set(actual)==expected
+    assert len(d['declared_subjects'])==len(meshes)*len(names)
+    for r in d['invocations']:
+        assert r['dt']==cfg['dt'] and r['nodes_per_axis']==r['intervals']+1
+        if r['name']!='nmrom':
+            declared=next(x for x in cfg['fom_settings'] if x['name']==r['name'])
+            assert all(r[k]==v for k,v in declared.items())
     rng=np.random.default_rng(cfg['seed']);n=cfg['cases']
     physical=np.stack([rng.uniform(.15,.85,n),rng.uniform(.15,.85,n),rng.uniform(.05,.2,n),rng.uniform(.5,2.,n),np.exp(rng.uniform(np.log(.01),np.log(.1),n))],1)
     assert np.array_equal(physical,np.array(d['physical_cases']))
@@ -65,6 +72,11 @@ def main():
     for L,rep,case in itertools.product(meshes,reps,cases):
         assert [names[i] for i in order_rng.permutation(len(names))]==[r['name'] for r in d['invocations'] if (r['intervals'],r['rep'],r['case'])==(L,rep,case)]
     ck=pickle.load(open(run/'in/checkpoint.pkl','rb'));params=ck['params']
+    def leaves(x):
+        if isinstance(x,dict):return [a for v in x.values() for a in leaves(v)]
+        if isinstance(x,(list,tuple)):return [a for v in x for a in leaves(v)]
+        return [np.asarray(x)]
+    assert all(x.dtype==np.float64 for x in leaves(params))
     rf=cfg['reference_mesh'];rt=cfg['reference_dt'];refs={};ref_delta=0.
     for r in d['reference']:
         z=np.load(out/r['artifact']);f=z['fields'];assert f.shape==(6,largest+1,largest+1) and f.dtype==np.float64 and np.isfinite(f).all()

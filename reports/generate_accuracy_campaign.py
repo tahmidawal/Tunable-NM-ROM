@@ -112,14 +112,43 @@ def poisson(run_name, coordinator_file):
     return dict(panel, run=str(run), cleanup=cleanup)
 
 
+def burgers(run_name, coordinator_file):
+    run = Path("worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs")/run_name
+    panel = read(run/"PANEL.json")
+    audit = read(run/"AUDIT.json")
+    raw = read(run/"archive/out/result.json")
+    coordinator = read(coordinator_file)
+    collection = read(run/"COLLECTION-CHECK.json")
+    assert audit["passed"] and coordinator["passed"] and raw["complete"] and raw["final_cohort_unopened"]
+    assert audit["result_sha256"] == coordinator["source_result_sha256"] == SOURCES[str(run/"archive/out/result.json")]
+    assert coordinator["owner_audit_sha256"] == SOURCES[str(run/"AUDIT.json")]
+    assert str(audit["job_id"]) == str(raw["job_id"]) == str(collection["job_id"])
+    assert audit["source_commit"] == raw["commit"] == collection["source_commit"]
+    assert collection["archive_verified"]
+    for row in panel["rows"]:
+        reps = [r for r in raw["invocations"] if r["name"] == row["name"] and r["intervals"] == row["intervals"]
+                and (row["cohort"] == "all" or r["cohort"] == row["cohort"])]
+        times = [r["gpu_seconds"]*1000 for r in reps]
+        host = [r["host_seconds"]*1000 for r in reps]
+        assert len(reps) == row["invocations"]
+        assert np.isclose(np.median(times), row["gpu_ms"], rtol=1e-14)
+        assert np.isclose(np.median(host), row["host_ms"], rtol=1e-14)
+        assert np.isclose(max(r["error"]["fixed_initial_max"] for r in reps), row["worst_fixed_initial"], rtol=1e-14)
+        assert np.isclose(max(r["error"]["current_relative_max"] for r in reps), row["worst_current_relative"], rtol=1e-14)
+        assert np.isclose(max(r["error"]["fixed_initial_per_time"][0] for r in reps), row["worst_initial_error"], rtol=1e-14)
+        row["gpu_repetitions_ms"], row["host_repetitions_ms"] = times, host
+    return dict(panel, run=str(run), collection=collection)
+
+
 def build():
     h, w6, w7, w8 = heat(), wave("accel06"), wave("accel07"), wave("accel08")
     w9, w10 = wave("accel09"), wave("accel10")
     w10_coordinator = read("reports/2026-09-11-wave-correction-screen.coordinator-audit.json")
     assert w10_coordinator["passed"] and w10_coordinator["source_result_sha256"] == w10["source_result_sha256"]
     ps = poisson("staged_accuracy08", "reports/2026-09-11-poisson-staged-accuracy.coordinator-audit.json")
-    normalized = dict(status="Audited heat, fixed-capacity Poisson and wave screens/training; follow-up capacity tests, Burgers and wave confirmation remain active.",
-                      heat=h, poisson_staged=ps, wave_screens={"accel06": w6, "accel07": w7, "accel08": w8, "accel09": w9, "accel10": w10},
+    b = burgers("accuracy08", "reports/2026-09-11-burgers-accuracy.coordinator-audit.json")
+    normalized = dict(status="Audited heat, fixed-capacity Poisson, initial Burgers and wave screens; follow-up capacity/coverage and wave confirmation remain active.",
+                      heat=h, poisson_staged=ps, burgers_initial=b, wave_screens={"accel06": w6, "accel07": w7, "accel08": w8, "accel09": w9, "accel10": w10},
                       wave_correction_coordinator_audit=w10_coordinator)
     lines = ["# Accuracy improvements and reflective-wave speed", "",
              "This report records the controlled accuracy-training and wave-acceleration campaign. The included numbers have passed independent development audits; the overall campaign and publication validation are still incomplete.", "",
@@ -169,6 +198,24 @@ def build():
     lines += table(["Development cohort (cases)", "Intervals", "Model", "Worst physical error %", "Bank projection error %", "GPU ms", "GPU outliers", "Invalid solves", "5% target"], rows)
     lines += ["Matched joint continuation slightly improves the earlier cases but worsens the later development cases. Neither staged endpoint improves the expanded-cohort worst error. The nonlinear solves are stationary; the remaining error is not resolved by simply allowing more online iterations.", "",
               "Bank projection uses the full same-grid field norm; the online physical error uses a refined-grid reference. These columns are related diagnostics, not an additive error decomposition. A larger learned-bank experiment is now separate from this unsuccessful fixed-capacity comparison. Normalized training-snapshot POD projections motivate that experiment but do not prove a worst-case lower bound for every possible bank.", "",
+              "## Burgers: stricter solves work; initial-field retraining regressed", "",
+              "The fixed-bank comparison crosses the original and refined heads with the earlier stall-based optimizer and explicit stationarity stopping. The refined head trains on regenerated initial fields in the fine-grid physical norm, while replay preserves original decoded outputs at old training codes. Replay targets are not new PDE trajectories.", "",
+              f"The combined cohort has {b['config']['cases']+b['config']['fresh_cases']} development cases: {b['config']['cases']} previously opened and {b['config']['fresh_cases']} introduced in this comparison. Every method has {b['config']['reps']} timed repetitions per case and mesh.", ""]
+    rows = []
+    for r in b["rows"]:
+        if r["cohort"] != "all":
+            continue
+        states = "—" if r["stationary_invocations"] is None else f"{r['stationary_invocations']}/{r['invocations']}"
+        rows.append([r["intervals"], r["name"], f"{100*r['median_case_fixed_initial']:.6f} / {100*r['worst_fixed_initial']:.6f}",
+                     f"{100*r['worst_initial_error']:.6f}", f"{r['gpu_ms']:.6f}", f"{r['host_ms']:.6f}",
+                     states, r["timing_outliers_gt2x_case_median"], "Pass" if r["physical_and_numerical_pass"] else "Fail"])
+    lines += table(["Intervals", "Method", "Median / worst fixed-initial error %", "Worst initial error %", "GPU ms", "Host ms", "Stationary queries", "GPU outliers", "Physical and numerical criteria"], rows)
+    fine = {r["name"]: r for r in b["rows"] if r["cohort"] == "all" and r["intervals"] == max(b["config"]["meshes"])}
+    strict, accepted, trained, bfom = (fine[k] for k in ("frozen_stationary", "frozen_accepted", "trained_stationary", "fft_loose"))
+    lines += [f"On the largest mesh, strict stopping changes worst fixed-initial error from {100*accepted['worst_fixed_initial']:.6f}% to {100*strict['worst_fixed_initial']:.6f}%, with GPU time {accepted['gpu_ms']:.6f} → {strict['gpu_ms']:.6f} ms. It is {bfom['gpu_ms']/strict['gpu_ms']:.6f}× faster than the same-job loose iterative FOM, and both meet the declared criteria. The trained strict head reaches {100*trained['worst_fixed_initial']:.6f}% error and is rejected as an accuracy improvement.", "",
+              "The old stopping contract accepted small-progress exits; those saved results are preserved. The added gradient audit reveals that they were not stationary under the stricter criterion. Stricter solving makes convergence explicit but barely changes the physical error. The retraining improves its training initial fields while worsening development trajectories, motivating a separate broader-training-coverage comparison.", "",
+              "An earlier attempt failed an overly tight diagnostic equality between two floating-point gradient evaluations. Its training checkpoint and references were preserved with audited lineage, then reused unchanged in this replay. All reported costs and predictions were regenerated together in the replay job. The stationarity threshold was unchanged; charged, posthoc and independent CPU gradients must all pass, and no threshold classification disagreement occurred.", "",
+              "Burgers errors are divided by the reference initial-field norm and maximized over saved times. Its physical criterion includes the empirical reference-refinement allowance; the coarse mesh remains unqualified. The FFT-labeled FOM is an iterative Newton–BiCGStab solve using an FFT preconditioner, not a direct nonlinear solution.", "",
               "## Reflective waves: geometry and time-step screens", "",
               f"These screens use the same {w6['case_count']} opened reflective Dirichlet cases at {w6['panels'][0]['intervals']} intervals, with {w6['repetitions']} timed repetitions per case. They are development screens, not a large independent test set.", "",
               "Shared analytic decoder derivatives and guarded Cholesky solves remove repeated work in latent evolution. At the original step, these preserve the mathematical trajectory to audited floating-point parity. Larger steps are a separate integration change and require refinement checks.", ""]
@@ -225,11 +272,12 @@ def build():
     nested_original = next(p for p in w10["panels"] if p["method"] == "baseline")
     lines += [f"The nested head reaches {nested['worst_initial_errors_percent']['energy_state']:.6f}% worst energy-state error and {nested['median_gpu_ms']:.6f} GPU ms on the opened screen. Its {nested_original['median_gpu_ms']/nested['median_gpu_ms']:.6f}× acceleration is relative to the same-job original ROM, not a qualified FOM speedup. It still misses the all-state target. Its weights, initializer, step and solver are frozen before multiresolution evaluation on additional development cases.", "",
               "## Work still in progress", "",
-              "Poisson bank-capacity training and Burgers initial-field training plus stationarity-aware solving are still underway. Their completed audits will be added here, including unsuccessful arms. Frozen wave multiresolution confirmation is also outstanding.", "",
+              "Poisson bank-capacity results are undergoing acceptance auditing. A training-only correction-direction diagnostic and a broader Burgers training-coverage comparison are being prepared. Frozen wave multiresolution confirmation is running. Completed audits will be added here, including unsuccessful arms.", "",
               "## Reproduction and evidence", "",
               f"Heat job `{h['metadata']['job_id']}` contains the paired GPU measurements; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.", "",
               f"- [Heat complete panel](../{h['run']}/analysis/summary.md)",
               f"- [Poisson fixed-capacity panel](../{ps['run']}/panel.json)",
+              f"- [Burgers training and solver panel](../{b['run']}/PANEL.json)",
               f"- [Wave geometry audit](../{w6['run']}/audit.json)",
               f"- [Wave follow-up audit](../{w7['run']}/audit.json)",
               f"- [Wave training audit](../{w8['run']}/audit.json)",

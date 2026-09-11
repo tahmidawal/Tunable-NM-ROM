@@ -1,0 +1,407 @@
+{
+  "passed": true,
+  "source_result_sha256": "056ba0ae8b16bf8737ac370cef6219414fecff3e693592fc4f15f67cdd41cb7e",
+  "owner_audit_sha256": "7d2e9e5fc4771346ee6a5e93471a249ffce1c806af325338891caa36a966f61b",
+  "source_script_sha256": "3b041b94d28125488cf91ca6179afbc65cccafab26f91a8116dd0f5d30e39f91",
+  "helper_sha256": {
+    "audit_burgers_stationarity.py": "85be7b967848e06acb50901634e5fa8e04657c49d8286ac8289b5ce3d7cede0f",
+    "audit_poisson_online_tuning.py": "2658004009c3f5da2fffdb2eba1dd14f45d73afb4056cd787f0528340489e154"
+  },
+  "source_result_path": "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/accuracy08/archive/out/result.json",
+  "job_id": "3565181",
+  "source_commit": "47b783429500b559f6a509448ca11f164183b658",
+  "scope": "Worst trajectory per model/mesh: all output errors and decoded samples; initial, first, last and largest recorded-gradient weak states. Full owner audit remains required. No new solve or timing.",
+  "checked_trajectories": 12,
+  "endpoints": [
+    {
+      "model": "frozen_accepted",
+      "intervals": 64,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.10854648110951255,
+      "decoder_relative_error": 3.024903787830325e-14,
+      "field_sha256": "d2ae6faed10379b5ec85f1c7721b33f7ae78932c25c84607bf94d17b7b9a8f84",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 7.847662172359989e-06,
+          "posthoc": 7.847662100807335e-06,
+          "charged": null
+        },
+        {
+          "step": 1,
+          "cpu": 0.0036262576972250315,
+          "posthoc": 0.0036262576998674083,
+          "charged": null
+        },
+        {
+          "step": 50,
+          "cpu": 1.0155068816036835e-06,
+          "posthoc": 1.01552241597388e-06,
+          "charged": null
+        }
+      ]
+    },
+    {
+      "model": "frozen_stationary",
+      "intervals": 64,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.1085697931783108,
+      "decoder_relative_error": 2.7048517543839286e-14,
+      "field_sha256": "1df3b2d08c79ed06fea8c61fe2dc2b70534ed59605792ae708b8bae3d8cc67cf",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 9.55675838636197e-07,
+          "posthoc": 9.556757712974063e-07,
+          "charged": 9.556757721483574e-07
+        },
+        {
+          "step": 1,
+          "cpu": 6.967607336150074e-08,
+          "posthoc": 6.967651376519002e-08,
+          "charged": 6.967660525922049e-08
+        },
+        {
+          "step": 13,
+          "cpu": 9.357013040393424e-07,
+          "posthoc": 9.35697843665841e-07,
+          "charged": 9.357024840187966e-07
+        },
+        {
+          "step": 50,
+          "cpu": 6.03176063309825e-09,
+          "posthoc": 6.0477028867220805e-09,
+          "charged": 6.040397258796334e-09
+        }
+      ]
+    },
+    {
+      "model": "frozen_accepted",
+      "intervals": 256,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.04550700126196064,
+      "decoder_relative_error": 2.945182006074041e-14,
+      "field_sha256": "9d0345b44a0e3f7d3c58418b0d07fecdc675a558ccfa06dce332f11b9f66df31",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 9.28749605844815e-06,
+          "posthoc": 9.28749599922006e-06,
+          "charged": null
+        },
+        {
+          "step": 1,
+          "cpu": 0.012415843260256887,
+          "posthoc": 0.012415843265856237,
+          "charged": null
+        },
+        {
+          "step": 50,
+          "cpu": 2.2352765987915837e-06,
+          "posthoc": 2.235260842216793e-06,
+          "charged": null
+        }
+      ]
+    },
+    {
+      "model": "frozen_stationary",
+      "intervals": 256,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.04554610883324433,
+      "decoder_relative_error": 2.8672361089929484e-14,
+      "field_sha256": "49d9cbac9843a559b10fde17fd3f1171087ee53e7f112fc4f6c69a9540e960b6",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 6.121281061152403e-07,
+          "posthoc": 6.121281183185768e-07,
+          "charged": 6.121281183668158e-07
+        },
+        {
+          "step": 1,
+          "cpu": 9.7114872638688e-07,
+          "posthoc": 9.711496150372034e-07,
+          "charged": 9.71146709071374e-07
+        },
+        {
+          "step": 50,
+          "cpu": 1.1594564262068381e-08,
+          "posthoc": 1.158412839919374e-08,
+          "charged": 1.1580587010792793e-08
+        }
+      ]
+    },
+    {
+      "model": "frozen_accepted",
+      "intervals": 1024,
+      "case": 3,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.03907620325223481,
+      "decoder_relative_error": 1.6422323343293295e-14,
+      "field_sha256": "b18219554aa69559154a74a00cc0d9b2804d9fbd1ab38cac33ad49333ef84c75",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 2.955702375779029e-06,
+          "posthoc": 2.9557024445306012e-06,
+          "charged": null
+        },
+        {
+          "step": 1,
+          "cpu": 0.025761629012226974,
+          "posthoc": 0.025761629012652987,
+          "charged": null
+        },
+        {
+          "step": 50,
+          "cpu": 5.873840639210156e-06,
+          "posthoc": 5.873839024323864e-06,
+          "charged": null
+        }
+      ]
+    },
+    {
+      "model": "frozen_stationary",
+      "intervals": 1024,
+      "case": 3,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.038846796264064655,
+      "decoder_relative_error": 1.7972565435387174e-14,
+      "field_sha256": "87122b6b3fdd3264202c263ce99568e007b28cc3150543e5d0578f8afb7a7add",
+      "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 6.520672369799963e-07,
+          "posthoc": 6.520672354926504e-07,
+          "charged": 6.520672353716768e-07
+        },
+        {
+          "step": 1,
+          "cpu": 3.2863541184102943e-07,
+          "posthoc": 3.2863501118146216e-07,
+          "charged": 3.286355975768411e-07
+        },
+        {
+          "step": 15,
+          "cpu": 9.458876787269737e-07,
+          "posthoc": 9.458876141470652e-07,
+          "charged": 9.458899378866774e-07
+        },
+        {
+          "step": 50,
+          "cpu": 2.6350556827729317e-08,
+          "posthoc": 2.634927885314719e-08,
+          "charged": 2.6349630178653968e-08
+        }
+      ]
+    },
+    {
+      "model": "trained_accepted",
+      "intervals": 64,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.11038040378945882,
+      "decoder_relative_error": 1.3255316773903346e-14,
+      "field_sha256": "ea4c60cf0eaf9988df62cf584cab75488540e6cc32bb620616960f1663af5dce",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 4.824912123842955e-06,
+          "posthoc": 4.8249121428734125e-06,
+          "charged": null
+        },
+        {
+          "step": 1,
+          "cpu": 0.012037113425045445,
+          "posthoc": 0.012037113424613532,
+          "charged": null
+        },
+        {
+          "step": 50,
+          "cpu": 4.674120936256369e-07,
+          "posthoc": 4.674158226067019e-07,
+          "charged": null
+        }
+      ]
+    },
+    {
+      "model": "trained_stationary",
+      "intervals": 64,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.11045567817453053,
+      "decoder_relative_error": 1.4348129592685895e-14,
+      "field_sha256": "18f6c393290d3792073c078c3e8a8f666e6b7762e991c3e9e92e97325ecb1aac",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 7.864362120842416e-07,
+          "posthoc": 7.864362329809885e-07,
+          "charged": 7.864362328795164e-07
+        },
+        {
+          "step": 1,
+          "cpu": 8.653361267041621e-07,
+          "posthoc": 8.65336122888733e-07,
+          "charged": 8.653360267488515e-07
+        },
+        {
+          "step": 10,
+          "cpu": 8.719800169982423e-07,
+          "posthoc": 8.719793029446618e-07,
+          "charged": 8.719792871597516e-07
+        },
+        {
+          "step": 50,
+          "cpu": 4.67749133414332e-07,
+          "posthoc": 4.6774702924444996e-07,
+          "charged": 4.6774640235543865e-07
+        }
+      ]
+    },
+    {
+      "model": "trained_accepted",
+      "intervals": 256,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.05788215265449708,
+      "decoder_relative_error": 1.4828130098268542e-14,
+      "field_sha256": "cb5ede2a098ba39a5d83cd7a8b45a3cb88855f2de5ac5f7e35ccc1b75cac0560",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 1.9176610043207247e-06,
+          "posthoc": 1.917661003511439e-06,
+          "charged": null
+        },
+        {
+          "step": 1,
+          "cpu": 0.009344959804152567,
+          "posthoc": 0.009344959804949423,
+          "charged": null
+        },
+        {
+          "step": 50,
+          "cpu": 8.791809430922018e-07,
+          "posthoc": 8.7918062937153e-07,
+          "charged": null
+        }
+      ]
+    },
+    {
+      "model": "trained_stationary",
+      "intervals": 256,
+      "case": 2,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.05794181698687688,
+      "decoder_relative_error": 1.2010896741818825e-14,
+      "field_sha256": "88a23295c92e433a5a50c7d72c7603cd82080d9330eefd140b6ef6db04ff357b",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 8.666177898834163e-07,
+          "posthoc": 8.666177871741662e-07,
+          "charged": 8.666177871452743e-07
+        },
+        {
+          "step": 1,
+          "cpu": 5.621957022404431e-07,
+          "posthoc": 5.621957077125948e-07,
+          "charged": 5.621957691762231e-07
+        },
+        {
+          "step": 49,
+          "cpu": 9.305744111126071e-07,
+          "posthoc": 9.305742766142091e-07,
+          "charged": 9.305745803839041e-07
+        },
+        {
+          "step": 50,
+          "cpu": 8.89689537360102e-07,
+          "posthoc": 8.896892417502391e-07,
+          "charged": 8.896905113364155e-07
+        }
+      ]
+    },
+    {
+      "model": "trained_accepted",
+      "intervals": 1024,
+      "case": 3,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.0546947303511697,
+      "decoder_relative_error": 1.4779663710104515e-14,
+      "field_sha256": "514498462f309e55161de2b1da22de5f6718f03c7c54a80144884aef8a135418",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 2.800000131925738e-06,
+          "posthoc": 2.800000132036287e-06,
+          "charged": null
+        },
+        {
+          "step": 1,
+          "cpu": 0.0028226723902457515,
+          "posthoc": 0.002822672389891814,
+          "charged": null
+        },
+        {
+          "step": 50,
+          "cpu": 3.024857790384879e-06,
+          "posthoc": 3.0248614783233314e-06,
+          "charged": null
+        }
+      ]
+    },
+    {
+      "model": "trained_stationary",
+      "intervals": 1024,
+      "case": 3,
+      "cohort": "opened development",
+      "worst_fixed_initial_error": 0.05459553761006067,
+      "decoder_relative_error": 1.4193229347135387e-14,
+      "field_sha256": "fca729f39057c687c7bc96ff06739b1c86edbcf1b603092b287ca7e42e340b59",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "selected_gradient_checks": [
+        {
+          "step": 0,
+          "cpu": 3.991500429531227e-07,
+          "posthoc": 3.9915005988634716e-07,
+          "charged": 3.9915006040491455e-07
+        },
+        {
+          "step": 1,
+          "cpu": 4.5298077489933334e-07,
+          "posthoc": 4.5298088126575864e-07,
+          "charged": 4.529809257191413e-07
+        },
+        {
+          "step": 15,
+          "cpu": 8.941611867900803e-07,
+          "posthoc": 8.941613196909416e-07,
+          "charged": 8.941614602650973e-07
+        },
+        {
+          "step": 50,
+          "cpu": 6.984292245683725e-08,
+          "posthoc": 6.984275764153834e-08,
+          "charged": 6.984287634300288e-08
+        }
+      ]
+    }
+  ]
+}

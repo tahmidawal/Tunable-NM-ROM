@@ -1,0 +1,357 @@
+{
+  "config": {
+    "meshes": [
+      64,
+      256,
+      1024
+    ],
+    "boundaries": [
+      "dirichlet"
+    ],
+    "validation_seed": 690602,
+    "validation_indices": [
+      0,
+      1
+    ],
+    "end_time": 2.4,
+    "observation_dt": 0.05,
+    "repetitions": 3,
+    "fit_iterations": 800,
+    "primary_dt": 0.0025,
+    "accuracy_only_dt": 0.00125,
+    "fom_cfl": 0.45,
+    "reference_cfl": 0.1125,
+    "reference_refinement_cfl": 0.05625,
+    "vanishing_fraction": 0.001,
+    "rom_refinement_target": 0.01,
+    "reference_refinement_target": 0.0001,
+    "accuracy_targets": [
+      0.1,
+      0.05,
+      0.01,
+      0.001
+    ],
+    "primary_method": "frozen_nested_phase32_plus_linear8",
+    "control_method": null,
+    "frozen_bank_rank": 64,
+    "final_test_opened": false,
+    "expected_timed_invocations": 324,
+    "expected_accuracy_only_queries": 36,
+    "input_output_contract": "Full GPU-resident displacement, velocity and scalar physical wave speed to both full GPU-resident fields at all 49 observations. Include projection, every cold-fit start, parameter preparation, evolution and dense output; exclude host transfers, compilation and mesh-only assembly.",
+    "selection": "Settings and selected nested-head checkpoint frozen from the accepted final opened-cohort screen before fresh development. No parameter, epoch or setting selection on confirmation data. Report both cohorts and pooled worst cases; the screen all-state 5% miss remains explicit.",
+    "claim_scope": "True nonlinear latent evolution: original 32-coordinate head controls and selected 40-coordinate nested manifold, all in the same 64-function spatial bank. Three meshes, opened two plus separately seeded fresh-development two; final paper cohort sealed. Named CG timestep/tolerance and direct DST controls are paired within the same job.",
+    "walltime": "02:00:00",
+    "estimated_runtime_minutes": [
+      15,
+      35
+    ],
+    "cg_tolerances": [
+      1e-06,
+      0.01
+    ],
+    "cg_max_iterations": 1000,
+    "cohorts": [
+      {
+        "name": "opened",
+        "seed": 690602,
+        "indices": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "fresh_development",
+        "seed": 691115,
+        "indices": [
+          0,
+          1
+        ]
+      }
+    ],
+    "profile_repetitions": 0,
+    "parity_target": 1e-08,
+    "arms": [
+      {
+        "method": "baseline",
+        "dt": 0.0025
+      },
+      {
+        "method": "chol_guard",
+        "dt": 0.01
+      },
+      {
+        "method": "trained_nested40",
+        "dt": 0.01
+      }
+    ],
+    "refinement_arms": [
+      {
+        "method": "baseline",
+        "dt": 0.0025
+      },
+      {
+        "method": "chol_guard",
+        "dt": 0.01
+      },
+      {
+        "method": "trained_nested40",
+        "dt": 0.01
+      }
+    ],
+    "cg_timestep_arms": [
+      {
+        "dt": 0.005,
+        "tolerance": 1e-06
+      },
+      {
+        "dt": 0.005,
+        "tolerance": 0.01
+      },
+      {
+        "dt": 0.01,
+        "tolerance": 1e-06
+      }
+    ],
+    "head_source_run": "accel10",
+    "frozen_head_inputs": {
+      "trained_nested40": "trained_nested40.npz"
+    },
+    "selection_frozen": {
+      "source_result_sha256": "334a8144d5bc8dd75a979bc9579a168ddba8207b163585cb45c38bc8f6d8e40a",
+      "source_audit_sha256": "db9e81072fe8902d773dd16d7d71003bd36ad7e21284cb86d58803ebb25dc32c",
+      "scientific_source_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+      "job_id": "3565033",
+      "selected_method": "trained_nested40",
+      "dt": 0.01,
+      "internal_configuration_dimension": 40,
+      "internal_phase_dimension": 80,
+      "weak_equations": 64,
+      "physical5percent_pass": false,
+      "selected_worst_fixed_initial_errors_percent": {
+        "displacement": 1.4779065499100805,
+        "velocity": 3.260997024411479,
+        "energy_state": 5.0410708296734486
+      },
+      "existing_halfstep_worst_fixed_initial_errors_percent": {
+        "displacement": 1.4822321425177034,
+        "velocity": 3.2726154951787594,
+        "energy_state": 5.053093248368519
+      },
+      "selection_criterion": "Lowest complete-cohort worst fixed-initial all-state error among the three numerically eligible final-screen trained/enriched heads; not a global optimum.",
+      "frozen_before_confirmation": true,
+      "fresh_development_seed": 691115,
+      "fresh_development_indices": [
+        0,
+        1
+      ],
+      "checkpoint_sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3",
+      "initializer_sha256": "154ec67eae3da47f97b16cd4838de52b685c22fd7e6e02c978294e0de45fbc60",
+      "initializer_limitation": "Training-library appended PCA scores are not residual-corrected for existing head contributions; all forty initial coordinates are nevertheless fitted to supplied fields.",
+      "candidates": [
+        {
+          "intervals": 64,
+          "cohort": "opened",
+          "method": "trained_phase",
+          "setting": 0.01,
+          "median_gpu_ms": 182.9788200557232,
+          "timing_ms": [
+            181.97172391228378,
+            182.52481799572706,
+            183.19588713347912,
+            182.80890421010554,
+            183.14873590134084,
+            183.84420592337847
+          ],
+          "outliers_above_twice_median": 0,
+          "worst_initial_errors_percent": {
+            "displacement": 1.7663245622045112,
+            "velocity": 4.1340087216168175,
+            "energy_state": 6.103805844803443
+          },
+          "worst_current_errors_percent": {
+            "displacement": 3.681008950957274,
+            "velocity": 6.417502616306884,
+            "energy_state": 6.103805844803442
+          },
+          "worst_defined_sine_projection_phase_radians": 0.013965752209946336,
+          "max_energy_drift_from_returned_initial_percent": 0.0051952786256470596,
+          "all_state_5percent_pass": false,
+          "all_completed": true,
+          "all_initial_fits_stationary": true,
+          "all_projection_fits_stationary": true,
+          "all_cg_converged": true,
+          "numerical_gate_pass": true,
+          "time_refinement_pass": true,
+          "projection_kinematic_pass": null,
+          "physical_and_numerical_pass": false,
+          "max_normal_backward": 5.66010196478053e-17,
+          "fastest_tested_passing_cg": {
+            "method": "cgdt_0.005_tol_0.01",
+            "tolerance": 0.01,
+            "median_gpu_ms": 42.01709304470569
+          },
+          "fastest_passing_cg_over_method": 0.22962817790556347
+        },
+        {
+          "intervals": 64,
+          "cohort": "opened",
+          "method": "trained_phase40",
+          "setting": 0.01,
+          "median_gpu_ms": 204.3891919311136,
+          "timing_ms": [
+            250.78137684613466,
+            202.94367312453687,
+            204.25814692862332,
+            205.11798188090324,
+            204.52023693360388,
+            204.0451020002365
+          ],
+          "outliers_above_twice_median": 0,
+          "worst_initial_errors_percent": {
+            "displacement": 2.1095306938044835,
+            "velocity": 4.252749399772053,
+            "energy_state": 6.167913332518649
+          },
+          "worst_current_errors_percent": {
+            "displacement": 4.425313129502431,
+            "velocity": 8.205165317995496,
+            "energy_state": 6.167913332518648
+          },
+          "worst_defined_sine_projection_phase_radians": 0.006256493614417852,
+          "max_energy_drift_from_returned_initial_percent": 0.005276981826585203,
+          "all_state_5percent_pass": false,
+          "all_completed": true,
+          "all_initial_fits_stationary": true,
+          "all_projection_fits_stationary": true,
+          "all_cg_converged": true,
+          "numerical_gate_pass": true,
+          "time_refinement_pass": true,
+          "projection_kinematic_pass": null,
+          "physical_and_numerical_pass": false,
+          "max_normal_backward": 4.655405776864284e-17,
+          "fastest_tested_passing_cg": {
+            "method": "cgdt_0.005_tol_0.01",
+            "tolerance": 0.01,
+            "median_gpu_ms": 42.01709304470569
+          },
+          "fastest_passing_cg_over_method": 0.20557394766190445
+        },
+        {
+          "intervals": 64,
+          "cohort": "opened",
+          "method": "trained_nested40",
+          "setting": 0.01,
+          "median_gpu_ms": 199.46493790484965,
+          "timing_ms": [
+            197.33041990548372,
+            197.74758513085544,
+            198.2995809521526,
+            200.6302948575467,
+            201.61192887462676,
+            200.98564494401217
+          ],
+          "outliers_above_twice_median": 0,
+          "worst_initial_errors_percent": {
+            "displacement": 1.4779065499100805,
+            "velocity": 3.260997024411479,
+            "energy_state": 5.0410708296734486
+          },
+          "worst_current_errors_percent": {
+            "displacement": 2.5546007647651523,
+            "velocity": 5.289309361244295,
+            "energy_state": 5.041070829673448
+          },
+          "worst_defined_sine_projection_phase_radians": 0.012617978824379872,
+          "max_energy_drift_from_returned_initial_percent": 0.0052918429960358004,
+          "all_state_5percent_pass": false,
+          "all_completed": true,
+          "all_initial_fits_stationary": true,
+          "all_projection_fits_stationary": true,
+          "all_cg_converged": true,
+          "numerical_gate_pass": true,
+          "time_refinement_pass": true,
+          "projection_kinematic_pass": null,
+          "physical_and_numerical_pass": false,
+          "max_normal_backward": 5.878780551723846e-17,
+          "fastest_tested_passing_cg": {
+            "method": "cgdt_0.005_tol_0.01",
+            "tolerance": 0.01,
+            "median_gpu_ms": 42.01709304470569
+          },
+          "fastest_passing_cg_over_method": 0.21064901674473244
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "host": "pax049",
+    "source_commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+    "job_id": "3565652",
+    "numpy_version": "2.5.0"
+  },
+  "frozen_mathematics": {
+    "source_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+    "sha256": {
+      "fresh_fom.py": "9dc6e3bd14acce20f5cc29497032f07d63806a20ddb78ef3f31a13b607c1adfc",
+      "fresh_models.py": "bef42f5ead734fb6b85b2e17b92790b8327f5f1dc3abce941c62f993de6e5553",
+      "fresh_rom.py": "960aefef2ffb77f2a0ff4ac4c99ae55e8ebd036486ce1c6d460dd5b5b98434ff",
+      "fresh_learning.py": "239f0df304781ca29ea0afc2b67fefa6a9163ab18fbdd81e95c76a08a72dd8c8",
+      "fresh_evaluate.py": "67bf89e8df5654fdcd29040ec737607762e5762d33d6e9996e6a5772be27f7e1"
+    }
+  },
+  "input_sha256": {
+    "ORIGIN.json": "0f53176f41af596d0eb8e017db224b075fb2c61783b2687100270026a7d4ad15",
+    "absorbing/bank_parameters.npz": "a9254afa4b94483f7204c6c9d08126890c1aee927609f926865dadaa9c7ecc74",
+    "absorbing/campaign-config.json": "8db8fb9ac036e3611231df487c14c9fdf5fad7b3fd96a9b8351fe077cbd93dad",
+    "absorbing/coordinates.npz": "97c3ddf60a9c4c5eff8f6c0d21dc8c599e213beacc2dd70f61b0f7e53dd85890",
+    "absorbing/data_manifest.json": "53edc2d730d912a35b30017033f534e812303abafacf71ba7dc5c92b1caf358c",
+    "absorbing/head.npz": "86d55abfed15ca778ca145b1a11ba7e4d30560bedc0f8cf95026111a51f4702a",
+    "absorbing/head32.npz": "4cef675ccaec28aedd887a085ff4f3fc1c95494a7ba44fd0a4369b651d88645a",
+    "absorbing/initializer32.npz": "e09b11becb830dc8214d1351d875b5f53d4321936c379ab7bb3c9d8d69ca9f4c",
+    "dirichlet/bank_parameters.npz": "4be766c4f2386005dddac89346f32b6351051d014406242e1ec40bf8f343c600",
+    "dirichlet/campaign-config.json": "8db8fb9ac036e3611231df487c14c9fdf5fad7b3fd96a9b8351fe077cbd93dad",
+    "dirichlet/coordinates.npz": "da594cff97868239c26cfd8b170131cff44d318167a30e2c546bcd374feda882",
+    "dirichlet/data_manifest.json": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809",
+    "dirichlet/head.npz": "985e8707e6b549e4ae5ea299c3d703ab58ff171849027d5f9189cc8e6930d845",
+    "dirichlet/head32.npz": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e",
+    "dirichlet/initializer32.npz": "537106c0a07cd78b6701c8a4e01fec423cd0a103c6681f1527879977efacca7d",
+    "dirichlet/initializer_trained_nested40.npz": "57f445f68a380d1bae37e46d0f0a72ce799be7d3bdf8aa64f0820dd257b9bfc1",
+    "dirichlet/trained_nested40.npz": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3"
+  },
+  "meshes": [],
+  "references": [],
+  "invocations": [],
+  "accuracy_controls": [],
+  "warmups": [],
+  "geometry_checks": [],
+  "profiles": [],
+  "parity": [],
+  "time_refinement": [],
+  "projection_kinematics": [],
+  "final_test_opened": false,
+  "complete": false,
+  "frozen_head_origin": {
+    "commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+    "sources": {
+      "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/head_trained_nested40.npz": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3",
+      "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/initializer_trained_nested40.npz": "154ec67eae3da47f97b16cd4838de52b685c22fd7e6e02c978294e0de45fbc60"
+    },
+    "training": [],
+    "parent_results": {
+      "accel10": {
+        "result_path": "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/result.json",
+        "result_sha256": "334a8144d5bc8dd75a979bc9579a168ddba8207b163585cb45c38bc8f6d8e40a"
+      }
+    }
+  }
+}

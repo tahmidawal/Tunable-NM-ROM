@@ -20,7 +20,6 @@ def stage(label, configuration):
     target=dest/'code/multiresolution-wave'/configuration;target.write_bytes(payload)
     metadata['source_hashes'][str(target.relative_to(dest))]=transport.digest(target)
     cfg=json.loads(payload)
-    assert cfg['primary_method']=='frozen_mlp32_seed691200','primary_method selects the frozen baseline lookup; trained alternatives belong in arms'
     assert not cfg.get('pending_capacity_screen',False),'Freeze the capacity selection before staging fresh development confirmation'
     if cfg.get('frozen_head_inputs'):
         origin=json.loads((dest/'in/ORIGIN.json').read_text())

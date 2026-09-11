@@ -45,7 +45,7 @@ def freeze():
     assert selection['checkpoint_sha256']==result['output_sha256'][checkpoint]
     (record/'selection.json').write_text(json.dumps(selection,indent=2)+'\n')
     path=here/'acceleration-confirm-config.json';cfg=json.loads(path.read_text())
-    cfg['primary_method']='frozen_mlp32_seed691200'
+    cfg['primary_method']='frozen_nested_phase32_plus_linear8'
     cfg['selection']='Settings and selected nested-head checkpoint frozen from the accepted final opened-cohort screen before fresh development. No parameter, epoch or setting selection on confirmation data. Report both cohorts and pooled worst cases; the screen all-state 5% miss remains explicit.'
     cfg['claim_scope']='True nonlinear latent evolution: original 32-coordinate head controls and selected 40-coordinate nested manifold, all in the same 64-function spatial bank. Three meshes, opened two plus separately seeded fresh-development two; final paper cohort sealed. Named CG timestep/tolerance and direct DST controls are paired within the same job.'
     for key in ('arms','refinement_arms'):

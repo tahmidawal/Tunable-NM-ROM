@@ -1,0 +1,18 @@
+......
+----------------------------------------------------------------------
+Ran 6 tests in 6.366s
+
+OK
+...
+----------------------------------------------------------------------
+Ran 3 tests in 5.298s
+
+OK
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/mr_wave2d_20260907/accel11/code/multiresolution-wave/acceleration_replay.py", line 227, in <module>
+    if __name__=='__main__': main()
+                             ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/mr_wave2d_20260907/accel11/code/multiresolution-wave/acceleration_replay.py", line 129, in main
+    full, models = previous.load_models(args.inputs/'dirichlet', grid); bank = models[cfg['primary_method']]
+                                                                               ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'frozen_nested_phase32_plus_linear8'

@@ -7,6 +7,7 @@ from pathlib import Path
 import jax
 jax.config.update("jax_enable_x64", True)
 import jax.numpy as jnp
+import jax.scipy.linalg as jsl
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "separable-decoder"))
@@ -78,13 +79,14 @@ def mode_matrix(intervals, modes_per_axis):
     return (sx[:, :, None]*sy[:, None, :]).reshape(len(xy), -1)/intervals**2
 
 
-def make_lm(head_fn, budget, tolerance):
+def make_lm(head_fn, budget, tolerance, linear_solver="lu"):
     """Damped monotone LM with explicit arrays, relative stationarity stop.
 
     Solves ||matrix @ h(params,z)-target||. Normalized gradient is divided by
     ||J||*||target||; stationarity does not certify global optimality.
     Reasons: 0 budget, 1 stationarity, 2 tiny step, 3 damping limit, 4 nonfinite.
     """
+    assert linear_solver in ("lu", "cholesky")
     def solve(params, matrix, target, z0):
         scale = jnp.maximum(jnp.linalg.norm(target), 1e-14)
         residual = lambda z: (matrix @ head_fn(params, z)-target)/scale
@@ -102,7 +104,13 @@ def make_lm(head_fn, budget, tolerance):
             z, r, jac, val, damping, attempts, accepted, _ = s
             gram = jac.T@jac
             d = jnp.maximum(jnp.diag(gram), 1e-12)
-            step = jnp.linalg.solve(gram+damping*jnp.diag(d), -jac.T@r)
+            system = gram+damping*jnp.diag(d)
+            rhs = -jac.T@r
+            if linear_solver == "cholesky":
+                lower = jnp.linalg.cholesky(system)
+                step = jsl.solve_triangular(lower.T, jsl.solve_triangular(lower, rhs, lower=True), lower=False)
+            else:
+                step = jnp.linalg.solve(system, rhs)
             candidate = z+step
             rnew = residual(candidate)
             vnew = jnp.dot(rnew, rnew)

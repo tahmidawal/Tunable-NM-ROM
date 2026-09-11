@@ -30,7 +30,8 @@ def stage(destination, commit, smoke=False):
     linear_settings = json.loads(linear_path.read_text())
     if smoke:
         linear_settings.update(requested_intervals=[64], reference_pair=[64, 128],
-                               cohorts=[dict(name="smoke", seed=790711, count=1)], timing_repetitions=1, updates=8, training_arms=["uniform","initial_only","initial_tail"])
+                               cohorts=[dict(name="smoke", seed=790711, count=1)], timing_repetitions=1, updates=8, training_arms=["uniform","initial_only","initial_tail"],
+                               smoke_fixture=True, methods=["nmrom_frozen","nmrom_uniform","nmrom_initial_only","nmrom_initial_tail","linear_weak_exact","fom_same_grid"])
         path = linear_path.with_name("config-accuracy-smoke.json")
         path.write_text(json.dumps(linear_settings, indent=2)+"\n")
         hashes[str(path.relative_to(destination))] = hashlib.sha256(path.read_bytes()).hexdigest()

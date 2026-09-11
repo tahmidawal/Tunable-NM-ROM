@@ -45,7 +45,7 @@ def main():
         metadata=dict(job_id=os.environ.get("SLURM_JOB_ID"), node=os.environ.get("SLURMD_NODENAME"),
                       gpu=jax.devices()[0].device_kind, backend="gpu", x64=True, precision="highest", jax=jax.__version__),
         complete=False, cases=[], rows=[], setups=[], case_fields=[], warmups=[],
-        verification=dict(**lp.verify(), **ap.verify(), **cg_paths.verify()), final_cohort_opened=False,
+        verification=(dict(smoke_reuses_previously_verified_solvers=True) if settings.get("smoke_fixture") else dict(**lp.verify(), **ap.verify(), **cg_paths.verify())), final_cohort_opened=False,
         query_contract="Full supplied GPU initial field to all six full GPU outputs, blocked; host input and output transfers additionally measured from the SAME invocation. FOM preserves supplied initial field; ROM returns its actual projection/fit. Source descriptors used only for data generation. Offline mesh assembly and compilation excluded and recorded.",
         reference_evidence="Empirical continuum-spectral nested-grid refinement, not a rigorous continuum bound.")
 

@@ -31,7 +31,7 @@ def main(record):
             while block:=f.read(1024*1024):one.update(block);joined.update(block)
         assert one.hexdigest()==expected[p.name],p
     assert joined.hexdigest()==manifest['original_sha256']
-    with io.BufferedReader(PartsReader(parts)) as raw,tarfile.open(fileobj=raw,mode='r|gz') as archive:
+    with io.BufferedReader(PartsReader(parts)) as raw,tarfile.open(fileobj=raw,mode='r|*') as archive:
         for member in archive:
             target=record/member.name
             if not target.resolve().is_relative_to(record.resolve()):raise RuntimeError('Unsafe archive member')

@@ -69,15 +69,26 @@ def wave(run_name):
     selection = read(run/"selection.json") if (ROOT/run/"selection.json").exists() else None
     cleanup = read(run/"cleanup.json")
     assert audit["passed"] and raw["complete"] and not raw["final_test_opened"]
-    assert panel["source_result_sha256"] == SOURCES[str(run/"cluster/out/pilot/result.json")]
+    assert panel["source_result_sha256"] == audit["result_sha256"] == SOURCES[str(run/"cluster/out/pilot/result.json")]
+    assert str(audit["job_id"]) == str(raw["provenance"]["job_id"]) == str(cleanup["job_id"])
+    assert audit["source_commit"] == raw["provenance"]["source_commit"]
+    assert audit["timed_invocations"] == len(raw["invocations"])
+    assert cleanup["remote_deleted_and_absence_checked"] and cleanup["all_three_manifests_verified"]
     for row in panel["panels"]:
         invocations = [r for r in raw["invocations"] if (r["intervals"], r["cohort"], r["method"], r["setting"])
                        == (row["intervals"], row["cohort"], row["method"], row["setting"])]
         times = [r["seconds"]["complete_device_query"]*1000 for r in invocations]
         np.testing.assert_allclose(times, row["timing_ms"], rtol=1e-14)
         assert np.isclose(np.median(times), row["median_gpu_ms"], rtol=1e-14)
+        for key in ("displacement", "velocity", "energy_state"):
+            initial = 100*max(r["same_grid_discrepancy"][key]["max_initial_normalized"] for r in invocations)
+            current = 100*max(r["same_grid_discrepancy"][key]["max_current_relative"] for r in invocations)
+            assert np.isclose(initial, row["worst_initial_errors_percent"][key], rtol=1e-14, atol=1e-14)
+            assert np.isclose(current, row["worst_current_errors_percent"][key], rtol=1e-14, atol=1e-14)
+        assert row["all_state_5percent_pass"] == (max(row["worst_initial_errors_percent"].values()) <= 5)
     return dict(**panel, provenance=raw["provenance"], selection=selection,
-                run=str(run), cleanup=cleanup)
+                run=str(run), cleanup=cleanup, case_count=len({r["case"] for r in raw["invocations"]}),
+                repetitions=raw["config"]["repetitions"])
 
 
 def poisson(run_name, coordinator_file):
@@ -103,9 +114,13 @@ def poisson(run_name, coordinator_file):
 
 def build():
     h, w6, w7, w8 = heat(), wave("accel06"), wave("accel07"), wave("accel08")
+    w9, w10 = wave("accel09"), wave("accel10")
+    w10_coordinator = read("reports/2026-09-11-wave-correction-screen.coordinator-audit.json")
+    assert w10_coordinator["passed"] and w10_coordinator["source_result_sha256"] == w10["source_result_sha256"]
     ps = poisson("staged_accuracy08", "reports/2026-09-11-poisson-staged-accuracy.coordinator-audit.json")
     normalized = dict(status="Audited heat, fixed-capacity Poisson and wave screens/training; follow-up capacity tests, Burgers and wave confirmation remain active.",
-                      heat=h, poisson_staged=ps, wave_screens={"accel06": w6, "accel07": w7, "accel08": w8})
+                      heat=h, poisson_staged=ps, wave_screens={"accel06": w6, "accel07": w7, "accel08": w8, "accel09": w9, "accel10": w10},
+                      wave_correction_coordinator_audit=w10_coordinator)
     lines = ["# Accuracy improvements and reflective-wave speed", "",
              "This report records the controlled accuracy-training and wave-acceleration campaign. The included numbers have passed independent development audits; the overall campaign and publication validation are still incomplete.", "",
              "Absorbing waves are excluded. Final paper cohorts remain unopened, and the existing experiment branches remain separate. Tables are generated from saved invocation records; no wall-clock ratio crosses jobs or GPUs.", "",
@@ -150,11 +165,12 @@ def build():
             bank = mesh["bank_diagnostics"][method]
             rows.append([f"{group['group']} ({group['cases']})", mesh["intervals"], plabels[method],
                          f"{100*r['worst_relative_error']:.6f}", f"{100*bank['worst_same_grid_relative_error']:.6f}",
-                         f"{r['gpu_median_ms']:.6f}", r["invalid_invocations"], "Pass" if r["all_cases_pass_target"] else "Fail"])
-    lines += table(["Development cohort (cases)", "Intervals", "Model", "Worst physical error %", "Bank projection error %", "GPU ms", "Invalid solves", "5% target"], rows)
+                         f"{r['gpu_median_ms']:.6f}", r["gpu_outlier_count"], r["invalid_invocations"], "Pass" if r["all_cases_pass_target"] else "Fail"])
+    lines += table(["Development cohort (cases)", "Intervals", "Model", "Worst physical error %", "Bank projection error %", "GPU ms", "GPU outliers", "Invalid solves", "5% target"], rows)
     lines += ["Matched joint continuation slightly improves the earlier cases but worsens the later development cases. Neither staged endpoint improves the expanded-cohort worst error. The nonlinear solves are stationary; the remaining error is not resolved by simply allowing more online iterations.", "",
               "Bank projection uses the full same-grid field norm; the online physical error uses a refined-grid reference. These columns are related diagnostics, not an additive error decomposition. A larger learned-bank experiment is now separate from this unsuccessful fixed-capacity comparison. Normalized training-snapshot POD projections motivate that experiment but do not prove a worst-case lower bound for every possible bank.", "",
               "## Reflective waves: geometry and time-step screens", "",
+              f"These screens use the same {w6['case_count']} opened reflective Dirichlet cases at {w6['panels'][0]['intervals']} intervals, with {w6['repetitions']} timed repetitions per case. They are development screens, not a large independent test set.", "",
               "Shared analytic decoder derivatives and guarded Cholesky solves remove repeated work in latent evolution. At the original step, these preserve the mathematical trajectory to audited floating-point parity. Larger steps are a separate integration change and require refinement checks.", ""]
     p6 = {(p["method"], p["setting"]): p for p in w6["panels"]}
     base, same, faster = p6["baseline", .0025], p6["chol_guard", .0025], p6["chol_guard", .01]
@@ -166,15 +182,15 @@ def build():
                      " / ".join(f"{errs[k]:.6f}" for k in ("displacement", "velocity", "energy_state")),
                      p["outliers_above_twice_median"], "Pass" if p["all_state_5percent_pass"] else "Fail"])
     lines += table(["Method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "Timing outliers", "All-state 5%"], rows)
-    lines += ["Wave errors in this table use fixed initial physical scales. The energy-state error measures the error in displacement gradients and velocity; it is not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.", "",
+    lines += [r"Wave displacement error is divided by the initial displacement norm. Velocity and energy-state errors are divided by $\sqrt{2E_0}$, where $E_0$ is initial physical energy; initial velocity can be zero, and its norm is not the denominator. The energy-state error measures displacement-gradient and velocity error, not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON and exclude the recorded zero/vanishing reference times. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.", "",
               "The follow-up also tested unrestricted bank evolution and nonlinear output projection. Those methods evolve a larger linear state and are labeled separately from the original nonlinear latent dynamics. Both projected-output variants missed the all-state target; the unrestricted linear control passed on the opened cases.", ""]
     rows = []
     for p in w7["panels"]:
         e = p["worst_initial_errors_percent"]
         rows.append([p["method"], p["setting"], f"{p['median_gpu_ms']:.6f}",
                      " / ".join(f"{e[k]:.6f}" for k in ("displacement", "velocity", "energy_state")),
-                     "Pass" if p["all_state_5percent_pass"] else "Fail"])
-    lines += table(["Follow-up method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "All-state 5%"], rows)
+                     p["outliers_above_twice_median"], "Pass" if p["all_state_5percent_pass"] else "Fail"])
+    lines += table(["Follow-up method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "GPU outliers", "All-state 5%"], rows)
     failed = [r for r in w7["time_refinement"] if not r["passed"]]
     for r in failed:
         lines += [f"Rejected time step: `{r['method']}` at {r['dt']} on `{r['case']}` has a {100*max(r['maxima'].values()):.6f}% half-step discrepancy. Its faster timing is diagnostic only.", ""]
@@ -186,11 +202,30 @@ def build():
         e = p["worst_initial_errors_percent"]
         rows.append([p["method"], p["setting"], f"{p['median_gpu_ms']:.6f}",
                      " / ".join(f"{e[k]:.6f}" for k in ("displacement", "velocity", "energy_state")),
-                     "Pass" if p["all_state_5percent_pass"] else "Fail"])
-    lines += table(["Training-screen method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "All-state 5%"], rows)
-    lines += ["The combined training improves the worst displacement, velocity and energy-state errors compared with both the original and new field-only heads. The gain is modest, and all nonlinear heads still miss the all-state target. Initial fitting, numerical rank and half-step checks pass. A separately declared capacity screen and frozen multiresolution confirmation remain in progress; these are not online changes to one trained network.", "",
+                     p["outliers_above_twice_median"], "Pass" if p["all_state_5percent_pass"] else "Fail"])
+    lines += table(["Training-screen method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "GPU outliers", "All-state 5%"], rows)
+    wave_original = next(p for p in w8["panels"] if p["method"] == "chol_guard")
+    wave_phase = next(p for p in w8["panels"] if p["method"] == "trained_phase")
+    lines += ["The combined training improves the three displayed initial-scaled errors compared with both the original and new field-only heads. It does not improve every error normalization: "
+              f"current-relative displacement changes from {wave_original['worst_current_errors_percent']['displacement']:.6f}% to {wave_phase['worst_current_errors_percent']['displacement']:.6f}%, while current-relative velocity improves from {wave_original['worst_current_errors_percent']['velocity']:.6f}% to {wave_phase['worst_current_errors_percent']['velocity']:.6f}%. "
+              "All nonlinear heads in this screen still miss the all-state target. Initial fitting, numerical rank and half-step checks pass. These separately trained endpoints are not online changes to one trained network.", "",
+              "## Reflective waves: correction coordinates help more than retraining a larger head", "",
+              "Increasing the latent dimension and retraining with the same phase-aware loss worsened both runtime and accuracy on the opened screen. The next arm preserves the trained nonlinear head and adds fixed linear correction directions from training data. This enlarges the nonlinear manifold while containing the original one exactly; it is a separately prepared decoder.", "",
+              r"The enriched decoder is $h_{40}(z,y)=h_{32}(z)+B_8y$. The extra directions are frozen training principal components. All initial coordinates are fitted from the supplied fields, and the full enlarged state evolves through nonlinear latent dynamics. The initial-guess library uses appended principal-component coordinates without a residual correction; that limitation is frozen for confirmation.", ""]
+    for label, screen in [("Larger retrained head", w9), ("Nested correction directions", w10)]:
+        rows = []
+        for p in screen["panels"]:
+            e = p["worst_initial_errors_percent"]
+            rows.append([p["method"], p["setting"], f"{p['median_gpu_ms']:.6f}",
+                         " / ".join(f"{e[k]:.6f}" for k in ("displacement", "velocity", "energy_state")),
+                         p["outliers_above_twice_median"], "Pass" if p["all_state_5percent_pass"] else "Fail"])
+        lines += [f"{label}: all comparisons below use this screen's own paired timings.", ""]
+        lines += table(["Method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "GPU outliers", "All-state 5%"], rows)
+    nested = next(p for p in w10["panels"] if p["method"] == "trained_nested40")
+    nested_original = next(p for p in w10["panels"] if p["method"] == "baseline")
+    lines += [f"The nested head reaches {nested['worst_initial_errors_percent']['energy_state']:.6f}% worst energy-state error and {nested['median_gpu_ms']:.6f} GPU ms on the opened screen. Its {nested_original['median_gpu_ms']/nested['median_gpu_ms']:.6f}× acceleration is relative to the same-job original ROM, not a qualified FOM speedup. It still misses the all-state target. Its weights, initializer, step and solver are frozen before multiresolution evaluation on additional development cases.", "",
               "## Work still in progress", "",
-              "Poisson bank-capacity training and Burgers initial-field training plus stationarity-aware solving are still underway. Their completed audits will be added here, including unsuccessful arms. Wave capacity and multiresolution confirmation are also outstanding.", "",
+              "Poisson bank-capacity training and Burgers initial-field training plus stationarity-aware solving are still underway. Their completed audits will be added here, including unsuccessful arms. Frozen wave multiresolution confirmation is also outstanding.", "",
               "## Reproduction and evidence", "",
               f"Heat job `{h['metadata']['job_id']}` contains the paired GPU measurements; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.", "",
               f"- [Heat complete panel](../{h['run']}/analysis/summary.md)",
@@ -198,6 +233,8 @@ def build():
               f"- [Wave geometry audit](../{w6['run']}/audit.json)",
               f"- [Wave follow-up audit](../{w7['run']}/audit.json)",
               f"- [Wave training audit](../{w8['run']}/audit.json)",
+              f"- [Wave larger-head audit](../{w9['run']}/audit.json)",
+              f"- [Wave correction-head audit](../{w10['run']}/audit.json)",
               "- [Normalized values, repetition arrays and source hashes](2026-09-11-accuracy-improvements-and-wave-speed.json)", "",
               "Run `reports/generate_accuracy_campaign.py` with the repository Python environment to rebuild. All source hashes and generator identity are embedded in the adjacent JSON. These are single-training-seed development studies on the recorded families; they do not establish broad PDE generalization or final paper performance.", "",
               "## Plain-language glossary", "",

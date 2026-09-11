@@ -54,26 +54,28 @@ The small GPU runtime improvement does not imply a host-inclusive improvement. T
 
 The learned spatial bank is trained first with free training coefficients, then the nonlinear head is fitted in the full field metric, followed by joint refinement. Ordinary joint continuation is matched to the staged optimizer time. All procedures keep the original bank size, latent dimension, source-input contract and exact weak solver.
 
-| Development cohort (cases) | Intervals | Model | Worst physical error % | Bank projection error % | GPU ms | Invalid solves | 5% target |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| all (42) | 1024 | Original | 7.280248 | 6.489096 | 2.613091 | 0 | Fail |
-| all (42) | 1024 | Matched joint | 7.571199 | 6.936344 | 2.545561 | 0 | Fail |
-| all (42) | 1024 | Staged bank + head | 7.757472 | 6.981179 | 2.597750 | 0 | Fail |
-| all (42) | 1024 | Staged + joint | 7.660328 | 6.966506 | 2.565345 | 0 | Fail |
-| existing_development (30) | 1024 | Original | 6.801556 | 5.500597 | 2.638046 | 0 | Fail |
-| existing_development (30) | 1024 | Matched joint | 6.605687 | 5.647629 | 2.531182 | 0 | Fail |
-| existing_development (30) | 1024 | Staged bank + head | 7.353073 | 6.177772 | 2.622753 | 0 | Fail |
-| existing_development (30) | 1024 | Staged + joint | 6.842717 | 5.948326 | 2.613186 | 0 | Fail |
-| new_development (12) | 1024 | Original | 7.280248 | 6.489096 | 2.572861 | 0 | Fail |
-| new_development (12) | 1024 | Matched joint | 7.571199 | 6.936344 | 2.565197 | 0 | Fail |
-| new_development (12) | 1024 | Staged bank + head | 7.757472 | 6.981179 | 2.535608 | 0 | Fail |
-| new_development (12) | 1024 | Staged + joint | 7.660328 | 6.966506 | 2.498484 | 0 | Fail |
+| Development cohort (cases) | Intervals | Model | Worst physical error % | Bank projection error % | GPU ms | GPU outliers | Invalid solves | 5% target |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| all (42) | 1024 | Original | 7.280248 | 6.489096 | 2.613091 | 1 | 0 | Fail |
+| all (42) | 1024 | Matched joint | 7.571199 | 6.936344 | 2.545561 | 0 | 0 | Fail |
+| all (42) | 1024 | Staged bank + head | 7.757472 | 6.981179 | 2.597750 | 0 | 0 | Fail |
+| all (42) | 1024 | Staged + joint | 7.660328 | 6.966506 | 2.565345 | 0 | 0 | Fail |
+| existing_development (30) | 1024 | Original | 6.801556 | 5.500597 | 2.638046 | 1 | 0 | Fail |
+| existing_development (30) | 1024 | Matched joint | 6.605687 | 5.647629 | 2.531182 | 0 | 0 | Fail |
+| existing_development (30) | 1024 | Staged bank + head | 7.353073 | 6.177772 | 2.622753 | 0 | 0 | Fail |
+| existing_development (30) | 1024 | Staged + joint | 6.842717 | 5.948326 | 2.613186 | 0 | 0 | Fail |
+| new_development (12) | 1024 | Original | 7.280248 | 6.489096 | 2.572861 | 0 | 0 | Fail |
+| new_development (12) | 1024 | Matched joint | 7.571199 | 6.936344 | 2.565197 | 0 | 0 | Fail |
+| new_development (12) | 1024 | Staged bank + head | 7.757472 | 6.981179 | 2.535608 | 0 | 0 | Fail |
+| new_development (12) | 1024 | Staged + joint | 7.660328 | 6.966506 | 2.498484 | 0 | 0 | Fail |
 
 Matched joint continuation slightly improves the earlier cases but worsens the later development cases. Neither staged endpoint improves the expanded-cohort worst error. The nonlinear solves are stationary; the remaining error is not resolved by simply allowing more online iterations.
 
 Bank projection uses the full same-grid field norm; the online physical error uses a refined-grid reference. These columns are related diagnostics, not an additive error decomposition. A larger learned-bank experiment is now separate from this unsuccessful fixed-capacity comparison. Normalized training-snapshot POD projections motivate that experiment but do not prove a worst-case lower bound for every possible bank.
 
 ## Reflective waves: geometry and time-step screens
+
+These screens use the same 2 opened reflective Dirichlet cases at 64 intervals, with 3 timed repetitions per case. They are development screens, not a large independent test set.
 
 Shared analytic decoder derivatives and guarded Cholesky solves remove repeated work in latent evolution. At the original step, these preserve the mathematical trajectory to audited floating-point parity. Larger steps are a separate integration change and require refinement checks.
 
@@ -91,27 +93,27 @@ On the opened 64-interval screen, the unchanged-step implementation is 6.929744Ã
 | cg_0.01 | 0.01 | 82.725549 | 0.303316 / 0.358723 / 0.485925 | 0 | Pass |
 | dst | 0.0 | 3.851750 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
 
-Wave errors in this table use fixed initial physical scales. The energy-state error measures the error in displacement gradients and velocity; it is not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.
+Wave displacement error is divided by the initial displacement norm. Velocity and energy-state errors are divided by $\sqrt{2E_0}$, where $E_0$ is initial physical energy; initial velocity can be zero, and its norm is not the denominator. The energy-state error measures displacement-gradient and velocity error, not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON and exclude the recorded zero/vanishing reference times. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.
 
 The follow-up also tested unrestricted bank evolution and nonlinear output projection. Those methods evolve a larger linear state and are labeled separately from the original nonlinear latent dynamics. Both projected-output variants missed the all-state target; the unrestricted linear control passed on the opened cases.
 
-| Follow-up method | Step / CG tolerance | GPU ms | Worst u / v / energy-state error % | All-state 5% |
-| --- | --- | --- | --- | --- |
-| baseline | 0.0025 | 4506.736031 | 1.812375 / 4.167162 / 6.223986 | Fail |
-| chol_guard | 0.01 | 182.219969 | 1.810916 / 4.167481 / 6.223099 | Fail |
-| chol_guard | 0.025 | 86.577930 | 1.804828 / 4.201964 / 6.260739 | Fail |
-| linear_bank64 | 0.0 | 1.447262 | 0.782627 / 2.169768 / 3.211301 | Pass |
-| projected_l2 | 0.0 | 377.396711 | 1.487063 / 3.771709 / 5.538662 | Fail |
-| projected_h1 | 0.0 | 413.628283 | 1.507638 / 3.839339 / 5.566894 | Fail |
-| cg_1e-06 | 1e-06 | 110.081740 | 0.199690 / 0.412971 / 0.574495 | Pass |
-| cg_0.01 | 0.01 | 82.229586 | 0.303316 / 0.358723 / 0.485925 | Pass |
-| cgdt_0.005_tol_1e-06 | 1e-06 | 69.395180 | 0.794879 / 1.548112 / 2.162953 | Pass |
-| cgdt_0.005_tol_0.01 | 0.01 | 41.904818 | 1.213408 / 1.418882 / 1.923893 | Pass |
-| cgdt_0.01_tol_1e-06 | 1e-06 | 45.235283 | 3.144053 / 5.874126 / 8.153122 | Fail |
-| cgdt_0.01_tol_0.01 | 0.01 | 22.983202 | 4.694635 / 5.865361 / 7.941749 | Fail |
-| cgdt_0.025_tol_1e-06 | 1e-06 | 39.998864 | 18.437037 / 33.157363 / 45.789823 | Fail |
-| cgdt_0.025_tol_0.01 | 0.01 | 16.095903 | 22.146597 / 31.840654 / 43.556564 | Fail |
-| dst | 0.0 | 3.737003 | 0.000000 / 0.000000 / 0.000000 | Pass |
+| Follow-up method | Step / CG tolerance | GPU ms | Worst u / v / energy-state error % | GPU outliers | All-state 5% |
+| --- | --- | --- | --- | --- | --- |
+| baseline | 0.0025 | 4506.736031 | 1.812375 / 4.167162 / 6.223986 | 0 | Fail |
+| chol_guard | 0.01 | 182.219969 | 1.810916 / 4.167481 / 6.223099 | 0 | Fail |
+| chol_guard | 0.025 | 86.577930 | 1.804828 / 4.201964 / 6.260739 | 0 | Fail |
+| linear_bank64 | 0.0 | 1.447262 | 0.782627 / 2.169768 / 3.211301 | 0 | Pass |
+| projected_l2 | 0.0 | 377.396711 | 1.487063 / 3.771709 / 5.538662 | 0 | Fail |
+| projected_h1 | 0.0 | 413.628283 | 1.507638 / 3.839339 / 5.566894 | 0 | Fail |
+| cg_1e-06 | 1e-06 | 110.081740 | 0.199690 / 0.412971 / 0.574495 | 0 | Pass |
+| cg_0.01 | 0.01 | 82.229586 | 0.303316 / 0.358723 / 0.485925 | 0 | Pass |
+| cgdt_0.005_tol_1e-06 | 1e-06 | 69.395180 | 0.794879 / 1.548112 / 2.162953 | 0 | Pass |
+| cgdt_0.005_tol_0.01 | 0.01 | 41.904818 | 1.213408 / 1.418882 / 1.923893 | 0 | Pass |
+| cgdt_0.01_tol_1e-06 | 1e-06 | 45.235283 | 3.144053 / 5.874126 / 8.153122 | 0 | Fail |
+| cgdt_0.01_tol_0.01 | 0.01 | 22.983202 | 4.694635 / 5.865361 / 7.941749 | 0 | Fail |
+| cgdt_0.025_tol_1e-06 | 1e-06 | 39.998864 | 18.437037 / 33.157363 / 45.789823 | 0 | Fail |
+| cgdt_0.025_tol_0.01 | 0.01 | 16.095903 | 22.146597 / 31.840654 / 43.556564 | 0 | Fail |
+| dst | 0.0 | 3.737003 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
 
 Rejected time step: `chol_guard` at 0.025 on `opened_1` has a 1.143733% half-step discrepancy. Its faster timing is diagnostic only.
 
@@ -121,24 +123,63 @@ The CG control was also allowed to use larger time steps; any FOM speed ratio mu
 
 Two matched training arms use a fixed encoder with consistent latent velocities. One trains displacement reconstruction; the other adds displacement-energy and tangent-velocity losses. Their comparison isolates those extra losses. The original head used independently optimized snapshot codes, so comparison with that checkpoint also changes the training-code procedure.
 
-| Training-screen method | Step / CG tolerance | GPU ms | Worst u / v / energy-state error % | All-state 5% |
-| --- | --- | --- | --- | --- |
-| baseline | 0.0025 | 4519.760249 | 1.812375 / 4.167162 / 6.223986 | Fail |
-| chol_guard | 0.01 | 182.911717 | 1.810916 / 4.167481 / 6.223099 | Fail |
-| trained_field | 0.01 | 184.240493 | 1.901449 / 4.587520 / 6.263939 | Fail |
-| trained_phase | 0.01 | 182.754962 | 1.766325 / 4.134009 / 6.103806 | Fail |
-| cg_1e-06 | 1e-06 | 109.972200 | 0.199690 / 0.412971 / 0.574495 | Pass |
-| cg_0.01 | 0.01 | 82.678175 | 0.303316 / 0.358723 / 0.485925 | Pass |
-| cgdt_0.005_tol_1e-06 | 1e-06 | 69.673613 | 0.794879 / 1.548112 / 2.162953 | Pass |
-| cgdt_0.005_tol_0.01 | 0.01 | 42.025412 | 1.213408 / 1.418882 / 1.923893 | Pass |
-| cgdt_0.01_tol_1e-06 | 1e-06 | 44.376265 | 3.144053 / 5.874126 / 8.153122 | Fail |
-| dst | 0.0 | 3.881786 | 0.000000 / 0.000000 / 0.000000 | Pass |
+| Training-screen method | Step / CG tolerance | GPU ms | Worst u / v / energy-state error % | GPU outliers | All-state 5% |
+| --- | --- | --- | --- | --- | --- |
+| baseline | 0.0025 | 4519.760249 | 1.812375 / 4.167162 / 6.223986 | 0 | Fail |
+| chol_guard | 0.01 | 182.911717 | 1.810916 / 4.167481 / 6.223099 | 0 | Fail |
+| trained_field | 0.01 | 184.240493 | 1.901449 / 4.587520 / 6.263939 | 0 | Fail |
+| trained_phase | 0.01 | 182.754962 | 1.766325 / 4.134009 / 6.103806 | 0 | Fail |
+| cg_1e-06 | 1e-06 | 109.972200 | 0.199690 / 0.412971 / 0.574495 | 0 | Pass |
+| cg_0.01 | 0.01 | 82.678175 | 0.303316 / 0.358723 / 0.485925 | 0 | Pass |
+| cgdt_0.005_tol_1e-06 | 1e-06 | 69.673613 | 0.794879 / 1.548112 / 2.162953 | 0 | Pass |
+| cgdt_0.005_tol_0.01 | 0.01 | 42.025412 | 1.213408 / 1.418882 / 1.923893 | 0 | Pass |
+| cgdt_0.01_tol_1e-06 | 1e-06 | 44.376265 | 3.144053 / 5.874126 / 8.153122 | 0 | Fail |
+| dst | 0.0 | 3.881786 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
 
-The combined training improves the worst displacement, velocity and energy-state errors compared with both the original and new field-only heads. The gain is modest, and all nonlinear heads still miss the all-state target. Initial fitting, numerical rank and half-step checks pass. A separately declared capacity screen and frozen multiresolution confirmation remain in progress; these are not online changes to one trained network.
+The combined training improves the three displayed initial-scaled errors compared with both the original and new field-only heads. It does not improve every error normalization: current-relative displacement changes from 3.640762% to 3.681009%, while current-relative velocity improves from 7.712200% to 6.417503%. All nonlinear heads in this screen still miss the all-state target. Initial fitting, numerical rank and half-step checks pass. These separately trained endpoints are not online changes to one trained network.
+
+## Reflective waves: correction coordinates help more than retraining a larger head
+
+Increasing the latent dimension and retraining with the same phase-aware loss worsened both runtime and accuracy on the opened screen. The next arm preserves the trained nonlinear head and adds fixed linear correction directions from training data. This enlarges the nonlinear manifold while containing the original one exactly; it is a separately prepared decoder.
+
+The enriched decoder is $h_{40}(z,y)=h_{32}(z)+B_8y$. The extra directions are frozen training principal components. All initial coordinates are fitted from the supplied fields, and the full enlarged state evolves through nonlinear latent dynamics. The initial-guess library uses appended principal-component coordinates without a residual correction; that limitation is frozen for confirmation.
+
+Larger retrained head: all comparisons below use this screen's own paired timings.
+
+| Method | Step / CG tolerance | GPU ms | Worst u / v / energy-state error % | GPU outliers | All-state 5% |
+| --- | --- | --- | --- | --- | --- |
+| baseline | 0.0025 | 4496.899827 | 1.812375 / 4.167162 / 6.223986 | 0 | Fail |
+| chol_guard | 0.01 | 182.031151 | 1.810916 / 4.167481 / 6.223099 | 0 | Fail |
+| trained_phase | 0.01 | 181.880917 | 1.766325 / 4.134009 / 6.103806 | 0 | Fail |
+| trained_phase40 | 0.01 | 202.700617 | 2.109531 / 4.252749 / 6.167913 | 0 | Fail |
+| cg_1e-06 | 1e-06 | 110.558403 | 0.199690 / 0.412971 / 0.574495 | 0 | Pass |
+| cg_0.01 | 0.01 | 82.596072 | 0.303316 / 0.358723 / 0.485925 | 0 | Pass |
+| cgdt_0.005_tol_1e-06 | 1e-06 | 69.765648 | 0.794879 / 1.548112 / 2.162953 | 0 | Pass |
+| cgdt_0.005_tol_0.01 | 0.01 | 42.045034 | 1.213408 / 1.418882 / 1.923893 | 0 | Pass |
+| cgdt_0.01_tol_1e-06 | 1e-06 | 44.650749 | 3.144053 / 5.874126 / 8.153122 | 0 | Fail |
+| dst | 0.0 | 3.876942 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
+
+Nested correction directions: all comparisons below use this screen's own paired timings.
+
+| Method | Step / CG tolerance | GPU ms | Worst u / v / energy-state error % | GPU outliers | All-state 5% |
+| --- | --- | --- | --- | --- | --- |
+| baseline | 0.0025 | 4508.179159 | 1.812375 / 4.167162 / 6.223986 | 0 | Fail |
+| chol_guard | 0.01 | 183.175590 | 1.810916 / 4.167481 / 6.223099 | 0 | Fail |
+| trained_phase | 0.01 | 182.978820 | 1.766325 / 4.134009 / 6.103806 | 0 | Fail |
+| trained_phase40 | 0.01 | 204.389192 | 2.109531 / 4.252749 / 6.167913 | 0 | Fail |
+| trained_nested40 | 0.01 | 199.464938 | 1.477907 / 3.260997 / 5.041071 | 0 | Fail |
+| cg_1e-06 | 1e-06 | 110.326429 | 0.199690 / 0.412971 / 0.574495 | 0 | Pass |
+| cg_0.01 | 0.01 | 82.659176 | 0.303316 / 0.358723 / 0.485925 | 0 | Pass |
+| cgdt_0.005_tol_1e-06 | 1e-06 | 69.839773 | 0.794879 / 1.548112 / 2.162953 | 0 | Pass |
+| cgdt_0.005_tol_0.01 | 0.01 | 42.017093 | 1.213408 / 1.418882 / 1.923893 | 0 | Pass |
+| cgdt_0.01_tol_1e-06 | 1e-06 | 44.453260 | 3.144053 / 5.874126 / 8.153122 | 0 | Fail |
+| dst | 0.0 | 3.860532 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
+
+The nested head reaches 5.041071% worst energy-state error and 199.464938 GPU ms on the opened screen. Its 22.601361Ã— acceleration is relative to the same-job original ROM, not a qualified FOM speedup. It still misses the all-state target. Its weights, initializer, step and solver are frozen before multiresolution evaluation on additional development cases.
 
 ## Work still in progress
 
-Poisson bank-capacity training and Burgers initial-field training plus stationarity-aware solving are still underway. Their completed audits will be added here, including unsuccessful arms. Wave capacity and multiresolution confirmation are also outstanding.
+Poisson bank-capacity training and Burgers initial-field training plus stationarity-aware solving are still underway. Their completed audits will be added here, including unsuccessful arms. Frozen wave multiresolution confirmation is also outstanding.
 
 ## Reproduction and evidence
 
@@ -149,6 +190,8 @@ Heat job `3563072` contains the paired GPU measurements; scientific source and c
 - [Wave geometry audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel06/audit.json)
 - [Wave follow-up audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel07/audit.json)
 - [Wave training audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel08/audit.json)
+- [Wave larger-head audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel09/audit.json)
+- [Wave correction-head audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel10/audit.json)
 - [Normalized values, repetition arrays and source hashes](2026-09-11-accuracy-improvements-and-wave-speed.json)
 
 Run `reports/generate_accuracy_campaign.py` with the repository Python environment to rebuild. All source hashes and generator identity are embedded in the adjacent JSON. These are single-training-seed development studies on the recorded families; they do not establish broad PDE generalization or final paper performance.

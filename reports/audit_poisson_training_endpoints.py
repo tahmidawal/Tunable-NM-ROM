@@ -23,6 +23,7 @@ def array_sha(a):
 
 
 def audit(run):
+    run = run.resolve()
     out = run/"cluster/out/pilot"
     path = out/"result.json"
     data = json.loads(path.read_text())

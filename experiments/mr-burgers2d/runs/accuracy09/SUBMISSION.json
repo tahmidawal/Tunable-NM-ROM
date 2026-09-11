@@ -1,0 +1,21 @@
+{
+  "job_id": "3571954",
+  "source_commit": "9bd640437f8ba1d830806d950fd34949dbbb8bfc",
+  "remote": "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy09",
+  "namespace": "mr_burgers2d_20260907",
+  "partition": "gpu",
+  "gpu_request": "a100:1",
+  "walltime": "01:00:00",
+  "expected_invocations": 270,
+  "squeue_before": [],
+  "squeue_after": [
+    {
+      "job_id": "3571954",
+      "name": "ctol_mr_burgers_accuracy09",
+      "state": "PENDING"
+    }
+  ],
+  "node": "pax144",
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "gpu_preflight_passed": true
+}

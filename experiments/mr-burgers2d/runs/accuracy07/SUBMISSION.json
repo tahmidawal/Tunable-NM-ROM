@@ -1,0 +1,20 @@
+{
+  "job_id": "3563749",
+  "remote": "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy07",
+  "source_commit": "cbc4e4d8432763a8ea6a02fac0b433066cd521af",
+  "pre_submit_other_jobs": [
+    "3563590",
+    "3563323"
+  ],
+  "state_at_submit": "PENDING",
+  "previous_heat_job": "3563072 absent from queue; untouched",
+  "partition": "gpu",
+  "gpu_request": "a100:1",
+  "time_limit": "03:00:00",
+  "state_observed": "RUNNING",
+  "node": "pax007",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "backend_preflight": "jax_backend=gpu",
+  "stage_observed": "TRAIN_BEGIN",
+  "stderr_observed_empty": true
+}

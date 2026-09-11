@@ -1,0 +1,335 @@
+{
+  "branch": "exp/2026-09-07-mr-wave2d",
+  "session_base": "321ce49eeb70d97868c07b53e02b0a16accfceaa",
+  "final_scientific_source_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+  "final_archive_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+  "merge_performed": false,
+  "status": "Reviewable research result; selected nested method still misses pooled all-state five-percent accuracy.",
+  "files": {
+    "original_mathematics_geometry_acceleration": [
+      {
+        "path": "experiments/multiresolution-wave/acceleration.py",
+        "sha256": "3c9866556f3d8d1f5434918fb966b5f60008e80e21968d52e9b5a74a43d1602a",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Shared analytic head/Jacobian/curvature; sufficient rank guards, exact-SVD fallback and normal-equation backward diagnostics. Geometry at unchanged timestep is the parity arm."
+      },
+      {
+        "path": "experiments/multiresolution-wave/ACCELERATION-DESIGN.md",
+        "sha256": "c3c02664d89ef855ca443b389c912d03440dd09295a96ec1b8c6d3423c13a8d6",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Analytical bounds, finite-precision margins and screen protocol."
+      },
+      {
+        "path": "experiments/multiresolution-wave/acceleration-screen-config.json",
+        "sha256": "a2b12a8bdf96698e31dbc08da58eec9f7e46034437c2f3ed746af66fb6dba0a7",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Original matched-timestep geometry and separate timestep screen settings."
+      }
+    ],
+    "selected_decoder_and_timestep": [
+      {
+        "path": "experiments/multiresolution-wave/nested_head.py",
+        "sha256": "b158bf1bb53f5de28fc4ace89f12c110bcbc0f2a63225cafedaebaffb0220ccb",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Preserve accepted phase-trained head and append eight fixed linear training directions; forty configuration/eighty phase coordinates, sixty-four weak equations."
+      },
+      {
+        "path": "experiments/multiresolution-wave/NESTED40-DESIGN.md",
+        "sha256": "61c1038fcddce94d318ccaa996b7c2cbdc9070312fea38902e15cee5657693c3",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Additive architecture and inclusion/rank protocol."
+      },
+      {
+        "path": "experiments/multiresolution-wave/acceleration-confirm-config.json",
+        "sha256": "30b9c4446c7a08bda2d2c30f1710ad5e8e2b8c1a6a0da2711cb77539369dedda",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Frozen final cohort, nested checkpoint/initializer hashes, retained timestep, halfstep checks and same-job FOM controls."
+      },
+      {
+        "path": "experiments/multiresolution-wave/acceleration_replay.py",
+        "sha256": "860ebf0985ad26f62bc689e25506eb3902dc7fb8e6a788067f9cf2a5ea9424e9",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Full-query experiment harness; initial supplied-field fitting, physical velocity, all output costs and saved repetitions. The larger timestep is separate from mathematical parity."
+      },
+      {
+        "path": "experiments/multiresolution-wave/freeze_acceleration.py",
+        "sha256": "c7722aa1a9df61d7ae0e1fafc9b7363e2df7a0cc45359cd9b6640400cfcfb8a2",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Generate the bounded final-screen selector before fresh development evaluation."
+      }
+    ],
+    "training_and_nonselected_evidence": [
+      {
+        "path": "experiments/multiresolution-wave/head_accuracy.py",
+        "sha256": "f518705b18ca0ea52c786b76195a961c93e361034fb15ebceb0448a9fa7d5269",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Matched fixed-encoder field-only/phase training and bounded capacity training; original optimized-code deployment head remains a distinct control."
+      },
+      {
+        "path": "experiments/multiresolution-wave/modal_projection.py",
+        "sha256": "cece9441ca4174325edcac601a165b2a72f4b1f6b363b60200ea9921d71e8c0e",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Nonselected larger-state linear-bank evolution with nonlinear output reconstruction and implicit physical velocity; not equivalent latent dynamics."
+      },
+      {
+        "path": "experiments/multiresolution-wave/diagnose_training_capacity.py",
+        "sha256": "ee14f02c1dbcc3c8152b927b9d277946ce67b8e7477f30bb02f867f8a166d48b",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Training-only projection diagnosis; not an online accuracy guarantee."
+      }
+    ],
+    "verification_and_transport": [
+      {
+        "path": "experiments/multiresolution-wave/audit_acceleration.py",
+        "sha256": "d4cfc6a2099e748ceedc310dfe22d726e0d9065e296d3035c727ab95d7761b85",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Independent full-field, analytic geometry, initial stationarity, reference and provenance auditor."
+      },
+      {
+        "path": "experiments/multiresolution-wave/analyze_acceleration.py",
+        "sha256": "1e5352c4e4265fd22fe64b694143d0094e34eeb2f31874bc4e528ab4e06358ba",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Audited source-derived cohort timing/error panels."
+      },
+      {
+        "path": "experiments/multiresolution-wave/cluster_acceleration.py",
+        "sha256": "6bf51ea71973761879b0da3640f1d38742e8020e2eed43d02d8b88455e33761c",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Private-directory staging, source/config preflight, submission and collection dispatch."
+      },
+      {
+        "path": "experiments/multiresolution-wave/collect_iterative.py",
+        "sha256": "6a76298487a44f36ddb07186491866373da85ffedc601ac1828c85768b2a0517",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Verified bounded-memory archive parts and exact remote cleanup."
+      },
+      {
+        "path": "experiments/multiresolution-wave/restore_archive.py",
+        "sha256": "64fa8fa4f207482c8b906320c7e3d9ea33cbb8c8811937dedf8a627fe68250c0",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Restore the complete full-output archives from ordered parts."
+      }
+    ],
+    "frozen_selected_checkpoint": [
+      {
+        "path": "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/head_trained_nested40.npz",
+        "sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3",
+        "available_at_commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+        "role": "Selected complete coefficient decoder and fixed training-code candidate library."
+      },
+      {
+        "path": "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/initializer_trained_nested40.npz",
+        "sha256": "154ec67eae3da47f97b16cd4838de52b685c22fd7e6e02c978294e0de45fbc60",
+        "available_at_commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+        "role": "Selected training-only affine initializer; supplied-field fitting still runs online."
+      },
+      {
+        "path": "experiments/multiresolution-wave/runs/accel10/selection.json",
+        "sha256": "3fb90a729eb881aed703d59665d723b690e1544a3eb217ad1f26f77f318d261a",
+        "available_at_commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+        "role": "Frozen selector binding source result/audit and selected checkpoint/initializer, with screen accuracy miss and initializer limitation."
+      }
+    ]
+  },
+  "runs": [
+    {
+      "attempt": "accel06",
+      "job_id": "3563074",
+      "scientific_source_commit": "2826ce49f385d34a65229798893ec1f2977c714a",
+      "original_archive_commit": "b55fe991cff4512063c8109dcdcc72d3ed21d060",
+      "archive": {
+        "path": "experiments/multiresolution-wave/runs/accel06/ARCHIVE.json",
+        "sha256": "db988cb27a0ea6f8cc64180aa10d4525d956e7d424aefb4abfc0318252b8fd3d",
+        "available_at_commit": "b55fe991cff4512063c8109dcdcc72d3ed21d060",
+        "role": "Complete ordered archive descriptor; original full arrays retained in bounded parts."
+      },
+      "archive_bytes": 79112916,
+      "archive_part_count": 1,
+      "numerically_accepted": true,
+      "exact_remote_removed": true,
+      "current_audit": {
+        "path": "experiments/multiresolution-wave/runs/accel06/audit.json",
+        "sha256": "8480ed84b2bb2c9deaa918fb7cb293bfc161f9dd53ada4225014868247c1ed57",
+        "available_at_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+        "role": "Current strengthened audit binding result, script, source and job."
+      }
+    },
+    {
+      "attempt": "accel07",
+      "job_id": "3563590",
+      "scientific_source_commit": "b55fe991cff4512063c8109dcdcc72d3ed21d060",
+      "original_archive_commit": "2514d3954d7a8c83429d698f4788f3176a2816fd",
+      "archive": {
+        "path": "experiments/multiresolution-wave/runs/accel07/ARCHIVE.json",
+        "sha256": "b8fca3d96f734fa93c8b3bf8b6e79942c69d83c464b40cf8fb256a7770bc4682",
+        "available_at_commit": "2514d3954d7a8c83429d698f4788f3176a2816fd",
+        "role": "Complete ordered archive descriptor; original full arrays retained in bounded parts."
+      },
+      "archive_bytes": 121868357,
+      "archive_part_count": 2,
+      "numerically_accepted": true,
+      "exact_remote_removed": true,
+      "current_audit": {
+        "path": "experiments/multiresolution-wave/runs/accel07/audit.json",
+        "sha256": "c887357e65ac2c4222f2f95025cdfbdeb82e2ab0cbd0ff2ae6c7b6f73b6a5982",
+        "available_at_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+        "role": "Current strengthened audit binding result, script, source and job."
+      }
+    },
+    {
+      "attempt": "accel08",
+      "job_id": "3563875",
+      "scientific_source_commit": "2514d3954d7a8c83429d698f4788f3176a2816fd",
+      "original_archive_commit": "160b338a7d61a5111e46bff0b168610ae4a77282",
+      "archive": {
+        "path": "experiments/multiresolution-wave/runs/accel08/ARCHIVE.json",
+        "sha256": "46ae150a1342fcc0f00f60e399788b79b9f29119876e13f645beba02962f26ce",
+        "available_at_commit": "160b338a7d61a5111e46bff0b168610ae4a77282",
+        "role": "Complete ordered archive descriptor; original full arrays retained in bounded parts."
+      },
+      "archive_bytes": 103824829,
+      "archive_part_count": 2,
+      "numerically_accepted": true,
+      "exact_remote_removed": true,
+      "current_audit": {
+        "path": "experiments/multiresolution-wave/runs/accel08/audit.json",
+        "sha256": "e280b0dfa8c5f1e4106445175936293fee3dc35347fbef08b2099385b67a614d",
+        "available_at_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+        "role": "Current strengthened audit binding result, script, source and job."
+      }
+    },
+    {
+      "attempt": "accel09",
+      "job_id": "3564476",
+      "scientific_source_commit": "160b338a7d61a5111e46bff0b168610ae4a77282",
+      "original_archive_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+      "archive": {
+        "path": "experiments/multiresolution-wave/runs/accel09/ARCHIVE.json",
+        "sha256": "3fef5117095c8d90fb7a3da740477350c584f640cd75b629678d66544d83cb2b",
+        "available_at_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+        "role": "Complete ordered archive descriptor; original full arrays retained in bounded parts."
+      },
+      "archive_bytes": 104456180,
+      "archive_part_count": 2,
+      "numerically_accepted": true,
+      "exact_remote_removed": true,
+      "current_audit": {
+        "path": "experiments/multiresolution-wave/runs/accel09/audit.json",
+        "sha256": "95f8b2283d7cceff18b9d9100b6794ed07dd326d22532901a21d94ff477cee38",
+        "available_at_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+        "role": "Current strengthened audit binding result, script, source and job."
+      }
+    },
+    {
+      "attempt": "accel10",
+      "job_id": "3565033",
+      "scientific_source_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+      "original_archive_commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+      "archive": {
+        "path": "experiments/multiresolution-wave/runs/accel10/ARCHIVE.json",
+        "sha256": "2c40d9c030f5eb634c7d0548c9978ea85fe93604905f4f7631fa82458b2c5026",
+        "available_at_commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+        "role": "Complete ordered archive descriptor; original full arrays retained in bounded parts."
+      },
+      "archive_bytes": 115041900,
+      "archive_part_count": 2,
+      "numerically_accepted": true,
+      "exact_remote_removed": true,
+      "current_audit": {
+        "path": "experiments/multiresolution-wave/runs/accel10/audit.json",
+        "sha256": "db9e81072fe8902d773dd16d7d71003bd36ad7e21284cb86d58803ebb25dc32c",
+        "available_at_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+        "role": "Current strengthened audit binding result, script, source and job."
+      }
+    },
+    {
+      "attempt": "accel11",
+      "job_id": "3565652",
+      "scientific_source_commit": "2cf42fcd8604177cf6ffe4fa3b81e5f0e3bff34d",
+      "original_archive_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+      "archive": {
+        "path": "experiments/multiresolution-wave/runs/accel11/ARCHIVE.json",
+        "sha256": "29e8093befe92fd1bb7052257f533d7c641e709b2cdc45a0f3304c84a4822b02",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Complete ordered archive descriptor; original full arrays retained in bounded parts."
+      },
+      "archive_bytes": 6662147,
+      "archive_part_count": 1,
+      "numerically_accepted": false,
+      "exact_remote_removed": true,
+      "current_audit": {
+        "path": "experiments/multiresolution-wave/runs/accel11/failure.json",
+        "sha256": "91db5e149223bdd8564932b85b966419d9775f93c6d739e6d1aa32650543f795",
+        "available_at_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+        "role": "Preserved operational failure before evaluation-case generation."
+      }
+    },
+    {
+      "attempt": "accel12",
+      "job_id": "3565786",
+      "scientific_source_commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+      "original_archive_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+      "archive": {
+        "path": "experiments/multiresolution-wave/runs/accel12/ARCHIVE.json",
+        "sha256": "ac13da2fe301f255a8dccbe82adbdfb5dcdd33c8bba508d783a0a930d9144425",
+        "available_at_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+        "role": "Complete ordered archive descriptor; original full arrays retained in bounded parts."
+      },
+      "archive_bytes": 43457269760,
+      "archive_part_count": 461,
+      "numerically_accepted": true,
+      "exact_remote_removed": true,
+      "current_audit": {
+        "path": "experiments/multiresolution-wave/runs/accel12/audit.json",
+        "sha256": "07579a69353d605bef2caa48554a3943165aa3c125b8d515b7f4cdaec8ae1dfa",
+        "available_at_commit": "ee24457b478e38d415dfc8125e50c8b7f84a5649",
+        "role": "Current strengthened audit binding result, script, source and job."
+      }
+    }
+  ],
+  "frozen_bank_and_original_head_lineage": {
+    "checkpoint_commit": "906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e",
+    "sources": {
+      "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/bank_parameters.npz": "4be766c4f2386005dddac89346f32b6351051d014406242e1ec40bf8f343c600",
+      "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/bank_tables.npz": "6f773c0942c91e8b320ae452499e1d217479d3bbbb255bec7995dda770b3e122",
+      "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/common_initialization.npz": "3f2dc1f5c7ae61890241350a46b180d894b9fad2330a34715ea8d32c4ebfdf1a",
+      "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691200/head.npz": "985e8707e6b549e4ae5ea299c3d703ab58ff171849027d5f9189cc8e6930d845",
+      "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/data_manifest.json": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809",
+      "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/bank_parameters.npz": "a9254afa4b94483f7204c6c9d08126890c1aee927609f926865dadaa9c7ecc74",
+      "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/bank_tables.npz": "04d94905fc708e565f0d2b28809d40253005890e659443c4bb09b7ecaeee9862",
+      "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/common_initialization.npz": "67ed39e63aec87436da34328c0d016840a672dc249cb30cefaaf72e52fd2a200",
+      "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691200/head.npz": "86d55abfed15ca778ca145b1a11ba7e4d30560bedc0f8cf95026111a51f4702a",
+      "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/data_manifest.json": "53edc2d730d912a35b30017033f534e812303abafacf71ba7dc5c92b1caf358c"
+    },
+    "head32_origin": {
+      "commit": "77af541a5995e3870583e6e957f9579d116a2760",
+      "result_path": "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/result.json",
+      "result_sha256": "b76064e45af70de38b75f1f3f7e383982017c82effefbfd04ad7d8ac75ca4851",
+      "sources": {
+        "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_dirichlet_new_mlp32_seed691200/head.npz": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e",
+        "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/training_ladder_dirichlet.npz": "b92cc737bfdf68dcfdad4c0feddc6d0fd8edb35bbe8e560887dfc8d6829653c9",
+        "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_absorbing_new_mlp32_seed691200/head.npz": "4cef675ccaec28aedd887a085ff4f3fc1c95494a7ba44fd0a4369b651d88645a",
+        "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/training_ladder_absorbing.npz": "f943364915777ccb2825cf512c6458e62e5e46bb5ad5008418a7bec48e5db838"
+      }
+    },
+    "initializer32_note": "Only the frozen fitted PCA map and center are extracted from checksum-audited training lineage. No training trajectories or coefficient snapshots are uploaded; there is no retraining. Query fields and references regenerate from seed on the cluster.",
+    "new_head_origin": {
+      "commit": "3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d",
+      "sources": {
+        "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/head_trained_nested40.npz": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3",
+        "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/initializer_trained_nested40.npz": "154ec67eae3da47f97b16cd4838de52b685c22fd7e6e02c978294e0de45fbc60"
+      },
+      "training": [],
+      "parent_results": {
+        "accel10": {
+          "result_path": "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/result.json",
+          "result_sha256": "334a8144d5bc8dd75a979bc9579a168ddba8207b163585cb45c38bc8f6d8e40a"
+        }
+      }
+    }
+  },
+  "final_result_sha256": "4993f0d12cfb4c6c6a7529fa93123e729252a2f81e2e4c09456e744823472cad",
+  "final_staged_config_sha256": "30b9c4446c7a08bda2d2c30f1710ad5e8e2b8c1a6a0da2711cb77539369dedda",
+  "integration_boundary": "Parity geometry can be reviewed separately from timestep changes and the larger selected nonlinear manifold. Supporting failed/hybrid results are evidence, not selected replacements. The original frozen fresh-wave mathematical source files were not edited.",
+  "initializer_limitation": "Training-library appended PCA scores are not residual-corrected for existing head contributions; all forty initial coordinates are nevertheless fitted to supplied fields."
+}

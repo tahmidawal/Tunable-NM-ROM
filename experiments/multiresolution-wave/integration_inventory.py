@@ -75,7 +75,7 @@ def generate(final_archive_commit):
         files=files,runs=runs,
         frozen_bank_and_original_head_lineage=json.loads((CELL/'runs/accel12/cluster/in/ORIGIN.json').read_text()),
         final_result_sha256=digest(CELL/'runs/accel12/cluster/out/pilot/result.json'),
-        final_config_sha256=hashlib.sha256(json.dumps(final['config'],sort_keys=True).encode()).hexdigest(),
+        final_staged_config_sha256=digest(CELL/'runs/accel12/cluster/code/multiresolution-wave/acceleration-confirm-config.json'),
         integration_boundary='Parity geometry can be reviewed separately from timestep changes and the larger selected nonlinear manifold. Supporting failed/hybrid results are evidence, not selected replacements. The original frozen fresh-wave mathematical source files were not edited.',
         initializer_limitation=final['config']['selection_frozen']['initializer_limitation'])
     (CELL/'integration-inventory.json').write_text(json.dumps(output,indent=2)+'\n')

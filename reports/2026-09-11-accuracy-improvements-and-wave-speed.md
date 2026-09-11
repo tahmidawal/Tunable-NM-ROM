@@ -50,6 +50,29 @@ The new cohort contains harder cases. Compare old and new heads on the same coho
 
 The small GPU runtime improvement does not imply a host-inclusive improvement. The direct DST FOM remains faster than the nonlinear ROM. The free linear-bank control uses unrestricted bank coefficients and is a different reduced model.
 
+## Poisson: staged training at unchanged capacity did not solve the problem
+
+The learned spatial bank is trained first with free training coefficients, then the nonlinear head is fitted in the full field metric, followed by joint refinement. Ordinary joint continuation is matched to the staged optimizer time. All procedures keep the original bank size, latent dimension, source-input contract and exact weak solver.
+
+| Development cohort (cases) | Intervals | Model | Worst physical error % | Bank projection error % | GPU ms | Invalid solves | 5% target |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| all (42) | 1024 | Original | 7.280248 | 6.489096 | 2.613091 | 0 | Fail |
+| all (42) | 1024 | Matched joint | 7.571199 | 6.936344 | 2.545561 | 0 | Fail |
+| all (42) | 1024 | Staged bank + head | 7.757472 | 6.981179 | 2.597750 | 0 | Fail |
+| all (42) | 1024 | Staged + joint | 7.660328 | 6.966506 | 2.565345 | 0 | Fail |
+| existing_development (30) | 1024 | Original | 6.801556 | 5.500597 | 2.638046 | 0 | Fail |
+| existing_development (30) | 1024 | Matched joint | 6.605687 | 5.647629 | 2.531182 | 0 | Fail |
+| existing_development (30) | 1024 | Staged bank + head | 7.353073 | 6.177772 | 2.622753 | 0 | Fail |
+| existing_development (30) | 1024 | Staged + joint | 6.842717 | 5.948326 | 2.613186 | 0 | Fail |
+| new_development (12) | 1024 | Original | 7.280248 | 6.489096 | 2.572861 | 0 | Fail |
+| new_development (12) | 1024 | Matched joint | 7.571199 | 6.936344 | 2.565197 | 0 | Fail |
+| new_development (12) | 1024 | Staged bank + head | 7.757472 | 6.981179 | 2.535608 | 0 | Fail |
+| new_development (12) | 1024 | Staged + joint | 7.660328 | 6.966506 | 2.498484 | 0 | Fail |
+
+Matched joint continuation slightly improves the earlier cases but worsens the later development cases. Neither staged endpoint improves the expanded-cohort worst error. The nonlinear solves are stationary; the remaining error is not resolved by simply allowing more online iterations.
+
+Bank projection uses the full same-grid field norm; the online physical error uses a refined-grid reference. These columns are related diagnostics, not an additive error decomposition. A larger learned-bank experiment is now separate from this unsuccessful fixed-capacity comparison. Normalized training-snapshot POD projections motivate that experiment but do not prove a worst-case lower bound for every possible bank.
+
 ## Reflective waves: geometry and time-step screens
 
 Shared analytic decoder derivatives and guarded Cholesky solves remove repeated work in latent evolution. At the original step, these preserve the mathematical trajectory to audited floating-point parity. Larger steps are a separate integration change and require refinement checks.
@@ -92,19 +115,40 @@ The follow-up also tested unrestricted bank evolution and nonlinear output proje
 
 Rejected time step: `chol_guard` at 0.025 on `opened_1` has a 1.143733% half-step discrepancy. Its faster timing is diagnostic only.
 
-The CG control was also allowed to use larger time steps; any FOM speed ratio must use a tested setting that passes its physical and solve criteria. The next wave stage trains matched field-only and field/energy/tangent-velocity heads, then confirms frozen settings across meshes and new development cases.
+The CG control was also allowed to use larger time steps; any FOM speed ratio must use a tested setting that passes its physical and solve criteria.
+
+## Reflective waves: training the original latent dimension
+
+Two matched training arms use a fixed encoder with consistent latent velocities. One trains displacement reconstruction; the other adds displacement-energy and tangent-velocity losses. Their comparison isolates those extra losses. The original head used independently optimized snapshot codes, so comparison with that checkpoint also changes the training-code procedure.
+
+| Training-screen method | Step / CG tolerance | GPU ms | Worst u / v / energy-state error % | All-state 5% |
+| --- | --- | --- | --- | --- |
+| baseline | 0.0025 | 4519.760249 | 1.812375 / 4.167162 / 6.223986 | Fail |
+| chol_guard | 0.01 | 182.911717 | 1.810916 / 4.167481 / 6.223099 | Fail |
+| trained_field | 0.01 | 184.240493 | 1.901449 / 4.587520 / 6.263939 | Fail |
+| trained_phase | 0.01 | 182.754962 | 1.766325 / 4.134009 / 6.103806 | Fail |
+| cg_1e-06 | 1e-06 | 109.972200 | 0.199690 / 0.412971 / 0.574495 | Pass |
+| cg_0.01 | 0.01 | 82.678175 | 0.303316 / 0.358723 / 0.485925 | Pass |
+| cgdt_0.005_tol_1e-06 | 1e-06 | 69.673613 | 0.794879 / 1.548112 / 2.162953 | Pass |
+| cgdt_0.005_tol_0.01 | 0.01 | 42.025412 | 1.213408 / 1.418882 / 1.923893 | Pass |
+| cgdt_0.01_tol_1e-06 | 1e-06 | 44.376265 | 3.144053 / 5.874126 / 8.153122 | Fail |
+| dst | 0.0 | 3.881786 | 0.000000 / 0.000000 / 0.000000 | Pass |
+
+The combined training improves the worst displacement, velocity and energy-state errors compared with both the original and new field-only heads. The gain is modest, and all nonlinear heads still miss the all-state target. Initial fitting, numerical rank and half-step checks pass. A separately declared capacity screen and frozen multiresolution confirmation remain in progress; these are not online changes to one trained network.
 
 ## Work still in progress
 
-Poisson staged bank/head training and Burgers initial-field training plus stationarity-aware solving are not yet accepted in this report. Their completed audits will be added here, including unsuccessful arms. Wave head training and multiresolution confirmation are also outstanding.
+Poisson bank-capacity training and Burgers initial-field training plus stationarity-aware solving are still underway. Their completed audits will be added here, including unsuccessful arms. Wave capacity and multiresolution confirmation are also outstanding.
 
 ## Reproduction and evidence
 
-Heat source `3563072` is the paired GPU job; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.
+Heat job `3563072` contains the paired GPU measurements; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.
 
 - [Heat complete panel](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/analysis/summary.md)
+- [Poisson fixed-capacity panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/staged_accuracy08/panel.json)
 - [Wave geometry audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel06/audit.json)
 - [Wave follow-up audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel07/audit.json)
+- [Wave training audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel08/audit.json)
 - [Normalized values, repetition arrays and source hashes](2026-09-11-accuracy-improvements-and-wave-speed.json)
 
 Run `reports/generate_accuracy_campaign.py` with the repository Python environment to rebuild. All source hashes and generator identity are embedded in the adjacent JSON. These are single-training-seed development studies on the recorded families; they do not establish broad PDE generalization or final paper performance.
@@ -113,6 +157,7 @@ Run `reports/generate_accuracy_campaign.py` with the repository Python environme
 
 - **Intervals / mesh:** subdivisions along each spatial axis; larger values request more output points.
 - **Bank / head / latent:** learned spatial functions / network choosing their coefficients / compressed coordinates solved online.
+- **POD / bank projection:** a span built from training-snapshot singular vectors / the closest unrestricted bank combination in the stated field norm. These are diagnostic controls, not deployed nonlinear networks.
 - **FOM / ROM / NMROM:** full-grid solver / reduced solver / reduced solver constrained to a nonlinear decoder.
 - **GPU / host ms:** blocked complete GPU input-to-output query time / the same heat invocation including input and output transfers.
 - **Relative error:** error magnitude divided by the specified reference magnitude. Heat uses the current true field at each time; the displayed wave screen uses initial physical scales.
@@ -122,5 +167,6 @@ Run `reports/generate_accuracy_campaign.py` with the repository Python environme
 - **Tail emphasis:** training loss that assigns more influence to large reconstruction errors within a training batch.
 - **All-state / energy-state:** checking displacement, velocity and their combined energy norm / the norm combining velocity and spatial-gradient error.
 - **Guard / parity / refinement:** a numerical check with a more robust fallback / agreement with unchanged equations / agreement after reducing the integration step.
+- **Cholesky / tangent velocity:** a factorization for solving a positive-definite small matrix system / the decoder Jacobian multiplied by latent velocity.
 - **Outlier:** heat repetition above one-and-a-half times its case median; wave repetition above twice its panel median. Counts and every duration are retained.
 - **Development / sealed final:** cases used in diagnosis and method selection / untouched cases reserved for the paper's later final evaluation.

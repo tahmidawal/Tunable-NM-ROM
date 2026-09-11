@@ -66,7 +66,7 @@ def wave(run_name):
     panel = read(run/"panel.json")
     audit = read(run/"audit.json")
     raw = read(run/"cluster/out/pilot/result.json")
-    selection = read(run/"selection.json")
+    selection = read(run/"selection.json") if (ROOT/run/"selection.json").exists() else None
     cleanup = read(run/"cleanup.json")
     assert audit["passed"] and raw["complete"] and not raw["final_test_opened"]
     assert panel["source_result_sha256"] == SOURCES[str(run/"cluster/out/pilot/result.json")]
@@ -80,10 +80,32 @@ def wave(run_name):
                 run=str(run), cleanup=cleanup)
 
 
+def poisson(run_name, coordinator_file):
+    run = Path("worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs")/run_name
+    panel = read(run/"panel.json")
+    audit = read(run/"audit.json")
+    raw = read(run/"result.json")
+    coordinator = read(coordinator_file)
+    cleanup = read(run/"cleanup.json")
+    assert audit["passed"] and coordinator["passed"] and raw["complete"] and audit["remote_deleted"]
+    assert audit["result_sha256"] == coordinator["source_result_sha256"] == SOURCES[str(run/"result.json")]
+    for group in panel["groups"]:
+        for mesh in group["meshes"]:
+            for method, row in mesh["methods"].items():
+                reps = [r for r in raw["rows"] if r["method"] == method and r["intervals"] == mesh["intervals"]
+                        and (group["group"] == "all" or r["group"] == group["group"])]
+                times = [r["fused_device_seconds"]*1000 for r in reps]
+                assert np.isclose(np.median(times), row["gpu_median_ms"], rtol=1e-14)
+                assert np.isclose(max(r["physical_error"] for r in reps), row["worst_relative_error"], rtol=1e-14)
+                np.testing.assert_allclose(times, row["gpu_repetitions_ms"], rtol=1e-14)
+    return dict(panel, run=str(run), cleanup=cleanup)
+
+
 def build():
-    h, w6, w7 = heat(), wave("accel06"), wave("accel07")
-    normalized = dict(status="Audited heat and wave screens; Poisson, Burgers and wave training/confirmation remain active.",
-                      heat=h, wave_screens={"accel06": w6, "accel07": w7})
+    h, w6, w7, w8 = heat(), wave("accel06"), wave("accel07"), wave("accel08")
+    ps = poisson("staged_accuracy08", "reports/2026-09-11-poisson-staged-accuracy.coordinator-audit.json")
+    normalized = dict(status="Audited heat, fixed-capacity Poisson and wave screens/training; follow-up capacity tests, Burgers and wave confirmation remain active.",
+                      heat=h, poisson_staged=ps, wave_screens={"accel06": w6, "accel07": w7, "accel08": w8})
     lines = ["# Accuracy improvements and reflective-wave speed", "",
              "This report records the controlled accuracy-training and wave-acceleration campaign. The included numbers have passed independent development audits; the overall campaign and publication validation are still incomplete.", "",
              "Absorbing waves are excluded. Final paper cohorts remain unopened, and the existing experiment branches remain separate. Tables are generated from saved invocation records; no wall-clock ratio crosses jobs or GPUs.", "",
@@ -116,6 +138,22 @@ def build():
                          f"{100*r['physical_error_worst']:.6f}", f"{r['device_outliers']} / {r['host_outliers']}"])
     lines += table(["Intervals per axis", "Method", "GPU ms", "Host ms", "Worst error %", "GPU / host outliers"], rows)
     lines += ["The small GPU runtime improvement does not imply a host-inclusive improvement. The direct DST FOM remains faster than the nonlinear ROM. The free linear-bank control uses unrestricted bank coefficients and is a different reduced model.", "",
+              "## Poisson: staged training at unchanged capacity did not solve the problem", "",
+              "The learned spatial bank is trained first with free training coefficients, then the nonlinear head is fitted in the full field metric, followed by joint refinement. Ordinary joint continuation is matched to the staged optimizer time. All procedures keep the original bank size, latent dimension, source-input contract and exact weak solver.", ""]
+    rows = []
+    plabels = {"original_relative": "Original", "joint_matched": "Matched joint",
+               "staged_head": "Staged bank + head", "staged_joint": "Staged + joint"}
+    for group in ps["groups"]:
+        mesh = max(group["meshes"], key=lambda x: x["intervals"])
+        for method in ps["config"]["trained_model_ids"]:
+            r = mesh["methods"][method]
+            bank = mesh["bank_diagnostics"][method]
+            rows.append([f"{group['group']} ({group['cases']})", mesh["intervals"], plabels[method],
+                         f"{100*r['worst_relative_error']:.6f}", f"{100*bank['worst_same_grid_relative_error']:.6f}",
+                         f"{r['gpu_median_ms']:.6f}", r["invalid_invocations"], "Pass" if r["all_cases_pass_target"] else "Fail"])
+    lines += table(["Development cohort (cases)", "Intervals", "Model", "Worst physical error %", "Bank projection error %", "GPU ms", "Invalid solves", "5% target"], rows)
+    lines += ["Matched joint continuation slightly improves the earlier cases but worsens the later development cases. Neither staged endpoint improves the expanded-cohort worst error. The nonlinear solves are stationary; the remaining error is not resolved by simply allowing more online iterations.", "",
+              "Bank projection uses the full same-grid field norm; the online physical error uses a refined-grid reference. These columns are related diagnostics, not an additive error decomposition. A larger learned-bank experiment is now separate from this unsuccessful fixed-capacity comparison. Normalized training-snapshot POD projections motivate that experiment but do not prove a worst-case lower bound for every possible bank.", "",
               "## Reflective waves: geometry and time-step screens", "",
               "Shared analytic decoder derivatives and guarded Cholesky solves remove repeated work in latent evolution. At the original step, these preserve the mathematical trajectory to audited floating-point parity. Larger steps are a separate integration change and require refinement checks.", ""]
     p6 = {(p["method"], p["setting"]): p for p in w6["panels"]}
@@ -140,19 +178,32 @@ def build():
     failed = [r for r in w7["time_refinement"] if not r["passed"]]
     for r in failed:
         lines += [f"Rejected time step: `{r['method']}` at {r['dt']} on `{r['case']}` has a {100*max(r['maxima'].values()):.6f}% half-step discrepancy. Its faster timing is diagnostic only.", ""]
-    lines += ["The CG control was also allowed to use larger time steps; any FOM speed ratio must use a tested setting that passes its physical and solve criteria. The next wave stage trains matched field-only and field/energy/tangent-velocity heads, then confirms frozen settings across meshes and new development cases.", "",
+    lines += ["The CG control was also allowed to use larger time steps; any FOM speed ratio must use a tested setting that passes its physical and solve criteria.", "",
+              "## Reflective waves: training the original latent dimension", "",
+              "Two matched training arms use a fixed encoder with consistent latent velocities. One trains displacement reconstruction; the other adds displacement-energy and tangent-velocity losses. Their comparison isolates those extra losses. The original head used independently optimized snapshot codes, so comparison with that checkpoint also changes the training-code procedure.", ""]
+    rows = []
+    for p in w8["panels"]:
+        e = p["worst_initial_errors_percent"]
+        rows.append([p["method"], p["setting"], f"{p['median_gpu_ms']:.6f}",
+                     " / ".join(f"{e[k]:.6f}" for k in ("displacement", "velocity", "energy_state")),
+                     "Pass" if p["all_state_5percent_pass"] else "Fail"])
+    lines += table(["Training-screen method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "All-state 5%"], rows)
+    lines += ["The combined training improves the worst displacement, velocity and energy-state errors compared with both the original and new field-only heads. The gain is modest, and all nonlinear heads still miss the all-state target. Initial fitting, numerical rank and half-step checks pass. A separately declared capacity screen and frozen multiresolution confirmation remain in progress; these are not online changes to one trained network.", "",
               "## Work still in progress", "",
-              "Poisson staged bank/head training and Burgers initial-field training plus stationarity-aware solving are not yet accepted in this report. Their completed audits will be added here, including unsuccessful arms. Wave head training and multiresolution confirmation are also outstanding.", "",
+              "Poisson bank-capacity training and Burgers initial-field training plus stationarity-aware solving are still underway. Their completed audits will be added here, including unsuccessful arms. Wave capacity and multiresolution confirmation are also outstanding.", "",
               "## Reproduction and evidence", "",
-              f"Heat source `{h['metadata']['job_id']}` is the paired GPU job; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.", "",
+              f"Heat job `{h['metadata']['job_id']}` contains the paired GPU measurements; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.", "",
               f"- [Heat complete panel](../{h['run']}/analysis/summary.md)",
+              f"- [Poisson fixed-capacity panel](../{ps['run']}/panel.json)",
               f"- [Wave geometry audit](../{w6['run']}/audit.json)",
               f"- [Wave follow-up audit](../{w7['run']}/audit.json)",
+              f"- [Wave training audit](../{w8['run']}/audit.json)",
               "- [Normalized values, repetition arrays and source hashes](2026-09-11-accuracy-improvements-and-wave-speed.json)", "",
               "Run `reports/generate_accuracy_campaign.py` with the repository Python environment to rebuild. All source hashes and generator identity are embedded in the adjacent JSON. These are single-training-seed development studies on the recorded families; they do not establish broad PDE generalization or final paper performance.", "",
               "## Plain-language glossary", "",
               "- **Intervals / mesh:** subdivisions along each spatial axis; larger values request more output points.",
               "- **Bank / head / latent:** learned spatial functions / network choosing their coefficients / compressed coordinates solved online.",
+              "- **POD / bank projection:** a span built from training-snapshot singular vectors / the closest unrestricted bank combination in the stated field norm. These are diagnostic controls, not deployed nonlinear networks.",
               "- **FOM / ROM / NMROM:** full-grid solver / reduced solver / reduced solver constrained to a nonlinear decoder.",
               "- **GPU / host ms:** blocked complete GPU input-to-output query time / the same heat invocation including input and output transfers.",
               "- **Relative error:** error magnitude divided by the specified reference magnitude. Heat uses the current true field at each time; the displayed wave screen uses initial physical scales.",
@@ -162,6 +213,7 @@ def build():
               "- **Tail emphasis:** training loss that assigns more influence to large reconstruction errors within a training batch.",
               "- **All-state / energy-state:** checking displacement, velocity and their combined energy norm / the norm combining velocity and spatial-gradient error.",
               "- **Guard / parity / refinement:** a numerical check with a more robust fallback / agreement with unchanged equations / agreement after reducing the integration step.",
+              "- **Cholesky / tangent velocity:** a factorization for solving a positive-definite small matrix system / the decoder Jacobian multiplied by latent velocity.",
               "- **Outlier:** heat repetition above one-and-a-half times its case median; wave repetition above twice its panel median. Counts and every duration are retained.",
               "- **Development / sealed final:** cases used in diagnosis and method selection / untouched cases reserved for the paper's later final evaluation.", ""]
     normalized["sources"] = SOURCES

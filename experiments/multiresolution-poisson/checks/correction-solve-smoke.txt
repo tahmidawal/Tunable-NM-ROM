@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "mode": "solve",
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "results": [
+    {
+      "count": 0,
+      "solver_valid": true,
+      "full_stationarity": 7.519177209807487e-08,
+      "reduced_stationarity": 7.519177209807487e-08,
+      "rank": 16,
+      "recovery_backward_error": 0.0,
+      "residual_reconstruction": 0.0,
+      "reason": 6,
+      "legacy_field_relative": 2.4700240385398965e-16,
+      "legacy_objective_scaled_difference": 0.0,
+      "legacy_gradient_absolute_difference": 8.750892328010943e-16,
+      "legacy_stops_match": true
+    },
+    {
+      "count": 32,
+      "solver_valid": true,
+      "full_stationarity": 4.463460603549342e-08,
+      "reduced_stationarity": 1.565262058221502e-07,
+      "rank": 16,
+      "recovery_backward_error": 3.6370796319213563e-17,
+      "residual_reconstruction": 8.635295131095803e-17,
+      "reason": 6,
+      "legacy_field_relative": null,
+      "legacy_objective_scaled_difference": null,
+      "legacy_gradient_absolute_difference": null,
+      "legacy_stops_match": null
+    }
+  ],
+  "scope": "smoke controls, not scientific timing measurements"
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "heat-iterative-cg-v1",
+  "checkpoint": "expanded_seed790715",
+  "requested_intervals": [
+    64,
+    256,
+    1024
+  ],
+  "cohorts": [
+    {
+      "name": "original",
+      "seed": 790711,
+      "count": 4
+    },
+    {
+      "name": "fresh",
+      "seed": 790716,
+      "count": 8
+    }
+  ],
+  "timing_repetitions": 3,
+  "dt": 0.025,
+  "gradient_tolerance": 1e-05,
+  "reference_pair": [
+    1024,
+    2048
+  ],
+  "coarse_solver_intervals": 16,
+  "primary_method": "nmrom_cholesky",
+  "accuracy_target": 0.05,
+  "final_cohort_opened": false,
+  "methods": [
+    "nmrom",
+    "nmrom_cholesky",
+    "fom_cg_cn",
+    "fom_cg_cn_tol1e3",
+    "fom_cg_cn_tol1e2",
+    "fom_cg_be50",
+    "linear_weak_exact",
+    "fom_same_grid"
+  ],
+  "field_parity_tolerance": 1e-08,
+  "latent_parity_tolerance": 1e-06,
+  "primary_fom": "fom_cg_cn",
+  "cg_methods": {
+    "fom_cg_cn": {
+      "theta": 0.5,
+      "dt": 0.025,
+      "tolerance": 1e-06,
+      "max_iterations": 1000
+    },
+    "fom_cg_cn_tol1e3": {
+      "theta": 0.5,
+      "dt": 0.025,
+      "tolerance": 0.001,
+      "max_iterations": 1000
+    },
+    "fom_cg_cn_tol1e2": {
+      "theta": 0.5,
+      "dt": 0.025,
+      "tolerance": 0.01,
+      "max_iterations": 1000
+    },
+    "fom_cg_be50": {
+      "theta": 1.0,
+      "dt": 0.01,
+      "tolerance": 1e-06,
+      "max_iterations": 1000
+    }
+  }
+}

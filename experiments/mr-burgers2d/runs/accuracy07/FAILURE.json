@@ -1,0 +1,15 @@
+{
+  "status": "failed instrumentation; incomplete paired coverage not accepted",
+  "job_id": "3563749",
+  "source_commit": "cbc4e4d8432763a8ea6a02fac0b433066cd521af",
+  "complete": false,
+  "expected_invocations": 324,
+  "persisted_invocations": 134,
+  "unrecorded_full_field_artifacts": [
+    "L256_frozen_stationary_case4_rep0.npz"
+  ],
+  "reason": "charged/posthoc stationarity assertion before row append; exact original charged gradient not retained",
+  "collected_archive_sha256": "c8184c3d4a7cf09b70676da219a038bfc837620a29933286190bd7c50783b628",
+  "diagnostic": "STATIONARITY-DIAGNOSTIC.json",
+  "training_audit": "TRAINING-AUDIT.json"
+}

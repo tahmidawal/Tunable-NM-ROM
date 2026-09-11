@@ -1,4 +1,4 @@
-"""Collect the closed approved accuracy07 into checked sub-100MB archive parts."""
+"""Collect the closed approved accuracy08 into checked sub-100MB archive parts."""
 import argparse
 import hashlib
 import json
@@ -8,7 +8,7 @@ import subprocess
 from restore_iterative import restore
 
 
-REMOTE = "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy07"
+REMOTE = "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy08"
 
 
 def collect(record, job, allow_failed=False):

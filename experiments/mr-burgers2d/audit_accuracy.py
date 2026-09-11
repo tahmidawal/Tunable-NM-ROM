@@ -39,7 +39,9 @@ def main():
     assert json.loads((record/'COLLECTION-CHECK.json').read_text())['archive_verified']
     stdout='\n'.join(p.read_text() for p in (run/'logs').glob('*.out'));stderr='\n'.join(p.read_text() for p in (run/'logs').glob('*.err'))
     assert 'jax_backend=gpu' in stdout and 'ACCURACY BURGERS COMPLETE' in stdout and 'ALL-DONE' in stdout and not stderr.strip(),stderr
-    ta=json.loads((record/'TRAINING-AUDIT.json').read_text());assert ta['passed'] and ta['R_rank']==512
+    training_audit_path=record/'TRAINING-AUDIT.json'
+    if not training_audit_path.exists():training_audit_path=record.parent/'accuracy07/TRAINING-AUDIT.json'
+    ta=json.loads(training_audit_path.read_text());assert ta['passed'] and ta['R_rank']==512
     # Direct training audit may precede collection; require the exact same scientific bytes.
     for path in [out/'training_targets.npz',out/'training.json',out/'trained_checkpoint.pkl']:
         expected=[v for k,v in ta['source_sha256'].items() if Path(k).name==path.name];assert len(expected)==1 and ai.sha(path)==expected[0]
@@ -71,7 +73,7 @@ def main():
     assert ref_delta<1e-10
     grouped=collections.defaultdict(list)
     for row in d['invocations']:grouped[row['artifact']].append(row)
-    maxima=collections.defaultdict(float);state_count=0;fom_count=0;parities=[];operator_checks=[]
+    maxima=collections.defaultdict(float);state_count=0;fom_count=0;parities=[];operator_checks=[];convergence_audit={};threshold_disagreements=[]
     for L in meshes:
         ops={model:dict(np.load(out/f'operators_{model}_L{L}.npz')) for model in weights}
         for model,op in ops.items():
@@ -137,12 +139,23 @@ def main():
                 for rr in rows:
                     maxima['weak_residual_delta']=max(maxima['weak_residual_delta'],float(np.max(abs(np.array(rn)-rr['residuals']))))
                     maxima['normalized_gradient_delta']=max(maxima['normalized_gradient_delta'],float(np.max(abs(np.array(gn)-rr['normalized_stationarity']))),abs(icgn-rr['ic_normalized_stationarity']))
-                    stationary=max(max(gn),icgn)<=cfg['strict']['gtol']*(1+1e-7);assert stationary==rr['stationary']
+                    cpu_values=np.array([icgn]+gn);post_values=np.array([rr['ic_normalized_stationarity']]+rr['normalized_stationarity']);threshold=cfg['strict']['gtol']
+                    charged_values=np.array([rr.get('charged_ic_normalized_stationarity',rr['ic_normalized_stationarity'])]+rr.get('charged_normalized_stationarity',rr['normalized_stationarity']))
+                    cpu_mask=cpu_values<=threshold;post_mask=post_values<=threshold;charged_mask=charged_values<=threshold
+                    disagreements=(cpu_mask!=post_mask)|(cpu_mask!=charged_mask)|(post_mask!=charged_mask)
+                    conservative=cpu_mask&post_mask&charged_mask
+                    key=(L,rr['name'],case,rr['rep']);convergence_audit[key]=dict(stationary=bool(np.all(conservative)),stationary_states=int(np.sum(conservative)),maximum_cpu_gradient=float(cpu_values.max()))
+                    if np.any(disagreements):threshold_disagreements.append(dict(intervals=L,name=rr['name'],case=case,rep=rr['rep'],states=np.flatnonzero(disagreements).tolist(),cpu=cpu_values[disagreements].tolist(),posthoc=post_values[disagreements].tolist(),charged=charged_values[disagreements].tolist()))
+                    if 'charged_normalized_stationarity' in rr:
+                        maxima['charged_cpu_normalized_gradient_delta']=max(maxima['charged_cpu_normalized_gradient_delta'],float(np.max(abs(charged_values-cpu_values))))
+                        maxima['charged_posthoc_normalized_gradient_delta']=max(maxima['charged_posthoc_normalized_gradient_delta'],float(np.max(abs(charged_values-post_values))))
+                        assert abs(max(abs(charged_values[1:]-post_values[1:]))-rr['charged_posthoc_weak_gradient_max_delta'])<1e-15
+                        assert abs(abs(charged_values[0]-post_values[0])-rr['charged_posthoc_initial_gradient_delta'])<1e-15
                     ib=180 if rr['solver']=='accepted' else cfg['strict']['ic_budget'];sb=30 if rr['solver']=='accepted' else cfg['strict']['step_budget']
                     allowed={0,1,2,3} if rr['solver']=='accepted' else {0,1,2,3,4};assert 0<=rr['ic_iterations']<=ib and rr['ic_reason'] in allowed
                     assert all(0<=v<=sb for v in rr['iterations']) and set(rr['stop_reasons'])<=allowed
-                    assert all(v<=cfg['strict']['gtol']*(1+1e-7) for v,reason in zip(gn,rr['stop_reasons']) if reason==4)
-                    if rr['ic_reason']==4:assert icgn<=cfg['strict']['gtol']*(1+1e-7)
+                    assert all(v<=cfg['strict']['gtol']*(1+1e-7) for v,reason in zip(rr.get('charged_normalized_stationarity',rr['normalized_stationarity']),rr['stop_reasons']) if reason==4)
+                    if rr['ic_reason']==4:assert rr.get('charged_ic_normalized_stationarity',rr['ic_normalized_stationarity'])<=cfg['strict']['gtol']*(1+1e-7)
                     state_count+=51
                 if row['name']=='frozen_accepted' and case<cfg['cases']:
                     oldrow=next(v for v in old['invocations'] if v['name']=='nmrom' and v['intervals']==L and v['case']==case and v['rep']==0)
@@ -169,12 +182,12 @@ def main():
         outliers=sum(sum(r['gpu_seconds']>2*np.median([v['gpu_seconds'] for v in rows if v['case']==c]) for r in rows if r['case']==c) for c in cases)
         reference_pass=all(d['reference_metrics'][str(L)][c]['margin']<=cfg['target_fixed_initial']*cfg['reference_margin_fraction'] and d['reference_metrics'][str(L)][c]['decrease'] for c in cases)
         error_pass=all(r['error']['fixed_initial_max']+d['reference_metrics'][str(L)][r['case']]['margin']<=cfg['target_fixed_initial'] for r in rows)
-        numerical=all(r['stationary'] for r in rows) if first['method']=='rom' else all(r['nonlinear_converged'] and r['linear_converged'] for r in rows)
+        numerical=all(convergence_audit[(L,name,r['case'],r['rep'])]['stationary'] for r in rows) if first['method']=='rom' else all(r['nonlinear_converged'] and r['linear_converged'] for r in rows)
         summary.append(dict(intervals=L,name=name,method=first['method'],cohort=cohort,cases=len(cases),invocations=len(rows),gpu_ms=1000*float(np.median([r['gpu_seconds'] for r in rows])),host_ms=1000*float(np.median([r['host_seconds'] for r in rows])),
             worst_fixed_initial=max(r['error']['fixed_initial_max'] for r in rows),worst_current_relative=max(r['error']['current_relative_max'] for r in rows),median_case_fixed_initial=float(np.median([max(r['error']['fixed_initial_max'] for r in rows if r['case']==c) for c in cases])),
             worst_initial_error=max(r['error']['fixed_initial_per_time'][0] for r in rows),worst_final_error=max(r['error']['fixed_initial_per_time'][-1] for r in rows),
-            stationary_invocations=sum(r['stationary'] for r in rows) if first['method']=='rom' else None,
-            stationary_states=sum(sum(v<=cfg['strict']['gtol']*(1+1e-7) for v in r['normalized_stationarity'])+int(r['ic_normalized_stationarity']<=cfg['strict']['gtol']*(1+1e-7)) for r in rows) if first['method']=='rom' else None,
+            stationary_invocations=sum(convergence_audit[(L,name,r['case'],r['rep'])]['stationary'] for r in rows) if first['method']=='rom' else None,
+            stationary_states=sum(convergence_audit[(L,name,r['case'],r['rep'])]['stationary_states'] for r in rows) if first['method']=='rom' else None,
             maximum_stationarity=max(max(r['normalized_stationarity']+[r['ic_normalized_stationarity']]) for r in rows) if first['method']=='rom' else None,
             numerical_pass=numerical,reference_pass=reference_pass,error_plus_margin_pass=error_pass,physical_pass=reference_pass and error_pass,physical_and_numerical_pass=reference_pass and error_pass and numerical,
             timing_outliers_gt2x_case_median=int(outliers),initial_reasons=dict(collections.Counter(r['ic_reason'] for r in rows)) if first['method']=='rom' else None,
@@ -185,7 +198,7 @@ def main():
         rows=[r for r in summary if r['intervals']==L and r['cohort']==cohort]
         for rom,fom in itertools.product([r for r in rows if r['method']=='rom'],[r for r in rows if r['method']=='fom']):
             comparisons.append(dict(intervals=L,cohort=cohort,rom=rom['name'],fom=fom['name'],gpu_ratio=fom['gpu_ms']/rom['gpu_ms'],host_ratio=fom['host_ms']/rom['host_ms'],both_physical_and_numerical_pass=rom['physical_and_numerical_pass'] and fom['physical_and_numerical_pass']))
-    audit=dict(passed=True,job_id=d['job_id'],source_commit=d['commit'],gpu=d['gpu'],invocations=len(actual),distinct_full_fields=len(grouped),audited_rom_states_with_repetitions=state_count,audited_fom_output_steps_with_repetitions=fom_count,reference_metric_max_delta=ref_delta,maxima=dict(maxima),frozen_control_parity=parities,
+    audit=dict(passed=True,threshold_classification_disagreements=threshold_disagreements,classification_policy='A state is stationary only when charged, posthoc and independent NumPy values all meet the unchanged threshold; disagreements fail convergence conservatively.',job_id=d['job_id'],source_commit=d['commit'],gpu=d['gpu'],invocations=len(actual),distinct_full_fields=len(grouped),audited_rom_states_with_repetitions=state_count,audited_fom_output_steps_with_repetitions=fom_count,reference_metric_max_delta=ref_delta,maxima=dict(maxima),frozen_control_parity=parities,
         scope='Independent full saved-field norms, cold/stencil decoder identities, every weak state residual and analytic Jacobian stationarity; FOM output-step residuals; source/provenance and training bytes. Inner linear correction residuals checked from records, not reconstructed unavailable Newton states.')
     dump(record/'AUDIT.json',audit);dump(record/'PANEL.json',dict(status='audited development',pde='burgers2d',job_id=d['job_id'],source_commit=d['commit'],config=cfg,gpu=d['gpu'],rows=summary,comparisons=comparisons,training=ta,operator_checks=operator_checks,reference_metrics=d['reference_metrics'],audit=audit))
     print(json.dumps(audit),flush=True)

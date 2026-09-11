@@ -1,8 +1,21 @@
 # Accuracy improvements and reflective-wave speed
 
-This report records the controlled accuracy-training and wave-acceleration campaign. The included numbers have passed independent development audits; the overall campaign and publication validation are still incomplete.
+This report records the completed controlled accuracy-training and wave-acceleration round. These development numbers are finalized and independently audited; final publication validation remains unopened.
 
 Absorbing waves are excluded. Final paper cohorts remain unopened, and the existing experiment branches remain separate. Tables are generated from saved invocation records; no wall-clock ratio crosses jobs or GPUs.
+
+## What to retain from this round
+
+All rows below use 1024 intervals per axis and each PDE's full development cohort. Errors are worst-case values under the stated normalization; they are not comparable across different norms. The timing ratio compares each chosen ROM with its own job's fastest tested passing iterative FOM.
+
+| PDE (cases) | Error normalization | Before → after error % | ROM GPU ms | Iterative FOM / ROM | Decision |
+| --- | --- | --- | --- | --- | --- |
+| Poisson (42) | Static field L2 | 7.280248 → 6.110576 | 6.043163 | 14.761360×* | Accuracy improves; target still missed |
+| Heat (16) | Current field L2 | 7.595346 → 4.762515 | 11.623313 | 4.633307× | Keep targeted training |
+| Burgers (6) | Initial field L2 | 3.907620 → 3.884680 | 55.924140 | 1.217479× | Keep original network; reject both retrained heads |
+| Reflective waves (4) | Initial energy-state | 6.213781 → 5.145194 | 202.941565 | 2.963889×* | Keep acceleration; accuracy target still missed |
+
+*Poisson and reflective waves miss their declared physical target. Their ratios describe runtime only, not a speedup at matched target accuracy. Direct DST is faster for the linear PDEs. Burgers before/after accuracy comes from its controlled stopping comparison; the displayed runtime ratio uses the latest same-job control pair, whose original-head fields were checked against that comparison.
 
 ## Heat: targeted training improves accuracy
 
@@ -101,6 +114,54 @@ At 1024 intervals on all 42 cases, the expanded joint endpoint lowers the bank p
 
 The proposed bank target is 3%, separately from the 5% online physical target; both remain missed. A subsequent training-only residual decomposition motivates fixed correction directions. It uses saved optimized training codes, not independently certified stationary training fits, and its truth-assisted corrections are reconstruction diagnostics rather than online PDE results.
 
+## Poisson: nested linear corrections improve accuracy
+
+The final predeclared experiment freezes the larger bank and nonlinear head, then adds nested prefixes of one correction basis constructed only from training reconstruction residuals. Evaluation truth is not used to build this basis or initialize a query. The largest prefix is the primary configuration, fixed before these queries.
+
+The decoder is $D_q(z,y)=G(h(z)+C_qy)$. For each $z$, solve the linear least-squares problem for $y$ exactly, then optimize the projected objective in $z$. Thus additional correction coordinates increase expressiveness while leaving the nonlinear optimizer dimension unchanged. This tests both added capacity and analytic elimination; it does not isolate a width-only change.
+
+Every neural timing in this job includes the supplied-source contraction, initial-guess search, nonlinear solve, linear recovery, full decoding, and final gradient/rank diagnostics. Both the full and projected objective gradients must satisfy their stationarity tests. Added diagnostics change the timing contract from previous jobs, so compare only paired times below.
+
+The prefix count is a fixed-weight tuning option after preparing each prefix's projected operators, initial-guess cache and compiled solver offline. Switching among those prepared presets requires no neural retraining. It is not a guarantee that arbitrary unprepared prefix sizes can be selected at zero setup cost.
+
+| Intervals | Method | Nonlinear / total coordinates | Worst physical error % | GPU ms | Host ms | GPU outliers | Invalid solves | Physical and numerical criteria |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 64 | cg_1e-01 | — | 9.627059 | 4.033062 | 4.919995 | 1 | 0 | Fail |
+| 64 | cg_1e-06 | — | 0.273175 | 8.385411 | 9.331011 | 0 | 0 | Pass |
+| 64 | cg_3e-02 | — | 1.376769 | 4.725828 | 5.616743 | 0 | 0 | Pass |
+| 64 | dst | — | 0.273175 | 0.256050 | 1.892254 | 0 | 0 | Pass |
+| 64 | original_relative | 16 / 16 | 7.281747 | 4.830095 | 6.358523 | 1 | 0 | Fail |
+| 64 | r128_q0 | 16 / 16 | 7.555330 | 4.766349 | 6.275453 | 0 | 0 | Fail |
+| 64 | r128_q16 | 16 / 32 | 7.034354 | 4.893498 | 6.425868 | 0 | 0 | Fail |
+| 64 | r128_q32 | 16 / 48 | 6.111946 | 4.910128 | 6.465681 | 1 | 0 | Fail |
+| 64 | r128_q8 | 16 / 24 | 7.209430 | 4.852020 | 6.369687 | 0 | 0 | Fail |
+| 256 | cg_1e-01 | — | 3.036038 | 15.021542 | 16.278673 | 0 | 0 | Pass |
+| 256 | cg_1e-06 | — | 0.016506 | 34.804448 | 36.210974 | 0 | 0 | Pass |
+| 256 | cg_3e-02 | — | 0.721700 | 17.501463 | 18.643897 | 0 | 0 | Pass |
+| 256 | dst | — | 0.016506 | 0.209141 | 2.184999 | 6 | 0 | Pass |
+| 256 | original_relative | 16 / 16 | 7.280264 | 4.622388 | 6.362127 | 1 | 0 | Fail |
+| 256 | r128_q0 | 16 / 16 | 7.553790 | 4.633263 | 6.336176 | 2 | 0 | Fail |
+| 256 | r128_q16 | 16 / 32 | 7.032166 | 4.813237 | 6.573889 | 0 | 0 | Fail |
+| 256 | r128_q32 | 16 / 48 | 6.110598 | 4.744899 | 6.652622 | 0 | 0 | Fail |
+| 256 | r128_q8 | 16 / 24 | 7.207542 | 4.764289 | 6.587218 | 0 | 0 | Fail |
+| 1024 | cg_1e-01 | — | 1.182643 | 89.205305 | 96.314497 | 1 | 0 | Pass |
+| 1024 | cg_1e-06 | — | 0.000785 | 251.533784 | 258.338489 | 0 | 0 | Pass |
+| 1024 | cg_3e-02 | — | 0.269520 | 103.618530 | 110.952986 | 0 | 0 | Pass |
+| 1024 | dst | — | 0.000785 | 0.395368 | 8.098022 | 3 | 0 | Pass |
+| 1024 | original_relative | 16 / 16 | 7.280248 | 3.927122 | 11.218030 | 5 | 0 | Fail |
+| 1024 | r128_q0 | 16 / 16 | 7.553765 | 4.412962 | 11.692039 | 1 | 0 | Fail |
+| 1024 | r128_q16 | 16 / 32 | 7.032119 | 5.232792 | 12.490237 | 3 | 0 | Fail |
+| 1024 | r128_q32 | 16 / 48 | 6.110576 | 6.043163 | 13.092479 | 0 | 0 | Fail |
+| 1024 | r128_q8 | 16 / 24 | 7.207505 | 5.031713 | 12.251328 | 5 | 0 | Fail |
+
+At 1024 intervals on all 42 development cases, the primary correction lowers worst error from the original model's 7.280248% and its larger-bank parent's 7.553765% to 6.110576%. Its GPU time is 6.043163 ms, compared with 3.927122 ms for the original and 4.412962 ms for the parent in this job.
+
+The primary uses 53.882742% more GPU time than the original and 36.941183% more than its uncorrected parent. This is an accuracy–cost tradeoff. All these cases were already opened in the preceding development comparisons; this is not independent final validation.
+
+On that finest mesh, target-failing cases fall from 8 to 2 out of 42. This is useful progress, while the full-cohort target remains unmet.
+
+The added directions help the solver use its existing spatial bank, but neither the physical target nor the separate tighter bank-projection target is met across all development cases. Preserve the enriched family as an accuracy-improving candidate; do not describe it as a completed target-accuracy solution. No further correction-basis search followed this result.
+
 ## Burgers: stricter solves work; initial-field retraining regressed
 
 The fixed-bank comparison crosses the original and refined heads with the earlier stall-based optimizer and explicit stationarity stopping. The refined head trains on regenerated initial fields in the fine-grid physical norm, while replay preserves original decoded outputs at old training codes. Replay targets are not new PDE trajectories.
@@ -184,7 +245,7 @@ On the opened 64-interval screen, the unchanged-step implementation is 6.929744�
 | cg_0.01 | 0.01 | 82.725549 | 0.303316 / 0.358723 / 0.485925 | 0 | Pass |
 | dst | 0.0 | 3.851750 | 0.000000 / 0.000000 / 0.000000 | 0 | Pass |
 
-Wave displacement error is divided by the initial displacement norm. Velocity and energy-state errors are divided by $\sqrt{2E_0}$, where $E_0$ is initial physical energy; initial velocity can be zero, and its norm is not the denominator. The energy-state error measures displacement-gradient and velocity error, not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON and exclude the recorded zero/vanishing reference times. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.
+Wave displacement error is divided by the initial displacement norm. Velocity and energy-state errors are divided by $\sqrt{2E_0}$, where $E_0$ is initial physical energy; initial velocity can be zero, and its norm is not the denominator. The energy-state error measures displacement-gradient and velocity error, not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON and exclude times flagged as numerical zeros; near-vanishing reference times are recorded separately. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.
 
 The follow-up also tested unrestricted bank evolution and nonlinear output projection. Those methods evolve a larger linear state and are labeled separately from the original nonlinear latent dynamics. Both projected-output variants missed the all-state target; the unrestricted linear control passed on the opened cases.
 
@@ -231,7 +292,7 @@ The combined training improves the three displayed initial-scaled errors compare
 
 ## Reflective waves: correction coordinates help more than retraining a larger head
 
-Increasing the latent dimension and retraining with the same phase-aware loss worsened both runtime and accuracy on the opened screen. The next arm preserves the trained nonlinear head and adds fixed linear correction directions from training data. This enlarges the nonlinear manifold while containing the original one exactly; it is a separately prepared decoder.
+Increasing the latent dimension and retraining with the same phase-aware loss worsened both runtime and accuracy on the opened screen. The next arm preserves the phase-trained `trained_phase` head and adds fixed linear correction directions from training data. This enlarges the nonlinear manifold while containing that parent decoder exactly; it is a separately prepared decoder.
 
 The enriched decoder is $h_{40}(z,y)=h_{32}(z)+B_8y$. The extra directions are frozen training principal components. All initial coordinates are fitted from the supplied fields, and the full enlarged state evolves through nonlinear latent dynamics. The initial-guess library uses appended principal-component coordinates without a residual correction; that limitation is frozen for confirmation.
 
@@ -270,7 +331,7 @@ The nested head reaches 5.041071% worst energy-state error and 199.464938 GPU ms
 
 ## Reflective waves: frozen multiresolution confirmation
 
-The selected nested decoder, initializer and integration step were frozen before introducing the new development cases. The original head, its accelerated implementation, named CG controls and direct DST are retimed together in this confirmation job. The phase-only head and independently retrained larger head were not confirmed across these meshes.
+The selected nested decoder, initializer and integration step were frozen before introducing the new development cases. Confirmation uses two previously opened cases plus two fresh development cases. The original head, its accelerated implementation, named CG controls and direct DST are retimed together in this job. The phase-only head and independently retrained larger head were not confirmed across these meshes.
 
 | Intervals | Method | GPU ms | Worst initial-scaled u / v / energy-state error % | GPU outliers | Physical and numerical criteria |
 | --- | --- | --- | --- | --- | --- |
@@ -292,7 +353,7 @@ The selected nested decoder, initializer and integration step were frozen before
 
 At 1024 intervals on all 4 cases, the selected ROM takes 202.941565 GPU ms versus 4477.732209 ms for the same-job original ROM (22.064145× acceleration). The fastest tested passing CG setting takes 601.496361 ms, a 2.963889× timing ratio. The ROM still misses the all-state target at 5.145194% energy-state error, so this is not an accuracy-qualified speedup at that target. Direct DST remains faster.
 
-The pooled comparator must pass over the complete cohort. A fast CG setting that fails physical accuracy on an intermediate mesh is excluded even when its algebraic residual test passes. Retained repetitions and all rejected CG settings remain in the normalized JSON.
+For each mesh, select the fastest tested CG setting that passes on all four cases; exclude a failing setting on that mesh. A setting can qualify on another mesh. Retained repetitions and all rejected CG settings remain in the normalized JSON.
 
 | Fine-grid cohort | Method | Initial-scaled u / v / energy-state error % | Current-relative u / v error % | Physical and numerical criteria |
 | --- | --- | --- | --- | --- |
@@ -303,9 +364,11 @@ The pooled comparator must pass over the complete cohort. A fast CG setting that
 
 The new development cohort stays separate from the opened selection cases; neither cohort is the paper's sealed final test. Every returned trajectory and refinement comparison passed the recorded numerical checks. A configuration-key error stopped the first confirmation attempt before any query cases were generated; the retry changed only that operational lookup and retained the frozen scientific configuration.
 
-## Work still in progress
+## What remains for the paper
 
-The final nested Poisson correction family is queued or running. Heat, Burgers and reflective-wave experiments are complete and audited. The remaining accepted result will be added here, including any unsuccessful prefixes.
+The bounded experiment round is complete. Heat's targeted training and the reflective-wave implementation acceleration are useful changes. Poisson's nested corrections improve accuracy but still need a better representation to meet the physical target. Burgers needs a training objective that preserves time evolution; both initial-field retraining arms remain negative results. Wave energy-state accuracy also remains short of its target.
+
+A subsequent round should freeze its protocol before measuring new cases: trajectory-aware Burgers training with a controlled EQ comparison, wave displacement-gradient/velocity training, and better Poisson correction coverage. Multiple training seeds and the sealed final cohorts are still required before a publication-level generalization claim. None of that additional search or final testing was performed here.
 
 ## Reproduction and evidence
 
@@ -314,6 +377,7 @@ Heat job `3563072` contains the paired GPU measurements; scientific source and c
 - [Heat complete panel](../worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/analysis/summary.md)
 - [Poisson fixed-capacity panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/staged_accuracy08/panel.json)
 - [Poisson larger-bank panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/capacity_accuracy09/panel.json)
+- [Poisson nested-correction panel](../worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/correction_accuracy10/panel.json)
 - [Burgers training and solver panel](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/accuracy08/PANEL.json)
 - [Burgers broader-coverage panel](../worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/accuracy09/PANEL.json)
 - [Wave geometry audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel06/audit.json)
@@ -324,6 +388,8 @@ Heat job `3563072` contains the paired GPU measurements; scientific source and c
 - [Wave multiresolution confirmation audit](../worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel12/audit.json)
 - [Normalized values, repetition arrays and source hashes](2026-09-11-accuracy-improvements-and-wave-speed.json)
 
+- [Selected implementation and artifact inventory](../reports/2026-09-11-accuracy-integration.json)
+
 Run `reports/generate_accuracy_campaign.py` with the repository Python environment to rebuild. All source hashes and generator identity are embedded in the adjacent JSON. These are single-training-seed development studies on the recorded families; they do not establish broad PDE generalization or final paper performance.
 
 ## Plain-language glossary
@@ -332,11 +398,12 @@ Run `reports/generate_accuracy_campaign.py` with the repository Python environme
 - **Bank / head / latent:** learned spatial functions / network choosing their coefficients / compressed coordinates solved online.
 - **POD / bank projection:** a span built from training-snapshot singular vectors / the closest unrestricted bank combination in the stated field norm. These are diagnostic controls, not deployed nonlinear networks.
 - **FOM / ROM / NMROM:** full-grid solver / reduced solver / reduced solver constrained to a nonlinear decoder.
-- **GPU / host ms:** blocked complete GPU input-to-output query time / the same heat invocation including input and output transfers.
+- **GPU / host ms:** blocked complete GPU input-to-output query time / the same timed invocation including input and output transfers.
 - **Relative error:** error magnitude divided by the specified reference magnitude. Heat uses the current true field at each time; the displayed wave screen uses initial physical scales.
 - **Median / worst:** middle case error / largest case error, with each case scored at its worst saved output time. Runtime uses the median of all retained repetitions.
 - **CG / DST:** iterative conjugate-gradient solver / direct discrete sine-transform solver. A CG tolerance is its stopping threshold, not its measured field error.
 - **Stationarity:** sufficiently small gradient of the reduced solve objective. This does not itself guarantee physical accuracy.
+- **Correction prefix / analytic elimination:** the first selected directions of one fixed training basis / solving their linear coefficients exactly inside the nonlinear solve. Nonlinear coordinates are searched iteratively; total coordinates include the analytically recovered ones.
 - **Tail emphasis:** training loss that assigns more influence to large reconstruction errors within a training batch.
 - **EQ / replay / coverage:** fitted quadrature weights approximating weak sums / preserving old decoded outputs during training / the range and number of training initial conditions.
 - **All-state / energy-state:** checking displacement, velocity and their combined energy norm / the norm combining velocity and spatial-gradient error.

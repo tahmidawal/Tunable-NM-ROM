@@ -171,7 +171,7 @@ def burgers(run_name, coordinator_file):
 
 def wave_confirmation_lines(w):
     lines = ["## Reflective waves: frozen multiresolution confirmation", "",
-             "The selected nested decoder, initializer and integration step were frozen before introducing the new development cases. The original head, its accelerated implementation, named CG controls and direct DST are retimed together in this confirmation job. The phase-only head and independently retrained larger head were not confirmed across these meshes.", ""]
+             "The selected nested decoder, initializer and integration step were frozen before introducing the new development cases. Confirmation uses two previously opened cases plus two fresh development cases. The original head, its accelerated implementation, named CG controls and direct DST are retimed together in this job. The phase-only head and independently retrained larger head were not confirmed across these meshes.", ""]
     lookup = {(p["intervals"], p["method"]): p for p in w["combined_panels"]}
     meshes = sorted({p["intervals"] for p in w["combined_panels"]})
     rows = []
@@ -189,7 +189,7 @@ def wave_confirmation_lines(w):
     original = lookup[meshes[-1], "baseline"]
     cg = fine["fastest_tested_passing_cg"]
     lines += [f"At {meshes[-1]} intervals on all {fine['cases']} cases, the selected ROM takes {fine['median_gpu_ms']:.6f} GPU ms versus {original['median_gpu_ms']:.6f} ms for the same-job original ROM ({original['median_gpu_ms']/fine['median_gpu_ms']:.6f}× acceleration). The fastest tested passing CG setting takes {cg['median_gpu_ms']:.6f} ms, a {cg['median_gpu_ms']/fine['median_gpu_ms']:.6f}× timing ratio. The ROM still misses the all-state target at {fine['worst_initial_errors_percent']['energy_state']:.6f}% energy-state error, so this is not an accuracy-qualified speedup at that target. Direct DST remains faster.", "",
-              "The pooled comparator must pass over the complete cohort. A fast CG setting that fails physical accuracy on an intermediate mesh is excluded even when its algebraic residual test passes. Retained repetitions and all rejected CG settings remain in the normalized JSON.", ""]
+              "For each mesh, select the fastest tested CG setting that passes on all four cases; exclude a failing setting on that mesh. A setting can qualify on another mesh. Retained repetitions and all rejected CG settings remain in the normalized JSON.", ""]
     rows = []
     for p in w["panels"]:
         if p["intervals"] == meshes[-1] and p["method"] in ("baseline", "trained_nested40"):
@@ -199,6 +199,122 @@ def wave_confirmation_lines(w):
     lines += table(["Fine-grid cohort", "Method", "Initial-scaled u / v / energy-state error %", "Current-relative u / v error %", "Physical and numerical criteria"], rows)
     lines += ["The new development cohort stays separate from the opened selection cases; neither cohort is the paper's sealed final test. Every returned trajectory and refinement comparison passed the recorded numerical checks. A configuration-key error stopped the first confirmation attempt before any query cases were generated; the retry changed only that operational lookup and retained the frozen scientific configuration.", ""]
     return lines
+
+
+def poisson_correction_lines(p):
+    group = next(g for g in p["groups"] if g["group"] == "all")
+    lines = ["## Poisson: nested linear corrections improve accuracy", "",
+             "The final predeclared experiment freezes the larger bank and nonlinear head, then adds nested prefixes of one correction basis constructed only from training reconstruction residuals. Evaluation truth is not used to build this basis or initialize a query. The largest prefix is the primary configuration, fixed before these queries.", "",
+             r"The decoder is $D_q(z,y)=G(h(z)+C_qy)$. For each $z$, solve the linear least-squares problem for $y$ exactly, then optimize the projected objective in $z$. Thus additional correction coordinates increase expressiveness while leaving the nonlinear optimizer dimension unchanged. This tests both added capacity and analytic elimination; it does not isolate a width-only change.", "",
+             "Every neural timing in this job includes the supplied-source contraction, initial-guess search, nonlinear solve, linear recovery, full decoding, and final gradient/rank diagnostics. Both the full and projected objective gradients must satisfy their stationarity tests. Added diagnostics change the timing contract from previous jobs, so compare only paired times below.", ""]
+    lines += ["The prefix count is a fixed-weight tuning option after preparing each prefix's projected operators, initial-guess cache and compiled solver offline. Switching among those prepared presets requires no neural retraining. It is not a guarantee that arbitrary unprepared prefix sizes can be selected at zero setup cost.", ""]
+    rows = []
+    for mesh in group["meshes"]:
+        for method, m in mesh["methods"].items():
+            dimensions = (f"{m['nonlinear_optimizer_dimension']} / {m['nominal_latent_dimension']}"
+                          if "correction_count" in m else "—")
+            rows.append([mesh["intervals"], method, dimensions,
+                         f"{100*m['worst_relative_error']:.6f}", f"{m['gpu_median_ms']:.6f}",
+                         f"{m['host_median_ms']:.6f}", m["gpu_outlier_count"],
+                         m["invalid_invocations"], "Pass" if m["all_cases_pass_target"] else "Fail"])
+    lines += table(["Intervals", "Method", "Nonlinear / total coordinates", "Worst physical error %",
+                    "GPU ms", "Host ms", "GPU outliers", "Invalid solves", "Physical and numerical criteria"], rows)
+    fine = max(group["meshes"], key=lambda m: m["intervals"])
+    old, parent, primary = (fine["methods"][m] for m in ("original_relative", "r128_q0", p["primary_model"]))
+    assert primary["worst_relative_error"] < min(old["worst_relative_error"], parent["worst_relative_error"])
+    physical_pass = all(m["methods"][p["primary_model"]]["all_cases_pass_target"] for m in group["meshes"])
+    bank_pass = all(m["bank_diagnostics"][p["primary_model"]]["passes_proposed_bank_target"] for m in group["meshes"])
+    # This conclusion is checked against the accepted panel, never inferred from partial progress.
+    assert not physical_pass and not bank_pass
+    lines += [f"At {fine['intervals']} intervals on all {group['cases']} development cases, the primary correction lowers worst error from the original model's {100*old['worst_relative_error']:.6f}% and its larger-bank parent's {100*parent['worst_relative_error']:.6f}% to {100*primary['worst_relative_error']:.6f}%. Its GPU time is {primary['gpu_median_ms']:.6f} ms, compared with {old['gpu_median_ms']:.6f} ms for the original and {parent['gpu_median_ms']:.6f} ms for the parent in this job.", "",
+              f"The primary uses {100*(primary['gpu_median_ms']/old['gpu_median_ms']-1):.6f}% more GPU time than the original and {100*(primary['gpu_median_ms']/parent['gpu_median_ms']-1):.6f}% more than its uncorrected parent. This is an accuracy–cost tradeoff. All these cases were already opened in the preceding development comparisons; this is not independent final validation.", "",
+              f"On that finest mesh, target-failing cases fall from {old['failed_target_cases']} to {primary['failed_target_cases']} out of {group['cases']}. This is useful progress, while the full-cohort target remains unmet.", "",
+              "The added directions help the solver use its existing spatial bank, but neither the physical target nor the separate tighter bank-projection target is met across all development cases. Preserve the enriched family as an accuracy-improving candidate; do not describe it as a completed target-accuracy solution. No further correction-basis search followed this result.", ""]
+    return lines
+
+
+def campaign_summary(h, p, b, bc, w):
+    """Keep the opening decisions short, with every number derived from records."""
+    n = max(r["intervals"] for r in h["rows"])
+    hr = {r["method"]: r for r in h["rows"] if r["scope"] == "all_development" and r["intervals"] == n}
+    pg = next(g for g in p["groups"] if g["group"] == "all")
+    pm = next(m for m in pg["meshes"] if m["intervals"] == n)
+    pr, po = pm["methods"][p["primary_model"]], pm["methods"]["original_relative"]
+    br = {r["name"]: r for r in bc["rows"] if r["cohort"] == "all" and r["intervals"] == n}
+    before_b = next(r for r in b["rows"] if r["cohort"] == "all" and r["intervals"] == n and r["name"] == "frozen_accepted")
+    wr = {r["method"]: r for r in w["combined_panels"] if r["intervals"] == n}
+    chosen_h, chosen_b, chosen_w = hr[h["primary"]], br["frozen_stationary"], wr["trained_nested40"]
+    eligible_h = [r for name, r in hr.items() if name.startswith("fom_cg") and r["physical_gate_passed"] and r["numerical_gate_passed"]]
+    assert min(eligible_h, key=lambda r: r["device_median_ms"])["method"] == "fom_cg_cn_tol1e2"
+    eligible_b = [r for name, r in br.items() if name.startswith("fft_") and r["physical_and_numerical_pass"]]
+    assert min(eligible_b, key=lambda r: r["gpu_ms"])["name"] == "fft_loose"
+    eligible_p = [name for name, r in pm["methods"].items() if name.startswith("cg_") and r["all_cases_pass_target"]]
+    assert min(eligible_p, key=lambda name: pm["methods"][name]["gpu_median_ms"]) == pm["fastest_passing_cg"]
+    assert pr["worst_relative_error"] < po["worst_relative_error"] and not pr["all_cases_pass_target"]
+    assert chosen_h["physical_error_worst"] < hr["nmrom_frozen"]["physical_error_worst"]
+    assert chosen_h["physical_gate_passed"] and chosen_h["numerical_gate_passed"]
+    assert not chosen_w["physical_and_numerical_pass"]
+    assert chosen_b["worst_fixed_initial"] < min(br[m]["worst_fixed_initial"] for m in ("trained576_stationary", "trained4608_stationary"))
+    summary = [
+        dict(pde="Poisson", choice="Nested correction family", norm="Static field L2", cases=pg["cases"],
+             before_percent=100*po["worst_relative_error"], after_percent=100*pr["worst_relative_error"],
+             gpu_ms=pr["gpu_median_ms"], fom_ms=pm["methods"][pm["fastest_passing_cg"]]["gpu_median_ms"],
+             target_pass=pr["all_cases_pass_target"], outcome="Accuracy improves; target still missed"),
+        dict(pde="Heat", choice="Initial + tail training", norm="Current field L2", cases=chosen_h["cases"],
+             before_percent=100*hr["nmrom_frozen"]["physical_error_worst"], after_percent=100*chosen_h["physical_error_worst"],
+             gpu_ms=chosen_h["device_median_ms"], fom_ms=hr["fom_cg_cn_tol1e2"]["device_median_ms"],
+             target_pass=chosen_h["physical_gate_passed"] and chosen_h["numerical_gate_passed"], outcome="Keep targeted training"),
+        dict(pde="Burgers", choice="Original head + strict stopping", norm="Initial field L2", cases=chosen_b["cases"],
+             before_percent=100*before_b["worst_fixed_initial"], after_percent=100*chosen_b["worst_fixed_initial"],
+             gpu_ms=chosen_b["gpu_ms"], fom_ms=br["fft_loose"]["gpu_ms"],
+             target_pass=chosen_b["physical_and_numerical_pass"], outcome="Keep original network; reject both retrained heads"),
+        dict(pde="Reflective waves", choice="Accelerated nested decoder", norm="Initial energy-state", cases=chosen_w["cases"],
+             before_percent=wr["baseline"]["worst_initial_errors_percent"]["energy_state"],
+             after_percent=chosen_w["worst_initial_errors_percent"]["energy_state"],
+             gpu_ms=chosen_w["median_gpu_ms"], fom_ms=chosen_w["fastest_tested_passing_cg"]["median_gpu_ms"],
+             target_pass=chosen_w["physical_and_numerical_pass"], outcome="Keep acceleration; accuracy target still missed")]
+    for r in summary:
+        r["intervals"] = n
+        r["iterative_fom_over_rom"] = r["fom_ms"]/r["gpu_ms"]
+    lines = ["## What to retain from this round", "",
+             f"All rows below use {n} intervals per axis and each PDE's full development cohort. Errors are worst-case values under the stated normalization; they are not comparable across different norms. The timing ratio compares each chosen ROM with its own job's fastest tested passing iterative FOM.", ""]
+    lines += table(["PDE (cases)", "Error normalization", "Before → after error %", "ROM GPU ms", "Iterative FOM / ROM", "Decision"],
+                   [[f"{r['pde']} ({r['cases']})", r["norm"], f"{r['before_percent']:.6f} → {r['after_percent']:.6f}",
+                     f"{r['gpu_ms']:.6f}", f"{r['iterative_fom_over_rom']:.6f}×" + ("*" if not r["target_pass"] else ""), r["outcome"]] for r in summary])
+    lines += ["*Poisson and reflective waves miss their declared physical target. Their ratios describe runtime only, not a speedup at matched target accuracy. Direct DST is faster for the linear PDEs. Burgers before/after accuracy comes from its controlled stopping comparison; the displayed runtime ratio uses the latest same-job control pair, whose original-head fields were checked against that comparison.", ""]
+    return summary, lines
+
+
+def integration_inventory(h, p):
+    """Provide concrete source/artifact links for the requested later merge decision."""
+    heat_cell = Path(h["run"]).parents[1]
+    heat_handoff = read(Path(h["run"])/"HANDOFF.json")
+    heat_checkpoint = next(m for m in h["models"] if m["name"] == "initial_tail")
+    checkpoint_path = Path(h["run"])/"archive/outputs"/heat_checkpoint["path"]
+    assert sha(ROOT/checkpoint_path) == heat_checkpoint["sha256"]
+    heat_files = [heat_cell/name for name in ("accuracy_training.py", "run_accuracy.py", "runtime_paths.py", "config-accuracy.json", "ACCURACY-DESIGN.md", "test_accuracy.py", "audit_accuracy.py")]
+    heat_files.append(checkpoint_path)
+    inventory = dict(status="Review inventory; no merge performed", report=str(REPORT.with_suffix(".md").relative_to(ROOT)),
+                     heat=dict(worktree=str(heat_cell.parents[1]), source_commit=heat_handoff["source_commit"],
+                               choice=h["primary"], reason="Targeted head training improves the complete development trajectory; unchanged online solver.",
+                               files=[dict(path=str(path), sha256=sha(ROOT/path)) for path in heat_files],
+                               archive_manifest=str(Path(h["run"])/"ARCHIVE.json"), retention=str(Path(h["run"])/"RETENTION.json")),
+                     poisson=dict(run=p["run"], source_commit=p["source_commit"], choice=p["primary_model"],
+                                  reason="Keep the fixed-weight correction family as an accuracy-improving research candidate; physical target remains missed.",
+                                  inventory=str(Path(p["run"]).parents[1]/"accuracy-integration/integration-inventory.json"),
+                                  implementation=str(Path(p["run"]).parents[1]/"correction_core.py"),
+                                  archive_manifest=str(Path(p["run"])/"ARCHIVE.json")),
+                     burgers=dict(inventory="worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/INTEGRATION-accuracy.json",
+                                  choice="Original checkpoint with explicit stationarity stopping; retain retraining failures as research evidence."),
+                     wave=dict(inventory="worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/integration-inventory.json",
+                               choice="Geometry acceleration, separately validated larger step, and frozen nested decoder; pooled physical target remains missed."),
+                     boundary="Do not replace defaults with failed trained checkpoints or erase negative evidence. Preserve corrected worktree dependencies and restorable archives. User merge decision remains pending.")
+    for key in ("poisson", "burgers", "wave"):
+        path = ROOT/inventory[key]["inventory"]
+        inventory[key]["inventory_sha256"] = sha(path)
+    destination = REPORT.parent/"2026-09-11-accuracy-integration.json"
+    destination.write_text(json.dumps(inventory, indent=2)+"\n")
+    return str(destination.relative_to(ROOT))
 
 
 def build():
@@ -212,19 +328,24 @@ def build():
     assert w10_coordinator["passed"] and w10_coordinator["source_result_sha256"] == w10["source_result_sha256"]
     ps = poisson("staged_accuracy08", "reports/2026-09-11-poisson-staged-accuracy.coordinator-audit.json")
     pc = poisson("capacity_accuracy09", "reports/2026-09-11-poisson-capacity-accuracy.coordinator-audit.json")
+    pd = poisson("correction_accuracy10", "reports/2026-09-11-poisson-correction.coordinator-audit.json")
     pc_diagnostic = read(Path(pc["run"])/"head-correction-diagnostic.json")
     assert pc_diagnostic["source_result_sha256"] == SOURCES[str(Path(pc["run"])/"result.json")]
     assert pc_diagnostic["source_audit_sha256"] == SOURCES[str(Path(pc["run"])/"audit.json")]
     b = burgers("accuracy08", "reports/2026-09-11-burgers-accuracy.coordinator-audit.json")
     bc = burgers("accuracy09", "reports/2026-09-11-burgers-coverage.coordinator-audit.json")
-    normalized = dict(status="Heat, Burgers and reflective waves complete and audited; staged/capacity Poisson audited; only the final nested Poisson family remains active.",
-                      heat=h, poisson_staged=ps, poisson_capacity=pc, poisson_training_correction_diagnostic=pc_diagnostic,
+    decisions, summary_lines = campaign_summary(h, pd, b, bc, wf)
+    integration_path = integration_inventory(h, pd)
+    normalized = dict(status="Controlled development round complete and independently audited; final paper validation remains unopened.",
+                      decisions=decisions, heat=h, poisson_staged=ps, poisson_capacity=pc, poisson_correction=pd, poisson_training_correction_diagnostic=pc_diagnostic,
                       burgers_initial=b, burgers_coverage=bc, wave_confirmation=wf, wave_confirmation_coordinator_audit=wf_coordinator,
                       wave_screens={"accel06": w6, "accel07": w7, "accel08": w8, "accel09": w9, "accel10": w10},
                       wave_correction_coordinator_audit=w10_coordinator)
     lines = ["# Accuracy improvements and reflective-wave speed", "",
-             "This report records the controlled accuracy-training and wave-acceleration campaign. The included numbers have passed independent development audits; the overall campaign and publication validation are still incomplete.", "",
-             "Absorbing waves are excluded. Final paper cohorts remain unopened, and the existing experiment branches remain separate. Tables are generated from saved invocation records; no wall-clock ratio crosses jobs or GPUs.", "",
+             "This report records the completed controlled accuracy-training and wave-acceleration round. These development numbers are finalized and independently audited; final publication validation remains unopened.", "",
+             "Absorbing waves are excluded. Final paper cohorts remain unopened, and the existing experiment branches remain separate. Tables are generated from saved invocation records; no wall-clock ratio crosses jobs or GPUs.", ""]
+    lines += summary_lines
+    lines += [
              "## Heat: targeted training improves accuracy", "",
              "The spatial bank, latent dimension and online solver are unchanged. Uniform continuation, extra initial-field sampling, and initial-field sampling plus a difficult-example loss are matched training arms. Initial-plus-tail was declared primary before evaluation.", ""]
     labels = {"nmrom_frozen": "Original head", "nmrom_uniform": "Uniform continuation",
@@ -339,7 +460,7 @@ def build():
                      " / ".join(f"{errs[k]:.6f}" for k in ("displacement", "velocity", "energy_state")),
                      p["outliers_above_twice_median"], "Pass" if p["all_state_5percent_pass"] else "Fail"])
     lines += table(["Method", "Step / CG tolerance", "GPU ms", "Worst u / v / energy-state error %", "Timing outliers", "All-state 5%"], rows)
-    lines += [r"Wave displacement error is divided by the initial displacement norm. Velocity and energy-state errors are divided by $\sqrt{2E_0}$, where $E_0$ is initial physical energy; initial velocity can be zero, and its norm is not the denominator. The energy-state error measures displacement-gradient and velocity error, not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON and exclude the recorded zero/vanishing reference times. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.", "",
+    lines += [r"Wave displacement error is divided by the initial displacement norm. Velocity and energy-state errors are divided by $\sqrt{2E_0}$, where $E_0$ is initial physical energy; initial velocity can be zero, and its norm is not the denominator. The energy-state error measures displacement-gradient and velocity error, not energy-conservation drift. Current-relative displacement and velocity errors are separately retained in the JSON and exclude times flagged as numerical zeros; near-vanishing reference times are recorded separately. DST is the same-grid semidiscrete reference, so its zero discrepancy is not zero continuum error.", "",
               "The follow-up also tested unrestricted bank evolution and nonlinear output projection. Those methods evolve a larger linear state and are labeled separately from the original nonlinear latent dynamics. Both projected-output variants missed the all-state target; the unrestricted linear control passed on the opened cases.", ""]
     rows = []
     for p in w7["panels"]:
@@ -367,7 +488,7 @@ def build():
               f"current-relative displacement changes from {wave_original['worst_current_errors_percent']['displacement']:.6f}% to {wave_phase['worst_current_errors_percent']['displacement']:.6f}%, while current-relative velocity improves from {wave_original['worst_current_errors_percent']['velocity']:.6f}% to {wave_phase['worst_current_errors_percent']['velocity']:.6f}%. "
               "All nonlinear heads in this screen still miss the all-state target. Initial fitting, numerical rank and half-step checks pass. These separately trained endpoints are not online changes to one trained network.", "",
               "## Reflective waves: correction coordinates help more than retraining a larger head", "",
-              "Increasing the latent dimension and retraining with the same phase-aware loss worsened both runtime and accuracy on the opened screen. The next arm preserves the trained nonlinear head and adds fixed linear correction directions from training data. This enlarges the nonlinear manifold while containing the original one exactly; it is a separately prepared decoder.", "",
+              "Increasing the latent dimension and retraining with the same phase-aware loss worsened both runtime and accuracy on the opened screen. The next arm preserves the phase-trained `trained_phase` head and adds fixed linear correction directions from training data. This enlarges the nonlinear manifold while containing that parent decoder exactly; it is a separately prepared decoder.", "",
               r"The enriched decoder is $h_{40}(z,y)=h_{32}(z)+B_8y$. The extra directions are frozen training principal components. All initial coordinates are fitted from the supplied fields, and the full enlarged state evolves through nonlinear latent dynamics. The initial-guess library uses appended principal-component coordinates without a residual correction; that limitation is frozen for confirmation.", ""]
     for label, screen in [("Larger retrained head", w9), ("Nested correction directions", w10)]:
         rows = []
@@ -382,13 +503,18 @@ def build():
     nested_original = next(p for p in w10["panels"] if p["method"] == "baseline")
     lines += [f"The nested head reaches {nested['worst_initial_errors_percent']['energy_state']:.6f}% worst energy-state error and {nested['median_gpu_ms']:.6f} GPU ms on the opened screen. Its {nested_original['median_gpu_ms']/nested['median_gpu_ms']:.6f}× acceleration is relative to the same-job original ROM, not a qualified FOM speedup. It still misses the all-state target. Its weights, initializer, step and solver were frozen before multiresolution evaluation on additional development cases.", ""]
     lines += wave_confirmation_lines(wf)
-    lines += ["## Work still in progress", "",
-              "The final nested Poisson correction family is queued or running. Heat, Burgers and reflective-wave experiments are complete and audited. The remaining accepted result will be added here, including any unsuccessful prefixes.", "",
+    # Keep the final correction family beside the earlier Poisson diagnostics.
+    insertion = next(i for i, line in enumerate(lines) if line.startswith("## Burgers:"))
+    lines[insertion:insertion] = poisson_correction_lines(pd)
+    lines += ["## What remains for the paper", "",
+              "The bounded experiment round is complete. Heat's targeted training and the reflective-wave implementation acceleration are useful changes. Poisson's nested corrections improve accuracy but still need a better representation to meet the physical target. Burgers needs a training objective that preserves time evolution; both initial-field retraining arms remain negative results. Wave energy-state accuracy also remains short of its target.", "",
+              "A subsequent round should freeze its protocol before measuring new cases: trajectory-aware Burgers training with a controlled EQ comparison, wave displacement-gradient/velocity training, and better Poisson correction coverage. Multiple training seeds and the sealed final cohorts are still required before a publication-level generalization claim. None of that additional search or final testing was performed here.", "",
               "## Reproduction and evidence", "",
               f"Heat job `{h['metadata']['job_id']}` contains the paired GPU measurements; scientific source and checkpoint hashes are in the linked owner panel. Independent coordinator checks cover each model's worst saved trajectory on every mesh.", "",
               f"- [Heat complete panel](../{h['run']}/analysis/summary.md)",
               f"- [Poisson fixed-capacity panel](../{ps['run']}/panel.json)",
               f"- [Poisson larger-bank panel](../{pc['run']}/panel.json)",
+              f"- [Poisson nested-correction panel](../{pd['run']}/panel.json)",
               f"- [Burgers training and solver panel](../{b['run']}/PANEL.json)",
               f"- [Burgers broader-coverage panel](../{bc['run']}/PANEL.json)",
               f"- [Wave geometry audit](../{w6['run']}/audit.json)",
@@ -398,17 +524,19 @@ def build():
               f"- [Wave correction-head audit](../{w10['run']}/audit.json)",
               f"- [Wave multiresolution confirmation audit](../{wf['run']}/audit.json)",
               "- [Normalized values, repetition arrays and source hashes](2026-09-11-accuracy-improvements-and-wave-speed.json)", "",
+              f"- [Selected implementation and artifact inventory](../{integration_path})", "",
               "Run `reports/generate_accuracy_campaign.py` with the repository Python environment to rebuild. All source hashes and generator identity are embedded in the adjacent JSON. These are single-training-seed development studies on the recorded families; they do not establish broad PDE generalization or final paper performance.", "",
               "## Plain-language glossary", "",
               "- **Intervals / mesh:** subdivisions along each spatial axis; larger values request more output points.",
               "- **Bank / head / latent:** learned spatial functions / network choosing their coefficients / compressed coordinates solved online.",
               "- **POD / bank projection:** a span built from training-snapshot singular vectors / the closest unrestricted bank combination in the stated field norm. These are diagnostic controls, not deployed nonlinear networks.",
               "- **FOM / ROM / NMROM:** full-grid solver / reduced solver / reduced solver constrained to a nonlinear decoder.",
-              "- **GPU / host ms:** blocked complete GPU input-to-output query time / the same heat invocation including input and output transfers.",
+              "- **GPU / host ms:** blocked complete GPU input-to-output query time / the same timed invocation including input and output transfers.",
               "- **Relative error:** error magnitude divided by the specified reference magnitude. Heat uses the current true field at each time; the displayed wave screen uses initial physical scales.",
               "- **Median / worst:** middle case error / largest case error, with each case scored at its worst saved output time. Runtime uses the median of all retained repetitions.",
               "- **CG / DST:** iterative conjugate-gradient solver / direct discrete sine-transform solver. A CG tolerance is its stopping threshold, not its measured field error.",
               "- **Stationarity:** sufficiently small gradient of the reduced solve objective. This does not itself guarantee physical accuracy.",
+              "- **Correction prefix / analytic elimination:** the first selected directions of one fixed training basis / solving their linear coefficients exactly inside the nonlinear solve. Nonlinear coordinates are searched iteratively; total coordinates include the analytically recovered ones.",
               "- **Tail emphasis:** training loss that assigns more influence to large reconstruction errors within a training batch.",
               "- **EQ / replay / coverage:** fitted quadrature weights approximating weak sums / preserving old decoded outputs during training / the range and number of training initial conditions.",
               "- **All-state / energy-state:** checking displacement, velocity and their combined energy norm / the norm combining velocity and spatial-gradient error.",

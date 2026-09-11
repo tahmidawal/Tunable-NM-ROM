@@ -1,0 +1,73 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.26:/projects/paralab  4.6T  4.1T  464G  91% /cluster/tufts/paralab
+Thu Sep 10 22:52:51 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  |   00000000:1E:00.0 Off |                    0 |
+| N/A   40C    P0             43W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+reference passed 0
+reference passed 1
+reference passed 2
+reference passed 3
+reference passed 4
+reference passed 5
+reference passed 6
+reference passed 7
+reference passed 8
+reference passed 9
+reference passed 10
+reference passed 11
+timed 64 0 {'nmrom': np.float64(13.5493), 'nmrom_cholesky': np.float64(12.4202), 'fom_cg_cn': np.float64(5.5674), 'fom_cg_cn_tol1e3': np.float64(2.7088), 'fom_cg_cn_tol1e2': np.float64(2.5339), 'fom_cg_be50': np.float64(10.6275), 'linear_weak_exact': np.float64(0.1062), 'fom_same_grid': np.float64(0.2025)}
+timed 64 1 {'nmrom': np.float64(11.3893), 'nmrom_cholesky': np.float64(10.1992), 'fom_cg_cn': np.float64(5.5018), 'fom_cg_cn_tol1e3': np.float64(2.6213), 'fom_cg_cn_tol1e2': np.float64(2.5456), 'fom_cg_be50': np.float64(10.6152), 'linear_weak_exact': np.float64(0.112), 'fom_same_grid': np.float64(0.172)}
+timed 64 2 {'nmrom': np.float64(13.0045), 'nmrom_cholesky': np.float64(11.1485), 'fom_cg_cn': np.float64(5.4856), 'fom_cg_cn_tol1e3': np.float64(2.7334), 'fom_cg_cn_tol1e2': np.float64(2.4319), 'fom_cg_be50': np.float64(10.3991), 'linear_weak_exact': np.float64(0.1075), 'fom_same_grid': np.float64(0.1834)}
+timed 64 3 {'nmrom': np.float64(11.0642), 'nmrom_cholesky': np.float64(10.142), 'fom_cg_cn': np.float64(5.2867), 'fom_cg_cn_tol1e3': np.float64(2.5932), 'fom_cg_cn_tol1e2': np.float64(2.493), 'fom_cg_be50': np.float64(10.4166), 'linear_weak_exact': np.float64(0.1096), 'fom_same_grid': np.float64(0.1817)}
+timed 64 4 {'nmrom': np.float64(12.0674), 'nmrom_cholesky': np.float64(11.229), 'fom_cg_cn': np.float64(5.496), 'fom_cg_cn_tol1e3': np.float64(2.6559), 'fom_cg_cn_tol1e2': np.float64(2.5133), 'fom_cg_be50': np.float64(10.6585), 'linear_weak_exact': np.float64(0.1103), 'fom_same_grid': np.float64(0.1816)}
+timed 64 5 {'nmrom': np.float64(11.9508), 'nmrom_cholesky': np.float64(10.8688), 'fom_cg_cn': np.float64(5.6261), 'fom_cg_cn_tol1e3': np.float64(2.6227), 'fom_cg_cn_tol1e2': np.float64(2.5518), 'fom_cg_be50': np.float64(10.6561), 'linear_weak_exact': np.float64(0.1085), 'fom_same_grid': np.float64(0.1764)}
+timed 64 6 {'nmrom': np.float64(12.5828), 'nmrom_cholesky': np.float64(11.6246), 'fom_cg_cn': np.float64(5.6012), 'fom_cg_cn_tol1e3': np.float64(2.8522), 'fom_cg_cn_tol1e2': np.float64(2.4567), 'fom_cg_be50': np.float64(10.566), 'linear_weak_exact': np.float64(0.1062), 'fom_same_grid': np.float64(0.1725)}
+timed 64 7 {'nmrom': np.float64(12.3887), 'nmrom_cholesky': np.float64(10.9018), 'fom_cg_cn': np.float64(5.5903), 'fom_cg_cn_tol1e3': np.float64(2.8344), 'fom_cg_cn_tol1e2': np.float64(2.4436), 'fom_cg_be50': np.float64(10.5383), 'linear_weak_exact': np.float64(0.1098), 'fom_same_grid': np.float64(0.1735)}
+timed 64 8 {'nmrom': np.float64(12.8503), 'nmrom_cholesky': np.float64(11.5023), 'fom_cg_cn': np.float64(5.4413), 'fom_cg_cn_tol1e3': np.float64(2.6469), 'fom_cg_cn_tol1e2': np.float64(2.5448), 'fom_cg_be50': np.float64(10.5243), 'linear_weak_exact': np.float64(0.106), 'fom_same_grid': np.float64(0.1775)}
+timed 64 9 {'nmrom': np.float64(14.0408), 'nmrom_cholesky': np.float64(12.2645), 'fom_cg_cn': np.float64(5.5736), 'fom_cg_cn_tol1e3': np.float64(2.7793), 'fom_cg_cn_tol1e2': np.float64(2.4159), 'fom_cg_be50': np.float64(10.6327), 'linear_weak_exact': np.float64(0.1054), 'fom_same_grid': np.float64(0.1752)}
+timed 64 10 {'nmrom': np.float64(15.3831), 'nmrom_cholesky': np.float64(14.2495), 'fom_cg_cn': np.float64(5.5399), 'fom_cg_cn_tol1e3': np.float64(2.6172), 'fom_cg_cn_tol1e2': np.float64(2.5343), 'fom_cg_be50': np.float64(10.6544), 'linear_weak_exact': np.float64(0.1089), 'fom_same_grid': np.float64(0.1772)}
+timed 64 11 {'nmrom': np.float64(12.8476), 'nmrom_cholesky': np.float64(11.2246), 'fom_cg_cn': np.float64(5.3988), 'fom_cg_cn_tol1e3': np.float64(2.5966), 'fom_cg_cn_tol1e2': np.float64(2.479), 'fom_cg_be50': np.float64(10.5368), 'linear_weak_exact': np.float64(0.1065), 'fom_same_grid': np.float64(0.1779)}
+timed 256 0 {'nmrom': np.float64(13.7856), 'nmrom_cholesky': np.float64(12.4685), 'fom_cg_cn': np.float64(21.5514), 'fom_cg_cn_tol1e3': np.float64(8.6649), 'fom_cg_cn_tol1e2': np.float64(7.1661), 'fom_cg_be50': np.float64(33.301), 'linear_weak_exact': np.float64(0.139), 'fom_same_grid': np.float64(0.2742)}
+timed 256 1 {'nmrom': np.float64(11.0711), 'nmrom_cholesky': np.float64(10.351), 'fom_cg_cn': np.float64(20.9434), 'fom_cg_cn_tol1e3': np.float64(8.3929), 'fom_cg_cn_tol1e2': np.float64(6.9693), 'fom_cg_be50': np.float64(33.1812), 'linear_weak_exact': np.float64(0.1337), 'fom_same_grid': np.float64(0.2517)}
+timed 256 2 {'nmrom': np.float64(11.8728), 'nmrom_cholesky': np.float64(11.1738), 'fom_cg_cn': np.float64(19.6632), 'fom_cg_cn_tol1e3': np.float64(8.4862), 'fom_cg_cn_tol1e2': np.float64(6.8089), 'fom_cg_be50': np.float64(32.2777), 'linear_weak_exact': np.float64(0.1347), 'fom_same_grid': np.float64(0.2219)}
+timed 256 3 {'nmrom': np.float64(10.9127), 'nmrom_cholesky': np.float64(10.1651), 'fom_cg_cn': np.float64(19.037), 'fom_cg_cn_tol1e3': np.float64(8.0018), 'fom_cg_cn_tol1e2': np.float64(6.8322), 'fom_cg_be50': np.float64(32.3158), 'linear_weak_exact': np.float64(0.1444), 'fom_same_grid': np.float64(0.203)}
+timed 256 4 {'nmrom': np.float64(12.1682), 'nmrom_cholesky': np.float64(11.4004), 'fom_cg_cn': np.float64(21.2012), 'fom_cg_cn_tol1e3': np.float64(8.076), 'fom_cg_cn_tol1e2': np.float64(6.934), 'fom_cg_be50': np.float64(33.2244), 'linear_weak_exact': np.float64(0.1291), 'fom_same_grid': np.float64(0.1996)}
+timed 256 5 {'nmrom': np.float64(12.0557), 'nmrom_cholesky': np.float64(10.9233), 'fom_cg_cn': np.float64(22.3739), 'fom_cg_cn_tol1e3': np.float64(8.282), 'fom_cg_cn_tol1e2': np.float64(7.1022), 'fom_cg_be50': np.float64(33.7247), 'linear_weak_exact': np.float64(0.1398), 'fom_same_grid': np.float64(0.2792)}
+timed 256 6 {'nmrom': np.float64(12.6534), 'nmrom_cholesky': np.float64(11.6694), 'fom_cg_cn': np.float64(21.2355), 'fom_cg_cn_tol1e3': np.float64(8.7898), 'fom_cg_cn_tol1e2': np.float64(6.8645), 'fom_cg_be50': np.float64(33.3457), 'linear_weak_exact': np.float64(0.145), 'fom_same_grid': np.float64(0.2045)}
+timed 256 7 {'nmrom': np.float64(12.0293), 'nmrom_cholesky': np.float64(10.9613), 'fom_cg_cn': np.float64(21.1094), 'fom_cg_cn_tol1e3': np.float64(8.8746), 'fom_cg_cn_tol1e2': np.float64(6.8856), 'fom_cg_be50': np.float64(33.1236), 'linear_weak_exact': np.float64(0.1354), 'fom_same_grid': np.float64(0.2732)}
+timed 256 8 {'nmrom': np.float64(12.4404), 'nmrom_cholesky': np.float64(11.7252), 'fom_cg_cn': np.float64(20.7587), 'fom_cg_cn_tol1e3': np.float64(8.1428), 'fom_cg_cn_tol1e2': np.float64(6.9502), 'fom_cg_be50': np.float64(32.9381), 'linear_weak_exact': np.float64(0.1319), 'fom_same_grid': np.float64(0.261)}
+timed 256 9 {'nmrom': np.float64(13.0118), 'nmrom_cholesky': np.float64(12.3235), 'fom_cg_cn': np.float64(19.8964), 'fom_cg_cn_tol1e3': np.float64(8.9179), 'fom_cg_cn_tol1e2': np.float64(6.7023), 'fom_cg_be50': np.float64(33.4312), 'linear_weak_exact': np.float64(0.1439), 'fom_same_grid': np.float64(0.2533)}
+timed 256 10 {'nmrom': np.float64(15.5686), 'nmrom_cholesky': np.float64(14.223), 'fom_cg_cn': np.float64(22.0104), 'fom_cg_cn_tol1e3': np.float64(8.251), 'fom_cg_cn_tol1e2': np.float64(7.0597), 'fom_cg_be50': np.float64(33.5425), 'linear_weak_exact': np.float64(0.1494), 'fom_same_grid': np.float64(0.2795)}
+timed 256 11 {'nmrom': np.float64(11.9262), 'nmrom_cholesky': np.float64(11.2489), 'fom_cg_cn': np.float64(20.0475), 'fom_cg_cn_tol1e3': np.float64(8.1538), 'fom_cg_cn_tol1e2': np.float64(6.9528), 'fom_cg_be50': np.float64(32.743), 'linear_weak_exact': np.float64(0.1335), 'fom_same_grid': np.float64(0.3681)}
+timed 1024 0 {'nmrom': np.float64(15.4051), 'nmrom_cholesky': np.float64(14.0175), 'fom_cg_cn': np.float64(217.2285), 'fom_cg_cn_tol1e3': np.float64(87.2978), 'fom_cg_cn_tol1e2': np.float64(59.5542), 'fom_cg_be50': np.float64(307.0095), 'linear_weak_exact': np.float64(0.6349), 'fom_same_grid': np.float64(1.157)}
+timed 1024 1 {'nmrom': np.float64(12.3518), 'nmrom_cholesky': np.float64(11.3423), 'fom_cg_cn': np.float64(210.3107), 'fom_cg_cn_tol1e3': np.float64(84.2625), 'fom_cg_cn_tol1e2': np.float64(59.3422), 'fom_cg_be50': np.float64(302.3762), 'linear_weak_exact': np.float64(0.8922), 'fom_same_grid': np.float64(1.246)}
+timed 1024 2 {'nmrom': np.float64(12.7322), 'nmrom_cholesky': np.float64(11.9327), 'fom_cg_cn': np.float64(196.6309), 'fom_cg_cn_tol1e3': np.float64(78.5453), 'fom_cg_cn_tol1e2': np.float64(57.8778), 'fom_cg_be50': np.float64(297.681), 'linear_weak_exact': np.float64(0.8543), 'fom_same_grid': np.float64(1.1803)}
+timed 1024 3 {'nmrom': np.float64(11.6441), 'nmrom_cholesky': np.float64(10.9871), 'fom_cg_cn': np.float64(191.7144), 'fom_cg_cn_tol1e3': np.float64(78.7677), 'fom_cg_cn_tol1e2': np.float64(57.6208), 'fom_cg_be50': np.float64(294.0851), 'linear_weak_exact': np.float64(0.8447), 'fom_same_grid': np.float64(1.1176)}
+timed 1024 4 {'nmrom': np.float64(13.0237), 'nmrom_cholesky': np.float64(12.4541), 'fom_cg_cn': np.float64(210.97), 'fom_cg_cn_tol1e3': np.float64(81.2535), 'fom_cg_cn_tol1e2': np.float64(59.8829), 'fom_cg_be50': np.float64(303.9087), 'linear_weak_exact': np.float64(0.8801), 'fom_same_grid': np.float64(1.2828)}
+timed 1024 5 {'nmrom': np.float64(12.4773), 'nmrom_cholesky': np.float64(11.6073), 'fom_cg_cn': np.float64(220.1835), 'fom_cg_cn_tol1e3': np.float64(78.7873), 'fom_cg_cn_tol1e2': np.float64(61.3393), 'fom_cg_be50': np.float64(309.1517), 'linear_weak_exact': np.float64(0.906), 'fom_same_grid': np.float64(1.2426)}
+timed 1024 6 {'nmrom': np.float64(13.2464), 'nmrom_cholesky': np.float64(12.3494), 'fom_cg_cn': np.float64(211.166), 'fom_cg_cn_tol1e3': np.float64(90.8141), 'fom_cg_cn_tol1e2': np.float64(58.1574), 'fom_cg_be50': np.float64(316.4861), 'linear_weak_exact': np.float64(0.6609), 'fom_same_grid': np.float64(1.2412)}
+timed 1024 7 {'nmrom': np.float64(12.408), 'nmrom_cholesky': np.float64(11.6746), 'fom_cg_cn': np.float64(211.5379), 'fom_cg_cn_tol1e3': np.float64(90.5938), 'fom_cg_cn_tol1e2': np.float64(58.6526), 'fom_cg_be50': np.float64(311.9743), 'linear_weak_exact': np.float64(0.8315), 'fom_same_grid': np.float64(1.1822)}
+timed 1024 8 {'nmrom': np.float64(13.3179), 'nmrom_cholesky': np.float64(12.858), 'fom_cg_cn': np.float64(206.8298), 'fom_cg_cn_tol1e3': np.float64(82.1767), 'fom_cg_cn_tol1e2': np.float64(59.3185), 'fom_cg_be50': np.float64(301.3201), 'linear_weak_exact': np.float64(0.8846), 'fom_same_grid': np.float64(1.2358)}
+timed 1024 9 {'nmrom': np.float64(14.4542), 'nmrom_cholesky': np.float64(13.0951), 'fom_cg_cn': np.float64(194.5093), 'fom_cg_cn_tol1e3': np.float64(89.0376), 'fom_cg_cn_tol1e2': np.float64(56.3503), 'fom_cg_be50': np.float64(312.7367), 'linear_weak_exact': np.float64(0.7739), 'fom_same_grid': np.float64(1.1989)}
+timed 1024 10 {'nmrom': np.float64(15.9566), 'nmrom_cholesky': np.float64(15.0674), 'fom_cg_cn': np.float64(220.1813), 'fom_cg_cn_tol1e3': np.float64(86.2529), 'fom_cg_cn_tol1e2': np.float64(59.5521), 'fom_cg_be50': np.float64(309.0401), 'linear_weak_exact': np.float64(0.6375), 'fom_same_grid': np.float64(1.2316)}
+timed 1024 11 {'nmrom': np.float64(13.3039), 'nmrom_cholesky': np.float64(12.1431), 'fom_cg_cn': np.float64(202.1243), 'fom_cg_cn_tol1e3': np.float64(82.2617), 'fom_cg_cn_tol1e2': np.float64(57.8256), 'fom_cg_be50': np.float64(298.8859), 'linear_weak_exact': np.float64(0.699), 'fom_same_grid': np.float64(1.2651)}
+ITERATIVE CG HEAT COMPLETE

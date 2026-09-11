@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "elapsed_seconds": 23.45382787595736,
+  "verification": {
+    "analytic_eigenmode_error": 0.0,
+    "independent_cn_error": 1.2039170891498076e-13,
+    "nonlinear_head_exact_least_squares_errors": {
+      "explicit_lu": 1.829786674151601e-10,
+      "explicit_chol": 1.8297870522420115e-10,
+      "gram_lu": 1.829785355888738e-10,
+      "gram_cholesky": 1.8297843486226645e-10
+    },
+    "cg_independent_fixture": {
+      "cn": {
+        "dense_time_step_relative_error": 6.786376191786869e-13,
+        "jax_cg_field_parity": 0.0
+      },
+      "be50": {
+        "dense_time_step_relative_error": 1.6770339715678756e-12,
+        "jax_cg_field_parity": 0.0
+      }
+    }
+  },
+  "nmrom_cholesky_field_parity": 1.9952618543069376e-15,
+  "cg_checks": {
+    "fom_cg_cn": {
+      "worst_relative_error_vs_exact_discrete": 2.495659517799583e-06,
+      "true_residual_max": 9.855689677863768e-07,
+      "total_iterations": 143
+    },
+    "fom_cg_cn_tol1e3": {
+      "worst_relative_error_vs_exact_discrete": 0.004706390350523413,
+      "true_residual_max": 0.0009905972967129476,
+      "total_iterations": 47
+    },
+    "fom_cg_cn_tol1e2": {
+      "worst_relative_error_vs_exact_discrete": 0.013024615943135896,
+      "true_residual_max": 0.009798607467858468,
+      "total_iterations": 44
+    },
+    "fom_cg_be50": {
+      "worst_relative_error_vs_exact_discrete": 3.2006381236416006e-06,
+      "true_residual_max": 9.789305314834737e-07,
+      "total_iterations": 271
+    }
+  },
+  "note": "Local correctness smoke only; timings excluded from benchmark."
+}

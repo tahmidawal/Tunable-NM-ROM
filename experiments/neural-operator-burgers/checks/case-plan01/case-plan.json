@@ -1,0 +1,1085 @@
+{
+  "schema_version": 1,
+  "pde": "burgers",
+  "complete": true,
+  "kind": "case-plan-only-no-solution-data",
+  "protocol": {
+    "schema_version": 1,
+    "pde": "burgers",
+    "dataset_seed": 20260914,
+    "pde_seed_code": 22,
+    "split_codes": {
+      "calibration": 0,
+      "train": 1,
+      "validation": 2
+    },
+    "counts": {
+      "calibration": 8,
+      "train": 128,
+      "validation": 32
+    },
+    "future_train_prefixes": [
+      512,
+      1024
+    ],
+    "training_intervals": 256,
+    "evaluation_intervals": [
+      64,
+      128,
+      256,
+      512,
+      1024
+    ],
+    "times": [
+      0.0,
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25
+    ],
+    "anchor": {
+      "intervals": 4096,
+      "dt": 0.0003125
+    },
+    "candidates": [
+      {
+        "intervals": 256,
+        "dt": 0.00125
+      },
+      {
+        "intervals": 512,
+        "dt": 0.000625
+      },
+      {
+        "intervals": 1024,
+        "dt": 0.0003125
+      }
+    ],
+    "newton_tolerance": 1e-11,
+    "linear_tolerance": 1e-09,
+    "maximum_relative_residual": 2e-11,
+    "max_newton": 20,
+    "empirical_reference_budget": 0.001,
+    "reference_metric": "maximum over requested times of interior l2 difference divided by anchor initial interior l2 norm",
+    "reference_interpretation": "space/time refinement differences are empirical development evidence, not rigorous continuum error bounds",
+    "final_cohort": "sealed; no split code or generation command exists"
+  },
+  "protocol_sha256": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+  "source_sha256": {
+    "experiments/neural-operator-burgers/data.py": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+    "experiments/neural-operator-burgers/protocol.json": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+    "experiments/mr-burgers2d/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "experiments/separable-decoder/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+  },
+  "records": [
+    {
+      "case_id": "burgers-calibration-00000",
+      "split": "calibration",
+      "case_index": 0,
+      "seed": 3824337363
+    },
+    {
+      "case_id": "burgers-calibration-00001",
+      "split": "calibration",
+      "case_index": 1,
+      "seed": 2217457785
+    },
+    {
+      "case_id": "burgers-calibration-00002",
+      "split": "calibration",
+      "case_index": 2,
+      "seed": 2377967207
+    },
+    {
+      "case_id": "burgers-calibration-00003",
+      "split": "calibration",
+      "case_index": 3,
+      "seed": 1144788104
+    },
+    {
+      "case_id": "burgers-calibration-00004",
+      "split": "calibration",
+      "case_index": 4,
+      "seed": 449598289
+    },
+    {
+      "case_id": "burgers-calibration-00005",
+      "split": "calibration",
+      "case_index": 5,
+      "seed": 135184177
+    },
+    {
+      "case_id": "burgers-calibration-00006",
+      "split": "calibration",
+      "case_index": 6,
+      "seed": 3188012634
+    },
+    {
+      "case_id": "burgers-calibration-00007",
+      "split": "calibration",
+      "case_index": 7,
+      "seed": 3130436725
+    },
+    {
+      "case_id": "burgers-train-00000",
+      "split": "train",
+      "case_index": 0,
+      "seed": 428288116
+    },
+    {
+      "case_id": "burgers-train-00001",
+      "split": "train",
+      "case_index": 1,
+      "seed": 3953685106
+    },
+    {
+      "case_id": "burgers-train-00002",
+      "split": "train",
+      "case_index": 2,
+      "seed": 4108307323
+    },
+    {
+      "case_id": "burgers-train-00003",
+      "split": "train",
+      "case_index": 3,
+      "seed": 2872383505
+    },
+    {
+      "case_id": "burgers-train-00004",
+      "split": "train",
+      "case_index": 4,
+      "seed": 2705921983
+    },
+    {
+      "case_id": "burgers-train-00005",
+      "split": "train",
+      "case_index": 5,
+      "seed": 2245563181
+    },
+    {
+      "case_id": "burgers-train-00006",
+      "split": "train",
+      "case_index": 6,
+      "seed": 2792960013
+    },
+    {
+      "case_id": "burgers-train-00007",
+      "split": "train",
+      "case_index": 7,
+      "seed": 958011769
+    },
+    {
+      "case_id": "burgers-train-00008",
+      "split": "train",
+      "case_index": 8,
+      "seed": 2565156466
+    },
+    {
+      "case_id": "burgers-train-00009",
+      "split": "train",
+      "case_index": 9,
+      "seed": 1133989574
+    },
+    {
+      "case_id": "burgers-train-00010",
+      "split": "train",
+      "case_index": 10,
+      "seed": 1759620736
+    },
+    {
+      "case_id": "burgers-train-00011",
+      "split": "train",
+      "case_index": 11,
+      "seed": 3265298925
+    },
+    {
+      "case_id": "burgers-train-00012",
+      "split": "train",
+      "case_index": 12,
+      "seed": 477419537
+    },
+    {
+      "case_id": "burgers-train-00013",
+      "split": "train",
+      "case_index": 13,
+      "seed": 105966940
+    },
+    {
+      "case_id": "burgers-train-00014",
+      "split": "train",
+      "case_index": 14,
+      "seed": 3462095751
+    },
+    {
+      "case_id": "burgers-train-00015",
+      "split": "train",
+      "case_index": 15,
+      "seed": 2941646562
+    },
+    {
+      "case_id": "burgers-train-00016",
+      "split": "train",
+      "case_index": 16,
+      "seed": 546819529
+    },
+    {
+      "case_id": "burgers-train-00017",
+      "split": "train",
+      "case_index": 17,
+      "seed": 3317266086
+    },
+    {
+      "case_id": "burgers-train-00018",
+      "split": "train",
+      "case_index": 18,
+      "seed": 2625823921
+    },
+    {
+      "case_id": "burgers-train-00019",
+      "split": "train",
+      "case_index": 19,
+      "seed": 2258462969
+    },
+    {
+      "case_id": "burgers-train-00020",
+      "split": "train",
+      "case_index": 20,
+      "seed": 3577838991
+    },
+    {
+      "case_id": "burgers-train-00021",
+      "split": "train",
+      "case_index": 21,
+      "seed": 2790457016
+    },
+    {
+      "case_id": "burgers-train-00022",
+      "split": "train",
+      "case_index": 22,
+      "seed": 3541386368
+    },
+    {
+      "case_id": "burgers-train-00023",
+      "split": "train",
+      "case_index": 23,
+      "seed": 837927548
+    },
+    {
+      "case_id": "burgers-train-00024",
+      "split": "train",
+      "case_index": 24,
+      "seed": 10476716
+    },
+    {
+      "case_id": "burgers-train-00025",
+      "split": "train",
+      "case_index": 25,
+      "seed": 1464236329
+    },
+    {
+      "case_id": "burgers-train-00026",
+      "split": "train",
+      "case_index": 26,
+      "seed": 4293532649
+    },
+    {
+      "case_id": "burgers-train-00027",
+      "split": "train",
+      "case_index": 27,
+      "seed": 2183011956
+    },
+    {
+      "case_id": "burgers-train-00028",
+      "split": "train",
+      "case_index": 28,
+      "seed": 3031873735
+    },
+    {
+      "case_id": "burgers-train-00029",
+      "split": "train",
+      "case_index": 29,
+      "seed": 903356112
+    },
+    {
+      "case_id": "burgers-train-00030",
+      "split": "train",
+      "case_index": 30,
+      "seed": 3308090767
+    },
+    {
+      "case_id": "burgers-train-00031",
+      "split": "train",
+      "case_index": 31,
+      "seed": 3809779483
+    },
+    {
+      "case_id": "burgers-train-00032",
+      "split": "train",
+      "case_index": 32,
+      "seed": 403727301
+    },
+    {
+      "case_id": "burgers-train-00033",
+      "split": "train",
+      "case_index": 33,
+      "seed": 2384879048
+    },
+    {
+      "case_id": "burgers-train-00034",
+      "split": "train",
+      "case_index": 34,
+      "seed": 3225632943
+    },
+    {
+      "case_id": "burgers-train-00035",
+      "split": "train",
+      "case_index": 35,
+      "seed": 775196082
+    },
+    {
+      "case_id": "burgers-train-00036",
+      "split": "train",
+      "case_index": 36,
+      "seed": 739437444
+    },
+    {
+      "case_id": "burgers-train-00037",
+      "split": "train",
+      "case_index": 37,
+      "seed": 4194995445
+    },
+    {
+      "case_id": "burgers-train-00038",
+      "split": "train",
+      "case_index": 38,
+      "seed": 772786819
+    },
+    {
+      "case_id": "burgers-train-00039",
+      "split": "train",
+      "case_index": 39,
+      "seed": 6474357
+    },
+    {
+      "case_id": "burgers-train-00040",
+      "split": "train",
+      "case_index": 40,
+      "seed": 1271906524
+    },
+    {
+      "case_id": "burgers-train-00041",
+      "split": "train",
+      "case_index": 41,
+      "seed": 524343989
+    },
+    {
+      "case_id": "burgers-train-00042",
+      "split": "train",
+      "case_index": 42,
+      "seed": 4060847222
+    },
+    {
+      "case_id": "burgers-train-00043",
+      "split": "train",
+      "case_index": 43,
+      "seed": 958635307
+    },
+    {
+      "case_id": "burgers-train-00044",
+      "split": "train",
+      "case_index": 44,
+      "seed": 2669107215
+    },
+    {
+      "case_id": "burgers-train-00045",
+      "split": "train",
+      "case_index": 45,
+      "seed": 24056518
+    },
+    {
+      "case_id": "burgers-train-00046",
+      "split": "train",
+      "case_index": 46,
+      "seed": 427702708
+    },
+    {
+      "case_id": "burgers-train-00047",
+      "split": "train",
+      "case_index": 47,
+      "seed": 3452407815
+    },
+    {
+      "case_id": "burgers-train-00048",
+      "split": "train",
+      "case_index": 48,
+      "seed": 1636289706
+    },
+    {
+      "case_id": "burgers-train-00049",
+      "split": "train",
+      "case_index": 49,
+      "seed": 3694184051
+    },
+    {
+      "case_id": "burgers-train-00050",
+      "split": "train",
+      "case_index": 50,
+      "seed": 142441739
+    },
+    {
+      "case_id": "burgers-train-00051",
+      "split": "train",
+      "case_index": 51,
+      "seed": 2802897948
+    },
+    {
+      "case_id": "burgers-train-00052",
+      "split": "train",
+      "case_index": 52,
+      "seed": 179640535
+    },
+    {
+      "case_id": "burgers-train-00053",
+      "split": "train",
+      "case_index": 53,
+      "seed": 3770613377
+    },
+    {
+      "case_id": "burgers-train-00054",
+      "split": "train",
+      "case_index": 54,
+      "seed": 720173962
+    },
+    {
+      "case_id": "burgers-train-00055",
+      "split": "train",
+      "case_index": 55,
+      "seed": 2537468382
+    },
+    {
+      "case_id": "burgers-train-00056",
+      "split": "train",
+      "case_index": 56,
+      "seed": 779234464
+    },
+    {
+      "case_id": "burgers-train-00057",
+      "split": "train",
+      "case_index": 57,
+      "seed": 1029815691
+    },
+    {
+      "case_id": "burgers-train-00058",
+      "split": "train",
+      "case_index": 58,
+      "seed": 1508218475
+    },
+    {
+      "case_id": "burgers-train-00059",
+      "split": "train",
+      "case_index": 59,
+      "seed": 1579611259
+    },
+    {
+      "case_id": "burgers-train-00060",
+      "split": "train",
+      "case_index": 60,
+      "seed": 1063008804
+    },
+    {
+      "case_id": "burgers-train-00061",
+      "split": "train",
+      "case_index": 61,
+      "seed": 3219765924
+    },
+    {
+      "case_id": "burgers-train-00062",
+      "split": "train",
+      "case_index": 62,
+      "seed": 3731608344
+    },
+    {
+      "case_id": "burgers-train-00063",
+      "split": "train",
+      "case_index": 63,
+      "seed": 910510358
+    },
+    {
+      "case_id": "burgers-train-00064",
+      "split": "train",
+      "case_index": 64,
+      "seed": 2070283980
+    },
+    {
+      "case_id": "burgers-train-00065",
+      "split": "train",
+      "case_index": 65,
+      "seed": 1501623554
+    },
+    {
+      "case_id": "burgers-train-00066",
+      "split": "train",
+      "case_index": 66,
+      "seed": 951514680
+    },
+    {
+      "case_id": "burgers-train-00067",
+      "split": "train",
+      "case_index": 67,
+      "seed": 2053361450
+    },
+    {
+      "case_id": "burgers-train-00068",
+      "split": "train",
+      "case_index": 68,
+      "seed": 3458648290
+    },
+    {
+      "case_id": "burgers-train-00069",
+      "split": "train",
+      "case_index": 69,
+      "seed": 3453575420
+    },
+    {
+      "case_id": "burgers-train-00070",
+      "split": "train",
+      "case_index": 70,
+      "seed": 2632349741
+    },
+    {
+      "case_id": "burgers-train-00071",
+      "split": "train",
+      "case_index": 71,
+      "seed": 2281239302
+    },
+    {
+      "case_id": "burgers-train-00072",
+      "split": "train",
+      "case_index": 72,
+      "seed": 2962724254
+    },
+    {
+      "case_id": "burgers-train-00073",
+      "split": "train",
+      "case_index": 73,
+      "seed": 934897250
+    },
+    {
+      "case_id": "burgers-train-00074",
+      "split": "train",
+      "case_index": 74,
+      "seed": 1495164889
+    },
+    {
+      "case_id": "burgers-train-00075",
+      "split": "train",
+      "case_index": 75,
+      "seed": 3543939316
+    },
+    {
+      "case_id": "burgers-train-00076",
+      "split": "train",
+      "case_index": 76,
+      "seed": 1181654267
+    },
+    {
+      "case_id": "burgers-train-00077",
+      "split": "train",
+      "case_index": 77,
+      "seed": 3422038613
+    },
+    {
+      "case_id": "burgers-train-00078",
+      "split": "train",
+      "case_index": 78,
+      "seed": 2478433945
+    },
+    {
+      "case_id": "burgers-train-00079",
+      "split": "train",
+      "case_index": 79,
+      "seed": 818583525
+    },
+    {
+      "case_id": "burgers-train-00080",
+      "split": "train",
+      "case_index": 80,
+      "seed": 2246882313
+    },
+    {
+      "case_id": "burgers-train-00081",
+      "split": "train",
+      "case_index": 81,
+      "seed": 699585048
+    },
+    {
+      "case_id": "burgers-train-00082",
+      "split": "train",
+      "case_index": 82,
+      "seed": 1374852621
+    },
+    {
+      "case_id": "burgers-train-00083",
+      "split": "train",
+      "case_index": 83,
+      "seed": 3157307147
+    },
+    {
+      "case_id": "burgers-train-00084",
+      "split": "train",
+      "case_index": 84,
+      "seed": 660937062
+    },
+    {
+      "case_id": "burgers-train-00085",
+      "split": "train",
+      "case_index": 85,
+      "seed": 2035121729
+    },
+    {
+      "case_id": "burgers-train-00086",
+      "split": "train",
+      "case_index": 86,
+      "seed": 3763878796
+    },
+    {
+      "case_id": "burgers-train-00087",
+      "split": "train",
+      "case_index": 87,
+      "seed": 2536559822
+    },
+    {
+      "case_id": "burgers-train-00088",
+      "split": "train",
+      "case_index": 88,
+      "seed": 3169040447
+    },
+    {
+      "case_id": "burgers-train-00089",
+      "split": "train",
+      "case_index": 89,
+      "seed": 1324977706
+    },
+    {
+      "case_id": "burgers-train-00090",
+      "split": "train",
+      "case_index": 90,
+      "seed": 2486045557
+    },
+    {
+      "case_id": "burgers-train-00091",
+      "split": "train",
+      "case_index": 91,
+      "seed": 588261674
+    },
+    {
+      "case_id": "burgers-train-00092",
+      "split": "train",
+      "case_index": 92,
+      "seed": 72465666
+    },
+    {
+      "case_id": "burgers-train-00093",
+      "split": "train",
+      "case_index": 93,
+      "seed": 4132644996
+    },
+    {
+      "case_id": "burgers-train-00094",
+      "split": "train",
+      "case_index": 94,
+      "seed": 413516183
+    },
+    {
+      "case_id": "burgers-train-00095",
+      "split": "train",
+      "case_index": 95,
+      "seed": 2045221690
+    },
+    {
+      "case_id": "burgers-train-00096",
+      "split": "train",
+      "case_index": 96,
+      "seed": 3544497688
+    },
+    {
+      "case_id": "burgers-train-00097",
+      "split": "train",
+      "case_index": 97,
+      "seed": 1953309928
+    },
+    {
+      "case_id": "burgers-train-00098",
+      "split": "train",
+      "case_index": 98,
+      "seed": 3108442854
+    },
+    {
+      "case_id": "burgers-train-00099",
+      "split": "train",
+      "case_index": 99,
+      "seed": 995313737
+    },
+    {
+      "case_id": "burgers-train-00100",
+      "split": "train",
+      "case_index": 100,
+      "seed": 2548976707
+    },
+    {
+      "case_id": "burgers-train-00101",
+      "split": "train",
+      "case_index": 101,
+      "seed": 1795755369
+    },
+    {
+      "case_id": "burgers-train-00102",
+      "split": "train",
+      "case_index": 102,
+      "seed": 3765602550
+    },
+    {
+      "case_id": "burgers-train-00103",
+      "split": "train",
+      "case_index": 103,
+      "seed": 731384567
+    },
+    {
+      "case_id": "burgers-train-00104",
+      "split": "train",
+      "case_index": 104,
+      "seed": 2346476321
+    },
+    {
+      "case_id": "burgers-train-00105",
+      "split": "train",
+      "case_index": 105,
+      "seed": 3077427637
+    },
+    {
+      "case_id": "burgers-train-00106",
+      "split": "train",
+      "case_index": 106,
+      "seed": 140848010
+    },
+    {
+      "case_id": "burgers-train-00107",
+      "split": "train",
+      "case_index": 107,
+      "seed": 4125811996
+    },
+    {
+      "case_id": "burgers-train-00108",
+      "split": "train",
+      "case_index": 108,
+      "seed": 2958299685
+    },
+    {
+      "case_id": "burgers-train-00109",
+      "split": "train",
+      "case_index": 109,
+      "seed": 1461973004
+    },
+    {
+      "case_id": "burgers-train-00110",
+      "split": "train",
+      "case_index": 110,
+      "seed": 1013291675
+    },
+    {
+      "case_id": "burgers-train-00111",
+      "split": "train",
+      "case_index": 111,
+      "seed": 1255493672
+    },
+    {
+      "case_id": "burgers-train-00112",
+      "split": "train",
+      "case_index": 112,
+      "seed": 3779880613
+    },
+    {
+      "case_id": "burgers-train-00113",
+      "split": "train",
+      "case_index": 113,
+      "seed": 2988037120
+    },
+    {
+      "case_id": "burgers-train-00114",
+      "split": "train",
+      "case_index": 114,
+      "seed": 3430475965
+    },
+    {
+      "case_id": "burgers-train-00115",
+      "split": "train",
+      "case_index": 115,
+      "seed": 3003306883
+    },
+    {
+      "case_id": "burgers-train-00116",
+      "split": "train",
+      "case_index": 116,
+      "seed": 797815485
+    },
+    {
+      "case_id": "burgers-train-00117",
+      "split": "train",
+      "case_index": 117,
+      "seed": 3731779305
+    },
+    {
+      "case_id": "burgers-train-00118",
+      "split": "train",
+      "case_index": 118,
+      "seed": 1338588700
+    },
+    {
+      "case_id": "burgers-train-00119",
+      "split": "train",
+      "case_index": 119,
+      "seed": 3138934993
+    },
+    {
+      "case_id": "burgers-train-00120",
+      "split": "train",
+      "case_index": 120,
+      "seed": 258376542
+    },
+    {
+      "case_id": "burgers-train-00121",
+      "split": "train",
+      "case_index": 121,
+      "seed": 3711601759
+    },
+    {
+      "case_id": "burgers-train-00122",
+      "split": "train",
+      "case_index": 122,
+      "seed": 1458869621
+    },
+    {
+      "case_id": "burgers-train-00123",
+      "split": "train",
+      "case_index": 123,
+      "seed": 145443040
+    },
+    {
+      "case_id": "burgers-train-00124",
+      "split": "train",
+      "case_index": 124,
+      "seed": 3593849278
+    },
+    {
+      "case_id": "burgers-train-00125",
+      "split": "train",
+      "case_index": 125,
+      "seed": 2713612541
+    },
+    {
+      "case_id": "burgers-train-00126",
+      "split": "train",
+      "case_index": 126,
+      "seed": 2504317495
+    },
+    {
+      "case_id": "burgers-train-00127",
+      "split": "train",
+      "case_index": 127,
+      "seed": 1159564962
+    },
+    {
+      "case_id": "burgers-validation-00000",
+      "split": "validation",
+      "case_index": 0,
+      "seed": 1044997471
+    },
+    {
+      "case_id": "burgers-validation-00001",
+      "split": "validation",
+      "case_index": 1,
+      "seed": 3797609774
+    },
+    {
+      "case_id": "burgers-validation-00002",
+      "split": "validation",
+      "case_index": 2,
+      "seed": 2771836162
+    },
+    {
+      "case_id": "burgers-validation-00003",
+      "split": "validation",
+      "case_index": 3,
+      "seed": 2021712575
+    },
+    {
+      "case_id": "burgers-validation-00004",
+      "split": "validation",
+      "case_index": 4,
+      "seed": 1366272061
+    },
+    {
+      "case_id": "burgers-validation-00005",
+      "split": "validation",
+      "case_index": 5,
+      "seed": 855373498
+    },
+    {
+      "case_id": "burgers-validation-00006",
+      "split": "validation",
+      "case_index": 6,
+      "seed": 352056143
+    },
+    {
+      "case_id": "burgers-validation-00007",
+      "split": "validation",
+      "case_index": 7,
+      "seed": 966142033
+    },
+    {
+      "case_id": "burgers-validation-00008",
+      "split": "validation",
+      "case_index": 8,
+      "seed": 2632051304
+    },
+    {
+      "case_id": "burgers-validation-00009",
+      "split": "validation",
+      "case_index": 9,
+      "seed": 672788269
+    },
+    {
+      "case_id": "burgers-validation-00010",
+      "split": "validation",
+      "case_index": 10,
+      "seed": 801282023
+    },
+    {
+      "case_id": "burgers-validation-00011",
+      "split": "validation",
+      "case_index": 11,
+      "seed": 561377755
+    },
+    {
+      "case_id": "burgers-validation-00012",
+      "split": "validation",
+      "case_index": 12,
+      "seed": 1410606118
+    },
+    {
+      "case_id": "burgers-validation-00013",
+      "split": "validation",
+      "case_index": 13,
+      "seed": 59003622
+    },
+    {
+      "case_id": "burgers-validation-00014",
+      "split": "validation",
+      "case_index": 14,
+      "seed": 2251482023
+    },
+    {
+      "case_id": "burgers-validation-00015",
+      "split": "validation",
+      "case_index": 15,
+      "seed": 96675545
+    },
+    {
+      "case_id": "burgers-validation-00016",
+      "split": "validation",
+      "case_index": 16,
+      "seed": 3653011254
+    },
+    {
+      "case_id": "burgers-validation-00017",
+      "split": "validation",
+      "case_index": 17,
+      "seed": 2866081749
+    },
+    {
+      "case_id": "burgers-validation-00018",
+      "split": "validation",
+      "case_index": 18,
+      "seed": 1397814590
+    },
+    {
+      "case_id": "burgers-validation-00019",
+      "split": "validation",
+      "case_index": 19,
+      "seed": 4018776733
+    },
+    {
+      "case_id": "burgers-validation-00020",
+      "split": "validation",
+      "case_index": 20,
+      "seed": 1360796936
+    },
+    {
+      "case_id": "burgers-validation-00021",
+      "split": "validation",
+      "case_index": 21,
+      "seed": 1847656864
+    },
+    {
+      "case_id": "burgers-validation-00022",
+      "split": "validation",
+      "case_index": 22,
+      "seed": 1688939329
+    },
+    {
+      "case_id": "burgers-validation-00023",
+      "split": "validation",
+      "case_index": 23,
+      "seed": 2982055104
+    },
+    {
+      "case_id": "burgers-validation-00024",
+      "split": "validation",
+      "case_index": 24,
+      "seed": 1888822779
+    },
+    {
+      "case_id": "burgers-validation-00025",
+      "split": "validation",
+      "case_index": 25,
+      "seed": 4188872719
+    },
+    {
+      "case_id": "burgers-validation-00026",
+      "split": "validation",
+      "case_index": 26,
+      "seed": 1225124115
+    },
+    {
+      "case_id": "burgers-validation-00027",
+      "split": "validation",
+      "case_index": 27,
+      "seed": 2527049696
+    },
+    {
+      "case_id": "burgers-validation-00028",
+      "split": "validation",
+      "case_index": 28,
+      "seed": 3440483241
+    },
+    {
+      "case_id": "burgers-validation-00029",
+      "split": "validation",
+      "case_index": 29,
+      "seed": 1774060670
+    },
+    {
+      "case_id": "burgers-validation-00030",
+      "split": "validation",
+      "case_index": 30,
+      "seed": 502181974
+    },
+    {
+      "case_id": "burgers-validation-00031",
+      "split": "validation",
+      "case_index": 31,
+      "seed": 3925023829
+    }
+  ]
+}

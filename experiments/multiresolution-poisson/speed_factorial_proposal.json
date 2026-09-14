@@ -1,0 +1,77 @@
+{
+  "status": "proposal_only_awaits_complete_factorial04_and_coordinator_review",
+  "checkpoints": [
+    "original_frozen",
+    "selected_scheduled_continuation_pending_complete_data"
+  ],
+  "checkpoint_selection": "minimize worst adjusted physical error across all30 cases and both meshes among complete endpoints with all tighter generic solves valid; tie median error then name",
+  "cohorts": {
+    "existing_seed": 7090703,
+    "existing_count": 6,
+    "fresh_seed": 7090732,
+    "fresh_count": 24
+  },
+  "intervals": [
+    256,
+    512
+  ],
+  "requested_modes": 256,
+  "projection": [
+    "skinny_sine_products",
+    "forward_dst_and_gather"
+  ],
+  "initialization": [
+    "mean_training_code",
+    "nearest_cached_scaled_weak_prediction"
+  ],
+  "solver": "guarded_scaled_gauss_jordan_fused",
+  "taus": [
+    0.01
+  ],
+  "fom_controls": [
+    "same_grid_dst",
+    "coarse128_dst_with_charged_interpolation"
+  ],
+  "repetitions": 3,
+  "warmup": 3,
+  "burn_seconds": 0.3,
+  "projection_relative_tolerance": 1e-11,
+  "field_relative_agreement_tolerance": 1e-06,
+  "latent_relative_agreement_tolerance": 0.0001,
+  "initial_scaled_residual_norm_difference_tolerance": 1e-05,
+  "linear_backward_error_limit": 1e-12,
+  "stationarity_tolerance": 1e-06,
+  "lm_budget": 150,
+  "targets": [
+    0.1,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "reference_intervals": [
+    512,
+    1024,
+    2048
+  ],
+  "observation_intervals": 256,
+  "reference_fraction": 0.1,
+  "expected_timed_invocations": 1800,
+  "partition": "gpu",
+  "gpu": "generic_A100",
+  "slurm_walltime": "02:00:00",
+  "new_training": false,
+  "sealed_finals": "untouched",
+  "stationary_accuracy_controls": {
+    "tau": 0,
+    "repetitions": 1,
+    "expected_invocations": 480,
+    "speed_selection": false,
+    "scope": "all checkpoints, projection/init variants, cases and meshes; fully recorded single calls"
+  },
+  "primary_query_configurations": 10,
+  "review_target_runtime_minutes": [
+    20,
+    35
+  ],
+  "parity_controls": "direct source-coefficient and final-field agreement; no repeated generic timing panel"
+}

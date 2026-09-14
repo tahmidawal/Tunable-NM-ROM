@@ -1,0 +1,86 @@
+{
+  "existing_development_seed": 7090703,
+  "existing_development_count": 6,
+  "fresh_development_seed": 7090732,
+  "fresh_development_count": 24,
+  "parameter_sha256": "8bd369190679e4ebb6df47c7b38d7b4a09fe3d6d2a95331643ae056d081dfb55",
+  "new_development_seed": 2026091127,
+  "new_development_count": 12,
+  "online_preset": {
+    "budget": 300,
+    "tau": 0.0,
+    "stationarity_stop": 1e-06,
+    "starts": 1,
+    "requested_modes": 256
+  },
+  "requested_modes": 256,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "intervals": [
+    64,
+    256,
+    1024
+  ],
+  "reference_intervals": [
+    1024,
+    2048
+  ],
+  "observation_intervals": 64,
+  "repetitions": 3,
+  "warmup": 2,
+  "burn_seconds": 0.1,
+  "cg_tolerances": [
+    1e-06,
+    0.03,
+    0.1
+  ],
+  "cg_maxiter": 6000,
+  "development_target": 0.05,
+  "reference_fraction": 0.1,
+  "proposed_gates": {
+    "bank_worst_relative_error": 0.03,
+    "online_adjusted_relative_error": 0.05,
+    "no_new_numerical_failures": true,
+    "cost": "no paired median GPU or host regression relative to frozen stationary control"
+  },
+  "development_grouping": "all42 already opened before this capacity choice: original30 and later12 first introduced in staged_accuracy08; group IDs retained for cohort continuity; no fresh independent validation in this follow-up",
+  "study": "nested_linear_corrections_with_exact_variable_projection",
+  "checkpoint": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints/r128_joint.pkl",
+  "checkpoint_sha256": "a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c",
+  "original_checkpoint": "experiments/multiresolution-poisson/runs/pilot04/checkpoints/original_relative.pkl",
+  "original_checkpoint_sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a",
+  "basis": "experiments/multiresolution-poisson/runs/capacity_accuracy09/r128_joint-training-correction-basis.npz",
+  "basis_sha256": "88d088d0665ea6bafc949433a1764b3032e8773a47a45f94e4bb0fc1036f5456",
+  "basis_parent_result_sha256": "e1bb9f840794ec79bf6d33e209f1d612ea08f431cf7d573f9727156f80be3d34",
+  "primary_model": "r128_q32",
+  "trained_model_ids": [
+    "original_relative",
+    "r128_q0",
+    "r128_q8",
+    "r128_q16",
+    "r128_q32"
+  ],
+  "correction_counts": {
+    "original_relative": 0,
+    "r128_q0": 0,
+    "r128_q8": 8,
+    "r128_q16": 16,
+    "r128_q32": 32
+  },
+  "method_base_model": {
+    "original_relative": "original_relative",
+    "r128_q0": "r128_joint",
+    "r128_q8": "r128_joint",
+    "r128_q16": "r128_joint",
+    "r128_q32": "r128_joint"
+  },
+  "residual_reconstruction_limit": 1e-12,
+  "validation_status": "All42 development cases already opened before this family was selected; final cases remain sealed",
+  "family_selection": "One fixed r128_joint head and one32-direction training-only normalized residual basis; nested8/16/32 prefixes,32 primary before query evaluation; no further search",
+  "mechanism": "Added linear correction capacity plus exact analytic elimination of linear coefficients; nonlinear optimizer retains16variables while nominal family dimensions are24/32/48",
+  "online_contract": "Full supplied source only; exact sine contraction, projected nearest-training-code cache, stationary16-variable nonlinear solve, charged linear recovery/full decode/full-and-reduced stationarity/rank checks/output",
+  "no_additional_neural_training": true,
+  "no_further_search": true,
+  "smoke_parity_tolerance": 1e-10
+}

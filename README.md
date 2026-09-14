@@ -1,4 +1,16 @@
-# Tunable-ROM
+# Consolidated NM-ROM development baseline
+
+Start with [the consolidated entrypoint guide](consolidated/README.md) for the selected
+Poisson, heat, Burgers and reflective-wave implementations, frozen checkpoints,
+saved-case replays and report verification. This branch starts from corrected heat
+commit `5974d3e0` and imports the other accepted accuracy-campaign sources by content hash.
+
+Project state and session history live only in the canonical
+[LAB-LOG.md](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md).
+The package description below is historical: the `heat/` package contains the
+previously documented frozen-rollout regression and is not the selected heat entrypoint.
+
+# Historical Tunable-ROM package description
 
 Tunable nonlinear manifold reduced-order models (NM-ROM) for parametric PDEs. This directory contains two self-contained, publishable Python packages — one per PDE family — plus a curated `best-results/` archive of the runs that produced the numbers in our paper.
 

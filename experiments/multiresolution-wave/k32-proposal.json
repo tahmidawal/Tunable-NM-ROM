@@ -1,0 +1,133 @@
+{
+  "status": "approved bounded implementation; not yet submitted",
+  "worktree": "worktrees/2026-09-07-mr-wave2d",
+  "branch": "exp/2026-09-07-mr-wave2d",
+  "base_commit": "3534673724d0829b7c78bf2df5f6a9b821014192",
+  "namespace": "/cluster/tufts/paralab/tawal01/mr_wave2d_20260907",
+  "attempt": "k32heads03",
+  "gpu_partition": "gpu",
+  "gpu_request": "a100:1",
+  "walltime": "02:00:00",
+  "memory_gb": 96,
+  "boundaries": [
+    "dirichlet",
+    "absorbing"
+  ],
+  "meshes": [
+    256,
+    512
+  ],
+  "frozen_bank_rank": 64,
+  "weak_bank_equations": 64,
+  "new_latent_dimension": 32,
+  "new_phase_dimension": 64,
+  "weak_overdetermination_note": "64 fixed weak bank equations for 32 new latent coordinates; ratio 2, still strictly overdetermined. This differs from the incumbent ratio 4; no new weak test space or bank is introduced.",
+  "training": {
+    "n": 256,
+    "train_seed": 690601,
+    "train_count": 64,
+    "observation_dt": 0.05,
+    "end_time": 2.4,
+    "fom_cfl": 0.12,
+    "head_width": 128,
+    "head_steps": 10000,
+    "head_batch": 64,
+    "head_lr": 0.001,
+    "code_lr": 0.003,
+    "code_penalty": 1e-06,
+    "optimizer_seeds": [
+      691200,
+      691201
+    ]
+  },
+  "training_velocity_weight": 0.0,
+  "head_kind": "mlp",
+  "bank_retrained": false,
+  "training_objective": "Original coefficient reconstruction / per-case initial-displacement scale squared, plus original mean code-squared penalty. No velocity/tangent/force/rollout loss.",
+  "arms": [
+    "frozen_mlp16_seed691200",
+    "new_mlp32_seed691200",
+    "new_mlp32_seed691201",
+    "common_affine32"
+  ],
+  "nonlinear_dts": [
+    0.01,
+    0.005,
+    0.0025
+  ],
+  "primary_dt": 0.0025,
+  "fine_refinement_dt": 0.00125,
+  "fom_controls": {
+    "dirichlet": [
+      "same-grid exact-discrete DST"
+    ],
+    "absorbing": [
+      "same-grid RK4 CFL .45",
+      "same-grid RK4 CFL .225"
+    ]
+  },
+  "coarse_fom_envelope_included": false,
+  "validation_seed": 690602,
+  "validation_indices": [
+    0,
+    1
+  ],
+  "final_test_opened": false,
+  "repetitions": 3,
+  "ordering": "Alternate complete method order by repetition; burn before every timed invocation.",
+  "online_fit_budget": 800,
+  "fit_starts": [
+    "matching affine initialization",
+    "zero",
+    "six equally spaced rows of the endpoint training-code library"
+  ],
+  "diagnostic_indices": [
+    0,
+    12,
+    24,
+    36,
+    48
+  ],
+  "diagnostic_fit_budgets": [
+    400,
+    800
+  ],
+  "diagnostics": [
+    "snapshot displacement",
+    "velocity tangent",
+    "phase energy",
+    "Jacobian rank",
+    "weak normal force with fixed initial physical scale",
+    "zero-field fit"
+  ],
+  "cost_control": "Frozen MLP16 retains primary dt .0025 with three repetitions. Each new MLP32 uses dt .01,.005,.0025 with three repetitions. One separately labeled fine .00125 query per endpoint/case supplies accuracy refinement only; its complete-query timing is preserved but is ineligible for speed selection and may include uncached compilation. Test adjacent step pairs .01/.005, .005/.0025, .0025/.00125.",
+  "query_contract": "Full host u0,v0 and scalar speed to 49 dense host u,v outputs at 0:.05:2.4. All full input projection/fitting, speed preparation, evolution, decoding and transfer charged.",
+  "expected_timed_invocations": 228,
+  "expected_warmup_queries": 76,
+  "runtime_budget_estimate": {
+    "basis": "Measured dynamics02 timings, with a conservative factor 4 for K32 nonlinear evolution and explicit allowance for regeneration, training, compilation, diagnosis andsaving.",
+    "anticipated_minutes": [
+      35,
+      65
+    ],
+    "hard_wall_minutes": 120,
+    "training_endpoints": 4,
+    "head_updates_total": 40000,
+    "new_training_data_sources": 0,
+    "new_validation_cases": 0,
+    "archive_size_estimate_gb": [
+      6,
+      10
+    ]
+  },
+  "training_regeneration": "Regenerate original seed/count at original training mesh/CFL on cluster; stream coefficients/scales and original field hashes. Prior saved coefficients are audit lineage only; do not upload them as training data.",
+  "acceptance": "Finite/frozen-bank/provenance gates required. Preserve all nonstationary fits, rank failures, failed rollouts and underresolved time steps explicitly; no relaxed acceptance or additional training by validation selection. No final cohort opened.",
+  "claims": "Development K32 representation/evolution/time-step comparisons only. Same-grid FOM ratios are not an efficient coarse-FOM envelope. Absorber current-relative errors and vanishing flags remain required beside fixed-scale errors.",
+  "frozen_control_dts": [
+    0.0025
+  ],
+  "accuracy_only_dt": 0.00125,
+  "accuracy_only_repetitions": 1,
+  "accuracy_only_comparison_eligible": false,
+  "expected_accuracy_only_queries": 16
+}

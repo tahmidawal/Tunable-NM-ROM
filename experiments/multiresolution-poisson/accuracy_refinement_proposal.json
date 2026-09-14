@@ -1,0 +1,75 @@
+{
+  "status": "approved_by_coordinator",
+  "checkpoint": "experiments/separable-decoder/runs/inherited_qf/sep_poisson_N256_K16_R64.pkl",
+  "arms": [
+    "original_frozen",
+    "original_global",
+    "expanded_global",
+    "original_relative",
+    "expanded_relative"
+  ],
+  "architecture": {
+    "latent_dimension": 16,
+    "features": 64,
+    "unchanged": true
+  },
+  "training_nodes_per_axis": 256,
+  "original_draw_seed": 0,
+  "original_draw_count": 576,
+  "original_training_prefix_count": 512,
+  "additional_training_seed": 7090731,
+  "additional_training_count": 1536,
+  "existing_development_seed": 7090703,
+  "existing_development_count": 6,
+  "additional_development_seed": 7090732,
+  "additional_development_count": 24,
+  "training_steps_each": 10000,
+  "source_batch": 64,
+  "point_batch": 4096,
+  "training_rng_seed": 7090733,
+  "optimizer": "Adam_reset_equal_in_both_arms",
+  "learning_rate": 0.0003,
+  "warmup_steps": 500,
+  "final_learning_rate_fraction": 0.01,
+  "loss": [
+    "global_relative_mse_plus_feature_gram",
+    "per_snapshot_relative_mse_plus_feature_gram"
+  ],
+  "loss_normalizer": {
+    "global": "original_training_field_mean_square_shared_across_coverage_arms",
+    "relative": "each_training_field_full_grid_mean_square_constant"
+  },
+  "orthogonality_weight": 0.0001,
+  "weight_decay": 0,
+  "ema": false,
+  "training_code_initialization": "original_codes_preserved_new_codes_reference_only_fixed_budget_fit",
+  "new_code_fit_budget": 150,
+  "new_code_fit_initialization": "mean_original_training_code",
+  "evaluation_intervals": [
+    256,
+    512
+  ],
+  "evaluation_requested_modes": 256,
+  "evaluation_taus": [
+    0.01,
+    0
+  ],
+  "evaluation_lm_budget": 150,
+  "timing_repetitions": 4,
+  "reference_intervals": [
+    512,
+    1024,
+    2048
+  ],
+  "observation_intervals": 256,
+  "training_wall_cap_seconds_each": 1200,
+  "slurm_walltime": "02:00:00",
+  "partition": "gpu",
+  "gpu": "generic_A100",
+  "selection": "final_scheduled_checkpoints_no_best_step_selection",
+  "sealed_final_cohort": "untouched",
+  "factorial": [
+    "coverage",
+    "loss_normalization"
+  ]
+}

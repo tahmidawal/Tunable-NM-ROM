@@ -1,0 +1,6 @@
+2026-09-06 fresh implementation component smoke, local spark-d69e GPU.
+Command: source /etc/profile.d/jax-mem.sh; JAX_DEFAULT_MATMUL_PRECISION=highest jaxrun /home/tahmid/Dev/.venv/bin/python experiments/fresh-wave-head/test_fresh_fom.py
+jax_backend=gpu; JAX 0.10.1; f64=true; matmul_precision=highest; device=cuda:0; NumPy 2.4.4.
+Six unittest tests passed in 3.582 seconds.
+Tests: backend/precision; independent incidence-matrix operator+energy; independent exponential and three mutations; nonzero-velocity semidiscrete standing mode; compact initial boundary compatibility; absorber constant state and invariant.
+This is a component smoke, not scientific spatial/temporal validation or a learned result.

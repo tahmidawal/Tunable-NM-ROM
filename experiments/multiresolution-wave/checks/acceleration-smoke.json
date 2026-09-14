@@ -1,0 +1,35 @@
+{
+  "absolute_errors": [
+    0.0,
+    8.673617379884035e-19,
+    1.734723475976807e-18,
+    2.168404344971009e-18
+  ],
+  "relative_errors": [
+    0.0,
+    1.6091244918558728e-17,
+    2.4777200558457762e-17,
+    4.97715163828916e-16
+  ],
+  "exact_rank_ratio": 0.015400289086663936,
+  "rhs_checks": {
+    "shared_svd_r": {
+      "acceleration_relative": 2.3988299495499746e-15,
+      "rank_diagnostic": 0.015400289086663908,
+      "fallback": 0
+    },
+    "qr_guard": {
+      "acceleration_relative": 2.3988299495499746e-15,
+      "rank_diagnostic": 0.005787030407686626,
+      "fallback": 0
+    },
+    "chol_guard": {
+      "acceleration_relative": 2.3663862658250377e-15,
+      "rank_diagnostic": 0.005787030407686625,
+      "fallback": 0
+    }
+  },
+  "guard_threshold_cases_passed": true,
+  "rk4_two_step_parity_passed": true,
+  "maximum_scaled_normal_backward_error": 2.887875112513081e-17
+}

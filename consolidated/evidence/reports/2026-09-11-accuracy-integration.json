@@ -1,0 +1,67 @@
+{
+  "status": "Review inventory; no merge performed",
+  "report": "reports/2026-09-11-accuracy-improvements-and-wave-speed.md",
+  "heat": {
+    "worktree": "worktrees/2026-09-07-mr-heat2d",
+    "source_commit": "c7cc18d4a12820f471076fcbb5e95cce3c6c75c4",
+    "choice": "nmrom_initial_tail",
+    "reason": "Targeted head training improves the complete development trajectory; unchanged online solver.",
+    "files": [
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/accuracy_training.py",
+        "sha256": "ab340e93fa924b982485d6e6dc74f982c4b7872498f7adbeb9b1ed2987d71063"
+      },
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/run_accuracy.py",
+        "sha256": "48047573a8b282c0a8cf08dfca4e8f3d7caeaabf8de4c303f172e4f394763b3e"
+      },
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runtime_paths.py",
+        "sha256": "5eb79fcc74f3c2119324db00d2e07d83e3830ab541fe8b8228833604f67edd9a"
+      },
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/config-accuracy.json",
+        "sha256": "cfd50ef4002f426ebdd3fd997df42f1c4b56349dea02bd746a6691df17727de4"
+      },
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/ACCURACY-DESIGN.md",
+        "sha256": "d375e822ff5d999b4ca14babe7cf2a5a7dff82dd882551f8816570890dfd01d2"
+      },
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/test_accuracy.py",
+        "sha256": "b92319598c92cca899d29daa0eb52e1c6d36789de59f95b083559b147c858dc1"
+      },
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/audit_accuracy.py",
+        "sha256": "3e3ee689d598d2df6b2e972f0f07f9b2cf71d4b030a67765f69ab28933cc5966"
+      },
+      {
+        "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/archive/outputs/checkpoints/initial_tail.pkl",
+        "sha256": "cb4786b0f3dcfbcf4eccd9704a60b0180d9d5b6244b46f12594e3afd90d0d369"
+      }
+    ],
+    "archive_manifest": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/ARCHIVE.json",
+    "retention": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/RETENTION.json"
+  },
+  "poisson": {
+    "run": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/correction_accuracy10",
+    "source_commit": "d5146f31268f6c4302c745280420d857c98ebcef",
+    "choice": "r128_q32",
+    "reason": "Keep the fixed-weight correction family as an accuracy-improving research candidate; physical target remains missed.",
+    "inventory": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/accuracy-integration/integration-inventory.json",
+    "implementation": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/correction_core.py",
+    "archive_manifest": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/correction_accuracy10/ARCHIVE.json",
+    "inventory_sha256": "a6a860fe46399b1e658e6ebcd5b143fc40d70b71713296f14a1c29fed6dcc1e0"
+  },
+  "burgers": {
+    "inventory": "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/INTEGRATION-accuracy.json",
+    "choice": "Original checkpoint with explicit stationarity stopping; retain retraining failures as research evidence.",
+    "inventory_sha256": "7671d090ff838efd4aa21b9add96d74a837972bd951eabc25f1c4eab16c5b5b4"
+  },
+  "wave": {
+    "inventory": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/integration-inventory.json",
+    "choice": "Geometry acceleration, separately validated larger step, and frozen nested decoder; pooled physical target remains missed.",
+    "inventory_sha256": "e347e664becb26480477f7085b6b4bb5475f822854e590b7119f7254c61fa635"
+  },
+  "boundary": "Do not replace defaults with failed trained checkpoints or erase negative evidence. Preserve corrected worktree dependencies and restorable archives. User merge decision remains pending."
+}

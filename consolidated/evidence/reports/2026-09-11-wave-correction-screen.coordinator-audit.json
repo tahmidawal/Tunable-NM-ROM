@@ -1,0 +1,102 @@
+{
+  "passed": true,
+  "source_result_sha256": "334a8144d5bc8dd75a979bc9579a168ddba8207b163585cb45c38bc8f6d8e40a",
+  "owner_audit_sha256": "db9e81072fe8902d773dd16d7d71003bd36ad7e21284cb86d58803ebb25dc32c",
+  "source_script_sha256": "6eaeb218f052563612323430eb63b10d7d669218d8a4e8a0ae98e25e23ef9b8f",
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "host": "pax049",
+    "source_commit": "452cbabf21404a32300b93747e1254117fefa62f",
+    "job_id": "3565033",
+    "numpy_version": "2.5.0"
+  },
+  "source_result_path": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/result.json",
+  "checked_trajectories": 5,
+  "endpoints": [
+    {
+      "intervals": 64,
+      "method": "baseline",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.018123748190538618,
+        "velocity": 0.041671620575310146,
+        "energy_state": 0.06223986057830842
+      },
+      "complex_step_decoded_uv_max_absolute": 8.104628079763643e-15,
+      "independent_modal_reference_max_absolute": 1.84297022087776e-14,
+      "field_artifact_sha256": "542e5d5675fba4e17aab208255bc47f9870af4d89854ec52254546e3e65fef0e",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 64,
+      "method": "chol_guard",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.018109156741339272,
+        "velocity": 0.041674814120076724,
+        "energy_state": 0.0622309867485669
+      },
+      "complex_step_decoded_uv_max_absolute": 8.715250743307479e-15,
+      "independent_modal_reference_max_absolute": 1.84297022087776e-14,
+      "field_artifact_sha256": "fa3275053331172c20e16ee8c7414e43450e0b5cf1b607b24fe3169bf4187883",
+      "checkpoint_sha256": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e"
+    },
+    {
+      "intervals": 64,
+      "method": "trained_phase",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.017663245622045118,
+        "velocity": 0.041340087216168164,
+        "energy_state": 0.06103805844803442
+      },
+      "complex_step_decoded_uv_max_absolute": 1.1546319456101628e-14,
+      "independent_modal_reference_max_absolute": 1.9095836023552692e-14,
+      "field_artifact_sha256": "52d1497b69b99ab9977edb1ce33a02381c78efce17e75232c7791f5cf95926fd",
+      "checkpoint_sha256": "eb4151fb61b250e49afdc328d74dcef478ce54d381559874d79beadaba5729d3"
+    },
+    {
+      "intervals": 64,
+      "method": "trained_phase40",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.021095306938044844,
+        "velocity": 0.042527493997720545,
+        "energy_state": 0.06167913332518648
+      },
+      "complex_step_decoded_uv_max_absolute": 1.0547118733938987e-14,
+      "independent_modal_reference_max_absolute": 1.84297022087776e-14,
+      "field_artifact_sha256": "5e3a83c7cc76d1c491451647cfea164ba89b53d285e2b4fd14d8cf3ffea9671e",
+      "checkpoint_sha256": "123bc907f109f18afe3eb7cb234e0c11316dbfd285a127666af0322ebbedec67"
+    },
+    {
+      "intervals": 64,
+      "method": "trained_nested40",
+      "case": "opened_1",
+      "cohort": "opened",
+      "fixed_initial_worst": {
+        "displacement": 0.014779065499100809,
+        "velocity": 0.03260997024411479,
+        "energy_state": 0.05041070829673447
+      },
+      "complex_step_decoded_uv_max_absolute": 1.0658141036401503e-14,
+      "independent_modal_reference_max_absolute": 1.84297022087776e-14,
+      "field_artifact_sha256": "7ba7f5779ae30045b8e4ad073c7f82bf4788ce1ed3a9dacc808a9e4d91560ea1",
+      "checkpoint_sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3"
+    }
+  ],
+  "scope": "Worst energy-state trajectory per ROM arm/mesh: all saved output errors with spectral energy; selected modal-reference times; sampled decoder values and complex-step tangent velocities. Full owner audit remains required. No new solves or timings."
+}

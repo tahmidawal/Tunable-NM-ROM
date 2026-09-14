@@ -1,0 +1,34 @@
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.23:/projects/paralab  4.6T  4.1T  467G  90% /cluster/tufts/paralab
+
+{
+  "label": "pilot04",
+  "source_commit": "0ed8384c30ff150d0f25adfe1dead41a8a739c26",
+  "source_hashes": {
+    "code/pilot03.py": "a4cb32b9a89744f242ef8dc88f615ecd96e5dd10e49771e8348d0327940b9d0b",
+    "code/test_training.py": "6d5dd8b01a95573d7a89455ec1a651604f52df5a7956ad67b0cbe087469ff361",
+    "code/training_core.py": "9da65e0b9dc14198bca21846a927284cebcf368c6eed1b2d3de5786fdfa78ba8",
+    "code/core.py": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+    "code/test_kernel.py": "85f387a88b2fc267ec468a5e270a2d827acdcadcc18477f3b742a9ae87ea8f5d",
+    "code/followup.py": "45f3940847f318fb37951d522f6cfef8572ef88d9e6099cedfd9c9db6edd95ca",
+    "code/test_core.py": "f006ecedceb2cea36802a725779729104fbfa5b476bcc86c7839ed2a40d8d44c",
+    "code/kernel_solver.py": "74944f90ca2649acc7e8275bf2c13e09a6fd49c18afd9002c0b53b625dd1098d",
+    "code/test_followup.py": "37ca6316986d929c30c9d8346256336a20d3553c99609f8bbf1507d4ef70e466",
+    "code/pilot04.py": "0d0973c0603be2f78492c95324b05ab2c5596a4dad5f735f92724d060146d06a",
+    "code/pilot02.py": "7b3007160b332b3012acb7e6ef48a885800da7988ded0dc533d8182a35b6ce1b",
+    "code/cluster.py": "af76125c2c4f967d4bd74b0a74408b97c3ac5cbe38536b96cb6fb322445fa9ad",
+    "code/pilot.py": "0d75d2ae845647f155a7b093ed0f439cd1a1b408759bc02b95fb8602b4bfc963",
+    "code/config02.json": "9ba64313a6c7f28e73885f8c0523aee95245b3b289b25a9bacda219a9daf56b5",
+    "code/config03.json": "215249bcadd79e7150099aaadc33814ab1356c946c46be8e54361a147aef012a",
+    "code/config.json": "26fbd2f99aca83293eb9b8d784ca08857ab0c5628946b2b2093925d390738f95",
+    "code/config04.json": "ed9242ee770413ab3076a603a6a142e9bce4e8c39d748ed8baf0f4fd8927437b",
+    "code/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+    "code/ctol_tol.py": "7bf2a76d195e4cd44ed65b5765bc1197f195fd05915a8abc1037a7d1a02e32f0",
+    "code/ms_parametric.py": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+  },
+  "remote": "/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/pilot04",
+  "staged_at": "2026-09-07T22:33:53.889354+00:00",
+  "queue_before": "             JOBID                                NAME    STATE     NODELIST(REASON)\n           3353136             ctol_mr_wave_dynamics02  RUNNING               pax050\n           3352857           ctol_mr_burgers_rollout04  RUNNING               pax050\n",
+  "job_id": "3353137",
+  "queue_after": "             JOBID                                NAME    STATE     NODELIST(REASON)\n           3353137             ctol_mr_poisson_pilot04  PENDING           (Priority)\n           3353136             ctol_mr_wave_dynamics02  RUNNING               pax050\n           3352857           ctol_mr_burgers_rollout04  RUNNING               pax050\n"
+}

@@ -1,0 +1,170 @@
+{
+  "passed": true,
+  "source_result_sha256": "c13d00247e44b87328f5b2d980fbe57b9841fb70c59232c0a2b594f6d2cecfca",
+  "source_script_sha256": "a82b1ed282e723f2f95b237abd5bdb5fbed556f380608cb075164e1d7d5521bc",
+  "shared_numpy_decoder_sha256": "2658004009c3f5da2fffdb2eba1dd14f45d73afb4056cd787f0528340489e154",
+  "source_result_path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/archive/outputs/results.json",
+  "metadata": {
+    "job_id": "3563072",
+    "node": "pax106",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "x64": true,
+    "precision": "highest",
+    "jax": "0.10.2"
+  },
+  "scope": "Worst trajectory for every model and mesh; second CPU implementation; no new solves or timings.",
+  "checkpoints": {
+    "frozen": "c919c7c01190c6bb8b1800256b5e3d6427503fb7d9c0b82f6a35bcb0f1144a93",
+    "uniform": "557ba4bf63d00d5c2fc8eadecf5739ba933bc25aefcede3a330a683151350b27",
+    "initial_only": "ca9ebcc085a95af389c7a20e994c038e63f6f71f9af3700e07ba30fb17cb7f94",
+    "initial_tail": "cb4786b0f3dcfbcf4eccd9704a60b0180d9d5b6244b46f12594e3afd90d0d369"
+  },
+  "checked_trajectories": 12,
+  "endpoints": [
+    {
+      "model": "frozen",
+      "intervals": 64,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "4427945574f4be4f0ea9f5fbee561eac5f2f305c36f2a31fec39e543e8840e59",
+      "worst_current_relative_error": 0.07595340587168047,
+      "maximum_sampled_decoder_relative_error": 7.94181510351427e-16,
+      "maximum_weak_diagnostic_difference": 6.242713289394183e-16,
+      "maximum_weak_stationarity": 9.988454746598437e-06
+    },
+    {
+      "model": "frozen",
+      "intervals": 256,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "1444b877157f460c7abcdba05a4a8440558eae031424bf6e78602c06b8707993",
+      "worst_current_relative_error": 0.07595346111748671,
+      "maximum_sampled_decoder_relative_error": 8.273282766710854e-16,
+      "maximum_weak_diagnostic_difference": 7.06377197132093e-16,
+      "maximum_weak_stationarity": 9.673644732664694e-06
+    },
+    {
+      "model": "frozen",
+      "intervals": 1024,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "e5be4a826c87291ad793c482fae2cb6dc01b79c8535123663a046c502d958545",
+      "worst_current_relative_error": 0.07595346134629068,
+      "maximum_sampled_decoder_relative_error": 7.663370859593224e-16,
+      "maximum_weak_diagnostic_difference": 3.85864165055802e-16,
+      "maximum_weak_stationarity": 9.603175843834063e-06
+    },
+    {
+      "model": "uniform",
+      "intervals": 64,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "8074d584e4540293e92bee8e8bfebaaab78a4c4b938b1807872fc2b720d44964",
+      "worst_current_relative_error": 0.053352680017328416,
+      "maximum_sampled_decoder_relative_error": 1.0284474693956797e-15,
+      "maximum_weak_diagnostic_difference": 2.8865010767264226e-16,
+      "maximum_weak_stationarity": 5.512071852288979e-06
+    },
+    {
+      "model": "uniform",
+      "intervals": 256,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "280786e98c06b255fecae4b3c450af3305eec2efa49c7fbac95ef794c0b18386",
+      "worst_current_relative_error": 0.053352814915732405,
+      "maximum_sampled_decoder_relative_error": 7.456326830246485e-16,
+      "maximum_weak_diagnostic_difference": 5.076916565448569e-16,
+      "maximum_weak_stationarity": 5.675059807358723e-06
+    },
+    {
+      "model": "uniform",
+      "intervals": 1024,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "5f339bb26aa883f2e0a0473a702a18a5a7813a9f1a61ba7760f97b195fa28de9",
+      "worst_current_relative_error": 0.05335281545558382,
+      "maximum_sampled_decoder_relative_error": 8.196156493625669e-16,
+      "maximum_weak_diagnostic_difference": 4.126646316140629e-16,
+      "maximum_weak_stationarity": 5.6856792367833624e-06
+    },
+    {
+      "model": "initial_only",
+      "intervals": 64,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "a4a54a2a8ba2b3bb79f7a2395e61efecad5ef1a8fbade2a36ac1fec8eaa5575b",
+      "worst_current_relative_error": 0.048674077634287646,
+      "maximum_sampled_decoder_relative_error": 1.1241679780715032e-15,
+      "maximum_weak_diagnostic_difference": 5.653696636389791e-16,
+      "maximum_weak_stationarity": 4.993882839712605e-06
+    },
+    {
+      "model": "initial_only",
+      "intervals": 256,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "18cdee235c846e25d7394f009ce9819b9a8b918fadc246aebafb553b8c8fb6c2",
+      "worst_current_relative_error": 0.048674230729202496,
+      "maximum_sampled_decoder_relative_error": 8.171745190596621e-16,
+      "maximum_weak_diagnostic_difference": 3.40661404792629e-16,
+      "maximum_weak_stationarity": 5.122461005466488e-06
+    },
+    {
+      "model": "initial_only",
+      "intervals": 1024,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "a423e69649dd3b64a89a04e06e91b6642199feaf5152c5cae61f21b9f6785274",
+      "worst_current_relative_error": 0.048674231340902305,
+      "maximum_sampled_decoder_relative_error": 9.670976937992284e-16,
+      "maximum_weak_diagnostic_difference": 3.580089042501931e-16,
+      "maximum_weak_stationarity": 5.130562429481101e-06
+    },
+    {
+      "model": "initial_tail",
+      "intervals": 64,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "20716b863103b5d298ec9e93860a7e814c60639c0ca2c9046c98ada1afac4f55",
+      "worst_current_relative_error": 0.047624998100701865,
+      "maximum_sampled_decoder_relative_error": 8.85645134362433e-16,
+      "maximum_weak_diagnostic_difference": 4.743293977977844e-16,
+      "maximum_weak_stationarity": 5.328697964154164e-06
+    },
+    {
+      "model": "initial_tail",
+      "intervals": 256,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "26a67853986727aa9d861176debbdde9043d3df583be00b54d9f08a0bb52f727",
+      "worst_current_relative_error": 0.047625145914396635,
+      "maximum_sampled_decoder_relative_error": 1.0163924754067924e-15,
+      "maximum_weak_diagnostic_difference": 3.6665588641435293e-16,
+      "maximum_weak_stationarity": 5.38598648056303e-06
+    },
+    {
+      "model": "initial_tail",
+      "intervals": 1024,
+      "case": 15,
+      "cohort": "confirmation_development",
+      "repetition": 0,
+      "field_sha256": "0cae8f83c60d417f9a89b3b8632207ccb4c6964c0491c5f09547225efd144e13",
+      "worst_current_relative_error": 0.04762514650694758,
+      "maximum_sampled_decoder_relative_error": 7.242019957565903e-16,
+      "maximum_weak_diagnostic_difference": 4.501522716865089e-16,
+      "maximum_weak_stationarity": 5.389513248933018e-06
+    }
+  ]
+}

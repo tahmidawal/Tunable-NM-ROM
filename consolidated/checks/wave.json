@@ -1,0 +1,34 @@
+{
+  "pde": "wave",
+  "intervals": 64,
+  "case": "opened_0",
+  "passed": true,
+  "scope": "One opened saved case, complete frozen query, local smoke only; no timing or new accuracy claim",
+  "tolerance": 1e-08,
+  "fields": {
+    "u": {
+      "relative_l2": 3.6287670992095867e-10,
+      "maximum_absolute": 2.437038381935695e-10,
+      "replay_sha256": "c1187e7fe07c94d0ff63016b15286fc889fca4ba521036aa994c55ba6626f3b2",
+      "expected_sha256": "2bfa62a42cef0eb69c1ce1ae5f5045f2a25cdd0b6f15c5bd8fb6f3439b3c5620"
+    },
+    "v": {
+      "relative_l2": 9.842711615886752e-10,
+      "maximum_absolute": 4.874492351425452e-09,
+      "replay_sha256": "16ea6702205c3bb68856bf56d77a4cef7816357a1281cf68108ffb8e369528d8",
+      "expected_sha256": "3a545c62bbddf864fcd45234d7cd7e98008ce9cf8b0bf0da1600ee9c1e660c7e"
+    }
+  },
+  "diagnostics": {
+    "completed": true,
+    "fit_stationary": true,
+    "total_guard_fallbacks": 0,
+    "minimum_dynamic_rank_ratio": 0.0013242453082555096
+  },
+  "jax_backend": "gpu",
+  "jax": "0.10.1",
+  "x64": true,
+  "matmul_precision": "highest",
+  "gpu": "NVIDIA GB10",
+  "manifest_sha256": "88c2ad248cfaa7a596d5346ae0f3a3a8388e637e1496bee72ed28d7f4c6c6b77"
+}

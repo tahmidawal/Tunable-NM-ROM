@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "mode": "algebra",
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "results": [
+    {
+      "count": 0,
+      "residual_relative": 0.0,
+      "eliminated_jacobian_relative": 0.0,
+      "gradient_relative": 0.0,
+      "linear_gradient_scaled": 0.0,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    },
+    {
+      "count": 8,
+      "residual_relative": 3.535010141643397e-16,
+      "eliminated_jacobian_relative": 6.207581617925524e-16,
+      "gradient_relative": 6.952222425062904e-16,
+      "linear_gradient_scaled": 3.177973528331535e-17,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    },
+    {
+      "count": 16,
+      "residual_relative": 6.885269155552061e-16,
+      "eliminated_jacobian_relative": 5.056092690563235e-16,
+      "gradient_relative": 9.214490394193652e-16,
+      "linear_gradient_scaled": 3.0883141417873283e-17,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    },
+    {
+      "count": 32,
+      "residual_relative": 7.5853537204422875e-16,
+      "eliminated_jacobian_relative": 7.246699430650281e-16,
+      "gradient_relative": 1.479923664871548e-15,
+      "linear_gradient_scaled": 3.7183104614111755e-17,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    }
+  ],
+  "scope": "smoke controls, not scientific timing measurements"
+}

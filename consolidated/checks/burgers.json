@@ -1,0 +1,28 @@
+{
+  "pde": "burgers",
+  "intervals": 64,
+  "case": 0,
+  "passed": true,
+  "scope": "One opened saved case, complete frozen query, local smoke only; no timing or new accuracy claim",
+  "tolerance": 1e-08,
+  "fields": {
+    "fields": {
+      "relative_l2": 1.4701494950776596e-14,
+      "maximum_absolute": 1.8623991238087e-14,
+      "replay_sha256": "853f846320e83ba94e9e772c4c0db0f15b5658f700fcfcdb10ea38fabb2e9c53",
+      "expected_sha256": "fa5489cd195300383f26f4dd0852cc1a9c4cb9fe39a43e90e680f61f6015af19"
+    }
+  },
+  "diagnostics": {
+    "initial_and_steps_stationary": true,
+    "maximum_step_stationarity": 9.011574219533048e-07,
+    "empirical_quadrature": "Archived decoder-output rule, unchanged",
+    "internal_latent_sha256": "fe9e5b29d4782f8ef75df15e8c1f1191d893be9c232ad519cdf305c0eda7b01c"
+  },
+  "jax_backend": "gpu",
+  "jax": "0.10.1",
+  "x64": true,
+  "matmul_precision": "highest",
+  "gpu": "NVIDIA GB10",
+  "manifest_sha256": "88c2ad248cfaa7a596d5346ae0f3a3a8388e637e1496bee72ed28d7f4c6c6b77"
+}

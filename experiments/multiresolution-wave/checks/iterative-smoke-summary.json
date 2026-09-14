@@ -1,0 +1,23 @@
+{
+  "complete": true,
+  "timings_excluded_from_science": true,
+  "local_timeout_seconds": 55,
+  "operator_verification": {
+    "dirichlet": {
+      "dense_relative_error": 2.674871159580505e-12,
+      "minimum_system_eigenvalue": 1.0000496975549267,
+      "temporal_refinement_ratio": 3.999091957254285,
+      "maximum_true_relative_residual": 9.139159375712325e-13
+    },
+    "absorbing": {
+      "dense_relative_error": 1.1970487082189078e-13,
+      "minimum_system_eigenvalue": 1.0000494011089898,
+      "temporal_refinement_ratio": 3.999624914189826,
+      "maximum_true_relative_residual": 9.338095952656358e-14
+    }
+  },
+  "timed_invocations": 8,
+  "all_completed": true,
+  "all_cg_converged": true,
+  "all_reference_refinement_passed": true
+}

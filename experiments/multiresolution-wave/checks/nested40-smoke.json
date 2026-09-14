@@ -1,0 +1,14 @@
+{
+  "method": "trained_nested40",
+  "internal_configuration_dimension": 40,
+  "internal_phase_dimension": 80,
+  "weak_equations": 64,
+  "construction": "h32(z)+B8*y; preserveall nonlinearK32parameters, append8zero firstlayerrows and8fixedlinearcolumns.",
+  "basis_units": "Original standardizedtraining-PCAlinearcolumns32:40 inorthonormalbankcoefficients; newyare dimensionless standardizedscores.",
+  "max_value_tangent_jacobian_curvature_inclusion_error": 6.938893903907228e-18,
+  "minimum_sampled_rank_ratio": 0.0046458085583371165,
+  "original_checkpoint_parameters_preserved": true,
+  "retrained": false,
+  "basis_sha256": "b96607e34d55f1b6b0a08340daa5647f66a98f1ab5dce745fe3d5b54ea0e8610",
+  "checkpoint_sha256": "915f480081ee025711cdd3bab119225914b30dabf72e725ad6a6998efa7aad39"
+}

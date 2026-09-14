@@ -1,0 +1,6 @@
+2026-09-06 fresh architecture/dynamics local bounded GPU smoke.
+Command: source /etc/profile.d/jax-mem.sh; JAX_DEFAULT_MATMUL_PRECISION=highest jaxrun /home/tahmid/Dev/.venv/bin/python experiments/fresh-wave-head/test_fresh_models.py
+GPU backend; f64=true; matmul_precision=highest.
+Initial attempt: 5 passed, reload assertion failed by4.44e-16 because it compared JVP primal evaluation with plain evaluation bitwise. Fixed test to compare exact saved leaves and same evaluator before/after reload; no model/math change for this test issue.
+Corrected attempt: all6 tests passed in13.569seconds.
+Covers independent quadratic value/J/Hww; MLP finite differences and reload; common affine initialization and bank walltrace; curved acceleration/energy/omitted-curvature mutation; independentDOP853; nonorthogonal linear matrixexponential.

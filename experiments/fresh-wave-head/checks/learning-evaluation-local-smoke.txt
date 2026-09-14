@@ -1,0 +1,9 @@
+Fresh local GPU/f64/highest component checks, after numerical-review fixes.
+
+Model/dynamics: 8 tests passed in15.450s. Includes raw quadratic derivatives, MLP finite differences and exact same-evaluator reload, affine initialization, curved analytic acceleration and omitted-curvature mutation, independent DOP853, nonorthogonal linear exponential, same-stage flux balance refinement, rank-deficient/overflow initial states freezing as failures. Flux-balance10/20/40 coarse study initially missed the asymptotic3.5-order requirement (3.392);20/40/80 passes unchanged requirement.
+
+Learning: 3 tests passed in1.722s. Zero/NaN bank rejection; weighted QR span preservation; direct near-member projection floor; nonorthogonal linear latent fit against independent NumPy least squares under1000000-fold latent-axis scale contrast.
+
+Evaluation: 3 tests passed in0.899s. Finite decoded displacement with overflowing energy rejected; deficient/NaN Jacobian failures counted; vanished predicted phase marked undefined and nonfinite cases counted as outliers.
+
+These are bounded component smokes, not learned scientific results. Every command used source /etc/profile.d/jax-mem.sh followed by JAX_DEFAULT_MATMUL_PRECISION=highest jaxrun /home/tahmid/Dev/.venv/bin/python and the matching test_fresh_*.py entry point.

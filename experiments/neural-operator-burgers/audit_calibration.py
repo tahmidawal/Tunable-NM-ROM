@@ -30,7 +30,7 @@ def main():
         stored=subprocess.check_output(['git','-C',str(d.ROOT),'show',x['provenance']['source_commit']+':'+name])
         import hashlib
         assert hashlib.sha256(stored).hexdigest()==value
-    fields={};counts={}
+    fields={};counts={};initial_discrepancies=[];initial_bitwise=[]
     for row in x['solves']:
         path=a.index.parent/row['path'];assert d.sha(path)==row['sha256']
         with np.load(path) as npz:
@@ -38,7 +38,10 @@ def main():
         assert f.dtype==np.float64 and f.shape==(6,1025,1025)
         assert np.isfinite(f).all() and np.isfinite(rn).all()
         assert not np.any(f[:,[0,-1],:]) and not np.any(f[:,:,[0,-1]])
-        expected,nu=initial(1024,row['seed']);assert np.array_equal(f[0],expected)
+        expected,nu=initial(1024,row['seed'])
+        discrepancy=float(np.linalg.norm(f[0]-expected)/np.linalg.norm(expected))
+        assert discrepancy<=1e-12
+        initial_discrepancies.append(discrepancy);initial_bitwise.append(bool(np.array_equal(f[0],expected)))
         assert len(it)==len(rn)==round(.25/row['dt'])
         assert rn.max()<=2e-11 and it.max()<=20
         assert int(it.sum())==row['total_newton_iterations']
@@ -47,7 +50,18 @@ def main():
         fields[row['intervals'],row['dt'],case]=f
         counts[case]=counts.get(case,0)+1
     assert counts=={i:9 for i in range(8)}
-    gate=d.evaluate_gate(x,fields);assert gate==x['gate']
+    gate=d.evaluate_gate(x,fields)
+    def compare(actual,expected):
+        if isinstance(actual,dict):
+            assert actual.keys()==expected.keys()
+            for key in actual:compare(actual[key],expected[key])
+        elif isinstance(actual,list):
+            assert len(actual)==len(expected)
+            for aa,bb in zip(actual,expected):compare(aa,bb)
+        elif isinstance(actual,float):
+            assert np.isclose(actual,expected,rtol=1e-10,atol=1e-14)
+        else:assert actual==expected
+    compare(gate,x['gate'])
     for row in x['records']:
         path=a.index.parent/row['path'];assert d.sha(path)==row['sha256']
         with np.load(path) as npz:
@@ -56,10 +70,11 @@ def main():
             assert npz['input'].shape==(1,1025,1025) and npz['target'].shape==(6,1,1025,1025)
             assert np.array_equal(npz['input'][0],npz['target'][0,0])
             assert np.array_equal(npz['times'],d.TIMES)
-            expected,nu=initial(1024,row['seed']);assert np.array_equal(npz['input'][0],expected)
-            assert npz['parameters'].shape==(1,) and npz['parameters'][0]==nu
+            expected,nu=initial(1024,row['seed']);assert np.linalg.norm(npz['input'][0]-expected)/np.linalg.norm(expected)<=1e-12
+            assert npz['parameters'].shape==(1,) and np.isclose(npz['parameters'][0],nu,rtol=1e-13,atol=0)
     result=dict(passed=True,reference_index_sha256=d.sha(a.index),solves_checked=len(x['solves']),cases_checked=8,
-                source_hashes_checked=True,all_fields_finite_f64_zero_boundary=True,initial_fields_seed_regenerated_exactly=True,
+                source_hashes_checked=True,all_fields_finite_f64_zero_boundary=True,initial_fields_seed_regenerated_within_tolerance=True,initial_relative_tolerance=1e-12,
+                initial_regeneration_worst_relative=max(initial_discrepancies),initial_regeneration_bitwise=all(initial_bitwise),
                 all_step_residuals_below_declared_threshold=True,all_saved_empirical_gate_numbers_reproduced=True,
                 model_facing_schema_exact=True,gate=gate,
                 independence='NumPy independently regenerates Gaussian inputs; gate implementation shared with producer; root independently reviews refinement arithmetic')

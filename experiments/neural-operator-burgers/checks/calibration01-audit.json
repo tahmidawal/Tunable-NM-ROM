@@ -1,0 +1,1526 @@
+{
+  "passed": true,
+  "reference_index_sha256": "1c4bd00bc3b0b89ef9d4b12fbc8a091912cb58f6157793b0e51a6658752b51ab",
+  "solves_checked": 72,
+  "cases_checked": 8,
+  "source_hashes_checked": true,
+  "all_fields_finite_f64_zero_boundary": true,
+  "initial_fields_seed_regenerated_within_tolerance": true,
+  "initial_relative_tolerance": 1e-12,
+  "initial_regeneration_worst_relative": 3.729438150293194e-17,
+  "initial_regeneration_bitwise": false,
+  "all_step_residuals_below_declared_threshold": true,
+  "all_saved_empirical_gate_numbers_reproduced": true,
+  "model_facing_schema_exact": true,
+  "gate": {
+    "status": "calibrated",
+    "calibration_count": 8,
+    "required_count": 8,
+    "empirical_budget": 0.001,
+    "interpretation": "space/time refinement differences are empirical development evidence, not rigorous continuum error bounds",
+    "selection": "lowest mesh^2 times time-step-count proxy among passing settings; no cross-job timing selection",
+    "by_output": {
+      "64": {
+        "passing": false,
+        "selected": null,
+        "cases": [
+          {
+            "case_id": "burgers-calibration-00000",
+            "anchor_space_difference": 0.00021552621871905365,
+            "anchor_time_difference": 0.0002584971801977464,
+            "anchor_difference_sum": 0.00047402339891680005,
+            "spatial_coarse_difference": 0.00042949550096711003,
+            "spatial_fine_difference": 0.00021526361991962926,
+            "temporal_coarse_difference": 0.0005146612302586799,
+            "temporal_fine_difference": 0.0002584971801977464,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.002986884680716499
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001426023304667132
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.00064554484036803
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00001",
+            "anchor_space_difference": 0.0005257066816619921,
+            "anchor_time_difference": 0.000859903591738861,
+            "anchor_difference_sum": 0.001385610273400853,
+            "spatial_coarse_difference": 0.001042899167484481,
+            "spatial_fine_difference": 0.0005241657806044631,
+            "temporal_coarse_difference": 0.0017011498297657317,
+            "temporal_fine_difference": 0.000859903591738861,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.00770523066115545
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003629682696041728
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0015716602118580696
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00002",
+            "anchor_space_difference": 0.0006266469578002825,
+            "anchor_time_difference": 0.0005572150156018384,
+            "anchor_difference_sum": 0.0011838619734021209,
+            "spatial_coarse_difference": 0.0012435385236381153,
+            "spatial_fine_difference": 0.000625414023331156,
+            "temporal_coarse_difference": 0.0011037817237451984,
+            "temporal_fine_difference": 0.0005572150156018384,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.009125900135866283
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0043269585242802205
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0018726248468626608
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00003",
+            "anchor_space_difference": 0.000280046635361468,
+            "anchor_time_difference": 0.0003109321407072962,
+            "anchor_difference_sum": 0.0005909787760687642,
+            "spatial_coarse_difference": 0.0005583095791263442,
+            "spatial_fine_difference": 0.0002797148012085594,
+            "temporal_coarse_difference": 0.0006195815862812727,
+            "temporal_fine_difference": 0.0003109321407072962,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.00427288736279291
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001984029837854557
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0008390175700630009
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00004",
+            "anchor_space_difference": 0.0004911440685064393,
+            "anchor_time_difference": 0.0005632424860208005,
+            "anchor_difference_sum": 0.0010543865545272397,
+            "spatial_coarse_difference": 0.0009771090374274315,
+            "spatial_fine_difference": 0.0004901157781920566,
+            "temporal_coarse_difference": 0.001117652770880577,
+            "temporal_fine_difference": 0.0005632424860208005,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0075768917366407645
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0035226534121943595
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0014703023576479125
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00005",
+            "anchor_space_difference": 0.0004300563802509016,
+            "anchor_time_difference": 0.0003915548312766254,
+            "anchor_difference_sum": 0.000821611211527527,
+            "spatial_coarse_difference": 0.000856293325434908,
+            "spatial_fine_difference": 0.00042936312734932015,
+            "temporal_coarse_difference": 0.0007793984694826731,
+            "temporal_fine_difference": 0.0003915548312766254,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.006626618190594433
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003079309881127878
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0012877308787582504
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00006",
+            "anchor_space_difference": 0.0002264241697597303,
+            "anchor_time_difference": 0.000165449427359958,
+            "anchor_difference_sum": 0.00039187359711968827,
+            "spatial_coarse_difference": 0.00045097106800129767,
+            "spatial_fine_difference": 0.0002261728299719569,
+            "temporal_coarse_difference": 0.00032980689041895784,
+            "temporal_fine_difference": 0.000165449427359958,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0030573478362736343
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0014780169914845064
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.000677894992268564
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00007",
+            "anchor_space_difference": 0.0004616831239195891,
+            "anchor_time_difference": 0.0003592867882249614,
+            "anchor_difference_sum": 0.0008209699121445505,
+            "spatial_coarse_difference": 0.0009169496384103008,
+            "spatial_fine_difference": 0.00046082603804096665,
+            "temporal_coarse_difference": 0.0007140012540391654,
+            "temporal_fine_difference": 0.0003592867882249614,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.006692653921028834
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0031751989343283753
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.001380330608215832
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          }
+        ],
+        "candidates": [
+          {
+            "intervals": 256,
+            "dt": 0.00125,
+            "passing": false,
+            "worst_empirical_margin": 0.010309762109268403,
+            "work_proxy": 13107200
+          },
+          {
+            "intervals": 512,
+            "dt": 0.000625,
+            "passing": false,
+            "worst_empirical_margin": 0.005510820497682341,
+            "work_proxy": 104857600
+          },
+          {
+            "intervals": 1024,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.0030564868202647816,
+            "work_proxy": 838860800
+          },
+          {
+            "intervals": 4096,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.001385610273400853,
+            "work_proxy": 13421772800
+          }
+        ]
+      },
+      "128": {
+        "passing": false,
+        "selected": null,
+        "cases": [
+          {
+            "case_id": "burgers-calibration-00000",
+            "anchor_space_difference": 0.00021547322220579406,
+            "anchor_time_difference": 0.0002584336174898399,
+            "anchor_difference_sum": 0.00047390683969563395,
+            "spatial_coarse_difference": 0.0004293898907867479,
+            "spatial_fine_difference": 0.00021521068797780216,
+            "temporal_coarse_difference": 0.0005145346785436577,
+            "temporal_fine_difference": 0.0002584336174898399,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0029861502249206046
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0014256726547239237
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.000645386105042267
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00001",
+            "anchor_space_difference": 0.0005257066584491145,
+            "anchor_time_difference": 0.0008599035537119687,
+            "anchor_difference_sum": 0.0013856102121610832,
+            "spatial_coarse_difference": 0.0010428991214433728,
+            "spatial_fine_difference": 0.000524165757459862,
+            "temporal_coarse_difference": 0.0017011497545370874,
+            "temporal_fine_difference": 0.0008599035537119687,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.007705230321844552
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003629682536020698
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0015716601424687132
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00002",
+            "anchor_space_difference": 0.0006266253013541563,
+            "anchor_time_difference": 0.0005571957586920448,
+            "anchor_difference_sum": 0.001183821060046201,
+            "spatial_coarse_difference": 0.001243495547892852,
+            "spatial_fine_difference": 0.0006253924094944776,
+            "temporal_coarse_difference": 0.0011037435779229737,
+            "temporal_fine_difference": 0.0005571957586920448,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.009125584753029823
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.004326808988140269
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0018725601303682844
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00003",
+            "anchor_space_difference": 0.0002799655031071459,
+            "anchor_time_difference": 0.00031084206062197253,
+            "anchor_difference_sum": 0.0005908075637291184,
+            "spatial_coarse_difference": 0.0005581478313706897,
+            "spatial_fine_difference": 0.0002796337650898147,
+            "temporal_coarse_difference": 0.0006194020874298588,
+            "temporal_fine_difference": 0.00031084206062197253,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.00427164946552897
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0019834550449853786
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0008387744984518228
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00004",
+            "anchor_space_difference": 0.0004899918462201386,
+            "anchor_time_difference": 0.0005619211217386486,
+            "anchor_difference_sum": 0.0010519129679587872,
+            "spatial_coarse_difference": 0.0009748167430070778,
+            "spatial_fine_difference": 0.0004889659682712085,
+            "temporal_coarse_difference": 0.001115030762659837,
+            "temporal_fine_difference": 0.0005619211217386486,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.007559116375138663
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0035143892795410697
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0014668530334038955
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00005",
+            "anchor_space_difference": 0.00042955530486704977,
+            "anchor_time_difference": 0.0003910986156230182,
+            "anchor_difference_sum": 0.000820653920490068,
+            "spatial_coarse_difference": 0.0008552956248436583,
+            "spatial_fine_difference": 0.00042886285970158923,
+            "temporal_coarse_difference": 0.0007784903622301068,
+            "temporal_fine_difference": 0.0003910986156230182,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0066188972607165
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0030757220576799016
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.001286230493524089
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00006",
+            "anchor_space_difference": 0.00022615232950982876,
+            "anchor_time_difference": 0.00016525079274837116,
+            "anchor_difference_sum": 0.0003914031222581999,
+            "spatial_coarse_difference": 0.000450429641375711,
+            "spatial_fine_difference": 0.00022590129147473544,
+            "temporal_coarse_difference": 0.00032941093219628683,
+            "temporal_fine_difference": 0.00016525079274837116,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0030536772482120645
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0014762425145832068
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0006770811253993975
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00007",
+            "anchor_space_difference": 0.0004613213306640957,
+            "anchor_time_difference": 0.00035900524576709295,
+            "anchor_difference_sum": 0.0008203265764311887,
+            "spatial_coarse_difference": 0.0009162310806916638,
+            "spatial_fine_difference": 0.0004604649164401919,
+            "temporal_coarse_difference": 0.0007134417520738007,
+            "temporal_fine_difference": 0.00035900524576709295,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.00668740929839575
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0031727107236517713
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0013792489267257188
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          }
+        ],
+        "candidates": [
+          {
+            "intervals": 256,
+            "dt": 0.00125,
+            "passing": false,
+            "worst_empirical_margin": 0.010309405813076024,
+            "work_proxy": 13107200
+          },
+          {
+            "intervals": 512,
+            "dt": 0.000625,
+            "passing": false,
+            "worst_empirical_margin": 0.0055106300481864694,
+            "work_proxy": 104857600
+          },
+          {
+            "intervals": 1024,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.0030563811904144853,
+            "work_proxy": 838860800
+          },
+          {
+            "intervals": 4096,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.0013856102121610832,
+            "work_proxy": 13421772800
+          }
+        ]
+      },
+      "256": {
+        "passing": false,
+        "selected": null,
+        "cases": [
+          {
+            "case_id": "burgers-calibration-00000",
+            "anchor_space_difference": 0.00021544767550477648,
+            "anchor_time_difference": 0.0002584029773665286,
+            "anchor_difference_sum": 0.0004738506528713051,
+            "spatial_coarse_difference": 0.00042933898193143875,
+            "spatial_fine_difference": 0.00021518517240307945,
+            "temporal_coarse_difference": 0.0005144736748470502,
+            "temporal_fine_difference": 0.0002584029773665286,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.002985796184259751
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001425503625683592
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0006453095874795353
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00001",
+            "anchor_space_difference": 0.000525706648209688,
+            "anchor_time_difference": 0.0008599035369620827,
+            "anchor_difference_sum": 0.0013856101851717707,
+            "spatial_coarse_difference": 0.001042899101130858,
+            "spatial_fine_difference": 0.0005241657472504782,
+            "temporal_coarse_difference": 0.0017011497214007036,
+            "temporal_fine_difference": 0.0008599035369620827,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.007705230171796959
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0036296824653302344
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0015716601118572666
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00002",
+            "anchor_space_difference": 0.0006266155512952243,
+            "anchor_time_difference": 0.0005571870889313594,
+            "anchor_difference_sum": 0.0011838026402265836,
+            "spatial_coarse_difference": 0.0012434761995606036,
+            "spatial_fine_difference": 0.0006253826786189405,
+            "temporal_coarse_difference": 0.0011037264040796833,
+            "temporal_fine_difference": 0.0005571870889313594,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.009125442762369328
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.004326741664600237
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0018725309940227767
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00003",
+            "anchor_space_difference": 0.00027992637225428865,
+            "anchor_time_difference": 0.00031079861414448287,
+            "anchor_difference_sum": 0.0005907249863987715,
+            "spatial_coarse_difference": 0.0005580698188997823,
+            "spatial_fine_difference": 0.00027959468060405275,
+            "temporal_coarse_difference": 0.0006193155134353504,
+            "temporal_fine_difference": 0.00031079861414448287,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.004271052415950284
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0019831778169466584
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0008386572627169933
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00004",
+            "anchor_space_difference": 0.0004894325757648581,
+            "anchor_time_difference": 0.0005612797521337779,
+            "anchor_difference_sum": 0.001050712327898636,
+            "spatial_coarse_difference": 0.0009737040995870072,
+            "spatial_fine_difference": 0.0004884078687399649,
+            "temporal_coarse_difference": 0.0011137580807625965,
+            "temporal_fine_difference": 0.0005612797521337779,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.007550488495957548
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003510378000361586
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0014651787860259912
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00005",
+            "anchor_space_difference": 0.0004293124014204874,
+            "anchor_time_difference": 0.0003908774585330968,
+            "anchor_difference_sum": 0.0008201898599535842,
+            "spatial_coarse_difference": 0.0008548119752352644,
+            "spatial_fine_difference": 0.0004286203478165497,
+            "temporal_coarse_difference": 0.0007780501441977328,
+            "temporal_fine_difference": 0.0003908774585330968,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.00661515442962848
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003073982809023569
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0012855031603581457
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00006",
+            "anchor_space_difference": 0.0002260204663669069,
+            "anchor_time_difference": 0.0001651544396083197,
+            "anchor_difference_sum": 0.0003911749059752266,
+            "spatial_coarse_difference": 0.0004501670083643159,
+            "spatial_fine_difference": 0.00022576957470511454,
+            "temporal_coarse_difference": 0.00032921886184597365,
+            "temporal_fine_difference": 0.0001651544396083197,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0030518967339581912
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0014753817586007473
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0006766863382019633
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00007",
+            "anchor_space_difference": 0.000461147884819243,
+            "anchor_time_difference": 0.0003588702684644379,
+            "anchor_difference_sum": 0.0008200181532836809,
+            "spatial_coarse_difference": 0.0009158865996235388,
+            "spatial_fine_difference": 0.00046029179258686283,
+            "temporal_coarse_difference": 0.0007131735152043621,
+            "temporal_fine_difference": 0.0003588702684644379,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0066848949921321
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003171517860080455
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0013787303619629335
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          }
+        ],
+        "candidates": [
+          {
+            "intervals": 256,
+            "dt": 0.00125,
+            "passing": false,
+            "worst_empirical_margin": 0.010309245402595911,
+            "work_proxy": 13107200
+          },
+          {
+            "intervals": 512,
+            "dt": 0.000625,
+            "passing": false,
+            "worst_empirical_margin": 0.005510544304826821,
+            "work_proxy": 104857600
+          },
+          {
+            "intervals": 1024,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.00305633363424936,
+            "work_proxy": 838860800
+          },
+          {
+            "intervals": 4096,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.0013856101851717707,
+            "work_proxy": 13421772800
+          }
+        ]
+      },
+      "512": {
+        "passing": false,
+        "selected": null,
+        "cases": [
+          {
+            "case_id": "burgers-calibration-00000",
+            "anchor_space_difference": 0.00021543514015910582,
+            "anchor_time_difference": 0.00025838794276179686,
+            "anchor_difference_sum": 0.0004738230829209027,
+            "spatial_coarse_difference": 0.00042931400179400866,
+            "spatial_fine_difference": 0.00021517265233056992,
+            "temporal_coarse_difference": 0.0005144437413361276,
+            "temporal_fine_difference": 0.00025838794276179686,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0030038310460732123
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001425420685913741
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0006452720415709075
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00001",
+            "anchor_space_difference": 0.0005257066434505623,
+            "anchor_time_difference": 0.0008599035291775108,
+            "anchor_difference_sum": 0.001385610172628073,
+            "spatial_coarse_difference": 0.0010428990916897258,
+            "spatial_fine_difference": 0.0005241657425053047,
+            "temporal_coarse_difference": 0.0017011497060004496,
+            "temporal_fine_difference": 0.0008599035291775108,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.007744909713015517
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.00362968243247168
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.001571660097629356
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00002",
+            "anchor_space_difference": 0.0006266109517482137,
+            "anchor_time_difference": 0.0005571829990101776,
+            "anchor_difference_sum": 0.0011837939507583911,
+            "spatial_coarse_difference": 0.0012434670720705367,
+            "spatial_fine_difference": 0.0006253780881215808,
+            "temporal_coarse_difference": 0.0011037183023951827,
+            "temporal_fine_difference": 0.0005571829990101776,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.009181768918977108
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.00432670990501314
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0018725172490809145
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00003",
+            "anchor_space_difference": 0.0002799071658154761,
+            "anchor_time_difference": 0.0003107772894850116,
+            "anchor_difference_sum": 0.0005906844553004877,
+            "spatial_coarse_difference": 0.0005580315283530775,
+            "spatial_fine_difference": 0.0002795754969234215,
+            "temporal_coarse_difference": 0.0006192730206704893,
+            "temporal_fine_difference": 0.0003107772894850116,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0042825809473497
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001983041746225352
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0008385997203737269
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00004",
+            "anchor_space_difference": 0.0004891571030489723,
+            "anchor_time_difference": 0.0005609638408821021,
+            "anchor_difference_sum": 0.0010501209439310742,
+            "spatial_coarse_difference": 0.0009731560590068399,
+            "spatial_fine_difference": 0.0004881329727711974,
+            "temporal_coarse_difference": 0.0011131312120611864,
+            "temporal_fine_difference": 0.0005609638408821021,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.007563464744711868
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0035084022157298757
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0014643541233463424
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00005",
+            "anchor_space_difference": 0.00042919284811347664,
+            "anchor_time_difference": 0.0003907686084448109,
+            "anchor_difference_sum": 0.0008199614565582876,
+            "spatial_coarse_difference": 0.0008545739304031937,
+            "spatial_fine_difference": 0.00042850098723003455,
+            "temporal_coarse_difference": 0.000777833475712406,
+            "temporal_fine_difference": 0.0003907686084448109,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0066328874878265375
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0030731267778230337
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0012851451782605492
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00006",
+            "anchor_space_difference": 0.00022595554445037325,
+            "anchor_time_difference": 0.00016510700079490852,
+            "anchor_difference_sum": 0.0003910625452452818,
+            "spatial_coarse_difference": 0.00045003770279583853,
+            "spatial_fine_difference": 0.00022570472485447852,
+            "temporal_coarse_difference": 0.0003291242973147628,
+            "temporal_fine_difference": 0.00016510700079490852,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.003078331756201273
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0014749579712667008
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0006764919674238552
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00007",
+            "anchor_space_difference": 0.0004610630181937091,
+            "anchor_time_difference": 0.0003588042243406507,
+            "anchor_difference_sum": 0.0008198672425343598,
+            "spatial_coarse_difference": 0.0009157180458750784,
+            "spatial_fine_difference": 0.0004602070835109242,
+            "temporal_coarse_difference": 0.0007130422674414359,
+            "temporal_fine_difference": 0.0003588042243406507,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.006727720528973515
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0031709341947926796
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0013784766294907727
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          }
+        ],
+        "candidates": [
+          {
+            "intervals": 256,
+            "dt": 0.00125,
+            "passing": false,
+            "worst_empirical_margin": 0.010365562869735499,
+            "work_proxy": 13107200
+          },
+          {
+            "intervals": 512,
+            "dt": 0.000625,
+            "passing": false,
+            "worst_empirical_margin": 0.005510503855771531,
+            "work_proxy": 104857600
+          },
+          {
+            "intervals": 1024,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.0030563111998393056,
+            "work_proxy": 838860800
+          },
+          {
+            "intervals": 4096,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.001385610172628073,
+            "work_proxy": 13421772800
+          }
+        ]
+      },
+      "1024": {
+        "passing": false,
+        "selected": null,
+        "cases": [
+          {
+            "case_id": "burgers-calibration-00000",
+            "anchor_space_difference": 0.00021542893198050203,
+            "anchor_time_difference": 0.0002583804968154355,
+            "anchor_difference_sum": 0.0004738094287959375,
+            "spatial_coarse_difference": 0.00042930163028396585,
+            "spatial_fine_difference": 0.0002151664517160583,
+            "temporal_coarse_difference": 0.0005144289166486327,
+            "temporal_fine_difference": 0.0002583804968154355,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0030082718074582876
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001429363645298154
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0006452534468139012
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00001",
+            "anchor_space_difference": 0.0005257066411621962,
+            "anchor_time_difference": 0.0008599035254344068,
+            "anchor_difference_sum": 0.001385610166596603,
+            "spatial_coarse_difference": 0.0010428990871500573,
+            "spatial_fine_difference": 0.0005241657402236452,
+            "temporal_coarse_difference": 0.001701149698595453,
+            "temporal_fine_difference": 0.0008599035254344068,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0077547681602458795
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003640155042809076
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0015716600907880254
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00002",
+            "anchor_space_difference": 0.0006266087212183704,
+            "anchor_time_difference": 0.0005571810156211159,
+            "anchor_difference_sum": 0.0011837897368394863,
+            "spatial_coarse_difference": 0.0012434626457348572,
+            "spatial_fine_difference": 0.0006253758619803267,
+            "temporal_coarse_difference": 0.0011037143735193665,
+            "temporal_fine_difference": 0.0005571810156211159,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.00919573432714385
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.00434125021460967
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0018725105835325478
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00003",
+            "anchor_space_difference": 0.000279897652331921,
+            "anchor_time_difference": 0.00031076672678782456,
+            "anchor_difference_sum": 0.0005906643791197455,
+            "spatial_coarse_difference": 0.0005580125619798774,
+            "spatial_fine_difference": 0.000279565994712627,
+            "temporal_coarse_difference": 0.0006192519728217103,
+            "temporal_fine_difference": 0.00031076672678782456,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.004285384150976068
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001986006891325817
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0008385712180500157
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00004",
+            "anchor_space_difference": 0.0004890204015691041,
+            "anchor_time_difference": 0.000560807072051146,
+            "anchor_difference_sum": 0.00104982747362025,
+            "spatial_coarse_difference": 0.000972884097560142,
+            "spatial_fine_difference": 0.00048799655749820275,
+            "temporal_coarse_difference": 0.0011128201326901122,
+            "temporal_fine_difference": 0.000560807072051146,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.007565646339030558
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.0035118427019711195
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0014639448900459096
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00005",
+            "anchor_space_difference": 0.00042913354478991473,
+            "anchor_time_difference": 0.00039071461435491385,
+            "anchor_difference_sum": 0.0008198481591448286,
+            "spatial_coarse_difference": 0.0008544558504432773,
+            "spatial_fine_difference": 0.00042844177950370876,
+            "temporal_coarse_difference": 0.000777725999293612,
+            "temporal_fine_difference": 0.00039071461435491385,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.006636850975540599
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003077687956641467
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0012849676045179658
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00006",
+            "anchor_space_difference": 0.00022592333532459597,
+            "anchor_time_difference": 0.000165083465403604,
+            "anchor_difference_sum": 0.00039100680072819995,
+            "spatial_coarse_difference": 0.00044997355158854664,
+            "spatial_fine_difference": 0.00022567255148210502,
+            "temporal_coarse_difference": 0.0003290773818654599,
+            "temporal_fine_difference": 0.000165083465403604,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.0030846639811997678
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.001481616185393164
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0006763955360000722
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          },
+          {
+            "case_id": "burgers-calibration-00007",
+            "anchor_space_difference": 0.0004610210481912636,
+            "anchor_time_difference": 0.0003587715628310912,
+            "anchor_difference_sum": 0.0008197926110223549,
+            "spatial_coarse_difference": 0.0009156346891817883,
+            "spatial_fine_difference": 0.0004601651914231656,
+            "temporal_coarse_difference": 0.0007129773600762102,
+            "temporal_fine_difference": 0.0003587715628310912,
+            "refinement_decreases": true,
+            "candidates": [
+              {
+                "intervals": 256,
+                "dt": 0.00125,
+                "difference_from_anchor": 0.006738041764949954
+              },
+              {
+                "intervals": 512,
+                "dt": 0.000625,
+                "difference_from_anchor": 0.003181872955325347
+              },
+              {
+                "intervals": 1024,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0013783511484497908
+              },
+              {
+                "intervals": 4096,
+                "dt": 0.0003125,
+                "difference_from_anchor": 0.0
+              }
+            ]
+          }
+        ],
+        "candidates": [
+          {
+            "intervals": 256,
+            "dt": 0.00125,
+            "passing": false,
+            "worst_empirical_margin": 0.010379524063983337,
+            "work_proxy": 13107200
+          },
+          {
+            "intervals": 512,
+            "dt": 0.000625,
+            "passing": false,
+            "worst_empirical_margin": 0.005525039951449156,
+            "work_proxy": 104857600
+          },
+          {
+            "intervals": 1024,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.003056300320372034,
+            "work_proxy": 838860800
+          },
+          {
+            "intervals": 4096,
+            "dt": 0.0003125,
+            "passing": false,
+            "worst_empirical_margin": 0.001385610166596603,
+            "work_proxy": 13421772800
+          }
+        ]
+      }
+    }
+  },
+  "independence": "NumPy independently regenerates Gaussian inputs; gate implementation shared with producer; root independently reviews refinement arithmetic"
+}

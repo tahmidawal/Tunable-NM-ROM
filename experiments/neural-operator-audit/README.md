@@ -78,6 +78,15 @@ model-facing case and reference sidecar hashes are unchanged. A checksummed
 archive must be pulled and verified before deleting the exact completed remote
 job directory. Use only the repository's explicit-ID cancellation script.
 
+`collect_when_done.py` is a bounded local monitor for the owned Poisson FNO job.
+It waits for Slurm completion, verifies the transferred archive and source hashes,
+checks completed-model fields and checkpoint hashes independently with NumPy,
+then preserves the archive in ordered 64-MiB Git-tracked parts before exact remote
+cleanup. Reconstruct by concatenating the filenames in `archive-parts/manifest.json`
+order and checking its aggregate SHA256 before extracting. Missing model results
+remain explicit. A failed collector leaves the remote evidence intact; inspect
+`checks/collection-monitor.log` and the canonical lab log for collection outcomes.
+
 ## Glossary
 
 - **FNO:** Fourier neural operator, a network using learned Fourier-space layers.

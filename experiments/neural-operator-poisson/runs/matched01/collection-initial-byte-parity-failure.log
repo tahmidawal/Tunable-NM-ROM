@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/collect.py", line 53, in <module>
+    p=argparse.ArgumentParser();p.add_argument('label');p.add_argument('--retain-remote',action='store_true');a=p.parse_args();collect(a.label,a.retain_remote)
+                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/collect.py", line 32, in collect
+    summary=audit_matched(archive)
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/audit_matched.py", line 45, in run
+    np.testing.assert_array_equal(initials[128]['Z_tr'],initials[256]['Z_tr'])
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/numpy/testing/_private/utils.py", line 1121, in assert_array_equal
+    assert_array_compare(operator.__eq__, actual, desired, err_msg=err_msg,
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/numpy/testing/_private/utils.py", line 983, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 2020 / 2048 (98.6%)
+First 5 mismatches are at indices:
+ [0, 0]: 0.025974542877601103 (ACTUAL), 0.02597454287760174 (DESIRED)
+ [0, 1]: -0.13126987187863837 (ACTUAL), -0.13126987187863912 (DESIRED)
+ [0, 2]: 0.2932914406063567 (ACTUAL), 0.29329144060634393 (DESIRED)
+ [0, 3]: 0.12943134780317017 (ACTUAL), 0.1294313478031739 (DESIRED)
+ [0, 4]: 0.6776166852636474 (ACTUAL), 0.6776166852636291 (DESIRED)
+Max absolute difference among violations: 4.21884749e-14
+Max relative difference among violations: 2.30153454e-12
+ ACTUAL: array([[ 0.025975, -0.13127 ,  0.293291, ..., -0.830993,  1.24184 ,
+        -1.011762],
+       [ 0.619642, -0.429718, -0.401969, ..., -0.274565, -0.104421,...
+ DESIRED: array([[ 0.025975, -0.13127 ,  0.293291, ..., -0.830993,  1.24184 ,
+        -1.011762],
+       [ 0.619642, -0.429718, -0.401969, ..., -0.274565, -0.104421,...

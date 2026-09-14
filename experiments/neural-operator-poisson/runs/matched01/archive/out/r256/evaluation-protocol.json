@@ -1,0 +1,43 @@
+{
+  "online_preset": {
+    "budget": 300,
+    "tau": 0.0,
+    "stationarity_stop": 1e-06,
+    "starts": 1,
+    "requested_modes": 256
+  },
+  "requested_modes": 256,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "residual_reconstruction_limit": 1e-12,
+  "repetitions": 3,
+  "burn_seconds": 0.1,
+  "cg_maxiter": 6000,
+  "checkpoint_sha256": "f48cba8c9e1d7aed4e447ce597995aa6e8dbbd699c596d0d44fe80e47dbba3bb",
+  "basis_sha256": "aeb6150f5bb9bfebb38545664035dd5c1ec46b8f625d276e5b727eca2fa223a9",
+  "checkpoint": "../out/r256/final.pkl",
+  "basis": "../out/r256/basis.npz",
+  "cg_tolerances": [
+    0.1,
+    0.03,
+    0.01,
+    0.001,
+    1e-06
+  ],
+  "oracle_starts": 3,
+  "oracle_max_nfev": 600,
+  "dataset_seed": 20260914,
+  "train_count": 128,
+  "validation_count": 32,
+  "calibration_count": 8,
+  "training_intervals": 256,
+  "reference_intervals": 2048,
+  "refinement_intervals": 4096,
+  "reference_budget": 0.001,
+  "precision": "float64/highest",
+  "scope": "first-stage data, diagnosis and inherited stationary ROM/FOM pilot; not matched-data paper evidence",
+  "comparison_status": "common-width matched-data capacity control; r only varies; historical checkpoint separate",
+  "training_index_sha256": "d20a5994af09b2dd5631186a9e920bd2444b1bea86e6c9521841d398f1bf1013",
+  "training_rank": 256
+}

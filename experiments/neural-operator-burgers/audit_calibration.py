@@ -20,7 +20,10 @@ def initial(L,seed):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('index',type=Path);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('index',type=Path);p.add_argument('--out',type=Path,required=True);p.add_argument('--refined',action='store_true');a=p.parse_args()
+    if a.refined:
+        from refine import configure
+        configure()
     x=json.loads(a.index.read_text());assert x['complete'] and x['count']==8
     assert x['pde']=='burgers' and x['provenance']['backend']=='gpu'
     assert x['provenance']['f64'] and x['provenance']['matmul_precision']=='highest'
@@ -49,7 +52,8 @@ def main():
         case=int(row['case_id'].split('-')[-1]);assert row['seed']==d.case_seed('calibration',case)
         fields[row['intervals'],row['dt'],case]=f
         counts[case]=counts.get(case,0)+1
-    assert counts=={i:9 for i in range(8)}
+    setting_count=len(set(d.anchor_settings()+[(r['intervals'],r['dt']) for r in d.PROTOCOL['candidates']]))
+    assert counts=={i:setting_count for i in range(8)}
     gate=d.evaluate_gate(x,fields)
     def compare(actual,expected):
         if isinstance(actual,dict):

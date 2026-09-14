@@ -29,6 +29,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--reference-index', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--reference-dt', type=float, default=.0003125)
     parser.add_argument('--cases', type=int, default=8)
     parser.add_argument('--intervals', type=int, default=256)
     parser.add_argument('--reps', type=int, default=3)
@@ -45,7 +46,7 @@ def main():
     params, Zold, _ = e.sc.load_pkl(CHECKPOINT)
     K, R = Zold.shape[1], params['h_lin'].shape[1]
     L, M, m = args.intervals, 4*K, 16*K
-    cfg = dict(dt=.005, strict=dict(ic_budget=400, step_budget=180, gtol=1e-6),
+    cfg = dict(reference_dt=args.reference_dt,dt=.005, strict=dict(ic_budget=400, step_budget=180, gtol=1e-6),
                oracle_starts=8, oracle_budget=400, oracle_gradient_tolerance=1e-7,
                reference_interpretation='analytic Gaussian continuum-family pilot; fine reference initial data use generation descriptors offline; no arbitrary sampled-field claim')
     if args.smoke:
@@ -105,7 +106,7 @@ def main():
     for case in range(args.cases):
         record=d.case_record('calibration',case)
         physical=e.params_draw(record['seed'],1)[0]
-        anchors=[s for s in ref.get('solves', []) if s['case_id']==record['case_id'] and s['intervals']==4096 and s['dt']==.0003125]
+        anchors=[s for s in ref.get('solves', []) if s['case_id']==record['case_id'] and s['intervals']==4096 and s['dt']==args.reference_dt]
         if args.smoke:
             anchor=ref['records'][0]
             artifact=args.reference_index.parent/anchor['path']

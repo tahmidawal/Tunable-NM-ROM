@@ -10,7 +10,7 @@ attempt=sys.argv[1];minutes=int(sys.argv[2]);assert attempt.isalnum() and 5<=min
 out=root/'experiments/neural-operator-burgers/runs'/attempt;out.mkdir(parents=True,exist_ok=False)
 remote=f'/cluster/tufts/paralab/tawal01/no_burgers_20260914/{attempt}'
 commit=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()
-files=['experiments/neural-operator-burgers/'+n for n in ['data.py','protocol.json','diagnose.py','worker.py','cluster/stage_followup.py']]
+files=['experiments/neural-operator-burgers/'+n for n in ['data.py','protocol.json','protocol-refined.json','refine.py','diagnose.py','worker.py','cluster/stage_followup.py']]
 files+=['experiments/mr-burgers2d/engines.py','experiments/mr-burgers2d/accuracy_paths.py',
         'experiments/separable-decoder/sep_common.py',
         'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']

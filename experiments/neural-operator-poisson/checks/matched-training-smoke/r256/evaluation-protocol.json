@@ -1,0 +1,43 @@
+{
+  "online_preset": {
+    "budget": 300,
+    "tau": 0.0,
+    "stationarity_stop": 1e-06,
+    "starts": 1,
+    "requested_modes": 256
+  },
+  "requested_modes": 256,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "residual_reconstruction_limit": 1e-12,
+  "repetitions": 3,
+  "burn_seconds": 0.1,
+  "cg_maxiter": 6000,
+  "checkpoint_sha256": "962dba08a909e902e64a40ebd755387b802654be53f3ff212f1816c10cd00825",
+  "basis_sha256": "6d73b9b2f6d7c19bbdcaab24e1ee6898c53050f1aae4663a16a053e28894502c",
+  "checkpoint": "experiments/neural-operator-poisson/checks/matched-training-smoke/r256/final.pkl",
+  "basis": "experiments/neural-operator-poisson/checks/matched-training-smoke/r256/basis.npz",
+  "cg_tolerances": [
+    0.1,
+    0.03,
+    0.01,
+    0.001,
+    1e-06
+  ],
+  "oracle_starts": 3,
+  "oracle_max_nfev": 600,
+  "dataset_seed": 20260914,
+  "train_count": 128,
+  "validation_count": 32,
+  "calibration_count": 8,
+  "training_intervals": 256,
+  "reference_intervals": 2048,
+  "refinement_intervals": 4096,
+  "reference_budget": 0.001,
+  "precision": "float64/highest",
+  "scope": "first-stage data, diagnosis and inherited stationary ROM/FOM pilot; not matched-data paper evidence",
+  "comparison_status": "common-width matched-data capacity control; r only varies; historical checkpoint separate",
+  "training_index_sha256": "24c49e28bb884e3d47ff970335d298974abb2ab3e9609559aa840f8be8964f7d",
+  "training_rank": 256
+}

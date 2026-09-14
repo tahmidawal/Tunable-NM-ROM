@@ -11,7 +11,7 @@ import numpy as np
 from dataset import preflight, sha_file, relative, ROOT, HERE
 
 
-def run(index_path, output, smoke=False, max_cases=None):
+def run(index_path, output, smoke=False, max_cases=None, protocol=None):
     core, jax, runtime = preflight(smoke)
     import jax.numpy as jnp
     import correction_core as c
@@ -25,28 +25,29 @@ def run(index_path, output, smoke=False, max_cases=None):
     n = manifest['intervals']
     output = Path(output); output.mkdir(parents=True, exist_ok=False)
     (output/'fields').mkdir()
-    cfg = json.loads((HERE/'protocol.json').read_text())
+    cfg = json.loads(Path(protocol or HERE/'protocol.json').read_text())
     params, codes, metadata = c.sc.load_pkl(ROOT/cfg['checkpoint'])
     basis = np.load(ROOT/cfg['basis'])
     assert sha_file(ROOT/cfg['checkpoint']) == cfg['checkpoint_sha256']
     assert sha_file(ROOT/cfg['basis']) == cfg['basis_sha256']
     np.testing.assert_array_equal(codes, basis['training_latents'])
-    assert (metadata['k'], metadata['r']) == (16, 128)
+    rank_requested = metadata['r']
+    assert metadata['k'] == 16 and rank_requested in (128,256)
     ops = c.assemble(params, codes, n, cfg['requested_modes'], cfg['lm_budget'])
     engine = c.prepare_correction(ops, codes, basis['coefficient_directions'], 32, cfg)
     U, R = jnp.linalg.qr(ops['bank'], mode='reduced')
     singular = np.asarray(jnp.linalg.svd(R, compute_uv=False))
     rank = int(np.sum(singular > singular[0]*max(ops['bank'].shape)*np.finfo(float).eps))
-    assert rank == 128
+    assert rank == rank_requested
     C = engine['C']
     # All correction fields Qphys=G C lie in G. Rank-revealing SVD of the
     # small coordinate matrix avoids spurious directions from dependent QR.
     UA, sa, _ = jnp.linalg.svd(jnp.concatenate((R, R@C), axis=1), full_matrices=False)
-    augmented_rank = int(np.sum(np.asarray(sa) > float(sa[0])*max(ops['bank'].shape[0],160)*np.finfo(float).eps))
+    augmented_rank = int(np.sum(np.asarray(sa) > float(sa[0])*max(ops['bank'].shape[0],rank_requested+32)*np.finfo(float).eps))
     assert augmented_rank == rank
     UA = UA[:, :augmented_rank]
     L, LR = jnp.linalg.qr(R@C, mode='reduced')
-    P = jnp.eye(128)-L@L.T
+    P = jnp.eye(rank_requested)-L@L.T
     reduced_R = P@R
     head = jax.jit(c.sc.head)
     residual = jax.jit(lambda z, target, matrix: matrix@head(params,z)-target)
@@ -58,7 +59,7 @@ def run(index_path, output, smoke=False, max_cases=None):
         checks=dict(cg=verify_cg(), bank_rank=rank, augmented_bank_rank=augmented_rank,
                     correction_span='Qphys=G C; [G,Qphys] and G have the same span'),
         cohort='new independent validation only; final cohort sealed',
-        comparison_status='inherited ROM unmatched training history; pilot only',
+        comparison_status=cfg.get('comparison_status','inherited ROM unmatched training history; pilot only'),
         rows=[], oracles=[], repetitions=1 if smoke else cfg['repetitions'])
     def persist():
         temp=output/'result.tmp'
@@ -137,5 +138,5 @@ def run(index_path, output, smoke=False, max_cases=None):
 if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('--index',required=True,type=Path)
     p.add_argument('--output',required=True,type=Path); p.add_argument('--smoke',action='store_true')
-    p.add_argument('--max-cases',type=int)
-    a=p.parse_args(); run(a.index,a.output,a.smoke,a.max_cases)
+    p.add_argument('--max-cases',type=int); p.add_argument('--protocol',type=Path)
+    a=p.parse_args(); run(a.index,a.output,a.smoke,a.max_cases,a.protocol)

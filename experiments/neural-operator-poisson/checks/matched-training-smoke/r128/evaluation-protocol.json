@@ -1,0 +1,43 @@
+{
+  "online_preset": {
+    "budget": 300,
+    "tau": 0.0,
+    "stationarity_stop": 1e-06,
+    "starts": 1,
+    "requested_modes": 256
+  },
+  "requested_modes": 256,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "residual_reconstruction_limit": 1e-12,
+  "repetitions": 3,
+  "burn_seconds": 0.1,
+  "cg_maxiter": 6000,
+  "checkpoint_sha256": "23bfdce4a594f793ec807727414b07c9df04a37b44d8c60501d58529e4605afe",
+  "basis_sha256": "c60a4e2c7c9fa720737db3b9f3a84d5ca3d06992bf452c6b35821bf1f4da8bc0",
+  "checkpoint": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/checks/matched-training-smoke/r128/final.pkl",
+  "basis": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/checks/matched-training-smoke/r128/basis.npz",
+  "cg_tolerances": [
+    0.1,
+    0.03,
+    0.01,
+    0.001,
+    1e-06
+  ],
+  "oracle_starts": 3,
+  "oracle_max_nfev": 600,
+  "dataset_seed": 20260914,
+  "train_count": 128,
+  "validation_count": 32,
+  "calibration_count": 8,
+  "training_intervals": 256,
+  "reference_intervals": 2048,
+  "refinement_intervals": 4096,
+  "reference_budget": 0.001,
+  "precision": "float64/highest",
+  "scope": "first-stage data, diagnosis and inherited stationary ROM/FOM pilot; not matched-data paper evidence",
+  "comparison_status": "common-width matched-data capacity control; r only varies; historical checkpoint separate",
+  "training_index_sha256": "24c49e28bb884e3d47ff970335d298974abb2ab3e9609559aa840f8be8964f7d",
+  "training_rank": 128
+}

@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import shutil
 
 import numpy as np
 
@@ -194,6 +195,8 @@ def generate(core, jax, info, output, split, count, intervals, calibration_path,
         raise ValueError("Only positive train/validation cohorts can be generated")
     calibration, calibration_record = check_calibration(calibration_path, intervals, info)
     output = new_directory(output)
+    shutil.copytree(Path(calibration_path).resolve().parent, output / "calibration")
+    calibration_record = {"path": "calibration/calibration.json", "sha256": sha_file(output / "calibration/calibration.json")}
     (output / "cases").mkdir()
     if include_reference:
         (output / "physical-reference").mkdir()

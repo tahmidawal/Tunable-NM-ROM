@@ -1,0 +1,10 @@
+jax_backend=gpu
+training r256_warm_joint {'updates': 1, 'loss': 9260.943883873146, 'reconstruction': 9260.943883227566, 'orth': 0.006455793394415696, 'optimizer_seconds': 0.0030231550335884094, 'block_seconds': 0.0030231550335884094, 'learning_rate': 2.9999999999999997e-06}
+training r256_warm_joint {'updates': 2, 'loss': 3001.279101680136, 'reconstruction': 3001.2791008479953, 'orth': 0.00832140646558446, 'optimizer_seconds': 0.004214571032207459, 'block_seconds': 0.0011914159986190498, 'learning_rate': 0.00015625965926939082}
+training r256_bank {'updates': 1, 'loss': 0.03426961304681822, 'reconstruction': 0.03426849958473279, 'orth': 0.011134620854307439, 'optimizer_seconds': 0.0031289790058508515, 'block_seconds': 0.0031289790058508515, 'learning_rate': 1.0000000000000002e-06}
+training r256_bank {'updates': 2, 'loss': 0.03186536101719623, 'reconstruction': 0.03186434876222984, 'orth': 0.010122549663873283, 'optimizer_seconds': 0.003946904966142029, 'block_seconds': 0.000817925960291177, 'learning_rate': 5.208655308979695e-05}
+training r256_head {'updates': 1, 'loss': 1721.0978113923377, 'reconstruction': 1721.0978113923377, 'orth': 0.0, 'optimizer_seconds': 0.003135587030556053, 'block_seconds': 0.003135587030556053, 'learning_rate': 2.9999999999999997e-06}
+training r256_head {'updates': 2, 'loss': 4734.87065106543, 'reconstruction': 4734.87065106543, 'orth': 0.0, 'optimizer_seconds': 0.004118872981052846, 'block_seconds': 0.0009832859504967928, 'learning_rate': 0.00015625965926939082}
+training r256_joint {'updates': 1, 'loss': 5643.267088143345, 'reconstruction': 5643.267087618532, 'orth': 0.005248131279526719, 'optimizer_seconds': 0.004153162008151412, 'block_seconds': 0.004153162008151412, 'learning_rate': 1.0000000000000002e-06}
+training r256_joint {'updates': 2, 'loss': 7947.911547960342, 'reconstruction': 7947.911547468102, 'orth': 0.004922405934819777, 'optimizer_seconds': 0.005543506995309144, 'block_seconds': 0.0013903449871577322, 'learning_rate': 5.208655308979695e-05}
+MATCHED TRAINING COMPLETE 256

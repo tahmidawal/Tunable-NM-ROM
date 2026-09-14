@@ -1,0 +1,62 @@
+{
+  "rank": [
+    128,
+    256
+  ],
+  "k": 16,
+  "q": 32,
+  "bank_hidden": 256,
+  "head_hidden": 256,
+  "fourier_features": 64,
+  "fourier_scales": [
+    1,
+    4,
+    16,
+    32
+  ],
+  "initialization_seed": 2026091413,
+  "common": {
+    "source_batch": 64,
+    "point_batch": 2048,
+    "orthogonality_weight": 0.0001,
+    "timing_block_updates": 100,
+    "log_every_updates": 2000,
+    "training_burn_seconds": 0.2,
+    "warmup_fraction": 0.02,
+    "final_learning_rate_fraction": 0.01,
+    "max_matched_steps": 200000
+  },
+  "phases": [
+    {
+      "name": "warm_joint",
+      "phase": "joint",
+      "steps": 10000,
+      "learning_rate": 0.0003,
+      "rng_seed": 2026091414
+    },
+    {
+      "name": "bank",
+      "phase": "bank",
+      "steps": 20000,
+      "learning_rate": 0.0001,
+      "rng_seed": 2026091415
+    },
+    {
+      "name": "head",
+      "phase": "head",
+      "steps": 20000,
+      "learning_rate": 0.0003,
+      "rng_seed": 2026091416
+    },
+    {
+      "name": "joint",
+      "phase": "joint",
+      "steps": 10000,
+      "learning_rate": 0.0001,
+      "rng_seed": 2026091417
+    }
+  ],
+  "selection": "fixed update budget; both arms evaluated, no best-checkpoint selection; common128trainingcases only",
+  "validation": "32cases used aftertraining only for diagnostic and futureselection; finalcohort sealed",
+  "budget": "equal phase update counts and sample exposures; actual synchronized block times reported separately, not a claim of equal training FLOPs"
+}

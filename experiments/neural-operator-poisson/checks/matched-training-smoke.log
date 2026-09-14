@@ -1,0 +1,44 @@
+jax_backend=gpu
+{"case_id": "poisson-calibration-00000", "reference_relative_change": 0.00045641173085328}
+{"case_id": "poisson-train-00000", "intervals": 32, "relative_discrete_residual": 1.5451676597759298e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00001", "intervals": 32, "relative_discrete_residual": 1.877792281539641e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00002", "intervals": 32, "relative_discrete_residual": 1.749175943450323e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00003", "intervals": 32, "relative_discrete_residual": 1.788851466992965e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00004", "intervals": 32, "relative_discrete_residual": 1.8475208432912642e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00005", "intervals": 32, "relative_discrete_residual": 5.528234664478423e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00006", "intervals": 32, "relative_discrete_residual": 7.7145863844499e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00007", "intervals": 32, "relative_discrete_residual": 1.3435524261561186e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00008", "intervals": 32, "relative_discrete_residual": 1.3759804716462445e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00009", "intervals": 32, "relative_discrete_residual": 1.3228697829629829e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00010", "intervals": 32, "relative_discrete_residual": 1.44858138412799e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00011", "intervals": 32, "relative_discrete_residual": 1.0001293345582779e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00012", "intervals": 32, "relative_discrete_residual": 5.0284921294084216e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00013", "intervals": 32, "relative_discrete_residual": 1.2784101644136462e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00014", "intervals": 32, "relative_discrete_residual": 1.1336483347055025e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00015", "intervals": 32, "relative_discrete_residual": 2.0642916947675007e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00016", "intervals": 32, "relative_discrete_residual": 9.008761360902881e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00017", "intervals": 32, "relative_discrete_residual": 9.969867237964065e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00018", "intervals": 32, "relative_discrete_residual": 6.638798466960324e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00019", "intervals": 32, "relative_discrete_residual": 1.0248389029678486e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00020", "intervals": 32, "relative_discrete_residual": 1.176037090749394e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00021", "intervals": 32, "relative_discrete_residual": 1.1697767669717674e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00022", "intervals": 32, "relative_discrete_residual": 1.720106083348924e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00023", "intervals": 32, "relative_discrete_residual": 1.3810786559579785e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00024", "intervals": 32, "relative_discrete_residual": 1.5275341237017296e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00025", "intervals": 32, "relative_discrete_residual": 9.270442613015358e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00026", "intervals": 32, "relative_discrete_residual": 5.4205888045697405e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00027", "intervals": 32, "relative_discrete_residual": 4.538165019894239e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00028", "intervals": 32, "relative_discrete_residual": 1.3520039663357811e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00029", "intervals": 32, "relative_discrete_residual": 1.421384079192147e-14, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00030", "intervals": 32, "relative_discrete_residual": 5.2064823193066415e-15, "boundary_max_abs": 0.0}
+{"case_id": "poisson-train-00031", "intervals": 32, "relative_discrete_residual": 4.923486038813497e-15, "boundary_max_abs": 0.0}
+jax_backend=gpu
+training r128_warm_joint {'updates': 1, 'loss': 2857.6195742868695, 'reconstruction': 2857.6195734144703, 'orth': 0.008723992953774365, 'optimizer_seconds': 0.0034277510130777955, 'block_seconds': 0.0034277510130777955, 'learning_rate': 2.9999999999999997e-06}
+training r128_warm_joint {'updates': 2, 'loss': 587.1307061080306, 'reconstruction': 587.1307050730445, 'orth': 0.010349860903645591, 'optimizer_seconds': 0.004490478022489697, 'block_seconds': 0.0010627270094119012, 'learning_rate': 0.00015625965926939082}
+training r128_bank {'updates': 1, 'loss': 0.11096864709890575, 'reconstruction': 0.1109673749449784, 'orth': 0.012721539273581044, 'optimizer_seconds': 0.0027129310183227062, 'block_seconds': 0.0027129310183227062, 'learning_rate': 1.0000000000000002e-06}
+training r128_bank {'updates': 2, 'loss': 0.08062289401174583, 'reconstruction': 0.08062154323201308, 'orth': 0.013507797327493293, 'optimizer_seconds': 0.0035597840324044228, 'block_seconds': 0.0008468530140817165, 'learning_rate': 5.208655308979695e-05}
+training r128_head {'updates': 1, 'loss': 883.6895737583504, 'reconstruction': 883.6895737583504, 'orth': 0.0, 'optimizer_seconds': 0.001970460987649858, 'block_seconds': 0.001970460987649858, 'learning_rate': 2.9999999999999997e-06}
+training r128_head {'updates': 2, 'loss': 2412.8374320754724, 'reconstruction': 2412.8374320754724, 'orth': 0.0, 'optimizer_seconds': 0.002710481989197433, 'block_seconds': 0.000740021001547575, 'learning_rate': 0.00015625965926939082}
+training r128_joint {'updates': 1, 'loss': 6060.474234501166, 'reconstruction': 6060.474233690591, 'orth': 0.00810575543795566, 'optimizer_seconds': 0.0031742450082674623, 'block_seconds': 0.0031742450082674623, 'learning_rate': 1.0000000000000002e-06}
+training r128_joint {'updates': 2, 'loss': 7233.510516452896, 'reconstruction': 7233.510515679872, 'orth': 0.007730238208671194, 'optimizer_seconds': 0.004206187964882702, 'block_seconds': 0.0010319429566152394, 'learning_rate': 5.208655308979695e-05}
+MATCHED TRAINING COMPLETE 128

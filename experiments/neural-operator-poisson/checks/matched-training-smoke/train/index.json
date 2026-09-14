@@ -1,0 +1,933 @@
+{
+  "calibration": {
+    "path": "calibration/calibration.json",
+    "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+  },
+  "complete": true,
+  "count": 32,
+  "dataset_seed": 20260914,
+  "final_cohort": "sealed; unsupported by generator",
+  "intervals": 32,
+  "model_input_contract": "Only input, known-physics parameters and coordinates; generation descriptors are forbidden.",
+  "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+  "pde": "poisson",
+  "records": [
+    {
+      "case_id": "poisson-train-00000",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.9944528419293874,
+        "cx": 0.4432725264592817,
+        "cy": 0.8038399597651112,
+        "width": 0.0839986107852816
+      },
+      "path": "cases/poisson-train-00000.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.5451676597759298e-14,
+        "target_intervals": 32
+      },
+      "seed": 3310928488,
+      "sha256": "b2a91542d14cd360328d756bad9bfee0bd4ff23d3eafac4b828c7576c7c7cf84",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00001",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.4329676103835909,
+        "cx": 0.4646929409490792,
+        "cy": 0.5096693747617728,
+        "width": 0.07824743789671405
+      },
+      "path": "cases/poisson-train-00001.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.877792281539641e-14,
+        "target_intervals": 32
+      },
+      "seed": 1819222169,
+      "sha256": "6b7108a32adc56b94a80f1a059fe6381d909560430ba4fb0a4e73f9324d7c641",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00002",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.9009095445759003,
+        "cx": 0.7613053770376113,
+        "cy": 0.3801387782214679,
+        "width": 0.09665895593870066
+      },
+      "path": "cases/poisson-train-00002.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.749175943450323e-14,
+        "target_intervals": 32
+      },
+      "seed": 4089528131,
+      "sha256": "3b35e44405044e251b9aff95b8f61c614585552ac5722adfe62a2a43aee62aa9",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00003",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.8432383052982644,
+        "cx": 0.6732393896453267,
+        "cy": 0.5038429513138282,
+        "width": 0.07761263716816115
+      },
+      "path": "cases/poisson-train-00003.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.788851466992965e-14,
+        "target_intervals": 32
+      },
+      "seed": 3227398457,
+      "sha256": "b3d1a0ee4dc60627088376fe12ac730f238adaf204dabafcea06ccb479f56613",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00004",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.0353337567669725,
+        "cx": 0.3003431764307742,
+        "cy": 0.5686006532143535,
+        "width": 0.08634414015322453
+      },
+      "path": "cases/poisson-train-00004.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.8475208432912642e-14,
+        "target_intervals": 32
+      },
+      "seed": 718747905,
+      "sha256": "1f6433537ea434b331001863993dc64e9264e705ca72c7f88ecc3cade325cbd2",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00005",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.940893641588243,
+        "cx": 0.4742589158118633,
+        "cy": 0.6203883834983884,
+        "width": 0.020697977046921497
+      },
+      "path": "cases/poisson-train-00005.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.528234664478423e-15,
+        "target_intervals": 32
+      },
+      "seed": 1647169111,
+      "sha256": "1704e965780c8848412ab3a2eced827e728c95751a84d4b708a22a8fb6a35949",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00006",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.6999204998415819,
+        "cx": 0.5382600659048613,
+        "cy": 0.7917743632651609,
+        "width": 0.04394398631536259
+      },
+      "path": "cases/poisson-train-00006.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.7145863844499e-15,
+        "target_intervals": 32
+      },
+      "seed": 1460251117,
+      "sha256": "bb260369a9159680a4177dabb678fad6c3874e2035dbf3f5a3f43ed3a7742c4a",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00007",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.6654615945947793,
+        "cx": 0.5543562225533973,
+        "cy": 0.6183839587222596,
+        "width": 0.05145978873457735
+      },
+      "path": "cases/poisson-train-00007.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3435524261561186e-14,
+        "target_intervals": 32
+      },
+      "seed": 805630254,
+      "sha256": "4b201efd828145505faa7f52cc10a479e956de5ffd3b77e2bbe35babd5d38221",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00008",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.527243768641042,
+        "cx": 0.42874013093878915,
+        "cy": 0.41471304257862207,
+        "width": 0.059310472710414286
+      },
+      "path": "cases/poisson-train-00008.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3759804716462445e-14,
+        "target_intervals": 32
+      },
+      "seed": 2191916935,
+      "sha256": "c94ba9996fbfe160d3e717b31de5b8d5d5e321558fd1d76c4f3f2fe34d63dc3b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00009",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.9544535216270513,
+        "cx": 0.33313443613103466,
+        "cy": 0.37737709389462215,
+        "width": 0.05448166758562072
+      },
+      "path": "cases/poisson-train-00009.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3228697829629829e-14,
+        "target_intervals": 32
+      },
+      "seed": 4099251720,
+      "sha256": "f1c90e1d66e695f5b73851d9c19ad38c55cbcab58fb138f2b27133adbfcf95dc",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00010",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.4052455810665299,
+        "cx": 0.3758350369727327,
+        "cy": 0.31642756726422583,
+        "width": 0.06399130896765119
+      },
+      "path": "cases/poisson-train-00010.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.44858138412799e-14,
+        "target_intervals": 32
+      },
+      "seed": 948480876,
+      "sha256": "6d88ac5f967fc972ccf2ef2a1f8f55bca7fde259c5d48349a3fa09dabf740881",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00011",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.2522497046638281,
+        "cx": 0.1804604836238321,
+        "cy": 0.7902366293234492,
+        "width": 0.08410711245935464
+      },
+      "path": "cases/poisson-train-00011.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.0001293345582779e-14,
+        "target_intervals": 32
+      },
+      "seed": 3689394950,
+      "sha256": "09917b1b7c15927140205c801a519c64b461619d03942aaaef966eec495c656a",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00012",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.2232900774347826,
+        "cx": 0.4287186648615037,
+        "cy": 0.26340006431187973,
+        "width": 0.024208363197432303
+      },
+      "path": "cases/poisson-train-00012.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.0284921294084216e-15,
+        "target_intervals": 32
+      },
+      "seed": 4100056223,
+      "sha256": "120529ac72b27e9aeff99d1d964dc1dd488f5fc756b698ea039b872c4d8fde78",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00013",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.2148839404783662,
+        "cx": 0.23283655150471155,
+        "cy": 0.49787218596989036,
+        "width": 0.06642949345285408
+      },
+      "path": "cases/poisson-train-00013.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.2784101644136462e-14,
+        "target_intervals": 32
+      },
+      "seed": 297227963,
+      "sha256": "e5e0821140c5ce8361f99fe1066c751f5e4c7d505f6789530d2624d696d48d2b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00014",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.2336074962645314,
+        "cx": 0.5248946924604593,
+        "cy": 0.800840531519304,
+        "width": 0.06145116926205771
+      },
+      "path": "cases/poisson-train-00014.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1336483347055025e-14,
+        "target_intervals": 32
+      },
+      "seed": 1606066362,
+      "sha256": "8d393b228e8579acf87b16adfae8f45128f7e7faaaefe692605129ac31959685",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00015",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.819692499176207,
+        "cx": 0.6157357920281938,
+        "cy": 0.5928795815882903,
+        "width": 0.09922052472307535
+      },
+      "path": "cases/poisson-train-00015.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 2.0642916947675007e-14,
+        "target_intervals": 32
+      },
+      "seed": 2463338421,
+      "sha256": "7d676017dde422622f9dd13dbb70d5fbbb26e4ac2bd6a20c4e681d04150442fe",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00016",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.4061380979451985,
+        "cx": 0.43930924397336524,
+        "cy": 0.7466428632019236,
+        "width": 0.039253202174710636
+      },
+      "path": "cases/poisson-train-00016.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.008761360902881e-15,
+        "target_intervals": 32
+      },
+      "seed": 3320797582,
+      "sha256": "c8a5c2f9fa9c43ea7ae2da6e593792c329de847e225280d2d1a00ac9d5bc3a39",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00017",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.9203487388568141,
+        "cx": 0.655408981087844,
+        "cy": 0.4733051683035183,
+        "width": 0.04276460239537157
+      },
+      "path": "cases/poisson-train-00017.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.969867237964065e-15,
+        "target_intervals": 32
+      },
+      "seed": 3087220126,
+      "sha256": "84114288f5e7b7e083aceda2883ee88d4176b054d6126eafff51428fa7cc2a46",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00018",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.8755632813097862,
+        "cx": 0.37541691489916207,
+        "cy": 0.5845982353739175,
+        "width": 0.028621221452288154
+      },
+      "path": "cases/poisson-train-00018.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.638798466960324e-15,
+        "target_intervals": 32
+      },
+      "seed": 3136133310,
+      "sha256": "59aa1ff4ab15ce71352d96bd183c613176857b541275a4022645c736c6ea25df",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00019",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.743709609370836,
+        "cx": 0.6463810960048093,
+        "cy": 0.35258761451172704,
+        "width": 0.039686386972619205
+      },
+      "path": "cases/poisson-train-00019.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.0248389029678486e-14,
+        "target_intervals": 32
+      },
+      "seed": 2610622607,
+      "sha256": "447a149ed680c5f6cb583cb953cb68c7aee280a09b80c8a7db4b03cee61852f9",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00020",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.9881749821722683,
+        "cx": 0.21300165797192666,
+        "cy": 0.6762166728465224,
+        "width": 0.07291380173473819
+      },
+      "path": "cases/poisson-train-00020.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.176037090749394e-14,
+        "target_intervals": 32
+      },
+      "seed": 2048793367,
+      "sha256": "64c0f2938cec861b28e57042e2867df3e1b33021c6c0caf12d367cc9e1b00569",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00021",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.6755486162648576,
+        "cx": 0.2522106763767681,
+        "cy": 0.6698458955349708,
+        "width": 0.05733791080390431
+      },
+      "path": "cases/poisson-train-00021.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1697767669717674e-14,
+        "target_intervals": 32
+      },
+      "seed": 968277545,
+      "sha256": "8af46febaf0af94f11e2c279e54a81f123f8b8358ae6bf59bc0a2a042864be3d",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00022",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.0185716546556205,
+        "cx": 0.27799294666712737,
+        "cy": 0.5018268839642428,
+        "width": 0.07885365902978986
+      },
+      "path": "cases/poisson-train-00022.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.720106083348924e-14,
+        "target_intervals": 32
+      },
+      "seed": 2959557802,
+      "sha256": "a92dea5b321f7ac9569b5692dcb3cb633db4208ab2321caa8f74db6069371c69",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00023",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.1994016289656302,
+        "cx": 0.42371917685812777,
+        "cy": 0.3167397834203508,
+        "width": 0.0628813749990771
+      },
+      "path": "cases/poisson-train-00023.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3810786559579785e-14,
+        "target_intervals": 32
+      },
+      "seed": 3090873183,
+      "sha256": "7ac4b8746e0b3c8a31e376a97b8e386dc15908196e5c188f5952580b78597291",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00024",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.6602636276089058,
+        "cx": 0.7090264380583516,
+        "cy": 0.594843773580296,
+        "width": 0.06538717194353705
+      },
+      "path": "cases/poisson-train-00024.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.5275341237017296e-14,
+        "target_intervals": 32
+      },
+      "seed": 3278828207,
+      "sha256": "25ed23f3a2ef1e66d6d870d607ef033fb57fa9f4fa0bc705aab7aa5cb911f8af",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00025",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.5360613151309641,
+        "cx": 0.3519204677289037,
+        "cy": 0.41122686405282816,
+        "width": 0.039728247742151904
+      },
+      "path": "cases/poisson-train-00025.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.270442613015358e-15,
+        "target_intervals": 32
+      },
+      "seed": 3802503513,
+      "sha256": "eff024eef9d0fcf460d0708fd247c9ee0654dfa82e7dd2156e25d723d9fdf94c",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00026",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.8588126309769357,
+        "cx": 0.665313123820935,
+        "cy": 0.2511179531518345,
+        "width": 0.02782585153802786
+      },
+      "path": "cases/poisson-train-00026.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.4205888045697405e-15,
+        "target_intervals": 32
+      },
+      "seed": 3092540159,
+      "sha256": "f096843487d040aa9d41f198f1ef8f7e08af3913ea3c340df458e7bd213acf03",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00027",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.2473678501495082,
+        "cx": 0.8059244642555977,
+        "cy": 0.20263527233079498,
+        "width": 0.027376868591667804
+      },
+      "path": "cases/poisson-train-00027.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.538165019894239e-15,
+        "target_intervals": 32
+      },
+      "seed": 4107108687,
+      "sha256": "7074579c849c163e3e3b6e202d9e90af16431d588f43b380567f76de53c3af8e",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00028",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.5726236503885103,
+        "cx": 0.4663720647553392,
+        "cy": 0.7843151504875193,
+        "width": 0.0679761837059417
+      },
+      "path": "cases/poisson-train-00028.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3520039663357811e-14,
+        "target_intervals": 32
+      },
+      "seed": 1731230869,
+      "sha256": "babf10740638c7870b120b90d0dc27841ca06b62f1102da3d0ab5a9c2076c03e",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00029",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.3014407013617628,
+        "cx": 0.607987084087826,
+        "cy": 0.7658528774041234,
+        "width": 0.07573184547275713
+      },
+      "path": "cases/poisson-train-00029.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.421384079192147e-14,
+        "target_intervals": 32
+      },
+      "seed": 4138493010,
+      "sha256": "e17fc296596bcd03ebe6dbfe66fea845fcab0998f9b11b0a08ac4331444af57f",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00030",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.7191558698983351,
+        "cx": 0.37076411065049864,
+        "cy": 0.2617335601166021,
+        "width": 0.023741378160447954
+      },
+      "path": "cases/poisson-train-00030.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.2064823193066415e-15,
+        "target_intervals": 32
+      },
+      "seed": 3679266951,
+      "sha256": "a34011cc11247de82852fef430c59e90b1e18f8db43e0dd97e89327f3965be76",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00031",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 0.6194145899730682,
+        "cx": 0.3389792812782594,
+        "cy": 0.6834550036295273,
+        "width": 0.02131144819724273
+      },
+      "path": "cases/poisson-train-00031.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "calibration/calibration.json",
+          "sha256": "97888e726426d7f4fd8b217e7adbf580f52b08d801dcdedba894c8561172d24b"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.923486038813497e-15,
+        "target_intervals": 32
+      },
+      "seed": 1172613879,
+      "sha256": "b3b3d6c33eaec5e5623f2c0ca46424a1219b2c751ef53cea1b4048fcec80a477",
+      "split": "train"
+    }
+  ],
+  "runtime": {
+    "gpu_type": "NVIDIA GB10",
+    "jax_backend": "gpu",
+    "jax_enable_x64": true,
+    "jax_version": "0.10.1",
+    "job_id": null,
+    "matmul_precision": "highest",
+    "numpy_version": "2.4.4",
+    "provenance_note": "Content hashes are authoritative; no cluster git ancestor lookup.",
+    "purpose": "local-smoke-only",
+    "source_commit": null,
+    "source_files": {
+      "experiments/multiresolution-poisson/core.py": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+      "experiments/neural-operator-poisson/dataset.py": "f01dc0264ed68c9ae6455eb3d4ead0420611848f63c369ba4529f0c6f19e3776",
+      "experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+    },
+    "utc_started": "2026-09-14T17:01:54.137211+00:00"
+  },
+  "schema": "neural-operator-case-v1",
+  "split": "train",
+  "target_contract": "Target is the native discrete solution on this mesh; physical-reference sidecars are evaluation-only."
+}

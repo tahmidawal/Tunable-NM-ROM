@@ -1,0 +1,166 @@
+{
+  "status": "proposed tests; saved-evidence summary only; no new solver invocation",
+  "scope": "classic fixed-checkpoint solver and EQ tuning; no nested capacity model",
+  "sources": {
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/index.json": "7c4a0b65ed4a42a34962ef832cc2ed23c9d413f6ae2abe666d8a732030b08bb2",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/checks/refinement02-diagnosis-audit.json": "2e4bdee96babef311bfe86688cd94426859187db77ad0bf617744b0b96b3df26"
+  },
+  "iteration_source_fields": [
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00000_rom_rep0.npz",
+      "sha256": "0ec4145a4614cc47fb4b5498d238d3206e6d96d84dce16752470b21c64f09b79"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00001_rom_rep0.npz",
+      "sha256": "15d2bc9238ff649c4ecc66cff2bafaab6598be6bfaf89bbc8193f2e88daf5ef3"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00002_rom_rep0.npz",
+      "sha256": "478d79394cf081470919ca3938397f57f4ba82705fbcec862120454863f0a217"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00003_rom_rep0.npz",
+      "sha256": "9e7a312b2b20da10a4cc71ee123cf2cefa3fd750604281d832da2e8684ee5f89"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00004_rom_rep0.npz",
+      "sha256": "ddb294d0359effd73e8384861afed802fddef94a07db487f32ab39880ba70f78"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00005_rom_rep0.npz",
+      "sha256": "27afeaa3b0292fdade8a849b6750b896ab69238df642ed4d843375345795bf58"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00006_rom_rep0.npz",
+      "sha256": "c9ba2a0785bf27b62e61a78dcd1952fdcb136be52ce8529008dd076a589dbd7e"
+    },
+    {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/live-diagnosis/burgers-calibration-00007_rom_rep0.npz",
+      "sha256": "95262922404cf6c0217b318b4f0a1dbb4fcca0ee0fc600c9698449bff03b5d54"
+    }
+  ],
+  "fixed": {
+    "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+    "latent_dimension": 16,
+    "bank_rank": 512,
+    "weak_modes": 64,
+    "intervals": 256,
+    "dt": 0.005,
+    "native_solver_config": {
+      "ic_budget": 400,
+      "step_budget": 180,
+      "gtol": 1e-06
+    },
+    "initialization_policy": "same supplied-field Gaussian fit and candidate library"
+  },
+  "saved_evidence": {
+    "case_count": 8,
+    "errors": {
+      "bank": {
+        "median_case_peak_percent": 0.04127949879789441,
+        "worst_case_peak_percent": 0.21197409459233355,
+        "median_evolved_case_peak_percent": 0.010239348094859066,
+        "worst_evolved_case_peak_percent": 0.108357824231566
+      },
+      "nonlinear_best_found": {
+        "median_case_peak_percent": 0.9565030947624367,
+        "worst_case_peak_percent": 1.866825229984792,
+        "median_evolved_case_peak_percent": 0.42110140386599415,
+        "worst_evolved_case_peak_percent": 0.8424516323471083
+      },
+      "online": {
+        "median_case_peak_percent": 1.045397368676509,
+        "worst_case_peak_percent": 1.8670679789390683,
+        "median_evolved_case_peak_percent": 0.9399700695684444,
+        "worst_evolved_case_peak_percent": 1.6587434364091203
+      }
+    },
+    "step_iteration_quantiles": {
+      "min": 2.0,
+      "q25": 3.0,
+      "median": 3.0,
+      "q75": 4.0,
+      "q95": 8.0,
+      "max": 42.0
+    },
+    "initial_fit_iterations_by_case": [
+      120,
+      9,
+      11,
+      178,
+      28,
+      44,
+      16,
+      48
+    ],
+    "qualification": "inherited-checkpoint calibration diagnostic; best-found fits are not certified global optima; errors are not additive"
+  },
+  "proposed_stages": [
+    {
+      "name": "converged full-upwind weak sentinel control",
+      "case_ids": [
+        "burgers-calibration-00002",
+        "burgers-calibration-00003"
+      ],
+      "purpose": "verify output stability under tighter solver settings at fixed timestep before a broader screen",
+      "hold_fixed": "checkpoint, weak modes, timestep and Gauss cold start",
+      "qualification": "numerical convergence of the reduced equations is not physical truth",
+      "separate_initializer_check": "compare sampled and full supplied-field initial fits diagnostically; do not mix initializers in the EQ screen"
+    },
+    {
+      "name": "quadrature control",
+      "eq_points": [
+        256,
+        512,
+        1024
+      ],
+      "additional_control": "full-grid FOM-exact upwind advection projected onto the same weak modes",
+      "hold_fixed": "checkpoint, modes, cold fit, timestep, solver tolerances and budgets",
+      "fitting": "decoder-output training snapshots only; record each NNLS support, weights and fit error",
+      "purpose": "determine whether EQ changes the complete trajectory or the high-effort accuracy endpoint"
+    },
+    {
+      "name": "iteration screen",
+      "step_budgets": [
+        2,
+        4,
+        8
+      ],
+      "reference": "converged control; retain its actual budget and stopping records",
+      "hold_fixed": "one selected EQ rule, cold fit, residual threshold and stationarity threshold",
+      "purpose": "measure deliberately early-stopped outputs and a converged reference"
+    },
+    {
+      "name": "tolerance screen",
+      "evolution_normalized_gradient_tolerances": [
+        0.001,
+        1e-05,
+        1e-06
+      ],
+      "step_budget": "same sufficiently large budget as the converged control",
+      "hold_fixed": "same EQ rule, initial fitting and residual threshold",
+      "normalization": "norm(J.T r)/(norm(J) norm(r)); not a physical-error tolerance",
+      "optional_followup": "expose and screen normalized weak-residual thresholds separately if the initial screen warrants it"
+    },
+    {
+      "name": "confirmation",
+      "rule": "freeze a small shortlist on calibration cases, then evaluate on common validation cases",
+      "timing": "complete query with FNO and tolerance-matched efficient FOM controls in one GPU job; all repetitions retained",
+      "outputs": "return supplied initial field exactly for every deployable method; retain native initial compression error separately"
+    }
+  ],
+  "readiness_gaps": [
+    "eq_ablation.py implements the three EQ sizes but has not run",
+    "its budget pre-check does not bound NNLS fit runtime; enforce per-stage walltime and preserve partial evidence",
+    "full-grid weak advection exists as a saved-state diagnostic, not a complete rollout arm",
+    "make_rom hard-codes the evolution residual threshold; expose it without changing initial fitting",
+    "make_rom shares gtol between initial fitting and evolution; separate those controls before a stationarity-tolerance sweep",
+    "keep original numerical acceptance gates; label early-stopped approximations separately rather than treating them as stationary solves",
+    "compare physical trajectory errors, convergence records and paired query cost; do not select using residual alone"
+  ],
+  "conditional_followup": [
+    "If representation diagnostics miss the target, improve one checkpoint's reconstruction/trajectory training, then freeze and repeat this same tuning protocol.",
+    "If best-found fits are accurate but the converged full-weak rollout is poor, isolate timestep and weak-projection/dynamics errors before attributing the gap to training.",
+    "If EQ causes the trajectory gap, improve the decoder-output-trained rules while keeping the neural checkpoint fixed."
+  ]
+}

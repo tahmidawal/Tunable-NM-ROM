@@ -1,0 +1,81 @@
+{
+  "calibration": {
+    "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/checks/diagnosis-smoke/calibration/calibration.json",
+    "sha256": "72d1442172527a8d143d5492aa60c19c547a664f8797030bef78805c395dc4b1"
+  },
+  "complete": true,
+  "count": 1,
+  "dataset_seed": 20260914,
+  "final_cohort": "sealed; unsupported by generator",
+  "intervals": 32,
+  "model_input_contract": "Only input, known-physics parameters and coordinates; generation descriptors are forbidden.",
+  "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+  "pde": "poisson",
+  "records": [
+    {
+      "case_id": "poisson-validation-00000",
+      "intervals": 32,
+      "mesh": 32,
+      "nodes_per_axis": 33,
+      "offline_generation_parameters": {
+        "amplitude": 1.4977274285306867,
+        "cx": 0.43101836215453637,
+        "cy": 0.22787272853811727,
+        "width": 0.050396509742664124
+      },
+      "path": "cases/poisson-validation-00000.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/checks/diagnosis-smoke/calibration/calibration.json",
+          "sha256": "72d1442172527a8d143d5492aa60c19c547a664f8797030bef78805c395dc4b1"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00000.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.296250655938666e-14
+        },
+        "reference_intervals": 64,
+        "reference_relative_change": 0.0008003231451754342,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.7296142320333664e-13
+        },
+        "refinement_intervals": 128,
+        "relative_discrete_residual": 9.922099081401042e-15,
+        "sha256": "2c3797c6c253d03826c00aef66fd763ce2602ded0a3f19e57ae5fcf32e583ccf",
+        "target_intervals": 32,
+        "target_relative_to_reference": 0.003251528065665318
+      },
+      "seed": 81474334,
+      "sha256": "2788954f62a5057d3f5d8a18c7c31c531afedfbe9760122d09279fa86e27d530",
+      "split": "validation"
+    }
+  ],
+  "runtime": {
+    "gpu_type": "NVIDIA GB10",
+    "jax_backend": "gpu",
+    "jax_enable_x64": true,
+    "jax_version": "0.10.1",
+    "job_id": null,
+    "matmul_precision": "highest",
+    "numpy_version": "2.4.4",
+    "provenance_note": "Content hashes are authoritative; no cluster git ancestor lookup.",
+    "purpose": "local-smoke-only",
+    "source_commit": null,
+    "source_files": {
+      "experiments/multiresolution-poisson/core.py": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+      "experiments/neural-operator-poisson/dataset.py": "ee7024b7eae509d9f9cf409f1391126b3351b5ea9e73e30b28484a54925d7498",
+      "experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+    },
+    "utc_started": "2026-09-14T16:47:50.619996+00:00"
+  },
+  "schema": "neural-operator-case-v1",
+  "split": "validation",
+  "target_contract": "Target is the native discrete solution on this mesh; physical-reference sidecars are evaluation-only."
+}

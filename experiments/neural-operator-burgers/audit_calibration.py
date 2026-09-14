@@ -25,6 +25,12 @@ def main():
         from refine import configure
         configure()
     x=json.loads(a.index.read_text());assert x['complete'] and x['count']==8
+    parent=None
+    if a.refined:
+        parent_path=d.HERE/'artifacts/calibration01/calibration-index.json'
+        parent=json.loads(parent_path.read_text())
+        assert not parent['gate']['by_output']['256']['passing']
+        parent_rows={(r['case_id'],r['intervals'],r['dt']):r for r in parent['solves']}
     assert x['pde']=='burgers' and x['provenance']['backend']=='gpu'
     assert x['provenance']['f64'] and x['provenance']['matmul_precision']=='highest'
     assert x['protocol_sha256']==d.sha(d.PROTOCOL_PATH)
@@ -35,6 +41,14 @@ def main():
         assert hashlib.sha256(stored).hexdigest()==value
     fields={};counts={};initial_discrepancies=[];initial_bitwise=[]
     for row in x['solves']:
+        if row.get('cache_reused'):
+            assert parent is not None
+            assert row['cache_parent_index_sha256']==d.sha(parent_path)
+            assert row['cache_parent_source_commit']==parent['provenance']['source_commit']
+            assert row['cache_parent_protocol_sha256']==parent['protocol_sha256']
+            previous=parent_rows[row['case_id'],row['intervals'],row['dt']]
+            for key in ['sha256','path','seed','max_relative_residual','total_newton_iterations','wall_seconds_including_first_compile']:
+                assert row[key]==previous[key]
         path=a.index.parent/row['path'];assert d.sha(path)==row['sha256']
         with np.load(path) as npz:
             f=npz['fields'];it=npz['iterations'];rn=npz['residuals']
@@ -73,6 +87,9 @@ def main():
             for k in npz.files:assert npz[k].dtype==np.float64
             assert npz['input'].shape==(1,1025,1025) and npz['target'].shape==(6,1,1025,1025)
             assert np.array_equal(npz['input'][0],npz['target'][0,0])
+            case=int(row['case_id'].split('-')[-1])
+            anchor=d.PROTOCOL['anchor']
+            assert np.array_equal(npz['target'][:,0],fields[anchor['intervals'],anchor['dt'],case])
             assert np.array_equal(npz['times'],d.TIMES)
             expected,nu=initial(1024,row['seed']);assert np.linalg.norm(npz['input'][0]-expected)/np.linalg.norm(expected)<=1e-12
             assert npz['parameters'].shape==(1,) and np.isclose(npz['parameters'][0],nu,rtol=1e-13,atol=0)
@@ -80,6 +97,7 @@ def main():
                 source_hashes_checked=True,all_fields_finite_f64_zero_boundary=True,initial_fields_seed_regenerated_within_tolerance=True,initial_relative_tolerance=1e-12,
                 initial_regeneration_worst_relative=max(initial_discrepancies),initial_regeneration_bitwise=all(initial_bitwise),
                 all_step_residuals_below_declared_threshold=True,all_saved_empirical_gate_numbers_reproduced=True,
+                cached_original_source_protocol_index_field_links_checked=bool(a.refined),
                 model_facing_schema_exact=True,gate=gate,
                 independence='NumPy independently regenerates Gaussian inputs; gate implementation shared with producer; root independently reviews refinement arithmetic')
     d.write_json(a.out,result);print(json.dumps({k:result[k] for k in ['passed','solves_checked','cases_checked']}))

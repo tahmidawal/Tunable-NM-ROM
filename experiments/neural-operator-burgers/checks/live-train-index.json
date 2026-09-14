@@ -1,0 +1,501 @@
+{
+  "schema_version": 1,
+  "pde": "burgers",
+  "kind": "matched-neural-operator-dataset",
+  "split": "train",
+  "count": 128,
+  "mesh": 256,
+  "complete": false,
+  "protocol_sha256": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+  "provenance": {
+    "source_commit": "5169c0950e95eb666ada753f358032be2c5a9585",
+    "source_sha256": {
+      "experiments/neural-operator-burgers/data.py": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+      "experiments/neural-operator-burgers/protocol.json": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+      "experiments/mr-burgers2d/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "experiments/separable-decoder/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "experiments/neural-operator-burgers/protocol-refined.json": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+      "experiments/neural-operator-burgers/refine.py": "6f2e1a244812a0105e0e5f58236668a52725921d1bd9cee152aafe9260b9a81c"
+    },
+    "job_id": "3702709",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "f64": true,
+    "matmul_precision": "highest",
+    "python": "3.13.2 (main, Jun 27 2025, 16:52:43) [GCC 12.4.0]",
+    "platform": "Linux-5.14.0-570.60.1+21.1.el9_6_ciq.x86_64-x86_64-with-glibc2.34",
+    "packages": {
+      "jax": "0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "scipy": "1.18.0",
+      "optax": "0.2.8"
+    }
+  },
+  "records": [
+    {
+      "case_id": "burgers-train-00000",
+      "split": "train",
+      "case_index": 0,
+      "seed": 428288116,
+      "path": "burgers-train-00000.npz",
+      "sha256": "7e51afdc969531b3b10b9a7def624a5e119f9f3ab57940c09e2d1d17174af16f",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5166373922631632,
+        "cy": 0.37951347644145966,
+        "width": 0.08069285341559271,
+        "amplitude": 0.5987393226364118,
+        "nu": 0.055062408711969435
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 6.604780311218861e-14,
+        "wall_seconds_including_first_compile": 114.3670188060496,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00000.solver.npz",
+        "sha256": "279708bf38ad3f316eebb963207d2edcf16783e9c9d79ad2dc797b63dd19bfd3"
+      }
+    },
+    {
+      "case_id": "burgers-train-00001",
+      "split": "train",
+      "case_index": 1,
+      "seed": 3953685106,
+      "path": "burgers-train-00001.npz",
+      "sha256": "5460d96979b4135e2afbbb7557c9c2b5a426edc45ba492a626f27d9197803538",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.8468241991833023,
+        "cy": 0.1935916091687541,
+        "width": 0.13418720969602424,
+        "amplitude": 0.6503939751327327,
+        "nu": 0.06713994503874768
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.2576502410993e-12,
+        "wall_seconds_including_first_compile": 113.45574494393077,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00001.solver.npz",
+        "sha256": "7f5512c207cd02c338f402caadc5ddaa78bee4d9b16749e78192a5549a10f458"
+      }
+    },
+    {
+      "case_id": "burgers-train-00002",
+      "split": "train",
+      "case_index": 2,
+      "seed": 4108307323,
+      "path": "burgers-train-00002.npz",
+      "sha256": "19ae95d67817e98656d08673516ebc740aaa0be12ee16fd600dfdbfa5c687c80",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6293910366811192,
+        "cy": 0.684870127241384,
+        "width": 0.15721843716356587,
+        "amplitude": 0.9414028298557466,
+        "nu": 0.08241844142188777
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 8.21006071203878e-12,
+        "wall_seconds_including_first_compile": 113.42329204501584,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00002.solver.npz",
+        "sha256": "e31f60409db0c726fea14067bdf1bbe741faf6efa90cf43e02bff70101fade17"
+      }
+    },
+    {
+      "case_id": "burgers-train-00003",
+      "split": "train",
+      "case_index": 3,
+      "seed": 2872383505,
+      "path": "burgers-train-00003.npz",
+      "sha256": "1022a421d3c41b5281ff961f5dea8f97c49ce2cf053ce6bcd240bfdb8e1bcf9a",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5674786876949676,
+        "cy": 0.6620176380863099,
+        "width": 0.1176394746998528,
+        "amplitude": 1.814878708826621,
+        "nu": 0.039582747596439906
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 5.61171259766454e-14,
+        "wall_seconds_including_first_compile": 139.27728281798773,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00003.solver.npz",
+        "sha256": "25490f62a9b5c8fa35f7c6b0356c4fb45a5e56887817117278756db77a2ba3e9"
+      }
+    },
+    {
+      "case_id": "burgers-train-00004",
+      "split": "train",
+      "case_index": 4,
+      "seed": 2705921983,
+      "path": "burgers-train-00004.npz",
+      "sha256": "1cceed25c3c5689addc9555f7658376276c83dfec42da1c9cb61801093d05081",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.3297363009057226,
+        "cy": 0.6399987516108595,
+        "width": 0.16916547254743286,
+        "amplitude": 1.2933093194347227,
+        "nu": 0.014851602021957228
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.063670183345382e-12,
+        "wall_seconds_including_first_compile": 151.15221228497103,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00004.solver.npz",
+        "sha256": "cfafaad1ff8081745618bb9d20c762618e0d5f172498c7ac0d13690311c4b5eb"
+      }
+    },
+    {
+      "case_id": "burgers-train-00005",
+      "split": "train",
+      "case_index": 5,
+      "seed": 2245563181,
+      "path": "burgers-train-00005.npz",
+      "sha256": "df9fada3308152d5852ed2bcdebde7330cc7fc184788f552f7c1bf7307b5f85a",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5298204955531444,
+        "cy": 0.8297904848465661,
+        "width": 0.14706386197478855,
+        "amplitude": 1.4756605594406753,
+        "nu": 0.06289668031830191
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.7649381813380904e-12,
+        "wall_seconds_including_first_compile": 118.94019637908787,
+        "total_newton_iterations": 3202,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00005.solver.npz",
+        "sha256": "01aac1731b95a3fd6876cb22db67c634348fa502308929c98184ccb257119709"
+      }
+    },
+    {
+      "case_id": "burgers-train-00006",
+      "split": "train",
+      "case_index": 6,
+      "seed": 2792960013,
+      "path": "burgers-train-00006.npz",
+      "sha256": "19ac818ada19a57ad33451dd3ba63aa45a47a3968ccfc3b192f55d1abcbed6c3",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.7827849355058976,
+        "cy": 0.45051846867646994,
+        "width": 0.1643970698967871,
+        "amplitude": 1.1442278530378103,
+        "nu": 0.012364281797650383
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 3.636210191576566e-12,
+        "wall_seconds_including_first_compile": 157.54710179299582,
+        "total_newton_iterations": 3202,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00006.solver.npz",
+        "sha256": "6b681778529524131949cae681bd7a2eca45216ad25a8723e23e0d873c371ab0"
+      }
+    },
+    {
+      "case_id": "burgers-train-00007",
+      "split": "train",
+      "case_index": 7,
+      "seed": 958011769,
+      "path": "burgers-train-00007.npz",
+      "sha256": "632545faa1e01ef0ded7811249907bdbfa7a0cb8b3fea6dc166e4d6751fe89f6",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5180917662536465,
+        "cy": 0.47967163117712497,
+        "width": 0.10640868768936901,
+        "amplitude": 1.6761256610630713,
+        "nu": 0.022422384035394375
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.6949480732551222e-14,
+        "wall_seconds_including_first_compile": 155.75231852801517,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00007.solver.npz",
+        "sha256": "37828dbe8fcfa8291b259722a5157b71c5060414dc3f011319e29a7fc12f11ba"
+      }
+    },
+    {
+      "case_id": "burgers-train-00008",
+      "split": "train",
+      "case_index": 8,
+      "seed": 2565156466,
+      "path": "burgers-train-00008.npz",
+      "sha256": "151639dd02d3305dbca3fdf02f7afd69ba58b3135ed0d33fed6bc8d7dc8101c7",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6745902211201827,
+        "cy": 0.8457716626415336,
+        "width": 0.19460249593173418,
+        "amplitude": 1.2701187380211505,
+        "nu": 0.08842631378935094
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 4.478358846595323e-12,
+        "wall_seconds_including_first_compile": 117.26918270392343,
+        "total_newton_iterations": 3202,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00008.solver.npz",
+        "sha256": "f4b38fcd36870f32879fc6b47bf05cd8a191fbf84c15b5f8083832d7e1d9ab46"
+      }
+    },
+    {
+      "case_id": "burgers-train-00009",
+      "split": "train",
+      "case_index": 9,
+      "seed": 1133989574,
+      "path": "burgers-train-00009.npz",
+      "sha256": "3ef52a1f3b2b2d4119ef7e9c42d1ce1721bce68b9fdae7df689886c620b6c4b8",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6700480023857878,
+        "cy": 0.6450748905894352,
+        "width": 0.17578405776673517,
+        "amplitude": 1.094054990034329,
+        "nu": 0.013268393650558692
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 8.102805472358155e-13,
+        "wall_seconds_including_first_compile": 138.20446293905843,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00009.solver.npz",
+        "sha256": "9930b821341d9ca24349a01d05a518c5165adab81957e045af08f0a823ef2b25"
+      }
+    },
+    {
+      "case_id": "burgers-train-00010",
+      "split": "train",
+      "case_index": 10,
+      "seed": 1759620736,
+      "path": "burgers-train-00010.npz",
+      "sha256": "b29c5f2ee561152a60be0a8ab88aaa103009a76d8ca54056d36a936915f3534d",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.22912167006348558,
+        "cy": 0.6109361819671728,
+        "width": 0.16971929013935078,
+        "amplitude": 1.3821078467258057,
+        "nu": 0.020118149812003154
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 5.2669666265417615e-12,
+        "wall_seconds_including_first_compile": 141.08475509297568,
+        "total_newton_iterations": 3202,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00010.solver.npz",
+        "sha256": "316da84054d8dafa5d8e26ba53a849fae89d76d113990fff360bca15384a6636"
+      }
+    },
+    {
+      "case_id": "burgers-train-00011",
+      "split": "train",
+      "case_index": 11,
+      "seed": 3265298925,
+      "path": "burgers-train-00011.npz",
+      "sha256": "33c22bfbc314bf063fd5a789612a9030eaa744d72f8ff1e8690dade3edbc224d",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.7492721926779087,
+        "cy": 0.5526951014024589,
+        "width": 0.16299380014038573,
+        "amplitude": 0.5139122561349377,
+        "nu": 0.03820983318582076
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.304311873297995e-13,
+        "wall_seconds_including_first_compile": 113.45012541906908,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00011.solver.npz",
+        "sha256": "a8e411e4b02dd1bfac3258b7b9e18cb0e6cfe744b8923ac15c4ee21d80a83bc8"
+      }
+    },
+    {
+      "case_id": "burgers-train-00012",
+      "split": "train",
+      "case_index": 12,
+      "seed": 477419537,
+      "path": "burgers-train-00012.npz",
+      "sha256": "a904c2f8b2ff5b5e919d4205637b81d2aa501ea1ea3d0e19ab75e9650a36bfe3",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6770606715051116,
+        "cy": 0.7417888713464812,
+        "width": 0.10376784509634472,
+        "amplitude": 1.0613357264973504,
+        "nu": 0.08130981445938174
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.1187291323131266e-13,
+        "wall_seconds_including_first_compile": 114.65863497799728,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00012.solver.npz",
+        "sha256": "854e9b1494ed41a756440254697523249f4e7dc449d803347d975efb9bb49dbb"
+      }
+    },
+    {
+      "case_id": "burgers-train-00013",
+      "split": "train",
+      "case_index": 13,
+      "seed": 105966940,
+      "path": "burgers-train-00013.npz",
+      "sha256": "9285f73a980b467c7483360a14c0abec5deb73aee837f2d88a786dddfc5b9870",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.514696191847251,
+        "cy": 0.2357378267084464,
+        "width": 0.08011904380400722,
+        "amplitude": 1.7971731073003676,
+        "nu": 0.027427491976243605
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 7.369250341439889e-14,
+        "wall_seconds_including_first_compile": 140.90158682700712,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00013.solver.npz",
+        "sha256": "745aa4c758d0687b37bd80feb1e25326710ab5f16ca8e5284e6f0643293cab04"
+      }
+    },
+    {
+      "case_id": "burgers-train-00014",
+      "split": "train",
+      "case_index": 14,
+      "seed": 3462095751,
+      "path": "burgers-train-00014.npz",
+      "sha256": "8ab6dfadb35b3bf30fa7479c285d07ef38bba0a6a6b91c275f2f4ecaf2ed6f10",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5791438730213668,
+        "cy": 0.26259809860082806,
+        "width": 0.11836086141356089,
+        "amplitude": 1.912877869740505,
+        "nu": 0.046507245626468546
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 9.621958895557558e-14,
+        "wall_seconds_including_first_compile": 135.4587320269784,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00014.solver.npz",
+        "sha256": "6dbb832708d379a43d6f5339ae7092d70e9496f6bf82d13379791384557ccb05"
+      }
+    },
+    {
+      "case_id": "burgers-train-00015",
+      "split": "train",
+      "case_index": 15,
+      "seed": 2941646562,
+      "path": "burgers-train-00015.npz",
+      "sha256": "0ba5d3a9be3744272c88b31fba17a9a5590cb2903cd70e039661d0ed11544b5c",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.29638072408316835,
+        "cy": 0.7684337010691736,
+        "width": 0.14725557141394996,
+        "amplitude": 0.5177934114248781,
+        "nu": 0.0260397157625792
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 3.1855714979480097e-13,
+        "wall_seconds_including_first_compile": 113.4486287808977,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-train-00015.solver.npz",
+        "sha256": "cb8b63b3895b874e2faa5e2a6da8c624c499f007822133d10bc55608d59c65e1"
+      }
+    }
+  ],
+  "calibration": {
+    "path": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/refinement/index.json",
+    "sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2",
+    "interpretation": "space/time refinement differences are empirical development evidence, not rigorous continuum error bounds",
+    "worst_empirical_margin": 0.0009588159542496009
+  },
+  "reference_setting": {
+    "intervals": 4096,
+    "dt": 0.00015625,
+    "passing": true,
+    "worst_empirical_margin": 0.0009588159542496009,
+    "work_proxy": 26843545600
+  },
+  "physical_accuracy_status": "empirically calibrated on independent development cases; not a per-case continuum certificate",
+  "descriptors_are_model_inputs": false,
+  "final_cohort": "sealed"
+}

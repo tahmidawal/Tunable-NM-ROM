@@ -7,6 +7,7 @@ from datetime import datetime,timezone
 from dataset import HERE,sha_file
 from audit import audit
 from audit_stationarity import inspect
+from audit_matched import run as audit_matched
 
 
 def collect(label, retain_remote=False):
@@ -27,10 +28,15 @@ def collect(label, retain_remote=False):
     checks=dict(job_id=job,exit_code=exit_code,checksums_verified=True,log_warnings=warnings,
                 archive_manifest_sha256=sha_file(archive/'ARCHIVE.sha256'))
     if exit_code==0 and not warnings:
-        summary=audit(archive/'out')
-        (record/'summary.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
-        independent=inspect(archive)
-        (record/'stationarity-audit.json').write_text(json.dumps(independent,indent=2,allow_nan=False)+'\n')
+        if (archive/'out/r128').exists():
+            summary=audit_matched(archive)
+            (record/'matched-summary.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+            checks['matched_data_and_exposure_audit_pass']=True
+        else:
+            summary=audit(archive/'out')
+            (record/'summary.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+            independent=inspect(archive)
+            (record/'stationarity-audit.json').write_text(json.dumps(independent,indent=2,allow_nan=False)+'\n')
         checks['numpy_audit_pass']=True
         checks['independent_stationarity_replay_pass']=True
     else:

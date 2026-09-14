@@ -14,13 +14,14 @@ def stats(values):
                 count_above_005=int(np.sum(a>.05)))
 
 
-def audit(root):
+def audit(root, diagnosis="diagnosis", dataset_root=None):
     root=Path(root)
-    calibration=json.loads((root/'calibration/calibration.json').read_text())
+    data=Path(dataset_root) if dataset_root is not None else root
+    calibration=json.loads((data/'calibration/calibration.json').read_text())
     assert calibration['complete'] and calibration['empirical_reference_budget_pass']
     arrays={}; ids=set(); array_hashes=set()
     for split,count in [('train',128),('validation',32)]:
-        folder=root/split; index=json.loads((folder/'index.json').read_text())
+        folder=data/split; index=json.loads((folder/'index.json').read_text())
         assert index['pde']=='poisson' and index['count']==count and index['complete']
         for r in index['records']:
             assert r['case_id'] not in ids; ids.add(r['case_id'])
@@ -48,11 +49,11 @@ def audit(root):
                     reference=r['reference']; p=folder/reference['path']
                     assert digest(p)==reference['sha256']
                     with np.load(p) as f: arrays[r['case_id']]=(field.copy(),f['target'][0,0].copy(),f['refinement'][0,0].copy())
-    result=json.loads((root/'diagnosis/result.json').read_text()); assert result['complete']
+    result=json.loads((root/diagnosis/'result.json').read_text()); assert result['complete']
     rows=result['rows']; assert len(rows)==32*7*3
     seen=set()
     def field(entry):
-        p=root/'diagnosis'/entry['field_path']; assert digest(p)==entry['field_sha256']
+        p=root/diagnosis/entry['field_path']; assert digest(p)==entry['field_sha256']
         with np.load(p) as a: f=a['field'].copy()
         assert np.isfinite(f).all() and f.dtype==np.float64
         assert not (np.any(f[0]) or np.any(f[-1]) or np.any(f[:,0]) or np.any(f[:,-1]))

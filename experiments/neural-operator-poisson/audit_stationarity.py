@@ -1,4 +1,4 @@
-"""Independent NumPy/analytic derivative replay of every inherited ROM answer."""
+"""Independent NumPy/analytic derivative replay of every recorded ROM answer."""
 import json
 import pickle
 from pathlib import Path
@@ -6,9 +6,9 @@ import numpy as np
 from scipy.special import expit
 
 
-def inspect(archive):
+def inspect(archive, diagnosis="diagnosis", validation="validation"):
     archive=Path(archive); out=archive/'out'
-    result=json.loads((out/'diagnosis/result.json').read_text())
+    result=json.loads((out/diagnosis/'result.json').read_text())
     cfg=result['config']; n=result['setup']['intervals']
     params=pickle.loads((archive/'source'/cfg['checkpoint']).read_bytes())['params']
     assert 'hB' not in params
@@ -43,16 +43,16 @@ def inspect(archive):
             a=a*sigmoid
         w,b=params['h'][-1]
         return a@w+b+z@params['h_lin'],(jac@w+params['h_lin']).T
-    index=json.loads((out/'validation/index.json').read_text()); cases={r['case_id']:r for r in index['records']}
+    index=json.loads((out/validation/'index.json').read_text()); cases={r['case_id']:r for r in index['records']}
     records=[]
     for row in result['rows']:
         if row['method']!='nmrom' or row['repetition']!=0:continue
-        with np.load(out/'validation'/cases[row['case_id']]['path']) as a: source=a['input'][0]
+        with np.load(out/validation/cases[row['case_id']]['path']) as a: source=a['input'][0]
         f=(S.T@source[1:-1,1:-1]@S)[I,J]/eigen
         z=np.asarray(row['latent']); y=np.asarray(row['correction_coefficients'])
         h,D=head(z); coefficients=h+C@y
         actual=np.pad((G@coefficients).reshape(n-1,n-1),1)
-        with np.load(out/'diagnosis'/row['field_path']) as a: expected=a['field']
+        with np.load(out/diagnosis/row['field_path']) as a: expected=a['field']
         parity=float(np.linalg.norm(actual-expected)/np.linalg.norm(expected))
         residual=B@coefficients-f; Jfull=B@D; Jlinear=B@C
         stationarity=float(np.linalg.norm(np.concatenate((Jfull.T@residual,Jlinear.T@residual)))/(np.sqrt(np.sum(Jfull*Jfull)+np.sum(Jlinear*Jlinear))*np.linalg.norm(residual)))

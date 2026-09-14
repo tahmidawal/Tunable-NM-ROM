@@ -181,12 +181,16 @@ def main():
                 fields=host[0].copy()
                 assert fields.dtype==np.float64 and np.isfinite(fields).all()
                 name=f"{record['case_id']}_{method}_rep{rep}.npz"
-                np.savez(out/name,fields=fields,iterations=host[1],residuals=host[2])
+                audit_arrays = dict(fields=fields,iterations=host[1],residuals=host[2])
+                if method=='rom':
+                    audit_arrays.update(step_reasons=host[3],output_latents=host[4],initial_iterations=host[5],
+                        initial_reason=host[6],internal_latents=host[7],step_gradients=host[8],initial_gradient=host[9])
+                np.savez(out/name,**audit_arrays)
                 row=dict(case_id=record['case_id'],method=str(method),rep=rep,gpu_seconds=seconds,
                          output_transfer_seconds=hostseconds,error=d.fixed_initial_errors(fields,reference),
                          path=name,sha256=d.sha(out/name),newton_or_lm_iterations=int(host[1].sum()))
                 if method=='rom':
-                    row.update(stationary=bool(np.max(host[8])<=1e-6 and float(host[9])<=1e-6))
+                    row.update(stationary=bool(np.max(host[8])<=1e-6 and float(host[9])<=1e-6),initial_iterations=int(host[5]))
                 else:
                     row.update(max_relative_residual=float(host[2].max()),converged=bool(np.isfinite(host[2]).all() and host[2].max()<=p['ntol']))
                 report['invocations'].append(row)

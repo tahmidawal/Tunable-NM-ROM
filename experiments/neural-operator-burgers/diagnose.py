@@ -170,14 +170,20 @@ def main():
         for rep in range(args.reps):
             for method in rng.permutation(order):
                 burn(jax,jnp,.1 if args.smoke else 2.)
+                complete_start=time.perf_counter()
+                invocation_u0=jax.device_put(supplied)
+                invocation_nu=jax.device_put(np.asarray(physical[4],dtype=np.float64))
+                jax.block_until_ready((invocation_u0,invocation_nu))
+                inputseconds=time.perf_counter()-complete_start
                 start=time.perf_counter()
                 if method=='rom':
-                    timed=jax.block_until_ready(rom(u0,nu,operators,cold))
+                    timed=jax.block_until_ready(rom(invocation_u0,invocation_nu,operators,cold))
                 else:
                     p=next(p for p in presets if p['name']==method)
-                    timed=jax.block_until_ready(foms[method](u0,nu,p['ntol'],p['ltol']))
+                    timed=jax.block_until_ready(foms[method](invocation_u0,invocation_nu,p['ntol'],p['ltol']))
                 seconds=time.perf_counter()-start
                 hoststart=time.perf_counter();host=jax.tree_util.tree_map(np.asarray,timed);hostseconds=time.perf_counter()-hoststart
+                complete_seconds=time.perf_counter()-complete_start
                 fields=host[0].copy()
                 assert fields.dtype==np.float64 and np.isfinite(fields).all()
                 name=f"{record['case_id']}_{method}_rep{rep}.npz"
@@ -187,7 +193,7 @@ def main():
                         initial_reason=host[6],internal_latents=host[7],step_gradients=host[8],initial_gradient=host[9])
                 np.savez(out/name,**audit_arrays)
                 row=dict(case_id=record['case_id'],method=str(method),rep=rep,gpu_seconds=seconds,
-                         output_transfer_seconds=hostseconds,error=d.fixed_initial_errors(fields,reference),
+                         input_transfer_seconds=inputseconds,output_transfer_seconds=hostseconds,host_to_host_seconds=complete_seconds,error=d.fixed_initial_errors(fields,reference),
                          path=name,sha256=d.sha(out/name),newton_or_lm_iterations=int(host[1].sum()))
                 if method=='rom':
                     row.update(stationary=bool(np.max(host[8])<=1e-6 and float(host[9])<=1e-6),initial_iterations=int(host[5]))

@@ -1,0 +1,47 @@
+{
+  "pde": "burgers",
+  "provenance": {
+    "source_commit": "17b5574c314a8f9bf9ebd5256b8ab4339a07c8a2",
+    "source_sha256": {
+      "experiments/neural-operator-burgers/data.py": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+      "experiments/neural-operator-burgers/protocol.json": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+      "experiments/mr-burgers2d/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "experiments/separable-decoder/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+    },
+    "job_id": null,
+    "gpu": "NVIDIA GB10",
+    "backend": "gpu",
+    "f64": true,
+    "matmul_precision": "highest",
+    "python": "3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0]",
+    "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+    "packages": {
+      "jax": "0.10.1",
+      "jaxlib": "0.10.1",
+      "numpy": "2.4.4",
+      "scipy": "1.17.1",
+      "optax": "0.2.8"
+    }
+  },
+  "records": [
+    {
+      "case_id": "burgers-calibration-00000",
+      "split": "calibration",
+      "case_index": 0,
+      "seed": 3824337363,
+      "path": "burgers-calibration-00000.npz",
+      "sha256": "34d11dff44cc980ec2850d47237029ee1b42d0510be961eaff978f3617044904",
+      "mesh": 64,
+      "generation_descriptors": {
+        "cx": 0.44440124928098657,
+        "cy": 0.6433679604115994,
+        "width": 0.19431864415010563,
+        "amplitude": 1.067191726033447,
+        "nu": 0.09389487574963509
+      },
+      "reference": {
+        "role": "smoke only"
+      }
+    }
+  ]
+}

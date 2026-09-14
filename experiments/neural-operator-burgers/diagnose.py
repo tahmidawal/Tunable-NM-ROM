@@ -65,6 +65,8 @@ def main():
     G = operators[0]
     Q, triangular = jnp.linalg.qr(G, mode='reduced')
     jax.block_until_ready(triangular)
+    bank_singular_values = np.asarray(jnp.linalg.svd(triangular, compute_uv=False))
+    assert np.isfinite(bank_singular_values).all() and bank_singular_values[-1] > 0
     hp = ap.whiten_head(params, triangular)
     candidate_z = operators[7]
     candidate_h = e.sc.head(hp,candidate_z)
@@ -91,6 +93,7 @@ def main():
                   provenance=d.provenance(jax), checkpoint_sha256=d.sha(CHECKPOINT),
                   own_source_sha256=d.sha(Path(__file__)), accuracy_paths_sha256=d.sha(Path(ap.__file__)),
                   config=cfg, intervals=L,K=K,R=R,M=M,m=m,setup=setup,cold_setup=cold_setup,
+                  bank_singular_values=bank_singular_values.tolist(),bank_condition_number=float(bank_singular_values[0]/bank_singular_values[-1]),
                   reference_index_sha256=d.sha(args.reference_index),reference_gate=ref.get('gate',ref.get('profile_gate')),
                   physical_accuracy_status='provisional whenever empirical reference gate fails or is incomplete',
                   training_history='original checkpoint unmatched to new case bank; pilot only',
@@ -121,6 +124,9 @@ def main():
         online_fields=np.asarray(result[0]);online_z=np.asarray(result[4])
         targets=jnp.asarray(reference[:,1:-1,1:-1].reshape(6,-1))
         y=targets@Q
+        free_coefficients=jax.scipy.linalg.solve_triangular(triangular,y.T,lower=False).T
+        bank_coefficient_replay=float(jnp.linalg.norm(free_coefficients@G.T-y@Q.T)/jnp.linalg.norm(y@Q.T))
+        assert bank_coefficient_replay < 1e-8, "ill-conditioned free-bank reconstruction"
         bank_fields=np.zeros_like(reference)
         bank_fields[:,1:-1,1:-1]=np.asarray(y@Q.T).reshape(6,L-1,L-1)
         nonlinear_fields=np.zeros_like(reference)
@@ -148,12 +154,12 @@ def main():
         assert np.all(np.asarray(errors['nonlinear_best_found']['per_time'])<=np.asarray(errors['online']['per_time'])+1e-9)
         name=record['case_id']+'.diagnosis.npz'
         np.savez(out/name,input=supplied,reference=reference,bank=bank_fields,nonlinear=nonlinear_fields,
-                 online=online_fields,online_z=online_z,nonlinear_z=np.asarray(latent),
+                 online=online_fields,online_z=online_z,nonlinear_z=np.asarray(latent),free_coefficients=np.asarray(free_coefficients),
                  step_iterations=np.asarray(result[1]),step_reasons=np.asarray(result[3]),
                  initial_iterations=np.asarray(result[5]),initial_reason=np.asarray(result[6]),
                  step_gradients=np.asarray(result[8]),initial_gradient=np.asarray(result[9]))
         report['cases'].append(dict(**record,anchor_sha256=anchor['sha256'],path=name,sha256=d.sha(out/name),
-                errors=errors,oracle_fits=fits,online_stationary=bool(np.max(np.asarray(result[8]))<=1e-6 and float(result[9])<=1e-6)))
+                errors=errors,free_bank_coefficient_replay_relative=bank_coefficient_replay,oracle_fits=fits,online_stationary=bool(np.max(np.asarray(result[8]))<=1e-6 and float(result[9])<=1e-6)))
         d.write_json(index_path,report)
         # Each setting compiles before timing; every repetition keeps its own
         # full fields, stopping evidence, and latency from the same invocation.

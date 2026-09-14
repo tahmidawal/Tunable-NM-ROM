@@ -46,8 +46,14 @@ def main():
         report['complete']=True;report['bulk_decision']=dict(status='locked_incomplete_refinement');save();return
     from refine import configure
     configure()
-    # Diagnose even a failed empirical reference, with its provisional status
-    # persisted beside all errors. This never unlocks training targets.
+    try:
+        d.read_calibration(a.calibration,256)
+    except ValueError as error:
+        report['bulk_decision']=dict(status='locked_refined_reference_gate',reason=str(error),
+            quantified_gap=cal['gate']['by_output']['256']['candidates'])
+        report['complete']=True;save();return
+    # The focused-refinement decision requires a passing unchanged reference
+    # gate before either diagnosis or bulk data generation proceeds.
     run('diagnosis','diagnose.py',['--reference-index',str(a.calibration),'--out',str(out/'diagnosis'),
                                  '--intervals','256','--cases','8','--reps','3','--reference-dt','.00015625'])
     try:

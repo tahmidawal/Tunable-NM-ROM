@@ -1,0 +1,31 @@
+{
+  "complete": true,
+  "pde": "poisson",
+  "best_epoch": 1,
+  "epochs_completed": 2,
+  "stopped_by_signal": false,
+  "stopped_by_wall_budget": false,
+  "validation": {
+    "errors": [
+      [
+        0.7272348717481635
+      ],
+      [
+        0.7274250032173566
+      ]
+    ],
+    "mean_case_max": 0.72732993748276,
+    "median_case_max": 0.72732993748276,
+    "worst_case_max": 0.7274250032173566,
+    "p95_case_max": 0.7274154966438969,
+    "above_threshold_counts": {
+      "0.01": 2,
+      "0.02": 2,
+      "0.05": 2
+    }
+  },
+  "parameter_count": 3745,
+  "best_checkpoint_sha256": "45e1de61bd763830e8e83124f8fe42db3f95e5f7bc4027ec52aa83eebab118ec",
+  "training_seconds": 1.3014323200332,
+  "scientific_status": "single-seed development capacity screen; no paired speed claim"
+}

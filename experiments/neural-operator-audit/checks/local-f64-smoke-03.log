@@ -1,0 +1,42 @@
+torch_backend=cuda NVIDIA GB10
+{
+  "passed": true,
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "neuraloperator": "2.0.0",
+    "cuda": "13.0",
+    "gpu": "NVIDIA GB10",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "cases": [
+    {
+      "pde": "poisson",
+      "shape": [
+        2,
+        1,
+        1,
+        17,
+        17
+      ],
+      "checkpoint_bitwise_parity": true,
+      "forward_backward_optimizer_intermediates_f64": true,
+      "loss": 0.1016652413463489
+    },
+    {
+      "pde": "burgers",
+      "shape": [
+        2,
+        6,
+        1,
+        17,
+        17
+      ],
+      "checkpoint_bitwise_parity": true,
+      "forward_backward_optimizer_intermediates_f64": true,
+      "loss": 0.004950981046440041
+    }
+  ],
+  "role": "implementation smoke, not scientific accuracy or timing evidence"
+}
+

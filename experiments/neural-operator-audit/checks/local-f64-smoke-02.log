@@ -1,0 +1,15 @@
+torch_backend=cuda NVIDIA GB10
+Traceback (most recent call last):
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-audit/experiments/neural-operator-audit/smoke.py", line 73, in <module>
+    main(args.output)
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-audit/experiments/neural-operator-audit/smoke.py", line 56, in main
+    restored.load_state_dict(torch.load(checkpoint, map_location='cuda', weights_only=True))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/torch/serialization.py", line 1578, in load
+    raise pickle.UnpicklingError(_get_wo_message(str(e))) from None
+_pickle.UnpicklingError: Weights only load failed. This file can still be loaded, to do so you have two options, [1mdo those steps only if you trust the source of the checkpoint[0m. 
+	(1) In PyTorch 2.6, we changed the default value of the `weights_only` argument in `torch.load` from `False` to `True`. Re-running `torch.load` with `weights_only` set to `False` will likely succeed, but it can result in arbitrary code execution. Do it only if you got the file from a trusted source.
+	(2) Alternatively, to load with `weights_only=True` please check the recommended steps in the following error message.
+	WeightsUnpickler error: Unsupported global: GLOBAL spectral_conv_f64.SpectralConvF64 was not an allowed global by default. Please use `torch.serialization.add_safe_globals([spectral_conv_f64.SpectralConvF64])` or the `torch.serialization.safe_globals([spectral_conv_f64.SpectralConvF64])` context manager to allowlist this global if you trust this class/function.
+
+Check the documentation of torch.load to learn more about types accepted by default with weights_only https://pytorch.org/docs/stable/generated/torch.load.html.

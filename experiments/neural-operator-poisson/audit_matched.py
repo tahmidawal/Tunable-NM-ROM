@@ -7,6 +7,12 @@ from audit import audit,digest
 from audit_stationarity import inspect
 
 
+def parameter_count(tree):
+    if isinstance(tree,dict):return sum(parameter_count(v) for v in tree.values())
+    if isinstance(tree,(tuple,list)):return sum(parameter_count(v) for v in tree)
+    return int(np.asarray(tree).size)
+
+
 def run(archive):
     archive=Path(archive);results={};trainings={};initials={}
     for rank in [128,256]:
@@ -33,6 +39,7 @@ def run(archive):
         summary=audit(archive/'out',f'diagnosis_r{rank}',archive/'out/data')
         stationarity=inspect(archive,f'diagnosis_r{rank}','data/validation')
         results[rank]=dict(summary=summary,stationarity=stationarity,
+            parameter_count=parameter_count(initials[rank]['params']),final_checkpoint_bytes=(folder/'final.pkl').stat().st_size,
             phase_optimizer_seconds={p['tag']:p['optimizer_seconds'] for p in training['phases']},
             training_metrics=training['training_metrics'])
     np.testing.assert_array_equal(initials[128]['Z_tr'],initials[256]['Z_tr'])

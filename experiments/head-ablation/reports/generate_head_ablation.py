@@ -127,13 +127,13 @@ def burgers_section(w, r, au, sm):
         if pod_sg:
             b = pod_sg[0]
             w(f"**On the same-grid metric, the smallest POD rank matching the neural head is "
-              f"$k'={b['k']}$** (${b['k'] / K:g}\times$ $K={K}$): worst same-grid discrepancy "
+              f"$k'={b['k']}$** (${b['k'] / K:g}\\times$ $K={K}$): worst same-grid discrepancy "
               f"{b['worst_same_grid_percent']:.6f}% against {neural['worst_same_grid_percent']:.6f}%, at "
               f"{b['median_gpu_ms']:.3f} ms against {neural['median_gpu_ms']:.3f} ms median GPU time.")
         elif pods and pods[-1].get('worst_same_grid_percent') is not None:
             t = pods[-1]
             w(f"**On the same-grid metric no tested POD rank up to $k'={t['k']}$ "
-              f"(${t['k'] / K:g}\times$ $K={K}$) matches the neural head**: the largest rung reaches "
+              f"(${t['k'] / K:g}\\times$ $K={K}$) matches the neural head**: the largest rung reaches "
               f"{t['worst_same_grid_percent']:.6f}% against {neural['worst_same_grid_percent']:.6f}%.")
         w('')
         match = [x for x in pods if x['worst_rollout_percent'] <= neural['worst_rollout_percent']]

@@ -74,7 +74,8 @@ def main():
       f"snapshots, {dd['starts']} multistart fits at budget {dd['budget']}, seed {dd['seed']}; the "
       f"head's own best-found relative fit over them is {dd['head_fit_relative_median'] * 100:.4f}% "
       f"median, {dd['head_fit_relative_worst'] * 100:.4f}% worst; available rank "
-      f"{dd['available_rank']}. Residual energy captured: "
+      f"{dd['available_rank']}. The fit is offline and one-time and enters no query timing, but at "
+      f"{dd['seconds']:.1f} s it dominated the job's setup cost. Residual energy captured: "
       + ', '.join(f"q={q} {v * 100:.4f}%" for q, v in dd['residual_energy_captured'].items()) + '.')
     w('')
     w('The primary metric is the same-grid discrepancy against the converged same-mesh full-order '

@@ -122,7 +122,10 @@ def build(r, au, sm, figinfo, figname):
       f"{d['snapshots']} snapshots, {d['starts']} multistart fits each at budget {d['budget']}, seed "
       f"{d['seed']}; the head's own best-found relative fit over them is "
       f"{d['head_fit_relative_median'] * 100:.4f}% median and {d['head_fit_relative_worst'] * 100:.4f}% "
-      f"worst, and the available rank is {d['available_rank']}. Residual energy captured: "
+      f"worst, and the available rank is {d['available_rank']}, which covers the whole ladder. "
+      f"This fit is **offline and one-time**: it cost {d['seconds']:.1f} s of the job and enters no "
+      f"query timing, but it is the dominant setup cost and any redesign of the direction rule pays "
+      f"it again. Residual energy captured: "
       + ', '.join(f"$q={q}$ {v * 100:.4f}%" for q, v in d['residual_energy_captured'].items()) + '.')
     w('')
     w(f"**Fidelity gate.** Through the corrected-head wrapper at $q=0$, the smoke reproduces the "

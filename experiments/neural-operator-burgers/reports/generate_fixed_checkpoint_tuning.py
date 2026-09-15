@@ -174,8 +174,6 @@ def main():
                'No. On the calibration cases no tuned setting is simultaneously at least as accurate and at least '
                'as fast as every efficient full-order control timed in the same job.'), '',
               f"Controls compared: {', '.join('`' + f + '`' for f in foms)}.", '']
-    for row in calibration.get('native_compression', []):
-        pass
     if calibration.get('native_compression'):
         worst = max(r['relative_initial_compression_error'] for r in calibration['native_compression'])
         lines += ['### Native compression of the supplied field', '',

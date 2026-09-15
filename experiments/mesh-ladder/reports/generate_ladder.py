@@ -297,11 +297,16 @@ def figure(summaries, out_png, out_pdf):
             axis.annotate(SERIES[key][2], (meshes[-1], 10 ** position),
                           textcoords='offset points', xytext=(11, 0), va='center',
                           ha='left', fontsize=8.5, color=MUTED, zorder=4)
-        for key in ('complete', 'fom'):
+        # The reduced curve carries its errors above the line and the full-order
+        # curve below it, so neither label can land on the other's marker where
+        # the two curves cross.
+        for key, offset in (('complete', 13), ('fom', -17)):
             color = SERIES[key][0]
             for mesh, value, error in zip(meshes, series[key], errors[key]):
                 axis.annotate(f'{100 * error:.2f}%', (mesh, value), textcoords='offset points',
-                              xytext=(0, -15), ha='center', fontsize=7.5, color=color, zorder=4)
+                              xytext=(0, offset), ha='center', fontsize=7.5, color=color,
+                              zorder=5, bbox=dict(boxstyle='round,pad=0.12', facecolor=SURFACE,
+                                                  edgecolor='none', alpha=0.85))
         axis.set_xscale('log', base=2)
         axis.set_yscale('log')
         axis.set_xticks(meshes)
@@ -317,6 +322,10 @@ def figure(summaries, out_png, out_pdf):
         for side in ('left', 'bottom'):
             axis.spines[side].set_color('#d8d7d2')
         axis.set_xlim(min(meshes) * 0.85, max(meshes) * 2.9)
+        # Leave room under the lowest curve so its error labels clear the tick row.
+        low = min(min(v) for v in series.values())
+        high = max(max(v) for v in series.values())
+        axis.set_ylim(low * 0.45, high * 1.7)
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc='lower center', ncol=4, frameon=False,
                fontsize=9.5, labelcolor=MUTED, bbox_to_anchor=(0.5, -0.012))

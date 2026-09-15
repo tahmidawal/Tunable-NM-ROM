@@ -1,0 +1,10 @@
+{
+  "attempted": "git push origin exp/2026-09-14-no-burgers",
+  "outcome": "terminated by this session before completing",
+  "reason": "the repository .git is 199 GB and this branch carries a 4.4 GB committed raw archive; git pack-objects reached about 48 GB resident memory on the shared 121 GB GB10 box, which risks the earlyoom safety net and any concurrent job, so the push was killed deliberately",
+  "remote_branches_total": 47,
+  "remote_branches_from_2026_09_1x": [],
+  "context": "no 2026-09-1x worktree branch is present on origin, so an unpushed branch is the established state for this round of work rather than a regression introduced here",
+  "commits_retained_locally": true,
+  "note": "every commit named in the lab log is present in the local repository and reachable from the branch head"
+}

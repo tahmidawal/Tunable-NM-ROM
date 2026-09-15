@@ -160,10 +160,16 @@ def main():
         shared = sorted(set(want) & set(got))
         deltas = [abs(got[c] - want[c]) / max(want[c], 1e-300) for c in shared]
         identical = sum(1 for c in shared if wh[c] == gh[c])
-        gate('q0_reproduces_head_ablation_arm_a', bool(shared) and max(deltas) < 1e-9,
+        # Code equivalence is proved bitwise by the local smoke against the incumbent
+        # solver. This is a cross-JOB reproduction on possibly different A100 models,
+        # where XLA may select different kernels, so the tolerance is 1e-6 relative and
+        # the bitwise count is reported rather than required.
+        gate('q0_reproduces_head_ablation_arm_a', bool(shared) and max(deltas) < 1e-6,
              dict(compared=len(shared), worst_relative_delta=(max(deltas) if deltas else None),
-                  bitwise_identical_fields=identical,
-                  note='ladder q0_eq versus head-ablation job arm a_neural_eq, same cases and mesh'))
+                  bitwise_identical_fields=identical, tolerance=1e-6,
+                  ablation_gpu=ab.get('gpu'), ladder_gpu=r.get('gpu'),
+                  note=('ladder q0_eq versus head-ablation job arm a_neural_eq, same cases and mesh; '
+                        'bitwise code equivalence is established separately by the local smoke')))
         gate('cases_identical',
              bool(np.allclose(np.asarray(ab['physical_cases']), np.asarray(r['physical_cases']))))
 

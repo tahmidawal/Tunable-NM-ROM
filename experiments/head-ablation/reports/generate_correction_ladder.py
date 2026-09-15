@@ -153,6 +153,11 @@ def build(r, au, sm, figinfo, figname):
             yn(x['all_stationary']), yn(x['all_completed']),
             fmt(x['median_gpu_ms'], 3), fmt(x['median_host_ms'], 3)]) + ' |')
     w('')
+    w('`fft_tight` is the converged full-order solve that *defines* the same-grid metric, so its own '
+      'same-grid value is zero by construction and it appears in the figure as a cost line rather '
+      'than a point. `nt1e-2` is the efficient loose-tolerance full-order control, the same setting '
+      'the head-ablation job recorded as `fft_loose`.')
+    w('')
     w(f'![error versus cost]({figname})')
     w('')
 

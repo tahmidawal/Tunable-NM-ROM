@@ -29,7 +29,8 @@ def main():
     parser.add_argument('--entry', type=Path, required=True)
     args = parser.parse_args()
     body = args.entry.read_text()
-    assert body.startswith('\n## '), 'entry must start with a blank line and a dated header'
+    assert body.lstrip('\n').startswith('## '), 'entry must begin with a dated header'
+    body = '\n\n' + body.strip('\n') + '\n'
     append(body)
     print('appended', len(body), 'characters to', LAB)
 

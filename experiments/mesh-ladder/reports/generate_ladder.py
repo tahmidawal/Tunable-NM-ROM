@@ -142,6 +142,46 @@ def rom_name(result):
     return next(row['name'] for row in result['invocations'] if row['method'] == 'rom')
 
 
+def poisson_same_grid(result, summary, attempt):
+    """ROM against the exact same-grid full-order solution, on the common grid.
+
+    The direct sine transform diagonalises this discrete operator exactly, so the
+    `dst` arm's own output *is* the converged same-grid full-order field. Taking
+    the discrepancy from the archived observation fields keeps it a measured
+    quantity rather than a second solve. It is omitted when the unpacked run
+    directory is not beside the report.
+    """
+    fields = CELL / 'runs' / attempt / 'out' / 'fields'
+    if not fields.is_dir():
+        return False
+    direct = {(row['intervals'], row['case']): row['field_sha256']
+              for row in result['invocations'] if row['name'] == 'dst'}
+    cache = {}
+
+    def load_field(digest):
+        if digest not in cache:
+            cache[digest] = np.load(fields / f'{digest}.npz')['observation_field']
+        return cache[digest]
+
+    discrepancy = defaultdict(list)
+    for row in result['invocations']:
+        if row['method'] != 'rom':
+            continue
+        key = (row['intervals'], row['case'])
+        if key not in direct:
+            return False
+        reduced, exact = load_field(row['field_sha256']), load_field(direct[key])
+        discrepancy[row['intervals']].append(
+            float(np.linalg.norm(reduced - exact) / np.linalg.norm(exact)))
+    for mesh, values in discrepancy.items():
+        entry = summary['table'][f'{mesh}|{summary["rom"]}']
+        entry['worst_same_grid_discrepancy'] = max(values)
+        entry['median_same_grid_discrepancy'] = float(np.median(values))
+        entry['same_grid_note'] = ('against the exact same-grid direct-transform solution, '
+                                   'measured on the common observation grid')
+    return True
+
+
 def efficient_fom(summary, mesh):
     """Cheapest full-order arm meeting the target; otherwise the cheapest arm."""
     arms = [v for k, v in summary['table'].items()
@@ -243,8 +283,8 @@ def milliseconds(value):
 def cost_table(summary):
     lines = ['| Intervals | Interior unknowns | ROM cached (ms) | ROM complete query (ms) | '
              'ROM host-to-host (ms) | ROM offline setup (s) | Efficient FOM | FOM device (ms) | '
-             'ROM worst err (%) | FOM worst err (%) |',
-             '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |']
+             'ROM worst err (%) | FOM worst err (%) | ROM vs same-grid FOM (%) |',
+             '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |']
     for mesh in summary['meshes']:
         rom = summary['table'][f'{mesh}|{summary["rom"]}']
         fom, passing = efficient_fom(summary, mesh)
@@ -257,7 +297,8 @@ def cost_table(summary):
             f'`{fom["subject"]}`{"" if passing else " (no arm meets the target)"} | '
             f'{milliseconds(fom["device_seconds"]["median"])} | '
             f'{percent(rom["worst_error_requested_grid"])} | '
-            f'{percent(fom["worst_error_requested_grid"])} |')
+            f'{percent(fom["worst_error_requested_grid"])} | '
+            f'{percent(rom["worst_same_grid_discrepancy"])} |')
     return '\n'.join(lines)
 
 
@@ -325,6 +366,8 @@ def main():
         result, path = load(attempt)
         summary = aggregate(result)
         summary['rom'] = rom_name(result)
+        if result['pde'] == 'poisson':
+            summary['same_grid_from_direct_solver'] = poisson_same_grid(result, summary, attempt)
         summary['flatness_cached'] = flatness(summary, 'cached')
         summary['flatness_complete'] = flatness(summary, 'complete')
         summary['crossover'] = crossover(summary)

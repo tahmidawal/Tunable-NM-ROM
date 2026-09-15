@@ -11,6 +11,7 @@ from pathlib import Path
 
 import numpy as np
 import data as d
+from refine import configure
 
 
 def validate_fields(field, intervals):
@@ -31,6 +32,7 @@ def main():
                         help='calibration reference index, or the validation dataset index')
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
+    configure()
     report = json.loads(args.index.read_text())
     reference = json.loads(args.reference.read_text())
     cfg = report['config']

@@ -303,7 +303,9 @@ def figure(summaries, out_png, out_pdf):
         for key, offset in (('complete', 13), ('fom', -17)):
             color = SERIES[key][0]
             for mesh, value, error in zip(meshes, series[key], errors[key]):
-                axis.annotate(f'{100 * error:.2f}%', (mesh, value), textcoords='offset points',
+                # Three significant figures, so an exact-solver error of 8e-4 %% does
+                # not round away to 0.00 %% beside a reduced error of 6 %%.
+                axis.annotate(f'{100 * error:.3g}%', (mesh, value), textcoords='offset points',
                               xytext=(0, offset), ha='center', fontsize=7.5, color=color,
                               zorder=5, bbox=dict(boxstyle='round,pad=0.12', facecolor=SURFACE,
                                                   edgecolor='none', alpha=0.85))

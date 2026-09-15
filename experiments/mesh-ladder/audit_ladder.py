@@ -149,10 +149,34 @@ def main():
               'complete query deliberately excludes the diagnostics' if not graded else
               'graded from the charged gradients returned by the timed invocation itself'))
     if pde == 'burgers':
-        drift = [row['audit_max_stationarity_difference'] for row in rom
-                 if 'audit_max_stationarity_difference' in row]
-        require('charged_and_audited_stationarity_agree', all(d <= 1e-10 for d in drift),
-                dict(worst=max(drift) if drift else None))
+        # The charged gradient comes back from the timed invocation; the audited one
+        # is recomputed afterwards by a separately compiled function. Both divide by
+        # a product of norms of order gtol, so an absolute bound on their difference
+        # is the wrong test -- it only says how small that denominator is. What has
+        # to hold is that the two agree to a small relative tolerance and that their
+        # difference is far smaller than the margin between the worst gradient and
+        # the stopping threshold, so no stationarity verdict can turn on it.
+        gtol = result['config']['strict']['gtol']
+        drift, values = [], []
+        for row in rom:
+            if 'audit_max_stationarity_difference' not in row:
+                continue
+            drift.append(row['audit_max_stationarity_difference'])
+            values.append(max(float(np.max(row['step_normalized_stationarity'])),
+                              float(row['ic_normalized_stationarity'])))
+        worst_drift = max(drift) if drift else 0.0
+        worst_value = max(values) if values else 0.0
+        worst_relative = max((d / v if v else 0.0) for d, v in zip(drift, values)) if drift else 0.0
+        margin = gtol - worst_value
+        require('charged_and_audited_stationarity_agree',
+                bool(drift) and worst_relative <= 1e-3 and worst_drift <= 0.5 * margin,
+                dict(worst_absolute_difference=worst_drift, worst_relative_difference=worst_relative,
+                     worst_gradient=worst_value, stopping_threshold=gtol,
+                     margin_to_threshold=margin,
+                     difference_as_fraction_of_margin=(worst_drift / margin if margin else None),
+                     note=('the solver exits as soon as the gradient reaches the threshold, so every '
+                           'recorded gradient sits just below it; the check is that no verdict can '
+                           'turn on the difference between the two evaluations')))
     else:
         native = result['native_rows']
         findings['native_solver_valid'] = dict(

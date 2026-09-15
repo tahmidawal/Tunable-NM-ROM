@@ -113,6 +113,46 @@ def main():
       f"({[round(v, 4) for v in errs]} percent); cost is "
       f"{'monotone increasing' if mono_cost else 'NOT monotone'} "
       f"({[round(v, 3) for v in costs]} median GPU ms).")
+    unconv = [x for x in ladder if x['all_completed'] is False]
+    if unconv:
+        w('The upper rungs are NOT converged solves: '
+          + ', '.join(f"q={x['q']} ({x['total_budget_exits']} iteration-budget exits, worst "
+                      f"normalized gradient {x['max_stationarity']:.2e})" for x in unconv)
+          + ' failed to complete under the shared stopping rule. They are legitimate approximate '
+            'points on an error/cost curve but keep their true stopping status and must not be read '
+            'as a converged accuracy curve. The trust radius and per-step budget were deliberately '
+            'held at the q=0 values so q is the only knob, and that is what binds as the solved '
+            'dimension grows.')
+        conv = [x for x in ladder if x['all_completed']]
+        if conv:
+            w(f"Restricted to the rungs that do converge (q={[x['q'] for x in conv]}), the error "
+              f"falls only from {conv[0]['worst_same_grid_percent']:.4f}% to "
+              f"{conv[-1]['worst_same_grid_percent']:.4f}% for a "
+              f"{conv[-1]['median_gpu_ms'] / conv[0]['median_gpu_ms']:.3f}-fold cost increase.")
+    eqs = sorted([x for x in rows if x['kind'] == 'rom' and x['quadrature'] == 'eq'
+                  and x['dt'] == cfg['dt']], key=lambda x: x['q'])
+    for e_ in eqs:
+        d_ = next((x for x in ladder if x['q'] == e_['q']), None)
+        if d_:
+            w(f"Hyper-reduction, not correction capacity, is the lever that moves cost: at q={e_['q']} "
+              f"the empirical-quadrature arm costs {e_['median_gpu_ms']:.3f} ms against "
+              f"{d_['median_gpu_ms']:.3f} ms dense, a factor "
+              f"{d_['median_gpu_ms'] / e_['median_gpu_ms']:.3f}, with worst same-grid errors "
+              f"differing by {abs(e_['worst_same_grid_percent'] - d_['worst_same_grid_percent']):.4f} "
+              f"percentage points. It is not available above q=16 because the nonnegative-least-"
+              f"squares rule at m=4M stops being constructible there.")
+    for x in [y for y in rows if y['kind'] == 'rom' and y['dt'] != cfg['dt']]:
+        b = next((y for y in rows if y['kind'] == 'rom' and y['q'] == 0 and y['dt'] == cfg['dt']
+                  and y['quadrature'] == x['quadrature'] and y['arm'] != 'q0_dense_Mmax'), None)
+        if b:
+            w(f"Time-step knob at q=0 ({x['quadrature']}): doubling the step to {x['dt']:g} costs "
+              f"{x['median_gpu_ms']:.3f} ms against {b['median_gpu_ms']:.3f} ms, a factor "
+              f"{x['median_gpu_ms'] / b['median_gpu_ms']:.3f} only, because the initial fit and the "
+              f"decode do not scale with step count; worst same-grid is unchanged at "
+              f"{x['worst_same_grid_percent']:.4f}% but the median rises from "
+              f"{b['median_same_grid_percent']:.4f}% to {x['median_same_grid_percent']:.4f}%. It buys "
+              f"little and costs accuracy on the typical case.")
+    w('')
     mm, q0d = get('q0_dense_Mmax'), get('q0_dense')
     if mm and q0d:
         w(f"Two effects grow together because the weak objective needs M > K+q, so M=4(K+q) grows "

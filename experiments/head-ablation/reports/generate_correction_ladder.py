@@ -21,7 +21,19 @@ def yn(x):
     return {True: 'yes', False: 'no', None: '—'}[x]
 
 
+def require_same_grid(rows):
+    """The same-grid discrepancy is the primary metric; without it there is no report.
+
+    It is only populated when the audit is run with --fields, so fail here with the
+    fix rather than deep inside matplotlib or a monotonicity comparison.
+    """
+    missing = [x['arm'] for x in rows if x.get('worst_same_grid_percent') is None]
+    assert not missing, ('same-grid errors missing for ' + ', '.join(missing)
+                         + '; rerun audit_ladder.py with --fields <output directory>')
+
+
 def figure(rows, cfg, out_png, out_pdf):
+    require_same_grid(rows)
     ladder = sorted([x for x in rows if x['kind'] == 'rom' and x['quadrature'] == 'dense'
                      and x['dt'] == cfg['dt'] and x['arm'] != 'q0_dense_Mmax'],
                     key=lambda x: x['q'])

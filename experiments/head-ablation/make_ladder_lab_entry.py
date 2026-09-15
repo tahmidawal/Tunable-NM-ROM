@@ -22,6 +22,9 @@ def main():
     au = json.loads(Path(a.audit).read_text())
     sm = json.loads(Path(a.smoke).read_text())
     rows = au['checks']['arm_table']
+    missing = [x['arm'] for x in rows if x.get('worst_same_grid_percent') is None]
+    assert not missing, ('same-grid errors missing for ' + ', '.join(missing)
+                         + '; rerun audit_ladder.py with --fields <output directory>')
     cfg = r['config']
     get = lambda n: next((x for x in rows if x['arm'] == n), None)
     ladder = sorted([x for x in rows if x['kind'] == 'rom' and x['quadrature'] == 'dense'

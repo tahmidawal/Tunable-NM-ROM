@@ -1,0 +1,26 @@
+{
+  "attempt": "qlad01",
+  "intervals": 256,
+  "dt": 0.005, "dt_alt": 0.01,
+  "eval_seed": 7090702, "eval_cases": 4,
+  "eval_fresh_seed": 911702, "eval_fresh_cases": 2,
+  "reference_mesh": 4096, "reference_dt": 0.0003125,
+  "train_seed": 0, "train_trajectories": 128, "train_state_stride": 2,
+  "snapshot_ntol": 1e-09, "snapshot_ltol": 1e-07,
+  "residual_snapshots": 1024, "residual_starts": 4, "residual_budget": 200,
+  "residual_seed": 20260915,
+  "decoder_code_subsample": 8192,
+  "q_ladder": [0, 16, 64, 128, 256, 512],
+  "eq_q": [0, 16],
+  "test_multiplier": 4, "quadrature_multiplier": 4,
+  "gauss_jordan_max": 64,
+  "eq_seed": 20259, "candidate_cap": 8192, "fit_states": 64,
+  "cold_axis_points": 48,
+  "strict": {"ic_budget": 400, "step_budget": 180, "gtol": 1e-06},
+  "recon_starts": 8, "recon_budget": 400,
+  "reps": 3, "order_seed": 911713, "burn_seconds": 0.25,
+  "fom_settings": [
+    {"name": "fft_tight", "preconditioner": "fft", "ntol": 1e-06, "ltol": 1e-08},
+    {"name": "nt1e-2", "preconditioner": "fft", "ntol": 0.01, "ltol": 0.5}
+  ]
+}

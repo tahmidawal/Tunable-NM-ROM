@@ -107,7 +107,13 @@ def main():
     save(dict(phase='monitoring',job_id=JOB,pid=os.getpid(),remote=REMOTE,maximum_monitor_hours=12))
     while time.monotonic()-started<12*3600:
         try:
-            queued=ssh(f'squeue -u tawal01 -j {JOB} -h -o "%i %j %T"',timeout=45).strip()
+            # Slurm returns exit 1 for an expired explicit job selector. Query
+            # the account queue successfully, then select only our exact ID.
+            queue=ssh('squeue -u tawal01 -h -o "%i %j %T"',timeout=45)
+            matches=[line.strip() for line in queue.splitlines()
+                     if line.split() and line.split()[0]==JOB]
+            assert len(matches)<=1
+            queued=matches[0] if matches else ''
             if queued:
                 parts=queued.split();assert parts[0]==JOB and parts[1]=='ctol_nob_refinement02'
                 if queued!=last:print(queued,flush=True);last=queued

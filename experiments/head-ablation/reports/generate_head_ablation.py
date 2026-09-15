@@ -94,9 +94,10 @@ def burgers_section(w, r, au, sm):
           f"{snap['max_relative_residual']:.3e}. Over those snapshots the frozen bank's own "
           f"root-mean-square projection floor is {snap['bank_projection_relative_rms'] * 100:.6f}%.")
         w('')
-        w('| arm | $K$ | quad. | $M$ | $m$ | bank proj. % | best-found % | worst rollout % | '
-          'median rollout % | median iters/step | median GPU ms | median host ms | stationary | completed |')
-        w('|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|')
+        w('| arm | $K$ | quad. | $M$ | $m$ | bank proj. % | best-found % | worst same-grid % | '
+          'worst rollout % | median rollout % | median iters/step | median GPU ms | median host ms | '
+          'stationary | completed |')
+        w('|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|')
         for x in order_rows([y for y in sel if y['kind'] == 'rom']) + [y for y in sel if y['kind'] == 'fom']:
             s = setup.get((L, x['arm']), {})
             w('| ' + ' | '.join([
@@ -104,11 +105,37 @@ def burgers_section(w, r, au, sm):
                 str(x['k']) if x['k'] else '—', x['quadrature'] or '—',
                 str(s.get('M', '—')), str(s.get('m') or '—'),
                 fmt(x['worst_bank_projection_percent'], 6), fmt(x['worst_best_found_percent'], 6),
+                fmt(x.get('worst_same_grid_percent'), 6),
                 fmt(x['worst_rollout_percent'], 6), fmt(x['median_rollout_percent'], 6),
                 fmt(x['median_iterations'], 1), fmt(x['median_gpu_ms'], 3), fmt(x['median_host_ms'], 3),
                 yn(x['all_stationary']), yn(x['all_completed'])]) + ' |')
         w('')
+        tight = next((x for x in sel if x['arm'] == 'fft_tight'), None)
+        if tight:
+            w(f"The same-job full-order model at this mesh already carries "
+              f"{tight['worst_rollout_percent']:.6f}% worst and {tight['median_rollout_percent']:.6f}% "
+              f"median error against the refined reference, because the reference metric contains the "
+              f"discretization error of this mesh as well as the reduction error. Wherever an arm's "
+              f"rollout error approaches that value the column is saturated and cannot separate arms; "
+              f"the same-grid column, which measures each arm against the converged full-order solve on "
+              f"its own mesh, is the discriminator there.")
+            w('')
         pods = sorted([x for x in sel if x['arm'].startswith('e_pod')], key=lambda x: x['k'])
+        pod_sg = [x for x in pods if x.get('worst_same_grid_percent') is not None
+                  and neural.get('worst_same_grid_percent') is not None
+                  and x['worst_same_grid_percent'] <= neural['worst_same_grid_percent']]
+        if pod_sg:
+            b = pod_sg[0]
+            w(f"**On the same-grid metric, the smallest POD rank matching the neural head is "
+              f"$k'={b['k']}$** (${b['k'] / K:g}\times$ $K={K}$): worst same-grid discrepancy "
+              f"{b['worst_same_grid_percent']:.6f}% against {neural['worst_same_grid_percent']:.6f}%, at "
+              f"{b['median_gpu_ms']:.3f} ms against {neural['median_gpu_ms']:.3f} ms median GPU time.")
+        elif pods and pods[-1].get('worst_same_grid_percent') is not None:
+            t = pods[-1]
+            w(f"**On the same-grid metric no tested POD rank up to $k'={t['k']}$ "
+              f"(${t['k'] / K:g}\times$ $K={K}$) matches the neural head**: the largest rung reaches "
+              f"{t['worst_same_grid_percent']:.6f}% against {neural['worst_same_grid_percent']:.6f}%.")
+        w('')
         match = [x for x in pods if x['worst_rollout_percent'] <= neural['worst_rollout_percent']]
         if match:
             b = match[0]
@@ -179,15 +206,16 @@ def poisson_section(w, r, au, sm):
           f"family. The frozen bank's own root-mean-square projection floor over them is "
           f"{snap['bank_projection_relative_rms'] * 100:.6f}%.")
         w('')
-        w('| arm | $K$ | $M$ | bank proj. % | best-found % | worst error % | median error % | '
-          'median iters | median query ms | max stationarity | stop reasons |')
-        w('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|')
+        w('| arm | $K$ | $M$ | bank proj. % | best-found % | worst same-grid % | worst error % | '
+          'median error % | median iters | median query ms | max stationarity | stop reasons |')
+        w('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|')
         for x in order_rows([y for y in sel if y['kind'] in ('rom', 'retained')]) \
                 + [y for y in sel if y['kind'] == 'fom']:
             w('| ' + ' | '.join([
                 label(x['arm'], False) if x['kind'] != 'fom' else f"FOM `{x['arm']}` (context only)",
                 str(x['k']) if x['k'] else '—', str(x['M'] or '—'),
                 fmt(x['worst_bank_projection_percent'], 6), fmt(x['worst_best_found_percent'], 6),
+                fmt(x.get('worst_same_grid_percent'), 6),
                 fmt(x['worst_error_percent'], 6), fmt(x['median_error_percent'], 6),
                 fmt(x['median_iterations'], 1), fmt(x['median_query_ms'], 3),
                 ('—' if x['max_stationarity'] is None else f"{x['max_stationarity']:.2e}"),

@@ -78,13 +78,38 @@ def main():
 
     if a.fields:
         d = Path(a.fields)
-        bad = []
-        for x in inv:
-            f = d / x['artifact']
-            if not f.exists():
-                bad.append(x['artifact'])
-                continue
+        bad = [x['artifact'] for x in inv if not (d / x['artifact']).exists()]
         gate('artifacts_present', not bad, bad[:5])
+        if not bad:
+            largest = r['reference'][0]['downsampled_to']
+            refs = {e['case']: np.load(d / e['artifact'])['fields'] for e in r['reference']}
+            base = {(x['intervals'], x['case']): x['artifact'] for x in inv if x['name'] == 'fft_tight'}
+            cache = {}
+
+            def fields_of(name):
+                if name not in cache:
+                    cache[name] = np.load(d / name)['fields']
+                return cache[name]
+
+            worst_recompute = 0.
+            for x in inv:
+                L = x['intervals']
+                st = largest // L
+                truth = refs[x['case']][:, ::st, ::st]
+                f = fields_of(x['artifact'])
+                n0 = np.linalg.norm(truth[0])
+                err = float(np.max(np.linalg.norm((f - truth).reshape(len(f), -1), axis=1)) / n0)
+                worst_recompute = max(worst_recompute,
+                                      abs(err - x['error']['fixed_initial_max'])
+                                      / max(x['error']['fixed_initial_max'], 1e-300))
+                # The same-grid discrepancy separates reduction error from the
+                # discretization error the reference metric also contains.
+                b = base.get((L, x['case']))
+                if b is not None:
+                    g = fields_of(b)
+                    x['same_grid_max'] = float(
+                        np.max(np.linalg.norm((f - g).reshape(len(f), -1), axis=1)) / n0)
+            gate('recorded_errors_recomputed_from_saved_fields', worst_recompute < 1e-9, worst_recompute)
 
     # ---------------------------------------------------- per-arm aggregates
     table = {}
@@ -97,6 +122,8 @@ def main():
         t['gpu_ms'].append(x['gpu_seconds'] * 1e3)
         t['host_ms'].append(x['host_seconds'] * 1e3)
         t['case_error'][x['case']] = x['error']['fixed_initial_max']
+        if 'same_grid_max' in x:
+            t.setdefault('case_same_grid', {})[x['case']] = x['same_grid_max']
         t['iterations'] += x['iterations']
         if x['kind'] == 'rom':
             t['stationary'].append(x['stationary'])
@@ -107,10 +134,14 @@ def main():
     for key, t in sorted(table.items()):
         errs = np.array([t['case_error'][c] for c in sorted(t['case_error'])])
         rc = recon.get(key)
+        sg = t.get('case_same_grid')
+        sgv = np.array([sg[c] for c in sorted(sg)]) if sg else None
         rows.append(dict(intervals=t['intervals'], arm=t['arm'], kind=t['kind'], k=t['k'],
                          quadrature=t['quadrature'], family=t['family'],
                          worst_rollout_percent=float(np.max(errs) * 100),
                          median_rollout_percent=float(np.median(errs) * 100),
+                         worst_same_grid_percent=(float(np.max(sgv) * 100) if sgv is not None else None),
+                         median_same_grid_percent=(float(np.median(sgv) * 100) if sgv is not None else None),
                          worst_bank_projection_percent=(float(rc['worst_bank_projection'] * 100) if rc else None),
                          worst_best_found_percent=(float(rc['worst_best_found'] * 100) if rc else None),
                          median_gpu_ms=median(t['gpu_ms']), median_host_ms=median(t['host_ms']),

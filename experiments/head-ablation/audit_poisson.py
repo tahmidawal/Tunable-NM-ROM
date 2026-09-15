@@ -15,6 +15,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('result')
     p.add_argument('--out', required=True)
+    p.add_argument('--fields', default=None, help='directory holding the saved output .npz files')
     a = p.parse_args()
     r = json.loads(Path(a.result).read_text())
     checks, fail = {}, []
@@ -59,6 +60,27 @@ def main():
          sorted({x['name'] for x in inv if x['kind'] == 'rom'
                  and x['stationarity'] > r['config']['stationarity_tolerance'] * (1 + 1e-7)}))
 
+    if a.fields:
+        d = Path(a.fields)
+        bad = [x['artifact'] for x in inv if not (d / x['artifact']).exists()]
+        gate('artifacts_present', not bad, bad[:5])
+        if not bad:
+            cache = {}
+
+            def field_of(name):
+                if name not in cache:
+                    cache[name] = np.load(d / name)['field']
+                return cache[name]
+
+            base = {(x['intervals'], x['case']): x['artifact'] for x in inv if x['name'] == 'dst_direct'}
+            for x in inv:
+                b = base.get((x['intervals'], x['case']))
+                if b is not None:
+                    f, g = field_of(x['artifact']), field_of(b)
+                    # The direct transform solve IS the exact discrete solution on this
+                    # mesh, so this isolates reduction error from discretization error.
+                    x['same_grid_error'] = float(np.linalg.norm(f - g) / max(np.linalg.norm(g), 1e-300))
+
     table = {}
     for x in inv:
         key = (x['intervals'], x['name'])
@@ -67,6 +89,8 @@ def main():
                                        iterations=[], stationarity=[], reasons=[]))
         t['ms'].append(x['total_seconds'] * 1e3)
         t['case_error'][x['case']] = x['physical_error']
+        if 'same_grid_error' in x:
+            t.setdefault('case_same_grid', {})[x['case']] = x['same_grid_error']
         if x['kind'] == 'rom':
             t['iterations'].append(x['iterations'])
             t['stationarity'].append(x['stationarity'])
@@ -80,10 +104,14 @@ def main():
     for key, t in sorted(table.items()):
         errs = np.array([t['case_error'][c] for c in sorted(t['case_error'])])
         rc = recon.get(key)
+        sg = t.get('case_same_grid')
+        sgv = np.array([sg[c] for c in sorted(sg)]) if sg else None
         rows.append(dict(intervals=t['intervals'], arm=t['arm'], kind=t['kind'], k=t['k'],
                          family=t['family'],
                          worst_error_percent=float(np.max(errs) * 100),
                          median_error_percent=float(np.median(errs) * 100),
+                         worst_same_grid_percent=(float(np.max(sgv) * 100) if sgv is not None else None),
+                         median_same_grid_percent=(float(np.median(sgv) * 100) if sgv is not None else None),
                          worst_bank_projection_percent=(float(rc['worst_bank_projection'] * 100) if rc else None),
                          worst_best_found_percent=(float(rc['worst_best_found'] * 100) if rc else None),
                          median_query_ms=median(t['ms']), query_repetitions=len(t['ms']),

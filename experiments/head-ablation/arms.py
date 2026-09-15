@@ -43,12 +43,17 @@ class CoordBank:
     def __init__(self, params, K, R):
         self.params, self.K, self.R = params, int(K), int(R)
         self.dim = int(R)
+        self._grid = {}
 
     def at(self, xy, chunk=8192):
         return sc.SeparableDecoder(self.params, self.K, self.R).feat_at(np.asarray(xy), chunk=chunk)
 
     def on_grid(self, L):
-        return self.at(e.coords(L))
+        # Memoized: every arm sharing this bank must share the identical array,
+        # both for provenance and to avoid holding several copies on the device.
+        if L not in self._grid:
+            self._grid[L] = self.at(e.coords(L))
+        return self._grid[L]
 
     def stencil(self, ij, L):
         off = np.array([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]])
@@ -347,7 +352,11 @@ def make_query(head, K, L, dt, trust, quadrature, ic_budget=400, step_budget=180
         internal = jnp.concatenate((z[None], zs))
         Z = internal[::int(round(.05 / dt))]
         fields = jax.vmap(lambda z: e.output_field(data['G'] @ head(z), L, L))(Z)
-        return fields, it, rn, reason, Z, icit, icreason, internal, gn, icgn
+        # icrn and ||ui|| are returned because the normalized-gradient stationarity
+        # test is uninformative for arms whose reduced fit is attainable: there the
+        # residual goes to round-off while ||J^T r||/(||J|| ||r||) stays O(1).
+        return (fields, it, rn, reason, Z, icit, icreason, internal, gn, icgn,
+                icrn, jnp.linalg.norm(ui))
     return jax.jit(query)
 
 

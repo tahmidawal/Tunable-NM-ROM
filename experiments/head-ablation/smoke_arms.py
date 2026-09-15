@@ -96,7 +96,6 @@ def main():
     Hdec = A.sc.head(params, Zsub)
     Ut = jnp.asarray(U.T)
     coef = jnp.linalg.solve(Rb, Qb.T @ Ut).T
-    V, eig, energy = A.__dict__ and None, None, None
     gram = Ut.T @ Ut
     w, W = jnp.linalg.eigh(gram)
     w, W = w[::-1], W[:, ::-1]
@@ -129,11 +128,14 @@ def main():
         cases.append(dict(arm=name, k=k, M=M, m=m, quadrature=quad_kind, linear_solve=linear,
                           eq_relative_fit=i['eq_relative_fit'], seconds=time.perf_counter() - t0,
                           max_step_stationarity=float(np.max(v[8])), initial_stationarity=float(v[9]),
+                          ic_relative_residual=float(v[10]) / float(v[11]),
+                          stop_reasons=sorted(set(v[3].tolist())), ic_reason=int(v[6]),
                           max_iterations=int(np.max(v[1])), field_norm=float(np.linalg.norm(f))))
         print('PART2', name, 'ok', round(time.perf_counter() - t0, 2), flush=True)
     out['arms'] = cases
-    print(json.dumps(out, indent=2), flush=True)
-    Path(sys.argv[1]).write_text(json.dumps(out, indent=2) + '\n') if len(sys.argv) > 1 else None
+    if len(sys.argv) > 1:
+        Path(sys.argv[1]).parent.mkdir(parents=True, exist_ok=True)
+        Path(sys.argv[1]).write_text(json.dumps(out, indent=2) + '\n')
     print('SMOKE OK', flush=True)
 
 

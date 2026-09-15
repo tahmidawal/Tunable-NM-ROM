@@ -1,0 +1,132 @@
+{
+  "generic_vs_saved_case": {
+    "relative_l2": 1.632764040260342e-14,
+    "latent_relative_l2": 9.537503681385876e-13,
+    "max_step_stationarity": 9.011580874559435e-07,
+    "initial_stationarity": 5.646616176204972e-07,
+    "tolerance": 1e-08
+  },
+  "generic_vs_incumbent": 0.0,
+  "fits": {
+    "linear": 0.1519203764178331,
+    "quadratic": 0.09250015634078221,
+    "quadratic_ridge": 0.0001
+  },
+  "arms": [
+    {
+      "arm": "b_linear",
+      "k": 16,
+      "M": 64,
+      "m": 256,
+      "quadrature": "eq",
+      "linear_solve": "gj",
+      "eq_relative_fit": 0.00020437483422839936,
+      "seconds": 49.342181834043004,
+      "max_step_stationarity": 2.077576419218466e-08,
+      "initial_stationarity": 7.452341392456467e-07,
+      "ic_relative_residual": 0.0625773745579036,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "max_iterations": 12,
+      "field_norm": 23.172329696230925
+    },
+    {
+      "arm": "c_quad",
+      "k": 16,
+      "M": 64,
+      "m": 256,
+      "quadrature": "eq",
+      "linear_solve": "gj",
+      "eq_relative_fit": 0.0002683182142437733,
+      "seconds": 20.80656131997239,
+      "max_step_stationarity": 9.472610884884328e-07,
+      "initial_stationarity": 2.2965960328661752e-07,
+      "ic_relative_residual": 0.03838467680344682,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "max_iterations": 10,
+      "field_norm": 23.206795129432972
+    },
+    {
+      "arm": "c_quad_dense",
+      "k": 16,
+      "M": 64,
+      "m": null,
+      "quadrature": "dense",
+      "linear_solve": "gj",
+      "eq_relative_fit": null,
+      "seconds": 4.293885897030123,
+      "max_step_stationarity": 8.91024021471104e-07,
+      "initial_stationarity": 2.2965960328661752e-07,
+      "ic_relative_residual": 0.03838467680344682,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "max_iterations": 10,
+      "field_norm": 23.197920134829136
+    },
+    {
+      "arm": "e_pod8",
+      "k": 8,
+      "M": 32,
+      "m": 128,
+      "quadrature": "eq",
+      "linear_solve": "gj",
+      "eq_relative_fit": 0.0001642998251191247,
+      "seconds": 6.7475056310067885,
+      "max_step_stationarity": 1.0473598105003252e-07,
+      "initial_stationarity": 0.0,
+      "ic_relative_residual": 0.0,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "max_iterations": 12,
+      "field_norm": 23.05080404585501
+    },
+    {
+      "arm": "e_pod8_dense",
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "linear_solve": "gj",
+      "eq_relative_fit": null,
+      "seconds": 2.2083986889920197,
+      "max_step_stationarity": 1.0452534470009822e-07,
+      "initial_stationarity": 0.0,
+      "ic_relative_residual": 0.0,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "max_iterations": 12,
+      "field_norm": 23.051953753194333
+    },
+    {
+      "arm": "d_freebank",
+      "k": 512,
+      "M": 768,
+      "m": null,
+      "quadrature": "dense",
+      "linear_solve": "lu",
+      "eq_relative_fit": null,
+      "seconds": 18.166536547010764,
+      "max_step_stationarity": 5.882346264263588e-05,
+      "initial_stationarity": 0.13002590324856694,
+      "ic_relative_residual": 7.703775907444164e-16,
+      "stop_reasons": [
+        0,
+        4
+      ],
+      "ic_reason": 2,
+      "max_iterations": 60,
+      "field_norm": 23.20332903580234
+    }
+  ]
+}

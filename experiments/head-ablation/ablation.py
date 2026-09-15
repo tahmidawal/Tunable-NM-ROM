@@ -242,10 +242,13 @@ def main():
             report['declared_subjects'].append(dict(intervals=L, method='fom', dt=dt, **fs))
 
         # ------------------------------------------------- untimed diagnostics
+        whitened = {}
         for b in built:
             s = b['spec']
             B = b['data']['G']
-            Bq, Br = A.whiten(B)
+            if id(B) not in whitened:
+                whitened[id(B)] = A.whiten(B)
+            Bq, Br = whitened[id(B)]
             hp_cols = None
             if s['linear_manifold']:
                 if s['family'] == 'linear':
@@ -348,12 +351,24 @@ def main():
                                residuals=v[2].tolist(), finite=True)
                     if sub['kind'] == 'rom':
                         b = built[sub['index']]
+                        reasons = v[3].tolist()
                         row.update(k=b['k'], M=b['M'], m=b['m'], quadrature=b['quadrature'],
                                    family=b['spec']['family'], linear_solve=b['linear_solve'],
-                                   stop_reasons=v[3].tolist(), ic_iterations=int(v[5]), ic_reason=int(v[6]),
+                                   stop_reasons=reasons, ic_iterations=int(v[5]), ic_reason=int(v[6]),
                                    step_stationarity=v[8].tolist(), ic_stationarity=float(v[9]),
+                                   ic_residual=float(v[10]), ic_input_norm=float(v[11]),
+                                   ic_relative_residual=float(v[10]) / max(float(v[11]), 1e-300),
+                                   budget_exits=int(sum(1 for r in reasons if r == 0)),
+                                   rejected_exits=int(sum(1 for r in reasons if r == 3)),
+                                   ic_budget_exit=bool(int(v[6]) in (0, 3)),
+                                   # Two separate, both reported, statuses: the campaign's
+                                   # normalized-gradient stationarity, and simple completion
+                                   # under the shared stopping rule without a budget or
+                                   # rejection exit.
                                    stationary=bool(max(float(np.max(v[8])), float(v[9]))
-                                                   <= strict['gtol'] * (1 + 1e-7)))
+                                                   <= strict['gtol'] * (1 + 1e-7)),
+                                   completed=bool(all(r in (1, 2, 4) for r in reasons)
+                                                  and int(v[6]) in (1, 2, 4)))
                     else:
                         row.update(nonlinear_converged=bool(np.max(v[2]) <= sub['setting']['ntol'] * (1 + 1e-9)))
                     report['invocations'].append(row)

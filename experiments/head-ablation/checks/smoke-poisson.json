@@ -1,0 +1,93 @@
+{
+  "K": 16,
+  "R": 128,
+  "intervals": 32,
+  "retained_modes": 256,
+  "retained_bank_rank": 128,
+  "fits": {
+    "linear_decoder": 0.06535419455632303,
+    "linear_truth": 0.047238170729194916,
+    "quadratic_heldout": 0.053251474470658054,
+    "quadratic_ridge": 0.01
+  },
+  "arms": [
+    {
+      "arm": "a_neural",
+      "k": 16,
+      "linear_solve": "gj",
+      "seconds": 3.2474356020102277,
+      "physical_error": 0.03833836572502383,
+      "iterations": 11,
+      "reason": 4,
+      "stationarity": 5.880261716103719e-07,
+      "relative_residual": 0.039397275275848374
+    },
+    {
+      "arm": "b_linear_dec",
+      "k": 16,
+      "linear_solve": "gj",
+      "seconds": 1.4180143790435977,
+      "physical_error": 0.15056551628468534,
+      "iterations": 1,
+      "reason": 4,
+      "stationarity": 1.83198931079639e-07,
+      "relative_residual": 0.15393670078690155
+    },
+    {
+      "arm": "b_linear_truth",
+      "k": 16,
+      "linear_solve": "gj",
+      "seconds": 2.1577329380088486,
+      "physical_error": 0.12246644145611507,
+      "iterations": 1,
+      "reason": 4,
+      "stationarity": 5.808936225961973e-07,
+      "relative_residual": 0.1256251091729353
+    },
+    {
+      "arm": "c_quad_dec",
+      "k": 16,
+      "linear_solve": "gj",
+      "seconds": 3.205975548014976,
+      "physical_error": 0.12937771418930444,
+      "iterations": 4,
+      "reason": 4,
+      "stationarity": 9.60419414803156e-08,
+      "relative_residual": 0.1325452744156812
+    },
+    {
+      "arm": "e_pod16",
+      "k": 16,
+      "linear_solve": "gj",
+      "seconds": 0.7848757019964978,
+      "physical_error": 0.12240901261543646,
+      "iterations": 1,
+      "reason": 4,
+      "stationarity": 5.814466993352702e-07,
+      "relative_residual": 0.1256534921609653
+    },
+    {
+      "arm": "d_freebank",
+      "k": 128,
+      "linear_solve": "lu",
+      "seconds": 2.315037479973398,
+      "physical_error": 0.012310607511437878,
+      "iterations": 2,
+      "reason": 4,
+      "stationarity": 2.423856037230798e-08,
+      "relative_residual": 0.010028175800016548
+    }
+  ],
+  "generic_vs_incumbent_neural": {
+    "relative": 9.583653608630179e-07,
+    "incumbent_stationarity": 1.3815970134382561e-08,
+    "incumbent_reason": 1,
+    "tolerance": 1e-06
+  },
+  "retained_q32": {
+    "physical_error": 0.028659311607182512,
+    "solver_valid": true,
+    "stationarity": 2.4293941779441296e-07,
+    "correction_count": 32
+  }
+}

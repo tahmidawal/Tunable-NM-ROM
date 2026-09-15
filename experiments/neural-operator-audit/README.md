@@ -36,6 +36,60 @@ the known analytic family. It does not establish arbitrary sampled-field operato
 generalization. Later nested dataset sizes, resolution transfer, repeated seeds,
 TFNO, expanded families and sealed final tests follow model selection.
 
+## Burgers common-data baseline
+
+`fno_burgers01` trains the same FNO family on the Burgers common dataset produced
+and verified by the Burgers lane, so the ROM, the FNO and the efficient FOM can
+later be compared on the same held-out cases.
+
+The input is the sampled initial nodal field, the viscosity and the coordinate
+channels. Generation descriptors, case identifiers and solver-audit sidecars are
+offline metadata and never enter the model.
+
+**Time dependence is a direct multi-time output, not autoregressive rollout.**
+One forward pass maps the supplied state to all five evolved fields as separate
+output channels, and the supplied initial state is returned exactly, so the query
+produces the complete six-time trajectory with no error-accumulating stepping and
+no intermediate state feedback. The cost is that the output time set is fixed by
+training; this design cannot be queried at an unseen time or continued past the
+last trained time. Because there is no rollout, there is no rollout error growth
+to report; per-time errors are still retained so any growth across the requested
+times is visible.
+
+Accuracy uses the Burgers lane's own physical metric: the maximum over the six
+requested output times of the interior field discrepancy divided by the interior
+norm of the supplied initial field. `check_burgers_error_definition.py` imports
+that lane's `fixed_initial_errors` by path and proves the two implementations
+agree on contract-valid fields; `checks/burgers-error-definition.json` records
+the proof and the imported source hash.
+
+`configs/burgers/` fixes an equal 200-epoch budget for the small, medium and
+large capacities so the capacity comparison is not confounded by epoch count;
+each still carries a wall-clock cap, and truncation is recorded per run.
+`worker_burgers.py` then selects the best capacity by validation mean
+case-maximum error and repeats it at a lower learning rate, if the remaining
+budget allows, before running the timing block.
+
+**Training is deliberately not resumable.** Each training run is bounded inside
+one allocation by its own wall budget and by a global deadline that always
+reserves time for timing. An interrupted run is reported as truncated at its
+recorded epoch; it is never described as resumed.
+
+`timing.py` measures the complete query from the supplied initial field already
+resident on the GPU to the complete trajectory resident on the GPU, with a
+dedicated GPU burn-in before every timed block, synchronisation around every
+repetition, host transfer timed as a separate block, and every repetition
+retained in `timing.npz`. Its module docstring is the protocol of record for the
+later interleaved ROM/FNO/FOM confirmation job. Timings from different jobs are
+never divided by one another.
+
+`collect_burgers.py` is the bounded local monitor for that job. It recomputes
+every validation error independently with NumPy, re-derives the timing medians
+from the retained repetition arrays, checks that the supplied initial state is
+returned bitwise, verifies checkpoint hashes, preserves the archive as Git
+parts, and only then removes the exact remote job directory. It never touches
+the shared `pilot-data01` cache, which belongs to the Burgers lane.
+
 ## Precision and environment
 
 The runtime uses float64 and complex128. The official NeuralOperator 2.0.0
@@ -107,3 +161,11 @@ remain explicit. A failed collector leaves the remote evidence intact; inspect
 - **Smoke:** a small test of implementation behavior, not a research result.
 - **Hash:** a checksum identifying exact file content.
 - **TFNO:** tensor-factorized FNO, reserved for the later efficient-baseline study.
+- **Fixed-initial error:** field discrepancy divided by the norm of the supplied
+  initial field, the normalisation the Burgers lane uses for every method.
+- **Autoregressive rollout:** predicting each output time by feeding the previous
+  prediction back in; not used here.
+- **Burn-in:** untimed repetitions run before a timed block so the GPU clock has
+  already ramped when measurement starts.
+- **Complete query:** everything charged between the supplied input and the
+  requested output, with nothing precomputed outside the timed region.

@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "agreement_tolerance": 1e-14,
+  "burgers_lane_data_py": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/data.py",
+  "burgers_lane_data_py_sha256": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+  "times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "trials": [
+    {
+      "trial": 0,
+      "mesh": 32,
+      "maximum_absolute_per_time_difference": 1.734723475976807e-18,
+      "case_maximum_difference": 1.734723475976807e-18,
+      "case_maximum": 0.010275803688125824
+    },
+    {
+      "trial": 1,
+      "mesh": 40,
+      "maximum_absolute_per_time_difference": 1.734723475976807e-18,
+      "case_maximum_difference": 0.0,
+      "case_maximum": 0.010077571212212061
+    },
+    {
+      "trial": 2,
+      "mesh": 48,
+      "maximum_absolute_per_time_difference": 3.469446951953614e-18,
+      "case_maximum_difference": 1.734723475976807e-18,
+      "case_maximum": 0.01017386541178383
+    },
+    {
+      "trial": 3,
+      "mesh": 56,
+      "maximum_absolute_per_time_difference": 1.734723475976807e-18,
+      "case_maximum_difference": 1.734723475976807e-18,
+      "case_maximum": 0.01027830920949793
+    },
+    {
+      "trial": 4,
+      "mesh": 64,
+      "maximum_absolute_per_time_difference": 3.469446951953614e-18,
+      "case_maximum_difference": 3.469446951953614e-18,
+      "case_maximum": 0.010199801704799512
+    },
+    {
+      "trial": 5,
+      "mesh": 72,
+      "maximum_absolute_per_time_difference": 3.469446951953614e-18,
+      "case_maximum_difference": 1.734723475976807e-18,
+      "case_maximum": 0.01010124441461786
+    },
+    {
+      "trial": 6,
+      "mesh": 80,
+      "maximum_absolute_per_time_difference": 3.469446951953614e-18,
+      "case_maximum_difference": 1.734723475976807e-18,
+      "case_maximum": 0.010190124958028898
+    },
+    {
+      "trial": 7,
+      "mesh": 88,
+      "maximum_absolute_per_time_difference": 0.0,
+      "case_maximum_difference": 0.0,
+      "case_maximum": 0.01007190701034114
+    }
+  ],
+  "worst_absolute_per_time_difference": 3.469446951953614e-18,
+  "worst_case_maximum_difference": 3.469446951953614e-18,
+  "definition": "maximum over requested output times of the l2 field discrepancy divided by the l2 norm of the supplied initial field (fixed-initial normalisation)",
+  "limitation": "Exact agreement relies on the dataset contract: zero Dirichlet boundaries and target[0] equal to the supplied input. It is not an accuracy result."
+}

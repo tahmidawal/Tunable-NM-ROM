@@ -19,26 +19,32 @@ def burgers_block(r, au):
         neural = next(x for x in sel if x['arm'] == 'a_neural_eq')
         pods = sorted([x for x in sel if x['arm'].startswith('e_pod')], key=lambda x: x['k'])
         match = [x for x in pods if x['worst_rollout_percent'] <= neural['worst_rollout_percent']]
-        line = (f"At {L} intervals the neural head reaches "
-                f"{neural['worst_rollout_percent']:.6f}% worst rollout error with best-found "
-                f"reconstruction {neural['worst_best_found_percent']:.6f}% and median "
-                f"{neural['median_gpu_ms']:.3f} GPU ms.")
-        for name in ('b_linear_dec_eq', 'b_linear_truth_eq', 'c_quad_dec_eq', 'e_pod16_eq',
-                     'd_freebank_dense'):
+        tight = next((y for y in rows if y['intervals'] == L and y['arm'] == 'fft_tight'), None)
+        line = (f"At {L} intervals the same-job converged full-order model already carries "
+                f"{tight['worst_rollout_percent']:.6f}% worst error against the refined reference, so "
+                f"the reference metric is partly discretization error and the same-grid discrepancy is "
+                f"the discriminator. The neural head reaches "
+                f"{neural['worst_same_grid_percent']:.6f}% worst same-grid, "
+                f"{neural['worst_rollout_percent']:.6f}% worst rollout, best-found reconstruction "
+                f"{neural['worst_best_found_percent']:.6f}%, median {neural['median_gpu_ms']:.3f} GPU ms.")
+        for name in ('a_neural_dense', 'b_linear_dec_eq', 'b_linear_truth_eq', 'c_quad_dec_eq',
+                     'e_pod16_eq', 'e_pod128_dense', 'd_freebank_dense'):
             x = next((y for y in sel if y['arm'] == name), None)
             if x:
-                line += (f" {name}: rollout {x['worst_rollout_percent']:.6f}%, best-found "
+                line += (f" {name}: same-grid {x['worst_same_grid_percent']:.6f}%, rollout "
+                         f"{x['worst_rollout_percent']:.6f}%, best-found "
                          f"{x['worst_best_found_percent']:.6f}%, {x['median_gpu_ms']:.3f} ms.")
-        if match:
-            b = match[0]
-            line += (f" Smallest POD rank matching the neural head: {b['k']} "
-                     f"({b['k'] / K:g}x K), {b['worst_rollout_percent']:.6f}% at "
+        sgm = [x for x in pods if x['worst_same_grid_percent'] <= neural['worst_same_grid_percent']]
+        if sgm:
+            b = sgm[0]
+            line += (f" Smallest POD rank matching the neural head on same-grid error: {b['k']} "
+                     f"({b['k'] / K:g}x K), {b['worst_same_grid_percent']:.6f}% at "
                      f"{b['median_gpu_ms']:.3f} ms.")
         else:
             t = pods[-1]
-            line += (f" No POD rank up to {t['k']} ({t['k'] / K:g}x K) matches it; the largest rung "
-                     f"reaches {t['worst_rollout_percent']:.6f}% with best-found "
-                     f"{t['worst_best_found_percent']:.6f}%.")
+            line += (f" No POD rank up to {t['k']} ({t['k'] / K:g}x K) matches it on same-grid error; "
+                     f"the largest rung reaches {t['worst_same_grid_percent']:.6f}% at "
+                     f"{t['median_gpu_ms']:.3f} ms.")
         out.append(line)
     return out
 
@@ -55,7 +61,7 @@ def poisson_block(r, au):
         line = (f"At {n} intervals the pure neural head reaches {neural['worst_error_percent']:.6f}% "
                 f"worst error at {neural['median_query_ms']:.3f} ms.")
         for name in ('a_neural_q32', 'b_linear_dec', 'b_linear_truth', 'c_quad_dec', 'e_pod16',
-                     'd_freebank'):
+                     'e_pod128', 'd_freebank', 'dst_direct'):
             x = next((y for y in sel if y['arm'] == name), None)
             if x:
                 line += (f" {name}: {x['worst_error_percent']:.6f}% at "
@@ -162,7 +168,10 @@ def main():
     w('')
     w(f"Source-generated report: `{a.report}`, with its generator beside it. Raw archives are "
       f"Git-tracked as bounded chunks under `experiments/head-ablation/artifacts/`: {a.archives}. "
-      'Every exact remote attempt directory was removed after checksum collection.')
+      'Every exact remote attempt directory was removed after checksum collection and the namespace '
+      'is empty. These archives are large - roughly 348 MB and 1.2 GB - because they retain every '
+      'dense output field at the finest mesh; the coordinator should weigh that against the already '
+      'heavy repository when staging pushes.')
     w('')
     w('**Not pushed.** The coordinator instructed mid-session that no branch descended from the '
       'consolidated baseline may be pushed from this worktree, because `git pack-objects` repacks a '

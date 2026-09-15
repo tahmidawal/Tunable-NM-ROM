@@ -1,0 +1,26 @@
+{
+  "attempt": "tuning01",
+  "phase": "calibration",
+  "job_id": "3711134",
+  "job_name": "ctol_nob_tuning01",
+  "partition": "gpu",
+  "gpu": "a100-80G",
+  "remote": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/tuning01",
+  "reference": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01/refinement/index.json",
+  "dataset": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01/validation/index.json",
+  "requested_minutes": 165,
+  "driver_seconds": 9300,
+  "source_commit": "db48b7a86ee4f38ea9f79751e730a70c841144d0",
+  "config_sha256": "a624de02b1e169f3902ab767aff18793dd8a12af49f1a0f51a50e20114f8dff7",
+  "queue_before": [
+    "3710846 ctol_noa_fno_b02 RUNNING",
+    "3710790 ctol_noa_fno_b01 RUNNING"
+  ],
+  "queue_after": [
+    "3711134 ctol_nob_tuning01 PENDING",
+    "3710846 ctol_noa_fno_b02 RUNNING",
+    "3710790 ctol_noa_fno_b01 RUNNING"
+  ],
+  "one_job_per_directory": true,
+  "shared_cache_access": "read-only; the pilot-data01 handoff cache is not written to or removed by this job"
+}

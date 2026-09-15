@@ -35,6 +35,9 @@ def main():
             shutil.copy2(source / name, out / name)
     if (source / 'output/result.json').exists():
         shutil.copy2(source / 'output/result.json', out / 'result.json')
+    for extra in ('audit.json',):
+        if (source.parent / extra).exists():
+            shutil.copy2(source.parent / extra, out / extra)
     (out / 'README.md').write_text('''# Full raw head-ablation archive
 
 The ordered chunks preserve the checksum-verified original compressed job archive,

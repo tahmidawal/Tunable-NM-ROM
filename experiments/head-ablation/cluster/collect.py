@@ -16,8 +16,14 @@ def main():
     remote = f'{NAMESPACE}/{a.attempt}'
     out = ROOT / 'experiments/head-ablation/runs' / a.attempt / 'archive'
     out.mkdir(parents=True, exist_ok=False)
-    members = ['experiments', 'COMMIT.txt', 'PROVENANCE.json', 'MANIFEST.sha256', 'run.sbatch',
+    # The Burgers attempt stages a nested `experiments/` tree; the Poisson attempt
+    # stages flat into `code/`, because that cell imports its modules as siblings.
+    members = ['COMMIT.txt', 'PROVENANCE.json', 'MANIFEST.sha256', 'run.sbatch',
                'logs', 'OUTPUTS.sha256', 'output']
+    for extra in ('experiments', 'code'):
+        present = subprocess.run(['ssh', 'tufts-login', f'test -e {shlex.quote(remote + "/" + extra)}'])
+        if present.returncode == 0:
+            members.append(extra)
     cmd = (f'cd {shlex.quote(remote)} && sha256sum -c OUTPUTS.sha256 --quiet && '
            f'sha256sum -c MANIFEST.sha256 --quiet && tar -czf collection.tar.gz '
            + ' '.join(map(shlex.quote, members))

@@ -125,7 +125,11 @@ def build(r, au, sm, figinfo, figname):
       f"worst, and the available rank is {d['available_rank']}, which covers the whole ladder. "
       f"This fit is **offline and one-time**: it cost {d['seconds']:.1f} s of the job and enters no "
       f"query timing, but it is the dominant setup cost and any redesign of the direction rule pays "
-      f"it again. Residual energy captured: "
+      f"it again. Almost all of it is XLA compilation rather than arithmetic - the retained job "
+      f"stderr carries a single slow-operation alarm covering nearly the whole stage - because the "
+      f"fit is a doubly vectorised Levenberg-Marquardt `while_loop` with a forward-mode Jacobian "
+      f"inside. A flatter formulation would remove most of this setup cost without changing a "
+      f"single reported number. Residual energy captured: "
       + ', '.join(f"$q={q}$ {v * 100:.4f}%" for q, v in d['residual_energy_captured'].items()) + '.')
     w('')
     w(f"**Fidelity gate.** Through the corrected-head wrapper at $q=0$, the smoke reproduces the "

@@ -84,6 +84,8 @@ def aggregate(result):
             iterations[key].append(int(np.sum(row['iterations'])))
         elif row.get('iterations') is not None:
             iterations[key].append(int(row['iterations']))
+        elif row.get('attempts') is not None:
+            iterations[key].append(int(row['attempts']))
         if row.get('stationary') is not None:
             stopping[key]['stationary' if row['stationary'] else 'not_stationary'] += 1
         if row.get('nonlinear_tolerance_satisfied') is not None:
@@ -136,6 +138,64 @@ def aggregate(result):
                                      median_iterations=float(np.median(cached_iterations[m])),
                                      stopping=dict(cached_stationary[m])) for m in meshes},
                 setup={str(m): setup[m] for m in meshes})
+
+
+def rom_stopping(result):
+    """Per mesh and per case: iteration counts and how the reduced solver exited."""
+    rows = defaultdict(lambda: defaultdict(lambda: dict(
+        iterations=[], stationary=0, graded=0, reasons=defaultdict(int), worst_gradient=None)))
+    for row in result['invocations']:
+        if row['method'] != 'rom':
+            continue
+        entry = rows[row['intervals']][row['case']]
+        if isinstance(row.get('iterations'), list):
+            entry['iterations'].append(int(np.sum(row['iterations'])))
+        elif row.get('iterations') is not None:
+            entry['iterations'].append(int(row['iterations']))
+        elif row.get('attempts') is not None:
+            # The Poisson reduced solver counts accepted-plus-rejected attempts
+            # rather than a per-step iteration vector.
+            entry['iterations'].append(int(row['attempts']))
+        if row.get('stationary') is not None:
+            entry['graded'] += 1
+            entry['stationary'] += int(bool(row['stationary']))
+        for key in ('stop_reasons', 'reason'):
+            value = row.get(key)
+            if isinstance(value, list):
+                for item in value:
+                    entry['reasons'][int(item)] += 1
+            elif value is not None:
+                entry['reasons'][int(value)] += 1
+        gradient = row.get('step_normalized_stationarity')
+        if gradient is not None:
+            worst = max(float(np.max(gradient)), float(row.get('ic_normalized_stationarity', 0.0)))
+            entry['worst_gradient'] = worst if entry['worst_gradient'] is None else max(
+                entry['worst_gradient'], worst)
+    native = defaultdict(dict)
+    for row in result.get('native_rows', []):
+        native[row['intervals']][row['case']] = row
+    return rows, native
+
+
+def rom_stopping_table(result, summary):
+    rows, native = rom_stopping(result)
+    lines = ['| Intervals | Case | Median total iterations | Stationary / graded | '
+             'Worst normalized gradient | Exit reasons (count) |',
+             '| --- | --- | --- | --- | --- | --- |']
+    for mesh in summary['meshes']:
+        for case in sorted(rows[mesh]):
+            entry = rows[mesh][case]
+            gradient = entry['worst_gradient']
+            if gradient is None and case in native.get(mesh, {}):
+                gradient = native[mesh][case]['stationarity']
+            graded = f'{entry["stationary"]}/{entry["graded"]}' if entry['graded'] else (
+                f'{int(native[mesh][case]["stationary"])}/1 (native row)'
+                if case in native.get(mesh, {}) else '—')
+            reasons = ', '.join(f'{k}: {v}' for k, v in sorted(entry['reasons'].items())) or '—'
+            iterations = f'{np.median(entry["iterations"]):.0f}' if entry['iterations'] else '—'
+            lines.append(f'| {mesh} | {case} | {iterations} | {graded} | '
+                         f'{"—" if gradient is None else f"{gradient:.3e}"} | {reasons} |')
+    return '\n'.join(lines)
 
 
 def rom_name(result):
@@ -362,6 +422,7 @@ def main():
 
     summaries = {}
     provenance = {}
+    stopping_tables = {}
     for label, attempt in (('Burgers 2D', args.burgers), ('Poisson 2D', args.poisson)):
         result, path = load(attempt)
         summary = aggregate(result)
@@ -372,6 +433,7 @@ def main():
         summary['flatness_complete'] = flatness(summary, 'complete')
         summary['crossover'] = crossover(summary)
         summaries[label] = summary
+        stopping_tables[label] = rom_stopping_table(result, summary)
         provenance[label] = dict(
             attempt=attempt, source=str(path.relative_to(ROOT)), job_id=result.get('job_id'),
             commit=result.get('commit'), gpu=result.get('gpu'), node=result.get('slurm_node'),
@@ -399,15 +461,15 @@ def main():
     out.with_suffix('.json').write_text(json.dumps(data, indent=2) + '\n')
     figure(summaries, out.with_suffix('.png'), out.with_suffix('.pdf'))
 
-    text = [render(summaries, provenance)]
+    text = [render(summaries, provenance, stopping_tables)]
     out.write_text('\n'.join(text))
     print(f'wrote {out}, {out.with_suffix(".json")}, {out.with_suffix(".png")}, {out.with_suffix(".pdf")}')
 
 
-def render(summaries, provenance):
+def render(summaries, provenance, stopping_tables):
     from report_text import document
     return document(summaries, provenance, cost_table, subject_table, efficient_fom,
-                    setup_total, percent, milliseconds, TARGET)
+                    setup_total, percent, milliseconds, TARGET, stopping_tables)
 
 
 if __name__ == '__main__':

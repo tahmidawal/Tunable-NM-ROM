@@ -33,7 +33,7 @@ def _crossover_sentence(label, summary):
 
 
 def document(summaries, provenance, cost_table, subject_table, efficient_fom,
-             setup_total, percent, milliseconds, target):
+             setup_total, percent, milliseconds, target, stopping_tables):
     out = []
     add = out.append
 
@@ -153,6 +153,10 @@ def document(summaries, provenance, cost_table, subject_table, efficient_fom,
         add(f'The staged solver used for the timing split reproduces the retained selected solver to a '
             f'worst relative difference of {worst_parity:.1e} across the ladder, so the split does not '
             f'change the numerics it measures.')
+        add('')
+        add(f'### {label}: reduced-solver iteration counts and stopping status, per case per mesh')
+        add('')
+        add(stopping_tables[label])
         add('')
 
     add('## The figure')

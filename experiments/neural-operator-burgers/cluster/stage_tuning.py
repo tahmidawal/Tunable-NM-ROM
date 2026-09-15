@@ -72,6 +72,7 @@ find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''.replace('ATTEMPT', attempt).replace('MINUTES', f'{minutes // 60:02d}:{minutes % 60:02d}:00') \
    .replace('REMOTE', remote).replace('CACHEDIR', cache).replace('PHASE', phase) \
+   .replace('SECONDS', str(minutes * 60 - 600)) \
    .replace('SHORTLIST', '--shortlist "$TASK_ROOT/experiments/neural-operator-burgers/checks/tuning02-shortlist.json"'
             if phase == 'validation' else '').replace('EXTRA', ' '.join(extra))
 (out / 'run.sbatch').write_text(script)

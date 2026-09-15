@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-09-15T01:07:08.617128+00:00",
+  "snapshot_only": true,
+  "cluster": {
+    "observed_at_utc": "2026-09-15T01:07:08.213638+00:00",
+    "squeue": {
+      "argv": [
+        "squeue",
+        "-u",
+        "tawal01",
+        "-h",
+        "-o",
+        "%i|%j|%T|%M|%l|%N"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "sacct": {
+      "argv": [
+        "sacct",
+        "-X",
+        "-j",
+        "3701221,3702709,3701314,3702473,3702464",
+        "-n",
+        "-P",
+        "-o",
+        "JobIDRaw,JobName%40,State,ElapsedRaw,TimelimitRaw,Start,End,NodeList,AllocTRES"
+      ],
+      "returncode": 0,
+      "stdout": "3701221|ctol_nob_calibration01|COMPLETED|1575|480|2026-09-14T12:47:19|2026-09-14T13:13:34|pax007|billing=8,cpu=8,gres/gpu=1,mem=96G,node=1\n3701314|ctol_nop_pilot01|COMPLETED|208|60|2026-09-14T12:49:36|2026-09-14T12:53:04|pax106|billing=8,cpu=8,gres/gpu=1,mem=96G,node=1\n3702464|ctol_noa_fno_p01|COMPLETED|3496|420|2026-09-14T13:05:18|2026-09-14T14:03:34|pax106|billing=8,cpu=8,gres/gpu=1,mem=96G,node=1\n3702473|ctol_nop_matched01|COMPLETED|529|120|2026-09-14T13:13:38|2026-09-14T13:22:27|pax007|billing=8,cpu=8,gres/gpu=1,mem=96G,node=1\n3702709|ctol_nob_refinement02|COMPLETED|22852|440|2026-09-14T13:22:31|2026-09-14T19:43:23|pax007|billing=8,cpu=8,gres/gpu=1,mem=96G,node=1\n",
+      "stderr": ""
+    },
+    "disk": {
+      "argv": [
+        "df",
+        "-B1",
+        "/cluster/tufts/paralab/tawal01"
+      ],
+      "returncode": 0,
+      "stdout": "Filesystem                          1B-blocks          Used    Available Use% Mounted on\n10.235.106.23:/projects/paralab 5000000438272 4527346417664 472654020608  91% /cluster/tufts/paralab\n",
+      "stderr": ""
+    },
+    "job_directory": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02",
+    "job_directory_exists": true,
+    "dataset": {
+      "train": {
+        "path": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/train/index.json",
+        "exists": true,
+        "complete": true,
+        "records": 128,
+        "count": 128,
+        "keys": [
+          "schema_version",
+          "pde",
+          "kind",
+          "split",
+          "count",
+          "mesh",
+          "complete",
+          "protocol_sha256",
+          "provenance",
+          "records",
+          "calibration",
+          "reference_setting",
+          "physical_accuracy_status",
+          "descriptors_are_model_inputs",
+          "final_cohort"
+        ]
+      },
+      "validation": {
+        "path": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/validation/index.json",
+        "exists": true,
+        "complete": true,
+        "records": 32,
+        "count": 32,
+        "keys": [
+          "schema_version",
+          "pde",
+          "kind",
+          "split",
+          "count",
+          "mesh",
+          "complete",
+          "protocol_sha256",
+          "provenance",
+          "records",
+          "calibration",
+          "reference_setting",
+          "physical_accuracy_status",
+          "descriptors_are_model_inputs",
+          "final_cohort"
+        ]
+      }
+    },
+    "logs": [],
+    "handoff_cache": {
+      "path": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01",
+      "exists": false,
+      "relocation_exists": false
+    }
+  },
+  "accounting": [
+    {
+      "job_id": "3701221",
+      "job_name": "ctol_nob_calibration01",
+      "state": "COMPLETED",
+      "elapsed_seconds": "1575",
+      "time_limit_minutes": "480",
+      "start": "2026-09-14T12:47:19",
+      "end": "2026-09-14T13:13:34",
+      "node": "pax007",
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+    },
+    {
+      "job_id": "3701314",
+      "job_name": "ctol_nop_pilot01",
+      "state": "COMPLETED",
+      "elapsed_seconds": "208",
+      "time_limit_minutes": "60",
+      "start": "2026-09-14T12:49:36",
+      "end": "2026-09-14T12:53:04",
+      "node": "pax106",
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+    },
+    {
+      "job_id": "3702464",
+      "job_name": "ctol_noa_fno_p01",
+      "state": "COMPLETED",
+      "elapsed_seconds": "3496",
+      "time_limit_minutes": "420",
+      "start": "2026-09-14T13:05:18",
+      "end": "2026-09-14T14:03:34",
+      "node": "pax106",
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+    },
+    {
+      "job_id": "3702473",
+      "job_name": "ctol_nop_matched01",
+      "state": "COMPLETED",
+      "elapsed_seconds": "529",
+      "time_limit_minutes": "120",
+      "start": "2026-09-14T13:13:38",
+      "end": "2026-09-14T13:22:27",
+      "node": "pax007",
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+    },
+    {
+      "job_id": "3702709",
+      "job_name": "ctol_nob_refinement02",
+      "state": "COMPLETED",
+      "elapsed_seconds": "22852",
+      "time_limit_minutes": "440",
+      "start": "2026-09-14T13:22:31",
+      "end": "2026-09-14T19:43:23",
+      "node": "pax007",
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+    }
+  ],
+  "trees": {
+    "main": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude",
+      "head": "19403cf242067bde82c4d38ffbb0970d14699550",
+      "branch": "main",
+      "status": "M LAB-LOG.md\n M understand/2026-09-02-poisson-rom-training-to-prediction.pdf\n M understand/2026-09-02-poisson-rom-training-to-prediction.tex\n?? reports/2026-09-04-results-deck-burgers-poisson.aux\n?? reports/2026-09-04-results-deck-burgers-poisson.fdb_latexmk\n?? reports/2026-09-04-results-deck-burgers-poisson.fls\n?? reports/2026-09-04-results-deck-burgers-poisson.nav\n?? reports/2026-09-04-results-deck-burgers-poisson.snm\n?? reports/2026-09-04-results-deck-burgers-poisson.toc\n?? reports/2026-09-10-quadrature-free-paper-strategy.md\n?? reports/2026-09-11-accuracy-aggregates.json\n?? reports/2026-09-11-accuracy-aggregates.md\n?? reports/generate_accuracy_aggregates.py"
+    },
+    "consolidated": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-13-nmrom-consolidated",
+      "head": "02ff0f1f18db37d8589b28e90c3a93dae5bc5a88",
+      "branch": "exp/2026-09-13-nmrom-consolidated",
+      "status": ""
+    },
+    "poisson": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson",
+      "head": "02fac7a161333b8013c92df0f9de439e887ec475",
+      "branch": "exp/2026-09-14-no-poisson",
+      "status": ""
+    },
+    "burgers": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers",
+      "head": "21e12e979005468cce7247ae49cd7d703aa3a423",
+      "branch": "exp/2026-09-14-no-burgers",
+      "status": "M experiments/neural-operator-burgers/checks/refinement02-collection-status.json"
+    },
+    "audit": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-audit",
+      "head": "fd9b5eb8dd26f4f8d16fff86bcce0b1e81d4b447",
+      "branch": "exp/2026-09-14-no-audit",
+      "status": ""
+    }
+  },
+  "collector": {
+    "status_path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/checks/refinement02-collection-status.json",
+    "status": {
+      "phase": "collecting",
+      "job_id": "3702709",
+      "accounting": "3702709|ctol_nob_refinement02|COMPLETED|22852|pax007"
+    },
+    "pid": 3432725,
+    "proc_exists": true,
+    "cmdline": "/home/tahmid/Dev/.venv/bin/python /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/cluster/collect_when_done.py ",
+    "cwd": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers",
+    "stdout": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/collection-monitor-restarted.log",
+    "stderr": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/collection-monitor-restarted.log",
+    "ps": "PID                  STARTED     ELAPSED COMMAND\n3432725 Mon Sep 14 21:09:08 2026       01:26 /home/tahmid/Dev/.venv/bin/python /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/cluster/collect_when_done.py",
+    "original_snapshot_status": {
+      "phase": "monitoring",
+      "job_id": "3702709",
+      "pid": 3182016,
+      "remote": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02",
+      "maximum_monitor_hours": 12
+    },
+    "restart": {
+      "pid": 3432725,
+      "log": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/collection-monitor-restarted.log",
+      "source_commit": "629efba81ac42c93067b0d388ae1481337e05117",
+      "script_sha256": "b2f4399a73d49f742416f31885995a88528f8172e054d1014b2023f70700dd15",
+      "started_utc": "2026-09-15T01:09:08Z",
+      "replaces_pid": 3182016
+    },
+    "restart_path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/checks/collection-monitor-restart.json"
+  },
+  "budget": {
+    "authorized_seconds_per_lane": 28800,
+    "burgers_consumed_seconds_at_snapshot": 24427,
+    "burgers_remaining_seconds_at_snapshot": 4373,
+    "caution": "All listed GPU jobs are completed at this snapshot. These are unused portions of the original per-lane allocation budgets, not reserved GPUs or authorization for fresh eight-hour blocks. Recheck accounting and available resources before submitting.",
+    "lanes": {
+      "burgers": {
+        "jobs": [
+          "3701221",
+          "3702709"
+        ],
+        "authorized_seconds": 28800,
+        "consumed_seconds": 24427,
+        "remaining_seconds": 4373
+      },
+      "poisson": {
+        "jobs": [
+          "3701314",
+          "3702473"
+        ],
+        "authorized_seconds": 28800,
+        "consumed_seconds": 737,
+        "remaining_seconds": 28063
+      },
+      "audit": {
+        "jobs": [
+          "3702464"
+        ],
+        "authorized_seconds": 28800,
+        "consumed_seconds": 3496,
+        "remaining_seconds": 25304
+      }
+    }
+  },
+  "read_only_observation": true,
+  "collection_issue": {
+    "detected": true,
+    "kind": "completed_job_queue_query_retry_loop",
+    "evidence": "squeue with -j for completed job returns exit 1 Invalid job id specified; old monitor treats this as transient and never reaches sacct",
+    "repair_owner": "burgers_run",
+    "repair_status": "fixed; restarted collector observed collecting",
+    "results_preserved_remote": true,
+    "repair": {
+      "old_pid": 3182016,
+      "verified_cmdline": [
+        "/home/tahmid/Dev/.venv/bin/python",
+        "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/cluster/collect_when_done.py"
+      ],
+      "signal": "SIGTERM",
+      "original_log": "experiments/neural-operator-burgers/checks/collection-monitor-original.log",
+      "log_sha256": "46ddce5928905dc322facc3987411fcf506fff40d99a34f92683dfad5ae368ce",
+      "failure": "squeue with completed explicit job ID returned status1 and was retried as transient; sacct path was unreachable",
+      "terminated_only_local_monitor": true,
+      "exact_id_parser_checks": true,
+      "account_queue_query_succeeded": true,
+      "accounting": "3702709|ctol_nob_refinement02|COMPLETED|22852|pax007"
+    },
+    "repair_commit": "629efba81ac42c93067b0d388ae1481337e05117"
+  },
+  "collector_observed_at_utc": "2026-09-15T01:10:35.837609+00:00",
+  "sources": {
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/checks/collection-monitor-restart.json": "d72a5c764e6e629e1886a08053c308ab55e05f5e843bbce5e9126642e13cdb3a",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/checks/collection-monitor-repair.json": "062e29bcdc0a42b8518455d26b27b975547160e1d7cb864860c5770c37d6f09c",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/checks/collection-monitor-original.log": "46ddce5928905dc322facc3987411fcf506fff40d99a34f92683dfad5ae368ce"
+  }
+}

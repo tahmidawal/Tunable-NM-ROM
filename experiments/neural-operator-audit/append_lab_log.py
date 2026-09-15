@@ -154,12 +154,14 @@ semantics were not added. The eight-case cohort is small, so its worst-case colu
 Nothing under `best-results/` or any other worktree was modified, no worktree was created or merged,
 and no final cohort was opened.
 
-**Open items.** (1) The interleaved same-job ROM/FNO/FOM timing panel. (2) `git push` of this branch
-to `origin` fails with HTTP 500 — the branch carries ~1.5 GB of Git-tracked archive parts from the
-earlier Poisson screen, and no other recent `exp/2026-09-1x` branch is on origin either, so this is
-a pre-existing repository-size condition rather than something this session introduced; all work is
-committed locally on the branch. (3) Resolution transfer, repeated seeds, TFNO and wider families
-remain unstudied. (4) The shared `pilot-data01` cache can now be cleaned up by the Burgers lane.
+**Open items.** (1) The interleaved same-job ROM/FNO/FOM timing panel. (2) **This branch is
+committed locally but not pushed.** Two early `git push` attempts failed with HTTP 500 from GitHub;
+the coordinator then directed every agent to stop pushing, because packing this 199 GB repository
+reaches roughly 48 GB resident on the shared GB10 and risks `earlyoom` killing other agents' work.
+The coordinator will push branches in stages. No other recent `exp/2026-09-1x` branch is on origin
+either. All work is committed on `exp/2026-09-14-no-audit`. (3) Resolution transfer, repeated
+seeds, TFNO and wider families remain unstudied. (4) The shared `pilot-data01` cache can now be
+cleaned up by the Burgers lane.
 
 Generated report: `experiments/neural-operator-audit/reports/2026-09-14-burgers-fno-baseline.md`
 (SHA256 `{report_sha}`) with its generator and source manifest beside it.

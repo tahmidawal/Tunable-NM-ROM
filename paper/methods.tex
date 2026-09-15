@@ -57,9 +57,13 @@ Laplacian (five-point stencil, ghost zeros on all four walls) and $f\in\Real^n$
 for a source or right-hand side. Reduced quantities carry three sizes that must
 be kept distinct: $R$ is the width of the spatial bank, $k$ the latent
 dimension solved for online, and $M$ the number of retained weak tests. Where
-sampling is used, $m$ is the number of quadrature nodes. The implementations
-assert $M\ge 4k$ and $m\ge 4M$ at build time, so the latent problem is always
-overdetermined and the quadrature problem is never under-constrained.
+sampling is used, $m$ is the number of quadrature nodes. Every cell keeps
+$M>k$, so the latent problem is always overdetermined; the Burgers assembly
+additionally asserts $M\ge 4k$ and $m\ge 4M$, so its quadrature problem is
+never under-constrained.
+% Code: engines.build_rom asserts `M >= 4*K and m >= 4*M`.  The elliptic and
+% parabolic assemblies take M from their configuration and assert no ratio;
+% M > k holds in every configuration used here and is reported in table T1.
 
 \subsection{Trial manifold}
 \label{sec:method:manifold}

@@ -1,0 +1,97 @@
+{
+  "scope": "bounded local L=64 saved-operator smoke; no accuracy, timing or reference claim",
+  "passed": true,
+  "full_grid_operator_numpy_parity": 7.456558587684146e-15,
+  "declared_operator_tolerance": 1e-12,
+  "full_grid_jacobian_finite_difference_parity": 1.9319860970359952e-09,
+  "declared_gradient_tolerance": 1e-06,
+  "sampled_versus_full_quadrature_relative_discrepancy": 0.0019785193403294783,
+  "explicit_default_controls_bit_identical": true,
+  "arms": {
+    "m256_native": {
+      "step_iterations_total": 343,
+      "step_iterations_max": 41,
+      "step_reason_counts": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 50
+      },
+      "steps_at_iteration_cap": 0,
+      "worst_step_normalized_gradient": 8.587507667379901e-07,
+      "initial_iterations": 140,
+      "initial_reason": 4,
+      "initial_normalized_gradient": 6.94182050141439e-07,
+      "gradient_stationary": true,
+      "early_stopped": false,
+      "fields_sha256": "f731c70f9d57e4f79882efbe78b0ca353f145818fb2d11e6ca76e9dbda769087"
+    },
+    "m256_cap2": {
+      "step_iterations_total": 100,
+      "step_iterations_max": 2,
+      "step_reason_counts": {
+        "0": 50,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "steps_at_iteration_cap": 50,
+      "worst_step_normalized_gradient": 0.42619014829025975,
+      "initial_iterations": 140,
+      "initial_reason": 4,
+      "initial_normalized_gradient": 6.94182050141439e-07,
+      "gradient_stationary": false,
+      "early_stopped": true,
+      "fields_sha256": "d9fce970e1c2aa83caafea0b616f299182164f8cc345c4fd3924d2facb7640be"
+    },
+    "full_native": {
+      "step_iterations_total": 342,
+      "step_iterations_max": 41,
+      "step_reason_counts": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 50
+      },
+      "steps_at_iteration_cap": 0,
+      "worst_step_normalized_gradient": 9.442883958307578e-07,
+      "initial_iterations": 140,
+      "initial_reason": 4,
+      "initial_normalized_gradient": 6.94182050141439e-07,
+      "gradient_stationary": true,
+      "early_stopped": false,
+      "fields_sha256": "9b7ffb9f654b729e04b76aa5b8fb1ebebd58c2b286ecf1b39872dc99259c98de"
+    },
+    "full_cap2": {
+      "step_iterations_total": 100,
+      "step_iterations_max": 2,
+      "step_reason_counts": {
+        "0": 50,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "steps_at_iteration_cap": 50,
+      "worst_step_normalized_gradient": 0.42641576728206754,
+      "initial_iterations": 140,
+      "initial_reason": 4,
+      "initial_normalized_gradient": 6.94182050141439e-07,
+      "gradient_stationary": false,
+      "early_stopped": true,
+      "fields_sha256": "d9fce970e1c2aa83caafea0b616f299182164f8cc345c4fd3924d2facb7640be"
+    }
+  },
+  "backend": "gpu",
+  "gpu": "NVIDIA GB10",
+  "f64": true,
+  "matmul_precision": "highest",
+  "jax_version": "0.10.1",
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "tuning_source_sha256": "2b1ad5abd78351a2b404d7d345b841c3ccf8a7ce17d55ed3431ef8ab316ee043",
+  "accuracy_paths_sha256": "94fb27035bcca60a6fcbb06bf03b40419bd9e7c7c89bd6f8306e141b2950d887",
+  "config_sha256": "055156c8cae395a417ef6b0a5ace07a986264d32606f6f3167f4ffa12aef0012"
+}

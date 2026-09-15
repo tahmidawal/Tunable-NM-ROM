@@ -31,19 +31,31 @@ def make_stationary_lm(fun,K,budget,trust=np.inf,gtol=1e-6):
     return lm
 
 
-def make_rom(params,L,dt,trust,ic_budget=400,step_budget=180,gtol=1e-6):
+def make_rom(params,L,dt,trust,ic_budget=400,step_budget=180,gtol=1e-6,
+             evolution_gtol=None,evolution_residual_scale=1e-9,weak_fn=None):
+    """Initial-fit and evolution stopping controls are separately addressable.
+
+    ``ic_budget``/``gtol`` remain the initial-fit controls. ``evolution_gtol=None``
+    keeps the historical behaviour of sharing one gtol with the initial fit, and
+    ``evolution_residual_scale=1e-9`` is the previously hard-coded weak-residual
+    threshold factor, so the default call is bit-for-bit the original solver.
+    ``weak_fn=None`` selects the sampled (empirical-quadrature) weak residual;
+    passing a full-grid weak residual gives the quadrature-free control arm.
+    """
     K=params['h_lin'].shape[0]
+    evolution_gtol=gtol if evolution_gtol is None else evolution_gtol
+    weak_fn=e.weak if weak_fn is None else weak_fn
     ic=make_stationary_lm(lambda z,y,R:R@e.sc.head(params,z)-y,K,ic_budget,gtol=gtol)
-    lm=make_stationary_lm(lambda z,p,nu,data:e.weak(z,p,nu,data,params,L,dt),K,step_budget,trust,gtol)
+    lm=make_stationary_lm(lambda z,p,nu,data:weak_fn(z,p,nu,data,params,L,dt),K,step_budget,trust,evolution_gtol)
     def query(u0,nu,data,cold):
         xy,w,Q,R,Hrot,Hnorm=cold;ui=e.sample_field(u0,xy,L)*w;y=Q.T@ui
         idx=jnp.argmin(Hnorm-2*Hrot@y);z,icrn,icit,icreason,icgn=ic(data[7][idx],(y,R),0.)
         scale=jnp.linalg.norm(ui)*jnp.sqrt(len(w))
         def step(carry,_):
             z,zprev=carry;p=data[1]@e.sc.head(params,z);ze=z+(z-zprev)
-            r0=jnp.linalg.norm(e.weak(z,p,nu,data,params,L,dt));re=jnp.linalg.norm(e.weak(ze,p,nu,data,params,L,dt))
+            r0=jnp.linalg.norm(weak_fn(z,p,nu,data,params,L,dt));re=jnp.linalg.norm(weak_fn(ze,p,nu,data,params,L,dt))
             zi=jnp.where(jnp.isfinite(re)&(re<r0),ze,z)
-            z2,rn,it,reason,gn=lm(zi,(p,nu,data),1e-9*scale)
+            z2,rn,it,reason,gn=lm(zi,(p,nu,data),evolution_residual_scale*scale)
             return (z2,z),(z2,rn,it,reason,gn)
         _,(zs,rn,it,reason,gn)=jax.lax.scan(step,(z,z),None,length=int(round(.25/dt)))
         internal=jnp.concatenate((z[None],zs));Z=internal[::int(round(.05/dt))]

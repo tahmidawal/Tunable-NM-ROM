@@ -17,6 +17,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--diagnosis',type=Path,required=True);p.add_argument('--reference',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--seconds',type=float,required=True)
+    p.add_argument('--eq-seconds',type=float,default=1500.,dest='eq_seconds',help='per-rule NNLS walltime bound')
     a=p.parse_args();configure();selected,_=d.read_calibration(a.reference,256)
     control=json.loads(a.diagnosis.read_text());reference=json.loads(a.reference.read_text())
     assert control['complete'] and control['m']==256 and control['M']==64 and control['K']==16
@@ -50,22 +51,27 @@ def main():
                 reference_setting=selected,timing_seed=2026091411,repetitions=3,
                 reference_interpretation=d.PROTOCOL['reference_interpretation'])
     path=out/'index.json';d.write_json(path,report)
+    # Each NNLS refit is bounded by its own walltime; a deadline-truncated rule keeps
+    # its partial support, weights and fit residual as evidence and is not deployed
+    # below the m >= 4M support requirement.
+    import tuning as tn
     for m in [512,1024]:
         if time.monotonic()-started+300>a.seconds:
             report['stop_reason']='budget before EQ refit';d.write_json(path,report);return
-        print('REFIT EQ',m,flush=True)
-        new,info=e.build_rom(params,Z,L,M,m,eq_seed=control['setup']['eq_seed'],candidate_cap=8192,fit_states=64)
+        budget=min(a.eq_seconds,a.seconds-(time.monotonic()-started)-300)
+        print('REFIT EQ',m,'budget',budget,flush=True)
+        rpos,rw,info=tn.fit_eq_rule(jax,jnp,e,params,Z,L,M,m,G,phi,time.monotonic()+budget,
+                                    control['setup']['eq_seed'],8192,len(control['setup']['eq_fit_rows']))
         assert info['eq_fit_rows']==control['setup']['eq_fit_rows']
-        assert info['mode_ids']==control['setup']['mode_ids']
-        assert np.array_equal(np.asarray(new[7]),np.asarray(candidate_z))
-        bank_parity=float(jnp.linalg.norm(new[0]-G)/jnp.linalg.norm(G))
-        linear_parity=float(jnp.linalg.norm(new[1]-A)/jnp.linalg.norm(A))
-        assert bank_parity<1e-12 and linear_parity<1e-12
-        # Only the advection rule varies; freeze all shared arrays exactly.
-        operators[f'm{m}']=(G,A,jnp.asarray(lam),new[3],new[4],None,None,candidate_z)
-        report['setup'].append(dict(arm=f'm{m}',cache_reused=False,info=info,bank_parity=bank_parity,linear_parity=linear_parity))
-        d.write_json(path,report);del new
-    q=ap.make_rom(params,L,.005,control['setup']['trust_radius'],**control['config']['strict'])
+        report['setup'].append(dict(arm=f'm{m}',cache_reused=False,info=info))
+        d.write_json(path,report)
+        if info['actual_m']<4*M:
+            print('EQ RULE BELOW 4M SUPPORT, NOT DEPLOYED',m,info['actual_m'],flush=True);continue
+        # Only the advection rule varies; every shared array stays exactly frozen.
+        G5n,Pqn=tn.quadrature_arrays(e,jnp,dec,phi,rpos,rw,L,R)
+        operators['m%d'%info['actual_m']]=(G,A,jnp.asarray(lam),G5n,Pqn,None,None,candidate_z)
+    q=ap.make_rom(params,L,.005,control['setup']['trust_radius'],**control['config']['strict'],
+                  evolution_gtol=control['config']['strict']['gtol'],evolution_residual_scale=1e-9)
     foms={}
     for dt in [.005,.01]:
         native=e.make_fom(L,dt,target=L)[0]

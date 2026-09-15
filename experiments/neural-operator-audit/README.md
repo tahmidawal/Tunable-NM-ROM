@@ -63,12 +63,32 @@ that lane's `fixed_initial_errors` by path and proves the two implementations
 agree on contract-valid fields; `checks/burgers-error-definition.json` records
 the proof and the imported source hash.
 
-`configs/burgers/` fixes an equal 200-epoch budget for the small, medium and
-large capacities so the capacity comparison is not confounded by epoch count;
-each still carries a wall-clock cap, and truncation is recorded per run.
-`worker_burgers.py` then selects the best capacity by validation mean
-case-maximum error and repeats it at a lower learning rate, if the remaining
-budget allows, before running the timing block.
+Two jobs run this lane, each in its own job directory, staged by
+`stage_burgers.py --name`:
+
+- `fno_burgers01` (`worker_burgers.py`, `configs/burgers/`) is the bounded
+  screen: an identical 200-epoch budget for small, medium and large so capacity
+  is not confounded with epoch count, then a learning-rate refinement of the
+  best capacity and a timing block.
+- `fno_burgers02` (`worker_burgers_long.py`, `configs/burgers-long/`) is the
+  primary job. Every capacity in the first screen was still improving when its
+  epoch budget ran out, so this one gives each capacity the same much larger
+  *wall* budget and lets early stopping decide. Epoch counts therefore differ by
+  design — equal compute, not equal epochs — and each run's epoch count and
+  truncation flag are recorded.
+
+`prepare_diagnosis_cohort.py` (run inside `fno_burgers02`) rebuilds the exact
+cohort the Burgers lane graded its ROM and FOM on: its refined 4096-interval
+anchors for the eight calibration cases, restricted to the 256-interval grid,
+with the supplied initial field taken from the same restriction, written in the
+model-facing four-key schema. It re-checks disjointness from FNO training by
+generation seed and by input-field content rather than assuming it.
+`evaluate_cohort.py` then scores every trained checkpoint there.
+
+**Accuracy on that cohort is comparable across jobs; timing is not.** Error does
+not depend on which GPU ran a job, so the same-case accuracy comparison against
+the ROM and the FOM is legitimate. Wall clock does, so no time from another job
+is ever divided by a time measured here.
 
 **Training is deliberately not resumable.** Each training run is bounded inside
 one allocation by its own wall budget and by a global deadline that always
@@ -83,7 +103,7 @@ retained in `timing.npz`. Its module docstring is the protocol of record for the
 later interleaved ROM/FNO/FOM confirmation job. Timings from different jobs are
 never divided by one another.
 
-`collect_burgers.py` is the bounded local monitor for that job. It recomputes
+`collect_burgers.py --name <job>` is the bounded local monitor for either job. It recomputes
 every validation error independently with NumPy, re-derives the timing medians
 from the retained repetition arrays, checks that the supplied initial state is
 returned bitwise, verifies checkpoint hashes, preserves the archive as Git

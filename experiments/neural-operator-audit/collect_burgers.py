@@ -22,18 +22,17 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 NAMESPACE = '/cluster/tufts/paralab/tawal01/no_audit_20260914'
-NAME = 'fno_burgers01'
-JOB_NAME = 'ctol_noa_fno_b01'
-REMOTE = NAMESPACE + '/' + NAME
+JOB_NAMES = {'fno_burgers01': 'ctol_noa_fno_b01', 'fno_burgers02': 'ctol_noa_fno_b02'}
 # Retained: every `best.pt`, every saved validation prediction, all loss curves,
 # the timing repetition arrays and the model-facing validation cases.
 # Excluded: the final-epoch optimiser state (training is deliberately not
 # resumable and `best.pt` carries the selected weights, normalisation and its
 # own hash), package caches, and the training cases and solver sidecars, which
 # are already archived and hash-linked by the Burgers lane.
-EXCLUDES = ['--exclude=*/last.pt', '--exclude=*.solver.npz',
-            '--exclude=fno_burgers01/cache', '--exclude=fno_burgers01/tmp',
-            '--exclude=fno_burgers01/data/train']
+def excludes(name):
+    return ['--exclude=*/last.pt', '--exclude=*.solver.npz',
+            f'--exclude={name}/cache', f'--exclude={name}/tmp',
+            f'--exclude={name}/data/train', f'--exclude={name}/data/refinement']
 
 
 def ssh(command):
@@ -126,6 +125,40 @@ def audit_timing(root):
                 limitation='Same-job, same-GPU FNO timings only; never divide these by another job\'s timings.')
 
 
+def audit_cohort(root):
+    folder = root / 'out/diagnosis-cohort'
+    index = root / 'data/diagnosis-cohort/index.json'
+    if not (folder / 'cohort-result.json').exists() or not index.exists():
+        return dict(present=False, note='The matched diagnosis cohort was not evaluated in this job')
+    stated = json.loads((folder / 'cohort-result.json').read_text())
+    rows = json.loads(index.read_text())['records']
+    provenance = json.loads((index.parent / 'cohort-provenance.json').read_text())
+    models = {}
+    for name, model in stated['models'].items():
+        per_case = []
+        for position, row in enumerate(rows):
+            with np.load(index.parent / row['path']) as case:
+                target, supplied = case['target'].copy(), case['input'].copy()
+            assert sha(index.parent / row['path']) == row['sha256']
+            with np.load(folder / name / (row['case_id'] + '.prediction.npz')) as saved:
+                prediction = saved['prediction'].copy()
+            assert prediction.shape == target.shape and np.isfinite(prediction).all()
+            assert np.array_equal(prediction[0], supplied)
+            errors = fixed_initial_errors(prediction, target)
+            stated_errors = np.asarray(model['errors'][position], dtype=np.float64)
+            assert np.allclose(errors, stated_errors, rtol=1e-11, atol=1e-13), row['case_id']
+            per_case.append(float(errors.max()))
+        models[name] = dict(fixed_initial=statistics(per_case), case_maximum_errors=per_case,
+                            checkpoint_sha256=model['checkpoint_sha256'])
+    return dict(present=True, cases=[r['case_id'] for r in rows], models=models,
+                cohort_index_sha256=stated['cohort_index_sha256'],
+                disjoint_from_training_by_seed=provenance['disjoint_from_training_by_seed'],
+                disjoint_from_training_by_input_field=provenance['disjoint_from_training_by_input_field'],
+                comparability='These are the eight cases and references the Burgers lane ROM/FOM '
+                              'diagnosis used at 256 intervals, so accuracy is directly comparable; '
+                              'timing measured in that other job is not.')
+
+
 def audit(root):
     rows = json.loads((root / 'data/validation/index.json').read_text())['records']
     data_root = root / 'data/validation'
@@ -140,15 +173,18 @@ def audit(root):
                 models=models, validation_cases=len(rows),
                 capacity_selection=json.loads(selection.read_text()) if selection.exists() else None,
                 worker=json.loads((root / 'out/worker.json').read_text()),
-                timing=audit_timing(root),
+                timing=audit_timing(root), diagnosis_cohort=audit_cohort(root),
                 metric='maximum over the six requested output times of the interior l2 discrepancy '
                        'divided by the interior l2 norm of the supplied initial field',
                 limitation='Single-seed, bounded-epoch development screen on one mesh and one Gaussian '
                            'continuum family; no ROM/FOM comparison and no cross-job timing ratio.')
 
 
-def main(job_id):
+def main(job_id, NAME):
     assert job_id.isdecimal()
+    JOB_NAME = JOB_NAMES[NAME]
+    REMOTE = NAMESPACE + '/' + NAME
+    EXCLUDES = excludes(NAME)
     folder = HERE / 'runs' / NAME
     folder.mkdir(parents=True, exist_ok=False)
     deadline = time.monotonic() + 10 * 3600
@@ -211,9 +247,10 @@ def main(job_id):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--job-id', required=True)
+    parser.add_argument('--name', default='fno_burgers01', choices=sorted(JOB_NAMES))
     arguments = parser.parse_args()
     try:
-        main(arguments.job_id)
+        main(arguments.job_id, arguments.name)
     except BaseException:
         traceback.print_exc()
         raise

@@ -881,13 +881,13 @@
       "role": "exactly the archived native solver configuration"
     },
     "converged": {
-      "step_budget": 600,
+      "step_budget": 180,
       "evolution_gtol": 1e-08,
       "evolution_residual_scale": 1e-12,
       "role": "high-effort reference endpoint"
     },
     "ultra": {
-      "step_budget": 1200,
+      "step_budget": 360,
       "evolution_gtol": 1e-10,
       "evolution_residual_scale": 1e-14,
       "role": "stability control for the reference endpoint"
@@ -911,19 +911,19 @@
       "role": "iteration-cap screen; deliberately early stopped"
     },
     "gtol0.001": {
-      "step_budget": 600,
+      "step_budget": 180,
       "evolution_gtol": 0.001,
       "evolution_residual_scale": 1e-09,
       "role": "stopping-tolerance screen at the converged cap"
     },
     "gtol1e-05": {
-      "step_budget": 600,
+      "step_budget": 180,
       "evolution_gtol": 1e-05,
       "evolution_residual_scale": 1e-09,
       "role": "stopping-tolerance screen at the converged cap"
     },
     "gtol1e-06": {
-      "step_budget": 600,
+      "step_budget": 180,
       "evolution_gtol": 1e-06,
       "evolution_residual_scale": 1e-09,
       "role": "stopping-tolerance screen at the converged cap"

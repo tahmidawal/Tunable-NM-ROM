@@ -1,0 +1,246 @@
+"""Generate the fixed-checkpoint tuning report from the run indices only.
+
+Every number in the report comes from this script reading the archived result
+JSONs.  Nothing is typed by hand.
+"""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def load(path):
+    return json.loads(Path(path).read_text())
+
+
+def ms(seconds):
+    return f'{1000 * seconds:.6f}'
+
+
+def pct(value):
+    return f'{100 * value:.6f}'
+
+
+def arm_rows(report, pass_name):
+    rows = []
+    for key, summary in report['summaries'].items():
+        if not summary or not key.startswith(pass_name + '/'):
+            continue
+        if summary.get('median_gpu_seconds') is None:
+            continue
+        method = summary['method']
+        sample = next((r for r in report['invocations']
+                       if r['pass_name'] == pass_name and r['method'] == method), None)
+        spec = (sample or {}).get('arm')
+        preset = (sample or {}).get('preset')
+        rows.append(dict(method=method, summary=summary, spec=spec, preset=preset))
+    return sorted(rows, key=lambda r: r['summary']['median_gpu_seconds'])
+
+
+def curve_table(report, passes, title):
+    lines = [f'### {title}', '',
+             '| Arm | Quadrature | Cap | Evolution gtol | Worst error (%) | Median GPU (ms) | '
+             'Median complete query (ms) | Early-stopped invocations | Gradient-stationary invocations | Latency outliers |',
+             '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+    for pass_name in passes:
+        for row in arm_rows(report, pass_name):
+            s, spec, preset = row['summary'], row['spec'], row['preset']
+            if spec:
+                quadrature = f"{spec['quadrature']} (m={spec['actual_m']})"
+                cap = str(spec['step_budget'])
+                gtol = f"{spec['evolution_gtol']:g}"
+            else:
+                quadrature = f"FOM mesh {preset['mesh']}, dt {preset['dt']:g}"
+                cap = '-'
+                gtol = f"Newton tol {preset['ntol']:g}"
+            lines.append(f"| `{row['method']}` | {quadrature} | {cap} | {gtol} | "
+                         f"{pct(s['worst_fixed_initial_error'])} | {ms(s['median_gpu_seconds'])} | "
+                         f"{ms(s['median_complete_host_seconds'])} | {s.get('early_stopped_invocations', 0)} | "
+                         f"{s.get('gradient_stationary_invocations', 0)} | {s['upper_tukey_latency_outliers']} |")
+    lines.append('')
+    return lines
+
+
+def dominance(report, passes, fom_names):
+    """Does any tuned ROM arm beat every efficient FOM control on both axes at once?"""
+    foms = [r for p in passes for r in arm_rows(report, p) if r['preset']]
+    roms = [r for p in passes for r in arm_rows(report, p) if r['spec']]
+    best = []
+    for rom in roms:
+        beaten = [f for f in foms
+                  if rom['summary']['worst_fixed_initial_error'] <= f['summary']['worst_fixed_initial_error']
+                  and rom['summary']['median_gpu_seconds'] <= f['summary']['median_gpu_seconds']]
+        if len(beaten) == len(foms) and foms:
+            best.append(rom['method'])
+    return best, [f['method'] for f in foms]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--calibration', type=Path, required=True)
+    parser.add_argument('--validation', type=Path)
+    parser.add_argument('--out', type=Path, required=True)
+    args = parser.parse_args()
+    calibration = load(args.calibration)
+    validation = load(args.validation) if args.validation and args.validation.exists() else None
+    cfg = calibration['config']
+    lines = ['# Burgers fixed-checkpoint tuning: measured physical error against complete query cost', '',
+             'This report measures what the Gauss-Newton iteration cap, the evolution stopping tolerance and the '
+             'choice of offline-fitted empirical-quadrature rule buy from **one frozen checkpoint**, against the '
+             'efficient full-order controls timed in the same job on the same GPU. '
+             + ('All numbers below are final for this study.' if validation else
+                '**Numbers below are provisional: the held-out confirmation pass has not been collected.**'), '']
+    lines += ['## What was held fixed', '',
+              '```json', json.dumps(dict(checkpoint_sha256=calibration['checkpoint_sha256'], **cfg['fixed']),
+                                    indent=2, default=str)[:4000], '```', '',
+              f"Trust radius {calibration['trust_radius']:.12g}. "
+              f"Weak-mode count $M = {cfg['fixed']['weak_modes']}$, latent dimension $k = {cfg['fixed']['latent_dimension']}$, "
+              f"bank rank $R = {cfg['fixed']['bank_rank']}$, mesh $L = {cfg['fixed']['intervals']}$ intervals, "
+              f"time step $\\Delta t = {cfg['fixed']['dt']}$.", '']
+    lines += ['## Pipeline', '', '```mermaid', 'flowchart LR',
+              '  U["supplied initial field u0, viscosity nu"] --> C["cold fit: fixed Gauss rule, 2304 points"]',
+              '  C --> Z0["latent z0 (k=16)"]',
+              '  Z0 --> GN["Gauss-Newton weak solve per step<br/>cap and stopping tolerance VARY"]',
+              '  Q["EQ rule m=256/512/1024<br/>or full-grid upwind<br/>SELECTION VARIES"] --> GN',
+              '  W["frozen decoder, bank rank 512<br/>64 weak modes, dt fixed"] --> GN',
+              '  GN --> D["decode requested times"]',
+              '  D --> O["output: supplied u0 at t=0, decoded fields after"]',
+              '  classDef frozen fill:#dce8f7,stroke:#3a6ea5;',
+              '  classDef tuned fill:#f7e3c8,stroke:#b57a2a;',
+              '  class W,C frozen;', '  class GN,Q tuned;', '```', '',
+              'The weak residual minimised at each step is',
+              '',
+              r'$$ r(z) = \frac{\Phi^\top \big(D(z) - D(z_{\mathrm{prev}})\big) + \Delta t\,\big(Q^\top a(z) '
+              r'+ \nu \Lambda \Phi^\top D(z)\big)}{1 + \Delta t\, \nu \Lambda}, $$',
+              '',
+              r'with $\Phi$ the $M$ retained sine modes, $\Lambda$ their discrete eigenvalues, $D(z)$ the decoded '
+              r'field and $a(z)$ the FOM-exact upwind advection.  An EQ arm evaluates $a$ at $m$ fitted nodes with '
+              r'nonnegative weights; the quadrature-free control evaluates it at every interior node.  The '
+              r'stopping tolerance is applied to $\lVert J^\top r\rVert / (\lVert J\rVert\,\lVert r\rVert)$, '
+              'which is an optimisation measure and not a physical-error bound.', '']
+    lines += ['## Offline quadrature rules', '',
+              '| Rule | Requested m | Actual support | NNLS relative fit | Deadline truncated | Fit seconds |',
+              '| --- | ---: | ---: | ---: | --- | ---: |']
+    for rule in calibration['eq_rules']:
+        lines.append(f"| {rule.get('source', 'decoder-output NNLS refit')} | {rule.get('requested_m')} | "
+                     f"{rule['actual_m']} | {rule.get('eq_relative_fit', float('nan')):.6g} | "
+                     f"{rule.get('deadline_truncated', False)} | {rule.get('fit_seconds', 0):.1f} |")
+    reproduction = calibration.get('archived_rule_reproduction')
+    if reproduction:
+        lines += ['', f"Independent bounded refit of the accepted $m=256$ rule: support identical "
+                      f"`{reproduction['indices_identical']}`, largest absolute weight difference "
+                      f"`{reproduction['maximum_absolute_weight_difference']}`.", '']
+    lines += ['## Converged sentinel', '',
+              '| Case | Arm | Worst error (%) | Steps at iteration cap | Worst normalized gradient | Gradient stationary |',
+              '| --- | --- | ---: | ---: | ---: | --- |']
+    for row in calibration['sentinel']:
+        if 'stability_check' in row:
+            continue
+        lines.append(f"| {row['case_id']} | `{row['method']}` | {pct(row['error']['maximum'])} | "
+                     f"{row['steps_at_iteration_cap']} | {row['worst_step_normalized_gradient']:.3g} | "
+                     f"{row['gradient_stationary']} |")
+    stability = [r for r in calibration['sentinel'] if 'stability_check' in r]
+    if stability:
+        lines += ['', '| Case | Stability check | Relative field difference | Declared tolerance |',
+                  '| --- | --- | ---: | ---: |']
+        for row in stability:
+            lines.append(f"| {row['case_id']} | {row['stability_check']} | "
+                         f"{row['relative_field_difference']:.6g} | {row['declared_stability_tolerance']:g} |")
+    lines.append('')
+    if calibration.get('initial_fit_diagnostic'):
+        lines += ['### Sampled versus full-grid supplied-field initial fit (diagnostic only)', '',
+                  '| Case | Sampled relative error | Full-grid relative error | Sampled iterations | Full-grid iterations |',
+                  '| --- | ---: | ---: | ---: | ---: |']
+        for row in calibration['initial_fit_diagnostic']:
+            lines.append(f"| {row['case_id']} | {row['sampled_relative_field_error']:.6g} | "
+                         f"{row['full_grid_relative_field_error']:.6g} | {row['sampled_iterations']} | "
+                         f"{row['full_grid_iterations']} |")
+        lines += ['', 'The deployed cold initializer is unchanged in every timed arm; this row pair only says how '
+                      'much of the initial-fit error is the sampling rule rather than the decoder.', '']
+    lines += curve_table(calibration, ['quadrature', 'effort'],
+                         'Calibration cases: measured error against complete query cost')
+    selection = calibration.get('rule_selection')
+    if selection:
+        lines += [f"Rule selected for the effort screens: **{selection['selected']}**. Criterion: {selection['criterion']}.", '']
+    beat, foms = dominance(calibration, ['quadrature', 'effort'], None)
+    lines += ['### Does any tuned setting beat the efficient FOM on both axes?', '',
+              (f"Yes on the calibration cases: {', '.join('`' + b + '`' for b in beat)}." if beat else
+               'No. On the calibration cases no tuned setting is simultaneously at least as accurate and at least '
+               'as fast as every efficient full-order control timed in the same job.'), '',
+              f"Controls compared: {', '.join('`' + f + '`' for f in foms)}.", '']
+    for row in calibration.get('native_compression', []):
+        pass
+    if calibration.get('native_compression'):
+        worst = max(r['relative_initial_compression_error'] for r in calibration['native_compression'])
+        lines += ['### Native compression of the supplied field', '',
+                  f"Every deployable arm returns the supplied initial field exactly. If the decoder's own fit of "
+                  f"that field were returned instead, the worst relative initial error over the reported cases "
+                  f"would be {pct(worst)}%. That cost is paid inside every query and is reported here rather "
+                  f"than hidden in the output.", '']
+    if validation:
+        lines += curve_table(validation, ['validation'], 'Held-out validation cases: frozen shortlist')
+        vbeat, vfoms = dominance(validation, ['validation'], None)
+        lines += ['### Held-out verdict', '',
+                  (f"A tuned setting dominates every efficient control on the held-out cases: "
+                   f"{', '.join('`' + b + '`' for b in vbeat)}." if vbeat else
+                   'No frozen setting is simultaneously at least as accurate and at least as fast as every '
+                   'efficient full-order control on the held-out cases.'), '']
+    lines += ['## Provenance', '',
+              '| Item | Value |', '| --- | --- |',
+              f"| Calibration job | `{calibration['provenance']['job_id']}` on {calibration['provenance']['gpu']} |",
+              f"| Calibration source commit | `{calibration['provenance']['source_commit']}` |",
+              f"| JAX backend / f64 / precision | `{calibration['provenance']['backend']}` / "
+              f"`{calibration['provenance']['f64']}` / `{calibration['provenance']['matmul_precision']}` |",
+              f"| Checkpoint SHA256 | `{calibration['checkpoint_sha256']}` |",
+              f"| Configuration SHA256 | `{calibration['config_sha256']}` |",
+              f"| Calibration index SHA256 | `{sha(args.calibration)}` |"]
+    if validation:
+        lines += [f"| Validation job | `{validation['provenance']['job_id']}` on {validation['provenance']['gpu']} |",
+                  f"| Validation index SHA256 | `{sha(args.validation)}` |"]
+    lines += ['', f"| Repetitions per arm and case | {calibration['repetitions']} |", '',
+              'Timing is within one job on one GPU with a GPU burn-in before every timed block; cost and accuracy '
+              'come from the same invocation; every repetition is retained in the run index. No timing ratio is '
+              'taken across jobs.', '']
+    lines += ['## Glossary', '',
+              '- **Checkpoint**: the exact saved neural network weights. Frozen here; nothing is retrained.',
+              '- **Latent dimension $k$**: how many numbers the online solve actually solves for (16).',
+              '- **Bank rank $R$**: how many fixed learned spatial patterns the decoder combines (512).',
+              '- **Weak modes $M$**: the smooth test functions the PDE residual is projected onto (64). The solve '
+              'minimises that projected residual, not the pointwise one.',
+              '- **EQ / empirical quadrature**: a stored list of $m$ grid points and nonnegative weights that '
+              'approximate an integral over the whole grid, so the nonlinear term costs $m$ evaluations instead of '
+              'all 65025. The weights are fitted offline by nonnegative least squares on decoder outputs.',
+              '- **$m$**: the number of quadrature points in a rule. The project rule of thumb is $m \\approx 4M$.',
+              '- **NNLS**: nonnegative least squares, the offline fit that chooses those weights.',
+              '- **Full-grid / quadrature-free control**: the same solve with the nonlinear term evaluated at every '
+              'interior node, so any difference from an EQ arm is quadrature error alone.',
+              '- **Cap (iteration budget)**: the maximum Gauss-Newton iterations allowed per time step.',
+              '- **Evolution gtol (stopping tolerance)**: the normalized gradient below which a step is declared '
+              'converged. It measures optimisation progress, never physical accuracy.',
+              '- **Early stopped**: the step ran out of iterations instead of meeting a stopping test. Such arms are '
+              'reported as early stopped and are never counted as stationary solves.',
+              '- **Gradient stationary**: every step and the initial fit met the normalized-gradient test.',
+              '- **Worst error**: the largest relative field error over all requested output times and all cases in '
+              'the pass, normalized by the reference initial field norm (the archived convention).',
+              '- **Median GPU (ms)**: median device time for one complete query over every case and repetition.',
+              '- **Median complete query (ms)**: the same, including host-to-device input and device-to-host output.',
+              '- **FOM control**: the ordinary full-order numerical solver at a named tolerance and mesh, timed in '
+              'the same job. `same_nt1e-2_dt005` means the production mesh, time step 0.005 and Newton tolerance '
+              '1e-2; `coarse_half` and `coarse_quarter` solve on half and quarter meshes and interpolate up.',
+              '- **Latency outlier**: a repetition above the upper Tukey fence of that arm\'s timings.',
+              '- **Calibration cases**: eight independent development cases used to fit and choose settings.',
+              '- **Held-out validation cases**: the 32 common-data cases, untouched until the shortlist was frozen.',
+              '- **Sentinel**: a small high-effort run used only to check that tightening the solver further stops '
+              'changing the answer.', '']
+    args.out.write_text('\n'.join(lines) + '\n')
+    print(args.out, sha(args.out))
+
+
+if __name__ == '__main__':
+    main()

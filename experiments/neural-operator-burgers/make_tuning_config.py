@@ -24,9 +24,11 @@ def main():
         native=dict(step_budget=strict['step_budget'], evolution_gtol=strict['gtol'],
                     evolution_residual_scale=1e-9,
                     role='exactly the archived native solver configuration'),
-        converged=dict(step_budget=600, evolution_gtol=1e-8, evolution_residual_scale=1e-12,
+        # The archived native run never reached its 180-iteration cap (worst step 42),
+        # so the high-effort endpoint tightens the tolerances rather than inflating the cap.
+        converged=dict(step_budget=strict['step_budget'], evolution_gtol=1e-8, evolution_residual_scale=1e-12,
                        role='high-effort reference endpoint'),
-        ultra=dict(step_budget=1200, evolution_gtol=1e-10, evolution_residual_scale=1e-14,
+        ultra=dict(step_budget=2 * strict['step_budget'], evolution_gtol=1e-10, evolution_residual_scale=1e-14,
                    role='stability control for the reference endpoint'),
     )
     for budget in [2, 4, 8]:
@@ -34,7 +36,7 @@ def main():
                                         evolution_residual_scale=1e-9,
                                         role='iteration-cap screen; deliberately early stopped')
     for gtol in [1e-3, 1e-5, 1e-6]:
-        settings[f'gtol{gtol:g}'] = dict(step_budget=600, evolution_gtol=gtol,
+        settings[f'gtol{gtol:g}'] = dict(step_budget=strict['step_budget'], evolution_gtol=gtol,
                                          evolution_residual_scale=1e-9,
                                          role='stopping-tolerance screen at the converged cap')
     cfg = dict(

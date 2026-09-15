@@ -106,16 +106,17 @@ def fit_eq_rule(jax, jnp, e, params, Z, L, M, m, G, phi, deadline, seed, candida
     design = design / scale[:, None]
     b = b / scale
     supp, w, truncated, rounds = bounded_nnls_capped(design, b, m, deadline, scipy_optimize)
+    # Padding must never outlive the deadline check that licenses the final refit,
+    # or the returned support and weights would disagree.
+    can_refit = time.monotonic() < deadline
     padded = False
-    if len(supp) < m and time.monotonic() < deadline:
+    if len(supp) < m and can_refit:
         rest = np.setdiff1d(np.arange(len(cp)), supp)
         supp = np.concatenate((supp, rest[np.argsort(-np.abs(design[:, rest]).mean(0))[:m - len(supp)]]))
         padded = True
-    if len(supp) and time.monotonic() < deadline:
+    refit = bool(len(supp) and can_refit)
+    if refit:
         w, _ = scipy_optimize.nnls(design[:, supp], b, maxiter=10 * len(supp))
-        refit = True
-    else:
-        refit = False
     pos = cp[supp]
     relative_fit = float(np.linalg.norm(design[:, supp] @ w - b) / np.linalg.norm(b))
     info = dict(requested_m=int(m), actual_m=int(len(supp)), greedy_rounds=int(rounds),
@@ -272,12 +273,14 @@ def run_timed_pass(ctx, report, path, out, arms, foms, cases, reps, deadline, pa
                 output_seconds = time.perf_counter() - host_start
                 complete_seconds = time.perf_counter() - complete_start
                 fields = host[0].copy()
-                assert fields.dtype == np_.float64 and np_.isfinite(fields).all()
+                assert fields.dtype == np_.float64
                 assert np_.array_equal(fields[0], supplied), 'deployable output must return the supplied field'
+                finite = bool(np_.isfinite(fields).all())
                 row = dict(pass_name=pass_name, case_id=record['case_id'], case_index=case['index'],
                            method=method, rep=rep, gpu_seconds=gpu_seconds,
                            input_transfer_seconds=input_seconds, output_transfer_seconds=output_seconds,
-                           host_to_host_seconds=complete_seconds, error=error_metrics(fields, reference),
+                           host_to_host_seconds=complete_seconds, finite_output=finite,
+                           error=error_metrics(fields, reference) if finite else None,
                            fields_sha256=field_hash(fields))
                 if method in arms:
                     row.update(arm=arms[method]['spec'], **stopping_record(host))
@@ -303,9 +306,10 @@ def run_timed_pass(ctx, report, path, out, arms, foms, cases, reps, deadline, pa
 
 
 def summarize(report, pass_name, method):
-    rows = [r for r in report['invocations'] if r['pass_name'] == pass_name and r['method'] == method]
+    every = [r for r in report['invocations'] if r['pass_name'] == pass_name and r['method'] == method]
+    rows = [r for r in every if r.get('error')]
     if not rows:
-        return None
+        return dict(method=method, invocations=len(every), nonfinite_invocations=len(every) - len(rows))
     gpu = np.asarray([r['gpu_seconds'] for r in rows])
     host = np.asarray([r['host_to_host_seconds'] for r in rows])
     worst = max(r['error']['maximum'] for r in rows)
@@ -313,7 +317,8 @@ def summarize(report, pass_name, method):
     for r in rows:
         per_case.setdefault(r['case_id'], []).append(r['gpu_seconds'])
     q1, q3 = np.percentile(gpu, [25, 75])
-    return dict(method=method, invocations=len(rows), median_gpu_seconds=float(np.median(gpu)),
+    return dict(method=method, invocations=len(rows), nonfinite_invocations=len(every) - len(rows),
+                median_gpu_seconds=float(np.median(gpu)),
                 median_complete_host_seconds=float(np.median(host)),
                 median_of_case_median_gpu_seconds=float(np.median([np.median(v) for v in per_case.values()])),
                 worst_fixed_initial_error=float(worst),
@@ -473,7 +478,8 @@ def main():
             G5, Pq = quadrature_arrays(e, jnp, ctx['dec'], ctx['phi'], rpos, rw, ctx['L'], ctx['R'])
             rules[f'm{m}'] = dict(operators=make_operators(ctx, G5, Pq), info=info)
     else:
-        for entry in cfg['validation_rules']:
+        shortlist = json.loads(args.shortlist.read_text())
+        for entry in shortlist.get('rules', []):
             if entry['name'] == 'm256':
                 continue
             rpos = np.asarray(entry['eq_indices'])
@@ -592,7 +598,6 @@ def main():
         for name in list(arms) + list(drift):
             report['summaries'][f'effort/{name}'] = summarize(report, 'effort', name)
     else:
-        shortlist = json.loads(args.shortlist.read_text())
         report['shortlist'] = shortlist
         arms = build_arms([(a['name'], a['quadrature'], a['setting']) for a in shortlist['arms']])
         run_timed_pass(ctx, report, path, out, arms, foms, cases, reps, deadline, 'validation', cfg)

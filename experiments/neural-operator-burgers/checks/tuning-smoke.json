@@ -1,11 +1,11 @@
 {
   "scope": "bounded local L=64 saved-operator smoke; no accuracy, timing or reference claim",
   "passed": true,
-  "full_grid_operator_numpy_parity": 7.456558587684146e-15,
+  "full_grid_operator_numpy_parity": 8.698718979631216e-15,
   "declared_operator_tolerance": 1e-12,
-  "full_grid_jacobian_finite_difference_parity": 1.9319860970359952e-09,
+  "full_grid_jacobian_finite_difference_parity": 1.7773691907992245e-09,
   "declared_gradient_tolerance": 1e-06,
-  "sampled_versus_full_quadrature_relative_discrepancy": 0.0019785193403294783,
+  "sampled_versus_full_quadrature_relative_discrepancy": 0.001978519340329524,
   "explicit_default_controls_bit_identical": true,
   "arms": {
     "m256_native": {
@@ -19,13 +19,13 @@
         "4": 50
       },
       "steps_at_iteration_cap": 0,
-      "worst_step_normalized_gradient": 8.587507667379901e-07,
+      "worst_step_normalized_gradient": 8.58750423270333e-07,
       "initial_iterations": 140,
       "initial_reason": 4,
-      "initial_normalized_gradient": 6.94182050141439e-07,
+      "initial_normalized_gradient": 6.941821157077924e-07,
       "gradient_stationary": true,
       "early_stopped": false,
-      "fields_sha256": "f731c70f9d57e4f79882efbe78b0ca353f145818fb2d11e6ca76e9dbda769087"
+      "fields_sha256": "be57b7f763b6a6564f829825d9aab74fde98dcf85016efc4048af9bdd76ac1eb"
     },
     "m256_cap2": {
       "step_iterations_total": 100,
@@ -38,13 +38,13 @@
         "4": 0
       },
       "steps_at_iteration_cap": 50,
-      "worst_step_normalized_gradient": 0.42619014829025975,
+      "worst_step_normalized_gradient": 0.42619014829025176,
       "initial_iterations": 140,
       "initial_reason": 4,
-      "initial_normalized_gradient": 6.94182050141439e-07,
+      "initial_normalized_gradient": 6.941821157077924e-07,
       "gradient_stationary": false,
       "early_stopped": true,
-      "fields_sha256": "d9fce970e1c2aa83caafea0b616f299182164f8cc345c4fd3924d2facb7640be"
+      "fields_sha256": "df2ce1f0929ad7734d95a216fae14917a2961f0a93cc4a1624ede8e5e379a2b3"
     },
     "full_native": {
       "step_iterations_total": 342,
@@ -57,13 +57,13 @@
         "4": 50
       },
       "steps_at_iteration_cap": 0,
-      "worst_step_normalized_gradient": 9.442883958307578e-07,
+      "worst_step_normalized_gradient": 9.442909376033856e-07,
       "initial_iterations": 140,
       "initial_reason": 4,
-      "initial_normalized_gradient": 6.94182050141439e-07,
+      "initial_normalized_gradient": 6.941821157077924e-07,
       "gradient_stationary": true,
       "early_stopped": false,
-      "fields_sha256": "9b7ffb9f654b729e04b76aa5b8fb1ebebd58c2b286ecf1b39872dc99259c98de"
+      "fields_sha256": "2f40db4cb43f3d5d79121c884689e9f2ad098a13205048b89cc49704b91c994e"
     },
     "full_cap2": {
       "step_iterations_total": 100,
@@ -76,13 +76,13 @@
         "4": 0
       },
       "steps_at_iteration_cap": 50,
-      "worst_step_normalized_gradient": 0.42641576728206754,
+      "worst_step_normalized_gradient": 0.4264157672820597,
       "initial_iterations": 140,
       "initial_reason": 4,
-      "initial_normalized_gradient": 6.94182050141439e-07,
+      "initial_normalized_gradient": 6.941821157077924e-07,
       "gradient_stationary": false,
       "early_stopped": true,
-      "fields_sha256": "d9fce970e1c2aa83caafea0b616f299182164f8cc345c4fd3924d2facb7640be"
+      "fields_sha256": "df2ce1f0929ad7734d95a216fae14917a2961f0a93cc4a1624ede8e5e379a2b3"
     }
   },
   "backend": "gpu",
@@ -91,7 +91,7 @@
   "matmul_precision": "highest",
   "jax_version": "0.10.1",
   "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
-  "tuning_source_sha256": "2b1ad5abd78351a2b404d7d345b841c3ccf8a7ce17d55ed3431ef8ab316ee043",
+  "tuning_source_sha256": "11468d8952b0bfe03a287d4fa7e3ecb98f003aa6090494882b6407f8c5d97631",
   "accuracy_paths_sha256": "94fb27035bcca60a6fcbb06bf03b40419bd9e7c7c89bd6f8306e141b2950d887",
-  "config_sha256": "055156c8cae395a417ef6b0a5ace07a986264d32606f6f3167f4ffa12aef0012"
+  "config_sha256": "a624de02b1e169f3902ab767aff18793dd8a12af49f1a0f51a50e20114f8dff7"
 }

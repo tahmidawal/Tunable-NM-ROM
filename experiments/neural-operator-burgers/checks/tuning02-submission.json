@@ -1,0 +1,22 @@
+{
+  "attempt": "tuning02",
+  "phase": "validation",
+  "job_id": "3712269",
+  "job_name": "ctol_nob_tuning02",
+  "partition": "gpu",
+  "gpu": "a100-80G",
+  "remote": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/tuning02",
+  "requested_minutes": 110,
+  "driver_seconds": 6000,
+  "shortlist_sha256": "142a5a760b3548f19d1c111a64d7d9d6224238dd4c211aa73c8df559eaf40c3d",
+  "source_commit": "d2b93bd4f56d07580d3357972737eab92a96622f",
+  "queue_before": [
+    "3710846 ctol_noa_fno_b02 RUNNING"
+  ],
+  "queue_after": [
+    "3712269 ctol_nob_tuning02 PENDING",
+    "3710846 ctol_noa_fno_b02 RUNNING"
+  ],
+  "one_job_per_directory": true,
+  "shortlist_frozen_before_holdout": "yes; the shortlist was produced from calibration invocations only"
+}

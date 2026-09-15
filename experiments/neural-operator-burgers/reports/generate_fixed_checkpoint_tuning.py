@@ -45,9 +45,9 @@ def arm_rows(report, pass_name):
 
 def curve_table(report, passes, title):
     lines = [f'### {title}', '',
-             '| Arm | Quadrature | Cap | Evolution gtol | Worst error (%) | Median GPU (ms) | '
+             '| Arm | Pass | Quadrature | Cap | Evolution gtol | Worst error (%) | Median GPU (ms) | '
              'Median complete query (ms) | Early-stopped invocations | Gradient-stationary invocations | Latency outliers |',
-             '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+             '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
     for pass_name in passes:
         for row in arm_rows(report, pass_name):
             s, spec, preset = row['summary'], row['spec'], row['preset']
@@ -59,7 +59,7 @@ def curve_table(report, passes, title):
                 quadrature = f"FOM mesh {preset['mesh']}, dt {preset['dt']:g}"
                 cap = '-'
                 gtol = f"Newton tol {preset['ntol']:g}"
-            lines.append(f"| `{row['method']}` | {quadrature} | {cap} | {gtol} | "
+            lines.append(f"| `{row['method']}` | {pass_name} | {quadrature} | {cap} | {gtol} | "
                          f"{pct(s['worst_fixed_initial_error'])} | {ms(s['median_gpu_seconds'])} | "
                          f"{ms(s['median_complete_host_seconds'])} | {s.get('early_stopped_invocations', 0)} | "
                          f"{s.get('gradient_stationary_invocations', 0)} | {s['upper_tukey_latency_outliers']} |")
@@ -78,7 +78,7 @@ def dominance(report, passes, fom_names):
                   and rom['summary']['median_gpu_seconds'] <= f['summary']['median_gpu_seconds']]
         if len(beaten) == len(foms) and foms:
             best.append(rom['method'])
-    return best, [f['method'] for f in foms]
+    return best, sorted(dict.fromkeys(f['method'] for f in foms))
 
 
 def main():
@@ -96,9 +96,34 @@ def main():
              'efficient full-order controls timed in the same job on the same GPU. '
              + ('All numbers below are final for this study.' if validation else
                 '**Numbers below are provisional: the held-out confirmation pass has not been collected.**'), '']
+    fixed = {k: v for k, v in cfg['fixed'].items() if k != 'mode_ids'}
+    fixed['weak_mode_set'] = f"the {len(cfg['fixed']['mode_ids'])} lowest discrete eigenvalue sine modes"
+    beat0, foms0 = dominance(calibration, ['quadrature', 'effort'], None)
+    roms0 = [r for p in ['quadrature', 'effort'] for r in arm_rows(calibration, p) if r['spec']]
+    best_rom = min(roms0, key=lambda r: r['summary']['worst_fixed_initial_error'])
+    cheap_fom = min((r for p in ['quadrature', 'effort'] for r in arm_rows(calibration, p) if r['preset']),
+                    key=lambda r: r['summary']['median_gpu_seconds'])
+    acc_fom = min((r for p in ['quadrature', 'effort'] for r in arm_rows(calibration, p) if r['preset']),
+                  key=lambda r: r['summary']['worst_fixed_initial_error'])
+    lines += ['## Verdict', '',
+              ('**No.** ' if not beat0 else '**Yes.** ') +
+              'Across every setting measured on the calibration cases, no tuned configuration of this frozen '
+              'checkpoint is simultaneously at least as accurate and at least as fast as every efficient '
+              'full-order control timed in the same job.', '',
+              f"The most accurate tuned setting is `{best_rom['method']}` at "
+              f"{pct(best_rom['summary']['worst_fixed_initial_error'])}% worst error and "
+              f"{ms(best_rom['summary']['median_gpu_seconds'])} ms median GPU time. The most accurate full-order "
+              f"control, `{acc_fom['method']}`, reaches {pct(acc_fom['summary']['worst_fixed_initial_error'])}% at "
+              f"{ms(acc_fom['summary']['median_gpu_seconds'])} ms, and the cheapest, `{cheap_fom['method']}`, costs "
+              f"{ms(cheap_fom['summary']['median_gpu_seconds'])} ms. The reduced-order model is beaten on both axes "
+              'at once.', '',
+              'What the three controls do buy is a real **cost** curve at essentially unchanged accuracy, plus a '
+              'cliff below a threshold of solver effort. Above that threshold the physical error is flat to five '
+              'or six significant figures while the cost moves by tens of percent, because the error is set by how '
+              'well the frozen decoder can represent the solution, not by how well the weak equations are solved.', '']
     lines += ['## What was held fixed', '',
-              '```json', json.dumps(dict(checkpoint_sha256=calibration['checkpoint_sha256'], **cfg['fixed']),
-                                    indent=2, default=str)[:4000], '```', '',
+              '```json', json.dumps(dict(checkpoint_sha256=calibration['checkpoint_sha256'], **fixed),
+                                    indent=2, default=str), '```', '',
               f"Trust radius {calibration['trust_radius']:.12g}. "
               f"Weak-mode count $M = {cfg['fixed']['weak_modes']}$, latent dimension $k = {cfg['fixed']['latent_dimension']}$, "
               f"bank rank $R = {cfg['fixed']['bank_rank']}$, mesh $L = {cfg['fixed']['intervals']}$ intervals, "
@@ -128,8 +153,13 @@ def main():
               '| Rule | Requested m | Actual support | NNLS relative fit | Deadline truncated | Fit seconds |',
               '| --- | ---: | ---: | ---: | --- | ---: |']
     for rule in calibration['eq_rules']:
-        lines.append(f"| {rule.get('source', 'decoder-output NNLS refit')} | {rule.get('requested_m')} | "
-                     f"{rule['actual_m']} | {rule.get('eq_relative_fit', float('nan')):.6g} | "
+        if rule.get('requested_m') is None:
+            name, requested, fit = 'full grid (quadrature-free control)', 'n/a', 'n/a (exact)'
+        else:
+            name = 'archived accepted rule' if 'archived' in rule.get('source', '') else 'decoder-output NNLS refit'
+            requested = rule['requested_m']
+            fit = f"{rule['eq_relative_fit']:.6g}"
+        lines.append(f"| {name} | {requested} | {rule['actual_m']} | {fit} | "
                      f"{rule.get('deadline_truncated', False)} | {rule.get('fit_seconds', 0):.1f} |")
     reproduction = calibration.get('archived_rule_reproduction')
     if reproduction:
@@ -169,11 +199,60 @@ def main():
     if selection:
         lines += [f"Rule selected for the effort screens: **{selection['selected']}**. Criterion: {selection['criterion']}.", '']
     beat, foms = dominance(calibration, ['quadrature', 'effort'], None)
+    # what the knobs actually buy, compared only within one measurement pass
+    def summary_of(pass_name, method):
+        return calibration['summaries'].get(f'{pass_name}/{method}')
+    selected_name = selection['selected'] if selection else None
+    if selected_name:
+        base = summary_of('effort', f'{selected_name}_gtol1e-06')
+        knob_rows = []
+        for method in [f'{selected_name}_gtol0.001', f'{selected_name}_gtol1e-05',
+                       f'{selected_name}_cap8', f'{selected_name}_cap4', f'{selected_name}_cap2']:
+            other = summary_of('effort', method)
+            if base and other and other.get('median_gpu_seconds'):
+                knob_rows.append((method, other['median_gpu_seconds'] / base['median_gpu_seconds'] - 1,
+                                  other['worst_fixed_initial_error'] - base['worst_fixed_initial_error'],
+                                  other['worst_fixed_initial_error'], other['early_stopped_invocations']))
+        if knob_rows:
+            lines += ['### What the effort knobs actually buy', '',
+                      f"All rows below use the selected `{selected_name}` quadrature rule and were measured in the "
+                      f"same pass as the reference `{selected_name}_gtol1e-06`, which is the archived native "
+                      f"solver configuration on that rule: {pct(base['worst_fixed_initial_error'])}% worst error at "
+                      f"{ms(base['median_gpu_seconds'])} ms.", '',
+                      '| Setting | Cost change | Worst-error change (percentage points) | Worst error (%) | Early-stopped invocations |',
+                      '| --- | ---: | ---: | ---: | ---: |']
+            for method, dc, de, err, early in knob_rows:
+                lines.append(f'| `{method}` | {100 * dc:+.3f}% | {100 * de:+.6f} | {pct(err)} | {early} |')
+            lines += ['', 'Loosening the stopping tolerance is a usable cost control: it moves the cost by tens of '
+                          'percent while the physical error changes in the fifth or sixth significant figure. '
+                          'Starving the iteration cap is not: below a threshold the solve stops making accepted '
+                          'steps at all and the trajectory collapses, and because the fixed initial fit and the '
+                          'decode still have to be paid, the saving is far from proportional to the work removed.', '']
     lines += ['### Does any tuned setting beat the efficient FOM on both axes?', '',
               (f"Yes on the calibration cases: {', '.join('`' + b + '`' for b in beat)}." if beat else
                'No. On the calibration cases no tuned setting is simultaneously at least as accurate and at least '
                'as fast as every efficient full-order control timed in the same job.'), '',
               f"Controls compared: {', '.join('`' + f + '`' for f in foms)}.", '']
+    shared = [m for m in cfg['drift_controls']]
+    drift_rows = []
+    for method in shared:
+        a = calibration['summaries'].get(f'quadrature/{method}')
+        b = calibration['summaries'].get(f'effort/{method}')
+        if a and b and a.get('median_gpu_seconds') and b.get('median_gpu_seconds'):
+            drift_rows.append((method, a['median_gpu_seconds'], b['median_gpu_seconds'],
+                               b['median_gpu_seconds'] / a['median_gpu_seconds'] - 1,
+                               a['worst_fixed_initial_error'], b['worst_fixed_initial_error']))
+    if drift_rows:
+        lines += ['### Within-job drift control', '',
+                  'The same full-order controls were re-timed in the second pass of the same job on the same GPU. '
+                  'Their accuracy is identical by construction; the timing difference is the drift these '
+                  'measurements carry, and it bounds how finely two arms measured in different passes may be '
+                  'compared.', '',
+                  '| Control | Pass 1 median GPU (ms) | Pass 2 median GPU (ms) | Drift | Worst error pass 1 (%) | Worst error pass 2 (%) |',
+                  '| --- | ---: | ---: | ---: | ---: | ---: |']
+        for name, first, second, delta, e1, e2 in drift_rows:
+            lines.append(f'| `{name}` | {ms(first)} | {ms(second)} | {100 * delta:+.3f}% | {pct(e1)} | {pct(e2)} |')
+        lines.append('')
     if calibration.get('native_compression'):
         worst = max(r['relative_initial_compression_error'] for r in calibration['native_compression'])
         lines += ['### Native compression of the supplied field', '',

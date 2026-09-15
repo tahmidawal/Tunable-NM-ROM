@@ -1,0 +1,17 @@
+{
+  "job_id": "3710846",
+  "job_name": "ctol_noa_fno_b02",
+  "remote_job_directory": "/cluster/tufts/paralab/tawal01/no_audit_20260914/fno_burgers02",
+  "data_source": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01 (train, validation and the eight refined 4096-interval anchors copied on the cluster; 171/171 files verified against DATA.sha256; the shared cache itself is untouched)",
+  "node": "pax105",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "jax_backend": "gpu",
+  "driver": "575.57.08",
+  "staged_manifest_verified": "33/33",
+  "source_commit": "6fe122e2",
+  "design": "equal 3000-second wall budget per capacity with early stopping, learning-rate refinement of the winner, matched ROM/FOM diagnosis cohort evaluation and same-job complete-query timing",
+  "log": "checks/collection-burgers02.log",
+  "launched_utc": "2026-09-15T02:18:53.732018+00:00",
+  "queue_before_submit": "one owned job 3710790 in its own directory",
+  "queue_after_submit": "two owned jobs, one per job directory"
+}

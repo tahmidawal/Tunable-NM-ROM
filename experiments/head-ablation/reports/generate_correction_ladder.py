@@ -43,15 +43,21 @@ def figure(rows, cfg, out_png, out_pdf):
         for x in eq:
             ax.annotate(f"q={x['q']}", (x['median_gpu_ms'], x['worst_same_grid_percent']),
                         textcoords='offset points', xytext=(6, -12), fontsize=8, color='#4f8a3d')
-    for x in alt:
-        ax.plot(x['median_gpu_ms'], x['worst_same_grid_percent'], '^', color='#b07b32',
-                label=f"q=0, time step {x['dt']:g} ({x['quadrature']})", zorder=4)
+    for x, mark in zip(alt, ['^', 'v', '<', '>']):
+        ax.plot(x['median_gpu_ms'], x['worst_same_grid_percent'], mark, markersize=9,
+                color='#b07b32', label=f"q=0, dt {x['dt']:g}, {x['quadrature']}", zorder=4)
     for x in mmax:
-        ax.plot(x['median_gpu_ms'], x['worst_same_grid_percent'], 'D', color='#7a5ba6',
-                label=f"q=0 at the ladder's largest test count", zorder=4)
-    for x, mark in zip(foms, ['*', 'X']):
-        ax.plot(x['median_gpu_ms'], max(x['worst_same_grid_percent'], 1e-4), mark, markersize=11,
-                color='#b03a3a', label=f"full-order `{x['arm']}`", zorder=5)
+        ax.plot(x['median_gpu_ms'], x['worst_same_grid_percent'], 'D', markersize=8, color='#7a5ba6',
+                label=f"q=0 held at M={x['M']} (test-count control)", zorder=4)
+    # The converged full-order solve defines the same-grid metric, so its own value is
+    # zero by construction: it enters the figure as a cost line, not as a point.
+    for x in foms:
+        if x['worst_same_grid_percent'] is not None and x['worst_same_grid_percent'] > 0:
+            ax.plot(x['median_gpu_ms'], x['worst_same_grid_percent'], 'X', markersize=12,
+                    color='#b03a3a', label=f"full-order `{x['arm']}`", zorder=5)
+        else:
+            ax.axvline(x['median_gpu_ms'], color='#b03a3a', ls='--', lw=1.4, zorder=1,
+                       label=f"full-order `{x['arm']}` cost (its same-grid error is 0 by definition)")
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('median complete-query GPU time (ms), same job, burn-in before every timed block')

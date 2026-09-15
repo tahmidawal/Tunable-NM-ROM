@@ -1,0 +1,78 @@
+{
+  "scope": "one opened development case at 64 intervals with archived mesh operators; a solver-reformulation check, not a timing or accuracy measurement",
+  "intervals": 64,
+  "case": 0,
+  "dt": 0.005,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 180,
+    "gtol": 1e-06
+  },
+  "trust_radius": 0.05256511659045252,
+  "checkpoint": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "K": 16,
+  "R": 512,
+  "tolerance": 1e-08,
+  "parity_tolerance": 1e-12,
+  "retained_vs_expected_relative": 1.6053456957278525e-14,
+  "staged_vs_expected_relative": 1.6053456957278525e-14,
+  "staged_vs_retained_relative": 0.0,
+  "staged_vs_retained_bitwise_identical": true,
+  "stages_compose_relative": 0.0,
+  "latent_relative": 0.0,
+  "max_step_stationarity": 9.011566650492841e-07,
+  "initial_fit_stationarity": 5.64661637355103e-07,
+  "stationary": true,
+  "expected_sha256": "fa5489cd195300383f26f4dd0852cc1a9c4cb9fe39a43e90e680f61f6015af19",
+  "staged_sha256": "54b41f08348a5650cef10c7a859b9d2039cbb081c4e9f2915aeee1b27829fe5a",
+  "reference_settings_for_4096": [
+    [
+      1024,
+      0.000625
+    ],
+    [
+      2048,
+      0.000625
+    ],
+    [
+      2048,
+      0.0003125
+    ],
+    [
+      4096,
+      0.00125
+    ],
+    [
+      4096,
+      0.000625
+    ],
+    [
+      4096,
+      0.0003125
+    ]
+  ],
+  "restriction": {
+    "source_intervals": 64,
+    "ladder": [
+      64
+    ],
+    "coarsest": 64,
+    "operator": "nested-node injection (stride selection)",
+    "chained_equals_direct": true,
+    "direct_sha256": "fa5489cd195300383f26f4dd0852cc1a9c4cb9fe39a43e90e680f61f6015af19",
+    "chained_sha256": "fa5489cd195300383f26f4dd0852cc1a9c4cb9fe39a43e90e680f61f6015af19",
+    "nodes_are_source_nodes": true,
+    "boundary_preserved": true
+  },
+  "seconds": 32.14380328601692,
+  "jax_backend": "gpu",
+  "jax_version": "0.10.1",
+  "gpu": "NVIDIA GB10",
+  "x64": true,
+  "matmul_precision": "highest",
+  "commit": null,
+  "job_id": null,
+  "slurm_node": null,
+  "metric_recomputation_difference": 0.0
+}

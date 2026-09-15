@@ -1,0 +1,29 @@
+#!/bin/bash
+#SBATCH --job-name=ctol_mrladder___PDE__
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:__GPU__:1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=__MEM__
+#SBATCH --time=__TIME__
+#SBATCH --output=__REMOTE__/job.out
+#SBATCH --error=__REMOTE__/job.err
+set -euo pipefail
+REMOTE=__REMOTE__
+PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+cd "$REMOTE/code"
+export JAX_DEFAULT_MATMUL_PRECISION=highest
+export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export COMMIT=__COMMIT__
+echo "host=$(hostname) job=$SLURM_JOB_ID gpu=$CUDA_VISIBLE_DEVICES commit=$COMMIT"
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader || true
+# A node with a failed cuInit falls back to CPU silently and returns plausible,
+# invalid timings. Refuse to do any work in that case.
+"$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b=='gpu' else 42)"
+df -h "$REMOTE" | tail -1
+"$PY" experiments/mesh-ladder/ladder___PDE__.py \
+  --config experiments/mesh-ladder/config-__PDE__.json \
+  --out "$REMOTE/out"
+echo "DRIVER-EXIT=$?"
+cd "$REMOTE/out"
+find . -type f -print0 | sort -z | xargs -0 sha256sum > "$REMOTE/OUTPUTS.sha256"
+echo "SBATCH-COMPLETE"

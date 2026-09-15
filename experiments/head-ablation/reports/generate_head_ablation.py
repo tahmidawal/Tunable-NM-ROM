@@ -288,6 +288,64 @@ def glossary(w):
     w('')
 
 
+def answer_section(w, br, ba, pr, pa):
+    """The decisive cross-PDE table, at matched latent dimension, finest mesh each."""
+    w('## The answer, at matched latent dimension')
+    w('')
+    w('One row per PDE at its finest tested mesh. "Discriminating error" is the same-grid')
+    w('discrepancy against the converged full-order solve on that mesh, which removes the')
+    w('discretization error the refined-reference metric also contains; on Poisson the direct')
+    w('transform solve is the exact discrete solution, so that column is the reduction error itself.')
+    w('')
+    w('| PDE | mesh | $K$ | neural % | best linear % | quadratic % | best POD at $K$ % | free bank % | '
+      'smallest POD rank reaching the neural head | neural median ms |')
+    w('|---|---:|---:|---:|---:|---:|---:|---:|---|---:|')
+
+    def row(name, rows, mesh, K, neural_arm, linear_arms, quad_arm, pod_prefix, free_arm, key, ms_key):
+        sel = [x for x in rows if x['intervals'] == mesh]
+        get = lambda a: next((x for x in sel if x['arm'] == a), None)
+        n = get(neural_arm)
+        lins = [get(a) for a in linear_arms]
+        lins = [x for x in lins if x]
+        q = get(quad_arm)
+        podK = next((x for x in sel if x['arm'].startswith(pod_prefix) and x['k'] == K), None)
+        fb = get(free_arm)
+        pods = sorted([x for x in sel if x['arm'].startswith(pod_prefix)], key=lambda x: x['k'])
+        hit = [x for x in pods if x[key] is not None and n[key] is not None and x[key] <= n[key]]
+        verdict = (f"$k'={hit[0]['k']}$ (${hit[0]['k'] / K:g}\\times K$)" if hit
+                   else f"none up to $k'={pods[-1]['k']}$ (${pods[-1]['k'] / K:g}\\times K$)")
+        w('| ' + ' | '.join([name, str(mesh), str(K), fmt(n[key], 4),
+                             fmt(min(x[key] for x in lins), 4) if lins else '—',
+                             fmt(q[key], 4) if q else '—',
+                             fmt(podK[key], 4) if podK else '—',
+                             fmt(fb[key], 4) if fb else '—', verdict,
+                             fmt(n[ms_key], 3)]) + ' |')
+
+    bmesh = max({x['intervals'] for x in ba['checks']['arm_table']})
+    row('Burgers 2D', ba['checks']['arm_table'], bmesh, br['K'], 'a_neural_eq',
+        ['b_linear_dec_eq', 'b_linear_truth_eq'], 'c_quad_dec_eq', 'e_pod', 'd_freebank_dense',
+        'worst_same_grid_percent', 'median_gpu_ms')
+    if pa:
+        pmesh = max({x['intervals'] for x in pa['checks']['arm_table']})
+        row('Poisson 2D', pa['checks']['arm_table'], pmesh, pr['K'], 'a_neural',
+            ['b_linear_dec', 'b_linear_truth'], 'c_quad_dec', 'e_pod', 'd_freebank',
+            'worst_same_grid_percent', 'median_query_ms')
+    w('')
+    w('Read together: **the nonlinear coefficient map earns its place per latent dimension on both '
+      'PDEs**, by a factor of several against the best linear map the same frozen bank admits.')
+    w('Whether that advantage survives is a different question per PDE, and the two answer it')
+    w('differently. On advection-dominated Burgers no classical POD rank up to eight times the latent')
+    w('dimension comes close, and the ranks that get closest cost several times more per query, which')
+    w('is the slow Kolmogorov width decay of a moving front. On the linear elliptic Poisson problem a')
+    w('classical POD basis at eight times the dimension overtakes the pure neural head at essentially')
+    w('the same cost, because there the query is dominated by source projection and decoding rather')
+    w('than by the reduced solve, so extra dimensions are nearly free.')
+    w('')
+    w('Neither PDE supports a claim of a speed advantage over a full-order solver; the full-order rows')
+    w('in the tables below are same-job context only.')
+    w('')
+
+
 def build(args):
     br = json.loads(Path(args.burgers_result).read_text())
     ba = json.loads(Path(args.burgers_audit).read_text())
@@ -317,7 +375,7 @@ def build(args):
     w(r'$$r_w(z)=\frac{A h(z)-p+\Delta t\,\big(\Phi^\top\mathcal N(Bh(z))+\nu\,\lambda\odot A h(z)\big)}'
       r'{1+\Delta t\,\nu\lambda},\qquad p=A h(z^{\rm prev}),$$')
     w('')
-    w(r'with $\mathcal N$ the full-order model\'s own sign-upwind advection, and the Poisson arms minimise')
+    w(r"with $\mathcal N$ the full-order model's own sign-upwind advection, and the Poisson arms minimise")
     w(r'$B h(z)-\lambda^{-1}\Phi^\top f$. The linear terms are exact in both.')
     w('')
     w('The arms are')
@@ -365,12 +423,14 @@ def build(args):
     w('  class HB,HC,HD,HE fitted;')
     w('```')
     w('')
-    burgers_section(w, br, ba, bs)
     pr = pa = ps = None
     if args.poisson_result:
         pr = json.loads(Path(args.poisson_result).read_text())
         pa = json.loads(Path(args.poisson_audit).read_text())
         ps = json.loads(Path(args.poisson_smoke).read_text())
+    answer_section(w, br, ba, pr, pa)
+    burgers_section(w, br, ba, bs)
+    if pr:
         poisson_section(w, pr, pa, ps)
 
     w('## Stopping status, and why the stationarity column is not a quality ranking')

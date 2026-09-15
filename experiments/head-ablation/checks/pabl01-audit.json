@@ -1,0 +1,817 @@
+{
+  "result": "experiments/head-ablation/runs/pabl01/archive/output/result.json",
+  "result_sha256": "b5fe5102cc20104504112c84829a39ae8e48a73d72326328a01e224db24b3bb7",
+  "job_id": "3711736",
+  "commit": "6759adcc9d85a413f64a05e49e60f828c4bcea4d",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "failed": [],
+  "passed": true,
+  "checks": {
+    "complete": {
+      "passed": true,
+      "detail": null
+    },
+    "backend_gpu": {
+      "passed": true,
+      "detail": "gpu"
+    },
+    "x64": {
+      "passed": true,
+      "detail": null
+    },
+    "precision_highest": {
+      "passed": true,
+      "detail": null
+    },
+    "bank_frozen": {
+      "passed": true,
+      "detail": null
+    },
+    "final_cohort_unopened": {
+      "passed": true,
+      "detail": null
+    },
+    "every_invocation_paired": {
+      "passed": true,
+      "detail": null
+    },
+    "every_subject_case_has_all_reps": {
+      "passed": true,
+      "detail": [
+        3
+      ]
+    },
+    "repetition_output_identical": {
+      "passed": true,
+      "detail": []
+    },
+    "overdetermined_weak_system": {
+      "passed": true,
+      "detail": []
+    },
+    "retained_solver_valid": {
+      "passed": true,
+      "detail": null
+    },
+    "rom_stationary": {
+      "passed": true,
+      "detail": []
+    },
+    "artifacts_present": {
+      "passed": true,
+      "detail": []
+    },
+    "arm_table": [
+      {
+        "intervals": 64,
+        "arm": "a_neural",
+        "kind": "rom",
+        "k": 16,
+        "family": "neural",
+        "worst_error_percent": 6.094768220851192,
+        "median_error_percent": 1.2447404653381189,
+        "worst_same_grid_percent": 6.239065114629969,
+        "median_same_grid_percent": 1.2454333263792239,
+        "worst_bank_projection_percent": 2.31469534774358,
+        "worst_best_found_percent": 6.092626919634297,
+        "median_query_ms": 2.974155475385487,
+        "query_repetitions": 36,
+        "median_iterations": 5.0,
+        "max_stationarity": 8.830863083458565e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "a_neural_q32",
+        "kind": "retained",
+        "k": 16,
+        "family": "neural+linear",
+        "worst_error_percent": 4.671593479575532,
+        "median_error_percent": 0.9399478820828672,
+        "worst_same_grid_percent": 4.794084724392891,
+        "median_same_grid_percent": 0.9422899931425578,
+        "worst_bank_projection_percent": null,
+        "worst_best_found_percent": null,
+        "median_query_ms": 4.507970414124429,
+        "query_repetitions": 36,
+        "median_iterations": 6.5,
+        "max_stationarity": 3.7927989655510737e-07,
+        "stop_reasons": [
+          6
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "b_linear_dec",
+        "kind": "rom",
+        "k": 16,
+        "family": "linear",
+        "worst_error_percent": 17.296808116205394,
+        "median_error_percent": 6.94945910354507,
+        "worst_same_grid_percent": 17.444641152429224,
+        "median_same_grid_percent": 6.991172615320967,
+        "worst_bank_projection_percent": 2.31469534774358,
+        "worst_best_found_percent": 17.296605793891835,
+        "median_query_ms": 2.3638445418328047,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 6.878624361654565e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "b_linear_truth",
+        "kind": "rom",
+        "k": 16,
+        "family": "linear",
+        "worst_error_percent": 21.188426894662626,
+        "median_error_percent": 7.198296942258639,
+        "worst_same_grid_percent": 21.332980876556515,
+        "median_same_grid_percent": 7.250037136903309,
+        "worst_bank_projection_percent": 2.31469534774358,
+        "worst_best_found_percent": 21.188344817730144,
+        "median_query_ms": 2.372903050854802,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 9.204304482853171e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "c_quad_dec",
+        "kind": "rom",
+        "k": 16,
+        "family": "quadratic",
+        "worst_error_percent": 16.630489091558562,
+        "median_error_percent": 2.679976968038961,
+        "worst_same_grid_percent": 16.777142946397536,
+        "median_same_grid_percent": 2.699554253319415,
+        "worst_bank_projection_percent": 2.31469534774358,
+        "worst_best_found_percent": 16.63025341599361,
+        "median_query_ms": 2.794542466290295,
+        "query_repetitions": 36,
+        "median_iterations": 4.0,
+        "max_stationarity": 6.402862642658688e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "d_freebank",
+        "kind": "rom",
+        "k": 128,
+        "family": "free",
+        "worst_error_percent": 2.3391016720796394,
+        "median_error_percent": 0.3899535393912807,
+        "worst_same_grid_percent": 2.4614468739854654,
+        "median_same_grid_percent": 0.3772952057932883,
+        "worst_bank_projection_percent": 2.31469534774358,
+        "worst_best_found_percent": 2.31469534774358,
+        "median_query_ms": 3.0478225089609623,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 3.30967245818005e-08,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "dst_direct",
+        "kind": "fom",
+        "k": null,
+        "family": "fom",
+        "worst_error_percent": 0.25721728516899434,
+        "median_error_percent": 0.08703177568255266,
+        "worst_same_grid_percent": 0.0,
+        "median_same_grid_percent": 0.0,
+        "worst_bank_projection_percent": null,
+        "worst_best_found_percent": null,
+        "median_query_ms": 1.821483368985355,
+        "query_repetitions": 36,
+        "median_iterations": null,
+        "max_stationarity": null,
+        "stop_reasons": null,
+        "M": null
+      },
+      {
+        "intervals": 64,
+        "arm": "e_pod128",
+        "kind": "rom",
+        "k": 128,
+        "family": "pod",
+        "worst_error_percent": 4.382992806125904,
+        "median_error_percent": 0.22863471861313475,
+        "worst_same_grid_percent": 4.518298515262168,
+        "median_same_grid_percent": 0.21301574386777106,
+        "worst_bank_projection_percent": 4.344302683810991,
+        "worst_best_found_percent": 4.344302683810991,
+        "median_query_ms": 2.9868854908272624,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 7.180886024831925e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "e_pod16",
+        "kind": "rom",
+        "k": 16,
+        "family": "pod",
+        "worst_error_percent": 20.053948235046832,
+        "median_error_percent": 7.293087441879158,
+        "worst_same_grid_percent": 20.209000963078978,
+        "median_same_grid_percent": 7.345568687779486,
+        "worst_bank_projection_percent": 20.053865008415055,
+        "worst_best_found_percent": 20.053865008415055,
+        "median_query_ms": 2.2538929479196668,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 9.187339607066017e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "e_pod32",
+        "kind": "rom",
+        "k": 32,
+        "family": "pod",
+        "worst_error_percent": 11.874327237748043,
+        "median_error_percent": 2.4791672871248727,
+        "worst_same_grid_percent": 12.042533981091848,
+        "median_same_grid_percent": 2.5102237910481002,
+        "worst_bank_projection_percent": 11.873887706935006,
+        "worst_best_found_percent": 11.873887706935006,
+        "median_query_ms": 2.5065125664696097,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 9.085261049929532e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "e_pod64",
+        "kind": "rom",
+        "k": 64,
+        "family": "pod",
+        "worst_error_percent": 7.76634963195479,
+        "median_error_percent": 0.7016555964773734,
+        "worst_same_grid_percent": 7.936201474001351,
+        "median_same_grid_percent": 0.7044867526358906,
+        "worst_bank_projection_percent": 7.764510015854599,
+        "worst_best_found_percent": 7.764510015854599,
+        "median_query_ms": 2.523307455703616,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 8.143618224743789e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 64,
+        "arm": "e_pod8",
+        "kind": "rom",
+        "k": 8,
+        "family": "pod",
+        "worst_error_percent": 22.316793745665322,
+        "median_error_percent": 12.47652988218038,
+        "worst_same_grid_percent": 22.46508102427851,
+        "median_same_grid_percent": 12.53538891628661,
+        "worst_bank_projection_percent": 22.316738692073912,
+        "worst_best_found_percent": 22.316738692073912,
+        "median_query_ms": 2.341940882615745,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 8.088873406761967e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "a_neural",
+        "kind": "rom",
+        "k": 16,
+        "family": "neural",
+        "worst_error_percent": 6.092742043629445,
+        "median_error_percent": 1.2421364345806298,
+        "worst_same_grid_percent": 6.101433205253349,
+        "median_same_grid_percent": 1.2423102295121928,
+        "worst_bank_projection_percent": 2.3148075885348516,
+        "worst_best_found_percent": 6.092634061781842,
+        "median_query_ms": 2.87894147913903,
+        "query_repetitions": 36,
+        "median_iterations": 5.0,
+        "max_stationarity": 9.753267649870135e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "a_neural_q32",
+        "kind": "retained",
+        "k": 16,
+        "family": "neural+linear",
+        "worst_error_percent": 4.6671020442747,
+        "median_error_percent": 0.9367864165834847,
+        "worst_same_grid_percent": 4.674511859739574,
+        "median_same_grid_percent": 0.9370960745304249,
+        "worst_bank_projection_percent": null,
+        "worst_best_found_percent": null,
+        "median_query_ms": 4.532633465714753,
+        "query_repetitions": 36,
+        "median_iterations": 6.5,
+        "max_stationarity": 3.774484359828268e-07,
+        "stop_reasons": [
+          6
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "b_linear_dec",
+        "kind": "rom",
+        "k": 16,
+        "family": "linear",
+        "worst_error_percent": 17.296603258377054,
+        "median_error_percent": 6.949120757186994,
+        "worst_same_grid_percent": 17.305562643941666,
+        "median_same_grid_percent": 6.951693867088271,
+        "worst_bank_projection_percent": 2.3148075885348516,
+        "worst_best_found_percent": 17.29660184268645,
+        "median_query_ms": 2.2922646021470428,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 6.904610838447796e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "b_linear_truth",
+        "kind": "rom",
+        "k": 16,
+        "family": "linear",
+        "worst_error_percent": 21.16621721798686,
+        "median_error_percent": 7.198543312394354,
+        "worst_same_grid_percent": 21.174999513980154,
+        "median_same_grid_percent": 7.2017289539916565,
+        "worst_bank_projection_percent": 2.3148075885348516,
+        "worst_best_found_percent": 21.16621589607903,
+        "median_query_ms": 2.372098504565656,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 9.269995496564501e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "c_quad_dec",
+        "kind": "rom",
+        "k": 16,
+        "family": "quadratic",
+        "worst_error_percent": 16.630251903976966,
+        "median_error_percent": 2.6792576744685817,
+        "worst_same_grid_percent": 16.639135678740256,
+        "median_same_grid_percent": 2.680493644951542,
+        "worst_bank_projection_percent": 2.3148075885348516,
+        "worst_best_found_percent": 16.63024982122123,
+        "median_query_ms": 2.859659492969513,
+        "query_repetitions": 36,
+        "median_iterations": 4.0,
+        "max_stationarity": 6.267464309231978e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "d_freebank",
+        "kind": "rom",
+        "k": 128,
+        "family": "free",
+        "worst_error_percent": 2.3276324053569253,
+        "median_error_percent": 0.3724639825586732,
+        "worst_same_grid_percent": 2.335311681476646,
+        "median_same_grid_percent": 0.3726175544339219,
+        "worst_bank_projection_percent": 2.3148075885348516,
+        "worst_best_found_percent": 2.3148075885348516,
+        "median_query_ms": 3.028970444574952,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 3.3389434552930205e-08,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "dst_direct",
+        "kind": "fom",
+        "k": null,
+        "family": "fom",
+        "worst_error_percent": 0.015459977633440071,
+        "median_error_percent": 0.005337721342418791,
+        "worst_same_grid_percent": 0.0,
+        "median_same_grid_percent": 0.0,
+        "worst_bank_projection_percent": null,
+        "worst_best_found_percent": null,
+        "median_query_ms": 1.8392049241811037,
+        "query_repetitions": 36,
+        "median_iterations": null,
+        "max_stationarity": null,
+        "stop_reasons": null,
+        "M": null
+      },
+      {
+        "intervals": 256,
+        "arm": "e_pod128",
+        "kind": "rom",
+        "k": 128,
+        "family": "pod",
+        "worst_error_percent": 4.347265745658061,
+        "median_error_percent": 0.20509714084166716,
+        "worst_same_grid_percent": 4.3555634795638145,
+        "median_same_grid_percent": 0.20529495646487064,
+        "worst_bank_projection_percent": 4.322763689286694,
+        "worst_best_found_percent": 4.322763689286694,
+        "median_query_ms": 3.001329954713583,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 7.355798323752788e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "e_pod16",
+        "kind": "rom",
+        "k": 16,
+        "family": "pod",
+        "worst_error_percent": 20.05474147191372,
+        "median_error_percent": 7.293844042405323,
+        "worst_same_grid_percent": 20.064156592787153,
+        "median_same_grid_percent": 7.297074536993533,
+        "worst_bank_projection_percent": 20.054741126963343,
+        "worst_best_found_percent": 20.054741126963343,
+        "median_query_ms": 2.3075154749676585,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 9.252061587251727e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "e_pod32",
+        "kind": "rom",
+        "k": 32,
+        "family": "pod",
+        "worst_error_percent": 11.85977228990184,
+        "median_error_percent": 2.479521158028005,
+        "worst_same_grid_percent": 11.869948270544164,
+        "median_same_grid_percent": 2.4815053715329745,
+        "worst_bank_projection_percent": 11.859769466696848,
+        "worst_best_found_percent": 11.859769466696848,
+        "median_query_ms": 2.43157846853137,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 9.150552286257904e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "e_pod64",
+        "kind": "rom",
+        "k": 64,
+        "family": "pod",
+        "worst_error_percent": 7.7412644148159755,
+        "median_error_percent": 0.6909802207298492,
+        "worst_same_grid_percent": 7.751539211875063,
+        "median_same_grid_percent": 0.6913971130529843,
+        "worst_bank_projection_percent": 7.741101824541754,
+        "worst_best_found_percent": 7.741101824541754,
+        "median_query_ms": 2.5395655538886786,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 8.266221802028236e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 256,
+        "arm": "e_pod8",
+        "kind": "rom",
+        "k": 8,
+        "family": "pod",
+        "worst_error_percent": 22.319466317943046,
+        "median_error_percent": 12.478345925366593,
+        "worst_same_grid_percent": 22.32847430639841,
+        "median_same_grid_percent": 12.48196109420297,
+        "worst_bank_projection_percent": 22.319466103654552,
+        "worst_best_found_percent": 22.319466103654552,
+        "median_query_ms": 2.2223825799301267,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 8.115022448670083e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "a_neural",
+        "kind": "rom",
+        "k": 16,
+        "family": "neural",
+        "worst_error_percent": 6.0927217068033,
+        "median_error_percent": 1.2421161378997891,
+        "worst_same_grid_percent": 6.09313502482934,
+        "median_same_grid_percent": 1.2421248029139267,
+        "worst_bank_projection_percent": 2.3148080520781353,
+        "worst_best_found_percent": 6.0926340935151355,
+        "median_query_ms": 5.843316437676549,
+        "query_repetitions": 36,
+        "median_iterations": 5.0,
+        "max_stationarity": 9.734948108711754e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "a_neural_q32",
+        "kind": "retained",
+        "k": 16,
+        "family": "neural+linear",
+        "worst_error_percent": 4.667012937258284,
+        "median_error_percent": 0.9367617467117043,
+        "worst_same_grid_percent": 4.6673654232010096,
+        "median_same_grid_percent": 0.93677698398143,
+        "worst_bank_projection_percent": null,
+        "worst_best_found_percent": null,
+        "median_query_ms": 7.317482493817806,
+        "query_repetitions": 36,
+        "median_iterations": 6.5,
+        "max_stationarity": 3.773349257295783e-07,
+        "stop_reasons": [
+          6
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "b_linear_dec",
+        "kind": "rom",
+        "k": 16,
+        "family": "linear",
+        "worst_error_percent": 17.29660213349393,
+        "median_error_percent": 6.949118960757558,
+        "worst_same_grid_percent": 17.29702835776922,
+        "median_same_grid_percent": 6.949241502609185,
+        "worst_bank_projection_percent": 2.3148080520781353,
+        "worst_best_found_percent": 17.296601828230582,
+        "median_query_ms": 5.163108464330435,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 6.906236691214875e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "b_linear_truth",
+        "kind": "rom",
+        "k": 16,
+        "family": "linear",
+        "worst_error_percent": 21.164847010026094,
+        "median_error_percent": 7.198578888541385,
+        "worst_same_grid_percent": 21.165264872190043,
+        "median_same_grid_percent": 7.1987305838537905,
+        "worst_bank_projection_percent": 2.3148080520781353,
+        "worst_best_found_percent": 21.164846155238678,
+        "median_query_ms": 5.328965024091303,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 9.274106350998912e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "c_quad_dec",
+        "kind": "rom",
+        "k": 16,
+        "family": "quadratic",
+        "worst_error_percent": 16.630250477310955,
+        "median_error_percent": 2.6792534743420653,
+        "worst_same_grid_percent": 16.630673092783123,
+        "median_same_grid_percent": 2.679312420160433,
+        "worst_bank_projection_percent": 2.3148080520781353,
+        "worst_best_found_percent": 16.63024980815747,
+        "median_query_ms": 5.7738779578357935,
+        "query_repetitions": 36,
+        "median_iterations": 4.0,
+        "max_stationarity": 6.25911282615497e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "d_freebank",
+        "kind": "rom",
+        "k": 128,
+        "family": "free",
+        "worst_error_percent": 2.3274349370854646,
+        "median_error_percent": 0.37231861922343734,
+        "worst_same_grid_percent": 2.327801078859829,
+        "median_same_grid_percent": 0.37232877084629595,
+        "worst_bank_projection_percent": 2.3148080520781353,
+        "worst_best_found_percent": 2.3148080520781353,
+        "median_query_ms": 5.994765437208116,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 3.340756390276704e-08,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "dst_direct",
+        "kind": "fom",
+        "k": null,
+        "family": "fom",
+        "worst_error_percent": 0.0007351177051312655,
+        "median_error_percent": 0.00025411228931933793,
+        "worst_same_grid_percent": 0.0,
+        "median_same_grid_percent": 0.0,
+        "worst_bank_projection_percent": null,
+        "worst_best_found_percent": null,
+        "median_query_ms": 4.340686835348606,
+        "query_repetitions": 36,
+        "median_iterations": null,
+        "max_stationarity": null,
+        "stop_reasons": null,
+        "M": null
+      },
+      {
+        "intervals": 1024,
+        "arm": "e_pod128",
+        "kind": "rom",
+        "k": 128,
+        "family": "pod",
+        "worst_error_percent": 4.345242446794631,
+        "median_error_percent": 0.20481868431808606,
+        "worst_same_grid_percent": 4.345637494089194,
+        "median_same_grid_percent": 0.2048317701957311,
+        "worst_bank_projection_percent": 4.321342244426722,
+        "worst_best_found_percent": 4.321342244426722,
+        "median_query_ms": 5.930194514803588,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 7.367013132061001e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "e_pod16",
+        "kind": "rom",
+        "k": 16,
+        "family": "pod",
+        "worst_error_percent": 20.054796527525465,
+        "median_error_percent": 7.293910214406135,
+        "worst_same_grid_percent": 20.05524448449582,
+        "median_same_grid_percent": 7.29406404324736,
+        "worst_bank_projection_percent": 20.054796521187814,
+        "worst_best_found_percent": 20.054796521187814,
+        "median_query_ms": 4.659108468331397,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 9.256111484729163e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "e_pod32",
+        "kind": "rom",
+        "k": 32,
+        "family": "pod",
+        "worst_error_percent": 11.858898639803952,
+        "median_error_percent": 2.479642026906518,
+        "worst_same_grid_percent": 11.859382690181192,
+        "median_same_grid_percent": 2.479736725223612,
+        "worst_bank_projection_percent": 11.858898231321747,
+        "worst_best_found_percent": 11.858898231321747,
+        "median_query_ms": 5.049882456660271,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 9.15463882202664e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "e_pod64",
+        "kind": "rom",
+        "k": 64,
+        "family": "pod",
+        "worst_error_percent": 7.7397918023501155,
+        "median_error_percent": 0.6905677569686987,
+        "worst_same_grid_percent": 7.7402805559977,
+        "median_same_grid_percent": 0.6905883392770082,
+        "worst_bank_projection_percent": 7.739660228065616,
+        "worst_best_found_percent": 7.739660228065616,
+        "median_query_ms": 5.169607466086745,
+        "query_repetitions": 36,
+        "median_iterations": 2.0,
+        "max_stationarity": 8.273866141288682e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      },
+      {
+        "intervals": 1024,
+        "arm": "e_pod8",
+        "kind": "rom",
+        "k": 8,
+        "family": "pod",
+        "worst_error_percent": 22.319638030436874,
+        "median_error_percent": 12.478466705321539,
+        "worst_same_grid_percent": 22.3200666270814,
+        "median_same_grid_percent": 12.478638828007158,
+        "worst_bank_projection_percent": 22.319638029550294,
+        "worst_best_found_percent": 22.319638029550294,
+        "median_query_ms": 4.633078933693469,
+        "query_repetitions": 36,
+        "median_iterations": 1.0,
+        "max_stationarity": 8.116657320251462e-07,
+        "stop_reasons": [
+          4
+        ],
+        "M": 257
+      }
+    ]
+  }
+}

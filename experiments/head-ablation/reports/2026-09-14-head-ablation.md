@@ -20,7 +20,7 @@ Burgers arms minimise
 
 $$r_w(z)=\frac{A h(z)-p+\Delta t\,\big(\Phi^\top\mathcal N(Bh(z))+\nu\,\lambda\odot A h(z)\big)}{1+\Delta t\,\nu\lambda},\qquad p=A h(z^{\rm prev}),$$
 
-with $\mathcal N$ the full-order model\'s own sign-upwind advection, and the Poisson arms minimise
+with $\mathcal N$ the full-order model's own sign-upwind advection, and the Poisson arms minimise
 $B h(z)-\lambda^{-1}\Phi^\top f$. The linear terms are exact in both.
 
 The arms are
@@ -67,6 +67,30 @@ flowchart LR
   class Z,LM,W solved;
   class HB,HC,HD,HE fitted;
 ```
+
+## The answer, at matched latent dimension
+
+One row per PDE at its finest tested mesh. "Discriminating error" is the same-grid
+discrepancy against the converged full-order solve on that mesh, which removes the
+discretization error the refined-reference metric also contains; on Poisson the direct
+transform solve is the exact discrete solution, so that column is the reduction error itself.
+
+| PDE | mesh | $K$ | neural % | best linear % | quadratic % | best POD at $K$ % | free bank % | smallest POD rank reaching the neural head | neural median ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---:|
+| Burgers 2D | 256 | 16 | 2.5629 | 56.9296 | 31.8276 | 61.6503 | 0.6027 | none up to $k'=128$ ($8\times K$) | 47.649 |
+| Poisson 2D | 1024 | 16 | 6.0931 | 17.2970 | 16.6307 | 20.0552 | 2.3278 | $k'=128$ ($8\times K$) | 5.843 |
+
+Read together: **the nonlinear coefficient map earns its place per latent dimension on both PDEs**, by a factor of several against the best linear map the same frozen bank admits.
+Whether that advantage survives is a different question per PDE, and the two answer it
+differently. On advection-dominated Burgers no classical POD rank up to eight times the latent
+dimension comes close, and the ranks that get closest cost several times more per query, which
+is the slow Kolmogorov width decay of a moving front. On the linear elliptic Poisson problem a
+classical POD basis at eight times the dimension overtakes the pure neural head at essentially
+the same cost, because there the query is dominated by source projection and decoding rather
+than by the reduced solve, so extra dimensions are nearly free.
+
+Neither PDE supports a claim of a speed advantage over a full-order solver; the full-order rows
+in the tables below are same-job context only.
 
 ## Burgers 2D — the nonlinear performance case
 
@@ -146,6 +170,84 @@ At matched $K=16$ the lowest worst rollout error is 4.554611% from (a) neural he
 
 Map fitting at this mesh: the rank-16 linear map retains 97.587817% of the decoder-output coefficient energy, leaving a relative projection root-mean-square of 15.531204%; the quadratic correction uses ridge 1e-06 chosen on a 20% held-out split, with held-out relative residual 8.717884%.
 
+## Poisson 2D — the linear control
+
+Job `3711736` on `NVIDIA A100 80GB PCIe`, source commit `6759adcc9d85a413f64a05e49e60f828c4bcea4d`, JAX 0.10.2, backend `gpu`, float64, matmul precision `highest`, elapsed 613.3 s.
+
+$$-\Delta u = f \quad\text{on}\quad (0,1)^2,\qquad u|_{\partial\Omega}=0,$$
+
+so the weak residual is exactly
+
+$$r(z)=B\,h(z)-f_m,\qquad B=\Phi^\top\!B_{\rm bank},\qquad f_m=\lambda^{-1}\Phi^\top f,$$
+
+with no time stepping and no quadrature approximation anywhere. Only $h$ changes between arms.
+Frozen bank of $R=128$ features, neural latent dimension $K=16$, 256 requested sine tests, 12 opened development sources, 3 timed repetitions each with burn-in.
+
+**Fidelity gate.** The generic machinery with the frozen neural head reaches the incumbent `core.rom_query` solution to 9.584e-07 relative from the same start, inside the declared 1e-06 tolerance. This is agreement on the same stationary point between two Levenberg-Marquardt implementations, not bit identity.
+
+### Poisson at 64 intervals per axis
+
+Training snapshots: 192 exact discrete solutions of the incumbent source family. The frozen bank's own root-mean-square projection floor over them is 0.575979%.
+
+| arm | $K$ | $M$ | bank proj. % | best-found % | worst same-grid % | worst error % | median error % | median iters | median query ms | max stationarity | stop reasons |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| (a) neural head | 16 | 257 | 2.314695 | 6.092627 | 6.239065 | 6.094768 | 1.244740 | 5.0 | 2.974 | 8.83e-07 | 4 |
+| (a+) neural head + 32 eliminated linear corrections (retained) | 16 | 257 | — | — | 4.794085 | 4.671593 | 0.939948 | 6.5 | 4.508 | 3.79e-07 | 6 |
+| (b) linear, decoder-output fit | 16 | 257 | 2.314695 | 17.296606 | 17.444641 | 17.296808 | 6.949459 | 1.0 | 2.364 | 6.88e-07 | 4 |
+| (b) linear, truth fit | 16 | 257 | 2.314695 | 21.188345 | 21.332981 | 21.188427 | 7.198297 | 1.0 | 2.373 | 9.20e-07 | 4 |
+| (c) quadratic | 16 | 257 | 2.314695 | 16.630253 | 16.777143 | 16.630489 | 2.679977 | 4.0 | 2.795 | 6.40e-07 | 4 |
+| (e) POD-LSPG, rank 8 | 8 | 257 | 22.316739 | 22.316739 | 22.465081 | 22.316794 | 12.476530 | 1.0 | 2.342 | 8.09e-07 | 4 |
+| (e) POD-LSPG, rank 16 | 16 | 257 | 20.053865 | 20.053865 | 20.209001 | 20.053948 | 7.293087 | 1.0 | 2.254 | 9.19e-07 | 4 |
+| (e) POD-LSPG, rank 32 | 32 | 257 | 11.873888 | 11.873888 | 12.042534 | 11.874327 | 2.479167 | 2.0 | 2.507 | 9.09e-07 | 4 |
+| (e) POD-LSPG, rank 64 | 64 | 257 | 7.764510 | 7.764510 | 7.936201 | 7.766350 | 0.701656 | 2.0 | 2.523 | 8.14e-07 | 4 |
+| (e) POD-LSPG, rank 128 | 128 | 257 | 4.344303 | 4.344303 | 4.518299 | 4.382993 | 0.228635 | 2.0 | 2.987 | 7.18e-07 | 4 |
+| (d) free bank coefficients | 128 | 257 | 2.314695 | 2.314695 | 2.461447 | 2.339102 | 0.389954 | 2.0 | 3.048 | 3.31e-08 | 4 |
+| FOM `dst_direct` (context only) | — | — | — | — | 0.000000 | 0.257217 | 0.087032 | — | 1.821 | — | — |
+
+**POD rank matching the neural head: $k'=128$** ($8\times$ $K=16$) — worst error 4.382993% against 6.094768%, at 2.987 ms against 2.974 ms.
+
+### Poisson at 256 intervals per axis
+
+Training snapshots: 192 exact discrete solutions of the incumbent source family. The frozen bank's own root-mean-square projection floor over them is 0.570098%.
+
+| arm | $K$ | $M$ | bank proj. % | best-found % | worst same-grid % | worst error % | median error % | median iters | median query ms | max stationarity | stop reasons |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| (a) neural head | 16 | 257 | 2.314808 | 6.092634 | 6.101433 | 6.092742 | 1.242136 | 5.0 | 2.879 | 9.75e-07 | 4 |
+| (a+) neural head + 32 eliminated linear corrections (retained) | 16 | 257 | — | — | 4.674512 | 4.667102 | 0.936786 | 6.5 | 4.533 | 3.77e-07 | 6 |
+| (b) linear, decoder-output fit | 16 | 257 | 2.314808 | 17.296602 | 17.305563 | 17.296603 | 6.949121 | 1.0 | 2.292 | 6.90e-07 | 4 |
+| (b) linear, truth fit | 16 | 257 | 2.314808 | 21.166216 | 21.175000 | 21.166217 | 7.198543 | 1.0 | 2.372 | 9.27e-07 | 4 |
+| (c) quadratic | 16 | 257 | 2.314808 | 16.630250 | 16.639136 | 16.630252 | 2.679258 | 4.0 | 2.860 | 6.27e-07 | 4 |
+| (e) POD-LSPG, rank 8 | 8 | 257 | 22.319466 | 22.319466 | 22.328474 | 22.319466 | 12.478346 | 1.0 | 2.222 | 8.12e-07 | 4 |
+| (e) POD-LSPG, rank 16 | 16 | 257 | 20.054741 | 20.054741 | 20.064157 | 20.054741 | 7.293844 | 1.0 | 2.308 | 9.25e-07 | 4 |
+| (e) POD-LSPG, rank 32 | 32 | 257 | 11.859769 | 11.859769 | 11.869948 | 11.859772 | 2.479521 | 2.0 | 2.432 | 9.15e-07 | 4 |
+| (e) POD-LSPG, rank 64 | 64 | 257 | 7.741102 | 7.741102 | 7.751539 | 7.741264 | 0.690980 | 2.0 | 2.540 | 8.27e-07 | 4 |
+| (e) POD-LSPG, rank 128 | 128 | 257 | 4.322764 | 4.322764 | 4.355563 | 4.347266 | 0.205097 | 2.0 | 3.001 | 7.36e-07 | 4 |
+| (d) free bank coefficients | 128 | 257 | 2.314808 | 2.314808 | 2.335312 | 2.327632 | 0.372464 | 2.0 | 3.029 | 3.34e-08 | 4 |
+| FOM `dst_direct` (context only) | — | — | — | — | 0.000000 | 0.015460 | 0.005338 | — | 1.839 | — | — |
+
+**POD rank matching the neural head: $k'=128$** ($8\times$ $K=16$) — worst error 4.347266% against 6.092742%, at 3.001 ms against 2.879 ms.
+
+### Poisson at 1024 intervals per axis
+
+Training snapshots: 192 exact discrete solutions of the incumbent source family. The frozen bank's own root-mean-square projection floor over them is 0.569737%.
+
+| arm | $K$ | $M$ | bank proj. % | best-found % | worst same-grid % | worst error % | median error % | median iters | median query ms | max stationarity | stop reasons |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| (a) neural head | 16 | 257 | 2.314808 | 6.092634 | 6.093135 | 6.092722 | 1.242116 | 5.0 | 5.843 | 9.73e-07 | 4 |
+| (a+) neural head + 32 eliminated linear corrections (retained) | 16 | 257 | — | — | 4.667365 | 4.667013 | 0.936762 | 6.5 | 7.317 | 3.77e-07 | 6 |
+| (b) linear, decoder-output fit | 16 | 257 | 2.314808 | 17.296602 | 17.297028 | 17.296602 | 6.949119 | 1.0 | 5.163 | 6.91e-07 | 4 |
+| (b) linear, truth fit | 16 | 257 | 2.314808 | 21.164846 | 21.165265 | 21.164847 | 7.198579 | 1.0 | 5.329 | 9.27e-07 | 4 |
+| (c) quadratic | 16 | 257 | 2.314808 | 16.630250 | 16.630673 | 16.630250 | 2.679253 | 4.0 | 5.774 | 6.26e-07 | 4 |
+| (e) POD-LSPG, rank 8 | 8 | 257 | 22.319638 | 22.319638 | 22.320067 | 22.319638 | 12.478467 | 1.0 | 4.633 | 8.12e-07 | 4 |
+| (e) POD-LSPG, rank 16 | 16 | 257 | 20.054797 | 20.054797 | 20.055244 | 20.054797 | 7.293910 | 1.0 | 4.659 | 9.26e-07 | 4 |
+| (e) POD-LSPG, rank 32 | 32 | 257 | 11.858898 | 11.858898 | 11.859383 | 11.858899 | 2.479642 | 2.0 | 5.050 | 9.15e-07 | 4 |
+| (e) POD-LSPG, rank 64 | 64 | 257 | 7.739660 | 7.739660 | 7.740281 | 7.739792 | 0.690568 | 2.0 | 5.170 | 8.27e-07 | 4 |
+| (e) POD-LSPG, rank 128 | 128 | 257 | 4.321342 | 4.321342 | 4.345637 | 4.345242 | 0.204819 | 2.0 | 5.930 | 7.37e-07 | 4 |
+| (d) free bank coefficients | 128 | 257 | 2.314808 | 2.314808 | 2.327801 | 2.327435 | 0.372319 | 2.0 | 5.995 | 3.34e-08 | 4 |
+| FOM `dst_direct` (context only) | — | — | — | — | 0.000000 | 0.000735 | 0.000254 | — | 4.341 | — | — |
+
+**POD rank matching the neural head: $k'=128$** ($8\times$ $K=16$) — worst error 4.345242% against 6.092722%, at 5.930 ms against 5.843 ms.
+
 ## Stopping status, and why the stationarity column is not a quality ranking
 
 Every arm runs the identical stopping rule. The campaign's stationarity test is the normalized
@@ -201,4 +303,4 @@ reduced model is slower and less accurate than an efficient same-job full-order 
 
 ---
 
-Generated by `experiments/head-ablation/reports/generate_head_ablation.py` from Burgers `result.json` (SHA256 `ea07c46144fb6295c2ed0c718d6227c0048f2a6289b00140092b7c429de6af46`) and their audit JSONs. Every number above is read from those files.
+Generated by `experiments/head-ablation/reports/generate_head_ablation.py` from Burgers `result.json` (SHA256 `ea07c46144fb6295c2ed0c718d6227c0048f2a6289b00140092b7c429de6af46`) and Poisson `result.json` (SHA256 `b5fe5102cc20104504112c84829a39ae8e48a73d72326328a01e224db24b3bb7`) and their audit JSONs. Every number above is read from those files.

@@ -182,6 +182,8 @@ def build(r, au, sm, figinfo, figname):
 
     ladder = sorted([x for x in rows if x['kind'] == 'rom' and x['quadrature'] == 'dense'
                      and x['dt'] == cfg['dt'] and x['arm'] != 'q0_dense_Mmax'], key=lambda x: x['q'])
+    eq = sorted([x for x in rows if x['kind'] == 'rom' and x['quadrature'] == 'eq'
+                 and x['dt'] == cfg['dt']], key=lambda x: x['q'])
     errs = [x['worst_same_grid_percent'] for x in ladder]
     costs = [x['median_gpu_ms'] for x in ladder]
     mono_err = all(b <= a * (1 + 1e-12) for a, b in zip(errs, errs[1:]))
@@ -200,6 +202,26 @@ def build(r, au, sm, figinfo, figname):
           'More correction capacity does not guarantee a smaller physical error: the weak objective '
           'is minimised, not the field error, and the shared trust radius and iteration budget are '
           'held fixed as the solved dimension grows.')
+    w('')
+    unconverged = [x for x in ladder if x['all_completed'] is False]
+    if unconverged:
+        w('')
+        w('**But the upper rungs are not converged solves.** Under the shared stopping rule, '
+          + ', '.join(f"$q={x['q']}$ ({x['total_budget_exits']} iteration-budget exits, worst "
+                      f"normalized gradient {x['max_stationarity']:.2e})" for x in unconverged)
+          + ' failed to complete. Those points are legitimate approximate entries on an '
+            'error-versus-cost curve, but they keep their true stopping status: they are '
+            'early-stopped outputs at a fixed budget, not stationary solutions, and they must not be '
+            'read as a converged accuracy curve. The shared trust radius and per-step budget were '
+            'deliberately held at the $q=0$ values so that $q$ is the only knob, and that is exactly '
+            'what binds as the solved dimension grows.')
+    conv = [x for x in ladder if x['all_completed']]
+    if conv:
+        w('')
+        w('Restricted to the rungs that do converge (' + ', '.join(f"$q={x['q']}$" for x in conv)
+          + f"), the error falls only from {conv[0]['worst_same_grid_percent']:.4f}% to "
+            f"{conv[-1]['worst_same_grid_percent']:.4f}% for a "
+            f"{conv[-1]['median_gpu_ms'] / conv[0]['median_gpu_ms']:.3f}-fold cost increase.")
     w('')
     w(f"**Cost: {'monotone increasing' if mono_cost else 'NOT monotone'}**, "
       f"{[round(v, 3) for v in costs]} median GPU ms. Two effects grow together here and the "
@@ -234,6 +256,41 @@ def build(r, au, sm, figinfo, figname):
                              fmt(x['median_gpu_ms'] / base['median_gpu_ms'], 3)]) + ' |')
     w('')
 
+    w('## What actually bought accuracy cheaply')
+    w('')
+    pairs = []
+    for e_ in eq:
+        d_ = next((x for x in ladder if x['q'] == e_['q']), None)
+        if d_:
+            pairs.append((e_, d_))
+    for e_, d_ in pairs:
+        same = abs(e_['worst_same_grid_percent'] - d_['worst_same_grid_percent'])
+        w(f"At $q={e_['q']}$ the empirical-quadrature arm costs {e_['median_gpu_ms']:.3f} ms against "
+          f"{d_['median_gpu_ms']:.3f} ms for the same arm with the exact dense grid sum, a factor "
+          f"{d_['median_gpu_ms'] / e_['median_gpu_ms']:.3f}, while their worst same-grid errors "
+          f"differ by {same:.4f} percentage points.")
+    if pairs:
+        w('')
+        w('So on this mesh hyper-reduction, not correction capacity, is the lever that moves cost: it '
+          'is worth several times more than any rung of the ladder and costs nothing measurable in '
+          'accuracy. The ladder can only be bought at the dense price above $q=16$, because a '
+          'nonnegative-least-squares rule at $m=4M$ stops being constructible there.')
+    w('')
+    alt_rows = [x for x in rows if x['kind'] == 'rom' and x['dt'] != cfg['dt']]
+    for x in alt_rows:
+        b = next((y for y in rows if y['kind'] == 'rom' and y['q'] == 0
+                  and y['quadrature'] == x['quadrature'] and y['dt'] == cfg['dt']
+                  and y['arm'] != 'q0_dense_Mmax'), None)
+        if b:
+            w(f"The time-step knob at $q=0$ ({x['quadrature']}): doubling the step to "
+              f"{x['dt']:g} costs {x['median_gpu_ms']:.3f} ms against {b['median_gpu_ms']:.3f} ms, "
+              f"only a factor {x['median_gpu_ms'] / b['median_gpu_ms']:.3f}, because the initial fit "
+              f"and the decode do not scale with the number of steps. Worst same-grid error is "
+              f"{x['worst_same_grid_percent']:.4f}% against {b['worst_same_grid_percent']:.4f}% and "
+              f"the median rises from {b['median_same_grid_percent']:.4f}% to "
+              f"{x['median_same_grid_percent']:.4f}%, so it buys little and costs accuracy on the "
+              f"typical case.")
+    w('')
     w('## Does any rung beat the efficient full-order solver on both axes?')
     w('')
     loose = next((x for x in rows if x['arm'] == 'nt1e-2'), None)

@@ -23,6 +23,8 @@ commit = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], 
 files = ['experiments/neural-operator-burgers/' + n for n in
          ['data.py', 'protocol.json', 'protocol-refined.json', 'refine.py', 'diagnose.py',
           'tuning.py', 'tuning-config.json', 'cluster/stage_tuning.py']]
+if phase == 'validation':
+    files.append('experiments/neural-operator-burgers/checks/tuning02-shortlist.json')
 files += ['experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/accuracy_paths.py',
           'experiments/separable-decoder/sep_common.py',
           'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
@@ -65,12 +67,13 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 "$PY" experiments/neural-operator-burgers/tuning.py --phase PHASE \\
   --reference "$CACHE/refinement/index.json" --dataset "$CACHE/validation/index.json" \\
-  --out "$TASK_ROOT/output" --seconds SECONDS EXTRA
+  --out "$TASK_ROOT/output" --seconds SECONDS SHORTLIST EXTRA
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''.replace('ATTEMPT', attempt).replace('MINUTES', f'{minutes // 60:02d}:{minutes % 60:02d}:00') \
    .replace('REMOTE', remote).replace('CACHEDIR', cache).replace('PHASE', phase) \
-   .replace('SECONDS', str(minutes * 60 - 600)).replace('EXTRA', ' '.join(extra))
+   .replace('SHORTLIST', '--shortlist "$TASK_ROOT/experiments/neural-operator-burgers/checks/tuning02-shortlist.json"'
+            if phase == 'validation' else '').replace('EXTRA', ' '.join(extra))
 (out / 'run.sbatch').write_text(script)
 manifest = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(out)}'
             for p in sorted(out.rglob('*')) if p.is_file()]

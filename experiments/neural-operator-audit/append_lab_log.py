@@ -78,7 +78,7 @@ def build(primary, screen, launch, screen_launch, diagnosis, definition, commit,
             f"fixed-initial error, against the recorded ROM {pct(rom)}% and efficient FOM "
             f"`same_nt1e-2_dt005` {pct(fom)}%. Accuracy on identical cases is comparable across jobs; "
             f"timing is not, and none is compared. The cohort is disjoint from FNO training by "
-            f"generation seed and by input-field content, re-checked against the training index. ")
+            f"generation seed and by input-field content, re-checked against the training index.")
     screen_line = ''
     if screen:
         screen_name = min((k for k, v in screen['models'].items() if v.get('complete')),
@@ -91,7 +91,7 @@ def build(primary, screen, launch, screen_launch, diagnosis, definition, commit,
             f"{pct(screen_best['fixed_initial']['maximum'])}% worst validation error after "
             f"{screen_best['epochs_completed']} epochs and every capacity was still improving at the "
             f"budget, which is why the primary job switched to an equal wall budget with early "
-            f"stopping. Those screen numbers are superseded, not retracted. ")
+            f"stopping. Those screen numbers are superseded, not retracted.")
     return f"""
 
 ## {time.strftime('%Y-%m-%d', time.gmtime())}
@@ -141,7 +141,11 @@ trajectory, GPU burn-in before every timed block, every repetition retained):
 | --- | ---: | ---: |
 {cohort_rows(primary, diagnosis)}
 
-{cohort_line}{screen_line}**No speed claim is established.** The FNO timings above are same-job, same-GPU only; the ROM and
+{cohort_line}
+
+{screen_line}
+
+**No speed claim is established.** The FNO timings above are same-job, same-GPU only; the ROM and
 FOM timings were measured in job `3702709` on a different allocation and are never divided by
 them. The interleaved ROM/FNO/FOM panel remains the only admissible route to a speed statement,
 and the timing protocol is recorded in `timing.py`'s module docstring so that job can reproduce it.

@@ -95,7 +95,7 @@ compile-time constants, so one compiled query serves both anchor weights.
 the first draw of the training family (`params_draw(train_seed)[0]` on Burgers,
 `source_params(train_seed)[0]` on Poisson). The rule, fixed before the run:
 
-> Sweep $\alpha \in \{10^{-6}, 3\cdot10^{-6}, 10^{-5}, 3\cdot10^{-5}, 10^{-4}, 3\cdot10^{-4}, 10^{-3}\}$,
+> Sweep $\alpha \in \{10^{-8}, 3\cdot10^{-8}, 10^{-7}, 3\cdot10^{-7}, 10^{-6}, 3\cdot10^{-6}, 10^{-5}, 3\cdot10^{-5}, 10^{-4}\}$,
 > run V1 with $n=8$ at $\mu=\mu_{\rm loose}$ on the calibration case, and take the $\alpha$ with
 > the smallest **data term** (the relative field-fit residual on the Gauss nodes; on Poisson, the
 > relative weak residual). Ties within $10^{-3}$ relative are broken by the smaller $\alpha$.
@@ -106,9 +106,9 @@ because the objectives have different units; that is one calibration per PDE, re
 
 ## Anchor weights
 
-Pre-registered, fixed before the run: $\mu_{\rm loose} = 10^{-3}$, $\mu_{\rm tight} = 10^{1}$.
+Pre-registered, fixed before the run: $\mu_{\rm loose} = 10^{2}$, $\mu_{\rm tight} = 10^{5}$.
 A separate **diagnostic** sweep of the drift at $n=32$ over
-$\mu \in \{10^{-4},10^{-3},10^{-2},10^{-1},1,10\}$ is run on the calibration case only, to show
+$\mu \in \{1,10^{2},10^{3},10^{4},10^{5},10^{6}\}$ is run on the calibration case only, to show
 where the anchor starts to bind. It is diagnostic: it does **not** change the two swept values.
 If both swept $\mu$ turn out to lie on the same side of the binding point, that is reported as a
 limitation, not corrected after the fact.
@@ -216,3 +216,29 @@ A negative outcome is reported as the result. This cell does not attempt to resc
   projection floor comes from the reference fields, and there is no basis to fit.
 - The Burgers reference, cohort, EQ rule, trust radius, budgets and tolerance are copied verbatim
   from the `abl01` arm (a) recipe so gate (ii) is meaningful.
+
+## Amendment, 2026-09-15, before any cluster submission
+
+Two numbers in this document were changed after the local fidelity smoke
+(`smoke_refine.py`, record `checks/smoke-refine.json`) and before any evaluation run.
+Both changes are **scale** corrections; no accuracy number, no error against any
+reference and no evaluation-case outcome entered either choice. The smoke reports only
+the fidelity gate, the drift, the objective terms and the gradient norms.
+
+1. **Anchor weights** $\mu_{\rm loose}, \mu_{\rm tight}$ moved from $\{10^{-3}, 10\}$ to
+   $\{10^{2}, 10^{5}\}$. The smoke measured the anchor gradient norm at
+   $\|\nabla_\theta\Omega\| \approx 3\times10^{-6}$ against a data-term gradient norm of
+   $6\times10^{-2}$ to $1$: with $\|\theta_0\|_2 = 209.2$ and $P = 542{,}208$, the anchor
+   gradient is $2\sqrt\Omega/\|\theta_0\|$, so any $\mu \lesssim 10^{3}$ is numerically
+   indistinguishable from no anchor at all. At $\mu=10$ the measured drift differed from
+   $\mu=10^{-3}$ by 0.2 %, which would have made the "loose versus tight" contrast vacuous.
+   The new pair brackets the binding point: $\mu=10^{2}$ leaves the anchor gradient roughly
+   $10^{-3}$ of the data gradient, $\mu=10^{5}$ makes them comparable.
+2. **The step-size grid** was widened downward, from $[10^{-6}, 10^{-3}]$ to
+   $[10^{-8}, 10^{-4}]$. Adam's update has magnitude $\approx\alpha$ per coordinate, so the
+   drift per step is $\alpha\sqrt P/\|\theta_0\| \approx 3.5\alpha$; the smoke confirmed that
+   at $\alpha = 10^{-4}$ a single step *increases* the field-fit objective (from
+   $\approx 4\times10^{-4}$ to $8\times10^{-3}$), i.e. it steps outside the region where the
+   linearisation holds. The original grid's lower end was therefore its only usable part.
+
+The selection rule, the sweep, the gates and the acceptance criteria are unchanged.

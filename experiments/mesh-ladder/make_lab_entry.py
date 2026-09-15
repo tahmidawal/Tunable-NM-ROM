@@ -45,6 +45,17 @@ def panel(label, summary, provenance, extra):
         f'{summary["setup"][str(last)]["total_offline_setup_seconds"]:.2f} s at {last}, charged '
         f'separately. Worst physical error {pct(first_row["worst_error_requested_grid"])} at {first} '
         f'and {pct(last_row["worst_error_requested_grid"])} at {last} intervals.')
+    passing = [m for m in meshes if summary['table'][f'{m}|{rom}']['meets_target']]
+    failing = [m for m in meshes if not summary['table'][f'{m}|{rom}']['meets_target']]
+    if not passing:
+        lines.append(f'The frozen checkpoint misses the 5% target at **every** rung, so none of its '
+                     f'timing ratios is a qualifying speedup.')
+    elif not failing:
+        lines.append('The frozen checkpoint meets the 5% target at every rung.')
+    else:
+        lines.append(f'Accuracy does not degrade with refinement, it improves: the frozen checkpoint '
+                     f'misses the 5% target at {", ".join(str(m) for m in failing)} and meets it at '
+                     f'{", ".join(str(m) for m in passing)} intervals.')
     rows = cross['rows']
     ratios = ', '.join(f'{r["intervals"]}: {r["speedup_fom_over_rom"]:.3f}x vs `{r["fom_subject"]}`'
                        for r in rows)

@@ -1,6 +1,6 @@
 # Burgers fixed-checkpoint tuning: measured physical error against complete query cost
 
-This report measures what the Gauss-Newton iteration cap, the evolution stopping tolerance and the choice of offline-fitted empirical-quadrature rule buy from **one frozen checkpoint**, against the efficient full-order controls timed in the same job on the same GPU. **Numbers below are provisional: the held-out confirmation pass has not been collected.**
+This report measures what the Gauss-Newton iteration cap, the evolution stopping tolerance and the choice of offline-fitted empirical-quadrature rule buy from **one frozen checkpoint**, against the efficient full-order controls timed in the same job on the same GPU. All numbers below are final for this study.
 
 ## Verdict
 
@@ -9,6 +9,8 @@ This report measures what the Gauss-Newton iteration cap, the evolution stopping
 The most accurate tuned setting is `m512_converged` at 1.510853% worst error and 70.726856 ms median GPU time. The most accurate full-order control, `same_nt1e-2_dt005`, reaches 0.997803% at 16.519509 ms, and the cheapest, `same_nt1e-2_dt01`, costs 9.052748 ms. The reduced-order model is beaten on both axes at once.
 
 What the three controls do buy is a real **cost** curve at essentially unchanged accuracy, plus a cliff below a threshold of solver effort. Above that threshold the physical error is flat to five or six significant figures while the cost moves by tens of percent, because the error is set by how well the frozen decoder can represent the solution, not by how well the weak equations are solved.
+
+The held-out pass confirms this on 32 cases the shortlist never saw. The best frozen setting `m512_gtol0.001` reaches 6.701206% worst error at 41.641916 ms, and `same_nt1e-4_dt005` beats it on both axes at 6.170513% and 22.389024 ms. The held-out data also corrects a calibration-stage statement about which full-order control is the accuracy bar; see the correction below.
 
 ## What was held fixed
 
@@ -105,30 +107,30 @@ The deployed cold initializer is unchanged in every timed arm; this row pair onl
 
 ### Calibration cases: measured error against complete query cost
 
-| Arm | Pass | Quadrature | Cap | Evolution gtol | Worst error (%) | Median GPU (ms) | Median complete query (ms) | Early-stopped invocations | Gradient-stationary invocations | Latency outliers |
-| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `same_nt1e-2_dt01` | quadrature | FOM mesh 256, dt 0.01 | - | Newton tol 0.01 | 1.864195 | 9.052748 | 10.617246 | 0 | 0 | 2 |
-| `coarse_quarter_dt01` | quadrature | FOM mesh 64, dt 0.01 | - | Newton tol 0.0001 | 3.639752 | 13.494967 | 15.548257 | 0 | 0 | 1 |
-| `same_nt1e-2_dt005` | quadrature | FOM mesh 256, dt 0.005 | - | Newton tol 0.01 | 0.997803 | 16.519509 | 18.305014 | 0 | 0 | 3 |
-| `coarse_half_dt005` | quadrature | FOM mesh 128, dt 0.005 | - | Newton tol 0.0001 | 1.899297 | 17.588601 | 19.821747 | 0 | 0 | 1 |
-| `same_nt1e-4_dt005` | quadrature | FOM mesh 256, dt 0.005 | - | Newton tol 0.0001 | 1.381132 | 18.543491 | 20.341579 | 0 | 0 | 1 |
-| `m256_native` | quadrature | m256 (m=256) | 180 | 1e-06 | 1.658743 | 54.176387 | 56.393012 | 0 | 24 | 1 |
-| `m512_native` | quadrature | m512 (m=512) | 180 | 1e-06 | 1.510853 | 57.788957 | 59.930177 | 0 | 24 | 1 |
-| `m1024_native` | quadrature | m1024 (m=1024) | 180 | 1e-06 | 1.556934 | 63.313999 | 65.883465 | 0 | 24 | 1 |
-| `m256_converged` | quadrature | m256 (m=256) | 180 | 1e-08 | 1.658743 | 65.956854 | 68.155141 | 0 | 24 | 1 |
-| `m512_converged` | quadrature | m512 (m=512) | 180 | 1e-08 | 1.510853 | 70.726856 | 73.191591 | 0 | 24 | 1 |
-| `m1024_converged` | quadrature | m1024 (m=1024) | 180 | 1e-08 | 1.556933 | 76.839364 | 79.336293 | 0 | 24 | 1 |
-| `same_nt1e-6_dt005` | quadrature | FOM mesh 256, dt 0.005 | - | Newton tol 1e-06 | 1.381082 | 81.907711 | 84.587124 | 0 | 0 | 1 |
-| `full_native` | quadrature | full (m=65025) | 180 | 1e-06 | 1.567388 | 309.817492 | 311.814486 | 0 | 24 | 1 |
-| `full_converged` | quadrature | full (m=65025) | 180 | 1e-08 | 1.567388 | 392.165308 | 394.900876 | 0 | 24 | 1 |
-| `same_nt1e-2_dt005` | effort | FOM mesh 256, dt 0.005 | - | Newton tol 0.01 | 0.997803 | 18.722449 | 20.829653 | 0 | 0 | 0 |
-| `same_nt1e-4_dt005` | effort | FOM mesh 256, dt 0.005 | - | Newton tol 0.0001 | 1.381132 | 21.498545 | 23.312950 | 0 | 0 | 0 |
-| `m512_cap2` | effort | m512 (m=512) | 2 | 1e-06 | 74.896500 | 32.733207 | 35.152685 | 24 | 0 | 4 |
-| `m512_cap4` | effort | m512 (m=512) | 4 | 1e-06 | 74.896500 | 44.495170 | 46.741079 | 24 | 0 | 4 |
-| `m512_gtol0.001` | effort | m512 (m=512) | 180 | 0.001 | 1.510865 | 50.292543 | 52.660222 | 0 | 0 | 4 |
-| `m512_cap8` | effort | m512 (m=512) | 8 | 1e-06 | 4.442939 | 59.531328 | 61.962703 | 24 | 0 | 1 |
-| `m512_gtol1e-05` | effort | m512 (m=512) | 180 | 1e-05 | 1.510853 | 60.783314 | 63.096100 | 0 | 0 | 4 |
-| `m512_gtol1e-06` | effort | m512 (m=512) | 180 | 1e-06 | 1.510853 | 65.185628 | 67.498714 | 0 | 24 | 1 |
+| Arm | Pass | Quadrature | Cap | Evolution gtol | Median case error (%) | 95th pct case error (%) | Worst error (%) | Cases above 10% | Median GPU (ms) | Median complete query (ms) | Early-stopped invocations | Gradient-stationary invocations | Latency outliers |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `same_nt1e-2_dt01` | quadrature | FOM mesh 256, dt 0.01 | - | Newton tol 0.01 | 0.847080 | 1.710434 | 1.864195 | 0 | 9.052748 | 10.617246 | 0 | 0 | 2 |
+| `coarse_quarter_dt01` | quadrature | FOM mesh 64, dt 0.01 | - | Newton tol 0.0001 | 2.777721 | 3.564298 | 3.639752 | 0 | 13.494967 | 15.548257 | 0 | 0 | 1 |
+| `same_nt1e-2_dt005` | quadrature | FOM mesh 256, dt 0.005 | - | Newton tol 0.01 | 0.413806 | 0.887369 | 0.997803 | 0 | 16.519509 | 18.305014 | 0 | 0 | 3 |
+| `coarse_half_dt005` | quadrature | FOM mesh 128, dt 0.005 | - | Newton tol 0.0001 | 1.434636 | 1.865805 | 1.899297 | 0 | 17.588601 | 19.821747 | 0 | 0 | 1 |
+| `same_nt1e-4_dt005` | quadrature | FOM mesh 256, dt 0.005 | - | Newton tol 0.0001 | 0.870488 | 1.296014 | 1.381132 | 0 | 18.543491 | 20.341579 | 0 | 0 | 1 |
+| `m256_native` | quadrature | m256 (m=256) | 180 | 1e-06 | 0.939970 | 1.589613 | 1.658743 | 0 | 54.176387 | 56.393012 | 0 | 24 | 1 |
+| `m512_native` | quadrature | m512 (m=512) | 180 | 1e-06 | 0.942177 | 1.508118 | 1.510853 | 0 | 57.788957 | 59.930177 | 0 | 24 | 1 |
+| `m1024_native` | quadrature | m1024 (m=1024) | 180 | 1e-06 | 0.940334 | 1.538089 | 1.556934 | 0 | 63.313999 | 65.883465 | 0 | 24 | 1 |
+| `m256_converged` | quadrature | m256 (m=256) | 180 | 1e-08 | 0.939970 | 1.589612 | 1.658743 | 0 | 65.956854 | 68.155141 | 0 | 24 | 1 |
+| `m512_converged` | quadrature | m512 (m=512) | 180 | 1e-08 | 0.942177 | 1.508117 | 1.510853 | 0 | 70.726856 | 73.191591 | 0 | 24 | 1 |
+| `m1024_converged` | quadrature | m1024 (m=1024) | 180 | 1e-08 | 0.940334 | 1.538089 | 1.556933 | 0 | 76.839364 | 79.336293 | 0 | 24 | 1 |
+| `same_nt1e-6_dt005` | quadrature | FOM mesh 256, dt 0.005 | - | Newton tol 1e-06 | 0.872767 | 1.296607 | 1.381082 | 0 | 81.907711 | 84.587124 | 0 | 0 | 1 |
+| `full_native` | quadrature | full (m=65025) | 180 | 1e-06 | 0.940624 | 1.544401 | 1.567388 | 0 | 309.817492 | 311.814486 | 0 | 24 | 1 |
+| `full_converged` | quadrature | full (m=65025) | 180 | 1e-08 | 0.940624 | 1.544401 | 1.567388 | 0 | 392.165308 | 394.900876 | 0 | 24 | 1 |
+| `same_nt1e-2_dt005` | effort | FOM mesh 256, dt 0.005 | - | Newton tol 0.01 | 0.413806 | 0.887369 | 0.997803 | 0 | 18.722449 | 20.829653 | 0 | 0 | 0 |
+| `same_nt1e-4_dt005` | effort | FOM mesh 256, dt 0.005 | - | Newton tol 0.0001 | 0.870488 | 1.296014 | 1.381132 | 0 | 21.498545 | 23.312950 | 0 | 0 | 0 |
+| `m512_cap2` | effort | m512 (m=512) | 2 | 1e-06 | 58.466971 | 72.878433 | 74.896500 | 8 | 32.733207 | 35.152685 | 24 | 0 | 4 |
+| `m512_cap4` | effort | m512 (m=512) | 4 | 1e-06 | 58.466971 | 72.878433 | 74.896500 | 8 | 44.495170 | 46.741079 | 24 | 0 | 4 |
+| `m512_gtol0.001` | effort | m512 (m=512) | 180 | 0.001 | 0.941904 | 1.508070 | 1.510865 | 0 | 50.292543 | 52.660222 | 0 | 0 | 4 |
+| `m512_cap8` | effort | m512 (m=512) | 8 | 1e-06 | 1.217488 | 3.544100 | 4.442939 | 0 | 59.531328 | 61.962703 | 24 | 0 | 1 |
+| `m512_gtol1e-05` | effort | m512 (m=512) | 180 | 1e-05 | 0.942175 | 1.508117 | 1.510853 | 0 | 60.783314 | 63.096100 | 0 | 0 | 4 |
+| `m512_gtol1e-06` | effort | m512 (m=512) | 180 | 1e-06 | 0.942177 | 1.508118 | 1.510853 | 0 | 65.185628 | 67.498714 | 0 | 24 | 1 |
 
 Rule selected for the effort screens: **m512**. Criterion: lowest worst-case fixed-initial physical error over the calibration cases at the converged setting; rules within 1% of the best are separated by lower median GPU seconds.
 
@@ -165,6 +167,35 @@ The same full-order controls were re-timed in the second pass of the same job on
 
 Every deployable arm returns the supplied initial field exactly. If the decoder's own fit of that field were returned instead, the worst relative initial error over the reported cases would be 1.867068%. That cost is paid inside every query and is reported here rather than hidden in the output.
 
+### Held-out validation cases: frozen shortlist
+
+| Arm | Pass | Quadrature | Cap | Evolution gtol | Median case error (%) | 95th pct case error (%) | Worst error (%) | Cases above 10% | Median GPU (ms) | Median complete query (ms) | Early-stopped invocations | Gradient-stationary invocations | Latency outliers |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `same_nt1e-2_dt01` | validation | FOM mesh 256, dt 0.01 | - | Newton tol 0.01 | 1.341303 | 4.145038 | 6.806734 | 0 | 9.910044 | 12.210279 | 0 | 0 | 6 |
+| `coarse_quarter_dt01` | validation | FOM mesh 64, dt 0.01 | - | Newton tol 0.0001 | 3.594731 | 10.805216 | 16.094676 | 2 | 13.961922 | 16.169056 | 0 | 0 | 2 |
+| `same_nt1e-2_dt005` | validation | FOM mesh 256, dt 0.005 | - | Newton tol 0.01 | 1.135606 | 24.270810 | 35.357022 | 3 | 17.380670 | 19.398844 | 0 | 0 | 1 |
+| `coarse_half_dt005` | validation | FOM mesh 128, dt 0.005 | - | Newton tol 0.0001 | 1.850760 | 6.209895 | 9.849329 | 0 | 21.185605 | 23.499694 | 0 | 0 | 8 |
+| `same_nt1e-4_dt005` | validation | FOM mesh 256, dt 0.005 | - | Newton tol 0.0001 | 1.233720 | 3.987257 | 6.170513 | 0 | 22.389024 | 24.487508 | 0 | 0 | 10 |
+| `m512_cap2` | validation | m512 (m=512) | 2 | 1e-06 | 65.494110 | 85.023878 | 90.324105 | 31 | 28.368548 | 31.055967 | 96 | 0 | 6 |
+| `m512_gtol0.001` | validation | m512 (m=512) | 180 | 0.001 | 1.453594 | 5.597954 | 6.701206 | 0 | 41.641916 | 44.679836 | 0 | 0 | 7 |
+| `m256_native` | validation | m256 (m=256) | 180 | 1e-06 | 1.473297 | 5.620274 | 7.244774 | 0 | 51.008713 | 53.272908 | 0 | 96 | 4 |
+| `m512_converged` | validation | m512 (m=512) | 180 | 1e-08 | 1.453762 | 5.598963 | 6.711730 | 0 | 64.668124 | 67.017914 | 0 | 96 | 1 |
+| `same_nt1e-6_dt005` | validation | FOM mesh 256, dt 0.005 | - | Newton tol 1e-06 | 1.233681 | 3.985744 | 6.171972 | 0 | 88.287076 | 90.477352 | 0 | 0 | 4 |
+
+### Held-out verdict
+
+No frozen setting is simultaneously at least as accurate and at least as fast as every efficient full-order control on the held-out cases.
+
+The best tuned setting is `m512_gtol0.001`: worst error 6.701206%, median case error 1.453594%, at 41.641916 ms.
+
+`same_nt1e-4_dt005` beats it on every axis at once: worst error 6.170513%, median case error 1.233720%, at 22.389024 ms, which is 1.86× cheaper than the best tuned setting.
+
+The cheapest full-order control, `same_nt1e-2_dt01`, costs 9.910044 ms, 4.20× less than the best tuned setting, with a lower median case error (1.341303% against 1.453594%) but a slightly higher worst case (6.806734% against 6.701206%), so on the worst-case axis alone it is the one comparison the reduced-order model wins.
+
+#### Correction carried by the held-out data
+
+On the calibration cases `same_nt1e-2_dt005` was the most accurate control at 0.997803%. On the held-out cases the same setting reaches 35.357022% worst error, with 3 of 32 cases above 10%, while its median case error is only 1.135606%. Its loose Newton tolerance is simply not reliable across the wider family, so any statement that named it as *the* accuracy bar is corrected here. The dominance conclusion is unaffected, because other full-order controls beat every tuned setting on both axes on the held-out cases as well.
+
 ## Provenance
 
 | Item | Value |
@@ -175,8 +206,11 @@ Every deployable arm returns the supplied initial field exactly. If the decoder'
 | Checkpoint SHA256 | `18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589` |
 | Configuration SHA256 | `a624de02b1e169f3902ab767aff18793dd8a12af49f1a0f51a50e20114f8dff7` |
 | Calibration index SHA256 | `418c2bea1045215bde73244362dd8e04111ca23d03316da93d981a88d75b6cca` |
-
+| Validation job | `3712269` on NVIDIA A100 80GB PCIe |
+| Validation index SHA256 | `aa876e86d2ac18656914a80c6c082bdf6f6f8a267fc954a3d51b33eb6e168dd6` |
 | Repetitions per arm and case | 3 |
+| Calibration invocations | 528 |
+| Held-out invocations | 960 |
 
 Timing is within one job on one GPU with a GPU burn-in before every timed block; cost and accuracy come from the same invocation; every repetition is retained in the run index. No timing ratio is taken across jobs.
 

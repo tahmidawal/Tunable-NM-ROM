@@ -1,0 +1,22 @@
+{
+  "scope": "independent recomputation of a fixed-checkpoint tuning run from its saved arrays",
+  "passed": true,
+  "index_sha256": "aa876e86d2ac18656914a80c6c082bdf6f6f8a267fc954a3d51b33eb6e168dd6",
+  "phase": "validation",
+  "complete": true,
+  "job_id": "3712269",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "source_commit": "d2b93bd4f56d07580d3357972737eab92a96622f",
+  "invocations": 960,
+  "arrays_recomputed": 320,
+  "distinct_case_arm_pairs": 320,
+  "repetitions": 3,
+  "worst_absolute_error_metric_difference": 2.220446049250313e-16,
+  "worst_absolute_gradient_difference": 0.0,
+  "supplied_initial_output_contract_failures": [],
+  "stopping_record_mismatches": [],
+  "repetition_output_hash_mismatches": [],
+  "incomplete_repetitions": [],
+  "unexpected_native_setting_cap_exits": [],
+  "note": "a repetition hash mismatch is a determinism failure, not necessarily an error; timings are expected to vary while outputs are not"
+}

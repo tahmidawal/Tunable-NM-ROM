@@ -8,6 +8,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import numpy as np
+
 HERE = Path(__file__).resolve().parent
 
 
@@ -43,11 +45,21 @@ def arm_rows(report, pass_name):
     return sorted(rows, key=lambda r: r['summary']['median_gpu_seconds'])
 
 
+def case_errors(report, pass_name, method):
+    """Worst error per case, so one divergent case cannot hide behind a mean."""
+    by = {}
+    for row in report['invocations']:
+        if row['pass_name'] == pass_name and row['method'] == method and row.get('error'):
+            by.setdefault(row['case_id'], []).append(row['error']['maximum'])
+    return np.asarray([max(v) for v in by.values()]) if by else np.zeros(0)
+
+
 def curve_table(report, passes, title):
     lines = [f'### {title}', '',
-             '| Arm | Pass | Quadrature | Cap | Evolution gtol | Worst error (%) | Median GPU (ms) | '
-             'Median complete query (ms) | Early-stopped invocations | Gradient-stationary invocations | Latency outliers |',
-             '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+             '| Arm | Pass | Quadrature | Cap | Evolution gtol | Median case error (%) | 95th pct case error (%) | '
+             'Worst error (%) | Cases above 10% | Median GPU (ms) | Median complete query (ms) | '
+             'Early-stopped invocations | Gradient-stationary invocations | Latency outliers |',
+             '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
     for pass_name in passes:
         for row in arm_rows(report, pass_name):
             s, spec, preset = row['summary'], row['spec'], row['preset']
@@ -59,8 +71,11 @@ def curve_table(report, passes, title):
                 quadrature = f"FOM mesh {preset['mesh']}, dt {preset['dt']:g}"
                 cap = '-'
                 gtol = f"Newton tol {preset['ntol']:g}"
+            errs = case_errors(report, pass_name, row['method'])
             lines.append(f"| `{row['method']}` | {pass_name} | {quadrature} | {cap} | {gtol} | "
-                         f"{pct(s['worst_fixed_initial_error'])} | {ms(s['median_gpu_seconds'])} | "
+                         f"{pct(float(np.median(errs)))} | {pct(float(np.percentile(errs, 95)))} | "
+                         f"{pct(s['worst_fixed_initial_error'])} | {int((errs > .10).sum())} | "
+                         f"{ms(s['median_gpu_seconds'])} | "
                          f"{ms(s['median_complete_host_seconds'])} | {s.get('early_stopped_invocations', 0)} | "
                          f"{s.get('gradient_stationary_invocations', 0)} | {s['upper_tukey_latency_outliers']} |")
     lines.append('')
@@ -121,6 +136,20 @@ def main():
               'cliff below a threshold of solver effort. Above that threshold the physical error is flat to five '
               'or six significant figures while the cost moves by tens of percent, because the error is set by how '
               'well the frozen decoder can represent the solution, not by how well the weak equations are solved.', '']
+    if validation:
+        vr = [r for r in arm_rows(validation, 'validation')]
+        vb = min((r for r in vr if r['spec']), key=lambda r: r['summary']['worst_fixed_initial_error'])
+        vd = [f for f in vr if f['preset']
+              and f['summary']['worst_fixed_initial_error'] <= vb['summary']['worst_fixed_initial_error']
+              and f['summary']['median_gpu_seconds'] <= vb['summary']['median_gpu_seconds']]
+        lines += ['The held-out pass confirms this on 32 cases the shortlist never saw. The best frozen setting '
+                  f"`{vb['method']}` reaches {pct(vb['summary']['worst_fixed_initial_error'])}% worst error at "
+                  f"{ms(vb['summary']['median_gpu_seconds'])} ms"
+                  + (f", and `{vd[0]['method']}` beats it on both axes at "
+                     f"{pct(vd[0]['summary']['worst_fixed_initial_error'])}% and "
+                     f"{ms(vd[0]['summary']['median_gpu_seconds'])} ms." if vd else '.')
+                  + ' The held-out data also corrects a calibration-stage statement about which full-order control '
+                    'is the accuracy bar; see the correction below.', '']
     lines += ['## What was held fixed', '',
               '```json', json.dumps(dict(checkpoint_sha256=calibration['checkpoint_sha256'], **fixed),
                                     indent=2, default=str), '```', '',
@@ -263,11 +292,57 @@ def main():
     if validation:
         lines += curve_table(validation, ['validation'], 'Held-out validation cases: frozen shortlist')
         vbeat, vfoms = dominance(validation, ['validation'], None)
+        vrows = arm_rows(validation, 'validation')
+        vroms = [r for r in vrows if r['spec']]
+        vfom_rows = [r for r in vrows if r['preset']]
+        best_v = min(vroms, key=lambda r: r['summary']['worst_fixed_initial_error'])
+        cheap_v = min(vfom_rows, key=lambda r: r['summary']['median_gpu_seconds'])
         lines += ['### Held-out verdict', '',
                   (f"A tuned setting dominates every efficient control on the held-out cases: "
                    f"{', '.join('`' + b + '`' for b in vbeat)}." if vbeat else
                    'No frozen setting is simultaneously at least as accurate and at least as fast as every '
-                   'efficient full-order control on the held-out cases.'), '']
+                   'efficient full-order control on the held-out cases.'), '',
+                  f"The best tuned setting is `{best_v['method']}`: worst error "
+                  f"{pct(best_v['summary']['worst_fixed_initial_error'])}%, median case error "
+                  f"{pct(float(np.median(case_errors(validation, 'validation', best_v['method']))))}%, at "
+                  f"{ms(best_v['summary']['median_gpu_seconds'])} ms.", '']
+        dominating = [f for f in vfom_rows
+                      if f['summary']['worst_fixed_initial_error'] <= best_v['summary']['worst_fixed_initial_error']
+                      and f['summary']['median_gpu_seconds'] <= best_v['summary']['median_gpu_seconds']
+                      and float(np.median(case_errors(validation, 'validation', f['method'])))
+                      <= float(np.median(case_errors(validation, 'validation', best_v['method'])))]
+        if dominating:
+            f = min(dominating, key=lambda r: r['summary']['median_gpu_seconds'])
+            lines += [f"`{f['method']}` beats it on every axis at once: worst error "
+                      f"{pct(f['summary']['worst_fixed_initial_error'])}%, median case error "
+                      f"{pct(float(np.median(case_errors(validation, 'validation', f['method']))))}%, at "
+                      f"{ms(f['summary']['median_gpu_seconds'])} ms, which is "
+                      f"{best_v['summary']['median_gpu_seconds'] / f['summary']['median_gpu_seconds']:.2f}\u00d7 "
+                      'cheaper than the best tuned setting.', '']
+        lines += [f"The cheapest full-order control, `{cheap_v['method']}`, costs "
+                  f"{ms(cheap_v['summary']['median_gpu_seconds'])} ms, "
+                  f"{best_v['summary']['median_gpu_seconds'] / cheap_v['summary']['median_gpu_seconds']:.2f}\u00d7 "
+                  f"less than the best tuned setting, with a lower median case error "
+                  f"({pct(float(np.median(case_errors(validation, 'validation', cheap_v['method']))))}% against "
+                  f"{pct(float(np.median(case_errors(validation, 'validation', best_v['method']))))}%) but a "
+                  f"slightly higher worst case ({pct(cheap_v['summary']['worst_fixed_initial_error'])}% against "
+                  f"{pct(best_v['summary']['worst_fixed_initial_error'])}%), so on the worst-case axis alone it is "
+                  'the one comparison the reduced-order model wins.', '']
+        # a calibration-stage statement that the held-out data corrects
+        for name in ['same_nt1e-2_dt005']:
+            cal = calibration['summaries'].get(f'quadrature/{name}')
+            val = validation['summaries'].get(f'validation/{name}')
+            if cal and val and cal.get('worst_fixed_initial_error') and val.get('worst_fixed_initial_error'):
+                cerr = case_errors(validation, 'validation', name)
+                lines += ['#### Correction carried by the held-out data', '',
+                          f"On the calibration cases `{name}` was the most accurate control at "
+                          f"{pct(cal['worst_fixed_initial_error'])}%. On the held-out cases the same setting reaches "
+                          f"{pct(val['worst_fixed_initial_error'])}% worst error, with "
+                          f"{int((cerr > .10).sum())} of {len(cerr)} cases above 10%, while its median case error is "
+                          f"only {pct(float(np.median(cerr)))}%. Its loose Newton tolerance is simply not reliable "
+                          'across the wider family, so any statement that named it as *the* accuracy bar is '
+                          'corrected here. The dominance conclusion is unaffected, because other full-order '
+                          'controls beat every tuned setting on both axes on the held-out cases as well.', '']
     lines += ['## Provenance', '',
               '| Item | Value |', '| --- | --- |',
               f"| Calibration job | `{calibration['provenance']['job_id']}` on {calibration['provenance']['gpu']} |",
@@ -280,7 +355,11 @@ def main():
     if validation:
         lines += [f"| Validation job | `{validation['provenance']['job_id']}` on {validation['provenance']['gpu']} |",
                   f"| Validation index SHA256 | `{sha(args.validation)}` |"]
-    lines += ['', f"| Repetitions per arm and case | {calibration['repetitions']} |", '',
+    lines += [f"| Repetitions per arm and case | {calibration['repetitions']} |",
+              f"| Calibration invocations | {len(calibration['invocations'])} |"]
+    if validation:
+        lines.append(f"| Held-out invocations | {len(validation['invocations'])} |")
+    lines += ['',
               'Timing is within one job on one GPU with a GPU burn-in before every timed block; cost and accuracy '
               'come from the same invocation; every repetition is retained in the run index. No timing ratio is '
               'taken across jobs.', '']

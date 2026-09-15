@@ -42,14 +42,15 @@ def load(path):
 
 
 def capacity_table(audit):
-    lines = ['| Run | Width | Modes | Real parameters | Epochs run | Best epoch | Training seconds | Truncated by wall budget |',
-             '| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |']
+    lines = ['| Run | Width | Modes | Learning rate | Real parameters | Epochs run | Best epoch | Training seconds | Truncated by wall budget |',
+             '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |']
     for name, model in audit['models'].items():
         if not model.get('complete'):
-            lines.append(f'| `{name}` | — | — | — | — | — | — | run did not complete |')
+            lines.append(f'| `{name}` | — | — | — | — | — | — | — | run did not complete |')
             continue
         config = model['config']
-        lines.append(f"| `{name}` | {config['width']} | {config['modes']} | {model['real_parameter_count']} | "
+        lines.append(f"| `{name}` | {config['width']} | {config['modes']} | {config['learning_rate']:g} | "
+                     f"{model['real_parameter_count']} | "
                      f"{model['epochs_completed']} | {model['best_epoch']} | "
                      f"{model['training_seconds']:.0f} | "
                      f"{'yes' if model['stopped_by_wall_budget'] else 'no'} |")

@@ -227,7 +227,7 @@ Timing is within one job on one GPU with a GPU burn-in before every timed block;
 - **Cap (iteration budget)**: the maximum Gauss-Newton iterations allowed per time step.
 - **Evolution gtol (stopping tolerance)**: the normalized gradient below which a step is declared converged. It measures optimisation progress, never physical accuracy.
 - **Early stopped**: the step ran out of iterations instead of meeting a stopping test. Such arms are reported as early stopped and are never counted as stationary solves.
-- **Gradient stationary**: every step and the initial fit met the normalized-gradient test.
+- **Gradient stationary**: every step and the initial fit reached a normalized gradient at or below 1e-6, the bar the archived native configuration used. It is one fixed bar for all arms, so an arm whose own declared stopping tolerance is looser than 1e-6 can satisfy its own test on every step and still show zero gradient-stationary invocations here. That is not a failure to stop; it means the arm deliberately stopped earlier than the archived bar. Neither number is a physical-error certificate.
 - **Worst error**: the largest relative field error over all requested output times and all cases in the pass, normalized by the reference initial field norm (the archived convention).
 - **Median GPU (ms)**: median device time for one complete query over every case and repetition.
 - **Median complete query (ms)**: the same, including host-to-device input and device-to-host output.

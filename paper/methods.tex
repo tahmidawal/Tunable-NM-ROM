@@ -1,0 +1,727 @@
+% ===========================================================================
+% methods.tex -- Methodology for
+%   "Nonlinear Manifold Reduced Models with Precomputed Weak Operators"
+%
+% EVERY equation in this file was checked line by line against the implemented
+% code in this repository.  Where the previous submission
+% (paper/old-submission/main.tex) and the code disagree, THE CODE IS FOLLOWED
+% and the disagreement is recorded in a comment beginning "DISCREPANCY".
+%
+% Sources checked (paths relative to the worktree root):
+%   experiments/separable-decoder/sep_common.py          (features, head, SeparableDecoder)
+%   experiments/mr-burgers2d/engines.py                  (spatial, residual, modes, weak,
+%                                                         build_rom, nnls_capped,
+%                                                         build_gauss_cold, make_lm)
+%   experiments/mr-burgers2d/accuracy_paths.py           (make_stationary_lm, make_rom,
+%                                                         make_diagnostics)
+%   experiments/multiresolution-poisson/core.py          (assemble, rom_query, dst_solve)
+%   experiments/multiresolution-poisson/correction_core.py (prepare_correction, correction_query)
+%   experiments/multiresolution-poisson/kernel_solver.py (make_lm_kernel, guarded_gj)
+%   experiments/cost-to-tolerance/ctol_tol.py            (lm_tau_poisson)
+%   experiments/mr-heat2d/heat_core.py                   (mode_matrix, cn_factor, make_lm,
+%                                                         make_rollout, make_query)
+%   experiments/mr-heat2d/cp_algebra_paths.py            (make_gram_lm, build)
+%   experiments/mr-heat2d/run_pilot.py                   (assemble, exactness assertion)
+%   worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/b2d_tensor_common.py
+%                                                        (backward_diff_bank_2d, build_T,
+%                                                         symmetrize, q_of, dq_dh)
+%
+% NO NUMBER IS TYPED BY HAND.  Numeric slots use \gen{...} and are filled by the
+% generator scripts listed in figures/README.md.
+% ===========================================================================
+
+\section{Method}
+\label{sec:method}
+
+We reduce a discretised PDE by restricting its state to the image of a frozen
+learned decoder and solving, in the latent coordinates alone, a least-squares
+problem built from a small set of smooth weak tests. The construction has four
+parts: the trial manifold (\S\ref{sec:method:manifold}), the weak residual and
+the solver that is actually run (\S\ref{sec:method:weak}), the offline
+assembly of the reduced operators (\S\ref{sec:method:precomp}), and the three
+PDE instances (\S\ref{sec:method:poisson}--\S\ref{sec:method:burgers}).
+\S\ref{sec:method:eq} describes empirical quadrature, which is used only for
+the operator that is not exactly precomputable. \S\ref{sec:method:tuning}
+states precisely which quantities may be varied at deployment, and
+\S\ref{sec:method:limits} states what the construction does not provide.
+
+\subsection{Discrete setting and notation}
+\label{sec:method:setting}
+
+All problems are posed on $[0,1]^2$ with homogeneous Dirichlet data and
+discretised by second-order finite differences on a uniform grid of $N$
+intervals per axis. The unknown is the vector of interior nodal values
+$u\in\Real^{n}$, $n=(N-1)^2$; boundary values are structurally zero and are not
+unknowns. We write $\Aop\in\Real^{n\times n}$ for the negative discrete
+Laplacian (five-point stencil, ghost zeros on all four walls) and $f\in\Real^n$
+for a source or right-hand side. Reduced quantities carry three sizes that must
+be kept distinct: $R$ is the width of the spatial bank, $k$ the latent
+dimension solved for online, and $M$ the number of retained weak tests. Where
+sampling is used, $m$ is the number of quadrature nodes. The implementations
+assert $M\ge 4k$ and $m\ge 4M$ at build time, so the latent problem is always
+overdetermined and the quadrature problem is never under-constrained.
+
+\subsection{Trial manifold}
+\label{sec:method:manifold}
+
+The trial manifold is the image of an affine lift composed with a frozen
+nonlinear coefficient map,
+\begin{equation}
+  \umanifold(\latent) \;=\; \lift \;+\; \bank\,\head(\latent),
+  \qquad
+  \bank\in\Real^{n\times R},\quad
+  \head:\Real^{k}\to\Real^{R},\quad k\le R\ll n .
+  \label{eq:decoder}
+\end{equation}
+Both $\lift$ and $\bank$ are fixed once the mesh is chosen, and $\theta$ is
+frozen for every result reported here. In the implemented cells the Dirichlet
+data are homogeneous, so $\lift=0$, and the boundary condition is enforced
+structurally by a smooth vanishing factor folded into the bank itself:
+\begin{equation}
+  \bank_{x,:} \;=\; \bcmask(x)\,g_\phi(x)\T,
+  \qquad
+  \bcmask(x) \;=\; 16\,x_1(1-x_1)\,x_2(1-x_2),
+  \label{eq:bank}
+\end{equation}
+where $g_\phi:\Real^2\to\Real^{R}$ is a random-Fourier-feature
+MLP~\citep{Tancik2020FourierFeatures} evaluated pointwise at the nodal
+coordinates. Because $\bcmask$ vanishes on $\partial[0,1]^2$, every state in the
+manifold satisfies the boundary condition exactly and
+$\partial \umanifold/\partial\latent$ vanishes there as well, for every
+$\latent$ and at every resolution.
+% DISCREPANCY (D1) vs old-submission Eq. (1): the previous manuscript wrote
+% \tilde u = m \odot D(z) + u_g with a BINARY mask m and a nonzero lift u_g.
+% The implemented decoder (sep_common.features / bc_poly) uses the SMOOTH
+% polynomial factor above, folded into the bank, with u_g = 0.  Enforcement is
+% still exact, but by a different mechanism, and as implemented it covers only
+% homogeneous Dirichlet data.  We follow the code.
+
+The coefficient map is a two-layer SiLU MLP plus a linear skip,
+\begin{equation}
+  \head(\latent) \;=\; \varphi_\theta(\latent) \;+\; W\T\latent,
+  \qquad W\in\Real^{k\times R},
+  \label{eq:head}
+\end{equation}
+so that the decoder Jacobian
+\begin{equation}
+  \jac{\umanifold}(\latent) \;=\; \frac{\partial \umanifold}{\partial \latent}
+  \;=\; \bank\,\dhead(\latent),
+  \qquad
+  \dhead(\latent) \;=\; D\varphi_\theta(\latent) + W\T ,
+  \label{eq:jacobian}
+\end{equation}
+retains a latent-independent component. The rank statement this permits is
+exactly the following, and no more:
+\begin{equation}
+  \rank \jac{\umanifold}(\latent)
+  \;\le\; \min\{\,k,\;\rank \bank\,\}\;\le\;\min\{k,R\},
+  \label{eq:rank-bound}
+\end{equation}
+with equality to $k$ if and only if $\dhead(\latent)$ has rank $k$ and
+$\operatorname{range}\dhead(\latent)\cap\ker\bank=\{0\}$. The linear skip makes
+the first condition generic but does not prove it: $D\varphi_\theta(\latent)$
+can cancel $W\T$ at particular $\latent$. We therefore measure the rank of the
+projected Jacobian at every solved query rather than asserting it
+(\S\ref{sec:method:weak}), and report the retained bank rank from the singular
+values of $\bank$.
+% Code: the Poisson kernel (correction_core.correction_query) computes the
+% singular values of the projected Jacobian and sets projected_jacobian_rank_valid
+% per query; run_pilot.assemble records retained_bank_rank for the heat bank.
+
+Two consequences of \eqref{eq:decoder} are used throughout. First, the manifold
+lies inside the $R$-dimensional linear span of the bank, so the representation
+error of the manifold is bounded below by the linear projection error of that
+span: nonlinearity in $\head$ buys a smaller \emph{solved} dimension $k$, not
+an escape from the bank's span. Second, all $x$-dependence factors through
+$\bank$, so restricting the decoder to any point set $S$ is exactly the cached
+matrix $\bank_{S,:}\in\Real^{|S|\times R}$ times $\head(\latent)$. This is the
+property that makes both node sampling (\S\ref{sec:method:eq}) and exact
+operator preassembly (\S\ref{sec:method:precomp}) available from the same
+decoder.
+% DISCREPANCY (D6) vs old-submission Sec. 4.4: the previous manuscript's
+% architecture was a ViT encoder feeding a LinearCPDecoder (linear skip +
+% shallow MLP + rank-R canonical-polyadic spatial head).  The implemented
+% decoder here has NO ENCODER in the deployed path: latent codes come from an
+% auto-decoder fit during training and from a least-squares fit at query time
+% (Sec. 5.3).  The per-node evaluation property that the CP head was chosen for
+% is inherited by the separable bank.  The "ViT for global coupling" argument
+% of the old manuscript does not apply to the method described here.
+
+\subsection{Weak residual, objective, and solver}
+\label{sec:method:weak}
+
+\paragraph{Tests and row scaling.}
+Let $\tests\in\Real^{M\times n}$ collect $M$ smooth test vectors as rows,
+together with the discrete integration weight. In every cell the tests are the
+tensor-product sine vectors
+$\sin(\pi a x_1)\sin(\pi b x_2)$ sampled at interior nodes, retained for the
+$M$ smallest eigenvalues $\lambda_i$ of $\Aop$, and scaled by a fixed
+normalisation: the Poisson and Burgers cells use the orthonormal discrete sine
+basis ($\tests\tests\T=I_M$), while the heat cell uses continuum-normalised
+tests multiplied by the cell area $N^{-2}$, i.e.\ $N^{-1}$ times the
+orthonormal basis, a uniform scaling chosen so that entries are comparable
+across meshes. These vectors are exactly the eigenvectors of the five-point
+operator, which gives the identity we use throughout,
+\begin{equation}
+  \tests\Aop \;=\; \rowscale\,\tests,
+  \qquad
+  \rowscale \;=\; \diag(\lambda_1,\dots,\lambda_M),
+  \qquad
+  \lambda_{(a,b)} \;=\; 4N^2\!\left[\sin^2\!\tfrac{\pi a}{2N}+\sin^2\!\tfrac{\pi b}{2N}\right].
+  \label{eq:eigen-identity}
+\end{equation}
+% Code: this identity is asserted numerically in run_pilot.assemble, which
+% checks || low_lam * (Psi^T G h) - Psi^T (-Lap_h)(G h) || / ||.|| < 1e-11 for
+% both the operator and its Jacobian.  It is the reason the linear part of
+% every weak residual below needs no quadrature.
+The residual rows are additionally scaled by a diagonal $\rowscale_\star^{-1}$
+whose choice is stated per PDE below; the scaling is part of the objective, not
+a cosmetic normalisation, and it changes which solution the least-squares
+problem selects.
+
+\paragraph{The objective that is minimised.}
+Given a fully discrete residual $\rfull(\cdot)$ for the PDE at hand, the
+reduced problem solved online is the row-scaled, weak-tested least-squares
+problem
+\begin{equation}
+  \latent^{\star}
+  \;=\;
+  \argmin_{\latent\in\Real^{k}}
+  \tfrac12\,\norm{\rweak(\latent)}_2^2,
+  \qquad
+  \rweak(\latent) \;=\; \rowscale_\star^{-1}\,\tests\,\rfull\!\big(\umanifold(\latent)\big)
+  \;\in\;\Real^{M},
+  \qquad M>k .
+  \label{eq:objective}
+\end{equation}
+This is a least-squares Petrov--Galerkin condition with an explicitly chosen
+test space and row norm, in the sense of \citet{Carlberg2011LSPG} and
+\citet{LeeCarlberg2020}. It is \emph{not} tangent-space Galerkin: the test
+space is $\tests$, fixed and independent of $\latent$, not
+$\jac{\umanifold}(\latent)$; and the system is overdetermined
+($M>k$) rather than square.
+% DISCREPANCY (D2) vs old-submission Eqs. (2)-(3): the previous manuscript
+% stated tangent Galerkin, r_red(z) = J_D(z)^T (K u(z) - F) = 0, with the update
+% dz = -(J_D^T K J_D)^{-1} r_red.  No implemented path forms J_D^T K J_D, and
+% none imposes a square tangent-projected condition.  We follow the code.
+% Note also that for a LINEAR trial space the two conditions still differ:
+% residual least squares imposes V^T A^T (AVz-b)=0 while Galerkin imposes
+% V^T(AVz-b)=0.  The rebuttal's claim that they coincide for a linear decoder
+% holds only under additional assumptions on the test space and norm, which we
+% do not make.
+
+\paragraph{The update that is taken.}
+Write $\jac{}(\latent)=\partial\rweak/\partial\latent\in\Real^{M\times k}$,
+evaluated by forward-mode automatic differentiation through $\head$
+\citep{Bradbury2018JAX}, $H=\jac{}\T\jac{}$ and $g=\jac{}\T\rweak$. Each
+attempt solves the damped normal system
+\begin{equation}
+  \big(H + \lambda\,\diag(\diag H)\big)\,\delta\latent \;=\; -\,g,
+  \label{eq:lm}
+\end{equation}
+and accepts $\latent\leftarrow\latent+\delta\latent$ only if $\delta\latent$ is
+finite, $\norm{\delta\latent}\le\Delta$ for a fixed trust radius $\Delta$, and
+the residual norm strictly decreases. On acceptance
+$\lambda\leftarrow\max(\lambda/3,10^{-12})$; on rejection the step is discarded
+and $\lambda\leftarrow\min(10\lambda,\lambda_{\max})$. This is damped
+Levenberg--Marquardt with a monotone accept/reject test
+\citep{Marquardt1963}; there is no line search.
+% DISCREPANCY (D8): the old manuscript calls this "Gauss-Newton" throughout and
+% prints an undamped update.  Implemented: LM with diagonal damping,
+% lambda_0 = 1e-6 (Poisson kernel_solver.make_lm_kernel and Burgers
+% accuracy_paths.make_stationary_lm) or 1e-4 (heat heat_core.make_lm), and an
+% explicit trust radius taken from the spread of the training codes.
+The curvature dropped in \eqref{eq:lm} is exactly
+$\sum_{i}(\rweak)_i\,\nabla^2_{\latent}(\rweak)_i$. Since every implemented
+$\rweak$ is affine or quadratic in $\head(\latent)$ and $\head$ is the only
+nonlinearity in $\latent$, this dropped term is the residual-weighted curvature
+of the head, $\sum_i (\rweak)_i \sum_a B_{ia}\nabla^2_\latent \headc{a}$ in the
+linear-operator case. We identify it here rather than absorbing it into the
+name of the method.
+
+\paragraph{Stopping.}
+Three families of exit are recorded and never conflated. The primary one is the
+scale-free stationarity measure
+\begin{equation}
+  \station{\latent}{\cdot}
+  \;=\;
+  \frac{\norm{\jac{}(\latent)\T\rweak(\latent)}_2}
+       {\normF{\jac{}(\latent)}\;\norm{\rweak(\latent)}_2},
+  \qquad\text{exit when } \station{\latent}{\cdot}\le\eta_{\mathrm{tol}} ,
+  \label{eq:stationarity}
+\end{equation}
+with $\normF{\cdot}$ the Frobenius norm. The second is a residual threshold:
+relative, $\norm{\rweak(\latent)}\le\tau\,\norm{\rweak(\latent_0)}$, in the
+elliptic cell, and absolute, scaled by the norm of the fitted input, in the
+Burgers time step. The third family collects \emph{stalls}: exhausting the
+attempt budget $I_{\max}$, a step below $10^{-14}(1+\norm{\latent})$, the
+damping reaching $\lambda_{\max}$, or a non-finite value. Each solve returns its
+exit reason, and outputs produced under a stall exit are reported as
+early-stopped outputs, never as converged solves.
+% Code: reason codes differ per cell and we report them per cell rather than
+% unifying them.  Burgers (accuracy_paths.make_stationary_lm): 4 stationarity,
+% 1 residual, 2 tiny step, 3 rejected at lambda >= 1e14, 0 budget.  Poisson
+% (kernel_solver.make_lm_kernel): 6 stationarity, 2 relative residual tau,
+% 1 stall, 3 damping limit, 5 non-finite initial value, 0 budget.  Heat
+% (heat_core.make_lm): 1 stationarity, 2 tiny step, 3 damping limit,
+% 4 non-finite, 0 budget.  The heat criterion divides by ||J||_F only, applied
+% to a residual already normalised by ||target||; Poisson and Burgers use the
+% ratio in Eq. (8) directly.
+
+\paragraph{What stationarity does and does not certify.}
+$\station{\latent}{\cdot}\le\eta_{\mathrm{tol}}$ certifies that $\latent$ is a
+first-order critical point of the specific objective \eqref{eq:objective} on
+the frozen manifold. It does not certify a global minimum of that objective; it
+says nothing about the $n-M$ residual components that no test vector sees; it
+does not bound the representation error
+$\min_{\latent}\norm{\umanifold(\latent)-u^{\star}}$ of the frozen decoder; and
+it therefore does not bound the physical error of the returned field. We
+report weak stationarity and physical error as separate quantities throughout,
+and we record cases in which the weak residual decreases while the field error
+does not.
+
+\paragraph{Initialisation.}
+No query uses the solution it is predicting. The elliptic cell starts from the
+cached training code whose stored projected weak prediction is nearest the
+projected source. The heat cell takes the better of the nearest library code and
+the mean code after a QR-compressed full-field least-squares fit. The Burgers
+cell fits the latent code to the supplied initial field on a fixed
+$48\times 48$ Gauss--Legendre product rule that does not depend on the query
+mesh: with $Q\mathcal{R}$ the thin QR factorisation of the weight-scaled bank
+evaluated at the Gauss nodes and $\tilde u$ the bilinear interpolation of the
+dense input at those nodes, the fit minimises
+$\norm{\mathcal{R}\,\head(\latent)-Q\T\tilde u}$ by the same LM iteration, started
+at the training code minimising the corresponding quadratic surrogate. The
+interpolation of the supplied input is charged to the query.
+
+\subsection{Precomputed weak operators}
+\label{sec:method:precomp}
+
+\paragraph{Linear operators.}
+For a fixed linear discrete operator $\Aop$, substituting \eqref{eq:decoder}
+into $\rfull(u)=\Aop u-f$ and applying $\tests$ gives an exactly precomputable
+reduced form,
+\begin{equation}
+  \tests\big(\Aop\,\umanifold(\latent)-f\big)
+  \;=\; B\,\head(\latent) \;-\; b,
+  \qquad
+  B \;=\; \tests\Aop\bank\in\Real^{M\times R},
+  \qquad
+  b \;=\; \tests\,(f-\Aop\lift)\in\Real^{M}.
+  \label{eq:linear-precomp}
+\end{equation}
+In the implemented cells the sine tests diagonalise $\Aop$, so
+$B=\rowscale\,\tests\bank$ by \eqref{eq:eigen-identity} and, after row scaling
+by $\rowscale^{-1}$, the reduced matrix is simply $\tests\bank$: a separable
+sine transform of the bank, assembled offline by two one-dimensional
+contractions.
+% Code: core.assemble builds B with einsum('xa,xyr,yb->abr') from the skinny
+% sine factor S; run_pilot.assemble builds it as Psi^T G.  No quadrature fit and
+% no sampling is involved in either.
+
+\paragraph{Polynomial operators.}
+For a field operator that is polynomial in $u$ with fixed coefficients, the
+projected term is a fixed multilinear form in $\head$. For the quadratic
+advection used here, with $DG$ the bank differenced by the fixed stencil,
+\begin{equation}
+  \tests\,\big[\,\bank\head \odot (D^-_{x}+D^-_{y})\bank\head\,\big]_{i}
+  \;=\;
+  \sum_{a,b} T_{iab}\,\headc{a}\headc{b},
+  \qquad
+  T_{iab}=\sum_{x}\tests_{ix}\,\bank_{xa}\,(DG)_{xb},
+  \label{eq:tensor}
+\end{equation}
+with $DG=D^-_{x}\bank+D^-_{y}\bank$ and ghost zeros on all four walls. $T$ is
+not symmetric in $(a,b)$ because its two factors are the bank and the
+differenced bank, so we store the symmetrised table $Q=T+T^{(a\leftrightarrow
+b)}$ and evaluate
+\begin{equation}
+  q(\head)=\tfrac12\,\head\T Q\,\head,
+  \qquad
+  \frac{\partial q}{\partial \head} = Q\,\head .
+  \label{eq:tensor-eval}
+\end{equation}
+Storage is $MR^2$ entries and one residual evaluation costs $O(MR^2)$; the
+matrix $Q\head$ formed for the residual is reused for the Jacobian, so a
+residual-and-Jacobian pair costs $O(MR^2+MRk)$. Bank width therefore enters the
+online cost quadratically and independently of the latent dimension. The offline
+build costs $O(nMR^2)$ and is blocked over $x$ so that the $n\times R^2$
+intermediate is never materialised.
+
+\paragraph{Exactly when this is available.}
+Three conditions must hold together. (i) The linear operator is fixed, or
+affinely separable in its parameters, so that $B$ can be assembled once and
+reused; an arbitrary new coefficient field does not inherit the same
+offline/online split. (ii) The field operator is polynomial in $u$ with fixed
+coefficients. (iii) \emph{For the Burgers advection specifically, the
+sign-dependent upwind switch must be inactive}: the stencil reduces to the fixed
+backward difference on both axes only where $u>0$, so \eqref{eq:tensor} is an
+identity only if the state is non-negative at every stencil node involved. This
+must hold not only for the data and not only for the converged decoded state,
+but for \emph{every trial state the solver visits}. Non-negative training data is
+not sufficient; decoded states can undershoot below zero even when the truth
+does not, and we report the measured fraction of negative decoded values and the
+resulting departure from the sign-upwind operator
+(\gen{positivity audit: fraction of negative decoded nodes and tensor-vs-upwind
+parity per mesh}) beside every exactness statement. We do not change the
+full-order discretisation to make the algebra polynomial.
+
+\paragraph{What is and is not mesh-independent.}
+Assembly of $\bank$, $\tests$, $B$ and $T$ is mesh-dependent and must be redone
+at each resolution even when the network weights $\theta$ transfer unchanged;
+we charge and report it separately as setup. The cached reduced evaluation --
+$B\head$, $Q\head$, the $k\times k$ damped solve \eqref{eq:lm} -- contains no
+explicit loop over mesh nodes, so its operation count depends on $(M,R,k)$
+alone. This does not imply a mesh-independent complete query: reading a dense
+input and writing a dense requested field must touch $O(n)$ values, and the
+dense decode $\bank\head(\latent)$ costs $O(nR)$. Nor does it imply
+mesh-independent iteration counts or mesh-independent accuracy. We measure
+complete device-query cost with its input, setup, solve and output components
+reported separately.
+
+\subsection{Elliptic instance: Poisson}
+\label{sec:method:poisson}
+
+For $\Aop u=f$ we take $\rowscale_\star=\rowscale$, so by
+\eqref{eq:eigen-identity} and \eqref{eq:linear-precomp} the weak residual is
+\begin{equation}
+  \rweak(\latent)
+  \;=\;\rowscale^{-1}\tests(\Aop\umanifold(\latent)-f)
+  \;=\; B_0\,\head(\latent) - b_0,
+  \qquad
+  B_0=\tests\bank,\quad b_0=\rowscale^{-1}\tests f .
+  \label{eq:poisson-residual}
+\end{equation}
+Because the retained tests are orthonormal and $\Aop u^{\star}=f$, this residual
+is exactly the tested error,
+\begin{equation}
+  \rweak(\latent)\;=\;\tests\big(\umanifold(\latent)-u^{\star}\big),
+  \label{eq:poisson-error-identity}
+\end{equation}
+so the minimised objective \eqref{eq:objective} is the squared discrete $L^2$
+error of the reduced state in the retained modes, not merely a residual norm.
+This is the precise sense in which the elliptic solve minimises an error
+(energy-type) functional; it is a consequence of the row scaling and holds only
+for the modes $\tests$ retains.
+% Code: core.assemble puts the scaling in `project` (W = lam^{-1}) and leaves B
+% unscaled, which is algebraically identical to Eq. (13).
+% DISCREPANCY (D2b) vs old-submission Eq. (3): the previous manuscript described
+% this solve as Gauss-Newton on a tangent-projected system without identifying
+% its objective.  The objective is Eq. (13)-(14).
+
+\paragraph{Analytically eliminated linear corrections.}
+The deployed elliptic model augments the frozen coefficient vector with a small
+number $c$ of fixed linear directions $C\in\Real^{R\times c}$ and solves
+\begin{equation}
+  \min_{\latent\in\Real^k,\;y\in\Real^{c}}
+  \; \norm{B_0\big(\head(\latent)+Cy\big)-b_0}_2^2 .
+  \label{eq:poisson-augmented}
+\end{equation}
+Let $B_0C=Q\mathcal{R}$ be a thin QR factorisation. Since $Q$ does not depend on
+$\latent$, the inner minimisation over $y$ has the closed-form solution
+$\mathcal{R}y=Q\T\big(b_0-B_0\head(\latent)\big)$ and the minimised value is
+\begin{equation}
+  \min_{y}\norm{B_0(\head(\latent)+Cy)-b_0}
+  \;=\;
+  \norm{B_\perp \head(\latent)-b_\perp},
+  \qquad
+  B_\perp=(I-QQ\T)B_0,\quad b_\perp=(I-QQ\T)b_0 .
+  \label{eq:varpro}
+\end{equation}
+So \eqref{eq:poisson-augmented} is solved by running the LM iteration of
+\S\ref{sec:method:weak} on $\latent$ alone with the deflated operator, then
+recovering $y$ with one triangular solve. This is variable projection
+\citep{GolubPereyra1973} with a \emph{constant} projector, which matters for the
+derivative bookkeeping: because $I-QQ\T$ is independent of $\latent$, the
+elimination introduces no approximation at all, and
+$\jac{}(\latent)=B_\perp\,\dhead(\latent)$ is the \emph{exact} Jacobian of the
+eliminated residual. The only derivative term dropped anywhere in the elliptic
+solve is the Gauss--Newton head curvature identified after \eqref{eq:lm}; the
+$y$ block contributes none, because it enters linearly and is eliminated in
+closed form. We report both the reduced stationarity of the deflated problem
+and the augmented stationarity of \eqref{eq:poisson-augmented}, whose gradient
+is $\big[\jac{}\T \rfull;\,(B_0C)\T \rfull\big]$ normalised by
+$\big(\normF{\jac{}}^2+\normF{B_0C}^2\big)^{1/2}\norm{\rfull}$, together with the
+backward error of the triangular recovery and the numerical rank of $B_0C$.
+
+\subsection{Parabolic instance: heat}
+\label{sec:method:heat}
+
+The semi-discrete heat equation is $\dot u=-\kappa\Aop u$. The implementation
+advances it with Crank--Nicolson,
+\begin{equation}
+  \Big(I+\tfrac{\Delta t\,\kappa}{2}\Aop\Big)u^{n+1}
+  \;=\;
+  \Big(I-\tfrac{\Delta t\,\kappa}{2}\Aop\Big)u^{n},
+  \label{eq:cn}
+\end{equation}
+% DISCREPANCY (D3a): the old manuscript states BACKWARD EULER (its Eq. (4)).
+% The implemented scheme is Crank-Nicolson (heat_core.cn_factor).  We follow the code.
+and the reduced step is obtained by substituting the manifold into the
+\emph{fully discrete} equation \emph{before} projecting. With
+$u^{n}=\umanifold(\latent_n)$ the fully discrete residual is
+\begin{equation}
+  \rfull_n(\latent)
+  \;=\;
+  \Big(I+\tfrac{\Delta t\kappa}{2}\Aop\Big)\umanifold(\latent)
+  \;-\;
+  \Big(I-\tfrac{\Delta t\kappa}{2}\Aop\Big)\umanifold(\latent_n),
+  \label{eq:heat-full-residual}
+\end{equation}
+which is nonlinear in $\latent$ because $\umanifold$ is. Projecting with
+$\tests$, using \eqref{eq:eigen-identity}, and row-scaling by
+$\rowscale_\star=I+\tfrac{\Delta t\kappa}{2}\rowscale$ gives the implemented
+residual
+\begin{equation}
+  \rweakn{n}(\latent)
+  \;=\;
+  B_0\,\head(\latent) \;-\; D\,B_0\,\head(\latent_n),
+  \qquad
+  D=\diag\!\left(\frac{1-\tfrac{\Delta t\kappa}{2}\lambda_i}
+                      {1+\tfrac{\Delta t\kappa}{2}\lambda_i}\right),
+  \qquad B_0=\tests\bank,
+  \label{eq:heat-step}
+\end{equation}
+and the step is defined as
+$\latent_{n+1}=\argmin_{\latent}\norm{\rweakn{n}(\latent)}_2$, solved by the LM
+iteration of \S\ref{sec:method:weak} warm-started at $\latent_n$. Two points
+are structural and were both wrong in the previous presentation.
+% DISCREPANCY (D3b) vs old-submission Eq. (4): the previous manuscript printed
+%   (J^T J + dt kappa J^T K J) z_{n+1} = J^T J z_n,
+% a LINEAR system in z_{n+1} obtained by replacing \tilde u(z) with J_D z.  That
+% substitution is valid only for a homogeneous linear decoder: it discards the
+% decoder bias, the current operating point, and the linearisation remainder.
+% The implemented step is the nonlinear least-squares problem above.
+% DISCREPANCY (D9): the old manuscript also wrote a latent ODE
+% J^T J \dot z = -kappa J^T K \tilde u(z).  No implemented path forms a latent
+% mass matrix J^T J or integrates an ODE in z; the step is a per-step
+% minimisation.
+First, the right-hand side of \eqref{eq:heat-step} is built from the
+\emph{decoded current state} $\head(\latent_n)$ at every step. Carrying instead
+the quantity that the previous step already made small freezes the recursion:
+the rollout then reproduces a one-step solution to round-off and the error is
+silently wrong. Second, $\latent_{n+1}$ appears through $\head$, so the step is
+a nonlinear least-squares problem and not a linear solve.
+
+\paragraph{Cholesky and contracted normal equations.}
+Because $B_0$ and $\dhead$ are small, the damped normal matrix in \eqref{eq:lm}
+is symmetric positive definite by construction, and the deployed path
+(\texttt{nmrom\_cholesky}) factors it by Cholesky and applies two triangular
+solves instead of a general LU factorisation. A further variant avoids
+assembling the $M\times k$ weak Jacobian at all: with the fixed Gram matrix
+$S=B_0\T B_0\in\Real^{R\times R}$ assembled offline,
+\begin{equation}
+  H=\dhead\T S\,\dhead,
+  \qquad
+  g = \dhead\T\Big(S\big(\head(\latent)-\head(\latent_0)\big)+B_0\T\rweakn{n}(\latent_0)\Big),
+  \label{eq:gram}
+\end{equation}
+where anchoring the gradient at the initial iterate avoids cancellation near a
+good warm start. This replaces per-iteration $O(MR)$ work by $O(R^2)$ and is
+exact; we report it as an algebraic ablation of the same step, not a different
+model.
+
+\subsection{Nonlinear advection: Burgers}
+\label{sec:method:burgers}
+
+The full-order problem is $u_t+u(u_x+u_y)=\nu\Delta u$ with the non-conservative
+sign-upwind stencil
+\begin{equation}
+  N(u)_{ij} \;=\; u_{ij}\,\big(\delta_x u + \delta_y u\big)_{ij},
+  \qquad
+  (\delta_x u)_{ij} = N\!\cdot\!
+  \begin{cases}
+    u_{ij}-u_{i-1,j}, & u_{ij}>0,\\[2pt]
+    u_{i+1,j}-u_{ij}, & u_{ij}\le 0,
+  \end{cases}
+  \label{eq:upwind}
+\end{equation}
+with $\delta_y$ defined analogously on the second index and switching on the
+\emph{same} centre value $u_{ij}$,
+with ghost zeros on all four walls, and
+backward Euler in time,
+$\rfull_n(u)=u-u^{n}+\Delta t\big(N(u)-\nu\Delta_h u\big)$. Projecting and row
+scaling by $\rowscale_\star=I+\Delta t\,\nu\rowscale$ gives
+\begin{equation}
+  \rweakn{n}(\latent)
+  \;=\;
+  \big(I+\Delta t\,\nu\rowscale\big)^{-1}
+  \Big[\,
+    B_0\head(\latent)-B_0\head(\latent_n)
+    \;+\;\Delta t\,\big(\,\widehat{N}(\latent)+\nu\rowscale B_0\head(\latent)\,\big)
+  \Big],
+  \label{eq:burgers-step}
+\end{equation}
+where $B_0=\tests\bank$ and the diffusion term is exact by
+\eqref{eq:eigen-identity}. The row scaling is precisely the diagonal of the
+linearised implicit operator in the modal basis, i.e.\ the modal form of the
+Helmholtz preconditioner used by the full-order solver, so the reduced and
+full-order problems are scaled consistently.
+
+Only the advection projection $\widehat{N}(\latent)\approx\tests N(\bank\head(\latent))$
+requires a choice. Two are implemented and compared:
+\begin{align}
+  \text{sampled (EQ)}\quad
+  &\widehat{N}(\latent)=\sum_{i\in\mathcal S} w_i\,\tests_{:,i}\;N_i\big(\bank\head(\latent)\big),
+  && \text{sign switch retained,}
+  \label{eq:burgers-eq}\\[2pt]
+  \text{precomputed}\quad
+  &\widehat{N}(\latent)=\tfrac12\,\head(\latent)\T Q\,\head(\latent),
+  && \text{exact iff $u\ge 0$ at every stencil node.}
+  \label{eq:burgers-tensor}
+\end{align}
+The sampled form \eqref{eq:burgers-eq} evaluates the decoder only at the
+five-point stencil of each retained node, which is the cached
+$5m\times R$ block times $\head(\latent)$, and it reproduces the sign-dependent
+stencil exactly at those nodes. The precomputed form
+\eqref{eq:burgers-tensor} removes sampling entirely but carries the sign
+restriction of \S\ref{sec:method:precomp} and departs from
+\eqref{eq:upwind} wherever the decoded or trial state undershoots below zero.
+Time stepping uses a fixed substep count per output interval; each step is
+warm-started at $\latent_n$, and a linear extrapolation
+$\latent_n+(\latent_n-\latent_{n-1})$ is used instead when, and only when, its
+residual norm is smaller.
+
+\subsection{Empirical quadrature}
+\label{sec:method:eq}
+
+The sampled rule of \eqref{eq:burgers-eq} is fitted \emph{offline}, from decoder
+outputs, by non-negative least squares \citep{LawsonHanson1974NNLS} in the
+empirical-quadrature form of \citet{Hernandez2017EQ} and
+\citet{YanoPatera2019LPEQ}. A candidate node set $\mathcal C$ is drawn once with
+a fixed seed. For each of $n_{\text{fit}}$ stored training codes $\latent^{(\ell)}$ we
+evaluate the decoded state, form the per-node advection contributions
+$N_i(\bank\head(\latent^{(\ell)}))$ and the exact full-grid target
+$\tests N(\bank\head(\latent^{(\ell)}))$, and stack
+\begin{equation}
+  \min_{w\ge 0}\;
+  \norm{\,\mathcal{G}\,w-\beta\,}_2,
+  \qquad
+  \mathcal{G}_{(\ell,i),\,c}=\tests_{i,c}\,N_c\big(\bank\head(\latent^{(\ell)})\big),
+  \qquad
+  \beta_{(\ell,i)}=\big[\tests N(\bank\head(\latent^{(\ell)}))\big]_i ,
+  \label{eq:nnls}
+\end{equation}
+with the rows normalised by their Euclidean norms before the fit. The support is
+grown greedily by the Lawson--Hanson criterion with an exact non-negative refit
+after each addition and a hard cap of $m$ nodes; if the support saturates below
+$m$, it is padded with the remaining candidates of largest mean design magnitude
+and refit, so the achieved node count equals the requested one. Three counts that
+the previous manuscript did not separate are separated here: the \emph{requested}
+node count $m$, the \emph{achieved} support size, and the number of \emph{fit
+snapshots} $n_{\text{fit}}$ used to assemble \eqref{eq:nnls}.
+% DISCREPANCY (D4) vs old-submission Sec. 4.3: the previous manuscript fitted EQ
+% against the TANGENT-PROJECTED residual J_D^T r with k rows per snapshot, and
+% presented the sample count as a deployment-time knob.  Implemented: the fit
+% targets the WEAK ADVECTION TERM only, with M rows per snapshot; the linear
+% terms are exact and never sampled; and selecting a different m selects a
+% different STORED rule.  The old manuscript's irreconcilable counts (minimum
+% support 300, n_eq in {4,...,64}, N_eq in [512,2560]) are the three quantities
+% separated above.
+
+A deployed rule is a stored triple: node indices, non-negative weights, and the
+cached $m\times 5\times R$ bank block at the five-point stencil of each node.
+Changing $m$ requires re-solving \eqref{eq:nnls} offline. At deployment one
+selects among rules that already exist; nothing is re-optimised online. The
+number of quadrature nodes is therefore a \emph{discrete selection among
+precomputed rules}, not a continuous accuracy knob.
+
+Two further cautions apply. The NNLS relative fit attained on its own snapshots
+is recorded, but it is a property of the fitting set and is not a fidelity
+certificate on unseen states; we certify a rule by measured full-grid parity and
+by physical error, never by its NNLS residual. And the selected support is one
+admissible solution among several: rebuilding the same problem under a different
+floating-point summation order can select different nodes.
+
+\paragraph{What per-node decoder evaluation saves, and what it does not.}
+Because all $x$-dependence factors through $\bank$, evaluating the decoder at
+the $5m$ stencil coordinates costs $O(mR)$ and is independent of $n$: this is
+the property the previous CP spatial head was chosen for, and the separable bank
+inherits it. It does not reduce the cost of the dense input projection, of the
+dense output decode $\bank\head(\latent)$ ($O(nR)$), or of the requested
+full-field output; and it buys nothing for the linear terms, which are already
+exact and reduced by \eqref{eq:linear-precomp}.
+
+\subsection{Deployment-time controls at a fixed checkpoint}
+\label{sec:method:tuning}
+
+All controls below act on a single frozen artefact. The network weights
+$\theta$, the bank $\bank$ and its width $R$, the latent dimension $k$, the test
+set $\tests$ and its size $M$, the time discretisation, and the query contract
+are identical across every operating point we report. What may change is:
+\begin{enumerate}\itemsep2pt
+  \item the LM attempt budget $I_{\max}$, per solve for the elliptic problem and
+        per time step for the evolution problems;
+  \item the stopping tolerance --- the stationarity threshold
+        $\eta_{\mathrm{tol}}$ of \eqref{eq:stationarity}, and where applicable the
+        residual threshold, relative ($\tau$) for the elliptic cell and absolute
+        for the Burgers step;
+  \item the index of the stored empirical-quadrature rule, where sampled
+        evaluation is used at all.
+\end{enumerate}
+Nothing else is varied, and nothing is re-optimised at query time. An operating
+point whose solves exited on budget or on a stall is labelled as such and its
+outputs are reported as early-stopped outputs; losses are reported as losses. We
+\emph{measure} the resulting error-versus-cost relation. We do not assume it is
+monotone or that it forms a frontier: a smaller weak residual need not produce a
+smaller field error, and no amount of additional optimisation can pass the
+representation limit of the frozen decoder, which we report separately as the
+best achievable fit of the bank and of the head.
+% DISCREPANCY (D5) vs old-submission Sec. 5.1: the previous manuscript fed the
+% projected operator to a conjugate-gradient solver, raising a symmetry question
+% once row weights are introduced.  No implemented path applies CG to the
+% projected operator: the k x k damped normal system is solved directly, by
+% Gauss-Jordan elimination with symmetric diagonal scaling and a backward-error
+% gate with a charged general-solve fallback (kernel_solver.guarded_gj), or by
+% Cholesky (heat).  The symmetry objection does not arise, but only because the
+% implementation differs from the printed description.
+
+\subsection{Intrusive and non-intrusive comparison}
+\label{sec:method:intrusive}
+
+The model described here is intrusive. It requires the discrete operator
+$\Aop$, the stencil, and the right-hand side at inference, and its offline stage
+requires assembling $B$ and, where used, $T$ at the deployment resolution. Neural
+operators such as FNO \citep{Li2020FNO} and DeepONet \citep{Lu2021DeepONet} are
+non-intrusive: they map data to data and apply where no discretisation or solver
+is available at all. The two are therefore not substitutes, and a head-to-head
+accuracy-per-cost table is meaningful only under one stated condition, which we
+state before any comparison: a discretisation exists and may be used. Under that
+condition the intrusive route can check and reduce its own equation error, while
+the non-intrusive route cannot; outside it, the comparison does not apply. We
+also hold the training data and the train/validation split fixed between the
+compared models and record the index hashes, so that differences are not
+attributable to different data.
+
+\subsection{What the construction does not provide}
+\label{sec:method:limits}
+
+We state the boundaries of the method with it, rather than in a closing
+paragraph.
+\begin{itemize}\itemsep2pt
+  \item \emph{No accuracy certificate.} Weak stationarity
+        \eqref{eq:stationarity} is a first-order condition on $M$ tested
+        components of a residual with $n\gg M$ components. It bounds neither the
+        untested components nor the physical error.
+  \item \emph{No escape from the bank.} By \eqref{eq:decoder} the manifold lies
+        in $\operatorname{range}\bank$; the bank's linear projection error is a
+        floor on the achievable field error, whatever the solver does.
+  \item \emph{Offline cost is mesh-dependent.} Frozen weights transfer across
+        meshes, but $\bank$, $\tests$, $B$ and $T$ do not; rebuilding them is
+        setup work that we charge and report separately.
+  \item \emph{Exact preassembly is conditional.} It requires a fixed or affinely
+        separable linear operator and a polynomial field operator, and for the
+        Burgers upwind stencil it additionally requires the sign restriction of
+        \S\ref{sec:method:precomp}, which decoded and trial states can violate.
+  \item \emph{Parameter-varying operators need a declared treatment.} A finite
+        affine decomposition can be preassembled term by term; an arbitrary new
+        coefficient field cannot inherit the same split.
+  \item \emph{No convergence theory.} We have no convergence guarantee for the
+        cold-start LM iteration, and no bound on the empirical-quadrature error
+        as a function of $m$ on unseen instances. Both are stated as open.
+  \item \emph{Classical solvers remain strong on the separable cells.} For
+        constant-coefficient Poisson and heat on a rectangle, the discrete sine
+        transform gives a direct solve \citep{Swarztrauber1977}; we name it as
+        the faster comparator wherever it applies and report it alongside every
+        iterative comparator.
+\end{itemize}

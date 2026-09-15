@@ -1,0 +1,109 @@
+% ===========================================================================
+% related-work.tex -- honest positioning.
+%
+% Rule applied throughout: every sentence that says something is new is
+% immediately followed by what is not.  No sentence claims dominance, a
+% frontier, or a speedup.  Numeric slots use \gen{...}.
+% ===========================================================================
+
+\section{Related work and what is new here}
+\label{sec:related}
+
+\paragraph{Linear and nonlinear manifold ROMs.}
+Projection-based reduction on a linear subspace \citep{Sirovich1987POD,
+BennerGugercinWillcox2015} is limited on advection-dominated and
+moving-front problems by the slow decay of the Kolmogorov width
+\citep{CohenDeVore2015,OhlbergerRave2016}. Nonlinear manifold ROMs replace the
+subspace with the image of a learned decoder: \citet{LeeCarlberg2020} introduced
+convolutional-autoencoder manifolds with least-squares Petrov--Galerkin
+projection \citep{Carlberg2011LSPG}, and \citet{KimChoi2022NMROM} made the
+decoder evaluable on a sample mesh with a shallow masked autoencoder, which is
+what makes hyper-reduction possible at all on a nonlinear manifold. Our trial
+manifold \eqref{eq:decoder} is of exactly this family. The decoder we use is a
+separable one --- a coordinate network supplying a spatial bank, composed with a
+nonlinear coefficient map --- rather than a convolutional or masked-dense
+decoder, and it is this factorisation, not the projection, that we rely on. The
+projection itself is standard; we claim no novelty for it, and we state the
+implemented test space, row scaling and stopping rule explicitly
+(\S\ref{sec:method:weak}) because conflating tangent Galerkin with residual
+least squares was a defect of our own earlier presentation.
+
+\paragraph{Precomputed reduced operators.}
+Caching reduced tensors for polynomial operators is established. Tensorial POD
+\citep{StefanescuSandu2014} precomputes the reduced coefficients of polynomial
+nonlinearities so that the online residual and Jacobian are contractions of
+fixed arrays, and compressive tensor approximations appear already in
+\citet{Carlberg2011LSPG}. Quadratic manifolds
+\citep{GeelenWrightWillcox2022,BarnettFarhat2022} make the decoder itself
+polynomial, which yields online-efficient reduced models by the same mechanism;
+\citet{WederSchwerdtnerPeherstorfer2024} give online-efficient Neural Galerkin
+models on quadratic manifolds for linear PDEs. Relative to this line,
+\emph{the tensor construction in \eqref{eq:tensor} is not new}. What differs is
+the pairing: the coefficient map $\head$ is an unrestricted neural network while
+only the \emph{discrete field operator} is required to be polynomial, so the
+manifold is not itself quadratic and the guarantees available for quadratic
+manifolds do not transfer. Whether the extra coefficient nonlinearity is worth
+its cost at matched reduced dimension is an empirical question, and we treat it
+as one (\S\ref{sec:exp:head}); exact tensor algebra by itself establishes
+nothing about that. We also note explicitly that the canonical-polyadic decoder
+of our previous submission admits the same preassembly, so precomputability is
+not a property of the newer bank: for that architecture one may write
+$\jac{\umanifold}\T(\Aop u-f)=\dhead\T[\,C\head-d\,]$ with $C=\bank\T\Aop\bank$
+and $d=\bank\T(f-\Aop\lift)$. This is an algebraic observation about the printed
+architecture, not a measured statement about its implementation.
+
+\paragraph{Hyper-reduction.}
+Where the projected operator is not exactly precomputable we use empirical
+quadrature in the non-negative least-squares form of \citet{Hernandez2017EQ},
+with the linear-programming variant of \citet{YanoPatera2019LPEQ} and energy-based
+mesh sampling \citep{FarhatECSW2014} as the nearby alternatives, and DEIM
+\citep{ChaturantabutSorensen2010} as the interpolation-based one. We use this
+machinery unchanged. Two things we do differently are worth stating, both of them
+corrections rather than contributions: the quadrature fits only the term that
+resists preassembly, since the linear terms are exact by
+\eqref{eq:linear-precomp} and need no sampling at all; and the node count is a
+selection among rules fitted offline, not a continuous online control
+(\S\ref{sec:method:eq}). The comparison we care about is therefore between exact
+preassembly and a fitted rule on the same frozen decoder, holding tests, row
+scaling, initialisation, time discretisation, stopping and output contract fixed
+--- including the offline cost of each.
+
+\paragraph{Neural operators.}
+FNO \citep{Li2020FNO}, DeepONet \citep{Lu2021DeepONet} and the broader
+operator-learning literature \citep{Kovachki2023NeuralOperator} learn a map
+between function spaces and evaluate it in a single forward pass. They are
+non-intrusive: they need no discrete operator at inference and apply where no
+solver exists, which is a capability our method does not have. They also
+produce one accuracy--cost point per trained model, which is the asymmetry our
+solver-side controls address (\S\ref{sec:method:tuning}). We do not treat these
+as substitutes for one another, and we do not present a head-to-head table as a
+verdict on either family: we state the condition under which the comparison is
+meaningful (\S\ref{sec:method:intrusive}), hold the training data and split
+fixed, and report the result whichever way it falls. In the screens completed so
+far the neural operator is the more accurate model on the elliptic problem
+(\gen{Poisson matched-data screen: per-capacity worst and mean error, ROM and
+FNO}), and we report that rather than omitting it.
+
+\paragraph{Classical solvers.}
+The separable, constant-coefficient cells admit a direct discrete sine-transform
+solve \citep{Swarztrauber1977}, which is faster than every reduced model we have
+measured on those cells; preconditioned Krylov methods \citep{Saad2003} are the
+appropriate iterative comparator, and a reduced model that beats one iterative
+solver has not thereby beaten the others. We name the direct solver wherever it
+applies and report it alongside, rather than choosing the comparator that
+flatters the method. The question a reduced model can be asked on these problems
+is not whether it beats a fast direct solver on a rectangle --- it does not ---
+but what happens where no such solver exists.
+
+\paragraph{What we claim, and what we do not.}
+The contribution we are prepared to defend is a combination and its
+characterisation: a frozen separable decoder whose spatial bank permits both
+exact preassembly of the linear and polynomial parts of a weak discrete
+residual and sampled evaluation of the parts that resist it; a precisely stated
+weak least-squares solve with recorded stationarity and exit reasons; and
+measurements of when the compression pays and when it does not, including the
+cases where it does not. We do not claim a new projection, a new hyper-reduction
+algorithm, a new tensor construction, a speedup at matched accuracy against a
+tuned classical solver, dominance over neural operators, or an accuracy--cost
+frontier. Where the evidence is a single training seed on development cases, we
+say so next to the number.

@@ -1,0 +1,78 @@
+% ===========================================================================
+% main-skeleton.tex
+%
+% Build check only.  This file exists so that methods.tex and related-work.tex
+% can be compiled and proofread on their own, with the NeurIPS style copied
+% from the previous submission (neurips_2026.sty).  It is NOT the manuscript:
+% the other sections are stubs carrying only their labels, so that the
+% \ref{} targets used by the two real sections resolve.
+%
+%   latexmk -pdf main-skeleton.tex
+% ===========================================================================
+
+\documentclass{article}
+
+\PassOptionsToPackage{numbers, sort&compress}{natbib}
+\usepackage[preprint]{neurips_2026}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{xcolor}
+
+\input{macros}
+
+\title{Nonlinear Manifold Reduced Models with Precomputed Weak Operators}
+
+\author{%
+  Anonymous \\
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study separable learned decoders whose nonlinear latent coordinates admit
+exact preassembly of the linear and polynomial parts of a weak discrete PDE
+residual, and we characterise the accuracy, cost and discretisation limits of
+removing fitted empirical quadrature from the repeated reduced evaluation.
+\gen{abstract endpoints, once the decisive experiments in OUTLINE.md have run}
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+\emph{Stub for the build check; see \texttt{OUTLINE.md}.}
+
+\input{related-work}
+
+\input{methods}
+
+\section{Experimental setup}\label{sec:setup}
+\emph{Stub for the build check; see \texttt{OUTLINE.md}.}
+
+\section{Results}\label{sec:results}
+\emph{Stub for the build check; see \texttt{OUTLINE.md}.}
+
+\subsection{Head ablation at matched latent dimension}\label{sec:exp:head}
+\emph{Stub for the build check.}
+
+\subsection{Preassembly against fitted quadrature}\label{sec:exp:quadrature}
+\emph{Stub for the build check.}
+
+\subsection{Frozen-checkpoint mesh ladder}\label{sec:exp:mesh}
+\emph{Stub for the build check.}
+
+\subsection{Deployment-time controls at a fixed checkpoint}\label{sec:exp:tuning}
+\emph{Stub for the build check.}
+
+\section{Conclusion}\label{sec:conclusion}
+\emph{Stub for the build check.}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\end{document}

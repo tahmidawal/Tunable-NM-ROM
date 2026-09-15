@@ -22,3 +22,56 @@
 3710790 ctol_noa_fno_b01 RUNNING
 3710790 ctol_noa_fno_b01 RUNNING
 3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+3710790 ctol_noa_fno_b01 RUNNING
+[exp/2026-09-14-no-audit 41f068c8] Archive and audit Burgers FNO job 3710790
+ 27 files changed, 2832 insertions(+)
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/accounting.txt
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/manifest.json
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0000
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0001
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0002
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0003
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0004
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0005
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0006
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0007
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0008
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0009
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0010
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0011
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0012
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0013
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0014
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0015
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0016
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0017
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0018
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0019
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0020
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0021
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive-parts/part-0022
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/archive.sha256
+ create mode 100644 experiments/neural-operator-audit/runs/fno_burgers01/field-audit.json
+{"numpy_fields_passed": true, "validation_cases": 32, "capacity_selection": {"capacity_scores": {"small": 0.03251956444336428, "medium": 0.027675276265074614, "large": 0.02585146813004162}, "refinement_learning_rate": 0.0003, "trained": ["small", "medium", "large", "refine"], "stopped_by_signal": false}, "worker": [{"task": "precision", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/smoke.py", "--output", "out/precision.json"], "exit_code": 0, "started_unix": 1789438186.9230676, "ended_unix": 1789438207.7717688, "job_id": "3710790", "remaining_global_seconds": 15279.149135185056}, {"task": "training-smoke", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/training_smoke_burgers.py", "--out", "out/training-smoke"], "exit_code": 0, "started_unix": 1789438207.7766833, "ended_unix": 1789438215.548058, "job_id": "3710790", "remaining_global_seconds": 15271.372848213068}, {"task": "small", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/train.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--config", "code/configs/burgers/small.json", "--out", "out/fno-small", "--wall-seconds", "2100"], "exit_code": 0, "started_unix": 1789438215.5516603, "ended_unix": 1789438553.569346, "job_id": "3710790", "remaining_global_seconds": 14933.351560206967}, {"task": "medium", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/train.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--config", "code/configs/burgers/medium.json", "--out", "out/fno-medium", "--wall-seconds", "2700"], "exit_code": 0, "started_unix": 1789438553.57339, "ended_unix": 1789439065.9038577, "job_id": "3710790", "remaining_global_seconds": 14421.01704774506}, {"task": "large", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/train.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--config", "code/configs/burgers/large.json", "--out", "out/fno-large", "--wall-seconds", "3900"], "exit_code": 0, "started_unix": 1789439065.9080424, "ended_unix": 1789439968.9927015, "job_id": "3710790", "remaining_global_seconds": 13517.928204527008}, {"task": "refine", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/train.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--config", "out/refine-config.json", "--out", "out/fno-refine", "--wall-seconds", "2700"], "exit_code": 0, "started_unix": 1789439969.0071895, "ended_unix": 1789440882.612257, "job_id": "3710790", "remaining_global_seconds": 12604.308648393024}, {"task": "timing", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/timing.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--runs", "out", "--out", "out/timing", "--repetitions", "30", "--burn-in", "20"], "exit_code": 0, "started_unix": 1789440882.6188924, "ended_unix": 1789440932.6664727, "job_id": "3710790", "remaining_global_seconds": 12554.25443339604}], "timing": {"present": true, "gpu": "NVIDIA A100 80GB PCIe", "models": {"fno-large": {"repetitions": [32, 30], "device_pooled_median_ms": 7.342960510868579, "device_median_of_case_medians_ms": 7.342618511756882, "host_pooled_median_ms": 0.2394870389252901, "device_plus_host_pooled_median_ms": 7.584935461636633}, "fno-medium": {"repetitions": [32, 30], "device_pooled_median_ms": 5.507445486728102, "device_median_of_case_medians_ms": 5.5083192710299045, "host_pooled_median_ms": 0.23641996085643768, "device_plus_host_pooled_median_ms": 5.745063477661461}, "fno-refine": {"repetitions": [32, 30], "device_pooled_median_ms": 7.355477544479072, "device_median_of_case_medians_ms": 7.356286980211735, "host_pooled_median_ms": 0.23864698596298695, "device_plus_host_pooled_median_ms": 7.59609550004825}, "fno-small": {"repetitions": [32, 30], "device_pooled_median_ms": 3.3726844703778625, "device_median_of_case_medians_ms": 3.3730915165506303, "host_pooled_median_ms": 0.23725349456071854, "device_plus_host_pooled_median_ms": 3.6110380315221846}}, "repetitions_per_case": 30, "burn_in_per_block": 20, "limitation": "Same-job, same-GPU FNO timings only; never divide these by another job's timings."}, "metric": "maximum over the six requested output times of the interior l2 discrepancy divided by the interior l2 norm of the supplied initial field", "limitation": "Single-seed, bounded-epoch development screen on one mesh and one Gaussian continuum family; no ROM/FOM comparison and no cross-job timing ratio.", "job_id": "3710790", "archive_sha256": "7f3cdc2a44b3146584e88041bbcf6d0e77a579d24350ac23903d594132f4c0c2", "accounting": "3710790|ctol_noa_fno_b01|COMPLETED|00:46:00|pax007\n", "archive_exclusions": ["--exclude=*/last.pt", "--exclude=*.solver.npz", "--exclude=fno_burgers01/cache", "--exclude=fno_burgers01/tmp", "--exclude=fno_burgers01/data/train"], "archive_bytes": 1479661762}
+COLLECTION FINISHED

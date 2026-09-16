@@ -1,0 +1,10 @@
+{
+  "attempt": "pbh02",
+  "mode": "headsolve",
+  "job_id": "3748202",
+  "remote": "/cluster/tufts/paralab/tawal01/p_bank_head_20260916/pbh02",
+  "bank": "bank_R512_S3072, selected by DESIGN.md amendment 4 on the common 256-source cohort",
+  "body": "head sweep on the supplied frozen bank, then make_models, then the frozen solve of incumbent + new_K16 + new_K32 + bank_arm_head with POD-LSPG and dst_direct in the same job",
+  "squeue_before": "no job in this attempt directory; two other agents' jobs running elsewhere",
+  "squeue_after": "3748202 pbh_pbh02 PENDING; exactly one job per attempt directory"
+}

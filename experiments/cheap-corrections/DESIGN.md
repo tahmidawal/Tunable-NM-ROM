@@ -297,3 +297,30 @@ wrapper carries the extra per-step stationarity diagnostics inside the same `sca
 changes XLA fusion. The audited ladder's wrapper was bitwise identical to
 `accuracy_paths.make_rom`; this one is identical to round-off. Gate i is stated as a $10^{-12}$
 relative tolerance and passes; the loss of bitwise identity is recorded, not glossed.
+
+## Amendments after the runs, before the report
+
+Both jobs finished and were audited before any of these were made; none of them changes a
+recorded number.
+
+The independent audit's `--qlad01` field-level comparison was pointed at the `qlad01` chunked
+archive reassembled into this session's scratchpad (`sha256sum -c` against `archive.json`
+first, then `tar -xzf`, then the `output/` directory of the restoration). Nothing was written
+into the head-ablation worktree; the restoration is a read-only copy and is not committed here
+because the chunks it was rebuilt from already are, in
+`experiments/head-ablation/artifacts/qlad01`.
+
+Two checks are recorded as informational rather than blocking, exactly as the design
+anticipated they might have to be: `directions_hash_matches_qlad01` and
+`reference_fields_bitwise_match_qlad01`. Both fail, and both are reported as failing in the
+report's gate table and in the lab log. The reason is cross-job, not procedural: `qlad01` ran
+on an `NVIDIA A100-PCIE-40GB` and this job on an `NVIDIA A100 80GB PCIe`, and within this job
+the audited and flattened direction fits are bitwise identical to each other. Gate iii, the
+one the design says carries the scientific weight, compares the actual $q=16$ fields against
+the retained `q16_dense` rung and passes with room to spare, and the $q=0$ arm reproduces both
+`qlad01`'s `q0_eq` and `abl01`'s `a_neural_eq` inside the declared $10^{-9}$.
+
+The `q=512` empirical-quadrature arm is reported as measured and is NOT excluded, retuned or
+refitted, even though its same-grid error is plainly broken relative to its dense twin. Its
+rule is walltime-truncated and its relative fit is the worst in the table; the arm stands as a
+recorded limit of the bounded fitter's cap rather than being quietly dropped.

@@ -35,9 +35,25 @@ def build(r, au, sm, pr, pau, meta):
     w = o.append
     w('')
     w('')
+    pverd = {}
+    for n in sorted({x['intervals'] for x in prows}):
+        blk = sorted([x for x in prows if x['kind'] == 'rom' and x['intervals'] == n],
+                     key=lambda z: -(float('inf') if z['lambda_rel'] is None else z['lambda_rel']))
+        nd = nondominated(blk, 'worst_same_grid_percent', 'median_query_ms')
+        pverd[n] = dict(
+            span=max(p['worst_same_grid_percent'] for p in nd)
+            / max(min(p['worst_same_grid_percent'] for p in nd), 1e-300),
+            cost=max(p['median_query_ms'] for p in nd) / min(p['median_query_ms'] for p in nd))
+    pn = max(pverd, key=lambda k: pverd[k]['span'])
+    burg = ('a usable knob on the primary block' if v_all['passed'] else
+            ('not a knob on the pre-registered metric, which the initializer contract pins; '
+             + ('a knob on the evolved-time metric' if v_evo['passed']
+                else 'and not a knob on the evolved-time metric either')))
+    pois = (f"on Poisson it spans {pverd[pn]['span']:.2f}x in error for {pverd[pn]['cost']:.2f}x "
+            f"in cost")
     w('## 2026-09-15')
-    w('### prior-dial — trusting the neural prior less is not a usable inference-time knob on '
-      'this Burgers checkpoint, and on Poisson it is an accuracy lever that costs almost nothing')
+    w(f'### prior-dial — trusting the neural prior less is {burg} on this Burgers checkpoint, '
+      f'and {pois}')
     w('')
     w('The coordinator asked whether "trust in the neural prior" is a usable inference-time '
       'accuracy/cost knob on one frozen checkpoint. Instead of solving only for the latent code '
@@ -106,7 +122,7 @@ def build(r, au, sm, pr, pau, meta):
     w('**Burgers, primary block (M = 64, EQ — arm (a)\'s own test count and quadrature).**')
     w('')
     w('| lambda_rel | worst same-grid all times % | worst same-grid evolved % | '
-      'realised ||y||/||u|| % | median iters/step | budget exits | completed | median GPU ms |')
+      'realised ‖y‖/‖u‖ % | median iters/step | budget exits | completed | median GPU ms |')
     w('|---:|---:|---:|---:|---:|---:|---|---:|')
     for x in prim:
         w('| ' + ' | '.join([lam_plain(x['lambda_rel']), pct(x['worst_same_grid_percent']),
@@ -182,7 +198,7 @@ def build(r, au, sm, pr, pau, meta):
       'so lambda -> 0 does reach the free bank.')
     w('')
     w('| intervals | lambda_rel | worst same-grid % | median same-grid % | worst physical % | '
-      'realised ||y||/||u|| % | median host ms |')
+      'realised ‖y‖/‖u‖ % | median host ms |')
     w('|---:|---:|---:|---:|---:|---:|---:|')
     for x in prows:
         w('| ' + ' | '.join([

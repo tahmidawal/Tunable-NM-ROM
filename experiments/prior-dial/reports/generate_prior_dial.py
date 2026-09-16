@@ -337,7 +337,7 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
     w('')
     w('| arm | $M$ | $m$ | quad. | $\\lambda_{\\rm rel}$ | solved dim | L1 bank floor % | '
       'L2 best-found % | L3 worst same-grid % | L3 worst evolved % | median evolved % | '
-      'worst reference % | realised $\\|y\\|/\\|u\\|$ % | median iters/step | budget exits | '
+      'worst reference % | realised ‖y‖/‖u‖ % | median iters/step | budget exits | '
       'completed | median GPU ms | median host ms |')
     w('|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|')
     for x in rows:
@@ -506,7 +506,7 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
     w('')
     w('| intervals | $\\lambda_{\\rm rel}$ | L1 bank floor % | L2 best-found % | '
       'L3 worst same-grid % | median same-grid % | worst physical % | '
-      'realised $\\|y\\|/\\|u\\|$ % | median iters | completed | median host ms | '
+      'realised ‖y‖/‖u‖ % | median iters | completed | median host ms | '
       'median device ms |')
     w('|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|')
     for x in prows:
@@ -615,7 +615,7 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
          'reach on the reference field with no PDE involved. Separates representation from '
          'dynamics.'),
         ('L3 solved error', 'what the real online solve actually produced.'),
-        ('realised $\\|y\\|/\\|u\\|$', 'how far the solved state actually departed from the '
+        ('realised ‖y‖/‖u‖', 'how far the solved state actually departed from the '
          'head\'s prediction, as a fraction of the state norm. If this is near zero the prior '
          'was never binding.'),
         ('iterations / budget exits', 'Levenberg-Marquardt steps per time step, hardware-free / '

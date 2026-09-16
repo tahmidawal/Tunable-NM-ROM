@@ -347,6 +347,28 @@ One consequence is recorded in advance: a *measured* parity of order $5\times10^
 distinguish an arm that reassociates from one that does not, so the per-arm class in
 `ladders.py` is documentation of intent, not a claim about the measurement.
 
+### D3 (2026-09-16, during the run) — the abl01 field gate covers four cases, not six
+
+Section 9 claimed the cohort's first six cases are "exactly `abl01`'s six". They are not,
+and the job's own gate printed `2.33` relative, which is the finding rather than a failure
+of the solver. `engines.params_draw` draws **column by column**:
+`r.uniform(.15,.85,count)` for every case's first parameter, then the second, and so on. So
+drawing 4 cases from a seed does **not** extend a draw of 2 from the same seed — only the
+first column agrees. `abl01`'s two "fresh development" cases came from
+`params_draw(911702, 2)`; this cohort's four came from `params_draw(911702, 4)`, so they are
+different physical cases and comparing them against `abl01`'s saved fields is comparing
+different problems.
+
+Cases 0–3 come from `params_draw(7090702, 4)` in both and are bit-identical parameter
+vectors, so the gate is **those four complete trajectories at 256 intervals against the
+retained `abl01` `a_neural_eq` fields**, at the same $10^{-12}$ bar. The audit restricts the
+gate to them and reports the excluded cases explicitly; the job's own six-case number is
+recorded but is not the gate. The cohort itself is unaffected — eight development cases from
+the two campaign seeds, no final cohort opened.
+
+This is worth carrying beyond this cell: any experiment that reuses a `params_draw` seed with
+a different `count` gets a different cohort, silently.
+
 ### D2 (2026-09-16, before any cluster run) — matvec orientation fixed in the harness
 
 The first harness draft wrote the quadrature contraction as `adv @ Pq` where the incumbent

@@ -205,12 +205,16 @@ def main():
     p.add_argument('--r1', required=True)
     p.add_argument('--r2', default=None)
     p.add_argument('--comparators', default=str(CELL / 'checks/comparators.json'))
+    p.add_argument('--dense-ref', default=None,
+                   help="the q-trajdirs lane's audited dense ladder at M = 4(K+q), read-only")
     p.add_argument('--out', required=True)
     a = p.parse_args()
     r1 = json.loads(Path(a.r1).read_text())
     r2 = json.loads(Path(a.r2).read_text()) if a.r2 and Path(a.r2).exists() else None
     eq = json.loads(Path(a.eq).read_text()) if a.eq and Path(a.eq).exists() else None
     cmp_t = json.loads(Path(a.comparators).read_text())
+    dref = (json.loads(Path(a.dense_ref).read_text())
+            if a.dense_ref and Path(a.dense_ref).exists() else None)
     out = Path(a.out)
     d = Doc()
     jobs = [x for x in (r1, r2, eq) if x]
@@ -304,6 +308,25 @@ def main():
                  'NNLS relative fit'],
                 [[c['q'], c['M'], c['chosen_m'], c['basis'], f(c['rho_max']), f(c['rho_p95']),
                   sci(c['relative_fit'])] for c in eq['rule_choice']])
+
+        if dref:
+            d.h(3, 'The dense ladder this is measured against')
+            want = {0: 'q0_M64_dense', 16: 'old_q16_M128_dense', 32: 'old_q32_M192_dense',
+                    64: 'old_q64_M320_dense', 128: 'old_q128_M576_dense',
+                    256: 'old_q256_M1088_dense'}
+            byd = {x['arm']: x for x in dref['arms']}
+            rowsd = [[q, byd[nm]['M'], f(byd[nm]['worst_evolved_percent']),
+                      f(byd[nm]['worst_all_times_percent']), f(byd[nm]['median_gpu_ms'], 1),
+                      yn(byd[nm]['converged'])]
+                     for q, nm in sorted(want.items()) if nm in byd]
+            d.p('Read-only from the `q-trajdirs` lane, job '
+                f"`{dref['job_id']}` (`qtd02`) on `{dref['gpu']}`: the same six cases, the same "
+                'old direction rule, the same budget-600 contract, exact quadrature, '
+                '$M = 4(K+q)$. It is the ladder the empirical rule has to reproduce.')
+            d.table(['$q$', '$M$', 'worst evolved %', 'worst all-times %', 'median GPU ms',
+                     'converged'], rowsd)
+            d.p('Monotone on the evolved metric: '
+                f"**{yn(_mono([byd[nm]['worst_evolved_percent'] for q, nm in sorted(want.items()) if nm in byd]))}**.")
 
         d.h(3, 'The rebuilt ladder')
         for key in ('certified', 'old_rule', 'dense'):

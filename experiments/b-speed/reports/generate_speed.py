@@ -164,36 +164,64 @@ def section_profile(pr, res):
                              'fusions', 'custom calls', 'dots'],
                       ['---', '---:', '---:', '---:', '---:', '---:', '---:']))
 
-    # launch-bound accounting
-    chain = [(n, mb[f'elementwise_chain_{n}']['per_iteration_us']) for n in (1, 4, 16)
-             if f'elementwise_chain_{n}' in mb]
-    if len(chain) >= 2:
-        (n0, t0), (n1, t1) = chain[0], chain[-1]
-        per_op = (t1 - t0) / (n1 - n0)
+    # launch-bound accounting: regress in-loop cost on fusion count
+    pairs = []
+    for k, v in mb.items():
+        c = ca.get(k)
+        if c and 'fusions' in c and v['per_iteration_us'] > 0 and 'flops' in c:
+            pairs.append((k, c['fusions'], v['per_iteration_us'], c['flops'],
+                          c.get('bytes accessed', 0.)))
+    body.append('\n### Is it launch bound? The measurement\n')
+    if len(pairs) >= 3:
+        rows = [[f'`{k}`', f, fmt(t, 2), fmt(t / f, 2), f'{fl:.2e}',
+                 f'{fl / (t * 1e-6) / 1e9:.1f}'] for k, f, t, fl, by in pairs]
+        body.append(table(rows, ['in-loop body', 'fusions', 'us / iteration',
+                                 'us / fusion', 'FLOPs', 'GFLOP/s achieved'],
+                          ['---', '---:', '---:', '---:', '---:', '---:']))
+        xs = [f for _, f, _, _, _ in pairs]
+        ys = [t for _, _, t, _, _ in pairs]
+        n = len(xs)
+        mx = sum(xs) / n
+        my = sum(ys) / n
+        sxx = sum((x - mx) ** 2 for x in xs)
+        b1 = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx if sxx else float('nan')
+        b0 = my - b1 * mx
+        ss = sum((y - my) ** 2 for y in ys)
+        rr = 1 - sum((y - (b0 + b1 * x)) ** 2 for x, y in zip(xs, ys)) / ss if ss else float('nan')
+        fl = [f for _, _, _, f, _ in pairs]
         body.append(
-            f'\nThe elementwise chain gives a calibrated in-loop cost of '
-            f'**{fmt(per_op, 2)} µs per fused kernel** ({n0}→{n1} operations, '
-            f'{fmt(t0, 2)}→{fmt(t1, 2)} µs/iteration), against a bare loop-control floor of '
-            f"{fmt(mb['loop_control_scalar']['per_iteration_us'], 2)} µs/iteration. ")
-        ev = ca.get('evolution', {})
-        rj = mb.get('residual_and_jacfwd', {}).get('per_iteration_us')
-        rjc = ca.get('residual_and_jacfwd', {})
-        if rj and rjc.get('fusions'):
-            est = rjc['fusions'] * per_op
-            body.append(
-                f"One residual+Jacobian evaluation compiles to {rjc['fusions']} fusions and "
-                f"{rjc.get('custom_calls')} custom calls and measures {fmt(rj, 2)} µs in-loop; "
-                f'{rjc["fusions"]} × {fmt(per_op, 2)} µs = {fmt(est, 1)} µs, i.e. '
-                f'**{fmt(100 * est / rj, 0)}% of it is accounted for by kernel count alone**. ')
-        if ev.get('flops') and ev.get('bytes accessed'):
-            body.append(
-                f"The whole evolution moves {ev['bytes accessed'] / 1e6:.1f} MB and does "
-                f"{ev['flops'] / 1e6:.1f} MFLOP in "
-                f"{fmt(ms(pr['phases']['evolution']['median_seconds']))} ms, i.e. "
-                f"{fmt(ev['bytes accessed'] / pr['phases']['evolution']['median_seconds'] / 1e9, 1)} GB/s "
-                f"and {fmt(ev['flops'] / pr['phases']['evolution']['median_seconds'] / 1e9, 1)} GFLOP/s "
-                'against an A100 80GB PCIe capability of order 1900 GB/s and 19500 GFLOP/s '
-                'in f64 — two to three orders below both. The program is kernel-count bound.')
+            f'\nAcross these bodies the arithmetic spans a factor of '
+            f'**{max(fl) / min(fl):.0f}** while the time spans a factor of only '
+            f'**{max(ys) / min(ys):.1f}**. Regressing microseconds per in-loop iteration on '
+            f'the compiled fusion count gives **{fmt(b1, 2)} us per fusion + {fmt(b0, 2)} us** '
+            f'(R-squared = {fmt(rr, 3)}), against a bare loop-control floor of '
+            f"{fmt(mb['loop_control_scalar']['per_iteration_us'], 2)} us/iteration. "
+            + ('Cost tracks the number of compiled kernels, not the work inside them: the '
+               'program is **kernel-count bound**. Every result below follows from that one '
+               'fact - an optimisation pays only if it removes kernels, and one that removes '
+               'arithmetic while adding kernels loses.\n'
+               if (rr == rr and rr >= 0.7 and b1 > 0) else
+               'That regression does NOT support a clean per-kernel law here (R-squared '
+               'below 0.7 or a non-positive slope), so no per-kernel cost is quoted from '
+               'it; the raw table above stands on its own and the arithmetic-versus-time '
+               'spans are the evidence for the launch-bound reading.\n'))
+        body.append('\nThe elementwise-chain rows above are NOT a per-kernel calibration and '
+                    'must not be read as one: XLA fuses a chain of elementwise operations on '
+                    'one small vector into a single kernel, so those rows measure arithmetic '
+                    'inside one fusion, which is why they are nearly flat in the chain '
+                    'length. They are kept as the contrast that makes the point.\n')
+    ev = ca.get('evolution', {})
+    if ev.get('flops') and ev.get('bytes accessed'):
+        sec = pr['phases']['evolution']['median_seconds']
+        body.append(
+            f"\nThe whole evolution moves {ev['bytes accessed'] / 1e6:.1f} MB and does "
+            f"{ev['flops'] / 1e6:.1f} MFLOP in {fmt(ms(sec))} ms, i.e. "
+            f"{fmt(ev['bytes accessed'] / sec / 1e9, 2)} GB/s and "
+            f"{fmt(ev['flops'] / sec / 1e9, 2)} GFLOP/s"
+            + (', against an A100 80GB PCIe capability of order 1900 GB/s and 9700 GFLOP/s '
+               'in f64.\n' if 'A100' in res.get('gpu', '') else
+               f", on {res.get('gpu')}, orders of magnitude below what any current data-centre "
+               'GPU sustains in f64.\n'))
     return '\n'.join(body)
 
 

@@ -1,0 +1,1954 @@
+{
+ "repository": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude",
+ "refspec": "--all",
+ "objects_total": 23959,
+ "blobs_total": 15349,
+ "blob_bytes_total": 231010941068,
+ "blob_bytes_on_disk": 227436056380,
+ "metadata_objects": 8610,
+ "metadata_bytes_on_disk": 1811633,
+ "drop_rule": "(\\.part-?[0-9]+$)|(/archive-parts/part-?[0-9]+$)|(\\.(npz|npy|pkl|pt|pth|h5|hdf5)$)|(\\.(tar|tgz|zip)$)|(\\.tar\\.gz$)|(\\.gz$)",
+ "dropped_blobs": 6935,
+ "dropped_bytes": 230089298297,
+ "kept_blobs": 8414,
+ "kept_bytes": 921642771,
+ "kept_bytes_on_disk": 216928295,
+ "kept_blobs_over_50MB": [],
+ "kept_blobs_over_100MB": [],
+ "largest_kept": [
+  {
+   "path": "experiments/modcp-eq/runs/evaluation01/out/validation_handoff.json",
+   "bytes": 42707644
+  },
+  {
+   "path": "consolidated/evidence/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel12/cluster/out/pilot/result.json",
+   "bytes": 26791604
+  },
+  {
+   "path": "experiments/modcp-eq/runs/validation01/out/invocations.jsonl",
+   "bytes": 24936301
+  },
+  {
+   "path": "consolidated/evidence/worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/correction_accuracy10/result.json",
+   "bytes": 22425883
+  },
+  {
+   "path": "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/result.json",
+   "bytes": 22336792
+  },
+  {
+   "path": "experiments/multiresolution-poisson/runs/pilot04/result.json",
+   "bytes": 19134148
+  },
+  {
+   "path": "experiments/multiresolution-poisson/runs/online_tuning07/result.json",
+   "bytes": 17647102
+  },
+  {
+   "path": "consolidated/evidence/worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/archive/outputs/results.json",
+   "bytes": 15782104
+  },
+  {
+   "path": "experiments/burgers-hybrid-1024/runs/final_provisional_seed1/out/final_confirmation.json",
+   "bytes": 14745864
+  },
+  {
+   "path": "experiments/multiresolution-wave/runs/iterative05/cluster/out/pilot/result.json",
+   "bytes": 14188251
+  }
+ ],
+ "by_class": {
+  "chunked run archive": {
+   "count": 2641,
+   "bytes": 205131291323
+  },
+  "saved field array": {
+   "count": 3907,
+   "bytes": 23004624134
+  },
+  "checkpoint": {
+   "count": 361,
+   "bytes": 1426911158
+  },
+  "result / audit JSON": {
+   "count": 2333,
+   "bytes": 770417100
+  },
+  "whole archive": {
+   "count": 26,
+   "bytes": 526471682
+  },
+  "figure / document": {
+   "count": 353,
+   "bytes": 76987955
+  },
+  "text / manifest": {
+   "count": 3272,
+   "bytes": 42666465
+  },
+  "source": {
+   "count": 2237,
+   "bytes": 30518963
+  },
+  "other": {
+   "count": 219,
+   "bytes": 1052288
+  }
+ },
+ "dropped_directories_count": 442,
+ "dropped_directories": [
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel12",
+   "bytes": 43457269760
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/iterative05",
+   "bytes": 22539581440
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/parts",
+   "bytes": 12030341120
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/transfer04/parts",
+   "bytes": 8974452498
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/rollout04/out",
+   "bytes": 7560037218
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/nonlinear06/parts",
+   "bytes": 6378147840
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/k32heads03",
+   "bytes": 6251670224
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/iterative_cg09/parts",
+   "bytes": 6151649280
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/device04",
+   "bytes": 6150315093
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/accuracy08/parts",
+   "bytes": 6056642560
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/linear05/parts",
+   "bytes": 5987461120
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/capacity_accuracy09",
+   "bytes": 5910778176
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/accuracy09/parts",
+   "bytes": 5883453440
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/steps05/out",
+   "bytes": 5475021388
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/cp_algebra08/parts",
+   "bytes": 5233674240
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/staged_accuracy08",
+   "bytes": 5216503208
+  },
+  {
+   "dir": "experiments/historical-poisson-replay/runs/replay02/archive",
+   "bytes": 4977124201
+  },
+  {
+   "dir": "experiments/neural-operator-burgers/artifacts/refinement02",
+   "bytes": 4667217851
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/correction_accuracy10",
+   "bytes": 4639962078
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/dynamics02",
+   "bytes": 4119323795
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/nonlinear07/parts",
+   "bytes": 4084019200
+  },
+  {
+   "dir": "experiments/neural-operator-burgers/artifacts/calibration01",
+   "bytes": 3860961311
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/online_tuning07",
+   "bytes": 3068693277
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/iterative06/parts",
+   "bytes": 2925496320
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/iterative_cg06",
+   "bytes": 2278918990
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/accuracy07/parts",
+   "bytes": 1999032320
+  },
+  {
+   "dir": "experiments/cheap-corrections/artifacts/ccpoi01",
+   "bytes": 1895822263
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/pilot04",
+   "bytes": 1877205838
+  },
+  {
+   "dir": "experiments/historical-burgers2d-replay/runs/historical_20260910_r1/out/n1024",
+   "bytes": 1818859477
+  },
+  {
+   "dir": "experiments/neural-operator-audit/runs/fno_burgers02/archive-parts",
+   "bytes": 1605970408
+  },
+  {
+   "dir": "experiments/neural-operator-audit/runs/fno_poisson01/archive-parts",
+   "bytes": 1511411500
+  },
+  {
+   "dir": "experiments/neural-operator-audit/runs/fno_burgers01/archive-parts",
+   "bytes": 1479661762
+  },
+  {
+   "dir": "experiments/head-refine/artifacts/pref01",
+   "bytes": 1467057756
+  },
+  {
+   "dir": "experiments/historical-poisson-replay/runs/replay01/archive",
+   "bytes": 1236587573
+  },
+  {
+   "dir": "experiments/head-refine/artifacts/bref01",
+   "bytes": 1214929942
+  },
+  {
+   "dir": "experiments/head-ablation/artifacts/pabl01",
+   "bytes": 1213309029
+  },
+  {
+   "dir": "experiments/cheap-corrections/artifacts/cclad01",
+   "bytes": 1030352480
+  },
+  {
+   "dir": "experiments/neural-operator-burgers/artifacts/tuning02",
+   "bytes": 983268507
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p5_d_r1/out/targets",
+   "bytes": 962852384
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/pilot05",
+   "bytes": 858639891
+  },
+  {
+   "dir": "experiments/prior-dial/artifacts/ppdial01",
+   "bytes": 856932794
+  },
+  {
+   "dir": "experiments/historical-burgers2d-replay/runs/historical_20260910_r1/out/n512",
+   "bytes": 754358385
+  },
+  {
+   "dir": "experiments/historical-burgers2d-replay/runs/historical_20260910_r1/out/n256",
+   "bytes": 677452510
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/verify03",
+   "bytes": 641562664
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/verify03/cluster/out/verification",
+   "bytes": 641387037
+  },
+  {
+   "dir": "experiments/prior-dial/artifacts/pdial01",
+   "bytes": 625469169
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/pilot02/out",
+   "bytes": 528059128
+  },
+  {
+   "dir": "experiments/neural-operator-burgers/artifacts/tuning01",
+   "bytes": 508400660
+  },
+  {
+   "dir": "experiments/mesh-ladder/artifacts/burgers01",
+   "bytes": 506443866
+  },
+  {
+   "dir": "experiments/mesh-ladder/artifacts/poisson01",
+   "bytes": 461179947
+  },
+  {
+   "dir": "experiments/head-ablation/artifacts/abl01",
+   "bytes": 360677284
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/pilot01/out",
+   "bytes": 304936912
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/diagnosis_r128/fields",
+   "bytes": 298615418
+  },
+  {
+   "dir": "experiments/head-ablation/artifacts/qlad01",
+   "bytes": 287510586
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p10_d_r2_failed/out",
+   "bytes": 285078220
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/absorbing02",
+   "bytes": 283914375
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/pilot01/archive/out/diagnosis/fields",
+   "bytes": 283071376
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/diagnosis_r256/fields",
+   "bytes": 280684834
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/reflective01",
+   "bytes": 280621061
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p4_d_r2/out",
+   "bytes": 249700539
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p4_d_r3/out",
+   "bytes": 249700534
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/pilot02",
+   "bytes": 243049016
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/pilot03",
+   "bytes": 214999997
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing",
+   "bytes": 165169330
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet",
+   "bytes": 162808161
+  },
+  {
+   "dir": "experiments/historical-burgers2d-replay/runs/historical_20260910_r1/out/n64",
+   "bytes": 148770519
+  },
+  {
+   "dir": "experiments/mr-burgers2d/runs/cold03/out",
+   "bytes": 147973056
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/data/train/cases",
+   "bytes": 127971850
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/data/calibration",
+   "bytes": 126461981
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p8_d_r2/out",
+   "bytes": 125738432
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel07",
+   "bytes": 121868357
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel10",
+   "bytes": 115041900
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/pilot01/archive/outputs",
+   "bytes": 109837965
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel09",
+   "bytes": 104456180
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel08",
+   "bytes": 103824829
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/pilot01",
+   "bytes": 102341814
+  },
+  {
+   "dir": "experiments/burgers-hybrid-2048/runs/diagnostic2/out",
+   "bytes": 100664146
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/pilot01/cluster/out/pilot",
+   "bytes": 98810130
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/s0_spline_r1/out",
+   "bytes": 98624582
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/movie01",
+   "bytes": 96482996
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/movie01/cluster/out/movie",
+   "bytes": 96163378
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/pilot01",
+   "bytes": 95159603
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel07/cluster/out/pilot",
+   "bytes": 92672836
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p7_g1_s11_r3/out",
+   "bytes": 86105043
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel06",
+   "bytes": 79112916
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p4_h1_s11_r1/out",
+   "bytes": 70003948
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/pilot02/archive/outputs/fields",
+   "bytes": 69845018
+  },
+  {
+   "dir": "experiments/cost-to-tolerance/ckpt_burgers",
+   "bytes": 68172091
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel06/cluster/out/pilot",
+   "bytes": 63146923
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel10/cluster/out/pilot",
+   "bytes": 62006289
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r3c/out",
+   "bytes": 59465536
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel08/cluster/out/pilot",
+   "bytes": 55311735
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/dn1024/out",
+   "bytes": 53310658
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cfd256/out",
+   "bytes": 53261449
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p9_terminal_recovery_s11_r1_failed/out",
+   "bytes": 52473770
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel09/cluster/out/pilot",
+   "bytes": 51755228
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r4a5/out",
+   "bytes": 46395510
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cf256/out",
+   "bytes": 42635276
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20002",
+   "bytes": 41602069
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20101",
+   "bytes": 41601911
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/refquad20001",
+   "bytes": 41601389
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/refquad20101",
+   "bytes": 41599651
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r4a1/out",
+   "bytes": 37998632
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/dn256b/out",
+   "bytes": 36402230
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/dr256/out",
+   "bytes": 36402230
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation01/out/rules",
+   "bytes": 35070217
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3d_architecture/screen40/out",
+   "bytes": 33435072
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight01",
+   "bytes": 32451426
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight01/cluster/out/preflight/synthetic_bank_cost",
+   "bytes": 32244422
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/data/validation/cases",
+   "bytes": 31953277
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/data/validation/physical-reference",
+   "bytes": 31457551
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b2dtensor/figs",
+   "bytes": 30733132
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/train_absorbing01",
+   "bytes": 30732469
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/train_reflective01",
+   "bytes": 30714385
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/pilot03/archive/outputs/fields",
+   "bytes": 27021174
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/verify02",
+   "bytes": 26435708
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/verify02/cluster/out/verification",
+   "bytes": 26387565
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/train_reflective01/cluster/out/training/checkpoints",
+   "bytes": 26261692
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/train_absorbing01/cluster/out/training/checkpoints",
+   "bytes": 26261667
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r4a2/out",
+   "bytes": 25468968
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/inherited/r4a6",
+   "bytes": 25468964
+  },
+  {
+   "dir": "reports",
+   "bytes": 23275998
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p11_g2_s11_r1_failed/out",
+   "bytes": 22760927
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r4a4/out",
+   "bytes": 22253503
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p9_t1_s11_r1_failed/out",
+   "bytes": 19780718
+  },
+  {
+   "dir": "experiments/wave2d-coord-rom/sweep",
+   "bytes": 19656079
+  },
+  {
+   "dir": "experiments/burgers2d-coord-rom/sweep",
+   "bytes": 19307919
+  },
+  {
+   "dir": "experiments/heat2d-coord-decoder/sweep",
+   "bytes": 19307919
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r4a3/out",
+   "bytes": 18481079
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r3a/out",
+   "bytes": 18480965
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r3b/out",
+   "bytes": 18480965
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r3d/out",
+   "bytes": 18480960
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r4x512/out",
+   "bytes": 18480957
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r4x128/out",
+   "bytes": 18480953
+  },
+  {
+   "dir": "experiments/coord-decoder/film",
+   "bytes": 18473495
+  },
+  {
+   "dir": "consolidated/fixtures/burgers",
+   "bytes": 16628639
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/wav2d/p2fix_n128_abs/cache",
+   "bytes": 16025332
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/wav2d/p2fix_n128_ref/cache",
+   "bytes": 15765224
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/r256",
+   "bytes": 15090546
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/matched-training-smoke/r256",
+   "bytes": 14992664
+  },
+  {
+   "dir": "experiments/wave2d-rom-latent-stepping/runs/wad_n128_k8/out",
+   "bytes": 14028683
+  },
+  {
+   "dir": "experiments/heat2d-rom-latent-stepping/runs/ad_n128_k8",
+   "bytes": 14028111
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/diagnose01/out/checkpoints",
+   "bytes": 13853026
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p9_terminal_recovery_audit_r1/out",
+   "bytes": 13226292
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/runs/matched01/archive/out/r128",
+   "bytes": 11612626
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/matched-training-smoke/r128",
+   "bytes": 11514161
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/sepdec_n128_j1/out",
+   "bytes": 11332681
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/d0_r2/out",
+   "bytes": 11135891
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/wav2d/p2fix_n64_abs/cache",
+   "bytes": 9733864
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/wav2d/p2fix_n64_ref/cache",
+   "bytes": 9604832
+  },
+  {
+   "dir": "experiments/wave2d-coord-rom/vitcp",
+   "bytes": 9435038
+  },
+  {
+   "dir": "experiments/burgers2d-coord-rom/vitcp",
+   "bytes": 9435038
+  },
+  {
+   "dir": "experiments/wave2d-rom-latent-stepping/runs/wad_n64_k16/out",
+   "bytes": 9150347
+  },
+  {
+   "dir": "experiments/heat2d-rom-latent-stepping/runs/ad_n64_k16",
+   "bytes": 9149775
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3d_architecture/mlp192/out",
+   "bytes": 8465988
+  },
+  {
+   "dir": "experiments/cost-to-tolerance/ckpt_poisson",
+   "bytes": 8151819
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_velocity_691200",
+   "bytes": 8136510
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/correction_smoke10b",
+   "bytes": 8129568
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_velocity_691201",
+   "bytes": 8116362
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691200",
+   "bytes": 8078599
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691201",
+   "bytes": 8072099
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_velocity_691200",
+   "bytes": 7994646
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_velocity_691201",
+   "bytes": 7984011
+  },
+  {
+   "dir": "consolidated/fixtures/wave",
+   "bytes": 7975143
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3d_architecture/mlp128/out",
+   "bytes": 7972416
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_velocity_691201",
+   "bytes": 7972313
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_velocity_691200",
+   "bytes": 7972031
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691201",
+   "bytes": 7966391
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_691201",
+   "bytes": 7956663
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_691200",
+   "bytes": 7946609
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_velocity_691200",
+   "bytes": 7878972
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_velocity_691201",
+   "bytes": 7876519
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_691200",
+   "bytes": 7869538
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_691201",
+   "bytes": 7862815
+  },
+  {
+   "dir": "experiments/wave2d-rom-latent-stepping/runs/wad_n64_k8/out",
+   "bytes": 7475083
+  },
+  {
+   "dir": "experiments/heat2d-rom-latent-stepping/runs/ad_n64_k8",
+   "bytes": 7474511
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691200",
+   "bytes": 7365780
+  },
+  {
+   "dir": "experiments/coord-decoder/film-fix",
+   "bytes": 7061718
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691201/training_geometry",
+   "bytes": 7000360
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_velocity_691200/training_geometry",
+   "bytes": 7000026
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_691200/training_geometry",
+   "bytes": 6999988
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_velocity_691201/training_geometry",
+   "bytes": 6999900
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_691201/training_geometry",
+   "bytes": 6999826
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_velocity_691201/training_geometry",
+   "bytes": 6999567
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691200/training_geometry",
+   "bytes": 6999370
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_velocity_691200/training_geometry",
+   "bytes": 6998711
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_691200/training_geometry",
+   "bytes": 6973923
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_velocity_691201/training_geometry",
+   "bytes": 6973657
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_velocity_691200/training_geometry",
+   "bytes": 6973563
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_691201/training_geometry",
+   "bytes": 6973480
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691200/training_geometry",
+   "bytes": 6973379
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_velocity_691201/training_geometry",
+   "bytes": 6973211
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_velocity_691200/training_geometry",
+   "bytes": 6973151
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691201/training_geometry",
+   "bytes": 6973042
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg192l4g2f31_r2/out",
+   "bytes": 6936473
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g1f31_r10/out",
+   "bytes": 6898862
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg176l4g2f31_r8/out",
+   "bytes": 6745134
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel11",
+   "bytes": 6662147
+  },
+  {
+   "dir": "experiments/wave2d-rom-latent-stepping/runs/wad_n64_k4/out",
+   "bytes": 6637451
+  },
+  {
+   "dir": "experiments/heat2d-rom-latent-stepping/runs/ad_n64_k4",
+   "bytes": 6636879
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g2f31_s1_r11/out",
+   "bytes": 6566062
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g2f31_s2_r11/out",
+   "bytes": 6566062
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g2f31_r2/out",
+   "bytes": 6566041
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg159l4g3f31_s0_r22/out",
+   "bytes": 6445038
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg159l4g3f31_s1_r22/out",
+   "bytes": 6445038
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg159l4g3f31_s2_r22/out",
+   "bytes": 6445038
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g4f31_r15/out",
+   "bytes": 6399662
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g4f31_s1_r18/out",
+   "bytes": 6399662
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g4f31_s2_r18/out",
+   "bytes": 6399662
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg144l4g2f31_s0_r29/out",
+   "bytes": 6399278
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg160l4g8f31_r19/out",
+   "bytes": 6316460
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_b160l4f31_r1/out",
+   "bytes": 6274828
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_absorbing01",
+   "bytes": 6203985
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_b160l4f16_r1/out",
+   "bytes": 6198028
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_reflective01",
+   "bytes": 6169662
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_b128l5f16_r1/out",
+   "bytes": 6099169
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/compare_absorbing01",
+   "bytes": 6005090
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/compare_reflective01",
+   "bytes": 6001803
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r2_burgers/out",
+   "bytes": 5885579
+  },
+  {
+   "dir": "experiments/separable-decoder/cache/wav2d_smoke",
+   "bytes": 5791808
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/compare_reflective01/cluster/inputs",
+   "bytes": 5788287
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/compare_absorbing01/cluster/inputs",
+   "bytes": 5788272
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/capacity_smoke09/checkpoints",
+   "bytes": 5161048
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/n256_j3/out",
+   "bytes": 5041015
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/capacity_accuracy09/checkpoints",
+   "bytes": 4883126
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/sepdec_n512_j2/out",
+   "bytes": 4430844
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/verify01",
+   "bytes": 4309094
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/verify01/cluster/out/verification",
+   "bytes": 4273466
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r2a_poisson/out",
+   "bytes": 4116019
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r2b_poisson/out",
+   "bytes": 4115976
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/refquadvel20002/out/refinement",
+   "bytes": 3830649
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/refquadvel20101/out/refinement",
+   "bytes": 3830521
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/refquad20001/out/refinement",
+   "bytes": 3830465
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/refquad20101/out/refinement",
+   "bytes": 3829992
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/sepdec_r1/out",
+   "bytes": 3735776
+  },
+  {
+   "dir": "experiments/coord-decoder/smoke_film",
+   "bytes": 3694699
+  },
+  {
+   "dir": "experiments/historical-poisson-replay/runs/local-smoke",
+   "bytes": 3624474
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/n256_j1/out",
+   "bytes": 3595310
+  },
+  {
+   "dir": "experiments/wave2d-rom-latent-stepping/smoke2",
+   "bytes": 3578706
+  },
+  {
+   "dir": "experiments/wave2d-rom-latent-stepping/smoke",
+   "bytes": 3578534
+  },
+  {
+   "dir": "experiments/heat2d-rom-latent-stepping/smoke",
+   "bytes": 3578363
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3d_repair/head33/out",
+   "bytes": 3485461
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3dtensor/pilot33b/out",
+   "bytes": 3484556
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3dtensor/pilot33b_withdrawn/out",
+   "bytes": 3484556
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/capacity_smoke09",
+   "bytes": 3447117
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_smoke/out",
+   "bytes": 3238319
+  },
+  {
+   "dir": "experiments/historical-poisson-replay/runs/replay02",
+   "bytes": 3182891
+  },
+  {
+   "dir": "experiments/burgers-hybrid-1024/runs/shift_corr_gate/out",
+   "bytes": 3047179
+  },
+  {
+   "dir": "experiments/historical-poisson-replay/runs/replay01",
+   "bytes": 3021557
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/diagnose01/out",
+   "bytes": 2983028
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/sepdec_n128_j2/out",
+   "bytes": 2926300
+  },
+  {
+   "dir": "experiments/coord-decoder/round3",
+   "bytes": 2670450
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p3_d_r1/out",
+   "bytes": 2612308
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/n256_j2/out",
+   "bytes": 2605923
+  },
+  {
+   "dir": "repro-heat2d-n64",
+   "bytes": 2596124
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/staged_accuracy08/checkpoints",
+   "bytes": 2562313
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/sepdec_n512_j1/out",
+   "bytes": 2505690
+  },
+  {
+   "dir": "experiments/coord-decoder/round2",
+   "bytes": 2342770
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/pilot04/checkpoints",
+   "bytes": 2310064
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/inherited_qf",
+   "bytes": 2200831
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel12/cluster/in/dirichlet",
+   "bytes": 1913197
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/smoke02/outputs/fields",
+   "bytes": 1813307
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/smoke/outputs/fields",
+   "bytes": 1660300
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cdmm/n256m256/out",
+   "bytes": 1619592
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_i_m256/out",
+   "bytes": 1619161
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_ii_m256/out",
+   "bytes": 1619161
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_n_m256/out",
+   "bytes": 1619161
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_r100_ii_m256/out",
+   "bytes": 1619161
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cdmm/n256m64/out",
+   "bytes": 1610376
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_i_m64/out",
+   "bytes": 1609945
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_ii_m64/out",
+   "bytes": 1609945
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_iii_m64/out",
+   "bytes": 1609945
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_n_m64/out",
+   "bytes": 1609945
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cd_r100_ii_m64/out",
+   "bytes": 1609945
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3dtensor/pilot33a/out",
+   "bytes": 1605507
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3dtensor/pilot33a_withdrawn/out",
+   "bytes": 1605507
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r1_burgers/out",
+   "bytes": 1605241
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b2dtensor/n512/out",
+   "bytes": 1605171
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/correction_accuracy10/checkpoints",
+   "bytes": 1405114
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/n256_j4/out",
+   "bytes": 1361416
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke02/out/fields",
+   "bytes": 1309061
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/iterative_cg09/smoke/outputs/fields",
+   "bytes": 1267560
+  },
+  {
+   "dir": "experiments/neural-operator-burgers/checks/diagnosis-smoke01",
+   "bytes": 1259008
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/checks/iterative_cg06_smoke2",
+   "bytes": 1212346
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/archive/outputs/checkpoints",
+   "bytes": 1211908
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/smoke/outputs/checkpoints",
+   "bytes": 1211350
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/smoke02/outputs/checkpoints",
+   "bytes": 1211350
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/sepdec_n1024_j1/out",
+   "bytes": 1131209
+  },
+  {
+   "dir": "experiments/burgers-hybrid-1024/runs/corr_gate/out",
+   "bytes": 1102323
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/transfer04/smoke/outputs/fields",
+   "bytes": 1094780
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/pilot03/archive/outputs/checkpoints",
+   "bytes": 1064232
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel06/cluster/in/absorbing",
+   "bytes": 1053075
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dtensor/audit",
+   "bytes": 1049088
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_absorbing_new_mlp32_seed691201",
+   "bytes": 1012126
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_dirichlet_new_mlp32_seed691201",
+   "bytes": 1009975
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dtensor/tensor_n65536/out",
+   "bytes": 1002963
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1d_n512/out",
+   "bytes": 1002961
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1ds_n1024/out",
+   "bytes": 1002961
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1ds_n2048/out",
+   "bytes": 1002961
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1ds_n4096/out",
+   "bytes": 1002961
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1ds_n512/out",
+   "bytes": 1002961
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dtensor/tensor_n16384/out",
+   "bytes": 1002961
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1d_n256/out",
+   "bytes": 1002960
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1ds_n256/out",
+   "bytes": 1002960
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1d_n128/out",
+   "bytes": 1002959
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b1dqf/b1ds_n128/out",
+   "bytes": 1002959
+  },
+  {
+   "dir": "experiments/poisson2d-rom-objective/runs/colloc_weak_N128",
+   "bytes": 995919
+  },
+  {
+   "dir": "experiments/poisson2d-rom-objective/runs/colloc_weak_N32",
+   "bytes": 995919
+  },
+  {
+   "dir": "experiments/poisson2d-rom-objective/runs/colloc_weak_hbc",
+   "bytes": 995919
+  },
+  {
+   "dir": "experiments/poisson2d-rom-objective/runs/hbc_K8",
+   "bytes": 995919
+  },
+  {
+   "dir": "experiments/poisson2d-rom-objective/runs/nlad_N128",
+   "bytes": 995919
+  },
+  {
+   "dir": "experiments/poisson2d-rom-objective/runs/nlad_N32",
+   "bytes": 995919
+  },
+  {
+   "dir": "experiments/poisson2d-rom-objective/runs/nlad_N64",
+   "bytes": 995919
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/cp_512_8",
+   "bytes": 912370
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/modcp_512_8",
+   "bytes": 901662
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/film_512_8",
+   "bytes": 900063
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/cp_algebra08/smoke/outputs/fields",
+   "bytes": 895123
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/cp_512_8",
+   "bytes": 890913
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/modcp_512_8",
+   "bytes": 889833
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/film_512_8",
+   "bytes": 881256
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cdmm/n1024m256/out",
+   "bytes": 833299
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/cdmm/n1024m64/out",
+   "bytes": 824083
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/inherited/n1024_j2",
+   "bytes": 818978
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/archive",
+   "bytes": 808112
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/modcp_256_8",
+   "bytes": 777390
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/cp_256_8",
+   "bytes": 776585
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/film_256_8",
+   "bytes": 769322
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg128l4g2_r2/out",
+   "bytes": 766844
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/nonlinear06/smoke/outputs/fields",
+   "bytes": 757803
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/modcp_256_8",
+   "bytes": 746658
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/cp_256_8",
+   "bytes": 745882
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/film_256_8",
+   "bytes": 738705
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg112l4g2_r3/out",
+   "bytes": 637436
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg128l4g4_r2/out",
+   "bytes": 633724
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/push_r1_poisson/out",
+   "bytes": 621919
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/sepdec_n1024_j2/out",
+   "bytes": 607503
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_reflective01/cluster/out/smoke/comparison/fields",
+   "bytes": 590702
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg104l4g2_r4/out",
+   "bytes": 577338
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg100l4g2_r5/out",
+   "bytes": 548442
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg100l4g2_s1_r7/out",
+   "bytes": 548442
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg100l4g2_s2_r7/out",
+   "bytes": 548442
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/linear05/smoke/outputs/fields",
+   "bytes": 543514
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg98l4g2_r6/out",
+   "bytes": 534282
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg98l4g2_s1_r7/out",
+   "bytes": 534282
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg98l4g2_s2_r7/out",
+   "bytes": 534282
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_p128l4_r1/out",
+   "bytes": 533876
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg96l4g2_r3/out",
+   "bytes": 520314
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/matched-training-smoke/train/cases",
+   "bytes": 506041
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke02/out/rules",
+   "bytes": 505878
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_absorbing01/cluster/out/smoke/comparison/fields",
+   "bytes": 480210
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_pg112l3g2_r3/out",
+   "bytes": 477861
+  },
+  {
+   "dir": "experiments/coord-decoder/smoke2d_nf",
+   "bytes": 468554
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/cp_512_4",
+   "bytes": 459180
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/modcp_512_4",
+   "bytes": 455294
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/film_512_4",
+   "bytes": 449879
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/film_512_4",
+   "bytes": 444221
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/modcp_512_4",
+   "bytes": 440886
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/cp_512_4",
+   "bytes": 440536
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/archive/outputs/assembly",
+   "bytes": 432018
+  },
+  {
+   "dir": "consolidated/evidence/worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/archive/outputs/checkpoints",
+   "bytes": 404161
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/film_256_4",
+   "bytes": 387044
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/compare_absorbing01/cluster/out/comparison/quadrature/cp_256_4",
+   "bytes": 384059
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_absorbing01/cluster/inputs/validation_bundle/quadrature/modcp_256_4",
+   "bytes": 382945
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/modcp_256_4",
+   "bytes": 376694
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/evaluation_reflective01/cluster/inputs/validation_bundle/quadrature/film_256_4",
+   "bytes": 376286
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/compare_reflective01/cluster/out/comparison/quadrature/cp_256_4",
+   "bytes": 376151
+  },
+  {
+   "dir": "experiments/nonlinear-decoder-architecture/runs/nda_p96l4_r1/out",
+   "bytes": 345579
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/smoke02/outputs",
+   "bytes": 319585
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/smoke/outputs",
+   "bytes": 319347
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/archive/outputs",
+   "bytes": 319208
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight02",
+   "bytes": 305258
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/iterative_cg09/archive/outputs/assembly",
+   "bytes": 287934
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/pilot03/archive/outputs",
+   "bytes": 279619
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/linear05/archive/outputs/assembly",
+   "bytes": 266516
+  },
+  {
+   "dir": "experiments/neural-operator-burgers/checks/diagnosis-smoke-reference01",
+   "bytes": 237658
+  },
+  {
+   "dir": "experiments/coord-decoder/smoke2d",
+   "bytes": 235600
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke02/out/checkpoints",
+   "bytes": 230028
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/checks/iterative_cg06_smoke2/fields",
+   "bytes": 213501
+  },
+  {
+   "dir": "consolidated/fixtures/heat",
+   "bytes": 211979
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/accuracy10/smoke/outputs/assembly",
+   "bytes": 144092
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/cp_algebra08/archive/outputs/assembly",
+   "bytes": 144064
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/absorbing01",
+   "bytes": 140178
+  },
+  {
+   "dir": "experiments/neural-operator-audit/checks",
+   "bytes": 128854
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/checks/online-tuning-driver-smoke/fields",
+   "bytes": 121878
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/diagnosis-smoke/diagnosis/fields",
+   "bytes": 113636
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/transfer04/archive/outputs/assembly",
+   "bytes": 101868
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3d_repair/diag33",
+   "bytes": 94572
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/b3d_repair/reference",
+   "bytes": 89718
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_absorbing01/cluster/out/smoke/comparison/quadrature/cp_16_4",
+   "bytes": 88388
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_absorbing01/cluster/out/smoke/comparison/quadrature/film_16_4",
+   "bytes": 88246
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_absorbing01/cluster/out/smoke/comparison/quadrature/modcp_16_4",
+   "bytes": 88234
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/correction_smoke10b/fields",
+   "bytes": 83528
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight01/cluster/out/preflight/small_pipeline",
+   "bytes": 80225
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight02/cluster/out/preflight/small_pipeline/mlp",
+   "bytes": 68452
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/matched-diagnosis-smoke/fields",
+   "bytes": 68440
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/matched-diagnosis-r256-smoke/fields",
+   "bytes": 68273
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight02/cluster/out/preflight/small_pipeline/quadratic",
+   "bytes": 63985
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_reflective01/cluster/out/smoke/comparison/quadrature/film_16_4",
+   "bytes": 62966
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_reflective01/cluster/out/smoke/comparison/quadrature/modcp_16_4",
+   "bytes": 62601
+  },
+  {
+   "dir": "experiments/modcp-eq/runs/smoke_reflective01/cluster/out/smoke/comparison/quadrature/cp_16_4",
+   "bytes": 62431
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/checks/iterative_cg06_smoke2/references",
+   "bytes": 60985
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/capacity_smoke09/references",
+   "bytes": 60985
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight01/cluster/out/preflight/small_pipeline/mlp",
+   "bytes": 58131
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight01/cluster/out/preflight/small_pipeline/quadratic",
+   "bytes": 53709
+  },
+  {
+   "dir": "Older Paper ",
+   "bytes": 53638
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p5_d_r1/out",
+   "bytes": 38920
+  },
+  {
+   "dir": "experiments/burgers-1e3-10x/runs/p6_d_r1/out",
+   "bytes": 34910
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/dynamics02/analysis",
+   "bytes": 31157
+  },
+  {
+   "dir": "consolidated/fixtures/poisson",
+   "bytes": 30441
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/accel10/cluster/in/dirichlet",
+   "bytes": 20694
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/transfer04/smoke/outputs/assembly",
+   "bytes": 20395
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/nonlinear06/archive/outputs/assembly",
+   "bytes": 16301
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/nonlinear07/archive/outputs/assembly",
+   "bytes": 16295
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/fresh_wave_campaign/preflight02/cluster/out/preflight/small_pipeline",
+   "bytes": 15972
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/diagnosis-smoke/validation/cases",
+   "bytes": 15813
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/diagnosis-smoke/validation/physical-reference",
+   "bytes": 15160
+  },
+  {
+   "dir": "experiments/multiresolution-poisson/runs/correction_smoke10b/references",
+   "bytes": 15156
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/diagnosis-smoke/calibration",
+   "bytes": 15132
+  },
+  {
+   "dir": "experiments/modcp-eq/checks/nnls-probe01",
+   "bytes": 13944
+  },
+  {
+   "dir": "experiments/separable-decoder/runs/smoke_exlin",
+   "bytes": 13250
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_velocity_691201/zero_state",
+   "bytes": 9993
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_691200/zero_state",
+   "bytes": 9971
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_velocity_691200/zero_state",
+   "bytes": 9949
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_691201/zero_state",
+   "bytes": 9945
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691201/zero_state",
+   "bytes": 9943
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_691200/zero_state",
+   "bytes": 9911
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_velocity_691200/zero_state",
+   "bytes": 9901
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/quadratic_velocity_691201/zero_state",
+   "bytes": 9901
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/reflective01/out/campaign/dirichlet/mlp_velocity_691200/zero_state",
+   "bytes": 9881
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_velocity_691201/zero_state",
+   "bytes": 9841
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_velocity_691200/zero_state",
+   "bytes": 9825
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_velocity_691201/zero_state",
+   "bytes": 9825
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691200/zero_state",
+   "bytes": 9805
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_691201/zero_state",
+   "bytes": 9805
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/mlp_691201/zero_state",
+   "bytes": 9743
+  },
+  {
+   "dir": "experiments/fresh-wave-head/runs/absorbing02/out/campaign/absorbing/quadratic_691200/zero_state",
+   "bytes": 9709
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/dataset-smoke/train/cases",
+   "bytes": 8810
+  },
+  {
+   "dir": "experiments/mr-heat2d/runs/nonlinear06/smoke/outputs/assembly",
+   "bytes": 8162
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/dataset-smoke/calibration",
+   "bytes": 7989
+  },
+  {
+   "dir": "experiments/neural-operator-poisson/checks/dataset-smoke/train/physical-reference",
+   "bytes": 7981
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_absorbing_new_mlp32_seed691200",
+   "bytes": 1234
+  },
+  {
+   "dir": "experiments/multiresolution-wave/runs/k32heads03/cluster/out/pilot/head_dirichlet_new_mlp32_seed691200",
+   "bytes": 1234
+  }
+ ],
+ "lineage": "exp/2026-09-13-nmrom-consolidated",
+ "commits_over_2GiB_on_lineage": 7,
+ "largest_commits": [
+  {
+   "commit": "5974d3e0",
+   "date": "2026-09-11",
+   "subject": "Archive and accept matched heat accuracy training experiment",
+   "added_bytes": 12048491889,
+   "dominant_dir": "experiments/mr-heat2d/runs/accuracy10/parts",
+   "dominant_bytes": 12030341120
+  },
+  {
+   "commit": "f2ec3ee5",
+   "date": "2026-09-07",
+   "subject": "Archive complete frozen heat transfer04 with checked chunk restoration",
+   "added_bytes": 8984534857,
+   "dominant_dir": "experiments/mr-heat2d/runs/transfer04/parts",
+   "dominant_bytes": 8974452498
+  },
+  {
+   "commit": "ab159c71",
+   "date": "2026-09-10",
+   "subject": "Archive and independently audit nonlinear heat acceleration screen",
+   "added_bytes": 6384089304,
+   "dominant_dir": "experiments/mr-heat2d/runs/nonlinear06/parts",
+   "dominant_bytes": 6378147840
+  },
+  {
+   "commit": "1f576c9e",
+   "date": "2026-09-10",
+   "subject": "Archive and verify heat comparison against iterative CG at three resolutions",
+   "added_bytes": 6161983895,
+   "dominant_dir": "experiments/mr-heat2d/runs/iterative_cg09/parts",
+   "dominant_bytes": 6151649280
+  },
+  {
+   "commit": "d9980cb2",
+   "date": "2026-09-10",
+   "subject": "Archive complete same-allocation heat linear-bank comparison and remote cleanup",
+   "added_bytes": 5994624138,
+   "dominant_dir": "experiments/mr-heat2d/runs/linear05/parts",
+   "dominant_bytes": 5987461120
+  },
+  {
+   "commit": "98917547",
+   "date": "2026-09-10",
+   "subject": "Archive audited same-step CP algebra heat comparison and all timing repetitions",
+   "added_bytes": 5241126300,
+   "dominant_dir": "experiments/mr-heat2d/runs/cp_algebra08/parts",
+   "dominant_bytes": 5233674240
+  },
+  {
+   "commit": "1d6e5221",
+   "date": "2026-09-10",
+   "subject": "Archive and audit higher-budget nonlinear heat convergence follow-up",
+   "added_bytes": 4086538980,
+   "dominant_dir": "experiments/mr-heat2d/runs/nonlinear07/parts",
+   "dominant_bytes": 4084019200
+  },
+  {
+   "commit": "47d2bbde",
+   "date": "2026-08-25",
+   "subject": "Merge branch 'exp/2026-08-23-n256-push' into exp/2026-08-25-sepdec-consolidated",
+   "added_bytes": 190735169,
+   "dominant_dir": "experiments/separable-decoder/runs/push_r4a5/out",
+   "dominant_bytes": 46594309
+  },
+  {
+   "commit": "02ff0f1f",
+   "date": "2026-09-14",
+   "subject": "Consolidate selected accuracy-campaign solvers and frozen artifacts",
+   "added_bytes": 168929590,
+   "dominant_dir": "consolidated/evidence/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel12/cluster/out/pilot",
+   "dominant_bytes": 26791604
+  },
+  {
+   "commit": "71c4fef0",
+   "date": "2026-08-19",
+   "subject": "Record audited nonlinear decoder architecture results",
+   "added_bytes": 113610852,
+   "dominant_dir": "experiments/nonlinear-decoder-architecture/runs/nda_bg192l4g2f31_r2/out",
+   "dominant_bytes": 6957302
+  }
+ ],
+ "measured_mirror_pack": "170.07 MiB"
+}

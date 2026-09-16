@@ -1,0 +1,248 @@
+{
+  "run": "runs/pbh02/archive/output/solve",
+  "passed": true,
+  "failures": [],
+  "checks": {
+    "backend": {
+      "passed": true,
+      "backend": "gpu",
+      "x64": true,
+      "precision": "highest",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "job_id": "3748202",
+      "commit": "798c60c290d62fb313fdf1511fa72e5e68bc04c6"
+    },
+    "cohort_parameters": {
+      "passed": true,
+      "sources": 12,
+      "local_sha256": "8bd530419403771b75014515a8f5cebfb15b20ff406dca56723e122d06a41c9f",
+      "recorded_sha256": "9cb495d1d90d9c2e8084bffd2b7afd74d390aaa433fb8d57cab0fc84274fd603",
+      "hashes_agree": false,
+      "max_absolute_parameter_drift": 1.3877787807814457e-17
+    },
+    "recomputed_errors": {
+      "passed": true,
+      "invocations": 2160,
+      "worst_physical_difference": 2.7755575615628914e-16,
+      "worst_same_grid_difference": 3.357262514314276e-16,
+      "per_mesh": {
+        "64": 720,
+        "256": 720,
+        "1024": 720
+      }
+    },
+    "timing_identity": {
+      "passed": true,
+      "worst_relative_discrepancy": 0.0,
+      "negative_components": 0
+    },
+    "invocation_grid": {
+      "passed": true,
+      "subjects": [
+        "a_neural@bank_arm_head",
+        "a_neural@incumbent",
+        "a_neural@new_K16",
+        "a_neural@new_K32",
+        "a_neural_q32@bank_arm_head",
+        "a_neural_q32@incumbent",
+        "a_neural_q32@new_K16",
+        "a_neural_q32@new_K32",
+        "d_freebank@incumbent",
+        "dst_direct",
+        "e_pod128",
+        "e_pod128@trainset",
+        "e_pod16",
+        "e_pod16@trainset",
+        "e_pod32",
+        "e_pod32@trainset",
+        "e_pod64",
+        "e_pod64@trainset",
+        "e_pod8",
+        "e_pod8@trainset"
+      ],
+      "expected": 2160,
+      "seen": 2160,
+      "distinct": 2160
+    },
+    "fidelity_gates": {
+      "passed": true,
+      "count": 24,
+      "worst": 1.3746982799109484e-14,
+      "tolerance": 1e-09,
+      "reference_source": "experiments/head-ablation/artifacts/pabl01/result.json",
+      "reference_sha256": "b5fe5102cc20104504112c84829a39ae8e48a73d72326328a01e224db24b3bb7"
+    },
+    "fidelity_recomputed": {
+      "passed": true,
+      "compared": 288,
+      "worst_relative_difference": 1.3746982799109484e-14,
+      "tolerance": 1e-09
+    },
+    "numpy_bank_floor": {
+      "passed": true,
+      "intervals": 64,
+      "per_model": {
+        "incumbent": {
+          "recomputed_worst": 0.023146953477435804,
+          "reported_worst": 0.023146953477430728,
+          "worst_per_case_difference": 4.695072455818128e-14
+        },
+        "new_K16": {
+          "recomputed_worst": 0.00740698173047317,
+          "reported_worst": 0.007406981728177307,
+          "worst_per_case_difference": 3.2903061893997665e-11
+        },
+        "new_K32": {
+          "recomputed_worst": 0.00740698173047317,
+          "reported_worst": 0.007406981728177307,
+          "worst_per_case_difference": 3.2903061893997665e-11
+        },
+        "bank_arm_head": {
+          "recomputed_worst": 0.00740698173047317,
+          "reported_worst": 0.007406981728177307,
+          "worst_per_case_difference": 3.2903061893997665e-11
+        }
+      }
+    },
+    "exit_bookkeeping": {
+      "passed": true,
+      "per_subject": {
+        "a_neural@bank_arm_head": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 7.761077451303509e-07,
+          "worst_iterations": 6
+        },
+        "a_neural@incumbent": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 9.753267624402635e-07,
+          "worst_iterations": 6
+        },
+        "a_neural@new_K16": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 8.669973153591576e-07,
+          "worst_iterations": 5
+        },
+        "a_neural@new_K32": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 9.852142606037225e-07,
+          "worst_iterations": 6
+        },
+        "a_neural_q32@bank_arm_head": {
+          "stationary": 108,
+          "exit_convention": "explicit stationary flag (kernel_solver, reason 6)",
+          "total": 108,
+          "worst_stationarity": 1.2058524641366028e-07,
+          "worst_iterations": 6
+        },
+        "a_neural_q32@incumbent": {
+          "stationary": 108,
+          "exit_convention": "explicit stationary flag (kernel_solver, reason 6)",
+          "total": 108,
+          "worst_stationarity": 3.792798974956361e-07,
+          "worst_iterations": 6
+        },
+        "a_neural_q32@new_K16": {
+          "stationary": 108,
+          "exit_convention": "explicit stationary flag (kernel_solver, reason 6)",
+          "total": 108,
+          "worst_stationarity": 4.78683911144728e-07,
+          "worst_iterations": 5
+        },
+        "a_neural_q32@new_K32": {
+          "stationary": 108,
+          "exit_convention": "explicit stationary flag (kernel_solver, reason 6)",
+          "total": 108,
+          "worst_stationarity": 2.3686748828521616e-07,
+          "worst_iterations": 6
+        },
+        "d_freebank@incumbent": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 3.3407563404599713e-08,
+          "worst_iterations": 2
+        },
+        "e_pod128": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 7.367013131819233e-07,
+          "worst_iterations": 2
+        },
+        "e_pod128@trainset": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 3.3551190253519024e-11,
+          "worst_iterations": 2
+        },
+        "e_pod16": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 9.256111485288373e-07,
+          "worst_iterations": 2
+        },
+        "e_pod16@trainset": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 7.085373868099879e-07,
+          "worst_iterations": 2
+        },
+        "e_pod32": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 9.1546388149919e-07,
+          "worst_iterations": 2
+        },
+        "e_pod32@trainset": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 5.983470270415163e-07,
+          "worst_iterations": 2
+        },
+        "e_pod64": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 8.273866140938737e-07,
+          "worst_iterations": 2
+        },
+        "e_pod64@trainset": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 8.11484005819556e-07,
+          "worst_iterations": 2
+        },
+        "e_pod8": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 8.1166573210475e-07,
+          "worst_iterations": 2
+        },
+        "e_pod8@trainset": {
+          "stationary": 108,
+          "exit_convention": "normalised-gradient stop (arms, reason 4)",
+          "total": 108,
+          "worst_stationarity": 4.2532577913038494e-07,
+          "worst_iterations": 1
+        }
+      }
+    }
+  },
+  "result_sha256": "26ef33589094408df27f134cc2783910318f66dc04c378cf7139105f1d7dd7a5",
+  "scope": "NumPy/SciPy only; imports neither the driver nor JAX"
+}

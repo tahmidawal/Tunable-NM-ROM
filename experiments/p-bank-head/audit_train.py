@@ -87,7 +87,7 @@ def main():
         floor = np.sqrt(perp2 / nu2)
         entry = dict(K=int(Z.shape[1]), R=int(np.asarray(params['h_lin']).shape[1]),
                      recomputed_worst_floor=float(floor.max()))
-        if ck.get('layer') == 'bank':
+        if ck.get('layer') == 'bank' and not ck.get('supplied'):
             arm = next(x for x in d['bank_arms'] if x['arm'] == ck['id'])
             rep = next(f for f in arm['floors'] if f['intervals'] == mesh)
             diff = float(np.max(np.abs(floor - np.asarray(rep['development']['per_case']))))

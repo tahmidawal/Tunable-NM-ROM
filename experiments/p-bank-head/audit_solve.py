@@ -155,7 +155,13 @@ def main():
         if not sel:
             continue
         stat[name] = dict(
-            stationary=int(sum(1 for r in sel if r.get('reason') == 4)),
+            stationary=int(sum(1 for r in sel
+                               if (bool(r['stationary'])
+                                   if r.get('stationary') is not None
+                                   else r.get('reason') == 4))),
+            exit_convention=('explicit stationary flag (kernel_solver, reason 6)'
+                             if sel[0].get('stationary') is not None
+                             else 'normalised-gradient stop (arms, reason 4)'),
             total=len(sel),
             worst_stationarity=max((r.get('stationarity') or 0.) for r in sel),
             worst_iterations=max(r.get('iterations', r.get('attempts', 0)) for r in sel))

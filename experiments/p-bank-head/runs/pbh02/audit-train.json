@@ -1,0 +1,183 @@
+{
+  "run": "runs/pbh02/archive/output/train",
+  "passed": true,
+  "failures": [],
+  "checks": {
+    "backend": {
+      "passed": true,
+      "backend": "gpu",
+      "x64": true,
+      "precision": "highest",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "job_id": "3748202",
+      "commit": "798c60c290d62fb313fdf1511fa72e5e68bc04c6"
+    },
+    "cohorts": {
+      "passed": true,
+      "per_cohort": {
+        "192": {
+          "parameters_hash_match": false,
+          "local_sha256": "404c3d6a64e54f1113fe0716ff9d2eee8f0f62810d56a5fc280c356eab50455f",
+          "recorded_sha256": "bb175e2794e742e0882e9f1b86fcc9e07e8737585cfd6d309a386a3b790308c2",
+          "overlap": 0,
+          "split_partitions": true
+        },
+        "768": {
+          "parameters_hash_match": false,
+          "local_sha256": "358a5e550dcad891bb4dd6376b1001b440074543af9442841b3719fa00531334",
+          "recorded_sha256": "c82077e435dff81791b4fd3299e98613682c970906e9f83a8fe31334b7e1c964",
+          "overlap": 0,
+          "split_partitions": true
+        },
+        "3072": {
+          "parameters_hash_match": false,
+          "local_sha256": "c89f0d0f3e8aa33568b8f9d39c2354f12687810d7d26eb147e9735bbe3f24400",
+          "recorded_sha256": "1178ed35c38ac7eadc7e2d31bb393027a0dac2ffd486ca54ebe05535136459d0",
+          "overlap": 0,
+          "split_partitions": true
+        }
+      },
+      "development_sha256": "8bd530419403771b75014515a8f5cebfb15b20ff406dca56723e122d06a41c9f"
+    },
+    "numpy_bank_floors": {
+      "passed": true,
+      "intervals": 255,
+      "worst_difference": 0.0,
+      "per_checkpoint": {
+        "bank_R512_S3072": {
+          "K": 16,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205
+        },
+        "head_K16_w0_s0": {
+          "K": 16,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 7.460291065464197e-13
+        },
+        "head_K16_w0_s0.001": {
+          "K": 16,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 5.182495058098091e-13
+        },
+        "head_K16_w0_s0.01": {
+          "K": 16,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 4.3199298305207634e-13
+        },
+        "head_K16_w1_s0": {
+          "K": 16,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 7.434270213324545e-13
+        },
+        "head_K16_w1_s0.001": {
+          "K": 16,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 6.400687271868044e-13
+        },
+        "head_K16_w1_s0.01": {
+          "K": 16,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 5.137557046452912e-13
+        },
+        "head_K32_w0_s0": {
+          "K": 32,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 1.35409305296319e-12
+        },
+        "head_K32_w0_s0.001": {
+          "K": 32,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 8.837227824520788e-13
+        },
+        "head_K32_w0_s0.01": {
+          "K": 32,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 6.994760673451061e-13
+        },
+        "head_K32_w1_s0": {
+          "K": 32,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 1.3355557978989019e-12
+        },
+        "head_K32_w1_s0.001": {
+          "K": 32,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 8.326828809801512e-13
+        },
+        "head_K32_w1_s0.01": {
+          "K": 32,
+          "R": 512,
+          "recomputed_worst_floor": 0.007458918026278205,
+          "stored_code_subsample": 66,
+          "worst_stored_code_difference": 7.200854496014486e-13
+        }
+      }
+    },
+    "numpy_stored_code_errors": {
+      "passed": true,
+      "intervals": 255,
+      "worst_difference": 1.35409305296319e-12
+    },
+    "bank_supplied": {
+      "passed": true,
+      "selected": "bank_R512_S3072",
+      "recomputed_sha256": "73f046572195d6a11d0e8d0137826f65f2599af540a20d25f34aec9950ab8bed",
+      "recorded_sha256": "73f046572195d6a11d0e8d0137826f65f2599af540a20d25f34aec9950ab8bed",
+      "rule": "supplied: this run is head-only, on a bank selected by DESIGN.md amendment 4 on the common selection cohort"
+    },
+    "head_selection_rule": {
+      "passed": true,
+      "per_latent": {
+        "16": {
+          "recomputed": "head_K16_w0_s0",
+          "recorded": "head_K16_w0_s0",
+          "development_ranking_agrees": false
+        },
+        "32": {
+          "recomputed": "head_K32_w0_s0",
+          "recorded": "head_K32_w0_s0",
+          "development_ranking_agrees": false
+        }
+      }
+    },
+    "correction_bases": {
+      "passed": true,
+      "per_latent": {
+        "16": {
+          "recomputed_orthogonality": 1.2089763067124672e-11,
+          "reported": 1.639201359719823e-11,
+          "count": 32
+        },
+        "32": {
+          "recomputed_orthogonality": 1.1196625732164456e-11,
+          "reported": 1.5422260788154402e-11,
+          "count": 32
+        }
+      }
+    }
+  },
+  "result_sha256": "8f94ffc5c78ff114ff35e261036d36940ec3b5b287c47ba78886b2eb9f1f38e2",
+  "scope": "NumPy/SciPy only; imports neither the driver nor JAX"
+}

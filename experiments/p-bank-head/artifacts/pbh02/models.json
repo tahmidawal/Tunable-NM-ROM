@@ -1,0 +1,50 @@
+[
+  {
+    "id": "incumbent",
+    "role": "control",
+    "checkpoint": "r128_joint.pkl",
+    "basis": "basis.npz"
+  },
+  {
+    "id": "new_K16",
+    "role": "primary",
+    "checkpoint": "primary_K16.pkl",
+    "basis": "primary_K16-basis.npz",
+    "source_arm": "head_K16_w0_s0",
+    "K": 16,
+    "R": 512,
+    "sources": 3072,
+    "beta_weak": 0.0,
+    "beta_smooth": 0.0,
+    "bank": "bank_R512_S3072",
+    "checkpoint_sha256": "a05ca6916ea089fa10e504333d246398e5c1be1e67245cc40358032c84b87885",
+    "basis_sha256": "14bca3cbf085bf0f5d5d044f2ad200ba1ade3a3a98162040e4bb4654cea9acad"
+  },
+  {
+    "id": "new_K32",
+    "role": "primary",
+    "checkpoint": "primary_K32.pkl",
+    "basis": "primary_K32-basis.npz",
+    "source_arm": "head_K32_w0_s0",
+    "K": 32,
+    "R": 512,
+    "sources": 3072,
+    "beta_weak": 0.0,
+    "beta_smooth": 0.0,
+    "bank": "bank_R512_S3072",
+    "checkpoint_sha256": "0c195e99c4fbc47c7906d84df885d12bc5452401a5c97eec3727b7ffba70be4f",
+    "basis_sha256": "d629fb764295b5fad2252078993335ea7f7d3ea242584d7cef32dad21824fcd5"
+  },
+  {
+    "id": "bank_arm_head",
+    "role": "bank arm own jointly trained head, reported but not a pre-registered primary",
+    "checkpoint": "bankarm_head.pkl",
+    "basis": "bankarm_head-basis.npz",
+    "source_arm": "bank_R512_S3072",
+    "K": 16,
+    "R": 512,
+    "sources": 3072,
+    "basis_orthogonality_error": 1.5041171039296376e-11,
+    "basis_construction": "pure NumPy, built after collection from the checkpoint and regenerated training truth"
+  }
+]

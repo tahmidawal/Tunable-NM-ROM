@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=pbh_pbh01
+#SBATCH --job-name=pbh_pbh02
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:a100:1
@@ -7,10 +7,10 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=200G
 #SBATCH --time=08:00:00
-#SBATCH --output=/cluster/tufts/paralab/tawal01/p_bank_head_20260916/pbh01/logs/%j.out
-#SBATCH --error=/cluster/tufts/paralab/tawal01/p_bank_head_20260916/pbh01/logs/%j.err
+#SBATCH --output=/cluster/tufts/paralab/tawal01/p_bank_head_20260916/pbh02/logs/%j.out
+#SBATCH --error=/cluster/tufts/paralab/tawal01/p_bank_head_20260916/pbh02/logs/%j.err
 set -euo pipefail
-TASK_ROOT=/cluster/tufts/paralab/tawal01/p_bank_head_20260916/pbh01
+TASK_ROOT=/cluster/tufts/paralab/tawal01/p_bank_head_20260916/pbh02
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
@@ -29,7 +29,17 @@ cd "$TASK_ROOT/code"
 "$PY" pbh_train.py \
   --config config-train.json \
   --incumbent r128_joint.pkl --incumbent-basis basis.npz \
-  --out ../output
+  --bank-checkpoint selected_bank.pkl \
+  --out ../output/train
+"$PY" make_models.py ../output/train \
+  --stage ../output/staged --config config-solve.json \
+  --config-out ../output/staged/config-solve.json \
+  --incumbent r128_joint.pkl --incumbent-basis basis.npz
+"$PY" pbh_solve.py \
+  --config ../output/staged/config-solve.json \
+  --models ../output/staged/models.json \
+  --reference pabl01-reference.json \
+  --out ../output/solve
 cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE

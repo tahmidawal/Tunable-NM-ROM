@@ -30,6 +30,21 @@ def med(rows, key):
     return float(np.median(v)) if v else None
 
 
+def is_stationary(r):
+    """Two solvers, two exit conventions, one question.
+
+    `arms.make_stationary_lm` (every `a_neural`, POD and free-bank arm) reports
+    reason 4 for the normalised-gradient stop. The retained correction engine
+    uses `kernel_solver.make_lm_kernel`, whose stationarity stop is reason 6 and
+    which also carries an explicit `stationary` boolean over the FULL augmented
+    gradient. Counting only reason 4 would report every correction arm as
+    non-stationary, which is false.
+    """
+    if 'stationary' in r and r['stationary'] is not None:
+        return bool(r['stationary'])
+    return r.get('reason') == 4
+
+
 def solve_table(sv):
     """(intervals, subject) -> aggregated row, from the raw invocations only."""
     out = {}
@@ -44,10 +59,11 @@ def solve_table(sv):
         med_sg = float(np.median([np.median([x['same_grid_error'] for x in v])
                                   for v in per_case.values()]))
         worst_ph = max(max(x['physical_error'] for x in v) for v in per_case.values())
-        stationary = sum(1 for r in rows if r.get('reason') == 4)
+        stationary = sum(1 for r in rows if is_stationary(r))
         agg[key] = dict(worst_same_grid=worst_sg, median_same_grid=med_sg,
                         worst_physical=worst_ph, total_ms=med(rows, 'total_seconds'),
-                        device_ms=med(rows, 'fused_device_seconds'),
+                        device_ms=(med(rows, 'fused_device_seconds')
+                                   or med(rows, 'solver_seconds')),
                         invocations=len(rows), stationary=stationary,
                         k=rows[0].get('k'), family=rows[0].get('family'),
                         model=rows[0].get('model'),
@@ -484,43 +500,109 @@ def main():
     # ----------------------------------------------------------- honesty -----
     w('## Honesty clauses, as pre-registered')
     w('')
-    for n in [fine]:
-        dst = agg.get((n, 'dst_direct'))
-        if dst:
-            w(f"- **The direct DST full-order solve is faster and more accurate.** At {n} "
-              f"intervals it takes {ms(dst['total_ms'])} ms total "
-              f"({ms(dst['device_ms'])} ms device) with {pc(dst['worst_physical'])} % worst "
-              f"physical error. No speedup over any full-order solver is claimed anywhere in "
-              f"this cell.")
-        for mid in models:
-            _, r = solved(mid, n)
-            if r is None:
-                continue
-            k8 = agg.get((n, f"e_pod{8 * models[mid]['K']}"))
-            if k8 is None:
-                biggest = max((kk for (mesh, name) in agg if mesh == n
-                               and name.startswith('e_pod') and '@' not in name
-                               for kk in [int(name[len('e_pod'):])]), default=None)
-                if biggest is not None:
-                    k8 = agg.get((n, f'e_pod{biggest}'))
-                    w(f"- **POD at 8K is not in the pre-registered rank set for "
-                      f"`{mid}` (K={models[mid]['K']}).** The largest rung run is "
-                      f"k'={biggest} at {pc(k8['worst_same_grid'])} % worst same-grid and "
-                      f"{ms(k8['total_ms'])} ms, against {pc(r['worst_same_grid'])} % and "
-                      f"{ms(r['total_ms'])} ms for the neural head.")
-            else:
-                w(f"- **POD at 8K for `{mid}`** (k'={8 * models[mid]['K']}): "
-                  f"{pc(k8['worst_same_grid'])} % worst same-grid at {ms(k8['total_ms'])} ms, "
-                  f"against {pc(r['worst_same_grid'])} % at {ms(r['total_ms'])} ms for the "
-                  f"neural head — POD "
-                  f"{'still matches or beats it' if k8['worst_same_grid'] <= r['worst_same_grid'] else 'no longer matches it'}.")
-    w(f"- Selections used internal-validation splits only. Bank development ranking agrees: "
-      f"{yn(bank_sel['development_ranking_agrees'])}; head development rankings agree: "
-      + ', '.join(f"K={s['K']} {yn(s['development_ranking_agrees'])}" for s in head_sels) + '.')
-    w('- Every bank arm received the same number of optimizer updates, so the larger-S arms '
-      'were not given more training compute; realised source exposures are in the run JSON.')
-    w('')
+    dst = agg.get((fine, 'dst_direct'))
+    if dst:
+        w(f"- **The direct DST full-order solve is faster and more accurate than every reduced "
+          f"arm.** At {fine} intervals it takes {ms(dst['total_ms'])} ms total "
+          f"({ms(dst['device_ms'])} ms device) with {pc(dst['worst_physical'])} % worst physical "
+          f"error, against {ms(ctrl['total_ms'])} ms and {pc(ctrl['worst_physical'])} % for the "
+          f"incumbent. **No speedup over any full-order solver is claimed anywhere in this "
+          f"cell.**")
+    pods = sorted({(k[1], agg[k]['k'], agg[k].get('pod_cohort')) for k in agg
+                   if k[0] == fine and agg[k]['family'] == 'pod'}, key=lambda x: (x[1], x[0]))
 
+    def best_pod(rank):
+        cands = [(n, c) for (n, kk, c) in pods if kk == rank]
+        if not cands:
+            return None, None
+        n, c = min(cands, key=lambda x: agg[(fine, x[0])]['worst_same_grid'])
+        return n, agg[(fine, n)]
+    w('')
+    w('**POD-LSPG at the matched rank and at eight times it**, both cohorts, at '
+      f'{fine} intervals. `@trainset` is rebuilt from the selected bank\'s own '
+      f'{next((c["count"] for c in sv.get("pod_cohorts", []) if c["id"] == "trainset"), "?")} '
+      'training snapshots and is the stronger competitor; the unsuffixed rungs are the '
+      '192-snapshot cohort `pabl01` used.')
+    w('')
+    w("| checkpoint | K | neural worst / ms | POD k'=K worst / ms | POD k'=8K worst / ms | "
+      'strongest POD dominates the head on BOTH error and cost? |')
+    w('|---|---:|---:|---:|---:|---|')
+    for mid in models:
+        _, r = solved(mid, fine)
+        if r is None:
+            continue
+        K_ = models[mid]['K']
+        n1, p1 = best_pod(K_)
+        n8, p8 = best_pod(8 * K_)
+        dom = [n for (n, kk, c) in pods
+               if agg[(fine, n)]['worst_same_grid'] < r['worst_same_grid']
+               and agg[(fine, n)]['total_ms'] < r['total_ms']]
+        w(f"| `{mid}` | {K_} | {pc(r['worst_same_grid'])} % / {ms(r['total_ms'])} | "
+          + (f"`{n1}` {pc(p1['worst_same_grid'])} % / {ms(p1['total_ms'])} | " if p1 else '— | ')
+          + (f"`{n8}` {pc(p8['worst_same_grid'])} % / {ms(p8['total_ms'])} | " if p8
+             else f"not run (8K = {8 * K_} exceeds the pre-registered rank set) | ")
+          + (f"**yes** — {', '.join('`' + x + '`' for x in sorted(dom))}" if dom else 'no') + ' |')
+    w('')
+    for mid in models:
+        _, r = solved(mid, fine)
+        if r is None:
+            continue
+        n8, p8 = best_pod(8 * models[mid]['K'])
+        if p8 is None:
+            w(f"- **POD at 8K is not in the pre-registered rank set for `{mid}`** "
+              f"(K={models[mid]['K']}, so 8K={8 * models[mid]['K']}). The largest rung run is "
+              f"k'=128. This is a stated limitation, not a pass.")
+        else:
+            w(f"- **POD at 8K for `{mid}`**: `{n8}` reaches {pc(p8['worst_same_grid'])} % at "
+              f"{ms(p8['total_ms'])} ms against {pc(r['worst_same_grid'])} % at "
+              f"{ms(r['total_ms'])} ms for the neural head — POD "
+              f"{'**still matches or beats it**' if p8['worst_same_grid'] <= r['worst_same_grid'] else 'no longer matches it'}.")
+    w(f"- Selections used an internal-validation split or the common held-out cohort only; the "
+      f"12 development sources report and select nothing. The common-cohort bank ranking and the "
+      f"development ranking "
+      + ('agree' if (bsel and bsel['development_ranking_agrees']) else 'DISAGREE')
+      + '; head development rankings '
+      + ', '.join(f"K={x['K']} {yn(x['development_ranking_agrees'])}" for x in head_sels) + '.')
+    w('- Every bank arm received the same number of optimizer updates, so the larger-S arms were '
+      'not given more training compute; realised source exposures are in the run JSON.')
+    w('')
+    w('### The pre-registered falsification clause')
+    w('')
+    ratios = []
+    for mid in models:
+        if mid == control:
+            continue
+        rec = recon[(fine, mid)]
+        ratios.append((mid, rec['best_found']['worst'] / max(rec['bank_projection']['worst'], 1e-300)))
+    crec = recon[(fine, control)]
+    cratio = crec['best_found']['worst'] / max(crec['bank_projection']['worst'], 1e-300)
+    spread = (max(x['best_found_development']['worst'] for x in ht['head_arms'])
+              / max(min(x['best_found_development']['worst'] for x in ht['head_arms']), 1e-300))
+    w(f"DESIGN.md section 8 fixed two falsification conditions. **The first is met.** On the "
+      f"selected bank every head arm's development best-found stays above 1.2x the bank floor "
+      f"while the bank floor itself improved by "
+      f"{num(crec['bank_projection']['worst'] / recon[(fine, ratios[0][0])]['bank_projection']['worst'], 3)}x: "
+      + '; '.join(f"`{m}` {num(v, 3)}x" for m, v in ratios)
+      + f", against {num(cratio, 3)}x for the incumbent. Pushing the bank three times lower "
+        f"made the head's *relative* distance to it **larger**, not smaller, even though the "
+        f"head's absolute error fell by "
+        f"{num(crec['best_found']['worst'] / min(recon[(fine, m)]['best_found']['worst'] for m, _ in ratios), 3)}x. "
+        f"That is the 2026-09-11 finding reproduced at larger scale and it is reported as a "
+        f"negative result, with no rescue arm.")
+    w('')
+    w(f"**The second is not met.** The head arms are not inert: their worst development "
+      f"best-found spans {num(spread, 3)}x across the twelve arms on the selected bank, far "
+      f"above the 5 % relative change that would have said the limit is the head's function "
+      f"class and outside this cell's latitude. What moves them is **coverage**, not the "
+      f"objective: on the selected bank the two objective terms are neutral at best "
+      f"(the pre-registered primary at both K is the plain reconstruction objective, "
+      f"beta_weak = beta_smooth = 0), while changing the bank's training cohort from "
+      + (f"{alt['head_layer']['fit_count']} to {hl['fit_count']} fit sources moved the best "
+         f"development best-found from "
+         f"{pc(min(x['best_found_development']['worst'] for x in alt['head_arms']))} % to "
+         f"{pc(min(x['best_found_development']['worst'] for x in ht['head_arms']))} %."
+         if alt else 'more sources moved it substantially.'))
+    w('')
     # -------------------------------------------------------------- gates ----
     w('## Fidelity gates and audits')
     w('')

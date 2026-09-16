@@ -19,3 +19,9 @@ experiments/mr-heat2d/runs/iterative_cg09/archive/outputs/fields/*.npz
 
 # Heat accuracy fields are preserved exactly in checksum-verified archive parts.
 experiments/mr-heat2d/runs/accuracy10/archive/outputs/fields/*.npz
+
+# p-bank-head: the collected job archives are preserved exactly as checksum-verified
+# chunks under experiments/p-bank-head/artifacts/<attempt>/. The working copies under
+# runs/<attempt>/archive/ are the same bytes unpacked and must not be tracked twice —
+# pbh02's alone is 2.0 GB compressed and 4.0 GB unpacked.
+experiments/p-bank-head/runs/*/archive/

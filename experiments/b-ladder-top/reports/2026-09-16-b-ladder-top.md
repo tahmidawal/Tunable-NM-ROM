@@ -252,6 +252,12 @@ The retained ladder on the **all_times** metric (fixed test count, empirical qua
 | 256 | 544 | 0.9053 | 912.092 |
 | 512 | 1056 | 3.6505 | 459.722 |
 
+### Verdict on Q2
+
+**Nothing but the full-order solver is on the envelope.** On BOTH metrics the non-dominated set over every subject in this job contains only same-job full-order controls: no correction-ladder rung, no POD-LSPG rank and not the trained neural operator survives. The cheapest non-dominated point is `nt1e-2_dt01` at 9.312 ms and 3.1999 % evolved error, and `nt1e-4_dt005` at 37.699 ms reaches 0.0338 %. The most accurate reduced-order arm, `q256_M544_eq_g0p001`, needs 496.671 ms for 0.7580 %, and the cheapest, `q0_M256_eq_g0p001`, needs 45.762 ms for 1.3182 %.
+
+**The ladder's monotonicity is the $t=0$ compression term, not the trajectory.** On the all-times metric the fixed-test-count rungs fall monotonically 2.5629 % -> 1.8116 % from $q=0$ to $q=128$, and that column is pinned at every rung by the decoder's compression of the supplied field. On the evolved-times metric the same rungs are NOT monotone: $q=16$ (1.8066 %) is worse than $q=0$ (1.3186 %), and the whole converged non-dominated set spans only 1.266x in error across 19.522x in cost. The pre-registered criterion for calling $q$ a knob therefore fails on both metrics, and it fails for a different reason on each: error span on the all-times metric, monotonicity and error span on the evolved one.
+
 ### The trained FNO, in this allocation
 
 `fno-large`, 17,877,317 real parameters, checkpoint SHA256 `208d9002cd8e8567…`, NVIDIA A100-PCIE-40GB, torch 2.11.0+cu128 / neuraloperator 2.0.0, float64/complex128. Pooled device query 11.206 ms median over 18 retained repetitions.

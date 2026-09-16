@@ -54,42 +54,70 @@ def gate_table(checks):
 
 
 def figure(rows, out_png, out_pdf):
-    fig, axes = plt.subplots(1, 2, figsize=(13.5, 5.6), sharey=False)
+    """Error against complete-query cost, both metrics.
+
+    `fft_tight` IS the same-grid reference, so its same-grid error is zero by
+    construction and it cannot be a point on a log axis; it is drawn as the vertical
+    cost line it really is. Only the retained evolution tolerance (1e-6) is labelled
+    with its q or k'; the 1e-3 arms are plotted with a smaller marker so the pairs do
+    not overwrite each other.
+    """
+    base = [x for x in rows if x['arm'] == 'fft_tight']
+    pts = [x for x in rows if x['arm'] != 'fft_tight']
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=False)
     for ax, key, title in ((axes[0], 'worst_all_times_percent',
-                            'worst over ALL output times (t = 0 included)'),
+                            'worst over ALL output times ($t=0$ included)'),
                            (axes[1], 'worst_evolved_percent',
-                            'worst over EVOLVED times only (t > 0)')):
+                            'worst over EVOLVED times only ($t>0$)')):
         seen = set()
-        for x in rows:
+        for x in pts:
             fam = x['family']
             if x.get('effective_gpu_ms') is None or x.get(key) is None:
                 continue
-            face = COLOR[fam] if x.get('converged') or fam in ('fom', 'fno') else 'none'
-            ax.plot(x['effective_gpu_ms'], max(x[key], 1e-4), MARK[fam], ms=9,
-                    markerfacecolor=face, markeredgecolor=COLOR[fam], markeredgewidth=1.5,
-                    label=(LABEL[fam] if fam not in seen else None))
+            loose = x.get('gtol') is not None and x['gtol'] > 1e-6
+            face = COLOR[fam] if (x.get('converged') or fam in ('fom', 'fno')) else 'none'
+            ax.plot(x['effective_gpu_ms'], x[key], MARK[fam], ms=6 if loose else 10,
+                    markerfacecolor=face, markeredgecolor=COLOR[fam],
+                    markeredgewidth=1.0 if loose else 1.6, alpha=.6 if loose else 1.,
+                    label=(LABEL[fam] if fam not in seen else None), zorder=3)
             seen.add(fam)
-            tag = (f"q={x['q']}" if fam == 'rom' and x['q'] is not None else
-                   (f"k'={x['k']}" if fam == 'pod' else None))
+            if loose:
+                continue
+            tag = ((f"q={x['q']}" + ('' if x['quadrature'] == 'eq' else ' dense'))
+                   if fam == 'rom' and x['q'] is not None else
+                   (f"k'={x['k']}" if fam == 'pod' else
+                    (x['arm'] if fam in ('fom', 'fno') else None)))
             if tag:
-                ax.annotate(tag, (x['effective_gpu_ms'], max(x[key], 1e-4)),
-                            textcoords='offset points', xytext=(6, 4), fontsize=8)
-        lad = sorted([x for x in rows if x['family'] == 'rom' and x['quadrature'] == 'eq'
+                ax.annotate(tag, (x['effective_gpu_ms'], x[key]), textcoords='offset points',
+                            xytext=(7, 5), fontsize=8, zorder=4)
+        lad = sorted([x for x in pts if x['family'] == 'rom' and x['quadrature'] == 'eq'
                       and x.get('gtol') == 1e-6 and x['q'] is not None], key=lambda x: x['q'])
         if len(lad) > 1:
-            ax.plot([x['effective_gpu_ms'] for x in lad], [max(x[key], 1e-4) for x in lad],
-                    '-', color=COLOR['rom'], lw=1, alpha=.5, zorder=0)
+            ax.plot([x['effective_gpu_ms'] for x in lad], [x[key] for x in lad],
+                    '-', color=COLOR['rom'], lw=1.2, alpha=.45, zorder=1)
+        if base:
+            b = base[0]
+            ax.axvline(b['effective_gpu_ms'], color=COLOR['fom'], ls='--', lw=1.2, alpha=.7,
+                       zorder=0)
+            ax.annotate('fft_tight: the converged FOM this column\nis measured against '
+                        '(error 0 by construction)', (b['effective_gpu_ms'], 1.),
+                        textcoords='offset points', xytext=(8, 0), fontsize=7.5,
+                        color=COLOR['fom'], rotation=90, va='center', zorder=4)
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.set_xlabel('median complete-query GPU time (ms, log)')
         ax.set_ylabel('error against the same-job converged FOM (%, log)')
         ax.set_title(title, fontsize=10)
         ax.grid(alpha=.25, which='both')
-    axes[0].legend(fontsize=8, loc='best')
-    fig.suptitle('One frozen Burgers checkpoint, 256 intervals: error against complete-query cost\n'
-                 'filled marker = converged under the shared stationarity rule; open = not',
-                 fontsize=11)
-    fig.tight_layout()
+    handles, labels = axes[0].get_legend_handles_labels()
+    order = sorted(range(len(labels)), key=lambda i: labels[i])
+    fig.legend([handles[i] for i in order], [labels[i] for i in order], fontsize=9,
+               loc='lower center', ncol=4, frameon=False, bbox_to_anchor=(.5, -.01))
+    fig.suptitle('One frozen Burgers checkpoint, 256 intervals, six development cases:\n'
+                 'error against complete-query cost. Filled marker = converged under the shared '
+                 'stationarity rule, open = not;\nsmall faded marker = evolution tolerance '
+                 '1e-3 instead of the retained 1e-6.', fontsize=10.5)
+    fig.tight_layout(rect=(0, .06, 1, .93))
     fig.savefig(out_png, dpi=190)
     fig.savefig(out_pdf)
     plt.close(fig)
@@ -257,6 +285,50 @@ def q2_section(W, a2):
           f'evolution tolerance $10^{{-6}}$):\n\n')
         W(table(['q', 'M', 'worst error %', 'median GPU ms'],
                 [[q, M, fmt(v), fmt(c, 3)] for q, M, v, c in k[m]['ladder']]) + '\n')
+
+    W('### Verdict on Q2\n\n')
+    fams = {}
+    for key, err in (('all_subjects_all_times', 'worst_all_times_percent'),
+                     ('all_subjects_evolved', 'worst_evolved_percent')):
+        fams[key] = sorted({by[n]['family'] for n in a2['frontier'][key]})
+    if all(v == ['fom'] for v in fams.values()):
+        cheap = min((by[n] for n in a2['frontier']['all_subjects_evolved']),
+                    key=lambda x: x['effective_gpu_ms'])
+        bestrom = min([x for x in rows if x['family'] == 'rom'],
+                      key=lambda x: x['worst_evolved_percent'])
+        cheaprom = min([x for x in rows if x['family'] == 'rom'],
+                       key=lambda x: x['effective_gpu_ms'])
+        mid = [by[n] for n in a2['frontier']['all_subjects_evolved']
+               if by[n]['arm'] != cheap['arm']]
+        mid = min(mid, key=lambda x: x['effective_gpu_ms']) if mid else None
+        W('**Nothing but the full-order solver is on the envelope.** On BOTH metrics the '
+          'non-dominated set over every subject in this job contains only same-job full-order '
+          'controls: no correction-ladder rung, no POD-LSPG rank and not the trained neural '
+          f"operator survives. The cheapest non-dominated point is `{cheap['arm']}` at "
+          f"{cheap['effective_gpu_ms']:.3f} ms and {cheap['worst_evolved_percent']:.4f} % evolved "
+          f"error")
+        if mid:
+            W(f", and `{mid['arm']}` at {mid['effective_gpu_ms']:.3f} ms reaches "
+              f"{mid['worst_evolved_percent']:.4f} %")
+        W(f". The most accurate reduced-order arm, `{bestrom['arm']}`, needs "
+          f"{bestrom['effective_gpu_ms']:.3f} ms for {bestrom['worst_evolved_percent']:.4f} %, and "
+          f"the cheapest, `{cheaprom['arm']}`, needs {cheaprom['effective_gpu_ms']:.3f} ms for "
+          f"{cheaprom['worst_evolved_percent']:.4f} %.\n\n")
+    lad = {q: (M, v, c) for q, M, v, c in k['all_times']['ladder']}
+    lae = {q: (M, v, c) for q, M, v, c in k['evolved']['ladder']}
+    if 0 in lad and 16 in lae:
+        W('**The ladder\'s monotonicity is the $t=0$ compression term, not the trajectory.** '
+          f"On the all-times metric the fixed-test-count rungs fall monotonically "
+          f"{lad[0][1]:.4f} % -> {lad[128][1]:.4f} % from $q=0$ to $q=128$, and that column is "
+          f"pinned at every rung by the decoder's compression of the supplied field. On the "
+          f"evolved-times metric the same rungs are NOT monotone: $q=16$ "
+          f"({lae[16][1]:.4f} %) is worse than $q=0$ ({lae[0][1]:.4f} %), and the whole "
+          f"converged non-dominated set spans only "
+          f"{k['evolved']['error_span']:.3f}x in error across "
+          f"{k['evolved']['cost_span']:.3f}x in cost. The pre-registered criterion for calling "
+          f"$q$ a knob therefore fails on both metrics, and it fails for a different reason on "
+          f"each: error span on the all-times metric, monotonicity and error span on the "
+          f"evolved one.\n\n")
 
     if a2.get('fno'):
         f = a2['fno']

@@ -33,7 +33,7 @@ FILES = [
     'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl',
 ]
 CHECKPOINT = 'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl'
-HOURS = '12:00:00'
+HOURS = '20:00:00'
 EXCLUDE = 'pax007'
 
 

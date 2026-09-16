@@ -419,6 +419,14 @@ def main():
     # ------------------------------------------------------- three-layer table -
     w('## The three layers per checkpoint')
     w('')
+    w('One caveat on reading the middle column against the third. **Best-found minimises the '
+      'FIELD error; the solve minimises the WEAK residual** over the 257 retained sine tests. '
+      'They are different objectives and they agree here only because the solutions of this '
+      'family are smooth enough that the retained modes carry essentially all of their energy — '
+      'measured, not assumed, and visible in the incumbent control, where the two agree to four '
+      'decimal places. On a family whose solutions carried energy outside the test span the two '
+      'columns would separate and the third could sit below the second.')
+    w('')
     w('| intervals | checkpoint | K | R | bank floor (worst) | head best-found (worst) | '
       'solved same-grid (worst) | solved + q corrections | median total ms |')
     w('|---:|---|---:|---:|---:|---:|---:|---:|---:|')

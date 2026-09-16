@@ -28,6 +28,19 @@ def pct(x, n=4):
     return '--' if x is None else f'{100 * x:.{n}f}'
 
 
+def share(t):
+    """The added term's realised share of the loss at the END of training: the
+    weight times the term, over the total. It measures what the calibration
+    actually bought instead of assuming it."""
+    fp, added = t.get('final_parts'), 0.
+    if not fp:
+        return '--'
+    for key, wkey in (('weak', 'beta_w'), ('traj', 'beta_t'), ('smooth', 'gamma')):
+        added += (t.get(wkey) or 0.) * (fp.get(key) or 0.)
+    total = (fp.get('rec') or 0.) + added
+    return '--' if total <= 0 else f'{added / total:.3g}'
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--train-result', required=True)
@@ -201,6 +214,21 @@ def main():
       f"$\\mathcal L_{{\\rm W}} = {ww['L_weak']:.6g}$, $\\mathcal L_{{\\rm Z}} = "
       f"{ww['L_smooth']:.6g}$ on {ww['calibration_states']} training-cohort calibration states.")
     w('')
+    w('> **The calibration point is weaker than DESIGN.md §3 declared, and this is the cell\'s main '
+      'recorded flaw.** The rule says "at the incumbent head". What the driver actually evaluated '
+      'is the incumbent head at 512 of its own training codes paired with 512 *unrelated* '
+      'snapshots\' targets: the incumbent\'s codes index its own dense pick of states, and the '
+      'driver strided both arrays independently instead of joining them. The pairing was '
+      'recoverable — the checkpoint carries `hfit_pick`, the global state ids its codes belong to, '
+      'in exactly the trajectory-major order this lane uses — and was not used. The consequence is '
+      'bounded but real: $\\beta_W$ and $\\gamma$ are a RATIO of two terms evaluated at the same '
+      'arbitrary point on the manifold, so they put the terms on a common scale there rather than '
+      'at the incumbent\'s own operating point. Because it is a ratio at a shared point, the arms '
+      'remain well defined at fixed, declared, reported weights; what is NOT licensed is the claim '
+      'that the added term contributes a tenth of the loss at the incumbent\'s fit. The realised '
+      'balance at the END of training is measured rather than assumed and is in the table below, '
+      'so a weight that turned out to be uninformative is visible instead of hidden.')
+    w('')
 
     # ------------------------------------------------------------- gates ----
     w('## Gates')
@@ -245,14 +273,14 @@ def main():
     w('')
     w('| arm | traj | states | $K$ | $R$ | bank | objective | steps | recon (train) mean | '
       'held-out oracle mean % | held-out worst % | mean-code-only mean % | '
-      '$\\times$ its own span floor | train GPU h |')
-    w('|---|---:|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---:|---:|')
+      '$\\times$ its own span floor | realised term share | train GPU h |')
+    w('|---|---:|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---:|---|---:|')
     for t in ta['arm_table']:
         w('| `' + t['arm'] + '` | ' + ' | '.join([
             str(t['trajectories']), str(t['states']), str(t['K']), str(t['R']), t['bank'],
             t['objective'], str(t['steps']), g(t['recon_train_mean'], 4),
             pct(t['holdout_mean']), pct(t['holdout_max']), pct(t['holdout_mean_only']),
-            f(t['holdout_over_floor'], 1), f(t['train_gpu_hours'], 3)]) + ' |')
+            f(t['holdout_over_floor'], 1), share(t), f(t['train_gpu_hours'], 3)]) + ' |')
     w('')
     w('The held-out oracle columns use two initialisations (the mean training code and a '
       'training-only encoder) for the frozen-bank arms and the mean training code alone for the '

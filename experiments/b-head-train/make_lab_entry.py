@@ -171,6 +171,24 @@ def main():
       'dense advection rather than the empirical-quadrature rule, because that rule is fitted at a '
       'fixed head and would drift as theta moves.')
     w('')
+    w(f"**The objective weights are fixed and declared, but their calibration point is weaker than "
+      f"DESIGN.md said, and this is the cell's main recorded flaw.** The declared rule is "
+      f"beta = rho * L_rec / L_term 'at the incumbent head'. The driver evaluated the incumbent "
+      f"head at {tr['weights']['calibration_states']} of its own training codes paired with the "
+      f"same number of UNRELATED snapshots' targets: the "
+      f"incumbent's codes index its own dense state pick and the driver strided both arrays "
+      f"independently instead of joining them on it. The join was recoverable -- the checkpoint "
+      f"carries `hfit_pick`, the global state ids its codes belong to, in exactly the "
+      f"trajectory-major order this lane uses -- and was not used. Realised values: "
+      f"L_rec {tr['weights']['L_rec']:.6g}, L_weak {tr['weights']['L_weak']:.6g}, "
+      f"L_smooth {tr['weights']['L_smooth']:.6g}, beta_w = beta_t = "
+      f"{tr['weights']['beta_w']:.6g}, gamma {tr['weights']['gamma']:.6g}. Because the weights are "
+      f"a RATIO of two terms evaluated at the same arbitrary point, the arms stay well defined at "
+      f"fixed reported weights; what is NOT licensed is the claim that the added term contributes a "
+      f"tenth of the loss at the incumbent's own fit. The realised share of the loss each added "
+      f"term held at the END of training is in the report's training table, so a weight that turned "
+      f"out to be uninformative is visible rather than hidden.")
+    w('')
     w('**A compile-time note worth carrying forward.** `common.make_projector` jits a closure over '
       'the cached bank, so XLA reported a large captured constant during the first projection '
       'compile. At this bank size that costs compile time only and the job ran at full speed, but '

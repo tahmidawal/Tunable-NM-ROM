@@ -142,6 +142,17 @@ def main():
           or (cfg['wide_rank'] in rec['bank_rank_arms']) == (verdict != 'data-limited')),
          dict(arms=rec.get('bank_rank_arms'), verdict=verdict))
 
+    wts = r.get('weights', {})
+    gate('objective_weights_recorded',
+         all(k in wts for k in ('beta_w', 'beta_t', 'gamma', 'L_rec', 'L_weak', 'L_smooth')),
+         {k: wts.get(k) for k in ('beta_w', 'beta_t', 'gamma', 'L_rec', 'L_weak', 'L_smooth')})
+    gate('objective_weights_reproduce_the_declared_ratio',
+         (abs(wts.get('beta_w', 0) - cfg['objective_fraction'] * wts.get('L_rec', 0)
+              / max(wts.get('L_weak', 1e-300), 1e-300)) < 1e-9
+          and abs(wts.get('gamma', 0) - cfg['objective_fraction'] * wts.get('L_rec', 0)
+                  / max(wts.get('L_smooth', 1e-300), 1e-300)) < 1e-9),
+         dict(rho=cfg['objective_fraction']))
+
     table = [dict(arm=row['arm'], K=row['K'], R=row['R'], bank=row['spec']['bank'],
                   objective=row['spec']['objective'], trajectories=row['trajectories'],
                   states=row['states'], steps=row['spec']['steps'],
@@ -153,6 +164,9 @@ def main():
                   holdout_over_floor=row['holdout_over_floor'],
                   span_floor_mean=row['span_floor']['mean'],
                   train_gpu_hours=row['train_gpu_hours'],
+                  final_parts=(row['train'] or {}).get('final_parts'),
+                  beta_w=row['spec'].get('beta_w'), beta_t=row['spec'].get('beta_t'),
+                  gamma=row['spec'].get('gamma'),
                   checkpoint_sha256=row['checkpoint_sha256'])
              for row in r['arms']]
 

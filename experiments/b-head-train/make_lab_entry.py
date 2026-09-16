@@ -83,6 +83,32 @@ def main():
       + str([n for n, _ in sel['density_curve']]) + ' trajectories. Density is then the only '
       'variable across the rungs and the top rung is the incumbent\'s own data.')
     w('')
+    # the single most consequential comparison, computed rather than typed
+    top = int(max(n for n, _ in sel['density_curve']))
+    qsuf = '_' + ev['config']['incumbent_arm'].split('_')[-1]
+    lname = f'd{top}k{tr["K_incumbent"]}rec'
+    verd = {v['arm']: v for v in ea['verdicts']}
+    lfl, iv = verd.get(lname + qsuf), verd[ev['config']['incumbent_arm']]
+    lrow = next((r for r in tr['arms'] if r['arm'] == lname), None)
+    ick = next((c for c in ev['checkpoints'] if c['arm'] == 'incumbent'), None)
+    if lfl and lrow and ick:
+        w(f"**THE HEAD GAP IS NOT A SHORTAGE OF DATA.** `{lfl['arm']}` is the like-for-like "
+          f"retrain: the same {top} trajectories, the same K = {tr['K_incumbent']}, R = "
+          f"{lrow['R']}, head {tr['config']['head_hidden']} wide x "
+          f"{tr['config']['head_layers']} layers, the same {tr['config']['steps']}-step budget, "
+          f"lr {tr['config']['lr']}, batch {tr['config']['batch']} that the incumbent's own refit "
+          f"used. It reaches {lfl['best_found_percent']:.4f} % best-found against the incumbent's "
+          f"{iv['best_found_percent']:.4f} % -- "
+          f"{lfl['best_found_percent'] / iv['best_found_percent']:.2f}x WORSE. Given the "
+          'incumbent\'s own data this pipeline does not recover the incumbent, so adding data is '
+          f"not the lever. One difference is recorded in the two configurations: this arm expands "
+          f"those trajectories into {lrow['states']} auto-decoder codes (stride "
+          f"{tr['config']['state_stride']}) where the incumbent checkpoint carries {ick['codes']} "
+          f"-- {lrow['states'] / ick['codes']:.2f}x more states at the SAME step budget, so each "
+          'state gets that factor less optimisation. Budget-per-state and the fixed step budget '
+          'are the two candidates this cell can see for the remaining distance; the next '
+          'experiment should vary them at fixed data.')
+        w('')
     w('**Gates.** ' + '; '.join(
         [f"whitening round trip {tr['gates']['whitening_round_trip']:.3e} (< 1e-10)",
          f"identity (*) against regenerated fields {tr['gates']['identity_star_relative']:.3e} (< 1e-9)"]

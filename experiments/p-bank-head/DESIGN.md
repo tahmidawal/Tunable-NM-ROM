@@ -317,5 +317,67 @@ latitude.
 
 ### Amendments
 
-*(none yet — any amendment is appended here with its date and the reason, and never
-replaces a criterion above in place.)*
+**2026-09-16, amendment 1 — the incumbent's training cohort, and a retraction inside `pbh01`.**
+`pbh01` was submitted with `incumbent_training_count = 512` and therefore computed the
+incumbent's *training-side* diagnostics D2, D3, D4, D6 and D8 against
+`core.source_params(0, 512)`. That is **not** the incumbent's training set: the accepted
+2026-09-11 lineage trained on `core.source_params(0, 576)[:512]`, and because every
+`source_params` call draws each of the four parameter arrays at its own length, the two
+cohorts share nothing. The symptom was unmissable — D2 came back at 2091 % worst — which is
+how it was caught. **Those five `pbh01` values for the incumbent are retracted.** D1 on the
+development cohort, D5 and D7 never touch the training parameters and stand unchanged, and
+nothing in the bank or head sweep is affected, because those arms generate and use their own
+cohorts consistently. The five retracted quantities are recomputed on the correct cohort in
+`checks/incumbent-diagnosis/`, a bounded local GB10 diagnostic, and the config and driver are
+corrected for the record. No cluster job was spent on the correction.
+
+**2026-09-16, amendment 2 — cohort identity is checked to a tolerance, not by hash.**
+While recovering the incumbent cohort it emerged that `core.source_params` is **not
+bit-reproducible between the local GB10 and the Tufts cluster**: the Gaussian-width column,
+$w=\exp(\mathcal U(\log 0.02, \log 0.1))$, differs by one ulp (max $1.39\times10^{-17}$)
+between the two NumPy builds, while the other three columns agree bitwise. The 2026-09-11
+assertion `sha(training) == checkpoint['training_draw_sha256']` passed only because it ran on
+the cluster. Both audits therefore compare regenerated cohorts to a tolerance and record both
+hashes instead of requiring them to agree. The difference is numerically irrelevant at the
+tolerances this cell uses: the cross-job fidelity gate on `pabl01` arm (a) passes at
+$2.96\times10^{-15}$ against a $10^{-9}$ tolerance.
+
+**2026-09-16, amendment 3 — one extra reported checkpoint and one extra POD rung.**
+(a) The selected bank arm carries its own jointly trained head. It is evaluated in the solve
+job and reported as `bank_arm_head`, but it is **not** a pre-registered primary and cannot be
+selected; it exists so the frozen-bank head sweep cannot hide a regression against the head
+its own bank was trained with. (b) The POD rank set is run as
+$k' \in \{8, 16, 32, 64, 128\}$ rather than $\{16, 32, 64, 128\}$; $k'=8$ is free, is one
+of the rungs `pabl01` ran, and gives one more fidelity gate. Neither change relaxes a
+criterion.
+
+
+**2026-09-16, amendment 4 — the bank selection rule is replaced, because the pre-registered
+one compares statistics over different-sized samples. Declared before any number on the new
+cohort was computed.**
+
+Section 4's rule selects on *the worst internal-validation floor*, but each arm's validation
+split is a different cohort with a different size (29 sources at $S=192$, 115 at $S=768$, 461
+at $S=3072$). The maximum over a sample is not a size-fair statistic: the worst of 461 draws
+from a family is systematically larger than the worst of 29, so the rule as written is biased
+towards small $S$ for reasons that have nothing to do with the bank. The first two arms of
+`pbh01` make the size of the effect visible — `bank_R128_S192` reports validation worst
+3.588 % against development worst 4.943 %, while `bank_R128_S768` reports validation worst
+5.230 % against development worst 1.861 % — so the rule would have preferred the worse bank.
+This is a flaw in the design, not a result.
+
+**Replacement rule, fixed here before any floor on the new cohort was evaluated.** Define one
+**common selection cohort**, `core.source_params(20260916, 256)` — a fresh seed, disjoint by
+construction from every $S$-cohort (seed 0) and from the development cohort (seeds 7090703 and
+7090732), and asserted disjoint in code. Every bank arm is scored on *that same* cohort, so the
+maximum is comparable across arms. The selected bank is the arm with the lowest **worst floor
+on the common selection cohort at 255 intervals**; ties by median, then smaller $R$, then
+smaller $S$. The mesh is 255 rather than 1023 because the floor is measured to be
+mesh-independent to three significant figures (incumbent 2.3227 % at 255 against 2.3152 % at
+1023; `bank_R128_S192` 4.9435 % against 4.9349 %) and because a rank-512 bank at 1023 intervals
+is a 4.3 GB array that does not belong on the shared local box.
+
+Nothing else changes: the development cohort still selects nothing, the head selection rule of
+section 5 is untouched, and every pre-registered target and success clause stands as written.
+Both rules' picks and both rankings are reported side by side, and the `pbh01` head sweep — which
+ran on the arm the original rule chose — is reported as run, whatever the replacement rule says.

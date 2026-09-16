@@ -208,7 +208,8 @@ def main():
     params0, Z0, ck0 = sc.load_pkl(a.incumbent)
     basis0 = np.load(a.incumbent_basis)
     np.testing.assert_array_equal(np.asarray(Z0), basis0['training_latents'])
-    inc_draws = C.source_params(cfg['train_seed'], cfg['incumbent_training_count'])
+    inc_draws = C.source_params(cfg['train_seed'],
+                                cfg['incumbent_draw_count'])[:cfg['incumbent_training_prefix']]
     assert len(inc_draws) == len(Z0), (len(inc_draws), len(Z0))
     rng = np.random.default_rng(cfg['oracle_seed'])
     sub0 = np.sort(rng.choice(len(inc_draws), min(cfg['train_oracle_subsample'], len(inc_draws)),

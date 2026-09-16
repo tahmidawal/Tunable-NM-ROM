@@ -1,0 +1,16 @@
+{
+  "scope": "the exact 512 training source parameters of the incumbent checkpoint r128_joint",
+  "recovered_from": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/capacity_accuracy09/result.json",
+  "recovered_sha256": "d73f2b9347a8c8e164320fcc8bfac7df75f27d8ef37fe71d4b8be9150480986b",
+  "generating_call": "core.source_params(0, 576)[:512]",
+  "local_regeneration_sha256": "0317927dcbfc18a61044e2804a375e99933bd0622048a5569fc8f6cb5b820ecd",
+  "local_regeneration_max_abs_difference": 1.3877787807814457e-17,
+  "local_regeneration_differing_columns": [
+    2
+  ],
+  "finding": "core.source_params is NOT bit-reproducible across the local GB10 and the Tufts cluster: the Gaussian-width column, w = exp(uniform(log 0.02, log 0.1)), differs by one ulp (max 1.39e-17) between the two numpy builds. Cohort identity between the two machines must therefore be checked to a tolerance, not by sha256. The 2026-09-11 assertion sha(training)==checkpoint training_draw_sha256 passed only because it ran on the cluster. The difference is numerically irrelevant: the cross-job fidelity gate on pabl01 arm (a) passes at 2.96e-15 against a 1e-09 tolerance.",
+  "shape": [
+    512,
+    4
+  ]
+}

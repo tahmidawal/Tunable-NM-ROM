@@ -42,8 +42,17 @@ def main():
     cfg = d['config']
     dev = np.concatenate((N.source_params(cfg['eval_seed'], cfg['eval_count']),
                           N.source_params(cfg['fresh_seed'], cfg['fresh_count'])))
-    check('cohort_parameters', hashlib.sha256(np.ascontiguousarray(dev).tobytes()).hexdigest()
-          == d['cohort']['sha256'], dict(sources=len(dev)))
+    # core.source_params is not bit-reproducible across the GB10 and the cluster
+    # (the Gaussian-width column differs by one ulp between numpy builds), so the
+    # cohort is checked by regenerating it and comparing to a tolerance; the two
+    # hashes are recorded rather than required to agree.
+    local_dev = hashlib.sha256(np.ascontiguousarray(dev).tobytes()).hexdigest()
+    recorded = np.asarray(d['cohort']['parameters'])
+    drift = float(np.max(np.abs(recorded - dev)))
+    check('cohort_parameters', drift <= 1e-15 and recorded.shape == dev.shape,
+          dict(sources=len(dev), local_sha256=local_dev, recorded_sha256=d['cohort']['sha256'],
+               hashes_agree=local_dev == d['cohort']['sha256'],
+               max_absolute_parameter_drift=drift))
 
     nhi = cfg['reference_intervals'][-1]
     fine = {c: N.solve(nhi, p) for c, p in enumerate(dev)}

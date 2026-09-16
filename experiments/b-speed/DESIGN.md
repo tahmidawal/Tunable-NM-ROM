@@ -299,7 +299,7 @@ the retained ones.
 |---|---|---|---|
 | 1 | `spd01` | 256²: S0 profile, full ladder, decode study, throughput, three FOM controls | `a100-80G`, exclude `pax007` |
 | 2 | `fine01` | 1024²: incumbent vs the ladder's cumulative arms, decode study, throughput, three FOM controls | `a100-80G`, exclude `pax007` |
-| 3 | reserve | a repair of 1 or 2, or S4 (the cheap-corrections $q=16$ EQ arm under the same optimisations) | |
+| 3 | `comp01` | 256² **and** 1024²: the composed arms `C1`–`C3` (the ladder without `block`), plus the incumbent, the `abl01` gate, three FOM controls and throughput — see deviation D4 | `a100-80G`, exclude `pax007` |
 
 Jobs 1 and 2 are independent and are submitted **simultaneously from their own attempt
 directories**; `squeue` is checked before and after each submission. 1024² is where the story
@@ -346,6 +346,30 @@ What replaces it:
 One consequence is recorded in advance: a *measured* parity of order $5\times10^{-14}$ cannot
 distinguish an arm that reassociates from one that does not, so the per-arm class in
 `ladders.py` is documentation of intent, not a claim about the measurement.
+
+### D4 (2026-09-16, after `spd01`'s profile, before its ladder was read) — the third job goes to composed arms, not to S4
+
+Section 10 left job 3 as a reserve for a repair or for S4 (the cheap-corrections $q=16$ EQ
+arm). It went to neither. `spd01`'s in-loop microbenchmarks, read as soon as the profile was
+written, measure the block Gauss–Jordan solve as a **loss** on this device: 26.4 µs per
+in-loop iteration at $b=1$ against 64.7, 93.3 and 103.2 µs at $b=2,4,8$, because the block
+form trades 16 sequential elimination stages for 41–67 compiled fusions in a program whose
+cost tracks fusion count. The pre-registered cumulative ladder puts `block4` at `L5`, so
+`L5`, `L6` and `L7` all inherit that loss and the declared "full port" arm is not the fastest
+composition — through no fault of the optimisations that come after it.
+
+Job 3 (`comp01`) therefore runs `C1` = `L4`+`probe`, `C2` = `C1`+`nodot`, `C3` = `C2`+folded
+decode — the same ladder with `block` left out — at **both** 256 and 1024 intervals, with its
+own incumbent, its own three full-order controls, its own `abl01` gate and its own throughput
+arms, so nothing in it is a cross-job ratio. These arms are **composed after seeing the
+isolated measurements** and are labelled as post-hoc in every table; they are never folded
+into the pre-registered ladder, and the pre-registered ladder's regression is reported as
+measured.
+
+S4 is **not run**. Porting the optimisations into `varpro.py`'s block-damped $q=16$ solver is
+a substantial change to a solver this cell did not write, its offline direction fit and
+per-rung NNLS cost about 25 minutes inside the job, and doing that unattended with the last
+job slot risks the deliverable for a marginal extension. It stays open.
 
 ### D3 (2026-09-16, during the run) — the abl01 field gate covers four cases, not six
 

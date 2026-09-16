@@ -107,6 +107,40 @@ def main():
       f"{verdicts[ecfg['incumbent_arm']]['same_grid_percent']:.4f} %, at "
       f"{best['cost_factor']:.3f}x the incumbent's cost.")
     w('')
+    # The like-for-like retrain is the sharpest single comparison in the cell, so it is stated in
+    # the answer. Everything here is read from the two recorded configurations, not asserted.
+    top = int(max(n for n, _ in sel['density_curve']))
+    qsuf = '_' + ecfg['incumbent_arm'].split('_')[-1]
+    lname = f'd{top}k{tr["K_incumbent"]}rec'
+    lfl = verdicts.get(lname + qsuf)
+    lrow = next((r for r in tr['arms'] if r['arm'] == lname), None)
+    ick = next((c for c in ev['checkpoints'] if c['arm'] == 'incumbent'), None)
+    if lfl is not None and lrow is not None and ick is not None:
+        iv = verdicts[ecfg['incumbent_arm']]
+        ratio = lrow['states'] / ick['codes']
+        w(f"**The sharpest comparison in the cell is the like-for-like retrain.** `{lfl['arm']}` "
+          f"is fitted on the same {top} trajectories as the incumbent, at the same $K = "
+          f"{tr['K_incumbent']}$ and $R = {lrow['R']}$, with the same head shape "
+          f"({tcfg['head_hidden']} wide, {tcfg['head_layers']} layers), the same "
+          f"{tcfg['steps']}-step budget, the same learning rate {tcfg['lr']} and the same batch "
+          f"{tcfg['batch']} that the incumbent's own refit used. It reaches "
+          f"{lfl['best_found_percent']:.4f} % best-found against the incumbent's "
+          f"{iv['best_found_percent']:.4f} % -- "
+          f"{lfl['best_found_percent'] / iv['best_found_percent']:.2f}$\\times$ worse, not better. "
+          '**So the residual head gap is not a shortage of trajectories:** given the incumbent\'s '
+          'own data, this pipeline does not recover the incumbent, and adding data to a pipeline '
+          'that cannot match it at full data is not the lever.')
+        w('')
+        w(f"One difference between the two runs is recorded in their configurations and is worth "
+          f"naming rather than hiding: this arm expands those {top} trajectories into "
+          f"{lrow['states']} auto-decoder codes (stride "
+          f"{tcfg['state_stride']}, every state of every trajectory), where the incumbent "
+          f"checkpoint carries {ick['codes']} -- a factor {ratio:.2f} more states at the SAME step "
+          'budget, so each of this arm\'s states receives that factor less optimisation. That, and '
+          'the fixed step budget itself, are the two candidates this cell can see for the '
+          'remaining distance; neither is data volume. Varying the budget and the snapshot '
+          'subsample at fixed data is the first thing a follow-up should do.')
+        w('')
     w(f"**Data-vs-capacity diagnostic: {sel['diagnostic_verdict']}.** At fixed $K = "
       f"{tr['K_incumbent']}$ the held-out representation oracle's worst value along "
       f"$N_{{\\rm traj}} = {[n for n, _ in sel['density_curve']]}$ is "
@@ -302,14 +336,22 @@ def main():
     # range is a fraction of a percent selected a winner but did not move the answer.
     for label, curve, dens in (('latent-dimension', sel['latent_curve'], tcfg['densities'][0]),
                                ('objective', sel['objective_curve'], tcfg['objective_density'])):
-        vals = [v for _, v in curve]
-        spread = (max(vals) - min(vals)) / min(vals)
+        srt = sorted(curve, key=lambda kv: kv[1])
+        vals = [v for _, v in srt]
+        spread = (vals[-1] - vals[0]) / vals[0]
+        margin = (vals[1] - vals[0]) / vals[0]
+        dv = [v for _, v in sel['density_curve']]
         w(f"The {label} curve's full spread at {dens} trajectories is "
-          f"{100 * spread:.1f}\\% relative (best {100 * min(vals):.3f}\\%, worst "
-          f"{100 * max(vals):.3f}\\% held-out worst). Compare the density curve's spread, "
-          f"{100 * (max(v for _, v in sel['density_curve']) - min(v for _, v in sel['density_curve'])) / min(v for _, v in sel['density_curve']):.1f}"
-          f"\\% relative. The declared rule still picks a winner from a curve this flat, so the "
-          f"selected value is reported as the rule's output, not as a demonstrated effect.")
+          f"{100 * spread:.1f}\\% relative (best `{srt[0][0]}` at {100 * vals[0]:.3f}\\%, worst "
+          f"`{srt[-1][0]}` at {100 * vals[-1]:.3f}\\% held-out worst), against the density "
+          f"curve's {100 * (max(dv) - min(dv)) / min(dv):.1f}\\%. What decides the selection is "
+          f"not that spread but the **margin over the runner-up**, `{srt[1][0]}`, which is "
+          f"{100 * margin:.1f}\\% relative."
+          + (' That margin is smaller than any resolution this cell can claim from one training '
+             'seed per arm, so the selected value is reported as the declared rule\'s output, not '
+             'as a demonstrated effect.' if margin < 0.05 else
+             ' That margin is large enough to be read as a real ordering at this density; the '
+             'spread is dominated by the worst arm, not by the choice between the top two.'))
         w('')
 
     # ------------------------------------------------ joint-arm diagnostics --

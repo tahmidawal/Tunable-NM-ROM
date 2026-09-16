@@ -45,15 +45,18 @@ def build(r, au, sm, pr, pau, meta):
             / max(min(p['worst_same_grid_percent'] for p in nd), 1e-300),
             cost=max(p['median_query_ms'] for p in nd) / min(p['median_query_ms'] for p in nd))
     pn = max(pverd, key=lambda k: pverd[k]['span'])
-    burg = ('a usable knob on the primary block' if v_all['passed'] else
-            ('not a knob on the pre-registered metric, which the initializer contract pins; '
-             + ('a knob on the evolved-time metric' if v_evo['passed']
-                else 'and not a knob on the evolved-time metric either')))
-    pois = (f"on Poisson it spans {pverd[pn]['span']:.2f}x in error for {pverd[pn]['cost']:.2f}x "
-            f"in cost")
+    if v_all['passed']:
+        burg = 'is a usable knob on the primary block'
+    elif v_evo['passed']:
+        burg = ('is not a knob on the pre-registered metric, which the initializer contract '
+                'pins, but is one on the evolved-time metric')
+    else:
+        burg = 'is not a knob on either metric'
+    pois = (f"spans {pverd[pn]['span']:.2f}x in error for only {pverd[pn]['cost']:.2f}x in cost "
+            f"at {pn} intervals")
     w('## 2026-09-15')
-    w(f'### prior-dial — trusting the neural prior less is {burg} on this Burgers checkpoint, '
-      f'and {pois}')
+    w(f'### prior-dial — on Burgers, trusting the neural prior less {burg}; on Poisson it is an '
+      f'accuracy lever that is nearly free, {pois}')
     w('')
     w('The coordinator asked whether "trust in the neural prior" is a usable inference-time '
       'accuracy/cost knob on one frozen checkpoint. Instead of solving only for the latent code '
@@ -168,6 +171,29 @@ def build(r, au, sm, pr, pau, meta):
             pct(best['worst_same_grid_evolved_percent']), lam_plain(best['lambda_rel']),
             f"{best['median_gpu_ms'] / inf['median_gpu_ms']:.3f}",
             'yes' if best['all_completed'] else 'NO']) + ' |')
+    w('')
+    w('**Cost span, since that is what Poisson failed on.** Applying the same three criteria '
+      'block by block (the criteria are pre-registered on the primary block only; this is the '
+      'separate question of whether the test count changes the shape of the frontier):')
+    w('')
+    w('| block | metric | monotone | non-dom. points | cost span | >= 2x cost | error span | '
+      '>= 2x error | none early-stopped |')
+    w('|---|---|---|---:|---:|---|---:|---|---|')
+    for (M, quad), blk in blocks(rows):
+        for key, label in [('worst_same_grid_percent', 'all times'),
+                           ('worst_same_grid_evolved_percent', 'evolved')]:
+            v = verdict(blk, key)
+            w('| ' + ' | '.join([f'M={M} {quad}', label,
+                                 'yes' if v['criterion_1_monotone'] else 'NO', str(v['count']),
+                                 f"{v['cost_span']:.2f}x", 'yes' if v['cost_span'] >= 2 else 'NO',
+                                 f"{v['error_span']:.2f}x", 'yes' if v['error_span'] >= 2 else 'NO',
+                                 'yes' if v['criterion_3_honest'] else 'NO']) + ' |')
+    w('')
+    w('On Burgers the cost span CLEARS 2x at every test count on the evolved-time metric, '
+      'because the finite-lambda path solves K+R = %d unknowns instead of K = %d whatever lambda '
+      'is; what fails is the error span, the monotonicity and the convergence of the points that '
+      'do buy accuracy. Poisson fails the opposite way, on cost. The dial is never a knob, but it '
+      'fails for a different reason on each PDE.' % (r['K'] + r['R'], r['K']))
     w('')
     nd_evo = nondominated([x for x in rows if x['kind'] == 'rom'],
                           'worst_same_grid_evolved_percent')

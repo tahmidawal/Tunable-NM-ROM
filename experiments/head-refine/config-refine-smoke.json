@@ -1,0 +1,29 @@
+{
+  "attempt": "smoke",
+  "intervals": 32,
+  "dt": 0.005,
+  "eval_seed": 7090702, "eval_cases": 4,
+  "eval_fresh_seed": 911702, "eval_fresh_cases": 2,
+  "reference_mesh": 128, "reference_dt": 0.00125,
+  "train_seed": 0, "train_trajectories": 8,
+  "decoder_code_subsample": 1024,
+  "test_multiplier": 4, "quadrature_multiplier": 4,
+  "gauss_jordan_max": 64,
+  "eq_seed": 20259, "candidate_cap": 900, "fit_states": 8,
+  "cold_axis_points": 24,
+  "strict": {"ic_budget": 120, "step_budget": 60, "gtol": 1e-06},
+  "n_ladder": [0, 1],
+  "mu": {"loose": 100.0, "tight": 100000.0},
+  "alpha_grid": [1e-07, 1e-06, 1e-05],
+  "calibration_n": 1, "calibration_mu": "loose", "calibration_tie_relative": 0.001,
+  "mu_diagnostic_grid": [1.0, 100000.0],
+  "mu_diagnostic_n": 1,
+  "dense_controls": [["baseline", 0, null], ["v1", 1, "tight"]],
+  "redecode_nodes": 256, "redecode_seed": 20260915,
+  "recon_starts": 2, "recon_budget": 80,
+  "reps": 1, "order_seed": 911715, "burn_seconds": 0.02,
+  "fom_settings": [
+    {"name": "fft_loose", "preconditioner": "fft", "ntol": 0.01, "ltol": 0.5},
+    {"name": "fft_tight", "preconditioner": "fft", "ntol": 1e-06, "ltol": 1e-08}
+  ]
+}

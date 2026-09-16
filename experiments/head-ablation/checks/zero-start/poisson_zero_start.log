@@ -1,0 +1,17 @@
+jax_backend=gpu
+mesh 64: assembled in 10.1s, M=257
+  nearest_code   worst   6.2391%  median   1.2454%  iters med/max 5/6  reasons [4]  stationary 12/12  ms 30.39
+  mean_code      worst   6.2391%  median   1.2454%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 69.94
+  zero           worst   6.2391%  median   1.2454%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 72.43
+  zero_no_trust  worst   6.2391%  median   1.2454%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 72.14
+mesh 256: assembled in 10.4s, M=257
+  nearest_code   worst   6.1014%  median   1.2423%  iters med/max 5/6  reasons [4]  stationary 12/12  ms 33.76
+  mean_code      worst   6.1014%  median   1.2423%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 71.66
+  zero           worst   6.1014%  median   1.2423%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 71.22
+  zero_no_trust  worst   6.1014%  median   1.2423%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 72.07
+mesh 1024: assembled in 30.4s, M=257
+  nearest_code   worst   6.0931%  median   1.2421%  iters med/max 5/6  reasons [4]  stationary 12/12  ms 41.22
+  mean_code      worst   6.0931%  median   1.2421%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 83.21
+  zero           worst   6.0931%  median   1.2421%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 85.64
+  zero_no_trust  worst   6.0931%  median   1.2421%  iters med/max 14/20  reasons [4]  stationary 12/12  ms 82.63
+DONE

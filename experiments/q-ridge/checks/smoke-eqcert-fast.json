@@ -1,0 +1,57 @@
+{
+  "rules": {
+    "reach_m96": {
+      "m": 96,
+      "relative_fit": 0.007189260796127006,
+      "states": 128,
+      "rho_max": 0.7770950929404148,
+      "rho_p95": 0.6480811292749248,
+      "rho_median": 0.2043464653494163,
+      "rho_mean": 0.23479186126419585,
+      "rho_min": 0.05682443932663063
+    },
+    "reach_m192": {
+      "m": 192,
+      "relative_fit": 0.0010441877592792957,
+      "states": 128,
+      "rho_max": 0.3304491677796379,
+      "rho_p95": 0.2347459092849035,
+      "rho_median": 0.07886973327865761,
+      "rho_mean": 0.08646039207961063,
+      "rho_min": 0.020910385883349328
+    },
+    "static_m192": {
+      "m": 192,
+      "relative_fit": 0.029239162744505703,
+      "states": 128,
+      "rho_max": 0.7314224245243383,
+      "rho_p95": 0.5341215315559986,
+      "rho_median": 0.050063870621093035,
+      "rho_mean": 0.1290265665458246,
+      "rho_min": 0.01806224633525353
+    }
+  },
+  "rho_identity": {
+    "weak_difference": 0.09258832496885061,
+    "rho_numerator": 0.09258832496884843,
+    "relative": 2.3532261616785232e-14
+  },
+  "rho_ordering": {
+    "rho_falls_with_m": true,
+    "reachable_beats_static": true,
+    "reach_m96": 0.7770950929404148,
+    "reach_m192": 0.3304491677796379,
+    "static_m192": 0.7314224245243383
+  },
+  "query": {
+    "shape": [
+      6,
+      33,
+      33
+    ],
+    "finite": true,
+    "max_step_joint_stationarity": 9.98939299232943e-07,
+    "budget_exits": 0,
+    "relative_to_dense": 8.59911179788721e-05
+  }
+}

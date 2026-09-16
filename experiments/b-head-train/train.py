@@ -173,7 +173,7 @@ def widen(params, R_new, key):
 
 
 def fit_joint(key, params0, xy, Upts, un2, n_full, k_lat, steps, lr, batch, log_every=20000,
-              tag='', lam_orth=0., Z0=None):
+              tag='', orth_fraction=0.1, Z0=None):
     """Joint Adam over (bank g, head h, codes Z) against the field-space loss on a
     fixed seeded subset of interior points -- the loss form
     `sep_common.train_autodecoder` uses, minibatched over snapshots because the
@@ -182,12 +182,17 @@ def fit_joint(key, params0, xy, Upts, un2, n_full, k_lat, steps, lr, batch, log_
     Two deliberate differences from that function, both recorded in DESIGN.md:
     the sum over the P sampled points is rescaled by n_full / P so the data term
     reads as the per-snapshot relative MSE the frozen-bank arms also minimise;
-    and `lam_orth` defaults to ZERO. The feature-Gram orthonormality
-    regulariser exists to condition a FRESHLY initialised bank. These arms warm
-    start from an already-trained bank whose Gram is far from the identity, so
-    at the warm start that penalty is orders of magnitude larger than the data
-    term and a joint run under it is an orthonormalisation, not a refinement.
-    The realised orthonormality deviation is reported instead of imposed."""
+    and `lam_orth` is CALIBRATED rather than inherited. The feature-Gram
+    orthonormality regulariser exists to condition a FRESHLY initialised bank;
+    these arms warm start from an already-trained bank whose Gram is far from
+    the identity, so the inherited constant 1e-4 makes that penalty orders of
+    magnitude larger than the data term and a joint run under it is an
+    orthonormalisation, not a refinement -- while switching it off entirely lets
+    the bank's conditioning run away. It is therefore set, once, at the warm
+    start, so the penalty contributes `orth_fraction` of the data term there,
+    by the same scale rule the solve-aware objective weights use. The realised
+    weight, the feature-Gram deviation before and after, and the resulting Gram
+    condition number are all reported."""
     S = Upts.shape[0]
     key, kz = jax.random.split(key)
     Z = (jnp.asarray(Z0, dtype=F64) if Z0 is not None
@@ -207,15 +212,22 @@ def fit_joint(key, params0, xy, Upts, un2, n_full, k_lat, steps, lr, batch, log_
         Cg = (G.T @ G) / (G.shape[0] * pp['out_scale'] ** 2)
         return jnp.mean((Cg - jnp.eye(Cg.shape[0], dtype=F64)) ** 2)
 
+    def data_of(pp, z, idx):
+        G = A.sc.features(pp, xy)
+        d = A.sc.head(pp, z[idx]) @ G.T - Upts[idx]
+        return jnp.mean(inv[idx] * jnp.sum(d * d, axis=1))
+
+    orth0 = float(orth_of(params0))
+    base0 = float(data_of(params0, Z, jnp.arange(nb)))
+    lam_orth = float(orth_fraction) * base0 / max(orth0, 1e-300)
+
     def loss_fn(pz, idx):
         pp, z = pz
         G = A.sc.features(pp, xy)
         d = A.sc.head(pp, z[idx]) @ G.T - Upts[idx]
         base = jnp.mean(inv[idx] * jnp.sum(d * d, axis=1))
-        if lam_orth:
-            Cg = (G.T @ G) / (G.shape[0] * pp['out_scale'] ** 2)
-            return base + lam_orth * jnp.mean((Cg - jnp.eye(Cg.shape[0], dtype=F64)) ** 2), base
-        return base, base
+        Cg = (G.T @ G) / (G.shape[0] * pp['out_scale'] ** 2)
+        return base + lam_orth * jnp.mean((Cg - jnp.eye(Cg.shape[0], dtype=F64)) ** 2), base
 
     @jax.jit
     def step(pz, st, kk):
@@ -224,8 +236,6 @@ def fit_joint(key, params0, xy, Upts, un2, n_full, k_lat, steps, lr, batch, log_
         gr[0]['out_scale'] = jnp.zeros_like(gr[0]['out_scale'])
         upd, st = opt.update(gr, st, pz)
         return optax.apply_updates(pz, upd), st, val, base
-
-    orth0 = float(orth_of(params0))
 
     pz = (params0, Z)
     t0 = time.time()
@@ -238,6 +248,8 @@ def fit_joint(key, params0, xy, Upts, un2, n_full, k_lat, steps, lr, batch, log_
                   f'data {float(base):.4e} [{time.time() - t0:.0f}s]', flush=True)
     return pz[0], pz[1], dict(steps=int(steps), lr=lr, batch=int(nb), points=int(xy.shape[0]),
                               n_full=int(n_full), lam_orth=float(lam_orth),
+                              orth_fraction=float(orth_fraction),
+                              data_term_at_warm_start=base0,
                               warm_start=Z0 is not None, seconds=time.time() - t0,
                               final_loss=float(val), final_data_loss=float(base),
                               feature_gram_deviation_start=orth0,
@@ -587,7 +599,8 @@ def main():
             pj_, Zj, ji = fit_joint(jax.random.PRNGKey(cfg['seed'] + 41), pin,
                                     e.coords(L)[pts], Upts, jnp.asarray(jt['un2']),
                                     (L - 1) ** 2, best_K, cfg['joint_steps'], cfg['lr'],
-                                    cfg['batch'], tag=name, lam_orth=cfg['joint_lam_orth'],
+                                    cfg['batch'], tag=name,
+                                    orth_fraction=cfg['joint_orth_fraction'],
                                     Z0=warm_Z[:Upts.shape[0]])
             bj = A.CoordBank(pj_, best_K, Rn)
             Gj = jax.block_until_ready(bj.on_grid(L))

@@ -302,16 +302,19 @@ than run with the defect.
    relative MSE the frozen-bank arms minimise. Without the rescaling the data term sat a factor
    $n/P \approx 16$ below its intended value and every fixed regulariser weight sat that factor
    too high against it.
-2. *Orthonormality regulariser off.* `sep_common.train_autodecoder` adds
+2. *Orthonormality regulariser calibrated, not inherited.* `sep_common.train_autodecoder` adds
    $\lambda_{\rm orth}\,\overline{(C_G-I)^2}$ with $\lambda_{\rm orth}=10^{-4}$ and
    $C_G = G^\top G / (P\,s^2)$. That penalty exists to condition a **freshly initialised** bank.
    These arms warm start from the incumbent's already-trained bank, whose Gram is far from the
-   identity (its condition number is $\approx 2.6\times10^{4}$), so at the warm start the penalty
-   is orders of magnitude larger than the data term and a joint run under it would be an
-   orthonormalisation rather than a refinement. $\lambda_{\rm orth}$ is therefore set to $0$ and
-   the realised feature-Gram deviation is **reported** — before and after training — together with
-   the resulting bank's Gram condition number, rather than imposed. No accuracy number was
-   consulted in making either change.
+   identity (condition number $\approx 2.6\times10^{4}$), so the inherited constant makes the
+   penalty orders of magnitude larger than the data term and a joint run under it is an
+   orthonormalisation rather than a refinement — while switching it off entirely lets the bank's
+   conditioning run away, which a local probe confirmed. $\lambda_{\rm orth}$ is therefore set
+   **once, at the warm start**, so that the penalty contributes a declared fraction
+   $\rho_{\rm orth}=0.1$ of the data term there — the same scale rule §3 uses for
+   $\beta_W,\beta_T,\gamma$. The realised $\lambda_{\rm orth}$, the feature-Gram deviation
+   before and after training, and the resulting bank's Gram condition number are all reported.
+   No accuracy number was consulted in making either change.
 
 **A2 (2026-09-16, same point).** The joint arms **continue from the selected frozen-bank arm's
 head and codes** rather than cold-starting, because the question the brief asks is what unfreezing

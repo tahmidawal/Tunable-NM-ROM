@@ -4,7 +4,7 @@ Inputs, all machine-generated and all already audited:
 
   --audit / --result          the dense-ladder job (qtd02), the PRIMARY subject
   --archives                  `dense_from_archives.py` output, Part 1 (no GPU)
-  --control-audit / --control-result   the trajectory-directions job (qtd01), the CONTROL
+  --control-audit             the trajectory-directions job (qtd01), the CONTROL
   --qdiag                     the q-diag lane's report, cited if it exists
 
 Nothing in the report is typed by hand.
@@ -177,7 +177,6 @@ def main():
     p.add_argument('--result', required=True)
     p.add_argument('--archives', required=True)
     p.add_argument('--control-audit', default=None)
-    p.add_argument('--control-result', default=None)
     p.add_argument('--qdiag', default=None)
     p.add_argument('--out', required=True)
     p.add_argument('--figure', required=True)
@@ -186,7 +185,6 @@ def main():
     raw = json.loads(Path(a.result).read_text())
     arc = json.loads(Path(a.archives).read_text())
     control = json.loads(Path(a.control_audit).read_text()) if a.control_audit else None
-    craw = json.loads(Path(a.control_result).read_text()) if a.control_result else None
     cfg = raw['config']
     lads = aud['ladders']
     by_arm = {x['arm']: x for x in aud['arms']}
@@ -390,7 +388,7 @@ def main():
                          '`' + cds[k]['directions_sha256'][:16] + '…`']
                         for k in ('old', 'traj', 'prac') if k in cds]))
         cc = control['direction_comparison']['cross_capture']
-        qs = [q for q in craw['config']['q_ladder'] if q > 0]
+        qs = sorted({u['q'] for d in cl.values() for u in d['rungs'] if u['q'] > 0})
         L.append('\n**Cross-capture** $\\kappa_q(P,C)=\\|\\tilde P\\tilde C_{:,1:q}\\|_F^2/'
                  '\\|\\tilde P\\|_F^2$, per cent of residual matrix $P$\'s whitened energy that '
                  'direction set $C$ reaches at rung $q$. The diagonal is each set\'s own POD '

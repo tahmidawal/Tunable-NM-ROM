@@ -83,11 +83,20 @@ def main():
                   all(bool(x.get('bitwise_matches_cclad01')) for x in r['reference']),
                   [x.get('bitwise_matches_cclad01') for x in r['reference']],
                   'a cross-job bitwise probe; informative, not required')
-    dg = r['gates'].get('directions_hash', {})
-    dir_bitwise = bool(dg.get('passed'))
-    informational('directions_hash_matches_cclad01', dir_bitwise, dg,
-                  'bitwise across jobs and GPUs; the substantive check is the q = 0 / q = 128 '
-                  'reproduction below')
+    dg = dict(r['gates'].get('directions_hash', {}))
+    # The config's expected hash is `qlad01`'s, produced on an A100-PCIE-40GB. The
+    # cheap-corrections job ran on an A100 80GB PCIe and produced a different one; both
+    # are recorded, so the probe says WHICH job this one reproduces, if either.
+    cclad_dir = None
+    if CCLAD.exists():
+        cclad_dir = json.loads(CCLAD.read_text())['directions']['directions_sha256']
+    dg['cclad01_sha256'] = cclad_dir
+    dg['matches_cclad01'] = bool(cclad_dir is not None and dg.get('got') == cclad_dir)
+    dir_bitwise = bool(dg.get('passed')) or dg['matches_cclad01']
+    informational('directions_hash_matches_cclad01', dg['matches_cclad01'], dg,
+                  'bitwise across jobs; qlad01 (A100-PCIE-40GB) and cclad01 (A100 80GB PCIe) '
+                  'already disagree with each other, so this is a probe, not a requirement. The '
+                  'substantive check is the q = 0 / q = 128 reproduction below')
     gate('directions_rank_covers_ladder',
          r['directions']['available_rank'] >= max(
              [x.get('q') or 0 for x in r['declared_subjects'] if x.get('method') == 'rom'] or [0]),

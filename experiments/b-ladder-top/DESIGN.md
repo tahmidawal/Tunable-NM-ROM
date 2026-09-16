@@ -470,4 +470,78 @@ accepted deliberately because both primary questions are already answered and ar
 
 ### After the runs, before the report
 
-*(filled in below at close)*
+All three jobs finished, were collected, independently audited and archived, and their
+exact remote attempt directories removed, before any of these were made. None of them
+changes a recorded number.
+
+1. **`collect.py` was patched mid-lane** so the Q2 attempt's out-of-band inputs are handled
+   explicitly: the three small FNO architecture modules are now collected, and the 429 MB
+   checkpoint is named in `EXCLUDED-FROM-COLLECTION.txt` with the reasoning — it is
+   verified on the remote side by the full `MANIFEST.sha256` before the archive is made,
+   its SHA256 is in `PROVENANCE.json`, and its source copy is retained in the lane it came
+   from, so duplicating it into every archive buys nothing. The first Q2 collection
+   attempt failed its local manifest re-check on exactly those four paths and was redone,
+   not overridden.
+2. **The `q0_arms_bitwise` gate reports "not applicable" when a sweep has no $q=0$ dense
+   arms**, instead of failing vacuously. Q1-B has none. The Q1 sweep, which does, passes it.
+3. **The monotonicity check is reported twice**: over the rungs that share the modal test
+   count (the "retained configuration" the acceptance criterion names) and over every rung.
+   The $q=256$ and $q=512$ rungs cannot use $M=256$ and carry their own, so lumping them in
+   would silently change what "monotone in $q$" means.
+4. **The audit compares the regenerated directions against BOTH prior jobs.** `qlad01` and
+   `cclad01` already disagree with each other, so a single expected hash cannot be a gate;
+   it is reported as a probe saying which job, if either, this one reproduces.
+
+### What the three jobs found
+
+* **Q1 target: FAIL under the frozen contract, PASS under one declared relaxation.** None
+  of the three fixes converges $q=256$; all four dense arms (`base`, `pre`, `damp`,
+  `predamp`) are indistinguishable to four decimals, and the cascade is much worse.
+  Raising the per-step iteration budget from 180 to 600, and changing nothing else,
+  converges it at 0.988x the control's median GPU time, with worst same-grid error
+  0.9053 % against the $q=128$ rung's 1.8116 %.
+* **Fix (b) does what it was predicted to do to the conditioning and nothing to the
+  answer.** Column equilibration cuts $\kappa$ at $q=512$ from $6.9\times10^{10}$ to
+  $3.5\times10^{7}$ — a factor of 1965 — and changes no reported error anywhere. The
+  conditioning was never the binding constraint.
+* **Fix (c) is inert and fix (a) is harmful.** The decoupled $y$ damping and trust radius
+  change nothing measurable; the cascade warm start turns a converged $q=128$ rung into one
+  with 63 budget exits and a $q=256$ rung into one with 180.
+* **The latent trust radius is a real cost lever.** Ten times the retained radius costs
+  0.599x the GPU time at identical error, and reduces the budget exits from 15 to 3 without
+  removing them.
+* **Q2: "$q$ is a knob" FAILS on both metrics, for different reasons.** On the worst-over-
+  all-times metric the fixed-test-count ladder IS monotone, but its converged non-dominated
+  set spans only 1.415x in error. On the evolved-times metric it is NOT monotone at all
+  ($q=16$ is worse than $q=0$) and spans 1.266x. The monotonicity that the whole ladder
+  story rested on is the $t=0$ compression term.
+* **Nothing but the full-order solver is on the envelope.** On both metrics the
+  non-dominated set over every subject — ladder, POD-LSPG, FNO, FOM — contains only
+  same-job full-order controls.
+
+### What is retracted
+
+* The cheap-corrections cell's speculation that the broken $q=512$ empirical-quadrature arm
+  was the **bounded fitter's walltime cap**. With the refit block raised from $m/64$ to
+  $m/16$ every rule in this lane reached full target support and none was truncated,
+  including $m=2048$ at $q=512$ with relative fit $2.06\times10^{-4}$ against the truncated
+  rule's $5.7\times10^{-3}$ — and that rung still gives 3.65 % same-grid error against
+  0.60 % for its dense twin. The cap was not the suspect.
+* Within this lane, the design's own framing that the $q=512$ rung "does not converge" as a
+  solver fact. It is a degenerate endpoint of the stopping rule: at $q=R$ the corrections
+  span the whole bank, the supplied field is fitted to $10^{-16}$, and
+  $\|J^\top r\|/(\|J\|\,\|r\|)$ becomes $0/0$, while every one of its 900 time steps is
+  stationary at $5.8\times10^{-7}$.
+
+### What is still open
+
+* The $q=16$ regression on the evolved-times metric is unexplained. It is reproducible
+  across the quadrature and both evolution tolerances, so it is not noise, but nothing here
+  says why one extra correction direction makes the *trajectory* worse while making the
+  supplied-field fit better.
+* The $q=512$ empirical-quadrature failure is measured, not explained. The hypothesis on
+  offer — that at $q=R$ the reachable states include fields the $m$-point rule was never
+  fitted on, and the exactly-fitted initial condition starts the trajectory on one — is a
+  hypothesis and was not tested.
+* Everything here is one mesh, one checkpoint, one training seed and six opened development
+  cases. The final cohorts stay sealed and no new case was opened.

@@ -22,6 +22,10 @@ def yn(x):
     return {True: 'yes', False: 'no', None: '—'}[x]
 
 
+def sci(x):
+    return '—' if x is None else f'{x:.0e}'
+
+
 def table(header, rows):
     out = ['| ' + ' | '.join(header) + ' |', '|' + '|'.join(['---'] * len(header)) + '|']
     for r in rows:
@@ -42,6 +46,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--q1-audit', required=True)
     p.add_argument('--q2-audit', default=None)
+    p.add_argument('--q1b-audit', default=None)
     p.add_argument('--report', required=True)
     p.add_argument('--out', required=True)
     p.add_argument('--branch', required=True)
@@ -50,6 +55,7 @@ def main():
     a = p.parse_args()
     a1 = json.loads(Path(a.q1_audit).read_text())
     a2 = json.loads(Path(a.q2_audit).read_text()) if a.q2_audit else None
+    a1b = json.loads(Path(a.q1b_audit).read_text()) if a.q1b_audit else None
     W = []
 
     def w(s):
@@ -62,19 +68,24 @@ def main():
       f'`{a.namespace}`. ')
     jobs = [f"Q1 job `{a1.get('job_id')}` (`btq101`) on `{a1.get('gpu')}`, source "
             f"`{a1.get('commit')}`, elapsed {fmt(a1.get('elapsed_seconds'), 1)} s"]
+    if a1b:
+        jobs.append(f"Q1-B job `{a1b.get('job_id')}` (`btq102`) on `{a1b.get('gpu')}`, source "
+                    f"`{a1b.get('commit')}`, elapsed {fmt(a1b.get('elapsed_seconds'), 1)} s")
     if a2:
         jobs.append(f"Q2 job `{a2.get('job_id')}` (`btq201`) on `{a2.get('gpu')}`, source "
                     f"`{a2.get('commit')}`, elapsed {fmt(a2.get('elapsed_seconds'), 1)} s")
-    w('. '.join(jobs) + '. Both printed `jax_backend=gpu`, ran float64 with highest matmul '
+    w('. '.join(jobs) + '. Every job printed `jax_backend=gpu`, ran float64 with highest matmul '
       'precision, and were checksum-collected, independently NumPy-audited and archived '
       'before their exact remote attempt directories were removed.\n\n')
 
     w('**Q1 gates.** ' + gates_line(a1['checks']) + '\n\n')
+    if a1b:
+        w('**Q1-B gates.** ' + gates_line(a1b['checks']) + '\n\n')
     if a2:
         w('**Q2 gates.** ' + gates_line(a2['checks']) + '\n\n')
 
     w('**Fidelity against the cheap-corrections job.**\n\n')
-    for label, au in (('Q1', a1), ('Q2', a2)):
+    for label, au in (('Q1', a1), ('Q1-B', a1b), ('Q2', a2)):
         if au is None:
             continue
         fid = (au['checks'].get('cclad01_fidelity') or {}).get('detail') or {}
@@ -84,9 +95,9 @@ def main():
         w(table(['arm', 'reproduces', 'tolerance', 'relative difference (reference)',
                  'relative difference (same-grid)', 'passed'],
                 [[f'`{k}`', f"`{v['detail']['comparator']}`",
-                  fmt(v['detail']['declared_tolerance'], 12),
-                  fmt(v['detail']['relative_worst_reference_difference'], 12),
-                  fmt(v['detail'].get('relative_worst_same_grid_difference'), 12),
+                  sci(v['detail']['declared_tolerance']),
+                  sci(v['detail']['relative_worst_reference_difference']),
+                  sci(v['detail'].get('relative_worst_same_grid_difference')),
                   yn(v['passed'])] for k, v in sorted(fid.items())]) + '\n')
 
     w('**Conditioning of the augmented normal equations** (offline probe, $\\lambda=10^{-6}$):\n\n')
@@ -118,6 +129,22 @@ def main():
               fmt(x['quadrature_fit_seconds'], 1), fmt(x['worst_all_times_percent']),
               fmt(x['median_gpu_ms'], 3), yn(x['converged'])]
              for x in sorted(eqr, key=lambda x: (x['q'], x['fix'] or ''))]) + '\n')
+
+    if a1b:
+        ctrl = next((x for x in a1b['arms'] if x['arm'] == 'q256_m2_dense_base'), None)
+        w('**Q1-B, one relaxed contract constant at a time, $q=256$ only:**\n\n')
+        w(table(['arm', 'per-step iteration budget', 'latent trust radius', 'quadrature',
+                 'budget exits', 'worst joint gradient', 'worst same-grid all %',
+                 'worst evolved %', 'median GPU ms', 'cost vs control', 'converged'],
+                [[f"`{x['arm']}`", x.get('step_budget'),
+                  ('x' + fmt(x.get('trust_scale'), 0)) if x.get('trust_scale') else '—',
+                  x['quadrature'], x['total_budget_exits'],
+                  f"{x['max_joint_stationarity']:.3e}", fmt(x['worst_all_times_percent']),
+                  fmt(x['worst_evolved_percent']), fmt(x['median_gpu_ms'], 3),
+                  (fmt(x['median_gpu_ms'] / ctrl['median_gpu_ms'], 3) + 'x') if ctrl else '—',
+                  yn(x['converged'])]
+                 for x in sorted([y for y in a1b['arms'] if y['kind'] == 'rom'],
+                                 key=lambda y: (y['quadrature'], y['arm']))]) + '\n')
 
     if a2:
         w('**Q2 envelope, every subject, both metrics:**\n\n')

@@ -424,6 +424,34 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
       f"Secondary-metric errors on the same arms: {[round(e, 6) for e in v_evo['errors']]} "
       f"percent.")
     w('')
+    w('### Every block against the same three criteria')
+    w('')
+    w('The criteria are pre-registered on the primary block, but the same arithmetic on each '
+      'block answers the separate question of whether the test count changes the shape of the '
+      'frontier — in particular whether the **cost span** clears $2\\times$ anywhere.')
+    w('')
+    w('| block | metric | (1) monotone | non-dom. points | cost span | $\\ge2\\times$ cost? | '
+      'error span | $\\ge2\\times$ error? | (3) none early-stopped | verdict |')
+    w('|---|---|---|---:|---:|---|---:|---|---|---|')
+    for (M, quad), blk in blocks(rows):
+        for key, label in [('worst_same_grid_percent', 'all times'),
+                           ('worst_same_grid_evolved_percent', 'evolved')]:
+            v = verdict(blk, key)
+            w('| ' + ' | '.join([
+                f'$M={M}$, {quad}', label,
+                'yes' if v['criterion_1_monotone'] else 'NO', str(v['count']),
+                f"{v['cost_span']:.2f}$\\times$", 'yes' if v['cost_span'] >= 2 else '**NO**',
+                f"{v['error_span']:.2f}$\\times$", 'yes' if v['error_span'] >= 2 else '**NO**',
+                'yes' if v['criterion_3_honest'] else 'NO',
+                'KNOB' if v['passed'] else 'not a knob']) + ' |')
+    w('')
+    w('So on Burgers the cost span is **not** what fails: at every test count the non-dominated '
+      'set spans far more than $2\\times$ in cost, because the finite-$\\lambda$ path solves '
+      f"$K+R={r['K'] + r['R']}$ unknowns instead of $K={r['K']}$ whatever $\\lambda$ is. What "
+      'fails is the error span, the monotonicity, and the convergence of the points that do buy '
+      'accuracy. Poisson fails the opposite way — see below. The dial is never a knob, but it '
+      'fails for a different reason on each PDE.')
+    w('')
     w('### The non-dominated set')
     w('')
     for key, label in [('worst_same_grid_percent', 'all six output times'),
@@ -558,7 +586,7 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
     if fb:
         w('**Both limits are confirmed against the head ablation, not asserted.** At '
           '$\\lambda=\\infty$ this reproduces `pabl01`\'s arm (a) to '
-          f"{g3['worst_relative_delta']:.3e} relative (gate (iii)); at the smallest "
+          f"{g3['detail']['worst_relative_delta']:.3e} relative (gate (iii)); at the smallest "
           f"$\\lambda_{{\\rm rel}}$ on the grid it lands within "
           + ', '.join(f"{v['worst_relative_delta']:.2e} at {k} intervals"
                       for k, v in sorted(fb.items(), key=lambda kv: int(kv[0])))

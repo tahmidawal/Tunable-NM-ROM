@@ -171,6 +171,39 @@ def main():
       'dense advection rather than the empirical-quadrature rule, because that rule is fitted at a '
       'fixed head and would drift as theta moves.')
     w('')
+    jw = {r['arm']: r['train'] for r in tr['arms'] if r['spec']['bank'] == 'joint'}
+    bad = {k: v for k, v in jw.items() if v['data_term_at_warm_start'] > 1e-2}
+    if bad:
+        w('**RETRACTED AS A RANK TEST (amendment A4).** '
+          + ', '.join(f'`{k}`' for k in bad)
+          + ' did not inherit the warm start it was supposed to continue from: `widen` keeps the '
+            'incumbent feature columns but initialises the new head output columns at random, so '
+            'the widened decoder starts from a data term of '
+          + ', '.join(f"{v['data_term_at_warm_start']:.3e}" for v in bad.values())
+          + ' where its narrow sibling starts from '
+          + ', '.join(f"{v['data_term_at_warm_start']:.3e}" for k, v in jw.items() if k not in bad)
+          + '. Because lambda_orth is calibrated at the warm start, it was then set against that '
+            'large value and dominated the run. The wide-rank arm is reported with its numbers but '
+            'it says nothing about bank rank; a fair rank arm needs a warm-start-preserving '
+            'widening and a penalty calibrated after it. Not rerun: the job cap reserved the '
+            'remaining job for the evaluation.')
+        w('')
+    ulp = ta['checks'].get('archived_draws_reproduce_locally_to_one_ulp')
+    if ulp is not None:
+        w('**Three audit gates failed on a byte hash and were replaced by a stronger value check '
+          '(amendment A5).** The cluster NumPy and the local NumPy disagree by one unit in the last '
+          'place in np.exp, and the viscosity column is the only one that passes through it; a '
+          'direct probe shows their default_rng streams are otherwise identical. '
+          + ' '.join(f"The {k} draw differs in {v['rows_differing']} rows, column(s) "
+                     f"{v['columns_differing']}, at most {v['max_ulp']:.0f} ULP."
+                     for k, v in ulp['detail'].items())
+          + ' The attempt\'s own draws are now regenerated in the cluster interpreter, accepted '
+            'only because each hashes to exactly the value the job recorded, committed as '
+            'artifacts/<attempt>/draws.npz, and checked against a local re-derivation to <= 1 ULP, '
+            'against the declared ranges, and for cohort disjointness on the actual values. The '
+            'evaluation cohort is asserted BITWISE equal to abl01\'s own recorded cases in the job '
+            'and again in the audit. No reported number moves: 1 ULP in nu is O(1e-16) relative.')
+        w('')
     w(f"**The objective weights are fixed and declared, but their calibration point is weaker than "
       f"DESIGN.md said, and this is the cell's main recorded flaw.** The declared rule is "
       f"beta = rho * L_rec / L_term 'at the incumbent head'. The driver evaluated the incumbent "

@@ -104,14 +104,14 @@ def main():
       f"{100 * tr['data']['holdout_span_floor']['mean']:.4f} % mean):")
     w('')
     w('| arm | traj | $K$ | $R$ | bank | objective | recon (train) mean | held-out mean % | '
-      'held-out worst % | train GPU h |')
-    w('|---|---:|---:|---:|---|---|---:|---:|---:|---:|')
+      'held-out worst % | mean-code-only mean % | train GPU h |')
+    w('|---|---:|---:|---:|---|---|---:|---:|---:|---:|---:|')
     for t in ta['arm_table']:
         w('| `' + t['arm'] + '` | ' + ' | '.join([
             str(t['trajectories']), str(t['K']), str(t['R']), t['bank'], t['objective'],
             ('--' if t['recon_train_mean'] is None else f"{t['recon_train_mean']:.4e}"),
             f"{100 * t['holdout_mean']:.4f}", f"{100 * t['holdout_max']:.4f}",
-            f"{t['train_gpu_hours']:.3f}"]) + ' |')
+            f"{100 * t['holdout_mean_only']:.4f}", f"{t['train_gpu_hours']:.3f}"]) + ' |')
     w('')
     w(f"**Data-vs-capacity diagnostic: {sel['diagnostic_verdict']}.** At fixed $K$ = "
       f"{tr['K_incumbent']} the held-out oracle worst along "

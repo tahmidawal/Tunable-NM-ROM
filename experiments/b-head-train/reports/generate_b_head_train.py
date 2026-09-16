@@ -206,14 +206,22 @@ def main():
       f"{100 * tr['data']['holdout_span_floor']['max']:.4f} % worst.")
     w('')
     w('| arm | traj | states | $K$ | $R$ | bank | objective | steps | recon (train) mean | '
-      'held-out oracle mean % | held-out worst % | $\\times$ its own span floor | train GPU h |')
-    w('|---|---:|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---:|')
+      'held-out oracle mean % | held-out worst % | mean-code-only mean % | '
+      '$\\times$ its own span floor | train GPU h |')
+    w('|---|---:|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---:|---:|')
     for t in ta['arm_table']:
         w('| `' + t['arm'] + '` | ' + ' | '.join([
             str(t['trajectories']), str(t['states']), str(t['K']), str(t['R']), t['bank'],
             t['objective'], str(t['steps']), g(t['recon_train_mean'], 4),
-            pct(t['holdout_mean']), pct(t['holdout_max']), f(t['holdout_over_floor'], 1),
-            f(t['train_gpu_hours'], 3)]) + ' |')
+            pct(t['holdout_mean']), pct(t['holdout_max']), pct(t['holdout_mean_only']),
+            f(t['holdout_over_floor'], 1), f(t['train_gpu_hours'], 3)]) + ' |')
+    w('')
+    w('The held-out oracle columns use two initialisations (the mean training code and a '
+      'training-only encoder) for the frozen-bank arms and the mean training code alone for the '
+      'joint arms, which have no whitened training block in their own bank. The **mean-code-only '
+      'column is the like-for-like one across the two families**; selection happened among '
+      'frozen-bank arms only, where the two-initialisation column exists for all of them. The '
+      'joint arms also have their own span floor, because their bank moved.')
     w('')
     w(f"Selection was by the declared rule ({sel['rule']}): best density "
       f"{sel['best_density']}, best $K$ {sel['best_K']}, best objective `{sel['best_objective']}`, "

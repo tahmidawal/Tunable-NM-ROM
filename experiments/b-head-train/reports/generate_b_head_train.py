@@ -100,6 +100,39 @@ def main():
       f"{100 * sel['saturation_fraction']:.0f} %.")
     w('')
 
+    # --------------------------------- what the incumbent was trained on -----
+    ick = next(c for c in ev['checkpoints'] if c['arm'] == 'incumbent')
+    icfg = ick['cfg']
+    n_inc = icfg.get('hfit_n_traj')
+    inc_bf = verdicts[ecfg['incumbent_arm']]['best_found_percent']
+    w(f"## The incumbent head was trained on {n_inc} trajectories, not 128")
+    w('')
+    w(f"This has to come before any density number, because the lab log and the framing of this "
+      f"question both assumed 128. **128 is the head-ablation configuration's snapshot draw** "
+      f"(`config-ablation.json: train_trajectories = 128`), used there to build POD bases, to fit "
+      f"the linear and quadratic coefficient maps, and to fit the empirical-quadrature rule. It is "
+      f"not what trained the head. The incumbent checkpoint `{ick['file']}` carries its own "
+      f"training record: `hfit_n_traj = {n_inc}`, `hfit_extra_seed = "
+      f"{icfg.get('hfit_extra_seed')}`, `hfit_extra_traj = {icfg.get('hfit_extra_traj')}`, "
+      f"`hfit_arm = {icfg.get('hfit_arm')!r}`, `hfit_source_ckpt = "
+      f"{icfg.get('hfit_source_ckpt')!r}` — that is the canonical "
+      f"`sample_params(seed={tcfg['canonical_seed']})` draw of "
+      f"{n_inc - (icfg.get('hfit_extra_traj') or 0)} plus {icfg.get('hfit_extra_traj')} appended "
+      f"from seed {icfg.get('hfit_extra_seed')}, and it carries {ick['codes']} auto-decoder codes, "
+      f"one per fitted state.")
+    w('')
+    w(f"`burgers2d_film.sample_params` and `engines.params_draw` are the *same* sequential RNG draw "
+      f"over the *same* ranges, so that data set is reproducible in this lane, and the density "
+      f"ladder here is a **nested prefix** of it at {[n for n, _ in sel['density_curve']]} "
+      f"trajectories. Two consequences for how the numbers below should be read. First, density is "
+      f"the only variable across the rungs, and the top rung is a like-for-like retrain of the "
+      f"incumbent inside this pipeline rather than a different experiment. Second, the incumbent's "
+      f"{inc_bf:.4f} % best-found reconstruction is **not** the result of a data-starved fit: it is "
+      f"what {n_inc} trajectories already bought. Any reading of the head gap that assumed 128 "
+      f"trajectories — including the expectation that simply adding data would close it — has to be "
+      f"revisited against the ladder below.")
+    w('')
+
     # ------------------------------------------------------------ the shape --
     w('## What is being trained, and what is frozen at query time')
     w('')
@@ -287,6 +320,42 @@ def main():
             f(v['best_found_percent']), f(v['same_grid_percent']),
             'yes' if v['stationary'] else 'NO', 'yes' if v['completed'] else 'NO',
             f(v['cost_factor'], 3), '**PASS**' if v['success'] else 'no']) + ' |')
+    w('')
+
+    # --------------------------------------------------------- deviations ----
+    w('## Recorded deviations and limitations')
+    w('')
+    w('- **The density ladder is nested inside the incumbent\'s own draw** rather than three '
+      'independent `params_draw(0, n)` draws, and a '
+      f"{tcfg['canonical_trajectories'] + tcfg['extra_trajectories']}-trajectory rung was added to "
+      'the brief\'s three, so that density is the only variable and the top rung is the '
+      'incumbent\'s own data (DESIGN.md deviation D1).')
+    w('- **A first training submission, job `3745663`, was CANCELLED while still PENDING.** It '
+      'never started, consumed no GPU time and produced no output. It was cancelled because two '
+      'defects in the joint bank+head arms were found after submission: the sampled-point data '
+      f"term was a factor $n/P \\approx {(tcfg['intervals'] - 1) ** 2 // tcfg['joint_points']}$ "
+      'below the relative MSE it claimed to be, which also put every fixed regulariser weight that '
+      'factor too high against it; and the orthonormality penalty inherited from '
+      '`sep_common.train_autodecoder` exists to condition a *freshly initialised* bank, while these '
+      'arms warm start from a trained bank whose Gram is far from the identity, so it drowned the '
+      'data term. Both are fixed and recorded as dated amendments A1-A3 in `DESIGN.md`, made before '
+      'any evaluation number existed. The executed jobs are the training and evaluation jobs named '
+      'at the top of this report.')
+    w('- **The joint bank+head arms cannot use identity $(\\ast)$**, because their bank moves. They '
+      f"train against a fixed seeded subset of {tcfg['joint_points']} of the "
+      f"{(tcfg['intervals'] - 1) ** 2} interior points, at a capped density, continuing from the "
+      'selected frozen-bank arm; their orthonormality weight is calibrated at the warm start rather '
+      'than inherited, and their held-out oracle uses the mean-code initialisation only. They also '
+      'have their own span floor.')
+    w('- **The solve-aware training terms use the exact dense advection**, not the '
+      'empirical-quadrature rule, because that rule is fitted at a fixed head and would drift as '
+      '$\\theta$ moves.')
+    w(f"- **The step budget is held fixed at {tcfg['steps']} for every frozen-bank arm**, so the "
+      'low-density arms see far more epochs than the high-density ones. That is what isolates '
+      'density, and it is also why the low-density arms are the ones most exposed to overfitting.')
+    w('- **One mesh, one training seed per arm, development cohort only.** The final cohort stays '
+      'sealed and no new case was opened. Nothing here is a speed claim against a full-order '
+      'solver: the same-job full-order rows are context only.')
     w('')
 
     # ----------------------------------------------------------- glossary ----

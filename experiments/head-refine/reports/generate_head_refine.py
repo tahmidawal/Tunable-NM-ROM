@@ -262,6 +262,17 @@ def build(b, ba, p, pa, sm, figname):
           + ', '.join(f"$\\alpha={t['alpha']:g}$ &rarr; {t['final_data_term']:.6e}"
                       for t in c['trace'])
           + f", so $\\alpha = {c['selected_alpha']:g}$ was selected and frozen.")
+        grid = r['config']['alpha_grid']
+        if c['selected_alpha'] in (min(grid), max(grid)):
+            w('')
+            w(f"**Recorded limitation.** The selected step size sits at the "
+              f"{'upper' if c['selected_alpha'] == max(grid) else 'lower'} edge of the "
+              f"pre-registered grid $[{min(grid):g}, {max(grid):g}]$, so the calibration did not "
+              f"bracket an interior optimum: a "
+              f"{'larger' if c['selected_alpha'] == max(grid) else 'smaller'} step was never "
+              f"tested. The grid was fixed before the run and was not widened afterwards, so every "
+              f"{tag} number below is for that step size and may understate what refinement could "
+              f"do with a better-chosen one.")
         w('')
         d = r['anchor_diagnostic']
         w(f"Anchor diagnostic on the same calibration case at $n={d['n']}$ "

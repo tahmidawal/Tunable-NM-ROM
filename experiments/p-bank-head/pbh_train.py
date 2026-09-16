@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import time
 from pathlib import Path
 
@@ -83,6 +84,9 @@ def main():
     ap.add_argument('--incumbent', required=True)
     ap.add_argument('--incumbent-basis', required=True)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--bank-checkpoint', default=None,
+                    help='head-only mode: skip the incumbent diagnosis and the bank sweep and '
+                         'run the head sweep on this already-trained, frozen bank')
     ap.add_argument('--smoke', action='store_true')
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
@@ -214,15 +218,23 @@ def main():
     rng = np.random.default_rng(cfg['oracle_seed'])
     sub0 = np.sort(rng.choice(len(inc_draws), min(cfg['train_oracle_subsample'], len(inc_draws)),
                               replace=False))
-    R_['diagnosis'].append(diagnose('incumbent_r128_joint', params0, Z0, inc_draws, sub0,
-                                    cfg['floor_intervals']))
-    save()
+    if a.bank_checkpoint is None:
+        R_['diagnosis'].append(diagnose('incumbent_r128_joint', params0, Z0, inc_draws, sub0,
+                                        cfg['floor_intervals']))
+        save()
     print('DIAGNOSIS done', round(time.perf_counter() - begin, 1), flush=True)
 
     # ------------------------------------------------------------ bank sweep ---
     coords_tr = K_.coords_of(ntr)
+    head_only = a.bank_checkpoint is not None
+    supplied_sources = None
+    if head_only:
+        supplied_sources = int(sc.load_pkl(a.bank_checkpoint)[2]['sources'])
+        assert supplied_sources in cohorts, (supplied_sources, list(cohorts))
     Ucache = {}
     for S in cfg['source_counts']:
+        if head_only and S != supplied_sources:
+            continue
         Ucache[S] = K_.fields(cohorts[S]['draws'], ntr)
 
     def store(tag, params, Z, extra):
@@ -237,7 +249,7 @@ def main():
         save()
         return dest
 
-    for R in cfg['ranks']:
+    for R in (cfg['ranks'] if not head_only else []):
         for S in cfg['source_counts']:
             tag = f'bank_R{R}_S{S}'
             t0 = time.perf_counter()
@@ -321,12 +333,32 @@ def main():
 
     # ------------------------------------------------------- bank selection ----
     pick_n = cfg['floor_intervals'][-1]
+    if head_only:
+        bp, bz, bcfg = sc.load_pkl(a.bank_checkpoint)
+        best = dict(arm=bcfg['tag'], R=int(bcfg['rank']), S=int(bcfg['sources']))
+        R_['selection']['bank'] = dict(
+            rule=('supplied: this run is head-only, on a bank selected by DESIGN.md '
+                  'amendment 4 on the common selection cohort'),
+            selected=best['arm'], R=best['R'], S=best['S'], mesh=None,
+            source_checkpoint=str(a.bank_checkpoint),
+            source_checkpoint_sha256=hashlib.sha256(
+                Path(a.bank_checkpoint).read_bytes()).hexdigest(),
+            development_ranking_agrees=None, ranking=[])
+        shutil.copy2(a.bank_checkpoint, out / 'checkpoints' / (best['arm'] + '.pkl'))
+        R_['checkpoints'].append(dict(id=best['arm'], path=f"checkpoints/{best['arm']}.pkl",
+                                      sha256=R_['selection']['bank']['source_checkpoint_sha256'],
+                                      weights_sha256=K_.weights_sha(bp),
+                                      codes_sha256=K_.sha_array(bz), layer='bank',
+                                      rank=best['R'], sources=best['S'], supplied=True))
+        save()
+        print('BANK SUPPLIED', best['arm'], flush=True)
 
     def bank_key(arm):
         f = next(x for x in arm['floors'] if x['intervals'] == pick_n)
         return (f['validation']['worst'], f['validation']['median'], arm['R'], arm['S'])
-    best = min(R_['bank_arms'], key=bank_key)
-    R_['selection']['bank'] = dict(
+    best = best if head_only else min(R_['bank_arms'], key=bank_key)
+    if not head_only:
+      R_['selection']['bank'] = dict(
         rule='lowest worst internal-validation bank projection floor at the finest floor mesh; '
              'ties by median, then smaller R, then smaller S',
         mesh=pick_n, selected=best['arm'], R=best['R'], S=best['S'],
@@ -347,6 +379,7 @@ def main():
     val = cohorts[Sbest]['val']
     draws = cohorts[Sbest]['draws']
     bank_params, _, _ = sc.load_pkl(out / 'checkpoints' / (best['arm'] + '.pkl'))
+    assert int(np.asarray(bank_params['h_lin']).shape[1]) == Rbest, (Rbest,)
     Ufit = Ucache[Sbest][jnp.asarray(fit)]
     G = K_.bank_of(bank_params, ntr)
     Rg, rank_tr = K_.bank_r(G)

@@ -1,0 +1,65 @@
+{
+  "cases": [
+    {
+      "rows": 1024,
+      "cols": 2048,
+      "target": 128,
+      "gpu_support": 128,
+      "gpu_relative": 3.4933815687574396e-05,
+      "gpu_rounds": 0,
+      "gpu_stop": "target",
+      "gpu_seconds": 7.6016004079720005,
+      "scipy_support": 128,
+      "scipy_relative": 3.495399064125534e-05,
+      "scipy_seconds": 0.12327295000432059,
+      "nonnegative": true,
+      "reached_target_or_kkt": true
+    },
+    {
+      "rows": 2048,
+      "cols": 4096,
+      "target": 256,
+      "gpu_support": 256,
+      "gpu_relative": 1.921349987049766e-05,
+      "gpu_rounds": 0,
+      "gpu_stop": "target",
+      "gpu_seconds": 17.70602418697672,
+      "scipy_support": 256,
+      "scipy_relative": 1.9181575205143856e-05,
+      "scipy_seconds": 0.414457505044993,
+      "nonnegative": true,
+      "reached_target_or_kkt": true
+    },
+    {
+      "rows": 4096,
+      "cols": 8192,
+      "target": 1024,
+      "gpu_support": 1024,
+      "gpu_relative": 4.7840645026118964e-06,
+      "gpu_rounds": 3,
+      "gpu_stop": "reentry_cap",
+      "gpu_seconds": 113.05485849297838,
+      "scipy_support": 1024,
+      "scipy_relative": 4.701740975474182e-06,
+      "scipy_seconds": 11.487107796012424,
+      "nonnegative": true,
+      "reached_target_or_kkt": true
+    },
+    {
+      "rows": 8192,
+      "cols": 16384,
+      "target": 2048,
+      "gpu_support": 2048,
+      "gpu_relative": 2.3172166601150625e-06,
+      "gpu_rounds": 3,
+      "gpu_stop": "reentry_cap",
+      "gpu_seconds": 827.1290911560063,
+      "scipy_support": 2048,
+      "scipy_relative": 2.2864010177269097e-06,
+      "scipy_seconds": 123.60686093301047,
+      "nonnegative": true,
+      "reached_target_or_kkt": true
+    }
+  ],
+  "note": "the gate qrg301 would have failed: reached_target_or_kkt"
+}

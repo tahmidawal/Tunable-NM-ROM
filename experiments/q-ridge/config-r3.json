@@ -39,7 +39,7 @@
   "order_seed": 911716,
   "burn_seconds": 0.25,
   "step_budget_provenance": "btq102 sweep block '_b600' (q256_m2_dense_base_b600): zero budget exits, worst joint gradient 9.71e-07, 0.988x the budget-180 control cost",
-  "eq_seconds": 3600.0,
+  "eq_seconds": 1200.0,
   "q_ladder": [
     0,
     16,
@@ -178,5 +178,6 @@
       "tolerance": 0.001,
       "tolerance_if_directions_bitwise": 1e-09
     }
-  }
+  },
+  "fitter_note": "support selection by FISTA over the full candidate set, refined exactly on the chosen support; see DESIGN.md A4 and checks/fitter-bench.json"
 }

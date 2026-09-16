@@ -151,6 +151,11 @@ def main():
     r3['fit_blocks'] = 8
     r3['active_set_iterations'] = 40
     r3['gram_ridge_relative'] = 1e-12
+    # DESIGN.md A4: one rule may not eat the job; a truncated rule is disqualified anyway.
+    r3['eq_seconds'] = 1200.
+    r3['fitter_note'] = ('support selection by FISTA over the full candidate set, refined '
+                         'exactly on the chosen support; see DESIGN.md A4 and '
+                         'checks/fitter-bench.json')
     r3['reproduction_arms'] = [
         dict(name='q0_m4_eqold_ret', q=0, test_multiplier=4, fitter='retained'),
         dict(name='q128_m2_eqold_bnd', q=128, test_multiplier=2, fitter='bounded')]

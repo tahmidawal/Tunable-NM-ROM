@@ -120,14 +120,21 @@ def main():
             # The t = 0 output is the head's compression of the supplied field and
             # cannot depend on lambda, because the initializer is arm (a)'s and
             # starts the correction at y = 0. Assert that, since the whole reading
-            # of the all-times metric rests on it.
+            # of the all-times metric rests on it. lambda = infinity and the finite
+            # path are separately compiled graphs, so the bar is round-off, not
+            # bitwise equality.
             t0 = {}
             for x in inv:
                 if x['kind'] == 'rom':
-                    t0.setdefault(x['case'], set()).add(round(x['same_grid_per_time'][0], 15))
+                    t0.setdefault(x['case'], []).append(x['same_grid_per_time'][0])
+            spread = {c: (max(v) - min(v)) / max(abs(np.mean(v)), 1e-300) for c, v in t0.items()}
             gate('initial_output_is_lambda_independent',
-                 all(len(v) == 1 for v in t0.values()),
-                 {k: sorted(v) for k, v in t0.items() if len(v) > 1})
+                 max(spread.values()) < 1e-12,
+                 dict(worst_relative_spread=max(spread.values()), tolerance=1e-12,
+                      per_case=spread,
+                      note=('the t = 0 same-grid error over every lambda, every test count and '
+                            'every quadrature, on each case; arm (a) initializer means y = 0 '
+                            'there')))
             note('all_times_worst_is_at_t0',
                  sorted({(x['name'], x['same_grid_argmax_time']) for x in inv
                          if x['kind'] == 'rom' and x['same_grid_argmax_time'] != 0})[:10])

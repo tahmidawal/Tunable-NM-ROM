@@ -304,8 +304,9 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
     w(f"The contract fixes the initializer as arm (a)'s: the nearest training code, a "
       f"$K$-dimensional Gauss state fit, and $y=0$. So the $t=0$ output of every arm is the "
       f"head's compression of the supplied field and **cannot depend on $\\lambda$** — the "
-      f"audit asserts this and it holds "
-      f"{'exactly' if g0.get('passed') else 'NOT'}. On these cases that compression error is "
+      f"audit asserts this and it holds to "
+      f"{g0.get('detail', {}).get('worst_relative_spread', float('nan')):.2e} relative across "
+      f"every lambda, test count and quadrature. On these cases that compression error is "
       f"also the largest of the six output times"
       + ('' if not t0note else f" (exceptions, arm and argmax index: {t0note})")
       + ", so the worst same-grid error over **all** output times is pinned by construction "

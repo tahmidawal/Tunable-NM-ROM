@@ -39,7 +39,12 @@ def main():
     ap.add_argument('--smoke', action='store_true')
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
+    base = Path(a.models).resolve().parent
     models = json.loads(Path(a.models).read_text())
+    for m in models:
+        for key in ('checkpoint', 'basis'):
+            cand = base / m[key]
+            m[key] = str(cand if cand.exists() else Path(m[key]))
     ref = json.loads(Path(a.reference).read_text())
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

@@ -32,6 +32,16 @@ TRAIN = COMMON + ['experiments/p-bank-head/pbh_fit.py',
                   'experiments/p-bank-head/config-train.json',
                   f'{RUN}/checkpoints/r128_joint.pkl', f'{RUN}/basis.npz']
 
+HEADSOLVE = COMMON + ['experiments/p-bank-head/pbh_fit.py',
+                      'experiments/p-bank-head/pbh_train.py',
+                      'experiments/p-bank-head/config-train.json',
+                      'experiments/p-bank-head/pbh_solve.py',
+                      'experiments/p-bank-head/config-solve.json',
+                      'experiments/p-bank-head/pabl01-reference.json',
+                      'experiments/p-bank-head/pbh_audit_np.py',
+                      'experiments/p-bank-head/cluster/make_models.py',
+                      f'{RUN}/checkpoints/r128_joint.pkl', f'{RUN}/basis.npz']
+
 SOLVE = COMMON + ['experiments/p-bank-head/pbh_solve.py',
                   'experiments/p-bank-head/config-solve.json',
                   'experiments/p-bank-head/pabl01-reference.json',
@@ -46,6 +56,20 @@ BODY = {
   --config config-solve.json --models models.json \\
   --reference pabl01-reference.json \\
   --out ../output''',
+    'headsolve': '''"$PY" pbh_train.py \\
+  --config config-train.json \\
+  --incumbent r128_joint.pkl --incumbent-basis basis.npz \\
+  --bank-checkpoint selected_bank.pkl \\
+  --out ../output/train
+"$PY" make_models.py ../output/train \\
+  --stage ../output/staged --config config-solve.json \\
+  --config-out ../output/staged/config-solve.json \\
+  --incumbent r128_joint.pkl --incumbent-basis basis.npz
+"$PY" pbh_solve.py \\
+  --config ../output/staged/config-solve.json \\
+  --models ../output/staged/models.json \\
+  --reference pabl01-reference.json \\
+  --out ../output/solve''',
 }
 
 SCRIPT = '''#!/bin/bash
@@ -85,7 +109,7 @@ echo ALL-DONE
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('mode', choices=['train', 'solve'])
+    p.add_argument('mode', choices=['train', 'solve', 'headsolve'])
     p.add_argument('attempt')
     p.add_argument('--hours', type=int, default=6)
     p.add_argument('--extra', nargs='*', default=[],
@@ -101,7 +125,7 @@ def main():
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'],
                                      text=True).strip()
     proof = []
-    for name in (TRAIN if a.mode == 'train' else SOLVE):
+    for name in {'train': TRAIN, 'solve': SOLVE, 'headsolve': HEADSOLVE}[a.mode]:
         content = (ROOT / name).read_bytes()
         assert content == subprocess.check_output(
             ['git', '-C', str(ROOT), 'show', f'{commit}:{name}']), f'uncommitted: {name}'

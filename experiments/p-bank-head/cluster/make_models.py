@@ -13,8 +13,11 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import pbh_audit_np as N
+try:                                     # staged flat on the cluster
+    import pbh_audit_np as N
+except ModuleNotFoundError:              # local worktree layout
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    import pbh_audit_np as N
 
 
 def build_basis(checkpoint, intervals, count, draws, fit):
@@ -46,7 +49,11 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('run', type=Path, help='collected training output directory')
     ap.add_argument('--stage', type=Path, required=True, help='where to copy the staged files')
-    ap.add_argument('--config', type=Path, required=True, help='config-solve.json to update')
+    ap.add_argument('--config', type=Path, required=True, help='config-solve.json to read')
+    ap.add_argument('--config-out', type=Path, default=None,
+                    help='where to write the updated solve config (default: in place)')
+    ap.add_argument('--incumbent', type=Path, default=None)
+    ap.add_argument('--incumbent-basis', type=Path, default=None)
     a = ap.parse_args()
     d = json.loads((a.run / 'result.json').read_text())
     assert d['complete']
@@ -54,6 +61,9 @@ def main():
     models = [dict(id='incumbent', role='control', checkpoint='r128_joint.pkl',
                    basis='basis.npz')]
     extra = []
+    if a.incumbent is not None:
+        shutil.copy2(a.incumbent, a.stage / 'r128_joint.pkl')
+        shutil.copy2(a.incumbent_basis, a.stage / 'basis.npz')
     for sel in d['selection']['heads']:
         arm = next(x for x in d['head_arms'] if x['arm'] == sel['selected'])
         ck = next(x for x in d['checkpoints'] if x['id'] == sel['selected'])
@@ -75,8 +85,9 @@ def main():
     # pre-registered primary, but leaving it out would hide whether the frozen-bank
     # head sweep actually improved on the head the bank was trained with.
     bank = d['selection']['bank']
-    arm = next(x for x in d['bank_arms'] if x['arm'] == bank['selected'])
     ck = next(x for x in d['checkpoints'] if x['id'] == bank['selected'])
+    arm = next((x for x in d['bank_arms'] if x['arm'] == bank['selected']),
+               dict(K=d['config']['latents'][0], R=ck['rank'], S=ck['sources']))
     src = a.run / ck['path']
     assert hashlib.sha256(src.read_bytes()).hexdigest() == ck['sha256']
     shutil.copy2(src, a.stage / 'bankarm_head.pkl')
@@ -104,7 +115,7 @@ def main():
             c['note'] = (f"the selected bank's own training cohort "
                          f"({d['selection']['bank']['selected']}), so the POD competitor sees "
                          f"exactly the snapshots the neural bank was trained on")
-    a.config.write_text(json.dumps(cfg, indent=2) + '\n')
+    (a.config_out or a.config).write_text(json.dumps(cfg, indent=2) + '\n')
     print(' '.join(extra))
     print('pod trainset count ->', S)
 

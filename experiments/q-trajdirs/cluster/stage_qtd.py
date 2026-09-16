@@ -86,7 +86,7 @@ df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 export PYTHONPATH="PYPATH"
 "$PY" experiments/q-trajdirs/qtd_run.py \
-  --config CONFIG \
+  --config __CONFIG__ \
   --checkpoint CKPT \
   --out output
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
@@ -94,7 +94,7 @@ echo ALL-DONE
 '''
     script = (script.replace('ATTEMPT', attempt).replace('REMOTE', remote)
               .replace('CKPT', CHECKPOINT).replace('HOURS', HOURS).replace('EXCLUDE', EXCLUDE)
-              .replace('CONFIG', config)
+              .replace('__CONFIG__', config)
               .replace('PYPATH', ':'.join(f'{remote}/{p}' for p in PYPATH)))
     (out / 'run.sbatch').write_text(script)
     manifest = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(out)}'

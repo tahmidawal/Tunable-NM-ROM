@@ -116,10 +116,13 @@ def main():
     w('')
     w(f"**Bank layer — six arms, R in {{128, 512}} x S in {{192, 768, 3072}}, equal update "
       f"counts, one seed. The pre-registered 1.0 % target PASSES.** Worst bank projection floor "
-      f"on the 12 development sources at {fine} intervals: "
+      f"on the 12 development sources at {bs['intervals']} intervals (the floor is "
+      f"mesh-independent to three significant figures; the 1023-interval column is in the "
+      f"report): "
       + '; '.join(f"`{x['arm']}` {pc(x['reported_development_worst'])} %"
                   for x in sorted(bs['arms'], key=lambda x: (x['R'], x['S'])))
-      + f". The incumbent's own bank is {pc(crec['bank_projection']['worst'])} %. **R is the "
+      + f". The incumbent's own bank is "
+        f"{pc(idg['D1_bank_floor_development']['worst'])} % on the same cohort and mesh. **R is the "
         f"lever; S at equal optimizer budget is not** — every R=512 arm clears 1.0 % and the "
         f"three are within "
         f"{num(max(x['common']['worst'] for x in bs['arms'] if x['R'] == 512) / min(x['common']['worst'] for x in bs['arms'] if x['R'] == 512), 3)}x "

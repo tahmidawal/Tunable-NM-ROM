@@ -485,12 +485,23 @@ def main():
                     if key not in artifacts:
                         fn_ = f"L{L}_{sub['name']}_case{case}_rep{rep}.npz"
                         extra = dict(internal_latents=v[7]) if sub['kind'] == 'rom' else {}
-                        np.savez_compressed(out / fn_, fields=f, **extra)
+                        # The archived field is the exact nested-node restriction to
+                        # `archive_max_intervals` when the mesh is finer, so a fine-mesh
+                        # job does not park tens of GB on a 91%-full share; case 0 keeps
+                        # the full-resolution field for every subject. The in-job parity
+                        # statistic above is always computed on the FULL field.
+                        cap = int(cfg.get('archive_max_intervals', 0)) or L
+                        st = max(1, L // cap) if (L > cap and case not in
+                                                  cfg.get('archive_full_cases', [0])) else 1
+                        np.savez_compressed(out / fn_, fields=f[:, ::st, ::st],
+                                            archive_stride=np.int64(st), **extra)
                         artifacts[key] = fn_
+                        artifacts[('stride',) + key] = st
                     row = dict(intervals=L, case=case, cohort=report['cohort_roles'][case],
                                rep=rep, kind=sub['kind'], name=sub['name'], gpu_seconds=gs,
                                host_seconds=hs, output_bytes=int(f.nbytes), field_sha256=h,
                                artifact=artifacts[key], dtype=str(f.dtype),
+                               archive_stride=int(artifacts.get(('stride',) + key, 1)),
                                iterations=v[1].tolist(), residuals=v[2].tolist(), finite=True)
                     if case in truth:
                         row['same_grid'] = e.errors(f.astype(np.float64), truth[case], L)

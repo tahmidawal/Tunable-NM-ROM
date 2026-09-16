@@ -232,7 +232,40 @@ def section_ladder(res, aud, g, pmap, title):
     return '\n'.join(body)
 
 
-def section_controls(res, g):
+def best_parity_arm(g, pmap, L):
+    """The fastest arm at this mesh that PASSES every parity gate."""
+    best = None
+    for n in list(ladders.CUMULATIVE) + list(ladders.ISOLATED):
+        if (L, n) not in g:
+            continue
+        if not pmap.get((L, n), {}).get('parity'):
+            continue
+        if best is None or g[(L, n)]['gpu_ms'] < g[(L, best)]['gpu_ms']:
+            best = n
+    return best
+
+
+def section_headline(jobs):
+    rows = []
+    for attempt, res, aud, g, pmap in jobs:
+        for L in sorted({k[0] for k in g}):
+            inc = g.get((L, 'incumbent'))
+            b = best_parity_arm(g, pmap, L)
+            if inc is None or b is None:
+                continue
+            v = g[(L, b)]
+            rows.append([attempt, L, f'`{b}`', fmt(inc['gpu_ms']), fmt(v['gpu_ms']),
+                         fmt(inc['gpu_ms'] / v['gpu_ms'], 3) + 'x',
+                         fmt(inc['host_ms'] / v['host_ms'], 3) + 'x',
+                         sci(pmap[(L, b)]['worst_field_relative']),
+                         'PASS' if inc['gpu_ms'] / v['gpu_ms'] >= 2.0 else 'FAIL'])
+    return table(rows, ['attempt', 'intervals', 'fastest parity arm', 'incumbent GPU ms',
+                        'arm GPU ms', 'GPU speedup', 'speedup incl. host transfer',
+                        'parity', 'pre-registered 2x target'],
+                 ['---', '---:', '---', '---:', '---:', '---:', '---:', '---:', ':---:'])
+
+
+def section_controls(res, g, pmap):
     body = ['### Against the full-order controls, same job, same GPU\n',
             'Single-query latency. The ratio is ROM / FOM: below 1 the reduced query is '
             'faster. Same-grid error is against the same-job `fft_tight` solution at the '
@@ -246,10 +279,7 @@ def section_controls(res, g):
             if v:
                 rows.append([f'`{name}`', 'FOM', fmt(v['gpu_ms']), fmt(v['host_ms']),
                              fmt(v['worst_same_grid_percent'], 4), '—', '—', '—'])
-        best = None
-        for n in list(ladders.CUMULATIVE) + ['o_none']:
-            if (L, n) in g and (best is None or g[(L, n)]['gpu_ms'] < g[(L, best)]['gpu_ms']):
-                best = n
+        best = best_parity_arm(g, pmap, L)
         for n in ['incumbent'] + ([best] if best else []):
             v = g.get((L, n))
             if not v:
@@ -353,6 +383,13 @@ def main():
            'listed; every table is generated from the job JSONs and the independent NumPy '
            'audits by the generator beside this file, and every arm carries its own parity '
            'verdict.\n',
+           '## The answer, up front\n',
+           section_headline(jobs),
+           '\nThe speedup column is the incumbent\'s median single-query GPU latency divided '
+           'by the arm\'s, both measured in the same job on the same GPU with every arm '
+           'interleaved in a randomized order. Parity is the worst relative field deviation '
+           'from the incumbent over every case, against a bar of 1e-12, with the per-step '
+           'iteration counts and exit reasons identical as integers.\n',
            '## The query\n', DIAGRAM, '\n## S0 — the profile\n']
 
     for attempt, res, aud, g, pmap in jobs:
@@ -370,7 +407,7 @@ def main():
     doc.append('\n## The full-order controls\n')
     for attempt, res, aud, g, pmap in jobs:
         doc.append(f"\n*Attempt `{attempt}`.*\n")
-        doc.append(section_controls(res, g))
+        doc.append(section_controls(res, g, pmap))
 
     doc.append('\n## S3 — throughput\n')
     for attempt, res, aud, g, pmap in jobs:

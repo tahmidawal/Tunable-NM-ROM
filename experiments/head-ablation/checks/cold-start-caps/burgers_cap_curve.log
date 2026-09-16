@@ -1,0 +1,40 @@
+jax_backend=gpu
+operators built in 93.2s; M=64 m=256 eq_fit=5.159e-03 trust=0.05257
+FOM tight 1847.0 ms; loose 491.3 ms, worst same-grid 3.713%
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap   1: worst-all   81.238%  worst-evolved   81.238%  median-all  73.253%  ms   443.4  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap   2: worst-all   81.238%  worst-evolved   81.238%  median-all  73.253%  ms   679.8  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap   3: worst-all   81.238%  worst-evolved   81.238%  median-all  73.253%  ms   915.4  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap   4: worst-all   81.238%  worst-evolved   81.238%  median-all  73.253%  ms  1150.9  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap   6: worst-all   81.238%  worst-evolved   81.238%  median-all  73.253%  ms  1603.8  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap   8: worst-all    3.801%  worst-evolved    3.801%  median-all   2.129%  ms  1096.3  step-budget-exits/300   3  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap  12: worst-all    2.563%  worst-evolved    2.391%  median-all   1.675%  ms  1162.0  step-budget-exits/300   1  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap  20: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1241.5  step-budget-exits/300   1  ic-iters med 14
+A_step_cap ic=gauss step=prev ic_cap 400 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1249.1  step-budget-exits/300   0  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap   1: worst-all   88.496%  worst-evolved   88.496%  median-all  77.978%  ms   449.0  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap   2: worst-all   88.506%  worst-evolved   88.506%  median-all  77.956%  ms   693.7  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap   3: worst-all   88.473%  worst-evolved   88.473%  median-all  78.217%  ms   932.0  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap   4: worst-all   88.490%  worst-evolved   88.490%  median-all  77.902%  ms  1172.3  step-budget-exits/300  35  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap   6: worst-all   88.491%  worst-evolved   88.491%  median-all  77.915%  ms  1541.9  step-budget-exits/300  35  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap   8: worst-all   88.491%  worst-evolved   88.491%  median-all  77.918%  ms  1993.4  step-budget-exits/300  36  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap  12: worst-all   86.368%  worst-evolved   86.368%  median-all  76.968%  ms  3075.9  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap  20: worst-all   83.394%  worst-evolved   83.394%  median-all  74.572%  ms  5059.4  step-budget-exits/300  50  ic-iters med 14
+A_step_cap ic=gauss step=zero ic_cap 400 step_cap 180: worst-all    3.067%  worst-evolved    3.067%  median-all   2.591%  ms 42184.1  step-budget-exits/300  17  ic-iters med 14
+B_ic_cap ic=gauss step=prev ic_cap   1 step_cap 180: worst-all   33.056%  worst-evolved   18.497%  median-all  20.505%  ms  1099.8  step-budget-exits/300   0  ic-iters med 1
+B_ic_cap ic=gauss step=prev ic_cap   2 step_cap 180: worst-all   33.056%  worst-evolved   18.497%  median-all  20.505%  ms  1104.3  step-budget-exits/300   0  ic-iters med 2
+B_ic_cap ic=gauss step=prev ic_cap   4 step_cap 180: worst-all   30.556%  worst-evolved   24.346%  median-all  19.812%  ms  1121.3  step-budget-exits/300   0  ic-iters med 4
+B_ic_cap ic=gauss step=prev ic_cap   8 step_cap 180: worst-all    2.885%  worst-evolved    1.950%  median-all   2.150%  ms  1122.1  step-budget-exits/300   0  ic-iters med 8
+B_ic_cap ic=gauss step=prev ic_cap  16 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.828%  ms  1143.8  step-budget-exits/300   0  ic-iters med 14
+B_ic_cap ic=gauss step=prev ic_cap  32 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1187.1  step-budget-exits/300   0  ic-iters med 14
+B_ic_cap ic=gauss step=prev ic_cap  64 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1248.4  step-budget-exits/300   0  ic-iters med 14
+B_ic_cap ic=gauss step=prev ic_cap 128 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1249.0  step-budget-exits/300   0  ic-iters med 14
+B_ic_cap ic=gauss step=prev ic_cap 400 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1248.6  step-budget-exits/300   0  ic-iters med 14
+B_ic_cap ic=zero  step=prev ic_cap   1 step_cap 180: worst-all  104.203%  worst-evolved   88.487%  median-all  95.626%  ms   681.0  step-budget-exits/300   0  ic-iters med 1
+B_ic_cap ic=zero  step=prev ic_cap   2 step_cap 180: worst-all  104.203%  worst-evolved   88.487%  median-all  95.626%  ms   686.6  step-budget-exits/300   0  ic-iters med 2
+B_ic_cap ic=zero  step=prev ic_cap   4 step_cap 180: worst-all  104.203%  worst-evolved   88.487%  median-all  95.626%  ms   696.1  step-budget-exits/300   0  ic-iters med 4
+B_ic_cap ic=zero  step=prev ic_cap   8 step_cap 180: worst-all   88.121%  worst-evolved   60.990%  median-all  42.411%  ms  1133.5  step-budget-exits/300   0  ic-iters med 8
+B_ic_cap ic=zero  step=prev ic_cap  16 step_cap 180: worst-all    7.404%  worst-evolved    5.723%  median-all   2.444%  ms  1233.3  step-budget-exits/300   0  ic-iters med 16
+B_ic_cap ic=zero  step=prev ic_cap  32 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1266.0  step-budget-exits/300   0  ic-iters med 28
+B_ic_cap ic=zero  step=prev ic_cap  64 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1298.6  step-budget-exits/300   0  ic-iters med 28
+B_ic_cap ic=zero  step=prev ic_cap 128 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1300.5  step-budget-exits/300   0  ic-iters med 28
+B_ic_cap ic=zero  step=prev ic_cap 400 step_cap 180: worst-all    2.563%  worst-evolved    1.900%  median-all   1.701%  ms  1298.8  step-budget-exits/300   0  ic-iters med 28
+DONE

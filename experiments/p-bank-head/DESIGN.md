@@ -381,3 +381,25 @@ Nothing else changes: the development cohort still selects nothing, the head sel
 section 5 is untouched, and every pre-registered target and success clause stands as written.
 Both rules' picks and both rankings are reported side by side, and the `pbh01` head sweep — which
 ran on the arm the original rule chose — is reported as run, whatever the replacement rule says.
+
+**2026-09-16, amendment 5 — the offline best-found oracle uses a pivoted dense step and a
+small fixed batch. Performance only; verified to change no digit.**
+
+`pbh01`'s stderr carries XLA's slow-operation alarm, and on the node a single `ptxas`
+process ran for 27 minutes at 99.6 % CPU on one kernel. The kernel is the best-found
+oracle: a batched Levenberg–Marquardt, vmapped over sources *and* multistarts, whose step
+used the incumbent **unrolled** Gauss–Jordan solve (one graph level per unknown) inside a
+`while_loop` under a double `vmap`, with a 512-dimensional residual. The instruction count
+explodes and assembly, not arithmetic, becomes the cost.
+
+Two changes, both confined to this **offline diagnostic**, which is never inside a timed
+query and never reports a cost: the step uses `jnp.linalg.solve` (pivoted, more accurate
+than the unrolled Gauss–Jordan, which is the same deviation `pabl01` records for its own
+arms above rank 64), and the batch is a small fixed width, padded by repeating the last row
+so the kernel compiles exactly once per cohort. Measured against the original on every head
+arm and every cohort of the local smoke: worst per-case difference
+$3.33\times10^{-16}$ (pivoted step) and $4.44\times10^{-16}$ (padding), i.e. round-off.
+
+`pbh01` itself ran with the original and is unaffected; the change matters for any later
+run. The solve job is untouched — it uses `arms.make_reconstruction` on the dense field
+exactly as `pabl01` does.

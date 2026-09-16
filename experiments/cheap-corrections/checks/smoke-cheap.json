@@ -1,0 +1,127 @@
+{
+  "q0_vs_saved_case": {
+    "joint": {
+      "relative_l2": 1.9242693944667554e-14,
+      "latent_relative_l2": 7.535979388813255e-13,
+      "tolerance": 1e-12,
+      "max_step_joint_stationarity": 9.011587705451913e-07,
+      "ic_joint_stationarity": 5.646616262664926e-07
+    },
+    "varpro": {
+      "relative_l2": 1.9242693944667554e-14,
+      "latent_relative_l2": 7.535979388813255e-13,
+      "tolerance": 1e-12,
+      "max_step_joint_stationarity": 9.011587705451913e-07,
+      "ic_joint_stationarity": 5.646616262664926e-07
+    },
+    "alt": {
+      "relative_l2": 1.9242693944667554e-14,
+      "latent_relative_l2": 7.535979388813255e-13,
+      "tolerance": 1e-12,
+      "max_step_joint_stationarity": 9.011587705451913e-07,
+      "ic_joint_stationarity": 5.646616262664926e-07
+    }
+  },
+  "q0_vs_incumbent": {
+    "joint": 8.078655783623229e-16,
+    "varpro": 8.078655783623229e-16,
+    "alt": 8.078655783623229e-16
+  },
+  "q0_variants_bitwise_identical": {
+    "joint": true,
+    "varpro": true,
+    "alt": true
+  },
+  "q0_vs_incumbent_bitwise": {
+    "joint": false,
+    "varpro": false,
+    "alt": false
+  },
+  "q0_vs_incumbent_note": "the audited ladder wrapper was bitwise identical to accuracy_paths.make_rom; this wrapper carries extra per-step stationarity diagnostics inside the same scan, which changes XLA fusion, so agreement is to round-off rather than bitwise",
+  "directions": {
+    "audited": {
+      "available_rank": 16,
+      "head_fit_relative_median": 0.0072531097392188534,
+      "head_fit_relative_worst": 0.04267981131751313,
+      "residual_energy_captured": {
+        "0": 0.0,
+        "8": 0.9672018277451926
+      },
+      "directions_sha256": "ab4a0f6ed85a34e8d0a77b53ea80b7bc868b80bad888317961856ef0ef78d8d2",
+      "seconds": 21.96118297299836
+    },
+    "flat_seconds": 9.706135693006217,
+    "flat_sha256": "fe385576303df2c09b173f0550477e7cede8fa61e4a8ef0f0f900f930f494190",
+    "flat_bitwise_identical": false,
+    "flat_max_abs_difference": 4.726208313599045e-11
+  },
+  "enriched_codes": {
+    "q": 8,
+    "relative_after": 0.0016211039114897095,
+    "relative_before": 0.00895129834786075,
+    "improved": true
+  },
+  "small_q_arms": [
+    {
+      "variant": "joint",
+      "q": 8,
+      "M": 96,
+      "seconds": 36.22786906798137,
+      "max_step_joint_stationarity": 8.922176484139402e-07,
+      "max_inner_stationarity": 0.0,
+      "ic_joint_stationarity": 7.617242891211611e-07,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "median_iterations": 3.0,
+      "relative_to_q0": 0.007443331612759493,
+      "relative_to_joint": 0.0
+    },
+    {
+      "variant": "varpro",
+      "q": 8,
+      "M": 96,
+      "seconds": 22.192636121995747,
+      "max_step_joint_stationarity": 9.807454172234694e-07,
+      "max_inner_stationarity": 9.145947783036355e-08,
+      "ic_joint_stationarity": 7.586710861988394e-07,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "median_iterations": 11.0,
+      "relative_to_q0": 0.007443367651113816,
+      "relative_to_joint": 2.797589618556028e-07
+    },
+    {
+      "variant": "alt",
+      "q": 8,
+      "M": 96,
+      "seconds": 7.883892005018424,
+      "max_step_joint_stationarity": 0.0015869225770895703,
+      "max_inner_stationarity": 1.4209891328226759e-08,
+      "ic_joint_stationarity": 7.586710861988394e-07,
+      "stop_reasons": [
+        4
+      ],
+      "ic_reason": 4,
+      "median_iterations": 8.0,
+      "relative_to_q0": 0.007442766555749553,
+      "relative_to_joint": 3.2302063937726e-05
+    }
+  ],
+  "nnls": {
+    "retained": {
+      "support": 64,
+      "seconds": 0.07216512301238254,
+      "relative": 7.051342123958715e-16
+    },
+    "bounded": {
+      "support": 60,
+      "seconds": 0.022119224013295025,
+      "refits": 61,
+      "relative": 4.872031535388974e-16
+    }
+  }
+}

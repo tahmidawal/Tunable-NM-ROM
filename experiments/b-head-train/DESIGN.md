@@ -329,3 +329,26 @@ training block in their own bank, so they are graded with the mean-code initiali
 columns are reported for every arm and the **mean-code-only column is the like-for-like one**
 across the two families. Selection happens among frozen-bank arms only, where the two-init column
 is available for all of them.
+
+**A4 (2026-09-16, recorded DURING the training job `3745912`, before any evaluation number
+existed, and NOT acted on).** The training log showed the $R = 1024$ joint arm starting from a
+data term of order $10^{1}$ rather than the $10^{-5}$ its $R = 512$ sibling started from. The
+cause is `widen`: it keeps the incumbent's $R$ feature columns exactly, but initialises the new
+head output columns at random scale $0.3$, so the widened decoder's output is dominated by the
+new columns and the warm start is destroyed. Two consequences follow, and both are reported
+rather than repaired, because repairing them costs a cluster job and the job cap reserves the
+remaining job for a fix to the *evaluation*:
+
+1. The $R = 1024$ arm is effectively a **cold start** under a budget (`joint_steps`) chosen for a
+   warm one, so it is not a fair test of bank rank.
+2. $\lambda_{\rm orth}$ is calibrated *at the warm start* (A1). Calibrated against a data term of
+   order $10^{1}$, it is orders of magnitude too large once the data term falls to $10^{-2}$, so
+   that arm spends its budget orthonormalising its bank. The realised ratio of total loss to data
+   term at the end is printed in the report, from the run's own JSON.
+
+**The $R = 1024$ arm is therefore reported as uninformative about rank**, with its numbers shown
+so the claim can be checked. A fair rank arm needs (i) a widening that preserves the warm start —
+new head output columns at zero, so the widened decoder is initially identical to the narrow one —
+and (ii) $\lambda_{\rm orth}$ calibrated *after* the widening. Neither change was made in this
+run. No accuracy number was consulted in writing this amendment; it is derived entirely from the
+training loss trace.

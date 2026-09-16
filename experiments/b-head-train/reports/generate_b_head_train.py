@@ -312,6 +312,58 @@ def main():
           f"selected value is reported as the rule's output, not as a demonstrated effect.")
         w('')
 
+    # ------------------------------------------------ joint-arm diagnostics --
+    tcfg_R0 = next((r['R'] for r in tr['arms'] if r['spec']['bank'] == 'frozen'), None)
+    jarms = [r for r in tr['arms'] if r['spec']['bank'] == 'joint']
+    if jarms:
+        w('### What happened inside the joint bank+head arms')
+        w('')
+        w('These arms unfreeze the bank, so identity $(\\ast)$ does not apply to them and they '
+          'optimise raw field values at a fixed seeded point subset. Both were warm started from '
+          f"`{sel['joint_warm_start']}`; the wider one first passes through `widen`, which keeps "
+          'the incumbent\'s $R$ feature columns exactly and initialises the new ones at random. '
+          'The warm-start data term below says how much of the warm start survived that widening, '
+          'and $\\lambda_{\\mathrm{orth}}$ was calibrated at that same point.')
+        w('')
+        w('| arm | $R$ | warm-start data term | final data term | final total loss | '
+          '$\\lambda_{\\mathrm{orth}}$ | feature-Gram dev. start | feature-Gram dev. end | '
+          'bank Gram cond. | own span floor mean % | own span floor worst % | held-out worst % |')
+        w('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
+        for r in jarms:
+            t = r['train']
+            w('| `' + r['arm'] + '` | ' + ' | '.join([
+                str(r['R']), g(t['data_term_at_warm_start']), g(t['final_data_loss']),
+                g(t['final_loss']), g(t['lam_orth']),
+                g(t['feature_gram_deviation_start']), g(t['feature_gram_deviation_end']),
+                g(t['bank_gram_condition'], 3), pct(r['span_floor']['mean']),
+                pct(r['span_floor']['max']), pct(r['holdout']['selection']['max'])]) + ' |')
+        w('')
+        # every judgement below is derived from the numbers in that table, not asserted
+        base = next((r['train']['final_data_loss'] for r in jarms
+                     if r['R'] == tcfg_R0), None)
+        for r in jarms:
+            t = r['train']
+            ratio = t['final_loss'] / max(t['final_data_loss'], 1e-300)
+            if t['data_term_at_warm_start'] > 1e-2:
+                w(f"- `{r['arm']}` did **not** inherit a usable warm start: its data term at the "
+                  f"warm start is {g(t['data_term_at_warm_start'])}, so widening the bank to "
+                  f"$R = {r['R']}$ discarded the head's fit and this arm is effectively a cold "
+                  f"start under a {tcfg['joint_steps']}-step budget. Because "
+                  '$\\lambda_{\\mathrm{orth}}$ is calibrated *at the warm start*, it was set '
+                  f"against that large value, and at the end the orthonormality penalty is "
+                  f"{ratio:.1f}$\\times$ the data term -- this arm was orthonormalising its bank, "
+                  'not fitting the data. **It is reported but it does not answer the rank '
+                  'question**; a fair $R = ' + str(r['R']) + '$ arm needs a widening that preserves '
+                  'the warm start (new columns at zero head weight) and a penalty calibrated after '
+                  'the widening. That is a defect of this run, recorded in `DESIGN.md` as A4.')
+            else:
+                w(f"- `{r['arm']}` inherited its warm start intact (data term "
+                  f"{g(t['data_term_at_warm_start'])} at step 1) and ended at "
+                  f"{g(t['final_data_loss'])}, with the orthonormality penalty at "
+                  f"{ratio - 1:.3f}$\\times$ the data term. Its span floor moved because its bank "
+                  'moved, so it must be read against its own floor column, not the frozen one.')
+        w('')
+
     # --------------------------------------------------------- three layers --
     w('## The three layers, per checkpoint')
     w('')

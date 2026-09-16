@@ -127,7 +127,13 @@ def main():
          [s['arm'] for s in eq if 'eq_rule_valid' not in s][:5])
     if a.mode == 'q1':
         g0 = r['gates'].get('q0_arms_bitwise', {})
-        gate('q0_arms_bitwise', bool(g0.get('passed')), g0)
+        if g0.get('arms'):
+            gate('q0_arms_bitwise', bool(g0.get('passed')), g0)
+        else:
+            # A sweep with no q = 0 dense arms has nothing to compare; the gate is not
+            # applicable rather than failed.
+            checks['q0_arms_bitwise'] = dict(
+                passed=None, detail=g0, note='not applicable: this sweep has no q = 0 dense arms')
 
     # ------------------------------------------- errors recomputed from fields
     cache = {}
@@ -187,6 +193,7 @@ def main():
             gate('fno_cohort_disjoint_from_training', bool(cohort['passed']), cohort)
 
     # ------------------------------------------------------ per-arm aggregates
+    default_budget = (r['config'].get('strict') or {}).get('step_budget')
     setup = {s['arm']: s for s in r['arm_setup'] if 'arm' in s}
     recon_rom = {x['q']: x for x in r['reconstruction'] if x.get('family', 'rom') == 'rom'}
     recon_pod = {x.get('k'): x for x in r['reconstruction'] if x.get('family') == 'pod'}
@@ -197,6 +204,8 @@ def main():
             solved_dimension=x.get('solved_dimension'), M=x.get('M'), m=x.get('m'),
             rule=x.get('rule'), fix=x.get('fix'), quadrature=x.get('quadrature'),
             gtol=x.get('gtol'), dt=x.get('dt'), cascade_source=x.get('cascade_source'),
+            step_budget=x.get('step_budget', default_budget),
+            trust_scale=x.get('trust_scale', 1.0),
             gpu_ms=[], host_ms=[], case_ref={}, case_all={}, case_evolved={}, case_t0={},
             iterations=[], stationarity=[], stationary=[], completed=[], converged=[],
             stationary_1e6=[], budget_exits=[], exit_reasons=[]))
@@ -233,7 +242,8 @@ def main():
             arm=name, kind=t['kind'], family=t['family'] or ('fom' if t['kind'] == 'fom' else 'rom'),
             q=t['q'], k=t['k'], solved_dimension=t['solved_dimension'], M=t['M'], m=t['m'],
             rule=t['rule'], fix=t['fix'], quadrature=t['quadrature'], gtol=t['gtol'], dt=t['dt'],
-            cascade_source=t['cascade_source'],
+            cascade_source=t['cascade_source'], step_budget=t['step_budget'],
+            trust_scale=t['trust_scale'],
             worst_reference_percent=float(np.max(list(t['case_ref'].values())) * 100),
             median_reference_percent=float(np.median(list(t['case_ref'].values())) * 100),
             worst_all_times_percent=float(np.max(list(t['case_all'].values())) * 100),

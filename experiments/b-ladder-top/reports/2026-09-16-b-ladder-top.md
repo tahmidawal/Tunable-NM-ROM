@@ -8,6 +8,7 @@ Two questions on one frozen Burgers checkpoint at 256 intervals: whether the $q=
 |---|---|---|---|---|
 | Q1 convergence sweep | 3745589 | NVIDIA A100 80GB PCIe | b03fc2e07aa3ed98cacaccaacbd640f078d19f3d | 5641.8 |
 | Q2 envelope | 3747245 | NVIDIA A100-PCIE-40GB | a9b99c50cb2e5b274cd02cf5b53dc62cc9eb8c75 | 6557.5 |
+| Q1-B cost of convergence | 3749039 | NVIDIA A100 80GB PCIe | 4eccb76e3a9f908ad853f467d9043a4db30d0d00 | 3292.0 |
 
 ## Gates
 
@@ -71,15 +72,42 @@ Two questions on one frozen Burgers checkpoint at 256 intervals: whether the $q=
 | `same_grid_baseline_present` | yes | blocking |
 | `x64` | yes | blocking |
 
+### Q1-B
+
+| gate | passed | kind |
+|---|---|---|
+| `artifacts_present` | yes | blocking |
+| `backend_gpu` | yes | blocking |
+| `bank_frozen` | yes | blocking |
+| `cclad01_fidelity` | yes | blocking |
+| `checkpoint_unchanged` | yes | blocking |
+| `complete` | yes | blocking |
+| `directions_hash_matches_cclad01` | no | informational |
+| `directions_rank_covers_ladder` | yes | blocking |
+| `every_eq_rule_reports_validity` | yes | blocking |
+| `every_invocation_paired` | yes | blocking |
+| `every_rom_carries_exit_and_stationarity` | yes | blocking |
+| `every_subject_case_has_all_reps` | yes | blocking |
+| `final_cohort_unopened` | yes | blocking |
+| `overdetermined_weak_system` | yes | blocking |
+| `precision_highest` | yes | blocking |
+| `recorded_errors_recomputed_from_saved_fields` | yes | blocking |
+| `reference_fields_bitwise_match_cclad01` | no | informational |
+| `reference_residuals` | yes | blocking |
+| `repetition_output_identical` | yes | blocking |
+| `reproduces_q256_m2_dense_base` | yes | blocking |
+| `same_grid_baseline_present` | yes | blocking |
+| `x64` | yes | blocking |
+
 ## Q1 — making the top of the ladder converge
 
 ### Fidelity gates against the cheap-corrections job
 
 | arm | reproduces | declared tolerance | relative difference (reference metric) | relative difference (same-grid metric) | ours worst reference % | theirs worst reference % | passed |
 |---|---|---|---|---|---|---|---|
-| `q0_m4_dense_base` | `q0_m4_dense_block` | 0.000000001000 | 0.000000000000 | 0.000000000000 | 4.5575 | 4.5575 | yes |
-| `q0_m4_eq_base` | `q0_m4_eq_varpro` | 0.000000001000 | 0.000000000000 | 0.000000000000 | 4.5546 | 4.5546 | yes |
-| `q128_m2_dense_base` | `q128_m2_dense_block` | 0.000000001000 | 0.000000000000 | 0.000000000000 | 4.0803 | 4.0803 | yes |
+| `q0_m4_dense_base` | `q0_m4_dense_block` | 1e-09 | 2e-13 | 0e+00 | 4.5575 | 4.5575 | yes |
+| `q0_m4_eq_base` | `q0_m4_eq_varpro` | 1e-09 | 1e-14 | 0e+00 | 4.5546 | 4.5546 | yes |
+| `q128_m2_dense_base` | `q128_m2_dense_block` | 1e-09 | 4e-13 | 1e-13 | 4.0803 | 4.0803 | yes |
 
 ### Conditioning of the augmented normal equations
 
@@ -172,7 +200,33 @@ At $q=512$ the correction directions span the **whole** bank ($q=R$), so the sup
 
 ### Verdict on Q1
 
-**FAIL.** No fix converged the $q=256$ rung under the shared stopping rule. The arms and their exit-reason histograms are in the sweep table above; the pre-registered falsification clauses in `DESIGN.md` say which reading the data supports.
+**FAIL under the frozen contract.** No fix converged the $q=256$ rung under the shared stopping rule with every retained constant held fixed: `base`, `pre`, `damp` and `predamp` are indistinguishable there to four decimals, and the cascade arm is much worse. The localisation table above says why — the failure is five time steps of ONE case out of six, and none of the three fixes touches what those steps need. Q1-B below relaxes one retained constant at a time and settles what the rung costs to converge.
+
+## Q1-B — does $q=256$ converge at a stated cost?
+
+Q1 answered "do these three fixes converge the rung" with a clean no, and localised the failure to five time steps of one case out of six. Q1-B relaxes exactly ONE retained contract constant per arm — the per-step iteration budget and the latent trust radius — with the retained setting as the control. The relaxation is a declared departure from the frozen contract, predeclared in `DESIGN.md` before the job was submitted.
+
+| control arm | reproduces | declared tolerance | relative difference (reference metric) | relative difference (same-grid metric) | passed |
+|---|---|---|---|---|---|
+| `q256_m2_dense_base` | `q256_m2_dense_block` | 1e-09 | 5e-13 | 9e-14 | yes |
+
+| arm | per-step iteration budget | latent trust radius | quadrature | median iters/step | budget exits | worst joint gradient | worst same-grid all % | worst evolved % | median GPU ms | cost vs control | converged |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `q256_m2_dense_base` | 180 | x1 | dense | 5.0 | 15 | 1.191e-03 | 0.9053 | 0.7566 | 3662.173 | 1.000x | no |
+| `q256_m2_dense_base_b2000` | 2000 | x1 | dense | 5.0 | 0 | 9.710e-07 | 0.9053 | 0.7566 | 3652.751 | 0.997x | yes |
+| `q256_m2_dense_base_b600` | 600 | x1 | dense | 5.0 | 0 | 9.710e-07 | 0.9053 | 0.7566 | 3618.621 | 0.988x | yes |
+| `q256_m2_dense_base_b600t10` | 600 | x10 | dense | 5.0 | 0 | 9.710e-07 | 0.9053 | 0.7566 | 2179.486 | 0.595x | yes |
+| `q256_m2_dense_base_t10` | 180 | x10 | dense | 5.0 | 3 | 6.266e-03 | 0.9053 | 0.7566 | 2192.885 | 0.599x | no |
+| `q256_m2_eq_base` | 180 | x1 | eq | 5.0 | 15 | 1.978e-03 | 0.9053 | 0.7580 | 843.870 | 0.230x | no |
+| `q256_m2_eq_base_b2000` | 2000 | x1 | eq | 5.0 | 0 | 9.849e-07 | 0.9053 | 0.7580 | 848.014 | 0.232x | yes |
+
+### Verdict on Q1, restated
+
+**PASS, at a stated and declared cost.** With the retained per-step iteration budget of 180 the $q=256$ rung has 15 budget exits and a worst joint normalized gradient of 1.191e-03. Raising that budget to 600 — and changing nothing else — converges it: zero budget exits, worst gradient 9.710e-07, every case and every time step stationary. The cost of the relaxation is essentially nothing: 3618.621 ms against the control's 3662.173 ms, a factor of 0.988, because the extra iterations are spent on five of nine hundred time steps. Its worst same-grid error 0.9053 % is strictly below the same-rule $q=128$ rung's 1.8116 % (`q128_m2_dense_base`, 913.684 ms in the Q1 job), so the pre-registered accuracy requirement holds; the rung costs 3.960x the $q=128$ rung. 
+
+**What did NOT do it.** The three fixes Q1 was designed around — the cascade warm start, column equilibration and a decoupled damping and trust schedule for the correction block — are all inert at this rung; the cascade is actively harmful. The binding constraint was simply solver effort on a handful of hard steps, and the relaxed latent trust radius is a genuine COST lever at unchanged error, not an accuracy one.
+
+**And the answer does not move.** Every arm in the table above, converged or not, reports the same 0.9053 % worst same-grid error and the same 0.7566 % evolved error to four decimals. Converging the five stubborn steps changes nothing about the physical answer: the unconverged rung was already at it. That is worth stating plainly, because it means the convergence failure was a stopping-rule fact, not an accuracy fact.
 
 ## Q2 — the combined envelope, one job
 
@@ -311,6 +365,8 @@ Marker shape is the family, fill is convergence under the shared stationarity ru
 **normalized gradient** — $\|J^\top r\|/(\|J\|\,\|r\|)$, the scale-free measure of how close a solve is to a stationary point. The shared rule asks for $10^{-6}$.
 
 **budget exit** — a time step that ran out of solver iterations before meeting any stopping criterion. Any budget exit means the arm is not converged.
+
+**per-step iteration budget** — the hard cap on solver iterations at one time step. The retained contract sets it to 180; Q1-B raises it as a declared relaxation.
 
 **exit reasons** — 0 = ran out of iterations, 1 = the residual fell below the absolute tolerance, 2 = the step became negligibly small, 4 = the normalized gradient met the tolerance.
 

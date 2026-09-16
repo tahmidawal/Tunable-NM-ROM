@@ -447,8 +447,8 @@ def main():
                         identical=sum(1 for c in set(base0) & set(got) if base0[c] == got[c]))
     report['gates']['q0_arms_bitwise'] = dict(
         reference='q0_m4_dense_base', arms=same,
-        passed=bool(same) and all(v['compared'] > 0 and v['identical'] == v['compared']
-                                  for v in same.values()))
+        passed=(None if not same else
+                all(v['compared'] > 0 and v['identical'] == v['compared'] for v in same.values())))
     report['checkpoint_sha256_after'] = sha_file(a.checkpoint)
     assert report['checkpoint_sha256'] == report['checkpoint_sha256_after']
     report['elapsed_seconds'] = time.perf_counter() - begin

@@ -120,6 +120,12 @@ def section_profile(pr, res):
     body.append(table(rows, ['component', 'median ms', '% of whole query', 'repetitions'],
                       ['---', '---:', '---:', '---:']))
     body.append('\n' + pr['phase_note'].capitalize() + '.\n')
+    body.append('\n**The `host_transfer` row is withdrawn as a measurement** and is shown '
+                'only for the record: it times `np.asarray` on the same array repeatedly, and '
+                'a JAX array caches its numpy value after the first conversion, so every '
+                'repetition after the first measures a cache hit. What the transfers actually '
+                'cost is the `transfer ms` column of the ladder tables below, which comes from '
+                'the nested GPU and host timers of each timed invocation.\n')
 
     bp = pr['budget_probe']
     body.append('### Per-iteration marginal cost\n')
@@ -258,6 +264,7 @@ def section_ladder(res, aud, g, pmap, title):
                 rows.append([
                     f'`{n}`', res['arm_declarations'][n]['declared_class'],
                     fmt(v['gpu_ms']), fmt(v['host_ms']),
+                    fmt(v['host_ms'] - v['gpu_ms']),
                     fmt(inc['gpu_ms'] / v['gpu_ms'], 3) + 'x',
                     (fmt(null['gpu_ms'] / v['gpu_ms'], 3) + 'x') if null else '—',
                     sci(p.get('worst_field_relative')),
@@ -265,12 +272,12 @@ def section_ladder(res, aud, g, pmap, title):
                     fmt(p.get('iterations_identical')), fmt(p.get('reasons_identical')),
                     fmt(p.get('parity'))])
             body.append(f'\n*{label}*\n')
-            body.append(table(rows, ['arm', 'intent', 'GPU ms', 'host ms',
+            body.append(table(rows, ['arm', 'intent', 'GPU ms', 'host ms', 'transfer ms',
                                      'vs incumbent', 'vs `o_none`',
                                      'parity (job)', 'parity (audit)', 'same iterations',
                                      'same exits', 'PARITY'],
                               ['---', '---', '---:', '---:', '---:', '---:', '---:', '---:',
-                               ':---:', ':---:', ':---:']))
+                               '---:', ':---:', ':---:', ':---:']))
         null = g.get((L, 'o_none'))
         if floor is not None and null is not None:
             body.append(
@@ -332,7 +339,8 @@ def section_controls(res, g, pmap):
             v = g.get((L, name))
             if v:
                 rows.append([f'`{name}`', 'FOM', fmt(v['gpu_ms']), fmt(v['host_ms']),
-                             fmt(v['worst_same_grid_percent'], 4), '—', '—', '—'])
+                             fmt(v['worst_same_grid_percent'], 4)]
+                            + ['—'] * len(foms))
         best = best_parity_arm(res, g, pmap, L)
         for n in ['incumbent'] + ([best] if best else []):
             v = g.get((L, n))
@@ -348,6 +356,43 @@ def section_controls(res, g, pmap):
         body.append(table(rows, ['subject', 'kind', 'GPU ms', 'host ms', 'worst same-grid %']
                           + [f'ROM/`{f}`' for f in foms],
                           ['---', '---', '---:', '---:', '---:'] + ['---:'] * len(foms)))
+    return '\n'.join(body)
+
+
+def section_crossover(jobs):
+    """One table across every mesh measured, so the trend is visible in one place.
+
+    Each row is a within-job ratio; nothing is compared across jobs."""
+    body = ['### The mesh trend, one row per mesh measured\n',
+            'Every ratio in a row comes from the same job, the same GPU and the same '
+            'randomized interleaving. Rows from different jobs are never divided by each '
+            'other.\n']
+    rows = []
+    for attempt, res, aud, g, pmap in jobs:
+        for L in sorted({k[0] for k in g}):
+            inc = g.get((L, 'incumbent'))
+            b = best_parity_arm(res, g, pmap, L)
+            if inc is None or b is None:
+                continue
+            v = g[(L, b)]
+            cells = [attempt, L, f'`{b}`', fmt(inc['gpu_ms']), fmt(v['gpu_ms']),
+                     fmt(inc['gpu_ms'] / v['gpu_ms'], 3) + 'x',
+                     fmt(v['worst_same_grid_percent'], 3)]
+            for fname in [f['name'] for f in res['config']['fom_settings']]:
+                fv = g.get((L, fname))
+                cells.append((fmt(v['gpu_ms'] / fv['gpu_ms'], 2) + 'x') if fv else '—')
+                cells.append(fmt(fv['worst_same_grid_percent'], 3) if fv else '—')
+            rows.append(cells)
+    if not rows:
+        return ''
+    foms = [f['name'] for f in jobs[0][1]['config']['fom_settings']]
+    head = ['attempt', 'intervals', 'arm', 'incumbent GPU ms', 'arm GPU ms', 'speedup',
+            'arm err %']
+    align = ['---', '---:', '---', '---:', '---:', '---:', '---:']
+    for f in foms:
+        head += [f'arm/`{f}`', f'`{f}` err %']
+        align += ['---:', '---:']
+    body.append(table(rows, head, align))
     return '\n'.join(body)
 
 
@@ -462,6 +507,9 @@ def main():
     for attempt, res, aud, g, pmap in jobs:
         doc.append(f"\n*Attempt `{attempt}`.*\n")
         doc.append(section_controls(res, g, pmap))
+
+    doc.append('\n## The mesh trend\n')
+    doc.append(section_crossover(jobs))
 
     doc.append('\n## S3 — throughput\n')
     for attempt, res, aud, g, pmap in jobs:

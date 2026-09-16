@@ -347,6 +347,24 @@ One consequence is recorded in advance: a *measured* parity of order $5\times10^
 distinguish an arm that reassociates from one that does not, so the per-arm class in
 `ladders.py` is documentation of intent, not a claim about the measurement.
 
+### D5 (2026-09-16, after `fine01`) — the profile's `host_transfer` row is invalid and is withdrawn
+
+The profile times the host transfer as `np.asarray(fields)` repeated over the timing
+repetitions. That is wrong: a JAX array caches its numpy value after the first conversion, so
+every repetition after the first measures a cache hit, not a copy. The row reports 0.050 ms
+at 256 and 0.056 ms at 1024 for six dense f64 fields — 50 MB at 1024, which at 0.056 ms would
+be 900 GB/s over PCIe. It is withdrawn as a measurement of the transfer and is kept in the
+table only labelled as such.
+
+The transfer cost is measured correctly elsewhere in the same job and is what the report
+quotes: every timed invocation runs **nested** timers, the GPU timer starting after the input
+is on the device and closing on `block_until_ready`, the host timer spanning the input
+`device_put`, the query and the host copy of the six fields. Because they are nested inside
+one invocation rather than being two separate programs, their difference is a legitimate
+statement of what the transfers cost, and the ladder tables now carry it as its own column.
+At 1024 intervals it is 18.0 ms against a 49.3 ms GPU query, and the labelled float32 output
+variant halves it to 8.1 ms — which is the whole of what that variant buys.
+
 ### D4 (2026-09-16, after `spd01`'s profile, before its ladder was read) — the third job goes to composed arms, not to S4
 
 Section 10 left job 3 as a reserve for a repair or for S4 (the cheap-corrections $q=16$ EQ

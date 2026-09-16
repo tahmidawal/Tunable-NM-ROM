@@ -191,26 +191,6 @@ def weak_sources(draws, ops, n, chunk=64):
 
 # ------------------------------------------------------------- head oracles ---
 
-def make_qr_oracle(params_fn, K, budget, gtol=1e-6, linear='gj'):
-    """Best-found latent fit in the exact QR field metric.
-
-    residual(z) = R_G h(z) - T. Because ||G d|| == ||R_G d||, this LM has the
-    identical Gram and gradient to the dense-field fit `arms.make_reconstruction`
-    performs; only the residual NORM differs by the constant perpendicular part,
-    which shifts the normalised-gradient exit. Both are upper bounds on the head
-    floor. The dense form is used in the solve job, this one for large cohorts.
-    """
-    lm = A.make_stationary_lm(lambda z, T, R: R @ params_fn(z) - T, budget,
-                              gtol=gtol, linear=linear)
-
-    @jax.jit
-    def fit(starts, T, R):
-        out = jax.vmap(lambda z0: lm(z0, (T, R), 0.))(starts)
-        best = jnp.argmin(out[1])
-        return out[0][best], out[1][best], out[2][best], out[3][best]
-    return fit
-
-
 def oracle_errors(head, Rg, Zcand, T, perp2, nu2, budget, starts=8, gtol=1e-6,
                   linear='gj', block=64):
     """Worst/median best-found error over a cohort, multistart from candidate codes.
@@ -233,17 +213,28 @@ def oracle_errors(head, Rg, Zcand, T, perp2, nu2, budget, starts=8, gtol=1e-6,
     Hn = jnp.sum(Hr * Hr, axis=1)
     Zc = jnp.asarray(Zcand)
     Rgj = jnp.asarray(Rg)
+    total = int(T.shape[0])
+    block = min(block, total)
     errs, iters, reasons = [], [], []
-    for s in range(0, int(T.shape[0]), block):
-        Tb = jnp.asarray(T[s:s + block])
+    for s in range(0, total, block):
+        # Every block is padded to the SAME width by repeating its last row, so
+        # `fit` is compiled exactly once however long the cohort is. Compilation
+        # of this nested-vmap LM costs minutes at R=512, and the padded rows
+        # cannot change the real ones: a batched while_loop freezes each element
+        # once its own predicate is false.
+        take = np.arange(s, min(s + block, total))
+        keep = len(take)
+        if keep < block:
+            take = np.concatenate((take, np.full(block - keep, take[-1])))
+        Tb = jnp.asarray(np.asarray(T)[take])
         score = Hn[None, :] - 2. * (Tb @ Hr.T)
         pick = jnp.argsort(score, axis=1)[:, :starts]
         rn, it, reason = jax.device_get(fit(Zc[pick], Tb, Rgj))
-        p2 = np.asarray(perp2[s:s + block])
-        n2 = np.asarray(nu2[s:s + block])
-        errs.append(np.sqrt(np.asarray(rn) ** 2 + p2) / np.sqrt(n2))
-        iters.append(np.asarray(it))
-        reasons.append(np.asarray(reason))
+        p2 = np.asarray(perp2)[take[:keep]]
+        n2 = np.asarray(nu2)[take[:keep]]
+        errs.append(np.sqrt(np.asarray(rn)[:keep] ** 2 + p2) / np.sqrt(n2))
+        iters.append(np.asarray(it)[:keep])
+        reasons.append(np.asarray(reason)[:keep])
     return (np.concatenate(errs), np.concatenate(iters).astype(int),
             np.concatenate(reasons).astype(int))
 

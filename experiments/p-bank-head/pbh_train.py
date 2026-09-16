@@ -447,7 +447,10 @@ def main():
                 print('HEAD', tag, 'val', float(bf_val.max()), 'dev', float(bf_dev.max()),
                       'solved', float(se.max()), flush=True)
                 save()
-                jax.clear_caches()
+                # No jax.clear_caches() here: every arm at a given K has identical
+                # array shapes, and compiling this nested-vmap LM costs minutes at
+                # R=512. The arrays held are R-dimensional and small. Performance
+                # only; no numerical effect.
 
     # ------------------------------------------------------- head selection ----
     R_['selection']['heads'] = []

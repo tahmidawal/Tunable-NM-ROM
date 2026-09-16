@@ -590,3 +590,27 @@ reproducible.
 **Job accounting, updated.** Six submissions; **three carried experiments**: `qrg101` (R1,
 3757235), `qrg201` (R2, 3757237) and `qrg303` (EQ certification). `qrg301` and `qrg302` are
 retracted above and together consumed about an hour of A100 time; the two of §A1 consumed none.
+
+### A6 (2026-09-16) — `qrg303` completed the certification sweep, then crashed assembling the timed arms; resubmitted as `qrg304`
+
+Job **3764450** (`qrg303`) ran the whole expensive half correctly — references, directions,
+the reachable-state collection at all six rungs, and **all eighteen rules with their held-out
+$\rho$ and their per-rung choice** — and then raised `KeyError: (0, 'static', 256, 'gpu')`
+while assembling the timed arms. The rule-lookup key hard-coded the fitter name `'gpu'` from
+§A4 while §A5 had moved the job to `'bounded'`. One word.
+
+Its certification sweep is **not retracted**: it is complete, its `result.json` was written
+incrementally, and it has been checksum-collected and archived as `qrg303`. What it does not
+contain is the rebuilt ladder — no timed queries ran — so the pre-registered pass criterion
+cannot be evaluated from it.
+
+`qrg304` is the same job with the key corrected and an assertion added that every rule key the
+timed phase will need is present **before** the timed phase starts, so this class of failure
+fails in seconds rather than after three hours. Because every seed is unchanged, `qrg304`'s
+rules are the same rules; the report uses `qrg304` throughout and the two are compared as a
+reproduction check.
+
+**Job accounting, updated.** Seven submissions; **three carry the reported experiments**:
+`qrg101` (R1, 3757235), `qrg201` (R2, 3757237) and `qrg304` (EQ certification). `qrg301`
+(§A4) and `qrg302` (§A5) are retracted; `qrg303` is partially retained as above; the two of
+§A1 ran nothing.

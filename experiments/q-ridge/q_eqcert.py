@@ -348,6 +348,11 @@ def main():
                                                 quadrature=quadrature, rule_kind=rule_kind))
         subjects.append(dict(kind='rom', name=name))
 
+    wanted = [(q, 'static', int(min(4 * (K + q) * 4, cfg['incumbent_cap'])),
+               cfg['rule_fitter']) for q in QS]
+    missing = [k for k in wanted if k not in rules]
+    assert not missing, ('rule keys missing before the timed phase: '
+                         f'{missing}; have {sorted(rules)}')
     for q in QS:
         M = 4 * (K + q)
         rk, ri = rules[chosen[q]]
@@ -357,7 +362,7 @@ def main():
                        certified_primary=ri['certified_primary'],
                        certified_secondary=ri['certified_secondary'],
                        relative_fit=ri['relative_fit']))
-        sk = (q, 'static', int(min(4 * M, cfg['incumbent_cap'])), 'gpu')
+        sk = (q, 'static', int(min(4 * M, cfg['incumbent_cap'])), cfg['rule_fitter'])
         rk2, ri2 = rules[sk]
         add(f'q{q}_m4_eqstatic', q, M, 'eq', eq_data(M, rk2), m=ri2['m'], rule_kind='static',
             extra=dict(rho_max=ri2['certification']['rho_max'],

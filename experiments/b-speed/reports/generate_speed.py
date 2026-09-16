@@ -8,11 +8,20 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import statistics as st
 from collections import defaultdict
 from pathlib import Path
 
-import ladders
+
+# The arm list, its intents and its grouping are read from the job JSON, so the
+# generator imports neither JAX nor the experiment modules.
+def groups(res):
+    decl = res['arm_declarations']
+    isolated = [n for n in decl if n.startswith('o_') and decl[n]['declared_class'] != 'labelled']
+    cumulative = [n for n in decl if re.fullmatch(r'L\d+', n)]
+    labelled = [n for n in decl if decl[n]['declared_class'] == 'labelled']
+    return isolated, sorted(cumulative, key=lambda x: int(x[1:])), labelled
 
 
 def med(xs):
@@ -201,10 +210,11 @@ def section_ladder(res, aud, g, pmap, title):
                     f'({len(set(r["case"] for r in res["invocations"] if r["intervals"] == L))} '
                     f"cases x {res['config']['reps']} repetitions).\n")
         floor = pmap.get((L, 'o_none'), {}).get('worst_field_relative')
-        groups = [('Isolated optimisations', [n for n in ladders.ISOLATED if (L, n) in g]),
-                  ('Cumulative ladder', [n for n in ladders.CUMULATIVE if (L, n) in g]),
-                  ('Labelled non-parity', [n for n in ladders.LABELLED if (L, n) in g])]
-        for label, names in groups:
+        iso, cum, lab = groups(res)
+        blocks = [('Isolated optimisations', [n for n in iso if (L, n) in g]),
+                  ('Cumulative ladder', [n for n in cum if (L, n) in g]),
+                  ('Labelled non-parity', [n for n in lab if (L, n) in g])]
+        for label, names in blocks:
             if not names:
                 continue
             rows = []
@@ -212,7 +222,8 @@ def section_ladder(res, aud, g, pmap, title):
                 v = g[(L, n)]
                 p = pmap.get((L, n), {})
                 rows.append([
-                    f'`{n}`', ladders.ALL[n]['cls'], fmt(v['gpu_ms']), fmt(v['host_ms']),
+                    f'`{n}`', res['arm_declarations'][n]['declared_class'],
+                    fmt(v['gpu_ms']), fmt(v['host_ms']),
                     fmt(inc['gpu_ms'] / v['gpu_ms'], 3) + 'x',
                     sci(p.get('worst_field_relative')),
                     sci(p.get('audit_field_relative')),
@@ -232,10 +243,11 @@ def section_ladder(res, aud, g, pmap, title):
     return '\n'.join(body)
 
 
-def best_parity_arm(g, pmap, L):
+def best_parity_arm(res, g, pmap, L):
     """The fastest arm at this mesh that PASSES every parity gate."""
+    iso, cum, _ = groups(res)
     best = None
-    for n in list(ladders.CUMULATIVE) + list(ladders.ISOLATED):
+    for n in cum + iso:
         if (L, n) not in g:
             continue
         if not pmap.get((L, n), {}).get('parity'):
@@ -250,7 +262,7 @@ def section_headline(jobs):
     for attempt, res, aud, g, pmap in jobs:
         for L in sorted({k[0] for k in g}):
             inc = g.get((L, 'incumbent'))
-            b = best_parity_arm(g, pmap, L)
+            b = best_parity_arm(res, g, pmap, L)
             if inc is None or b is None:
                 continue
             v = g[(L, b)]
@@ -279,7 +291,7 @@ def section_controls(res, g, pmap):
             if v:
                 rows.append([f'`{name}`', 'FOM', fmt(v['gpu_ms']), fmt(v['host_ms']),
                              fmt(v['worst_same_grid_percent'], 4), '—', '—', '—'])
-        best = best_parity_arm(g, pmap, L)
+        best = best_parity_arm(res, g, pmap, L)
         for n in ['incumbent'] + ([best] if best else []):
             v = g.get((L, n))
             if not v:

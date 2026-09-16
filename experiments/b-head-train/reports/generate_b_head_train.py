@@ -436,6 +436,11 @@ def main():
                                    'status; stationarity alone is not a quality ranking.'),
         ('cost factor', 'median GPU query milliseconds divided by the incumbent\'s, measured in the '
                         'same job on the same GPU with burn-in before every timed block.'),
+        ('realised term share', 'at the END of training, the added objective term times its weight, '
+                                'divided by the total loss. It measures what the weight calibration '
+                                'actually bought: a share near zero means the added term was '
+                                'numerically inert and its arm is a null about the weight, not '
+                                'about the idea.'),
         ('development / final cohort', 'cases usable for method selection / cases kept unopened.'),
         ('frozen-bank vs joint arm', 'a frozen-bank arm retrains only the head and the codes, so '
                                      'every such arm shares one span floor; a joint arm also moves '

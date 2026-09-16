@@ -20,7 +20,13 @@ def main():
     # stages flat into `code/`, because that cell imports its modules as siblings.
     members = ['COMMIT.txt', 'PROVENANCE.json', 'MANIFEST.sha256', 'run.sbatch',
                'logs', 'OUTPUTS.sha256', 'output']
-    for extra in ('experiments', 'code'):
+    # `fnocode` holds the three small modules that define the trained operator's
+    # architecture and data contract; they are collected. `fnockpt/best.pt` is NOT:
+    # it is a 429 MB out-of-band input whose SHA256 is recorded in PROVENANCE.json and
+    # whose source copy is retained in the lane it came from, so duplicating it into
+    # every archive buys nothing.
+    EXCLUDED = ['fnockpt/best.pt']
+    for extra in ('experiments', 'code', 'fnocode'):
         present = subprocess.run(['ssh', 'tufts-login', f'test -e {shlex.quote(remote + "/" + extra)}'])
         if present.returncode == 0:
             members.append(extra)
@@ -34,7 +40,14 @@ def main():
     subprocess.run(['sha256sum', '-c', 'collection.tar.gz.sha256'], cwd=out, check=True)
     subprocess.run(['tar', '-xzf', 'collection.tar.gz'], cwd=out, check=True)
     subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
-    subprocess.run(['sha256sum', '-c', 'MANIFEST.sha256', '--quiet'], cwd=out, check=True)
+    manifest = [line for line in (out / 'MANIFEST.sha256').read_text().splitlines()
+                if line.split('  ', 1)[-1] not in EXCLUDED]
+    (out / 'MANIFEST.collected.sha256').write_text('\n'.join(manifest) + '\n')
+    subprocess.run(['sha256sum', '-c', 'MANIFEST.collected.sha256', '--quiet'], cwd=out, check=True)
+    (out / 'EXCLUDED-FROM-COLLECTION.txt').write_text(
+        '\n'.join(EXCLUDED) + '\n\nVerified on the remote side by the full MANIFEST.sha256 before '
+        'the archive was made; SHA256 recorded in PROVENANCE.json; source copy retained in the '
+        'worktree it was staged from.\n')
     print(out)
     print('Checksums verified; exact remote cleanup remains an explicit separate step.')
 

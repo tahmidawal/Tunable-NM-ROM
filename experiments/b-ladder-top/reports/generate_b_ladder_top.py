@@ -160,6 +160,34 @@ def q1_section(W, a1):
             [[f"`{x['arm']}`", fmt(x['worst_all_times_percent']), fmt(x['worst_reference_percent']),
               fmt(x['median_gpu_ms'], 3)] for x in rows if x['kind'] == 'fom']) + '\n')
 
+    W('### Where each rung\'s non-convergence actually lives\n\n')
+    W('Localised from the saved per-step exit reasons and the initial-fit diagnostics, not '
+      'asserted: an arm can miss the shared rule in its supplied-field fit, in its time '
+      'stepping, or in both.\n\n')
+    W(table(['arm', 'q', 'fix', 'converged', 'failure located in',
+             'initial-fit relative residual (min, max)', 'initial-fit exit reasons',
+             'worst initial-fit gradient', 'worst step gradient',
+             'cases with budget exits', 'their failing step indices'],
+            [[f"`{x['arm']}`", x['q'], f"`{x['fix']}`", yn(x['converged']),
+              x.get('failure_located_in') or '—',
+              f"({x['ic_relative_residual_min']:.3e}, {x['ic_relative_residual_max']:.3e})",
+              ', '.join(f'{a}:{b}' for a, b in sorted((x.get('ic_reason_counts') or {}).items())),
+              f"{x['ic_joint_stationarity_max']:.3e}", f"{x['step_joint_stationarity_max']:.3e}",
+              x.get('failing_case_count'),
+              '; '.join(f"case {c}: {v}" for c, v in (x.get('failing_cases') or {}).items()) or '—']
+             for x in sorted(sweep, key=lambda x: (x['q'], x['fix'] or ''))]) + '\n')
+    q512 = [x for x in sweep if x['q'] == 512]
+    if q512:
+        z = q512[0]
+        W(f"At $q=512$ the correction directions span the **whole** bank ($q=R$), so the supplied "
+          f"field is fitted to machine zero — the initial-fit relative residual is "
+          f"{z['ic_relative_residual_min']:.3e} to {z['ic_relative_residual_max']:.3e} — and the "
+          f"normalized gradient $\\|J^\\top r\\|/(\\|J\\|\\,\\|r\\|)$ becomes a $0/0$ ratio. Its reported "
+          f"value {z['ic_joint_stationarity_max']:.3e} therefore measures nothing, while every "
+          f"time step of that rung is stationary at {z['step_joint_stationarity_max']:.3e}. The "
+          f"$q=512$ rung is a **degenerate endpoint of the stopping rule, not a solver failure** "
+          f"— the same thing the Poisson $q=R$ rung showed.\n\n")
+
     W('### Verdict on Q1\n\n')
     target = [x for x in sweep if x['q'] == 256]
     won = [x for x in target if x['converged']]
@@ -218,16 +246,17 @@ def q2_section(W, a2):
 
     W('### Is $q$ a knob?\n\n')
     k = a2['knob_criterion']
-    W(table(['metric', 'monotone in q', 'converged non-dominated points', 'cost span',
-             'error span', 'passes the pre-registered criterion'],
-            [[m, yn(k[m]['monotone']), k[m].get('points'),
-              fmt(k[m].get('cost_span'), 3), fmt(k[m].get('error_span'), 3), yn(k[m]['passes'])]
-             for m in ('evolved', 'all_times')]) + '\n')
+    W(table(['metric', 'monotone at the fixed test count', 'monotone over every rung',
+             'converged non-dominated points', 'cost span', 'error span',
+             'passes the pre-registered criterion'],
+            [[m, yn(k[m]['monotone_fixed_test_count']), yn(k[m]['monotone_all_rungs']),
+              k[m].get('points'), fmt(k[m].get('cost_span'), 3), fmt(k[m].get('error_span'), 3),
+              yn(k[m]['passes'])] for m in ('evolved', 'all_times')]) + '\n')
     for m in ('evolved', 'all_times'):
         W(f'The retained ladder on the **{m}** metric (fixed test count, empirical quadrature, '
           f'evolution tolerance $10^{{-6}}$):\n\n')
-        W(table(['q', 'worst error %', 'median GPU ms'],
-                [[q, fmt(v), fmt(c, 3)] for q, v, c in k[m]['ladder']]) + '\n')
+        W(table(['q', 'M', 'worst error %', 'median GPU ms'],
+                [[q, M, fmt(v), fmt(c, 3)] for q, M, v, c in k[m]['ladder']]) + '\n')
 
     if a2.get('fno'):
         f = a2['fno']

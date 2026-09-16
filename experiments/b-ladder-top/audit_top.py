@@ -215,6 +215,14 @@ def main():
             t['converged'].append(x['converged'])
             t['budget_exits'].append(x['budget_exits'])
             t['exit_reasons'] += x['stop_reasons']
+            t.setdefault('ic_rel', []).append(x.get('ic_relative_residual'))
+            t.setdefault('ic_reasons', []).append(x.get('ic_reason'))
+            t.setdefault('ic_gj', []).append(x.get('ic_joint_stationarity'))
+            t.setdefault('step_gj', []).append(max(x['step_joint_stationarity'])
+                                               if x.get('step_joint_stationarity') else None)
+            bad = [i for i, s in enumerate(x['stop_reasons']) if s == 0]
+            if bad:
+                t.setdefault('failing', {}).setdefault(x['case'], sorted(bad))
 
     rows = []
     for name, t in table.items():
@@ -252,6 +260,27 @@ def main():
                                            if rc and 'worst_bank_projection' in rc else None),
             worst_best_found_percent=(float(rc['worst_best_found'] * 100) if rc else None),
             setup_seconds=st.get('total_setup_seconds'))
+        # Where the non-convergence lives: the supplied-field fit, or the time stepping.
+        if t.get('ic_rel'):
+            icr = [v for v in t['ic_rel'] if v is not None]
+            icg = [v for v in t['ic_gj'] if v is not None]
+            sgj = [v for v in t['step_gj'] if v is not None]
+            row.update(
+                ic_relative_residual_max=(float(np.max(icr)) if icr else None),
+                ic_relative_residual_min=(float(np.min(icr)) if icr else None),
+                ic_joint_stationarity_max=(float(np.max(icg)) if icg else None),
+                step_joint_stationarity_max=(float(np.max(sgj)) if sgj else None),
+                ic_reason_counts={str(k2): int(v2) for k2, v2 in
+                                  zip(*np.unique([v for v in t['ic_reasons'] if v is not None],
+                                                 return_counts=True))},
+                failing_cases={str(c): v for c, v in sorted((t.get('failing') or {}).items())},
+                failing_case_count=len(t.get('failing') or {}),
+                failure_located_in=(
+                    None if (row['converged'] is None or row['converged']) else
+                    ('initial fit only' if (row['total_budget_exits'] == 0
+                                            and (icg and np.max(icg) > 1e-6)
+                                            and (not sgj or np.max(sgj) <= 1e-6))
+                     else ('time stepping only' if (icg and np.max(icg) <= 1e-6) else 'both'))))
         rows.append(row)
     by_arm = {x['arm']: x for x in rows}
     for x in rows:
@@ -318,12 +347,23 @@ def main():
     knob = dict(
         evolved=spans(frontier['converged_rom_evolved'], 'worst_evolved_percent'),
         all_times=spans(frontier['converged_rom_all_times'], 'worst_all_times_percent'))
+    def mono(vals):
+        return bool(all(b <= a + 1e-12 for a, b in zip(vals, vals[1:])))
+
     for metric, key in (('evolved', 'worst_evolved_percent'), ('all_times', 'worst_all_times_percent')):
         ladder = sorted([x for x in rows if x['family'] == 'rom' and x['quadrature'] == 'eq'
                          and x['gtol'] == 1e-6 and x['q'] is not None], key=lambda x: x['q'])
-        vals = [x[key] for x in ladder]
-        knob[metric]['monotone'] = bool(all(b <= a + 1e-12 for a, b in zip(vals, vals[1:])))
-        knob[metric]['ladder'] = [(x['q'], x[key], x['effective_gpu_ms']) for x in ladder]
+        # The pre-registered criterion says "within the retained configuration", which is the
+        # FIXED test count. Rungs above q = 239 cannot use M = 256 and carry their own M, so
+        # monotonicity is reported both over the fixed-M rungs alone and over every rung.
+        counts = [x['M'] for x in ladder]
+        fixed = max(set(counts), key=counts.count) if counts else None
+        same = [x for x in ladder if x['M'] == fixed]
+        knob[metric]['test_count_of_retained_configuration'] = fixed
+        knob[metric]['monotone_fixed_test_count'] = mono([x[key] for x in same])
+        knob[metric]['monotone_all_rungs'] = mono([x[key] for x in ladder])
+        knob[metric]['monotone'] = knob[metric]['monotone_fixed_test_count']
+        knob[metric]['ladder'] = [(x['q'], x['M'], x[key], x['effective_gpu_ms']) for x in ladder]
         knob[metric]['passes'] = bool(knob[metric]['monotone']
                                       and (knob[metric].get('points') or 0) >= 3
                                       and (knob[metric].get('cost_span') or 0) >= 2

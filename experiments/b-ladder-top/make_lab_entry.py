@@ -143,9 +143,10 @@ def main():
                      for x in sel]) + '\n')
         k = a2['knob_criterion']
         w('**Pre-registered criterion for calling $q$ a knob:**\n\n')
-        w(table(['metric', 'monotone', 'converged non-dominated points', 'cost span',
-                 'error span', 'passes'],
-                [[m, yn(k[m]['monotone']), k[m].get('points'), fmt(k[m].get('cost_span'), 3),
+        w(table(['metric', 'monotone at fixed M', 'monotone over every rung',
+                 'converged non-dominated points', 'cost span', 'error span', 'passes'],
+                [[m, yn(k[m]['monotone_fixed_test_count']), yn(k[m]['monotone_all_rungs']),
+                  k[m].get('points'), fmt(k[m].get('cost_span'), 3),
                   fmt(k[m].get('error_span'), 3), yn(k[m]['passes'])]
                  for m in ('evolved', 'all_times')]) + '\n')
         if a2.get('fno'):

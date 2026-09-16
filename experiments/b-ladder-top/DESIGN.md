@@ -386,6 +386,52 @@ Recorded here rather than folded in silently.
    reproduction is the in-job gate, which is also the only place the numbers are
    comparable.
 
+### After Q1 landed, before Q2 was submitted
+
+Q1 (job `3745589`) finished, was collected, audited and archived before any of these were
+made. None of them changes a recorded Q1 number.
+
+1. **The $q=256$ rung did NOT converge and the pre-registered Q1 target FAILS.** All three
+   fixes are numerically inert there: `base`, `pre`, `damp` and `predamp` give the same
+   worst error to four decimals, the same 15 iteration-budget exits out of 900 steps, the
+   same median five iterations per step and the same worst gradient $1.19\times10^{-3}$.
+   The cascade arm makes it much worse (180 budget exits, 3.6x the cost).
+2. **Q2 keeps the $q=256$ rung anyway, marked not converged.** The design said "256 if
+   converged". Dropping it would delete the most informative accuracy point from the
+   envelope while the pre-registered knob criterion counts only CONVERGED non-dominated
+   points, so keeping it cannot corrupt the criterion. It is plotted with an open marker
+   and its convergence status is stated on its row. The `fix` for that rung is `base`,
+   because Q1 measured all three fixes to change nothing there; picking one of them would
+   be arbitrary.
+3. **Q2 also adds a single $q=512$ rung** (`M=1056`, empirical quadrature, evolution
+   tolerance $10^{-6}$). Q1 established that its every time step is stationary and that its
+   only failing check is a degenerate initial-fit gradient (see the findings below), and it
+   is the rung that reaches the bank floor, so the envelope is more honest with it than
+   without it. Declared as an addition to the grid, not a substitution.
+4. **The `expected_reference_sha256` block inherited from the cheap-corrections config is
+   `qlad01`'s, not `cclad01`'s.** The driver's field name says `cclad01`; the comparison it
+   performs is against `qlad01`. The audit reports the reference-hash probe as failing and
+   compares the directions against BOTH prior jobs explicitly, which is the fix; the
+   misleading field name is recorded here rather than renamed after the fact.
+
+### What Q1 actually found, recorded here because it changes what Q2 means
+
+* **$q=512$ is not a solver failure.** Its initial-fit residual is $4\times10^{-17}$ to
+  $9\times10^{-17}$ relative — machine zero — because at $q=R=512$ the correction directions
+  span the *whole* bank, so the supplied field is fit exactly. The joint normalized gradient
+  is then a $0/0$ ratio and its value $0.1497$ means nothing. Every one of its 900 time steps
+  exits on the gradient criterion at $g\le5.8\times10^{-7}$. This is the same degenerate
+  endpoint the Poisson $q=R$ rung had, and it is the reason the rung reads "not converged".
+* **$q=256$ fails in one case, on five time steps.** Only case 0 has budget exits, at steps
+  0, 1, 2, 3 and 31 of 50, with $g\approx1.1\times10^{-3}$; the other five cases converge
+  cleanly. The failure is concentrated in the first steps after the initial fit.
+* **The $q=512$ empirical-quadrature failure is NOT the fitter's walltime cap.** With the
+  larger refit block every rule reached full support and none was truncated ($m=2048$ at
+  $q=512$ in 1006 s, relative fit $2.06\times10^{-4}$ against the truncated rule's
+  $5.7\times10^{-3}$), and the rung still gives 3.65 % same-grid error against 0.60 % for its
+  dense twin. The cheap-corrections cell's speculation that "the bounded fitter's cap, not
+  the rung, is the suspect" is therefore **retracted**.
+
 ### After the runs, before the report
 
 *(filled in below at close)*

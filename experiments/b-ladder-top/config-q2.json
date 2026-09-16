@@ -148,6 +148,27 @@
       "quadrature": "dense",
       "gtol": 1e-06,
       "fix": "base"
+    },
+    {
+      "q": 256,
+      "M": 544,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 256,
+      "M": 544,
+      "quadrature": "eq",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 512,
+      "M": 1056,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
     }
   ],
   "fom_settings": [
@@ -194,6 +215,7 @@
     }
   },
   "cclad01_job_id": 3734098,
-  "q256_note": "the q = 256 rung is appended to rom_arms only if Q1 converged it; see DESIGN.md",
-  "fidelity_note": "the fidelity gates use the DENSE arms, not the empirical-quadrature ones: the bounded NNLS fitter stops on whichever of target support and walltime binds, so a walltime-truncated rule is not reproducible across nodes even at identical settings, and cclad01's m256 rules were truncated. The dense arms carry no quadrature and must reproduce exactly."
+  "q256_note": "Q1 (job 3745589) did NOT converge the q = 256 rung and measured all three fixes to be numerically inert there, so the rung is carried with fix 'base' and reported as not converged rather than dropped; the pre-registered knob criterion counts only converged non-dominated points, so keeping it cannot corrupt the criterion.",
+  "fidelity_note": "the fidelity gates use the DENSE arms, not the empirical-quadrature ones: the bounded NNLS fitter stops on whichever of target support and walltime binds, so a walltime-truncated rule is not reproducible across nodes even at identical settings, and cclad01's m256 rules were truncated. The dense arms carry no quadrature and must reproduce exactly.",
+  "q512_note": "added after Q1: every q = 512 time step is stationary and the only failing check is a degenerate initial-fit gradient (at q = R the corrections span the whole bank and the supplied field is fit to machine zero, making the normalized gradient a 0/0 ratio). It is the rung that reaches the bank floor, so the envelope is more honest with it than without it."
 }

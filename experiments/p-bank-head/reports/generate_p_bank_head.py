@@ -162,6 +162,17 @@ def main():
               f"{pc(bestrow['solved'])} % vs {pc(bestrow['pod_matched'])} % | "
               f"{'**pass**' if bestrow['beats_pod'] else '**miss**'} |")
     w('')
+    w('Every checkpoint at that mesh, control first:')
+    w('')
+    w('| checkpoint | K | R | bank floor | best-found | solved same-grid | median total ms | '
+      'cost vs control | stationary |')
+    w('|---|---:|---:|---:|---:|---:|---:|---:|---:|')
+    for x in sorted(rows, key=lambda x: (x['model'] != control, x['solved'])):
+        w(f"| `{x['model']}`{' *(control)*' if x['model'] == control else ''} | {x['K']} | "
+          f"{x['R']} | {pc(x['floor'])} % | {pc(x['best'])} % | {pc(x['solved'])} % | "
+          f"{ms(x['ms'])} | {num(x['cost_ratio'], 3)}x | "
+          f"{x['stationary']}/{x['invocations']} |")
+    w('')
     bank_target = min((next(f for f in x['floors'] if f['intervals'] == bank_mesh)
                        ['development']['worst'] for x in tr['bank_arms']), default=None)
     w(f"| layer target | requirement | value | verdict |")
@@ -580,6 +591,44 @@ def main():
     w('- **Fidelity gate** — a check that this cell\'s code reproduces an earlier accepted '
       'run\'s numbers before any new number is believed.')
     w('- **pp** — percentage points, the difference between two percentages.')
+    w('- **Incumbent** — the checkpoint this cell is trying to beat: the accepted 2026-09-11 '
+      'Poisson model `r128_joint` (K=16, R=128), carried through frozen and never retrained.')
+    w('- **Arm** — one configuration in a sweep. A *bank arm* is one (R, S) pair; a *head arm* '
+      'is one (K, beta_weak, beta_smooth) triple; a *solve subject* is one thing that is timed.')
+    w('- **S (training sources)** — how many source fields the bank and head were fitted to.')
+    w('- **beta_weak / beta_smooth** — the two weights in the head objective: how much the '
+      'exact weak residual and the parameter-space code-smoothness term count against plain '
+      'reconstruction. Both zero reproduces the incumbent objective.')
+    w('- **Code smoothness** — a penalty that pulls the latent codes of sources with similar '
+      'parameters towards each other, so the head has to interpolate between them rather than '
+      'memorise each one. It uses the source parameters offline only; no query ever sees them.')
+    w('- **Head at the stored codes** — the training error the optimizer actually produced, '
+      'using each training source\'s own saved code. Compare it with best-found on the same '
+      'sources: a large gap means the codes were not converged.')
+    w('- **Code-refit gain (D4)** — exactly that gap. Small means the training codes are at '
+      'their own optimum and the problem is not optimisation.')
+    w('- **D1 … D8** — the eight numbered diagnostics of DESIGN.md section 6, designed so that '
+      'each of the three ways the head can fail (optimisation, coverage, capacity) leaves a '
+      'different fingerprint.')
+    w('- **Generalisation gap (D6)** — how much worse the head is on unseen sources than on its '
+      'own training sources. Large means the head interpolates badly; the fix is coverage or '
+      'regularisation, not capacity.')
+    w('- **Common selection cohort** — one fixed 256-source held-out set, at a seed used '
+      'nowhere else, on which every bank arm is scored. It exists because each arm\'s own '
+      'validation split has a different size, and a maximum over a larger sample is '
+      'systematically larger for reasons unrelated to the bank.')
+    w('- **Rank / condition number of a bank** — whether its R columns are genuinely '
+      'independent on the mesh, and how close to dependent they are. A rank-deficient bank '
+      'would make R a lie; every arm here is checked to be full rank at every mesh.')
+    w('- **Exposures** — how many times the optimizer saw a training source. Equal update '
+      'counts across arms means the larger-S arms get fewer exposures each, which is the '
+      'honest equal-compute comparison and is why more data is not automatically better here.')
+    w('- **Total ms vs device ms** — total is the whole query, host array in to dense nodal '
+      'field out; device is the fused GPU interval inside it. Total is the number that matters '
+      'to a user; device is where the reduced solve actually happens.')
+    w('- **Trust radius** — a cap on how far one solver step may move the latent code, set to '
+      'the radius of the training code cloud so the solve stays where the head was fitted.')
+
     w('')
 
     a.out.write_text('\n'.join(L) + '\n')

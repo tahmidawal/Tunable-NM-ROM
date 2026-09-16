@@ -163,23 +163,28 @@ def main():
     # ---------------------------------------------------------------- subjects -
     specs, seen = [], set()
 
-    def add(q, rule, quadrature, arm, fitter='bounded', timed=True):
+    def add(q, rule, quadrature, arm, fitter='bounded', timed=True, step_budget=None,
+            trust_scale=None, tag=''):
         M = test_count(rule, K, q, cfg['fixed_test_count'])
         if M <= K + q:
             return None
-        name = f'q{q}_{rule}_{quadrature}_{arm}'
+        name = f'q{q}_{rule}_{quadrature}_{arm}' + tag
         if name in seen:
             return name
         seen.add(name)
-        specs.append(dict(name=name, q=q, M=M, rule=rule, quadrature=quadrature,
-                          arm=arm, fitter=fitter, timed=timed))
+        specs.append(dict(name=name, q=q, M=M, rule=rule, quadrature=quadrature, arm=arm,
+                          fitter=fitter, timed=timed,
+                          step_budget=int(step_budget or strict['step_budget']),
+                          trust_scale=float(trust_scale or 1.)))
         return name
 
     for g in cfg['gate_arms']:
         add(g['q'], g['rule'], g['quadrature'], g['arm'], g.get('fitter', 'bounded'))
     for blk in cfg['sweep']:
         for arm in blk['arms']:
-            add(blk['q'], blk['rule'], blk['quadrature'], arm, blk.get('fitter', 'bounded'))
+            add(blk['q'], blk['rule'], blk['quadrature'], arm, blk.get('fitter', 'bounded'),
+                step_budget=blk.get('step_budget'), trust_scale=blk.get('trust_scale'),
+                tag=blk.get('tag', ''))
     for src in cfg['cascade_setup']:
         add(src['q'], src['rule'], src['quadrature'], src['arm'], timed=False)
 
@@ -230,12 +235,15 @@ def main():
         dim = K + q
         linear = 'gj' if dim <= cfg['gauss_jordan_max'] else 'lu'
         cascade = s['arm'] == 'casc'
-        query = TF.make_query(params, C, K, q, L, dt, trust, s['quadrature'], s['arm'],
+        arm_strict = dict(strict, step_budget=s['step_budget'])
+        arm_trust = trust * s['trust_scale']
+        query = TF.make_query(params, C, K, q, L, dt, arm_trust, s['quadrature'], s['arm'],
                               Rb=Rb, linear=linear, inner_damping=cfg['inner_damping'],
                               tau_y=cfg['tau_y'], cascade=cascade, ic_gtol=cfg['ic_gtol'],
-                              **strict)
+                              **arm_strict)
         info.update(arm=s['name'], q=q, rule=s['rule'], fix=s['arm'], fitter=s['fitter'],
-                    solved_dimension=dim, dt=dt, trust_radius=trust, linear_solve=linear,
+                    step_budget=s['step_budget'], trust_scale=s['trust_scale'],
+                    solved_dimension=dim, dt=dt, trust_radius=arm_trust, linear_solve=linear,
                     cold=cinfo, timed=s['timed'], cascade_source=cascade_source.get(s['name']),
                     fixes=TF.ARMS[s['arm']], tau_y=(cfg['tau_y'] if TF.ARMS[s['arm']]['adaptive_y'] else None),
                     total_setup_seconds=time.perf_counter() - t0, correction_directions_used=q)
@@ -393,6 +401,7 @@ def main():
                     scale = float(v[11])
                     row.update(q=b['q'], solved_dimension=K + b['q'], M=b['M'], m=b['m'],
                                rule=b['rule'], fix=b['arm'], fitter=b['fitter'],
+                               step_budget=b['step_budget'], trust_scale=b['trust_scale'],
                                quadrature=b['quadrature'], dt=dt, linear_solve=b['linear_solve'],
                                cascade=bool(b['cascade']),
                                cascade_source=cascade_source.get(sub['name']),

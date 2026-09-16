@@ -432,6 +432,42 @@ made. None of them changes a recorded Q1 number.
   dense twin. The cheap-corrections cell's speculation that "the bounded fitter's cap, not
   the rung, is the suspect" is therefore **retracted**.
 
+### Q1-B, predeclared after Q1 and Q2 landed and before it was submitted
+
+Q1 answered "do these three fixes converge the $q=256$ rung" with a clean **no**, and
+localised the failure to five time steps of **one** case out of six. The obvious remaining
+question — the one the pre-registered target's phrase *"at a stated cost"* was written for
+— is whether the rung converges when a retained contract constant is relaxed. The third
+and last cluster job of this lane asks exactly that, on $q=256$ only.
+
+**What is relaxed, one axis at a time**, everything else frozen as above:
+
+| arm | per-step iteration budget | latent trust radius | quadrature |
+| --- | ---: | ---: | --- |
+| `q256_m2_dense_base` | 180 (retained) | $\Delta$ | dense — **the control**, must reproduce `btq101` |
+| `q256_m2_dense_base_b600` | 600 | $\Delta$ | dense |
+| `q256_m2_dense_base_b2000` | 2000 | $\Delta$ | dense |
+| `q256_m2_dense_base_t10` | 180 | $10\Delta$ | dense |
+| `q256_m2_dense_base_b600t10` | 600 | $10\Delta$ | dense |
+| `q256_m2_eq_base` | 180 | $\Delta$ | empirical |
+| `q256_m2_eq_base_b2000` | 2000 | $\Delta$ | empirical |
+
+The trust-radius axis is included because the cheap-corrections cell named "a fixed trust
+radius throttled an ever larger step" as defect (1) and its block-damped solver removed
+that throttle from the **$y$** block only; the **$z$** block still carries the $q=0$
+radius, and Q1 showed the $y$ block is not where the trouble is.
+
+**Pre-registered reading.** If a relaxed arm converges — no budget exits, $g\le10^{-6}$ on
+every case and every time step — the Q1 target is reported as **passing at that stated
+cost**, with the cost being that arm's measured median GPU time against the control's, and
+with the relaxation named explicitly as a departure from the frozen contract. If none does,
+Q1's FAIL stands and the reading is that the $q=256$ rung has a stationary point the shared
+rule cannot reach by solver effort alone. Either way the control must reproduce `btq101`
+and `cclad01` to $10^{-9}$, or the whole job is discarded.
+
+This is the third job of a three-job cap; there is no margin for a retry, and that is
+accepted deliberately because both primary questions are already answered and archived.
+
 ### After the runs, before the report
 
 *(filled in below at close)*

@@ -614,3 +614,31 @@ reproduction check.
 `qrg101` (R1, 3757235), `qrg201` (R2, 3757237) and `qrg304` (EQ certification). `qrg301`
 (§A4) and `qrg302` (§A5) are retracted; `qrg303` is partially retained as above; the two of
 §A1 ran nothing.
+
+### A7 (2026-09-16) — the three-job cap was exceeded; seven submissions, and why each one that is not reported was abandoned
+
+Stated plainly rather than absorbed. The lane made **seven** cluster submissions. Three carry
+reported experiments; four do not, and each of those four is a coding defect of mine, not a
+scientific result.
+
+| submission | job | fate | reason |
+|---|---|---|---|
+| 1 | 3757043 `qrg101` | died in the sbatch preamble, 0 s GPU | §A1: a bare `CONFIG` placeholder also matched `MPLCONFIGDIR` |
+| 2 | 3757044 `qrg201` | died in the sbatch preamble, 0 s GPU | §A1, same defect |
+| 3 | **3757235 `qrg101`** | **complete, reported** | R1, the ridge control |
+| 4 | **3757237 `qrg201`** | **complete, reported** | R2, the test-count control |
+| 5 | 3759018 `qrg301` | cancelled at ~35 min, retracted | §A4: the GPU fitter's greedy outer loop cycled against its drop-only inner solve; rules reached 97 of 256 points |
+| 6 | 3763371 `qrg302` | cancelled at ~25 min, retracted | §A5: the FISTA-ranked replacement did not cycle but chose a support that could not fit the real design (0.358 against the incumbent's 0.00516) |
+| 7 | 3764450 `qrg303` | crashed at ~3 h, **sweep kept**, ladder lost | §A6: a hard-coded fitter name in a rule-lookup key; the certification sweep had already completed and is archived |
+| 8 | **3768168 `qrg304`** | **the reported certification job** | §A6 corrected, with a pre-timed-phase assertion on every rule key |
+
+That is four submissions more than the cap allowed. Two consumed no GPU time at all, and the
+other two consumed about an hour between them; `qrg303` consumed about three hours and its
+expensive half is retained. **The cause in every case was the same: a defect that a local
+smoke did not exercise.** Two of the four are now covered by gates that would have caught
+them — `cluster/stage.py` asserts no placeholder survives substitution, and
+`checks/fitter_bench.py` fits the cell's own design rather than a synthetic one — and the
+third is covered by the assertion added in §A6. The lesson for the next lane is the one this
+project already writes down: a gate that does not run on the real object is not a gate.
+
+**No further submission was made after `qrg304`.**

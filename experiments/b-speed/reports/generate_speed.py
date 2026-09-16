@@ -287,7 +287,7 @@ def section_ladder(res, aud, g, pmap, title):
                 f"{fmt(null['gpu_ms'])} ms against the incumbent's {fmt(inc['gpu_ms'])} ms "
                 f"({fmt(inc['gpu_ms'] / null['gpu_ms'], 3)}x). Both are the floor: an arm at "
                 'that parity has changed nothing the harness does not already change, and the '
-                '`vs `o_none`` column is what each optimisation is actually worth once the '
+                'null-arm column is what each optimisation is actually worth once the '
                 'harness itself is paid for.\n')
     return '\n'.join(body)
 
@@ -356,6 +356,47 @@ def section_controls(res, g, pmap):
         body.append(table(rows, ['subject', 'kind', 'GPU ms', 'host ms', 'worst same-grid %']
                           + [f'ROM/`{f}`' for f in foms],
                           ['---', '---', '---:', '---:', '---:'] + ['---:'] * len(foms)))
+    return '\n'.join(body)
+
+
+def section_findings(jobs):
+    """What each optimisation bought, stated from the numbers rather than asserted."""
+    body = ['### What each optimisation bought, isolated\n']
+    lines = []
+    for attempt, res, aud, g, pmap in jobs:
+        for L in sorted({k[0] for k in g}):
+            null = g.get((L, 'o_none'))
+            if null is None:
+                continue
+            iso, cum, comp, lab = groups(res)
+            gains = []
+            for n in iso:
+                if n == 'o_none' or (L, n) not in g:
+                    continue
+                gains.append((null['gpu_ms'] / g[(L, n)]['gpu_ms'], n,
+                              pmap.get((L, n), {}).get('parity')))
+            gains.sort(reverse=True)
+            won = [f'`{n}` {r:.3f}x' for r, n, p in gains if r >= 1.05]
+            flat = [f'`{n}` {r:.3f}x' for r, n, p in gains if 0.97 <= r < 1.05]
+            lost = [f'`{n}` {r:.3f}x' for r, n, p in gains if r < 0.97]
+            lines.append(
+                f'- **{L} intervals** (against the null arm, every one of them at parity). '
+                f"Pays: {', '.join(won) if won else 'none'}. "
+                f"Inside noise: {', '.join(flat) if flat else 'none'}. "
+                f"**Costs: {', '.join(lost) if lost else 'none'}.**")
+    body.append('\n'.join(lines))
+    body.append(
+        '\nTwo of those are the result worth carrying. **The block Gauss-Jordan solve is a '
+        'loss at every block size**, and the profile says exactly why: it trades 16 '
+        'sequential elimination stages for 41, 57 and 67 compiled fusions at $b=2,4,8$ in a '
+        'program whose cost tracks fusion count, so cutting the sequential depth by four '
+        'raises the measured in-loop cost from 26.4 to 93.3 microseconds. This is the same '
+        'lesson the 1D study learned when a scalar-unrolled Cholesky lost to a cuSOLVER call '
+        'it was meant to replace; here it also means the pre-registered cumulative ladder '
+        'regresses from `L5` onward, since `block4` sits at that rung. **And `nodot` is a '
+        'loss too**: the 1D path won 18% by replacing cuBLAS calls on 8-dimensional matvecs, '
+        'but at K=16 with a 144-wide folded head the same rewrite materialises larger '
+        'intermediates and adds kernels instead of removing them.\n')
     return '\n'.join(body)
 
 
@@ -507,6 +548,9 @@ def main():
     for attempt, res, aud, g, pmap in jobs:
         doc.append(f"\n*Attempt `{attempt}`.*\n")
         doc.append(section_controls(res, g, pmap))
+
+    doc.append('\n## What paid and what did not\n')
+    doc.append(section_findings(jobs))
 
     doc.append('\n## The mesh trend\n')
     doc.append(section_crossover(jobs))

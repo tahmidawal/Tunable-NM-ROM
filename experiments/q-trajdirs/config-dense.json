@@ -1,5 +1,5 @@
 {
-  "attempt": "qtd01",
+  "attempt": "qtd02",
   "intervals": 256,
   "dt": 0.005,
   "eval_seed": 7090702,
@@ -19,6 +19,7 @@
   "residual_budget": 200,
   "residual_seed": 20260915,
 
+  "direction_sets_to_build": [],
   "direction_traj_seed": 20260916,
   "direction_traj_count": 32,
   "direction_prac_seed": 20260917,
@@ -49,34 +50,18 @@
   "recon_budget": 400,
 
   "reps": 3,
-  "order_seed": 911721,
+  "order_seed": 911723,
   "burn_seconds": 0.25,
 
-  "pass_criteria": {"ladder": "traj_primary", "error_span": 2.0, "cost_span": null, "note": "the pre-registered pass of DESIGN.md section 6"},
+  "pass_criteria": {"ladder": "dense_m4", "error_span": 2.0, "cost_span": 2.0, "note": "the redirected pass of DESIGN.md amendment 2026-09-16 B"},
 
   "ladders": [
-    {"id": "traj_primary", "label": "traj directions, M = 4(K+q), EQ",
-     "dirset": "traj", "rule": "m4", "quadrature": "eq", "q": [0, 16, 32, 64, 128, 256]},
-    {"id": "traj_dense", "label": "traj directions, M = 4(K+q), dense twins",
-     "dirset": "traj", "rule": "m4", "quadrature": "dense", "q": [0, 16, 64, 256]},
-    {"id": "traj_fixedM", "label": "traj directions, fixed M = 256, EQ",
-     "dirset": "traj", "rule": "mfix", "quadrature": "eq", "q": [0, 16, 32, 64, 128]},
-    {"id": "prac_primary", "label": "prac directions, M = 4(K+q), EQ",
-     "dirset": "prac", "rule": "m4", "quadrature": "eq", "q": [0, 16, 32, 64, 128, 256]},
-    {"id": "prac_dense", "label": "prac directions, M = 4(K+q), dense twins",
-     "dirset": "prac", "rule": "m4", "quadrature": "dense", "q": [0, 16, 64, 256]},
-    {"id": "old_primary", "label": "old directions, M = 4(K+q), EQ",
-     "dirset": "old", "rule": "m4", "quadrature": "eq", "q": [0, 16, 64]},
-    {"id": "old_dense", "label": "old directions, M = 4(K+q), dense twins",
-     "dirset": "old", "rule": "m4", "quadrature": "dense", "q": [0, 16, 64]},
-    {"id": "old_fixedM", "label": "old directions, fixed M = 256, EQ",
-     "dirset": "old", "rule": "mfix", "quadrature": "eq", "q": [0, 16, 64]}
+    {"id": "dense_m4", "label": "incumbent directions, DENSE quadrature, M = 4(K+q)",
+     "dirset": "old", "rule": "m4", "quadrature": "dense", "q": [0, 16, 32, 64, 128, 256]},
+    {"id": "dense_fixedM", "label": "incumbent directions, DENSE quadrature, fixed M = 256",
+     "dirset": "old", "rule": "mfix", "quadrature": "dense", "q": [0, 16, 32, 64, 128]}
   ],
-  "extra_arms": [
-    {"dirset": "shared", "rule": "mfix", "quadrature": "dense", "q": [0]},
-    {"dirset": "shared", "rule": "m4", "quadrature": "eq", "q": [0],
-     "fitter": "retained", "tag": "_ret"}
-  ],
+  "extra_arms": [],
 
   "fom_settings": [
     {"name": "fft_tight", "preconditioner": "fft", "dt": 0.005, "ntol": 1e-06, "ltol": 1e-08},
@@ -98,23 +83,32 @@
   "fidelity_expectations": {
     "q0_M64_dense": {"job": "cclad01", "reproduces": "q0_m4_dense_block", "tolerance": 1e-09},
     "q0_M256_dense": {"job": "cclad01", "reproduces": "q0_m256_dense_block", "tolerance": 1e-09},
-    "q0_M64_eq_ret": {"job": "cclad01", "reproduces": "q0_m4_eq_varpro", "tolerance": 1e-09},
     "old_q16_M128_dense": {"job": "cclad01", "reproduces": "q16_m4_dense_block",
-                           "tolerance": 1e-09, "tolerance_if_directions_bitwise": 1e-09,
-                           "second_tier_tolerance": 1e-03},
+                           "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
+    "old_q32_M192_dense": {"job": "cclad01", "reproduces": "q32_m4_dense_block",
+                           "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
     "old_q64_M320_dense": {"job": "cclad01", "reproduces": "q64_m4_dense_block",
-                           "tolerance": 1e-09, "tolerance_if_directions_bitwise": 1e-09,
-                           "second_tier_tolerance": 1e-03}
+                           "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
+    "old_q128_M576_dense": {"job": "cclad01", "reproduces": "q128_m4_dense_block",
+                            "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
+    "old_q256_M1088_dense": {"job": "cclad01", "reproduces": "q256_m4_dense_block",
+                             "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
+    "old_q16_M256_dense": {"job": "cclad01", "reproduces": "q16_m256_dense_block",
+                           "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
+    "old_q32_M256_dense": {"job": "cclad01", "reproduces": "q32_m256_dense_block",
+                           "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
+    "old_q64_M256_dense": {"job": "cclad01", "reproduces": "q64_m256_dense_block",
+                           "tolerance": 1e-09, "second_tier_tolerance": 1e-03},
+    "old_q128_M256_dense": {"job": "btq201", "reproduces": "q128_M256_dense_g1em06",
+                            "tolerance": 1e-09, "second_tier_tolerance": 1e-03}
   },
   "btq201_expectations": {
     "q0_M256_dense": "q0_M256_dense_g1em06",
-    "q0_M256_eq": "q0_M256_eq_g1em06",
-    "old_q16_M256_eq": "q16_M256_eq_g1em06",
-    "old_q64_M256_eq": "q64_M256_eq_g1em06"
+    "old_q128_M256_dense": "q128_M256_dense_g1em06"
   },
   "cclad01_job_id": 3734098,
   "btq101_job_id": 3745589,
   "btq102_job_id": 3749039,
   "btq201_job_id": 3747245,
-  "purpose": "Does fitting the correction directions to the ROM's TRAJECTORY error, instead of the head's static reconstruction residual, make the Burgers 256^2 ladder monotone on the worst-over-evolved-times metric while keeping it monotone on worst-over-all-times? Same frozen checkpoint, same six development cases, same bank, head, weak objective, initializer, per-step budget 600, same output contract. Only C_q changes."
+  "purpose": "REDIRECTED PRIMARY QUESTION (2026-09-16, after the q-diag lane reported that the q = 16 evolved-metric regression is the empirical quadrature, not the directions): does the DENSE correction ladder on the incumbent directions, at per-step budget 600, satisfy the pre-registered knob criterion on BOTH metrics inside ONE allocation? Two ladders, M = 4(K+q) and fixed M = 256, q in {0,16,32,64,128,256}, the same six opened development cases, same-job fft_tight / fft_loose / nt1e-2_dt01 controls, three timed repetitions with burn-in. PASS = worst evolved-times error non-increasing in q with every rung converged AND the converged non-dominated set spanning at least 2x in error AND at least 2x in cost. No empirical quadrature is fitted anywhere in this job, so no number in it can depend on a quadrature rule."
 }

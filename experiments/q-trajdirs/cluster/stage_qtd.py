@@ -16,6 +16,7 @@ FILES = [
     'experiments/q-trajdirs/qtd_run.py',
     'experiments/q-trajdirs/trajdirs.py',
     'experiments/q-trajdirs/config-qtd.json',
+    'experiments/q-trajdirs/config-dense.json',
     'experiments/q-trajdirs/cluster/stage_qtd.py',
     'experiments/b-ladder-top/topfix.py',
     'experiments/cheap-corrections/varpro.py',
@@ -38,6 +39,8 @@ PYPATH = ['experiments/mr-burgers2d', 'experiments/head-ablation',
 
 def main():
     attempt = sys.argv[1]
+    config = sys.argv[2] if len(sys.argv) > 2 else 'experiments/q-trajdirs/config-qtd.json'
+    assert config in FILES, config
     assert attempt.isalnum(), attempt
     out = ROOT / 'experiments/q-trajdirs/runs' / attempt
     out.mkdir(parents=True, exist_ok=False)
@@ -83,7 +86,7 @@ df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 export PYTHONPATH="PYPATH"
 "$PY" experiments/q-trajdirs/qtd_run.py \
-  --config experiments/q-trajdirs/config-qtd.json \
+  --config CONFIG \
   --checkpoint CKPT \
   --out output
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
@@ -91,6 +94,7 @@ echo ALL-DONE
 '''
     script = (script.replace('ATTEMPT', attempt).replace('REMOTE', remote)
               .replace('CKPT', CHECKPOINT).replace('HOURS', HOURS).replace('EXCLUDE', EXCLUDE)
+              .replace('CONFIG', config)
               .replace('PYPATH', ':'.join(f'{remote}/{p}' for p in PYPATH)))
     (out / 'run.sbatch').write_text(script)
     manifest = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(out)}'

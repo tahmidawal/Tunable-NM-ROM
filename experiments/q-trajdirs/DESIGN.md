@@ -303,3 +303,81 @@ Recorded here rather than folded in silently.
   energy. The two subspaces are close to disjoint even at the bottom of the ladder. The
   smoke's `old` rule is deliberately under-sampled (16 snapshots), so this is a signal
   that the experiment can separate the two rules, not a result.
+
+---
+
+## 11. Amendment, 2026-09-16 — REDIRECT after the `q-diag` lane reported
+
+The `q-diag` lane published its diagnosis
+(`worktrees/2026-09-16-q-diag/experiments/q-diag/reports/2026-09-16-q16-regression-diagnosis.md`,
+SHA256 `c0bf57626d9e0a422965446b39e79e423c9a39f6886b7ca1893b8a03cd803c6e`) **while this
+lane's job `qtd01` was already running**. Its verdict:
+
+> The $q=16$ evolved-metric regression is the **empirical quadrature**, not the
+> directions. Across four jobs every dense ladder is monotone on both metrics (12 of 12
+> dense ladder/metric combinations, 0 violations) and only EQ ladders regress. Cause (1),
+> trajectory-blind directions, is **refuted** on both of its pre-registered criteria: the
+> incumbent directions' per-interval step map *improves* with $q$
+> (0.95 / 0.87 / 0.73 / 0.65).
+
+The coordinator therefore redirected this lane. Both parts of the redirect are recorded
+here; **nothing above this line is edited**, and everything already built and committed
+is kept.
+
+### A. The trajectory-directions job becomes a control
+
+`qtd01` (job 3756800) was already running when the redirect arrived, so it is **let
+finish and reported as a control**, not as the subject. Its pre-registered pass of
+section 6 is still evaluated and reported exactly as written, because a pre-registration
+that is abandoned once its hypothesis looks dead is worth nothing. It is now a *test of
+`q-diag`'s verdict*: if `q-diag` is right that the directions are innocent, then
+
+* the three direction sets should give ladders that agree closely at matched $q$, $M$ and
+  quadrature; and
+* the $q=16$ evolved regression should appear on the EQ ladders of **all three** direction
+  sets and on the dense ladders of **none**.
+
+**No second job is spent on new directions.**
+
+### B. The new primary question — certify the DENSE ladder
+
+> Does the **dense** correction ladder — incumbent directions, per-step budget 600 —
+> satisfy the knob criterion on **both** metrics, inside one allocation?
+
+This is the tunability certification on the arm that does not depend on the quadrature at
+all; the `q-ridge` lane is separately redirected to fix the EQ rules themselves.
+
+**Part 1, no GPU.** From the existing audited archives (`cclad01`, `btq101`, `btq102`,
+`btq201`), **dense arms only**, compute the converged non-dominated set on both metrics,
+monotonicity, cost span and error span. `experiments/q-trajdirs/dense_from_archives.py`.
+
+**Part 2, one job (`qtd02`).** Dense ladder, $q\in\{0,16,32,64,128,256\}$, at **fixed
+$M=256$** and at **$M=4(K+q)$**, per-step budget 600, the same six opened development
+cases, same-job `fft_tight` / `fft_loose` / `nt1e-2_dt01` controls, three timed
+repetitions with burn-in, both metrics per output time per case, exit reasons. It fits
+**no empirical quadrature anywhere**, so no number in it can depend on a quadrature rule.
+$M=256$ is illegal above $q=239$, so the fixed-$M$ ladder stops at $q=128$; the
+$M=4(K+q)$ ladder carries $q=256$ and is the pass ladder.
+
+**Redirected pass (`config-dense.json`, `pass_criteria`).** On the `dense_m4` ladder:
+
+1. worst **evolved**-times error non-increasing in $q$ from 0 to 256, **with every rung
+   converged**; and
+2. the converged non-dominated set on the (median GPU ms, worst evolved error) plane
+   spans $\ge 2\times$ in **error** **and** $\ge 2\times$ in **cost**.
+
+The all-times metric is reported beside it on every row. Criterion 2 is strictly harder
+than section 6's, which required only the error span.
+
+**Gates unchanged**, plus the coordinator's: $q=0$ and $q=128$ dense reproduce the
+`b-ladder-top` rows to $\le 10^{-9}$; every error recomputed from the saved fields; the
+evaluation cohort bitwise `abl01`'s six cases. The two jobs run **concurrently in their
+own attempt directories** — `qtd01` and `qtd02` — which is two of the three-job cap.
+
+### C. What this lane can no longer claim
+
+The trajectory-direction hypothesis was **refuted by another lane before this lane's own
+job produced a number**. Whatever `qtd01` reports, this cell does not get to claim it
+discovered that the directions are innocent; `q-diag` established that from data that
+already existed, and this report cites it. What `qtd01` adds is an independent,
+same-allocation check of that verdict under a direction rule `q-diag` never had.

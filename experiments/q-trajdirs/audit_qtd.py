@@ -408,13 +408,15 @@ def main():
         return dict(points=len(sel), cost_span=max(c) / max(min(c), 1e-300),
                     error_span=max(v) / max(min(v), 1e-300))
 
-    # Restricted to the pre-registered subject: the traj primary ladder's own rungs.
-    primary = ladders.get('traj_primary', {})
+    # Restricted to the pre-registered subject: that config's own primary ladder.
+    pc = dict(cfg.get('pass_criteria')
+              or {'ladder': 'traj_primary', 'error_span': 2.0, 'cost_span': None})
+    primary = ladders.get(pc['ladder'], {})
     prim_names = [u['arm'] for u in primary.get('rungs', []) if u['converged']]
     prim_front = nondominated([by_arm[n] for n in prim_names],
                               'median_gpu_ms', 'worst_evolved_percent')
     verdict = dict(
-        ladder='traj_primary',
+        ladder=pc['ladder'], criteria=pc,
         criterion_1_evolved_monotone_every_rung_converged=bool(
             primary.get('monotone_evolved') and primary.get('all_converged')),
         criterion_2_all_times_monotone=bool(primary.get('monotone_all_times')),
@@ -425,7 +427,10 @@ def main():
         all_converged=primary.get('all_converged'),
         regressions_evolved=primary.get('regressions_evolved'),
         regressions_all_times=primary.get('regressions_all_times'))
-    verdict['criterion_3_passes'] = bool((verdict['criterion_3_error_span'].get('error_span') or 0) >= 2)
+    sp = verdict['criterion_3_error_span']
+    verdict['criterion_3_passes'] = bool(
+        (sp.get('error_span') or 0) >= pc['error_span']
+        and (pc.get('cost_span') is None or (sp.get('cost_span') or 0) >= pc['cost_span']))
     verdict['passes'] = bool(verdict['criterion_1_evolved_monotone_every_rung_converged']
                              and verdict['criterion_2_all_times_monotone']
                              and verdict['criterion_3_passes'])

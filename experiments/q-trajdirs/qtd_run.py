@@ -116,6 +116,8 @@ def main():
     rngB = np.random.default_rng(cfg['direction_prac_seed'])
     idxB = np.sort(rngB.choice(rest, cfg['direction_prac_count'], replace=False))
     cohorts = {'traj': idxA, 'prac': idxB}
+    cohorts = {k: v for k, v in cohorts.items()
+               if k in cfg.get('direction_sets_to_build', ['traj', 'prac'])}
     dj = {}
     for name, idx in cohorts.items():
         sub = train_physical[idx]
@@ -124,9 +126,12 @@ def main():
                         indices_sha256=sha_array(idx), parameters_sha256=sha_array(sub),
                         min_distance_to_evaluation_cases=d, disjoint=bool(d > 1e-12))
     dj['traj_prac_disjoint'] = bool(len(np.intersect1d(idxA, idxB)) == 0)
+    dj['built'] = sorted(cohorts)
     report['gates']['direction_cohorts_disjoint_from_evaluation'] = dict(
         passed=bool(all(v['disjoint'] for k, v in dj.items() if isinstance(v, dict))
-                    and dj['traj_prac_disjoint']), detail=dj)
+                    and dj['traj_prac_disjoint']), detail=dj,
+        note=('cohorts are built only for the direction sets this job constructs; a job '
+              'that builds none still records the seeded index sets it would have used'))
     report['direction_cohorts'] = dj
     save()
 
@@ -211,7 +216,7 @@ def main():
     sets = {}
     sets['old'] = dict(C=Cold, Ct=Ct_old, Zcodes=np.asarray(Zstar_old), rho=np.asarray(rho_old),
                        tilde=tilde_old, info=dinfo_old)
-    for name in ('traj', 'prac'):
+    for name in cfg.get('direction_sets_to_build', ['traj', 'prac']):
         t0 = time.perf_counter()
         C, Ct, Z, P, tilde, info = TD.build(
             query0, head0, Qb, Rb, train_physical[cohorts[name]], L, dt,
@@ -259,10 +264,12 @@ def main():
         comparison['cross_capture'][pn] = {
             cn: TD.cross_capture(ps['tilde'], cs['Ct'], qlad) for cn, cs in sets.items()}
     for other in ('traj', 'prac'):
-        comparison['principal_angles'][f'{other}_vs_old'] = TD.principal_angles(
-            sets[other]['Ct'], sets['old']['Ct'], cmp_q)
-    comparison['principal_angles']['traj_vs_prac'] = TD.principal_angles(
-        sets['traj']['Ct'], sets['prac']['Ct'], cmp_q)
+        if other in sets:
+            comparison['principal_angles'][f'{other}_vs_old'] = TD.principal_angles(
+                sets[other]['Ct'], sets['old']['Ct'], cmp_q)
+    if 'traj' in sets and 'prac' in sets:
+        comparison['principal_angles']['traj_vs_prac'] = TD.principal_angles(
+            sets['traj']['Ct'], sets['prac']['Ct'], cmp_q)
     report['direction_comparison'] = comparison
     save()
     print('COMPARISON done', round(time.perf_counter() - begin, 1), flush=True)

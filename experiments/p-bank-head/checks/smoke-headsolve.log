@@ -1,0 +1,20 @@
+/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/8dd24c38-78af-49e7-988d-0874ec7f50cb/scratchpad/hs/staged/primary_K8.pkl /tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/8dd24c38-78af-49e7-988d-0874ec7f50cb/scratchpad/hs/staged/primary_K8-basis.npz /tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/8dd24c38-78af-49e7-988d-0874ec7f50cb/scratchpad/hs/staged/bankarm_head.pkl /tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/8dd24c38-78af-49e7-988d-0874ec7f50cb/scratchpad/hs/staged/bankarm_head-basis.npz /tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/8dd24c38-78af-49e7-988d-0874ec7f50cb/scratchpad/hs/staged/models.json
+pod trainset count -> 24
+jax_backend=gpu x64=True precision=highest
+REFERENCES done 2.2
+MESH 64
+RECON 64 incumbent floor 0.023146953477438288 best 0.060926269196342746
+RECON 64 new_K8 floor 0.6312481725797302 best 0.8846510460616764
+RECON 64 bank_arm_head floor 0.6312481725797302 best 0.7929972805761247
+TIMED 64 0 95.1
+GATE {'intervals': 64, 'arm': 'a_neural@incumbent', 'worst_relative_difference': 4.991191942839136e-15, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod8', 'worst_relative_difference': 1.0882918125000923e-15, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod16', 'worst_relative_difference': 2.976306086533713e-14, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod32', 'worst_relative_difference': 4.568911898306165e-13, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod64', 'worst_relative_difference': 1.2105437522191107e-12, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod128', 'worst_relative_difference': 7.849115270610492e-11, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'd_freebank@incumbent', 'worst_relative_difference': 2.6408442279355804e-14, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'dst_direct', 'worst_relative_difference': 1.2376855732888615e-13, 'tolerance': 1e-09, 'passed': True}
+P-BANK-HEAD SOLVE COMPLETE
+
+[exited with code 0]

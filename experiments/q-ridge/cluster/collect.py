@@ -34,8 +34,7 @@ def main():
            + ' && sha256sum collection.tar.gz > collection.tar.gz.sha256')
     subprocess.run(['ssh', 'tufts-login', cmd], check=True)
     for name in ['collection.tar.gz', 'collection.tar.gz.sha256']:
-        subprocess.run(['scp', f'{remote}/{name}'.join(['tufts-login:', '']), str(out / name)],
-                       check=True)
+        subprocess.run(['scp', f'tufts-login:{remote}/{name}', str(out / name)], check=True)
     subprocess.run(['sha256sum', '-c', 'collection.tar.gz.sha256'], cwd=out, check=True)
     subprocess.run(['tar', '-xzf', 'collection.tar.gz'], cwd=out, check=True)
     (out / 'output').mkdir(exist_ok=True)

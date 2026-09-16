@@ -399,3 +399,18 @@ none. The attempts were re-staged from a clean remote directory and resubmitted 
 Recorded rather than quietly fixed. The lane's three-job cap is counted against jobs that
 run the experiment; these two ran nothing. Two experiment jobs are used and one is held in
 reserve, as §6 declares.
+
+### A2 (2026-09-16, before any result) — the two attempts were scheduled onto one node
+
+Slurm placed `qrg101` (3757235) and `qrg201` (3757237) on **the same node, `pax106`**, each
+with its own A100. They are separate job directories and separate GPUs, so the
+one-job-per-directory rule and the data-isolation rule are intact, but the two share host
+CPU, memory bandwidth and PCIe.
+
+Consequence for the numbers, stated in advance: **absolute** median GPU times in these two
+jobs are not comparable with `b-ladder-top`'s, and are not compared with them. Every cost
+statement this lane makes is a **ratio within one job** — each rung against its own
+$\lambda_{rel}=0$ / $M=4(K+q)$ control, measured in the same allocation with the same
+0.25 s burn-in, the same randomised subject order and the same three retained repetitions —
+so shared-host contention affects numerator and denominator alike. Accuracy is unaffected:
+every reported error is recomputed in NumPy from the retained fields.

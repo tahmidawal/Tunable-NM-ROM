@@ -171,6 +171,13 @@ def main():
       'dense advection rather than the empirical-quadrature rule, because that rule is fitted at a '
       'fixed head and would drift as theta moves.')
     w('')
+    w('**A compile-time note worth carrying forward.** `common.make_projector` jits a closure over '
+      'the cached bank, so XLA reported a large captured constant during the first projection '
+      'compile. At this bank size that costs compile time only and the job ran at full speed, but '
+      'the same pattern at a larger bank or a finer mesh is the captured-constant landmine '
+      '`CLAUDE.md` warns about; the bank should be an explicit jit argument if this code is reused '
+      'there.')
+    w('')
     w(f"Source-generated report: `{a.report}` (SHA256 `{a.report_sha256}`) with its generator "
       f"beside it. Raw archives Git-tracked as bounded chunks under "
       f"`experiments/b-head-train/artifacts/`"

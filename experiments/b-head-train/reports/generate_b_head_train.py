@@ -358,6 +358,13 @@ def main():
     w(f"- **The step budget is held fixed at {tcfg['steps']} for every frozen-bank arm**, so the "
       'low-density arms see far more epochs than the high-density ones. That is what isolates '
       'density, and it is also why the low-density arms are the ones most exposed to overfitting.')
+    w('- **A compile-time note worth carrying forward.** `common.make_projector` jits a closure '
+      'over the cached bank, so XLA reports a large captured constant (the padded '
+      f"$512\\times{(tcfg['intervals'] - 1) ** 2}$ bank) during the first projection compile. At "
+      'this bank size it costs compile time only and the job runs at full speed, but the same '
+      'pattern at a larger bank or a finer mesh is the captured-constant landmine `CLAUDE.md` '
+      'warns about, and the bank should be passed as an explicit jit argument if this code is '
+      'reused there.')
     w('- **One mesh, one training seed per arm, development cohort only.** The final cohort stays '
       'sealed and no new case was opened. Nothing here is a speed claim against a full-order '
       'solver: the same-job full-order rows are context only.')

@@ -103,15 +103,15 @@ def panel(ax, rows, cost, err, title, quad=None):
     ax.legend(fontsize=6.5, loc='best')
 
 
-def figure(brows, prows, out_png, out_pdf):
+def figure(brows, prows, bL, pL, out_png, out_pdf):
     fig, axes = plt.subplots(1, 2, figsize=(12.4, 5.0), constrained_layout=True)
     panel(axes[0], brows, 'median_gpu_ms', 'worst_same_grid_percent',
-          'Burgers 2D, 256 intervals (marker: D n=0, o V1, s V2; open = early-stopped)',
+          f'Burgers 2D, {bL} intervals (marker: D n=0, o V1, s V2; open = early-stopped)',
           quad='eq')
     axes[0].set_xlabel('median complete-query GPU time (ms)')
     axes[0].set_ylabel('worst same-grid error vs converged FOM (%)')
     panel(axes[1], prows, 'median_query_ms', 'worst_same_grid_percent',
-          'Poisson 2D, 1024 intervals (V1 only; V2 collapses onto it)')
+          f'Poisson 2D, {pL} intervals (V1 only; V2 collapses onto it)')
     axes[1].set_xlabel('median complete-query time (ms)')
     axes[1].set_ylabel('worst same-grid error vs direct solve (%)')
     fig.savefig(out_png, dpi=200)
@@ -444,6 +444,7 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
     stem = str(out.with_suffix(''))
     fig = figure(ba['checks']['arm_table'], pa['checks']['arm_table'],
+                 b['intervals'], p['intervals'],
                  Path(stem + '-cost.png'), Path(stem + '-cost.pdf'))
     text = build(b, ba, p, pa, sm, Path(stem + '-cost.png').name)
     out.write_text(text)

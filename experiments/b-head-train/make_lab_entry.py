@@ -40,7 +40,7 @@ def main():
 
     w('## 2026-09-16')
     w(f"### b-head-train — training alone {'DOES' if passing else 'does NOT'} close the Burgers "
-      f"head's gap: {'; '.join([])}"
+      f"head's gap: the best trained checkpoint reaches "
       f"best-found {best['best_found_percent']:.4f} % against the incumbent's "
       f"{next(v for v in ea['verdicts'] if v['checkpoint'] == 'incumbent')['best_found_percent']:.4f} % "
       f"and a {f(inc['worst_bank_projection_percent'])} % bank floor; the diagnostic says "

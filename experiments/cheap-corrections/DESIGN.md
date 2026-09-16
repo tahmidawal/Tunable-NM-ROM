@@ -324,3 +324,25 @@ The `q=512` empirical-quadrature arm is reported as measured and is NOT excluded
 refitted, even though its same-grid error is plainly broken relative to its dense twin. Its
 rule is walltime-truncated and its relative fit is the worst in the table; the arm stands as a
 recorded limit of the bounded fitter's cap rather than being quietly dropped.
+
+## The local cost probe, for the record
+
+`probe_cost.py` finished on the local GB10 *after* both cluster jobs had already been
+submitted, collected and audited. Its output, `checks/probe-cost.json`, fed **no** number in
+the report, the lab log or any verdict, and it is tracked here only so that a run that
+happened is not a run that vanished. It is a proxy: a different mesh, a different quadrature
+support, no burn-in protocol and a shared unified-memory box, so its milliseconds are not
+comparable with the cluster's and must never be quoted against them.
+
+Qualitatively it agrees with the cluster on the one thing it was built to check — that the
+joint and block-damped variants reach the shared stationarity rule in about three iterations
+per step while `alt` misses it — and it disagrees with the cluster on plain variable
+projection, which hit its iteration budget here but converged on the cluster. That
+disagreement is a settings difference, not a contradiction to resolve: the probe ran a
+different quadrature and a different damping schedule from the submitted configuration. The
+cluster numbers are the ones that count.
+
+This probe also breaks the local-work guidance in `CLAUDE.md`, which says the shared box is
+for sub-minute smokes. It ran far longer than that, alongside two sibling agents. Recorded as
+a deviation rather than quietly dropped; a future cost probe of this size belongs on the
+cluster.

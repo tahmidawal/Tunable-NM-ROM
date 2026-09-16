@@ -88,7 +88,7 @@ def ladder_line(ax, lad, key, color, label, dashed=False):
 def figure(aud, control, out_png, out_pdf):
     times = aud['output_times']
     lads = aud['ladders']
-    nrow = 3 if control else 2
+    nrow = 3 if (control and control.get('ladders')) else 2
     fig = plt.figure(figsize=(15, 4.6 * nrow))
     gs = fig.add_gridspec(nrow, 6, height_ratios=[1.35] * (nrow - 1) + [1.0],
                           hspace=.72, wspace=.42)
@@ -106,7 +106,7 @@ def figure(aud, control, out_png, out_pdf):
         ax.set_title(f'{title}\nDENSE ladder, budget 600, one allocation', fontsize=10)
         ax.legend(fontsize=8, loc='best')
 
-    if control:
+    if control and control.get('ladders'):
         clads = control['ladders']
         for col, (key, title) in enumerate((('evolved', 'worst over EVOLVED times ($t>0$)'),
                                             ('all_times', 'worst over ALL times ($t\\geq 0$)'))):
@@ -131,8 +131,9 @@ def figure(aud, control, out_png, out_pdf):
             ax.plot([u['q'] for u in lad['rungs']], [u['per_time'][i] for u in lad['rungs']],
                     'o-', ms=4, lw=1.4, color=RULECOLOR.get(lad['rule'], '#555'),
                     label=lid if i == 0 else None)
-        if control:
-            cl = control['ladders'].get('traj_primary') or control['ladders'].get('old_primary')
+        if control and control.get('ladders'):
+            cl = (control['ladders'].get('traj_primary')
+                  or control['ladders'].get('old_primary'))
             if cl:
                 ax.plot([u['q'] for u in cl['rungs']], [u['per_time'][i] for u in cl['rungs']],
                         's--', ms=3.5, lw=1.1, color='#8a5a2a',
@@ -373,21 +374,27 @@ def main():
 
     # ------------------------------------------------------------- the control
     if control:
-        cl = control['ladders']
-        cv = control['verdict']
+        cl = control.get('ladders') or {}
+        cv = control.get('verdict')
         cds = control['direction_sets']
         L.append('\n## The control — correction directions fitted to the trajectory error\n')
         L.append(
             f'Job `{control["job_id"]}` (`qtd01`) on `{control["gpu"]}`, source '
-            f'`{control["commit"]}`, elapsed {control["elapsed_seconds"]:.1f} s, submitted '
-            '**before** the `q-diag` verdict arrived and let finish rather than cancelled. It '
+            f'`{control["commit"]}`, '
+            + (f'elapsed {control["elapsed_seconds"]:.1f} s' if control.get('elapsed_seconds')
+               else 'elapsed time not recorded because it did not finish')
+            + ', submitted '
+            '**before** the `q-diag` verdict arrived and let run rather than cancelled. It '
             'builds three direction sets that differ only in which residual matrix is '
             'decomposed — the incumbent static reconstruction residual, and the $q=0$ ROM\'s own '
             'trajectory error against the same-mesh converged full-order solve over 32 and over '
-            '6 training trajectories — and runs each over the ladder. Its own pre-registered '
-            f'pass (section 6 of `DESIGN.md`) **{"passes" if cv["passes"] else "does not pass"}**, '
-            'and it is reported here as a test of `q-diag`\'s verdict rather than as this cell\'s '
-            'subject.\n')
+            '6 training trajectories — and runs each over the ladder. '
+            + ('Its own pre-registered pass (section 6 of `DESIGN.md`) '
+               f'**{"passes" if (cv or {}).get("passes") else "does not pass"}**, and it is '
+               'reported here as a test of `q-diag`\'s verdict rather than as this cell\'s '
+               'subject.\n' if cv else
+               'It **did not reach its timed phase**; what it did produce is reported here, and '
+               'what it did not is stated plainly below.\n'))
         L.append('\n**The three direction sets.**\n\n')
         L.append(table(['set', 'residual decomposed', 'rows', 'rank', 'orthonormality dev',
                         'fit s', '`directions_sha256`'],
@@ -400,7 +407,8 @@ def main():
                          '`' + cds[k]['directions_sha256'][:16] + '…`']
                         for k in ('old', 'traj', 'prac') if k in cds]))
         cc = control['direction_comparison']['cross_capture']
-        qs = sorted({u['q'] for d in cl.values() for u in d['rungs'] if u['q'] > 0})
+        qs = sorted({int(q) for d in cc.values() for e in d.values() for q in e
+                     if int(q) > 0})
         L.append('\n**Cross-capture** $\\kappa_q(P,C)=\\|\\tilde P\\tilde C_{:,1:q}\\|_F^2/'
                  '\\|\\tilde P\\|_F^2$, per cent of residual matrix $P$\'s whitened energy that '
                  'direction set $C$ reaches at rung $q$. The diagonal is each set\'s own POD '
@@ -418,18 +426,51 @@ def main():
                        [[f'`{pair}`', q, f(d[q]['overlap'], 5), f(d[q]['angle_min_degrees'], 2),
                          f(d[q]['angle_median_degrees'], 2), f(d[q]['angle_max_degrees'], 2)]
                         for pair, d in sorted(pa.items()) for q in sorted(d, key=int)]))
-        L.append('\n**Its ladders, both metrics.**\n')
-        ladder_block(L, cl, ['old_primary', 'traj_primary', 'prac_primary', 'old_dense',
-                             'traj_dense', 'prac_dense', 'old_fixedM', 'traj_fixedM'])
-        L.append('\n**The $q=16$ evolved-metric regression, per ladder of the control.** If '
-                 '`q-diag` is right, the regression appears on empirical-quadrature ladders and '
-                 'not on dense ones, whichever direction rule drives them.\n\n')
-        L.append(table(['ladder', 'directions', 'quadrature', '$q=0$ evolved %',
-                        '$q=16$ evolved %', 'change (pp)', 'regression'],
-                       [[f'`{lid}`', cl[lid]['dirset'], cl[lid]['quadrature'], pct(x['q0']),
-                         pct(x['q16']), f"{x['delta_percentage_points']:+.4f}",
-                         yn(x['regression'])]
-                        for lid, x in sorted(cv['q16_regression'].items())]))
+        if control.get('reconstruction'):
+            L.append('\n**The static manifold floor each rule buys.** Best-found error on the '
+                     'supplied field over that rung\'s own manifold, worst over the six cases, '
+                     'found offline by multistart optimisation. It is the accuracy floor the '
+                     'online solver is chasing, and it is the confounder that would otherwise '
+                     'explain any ladder difference. A dash is a rung this job did not build '
+                     'for that rule; the incumbent rule\'s floor at every rung is in the '
+                     'primary job\'s ladder tables above.\n\n')
+            rq = sorted({x['q'] for x in control['reconstruction']})
+            byq = {(x['dirset'], x['q']): x for x in control['reconstruction']}
+            L.append(table(['directions'] + [f'$q={q}$ %' for q in rq],
+                           [[f'`{d}`'] + [pct(byq[(d, q)]['worst_best_found_percent'])
+                                          if (d, q) in byq else
+                                          (pct(byq[('shared', 0)]['worst_best_found_percent'])
+                                           if q == 0 and ('shared', 0) in byq else '—')
+                                          for q in rq]
+                            for d in ('old', 'traj', 'prac')]))
+        if cl:
+            L.append('\n**Its ladders, both metrics.**\n')
+            ladder_block(L, cl, ['old_primary', 'traj_primary', 'prac_primary', 'old_dense',
+                                 'traj_dense', 'prac_dense', 'old_fixedM', 'traj_fixedM'])
+            L.append('\n**The $q=16$ evolved-metric regression, per ladder of the control.** If '
+                     '`q-diag` is right, the regression appears on empirical-quadrature ladders '
+                     'and not on dense ones, whichever direction rule drives them.\n\n')
+            L.append(table(['ladder', 'directions', 'quadrature', '$q=0$ evolved %',
+                            '$q=16$ evolved %', 'change (pp)', 'regression'],
+                           [[f'`{lid}`', cl[lid]['dirset'], cl[lid]['quadrature'], pct(x['q0']),
+                             pct(x['q16']), f"{x['delta_percentage_points']:+.4f}",
+                             yn(x['regression'])]
+                            for lid, x in sorted(cv['q16_regression'].items())]))
+        else:
+            L.append(
+                '\n**Its timed ladders do not exist.** The job built all 31 reduced arms and '
+                'every empirical-quadrature rule, ran every offline diagnostic above, and then '
+                'died in the compile warm-up of its 21st subject with a CUDA out-of-memory on a '
+                '40 GB A100 — it was sized for the 80 GB part. Everything above this paragraph '
+                'is from its collected, checksum-verified output; nothing below it exists. The '
+                'coordinator\'s redirect said not to spend another job on new directions, so it '
+                'was not resubmitted, and the question it would have answered — whether the '
+                '$q=16$ evolved regression follows the quadrature rather than the direction rule '
+                '— is answered by the `q-diag` census and by Part 1 and Part 2 above, on the '
+                'dense side, without it.\n')
+            if control.get('terminating_error'):
+                L.append('\nIts terminating error, lifted verbatim from the collected job '
+                         'stderr:\n\n```\n' + control['terminating_error'] + '\n```\n')
         L.append('\n**Gates of the control job.**\n\n')
         L.append(gate_table(control['checks']))
         L.append('\n' + ('Failed: ' + ', '.join(f'`{x}`' for x in control['failed']) + '.\n'

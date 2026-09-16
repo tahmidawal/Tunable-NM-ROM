@@ -401,3 +401,36 @@ same-allocation check of that verdict under a direction rule `q-diag` never had.
   scratchpad was overwritten by a sibling agent between two uses of it. Nothing that
   matters lives there — every input to every reported number is a committed file or a
   checksum-verified archive — but fixtures are now written to a lane-specific subdirectory.
+
+### E. Outcome, and what was retracted
+
+* **E1 — the redirected primary PASSES.** `qtd02` (job 3757505, `NVIDIA A100-PCIE-40GB`,
+  3152.1 s): on the `dense_m4` ladder the worst evolved-times error falls monotonically
+  $1.8890 \to 1.3985 \to 1.2336 \to 1.0843 \to 0.8930 \to 0.5194\,\%$ over
+  $q=0,16,32,64,128,256$ with **every rung converged** — zero budget exits anywhere, worst
+  joint gradient $9.99\times10^{-7}$ — and the worst all-times error falls monotonically
+  $2.5629 \to 0.9053\,\%$. Six converged non-dominated points spanning **3.637×** in error
+  and **13.070×** in cost. Both legs of the redirected criterion clear 2×. The fixed-$M=256$
+  dense ladder is also monotone on both metrics and fully converged but spans only 1.22× in
+  evolved error, so $M$ growing with $q$ carries part of the cost span and part of the error
+  span; both ladders are reported.
+* **E2 — the control job DIED and was not resubmitted.** `qtd01` (job 3756800) built all 31
+  reduced arms and all 21 empirical-quadrature rules, ran every offline diagnostic, and then
+  hit `CUDA_ERROR_OUT_OF_MEMORY` in the compile warm-up of its 21st subject. It was sized
+  for an 80 GB A100 and landed on the 40 GB part; 31 simultaneous jitted queries holding
+  their own dense test-mode matrices and quadrature stencils do not fit in 40 GB. Its
+  offline output is collected, checksum-verified, audited in a `--partial` mode and reported;
+  **its timed ladders do not exist.** The redirect said not to spend another job on new
+  directions, so it was not rerun, and the third job of the cap is unused.
+* **E3 — the trajectory-direction hypothesis is withdrawn, and this cell does not get to
+  claim it tested it.** `q-diag` refuted it from data that already existed, before this
+  lane's own job produced a number. What survives from `qtd01` is a measurement of how
+  differently the two rules aim — the incumbent directions reach only **11.7 %** of the
+  trajectory residual's energy at $q=16$ and **39.0 %** at $q=64$, with a field-metric
+  subspace overlap of 0.176 and 0.441 against the trajectory directions — together with the
+  fact that aiming differently was never what the ladder needed.
+* **E4 — sizing rule for this family of jobs, worth carrying.** A job that builds $N$
+  jitted reduced queries holds all $N$ compiled executables plus all $N$ operator sets on
+  the device at once. `qtd02`, with 14 subjects and no quadrature stencils, fits 40 GB
+  comfortably; `qtd01`, with 34, does not. Either request the 80 GB part explicitly, or
+  split the sweep across attempt directories.

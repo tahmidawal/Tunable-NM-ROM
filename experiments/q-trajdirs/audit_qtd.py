@@ -83,6 +83,10 @@ def main():
     p.add_argument('result')
     p.add_argument('--out', required=True)
     p.add_argument('--fields', required=True)
+    p.add_argument('--partial', action='store_true',
+                   help='audit a job that died before its timed phase: run the environment, '
+                        'cohort, direction and reconstruction checks and record that the '
+                        'timed ladders do not exist, instead of failing on empty tables')
     a = p.parse_args()
     r = json.loads(Path(a.result).read_text())
     fields_dir = Path(a.fields)
@@ -101,12 +105,23 @@ def main():
     qlad = list(cfg['q_ladder'])
 
     # ------------------------------------------------------- environment gates
-    gate('complete', r.get('complete') is True)
+    partial = bool(a.partial) or not r['invocations']
+    if partial:
+        checks['complete'] = dict(
+            passed=False, detail=dict(complete=r.get('complete'),
+                                      invocations=len(r['invocations'])),
+            note='PARTIAL audit: this job did not reach its timed phase, so it has no ladders, '
+                 'no frontier and no verdict. Everything below that does not need a timed '
+                 'invocation is still checked.')
+        fail.append('complete')
+    else:
+        gate('complete', r.get('complete') is True)
     gate('backend_gpu', r['backend'] == 'gpu', r['backend'])
     gate('x64', r['x64'] is True)
     gate('precision_highest', r['matmul_precision'] == 'highest')
     gate('bank_frozen', r['spatial_bank_frozen'] and r['network_weights_frozen'])
-    gate('checkpoint_unchanged', r['checkpoint_sha256'] == r.get('checkpoint_sha256_after'))
+    if not partial:
+        gate('checkpoint_unchanged', r['checkpoint_sha256'] == r.get('checkpoint_sha256_after'))
     gate('final_cohort_unopened', r['final_cohort_unopened'] is True)
     gate('reference_residuals', all(x['max_relative_residual'] < 2e-11 for x in r['reference']),
          max(x['max_relative_residual'] for x in r['reference']))
@@ -151,14 +166,84 @@ def main():
     gate('direction_prefixes_recomputed_from_artifact', prefix_ok, prefix_detail,
          'the hash of the first q columns of each SAVED matrix equals the hash the job '
          'recorded for the slice it handed rung q')
-    gate('nested_prefix_consistent', bool(r['gates']['nested_prefix_consistent']['passed']),
-         r['gates']['nested_prefix_consistent'])
+    # The job writes this gate at the very end, so a job that died earlier has the same
+    # claim to check but not the job's own answer; the audit then derives it from the
+    # arm setups and the saved matrices, which is the stronger check anyway.
+    npc = r['gates'].get('nested_prefix_consistent')
+    if npc is None:
+        ok = all(s2['directions_prefix_sha256']
+                 == r['direction_sets']['old' if s2['dirset'] == 'shared' else s2['dirset']
+                                        ]['prefix_sha256'][str(s2['q'])]
+                 for s2 in r['arm_setup'])
+        npc = dict(passed=ok, note='derived by the audit; the job died before writing it')
+    gate('nested_prefix_consistent', bool(npc['passed']), npc)
     info('old_directions_hash_matches_comparator',
          bool(ds['old'].get('bitwise_matches_comparator')),
          dict(expected=ds['old'].get('expected_sha256'), got=ds['old']['directions_sha256']),
          'bitwise across jobs; qlad01, cclad01 and the b-ladder-top jobs already disagree '
          'with each other, so this is a probe, not a requirement')
     dir_bitwise = bool(ds['old'].get('bitwise_matches_comparator'))
+
+    # ------------------------------------ what a partial job can still report ---
+    if partial:
+        recon = {(x['dirset'], x['q']): x for x in r['reconstruction']}
+        gate('every_declared_rung_has_a_reconstruction',
+             all((s2['dirset'], s2['q']) in recon for s2 in r['arm_setup']),
+             sorted({(s2['dirset'], s2['q']) for s2 in r['arm_setup']}
+                    - set(recon)))
+        eqp = [s2 for s2 in r['arm_setup'] if s2.get('quadrature') == 'eq']
+        gate('every_eq_rule_reports_validity',
+             all('eq_rule_valid' in s2 or
+                 (s2.get('eq_fit') or {}).get('fitter') == 'retained_nnls_capped' for s2 in eqp),
+             [s2['arm'] for s2 in eqp if 'eq_rule_valid' not in s2][:5])
+        gate('no_eq_rule_truncated',
+             all(not (s2.get('eq_fit') or {}).get('truncated', False) for s2 in eqp),
+             [s2['arm'] for s2 in eqp if (s2.get('eq_fit') or {}).get('truncated')])
+        gate('overdetermined_weak_system',
+             all(s2['M'] > s2['solved_dimension'] for s2 in r['arm_setup']),
+             [(s2['arm'], s2['M'], s2['solved_dimension']) for s2 in r['arm_setup']
+              if s2['M'] <= s2['solved_dimension']][:5])
+        # The job never wrote its own elapsed time, so the last phase timestamp it DID
+        # write is reported as a floor, and the terminating error is lifted verbatim out
+        # of the collected stderr rather than retyped.
+        logs = Path(a.fields).parent / 'logs'
+        err_lines = []
+        for f2 in sorted(logs.glob('*.err')) if logs.exists() else []:
+            err_lines = [ln for ln in f2.read_text(errors='replace').splitlines() if ln.strip()]
+        terminating = next((ln for ln in reversed(err_lines)
+                            if 'Error' in ln or 'error' in ln), None)
+        out = dict(result=str(Path(a.result).resolve()),
+                   result_sha256=hashlib.sha256(Path(a.result).read_bytes()).hexdigest(),
+                   partial=True, job_id=r.get('job_id'), commit=r.get('commit'),
+                   gpu=r.get('gpu'), elapsed_seconds=r.get('elapsed_seconds'),
+                   last_recorded_phase_seconds=max(
+                       [v.get('seconds', 0) for v in r['direction_sets'].values()]
+                       + [r.get('compile_warmup', {}).get('seconds', 0)] + [0]),
+                   terminating_error=terminating,
+                   arms_built=len(r['arm_setup']),
+                   subjects_warmed=None,
+                   output_times=r['output_times'], checks=checks, failed=sorted(fail),
+                   arms=[], ladders={}, frontier={}, verdict=None,
+                   arm_setup=[{k2: v2 for k2, v2 in s2.items()
+                               if k2 not in ('eq_indices', 'eq_weights', 'eq_fit_rows')}
+                              for s2 in r['arm_setup']],
+                   reconstruction=[dict(dirset=x['dirset'], q=x['q'],
+                                        worst_bank_projection_percent=x['worst_bank_projection'] * 100,
+                                        worst_best_found_percent=x['worst_best_found'] * 100)
+                                   for x in r['reconstruction']],
+                   direction_sets={k: {kk: vv for kk, vv in v.items()
+                                       if kk not in ('singular_values',)}
+                                   for k, v in r['direction_sets'].items()},
+                   direction_comparison=r['direction_comparison'],
+                   direction_cohorts=r['direction_cohorts'],
+                   direction_rollout=r.get('direction_rollout', {}),
+                   comparators={})
+        Path(a.out).write_text(json.dumps(out, indent=2) + '\n')
+        print(json.dumps(dict(partial=True, failed=sorted(fail),
+                              arm_setups=len(r['arm_setup']),
+                              reconstructions=len(r['reconstruction'])), indent=2))
+        print('PARTIAL AUDIT WROTE', a.out)
+        return
 
     # --------------------------------------------------------- bookkeeping ---
     inv = r['invocations']

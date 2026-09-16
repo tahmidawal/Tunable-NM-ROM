@@ -414,3 +414,98 @@ $\lambda_{rel}=0$ / $M=4(K+q)$ control, measured in the same allocation with the
 0.25 s burn-in, the same randomised subject order and the same three retained repetitions —
 so shared-host contention affects numerator and denominator alike. Accuracy is unaffected:
 every reported error is recomputed in NumPy from the retained fields.
+
+### A3 (2026-09-16, after `q-diag` reported, before `qrg301` was staged) — re-scope: the primary question becomes EQ rule certification
+
+The `q-diag` lane reported while `qrg101` (R1) and `qrg201` (R2) were running:
+`worktrees/2026-09-16-q-diag/experiments/q-diag/reports/2026-09-16-q16-regression-diagnosis.md`,
+SHA256 `c0bf57626d9e0a422965446b39e79e423c9a39f6886b7ca1893b8a03cd803c6e`. Its verdict
+**confirms §1.1 of this design independently and goes further**:
+
+- every dense ladder is monotone — 12 of 12 ladder/metric combinations across four jobs,
+  0 violations — while only 3 of 10 empirical-quadrature combinations are;
+- test-space overfitting is **real but is not the cause**: on the dense $M=256$ arms the
+  residual on the solved 256 modes falls about 2x from $q=0$ to $q=128$ while the residual on
+  the next 1024 held-out modes rises about 1.7x, yet the field error falls monotonically over
+  the same range;
+- the mechanism is the rule: $\rho$, the $m$-point rule's own relative error on the advection
+  functional, rises from 0.1158 at $q=0$ to 0.1854 at $q=128$ and 0.50–0.77 at $q=512$ **while
+  its NNLS relative fit stays flat at $\approx 4\times10^{-4}$ and is anti-correlated with
+  $\rho$ at the top**. The whole penalty is injected in the first output interval of one case.
+
+The coordinator therefore re-scoped this lane. What changes, and what does not:
+
+**Kept, unchanged and already running.** `qrg101` and `qrg201` were submitted before the
+redirect and are left to finish; they cost nothing more. R1 is **demoted from primary to a
+control**: the ridge arm at $q=64$, $\lambda_{rel}=10^{-2}$ is retained as the declared
+control and the rest of the $\lambda$ grid is reported as measured but is no longer the
+lane's question. R2 is likewise reported as a secondary test-count result. R3 stays as the
+cheap held-out-residual control; `q-diag` has already measured it on the dense arms across
+four jobs and **this lane cites their numbers** rather than restating them, adding only what
+is new here: the held-out residual under a **ridge** and under **larger $M$**, which they
+could not measure because no such arm existed.
+
+**New primary — EQ rule certification (`qrg301`, the lane's third and last job).**
+
+1. *Reachable-state population.* The rule is refit on states the ROM actually reaches:
+   enriched decoder outputs $h_\theta(z) + C_q y$ taken from the ROM's **own dense-quadrature
+   rollouts** on training-family trajectories, recording the converged step solution *and*
+   the intermediate LM iterates at every step (an untimed collection path that unrolls a
+   fixed 12 Levenberg-Marquardt steps with the retained step formula, so its iterates are the
+   production solver's). Fit trajectories and certification trajectories are **disjoint**.
+2. *The $m$ grid.* $m \in \{1024, 2048, 4096, 8192\}$ at $M = 4(K+q)$ fixed, for
+   $q \in \{16, 64, 256\}$ as the coordinator specified and also for $q \in \{0, 32, 128\}$,
+   because the rebuilt ladder needs a certified rule at every rung. Candidate pool raised to
+   16384 interior points so $m = 8192$ is a genuine selection; the number of fit states is
+   $\mathrm{clip}(\lceil 4m/M \rceil, 16, 256)$ so the design never becomes underdetermined as
+   $m$ grows. Both are declared departures from the incumbent construction and are recorded
+   per rule.
+3. *Certification.* Every rule is certified by
+   $$\rho(u) = \frac{\bigl\|\sum_{j=1}^{m} w_j \Phi(x_j)\,a(u)(x_j) - \Phi^\top a(u)\bigr\|_2}
+   {\|\Phi^\top a(u)\|_2},$$
+   `q-diag`'s definition verbatim, evaluated on a **held-out** set of reachable states from
+   the disjoint certification trajectories. **Never by the NNLS relative fit**, which this
+   lane also records precisely so the anti-correlation can be shown again on new rules.
+   Reported per rule: $\rho_{\max}$, $\rho_{95}$, $\rho_{\text{median}}$, the fit walltime,
+   the fitter's truncation flag, $m$, the nodes and the weights.
+4. *The bar, declared before running.* A rule is **certified** iff
+   $\rho_{\max} \le \rho^\star = 0.116$ on the held-out reachable set — the value `q-diag`
+   measured for the $q=0$ incumbent rule at the state that carries the whole penalty. A
+   secondary bar $\rho_{95} \le \rho^\star$ is reported alongside for every rule; where no
+   rule at a rung meets the primary bar, the ladder falls back to the cheapest rule meeting
+   the secondary bar and **the row says so**. The incumbent static-population rule at
+   $m = \min(4M, 2048)$ is fitted and certified at every rung with the identical protocol, so
+   the old and new populations are compared like for like and the in-job value of the old
+   $q=0$ rule's $\rho$ is reported next to `q-diag`'s 0.116.
+5. *The rebuilt ladder.* $q \in \{0, 16, 32, 64, 128, 256\}$ with the cheapest certified rule
+   per rung, dense twins at $q \in \{0, 64, 256\}$, per-step budget 600, the same six cases,
+   the same-job `fft_tight` / `fft_loose` / `nt1e-2_dt01` controls, three retained timed
+   repetitions, both metrics per time and per case.
+6. *Fitter.* The scipy Lawson-Hanson NNLS the incumbent uses cannot reach $m = 8192$ in a
+   job: it took about 1000 s at $m=2048$. New rules are fitted with a block-greedy support
+   selection plus a **projected-gradient (FISTA) nonnegative least-squares solve in float64
+   on the GPU**. This is a declared change of fitter, and it is legitimate precisely because
+   §A3.3 certifies rules by $\rho$ rather than by the fit residual. The smoke gates the GPU
+   fitter against scipy's NNLS at small $m$. The two b-ladder-top reproduction arms keep the
+   **retained scipy fitters** so their gates stay exact.
+
+**Pass (pre-registered).** The rebuilt EQ ladder is non-increasing in $q$ on the
+worst-over-evolved-times metric over $\{0,16,32,64,128,256\}$, every rung converged under the
+shared stationarity rule, at a median complete-query GPU cost per rung of at most **2x** that
+rung's old-rule EQ cost, without raising the worst-over-all-times metric at any rung.
+
+**Falsification.** If no $m \le 8192$ reaches the bar at $q=256$, the lane reports the $m$ at
+which it would by extrapolation of $\rho$ against $m$ and stops, rather than enlarging the
+grid. If the rebuilt ladder is monotone only because the certified rules made every rung
+equal to its dense twin at a cost no better than dense, the lane says so.
+
+**Gates added.** The old $m = 4M$ rule reproduces `b-ladder-top`'s EQ rows to $\le 10^{-9}$
+(`q0_m4_eq_base`, and `q128_m2_eq_base` under the two-tier directions-dependent tolerance);
+every reported error recomputed from saved fields; the evaluation cohort bitwise `abl01`'s six
+cases; every rule's nodes, weights, $m$, fit residual, fit walltime and held-out $\rho$
+archived in `result.json`; fit and certification trajectories disjoint, and both disjoint from
+the six evaluation cases.
+
+**Job budget.** The cap of three stands: `qrg101` (R1, running), `qrg201` (R2, running),
+`qrg301` (EQ certification). The two aborted submissions of §A1 ran nothing and are not
+counted.

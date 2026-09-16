@@ -291,9 +291,13 @@ def main():
                            and (x['lam_rel'] == 0. or x['q'] == 16)})
         blocks_cache = {}
 
+        short = {}
+
         def block(skip, count):
             if (skip, count) not in blocks_cache:
                 phi, lam, _ = R3.modes(L, count, skip)
+                if phi.shape[1] != count:
+                    short[f'{skip}+{count}'] = int(phi.shape[1])
                 blocks_cache[(skip, count)] = (phi, lam)
             return blocks_cache[(skip, count)]
 
@@ -340,6 +344,9 @@ def main():
             print('R3', name, per_arm[name]['held_out_common']['worst_normalised_per_mode_rms'],
                   flush=True)
         gate('decoded_fields_match_saved_outputs', decoded_dev < 1e-12, decoded_dev)
+        gate('r3_mode_blocks_complete', not short, short,
+             'every requested test-mode block returned its full width; a short block would '
+             'silently change what a residual is normalised by')
 
         def cmp_pair(quad, rule, q_lo, q_hi, lam=0.):
             lo = next((x['arm'] for x in rows if x['family'] == 'rom' and x['q'] == q_lo

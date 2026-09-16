@@ -126,6 +126,26 @@ def main():
           f"{v['error_span']:.2f}x | {'yes' if v['all_nondominated_converged'] else 'no'} | "
           f"**{'A KNOB' if v['accepted'] else 'NOT a knob'}** |")
     w('')
+    fails = {}
+    for v in vs:
+        why = []
+        if not v['monotone']:
+            why.append('monotonicity')
+        if v['nondominated_count'] < 3:
+            why.append('fewer than three non-dominated points')
+        if v['cost_span'] < 2.:
+            why.append('cost span below 2x')
+        if v['error_span'] < 2.:
+            why.append('error span below 2x')
+        if not v['all_nondominated_converged']:
+            why.append('an early-stopped point on the frontier')
+        fails[(v['pde'], v['variant'], v['mu_key'])] = why
+    w('**What each ladder failed on:** '
+      + '; '.join(f"{v['pde']} {v['variant'].upper()}/{v['mu_key']} — "
+                  + (', '.join(fails[(v['pde'], v['variant'], v['mu_key'])])
+                     if fails[(v['pde'], v['variant'], v['mu_key'])] else 'nothing')
+                  for v in vs) + '.')
+    w('')
     for v in vs:
         w(f"- {v['pde']} {v['variant'].upper()} / {v['mu_key']}: worst same-grid along n={v['n']} is "
           f"{[round(x, 4) for x in v['errors']]} percent at {[round(x, 3) for x in v['costs']]} "
@@ -165,6 +185,24 @@ def main():
                   f"{x['worst_same_grid_percent']:.4f}%, {x['median_query_ms']:.3f} ms"
                   for x in prows if x['kind'] == 'rom' and x['n'] in (8, 32)) + '.')
     w('')
+    bt = base.get('worst_same_grid_per_time_percent')
+    if bt:
+        import numpy as _np
+        at0 = int(_np.argmax(bt))
+        if at0 == 0:
+            w(f"**A structural point that must not be misread.** For the unrefined Burgers head the "
+              f"maximum over the six output times is attained at t=0 ({bt[0]:.4f}% against "
+              f"{max(bt[1:]):.4f}% over the evolved times): the t=0 output is the model's own "
+              f"compression of the supplied initial field. V2 has not taken a single refinement step "
+              f"by the time that field is decoded, so NO V2 arm can move the worst-over-times number "
+              f"once its evolved times fall below the t=0 value. Several V2 rows therefore sit at "
+              f"exactly the n=0 value for that structural reason, not because refinement did nothing "
+              f"- their drift is non-zero and their per-time errors do change. The same pinning "
+              f"applies to the V2 best-found reconstruction column, which is a max over times whose "
+              f"t=0 entry uses theta_0. V1 does move the number, because it refines before t=0 is "
+              f"decoded. This was not anticipated in DESIGN.md and is recorded here as the main "
+              f"interpretive correction of the cell.")
+            w('')
     risky = []
     for x in brows:
         v = x.get('worst_same_grid_per_time_percent')

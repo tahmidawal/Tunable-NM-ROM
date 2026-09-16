@@ -118,13 +118,23 @@ def main():
           dict(intervals=mesh, worst_difference=worst_stored))
 
     bank = d['selection']['bank']
-    pick = min(d['bank_arms'], key=lambda x: (
-        next(f for f in x['floors'] if f['intervals'] == bank['mesh'])['validation']['worst'],
-        next(f for f in x['floors'] if f['intervals'] == bank['mesh'])['validation']['median'],
-        x['R'], x['S']))
-    check('bank_selection_rule', pick['arm'] == bank['selected'],
-          dict(recomputed=pick['arm'], recorded=bank['selected'], mesh=bank['mesh'],
-               development_ranking_agrees=bank['development_ranking_agrees']))
+    if d['bank_arms']:
+        pick = min(d['bank_arms'], key=lambda x: (
+            next(f for f in x['floors'] if f['intervals'] == bank['mesh'])['validation']['worst'],
+            next(f for f in x['floors'] if f['intervals'] == bank['mesh'])['validation']['median'],
+            x['R'], x['S']))
+        check('bank_selection_rule', pick['arm'] == bank['selected'],
+              dict(recomputed=pick['arm'], recorded=bank['selected'], mesh=bank['mesh'],
+                   development_ranking_agrees=bank['development_ranking_agrees']))
+    else:
+        # Head-only run: the bank was selected elsewhere and supplied. Check that
+        # the supplied checkpoint is byte-identical to the one that was copied in.
+        src = a.run / f"checkpoints/{bank['selected']}.pkl"
+        got = hashlib.sha256(src.read_bytes()).hexdigest()
+        check('bank_supplied', got == bank['source_checkpoint_sha256'],
+              dict(selected=bank['selected'], recomputed_sha256=got,
+                   recorded_sha256=bank['source_checkpoint_sha256'],
+                   rule=bank['rule']))
 
     head_ok, head_detail = True, {}
     for sel in d['selection']['heads']:

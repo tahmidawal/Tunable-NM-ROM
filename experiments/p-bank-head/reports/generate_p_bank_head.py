@@ -57,8 +57,16 @@ def solve_table(sv):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--train', type=Path, required=True)
+    ap.add_argument('--train', type=Path, required=True,
+                    help='the run that swept the bank (and carries the incumbent diagnosis)')
     ap.add_argument('--train-audit', type=Path, required=True)
+    ap.add_argument('--head-train', type=Path, default=None,
+                    help='the run that swept the head, if different from --train')
+    ap.add_argument('--head-audit', type=Path, default=None)
+    ap.add_argument('--bank-selection', type=Path, default=None,
+                    help='the common-cohort bank selection check (DESIGN amendment 4)')
+    ap.add_argument('--incumbent-diagnosis', type=Path, default=None,
+                    help='the corrected incumbent diagnosis (DESIGN amendment 1)')
     ap.add_argument('--solve', type=Path, required=True)
     ap.add_argument('--solve-audit', type=Path, required=True)
     ap.add_argument('--reference', type=Path, required=True)
@@ -66,6 +74,10 @@ def main():
     a = ap.parse_args()
     tr = json.loads(a.train.read_text())
     ta = json.loads(a.train_audit.read_text())
+    ht = json.loads(a.head_train.read_text()) if a.head_train else tr
+    ha = json.loads(a.head_audit.read_text()) if a.head_audit else ta
+    bsel = json.loads(a.bank_selection.read_text()) if a.bank_selection else None
+    idg = json.loads(a.incumbent_diagnosis.read_text()) if a.incumbent_diagnosis else None
     sv = json.loads(a.solve.read_text())
     sa = json.loads(a.solve_audit.read_text())
     ref = json.loads(a.reference.read_text())
@@ -76,7 +88,9 @@ def main():
     fine = meshes[-1]
     tcfg, scfg = tr['config'], sv['config']
     bank_sel = tr['selection']['bank']
-    head_sels = tr['selection']['heads']
+    head_sels = ht['selection']['heads']
+    bank_mesh = tcfg['floor_intervals'][-1]
+    selected_bank = bsel['selected'] if bsel else bank_sel['selected']
     recon = {(r['intervals'], r['model']): r for r in sv['reconstruction']}
     models = {m['id']: m for m in sv['checkpoints']}
     control = 'incumbent'
@@ -148,16 +162,16 @@ def main():
               f"{pc(bestrow['solved'])} % vs {pc(bestrow['pod_matched'])} % | "
               f"{'**pass**' if bestrow['beats_pod'] else '**miss**'} |")
     w('')
-    bank_target = min((next(f for f in x['floors'] if f['intervals'] == bank_sel['mesh'])
+    bank_target = min((next(f for f in x['floors'] if f['intervals'] == bank_mesh)
                        ['development']['worst'] for x in tr['bank_arms']), default=None)
     w(f"| layer target | requirement | value | verdict |")
     w('|---|---|---:|---|')
-    w(f"| bank | worst development floor < 1.0000 % at {bank_sel['mesh']} intervals | "
+    w(f"| bank | worst development floor < 1.0000 % at {bank_mesh} intervals | "
       f"{pc(bank_target)} % | {'**pass**' if (bank_target or 9) < 0.01 else '**miss**'} |")
     for s in head_sels:
-        arm = next(x for x in tr['head_arms'] if x['arm'] == s['selected'])
+        arm = next(x for x in ht['head_arms'] if x['arm'] == s['selected'])
         f_ = next(f for f in next(x for x in tr['bank_arms']
-                                  if x['arm'] == bank_sel['selected'])['floors']
+                                  if x['arm'] == selected_bank)['floors']
                   if f['intervals'] == tcfg['training_intervals'])['development']['worst']
         ratio = arm['best_found_development']['worst'] / max(f_, 1e-300)
         w(f"| head K={s['K']} | best-found within 1.2x its bank floor | {num(ratio, 3)}x | "
@@ -170,6 +184,46 @@ def main():
     w('The diagnosis is measured, not argued. D1–D8 are defined in DESIGN.md section 6 and are '
       'computed here for the incumbent checkpoint before anything was trained.')
     w('')
+    if idg is not None:
+        w('> **Retraction inside `pbh01` (DESIGN.md amendment 1).** That job computed the '
+          "incumbent's *training-side* diagnostics against `core.source_params(0, 512)`, which "
+          'is not the cohort that checkpoint was trained on (it trained on '
+          '`core.source_params(0, 576)[:512]`, and the two share nothing). **D2, D3, D4, D6 and '
+          'D8 as printed by `pbh01` for the incumbent are retracted.** The table immediately '
+          'below replaces them, recomputed on the correct cohort by '
+          '`checks/incumbent-diagnosis/`. D1 on the development cohort, D5 and D7 never touch '
+          'the training parameters and are unchanged.')
+        w('')
+        w(f"Corrected, at {idg['intervals']} intervals, {idg['training_sources']} training "
+          f"sources ({len(idg['subsample'])} sampled for the training-side oracle):")
+        w('')
+        w('| quantity | worst | median |')
+        w('|---|---:|---:|')
+        for key, label in [('D1_bank_floor_training', 'D1 bank floor, training'),
+                           ('D1_bank_floor_development', 'D1 bank floor, development'),
+                           ('D2_head_at_stored_codes_training', 'D2 head at the stored codes, training'),
+                           ('D3_head_best_found_training', 'D3 head best-found, training'),
+                           ('D5_head_best_found_development', 'D5 head best-found, development')]:
+            w(f"| {label} | {pc(idg[key]['worst'])} % | {pc(idg[key]['median'])} % |")
+        w('')
+        w(f"D4 code-refit gain (D2 − D3), worst {pc(idg['D4_code_refit_gain_training']['worst'])} pp, "
+          f"relative worst {num(idg['D4_code_refit_gain_training']['relative_worst'], 4)}, "
+          f"relative median {num(idg['D4_code_refit_gain_training']['relative_median'], 4)}. "
+          f"D6 generalisation gap, ratio of worst "
+          f"{num(idg['D6_generalisation_gap']['ratio_of_worst'], 3)}x, ratio of median "
+          f"{num(idg['D6_generalisation_gap']['ratio_of_median'], 3)}x. "
+          f"D8 Spearman of development best-found against distance to the nearest training "
+          f"parameter: {num(idg['D8_spearman_best_found_vs_distance'], 3)}. "
+          f"Head floor over bank floor: "
+          f"**{num(idg['head_floor_over_bank_floor'], 3)}x**.")
+        w('')
+        w(f"(Local GB10 diagnostic, `jax_backend={idg['backend']}`, float64, "
+          f"matmul precision `{idg['matmul_precision']}`, "
+          f"{num(idg['seconds'], 1)} s; no cluster job was spent on the correction.)")
+        w('')
+        w('The `pbh01` table below is kept for the record; read only its D1(dev), D5 and D7 '
+          'columns.')
+        w('')
     for dg in tr['diagnosis']:
         w(f"**`{dg['model']}`** — K={dg['K']}, R={dg['R']}, "
           f"{dg['training_sources']} training sources.")
@@ -196,11 +250,39 @@ def main():
     # ------------------------------------------------------------ bank layer --
     w('## Layer 1a — the bank sweep')
     w('')
-    w(f"Six arms at K={tcfg['latents'][0]} with one fixed schedule and one fixed seed. "
-      f"Selection is by the worst **internal-validation** floor at {bank_sel['mesh']} "
-      f"intervals; development floors are reported and do not select "
-      f"(development ranking agrees: {yn(bank_sel['development_ranking_agrees'])}).")
+    w(f"Six arms at K={tcfg['latents'][0]} with one fixed schedule and one fixed seed: identical "
+      f"phase counts, identical learning rates, identical optimizer seeds, so the only "
+      f"differences are R and S. Equal update counts mean the larger-S arms are NOT given more "
+      f"training compute.")
     w('')
+    if bsel is not None:
+        w(f"**Selection.** The rule in force is DESIGN.md amendment 4: the lowest worst floor on "
+          f"one **common selection cohort** — `core.source_params({bsel['common_cohort']['seed']}, "
+          f"{bsel['common_cohort']['count']})`, a fresh seed asserted disjoint from every training "
+          f"cohort and from the development cohort — at {bsel['intervals']} intervals. The "
+          f"originally pre-registered rule (worst of each arm's *own* validation split) was "
+          f"withdrawn mid-run because those splits have different sizes (29, 115 and 461 sources), "
+          f"so their maxima are not comparable. Selected: **`{bsel['selected']}`**; the withdrawn "
+          f"rule would have selected `{bsel['original_rule_selected']}`; the two "
+          f"{'agree' if bsel['rules_agree'] else 'DISAGREE'}. The development cohort selects "
+          f"nothing and its own ranking "
+          f"{'agrees' if bsel['development_ranking_agrees'] else 'disagrees'} with the common-cohort "
+          f"ranking.")
+        w('')
+        w('| arm | R | S | common cohort worst | common cohort median | own-validation worst '
+          '(withdrawn rule) | development worst |')
+        w('|---|---:|---:|---:|---:|---:|---:|')
+        for x in sorted(bsel['arms'], key=lambda x: x['common']['worst']):
+            mark = ' **(selected)**' if x['arm'] == bsel['selected'] else ''
+            w(f"| `{x['arm']}`{mark} | {x['R']} | {x['S']} | {pc(x['common']['worst'])} % | "
+              f"{pc(x['common']['median'])} % | {pc(x['reported_validation_worst'])} % | "
+              f"{pc(x['reported_development_worst'])} % |")
+        w('')
+    else:
+        w(f"Selection is by the worst **internal-validation** floor at {bank_sel['mesh']} "
+          f"intervals; development floors are reported and do not select "
+          f"(development ranking agrees: {yn(bank_sel['development_ranking_agrees'])}).")
+        w('')
     for n in tcfg['floor_intervals']:
         w(f'### At {n} intervals')
         w('')
@@ -223,12 +305,12 @@ def main():
     # ------------------------------------------------------------ head layer --
     w('## Layer 1b — the head sweep on the selected bank')
     w('')
-    hl = tr['head_layer']
+    hl = ht['head_layer']
     w(f"Bank `{hl['bank']}` frozen (R={hl['R']}, rank {hl['bank_rank']['rank']}), "
       f"{hl['fit_count']} fit sources, {hl['validation_count']} internal-validation sources, "
       f"{hl['edges']} edges in the {hl['knn']}-nearest-neighbour parameter graph. "
-      f"Every arm is {tcfg['head_steps']} full-batch Adam updates from a fresh head and fresh "
-      f"codes at one seed. Errors below are at {tr['head_layer'].get('intervals', tcfg['training_intervals'])} "
+      f"Every arm is {ht['config']['head_steps']} full-batch Adam updates from a fresh head and fresh "
+      f"codes at one seed. Errors below are at {ht['config']['training_intervals']} "
       'intervals, the training mesh.')
     w('')
     w('| arm | K | beta_weak | beta_smooth | head at stored codes (fit, worst) | '
@@ -236,7 +318,7 @@ def main():
       'stationary | training s |')
     w('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
     picks = {s['selected'] for s in head_sels}
-    for x in sorted(tr['head_arms'], key=lambda x: (x['K'], x['beta_weak'], x['beta_smooth'])):
+    for x in sorted(ht['head_arms'], key=lambda x: (x['K'], x['beta_weak'], x['beta_smooth'])):
         mark = ' **(primary)**' if x['arm'] in picks else ''
         s = x['weak_solved_development']
         w(f"| `{x['arm']}`{mark} | {x['K']} | {x['beta_weak']:g} | {x['beta_smooth']:g} | "

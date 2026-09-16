@@ -1,0 +1,17 @@
+179:            R_['pod'].append(dict(cohort=pid, **pinfo))
+jax_backend=gpu x64=True precision=highest
+REFERENCES done 1.8
+MESH 64
+RECON 64 incumbent floor 0.023146953477435766 best 0.060926269196342815
+TIMED 64 0 60.8
+GATE {'intervals': 64, 'arm': 'a_neural@incumbent', 'worst_relative_difference': 2.9617449607684402e-15, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod8', 'worst_relative_difference': 1.0882918125000923e-15, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod16', 'worst_relative_difference': 2.9960167228683734e-14, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod32', 'worst_relative_difference': 4.564586642485743e-13, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod64', 'worst_relative_difference': 1.2101444963641572e-12, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'e_pod128', 'worst_relative_difference': 7.849031564826609e-11, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'd_freebank@incumbent', 'worst_relative_difference': 2.6408442279355804e-14, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'arm': 'dst_direct', 'worst_relative_difference': 1.2376855732888615e-13, 'tolerance': 1e-09, 'passed': True}
+P-BANK-HEAD SOLVE COMPLETE
+
+[exited with code 0]

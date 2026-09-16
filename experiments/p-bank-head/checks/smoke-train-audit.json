@@ -1,0 +1,103 @@
+{
+  "run": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/8dd24c38-78af-49e7-988d-0874ec7f50cb/scratchpad/out_smoke",
+  "passed": true,
+  "failures": [],
+  "checks": {
+    "backend": {
+      "passed": true,
+      "backend": "gpu",
+      "x64": true,
+      "precision": "highest",
+      "gpu": "NVIDIA GB10",
+      "job_id": null,
+      "commit": null
+    },
+    "cohorts": {
+      "passed": true,
+      "per_cohort": {
+        "24": {
+          "parameters_match": true,
+          "overlap": 0,
+          "split_partitions": true
+        }
+      },
+      "development_sha256": "8bd530419403771b75014515a8f5cebfb15b20ff406dca56723e122d06a41c9f"
+    },
+    "numpy_bank_floors": {
+      "passed": true,
+      "intervals": 31,
+      "worst_difference": 2.275957200481571e-15,
+      "per_checkpoint": {
+        "bank_R32_S24": {
+          "K": 8,
+          "R": 32,
+          "recomputed_worst_floor": 0.6327072985315697,
+          "reported_worst_floor": 0.6327072985315679,
+          "worst_per_case_difference": 2.275957200481571e-15
+        },
+        "head_K8_w0_s0": {
+          "K": 8,
+          "R": 32,
+          "recomputed_worst_floor": 0.6327072985315697,
+          "stored_code_subsample": 20,
+          "worst_stored_code_difference": 4.440892098500626e-16
+        },
+        "head_K8_w0_s0.01": {
+          "K": 8,
+          "R": 32,
+          "recomputed_worst_floor": 0.6327072985315697,
+          "stored_code_subsample": 20,
+          "worst_stored_code_difference": 5.551115123125783e-16
+        },
+        "head_K8_w1_s0": {
+          "K": 8,
+          "R": 32,
+          "recomputed_worst_floor": 0.6327072985315697,
+          "stored_code_subsample": 20,
+          "worst_stored_code_difference": 5.551115123125783e-16
+        },
+        "head_K8_w1_s0.01": {
+          "K": 8,
+          "R": 32,
+          "recomputed_worst_floor": 0.6327072985315697,
+          "stored_code_subsample": 20,
+          "worst_stored_code_difference": 4.440892098500626e-16
+        }
+      }
+    },
+    "numpy_stored_code_errors": {
+      "passed": true,
+      "intervals": 31,
+      "worst_difference": 5.551115123125783e-16
+    },
+    "bank_selection_rule": {
+      "passed": true,
+      "recomputed": "bank_R32_S24",
+      "recorded": "bank_R32_S24",
+      "mesh": 63,
+      "development_ranking_agrees": true
+    },
+    "head_selection_rule": {
+      "passed": true,
+      "per_latent": {
+        "8": {
+          "recomputed": "head_K8_w0_s0.01",
+          "recorded": "head_K8_w0_s0.01",
+          "development_ranking_agrees": false
+        }
+      }
+    },
+    "correction_bases": {
+      "passed": true,
+      "per_latent": {
+        "8": {
+          "recomputed_orthogonality": 1.1424711905995921e-14,
+          "reported": 1.4175221588221421e-14,
+          "count": 20
+        }
+      }
+    }
+  },
+  "result_sha256": "5dc564c65c55303306ba0d98e0115eeb76f3007a02133e67c1f8831c10c33796",
+  "scope": "NumPy/SciPy only; imports neither the driver nor JAX"
+}

@@ -1,0 +1,79 @@
+{
+  "scope": "local GB10 jaxrun smoke of the frozen evaluation path with the INCUMBENT checkpoint at 64 intervals, all 12 development sources, 1 repetition",
+  "gate": "DESIGN.md G1 - the evaluation path must reproduce pabl01 a_neural to <= 1e-9 relative",
+  "gpu": "NVIDIA GB10",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "jax_version": "0.10.1",
+  "gates": [
+    {
+      "intervals": 64,
+      "arm": "a_neural@incumbent",
+      "worst_relative_difference": 2.9617449607684402e-15,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "intervals": 64,
+      "arm": "e_pod8",
+      "worst_relative_difference": 1.0882918125000923e-15,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "intervals": 64,
+      "arm": "e_pod16",
+      "worst_relative_difference": 2.9960167228683734e-14,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "intervals": 64,
+      "arm": "e_pod32",
+      "worst_relative_difference": 4.564586642485743e-13,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "intervals": 64,
+      "arm": "e_pod64",
+      "worst_relative_difference": 1.2101444963641572e-12,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "intervals": 64,
+      "arm": "e_pod128",
+      "worst_relative_difference": 7.849031564826609e-11,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "intervals": 64,
+      "arm": "d_freebank@incumbent",
+      "worst_relative_difference": 2.6408442279355804e-14,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "intervals": 64,
+      "arm": "dst_direct",
+      "worst_relative_difference": 1.2376855732888615e-13,
+      "tolerance": 1e-09,
+      "passed": true
+    }
+  ],
+  "reconstruction": [
+    {
+      "intervals": 64,
+      "model": "incumbent",
+      "K": 16,
+      "R": 128,
+      "bank_projection_dense_qr_check": 4.6922535301696655e-14,
+      "bank_projection_worst": 0.023146953477435766,
+      "best_found_worst": 0.060926269196342815
+    }
+  ],
+  "elapsed_seconds": 60.951758716022596
+}

@@ -240,6 +240,18 @@ def main():
     L.append(f'**Overall: the redirected criterion {state}.**\n')
     L.append('Converged non-dominated arms on the evolved metric: '
              + ', '.join(f'`{n}`' for n in v['converged_nondominated_evolved']) + '.\n')
+    # What the criterion does NOT say, stated from the frontier rather than from prose.
+    fams = {by_arm[n]['family'] for k in ('all_subjects_all_times', 'all_subjects_evolved')
+            for n in aud['frontier'][k]}
+    L.append(
+        '\n**What this does not say.** The criterion is about the ladder: it certifies that '
+        '$q$ is a real accuracy/cost dial on a frozen checkpoint. It is not a claim that the '
+        'reduced solver beats the full-order one. Over EVERY subject in this job the '
+        'non-dominated set on both metrics contains only '
+        + ', '.join(sorted(f'`{x}`' for x in fams)) + ' arms'
+        + (' — that is, only the same-job full-order controls, exactly as the campaign\'s '
+           'standing conclusion says' if fams == {'fom'} else '')
+        + '; the tables below give it in full.\n')
     if v['regressions_evolved']:
         L.append('\nMonotonicity violations on the evolved metric that survive:\n\n')
         L.append(table(['from $q$', 'to $q$', 'from %', 'to %'],

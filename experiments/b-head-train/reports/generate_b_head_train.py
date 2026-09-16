@@ -68,7 +68,12 @@ def main():
 
     # ------------------------------------------------------------- headline --
     passing = [v for v in ea['verdicts'] if v['success']]
-    trained = [v for v in ea['verdicts'] if v['checkpoint'] != 'incumbent']
+    quad = {x['arm']: x['quadrature'] for x in rows}
+    incq = quad.get(ecfg['incumbent_arm'])
+    # the headline compares like for like: trained checkpoints in the incumbent's
+    # own quadrature. The paired dense arms are quadrature controls, not candidates.
+    trained = [v for v in ea['verdicts']
+               if v['checkpoint'] != 'incumbent' and quad.get(v['arm']) == incq]
     best = min(trained or ea['verdicts'], key=lambda v: v['best_found_percent'])
     w('## The answer')
     w('')

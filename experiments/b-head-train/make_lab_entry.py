@@ -33,7 +33,10 @@ def main():
     sel = tr['selection']
     crit = ea['checks']['success_criteria_evaluated']['detail']['criteria']
     passing = [v for v in ea['verdicts'] if v['success']]
-    trained = [v for v in ea['verdicts'] if v['checkpoint'] != 'incumbent']
+    quad = {x['arm']: x['quadrature'] for x in ea['arm_table']}
+    incq = quad.get(ev['config']['incumbent_arm'])
+    trained = [v for v in ea['verdicts']
+               if v['checkpoint'] != 'incumbent' and quad.get(v['arm']) == incq]
     best = min(trained or ea['verdicts'], key=lambda v: v['best_found_percent'])
     o = []
     w = o.append

@@ -1,6 +1,6 @@
 """Stage one q-ridge attempt into an isolated paralab-bound directory.
 
-    python cluster/stage.py <attempt> <config-file-name>
+    python cluster/stage.py <attempt> <config-file-name> [<driver>]
 
 Each attempt gets its OWN submit directory and its OWN remote directory: one job per
 directory, never two. Every staged file is checked byte-for-byte against the committed
@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[3]
 NAMESPACE = '/cluster/tufts/paralab/tawal01/q_ridge_20260916'
 FILES = [
     'experiments/q-ridge/q_ridge.py',
+    'experiments/q-ridge/q_eqcert.py',
+    'experiments/q-ridge/eqcert.py',
     'experiments/q-ridge/ridge.py',
     'experiments/q-ridge/r3.py',
     'experiments/q-ridge/cluster/stage.py',
@@ -38,6 +40,8 @@ EXCLUDE = 'pax007'
 def main():
     attempt, config = sys.argv[1], sys.argv[2]
     assert attempt.isalnum(), attempt
+    driver = sys.argv[3] if len(sys.argv) > 3 else 'q_ridge.py'
+    assert driver in ('q_ridge.py', 'q_eqcert.py'), driver
     files = FILES + [f'experiments/q-ridge/{config}']
     out = ROOT / 'experiments/q-ridge/runs' / attempt
     out.mkdir(parents=True, exist_ok=False)
@@ -82,7 +86,7 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 export PYTHONPATH="$TASK_ROOT/experiments/mr-burgers2d:$TASK_ROOT/experiments/head-ablation:$TASK_ROOT/experiments/cheap-corrections:$TASK_ROOT/experiments/b-ladder-top:$TASK_ROOT/experiments/q-ridge"
-"$PY" experiments/q-ridge/q_ridge.py \
+"$PY" experiments/q-ridge/__DRIVER__ \
   --config experiments/q-ridge/__CONFIG__ \
   --checkpoint __CKPT__ \
   --out output
@@ -93,7 +97,8 @@ echo ALL-DONE
     # first submission of both attempts in the shell preamble, before any GPU work.
     for token, value in (('__ATTEMPT__', attempt), ('__REMOTE__', remote),
                          ('__CKPT__', CHECKPOINT), ('__CONFIG__', config),
-                         ('__HOURS__', HOURS), ('__EXCLUDE__', EXCLUDE)):
+                         ('__HOURS__', HOURS), ('__EXCLUDE__', EXCLUDE),
+                         ('__DRIVER__', driver)):
         script = script.replace(token, value)
     assert '__' not in script.replace('__pycache__', ''), script
     (out / 'run.sbatch').write_text(script)

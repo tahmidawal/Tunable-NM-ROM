@@ -120,9 +120,54 @@ def main():
                    for qd in ('dense', 'eq')]
     r2['expectations'] = dict(common_exp)
 
-    for name, cfg in (('config-r1.json', r1), ('config-r2.json', r2)):
+    # ---- DESIGN.md A3: the re-scoped primary, EQ rule certification ----------
+    r3 = dict(shared, attempt='qrg301', question='EQCERT', purpose=(
+        'EQ rule certification (DESIGN.md A3). Refit the empirical rule on states the ROM '
+        'actually reaches, grow m at fixed M = 4(K+q), certify every rule by held-out rho '
+        'rather than by its NNLS fit residual, and rebuild the EQ ladder with the cheapest '
+        'certified rule per rung.'))
+    r3['q_ladder'] = [0, 16, 32, 64, 128, 256]
+    r3['dense_twins'] = [0, 64, 256]
+    r3['m_grid'] = [1024, 2048, 4096, 8192]
+    # The bar, declared before the job ran: q-diag's measured rho for the q = 0 incumbent
+    # rule at the state that carries the whole first-interval penalty.
+    r3['rho_bar'] = 0.116
+    r3['rho_bar_provenance'] = (
+        'q-diag 2026-09-16, report SHA256 c0bf57626d9e0a422965446b39e79e423c9a39f6886b7ca1893'
+        'b8a03cd803c6e: cclad01 arm q0_m256_eq_block, rho = 0.1158 at t = 0')
+    r3['collect_iters'] = 12
+    r3['collect_seed'] = 20260916
+    r3['fit_trajectories'] = 24
+    r3['cert_trajectories'] = 8
+    r3['cert_states'] = 512
+    r3['certify_chunk'] = 32
+    r3['fit_states_min'] = 16
+    r3['fit_states_max'] = 256
+    r3['candidate_cap'] = 16384            # raised so m = 8192 is a genuine selection
+    r3['incumbent_candidate_cap'] = base['candidate_cap']
+    r3['incumbent_fit_states'] = base['fit_states']
+    r3['incumbent_max_fit_rows'] = base['max_fit_rows']
+    r3['incumbent_cap'] = base['quadrature_cap']
+    r3['fit_blocks'] = 8
+    r3['active_set_iterations'] = 40
+    r3['gram_ridge_relative'] = 1e-12
+    r3['reproduction_arms'] = [
+        dict(name='q0_m4_eqold_ret', q=0, test_multiplier=4, fitter='retained'),
+        dict(name='q128_m2_eqold_bnd', q=128, test_multiplier=2, fitter='bounded')]
+    r3['expectations'] = {
+        'q0_m4_eqold_ret': dict(source='btq101', arm='q0_m4_eq_base', tolerance=tight,
+                                note='the retained NNLS fitter, the incumbent candidate pool '
+                                     'and the incumbent static population: the exact old rule'),
+        'q128_m2_eqold_bnd': dict(source='btq101', arm='q128_m2_eq_base', tolerance=loose,
+                                  tolerance_if_directions_bitwise=tight)}
+
+    for name, cfg in (('config-r1.json', r1), ('config-r2.json', r2), ('config-r3.json', r3)):
         (HERE / name).write_text(json.dumps(cfg, indent=2) + '\n')
-        arms = len(cfg['gate_arms']) + sum(len(b['lams']) for b in cfg['sweep'])
+        if 'sweep' in cfg:
+            arms = len(cfg['gate_arms']) + sum(len(b['lams']) for b in cfg['sweep'])
+        else:
+            arms = (2 * len(cfg['q_ladder']) + len(cfg['dense_twins'])
+                    + len(cfg['reproduction_arms']))
         print(name, 'declared arms (before de-duplication):', arms)
 
 

@@ -254,25 +254,34 @@ def section_ladder(res, aud, g, pmap, title):
             for n in names:
                 v = g[(L, n)]
                 p = pmap.get((L, n), {})
+                null = g.get((L, 'o_none'))
                 rows.append([
                     f'`{n}`', res['arm_declarations'][n]['declared_class'],
                     fmt(v['gpu_ms']), fmt(v['host_ms']),
                     fmt(inc['gpu_ms'] / v['gpu_ms'], 3) + 'x',
+                    (fmt(null['gpu_ms'] / v['gpu_ms'], 3) + 'x') if null else '—',
                     sci(p.get('worst_field_relative')),
                     sci(p.get('audit_field_relative')),
                     fmt(p.get('iterations_identical')), fmt(p.get('reasons_identical')),
                     fmt(p.get('parity'))])
             body.append(f'\n*{label}*\n')
-            body.append(table(rows, ['arm', 'intent', 'GPU ms', 'host ms', 'speedup',
+            body.append(table(rows, ['arm', 'intent', 'GPU ms', 'host ms',
+                                     'vs incumbent', 'vs `o_none`',
                                      'parity (job)', 'parity (audit)', 'same iterations',
                                      'same exits', 'PARITY'],
-                              ['---', '---', '---:', '---:', '---:', '---:', '---:',
+                              ['---', '---', '---:', '---:', '---:', '---:', '---:', '---:',
                                ':---:', ':---:', ':---:']))
-        if floor is not None:
-            body.append(f'\nHarness floor: the null arm `o_none` — the same arithmetic '
-                        f'emitted through the optimisation harness with every switch off — '
-                        f'already deviates by {sci(floor)}. An arm at that order has changed '
-                        'nothing the harness does not already change.\n')
+        null = g.get((L, 'o_none'))
+        if floor is not None and null is not None:
+            body.append(
+                f'\n**Harness floor.** The null arm `o_none` — the same arithmetic emitted '
+                f'through the optimisation harness with every switch off — already deviates '
+                f'from the incumbent by {sci(floor)} in the field, and already runs at '
+                f"{fmt(null['gpu_ms'])} ms against the incumbent's {fmt(inc['gpu_ms'])} ms "
+                f"({fmt(inc['gpu_ms'] / null['gpu_ms'], 3)}x). Both are the floor: an arm at "
+                'that parity has changed nothing the harness does not already change, and the '
+                '`vs `o_none`` column is what each optimisation is actually worth once the '
+                'harness itself is paid for.\n')
     return '\n'.join(body)
 
 

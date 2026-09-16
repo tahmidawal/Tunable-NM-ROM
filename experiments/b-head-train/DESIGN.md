@@ -288,3 +288,41 @@ win that costs an order of magnitude more offline is a different claim from one 
    checkpoint SHA-256 before and after evaluation.
 4. `jax_backend=gpu`, float64, matmul precision `highest`, one job per attempt directory,
    `squeue` checked before and after every submission.
+
+---
+
+## 8. Amendments, dated, all made before any evaluation run
+
+**A1 (2026-09-16, before the first training job produced any number).** The joint bank+head arms
+were amended in two ways, and the first pending submission was cancelled before it started rather
+than run with the defect.
+
+1. *Loss scale.* The sampled-point sum over $P$ points estimates $(P/n)$ of the full-grid squared
+   error, so it is rescaled by $n/P$ and the joint arms' data term reads as the same per-snapshot
+   relative MSE the frozen-bank arms minimise. Without the rescaling the data term sat a factor
+   $n/P \approx 16$ below its intended value and every fixed regulariser weight sat that factor
+   too high against it.
+2. *Orthonormality regulariser off.* `sep_common.train_autodecoder` adds
+   $\lambda_{\rm orth}\,\overline{(C_G-I)^2}$ with $\lambda_{\rm orth}=10^{-4}$ and
+   $C_G = G^\top G / (P\,s^2)$. That penalty exists to condition a **freshly initialised** bank.
+   These arms warm start from the incumbent's already-trained bank, whose Gram is far from the
+   identity (its condition number is $\approx 2.6\times10^{4}$), so at the warm start the penalty
+   is orders of magnitude larger than the data term and a joint run under it would be an
+   orthonormalisation rather than a refinement. $\lambda_{\rm orth}$ is therefore set to $0$ and
+   the realised feature-Gram deviation is **reported** — before and after training — together with
+   the resulting bank's Gram condition number, rather than imposed. No accuracy number was
+   consulted in making either change.
+
+**A2 (2026-09-16, same point).** The joint arms **continue from the selected frozen-bank arm's
+head and codes** rather than cold-starting, because the question the brief asks is what unfreezing
+the bank adds *on top of* the best head-only fit, not whether a bounded joint run can rediscover
+it. The warm-start arm is named in the result JSON. Their density is additionally capped
+(`joint_density_cap`) because the joint arms must hold raw field values and that block grows with
+both states and points.
+
+**A3 (2026-09-16, same point).** Frozen-bank arms are graded by the held-out oracle with two
+initialisations (mean training code and a training-only encoder); the joint arms have no whitened
+training block in their own bank, so they are graded with the mean-code initialisation only. Both
+columns are reported for every arm and the **mean-code-only column is the like-for-like one**
+across the two families. Selection happens among frozen-bank arms only, where the two-init column
+is available for all of them.

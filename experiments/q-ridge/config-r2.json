@@ -1,0 +1,305 @@
+{
+  "intervals": 256,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "train_seed": 0,
+  "train_trajectories": 128,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "residual_snapshots": 1024,
+  "residual_starts": 4,
+  "residual_budget": 200,
+  "residual_seed": 20260915,
+  "decoder_code_subsample": 8192,
+  "quadrature_multiplier": 4,
+  "quadrature_cap": 2048,
+  "eq_blocks": 16,
+  "eq_seed": 20259,
+  "candidate_cap": 8192,
+  "fit_states": 64,
+  "max_fit_rows": 8192,
+  "gauss_jordan_max": 64,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 600,
+    "gtol": 1e-06
+  },
+  "ic_gtol": 1e-06,
+  "inner_damping": 1e-10,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reps": 3,
+  "order_seed": 911716,
+  "burn_seconds": 0.25,
+  "step_budget_provenance": "btq102 sweep block '_b600' (q256_m2_dense_base_b600): zero budget exits, worst joint gradient 9.71e-07, 0.988x the budget-180 control cost",
+  "eq_seconds": 3600.0,
+  "q_ladder": [
+    0,
+    16,
+    64
+  ],
+  "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "expected_directions_sha256": "f270e5bf682ad220f2164ced82dde0f3e0374e84e2fa002f3101e0728062d399",
+  "source_directions_sha256": {
+    "btq101": "802737d3509a81d5b9f2b9f896c603dceb4a6f84c86abb635d9e3ec62b0aa4b7",
+    "btq102": "fcddf9f43f338c54c057f580c729a6a0d45ab244e1717a4c1a4295ee6874a747",
+    "btq201": "7558a9900d3ff2735cffb193da708c8014add9cb75a6ffab9f99b0de234950bd",
+    "cclad01": "802737d3509a81d5b9f2b9f896c603dceb4a6f84c86abb635d9e3ec62b0aa4b7"
+  },
+  "source_reference_sha256": {
+    "btq101": {
+      "0": "342a9bade52d7bd3b1493e0b3ed261960b37fec1b44cd8963c12a2ec2bf700e8",
+      "1": "561ea60858a2d2aa78669410a2314189c089c8d3c73a48dcf0d48cc124770731",
+      "2": "d442119599b081ad5c7568cc046852dfdc3ea79f9b9b99c41d2a3fd133b703c5",
+      "3": "99e16b172f7227c5df09fb6de22fe57f2786e9d4ac7242d5e785d4f9a7d3c5e3",
+      "4": "d56fa57a5bdeae8ac66b539b71d9defdaeb4adf4c6296967716c4286bfee975a",
+      "5": "64bc5ed64648c1daba8baa52bcbd860da7228905175686fd7746745e995ec4f8"
+    },
+    "btq102": {
+      "0": "2c06adb79a224fb19b9c9fc6673d1d116141862cdb7c5beb5dc7611269e40007",
+      "1": "9fbe75f4875e63338c6a28ffa1a470eea324c61427e0fb96728f5c4aa991c888",
+      "2": "81817042d4181eeb8697442e2707c48d71473681566dfb2cd5846552a0258248",
+      "3": "768a9a5ed795c43bad6eeeecc34e767a482ebda1214953cddeb0a0f0ad4467a0",
+      "4": "9ec6a6f6d2f022f8ff7b1872436fdcfb984bf1ef08d4cd52c9c76b9ea7ae24bb",
+      "5": "d3ce07bc6e325997adf9e8771b504b50bc3ccdd252dea31d493a94ee886b66ed"
+    },
+    "btq201": {
+      "0": "363d77568dbd1b117ef10d8c634548ebe4febe0366d44c40519ace63dfecab21",
+      "1": "bc411074cbaf401b31a3291db010d190066a2ad82cb808098d3c70c8b8fced76",
+      "2": "79fb8ec6495589c16df12071a0f55fba2732bb9d334df9a19b27bc5c7a35b259",
+      "3": "fc3db5f4ae81e5e70df8a6074aacfc9948c1a66618c3c88ec8883007acfe2905",
+      "4": "ec6ea95b93ff30f504ecb6f17d9062b5d6ac2dce79eb2dda1363b72f8a45e9a5",
+      "5": "1ee7966163f55ce300a0821d7d84479b0448d8a6da2f660e27c68b509163c166"
+    },
+    "cclad01": {
+      "0": "7f0fef2e2e5779a82b9f3d28c8791f8bfb9c97ce4be7d94e629121e27072b1a8",
+      "1": "387ad469b5d710dd9e37b7d6eb24d767d517e751a0194f46379fc498d41a48bc",
+      "2": "13a869d4eb58265dcde254272a44d6bdd32a6a5b491aeb0439acfa037407b723",
+      "3": "96d6fcc155487ccb3a8f37c6f073f180ad8e9bd7643c749a5968013224a380be",
+      "4": "7261613b4242796b05687419f6a4539e18172cd646c0a931b3b45f9f240bcb42",
+      "5": "a1fd937fccd7f3a6bd7bc840a81e3526a18ed1c4e8b5c92ebb7e7807a101a5c5"
+    }
+  },
+  "source_job_ids": {
+    "btq101": "3745589",
+    "btq102": "3749039",
+    "btq201": "3747245",
+    "cclad01": "3734098"
+  },
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "fft_loose",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5
+    }
+  ],
+  "cohort_note": "bitwise abl01 / cclad01 / btq101: the six physical cases hash to 108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a. The 4096-interval reference FIELD hashes are GPU-model dependent across jobs (btq101 and btq201 disagree with each other), so they are recorded as probes, not gates.",
+  "attempt": "qrg201",
+  "question": "R2",
+  "purpose": "R2: more tests at fixed q. M in {4, 8, 16} x (K+q) at q = 0, 16, 64 in BOTH quadratures at lambda = 0, with the empirical rule refit per (q, M) at m = 4M target support, capped at quadrature_cap. The same hypothesis from the other side: if the regression is test-space overfitting, more tests must remove it with no penalty at all.",
+  "gate_arms": [
+    {
+      "q": 0,
+      "rule": "m4",
+      "quadrature": "eq",
+      "lam_rel": 0.0,
+      "fitter": "retained",
+      "tag": "_ret"
+    }
+  ],
+  "sweep": [
+    {
+      "q": 0,
+      "rule": "m4",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 0,
+      "rule": "m4",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 0,
+      "rule": "m8",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 0,
+      "rule": "m8",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 0,
+      "rule": "m16",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 0,
+      "rule": "m16",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 16,
+      "rule": "m4",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 16,
+      "rule": "m4",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 16,
+      "rule": "m8",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 16,
+      "rule": "m8",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 16,
+      "rule": "m16",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 16,
+      "rule": "m16",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 64,
+      "rule": "m4",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 64,
+      "rule": "m4",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 64,
+      "rule": "m8",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 64,
+      "rule": "m8",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 64,
+      "rule": "m16",
+      "quadrature": "dense",
+      "lams": [
+        0.0
+      ]
+    },
+    {
+      "q": 64,
+      "rule": "m16",
+      "quadrature": "eq",
+      "lams": [
+        0.0
+      ]
+    }
+  ],
+  "expectations": {
+    "q0_m4_dense_l0": {
+      "source": "btq101",
+      "arm": "q0_m4_dense_base",
+      "tolerance": 1e-09,
+      "note": "q = 0 carries no correction directions, so this reproduction is unconditional"
+    },
+    "q0_m4_eq_l0_ret": {
+      "source": "btq101",
+      "arm": "q0_m4_eq_base",
+      "tolerance": 1e-09,
+      "note": "built with the RETAINED NNLS fitter, which is what btq101 used for this gate arm"
+    },
+    "q16_m4_dense_l0": {
+      "source": "cclad01",
+      "arm": "q16_m4_dense_block",
+      "tolerance": 0.001,
+      "tolerance_if_directions_bitwise": 1e-09
+    },
+    "q64_m4_dense_l0": {
+      "source": "cclad01",
+      "arm": "q64_m4_dense_block",
+      "tolerance": 0.001,
+      "tolerance_if_directions_bitwise": 1e-09
+    }
+  }
+}

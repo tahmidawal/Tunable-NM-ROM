@@ -86,6 +86,16 @@ def verdict(block, err_key, cost_key='median_gpu_ms'):
 
 
 
+def worst_increase(errs):
+    """Largest rise along the sweep, so a strict monotonicity flag cannot be read as a
+    big reversal when it is a fifth-significant-digit wobble."""
+    rises = [(b - a, a, b) for a, b in zip(errs, errs[1:]) if b > a]
+    if not rises:
+        return None
+    d, a, b = max(rises)
+    return dict(pp=d, frm=a, to=b, relative=d / max(a, 1e-300))
+
+
 def diagnose(v):
     """Name which pre-registered falsification mode fired, from the numbers alone."""
     if v['passed']:
@@ -417,6 +427,12 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
     w('')
     for v, label in [(v_all, 'primary metric'), (v_evo, 'secondary metric')]:
         w(f"**Which pre-registered falsification mode fired ({label}):** {diagnose(v)}")
+        wi = worst_increase(v['errors'])
+        if wi:
+            w('')
+            w(f"The monotonicity test is applied strictly. The largest rise anywhere along that "
+              f"sweep is {wi['pp']:.4f} pp ({wi['frm']:.4f}% to {wi['to']:.4f}%, "
+              f"{wi['relative'] * 100:.3f}% relative), so read the flag together with that size.")
         w('')
     w(f"Primary-metric errors along $\\lambda_{{\\rm rel}}="
       f"[{', '.join(lam_plain(x['lambda_rel']) for x in prim)}]$: "
@@ -614,6 +630,11 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
           + (f"The direct DST solve costs {fom['median_query_ms']:.4f} ms with zero same-grid "
              f"error by definition, against {blk[0]['median_query_ms']:.4f} ms for the ROM at "
              f"$\\lambda=\\infty$." if fom else '')
+          + (('' if not worst_increase(errs) else
+              f" The largest rise along the sweep is {worst_increase(errs)['pp']:.4f} pp "
+              f"({worst_increase(errs)['relative'] * 100:.3f}% relative), so the strict "
+              f"monotonicity flag should be read together with that size.")
+             if not mono else '')
           + ' ' + diagnose(dict(passed=(mono and len(nd) >= 3 and cs >= 2 and es >= 2
                                         and all(p['all_completed'] for p in nd)),
                                 criterion_1_monotone=mono,

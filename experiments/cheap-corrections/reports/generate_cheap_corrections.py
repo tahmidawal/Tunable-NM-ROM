@@ -371,6 +371,12 @@ def main():
       'separately and are never part of a query timing; they are one-time per rung.\n')
     W('- The full-order rows are same-job context, not a speed claim: no ratio against another '
       'job is taken anywhere in this report.\n')
+    W('- At $q>0$ the block-damped variant solves its augmented normal equations with a pivoted '
+      'dense solve, while the joint arms below 64 unknowns keep the incumbent unrolled '
+      'Gauss-Jordan; the `linear_solve` column records the joint convention, not the block '
+      'variant\'s. That is a more accurate step, not a weaker one, and it is the same recorded '
+      'deviation the audited ladder carried at its larger arms. At $q=0$ every variant takes the '
+      'audited path verbatim, which is what the bitwise gate checks.\n')
 
     W('## Glossary\n')
     for term, text in [

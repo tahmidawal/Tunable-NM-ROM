@@ -554,6 +554,19 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
     w('')
     w(f'![Poisson]({pfigname})')
     w('')
+    fb = pau['checks'].get('smallest_lambda_versus_pabl01_free_bank', {}).get('detail')
+    if fb:
+        w('**Both limits are confirmed against the head ablation, not asserted.** At '
+          '$\\lambda=\\infty$ this reproduces `pabl01`\'s arm (a) to '
+          f"{g3['worst_relative_delta']:.3e} relative (gate (iii)); at the smallest "
+          f"$\\lambda_{{\\rm rel}}$ on the grid it lands within "
+          + ', '.join(f"{v['worst_relative_delta']:.2e} at {k} intervals"
+                      for k, v in sorted(fb.items(), key=lambda kv: int(kv[0])))
+          + " of `pabl01`'s free-bank arm (d). So the dial really does walk the solved error "
+            'from the head-manifold floor to the bank floor. What is new here is the shape of '
+            'the walk and its price; the two endpoints were already measured by the head '
+            'ablation, and at the low end this **is** arm (d), reached by a different route.')
+        w('')
     for n in sorted({x['intervals'] for x in prows}):
         blk = sorted([x for x in prows if x['kind'] == 'rom' and x['intervals'] == n],
                      key=lambda z: -lam_key(z['lambda_rel']))

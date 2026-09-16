@@ -337,6 +337,31 @@ def build(b, ba, p, pa, sm, figname):
                   f"{yn(v['all_nondominated_converged'])} | "
                   f"**{'A KNOB' if v['accepted'] else 'NOT a knob'}** |")
     w('')
+    fails = {}
+    for v in verdicts:
+        why = []
+        if not v['monotone']:
+            why.append('monotonicity')
+        if v['nondominated_count'] < 3:
+            why.append('fewer than three non-dominated points')
+        if v['cost_span'] < 2.:
+            why.append('cost span below 2x')
+        if v['error_span'] < 2.:
+            why.append('error span below 2x')
+        if not v['all_nondominated_converged']:
+            why.append('an early-stopped point on the frontier')
+        fails[(v['pde'], v['variant'], v['mu_key'])] = why
+    passed = [v for v in verdicts if v['accepted']]
+    w('**Reading.** '
+      + ('Every ladder fails at least one criterion, so refinement is **not** a usable knob as '
+         'pre-registered, on either PDE and under either anchor. ' if not passed
+         else f"{len(passed)} of {len(verdicts)} ladders meet all three criteria. ")
+      + 'What each ladder failed on: '
+      + '; '.join(f"{v['pde']} {v['variant'].upper()}/{v['mu_key']} — "
+                  + (', '.join(fails[(v['pde'], v['variant'], v['mu_key'])])
+                     if fails[(v['pde'], v['variant'], v['mu_key'])] else 'nothing')
+                  for v in verdicts) + '.')
+    w('')
     for v in verdicts:
         w(f"- {v['pde']} {v['variant'].upper()} / {v['mu_key']}: worst same-grid along "
           f"$n={v['n']}$ is {[round(x, 4) for x in v['errors']]} percent at "
@@ -378,6 +403,23 @@ def build(b, ba, p, pa, sm, figname):
             w(f"| `{x['arm']}` | "
               + ' | '.join(f'{v:.4f}' for v in x['worst_same_grid_per_time_percent']) + ' |')
     w('')
+    bt = base_per_time = next((y['worst_same_grid_per_time_percent'] for y in brows
+                               if y['arm'] == 'n0'), None)
+    if bt:
+        at0 = int(np.argmax(bt))
+        w(f"**Where the worst-over-times error lives.** For the unrefined head the maximum over the "
+          f"six output times is attained at $t={times[at0]:g}$ "
+          f"({bt[at0]:.4f}% against {max(bt[1:]):.4f}% over the evolved times). "
+          + ("Because the $t=0$ output is the model's own compression of the supplied initial "
+             "field, and V2 has not taken a single refinement step by the time that field is "
+             "decoded, **no V2 arm can move the worst-over-times number at all** once its evolved "
+             "times fall below the $t=0$ value: several V2 rows sit at exactly the $n=0$ value for "
+             "that reason, not because refinement did nothing. V1 does move it, because it refines "
+             "before $t=0$ is decoded. The per-time table above is the honest reading for V2."
+             if at0 == 0 else
+             "The maximum is not at $t=0$, so the per-step variant is not structurally pinned "
+             "here."))
+        w('')
     risky = []
     for x in brows:
         v = x.get('worst_same_grid_per_time_percent')

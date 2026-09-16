@@ -131,7 +131,10 @@ def main():
           f"{[round(x, 4) for x in v['errors']]} percent at {[round(x, 3) for x in v['costs']]} "
           f"median ms."
           + (f" Early-stopped on this ladder: {', '.join(v['early_stopped'])}."
-             if v['early_stopped'] else ' Nothing on this ladder is early-stopped.'))
+             if v['early_stopped'] else ' Nothing on this ladder is early-stopped.')
+          + (' Monotonicity breaks at ' + ', '.join(
+              f"n={x['n']} ({x['previous']:.4f} -> {x['here']:.4f} %)"
+              for x in v['monotonicity_breaks']) + '.' if v['monotonicity_breaks'] else ''))
     w('')
     for pde, rows, cost, quad in (('Burgers', brows, 'median_gpu_ms', 'eq'),
                                   ('Poisson', prows, 'median_query_ms', None)):

@@ -58,8 +58,11 @@ def verdict(rows, variant, mu_key, cost, err, quad=None):
     span_cost = (max(x[cost] for x in nd) / min(x[cost] for x in nd)) if nd else 0.
     span_err = (max(x[err] for x in nd) / max(min(x[err] for x in nd), 1e-300)) if nd else 0.
     conv = all(x['all_completed'] for x in nd) if nd else False
+    breaks = [dict(n=lad[i + 1]['n'], previous=e[i], here=e[i + 1])
+              for i in range(len(e) - 1) if e[i + 1] > e[i] * (1 + 1e-12)]
     return dict(variant=variant, mu_key=mu_key, n=[x['n'] for x in lad], errors=e, costs=c,
-                monotone=bool(mono), nondominated=[x['arm'] for x in nd],
+                monotone=bool(mono), monotonicity_breaks=breaks,
+                nondominated=[x['arm'] for x in nd],
                 nondominated_count=len(nd), cost_span=float(span_cost), error_span=float(span_err),
                 all_nondominated_converged=bool(conv),
                 early_stopped=[x['arm'] for x in lad if not x['all_completed']],
@@ -289,6 +292,16 @@ def build(b, ba, p, pa, sm, figname):
       f"against the refined reference. Both are reported. The bank projection floor is the best "
       f"any coefficients at all could do in the frozen bank and is unchanged by refinement.")
     w('')
+    w('**How the refined best-found column is computed, and one structural caveat.** For each arm '
+      'and case it is the worst over the six output times of a seeded multistart fit on that arm\'s '
+      'own moved manifold, using the weights that arm actually produced. For V1 those weights are '
+      'one refined $\\theta$ used at every output time. For V2 the weights in force at $t=0$ are '
+      '$\\theta_0$ by construction — no time step has happened yet — so a V2 arm\'s worst-over-times '
+      'best-found can never fall below the $n=0$ value even when its later times improve. Read the '
+      'V2 best-found column as an upper bound pinned at $t=0$, not as evidence that per-step '
+      'refinement does not move the manifold; the drift column and the per-output-time table show '
+      'that it does.')
+    w('')
     three_layer(w, brows, 'median_gpu_ms', 'worst_same_grid_percent', 'same-grid')
     w('')
     w('Full-order rows are **context only**; no speed claim is made against them here. '
@@ -329,7 +342,10 @@ def build(b, ba, p, pa, sm, figname):
           f"$n={v['n']}$ is {[round(x, 4) for x in v['errors']]} percent at "
           f"{[round(x, 3) for x in v['costs']]} ms."
           + (f" Early-stopped arms on this ladder: {', '.join('`' + a + '`' for a in v['early_stopped'])}."
-             if v['early_stopped'] else ' No arm on this ladder is early-stopped.'))
+             if v['early_stopped'] else ' No arm on this ladder is early-stopped.')
+          + (' Monotonicity breaks at ' + ', '.join(
+              f"$n={x['n']}$ ({x['previous']:.4f} &rarr; {x['here']:.4f} %)"
+              for x in v['monotonicity_breaks']) + '.' if v['monotonicity_breaks'] else ''))
     w('')
     w('### The non-dominated set')
     w('')

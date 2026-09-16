@@ -277,3 +277,29 @@ Recorded here rather than folded in silently.
 ## 10. Amendments
 
 *(Appended as they are made; nothing above is edited after the first commit.)*
+
+### After the local smoke, before submission
+
+* **A1 — the self-comparison tolerance on principal angles.** The first smoke asserted
+  that a direction set compared against itself gives principal angles below $10^{-6}$
+  degrees. It does not: $\arccos$ is $\sqrt{\cdot}$-ill-conditioned at $\sigma=1$, so a
+  bitwise-identical subspace lands at $2.8\times10^{-5}$ degrees. The gate is now on the
+  well-conditioned quantity, the overlap $\frac1q\sum\sigma_i^2$, required within
+  $10^{-12}$ of 1, with the angle bound loosened to $10^{-3}$ degrees and both reported.
+  The angles themselves are still reported because they are the readable summary.
+* **A2 — the local smoke ran 134 s, not sub-minute.** Two sibling agents share the GB10.
+  Recorded as a deviation from `CLAUDE.md`; the five gates each need a real q = 0 query,
+  a real direction fit and a real NNLS rule, and splitting them into five sub-minute
+  processes would have paid five JAX start-ups instead.
+* **A3 — the GB10 is not bit-reproducible across processes.** Two runs of the identical
+  smoke produced `directions_sha256` `61c11777…` and `9c99805b…`, and the $q=0$ field
+  reproduced the saved case at $2.00\times10^{-14}$ and $1.50\times10^{-14}$. Within one
+  process everything is bitwise. This is the `b-speed` D1 reassociation class showing up
+  again and is the reason the cross-job `directions_sha256` probe is informational, never
+  a gate.
+* **A4 — what the smoke already shows, on a tiny 64-interval cohort.** The incumbent
+  directions capture **3.9 % / 6.1 %** of the trajectory residual's energy at $q=4/8$,
+  and the trajectory directions capture **3.3 % / 5.9 %** of the incumbent residual's
+  energy. The two subspaces are close to disjoint even at the bottom of the ladder. The
+  smoke's `old` rule is deliberately under-sampled (16 snapshots), so this is a signal
+  that the experiment can separate the two rules, not a result.

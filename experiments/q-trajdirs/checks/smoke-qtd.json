@@ -1,0 +1,102 @@
+{
+  "q0_budget": {
+    "retained": {
+      "step_budget": 180,
+      "relative_l2_to_saved_case": 1.4957935355618092e-14,
+      "latent_relative_l2": 7.900586906375203e-13,
+      "budget_exits": 0,
+      "max_step_joint_stationarity": 9.011563427110447e-07
+    },
+    "b600": {
+      "step_budget": 600,
+      "relative_l2_to_saved_case": 1.4957935355618092e-14,
+      "latent_relative_l2": 7.900586906375203e-13,
+      "budget_exits": 0,
+      "max_step_joint_stationarity": 9.011563427110447e-07
+    },
+    "bitwise_identical": true
+  },
+  "shared_pod_reproduces_audited": {
+    "directions_bitwise": true,
+    "field_orthonormal_bitwise": true,
+    "audited_sha256": "9c99805b58184e91bb613bd22f5409e97fb91383256106bd98aa3f779eeb2e47",
+    "shared_sha256": "9c99805b58184e91bb613bd22f5409e97fb91383256106bd98aa3f779eeb2e47",
+    "energy_captured_audited": {
+      "0": 0.0,
+      "4": 0.8223003605947518,
+      "8": 0.9672233843618995
+    },
+    "energy_captured_shared": {
+      "0": 0.0,
+      "4": 0.8223003605947518,
+      "8": 0.9672233843618995
+    }
+  },
+  "trajectory_rule": {
+    "residual_rows": 102,
+    "available_rank": 102,
+    "orthonormality_deviation": 1.2256862191861728e-13,
+    "seconds": 18.892444021010306,
+    "energy_captured": {
+      "0": 0.0,
+      "4": 0.8227765978345938,
+      "8": 0.9740583362420523
+    },
+    "relative_residual_worst": 0.04232393661283205,
+    "relative_residual_median": 0.03881412660656949,
+    "fom_max_relative_residual": 1.1731080946683298e-07,
+    "prefix_sha256": {
+      "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "4": "a87600fbfe38e3e648450017b28d1c2f341e3dfa586dd87bff3db993202d5037",
+      "8": "7fd66ea4fb5ed0aea51f20dcb0aad66bafa239e3502e4cc3a172554d19cafd94"
+    }
+  },
+  "comparisons": {
+    "self_capture": {
+      "0": 0.0,
+      "4": 0.8227765978345523,
+      "8": 0.9740583362420058
+    },
+    "reported": {
+      "0": 0.0,
+      "4": 0.8227765978345938,
+      "8": 0.9740583362420523
+    },
+    "traj_residual_by_old_directions": {
+      "0": 0.0,
+      "4": 0.0392977884159564,
+      "8": 0.061113032841779186
+    },
+    "old_residual_by_traj_directions": {
+      "0": 0.0,
+      "4": 0.03286109555281812,
+      "8": 0.058878311210579265
+    },
+    "self_angles": {
+      "4": {
+        "angle_max_degrees": 2.826493702772035e-05,
+        "overlap": 0.9999999999999019
+      },
+      "8": {
+        "angle_max_degrees": 2.838075104947544e-05,
+        "overlap": 0.9999999999998956
+      }
+    }
+  },
+  "arm_q8": {
+    "q": 8,
+    "M": 96,
+    "m": 256,
+    "eq_rule_valid": true,
+    "eq_relative_fit": 2.457650902697875e-05,
+    "enriched_codes_shape": [
+      102,
+      24
+    ],
+    "relative_to_q0": 0.020383367054740784,
+    "max_step_joint_stationarity": 9.780731073068565e-07,
+    "budget_exits": 0,
+    "median_iterations": 5.0
+  },
+  "seconds": 133.90585000801366
+}

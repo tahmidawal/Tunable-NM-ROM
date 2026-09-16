@@ -385,4 +385,17 @@ is stated in advance here so it cannot be read afterwards as a result.
 
 ## 9. Amendments
 
-*(none yet)*
+### A1 (2026-09-16, before any result) — two submissions aborted in the shell preamble
+
+`cluster/stage.py` substituted a bare `CONFIG` placeholder into the generated sbatch
+script, which also matched `MPLCONFIGDIR`. Jobs **3757043** (`qrg101`) and **3757044**
+(`qrg201`) therefore died on line 17 of the batch script with
+`export: ... not a valid identifier`, **before the GPU preflight and before any GPU work**:
+zero seconds of compute, no `output/`, no log beyond the shell error. The placeholders are
+now distinctive (`__CONFIG__` and friends) and the generated script is asserted to contain
+none. The attempts were re-staged from a clean remote directory and resubmitted as
+**3757235** (`qrg101`) and **3757237** (`qrg201`).
+
+Recorded rather than quietly fixed. The lane's three-job cap is counted against jobs that
+run the experiment; these two ran nothing. Two experiment jobs are used and one is held in
+reserve, as §6 declares.

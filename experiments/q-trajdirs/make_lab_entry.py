@@ -91,6 +91,14 @@ def main():
         'without editing anything above it. Nothing was merged and the branch was **not** '
         'pushed.\n')
     L.append(
+        '`q-diag`\'s diagnosis, cited because it is what redirected this lane: '
+        '`worktrees/2026-09-16-q-diag/experiments/q-diag/reports/'
+        '2026-09-16-q16-regression-diagnosis.md`, SHA256 `c0bf57626d9e0a42…`. Its verdict: 12 of '
+        '12 dense ladder/metric combinations monotone across four jobs, only empirical-quadrature '
+        'ladders regressing, and cause (1) — trajectory-blind directions — refuted on both of its '
+        'pre-registered criteria, the incumbent directions\' per-interval step map improving with '
+        '$q$ at 0.95 / 0.87 / 0.73 / 0.65.\n')
+    L.append(
         f'Worktree `worktrees/2026-09-16-q-trajdirs`, branch `exp/2026-09-16-q-trajdirs`, forked '
         f'from `exp/2026-09-16-b-ladder-top` at `b8efd5b4`. Namespace '
         f'`/cluster/tufts/paralab/tawal01/q_trajdirs_20260916/`. Two A100 jobs, one attempt '
@@ -98,10 +106,12 @@ def main():
         f'leaving one unused: the redirected primary `{aud["job_id"]}` (`qtd02`) on '
         f'`{aud["gpu"]}`, source `{aud["commit"]}`, elapsed {aud["elapsed_seconds"]:.1f} s'
         + (f'; and the control `{ctl["job_id"]}` (`qtd01`) on `{ctl["gpu"]}`, source '
-           f'`{ctl["commit"]}`, elapsed {ctl["elapsed_seconds"]:.1f} s' if ctl else '')
+           f'`{ctl["commit"]}`, '
+           + (f'elapsed {ctl["elapsed_seconds"]:.1f} s' if ctl.get('elapsed_seconds')
+              else '**FAILED** before writing its elapsed time') if ctl else '')
         + '. Both printed `jax_backend=gpu`, ran float64 with highest matmul precision, and were '
           'checksum-collected, independently NumPy-audited and archived before their exact '
-          'remote attempt directories were removed.\n')
+          'remote attempt directories were removed; the namespace is now empty.\n')
 
     # --------------------------------------------------------------- the verdict
     L.append('**The redirected verdict.** On the `' + v['ladder'] + '` ladder — incumbent '
@@ -171,16 +181,20 @@ def main():
 
     # ------------------------------------------------------------------ control
     if ctl:
-        cv = ctl['verdict']
+        cv = ctl.get('verdict')
         cds = ctl['direction_sets']
         cc = ctl['direction_comparison']['cross_capture']
         pa = ctl['direction_comparison']['principal_angles']
-        qs = sorted({u['q'] for d in ctl['ladders'].values() for u in d['rungs'] if u['q'] > 0})
+        qs = sorted({int(q) for d in cc.values() for e in d.values() for q in e if int(q) > 0})
         L.append('\n**The control, `qtd01` — the trajectory-fitted directions, run because it '
-                 'was already running.** Its own pre-registered pass (section 6 of `DESIGN.md`) '
-                 f'**{"PASSES" if cv["passes"] else "FAILS"}**; it is reported as a test of the '
-                 '`q-diag` verdict, not as this cell\'s subject. Three direction sets differing '
-                 'only in which residual matrix is decomposed:\n\n')
+                 'was already running.** '
+                 + (f'Its own pre-registered pass (section 6 of `DESIGN.md`) '
+                    f'**{"PASSES" if cv["passes"] else "FAILS"}**; it is reported as a test of '
+                    'the `q-diag` verdict, not as this cell\'s subject. ' if cv else
+                    'It **did not reach its timed phase**, so it has no ladders and no verdict; '
+                    'what it did produce is below. ')
+                 + 'Three direction sets differing only in which residual matrix is '
+                   'decomposed:\n\n')
         L.append(table(['set', 'residual decomposed', 'rows', 'rank', 'fit s',
                         '`directions_sha256`'],
                        [[f'`{k}`',
@@ -206,20 +220,44 @@ def main():
                              f(d[q]['angle_min_degrees'], 2), f(d[q]['angle_median_degrees'], 2),
                              f(d[q]['angle_max_degrees'], 2)]
                             for pair, d in sorted(pa.items()) for q in sorted(d, key=int)]))
-        L.append('\nIts ladders:\n')
-        L += ladders(ctl['ladders'], ['old_primary', 'traj_primary', 'prac_primary',
-                                      'old_dense', 'traj_dense', 'prac_dense',
-                                      'old_fixedM', 'traj_fixedM'])
-        L.append('\nThe $q=16$ evolved-metric regression, per ladder of the control — the direct '
-                 'test of `q-diag`\'s verdict that the quadrature, not the direction rule, '
-                 'carries it:\n\n')
-        L.append(table(['ladder', 'directions', 'quadrature', '$q=0$ evolved %',
-                        '$q=16$ evolved %', 'change (pp)', 'regression'],
-                       [[f'`{lid}`', ctl['ladders'][lid]['dirset'],
-                         ctl['ladders'][lid]['quadrature'], pct(x['q0']), pct(x['q16']),
-                         f"{x['delta_percentage_points']:+.4f}", yn(x['regression'])]
-                        for lid, x in sorted(cv['q16_regression'].items())]))
-        L.append('\n**Gates, `qtd01`.** ' + gates(ctl['checks']) + '\n')
+        if ctl.get('reconstruction'):
+            rq = sorted({x['q'] for x in ctl['reconstruction']})
+            byq = {(x['dirset'], x['q']): x for x in ctl['reconstruction']}
+            L.append('\nThe static manifold floor (best-found on the supplied field) each rule '
+                     'buys, worst over the six cases; a dash is a rung this job did not build '
+                     'for that rule:\n\n')
+            L.append(table(['directions'] + [f'$q={q}$ %' for q in rq],
+                           [[f'`{d}`'] + [pct(byq[(d, q)]['worst_best_found_percent'])
+                                          if (d, q) in byq else
+                                          (pct(byq[('shared', 0)]['worst_best_found_percent'])
+                                           if q == 0 and ('shared', 0) in byq else '—')
+                                          for q in rq]
+                            for d in ('old', 'traj', 'prac')]))
+        if ctl.get('ladders'):
+            L.append('\nIts ladders:\n')
+            L += ladders(ctl['ladders'], ['old_primary', 'traj_primary', 'prac_primary',
+                                          'old_dense', 'traj_dense', 'prac_dense',
+                                          'old_fixedM', 'traj_fixedM'])
+            L.append('\nThe $q=16$ evolved-metric regression, per ladder of the control — the '
+                     'direct test of `q-diag`\'s verdict that the quadrature, not the direction '
+                     'rule, carries it:\n\n')
+            L.append(table(['ladder', 'directions', 'quadrature', '$q=0$ evolved %',
+                            '$q=16$ evolved %', 'change (pp)', 'regression'],
+                           [[f'`{lid}`', ctl['ladders'][lid]['dirset'],
+                             ctl['ladders'][lid]['quadrature'], pct(x['q0']), pct(x['q16']),
+                             f"{x['delta_percentage_points']:+.4f}", yn(x['regression'])]
+                            for lid, x in sorted(cv['q16_regression'].items())]))
+        else:
+            L.append(
+                f'\n**Its timed ladders do not exist.** It built all {ctl.get("arms_built")} '
+                'reduced arms and every empirical-quadrature rule, ran every offline diagnostic '
+                'above, and then died in the compile warm-up of its 21st subject with '
+                f'`{ctl.get("terminating_error")}` on a 40 GB A100 it was sized past. Its '
+                'offline output is collected, checksum-verified and audited in a `--partial` '
+                'mode; it was **not** resubmitted, because the redirect said not to spend '
+                'another job on new directions, and the third job of the cap is unused.\n')
+        L.append('\n**Gates, `qtd01`** (the `complete` gate fails by construction for a '
+                 'partial job). ' + gates(ctl['checks']) + '\n')
 
     rp = Path(a.report)
     L.append(f'\nSource-generated report: `experiments/q-trajdirs/reports/{rp.name}` (SHA256 '

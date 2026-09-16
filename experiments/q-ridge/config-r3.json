@@ -21,7 +21,7 @@
   "quadrature_cap": 2048,
   "eq_blocks": 16,
   "eq_seed": 20259,
-  "candidate_cap": 16384,
+  "candidate_cap": 8192,
   "fit_states": 64,
   "max_fit_rows": 8192,
   "gauss_jordan_max": 64,
@@ -39,7 +39,7 @@
   "order_seed": 911716,
   "burn_seconds": 0.25,
   "step_budget_provenance": "btq102 sweep block '_b600' (q256_m2_dense_base_b600): zero budget exits, worst joint gradient 9.71e-07, 0.988x the budget-180 control cost",
-  "eq_seconds": 1200.0,
+  "eq_seconds": 1500.0,
   "q_ladder": [
     0,
     16,
@@ -130,10 +130,15 @@
   ],
   "m_grid": [
     1024,
+    2048
+  ],
+  "m_grid_requested": [
+    1024,
     2048,
     4096,
     8192
   ],
+  "rule_fitter": "bounded",
   "rho_bar": 0.116,
   "rho_bar_provenance": "q-diag 2026-09-16, report SHA256 c0bf57626d9e0a422965446b39e79e423c9a39f6886b7ca1893b8a03cd803c6e: cclad01 arm q0_m256_eq_block, rho = 0.1158 at t = 0",
   "collect_iters": 12,
@@ -151,6 +156,7 @@
   "fit_blocks": 8,
   "active_set_iterations": 40,
   "gram_ridge_relative": 1e-12,
+  "fitter_note": "varpro.bounded_nnls, the cell's own audited block-greedy Lawson-Hanson fitter, with the incumbent refit block and fit-state convention; see DESIGN.md A4 and A5",
   "reproduction_arms": [
     {
       "name": "q0_m4_eqold_ret",
@@ -178,6 +184,5 @@
       "tolerance": 0.001,
       "tolerance_if_directions_bitwise": 1e-09
     }
-  },
-  "fitter_note": "support selection by FISTA over the full candidate set, refined exactly on the chosen support; see DESIGN.md A4 and checks/fitter-bench.json"
+  }
 }

@@ -242,8 +242,14 @@ def main():
                                                replace=False)] for q in QS}
 
     # ------------------------------------------------- phase 3+4: the rules ---
+    def fit_state_count(M):
+        # The incumbent convention, so the design has the shape the audited fitter was
+        # measured on: at most `max_fit_rows` rows, at least 8 states, at most `fit_states`.
+        return int(np.clip(cfg['incumbent_max_fit_rows'] // int(M), 8,
+                           cfg['incumbent_fit_states']))
+
     def pick_fit(q, m, M):
-        n = int(np.clip(int(np.ceil(4 * m / M)), cfg['fit_states_min'], cfg['fit_states_max']))
+        n = fit_state_count(M)
         pool = pools[q]['fit']
         sel = rng.choice(len(pool), min(n, len(pool)), replace=False)
         return pool[np.sort(sel)]
@@ -255,16 +261,16 @@ def main():
         cand = np.sort(rng.choice((L - 1) ** 2, cfg['candidate_cap'], replace=False))
         cand_small = np.sort(np.random.default_rng(cfg['eq_seed']).choice(
             (L - 1) ** 2, cfg['incumbent_candidate_cap'], replace=False))
+        fitter = cfg['rule_fitter']
         specs = [dict(population='static', m=int(min(4 * M, cfg['incumbent_cap'])),
-                      fitter='gpu', candidates=cand_small)]
-        specs += [dict(population='reachable', m=int(mm), fitter='gpu', candidates=cand)
+                      fitter=fitter, candidates=cand_small)]
+        specs += [dict(population='reachable', m=int(mm), fitter=fitter, candidates=cand)
                   for mm in cfg['m_grid']]
         for s in specs:
             key = (q, s['population'], s['m'], s['fitter'])
             if s['population'] == 'static':
                 codes = EC.static_codes(Zstar, rho_head, Rb, Ct, q, Zold)
-                n = int(np.clip(int(np.ceil(4 * s['m'] / M)), cfg['fit_states_min'],
-                                cfg['fit_states_max']))
+                n = fit_state_count(M)
                 sel = np.sort(rng.choice(len(codes), min(n, len(codes)), replace=False))
                 coefs = np.asarray(jax.jit(jax.vmap(RG.corrected_head(params, Cfull[:, :q], K)))(
                     jnp.asarray(codes[sel])))
@@ -272,8 +278,8 @@ def main():
                 coefs = pick_fit(q, s['m'], M)
             rule, info = EC.fit_rule(bank, G, ph, L, M, s['m'], coefs, s['candidates'],
                                      fitter=s['fitter'], blocks=cfg['fit_blocks'],
-                                     inner_iters=cfg['active_set_iterations'],
-                                     seconds=cfg['eq_seconds'])
+                                     seconds=cfg['eq_seconds'],
+                                     scipy_blocks=cfg['eq_blocks'])
             cert = EC.certify(G, ph, L, rule, cert_sel[q], chunk=cfg['certify_chunk'])
             info.update(q=q, population=s['population'], certification=cert,
                         certified_primary=bool(cert['rho_max'] <= rho_bar and info['eq_rule_valid']),

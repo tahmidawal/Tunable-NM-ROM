@@ -198,23 +198,23 @@ def _drop_loop(Hs, cs, free0, ridge, iters=40, refine=2):
     return jnp.where(free & (w > 0.), w, 0.), free, used
 
 
-def gpu_nnls(design, b, target, fista_iters=6000, drop_iters=40, reentry=3,
-             ridge_rel=1e-12, seconds=None, **_ignored):
+def gpu_nnls(design, b, target, blocks=16, drop_iters=40, ridge_rel=1e-12, seconds=None,
+             max_passes=None, **_ignored):
     """Nonnegative least squares with a bounded support, solved on the GPU in float64.
 
-    Two stages, because scipy's Lawson-Hanson cannot reach m = 8192 inside a job and a
-    gradient-greedy outer loop cycles on degenerate zero steps (which is exactly how attempt
-    `qrg301` failed, at 97 of 256 points):
+    The selection rule is the RETAINED one: grow the support in passes by the residual
+    correlation, `target/blocks` points at a time, exactly as `varpro.bounded_nnls` does.
+    Only the inner solve moves off the host: scipy's Lawson-Hanson is replaced by an exact
+    least-squares drop loop on the Gram block of the chosen columns, which is what makes
+    m = 8192 reachable inside a job (Lawson-Hanson took about 1000 s at m = 2048).
 
-      1 a projected-gradient (FISTA) solve of the FULL nonnegative problem over every
-        candidate point, used only to RANK the candidates;
-      2 the `target` largest of those, refined by an exact least-squares drop loop that
-        cannot cycle, followed by up to `reentry` rounds that re-fill the support with the
-        best remaining positive-gradient candidates.
-
-    Every reported weight comes from stage 2, so stage 1's slow tail convergence never
-    enters a number. The relative fit is measured on the design, not on the Gram, because
-    the Gram form cancels catastrophically when the fit is near-exact.
+    The drop loop returns the exact minimiser over the columns that survive, but -- unlike
+    Lawson-Hanson -- not a KKT point of the block, so a column it zeroes can still carry a
+    positive gradient. Left alone the outer loop re-selects it and the two cycle, which is
+    how attempt `qrg301` failed at 97 of 256 points. The correction is to BAN a column the
+    inner solve has zeroed from being re-selected. That is a declared deviation from an
+    exact NNLS -- it can only make the fit worse, never better -- and it is measured:
+    `checks/fitter_bench.py` compares this fitter against scipy's on real quadrature designs.
     """
     t0 = time.perf_counter()
     D = jnp.asarray(design)
@@ -225,60 +225,75 @@ def gpu_nnls(design, b, target, fista_iters=6000, drop_iters=40, reentry=3,
     bnorm = float(jnp.linalg.norm(bv))
     ridge = float(ridge_rel * (jnp.mean(jnp.diag(H)) + 1e-300))
     target = int(min(target, n))
-    key = jax.random.PRNGKey(0)
-    v = jax.random.normal(key, (n,), dtype=H.dtype)
-    for _ in range(40):
-        v = H @ v
-        v = v / (jnp.linalg.norm(v) + 1e-300)
-    lip = float(jnp.dot(v, H @ v) / (jnp.dot(v, v) + 1e-300))
-    wf = np.asarray(_fista(H, c, lip, int(fista_iters)))
-    fista_support = int((wf > 0).sum())
-    order = np.argsort(-wf)[:target]
-    sel = np.sort(order[wf[order] > 0.])
-    if sel.size == 0:
-        sel = np.sort(np.argsort(-np.asarray(c))[:target])
-    rounds, used = 0, 0
+    blocks = max(1, int(blocks))
+    per = max(1, target // blocks)
+    cap = int(max_passes if max_passes is not None else 8 * blocks)
+    sel = np.zeros(0, dtype=int)
+    banned = np.zeros(n, dtype=bool)
     w_full = jnp.zeros(n, dtype=H.dtype)
-    reason = 'target'
-    for rounds in range(int(reentry) + 1):
-        pad = target - len(sel)
-        idx = jnp.asarray(np.concatenate((sel, np.zeros(max(pad, 0), dtype=int))))
-        S = jnp.asarray(np.concatenate((np.ones(len(sel), bool),
-                                        np.zeros(max(pad, 0), bool))))
-        wb, _, u = _drop_loop(H[idx][:, idx], c[idx], S, ridge, drop_iters)
-        used = max(used, u)
-        wb = np.asarray(wb)[:len(sel)]
+    truncated, reason, passes, drops_used, banned_total = False, 'target', 0, 0, 0
+    while len(sel) < target:
+        if seconds is not None and time.perf_counter() - t0 > seconds:
+            truncated, reason = True, 'walltime'
+            break
+        if passes >= cap:
+            truncated, reason = True, 'pass_cap'
+            break
+        g = np.array(c - H @ w_full, copy=True)            # -d/dw of 0.5||Dw-b||^2
+        if sel.size:
+            g[sel] = -np.inf
+        g[banned] = -np.inf
+        take = min(per, target - len(sel))
+        order = np.argsort(-g)[:take]
+        order = order[g[order] > 1e-13 * max(bnorm, 1e-300)]
+        if order.size == 0:
+            reason = 'candidates_exhausted' if banned.any() else 'gradient'
+            break
+        cand = np.sort(np.concatenate((sel, order)))
+        nc = len(cand)
+        width = min(int(np.ceil(nc / per)) * per, target + per)
+        pad = max(0, width - nc)
+        idx = jnp.asarray(np.concatenate((cand, np.zeros(pad, dtype=int))))
+        free0 = jnp.asarray(np.concatenate((np.ones(nc, bool), np.zeros(pad, bool))))
+        wb, _, used = _drop_loop(H[idx][:, idx], c[idx], free0, ridge, drop_iters)
+        wb = np.asarray(wb)[:nc]
         keep = wb > 0.
-        sel = sel[keep]
+        banned[cand[~keep]] = True
+        banned_total = int(banned.sum())
+        sel = cand[keep]
         w_full = jnp.zeros(n, dtype=H.dtype).at[jnp.asarray(sel)].set(jnp.asarray(wb[keep]))
-        if len(sel) >= target or (seconds is not None
-                                  and time.perf_counter() - t0 > seconds):
-            break
-        g = np.array(c - H @ w_full, copy=True)
-        g[sel] = -np.inf
-        add = np.argsort(-g)[:target - len(sel)]
-        add = add[g[add] > 1e-13 * max(bnorm, 1e-300)]
-        if add.size == 0:
-            reason = 'gradient'
-            break
-        sel = np.sort(np.concatenate((sel, add)))
-    else:
-        reason = 'reentry_cap'
+        passes += 1
+        drops_used = max(drops_used, used)
     rel = float(jnp.linalg.norm(D @ w_full - bv) / max(bnorm, 1e-300))
-    truncated = bool(len(sel) < target and reason not in ('gradient',))
-    info = dict(fitter='gpu_fista_select_exact_refine', target_support=target,
-                support=int(len(sel)), fista_iterations=int(fista_iters),
-                fista_support=fista_support, reentry_rounds=int(rounds),
-                max_drop_iterations=int(used), truncated=truncated, stop_reason=reason,
-                relative_fit=rel, seconds=time.perf_counter() - t0)
-    print(f'    nnls m={info["support"]}/{target} rounds={rounds} drops={used} '
-          f'stop={reason} fit={rel:.3e} {info["seconds"]:.1f}s', flush=True)
+    info = dict(fitter='gpu_block_greedy_drop_loop_banned', blocks=blocks,
+                target_support=target, support=int(len(sel)), passes=passes, pass_cap=cap,
+                banned=banned_total, max_drop_iterations=int(drops_used),
+                truncated=bool(truncated), stop_reason=reason, relative_fit=rel,
+                seconds=time.perf_counter() - t0)
+    print(f'    nnls m={info["support"]}/{target} passes={passes} drops={drops_used} '
+          f'banned={banned_total} stop={reason} fit={rel:.3e} {info["seconds"]:.1f}s',
+          flush=True)
     return sel.astype(int), np.asarray(w_full)[sel], info
 
 
 # ----------------------------------------------------- the rule and its rho ---
 
-def fit_rule(bank, G, Phi, L, M, m, coefficients, candidates, fitter='gpu', blocks=8,
+def fit_via(design, b, m, fitter='bounded', blocks=16, seconds=None):
+    """One entry point for every fitter, so the bench and the job call the same code."""
+    if fitter == 'gpu':
+        return gpu_nnls(design, b, m, blocks=blocks, seconds=seconds)
+    if fitter == 'retained':
+        supp, w, info = VP.retained_nnls(design, b, m)
+    else:
+        supp, w, info = VP.bounded_nnls(design, b, m, seconds or 3600.,
+                                        block=max(1, int(m) // int(blocks)))
+    info.setdefault('relative_fit', float(
+        np.linalg.norm(design[:, supp] @ w - b) / max(np.linalg.norm(b), 1e-300)))
+    info['banned'] = 0
+    return supp, w, info
+
+
+def fit_rule(bank, G, Phi, L, M, m, coefficients, candidates, fitter='bounded', blocks=8,
              inner_iters=40, final_iters=None, seconds=None, scipy_blocks=16):
     """Fit one m-point rule from a population given as BANK COEFFICIENTS.
 
@@ -301,14 +316,9 @@ def fit_rule(bank, G, Phi, L, M, m, coefficients, candidates, fitter='gpu', bloc
     scale = np.linalg.norm(design, axis=1) + 1e-300
     design /= scale[:, None]
     b /= scale
-    if fitter == 'gpu':
-        supp, w, info = gpu_nnls(design, b, m, seconds=seconds)
-    else:
-        supp, w, info = (VP.retained_nnls(design, b, m) if fitter == 'retained'
-                         else VP.bounded_nnls(design, b, m, seconds or 3600.,
-                                              block=max(1, int(m) // scipy_blocks)))
-        info.setdefault('relative_fit', float(
-            np.linalg.norm(design[:, supp] @ w - b) / max(np.linalg.norm(b), 1e-300)))
+    supp, w, info = fit_via(design, b, m, fitter=fitter,
+                            blocks=(blocks if fitter == 'gpu' else scipy_blocks),
+                            seconds=seconds)
     pos = cp[supp]
     ij = np.stack(np.unravel_index(pos, (L - 1, L - 1)), 1) + 1
     rule = dict(G5=bank.stencil(ij, L), Pq=jnp.asarray(np.asarray(Phi)[pos] * w[:, None]))

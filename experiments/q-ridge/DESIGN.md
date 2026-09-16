@@ -545,3 +545,48 @@ carried experiments**: `qrg101` (R1, 3757235), `qrg201` (R2, 3757237) and `qrg30
 certification). `qrg301` consumed about 35 minutes of A100 time and produced nothing that is
 reported; the two submissions of §A1 consumed none. The three-job cap is read as three
 experiment jobs, and this deviation is recorded rather than absorbed.
+
+### A5 (2026-09-16) — `qrg302` retracted too; the job uses the cell's own audited fitter, and the $m$ grid shrinks to what that fitter can construct
+
+The second EQ-certification attempt, job **3763371** (`qrg302`), was **cancelled 25 minutes in**
+and its results are **retracted in full**. Its rules reached their target sizes — the §A4
+cycling was gone — but they did not *fit*: the $q=0$ incumbent-population rule at $m=256$ came
+back with a relative fit of **0.358** where the audited incumbent reaches **0.00516** on the
+same $M$, the same $m$ and the same candidate pool, and its held-out $\rho$ was 0.756. A rule
+that cannot fit its own design measures the fitter, not the population.
+
+**The defect.** §A4 replaced greedy selection with a projected-gradient (FISTA) ranking of the
+full nonnegative problem. On the synthetic bench that ranking was excellent; on the **real**
+quadrature design — heavily underdetermined, badly conditioned, with columns that are products
+of a test mode and an advection field — it is not, and the `target` largest FISTA coordinates
+are simply the wrong points. The synthetic bench passed because the synthetic problem was
+well-conditioned and exactly representable. That is the lesson: **a fitter must be benched on
+the design it will actually be given.**
+
+**The correction.** `checks/fitter_bench.py` now builds the cell's own design — the decoder
+bank, the sine test modes and the five-point advection of real decoder states — and requires
+the achieved support to reach the target (or to stop on a genuine KKT `gradient` exit), the
+weights to be nonnegative, and the relative fit to be within 2x of scipy's block-greedy
+Lawson-Hanson on the same design. `qrg301` fails its first case on the support; `qrg302` fails
+it on the fit.
+
+**What the job now runs.** The rules are fitted by `varpro.bounded_nnls` — **this cell's own
+audited block-greedy Lawson-Hanson fitter**, with the incumbent refit block ($m/16$), the
+incumbent candidate pool (8192) and the incumbent fit-state convention
+($\mathrm{clip}(8192/M, 8, 64)$ states). The bench confirms it reproduces itself exactly
+(ratio 1.000 at every size), which is the point: **no new fitter enters a reported number.**
+
+**The cost of that decision, stated plainly.** Lawson-Hanson took about 1000 s at $m=2048$ in
+`b-ladder-top` and scales like (rows $\times m^2$), so $m=4096$ and $m=8192$ are **not
+constructible** inside the declared per-rule walltime of 1500 s. The requested grid
+$m \in \{1024, 2048, 4096, 8192\}$ therefore becomes **$m \in \{1024, 2048\}$**, recorded in
+the config as `m_grid` against `m_grid_requested`. The coordinator's falsification clause —
+"if no $m \le 8192$ reaches the bar at $q=256$, report the $m$ at which it would by
+extrapolation and stop" — is answered from the two constructible sizes instead of four, and the
+report says so at the point of use. The GPU fitter stays in `eqcert.py` as `gpu_nnls`, unused
+by the job and reachable only through `fit_via(fitter='gpu')`, so the two failed attempts remain
+reproducible.
+
+**Job accounting, updated.** Six submissions; **three carried experiments**: `qrg101` (R1,
+3757235), `qrg201` (R2, 3757237) and `qrg303` (EQ certification). `qrg301` and `qrg302` are
+retracted above and together consumed about an hour of A100 time; the two of §A1 consumed none.

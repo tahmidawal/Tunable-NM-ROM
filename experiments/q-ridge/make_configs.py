@@ -128,7 +128,11 @@ def main():
         'certified rule per rung.'))
     r3['q_ladder'] = [0, 16, 32, 64, 128, 256]
     r3['dense_twins'] = [0, 64, 256]
-    r3['m_grid'] = [1024, 2048, 4096, 8192]
+    # DESIGN.md A5: the audited scipy fitter reaches 2048 inside the declared
+    # per-rule walltime and nothing larger; 4096 and 8192 are not constructible.
+    r3['m_grid'] = [1024, 2048]
+    r3['m_grid_requested'] = [1024, 2048, 4096, 8192]
+    r3['rule_fitter'] = 'bounded'
     # The bar, declared before the job ran: q-diag's measured rho for the q = 0 incumbent
     # rule at the state that carries the whole first-interval penalty.
     r3['rho_bar'] = 0.116
@@ -143,7 +147,7 @@ def main():
     r3['certify_chunk'] = 32
     r3['fit_states_min'] = 16
     r3['fit_states_max'] = 256
-    r3['candidate_cap'] = 16384            # raised so m = 8192 is a genuine selection
+    r3['candidate_cap'] = base['candidate_cap']   # the incumbent pool: m <= 2048
     r3['incumbent_candidate_cap'] = base['candidate_cap']
     r3['incumbent_fit_states'] = base['fit_states']
     r3['incumbent_max_fit_rows'] = base['max_fit_rows']
@@ -152,10 +156,10 @@ def main():
     r3['active_set_iterations'] = 40
     r3['gram_ridge_relative'] = 1e-12
     # DESIGN.md A4: one rule may not eat the job; a truncated rule is disqualified anyway.
-    r3['eq_seconds'] = 1200.
-    r3['fitter_note'] = ('support selection by FISTA over the full candidate set, refined '
-                         'exactly on the chosen support; see DESIGN.md A4 and '
-                         'checks/fitter-bench.json')
+    r3['eq_seconds'] = 1500.
+    r3['fitter_note'] = ("varpro.bounded_nnls, the cell's own audited block-greedy "
+                         'Lawson-Hanson fitter, with the incumbent refit block and fit-state '
+                         'convention; see DESIGN.md A4 and A5')
     r3['reproduction_arms'] = [
         dict(name='q0_m4_eqold_ret', q=0, test_multiplier=4, fitter='retained'),
         dict(name='q128_m2_eqold_bnd', q=128, test_multiplier=2, fitter='bounded')]

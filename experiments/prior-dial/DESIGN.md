@@ -253,6 +253,43 @@ final cohort stays sealed.
 - A100 requested on the `gpu` partition, `--time 04:00:00`, `--mem 150G` for Burgers and
   `--mem 100G` for Poisson.
 
-**Amendment 2 — the $\lambda_{\rm rel}$ grid, after the local probe.**
+**Amendment 2 — the $\lambda_{\rm rel}$ grid is confirmed unchanged, and a secondary
+metric is added, after the local probe.** Evidence: `checks/smoke-prior.json`, produced by
+`smoke_prior.py` on the local GB10 at 64 intervals on development cases 0 and 2.
 
-Recorded after the probe ran; see `checks/smoke-prior.json` for the measured quantities.
+*Gate (i) passed:* $\lambda=\infty$ through the new code path reproduces the consolidated
+saved Burgers case to $2.01\times10^{-14}$ relative ($9.59\times10^{-13}$ on the internal
+latents) and is **bit-identical** (relative difference exactly $0$, arrays equal) to the
+incumbent `accuracy_paths.make_rom`. The finite path at $\lambda_{\rm rel}=10^{6}$ returns
+to that limit to $3.65\times10^{-6}$ with a realised correction of $1.26\times10^{-9}$ of
+the state norm. Measured $\sigma=0.9999999997$ — the bank contains the lowest sine modes
+almost exactly — and $\operatorname{cond}(R_G)=3.25\times10^{4}$, benign, and in any case
+never applied to a solved vector.
+
+*The grid stands.* At $M=64$ the realised correction grows $1.3\times10^{-6}\to
+1.1\times10^{-4}\to 7.1\times10^{-4}\to 3.1\times10^{-3}$ of the state norm as
+$\lambda_{\rm rel}$ falls $10^{3}\to 10^{1}\to 10^{0}\to 10^{-2}$, and $10^{-2}$ is already
+failing to complete. At $M=1024$ the same sweep moves the evolved-time error by more than a
+factor of two. The declared eight-point grid brackets the whole transition at both test
+counts; **no change is made**.
+
+*A secondary metric is added, and why.* The probe shows that the worst same-grid error over
+**all** output times is achieved at $t=0$ on every case and is **bit-identical at every
+$\lambda$** (1.8428 % on case 0, 1.5130 % on case 2). The mechanism is the contract itself:
+the initializer is arm (a)'s and starts the correction at $y=0$, so the $t=0$ output is the
+head's compression of the supplied field and **cannot** depend on $\lambda$. Since that
+compression error is the largest of the six, the pre-registered primary metric is pinned by
+construction. The primary metric and its acceptance criteria are **kept exactly as
+pre-registered and reported as such**; in addition the worst same-grid error over the
+**evolved** times $t\in\{0.05,\dots,0.25\}$ is reported as a declared secondary metric, with
+the same three acceptance criteria applied to it and labelled as secondary. The audit
+asserts the $t=0$ invariance rather than assuming it. Probed values (worst over the two
+probe cases, evolved times, 64 intervals):
+
+| $M$ | quad. | $\lambda_{\rm rel}=\infty$ | $10^{0}$ | $10^{-2}$ |
+| ---: | --- | ---: | ---: | ---: |
+| 64 | EQ | 1.4771 % | 1.4147 % | 1.1171 % |
+| 1024 | dense | 1.3108 % | 1.2039 % | 0.8427 % |
+
+At $\lambda_{\rm rel}=10^{-2}$ three of the four probed solves fail to complete under the
+shared stopping rule, which is exactly what criterion 3 exists to catch.

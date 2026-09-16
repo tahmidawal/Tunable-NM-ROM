@@ -381,3 +381,23 @@ job produced a number**. Whatever `qtd01` reports, this cell does not get to cla
 discovered that the directions are innocent; `q-diag` established that from data that
 already existed, and this report cites it. What `qtd01` adds is an independent,
 same-allocation check of that verdict under a direction rule `q-diag` never had.
+
+### D. Observed during the runs, before any verdict
+
+* **D1 — the trajectory direction rule is two orders of magnitude cheaper to fit than the
+  incumbent one.** In `qtd01`, on one A100, the incumbent static rule took **1546.9 s**
+  (almost all of it one XLA slow-compile alarm on its doubly vectorised multistart
+  Levenberg-Marquardt fit over 1024 snapshots), while `traj` took **27.0 s** over 32
+  training trajectories and `prac` **8.9 s** over 6. The trajectory rule needs no
+  multistart optimisation at all: the ROM's own internal latents already are the codes.
+  That is a real, incidental advantage of the rule the redirect just made irrelevant, and
+  it is recorded because it would otherwise be lost.
+* **D2 — the `sbatch` config placeholder bug.** Parameterising the staging script by
+  config file introduced a bare `CONFIG` token that also matched inside `MPLCONFIGDIR`,
+  so the generated script exported a corrupted matplotlib cache path. Caught by reading
+  the staged script before submission; **no job ran with it**. The placeholder is now
+  `__CONFIG__`.
+* **D3 — the session scratchpad is shared.** A synthetic fixture written under the
+  scratchpad was overwritten by a sibling agent between two uses of it. Nothing that
+  matters lives there — every input to every reported number is a committed file or a
+  checksum-verified archive — but fixtures are now written to a lane-specific subdirectory.

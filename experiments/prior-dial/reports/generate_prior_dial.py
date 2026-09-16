@@ -85,6 +85,35 @@ def verdict(block, err_key, cost_key='median_gpu_ms'):
                 passed=bool(mono and len(nd) >= 3 and cost_span >= 2 and err_span >= 2 and honest))
 
 
+
+def diagnose(v):
+    """Name which pre-registered falsification mode fired, from the numbers alone."""
+    if v['passed']:
+        return 'none: all three criteria hold.'
+    parts = []
+    if not v['criterion_1_monotone']:
+        parts.append('**error is not monotone in $\\lambda$** - the weak objective is minimised, '
+                     'the field error is not')
+    if not v['criterion_2_frontier']:
+        if v['cost_span'] < 2 and v['error_span'] >= 2:
+            parts.append(f"**cost is flat in $\\lambda$** ({v['cost_span']:.2f}$\\times$ across "
+                         f"the whole frontier while error spans {v['error_span']:.2f}$\\times$), so "
+                         'this is an accuracy *lever*, not a cost/accuracy knob: the cheapest good '
+                         '$\\lambda$ simply wins and there is nothing to trade')
+        elif v['error_span'] < 2 and v['cost_span'] >= 2:
+            parts.append(f"**error is flat in $\\lambda$** ({v['error_span']:.2f}$\\times$ across "
+                         f"the whole frontier while cost spans {v['cost_span']:.2f}$\\times$), so "
+                         'the prior was never binding on this metric')
+        else:
+            parts.append(f"**the frontier collapses** to {v['count']} point(s) spanning "
+                         f"{v['cost_span']:.2f}$\\times$ in cost and {v['error_span']:.2f}$\\times$ "
+                         'in error')
+    if not v['criterion_3_honest']:
+        parts.append('**the accuracy only appears at $\\lambda$ values whose solves do not '
+                     'converge**, which is how the correction ladder failed')
+    return '; '.join(parts) + '.'
+
+
 # ------------------------------------------------------------------ figure ---
 
 def figure(rows, prows, out_png, out_pdf):
@@ -386,6 +415,9 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
           f"{'yes' if v['criterion_3_honest'] else 'NO'} | "
           f"**{'KNOB' if v['passed'] else 'NOT A KNOB'}** |")
     w('')
+    for v, label in [(v_all, 'primary metric'), (v_evo, 'secondary metric')]:
+        w(f"**Which pre-registered falsification mode fired ({label}):** {diagnose(v)}")
+        w('')
     w(f"Primary-metric errors along $\\lambda_{{\\rm rel}}="
       f"[{', '.join(lam_plain(x['lambda_rel']) for x in prim)}]$: "
       f"{[round(e, 6) for e in v_all['errors']]} percent. "
@@ -539,7 +571,14 @@ def build(r, au, sm, pr, pau, figinfo, figname, pfigname):
           f"{es:.2f}$\\times$ in error; "
           f"{'all complete' if all(p['all_completed'] for p in nd) else 'some are early-stopped'}. "
           + (f"The direct DST solve costs {fom['median_query_ms']:.4f} ms with zero same-grid "
-             f"error by definition." if fom else ''))
+             f"error by definition, against {blk[0]['median_query_ms']:.4f} ms for the ROM at "
+             f"$\\lambda=\\infty$." if fom else '')
+          + ' ' + diagnose(dict(passed=(mono and len(nd) >= 3 and cs >= 2 and es >= 2
+                                        and all(p['all_completed'] for p in nd)),
+                                criterion_1_monotone=mono,
+                                criterion_2_frontier=(len(nd) >= 3 and cs >= 2 and es >= 2),
+                                criterion_3_honest=all(p['all_completed'] for p in nd),
+                                cost_span=cs, error_span=es, count=len(nd))))
     w('')
 
     # ---------------------------------------------- deviations and caveats ---

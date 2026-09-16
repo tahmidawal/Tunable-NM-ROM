@@ -14,10 +14,11 @@ This module supplies the three pieces that fixes that, and nothing else:
                      training-family trajectories, recording the converged step solution AND
                      the intermediate Levenberg-Marquardt iterates, by unrolling a fixed
                      number of steps of the retained step formula.
-  `fit_rule`         block-greedy support selection plus an EXACT active-set nonnegative
-                     least-squares solve on the Gram matrix, float64 on the GPU, so m = 8192
-                     is reachable inside a job. scipy's Lawson-Hanson NNLS took about 1000 s
-                     at m = 2048; `smoke_eqcert.py` gates this fitter against it at small m.
+  `fit_rule`         support selection by a projected-gradient solve of the full
+                     nonnegative problem, then an exact drop-loop refinement on the chosen
+                     support, float64 on the GPU, so m = 8192 is reachable inside a job.
+                     scipy's Lawson-Hanson took about 1000 s at m = 2048;
+                     `checks/fitter_bench.py` gates this fitter against it up to m = 2048.
   `certify`          rho on a HELD-OUT set of reachable states, reported as max, 95th
                      percentile and median, never as the fit residual.
 
@@ -140,12 +141,10 @@ def static_codes(Zstar, rho, Rb, Ct, q, Zold):
 # ---------------------------------------------------------- the GPU fitter ----
 
 def _ls_on_free(Hs, cs, free, ridge):
-    """Unconstrained least squares on the free subset of a SMALL Gram block.
+    """Unconstrained least squares on the free subset of a Gram block, at fixed shape.
 
-    Rows and columns outside the free set are replaced by the identity so the shape is
-    fixed within one greedy pass; the block itself is only as wide as the support chosen so
-    far, which is what keeps the cubic cost down -- the candidate pool is 16384 wide, the
-    support at most 8192, and most passes far less.
+    Rows and columns outside the free set are replaced by the identity, so every call at a
+    given block width compiles once.
     """
     m = free.astype(Hs.dtype)
     A = Hs * m[:, None] * m[None, :] + jnp.diag(jnp.where(free, ridge, 1.))
@@ -156,40 +155,66 @@ def _ls_on_free(Hs, cs, free, ridge):
 _ls = jax.jit(_ls_on_free)
 
 
-def _nnls_block(Hs, cs, free0, ridge, iters=12, refine=2):
-    """Exact nonnegative least squares on one padded support block, by active set.
+def _fista_impl(H, c, lip, iters):
+    """min_w 0.5 w^T H w - c^T w subject to w >= 0, by projected gradient with momentum.
 
-    Solve unconstrained on the free set, drop every negative weight, repeat: the classical
-    fast-NNLS inner loop. It terminates because the free set only ever shrinks. Iterative
-    refinement at the end removes the bias of the tiny Gram ridge, which is a solve device
-    and not part of the objective. `free0` starts the padding rows fixed at zero, so the
-    block can be padded to a bucketed width and XLA compiles one solve per bucket instead
-    of one per pass.
+    Used only to CHOOSE the support -- the weights it returns are refined exactly afterwards
+    -- so its slow tail convergence does not enter any reported number. It is what replaces
+    the greedy selection that made attempt `qrg301` cycle.
+    """
+    step = 1. / jnp.maximum(lip, 1e-300)
+
+    def body(i, st):
+        w, y, t = st
+        wn = jnp.maximum(y - step * (H @ y - c), 0.)
+        tn = (1. + jnp.sqrt(1. + 4. * t * t)) / 2.
+        return (wn, wn + ((t - 1.) / tn) * (wn - w), tn)
+
+    z = jnp.zeros(H.shape[0], dtype=H.dtype)
+    w, _, _ = jax.lax.fori_loop(0, iters, body, (z, z, jnp.asarray(1.)))
+    return w
+
+
+_fista = jax.jit(_fista_impl, static_argnums=(3,))
+
+
+def _drop_loop(Hs, cs, free0, ridge, iters=40, refine=2):
+    """Exact least squares on the free set, dropping every non-positive weight, to a fixed
+    point. The free set only ever shrinks, so this cannot cycle; the returned point is the
+    exact minimiser over the surviving columns. Iterative refinement removes the bias of the
+    tiny Gram ridge, which is a solve device and not part of the objective.
     """
     free = free0
     w = jnp.zeros(Hs.shape[0], dtype=Hs.dtype)
     used = 0
     for used in range(1, int(iters) + 1):
         w = _ls(Hs, cs, free, ridge)
-        neg = free & (w < 0.)
-        if not bool(jnp.any(neg)):
+        bad = free & (w <= 0.)
+        if not bool(jnp.any(bad)):
             break
-        free = free & ~neg
+        free = free & ~bad
     for _ in range(int(refine)):
         w = w + _ls(Hs, cs - Hs @ w, free, ridge)
-    return jnp.where(free & (w > 0.), w, 0.), used
+    return jnp.where(free & (w > 0.), w, 0.), free, used
 
 
-def gpu_nnls(design, b, target, blocks=8, ridge_rel=1e-12, inner_iters=12, refine=2,
-             seconds=None, max_passes=None, **_ignored):
-    """Block-greedy nonnegative least squares, solved exactly on the GPU.
+def gpu_nnls(design, b, target, fista_iters=6000, drop_iters=40, reentry=3,
+             ridge_rel=1e-12, seconds=None, **_ignored):
+    """Nonnegative least squares with a bounded support, solved on the GPU in float64.
 
-    The support is grown in `blocks` passes by the residual correlation -- the retained
-    block-greedy rule -- and the inner solve is an exact active-set NNLS on the Gram BLOCK
-    of the columns chosen so far, rather than scipy's Lawson-Hanson, which is what makes
-    m = 8192 reachable inside a job. Everything is float64. The full Gram is formed once;
-    each pass factors only a |support| x |support| block, PADDED to a multiple of the block
-    size so XLA compiles one solve per bucket rather than one per pass.
+    Two stages, because scipy's Lawson-Hanson cannot reach m = 8192 inside a job and a
+    gradient-greedy outer loop cycles on degenerate zero steps (which is exactly how attempt
+    `qrg301` failed, at 97 of 256 points):
+
+      1 a projected-gradient (FISTA) solve of the FULL nonnegative problem over every
+        candidate point, used only to RANK the candidates;
+      2 the `target` largest of those, refined by an exact least-squares drop loop that
+        cannot cycle, followed by up to `reentry` rounds that re-fill the support with the
+        best remaining positive-gradient candidates.
+
+    Every reported weight comes from stage 2, so stage 1's slow tail convergence never
+    enters a number. The relative fit is measured on the design, not on the Gram, because
+    the Gram form cancels catastrophically when the fit is near-exact.
     """
     t0 = time.perf_counter()
     D = jnp.asarray(design)
@@ -200,60 +225,61 @@ def gpu_nnls(design, b, target, blocks=8, ridge_rel=1e-12, inner_iters=12, refin
     bnorm = float(jnp.linalg.norm(bv))
     ridge = float(ridge_rel * (jnp.mean(jnp.diag(H)) + 1e-300))
     target = int(min(target, n))
-    blocks = max(1, int(blocks))
-    per = max(1, target // blocks)
-    # NNLS zeroes many greedily chosen columns, so the support grows by less than one
-    # block per pass; the binding limit is the declared walltime, not a pass count.
-    cap = int(max_passes if max_passes is not None else 40 * blocks)
-    sel = np.zeros(0, dtype=int)
+    key = jax.random.PRNGKey(0)
+    v = jax.random.normal(key, (n,), dtype=H.dtype)
+    for _ in range(40):
+        v = H @ v
+        v = v / (jnp.linalg.norm(v) + 1e-300)
+    lip = float(jnp.dot(v, H @ v) / (jnp.dot(v, v) + 1e-300))
+    wf = np.asarray(_fista(H, c, lip, int(fista_iters)))
+    fista_support = int((wf > 0).sum())
+    order = np.argsort(-wf)[:target]
+    sel = np.sort(order[wf[order] > 0.])
+    if sel.size == 0:
+        sel = np.sort(np.argsort(-np.asarray(c))[:target])
+    rounds, used = 0, 0
     w_full = jnp.zeros(n, dtype=H.dtype)
-    truncated, reason, passes, inner_used = False, 'target', 0, 0
-    while len(sel) < target:
-        if seconds is not None and time.perf_counter() - t0 > seconds:
-            truncated, reason = True, 'walltime'
-            break
-        if passes >= cap:
-            reason = 'pass_cap'
-            break
-        g = np.array(c - H @ w_full, copy=True)            # -d/dw of 0.5||Dw-b||^2
-        if sel.size:
-            g[sel] = -np.inf
-        take = min(per, target - len(sel))
-        order = np.argsort(-g)[:take]
-        order = order[g[order] > 1e-12 * max(bnorm, 1e-300)]
-        if order.size == 0:
-            reason = 'gradient'
-            break
-        sel = np.sort(np.concatenate((sel, order)))
-        ns = len(sel)
-        width = min(int(np.ceil(ns / per)) * per, target)
-        pad = max(0, width - ns)
-        idx = jnp.asarray(np.concatenate((sel, np.zeros(pad, dtype=int))))
-        free0 = jnp.asarray(np.concatenate((np.ones(ns, bool), np.zeros(pad, bool))))
-        wb, used = _nnls_block(H[idx][:, idx], c[idx], free0, ridge, inner_iters, refine)
-        wb = np.asarray(wb)[:ns]
+    reason = 'target'
+    for rounds in range(int(reentry) + 1):
+        pad = target - len(sel)
+        idx = jnp.asarray(np.concatenate((sel, np.zeros(max(pad, 0), dtype=int))))
+        S = jnp.asarray(np.concatenate((np.ones(len(sel), bool),
+                                        np.zeros(max(pad, 0), bool))))
+        wb, _, u = _drop_loop(H[idx][:, idx], c[idx], S, ridge, drop_iters)
+        used = max(used, u)
+        wb = np.asarray(wb)[:len(sel)]
         keep = wb > 0.
         sel = sel[keep]
         w_full = jnp.zeros(n, dtype=H.dtype).at[jnp.asarray(sel)].set(jnp.asarray(wb[keep]))
-        passes += 1
-        inner_used = max(inner_used, used)
-    wn = np.asarray(w_full)[sel]
-    # Measured on the DESIGN, not on the Gram: ||D w||^2 - 2 c^T w + ||b||^2 cancels
-    # catastrophically when the fit is near-exact and would report sqrt(eps) instead of eps.
+        if len(sel) >= target or (seconds is not None
+                                  and time.perf_counter() - t0 > seconds):
+            break
+        g = np.array(c - H @ w_full, copy=True)
+        g[sel] = -np.inf
+        add = np.argsort(-g)[:target - len(sel)]
+        add = add[g[add] > 1e-13 * max(bnorm, 1e-300)]
+        if add.size == 0:
+            reason = 'gradient'
+            break
+        sel = np.sort(np.concatenate((sel, add)))
+    else:
+        reason = 'reentry_cap'
     rel = float(jnp.linalg.norm(D @ w_full - bv) / max(bnorm, 1e-300))
-    info = dict(fitter='gpu_block_greedy_active_set', blocks=blocks, target_support=target,
-                support=int(len(sel)), passes=passes, pass_cap=cap,
-                max_active_set_iterations=int(inner_used), truncated=bool(truncated),
-                stop_reason=reason, relative_fit=rel, seconds=time.perf_counter() - t0)
-    print(f'    nnls m={info["support"]}/{target} passes={passes} active={inner_used} '
+    truncated = bool(len(sel) < target and reason not in ('gradient',))
+    info = dict(fitter='gpu_fista_select_exact_refine', target_support=target,
+                support=int(len(sel)), fista_iterations=int(fista_iters),
+                fista_support=fista_support, reentry_rounds=int(rounds),
+                max_drop_iterations=int(used), truncated=truncated, stop_reason=reason,
+                relative_fit=rel, seconds=time.perf_counter() - t0)
+    print(f'    nnls m={info["support"]}/{target} rounds={rounds} drops={used} '
           f'stop={reason} fit={rel:.3e} {info["seconds"]:.1f}s', flush=True)
-    return sel.astype(int), wn, info
+    return sel.astype(int), np.asarray(w_full)[sel], info
 
 
 # ----------------------------------------------------- the rule and its rho ---
 
 def fit_rule(bank, G, Phi, L, M, m, coefficients, candidates, fitter='gpu', blocks=8,
-             inner_iters=12, final_iters=None, seconds=None, scipy_blocks=16):
+             inner_iters=40, final_iters=None, seconds=None, scipy_blocks=16):
     """Fit one m-point rule from a population given as BANK COEFFICIENTS.
 
     `coefficients` is (S, R): each row decodes to a fit state u = G c. That is the only
@@ -276,8 +302,7 @@ def fit_rule(bank, G, Phi, L, M, m, coefficients, candidates, fitter='gpu', bloc
     design /= scale[:, None]
     b /= scale
     if fitter == 'gpu':
-        supp, w, info = gpu_nnls(design, b, m, blocks=blocks, inner_iters=inner_iters,
-                                 seconds=seconds)
+        supp, w, info = gpu_nnls(design, b, m, seconds=seconds)
     else:
         supp, w, info = (VP.retained_nnls(design, b, m) if fitter == 'retained'
                          else VP.bounded_nnls(design, b, m, seconds or 3600.,

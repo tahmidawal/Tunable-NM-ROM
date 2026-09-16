@@ -509,3 +509,39 @@ the six evaluation cases.
 **Job budget.** The cap of three stands: `qrg101` (R1, running), `qrg201` (R2, running),
 `qrg301` (EQ certification). The two aborted submissions of §A1 ran nothing and are not
 counted.
+
+### A4 (2026-09-16) — `qrg301` aborted at 35 minutes on a fitter defect; resubmitted as `qrg302`
+
+The first EQ-certification attempt, job **3759018** (`qrg301`), was **cancelled 35 minutes in**
+and its results are **retracted in full**. Its rules were far below the requested sizes — 97 of
+256 points at $q=0$ for the incumbent static rule, 133 of 1024 for the first reachable rule —
+every one stopping on the fitter's pass cap, with held-out $\rho$ of 0.57 and 0.62 against a bar
+of 0.116. The certification sweep it would have produced would have measured the fitter, not the
+population or $m$.
+
+**The defect.** The GPU fitter grew the support greedily by the residual correlation and, at each
+pass, solved the block by dropping every non-positive weight and re-solving. That inner loop
+returns the exact minimiser over the *surviving* columns but not a KKT point of the block: a
+column NNLS has just zeroed can still carry a positive gradient, so the outer greedy re-selects
+it, the inner loop zeroes it again, and the two cycle until the pass cap. scipy's Lawson-Hanson
+does not have this failure because it returns a KKT point, which is why the incumbent fitter
+never showed it. An attempt to fix it by adding a Lawson-Hanson outer round with block additions
+still cycled, on the classical degenerate zero step: a freshly added column whose unconstrained
+value is non-positive gives a zero-length line search, is dropped, and is re-added with an
+unchanged gradient.
+
+**The correction, and the gate that would have caught it.** Support selection is now a
+projected-gradient (FISTA) solve of the **full** nonnegative problem over every candidate, used
+only to *rank* candidates; the `target` largest are then refined by the exact drop loop, with at
+most three bounded re-entry rounds. The drop loop's free set only ever shrinks, so it cannot
+cycle, and the ranking stage has no combinatorial selection at all. Every reported weight comes
+from the exact stage. `checks/fitter_bench.py` is a new pre-submission gate: across four sizes
+up to $8192 \times 16384$ it requires the achieved support to reach the target (or to stop on a
+genuine KKT `gradient` exit), the weights to be nonnegative, and the relative fit to be no worse
+than scipy's block-greedy fitter at the same target. `qrg301` would have failed its first case.
+
+**Job accounting, stated plainly.** The lane made **four** cluster submissions of which **three
+carried experiments**: `qrg101` (R1, 3757235), `qrg201` (R2, 3757237) and `qrg302` (EQ
+certification). `qrg301` consumed about 35 minutes of A100 time and produced nothing that is
+reported; the two submissions of §A1 consumed none. The three-job cap is read as three
+experiment jobs, and this deviation is recorded rather than absorbed.

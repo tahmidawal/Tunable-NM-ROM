@@ -1,0 +1,50 @@
+{
+  "attempt": "smoke",
+  "intervals": 128,
+  "fixed_test_count": 64,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "eval_seed": 7090703,
+  "eval_count": 2,
+  "fresh_seed": 7090732,
+  "fresh_count": 2,
+  "train_seed": 0,
+  "train_count": 24,
+  "reference_intervals": [
+    128,
+    512
+  ],
+  "q_ladder": [
+    0,
+    8,
+    32
+  ],
+  "rules": [
+    "m256",
+    "m4"
+  ],
+  "residual_snapshots": 24,
+  "residual_starts": 2,
+  "residual_budget": 60,
+  "residual_seed": 20260915,
+  "recon_starts": 4,
+  "recon_budget": 120,
+  "repetitions": 1,
+  "order_seed": 911711,
+  "burn_seconds": 0.05,
+  "retained": {
+    "online_preset": {
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-06,
+      "starts": 1,
+      "requested_modes": 64
+    },
+    "stationarity_tolerance": 1e-06,
+    "linear_backward_error_limit": 1e-12,
+    "residual_reconstruction_limit": 1e-10
+  },
+  "pabl01_job_id": 3711736,
+  "pabl01_note": "q32_m256 must reproduce pabl01 a_neural_q32 at 1024 intervals on the same 12 sources"
+}

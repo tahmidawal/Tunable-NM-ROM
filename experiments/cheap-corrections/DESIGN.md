@@ -97,8 +97,20 @@ y^{(j+1)}=\mathrm{GN}_y\big(y^{(j)};\,z^{(j+1)}\big),$$
 
 with the outer iteration budget split across rounds. Cheaper per round (no inner solve inside
 the outer function evaluation) but with no guarantee the $z$-step sees the effect of $y$.
-One of the two variants is kept for the main sweep, chosen on the $q\in\{16,64\}$ comparison
-by (converged, then cost); the other's numbers are still reported.
+
+**Block-damped variant (added after the first local smoke — see *Amendments* below).** One
+Jacobian per iteration for the whole augmented vector, as the audited solver does, but the
+normal equations are split so that the Levenberg damping and the trust radius touch the latent
+block only:
+
+$$\big(J^{\top}J+\lambda D_z+\varepsilon D_y\big)\begin{bmatrix}\delta z\\ \delta y\end{bmatrix}
+=-J^{\top}r,\qquad \|\delta z\|\le\Delta,$$
+
+where $D_z$ zeroes the $y$ diagonal, $D_y$ is a fixed tiny ridge and $\Delta$ is the $q=0$
+trust radius. The $y$ step is then an exact Gauss–Newton step on the current linearisation and
+is never throttled by a radius calibrated at $q=0$ — which is defect (1) — at exactly the
+audited cost per iteration, because both Jacobian blocks come from one forward-mode pass. At
+$q=0$ it **is** the audited solver.
 
 **Stationarity accounting.** Every solve records $\|J_z^{\top}r\|$, $\|J_y^{\top}r\|$,
 $\|J_z\|_F$, $\|J_y\|_F$ and $\|r\|$, so the *joint* normalized gradient
@@ -171,8 +183,12 @@ with GPU burn-in before every block, all repetitions retained, complete device-q
 `qlad01` defined it (supplied dense initial field on GPU → six dense GPU output fields), with
 the same-job FOM controls `fft_tight` and `nt1e-2` interleaved in the randomised order.
 
-*Variant selection* (dense, `m4`): $q\in\{0,16,64\}\times\{$joint, varpro, alternating$\}$,
-plus the retained EQ arms at $q\in\{0,16\}$.
+*Variant selection* (dense, `m4`): $q\in\{0,16,64\}\times\{$joint, varpro, block-damped,
+alternating$\}$ and $q=128\times\{$joint, block-damped, alternating$\}$, plus the retained EQ
+arms at $q\in\{0,16\}$. The variant carried through the main ladder is fixed **before the job
+runs**, by the local cost probe described under *Amendments*; the other variants' numbers are
+reported at every $q$ where they were run, and if one of them wins the in-job comparison that
+is reported as a finding rather than silently re-run.
 
 *Main ladder* (best variant): $q\in\{0,16,32,64,128,256,512\}$ × {`m4`, `m2`, `m256` where
 legal} × {dense, eq where constructible}.
@@ -254,3 +270,30 @@ stay sealed.
   $C$ is the one used downstream, so gate iv is on the exact retained computation) and once
   with the flattened single-`vmap` path, to measure the compilation saving the audited ladder
   flagged and to test whether the two are bitwise equal.
+
+## Amendments after the local smoke and cost probe
+
+The design above was predeclared before any code ran. Two things were then measured locally and
+the sweep was amended before any cluster job was submitted; both amendments and their evidence
+are recorded here rather than folded in silently.
+
+1. **`smoke_cheap.py` (retained at `checks/smoke-cheap.json`).** At $q=8$ on 64 intervals,
+   plain variable projection agreed with the joint solver on the solved field to $2.80\times
+   10^{-7}$ relative and reached joint stationarity $9.81\times10^{-7}$, but needed a median of
+   11 outer iterations against the joint solver's 3 — the Kaufman Hessian model is poor here.
+   The literal alternating variant converged in fewer iterations but did **not** reach the
+   shared stopping rule: joint normalized gradient $1.59\times10^{-3}$ against the required
+   $10^{-6}$. Since a block method's Jacobian cost per iteration is the same as the joint
+   solver's (both blocks come from one forward-mode pass over $K+q$ tangents), an iteration-count
+   increase translates directly into cost, so a variant that keeps one Jacobian per iteration
+   was added: the block-damped solver above.
+2. **`probe_cost.py` (retained at `checks/probe-cost.json`).** A local probe at the real mesh
+   and the real operator sizes, with proxy directions, times every variant at representative
+   $(q, M, \text{quadrature})$ so the ladder's variant is chosen on measured cost rather than a
+   flop count. Its directions are a placeholder, so nothing about accuracy is read from it.
+
+`q0_vs_incumbent` in the smoke is $9.7\times10^{-16}$ relative rather than bitwise zero: this
+wrapper carries the extra per-step stationarity diagnostics inside the same `scan`, which
+changes XLA fusion. The audited ladder's wrapper was bitwise identical to
+`accuracy_paths.make_rom`; this one is identical to round-off. Gate i is stated as a $10^{-12}$
+relative tolerance and passes; the loss of bitwise identity is recorded, not glossed.

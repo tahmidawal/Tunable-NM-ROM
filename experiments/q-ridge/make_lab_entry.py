@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 
 CELL = Path(__file__).resolve().parent
+MULT = {'m4': 4, 'm8': 8, 'm16': 16}
 
 
 def sha(p):
@@ -34,15 +35,15 @@ def table(header, rows):
     return '\n'.join(out) + '\n'
 
 
-def ladder_block(aud, kind):
+def ladder_block(aud, kind=None):
     lines = []
     for quad in ('dense', 'eq'):
         lines.append(f'\n*{quad} quadrature:*\n')
         rows = []
         for label, e in sorted(aud['ladders'][quad].items(),
                                key=lambda kv: (kv[1]['lam_rel'], kv[1]['rule'])):
-            head = (f'$\\lambda_{{rel}}={label}$' if kind == 'lam'
-                    else f"$M={ {'m4': 4, 'm8': 8, 'm16': 16}[label] }(K+q)$")
+            head = (f'$\\lambda_{{rel}}={label}$' if e['kind'] == 'lam'
+                    else f"$M={MULT[label]}(K+q)$")
             rows.append([head,
                          ' / '.join(fmt(v) for v in e['worst_evolved_percent']),
                          ' / '.join(fmt(v) for v in e['worst_all_times_percent']),
@@ -83,8 +84,17 @@ def main():
                 if falsified else
                 'the held-out weak residual IS higher at $q=16$, so test-space overfitting '
                 'survives its own control')
-    W.append(f'### q-ridge — {headline}; the regression lives in the empirical quadrature, '
-             f"and {'some' if any_pass else 'no'} remedy removes it\n")
+    where = {q: r1['verdict'][q]['regression_present_at_incumbent'] for q in ('dense', 'eq')}
+    if where.get('eq') and not where.get('dense'):
+        loc = 'the regression is present in the empirical quadrature and absent in the dense one'
+    elif where.get('dense') and not where.get('eq'):
+        loc = 'the regression is present in the dense quadrature and absent in the empirical one'
+    elif where.get('dense') and where.get('eq'):
+        loc = 'the regression is present in both quadratures'
+    else:
+        loc = 'the regression is absent at the incumbent setting in both quadratures'
+    W.append(f"### q-ridge — {headline}; {loc}, and "
+             f"{'some' if any_pass else 'no'} declared remedy removes it\n")
 
     W.append(
         'The coordinator asked whether the Burgers $256^2$ correction ladder\'s '
@@ -131,9 +141,9 @@ def main():
                     'rel. diff (all-times)', 'rel. diff (evolved)', 'passed'], rows))
 
     W.append('\n**R1 — the ridge.**\n')
-    W.append(ladder_block(r1, 'lam'))
+    W.append(ladder_block(r1))
     W.append('\n**R2 — more tests at fixed $q$.**\n')
-    W.append(ladder_block(r2, 'rule'))
+    W.append(ladder_block(r2))
 
     W.append('\n**R3 — the held-out weak residual** (worst over cases and steps, per-mode RMS '
              'normalised by the per-node RMS of the previous state; the common held-out block '

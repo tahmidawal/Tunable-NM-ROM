@@ -1,0 +1,141 @@
+{
+  "stage": "query",
+  "backend": "gpu",
+  "config": {
+    "intervals": 32,
+    "dt": 0.005,
+    "M": 64,
+    "m": 64,
+    "eq_seed": 20259,
+    "candidate_cap": 512,
+    "fit_states": 8,
+    "code_subsample": 8192,
+    "cold_axis_points": 48,
+    "case_seed": 7090702,
+    "cases": 2,
+    "strict": {
+      "ic_budget": 400,
+      "step_budget": 180,
+      "gtol": 1e-06
+    }
+  },
+  "reference": {
+    "iterations": [
+      283,
+      229
+    ],
+    "ic_iterations": [
+      20,
+      14
+    ],
+    "seconds": 37.64072609395953
+  },
+  "arms": [
+    {
+      "arm": "o_probe",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 1,
+        "lean": 0,
+        "block": 1,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.22364356101024896,
+      "field_relative": 9.906026571995911e-14,
+      "latent_relative": 6.12372890715341e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 5.05029728502268,
+      "parity": true
+    },
+    {
+      "arm": "o_lean",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 1,
+        "block": 1,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 4.872551418025978,
+      "field_relative": 9.594020642652593e-14,
+      "latent_relative": 3.0060884388320047e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 8.198516174044926,
+      "parity": true
+    },
+    {
+      "arm": "o_block2",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 2,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.014931140001863241,
+      "field_relative": 4.95978276316734e-14,
+      "latent_relative": 3.39991118934472e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 2.4190827180282213,
+      "parity": true
+    },
+    {
+      "arm": "o_block4",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 4,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.012880297028459609,
+      "field_relative": 8.606633719997873e-14,
+      "latent_relative": 3.7074810799685246e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 1.7398570019868203,
+      "parity": true
+    },
+    {
+      "arm": "o_block8",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 8,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.01578250399325043,
+      "field_relative": 9.005579560514336e-14,
+      "latent_relative": 5.901741650979055e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 1.9798320239642635,
+      "parity": true
+    }
+  ],
+  "elapsed_seconds": 57.028630273998715
+}

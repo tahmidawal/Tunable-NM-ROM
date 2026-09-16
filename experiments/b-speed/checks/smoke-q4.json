@@ -1,0 +1,183 @@
+{
+  "stage": "query",
+  "backend": "gpu",
+  "config": {
+    "intervals": 32,
+    "dt": 0.005,
+    "M": 64,
+    "m": 64,
+    "eq_seed": 20259,
+    "candidate_cap": 512,
+    "fit_states": 8,
+    "code_subsample": 8192,
+    "cold_axis_points": 48,
+    "case_seed": 7090702,
+    "cases": 2,
+    "strict": {
+      "ic_budget": 400,
+      "step_budget": 180,
+      "gtol": 1e-06
+    }
+  },
+  "reference": {
+    "iterations": [
+      283,
+      229
+    ],
+    "ic_iterations": [
+      20,
+      14
+    ],
+    "seconds": 31.825053205015138
+  },
+  "arms": [
+    {
+      "arm": "L1",
+      "opts": {
+        "fuse": 1,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 1,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.13321400101995096,
+      "field_relative": 6.008156372974868e-14,
+      "latent_relative": 2.8568625165266216e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 2.1775621169945225,
+      "parity": true
+    },
+    {
+      "arm": "L2",
+      "opts": {
+        "fuse": 1,
+        "hoist": 1,
+        "share": 1,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 1,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.011818849015980959,
+      "field_relative": 6.008156372974868e-14,
+      "latent_relative": 2.8568625165266216e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 0.9956330550485291,
+      "parity": true
+    },
+    {
+      "arm": "L3",
+      "opts": {
+        "fuse": 1,
+        "hoist": 1,
+        "share": 1,
+        "unroll": 5,
+        "probe": 0,
+        "lean": 0,
+        "block": 1,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.0162368580349721,
+      "field_relative": 6.008156372974868e-14,
+      "latent_relative": 2.8568625165266216e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 1.7430136310285889,
+      "parity": true
+    },
+    {
+      "arm": "L4",
+      "opts": {
+        "fuse": 1,
+        "hoist": 1,
+        "share": 1,
+        "unroll": 5,
+        "probe": 0,
+        "lean": 1,
+        "block": 1,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 3.291472757991869,
+      "field_relative": 4.1214684611197026e-14,
+      "latent_relative": 2.883049949111912e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 7.063747011008672,
+      "parity": true
+    },
+    {
+      "arm": "L5",
+      "opts": {
+        "fuse": 1,
+        "hoist": 1,
+        "share": 1,
+        "unroll": 5,
+        "probe": 0,
+        "lean": 1,
+        "block": 4,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.02546700497623533,
+      "field_relative": 4.38290591546411e-14,
+      "latent_relative": 2.8248708540057373e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 2.1541997789754532,
+      "parity": true
+    },
+    {
+      "arm": "L6",
+      "opts": {
+        "fuse": 1,
+        "hoist": 1,
+        "share": 1,
+        "unroll": 5,
+        "probe": 1,
+        "lean": 1,
+        "block": 4,
+        "nodot": 0,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.026440849993377924,
+      "field_relative": 4.351124882794703e-14,
+      "latent_relative": 2.862945537006028e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 2.918900410993956,
+      "parity": true
+    },
+    {
+      "arm": "L7",
+      "opts": {
+        "fuse": 1,
+        "hoist": 1,
+        "share": 1,
+        "unroll": 5,
+        "probe": 1,
+        "lean": 1,
+        "block": 4,
+        "nodot": 1,
+        "decode": "lean"
+      },
+      "setup_seconds": 1.6844916599802673,
+      "field_relative": 4.603275281109807e-14,
+      "latent_relative": 2.877012160494929e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 4.453866116993595,
+      "parity": true
+    }
+  ],
+  "elapsed_seconds": 53.332339870976284
+}

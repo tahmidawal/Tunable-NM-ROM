@@ -1,0 +1,120 @@
+{
+  "stage": "query",
+  "backend": "gpu",
+  "config": {
+    "intervals": 32,
+    "dt": 0.005,
+    "M": 64,
+    "m": 64,
+    "eq_seed": 20259,
+    "candidate_cap": 512,
+    "fit_states": 8,
+    "code_subsample": 8192,
+    "cold_axis_points": 48,
+    "case_seed": 7090702,
+    "cases": 2,
+    "strict": {
+      "ic_budget": 400,
+      "step_budget": 180,
+      "gtol": 1e-06
+    }
+  },
+  "reference": {
+    "iterations": [
+      283,
+      229
+    ],
+    "ic_iterations": [
+      20,
+      14
+    ],
+    "seconds": 39.478328926023096
+  },
+  "arms": [
+    {
+      "arm": "o_nodot",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 1,
+        "nodot": 1,
+        "decode": "vmap"
+      },
+      "setup_seconds": 0.19559921696782112,
+      "field_relative": 8.265097986135874e-14,
+      "latent_relative": 3.3406385465818744e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 2.3241698179626837,
+      "parity": true
+    },
+    {
+      "arm": "o_decfused",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 1,
+        "nodot": 0,
+        "decode": "fused"
+      },
+      "setup_seconds": 0.013628571992740035,
+      "field_relative": 8.417561067088545e-14,
+      "latent_relative": 2.883233732830087e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 1.1504710270091891,
+      "parity": true
+    },
+    {
+      "arm": "o_decleaan",
+      "opts": {
+        "fuse": 0,
+        "hoist": 0,
+        "share": 0,
+        "unroll": 1,
+        "probe": 0,
+        "lean": 0,
+        "block": 1,
+        "nodot": 0,
+        "decode": "lean"
+      },
+      "setup_seconds": 2.6432461630320176,
+      "field_relative": 8.000411035437768e-14,
+      "latent_relative": 2.883233732830087e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 4.877990801003762,
+      "parity": true
+    },
+    {
+      "arm": "f32out",
+      "opts": {
+        "fuse": 1,
+        "hoist": 1,
+        "share": 1,
+        "unroll": 5,
+        "probe": 1,
+        "lean": 1,
+        "block": 4,
+        "nodot": 1,
+        "decode": "lean_f32"
+      },
+      "setup_seconds": 3.6193832110147923,
+      "field_relative": 2.72375805425572e-08,
+      "latent_relative": 2.6201115504597654e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "seconds": 8.418525621993467,
+      "parity": false
+    }
+  ],
+  "elapsed_seconds": 56.24978092999663
+}

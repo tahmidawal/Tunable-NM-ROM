@@ -100,11 +100,13 @@ $\nu$ is fixed for a whole query, so $\nu\Lambda$ and $1 + \Delta t\,\nu\Lambda$
 computed once instead of inside every residual evaluation (2–3× per LM iteration, ≈ 900× per
 query). Identical expressions, identical values.
 
-### O3 `carry` — carry $Ah$ across the time-step boundary (bitwise)
+### O3 `share` — one evaluation for the step projection and the probe residual (bitwise)
 
-The probe's $p = A h_\theta(z)$ is exactly the $Ah$ block already computed by the last
-accepted residual evaluation of the previous step. Returning it from the LM removes one head
-evaluation and one $M\times R$ matvec per time step (50 per query). Same value, same bits.
+Each time step computes $p = A h_\theta(z)$ and then, immediately, $\|r(z)\|$ at the **same**
+$z$ — and $r(z)$ recomputes $h_\theta(z)$, the stencil contraction and $Ah$ from scratch.
+Splitting the residual at $(us, Ah)$ lets one evaluation serve both: $p$ is the $Ah$ block of
+that evaluation. This removes one head evaluation, one $5m\times R$ contraction and one
+$M\times R$ matvec per time step (50 per query), evaluating the identical expressions.
 
 ### O4 `unroll` — `lax.scan(..., unroll=5)` on the 50-step loop (bitwise)
 
@@ -187,9 +189,9 @@ error is measured and stated beside it; it is **not** eligible for the headline 
 | arm | composition | class |
 |---|---|---|
 | `incumbent` | `arms.make_query` verbatim, imported unmodified | reference |
-| `o_fuse`, `o_hoist`, `o_carry`, `o_unroll`, `o_probe`, `o_lean`, `o_block4`, `o_nodot`, `o_leandec` | each optimisation alone on the incumbent | isolated |
+| `o_fuse`, `o_hoist`, `o_share`, `o_unroll`, `o_probe`, `o_lean`, `o_block4`, `o_nodot`, `o_leandec` | each optimisation alone on the incumbent | isolated |
 | `L1` = `fuse` | | cumulative |
-| `L2` = `L1+hoist+carry` | | cumulative |
+| `L2` = `L1+hoist+share` | | cumulative |
 | `L3` = `L2+unroll` | | cumulative |
 | `L4` = `L3+lean` | | cumulative |
 | `L5` = `L4+block4` | | cumulative |
@@ -313,7 +315,44 @@ otherwise unused; its offline direction fit and per-rung NNLS cost ≈ 25 min in
 Deviations from this document are recorded here as they happen, with their reason, before the
 report is written.
 
-* (none yet)
+### D1 (2026-09-16, before any cluster run) — the whole-query `bitwise` class is withdrawn
+
+Section 3 declared `fuse`, `hoist`, `share`, `unroll` and `block` at $b=1$ **bitwise at the
+whole-query level**, gated on output-field sha256 equality. The local smoke shows that bar is
+not attainable and the declaration was wrong, for a reason that has nothing to do with the
+optimisations: **the null arm already fails it.** `o_none` — the optimisation harness with
+every switch off, emitting the same expressions as `arms.make_query` — reproduces the
+incumbent to `4.883e-14` relative in the field and `3.947e-13` in the latent path, not to the
+bit. Re-expressing the same arithmetic in a differently *structured* program changes XLA's
+fusion decisions, and fused versus unfused f64 accumulation rounds differently. No amount of
+care inside these arms removes that, because the arms are by construction differently
+structured programs.
+
+What replaces it:
+
+* Every whole-query arm, `o_none` included, is in the **reassociation** class and is gated at
+  $10^{-12}$ relative on fields and latents with **identical integer** iteration counts and
+  exit reasons. That is exactly the bar the task states.
+* `o_none`'s deviation is reported beside every arm as the **harness floor**: an arm at
+  `5e-14` has changed nothing that the harness itself does not already change.
+* `bitwise` survives where it is real and is verified at **component** level, inside one
+  compiled program:
+  * `gj_block(·,·,1)` equals `engines.gj_solve` **exactly** on 256 random damped SPD systems
+    (`checks/smoke-solve.json`, 256/256 bitwise; $b=2,4,8$ agree to $7.4\times10^{-16}$, all
+    tighter than `gj_solve`'s own $4.5\times10^{-16}$ deviation from `numpy.linalg.solve`).
+  * `vmap(linearize-jvp)` equals `jacfwd` **exactly**, and the linearisation primal equals
+    `fun(z)` **exactly**, on the real head inside one jit (`checks/smoke-jac.json`, 16/16).
+
+One consequence is recorded in advance: a *measured* parity of order $5\times10^{-14}$ cannot
+distinguish an arm that reassociates from one that does not, so the per-arm class in
+`ladders.py` is documentation of intent, not a claim about the measurement.
+
+### D2 (2026-09-16, before any cluster run) — matvec orientation fixed in the harness
+
+The first harness draft wrote the quadrature contraction as `adv @ Pq` where the incumbent
+writes `Pq.T @ adv`. Mathematically identical, but XLA emits a different contraction, which
+inflated the harness floor. The dot path now writes `W.T @ x` exactly as the incumbent does.
+No arm's definition changed.
 
 ## 12. Deliverable
 

@@ -1,0 +1,33 @@
+{
+  "stage": "solve",
+  "backend": "gpu",
+  "config": {
+    "intervals": 32,
+    "dt": 0.005,
+    "M": 64,
+    "m": 64,
+    "eq_seed": 20259,
+    "candidate_cap": 512,
+    "fit_states": 8,
+    "code_subsample": 8192,
+    "cold_axis_points": 48,
+    "case_seed": 7090702,
+    "cases": 2,
+    "strict": {
+      "ic_budget": 400,
+      "step_budget": 180,
+      "gtol": 1e-06
+    }
+  },
+  "result": {
+    "block1_bitwise_count": 256,
+    "block1_bitwise": true,
+    "relative": {
+      "1": 0.0,
+      "2": 7.353307898252644e-16,
+      "4": 5.933037292963642e-16,
+      "8": 5.495218895797456e-16,
+      "numpy": 4.51378689197446e-16
+    }
+  }
+}

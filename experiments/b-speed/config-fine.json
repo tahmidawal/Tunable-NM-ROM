@@ -1,0 +1,82 @@
+{
+  "attempt": "fine01",
+  "meshes": [
+    512,
+    1024
+  ],
+  "profile_mesh": 1024,
+  "reference_mesh": null,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 4,
+  "test_multiplier": 4,
+  "quadrature_multiplier": 4,
+  "eq_seed": 20259,
+  "candidate_cap": 8192,
+  "fit_states": 64,
+  "decoder_code_subsample": 8192,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 180,
+    "gtol": 1e-06
+  },
+  "parity_bar": 1e-12,
+  "reps": 3,
+  "order_seed": 911711,
+  "burn_seconds": 0.25,
+  "profile_reps": 7,
+  "micro_iterations": 400,
+  "budget_probe": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "arms": [
+    "o_none",
+    "o_lean",
+    "o_block4",
+    "o_decfused",
+    "o_decleaan",
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L5",
+    "L6",
+    "L7",
+    "f32out"
+  ],
+  "throughput_arms": [
+    "o_none",
+    "L7"
+  ],
+  "accuracy_reference": "fft_tight",
+  "fom_settings": [
+    {
+      "name": "fft_loose",
+      "preconditioner": "fft",
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "dt": 0.005
+    },
+    {
+      "name": "fft_loose_dt01",
+      "preconditioner": "fft",
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "dt": 0.01
+    },
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "dt": 0.005
+    }
+  ],
+  "micro_iterations_light": 3000
+}

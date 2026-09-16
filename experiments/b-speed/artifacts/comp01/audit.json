@@ -1,0 +1,1201 @@
+{
+  "result": "experiments/b-speed/runs/comp01/archive/output/result.json",
+  "checks": {
+    "complete": true,
+    "backend_gpu": true,
+    "x64": true,
+    "precision_highest": true,
+    "checkpoint_unchanged": true,
+    "checkpoint_is_retained_dn256b": true,
+    "bank_frozen": true,
+    "weights_frozen": true,
+    "final_cohort_unopened": true,
+    "complete_cartesian_grid": true,
+    "every_timing_positive": true,
+    "host_time_covers_gpu_time": true,
+    "every_invocation_finite": true,
+    "repetition_output_identical": true,
+    "archived_digests_match": true,
+    "recomputed_parity_agrees_with_job": true,
+    "recomputed_parity_worst_ratio": 0.005690993849623976,
+    "every_arm_has_a_parity_verdict": true,
+    "incumbent_reproduces_abl01": true,
+    "incumbent_vs_abl01_worst": 9.256336787163304e-14,
+    "incumbent_vs_abl01_cases": [
+      {
+        "case": 0,
+        "comparable": true,
+        "field_relative": 5.933483443900261e-14
+      },
+      {
+        "case": 1,
+        "comparable": true,
+        "field_relative": 3.499804666773906e-14
+      },
+      {
+        "case": 2,
+        "comparable": true,
+        "field_relative": 9.256336787163304e-14
+      },
+      {
+        "case": 3,
+        "comparable": true,
+        "field_relative": 6.885595880554219e-14
+      },
+      {
+        "case": 4,
+        "comparable": false,
+        "field_relative": 2.3328157665169353
+      },
+      {
+        "case": 5,
+        "comparable": false,
+        "field_relative": 1.819298070787904
+      }
+    ],
+    "incumbent_vs_abl01_comparable_cases": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "tight_control_converged": true,
+    "fom_controls_present": true
+  },
+  "parity_recomputed": [
+    {
+      "intervals": 256,
+      "name": "C1",
+      "worst_field_relative": 2.5619787824032313e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 9.996711817799025e-14,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 8.040423358548234e-14,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 1.5906987413138296e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 1.1482720010012266e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 1.099464160225724e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 7.905822222800207e-14,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 2.5619787824032313e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 4.046470731993967e-14,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "C2",
+      "worst_field_relative": 2.5479305790275706e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 1.013836295084424e-13,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 8.17406901744956e-14,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 1.5693503579976675e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 1.1473322730568891e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 1.0795904442144108e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 7.98314022153783e-14,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 2.5479305790275706e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 3.2804444065612425e-14,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "C3",
+      "worst_field_relative": 2.584699108189773e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 1.010188177082809e-13,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 8.100404439156829e-14,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 1.579661820967672e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 1.1552233422125157e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 1.1002672363386913e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 8.036648595726644e-14,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 2.584699108189773e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 3.603951629106451e-14,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "L4",
+      "worst_field_relative": 2.5752769389236114e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 1.002755044700808e-13,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 8.075710889549663e-14,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 1.5914964522571395e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 1.1445063407872676e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 1.0917470777606261e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 8.061996939059419e-14,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 2.5752769389236114e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 3.599549013416565e-14,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "f32c",
+      "worst_field_relative": 2.656141117782062e-08,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 2.6499478356108392e-08,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 2.6379811450725466e-08,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 2.616709637086209e-08,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 2.656141117782062e-08,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 2.6525771159418498e-08,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 2.6282795050191584e-08,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 2.6042368094704488e-08,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 2.6211731623169088e-08,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "fft_loose",
+      "worst_field_relative": 0.19519613223768728,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 0.01390473849208502,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 0.02241586230822282,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 0.05361431884275161,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 0.034826284779191315,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 0.023805178017987455,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 0.19519613223768728,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 0.05466458459504503,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 0.023759518904974006,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "fft_loose_dt01",
+      "worst_field_relative": 0.04576865107233351,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 0.019528787121618624,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 0.017707931675033466,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 0.036787478105800187,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 0.04576865107233351,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 0.02281479399335856,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 0.014548656943685314,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 0.03226525520155496,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 0.023759518904974006,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "fft_tight",
+      "worst_field_relative": 0.03226525520155496,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 0.00831888661288813,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 0.013025947299424606,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 0.024404246664360373,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 0.025656182500422956,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 0.018681919636474306,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 0.009879500728077278,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 0.03226525520155496,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 0.023759518904974006,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 256,
+      "name": "o_none",
+      "worst_field_relative": 1.0586479529294136e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 3.5385763306219963e-14,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 1,
+          "field_relative": 2.25054235912511e-14,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 1,
+          "field_relative": 1.0586479529294136e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 1,
+          "field_relative": 6.938790016345623e-14,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 1,
+          "field_relative": 4.026869381547123e-14,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 1,
+          "field_relative": 2.5807319921141427e-14,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 1,
+          "field_relative": 6.118801780142769e-14,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 1,
+          "field_relative": 5.291348939290761e-14,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "C1",
+      "worst_field_relative": 7.129187753289181e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 2.3555679071540444e-13,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 3.029328112036141e-13,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 6.488628464714467e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 2.8154859235567867e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 6.814589707334201e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 2.35393309094647e-13,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 7.129187753289181e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 4.2995547218421785e-13,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "C2",
+      "worst_field_relative": 7.122355944457238e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 2.3218985055306456e-13,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 2.995424979203721e-13,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 6.417656455515349e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 2.7907992181428857e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 6.788934851908205e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 2.357395974450878e-13,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 7.122355944457238e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 4.230850302081123e-13,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "C3",
+      "worst_field_relative": 7.090979669659746e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 2.328996923373963e-13,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 2.994908130743299e-13,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 6.425472122217128e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 2.811499716580907e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 6.80936646258251e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 2.355639937761121e-13,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 7.090979669659746e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 4.255188348152206e-13,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "L4",
+      "worst_field_relative": 7.136583422926982e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 2.3294424605880315e-13,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 3.0169948556699293e-13,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 6.435515035176397e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 2.81629118252873e-13,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 6.769637008468337e-13,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 2.363824425909551e-13,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 7.136583422926982e-13,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 4.2449289663236723e-13,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "f32c",
+      "worst_field_relative": 2.6490672303396405e-08,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 2.609610301157518e-08,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 2.6490672303396405e-08,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 2.626387937146188e-08,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 2.6411109006311897e-08,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 2.648575491692716e-08,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 2.640949424467831e-08,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 2.6216364841599196e-08,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 2.6068933875395768e-08,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "fft_loose",
+      "worst_field_relative": 0.19553093208619093,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 0.016290588905518065,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 0.0226287746962251,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 0.06490292454052558,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 0.045213787648893,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 0.02548880002302058,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 0.19553093208619093,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 0.06287091219003564,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 0.02392243515564833,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "fft_loose_dt01",
+      "worst_field_relative": 0.053919992209622125,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 0.02018064684284978,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 0.01758910834836768,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 0.04127786815607958,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 0.053919992209622125,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 0.024070732667765438,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 0.014220943070080254,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 0.033771909826402914,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 0.02392243515564833,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "fft_tight",
+      "worst_field_relative": 0.03605071757110505,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 0.016290588905518065,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 0.013023008699269164,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 0.029226293211134017,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 0.03605071757110505,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 0.01867154169114451,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 0.010480780355073426,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 0.033777297474983634,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 0.02392243515564833,
+          "bitwise": false
+        }
+      ]
+    },
+    {
+      "intervals": 1024,
+      "name": "o_none",
+      "worst_field_relative": 1.1411856469176218e-13,
+      "bitwise": false,
+      "cases": [
+        {
+          "case": 0,
+          "archive_stride": 1,
+          "field_relative": 4.323670099411503e-14,
+          "bitwise": false
+        },
+        {
+          "case": 1,
+          "archive_stride": 4,
+          "field_relative": 3.584791418375626e-14,
+          "bitwise": false
+        },
+        {
+          "case": 2,
+          "archive_stride": 4,
+          "field_relative": 1.1411856469176218e-13,
+          "bitwise": false
+        },
+        {
+          "case": 3,
+          "archive_stride": 4,
+          "field_relative": 3.9370560266811174e-14,
+          "bitwise": false
+        },
+        {
+          "case": 4,
+          "archive_stride": 4,
+          "field_relative": 5.128471367658734e-14,
+          "bitwise": false
+        },
+        {
+          "case": 5,
+          "archive_stride": 4,
+          "field_relative": 3.500526970209577e-14,
+          "bitwise": false
+        },
+        {
+          "case": 6,
+          "archive_stride": 4,
+          "field_relative": 9.661284102633964e-14,
+          "bitwise": false
+        },
+        {
+          "case": 7,
+          "archive_stride": 4,
+          "field_relative": 3.3898248056685846e-14,
+          "bitwise": false
+        }
+      ]
+    }
+  ],
+  "parity_verdict": [
+    {
+      "intervals": 256,
+      "arm": "o_none",
+      "declared_class": "bitwise",
+      "job_field_relative": 1.0586479529294137e-13,
+      "audit_field_relative": 1.0586479529294136e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 256,
+      "arm": "L4",
+      "declared_class": "reassociation",
+      "job_field_relative": 2.575276938923612e-13,
+      "audit_field_relative": 2.5752769389236114e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 256,
+      "arm": "C1",
+      "declared_class": "reassociation",
+      "job_field_relative": 2.5619787824032313e-13,
+      "audit_field_relative": 2.5619787824032313e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 256,
+      "arm": "C2",
+      "declared_class": "reassociation",
+      "job_field_relative": 2.547930579027571e-13,
+      "audit_field_relative": 2.5479305790275706e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 256,
+      "arm": "C3",
+      "declared_class": "reassociation",
+      "job_field_relative": 2.584699108189773e-13,
+      "audit_field_relative": 2.584699108189773e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 256,
+      "arm": "f32c",
+      "declared_class": "labelled",
+      "job_field_relative": 2.6561411177820622e-08,
+      "audit_field_relative": 2.656141117782062e-08,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": false
+    },
+    {
+      "intervals": 1024,
+      "arm": "o_none",
+      "declared_class": "bitwise",
+      "job_field_relative": 1.1412328279571046e-13,
+      "audit_field_relative": 1.1411856469176218e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 1024,
+      "arm": "L4",
+      "declared_class": "reassociation",
+      "job_field_relative": 7.136742318459712e-13,
+      "audit_field_relative": 7.136583422926982e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 1024,
+      "arm": "C1",
+      "declared_class": "reassociation",
+      "job_field_relative": 7.129486646378397e-13,
+      "audit_field_relative": 7.129187753289181e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 1024,
+      "arm": "C2",
+      "declared_class": "reassociation",
+      "job_field_relative": 7.122448818801199e-13,
+      "audit_field_relative": 7.122355944457238e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 1024,
+      "arm": "C3",
+      "declared_class": "reassociation",
+      "job_field_relative": 7.091589647089414e-13,
+      "audit_field_relative": 7.090979669659746e-13,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": true
+    },
+    {
+      "intervals": 1024,
+      "arm": "f32c",
+      "declared_class": "labelled",
+      "job_field_relative": 2.634076715949733e-08,
+      "audit_field_relative": 2.6490672303396405e-08,
+      "iterations_identical": true,
+      "reasons_identical": true,
+      "parity": false
+    }
+  ],
+  "notes": [
+    "the recomputed statistic uses the ARCHIVED field, which above 256 intervals is the exact nested-node restriction for cases other than case 0, so it can differ from the job's full-field statistic by a bounded factor; the check is that both sit on the same order, not that they are equal"
+  ],
+  "passed": true
+}

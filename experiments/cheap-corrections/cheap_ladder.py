@@ -188,15 +188,15 @@ def main():
             '' if arm['fitter'] == 'retained' else '_bnd')
     lad = cfg['ladder_arms']
     for rule, spec in lad['rules'].items():
-        for q in spec['q']:
-            add(q, rule, 'dense', lad['variant'])
-        for q in spec.get('eq_q', []):
-            add(q, rule, 'eq', lad['variant'], 'bounded',
-                '' if rule != 'm4' else '_bnd')
+        for v in spec.get('variants', [lad['variant']]):
+            for q in spec['q']:
+                add(q, rule, 'dense', v)
+            for q in spec.get('eq_q', []):
+                add(q, rule, 'eq', v, 'bounded', '_bnd' if rule == 'm4' else '')
     # q = 0 control at the ladder's largest test count, so the growth of M is separable
     Mmax = test_count('m4', K, max(lad['rules']['m4']['q']), cfg['fixed_test_count'])
-    specs.append(dict(name='q0_Mmax_dense_varpro', q=0, M=Mmax, rule='Mmax',
-                      quadrature='dense', variant='varpro', fitter='retained'))
+    specs.append(dict(name=f"q0_Mmax_dense_{lad['variant']}", q=0, M=Mmax, rule='Mmax',
+                      quadrature='dense', variant=lad['variant'], fitter='retained'))
 
     built, datas, colds, recon_done = [], {}, {}, {}
     for s in specs:

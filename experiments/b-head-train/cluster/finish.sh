@@ -17,12 +17,14 @@ cd "$ROOT"
 OUT="$CELL/runs/$ATTEMPT/archive/output"
 
 if [ "$KIND" = train ]; then
-  "$PY" "$CELL/audit_train.py" "$OUT/result.json" \
+  "$PY" "$CELL/cluster/capture_draws.py" "$OUT/result.json" --out "$CELL/artifacts/$ATTEMPT/draws.npz"
+  "$PY" "$CELL/audit_train.py" "$OUT/result.json" --draws "$CELL/artifacts/$ATTEMPT/draws.npz" \
     --checkpoints "$OUT" --out "$CELL/checks/$ATTEMPT-audit.json"
 else
   TRAIN=$3
   "$PY" "$CELL/audit_eval.py" "$OUT/result.json" \
     --fields "$OUT" \
+    --abl01 "$ROOT/experiments/head-ablation/artifacts/abl01/result.json" \
     --train "$CELL/runs/$TRAIN/archive/output/result.json" \
     --out "$CELL/checks/$ATTEMPT-audit.json"
 fi

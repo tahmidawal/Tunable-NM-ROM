@@ -439,6 +439,27 @@ def main():
       'data term. Both are fixed and recorded as dated amendments A1-A3 in `DESIGN.md`, made before '
       'any evaluation number existed. The executed jobs are the training and evaluation jobs named '
       'at the top of this report.')
+    ulp = ta['checks'].get('archived_draws_reproduce_locally_to_one_ulp')
+    if ulp is not None:
+        d = ulp['detail']
+        w('- **The byte-exact draw hash is not portable across NumPy versions, and three audit '
+          'gates failed on it before being replaced by a stronger check.** The cluster runs NumPy '
+          f"{tr.get('numpy_version', '2.5.0')} and this machine runs a different one; a direct "
+          'probe shows their `default_rng` streams are identical for `random`, `uniform`, '
+          '`integers`, `choice`, `permutation` and `normal`, and the entire disagreement is one '
+          'unit in the last place of `np.exp`, which only the viscosity column passes through. '
+          + ' '.join(f"The {k} draw differs in {v['rows_differing']} rows, column(s) "
+                     f"{v['columns_differing']}, at most {v['max_ulp']:.0f} ULP "
+                     f"({v['max_relative']:.2e} relative)." for k, v in d.items())
+          + ' The audit therefore gates on values: the attempt\'s own draws are regenerated in '
+            'the cluster interpreter, accepted only because each hashes to exactly the value the '
+            'job recorded, committed as `artifacts/<attempt>/draws.npz`, and then checked against '
+            'a local re-derivation to $\\le 1$ ULP, against the declared ranges, and for cohort '
+            'disjointness on the actual values. On the evaluation side the binding check is not a '
+            'seed at all: the six development cases are asserted **bitwise** equal to abl01\'s own '
+            'recorded cases, in the job and again in the audit. A 1-ULP change in $\\nu$ moves a '
+            'solution by $O(10^{-16})$ relative, far below every tolerance here, so no reported '
+            'number is affected. Recorded as amendment A5 in `DESIGN.md`.')
     w('- **The joint bank+head arms cannot use identity $(\\ast)$**, because their bank moves. They '
       f"train against a fixed seeded subset of {tcfg['joint_points']} of the "
       f"{(tcfg['intervals'] - 1) ** 2} interior points, at a capped density, continuing from the "

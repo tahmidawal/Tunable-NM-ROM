@@ -352,3 +352,45 @@ new head output columns at zero, so the widened decoder is initially identical t
 and (ii) $\lambda_{\rm orth}$ calibrated *after* the widening. Neither change was made in this
 run. No accuracy number was consulted in writing this amendment; it is derived entirely from the
 training loss trace.
+
+**A5 (2026-09-16, recorded at the collection of training attempt `train02`, before any evaluation
+number existed).** Three audit gates — `training_draw_hash`, `holdout_draw_hash`,
+`eval_draw_hash` — failed on first run. They were **not** a wrong draw. The audit re-derives each
+draw on the local machine (NumPy 2.4.4) and compares a SHA256 against the hash the cluster job
+(NumPy 2.5.0) recorded. Regenerating the draws in the cluster's own interpreter and diffing them
+against the local re-derivation gives:
+
+| draw | rows | rows differing | columns differing | max ULP | max relative |
+|---|---:|---:|---|---:|---:|
+| training | 4608 | 201 | viscosity only | 1 | $2.22\times10^{-16}$ |
+| holdout | 64 | 3 | viscosity only | 1 | $2.17\times10^{-16}$ |
+| evaluation | 6 | 1 | viscosity only | 1 | $1.97\times10^{-16}$ |
+
+Every other column is bitwise identical, and a direct probe of `default_rng(...).random`,
+`.uniform`, `.integers`, `.choice`, `.permutation` and `.normal` at a fixed seed shows the two
+NumPy versions produce **identical** streams. The whole discrepancy is one unit in the last place
+of `np.exp`, which the viscosity column alone passes through
+($\nu = \exp(\mathcal{U}(\log 0.01, \log 0.1))$). So the draws agree to sixteen digits and the
+byte-exact hash simply does not survive a NumPy upgrade.
+
+The response is to make the audit gate on **values**, which is strictly stronger than the hash it
+replaces, not weaker:
+
+1. `cluster/capture_draws.py` regenerates the attempt's draws in the cluster's own interpreter
+   (a CPU-only login-node command, not a job) and accepts them **only if each hashes to exactly
+   the value the job's own `result.json` recorded**. That equality proves the archived arrays are
+   byte-identical to the ones the job used, so nothing downstream rests on trust. The arrays are
+   committed as `artifacts/<attempt>/draws.npz` with a provenance file naming both NumPy versions.
+2. `audit_train.py --draws` then gates on `archived_draws_match_the_recorded_hashes` (byte-exact,
+   portable), `archived_draws_reproduce_locally_to_one_ulp` (values agree to $\le 1$ ULP and
+   $<10^{-15}$ relative, with the differing columns listed), `draws_inside_the_declared_ranges`,
+   and cohort disjointness computed on the **actual** values rather than on a re-derivation.
+3. On the evaluation side the binding check is not a seed at all: `evaluate.py` asserts in-job
+   that its six development cases are **bitwise** abl01's own recorded cases, and
+   `audit_eval.py --abl01` re-checks it offline. Those six cases are confirmed bitwise identical
+   between abl01 and this cluster, so the incumbent really is being run as a control on the same
+   six problems.
+
+A 1-ULP change in $\nu$ perturbs a solution by $O(10^{-16})$ relative, far below every tolerance
+in this lane, so no reported number moves. Nothing about the science changed; only the audit's
+notion of "the same draw" changed, from a byte hash to the values with a stated tolerance.

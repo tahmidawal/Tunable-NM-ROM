@@ -121,6 +121,18 @@ def main():
     report['physical_cases'] = physical.tolist()
     report['cohort_roles'] = (['opened development'] * cfg['eval_cases']
                               + ['fresh development'] * cfg['eval_fresh_cases'])
+    # The six development cases must be the ones abl01 solved, or the incumbent is not a control.
+    # Compared as values, bitwise, against abl01's own recorded cases -- not by re-deriving a seed,
+    # because a NumPy upgrade can move `np.exp` by one unit in the last place (DESIGN.md A5).
+    if cfg.get('abl01_result') and Path(cfg['abl01_result']).exists():
+        ab = np.asarray(json.loads(Path(cfg['abl01_result']).read_text())['physical_cases'])
+        same = ab.shape == physical.shape and bool((ab == physical).all())
+        rel = (float(np.max(np.abs(ab - physical) / np.maximum(np.abs(ab), 1e-300)))
+               if ab.shape == physical.shape else None)
+        report['cohort_matches_abl01'] = dict(bitwise=same, max_relative=rel,
+                                              n=int(len(physical)))
+        print('GATE cohort_matches_abl01', report['cohort_matches_abl01'], flush=True)
+        assert same, ('the evaluation cohort is not abl01\'s', rel)
     save()
 
     rf, rt = cfg['reference_mesh'], cfg['reference_dt']

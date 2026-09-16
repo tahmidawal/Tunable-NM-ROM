@@ -36,6 +36,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('result')
     p.add_argument('--checkpoints', required=True)
+    p.add_argument('--draws', help='npz written by cluster/capture_draws.py: the attempt\'s own draws, regenerated in the cluster interpreter and verified against the hashes this result.json records')
     p.add_argument('--out', required=True)
     a = p.parse_args()
     r = json.loads(Path(a.result).read_text())
@@ -63,9 +64,46 @@ def main():
     hold = params_draw(cfg['holdout_seed'], cfg['holdout_trajectories'])
     ev = np.concatenate((params_draw(cfg['eval_seed'], cfg['eval_cases']),
                          params_draw(cfg['eval_fresh_seed'], cfg['eval_fresh_cases'])))
-    gate('training_draw_hash', sha_array(traj) == r['data']['train_physical_sha256'])
-    gate('holdout_draw_hash', sha_array(hold) == r['data']['holdout_physical_sha256'])
-    gate('eval_draw_hash', sha_array(ev) == r['data']['eval_physical_sha256'])
+    local = dict(train=traj, holdout=hold, eval=ev)
+    recorded = {k: r['data'][f'{k}_physical_sha256'] for k in local}
+
+    # The job records a SHA256 of each draw. Hashing a LOCAL re-derivation against it is not a
+    # portable check: `np.exp` differs by one unit in the last place between this machine's NumPy
+    # and the cluster's, so the viscosity column -- and only that column -- can disagree in its
+    # last bit while every value is the same number to 16 digits (DESIGN.md A5). The gate is
+    # therefore split. `--draws` is the attempt's own draw, regenerated in the cluster's
+    # interpreter and accepted by `cluster/capture_draws.py` only because it hashes to exactly
+    # the recorded value; that equality is re-checked here, so nothing is taken on trust.
+    if a.draws:
+        z = np.load(a.draws)
+        arch = {k: np.asarray(z[k]) for k in local}
+        gate('archived_draws_match_the_recorded_hashes',
+             all(sha_array(arch[k]) == recorded[k] for k in local),
+             {k: sha_array(arch[k]) == recorded[k] for k in local})
+        tol = {}
+        for k in local:
+            d = np.abs(arch[k] - local[k])
+            ulp = float(np.max(d / np.maximum(np.spacing(np.abs(local[k])), 1e-300)))
+            cols = np.nonzero(d.max(0) > 0)[0].tolist()
+            tol[k] = dict(bitwise=bool((arch[k] == local[k]).all()), max_ulp=ulp,
+                          max_relative=float(np.max(d / np.maximum(np.abs(local[k]), 1e-300))),
+                          columns_differing=cols, rows_differing=int((d.max(1) > 0).sum()))
+        gate('archived_draws_reproduce_locally_to_one_ulp',
+             all(v['max_ulp'] <= 1.0 and v['max_relative'] < 1e-15
+                 and set(v['columns_differing']) <= {4} for v in tol.values()), tol)
+        use = arch
+    else:
+        gate('draw_hashes_bitwise', all(sha_array(local[k]) == recorded[k] for k in local),
+             {k: sha_array(local[k]) == recorded[k] for k in local})
+        use = local
+
+    lo = np.array([.15, .15, .05, .5, .01])
+    hi = np.array([.85, .85, .20, 2., .1])
+    gate('draws_inside_the_declared_ranges',
+         all(bool(((v >= lo - 1e-12) & (v <= hi + 1e-12)).all()) for v in use.values()),
+         {k: [float(v.min(0).min()), float(v.max(0).max())] for k, v in use.items()})
+
+    traj, hold, ev = use['train'], use['holdout'], use['eval']
     ov = [(i, j) for i, t in enumerate(traj) for j, s in enumerate(ev) if np.allclose(t, s)]
     ov += [(i, j) for i, t in enumerate(hold) for j, s in enumerate(ev) if np.allclose(t, s)]
     ov += [(i, j) for i, t in enumerate(hold) for j, s in enumerate(traj) if np.allclose(t, s)]

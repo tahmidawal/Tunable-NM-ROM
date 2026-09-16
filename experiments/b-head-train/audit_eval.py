@@ -36,6 +36,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('result')
     p.add_argument('--fields', required=True)
+    p.add_argument('--abl01', help="abl01 result.json: the evaluation cohort must "
+                   'be bitwise the one it solved')
     p.add_argument('--out', required=True)
     p.add_argument('--train', default=None, help='the training attempt result.json')
     a = p.parse_args()
@@ -60,7 +62,19 @@ def main():
     phys = np.asarray(r['physical_cases'])
     want = np.concatenate((params_draw(cfg['eval_seed'], cfg['eval_cases']),
                            params_draw(cfg['eval_fresh_seed'], cfg['eval_fresh_cases'])))
-    gate('cohort_reproduced', np.allclose(phys, want), float(np.max(np.abs(phys - want))))
+    d = np.abs(phys - want)
+    gate('cohort_reproduced', bool(np.max(d / np.maximum(np.abs(want), 1e-300)) < 1e-15),
+         dict(bitwise=bool((phys == want).all()), max_absolute=float(d.max()),
+              max_relative=float(np.max(d / np.maximum(np.abs(want), 1e-300))),
+              max_ulp=float(np.max(d / np.maximum(np.spacing(np.abs(want)), 1e-300))),
+              columns_differing=np.nonzero(d.max(0) > 0)[0].tolist(),
+              note='a local re-derivation can differ from the cluster by one unit in the last '
+                   'place of the viscosity column; see DESIGN.md A5'))
+    # the binding check is against abl01's OWN recorded cases, which is portable and bitwise
+    if a.abl01 and Path(a.abl01).exists():
+        ab = np.asarray(json.loads(Path(a.abl01).read_text())['physical_cases'])
+        gate('cohort_is_bitwise_abl01s', ab.shape == phys.shape and bool((ab == phys).all()),
+             dict(n=int(len(phys)), recorded_in_job=r.get('cohort_matches_abl01')))
 
     # references
     refs = {}

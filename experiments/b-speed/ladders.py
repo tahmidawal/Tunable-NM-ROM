@@ -54,16 +54,34 @@ CUMULATIVE = {
              share=1, unroll=5, lean=1, block=4, probe=1, nodot=1, decode='lean'),
 }
 
+# Composed AFTER the isolated measurements of attempt `spd01`, not before: that job's
+# in-loop microbenchmarks showed the block Gauss-Jordan solve is a LOSS on this device
+# (26.4 us/iteration at bs=1 against 64.7 / 93.3 / 103.2 at bs=2 / 4 / 8, because the
+# block form trades 16 sequential stages for 41-67 fusions in a kernel-count-bound
+# program), so the pre-registered cumulative ladder regresses from L5 onward through no
+# fault of the optimisations that follow it. These arms are the same ladder with `block`
+# left out. They are labelled as post-hoc compositions wherever they appear.
+COMPOSED = {
+    'C1': _a('reassociation', 'L4 + batched probe (the pre-registered L6 without block)',
+             fuse=1, hoist=1, share=1, unroll=5, lean=1, probe=1),
+    'C2': _a('reassociation', 'C1 + cuBLAS-free small matvecs', fuse=1, hoist=1, share=1,
+             unroll=5, lean=1, probe=1, nodot=1),
+    'C3': _a('reassociation', 'C2 + folded decode: the full port without block',
+             fuse=1, hoist=1, share=1, unroll=5, lean=1, probe=1, nodot=1, decode='lean'),
+}
+
 LABELLED = {
     'f32out': _a('labelled', 'L7 with float32 output fields; NOT a parity arm', fuse=1,
                  hoist=1, share=1, unroll=5, lean=1, block=4, probe=1, nodot=1,
                  decode='lean_f32'),
+    'f32c': _a('labelled', 'C3 with float32 output fields; NOT a parity arm', fuse=1,
+               hoist=1, share=1, unroll=5, lean=1, probe=1, nodot=1, decode='lean_f32'),
 }
 
-ALL = {**ISOLATED, **CUMULATIVE, **LABELLED}
+ALL = {**ISOLATED, **CUMULATIVE, **COMPOSED, **LABELLED}
 ARMS = {k: v['opts'] for k, v in ALL.items()}
 
 # The arm whose optimisations the throughput and fine-mesh jobs inherit, chosen before
 # any run: the full port. If it fails a parity gate the report says so and falls back to
 # the deepest cumulative arm that passes, which is recorded, not chosen silently.
-THROUGHPUT_PREFERENCE = ['L7', 'L6', 'L5', 'L4', 'L3', 'L2', 'L1']
+THROUGHPUT_PREFERENCE = ['C3', 'C2', 'C1', 'L4', 'L3', 'L2', 'L1']

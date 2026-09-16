@@ -20,8 +20,10 @@ def groups(res):
     decl = res['arm_declarations']
     isolated = [n for n in decl if n.startswith('o_') and decl[n]['declared_class'] != 'labelled']
     cumulative = [n for n in decl if re.fullmatch(r'L\d+', n)]
+    composed = [n for n in decl if re.fullmatch(r'C\d+', n)]
     labelled = [n for n in decl if decl[n]['declared_class'] == 'labelled']
-    return isolated, sorted(cumulative, key=lambda x: int(x[1:])), labelled
+    return (isolated, sorted(cumulative, key=lambda x: int(x[1:])),
+            sorted(composed, key=lambda x: int(x[1:])), labelled)
 
 
 def med(xs):
@@ -238,9 +240,12 @@ def section_ladder(res, aud, g, pmap, title):
                     f'({len(set(r["case"] for r in res["invocations"] if r["intervals"] == L))} '
                     f"cases x {res['config']['reps']} repetitions).\n")
         floor = pmap.get((L, 'o_none'), {}).get('worst_field_relative')
-        iso, cum, lab = groups(res)
+        iso, cum, comp, lab = groups(res)
         blocks = [('Isolated optimisations', [n for n in iso if (L, n) in g]),
-                  ('Cumulative ladder', [n for n in cum if (L, n) in g]),
+                  ('Cumulative ladder, pre-registered order',
+                   [n for n in cum if (L, n) in g]),
+                  ('Composed after the isolated measurements (post-hoc, labelled)',
+                   [n for n in comp if (L, n) in g]),
                   ('Labelled non-parity', [n for n in lab if (L, n) in g])]
         for label, names in blocks:
             if not names:
@@ -273,9 +278,9 @@ def section_ladder(res, aud, g, pmap, title):
 
 def best_parity_arm(res, g, pmap, L):
     """The fastest arm at this mesh that PASSES every parity gate."""
-    iso, cum, _ = groups(res)
+    iso, cum, comp, _ = groups(res)
     best = None
-    for n in cum + iso:
+    for n in comp + cum + iso:
         if (L, n) not in g:
             continue
         if not pmap.get((L, n), {}).get('parity'):

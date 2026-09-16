@@ -298,6 +298,19 @@ def main():
     w(f"Latent-dimension curve (held-out worst): {[(k, round(v, 6)) for k, v in sel['latent_curve']]}. "
       f"Objective curve: {[(o, round(v, 6)) for o, v in sel['objective_curve']]}.")
     w('')
+    # The spread of each secondary curve is computed here, never typed: a lever whose whole
+    # range is a fraction of a percent selected a winner but did not move the answer.
+    for label, curve, dens in (('latent-dimension', sel['latent_curve'], tcfg['densities'][0]),
+                               ('objective', sel['objective_curve'], tcfg['objective_density'])):
+        vals = [v for _, v in curve]
+        spread = (max(vals) - min(vals)) / min(vals)
+        w(f"The {label} curve's full spread at {dens} trajectories is "
+          f"{100 * spread:.1f}\\% relative (best {100 * min(vals):.3f}\\%, worst "
+          f"{100 * max(vals):.3f}\\% held-out worst). Compare the density curve's spread, "
+          f"{100 * (max(v for _, v in sel['density_curve']) - min(v for _, v in sel['density_curve'])) / min(v for _, v in sel['density_curve']):.1f}"
+          f"\\% relative. The declared rule still picks a winner from a curve this flat, so the "
+          f"selected value is reported as the rule's output, not as a demonstrated effect.")
+        w('')
 
     # --------------------------------------------------------- three layers --
     w('## The three layers, per checkpoint')

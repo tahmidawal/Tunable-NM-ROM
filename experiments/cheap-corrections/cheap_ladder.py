@@ -374,7 +374,7 @@ def main():
 
     base = fields_by('q0_m4_dense_joint')
     same = {}
-    for nm in ('q0_m4_dense_varpro', 'q0_m4_dense_alt'):
+    for nm in ('q0_m4_dense_varpro', 'q0_m4_dense_block', 'q0_m4_dense_alt'):
         got = fields_by(nm)
         same[nm] = dict(compared=len(set(base) & set(got)),
                         identical=sum(1 for c in set(base) & set(got) if base[c] == got[c]))

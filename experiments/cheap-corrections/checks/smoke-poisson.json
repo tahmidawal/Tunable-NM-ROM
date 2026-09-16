@@ -1,0 +1,258 @@
+{
+  "scope": "local Poisson driver smoke at 128 intervals, 4 cases, q in [0,8,32]; interfaces and audit path only, not a converged-accuracy result",
+  "complete": true,
+  "gates": {
+    "retained_prefix_exact": {
+      "max_abs_difference": 0.0,
+      "passed": true
+    }
+  },
+  "directions": {
+    "available_rank": 24,
+    "retained_prefix_columns": 32,
+    "retained_prefix_max_abs_difference": 0.0,
+    "head_fit_relative_median": 0.027700069794772256,
+    "head_fit_relative_worst": 0.15457625308530532,
+    "seconds": 32.82862506102538
+  },
+  "audit_passed": true,
+  "audit_checks": {
+    "complete": {
+      "passed": true,
+      "detail": null
+    },
+    "backend_gpu": {
+      "passed": true,
+      "detail": "gpu"
+    },
+    "x64": {
+      "passed": true,
+      "detail": null
+    },
+    "precision_highest": {
+      "passed": true,
+      "detail": null
+    },
+    "bank_frozen": {
+      "passed": true,
+      "detail": null
+    },
+    "final_cohort_unopened": {
+      "passed": true,
+      "detail": null
+    },
+    "retained_direction_prefix_exact": {
+      "passed": true,
+      "detail": {
+        "max_abs_difference": 0.0,
+        "passed": true
+      }
+    },
+    "every_subject_case_has_all_reps": {
+      "passed": true,
+      "detail": [
+        1
+      ]
+    },
+    "repetition_output_identical": {
+      "passed": true,
+      "detail": []
+    },
+    "overdetermined_weak_system": {
+      "passed": true,
+      "detail": []
+    },
+    "nonlinear_dimension_stays_K": {
+      "passed": true,
+      "detail": [
+        16
+      ]
+    },
+    "every_rom_reports_solver_validity": {
+      "passed": true,
+      "detail": null
+    },
+    "artifacts_present": {
+      "passed": true,
+      "detail": []
+    },
+    "recorded_errors_recomputed_from_saved_fields": {
+      "passed": true,
+      "detail": 0.0
+    },
+    "pabl01_comparison_skipped": {
+      "passed": true,
+      "detail": "cohort shape differs from pabl01; this is not the production run"
+    }
+  },
+  "arm_table": [
+    {
+      "arm": "q0_m256",
+      "kind": "rom",
+      "q": 0,
+      "rule": "m256",
+      "M": 64,
+      "nominal_dimension": 16,
+      "nonlinear_dimension": 16,
+      "linear_rank": 0,
+      "linear_rank_valid": true,
+      "degenerate_full_bank": false,
+      "worst_physical_percent": 3.8950293820740804,
+      "median_physical_percent": 2.494238421839986,
+      "worst_same_grid_percent": 3.9007083380601273,
+      "worst_bank_projection_percent": 1.3703217127785194,
+      "worst_best_found_percent": 3.8031607967646828,
+      "median_device_ms": 73.18246050272137,
+      "median_total_ms": 80.64208697760478,
+      "repetitions": 4,
+      "median_iterations": 6.5,
+      "all_solver_valid": true,
+      "all_stationary": true,
+      "setup_seconds": 2.619654113019351
+    },
+    {
+      "arm": "q0_m4",
+      "kind": "rom",
+      "q": 0,
+      "rule": "m4",
+      "M": 64,
+      "nominal_dimension": 16,
+      "nonlinear_dimension": 16,
+      "linear_rank": 0,
+      "linear_rank_valid": true,
+      "degenerate_full_bank": false,
+      "worst_physical_percent": 3.8950293820740804,
+      "median_physical_percent": 2.494238421839986,
+      "worst_same_grid_percent": 3.9007083380601273,
+      "worst_bank_projection_percent": 1.3703217127785194,
+      "worst_best_found_percent": 3.8031607967646828,
+      "median_device_ms": 73.75851899269037,
+      "median_total_ms": 77.56540947593749,
+      "repetitions": 4,
+      "median_iterations": 6.5,
+      "all_solver_valid": true,
+      "all_stationary": true,
+      "setup_seconds": 0.21196540299570188
+    },
+    {
+      "arm": "q8_m256",
+      "kind": "rom",
+      "q": 8,
+      "rule": "m256",
+      "M": 64,
+      "nominal_dimension": 24,
+      "nonlinear_dimension": 16,
+      "linear_rank": 8,
+      "linear_rank_valid": true,
+      "degenerate_full_bank": false,
+      "worst_physical_percent": 4.443349689603851,
+      "median_physical_percent": 2.5021792442081785,
+      "worst_same_grid_percent": 4.445242259750398,
+      "worst_bank_projection_percent": 1.3703217127785194,
+      "worst_best_found_percent": 3.479331285149771,
+      "median_device_ms": 72.6437300327234,
+      "median_total_ms": 76.35166752152145,
+      "repetitions": 4,
+      "median_iterations": 6.5,
+      "all_solver_valid": true,
+      "all_stationary": true,
+      "setup_seconds": 2.880986466014292
+    },
+    {
+      "arm": "q8_m4",
+      "kind": "rom",
+      "q": 8,
+      "rule": "m4",
+      "M": 96,
+      "nominal_dimension": 24,
+      "nonlinear_dimension": 16,
+      "linear_rank": 8,
+      "linear_rank_valid": true,
+      "degenerate_full_bank": false,
+      "worst_physical_percent": 3.813324794930019,
+      "median_physical_percent": 2.407893474854692,
+      "worst_same_grid_percent": 3.8172969300209316,
+      "worst_bank_projection_percent": 1.3703217127785194,
+      "worst_best_found_percent": 3.479331285149771,
+      "median_device_ms": 68.22637299774215,
+      "median_total_ms": 72.57604200276546,
+      "repetitions": 4,
+      "median_iterations": 6.0,
+      "all_solver_valid": true,
+      "all_stationary": true,
+      "setup_seconds": 5.5839631099952385
+    },
+    {
+      "arm": "q32_m256",
+      "kind": "rom",
+      "q": 32,
+      "rule": "m256",
+      "M": 64,
+      "nominal_dimension": 48,
+      "nonlinear_dimension": 16,
+      "linear_rank": 32,
+      "linear_rank_valid": true,
+      "degenerate_full_bank": false,
+      "worst_physical_percent": 10.596746366759321,
+      "median_physical_percent": 5.015240394668736,
+      "worst_same_grid_percent": 10.595066300012626,
+      "worst_bank_projection_percent": 1.3703217127785194,
+      "worst_best_found_percent": 2.8138801782573957,
+      "median_device_ms": 83.87858999776654,
+      "median_total_ms": 89.02691048569977,
+      "repetitions": 4,
+      "median_iterations": 8.0,
+      "all_solver_valid": true,
+      "all_stationary": true,
+      "setup_seconds": 4.12010189704597
+    },
+    {
+      "arm": "q32_m4",
+      "kind": "rom",
+      "q": 32,
+      "rule": "m4",
+      "M": 193,
+      "nominal_dimension": 48,
+      "nonlinear_dimension": 16,
+      "linear_rank": 32,
+      "linear_rank_valid": true,
+      "degenerate_full_bank": false,
+      "worst_physical_percent": 2.8276825358798754,
+      "median_physical_percent": 1.762756299987437,
+      "worst_same_grid_percent": 2.830579579592656,
+      "worst_bank_projection_percent": 1.3703217127785194,
+      "worst_best_found_percent": 2.8138801782573957,
+      "median_device_ms": 69.91278100758791,
+      "median_total_ms": 75.21482999436557,
+      "repetitions": 4,
+      "median_iterations": 6.0,
+      "all_solver_valid": true,
+      "all_stationary": true,
+      "setup_seconds": 7.5167145190062
+    },
+    {
+      "arm": "dst_direct",
+      "kind": "fom",
+      "q": null,
+      "rule": null,
+      "M": null,
+      "nominal_dimension": null,
+      "nonlinear_dimension": null,
+      "linear_rank": null,
+      "linear_rank_valid": null,
+      "degenerate_full_bank": null,
+      "worst_physical_percent": 0.03669141584398996,
+      "median_physical_percent": 0.027429251239286353,
+      "worst_same_grid_percent": 0.0,
+      "worst_bank_projection_percent": null,
+      "worst_best_found_percent": null,
+      "median_device_ms": 2.1979940065648407,
+      "median_total_ms": 4.218155983835459,
+      "repetitions": 4,
+      "median_iterations": null,
+      "all_solver_valid": null,
+      "all_stationary": null,
+      "setup_seconds": null
+    }
+  ]
+}

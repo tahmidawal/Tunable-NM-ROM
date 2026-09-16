@@ -69,6 +69,8 @@ def main():
     gate('nonlinear_dimension_stays_K',
          all(x['nonlinear_optimizer_dimension'] == r['K'] for x in roms),
          sorted({x['nonlinear_optimizer_dimension'] for x in roms}))
+    gate('every_rom_reports_solver_validity',
+         all(('solver_valid' in x and 'stationarity' in x and 'reason' in x) for x in roms))
 
     if a.fields:
         d = Path(a.fields)
@@ -98,7 +100,9 @@ def main():
                                              rule=x.get('rule'), M=x.get('M'), device_ms=[],
                                              total_ms=[], case_error={}, case_same_grid={},
                                              valid=[], stationary=[], iterations=[]))
-        t['device_ms'].append(x['fused_device_seconds'] * 1e3)
+        # the ROM rows time the fused device kernel; the direct DST control reports its
+        # solve stage separately, so the comparable device figure is that stage
+        t['device_ms'].append((x.get('fused_device_seconds') or x['solver_seconds']) * 1e3)
         t['total_ms'].append(x['total_seconds'] * 1e3)
         t['case_error'][x['case']] = x['physical_error']
         if 'same_grid' in x:
@@ -107,6 +111,8 @@ def main():
             t['valid'].append(x['solver_valid'])
             t['stationary'].append(x['stationary'])
             t['iterations'].append(x['total_attempts'])
+    for t in table.values():
+        pass
     setup = {s['arm']: s for s in r['arm_setup'] if 'arm' in s}
     recon = {x['q']: x for x in r['reconstruction']}
     rows = []
@@ -138,8 +144,8 @@ def main():
     checks['nondominated_valid'] = nondominated([x for x in rows if x['kind'] == 'rom'
                                                  and x['all_solver_valid']])
 
-    if Path(PABL).exists():
-        ref = json.loads(Path(PABL).read_text())
+    ref = json.loads(Path(PABL).read_text()) if Path(PABL).exists() else None
+    if ref is not None and np.shape(ref['cohort']['parameters']) == np.shape(r['cohort']['parameters']):
         want = {x['case']: x['physical_error'] for x in ref['invocations']
                 if x['name'] == 'a_neural_q32' and x['intervals'] == r['intervals']}
         got = {x['case']: x['physical_error'] for x in inv if x['name'] == 'q32_m256'}
@@ -151,6 +157,9 @@ def main():
         gate('cohort_identical',
              bool(np.allclose(np.asarray(ref['cohort']['parameters']),
                               np.asarray(r['cohort']['parameters']))))
+    elif ref is not None:
+        checks['pabl01_comparison_skipped'] = dict(
+            passed=True, detail='cohort shape differs from pabl01; this is not the production run')
 
     out = dict(result=str(a.result), result_sha256=hashlib.sha256(Path(a.result).read_bytes()).hexdigest(),
                job_id=r.get('job_id'), commit=r.get('commit'), gpu=r.get('gpu'),

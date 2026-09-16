@@ -65,19 +65,20 @@ def figure(aud, out_png, out_pdf):
     """Evolved-times error against q for old and new directions, plus per-time panels."""
     lads = aud['ladders']
     times = aud['output_times']
-    fig = plt.figure(figsize=(15, 9.5))
-    gs = fig.add_gridspec(3, 6, height_ratios=[1.35, 1.35, 1.0], hspace=.42, wspace=.38)
+    fig = plt.figure(figsize=(15, 10.5))
+    gs = fig.add_gridspec(3, 6, height_ratios=[1.35, 1.35, 1.0], hspace=.75, wspace=.38)
 
-    groups = [('primary', 'M = 4(K+q), EQ per rung',
-               [('old', 'old_primary'), ('traj', 'traj_primary'), ('prac', 'prac_primary')]),
+    groups = [('primary', 'M = 4(K+q); solid = EQ per rung, dashed = dense twin',
+               [('old', 'old_primary', 'old_dense'), ('traj', 'traj_primary', 'traj_dense'),
+                ('prac', 'prac_primary', 'prac_dense')]),
               ('fixedM', 'fixed M = 256, EQ per rung',
-               [('old', 'old_fixedM'), ('traj', 'traj_fixedM')])]
+               [('old', 'old_fixedM', None), ('traj', 'traj_fixedM', None)])]
 
     for col, (key, title) in enumerate((('evolved', 'worst over EVOLVED times ($t>0$)'),
-                                        ('all_times', 'worst over ALL times ($t\\ge 0$)'))):
+                                        ('all_times', 'worst over ALL times ($t\\geq 0$)'))):
         for grow, (gid, gtitle, members) in enumerate(groups):
             ax = fig.add_subplot(gs[grow, col * 3:(col + 1) * 3])
-            for setname, lid in members:
+            for setname, lid, dense_lid in members:
                 lad = lads.get(lid)
                 if not lad:
                     continue
@@ -90,6 +91,19 @@ def figure(aud, out_png, out_pdf):
                     ax.plot([q], [v], 'o' if c else 'X', ms=8 if c else 10,
                             mfc=SETCOLOR[setname] if c else 'white',
                             mec=SETCOLOR[setname], mew=1.8, zorder=3)
+                dl = lads.get(dense_lid) if dense_lid else None
+                if dl:
+                    ax.plot([u['q'] for u in dl['rungs']], [u[key] for u in dl['rungs']],
+                            '--', color=SETCOLOR[setname], lw=1.1, alpha=.75, zorder=1)
+                    for u in dl['rungs']:
+                        ax.plot([u['q']], [u[key]], 'o' if u['converged'] else 'X', ms=5,
+                                mfc='white', mec=SETCOLOR[setname], mew=1.1, zorder=1)
+            ax.set_yscale('log')
+            ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(
+                lambda y, _: f'{y:g}'))
+            ax.yaxis.set_minor_formatter(matplotlib.ticker.FuncFormatter(
+                lambda y, _: f'{y:g}'))
+            ax.tick_params(axis='y', which='minor', labelsize=7)
             ax.set_xscale('symlog', linthresh=16)
             ax.set_xticks(sorted({u['q'] for lad in lads.values() for u in lad['rungs']}))
             ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
@@ -102,7 +116,7 @@ def figure(aud, out_png, out_pdf):
     # Per-output-time panels on the primary ladders.
     for i, t in enumerate(times):
         ax = fig.add_subplot(gs[2, i])
-        for setname, lid in groups[0][2]:
+        for setname, lid, _dense in groups[0][2]:
             lad = lads.get(lid)
             if not lad:
                 continue
@@ -115,6 +129,9 @@ def figure(aud, out_png, out_pdf):
         ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax.tick_params(labelsize=7)
         ax.set_title(f'$t = {t:g}$', fontsize=9)
+        ax.set_yscale('log')
+        ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda y, _: f'{y:g}'))
+        ax.yaxis.set_minor_formatter(matplotlib.ticker.FuncFormatter(lambda y, _: f'{y:g}'))
         ax.grid(alpha=.25)
         if i == 0:
             ax.set_ylabel('worst same-grid\nerror (%)', fontsize=8)
@@ -149,7 +166,7 @@ def main():
     oldfix = lads.get('old_fixedM', {})
     trajfix = lads.get('traj_fixedM', {})
 
-    state = ('**PASSED**' if v['passes'] else '**did not pass**')
+    state = 'PASSED' if v['passes'] else 'did NOT pass'
     L = []
     L.append('# Trajectory-fitted correction directions on the Burgers ladder\n')
     L.append(
@@ -157,7 +174,7 @@ def main():
         'of the head\'s static reconstruction residual, make the Burgers $256^2$ fixed-weight '
         'correction ladder monotone on the worst-over-evolved-times metric while keeping it '
         'monotone on worst-over-all-times? One frozen checkpoint, one mesh, one job, six '
-        f'opened development cases. The pre-registered pass {state}. These numbers are '
+        f'opened development cases. The pre-registered pass **{state}**. These numbers are '
         'final for this cell: every one is recomputed in an independent NumPy audit from the '
         'saved output fields, and nothing here is typed by hand.\n')
     L.append(f'Job `{aud["job_id"]}`, source `{aud["commit"]}`, GPU `{aud["gpu"]}`, '
@@ -180,7 +197,7 @@ def main():
           f"{f(v['criterion_3_error_span']['error_span'], 3)}x, cost span "
           f"{f(v['criterion_3_error_span']['cost_span'], 3)}x")]]
     L.append(table(['pre-registered criterion (traj primary ladder)', 'holds', 'measured'], crit))
-    L.append(f'\n**Overall: {state}.**\n')
+    L.append(f'**Overall: the pre-registered pass {state}.**\n')
 
     if v['regressions_evolved']:
         L.append('\nRegressions on the evolved metric that survive on the `traj` primary '
@@ -448,7 +465,7 @@ def main():
         'for 32 cases from a seed does not give the first 32 of 128 from that seed. Every '
         'cohort here is a set of indices into ONE draw of 128.\n')
 
-    text = ''.join(L)
+    text = ''.join(x if x.endswith('\n\n') else x + '\n' for x in L)
     Path(a.out).write_text(text)
     print(a.out, hashlib.sha256(Path(a.out).read_bytes()).hexdigest())
 

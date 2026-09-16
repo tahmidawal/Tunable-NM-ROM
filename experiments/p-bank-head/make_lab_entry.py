@@ -60,11 +60,13 @@ def main():
     best_id = min((m for m in models if m != 'incumbent'),
                   key=lambda m: neural[m]['worst_same_grid'])
     best = neural[best_id]
-    pods = {(agg[k]['k'], agg[k].get('pod_cohort')): (k[1], agg[k])
-            for k in agg if k[0] == fine and agg[k]['family'] == 'pod'}
+    # Keyed by NAME, not by (rank, cohort): `pod_cohort` is carried through
+    # solve_table, but keying on it collapsed the two cohorts into one entry per
+    # rank and silently reported the WEAKER competitor.
+    pods = {k[1]: agg[k] for k in agg if k[0] == fine and agg[k]['family'] == 'pod'}
 
     def bestpod(rank):
-        c = [(n, r) for (kk, _), (n, r) in pods.items() if kk == rank]
+        c = [(n, r) for n, r in pods.items() if r['k'] == rank]
         return min(c, key=lambda x: x[1]['worst_same_grid']) if c else (None, None)
 
     podK = bestpod(models[best_id]['K'])

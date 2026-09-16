@@ -67,6 +67,7 @@ def solve_table(sv):
                         invocations=len(rows), stationary=stationary,
                         k=rows[0].get('k'), family=rows[0].get('family'),
                         model=rows[0].get('model'),
+                        pod_cohort=rows[0].get('pod_cohort'), name=key[1],
                         iterations=med(rows, 'iterations'))
     return agg
 

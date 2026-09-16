@@ -403,3 +403,17 @@ $3.33\times10^{-16}$ (pivoted step) and $4.44\times10^{-16}$ (padding), i.e. rou
 `pbh01` itself ran with the original and is unaffected; the change matters for any later
 run. The solve job is untouched — it uses `arms.make_reconstruction` on the dense field
 exactly as `pabl01` does.
+
+**2026-09-16, amendment 6 — a local GPU landmine, recorded because it could have produced a
+silent wrong answer.**
+
+On the local GB10, the **first** JAX GPU QR of a $64516\times512$ float64 matrix returns an
+all-NaN factor; the second and third calls in the same process are correct, and NumPy and the
+cluster are always correct. It was caught by this cell's full-numerical-rank assertion, which
+reported rank 0 for a bank the cluster had already certified at rank 512. Two consequences,
+both applied: `pbh_core.bank_r` now recomputes a non-finite factor and folds finiteness into
+`rank_valid`, so a NaN can never reach a result; and the common-cohort bank selection of
+amendment 4 is implemented in **pure NumPy/SciPy**, importing neither JAX nor any driver
+module, which is the right implementation for a selection anyway. No cluster number is
+affected — every `pbh01` bank arm asserted full rank on the cluster before its floor was
+recorded.

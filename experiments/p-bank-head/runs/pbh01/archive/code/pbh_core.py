@@ -109,26 +109,13 @@ def bank_of(params, intervals, chunk=16384):
     return G
 
 
-def bank_r(G, retries=2):
-    """Thin R factor without ever materialising Q (4.3 GB at R=512, n=1024).
-
-    The FIRST GPU QR of a tall f64 matrix of this shape returns all-NaN on the
-    local GB10 (reproducible; NumPy and the cluster are always correct), so a
-    non-finite factor is recomputed rather than propagated. The caller still
-    asserts full numerical rank, so a silent NaN can never reach a result.
-    """
-    G = jnp.asarray(G)
-    for attempt in range(retries + 1):
-        R = jnp.linalg.qr(G, mode='r')
-        if bool(jnp.isfinite(R).all()):
-            break
-        print(f'WARNING: non-finite QR factor, attempt {attempt + 1}', flush=True)
+def bank_r(G):
+    """Thin R factor without ever materialising Q (4.3 GB at R=512, n=1024)."""
+    R = jnp.linalg.qr(jnp.asarray(G), mode='r')
     values = np.asarray(jnp.linalg.svd(R, compute_uv=False))
     threshold = float(values[0] * max(np.asarray(G).shape) * np.finfo(float).eps)
     rank = int((values > threshold).sum())
-    info = dict(rank=rank, rank_valid=bool(rank == int(R.shape[1])
-                                          and np.isfinite(values).all()),
-                rank_threshold=threshold,
+    info = dict(rank=rank, rank_valid=rank == int(R.shape[1]), rank_threshold=threshold,
                 condition_number=float(values[0] / values[-1]),
                 singular_values=values.tolist(), R_sha256=sha_array(R))
     return R, info
@@ -204,21 +191,33 @@ def weak_sources(draws, ops, n, chunk=64):
 
 # ------------------------------------------------------------- head oracles ---
 
+def make_qr_oracle(params_fn, K, budget, gtol=1e-6, linear='gj'):
+    """Best-found latent fit in the exact QR field metric.
+
+    residual(z) = R_G h(z) - T. Because ||G d|| == ||R_G d||, this LM has the
+    identical Gram and gradient to the dense-field fit `arms.make_reconstruction`
+    performs; only the residual NORM differs by the constant perpendicular part,
+    which shifts the normalised-gradient exit. Both are upper bounds on the head
+    floor. The dense form is used in the solve job, this one for large cohorts.
+    """
+    lm = A.make_stationary_lm(lambda z, T, R: R @ params_fn(z) - T, budget,
+                              gtol=gtol, linear=linear)
+
+    @jax.jit
+    def fit(starts, T, R):
+        out = jax.vmap(lambda z0: lm(z0, (T, R), 0.))(starts)
+        best = jnp.argmin(out[1])
+        return out[0][best], out[1][best], out[2][best], out[3][best]
+    return fit
+
+
 def oracle_errors(head, Rg, Zcand, T, perp2, nu2, budget, starts=8, gtol=1e-6,
-                  linear='lu', block=16):
+                  linear='gj', block=64):
     """Worst/median best-found error over a cohort, multistart from candidate codes.
 
     Sources and starts are vmapped together, so one dispatch solves
     block x starts independent LM problems of dimension K with an R-dimensional
-    residual. Returns per-source (error, iterations, exit reason).
-
-    Two deviations from `arms.make_reconstruction`, both recorded in DESIGN.md
-    amendment 5 and both measured to change no digit that matters. (1) The step
-    uses a pivoted dense solve rather than the incumbent unrolled Gauss-Jordan:
-    more accurate, not weaker, and the unrolled graph is what makes ptxas take
-    tens of minutes on this nested-vmap kernel at R=512. (2) The batch is small
-    and fixed, for the same reason. This is an offline diagnostic, never a timed
-    query, so neither choice touches a reported cost."""
+    residual. Returns per-source (error, iterations, exit reason)."""
     K = int(np.asarray(Zcand).shape[1])
     lm = A.make_stationary_lm(lambda z, t, R: R @ head(z) - t, budget, gtol=gtol, linear=linear)
 
@@ -234,28 +233,17 @@ def oracle_errors(head, Rg, Zcand, T, perp2, nu2, budget, starts=8, gtol=1e-6,
     Hn = jnp.sum(Hr * Hr, axis=1)
     Zc = jnp.asarray(Zcand)
     Rgj = jnp.asarray(Rg)
-    total = int(T.shape[0])
-    block = min(block, total)
     errs, iters, reasons = [], [], []
-    for s in range(0, total, block):
-        # Every block is padded to the SAME width by repeating its last row, so
-        # `fit` is compiled exactly once however long the cohort is. Compilation
-        # of this nested-vmap LM costs minutes at R=512, and the padded rows
-        # cannot change the real ones: a batched while_loop freezes each element
-        # once its own predicate is false.
-        take = np.arange(s, min(s + block, total))
-        keep = len(take)
-        if keep < block:
-            take = np.concatenate((take, np.full(block - keep, take[-1])))
-        Tb = jnp.asarray(np.asarray(T)[take])
+    for s in range(0, int(T.shape[0]), block):
+        Tb = jnp.asarray(T[s:s + block])
         score = Hn[None, :] - 2. * (Tb @ Hr.T)
         pick = jnp.argsort(score, axis=1)[:, :starts]
         rn, it, reason = jax.device_get(fit(Zc[pick], Tb, Rgj))
-        p2 = np.asarray(perp2)[take[:keep]]
-        n2 = np.asarray(nu2)[take[:keep]]
-        errs.append(np.sqrt(np.asarray(rn)[:keep] ** 2 + p2) / np.sqrt(n2))
-        iters.append(np.asarray(it)[:keep])
-        reasons.append(np.asarray(reason)[:keep])
+        p2 = np.asarray(perp2[s:s + block])
+        n2 = np.asarray(nu2[s:s + block])
+        errs.append(np.sqrt(np.asarray(rn) ** 2 + p2) / np.sqrt(n2))
+        iters.append(np.asarray(it))
+        reasons.append(np.asarray(reason))
     return (np.concatenate(errs), np.concatenate(iters).astype(int),
             np.concatenate(reasons).astype(int))
 

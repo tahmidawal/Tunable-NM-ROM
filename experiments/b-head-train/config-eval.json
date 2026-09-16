@@ -1,0 +1,60 @@
+{
+  "attempt": "eval01",
+  "intervals": 256,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "decoder_code_subsample": 8192,
+  "test_multiplier": 4,
+  "quadrature_multiplier": 4,
+  "eq_seed": 20259,
+  "candidate_cap": 8192,
+  "fit_states": 64,
+  "cold_axis_points": 48,
+  "default_quadratures": [
+    "eq"
+  ],
+  "quadratures": {
+    "incumbent": [
+      "eq",
+      "dense"
+    ]
+  },
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 180,
+    "gtol": 1e-06
+  },
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reps": 3,
+  "order_seed": 911709,
+  "burn_seconds": 0.25,
+  "fom_settings": [
+    {
+      "name": "fft_loose",
+      "preconditioner": "fft",
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    }
+  ],
+  "same_grid_reference": "fft_tight",
+  "incumbent_arm": "incumbent_eq",
+  "abl01_result": "experiments/head-ablation/artifacts/abl01/result.json",
+  "abl01_arm": "a_neural_eq",
+  "success": {
+    "best_found": 1.0,
+    "same_grid": 1.3,
+    "cost_factor": 1.5
+  }
+}

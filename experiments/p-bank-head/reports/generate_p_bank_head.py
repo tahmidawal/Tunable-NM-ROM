@@ -63,6 +63,8 @@ def main():
     ap.add_argument('--head-train', type=Path, default=None,
                     help='the run that swept the head, if different from --train')
     ap.add_argument('--head-audit', type=Path, default=None)
+    ap.add_argument('--head-train-alt', type=Path, default=None,
+                    help='a second head sweep on a different bank, reported as a contrast')
     ap.add_argument('--bank-selection', type=Path, default=None,
                     help='the common-cohort bank selection check (DESIGN amendment 4)')
     ap.add_argument('--incumbent-diagnosis', type=Path, default=None,
@@ -76,6 +78,7 @@ def main():
     ta = json.loads(a.train_audit.read_text())
     ht = json.loads(a.head_train.read_text()) if a.head_train else tr
     ha = json.loads(a.head_audit.read_text()) if a.head_audit else ta
+    alt = json.loads(a.head_train_alt.read_text()) if a.head_train_alt else None
     bsel = json.loads(a.bank_selection.read_text()) if a.bank_selection else None
     idg = json.loads(a.incumbent_diagnosis.read_text()) if a.incumbent_diagnosis else None
     sv = json.loads(a.solve.read_text())
@@ -342,6 +345,40 @@ def main():
         w(f"- K={s['K']}: primary `{s['selected']}`; development ranking agrees: "
           f"{yn(s['development_ranking_agrees'])}.")
     w('')
+    if alt is not None:
+        ahl = alt['head_layer']
+        w('### The same sweep on a bank with a sixteenth of the coverage')
+        w('')
+        w(f"`pbh01` ran the identical twelve-arm sweep on `{ahl['bank']}` "
+          f"({ahl['fit_count']} fit sources) because that is the arm the **withdrawn** "
+          f"selection rule chose. The contrast is the cell's clearest single result, so it is "
+          f"reported rather than discarded.")
+        w('')
+        w('| arm | K | beta_weak | beta_smooth | training fit (worst, at stored codes) | '
+          'best-found (dev, worst) | | training fit | best-found (dev, worst) |')
+        w('|---|---:|---:|---:|---:|---:|---|---:|---:|')
+        w(f"| | | | | **{hl['bank']}** ({hl['fit_count']} sources) | | | "
+          f"**{ahl['bank']}** ({ahl['fit_count']} sources) | |")
+        byarm = {x['arm']: x for x in alt['head_arms']}
+        for x in sorted(ht['head_arms'], key=lambda x: (x['K'], x['beta_weak'], x['beta_smooth'])):
+            y = byarm.get(x['arm'])
+            w(f"| `{x['arm']}` | {x['K']} | {x['beta_weak']:g} | {x['beta_smooth']:g} | "
+              f"{pc(x['head_at_stored_codes_fit']['worst'])} % | "
+              f"{pc(x['best_found_development']['worst'])} % | | "
+              f"{pc(y['head_at_stored_codes_fit']['worst']) if y else '—'} % | "
+              f"{pc(y['best_found_development']['worst']) if y else '—'} % |")
+        w('')
+        bestf = min(ht['head_arms'], key=lambda x: x['best_found_development']['worst'])
+        besta = min(alt['head_arms'], key=lambda x: x['best_found_development']['worst'])
+        w(f"Best development best-found: {pc(bestf['best_found_development']['worst'])} % with "
+          f"{hl['fit_count']} sources against {pc(besta['best_found_development']['worst'])} % "
+          f"with {ahl['fit_count']}, a factor of "
+          f"{num(besta['best_found_development']['worst'] / max(bestf['best_found_development']['worst'], 1e-300), 3)}. "
+          f"The low-coverage sweep fits its own training data far TIGHTER "
+          f"({pc(min(x['head_at_stored_codes_fit']['worst'] for x in alt['head_arms']))} % worst "
+          f"against {pc(min(x['head_at_stored_codes_fit']['worst'] for x in ht['head_arms']))} %) "
+          f"and generalises far worse: it is memorising, not representing.")
+        w('')
 
     # -------------------------------------------------------------- mermaid ---
     w('## What is trained, what is frozen, what is solved')

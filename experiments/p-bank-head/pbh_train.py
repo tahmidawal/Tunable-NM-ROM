@@ -356,22 +356,29 @@ def main():
     def bank_key(arm):
         f = next(x for x in arm['floors'] if x['intervals'] == pick_n)
         return (f['validation']['worst'], f['validation']['median'], arm['R'], arm['S'])
-    best = best if head_only else min(R_['bank_arms'], key=bank_key)
     if not head_only:
-      R_['selection']['bank'] = dict(
-        rule='lowest worst internal-validation bank projection floor at the finest floor mesh; '
-             'ties by median, then smaller R, then smaller S',
-        mesh=pick_n, selected=best['arm'], R=best['R'], S=best['S'],
-        ranking=[dict(arm=x['arm'], validation_worst=bank_key(x)[0],
-                      development_worst=next(f for f in x['floors']
+        best = min(R_['bank_arms'], key=bank_key)
+        # The rule recorded here is the ORIGINAL pre-registration. DESIGN.md
+        # amendment 4 withdrew it mid-run because each arm's validation split has a
+        # different size, so their maxima are not comparable; the rule in force is
+        # the common-cohort rule applied in checks/bank-selection/. Both rankings
+        # are kept and both are reported.
+        R_['selection']['bank'] = dict(
+            rule='ORIGINAL pre-registration, WITHDRAWN by DESIGN.md amendment 4: lowest worst '
+                 'internal-validation bank projection floor at the finest floor mesh; ties by '
+                 'median, then smaller R, then smaller S. Superseded by the common-cohort rule.',
+            withdrawn=True, mesh=pick_n, selected=best['arm'], R=best['R'], S=best['S'],
+            ranking=[dict(arm=x['arm'], validation_worst=bank_key(x)[0],
+                          development_worst=next(f for f in x['floors']
+                                                 if f['intervals'] == pick_n)['development']['worst'])
+                     for x in sorted(R_['bank_arms'], key=bank_key)])
+        dev_rank = sorted(R_['bank_arms'],
+                          key=lambda x: next(f for f in x['floors']
                                              if f['intervals'] == pick_n)['development']['worst'])
-                 for x in sorted(R_['bank_arms'], key=bank_key)])
-    dev_rank = sorted(R_['bank_arms'],
-                      key=lambda x: next(f for f in x['floors']
-                                         if f['intervals'] == pick_n)['development']['worst'])
-    R_['selection']['bank']['development_ranking_agrees'] = bool(dev_rank[0]['arm'] == best['arm'])
-    save()
-    print('BANK SELECTED', best['arm'], flush=True)
+        R_['selection']['bank']['development_ranking_agrees'] = bool(
+            dev_rank[0]['arm'] == best['arm'])
+        save()
+        print('BANK SELECTED', best['arm'], flush=True)
 
     # ------------------------------------------------------------ head sweep ---
     Sbest, Rbest = best['S'], best['R']

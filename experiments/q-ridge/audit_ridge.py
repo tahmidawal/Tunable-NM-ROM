@@ -273,6 +273,10 @@ def main():
 
     # ------------------------------------------------------------- R3 --------
     r3out = None
+    if a.no_r3 or not a.bank or not Path(a.bank).exists():
+        checks['bank_sha256_consistent'] = dict(
+            passed=None, detail=dict(bank=a.bank, no_r3=a.no_r3),
+            note='not applicable: R3 was not computed in this invocation')
     if not a.no_r3 and a.bank and Path(a.bank).exists():
         L = r['intervals']
         dt = r['dt']

@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 HERE = Path(__file__).resolve().parent
 CELL = HERE.parent
 QUAD_TITLE = {'dense': 'dense (exact) quadrature', 'eq': 'empirical quadrature, $m = 4M$'}
+QUAD_HEAD = {'dense': 'Dense (exact) quadrature', 'eq': 'Empirical quadrature, $m = 4M$'}
+MULT = {'m4': 4, 'm8': 8, 'm16': 16}
 COLORS = ['#2b2b2b', '#3b6ea5', '#4f8a3d', '#b08a2a', '#b03a3a', '#7a4f9a', '#2a8a8a']
 
 
@@ -124,7 +126,7 @@ def figure(r1, r2, png, pdf):
                 ax.plot(e['q'], e['worst_evolved_percent'], 'o-', color=c, lw=1.6,
                         ms=7, markerfacecolor=(c if filled else 'none'),
                         label=(f'$\\lambda_{{rel}}={label}$' if kind == 'lam'
-                               else f'$M={ {"m4": 4, "m8": 8, "m16": 16}[label] }(K+q)$'))
+                               else f'$M={MULT[label]}(K+q)$'))
             ax.set_xscale('symlog', linthresh=16)
             ax.set_yscale('log')
             ax.set_xlabel('correction directions $q$')
@@ -154,9 +156,22 @@ def main():
     out = Path(a.out)
     d = Doc()
 
-    d.h(1, 'q-ridge — the Burgers evolved-times regression is a quadrature fact, not '
-           'test-space overfitting')
     jobs = [x for x in (r1, r2) if x]
+    # The headline is DERIVED from the audited falsification test, never asserted.
+    fp = {}
+    for aud in jobs:
+        for quad, v in ((aud.get('r3') or {}).get('falsification_pairs') or {}).items():
+            if v:
+                fp[quad] = v['held_out_higher_at_high_q']
+    if not fp:
+        headline = 'q-ridge — R1, R2 and R3 on the Burgers evolved-times regression'
+    elif any(fp.values()):
+        headline = ('q-ridge — the held-out weak residual IS higher at $q=16$: '
+                    'test-space overfitting survives its control')
+    else:
+        headline = ('q-ridge — the held-out weak residual is NOT higher at $q=16$: '
+                    'test-space overfitting is falsified as the cause')
+    d.h(1, headline)
     d.p('Final numbers. Two cluster jobs on the frozen Burgers checkpoint '
         '`18f0266ae6f0…` at 256 intervals, on the six opened development cases, under the '
         'budget-600 block-damped variable-projection contract inherited from `b-ladder-top`. '
@@ -212,13 +227,11 @@ def main():
             continue
         d.h(2, name)
         for quad in ('dense', 'eq'):
-            d.h(3, QUAD_TITLE[quad].capitalize())
+            d.h(3, QUAD_HEAD[quad])
             for label, e in sorted(aud['ladders'][quad].items(),
                                    key=lambda kv: (kv[1]['lam_rel'], kv[1]['rule'])):
                 head = (f'$\\lambda_{{rel}} = {label}$' if kind == 'lam'
-                        else f'$M = {{"m4": 4, "m8": 8, "m16": 16}}[{label}](K+q)$'.replace(
-                            '{"m4": 4, "m8": 8, "m16": 16}[' + label + ']',
-                            str({'m4': 4, 'm8': 8, 'm16': 16}[label])))
+                        else f'$M = {MULT[label]}(K+q)$')
                 d.p(f'**{head}** — monotone in $q$ on evolved times: '
                     f"**{yn(e['monotone_evolved'])}**; every rung converged: "
                     f"{yn(e['all_converged'])}; cost within 1.5x of the incumbent: "
@@ -353,8 +366,8 @@ def _mono(v):
 TEX_PREAMBLE = r"""\documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,graphicx,booktabs,longtable}
-\title{q-ridge: the Burgers evolved-times regression is a quadrature fact,\\
-not test-space overfitting}
+\title{q-ridge: R1 (ridge), R2 (more tests) and R3 (held-out residual)\\
+on the Burgers evolved-times regression}
 \date{2026-09-16}
 \begin{document}\maketitle
 """

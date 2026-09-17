@@ -89,6 +89,8 @@ export SOURCE_COMMIT=$(cat COMMIT.txt)
 echo "host=$(hostname) source_commit=$SOURCE_COMMIT"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
+FREE_GB=$(df -BG --output=avail /cluster/tufts/paralab | tail -1 | tr -dc 0-9)
+test "$FREE_GB" -ge 30 || { echo "paralab free ${FREE_GB}G < 30G: abort before writing"; exit 43; }
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 "$PY" experiments/w-ladder/ladder.py \\
   --config experiments/w-ladder/__CONFIG__ \\

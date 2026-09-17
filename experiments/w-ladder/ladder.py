@@ -38,7 +38,7 @@ def sha(path):
 
 
 # ----------------------------------------------------------------------------- training data
-def regenerate_training_fields(inputs, out):
+def regenerate_training_fields(inputs, cfg):
     """Second streaming pass over the 64 training trajectories, retaining normalised fields.
 
     Same generator, seed, mesh, CFL and stride as fresh_learning.generate_data; the stacked
@@ -48,12 +48,15 @@ def regenerate_training_fields(inputs, out):
     expected = json.loads((inputs / 'data_manifest.json').read_text())['splits']['train']
     grid = Grid(original['n'], 'dirichlet', 'dirichlet')
     pars = parameter_rows(original['train_seed'], original['train_count'])
+    case_stride = int(cfg.get('pod_training_case_stride', 1))
     stride = int(np.ceil(original['observation_dt'] / (original['fom_cfl'] * grid.h / 1.15)))
     dt = original['observation_dt'] / stride
     nobs = int(round(original['end_time'] / original['observation_dt']))
     us, vs, scales = [], [], []
     start = time.perf_counter()
     for ci, par in enumerate(pars):
+        if ci % case_stride:
+            continue
         u0, v0 = localized_initial(grid, par)
         u, v, _ = integrate_balance(u0, v0, par[5], dt, grid=grid, steps=nobs * stride, stride=stride)
         e0 = float(energy(u0, v0, grid, par[5]))
@@ -63,13 +66,16 @@ def regenerate_training_fields(inputs, out):
         print('pod_training_case', ci, flush=True)
     us, vs, scales = np.stack(us), np.stack(vs), np.asarray(scales)
     uh, vh = hashlib.sha256(us.tobytes()).hexdigest(), hashlib.sha256(vs.tobytes()).hexdigest()
-    match = uh == expected['u_sha256'] and vh == expected['v_sha256']
-    np.testing.assert_allclose(scales, expected['scales'], rtol=1e-12, atol=1e-14)
-    if not match:
-        raise RuntimeError('Regenerated POD training fields do not match data_manifest.json')
-    return grid, us, vs, scales, dict(u_sha256=uh, v_sha256=vh, hashes_match=match,
+    np.testing.assert_allclose(scales, np.asarray(expected['scales'])[::case_stride], rtol=1e-12, atol=1e-14)
+    if case_stride == 1:
+        match = uh == expected['u_sha256'] and vh == expected['v_sha256']
+        if not match:
+            raise RuntimeError('Regenerated POD training fields do not match data_manifest.json')
+    else:
+        match = None   # smoke-only subsample: the campaign hash covers all 64 cases and is not checked
+    return grid, us, vs, scales, dict(u_sha256=uh, v_sha256=vh, hashes_match=match, case_stride=case_stride,
                                       seconds_including_first_compile=time.perf_counter() - start,
-                                      seed=original['train_seed'], count=len(pars), intervals=grid.n, dt=dt)
+                                      seed=original['train_seed'], count=len(us), intervals=grid.n, dt=dt)
 
 
 @partial(jax.jit, static_argnames=('modes',))
@@ -85,8 +91,8 @@ def pod_gram_modes(snapshots, sqrt_mass, modes):
     return phi / sqrt_mass[:, None], jnp.sqrt(jnp.maximum(eigen, 0.)), jnp.sqrt(jnp.maximum(jnp.linalg.eigvalsh(gram), 0.))
 
 
-def build_pod(inputs, out, modes):
-    grid, us, vs, scales, manifest = regenerate_training_fields(inputs, out)
+def build_pod(inputs, out, modes, cfg):
+    grid, us, vs, scales, manifest = regenerate_training_fields(inputs, cfg)
     snapshots = np.concatenate((us / scales[:, 0, None, None], vs / scales[:, 1, None, None]), axis=1)
     snapshots = snapshots.reshape(-1, snapshots.shape[-1])
     sqrt_mass = jnp.sqrt(jnp.asarray(grid.mass().ravel()))
@@ -100,9 +106,10 @@ def build_pod(inputs, out, modes):
     manifest.update(modes=modes, snapshot_count=int(snapshots.shape[0]), orthogonality_defect_256=defect,
                     singular_values=singular.tolist(), energy_fraction_captured={
                         str(k): float(np.sum(singular[:k] ** 2) / np.sum(all_singular ** 2)) for k in (16, 40, 64, 128) if k <= modes},
-                    construction='Displacement and velocity snapshots of the 64 training trajectories at 256 intervals, each case '
-                                 'normalised by its initial displacement mass-norm and sqrt(2 E0); method of snapshots in the '
-                                 'trapezoid-mass inner product; modes are the leading left singular vectors.')
+                    construction='Displacement and velocity snapshots of the training trajectories at 256 intervals, each case '
+                                 'normalised by its initial displacement mass-norm and sqrt(2 E0); EXACT method of snapshots (eigh of the '
+                                 'Gram matrix) in the trapezoid-mass inner product; modes are the leading left singular vectors. This is '
+                                 'not the campaign-config randomized SVD.')
     if defect > 1e-8:
         raise RuntimeError('POD orthogonality defect at 256')
     return phi, manifest
@@ -127,13 +134,17 @@ def transfer_modes(phi256, grid):
 
 
 def sine_transfer_check(grid):
-    """A pure discrete sine mode must transfer exactly (gate 1e-12)."""
-    xy256 = Grid(256).coordinates()
-    mode = np.sin(3 * np.pi * xy256[..., 0]) * np.sin(2 * np.pi * xy256[..., 1])
-    xy = grid.coordinates()
-    exact = np.sin(3 * np.pi * xy[..., 0]) * np.sin(2 * np.pi * xy[..., 1])
-    got = np.asarray(transfer_modes(mode.reshape(-1, 1), grid)).reshape(grid.shape)
-    return float(np.max(abs(got - exact)))
+    """Pure discrete sine modes (low and near the 256-grid Nyquist) must transfer exactly; prolongation must round-trip."""
+    xy256 = Grid(256).coordinates(); xy = grid.coordinates(); worst = 0.
+    for kx, ky in ((3, 2), (200, 37), (251, 253)):
+        mode = np.sin(kx * np.pi * xy256[..., 0]) * np.sin(ky * np.pi * xy256[..., 1])
+        exact = np.sin(kx * np.pi * xy[..., 0]) * np.sin(ky * np.pi * xy[..., 1])
+        got = np.asarray(transfer_modes(mode.reshape(-1, 1), grid)).reshape(grid.shape)
+        worst = max(worst, float(np.max(abs(got - exact))))
+        if grid.n > 256:
+            back = restrict(np.asarray(dst_prolong(mode[None], grid.n))[0], grid.n, 256, 'dirichlet')
+            worst = max(worst, float(np.max(abs(back - mode))))
+    return worst
 
 
 def pod_banks(phi256, grid, ranks, mass, boundary):
@@ -159,9 +170,9 @@ def pod_banks(phi256, grid, ranks, mass, boundary):
 
 # ----------------------------------------------------------------------------- nested q heads
 def nested_model(full, head32, ladder, q, sample_codes_rng):
-    """h_{32+q}(z,y) = h32(z) + B_q y with orthonormal training-PCA directions 32:32+q."""
+    """h_{32+q}(z,y) = h32(z) + B_q y with the SCALED training-PCA directions 32:32+q (nested_head.build's convention)."""
     p = head32['p']
-    basis = jnp.asarray(ladder['basis'][:, 32:32 + q])
+    basis = jnp.asarray(ladder['standardized_linear'][:, 32:32 + q])
     enriched = {**p, 'linear': jnp.concatenate((p['linear'], basis), axis=1),
                 'l1': {**p['l1'], 'w': jnp.concatenate((p['l1']['w'], jnp.zeros((q, p['l1']['w'].shape[1]))), axis=0)}}
     codes = jnp.concatenate((jnp.asarray(head32['codes']), jnp.zeros((len(head32['codes']), q))), axis=1)
@@ -173,17 +184,20 @@ def nested_model(full, head32, ladder, q, sample_codes_rng):
         aa, bb, jj, cc = head_geometry(enriched, head32['frozen'], zz, ww, 'mlp')
         errors.append(max(float(jnp.max(abs(a - aa))), float(jnp.max(abs(b - bb))), float(jnp.max(abs(jac - jj[:, :32]))),
                           float(jnp.max(abs(curve - cc))), float(jnp.max(abs(jj[:, 32:] - basis))) if q else 0.))
-        s = np.linalg.svd(np.asarray(jj), compute_uv=False); ranks.append(float(s[-1] / s[0]))
+        s = np.linalg.svd(np.asarray(jj), compute_uv=False)
+        st = np.linalg.svd(np.asarray(full['transform']) @ np.asarray(jj), compute_uv=False)
+        ranks.append(float(min(s[-1] / s[0], st[-1] / st[0])))
     if max(errors) > 1e-10 or min(ranks) <= 1e-8:
         raise RuntimeError(f'Nested inclusion check failed at q={q}: {errors} {ranks}')
     transform = jnp.asarray(full['transform'])
-    linear = np.concatenate((ladder['standardized_linear'][:, :32], np.asarray(basis)), axis=1)
+    linear = ladder['standardized_linear'][:, :32 + q]
     candidate = dict(full, p=base.transform_head(enriched, transform), frozen=head32['frozen'],
                      common_inverse=jnp.linalg.pinv(transform @ jnp.asarray(linear)), common_center=transform @ jnp.asarray(ladder['center']),
                      fixed_codes=codes[np.linspace(0, len(codes) - 1, FIXED, dtype=int)])
     record = dict(q=q, internal_configuration_dimension=32 + q, internal_phase_dimension=2 * (32 + q),
                   max_inclusion_error=max(errors), minimum_sampled_rank_ratio=min(ranks),
-                  basis_sha256=base.array_sha(np.asarray(basis)), directions='orthonormal training-PCA columns 32:32+q',
+                  basis_sha256=base.array_sha(np.asarray(basis)), directions='scaled training-PCA columns 32:32+q (standardized_linear), as in nested_head.build',
+                  column_norms=np.linalg.norm(np.asarray(basis), axis=0).tolist(), rank_ratio_definition='min over untransformed and mesh-transformed joint Jacobian',
                   y_starts='affine projection start; zero start; six fixed training codes carry y=0')
     return previous.numerical_bank(candidate), record
 
@@ -403,7 +417,7 @@ def main():
     data = dict(config=cfg, provenance=meta, frozen_mathematics=frozen, mesh=n,
                 input_sha256={str(p.relative_to(args.inputs)): base.sha(p) for p in args.inputs.rglob('*') if p.is_file()},
                 training={}, pod={}, mesh_audits={}, nested_models=[], references=[], invocations=[], warmups=[],
-                decomposition=[], energy=[], consistency=[], gates={}, final_test_opened=False, complete=False)
+                decomposition=[], consistency=[], gates={}, final_test_opened=False, complete=False)
     save = lambda: base.save_json(out / 'result.json', data)
     # --- training ladder (PCA directions) and POD basis, both from the regenerated training data
     linear, center, manifest = dyn.regenerate_ladder(args.inputs, 'dirichlet', out, cfg)
@@ -412,11 +426,14 @@ def main():
         ladder = {k: f[k] for k in ('basis', 'standardized_linear', 'center', 'scales', 'singular_values')}
     with np.load(args.inputs / 'initializer32.npz') as f:
         saved32 = f['linear']
-    q_saved = np.linalg.qr(saved32)[0]; q_regen = np.linalg.qr(ladder['standardized_linear'][:, :32])[0]
-    manifest['saved_pca32_projector_defect'] = float(np.linalg.norm(q_saved @ q_saved.T - q_regen @ q_regen.T))
-    assert manifest['saved_pca32_projector_defect'] < 1e-8, manifest['saved_pca32_projector_defect']
+    manifest['saved_initializer32_max_abs_difference'] = float(np.max(abs(ladder['standardized_linear'][:, :32] - saved32)))
+    np.testing.assert_allclose(ladder['standardized_linear'][:, :32], saved32, atol=1e-12, rtol=0)
+    with np.load(args.inputs / 'initializer_trained_nested40.npz') as f:
+        saved40 = f['linear']
+    manifest['saved_initializer40_max_abs_difference'] = float(np.max(abs(ladder['standardized_linear'][:, :40] - saved40[:, :40])))
+    np.testing.assert_allclose(ladder['standardized_linear'][:, :40], saved40[:, :40], atol=1e-10, rtol=0)
     data['training'] = manifest; save()
-    phi256, pod_manifest = build_pod(args.inputs, out, max(cfg['pod_ranks']))
+    phi256, pod_manifest = build_pod(args.inputs, out, max(cfg['pod_ranks']), cfg)
     data['pod'] = pod_manifest; save()
     # --- models on this mesh
     full, models = previous.load_models(args.inputs, grid)
@@ -429,7 +446,11 @@ def main():
         head_models[f'nested_q{q}'], record = nested_model(full, head32, ladder, q, rng)
         data['nested_models'].append(record)
     phi, kk_pod, pods, pod_audits = pod_banks(phi256, grid, cfg['pod_ranks'], bank['mass'], jnp.asarray(base.damping_ratio(grid, 1.).ravel()))
-    data['mesh_audits'] = dict(bank=full['audits'], bank_assembly_seconds=full['assembly_seconds_including_first_compile'], pod=pod_audits); save()
+    eig = np.linalg.eigvalsh(np.asarray(bank['k']))
+    bank_audits = dict(full['audits'], stiffness_max_eigenvalue=float(eig[-1]), stiffness_min_eigenvalue_numpy=float(eig[0]),
+                       omega_max_dt_at_c1p15=float(1.15 * np.sqrt(eig[-1]) * cfg['head_dt']), rk4_linear_stability_bound=2 * np.sqrt(2.))
+    assert eig[0] > 0, 'bank stiffness not positive definite'
+    data['mesh_audits'] = dict(bank=bank_audits, bank_assembly_seconds=full['assembly_seconds_including_first_compile'], pod=pod_audits); save()
     np.savez_compressed(out / f'mesh_{n}.npz', g=np.asarray(bank['g']), mass=np.asarray(bank['mass']), stiffness=np.asarray(bank['k']),
                         damping=np.asarray(bank['d']), transform=full['transform'], pod_phi=np.asarray(phi), pod_stiffness=kk_pod)
     linear_banks = {'linear_bank64': bank, **pods}
@@ -484,12 +505,16 @@ def main():
                             arrays.update(save_fields(u, v))
                         if arrays:
                             np.savez_compressed(out / (ident + '.npz'), **arrays)
-                        else:
-                            row['field_artifact'] = f'reference_{n}_{case}.npz'
                         first[ident] = row['output_sha256']
                     else:
                         assert first[ident] == row['output_sha256'], 'Nondeterministic output: ' + ident
+                    if name == 'dst':
+                        row['field_artifact'] = f'reference_{n}_{case}.npz'
                     row['artifact_relation'] = 'Actual first timed output' if rep == 0 else 'Byte-identical full timed fields, both hashes checked'
+                    if not name.startswith(('head_', 'trained_', 'nested_')):
+                        assert row['completed'], 'non-head arm did not complete: ' + ident
+                    if name.startswith(('cg_', 'cgdt_')):
+                        assert row['cg_all_converged'] and row['cg_cap_exits'] == 0, 'CG did not meet its tolerance: ' + ident
                     data['invocations'].append(row); save()
             print('decomposition', n, case, flush=True)
             data['decomposition'].append(dict(intervals=n, case=case, layers=decomposition(head_models, linear_banks, su, sv, grid, par[5], cfg))); save()
@@ -519,7 +544,9 @@ def main():
             rel = abs(got - g['value']) / abs(g['value'])
             checks.append(dict(**g, measured=got, relative_difference=rel, passed=rel <= 1e-9))
         data['gates'] = dict(retained_value_checks=checks, all_passed=all(x['passed'] for x in checks), count=len(checks))
-        print('gates', json.dumps(data['gates']), flush=True)
+        print('gates', json.dumps(data['gates']), flush=True); save()
+        if not data['gates']['all_passed']:
+            raise RuntimeError('Retained-value gate failed; see result.json gates')
     data['complete'] = True; data['output_sha256'] = {p.name: base.sha(p) for p in out.glob('*.npz')}; save()
     print('w_ladder_complete', flush=True)
 

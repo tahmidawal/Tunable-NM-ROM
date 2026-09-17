@@ -13378,3 +13378,9 @@ Worktree `worktrees/2026-09-17-b-eqtop`, branch `exp/2026-09-17-b-eqtop`, forked
 - `b-panel` drops `experiments/b-eqtop/certified-rules/` into its full $256^2$ re-run; the `construction.status` field must travel with each rule and the paper must say which rungs are single-draw.
 
 Source-generated report: `experiments/b-eqtop/reports/2026-09-17-b-eqtop.md` (SHA256 `9398ad130a373fa55c85c2d390c6d95ebbb035fdab7f7ff08cf7db31b41c0d2e`) with `summary.json` and its generator beside it; audits `experiments/b-eqtop/checks/bet101-audit.json`, `bet201-audit.json`, `bet301-audit.json`; self-audit of the report in place of Codex: `experiments/b-eqtop/reports/self-audit-report.md`; archives `experiments/b-eqtop/artifacts/bet101`, `bet201`, `bet301`; exported rule set for `b-panel`: `experiments/b-eqtop/certified-rules/` (`PROVENANCE.json`, `SHA256SUMS`); the draw bookkeeping shared by report, export, self-audit and this entry: `experiments/b-eqtop/draws.py`. Jobs used: 3 of 8, none retracted.
+
+## 2026-09-17
+
+### b-eqtop — addendum to the closing entry: the 84 timed-ladder rows restored in the final `summary.json`
+
+Addendum, one correction of the deliverable, no number changed: the final `reports/summary.json` at `fc7ca639` had dropped the 84 timed-ladder rows of job 3780164 (evolved 1.8891 → 0.5389 %, 59.1 → 722.2 ms, dense twins and cost ratios) that the interim file at `d6071e3c` carried, and the report's "rebuilt ladders" section was empty — the ladder loop sat under an interim-only branch of the generator. Fixed at `8542c604`: the rows are back, verified identical to the interim values, each carrying `construction_status` (confirmed 3/3, 3/3, 2/2 at  = 0, 16, 32$; marginal at  = 1024$ (2/6),  = 2048$ (4/5),  = 2048$ (1/5) at  = 64, 128, 256$); the report section is restored with the same wording; report SHA256 now `fcfb36bf6ea4f0a5f68229ca7fde2f5a8e415834f38c0c86a924415748463347`; self-audit 21/21.

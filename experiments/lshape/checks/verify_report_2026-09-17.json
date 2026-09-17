@@ -3,7 +3,7 @@
     "every_timed_row_is_keyed_by_job_and_block": {
       "pass_": true,
       "detail": {
-        "rows": 820,
+        "rows": 1013,
         "unkeyed": 0
       }
     },
@@ -41,6 +41,16 @@
             "freebank@head_sdf_R512_K32",
             "pod16",
             "pod32"
+          ],
+          "('3789568', 512)": [
+            "fom_cg_gpu_r0.01",
+            "fom_splu",
+            "neural_q128@head_sdf_R512_K16",
+            "neural_q64@head_sdf_R512_K16",
+            "pod128",
+            "pod16",
+            "pod32",
+            "pod64"
           ]
         },
         "report": {
@@ -56,6 +66,16 @@
           "('3784663', 256)": [
             "fom_splu",
             "neural_q0@head_smooth_R256_K16",
+            "neural_q64@head_sdf_R512_K16",
+            "pod128",
+            "pod16",
+            "pod32",
+            "pod64"
+          ],
+          "('3789568', 512)": [
+            "fom_cg_gpu_r0.01",
+            "fom_splu",
+            "neural_q128@head_sdf_R512_K16",
             "neural_q64@head_sdf_R512_K16",
             "pod128",
             "pod16",
@@ -82,7 +102,7 @@
       "pass_": true,
       "detail": {
         "cases": 32,
-        "worst_relative_field_difference": 4.061408280067816e-14,
+        "worst_relative_field_difference": 4.061408280067815e-14,
         "worst_same_grid_error_difference": 4.85722573273506e-17,
         "bitwise_identical": false
       }
@@ -110,7 +130,7 @@
     "all_gates_passed": {
       "pass_": true,
       "detail": {
-        "gates": 10
+        "gates": 12
       }
     },
     "all_jobs_gpu_x64_highest_complete": {
@@ -140,6 +160,13 @@
           ],
           [
             "lsh06",
+            "gpu",
+            true,
+            "highest",
+            true
+          ],
+          [
+            "lsh07",
             "gpu",
             true,
             "highest",
@@ -183,6 +210,11 @@
           "failed": []
         },
         "lsh06": {
+          "passed": true,
+          "checks": 13,
+          "failed": []
+        },
+        "lsh07": {
           "passed": true,
           "checks": 13,
           "failed": []

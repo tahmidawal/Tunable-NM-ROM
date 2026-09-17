@@ -4,29 +4,34 @@ Codex is unavailable until 2026-09-19 11:33 (coordinator-verified), which is aft
 reporting window, so this written self-audit substitutes for the independent-auditor pass that
 DESIGN.md §9 requires. The substitution is recorded as DESIGN.md §A5 and §A8.
 
+**Updated after `lsh07` (job 3789568, N=512) landed and was collected, audited, archived, and
+folded into the report.** Every count below is the current one, after the update; the lane is
+now closing (job 8 of 8 used: `lsh01` retracted, `lsh02` train, `lsh03`–`lsh07` solve).
+
 Every claim below names the JSON field it rests on and the check that was run against it. The
 checks are executed by `../checks/verify_report_2026-09-17.py`, which does **not** import the
 report generator, and their verdicts are stored in `../checks/verify_report_2026-09-17.json`.
-The four per-job `audit.json` files come from `../lsh_audit_np.py`, which imports neither JAX nor
-any driver module and recomputes the operator, the reference solutions and every reported error
-from the saved fields.
+The five per-job `audit.json` files (`lsh02`–`lsh04`, `lsh06`, `lsh07`) come from
+`../lsh_audit_np.py`, which imports neither JAX nor any driver module and recomputes the
+operator, the reference solutions and every reported error from the saved fields.
 
 ## Claims and their evidence
 
 | # | claim in the report | field it rests on | check | verdict |
 |---|---|---|---|---|
 | 1 | every timed number belongs to one identified job and one test-mode block | `summary.json` rows `job_id`, `test_modes`, `source_sha` | `every_timed_row_is_keyed_by_job_and_block`, `no_duplicate_timed_rows` | pass |
-| 2 | the non-dominated sets are what the report says | `result.json:invocations[].same_grid_error`, `.total_seconds` | `nondominated_sets_match_independent_audit` — the sets recomputed by `lsh_audit_np.py` equal the report's, for all four (job, mesh) pairs | pass |
+| 2 | the non-dominated sets are what the report says | `result.json:invocations[].same_grid_error`, `.total_seconds` | `nondominated_sets_match_independent_audit` — the sets recomputed by `lsh_audit_np.py` equal the report's, for all five (job, mesh) pairs, including `(3789568, 512)` | pass |
 | 3 | every worst error and median complete-query time in the report is the raw data | `result.json:invocations` | `report_values_recomputed_from_raw_invocations`, worst relative difference $0$ | pass |
-| 4 | every reported error is reproducible from the stored output fields | the per-invocation `.npz` artifacts | audit check `same_grid_errors_recomputed_from_saved_fields` (and `physical_...`), worst difference $0.0$ in all three solve jobs | pass |
+| 4 | every reported error is reproducible from the stored output fields | the per-invocation `.npz` artifacts | audit check `same_grid_errors_recomputed_from_saved_fields` (and `physical_...`), worst difference $0.0$ in all four solve jobs (`lsh03`, `lsh04`, `lsh06`, `lsh07`) | pass |
 | 5 | the free rung is a linear model that runs no nonlinear solve | `invocations[].iterations`, `arm_setup[].free_rung` | `free_rung_runs_no_lm`, max iterations $0$ | pass |
 | 6 | the free rung sits on its own bank floor | `reconstruction[].bank_projection.worst` | `free_rung_reaches_its_bank_floor`, ratio $1.003$ | pass |
 | 7 | the free rung is head-independent | the two heads' output fields | `free_rung_is_head_independent_to_roundoff`, worst relative field difference $4.06\times10^{-14}$; **not** bitwise, correcting §A6 (now §A9) | pass, with the correction |
 | 8 | timing repetitions measure the same computation | `invocations[].field_sha256` | `timed_repetitions_are_bit_identical` | pass |
-| 9 | every operator gate passed in every job | `gates[].passed` | `all_gates_passed`, 12 gate records | pass |
+| 9 | every operator gate passed in every job | `gates[].passed` | `all_gates_passed`, 12 gate records (10 before `lsh07`, +2 from `lsh07`'s G-FOM-1/2/3 and G-FOM-5 at N=512) | pass |
 | 10 | every job ran on a GPU in float64 at `highest` and finished | `backend`, `x64`, `matmul_precision`, `complete` | `all_jobs_gpu_x64_highest_complete` | pass |
 | 11 | the validation-versus-development gap quoted beside the headline is the training job's own | `lsh02:head_arms[].best_found_validation/development` | `validation_gap_matches_training_json` | pass |
-| 12 | the independent NumPy audits pass | `artifacts/*/audit.json` | `independent_numpy_audits_pass`, 13/13 checks on each solve job and 19/19 on the training job | pass |
+| 12 | the independent NumPy audits pass | `artifacts/*/audit.json` | `independent_numpy_audits_pass`, 13/13 checks on each of the four solve jobs and 19/19 on the training job | pass |
+| 13 | the $N=512$ block is the same $M=257$ block as `lsh03`/`lsh04`, not a new one | `summary.json` rows with `mesh=512`, `test_modes` | `every_timed_row_is_keyed_by_job_and_block`, `no_duplicate_timed_rows` — `lsh07`'s 512 rows carry `test_modes=257` and collide with nothing | pass |
 
 ## What this audit does not cover
 
@@ -37,10 +42,13 @@ from the saved fields.
 - **Cross-block costs.** The report refuses these by construction, and the generator now aborts
   rather than merge two jobs in one block, but nothing checks that a future reader obeys the
   refusal.
-- **$N=512$.** `lsh07` (job 3789568) was running when this report was generated. Its numbers are
-  absent, and the mesh trend in the report is therefore three meshes wide, not four.
 - **The $M=257$ free rung.** Not constructible ($M < R$), so the $M=1024$ rung has no same-block
-  $M=257$ twin and the two cannot be compared on cost.
+  $M=257$ twin and the two cannot be compared on cost, at any mesh including $N=512$.
+- **$N=512$ is now included** (`lsh07`, job 3789568, COMPLETED 28m31s). The mesh trend is four
+  meshes wide. The cost margin widens as the direct solve's cost grows with the mesh: `fom_splu`
+  is 1.282, 2.475, 8.386, 36.505 ms at $N=64,128,256,512$, while the best non-dominated reduced
+  arm (`neural_q64@head_sdf_R512_K16`) is 2.846, 2.806, 3.028, 4.801 ms — the direct-to-reduced
+  cost ratio widens from 2.77x at $N=256$ to 7.60x at $N=512$, as the design anticipated.
 
 ## Claims that were weakened or retracted during this audit
 

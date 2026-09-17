@@ -1,0 +1,38 @@
+{
+  "mode": "solve",
+  "checks": {
+    "complete": true,
+    "backend_gpu": true,
+    "x64": true,
+    "precision_highest": true,
+    "gates_recorded_pass": true,
+    "development_cohort_reproduced": true,
+    "operator_symmetric": true,
+    "operator_independent_assembly": true,
+    "reference_residual_below_limit": true,
+    "same_grid_errors_recomputed_from_saved_fields": true,
+    "physical_errors_recomputed_from_saved_fields": true,
+    "every_subject_case_has_all_reps": true,
+    "tight_iterative_solves_match_direct": true
+  },
+  "detail": {
+    "cohort_max_abs_difference": 3.469446951953614e-18,
+    "worst_reference_residual": 1.1821118243892692e-12,
+    "worst_reference_residual_over_limit": 0.1556068891007346,
+    "worst_same_grid_difference": 5.9984456026774904e-15,
+    "worst_physical_difference": 7.285960571846994e-15,
+    "nondominated_complete_ms": {
+      "512": [
+        "fom_splu",
+        "pod64",
+        "pod128",
+        "pod32",
+        "pod16",
+        "neural_q128@head_sdf_R512_K16",
+        "neural_q64@head_sdf_R512_K16",
+        "fom_cg_gpu_r0.01"
+      ]
+    }
+  },
+  "passed": true
+}

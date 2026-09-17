@@ -1,0 +1,63 @@
+{
+  "attempt": "lsh0x",
+  "intervals": [
+    64,
+    128,
+    256,
+    512
+  ],
+  "fine_intervals": 1024,
+  "requested_modes": 257,
+  "mode_seed": 0,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "correction_ladder": [
+    0,
+    32,
+    64,
+    128
+  ],
+  "free_bank_rule": "q = R_total is added for a primary only where M > R_total; otherwise reported as not constructible at M = 257",
+  "cohorts": {
+    "development": {
+      "seed": 20260917,
+      "draw": 64,
+      "count": 32
+    },
+    "training": {
+      "seed": 0,
+      "draw": 4608,
+      "count": 3072
+    }
+  },
+  "pod_count": 3072,
+  "pod_ranks": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "pod_block": 512,
+  "cg_gpu_rtols": [
+    0.01,
+    0.0001,
+    1e-10
+  ],
+  "pcg_ic0_rtols": [
+    0.01,
+    1e-10
+  ],
+  "cg_maxiter": 100000,
+  "reference_residual_limit": 1e-12,
+  "reference_residual_roundoff_factor": 1.0,
+  "reference_residual_rule": "G-FOM-4 (DESIGN A7): the accepted relative residual of the sparse-direct + 2-refinement reference is max(reference_residual_limit, factor * eps * ||A||_inf * ||u||_2 / ||f||_2). The second term is the round-off floor of evaluating ||Au - f|| in f64; it grows like N^2 and the measured residual sits at a mesh-independent 0.156x of it, so a fixed absolute bound is a mesh-dependent gate. With factor 1.0 the gate is unchanged (still 1e-12) at N <= 256 and reachable at N = 512.",
+  "solver_agreement_limit": 1e-08,
+  "repetitions": 3,
+  "order_seed": 911717,
+  "burn_seconds": 0.1,
+  "timing_contract": "host (N+1)^2 nodal source array in to host (N+1)^2 nodal solution array out, including gather/projection, initialisation, solve and decode/scatter; identical for every subject"
+}

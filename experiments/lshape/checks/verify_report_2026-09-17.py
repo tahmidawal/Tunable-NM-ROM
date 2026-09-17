@@ -31,7 +31,7 @@ chk('no_duplicate_timed_rows', not dups, dict(duplicates=dups[:5]))
 
 # ---- 3. the non-dominated sets equal the ones the independent NumPy audit computed
 audit_nd, report_nd = {}, {}
-for att, job in (('lsh03', 3784662), ('lsh04', 3784663), ('lsh06', 3784910)):
+for att, job in (('lsh03', 3784662), ('lsh04', 3784663), ('lsh06', 3784910), ('lsh07', 3789568)):
     au = json.loads((H / f'artifacts/{att}/audit.json').read_text())
     for n, names in au['detail']['nondominated_complete_ms'].items():
         audit_nd[(str(job), int(n))] = set(names)
@@ -44,7 +44,7 @@ chk('nondominated_sets_match_independent_audit', audit_nd == report_nd,
 
 # ---- 4. recompute worst error and median complete-ms straight from the raw invocations
 worst_dev = 0.0
-for att, job in (('lsh03', 3784662), ('lsh04', 3784663), ('lsh06', 3784910)):
+for att, job in (('lsh03', 3784662), ('lsh04', 3784663), ('lsh06', 3784910), ('lsh07', 3789568)):
     d = json.loads((H / f'artifacts/{att}/result.json').read_text())
     raw = {}
     for x in d['invocations']:
@@ -91,7 +91,7 @@ chk('free_rung_runs_no_lm', all(x['iterations'] == 0 for x in f16 + f32),
 
 # ---- 6. every reported gate passed, in every job, and the backend was a GPU at x64/highest
 gates, env = [], []
-for att in ('lsh02', 'lsh03', 'lsh04', 'lsh06'):
+for att in ('lsh02', 'lsh03', 'lsh04', 'lsh06', 'lsh07'):
     d = json.loads((H / f'artifacts/{att}/result.json').read_text())
     gates += [(att, g.get('intervals'), g['passed']) for g in d['gates']]
     env.append((att, d['backend'], d['x64'], d['matmul_precision'], d['complete']))
@@ -110,9 +110,9 @@ chk('validation_gap_matches_training_json', row_v == max(vw) and row_d == max(dw
          arms=len(tr['head_arms']), validation_cases=len(tr['cohorts']['training']['validation']),
          development_cases=tr['cohorts']['development']['count']))
 
-# ---- 8. all four independent audits pass every one of their own checks
+# ---- 8. all five independent audits pass every one of their own checks
 ap = {}
-for att in ('lsh02', 'lsh03', 'lsh04', 'lsh06'):
+for att in ('lsh02', 'lsh03', 'lsh04', 'lsh06', 'lsh07'):
     au = json.loads((H / f'artifacts/{att}/audit.json').read_text())
     ap[att] = dict(passed=au['passed'], checks=len(au['checks']),
                    failed=[k for k, v in au['checks'].items() if not v])

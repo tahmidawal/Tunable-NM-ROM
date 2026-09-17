@@ -429,10 +429,71 @@ def prediction(W, au):
     W(table(['q', 'capped fit states (bpn201/bpn202)', 'capped ρ max', 'uncapped fit states (this job)',
              'uncapped ρ max', 'uncapped basis', 'certified primary'], rows))
     good = [x for x in t if x['certified_primary']]
+    named = [x for x in t if x['q'] in (128, 256)]
     W(f"\n{len(good)} of {len(t)} transferred rungs certify on the primary bar in this job under the uncapped "
       f"count, against 3 of 6 under the capped one. Rungs still not primary-certified: "
       + (', '.join(f"q = {x['q']} (ρ max {f(x['certification']['rho_max'])}, basis {x['basis']})"
                    for x in t if not x['certified_primary']) or 'none') + '.\n')
+    if named:
+        held = [x for x in named if not x['certified_primary']]
+        W(f"\n**Scoring §A5.2.** The two rungs it named (q = "
+          + ', '.join(str(x['q']) for x in named) + ") came back "
+          + ', '.join(f"q = {x['q']}: {x['basis']} (ρ max {f(x['certification']['rho_max'])} against the "
+                      f"{f(x['rho_bar'])} bar)" for x in named)
+          + f". The predicted **outcome** therefore {'held' if len(held) == len(named) else 'did not hold'}: "
+          + f"{len(held)} of the {len(named)} named rungs are not primary-certified. "
+            "Its **mechanism** does not survive this job, and that is the part to carry forward: §A5.2 blamed the "
+            "fit-state starvation b-eqtop identified, and DESIGN.md §A7 removed exactly that — every rung here is "
+            f"fitted on {named[0]['fit_states_used']} states, not the 14 and 8 the capped convention gave — yet the "
+            "same rungs still miss the bar. Fit-state starvation is therefore not a sufficient explanation for the "
+            "top transferred rungs at this mesh; what remains is the transfer itself (the mapped support loses "
+            "weight mass: see the support m against nonzero m column) and the 1024² reachable population. "
+            "The comparison needs that care: the capped and uncapped refits are not the same experiment, so the "
+            "capped ρ column above is context, not a controlled A/B.\n")
+
+
+def crossover(W, audits):
+    """Within-job reduced-versus-full-order cost ratios at each mesh, compared as ratios only."""
+    if len(audits) < 2:
+        return
+    W('## The mesh trend: reduced against full-order, inside each job\n')
+    W('Every entry below is a ratio of two timings **from the same allocation on the same GPU**. The raw '
+      'millisecond columns of two different jobs are never compared: the meshes ran on different GPUs '
+      '(a ratio across them would be meaningless), so only the within-job ratios are put side by side, and '
+      'even those carry the different hardware. The question they answer is whether reduced queries buy more, '
+      'relative to the full-order solver they must beat, as the mesh is refined.\n')
+    hdr = ['mesh', 'job', 'GPU', 'cheapest admissible reduced', 'its GPU ms', 'its evolved %',
+           'cheapest full-order', 'its GPU ms', 'its evolved %', 'reduced / cheapest FOM',
+           'converged FOM `fft_tight` ms', 'reduced / `fft_tight`', 'reduced subjects on the admissible frontier']
+    rows, ratios = [], {}
+    for au in audits:
+        red = [x for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free') and x['admissible']]
+        fom = [x for x in au['arms'] if x['family'] == 'fom']
+        if not red or not fom:
+            continue
+        cr = min(red, key=lambda z: z['median_gpu_ms'])
+        cf = min(fom, key=lambda z: z['median_gpu_ms'])
+        tight = next((x for x in fom if x['arm'] == 'fft_tight'), None)
+        nd = set(au['nondominated']['gpu_evolved']['admissible'])
+        nred = [x['arm'] for x in red if x['arm'] in nd]
+        r1 = cr['median_gpu_ms'] / cf['median_gpu_ms']
+        r2 = cr['median_gpu_ms'] / tight['median_gpu_ms'] if tight else None
+        ratios[au['intervals']] = (r1, r2, len(nred))
+        rows.append([f"{au['intervals']}²", f"`{au['job_id']}`", au['gpu'], f"`{cr['arm']}`", f(cr['median_gpu_ms'], 1),
+                     f(cr['worst_evolved_percent']), f"`{cf['arm']}`", f(cf['median_gpu_ms'], 1),
+                     f(cf['worst_evolved_percent']), f(r1, 3), f(tight['median_gpu_ms'], 1) if tight else '—',
+                     f(r2, 3) if r2 is not None else '—', f"{len(nred)} ({', '.join(nred) or 'none'})"])
+    W(table(hdr, rows))
+    ms = sorted(ratios)
+    if len(ms) >= 2:
+        lo, hi = ms[0], ms[-1]
+        a0, a1 = ratios[lo], ratios[hi]
+        W(f"\nFrom {lo}² to {hi}², the cheapest admissible reduced query goes from {f(a0[0], 3)}× the cheapest "
+          f"full-order setting of its own job to {f(a1[0], 3)}× — a factor of {f(a0[0] / a1[0], 2)} in the reduced "
+          f"query's favour — and from {f(a0[1], 3)}× to {f(a1[1], 3)}× the converged `fft_tight` solve of its own "
+          f"job, a factor of {f(a0[1] / a1[1], 2)}. The frontier follows: {a0[2]} reduced subjects are "
+          f"non-dominated at {lo}², {a1[2]} at {hi}². That is the crossover this lane was built to measure, and it "
+          f"is visible only in the ratios — not in the raw milliseconds, which are different GPUs.\n")
 
 
 def glossary(W):
@@ -460,6 +521,10 @@ def glossary(W):
         ('strict', 'btq201\'s rule: every gradient ≤ tol regardless of residual; differs from conv. only for attained (square) initial fits.'),
         ('admissible', 'eligible for the reported frontier: converged reduced subjects with certified rules, parity-passing `fast`, and all `fom` / `fno` rows.'),
         ('non-dominated', 'no other subject in the same job is both cheaper and more accurate.'),
+        ('dense twin', 'for an EQ arm, the arm at the same q and the same M with the exact (dense) advection sum, timed in the same job at tol 1e-06; `dense / EQ` is the within-job quadrature speedup at fixed model and test space.'),
+        ('fit states', 'the number of reachable states the rule\'s weights were fitted on. b-eqtop found this, not the node count m, to be the binding constraint on whether a rule certifies.'),
+        ('support m / nonzero m', 'for a transferred rule: the number of mapped nodes offered to the refit, and the number that kept a strictly positive weight.'),
+        ('transferred rule (`eqxfer`)', 'a 256²-grid rule\'s node set mapped to the same physical points on the finer grid, its weights refitted by nonnegative least squares at that mesh, and certified there by held-out ρ on disjoint trajectories.'),
         ('ladder spans', 'over the converged non-dominated rungs of that ladder on the evolved metric.'),
         ('same allocation', 'the FNO is timed by a second process in the same Slurm job on the same GPU after the JAX process exits.'),
     ]:
@@ -483,6 +548,7 @@ def main():
       'full-order controls timed in that same allocation with the same reference; every number is generated from the '
       'audit JSONs named at the end. Numbers are development-cohort (six opened cases), one checkpoint, one training '
       'seed; the sealed cohorts are untouched. **Status: provisional as paper claims until the coordinator assembles T5.**\n')
+    W('The 256\u00b2 table below is `bpn301`\u2019s and **replaces `bpn101`\u2019s wholesale** (DESIGN.md \u00a7A5.1): `bpn301` re-ran the whole panel \u2014 every full-order control, POD rank, dense rung and the FNO \u2014 in one allocation while carrying both quadrature rule sets as arms, so the two sets are compared in-allocation rather than across jobs. `bpn101` is not withdrawn; it stays in `artifacts/bpn101/` as the record of what the superseded rules gave. The 1024\u00b2 table is `bpn203`\u2019s, the third attempt at that mesh; `bpn201` and `bpn202` are retracted and produced no timed number (DESIGN.md \u00a7A6, \u00a7A7).\n')
     for au in audits:
         red = [x for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free') and x['admissible']]
         nd = set(au['nondominated']['gpu_evolved']['admissible'])
@@ -539,6 +605,7 @@ def main():
                     summary.append(dict(mesh=au['intervals'], subject='*', family='*', q_or_k=None, M=None, quadrature=None,
                                         tol=None, metric=f'nondominated_{key}_{which}', value=v[which],
                                         job_id=au['job_id'], source_sha=au['result_sha256']))
+    crossover(W, audits)
     glossary(W)
     W('---\n')
     W('Generated by `experiments/b-panel/reports/generate_panel.py` from: ' + ', '.join(

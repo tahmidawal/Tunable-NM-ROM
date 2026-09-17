@@ -92,10 +92,14 @@ rung is within a few percent of the mesh's own discretisation error, so
 the knob moves the reduction error, not the physical error, at the
 meshes we ran; its quadrature
 rules are validated on reachable states, not by their fitting residual;
-and its wins are cost-only and measured in the same job: $\nLshapeNeuralCheaper\times$ and
-$\nLshapeNeuralCheaperFiveTwelve\times$ cheaper than a sparse direct solve
-on an L-shaped domain at $256^2$ and $512^2$, and non-dominated on the
-evolved-times metric at $1024^2$ on Burgers. Nothing reduced is on the
+and its cost results are measured in the same job: on an L-shaped Poisson
+domain, where no fast transform applies, reduced models are cheaper than
+the cheapest full-order solve by $\nLshapeNeuralCheaperVsCheapestTwoFiftySix\times$
+at $256^2$ and $\nLshapeNeuralCheaperVsCheapestFiveTwelve\times$ at $512^2$ for
+the neural head, and by more for plain POD-128, which is cheaper than the
+head at both meshes and $\nLshapePodOverHeadErrFiveTwelve\,\%$ less accurate; at
+$1024^2$ on Burgers the three cheapest rungs are non-dominated on the
+evolved-times metric. Nothing reduced is on the
 frontier at $256^2$, where a tuned full-order solver and a neural operator
 trained on the same data are both cheaper and more accurate; and on
 Poisson, heat and waves the family collapses to a linear model, which
@@ -180,11 +184,14 @@ states, and a matrix-free JAX implementation \citep{Bradbury2018JAX}.
       non-dominated set once a tuned full-order solver and a neural
       operator on the same data are in the job; on Poisson, heat and
       waves the top rung is the linear model and also the cheapest
-      point. The wins are cost-only: $\nLshapeNeuralCheaper\times$ and
-      $\nLshapeNeuralCheaperFiveTwelve\times$ cheaper than a sparse direct
-      solve on an L-shaped domain at $256^2$ and $512^2$, and
-      non-dominated at $1024^2$ on Burgers on the evolved-times metric
-      only (\S\ref{sec:results:operators}, \S\ref{sec:results:collapse}).
+      point. The cost results are for reduced models in general: on an L-shaped
+      Poisson domain, where no fast transform applies, the head is
+      $\nLshapeNeuralCheaperVsCheapestTwoFiftySix\times$ and
+      $\nLshapeNeuralCheaperVsCheapestFiveTwelve\times$ cheaper than the
+      cheapest same-job full-order solve at $256^2$ and $512^2$ and POD-128
+      cheaper still; and at $1024^2$ on Burgers the cheapest rungs are
+      non-dominated on the evolved-times metric only
+      (\S\ref{sec:results:operators}, \S\ref{sec:results:collapse}).
 \end{enumerate}
 
 \paragraph{What we do not claim.} No speedup over an efficient
@@ -826,33 +833,57 @@ $\nNsOracleBar$, so no ladder was built; the limit is head
 generalisation, and at $t=0$ POD-32 is the more accurate of the two
 (POD/oracle $\nNsKthirtyTwoPodOverOracleTzero$), a clean case of linear
 beating nonlinear where the data lie in a low-dimensional linear
-subspace. So the correction-rank trade needs \emph{both} a residual
-nonlinear in the coefficients and a manifold that beats POD held-out;
-Poisson, heat and waves lack the first, this cell the second, and Burgers
-on the square had both yet still lost on cost.
+subspace. So the correction-rank trade, as a trade between rungs, needs a
+residual nonlinear in the coefficients and a manifold that beats POD
+held-out; Poisson, heat and waves lack the first, this cell the second,
+and Burgers on the square had both yet still lost on cost. Whether a
+reduced solve wins on cost at all is a separate question, decided by
+whether a fast transform exists, and the L-shape below is that case, on a
+linear residual.
 
-\textbf{On the L-shaped domain the trade does exist, and it widens with
-the mesh.} In plain terms: the reduced solve becomes the cheaper option
-between $128^2$ and $256^2$, and by $512^2$ it is
-$\nLshapeNeuralCheaperFiveTwelve\times$ cheaper than the direct solve at
-about two percent error. No fast transform applies there, so the
-full-order comparator is a sparse direct solve whose cost climbs with the
-mesh ($\nLshapeSpluMsSixtyFour$ to $\nLshapeSpluMsFiveTwelve$\,ms from
-$64^2$ to $512^2$) while the head at $q=64$ stays nearly flat
-(\nLshapeNeuralMsTrend\,ms). Table~\ref{tab:lshape-solve} gives the
-non-dominated set per mesh, one job per mesh, every ratio inside its job:
-at $256^2$ the head at $q=64$ reaches $\nLshapeNeuralErr\,\%$ at
-$\nLshapeNeuralMs$\,ms against $\nLshapeSpluMsTwoFiftySix$\,ms,
-$\nLshapeNeuralCheaper\times$ cheaper; at $512^2$ it reaches
-$\nLshapeNeuralErrFiveTwelve\,\%$ at $\nLshapeNeuralMsFiveTwelve$\,ms
-against $\nLshapeSpluMsFiveTwelve$\,ms,
-$\nLshapeNeuralCheaperFiveTwelve\times$ cheaper, and is the most accurate
-reduced subject on the set. The win is on cost alone: no reduced arm
-beats the direct solve on accuracy at any mesh, nothing is claimed beyond
-$512^2$, and every L-shape error quoted is the optimistic end of a range
-($\nLshapeDevelopmentWorst\,\%$ worst best-found on development sources
-against $\nLshapeValidationWorst\,\%$ on validation sources,
-Table~\ref{tab:lshape}).
+\begin{table}[t]
+\centering
+\caption{L-shaped Poisson, solve layer at $M=257$, one job per mesh
+(complete-query ms; every ratio inside its job). The cheapest same-job
+full-order arm, POD-128 and the neural head at $q=64$, with each reduced
+arm's cost margin against the sparse direct solve and against the
+cheapest full-order arm; the head rows are printed even where dominated.
+The full non-dominated sets are in Table~\ref{tab:lshape-solve}.}
+\label{tab:lshape-main}
+\resizebox{\linewidth}{!}{\input{tables/T18m_lshape_main}}
+\end{table}
+
+\textbf{On the L-shaped domain reduced models are the cheaper option, and
+POD is cheaper than the head.} This is Poisson, a linear residual, so the
+cell illustrates the no-fast-transform case, not the structural condition
+above. The full-order comparators are a sparse direct solve and CG;
+the direct solve's cost climbs with the mesh ($\nLshapeSpluMsSixtyFour$
+to $\nLshapeSpluMsFiveTwelve$\,ms from $64^2$ to $512^2$), and at $512^2$
+CG at tolerance $10^{-2}$ is the cheaper full-order arm
+($\nLshapeCheapestFomMsFiveTwelve$\,ms at
+$\nLshapeCheapestFomErrFiveTwelve\,\%$, more accurate than every reduced
+arm), while the reduced arms stay nearly flat across meshes (a cross-job
+trend: \nLshapeNeuralMsTrend\,ms for the head, Table~\ref{tab:lshape-main}).
+Every ratio is inside its job. At $256^2$ the head at $q=64$ reaches
+$\nLshapeNeuralErr\,\%$ at $\nLshapeNeuralMs$\,ms,
+$\nLshapeNeuralCheaperVsCheapestTwoFiftySix\times$ cheaper than the
+cheapest full-order arm (the direct solve); POD-128 reaches
+$\nLshapePodErrTwoFiftySix\,\%$ at $\nLshapePodMsTwoFiftySix$\,ms,
+$\nLshapePodCheaperVsCheapestTwoFiftySix\times$ cheaper. At $512^2$ the
+head is $\nLshapeNeuralCheaperVsCheapestFiveTwelve\times$ cheaper than CG
+($\nLshapeNeuralCheaperFiveTwelve\times$ than the direct solve) and
+POD-128 $\nLshapePodCheaperVsCheapestFiveTwelve\times$
+($\nLshapePodCheaperFiveTwelve\times$). The head is on the non-dominated
+set only because it is more accurate: it costs
+$\nLshapeHeadOverPodCostTwoFiftySix$--$\nLshapeHeadOverPodCostFiveTwelve\,\%$
+more than POD-128 for $\nLshapePodOverHeadErrFiveTwelve\,\%$ lower error.
+Nothing here is a neural-manifold win: no reduced arm beats the
+full-order solves on accuracy at any mesh, and nothing is claimed beyond
+$512^2$. The same banks' best-found reconstruction degrades from
+$\nLshapeDevelopmentWorst\,\%$ on the 32 development sources to
+$\nLshapeValidationWorst\,\%$ on the 461 validation sources
+(Table~\ref{tab:lshape}); no solve sweep on the validation cohort has
+been run.
 
 \FloatBarrier
 % =====================================================================
@@ -894,14 +925,16 @@ spanning $\nQxmErrSpan\times$ in error for $\nQxmCostSpan\times$ in cost on
 model: its evaluation grid moves cost, not what the model can represent
 (\S\ref{sec:results:operators}). The framework does not beat a tuned full-order solver or
 a neural operator trained on the same data at $256^2$ on the square, and
-we report that; its wins are cost-only, on the L-shaped domain where no
-fast transform applies and, on the evolved-times metric, at $1024^2$.
+we report that; its cost results are on the L-shaped domain, where no
+fast transform applies and plain POD is cheaper still, and, on the
+evolved-times metric, at $1024^2$.
 Mechanically, the decoder is a learned non-linear manifold inside a
 linear bank, the PDE is enforced by least-squares Petrov--Galerkin
 projection onto fixed weak tests, and Empirical Quadrature decouples the
-one nonlinear term from mesh size. The trade is real where the residual is nonlinear in the coefficients and no
-fast transform makes the full-order solve cheap, and it collapses where
-neither holds. Natural next steps are a harder Burgers regime at lower viscosity, a
+one nonlinear term from mesh size. A trade between rungs needs a residual nonlinear in the coefficients
+and a manifold that beats POD; a cost advantage for reduced models at all
+needs the absence of a fast transform, and on our cells POD then does at
+least as well as the head. Natural next steps are a harder Burgers regime at lower viscosity, a
 Navier--Stokes head that beats POD held-out, and unstructured meshes.
 
 % =====================================================================

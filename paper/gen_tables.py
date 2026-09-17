@@ -1369,6 +1369,30 @@ def build_lshape():
         # is the head at q=64 on the non-dominated set at this mesh?
         macro(f'nLshapeNeuralNonDom{nm}', yn(bool(V.get((mesh, 257, 'neural_q64@head_sdf_R512_K16'), {}).get('nondominated_complete_ms'))))
     macro('nLshapeNeuralMsTrend', ' $\\to$ '.join(trend))
+    # review r2 (B4/M2): the cheapest same-job full-order arm, POD-128, and the head, per mesh, dominated or not
+    HEAD = 'neural_q64@head_sdf_R512_K16'; POD = 'pod128'
+    tm = []; margins_cheapest = {}
+    for mesh, nm in NM:
+        foms = [sub for (m, tm_, sub) in V if m == mesh and tm_ == 257 and fam[sub] == 'fom']
+        if not foms: continue
+        cf = min(foms, key=lambda sub: V[(mesh, 257, sub)]['median_total_ms']); c = V[(mesh, 257, cf)]
+        sp = V[(mesh, 257, 'fom_splu')]; hd = V.get((mesh, 257, HEAD), {}); pd = V.get((mesh, 257, POD), {})
+        macro(f'nLshapeCheapestFom{nm}', name(cf)); macro(f'nLshapeCheapestFomMs{nm}', ms(c['median_total_ms'], 2)); macro(f'nLshapeCheapestFomErr{nm}', pct(100 * c['worst_same_grid'], 3))
+        if hd:
+            macro(f'nLshapeNeuralCheaperVsCheapest{nm}', f"{c['median_total_ms'] / hd['median_total_ms']:.2f}")
+            macro(f'nLshapeCheapestFomMoreAccurate{nm}', f"{hd['worst_same_grid'] / c['worst_same_grid']:.1f}" if c['worst_same_grid'] > 0 else 'exact')
+        if pd:
+            macro(f'nLshapePodErr{nm}', pct(100 * pd['worst_same_grid'], 3)); macro(f'nLshapePodMs{nm}', ms(pd['median_total_ms'], 3))
+            macro(f'nLshapePodCheaper{nm}', f"{sp['median_total_ms'] / pd['median_total_ms']:.2f}"); macro(f'nLshapePodCheaperVsCheapest{nm}', f"{c['median_total_ms'] / pd['median_total_ms']:.2f}")
+        if hd and pd:
+            macro(f'nLshapeHeadOverPodCost{nm}', f"{100 * (hd['median_total_ms'] / pd['median_total_ms'] - 1):.0f}")
+            macro(f'nLshapePodOverHeadErr{nm}', f"{100 * (pd['worst_same_grid'] / hd['worst_same_grid'] - 1):.0f}")
+        tm.append([f'${mesh}^2$', tt(jobs.get((mesh, 257), '---')), ms(sp['median_total_ms'], 2), name(cf), ms(c['median_total_ms'], 2), pct(100 * c['worst_same_grid'], 3),
+                   pct(100 * pd['worst_same_grid'], 3) if pd else '---', ms(pd['median_total_ms'], 3) if pd else '---', f"{sp['median_total_ms'] / pd['median_total_ms']:.2f} / {c['median_total_ms'] / pd['median_total_ms']:.2f}" if pd else '---',
+                   pct(100 * hd['worst_same_grid'], 3) if hd else '---', ms(hd['median_total_ms'], 3) if hd else '---', f"{sp['median_total_ms'] / hd['median_total_ms']:.2f} / {c['median_total_ms'] / hd['median_total_ms']:.2f}" if hd else '---',
+                   yn(bool(hd.get('nondominated_complete_ms'))) if hd else '---'])
+    write('T18m_lshape_main.tex', tabular(['mesh', 'job', 'sparse direct ms', 'cheapest FOM', 'ms', 'err \\%', 'POD-128 err \\%', 'ms', '$\\times$ vs direct / cheapest', 'head $q{=}64$ err \\%', 'ms', '$\\times$ vs direct / cheapest', 'head on set'],
+                                         tm, 'llrlrrrrrrrrc', r'\scriptsize'), 'lshape solve layer, M = 257, one job per mesh; complete-query ms; every ratio inside its job; head rows printed even where dominated')
     # the 256^2 crossover cell keeps its short names (used in the intro and §5.6)
     best = V.get((256, 257, 'neural_q64@head_sdf_R512_K16'), {}); splu = V.get((256, 257, 'fom_splu'), {})
     if best and splu:

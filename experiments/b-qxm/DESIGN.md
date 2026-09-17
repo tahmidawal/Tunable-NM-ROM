@@ -475,3 +475,63 @@ $M^\star = 256$, $1.1255$ %, $0.922\times$ the scheduled $M = 320$ cost — chea
 3.7 % of it, so at $q = 64$ the scheduled rule overspends on tests. The $q = 64$ curve is
 **non-monotone** at the tail ($1.0593 \to 1.0594 \to 1.0620$ % at $M = 1088, 2048, 4096$):
 past saturation more tests very slightly hurt.
+
+### A3 (2026-09-17, before the round-2 jobs) — two extensions, pre-registered
+
+Round 1 answered the commissioned question. Two facts in its own output point past it, and the
+coordinator asked for both. Declared here before either job was staged.
+
+**First, a correction to my own round-1 framing, which had already reached the paper file.** I
+wrote that "what is roughly invariant is the tests-per-unknown ratio, not $M$ itself". The data
+does not support it: saturation sits at $M^\star/(K+q) \approx 16$ at $q = 0$, $\approx 4$ at
+$q = 64$, and is **not reached by 8** at $q = 256$. I compared a $4\times \to 16\times$ range at
+$q = 0$ against a $2\times \to 8\times$ range at $q = 256$ — different ranges — and generalised.
+What the data does support is narrower: **the absolute $M$ needed to saturate grows with $q$, and
+at $q = 256$ it is still growing at 8 tests per unknown.** E2 measures that curve properly.
+
+#### E1 (`bqx401`, `config-e1.json`) — does the pure-rank ladder keep going past $q = 256$?
+
+The fixed-$M = 1088$ ladder spans $2.437\times$ against a $2\times$ bar and the bank projection
+floor is $0.39$ %, so most of the headroom is unclaimed. $q = R = 512$ is the whole bank: the
+largest rank the decoder can carry.
+
+| cell | role |
+|---|---|
+| $(0, 64)$ | the unconditional $10^{-9}$ fidelity anchor four earlier jobs also ran |
+| $(q, 1088)$ for $q = 0, 16, 32, 64, 128, 256, 512$ | the whole fixed-$M$ column **in one job**, so the within-job cost ladder covers every rung — the exact place the round-1 generator went wrong |
+| $(512, 2112) = 4(K+q)$, $(512, 3168) = 6(K+q)$ | the disambiguation: $M = 1088$ is only **2.06** tests per unknown at $q = 512$, and $q = 64$ at 1.6 tests per unknown was visibly starved ($1.8032$ % against $1.1255$ % at $3.2\times$). Without these, a bad $(512, 1088)$ cannot be told from a rank limit |
+
+`cclad01` ran $(512, 2112)$ and $(512, 1056)$ at budget **180** and reached $0.2307$ % and
+$0.4343$ % — better than anything this campaign has recorded — but **neither converged** (budget
+exits), so they are cited as motivation and **not** used as gates. If $q = 512$ converges at
+budget 600 near those values it is the best cell in the campaign; if it does not converge, that
+is the finding and the rung is excluded from every span, as §5 requires.
+
+#### E2 (`bqx501`, `config-e2.json`) — where does the best cell stop improving?
+
+$(256, 2176)$ at $0.3736$ % is the campaign's best converged number. $q = 256$ against
+$M \in \{1088, 2176, 3264, 4352, 6528\}$ — 4 to **24** tests per unknown — plus the $(0, 64)$ and
+$(0, 1088)$ anchors. Requests an **80 GB** A100 by `--constraint=a100-80G`: the five distinct $M$
+need 8.46 GB of test-mode matrices, and round 1 peaked at $2.6\times$ its own matrix storage, so
+$\approx 22$ GB would sit exactly on the pool ceiling of a 40 GB card.
+
+#### Gates and what would make the extensions uninformative
+
+Same gates as §5. New: every round-2 cell that round 1 also ran is gated against **this lane's own
+round-1 jobs** as well as the earlier ones. Round 1 established that the direction matrix is
+**run-to-run nondeterministic even on one GPU model** — `bqx101`, `bqx201`, `bqx301` hash to three
+different values — so every $q > 0$ pair is judged at the loose tier and the *achieved* difference
+is the evidence; round 1 achieved $\le 9.2\times10^{-9}$ against four earlier jobs.
+
+- **E1 is uninformative** if $(512, 1088)$, $(512, 2112)$ and $(512, 3168)$ all fail to converge:
+  then nothing is learned about the rank past 256 and the lane says so.
+- **E1 answers "the rank has run out"** only if $(512, 3168)$ converges and is no better than
+  $(256, 1088)$; if instead $(512, 1088)$ is poor while $(512, 3168)$ is good, the cause is the
+  test count, not the rank, and the fixed-$M = 1088$ column's $q = 512$ rung must be reported as
+  test-starved rather than as a rank limit.
+- **E2 answers "it flattens at $M^\star$"** only if the last step improves by less than 5 %; if the
+  curve is still falling at $M = 6528$ the honest statement is that 24 tests per unknown does not
+  saturate $q = 256$, and no $M^\star$ is quoted.
+
+Reporting: `reports/2026-09-17-b-qxm.md` and `summary.json` are **updated in place** (one report per
+question, not per session); the lab-log entry gets a short addendum, not a new entry.

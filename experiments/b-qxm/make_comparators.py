@@ -21,6 +21,10 @@ PARENT = ROOT / 'experiments/q-ridge/checks/comparators.json'
 AUDITS = {
     'qtd02': ROOT.parent / '2026-09-16-q-trajdirs/experiments/q-trajdirs/artifacts/qtd02/audit.json',
     'qrg201': ROOT / 'experiments/q-ridge/checks/qrg201-audit.json',
+    # This lane's own first round, so the extension jobs can be gated against it.
+    'bqx101': HERE / 'checks/bqx101-audit.json',
+    'bqx201': HERE / 'checks/bqx201-audit.json',
+    'bqx301': HERE / 'checks/bqx301-audit.json',
 }
 KEEP = ('arm', 'q', 'M', 'm', 'rule', 'quadrature', 'converged', 'total_budget_exits',
         'max_joint_stationarity', 'median_gpu_ms', 'median_iterations',
@@ -42,12 +46,13 @@ def main():
                            arms={k: {kk: x.get(kk) for kk in KEEP} for k, x in v['arms'].items()})
     for name, path in AUDITS.items():
         au = json.loads(path.read_text())
-        dirs = None
+        dirs = au.get('directions_sha256')
         chk = au.get('checks', {})
-        for key in ('old_directions_hash_matches_comparator', 'directions_hash_matches_cclad01'):
-            if key in chk and isinstance(chk[key].get('detail'), dict):
-                d = chk[key]['detail']
-                dirs = d.get('got') or d.get('ours')
+        if dirs is None:
+            for key in ('old_directions_hash_matches_comparator', 'directions_hash_matches_cclad01'):
+                if key in chk and isinstance(chk[key].get('detail'), dict):
+                    d = chk[key]['detail']
+                    dirs = d.get('got') or d.get('ours')
         table[name] = dict(job_id=au.get('job_id'), gpu=au.get('gpu'), commit=au.get('commit'),
                            source=str(path), source_sha256=sha(path), directions_sha256=dirs,
                            arms={x['arm']: {kk: x.get(kk) for kk in KEEP} for x in au['arms']})

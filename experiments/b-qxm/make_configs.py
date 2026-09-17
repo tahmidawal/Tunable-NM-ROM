@@ -57,6 +57,19 @@ G2 = [cell(0, 256, 'fixed256', 'anchor'), cell(0, 1088, 'fixed1088', 'anchor'),
 S1 = [cell(0, M, 'sat') for M in (64, 128, 256, 512, 1088, 2048, 4096)] + \
      [cell(64, M, 'sat') for M in (128, 256, 320, 512, 1088, 2048, 4096)]
 
+# --- round 2 (DESIGN.md §A3) ------------------------------------------------------
+# E1: the pure-rank ladder extended to q = R = 512, the whole bank, at fixed M = 1088 --
+# every rung in ONE job, which is what makes the within-job cost ladder exist. The two
+# extra q = 512 cells at 4(K+q) and 6(K+q) separate "the rank has run out" from "this cell
+# is under-tested": M = 1088 is only 2.06 tests per unknown at q = 512, and q = 64 at 1.6
+# tests per unknown was visibly starved (1.8032 % against 1.1255 % at 3.2x).
+E1 = [cell(0, 64, 'anchor')] + [cell(q, 1088, 'fixed1088') for q in (0, 16, 32, 64, 128, 256, 512)] + \
+     [cell(512, 2112, '4x'), cell(512, 3168, '6x')]
+# E2: where does the best cell in the campaign stop improving? q = 256 against M from the
+# 4(K+q) rung out to 24 tests per unknown, plus the two anchors.
+E2 = [cell(0, 64, 'anchor'), cell(0, 1088, 'anchor')] + \
+     [cell(256, M, 'sat256') for M in (1088, 2176, 3264, 4352, 6528)]
+
 
 def exp(source, arm, tol=1e-9, cond=None, note=None):
     d = dict(source=source, arm=arm, tolerance=tol)
@@ -67,6 +80,7 @@ def exp(source, arm, tol=1e-9, cond=None, note=None):
     return d
 
 
+MINE = ('bqx101', 'bqx201', 'bqx301')
 UNCOND = 'q = 0 carries no correction directions, so this reproduction is unconditional'
 COND = ('directions are GPU-model dependent across jobs: 1e-9 if the directions hash is '
         'bitwise, 1e-3 otherwise (b-ladder-top convention); the achieved difference is reported')
@@ -107,6 +121,23 @@ EXPECT = {
                          exp('cclad01', 'q256_m4_dense_block', 1e-3, 1e-9,
                              COND + '; cclad01 ran this rung at budget 180')],
 }
+# Round 2 gates against this lane's own round-1 jobs. The direction matrix is nondeterministic
+# run to run even on one GPU model (bqx101/201/301 hash to three different values), so every
+# q > 0 pair is judged at the loose tier and the ACHIEVED difference is the evidence; round 1
+# came in at <= 9.2e-9 against four earlier jobs.
+SELF = 'against this lane\'s own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported'
+# Applied ONLY to the round-2 jobs: config-g1/g2/s1.json are already staged, submitted and
+# audited, and must regenerate byte-identically.
+EXPECT_R2 = {k: list(v) for k, v in EXPECT.items()}
+for _arm, _q in (('q0_M64_dense', 0), ('q0_M1088_dense', 0), ('q16_M1088_dense', 16),
+                 ('q32_M1088_dense', 32), ('q64_M1088_dense', 64), ('q128_M1088_dense', 128),
+                 ('q256_M1088_dense', 256), ('q256_M2176_dense', 256)):
+    for _src in MINE:
+        EXPECT_R2.setdefault(_arm, [])
+        if _q == 0:
+            EXPECT_R2[_arm].append(exp(_src, _arm, note=UNCOND + '; ' + SELF))
+        else:
+            EXPECT_R2[_arm].append(exp(_src, _arm, 1e-3, 1e-9, SELF))
 
 
 def main():
@@ -133,6 +164,15 @@ def main():
                             'the bridge cells, and two q = 0 anchor arms that are in-job fidelity '
                             'gates; dense quadrature, budget 600'),
                    cells=G2, q_ladder=[0, 64, 128, 256]),
+        'e1': dict(attempt='bqx401', question='E1',
+                   purpose=('round 2: the pure-rank ladder extended to q = R = 512 at fixed M = 1088, every '
+                            'rung in one job so the within-job cost ladder covers all of it, plus q = 512 at '
+                            '4(K+q) and 6(K+q) to tell a rank limit from an under-tested cell'),
+                   cells=E1, q_ladder=[0, 16, 32, 64, 128, 256, 512]),
+        'e2': dict(attempt='bqx501', question='E2',
+                   purpose=('round 2: where the campaign\'s best cell stops improving — q = 256 against '
+                            'M in {1088, 2176, 3264, 4352, 6528}, i.e. 4 to 24 tests per unknown'),
+                   cells=E2, q_ladder=[0, 256]),
         's1': dict(attempt='bqx301', question='S1',
                    purpose=('the saturation sweep: M in {64, ..., 4096} at q = 0 and {128, ..., 4096} at q = 64 '
                             '(with the row\'s own 4(K+q) = 320 cell for the within-job cost ratio), '
@@ -146,7 +186,8 @@ def main():
         assert len(names) == len(set(names)), names
         cfg = dict(shared)
         cfg.update(job)
-        cfg['expectations'] = {n: EXPECT[n] for n in names if n in EXPECT}
+        table = EXPECT_R2 if tag in ('e1', 'e2') else EXPECT
+        cfg['expectations'] = {n: table[n] for n in names if n in table}
         cfg['gate_note'] = ('every q = 0 expectation is unconditional at 1e-9; the audit gates '
                             'each (arm, source) pair separately and reports the achieved '
                             'relative difference on both metrics')

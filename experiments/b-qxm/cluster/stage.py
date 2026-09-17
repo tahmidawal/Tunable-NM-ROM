@@ -1,6 +1,6 @@
 """Stage one b-qxm attempt into an isolated paralab-bound directory.
 
-    python cluster/stage.py <attempt> <config-file-name>
+    python cluster/stage.py <attempt> <config-file-name> [<gpu>] [<constraint>] [<hours>]
 
 Each attempt gets its OWN submit directory and its OWN remote directory: one job per
 directory, never two. Every staged file is checked byte-for-byte against the committed
@@ -45,6 +45,8 @@ def main():
     assert attempt.isalnum(), attempt
     gpu = sys.argv[3] if len(sys.argv) > 3 else 'a100'
     assert gpu in ('a100', 'h100', 'h200', 'l40s'), gpu
+    constraint = sys.argv[4] if len(sys.argv) > 4 and sys.argv[4] != '-' else None
+    hours = sys.argv[5] if len(sys.argv) > 5 else HOURS
     files = FILES + [f'experiments/b-qxm/{config}']
     out = ROOT / 'experiments/b-qxm/runs' / attempt
     out.mkdir(parents=True, exist_ok=False)
@@ -68,6 +70,7 @@ def main():
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:__GPU__:1
 #SBATCH --exclude=__EXCLUDE__
+__CONSTRAINT__
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=180G
 #SBATCH --time=__HOURS__
@@ -99,10 +102,11 @@ echo ALL-DONE
 '''
     for token, value in (('__ATTEMPT__', attempt), ('__REMOTE__', remote),
                          ('__CKPT__', CHECKPOINT), ('__CONFIG__', config),
-                         ('__HOURS__', HOURS), ('__EXCLUDE__', EXCLUDE), ('__GPU__', gpu)):
+                         ('__HOURS__', hours), ('__EXCLUDE__', EXCLUDE), ('__GPU__', gpu),
+                         ('__CONSTRAINT__', f'#SBATCH --constraint={constraint}' if constraint else '')):
         script = script.replace(token, value)
     assert '__' not in script.replace('__pycache__', ''), script
-    (out / 'run.sbatch').write_text(script)
+    (out / 'run.sbatch').write_text('\n'.join(l for l in script.split('\n') if l.strip() != '') if False else script.replace('\n\n', '\n'))
     manifest = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(out)}'
                 for p in sorted(out.rglob('*')) if p.is_file()]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')

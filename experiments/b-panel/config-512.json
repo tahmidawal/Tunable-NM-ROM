@@ -178,9 +178,9 @@
     ],
     "collect_iters": 12,
     "fit_states": 64,
-    "max_fit_rows": 8192,
     "cert_states": 512,
-    "certify_chunk": 24
+    "certify_chunk": 24,
+    "fit_state_note": "DESIGN A7: fit_states used at every rung, uncapped; the clip(max_fit_rows/M, 8, fit_states) convention of bpn201/bpn202 is retired"
   },
   "priority_override": [
     "q0_M64_dense_g1em06",

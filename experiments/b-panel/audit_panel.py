@@ -91,6 +91,12 @@ def main():
          max(x['max_relative_residual'] for x in r['reference']))
     gate('every_rule_hash_matches_provenance',
          all(x['nodes_sha256_matches'] and x['weights_sha256_matches'] for x in r['rules']))
+    mr = r['gates'].get('matched_rule_files_bitwise')
+    if mr is not None and mr.get('passed') is not None:
+        gate('matched_rule_files_bitwise', bool(mr['passed']), mr,
+             'two rule sets carrying the same rule file must give bitwise identical arms (DESIGN A8)')
+    elif mr is not None:
+        info('matched_rule_files_bitwise', None, mr, 'no two rule sets share a rule file in this job')
     info('no_subject_dropped', not r['dropped'], r['dropped'], 'a drop is a reported finding, not a failure of the job')
 
     inv = r['invocations']
@@ -138,6 +144,15 @@ def main():
         score(x, f)
         worst = max(worst, abs(x['reference_all'] - x['error']['fixed_initial_max']) / max(x['error']['fixed_initial_max'], 1e-300))
     gate('recorded_errors_recomputed_from_saved_fields', worst < 1e-9, worst)
+    if mr is not None and mr.get('pairs'):
+        # the driver's matched-rule gate, recomputed from the SAVED fields of both arms
+        art = {(x['name'], x['case']): x['artifact'] for x in inv}
+        pairs = []
+        for t in mr['pairs']:
+            na, nb = t['arms']
+            same = all(np.array_equal(F(art[(na, c)]), F(art[(nb, c)])) for c in sorted({x['case'] for x in inv}))
+            pairs.append(dict(arms=t['arms'], q=t['q'], gtol=t['gtol'], saved_fields_identical=bool(same)))
+        gate('matched_rule_files_bitwise_recomputed', all(t['saved_fields_identical'] for t in pairs), pairs)
 
     # ------------------------------------------------ the FNO, same code ------
     fno_rows, fno_meta = [], None
@@ -223,6 +238,10 @@ def main():
             arm=name, kind=t['kind'], family=t['family'], q=t['q'], k=t['k'], M=t['M'], m=t['m'],
             quadrature=t['quadrature'], gtol=t['gtol'], dt=t['dt'], solved_dimension=t['solved_dimension'],
             rule_kind=t['rule_kind'], rule_basis=basis, rule_m=rule.get('m'), rho_max=rule.get('rho_max', rule.get('source_rho_max')),
+            rule_set=rule.get('rule_set'), rule_status=rule.get('construction_status'), rule_export_basis=rule.get('export_basis'),
+            rule_source_lane=rule.get('source_lane'), rule_source_attempt=rule.get('source_attempt'),
+            rule_fit_states=rule.get('source_fit_states'), rule_file=rule.get('file'), rule_file_sha256=rule.get('sha256'),
+            rule_construction_note=rule.get('construction_note'),
             rho_p95=rule.get('rho_p95', rule.get('source_rho_p95')), certified_primary=rule.get('certified_primary'),
             certified_secondary=rule.get('certified_secondary'), rule_source_job=rule.get('source_job'),
             ntol=t['ntol'], ltol=t['ltol'], preconditioner=t['preconditioner'],
@@ -332,10 +351,14 @@ def main():
 
     g6 = f"g{cfg['strict']['gtol']:g}".replace('-', 'm').replace('.', 'p')
     ladders = dict(
-        dense=ladder(lambda x: x['family'] == 'rom' and x['quadrature'] == 'dense' and x['M'] == 4 * (K + x['q']) and x['arm'].endswith(g6), lambda x: x['q']),
-        eq_g1em06=ladder(lambda x: x['family'] == 'rom' and x['quadrature'] == 'eq' and x['arm'].endswith(g6), lambda x: x['q']),
-        eq_g0p001=ladder(lambda x: x['family'] == 'rom' and x['quadrature'] == 'eq' and x['arm'].endswith('g0p001'), lambda x: x['q']),
-        pod=ladder(lambda x: x['family'] == 'pod', lambda x: x['k']))
+        dense=ladder(lambda x: x['family'] == 'rom' and x['quadrature'] == 'dense' and x['M'] == 4 * (K + x['q']) and x['arm'].endswith(g6), lambda x: x['q']))
+    # one EQ ladder per (rule set, tolerance): a job may carry several sets (DESIGN A5.1 / A8)
+    for kind in sorted({x['rule_kind'] for x in rows if x['family'] == 'rom' and x['quadrature'] == 'eq' and x['rule_kind']}):
+        for g in sorted({x['gtol'] for x in rows if x['family'] == 'rom' and x['quadrature'] == 'eq'}, reverse=True):
+            gs = f'g{g:g}'.replace('-', 'm').replace('.', 'p')
+            ladders[f'eq_{kind}_{gs}'] = ladder(lambda x, kind=kind, g=g: x['family'] == 'rom' and x['quadrature'] == 'eq'
+                                                and x['rule_kind'] == kind and x['gtol'] == g, lambda x: x['q'])
+    ladders['pod'] = ladder(lambda x: x['family'] == 'pod', lambda x: x['k'])
 
     # ------------------------------------------------ non-dominated sets ------
     nd = {}

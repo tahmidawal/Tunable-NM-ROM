@@ -431,6 +431,12 @@ def main():
                         nodes_sha256_matches=(sha_array(nodes) == rprov['nodes_sha256']),
                         weights_sha256_matches=(sha_array(weights) == rprov['weights_sha256']))
             assert info['nodes_sha256_matches'] and info['weights_sha256_matches'], spec['file']
+            # DESIGN A8: the construction status (confirmed / marginal / certified in one draw /
+            # single qrg304 draw) travels with the rule into every row and caption.
+            info.update(source_lane=rprov.get('source_lane', 'q-ridge'), source_attempt=rprov.get('source_attempt'),
+                        construction_status=rprov.get('construction_status'), export_basis=rprov.get('export_basis'),
+                        construction_note=rprov.get('construction_note') or rprov.get('status_note'),
+                        same_file_as_qrg304_rule=rprov.get('same_file_as_qrg304_rule'))
             if at_mesh:
                 ph, _ = modes(M)
                 ops = rule_operators(bank, ph, L, nodes, weights)
@@ -475,7 +481,13 @@ def main():
                     assert np.isfinite(wv).all() and np.linalg.norm(wv[-1] - wv[0]) > 0, ('frozen rollout', q, int(i))
                     rows.append(np.asarray(cf(jnp.asarray(wv))))
                 pools[tag] = np.concatenate(rows)
-            nfit = int(np.clip(xfer['max_fit_rows'] // M, 8, xfer['fit_states']))
+            # DESIGN A7: every configured fit state at every rung. The former convention
+            # clip(max_fit_rows / M, 8, fit_states) gave bpn201 / bpn202 14 and 8 states at q = 128
+            # and 256 -- the starvation b-eqtop identified -- and their top rungs came back
+            # uncertified. 64 states x M = 1088 rows on a 2048-point support is 87 s of host NNLS
+            # (checks/nnls-size.json), so no cap is needed.
+            assert 'max_fit_rows' not in xfer, 'max_fit_rows is retired (DESIGN A7): the fit-state count is fit_states'
+            nfit = int(xfer['fit_states'])
             sel = np.sort(rng.choice(len(pools['fit']), min(nfit, len(pools['fit'])), replace=False))
             csel = pools['cert'][np.sort(rng.choice(len(pools['cert']), min(xfer['cert_states'], len(pools['cert'])),
                                                     replace=False))]
@@ -488,6 +500,7 @@ def main():
             tinfo = dict(q=q, M=M, rule_set=sname, m_support=int(len(pos)), m=int(keep.sum()),
                          refit=finfo, certification=cert,
                          fit_states_available=int(len(pools['fit'])), fit_states_used=int(len(sel)),
+                         fit_state_rule='fit_states, uncapped (DESIGN A7)',
                          certification_states=int(len(csel)), population='production dense query, converged per-step states (A3)',
                          fit_pool_sha256=sha_array(pools['fit']), certification_pool_sha256=sha_array(pools['cert']),
                          certified_primary=bool(cert['rho_max'] <= bar), certified_secondary=bool(cert['rho_p95'] <= bar),
@@ -502,6 +515,74 @@ def main():
             print('XFER', sname, 'q', q, 'm', tinfo['m'], 'rho_max', f"{cert['rho_max']:.4f}",
                   'p95', f"{cert['rho_p95']:.4f}", tinfo['basis'], round(tinfo['seconds'], 1), flush=True)
             save()
+
+    # ------------------------------------------------ untimed diagnostics -----
+    # DESIGN A7: run BEFORE the subjects are built, while the GPU holds only the bank, the test
+    # matrices and the snapshot basis. bpn202 (job 3787247, 1024^2, H200) died in this diagnostic
+    # at q = 256 with 29 subjects resident: the eight-start vmapped Jacobian batch is 18 GB and an
+    # [8, n, 512] intermediate 34 GB. The programs and their inputs are unchanged, so the values
+    # are; the diagnostic is also OOM-tolerant (recorded as dropped, the job continues). Chunking
+    # the starts was tried first and dropped: it agrees with the vmapped batch only to round-off
+    # (1e-13 residuals, checks/recon-chunk-probe.json), whereas moving the diagnostic keeps the
+    # pre-registered program byte-identical.
+    recon_done = {}
+    for s in specs:
+        if s['family'] != 'rom' or s['q'] in recon_done:
+            continue
+        q = s['q']
+        _, _, head = cold_for(q)
+        t0 = time.perf_counter()
+        try:
+            Zaug = np.concatenate((Zsub, np.zeros((len(Zsub), q))), axis=1)
+            Hc = jax.jit(jax.vmap(head))(jnp.asarray(Zaug))
+            Hn = jnp.sum((Hc @ Rb.T) ** 2, 1)
+            recon = A.make_reconstruction(head, K + q, L, cfg['recon_budget'], linear=lin(K + q))
+            rows = []
+            for case in refs:
+                ref = refs[case]
+                n0 = float(np.linalg.norm(ref[0]))
+                bank_err, man_err = [], []
+                for ti in range(ref.shape[0]):
+                    target = jnp.asarray(ref[ti][1:-1, 1:-1].ravel())
+                    bank_err.append(float(jnp.linalg.norm(Qb @ (Qb.T @ target) - target)) / n0)
+                    score = Hn - 2 * (Hc @ (G.T @ target))
+                    starts = jnp.asarray(Zaug)[jnp.argsort(score)[:cfg['recon_starts']]]
+                    z, rn, it, reason = host(recon(starts, target, G))
+                    man_err.append(float(rn) / n0)
+                rows.append(dict(case=case, bank_projection_per_time=bank_err, bank_projection_max=float(np.max(bank_err)),
+                                 best_found_per_time=man_err, best_found_max=float(np.max(man_err))))
+            entry = dict(family='rom', q=q, solved_dimension=K + q, cases=rows,
+                         worst_bank_projection=float(max(r['bank_projection_max'] for r in rows)),
+                         worst_best_found=float(max(r['best_found_max'] for r in rows)),
+                         starts=int(cfg['recon_starts']), budget=int(cfg['recon_budget']), seconds=time.perf_counter() - t0)
+        except Exception as exc:              # noqa: BLE001 - DESIGN A7: an untimed diagnostic must not kill the job
+            if not is_oom(exc):
+                raise
+            report['dropped'].append(dict(name=f'reconstruction_q{q}', family='diagnostic', phase='reconstruction',
+                                          reason=str(exc)[:400], seconds=time.perf_counter() - t0))
+            print('DROPPED (reconstruction, OOM) q', q, flush=True)
+            recon_done[q] = None
+            jax.clear_caches()
+            save()
+            continue
+        recon_done[q] = entry
+        report['reconstruction'].append(entry)
+        print('RECON q', q, round(entry['worst_best_found'] * 100, 5), round(entry['seconds'], 1), flush=True)
+        save()
+    for k in ranks:
+        span, _ = jnp.linalg.qr(Vmodes[:, :k], mode='reduced')
+        rows = []
+        for case in refs:
+            ref = refs[case]
+            n0 = float(np.linalg.norm(ref[0]))
+            err = [float(jnp.linalg.norm(span @ (span.T @ jnp.asarray(ref[ti][1:-1, 1:-1].ravel()))
+                                         - jnp.asarray(ref[ti][1:-1, 1:-1].ravel()))) / n0 for ti in range(ref.shape[0])]
+            rows.append(dict(case=case, best_found_per_time=err, best_found_max=float(np.max(err))))
+        report['reconstruction'].append(dict(family='pod', k=k, solved_dimension=k, cases=rows,
+                                             worst_best_found=float(max(r['best_found_max'] for r in rows))))
+        del span
+        save()
+    jax.clear_caches()
 
     # ---------------------------------------------------------- subjects -----
     # Declared (and validated) at the top of main(), before any expensive work; the list is
@@ -530,9 +611,11 @@ def main():
                 data, rinfo = dense_data(M), {}
             else:
                 ops, rinfo = rules[(s.get('rule_set') or sets[0]['resolved'], q)]
-                ph, lm = modes(M)
-                P = jnp.asarray(ph)
-                data = dict(A=P.T @ G, lam=lm, G=G, G5=ops['G5'], Pq=ops['Pq'])
+                # DESIGN A8: A = Phi^T G and lambda are the dense arm's own resident arrays for
+                # this M (the same device inputs, the same program). Every EQ arm used to hold
+                # its own copy of Phi: 24 copies at 256^2 (4.9 GB), 12 at 1024^2 (40 GB).
+                dd = dense_data(M)
+                data = dict(A=dd['A'], lam=dd['lam'], G=G, G5=ops['G5'], Pq=ops['Pq'])
             if fam == 'rom':
                 if s['quadrature'] == 'dense' and s['gtol'] == strict['gtol'] and M == 4 * (K + q):
                     query = dense_query(q)
@@ -570,7 +653,7 @@ def main():
                          solved_dimension=k, linear_solve=lin(k), step_budget=strict['step_budget'],
                          ic_budget=strict['ic_budget'], trust_radius=tr, cold=cinfo,
                          fit='classical POD of the same truth snapshots, identity head', array_bytes=info['array_bytes'])
-            return dict(s, kind='rom', data=data, cold=cold, query=query, head=head, dim=k, setup=setup, pod_span=gb.V)
+            return dict(s, kind='rom', data=data, cold=cold, query=query, head=head, dim=k, setup=setup)
         if fam == 'free':
             M = s['M']
             head = A.identity_head()
@@ -606,54 +689,6 @@ def main():
         built[s['name']] = b
         print('ARM', s['name'], round(time.perf_counter() - t0, 1), flush=True)
         save()
-
-    # ------------------------------------------------ untimed diagnostics -----
-    recon_done = {}
-    for name, b in built.items():
-        if b['family'] != 'rom' or b['q'] in recon_done:
-            continue
-        q, head = b['q'], b['head']
-        Zaug = np.concatenate((Zsub, np.zeros((len(Zsub), q))), axis=1)
-        Hc = jax.jit(jax.vmap(head))(jnp.asarray(Zaug))
-        Hn = jnp.sum((Hc @ Rb.T) ** 2, 1)
-        recon = A.make_reconstruction(head, K + q, L, cfg['recon_budget'], linear=lin(K + q))
-        rows = []
-        for case in refs:
-            ref = refs[case]
-            n0 = float(np.linalg.norm(ref[0]))
-            bank_err, man_err = [], []
-            for ti in range(ref.shape[0]):
-                target = jnp.asarray(ref[ti][1:-1, 1:-1].ravel())
-                bank_err.append(float(jnp.linalg.norm(Qb @ (Qb.T @ target) - target)) / n0)
-                score = Hn - 2 * (Hc @ (G.T @ target))
-                starts = jnp.asarray(Zaug)[jnp.argsort(score)[:cfg['recon_starts']]]
-                z, rn, it, reason = host(recon(starts, target, G))
-                man_err.append(float(rn) / n0)
-            rows.append(dict(case=case, bank_projection_per_time=bank_err, bank_projection_max=float(np.max(bank_err)),
-                             best_found_per_time=man_err, best_found_max=float(np.max(man_err))))
-        entry = dict(family='rom', q=q, solved_dimension=K + q, cases=rows,
-                     worst_bank_projection=float(max(r['bank_projection_max'] for r in rows)),
-                     worst_best_found=float(max(r['best_found_max'] for r in rows)))
-        recon_done[q] = entry
-        report['reconstruction'].append(entry)
-        print('RECON q', q, round(entry['worst_best_found'] * 100, 5), flush=True)
-        save()
-    for name, b in built.items():
-        if b['family'] != 'pod':
-            continue
-        span, _ = jnp.linalg.qr(b['pod_span'], mode='reduced')
-        rows = []
-        for case in refs:
-            ref = refs[case]
-            n0 = float(np.linalg.norm(ref[0]))
-            err = [float(jnp.linalg.norm(span @ (span.T @ jnp.asarray(ref[ti][1:-1, 1:-1].ravel()))
-                                         - jnp.asarray(ref[ti][1:-1, 1:-1].ravel()))) / n0 for ti in range(ref.shape[0])]
-            rows.append(dict(case=case, best_found_per_time=err, best_found_max=float(np.max(err))))
-        report['reconstruction'].append(dict(family='pod', k=b['k'], solved_dimension=b['k'], cases=rows,
-                                             worst_best_found=float(max(r['best_found_max'] for r in rows))))
-        del span
-        save()
-    jax.clear_caches()
 
     # ---------------------------------------------------------- timed queries --
     inputs_u = [e.initial(L, phys) for phys in physical]
@@ -789,6 +824,26 @@ def main():
     for x in report['invocations']:
         hashes.setdefault((x['name'], x['case']), set()).add(x['field_sha256'])
     report['gates']['repetition_output_identical'] = dict(passed=all(len(v) == 1 for v in hashes.values()))
+    # DESIGN A8: two rule SETS carrying the same rule file at a rung must produce bitwise
+    # identical arms at matched tolerance (b-eqtop's q = 0, 16, 32 rules are qrg304's files).
+    file_sha = {(x['rule_set'], x['q']): x['sha256'] for x in report['rules']}
+    twins = []
+    for (sa, q), ha in file_sha.items():
+        for (sb, q2), hb in file_sha.items():
+            if q2 != q or not sa < sb or ha != hb:
+                continue
+            for g in cfg['eq_gtols']:
+                na, nb = f'q{q}_M{4 * (K + q)}_{sa}_{gt(g)}', f'q{q}_M{4 * (K + q)}_{sb}_{gt(g)}'
+                if na not in built or nb not in built:
+                    continue
+                same = all(hashes[(na, c)] == hashes[(nb, c)] for c in range(len(physical)))
+                ints = all(np.array_equal(fields_kept[(na, c)][1][1], fields_kept[(nb, c)][1][1])
+                           and np.array_equal(fields_kept[(na, c)][1][3], fields_kept[(nb, c)][1][3])
+                           for c in range(len(physical)))
+                twins.append(dict(q=q, gtol=g, arms=[na, nb], file_sha256=ha, same_fields=bool(same), same_iterations=bool(ints)))
+    report['gates']['matched_rule_files_bitwise'] = dict(
+        passed=(all(t['same_fields'] and t['same_iterations'] for t in twins) if twins else None), pairs=twins,
+        note='None when no two sets share a rule file; a pair that differs means the multi-set path perturbs a result')
     report['gates']['fft_tight_converged_everywhere'] = dict(
         passed=all(x['nonlinear_converged'] for x in report['invocations'] if x['name'] == tight))
 

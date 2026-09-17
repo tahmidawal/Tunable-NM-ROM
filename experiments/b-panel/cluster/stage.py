@@ -65,6 +65,9 @@ def main():
     cfg = json.loads((ROOT / 'experiments/b-panel' / config).read_text())
     files = FILES + [f'experiments/b-panel/{config}']
     files += [f"experiments/b-panel/inputs/rules/{v['file']}" for v in cfg['rules'].values()]
+    for es in cfg.get('extra_rule_sets', []):          # DESIGN A5.1 / A8: e.g. b-eqtop's set under rules-eqtop/
+        files += [f"experiments/b-panel/inputs/{es.get('subdir', 'rules')}/{v['file']}" for v in es['rules'].values()]
+    files = list(dict.fromkeys(files))
     out = ROOT / 'experiments/b-panel/runs' / attempt
     out.mkdir(parents=True, exist_ok=False)
     remote = f'{NAMESPACE}/{attempt}'

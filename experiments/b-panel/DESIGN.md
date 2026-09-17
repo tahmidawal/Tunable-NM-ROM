@@ -420,3 +420,179 @@ partial `result.json`, the six transferred rule files, remote hashes).
 after). The remote `bpn201` directory and its local staging copy are deleted; the retracted
 record is `artifacts/bpn201-retracted/`. The smoke that gated the fix: `checks/smoke-panel-a6.json`
 (baseline $1.4\times10^{-14}$, GATE5 override honoured, GATE6 the three cluster configs declare).
+
+## A7 — 2026-09-17 12:20, after `bpn202` failed: an out-of-memory in the untimed reconstruction diagnostic; fixed and smoked, NOT resubmitted by this session
+
+`bpn202` (job 3787247, H200 on `pax011`, 240 GB, staged from `494c3f48`) exited 1 after 28m37s.
+Not disk (paralab 92 %, 400 GB free at start; both logs non-empty) and not host memory (batch
+peak RSS 86 GiB of 240). The GPU preflight, the six 4096-interval references, the 1024²
+snapshots, **all six rule transfers, all 29 subject builds and the q = 0 and q = 64
+reconstruction diagnostics completed**; the crash is in the *untimed* best-found reconstruction
+at q = 256, verbatim from `logs/3787247.err`:
+
+```
+  File ".../experiments/b-panel/panel.py", line 630, in main
+    z, rn, it, reason = host(recon(starts, target, G))
+jax.errors.JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 73 instructions.
+  ... Autotuning failed for HLO: %input_reduce_fusion.19 = f64[1046529,8]{1,0} ...
+  Failed to profile configs: Out of memory while trying to allocate 16.98GiB.
+```
+
+`arms.make_reconstruction` vmaps one Levenberg–Marquardt solve per start; with eight starts at
+$q=256$ on the $1024^2$ grid the batched Jacobian is `f64[8, 2, 523266, 272]` (18.2 GB) and an
+`[8, n, 512]` intermediate is 34.3 GB, on top of 29 resident subjects — of which the twelve EQ arms
+each held their **own** copy of their test matrix $\Phi_M$ (≈ 40 GB at $1024^2$). No timed subject
+had been invoked; no number exists. The record is `artifacts/bpn202-failed/` (`FAILURE.json` with the
+verbatim traceback and what completed, logs, the partial `result.json`, the six transferred rules,
+remote hashes); the remote directory and the local `runs/bpn202/` staging copy are deleted.
+
+**What the attempt showed before it died.** The six transfers recomputed exactly the retracted
+`bpn201`'s values: $q=0,16,32$ primary ($\rho_{\max}$ 0.0180, 0.0594, 0.0313 on 64/64/42 fit states);
+$q=64,128,256$ **uncertified** (0.1316, 1.0295, 0.4144 on 25/14/8 states). These are the values of
+record for the `clip(8192/M, 8, 64)` convention and confirm §A5.2's prediction (and its q = 64 miss).
+
+**What changed (this commit), and why it does not alter the timed science.**
+
+1. *Reconstruction diagnostic.* It now runs **before the subjects are built**, when the GPU holds
+   only the bank, the test matrices and the snapshot basis (≈ 30 GB at $1024^2$ against the
+   34 + 18 GB transient, on 141 GB), over the declared rom $q$'s and POD ranks instead of the
+   built ones; the programs and their inputs are unchanged, so the values are. It is also
+   OOM-tolerant: an OOM records `dropped[name=reconstruction_q{q}, phase=reconstruction]` and the
+   job continues to the timed subjects. **Chunking the eight starts was tried first and
+   dropped.** The smoke's chunk gate failed — 0.6 % and 9.5 % *relative* differences in the
+   best-found residual — but a probe at budgets 100 / 400 / 1000 (`checks/recon-chunk-probe.json`)
+   shows those are relative comparisons of round-off-level residuals ($\approx10^{-13}$ on the
+   attainable fixture fit; the found codes agree to $8\times10^{-14}$ and the whole batch is
+   bitwise stable across reruns), so chunking is equivalent to round-off and the gate was badly
+   posed, not the transformation. It was still dropped: moving the diagnostic keeps the
+   pre-registered vmapped program byte-identical, which a chunked variant cannot claim.
+2. *Memory.* Every EQ arm now reuses the dense arm's resident $\Phi_M$ and $A=\Phi_M^\top G$ for
+   its $M$ (the same device inputs through the same program) instead of holding its own copy — 12
+   copies (≈ 40 GB) at $1024^2$, 24 copies (≈ 4.9 GB) at $256^2$. Covered by the smoke's
+   $10^{-12}$ baseline gate, the in-job matched-rule bitwise gate (§A8) and the cross-job
+   fidelity gates.
+3. *Fit-state count* — the fix §A5.2 deferred to `bpn301`, now made because the transfer path
+   is being touched anyway. `nfit = fit_states` (64) at every rung; `max_fit_rows` is retired
+   and the driver asserts it is absent. The size it produces — 64 × 1088 = 69 632 rows on a
+   2048-point support — is 87 s of host NNLS on the GB10 (`checks/nnls-size.json`: 12.4 / 45.3 /
+   86.8 s at 8 704 / 34 816 / 69 632 rows), so the cap the convention existed for is not needed.
+   This **is** a science change for any future $1024^2$ / $512^2$ transfer, pre-announced in §A5.2.
+
+**Not resubmitted here.** The coordinator's instruction for this session was `bpn301` first and
+`bpn202` left as it was; `bpn202` has landed, failed, and the fix is committed and smoked. A
+resubmission (`bpn203`: same `config-1024.json`, H200, 240 GB) is one `stage.py` + `sbatch` away and
+waits for the coordinator's word. Jobs used: three (`bpn101`, `bpn201` retracted, `bpn202` failed).
+
+## A8 — 2026-09-17 12:45, the local smoke that gates `bpn301`: two rule sets, the uncapped
+fit-state fix, and the diagnostic-before-build reorder, all in one driver — every gate passes
+
+`bpn301` carries both `eqcert` (qrg304's rules) and `eqtop` (b-eqtop's final exported set,
+§A5/§config-256.json) as arms at matched $q$, $M$ and tolerance, on top of §A7's uncapped
+fit-state count and reordered untimed reconstruction diagnostic. Before staging, the smoke
+(`smoke_panel.py`, `checks/smoke-panel-a8.json`) was run to gate all of it, including a new
+in-job gate this multi-rule-set change requires: **two rule sets whose files are byte-identical
+must reproduce each other's fields bitwise.** The smoke drives this with a synthetic second set
+(`eqdup`) that points at the *same* `.npz` files as `eqcert` — the cheapest way to exercise the
+multi-set code path without the real `eqtop` files, which differ from `eqcert`'s at $q\ge64$ by
+construction and are not expected to reproduce them.
+
+**Gate values (`checks/smoke-panel-a8.json`):**
+
+| gate | result |
+|---|---|
+| GATE1 `baseline_saved_case` — reproduces the saved audited case | relative $\ell_2$ $1.44468\times10^{-14}$, latent $8.2477\times10^{-13}$, converged, 0 budget exits — **pass**, matches §A6's $1.4\times10^{-14}$ |
+| GATE4 `duplicate_rule_set_bitwise` — a second rule *set* over the same files reproduces the first | 4 arm pairs, 8 invocations, **all bitwise** — **pass** |
+| GATE4b `matched_rule_files_bitwise` (in-job driver gate, new this commit) | 4 pairs ($q\in\{0,4\}\times g\in\{10^{-6},10^{-3}\}$), each pair one file SHA256, `same_fields=true`, `same_iterations=true` for all 4 — **pass** |
+| GATE4b audit recomputation (`audit_panel.py`, independent of the driver) | `saved_fields_identical=true` for all 4 pairs, recomputed from the saved field arrays, not from the driver's own verdict — **pass** |
+| GATE5 `priority_override_honoured` | declared build order matches the override for both a partial and a full override list — **pass** |
+| GATE7 `fit_states_uncapped` (§A7's fix) | configured 16 fit states; used $[16,16]$ at $q=\{0,4\}$; design rows $[1024,1280]=16\times M$ exactly, no cap applied — **pass** |
+| `transfer_fit_cert_disjoint` (smoke128) | **pass** |
+| `fft_tight_converged_everywhere` (both smoke64 and smoke128) | **pass** |
+| `repetition_output_identical` (both) | **pass** |
+| `directions_file_sha256` / `directions_prefix_hashes` (both) | **pass** |
+| `direct_reproduces_fft_tight` / `fast_parity` (smoke64) | **pass** |
+| `cluster_config_declarations` | `config-256.json`: 47 subjects declared, override list of 38 names honoured, includes both `eqcert` and `eqtop` arms at all six $q$ and both tolerances (§config-256.json's `extra_rule_sets`); `config-512.json` / `config-1024.json`: 35 / 29 subjects, override honoured (these two meshes are not part of `bpn301` and still carry only the single-set `eqxfer` arms; unaffected by this change) — **pass** |
+| `audit_failed` (both driver runs) | `[]` — **pass** |
+
+No gate failed. The `q0`/`q4` transfer certifications printed in the smoke
+($\rho_{\max}=0.0761$ and $0.0632$ on the tiny 64-interval fixture) are sanity numbers for the
+mechanism, not the real ladder's rules — those are qrg304's and b-eqtop's archived values,
+carried by SHA256 and `construction_status`, not refitted here.
+
+**Deviation, already priced under §A2's precedent.** `total_seconds = 167.86` for the combined
+smoke64 + smoke128 driver runs, over the nominal sub-minute local budget; recorded, not hidden,
+same category as the deviation §A2 already logged for this lane's smoke.
+
+**What changed in the driver to make these gates possible** (already committed by the previous
+session in this worktree, verified here, not re-derived):
+
+1. `panel.py`: the untimed reconstruction diagnostic now runs before subjects are built (§A7),
+   `max_fit_rows` is retired and `nfit = fit_states` unconditionally (§A7), every EQ arm reuses
+   the dense arm's resident $\Phi_M$/$A$ instead of holding its own copy (§A7), and the new
+   `matched_rule_files_bitwise` gate compares fields and iteration counts for any two rule-set
+   arms that share a file SHA256 at the same $q$ and `gtol` (this commit, exercised by GATE4b).
+2. `cluster/stage.py`: stages every file under `config['extra_rule_sets'][*]['rules']`, keyed by
+   that set's `subdir` (`rules-eqtop/` for `eqtop`), in addition to the existing `rules/`.
+3. `config-256.json` (`attempt: bpn301`): `extra_rule_sets` adds the `eqtop` set at
+   `inputs/rules-eqtop/`, one file per rung (`q=0,16,32`: b-eqtop's own copies of qrg304's
+   $m=1024$ files, confirmed constructions 3/3, 3/3, 2/2; `q=64`: bet201's $m=2048$ `std` rule,
+   confirmed 2/2; `q=128,256`: single-draw rules above the marginal $m=2048$, status
+   `certified in one draw`); `priority_override` lists all six FOM controls, both rule sets at
+   both tolerances, the six POD ranks, the fidelity arm, the free bank and the `fast` kernel in
+   that order, with a note that the loose-tolerance ($10^{-3}$) EQ arms of both sets are the
+   first to drop under an OOM, ahead of anything not already duplicated in the table; `inputs/`
+   carries `rules-eqtop/` (the six `.npz` verified against `SHA256SUMS.b-eqtop` and
+   `PROVENANCE.json`'s own re-hash) and `PROVENANCE.json` records, per file, `source_lane`,
+   `construction_status`, `export_basis` and the `eqtop_status_note` quoted from b-eqtop's
+   provenance so the caveat travels with the data, not only with this design document.
+
+**Not re-run.** This smoke was produced by the previous session in this worktree before it was
+killed by the model usage limit; per the lane protocol's local-smoke rule and this task's
+instruction, it is read and recorded here rather than re-executed, since every gate above
+already passed. Jobs used: still three (`bpn101` complete, `bpn201` retracted, `bpn202`
+failed); no cluster job has run since this amendment. `bpn301` is staged and submitted next.
+
+## A9 — 2026-09-17 ~13:00, coordinator follow-up on `bpn202`: cause confirmed, not the refit;
+resubmitted as `bpn203` with the same §A7/§A8 fix, no arms dropped
+
+The coordinator asked, after `bpn301` was submitted, for `bpn202`'s cause to be pulled from its
+remote log, recorded, archived and cleaned up, and — conditionally, if the transferred-rule
+refit turned out to be the problem — for the quadrature arms to be dropped from the $1024^2$ job
+rather than fought. All of the recording/archiving/cleanup the coordinator asked for had already
+been done by the session that hit the usage limit (§A7, before this session started): the
+verbatim cause is `artifacts/bpn202-failed/FAILURE.json` (checked again here, not re-derived),
+the logs are archived alongside it, and the remote attempt directory is confirmed deleted —
+`ssh tufts-login "ls /cluster/tufts/paralab/tawal01/b_panel_20260917/"` returns empty. Disk was
+not the cause: 92% full, 400 GB free at job start, matching §A6/§A7's check, and both logs were
+non-empty (28m37s of real work, not a preamble death).
+
+**The conditional does not fire.** The cause is *not* the transferred-rule refit: all six rule
+transfers for `bpn202`'s config completed (37–390 s each; the values are in `FAILURE.json`'s
+`completed_before_crash.rule_transfers`, identical to `bpn201`'s retracted numbers and to
+§A5.2's prediction — $q=64,128,256$ uncertified for fit-state-starvation reasons, exactly as
+predicted, but *not crashed*). The crash is an XLA autotuning OOM inside the **untimed best-found
+reconstruction diagnostic** at $q=256$, after all 29 timed subjects had already been built and
+were resident (`panel.py:630`, `INTERNAL: Failed to get configs`, allocation requests
+16.97/16.98/31.97 GiB) — this is exactly what §A7 already diagnosed and fixed for the same
+reason `bpn202` itself hit it. Dropping the quadrature arms would not have prevented this crash:
+the diagnostic runs over every declared ROM $q$ regardless of which quadrature built it, and the
+29 resident subjects that starved the autotuner's memory headroom are dominated by the *dense*
+ladder's own test matrices, not by the EQ arms' (each EQ arm's $\Phi_M$/$A$ is now shared with
+its dense twin, per §A7). The correct fix is therefore the one already committed — reorder the
+diagnostic before the builds and share the resident test matrices — not removing arms that carry
+crossover-relevant numbers the $1024^2$ job exists to produce.
+
+**Smoked before resubmission.** The fix is the same code path `checks/smoke-panel-a8.json`
+already gates (§A8): `GATE7` confirms the uncapped fit-state count: `cluster_config_declarations`
+confirms `config-1024.json`'s 29 subjects and its `priority_override` are declared and honoured
+under the current driver, unchanged in shape from what `bpn202` ran. No new local smoke was run
+for this amendment; the mechanism smoke already covers the diagnostic reorder and the memory
+share, and nothing else in `config-1024.json` changed. `config-1024.json`'s `attempt` field is
+now `bpn203`; nothing else in the file differs from what `bpn202` staged (`git diff` against
+`bpn202`'s content is one line).
+
+**Resubmitted once, per the coordinator's instruction: `bpn203`.** Job id, GPU and namespace are
+recorded in the lab log entry this session appends. Not waited on.
+
+Job count after this amendment: `bpn101` (complete), `bpn201` (retracted), `bpn202` (failed),
+`bpn301` (submitted this session), `bpn203` (submitted this session) — five of the cap of eight.

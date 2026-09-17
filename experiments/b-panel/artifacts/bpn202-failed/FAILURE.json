@@ -1,0 +1,241 @@
+{
+  "attempt": "bpn202",
+  "job_id": "3787247",
+  "status": "FAILED: XLA autotuning out-of-memory inside the UNTIMED reconstruction diagnostic at q = 256, after every timed subject had been built; no timing or error number exists",
+  "scheduler": {
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed": "00:28:37",
+    "start": "2026-09-17T11:23:54",
+    "end": "2026-09-17T11:52:31",
+    "node": "pax011",
+    "batch_max_rss": "90611456K",
+    "alloc": "billing=8,cpu=8,gres/gpu=1,mem=240G,node=1",
+    "submitted": "3787247 bpn202 h200 240G submitted 2026-09-17 11:34 EDT from commit 494c3f48"
+  },
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "staged_commit": "494c3f485954995e47c41b726cfd6580eca036e3",
+  "config": "bpn202 (config-1024.json)",
+  "disk_at_start": "10.235.106.32:/projects/paralab  4.6T  4.2T  400G  92% /cluster/tufts/paralab",
+  "disk_full": false,
+  "cause": {
+    "kind": "GPU memory exhaustion during XLA autotuning of the reconstruction diagnostic (recon), not a code exception in the science path and not disk",
+    "where": "panel.py line 630 at commit 494c3f48: `z, rn, it, reason = host(recon(starts, target, G))` -- the best-found reconstruction diagnostic, vmapped over recon_starts = 8 starts, at q = 256 (K + q = 272 unknowns) on the 1024^2 grid (n = 1 046 529)",
+    "why": "`arms.make_reconstruction` vmaps one Levenberg-Marquardt solve per start; at 1024^2 and q = 256 the batched Jacobian is f64[8, 2, 523266, 272] = 18.2 GB and an [8, n, 512] intermediate is 34.3 GB. XLA's autotuner could not allocate 16.97GiB / 16.98GiB / 31.97GiB for its candidate configurations with the 29 built subjects resident (each EQ arm then held its own copy of its test matrix: 12 copies, ~40 GB at 1024^2) and raised INTERNAL: Failed to get configs. RECON q 0 and q 64 had completed; q 256 was next in the built order.",
+    "allocation_sizes_requested": [
+      "16.97GiB",
+      "16.98GiB",
+      "31.97GiB"
+    ],
+    "hlo_shapes_in_autotune_failures": [
+      "f64[1046529,8]",
+      "f64[8,2,272,272]"
+    ],
+    "oom_warnings": 15,
+    "traceback_verbatim": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/b_panel_20260917/bpn202/experiments/b-panel/panel.py\", line 805, in <module>\n    main()\n    ~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/b_panel_20260917/bpn202/experiments/b-panel/panel.py\", line 630, in main\n    z, rn, it, reason = host(recon(starts, target, G))\n                             ~~~~~^^^^^^^^^^^^^^^^^^^\njax.errors.JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 73 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %input_reduce_fusion.19 = f64[1046529,8]{1,0} fusion(%gemm_fusion_dot.5), kind=kInput, calls=%fused_reduce.19. Failed to profile configs: Out of memory while trying to allocate 16.98GiB.\n--------------------\nFor simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.\n"
+  },
+  "completed_before_crash": {
+    "preflight": "jax_backend=gpu",
+    "declared_subjects": 29,
+    "references": [
+      {
+        "case": 0,
+        "seconds": 33.18033447000198,
+        "max_relative_residual": 1.5988877558536421e-12
+      },
+      {
+        "case": 1,
+        "seconds": 29.413107907166705,
+        "max_relative_residual": 2.2824688962688955e-13
+      },
+      {
+        "case": 2,
+        "seconds": 39.69023281103,
+        "max_relative_residual": 3.389354035814174e-14
+      },
+      {
+        "case": 3,
+        "seconds": 36.80112185818143,
+        "max_relative_residual": 5.027782380426428e-12
+      },
+      {
+        "case": 4,
+        "seconds": 31.73626207304187,
+        "max_relative_residual": 1.2233066930136117e-13
+      },
+      {
+        "case": 5,
+        "seconds": 28.834899691864848,
+        "max_relative_residual": 9.875956374345395e-12
+      }
+    ],
+    "snapshots": {
+      "seconds": 76.58190390886739
+    },
+    "rule_transfers": [
+      {
+        "q": 0,
+        "M": 64,
+        "m_support": 1024,
+        "m": 934,
+        "fit_states": 64,
+        "design_rows": 4096,
+        "rho_max": 0.01795501362381313,
+        "rho_p95": 0.016111074401556267,
+        "basis": "primary",
+        "seconds": 37.161833758000284,
+        "source_rho_max": 0.015325989787060358
+      },
+      {
+        "q": 16,
+        "M": 128,
+        "m_support": 1024,
+        "m": 918,
+        "fit_states": 64,
+        "design_rows": 8192,
+        "rho_max": 0.05943045801487223,
+        "rho_p95": 0.05620241810160377,
+        "basis": "primary",
+        "seconds": 45.34771309304051,
+        "source_rho_max": 0.09354875564583576
+      },
+      {
+        "q": 32,
+        "M": 192,
+        "m_support": 1024,
+        "m": 967,
+        "fit_states": 42,
+        "design_rows": 8064,
+        "rho_max": 0.03131105849825562,
+        "rho_p95": 0.01802643636715911,
+        "basis": "primary",
+        "seconds": 51.40285720513202,
+        "source_rho_max": 0.05325016925129779
+      },
+      {
+        "q": 64,
+        "M": 320,
+        "m_support": 1024,
+        "m": 897,
+        "fit_states": 25,
+        "design_rows": 8000,
+        "rho_max": 0.1316266211054809,
+        "rho_p95": 0.12543832554392553,
+        "basis": "none",
+        "seconds": 67.11488638888113,
+        "source_rho_max": 0.05307530181948666
+      },
+      {
+        "q": 128,
+        "M": 576,
+        "m_support": 2048,
+        "m": 1307,
+        "fit_states": 14,
+        "design_rows": 8064,
+        "rho_max": 1.0294635622322725,
+        "rho_p95": 0.521792890280666,
+        "basis": "none",
+        "seconds": 126.68675089697354,
+        "source_rho_max": 0.19079787335858353
+      },
+      {
+        "q": 256,
+        "M": 1088,
+        "m_support": 2048,
+        "m": 1831,
+        "fit_states": 8,
+        "design_rows": 8704,
+        "rho_max": 0.41435434813556793,
+        "rho_p95": 0.3979777793680007,
+        "basis": "none",
+        "seconds": 389.66834332817234,
+        "source_rho_max": 0.16776604412734367
+      }
+    ],
+    "seconds_in_transfers": 717.3823846701998,
+    "subjects_built": [
+      "fft_tight",
+      "nt1e-2_dt01",
+      "nt1e-2_dt005",
+      "nt1e-4_dt01",
+      "nt1e-4_dt005",
+      "q0_M64_dense_g1em06",
+      "q64_M320_dense_g1em06",
+      "q256_M1088_dense_g1em06",
+      "q0_M64_eqxfer_g1em06",
+      "q64_M320_eqxfer_g1em06",
+      "q256_M1088_eqxfer_g1em06",
+      "pod16_M64_dense",
+      "pod128_M512_dense",
+      "q16_M128_dense_g1em06",
+      "q32_M192_dense_g1em06",
+      "q128_M576_dense_g1em06",
+      "q16_M128_eqxfer_g1em06",
+      "q32_M192_eqxfer_g1em06",
+      "q128_M576_eqxfer_g1em06",
+      "pod32_M128_dense",
+      "pod64_M256_dense",
+      "pod256_M1024_dense",
+      "q0_M64_eqxfer_g0p001",
+      "q16_M128_eqxfer_g0p001",
+      "q32_M192_eqxfer_g0p001",
+      "q64_M320_eqxfer_g0p001",
+      "q128_M576_eqxfer_g0p001",
+      "q256_M1088_eqxfer_g0p001",
+      "free512_M1024_dense"
+    ],
+    "subjects_built_count": 29,
+    "reconstruction_done": [
+      {
+        "q": 0,
+        "worst_best_found": 0.03854892662374035
+      },
+      {
+        "q": 64,
+        "worst_best_found": 0.03573873658026198
+      }
+    ]
+  },
+  "not_reached": "the reconstruction at q = 256, 16, 32, 128; the POD projection diagnostics; every warm-up, timing, the FNO phase, OUTPUTS.sha256, ALL-DONE",
+  "stdout_verbatim": "host=pax011 source_commit=494c3f485954995e47c41b726cfd6580eca036e3\nNVIDIA H200, 143771 MiB\n10.235.106.32:/projects/paralab  4.6T  4.2T  400G  92% /cluster/tufts/paralab\njax_backend=gpu\njax_backend=gpu x64=True precision=highest\nDECLARED 29 subjects: fft_tight nt1e-2_dt01 nt1e-2_dt005 nt1e-4_dt01 nt1e-4_dt005 q0_M64_dense_g1em06 q64_M320_dense_g1em06 q256_M1088_dense_g1em06 q0_M64_eqxfer_g1em06 q64_M320_eqxfer_g1em06 q256_M1088_eqxfer_g1em06 pod16_M64_dense pod128_M512_dense q16_M128_dense_g1em06 q32_M192_dense_g1em06 q128_M576_dense_g1em06 q16_M128_eqxfer_g1em06 q32_M192_eqxfer_g1em06 q128_M576_eqxfer_g1em06 pod32_M128_dense pod64_M256_dense pod256_M1024_dense q0_M64_eqxfer_g0p001 q16_M128_eqxfer_g0p001 q32_M192_eqxfer_g0p001 q64_M320_eqxfer_g0p001 q128_M576_eqxfer_g0p001 q256_M1088_eqxfer_g0p001 free512_M1024_dense\nREFERENCE 0 40.2\nREFERENCE 1 69.6\nREFERENCE 2 109.3\nREFERENCE 3 146.1\nREFERENCE 4 177.9\nREFERENCE 5 206.7\nSNAPSHOTS 76.6\nRULE eqxfer q 0 m 1024 primary\nRULE eqxfer q 16 m 1024 primary\nRULE eqxfer q 32 m 1024 primary\nRULE eqxfer q 64 m 1024 primary\nRULE eqxfer q 128 m 2048 secondary\nRULE eqxfer q 256 m 2048 secondary\nXFER eqxfer q 0 m 934 rho_max 0.0180 p95 0.0161 primary 37.2\nXFER eqxfer q 16 m 918 rho_max 0.0594 p95 0.0562 primary 45.3\nXFER eqxfer q 32 m 967 rho_max 0.0313 p95 0.0180 primary 51.4\nXFER eqxfer q 64 m 897 rho_max 0.1316 p95 0.1254 none 67.1\nXFER eqxfer q 128 m 1307 rho_max 1.0295 p95 0.5218 none 126.7\nXFER eqxfer q 256 m 1831 rho_max 0.4144 p95 0.3980 none 389.7\nARM fft_tight 0.4\nARM nt1e-2_dt01 0.0\nARM nt1e-2_dt005 0.0\nARM nt1e-4_dt01 0.0\nARM nt1e-4_dt005 0.0\nARM q0_M64_dense_g1em06 0.0\nARM q64_M320_dense_g1em06 0.0\nARM q256_M1088_dense_g1em06 0.0\nARM q0_M64_eqxfer_g1em06 0.0\nARM q64_M320_eqxfer_g1em06 0.3\nARM q256_M1088_eqxfer_g1em06 1.0\nARM pod16_M64_dense 4.4\nARM pod128_M512_dense 17.5\nARM q16_M128_dense_g1em06 0.0\nARM q32_M192_dense_g1em06 0.0\nARM q128_M576_dense_g1em06 0.0\nARM q16_M128_eqxfer_g1em06 0.1\nARM q32_M192_eqxfer_g1em06 0.2\nARM q128_M576_eqxfer_g1em06 0.5\nARM pod32_M128_dense 5.7\nARM pod64_M256_dense 9.7\nARM pod256_M1024_dense 34.8\nARM q0_M64_eqxfer_g0p001 0.0\nARM q16_M128_eqxfer_g0p001 0.1\nARM q32_M192_eqxfer_g0p001 0.2\nARM q64_M320_eqxfer_g0p001 0.3\nARM q128_M576_eqxfer_g0p001 0.5\nARM q256_M1088_eqxfer_g0p001 1.0\nARM free512_M1024_dense 33.6\nRECON q 0 3.85489\nRECON q 64 3.57387\n",
+  "prediction_A5_2": {
+    "predicted_uncertified": [
+      128,
+      256
+    ],
+    "observed_uncertified": [
+      64,
+      128,
+      256
+    ],
+    "note": "identical rho values to the retracted bpn201 (same H200 class, same code path): q = 64 (25 states), 128 (14) and 256 (8) uncertified. These are the values of record for the clip(8192/M, 8, 64) convention; A7 retires that convention, so the resubmission recomputes them with 64 states at every rung."
+  },
+  "remediation": {
+    "changes": [
+      "panel.py: the untimed reconstruction and POD-projection diagnostics run BEFORE the subjects are built (over the declared q's and ranks; same programs, same inputs) and the reconstruction is OOM-tolerant -- an OOM records dropped[name=reconstruction_q{q}, phase=reconstruction] and the job continues. Chunking the starts was tried first and dropped: it agrees with the vmapped batch to round-off (checks/recon-chunk-probe.json) but moving the diagnostic keeps the pre-registered program byte-identical",
+      "panel.py: every EQ arm now reuses the dense arm's resident test matrix and A = Phi^T G for its M instead of holding its own copy (12 copies, ~40 GB at 1024^2; 24 copies, ~4.9 GB at 256^2)",
+      "panel.py: the transferred-rule refit uses every configured fit state (64) at every rung; `max_fit_rows` retired (DESIGN A7)"
+    ],
+    "science_changed": "the transferred-rule fit-state count (a pre-announced fix, A5.2/A7); nothing else -- the memory changes are covered by the smoke's 1e-12 baseline gate, the in-job matched-rule bitwise gate and the cross-job fidelity gates",
+    "resubmitted_as": "NOT resubmitted by this session: the coordinator ordered bpn301 first and bpn202 left as it was; the fix is committed and smoked, and a resubmission (bpn203) is one stage + sbatch away"
+  },
+  "files": {
+    "COMMIT.txt": "4a28a2d7a7f1b9f6782c57bf5e22b967b89e54c7e621d76dfe4cc4833dbce5c6",
+    "MANIFEST.sha256": "acf6cc387875f736d8d33f5c736d2940813a906ce9e71fd4eb85239a7f2bdb24",
+    "PROVENANCE.json": "c9e764d28bf91279fed87fe5b2413b161816436611d695287b8c057605b14001",
+    "REMOTE-SHA256.txt": "dcb4b9c234781c88e7bb21ca462840ce07e575d0f10901818c8b03272cc3e8ac",
+    "logs/3787247.err": "e24485501eb02f0180039fb2f75e40ac43ce29cbad42786ec2d539a141f326c0",
+    "logs/3787247.out": "f671145fa5943480b56ac1dad2f1a56aa67b4a96b2b780f2805ac46c830c8c2c",
+    "output/fno-cohort-index.json": "bcfb4445e71efe3e1f28629e86ed8345d1242195cbbf271080febc96680ede1b",
+    "output/result.partial.json": "36b9be8ebe140af1a4d65bb7e2614582c7cb0c94fcf64f9545fcd0b3f45f5ee5",
+    "output/rule_xfer_eqxfer_q0_L1024.npz": "b7e40e5c40b37149ef4cda268d9e108b7c792eda4ab369ec89a4bb6829418710",
+    "output/rule_xfer_eqxfer_q128_L1024.npz": "4d7fa3569a85a8a1819c5e6a8139502f1eaa4a1277392f2a7eca9c933ca51cae",
+    "output/rule_xfer_eqxfer_q16_L1024.npz": "23a1c04cdd380889962df5d23ef06a54dcb21ccd2e5f1191b5b87f435b4af1b9",
+    "output/rule_xfer_eqxfer_q256_L1024.npz": "5adcf28201c6d209a49b2249dc89419e09b2b1f4a18d5cc6c21520786475fdce",
+    "output/rule_xfer_eqxfer_q32_L1024.npz": "4ffa7186003a6a42216d2050b9ee2b271a34efd9464959a719cac60c0d5bd3a5",
+    "output/rule_xfer_eqxfer_q64_L1024.npz": "fbeb96e638b065aa6e2d75e66f4da44ed6dcd09135cabedf64d919113feb5c6e",
+    "run.sbatch": "24ce896b950b992b48be97dede54ba9ea9a5891ce49829c16775627fd81efcf7",
+    "scheduler.txt": "e74e1c855eba8d8805a0b4c075a89dbdd9b9a775f27ba922b7a39db4f0545c68"
+  }
+}

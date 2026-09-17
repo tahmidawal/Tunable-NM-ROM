@@ -14,11 +14,18 @@ import json
 import subprocess
 from pathlib import Path
 
+import numpy as np
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 QTD = ROOT.parent / '2026-09-16-q-trajdirs/experiments/q-trajdirs/artifacts/qtd02'
 QRG = ROOT / 'experiments/q-ridge/artifacts/qrg304'
+EQTOP = ROOT.parent / '2026-09-17-b-eqtop/experiments/b-eqtop/certified-rules'
 SPEED_COMMIT = 'b3f9ecf928805fd512e15ff47d15863bc0d3d268'
+
+
+def sha_array(x):
+    return hashlib.sha256(np.ascontiguousarray(np.asarray(x)).tobytes()).hexdigest()
 
 
 def sha(p):
@@ -35,7 +42,8 @@ def outputs_table(archive):
 
 def main():
     out = dict(note=('frozen inputs of the b-panel lane; every SHA256 below is recomputed here and '
-                     'asserted equal to the source job\'s own OUTPUTS.sha256 entry'), files={})
+                     'asserted equal to the source job\'s own OUTPUTS.sha256 entry (qtd02, qrg304) or to the '
+                     'exporting lane\'s SHA256SUMS and PROVENANCE.json (b-eqtop, rules-eqtop/)'), files={})
 
     # --- the dense ladder's directions (qtd02, job 3757505) --------------------------
     qtd_out = outputs_table(QTD)
@@ -83,6 +91,66 @@ def main():
             nodes_sha256=info['nodes_sha256'], weights_sha256=info['weights_sha256'],
             chosen_by_qrg304=(c['chosen_m'] == m), qrg304_basis=(c['basis'] if c['chosen_m'] == m else None),
             gpu=qrg_res['gpu'])
+
+    # --- b-eqtop's exported rule set (DESIGN A8: the `eqtop` arms of bpn301) --------------
+    # Verified three ways: the file SHA256 against b-eqtop's SHA256SUMS AND its PROVENANCE.json,
+    # and the nodes / weights SHA256 recomputed here against the per-rule record. The
+    # construction status (confirmed / marginal / certified in one draw) is carried verbatim so
+    # every table row and caption can show it: at q = 128 and 256 the exported rules are single
+    # draws of constructions whose m = 2048 re-draws were marginal (b-eqtop DESIGN A4).
+    et = json.loads((EQTOP / 'PROVENANCE.json').read_text())
+    sums = dict(line.split('  ', 1)[::-1] for line in (EQTOP / 'SHA256SUMS').read_text().splitlines() if line.strip())
+    et_head = subprocess.check_output(['git', '-C', str(EQTOP), 'rev-parse', 'HEAD'], text=True).strip()
+    et_dirty = subprocess.check_output(['git', '-C', str(EQTOP), 'status', '--porcelain', str(EQTOP)], text=True).strip()
+    assert not et_dirty, f'b-eqtop certified-rules directory has uncommitted changes:\n{et_dirty}'
+    by_file = {r['file']: r for r in et['rules']}
+    superseded = {x['sha256']: x for x in et.get('superseded', [])}
+    local_qrg = {sha(p_): p_.name for p_ in (HERE / 'rules').glob('*.npz')}
+    for p in sorted((HERE / 'rules-eqtop').glob('*.npz')):
+        rec = by_file[p.name]
+        h = sha(p)
+        assert h == rec['sha256'] == sums[p.name], (p.name, h, rec['sha256'], sums.get(p.name))
+        z = np.load(p)
+        nodes, w = np.asarray(z['nodes'], dtype=int), np.asarray(z['weights'], dtype=float)
+        assert sha_array(nodes) == rec['nodes_sha256'] and sha_array(w) == rec['weights_sha256'], p.name
+        assert len(nodes) == rec['m'] and rec['M'] == 4 * (16 + rec['q']), p.name
+        ho = rec['held_out']
+        assert ho['bars']['primary'] == et['bars']['primary']
+        out['files'][f'rules-eqtop/{p.name}'] = dict(
+            sha256=h, source_lane='b-eqtop', source_job=rec['origin']['job_id'], source_attempt=rec['origin']['attempt'],
+            source_commit=rec['origin']['commit'], source_gpu=rec['origin']['gpu'],
+            source_path=f'experiments/b-eqtop/certified-rules/{p.name}', source_worktree_head=et_head,
+            recertified_in=rec['origin'].get('recertified_in'), certified_in=ho.get('certified_in'),
+            q=rec['q'], M=rec['M'], m=rec['m'], m_target=rec['m_target'], population=rec['population'],
+            construction_arm=rec['construction_arm'], fit_states=rec['fit_states'], candidate_pool=rec['candidate_pool'],
+            design_rows=rec['design_rows'], scaling=rec['scaling'], compressed=rec['compressed'],
+            relative_fit=rec['nnls_relative_fit'], truncated=rec['truncated'], held_out_states=ho['states'],
+            rho_max=ho['rho_max'], rho_p95=ho['rho_p95'], rho_median=ho['rho_median'], rho_bar=et['bars']['primary'],
+            certified_primary=ho['certified_primary'], certified_secondary=ho['certified_secondary'],
+            certified_tight=ho['certified_tight'], tight_bar=et['bars']['tight'],
+            construction_status=rec['construction']['status'], construction_draws=rec['construction']['draws'],
+            draws_certifying_primary=rec['construction']['draws_certifying_primary'],
+            rho_max_over_draws=dict(min=rec['construction']['rho_max_min'], median=rec['construction']['rho_max_median'],
+                                    max=rec['construction']['rho_max_max']),
+            export_basis=rec['export_basis'], export_note=rec['export_note'], status_note=rec['status'],
+            same_file_as_qrg304_rule=local_qrg.get(h),
+            nodes_sha256=rec['nodes_sha256'], weights_sha256=rec['weights_sha256'],
+            eqtop_set_status=et['status'], eqtop_status_note=et['status_note'])
+    # what b-eqtop's replication says about the qrg304 files this lane carries as `eqcert`
+    for key, entry in out['files'].items():
+        if not key.startswith('rules/'):
+            continue
+        h = entry['sha256']
+        if h in {r['sha256'] for r in et['rules']}:
+            rec = next(r for r in et['rules'] if r['sha256'] == h)
+            entry.update(construction_status=rec['construction']['status'], construction_draws=rec['construction']['draws'],
+                         construction_assessed_by='b-eqtop (same file, exported there as well)')
+        elif h in superseded:
+            entry.update(construction_status='marginal (b-eqtop superseded list)', construction_assessed_by='b-eqtop',
+                         construction_note=superseded[h]['reason'])
+        else:
+            entry.update(construction_status=None, construction_assessed_by=None,
+                         construction_note='single qrg304 draw; its construction was not re-drawn under this file hash in b-eqtop')
 
     # --- the b-speed kernels ----------------------------------------------------------
     for name in ('fast.py', 'ladders.py'):

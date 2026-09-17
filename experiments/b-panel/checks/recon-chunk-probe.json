@@ -1,0 +1,106 @@
+{
+  "purpose": "DESIGN A7: does arms.make_reconstruction vmapped over 4 starts equal the same 4 solves run one at a time? 64-interval fixture case, q = 4 head, budgets 100 / 400 / 1000. Verdict: yes to round-off -- the best residuals are 1e-13 (an attainable fit) and differ at that level; the smoke's first chunk gate compared those round-off residuals RELATIVELY and failed on nothing. Chunking was nevertheless dropped in favour of running the diagnostic before the builds, which keeps the pre-registered program byte-identical.",
+  "machine": "local GB10",
+  "script": "scratchpad recon_chunk_probe.py (self-contained; the rows below are its output)",
+  "by_budget": {
+    "100": {
+      "whole": {
+        "rn": 1.1703347955552498e-13,
+        "it": 99,
+        "reason": 2
+      },
+      "whole_rerun_bitwise": true,
+      "singles": [
+        {
+          "rn": 1.1103496370777582e-13,
+          "it": 100,
+          "reason": 0
+        },
+        {
+          "rn": 0.06211629790920843,
+          "it": 100,
+          "reason": 0
+        },
+        {
+          "rn": 0.041604711155337745,
+          "it": 100,
+          "reason": 0
+        },
+        {
+          "rn": 0.04216771334360113,
+          "it": 100,
+          "reason": 0
+        }
+      ],
+      "best_single": 0,
+      "rel_rn": 0.051254699685343026,
+      "z_rel": 5.0797602605706264e-14
+    },
+    "400": {
+      "whole": {
+        "rn": 1.0336993530930682e-13,
+        "it": 135,
+        "reason": 2
+      },
+      "whole_rerun_bitwise": true,
+      "singles": [
+        {
+          "rn": 1.1103496370777582e-13,
+          "it": 103,
+          "reason": 2
+        },
+        {
+          "rn": 9.525202675872384e-14,
+          "it": 150,
+          "reason": 2
+        },
+        {
+          "rn": 1.1028227006869674e-13,
+          "it": 139,
+          "reason": 2
+        },
+        {
+          "rn": 1.0450300292375686e-13,
+          "it": 143,
+          "reason": 2
+        }
+      ],
+      "best_single": 1,
+      "rel_rn": 0.07853258809045696,
+      "z_rel": 7.991311356781064e-14
+    },
+    "1000": {
+      "whole": {
+        "rn": 1.0336993530930682e-13,
+        "it": 135,
+        "reason": 2
+      },
+      "whole_rerun_bitwise": true,
+      "singles": [
+        {
+          "rn": 1.1103496370777582e-13,
+          "it": 103,
+          "reason": 2
+        },
+        {
+          "rn": 9.525202675872384e-14,
+          "it": 150,
+          "reason": 2
+        },
+        {
+          "rn": 1.1028227006869674e-13,
+          "it": 139,
+          "reason": 2
+        },
+        {
+          "rn": 1.0450300292375686e-13,
+          "it": 143,
+          "reason": 2
+        }
+      ],
+      "best_single": 1,
+      "rel_rn": 0.07853258809045696,
+      "z_rel": 7.991311356781064e-14
+    }
+  }
+}

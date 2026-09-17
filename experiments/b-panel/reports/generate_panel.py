@@ -25,7 +25,8 @@ METRICS = ('worst_all_times_percent', 'median_all_times_percent', 'worst_evolved
            'worst_t0_compression_percent', 'worst_reference_percent', 'median_reference_percent', 'median_gpu_ms',
            'median_host_ms', 'median_iterations', 'max_iterations', 'total_budget_exits', 'max_joint_stationarity',
            'max_step_stationarity', 'max_ic_stationarity', 'max_ic_relative_residual', 'best_found_percent',
-           'solved_over_best_found', 'converged', 'converged_strict', 'admissible', 'rho_max', 'rho_p95', 'rule_basis')
+           'solved_over_best_found', 'converged', 'converged_strict', 'admissible', 'rho_max', 'rho_p95', 'rule_basis',
+           'rule_set', 'rule_status', 'rule_m', 'rule_source_lane', 'rule_source_job', 'rule_fit_states', 'rule_file_sha256')
 
 
 def f(x, d=4):
@@ -110,6 +111,26 @@ def section(W, au, tag):
       f"Costs are medians over 6 cases × 3 repetitions; ratios are only meaningful inside this table.\n")
     if au['dropped']:
         W('**Subjects dropped by the OOM rule (DESIGN.md §3.1):** ' + ', '.join(f"`{d['name']}` ({d['phase']})" for d in au['dropped']) + '\n')
+    if au.get('rules'):
+        sets = sorted({x.get('rule_set') or x.get('kind') for x in au['rules']}, key=str)
+        single = [x for x in au['rules'] if (x.get('construction_status') or '').startswith('certified in one draw')]
+        W('### Rule sets carried in this job\n')
+        W(f"{len(sets)} empirical-quadrature rule set{'s' if len(sets) != 1 else ''} ran as arms at matched q, M and tolerance: "
+          + ', '.join(f'`{k}`' for k in sets) + ". The **rule status** column is the construction status the exporting lane "
+          "recorded for that rule and travels with every row below: *confirmed (k/k)* means every independent re-draw of the "
+          "construction met the primary bar; *marginal* means some re-draws failed it; *certified in one draw* means this "
+          "single rule met the bar but its construction has not been re-drawn; blank means a single qrg304 draw never "
+          "re-drawn. "
+          + (f"**{len(single)} rule{'s' if len(single) != 1 else ''} in this job {'are' if len(single) != 1 else 'is'} single-draw: "
+             + ', '.join(f"`{x.get('rule_set')}` q={x['q']}" for x in single)
+             + " — those arms are 'b-eqtop's rules, single-draw', not 'certified rules'." if single else '')
+          + '\n')
+        W(table(['set', 'q', 'M', 'file', 'source', 'm', 'fit states', 'ρ max', 'ρ 95', 'basis', 'rule status'],
+                [[f"`{x.get('rule_set') or x.get('kind')}`", x['q'], x['M'], f"`{x['file']}`",
+                  f"{x.get('source_lane') or 'q-ridge'} / {x.get('source_attempt') or ''} / {x.get('source_job')}".replace('/  /', '/'),
+                  f(x.get('m')), f(x.get('source_fit_states')), f(x.get('rho_max', x.get('source_rho_max'))), f(x.get('rho_p95', x.get('source_rho_p95'))),
+                  x.get('basis') or '—', x.get('construction_status') or '—']
+                 for x in sorted(au['rules'], key=lambda x: (str(x.get('rule_set')), x['q']))]))
     zero = [x['arm'] for x in au['arms'] if x['worst_all_times_percent'] <= 0.]
     disc = au['fom_discretisation_error_percent']
     if zero:
@@ -134,13 +155,13 @@ def section(W, au, tag):
           + ", and every reduced subject inherits it. A reduced subject is only interesting where it is cheaper "
             "than a full-order solve of the accuracy it actually delivers.\n")
     W('### Every subject\n')
-    hdr = ['subject', 'family', 'q / k′', 'M', 'quad.', 'm', 'rule basis', 'tol', 'worst all %', 'worst evolved %',
+    hdr = ['subject', 'family', 'q / k′', 'M', 'quad.', 'm', 'rule set', 'rule basis', 'rule status', 'tol', 'worst all %', 'worst evolved %',
            'median evolved %', 't=0 %', 'worst vs ref %', 'best-found %', 'solved/best-found', 'GPU ms',
            'complete ms', 'med it', 'max it', 'budget exits', 'conv.', 'strict', 'admissible']
     rows = []
     for x in au['arms']:
         rows.append([f"`{x['arm']}`", x['family'], sub_label(x), f(x['M']), x['quadrature'] or ('—' if x['family'] != 'fom' else f"ntol {sci(x['ntol'])} dt {x['dt']}"),
-                     f(x['rule_m']) if x['quadrature'] == 'eq' else '—', x['rule_basis'] or '—',
+                     f(x['rule_m']) if x['quadrature'] == 'eq' else '—', x.get('rule_set') or '—', x['rule_basis'] or '—', x.get('rule_status') or '—',
                      sci(x['gtol']) if x['gtol'] is not None else '—', f(x['worst_all_times_percent']), f(x['worst_evolved_percent']),
                      f(x['median_evolved_percent']), f(x['worst_t0_compression_percent']), f(x['worst_reference_percent']),
                      f(x.get('best_found_percent')), f(x.get('solved_over_best_found'), 5), f(x['median_gpu_ms'], 3), f(x['median_host_ms'], 3), f(x['median_iterations'], 1), f(x['max_iterations']),
@@ -323,7 +344,10 @@ def glossary(W):
         ('M', 'number of sine test modes the weak residual is projected on; M = 4 × unknowns unless stated.'),
         ('quad. / m', 'dense = exact advection sum on the whole grid; eq = an m-point empirical quadrature rule.'),
         ('eqcert / eqxfer', 'eqcert: the rule qrg304 fitted on reachable states and certified by held-out ρ; eqxfer: that rule\'s support mapped to a finer grid with weights refit and re-certified.'),
+        ('eqtop', 'the b-eqtop lane\'s final exported rule set, one rule per rung, carried as a second set of arms at matched q, M and tolerance in the same job; at q = 0, 16, 32 its files are qrg304\'s own (the two sets must then agree bitwise, an in-job gate), at q = 64 a confirmed m = 2048 construction, at q = 128 and 256 single-draw rules.'),
+        ('rule set', 'which named set of empirical-quadrature rules the arm used; sets differ only in the (nodes, weights) files.'),
         ('rule basis', 'primary: ρ max ≤ 0.116 on held-out reachable states; secondary: only the 95th percentile of ρ is ≤ 0.116; none: uncertified.'),
+        ('rule status', 'the exporting lane\'s verdict on the rule\'s CONSTRUCTION, not just this rule: confirmed (k/k) = every independent re-draw certified; marginal = some re-draws failed; certified in one draw = never re-drawn, a fresh draw could fail; blank = a single qrg304 draw that was never re-drawn.'),
         ('ρ', 'the rule\'s relative error on the projected advection term, measured on states the model actually reaches, never its own fit residual.'),
         ('tol', 'the evolution stopping tolerance on the normalised gradient.'),
         ('worst all % / worst evolved %', 'largest relative error against the same-job converged full-order solve over all six output times / over the five evolved times, worst over the six cases.'),

@@ -161,6 +161,12 @@ def main():
             out['duplicate_rule_set_bitwise'] = dict(
                 arms=len({k[0] for k in dup}), invocations=len(dup), all_bitwise=True)
             print('GATE4 duplicate rule set bitwise over', len(dup), 'invocations', flush=True)
+            # DESIGN A8: the same identity is now an in-job gate of the driver, and the audit recomputes it
+            mr = res['gates']['matched_rule_files_bitwise']
+            assert mr['passed'] is True and len(mr['pairs']) == 4, mr
+            assert aj['checks']['matched_rule_files_bitwise']['passed'] and aj['checks']['matched_rule_files_bitwise_recomputed']['passed']
+            out['matched_rule_files_gate'] = dict(pairs=mr['pairs'], audit_recomputed=aj['checks']['matched_rule_files_bitwise_recomputed']['detail'])
+            print('GATE4b in-job matched-rule gate and its audit recomputation pass over', len(mr['pairs']), 'pairs', flush=True)
             saved = np.load(FIX / 'expected.npz')
             x = next(i for i in res['invocations'] if i['name'] == 'q0_M64_eqcert_g1em06' and i['case'] == 0)
             f = np.load(od / x['artifact'])
@@ -182,8 +188,20 @@ def main():
             assert declared[nfom:nfom + len(cfg128['priority_override'])] == cfg128['priority_override'], declared
             out['priority_override_honoured'] = dict(declared_order=declared, override=cfg128['priority_override'])
             print('GATE5 priority_override honoured', declared, flush=True)
-            out['transfer'] = [{k: v for k, v in t.items() if k in ('q', 'M', 'm', 'certification', 'basis', 'seconds')}
+            out['transfer'] = [{k: v for k, v in t.items() if k in ('q', 'M', 'm', 'certification', 'basis', 'seconds', 'fit_states_used', 'fit_state_rule')}
                                for t in res['transfer']]
+            # DESIGN A7: the uncapped fit-state count -- every configured state, design rows = states x M
+            cfg128 = json.loads((HERE / cfgname).read_text())
+            want = int(cfg128['eq_transfer']['fit_states'])
+            assert all(t['fit_states_used'] == want and t['refit']['design_rows'] == want * t['M'] for t in res['transfer']), \
+                [(t['q'], t['fit_states_used'], t['refit']['design_rows']) for t in res['transfer']]
+            # DESIGN A7: the diagnostics now run before the builds, over the DECLARED rom q's and POD ranks
+            assert sorted(e['q'] for e in res['reconstruction'] if e['family'] == 'rom') == sorted(set(cfg128['dense_q']) | set(cfg128['eq_q']) | set(cfg128.get('extra_dense_q', [])))
+            assert sorted(e['k'] for e in res['reconstruction'] if e['family'] == 'pod') == sorted(cfg128['pod_ranks'])
+            assert all(e.get('starts') == cfg128['recon_starts'] and e.get('budget') == cfg128['recon_budget'] for e in res['reconstruction'] if e['family'] == 'rom')
+            out['fit_states_uncapped'] = dict(configured=want, used=[t['fit_states_used'] for t in res['transfer']],
+                                              design_rows=[t['refit']['design_rows'] for t in res['transfer']])
+            print('GATE7 fit states uncapped:', out['fit_states_uncapped'], flush=True)
     # The cluster configs' `priority_override` names must each be a declared subject: the check
     # is pure configuration (no GPU work), the same function main() runs before any work.
     out['cluster_config_declarations'] = {}

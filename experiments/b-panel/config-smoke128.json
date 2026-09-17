@@ -49,8 +49,7 @@
       2
     ],
     "collect_iters": 4,
-    "fit_states": 8,
-    "max_fit_rows": 8192,
+    "fit_states": 16,
     "cert_states": 16,
     "certify_chunk": 8
   },
@@ -92,7 +91,10 @@
   "fidelity_expectations": {},
   "fno": false,
   "purpose": "local smoke, 128 intervals, rules transferred from 64",
-  "priority_override": ["q4_M80_dense_g1em06", "q0_M64_eqxfer_g1em06"],
+  "priority_override": [
+    "q4_M80_dense_g1em06",
+    "q0_M64_eqxfer_g1em06"
+  ],
   "priority_override_note": "a list of subject NAMES, as config-512/1024 carry it; bpn201 (job 3783817) crashed on this key after 20 minutes because the driver indexed it as dicts and no smoke config carried it (DESIGN A6)",
   "case_subset": [
     0,

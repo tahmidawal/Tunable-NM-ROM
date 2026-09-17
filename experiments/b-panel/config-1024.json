@@ -1,5 +1,5 @@
 {
-  "attempt": "bpn202",
+  "attempt": "bpn203",
   "intervals": 1024,
   "dt": 0.005,
   "eval_seed": 7090702,
@@ -154,9 +154,9 @@
     ],
     "collect_iters": 12,
     "fit_states": 64,
-    "max_fit_rows": 8192,
     "cert_states": 512,
-    "certify_chunk": 16
+    "certify_chunk": 16,
+    "fit_state_note": "DESIGN A7: fit_states used at every rung, uncapped; the clip(max_fit_rows/M, 8, fit_states) convention of bpn201/bpn202 is retired"
   },
   "priority_override": [
     "q0_M64_dense_g1em06",
@@ -167,5 +167,6 @@
     "q256_M1088_eqxfer_g1em06",
     "pod16_M64_dense",
     "pod128_M512_dense"
-  ]
+  ],
+  "reconstruction_note": "DESIGN A7: the untimed reconstruction diagnostic runs before the subjects are built (bpn202, job 3787247, OOM-killed in it at q = 256 with 29 subjects resident) and is OOM-tolerant"
 }

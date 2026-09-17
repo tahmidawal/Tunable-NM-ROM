@@ -51,11 +51,11 @@ def main():
                  f"failed gates: {', '.join(au['failed']) or 'none'}; dropped by the OOM rule: "
                  f"{', '.join(d['name'] for d in au['dropped']) or 'none'}.")
         L.append('')
-        L.append('| subject | family | q / k′ | quad. | basis | tol | worst all % | worst evolved % | t=0 % | vs ref % | GPU ms | complete ms | med it | budget exits | converged | strict | admissible |')
-        L.append('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
+        L.append('| subject | family | q / k′ | quad. | rule set | basis | rule status | tol | worst all % | worst evolved % | t=0 % | vs ref % | GPU ms | complete ms | med it | budget exits | converged | strict | admissible |')
+        L.append('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
         for x in au['arms']:
             qk = x['q'] if x['q'] is not None else (x['k'] if x['k'] is not None else '—')
-            L.append(f"| `{x['arm']}` | {x['family']} | {qk} | {x['quadrature'] or '—'} | {x['rule_basis'] or '—'} | "
+            L.append(f"| `{x['arm']}` | {x['family']} | {qk} | {x['quadrature'] or '—'} | {x.get('rule_set') or '—'} | {x['rule_basis'] or '—'} | {x.get('rule_status') or '—'} | "
                      f"{('%.0e' % x['gtol']) if x['gtol'] is not None else '—'} | {f(x['worst_all_times_percent'])} | "
                      f"{f(x['worst_evolved_percent'])} | {f(x['worst_t0_compression_percent'])} | {f(x['worst_reference_percent'])} | "
                      f"{f(x['median_gpu_ms'], 3)} | {f(x['median_host_ms'], 3)} | {f(x['median_iterations'], 1)} | "

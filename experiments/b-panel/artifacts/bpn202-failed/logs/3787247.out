@@ -1,0 +1,56 @@
+host=pax011 source_commit=494c3f485954995e47c41b726cfd6580eca036e3
+NVIDIA H200, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  400G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+DECLARED 29 subjects: fft_tight nt1e-2_dt01 nt1e-2_dt005 nt1e-4_dt01 nt1e-4_dt005 q0_M64_dense_g1em06 q64_M320_dense_g1em06 q256_M1088_dense_g1em06 q0_M64_eqxfer_g1em06 q64_M320_eqxfer_g1em06 q256_M1088_eqxfer_g1em06 pod16_M64_dense pod128_M512_dense q16_M128_dense_g1em06 q32_M192_dense_g1em06 q128_M576_dense_g1em06 q16_M128_eqxfer_g1em06 q32_M192_eqxfer_g1em06 q128_M576_eqxfer_g1em06 pod32_M128_dense pod64_M256_dense pod256_M1024_dense q0_M64_eqxfer_g0p001 q16_M128_eqxfer_g0p001 q32_M192_eqxfer_g0p001 q64_M320_eqxfer_g0p001 q128_M576_eqxfer_g0p001 q256_M1088_eqxfer_g0p001 free512_M1024_dense
+REFERENCE 0 40.2
+REFERENCE 1 69.6
+REFERENCE 2 109.3
+REFERENCE 3 146.1
+REFERENCE 4 177.9
+REFERENCE 5 206.7
+SNAPSHOTS 76.6
+RULE eqxfer q 0 m 1024 primary
+RULE eqxfer q 16 m 1024 primary
+RULE eqxfer q 32 m 1024 primary
+RULE eqxfer q 64 m 1024 primary
+RULE eqxfer q 128 m 2048 secondary
+RULE eqxfer q 256 m 2048 secondary
+XFER eqxfer q 0 m 934 rho_max 0.0180 p95 0.0161 primary 37.2
+XFER eqxfer q 16 m 918 rho_max 0.0594 p95 0.0562 primary 45.3
+XFER eqxfer q 32 m 967 rho_max 0.0313 p95 0.0180 primary 51.4
+XFER eqxfer q 64 m 897 rho_max 0.1316 p95 0.1254 none 67.1
+XFER eqxfer q 128 m 1307 rho_max 1.0295 p95 0.5218 none 126.7
+XFER eqxfer q 256 m 1831 rho_max 0.4144 p95 0.3980 none 389.7
+ARM fft_tight 0.4
+ARM nt1e-2_dt01 0.0
+ARM nt1e-2_dt005 0.0
+ARM nt1e-4_dt01 0.0
+ARM nt1e-4_dt005 0.0
+ARM q0_M64_dense_g1em06 0.0
+ARM q64_M320_dense_g1em06 0.0
+ARM q256_M1088_dense_g1em06 0.0
+ARM q0_M64_eqxfer_g1em06 0.0
+ARM q64_M320_eqxfer_g1em06 0.3
+ARM q256_M1088_eqxfer_g1em06 1.0
+ARM pod16_M64_dense 4.4
+ARM pod128_M512_dense 17.5
+ARM q16_M128_dense_g1em06 0.0
+ARM q32_M192_dense_g1em06 0.0
+ARM q128_M576_dense_g1em06 0.0
+ARM q16_M128_eqxfer_g1em06 0.1
+ARM q32_M192_eqxfer_g1em06 0.2
+ARM q128_M576_eqxfer_g1em06 0.5
+ARM pod32_M128_dense 5.7
+ARM pod64_M256_dense 9.7
+ARM pod256_M1024_dense 34.8
+ARM q0_M64_eqxfer_g0p001 0.0
+ARM q16_M128_eqxfer_g0p001 0.1
+ARM q32_M192_eqxfer_g0p001 0.2
+ARM q64_M320_eqxfer_g0p001 0.3
+ARM q128_M576_eqxfer_g0p001 0.5
+ARM q256_M1088_eqxfer_g0p001 1.0
+ARM free512_M1024_dense 33.6
+RECON q 0 3.85489
+RECON q 64 3.57387

@@ -1,0 +1,30 @@
+{
+  "purpose": "DESIGN A7: is scipy.optimize.nnls bounded at the largest fixed-support refit the uncapped fit-state count produces (64 states x M = 1088 rows on a 2048-point support)?",
+  "machine": "local GB10, CPU only, OPENBLAS/OMP 8 threads",
+  "scipy": "1.17.1",
+  "problem": "random nonnegative design, half-sparse nonnegative truth, 1e-6 noise; maxiter = 20 x cols as in panel.refit_weights",
+  "rows": [
+    {
+      "rows": 8704,
+      "cols": 2048,
+      "seconds": 12.4,
+      "nonzero": 1413,
+      "relative_fit": 2.3757721043497923e-09
+    },
+    {
+      "rows": 34816,
+      "cols": 2048,
+      "seconds": 45.3,
+      "nonzero": 1419,
+      "relative_fit": 2.4208195018008894e-09
+    },
+    {
+      "rows": 69632,
+      "cols": 2048,
+      "seconds": 86.8,
+      "nonzero": 1382,
+      "relative_fit": 2.5118090114319056e-09
+    }
+  ],
+  "script": "scratchpad nnls_size.py (CPU only, no JAX; reproduced by the rows above)"
+}

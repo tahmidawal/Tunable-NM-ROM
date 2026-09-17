@@ -50,7 +50,6 @@ SOURCES = {
     'lshape_report': '2026-09-17-lshape/experiments/lshape/reports/2026-09-17-lshape.md',
     'eqtop_summary': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/summary.json',
     'eqtop_report': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/2026-09-17-b-eqtop.md',
-    'eqtop_interim': '../worktrees/2026-09-16-paper-refresh/paper/sources/b-eqtop-interim-summary.json',
     'ns2d_summary': '2026-09-17-ns2d/experiments/ns2d/reports/summary.json',
     # pending lanes (absent on disk today; listed so the placeholder names the lane)
     'seeds_summary': '2026-09-17-b-seeds/experiments/b-seeds/reports/summary.json',
@@ -909,12 +908,9 @@ def build_eqtop():
     # ---- T9a: the primary EQ ladder and its dense twins, one allocation
     L = defaultdict(dict); Lmeta = {}
     ladder_rows = [r for r in rows if r['table'] == 'ladder']
-    ladder_source = 'final summary'
-    if not ladder_rows:                      # the lane's final summary dropped the timed-ladder rows; use the pinned interim copy
-        interim = load('eqtop_interim')
-        ladder_rows = [r for r in interim['rows'] if r['table'] == 'ladder'] if interim else []
-        ladder_source = 'pinned interim summary (lane commit d6071e3c)'
-    macro('provEqtopLadderSource', ladder_source)
+    if not ladder_rows:
+        raise SystemExit('b-eqtop final summary carries no timed-ladder rows')
+    macro('provEqtopLadderSource', 'lane summary.json (final)')
     for r in ladder_rows:
         L[(r['ladder'], r['arm'])][r['metric']] = r['value']; Lmeta[(r['ladder'], r['arm'])] = r
     prim = sorted([k for k in L if k[0] == 'primary'], key=lambda k: Lmeta[k]['q'])

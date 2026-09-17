@@ -1,0 +1,150 @@
+{
+  "passed": true,
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "neuraloperator": "2.0.0",
+    "cuda": "13.0",
+    "gpu": "NVIDIA GB10",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "rungs": [
+    256,
+    128,
+    64,
+    32
+  ],
+  "prolongation_check": {
+    "max_abs_difference": 0.0,
+    "tolerance": 1e-12,
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/mr-burgers2d/engines.py",
+    "source_sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4"
+  },
+  "families": [
+    {
+      "family": "fno",
+      "config": {
+        "width": 8,
+        "modes": 32,
+        "layers": 2
+      },
+      "shapes": {
+        "256": [
+          1,
+          6,
+          1,
+          257,
+          257
+        ],
+        "128": [
+          1,
+          6,
+          1,
+          129,
+          129
+        ],
+        "64": [
+          1,
+          6,
+          1,
+          65,
+          65
+        ],
+        "32": [
+          1,
+          6,
+          1,
+          33,
+          33
+        ]
+      },
+      "ran_every_rung": true
+    },
+    {
+      "family": "unet",
+      "config": {
+        "family": "unet",
+        "base": 8,
+        "groups": 8,
+        "dtype": "float32"
+      },
+      "shapes": {
+        "256": [
+          1,
+          6,
+          1,
+          257,
+          257
+        ],
+        "128": [
+          1,
+          6,
+          1,
+          129,
+          129
+        ],
+        "64": [
+          1,
+          6,
+          1,
+          65,
+          65
+        ],
+        "32": [
+          1,
+          6,
+          1,
+          33,
+          33
+        ]
+      },
+      "ran_every_rung": true
+    },
+    {
+      "family": "transolver",
+      "config": {
+        "family": "transolver",
+        "dim": 32,
+        "layers": 2,
+        "heads": 4,
+        "slices": 8,
+        "mlp_ratio": 2,
+        "patch": 4,
+        "ref": 8,
+        "dtype": "float32"
+      },
+      "shapes": {
+        "256": [
+          1,
+          6,
+          1,
+          257,
+          257
+        ],
+        "128": [
+          1,
+          6,
+          1,
+          129,
+          129
+        ],
+        "64": [
+          1,
+          6,
+          1,
+          65,
+          65
+        ],
+        "32": [
+          1,
+          6,
+          1,
+          33,
+          33
+        ]
+      },
+      "ran_every_rung": true
+    }
+  ],
+  "role": "implementation smoke for the resolution ladder; no accuracy evidence"
+}

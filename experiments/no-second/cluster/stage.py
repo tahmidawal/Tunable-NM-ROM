@@ -21,7 +21,8 @@ NAMESPACE = '/cluster/tufts/paralab/tawal01/no_second_20260917'
 CACHE = '/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01'
 CODE = ['families.py', 'model.py', 'train.py', 'dataset.py', 'evaluate_cohort.py', 'timing.py',
         'prepare_diagnosis_cohort.py', 'spectral_conv_f64.py', 'NEURALOPERATOR-LICENSE',
-        'smoke_second.py', 'training_smoke_second.py', 'worker_second.py']
+        'smoke_second.py', 'training_smoke_second.py', 'worker_second.py',
+        'resolution.py', 'smoke_resolution.py', 'worker_resolution.py', 'engines_output_field.py']
 # Every config file is staged (pois01 died in its preamble because an explicit list omitted
 # the Poisson configs).
 CODE += sorted(str(p.relative_to(ROOT / 'experiments/no-second'))
@@ -101,20 +102,28 @@ test ! -e data
 mkdir data
 cp -r __DATADIRS__ __CACHE__/__MANIFEST__ data/
 ( cd data && sha256sum -c __MANIFEST__ --quiet && echo "data_verified=$(wc -l < __MANIFEST__)" )
+__CKPTSTEP__
 "$PY" -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
 # Forward Slurm's USR1 (sent to this batch shell 180 s before the limit) to the worker,
 # which asks train.py for an epoch-boundary stop; then wait for it.
-"$PY" code/worker_second.py code/specs/__SPEC__ &
+"$PY" code/__WORKER__ code/specs/__SPEC__ &
 WORKER=$!
 trap 'kill -USR1 "$WORKER" 2>/dev/null || true' USR1
 wait "$WORKER"
 find out $(test -d data/diagnosis-cohort && echo data/diagnosis-cohort) -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+du -sh out | tail -1
 echo ALL-DONE
 '''
+    ckpt = spec.get('checkpoint_source')
+    ckpt_step = ('test ! -e ckpt\nmkdir ckpt\n'
+                 f'cp -r {ckpt}/. ckpt/\n'
+                 '( cd ckpt && sha256sum -c CHECKPOINTS.sha256 --quiet && '
+                 'echo "checkpoints_verified=$(wc -l < CHECKPOINTS.sha256)" )') if ckpt else '# no checkpoint cache'
     cache = spec.get('data_source', CACHE)
     data_dirs = ' '.join(f'{cache}/{d}' for d in spec.get('data_dirs', ['train', 'validation', 'refinement']))
     tokens = (('__JOBNAME__', spec['job_name']), ('__REMOTE__', remote), ('__DATADIRS__', data_dirs),
               ('__MANIFEST__', spec.get('data_manifest', 'DATA.sha256')), ('__CACHE__', cache),
+              ('__CKPTSTEP__', ckpt_step), ('__WORKER__', spec.get('worker', 'worker_second.py')),
               ('__SPEC__', spec_name), ('__HOURS__', spec['time']), ('__EXCLUDE__', EXCLUDE), ('__GPU__', args.gpu),
               ('__CONSTRAINT__', '#SBATCH --constraint=a100-80G\n' if args.gpu == 'a100' else ''))
     for token, value in tokens:

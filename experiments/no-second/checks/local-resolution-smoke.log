@@ -1,0 +1,8 @@
+[jaxrun-slot] slot 1 acquired at 09:40:05
+jax_backend=gpu
+torch_backend=cuda NVIDIA GB10
+{"family": "fno", "config": {"width": 8, "modes": 32, "layers": 2}, "shapes": {"256": [1, 6, 1, 257, 257], "128": [1, 6, 1, 129, 129], "64": [1, 6, 1, 65, 65], "32": [1, 6, 1, 33, 33]}, "ran_every_rung": true}
+{"family": "unet", "config": {"family": "unet", "base": 8, "groups": 8, "dtype": "float32"}, "shapes": {"256": [1, 6, 1, 257, 257], "128": [1, 6, 1, 129, 129], "64": [1, 6, 1, 65, 65], "32": [1, 6, 1, 33, 33]}, "ran_every_rung": true}
+{"family": "transolver", "config": {"family": "transolver", "dim": 32, "layers": 2, "heads": 4, "slices": 8, "mlp_ratio": 2, "patch": 4, "ref": 8, "dtype": "float32"}, "shapes": {"256": [1, 6, 1, 257, 257], "128": [1, 6, 1, 129, 129], "64": [1, 6, 1, 65, 65], "32": [1, 6, 1, 33, 33]}, "ran_every_rung": true}
+resolution_smoke=passed
+[jaxrun-slot] slot 1 released rc=0

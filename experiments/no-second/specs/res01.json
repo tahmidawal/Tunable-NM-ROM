@@ -1,0 +1,15 @@
+{
+  "family": "unet",
+  "prefix": "res",
+  "pde": "burgers",
+  "job_name": "ctol_nos_res01",
+  "time": "02:00:00",
+  "worker": "worker_resolution.py",
+  "checkpoint_source": "/cluster/tufts/paralab/tawal01/no_second_20260917/ckpt01",
+  "arms": [],
+  "refine_learning_rate": null,
+  "per_arm_seconds": 0.0,
+  "global_seconds": 0.0,
+  "reserve_seconds": 0.0,
+  "design": "DESIGN \u00a7A5: frozen validation-selected FNO / U-Net / Transolver evaluated at 256, 128, 64 and 32 intervals on the same validation-32 and matched-8 cases, graded exactly as the Burgers lane grades its coarse-mesh FOM arms (restrict input, run coarse, aligned-bilinear prolong to 256, score against the same reference), with the interpolation floor as control and same-job per-rung timing. No training."
+}

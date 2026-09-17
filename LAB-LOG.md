@@ -13855,3 +13855,81 @@ by `reports/generate_xm.py`; nothing hand-typed. Raw archives `bqx401` (3783898)
 (3783899) Git-tracked as bounded chunks under `experiments/b-qxm/artifacts/{bqx401,bqx501}/`.
 Five of the eight-job cap used across both rounds. Nothing merged, nothing pushed. Committed
 to `worktrees/2026-09-17-b-qxm`, branch `exp/2026-09-17-b-qxm`.
+
+## 2026-09-17
+
+### lshape — LANE CLOSED: N=512 lands, and the cost margin widens as expected (2.77x -> 7.60x); no reduced arm ever beats the direct solve on accuracy, at any mesh
+
+**What ran.** Branch `exp/2026-09-17-lshape`, worktree `worktrees/2026-09-17-lshape`,
+namespace `/cluster/tufts/paralab/tawal01/lshape_20260917/`. Collected the eighth and final job,
+`lsh07` (job `3789568`, A100, N=512, M=257, COMPLETED 0:0 in 28m31s): checksum-collected
+(`OUTPUTS.sha256` + `MANIFEST.sha256` verified remotely and locally), independently re-audited
+(`lsh_audit_np.py`, all 13 checks pass), archived as 24 bounded Git chunks under
+`experiments/lshape/artifacts/lsh07/` (1.2 GB), and its remote attempt directory deleted. The
+namespace `/cluster/tufts/paralab/tawal01/lshape_20260917/` is now empty — **the lane is
+closed**. All 8 jobs used: `lsh01` retracted, `lsh02` train, `lsh03`-`lsh07` solve.
+
+**The N=512 result, in the same $M=257$ block as `lsh03`/`lsh04`.** Non-dominated set (full-order
+comparators included): `pod16` (34.564 %, 3.217 ms), `pod32` (18.936 %, 3.390 ms), `pod64`
+(7.655 %, 3.512 ms), `pod128` (2.451 %, 4.031 ms), `neural_q128@head_sdf_R512_K16` (2.198 %,
+4.748 ms), `neural_q64@head_sdf_R512_K16` (2.123 %, 4.801 ms), `fom_cg_gpu_r0.01` (0.385 %,
+29.127 ms), `fom_splu` (0.000 %, 36.505 ms). Also present as same-job comparators: CG at three
+GPU tolerances and IC(0)-PCG (CPU) at two, all recorded in the report's full subject table. The
+most accurate reduced arm, `neural_q64@head_sdf_R512_K16`, reaches 2.123 % worst error at
+4.801 ms against `fom_splu`'s round-off-exact 0.000 % at 36.505 ms — **7.60x cheaper**. As at
+every other mesh in this cell, no reduced arm improves on the direct solve's accuracy; the front
+records what accuracy each one trades away to be cheaper.
+
+**The four-mesh trend, generated from `reports/summary.json` (never hand-typed):**
+
+| N | `fom_splu` ms | best non-dominated reduced arm | error % | ms | splu / reduced |
+|---:|---:|---|---:|---:|---:|
+| 64 | 1.282 | none — direct dominates every reduced subject | — | — | — |
+| 128 | 2.475 | `pod64` (cheapness-only; above the cell's 5 % bar) | 7.701 | 2.294 | 1.08x |
+| 256 | 8.386 | `neural_q64@head_sdf_R512_K16` | 2.131 | 3.028 | 2.77x |
+| 512 | 36.505 | `neural_q64@head_sdf_R512_K16` | 2.123 | 4.801 | **7.60x** |
+
+**Verdict on the cost margin: it widened as expected, and by more than a linear extrapolation
+would have suggested.** `fom_splu`'s cost grows steeply with the mesh (1.282, 2.475, 8.386,
+36.505 ms — the corner-singular L-shape has no fast transform, so this is genuine sparse-direct
+scaling, not a fixed cost), while the same reduced subject (`neural_q64@head_sdf_R512_K16`) stays
+close to flat (2.846, 2.806, 3.028, 4.801 ms at N=64/128/256/512 respectively — the small rise at
+512 is the dense $M{\times}n$ test-mode projection growing with $n$). The direct-to-reduced cost
+ratio on the non-dominated front goes 1.08x -> 2.77x -> 7.60x from N=128 to N=512. N=512 is, as
+anticipated at hand-off, the mesh where the cost margin is largest in this cell.
+
+**Nothing is retracted this session.** `lsh07`'s config, cohorts, seeds, arms, ladder, POD ranks,
+comparators, repetitions and timing contract are byte-identical to `lsh05`'s except for the
+G-FOM-4 round-off-floor fix (DESIGN §A7); no science changed between the two attempts.
+
+**Verification.** `lsh07` passes all 13 independent NumPy audit checks
+(`lsh_audit_np.py`, imports neither JAX nor a driver). `reports/generate_lshape.py` regenerated
+against all five result JSONs (`lsh02` train + `lsh03`/`lsh04`/`lsh06`/`lsh07` solve) with no
+collisions (the generator aborts on any (job, mesh) collision inside a block; N=512 is a clean
+addition to the existing $M=257$ block, never merged with the $M=1024$ block). The updated
+12-check cross-audit (`checks/verify_report_2026-09-17.py`, extended in this session to include
+`lsh07`/job `3789568` in every check that enumerates solve jobs) passes all 12 checks, including
+the non-dominated sets recomputed independently for all five (job, mesh) pairs. Codex remains
+quota-locked until 2026-09-19 11:33 (past this lane's window); the substitute is
+`reports/self-audit-2026-09-17-solves.md`, updated in this session with the N=512 counts and the
+widened-margin finding, per DESIGN §A5/§A8.
+
+**Standing instructions kept.** The validation-versus-development gap (worst best-found 3.2-6.8 %
+on 32 development sources vs 10.7-16.7 % on 461 validation sources) is printed immediately below
+the headline verdict in the regenerated report, not in a caveat section. No K=64 head was run —
+the eighth and final job went to N=512, per the coordinator's stated priority.
+
+**Open / next, for whoever picks up a Poisson lane after this one.** (i) A 461-source *solve*
+sweep is the measurement that would replace the worst-over-32 numbers used everywhere in this
+cell; not run, no jobs remain in this lane's budget. (ii) A K=64 head was the declared remaining
+lever and was never run. (iii) The free rung (q=R) has no $M=257$ twin at any mesh, N=512
+included; it is only known at $M=1024$, N=256.
+
+**Paths.** `experiments/lshape/DESIGN.md` (no new amendment this session; §A7/§A9/§A10 already
+covered `lsh07`'s gate fix and the report generator's job/block keying),
+`experiments/lshape/reports/2026-09-17-lshape.md` (regenerated, now four meshes),
+`.../reports/summary.json` (1013 rows, up from 820), `.../reports/self-audit-2026-09-17-solves.md`
+(updated), `.../reports/2026-09-17-lshape-error-cost.png` (regenerated, four panels),
+`experiments/lshape/checks/verify_report_2026-09-17.{py,json}` (extended to include `lsh07`),
+`experiments/lshape/artifacts/lsh07/` (24 chunks + `result.json` + `audit.json`),
+`experiments/lshape/runs/lsh07/` (collected archive + audit.json, local only).

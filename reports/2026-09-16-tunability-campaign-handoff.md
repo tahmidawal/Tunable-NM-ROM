@@ -43,7 +43,7 @@ flowchart TD
   PD --> PF[2026-09-16-paper-refresh<br/>ledger, figure gen, mirror plan]
   BL --> QD[2026-09-16-q-diag<br/>cause = quadrature]
   BL --> QT[2026-09-16-q-trajdirs<br/>dense ladder PASSES]
-  BL --> QR[2026-09-16-q-ridge<br/>EQ certification, running]
+  BL --> QR[2026-09-16-q-ridge<br/>EQ certified q≤128, q=256 needs m>2048]
   classDef done fill:#dce9f7,stroke:#3b6ea5;
   classDef neg fill:#f7e0dc,stroke:#a5433b;
   classDef pass fill:#e2f0da,stroke:#4f8a3d;
@@ -51,7 +51,7 @@ flowchart TD
   class C,HA,NB,NA,PD,PR,HR,CC,ZS,BL,BS,PF,QD done;
   class BH neg;
   class QT,PB pass;
-  class QR run;
+  class QR done;
 ```
 
 Every lane: own worktree, own cluster namespace, `DESIGN.md` committed before any run, off-setting reproduces the audited baseline (typically $\le10^{-12}$), same-job FOM controls, three timed repetitions with burn-in, independent NumPy audit of every reported error from saved fields, checksum-collected archives in Git chunks, remote attempt directory deleted, dated lab-log entry. All branches are **local only** (see §7).

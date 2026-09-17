@@ -35,3 +35,30 @@ job. This is not an independent audit and is labelled as such.
 8. **Parent characterisation.** btq201's POD rows: verified from its `result.json` (every step
    exits on reason 4; initial fit reason 2 at relative residual $\le10^{-18}$). qrg304's
    certification: verified from its `rule_choice` (primary at $q\le64$, secondary at 128/256).
+
+---
+
+## Post-job addendum, 2026-09-17, after job 1 (`bpn101`, 3780638)
+
+Codex is still unavailable (DESIGN.md §A1). In its place the lane ran a **second, independent
+code path** over the same saved fields — `checks/recheck_headline.py`, which imports neither
+`audit_panel.py` nor the driver nor JAX — and compared it against the audit arm by arm.
+
+- **Worst relative difference between the audit and the independent re-derivation: 0.0** over
+  every arm and every reported metric (`checks/bpn101-recheck.json`).
+- Both paths independently return the same non-dominated set and the same two headline claims.
+
+What this does and does not cover. It covers arithmetic and the frontier logic: no reported
+number is a transcription or a one-sided bug. It does **not** cover design judgement — whether
+the convergence rule, the admissibility rule or the subject list are the right ones is exactly
+what an independent model was meant to challenge, and that challenge did not happen. The three
+judgements most exposed, stated so a reader can attack them:
+
+1. **§5's convergence rule admits an initial fit whose residual is at round-off.** Job 1 shows
+   this changes the flag for POD-32/64/128/256/512 and the free bank and for nothing else, and
+   it changes no error or cost. The strict column is printed beside it throughout.
+2. **`fft_tight` is both a subject and the reference**, so it sits at exactly zero same-grid
+   error and is trivially on the same-grid frontier. The report now says so in a generated
+   paragraph and points at the reference-metric column instead.
+3. **The `reduced_only` frontier (§A4) was added after seeing the data.** It changes no
+   pre-registered criterion, and it is labelled post-hoc everywhere.

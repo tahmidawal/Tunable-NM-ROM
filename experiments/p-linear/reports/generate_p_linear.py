@@ -280,12 +280,17 @@ def head_section(d, audit):
     lines += ['', f"**H1 (reproducibility).** The re-run of the pbh02 recipe (`K32_w128_L2`) lands at {pct(ctrl['best_found_development']['worst'])} "
               f"worst development best-found against pbh02's frozen primary {pct(prim['best_found_development']['worst'])} in the same job: "
               f"{100 * h1:.2f} % relative difference against the pre-registered 5 % bar — **{'pass' if h1 <= 0.05 else 'FAIL'}**.", '',
-              f"**H2 (verdict).** The primary's ratio is {rho0:.3f}x. The largest relative reduction of that ratio by any capacity arm is "
+              (('**H1 FAILED, so every H2 conclusion below is CONDITIONAL** (DESIGN §5: a failed H1 '
+                'makes the reproduction failure the headline of job 3, and no capacity claim is safe '
+                'until the recipe reproduces the incumbent).\n\n') if h1 > 0.05 else '')
+              + f"**H2 (verdict{', conditional' if h1 > 0.05 else ''}).** The primary's ratio is {rho0:.3f}x. "
+              f"The largest relative reduction of that ratio by any capacity arm is "
               f"{100 * maxdrop:.1f} % (`{max(drops, key=drops.get)}`), against the 20 % bar; the lowest ratio reached is "
               f"{min(a['ratio_dev_best_found_over_floor'] for a in arms):.3f}x against the 2x bar for a better anchor. "
-              + ('**Function-class-limited within the tested range.**' if maxdrop <= 0.20 else
-                 ('**A better anchor was found.**' if min(a['ratio_dev_best_found_over_floor'] for a in arms) < 2 else
-                  '**Partial movement only.**')),
+              + (('The reading that follows would hold only if H1 passed: ' if h1 > 0.05 else '')
+                 + ('**Function-class-limited within the tested range.**' if maxdrop <= 0.20 else
+                    ('**A better anchor was found.**' if min(a['ratio_dev_best_found_over_floor'] for a in arms) < 2 else
+                     '**Partial movement only.**'))),
               f" Selection by the internal-validation split picks `{best['arm']}`; the development sources selected nothing.", '',
               f"### Solved at {d['config']['solve_intervals']} intervals through the unchanged head-ablation kernel", '',
               '| subject | K | worst same-grid | median same-grid | worst physical | median total ms | median device ms | stationary | LM iters |',

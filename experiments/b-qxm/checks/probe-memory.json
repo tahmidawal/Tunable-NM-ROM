@@ -1,0 +1,114 @@
+{
+  "cells": [
+    [
+      0,
+      64
+    ],
+    [
+      0,
+      1088
+    ],
+    [
+      32,
+      1088
+    ],
+    [
+      64,
+      1280
+    ],
+    [
+      256,
+      2176
+    ],
+    [
+      64,
+      4096
+    ]
+  ],
+  "rows": [
+    {
+      "stage": "after_bank",
+      "bytes_in_use": 558779136,
+      "peak": 1107466496
+    },
+    {
+      "stage": "q0_M64",
+      "after_operators": {
+        "bytes_in_use": 638781184,
+        "peak": 1107466496
+      },
+      "after_compile": {
+        "bytes_in_use": 641963264,
+        "peak": 1107466496
+      },
+      "seconds": 28.360741401906125,
+      "query_finite": true
+    },
+    {
+      "stage": "q0_M1088",
+      "after_operators": {
+        "bytes_in_use": 1212417792,
+        "peak": 2922650880
+      },
+      "after_compile": {
+        "bytes_in_use": 1215593216,
+        "peak": 2922650880
+      },
+      "seconds": 92.8983566579409,
+      "query_finite": true
+    },
+    {
+      "stage": "q32_M1088",
+      "after_operators": {
+        "bytes_in_use": 1265119488,
+        "peak": 2922650880
+      },
+      "after_compile": {
+        "bytes_in_use": 1268316160,
+        "peak": 2922650880
+      },
+      "seconds": 23.14110075403005,
+      "query_finite": true
+    },
+    {
+      "stage": "q64_M1280",
+      "after_operators": {
+        "bytes_in_use": 1999598848,
+        "peak": 4008669184
+      },
+      "after_compile": {
+        "bytes_in_use": 2002802176,
+        "peak": 4008669184
+      },
+      "seconds": 84.67719792004209,
+      "query_finite": true
+    },
+    {
+      "stage": "q256_M2176",
+      "after_operators": {
+        "bytes_in_use": 3213818880,
+        "peak": 6616988672
+      },
+      "after_compile": {
+        "bytes_in_use": 3218362368,
+        "peak": 6616988672
+      },
+      "seconds": 220.30754309694748,
+      "query_finite": true
+    },
+    {
+      "stage": "q64_M4096",
+      "after_operators": {
+        "bytes_in_use": 5366206464,
+        "peak": 11808559104
+      },
+      "after_compile": {
+        "bytes_in_use": 5369384960,
+        "peak": 11808559104
+      },
+      "seconds": 1189.0962340529077,
+      "query_finite": true
+    }
+  ],
+  "device": "NVIDIA GB10"
+}

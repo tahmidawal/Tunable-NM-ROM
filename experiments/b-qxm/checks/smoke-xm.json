@@ -1,0 +1,128 @@
+{
+  "gate1_q0_vs_audited_fixture": {
+    "relative_l2": 1.4067980747766557e-14,
+    "latent_relative_l2": 6.060300959588285e-13,
+    "tolerance": 1e-12,
+    "ic_iterations": 86,
+    "iterations_first10": [
+      19,
+      5,
+      3,
+      5,
+      4,
+      4,
+      3,
+      3,
+      3,
+      3
+    ],
+    "xla_flags": null,
+    "passed": true
+  },
+  "gate2_operators": {
+    "rebuild_A_bitwise": true,
+    "rebuild_Phi_bitwise": true,
+    "rebuild_lam_bitwise": true,
+    "fresh_bank_bitwise_equals_shared": true,
+    "modes_ids": 128
+  },
+  "directions": {
+    "available_rank": 16,
+    "head_fit_relative_worst": 0.04267981131751145,
+    "seconds": 20.319593793014064
+  },
+  "q0_monotone_in_M": true,
+  "q8_monotone_in_M": true,
+  "grid": {
+    "q0_M64": {
+      "q": 0,
+      "M": 64,
+      "worst_evolved": 0.006739658033158232,
+      "t0": 0.01815199814761933,
+      "max_step_joint_stationarity": 9.409911700218592e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true
+    },
+    "q0_M96": {
+      "q": 0,
+      "M": 96,
+      "worst_evolved": 0.005311991922154422,
+      "t0": 0.01815199814761933,
+      "max_step_joint_stationarity": 8.791324725535345e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true
+    },
+    "q0_M128": {
+      "q": 0,
+      "M": 128,
+      "worst_evolved": 0.004611642578015557,
+      "t0": 0.01815199814761933,
+      "max_step_joint_stationarity": 9.767398905403701e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true
+    },
+    "q0_M256": {
+      "q": 0,
+      "M": 256,
+      "worst_evolved": 0.004538864416247459,
+      "t0": 0.01815199814761933,
+      "max_step_joint_stationarity": 7.466894856635425e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true
+    },
+    "q8_M64": {
+      "q": 8,
+      "M": 64,
+      "worst_evolved": 0.007027743317168541,
+      "t0": 0.01742040044381041,
+      "max_step_joint_stationarity": 9.618183083779569e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true
+    },
+    "q8_M96": {
+      "q": 8,
+      "M": 96,
+      "worst_evolved": 0.005631613458732603,
+      "t0": 0.01742040044381041,
+      "max_step_joint_stationarity": 8.92219152295174e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true,
+      "bitwise_to_retained_block_at_4x": true
+    },
+    "q8_M128": {
+      "q": 8,
+      "M": 128,
+      "worst_evolved": 0.0047754297048962285,
+      "t0": 0.01742040044381041,
+      "max_step_joint_stationarity": 9.94128192639047e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true
+    },
+    "q8_M256": {
+      "q": 8,
+      "M": 256,
+      "worst_evolved": 0.004553993333355278,
+      "t0": 0.01742040044381041,
+      "max_step_joint_stationarity": 9.930863957408637e-07,
+      "budget_exits": 0,
+      "median_iterations": 3.0,
+      "t0_relative_to_first_M": 0.0,
+      "t0_bitwise_to_first_M": true
+    }
+  },
+  "seconds": 135.437119693961
+}

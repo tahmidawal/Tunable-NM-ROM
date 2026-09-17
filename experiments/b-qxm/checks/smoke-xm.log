@@ -1,0 +1,17 @@
+[jaxrun-slot] slot 1 acquired at 05:22:28
+jax_backend=gpu
+GATE 1 {'relative_l2': 1.4067980747766557e-14, 'latent_relative_l2': 6.060300959588285e-13, 'tolerance': 1e-12, 'ic_iterations': 86, 'iterations_first10': [19, 5, 3, 5, 4, 4, 3, 3, 3, 3], 'xla_flags': None, 'passed': True}
+GATE 2 {'rebuild_A_bitwise': True, 'rebuild_Phi_bitwise': True, 'rebuild_lam_bitwise': True, 'fresh_bank_bitwise_equals_shared': True, 'modes_ids': 128}
+CELL {'q': 0, 'M': 64, 'worst_evolved': 0.006739658033158232, 't0': 0.01815199814761933, 'max_step_joint_stationarity': 9.409911700218592e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+CELL {'q': 0, 'M': 96, 'worst_evolved': 0.005311991922154422, 't0': 0.01815199814761933, 'max_step_joint_stationarity': 8.791324725535345e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+CELL {'q': 0, 'M': 128, 'worst_evolved': 0.004611642578015557, 't0': 0.01815199814761933, 'max_step_joint_stationarity': 9.767398905403701e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+CELL {'q': 0, 'M': 256, 'worst_evolved': 0.004538864416247459, 't0': 0.01815199814761933, 'max_step_joint_stationarity': 7.466894856635425e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+MONOTONE in M at q 0 True [0.006739658033158232, 0.005311991922154422, 0.004611642578015557, 0.004538864416247459]
+CELL {'q': 8, 'M': 64, 'worst_evolved': 0.007027743317168541, 't0': 0.01742040044381041, 'max_step_joint_stationarity': 9.618183083779569e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+CELL {'q': 8, 'M': 96, 'worst_evolved': 0.005631613458732603, 't0': 0.01742040044381041, 'max_step_joint_stationarity': 8.92219152295174e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+GATE 4b q 8 M 96 bitwise to retained block
+CELL {'q': 8, 'M': 128, 'worst_evolved': 0.0047754297048962285, 't0': 0.01742040044381041, 'max_step_joint_stationarity': 9.94128192639047e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+CELL {'q': 8, 'M': 256, 'worst_evolved': 0.004553993333355278, 't0': 0.01742040044381041, 'max_step_joint_stationarity': 9.930863957408637e-07, 'budget_exits': 0, 'median_iterations': 3.0, 't0_relative_to_first_M': 0.0, 't0_bitwise_to_first_M': True}
+MONOTONE in M at q 8 True [0.007027743317168541, 0.005631613458732603, 0.0047754297048962285, 0.004553993333355278]
+XM SMOKE OK 135.4 s
+[jaxrun-slot] slot 1 released rc=0

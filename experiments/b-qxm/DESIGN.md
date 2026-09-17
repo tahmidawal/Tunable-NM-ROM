@@ -462,9 +462,12 @@ the *bottom* of the ladder and the rank is what buys the *top*. Equivalently, $M
 in absolute terms at low $q$ ($M^\star = 256$ at $q = 0$, flat to $M = 4096$) but not at high
 $q$; what is roughly invariant is the tests-per-unknown ratio, not $M$ itself.
 
-**Solver control.** $(32, 1088)$ with LU reproduced its Gauss–Jordan twin to
-$4.7\times10^{-14}$ relative at $1.000\times$ the cost in the same job, so the `gj`$\to$`lu`
-switch at $K + q > 64$ is inert and does not contaminate the rank ladder.
+**Solver control.** $(32, 1088)$ with LU reproduced its Gauss–Jordan twin **exactly**
+(relative difference 0.0 on the evolved metric — the two solves agree to the last bit)
+at $0.9999\times$ the cost in the same job, so the `gj`$\to$`lu` switch at $K + q > 64$ is
+inert and does not contaminate the rank ladder. (This paragraph first carried a hand-typed
+$4.7\times10^{-14}$, which was simply wrong; it is now read from `summary.json`. The
+project's rule against hand-typed numbers earned its place again.)
 
 **Saturation.** $q = 0$: $M^\star = 256$, $1.2710$ %, $1.210\times$ the $M = 64$ cost —
 **not** cost-neutral by the $\le 1.1\times$ rule, so that sentence is not written. $q = 64$:

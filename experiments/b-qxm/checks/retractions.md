@@ -50,3 +50,8 @@
   re-derives three cells' errors from the archived field tarballs and verifies the decomposition identities
   — and all 27 checks agree. That is a self-check by the same author, not the protocol's independent
   auditor, and the lane says so rather than implying otherwise.
+- **I hand-typed a number into DESIGN §A2 and it was wrong.** The solver control's
+  evolved-metric agreement was written as $4.7\times10^{-14}$ from memory; read from
+  `summary.json` it is exactly 0.0 — the Gauss–Jordan and LU solves of the $(32, 1088)$
+  cell agree to the last bit. Corrected in place, and the paragraph now quotes the generated
+  value. No other prose number in this lane was typed by hand; every table is generated.

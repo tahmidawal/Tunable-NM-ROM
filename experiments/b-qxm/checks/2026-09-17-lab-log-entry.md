@@ -158,6 +158,11 @@ Variance shares on the balanced $5 \times 2$ sub-grid: rank 85.1 %, test count 6
   re-derives three cells' errors from the archived field tarballs and verifies the decomposition identities
   — and all 27 checks agree. That is a self-check by the same author, not the protocol's independent
   auditor, and the lane says so rather than implying otherwise.
+- **I hand-typed a number into DESIGN §A2 and it was wrong.** The solver control's
+  evolved-metric agreement was written as $4.7\times10^{-14}$ from memory; read from
+  `summary.json` it is exactly 0.0 — the Gauss–Jordan and LU solves of the $(32, 1088)$
+  cell agree to the last bit. Corrected in place, and the paragraph now quotes the generated
+  value. No other prose number in this lane was typed by hand; every table is generated.
 
 Source-generated report: `experiments/b-qxm/reports/2026-09-17-b-qxm.md` (SHA256 `e7b96d09101236761aff2f0ede853aad9bd469304eeccd6c3150a05273061363`) with `summary.json`, `analysis.json`, its two figures and its generator beside it; the design audit is `experiments/b-qxm/reports/design-audit.md`.
 Raw archive `bqx101` Git-tracked as bounded chunks: whole SHA256 `fb4a39e21b6e3f7e21c839e6edc7250cc03dbfd975305afaa97382ff296878e5` (9 chunks).

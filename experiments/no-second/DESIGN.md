@@ -282,3 +282,81 @@ twin and the second seed both land within the screen's own capacity-to-capacity 
 the float32 single-seed numbers stand as reported; if either moves the selected arm's
 validation worst or median by more than that spread, the report flags the headline numbers
 as precision- or seed-sensitive and quotes the control beside them.
+
+## §A5 — The resolution knob: does a trained operator expose an accuracy–cost family? (job 5, `res01`)
+
+Pre-registered 2026-09-17, before the job is staged, at the coordinator's request.
+
+**Question.** The paper contrasts "a trained operator gives one accuracy–cost point" with "our
+decoder gives a family". The obvious objection is that an operator has an inference-time knob
+too: the grid it is evaluated on. An FNO is discretisation-invariant by construction and a
+convolutional U-Net also runs at other grid sizes. So: **evaluated at coarser grids, does a
+trained operator trace a usable accuracy–cost curve, or a degenerate one?**
+
+**Arms.** The validation-selected checkpoint of each family, by the §A1 rule, frozen and
+unmodified: `fno-large` (parent lane, job `3710846`), `unet-refine` (job `3780138`) and
+`tsol-refine` (job `3780139`). The Transolver is beyond what was asked for and is included
+because it costs nothing extra in the same job and three families answer the question more
+firmly than two. Checkpoints are inputs here, uploaded to the namespace with a recorded
+`CHECKPOINTS.sha256` and verified in-job against the SHA256 already recorded in the audits;
+**no training happens in this job.**
+
+**Resolutions.** 256, 128, 64 and 32 intervals (257², 129², 65², 33² nodes). Each divides 256,
+so the input restriction is exact nested sampling and the output prolongation is exact at
+nested nodes.
+
+**Grading — identical to the Burgers lane's own coarse-mesh FOM arms** (`coarse_half_dt005`,
+`coarse_quarter_dt01`), which is the precedent that makes this comparable:
+`engines.make_fom(..., target=L)` restricts the supplied field by stride, solves on the coarse
+grid, and returns `engines.output_field`, an **aligned bilinear prolongation** back to the
+257² grid, where it is scored against the same reference. This lane does the same: restrict
+the supplied 257² field by stride → run the operator at that grid → prolong every output time
+back to 257² by the same aligned bilinear map → score with the same fixed-initial metric
+against the same reference on 257². The prolongation is re-implemented here and checked
+against `engines.output_field` to $\le 10^{-12}$ before use.
+
+Per LANE-PROTOCOL rule 9, three error numbers are reported separately at every rung:
+**worst-over-evolved-times** ($t>0$), **worst-over-all-times**, and the **$t=0$ term** on its
+own. At a coarse rung $t=0$ is no longer exact — prolonging the restricted initial field is
+lossy — and that loss is a genuine cost of this knob, so it must be visible rather than
+folded into one number.
+
+**Cost.** Same-job device-query timing per (model, resolution) with the parent lane's
+`timing.py` protocol: 20-query burn-in per block, `torch.cuda.synchronize()` around every
+repetition, 30 repetitions per case, every repetition retained. Ratios **within one model's
+own curve, measured in this one job on this one GPU**, are same-job controls and are
+admissible; no ratio is formed against any other job, model-family checkpoint timing from
+another allocation, the ROM or the FOM.
+
+**The control that decides what a degradation means.** `interp-floor@r`: take the *reference
+itself*, restrict it to grid $r$ and prolong it back, then score it by the same metric. This
+is the error of a **perfect** operator at that rung — pure discretisation and interpolation
+loss. Reported beside every rung. If an operator's coarse error tracks the floor, the grid is
+the limit and the knob is real; if it is far above the floor, the model itself is breaking
+off-resolution.
+
+**Pre-registered criterion, per operator.**
+
+- **R-USABLE**: some rung below 256 reaches a same-job median device-query speedup $\ge 1.5\times$
+  over that same model's own 256 evaluation **while** its worst-over-evolved-times error stays
+  $\le 2\times$ that model's own worst-over-evolved-times error at 256.
+- **R-DEGENERATE**: the first rung below 256 (128) already fails either half — more than 2× the
+  error, or less than 1.5× the speedup.
+- The full curve is reported for every operator and every rung regardless of the label, with
+  the interpolation floor beside it.
+
+**Falsification clause — this is the point of the experiment.** If any operator is R-USABLE,
+then "a trained operator gives one accuracy–cost point" is **false as stated** and this lane
+will say so plainly; the paper's contribution must then narrow honestly to the mechanism and
+the structural condition rather than to the existence of a family. If every operator is
+R-DEGENERATE, that is support for the framing, stated as what it is: evidence from three
+families, one mesh ladder, one PDE and one seed, not a theorem about neural operators. A
+result in either direction is reported with equal prominence, and neither outcome licenses a
+speed claim against the ROM or the FOM.
+
+**Gates.** G1–G4 as before (G3: the same validation-32 and matched-8 cases and hashes; no
+training, so no arm-set or budget gate). Added: the prolongation check above; the assertion
+that each loaded checkpoint's SHA256 equals the one recorded in the corresponding audit; and
+the assertion that at rung 256 the reproduced errors equal the already-audited numbers for
+that checkpoint to $\le 10^{-9}$ — i.e. the ladder's top rung must reproduce this lane's own
+published result, or the job is void.

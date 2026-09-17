@@ -404,6 +404,35 @@ def main():
           'non-dominated front with full-order comparators included, and only front members are labelled.')
         W('')
 
+    # -------------------------------------------- deviations and honesty ------
+    W('## Recorded deviations and honesty notes')
+    W('')
+    notes = [
+        ('The POD competitor sees more data than the bank did.', 'The bank and every head are fitted on the '
+         f'85 % fit split ({tr["cohorts"]["training"]["count"] - len(tr["cohorts"]["training"]["validation"])} sources); '
+         f'POD-LSPG is built from all {solves[0]["pod_cohort"]["used"] if solves else "—"} training snapshots. The difference '
+         'favours POD, and it is left that way deliberately so the linear baseline is not handicapped.'),
+        ('No free-bank rung exists.', 'The $q=R$ rung needs more test modes than bank columns, and both primaries have '
+         f'$R={max(x["R_total"] for x in tr["head_arms"])}$ against $M={cfg["requested_modes"]}$ tests, so it is not constructible here. '
+         'The untimed bank projection floor stands in for it as the representation ceiling.'),
+        ('The comparison heads run at $q=0$ only.', 'The correction ladder is run on the two primaries; the heads on the '
+         'non-selected banks answer the boundary-factor question at $q=0$, which is where that question lives.'),
+        ('Offline setup is not charged to any query.', 'The operator assembly, the SuperLU and IC(0) factorisations, the '
+         'eigen-decomposition that defines the test modes, the POD basis and the bank build all happen once per mesh before '
+         'timing and are reported separately. Every timed subject is charged host-array-in to host-array-out.'),
+        ('CPU and GPU subjects are timed in the same process against the same contract.', 'The sparse direct and IC(0)-PCG '
+         'subjects run on the node CPU; the neural, correction and POD subjects and the matrix-free CG run on the GPU. No '
+         'ratio is formed across machines, and both cost columns are reported.'),
+        ('`lsh01` is retracted.', 'The first training attempt aborted on a mis-scaled basis-orthonormality gate after '
+         'completing seven of eight head arms (DESIGN.md §A3). No number from it appears here; the job was rerun in full.'),
+        ('The independent-auditor requirement was met by a self-audit, not by Codex.', 'The Codex account quota was '
+         'exhausted for the whole campaign window and a substitute review agent was killed by an API limit, both recorded '
+         'in DESIGN.md §A1. The substitute is the NumPy/SciPy audit in this report plus the CPU-only checks listed there.'),
+    ]
+    for head_, body in notes:
+        W(f'- **{head_}** {body}')
+    W('')
+
     # ------------------------------------------------------------ glossary ---
     W('## Glossary')
     W('')

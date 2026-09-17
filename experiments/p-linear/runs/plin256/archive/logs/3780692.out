@@ -1,0 +1,70 @@
+host=pax051 source_commit=b43a437d7360157adaf539872aac24715e25063e
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.24:/projects/paralab  4.6T  4.2T  425G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCES done 7.9
+DIRECTIONS new_K32 orth 1.2434258360898914e-09 prefix defect 2.272023982113113e-06 10.0
+ARM q0_m256@new_K32 M 257
+ARM q32_m256@new_K32 M 257
+ARM q64_m256@new_K32 M 257
+ARM q128_m256@new_K32 M 257
+SKIP q256_m256@new_K32 257 288
+SKIP q512_m256@new_K32 257 512
+ARM q0_m4@new_K32 M 129
+ARM q32_m4@new_K32 M 257
+ARM q64_m4@new_K32 M 384
+ARM q128_m4@new_K32 M 640
+ARM q256_m4@new_K32 M 1153
+ARM q512_m4@new_K32 M 2177
+DIRECTIONS incumbent orth 1.5715933794247032e-13 prefix defect 2.8194320095217976e-07 4.8
+ARM q0_m256@incumbent M 257
+ARM q32_m256@incumbent M 257
+ARM q64_m256@incumbent M 257
+ARM q128_m256@incumbent M 257
+ARM q0_m4@incumbent M 64
+ARM q32_m4@incumbent M 193
+ARM q64_m4@incumbent M 320
+ARM q128_m4@incumbent M 577
+SKIP e_pod512_m256@trainset 257 512
+POD done 142.4
+RECON new_K32 q 0 floor 0.007458604088496271 best 0.031211215560714028
+RECON new_K32 q 32 floor 0.007458604088496271 best 0.02455493849386803
+RECON new_K32 q 64 floor 0.007458604088496271 best 0.020787354900733503
+RECON new_K32 q 128 floor 0.007458604088496271 best 0.015492571976653236
+RECON new_K32 q 256 floor 0.007458604088496271 best 0.009691378696175685
+RECON new_K32 q 512 floor 0.007458604088496271 best 0.0074624057044688835
+RECON incumbent q 0 floor 0.02322647906564807 best 0.06101345949040761
+RECON incumbent q 32 floor 0.02322647906564807 best 0.04671612321877049
+RECON incumbent q 64 floor 0.02322647906564807 best 0.03433815116641428
+RECON incumbent q 128 floor 0.02322647906564807 best 0.02323071050815996
+WARMUP 38 subjects 94.6
+TIMED 0 1002.0
+TIMED 1 1084.5
+TIMED 2 1168.4
+GATE {'intervals': 256, 'ours': 'a_neural@incumbent', 'theirs': 'a_neural@incumbent', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 3.5413370792816587e-15, 'worst_absolute_difference': 1.1102230246251565e-16, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'a_neural@incumbent', 'theirs': 'a_neural@incumbent', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 3.541685772350092e-15, 'worst_absolute_difference': 1.0408340855860843e-16, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'q32_m256@incumbent', 'theirs': 'a_neural_q32@incumbent', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 4.6421679710126795e-15, 'worst_absolute_difference': 6.938893903907228e-17, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'q32_m256@incumbent', 'theirs': 'a_neural_q32@incumbent', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 4.635919396373121e-15, 'worst_absolute_difference': 6.938893903907228e-17, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'd_freebank_m256@incumbent', 'theirs': 'd_freebank@incumbent', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 8.689216359042329e-16, 'worst_absolute_difference': 2.6020852139652106e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'd_freebank_m256@incumbent', 'theirs': 'd_freebank@incumbent', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 8.733107621178683e-16, 'worst_absolute_difference': 6.938893903907228e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'a_neural@new_K32', 'theirs': 'a_neural@new_K32', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 3.127740860994946e-15, 'worst_absolute_difference': 1.3877787807814457e-17, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'a_neural@new_K32', 'theirs': 'a_neural@new_K32', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 3.3220423812927026e-15, 'worst_absolute_difference': 1.474514954580286e-17, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'q32_m256@new_K32', 'theirs': 'a_neural_q32@new_K32', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 1.698197594419667e-13, 'worst_absolute_difference': 4.184153024056059e-15, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'q32_m256@new_K32', 'theirs': 'a_neural_q32@new_K32', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 1.6996743842896062e-13, 'worst_absolute_difference': 4.198030811863873e-15, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'e_pod32_m256@trainset', 'theirs': 'e_pod32@trainset', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 2.0806617006695296e-16, 'worst_absolute_difference': 6.938893903907228e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'e_pod32_m256@trainset', 'theirs': 'e_pod32@trainset', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 1.8977217837994368e-16, 'worst_absolute_difference': 6.938893903907228e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'e_pod64_m256@trainset', 'theirs': 'e_pod64@trainset', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 1.2237508832272267e-14, 'worst_absolute_difference': 6.613633252161577e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'e_pod64_m256@trainset', 'theirs': 'e_pod64@trainset', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 2.409795136464736e-15, 'worst_absolute_difference': 3.469446951953614e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'e_pod128_m256@trainset', 'theirs': 'e_pod128@trainset', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 1.5384411716526226e-14, 'worst_absolute_difference': 6.938893903907228e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'e_pod128_m256@trainset', 'theirs': 'e_pod128@trainset', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 8.834362297252835e-15, 'worst_absolute_difference': 1.6263032587282567e-18, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'dst_direct', 'theirs': 'dst_direct', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'physical_error', 'worst_relative_difference': 0.0, 'worst_absolute_difference': 0.0, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+GATE {'intervals': 256, 'ours': 'dst_direct', 'theirs': 'dst_direct', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'metric': 'same_grid_error', 'worst_relative_difference': 0.0, 'worst_absolute_difference': 0.0, 'tolerance': 1e-09, 'absolute_floor': 1e-12, 'passed': True}
+CONSISTENCY {'intervals': 256, 'a': 'q0_m256@new_K32', 'b': 'a_neural@new_K32', 'found': True, 'worst_field_relative_difference': 8.049151574960226e-16, 'tolerance': 1e-06, 'passed': True}
+CONSISTENCY {'intervals': 256, 'a': 'q0_m256@incumbent', 'b': 'a_neural@incumbent', 'found': True, 'worst_field_relative_difference': 2.109972855310526e-15, 'tolerance': 1e-06, 'passed': True}
+CONSISTENCY {'intervals': 256, 'a': 'q512_m4@new_K32', 'b': 'd_linear_qr_m4@new_K32', 'found': True, 'worst_field_relative_difference': 1.0163305375824052e-07, 'tolerance': 1e-05, 'passed': True}
+CONSISTENCY {'intervals': 256, 'a': 'd_freebank_m4@new_K32', 'b': 'd_linear_qr_m4@new_K32', 'found': True, 'worst_field_relative_difference': 0.002250824898928452, 'tolerance': 0.01, 'passed': True}
+CONSISTENCY {'intervals': 256, 'a': 'd_freebank_m256@incumbent', 'b': 'd_linear_qr_m256@incumbent', 'found': True, 'worst_field_relative_difference': 4.0889943140353694e-07, 'tolerance': 1e-06, 'passed': True}
+CONSISTENCY {'intervals': 256, 'a': 'q32_m4@new_K32', 'b': 'q32_m256@new_K32', 'found': True, 'worst_field_relative_difference': 0.0, 'tolerance': 1e-12, 'passed': True}
+P-LINEAR SOLVE COMPLETE
+ALL-DONE

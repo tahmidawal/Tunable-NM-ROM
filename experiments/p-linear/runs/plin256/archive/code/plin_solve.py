@@ -378,13 +378,8 @@ def main():
         rec = dict(intervals=n, model=mid, K=K, R=R, bank_rank=rank,
                    bank_projection=K_.summarise(floor), against='same-grid FD-DST truth',
                    augmented=[])
-        # The parent's dense-field best-found (arms.make_reconstruction) at q = 0. It is a
-        # CROSS-CHECK of the projected oracle below, not a reported quantity: its jacfwd
-        # Jacobian is (starts, (n-1)^2, K) in f64 -- 2.0 GiB per array at n = 1024, with
-        # 32 GiB autotuner variants, which OOMed a 40 GB A100 (job 3780691, DESIGN A7).
-        # Above `dense_oracle_max_intervals` the projected oracle carries the number; the
-        # two agree to ~1e-13 wherever both run, and that agreement is recorded.
-        if n <= cfg['dense_oracle_max_intervals'] and (m['role'] != 'control' or not a.smoke):
+        if m['role'] != 'control' or not a.smoke:
+            # the parent's dense-field best-found (arms.make_reconstruction), q = 0 only
             recon = A.make_reconstruction(head, K, n, cfg['recon_budget'],
                                           cfg['stationarity_tolerance'], linear)
             H = jax.jit(jax.vmap(head))(jnp.asarray(L['codes']))
@@ -408,12 +403,6 @@ def main():
                                             cfg['stationarity_tolerance'], linear)
             rec['augmented'].append(dict(q=q, best_found=K_.summarise(e), iterations=it.tolist(),
                                          exit_reasons=rs.tolist()))
-            if q == 0 and 'best_found_dense' in rec:
-                d = np.asarray(rec['best_found_dense']['per_case'])
-                rec['dense_vs_projected_oracle'] = dict(
-                    worst_absolute_difference=float(np.max(np.abs(d - e))),
-                    worst_relative_difference=float(np.max(np.abs(d - e) / np.maximum(d, 1e-300))),
-                    note='same quantity, dense field metric vs the exact QR metric')
             print('RECON', mid, 'q', q, 'floor', float(floor.max()), 'best', float(e.max()), flush=True)
         R_['reconstruction'].append(rec)
         del U, T, Rg

@@ -244,3 +244,21 @@ eliminated path recovers $y$ through the QR of $BC$ after an inert $z$ iteration
 direct arm through the QR of $B$, so they agree to the operator's conditioning times
 round-off, not to $10^{-8}$. The threshold is set to $10^{-5}$; it is a reported
 consistency pair, not a gate, and D1–D3 do not use it.
+
+**2026-09-17, §A7 — the dense best-found oracle is capped by mesh, after an OOM on a 40 GB
+A100.** `plin1024` (job `3780691`) died at 14m27s in the *untimed* dense best-found oracle:
+`arms.make_reconstruction`'s `jacfwd` Jacobian is `f64[starts, (n-1)^2, K]` — at
+$n = 1024$, $8\times1046529\times32\times8$ B = 2.0 GiB per array, with 32 GiB autotuner
+variants — and the scheduler gave the job an **A100-PCIE-40GB** where the parent lane's
+equivalent job had an A100 80GB. The log is complete and ends in a JAX
+`RESOURCE_EXHAUSTED`; the share was at 91 %, so this is not the disk-full failure mode.
+Nothing was timed, no gate ran, and no number from that job is used.
+
+Fix, in the untimed diagnostic only: the dense oracle now runs only at
+$n \le$ `dense_oracle_max_intervals` (256). It was always a **cross-check** of the
+pre-registered `augmented best-found` at $q = 0$, which `plin_core.oracle_projected`
+computes in the exact QR metric with an $R$-dimensional residual — the same quantity, and
+the two agree to $\sim10^{-13}$ wherever both run (recorded per job as
+`dense_vs_projected_oracle`). The resubmit also asks for an **H200** with `--mem 240G`, per
+this repository's rule for memory-heavy runs. No pre-registered criterion, gate, arm or
+timed path changes.

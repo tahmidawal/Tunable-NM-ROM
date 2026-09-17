@@ -1,0 +1,6 @@
+{"attempt": "lsh07", "job_id": 3789568, "submitted": "2026-09-17T13:41 EDT", "gpu_request": "a100", "hours": 16, "mem": "180G",
+ "intervals": [512], "models_from": "lsh02 (3783786)", "config": "config-solve.json (M = 257)",
+ "remote": "/cluster/tufts/paralab/tawal01/lshape_20260917/lsh07",
+ "resubmit_of": "lsh05 (3784664, FAILED 1:0 on G-FOM-4; DESIGN A7)",
+ "science_unchanged": "staged tree differs from lsh05 in exactly lsh_core.py, lsh_solve.py, config-solve.json (and the inert stage.py); all 14 checkpoints, models.json and the three shared modules are byte-identical",
+ "squeue_before": "zero jobs in the lshape namespace", "squeue_after": "exactly one job for lsh07 (3789568 PD, Priority)"}

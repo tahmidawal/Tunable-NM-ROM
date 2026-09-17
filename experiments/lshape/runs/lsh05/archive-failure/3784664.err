@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/lshape_20260917/lsh05/code/lsh_solve.py", line 404, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/lshape_20260917/lsh05/code/lsh_solve.py", line 231, in main
+    assert resid <= cfg['reference_residual_limit'], (n, case, resid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (512, 8, 1.066064204113385e-12)

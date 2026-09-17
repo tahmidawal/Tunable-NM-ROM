@@ -1,0 +1,36 @@
+OpenAI Codex v0.154.0
+--------
+workdir: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-w-ladder
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 01a0adba-c5ce-7763-8137-e47513b3f81a
+--------
+user
+You are an independent adversarial auditor (read-only). Do not modify, create or delete any file; do not run GPU work; do not submit jobs; do not run Python that imports jax.
+
+Audit the pre-registered experiment design at experiments/w-ladder/DESIGN.md before its first cluster job is submitted. The design builds on frozen code in experiments/multiresolution-wave/ (pilot.py, acceleration.py, acceleration_replay.py, modal_projection.py, nested_head.py, dynamics.py, heads32.py, iterative_replay.py, iterative_paths.py) and experiments/fresh-wave-head/ (fresh_fom.py, fresh_models.py, fresh_rom.py, fresh_learning.py). Retained numbers it cites are in reports/2026-09-11-accuracy-improvements-and-wave-speed.md (reflective-wave sections) and consolidated/evidence/worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel12/cluster/out/pilot/result.json and .../accel07/cluster/out/pilot/result.json.
+
+Check specifically:
+1. Is the pre-registered criterion (D1-D4) falsifiable and non-vacuous? Is the 0.1x cost bar in D2 sensible or arbitrary? Would you change the primary metric?
+2. Mathematics of section 3.1: with the bank mass-orthonormal and the 64 weak tests equal to the bank, is the retained weak least-squares manifold equation with J -> I exactly the Galerkin system a'' = -c^2 K a? Is the claim that at q=32 the joint tangent [J32 | B32] being nonsingular makes the trajectory reproduce the full-bank linear evolution correct? Any hidden assumption (e.g., the curvature term, the guard)?
+3. Section 3.2: is exact modal propagation of a'' = -c^2 K a with K SPD unconditionally stable and exactly energy-conserving in exact arithmetic? Is the reduced energy E_r = (b^T b + c^2 a^T K a)/2 equal to the physical energy of the decoded field for this discretisation (edge stiffness, trapezoid mass)?
+4. Section 3.3: the POD transfer across meshes by sine interpolant (nodal subsampling to the nested coarse grid; DST-I zero-padding to the fine grid) followed by mass-QR — is this a fair analogue of how the neural bank is transferred (evaluated at new points, then mass-QR)? Any scaling trap in DST-I ortho normalisation between grids?
+5. Are there confounds that would let a head rung look artificially bad or the linear bank artificially good (initialisation contract differences: the head fits its initial state by nonlinear LM while the bank projects raw; dt choice; reference kind)? Are they disclosed?
+6. The gates G1-G5: thresholds sensible? Anything missing that the LAB-LOG's landmines list requires (nondeterminism, captured constants, disk-full, silent CPU fallback)?
+7. Is anything in the design a retraction risk — a number or claim that could later have to be withdrawn?
+
+Report as a numbered list of findings, each tagged WRONG / NEEDS-RESTATEMENT / OK / SUGGESTION, with the file/line you base it on. Be concise and concrete.
+
+warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
+codex
+I’ll read the canonical lab log, then check the design against the frozen equations, transfer code, and retained evidence. I’ll keep the audit read-only and run no GPU work.
+
+ERROR: You've hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 19th, 2026 11:33 AM.
+ERROR: You've hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 19th, 2026 11:33 AM.
+tokens used
+17,450
+codex rc=1

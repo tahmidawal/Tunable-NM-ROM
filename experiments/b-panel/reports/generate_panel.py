@@ -24,7 +24,8 @@ LABEL = {'rom': 'correction ladder (frozen model)', 'fast': 'optimised q = 0 ker
 METRICS = ('worst_all_times_percent', 'median_all_times_percent', 'worst_evolved_percent', 'median_evolved_percent',
            'worst_t0_compression_percent', 'worst_reference_percent', 'median_reference_percent', 'median_gpu_ms',
            'median_host_ms', 'median_iterations', 'max_iterations', 'total_budget_exits', 'max_joint_stationarity',
-           'max_ic_relative_residual', 'converged', 'converged_strict', 'admissible', 'rho_max', 'rho_p95', 'rule_basis')
+           'max_step_stationarity', 'max_ic_stationarity', 'max_ic_relative_residual', 'best_found_percent',
+           'solved_over_best_found', 'converged', 'converged_strict', 'admissible', 'rho_max', 'rho_p95', 'rule_basis')
 
 
 def f(x, d=4):

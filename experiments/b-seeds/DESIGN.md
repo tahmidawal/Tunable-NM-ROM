@@ -372,3 +372,33 @@ $10^{-3}$ gate result for every incumbent arm, so a reader meets the weakening w
 The report's §"Integrity notes on the bars this report is graded against" is generated from the audit
 JSONs and carries it, together with the Codex substitution and the sealed-cohort opening record. The
 paper's integrity section and this report must agree on that point.
+
+**A4 (2026-09-17 ~18:20 EDT, the sealed-cohort opening record).** The three seed jobs
+(`bsd_s1` 3783776, `bsd_s2` 3783777, `bsd_s3` 3783778, all COMPLETED 0:0, 5h32 / 5h32 / 6h09,
+`jax_backend=gpu`, A100 80GB / A100 80GB / A100 40GB) were collected with checksums verified on
+both sides, audited (45/45 and 43/43 ladder gates and 28/28 EQ-certification gates per seed),
+archived as Git chunks in `artifacts/s{1,2,3}/`, and their remote attempt directories deleted.
+The development-cohort numbers are therefore final and published in
+`reports/2026-09-17-b-seeds.md`.
+
+With that done, §3's opening rule is satisfied and **the sealed cohort is opened now**, in the
+fourth and last planned job (`final`). Evidence that it was sealed until this moment: no
+`config-sealed-*.json` appears in any seed attempt's `PROVENANCE.json` or in any seed archive's
+`MANIFEST.sha256` (zero matches for `sealed` in all six files); `checks/sealed-cohort.json` was
+written by `make_configs.py` and committed before the first submission; every seed `result.json`
+records `final_cohort_unopened: true`, and the final job's blocks will record `false`, which
+`audit_seeds.py` gates with `final_cohort_flag_matches_cohort`.
+
+The final job runs the incumbent and the three seed checkpoints (SHA256 `55e98cc1…`,
+`2997e06e…`, `1194495b…`, equal to the values the seed jobs recorded in their own
+`TRAIN-SHA256.txt`) through the sealed configurations, sequentially, in one allocation. No seed
+job is submitted after it (A1.6). Job count after it: 4 of the lane's 8.
+
+Also recorded here, because it is the one thing the development numbers did not deliver
+cleanly: **seed 3's top rung `old_q256_M1088_dense` is not converged** — 1 budget exit on 2 of
+the 6 development cases (cases 2 and 3), identically in all three timed repetitions, with worst
+joint stationarity 1.52e-06 and 5.83e-06 against `gtol` 1e-06. It is a budget exhaustion at the
+600-step cap, not a divergence: that rung still has seed 3's lowest error (0.4268 % evolved).
+Nothing is adjusted in response — the step budget is part of the frozen qtd02 configuration and
+changing it would break comparability — so C1, C3 and C4 are reported as 2 of 3 and the rung is
+reported as unconverged wherever it appears.

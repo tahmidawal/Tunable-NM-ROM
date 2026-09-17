@@ -51,19 +51,38 @@ def main():
             if r['family'] != 'rom' or 'solver-control' in (r.get('labels') or []):
                 continue
             cells.setdefault((r['q'], r['M']), []).append((att, j['question'], r))
-    E = {}
+    E, Econv = {}, {}
     for k, lst in cells.items():
         pref = [x for x in lst if x[1] == ('G1' if k[0] <= 32 else 'G2')] or lst
         E[k] = pref[0][2]['worst_evolved_percent']
+        Econv[k] = bool(pref[0][2]['converged'])
 
-    # --- spans -----------------------------------------------------------------
+    # --- spans -------------------------------------------------------------------
+    # round 2 (2026-09-17, bqx401/E1) appended a q=512 rung to the M=1088 column that does
+    # NOT converge. DESIGN.md §5 defines a span over a column's CONVERGED rungs only ("a
+    # non-converged cell is ... excluded from every span"), so this independent recomputation
+    # filters to Econv[k] before forming a span -- exactly what the fixed generator's
+    # `certified_span` does. Comparing against the raw `span` field (which the generator now
+    # correctly reports as `None`/unavailable for a column carrying an unconverged rung)
+    # would make this self-audit disagree with a correct report; comparing against
+    # `certified_span` is the right independent target. Falls back to `span` for any older
+    # analysis.json that has no `certified_span` key (round-1-only regeneration).
     for M in (256, 1088):
-        qs = sorted(q for (q, MM) in E if MM == M)
+        qs = sorted(q for (q, MM) in E if MM == M and Econv[(q, MM)])
         vals = [E[(q, M)] for q in qs]
-        check(f'span_q_fixed_M{M}', vals[0] / vals[-1],
-              an['spans']['worst_evolved_percent']['fixed_M'][str(M)]['span'])
+        rep = an['spans']['worst_evolved_percent']['fixed_M'][str(M)]
+        check(f'span_q_fixed_M{M}', vals[0] / vals[-1], rep.get('certified_span', rep.get('span')))
         out[f'monotone_fixed_M{M}'] = dict(mine=all(b <= a_ for a_, b in zip(vals, vals[1:])),
                                            report=an['spans']['worst_evolved_percent']['fixed_M'][str(M)]['monotone'])
+        # any non-converged rungs attempted at this M must be excluded from the span above,
+        # and the report's own `all_converged`/`unavailable_reason` must say so.
+        qs_all = sorted(q for (q, MM) in E if MM == M)
+        excluded = [q for q in qs_all if not Econv[(q, M)]]
+        report_has_exclusion = not rep.get('all_converged', True)
+        out[f'excluded_nonconverged_M{M}'] = dict(
+            mine=excluded, report=report_has_exclusion, agree=bool(excluded) == report_has_exclusion)
+        if bool(excluded) != report_has_exclusion:
+            bad.append(f'excluded_nonconverged_M{M}')
     sched = [(0, 64), (16, 128), (32, 192), (64, 320), (128, 576), (256, 1088)]
     sv = [E[c] for c in sched]
     check('span_scheduled_4x', sv[0] / sv[-1], an['spans']['worst_evolved_percent']['scheduled']['4x']['span'])

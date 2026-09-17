@@ -27,6 +27,13 @@
           "available": true,
           "unavailable_reason": null,
           "declared_fixed_column": true,
+          "certified_q_range": [
+            0,
+            128
+          ],
+          "certified_span": 1.2200715106073892,
+          "certified_all_converged": true,
+          "certified_note": null,
           "within_job": {
             "job": "G2",
             "job_id": "3780177",
@@ -45,13 +52,20 @@
               645.5934388795868,
               921.7661543516442
             ],
+            "converged": [
+              true,
+              true,
+              true
+            ],
+            "all_converged": true,
             "error_span": 1.2200715106074551,
             "cost_span": 2.2693196281456323,
             "monotone_error": true,
             "monotone_cost": true,
             "non_dominated_points": 3,
             "passes_tunability_bar": false
-          }
+          },
+          "within_job_longest_attempted": null
         },
         "1088": {
           "M": 1088,
@@ -72,14 +86,21 @@
             0.5193843584884361
           ],
           "monotone": true,
-          "span": 2.4368429602045354,
+          "span": null,
           "q_top": 256,
-          "q_max": 256,
-          "span_to_q128": 1.4528700420752918,
-          "all_converged": true,
-          "available": true,
-          "unavailable_reason": null,
+          "q_max": 512,
+          "span_to_q128": null,
+          "all_converged": false,
+          "available": false,
+          "unavailable_reason": "a rung is not converged; the span is not patched",
           "declared_fixed_column": true,
+          "certified_q_range": [
+            0,
+            256
+          ],
+          "certified_span": 2.4368429602045354,
+          "certified_all_converged": true,
+          "certified_note": "the declared column also attempted q = 512, which did not converge and is excluded (not patched into `span`); the q = 0..256 sub-ladder above it, all converged, is reported here as `certified_span` and is unaffected by the attempted extension",
           "within_job": {
             "job": "G2",
             "job_id": "3780177",
@@ -101,12 +122,66 @@
               1886.4762325538322,
               4377.883864566684
             ],
+            "converged": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "all_converged": true,
             "error_span": 2.4368429602045056,
             "cost_span": 5.1626587819982905,
             "monotone_error": true,
             "monotone_cost": true,
             "non_dominated_points": 4,
             "passes_tunability_bar": true
+          },
+          "within_job_longest_attempted": {
+            "job": "E1",
+            "job_id": "3783898",
+            "q": [
+              0,
+              16,
+              32,
+              64,
+              128,
+              256,
+              512
+            ],
+            "values": [
+              1.2656581176228874,
+              1.2203978326415692,
+              1.1628861255036997,
+              1.0592909358850193,
+              0.8711433795959751,
+              0.519384363624752,
+              0.4249881205345053
+            ],
+            "median_gpu_ms": [
+              852.5382520165294,
+              999.9272800050676,
+              1102.093628491275,
+              1383.0764305312186,
+              1922.502055997029,
+              4473.2862315140665,
+              2822.0867936033756
+            ],
+            "converged": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false
+            ],
+            "all_converged": false,
+            "error_span": null,
+            "cost_span": null,
+            "monotone_error": true,
+            "monotone_cost": false,
+            "non_dominated_points": 6,
+            "passes_tunability_bar": false
           }
         }
       },
@@ -131,7 +206,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 0.8149514910464426,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "192": {
           "M": 192,
@@ -151,7 +233,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            16,
+            32
+          ],
+          "certified_span": 1.0287428850803102,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "512": {
           "M": 512,
@@ -173,7 +262,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 1.189252027479361,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "320": {
           "M": 320,
@@ -193,7 +289,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            32,
+            64
+          ],
+          "certified_span": 1.080563737738386,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "576": {
           "M": 576,
@@ -213,7 +316,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            64,
+            128
+          ],
+          "certified_span": 1.1906887240816382,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "2048": {
           "M": 2048,
@@ -233,7 +343,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 1.194240629405462,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "4096": {
           "M": 4096,
@@ -253,7 +370,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 1.1910415646681622,
+          "certified_all_converged": true,
+          "certified_note": null
         }
       },
       "fixed_q": {
@@ -426,22 +550,31 @@
           "M": [
             544,
             1088,
-            2176
+            2176,
+            3264,
+            4352,
+            6528
           ],
           "values": [
             0.7565870264511788,
             0.5193843584884361,
-            0.3735872410422864
+            0.3735872410422864,
+            0.35638740721214623,
+            0.352294984303769,
+            0.35097544721015095
           ],
           "monotone": true,
-          "span": 2.0251950370155725,
-          "span_first_to_last": 2.0251950370155725,
-          "M_best": 2176,
-          "span_M_ge_2x": 2.0251950370155725,
+          "span": 2.1556693850386717,
+          "span_first_to_last": 2.1556693850386717,
+          "M_best": 6528,
+          "span_M_ge_2x": 2.1556693850386717,
           "M_ge_2x": [
             544,
             1088,
-            2176
+            2176,
+            3264,
+            4352,
+            6528
           ]
         }
       },
@@ -551,6 +684,13 @@
           "available": true,
           "unavailable_reason": null,
           "declared_fixed_column": true,
+          "certified_q_range": [
+            0,
+            128
+          ],
+          "certified_span": 1.414706338383428,
+          "certified_all_converged": true,
+          "certified_note": null,
           "within_job": {
             "job": "G2",
             "job_id": "3780177",
@@ -569,13 +709,20 @@
               645.5934388795868,
               921.7661543516442
             ],
+            "converged": [
+              true,
+              true,
+              true
+            ],
+            "all_converged": true,
             "error_span": 1.414706338383428,
             "cost_span": 2.2693196281456323,
             "monotone_error": true,
             "monotone_cost": true,
             "non_dominated_points": 3,
             "passes_tunability_bar": false
-          }
+          },
+          "within_job_longest_attempted": null
         },
         "1088": {
           "M": 1088,
@@ -596,14 +743,21 @@
             0.9052751422505605
           ],
           "monotone": true,
-          "span": 2.831042036886115,
+          "span": null,
           "q_top": 256,
-          "q_max": 256,
-          "span_to_q128": 1.414706338383428,
-          "all_converged": true,
-          "available": true,
-          "unavailable_reason": null,
+          "q_max": 512,
+          "span_to_q128": null,
+          "all_converged": false,
+          "available": false,
+          "unavailable_reason": "a rung is not converged; the span is not patched",
           "declared_fixed_column": true,
+          "certified_q_range": [
+            0,
+            256
+          ],
+          "certified_span": 2.831042036886115,
+          "certified_all_converged": true,
+          "certified_note": "the declared column also attempted q = 512, which did not converge and is excluded (not patched into `span`); the q = 0..256 sub-ladder above it, all converged, is reported here as `certified_span` and is unaffected by the attempted extension",
           "within_job": {
             "job": "G2",
             "job_id": "3780177",
@@ -625,12 +779,66 @@
               1886.4762325538322,
               4377.883864566684
             ],
+            "converged": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "all_converged": true,
             "error_span": 2.831042036886115,
             "cost_span": 5.1626587819982905,
             "monotone_error": true,
             "monotone_cost": true,
             "non_dominated_points": 4,
             "passes_tunability_bar": true
+          },
+          "within_job_longest_attempted": {
+            "job": "E1",
+            "job_id": "3783898",
+            "q": [
+              0,
+              16,
+              32,
+              64,
+              128,
+              256,
+              512
+            ],
+            "values": [
+              2.562871982659394,
+              2.480576889072995,
+              2.35337335624409,
+              2.148870544997514,
+              1.8115929188712008,
+              0.9052751444903362,
+              0.6026673508069594
+            ],
+            "median_gpu_ms": [
+              852.5382520165294,
+              999.9272800050676,
+              1102.093628491275,
+              1383.0764305312186,
+              1922.502055997029,
+              4473.2862315140665,
+              2822.0867936033756
+            ],
+            "converged": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false
+            ],
+            "all_converged": false,
+            "error_span": null,
+            "cost_span": null,
+            "monotone_error": true,
+            "monotone_cost": false,
+            "non_dominated_points": 6,
+            "passes_tunability_bar": false
           }
         }
       },
@@ -655,7 +863,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 1.1926600180142979,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "192": {
           "M": 192,
@@ -675,7 +890,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            16,
+            32
+          ],
+          "certified_span": 1.0540515735983755,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "512": {
           "M": 512,
@@ -697,7 +919,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 1.1926600180142979,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "320": {
           "M": 320,
@@ -717,7 +946,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            32,
+            64
+          ],
+          "certified_span": 1.0951675795251494,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "576": {
           "M": 576,
@@ -737,7 +973,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            64,
+            128
+          ],
+          "certified_span": 1.1861773839437384,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "2048": {
           "M": 2048,
@@ -757,7 +1000,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 1.1926600180142979,
+          "certified_all_converged": true,
+          "certified_note": null
         },
         "4096": {
           "M": 4096,
@@ -777,7 +1027,14 @@
           "all_converged": true,
           "available": true,
           "unavailable_reason": null,
-          "declared_fixed_column": false
+          "declared_fixed_column": false,
+          "certified_q_range": [
+            0,
+            64
+          ],
+          "certified_span": 1.1926600180142979,
+          "certified_all_converged": true,
+          "certified_note": null
         }
       },
       "fixed_q": {
@@ -950,22 +1207,31 @@
           "M": [
             544,
             1088,
-            2176
+            2176,
+            3264,
+            4352,
+            6528
           ],
           "values": [
             0.9052751422505605,
             0.9052751422505605,
-            0.9052751422505605
+            0.9052751422505605,
+            0.905275139559578,
+            0.905275139559578,
+            0.905275139559578
           ],
           "monotone": true,
-          "span": 1.0,
-          "span_first_to_last": 1.0,
-          "M_best": 544,
-          "span_M_ge_2x": 1.0,
+          "span": 1.0000000029725578,
+          "span_first_to_last": 1.0000000029725578,
+          "M_best": 3264,
+          "span_M_ge_2x": 1.0000000029725578,
           "M_ge_2x": [
             544,
             1088,
-            2176
+            2176,
+            3264,
+            4352,
+            6528
           ]
         }
       },
@@ -1581,6 +1847,75 @@
         "cost_neutral_claim": true,
         "reference_M": 320,
         "monotone": false
+      },
+      "256": {
+        "curve": [
+          {
+            "M": 1088,
+            "value": 0.5193843574337147,
+            "all_times": 0.905275139559578,
+            "median_gpu_ms": 3948.8909939536825,
+            "converged": true,
+            "median_iterations": 5.0,
+            "cost_ratio_to_4x": 1.0,
+            "improvement_to_next": 0.2807114121491618,
+            "next_M": 2176
+          },
+          {
+            "M": 2176,
+            "value": 0.37358724101031165,
+            "all_times": 0.905275139559578,
+            "median_gpu_ms": 5894.166678888723,
+            "converged": true,
+            "median_iterations": 4.0,
+            "cost_ratio_to_4x": 1.4926131635219955,
+            "improvement_to_next": 0.046039671354008244,
+            "next_M": 3264
+          },
+          {
+            "M": 3264,
+            "value": 0.35638740721214623,
+            "all_times": 0.905275139559578,
+            "median_gpu_ms": 9149.997265427373,
+            "converged": true,
+            "median_iterations": 4.0,
+            "cost_ratio_to_4x": 2.3171055568354073,
+            "improvement_to_next": 0.011483073827973827,
+            "next_M": 4352
+          },
+          {
+            "M": 4352,
+            "value": 0.352294984303769,
+            "all_times": 0.905275139559578,
+            "median_gpu_ms": 9282.805776456371,
+            "converged": true,
+            "median_iterations": 4.0,
+            "cost_ratio_to_4x": 2.3507374072036114,
+            "improvement_to_next": 0.003745546069086975,
+            "next_M": 6528
+          },
+          {
+            "M": 6528,
+            "value": 0.35097544721015095,
+            "all_times": 0.905275139559578,
+            "median_gpu_ms": 12130.830192589201,
+            "converged": true,
+            "median_iterations": 4.0,
+            "cost_ratio_to_4x": 3.0719587375704314,
+            "improvement_to_next": null,
+            "next_M": null
+          }
+        ],
+        "M_star": 2176,
+        "still_falling_at_largest_M": false,
+        "largest_M": 6528,
+        "value_at_largest_M": 0.35097544721015095,
+        "tests_per_unknown_at_M_star": 8.0,
+        "error_at_M_star": 0.37358724101031165,
+        "cost_ratio_at_M_star": 1.4926131635219955,
+        "cost_neutral_claim": false,
+        "reference_M": 1088,
+        "monotone": true
       }
     },
     "sources": {
@@ -1595,6 +1930,12 @@
         "job_id": "3780178",
         "attempt": "bqx301",
         "gpu": "NVIDIA A100-PCIE-40GB"
+      },
+      "256": {
+        "job": "E2",
+        "job_id": "3783899",
+        "attempt": "bqx501",
+        "gpu": "NVIDIA A100 80GB PCIe"
       }
     }
   },
@@ -1610,6 +1951,34 @@
       "rel_all": 0.0,
       "a_ms": 290.63586553093046,
       "b_ms": 339.57148308400065,
+      "tol": 1e-09,
+      "passed": true
+    },
+    {
+      "q": 0,
+      "M": 64,
+      "a": "bqx101",
+      "b": "bqx401",
+      "a_job": "3780175",
+      "b_job": "3783898",
+      "rel_evolved": 5.099178472044203e-13,
+      "rel_all": 0.0,
+      "a_ms": 290.63586553093046,
+      "b_ms": 337.53193507436663,
+      "tol": 1e-09,
+      "passed": true
+    },
+    {
+      "q": 0,
+      "M": 64,
+      "a": "bqx101",
+      "b": "bqx501",
+      "a_job": "3780175",
+      "b_job": "3783899",
+      "rel_evolved": 2.913984193683167e-13,
+      "rel_all": 2.3219245644161776e-14,
+      "a_ms": 290.63586553093046,
+      "b_ms": 291.64654843043536,
       "tol": 1e-09,
       "passed": true
     },
@@ -1684,6 +2053,62 @@
       "passed": true
     },
     {
+      "q": 0,
+      "M": 1088,
+      "a": "bqx101",
+      "b": "bqx401",
+      "a_job": "3780175",
+      "b_job": "3783898",
+      "rel_evolved": 5.438579863576469e-15,
+      "rel_all": 0.0,
+      "a_ms": 742.2219984000549,
+      "b_ms": 852.5382520165294,
+      "tol": 1e-09,
+      "passed": true
+    },
+    {
+      "q": 0,
+      "M": 1088,
+      "a": "bqx101",
+      "b": "bqx501",
+      "a_job": "3780175",
+      "b_job": "3783899",
+      "rel_evolved": 1.5438549290152556e-13,
+      "rel_all": 2.3219245644161776e-14,
+      "a_ms": 742.2219984000549,
+      "b_ms": 742.6816020160913,
+      "tol": 1e-09,
+      "passed": true
+    },
+    {
+      "q": 16,
+      "M": 1088,
+      "a": "bqx101",
+      "b": "bqx401",
+      "a_job": "3780175",
+      "b_job": "3783898",
+      "rel_evolved": 1.82441152139647e-10,
+      "rel_all": 8.03227838289762e-11,
+      "a_ms": 868.5573934344575,
+      "b_ms": 999.9272800050676,
+      "tol": 0.001,
+      "passed": true
+    },
+    {
+      "q": 32,
+      "M": 1088,
+      "a": "bqx101",
+      "b": "bqx401",
+      "a_job": "3780175",
+      "b_job": "3783898",
+      "rel_evolved": 6.833266045774242e-12,
+      "rel_all": 5.697536214180358e-11,
+      "a_ms": 958.2257199799642,
+      "b_ms": 1102.093628491275,
+      "tol": 0.001,
+      "passed": true
+    },
+    {
       "q": 64,
       "M": 256,
       "a": "bqx201",
@@ -1724,13 +2149,89 @@
       "b_ms": 1541.7818705318496,
       "tol": 0.001,
       "passed": true
+    },
+    {
+      "q": 64,
+      "M": 1088,
+      "a": "bqx201",
+      "b": "bqx401",
+      "a_job": "3780177",
+      "b_job": "3783898",
+      "rel_evolved": 3.4070398146332373e-10,
+      "rel_all": 1.1184753629064118e-09,
+      "a_ms": 1359.3609631061554,
+      "b_ms": 1383.0764305312186,
+      "tol": 0.001,
+      "passed": true
+    },
+    {
+      "q": 128,
+      "M": 1088,
+      "a": "bqx201",
+      "b": "bqx401",
+      "a_job": "3780177",
+      "b_job": "3783898",
+      "rel_evolved": 7.461114822980965e-10,
+      "rel_all": 8.733282806182641e-10,
+      "a_ms": 1886.4762325538322,
+      "b_ms": 1922.502055997029,
+      "tol": 0.001,
+      "passed": true
+    },
+    {
+      "q": 256,
+      "M": 1088,
+      "a": "bqx201",
+      "b": "bqx401",
+      "a_job": "3780177",
+      "b_job": "3783898",
+      "rel_evolved": 9.889238757751388e-09,
+      "rel_all": 2.474138075496754e-09,
+      "a_ms": 4377.883864566684,
+      "b_ms": 4473.2862315140665,
+      "tol": 0.001,
+      "passed": true
+    },
+    {
+      "q": 256,
+      "M": 1088,
+      "a": "bqx201",
+      "b": "bqx501",
+      "a_job": "3780177",
+      "b_job": "3783899",
+      "rel_evolved": 2.030714641429452e-09,
+      "rel_all": 2.9725576482900717e-09,
+      "a_ms": 4377.883864566684,
+      "b_ms": 3948.8909939536825,
+      "tol": 0.001,
+      "passed": true
+    },
+    {
+      "q": 256,
+      "M": 2176,
+      "a": "bqx201",
+      "b": "bqx501",
+      "a_job": "3780177",
+      "b_job": "3783899",
+      "rel_evolved": 8.55884587677679e-11,
+      "rel_all": 2.9725576482900717e-09,
+      "a_ms": 7012.57752510719,
+      "b_ms": 5894.166678888723,
+      "tol": 0.001,
+      "passed": true
     }
   ],
   "verdict": {
     "rules": "DESIGN.md \u00a76",
     "fixed1088_monotone": true,
-    "fixed1088_all_converged": true,
+    "fixed1088_all_converged": false,
     "span_q_at_M1088": 2.4368429602045354,
+    "span_q_at_M1088_certified_q_range": [
+      0,
+      256
+    ],
+    "span_q_at_M1088_declared_full_range_unavailable": null,
+    "span_q_at_M1088_extension_note": "the declared column also attempted q = 512, which did not converge and is excluded (not patched into `span`); the q = 0..256 sub-ladder above it, all converged, is reported here as `certified_span` and is unaffected by the attempted extension",
     "span_q_at_M256_to_q128": 1.2200715106073892,
     "headline_fixed_M": true,
     "fixed1088_within_job": {
@@ -1754,6 +2255,13 @@
         1886.4762325538322,
         4377.883864566684
       ],
+      "converged": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "all_converged": true,
       "error_span": 2.4368429602045056,
       "cost_span": 5.1626587819982905,
       "monotone_error": true,
@@ -1762,6 +2270,53 @@
       "passes_tunability_bar": true
     },
     "fixed1088_passes_tunability_bar": true,
+    "fixed1088_within_job_longest_attempted": {
+      "job": "E1",
+      "job_id": "3783898",
+      "q": [
+        0,
+        16,
+        32,
+        64,
+        128,
+        256,
+        512
+      ],
+      "values": [
+        1.2656581176228874,
+        1.2203978326415692,
+        1.1628861255036997,
+        1.0592909358850193,
+        0.8711433795959751,
+        0.519384363624752,
+        0.4249881205345053
+      ],
+      "median_gpu_ms": [
+        852.5382520165294,
+        999.9272800050676,
+        1102.093628491275,
+        1383.0764305312186,
+        1922.502055997029,
+        4473.2862315140665,
+        2822.0867936033756
+      ],
+      "converged": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "all_converged": false,
+      "error_span": null,
+      "cost_span": null,
+      "monotone_error": true,
+      "monotone_cost": false,
+      "non_dominated_points": 6,
+      "passes_tunability_bar": false
+    },
     "headline": "fixed-M ladder (M = 1088, pure rank), scheduled ladder reported beside it",
     "rank_claim_false": false,
     "H_rank_false": true,

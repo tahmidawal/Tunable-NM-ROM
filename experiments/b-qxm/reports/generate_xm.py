@@ -137,13 +137,29 @@ def spans(grid, metric):
         if len(ok) < 2:
             continue
         allc = all(grid.row(q, M)['converged'] for q in qs)
+        # `ok` already contains only the converged, valid rungs (grid.e() drops non-converged
+        # rows). DESIGN.md §6's "not patched" rule says the DECLARED column's span must not be
+        # silently formed from that dropped-rung subset -- so `span` stays None whenever any
+        # declared rung fails, exactly as pre-registered. But that rule is about not smuggling
+        # a quiet substitution past the reader, not about erasing what the converged rungs
+        # still establish on their own. So the converged sub-ladder is *also* reported, plainly
+        # labelled, alongside the unavailable full span (never merged into it, never silently
+        # used to fill `span`).
         entry = dict(M=M, q=[q for q, _ in ok], values=[v for _, v in ok],
                      monotone=mono([v for _, v in ok]),
                      span=(ok[0][1] / ok[-1][1] if allc else None), q_top=ok[-1][0], q_max=qs[-1],
                      span_to_q128=(ok[0][1] / dict(ok)[128] if 128 in dict(ok) and ok[0][0] == 0 and allc else None),
                      all_converged=allc, available=allc,
                      unavailable_reason=(None if allc else 'a rung is not converged; the span is not patched'),
-                     declared_fixed_column=declared)
+                     declared_fixed_column=declared,
+                     certified_q_range=([ok[0][0], ok[-1][0]] if len(ok) >= 2 else None),
+                     certified_span=(ok[0][1] / ok[-1][1] if len(ok) >= 2 else None),
+                     certified_all_converged=True if len(ok) >= 2 else None,
+                     certified_note=(None if allc else
+                         f"the declared column also attempted q = {qs[-1]}, which did not converge and is "
+                         f"excluded (not patched into `span`); the q = {ok[0][0]}..{ok[-1][0]} sub-ladder above "
+                         f"it, all converged, is reported here as `certified_span` and is unaffected by the "
+                         f"attempted extension"))
         (fixed if declared else other)[M] = entry
     # Cost may only be compared inside one job, so for each fixed-M column find the job that
     # holds the most of its rungs and report that segment's cost and error span together.
@@ -156,22 +172,45 @@ def spans(grid, metric):
                 continue
             for au_, r_ in lst:
                 byjob.setdefault(au_['question'], []).append((qq, r_, au_))
-        best = max(byjob.values(), key=lambda v: (len(v), max(x[0] for x in v)))
-        best.sort(key=lambda t: t[0])
-        if len(best) >= 2 and all(r['converged'] for _, r, _ in best):
+        for v in byjob.values():
+            v.sort(key=lambda t: t[0])
+
+        def _pack(best):
+            if best is None or len(best) < 2:
+                return None
             errs = [r[metric] for _, r, _ in best]
             costs = [r['median_gpu_ms'] for _, r, _ in best]
             nd = [i for i in range(len(best))
                   if not any((costs[j] <= costs[i] and errs[j] <= errs[i] and (costs[j] < costs[i] or errs[j] < errs[i]))
                              for j in range(len(best)))]
-            entry['within_job'] = dict(
+            allc_ = all(r['converged'] for _, r, _ in best)
+            return dict(
                 job=best[0][2]['question'], job_id=best[0][2]['job_id'], q=[q for q, _, _ in best],
-                values=errs, median_gpu_ms=costs, error_span=errs[0] / errs[-1],
-                cost_span=costs[-1] / costs[0], monotone_error=mono(errs), monotone_cost=mono([-c for c in costs]),
+                values=errs, median_gpu_ms=costs, converged=[r['converged'] for _, r, _ in best],
+                all_converged=allc_,
+                error_span=(errs[0] / errs[-1] if allc_ else None),
+                cost_span=(costs[-1] / costs[0] if allc_ else None),
+                monotone_error=mono(errs), monotone_cost=mono([-c for c in costs]),
                 non_dominated_points=len(nd),
-                passes_tunability_bar=bool(mono(errs) and errs[0] / errs[-1] >= 2. and costs[-1] / costs[0] >= 2. and len(nd) >= 3))
-        else:
-            entry['within_job'] = None
+                passes_tunability_bar=bool(allc_ and mono(errs) and errs[0] / errs[-1] >= 2.
+                                           and costs[-1] / costs[0] >= 2. and len(nd) >= 3))
+
+        # `within_job`: the longest run of rungs ONE job holds that are ALL converged --
+        # this is the certified, cost-bearing tunability object (e.g. G2's own q=0,64,128,256
+        # at M=1088). Choosing it by raw rung count alone (as this used to) let a later job's
+        # longer but non-converged attempt (E1's 7-rung q=0..512 run) silently displace and
+        # null out an earlier job's shorter, fully-passing result -- a reporting defect, not a
+        # finding (round 2, 2026-09-17: see DESIGN.md A5). `within_job_longest_attempted` keeps
+        # that longer attempt visible, separately and honestly, exactly as far as it got.
+        converged_candidates = [v for v in byjob.values() if len(v) >= 2 and all(r['converged'] for _, r, _ in v)]
+        best_certified = (max(converged_candidates, key=lambda v: (len(v), max(x[0] for x in v)))
+                          if converged_candidates else None)
+        best_attempted = (max(byjob.values(), key=lambda v: (len(v), max(x[0] for x in v)))
+                          if byjob else None)
+        entry['within_job'] = _pack(best_certified)
+        packed_attempted = _pack(best_attempted)
+        entry['within_job_longest_attempted'] = (
+            packed_attempted if best_attempted is not None and best_attempted != best_certified else None)
     out['fixed_M'] = fixed
     out['other_M_with_two_rows'] = other
     byq = {}
@@ -263,6 +302,67 @@ def decompose(grid, metric):
     return out
 
 
+def e1_disambiguation(grid, metric='worst_evolved_percent'):
+    """DESIGN.md A3, E1: does q = 512 separate 'the rank has run out' from 'this cell is
+    under-tested'? Reads the three q = 512 cells and the (256, 1088) baseline DIRECTLY (not
+    through `grid.e`, which drops non-converged rows), because the pre-registered clauses are
+    themselves about convergence and must see it. Applied literally, in the order declared."""
+    r1088, r2112, r3168 = grid.row(512, 1088), grid.row(512, 2112), grid.row(512, 3168)
+    base = grid.row(256, 1088)
+    if any(r is None for r in (r1088, r2112, r3168, base)):
+        return None
+    cells = dict(q512_M1088=r1088, q512_M2112=r2112, q512_M3168=r3168)
+    out = dict(metric=metric, baseline_q256_M1088=dict(
+        value=base[metric], converged=base['converged'], job=grid.au(256, 1088)['question']))
+    for name, r in cells.items():
+        out[name] = dict(value=r[metric], converged=r['converged'], median_gpu_ms=r['median_gpu_ms'],
+                         tests_per_unknown=r.get('tests_per_unknown'), median_iterations=r['median_iterations'],
+                         max_iterations=r.get('max_iterations'),
+                         worst_joint_gradient=r['max_joint_stationarity'], total_budget_exits=r['total_budget_exits'])
+    out['baseline_q256_M1088']['max_iterations'] = base.get('max_iterations')
+    out['baseline_q256_M1088']['median_iterations'] = base.get('median_iterations')
+    # every q <= 256 rung of this same job climbs its iteration count with q (max 59 at q=0
+    # to max 307 at q=256 -- real optimizer work happening before its own exit); all three
+    # q=512 cells instead cap at max_iterations = 3 regardless of M, a flat signature that
+    # does not look like "needs more tests, would otherwise grind" -- it looks like a wall
+    # at q = R = 512 (the whole bank, no free directions left for the block-damped solve).
+    out['flat_early_exit_at_q512'] = bool(
+        max(out['q512_M1088']['max_iterations'] or 0, out['q512_M2112']['max_iterations'] or 0,
+            out['q512_M3168']['max_iterations'] or 0) <= 5
+        and (out['baseline_q256_M1088']['max_iterations'] or 0) > 5)
+    all_c = all(r['converged'] for r in cells.values())
+    any_c = any(r['converged'] for r in cells.values())
+    out['all_three_converged'] = all_c
+    out['any_converged'] = any_c
+    if not any_c:
+        out['clause'] = 'uninformative'
+        out['clause_text'] = ("**uninformative**, by the literal DESIGN.md A3 clause: "
+            f"(512, 1088), (512, 2112) and (512, 3168) ALL fail to converge (worst joint "
+            f"gradient {sci(r1088['max_joint_stationarity'])}, {sci(r2112['max_joint_stationarity'])}, "
+            f"{sci(r3168['max_joint_stationarity'])} against the 1e-6 bar, with zero budget exits — "
+            f"the Levenberg-Marquardt path stalls short of the stationarity criterion, not a budget "
+            f"exhaustion). Nothing is learned about whether the rank has run out or the cell is merely "
+            f"under-tested at q = 512: the raw numbers ({f(r1088[metric])} %, {f(r2112[metric])} %, "
+            f"{f(r3168[metric])} % at 2.06, 4.0, 6.0 tests per unknown) are directionally consistent with "
+            f"more tests helping even at q = 512, and {f(r3168[metric])} % would be the best cell in the "
+            f"campaign if certified — but as non-converged numbers they are not certified and are excluded "
+            f"from every span and decomposition, exactly as §5 requires.")
+    elif r3168['converged'] and r3168[metric] >= base[metric]:
+        out['clause'] = 'rank_has_run_out'
+        out['clause_text'] = (f"the rank has run out: (512, 3168) converges at {f(r3168[metric])} %, "
+            f"no better than the (256, 1088) baseline at {f(base[metric])} %.")
+    elif r3168['converged'] and (not r1088['converged'] or r1088[metric] > r3168[metric]):
+        out['clause'] = 'test_starved_not_rank_limited'
+        out['clause_text'] = ("the cause is the test count, not the rank: (512, 3168) converges and "
+            "beats the baseline while (512, 1088) is poor or non-converged; the fixed-M=1088 column's "
+            "q = 512 rung must be reported as test-starved, not as a rank limit.")
+    else:
+        out['clause'] = 'ambiguous'
+        out['clause_text'] = ("the pre-registered clauses of DESIGN.md A3 do not cleanly classify this "
+            "convergence pattern; reported as-is without a headline claim.")
+    return out
+
+
 def saturation(audits, metric='worst_evolved_percent'):
     """Every sweep in M, from whichever job ran it. A curve is built only from cells the
     config LABELLED as a sweep ('sat', 'sat256'), so a job's two-point anchors never
@@ -340,17 +440,30 @@ def verdict(sp, dec, sat):
     s256 = fx.get(256)
     v = dict(rules='DESIGN.md §6')
     v['fixed1088_monotone'] = s1088['monotone'] if s1088 else None
+    # DESIGN.md §6's bar is stated over the ORIGINALLY pre-registered ranges -- "256 to
+    # q = 128; 1088 to q = 256" -- not over whatever a later round additionally attempts. Use
+    # `certified_span` (the span over the converged prefix of the declared column) for the
+    # headline/falsification decision, so a later round's failed EXTENSION of the SAME column
+    # (round 2, 2026-09-17: q = 512 at M = 1088, non-converged) cannot flip a verdict about the
+    # rungs it did not touch. `span` (the full, possibly-unavailable declared-column value,
+    # "not patched" per §6's own words) is reported separately for full transparency about
+    # the extension attempt, and is NEVER what `rank_claim_false` or the headline reads.
     v['fixed1088_all_converged'] = s1088['all_converged'] if s1088 else None
-    v['span_q_at_M1088'] = s1088['span'] if s1088 else None
+    v['span_q_at_M1088'] = (s1088.get('certified_span') if s1088 else None)
+    v['span_q_at_M1088_certified_q_range'] = (s1088.get('certified_q_range') if s1088 else None)
+    v['span_q_at_M1088_declared_full_range_unavailable'] = (s1088.get('span') if s1088 else None)
+    v['span_q_at_M1088_extension_note'] = (s1088.get('certified_note') if s1088 else None)
     v['span_q_at_M256_to_q128'] = s256['span'] if s256 else None
-    v['headline_fixed_M'] = bool(s1088 and s1088['monotone'] and s1088['all_converged'] and s1088['span'] is not None and s1088['span'] >= 2.)
+    v['headline_fixed_M'] = bool(s1088 and s1088['monotone'] and v['span_q_at_M1088'] is not None and v['span_q_at_M1088'] >= 2.)
     wj = (s1088 or {}).get('within_job')
     v['fixed1088_within_job'] = wj
     v['fixed1088_passes_tunability_bar'] = (wj or {}).get('passes_tunability_bar')
+    v['fixed1088_within_job_longest_attempted'] = (s1088 or {}).get('within_job_longest_attempted')
     v['headline'] = ('fixed-M ladder (M = 1088, pure rank), scheduled ladder reported beside it'
                      if v['headline_fixed_M'] else 'scheduled ladder, with the M share printed beside every span')
-    avail = [x for x in fx.values() if x['M'] in (256, 1088) and x['span'] is not None]
-    v['rank_claim_false'] = bool(avail and all(x['span'] < 1.5 for x in avail))
+    avail = [(x['M'], x.get('certified_span')) for x in fx.values() if x['M'] in (256, 1088)]
+    avail = [(m, s) for m, s in avail if s is not None]
+    v['rank_claim_false'] = bool(avail and all(s < 1.5 for _, s in avail))
     big_M_effect = [q for q, x in sp['fixed_q'].items() if q >= 64 and x['span_M_ge_2x'] is not None and x['span_M_ge_2x'] >= 1.5]
     q64_star = (sat['per_q'].get(64, {}).get('M_star') if sat else None)
     v['H_rank_false'] = bool(big_M_effect or (sat is not None and 64 in sat['per_q'] and (q64_star is None or q64_star > 1088)))
@@ -447,6 +560,7 @@ def main():
     sat = saturation(audits)
     anc = anchors(grid)
     ver = verdict(sp['worst_evolved_percent'], dec['worst_evolved_percent'], sat)
+    e1d = e1_disambiguation(grid)
     out = Path(a.out)
     d = Doc()
     summary = []
@@ -568,6 +682,28 @@ def main():
         d.table(['$M$', 'job', 'job id', 'rungs $q$', 'worst evolved %', 'median GPU ms', 'error span', 'cost span',
                  'non-dominated points', 'monotone', 'passes the tunability bar'], wrows or [['—'] * 11])
 
+        arows = []
+        for M, x in sorted(s['fixed_M'].items()):
+            wa = x.get('within_job_longest_attempted')
+            if not wa:
+                continue
+            arows.append([M, wa['job'], wa['job_id'], ', '.join(map(str, wa['q'])),
+                          ' / '.join(f(t) for t in wa['values']), ', '.join(yn(c) for c in wa['converged']),
+                          f(wa['error_span'], 3) + 'x' if wa['error_span'] is not None else 'unavailable',
+                          f(wa['cost_span'], 3) + 'x' if wa['cost_span'] is not None else 'unavailable'])
+        if arows:
+            d.p('**Separately, the longest ladder any job *attempted* at this $M$, whether or not it is all '
+                'converged** (DESIGN.md A5) — kept visible so a failed extension is reported honestly rather '
+                'than silently displacing the certified ladder above; its span is `unavailable` whenever any '
+                'rung failed, and it is **never** used as `certified_span` or read by the headline/verdict.')
+            d.table(['$M$', 'job', 'job id', 'rungs $q$ attempted', 'worst evolved %', 'converged?', 'error span',
+                     'cost span'], arows)
+            for M, x in sorted(s['fixed_M'].items()):
+                wa = x.get('within_job_longest_attempted')
+                if wa:
+                    srow(q=None, M=M, metric=f'fixed_M_within_job_longest_attempted.all_converged.{title}',
+                         value=wa['all_converged'], job_id=wa['job_id'], attempt=None, arm=None, source_sha256=None)
+
         d.h(3, 'At fixed $M$: the span in $q$ (the pure-rank effect)')
         d.table(['$M$', 'rows $q$', 'values %', 'monotone in $q$', 'every rung converged', 'span (first/last)', 'span to $q=128$'],
                 [[x['M'], ', '.join(map(str, x['q'])), ' / '.join(f(v) for v in x['values']), yn(x['monotone']),
@@ -579,6 +715,13 @@ def main():
                 'fewer than two tests per unknown); informational, not a declared column: '
                 + '; '.join(f"$M={x['M']}$: $q$ = {', '.join(map(str, x['q']))}, {' / '.join(f(v) for v in x['values'])} %"
                             for _, x in sorted(s['other_M_with_two_rows'].items())) + '.')
+        for M, x in sorted(s['fixed_M'].items()):
+            if x.get('certified_note'):
+                d.p(f"**$M={M}$, {x['certified_note']}** ($q = {x['certified_q_range'][0]}\\ldots"
+                    f"{x['certified_q_range'][1]}$, span **{f(x['certified_span'], 3)}x**, monotone, every "
+                    f"rung of this sub-ladder converged). The failed extension's own longest-attempted "
+                    f"in-job ladder (not certified, not a span) is reported separately below under "
+                    f"'the pure-rank ladder ... measured inside one job' where applicable.")
         for M, x in s['fixed_M'].items():
             srow(q=None, M=M, metric=f'span_q_at_fixed_M.{title}', value=x['span'], job_id=None, attempt=None, arm=None,
                  source_sha256=None, q_top=x['q_top'], monotone=x['monotone'])
@@ -633,6 +776,27 @@ def main():
                 srow(q=None, M=None, metric=f'anova.{k}.{title}', value=an[k], job_id=None, attempt=None, arm=None, source_sha256=None)
         else:
             d.p('**Variance shares: unavailable** (balanced sub-grid incomplete).')
+
+    d.h(2, 'E1 — does $q = 512$ separate a rank limit from an under-tested cell?')
+    d.p("Pre-registered in DESIGN.md A3. `(512, 1088)` is only 2.06 tests per unknown; "
+        "`(512, 2112)` and `(512, 3168)` add 4.0 and 6.0. `cclad01` (budget 180, not "
+        "converged) reached 0.2307 % / 0.4343 % at `(512, 2112)` / `(512, 1056)` and was "
+        "cited only as motivation, never as a gate.")
+    if e1d is None:
+        d.p('**Unavailable**: E1 does not carry all of $(512, 1088)$, $(512, 2112)$, $(512, 3168)$ and the $(256, 1088)$ baseline.')
+    else:
+        d.p(f"**Verdict:** {e1d['clause_text']}")
+        d.table(['cell', 'worst evolved %', 'tests/unknown', 'converged', 'median iters', 'worst joint gradient', 'budget exits', 'median GPU ms'],
+                [[name, f(c['value']), f(c.get('tests_per_unknown'), 2), yn(c['converged']), f(c.get('median_iterations'), 1),
+                  sci(c.get('worst_joint_gradient')), (c.get('total_budget_exits') if c.get('total_budget_exits') is not None else '—'),
+                  f(c.get('median_gpu_ms'), 1)]
+                 for name, c in (('q=512, M=1088', e1d['q512_M1088']), ('q=512, M=2112 (4x)', e1d['q512_M2112']),
+                                 ('q=512, M=3168 (6x)', e1d['q512_M3168']),
+                                 ('q=256, M=1088 (baseline, converged)', e1d['baseline_q256_M1088']))])
+        for name, c in (('q512_M1088', e1d['q512_M1088']), ('q512_M2112', e1d['q512_M2112']), ('q512_M3168', e1d['q512_M3168'])):
+            for k in ('value', 'converged', 'worst_joint_gradient', 'tests_per_unknown'):
+                srow(q=512, M=int(name.split('_M')[1]), metric=f'e1_disambiguation.{k}', value=c[k], job_id=None, attempt='bqx401', arm=name, source_sha256=None)
+        srow(q=None, M=None, metric='e1_disambiguation.clause', value=e1d['clause'], job_id=None, attempt='bqx401', arm=None, source_sha256=None)
 
     d.h(2, 'Saturation in $M$ (job S1)')
     if sat:

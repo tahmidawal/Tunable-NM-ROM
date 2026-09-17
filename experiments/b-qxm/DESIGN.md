@@ -552,3 +552,93 @@ rule of §3.1 applies to E1 (`a100` → `h100` → `h200` → `l40s`, science un
 directory each time). It does **not** apply unmodified to E2: its 80 GB constraint is a memory
 requirement, so if E2 is starved it is resubmitted as `h100` (80 GB) or `h200` (141 GB), never
 onto a 40 GB card or an L40S (48 GB), and never by relaxing the constraint on `a100`.
+
+### A5 (2026-09-17, after the round-2 results) — outcome, a generator defect it exposed and fixed, and the two clauses applied literally
+
+Both jobs COMPLETED exit 0 on `gpu`, source `76072bf420145bef07cf9b0247b1611dfcfc678f`: E1
+(`bqx401`, 3783898, A100-PCIE-40GB, 3508.8 s); E2 (`bqx501`, 3783899, A100 80GB PCIe, 3100.6 s).
+Zero failed gates in either. Checksum-collected, chunk-hashes verified locally against
+`archive.json`, remote `collection.tar.gz.sha256` matched bit for bit, remote attempt
+directories (`/cluster/tufts/paralab/tawal01/b_qxm_20260917/{bqx401,bqx501}/`) deleted after
+verification. Five of the eight-job cap used.
+
+**The round-1 four-rung ladder stands on its own terms, unconditionally.** `bqx201` (G2,
+3780177) ran $q = 0, 64, 128, 256$ at fixed $M = 1088$ **in one job**: monotone, every rung
+converged, worst-evolved values $1.2657, 1.0593, 0.8711, 0.5194$ %, median GPU $848, 1359,
+1886, 4378$ ms — error span $2.437\times$, cost span $5.163\times$, 4 non-dominated points,
+passes the pre-registered tunability bar. `bqx401` (E1) independently ran the **same** four
+cells (plus $q = 16, 32$) at $M = 1088$ in its own job and reproduces every one of G1/G2's
+values to $\le 9.9\times10^{-9}$ relative (loose-tier, direction matrix is GPU-model
+nondeterministic per A3; achieved is what is reported): $q=0$: $5.4\times10^{-13}$; $q=16$:
+$1.8\times10^{-10}$; $q=32$: $6.8\times10^{-12}$; $q=64$: $3.4\times10^{-10}$; $q=128$:
+$7.5\times10^{-10}$; $q=256$: $9.9\times10^{-9}$. **Nothing overturns the round-1 ladder.**
+
+**The generator defect this round exposed.** `reports/generate_xm.py`'s `spans()` named one
+object, `fixed_M['1088']`, for "the $M=1088$ column" and grew it by unioning every cell any
+job ever ran at that $M$ across jobs — round 1's four converged rungs from G2, plus round 2's
+$q=512$ rung from E1, which does not converge. `all_converged` was computed over that unioned
+object, so the single non-converged $q=512$ addition flipped `all_converged` to `false` for
+the *whole* object, which per §5 ("a non-converged cell ... is excluded... if the exclusion
+breaks a path, that path is reported as unavailable, not patched") nulled `span` entirely —
+erasing the round-1 result's own already-certified $2.437\times$ span and, downstream, flipping
+`rank_claim_false` to `true` and the headline to "scheduled ladder", neither of which round 1's
+own four converged rungs support. §5's "not patched" rule is about not quietly *substituting* a
+shortened ladder for the declared one; it was never meant to let a *failed extension attempt*
+retroactively erase what the un-extended rungs already established. **Fix, applied in
+`spans()` and `verdict()`:** every fixed-$M$ column now reports `span` (the full declared
+range, `null`/unavailable if any rung fails, exactly per §5, so the extension attempt is never
+hidden) **and**, separately, `certified_span` — the span over the converged *prefix* of that
+same column, with `certified_q_range` and a `certified_note` naming the rung that was attempted
+and excluded. `verdict()` reads `certified_span` for `rank_claim_false`, `headline_fixed_M` and
+`fixed1088_passes_tunability_bar`; `span` is reported for transparency and is never read by any
+decision. The within-job selector got the matching split: `within_job` is the longest run of
+rungs **one job holds that are all converged** (still G2's four-rung ladder — E1's own seven-rung
+attempt does not qualify because its top rung fails); `within_job_longest_attempted` separately
+reports the longest attempt regardless of convergence (E1's seven rungs, `error_span`/`cost_span`
+both `null` because it is not all converged), so the failed extension is visible but never
+silently swaps in for the certified ladder. `checks/selfaudit.py` was extended to filter to
+converged cells before forming its own independent span (matching §5's definition exactly) and
+to assert explicitly that $q=512$ is the excluded rung at $M=1088$; re-run against the round-2
+`analysis.json`/`summary.json`, 29/29 checks agree, zero disagreements. Regenerated verdict:
+`span_q_at_M1088 = 2.4368429602045354` (bit-identical to the round-1 committed value),
+`headline = fixed-M ladder`, `rank_claim_false = false` — restored to round 1's own, correct
+outcome; nothing about round 1's numbers changed, only the field that was wrongly letting a
+later failure overwrite them.
+
+**E1 — is $q = 512$ a rank limit or an under-tested cell? Applied literally, per A3:**
+**uninformative.** $(512, 1088)$, $(512, 2112)$, $(512, 3168)$ all fail to converge — worst
+normalised joint gradient $1.77\times10^{-1}$ at all three against the $10^{-6}$ bar, zero
+budget exits (the Levenberg–Marquardt path stalls, it does not run out of budget). The raw
+(uncertified) numbers are $0.4250, 0.2307, 0.1844$ % at $2.06, 4.0, 6.0$ tests per unknown —
+monotonically improving with more tests, directionally consistent with "test-starved, not
+rank-limited," and $0.1844$ % would be the campaign's best cell if certified — but per §5 an
+unconverged cell carries no certified value, so per A3's literal clause nothing is decided:
+the rank is not shown to have run out, and the cell is not shown to be merely under-tested
+either. Excluded from every span and decomposition. `cclad01`'s uncertified $0.2307$ %/$0.4343$
+% at $(512, 2112)$/$(512, 1056)$ (budget 180, cited as motivation only) is consistent with
+this pattern but was never a gate.
+
+**E2 — where does $q = 256$ stop improving in $M$?** Curve (job `bqx501`, converged at every
+step): $M = 1088, 2176, 3264, 4352, 6528$ → worst-evolved $0.5194, 0.3736, 0.3564, 0.3523,
+0.3510$ %, step-to-step improvement $28.1, 4.6, 1.1, 0.4$ %. By the pre-registered rule
+("the smallest $M$ beyond which the next step improves by less than 5 %"), $M^\star = 2176$
+(8 tests/unknown), error $0.3736$ %, cost $1.493\times$ the $M=1088$ cell (not cost-neutral).
+The curve keeps inching down through $M = 6528$ (24 tests/unknown, $3.07\times$ cost) but each
+step past $M^\star$ buys under 1.2 % more accuracy for a doubling of tests — diminishing, not
+flat, and not worth quoting as a second $M^\star$. $(256, 1088)$ remains the campaign's cheapest
+converged cell in the fixed-$M$ ladder; $(256, 2176)$ remains its best-converged accuracy
+(unchanged from A2).
+
+**What was wrong and retracted, round 2.** The generator defect above — a longer, failed
+extension of a column silently erasing an already-certified shorter result inside that same
+named object — is retracted; see the fix above. No other round-2 finding contradicts round 1;
+E1 is uninformative rather than a rank limit (this lane does **not** claim "the rank has run
+out at 512" — that would over-read three non-converged numbers).
+
+Source-generated report updated in place: `reports/2026-09-17-b-qxm.md`
+(SHA256 recorded in `summary.json`'s own generation record), `reports/summary.json` (510 rows),
+`reports/analysis.json`. Raw archives `bqx401`/`bqx501` Git-tracked as bounded chunks under
+`artifacts/{bqx401,bqx501}/`, whole-archive SHA256 matching the remote `collection.tar.gz.sha256`
+exactly for both before deletion. Codex remained over quota (until 2026-09-19 11:33); the
+written self-audit above (`checks/selfaudit.py` → `checks/selfaudit.json`, 29/29 agree) stands
+in, per the coordinator's 2026-09-17 ~23:30 notice.

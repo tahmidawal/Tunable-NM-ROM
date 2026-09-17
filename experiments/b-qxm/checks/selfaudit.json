@@ -9,6 +9,11 @@
       "mine": true,
       "report": true
     },
+    "excluded_nonconverged_M256": {
+      "mine": [],
+      "report": false,
+      "agree": true
+    },
     "span_q_fixed_M1088": {
       "mine": 2.4368429602045354,
       "report": 2.4368429602045354,
@@ -17,6 +22,13 @@
     "monotone_fixed_M1088": {
       "mine": true,
       "report": true
+    },
+    "excluded_nonconverged_M1088": {
+      "mine": [
+        512
+      ],
+      "report": true,
+      "agree": true
     },
     "span_scheduled_4x": {
       "mine": 3.6369781676269595,
@@ -136,7 +148,7 @@
     }
   },
   "disagreements": [],
-  "n_checks": 27,
+  "n_checks": 29,
   "all_agree": true,
   "note": "independent recomputation of the report headline numbers and a re-derivation of three cells from the archived fields; shares no code with reports/generate_xm.py"
 }

@@ -1,0 +1,2625 @@
+{
+  "result": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-qxm/experiments/b-qxm/runs/bqx501/archive/output/result.json",
+  "result_sha256": "fef3911d291fc6b228c2ba9a320093e705626d0e3f82553f006c37ab9dbceabb",
+  "question": "E2",
+  "job_id": "3783899",
+  "commit": "76072bf420145bef07cf9b0247b1611dfcfc678f",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "elapsed_seconds": 3100.5531377329025,
+  "attempt": "bqx501",
+  "config_attempt": "bqx501",
+  "directions_sha256": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+  "compile_warmup": {
+    "seconds": 140.3231672809925,
+    "subjects": 10,
+    "device_memory_after_each": [
+      {
+        "subject": "q0_M64_dense",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "q0_M1088_dense",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "q256_M1088_dense",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "q256_M2176_dense",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "q256_M3264_dense",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "q256_M4352_dense",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "q256_M6528_dense",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "fft_tight",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "fft_loose",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      },
+      {
+        "subject": "nt1e-2_dt01",
+        "bytes_in_use": 9943622912,
+        "peak_bytes_in_use": 20078834944
+      }
+    ]
+  },
+  "checks": {
+    "complete": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "backend_gpu": {
+      "passed": true,
+      "detail": "gpu",
+      "note": null
+    },
+    "x64": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "precision_highest": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "bank_frozen": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "checkpoint_unchanged": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "final_cohort_unopened": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "step_budget_600": {
+      "passed": true,
+      "detail": {
+        "ic_budget": 400,
+        "step_budget": 600,
+        "gtol": 1e-06
+      },
+      "note": null
+    },
+    "dense_quadrature_everywhere": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "evaluation_cohort_bitwise_abl01": {
+      "passed": true,
+      "detail": {
+        "expected": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+        "got": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+        "passed": true
+      },
+      "note": null
+    },
+    "reference_residuals": {
+      "passed": true,
+      "detail": 9.875956374345395e-12,
+      "note": null
+    },
+    "directions_hash_matches_btq101": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "802737d3509a81d5b9f2b9f896c603dceb4a6f84c86abb635d9e3ec62b0aa4b7"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_btq102": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "fcddf9f43f338c54c057f580c729a6a0d45ab244e1717a4c1a4295ee6874a747"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_btq201": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "7558a9900d3ff2735cffb193da708c8014add9cb75a6ffab9f99b0de234950bd"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_cclad01": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "802737d3509a81d5b9f2b9f896c603dceb4a6f84c86abb635d9e3ec62b0aa4b7"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_qtd02": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "7d51a88cd0e27bc829ecd7e76b95ea8b855ab683fd3011fd67d180013d0e2d51"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_qrg201": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "fcddf9f43f338c54c057f580c729a6a0d45ab244e1717a4c1a4295ee6874a747"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_bqx101": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "0d8a34749765c08e32257c92a18c21832c74417da45aeb0bf171d57c19582cce"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_bqx201": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "f270e5bf682ad220f2164ced82dde0f3e0374e84e2fa002f3101e0728062d399"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "directions_hash_matches_bqx301": {
+      "passed": false,
+      "detail": {
+        "ours": "27228a83f82967067b7cc7f2179b2d44271b1054d0f3e58e3f7b9555c1b4d62b",
+        "theirs": "5167ca4dafaa830597dc9487c38824ae75a60c5854d999f5883427de4f8dca2c"
+      },
+      "note": "bitwise across jobs; GPU-model dependent (80 GB and 40 GB A100s disagree); a probe",
+      "blocking": false
+    },
+    "reference_fields_bitwise_match_btq101": {
+      "passed": false,
+      "detail": null,
+      "note": "GPU-model dependent; a probe",
+      "blocking": false
+    },
+    "reference_fields_bitwise_match_btq102": {
+      "passed": true,
+      "detail": null,
+      "note": "GPU-model dependent; a probe",
+      "blocking": false
+    },
+    "reference_fields_bitwise_match_btq201": {
+      "passed": false,
+      "detail": null,
+      "note": "GPU-model dependent; a probe",
+      "blocking": false
+    },
+    "reference_fields_bitwise_match_cclad01": {
+      "passed": false,
+      "detail": null,
+      "note": "GPU-model dependent; a probe",
+      "blocking": false
+    },
+    "directions_rank_covers_ladder": {
+      "passed": true,
+      "detail": 512,
+      "note": null
+    },
+    "operators_shared_bitwise": {
+      "passed": true,
+      "detail": {
+        "checks": [
+          {
+            "M": 64,
+            "fresh_bank_bitwise_equals_shared": true
+          },
+          {
+            "M": 1088,
+            "fresh_bank_bitwise_equals_shared": true
+          },
+          {
+            "M": 2176,
+            "fresh_bank_bitwise_equals_shared": true
+          },
+          {
+            "M": 3264,
+            "fresh_bank_bitwise_equals_shared": true
+          },
+          {
+            "M": 4352,
+            "fresh_bank_bitwise_equals_shared": true
+          },
+          {
+            "M": 6528,
+            "fresh_bank_bitwise_equals_shared": true
+          }
+        ],
+        "passed": true
+      },
+      "note": null
+    },
+    "every_subject_case_has_all_reps": {
+      "passed": true,
+      "detail": [
+        3
+      ],
+      "note": null
+    },
+    "repetition_output_identical": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "every_invocation_paired": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "overdetermined_weak_system": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "every_rom_carries_exit_and_stationarity": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "every_declared_cell_timed": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "artifacts_present": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "same_grid_baseline_present": {
+      "passed": true,
+      "detail": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "note": null
+    },
+    "recorded_errors_recomputed_from_saved_fields": {
+      "passed": true,
+      "detail": 5.169900890572012e-16,
+      "note": null
+    },
+    "t0_field_invariant_in_M": {
+      "passed": true,
+      "detail": {
+        "worst_relative_difference": 0.0,
+        "families": 12,
+        "tolerance": 1e-06
+      },
+      "note": "blocking at the IC stationarity tolerance; the IC LM path can move within it on an ulp-level GEMM difference between the per-M programs (DESIGN.md \u00a79 A0)"
+    },
+    "t0_field_invariant_in_M_1e-12": {
+      "passed": true,
+      "detail": 0.0,
+      "note": "probe",
+      "blocking": false
+    },
+    "t0_field_bitwise_in_M": {
+      "passed": true,
+      "detail": null,
+      "note": "XLA may fuse programs of different M differently",
+      "blocking": false
+    },
+    "reproduces_q0_M64_dense__btq101": {
+      "passed": true,
+      "detail": {
+        "source": "btq101",
+        "source_job": "3745589",
+        "comparator": "q0_m4_dense_base",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.8889895724288257,
+          "theirs": 1.8889895724291645,
+          "relative_difference": 1.7937635657769305e-13
+        },
+        "worst_reference_percent": {
+          "ours": 4.557509187847018,
+          "theirs": 4.557509187846476,
+          "relative_difference": 1.1907315862004953e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 1.7937635657769305e-13,
+        "ours_median_gpu_ms": 291.64654843043536,
+        "theirs_median_gpu_ms": 284.99060997273773
+      },
+      "note": null
+    },
+    "reproduces_q0_M64_dense__cclad01": {
+      "passed": true,
+      "detail": {
+        "source": "cclad01",
+        "source_job": "3734098",
+        "comparator": "q0_m4_dense_block",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.8889895724288257,
+          "theirs": 1.8889895724280636,
+          "relative_difference": 4.0342048215924076e-13
+        },
+        "worst_reference_percent": {
+          "ours": 4.557509187847018,
+          "theirs": 4.557509187847584,
+          "relative_difference": 1.2414010154002145e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 4.0342048215924076e-13,
+        "ours_median_gpu_ms": 291.64654843043536,
+        "theirs_median_gpu_ms": 282.87116752471775
+      },
+      "note": null
+    },
+    "reproduces_q0_M64_dense__qrg201": {
+      "passed": true,
+      "detail": {
+        "source": "qrg201",
+        "source_job": "3757237",
+        "comparator": "q0_m4_dense_l0",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.8889895724288257,
+          "theirs": 1.888989572428706,
+          "relative_difference": 6.335770392883357e-14
+        },
+        "worst_reference_percent": {
+          "ours": 4.557509187847018,
+          "theirs": 4.557509187846788,
+          "relative_difference": 5.0474546780017535e-14
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 6.335770392883357e-14,
+        "ours_median_gpu_ms": 291.64654843043536,
+        "theirs_median_gpu_ms": 283.77617604564875
+      },
+      "note": null
+    },
+    "reproduces_q0_M64_dense__qtd02": {
+      "passed": true,
+      "detail": {
+        "source": "qtd02",
+        "source_job": "3757505",
+        "comparator": "q0_M64_dense",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.8889895724288257,
+          "theirs": 1.888989572428414,
+          "relative_difference": 2.1793169403353542e-13
+        },
+        "worst_reference_percent": {
+          "ours": 4.557509187847018,
+          "theirs": 4.557509187845806,
+          "relative_difference": 2.6601450330014976e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 2.6601450330014976e-13,
+        "ours_median_gpu_ms": 291.64654843043536,
+        "theirs_median_gpu_ms": 333.19217804819345
+      },
+      "note": null
+    },
+    "reproduces_q0_M64_dense__bqx101": {
+      "passed": true,
+      "detail": {
+        "source": "bqx101",
+        "source_job": "3780175",
+        "comparator": "q0_M64_dense",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.8889895724288257,
+          "theirs": 1.8889895724293762,
+          "relative_difference": 2.913984193683167e-13
+        },
+        "worst_reference_percent": {
+          "ours": 4.557509187847018,
+          "theirs": 4.557509187848894,
+          "relative_difference": 4.115916710399528e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 4.115916710399528e-13,
+        "ours_median_gpu_ms": 291.64654843043536,
+        "theirs_median_gpu_ms": 290.63586553093046
+      },
+      "note": null
+    },
+    "reproduces_q0_M64_dense__bqx201": {
+      "passed": true,
+      "detail": {
+        "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+        "source": "bqx201",
+        "arm": "q0_M64_dense",
+        "unconditional": null
+      },
+      "note": null,
+      "blocking": false
+    },
+    "reproduces_q0_M64_dense__bqx301": {
+      "passed": true,
+      "detail": {
+        "source": "bqx301",
+        "source_job": "3780178",
+        "comparator": "q0_M64_dense",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.8889895724288257,
+          "theirs": 1.8889895724281778,
+          "relative_difference": 3.4300144724376264e-13
+        },
+        "worst_reference_percent": {
+          "ours": 4.557509187847018,
+          "theirs": 4.5575091878460965,
+          "relative_difference": 2.0228795196010099e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 3.4300144724376264e-13,
+        "ours_median_gpu_ms": 291.64654843043536,
+        "theirs_median_gpu_ms": 339.57148308400065
+      },
+      "note": null
+    },
+    "reproduces_q0_M1088_dense__bqx101": {
+      "passed": true,
+      "detail": {
+        "source": "bqx101",
+        "source_job": "3780175",
+        "comparator": "q0_M1088_dense",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.2656581176226989,
+          "theirs": 1.2656581176228943,
+          "relative_difference": 1.5438549290152556e-13
+        },
+        "worst_reference_percent": {
+          "ours": 4.069005183313424,
+          "theirs": 4.069005183312367,
+          "relative_difference": 2.5975202090618994e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 2.5975202090618994e-13,
+        "ours_median_gpu_ms": 742.6816020160913,
+        "theirs_median_gpu_ms": 742.2219984000549
+      },
+      "note": null
+    },
+    "reproduces_q0_M1088_dense__bqx201": {
+      "passed": true,
+      "detail": {
+        "source": "bqx201",
+        "source_job": "3780177",
+        "comparator": "q0_M1088_dense",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.2656581176226989,
+          "theirs": 1.2656581176228787,
+          "relative_difference": 1.421048286934514e-13
+        },
+        "worst_reference_percent": {
+          "ours": 4.069005183313424,
+          "theirs": 4.069005183312884,
+          "relative_difference": 1.3271363757222134e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 1.421048286934514e-13,
+        "ours_median_gpu_ms": 742.6816020160913,
+        "theirs_median_gpu_ms": 847.9901634855196
+      },
+      "note": null
+    },
+    "reproduces_q0_M1088_dense__bqx301": {
+      "passed": true,
+      "detail": {
+        "source": "bqx301",
+        "source_job": "3780178",
+        "comparator": "q0_M1088_dense",
+        "declared_tolerance": 1e-09,
+        "unconditional": true,
+        "directions_bitwise": false,
+        "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+        "worst_all_times_percent": {
+          "ours": 2.5628719826594537,
+          "theirs": 2.562871982659394,
+          "relative_difference": 2.3219245644161776e-14
+        },
+        "worst_evolved_percent": {
+          "ours": 1.2656581176226989,
+          "theirs": 1.265658117622733,
+          "relative_difference": 2.7017461257770415e-14
+        },
+        "worst_reference_percent": {
+          "ours": 4.069005183313424,
+          "theirs": 4.0690051833124325,
+          "relative_difference": 2.435993742279859e-13
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 2.435993742279859e-13,
+        "ours_median_gpu_ms": 742.6816020160913,
+        "theirs_median_gpu_ms": 1049.2795173777267
+      },
+      "note": null
+    },
+    "reproduces_q256_M1088_dense__qtd02": {
+      "passed": true,
+      "detail": {
+        "source": "qtd02",
+        "source_job": "3757505",
+        "comparator": "old_q256_M1088_dense",
+        "declared_tolerance": 0.001,
+        "unconditional": false,
+        "directions_bitwise": false,
+        "note": "directions are GPU-model dependent across jobs: 1e-9 if the directions hash is bitwise, 1e-3 otherwise (b-ladder-top convention); the achieved difference is reported",
+        "worst_all_times_percent": {
+          "ours": 0.905275139559578,
+          "theirs": 0.9052751422571917,
+          "relative_difference": 2.9798827705369254e-09
+        },
+        "worst_evolved_percent": {
+          "ours": 0.5193843574337147,
+          "theirs": 0.5193843632474255,
+          "relative_difference": 1.1193465297491645e-08
+        },
+        "worst_reference_percent": {
+          "ours": 4.039124985849867,
+          "theirs": 4.039124986099979,
+          "relative_difference": 6.19223054564284e-11
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 1.1193465297491645e-08,
+        "ours_median_gpu_ms": 3948.8909939536825,
+        "theirs_median_gpu_ms": 4354.9022388178855
+      },
+      "note": null
+    },
+    "reproduces_q256_M1088_dense__cclad01": {
+      "passed": true,
+      "detail": {
+        "source": "cclad01",
+        "source_job": "3734098",
+        "comparator": "q256_m4_dense_block",
+        "declared_tolerance": 0.001,
+        "unconditional": false,
+        "directions_bitwise": false,
+        "note": "directions are GPU-model dependent across jobs: 1e-9 if the directions hash is bitwise, 1e-3 otherwise (b-ladder-top convention); the achieved difference is reported; cclad01 ran this rung at budget 180",
+        "worst_all_times_percent": {
+          "ours": 0.905275139559578,
+          "theirs": 0.9052751395173213,
+          "relative_difference": 4.667823160591654e-11
+        },
+        "worst_evolved_percent": {
+          "ours": 0.5193843574337147,
+          "theirs": 0.519384357612359,
+          "relative_difference": 3.4395398887085403e-10
+        },
+        "worst_reference_percent": {
+          "ours": 4.039124985849867,
+          "theirs": 4.03912498584401,
+          "relative_difference": 1.4499795178481778e-12
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 3.4395398887085403e-10,
+        "ours_median_gpu_ms": 3948.8909939536825,
+        "theirs_median_gpu_ms": 3927.2713670507073
+      },
+      "note": null
+    },
+    "reproduces_q256_M1088_dense__bqx101": {
+      "passed": true,
+      "detail": {
+        "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+        "source": "bqx101",
+        "arm": "q256_M1088_dense",
+        "unconditional": null
+      },
+      "note": null,
+      "blocking": false
+    },
+    "reproduces_q256_M1088_dense__bqx201": {
+      "passed": true,
+      "detail": {
+        "source": "bqx201",
+        "source_job": "3780177",
+        "comparator": "q256_M1088_dense",
+        "declared_tolerance": 0.001,
+        "unconditional": false,
+        "directions_bitwise": false,
+        "note": "against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+        "worst_all_times_percent": {
+          "ours": 0.905275139559578,
+          "theirs": 0.9052751422505605,
+          "relative_difference": 2.9725576482900717e-09
+        },
+        "worst_evolved_percent": {
+          "ours": 0.5193843574337147,
+          "theirs": 0.5193843584884361,
+          "relative_difference": 2.030714641429452e-09
+        },
+        "worst_reference_percent": {
+          "ours": 4.039124985849867,
+          "theirs": 4.039124985787048,
+          "relative_difference": 1.5552646548348833e-11
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 2.9725576482900717e-09,
+        "ours_median_gpu_ms": 3948.8909939536825,
+        "theirs_median_gpu_ms": 4377.883864566684
+      },
+      "note": null
+    },
+    "reproduces_q256_M1088_dense__bqx301": {
+      "passed": true,
+      "detail": {
+        "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+        "source": "bqx301",
+        "arm": "q256_M1088_dense",
+        "unconditional": null
+      },
+      "note": null,
+      "blocking": false
+    },
+    "reproduces_q256_M2176_dense__bqx101": {
+      "passed": true,
+      "detail": {
+        "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+        "source": "bqx101",
+        "arm": "q256_M2176_dense",
+        "unconditional": null
+      },
+      "note": null,
+      "blocking": false
+    },
+    "reproduces_q256_M2176_dense__bqx201": {
+      "passed": true,
+      "detail": {
+        "source": "bqx201",
+        "source_job": "3780177",
+        "comparator": "q256_M2176_dense",
+        "declared_tolerance": 0.001,
+        "unconditional": false,
+        "directions_bitwise": false,
+        "note": "against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+        "worst_all_times_percent": {
+          "ours": 0.905275139559578,
+          "theirs": 0.9052751422505605,
+          "relative_difference": 2.9725576482900717e-09
+        },
+        "worst_evolved_percent": {
+          "ours": 0.37358724101031165,
+          "theirs": 0.3735872410422864,
+          "relative_difference": 8.55884587677679e-11
+        },
+        "worst_reference_percent": {
+          "ours": 4.038094149994262,
+          "theirs": 4.0380941500037,
+          "relative_difference": 2.3371876774405773e-12
+        },
+        "metrics_compared": 3,
+        "achieved_worst_relative_difference": 2.9725576482900717e-09,
+        "ours_median_gpu_ms": 5894.166678888723,
+        "theirs_median_gpu_ms": 7012.57752510719
+      },
+      "note": null
+    },
+    "reproduces_q256_M2176_dense__bqx301": {
+      "passed": true,
+      "detail": {
+        "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+        "source": "bqx301",
+        "arm": "q256_M2176_dense",
+        "unconditional": null
+      },
+      "note": null,
+      "blocking": false
+    },
+    "at_least_two_unconditional_reproductions_at_1e-9": {
+      "passed": true,
+      "detail": {
+        "unconditional_pairs": 9,
+        "passed_at_1e9": 9
+      },
+      "note": null
+    },
+    "cross_job_fidelity": {
+      "passed": true,
+      "detail": {
+        "q0_M64_dense__btq101": {
+          "passed": true,
+          "detail": {
+            "source": "btq101",
+            "source_job": "3745589",
+            "comparator": "q0_m4_dense_base",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.8889895724288257,
+              "theirs": 1.8889895724291645,
+              "relative_difference": 1.7937635657769305e-13
+            },
+            "worst_reference_percent": {
+              "ours": 4.557509187847018,
+              "theirs": 4.557509187846476,
+              "relative_difference": 1.1907315862004953e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 1.7937635657769305e-13,
+            "ours_median_gpu_ms": 291.64654843043536,
+            "theirs_median_gpu_ms": 284.99060997273773
+          }
+        },
+        "q0_M64_dense__cclad01": {
+          "passed": true,
+          "detail": {
+            "source": "cclad01",
+            "source_job": "3734098",
+            "comparator": "q0_m4_dense_block",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.8889895724288257,
+              "theirs": 1.8889895724280636,
+              "relative_difference": 4.0342048215924076e-13
+            },
+            "worst_reference_percent": {
+              "ours": 4.557509187847018,
+              "theirs": 4.557509187847584,
+              "relative_difference": 1.2414010154002145e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 4.0342048215924076e-13,
+            "ours_median_gpu_ms": 291.64654843043536,
+            "theirs_median_gpu_ms": 282.87116752471775
+          }
+        },
+        "q0_M64_dense__qrg201": {
+          "passed": true,
+          "detail": {
+            "source": "qrg201",
+            "source_job": "3757237",
+            "comparator": "q0_m4_dense_l0",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.8889895724288257,
+              "theirs": 1.888989572428706,
+              "relative_difference": 6.335770392883357e-14
+            },
+            "worst_reference_percent": {
+              "ours": 4.557509187847018,
+              "theirs": 4.557509187846788,
+              "relative_difference": 5.0474546780017535e-14
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 6.335770392883357e-14,
+            "ours_median_gpu_ms": 291.64654843043536,
+            "theirs_median_gpu_ms": 283.77617604564875
+          }
+        },
+        "q0_M64_dense__qtd02": {
+          "passed": true,
+          "detail": {
+            "source": "qtd02",
+            "source_job": "3757505",
+            "comparator": "q0_M64_dense",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.8889895724288257,
+              "theirs": 1.888989572428414,
+              "relative_difference": 2.1793169403353542e-13
+            },
+            "worst_reference_percent": {
+              "ours": 4.557509187847018,
+              "theirs": 4.557509187845806,
+              "relative_difference": 2.6601450330014976e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 2.6601450330014976e-13,
+            "ours_median_gpu_ms": 291.64654843043536,
+            "theirs_median_gpu_ms": 333.19217804819345
+          }
+        },
+        "q0_M64_dense__bqx101": {
+          "passed": true,
+          "detail": {
+            "source": "bqx101",
+            "source_job": "3780175",
+            "comparator": "q0_M64_dense",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.8889895724288257,
+              "theirs": 1.8889895724293762,
+              "relative_difference": 2.913984193683167e-13
+            },
+            "worst_reference_percent": {
+              "ours": 4.557509187847018,
+              "theirs": 4.557509187848894,
+              "relative_difference": 4.115916710399528e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 4.115916710399528e-13,
+            "ours_median_gpu_ms": 291.64654843043536,
+            "theirs_median_gpu_ms": 290.63586553093046
+          }
+        },
+        "q0_M64_dense__bqx201": {
+          "passed": null,
+          "detail": {
+            "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+            "source": "bqx201",
+            "arm": "q0_M64_dense",
+            "unconditional": null
+          }
+        },
+        "q0_M64_dense__bqx301": {
+          "passed": true,
+          "detail": {
+            "source": "bqx301",
+            "source_job": "3780178",
+            "comparator": "q0_M64_dense",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.8889895724288257,
+              "theirs": 1.8889895724281778,
+              "relative_difference": 3.4300144724376264e-13
+            },
+            "worst_reference_percent": {
+              "ours": 4.557509187847018,
+              "theirs": 4.5575091878460965,
+              "relative_difference": 2.0228795196010099e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 3.4300144724376264e-13,
+            "ours_median_gpu_ms": 291.64654843043536,
+            "theirs_median_gpu_ms": 339.57148308400065
+          }
+        },
+        "q0_M1088_dense__bqx101": {
+          "passed": true,
+          "detail": {
+            "source": "bqx101",
+            "source_job": "3780175",
+            "comparator": "q0_M1088_dense",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.2656581176226989,
+              "theirs": 1.2656581176228943,
+              "relative_difference": 1.5438549290152556e-13
+            },
+            "worst_reference_percent": {
+              "ours": 4.069005183313424,
+              "theirs": 4.069005183312367,
+              "relative_difference": 2.5975202090618994e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 2.5975202090618994e-13,
+            "ours_median_gpu_ms": 742.6816020160913,
+            "theirs_median_gpu_ms": 742.2219984000549
+          }
+        },
+        "q0_M1088_dense__bqx201": {
+          "passed": true,
+          "detail": {
+            "source": "bqx201",
+            "source_job": "3780177",
+            "comparator": "q0_M1088_dense",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.2656581176226989,
+              "theirs": 1.2656581176228787,
+              "relative_difference": 1.421048286934514e-13
+            },
+            "worst_reference_percent": {
+              "ours": 4.069005183313424,
+              "theirs": 4.069005183312884,
+              "relative_difference": 1.3271363757222134e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 1.421048286934514e-13,
+            "ours_median_gpu_ms": 742.6816020160913,
+            "theirs_median_gpu_ms": 847.9901634855196
+          }
+        },
+        "q0_M1088_dense__bqx301": {
+          "passed": true,
+          "detail": {
+            "source": "bqx301",
+            "source_job": "3780178",
+            "comparator": "q0_M1088_dense",
+            "declared_tolerance": 1e-09,
+            "unconditional": true,
+            "directions_bitwise": false,
+            "note": "q = 0 carries no correction directions, so this reproduction is unconditional; against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+            "worst_all_times_percent": {
+              "ours": 2.5628719826594537,
+              "theirs": 2.562871982659394,
+              "relative_difference": 2.3219245644161776e-14
+            },
+            "worst_evolved_percent": {
+              "ours": 1.2656581176226989,
+              "theirs": 1.265658117622733,
+              "relative_difference": 2.7017461257770415e-14
+            },
+            "worst_reference_percent": {
+              "ours": 4.069005183313424,
+              "theirs": 4.0690051833124325,
+              "relative_difference": 2.435993742279859e-13
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 2.435993742279859e-13,
+            "ours_median_gpu_ms": 742.6816020160913,
+            "theirs_median_gpu_ms": 1049.2795173777267
+          }
+        },
+        "q256_M1088_dense__qtd02": {
+          "passed": true,
+          "detail": {
+            "source": "qtd02",
+            "source_job": "3757505",
+            "comparator": "old_q256_M1088_dense",
+            "declared_tolerance": 0.001,
+            "unconditional": false,
+            "directions_bitwise": false,
+            "note": "directions are GPU-model dependent across jobs: 1e-9 if the directions hash is bitwise, 1e-3 otherwise (b-ladder-top convention); the achieved difference is reported",
+            "worst_all_times_percent": {
+              "ours": 0.905275139559578,
+              "theirs": 0.9052751422571917,
+              "relative_difference": 2.9798827705369254e-09
+            },
+            "worst_evolved_percent": {
+              "ours": 0.5193843574337147,
+              "theirs": 0.5193843632474255,
+              "relative_difference": 1.1193465297491645e-08
+            },
+            "worst_reference_percent": {
+              "ours": 4.039124985849867,
+              "theirs": 4.039124986099979,
+              "relative_difference": 6.19223054564284e-11
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 1.1193465297491645e-08,
+            "ours_median_gpu_ms": 3948.8909939536825,
+            "theirs_median_gpu_ms": 4354.9022388178855
+          }
+        },
+        "q256_M1088_dense__cclad01": {
+          "passed": true,
+          "detail": {
+            "source": "cclad01",
+            "source_job": "3734098",
+            "comparator": "q256_m4_dense_block",
+            "declared_tolerance": 0.001,
+            "unconditional": false,
+            "directions_bitwise": false,
+            "note": "directions are GPU-model dependent across jobs: 1e-9 if the directions hash is bitwise, 1e-3 otherwise (b-ladder-top convention); the achieved difference is reported; cclad01 ran this rung at budget 180",
+            "worst_all_times_percent": {
+              "ours": 0.905275139559578,
+              "theirs": 0.9052751395173213,
+              "relative_difference": 4.667823160591654e-11
+            },
+            "worst_evolved_percent": {
+              "ours": 0.5193843574337147,
+              "theirs": 0.519384357612359,
+              "relative_difference": 3.4395398887085403e-10
+            },
+            "worst_reference_percent": {
+              "ours": 4.039124985849867,
+              "theirs": 4.03912498584401,
+              "relative_difference": 1.4499795178481778e-12
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 3.4395398887085403e-10,
+            "ours_median_gpu_ms": 3948.8909939536825,
+            "theirs_median_gpu_ms": 3927.2713670507073
+          }
+        },
+        "q256_M1088_dense__bqx101": {
+          "passed": null,
+          "detail": {
+            "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+            "source": "bqx101",
+            "arm": "q256_M1088_dense",
+            "unconditional": null
+          }
+        },
+        "q256_M1088_dense__bqx201": {
+          "passed": true,
+          "detail": {
+            "source": "bqx201",
+            "source_job": "3780177",
+            "comparator": "q256_M1088_dense",
+            "declared_tolerance": 0.001,
+            "unconditional": false,
+            "directions_bitwise": false,
+            "note": "against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+            "worst_all_times_percent": {
+              "ours": 0.905275139559578,
+              "theirs": 0.9052751422505605,
+              "relative_difference": 2.9725576482900717e-09
+            },
+            "worst_evolved_percent": {
+              "ours": 0.5193843574337147,
+              "theirs": 0.5193843584884361,
+              "relative_difference": 2.030714641429452e-09
+            },
+            "worst_reference_percent": {
+              "ours": 4.039124985849867,
+              "theirs": 4.039124985787048,
+              "relative_difference": 1.5552646548348833e-11
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 2.9725576482900717e-09,
+            "ours_median_gpu_ms": 3948.8909939536825,
+            "theirs_median_gpu_ms": 4377.883864566684
+          }
+        },
+        "q256_M1088_dense__bqx301": {
+          "passed": null,
+          "detail": {
+            "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+            "source": "bqx301",
+            "arm": "q256_M1088_dense",
+            "unconditional": null
+          }
+        },
+        "q256_M2176_dense__bqx101": {
+          "passed": null,
+          "detail": {
+            "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+            "source": "bqx101",
+            "arm": "q256_M2176_dense",
+            "unconditional": null
+          }
+        },
+        "q256_M2176_dense__bqx201": {
+          "passed": true,
+          "detail": {
+            "source": "bqx201",
+            "source_job": "3780177",
+            "comparator": "q256_M2176_dense",
+            "declared_tolerance": 0.001,
+            "unconditional": false,
+            "directions_bitwise": false,
+            "note": "against this lane's own round-1 job; the direction matrix is run-to-run nondeterministic, so the loose tier applies and the achieved difference is what is reported",
+            "worst_all_times_percent": {
+              "ours": 0.905275139559578,
+              "theirs": 0.9052751422505605,
+              "relative_difference": 2.9725576482900717e-09
+            },
+            "worst_evolved_percent": {
+              "ours": 0.37358724101031165,
+              "theirs": 0.3735872410422864,
+              "relative_difference": 8.55884587677679e-11
+            },
+            "worst_reference_percent": {
+              "ours": 4.038094149994262,
+              "theirs": 4.0380941500037,
+              "relative_difference": 2.3371876774405773e-12
+            },
+            "metrics_compared": 3,
+            "achieved_worst_relative_difference": 2.9725576482900717e-09,
+            "ours_median_gpu_ms": 5894.166678888723,
+            "theirs_median_gpu_ms": 7012.57752510719
+          }
+        },
+        "q256_M2176_dense__bqx301": {
+          "passed": null,
+          "detail": {
+            "reason": "not_applicable: source job never ran this arm (structural, by its declared q_ladder); mis-declared expectation, not a fidelity discrepancy",
+            "source": "bqx301",
+            "arm": "q256_M2176_dense",
+            "unconditional": null
+          }
+        }
+      },
+      "not_applicable": 5
+    }
+  },
+  "failed": [],
+  "arms": [
+    {
+      "arm": "nt1e-2_dt01",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "solved_dimension": null,
+      "M": null,
+      "labels": null,
+      "rule": null,
+      "quadrature": null,
+      "dt": 0.01,
+      "step_budget": null,
+      "tests_per_unknown": null,
+      "linear_solve": null,
+      "linear_override": null,
+      "worst_reference_percent": 3.6168193258238897,
+      "worst_all_times_percent": 3.199937091473236,
+      "worst_evolved_percent": 3.199937091473236,
+      "median_evolved_percent": 1.419195034972845,
+      "median_all_times_percent": 1.419195034972845,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 1.409402080751886,
+        "1": 0.9385933924073546,
+        "2": 2.014761124211829,
+        "3": 3.199937091473236,
+        "4": 1.428987989193804,
+        "5": 0.9382155449121928
+      },
+      "per_case_all_times_percent": {
+        "0": 1.409402080751886,
+        "1": 0.9385933924073546,
+        "2": 2.014761124211829,
+        "3": 3.199937091473236,
+        "4": 1.428987989193804,
+        "5": 0.9382155449121928
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          0.7188149715727601,
+          1.1798933609938385,
+          1.3740238598274574,
+          1.409402080751886,
+          1.3661606612792507
+        ],
+        "1": [
+          0.0,
+          0.8463135395999561,
+          0.9385933924073546,
+          0.8175609704526302,
+          0.6675078821363185,
+          0.531729547380473
+        ],
+        "2": [
+          0.0,
+          1.394755517458171,
+          0.6630362679117655,
+          1.577174318490215,
+          1.980935343452761,
+          2.014761124211829
+        ],
+        "3": [
+          0.0,
+          1.4062326948467918,
+          2.7351110433167745,
+          3.199937091473236,
+          3.1686089670522293,
+          2.9535029504686294
+        ],
+        "4": [
+          0.0,
+          1.0755022807639398,
+          1.428987989193804,
+          1.3459815933449693,
+          1.1251739889037504,
+          0.8879199932129043
+        ],
+        "5": [
+          0.0,
+          0.9112650844802549,
+          0.9382155449121928,
+          0.7798180183816419,
+          0.6397874959701882,
+          0.5361596600287113
+        ]
+      },
+      "median_gpu_ms": 9.313950897194445,
+      "gpu_ms_all": [
+        7.95151898637414,
+        8.087327936664224,
+        8.476193994283676,
+        8.602442918345332,
+        8.80875694565475,
+        8.853592909872532,
+        8.860368048772216,
+        8.909063879400492,
+        9.282292798161507,
+        9.345608996227384,
+        9.421244030818343,
+        9.49676288291812,
+        9.52452002093196,
+        9.609824977815151,
+        9.850163012742996,
+        10.006200056523085,
+        10.377292055636644,
+        10.72603790089488
+      ],
+      "median_host_ms": 11.026013526134193,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 1.0,
+      "mean_iterations": 1.14,
+      "max_iterations": 2.0,
+      "median_ic_iterations": null,
+      "max_joint_stationarity": null,
+      "converged": null,
+      "all_completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "worst_bank_projection_percent": null,
+      "worst_best_found_percent": null,
+      "setup_seconds": null
+    },
+    {
+      "arm": "fft_loose",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "solved_dimension": null,
+      "M": null,
+      "labels": null,
+      "rule": null,
+      "quadrature": null,
+      "dt": 0.005,
+      "step_budget": null,
+      "tests_per_unknown": null,
+      "linear_solve": null,
+      "linear_override": null,
+      "worst_reference_percent": 4.031998302412981,
+      "worst_all_times_percent": 0.033849423233636315,
+      "worst_evolved_percent": 0.033849423233636315,
+      "median_evolved_percent": 0.015325991173308295,
+      "median_all_times_percent": 0.015325991173308295,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 0.005288494355391541,
+        "1": 0.012581427833205733,
+        "2": 0.033849423233636315,
+        "3": 0.019221131420052714,
+        "4": 0.018070554513410858,
+        "5": 0.012074183607145104
+      },
+      "per_case_all_times_percent": {
+        "0": 0.005288494355391541,
+        "1": 0.012581427833205733,
+        "2": 0.033849423233636315,
+        "3": 0.019221131420052714,
+        "4": 0.018070554513410858,
+        "5": 0.012074183607145104
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          0.004156558713061639,
+          0.005262429433643161,
+          0.005288494355391541,
+          0.004986340125929648,
+          0.0046310375634523344
+        ],
+        "1": [
+          0.0,
+          0.012581427833205733,
+          0.012294464269327371,
+          0.009034688618409193,
+          0.006613841673400298,
+          0.004992758881444109
+        ],
+        "2": [
+          0.0,
+          0.022990545991762208,
+          0.033849423233636315,
+          0.029462107502617976,
+          0.02469479006953311,
+          0.02119122332491755
+        ],
+        "3": [
+          0.0,
+          0.015285855141944412,
+          0.019221131420052714,
+          0.018196200927280436,
+          0.016257880832432292,
+          0.01465489017837797
+        ],
+        "4": [
+          0.0,
+          0.018070554513410858,
+          0.01636002015257356,
+          0.013078072682849102,
+          0.010149652043090762,
+          0.008233894820928022
+        ],
+        "5": [
+          0.0,
+          0.012074183607145104,
+          0.011353053750684582,
+          0.008210781387479067,
+          0.006083742647919935,
+          0.00470092870822377
+        ]
+      },
+      "median_gpu_ms": 36.715001915581524,
+      "gpu_ms_all": [
+        32.91752189397812,
+        33.2985098939389,
+        33.45295903272927,
+        34.26260384730995,
+        34.28687318228185,
+        34.443025942891836,
+        35.91103898361325,
+        35.99572600796819,
+        36.55198682099581,
+        36.87801701016724,
+        36.89714311622083,
+        38.04150992073119,
+        44.18290709145367,
+        44.83967297710478,
+        45.055310940369964,
+        56.47413898259401,
+        56.55258009210229,
+        56.89530121162534
+      ],
+      "median_host_ms": 38.533513084985316,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 1.0,
+      "mean_iterations": 1.0866666666666667,
+      "max_iterations": 2.0,
+      "median_ic_iterations": null,
+      "max_joint_stationarity": null,
+      "converged": null,
+      "all_completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "worst_bank_projection_percent": null,
+      "worst_best_found_percent": null,
+      "setup_seconds": null
+    },
+    {
+      "arm": "fft_tight",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "solved_dimension": null,
+      "M": null,
+      "labels": null,
+      "rule": null,
+      "quadrature": null,
+      "dt": 0.005,
+      "step_budget": null,
+      "tests_per_unknown": null,
+      "linear_solve": null,
+      "linear_override": null,
+      "worst_reference_percent": 4.026514657115307,
+      "worst_all_times_percent": 0.0,
+      "worst_evolved_percent": 0.0,
+      "median_evolved_percent": 0.0,
+      "median_all_times_percent": 0.0,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      },
+      "per_case_all_times_percent": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "2": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "3": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "4": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "5": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "median_gpu_ms": 89.95651849545538,
+      "gpu_ms_all": [
+        72.24482693709433,
+        73.06099496781826,
+        73.20019183680415,
+        76.08172600157559,
+        76.12950401380658,
+        76.20654907077551,
+        86.49976598098874,
+        86.93416300229728,
+        88.02951383404434,
+        91.88352315686643,
+        92.34767686575651,
+        92.35803689807653,
+        115.2304990682751,
+        115.9797920845449,
+        116.31642980501056,
+        128.13281291164458,
+        128.6803330294788,
+        129.5414969790727
+      ],
+      "median_host_ms": 91.71242010779679,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 2.0,
+      "mean_iterations": 2.006666666666667,
+      "max_iterations": 3.0,
+      "median_ic_iterations": null,
+      "max_joint_stationarity": null,
+      "converged": null,
+      "all_completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "worst_bank_projection_percent": null,
+      "worst_best_found_percent": null,
+      "setup_seconds": null
+    },
+    {
+      "arm": "q0_M64_dense",
+      "kind": "rom",
+      "family": "rom",
+      "q": 0,
+      "solved_dimension": 16,
+      "M": 64,
+      "labels": [
+        "anchor"
+      ],
+      "rule": "anchor",
+      "quadrature": "dense",
+      "dt": 0.005,
+      "step_budget": 600,
+      "tests_per_unknown": 4.0,
+      "linear_solve": "gj",
+      "linear_override": null,
+      "worst_reference_percent": 4.557509187847018,
+      "worst_all_times_percent": 2.5628719826594537,
+      "worst_evolved_percent": 1.8889895724288257,
+      "median_evolved_percent": 1.0059092067425204,
+      "median_all_times_percent": 1.6957460830361961,
+      "worst_t0_compression_percent": 2.5628719826594537,
+      "per_case_evolved_percent": {
+        "0": 0.7001892199265262,
+        "1": 0.4183045722920679,
+        "2": 1.8889895724288257,
+        "3": 1.4744299885665673,
+        "4": 1.209732066536926,
+        "5": 0.8020863469481144
+      },
+      "per_case_all_times_percent": {
+        "0": 0.8317287337549127,
+        "1": 1.3020739942474882,
+        "2": 1.8889895724288257,
+        "3": 2.5628719826594537,
+        "4": 1.502502593643566,
+        "5": 2.3510950596067333
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.8317287337549127,
+        "1": 1.3020739942474882,
+        "2": 1.5053416316479193,
+        "3": 2.5628719826594537,
+        "4": 1.502502593643566,
+        "5": 2.3510950596067333
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.8317287337549127,
+          0.7001892199265262,
+          0.4931789857013153,
+          0.4617822794867198,
+          0.4083525217514665,
+          0.35748258657267884
+        ],
+        "1": [
+          1.3020739942474882,
+          0.4183045722920679,
+          0.25694092965435833,
+          0.1916073321351839,
+          0.17571688596208887,
+          0.1646725505472616
+        ],
+        "2": [
+          1.5053416316479193,
+          1.2595037498542037,
+          1.7354960011752085,
+          1.8889895724288257,
+          1.5710235563301849,
+          1.3219630455043379
+        ],
+        "3": [
+          2.5628719826594537,
+          1.4744299885665673,
+          1.0967117563349293,
+          1.1013741485642297,
+          0.948076780370052,
+          0.7947881999442805
+        ],
+        "4": [
+          1.502502593643566,
+          1.209732066536926,
+          0.6897862475708523,
+          0.3830992804196092,
+          0.2672106877483427,
+          0.23405954090588865
+        ],
+        "5": [
+          2.3510950596067333,
+          0.8020863469481144,
+          0.35050697359158123,
+          0.24674948402191987,
+          0.19872506585418528,
+          0.17693734464929053
+        ]
+      },
+      "median_gpu_ms": 291.64654843043536,
+      "gpu_ms_all": [
+        228.05905900895596,
+        228.19600184448063,
+        228.48206502385437,
+        262.2983129695058,
+        262.472040951252,
+        263.0162709392607,
+        280.305617954582,
+        280.7231917977333,
+        280.8536698576063,
+        302.4394270032644,
+        303.18461707793176,
+        303.35705215111375,
+        303.5388689022511,
+        303.8942089769989,
+        306.84487195685506,
+        324.20046092011034,
+        324.37447807751596,
+        331.6071480512619
+      ],
+      "median_host_ms": 293.77655149437487,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 3.0,
+      "mean_iterations": 3.9966666666666666,
+      "max_iterations": 29.0,
+      "median_ic_iterations": 14.0,
+      "max_joint_stationarity": 9.969757601737244e-07,
+      "converged": true,
+      "all_completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 900
+      },
+      "worst_bank_projection_percent": 0.39184464573906314,
+      "worst_best_found_percent": 2.5446628276034287,
+      "setup_seconds": 1.0330965500324965
+    },
+    {
+      "arm": "q0_M1088_dense",
+      "kind": "rom",
+      "family": "rom",
+      "q": 0,
+      "solved_dimension": 16,
+      "M": 1088,
+      "labels": [
+        "anchor"
+      ],
+      "rule": "anchor",
+      "quadrature": "dense",
+      "dt": 0.005,
+      "step_budget": 600,
+      "tests_per_unknown": 68.0,
+      "linear_solve": "gj",
+      "linear_override": null,
+      "worst_reference_percent": 4.069005183313424,
+      "worst_all_times_percent": 2.5628719826594537,
+      "worst_evolved_percent": 1.2656581176226989,
+      "median_evolved_percent": 0.5887769620694767,
+      "median_all_times_percent": 1.5039221126457427,
+      "worst_t0_compression_percent": 2.5628719826594537,
+      "per_case_evolved_percent": {
+        "0": 0.4223317121649894,
+        "1": 0.41071395287744716,
+        "2": 1.2656581176226989,
+        "3": 1.1681475753263366,
+        "4": 0.5551815179842149,
+        "5": 0.6223724061547387
+      },
+      "per_case_all_times_percent": {
+        "0": 0.8317287337549127,
+        "1": 1.3020739942474882,
+        "2": 1.5053416316479193,
+        "3": 2.5628719826594537,
+        "4": 1.502502593643566,
+        "5": 2.3510950596067333
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.8317287337549127,
+        "1": 1.3020739942474882,
+        "2": 1.5053416316479193,
+        "3": 2.5628719826594537,
+        "4": 1.502502593643566,
+        "5": 2.3510950596067333
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.8317287337549127,
+          0.4223317121649894,
+          0.34723255381031487,
+          0.335857985852538,
+          0.31608145222883827,
+          0.31708174899541075
+        ],
+        "1": [
+          1.3020739942474882,
+          0.41071395287744716,
+          0.28510113216864913,
+          0.24285917766322007,
+          0.20835501491837738,
+          0.1894931313437062
+        ],
+        "2": [
+          1.5053416316479193,
+          1.059064586861199,
+          1.2656581176226989,
+          1.2365346951869758,
+          1.0009064496217401,
+          0.8709574446358506
+        ],
+        "3": [
+          2.5628719826594537,
+          1.1681475753263366,
+          0.9599636631206806,
+          1.0269226791747272,
+          0.8576631300702887,
+          0.7588296413305344
+        ],
+        "4": [
+          1.502502593643566,
+          0.5551815179842149,
+          0.3854322937606072,
+          0.28264199501780096,
+          0.24065166420672,
+          0.2147258078737424
+        ],
+        "5": [
+          2.3510950596067333,
+          0.6223724061547387,
+          0.3359761462281907,
+          0.24295870308684608,
+          0.19782979531424477,
+          0.1771368071037867
+        ]
+      },
+      "median_gpu_ms": 742.6816020160913,
+      "gpu_ms_all": [
+        506.544979987666,
+        506.86841108836234,
+        507.03820399940014,
+        639.6903600543737,
+        639.7968251258135,
+        640.4089129064232,
+        659.8293317947537,
+        660.3603400290012,
+        661.2019860185683,
+        824.1612180136144,
+        824.984610080719,
+        825.0951347872615,
+        935.7211492024362,
+        936.893620993942,
+        938.6060871183872,
+        946.7644249089062,
+        946.8782211188227,
+        949.9271069653332
+      ],
+      "median_host_ms": 744.5844921749085,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 3.0,
+      "mean_iterations": 4.42,
+      "max_iterations": 59.0,
+      "median_ic_iterations": 14.0,
+      "max_joint_stationarity": 9.673270168388824e-07,
+      "converged": true,
+      "all_completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 900
+      },
+      "worst_bank_projection_percent": 0.39184464573906314,
+      "worst_best_found_percent": 2.5446628276034287,
+      "setup_seconds": 3.328619295032695
+    },
+    {
+      "arm": "q256_M1088_dense",
+      "kind": "rom",
+      "family": "rom",
+      "q": 256,
+      "solved_dimension": 272,
+      "M": 1088,
+      "labels": [
+        "sat256"
+      ],
+      "rule": "sat256",
+      "quadrature": "dense",
+      "dt": 0.005,
+      "step_budget": 600,
+      "tests_per_unknown": 4.0,
+      "linear_solve": "lu",
+      "linear_override": null,
+      "worst_reference_percent": 4.039124985849867,
+      "worst_all_times_percent": 0.905275139559578,
+      "worst_evolved_percent": 0.5193843574337147,
+      "median_evolved_percent": 0.17904843447953425,
+      "median_all_times_percent": 0.4322965917334087,
+      "worst_t0_compression_percent": 0.905275139559578,
+      "per_case_evolved_percent": {
+        "0": 0.10948493713854057,
+        "1": 0.06688232340468057,
+        "2": 0.5193843574337147,
+        "3": 0.2884031185225155,
+        "4": 0.158217859177123,
+        "5": 0.19987900978194556
+      },
+      "per_case_all_times_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.5193843574337147,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.18805648204139963,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.34520882603310277,
+          0.10948493713854057,
+          0.06257497738002271,
+          0.05151667142723621,
+          0.057732613714911514,
+          0.06460110175742022
+        ],
+        "1": [
+          0.16765940053570372,
+          0.06688232340468057,
+          0.03390137197722358,
+          0.027473147346628625,
+          0.025042679263865615,
+          0.020666394554255604
+        ],
+        "2": [
+          0.18805648204139963,
+          0.2373250991832619,
+          0.5193843574337147,
+          0.394836281169936,
+          0.2797638185799528,
+          0.1955036888361737
+        ],
+        "3": [
+          0.75764342601991,
+          0.2884031185225155,
+          0.1808167333811823,
+          0.1888824428533248,
+          0.18291848022386312,
+          0.1911927612720997
+        ],
+        "4": [
+          0.32998566837927346,
+          0.158217859177123,
+          0.11330242298205531,
+          0.09021130234102481,
+          0.08283223339430214,
+          0.07106815944711707
+        ],
+        "5": [
+          0.905275139559578,
+          0.19987900978194556,
+          0.08070369390427116,
+          0.05949474194431603,
+          0.048366603579654915,
+          0.046968224401947936
+        ]
+      },
+      "median_gpu_ms": 3948.8909939536825,
+      "gpu_ms_all": [
+        2298.7471020314842,
+        2301.7352051101625,
+        2302.296923007816,
+        2512.291160877794,
+        2515.649258857593,
+        2516.9329261407256,
+        3490.9456509631127,
+        3492.072109133005,
+        3492.0977449510247,
+        4405.68424295634,
+        4408.120481995866,
+        4409.237439045683,
+        5025.643097935244,
+        5030.218024970964,
+        5031.879699090496,
+        10187.07641796209,
+        10189.993812004104,
+        10190.711918985471
+      ],
+      "median_host_ms": 3950.807075481862,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 5.0,
+      "mean_iterations": 11.986666666666666,
+      "max_iterations": 307.0,
+      "median_ic_iterations": 32.0,
+      "max_joint_stationarity": 9.993763647756435e-07,
+      "converged": true,
+      "all_completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 900
+      },
+      "worst_bank_projection_percent": 0.39184464573906314,
+      "worst_best_found_percent": 0.9016448978696334,
+      "setup_seconds": 0.7913970188237727
+    },
+    {
+      "arm": "q256_M2176_dense",
+      "kind": "rom",
+      "family": "rom",
+      "q": 256,
+      "solved_dimension": 272,
+      "M": 2176,
+      "labels": [
+        "sat256"
+      ],
+      "rule": "sat256",
+      "quadrature": "dense",
+      "dt": 0.005,
+      "step_budget": 600,
+      "tests_per_unknown": 8.0,
+      "linear_solve": "lu",
+      "linear_override": null,
+      "worst_reference_percent": 4.038094149994262,
+      "worst_all_times_percent": 0.905275139559578,
+      "worst_evolved_percent": 0.37358724101031165,
+      "median_evolved_percent": 0.14622424561813724,
+      "median_all_times_percent": 0.3593980335217072,
+      "worst_t0_compression_percent": 0.905275139559578,
+      "per_case_evolved_percent": {
+        "0": 0.06700158750214548,
+        "1": 0.050786432388476875,
+        "2": 0.37358724101031165,
+        "3": 0.2362443147210546,
+        "4": 0.11920824610181718,
+        "5": 0.17324024513445727
+      },
+      "per_case_all_times_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.37358724101031165,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.18805648204139963,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.34520882603310277,
+          0.06700158750214548,
+          0.04955800869507251,
+          0.04822857639033826,
+          0.04708690155160794,
+          0.04950571489338511
+        ],
+        "1": [
+          0.16765940053570372,
+          0.050786432388476875,
+          0.03032222382340008,
+          0.02320744952817258,
+          0.020349064822278825,
+          0.017614850932386347
+        ],
+        "2": [
+          0.18805648204139963,
+          0.21462588130777097,
+          0.37358724101031165,
+          0.3276995632828127,
+          0.24538640005019868,
+          0.1759839855269548
+        ],
+        "3": [
+          0.75764342601991,
+          0.2362443147210546,
+          0.1660719977512981,
+          0.16868878615301458,
+          0.14926421334129072,
+          0.16143402010955643
+        ],
+        "4": [
+          0.32998566837927346,
+          0.11920824610181718,
+          0.08935126605125403,
+          0.06912118542031857,
+          0.06115759156781188,
+          0.05385606552910429
+        ],
+        "5": [
+          0.905275139559578,
+          0.17324024513445727,
+          0.07026284064968677,
+          0.04649974535373585,
+          0.038702355671481364,
+          0.03660860202216514
+        ]
+      },
+      "median_gpu_ms": 5894.166678888723,
+      "gpu_ms_all": [
+        3588.0258281249553,
+        3590.3036980889738,
+        3593.637228012085,
+        3879.6634359750897,
+        3880.941051989794,
+        3881.7202660720795,
+        4993.84586699307,
+        4998.390896944329,
+        5000.687778927386,
+        6787.645578850061,
+        6788.835512008518,
+        6789.443807210773,
+        8663.71456393972,
+        8665.274768136442,
+        8672.746401047334,
+        14324.786922195926,
+        14325.847649946809,
+        14330.083868000656
+      ],
+      "median_host_ms": 5896.611482603475,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 4.0,
+      "mean_iterations": 11.616666666666667,
+      "max_iterations": 254.0,
+      "median_ic_iterations": 32.0,
+      "max_joint_stationarity": 9.974034421750628e-07,
+      "converged": true,
+      "all_completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 900
+      },
+      "worst_bank_projection_percent": 0.39184464573906314,
+      "worst_best_found_percent": 0.9016448978696334,
+      "setup_seconds": 6.697435721056536
+    },
+    {
+      "arm": "q256_M3264_dense",
+      "kind": "rom",
+      "family": "rom",
+      "q": 256,
+      "solved_dimension": 272,
+      "M": 3264,
+      "labels": [
+        "sat256"
+      ],
+      "rule": "sat256",
+      "quadrature": "dense",
+      "dt": 0.005,
+      "step_budget": 600,
+      "tests_per_unknown": 12.0,
+      "linear_solve": "lu",
+      "linear_override": null,
+      "worst_reference_percent": 4.0380604803664735,
+      "worst_all_times_percent": 0.905275139559578,
+      "worst_evolved_percent": 0.35638740721214623,
+      "median_evolved_percent": 0.14173391772049426,
+      "median_all_times_percent": 0.3507981166226245,
+      "worst_t0_compression_percent": 0.905275139559578,
+      "per_case_evolved_percent": {
+        "0": 0.06425265857972491,
+        "1": 0.04853108559070356,
+        "2": 0.35638740721214623,
+        "3": 0.23273424138133472,
+        "4": 0.11199612165640335,
+        "5": 0.1714717137845852
+      },
+      "per_case_all_times_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.35638740721214623,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.18805648204139963,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.34520882603310277,
+          0.06425265857972491,
+          0.0489751762189526,
+          0.04788101054120281,
+          0.04615525944498372,
+          0.046848437148782056
+        ],
+        "1": [
+          0.16765940053570372,
+          0.04853108559070356,
+          0.02950123459710002,
+          0.022672930061098585,
+          0.02014026035990097,
+          0.01719969177954995
+        ],
+        "2": [
+          0.18805648204139963,
+          0.21211569676561134,
+          0.35638740721214623,
+          0.31782250132132167,
+          0.24440249263960748,
+          0.17314175840917254
+        ],
+        "3": [
+          0.75764342601991,
+          0.23273424138133472,
+          0.16598386562813638,
+          0.1664314514169373,
+          0.14507559887595092,
+          0.16116828115088538
+        ],
+        "4": [
+          0.32998566837927346,
+          0.11199612165640335,
+          0.08554408175921777,
+          0.06617563493829344,
+          0.0580083092715258,
+          0.05143544846765905
+        ],
+        "5": [
+          0.905275139559578,
+          0.1714717137845852,
+          0.06898217198283661,
+          0.04546968216269674,
+          0.037816876749728785,
+          0.03569005525691711
+        ]
+      },
+      "median_gpu_ms": 9149.997265427373,
+      "gpu_ms_all": [
+        5030.954101122916,
+        5031.0034768190235,
+        5033.373132813722,
+        5477.932611946017,
+        5485.4755632113665,
+        5487.0574090164155,
+        6957.591380923986,
+        6959.51156783849,
+        6962.8502749837935,
+        11337.144255870953,
+        11339.14148597978,
+        11344.001733930781,
+        12064.341326011345,
+        12070.182531140745,
+        12071.832980960608,
+        19173.00305282697,
+        19188.233684981242,
+        19204.22835298814
+      ],
+      "median_host_ms": 9152.438596007414,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 4.0,
+      "mean_iterations": 11.85,
+      "max_iterations": 227.0,
+      "median_ic_iterations": 32.0,
+      "max_joint_stationarity": 9.875637847886309e-07,
+      "converged": true,
+      "all_completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 900
+      },
+      "worst_bank_projection_percent": 0.39184464573906314,
+      "worst_best_found_percent": 0.9016448978696334,
+      "setup_seconds": 9.456679636845365
+    },
+    {
+      "arm": "q256_M4352_dense",
+      "kind": "rom",
+      "family": "rom",
+      "q": 256,
+      "solved_dimension": 272,
+      "M": 4352,
+      "labels": [
+        "sat256"
+      ],
+      "rule": "sat256",
+      "quadrature": "dense",
+      "dt": 0.005,
+      "step_budget": 600,
+      "tests_per_unknown": 16.0,
+      "linear_solve": "lu",
+      "linear_override": null,
+      "worst_reference_percent": 4.038176434685122,
+      "worst_all_times_percent": 0.905275139559578,
+      "worst_evolved_percent": 0.352294984303769,
+      "median_evolved_percent": 0.14058467846574796,
+      "median_all_times_percent": 0.34875190516843585,
+      "worst_t0_compression_percent": 0.905275139559578,
+      "per_case_evolved_percent": {
+        "0": 0.0640432928298609,
+        "1": 0.0481331237623612,
+        "2": 0.352294984303769,
+        "3": 0.23302561332308025,
+        "4": 0.10994835097255495,
+        "5": 0.17122100595894094
+      },
+      "per_case_all_times_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.352294984303769,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.18805648204139963,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.34520882603310277,
+          0.0640432928298609,
+          0.048919864239301294,
+          0.047930836568880995,
+          0.0465602738864919,
+          0.04644319166855909
+        ],
+        "1": [
+          0.16765940053570372,
+          0.0481331237623612,
+          0.029359470363380796,
+          0.022571444634278685,
+          0.019909578639252915,
+          0.01724698060501367
+        ],
+        "2": [
+          0.18805648204139963,
+          0.2112391501192739,
+          0.352294984303769,
+          0.31667239833621563,
+          0.24469567997172084,
+          0.17363207191857377
+        ],
+        "3": [
+          0.75764342601991,
+          0.23302561332308025,
+          0.16602117892417975,
+          0.1661648058893905,
+          0.14520110889005214,
+          0.16158778877807695
+        ],
+        "4": [
+          0.32998566837927346,
+          0.10994835097255495,
+          0.08473598857462586,
+          0.06600609372994362,
+          0.058075483375956395,
+          0.05176328867884528
+        ],
+        "5": [
+          0.905275139559578,
+          0.17122100595894094,
+          0.06874580084820943,
+          0.045431744177023385,
+          0.03773636735543066,
+          0.035622447920915803
+        ]
+      },
+      "median_gpu_ms": 9282.805776456371,
+      "gpu_ms_all": [
+        5615.431590005755,
+        5616.214100969955,
+        5616.943018976599,
+        6086.59219997935,
+        6093.286372022703,
+        6094.857516000047,
+        7687.010593013838,
+        7687.890351051465,
+        7689.411950996146,
+        10876.199601916596,
+        10882.1366277989,
+        10884.47784516029,
+        13114.195357076824,
+        13120.631600962952,
+        13127.722887089476,
+        20037.07421803847,
+        20044.267212972045,
+        20045.48229603097
+      ],
+      "median_host_ms": 9285.41138197761,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 4.0,
+      "mean_iterations": 11.486666666666666,
+      "max_iterations": 211.0,
+      "median_ic_iterations": 32.0,
+      "max_joint_stationarity": 9.859863267334934e-07,
+      "converged": true,
+      "all_completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 900
+      },
+      "worst_bank_projection_percent": 0.39184464573906314,
+      "worst_best_found_percent": 0.9016448978696334,
+      "setup_seconds": 12.609922586940229
+    },
+    {
+      "arm": "q256_M6528_dense",
+      "kind": "rom",
+      "family": "rom",
+      "q": 256,
+      "solved_dimension": 272,
+      "M": 6528,
+      "labels": [
+        "sat256"
+      ],
+      "rule": "sat256",
+      "quadrature": "dense",
+      "dt": 0.005,
+      "step_budget": 600,
+      "tests_per_unknown": 24.0,
+      "linear_solve": "lu",
+      "linear_override": null,
+      "worst_reference_percent": 4.03834869474317,
+      "worst_all_times_percent": 0.905275139559578,
+      "worst_evolved_percent": 0.35097544721015095,
+      "median_evolved_percent": 0.14024933496638833,
+      "median_all_times_percent": 0.34809213662162686,
+      "worst_t0_compression_percent": 0.905275139559578,
+      "per_case_evolved_percent": {
+        "0": 0.06432963059464555,
+        "1": 0.04822821280422304,
+        "2": 0.35097544721015095,
+        "3": 0.23422796091374692,
+        "4": 0.1091176706273562,
+        "5": 0.1713809993054205
+      },
+      "per_case_all_times_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.35097544721015095,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_case_t0_compression_percent": {
+        "0": 0.34520882603310277,
+        "1": 0.16765940053570372,
+        "2": 0.18805648204139963,
+        "3": 0.75764342601991,
+        "4": 0.32998566837927346,
+        "5": 0.905275139559578
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.34520882603310277,
+          0.06432963059464555,
+          0.04900336098738365,
+          0.04820079525965694,
+          0.04752521934561155,
+          0.0466428235032897
+        ],
+        "1": [
+          0.16765940053570372,
+          0.04822821280422304,
+          0.02951306046994911,
+          0.02272105828211426,
+          0.019993168227566523,
+          0.01744044971870822
+        ],
+        "2": [
+          0.18805648204139963,
+          0.2107411798794557,
+          0.35097544721015095,
+          0.3178502398016159,
+          0.2456876264273834,
+          0.1749819503100859
+        ],
+        "3": [
+          0.75764342601991,
+          0.23422796091374692,
+          0.16632912810033743,
+          0.16653481829598857,
+          0.14631009993387997,
+          0.16205485673635273
+        ],
+        "4": [
+          0.32998566837927346,
+          0.1091176706273562,
+          0.08488597404837389,
+          0.06669781112507216,
+          0.05895756880239246,
+          0.052786974448510174
+        ],
+        "5": [
+          0.905275139559578,
+          0.1713809993054205,
+          0.06885691202929578,
+          0.045694424403039946,
+          0.03792925812496496,
+          0.0358644864857769
+        ]
+      },
+      "median_gpu_ms": 12130.830192589201,
+      "gpu_ms_all": [
+        7761.429707985371,
+        7770.591110922396,
+        7771.276704967022,
+        8360.918508842587,
+        8363.411226077005,
+        8366.861287970096,
+        10519.461035029963,
+        10539.047901984304,
+        10539.856457151473,
+        13721.80392802693,
+        13732.120724860579,
+        13735.155857168138,
+        18223.269990179688,
+        18225.253915181383,
+        18237.85830801353,
+        29367.382945027202,
+        29417.694945121184,
+        29423.360016895458
+      ],
+      "median_host_ms": 12133.744076942094,
+      "gpu_ms_repetitions": 18,
+      "median_iterations": 4.0,
+      "mean_iterations": 11.39,
+      "max_iterations": 223.0,
+      "median_ic_iterations": 32.0,
+      "max_joint_stationarity": 9.78169543379347e-07,
+      "converged": true,
+      "all_completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 900
+      },
+      "worst_bank_projection_percent": 0.39184464573906314,
+      "worst_best_found_percent": 0.9016448978696334,
+      "setup_seconds": 19.475073331966996
+    }
+  ]
+}

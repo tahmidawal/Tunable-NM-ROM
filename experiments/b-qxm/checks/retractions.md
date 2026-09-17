@@ -55,3 +55,22 @@
   `summary.json` it is exactly 0.0 — the Gauss–Jordan and LU solves of the $(32, 1088)$
   cell agree to the last bit. Corrected in place, and the paragraph now quotes the generated
   value. No other prose number in this lane was typed by hand; every table is generated.
+- **Round 2 (2026-09-17, `bqx401`/`bqx501`): the report generator let a failed extension of a
+  column erase an already-certified shorter result inside the same named object.** Round 1's
+  fixed-$M=1088$ column (`bqx201`/G2, $q = 0, 64, 128, 256$, monotone, every rung converged,
+  span $2.437\times$) was reported correctly in the committed `analysis.json`
+  (`4b9723e8`). Round 2 (`bqx401`/E1) legitimately extended the same $M=1088$ column with a
+  $q = 512$ rung that does **not** converge (worst joint gradient $1.77\times10^{-1}$ against
+  the $10^{-6}$ bar). `spans()` computed `all_converged` over the union of both rounds' cells
+  at that $M$, so the one non-converged addition flipped the flag for the whole object and, per
+  DESIGN.md §5's "not patched" rule, nulled `span` entirely — silently erasing round 1's own,
+  already-certified $2.437\times$ result and, downstream, flipping `rank_claim_false` to `true`
+  and the headline to "scheduled ladder". Neither round-1's four converged rungs nor round-2's
+  results support either of those. **Fixed:** `span` (the full declared range, correctly
+  `null`/unavailable when a rung fails) is now reported separately from `certified_span` (the
+  converged prefix, unaffected by a later failed extension); `verdict()` reads
+  `certified_span` for `rank_claim_false`/`headline_fixed_M`. Re-derived `span_q_at_M1088 =
+  2.4368429602045354`, bit-identical to the value that was briefly overwritten. This defect
+  reached only the *working tree* between the previous session being killed and this one
+  finishing the fix — the committed `analysis.json` at `4b9723e8` was correct throughout and
+  the paper's pinned commit never carried the wrong value. Full mechanism: DESIGN.md §A5.

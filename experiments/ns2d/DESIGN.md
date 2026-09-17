@@ -283,3 +283,79 @@ $1.8\times10^{-15}$.
 
 **The pre-registered ladder $q\in\{0,16,64,256\}$ and both heads stand unchanged.** No rung is
 cut for cost.
+
+## §A4 (2026-09-17, after job 3783796 `ns201`, before any rerun) — the bank was structurally rank-capped at `g_hidden`; B-DATA becomes a hash-or-value gate; oracle errors are evaluated in field space
+
+**What happened.** `ns201` ($K=16$, $R=256$) completed (1 h 32 m, A100 `pax049`, exit 0) and
+failed three families of gates:
+
+1. **B-ORTH at every mesh: numerical rank 128 of $R=256$**, $\kappa(R_b)\approx 2\times10^{15}$.
+   The cause is structural, not numerical: the bank is
+   $G=\text{out\_scale}\cdot\mathrm{MLP}_g(\text{features})$ and the last layer of
+   $\mathrm{MLP}_g$ is **linear** over `g_hidden`$=128$ hidden units, so
+   $\operatorname{rank}G\le\min(R,\texttt{g\_hidden})=128$ regardless of $R$.
+   The parent lane paid for exactly this landmine on 2026-08 (`sep_burgers_r3.py`: "numerical
+   rank was capped at `g_hidden + 1 = 257` because the g-track's last layer is linear; the fix
+   is `G_HIDDEN >= 2R`") and its later drivers default `G_HIDDEN = 2R`. This lane's decoder
+   inherited the old default 128. Both Phase-2 heads (`ns201`, and `ns202` still running with
+   $R=512$) are rank-128 banks. The independent audit (`audit_phase2.py`) recomputes rank 128
+   from the pickled weights at $N=64,128,256$.
+2. **H-ORACLE at every mesh**: oracle median 0.203 vs POD-16 median 0.240 (ratio 1.19, bar 2.0);
+   bank floor median 0.038. The head, not the span, is the limit — at 30 000 full-batch steps
+   with a $128\times2$ head, which the parent lane's `HFIT.md` identifies as the short/narrow
+   corner (25k-step arms were ~2× worse than 120k-step arms; latent Fourier features made
+   things 10–50× *worse* and are **not** adopted).
+3. **B-DATA at 256²** (train and dev) by hash, while 64² and 128² matched. `ns202` on `pax106`
+   matched all Phase-1 hashes (from `pax105`) with the same commit; `ns201` on `pax049` did not.
+   The 256² cohort hash is therefore **node-dependent at the bit level** (the campaign's
+   "value gates, not hash gates, across machines" landmine), not a code change.
+
+**A fourth finding from the audit.** The driver reported the oracle error as
+$\sqrt{r_n^2+\|u-P u\|^2}/n_0$ with $r_n=\|R_b(h(z)-c)\|$ and $c=R_b^{-1}Q_b^\top u$. Through a
+singular $R_b$, $c$ carries $\sim10^{12}$ garbage in the null directions and $R_b(h-c)$ cancels
+catastrophically: the recomputed exact $\|Gh(z)-u\|/n_0$ differs from the reported value by up
+to **1.1e-2 relative at 64², 7.6e-3 at 128², 3.0e-3 at 256²** on the 48 archived states
+(the rank-128 projection formula agrees with the exact norm to all digits). No verdict changes
+(0.203 vs the 0.120 needed), but the `ns201` oracle numbers carry that contamination and the
+LM minimised a cancellation-noisy objective. The audit's six `e_oracle`/`e_single` checks
+are recorded as MISMATCH for `ns201`; that is the correct record.
+
+**Amendments (the science is unchanged; the model's implementation and two gates are fixed).**
+
+- **B-RANKCAP** (new, asserted before any GPU time is spent): `g_hidden >= R`; the driver's
+  default becomes `G_HIDDEN = 2R`, the parent lane's verified fix.
+- **Phase-2 training recipe for the reruns**: `G_HIDDEN = 2R`, head $512\times3$, 100 000
+  full-batch steps (same optimiser, schedule, seed, cohorts, `LAM_ORTH`). Nothing else changes.
+  Cost estimate from `ns201`/`ns202` step times: ≈3.5 h ($K=16$) and ≈6.5 h ($K=32$) of A100.
+- **B-DATA / R-DATA become hash-or-value gates.** Hash equality passes as before. On a
+  mismatch, the dev cohort passes iff every one of the first 8 dev trajectories at the six
+  evaluation times agrees with Phase 1's archived fields (`configs/dev8_eval_ref.npz`, cut from
+  job 3780151's `dev8_N*.npz`) to **≤ 1e-8 relative per state**; the train cohort (no archived
+  fields) passes iff the dev cohort at the same mesh passed on the same node, with the
+  mismatch recorded in the JSON (`mode`, `hash_mismatch`, `value_worst_rel`). Dev is generated
+  first so that the node is certified before the train cohort's gate is read. Phase 3 gates its
+  8-case converged reference by value directly (`R-DATA_reference`).
+- **Oracle, single-start and manifold errors are evaluated in field space**,
+  $\|Gh(z)-u\|_2/\|u_{\rm case}(0)\|_2$, and the whitened-formula value is stored beside them
+  (`formula_vs_field_worst_rel`), so the report never depends on $R_b^{-1}$.
+- **`ns201` is closed as a failed Phase-2 attempt**, archived (`artifacts/ns201`), audited, and
+  not used for Phase 3. `ns202` will be gated when it lands; its B-ORTH fails by construction.
+- **Job plan**: jobs 4–5 become the Phase-2 reruns `ns203` ($K=16,R=256$) and `ns204`
+  ($K=32,R=512$); Phase 3 moves to jobs 6–7; one spare. The 2026-09-22 stop rule stands.
+
+**Pre-registered expectation for the reruns, stated before they run.** Full rank $R$ at every
+mesh (B-ORTH passes by construction); the bank floor should drop below `ns201`'s 0.038
+median; H-ORACLE is the open question — the parent lane's evidence says longer training is
+worth ~2×, which would put the ratio near the 2.0 bar. If H-ORACLE fails again with a full-rank
+bank and 100k steps, the finding is that this auto-decoder head cannot beat linear POD-$K$ by 2×
+on decaying 2D NS at $\mathrm{Re}\in[100,1000]$, and the lane reports Phases 1–2 with that
+negative — it does not lower the bar.
+
+## §A5 (2026-09-17) — Codex unavailable: written self-audits substitute for the independent-model audits
+
+`codex exec` is quota-blocked until 2026-09-19 11:33 (coordinator notice). In its place:
+`reports/self-audit-fom-verification.md` (Phase 1) and `reports/self-audit-phase2.md` (Phase 2)
+list each claim, the JSON field it rests on, and the check run, and are labelled as
+self-audits. The independent NumPy audits (`audit_phase1.py`, `audit_phase2.py`,
+`audit_phase3.py`) remain the mechanical check. The Codex report audit is to be run after
+2026-09-19 11:33 if the lane is still open.

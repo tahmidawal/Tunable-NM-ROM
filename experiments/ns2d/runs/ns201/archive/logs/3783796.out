@@ -1,0 +1,57 @@
+host=pax049 source_commit=dddb41fbd0aa8a16306f414ceb569d81d8d957f3
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.22:/projects/paralab  4.6T  4.2T  410G  92% /cluster/tufts/paralab
+jax_backend=gpu
+GATE S0: PASS backend=gpu
+GATE B-DATA_train_N256: FAIL expected=4ce80fafbf1f1333f59963703684756327764236f811e71e2bb48bebf59ba12c got=a68db899816f8aa49a69fa15ad9c73729c1923936092c3b79f80d3de9f7eff08 seconds=6.313e+02
+GATE B-DATA_dev_N256: FAIL expected=f69ca8e8762150ebfbe4c409acc001859681bb3a1c3ac60c8a03a67d030a023d got=1681351128e7df36db8fea97cbc2f0fcff4882343d38a1b65b3c27fed095f00c seconds=8.093e+01
+DATA train (512, 26, 65536) dev (64, 26, 65536) in 712s
+   train[K16R256] step      1/30000  rel-MSE 2.803e+00  [13s]
+   train[K16R256] step   1000/30000  rel-MSE 2.004e-01  [118s]
+   train[K16R256] step   2000/30000  rel-MSE 9.915e-02  [225s]
+   train[K16R256] step   3000/30000  rel-MSE 8.099e-02  [331s]
+   train[K16R256] step   4000/30000  rel-MSE 7.389e-02  [437s]
+   train[K16R256] step   5000/30000  rel-MSE 6.972e-02  [543s]
+   train[K16R256] step   6000/30000  rel-MSE 6.555e-02  [649s]
+   train[K16R256] step   7000/30000  rel-MSE 6.306e-02  [755s]
+   train[K16R256] step   8000/30000  rel-MSE 6.122e-02  [862s]
+   train[K16R256] step   9000/30000  rel-MSE 5.990e-02  [968s]
+   train[K16R256] step  10000/30000  rel-MSE 5.787e-02  [1074s]
+   train[K16R256] step  11000/30000  rel-MSE 5.643e-02  [1180s]
+   train[K16R256] step  12000/30000  rel-MSE 5.555e-02  [1286s]
+   train[K16R256] step  13000/30000  rel-MSE 5.436e-02  [1393s]
+   train[K16R256] step  14000/30000  rel-MSE 5.361e-02  [1499s]
+   train[K16R256] step  15000/30000  rel-MSE 5.340e-02  [1605s]
+   train[K16R256] step  16000/30000  rel-MSE 5.231e-02  [1711s]
+   train[K16R256] step  17000/30000  rel-MSE 5.180e-02  [1817s]
+   train[K16R256] step  18000/30000  rel-MSE 5.131e-02  [1923s]
+   train[K16R256] step  19000/30000  rel-MSE 5.080e-02  [2030s]
+   train[K16R256] step  20000/30000  rel-MSE 5.048e-02  [2136s]
+   train[K16R256] step  21000/30000  rel-MSE 5.006e-02  [2242s]
+   train[K16R256] step  22000/30000  rel-MSE 4.978e-02  [2348s]
+   train[K16R256] step  23000/30000  rel-MSE 4.949e-02  [2454s]
+   train[K16R256] step  24000/30000  rel-MSE 4.925e-02  [2560s]
+   train[K16R256] step  25000/30000  rel-MSE 4.902e-02  [2666s]
+   train[K16R256] step  26000/30000  rel-MSE 4.882e-02  [2773s]
+   train[K16R256] step  27000/30000  rel-MSE 4.863e-02  [2879s]
+   train[K16R256] step  28000/30000  rel-MSE 4.846e-02  [2985s]
+   train[K16R256] step  29000/30000  rel-MSE 4.831e-02  [3091s]
+   train[K16R256] step  30000/30000  rel-MSE 4.817e-02  [3197s]
+   train[K16R256] done: recon rel-L2 mean 2.089e-01 max 6.214e-01  [3202s]
+GATE H-TRAIN: PASS recon_mean=2.089e-01 recon_median=2.056e-01 recon_max=6.214e-01 seconds=3.202e+03
+GATE B-DATA_dev_N64: PASS expected=76bb1790da52cb62c1acec42d37e85cb392c6015bc54d369c441b641819d1180 got=76bb1790da52cb62c1acec42d37e85cb392c6015bc54d369c441b641819d1180
+GATE B-ORTH_N64: FAIL rank=128 cond_Rb=1.989e+15 mean_abs_colmean=2.752e-16
+GATE B-FLOOR_N64: PASS bank_worst_evolved=2.377e-01 podR_worst_evolved=1.307e-01 ratio=1.819e+00 bank_median=8.296e-02 podR_median=3.233e-02 podK_worst_evolved=6.723e-01 podK_median=3.244e-01
+GATE H-ORACLE_N64: FAIL oracle_median=2.031e-01 podK_median=2.417e-01 ratio_podK_over_oracle=1.190e+00 bank_floor_median=3.775e-02 oracle_worst=5.311e-01
+GATE H-SOLVED_N64: PASS single_start_median=2.130e-01 oracle_median=2.031e-01
+GATE B-DATA_dev_N128: PASS expected=b82e69bc9c5d21fbc29dd6a247e86ad775673648a5f746d7f21f8bcd4e8f8a80 got=b82e69bc9c5d21fbc29dd6a247e86ad775673648a5f746d7f21f8bcd4e8f8a80
+GATE B-ORTH_N128: FAIL rank=128 cond_Rb=1.810e+15 mean_abs_colmean=2.613e-16
+GATE B-FLOOR_N128: PASS bank_worst_evolved=2.399e-01 podR_worst_evolved=1.302e-01 ratio=1.843e+00 bank_median=8.349e-02 podR_median=3.269e-02 podK_worst_evolved=6.710e-01 podK_median=3.244e-01
+GATE H-ORACLE_N128: FAIL oracle_median=2.018e-01 podK_median=2.404e-01 ratio_podK_over_oracle=1.191e+00 bank_floor_median=3.837e-02 oracle_worst=5.300e-01
+GATE H-SOLVED_N128: PASS single_start_median=2.141e-01 oracle_median=2.018e-01
+GATE B-ORTH_N256: FAIL rank=128 cond_Rb=1.638e+15 mean_abs_colmean=2.608e-16
+GATE B-FLOOR_N256: PASS bank_worst_evolved=2.404e-01 podR_worst_evolved=1.303e-01 ratio=1.845e+00 bank_median=8.377e-02 podR_median=3.275e-02 podK_worst_evolved=6.707e-01 podK_median=3.244e-01
+GATE H-ORACLE_N256: FAIL oracle_median=2.028e-01 podK_median=2.402e-01 ratio_podK_over_oracle=1.185e+00 bank_floor_median=3.843e-02 oracle_worst=5.300e-01
+GATE H-SOLVED_N256: PASS single_start_median=2.139e-01 oracle_median=2.028e-01
+PHASE2 done in 5553s; all_passed=False; failed=['B-DATA_train_N256', 'B-DATA_dev_N256', 'B-ORTH_N64', 'H-ORACLE_N64', 'B-ORTH_N128', 'H-ORACLE_N128', 'B-ORTH_N256', 'H-ORACLE_N256']
+ALL-DONE

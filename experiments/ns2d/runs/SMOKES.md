@@ -13,3 +13,10 @@ every one is `SMOKE=1`, which forbids `complete=true` in its JSON.
 
 The phase-3 smokes report `R-LADDER: FAIL` (monotone = yes, gain 1.25 < the pre-registered 2.0):
 that is the verdict gate working on a deliberately untrained checkpoint, not a lane result.
+
+## After §A4 (2026-09-17, 11:2x EDT) — patched drivers
+
+| smoke | configuration | outcome |
+|---|---|---|
+| phase 2 (§A4 driver) | K=4, R=16, `G_HIDDEN` default 2R=32, head 32×3, 32², 300 steps | B-RANKCAP PASS, B-ORTH rank 16/16, hash-or-value B-DATA in smoke mode, oracle formula-vs-field 1.3e-16; H-ORACLE fails as it must |
+| phase 3 (§A4 driver) | the checkpoint above, q ∈ {0,2,4}, FOM ladder first, decomposition | R-TB 0, R-TFFT 6.8e-16, R-TQ 6.8e-16, R-LIN 1.2e-15; FOM ladder lands before the ROM arms; decomposition formula-vs-field ≤ 2.5e-16; `audit_phase3.py` ALL_MATCH on 54 checks; R-LADDER FAIL (gain 1.04) on the untrained checkpoint |

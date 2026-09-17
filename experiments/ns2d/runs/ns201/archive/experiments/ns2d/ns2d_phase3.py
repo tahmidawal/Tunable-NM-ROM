@@ -5,12 +5,6 @@ ladder on one mesh with one head (DESIGN.md "Phase 3", gates R-*).
     FOM_NTOLS=3e-2,1e-2,3e-3,1e-3,1e-4,1e-6  REPS=3 BURN=0.25 CASES=8
     RES_SNAPSHOTS=1024 RES_STARTS=4 RES_BUDGET=200 RES_SEED=20260915
     IC_BUDGET=400 STEP_BUDGET=200 GTOL=1e-6  EXPECT_HASHES=...  SMOKE=0 OUT=output
-    DEV_REF=configs/dev8_eval_ref.npz DATA_VALUE_TOL=1e-8   (R-DATA value gate, DESIGN §A4)
-
-Order of work: data and references, bank/tensor/POD gates, then the FOM tolerance ladder
-(the same-job full-order controls) BEFORE the ROM arms, so a walltime cut leaves the
-controls; ROM fields are written after every case so a cut leaves the last complete rep;
-the three-layer decomposition (bank / manifold / solve) closes the job.
 
 Everything reported is written incrementally to output/result.json; the ROM fields of the
 last timed repetition and the converged FOM reference of every case are saved for the
@@ -55,7 +49,6 @@ NTOL, LTOL = float(E('NTOL', '1e-11')), float(E('LTOL', '1e-9'))
 EXPECT = E('EXPECT_HASHES', '')
 TQ_STATES = int(E('TQ_STATES', '32'))
 T_CHUNK = int(E('T_CHUNK', '256'))
-T_BLOCK = int(E('T_BLOCK', '16'))
 SMOKE = int(E('SMOKE', '0'))
 OUT = Path(E('OUT', 'output'))
 NSTEPS = int(round(T / DT))
@@ -86,55 +79,6 @@ def gate(report, name, passed, **kw):
     log(f'GATE {name}: {"PASS" if passed else "FAIL"} ' +
         ' '.join(f'{k}={v:.3e}' if isinstance(v, float) else f'{k}={v}'
                  for k, v in kw.items() if k != 'passed' and not isinstance(v, (list, dict))))
-
-
-
-DEV_REF = E('DEV_REF', 'configs/dev8_eval_ref.npz')
-DATA_VALUE_TOL = float(E('DATA_VALUE_TOL', '1e-8'))
-
-
-def load_ref():
-    return np.load(DEV_REF) if DEV_REF and Path(DEV_REF).exists() else None
-
-
-def value_check(ref, N, U):
-    """Worst relative difference of U (cases, NOUT, n) against the archived Phase-1 first-8
-    development trajectories at the six evaluation times.  None when no reference exists."""
-    if ref is None or f'U_N{N}' not in ref.files:
-        return None, 0, 0
-    idx, Ur = ref[f'eval_idx_N{N}'], ref[f'U_N{N}']
-    n_cases = min(len(U), Ur.shape[0])
-    diff = max(float(np.linalg.norm(U[c, i] - Ur[c, j]) / np.linalg.norm(Ur[c, j]))
-               for c in range(n_cases) for j, i in enumerate(idx))
-    return diff, n_cases, len(idx)
-
-
-def data_gate(report, expect, cohort, N, U, info, ref, dev_ok=None, prefix='B-DATA'):
-    """DESIGN §A4: the regenerated cohort must equal Phase 1's by SHA256 (bit-reproducible on
-    the same node class) or, failing that, by VALUE on the archived first-8 dev trajectories
-    at the six evaluation times (<= DATA_VALUE_TOL relative per state).  The train cohort has
-    no archived fields: on a hash mismatch it passes iff the dev cohort at the same N passed
-    on this node, and the mismatch is recorded.  A smoke carries no expectation."""
-    want, got = expect.get(f'{cohort}_N{N}'), info['sha256']
-    kw = dict(expected=want, got=got, seconds=info['seconds'], mode='hash')
-    if want is None:
-        ok, kw['mode'] = bool(SMOKE), 'smoke-no-expectation'
-    elif want == got:
-        ok = True
-    else:
-        kw['hash_mismatch'] = True
-        diff, n_cases, n_states = value_check(ref, N, U) if cohort == 'dev' else (None, 0, 0)
-        if diff is not None:
-            ok = diff <= DATA_VALUE_TOL
-            kw.update(mode='value', value_worst_rel=diff, value_tol=DATA_VALUE_TOL,
-                      value_cases=n_cases, value_states=n_states)
-        elif cohort == 'train' and dev_ok is not None:
-            ok = bool(dev_ok)
-            kw.update(mode='inferred-from-dev-gate-on-this-node', dev_ok=bool(dev_ok))
-        else:
-            ok, kw['mode'] = False, 'hash-only (no reference available)'
-    gate(report, f'{prefix}_{cohort}_N{N}', ok, **kw)
-    return ok
 
 
 def git_commit():
@@ -223,8 +167,7 @@ def main():
                               RES_STARTS=RES_STARTS, RES_BUDGET=RES_BUDGET, RES_SEED=RES_SEED,
                               IC_BUDGET=IC_BUDGET, STEP_BUDGET=STEP_BUDGET, GTOL=GTOL, DT=DT, T=T,
                               OUT_EVERY=OUT_EVERY, NOUT=NOUT, EVAL_IDX=EVAL_IDX, N_TRAIN=N_TRAIN,
-                              N_DEV=N_DEV, SEEDS=SEEDS, NTOL=NTOL, LTOL=LTOL, T_CHUNK=T_CHUNK,
-                              T_BLOCK=T_BLOCK),
+                              N_DEV=N_DEV, SEEDS=SEEDS, NTOL=NTOL, LTOL=LTOL, T_CHUNK=T_CHUNK),
                   timing_contract=('dense initial vorticity on device to NOUT dense device fields, '
                                    'block_until_ready; identical for every ROM arm and the FOM ladder; '
                                    'the bank, tensor, directions and POD are built untimed'),
@@ -238,21 +181,17 @@ def main():
     phys_tr = F.params_draw(SEEDS['train'], N_TRAIN)
     phys_dev = F.params_draw(SEEDS['dev'], N_DEV)[:CASES]
 
-    # ---- data: the converged references FIRST (their value gate against the archived
-    # Phase-1 fields certifies this node), then the training snapshots (POD, directions)
-    ref = load_ref()
-    Uref, iref = generate(phys_dev, NTOL, LTOL)                       # converged same-grid reference
-    report['data'][f'reference_N{N}'] = iref
-    diff, n_cases, n_states = value_check(ref, N, Uref)
-    ref_ok = bool(SMOKE) if diff is None else diff <= DATA_VALUE_TOL
-    gate(report, f'R-DATA_reference_N{N}', ref_ok, mode='value' if diff is not None else 'no-reference',
-         value_worst_rel=diff, value_tol=DATA_VALUE_TOL, value_cases=n_cases, value_states=n_states)
+    # ---- data: training snapshots (POD, directions) and the converged references
     Utr, itr = generate(phys_tr, NTOL, LTOL)
     report['data'][f'train_N{N}'] = itr
-    data_gate(report, expect, 'train', N, Utr, itr, ref, dev_ok=ref_ok, prefix='R-DATA')
+    want = expect.get(f'train_N{N}')
+    gate(report, f'R-DATA_train_N{N}', (want is None and bool(SMOKE)) or want == itr['sha256'],
+         expected=want, got=itr['sha256'])
     S = Utr.shape[0] * NOUT
     Uflat = Utr.reshape(S, -1)
     del Utr
+    Uref, iref = generate(phys_dev, NTOL, LTOL)                       # converged same-grid reference
+    report['data'][f'reference_N{N}'] = iref
     np.savez_compressed(OUT / f'reference_N{N}.npz', U=Uref[:, EVAL_IDX], physical=phys_dev,
                         eval_idx=np.asarray(EVAL_IDX))
     dump(report)
@@ -288,25 +227,17 @@ def main():
     M_neural = 4 * (K + max(Q_LADDER))
     pod_ks = sorted(set(PODK + ([K + q for q in Q_LADDER if q > 0] if MATCHED_POD else [])))
     M_pod = 4 * max(pod_ks)
-    Phi_n, lam_n, ids_n = RM.fourier_modes(N, M_neural)
-    Phi_p, lam_p, ids_p = RM.fourier_modes(N, M_pod)
+    Phi_n, lam_n, _ = RM.fourier_modes(N, M_neural)
+    Phi_p, lam_p, _ = RM.fourier_modes(N, M_pod)
     t0 = time.perf_counter()
-    T_n = RM.build_T_fft(ids_n, G, N, block=T_BLOCK)
+    T_n = RM.build_T(Phi_n, G, N, chunk=T_CHUNK)
     t_tn = time.perf_counter() - t0
-    T_n_rev = RM.build_T_fft(ids_n, G, N, block=max(1, T_BLOCK // 2), reverse=True)
+    T_n_rev = RM.build_T(Phi_n, G, N, chunk=T_CHUNK * 2 if not SMOKE else 64, reverse=True)
     tb = float(np.linalg.norm(T_n - T_n_rev) / np.linalg.norm(T_n))
     del T_n_rev
     gate(report, 'R-TB', tb <= 1e-12, rel=tb, M=M_neural, R=R, seconds=t_tn, bytes=int(T_n.nbytes))
-    # R-TFFT: the FFT projection against the INDEPENDENT direct (M, n) matmul build, on a
-    # small sub-block (the direct build costs 24 n M R^2 and is unaffordable at full size --
-    # that is exactly why the FFT route exists).  DESIGN 2nd amendment A3.
-    sub_M, sub_R = min(32, M_neural), min(16, R)
-    t_direct = RM.build_T(Phi_n[:, :sub_M], G[:, :sub_R], N, chunk=T_CHUNK)
-    t_fft = T_n[:sub_M, :sub_R, :sub_R]
-    tf = float(np.linalg.norm(t_direct - t_fft) / np.linalg.norm(t_direct))
-    gate(report, 'R-TFFT', tf <= 1e-12, rel=tf, sub_M=sub_M, sub_R=sub_R)
     t0 = time.perf_counter()
-    T_p = RM.build_T_fft(ids_p, Vpod, N, block=T_BLOCK)
+    T_p = RM.build_T(Phi_p, Vpod, N, chunk=T_CHUNK)
     report['tensor'] = dict(neural=dict(M=M_neural, R=R, seconds=t_tn, bytes=int(T_n.nbytes)),
                             pod=dict(M=M_pod, k=int(Vpod.shape[1]), seconds=time.perf_counter() - t0,
                                      bytes=int(T_p.nbytes)))
@@ -362,10 +293,37 @@ def main():
     report['subjects'] = [{k: v for k, v in s.items() if k not in ('query', 'ops')} for s in subjects]
     dump(report)
 
-    # ---- FOM ladder FIRST: the same-job full-order controls are the campaign's scarcest
-    # number, so they are produced before the ROM arms can exhaust the wall clock.
+    # ---- timed invocations: reps outermost, cases, subjects innermost in AB/BA order
     w0s = [jnp.asarray(Uref[c, 0].reshape(N, N)) for c in range(len(phys_dev))]
     nus = [float(p[12]) for p in phys_dev]
+    saved = {}
+    for rep in range(REPS + 1):                                    # rep 0 = warm/compile, untimed
+        for c in range(len(phys_dev)):
+            order = subjects if (rep + c) % 2 == 0 else list(reversed(subjects))
+            for s in order:
+                RM.burn(BURN)
+                t0 = time.perf_counter()
+                out = s['query'](w0s[c], nus[c], s['ops'])
+                jax.block_until_ready(out)
+                sec = time.perf_counter() - t0
+                fields, it, rn, reason, W, icit, icreason, gn, icgn, icrn = host(out)
+                err = RM.errors(fields[EVAL_IDX], Uref[c, EVAL_IDX].reshape(len(EVAL_IDX), N, N))
+                inv = dict(subject=s['name'], case=c, rep=rep, timed=rep > 0, seconds=sec, **err,
+                           iterations_total=int(it.sum()), iterations_max=int(it.max()),
+                           reasons={str(k): int(v) for k, v in zip(*np.unique(reason, return_counts=True))},
+                           budget_exits=int((reason == 0).sum()), worst_step_gradient=float(gn.max()),
+                           ic_iterations=int(icit), ic_reason=int(icreason), ic_residual=float(icrn),
+                           finite=bool(np.isfinite(fields).all()))
+                report['invocations'].append(inv)
+                if rep == REPS:
+                    saved[(s['name'], c)] = fields[EVAL_IDX]
+                log(f'INV rep{rep} case{c} {s["name"]:14s} {sec:8.3f}s worst_ev {err["worst_evolved"]:.3e} '
+                    f't0 {err["t0"]:.3e} budget_exits {inv["budget_exits"]}')
+            dump(report)
+    np.savez_compressed(OUT / f'rom_fields_N{N}.npz',
+                        **{f'{k[0]}__case{k[1]}': v for k, v in saved.items()})
+
+    # ---- FOM ladder, timed in the same job with the same contract
     for ntol in FOM_NTOLS + [NTOL]:
         ltol = 0.1 * ntol if ntol > NTOL else LTOL
         run, _ = F.make_fom(N, DT, NSTEPS, OUT_EVERY)
@@ -388,36 +346,6 @@ def main():
         jax.clear_caches()
         dump(report)
 
-
-    # ---- timed invocations: reps outermost, cases, subjects innermost in AB/BA order
-    saved = {}
-    for rep in range(REPS + 1):                                    # rep 0 = warm/compile, untimed
-        for c in range(len(phys_dev)):
-            order = subjects if (rep + c) % 2 == 0 else list(reversed(subjects))
-            for s in order:
-                RM.burn(BURN)
-                t0 = time.perf_counter()
-                out = s['query'](w0s[c], nus[c], s['ops'])
-                jax.block_until_ready(out)
-                sec = time.perf_counter() - t0
-                fields, it, rn, reason, W, icit, icreason, gn, icgn, icrn = host(out)
-                err = RM.errors(fields[EVAL_IDX], Uref[c, EVAL_IDX].reshape(len(EVAL_IDX), N, N))
-                inv = dict(subject=s['name'], case=c, rep=rep, timed=rep > 0, seconds=sec, **err,
-                           iterations_total=int(it.sum()), iterations_max=int(it.max()),
-                           reasons={str(k): int(v) for k, v in zip(*np.unique(reason, return_counts=True))},
-                           budget_exits=int((reason == 0).sum()), worst_step_gradient=float(gn.max()),
-                           ic_iterations=int(icit), ic_reason=int(icreason), ic_residual=float(icrn),
-                           finite=bool(np.isfinite(fields).all()))
-                report['invocations'].append(inv)
-                # every rep overwrites, so a truncated job still has the latest complete
-                # fields for every subject/case it reached (accuracy is read from the last
-                # TIMED rep present in result.json, which the audit re-derives)
-                saved[(s['name'], c)] = fields[EVAL_IDX]
-                log(f'INV rep{rep} case{c} {s["name"]:14s} {sec:8.3f}s worst_ev {err["worst_evolved"]:.3e} '
-                    f't0 {err["t0"]:.3e} budget_exits {inv["budget_exits"]}')
-            np.savez_compressed(OUT / f'rom_fields_N{N}.npz',
-                                **{f'{k[0]}__case{k[1]}': v for k, v in saved.items()})
-            dump(report)
     # ---- aggregates and the pre-registered verdict
     def agg(name):
         inv = [i for i in report['invocations'] if i['subject'] == name and i['timed']]
@@ -433,46 +361,6 @@ def main():
                     finite=bool(all(i['finite'] for i in last.values())))
     names = [s['name'] for s in subjects] + [f'fom_ntol{v:g}' for v in FOM_NTOLS + [NTOL]]
     report['aggregates'] = {n: agg(n) for n in names}
-    # ---- three-layer error decomposition (recorded after aggregates) ----------
-    # Layer 1 BANK   : best possible in the bank span            (representation)
-    # Layer 2 MANIFOLD: best found on the rung's own manifold    (+ head/correction restriction)
-    # Layer 3 SOLVE  : what the ROM actually achieved            (+ projection/time-stepping)
-    # Same states, same normalisation as every reported error, so the three are comparable and
-    # a negative result says WHICH layer costs the accuracy.
-    report['decomposition'] = {}
-    Xd = jnp.asarray(np.concatenate([Uref[c, EVAL_IDX] for c in range(len(phys_dev))]))
-    n0d = np.repeat([np.linalg.norm(Uref[c, 0]) for c in range(len(phys_dev))], len(EVAL_IDX))
-    perp = np.asarray(jnp.linalg.norm(Xd - (Xd @ Qb) @ Qb.T, axis=1))
-    Ct = np.asarray(jnp.linalg.solve(Rb, Qb.T @ Xd.T).T)
-    for q in Q_LADDER:
-        Cq = Cdir[:, :q]
-        head_q = (lambda w, Cq=Cq: D.head(params, w[:K]) + Cq @ w[K:]) if q else \
-                 (lambda w: D.head(params, w))
-        # best-found fit on the rung's own manifold: multi-start LM from the best-scoring
-        # training codes with a zero correction block (oracle_fit scores with head_q(z, 0)
-        # = head(z), the same rule as the query-time initialiser); one jit per rung
-        Zc = np.concatenate([np.asarray(Zcand), np.zeros((len(Zcand), q))], 1) if q else np.asarray(Zcand)
-        Wq, rn, its, reasons = D.oracle_fit(head_q, Rb, jnp.asarray(Ct), Zc, n_starts=RES_STARTS,
-                                           budget=RES_BUDGET, gtol=GTOL)
-        # reported in FIELD space (DESIGN §A4), the whitened formula kept beside it
-        Hq = jax.jit(jax.vmap(head_q))(jnp.asarray(Wq))
-        man = np.asarray(jnp.linalg.norm(Hq @ G.T - Xd, axis=1)) / n0d
-        man_formula = np.sqrt(np.asarray(rn) ** 2 + perp ** 2) / n0d
-        bank = perp / n0d
-        report['decomposition'][f'q{q}'] = dict(
-            q=q, states=int(len(man)), starts=RES_STARTS, budget=RES_BUDGET,
-            reasons={str(k): int(v) for k, v in zip(*np.unique(reasons, return_counts=True))},
-            manifold_per_state=man.tolist(), bank_per_state=bank.tolist(),
-            formula_vs_field_worst_rel=float(np.max(np.abs(man_formula - man) / man)),
-            bank_worst=float(bank.max()), bank_median=float(np.median(bank)),
-            manifold_worst=float(man.max()), manifold_median=float(np.median(man)),
-            manifold_over_bank_median=float(np.median(man) / max(np.median(bank), 1e-300)),
-            note=('layer 3 (solve) is aggregates[neural_q%d]; bank and manifold are best-possible '
-                  'and best-found on the SAME states and normalisation' % q))
-        log(f'DECOMP q={q}: bank {np.median(bank):.3e} manifold {np.median(man):.3e} (medians)')
-        dump(report)
-
-
     ladder = [report['aggregates'][f'neural_q{q}'] for q in Q_LADDER]
     we = [x['worst_evolved'] for x in ladder]
     mono = all(b <= a * (1 + 1e-12) for a, b in zip(we, we[1:]))

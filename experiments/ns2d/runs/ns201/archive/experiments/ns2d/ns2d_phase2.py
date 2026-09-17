@@ -1,8 +1,6 @@
 """ns2d_phase2.py -- Phase 2 driver: bank + head on the regenerated dataset (DESIGN.md).
 
     K=16 R=512 TRAIN_N=256 EVAL_NS=64,128,256 STEPS=30000 LR=1e-3 BATCH=0 SEED=0
-    G_HIDDEN=<2R by default: the g-track's last layer is linear, so rank(G) <= g_hidden>
-    DEV_REF=configs/dev8_eval_ref.npz DATA_VALUE_TOL=1e-8   (B-DATA value fallback, §A4)
     EXPECT_HASHES=configs/phase1-hashes.json   (Phase-1 cohort hashes; asserted)
     ORACLE_CASES=64 ORACLE_TIMES=0,5,10,15,20,25  SMOKE=0  OUT=output
 
@@ -39,7 +37,7 @@ TRAIN_N = int(E('TRAIN_N', '256'))
 EVAL_NS = [int(v) for v in E('EVAL_NS', '64,128,256').split(',')]
 STEPS, LR, BATCH, SEED = int(E('STEPS', '30000')), float(E('LR', '1e-3')), int(E('BATCH', '0')), int(E('SEED', '0'))
 LAM_ORTH = float(E('LAM_ORTH', '1e-4'))
-ARCH = dict(n_ff=int(E('N_FF', '64')), kff=int(E('KFF', '6')), g_hidden=int(E('G_HIDDEN', str(2 * R))),
+ARCH = dict(n_ff=int(E('N_FF', '64')), kff=int(E('KFF', '6')), g_hidden=int(E('G_HIDDEN', '128')),
             g_layers=int(E('G_LAYERS', '2')), h_hidden=int(E('H_HIDDEN', '128')), h_layers=int(E('H_LAYERS', '2')))
 DT, T, OUT_EVERY = float(E('DT', '2e-3')), float(E('T', '1.0')), int(E('OUT_EVERY', '20'))
 N_TRAIN, N_DEV = int(E('TRAIN', '512')), int(E('DEV', '64'))
@@ -79,55 +77,6 @@ def gate(report, name, passed, **kw):
     log(f'GATE {name}: {"PASS" if passed else "FAIL"} ' +
         ' '.join(f'{k}={v:.3e}' if isinstance(v, float) else f'{k}={v}'
                  for k, v in kw.items() if k != 'passed' and not isinstance(v, (list, dict))))
-
-
-
-DEV_REF = E('DEV_REF', 'configs/dev8_eval_ref.npz')
-DATA_VALUE_TOL = float(E('DATA_VALUE_TOL', '1e-8'))
-
-
-def load_ref():
-    return np.load(DEV_REF) if DEV_REF and Path(DEV_REF).exists() else None
-
-
-def value_check(ref, N, U):
-    """Worst relative difference of U (cases, NOUT, n) against the archived Phase-1 first-8
-    development trajectories at the six evaluation times.  None when no reference exists."""
-    if ref is None or f'U_N{N}' not in ref.files:
-        return None, 0, 0
-    idx, Ur = ref[f'eval_idx_N{N}'], ref[f'U_N{N}']
-    n_cases = min(len(U), Ur.shape[0])
-    diff = max(float(np.linalg.norm(U[c, i] - Ur[c, j]) / np.linalg.norm(Ur[c, j]))
-               for c in range(n_cases) for j, i in enumerate(idx))
-    return diff, n_cases, len(idx)
-
-
-def data_gate(report, expect, cohort, N, U, info, ref, dev_ok=None, prefix='B-DATA'):
-    """DESIGN §A4: the regenerated cohort must equal Phase 1's by SHA256 (bit-reproducible on
-    the same node class) or, failing that, by VALUE on the archived first-8 dev trajectories
-    at the six evaluation times (<= DATA_VALUE_TOL relative per state).  The train cohort has
-    no archived fields: on a hash mismatch it passes iff the dev cohort at the same N passed
-    on this node, and the mismatch is recorded.  A smoke carries no expectation."""
-    want, got = expect.get(f'{cohort}_N{N}'), info['sha256']
-    kw = dict(expected=want, got=got, seconds=info['seconds'], mode='hash')
-    if want is None:
-        ok, kw['mode'] = bool(SMOKE), 'smoke-no-expectation'
-    elif want == got:
-        ok = True
-    else:
-        kw['hash_mismatch'] = True
-        diff, n_cases, n_states = value_check(ref, N, U) if cohort == 'dev' else (None, 0, 0)
-        if diff is not None:
-            ok = diff <= DATA_VALUE_TOL
-            kw.update(mode='value', value_worst_rel=diff, value_tol=DATA_VALUE_TOL,
-                      value_cases=n_cases, value_states=n_states)
-        elif cohort == 'train' and dev_ok is not None:
-            ok = bool(dev_ok)
-            kw.update(mode='inferred-from-dev-gate-on-this-node', dev_ok=bool(dev_ok))
-        else:
-            ok, kw['mode'] = False, 'hash-only (no reference available)'
-    gate(report, f'{prefix}_{cohort}_N{N}', ok, **kw)
-    return ok
 
 
 def git_commit():
@@ -216,23 +165,17 @@ def main():
     gate(report, 'S0', (backend == 'gpu' and jax.config.jax_enable_x64
                         and os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest') or bool(SMOKE),
          backend=backend)
-    # B-RANKCAP (DESIGN §A4): the g-track's last layer is linear over g_hidden units, so the
-    # bank's rank is at most g_hidden; a bank with g_hidden < R is structurally rank-deficient.
-    gate(report, 'B-RANKCAP', ARCH['g_hidden'] >= R, g_hidden=ARCH['g_hidden'], R=R,
-         structural_rank_bound=min(R, ARCH['g_hidden']))
-    dump(report)
-    assert ARCH['g_hidden'] >= R, 'B-RANKCAP: bank rank <= g_hidden < R (DESIGN §A4); refusing to train'
     expect = json.loads(Path(EXPECT).read_text()) if EXPECT and Path(EXPECT).exists() else {}
-    ref = load_ref()
     phys = dict(train=F.params_draw(SEEDS['train'], N_TRAIN), dev=F.params_draw(SEEDS['dev'], N_DEV))
 
-    # ---- data at the training mesh (dev FIRST: its value gate certifies this node's roundoff)
-    Udev, idev = generate(TRAIN_N, phys['dev'])
-    report['data'][f'dev_N{TRAIN_N}'] = idev
-    dev_ok = data_gate(report, expect, 'dev', TRAIN_N, Udev, idev, ref)
+    # ---- data at the training mesh
     Utr, itr = generate(TRAIN_N, phys['train'])
-    report['data'][f'train_N{TRAIN_N}'] = itr
-    data_gate(report, expect, 'train', TRAIN_N, Utr, itr, ref, dev_ok=dev_ok)
+    Udev, idev = generate(TRAIN_N, phys['dev'])
+    report['data'][f'train_N{TRAIN_N}'], report['data'][f'dev_N{TRAIN_N}'] = itr, idev
+    for name, info in (('train', itr), ('dev', idev)):
+        want = expect.get(f'{name}_N{TRAIN_N}')
+        gate(report, f'B-DATA_{name}_N{TRAIN_N}', (want is None and bool(SMOKE)) or want == info['sha256'],
+             expected=want, got=info['sha256'], seconds=info['seconds'])
     dump(report)
     log(f'DATA train {Utr.shape} dev {Udev.shape} in {itr["seconds"]+idev["seconds"]:.0f}s')
 
@@ -270,7 +213,9 @@ def main():
         else:
             Ud, info = generate(N, phys['dev'])
             report['data'][f'dev_N{N}'] = info
-            data_gate(report, expect, 'dev', N, Ud, info, ref)
+            want = expect.get(f'dev_N{N}')
+            gate(report, f'B-DATA_dev_N{N}', (want is None and bool(SMOKE)) or want == info['sha256'],
+                 expected=want, got=info['sha256'])
         G = D.bank_on_grid(params, N)
         Qb, Rb = jnp.linalg.qr(G, mode='reduced')
         d = jnp.abs(jnp.diag(Rb))
@@ -304,17 +249,10 @@ def main():
         t0 = time.time()
         Zo, rn, its, reasons = D.oracle_fit(head_fn, Rb, Cc, Z, n_starts=ORACLE_STARTS,
                                             budget=ORACLE_BUDGET)
-        e_or_formula = np.sqrt(rn ** 2 + perp ** 2) / n0                            # whitened-metric formula
+        e_or = np.sqrt(rn ** 2 + perp ** 2) / n0                                    # field error incl. floor
         # single-start initialiser (the query-time policy): best-scoring code only
         Z1, rn1, its1, r1 = D.oracle_fit(head_fn, Rb, Cc, Z, n_starts=1, budget=ORACLE_BUDGET)
-        e_1_formula = np.sqrt(rn1 ** 2 + perp ** 2) / n0
-        # DESIGN §A4: the REPORTED errors are evaluated directly in field space,
-        # ||G h(z) - u|| / ||u_case(0)||, which does not pass through Rb^{-1} (a rank-deficient
-        # bank makes the whitened formula cancel catastrophically; ns201 measured <= 1.1e-2).
-        def field_err(Zs):
-            H = jax.jit(jax.vmap(head_fn))(jnp.asarray(Zs))
-            return np.asarray(jnp.linalg.norm(H @ G.T - Xd, axis=1)) / n0
-        e_or, e_1 = field_err(Zo), field_err(Z1)
+        e_1 = np.sqrt(rn1 ** 2 + perp ** 2) / n0
         # POD-K linear floor on the SAME states, same normalisation
         Vk = (Vpod if N == TRAIN_N else Vn)[:, :K]
         e_podk = np.asarray(jnp.linalg.norm(Xd - (Xd @ Vk) @ Vk.T, axis=1)) / n0
@@ -328,9 +266,7 @@ def main():
                   oracle_iters_median=float(np.median(its)), oracle_reasons={str(k): int(v) for k, v in
                                                                             zip(*np.unique(reasons, return_counts=True))},
                   seconds=time.time() - t0, per_state_oracle=e_or.tolist(), per_state_single=e_1.tolist(),
-                  per_state_podK=e_podk.tolist(), per_state_bank=e_bank.tolist(),
-                  formula_vs_field_worst_rel=float(np.max(np.abs(e_or_formula - e_or) / e_or)),
-                  per_state_oracle_formula=e_or_formula.tolist(), per_state_single_formula=e_1_formula.tolist())
+                  per_state_podK=e_podk.tolist(), per_state_bank=e_bank.tolist())
         report['oracle'][str(N)] = oi
         gate(report, f'H-ORACLE_N{N}', oi['oracle_median'] <= 0.5 * oi['podK_median']
              and oi['oracle_median'] >= oi['bank_floor_median'] * (1 - 1e-9),
@@ -341,7 +277,7 @@ def main():
              single_start_median=oi['single_start_median'], oracle_median=oi['oracle_median'])
         np.savez_compressed(OUT / f'oracle_N{N}.npz', Z=Zo, Z1=Z1, cases=np.asarray(cases),
                             times=np.asarray(ORACLE_TIMES), e_oracle=e_or, e_single=e_1, e_podK=e_podk,
-                            e_bank=e_bank, n0=n0, e_oracle_formula=e_or_formula, e_single_formula=e_1_formula)
+                            e_bank=e_bank, n0=n0)
         dump(report)
         del G, Qb, Rb, Xd, Cc
         jax.clear_caches()

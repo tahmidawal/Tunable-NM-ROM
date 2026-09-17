@@ -12717,3 +12717,92 @@ Branch `exp/2026-09-17-w-ladder`, worktree `worktrees/2026-09-17-w-ladder`, fork
 
 **Open.** (1) The sealed final cohort is untouched; every number here is development-cohort. (2) Absorbing boundaries were out of scope. (3) The learned bank losing to POD at matched rank deserves its own look — it bears on every cell that uses this bank, not just waves. (4) The $q=16/32$ fallback cost is a solver artefact that a better-conditioned parameterisation would remove; nobody should quote those milliseconds as the cost of enrichment in principle.
 
+
+## 2026-09-17
+
+### lshape — the L-shape bank clears its 1.0 % floor target and the corner is not what limits it; the head misses its 1.2 % bar on every arm; solve jobs queued
+
+**Where it ran.** Branch `exp/2026-09-17-lshape`, worktree `worktrees/2026-09-17-lshape`,
+namespace `/cluster/tufts/paralab/tawal01/lshape_20260917/`, paper table T18. Training job
+`3783786` (`lsh02`, A100 80GB PCIe on `pax050`, COMPLETED 0:0, 51m45s, `jax_backend=gpu`, x64,
+matmul `highest`, JAX 0.10.2, source commit `1086ccef`). Solve jobs `3784662` (N=64,128),
+`3784663` (N=256), `3784664` (N=512) submitted 10:31 EDT, one attempt directory each, all
+three PENDING on `QOSMaxGRESPerUser` behind four other campaign jobs. Four of the lane's
+eight-job cap used.
+
+**What was found — the bank layer (worst development floor, N=512).** `enrich_R512` 0.6650 %,
+`smooth_R512` 0.7093 %, `sdf_R512` 0.7698 %, `smooth_R256` 1.5057 %, `sdf_R256` 1.5626 %,
+`smooth_ff128s2_R512` 2.5388 %. The pre-registered bank target (< 1.0 %) **passes**, and the
+parent square cell's floor was 0.7419 %, so the L-shape costs the bank essentially nothing.
+
+**The pre-registered falsification is not triggered, and the answer is informative.** It needed
+every smooth arm above 1.5 % at N=512 *and* enrichment helping by more than 1.5×. Measured:
+smooth_R512 is at 0.709 %, and the two exact $r^{2/3}$/$r^{4/3}$ corner columns buy only
+1.067×. **The re-entrant corner singularity is not what limits this decoder** — that was the
+cell's central open question and it is answered in the negative.
+
+**The boundary factor: the pre-registered expectation was wrong, and the two cohorts disagree.**
+§4 predicted the smooth R-function factor would beat the signed-distance factor at equal $R$,
+because the SDF has gradient kinks on the medial axis. On the *selection* cohort (256 sources,
+worst floor, the rule) `sdf_R512` wins at 1.6155 % against `smooth_R512` 1.9344 % — so the rule
+selected `sdf_R512`. On the *development* cohort the order reverses (smooth 0.7093 % vs sdf
+0.7698 %), and sdf's median is 2.3–2.6× worse than smooth's on both cohorts. **The selection
+rule and the development ranking disagree**, which the DESIGN's honesty clause requires be
+reported, and it is, in the report and in `selection.bank.development_ranking_agrees = false`.
+Read plainly: the factors are within ~1.1× of each other and the ranking is cohort-dependent;
+the SDF kinks cost median accuracy but not worst-case.
+
+**The feature lever loses badly.** $n_{\rm ff}=128$ at scale 2 gives 2.5388 % against 0.7093 %
+for 64/scale 4 — 3.6× worse — and produces a bank with cond 8.9e9 against 2.4e5.
+
+**The head layer misses its target on every arm.** Worst development best-found / bank floor:
+2.24× (`sdf_R256`), 2.31× (`smooth_R256`), 4.10× (`sdf_R512_K32`), 4.97× (`sdf_R512_K16`),
+5.04× (`smooth_R512`), 5.77× (`enrich_R512`), 2.67× (`ff128s2`) — against a 1.2× bar. The
+parent square cell missed the same bar at 4.2–4.5×, so this is inherited, not corner-induced.
+$K=32$ helps (3.18 % vs 3.86 % worst-case on the same bank). All 32 development solves exit
+stationary (reason 4) on all seven arms, and the untimed weak solve reproduces the multistart
+best-found to four digits everywhere. Note the tail: validation worst (461 cases) is 10.7–16.7 %
+against development worst (32 cases) 3.5–6.8 %; the 32-case cohort understates the tail and the
+report says so.
+
+**Cell success criterion 1 is on track but not yet earned:** the untimed solve of
+`head_sdf_R512_K32` at N=256 is 3.18 % worst-case against the < 5.0 % bar, but the criterion is
+about the *timed* solve, which does not exist until `3784663` lands.
+
+**What was wrong and retracted.**
+- **`lsh01` (job `3780148`) is retracted in full** and no number from it is reported. It
+  aborted after seven of eight head arms on a basis-orthonormality gate inherited from the
+  parent, where the correction basis has $q_{\max}=32$; this cell raised $q_{\max}$ to 128
+  without rescaling the absolute Frobenius bound, so round-off alone exceeded it
+  (1.8455e-8 measured, 1.63e-9 per column). Gate rescaled per column (§A3), job rerun
+  identically as `lsh02`. Archived at `experiments/lshape/artifacts/lsh01/`.
+- **The independent audit's bank-floor gate was wrong and is now absolute (§A4).** The audit of
+  `lsh02` failed `bank_floors_reproduced` at 5.236e-6 relative against an inherited 1e-8 bound.
+  Diagnosis, not a silenced gate: two NumPy routes (QR and SVD) on identical features agree to
+  1.14e-14, so the floor is not cancellation-limited; the driver-vs-audit difference instead
+  tracks each bank's cond(G) across four decades (2.5e-10 at cond 1.3e4, 5.2e-6 at cond 8.9e9)
+  and is a near-constant 1.4e4–2.0e5 multiple of a one-$\varepsilon$ feature perturbation at
+  every arm. It is the cross-machine GPU-vs-CPU `exp`/`sin`/matmul difference (~1e-12) amplified
+  by conditioning — the landmine the lane protocol already lists. The deciding bound is now
+  absolute at 1e-6, i.e. it may not move the last reported digit; measured worst 4.723e-8, which
+  is 1.8e4× smaller than the closest gap in the bank ranking. **No floor, ranking, selection or
+  criterion moved, and `lsh02` stands.** The relative number and cond(G) are both still printed.
+- **The Codex audit did not happen**, at either required point. Quota exhausted until
+  2026-09-19 11:33; a substitute review agent was killed by an API limit (§A1). Substitutes:
+  the CPU-only checks in §A1 and `reports/self-audit-lsh02.md` (§A5), which lists each claim,
+  the field it rests on, the check run, and — deliberately — which checks are weak and which
+  have actually fired.
+
+**What is open.** The entire solve layer: the error–cost plane, the correction ladder
+$q\in\{0,32,64,128\}$, POD-LSPG at five ranks, and the six full-order comparators
+(`fom_splu`, GPU CG at three tolerances, IC(0)-PCG at two). **The headline question — whether
+any reduced arm is non-dominated once a sparse direct solve is in the same job, on the one
+domain where reviewer GwrW's DST competitor does not exist — is unanswered until
+`3784662`/`3`/`4` land.** The $q=R$ free-bank rung is not constructible for either primary
+($R=514$ against $M=257$ test modes) and the report says so rather than omitting it.
+
+**Paths.** `experiments/lshape/DESIGN.md` (§A1–A5), `reports/2026-09-17-lshape.md`,
+`reports/summary.json` (45 rows), `reports/self-audit-lsh02.md`,
+`artifacts/lsh02/` (bounded chunks, restore-verified), `checkpoints/lsh02/` (7 heads + bases,
+Git-tracked), `checks/floor_diag.py`, `checks/floor_sens.py`. Remote `lsh02` deleted after the
+archive was restored and re-verified; paralab at 92 %.

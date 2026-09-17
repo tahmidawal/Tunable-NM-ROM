@@ -12360,3 +12360,18 @@ Raw archive `bqx101` Git-tracked as bounded chunks: whole SHA256 `fb4a39e21b6e3f
 Raw archive `bqx201` Git-tracked as bounded chunks: whole SHA256 `b447b3ab0bdd88d3aa6ef8ec7fb60449db34e8a47a64ead1d8f3d115cc165a97` (8 chunks).
 Raw archive `bqx301` Git-tracked as bounded chunks: whole SHA256 `721d56b1dcf82b2b22343c737f62e741e9099c61eb36022f840bf2add569f469` (8 chunks).
 
+
+## 2026-09-17
+### b-qxm addendum — one more retraction, after the entry above was appended
+
+The entry above lists the lane's retractions as they stood when it was generated. One more was
+found immediately afterwards and belongs with them: **a number hand-typed into
+`experiments/b-qxm/DESIGN.md` §A2 was wrong.** The solver control's evolved-metric agreement
+was written as $4.7\times10^{-14}$ from memory; read from `summary.json` it is exactly $0.0$ —
+the Gauss–Jordan and LU solves of the $(32, 1088)$ cell agree to the last bit, at
+$0.9999\times$ the cost. Corrected in place at commit `955c04f1`, which also records it in
+`experiments/b-qxm/checks/retractions.md`; the paragraph now quotes the generated value. No
+reported result moved — the tables, the report and the entry above are all generated from the
+audit JSONs, and the wrong figure never reached any of them — but the project's rule against
+hand-typing numbers into prose earned its place again, in a lane whose own report generator
+exists to enforce it.

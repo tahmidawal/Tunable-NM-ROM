@@ -415,3 +415,81 @@ it fires on `code/checkpoints.json`. The science of §A5 is unchanged: `res02` i
 Self-audit substitution (Codex quota until 2026-09-19 11:33): this amendment and the record
 above were checked by the author against the pulled logs; the verbatim error line in
 `FAILURE.json` is copied programmatically from `logs-failed/resolution.log`.
+
+## §A8 — res02 result: the §A5 falsification clause fires for the FNO (2026-09-17)
+
+Job `3787189` (`res02`, pax049, A100-80G, COMPLETED 0:0 in 2 m 14 s — evaluation only, no
+training, so a short run is expected). `jax_backend=gpu`, `torch_backend=cuda`, 395 data files
+and 3/3 checkpoints hash-verified in-job, resolution smoke on every rung for all three
+families, prolongation check against `engines.output_field` = 0.0, cohort rebuilt 8/8,
+`ALL-DONE`. Collected with checksums verified on both sides, audited by
+`audit_resolution.py` (independent NumPy recomputation of every error from the saved
+prolonged fields, every floor from the references, every timing median from the retained
+30×8 repetition arrays), archived as 31 Git parts, remote directory deleted. The `ckpt01`
+checkpoint upload was deleted with it: `res02` was its only consumer and all three
+checkpoints are in Git archives (this lane's `unet01`/`tsol01`, the parent lane's
+`fno_burgers02`, and the `res02` archive itself).
+
+**Gates.** Top-rung gate: at 256 intervals every checkpoint reproduces its published
+worst-over-evolved and worst-over-all validation numbers with gap **0.0** (`fno-large` 6.3825 %,
+`unet-refine` 7.5176 %, `tsol-refine` 9.3183 %; tolerance 1e-9). Interpolation floor,
+validation-32, worst over evolved times: 0.2255 % @128, 0.9233 % @64, 4.0157 % @32.
+
+**Labels, applied literally as pre-registered (validation-32, same job, same GPU, within each
+model's own curve).**
+
+| checkpoint | rung | worst evolved | error ratio vs own 256 | median device query | speedup vs own 256 | error gate ≤2× | speed gate ≥1.5× |
+| --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| `fno-large` | 128 | 7.2993 % | 1.14× | 3.463 ms | 2.12× | pass | pass |
+| `fno-large` | 64 | 9.8214 % | 1.54× | 3.438 ms | 2.14× | pass | pass |
+| `fno-large` | 32 | 13.8510 % | 2.17× | 3.326 ms | 2.21× | fail | pass |
+| `unet-refine` | 128 | 38.1348 % | 5.07× | 2.347 ms | 2.51× | fail | pass |
+| `tsol-refine` | 128 | 15.2905 % | 1.64× | 8.151 ms | 1.37× | pass | fail |
+
+`fno-large` is **R-USABLE** (rungs 128 and 64); `unet-refine` and `tsol-refine` are
+**R-DEGENERATE** at the first rung below 256. (The numbers above are copied from
+`runs/res02/audit.json` for the record; the report and `summary.json` are generated from that
+file and are authoritative.)
+
+**Consequence — binding, as written in §A5.** The clause fires. The abstract's opening
+sentence, "A learned PDE surrogate usually gives one accuracy–cost point; getting another
+means retraining", is false as stated and is withdrawn, together with its restatements (the
+introduction's existence framing of tunability and the glossary line that each neural operator
+"is one trained model giving one accuracy–cost point"). The replacement is the narrower claim
+the reviewer suggested and the report states: the correction rank $q$ is a run-time control
+with a structural meaning — it moves the reachable set from the head's image to the bank's
+span, nested trial manifolds of the same weak-residual solve, error monotone in $q$ with the
+interpolation floor at zero at every rung — which resolution scaling of an operator is not.
+What the operator's curve actually looks like is also on record, generated from the rows:
+one step (256→128) buys the whole speedup (2.12×) at 1.14× error, and below 128 the query is
+launch-bound (3.46 → 3.44 → 3.33 ms) while the error rises to 1.54× and 2.17×, tens of times
+above the interpolation floor. Three families, one ladder, one PDE, one seed — evidence about
+these checkpoints, not a theorem; and neither outcome licenses any speed claim against the
+ROM or the FOM.
+
+**Code changes in this session (all committed, none touching the science).**
+- `audit_resolution.py`: timing entries now also carry p05/p95/mean re-derived from the
+  retained samples and the timed-region definition. No gate changed.
+- `reports/generate_report.py`: (i) `load_attempts` skipped nothing that lacked `spec` and so
+  crashed on the resolution audit — a latent bug that could not show before `res02` landed;
+  resolution audits (no `arms`) are now skipped there. (ii) The known `summary.json` defect:
+  operator metadata keyed by `arm` alone collided across the Burgers FNO job `3710846` and the
+  Poisson FNO job `3702464` (`fno-large` etc. in both). Every row now carries `pde`, an explicit
+  `key = arm|job_id` and, where epochs are known, `still_improving`; the `(key, cohort, metric)`
+  triple is asserted unique, and the Burgers-FNO still-improving count is asserted to equal the
+  number of FNO arms (4 of 4, as the report states). Poisson-FNO rows now take epochs, best
+  epoch and stop reason from the pinned `checks/fno-poisson-run-metadata.json` instead of
+  `None`. (iii) The resolution section reports both cohorts (validation-32 and diagnosis-8),
+  worst and median, the floor on each, the p05–p95 timing spread, per-rung gate flags, a
+  generated curve-shape sentence per operator, and the withdrawal text above.
+
+**Self-audit substitution (Codex quota until 2026-09-19 11:33).** `reports/self-audit-resolution.md`
+lists each claim of the resolution section, the JSON field it rests on and the check run,
+including a spot-check that recomputes the decisive `fno-large`/`unet-refine`/`tsol-refine`
+128-vs-256 ratios directly from the archived `.npz` fields and timing samples without importing
+`audit_resolution.py`. Codex should re-audit the report against the raw JSONs after
+2026-09-19 11:33 if the lane is still open.
+
+**Job count.** Counted: `unet01`, `tsol01`, `pois02`, `ctrl01`, `res02` = 5 of 8; `pois01` and
+`res01` were preamble deaths with zero science GPU time and do not count (rule 13). `ctrl01`
+(`3783831`) is still running and stays pending.

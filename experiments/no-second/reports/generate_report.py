@@ -71,6 +71,8 @@ def load_attempts(pde='burgers', controls=False):
     attempts = []
     for path in sorted(LANE.glob('runs/*/audit.json')):
         audit = json.loads(path.read_text())
+        if 'arms' not in audit:  # a resolution-ladder audit (DESIGN §A5) carries `labels`, not training arms
+            continue
         if audit.get('passed') and audit.get('pde', 'burgers') == pde and is_control(audit) == controls:
             attempts.append(dict(audit=audit, path=path, sha=sha(path)))
     return attempts
@@ -461,11 +463,22 @@ def resolution_rows():
                                          value=m[block]['median']))
                 fl = a['interpolation_floor'][f'validation@{rung}']['worst_over_evolved_times']['maximum']
                 rows.append(dict(base, cohort='validation-32', metric='interpolation_floor_worst_evolved', value=fl))
+                fd = a['interpolation_floor'][f'diagnosis@{rung}']['worst_over_evolved_times']['maximum']
+                rows.append(dict(base, cohort='diagnosis-8', metric='interpolation_floor_worst_evolved', value=fd))
                 rows.append(dict(base, cohort='validation-32', metric='same_job_device_query_pooled_median_ms',
                                  value=t['device_query_pooled_median_ms']))
+                for q in ('p05', 'p95'):
+                    if f'device_query_{q}_ms' in t:
+                        rows.append(dict(base, cohort='validation-32', metric=f'same_job_device_query_{q}_ms',
+                                         value=t[f'device_query_{q}_ms']))
                 if rung != 256:
+                    r = lab['rungs'][str(rung)]
                     rows.append(dict(base, cohort='validation-32', metric='same_job_speedup_vs_own_256',
-                                     value=lab['base_median_ms'] / t['device_query_pooled_median_ms']))
+                                     value=r['same_job_speedup']))
+                    rows.append(dict(base, cohort='validation-32', metric='worst_evolved_error_ratio_vs_own_256',
+                                     value=r['error_ratio']))
+                    rows.append(dict(base, cohort='validation-32', metric='meets_error_gate_2x', value=r['meets_error_gate']))
+                    rows.append(dict(base, cohort='validation-32', metric='meets_speed_gate_1p5x', value=r['meets_speed_gate']))
     return rows
 
 
@@ -483,22 +496,56 @@ def resolution_section():
     for a, path in audits:
         jobs = f"`{a['job_id']}` ({a['attempt']}, {a['gpu']}, commit `{a['source_commit'][:8]}`)"
         gate = '; '.join(f"`{k}` {v['gap_evolved']:.2e}" for k, v in a['top_rung_gate'].items())
-        rows = ['| Operator | Rung (intervals) | Worst evolved (%) | Worst all times (%) | $t=0$ term (%) | '
-                'Interp. floor, worst evolved (%) | Error / floor | Median device query (ms) | Same-job speedup vs its own 256 |',
-                '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+        def acc_table(cohort, label):
+            lines = [f'| Operator | Rung (intervals) | Worst evolved (%) | Median evolved (%) | Worst all times (%) | '
+                     f'$t=0$ term, worst (%) | Interp. floor, worst evolved (%) | Error / floor |',
+                     '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+            for entry in a['checkpoints']:
+                name = entry['name']
+                for rung in a['rungs']:
+                    m = a['models'][f'{name}@{rung}|{cohort}']
+                    fl = a['interpolation_floor'][f'{cohort}@{rung}']['worst_over_evolved_times']['maximum']
+                    ratio = f"{m['worst_over_evolved_times']['maximum'] / fl:.1f}" if fl > 0 else '—'
+                    lines.append(f"| `{name}` | {rung} | {pct(m['worst_over_evolved_times']['maximum'])} | "
+                                 f"{pct(m['worst_over_evolved_times']['median'])} | {pct(m['worst_over_all_times']['maximum'])} | "
+                                 f"{pct(m['initial_time_term']['maximum'])} | {pct(fl)} | {ratio} |")
+            return f'**{label}**\n\n' + chr(10).join(lines)
+
+        cost = ['| Operator | Rung (intervals) | Median device complete query (ms) | p05–p95 (ms) | Same-job speedup vs its own 256 | '
+                'Worst-evolved error vs its own 256 | Error gate (≤2×) | Speed gate (≥1.5×) | Label |',
+                '| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |']
         for entry in a['checkpoints']:
             name = entry['name']
             lab = a['labels'][name]
             for rung in a['rungs']:
-                m = a['models'][f'{name}@{rung}|validation']
                 t = a['models'][f'{name}@{rung}|timing']
-                fl = a['interpolation_floor'][f'validation@{rung}']['worst_over_evolved_times']['maximum']
-                ratio = m['worst_over_evolved_times']['maximum'] / fl if fl > 0 else float('inf')
-                sp = (lab['base_median_ms'] / t['device_query_pooled_median_ms']) if t['device_query_pooled_median_ms'] else float('inf')
-                rows.append(f"| `{name}` | {rung} | {pct(m['worst_over_evolved_times']['maximum'])} | "
-                            f"{pct(m['worst_over_all_times']['maximum'])} | {pct(m['initial_time_term']['maximum'])} | "
-                            f"{pct(fl)} | {ratio:.2f} | {ms(t['device_query_pooled_median_ms'])} | "
-                            f"{'1.00 (reference)' if rung == 256 else f'{sp:.2f}'} |")
+                spread = (f"{ms(t['device_query_p05_ms'])}–{ms(t['device_query_p95_ms'])}"
+                          if 'device_query_p05_ms' in t else '—')
+                if rung == 256:
+                    cost.append(f"| `{name}` | {rung} | {ms(t['device_query_pooled_median_ms'])} | {spread} | 1.00 (reference) | "
+                                f"1.00 (reference) | — | — | **{lab['label']}** |")
+                else:
+                    r = lab['rungs'][str(rung)]
+                    cost.append(f"| `{name}` | {rung} | {ms(t['device_query_pooled_median_ms'])} | {spread} | {r['same_job_speedup']:.2f}× | "
+                                f"{r['error_ratio']:.2f}× | {'pass' if r['meets_error_gate'] else 'fail'} | "
+                                f"{'pass' if r['meets_speed_gate'] else 'fail'} | {'usable rung' if r['meets_error_gate'] and r['meets_speed_gate'] else '—'} |")
+        n_rep = a['models'][f"{a['checkpoints'][0]['name']}@256|timing"]['repetitions']
+        # ---- the shape of each curve, generated: where the speed gain stops and the error keeps rising ----
+        shapes = []
+        for entry in a['checkpoints']:
+            name = entry['name']
+            lab = a['labels'][name]
+            seq = [(256, 1.0, 1.0)] + [(r, lab['rungs'][str(r)]['same_job_speedup'], lab['rungs'][str(r)]['error_ratio'])
+                                       for r in a['rungs'] if r != 256]
+            sp = ', '.join(f"{v:.2f}×" for _, v, _ in seq[1:])
+            er = ', '.join(f"{v:.2f}×" for _, _, v in seq[1:])
+            first_sp, last_sp = seq[1][1], seq[-1][1]
+            gain_below_first = last_sp / first_sp
+            shapes.append(f"- `{name}`: over rungs {', '.join(str(r) for r, _, _ in seq[1:])} the same-job speedup is {sp} "
+                          f"and the worst-evolved error is {er} its own 256 value. Below rung {seq[1][0]} the speedup moves "
+                          f"by only {gain_below_first:.2f}× more in total while the error keeps rising: the cost curve is flat "
+                          f"there (the query is launch-bound at batch 1 on this GPU), so coarsening past {seq[1][0]} buys error, "
+                          f"not speed.")
         verdicts = []
         for entry in a['checkpoints']:
             name = entry['name']
@@ -519,11 +566,31 @@ def resolution_section():
                     why.append(f"speedup is only {r['same_job_speedup']:.2f}\u00d7 (bar: \u22651.5\u00d7)")
                 verdicts.append(f"- `{name}`: **R-DEGENERATE** \u2014 already at rung {first}, " + ' and '.join(why) + '.')
         usable_any = any(v['label'] == 'R-USABLE' for v in a['labels'].values())
+        usable_names = [k for k, v in a['labels'].items() if v['label'] == 'R-USABLE']
+        usable_detail = '; '.join(
+            f"`{k}` at rung {max(a['labels'][k]['usable_rungs'])}: "
+            f"{a['labels'][k]['rungs'][str(max(a['labels'][k]['usable_rungs']))]['same_job_speedup']:.2f}\u00d7 at "
+            f"{a['labels'][k]['rungs'][str(max(a['labels'][k]['usable_rungs']))]['error_ratio']:.2f}\u00d7 its own error"
+            for k in usable_names)
+        first_rung = max(r for r in a['rungs'] if r != 256)
+        min_over_floor = min(v['rungs'][str(first_rung)]['error_over_floor'] for v in a['labels'].values())
         consequence = (
-            "**At least one operator exposes a usable inference-time accuracy\u2013cost family, so the claim that "
-            "\u201ca trained operator gives one accuracy\u2013cost point\u201d is false as stated and must be withdrawn.** "
-            "What survives is narrower and should be claimed as such: the mechanism by which the family is produced, "
-            "and the structural condition under which it holds."
+            f"**The pre-registered falsification clause fires** ({usable_detail}; bars \u22651.5\u00d7 and \u22642\u00d7). "
+            "**Withdrawn:** the abstract's opening sentence, \u201cA learned PDE surrogate usually gives one accuracy\u2013cost "
+            "point; getting another means retraining\u201d, and every restatement of it \u2014 the introduction's framing of "
+            "tunability as the *existence* of a run-time family, and the glossary line that each neural operator \u201cis one "
+            "trained model giving one accuracy\u2013cost point\u201d. A discretisation-invariant operator evaluated on a coarser "
+            "grid is a run-time accuracy\u2013cost family, exactly as Li et al. advertise, and this job measured one. "
+            "**Narrower replacement, to be claimed instead:** the correction rank $q$ is a run-time control with a "
+            "*structural* meaning \u2014 it moves the reachable set from the head's image ($q=0$) toward the bank's span "
+            "($q=R$), so each rung is a nested trial manifold of the same weak-residual solve, and error is monotone in $q$ "
+            "by construction of the family, with the interpolation floor at zero at every rung. Resolution scaling of an "
+            "operator is not that: it changes the grid the network sees, its cost floors at the launch-bound query "
+            "(the curve above is flat below the first rung), the supplied state is returned only up to the "
+            "interpolation floor, and the error at a rung is set by how far the network's off-resolution behaviour sits "
+            f"above that floor (at rung {first_rung}, the rung that decides every label, no family is closer than "
+            f"{min_over_floor:.0f}\u00d7 to it), not by a property of the model class. The paper "
+            "should contrast the two families on those terms and drop the existence claim."
             if usable_any else
             "**No operator reaches the pre-registered bar**: on this ladder the resolution knob does not buy a usable "
             "accuracy\u2013cost family for these checkpoints. That supports the \u201cone point per model\u201d framing, "
@@ -552,12 +619,23 @@ The **interpolation floor** is the error a *perfect* operator would incur at tha
 reference itself restricted and prolonged back \u2014 so "error / floor" separates the grid's limit
 from the model breaking off-resolution.
 
-{chr(10).join(rows)}
+{acc_table('validation', 'Accuracy on the 32 held-out validation cases (the cohort the labels are decided on)')}
 
-Speedups in the last column are **same-job, same-GPU, and only ever within one model's own curve**;
-no ratio is formed against another job, another allocation, the ROM or the FOM.
+{acc_table('diagnosis', 'Accuracy on the matched eight-case ROM/FOM diagnosis cohort, same reference on the common 256-interval grid')}
+
+**Cost, same job, same GPU.** The timed region is the parent lane's device query: on-device supplied field
+and parameters to the on-device *complete* six-time trajectory, {n_rep[1]} timed repetitions after a
+{a.get('burn_in_per_block', 20)}-query burn-in on each of {n_rep[0]} cases, every repetition retained
+(`timing-*.npz`); the device-to-host copy is not included. Speedups are **only ever within one model's own
+curve**; no ratio is formed against another job, another allocation, the ROM or the FOM.
+
+{chr(10).join(cost)}
 
 {chr(10).join(verdicts)}
+
+**What each curve looks like** (generated from the same rows):
+
+{chr(10).join(shapes)}
 
 {consequence}
 """)
@@ -830,6 +908,9 @@ tables below are separated by job and only rows inside one table may be compared
 - **Interpolation floor:** the error a perfect operator would still incur at that rung, obtained by restricting the reference itself to the rung and prolonging it back. **Error / floor** is how much worse than that floor a model actually is.
 - **Same-job speedup:** a model's median device query at 256 divided by its median at that rung, both measured in the same job on the same GPU. Never a cross-job ratio.
 - **R-USABLE / R-DEGENERATE:** the pre-registered labels — usable if some rung is ≥1.5× faster than the model's own 256 evaluation while staying within 2× its own 256 error; degenerate if the first rung below 256 already fails either half.
+- **Complete query / device query:** the timed region for the resolution ladder — the whole six-time trajectory produced on the GPU from an input already on the GPU; the copy back to the host is timed separately by the parent lane and not included here.
+- **Launch-bound:** the query time no longer falls when the grid shrinks because it is dominated by fixed per-kernel launch overhead, not by arithmetic on the grid.
+- **Falsification clause:** the pre-registered rule (DESIGN §A5) that if any operator is R-USABLE the paper's "one accuracy–cost point per trained operator" sentence is withdrawn.
 - **Discrete / physical candidate (Poisson):** error against the declared finite-difference training target, and against the finer evaluation-only reference solution; both are whole-field discrepancy over the field's norm.
 """
     return text
@@ -850,6 +931,27 @@ def main():
     control_attempts = load_attempts('burgers', controls=True)
     rows += rows_for(control_attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS), references=False)
     rows += resolution_rows()
+    # Operator metadata keyed by arm name alone collided across the Poisson and Burgers FNO jobs
+    # (`fno-large` etc. exist in both). Every row now carries `pde` and an explicit (arm, job) key,
+    # and the (key, cohort, metric) triple is asserted unique so a collision cannot recur silently.
+    meta_p = json.loads(FNO_POISSON_META.read_text())['arms'] if FNO_POISSON_META.exists() else {}
+    seen = set()
+    for r in rows:
+        r['pde'] = 'poisson' if str(r['cohort']).startswith('poisson') else 'burgers'
+        r['key'] = f"{r['arm']}|{r['job_id']}"
+        if r['pde'] == 'poisson' and r['operator'] == 'FNO' and r['arm'] in meta_p:
+            m = meta_p[r['arm']]
+            r['epochs'] = m['epochs_completed']
+            r['best_epoch'] = m['best_epoch']
+            r['stop_reason'] = 'wall_budget' if m['stopped_by_wall_budget'] else 'early_stopping'
+        if r['epochs'] is not None and r['best_epoch'] is not None:
+            r['still_improving'] = still_improving(r['best_epoch'], r['epochs'])
+        triple = (r['key'], r['cohort'], r['metric'])
+        assert triple not in seen, f'duplicate summary row {triple}'
+        seen.add(triple)
+    fno_burgers_improving = sorted({r['arm'] for r in rows if r['pde'] == 'burgers' and r['operator'] == 'FNO'
+                                    and r.get('still_improving')})
+    assert len(fno_burgers_improving) == len(fno['models']), fno_burgers_improving
     text = build(attempts, fno, launch, diagnosis, control_attempts)
     glossary = text.index('## Glossary')
     extra = poisson_section(poisson, fno_p).lstrip('\n') + ('\n' if poisson else '') + resolution_section().lstrip('\n')

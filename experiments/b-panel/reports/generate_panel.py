@@ -408,10 +408,9 @@ def prediction(W, au):
     W('Before `bpn201` returned, DESIGN.md §A5.2 predicted that the **top two transferred rungs (q = 128, 256) '
       'would come back uncertified**, because the then-current convention `clip(8192/M, 8, 64)` would fit them on '
       '14 and 8 reachable states — b-eqtop\'s fit-state-starvation diagnosis, not anything about the mesh. '
-      '`bpn201` (retracted) and `bpn202` (failed) both recorded exactly that: q = 0, 16, 32 primary '
-      '(ρ max 0.0180 / 0.0594 / 0.0313 on 64 / 64 / 42 states) and q = 64, 128, 256 uncertified '
-      '(0.1316 / 1.0295 / 0.4144 on 25 / 14 / 8 states) — the prediction held for the two rungs it named and the '
-      'rung below them also missed. **This job is not the same test**: DESIGN.md §A7 retired the cap, so every '
+      '`bpn201` (retracted) and `bpn202` (failed) both ran that capped refit; its per-rung values are read '
+      'here from the archived `artifacts/bpn202-failed/FAILURE.json` and appear in the second table below, '
+      'never typed into prose. **This job is not the same test**: DESIGN.md §A7 retired the cap, so every '
       'rung here is fitted on the full configured fit-state count, which is the change §A5.2 said would be made '
       'and smoked first. The table below is what the uncapped refit gives; it measures the remedy, not the '
       'prediction.\n')
@@ -420,18 +419,22 @@ def prediction(W, au):
     W(table(hdr, [[x['q'], x['M'], x['fit_states_used'], x['fit_states_available'], x['fit_state_rule'],
                    x['m_support'], x['m'], f(x['certification']['rho_max']), f(x['certification']['rho_p95']),
                    x['basis'], f(x['certified_primary']), f(x['rho_bar'])] for x in t]))
-    capped = {0: 64, 16: 64, 32: 42, 64: 25, 128: 14, 256: 8}
-    prior = {0: 0.0180, 16: 0.0594, 32: 0.0313, 64: 0.1316, 128: 1.0295, 256: 0.4144}
-    rows = [[x['q'], capped.get(x['q'], '—'), f(prior.get(x['q'])), x['fit_states_used'],
+    cap_file = Path(__file__).resolve().parents[1] / 'artifacts/bpn202-failed/FAILURE.json'
+    cap = {}
+    if cap_file.exists():
+        cap = {c['q']: c for c in json.loads(cap_file.read_text())['completed_before_crash']['rule_transfers']}
+    rows = [[x['q'], (cap.get(x['q']) or {}).get('fit_states', '—'), f((cap.get(x['q']) or {}).get('rho_max')),
+             (cap.get(x['q']) or {}).get('basis', '—'), x['fit_states_used'],
              f(x['certification']['rho_max']), x['basis'], f(x['certified_primary'])] for x in t]
+    n_cap = sum(1 for x in t if (cap.get(x['q']) or {}).get('rho_max', 1e9) <= x['rho_bar'])
     W('\nAgainst the capped refit the retracted attempts recorded (archived in `artifacts/bpn201-retracted/` and '
       '`artifacts/bpn202-failed/`; those values enter no other table):\n')
-    W(table(['q', 'capped fit states (bpn201/bpn202)', 'capped ρ max', 'uncapped fit states (this job)',
+    W(table(['q', 'capped fit states (bpn202)', 'capped ρ max', 'capped basis', 'uncapped fit states (this job)',
              'uncapped ρ max', 'uncapped basis', 'certified primary'], rows))
     good = [x for x in t if x['certified_primary']]
     named = [x for x in t if x['q'] in (128, 256)]
     W(f"\n{len(good)} of {len(t)} transferred rungs certify on the primary bar in this job under the uncapped "
-      f"count, against 3 of 6 under the capped one. Rungs still not primary-certified: "
+      f"count, against {n_cap} of {len(t)} under the capped one. Rungs still not primary-certified: "
       + (', '.join(f"q = {x['q']} (ρ max {f(x['certification']['rho_max'])}, basis {x['basis']})"
                    for x in t if not x['certified_primary']) or 'none') + '.\n')
     if named:
@@ -444,10 +447,12 @@ def prediction(W, au):
           + f"{len(held)} of the {len(named)} named rungs are not primary-certified. "
             "Its **mechanism** does not survive this job, and that is the part to carry forward: §A5.2 blamed the "
             "fit-state starvation b-eqtop identified, and DESIGN.md §A7 removed exactly that — every rung here is "
-            f"fitted on {named[0]['fit_states_used']} states, not the 14 and 8 the capped convention gave — yet the "
+          + f"fitted on {named[0]['fit_states_used']} states, not the "
+          + ' and '.join(str((cap.get(x['q']) or {}).get('fit_states', '?')) for x in named)
+          + " the capped convention gave — yet the "
             "same rungs still miss the bar. Fit-state starvation is therefore not a sufficient explanation for the "
             "top transferred rungs at this mesh; what remains is the transfer itself (the mapped support loses "
-            "weight mass: see the support m against nonzero m column) and the 1024² reachable population. "
+            + f"weight mass: see the support m against nonzero m column) and the {au['intervals']}\u00b2 reachable population. "
             "The comparison needs that care: the capped and uncapped refits are not the same experiment, so the "
             "capped ρ column above is context, not a controlled A/B.\n")
 

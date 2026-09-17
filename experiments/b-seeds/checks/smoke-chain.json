@@ -1,0 +1,213 @@
+{
+  "stage_s": 0.5531428679823875,
+  "reused_training_outputs": true,
+  "ladder_dev_s": "reused",
+  "audit_dev": {
+    "failed": [
+      "bank_steps_done_300000",
+      "checkpoint_finite_and_shaped",
+      "head_steps_done_200000",
+      "pick_is_131072_with_27648_early",
+      "recipe_values_match_incumbent",
+      "training_data_fingerprint_matches_incumbent"
+    ],
+    "unexpected_failures": [],
+    "verdict": false,
+    "three_layer": {
+      "bank_floor_percent": 18.697351803553765,
+      "best_found_percent": 87.0340950577666,
+      "solved_all_times_percent": 87.3418237731981,
+      "solved_evolved_percent": 52.44161191138916,
+      "t0_compression_percent": 87.3418237731981,
+      "median_gpu_ms": 237.0802530203946,
+      "converged": true,
+      "incumbent_reference": {
+        "bank_floor": 0.39184464573906314,
+        "best_found": 2.544662827603365,
+        "solved_all_times": 2.562871982659394,
+        "solved_evolved": 1.888989572428414,
+        "source": "comparators/qtd02-audit.json arm q0_M64_dense (job 3757505)"
+      }
+    },
+    "ladders": {
+      "dense_m4": {
+        "monotone_evolved": true,
+        "all_converged": false,
+        "rungs": [
+          [
+            0,
+            52.4416,
+            237.08
+          ],
+          [
+            4,
+            51.0902,
+            279.63
+          ],
+          [
+            8,
+            49.3892,
+            266.59
+          ]
+        ]
+      },
+      "dense_fixedM": {
+        "monotone_evolved": true,
+        "all_converged": true,
+        "rungs": [
+          [
+            0,
+            52.4416,
+            237.08
+          ],
+          [
+            4,
+            50.9497,
+            280.59
+          ]
+        ]
+      }
+    },
+    "gates_passed": [
+      "artifacts_present",
+      "backend_gpu",
+      "bank_frozen",
+      "btq201_envelope_probe",
+      "checkpoint_sha256_consistent",
+      "checkpoint_unchanged",
+      "cohort_roles_are_development",
+      "complete",
+      "direction_cohorts_disjoint_from_evaluation",
+      "direction_prefixes_recomputed_from_artifact",
+      "directions_hashed_and_saved",
+      "directions_rank_covers_ladder",
+      "evaluation_cohort_matches_abl01_to_one_ulp",
+      "every_eq_rule_reports_validity",
+      "every_invocation_paired",
+      "every_rom_carries_exit_and_stationarity",
+      "every_subject_case_has_all_reps",
+      "final_cohort_flag_matches_cohort",
+      "fom_residuals_converged",
+      "gram_identity_and_whitening",
+      "nested_prefix_consistent",
+      "no_eq_rule_truncated",
+      "overdetermined_weak_system",
+      "precision_highest",
+      "recorded_errors_recomputed_from_saved_fields",
+      "reference_residuals",
+      "repetition_output_identical",
+      "same_grid_baseline_present",
+      "seed_is_the_declared_one",
+      "step_budget_is_600",
+      "training_complete",
+      "x64"
+    ],
+    "bitwise_probe": false
+  },
+  "ladder_sealed_s": 189.06035309296567,
+  "audit_sealed": {
+    "failed": [
+      "bank_steps_done_300000",
+      "checkpoint_finite_and_shaped",
+      "head_steps_done_200000",
+      "pick_is_131072_with_27648_early",
+      "recipe_values_match_incumbent",
+      "training_data_fingerprint_matches_incumbent"
+    ],
+    "unexpected_failures": [],
+    "verdict": false,
+    "three_layer": {
+      "bank_floor_percent": 23.657763971372123,
+      "best_found_percent": 86.42208416492521,
+      "solved_all_times_percent": 87.09633873325456,
+      "solved_evolved_percent": 59.71772199252518,
+      "t0_compression_percent": 87.09633873325456,
+      "median_gpu_ms": 134.4318239716813,
+      "converged": true,
+      "incumbent_reference": {
+        "bank_floor": 0.39184464573906314,
+        "best_found": 2.544662827603365,
+        "solved_all_times": 2.562871982659394,
+        "solved_evolved": 1.888989572428414,
+        "source": "comparators/qtd02-audit.json arm q0_M64_dense (job 3757505)"
+      }
+    },
+    "ladders": {
+      "dense_m4": {
+        "monotone_evolved": true,
+        "all_converged": true,
+        "rungs": [
+          [
+            0,
+            59.7177,
+            134.43
+          ],
+          [
+            4,
+            47.1704,
+            195.69
+          ],
+          [
+            8,
+            39.5555,
+            191.06
+          ]
+        ]
+      },
+      "dense_fixedM": {
+        "monotone_evolved": true,
+        "all_converged": true,
+        "rungs": [
+          [
+            0,
+            59.7177,
+            134.43
+          ],
+          [
+            4,
+            47.2068,
+            188.91
+          ]
+        ]
+      }
+    },
+    "gates_passed": [
+      "artifacts_present",
+      "backend_gpu",
+      "bank_frozen",
+      "btq201_envelope_probe",
+      "checkpoint_sha256_consistent",
+      "checkpoint_unchanged",
+      "cohort_roles_are_sealed",
+      "complete",
+      "direction_cohorts_disjoint_from_evaluation",
+      "direction_prefixes_recomputed_from_artifact",
+      "directions_hashed_and_saved",
+      "directions_rank_covers_ladder",
+      "every_eq_rule_reports_validity",
+      "every_invocation_paired",
+      "every_rom_carries_exit_and_stationarity",
+      "every_subject_case_has_all_reps",
+      "final_cohort_flag_matches_cohort",
+      "fom_residuals_converged",
+      "gram_identity_and_whitening",
+      "nested_prefix_consistent",
+      "no_eq_rule_truncated",
+      "overdetermined_weak_system",
+      "precision_highest",
+      "recorded_errors_recomputed_from_saved_fields",
+      "reference_residuals",
+      "repetition_output_identical",
+      "same_grid_baseline_present",
+      "sealed_cohort_disjoint",
+      "sealed_cohort_seed_and_count_declared",
+      "sealed_cohort_values_match_declared",
+      "seed_is_the_declared_one",
+      "step_budget_is_600",
+      "training_complete",
+      "x64"
+    ]
+  },
+  "seconds": 190.55705685797147,
+  "note": "64 intervals, 300 training steps per stage, 16/24 trajectories: a plumbing smoke of the staged layout, the three training scripts, the ladder driver on both cohorts and the audit; no accuracy claim. The size-dependent training gates are expected to fail here and are listed as such."
+}

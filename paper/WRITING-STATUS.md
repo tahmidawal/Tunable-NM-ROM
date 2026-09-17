@@ -29,7 +29,7 @@ the intro, related work, setup, limitations and conclusion.
 |---|---|---|
 | Abstract | `main.tex` | revision 2 of `ABSTRACT-2026-09-17.md`, verbatim |
 | 1 Introduction | `sections/intro.tex` | drafted; three contributions + methodological findings; non-claims; reviewer pointer |
-| 2 Related work | `related-work.tex` | extended (U-Net, PDEBench, Transolver; GNAT, accelerated ECSW; certification paragraph); five new bib entries written from memory, **verify before submission** (Ronneberger 2015, Takamoto 2022, Wu 2024, Carlberg 2013, Chapman 2017) |
+| 2 Related work | `related-work.tex` | extended (U-Net, PDEBench, Transolver; GNAT, accelerated ECSW; certification paragraph); five new bib entries verified 2026-09-17 against dblp/Springer (Ronneberger et al. 2015, MICCAI pp. 234–241), NeurIPS 2022 D&B proceedings (Takamoto et al.), PMLR v235 (Wu et al. 2024), JCP 242:623–647 (Carlberg et al. 2013) and IJNME 109(12):1623–1654 (Chapman et al. 2017) |
 | 3 Method | `methods.tex` | tightened; correction ladder §3.2 first-class; instance derivations + DISCREPANCY record moved to Appendix A (`sections/method-details.tex`) |
 | Fig. 1 architecture | `figures/architecture.tex` | TikZ translation of `architecture.mmd`; comparator row narrowed; `figures/architecture.png` rendered by a standalone compile for the Markdown |
 | 4 Setup | `sections/setup.tex` | drafted; T1 in |

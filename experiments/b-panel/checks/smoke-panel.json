@@ -9,10 +9,15 @@
     "Pq": true,
     "m": 320
   },
+  "duplicate_rule_set_bitwise": {
+    "arms": 4,
+    "invocations": 8,
+    "all_bitwise": true
+  },
   "baseline_saved_case": {
     "arm": "q0_M64_eqcert_g1em06",
-    "relative_l2_to_saved_case": 1.9333458553704972e-14,
-    "latent_relative_l2": 6.802101232418257e-13,
+    "relative_l2_to_saved_case": 1.7882133210747027e-14,
+    "latent_relative_l2": 8.666964302794375e-13,
     "budget_exits": 0,
     "converged": true
   },
@@ -23,13 +28,13 @@
       "m": 230,
       "certification": {
         "states": 16,
-        "rho_max": 0.09743067260032083,
-        "rho_p95": 0.09555250027584912,
-        "rho_median": 0.06427498935333141,
-        "rho_mean": 0.05664443833835247,
-        "rho_min": 0.012498690396721537
+        "rho_max": 0.09743067260033735,
+        "rho_p95": 0.0955525002759137,
+        "rho_median": 0.06427498935341727,
+        "rho_mean": 0.05664443833840056,
+        "rho_min": 0.012498690396801281
       },
-      "seconds": 46.504856179933995,
+      "seconds": 17.793938327929936,
       "basis": "primary"
     },
     {
@@ -38,19 +43,19 @@
       "m": 280,
       "certification": {
         "states": 16,
-        "rho_max": 0.060111053996123175,
-        "rho_p95": 0.059928073720704855,
-        "rho_median": 0.03060428778948278,
-        "rho_mean": 0.031496692710119935,
-        "rho_min": 0.010888056607850563
+        "rho_max": 0.060111053996424677,
+        "rho_p95": 0.05992807372098097,
+        "rho_median": 0.030604287789547747,
+        "rho_mean": 0.03149669271023979,
+        "rho_min": 0.010888056607839505
       },
-      "seconds": 51.14447348099202,
+      "seconds": 19.05534251697827,
       "basis": "primary"
     }
   ],
   "runs": {
     "smoke64": {
-      "seconds": 0.0012231019791215658,
+      "seconds": 0.002676825039088726,
       "reused_existing_output": true,
       "subjects": [
         "fft_tight",
@@ -60,10 +65,14 @@
         "q4_M80_dense_g1em06",
         "q0_M64_eqcert_g1em06",
         "q4_M80_eqcert_g1em06",
+        "q0_M64_eqdup_g1em06",
+        "q4_M80_eqdup_g1em06",
         "pod8_M32_dense",
         "pod16_M64_dense",
         "q0_M64_eqcert_g0p001",
         "q4_M80_eqcert_g0p001",
+        "q0_M64_eqdup_g0p001",
+        "q4_M80_eqdup_g0p001",
         "q0_M128_dense_g1em06",
         "free512_M1024_dense",
         "q0_M64_eqcert_g1em06_fastL4"
@@ -80,65 +89,97 @@
       "audit_failed": [],
       "arms": {
         "q0_M128_dense_g1em06": {
-          "evolved": 0.64640215720939,
-          "all": 2.3472598964769458,
-          "gpu_ms": 458.8714904966764,
+          "evolved": 0.6464021572100297,
+          "all": 2.347259896477071,
+          "gpu_ms": 206.48697903379798,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q0_M64_dense_g1em06": {
-          "evolved": 0.7644347328606406,
-          "all": 2.3472598964769458,
-          "gpu_ms": 323.13796546077356,
+          "evolved": 0.7644347328609344,
+          "all": 2.347259896477071,
+          "gpu_ms": 186.02538749109954,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q0_M64_eqcert_g0p001": {
-          "evolved": 1.1508440344407571,
-          "all": 2.347278506585395,
-          "gpu_ms": 89.57592200022191,
+          "evolved": 1.1508440344405761,
+          "all": 2.347278506585072,
+          "gpu_ms": 65.25315751787275,
           "converged": true,
           "strict": true,
           "admissible": false
         },
         "q0_M64_eqcert_g1em06": {
-          "evolved": 1.1379566710584441,
-          "all": 2.3472598964769458,
-          "gpu_ms": 90.37288499530405,
+          "evolved": 1.137956671058128,
+          "all": 2.347259896477071,
+          "gpu_ms": 85.85503150243312,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q0_M64_eqdup_g0p001": {
+          "evolved": 1.1508440344405761,
+          "all": 2.347278506585072,
+          "gpu_ms": 65.47799351392314,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q0_M64_eqdup_g1em06": {
+          "evolved": 1.137956671058128,
+          "all": 2.347259896477071,
+          "gpu_ms": 85.39110951824114,
           "converged": true,
           "strict": true,
           "admissible": false
         },
         "q4_M80_dense_g1em06": {
-          "evolved": 0.7475293460773237,
-          "all": 2.3367791278421235,
-          "gpu_ms": 333.8122600107454,
+          "evolved": 0.7475293460763088,
+          "all": 2.3367791278421706,
+          "gpu_ms": 242.73434205679223,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q4_M80_eqcert_g0p001": {
-          "evolved": 0.9854825505741066,
-          "all": 2.3367791278421235,
-          "gpu_ms": 141.7254395200871,
+          "evolved": 0.985482550574065,
+          "all": 2.3367791278421706,
+          "gpu_ms": 104.74640096072108,
           "converged": true,
           "strict": true,
           "admissible": false
         },
         "q4_M80_eqcert_g1em06": {
-          "evolved": 0.9855008930330537,
-          "all": 2.3367791278421235,
-          "gpu_ms": 257.35943601466715,
+          "evolved": 0.985500893032212,
+          "all": 2.3367791278421706,
+          "gpu_ms": 131.37613999424502,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q4_M80_eqdup_g0p001": {
+          "evolved": 0.985482550574065,
+          "all": 2.3367791278421706,
+          "gpu_ms": 105.01315846340731,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q4_M80_eqdup_g1em06": {
+          "evolved": 0.985500893032212,
+          "all": 2.3367791278421706,
+          "gpu_ms": 131.2475514714606,
           "converged": true,
           "strict": true,
           "admissible": false
         },
         "q0_M64_eqcert_g1em06_fastL4": {
-          "evolved": 1.1379566710579796,
-          "all": 2.3472598964769733,
-          "gpu_ms": 110.06525997072458,
+          "evolved": 1.137956671057956,
+          "all": 2.3472598964770914,
+          "gpu_ms": 60.5575279914774,
           "converged": true,
           "strict": true,
           "admissible": false
@@ -146,15 +187,15 @@
         "pod8_M32_dense": {
           "evolved": 66.60504263459045,
           "all": 99.02356576109675,
-          "gpu_ms": 28.088971448596567,
+          "gpu_ms": 15.133024542592466,
           "converged": true,
-          "strict": false,
+          "strict": true,
           "admissible": true
         },
         "pod16_M64_dense": {
           "evolved": 65.32931515677038,
           "all": 97.33098005252917,
-          "gpu_ms": 25.01965395640582,
+          "gpu_ms": 21.67631301563233,
           "converged": true,
           "strict": false,
           "admissible": true
@@ -162,7 +203,7 @@
         "free512_M1024_dense": {
           "evolved": 0.16347468747071403,
           "all": 0.5700538430780832,
-          "gpu_ms": 5691.077509953175,
+          "gpu_ms": 4207.745371502824,
           "converged": true,
           "strict": false,
           "admissible": true
@@ -170,7 +211,7 @@
         "dense_tight": {
           "evolved": 1.790191331924439e-14,
           "all": 1.790191331924439e-14,
-          "gpu_ms": 59.762806980870664,
+          "gpu_ms": 42.426857515238225,
           "converged": null,
           "strict": null,
           "admissible": true
@@ -178,7 +219,7 @@
         "fft_tight": {
           "evolved": 0.0,
           "all": 0.0,
-          "gpu_ms": 192.70384003175423,
+          "gpu_ms": 81.051881541498,
           "converged": null,
           "strict": null,
           "admissible": true
@@ -186,22 +227,21 @@
         "nt1e-2_dt01": {
           "evolved": 1.4285004987159995,
           "all": 1.4285004987159995,
-          "gpu_ms": 28.68091850541532,
+          "gpu_ms": 8.165823470335454,
           "converged": null,
           "strict": null,
           "admissible": true
         }
       },
       "nondominated_admissible_evolved": [
-        "pod16_M64_dense",
         "nt1e-2_dt01",
         "dense_tight",
         "fft_tight"
       ]
     },
     "smoke128": {
-      "seconds": 302.28288521501236,
-      "reused_existing_output": false,
+      "seconds": 0.0013402370968833566,
+      "reused_existing_output": true,
       "subjects": [
         "fft_tight",
         "nt1e-2_dt01",
@@ -222,33 +262,33 @@
       "audit_failed": [],
       "arms": {
         "q0_M64_dense_g1em06": {
-          "evolved": 0.7850343025282652,
-          "all": 2.3348989252243957,
-          "gpu_ms": 548.0002669501118,
+          "evolved": 0.7850343025274675,
+          "all": 2.3348989252244228,
+          "gpu_ms": 512.6616680063307,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q0_M64_eqxfer_g1em06": {
-          "evolved": 2.7333025025154076,
-          "all": 2.7333025025154076,
-          "gpu_ms": 97.5955210160464,
+          "evolved": 2.733302502516064,
+          "all": 2.733302502516064,
+          "gpu_ms": 94.20166892232373,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q4_M80_dense_g1em06": {
-          "evolved": 0.740377524777905,
-          "all": 2.3247147686854976,
-          "gpu_ms": 751.311270520091,
+          "evolved": 0.7403775247773489,
+          "all": 2.324714768685428,
+          "gpu_ms": 700.2951139584184,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q4_M80_eqxfer_g1em06": {
-          "evolved": 2.3399715405282357,
-          "all": 2.3399715405282357,
-          "gpu_ms": 146.12245501484722,
+          "evolved": 2.339971540528741,
+          "all": 2.339971540528741,
+          "gpu_ms": 137.36521202372387,
           "converged": true,
           "strict": true,
           "admissible": true
@@ -256,7 +296,7 @@
         "pod8_M32_dense": {
           "evolved": 59.02179954499219,
           "all": 92.13353888324262,
-          "gpu_ms": 24.666882527526468,
+          "gpu_ms": 22.622750548180193,
           "converged": true,
           "strict": false,
           "admissible": true
@@ -264,7 +304,7 @@
         "fft_tight": {
           "evolved": 0.0,
           "all": 0.0,
-          "gpu_ms": 107.52336750738323,
+          "gpu_ms": 106.02806101087481,
           "converged": null,
           "strict": null,
           "admissible": true
@@ -272,7 +312,7 @@
         "nt1e-2_dt01": {
           "evolved": 1.3542460923422377,
           "all": 1.3542460923422377,
-          "gpu_ms": 10.867743520066142,
+          "gpu_ms": 10.431737988255918,
           "converged": null,
           "strict": null,
           "admissible": true
@@ -285,9 +325,9 @@
     }
   },
   "report": {
-    "md_bytes": 18092,
-    "summary_rows": 346
+    "md_bytes": 31111,
+    "summary_rows": 514
   },
-  "total_seconds": 363.22205956606194,
+  "total_seconds": 34.85912429110613,
   "deviation": "two driver runs; exceeds the sub-minute rule, recorded in DESIGN.md A2"
 }

@@ -115,17 +115,24 @@ def section(W, au, tag):
     if zero:
         W('### How to read the two error columns\n')
         verb = 'sits' if len(zero) == 1 else 'sit'
+        direct = au['checks'].get('direct_reproduces_fft_tight')
         W(f"The same-grid columns measure every subject against this job's converged `fft_tight` solve, so "
           f"**{' and '.join(f'`{z}`' for z in zero)} {verb} at exactly zero there by construction** — "
-          f"`fft_tight` *is* the reference, and `dense_tight`, the same solve through a different "
-          f"preconditioner, agrees with it to "
-          f"{sci(au['checks']['direct_reproduces_fft_tight']['detail']['worst_relative'])} relative. They are "
-          f"plotted at the axis floor, and they appear on the same-grid frontier for that reason, not because "
-          f"they are free. The `worst vs ref %` column is where the full-order solvers are not free: against the "
-          f"4096-interval reference this mesh's own discretisation error is "
-          f"{f(min(disc.values()))}–{f(max(disc.values()))} % for the full-order controls, and every reduced "
-          f"subject inherits it. A reduced subject is only interesting where it is cheaper than a full-order "
-          f"solve of the accuracy it actually delivers.\n")
+          f"`fft_tight` *is* the reference"
+          + (f", and `dense_tight`, the same solve through a different preconditioner, agrees with it to "
+             f"{sci((direct.get('detail') or {}).get('worst_relative'))} relative"
+             if direct and direct.get('detail') else '')
+          + ". "
+          + ('They are' if len(zero) > 1 else 'It is')
+          + " plotted at the axis floor, and "
+          + ('they appear' if len(zero) > 1 else 'it appears')
+          + " on the same-grid frontier for that reason, not because "
+          + ('they are' if len(zero) > 1 else 'it is')
+          + f" free. The `worst vs ref %` column is where the full-order solvers are not free: against the "
+            f"{au.get('reference_mesh') or 'refined'}-interval reference this mesh's own discretisation error is "
+          + (f"{f(min(disc.values()))}–{f(max(disc.values()))} % for the full-order controls" if disc else 'reported per control')
+          + ", and every reduced subject inherits it. A reduced subject is only interesting where it is cheaper "
+            "than a full-order solve of the accuracy it actually delivers.\n")
     W('### Every subject\n')
     hdr = ['subject', 'family', 'q / k′', 'M', 'quad.', 'm', 'rule basis', 'tol', 'worst all %', 'worst evolved %',
            'median evolved %', 't=0 %', 'worst vs ref %', 'best-found %', 'solved/best-found', 'GPU ms',

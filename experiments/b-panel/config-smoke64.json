@@ -95,5 +95,21 @@
     0,
     5
   ],
-  "cohort_hash_note": "no hash gate on the GB10: cluster and GB10 NumPy differ by 1 ulp in exp (viscosity column); the fixture case is checked by VALUE in smoke_panel.py; the cluster configs keep the hash gate"
+  "cohort_hash_note": "no hash gate on the GB10: cluster and GB10 NumPy differ by 1 ulp in exp (viscosity column); the fixture case is checked by VALUE in smoke_panel.py; the cluster configs keep the hash gate",
+  "extra_rule_sets": [
+    {
+      "name": "eqdup",
+      "mesh": 64,
+      "subdir": "rules",
+      "rules": {
+        "0": {
+          "file": "rule_q0_smoke_m256.npz"
+        },
+        "4": {
+          "file": "rule_q4_smoke_m320.npz"
+        }
+      },
+      "note": "the SAME rule files under a second set name: identical rules must give identical arms, which tests the multi-set machinery of DESIGN A5.1"
+    }
+  ]
 }

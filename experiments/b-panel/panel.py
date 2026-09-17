@@ -318,39 +318,59 @@ def main():
         return dense_queries[q]
 
     # ---------------------------------------------------------- the rules ----
-    rules = {}          # q -> (ops dict with G5/Pq, info)
+    # A job may carry SEVERAL named rule sets at matched q, M and tolerance, so that a new set
+    # is measured against its predecessor INSIDE one allocation instead of across jobs
+    # (DESIGN.md A5.1). The primary set is named by whether it is used at its own mesh
+    # (`eqcert`) or transferred to another (`eqxfer`); extra sets carry their declared name.
+    sets = [dict(name=None, mesh=int(cfg['rules_mesh']), rules=cfg['rules'], subdir='rules')]
+    for es in cfg.get('extra_rule_sets', []):
+        sets.append(dict(name=es['name'], mesh=int(es['mesh']), rules=es['rules'],
+                         subdir=es.get('subdir', 'rules')))
+    names = [x['name'] for x in sets]
+    assert len(names) == len(set(names)), f'duplicate rule-set names: {names}'
+
+    rules = {}          # (set_name, q) -> (ops dict with G5/Pq, info)
     xfer = cfg.get('eq_transfer')
-    for q in cfg['eq_q']:
-        spec = cfg['rules'][str(q)]
-        rfile = inputs / 'rules' / spec['file']
-        rprov = prov[f"rules/{spec['file']}"]
-        got = sha_file(rfile)
-        assert got == rprov['sha256'], (spec['file'], got, rprov['sha256'])
-        z = np.load(rfile)
-        nodes, weights = np.asarray(z['nodes'], dtype=int), np.asarray(z['weights'], dtype=float)
-        M = 4 * (K + q)
-        assert rprov['M'] == M and rprov['q'] == q
-        info = dict(q=q, M=M, file=spec['file'], sha256=got, source_job=rprov['source_job'],
-                    source_m=int(len(nodes)), source_mesh=int(cfg['rules_mesh']),
-                    source_rho_max=rprov['rho_max'], source_rho_p95=rprov['rho_p95'],
-                    source_relative_fit=rprov['relative_fit'], rho_bar=rprov['rho_bar'],
-                    certified_primary=rprov['certified_primary'], certified_secondary=rprov['certified_secondary'],
-                    basis=('primary' if rprov['certified_primary'] else
-                           'secondary' if rprov['certified_secondary'] else 'none'),
-                    nodes_sha256=sha_array(nodes), weights_sha256=sha_array(weights),
-                    nodes_sha256_matches=(sha_array(nodes) == rprov['nodes_sha256']),
-                    weights_sha256_matches=(sha_array(weights) == rprov['weights_sha256']))
-        assert info['nodes_sha256_matches'] and info['weights_sha256_matches'], spec['file']
-        if L == int(cfg['rules_mesh']):
-            ph, _ = modes(M)
-            ops = rule_operators(bank, ph, L, nodes, weights)
-            info.update(kind='eqcert', m=int(len(nodes)), transferred=False)
-            rules[q] = (ops, info)
-        else:
-            assert xfer is not None, 'a rule at another mesh needs an eq_transfer block'
-            rules[q] = (None, dict(info, kind='eqxfer', transferred=True, src_nodes=nodes, src_weights=weights))
-        report['rules'].append({k: v for k, v in info.items() if not k.startswith('src_')})
-        print('RULE q', q, info['kind'] if 'kind' in info else '', 'm', len(nodes), info['basis'], flush=True)
+    for rs in sets:
+        at_mesh = (L == rs['mesh'])
+        sname = rs['name'] or ('eqcert' if at_mesh else 'eqxfer')
+        if rs['name'] and not at_mesh:
+            sname = f"{rs['name']}xfer"
+        rs['resolved'] = sname
+        for q in cfg['eq_q']:
+            spec = rs['rules'][str(q)]
+            rfile = inputs / rs['subdir'] / spec['file']
+            rprov = prov[f"{rs['subdir']}/{spec['file']}"]
+            got = sha_file(rfile)
+            assert got == rprov['sha256'], (spec['file'], got, rprov['sha256'])
+            z = np.load(rfile)
+            nodes, weights = np.asarray(z['nodes'], dtype=int), np.asarray(z['weights'], dtype=float)
+            M = 4 * (K + q)
+            assert rprov['M'] == M and rprov['q'] == q
+            info = dict(q=q, M=M, rule_set=sname, file=spec['file'], sha256=got,
+                        source_job=rprov['source_job'], source_m=int(len(nodes)), source_mesh=rs['mesh'],
+                        source_rho_max=rprov['rho_max'], source_rho_p95=rprov['rho_p95'],
+                        source_relative_fit=rprov['relative_fit'], rho_bar=rprov['rho_bar'],
+                        source_fit_states=rprov.get('fit_states'),
+                        certified_primary=rprov['certified_primary'],
+                        certified_secondary=rprov['certified_secondary'],
+                        basis=('primary' if rprov['certified_primary'] else
+                               'secondary' if rprov['certified_secondary'] else 'none'),
+                        nodes_sha256=sha_array(nodes), weights_sha256=sha_array(weights),
+                        nodes_sha256_matches=(sha_array(nodes) == rprov['nodes_sha256']),
+                        weights_sha256_matches=(sha_array(weights) == rprov['weights_sha256']))
+            assert info['nodes_sha256_matches'] and info['weights_sha256_matches'], spec['file']
+            if at_mesh:
+                ph, _ = modes(M)
+                ops = rule_operators(bank, ph, L, nodes, weights)
+                info.update(kind=sname, m=int(len(nodes)), transferred=False)
+                rules[(sname, q)] = (ops, info)
+            else:
+                assert xfer is not None, 'a rule at another mesh needs an eq_transfer block'
+                rules[(sname, q)] = (None, dict(info, kind=sname, transferred=True,
+                                                src_nodes=nodes, src_weights=weights))
+            report['rules'].append({k: v for k, v in info.items() if not k.startswith('src_')})
+            print('RULE', sname, 'q', q, 'm', len(nodes), info['basis'], flush=True)
     save()
 
     # ------------------------------------------ transferred rules (job 2/3) --
@@ -360,8 +380,8 @@ def main():
         cert_idx = np.asarray(xfer['cert_trajectories'], dtype=int)
         assert not set(fit_idx.tolist()) & set(cert_idx.tolist())
         report['gates']['transfer_fit_cert_disjoint'] = dict(passed=True, fit=fit_idx.tolist(), cert=cert_idx.tolist())
-        for q in cfg['eq_q']:
-            ops, info = rules[q]
+        for (sname, q) in [k for k, v in rules.items() if v[1].get('transferred')]:
+            ops, info = rules[(sname, q)]
             M = 4 * (K + q)
             C = Cfull[:, :q]
             cold, _, head = cold_for(q)
@@ -394,7 +414,8 @@ def main():
             ops = dict(G5=bank.stencil(ij[keep], L), Pq=jnp.asarray(np.asarray(ph)[pos[keep]] * w[keep][:, None]))
             cert = EC.certify(G, dd['Phi'], L, ops, csel, chunk=xfer['certify_chunk'])
             bar = float(info['rho_bar'])
-            tinfo = dict(q=q, M=M, m_support=int(len(pos)), m=int(keep.sum()), refit=finfo, certification=cert,
+            tinfo = dict(q=q, M=M, rule_set=sname, m_support=int(len(pos)), m=int(keep.sum()),
+                         refit=finfo, certification=cert,
                          fit_states_available=int(len(pools['fit'])), fit_states_used=int(len(sel)),
                          certification_states=int(len(csel)), population='production dense query, converged per-step states (A3)',
                          fit_pool_sha256=sha_array(pools['fit']), certification_pool_sha256=sha_array(pools['cert']),
@@ -404,11 +425,11 @@ def main():
             info = dict({k: v for k, v in info.items() if not k.startswith('src_')}, m=tinfo['m'],
                         basis=tinfo['basis'], certified_primary=tinfo['certified_primary'],
                         certified_secondary=tinfo['certified_secondary'], rho_max=cert['rho_max'], rho_p95=cert['rho_p95'])
-            rules[q] = (ops, info)
-            np.savez_compressed(out / f'rule_xfer_q{q}_L{L}.npz', nodes=pos[keep], weights=w[keep])
+            rules[(sname, q)] = (ops, info)
+            np.savez_compressed(out / f'rule_xfer_{sname}_q{q}_L{L}.npz', nodes=pos[keep], weights=w[keep])
             report['transfer'].append(tinfo)
-            print('XFER q', q, 'm', tinfo['m'], 'rho_max', f"{cert['rho_max']:.4f}", 'p95', f"{cert['rho_p95']:.4f}",
-                  tinfo['basis'], round(tinfo['seconds'], 1), flush=True)
+            print('XFER', sname, 'q', q, 'm', tinfo['m'], 'rho_max', f"{cert['rho_max']:.4f}",
+                  'p95', f"{cert['rho_p95']:.4f}", tinfo['basis'], round(tinfo['seconds'], 1), flush=True)
             save()
 
     # ---------------------------------------------------------- subjects -----
@@ -423,10 +444,12 @@ def main():
                           M=4 * (K + q), quadrature='dense', gtol=strict['gtol'], priority=1))
     for g in cfg['eq_gtols']:
         pr = 2 if g == strict['gtol'] else 4
-        for q in cfg['eq_q']:
-            kind = rules[q][1]['kind']
-            specs.append(dict(name=f'q{q}_M{4 * (K + q)}_{kind}_{gt(g)}', family='rom', q=q, M=4 * (K + q),
-                              quadrature='eq', gtol=g, priority=pr, rule_kind=kind))
+        for si, rs in enumerate(sets):
+            for q in cfg['eq_q']:
+                kind = rs['resolved']
+                specs.append(dict(name=f'q{q}_M{4 * (K + q)}_{kind}_{gt(g)}', family='rom', q=q,
+                                  M=4 * (K + q), quadrature='eq', gtol=g, priority=pr + (0 if si == 0 else 0.5),
+                                  rule_kind=kind, rule_set=kind))
     for k in ranks:
         specs.append(dict(name=f'pod{k}_M{4 * k}_dense', family='pod', k=k, M=4 * k, quadrature='dense',
                           gtol=strict['gtol'], priority=3))
@@ -438,7 +461,7 @@ def main():
         specs.append(dict(name=f'free{R}_M{cfg["free_bank_M"]}_dense', family='free', k=R, M=int(cfg['free_bank_M']),
                           quadrature='dense', gtol=strict['gtol'], priority=6))
     if cfg.get('fast_arm') and 0 in cfg['eq_q']:
-        kind = rules[0][1]['kind']
+        kind = sets[0]['resolved']
         specs.append(dict(name=f'q0_M{4 * K}_{kind}_{gt(strict["gtol"])}_fast{cfg["fast_arm"]}', family='fast', q=0,
                           M=4 * K, quadrature='eq', gtol=strict['gtol'], priority=7, rule_kind=kind,
                           parity_against=f'q0_M{4 * K}_{kind}_{gt(strict["gtol"])}'))
@@ -469,7 +492,7 @@ def main():
             if s['quadrature'] == 'dense':
                 data, rinfo = dense_data(M), {}
             else:
-                ops, rinfo = rules[q]
+                ops, rinfo = rules[(s.get('rule_set') or sets[0]['resolved'], q)]
                 ph, lm = modes(M)
                 P = jnp.asarray(ph)
                 data = dict(A=P.T @ G, lam=lm, G=G, G5=ops['G5'], Pq=ops['Pq'])

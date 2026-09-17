@@ -353,7 +353,8 @@ def main():
 
     parts = Path(a.result).resolve().parts
     attempt = parts[parts.index('runs') + 1] if 'runs' in parts else cfg.get('attempt')
-    out = dict(result=str(Path(a.result).resolve()), result_sha256=hashlib.sha256(Path(a.result).read_bytes()).hexdigest(),
+    out = dict(result=str(Path(a.result).resolve()), reference_mesh=cfg.get('reference_mesh'),
+               result_sha256=hashlib.sha256(Path(a.result).read_bytes()).hexdigest(),
                job_id=r.get('job_id'), commit=r.get('commit'), gpu=r.get('gpu'), attempt=attempt, intervals=L, dt=dt,
                mem_fraction=r.get('mem_fraction'), elapsed_seconds=r.get('elapsed_seconds'), K=K, R=r['R'],
                output_times=r['output_times'], checks=checks, failed=sorted(fail), arms=rows, ladders=ladders,

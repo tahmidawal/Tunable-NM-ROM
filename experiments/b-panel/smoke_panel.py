@@ -144,6 +144,23 @@ def main():
         runs[tag]['nondominated_admissible_evolved'] = aj['nondominated']['gpu_evolved']['admissible']
         assert not aj['failed'], (tag, aj['failed'])
         if tag == 'smoke64':
+            # DESIGN A5.1 plumbing: a second rule SET over the identical files must produce
+            # bitwise identical arms. If it does not, the multi-set path perturbs a result.
+            dup = {}
+            for inv in res['invocations']:
+                if '_eqdup_' in inv['name']:
+                    twin = inv['name'].replace('_eqdup_', '_eqcert_')
+                    other = next(y for y in res['invocations']
+                                 if y['name'] == twin and y['case'] == inv['case'] and y['rep'] == inv['rep'])
+                    dup[(inv['name'], inv['case'])] = dict(
+                        same_field_hash=(inv['field_sha256'] == other['field_sha256']),
+                        same_iterations=(inv['iterations'] == other['iterations']),
+                        twin=twin)
+            assert dup, 'the duplicate rule set produced no arms'
+            assert all(v['same_field_hash'] and v['same_iterations'] for v in dup.values()), dup
+            out['duplicate_rule_set_bitwise'] = dict(
+                arms=len({k[0] for k in dup}), invocations=len(dup), all_bitwise=True)
+            print('GATE4 duplicate rule set bitwise over', len(dup), 'invocations', flush=True)
             saved = np.load(FIX / 'expected.npz')
             x = next(i for i in res['invocations'] if i['name'] == 'q0_M64_eqcert_g1em06' and i['case'] == 0)
             f = np.load(od / x['artifact'])

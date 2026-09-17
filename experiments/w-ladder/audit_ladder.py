@@ -138,7 +138,13 @@ def main():
         rows = [r for r in checks['rows'] if r['case'] == gate['case'] and r['method'] == gate['method']]
         if rows:
             rel = abs(rows[0]['recomputed'][gate['metric']] - gate['value']) / abs(gate['value'])
-            checks['gates'].append(dict(**gate, recomputed=rows[0]['recomputed'][gate['metric']], relative_difference=rel, passed=rel <= 1e-9))
+            # DESIGN A4, applied independently of the driver: an arm carrying the 8-start cold fit
+            # inherits a start-tie flip (the starts reach the same minimum; argmin breaks the tie by
+            # index), which moves the trajectory at ~1e-8. Linear arms are deterministic.
+            fit_arm = gate['method'].startswith(('head_', 'trained_', 'nested_'))
+            tol = 1e-7 if fit_arm else 1e-9
+            checks['gates'].append(dict(**gate, recomputed=rows[0]['recomputed'][gate['metric']],
+                                        relative_difference=rel, tolerance=tol, passed=rel <= tol))
     checks['max_error_difference'] = worst
     checks['reference_max_relative_difference'] = max(r['regenerated_vs_saved_relative'] for r in checks['reference'])
     checks['energy_max_difference'] = max([e['difference'] for e in checks['energy']] or [0.])

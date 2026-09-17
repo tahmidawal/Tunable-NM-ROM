@@ -1,0 +1,720 @@
+host=pax143 source_commit=2655bb01128e8ff24b610bad8c4f4d04b54d53a9
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.26:/projects/paralab  4.6T  4.2T  410G  92% /cluster/tufts/paralab
+jax_backend=gpu
+{"jax_backend": "gpu", "jax_version": "0.10.2", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA A100-PCIE-40GB"], "host": "pax143", "source_commit": "2655bb01128e8ff24b610bad8c4f4d04b54d53a9", "job_id": "3783805", "numpy_version": "2.5.0"}
+training_coefficients dirichlet 0
+training_coefficients dirichlet 1
+training_coefficients dirichlet 2
+training_coefficients dirichlet 3
+training_coefficients dirichlet 4
+training_coefficients dirichlet 5
+training_coefficients dirichlet 6
+training_coefficients dirichlet 7
+training_coefficients dirichlet 8
+training_coefficients dirichlet 9
+training_coefficients dirichlet 10
+training_coefficients dirichlet 11
+training_coefficients dirichlet 12
+training_coefficients dirichlet 13
+training_coefficients dirichlet 14
+training_coefficients dirichlet 15
+training_coefficients dirichlet 16
+training_coefficients dirichlet 17
+training_coefficients dirichlet 18
+training_coefficients dirichlet 19
+training_coefficients dirichlet 20
+training_coefficients dirichlet 21
+training_coefficients dirichlet 22
+training_coefficients dirichlet 23
+training_coefficients dirichlet 24
+training_coefficients dirichlet 25
+training_coefficients dirichlet 26
+training_coefficients dirichlet 27
+training_coefficients dirichlet 28
+training_coefficients dirichlet 29
+training_coefficients dirichlet 30
+training_coefficients dirichlet 31
+training_coefficients dirichlet 32
+training_coefficients dirichlet 33
+training_coefficients dirichlet 34
+training_coefficients dirichlet 35
+training_coefficients dirichlet 36
+training_coefficients dirichlet 37
+training_coefficients dirichlet 38
+training_coefficients dirichlet 39
+training_coefficients dirichlet 40
+training_coefficients dirichlet 41
+training_coefficients dirichlet 42
+training_coefficients dirichlet 43
+training_coefficients dirichlet 44
+training_coefficients dirichlet 45
+training_coefficients dirichlet 46
+training_coefficients dirichlet 47
+training_coefficients dirichlet 48
+training_coefficients dirichlet 49
+training_coefficients dirichlet 50
+training_coefficients dirichlet 51
+training_coefficients dirichlet 52
+training_coefficients dirichlet 53
+training_coefficients dirichlet 54
+training_coefficients dirichlet 55
+training_coefficients dirichlet 56
+training_coefficients dirichlet 57
+training_coefficients dirichlet 58
+training_coefficients dirichlet 59
+training_coefficients dirichlet 60
+training_coefficients dirichlet 61
+training_coefficients dirichlet 62
+training_coefficients dirichlet 63
+pod_training_case 0
+pod_training_case 1
+pod_training_case 2
+pod_training_case 3
+pod_training_case 4
+pod_training_case 5
+pod_training_case 6
+pod_training_case 7
+pod_training_case 8
+pod_training_case 9
+pod_training_case 10
+pod_training_case 11
+pod_training_case 12
+pod_training_case 13
+pod_training_case 14
+pod_training_case 15
+pod_training_case 16
+pod_training_case 17
+pod_training_case 18
+pod_training_case 19
+pod_training_case 20
+pod_training_case 21
+pod_training_case 22
+pod_training_case 23
+pod_training_case 24
+pod_training_case 25
+pod_training_case 26
+pod_training_case 27
+pod_training_case 28
+pod_training_case 29
+pod_training_case 30
+pod_training_case 31
+pod_training_case 32
+pod_training_case 33
+pod_training_case 34
+pod_training_case 35
+pod_training_case 36
+pod_training_case 37
+pod_training_case 38
+pod_training_case 39
+pod_training_case 40
+pod_training_case 41
+pod_training_case 42
+pod_training_case 43
+pod_training_case 44
+pod_training_case 45
+pod_training_case 46
+pod_training_case 47
+pod_training_case 48
+pod_training_case 49
+pod_training_case 50
+pod_training_case 51
+pod_training_case 52
+pod_training_case 53
+pod_training_case 54
+pod_training_case 55
+pod_training_case 56
+pod_training_case 57
+pod_training_case 58
+pod_training_case 59
+pod_training_case 60
+pod_training_case 61
+pod_training_case 62
+pod_training_case 63
+warmup 256 opened_0 head_q0
+warmup 256 opened_0 trained_nested40
+warmup 256 opened_0 nested_q8
+warmup 256 opened_0 nested_q16
+warmup 256 opened_0 nested_q32
+warmup 256 opened_0 linear_bank64
+warmup 256 opened_0 linear_bank64_cn
+warmup 256 opened_0 linear_bank64_rk4
+warmup 256 opened_0 pod_k16
+warmup 256 opened_0 pod_k40
+warmup 256 opened_0 pod_k64
+warmup 256 opened_0 pod_k128
+warmup 256 opened_0 dst
+warmup 256 opened_0 rk4_fom
+warmup 256 opened_0 cg_1e-06
+warmup 256 opened_0 cgdt_0.005_tol_1e-06
+warmup 256 opened_0 cgdt_0.005_tol_0.01
+warmup 256 opened_0 dst_coarse64
+timed 256 opened_0 0 head_q0
+timed 256 opened_0 0 trained_nested40
+timed 256 opened_0 0 nested_q8
+timed 256 opened_0 0 nested_q16
+timed 256 opened_0 0 nested_q32
+timed 256 opened_0 0 linear_bank64
+timed 256 opened_0 0 linear_bank64_cn
+timed 256 opened_0 0 linear_bank64_rk4
+timed 256 opened_0 0 pod_k16
+timed 256 opened_0 0 pod_k40
+timed 256 opened_0 0 pod_k64
+timed 256 opened_0 0 pod_k128
+timed 256 opened_0 0 dst
+timed 256 opened_0 0 rk4_fom
+timed 256 opened_0 0 cg_1e-06
+timed 256 opened_0 0 cgdt_0.005_tol_1e-06
+timed 256 opened_0 0 cgdt_0.005_tol_0.01
+timed 256 opened_0 0 dst_coarse64
+timed 256 opened_0 1 dst_coarse64
+timed 256 opened_0 1 cgdt_0.005_tol_0.01
+timed 256 opened_0 1 cgdt_0.005_tol_1e-06
+timed 256 opened_0 1 cg_1e-06
+timed 256 opened_0 1 rk4_fom
+timed 256 opened_0 1 dst
+timed 256 opened_0 1 pod_k128
+timed 256 opened_0 1 pod_k64
+timed 256 opened_0 1 pod_k40
+timed 256 opened_0 1 pod_k16
+timed 256 opened_0 1 linear_bank64_rk4
+timed 256 opened_0 1 linear_bank64_cn
+timed 256 opened_0 1 linear_bank64
+timed 256 opened_0 1 nested_q32
+timed 256 opened_0 1 nested_q16
+timed 256 opened_0 1 nested_q8
+timed 256 opened_0 1 trained_nested40
+timed 256 opened_0 1 head_q0
+timed 256 opened_0 2 head_q0
+timed 256 opened_0 2 trained_nested40
+timed 256 opened_0 2 nested_q8
+timed 256 opened_0 2 nested_q16
+timed 256 opened_0 2 nested_q32
+timed 256 opened_0 2 linear_bank64
+timed 256 opened_0 2 linear_bank64_cn
+timed 256 opened_0 2 linear_bank64_rk4
+timed 256 opened_0 2 pod_k16
+timed 256 opened_0 2 pod_k40
+timed 256 opened_0 2 pod_k64
+timed 256 opened_0 2 pod_k128
+timed 256 opened_0 2 dst
+timed 256 opened_0 2 rk4_fom
+timed 256 opened_0 2 cg_1e-06
+timed 256 opened_0 2 cgdt_0.005_tol_1e-06
+timed 256 opened_0 2 cgdt_0.005_tol_0.01
+timed 256 opened_0 2 dst_coarse64
+decomposition 256 opened_0
+warmup 256 opened_1 head_q0
+warmup 256 opened_1 trained_nested40
+warmup 256 opened_1 nested_q8
+warmup 256 opened_1 nested_q16
+warmup 256 opened_1 nested_q32
+warmup 256 opened_1 linear_bank64
+warmup 256 opened_1 linear_bank64_cn
+warmup 256 opened_1 linear_bank64_rk4
+warmup 256 opened_1 pod_k16
+warmup 256 opened_1 pod_k40
+warmup 256 opened_1 pod_k64
+warmup 256 opened_1 pod_k128
+warmup 256 opened_1 dst
+warmup 256 opened_1 rk4_fom
+warmup 256 opened_1 cg_1e-06
+warmup 256 opened_1 cgdt_0.005_tol_1e-06
+warmup 256 opened_1 cgdt_0.005_tol_0.01
+warmup 256 opened_1 dst_coarse64
+timed 256 opened_1 0 head_q0
+timed 256 opened_1 0 trained_nested40
+timed 256 opened_1 0 nested_q8
+timed 256 opened_1 0 nested_q16
+timed 256 opened_1 0 nested_q32
+timed 256 opened_1 0 linear_bank64
+timed 256 opened_1 0 linear_bank64_cn
+timed 256 opened_1 0 linear_bank64_rk4
+timed 256 opened_1 0 pod_k16
+timed 256 opened_1 0 pod_k40
+timed 256 opened_1 0 pod_k64
+timed 256 opened_1 0 pod_k128
+timed 256 opened_1 0 dst
+timed 256 opened_1 0 rk4_fom
+timed 256 opened_1 0 cg_1e-06
+timed 256 opened_1 0 cgdt_0.005_tol_1e-06
+timed 256 opened_1 0 cgdt_0.005_tol_0.01
+timed 256 opened_1 0 dst_coarse64
+timed 256 opened_1 1 dst_coarse64
+timed 256 opened_1 1 cgdt_0.005_tol_0.01
+timed 256 opened_1 1 cgdt_0.005_tol_1e-06
+timed 256 opened_1 1 cg_1e-06
+timed 256 opened_1 1 rk4_fom
+timed 256 opened_1 1 dst
+timed 256 opened_1 1 pod_k128
+timed 256 opened_1 1 pod_k64
+timed 256 opened_1 1 pod_k40
+timed 256 opened_1 1 pod_k16
+timed 256 opened_1 1 linear_bank64_rk4
+timed 256 opened_1 1 linear_bank64_cn
+timed 256 opened_1 1 linear_bank64
+timed 256 opened_1 1 nested_q32
+timed 256 opened_1 1 nested_q16
+timed 256 opened_1 1 nested_q8
+timed 256 opened_1 1 trained_nested40
+timed 256 opened_1 1 head_q0
+timed 256 opened_1 2 head_q0
+timed 256 opened_1 2 trained_nested40
+timed 256 opened_1 2 nested_q8
+timed 256 opened_1 2 nested_q16
+timed 256 opened_1 2 nested_q32
+timed 256 opened_1 2 linear_bank64
+timed 256 opened_1 2 linear_bank64_cn
+timed 256 opened_1 2 linear_bank64_rk4
+timed 256 opened_1 2 pod_k16
+timed 256 opened_1 2 pod_k40
+timed 256 opened_1 2 pod_k64
+timed 256 opened_1 2 pod_k128
+timed 256 opened_1 2 dst
+timed 256 opened_1 2 rk4_fom
+timed 256 opened_1 2 cg_1e-06
+timed 256 opened_1 2 cgdt_0.005_tol_1e-06
+timed 256 opened_1 2 cgdt_0.005_tol_0.01
+timed 256 opened_1 2 dst_coarse64
+decomposition 256 opened_1
+warmup 256 opened_2 head_q0
+warmup 256 opened_2 trained_nested40
+warmup 256 opened_2 nested_q8
+warmup 256 opened_2 nested_q16
+warmup 256 opened_2 nested_q32
+warmup 256 opened_2 linear_bank64
+warmup 256 opened_2 linear_bank64_cn
+warmup 256 opened_2 linear_bank64_rk4
+warmup 256 opened_2 pod_k16
+warmup 256 opened_2 pod_k40
+warmup 256 opened_2 pod_k64
+warmup 256 opened_2 pod_k128
+warmup 256 opened_2 dst
+warmup 256 opened_2 rk4_fom
+warmup 256 opened_2 cg_1e-06
+warmup 256 opened_2 cgdt_0.005_tol_1e-06
+warmup 256 opened_2 cgdt_0.005_tol_0.01
+warmup 256 opened_2 dst_coarse64
+timed 256 opened_2 0 head_q0
+timed 256 opened_2 0 trained_nested40
+timed 256 opened_2 0 nested_q8
+timed 256 opened_2 0 nested_q16
+timed 256 opened_2 0 nested_q32
+timed 256 opened_2 0 linear_bank64
+timed 256 opened_2 0 linear_bank64_cn
+timed 256 opened_2 0 linear_bank64_rk4
+timed 256 opened_2 0 pod_k16
+timed 256 opened_2 0 pod_k40
+timed 256 opened_2 0 pod_k64
+timed 256 opened_2 0 pod_k128
+timed 256 opened_2 0 dst
+timed 256 opened_2 0 rk4_fom
+timed 256 opened_2 0 cg_1e-06
+timed 256 opened_2 0 cgdt_0.005_tol_1e-06
+timed 256 opened_2 0 cgdt_0.005_tol_0.01
+timed 256 opened_2 0 dst_coarse64
+timed 256 opened_2 1 dst_coarse64
+timed 256 opened_2 1 cgdt_0.005_tol_0.01
+timed 256 opened_2 1 cgdt_0.005_tol_1e-06
+timed 256 opened_2 1 cg_1e-06
+timed 256 opened_2 1 rk4_fom
+timed 256 opened_2 1 dst
+timed 256 opened_2 1 pod_k128
+timed 256 opened_2 1 pod_k64
+timed 256 opened_2 1 pod_k40
+timed 256 opened_2 1 pod_k16
+timed 256 opened_2 1 linear_bank64_rk4
+timed 256 opened_2 1 linear_bank64_cn
+timed 256 opened_2 1 linear_bank64
+timed 256 opened_2 1 nested_q32
+timed 256 opened_2 1 nested_q16
+timed 256 opened_2 1 nested_q8
+timed 256 opened_2 1 trained_nested40
+timed 256 opened_2 1 head_q0
+timed 256 opened_2 2 head_q0
+timed 256 opened_2 2 trained_nested40
+timed 256 opened_2 2 nested_q8
+timed 256 opened_2 2 nested_q16
+timed 256 opened_2 2 nested_q32
+timed 256 opened_2 2 linear_bank64
+timed 256 opened_2 2 linear_bank64_cn
+timed 256 opened_2 2 linear_bank64_rk4
+timed 256 opened_2 2 pod_k16
+timed 256 opened_2 2 pod_k40
+timed 256 opened_2 2 pod_k64
+timed 256 opened_2 2 pod_k128
+timed 256 opened_2 2 dst
+timed 256 opened_2 2 rk4_fom
+timed 256 opened_2 2 cg_1e-06
+timed 256 opened_2 2 cgdt_0.005_tol_1e-06
+timed 256 opened_2 2 cgdt_0.005_tol_0.01
+timed 256 opened_2 2 dst_coarse64
+decomposition 256 opened_2
+warmup 256 opened_3 head_q0
+warmup 256 opened_3 trained_nested40
+warmup 256 opened_3 nested_q8
+warmup 256 opened_3 nested_q16
+warmup 256 opened_3 nested_q32
+warmup 256 opened_3 linear_bank64
+warmup 256 opened_3 linear_bank64_cn
+warmup 256 opened_3 linear_bank64_rk4
+warmup 256 opened_3 pod_k16
+warmup 256 opened_3 pod_k40
+warmup 256 opened_3 pod_k64
+warmup 256 opened_3 pod_k128
+warmup 256 opened_3 dst
+warmup 256 opened_3 rk4_fom
+warmup 256 opened_3 cg_1e-06
+warmup 256 opened_3 cgdt_0.005_tol_1e-06
+warmup 256 opened_3 cgdt_0.005_tol_0.01
+warmup 256 opened_3 dst_coarse64
+timed 256 opened_3 0 head_q0
+timed 256 opened_3 0 trained_nested40
+timed 256 opened_3 0 nested_q8
+timed 256 opened_3 0 nested_q16
+timed 256 opened_3 0 nested_q32
+timed 256 opened_3 0 linear_bank64
+timed 256 opened_3 0 linear_bank64_cn
+timed 256 opened_3 0 linear_bank64_rk4
+timed 256 opened_3 0 pod_k16
+timed 256 opened_3 0 pod_k40
+timed 256 opened_3 0 pod_k64
+timed 256 opened_3 0 pod_k128
+timed 256 opened_3 0 dst
+timed 256 opened_3 0 rk4_fom
+timed 256 opened_3 0 cg_1e-06
+timed 256 opened_3 0 cgdt_0.005_tol_1e-06
+timed 256 opened_3 0 cgdt_0.005_tol_0.01
+timed 256 opened_3 0 dst_coarse64
+timed 256 opened_3 1 dst_coarse64
+timed 256 opened_3 1 cgdt_0.005_tol_0.01
+timed 256 opened_3 1 cgdt_0.005_tol_1e-06
+timed 256 opened_3 1 cg_1e-06
+timed 256 opened_3 1 rk4_fom
+timed 256 opened_3 1 dst
+timed 256 opened_3 1 pod_k128
+timed 256 opened_3 1 pod_k64
+timed 256 opened_3 1 pod_k40
+timed 256 opened_3 1 pod_k16
+timed 256 opened_3 1 linear_bank64_rk4
+timed 256 opened_3 1 linear_bank64_cn
+timed 256 opened_3 1 linear_bank64
+timed 256 opened_3 1 nested_q32
+timed 256 opened_3 1 nested_q16
+timed 256 opened_3 1 nested_q8
+timed 256 opened_3 1 trained_nested40
+timed 256 opened_3 1 head_q0
+timed 256 opened_3 2 head_q0
+timed 256 opened_3 2 trained_nested40
+timed 256 opened_3 2 nested_q8
+timed 256 opened_3 2 nested_q16
+timed 256 opened_3 2 nested_q32
+timed 256 opened_3 2 linear_bank64
+timed 256 opened_3 2 linear_bank64_cn
+timed 256 opened_3 2 linear_bank64_rk4
+timed 256 opened_3 2 pod_k16
+timed 256 opened_3 2 pod_k40
+timed 256 opened_3 2 pod_k64
+timed 256 opened_3 2 pod_k128
+timed 256 opened_3 2 dst
+timed 256 opened_3 2 rk4_fom
+timed 256 opened_3 2 cg_1e-06
+timed 256 opened_3 2 cgdt_0.005_tol_1e-06
+timed 256 opened_3 2 cgdt_0.005_tol_0.01
+timed 256 opened_3 2 dst_coarse64
+decomposition 256 opened_3
+warmup 256 fresh_development_0 head_q0
+warmup 256 fresh_development_0 trained_nested40
+warmup 256 fresh_development_0 nested_q8
+warmup 256 fresh_development_0 nested_q16
+warmup 256 fresh_development_0 nested_q32
+warmup 256 fresh_development_0 linear_bank64
+warmup 256 fresh_development_0 linear_bank64_cn
+warmup 256 fresh_development_0 linear_bank64_rk4
+warmup 256 fresh_development_0 pod_k16
+warmup 256 fresh_development_0 pod_k40
+warmup 256 fresh_development_0 pod_k64
+warmup 256 fresh_development_0 pod_k128
+warmup 256 fresh_development_0 dst
+warmup 256 fresh_development_0 rk4_fom
+warmup 256 fresh_development_0 cg_1e-06
+warmup 256 fresh_development_0 cgdt_0.005_tol_1e-06
+warmup 256 fresh_development_0 cgdt_0.005_tol_0.01
+warmup 256 fresh_development_0 dst_coarse64
+timed 256 fresh_development_0 0 head_q0
+timed 256 fresh_development_0 0 trained_nested40
+timed 256 fresh_development_0 0 nested_q8
+timed 256 fresh_development_0 0 nested_q16
+timed 256 fresh_development_0 0 nested_q32
+timed 256 fresh_development_0 0 linear_bank64
+timed 256 fresh_development_0 0 linear_bank64_cn
+timed 256 fresh_development_0 0 linear_bank64_rk4
+timed 256 fresh_development_0 0 pod_k16
+timed 256 fresh_development_0 0 pod_k40
+timed 256 fresh_development_0 0 pod_k64
+timed 256 fresh_development_0 0 pod_k128
+timed 256 fresh_development_0 0 dst
+timed 256 fresh_development_0 0 rk4_fom
+timed 256 fresh_development_0 0 cg_1e-06
+timed 256 fresh_development_0 0 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_0 0 cgdt_0.005_tol_0.01
+timed 256 fresh_development_0 0 dst_coarse64
+timed 256 fresh_development_0 1 dst_coarse64
+timed 256 fresh_development_0 1 cgdt_0.005_tol_0.01
+timed 256 fresh_development_0 1 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_0 1 cg_1e-06
+timed 256 fresh_development_0 1 rk4_fom
+timed 256 fresh_development_0 1 dst
+timed 256 fresh_development_0 1 pod_k128
+timed 256 fresh_development_0 1 pod_k64
+timed 256 fresh_development_0 1 pod_k40
+timed 256 fresh_development_0 1 pod_k16
+timed 256 fresh_development_0 1 linear_bank64_rk4
+timed 256 fresh_development_0 1 linear_bank64_cn
+timed 256 fresh_development_0 1 linear_bank64
+timed 256 fresh_development_0 1 nested_q32
+timed 256 fresh_development_0 1 nested_q16
+timed 256 fresh_development_0 1 nested_q8
+timed 256 fresh_development_0 1 trained_nested40
+timed 256 fresh_development_0 1 head_q0
+timed 256 fresh_development_0 2 head_q0
+timed 256 fresh_development_0 2 trained_nested40
+timed 256 fresh_development_0 2 nested_q8
+timed 256 fresh_development_0 2 nested_q16
+timed 256 fresh_development_0 2 nested_q32
+timed 256 fresh_development_0 2 linear_bank64
+timed 256 fresh_development_0 2 linear_bank64_cn
+timed 256 fresh_development_0 2 linear_bank64_rk4
+timed 256 fresh_development_0 2 pod_k16
+timed 256 fresh_development_0 2 pod_k40
+timed 256 fresh_development_0 2 pod_k64
+timed 256 fresh_development_0 2 pod_k128
+timed 256 fresh_development_0 2 dst
+timed 256 fresh_development_0 2 rk4_fom
+timed 256 fresh_development_0 2 cg_1e-06
+timed 256 fresh_development_0 2 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_0 2 cgdt_0.005_tol_0.01
+timed 256 fresh_development_0 2 dst_coarse64
+decomposition 256 fresh_development_0
+warmup 256 fresh_development_1 head_q0
+warmup 256 fresh_development_1 trained_nested40
+warmup 256 fresh_development_1 nested_q8
+warmup 256 fresh_development_1 nested_q16
+warmup 256 fresh_development_1 nested_q32
+warmup 256 fresh_development_1 linear_bank64
+warmup 256 fresh_development_1 linear_bank64_cn
+warmup 256 fresh_development_1 linear_bank64_rk4
+warmup 256 fresh_development_1 pod_k16
+warmup 256 fresh_development_1 pod_k40
+warmup 256 fresh_development_1 pod_k64
+warmup 256 fresh_development_1 pod_k128
+warmup 256 fresh_development_1 dst
+warmup 256 fresh_development_1 rk4_fom
+warmup 256 fresh_development_1 cg_1e-06
+warmup 256 fresh_development_1 cgdt_0.005_tol_1e-06
+warmup 256 fresh_development_1 cgdt_0.005_tol_0.01
+warmup 256 fresh_development_1 dst_coarse64
+timed 256 fresh_development_1 0 head_q0
+timed 256 fresh_development_1 0 trained_nested40
+timed 256 fresh_development_1 0 nested_q8
+timed 256 fresh_development_1 0 nested_q16
+timed 256 fresh_development_1 0 nested_q32
+timed 256 fresh_development_1 0 linear_bank64
+timed 256 fresh_development_1 0 linear_bank64_cn
+timed 256 fresh_development_1 0 linear_bank64_rk4
+timed 256 fresh_development_1 0 pod_k16
+timed 256 fresh_development_1 0 pod_k40
+timed 256 fresh_development_1 0 pod_k64
+timed 256 fresh_development_1 0 pod_k128
+timed 256 fresh_development_1 0 dst
+timed 256 fresh_development_1 0 rk4_fom
+timed 256 fresh_development_1 0 cg_1e-06
+timed 256 fresh_development_1 0 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_1 0 cgdt_0.005_tol_0.01
+timed 256 fresh_development_1 0 dst_coarse64
+timed 256 fresh_development_1 1 dst_coarse64
+timed 256 fresh_development_1 1 cgdt_0.005_tol_0.01
+timed 256 fresh_development_1 1 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_1 1 cg_1e-06
+timed 256 fresh_development_1 1 rk4_fom
+timed 256 fresh_development_1 1 dst
+timed 256 fresh_development_1 1 pod_k128
+timed 256 fresh_development_1 1 pod_k64
+timed 256 fresh_development_1 1 pod_k40
+timed 256 fresh_development_1 1 pod_k16
+timed 256 fresh_development_1 1 linear_bank64_rk4
+timed 256 fresh_development_1 1 linear_bank64_cn
+timed 256 fresh_development_1 1 linear_bank64
+timed 256 fresh_development_1 1 nested_q32
+timed 256 fresh_development_1 1 nested_q16
+timed 256 fresh_development_1 1 nested_q8
+timed 256 fresh_development_1 1 trained_nested40
+timed 256 fresh_development_1 1 head_q0
+timed 256 fresh_development_1 2 head_q0
+timed 256 fresh_development_1 2 trained_nested40
+timed 256 fresh_development_1 2 nested_q8
+timed 256 fresh_development_1 2 nested_q16
+timed 256 fresh_development_1 2 nested_q32
+timed 256 fresh_development_1 2 linear_bank64
+timed 256 fresh_development_1 2 linear_bank64_cn
+timed 256 fresh_development_1 2 linear_bank64_rk4
+timed 256 fresh_development_1 2 pod_k16
+timed 256 fresh_development_1 2 pod_k40
+timed 256 fresh_development_1 2 pod_k64
+timed 256 fresh_development_1 2 pod_k128
+timed 256 fresh_development_1 2 dst
+timed 256 fresh_development_1 2 rk4_fom
+timed 256 fresh_development_1 2 cg_1e-06
+timed 256 fresh_development_1 2 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_1 2 cgdt_0.005_tol_0.01
+timed 256 fresh_development_1 2 dst_coarse64
+decomposition 256 fresh_development_1
+warmup 256 fresh_development_2 head_q0
+warmup 256 fresh_development_2 trained_nested40
+warmup 256 fresh_development_2 nested_q8
+warmup 256 fresh_development_2 nested_q16
+warmup 256 fresh_development_2 nested_q32
+warmup 256 fresh_development_2 linear_bank64
+warmup 256 fresh_development_2 linear_bank64_cn
+warmup 256 fresh_development_2 linear_bank64_rk4
+warmup 256 fresh_development_2 pod_k16
+warmup 256 fresh_development_2 pod_k40
+warmup 256 fresh_development_2 pod_k64
+warmup 256 fresh_development_2 pod_k128
+warmup 256 fresh_development_2 dst
+warmup 256 fresh_development_2 rk4_fom
+warmup 256 fresh_development_2 cg_1e-06
+warmup 256 fresh_development_2 cgdt_0.005_tol_1e-06
+warmup 256 fresh_development_2 cgdt_0.005_tol_0.01
+warmup 256 fresh_development_2 dst_coarse64
+timed 256 fresh_development_2 0 head_q0
+timed 256 fresh_development_2 0 trained_nested40
+timed 256 fresh_development_2 0 nested_q8
+timed 256 fresh_development_2 0 nested_q16
+timed 256 fresh_development_2 0 nested_q32
+timed 256 fresh_development_2 0 linear_bank64
+timed 256 fresh_development_2 0 linear_bank64_cn
+timed 256 fresh_development_2 0 linear_bank64_rk4
+timed 256 fresh_development_2 0 pod_k16
+timed 256 fresh_development_2 0 pod_k40
+timed 256 fresh_development_2 0 pod_k64
+timed 256 fresh_development_2 0 pod_k128
+timed 256 fresh_development_2 0 dst
+timed 256 fresh_development_2 0 rk4_fom
+timed 256 fresh_development_2 0 cg_1e-06
+timed 256 fresh_development_2 0 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_2 0 cgdt_0.005_tol_0.01
+timed 256 fresh_development_2 0 dst_coarse64
+timed 256 fresh_development_2 1 dst_coarse64
+timed 256 fresh_development_2 1 cgdt_0.005_tol_0.01
+timed 256 fresh_development_2 1 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_2 1 cg_1e-06
+timed 256 fresh_development_2 1 rk4_fom
+timed 256 fresh_development_2 1 dst
+timed 256 fresh_development_2 1 pod_k128
+timed 256 fresh_development_2 1 pod_k64
+timed 256 fresh_development_2 1 pod_k40
+timed 256 fresh_development_2 1 pod_k16
+timed 256 fresh_development_2 1 linear_bank64_rk4
+timed 256 fresh_development_2 1 linear_bank64_cn
+timed 256 fresh_development_2 1 linear_bank64
+timed 256 fresh_development_2 1 nested_q32
+timed 256 fresh_development_2 1 nested_q16
+timed 256 fresh_development_2 1 nested_q8
+timed 256 fresh_development_2 1 trained_nested40
+timed 256 fresh_development_2 1 head_q0
+timed 256 fresh_development_2 2 head_q0
+timed 256 fresh_development_2 2 trained_nested40
+timed 256 fresh_development_2 2 nested_q8
+timed 256 fresh_development_2 2 nested_q16
+timed 256 fresh_development_2 2 nested_q32
+timed 256 fresh_development_2 2 linear_bank64
+timed 256 fresh_development_2 2 linear_bank64_cn
+timed 256 fresh_development_2 2 linear_bank64_rk4
+timed 256 fresh_development_2 2 pod_k16
+timed 256 fresh_development_2 2 pod_k40
+timed 256 fresh_development_2 2 pod_k64
+timed 256 fresh_development_2 2 pod_k128
+timed 256 fresh_development_2 2 dst
+timed 256 fresh_development_2 2 rk4_fom
+timed 256 fresh_development_2 2 cg_1e-06
+timed 256 fresh_development_2 2 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_2 2 cgdt_0.005_tol_0.01
+timed 256 fresh_development_2 2 dst_coarse64
+decomposition 256 fresh_development_2
+warmup 256 fresh_development_3 head_q0
+warmup 256 fresh_development_3 trained_nested40
+warmup 256 fresh_development_3 nested_q8
+warmup 256 fresh_development_3 nested_q16
+warmup 256 fresh_development_3 nested_q32
+warmup 256 fresh_development_3 linear_bank64
+warmup 256 fresh_development_3 linear_bank64_cn
+warmup 256 fresh_development_3 linear_bank64_rk4
+warmup 256 fresh_development_3 pod_k16
+warmup 256 fresh_development_3 pod_k40
+warmup 256 fresh_development_3 pod_k64
+warmup 256 fresh_development_3 pod_k128
+warmup 256 fresh_development_3 dst
+warmup 256 fresh_development_3 rk4_fom
+warmup 256 fresh_development_3 cg_1e-06
+warmup 256 fresh_development_3 cgdt_0.005_tol_1e-06
+warmup 256 fresh_development_3 cgdt_0.005_tol_0.01
+warmup 256 fresh_development_3 dst_coarse64
+timed 256 fresh_development_3 0 head_q0
+timed 256 fresh_development_3 0 trained_nested40
+timed 256 fresh_development_3 0 nested_q8
+timed 256 fresh_development_3 0 nested_q16
+timed 256 fresh_development_3 0 nested_q32
+timed 256 fresh_development_3 0 linear_bank64
+timed 256 fresh_development_3 0 linear_bank64_cn
+timed 256 fresh_development_3 0 linear_bank64_rk4
+timed 256 fresh_development_3 0 pod_k16
+timed 256 fresh_development_3 0 pod_k40
+timed 256 fresh_development_3 0 pod_k64
+timed 256 fresh_development_3 0 pod_k128
+timed 256 fresh_development_3 0 dst
+timed 256 fresh_development_3 0 rk4_fom
+timed 256 fresh_development_3 0 cg_1e-06
+timed 256 fresh_development_3 0 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_3 0 cgdt_0.005_tol_0.01
+timed 256 fresh_development_3 0 dst_coarse64
+timed 256 fresh_development_3 1 dst_coarse64
+timed 256 fresh_development_3 1 cgdt_0.005_tol_0.01
+timed 256 fresh_development_3 1 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_3 1 cg_1e-06
+timed 256 fresh_development_3 1 rk4_fom
+timed 256 fresh_development_3 1 dst
+timed 256 fresh_development_3 1 pod_k128
+timed 256 fresh_development_3 1 pod_k64
+timed 256 fresh_development_3 1 pod_k40
+timed 256 fresh_development_3 1 pod_k16
+timed 256 fresh_development_3 1 linear_bank64_rk4
+timed 256 fresh_development_3 1 linear_bank64_cn
+timed 256 fresh_development_3 1 linear_bank64
+timed 256 fresh_development_3 1 nested_q32
+timed 256 fresh_development_3 1 nested_q16
+timed 256 fresh_development_3 1 nested_q8
+timed 256 fresh_development_3 1 trained_nested40
+timed 256 fresh_development_3 1 head_q0
+timed 256 fresh_development_3 2 head_q0
+timed 256 fresh_development_3 2 trained_nested40
+timed 256 fresh_development_3 2 nested_q8
+timed 256 fresh_development_3 2 nested_q16
+timed 256 fresh_development_3 2 nested_q32
+timed 256 fresh_development_3 2 linear_bank64
+timed 256 fresh_development_3 2 linear_bank64_cn
+timed 256 fresh_development_3 2 linear_bank64_rk4
+timed 256 fresh_development_3 2 pod_k16
+timed 256 fresh_development_3 2 pod_k40
+timed 256 fresh_development_3 2 pod_k64
+timed 256 fresh_development_3 2 pod_k128
+timed 256 fresh_development_3 2 dst
+timed 256 fresh_development_3 2 rk4_fom
+timed 256 fresh_development_3 2 cg_1e-06
+timed 256 fresh_development_3 2 cgdt_0.005_tol_1e-06
+timed 256 fresh_development_3 2 cgdt_0.005_tol_0.01
+timed 256 fresh_development_3 2 dst_coarse64
+decomposition 256 fresh_development_3
+gates {"retained_value_checks": [{"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "displacement", "value": 0.014027703192795978, "measured": 0.014027703192795987, "relative_difference": 6.183205661450287e-16, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "velocity", "value": 0.031768891567473236, "measured": 0.03176889156747321, "relative_difference": 8.736715146853477e-16, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "energy_state", "value": 0.04335952738971627, "measured": 0.04335952738971615, "relative_difference": 2.7205369492657373e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "selected_fit_objective", "value": 0.0001889670293117574, "archived_selected_start": 2, "measured_selected_start": 2, "selected_start_matches_archive": true, "measured": 0.00018896702931175784, "relative_difference": 2.295008132231978e-15, "tolerance": 1e-09, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "displacement", "value": 0.01233271618981699, "measured": 0.012332716189816682, "relative_difference": 2.5037532200637932e-14, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "velocity", "value": 0.025487475339795923, "measured": 0.025487475339795763, "relative_difference": 6.2616856970794864e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "energy_state", "value": 0.04042378551910223, "measured": 0.040423785519101973, "relative_difference": 6.351188320135074e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "selected_fit_objective", "value": 2.064954257934226e-05, "archived_selected_start": 2, "measured_selected_start": 2, "selected_start_matches_archive": true, "measured": 2.0649542579342063e-05, "relative_difference": 9.516513162843004e-15, "tolerance": 1e-09, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "displacement", "value": 0.01791871128618163, "measured": 0.01791871128618139, "relative_difference": 1.3359880398843813e-14, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "velocity", "value": 0.04212644008497969, "measured": 0.04212644008497959, "relative_difference": 2.4707382904571535e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "energy_state", "value": 0.062101704952690816, "measured": 0.062101704952690504, "relative_difference": 5.028045943564642e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "selected_fit_objective", "value": 8.93324365527903e-05, "archived_selected_start": 3, "measured_selected_start": 3, "selected_start_matches_archive": true, "measured": 8.933243655279103e-05, "relative_difference": 8.192281489996553e-15, "tolerance": 1e-09, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "displacement", "value": 0.015428407601869391, "measured": 0.015428407601869006, "relative_difference": 2.4961008394682888e-14, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "velocity", "value": 0.03419016401441672, "measured": 0.034190164014416456, "relative_difference": 7.712100130238963e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "energy_state", "value": 0.05136114487320719, "measured": 0.05136114487320691, "relative_difference": 5.5391025796351455e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "opened_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "selected_fit_objective", "value": 0.00010331503714199858, "archived_selected_start": 4, "measured_selected_start": 4, "selected_start_matches_archive": true, "measured": 0.00010331503714199871, "relative_difference": 1.3117671474523015e-15, "tolerance": 1e-09, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "displacement", "value": 0.014170128265227244, "measured": 0.014170128201275172, "relative_difference": 4.513161057707989e-09, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "velocity", "value": 0.03931437134474356, "measured": 0.03931437110108862, "relative_difference": 6.197604975216561e-09, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "energy_state", "value": 0.05133555914719338, "measured": 0.051335558580404096, "relative_difference": 1.1040870920479359e-08, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "selected_fit_objective", "value": 0.00011521800282719732, "archived_selected_start": 0, "measured_selected_start": 4, "selected_start_matches_archive": false, "measured": 0.00011521800282719736, "relative_difference": 3.528752492714546e-16, "tolerance": 1e-09, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "displacement", "value": 0.010601191008534004, "measured": 0.010601190970271072, "relative_difference": 3.609305098075604e-09, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "velocity", "value": 0.02695253994610814, "measured": 0.02695253983849876, "relative_difference": 3.992550607678135e-09, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "energy_state", "value": 0.03795896121073029, "measured": 0.03795896113752568, "relative_difference": 1.9285198199934325e-09, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "selected_fit_objective", "value": 5.1485186011894824e-05, "archived_selected_start": 4, "measured_selected_start": 7, "selected_start_matches_archive": false, "measured": 5.148518601189509e-05, "relative_difference": 5.1330159219447195e-15, "tolerance": 1e-09, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "displacement", "value": 0.015669906091490632, "measured": 0.0156699060914902, "relative_difference": 2.745462669210696e-14, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "velocity", "value": 0.03664148350457592, "measured": 0.03664148350457562, "relative_difference": 8.143022861799496e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "energy_state", "value": 0.04896849350296902, "measured": 0.04896849350296868, "relative_difference": 6.9433584120948954e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "selected_fit_objective", "value": 0.00010371911264574333, "archived_selected_start": 0, "measured_selected_start": 0, "selected_start_matches_archive": true, "measured": 0.0001037191126457436, "relative_difference": 2.6133133634411218e-15, "tolerance": 1e-09, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "displacement", "value": 0.011040681734013359, "measured": 0.011040681734012724, "relative_difference": 5.750630327940066e-14, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "velocity", "value": 0.026416615260218795, "measured": 0.026416615260218625, "relative_difference": 6.435453557206369e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "energy_state", "value": 0.038394513756140614, "measured": 0.038394513756140364, "relative_difference": 6.506142573578198e-15, "tolerance": 1e-07, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 256, "case": "fresh_development_1", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "selected_fit_objective", "value": 2.9220628251930935e-05, "archived_selected_start": 2, "measured_selected_start": 2, "selected_start_matches_archive": true, "measured": 2.9220628251930708e-05, "relative_difference": 7.768649869776558e-15, "tolerance": 1e-09, "passed": true}], "all_passed": true, "count": 32}
+w_ladder_complete
+ALL-DONE

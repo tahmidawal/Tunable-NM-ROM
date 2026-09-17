@@ -1,0 +1,150 @@
+{
+  "attempt": "bpn201",
+  "job_id": "3783817",
+  "status": "RETRACTED: crashed before any subject was built; no timing or error number exists",
+  "scheduler": {
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed": "00:20:23",
+    "start": "2026-09-17T10:35:39",
+    "end": "2026-09-17T10:56:02",
+    "node": "pax008",
+    "batch_max_rss": "76023968K",
+    "alloc": "billing=8,cpu=8,gres/gpu=1,mem=240G,node=1"
+  },
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "staged_commit": "e330cca4f3fa998f4fb25a431a3dfde480ff9625",
+  "config": "bpn201",
+  "disk_at_start": "10.235.106.33:/projects/paralab  4.6T  4.2T  396G  92% /cluster/tufts/paralab",
+  "disk_full": false,
+  "cause": {
+    "kind": "TypeError in the driver, not memory and not disk",
+    "where": "experiments/b-panel/panel.py line 445 at commit e330cca4 (line 468 at 2bdea0d1): order = {s['name']: i for i, s in enumerate(cfg.get('priority_override', []))}",
+    "why": "config-1024.json (and config-512.json) hold `priority_override` as a list of subject-name strings; the driver indexed each entry as a dict. Neither smoke config carried the key, so the path was never exercised; config-256.json (bpn101) has no override, so bpn101 was unaffected.",
+    "traceback_verbatim": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/b_panel_20260917/bpn201/experiments/b-panel/panel.py\", line 745, in <module>\n    main()\n    ~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/b_panel_20260917/bpn201/experiments/b-panel/panel.py\", line 445, in main\n    order = {s['name']: i for i, s in enumerate(cfg.get('priority_override', []))}\n             ~^^^^^^^^\nTypeError: string indices must be integers, not 'str'\n"
+  },
+  "completed_before_crash": {
+    "preflight": "jax_backend=gpu",
+    "references": "6 cases, 4096 intervals",
+    "snapshots": 3328,
+    "rule_transfers": [
+      {
+        "q": 0,
+        "M": 64,
+        "m_support": 1024,
+        "m": 934,
+        "fit_states": 64,
+        "design_rows": 4096,
+        "rho_max": 0.017955013632252083,
+        "rho_p95": 0.01611107440890439,
+        "basis": "primary",
+        "seconds": 37.33275703410618,
+        "source_rho_max": 0.015325989787060358
+      },
+      {
+        "q": 16,
+        "M": 128,
+        "m_support": 1024,
+        "m": 918,
+        "fit_states": 64,
+        "design_rows": 8192,
+        "rho_max": 0.05943045801841593,
+        "rho_p95": 0.05620241810504678,
+        "basis": "primary",
+        "seconds": 45.64167498610914,
+        "source_rho_max": 0.09354875564583576
+      },
+      {
+        "q": 32,
+        "M": 192,
+        "m_support": 1024,
+        "m": 967,
+        "fit_states": 42,
+        "design_rows": 8064,
+        "rho_max": 0.03131105849831428,
+        "rho_p95": 0.01802643636816909,
+        "basis": "primary",
+        "seconds": 52.24281107983552,
+        "source_rho_max": 0.05325016925129779
+      },
+      {
+        "q": 64,
+        "M": 320,
+        "m_support": 1024,
+        "m": 897,
+        "fit_states": 25,
+        "design_rows": 8000,
+        "rho_max": 0.13162662110552784,
+        "rho_p95": 0.12543832554399117,
+        "basis": "none",
+        "seconds": 68.40086254803464,
+        "source_rho_max": 0.05307530181948666
+      },
+      {
+        "q": 128,
+        "M": 576,
+        "m_support": 2048,
+        "m": 1307,
+        "fit_states": 14,
+        "design_rows": 8064,
+        "rho_max": 1.029463562232638,
+        "rho_p95": 0.5217928902774216,
+        "basis": "none",
+        "seconds": 130.99815805908293,
+        "source_rho_max": 0.19079787335858353
+      },
+      {
+        "q": 256,
+        "M": 1088,
+        "m_support": 2048,
+        "m": 1831,
+        "fit_states": 8,
+        "design_rows": 8704,
+        "rho_max": 0.4143543481086481,
+        "rho_p95": 0.3979777793435839,
+        "basis": "none",
+        "seconds": 407.3411176830996,
+        "source_rho_max": 0.16776604412734367
+      }
+    ],
+    "seconds_in_transfers": 741.957381390268
+  },
+  "not_reached": "every subject build, warm-up, timing, the FNO phase, OUTPUTS.sha256, ALL-DONE",
+  "stdout_verbatim": "host=pax008 source_commit=e330cca4f3fa998f4fb25a431a3dfde480ff9625\nNVIDIA H200, 143771 MiB\n10.235.106.33:/projects/paralab  4.6T  4.2T  396G  92% /cluster/tufts/paralab\njax_backend=gpu\njax_backend=gpu x64=True precision=highest\nREFERENCE 0 38.9\nREFERENCE 1 68.2\nREFERENCE 2 107.7\nREFERENCE 3 144.3\nREFERENCE 4 176.0\nREFERENCE 5 204.7\nSNAPSHOTS 77.5\nRULE q 0  m 1024 primary\nRULE q 16  m 1024 primary\nRULE q 32  m 1024 primary\nRULE q 64  m 1024 primary\nRULE q 128  m 2048 secondary\nRULE q 256  m 2048 secondary\nXFER q 0 m 934 rho_max 0.0180 p95 0.0161 primary 37.3\nXFER q 16 m 918 rho_max 0.0594 p95 0.0562 primary 45.6\nXFER q 32 m 967 rho_max 0.0313 p95 0.0180 primary 52.2\nXFER q 64 m 897 rho_max 0.1316 p95 0.1254 none 68.4\nXFER q 128 m 1307 rho_max 1.0295 p95 0.5218 none 131.0\nXFER q 256 m 1831 rho_max 0.4144 p95 0.3980 none 407.3\n",
+  "prediction_A5_2": {
+    "predicted_uncertified": [
+      128,
+      256
+    ],
+    "observed_uncertified": [
+      64,
+      128,
+      256
+    ],
+    "note": "q=64 (25 fit states) also missed the bar, rho_max 0.1316 > 0.116; the prediction named only the top two rungs. These rho values are from a retracted attempt and enter no table; bpn202 recomputes them."
+  },
+  "remediation": {
+    "change": "panel.py: priority_override read as a list of names, validated (every name must be a declared subject) at the top of main() before any expensive work; subject declaration factored into declare_subjects(); config-smoke128.json carries a priority_override so the smoke exercises the path; the smoke asserts the declared order and validates config-256/512/1024 against the declared subject set",
+    "science_changed": false,
+    "resubmitted_as": "bpn202 (H200, --mem 240G, same config-1024.json)"
+  },
+  "files": {
+    "COMMIT.txt": "22c66da53e782134dbbb569acb66e7d2aff9dba25fce5c5464190c5a585ee502",
+    "MANIFEST.sha256": "e4c651882af18925a19906057f4f20ee25c9dd9130e48f00a4feb9b8ced805de",
+    "PROVENANCE.json": "e3244cb408d31e659de0dcb57a045b9bf28142ceb35b7971c648c0d4f4e6fcb5",
+    "REMOTE-SHA256.txt": "f6fbc5c985f6c8fd81605cc7b8aee1ae803a4a84da3b0830d42a5274d28b2f88",
+    "logs/3783817.err": "93baf585587ed83cd882ddddb2f5a5d16e6745538cffa402c2b9400c7d17afbc",
+    "logs/3783817.out": "3f8b1146fdce6816982adc330c31be3aa895843f6d8896bd45efc02aa62f6d93",
+    "output/fno-cohort-index.json": "bcfb4445e71efe3e1f28629e86ed8345d1242195cbbf271080febc96680ede1b",
+    "output/result.partial.json": "b5a7f15285bb8d385fbb0e41f5bd27cecc21e4e77cc1ab95ec62a6011dea76f9",
+    "output/rule_xfer_q0_L1024.npz": "b5848f5d82628b2e3667e8c069e04c4fc2bcd5b2f065e06806816ad547bbe1e1",
+    "output/rule_xfer_q128_L1024.npz": "af5faae1aeec704c51d920979a4885510989cb87697d5a370d9c96be7c792103",
+    "output/rule_xfer_q16_L1024.npz": "78314f606c6fff6dc56d5a4c10b6844765cd3464b9f4ac959f6e68d7bad09f1b",
+    "output/rule_xfer_q256_L1024.npz": "7faa98f53cf980bfda2fc253497ad2d835feba56ecda84076fab26ebf7cadd33",
+    "output/rule_xfer_q32_L1024.npz": "48609ae8bfde762b3452b6cd291cf0f35e73a122a0ffa4325a7ea2a39f102c2c",
+    "output/rule_xfer_q64_L1024.npz": "8a161f124e37d909e8d7ff432da7211c85e2a678b1dcd1f771d37158b8e6c475",
+    "run.sbatch": "6a39cc9ea291d7b5856ca11f90523fc984b954fcbbea82ab3b0f3aff9809b031",
+    "scheduler.txt": "48a362fb747913881ea7b38bceef483680b98d8b2334fabd3ba3118dc1ddb128"
+  }
+}

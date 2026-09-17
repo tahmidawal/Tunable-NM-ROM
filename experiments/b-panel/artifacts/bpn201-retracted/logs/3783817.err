@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b_panel_20260917/bpn201/experiments/b-panel/panel.py", line 745, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b_panel_20260917/bpn201/experiments/b-panel/panel.py", line 445, in main
+    order = {s['name']: i for i, s in enumerate(cfg.get('priority_override', []))}
+             ~^^^^^^^^
+TypeError: string indices must be integers, not 'str'

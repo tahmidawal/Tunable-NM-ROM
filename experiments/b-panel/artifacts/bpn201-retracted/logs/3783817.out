@@ -1,0 +1,24 @@
+host=pax008 source_commit=e330cca4f3fa998f4fb25a431a3dfde480ff9625
+NVIDIA H200, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T  4.2T  396G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 38.9
+REFERENCE 1 68.2
+REFERENCE 2 107.7
+REFERENCE 3 144.3
+REFERENCE 4 176.0
+REFERENCE 5 204.7
+SNAPSHOTS 77.5
+RULE q 0  m 1024 primary
+RULE q 16  m 1024 primary
+RULE q 32  m 1024 primary
+RULE q 64  m 1024 primary
+RULE q 128  m 2048 secondary
+RULE q 256  m 2048 secondary
+XFER q 0 m 934 rho_max 0.0180 p95 0.0161 primary 37.3
+XFER q 16 m 918 rho_max 0.0594 p95 0.0562 primary 45.6
+XFER q 32 m 967 rho_max 0.0313 p95 0.0180 primary 52.2
+XFER q 64 m 897 rho_max 0.1316 p95 0.1254 none 68.4
+XFER q 128 m 1307 rho_max 1.0295 p95 0.5218 none 131.0
+XFER q 256 m 1831 rho_max 0.4144 p95 0.3980 none 407.3

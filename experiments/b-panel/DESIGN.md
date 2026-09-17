@@ -364,3 +364,53 @@ exercised; shipping an unsmoked change into the most expensive job of the lane i
 the 1024² job exists for — do not depend on any EQ rule at all. The fit-state count is therefore
 fixed in `bpn301`, where it can be smoked first, and `bpn201` reports its rules' certification
 status honestly under the existing admissibility rule.
+
+## A6 — 2026-09-17 11:15, after `bpn201` failed: a config-parsing crash, retracted and resubmitted as `bpn202`
+
+`bpn201` (job 3783817, H200 on `pax008`, 240 GB, staged from `e330cca4`) exited 1 after 20m23s.
+Disk was checked first: paralab at 92 % with 396 GB free at job start and now, both log files
+non-empty, so not disk-full. Not memory either: the batch step's peak host RSS was 76 GB of 240,
+and the crash is a Python exception, verbatim from `logs/3783817.err`:
+
+```
+  File ".../experiments/b-panel/panel.py", line 445, in main
+    order = {s['name']: i for i, s in enumerate(cfg.get('priority_override', []))}
+             ~^^^^^^^^
+TypeError: string indices must be integers, not 'str'
+```
+
+`config-1024.json` (and `config-512.json`) hold `priority_override` — §3.2's build order — as a
+list of subject-name strings; the driver indexed each entry as a dict. Neither smoke config
+carried the key, so the local smoke never exercised the path, and `config-256.json` has no
+override, so `bpn101` was unaffected. The job had by then completed the preflight
+(`jax_backend=gpu`), the six references (~740 s), the 1024² snapshots (3328 states, 78 s) and all
+six rule transfers (~740 s), and reached the subject declaration, the first line after them.
+
+**What changed (commit after this amendment), and why it does not alter the science.**
+`priority_override` is read as a list of names; every name must be a declared subject, asserted;
+the subject declaration is factored into `declare_subjects()` and runs at the top of `main()`,
+before any expensive work, so a malformed config now fails in the first second. The declared
+list, its names, priorities and sort key are otherwise byte-identical to the block that was
+inline. `config-smoke128.json` gains a `priority_override` so the smoke exercises the path, and
+the smoke asserts (i) the declared build order honours it and (ii) `config-256/512/1024.json`'s
+override names are declared subjects. No arm, tolerance, rule, seed, population or metric changed.
+
+**The resubmission is `bpn202`**: the same `config-1024.json`, H200, `--mem 240G`, staged from
+the commit carrying this amendment. Per protocol rule 4 the science is unchanged between the
+attempt and its resubmission; in particular the transferred-rule fit-state count stays at the
+§A5.2 convention and is **not** raised here, for §A5.2's reason (unsmoked size in the lane's most
+expensive job). `bpn201` counts against the cap (retracted jobs count): three jobs used.
+
+**What the failed attempt showed before it died, recorded because it bears on §A5.2's
+prediction.** The six transfers ran and certified: $q=0,16,32$ primary ($\rho_{\max}$ 0.018,
+0.059, 0.031 on 64/64/42 fit states); $q=64$ **uncertified**, $\rho_{\max}=0.1316$ on 25 states;
+$q=128$ uncertified, $\rho_{\max}=1.03$ on 14; $q=256$ uncertified, $\rho_{\max}=0.41$ on 8. The
+prediction named the top two rungs; the third from the top also missed, by a small margin. These
+values come from a retracted attempt, are archived in `artifacts/bpn201-retracted/` and enter no
+table; `bpn202` recomputes them and its values are the record. The refits themselves were cheap
+(3–22 s each; design rows $\le 8704$, support $\le 2048$), which bounds the cost of raising the
+fit-state cap in `bpn301` once that size has been smoked.
+
+The `runs/bpn201/` staging copy is deleted locally with the remote directory; the retracted
+archive is `artifacts/bpn201-retracted/` (`FAILURE.json`, verbatim logs, scheduler record,
+partial `result.json`, the six transferred rule files, remote hashes).

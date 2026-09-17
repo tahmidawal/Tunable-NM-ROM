@@ -1,0 +1,23 @@
+[jaxrun-slot] slot 1 acquired at 06:05:18
+jax_backend=gpu x64=True precision=highest
+BANK ready 138.7 floor dev 0.007458918027429539
+PRIMARY dev best-found 0.031211818884306824
+head K32_w128_L2 {'updates': 30, 'loss': 0.7146765650250437, 'reconstruction': 0.7146765650250437, 'weak': 0.7144828397603329, 'smoothness': 0.0, 'seconds': 0.42094000801444054}
+HEAD K32_w128_L2 fit 2.0527261772154275 val 0.6419571012980635 dev 0.446094374401105 99.0
+head K32_w256_L2 {'updates': 30, 'loss': 0.7014584449433636, 'reconstruction': 0.7014584449433636, 'weak': 0.7012795111916205, 'smoothness': 0.0, 'seconds': 0.5486135199898854}
+HEAD K32_w256_L2 fit 2.398655131382357 val 0.6300352508750133 dev 0.5119622517479361 155.7
+head K32_w128_L3 {'updates': 30, 'loss': 0.71170069814859, 'reconstruction': 0.71170069814859, 'weak': 0.7115063960754325, 'smoothness': 0.0, 'seconds': 0.44202959607355297}
+HEAD K32_w128_L3 fit 2.3093093137303597 val 0.6369529095899515 dev 0.5091992243600935 85.7
+head K64_w128_L2 {'updates': 30, 'loss': 0.7122741981775641, 'reconstruction': 0.7122741981775641, 'weak': 0.711934656861459, 'smoothness': 0.0, 'seconds': 0.44296570401638746}
+HEAD K64_w128_L2 fit 1.9929271711790166 val 0.3986331588391528 dev 0.26263450744131817 153.1
+RECON 64 pbh02_primary_K32 floor 0.008092268386424219 best 0.03242033114592169
+RECON 64 K32_w128_L2 floor 0.008092268386424219 best 0.4463392996372753
+RECON 64 K32_w256_L2 floor 0.008092268386424219 best 0.5122608690519181
+RECON 64 K32_w128_L3 floor 0.008092268386424219 best 0.5095157243782367
+RECON 64 K64_w128_L2 floor 0.008092268386424219 best 0.26290636523436844
+TIMED 0 821.4
+GATE {'intervals': 64, 'ours': 'a_neural@pbh02_primary_K32', 'theirs': 'a_neural@new_K32', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'worst_relative_difference': 1.0797842709326885e-14, 'tolerance': 1e-09, 'passed': True}
+GATE {'intervals': 64, 'ours': 'dst_direct', 'theirs': 'dst_direct', 'source': 'references/pbh02-reference.json', 'reference_job': '3748202', 'worst_relative_difference': 1.2376855732888615e-13, 'tolerance': 1e-09, 'passed': True}
+P-LINEAR HEAD COMPLETE
+[jaxrun-slot] slot 1 released rc=0
+exit=0

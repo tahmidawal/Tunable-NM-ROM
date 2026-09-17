@@ -12,16 +12,23 @@ import numpy as np, scipy.sparse.linalg as spla
 sys.path.insert(0, 'experiments/lshape')
 import lsh_audit_np as L
 
-out = Path('experiments/lshape/artifacts/lsh02'); d = json.loads((out / 'result.json').read_text())
+# result.json is the archived copy; the bank checkpoints sit in the collected output tree
+out = Path('experiments/lshape/runs/lsh02/archive/output'); d = json.loads((out / 'result.json').read_text())
 cfg = d['config']; N = cfg['training_intervals']
 g = L.Geom(N); S = L.Solver(g); A = S.A
 dc = cfg['cohorts']['development']; dev = L.cohort(seed=dc['seed'], draw=dc['draw'], count=dc['count'])
 F = np.stack([L.source_int(g, q) for q in dev]); U = np.stack([S.ref(f)[0] for f in F])
 KMAX = 1024
 t0 = time.time()
-opinv = spla.LinearOperator((g.n, g.n), matvec=S.lu.solve, dtype=float)
-lam, phi = spla.eigsh(A, k=KMAX, sigma=0.0, which='LM', OPinv=opinv, v0=np.random.default_rng(0).standard_normal(g.n), tol=0)
-o = np.argsort(lam); lam, phi = lam[o], phi[:, o]
+cache = Path(sys.argv[1]) if len(sys.argv) > 1 else None   # optional npz cache of the eigenpairs
+if cache is not None and cache.exists():
+    z = np.load(cache); lam, phi = z['lam'], z['phi']
+else:
+    opinv = spla.LinearOperator((g.n, g.n), matvec=S.lu.solve, dtype=float)
+    lam, phi = spla.eigsh(A, k=KMAX, sigma=0.0, which='LM', OPinv=opinv, v0=np.random.default_rng(0).standard_normal(g.n), tol=0)
+    o = np.argsort(lam); lam, phi = lam[o], phi[:, o]
+    if cache is not None:
+        np.savez(cache, lam=lam, phi=phi)
 print(f'eigsh k={KMAX}: {time.time()-t0:.0f}s, lambda_1={lam[0]:.6f}, lambda_{KMAX}={lam[-1]:.1f}, '
       f'eig resid {np.linalg.norm(A @ phi - phi * lam) / np.linalg.norm(phi * lam):.1e}', flush=True)
 rows = []

@@ -1,0 +1,61 @@
+{
+  "attempt": "lsh06",
+  "intervals": [
+    64,
+    128,
+    256,
+    512
+  ],
+  "fine_intervals": 1024,
+  "requested_modes": 1024,
+  "mode_seed": 0,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "correction_ladder": [
+    0,
+    32,
+    64,
+    128
+  ],
+  "free_bank_rule": "q = R_total is added for a primary only where M > R_total. M = 1024 (DESIGN.md A6): the untimed NumPy sweep on the real lsh02 banks shows the rank-512 least-squares rung is ill-posed at M = 513 (worst 8x its floor, cond(B) 6e6) and sits on its floor only from M ~ 768; every subject in this job -- ladder, POD and comparators alike -- uses these 1024 test modes, so all within-job comparisons are like for like and NO cost in this job is comparable with the M = 257 jobs",
+  "cohorts": {
+    "development": {
+      "seed": 20260917,
+      "draw": 64,
+      "count": 32
+    },
+    "training": {
+      "seed": 0,
+      "draw": 4608,
+      "count": 3072
+    }
+  },
+  "pod_count": 3072,
+  "pod_ranks": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "pod_block": 512,
+  "cg_gpu_rtols": [
+    0.01,
+    0.0001,
+    1e-10
+  ],
+  "pcg_ic0_rtols": [
+    0.01,
+    1e-10
+  ],
+  "cg_maxiter": 100000,
+  "reference_residual_limit": 1e-12,
+  "solver_agreement_limit": 1e-08,
+  "repetitions": 3,
+  "order_seed": 911717,
+  "burn_seconds": 0.1,
+  "timing_contract": "host (N+1)^2 nodal source array in to host (N+1)^2 nodal solution array out, including gather/projection, initialisation, solve and decode/scatter; identical for every subject"
+}

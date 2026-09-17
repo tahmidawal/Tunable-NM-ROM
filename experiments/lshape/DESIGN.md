@@ -440,3 +440,79 @@ exhausted until 2026-09-19 11:33 (coordinator-verified), which is after this lan
 window. As in §A1 the substitute is a written self-audit, `reports/self-audit-lsh02.md`,
 listing each claim, the `result.json` field it rests on, and the check that was run against it.
 If the lane is still open after 2026-09-19 11:33 the Codex audit is run and appended.
+
+**2026-09-17, §A6 — a fifth job carries the $q=R$ free-bank rung for the primaries at $N=256$;
+it runs at $M=1024$ test modes, not the $M=513$ the coordinator named, because $M=513$ is
+ill-posed on the real banks.** The coordinator's decision (2026-09-17, after the interim
+report): the paper's structural claim is that on linear PDEs the top rung is a linear reduced
+model and the cheapest point, and the L-shape is the cell where the direct sine-transform
+competitor is removed, so the $q=R$ rung is needed here; one more solve job at $N=256$ with the
+same six full-order comparators and the POD ranks in the same allocation, so its cost is
+comparable to the other rungs *in that job*. Four things were done before staging it.
+
+*(a) The free rung runs no LM.* On that rung $C=I$, so $B_\perp=(I-Q_qQ_q^\top)B$ is zero to
+round-off and no nonlinear unknown remains: every coefficient comes from the exact elimination
+$y = R_q^{-1}Q_q^\top f_m$. The LM's normalised gradient on a zero operator is a round-off cosine,
+so it would climb its damping ladder to exit reason 3 on every query and inflate the cost of what
+is by construction a linear reduced model — which would have made the claim under test look false
+for an implementation reason. `make_rom_kernel(..., free=True)` skips it; the rung reports
+0 iterations, and its stationarity is `full_stationarity`, the gradient of the *full* residual,
+which the kernel computes for every rung regardless. `arm_setup` records `free_rung` and
+`nonlinear_unknowns = 0`. `lsh03`–`lsh05` never reach this branch ($M=257<R=512$ for every
+primary), so the science they were staged with is unchanged; the byte difference in `lsh_solve.py`
+between those three attempts and this one is exactly this branch plus the two bookkeeping fields.
+
+*(b) Local smoke of the branch (`checks/smoke-free-rung-summary.json`, `checks/smoke-config-free-rung.json`).*
+$N=32$, $M=40$ against the smoke primaries' $R=32$, run without `--smoke` because that flag pins
+$M=16$: the rung fires on both primaries, 0 iterations, exit 4, full stationarity
+$1.8\times10^{-13}$, `linear_rank` $=32=R$, byte-identical output from the $K=4$ and $K=8$ heads
+(as it must be: the rung is head-independent), the cheapest reduced subject in the run, and the
+independent NumPy solve audit passes every check. Its *error* on that 705-node toy bank (worst 97.5 %
+against a 41 % floor) is not evidence about the real cell, but it is what prompted (c).
+
+*(c) The untimed free-rung error on the real `lsh02` banks as a function of $M$
+(`checks/free_rung_M_sweep.py`, one CPU shift-invert eigensolve at $k=1024$, eigen-residual
+$7.9\times10^{-14}$; every prefix $M$ is the same lowest-eigenpair set).* The rung is the
+least-squares solution of $Bc=f_m$ over all $R$ coefficients and is head-independent, so this is
+the number the job will report, obtained ahead of it:
+
+| bank | $R$ | $M$ | free rung worst / median | bank floor worst | worst / floor | $\mathrm{cond}(B)$ |
+|---|---:|---:|---:|---:|---:|---:|
+| `sdf_R512` | 512 | 513 | 6.2782 % / 1.8691 % | 0.7766 % | 8.08x | 6.35e+06 |
+| `sdf_R512` | 512 | 640 | 0.8640 % / 0.3230 % | 0.7766 % | 1.11x | 3.26e+05 |
+| `sdf_R512` | 512 | 768 | 0.8042 % / 0.3184 % | 0.7766 % | 1.04x | 2.62e+05 |
+| `sdf_R512` | 512 | 1024 | 0.7791 % / 0.3170 % | 0.7766 % | 1.00x | 2.38e+05 |
+| `smooth_R512` | 512 | 513 | 8.4852 % / 1.2033 % | 0.7123 % | 11.91x | 4.10e+06 |
+| `smooth_R512` | 512 | 640 | 0.8227 % / 0.1399 % | 0.7123 % | 1.16x | 3.38e+05 |
+| `smooth_R512` | 512 | 768 | 0.7340 % / 0.1252 % | 0.7123 % | 1.03x | 2.77e+05 |
+| `smooth_R512` | 512 | 1024 | 0.7161 % / 0.1225 % | 0.7123 % | 1.01x | 2.52e+05 |
+| `enrich_R512` | 514 | 515 | 8.7530 % / 0.8862 % | 0.6676 % | 13.11x | 2.38e+07 |
+| `enrich_R512` | 514 | 640 | 0.8204 % / 0.1364 % | 0.6676 % | 1.23x | 1.89e+06 |
+| `enrich_R512` | 514 | 768 | 0.6930 % / 0.1249 % | 0.6676 % | 1.04x | 1.47e+06 |
+| `enrich_R512` | 514 | 1024 | 0.6719 % / 0.1202 % | 0.6676 % | 1.01x | 1.28e+06 |
+
+At $M=R+1$ the system is one equation over square: bank content outside the span of the lowest
+513 eigenmodes is unconstrained, $\mathrm{cond}(B)$ is $10^{6}$–$10^{7}$, and the top rung sits
+8–13× above its own floor. From $M\approx768$ it is within 4 % of the floor on every bank and at
+$M=1024$ it *is* the floor (1.00×, 1.01×, 1.01×). **The job therefore runs at $M=1024$.** The
+coordinator's requirement — every subject in the same allocation so the comparison is within-job —
+holds at any $M$; what does *not* hold is cross-job cost comparability: with $f_m=Pf$ a dense
+$M\times n$ product charged inside every reduced query, no cost in this job may be set beside a
+cost from the $M=257$ jobs, and the report will label the two blocks separately. The deviation
+from the named $M=513$ is recorded here as a deviation; if the coordinator wants the $M=513$
+measurement timed as well, the untimed answer is the first row of each block of the table above,
+and a timed one is a second config away.
+
+*(d) A concern this exposes about the queued jobs.* POD-LSPG at $k'=256$ in `lsh03`–`lsh05` is
+solved against $M=257$ test modes — the same one-over-square structure. If it looks poor there,
+that is the test-space count, not the POD basis; this job carries POD at all five ranks under
+$M=1024$ and is the control that separates the two readings. `lsh03`–`lsh05` are **not** resubmitted
+(they are queued; the science is never changed between submits).
+
+*Carried into the next regeneration of the report, on the coordinator's instruction:* (i) the
+validation-versus-development worst-case gap (461 cases: 10.7–16.7 %; 32 cases: 3.5–6.8 %) goes
+**beside the headline error**, not in a caveat section; (ii) the report generator keys timed
+subjects by `(mesh, name)` and would let a second $N=256$ job overwrite `lsh04` — it must key by job
+as well and present the $M=257$ and $M=1024$ blocks as separate, non-comparable tables; (iii) a
+$K=64$ head is a reasonable use of a spare job only after the solve jobs land, and is not
+submitted now. Cluster jobs after this one: five used, three in reserve.

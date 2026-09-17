@@ -1,0 +1,6 @@
+**What was wrong, retracted or substituted (chronological).**
+
+- **Codex audit substituted (DESIGN.md A1).** `codex exec` with `gpt-6-astra` and `gpt-5.6-sol` both returned the account's usage limit ("try again at Sep 19th, 2026 11:33 AM"), so the protocol's pre-job Codex audit could not be obtained. An independent review by a Claude agent with no access to this lane's conversation (same read-only brief) was used instead and is recorded as such — a different context, not a different model family. Its blocker (the incumbent fidelity gate set at a $10^{-9}$ tier qtd02 itself did not meet) and its major findings were accepted before any job.
+- **First local parent smoke died at CUDA init** (`CUDA_ERROR_OUT_OF_MEMORY` creating the stream executor) while another lane's processes held most of the shared GB10; it was rerun once the slot freed. No number depended on it.
+- **The audit's training gates read the stage A/B JSONs by their `N256` names**; the 64-interval chain smoke exposed it (`FileNotFoundError`). Fixed to glob the mesh before any job; recorded in A1.
+- **Local smokes exceeded the sub-minute rule** (the parent smoke ≈ 2 min, the chain smoke ≈ 15 min at 64 intervals), as the parent lanes' smokes did; recorded as a deviation, the rule stands.

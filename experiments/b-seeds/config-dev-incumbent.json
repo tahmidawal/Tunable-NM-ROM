@@ -133,76 +133,8 @@
     "4": "ec6ea95b93ff30f504ecb6f17d9062b5d6ac2dce79eb2dda1363b72f8a45e9a5",
     "5": "1ee7966163f55ce300a0821d7d84479b0448d8a6da2f660e27c68b509163c166"
   },
-  "fidelity_expectations": {
-    "q0_M64_dense": {
-      "job": "cclad01",
-      "reproduces": "q0_m4_dense_block",
-      "tolerance": 1e-09
-    },
-    "q0_M256_dense": {
-      "job": "cclad01",
-      "reproduces": "q0_m256_dense_block",
-      "tolerance": 1e-09
-    },
-    "old_q16_M128_dense": {
-      "job": "cclad01",
-      "reproduces": "q16_m4_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q32_M192_dense": {
-      "job": "cclad01",
-      "reproduces": "q32_m4_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q64_M320_dense": {
-      "job": "cclad01",
-      "reproduces": "q64_m4_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q128_M576_dense": {
-      "job": "cclad01",
-      "reproduces": "q128_m4_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q256_M1088_dense": {
-      "job": "cclad01",
-      "reproduces": "q256_m4_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q16_M256_dense": {
-      "job": "cclad01",
-      "reproduces": "q16_m256_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q32_M256_dense": {
-      "job": "cclad01",
-      "reproduces": "q32_m256_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q64_M256_dense": {
-      "job": "cclad01",
-      "reproduces": "q64_m256_dense_block",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    },
-    "old_q128_M256_dense": {
-      "job": "btq201",
-      "reproduces": "q128_M256_dense_g1em06",
-      "tolerance": 1e-09,
-      "second_tier_tolerance": 0.001
-    }
-  },
-  "btq201_expectations": {
-    "q0_M256_dense": "q0_M256_dense_g1em06",
-    "old_q128_M256_dense": "q128_M256_dense_g1em06"
-  },
+  "fidelity_expectations": {},
+  "btq201_expectations": {},
   "cclad01_job_id": 3734098,
   "btq101_job_id": 3745589,
   "btq102_job_id": 3749039,
@@ -211,50 +143,62 @@
   "checkpoint_label": "incumbent",
   "lane": "b-seeds",
   "parent_configuration": "q-trajdirs config-dense.json, job 3757505 (qtd02)",
+  "expected_checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
   "qtd02_expectations": {
     "q0_M64_dense": {
       "reproduces": "q0_M64_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "q0_M256_dense": {
       "reproduces": "q0_M256_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q16_M128_dense": {
       "reproduces": "old_q16_M128_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q16_M256_dense": {
       "reproduces": "old_q16_M256_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q32_M192_dense": {
       "reproduces": "old_q32_M192_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q32_M256_dense": {
       "reproduces": "old_q32_M256_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q64_M256_dense": {
       "reproduces": "old_q64_M256_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q64_M320_dense": {
       "reproduces": "old_q64_M320_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q128_M256_dense": {
       "reproduces": "old_q128_M256_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q128_M576_dense": {
       "reproduces": "old_q128_M576_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     },
     "old_q256_M1088_dense": {
       "reproduces": "old_q256_M1088_dense",
-      "tolerance": 1e-09
+      "tolerance": 0.001,
+      "probe_tolerance": 1e-09
     }
   },
   "final_cohort_unopened": true

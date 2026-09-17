@@ -98,8 +98,8 @@ def training_gates(tdir, r, gate, a):
     and the incumbent's recorded job JSONs. Value gates throughout: FOM last bits are
     GPU-model dependent, so sums and sums of squares are compared at 1e-9 relative."""
     import pickle
-    r3 = json.loads((tdir / 'sep_burgers_r3_N256_K16_R512.json').read_text())
-    co = json.loads((tdir / 'sep_coeff_N256_K16_R512.json').read_text())
+    r3 = json.loads(next(tdir.glob('sep_burgers_r3_N*_K16_R512.json')).read_text())
+    co = json.loads(next(tdir.glob('sep_coeff_N*_K16_R512.json')).read_text())
     hf = json.loads((tdir / 'hfit_full.json').read_text())
     inc_r3 = json.loads(Path(a.incumbent_r3).read_text())
     inc_co = json.loads(Path(a.incumbent_coeff).read_text())
@@ -264,9 +264,10 @@ def main():
          r['final_cohort_unopened'] is (a.cohort == 'dev'),
          dict(flag=r['final_cohort_unopened'], cohort=a.cohort),
          'development jobs must record the final cohort as unopened; the sealed job as opened')
-    if a.expect_checkpoint_sha256:
-        gate('checkpoint_is_the_recorded_one', r['checkpoint_sha256'] == a.expect_checkpoint_sha256,
-             dict(expected=a.expect_checkpoint_sha256, got=r['checkpoint_sha256']))
+    want_ck = a.expect_checkpoint_sha256 or cfg.get('expected_checkpoint_sha256')
+    if want_ck:
+        gate('checkpoint_is_the_recorded_one', r['checkpoint_sha256'] == want_ck,
+             dict(expected=want_ck, got=r['checkpoint_sha256']))
     gate('reference_residuals', all(x['max_relative_residual'] < 2e-11 for x in r['reference']),
          max(x['max_relative_residual'] for x in r['reference']))
     info('reference_fields_bitwise_match_comparator',
@@ -622,6 +623,9 @@ def main():
             / max(their_sg['same_grid_evolved'], 1e-300))
         worst_rel = max(rels.values())
         q2[arm] = dict(passed=bool(worst_rel <= spec['tolerance']), tolerance=spec['tolerance'],
+                       probe_tolerance=spec.get('probe_tolerance'),
+                       passes_probe=(None if spec.get('probe_tolerance') is None
+                                     else bool(worst_rel <= spec['probe_tolerance'])),
                        worst_relative_difference=worst_rel, relative_differences=rels,
                        ours=dict(reference=mine['worst_reference_percent'],
                                  all_times=mine['worst_all_times_percent'],
@@ -635,6 +639,10 @@ def main():
     checks['incumbent_reproduces_qtd02'] = dict(
         passed=(all(v['passed'] for v in q2.values()) if q2 else None), detail=q2,
         note='errors only; GPU ms are same-job quantities and are never compared across jobs')
+    if q2:
+        info('incumbent_reproduces_qtd02_at_1e-9', all(v.get('passes_probe') for v in q2.values()),
+             {k: v['worst_relative_difference'] for k, v in q2.items()},
+             'the 1e-9 tier qtd02 itself did not meet against cclad01 on three arms; a probe')
 
     # A probe, not a gate: the same rows against the b-ladder-top envelope job.
     btq = {}
@@ -745,14 +753,22 @@ def main():
 
     # ---------------------------------------------- the three layers at q = 0 ----
     q0 = by_arm.get('q0_M64_dense')
+    inc_q0 = (comp_sg.get('qtd02', {}) or {}).get('q0_M64_dense') or {}
+    inc_rows = {x['arm']: x for x in json.loads(COMPARATOR_AUDITS['qtd02'].read_text())['arms']} \
+        if COMPARATOR_AUDITS['qtd02'].exists() else {}
+    inc_q0_row = inc_rows.get('q0_M64_dense', {})
     three_layer = (dict(bank_floor_percent=q0['worst_bank_projection_percent'],
                         best_found_percent=q0['worst_best_found_percent'],
                         solved_all_times_percent=q0['worst_all_times_percent'],
                         solved_evolved_percent=q0['worst_evolved_percent'],
                         t0_compression_percent=q0['worst_t0_compression_percent'],
                         median_gpu_ms=q0['median_gpu_ms'], converged=q0['converged'],
-                        incumbent_reference=dict(bank_floor=0.3918, best_found=2.5447,
-                                                 solved_all_times=2.5629, source='b-head-train / qtd02'))
+                        incumbent_reference=dict(
+                            bank_floor=inc_q0_row.get('worst_bank_projection_percent'),
+                            best_found=inc_q0_row.get('worst_best_found_percent'),
+                            solved_all_times=inc_q0.get('same_grid_all'),
+                            solved_evolved=inc_q0.get('same_grid_evolved'),
+                            source='comparators/qtd02-audit.json arm q0_M64_dense (job 3757505)'))
                    if q0 else None)
 
     # ------------------------------------------------------- the training gates ----

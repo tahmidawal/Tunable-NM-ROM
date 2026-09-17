@@ -17,7 +17,7 @@ NAMESPACE = '/cluster/tufts/paralab/tawal01/b_seeds_20260917'
 # The extraction npz (131072 x 512 f64 coefficients, ~540 MB) and the intermediate bank
 # checkpoint are collected SEPARATELY and kept out of the compressed archive; their
 # SHA256s are verified on both sides against OUTPUTS.sha256 and recorded beside the chunks.
-EXCLUDED = ['output/train/sep_coeff_N256_K16_R512.npz']
+EXCLUDED = ['output/train/sep_coeff_N256_K16_R512.npz', 'output/eqcert_seed/bank_G.npz']
 
 
 def main():
@@ -40,9 +40,10 @@ def main():
         subprocess.run(['scp', f'tufts-login:{remote}/{name}', str(out / name)], check=True)
     subprocess.run(['sha256sum', '-c', 'collection.tar.gz.sha256'], cwd=out, check=True)
     subprocess.run(['tar', '-xzf', 'collection.tar.gz'], cwd=out, check=True)
-    (out / 'output/train').mkdir(parents=True, exist_ok=True)
     for x in EXCLUDED:
-        subprocess.run(['scp', f'tufts-login:{remote}/{x}', str(out / x)], check=True)
+        (out / x).parent.mkdir(parents=True, exist_ok=True)
+        # an excluded file that the job did not produce (e.g. a skipped stage) is simply absent
+        subprocess.run(['scp', f'tufts-login:{remote}/{x}', str(out / x)], check=False)
     subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
     (out / 'EXCLUDED-FROM-ARCHIVE.txt').write_text(
         '\n'.join(EXCLUDED) + '\n\nCollected separately and verified on BOTH sides by the full '
@@ -52,7 +53,24 @@ def main():
         'the local training audit, so it is not duplicated into the Git-tracked archive chunks.\n')
     with (out / 'EXCLUDED-SHA256.txt').open('w') as fh:
         for x in EXCLUDED:
-            fh.write(f'{hashlib.sha256((out / x).read_bytes()).hexdigest()}  {x}\n')
+            if (out / x).exists():
+                fh.write(f'{hashlib.sha256((out / x).read_bytes()).hexdigest()}  {x}\n')
+    ck = sorted((out / 'output/train').glob('sep_hfit_seed*.pkl'))
+    if ck:
+        # the seed checkpoint enters the sealed job from experiments/b-seeds/checkpoints/, with
+        # its SHA256 taken from the job's own TRAIN-SHA256.txt (never recomputed silently)
+        cdir = ROOT / 'experiments/b-seeds/checkpoints'
+        cdir.mkdir(exist_ok=True)
+        recorded = {ln.split()[1].split('/')[-1]: ln.split()[0] for ln in
+                    (out / 'output/train/TRAIN-SHA256.txt').read_text().splitlines() if ln.strip()}
+        for p in ck:
+            digest = hashlib.sha256(p.read_bytes()).hexdigest()
+            assert digest == recorded[p.name], (p.name, digest, recorded.get(p.name))
+            dest = cdir / p.name
+            assert not dest.exists() or dest.read_bytes() == p.read_bytes(), f'{dest} exists and differs'
+            dest.write_bytes(p.read_bytes())
+            (cdir / (p.stem + '.sha256')).write_text(f'{digest}  {p.name}  attempt={a.attempt}\n')
+            print('checkpoint ->', dest, digest[:16])
     print(out)
     print('Checksums verified; exact remote cleanup remains an explicit separate step.')
 

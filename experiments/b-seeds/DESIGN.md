@@ -56,8 +56,9 @@ convergence.
 
 **The incumbent runs in every job.** Each seed job also runs the incumbent checkpoint through
 the identical development ladder, so (a) the seed-vs-incumbent cost ratio is a same-job
-ratio, and (b) every job carries an in-job fidelity gate: the incumbent's eleven dense arms
-must reproduce qtd02's worst-reference and same-grid errors to $10^{-9}$ relative.
+ratio, and (b) every job carries an audit-time fidelity gate: the incumbent's eleven dense arms
+must reproduce qtd02's worst-reference and same-grid errors to $10^{-3}$ relative (the tier qtd02
+itself needed across GPU models; A1.1), with the $10^{-9}$ tier reported as a probe.
 
 ---
 
@@ -234,7 +235,7 @@ trajectory, identity $(\ast)$ mean deviation $<10^{-6}$, whitening round trip $<
 
 Audit (`audit_seeds.py`, NumPy only): every reported error recomputed from the saved fields
 ($<10^{-9}$); every same-grid discrepancy against the same-job `fft_tight`; repetitions
-identical; all reps present; `incumbent_reproduces_qtd02` (eleven arms, $10^{-9}$);
+identical; all reps present; `incumbent_reproduces_qtd02` (eleven arms, $10^{-3}$; $10^{-9}$ as a probe, A1.1);
 `training_complete` (300000 and 200000 steps, not capped); `pick_is_131072_with_27648_early`;
 `training_data_fingerprint_matches_incumbent` (stage A and B sums and sums of squares against
 `push_r3a` / `dn256b` JSONs, $10^{-9}$ relative — a value gate, because the FOM's last bits are
@@ -257,8 +258,9 @@ both a development and a sealed configuration and `audit_seeds.py` passes on its
 | 1–3 | `s1`, `s2`, `s3` | stages A–F for one seed, incumbent ladder included | ≈ 3.0 h bank + 0.3 h extract + 0.15 h head + 0.9 h seed ladder + 0.9 h incumbent ladder + ≈1.2 h EQ cert ≈ 6.5 h |
 | 4 | `final` | sealed cohort: incumbent, seed 1, 2, 3, sequentially | ≈ 4 × 0.9 h |
 
-Submitted as `--gres=gpu:a100:1`, `--mem 180G`, resubmitted as h100 → h200 → l40s only if
-still pending after 3 h, never changing the science. Cap: 8 jobs; 4 planned, 4 reserved for
+Submitted as `--gres=gpu:a100:1`, `--mem 180G`, resubmitted as h100 → h200 (seed jobs; never
+l40s, A1.4) or h100 → h200 → l40s (final job) only if still pending after 3 h, never changing
+the science. Cap: 8 jobs; 4 planned, 4 reserved for
 the iteration rule. After each job: checksum collection, local hash verification, the NumPy
 audit, Git-chunked archive, then deletion of the exact remote attempt directory.
 
@@ -266,4 +268,72 @@ audit, Git-chunked archive, then deletion of the exact remote attempt directory.
 
 ## 9. Amendments
 
-*(none before the first submission)*
+**A1 (2026-09-17, before the first submission).** The protocol's pre-job Codex audit could not
+be obtained: `codex exec` (both `gpt-6-astra` and `gpt-5.6-sol`) returns "usage limit … try
+again at Sep 19th, 2026 11:33 AM" (coordinator notice in `LANE-PROTOCOL.md`). Substituted, and
+recorded here as a substitution: an independent review by a **Claude** agent with no access to
+this lane's conversation, same read-only brief, written to
+`reports/independent-design-audit-claude.md` — a different context, **not** a different model
+family. Its 25 findings were acted on as follows (numbers are its):
+
+1. *Accepted (blocker).* qtd02 itself met only the $10^{-3}$ second tier against cclad01 on three
+   arms (`comparators/qtd02-audit.json`), so a $10^{-9}$ gate would fail spuriously across GPU
+   models. The incumbent fidelity gate `incumbent_reproduces_qtd02` is now the $10^{-3}$ tier on
+   worst-reference, same-grid all-times and same-grid evolved errors; the $10^{-9}$ tier is
+   reported as the probe `incumbent_reproduces_qtd02_at_1e-9`. §2 and §7 read accordingly.
+2. *Accepted.* The inherited cclad01/btq201 `fidelity_expectations` are dropped from the incumbent
+   configuration; qtd02 is the comparator.
+3. *Accepted.* The sealed draw is harder than the development cohort by the sharpness proxy
+   $a/\nu$ (two sealed cases above anything measured so far). A **difficulty-normalised twin of
+   C2** is pre-registered: **C2n** — the sealed/development ratio of (worst evolved error /
+   worst best-found at the same rung), seed mean and incumbent, $\le1.5$ at every rung. T13
+   reports both, plus per-case sealed errors. Reading rule, fixed now: C2 fail with C2n pass is
+   read as *a harder cohort*, not as non-transfer; F2 applies only if **both** fail.
+4. *Accepted.* Seed jobs are never submitted to L40S (`stage.py` refuses); the fallback ladder for
+   seed jobs is a100 → h100 → h200. The final job may use any type.
+5–6. *Accepted.* Reruns are named `s<seed><suffix>` (`SEED0` from the digits); every seed
+   checkpoint in `checkpoints/` enters the final job and every table. Rule, fixed now: a rerun is
+   made only after a crash that produced **no** checkpoint (then it is that seed's entry); a
+   seed that completed but fails TR is reported, never rerun. No seed job is submitted after the
+   final job has been submitted; a later rerun would void T13.
+7. *Accepted.* T12 no longer averages absolute GPU ms across jobs; costs appear per job with the
+   GPU model, and the seed/incumbent cost ratio is the same-job ratio.
+8. *Accepted.* `OUTPUTS.sha256` and `output/STAGES-AE-DONE` are written after stage E; stage F
+   runs under `timeout 4h` and rewrites the checksums afterwards.
+9. *Accepted.* Both smokes are run and their JSONs committed to `checks/` before staging
+   (`smoke-seeds.json`, `smoke-chain.json`).
+10. *Accepted — D7.* Non-numerical mechanics that differ from the incumbent's job scripts:
+    `JAX_ENABLE_X64=true`, `OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8`, `TMPDIR` / `XDG_CACHE_HOME`
+    / `MPLCONFIGDIR` under the attempt; `--mem 180G`, `--time 16h`, `--exclude pax007`, `--qos
+    normal`; `set -euo pipefail` (the incumbent's head job ran `set -uo`); the sibling layout
+    `experiments/<name>/` instead of `code/` + `code/deps/` (same bytes; `sys.path` order
+    differs); output names `hfit_full.json` / `sep_hfit_seed{s}.pkl`; the incumbent's head refit
+    ran after two learning-curve processes in the same allocation (separate processes, no state
+    carried). None touches a number.
+11. *Accepted (wording).* The fidelity gate is **audit-time**, computed from the job's own
+    `result.json` against the qtd02 comparator, not inside the driver.
+12. *Accepted.* `checks/sep_solvers_r3a.diff` and `checks/sep_common_r3a.diff` record the diffs
+    between the bank job's staged versions (recovered from Git history, hashes `5af7056b…`,
+    `1f1c2796…`) and this branch's (`19df8382…`, `a74f0279…`).
+13. *Accepted.* The chain smoke exercises the sealed **mode** with a throwaway seed (424242) and
+    a throwaway declared-cohort file; the declared sealed cohort is not exercised before the
+    final job.
+14. *Accepted.* C2/C2n/C3 are computed only when all four sealed blocks exist, on the seed
+    intersection; otherwise they are "not yet run".
+15. *Accepted.* The incumbent's reference numbers (0.39 / 2.54 / 2.56 %, the TR bars, the training
+    row) are read from `comparators/qtd02-audit.json` and the incumbent's job JSONs, not typed.
+16. *Accepted.* `expected_checkpoint_sha256` is in both incumbent configurations and gated
+    (`checkpoint_is_the_recorded_one`).
+17. *Accepted.* `collect.py` writes `checkpoints/sep_hfit_seed{s}.pkl` and its `.sha256` from the
+    job's own `TRAIN-SHA256.txt`; the pickles are committed (the archive chunks hold them too).
+18. *Accepted.* See 5–6.
+20–21. *Accepted (wording).* Monotonicity is strict up to $10^{-12}$ percentage points, as in
+    qtd02; C1 is (monotone **and** every rung converged) on the same seed, for at least 2 seeds.
+22. *Accepted (wording).* Stage B's `LOOSE=1` is the incumbent's own setting (its bank was
+    trained on a different state pick than the extraction's, so the checkpoint codes are a
+    stand-in; the identity gate holds for any code) and is compared by the audit.
+19, 23, 24, 25. *Noted.* The tree is committed before staging; TR's factor is a heuristic
+    precondition; the time budget and the recipe reproduction were checked and found correct.
+
+Also in this amendment: the audit's own `training_gates` read the stage A/B JSONs by exact
+`N256` names, which the 64-interval smoke exposed; they now glob the mesh.

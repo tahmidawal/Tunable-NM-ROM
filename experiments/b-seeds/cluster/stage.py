@@ -15,6 +15,7 @@ SHA256s must equal the ones the seed jobs recorded.
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -163,10 +164,15 @@ PYTHONPATH="$LADDER_PATH" "$PY" experiments/b-seeds/seeds_run.py \\
   --config experiments/b-seeds/config-dev-incumbent.json \\
   --checkpoint __INCUMBENT__ --out output/ladder_incumbent
 
+# Stages A-E are the deliverable: checksum them NOW so a wall-clock kill during the optional
+# stage F cannot void the attempt (A1.8). OUTPUTS.sha256 is rewritten after F.
+echo "STAGES A-E DONE $(date -Is)" | tee output/STAGES-AE-DONE
+find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+
 # ------------------------------ stage F: EQ certification, q <= 64 (non-fatal, optional) ----
 echo "STAGE F eqcert seed=__SEED__ $(date -Is)"
 set +e
-PYTHONPATH="$LADDER_PATH" "$PY" experiments/q-ridge/q_eqcert.py \\
+PYTHONPATH="$LADDER_PATH" timeout 4h "$PY" experiments/q-ridge/q_eqcert.py \\
   --config experiments/b-seeds/config-eqcert-seed__SEED__.json \\
   --checkpoint "$SEEDCK" --out output/eqcert_seed
 rc=$?
@@ -179,10 +185,10 @@ echo ALL-DONE
 '''
 
 FINAL_BODY = '''
-# The sealed cohort is opened here and only here (DESIGN.md section 3). Four sequential
+# The sealed cohort is opened here and only here (DESIGN.md section 3). Sequential
 # invocations of the SAME driver and configuration shape as the development ladders: the
-# incumbent, then seeds 1, 2, 3. Each writes its own output directory.
-for CK in incumbent seed1 seed2 seed3; do
+# incumbent, then every seed checkpoint. Each writes its own output directory.
+for CK in __LABELS__; do
   echo "SEALED LADDER $CK $(date -Is)"
   case "$CK" in
     incumbent) CKPT=__INCUMBENT__ ;;
@@ -204,9 +210,13 @@ def main():
     gpu = sys.argv[2] if len(sys.argv) > 2 else 'a100'
     assert attempt.isalnum(), attempt
     assert gpu in ('a100', 'h100', 'h200', 'l40s'), gpu
-    if attempt.startswith('s') and attempt[1:].isdigit():
-        seed = int(attempt[1:])
+    m = re.fullmatch(r's(\d+)([a-z]*)', attempt)
+    if m:
+        seed = int(m.group(1))
         kind = 'seed'
+        # seed jobs never run on L40S: 300000 f64 steps would not fit the wall clock (A1.4)
+        assert gpu in ('a100', 'h100', 'h200'), f'seed jobs run on a100/h100/h200 only, not {gpu}'
+        assert (ROOT / f'experiments/b-seeds/config-dev-seed{seed}.json').exists(), seed
         files = LADDER_FILES + TRAIN_FILES + [
             f'experiments/b-seeds/config-dev-seed{seed}.json',
             'experiments/b-seeds/config-dev-incumbent.json',
@@ -215,9 +225,12 @@ def main():
     elif attempt.startswith('final'):
         seed = None
         kind = 'final'
+        # every seed checkpoint that exists enters the sealed job (a rerun keeps its suffix)
+        labels = sorted(p.stem[len('sep_hfit_'):] for p in (ROOT / 'experiments/b-seeds/checkpoints').glob('sep_hfit_seed*.pkl'))
+        assert labels, 'no seed checkpoints in experiments/b-seeds/checkpoints/'
         files = LADDER_FILES + ['experiments/b-seeds/config-sealed-incumbent.json'] + [
-            f'experiments/b-seeds/config-sealed-seed{s}.json' for s in (1, 2, 3)] + [
-            f'experiments/b-seeds/checkpoints/sep_hfit_seed{s}.pkl' for s in (1, 2, 3)]
+            f'experiments/b-seeds/config-sealed-{lb}.json' for lb in labels] + [
+            f'experiments/b-seeds/checkpoints/sep_hfit_{lb}.pkl' for lb in labels]
         hours = HOURS_FINAL
     else:
         raise SystemExit(f'attempt must be s<seed> or final*, got {attempt}')
@@ -246,16 +259,17 @@ def main():
         for src, dest_rel in RELOCATED.items():
             stage_one(src.split('#')[0], dest_rel)
     if kind == 'final':
-        # the seed checkpoints must be the ones the seed jobs recorded
-        for s in (1, 2, 3):
-            rec = ROOT / f'experiments/b-seeds/checkpoints/sep_hfit_seed{s}.sha256'
+        # the seed checkpoints must be the ones the seed jobs recorded (collect.py writes the .sha256)
+        for lb in labels:
+            rec = ROOT / f'experiments/b-seeds/checkpoints/sep_hfit_{lb}.sha256'
             want = rec.read_text().split()[0]
-            got = hashlib.sha256((ROOT / f'experiments/b-seeds/checkpoints/sep_hfit_seed{s}.pkl').read_bytes()).hexdigest()
-            assert want == got, (s, want, got)
+            got = hashlib.sha256((ROOT / f'experiments/b-seeds/checkpoints/sep_hfit_{lb}.pkl').read_bytes()).hexdigest()
+            assert want == got, (lb, want, got)
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=2) + '\n')
     (out / 'COMMIT.txt').write_text(commit + '\n')
     (out / 'logs').mkdir()
-    script = PREAMBLE + (SEED_BODY if kind == 'seed' else FINAL_BODY)
+    script = PREAMBLE + (SEED_BODY if kind == 'seed' else FINAL_BODY.replace(
+        '__LABELS__', ' '.join(['incumbent'] + labels)))
     for token, value in (('__ATTEMPT__', attempt), ('__REMOTE__', remote), ('__GPU__', gpu),
                          ('__HOURS__', hours), ('__EXCLUDE__', EXCLUDE),
                          ('__INCUMBENT__', INCUMBENT), ('__SEED__', str(seed))):

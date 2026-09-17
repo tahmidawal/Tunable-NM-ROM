@@ -33,8 +33,14 @@ def run(cmd, cwd, env=None, log=None):
     return time.perf_counter() - t
 
 
+SMOKE_SEALED_SEED = 424242   # a throwaway: the real sealed seed is never exercised before the final job
+
+
 def smoke_config(base, sealed):
     c = json.loads(Path(base).read_text())
+    if sealed:
+        c['eval_seed'] = SMOKE_SEALED_SEED
+        c['cohort_note'] = 'SMOKE ONLY: a throwaway sealed-mode cohort, not the declared one'
     c.update(intervals=64, reference_mesh=256, reference_dt=0.00125, residual_snapshots=64,
              residual_starts=2, residual_budget=80, decoder_code_subsample=512,
              q_ladder=[0, 4, 8], comparison_q=[4, 8], fixed_test_count=64, cold_axis_points=24,
@@ -52,38 +58,56 @@ def smoke_config(base, sealed):
 
 def main():
     t_all = time.perf_counter()
-    if SCRATCH.exists():
+    reuse = os.environ.get('SMOKE_REUSE') == '1' and (SCRATCH / 's1/output/train/TRAIN-SHA256.txt').exists()
+    if SCRATCH.exists() and not reuse:
         shutil.rmtree(SCRATCH)
-    SCRATCH.mkdir(parents=True)
+    SCRATCH.mkdir(parents=True, exist_ok=True)
     stage = SCRATCH / 's1'
     out = {}
-    out['stage_s'] = run([PY, 'experiments/b-seeds/cluster/stage.py', 's1'], ROOT,
-                         env=dict(ENV, STAGE_ROOT=str(SCRATCH)), log=SCRATCH / 'stage.log')
+    if reuse:
+        # re-stage the current sources over the retained outputs (the staging byte-check still runs)
+        shutil.rmtree(stage / 'experiments', ignore_errors=True)
+        tmp = SCRATCH / 'restage'
+        shutil.rmtree(tmp, ignore_errors=True)
+        out['stage_s'] = run([PY, 'experiments/b-seeds/cluster/stage.py', 's1'], ROOT,
+                             env=dict(ENV, STAGE_ROOT=str(tmp)), log=SCRATCH / 'stage.log')
+        shutil.copytree(tmp / 's1/experiments', stage / 'experiments')
+        for nm in ('COMMIT.txt', 'PROVENANCE.json', 'MANIFEST.sha256', 'run.sbatch'):
+            shutil.copy2(tmp / 's1' / nm, stage / nm)
+        for d in ('ladder_dev', 'ladder_sealed'):
+            shutil.rmtree(stage / 'output' / d, ignore_errors=True)
+    else:
+        out['stage_s'] = run([PY, 'experiments/b-seeds/cluster/stage.py', 's1'], ROOT,
+                             env=dict(ENV, STAGE_ROOT=str(SCRATCH)), log=SCRATCH / 'stage.log')
     sd = stage / 'experiments/separable-decoder'
     train = stage / 'output/train'
-    train.mkdir(parents=True)
+    train.mkdir(parents=True, exist_ok=True)
+    out['reused_training_outputs'] = reuse
     common = dict(ENV, JAX_DEFAULT_MATMUL_PRECISION='highest')
     a = dict(ROUND='3', K='16', LR='1e-3', P_SUB='4096', WD='1e-5', EMA_DECAY='0.999', LAM_ORTH='1e-4',
              MAX_SNAPS='512', T_EARLY='5', FULLROWS='8', N_FF='128', FF_SCALE='4.0', H_HIDDEN='256',
              N_TEST='2', SEED0='1', N='64', R='512', G_HIDDEN='1024', SNAP_NORM='0', STEPS='300',
              TIME_CAP='0', FULL_LAST='50', POOL='0', N_TRAJ='16', TRAIN_ONLY='1',
              OUT_PREFIX=str(train) + '/')
-    out['stageA_s'] = run([PY, 'sep_burgers_r3.py'], sd, env=dict(common, **a), log=SCRATCH / 'A.log')
     bank = train / 'sep_burgers_r3_N64_K16_R512.pkl'
+    if not reuse:
+        out['stageA_s'] = run([PY, 'sep_burgers_r3.py'], sd, env=dict(common, **a), log=SCRATCH / 'A.log')
     assert bank.exists()
     b = dict(N='64', K='16', R='512', MAX_SNAPS='600', T_EARLY='5', N_TEST='2', SEED0='1', LOOSE='1',
              EXTRA_SEED='1000', EXTRA_TRAJ='8', N_TRAJ='24', GEN_CHUNK='8', PROJ_CHUNK='256',
              IDENT_ROWS='8', CKPT=str(bank), OUT_PREFIX=str(train) + '/')
-    out['stageB_s'] = run([PY, 'sep_coeff_extract.py'], sd, env=dict(common, **b), log=SCRATCH / 'B.log')
     npz = train / 'sep_coeff_N64_K16_R512.npz'
+    if not reuse:
+        out['stageB_s'] = run([PY, 'sep_coeff_extract.py'], sd, env=dict(common, **b), log=SCRATCH / 'B.log')
     assert npz.exists()
     ck = train / 'sep_hfit_seed1.pkl'
     c = dict(NPZ=str(npz), CKPT=str(bank), OUT=str(train / 'hfit_full.json'), ARMS='mid', STEPS='300',
              BATCH='4096', LR='1e-3', TIME_CAP='0', ORACLE_ITERS='20', CODEDIAG_N='64',
              CODEDIAG_ITERS='10', ENC_STEPS='200', SEED0='1', EMIT='mid', EMIT_PATH=str(ck))
-    out['stageC_s'] = run([PY, 'sep_hfit_run.py'], sd, env=dict(common, **c), log=SCRATCH / 'C.log')
+    if not reuse:
+        out['stageC_s'] = run([PY, 'sep_hfit_run.py'], sd, env=dict(common, **c), log=SCRATCH / 'C.log')
+        subprocess.run(f'sha256sum {bank} {npz} {ck} > {train}/TRAIN-SHA256.txt', shell=True, check=True)
     assert ck.exists()
-    subprocess.run(f'sha256sum {bank} {npz} {ck} > {train}/TRAIN-SHA256.txt', shell=True, check=True)
     pp = ':'.join(str(stage / f'experiments/{d}') for d in (
         'mr-burgers2d', 'head-ablation', 'cheap-corrections', 'b-ladder-top', 'q-ridge', 'b-seeds'))
     lenv = dict(common, PYTHONPATH=pp, SOURCE_COMMIT=(stage / 'COMMIT.txt').read_text().strip())
@@ -103,6 +127,16 @@ def main():
         cmd = [PY, 'experiments/b-seeds/audit_seeds.py', str(stage / f'output/ladder_{name}/result.json'),
                '--fields', str(stage / f'output/ladder_{name}'), '--out', str(audit),
                '--cohort', name, '--train', str(train)]
+        if name == 'sealed':
+            # a throwaway declared-cohort file for the throwaway seed, so the real one is untouched
+            import numpy as np
+            rr = np.random.default_rng(SMOKE_SEALED_SEED)
+            pc = np.stack([rr.uniform(.15, .85, 6), rr.uniform(.15, .85, 6), rr.uniform(.05, .20, 6),
+                           rr.uniform(.5, 2., 6), np.exp(rr.uniform(np.log(.01), np.log(.1), 6))], axis=1)
+            sfile = SCRATCH / 'smoke-sealed-cohort.json'
+            sfile.write_text(json.dumps(dict(seed=SMOKE_SEALED_SEED, cases=6, physical_cases=pc.tolist(),
+                                             sha256_local='smoke')) + '\n')
+            cmd += ['--sealed', str(sfile)]
         r = subprocess.run(cmd, cwd=ROOT, env=dict(ENV, JAX_PLATFORMS='cpu'), capture_output=True, text=True)
         (SCRATCH / f'audit_{name}.log').write_text(r.stdout + r.stderr)
         assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]

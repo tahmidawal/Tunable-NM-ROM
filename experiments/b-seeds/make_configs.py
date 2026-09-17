@@ -86,7 +86,12 @@ def ladder_config(base, attempt, label, ckpt_role, cohort, sealed):
         c['btq201_expectations'] = {}
     else:
         # the incumbent: every dense_m4 / dense_fixedM arm must reproduce qtd02 to 1e-9
-        c['qtd02_expectations'] = {a: dict(reproduces=a, tolerance=1e-9) for a in [
+        # qtd02 itself met only the 1e-3 second tier against cclad01 on three arms (its own
+        # audit); the gate is the second tier, the 1e-9 tier is reported as a probe (A1.1)
+        c['fidelity_expectations'] = {}
+        c['btq201_expectations'] = {}
+        c['expected_checkpoint_sha256'] = INCUMBENT_SHA
+        c['qtd02_expectations'] = {a: dict(reproduces=a, tolerance=1e-3, probe_tolerance=1e-9) for a in [
             'q0_M64_dense', 'q0_M256_dense', 'old_q16_M128_dense', 'old_q16_M256_dense',
             'old_q32_M192_dense', 'old_q32_M256_dense', 'old_q64_M256_dense',
             'old_q64_M320_dense', 'old_q128_M256_dense', 'old_q128_M576_dense',

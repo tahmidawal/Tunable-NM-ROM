@@ -173,8 +173,30 @@ def main():
             assert res['gates']['fast_parity']['passed'], res['gates']['fast_parity']
             assert res['gates']['direct_reproduces_fft_tight']['passed'], res['gates']['direct_reproduces_fft_tight']
         else:
+            # DESIGN A6: the declared build order honours `priority_override` (a list of names) --
+            # the FOM controls first, then the override in its listed order, then everything else.
+            declared = [d['name'] for d in res['declared_subjects']]
+            cfg128 = json.loads((HERE / cfgname).read_text())
+            nfom = len(cfg128['fom_settings'])
+            assert all(d['family'] == 'fom' for d in res['declared_subjects'][:nfom]), declared
+            assert declared[nfom:nfom + len(cfg128['priority_override'])] == cfg128['priority_override'], declared
+            out['priority_override_honoured'] = dict(declared_order=declared, override=cfg128['priority_override'])
+            print('GATE5 priority_override honoured', declared, flush=True)
             out['transfer'] = [{k: v for k, v in t.items() if k in ('q', 'M', 'm', 'certification', 'basis', 'seconds')}
                                for t in res['transfer']]
+    # The cluster configs' `priority_override` names must each be a declared subject: the check
+    # is pure configuration (no GPU work), the same function main() runs before any work.
+    out['cluster_config_declarations'] = {}
+    for cname in ('config-256.json', 'config-512.json', 'config-1024.json'):
+        c = json.loads((HERE / cname).read_text())
+        cs = PN.resolve_rule_sets(c, int(c['intervals']))
+        sp = PN.declare_subjects(c, K, R, cs)
+        names = [x['name'] for x in sp]
+        ov = list(c.get('priority_override', []))
+        nf = len(c['fom_settings'])
+        assert names[nf:nf + len(ov)] == ov, (cname, names, ov)
+        out['cluster_config_declarations'][cname] = dict(subjects=len(sp), override=ov, first_after_fom=names[nf:nf + max(1, len(ov))])
+        print('GATE6', cname, len(sp), 'subjects; override', ov, flush=True)
     out['runs'] = runs
     rp = scratch / 'report'
     subprocess.run([PY, str(HERE / 'reports/generate_panel.py'), '--audit', str(scratch / 'smoke64/audit.json'),

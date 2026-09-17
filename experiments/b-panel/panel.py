@@ -104,6 +104,84 @@ def refit_weights(G, P, Phi_host, L, pos, coefficients, M):
                    M=int(M), seconds=time.perf_counter() - t0)
 
 
+def gt(g):
+    return f'g{g:g}'.replace('-', 'm').replace('.', 'p')
+
+
+def declare_subjects(cfg, K, R, sets):
+    """Every subject the job builds, in build priority order (DESIGN.md sections 3.1-3.2).
+
+    Pure configuration: no file is read and no JAX work is done, so main() calls it before the
+    references, the snapshots and the rule transfers, and a malformed config fails at once.
+    `priority_override` is a list of subject NAMES (strings); every name must be a declared
+    subject. bpn201 (job 3783817) died twenty minutes in, after all six rule transfers, because
+    this list was indexed as a list of dicts and no smoke config carried the key (DESIGN A6).
+    """
+    strict = cfg['strict']
+    ranks = sorted(set(cfg.get('pod_ranks', [])))
+    specs = []
+    for fs in cfg['fom_settings']:
+        specs.append(dict(name=fs['name'], family='fom', setting=fs, priority=0))
+    for q in cfg['dense_q']:
+        specs.append(dict(name=f'q{q}_M{4 * (K + q)}_dense_{gt(strict["gtol"])}', family='rom', q=q,
+                          M=4 * (K + q), quadrature='dense', gtol=strict['gtol'], priority=1))
+    for g in cfg['eq_gtols']:
+        pr = 2 if g == strict['gtol'] else 4
+        for si, rs in enumerate(sets):
+            for q in cfg['eq_q']:
+                kind = rs['resolved']
+                specs.append(dict(name=f'q{q}_M{4 * (K + q)}_{kind}_{gt(g)}', family='rom', q=q,
+                                  M=4 * (K + q), quadrature='eq', gtol=g, priority=pr + (0 if si == 0 else 0.5),
+                                  rule_kind=kind, rule_set=kind))
+    for k in ranks:
+        specs.append(dict(name=f'pod{k}_M{4 * k}_dense', family='pod', k=k, M=4 * k, quadrature='dense',
+                          gtol=strict['gtol'], priority=3))
+    for q in cfg.get('extra_dense_q', []):
+        M = int(cfg['extra_dense_M'])
+        specs.append(dict(name=f'q{q}_M{M}_dense_{gt(strict["gtol"])}', family='rom', q=q, M=M,
+                          quadrature='dense', gtol=strict['gtol'], priority=5))
+    if cfg.get('free_bank'):
+        specs.append(dict(name=f'free{R}_M{cfg["free_bank_M"]}_dense', family='free', k=R, M=int(cfg['free_bank_M']),
+                          quadrature='dense', gtol=strict['gtol'], priority=6))
+    if cfg.get('fast_arm') and 0 in cfg['eq_q']:
+        kind = sets[0]['resolved']
+        specs.append(dict(name=f'q0_M{4 * K}_{kind}_{gt(strict["gtol"])}_fast{cfg["fast_arm"]}', family='fast', q=0,
+                          M=4 * K, quadrature='eq', gtol=strict['gtol'], priority=7, rule_kind=kind,
+                          parity_against=f'q0_M{4 * K}_{kind}_{gt(strict["gtol"])}'))
+    override = list(cfg.get('priority_override', []))
+    assert all(isinstance(n, str) for n in override), f'priority_override must list subject names: {override}'
+    declared = [s['name'] for s in specs]
+    assert len(declared) == len(set(declared)), 'duplicate subject names'
+    missing = [n for n in override if n not in declared]
+    assert not missing, f'priority_override names no declared subject: {missing}; declared: {declared}'
+    order = {name: i for i, name in enumerate(override)}
+    # A name in `priority_override` is built right after the FOM controls, in the listed order,
+    # whatever its family: DESIGN.md section 3.2's reduced set comes before everything else.
+    specs.sort(key=lambda s: ((0.5, order[s['name']]) if s['name'] in order else (s['priority'], 0)))
+    return specs
+
+
+def resolve_rule_sets(cfg, L):
+    """The named rule sets a job carries (DESIGN.md A5.1) with their resolved arm names.
+
+    The primary set is named by whether it is used at its own mesh (`eqcert`) or transferred to
+    another (`eqxfer`); an extra set carries its declared name, suffixed `xfer` when transferred.
+    """
+    sets = [dict(name=None, mesh=int(cfg['rules_mesh']), rules=cfg['rules'], subdir='rules')]
+    for es in cfg.get('extra_rule_sets', []):
+        sets.append(dict(name=es['name'], mesh=int(es['mesh']), rules=es['rules'],
+                         subdir=es.get('subdir', 'rules')))
+    names = [x['name'] for x in sets]
+    assert len(names) == len(set(names)), f'duplicate rule-set names: {names}'
+    for rs in sets:
+        at_mesh = (L == rs['mesh'])
+        sname = rs['name'] or ('eqcert' if at_mesh else 'eqxfer')
+        if rs['name'] and not at_mesh:
+            sname = f"{rs['name']}xfer"
+        rs['resolved'] = sname
+    return sets
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', required=True)
@@ -129,6 +207,9 @@ def main():
     L = int(cfg['intervals'])
     dt = cfg['dt']
     strict = cfg['strict']
+    sets = resolve_rule_sets(cfg, L)
+    specs = declare_subjects(cfg, K, R, sets)      # validates priority_override before any work
+    print('DECLARED', len(specs), 'subjects:', ' '.join(s['name'] for s in specs), flush=True)
     prov = json.loads((inputs / 'PROVENANCE.json').read_text())['files']
 
     report = dict(config=cfg, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
@@ -322,21 +403,11 @@ def main():
     # is measured against its predecessor INSIDE one allocation instead of across jobs
     # (DESIGN.md A5.1). The primary set is named by whether it is used at its own mesh
     # (`eqcert`) or transferred to another (`eqxfer`); extra sets carry their declared name.
-    sets = [dict(name=None, mesh=int(cfg['rules_mesh']), rules=cfg['rules'], subdir='rules')]
-    for es in cfg.get('extra_rule_sets', []):
-        sets.append(dict(name=es['name'], mesh=int(es['mesh']), rules=es['rules'],
-                         subdir=es.get('subdir', 'rules')))
-    names = [x['name'] for x in sets]
-    assert len(names) == len(set(names)), f'duplicate rule-set names: {names}'
-
     rules = {}          # (set_name, q) -> (ops dict with G5/Pq, info)
     xfer = cfg.get('eq_transfer')
     for rs in sets:
         at_mesh = (L == rs['mesh'])
-        sname = rs['name'] or ('eqcert' if at_mesh else 'eqxfer')
-        if rs['name'] and not at_mesh:
-            sname = f"{rs['name']}xfer"
-        rs['resolved'] = sname
+        sname = rs['resolved']
         for q in cfg['eq_q']:
             spec = rs['rules'][str(q)]
             rfile = inputs / rs['subdir'] / spec['file']
@@ -433,42 +504,8 @@ def main():
             save()
 
     # ---------------------------------------------------------- subjects -----
-    def gt(g):
-        return f'g{g:g}'.replace('-', 'm').replace('.', 'p')
-
-    specs = []
-    for fs in cfg['fom_settings']:
-        specs.append(dict(name=fs['name'], family='fom', setting=fs, priority=0))
-    for q in cfg['dense_q']:
-        specs.append(dict(name=f'q{q}_M{4 * (K + q)}_dense_{gt(strict["gtol"])}', family='rom', q=q,
-                          M=4 * (K + q), quadrature='dense', gtol=strict['gtol'], priority=1))
-    for g in cfg['eq_gtols']:
-        pr = 2 if g == strict['gtol'] else 4
-        for si, rs in enumerate(sets):
-            for q in cfg['eq_q']:
-                kind = rs['resolved']
-                specs.append(dict(name=f'q{q}_M{4 * (K + q)}_{kind}_{gt(g)}', family='rom', q=q,
-                                  M=4 * (K + q), quadrature='eq', gtol=g, priority=pr + (0 if si == 0 else 0.5),
-                                  rule_kind=kind, rule_set=kind))
-    for k in ranks:
-        specs.append(dict(name=f'pod{k}_M{4 * k}_dense', family='pod', k=k, M=4 * k, quadrature='dense',
-                          gtol=strict['gtol'], priority=3))
-    for q in cfg.get('extra_dense_q', []):
-        M = int(cfg['extra_dense_M'])
-        specs.append(dict(name=f'q{q}_M{M}_dense_{gt(strict["gtol"])}', family='rom', q=q, M=M,
-                          quadrature='dense', gtol=strict['gtol'], priority=5))
-    if cfg.get('free_bank'):
-        specs.append(dict(name=f'free{R}_M{cfg["free_bank_M"]}_dense', family='free', k=R, M=int(cfg['free_bank_M']),
-                          quadrature='dense', gtol=strict['gtol'], priority=6))
-    if cfg.get('fast_arm') and 0 in cfg['eq_q']:
-        kind = sets[0]['resolved']
-        specs.append(dict(name=f'q0_M{4 * K}_{kind}_{gt(strict["gtol"])}_fast{cfg["fast_arm"]}', family='fast', q=0,
-                          M=4 * K, quadrature='eq', gtol=strict['gtol'], priority=7, rule_kind=kind,
-                          parity_against=f'q0_M{4 * K}_{kind}_{gt(strict["gtol"])}'))
-    order = {s['name']: i for i, s in enumerate(cfg.get('priority_override', []))}
-    # A name in `priority_override` is built right after the FOM controls, in the listed order,
-    # whatever its family: DESIGN.md section 3.2's reduced set comes before everything else.
-    specs.sort(key=lambda s: ((0.5, order[s['name']]) if s['name'] in order else (s['priority'], 0)))
+    # Declared (and validated) at the top of main(), before any expensive work; the list is
+    # unchanged here and is recorded so result.json carries it in the pre-existing position.
     report['declared_subjects'] = [{k: v for k, v in s.items() if k != 'setting'} | (s.get('setting') or {}) for s in specs]
     save()
 

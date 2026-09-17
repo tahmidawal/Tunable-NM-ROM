@@ -74,8 +74,10 @@ def main():
         shutil.copytree(tmp / 's1/experiments', stage / 'experiments')
         for nm in ('COMMIT.txt', 'PROVENANCE.json', 'MANIFEST.sha256', 'run.sbatch'):
             shutil.copy2(tmp / 's1' / nm, stage / nm)
+        # a ladder block that already completed is kept and reused; only incomplete ones go
         for d in ('ladder_dev', 'ladder_sealed'):
-            shutil.rmtree(stage / 'output' / d, ignore_errors=True)
+            if not (stage / 'output' / d / 'COMPLETE').exists():
+                shutil.rmtree(stage / 'output' / d, ignore_errors=True)
     else:
         out['stage_s'] = run([PY, 'experiments/b-seeds/cluster/stage.py', 's1'], ROOT,
                              env=dict(ENV, STAGE_ROOT=str(SCRATCH)), log=SCRATCH / 'stage.log')
@@ -118,10 +120,13 @@ def main():
         p = stage / f'experiments/b-seeds/config-smoke-{name}.json'
         p.write_text(json.dumps(cfg, indent=2) + '\n')
         cfgs[name] = p
-        out[f'ladder_{name}_s'] = run(
-            [PY, 'experiments/b-seeds/seeds_run.py', '--config', str(p.relative_to(stage)),
-             '--checkpoint', str(ck), '--out', f'output/ladder_{name}'], stage, env=lenv,
-            log=SCRATCH / f'ladder_{name}.log')
+        if (stage / f'output/ladder_{name}/COMPLETE').exists():
+            out[f'ladder_{name}_s'] = 'reused'
+        else:
+            out[f'ladder_{name}_s'] = run(
+                [PY, 'experiments/b-seeds/seeds_run.py', '--config', str(p.relative_to(stage)),
+                 '--checkpoint', str(ck), '--out', f'output/ladder_{name}'], stage, env=lenv,
+                log=SCRATCH / f'ladder_{name}.log')
         assert (stage / f'output/ladder_{name}/COMPLETE').exists()
         audit = SCRATCH / f'audit_{name}.json'
         cmd = [PY, 'experiments/b-seeds/audit_seeds.py', str(stage / f'output/ladder_{name}/result.json'),
@@ -162,7 +167,10 @@ def main():
             assert aj['checks']['sealed_cohort_values_match_declared']['passed']
             assert aj['checks']['sealed_cohort_disjoint']['passed']
         else:
-            assert aj['checks']['evaluation_cohort_bitwise_abl01']['passed']
+            # A2: the blocking gate is on VALUES; bitwise is a probe that legitimately fails
+            # locally, because abl01 was recorded on the cluster and np.exp differs by 1 ulp.
+            assert aj['checks']['evaluation_cohort_matches_abl01_to_one_ulp']['passed']
+            out[f'audit_{name}']['bitwise_probe'] = aj['checks']['evaluation_cohort_bitwise_abl01']['passed']
     out['seconds'] = time.perf_counter() - t_all
     out['note'] = ('64 intervals, 300 training steps per stage, 16/24 trajectories: a plumbing '
                    'smoke of the staged layout, the three training scripts, the ladder driver on '

@@ -1,0 +1,50 @@
+{
+  "256": {
+    "ladder": [
+      "q0_m4@new_K32",
+      "q32_m4@new_K32",
+      "q64_m4@new_K32",
+      "q128_m4@new_K32",
+      "q256_m4@new_K32",
+      "d_linear_qr_m4@new_K32"
+    ],
+    "costs": [
+      9.21419495716691,
+      9.536888566799462,
+      9.818680584430695,
+      10.219317395240068,
+      9.658001945354044,
+      3.220925573259592
+    ],
+    "errs": [
+      0.03156746847454927,
+      0.02469902971220685,
+      0.020808230111158,
+      0.015497283990881629,
+      0.00968850419215881,
+      0.007458632302014631
+    ],
+    "D1_span": 3.17278905171909,
+    "D1": false,
+    "D1_neural_span_posthoc": 1.1090841297308738,
+    "D2_lowest": true,
+    "D2_within": true,
+    "D2_strict": true,
+    "D3_fom": true,
+    "D3_pod": true,
+    "nd_all": [
+      "dst_direct"
+    ],
+    "nd_red": [
+      "d_linear_qr_m4@new_K32",
+      "d_linear_qr_m256@incumbent",
+      "e_pod512_m4@trainset"
+    ],
+    "monotone": true,
+    "falsified_literal": true,
+    "falsified_intent": false,
+    "buys": [],
+    "cheapest": "d_linear_qr_m4@new_K32",
+    "top": "d_linear_qr_m4@new_K32"
+  }
+}

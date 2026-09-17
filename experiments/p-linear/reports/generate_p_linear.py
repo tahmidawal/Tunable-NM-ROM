@@ -143,58 +143,109 @@ def subject_table(rows):
 
 
 def figure(d, rows, crit, path_png, path_json):
+    """The linear-case figure.
+
+    Two honesty rules, because both have a way of misleading a reader here.
+    (1) The ladder LINE is the pre-registered ladder of DESIGN A4 — the q < R rungs plus
+        the DIRECT rank-R solve — not the eliminated q = R arm, which is drawn separately
+        and greyed because its cost is an inert-iteration artefact.
+    (2) The exact solvers have zero same-grid error by construction. They are drawn on an
+        explicitly drawn and labelled round-off floor, never at a fabricated small value.
+    """
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     n = d['intervals']
-    fig, ax = plt.subplots(figsize=(7.2, 4.6), dpi=150)
+    fig, ax = plt.subplots(figsize=(9.9, 5.2), dpi=150)
+    prim = d['config']['models'][0]['id']
+    # The informative range is the REDUCED models'. The exact/near-exact full-order solvers
+    # sit up to twelve decades below and would crush it, so the axis is clipped to the
+    # reduced range and everything below is drawn on an explicit, labelled off-scale band
+    # carrying its true value. Nothing is ever plotted at a fabricated error.
+    red_err = [100 * r['worst'] for r in rows if r['kind'] not in ('fom', 'cg') and r['worst'] > 0]
+    FLOOR = 0.45 * min(red_err)
+    R = max(d['config']['ladder_q'])
     groups = {
-        'ladder (m4)': [r for r in rows if r['kind'] == 'ladder' and r['rule'] == 'm4' and r['model'] == d['config']['models'][0]['id'] and '_ccrule' not in r['name']],
+        'ladder (m4)': [r for r in rows if r['kind'] == 'ladder' and r['rule'] == 'm4' and r['model'] == prim and '_ccrule' not in r['name'] and r['q'] < R]
+                       + [r for r in rows if r['name'] == f'd_linear_qr_m4@{prim}'],
+        'q=R eliminated (inert iteration)': [r for r in rows if r['name'] == f'q{R}_m4@{prim}'],
         'ladder (m256)': [r for r in rows if r['kind'] == 'ladder' and r['rule'] == 'm256' and r['model'] == d['config']['models'][0]['id']],
         'incumbent R=128': [r for r in rows if r['model'] == 'incumbent'],
         'POD-LSPG (m4)': [r for r in rows if r['name'].startswith('e_pod') and r['rule'] == 'm4'],
         'POD-LSPG (m256)': [r for r in rows if r['name'].startswith('e_pod') and r['rule'] == 'm256'],
-        'head only / free bank / linear QR': [r for r in rows if r['kind'] in ('pa', 'linear') and r['model'] == d['config']['models'][0]['id']],
+        'head only / free bank / linear QR': [r for r in rows if r['kind'] in ('pa', 'linear') and r['model'] == prim],
         'CG': [r for r in rows if r['kind'] == 'cg'],
         'DST direct': [r for r in rows if r['kind'] == 'fom'],
     }
     palette = {'ladder (m4)': '#1d4ed8', 'ladder (m256)': '#60a5fa', 'incumbent R=128': '#94a3b8',
                'POD-LSPG (m4)': '#b45309', 'POD-LSPG (m256)': '#f59e0b', 'head only / free bank / linear QR': '#7c3aed',
-               'CG': '#059669', 'DST direct': '#dc2626'}
+               'CG': '#059669', 'DST direct': '#dc2626', 'q=R eliminated (inert iteration)': '#cbd5e1'}
     markers = {'ladder (m4)': 'o', 'ladder (m256)': 'o', 'incumbent R=128': 's', 'POD-LSPG (m4)': '^',
-               'POD-LSPG (m256)': '^', 'head only / free bank / linear QR': 'D', 'CG': 'x', 'DST direct': '*'}
-    points = []
+               'POD-LSPG (m256)': '^', 'head only / free bank / linear QR': 'D', 'CG': 'x', 'DST direct': '*',
+               'q=R eliminated (inert iteration)': 'o'}
+    def y_of(r):
+        e = 100 * r['worst']
+        return e if e > FLOOR else FLOOR
+    points, offscale = [], []
     for label, grp in groups.items():
         if not grp:
             continue
         xs = [r['total_ms'] for r in grp]
-        ys = [max(100 * r['worst'], 1e-4) for r in grp]
-        ax.scatter(xs, ys, label=label, color=palette[label], marker=markers[label], s=48 if label != 'DST direct' else 140,
-                   zorder=3, alpha=0.9, edgecolor='white', linewidth=0.6)
+        ys = [y_of(r) for r in grp]
+        ax.scatter(xs, ys, label=label, color=palette[label], marker=markers[label],
+                   s=48 if label != 'DST direct' else 150, zorder=3, alpha=0.9,
+                   edgecolor='white' if markers[label] != 'x' else None,
+                   linewidth=0.6 if markers[label] != 'x' else 1.4)
         if label == 'ladder (m4)':
             order = np.argsort([r['q'] for r in grp])
-            ax.plot([xs[i] for i in order], [ys[i] for i in order], color=palette[label], lw=1.2, zorder=2)
+            ax.plot([xs[i] for i in order], [ys[i] for i in order], color=palette[label], lw=1.4, zorder=2)
             for i in order:
-                ax.annotate(f"q={grp[i]['q']}", (xs[i], ys[i]), textcoords='offset points', xytext=(4, 4), fontsize=7, color=palette[label])
-        if label.startswith('POD-LSPG (m4)'):
+                tag = f"q={grp[i]['q']}" + (' (direct)' if grp[i]['kind'] == 'linear' else '')
+                ax.annotate(tag, (xs[i], ys[i]), textcoords='offset points', xytext=(5, 4),
+                            fontsize=7, color=palette[label])
+        if label == 'POD-LSPG (m4)':
             for r, x, y in zip(grp, xs, ys):
-                ax.annotate(f"k'={r['k']}", (x, y), textcoords='offset points', xytext=(4, -9), fontsize=7, color=palette[label])
+                ax.annotate(f"k'={r['k']}", (x, y), textcoords='offset points', xytext=(5, -10),
+                            fontsize=7, color=palette[label])
         if label == 'CG':
-            for r, x, y in zip(grp, xs, ys):
-                ax.annotate(f"{r['tolerance']:g}", (x, y), textcoords='offset points', xytext=(4, 2), fontsize=7, color=palette[label])
+            for i, (r, x, y) in enumerate(sorted(zip(grp, xs, ys), key=lambda t: t[1])):
+                # always above the marker: the off-scale band prints true values below
+                ax.annotate(f"tol {r['tolerance']:g}", (x, y), textcoords='offset points',
+                            xytext=(0, 7 if i % 2 == 0 else 16), fontsize=7,
+                            color=palette[label], ha='center')
         for r, x, y in zip(grp, xs, ys):
+            off = 100 * r['worst'] <= FLOOR
             points.append(dict(group=label, name=r['name'], total_ms=x, worst_same_grid_pct=100 * r['worst'],
-                               non_dominated_all=r['name'] in crit['nd_all'], non_dominated_reduced=r['name'] in crit['nd_red']))
+                               drawn_on_offscale_band=bool(off),
+                               non_dominated_all=r['name'] in crit['nd_all'],
+                               non_dominated_reduced=r['name'] in crit['nd_red']))
+            if off:
+                offscale.append((r, x))
+    if offscale:
+        ax.axhline(FLOOR, color='#64748b', lw=0.9, ls=':', zorder=1)
+        for i, (r, x) in enumerate(sorted(offscale, key=lambda t: t[1])):
+            e = 100 * r['worst']
+            ax.annotate('exact (0)' if e == 0 else f'{e:.0e} %', (x, FLOOR),
+                        textcoords='offset points', xytext=(0, -12 if i % 2 == 0 else -21),
+                        fontsize=6.5, color='#475569', ha='center')
+        ax.annotate('off-scale band — true worst error printed under each marker',
+                    (0.015, FLOOR), xycoords=('axes fraction', 'data'),
+                    textcoords='offset points', xytext=(0, 6), fontsize=7, color='#475569')
     nd = [p for p in points if p['non_dominated_all']]
     nd.sort(key=lambda p: p['total_ms'])
-    ax.plot([p['total_ms'] for p in nd], [max(p['worst_same_grid_pct'], 1e-4) for p in nd], color='black', lw=0.8, ls='--', zorder=1, label='non-dominated (all)')
+    ax.plot([p['total_ms'] for p in nd], [max(p['worst_same_grid_pct'], FLOOR) for p in nd],
+            color='black', lw=1.0, ls='--', zorder=1, label='non-dominated (all)')
+    ax.set_ylim(FLOOR / 1.6, 1.9 * max(100 * r['worst'] for r in rows))
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('median complete-query time, ms (same job, same GPU)')
     ax.set_ylabel('worst relative error vs same-grid FOM, %')
-    ax.set_title(f'Poisson 2D, {n}² intervals: correction ladder against every comparator')
-    ax.grid(True, which='both', alpha=0.25)
-    ax.legend(fontsize=7, loc='best')
+    ax.set_title(f'Poisson 2D, {n}² intervals: correction ladder against every comparator\n'
+                 f'(one job, one GPU, 12 development sources, 3 timed repetitions)', fontsize=10.5)
+    ax.grid(True, which='both', alpha=0.22)
+    ax.legend(fontsize=7.5, loc='upper left', bbox_to_anchor=(1.01, 1.0), framealpha=1.0,
+              borderaxespad=0.)
+    ax.set_ylim(bottom=FLOOR / 2.4)
     fig.tight_layout()
     fig.savefig(path_png)
     fig.savefig(path_png.with_suffix('.pdf'))

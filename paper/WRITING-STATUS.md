@@ -2,9 +2,14 @@
 
 ## 2026-09-17 late — REBUILT FROM THE OLD SOURCE (current state; everything below is history)
 
+**Release plan (double-blind).** The released/anonymised tree is `paper/` as committed, minus
+nothing; `private/` at the worktree root (the previous submission's source, its style file, the
+reviewer map, the review dispositions) is excluded and is never mirrored. `main.tex`'s header
+comment is stripped at release.
+
 User direction: keep the wording, style and title of the previous paper; update with the current
 architecture and the new results. `main.tex` is now the old NeurIPS `main.tex`
-(`old-neurips-main.tex`, archived in this tree) with the ICLR 2027 kit, the user-approved
+(`private/old-neurips-main.tex`, archived outside the release tree) with the ICLR 2027 kit, the user-approved
 two-word title change (see `ABSTRACT-2026-09-17.md`), the same section order and voice, and only
 the overturned sentences rewritten. Details, derivations and every full table live in the
 appendices (`sections/appendix.tex`, `sections/method-details.tex`); the inline bibliography is

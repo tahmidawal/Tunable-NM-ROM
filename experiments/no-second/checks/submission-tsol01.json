@@ -1,0 +1,12 @@
+{
+  "attempt": "tsol01",
+  "job_id": "3780139",
+  "job_name": "ctol_nos_tsol01",
+  "source_commit": "c4f8b0453b05cf64e1d0b5a114e98e6f4569d9e6",
+  "remote": "/cluster/tufts/paralab/tawal01/no_second_20260917/tsol01",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 04:40:00",
+  "submitted_utc": "2026-09-17T09:23:11.970137+00:00",
+  "queue_before": "no owned jobs",
+  "queue_after": "exactly two owned jobs, one per attempt directory (3780138 unet01, 3780139 tsol01)",
+  "pending_rule": "if still PENDING after 3 h: scancel and resubmit as h100, then h200, then l40s; science unchanged"
+}

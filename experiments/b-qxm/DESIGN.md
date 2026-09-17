@@ -535,3 +535,20 @@ is the evidence; round 1 achieved $\le 9.2\times10^{-9}$ against four earlier jo
 
 Reporting: `reports/2026-09-17-b-qxm.md` and `summary.json` are **updated in place** (one report per
 question, not per session); the lab-log entry gets a short addendum, not a new entry.
+
+### A4 (2026-09-17, before any round-2 result) — round-2 submission record
+
+Source commit `76072bf4`, every staged file byte-checked against it. Two submissions from two
+attempt directories, `squeue -u tawal01` before and after each, exactly one job per directory:
+
+| job | attempt | config | Slurm job id | request | time |
+|---|---|---|---|---|---|
+| E1 | `bqx401` | `config-e1.json` | 3783898 | `a100:1`, `--exclude pax007`, `--mem 180G` | 12:00:00 |
+| E2 | `bqx501` | `config-e2.json` | 3783899 | `a100:1` **`--constraint=a100-80G`**, `--exclude pax007`, `--mem 180G` | 12:00:00 |
+
+Five of the eight-job cap used. The per-user concurrent GPU limit is binding and three seed
+jobs (`bsd_s1/s2/s3`) plus several other lanes were ahead, so both entered PENDING. The 3 h
+rule of §3.1 applies to E1 (`a100` → `h100` → `h200` → `l40s`, science unchanged, new attempt
+directory each time). It does **not** apply unmodified to E2: its 80 GB constraint is a memory
+requirement, so if E2 is starved it is resubmitted as `h100` (80 GB) or `h200` (141 GB), never
+onto a 40 GB card or an L40S (48 GB), and never by relaxing the constraint on `a100`.

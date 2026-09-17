@@ -1,0 +1,362 @@
+{
+ "note": "N=32 local smoke of the q=R free rung with M=40 > R=32 (no --smoke flag; config in smoke-config-free-rung.json)",
+ "free_rung_arm_setup": [
+  {
+   "intervals": 32,
+   "arm": "freebank@head_smooth_ff128s2_R512_K4",
+   "model": "head_smooth_ff128s2_R512_K4",
+   "family": "free",
+   "k": 4,
+   "q": 32,
+   "R_total": 32,
+   "M": 40,
+   "trust_radius": 0.3302261989972567,
+   "linear_solve": "gj",
+   "free_rung": true,
+   "nonlinear_unknowns": 0,
+   "bank_rank": 32,
+   "bank_condition": 596.3721152231908,
+   "linear_rank": 32,
+   "operator_sha256": "3b93b9091eac39ce0fd8eba5cb85835d1fcedf8a166650c14d45041667d6fce6",
+   "projected_operator_sha256": "3211df3eea56314d29b7629bcd527cd180218bf3971eceab374c820ae3fa7295",
+   "bank_sha256": "6b4641060f4e7cb4d78083d03c0c9a8ee6dc935f30196571489dacd00e22120d"
+  },
+  {
+   "intervals": 32,
+   "arm": "freebank@head_smooth_ff128s2_R512_K8",
+   "model": "head_smooth_ff128s2_R512_K8",
+   "family": "free",
+   "k": 8,
+   "q": 32,
+   "R_total": 32,
+   "M": 40,
+   "trust_radius": 0.46944454919386414,
+   "linear_solve": "gj",
+   "free_rung": true,
+   "nonlinear_unknowns": 0,
+   "bank_rank": 32,
+   "bank_condition": 596.3721152231908,
+   "linear_rank": 32,
+   "operator_sha256": "3b93b9091eac39ce0fd8eba5cb85835d1fcedf8a166650c14d45041667d6fce6",
+   "projected_operator_sha256": "3211df3eea56314d29b7629bcd527cd180218bf3971eceab374c820ae3fa7295",
+   "bank_sha256": "6b4641060f4e7cb4d78083d03c0c9a8ee6dc935f30196571489dacd00e22120d"
+  }
+ ],
+ "subjects": {
+  "fom_cg_gpu_r0.0001": {
+   "worst": 3.07599011262529e-05,
+   "iterations": [
+    51,
+    56,
+    57,
+    58,
+    60,
+    61
+   ],
+   "reasons": [
+    0
+   ],
+   "full_stationarity_max": 0,
+   "median_ms": 2.9698649886995554
+  },
+  "fom_cg_gpu_r0.01": {
+   "worst": 0.004866492983637881,
+   "iterations": [
+    31,
+    33,
+    35,
+    36,
+    37
+   ],
+   "reasons": [
+    0
+   ],
+   "full_stationarity_max": 0,
+   "median_ms": 2.473334490787238
+  },
+  "fom_cg_gpu_r1e-10": {
+   "worst": 1.5520266676046385e-11,
+   "iterations": [
+    102,
+    103,
+    105,
+    106,
+    107,
+    110
+   ],
+   "reasons": [
+    0
+   ],
+   "full_stationarity_max": 0,
+   "median_ms": 4.014662990812212
+  },
+  "fom_pcg_ic0_cpu_r0.01": {
+   "worst": 0.00642526088526325,
+   "iterations": [
+    10,
+    11
+   ],
+   "reasons": [
+    0
+   ],
+   "full_stationarity_max": 0,
+   "median_ms": 0.5500830011442304
+  },
+  "fom_pcg_ic0_cpu_r1e-10": {
+   "worst": 1.1877929535051351e-11,
+   "iterations": [
+    33,
+    34,
+    35
+   ],
+   "reasons": [
+    0
+   ],
+   "full_stationarity_max": 0,
+   "median_ms": 1.112046535126865
+  },
+  "fom_splu": {
+   "worst": 3.0224482531772568e-15,
+   "iterations": [
+    null
+   ],
+   "reasons": [
+    0
+   ],
+   "full_stationarity_max": 0,
+   "median_ms": 0.1451849821023643
+  },
+  "freebank@head_smooth_ff128s2_R512_K4": {
+   "worst": 0.9753564547689725,
+   "iterations": [
+    0
+   ],
+   "reasons": [
+    4
+   ],
+   "full_stationarity_max": 1.8407079857349856e-13,
+   "median_ms": 2.587807015515864
+  },
+  "freebank@head_smooth_ff128s2_R512_K8": {
+   "worst": 0.9753564547689733,
+   "iterations": [
+    0
+   ],
+   "reasons": [
+    4
+   ],
+   "full_stationarity_max": 1.1564873186764175e-13,
+   "median_ms": 2.7919679996557534
+  },
+  "neural_q0@head_enrich_R512_K4": {
+   "worst": 0.6666222830960397,
+   "iterations": [
+    31,
+    42,
+    48,
+    53,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 0.00030524981566530657,
+   "median_ms": 7.437762978952378
+  },
+  "neural_q0@head_sdf_R256_K4": {
+   "worst": 1.0413652816851398,
+   "iterations": [
+    28,
+    34,
+    41,
+    45,
+    47,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 0.012117787452583744,
+   "median_ms": 6.856175954453647
+  },
+  "neural_q0@head_sdf_R512_K4": {
+   "worst": 0.8787477675486035,
+   "iterations": [
+    23,
+    26,
+    30,
+    34,
+    35,
+    38,
+    47,
+    49
+   ],
+   "reasons": [
+    4
+   ],
+   "full_stationarity_max": 9.927672065399129e-07,
+   "median_ms": 5.998689972329885
+  },
+  "neural_q0@head_smooth_R256_K4": {
+   "worst": 1.0618686234145494,
+   "iterations": [
+    37,
+    41,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 0.30060484636011287,
+   "median_ms": 7.369683007709682
+  },
+  "neural_q0@head_smooth_R512_K4": {
+   "worst": 0.851416854244561,
+   "iterations": [
+    33,
+    35,
+    37,
+    41,
+    50,
+    58,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 0.1587140090337865,
+   "median_ms": 7.015200506430119
+  },
+  "neural_q0@head_smooth_ff128s2_R512_K4": {
+   "worst": 0.6941295302497149,
+   "iterations": [
+    24,
+    26,
+    38,
+    44,
+    59,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 0.0005940122623334566,
+   "median_ms": 6.8668159656226635
+  },
+  "neural_q0@head_smooth_ff128s2_R512_K8": {
+   "worst": 0.6862396942248457,
+   "iterations": [
+    38,
+    44,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 0.052776008454554976,
+   "median_ms": 8.20010353345424
+  },
+  "neural_q4@head_smooth_ff128s2_R512_K4": {
+   "worst": 0.5317751109204385,
+   "iterations": [
+    19,
+    23,
+    27,
+    33,
+    37,
+    50,
+    52,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 2.3878033161308687e-06,
+   "median_ms": 6.631558469962329
+  },
+  "neural_q4@head_smooth_ff128s2_R512_K8": {
+   "worst": 0.5129287555211667,
+   "iterations": [
+    31,
+    33,
+    38,
+    41,
+    42,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 0.000591527719100825,
+   "median_ms": 8.328112482558936
+  },
+  "neural_q8@head_smooth_ff128s2_R512_K4": {
+   "worst": 0.4417346404525822,
+   "iterations": [
+    24,
+    27,
+    29,
+    32,
+    34,
+    57,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 1.1492477439221051e-07,
+   "median_ms": 5.660001013893634
+  },
+  "neural_q8@head_smooth_ff128s2_R512_K8": {
+   "worst": 0.4386494898826249,
+   "iterations": [
+    28,
+    34,
+    37,
+    44,
+    46,
+    60
+   ],
+   "reasons": [
+    0,
+    4
+   ],
+   "full_stationarity_max": 1.5743419438457503e-07,
+   "median_ms": 7.927054015453905
+  },
+  "pod4": {
+   "worst": 0.4376894070541097,
+   "iterations": [
+    1,
+    9
+   ],
+   "reasons": [
+    4
+   ],
+   "full_stationarity_max": 7.999524181468615e-07,
+   "median_ms": 2.483342483174056
+  },
+  "pod8": {
+   "worst": 0.30201953141716625,
+   "iterations": [
+    1,
+    2,
+    12
+   ],
+   "reasons": [
+    4
+   ],
+   "full_stationarity_max": 7.448170361418162e-07,
+   "median_ms": 2.43502197554335
+  }
+ }
+}

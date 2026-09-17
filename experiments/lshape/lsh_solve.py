@@ -24,8 +24,16 @@ import arms as A
 import lsh_core as K_
 
 
-def make_rom_kernel(head, geom, trust, budget, gtol, linear, q):
-    """One complete reduced query. Every large array is an argument."""
+def make_rom_kernel(head, geom, trust, budget, gtol, linear, q, free=False):
+    """One complete reduced query. Every large array is an argument.
+
+    `free` marks the q = R rung (DESIGN.md section 6, section A6): C = I, so B_perp = (I - QQ^T)B
+    is zero to round-off and there is no nonlinear unknown left -- every coefficient is
+    recovered by the exact elimination below. The LM is not run on that rung: on a zero
+    operator its normalised gradient is a round-off cosine, so it would spin through its
+    damping ladder to exit reason 3 on every query and inflate the cost of what is, by
+    construction, a linear reduced model. Its stationarity is `full_stationarity`, the
+    gradient of the FULL residual, which the kernel computes for every rung regardless."""
     N, nfull = geom.N, (geom.N + 1) ** 2
     lm = A.make_stationary_lm(lambda z, fp, Bp: Bp @ head(z) - fp, budget, trust, gtol, linear)
 
@@ -35,7 +43,10 @@ def make_rom_kernel(head, geom, trust, budget, gtol, linear, q):
         fm = P @ f
         fp = fm - Q @ (Q.T @ fm) if q else fm
         index = jnp.argmin(jnp.sum((predictions - fp[None, :]) ** 2, axis=1))
-        z, rn, it, reason, gn = lm(codes[index], (fp, Bp), 0.)
+        if free:
+            z, rn, it, reason, gn = codes[index], jnp.linalg.norm(fp), jnp.int32(0), jnp.int32(4), jnp.asarray(0.)
+        else:
+            z, rn, it, reason, gn = lm(codes[index], (fp, Bp), 0.)
         h = head(z)
         if q:
             y = jax.scipy.linalg.solve_triangular(Rq, Q.T @ (fm - B @ h), lower=False)
@@ -277,7 +288,8 @@ def main():
                 else:
                     Q, Rq, lrank, Bp = empty['Q'], empty['Rq'], 0, B
                 assert lrank == q, (mid, n, q, lrank)
-                kern = make_rom_kernel(head, geom, trust, cfg['lm_budget'], cfg['stationarity_tolerance'], linear, q)
+                kern = make_rom_kernel(head, geom, trust, cfg['lm_budget'], cfg['stationarity_tolerance'], linear, q,
+                                       free=(q == L['Rtot']))
                 pred = jax.jit(jax.vmap(lambda z, Bp: Bp @ head(z), in_axes=(0, None)))(jnp.asarray(L['codes']), Bp)
                 name = f'neural_q{q}@{mid}' if q < L['Rtot'] else f'freebank@{mid}'
                 built.append(dict(name=name, model=mid, k=L['K'], q=q, kernel=kern, predictions=pred,
@@ -286,6 +298,7 @@ def main():
                                   linear_solve=linear, primary=m['primary']))
                 R_['arm_setup'].append(dict(intervals=n, arm=name, model=mid, family=built[-1]['family'], k=L['K'],
                                             q=q, R_total=L['Rtot'], M=M, trust_radius=trust, linear_solve=linear,
+                                            free_rung=bool(q == L['Rtot']), nonlinear_unknowns=0 if q == L['Rtot'] else L['K'],
                                             bank_rank=rank['rank'], bank_condition=rank['condition_number'],
                                             linear_rank=lrank, operator_sha256=K_.sha_array(B),
                                             projected_operator_sha256=K_.sha_array(Bp), bank_sha256=K_.sha_array(G)))

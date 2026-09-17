@@ -1,0 +1,30 @@
+{
+  "mode": "solve",
+  "checks": {
+    "complete": true,
+    "backend_gpu": true,
+    "x64": true,
+    "precision_highest": true,
+    "gates_recorded_pass": true,
+    "development_cohort_reproduced": true,
+    "operator_symmetric": true,
+    "operator_independent_assembly": true,
+    "reference_residual_below_limit": true,
+    "same_grid_errors_recomputed_from_saved_fields": true,
+    "physical_errors_recomputed_from_saved_fields": true,
+    "every_subject_case_has_all_reps": true,
+    "tight_iterative_solves_match_direct": true
+  },
+  "detail": {
+    "cohort_max_abs_difference": 0.0,
+    "worst_reference_residual": 5.2602310885455e-15,
+    "worst_same_grid_difference": 0.0,
+    "worst_physical_difference": 0.0,
+    "nondominated_complete_ms": {
+      "32": [
+        "fom_splu"
+      ]
+    }
+  },
+  "passed": true
+}

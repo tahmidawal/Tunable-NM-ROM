@@ -27,11 +27,11 @@ COMMON = ['experiments/separable-decoder/sep_common.py',
 TRAIN = COMMON + ['experiments/lshape/lsh_fit.py', 'experiments/lshape/lsh_train.py',
                   'experiments/lshape/config-train.json']
 
-SOLVE = COMMON + ['experiments/lshape/lsh_solve.py', 'experiments/lshape/config-solve.json']
+SOLVE = COMMON + ['experiments/lshape/lsh_solve.py']  # + the chosen --config (default config-solve.json)
 
 BODY = {
     'train': '"$PY" lsh_train.py --config config-train.json --out ../output',
-    'solve': '"$PY" lsh_solve.py --config config-solve.json --models models.json --out ../output INTERVALS',
+    'solve': '"$PY" lsh_solve.py --config CONFIG --models models.json --out ../output INTERVALS',
 }
 
 SCRIPT = '''#!/bin/bash
@@ -77,6 +77,8 @@ def main():
     p.add_argument('--gpu', default='a100')
     p.add_argument('--intervals', nargs='*', default=[])
     p.add_argument('--extra', nargs='*', default=[])
+    p.add_argument('--config', default='experiments/lshape/config-solve.json',
+                   help='solve mode only: the tracked config to stage (e.g. config-solve-m513.json)')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     out = ROOT / 'experiments/lshape/runs' / a.attempt
@@ -86,7 +88,7 @@ def main():
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     proof = []
-    for name in {'train': TRAIN, 'solve': SOLVE}[a.mode]:
+    for name in {'train': TRAIN, 'solve': SOLVE + [a.config]}[a.mode]:
         content = (ROOT / name).read_bytes()
         assert content == subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}']), \
             f'uncommitted: {name}'
@@ -106,6 +108,7 @@ def main():
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=2) + '\n')
     (out / 'COMMIT.txt').write_text(commit + '\n')
     body = BODY[a.mode].replace('INTERVALS', ('--intervals ' + ' '.join(a.intervals)) if a.intervals else '')
+    body = body.replace('CONFIG', Path(a.config).name)
     (out / 'run.sbatch').write_text(
         SCRIPT.replace('ATTEMPT', a.attempt).replace('REMOTE', remote).replace('GPU', a.gpu)
         .replace('HOURS', f'{a.hours:02d}').replace('BODY', body))

@@ -255,6 +255,9 @@ def audit_train(out, tol):
     checks['checkpoint_and_basis_hashes'] = bool(hashes_ok)
     checks['head_stored_code_errors_reproduced'] = worst_stored_diff <= tol
     detail['worst_stored_code_relative_difference'] = worst_stored_diff
+    # The audit forms W = G @ directions on the full grid rather than Rg @ directions, so it
+    # carries more accumulation than the driver's QR-metric check; the limit is stated as an
+    # absolute Frobenius bound and is a conditioning check, not a scientific criterion.
     checks['correction_bases_orthonormal_in_field_metric'] = worst_basis_orth <= 1e-6
     detail['worst_basis_orthonormality_error'] = worst_basis_orth
     return dict(mode='train', checks=checks, detail=detail, passed=bool(all(checks.values())))

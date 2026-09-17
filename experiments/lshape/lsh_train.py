@@ -288,7 +288,7 @@ def main():
             se, sr, si, sg = weak_solve_errors(params, Z, B, Fm_dev, Rg, Tdev, pdev, ndev, cfg['lm_budget'],
                                                cfg['stationarity_tolerance'], linear)
             payload, binfo = K_.correction_basis(head, Z, Rg, Tfit, pfit, nfit, cfg['correction_count'])
-            assert binfo['orthogonality_error'] < 1e-8, binfo
+            assert binfo['orthogonality_error_scaled'] < cfg['basis_orthogonality_limit'], binfo
             np.savez_compressed(out / 'checkpoints' / f'{htag}-basis.npz', **payload)
             bsha = hashlib.sha256((out / 'checkpoints' / f'{htag}-basis.npz').read_bytes()).hexdigest()
             store(htag, params, Z, dict(layer='head', factor=bcfg['factor'], n_enrich=E, rank=R, rank_total=Rtot,

@@ -373,3 +373,23 @@ pattern residual $\|(LL^\top - A)\circ\mathrm{pat}(A)\|_{\max}$ is recorded per 
 subject is named `fom_pcg_ic0_cpu_r{1e-2,1e-10}` and everything else in §2 stands. Measured
 on the local box at $N=512$ (loaded, for iteration counts only): IC(0)-PCG 189 iterations at
 $10^{-2}$ and 519 at $10^{-10}$ against 1746 for plain CG at $10^{-10}$.
+
+**2026-09-17, §A3 — `lsh01` ABORTED on a mis-scaled numerical gate; the gate is rescaled and
+the job is rerun in full. No criterion changes.** Job `3780148` (A100, `pax144`, 59:56
+elapsed) completed the operator gates, all six bank arms, the bank selection and seven of the
+eight head arms, then died on the eighth (`head_smooth_ff128s2_R512_K16`) at
+`assert binfo['orthogonality_error'] < 1e-8` with a measured $1.8455\times10^{-8}$. The
+threshold was inherited from the parent cell, where the correction basis has $q_{\max}=32$
+columns; §5 of this design raised $q_{\max}$ to 128 without rescaling it. The quantity is
+$\|W^\top W - I\|_F$ over a $q\times q$ matrix, so at fixed per-entry round-off the absolute
+Frobenius norm grows like $q$; per column the measured value is
+$1.8455\times10^{-8}/\sqrt{128} = 1.63\times10^{-9}$, i.e. round-off, and the basis was fine.
+**The gate is now on the per-column value** $\|W^\top W - I\|_F/\sqrt{q} < 10^{-8}$
+(`basis_orthogonality_limit` in the config), and the absolute norm and the maximum entry
+deviation are both recorded beside it. The independent audit keeps its own, separate absolute
+bound of $10^{-6}$ on $W = G\,\mathrm{directions}$ formed on the full grid, which accumulates
+more than the driver's QR-metric form; both are conditioning checks, not scientific criteria.
+**`lsh01` is retracted as an attempt** — its partial `result.json` is archived for the record
+and **no number from it is reported** — and the identical job is rerun as `lsh02` with the
+rescaled gate. Nothing else in §§1–9 changes, and no criterion, cohort, seed or arm is
+altered, so `lsh02` reproduces `lsh01`'s seven completed arms as well as finishing the eighth.

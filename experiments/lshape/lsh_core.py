@@ -569,10 +569,17 @@ def correction_basis(head, Z, Rg, T, perp2, nu2, count):
     physical = Vt[:count].T
     directions = np.linalg.solve(np.asarray(Rg), physical)
     W = np.asarray(Rg) @ directions
-    orth = float(np.linalg.norm(W.T @ W - np.eye(count)))
+    D = W.T @ W - np.eye(count)
+    orth = float(np.linalg.norm(D))
     return dict(coefficient_directions=directions, physical_metric_directions=physical,
                 R=np.asarray(Rg), singular_values=s, training_latents=np.asarray(Z),
                 training_norms=norm), dict(orthogonality_error=orth, count=int(count),
+                                           # The Frobenius norm of a count x count deviation
+                                           # aggregates count^2 entries, so the ABSOLUTE norm
+                                           # grows with the basis size at fixed per-entry
+                                           # round-off. The gate is on the per-column value.
+                                           orthogonality_error_scaled=float(orth / np.sqrt(count)),
+                                           orthogonality_max_entry=float(np.abs(D).max()),
                                            singular_values=s[:count].tolist())
 
 

@@ -13173,3 +13173,84 @@ $k'=K+q$, FOM ladder first, three timed reps, three error metrics, three-layer d
 Stop rule 2026-09-22 stands. Codex quota-blocked to 2026-09-19 11:33: written self-audits
 `reports/self-audit-fom-verification.md` and `reports/self-audit-phase2.md` substitute (§A5).
 Report: `experiments/ns2d/reports/2026-09-17-ns2d.md` + `summary.json` (163 rows, interim).
+
+## 2026-09-17
+
+### no-second — the resolution knob: `fno-large` is R-USABLE, the §A5 falsification clause fires, the abstract's "one accuracy–cost point" sentence is withdrawn
+
+Branch `exp/2026-09-17-no-second`, worktree `worktrees/2026-09-17-no-second`, namespace
+`/cluster/tufts/paralab/tawal01/no_second_20260917/`. Commits `563ddf23` (collect, audit, archive)
+and `93627727` (verdict, report, DESIGN §A8, self-audit). Job `3787189` (`res02`, pax049, A100-80G,
+COMPLETED 0:0, 2 m 14 s — evaluation only, no training): `jax_backend=gpu`, `torch_backend=cuda`, 395
+data files and 3/3 checkpoints hash-verified in-job, prolongation vs `engines.output_field` = 0.0,
+`ALL-DONE`. Checksum-collected, independently NumPy-audited (`audit_resolution.py`), archived as 31
+Git parts, remote `res02` and the `ckpt01` checkpoint upload deleted. **Jobs counted: 5 of 8**
+(`unet01`, `tsol01`, `pois02`, `ctrl01`, `res02`; `pois01`/`res01` preamble deaths not counted).
+
+**What was measured.** The three frozen validation-selected checkpoints (`fno-large` from the FNO lane
+job `3710846`, `unet-refine` `3780138`, `tsol-refine` `3780139`) evaluated at 256/128/64/32 intervals,
+graded exactly as the Burgers lane grades its coarse-mesh FOM arms (restrict by stride → run → aligned
+bilinear prolongation to 256 → same reference, same fixed-initial metric), with the interpolation-floor
+control (the reference itself restricted and prolonged: 0.2255 / 0.9233 / 4.0157 % worst-evolved on
+validation-32 at 128/64/32) and same-job per-rung timing of the complete six-time device query
+(8 cases × 30 repetitions after 20-query burn-in, all retained). **Top-rung gate passed with gap 0.0
+for all three** (rung 256 reproduces the published 6.3825 / 7.5176 / 9.3183 % exactly).
+
+| checkpoint | rung | worst evolved, val-32 | median | worst evolved, diag-8 | median | floor (val) | median query ms | speedup vs own 256 | error ratio vs own 256 | label |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `fno-large` | 256 | 6.3825 % | 1.8054 | 2.4829 | 1.0494 | 0 | 7.351 | 1.00 | 1.00 | **R-USABLE** |
+| `fno-large` | 128 | 7.2993 % | 1.9011 | 2.2893 | 1.2180 | 0.2255 | 3.463 | **2.12×** | **1.14×** | usable rung |
+| `fno-large` | 64 | 9.8214 % | 2.1679 | 2.8125 | 1.6629 | 0.9233 | 3.438 | 2.14× | 1.54× | usable rung |
+| `fno-large` | 32 | 13.8510 % | 3.1812 | 5.4817 | 2.8138 | 4.0157 | 3.326 | 2.21× | 2.17× | fails error gate |
+| `unet-refine` | 256 | 7.5176 % | 1.0806 | 1.7110 | 1.2193 | 0 | 5.902 | 1.00 | 1.00 | **R-DEGENERATE** |
+| `unet-refine` | 128 | 38.1348 % | 20.2755 | 25.5894 | 20.7290 | 0.2255 | 2.347 | 2.51× | 5.07× | fails error gate |
+| `unet-refine` | 64 | 60.1808 % | 36.4349 | 36.5992 | 33.4498 | 0.9233 | 2.311 | 2.55× | 8.01× | — |
+| `unet-refine` | 32 | 67.6496 % | 42.7334 | 42.0969 | 38.9563 | 4.0157 | 2.302 | 2.56× | 9.00× | — |
+| `tsol-refine` | 256 | 9.3183 % | 1.3591 | 1.5224 | 1.0763 | 0 | 11.195 | 1.00 | 1.00 | **R-DEGENERATE** |
+| `tsol-refine` | 128 | 15.2905 % | 7.1491 | 8.3580 | 5.3872 | 0.2255 | 8.151 | 1.37× | 1.64× | fails speed gate |
+| `tsol-refine` | 64 | 35.1768 % | 17.9818 | 21.8151 | 13.3182 | 0.9233 | 8.092 | 1.38× | 3.78× | — |
+| `tsol-refine` | 32 | 75.1331 % | 32.8800 | 46.0569 | 27.5370 | 4.0157 | 8.040 | 1.39× | 8.06× | — |
+
+(Rows copied from `runs/res02/audit.json`; the report and `summary.json` are generated from it. The
+labels are decided on validation-32 worst-evolved as pre-registered; speedups are within one model's
+own curve in one job on one GPU — no ratio against any other job, the ROM or the FOM.)
+
+**Verdict, applied literally.** The clause fires: `fno-large` at rung 128 is 2.12× faster than its own
+256 evaluation at 1.14× its own error (bars ≥1.5× / ≤2×). **Withdrawn from the paper:** the abstract's
+opening sentence "A learned PDE surrogate usually gives one accuracy–cost point; getting another means
+retraining", the introduction's existence framing of tunability, and the glossary line that each
+operator "is one trained model giving one accuracy–cost point". Contribution 1's *existence* half ("a
+run-time accuracy control from one trained decoder") narrows to what the reviewer suggested: the rank
+$q$ is a run-time control with a **structural** meaning — it moves the reachable set from the head's
+image to the bank's span, nested trial manifolds of one weak-residual solve, error monotone in $q$ with
+the interpolation floor at zero at every rung — which resolution scaling of an operator is not. **What
+the operator's curve actually looks like** (the contrast the paper can make precisely): one step buys
+the whole gain (256→128: 2.12× at 1.14×), below 128 the query is launch-bound (3.46 → 3.44 → 3.33 ms;
+speedup moves 1.04× more in total) while error rises to 1.54× and 2.17×; the U-Net breaks
+off-resolution at once (5.07× error at the first rung) and the Transolver is already cost-flat
+(1.37×). At rung 128 no family is closer than 32× to the interpolation floor, so the error is the
+network's off-resolution behaviour, not the grid. Evidence from three families, one ladder, one PDE,
+one seed — about these checkpoints, not a theorem.
+
+**What was wrong and got fixed or retracted.**
+- The report generator crashed on the resolution audit: `load_attempts` assumed every `runs/*/audit.json`
+  carries a training `spec`. Latent until `res02` landed; resolution audits are now skipped there.
+- The known `summary.json` defect: operator metadata keyed by `arm` alone collided across the Burgers FNO
+  job `3710846` and the Poisson FNO job `3702464` (`fno-large` etc. in both). Every row now carries `pde`,
+  `key = arm|job_id` and `still_improving`; `(key, cohort, metric)` is asserted unique (426 rows, 426
+  unique); the Burgers-FNO still-improving count is asserted at 4 of 4. Poisson-FNO rows previously had
+  `epochs: null` and now take epochs/best epoch/early-stop from the pinned metadata.
+- My own first wording "tens of times above the floor, in every family here" was exact at rung 128 but
+  not at rung 32 for the FNO (3.4×); the generated sentence now states the measured minimum at the
+  deciding rung (32×). Recorded in `reports/self-audit-resolution.md`.
+- Nothing numeric retracted: every reported cell was recomputed by the audit from saved fields and a
+  separate spot-check (no audit import) reproduced the deciding ratios (1.1437× / 2.1228×).
+- Codex still unavailable (quota until 2026-09-19 11:33): written self-audit substituted, recorded in
+  DESIGN §A8; Codex should re-audit the report against the raw JSONs after that time.
+
+**Open.** (1) `3783831` (`ctrl01`, float64 and second-seed twins) still RUNNING; stays pending. (2)
+`poisson-data01` (183 MB) still parked in the namespace for a possible Poisson control; delete when the
+lane closes. (3) The launch-bound floor is batch-1 on an A100; a batched or larger-grid query would move
+it, and the paper should say the family was measured under the parent lane's protocol only. (4) Not
+pushed, not merged. Report `experiments/no-second/reports/2026-09-17-no-second.md`, `reports/summary.json`
+(426 rows), `reports/self-audit-resolution.md`, `runs/res02/{audit.json,archive-parts/}`.

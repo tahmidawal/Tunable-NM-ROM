@@ -69,8 +69,10 @@ def main():
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     if a.smoke:
+        # mechanics only: the extension is built from a 640-source prefix of the fit split so
+        # the smoke stays short on the shared box; the q <= 32 gates do not depend on it
         cfg.update(intervals=64, repetitions=1, burn_seconds=0.001, cg_maxiter=4000,
-                   ccrule_arms=False, attempt='smoke')
+                   ccrule_arms=False, attempt='smoke', extension_sources=640)
         cfg['gates'] = [g for g in cfg['gates'] if 64 in g['intervals']]
     n = int(cfg['intervals'])
     assert jax.default_backend() == 'gpu', jax.default_backend()
@@ -166,7 +168,8 @@ def main():
                                         'trust_delta', 'operator_sha256', 'bank_sha256',
                                         'bank_build_seconds', 'weak_assembly_seconds')}))
         Cfull, dinfo = L_.extend_basis(L['params'], L['codes'], L['basis'], L['train'],
-                                       cfg['training_intervals'])
+                                       cfg['training_intervals'],
+                                       subset=cfg.get('extension_sources'))
         assert dinfo['retained_prefix_exact'], dinfo
         assert dinfo['extension_orthonormality_error'] < 1e-8, dinfo
         L['Cfull'] = Cfull
@@ -192,10 +195,14 @@ def main():
                 modes = L_.test_count(rule, K + q, fixed)
                 ops = ops_for(modes)
                 M = int(ops['B'].shape[0])
-                if M <= K + q and q < R:
+                # below the top rung the K head unknowns and the q corrections must all be
+                # identifiable; at q = R the head is redundant and only the R-column linear
+                # part must have full rank
+                need = K + q if q < R else R
+                if M <= need:
                     R_['declared_subjects'].append(dict(name=f'q{q}_{rule}@{mid}', skipped=True,
-                                                        reason=f'M={M} <= K+q={K + q}'))
-                    print('SKIP', f'q{q}_{rule}@{mid}', M, K + q, flush=True)
+                                                        reason=f'M={M} <= unknowns={need}'))
+                    print('SKIP', f'q{q}_{rule}@{mid}', M, need, flush=True)
                     continue
                 t0 = time.perf_counter()
                 engine = CC.prepare_correction(ops, L['codes'], Cfull, q, cfg['retained'])

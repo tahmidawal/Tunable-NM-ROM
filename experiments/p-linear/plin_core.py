@@ -67,7 +67,7 @@ def reassemble(base, modes):
     return {**base, 'B': B, 'S': Sj, 'I': Ij, 'J': Jj, 'W': W, 'info': info}
 
 
-def extend_basis(params, codes, basis, train_draws, intervals):
+def extend_basis(params, codes, basis, train_draws, intervals, subset=None):
     """Nested correction directions for every q up to R.
 
     The retained basis (32 columns) is used VERBATIM, so every rung with q <= 32 is the
@@ -83,14 +83,25 @@ def extend_basis(params, codes, basis, train_draws, intervals):
     C32 = np.asarray(basis['coefficient_directions'])
     kept = int(C32.shape[1])
     assert len(train_draws) == len(codes), (len(train_draws), len(codes))
+    train_draws, codes = np.asarray(train_draws), np.asarray(codes)
+    if subset is not None and subset < len(train_draws):
+        train_draws, codes = train_draws[:subset], codes[:subset]
+    phases = {}
+    t1 = time.perf_counter()
     G = K_.bank_of(params, intervals)
     Rg, rank = K_.bank_r(G)
     assert rank['rank_valid'], rank
+    phases['bank_and_qr'] = time.perf_counter() - t1
+    t1 = time.perf_counter()
     U = K_.fields(train_draws, intervals)
+    phases['fields'] = time.perf_counter() - t1
+    t1 = time.perf_counter()
     T, perp2, nu2 = K_.project_targets(G, Rg, U)
     coeff = jax.jit(jax.vmap(lambda z: sc.head(params, z)))(jnp.asarray(codes))
     Rg_np = np.asarray(Rg)
     E = (np.asarray(T) - np.asarray(coeff) @ Rg_np.T) / np.sqrt(np.asarray(nu2))[:, None]
+    phases['targets'] = time.perf_counter() - t1
+    t1 = time.perf_counter()
     # the retained directions in THIS run's metric (they were built in the same metric on
     # another machine; the difference is round-off and is recorded, not assumed)
     V32 = Rg_np @ C32
@@ -109,6 +120,7 @@ def extend_basis(params, codes, basis, train_draws, intervals):
     Vfull = Rg_np @ Cfull
     orth = float(np.linalg.norm(Vfull.T @ Vfull - np.eye(R)))
     prefix_exact = bool(np.array_equal(Cfull[:, :kept], C32))
+    phases['svd_and_extension'] = time.perf_counter() - t1
     energy = {}
     total = float(np.sum(s_full ** 2))
     for q in (0, 8, 16, 32, 64, 128, 256, 512):
@@ -129,7 +141,9 @@ def extend_basis(params, codes, basis, train_draws, intervals):
                 full_singular_values=s_full.tolist(),
                 extension_singular_values=s_ext[:need].tolist(),
                 residual_energy_captured=energy,
-                bank_rank=rank,
+                bank_rank=rank, phase_seconds=phases,
+                subset_note=(None if subset is None or subset >= len(codes) + 0 else
+                             f'extension built from the first {subset} fit sources (smoke only)'),
                 directions_sha256=sha_array(Cfull),
                 seconds=time.perf_counter() - t0)
     del G, U, T

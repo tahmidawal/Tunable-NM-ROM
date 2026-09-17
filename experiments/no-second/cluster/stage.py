@@ -21,9 +21,11 @@ NAMESPACE = '/cluster/tufts/paralab/tawal01/no_second_20260917'
 CACHE = '/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01'
 CODE = ['families.py', 'model.py', 'train.py', 'dataset.py', 'evaluate_cohort.py', 'timing.py',
         'prepare_diagnosis_cohort.py', 'spectral_conv_f64.py', 'NEURALOPERATOR-LICENSE',
-        'smoke_second.py', 'training_smoke_second.py', 'worker_second.py',
-        'configs/unet/small.json', 'configs/unet/medium.json', 'configs/unet/large.json',
-        'configs/transolver/small.json', 'configs/transolver/medium.json', 'configs/transolver/large.json']
+        'smoke_second.py', 'training_smoke_second.py', 'worker_second.py']
+# Every config file is staged (pois01 died in its preamble because an explicit list omitted
+# the Poisson configs).
+CODE += sorted(str(p.relative_to(ROOT / 'experiments/no-second'))
+               for p in (ROOT / 'experiments/no-second/configs').rglob('*.json'))
 EXCLUDE = 'pax007'
 
 

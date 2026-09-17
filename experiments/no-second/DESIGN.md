@@ -254,3 +254,10 @@ runs were short (all three early-stopped within 27 min).
   so the median and the >5 % count are reported alongside. No ROM/DST cohort here.
 - Gates G1–G5 apply (G3 with the Poisson hashes; no cohort). One job, `03:30:00` on an
   A100-80G; global 12 000 s, reserve 600 s.
+
+## §A3 — pois01 preamble failure (2026-09-17)
+
+Job `3780224` (`pois01`) failed 51 s in, after both smokes passed, because the stager's
+explicit file list omitted `configs/unet-poisson/*.json`. No training ran; nothing to
+retract. `cluster/stage.py` now stages every file under `configs/`; the Poisson arm is
+resubmitted unchanged as attempt `pois02`. Logs preserved in `runs/pois01/logs-failed/`.

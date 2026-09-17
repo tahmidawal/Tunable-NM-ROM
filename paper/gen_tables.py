@@ -267,6 +267,39 @@ def pivot(rows, key='subject', metric='metric', value='value'):
     return d
 
 
+# --------------------------------------------------------------------------- quadrature status labels
+# Every rule row prints exactly one of: confirmed (n of n re-draws) / single-draw /
+# marginal (k of n draws pass) / none.  The k-of-n verdicts come from the b-eqtop draw
+# replication (job 3783811), keyed by (q, m); the panel's own strings are mapped onto them.
+_EQ_REP: dict | None = None
+def eq_replication_status():
+    global _EQ_REP
+    if _EQ_REP is None:
+        _EQ_REP = {}
+        e = load('eqtop_summary')
+        for r in (e['rows'] if e else []):
+            if r.get('table') == 'replication' and r.get('construction_status'):
+                _EQ_REP[(int(r['q']), int(r['m']))] = r['construction_status']
+    return _EQ_REP
+
+def norm_status(raw, q=None, m=None, rule_set=None):
+    raw = (raw or '').strip()
+    mm = re.match(r'confirmed \((\d+)/(\d+)\)', raw)
+    if mm:
+        return f'confirmed ({mm.group(1)} of {mm.group(2)} re-draws)'
+    if raw.startswith('certified in one draw') or raw == 'one draw':
+        return 'single-draw'
+    src = raw
+    if (not raw) or raw.startswith('marginal (b-eqtop') or raw == 'None':
+        src = eq_replication_status().get((int(q), int(m)), '') if (q is not None and m is not None) else ''
+    mm = re.search(r'\((\d+)/(\d+)\)', src)
+    if mm:
+        return f'marginal ({mm.group(1)} of {mm.group(2)} draws pass)'
+    if raw.startswith('marginal') or raw.startswith('not certified'):
+        return 'marginal (count unavailable)'
+    return 'none' if rule_set in (None, '', 'dense') else 'none'
+
+
 # =========================================================================== T3 / T5 panel
 def build_panel():
     summ = load('panel_summary'); rep = load('panel_report')
@@ -283,6 +316,7 @@ def build_panel():
     macro('provPanelCkpt', 'incumbent (gate checkpoint\\_unchanged; hash in T2, tuning row)')
     macro('provPanelJobs', ', '.join(sorted({r['job_id'] for r in rows})))
     SFX = {256: '', 1024: 'TenTwentyFour'}
+    RST256 = {}
     Ms = {0: 64, 16: 128, 32: 192, 64: 320, 128: 576, 256: 1088}
     qs = [0, 16, 32, 64, 128, 256]
     REDUCED = ('rom', 'fast', 'pod', 'free')
@@ -296,6 +330,14 @@ def build_panel():
         rstat = {r['subject']: r.get('rule_status') for r in R}
         rm = {r['subject']: r.get('rule_m') for r in R}
         adm = {r['subject']: r.get('admissible') for r in R}
+        rst = {sub: norm_status(rstat.get(sub), qk.get(sub), rm.get(sub), rset.get(sub)) for sub in rset}
+        # transferred rules (eqxfer, 1024^2) carry their 256^2 source rule's verdict; the 256^2 pass runs first
+        if mesh == 256:
+            RST256 = {int(qk[x]): rst[x] for x in rst if rset.get(x) == 'eqcert' and x.endswith('_g1em06') and qk.get(x) is not None}
+        else:
+            for x in list(rst):
+                if rset.get(x) == 'eqxfer' and rst[x] in ('none', 'marginal (count unavailable)') and qk.get(x) is not None:
+                    rst[x] = RST256.get(int(qk[x]), rst[x])
         macro(f'provPanel{sfx}Job', job); macro(f'provPanel{sfx}Gpu', gpu_of.get(job, '---'))
         macro(f'nPanel{sfx}Mesh', str(mesh))
         sets = ['eqcert', 'eqtop'] if mesh == 256 else ['eqxfer']
@@ -309,7 +351,7 @@ def build_panel():
             for st_ in sets:
                 e = P[f'q{q}_M{Ms[q]}_{st_}_g1em06']
                 cells += [pct(e['worst_evolved_percent']), pct(e['worst_all_times_percent']), ms(e['median_gpu_ms']),
-                          tex_escape(str(rstat.get(f'q{q}_M{Ms[q]}_{st_}_g1em06') or '---'))]
+                          tex_escape(rst.get(f'q{q}_M{Ms[q]}_{st_}_g1em06', 'none'))]
             cells.append(pct(d['worst_t0_compression_percent']))
             t3.append(cells)
         cols = ['$q$', '$M$', 'dense: evolved \\%', 'all \\%', 'ms']
@@ -336,7 +378,7 @@ def build_panel():
                 sub = f'q{q}_M{Ms[q]}_{st_}_g1em06'
                 macro(f'nPanel{sfx}{SN[st_]}Q{qn}Err', pct(P[sub]['worst_evolved_percent'])); macro(f'nPanel{sfx}{SN[st_]}Q{qn}Ms', ms(P[sub]['median_gpu_ms']))
                 macro(f'nPanel{sfx}{SN[st_]}Q{qn}All', pct(P[sub]['worst_all_times_percent']))
-                macro(f'nPanel{sfx}{SN[st_]}Q{qn}Status', tex_escape(str(rstat.get(sub) or '---'))); macro(f'nPanel{sfx}{SN[st_]}Q{qn}M', str(rm.get(sub) or '---'))
+                macro(f'nPanel{sfx}{SN[st_]}Q{qn}Status', tex_escape(rst.get(sub, 'none'))); macro(f'nPanel{sfx}{SN[st_]}Q{qn}M', str(rm.get(sub) or '---'))
                 macro(f'nPanel{sfx}{SN[st_]}Q{qn}Rho', f"{P[sub]['rho_max']:.4f}" if P[sub].get('rho_max') is not None else '---')
                 macro(f'nPanel{sfx}{SN[st_]}Q{qn}FitStates', str(P[sub].get('rule_fit_states') or '---'))
                 macro(f'nPanel{sfx}{SN[st_]}Q{qn}Basis', str(P[sub].get('rule_basis') or '---'))
@@ -344,6 +386,8 @@ def build_panel():
             sp = [P[f'q{q}_M{Ms[q]}_dense_g1em06']['median_gpu_ms'] / P[f'q{q}_M{Ms[q]}_{st_}_g1em06']['median_gpu_ms'] for q in qs]
             macro(f'nPanel{sfx}{SN[st_]}TwinSpeedupMin', f'{min(sp):.1f}'); macro(f'nPanel{sfx}{SN[st_]}TwinSpeedupMax', f'{max(sp):.1f}')
             macro(f'nPanel{sfx}{SN[st_]}PassingQs', ', '.join(str(q) for q in qs if P[f'q{q}_M{Ms[q]}_{st_}_g1em06'].get('rule_basis') == 'primary'))
+            sd = [str(q) for q in qs if rst.get(f'q{q}_M{Ms[q]}_{st_}_g1em06') == 'single-draw']
+            macro(f'nPanel{sfx}{SN[st_]}SingleDrawQs', ', '.join(sd) if sd else 'none'); macro(f'nPanel{sfx}{SN[st_]}SingleDrawCount', str(len(sd)))
         if mesh == 256:
             macro('nPanelEqQtwofiftysixEvolved', pct(P['q256_M1088_eqcert_g1em06']['worst_evolved_percent']))
             macro('nPanelEqQonetwentyeightEvolved', pct(P['q128_M576_eqcert_g1em06']['worst_evolved_percent']))
@@ -425,7 +469,7 @@ def build_panel():
             d = P[f'q{q}_M{Ms[q]}_dense_g1em06']; e = P.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06', {})
             tm.append([str(q), str(Ms[q]), pct(d['worst_evolved_percent']), pct(d['worst_all_times_percent']), pct(d['worst_reference_percent'], 2), ms(d['median_gpu_ms']),
                        pct(e.get('worst_evolved_percent')) if e else '---', ms(e.get('median_gpu_ms')) if e else '---',
-                       tex_escape(str(rstat.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06') or '---'))])
+                       tex_escape(rst.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06', 'none'))])
         write(f'T03m{"b" if sfx else ""}_ladder_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'GPU ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule'], tm, 'rrrrrrrrl', r'\scriptsize'),
               f'b-panel job {job}, {mesh}^2, tolerance 1e-6, scheduled M=4(K+q); EQ set = {sets[-1]}')
         if 'pod512_M2048_dense' in P:
@@ -454,7 +498,7 @@ def build_panel():
         t5 = []
         for x in subjects:
             d = P[x]; isred = fam[x] in REDUCED
-            rule = (f"{rset[x]} $m{{=}}{rm[x]}$, {rstat[x]}" if rset.get(x) else '---')
+            rule = (f"{rset[x]} $m{{=}}{rm[x]}$, {rst.get(x, 'none')}" if rset.get(x) else ('none' if isred else '---'))
             t5.append([tt(x), fam[x], str(qk[x]) if qk[x] is not None else '---', str(Mof[x]) if Mof[x] else '---', str(quad[x] or '---'),
                        tex_escape(rule), pct(d.get('worst_evolved_percent')), pct(d.get('worst_all_times_percent')),
                        pct(d.get('worst_t0_compression_percent')), pct(d.get('worst_reference_percent')),
@@ -1081,7 +1125,7 @@ def build_eqtop():
         ratio_cd = d['median_gpu_ms'] / dn['median_gpu_ms'] if dn else None
         if ratio_cd: ratios.append(ratio_cd)
         v = V.get(q, {})
-        st = v.get('ladder_rule_status', 'one draw')
+        st = norm_status(v.get('ladder_rule_status', 'one draw'), q, m['m'])
         t.append([str(q), str(m['m']), str(v.get('ladder_rule', {}).get('fit_states', '---')), f"{m['rho_max']:.4f}", tex_escape(st),
                   pct(d['worst_evolved_percent']), pct(d['worst_all_times_percent']), ms(d['median_gpu_ms']),
                   pct(dn['worst_evolved_percent']) if dn else '---', ms(dn['median_gpu_ms']) if dn else '---',
@@ -1114,7 +1158,7 @@ def build_eqtop():
         vals = ', '.join(f"{v:.4f}" for _, v in sorted(draws.get(key, [])))
         spreads.append(d['spread_ratio'])
         t.append([str(d['_q']), str(d['_m']), fs, vals, f"{d['rho_min']:.4f} / {d['rho_median']:.4f} / {d['rho_max_of_draws']:.4f}",
-                  f"{d['spread_ratio']:.2f}", f"{round(4*d['certified_primary_fraction']):.0f}/4", f"{round(4*d['certified_tight_fraction']):.0f}/4", tex_escape(d['_status'] or '---')])
+                  f"{d['spread_ratio']:.2f}", f"{round(4*d['certified_primary_fraction']):.0f}/4", f"{round(4*d['certified_tight_fraction']):.0f}/4", tex_escape(norm_status(d['_status'], d['_q'], d['_m']))])
     write('T09d_replication.tex', tabular(['$q$', '$m$', 'fit states', 'four draws: $\\rho_{\\max}$', 'min / median / max', 'spread', 'primary', 'tight', 'construction status (all draws)'],
                                           t, 'rrrp{3.6cm}p{2.9cm}rccp{2.6cm}', r'\scriptsize'), 'b-eqtop draw replication, job 3783811, four independent draws per construction')
     if spreads:

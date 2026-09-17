@@ -5,30 +5,30 @@
 \toprule
 subject & family & $q$ / $k^\prime$ & $M$ & quad. & rule & evolved \% & all \% & $t{=}0$ \% & vs ref \% & GPU ms & host ms & conv. & strict & adm. \\
 \midrule
-\texttt{q0\_M64\_dense\_g1em06} & rom & 0 & 64 & dense & --- & 2.2886 & 3.8562 & 3.8562 & 3.8562 & 1551.7 & 1562.4 & yes & yes & yes \\
-\texttt{q0\_M64\_eqxfer\_g0p001} & rom & 0 & 64 & eq & eqxfer $m{=}934$, confirmed (3/3) & 2.2925 & 3.8562 & 3.8562 & 3.8562 & 32.2 & 44.4 & yes & yes & yes \\
-\texttt{q0\_M64\_eqxfer\_g1em06} & rom & 0 & 64 & eq & eqxfer $m{=}934$, confirmed (3/3) & 2.2913 & 3.8562 & 3.8562 & 3.8562 & 40.3 & 51.4 & yes & yes & yes \\
-\texttt{q16\_M128\_dense\_g1em06} & rom & 16 & 128 & dense & --- & 1.5398 & 3.8071 & 3.8071 & 3.8071 & 1949.1 & 1960.6 & yes & yes & yes \\
-\texttt{q16\_M128\_eqxfer\_g0p001} & rom & 16 & 128 & eq & eqxfer $m{=}918$, confirmed (3/3) & 1.5277 & 3.8071 & 3.8071 & 3.8071 & 48.4 & 60.7 & yes & yes & yes \\
-\texttt{q16\_M128\_eqxfer\_g1em06} & rom & 16 & 128 & eq & eqxfer $m{=}918$, confirmed (3/3) & 1.5273 & 3.8071 & 3.8071 & 3.8071 & 59.6 & 70.5 & yes & yes & yes \\
-\texttt{q32\_M192\_dense\_g1em06} & rom & 32 & 192 & dense & --- & 1.4482 & 3.7140 & 3.7140 & 3.7140 & 2382.9 & 2393.5 & yes & yes & yes \\
-\texttt{q32\_M192\_eqxfer\_g0p001} & rom & 32 & 192 & eq & eqxfer $m{=}972$, confirmed (2/2) & 1.4488 & 3.7140 & 3.7140 & 3.7140 & 57.6 & 69.2 & yes & yes & yes \\
-\texttt{q32\_M192\_eqxfer\_g1em06} & rom & 32 & 192 & eq & eqxfer $m{=}972$, confirmed (2/2) & 1.4487 & 3.7140 & 3.7140 & 3.7140 & 72.0 & 83.0 & yes & yes & yes \\
-\texttt{q64\_M320\_dense\_g1em06} & rom & 64 & 320 & dense & --- & 1.2739 & 3.5773 & 3.5773 & 3.5773 & 3565.6 & 3581.8 & yes & yes & yes \\
-\texttt{q64\_M320\_eqxfer\_g0p001} & rom & 64 & 320 & eq & eqxfer $m{=}942$, marginal (b-eqtop superseded list) & 1.2763 & 3.5773 & 3.5773 & 3.5773 & 64.4 & 76.5 & yes & yes & no \\
-\texttt{q64\_M320\_eqxfer\_g1em06} & rom & 64 & 320 & eq & eqxfer $m{=}942$, marginal (b-eqtop superseded list) & 1.2762 & 3.5773 & 3.5773 & 3.5773 & 84.0 & 94.5 & yes & yes & no \\
-\texttt{q128\_M576\_dense\_g1em06} & rom & 128 & 576 & dense & --- & 1.0444 & 3.2858 & 3.2858 & 3.2858 & 6895.2 & 6909.1 & yes & yes & yes \\
-\texttt{q128\_M576\_eqxfer\_g0p001} & rom & 128 & 576 & eq & eqxfer $m{=}1713$, None & 1.0443 & 3.2858 & 3.2858 & 3.2858 & 128.3 & 139.2 & yes & yes & yes \\
-\texttt{q128\_M576\_eqxfer\_g1em06} & rom & 128 & 576 & eq & eqxfer $m{=}1713$, None & 1.0442 & 3.2858 & 3.2858 & 3.2858 & 163.7 & 175.4 & yes & yes & yes \\
-\texttt{q256\_M1088\_dense\_g1em06} & rom & 256 & 1088 & dense & --- & 0.5861 & 2.7974 & 2.7974 & 2.7974 & 22053.9 & 22066.3 & yes & yes & yes \\
-\texttt{q256\_M1088\_eqxfer\_g0p001} & rom & 256 & 1088 & eq & eqxfer $m{=}1658$, None & 1.8655 & 2.7974 & 2.7974 & 2.7974 & 277.2 & 290.1 & yes & yes & no \\
-\texttt{q256\_M1088\_eqxfer\_g1em06} & rom & 256 & 1088 & eq & eqxfer $m{=}1658$, None & 1.8664 & 2.7974 & 2.7974 & 2.7974 & 502.2 & 515.1 & yes & yes & no \\
-\texttt{pod16\_M64\_dense} & pod & 16 & 64 & dense & --- & 29.2793 & 61.9285 & 61.9285 & 61.9285 & 198.2 & 209.6 & yes & yes & yes \\
-\texttt{pod32\_M128\_dense} & pod & 32 & 128 & dense & --- & 19.4088 & 47.6410 & 47.6410 & 47.6410 & 391.2 & 402.5 & yes & no & yes \\
-\texttt{pod64\_M256\_dense} & pod & 64 & 256 & dense & --- & 7.4077 & 20.5994 & 20.5994 & 20.5994 & 741.6 & 752.9 & yes & no & yes \\
-\texttt{pod128\_M512\_dense} & pod & 128 & 512 & dense & --- & 2.1609 & 10.7339 & 10.7339 & 10.7339 & 1760.6 & 1773.0 & yes & no & yes \\
-\texttt{pod256\_M1024\_dense} & pod & 256 & 1024 & dense & --- & 1.1017 & 4.1416 & 4.1416 & 4.1416 & 4897.6 & 4911.4 & yes & no & yes \\
-\texttt{free512\_M1024\_dense} & free & 512 & 1024 & dense & --- & 0.5108 & 2.4466 & 2.4466 & 2.4466 & 13514.6 & 13529.0 & yes & no & yes \\
+\texttt{q0\_M64\_dense\_g1em06} & rom & 0 & 64 & dense & none & 2.2886 & 3.8562 & 3.8562 & 3.8562 & 1551.7 & 1562.4 & yes & yes & yes \\
+\texttt{q0\_M64\_eqxfer\_g0p001} & rom & 0 & 64 & eq & eqxfer $m{=}934$, confirmed (3 of 3 re-draws) & 2.2925 & 3.8562 & 3.8562 & 3.8562 & 32.2 & 44.4 & yes & yes & yes \\
+\texttt{q0\_M64\_eqxfer\_g1em06} & rom & 0 & 64 & eq & eqxfer $m{=}934$, confirmed (3 of 3 re-draws) & 2.2913 & 3.8562 & 3.8562 & 3.8562 & 40.3 & 51.4 & yes & yes & yes \\
+\texttt{q16\_M128\_dense\_g1em06} & rom & 16 & 128 & dense & none & 1.5398 & 3.8071 & 3.8071 & 3.8071 & 1949.1 & 1960.6 & yes & yes & yes \\
+\texttt{q16\_M128\_eqxfer\_g0p001} & rom & 16 & 128 & eq & eqxfer $m{=}918$, confirmed (3 of 3 re-draws) & 1.5277 & 3.8071 & 3.8071 & 3.8071 & 48.4 & 60.7 & yes & yes & yes \\
+\texttt{q16\_M128\_eqxfer\_g1em06} & rom & 16 & 128 & eq & eqxfer $m{=}918$, confirmed (3 of 3 re-draws) & 1.5273 & 3.8071 & 3.8071 & 3.8071 & 59.6 & 70.5 & yes & yes & yes \\
+\texttt{q32\_M192\_dense\_g1em06} & rom & 32 & 192 & dense & none & 1.4482 & 3.7140 & 3.7140 & 3.7140 & 2382.9 & 2393.5 & yes & yes & yes \\
+\texttt{q32\_M192\_eqxfer\_g0p001} & rom & 32 & 192 & eq & eqxfer $m{=}972$, confirmed (2 of 2 re-draws) & 1.4488 & 3.7140 & 3.7140 & 3.7140 & 57.6 & 69.2 & yes & yes & yes \\
+\texttt{q32\_M192\_eqxfer\_g1em06} & rom & 32 & 192 & eq & eqxfer $m{=}972$, confirmed (2 of 2 re-draws) & 1.4487 & 3.7140 & 3.7140 & 3.7140 & 72.0 & 83.0 & yes & yes & yes \\
+\texttt{q64\_M320\_dense\_g1em06} & rom & 64 & 320 & dense & none & 1.2739 & 3.5773 & 3.5773 & 3.5773 & 3565.6 & 3581.8 & yes & yes & yes \\
+\texttt{q64\_M320\_eqxfer\_g0p001} & rom & 64 & 320 & eq & eqxfer $m{=}942$, marginal (2 of 6 draws pass) & 1.2763 & 3.5773 & 3.5773 & 3.5773 & 64.4 & 76.5 & yes & yes & no \\
+\texttt{q64\_M320\_eqxfer\_g1em06} & rom & 64 & 320 & eq & eqxfer $m{=}942$, marginal (2 of 6 draws pass) & 1.2762 & 3.5773 & 3.5773 & 3.5773 & 84.0 & 94.5 & yes & yes & no \\
+\texttt{q128\_M576\_dense\_g1em06} & rom & 128 & 576 & dense & none & 1.0444 & 3.2858 & 3.2858 & 3.2858 & 6895.2 & 6909.1 & yes & yes & yes \\
+\texttt{q128\_M576\_eqxfer\_g0p001} & rom & 128 & 576 & eq & eqxfer $m{=}1713$, marginal (4 of 5 draws pass) & 1.0443 & 3.2858 & 3.2858 & 3.2858 & 128.3 & 139.2 & yes & yes & yes \\
+\texttt{q128\_M576\_eqxfer\_g1em06} & rom & 128 & 576 & eq & eqxfer $m{=}1713$, marginal (4 of 5 draws pass) & 1.0442 & 3.2858 & 3.2858 & 3.2858 & 163.7 & 175.4 & yes & yes & yes \\
+\texttt{q256\_M1088\_dense\_g1em06} & rom & 256 & 1088 & dense & none & 0.5861 & 2.7974 & 2.7974 & 2.7974 & 22053.9 & 22066.3 & yes & yes & yes \\
+\texttt{q256\_M1088\_eqxfer\_g0p001} & rom & 256 & 1088 & eq & eqxfer $m{=}1658$, marginal (1 of 5 draws pass) & 1.8655 & 2.7974 & 2.7974 & 2.7974 & 277.2 & 290.1 & yes & yes & no \\
+\texttt{q256\_M1088\_eqxfer\_g1em06} & rom & 256 & 1088 & eq & eqxfer $m{=}1658$, marginal (1 of 5 draws pass) & 1.8664 & 2.7974 & 2.7974 & 2.7974 & 502.2 & 515.1 & yes & yes & no \\
+\texttt{pod16\_M64\_dense} & pod & 16 & 64 & dense & none & 29.2793 & 61.9285 & 61.9285 & 61.9285 & 198.2 & 209.6 & yes & yes & yes \\
+\texttt{pod32\_M128\_dense} & pod & 32 & 128 & dense & none & 19.4088 & 47.6410 & 47.6410 & 47.6410 & 391.2 & 402.5 & yes & no & yes \\
+\texttt{pod64\_M256\_dense} & pod & 64 & 256 & dense & none & 7.4077 & 20.5994 & 20.5994 & 20.5994 & 741.6 & 752.9 & yes & no & yes \\
+\texttt{pod128\_M512\_dense} & pod & 128 & 512 & dense & none & 2.1609 & 10.7339 & 10.7339 & 10.7339 & 1760.6 & 1773.0 & yes & no & yes \\
+\texttt{pod256\_M1024\_dense} & pod & 256 & 1024 & dense & none & 1.1017 & 4.1416 & 4.1416 & 4.1416 & 4897.6 & 4911.4 & yes & no & yes \\
+\texttt{free512\_M1024\_dense} & free & 512 & 1024 & dense & none & 0.5108 & 2.4466 & 2.4466 & 2.4466 & 13514.6 & 13529.0 & yes & no & yes \\
 \texttt{fno-large} & fno & --- & --- & --- & --- & 6.2657 & 6.2657 & 0.0000 & 5.6472 & 58.9 & 71.0 & --- & --- & --- \\
 \texttt{fft\_tight} & fom & --- & --- & --- & --- & 0.0000 & 0.0000 & 0.0000 & 2.1416 & 210.9 & 222.2 & --- & --- & --- \\
 \texttt{nt1e-2\_dt005} & fom & --- & --- & --- & --- & 4.2628 & 4.2628 & 0.0000 & 2.3899 & 31.1 & 42.7 & --- & --- & --- \\

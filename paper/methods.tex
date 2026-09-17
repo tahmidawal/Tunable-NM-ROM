@@ -178,7 +178,7 @@ $48\times48$ Gauss--Legendre rule independent of the query mesh, and each time
 step is warm-started at the previous code. The interpolation of the input is
 charged to the query.
 
-\subsection{Precomputed operators, quadrature, and certification}
+\subsection{Precomputed operators, quadrature, and validation}
 \label{sec:method:precomp}
 
 For a fixed linear operator the tested residual is exactly precomputable:
@@ -198,8 +198,8 @@ A rule is fitted offline by non-negative least squares
 \citep{LawsonHanson1974NNLS} on decoder outputs at $n_{\rm fit}$ stored codes,
 with a hard cap of $m$ nodes (Appendix~\ref{app:method:eq}); changing $m$
 re-solves the fit, rules are not nested, and deployment selects among stored
-rules. \emph{A rule is never certified by its NNLS fit residual}; we certify it
-by the held-out relative error of the projected advection term,
+rules. \emph{A rule is never accepted on its NNLS fit residual}; we score it by
+the held-out relative error of the projected advection term,
 \begin{equation}
   \rho(u)=\frac{\norm{\sum_{i\in\mathcal S}w_i\tests_{:,i}N_i(u)-\tests N(u)}_2}{\norm{\tests N(u)}_2},
   \qquad
@@ -207,7 +207,9 @@ by the held-out relative error of the projected advection term,
   \label{eq:rho}
 \end{equation}
 over states the solver actually reaches on trajectories disjoint from the fit
-and evaluation cases. The primary bar is \nEqtopBarOrigin. Second, the fit states must be reachable states too, and at the top rungs
+and evaluation cases, and then re-draw the construction: a rule is
+\emph{confirmed} only if every re-draw passes (\S\ref{sec:exp:eq}). The
+primary bar is \nEqtopBarOrigin. Second, the fit states must be reachable states too, and at the top rungs
 ($q\ge128$) their \emph{number} binds before the node count does
 (\S\ref{sec:exp:eq}).
 
@@ -218,7 +220,7 @@ Every operating point uses one frozen artefact per PDE: the weights $\theta$,
 the bank $\bank$ and $R$, the latent dimension $k$, the directions $\corr$, the
 time discretisation and the query contract are identical across the family.
 Selected at run time are (i) the correction rank $q$, a prefix of the stored
-directions; (ii) the quadrature, dense or one of the stored certified rules;
+directions; (ii) the quadrature, dense or one of the stored validated rules;
 (iii) the stopping tolerance and attempt budget. The first two select among
 offline-prepared artefacts; only the third is a pure run-time number. The test
 count $M$ is a design parameter of the weak problem and is held fixed along the

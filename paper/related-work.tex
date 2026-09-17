@@ -57,16 +57,15 @@ hold the data and split fixed across an FNO, a U-Net and a Transolver at an
 equal wall budget and report the result whichever way it falls. It falls
 against us (\S\ref{sec:exp:operators}).
 
-\paragraph{Hyper-reduction and its certification.}
+\paragraph{Hyper-reduction and its validation.}
 We use empirical quadrature in the non-negative least-squares form of
 \citet{Hernandez2017EQ}, with the LP variant \citep{YanoPatera2019LPEQ},
 energy-based mesh sampling \citep{FarhatECSW2014,Chapman2017AcceleratedECSW},
 GNAT \citep{Carlberg2013GNAT} and DEIM \citep{ChaturantabutSorensen2010} as
 the nearby alternatives, unchanged. What we add is a rule about how a fitted
-rule may be accepted: not by its fit residual on the snapshots it was built
-from, but by its error on states the solver actually visits, with the fit built
-on such states; at the top rungs ($q\ge128$) the number of fit states binds
-before the node count does (\S\ref{sec:exp:eq}).
+rule may be accepted: not by its fit residual, but by its error on states the
+solver actually visits, with the fit built on such states, and then only if
+independent re-draws of the construction pass too (\S\ref{sec:exp:eq}).
 
 \paragraph{Classical solvers.}
 On separable constant-coefficient cells the discrete sine transform is a direct

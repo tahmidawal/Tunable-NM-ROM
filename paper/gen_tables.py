@@ -50,6 +50,7 @@ SOURCES = {
     'lshape_report': '2026-09-17-lshape/experiments/lshape/reports/2026-09-17-lshape.md',
     'eqtop_summary': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/summary.json',
     'eqtop_report': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/2026-09-17-b-eqtop.md',
+    'eqtop_interim': '../worktrees/2026-09-16-paper-refresh/paper/sources/b-eqtop-interim-summary.json',
     'ns2d_summary': '2026-09-17-ns2d/experiments/ns2d/reports/summary.json',
     # pending lanes (absent on disk today; listed so the placeholder names the lane)
     'seeds_summary': '2026-09-17-b-seeds/experiments/b-seeds/reports/summary.json',
@@ -900,33 +901,74 @@ def build_eqtop():
         write('T09_eq_ladder.tex', gen('b-eqtop', 'T9')); write('T09b_eq_certification.tex', gen('b-eqtop', 'T9')); return
     rows = e['rows']
     pend = e.get('pending') or []
-    pend_job = ', '.join(x['job_id'] for x in pend) or '---'
+    pend_job = ', '.join(x['job_id'] for x in pend) or 'none'
     macro('nEqtopPendingJob', pend_job)
     macro('nEqtopStatus', tex_escape(e.get('status', 'provisional')))
     macro('provEqtopJobs', '; '.join(f"{j['attempt']} = {j['job_id']} ({tex_escape(j['gpu'])}, commit {hexprefix(j['commit'])})" for j in e.get('jobs', [])))
     macro('provEqtopJob', ', '.join(j['job_id'] for j in e.get('jobs', [])))
     # ---- T9a: the primary EQ ladder and its dense twins, one allocation
     L = defaultdict(dict); Lmeta = {}
-    for r in rows:
-        if r['table'] == 'ladder':
-            L[(r['ladder'], r['arm'])][r['metric']] = r['value']; Lmeta[(r['ladder'], r['arm'])] = r
+    ladder_rows = [r for r in rows if r['table'] == 'ladder']
+    ladder_source = 'final summary'
+    if not ladder_rows:                      # the lane's final summary dropped the timed-ladder rows; use the pinned interim copy
+        interim = load('eqtop_interim')
+        ladder_rows = [r for r in interim['rows'] if r['table'] == 'ladder'] if interim else []
+        ladder_source = 'pinned interim summary (lane commit d6071e3c)'
+    macro('provEqtopLadderSource', ladder_source)
+    for r in ladder_rows:
+        L[(r['ladder'], r['arm'])][r['metric']] = r['value']; Lmeta[(r['ladder'], r['arm'])] = r
     prim = sorted([k for k in L if k[0] == 'primary'], key=lambda k: Lmeta[k]['q'])
     dense = {Lmeta[k]['q']: L[k] for k in L if k[0] == 'dense'}
     dense_meta = {Lmeta[k]['q']: Lmeta[k] for k in L if k[0] == 'dense'}
+    V = {v['q']: v for v in e.get('verdict_per_rung', [])}
     t = []; ratios = []
     for k in prim:
         m = Lmeta[k]; d = L[k]; q = m['q']
         dn = dense.get(q)
         ratio_cd = d['median_gpu_ms'] / dn['median_gpu_ms'] if dn else None
         if ratio_cd: ratios.append(ratio_cd)
-        t.append([str(q), str(m['m']), f"{m['rho_max']:.4f}", yn(m['certified_primary']), yn(m['certified_tight']),
+        v = V.get(q, {})
+        st = v.get('ladder_rule_status', 'one draw')
+        t.append([str(q), str(m['m']), str(v.get('ladder_rule', {}).get('fit_states', '---')), f"{m['rho_max']:.4f}", tex_escape(st),
                   pct(d['worst_evolved_percent']), pct(d['worst_all_times_percent']), ms(d['median_gpu_ms']),
                   pct(dn['worst_evolved_percent']) if dn else '---', ms(dn['median_gpu_ms']) if dn else '---',
                   f"{ratio_cd:.3f}" if ratio_cd else '---'])
+        macro('nEqtopStatusQ' + {0:'Zero',16:'Sixteen',32:'ThirtyTwo',64:'SixtyFour',128:'OneTwentyEight',256:'TwoFiftySix'}[q], tex_escape(st))
     job = Lmeta[prim[0]]['job_id']
-    write('T09_eq_ladder.tex', tabular(['$q$', '$m$', '$\\rho_{\\max}$', 'primary', 'tight', 'EQ evolved \\%', 'EQ all \\%', 'EQ ms',
-                                        'dense evolved \\%', 'dense ms', 'EQ/dense cost'], t, 'rrrccrrrrrr', r'\scriptsize'),
-          f'b-eqtop job {job}; PROVISIONAL, draw replication {pend_job} pending')
+    write('T09_eq_ladder.tex', tabular(['$q$', '$m$', 'fit states', '$\\rho_{\\max}$ (this draw)', 'construction status', 'EQ evolved \\%', 'EQ all \\%', 'EQ ms',
+                                        'dense evolved \\%', 'dense ms', 'EQ/dense cost'], t, 'rrrrlrrrrrr', r'\scriptsize'),
+          f'b-eqtop job {job}; construction status from the draw replication (job 3783811)')
+    conf = [str(q) for q in sorted(V) if V[q]['ladder_rule_status'].startswith('confirmed')]
+    marg = [f"{q} ({V[q]['draws_certifying_primary']}/{V[q]['draws']})" for q in sorted(V) if not V[q]['ladder_rule_status'].startswith('confirmed')]
+    macro('nEqtopConfirmedRungs', ', '.join(conf)); macro('nEqtopMarginalRungs', ', '.join(marg))
+    macro('nEqtopConfirmedCount', str(len(conf))); macro('nEqtopMarginalCount', str(len(marg)))
+    if 256 in V:
+        macro('nEqtopTopDraws', f"{V[256]['draws_certifying_primary']} of {V[256]['draws']}")
+        macro('nEqtopTopRedrawMin', f"{sorted(x for x in [V[256]['rho_median'], V[256]['rho_max_of_draws']])[0]:.3f}")
+    # replication table and spread
+    rep = defaultdict(dict)
+    for r in rows:
+        if r['table'] == 'replication':
+            rep[r['arm']][r['metric']] = r['value']; rep[r['arm']]['_q'] = r['q']; rep[r['arm']]['_m'] = r['m']; rep[r['arm']]['_status'] = r.get('construction_status')
+    draws = defaultdict(list)
+    for r in rows:
+        if r['table'] == 'rules' and r['job_id'] == '3783811' and r['metric'] == 'rho_max' and r['arm'].startswith('reprow'):
+            key = (r['q'], r['m'], '64' if 'w64' in r['arm'] else 'incumbent'); draws[key].append((r['arm'][-2:], r['value']))
+    t = []; spreads = []
+    for arm in sorted(rep, key=lambda a: (rep[a]['_q'], rep[a]['_m'])):
+        d = rep[arm]; st = re.search(r'_(\d+)states', arm); fs = st.group(1) if st else '---'
+        key = (d['_q'], d['_m'], '64' if fs == '64' else 'incumbent')
+        vals = ', '.join(f"{v:.4f}" for _, v in sorted(draws.get(key, [])))
+        spreads.append(d['spread_ratio'])
+        t.append([str(d['_q']), str(d['_m']), fs, vals, f"{d['rho_min']:.4f} / {d['rho_median']:.4f} / {d['rho_max_of_draws']:.4f}",
+                  f"{d['spread_ratio']:.2f}", f"{round(4*d['certified_primary_fraction']):.0f}/4", f"{round(4*d['certified_tight_fraction']):.0f}/4", tex_escape(d['_status'] or '---')])
+    write('T09d_replication.tex', tabular(['$q$', '$m$', 'fit states', 'four draws: $\\rho_{\\max}$', 'min / median / max', 'spread', 'primary', 'tight', 'construction status (all draws)'],
+                                          t, 'rrrp{3.6cm}p{2.9cm}rccp{2.6cm}', r'\scriptsize'), 'b-eqtop draw replication, job 3783811, four independent draws per construction')
+    if spreads:
+        macro('nEqtopSpreadMin', f"{min(spreads):.1f}"); macro('nEqtopSpreadMax', f"{max(spreads):.1f}")
+    q256 = sorted(v for _, v in draws.get((256, 2048, '64'), []))
+    if q256: macro('nEqtopTopRedrawRange', f"{q256[0]:.3f}--{q256[-1]:.3f}")
+    macro('provEqtopRepJob', '3783811')
     macro('provEqtopLadderJob', job)
     errs = [L[k]['worst_evolved_percent'] for k in prim]
     macro('nEqtopLadderMonotone', yn(all(errs[i] >= errs[i + 1] for i in range(len(errs) - 1))))
@@ -957,9 +999,9 @@ def build_eqtop():
             return '---' if r is None else f"{tex_escape(r['arm'])}, $m{{=}}{r['m']}$, {int(r['value'])} states, $\\rho_{{\\max}}{{=}}{r['rho_max']:.4f}$"
         t.append([str(q), cell(pr), cell(ti),
                   f"$m{{=}}{parent_best['m']}$, $\\rho_{{\\max}}{{=}}{parent_best['value']:.4f}$, {yn(parent_best['certified_primary'])}" if parent_best else '---'])
-    write('T09b_eq_certification.tex', tabular(['$q$', 'cheapest primary-certified rule', 'cheapest tight-certified rule',
-                                                'best parent-lane rule (re-certified): primary?'], t, r'rp{4.3cm}p{4.3cm}p{3.2cm}', r'\scriptsize'),
-          f'b-eqtop; PROVISIONAL, draw replication {pend_job} pending')
+    write('T09b_eq_certification.tex', tabular(['$q$', 'cheapest rule passing the primary bar (its draw)', 'cheapest rule passing the tight bar (its draw)',
+                                                'best parent-lane rule, re-scored: primary?'], t, r'rp{4.3cm}p{4.3cm}p{3.2cm}', r'\scriptsize'),
+          'b-eqtop; single-draw passes, see the replication table for construction status')
     # the fit-state story at the top rungs, and the draw sensitivity at q=64
     for q, nm in [(128, 'OneTwentyEight'), (256, 'TwoFiftySix')]:
         pr = C[q].get('cheapest_certified_primary_fit_states')

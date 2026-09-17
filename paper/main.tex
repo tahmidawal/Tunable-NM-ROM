@@ -51,8 +51,8 @@ reachable set is chosen at run time, turning one trained decoder into a family
 of operating points. The decoder
 writes the solution as a fixed spatial bank times a small neural head. At inference
 the solver may add $q$ extra bank directions on top of the head's output: $q$ sets
-accuracy, while offline-certified quadrature rules and the solver tolerance set
-cost. Three ingredients make this work: a bank that evaluates per node, so cached
+accuracy, while offline-fitted quadrature rules, validated on reachable states,
+and the solver tolerance set cost. Three ingredients make this work: a bank that evaluates per node, so cached
 cost is flat in mesh size; a linear skip in the head, so the solve starts reliably;
 and the split between bank, head and corrections, which lets the rank dial between
 the head's compression and the bank's floor. On 2D Burgers the family is monotone

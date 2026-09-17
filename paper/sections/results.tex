@@ -105,41 +105,38 @@ $q$ (at $q=256$ the $M$ effect is still $\nQxmSpanMatQtwoFiftySix\times$). The
 solver switch at $K+q>64$ is inert (relative difference
 \nQxmSolverControlRelDiff{}).
 
-\subsection{Quadrature rules must be certified on reachable states}
+\subsection{Quadrature rules: validate on reachable states, then re-draw}
 \label{sec:exp:eq}
 
-A rule's NNLS fit residual is a property of its fitting set, not a certificate
-(Figure~\ref{fig:cert}): the static-snapshot rule at $q=\nEqtopStaticWorstQ$
-fits to \nEqtopStaticWorstFit{} and reaches $\rho_{\max}=\nEqtopStaticWorstRho$
-on held-out reachable states, four times the primary bar. Certified by \eqref{eq:rho} on states the dense solver visits, the top-rung
-blocker turns out to be the number of fit states, not the node count: rules
-fitted on 14 and 8 states at $q=128$ and $256$ reach
-$\rho_{\max}=\nEqtopParentOneTwentyEightRho$ and $\nEqtopParentTwoFiftySixRho$
-at $m=2048$ and fail, while 64-state rules at the same $m$ reach
-$\nEqtopPrimaryOneTwentyEightRho$ and $\nEqtopPrimaryTwoFiftySixRho$ and pass
-(Table~\ref{tab:eqcert}) (a statement about $q\ge128$; at $q=64$ a 25-state rule passes where a
-64-state re-draw does not). Rebuilt with the cheapest primary-certified rule per rung
-and timed in one allocation, the EQ ladder is monotone on the evolved metric
-(\nEqtopLadderMonotone{}), every rung converged, running
+A rule's NNLS fit residual predicts nothing about its error on the states the
+solver visits (Figure~\ref{fig:cert}): the static-snapshot rule at
+$q=\nEqtopStaticWorstQ$ fits to $\nEqtopStaticWorstFit$ and reaches
+$\rho_{\max}=\nEqtopStaticWorstRho$ held-out, four times the primary bar. Scored by \eqref{eq:rho} on reachable states, the top-rung blocker is the
+number of fit states, not the node count: 14- and 8-state rules at $q=128$ and
+$256$ fail at $m=2048$ ($\rho_{\max}=\nEqtopParentOneTwentyEightRho$,
+$\nEqtopParentTwoFiftySixRho$) where 64-state rules pass in that draw
+($\nEqtopPrimaryOneTwentyEightRho$, $\nEqtopPrimaryTwoFiftySixRho$;
+Table~\ref{tab:eqcert}). Rebuilt with the cheapest rule passing the primary
+bar per rung and timed in one allocation, the EQ ladder is monotone on the
+evolved metric, every rung converged, running
 $\nEqtopLadderFirstErr\to\nEqtopLadderLastErr\,\%$ at
 $\nEqtopLadderFirstMs\to\nEqtopLadderLastMs$\,ms, $\nEqtopCostRatioMin$--$\nEqtopCostRatioMax\times$
-the same-job dense cost (Table~\ref{tab:eqladder}; at $q=256$, $\nEqtopTopEqErr\,\%$ against dense
-$\nEqtopTopDenseErr\,\%$). The rules are not free: the primary ladder's rules took
-$\nOfflineFitHoursLadderTotal$\,h of NNLS in total (Table~\ref{tab:offline}). \textbf{All
-of this is one draw}: a second draw at $q=64$ moved $\rho_{\max}$ from
-$\nEqtopQsixtyFourArchivedRho$ to $\nEqtopQsixtyFourRedrawRho$ and flipped the
-flag, so the draw is first-order; job $\nEqtopPendingJob$ measures that spread,
-and until then the ladder is ``certified in this draw''.
+the same-job dense cost (Table~\ref{tab:eqladder}) (offline cost in Table~\ref{tab:offline}).
 
-\begin{table}[t]
-\centering
-\caption{\textbf{Provisional.} The EQ ladder with the cheapest primary-certified
-rule per rung, timed in one allocation (job \provEqtopLadderJob, A100 80\,GB),
-with its same-job dense twins. Each certified flag is one draw; replication
-job $\nEqtopPendingJob$ is pending.}
-\label{tab:eqladder}
-\input{tables/T09_eq_ladder}
-\end{table}
+\textbf{Then the pre-registered replication re-drew every construction}
+(pool and fit-state subset, four draws at fixed $q$, $m$, fit-state count;
+Table~\ref{tab:replication}): $\rho_{\max}$ moves by
+$\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$ within one construction, and the
+ladder's rules are \textbf{confirmed at $q=\nEqtopConfirmedRungs$ and marginal
+at $q=\nEqtopMarginalRungs$} (draws passing / draws); at $q=256$ the rule the
+ladder ran is the only one of $\nEqtopTopDraws$ draws of its recipe to meet
+the bar (re-draws $\nEqtopTopRedrawRange$). The ladder's errors therefore stand
+only as measured with the SHA256-identified rules that happened to pass;
+``every rung carries a certified rule'' is withdrawn as a statement about the
+construction. The finding is stronger for it: the fit residual predicts
+nothing, and held-out $\rho$ is itself draw-sensitive, so a single passing rule
+is not a certificate of its construction---a re-draw is. Four earlier readings
+are withdrawn by the same data (Table~\ref{tab:replication}).
 
 \subsection{The head earns its place per dimension, not per millisecond}
 \label{sec:exp:head}

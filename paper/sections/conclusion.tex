@@ -6,6 +6,7 @@ One trained decoder exposes a monotone accuracy--cost family at run time
 through the number of bank directions the solver may add to the head's output:
 with the test count fixed, that rank alone spans $\nQxmErrSpan\times$ in error
 for $\nQxmCostSpan\times$ in cost on 2D Burgers inside one allocation, and
-certified quadrature moves cost at fixed accuracy. The trade exists where the residual is nonlinear in the coefficients; where
+quadrature rules validated on reachable states move cost at fixed
+accuracy (and must be re-drawn to be trusted). The trade exists where the residual is nonlinear in the coefficients; where
 it is linear the top rung is a linear model and the cheapest point. None of it beats a tuned full-order solver or a well-trained neural
 operator in 2D.

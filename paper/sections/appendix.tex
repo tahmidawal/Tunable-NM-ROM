@@ -70,12 +70,13 @@ block-damped step is the one kept.}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\linewidth]{fig_eq_certification}
-\caption{\textbf{Provisional.} NNLS fit residual on the fitting set against
-held-out $\rho_{\max}$ on reachable states for every fitted quadrature rule of
-the certification cell (jobs \provEqtopJob), with the primary and tight bars.
-The fit residual does not predict the held-out error; hollow squares are rules
-fitted on static snapshots. One draw per rule; replication \nEqtopPendingJob\
-pending.}
+\caption{NNLS fit residual on the fitting set against held-out $\rho_{\max}$
+on reachable states for every fitted quadrature rule (jobs \provEqtopJob), with
+the primary and tight bars. The fit residual does not predict the held-out
+error; hollow squares are rules fitted on static snapshots. Each point is one
+draw, and the same construction re-drawn moves by
+$\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$ (Table~\ref{tab:replication}), so a
+point below the bar is a passing draw, not a certified construction.}
 \label{fig:cert}
 \end{figure}
 
@@ -191,21 +192,49 @@ which is dominated by starting well.}
 
 \begin{table}[h]
 \centering
-\caption{\textbf{Provisional.} Cheapest rule certified on each bar per rung,
-with its fit-state count, and the parent lane's rule re-certified on the same
-held-out states. Jobs \provEqtopJobs. Draw replication $\nEqtopPendingJob$
-pending.}
+\caption{Cheapest rule passing each bar per rung in its own draw, with its
+fit-state count, and the parent lane's rule re-scored on the same held-out
+states. Jobs \provEqtopJobs. Construction status is in
+Table~\ref{tab:replication}.}
 \label{tab:eqcert}
 \input{tables/T09b_eq_certification}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{\textbf{Provisional.} Every quadrature rule: NNLS fit residual beside
-the held-out $\rho$, so the anti-correlation stays visible. Bars: primary
+\caption{Every quadrature rule: NNLS fit residual beside the held-out $\rho$,
+so the anti-correlation stays visible. Bars: primary
 $\rho_{\max}\le\nEqtopBar$, tight $\rho_{\max}\le\nEqtopTightBar$.}
 \label{tab:eqrules}
 \input{tables/T09c_eq_rules_full}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The EQ ladder with the cheapest rule passing the primary bar in its
+draw per rung, timed in one allocation (job \provEqtopLadderJob, A100 80\,GB),
+with its same-job dense twins, and the construction status from the four-draw
+replication (job \provEqtopRepJob): confirmed = every re-draw passes, marginal
+= only the listed fraction does. Errors are as measured with these rules
+(SHA256-identified); they are not properties of the construction above
+$q=32$. Ladder rows read from the \provEqtopLadderSource.}
+\label{tab:eqladder}
+\input{tables/T09_eq_ladder}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The pre-registered draw replication (job \provEqtopRepJob): four
+independent draws of candidate pool and fit-state subset at fixed $q$, $m$,
+fit-state count and scaling, with the number of draws passing each bar and
+the construction status over every draw of that construction in all three
+jobs. Withdrawn by these data: the parent lane's extrapolated crossing node
+count; the inherited fit-state convention for $q\ge128$ (0 of 6 draws pass);
+``64 states is uniformly better'' (1 of 5 at $q=256$); and the interim rule
+export at $q\ge64$, superseded by rules chosen by moving up in $m$, a
+post-hoc choice the lane discloses.}
+\label{tab:replication}
+\input{tables/T09d_replication}
 \end{table}
 
 \begin{table}[h]
@@ -315,7 +344,7 @@ Written for a reader who knows none of this project's vocabulary.
 \item[Correction rank $q$, rung, ladder, $\corr$] The number of fixed extra bank directions the solver may add to the head's output; one value of $q$; the sequence of rungs; the matrix of directions, a nested prefix chosen offline. $q=0$ is the head alone, $q=R$ the linear model on the bank.
 \item[Test count $M$, weak tests, row scaling] How many sine test functions the residual is averaged against; the functions; the diagonal weights on those averaged equations. All three change which solution is selected.
 \item[$m$, EQ, rule, NNLS, fit states, reachable states] Quadrature node count; empirical quadrature, evaluating a sum over all nodes by a weighted sum over $m$ of them; one fitted instance; the non-negative least-squares fit; the states used to fit a rule; states the solver actually visits, as opposed to stored snapshots.
-\item[$\rho$, primary and tight bars, certified] The rule's relative error on the projected advection term on held-out reachable states; $\rho_{\max}\le\nEqtopBar$ and $\le\nEqtopTightBar$; passing a bar. Never the NNLS fit residual.
+\item[$\rho$, primary and tight bars, confirmed, marginal] The rule's relative error on the projected advection term on held-out reachable states; $\rho_{\max}\le\nEqtopBar$ and $\le\nEqtopTightBar$; a construction every one of whose re-draws passes; one only some of whose re-draws pass. Never the NNLS fit residual, and never a single draw.
 \item[Dense] Evaluating the advection term at every interior node, exactly.
 \item[Evolved vs all-times metric, $t{=}0$ compression] Worst error over output times $t>0$; over all output times including $t=0$; the error at $t=0$ alone, which is the decoder's reconstruction of the supplied initial field and bounds the all-times metric from below.
 \item[Same-grid, reference, physical error] Error against the converged full-order solve on the same mesh (isolates the reduction); against a much finer solve (includes the mesh's own discretisation error); the cell's declared accuracy metric.

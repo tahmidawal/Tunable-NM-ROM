@@ -30,8 +30,9 @@ the condition under which it is a trade; the losses are reported as losses.
   the only control, the Burgers $256^2$ ladder is monotone, every rung
   converges, and its rungs span $\nQxmErrSpan\times$ in error for
   $\nQxmCostSpan\times$ in cost inside one allocation (\S\ref{sec:exp:qxm}),
-  meeting a bar fixed before any run. Certified quadrature rules cut the cost
-  about $5\times$ at four-decimal-identical error, and the tolerance is a
+  meeting a bar fixed before any run. Quadrature rules fitted offline and
+  validated on reachable states cut the cost about $5\times$ at
+  four-decimal-identical error, and the tolerance is a
   further cost lever (\S\ref{sec:exp:panel}). At matched latent dimension
   $k=16$ inside one bank, the neural head reaches $\nAblBurgersNeural\,\%$
   where the best linear map reaches $\nAblBurgersLinear\,\%$ and POD-16
@@ -56,9 +57,10 @@ the condition under which it is a trade; the losses are reported as losses.
   worth having; no cell in this paper shows it non-dominated at matched cost.
 \item \textbf{Two reporting practices.} Every result is reported as bank floor,
   best-found and solved error, so each lever's effect lands on the layer it acts
-  on (\S\ref{sec:method:layers}); and quadrature rules are certified on states
-  the solver actually reaches, never by their fitting residual, which we show
-  does not predict the held-out error (\S\ref{sec:exp:eq}).
+  on (\S\ref{sec:method:layers}); and quadrature rules are validated on states
+  the solver actually reaches, never by their fitting residual, which predicts
+  nothing---and even that validation is draw-sensitive, so one passing rule is
+  not a certificate of its construction (\S\ref{sec:exp:eq}).
 \end{enumerate}
 
 \paragraph{What we do not claim.} No speedup over an efficient full-order

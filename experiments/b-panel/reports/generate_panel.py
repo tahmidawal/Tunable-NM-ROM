@@ -219,15 +219,46 @@ def section(W, au, tag):
     fams = {x['arm']: x['family'] for x in au['arms']}
     W('### The nonlinear manifold against the classical one (post-hoc, DESIGN §A4)\n')
     lines = []
+    HUMAN = {'rom': 'correction ladder', 'fast': 'correction ladder (optimised q = 0 kernel)',
+             'pod': 'POD-LSPG', 'free': 'unrestricted bank'}
     for tag, human in (('gpu_all', 'worst over ALL output times'), ('gpu_evolved', 'worst over EVOLVED times')):
         ro = au['nondominated'][tag].get('reduced_only') or []
-        pods = [a_ for a_ in ro if fams.get(a_) == 'pod']
-        roms = [a_ for a_ in ro if fams.get(a_) in ('rom', 'fast')]
-        lines.append(f"- On **{human}**, the reduced-only frontier holds {len(roms)} correction-ladder "
-                     f"point(s) and {len(pods)} POD rank(s)"
-                     + (f" — POD enters only at {', '.join('k′=' + str(by_arm(au, a_)['k']) for a_ in pods)}."
-                        if pods else ', and **no POD rank appears on it at all**.'))
+        # EVERY family on the frontier is enumerated. An earlier draft counted only the ladder
+        # and POD and silently omitted the unrestricted-bank point, which made the frontier look
+        # like it had one fewer member than it has; a reader who then re-derives the set from
+        # summary.json gets a different answer. Nothing here is hand-summarised.
+        per = {}
+        for a_ in ro:
+            per.setdefault(fams.get(a_), []).append(a_)
+        parts = []
+        for famkey in ('fast', 'rom', 'pod', 'free'):
+            if per.get(famkey):
+                parts.append(f"{len(per[famkey])} {HUMAN[famkey]}")
+        cheapest_pod = min((by_arm(au, a_) for a_ in per.get('pod', [])),
+                           key=lambda z: z['median_gpu_ms'], default=None)
+        lines.append(f"- On **{human}**, the reduced-only frontier has {len(ro)} points: "
+                     + ', '.join(parts) + '. '
+                     + (f"The only POD rank on it is $k'={cheapest_pod['k']}$ at "
+                        f"{f(cheapest_pod['median_gpu_ms'], 0)} ms."
+                        if cheapest_pod else '**No POD rank is on it.**'))
     W('\n'.join(lines) + '\n')
+    ro_all = au['nondominated']['gpu_all'].get('reduced_only') or []
+    dom = [a_ for a_ in (x['arm'] for x in au['arms'] if x['family'] == 'pod' and x['admissible'])
+           if a_ not in ro_all]
+    if dom and ro_all:
+        top = max((by_arm(au, a_) for a_ in dom), key=lambda z: z['median_gpu_ms'])
+        killers = [x for x in au['arms'] if x['arm'] in ro_all
+                   and x['median_gpu_ms'] <= top['median_gpu_ms']
+                   and x['worst_all_times_percent'] <= top['worst_all_times_percent']]
+        if killers:
+            k0 = min(killers, key=lambda z: z['worst_all_times_percent'])
+            W(f"\nWorth stating because it is easy to get wrong when the frontier is re-derived from a "
+              f"subset: on the all-times metric `{top['arm']}` is **not** on the reduced frontier, because "
+              f"`{k0['arm']}` is both cheaper ({f(k0['median_gpu_ms'], 1)} ms against "
+              f"{f(top['median_gpu_ms'], 1)} ms) and more accurate ({f(k0['worst_all_times_percent'])} % "
+              f"against {f(top['worst_all_times_percent'])} %). Drop the unrestricted-bank endpoint from the "
+              f"candidate set and `{top['arm']}` becomes non-dominated at the expensive end; keep it and it "
+              f"does not. The set above is over every admissible reduced subject.\n")
     pod = [x for x in au['arms'] if x['family'] == 'pod' and x['admissible']]
     rom = [x for x in au['arms'] if x['family'] in ('rom', 'fast') and x['admissible']]
     if pod and rom:

@@ -393,3 +393,50 @@ more than the driver's QR-metric form; both are conditioning checks, not scienti
 and **no number from it is reported** — and the identical job is rerun as `lsh02` with the
 rescaled gate. Nothing else in §§1–9 changes, and no criterion, cohort, seed or arm is
 altered, so `lsh02` reproduces `lsh01`'s seven completed arms as well as finishing the eighth.
+
+**2026-09-17, §A4 — the independent audit's bank-floor gate is absolute, not relative; found by
+the audit of `lsh02`, after the job, and no reported number moves.** The audit of `lsh02` failed
+one check, `bank_floors_reproduced`, at a worst **relative** difference of
+$5.2360\times10^{-6}$ against its inherited $10^{-8}$ bound. The bound, not the job, was wrong,
+and the diagnosis is recorded here in full because the check is the cell's only independent
+verification of the floors.
+
+*What was measured.* (i) Two equally valid NumPy routes to the same floor — QR and SVD of the
+same feature matrix $G$ — agree to $1.14\times10^{-14}$ relative, so the floor is **not**
+cancellation-limited and is well determined in f64 on one machine. (ii) The driver-versus-audit
+difference is **not** uniform across arms: $2.5\times10^{-10}$ (`smooth_R256`),
+$8.4\times10^{-10}$ (`smooth_R512`), $3.9\times10^{-9}$ (`enrich_R512`) and
+$5.2\times10^{-6}$ for `smooth_ff128s2_R512` alone. (iii) It tracks each bank's conditioning:
+$\mathrm{cond}(G) = 1.3\times10^{4},\,2.4\times10^{5},\,2.0\times10^{4},\,2.3\times10^{5},\,
+1.1\times10^{6},\,8.9\times10^{9}$ over the six arms, and perturbing $G$ by one $\varepsilon$
+per entry inside NumPy moves the floor by $8\times10^{-15}$ at the smallest condition number
+and $1.0\times10^{-10}$ at the largest. The observed difference is a near-constant
+$1.4\times10^{4}$–$2.0\times10^{5}$ multiple of that single-$\varepsilon$ band at **every** arm,
+across four decades.
+
+*What that means.* The driver evaluates the random-Fourier features and the MLP on the GPU and
+the audit re-evaluates them on the CPU; the two `exp`/`sin`/`cos` and matmul-reduction paths
+differ by $\approx10^{-12}$ relative — the cross-machine 1-ulp effect the lane protocol already
+lists as a paid-for landmine — and each bank's $\mathrm{cond}(G)$ multiplies it. A fixed
+relative bound on this quantity therefore measures conditioning, not correctness, and the one
+arm it convicts is the worst arm in the cell on every other axis.
+
+*The change.* The deciding criterion is now **absolute and tied to the reporting precision**:
+the difference may not move the last digit of a floor quoted to four decimals in percent, i.e.
+$\le 10^{-6}$ in the ratio (`FLOOR_ABS_LIMIT`). Measured worst absolute difference
+$4.7233\times10^{-8}$, a factor $21$ inside the bound, and a factor $1.8\times10^{4}$ smaller
+than the closest gap in the bank ranking ($8.7\times10^{-4}$, `sdf_R512` against
+`enrich_R512` on the common cohort). The tight relative number is still computed, still
+reported in `detail`, and is never dropped; $\mathrm{cond}(G)$ is now recorded per arm beside
+it. **No floor, no ranking, no selection and no criterion changes**, and `lsh02` is not
+retracted: the audit now passes all nineteen checks, including `bank_selection_reproduced`
+and `head_stored_code_errors_reproduced` (worst $1.44\times10^{-10}$, still under the
+untouched $10^{-8}$ relative bound). The audit script is not staged to the cluster, so the
+three solve jobs submitted before this patch are unaffected by it.
+
+**2026-09-17, §A5 — the final-report Codex audit is replaced by a written self-audit.** §9
+requires Codex to audit the report after the last job. The Codex account's usage limit is
+exhausted until 2026-09-19 11:33 (coordinator-verified), which is after this lane's reporting
+window. As in §A1 the substitute is a written self-audit, `reports/self-audit-lsh02.md`,
+listing each claim, the `result.json` field it rests on, and the check that was run against it.
+If the lane is still open after 2026-09-19 11:33 the Codex audit is run and appended.

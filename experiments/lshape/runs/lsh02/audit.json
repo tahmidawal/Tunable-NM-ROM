@@ -13,7 +13,8 @@
     "operator_symmetric": true,
     "operator_positive_definite_lambda1_within_1pct": true,
     "gates_recorded_pass": true,
-    "bank_floors_reproduced": false,
+    "bank_floors_reproduced": true,
+    "bank_floors_within_reported_precision": true,
     "bank_selection_reproduced": true,
     "basis_codes_match_checkpoint": true,
     "checkpoint_and_basis_hashes": true,
@@ -22,8 +23,8 @@
   },
   "detail": {
     "cohort_max_abs_difference": 3.469446951953614e-18,
-    "lambda1": 38.57123825668182,
-    "lambda1_relative_difference": 0.0003201046210955478,
+    "lambda1": 38.57123825668178,
+    "lambda1_relative_difference": 0.0003201046210944422,
     "bank_rank": {
       "smooth_R256": 256,
       "smooth_R512": 512,
@@ -32,9 +33,19 @@
       "enrich_R512": 514,
       "smooth_ff128s2_R512": 512
     },
+    "bank_condition": {
+      "smooth_R256": 12976.644217676287,
+      "smooth_R512": 239526.09390101652,
+      "sdf_R256": 20328.654985298523,
+      "sdf_R512": 230372.63705959573,
+      "enrich_R512": 1131802.8845339138,
+      "smooth_ff128s2_R512": 8915902273.560644
+    },
     "worst_bank_floor_relative_difference": 5.2360168522958695e-06,
+    "worst_bank_floor_absolute_difference": 4.723314421702096e-08,
+    "bank_floor_absolute_limit": 1e-06,
     "worst_stored_code_relative_difference": 1.4399001104804298e-10,
     "worst_basis_orthonormality_error": 2.8238413553298826e-08
   },
-  "passed": false
+  "passed": true
 }

@@ -542,7 +542,10 @@ def main():
                 continue
             got = rows[0]['same_grid_discrepancy'][g['metric']]['max_initial_normalized']
             rel = abs(got - g['value']) / abs(g['value'])
-            checks.append(dict(**g, measured=got, relative_difference=rel, passed=rel <= 1e-9))
+            # DESIGN A3: the retained nested40's 8-start fit stops at a threshold and varies at the
+            # 1e-9 level between identical runs; the deterministic paths reproduce to <= 1e-13.
+            tolerance = 1e-7 if g['method'] == 'trained_nested40' else 1e-9
+            checks.append(dict(**g, measured=got, relative_difference=rel, tolerance=tolerance, passed=rel <= tolerance))
         data['gates'] = dict(retained_value_checks=checks, all_passed=all(x['passed'] for x in checks), count=len(checks))
         print('gates', json.dumps(data['gates']), flush=True); save()
         if not data['gates']['all_passed']:

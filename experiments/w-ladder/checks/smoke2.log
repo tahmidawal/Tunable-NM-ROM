@@ -1,0 +1,110 @@
+[jaxrun-slot] slot 1 acquired at 05:35:25
+{"jax_backend": "gpu", "jax_version": "0.10.1", "x64": true, "matmul_precision": "highest", "devices": ["cuda:0"], "device_kind": ["NVIDIA GB10"], "host": "spark-d69e", "source_commit": null, "job_id": null, "numpy_version": "2.4.4"}
+training_coefficients dirichlet 0
+training_coefficients dirichlet 1
+training_coefficients dirichlet 2
+training_coefficients dirichlet 3
+training_coefficients dirichlet 4
+training_coefficients dirichlet 5
+training_coefficients dirichlet 6
+training_coefficients dirichlet 7
+training_coefficients dirichlet 8
+training_coefficients dirichlet 9
+training_coefficients dirichlet 10
+training_coefficients dirichlet 11
+training_coefficients dirichlet 12
+training_coefficients dirichlet 13
+training_coefficients dirichlet 14
+training_coefficients dirichlet 15
+training_coefficients dirichlet 16
+training_coefficients dirichlet 17
+training_coefficients dirichlet 18
+training_coefficients dirichlet 19
+training_coefficients dirichlet 20
+training_coefficients dirichlet 21
+training_coefficients dirichlet 22
+training_coefficients dirichlet 23
+training_coefficients dirichlet 24
+training_coefficients dirichlet 25
+training_coefficients dirichlet 26
+training_coefficients dirichlet 27
+training_coefficients dirichlet 28
+training_coefficients dirichlet 29
+training_coefficients dirichlet 30
+training_coefficients dirichlet 31
+training_coefficients dirichlet 32
+training_coefficients dirichlet 33
+training_coefficients dirichlet 34
+training_coefficients dirichlet 35
+training_coefficients dirichlet 36
+training_coefficients dirichlet 37
+training_coefficients dirichlet 38
+training_coefficients dirichlet 39
+training_coefficients dirichlet 40
+training_coefficients dirichlet 41
+training_coefficients dirichlet 42
+training_coefficients dirichlet 43
+training_coefficients dirichlet 44
+training_coefficients dirichlet 45
+training_coefficients dirichlet 46
+training_coefficients dirichlet 47
+training_coefficients dirichlet 48
+training_coefficients dirichlet 49
+training_coefficients dirichlet 50
+training_coefficients dirichlet 51
+training_coefficients dirichlet 52
+training_coefficients dirichlet 53
+training_coefficients dirichlet 54
+training_coefficients dirichlet 55
+training_coefficients dirichlet 56
+training_coefficients dirichlet 57
+training_coefficients dirichlet 58
+training_coefficients dirichlet 59
+training_coefficients dirichlet 60
+training_coefficients dirichlet 61
+training_coefficients dirichlet 62
+training_coefficients dirichlet 63
+pod_training_case 0
+pod_training_case 8
+pod_training_case 16
+pod_training_case 24
+pod_training_case 32
+pod_training_case 40
+pod_training_case 48
+pod_training_case 56
+warmup 64 opened_0 head_q0
+warmup 64 opened_0 trained_nested40
+warmup 64 opened_0 nested_q8
+warmup 64 opened_0 nested_q32
+warmup 64 opened_0 linear_bank64
+warmup 64 opened_0 linear_bank64_cn
+warmup 64 opened_0 linear_bank64_rk4
+warmup 64 opened_0 pod_k16
+warmup 64 opened_0 pod_k64
+warmup 64 opened_0 dst
+warmup 64 opened_0 rk4_fom
+warmup 64 opened_0 cg_1e-06
+warmup 64 opened_0 cgdt_0.005_tol_0.01
+timed 64 opened_0 0 head_q0
+timed 64 opened_0 0 trained_nested40
+timed 64 opened_0 0 nested_q8
+timed 64 opened_0 0 nested_q32
+timed 64 opened_0 0 linear_bank64
+timed 64 opened_0 0 linear_bank64_cn
+timed 64 opened_0 0 linear_bank64_rk4
+timed 64 opened_0 0 pod_k16
+timed 64 opened_0 0 pod_k64
+timed 64 opened_0 0 dst
+timed 64 opened_0 0 rk4_fom
+timed 64 opened_0 0 cg_1e-06
+timed 64 opened_0 0 cgdt_0.005_tol_0.01
+decomposition 64 opened_0
+gates {"retained_value_checks": [{"source": "accel12", "job_id": "3565786", "intervals": 64, "case": "opened_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "displacement", "value": 0.014027533389884411, "measured": 0.014027533389884437, "relative_difference": 1.85498415269618e-15, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 64, "case": "opened_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "velocity", "value": 0.03172073135905615, "measured": 0.03172073135905609, "relative_difference": 1.7499959443844792e-15, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 64, "case": "opened_0", "method": "head_q0", "archived_method": "chol_guard", "setting": 0.01, "metric": "energy_state", "value": 0.04317486773459357, "measured": 0.04317486773459358, "relative_difference": 1.6071604310550061e-16, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 64, "case": "opened_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "displacement", "value": 0.011696441750402011, "measured": 0.01169644174423159, "relative_difference": 5.275469193165758e-10, "passed": true}, {"source": "accel12", "job_id": "3565786", "intervals": 64, "case": "opened_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "velocity", "value": 0.02538722315904255, "measured": 0.025387223053469767, "relative_difference": 4.158500616357503e-09, "passed": false}, {"source": "accel12", "job_id": "3565786", "intervals": 64, "case": "opened_0", "method": "trained_nested40", "archived_method": "trained_nested40", "setting": 0.01, "metric": "energy_state", "value": 0.038783182287084855, "measured": 0.03878318226319878, "relative_difference": 6.158874095923198e-10, "passed": true}, {"source": "accel07", "job_id": "3563590", "intervals": 64, "case": "opened_0", "method": "linear_bank64", "archived_method": "linear_bank64", "setting": 0.0, "metric": "displacement", "value": 0.007826268920301641, "measured": 0.00782626892030233, "relative_difference": 8.799662099219675e-14, "passed": true}, {"source": "accel07", "job_id": "3563590", "intervals": 64, "case": "opened_0", "method": "linear_bank64", "archived_method": "linear_bank64", "setting": 0.0, "metric": "velocity", "value": 0.01960827789673824, "measured": 0.01960827789673753, "relative_difference": 3.6272263627434736e-14, "passed": true}, {"source": "accel07", "job_id": "3563590", "intervals": 64, "case": "opened_0", "method": "linear_bank64", "archived_method": "linear_bank64", "setting": 0.0, "metric": "energy_state", "value": 0.02823972109705185, "measured": 0.028239721097052313, "relative_difference": 1.6339978820045903e-14, "passed": true}], "all_passed": false, "count": 9}
+Traceback (most recent call last):
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-w-ladder/experiments/w-ladder/ladder.py", line 555, in <module>
+    main()
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-w-ladder/experiments/w-ladder/ladder.py", line 549, in main
+    raise RuntimeError('Retained-value gate failed; see result.json gates')
+RuntimeError: Retained-value gate failed; see result.json gates
+[jaxrun-slot] slot 1 released rc=1
+rc=1

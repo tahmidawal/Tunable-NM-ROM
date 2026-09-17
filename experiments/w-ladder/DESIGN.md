@@ -383,3 +383,18 @@ Also observed on this one case and left for the jobs: `pod_k64` (1.3888 %) is mo
 accurate than the learned bank at the same rank, and the $q=32$ best-found error equals the
 bank floor exactly, as the full-rank tangent predicts. H-POD's "comparable" expectation may
 be wrong; it is not verdict-bearing.
+
+### A3 (2026-09-17, jobs cancelled while PENDING, zero GPU time) — the retained-value gate tolerance
+
+The confirmatory second smoke reproduced `head_q0` and `linear_bank64` to ≤ 1.9e-15 and
+≤ 8.8e-14 relative, but `trained_nested40` to only 5.3e-10 / 4.2e-9 / 6.2e-10 (u / v / energy
+state) where the first smoke, same code, same machine, had 3.5e-14 / 9.6e-15 / 3.8e-15: the
+retained nested head's 8-start trust-region fit stops at a threshold and its stopping
+iteration is run-to-run variable at that level (GPU reduction order). With the gate fatal at
+1e-9 the queued jobs (3780296 / 3780297 / 3780299) could have died after six hours of
+measurement on a 4e-9 discrepancy, so they were cancelled while pending (zero GPU time; they
+do not count against the cap) and their remote directories removed. The gate is now 1e-7
+relative for `trained_nested40` and stays 1e-9 for the deterministic `head_q0` and
+`linear_bank64` paths, still fatal. Resubmitted as `wl64b` / `wl256b` / `wl1024b`. The report
+generator implements A2's tie band and prints, per arm, the worst over evolved times and
+whether the worst is attained at $t = 0$.

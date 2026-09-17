@@ -62,6 +62,8 @@ def summarise(result):
         gpu = np.array([r['seconds']['complete_device_query'] * 1e3 for r in inv]); tot = np.array([r['device_plus_output_transfer_seconds'] * 1e3 for r in inv])
         evo = np.array([r['seconds']['evolution'] * 1e3 for r in inv])
         t0 = np.array([r['same_grid_discrepancy']['energy_state']['initial_normalized'][0] for r in first])
+        evolved = np.array([np.max(r['same_grid_discrepancy']['energy_state']['initial_normalized'][1:]) for r in first])
+        argmax = [int(np.argmax(r['same_grid_discrepancy']['energy_state']['initial_normalized'])) for r in first]
         phys = np.array([np.max(abs(np.asarray(r['same_grid_discrepancy']['energy_fraction']) / r['same_grid_discrepancy']['energy_fraction'][0] - 1.)) for r in first])
         red = np.array([r['reduced_energy']['max_relative_drift'] for r in first if 'reduced_energy' in r]) if all('reduced_energy' in r for r in first) else None
         rows[name] = dict(subject=name, family=family(name), q_or_k=q_or_k(name, first[0]), dimension=first[0].get('internal_configuration_dimension'),
@@ -69,7 +71,7 @@ def summarise(result):
                           worst_energy_state=float(np.max(e('energy_state'))), median_energy_state=float(np.median(e('energy_state'))),
                           worst_displacement=float(np.max(e('displacement'))), worst_velocity=float(np.max(e('velocity'))),
                           worst_current_displacement=float(np.nanmax(cur('displacement'))), worst_current_velocity=float(np.nanmax(cur('velocity'))),
-                          worst_t0_energy_state=float(np.max(t0)),
+                          worst_t0_energy_state=float(np.max(t0)), worst_evolved_energy_state=float(np.max(evolved)), worst_at_t0=bool(any(a == 0 for a in argmax)),
                           median_gpu_ms=float(np.median(gpu)), median_complete_ms=float(np.median(tot)), median_evolution_ms=float(np.median(evo)),
                           gpu_ms_all=gpu.tolist(), outliers_above_twice_median=int(np.sum(gpu > 2 * np.median(gpu))),
                           all_completed=bool(all(r['completed'] for r in inv)),
@@ -93,15 +95,21 @@ def nondominated(rows, names):
 def verdict(rows):
     heads = [n for n in rows if rows[n]['family'] == 'head rung']
     lb = rows['linear_bank64']
-    d1 = all(lb['worst_energy_state'] <= rows[h]['worst_energy_state'] for h in heads)
+    delta = abs(rows['linear_bank64_rk4']['worst_energy_state'] - lb['worst_energy_state'])   # DESIGN A2 integrator tie band
+    d1_strict = all(lb['worst_energy_state'] <= rows[h]['worst_energy_state'] for h in heads)
+    d1 = all(lb['worst_energy_state'] - delta <= rows[h]['worst_energy_state'] for h in heads)
     d2 = all(lb['median_gpu_ms'] <= 0.1 * rows[h]['median_gpu_ms'] for h in heads)
+    d2_matched_integrator_ratio = rows['head_q0']['median_gpu_ms'] / rows['linear_bank64_rk4']['median_gpu_ms']
     rom = heads + ['linear_bank64']
-    d3 = nondominated(rows, rom) == ['linear_bank64']
+    banded = {n: dict(rows[n]) for n in rom}
+    for h in heads:
+        banded[h]['worst_energy_state'] = max(0., banded[h]['worst_energy_state'] - delta) if banded[h]['worst_energy_state'] < lb['worst_energy_state'] else banded[h]['worst_energy_state']
+    d3 = nondominated(banded, rom) == ['linear_bank64']
     d4 = lb['reduced_energy_drift'] is not None and lb['reduced_energy_drift'] <= 1e-10 and rows['linear_bank64_cn']['reduced_energy_drift'] <= 1e-8
     ladder = ['head_q0', 'nested_q8', 'nested_q16', 'nested_q32']
     errs = [rows[n]['worst_energy_state'] for n in ladder if n in rows]
     mono = all(b <= a for a, b in zip(errs, errs[1:]))
-    return dict(D1_accuracy=d1, D2_cost_0p1=d2, D3_singleton_nondominated=d3, D4_energy_certificate=d4, all=bool(d1 and d2 and d3 and d4),
+    return dict(D1_accuracy=d1, D1_strict=d1_strict, tie_band_delta=delta, D2_cost_0p1=d2, D2_matched_integrator_head_over_bank_rk4=d2_matched_integrator_ratio, D3_singleton_nondominated=d3, D4_energy_certificate=d4, all=bool(d1 and d2 and d3 and d4),
                 H_mono_ladder=mono, ladder_worst_energy_state=errs, nondominated_rom=nondominated(rows, rom + [n for n in rows if n.startswith('pod_') or n.startswith('linear_bank64_')]),
                 nondominated_all=nondominated(rows, list(rows)))
 
@@ -153,7 +161,7 @@ def main():
         meshes.append((n, rows, vd))
         for name, r in rows.items():
             for metric in ('worst_energy_state', 'median_energy_state', 'worst_displacement', 'worst_velocity', 'worst_current_displacement', 'worst_current_velocity',
-                           'worst_t0_energy_state', 'median_gpu_ms', 'median_complete_ms', 'median_evolution_ms', 'physical_energy_drift', 'reduced_energy_drift', 'all_state_pass'):
+                           'worst_t0_energy_state', 'worst_evolved_energy_state', 'worst_at_t0', 'median_gpu_ms', 'median_complete_ms', 'median_evolution_ms', 'physical_energy_drift', 'reduced_energy_drift', 'all_state_pass'):
                 summary.append(dict(mesh=n, subject=name, family=r['family'], q_or_k=r['q_or_k'], dimension=r['dimension'], metric=metric, value=r[metric],
                                     cases=r['cases'], job_id=job, attempt=attempt, source_sha256=sha))
         for name, d in dec.items():
@@ -172,16 +180,16 @@ def main():
                 f"Retained-value gates: {gates.get('count', 0)} checks, all passed = {gates.get('all_passed')}. "
                 + (f"Independent NumPy audit: max error recomputation difference {audit['max_error_difference']:.2e}, reference regeneration {audit['reference_max_relative_difference']:.2e}, passed = {audit['passed']}." if audit else 'Audit: not yet run.'), '',
                 '### Verdict (pre-registered §4)', '',
-                '| D1 accuracy | D2 cost ≤ 0.1× | D3 singleton non-dominated | D4 energy certificate | all | H-mono ladder |', '|---|---|---|---|---|---|',
-                f"| {vd['D1_accuracy']} | {vd['D2_cost_0p1']} | {vd['D3_singleton_nondominated']} | {vd['D4_energy_certificate']} | **{vd['all']}** | {vd['H_mono_ladder']} |", '',
+                '| D1 accuracy (tie band δ) | D1 strict | δ (pp) | D2 cost ≤ 0.1× | head_q0 / bank-RK4 cost ratio | D3 singleton non-dominated | D4 energy certificate | all | H-mono ladder |', '|---|---|---:|---|---:|---|---|---|---|',
+                f"| {vd['D1_accuracy']} | {vd['D1_strict']} | {100 * vd['tie_band_delta']:.4f} | {vd['D2_cost_0p1']} | {vd['D2_matched_integrator_head_over_bank_rk4']:.1f} | {vd['D3_singleton_nondominated']} | {vd['D4_energy_certificate']} | **{vd['all']}** | {vd['H_mono_ladder']} |", '',
                 f"Non-dominated set, ROM rungs and controls only: {', '.join('`' + x + '`' for x in vd['nondominated_rom'])}. "
                 f"Including full-order solvers: {', '.join('`' + x + '`' for x in vd['nondominated_all'])}.", '',
                 '### Ladder table (worst over cases of the time-maximum error; medians over all timed repetitions)', '',
-                '| arm | family | q / k′ | dim | worst energy-state % | median energy-state % | worst u % | worst v % | worst current-rel u / v % | t=0 energy-state % | GPU ms | complete ms | evolution ms | outliers | reduced-energy drift | physical energy drift | completed / stationary / fallbacks | all-state 5 % |',
-                '|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---:|---:|---|---|---|:---:|']
+                '| arm | family | q / k′ | dim | worst energy-state % | median energy-state % | worst u % | worst v % | worst current-rel u / v % | t=0 energy-state % | evolved-times energy-state % | GPU ms | complete ms | evolution ms | outliers | reduced-energy drift | physical energy drift | completed / stationary / fallbacks | all-state 5 % |',
+                '|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---|---|---|:---:|']
         for name, r in rows.items():
             text.append(f"| `{name}` | {r['family']} | {'' if r['q_or_k'] is None else r['q_or_k']} | {r['dimension'] or ''} | {pct(r['worst_energy_state'])} | {pct(r['median_energy_state'])} | {pct(r['worst_displacement'])} | {pct(r['worst_velocity'])} | "
-                        f"{pct(r['worst_current_displacement'])} / {pct(r['worst_current_velocity'])} | {pct(r['worst_t0_energy_state'])} | {ms(r['median_gpu_ms'])} | {ms(r['median_complete_ms'])} | {ms(r['median_evolution_ms'])} | {r['outliers_above_twice_median']} | "
+                        f"{pct(r['worst_current_displacement'])} / {pct(r['worst_current_velocity'])} | {pct(r['worst_t0_energy_state'])} | {pct(r['worst_evolved_energy_state'])} | {ms(r['median_gpu_ms'])} | {ms(r['median_complete_ms'])} | {ms(r['median_evolution_ms'])} | {r['outliers_above_twice_median']} | "
                         f"{sci(r['reduced_energy_drift'])} | {r['physical_energy_drift']:.2e} | "
                         f"{r['all_completed']} / {r['fit_stationary']} / {r['guard_fallbacks']} | {'pass' if r['all_state_pass'] else 'fail'} |")
         text += ['', '### Three-layer decomposition (worst over cases; energy-state / displacement %)', '',

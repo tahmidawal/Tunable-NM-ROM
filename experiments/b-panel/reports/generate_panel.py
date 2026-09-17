@@ -312,12 +312,14 @@ def section(W, au, tag):
                          f(lad['monotone_evolved']), f(lad['monotone_all_times']), f(lad['all_converged']),
                          lad['nondominated_converged_points'], f(lad['error_span'], 3), f(lad['cost_span'], 3)])
     W(table(hdr, rows))
+    rule_sets(W, au)
     if au['transfer']:
         W('### Transferred rules (`eqxfer`, DESIGN.md §3.2)\n')
         W(table(['q', 'M', 'support m', 'nonzero m', 'refit rel. fit', 'ρ max', 'ρ 95', 'ρ median', 'basis', 'source ρ max (256²)', 'seconds'],
                 [[t['q'], t['M'], t['m_support'], t['m'], sci(t['refit']['relative_fit']), f(t['certification']['rho_max']),
                   f(t['certification']['rho_p95']), f(t['certification']['rho_median']), t['basis'], f(t['source_rho_max']), f(t['seconds'], 0)]
                  for t in au['transfer']]))
+        prediction(W, au)
     fid = au['checks'].get('cross_job_fidelity', {}).get('detail') or {}
     if fid:
         W('### Cross-job fidelity gates\n')
@@ -333,6 +335,104 @@ def section(W, au, tag):
     W(table(['gate', 'passed', 'detail'], [[k, f(v['passed']), (json.dumps(v['detail'])[:160] if v.get('detail') is not None else '')]
                                           for k, v in au['checks'].items() if k != 'cross_job_fidelity']))
     W(f"![envelope]({tag}-envelope.png)\n")
+
+
+def rule_sets(W, au):
+    """Matched-rule-set comparison and the cost of each rule set against its same-job dense twin."""
+    eq = [x for x in au['arms'] if x['quadrature'] == 'eq' and x['family'] == 'rom']
+    sets = sorted({x['rule_set'] for x in eq if x['rule_set']})
+    dense = {(x['q'], x['gtol']): x for x in au['arms'] if x['quadrature'] == 'dense' and x['family'] == 'rom' and x['M'] == 4 * (16 + (x['q'] or 0))}
+    if len(sets) > 1:
+        W('### The two rule sets at matched q, M and tolerance (same job, same GPU)\n')
+        W('Both rule sets ran as arms of this one allocation, so the comparison below is in-allocation, not across '
+          'jobs. Rows where the two sets point at the same rule file are identical by construction and the driver '
+          'gate `matched_rule_files_bitwise` asserts they are bitwise identical; rows where the files differ are '
+          'the actual comparison. Every `eqtop` row carries its construction status, and a status of *certified in '
+          'one draw* means exactly that — a single draw met the held-out bar and the construction was never '
+          're-drawn; it is not "certified".\n')
+        hdr = ['q', 'M', 'tol'] + sum(([f'{k} m', f'{k} ρ max', f'{k} status', f'{k} evolved %', f'{k} all %', f'{k} GPU ms'] for k in sets), []) \
+            + ['same file', 'evolved ratio (later/earlier set)', 'cost ratio (later/earlier set)']
+        rows = []
+        for q in sorted({x['q'] for x in eq}):
+            for g in sorted({x['gtol'] for x in eq}, reverse=True):
+                got = {k: next((x for x in eq if x['q'] == q and x['gtol'] == g and x['rule_set'] == k), None) for k in sets}
+                if any(v is None for v in got.values()):
+                    continue
+                cells = []
+                for k in sets:
+                    x = got[k]
+                    cells += [f(x['rule_m']), f(x['rho_max']), x['rule_status'] or '—', f(x['worst_evolved_percent']),
+                              f(x['worst_all_times_percent']), f(x['median_gpu_ms'], 1)]
+                a0, a1 = got[sets[0]], got[sets[-1]]
+                same = a0['rule_file_sha256'] == a1['rule_file_sha256']
+                rows.append([q, f(a0['M']), sci(g)] + cells + [f(same),
+                            f(a1['worst_evolved_percent'] / a0['worst_evolved_percent'], 4),
+                            f(a1['median_gpu_ms'] / a0['median_gpu_ms'], 4)])
+        W(table(hdr, rows))
+        sec = sorted({(x['rule_set'], x['q'], round(x['rho_max'], 4)) for x in eq if x['rule_basis'] == 'secondary'})
+        if sec:
+            W('Rules in this job whose held-out ρ max exceeds the 0.116 primary bar (secondary basis only): '
+              + '; '.join(f"`{k}` q = {q}, ρ max {f(r)}" for k, q, r in sec)
+              + '. Their arms are timed and reported, and they are the rungs the other set replaces.\n')
+    W('### Each rule set against its same-job dense twin\n')
+    W('The dense twin of an EQ arm is the `rom` arm at the same q and the same M with the exact advection sum, '
+      'timed in this same job at tol 1e-06. The cost ratio below is therefore a within-job quadrature speedup at '
+      'fixed model and fixed test space; the error columns say what that speedup costs in accuracy.\n')
+    hdr = ['set', 'q', 'M', 'tol', 'm', 'rule status', 'EQ GPU ms', 'dense GPU ms', 'dense / EQ (speedup)',
+           'EQ evolved %', 'dense evolved %', 'EQ − dense evolved (pp)', 'EQ all %', 'dense all %']
+    rows = []
+    for x in sorted(eq, key=lambda z: (str(z['rule_set']), z['q'], -(z['gtol'] or 0))):
+        d = dense.get((x['q'], 1e-06))
+        if d is None:
+            continue
+        rows.append([f"`{x['rule_set']}`", x['q'], f(x['M']), sci(x['gtol']), f(x['rule_m']), x['rule_status'] or '—',
+                     f(x['median_gpu_ms'], 1), f(d['median_gpu_ms'], 1), f(d['median_gpu_ms'] / x['median_gpu_ms'], 2),
+                     f(x['worst_evolved_percent']), f(d['worst_evolved_percent']),
+                     f(x['worst_evolved_percent'] - d['worst_evolved_percent'], 4),
+                     f(x['worst_all_times_percent']), f(d['worst_all_times_percent'])])
+    W(table(hdr, rows))
+    mono = {k: v for k, v in au['ladders'].items() if k.startswith('eq_')}
+    if mono:
+        W('Ladder monotonicity at the top, by rule set and tolerance: '
+          + '; '.join(f"`{k}` evolved-monotone {f(v['monotone_evolved'])} "
+                      f"(top two rungs {f(v['worst_evolved_percent'][-2])} % → {f(v['worst_evolved_percent'][-1])} %)"
+                      for k, v in mono.items()) + '.\n')
+
+
+def prediction(W, au):
+    """Score DESIGN.md §A5.2's recorded prediction about the transferred top rungs."""
+    t = au.get('transfer') or []
+    if not t:
+        return
+    W('### The §A5.2 prediction, scored\n')
+    W('Before `bpn201` returned, DESIGN.md §A5.2 predicted that the **top two transferred rungs (q = 128, 256) '
+      'would come back uncertified**, because the then-current convention `clip(8192/M, 8, 64)` would fit them on '
+      '14 and 8 reachable states — b-eqtop\'s fit-state-starvation diagnosis, not anything about the mesh. '
+      '`bpn201` (retracted) and `bpn202` (failed) both recorded exactly that: q = 0, 16, 32 primary '
+      '(ρ max 0.0180 / 0.0594 / 0.0313 on 64 / 64 / 42 states) and q = 64, 128, 256 uncertified '
+      '(0.1316 / 1.0295 / 0.4144 on 25 / 14 / 8 states) — the prediction held for the two rungs it named and the '
+      'rung below them also missed. **This job is not the same test**: DESIGN.md §A7 retired the cap, so every '
+      'rung here is fitted on the full configured fit-state count, which is the change §A5.2 said would be made '
+      'and smoked first. The table below is what the uncapped refit gives; it measures the remedy, not the '
+      'prediction.\n')
+    hdr = ['q', 'M', 'fit states used', 'fit states available', 'fit-state rule', 'support m', 'nonzero m',
+           'ρ max', 'ρ 95', 'basis', 'certified primary', 'bar']
+    W(table(hdr, [[x['q'], x['M'], x['fit_states_used'], x['fit_states_available'], x['fit_state_rule'],
+                   x['m_support'], x['m'], f(x['certification']['rho_max']), f(x['certification']['rho_p95']),
+                   x['basis'], f(x['certified_primary']), f(x['rho_bar'])] for x in t]))
+    capped = {0: 64, 16: 64, 32: 42, 64: 25, 128: 14, 256: 8}
+    prior = {0: 0.0180, 16: 0.0594, 32: 0.0313, 64: 0.1316, 128: 1.0295, 256: 0.4144}
+    rows = [[x['q'], capped.get(x['q'], '—'), f(prior.get(x['q'])), x['fit_states_used'],
+             f(x['certification']['rho_max']), x['basis'], f(x['certified_primary'])] for x in t]
+    W('\nAgainst the capped refit the retracted attempts recorded (archived in `artifacts/bpn201-retracted/` and '
+      '`artifacts/bpn202-failed/`; those values enter no other table):\n')
+    W(table(['q', 'capped fit states (bpn201/bpn202)', 'capped ρ max', 'uncapped fit states (this job)',
+             'uncapped ρ max', 'uncapped basis', 'certified primary'], rows))
+    good = [x for x in t if x['certified_primary']]
+    W(f"\n{len(good)} of {len(t)} transferred rungs certify on the primary bar in this job under the uncapped "
+      f"count, against 3 of 6 under the capped one. Rungs still not primary-certified: "
+      + (', '.join(f"q = {x['q']} (ρ max {f(x['certification']['rho_max'])}, basis {x['basis']})"
+                   for x in t if not x['certified_primary']) or 'none') + '.\n')
 
 
 def glossary(W):
@@ -392,17 +492,28 @@ def main():
                  and x['worst_evolved_percent'] <= best['worst_evolved_percent']
                  and x['median_gpu_ms'] <= best['median_gpu_ms']]
         cheapest = min(beats, key=lambda z: z['median_gpu_ms']) if beats else None
+        HUM = {'fom': 'full-order Newton', 'fno': 'the trained FNO', 'rom': 'the correction ladder',
+               'fast': 'the optimised q = 0 kernel', 'pod': 'POD-LSPG', 'free': 'the unrestricted bank'}
+        fseen, fdesc = [], {x['arm']: x['family'] for x in au['arms']}
+        for arm in au['nondominated']['gpu_evolved']['admissible']:
+            h = HUM.get(fdesc.get(arm), fdesc.get(arm))
+            if h not in fseen:
+                fseen.append(h)
+        front_desc = ' plus '.join(fseen) if fseen else 'empty'
         W(f"**Headline, {au['intervals']}² (job `{au['job_id']}`, one allocation, one GPU): "
           f"{nred} of the {len(red)} reduced-order subjects are non-dominated on (median GPU ms, worst "
-          f"evolved %).** The frontier is full-order Newton plus the trained FNO. The most accurate reduced "
+          f"evolved %).** The most accurate reduced "
           f"subject is `{best['arm']}` at {f(best['worst_evolved_percent'])} % and {f(best['median_gpu_ms'], 1)} ms"
           + (f", and {len(beats)} of the same job's full-order settings are **both cheaper and at least as "
              f"accurate** — cheapest `{cheapest['arm']}` at {f(cheapest['worst_evolved_percent'])} % and "
              f"{f(cheapest['median_gpu_ms'], 1)} ms, i.e. {f(best['median_gpu_ms'] / cheapest['median_gpu_ms'], 1)}× "
              f"less time at {f(cheapest['worst_evolved_percent'] / max(best['worst_evolved_percent'], 1e-300), 2)}× "
              f"the error." if cheapest else '.')
-          + " This is the evidence for the paper's claim of no speedup over an efficient full-order solver at "
-            "this mesh.\n")
+          + f" The frontier over admissible subjects is {front_desc}."
+          + (" This is the evidence for the paper's claim of no speedup over an efficient full-order solver at "
+             "this mesh.\n" if nred == 0 else
+             " A reduced subject is on the frontier at this mesh; the no-speedup claim does not hold here "
+             "unqualified.\n"))
     W('```mermaid\nflowchart LR\n  CK[frozen checkpoint] --> M[(bank G, head h, directions C)]\n  QTD[qtd02 directions] --> M\n'
       '  QRG[qrg304 certified rules] --> RULES[EQ rules]\n  M --> ROM[correction ladder q]\n  RULES --> ROM\n  SNAP[128 truth trajectories] --> POD[POD-LSPG k]\n'
       '  ROM --> T[one allocation: timed queries]\n  POD --> T\n  FOM[Newton grid + fft_tight] --> T\n  FNO[fno-large] --> T\n'
@@ -418,6 +529,9 @@ def main():
                 if mkey in x and x[mkey] is not None:
                     summary.append(dict(mesh=au['intervals'], subject=x['arm'], family=x['family'],
                                         q_or_k=(x['q'] if x['q'] is not None else x['k']), M=x['M'], quadrature=x['quadrature'],
+                                        rule_set=x.get('rule_set'), rule_m=x.get('rule_m'), rule_basis=x.get('rule_basis'),
+                                        rule_status=x.get('rule_status'), admissible=x.get('admissible'),
+                                        converged=x.get('converged'),
                                         tol=x['gtol'], metric=mkey, value=x[mkey], job_id=au['job_id'], source_sha=au['result_sha256']))
         for key, v in au['nondominated'].items():
             for which in ('admissible', 'all', 'reduced_only'):

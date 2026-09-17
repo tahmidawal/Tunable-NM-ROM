@@ -441,3 +441,15 @@ $(32,512)$. The Phase-3 question (correction-rank trade on a degree-2 residual) 
 reached; the deliverable is Phases 1–2, the certified FOM and dataset, the floors, and this
 negative. Any further Phase 2 (lower-dimensional family, more trajectories) is a new
 pre-registration; jobs used 5 of 8; the 2026-09-22 stop rule stands.
+
+## §A8 (2026-09-17, correction to §A6/§A7) — 3–5 % of oracle fits are LM budget exits, not "none"
+
+§A6 wrote "no budget exits" for `ns203`; that was read off the `oracle_reasons` dict without
+consulting the code map. `ns2d_decoder.make_lm_fit` defines reason 0 = budget (300 iterations),
+4 = stationary (gradient ≤ 1e-6). Stored counts over 384 held-out states: `ns203` {0: 12, 4: 372}
+at 256² (11–12 at the other meshes); `ns204` {0: 18, 4: 366} at 256² (12, 16 at 64², 128²). So
+3.1 % / 4.7 % of states hit the cap. The oracle values on those states are upper bounds on the
+best fit. The medians over 384 states and both verdicts stand (ratio 1.19 / 1.15 vs 2.0; even
+placing every budget-exit state at the bank floor would move the median by at most 18 ranks).
+The report table now carries the count per mesh (`oracle.budget_exits_of_states` in
+`summary.json`). Recorded as a correction, not silently edited.

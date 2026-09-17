@@ -146,13 +146,16 @@ def phase2(doc, d, job, sha):
     for N, o in d.get('oracle', {}).items():
         rows.append([N, o['states'], sci(o['oracle_median']), sci(o['oracle_worst']), sci(o['single_start_median']), sci(o['podK_median']),
                      sci(o['bank_floor_median']), fx(o['podK_median'] / o['oracle_median'], 2), sci(o.get('formula_vs_field_worst_rel')),
+                     f"{int(o.get('oracle_reasons', {}).get('0', 0))}/{o['states']} (median {fx(o.get('oracle_iters_median'), 0)} it)",
                      yn(G.get(f'H-ORACLE_N{N}', {}).get('passed')), yn(G.get(f'H-SOLVED_N{N}', {}).get('passed'))])
+        doc.row(phase=2, mesh=int(N), subject=f'head_K{c["K"]}_R{c["R"]}', metric='oracle.budget_exits_of_states', value=int(o.get('oracle_reasons', {}).get('0', 0)), gate=f'H-ORACLE_N{N}',
+                passed=G.get(f'H-ORACLE_N{N}', {}).get('passed'), job_id=job, source_sha256=sha)
         for m in ('oracle_median', 'oracle_worst', 'single_start_median', 'podK_median', 'bank_floor_median'):
             doc.row(phase=2, mesh=int(N), subject=f'head_K{c["K"]}_R{c["R"]}', metric=f'oracle.{m}', value=o[m], gate=f'H-ORACLE_N{N}',
                     passed=G.get(f'H-ORACLE_N{N}', {}).get('passed'), job_id=job, source_sha256=sha)
     doc.h(3, 'Head oracle versus the linear POD-$K$ floor (same held-out states)')
-    doc.table(['$N$', 'states', 'oracle median', 'oracle worst', 'single-start median', 'POD-$K$ median', 'bank floor median', 'POD-$K$ / oracle', 'formula vs field', 'H-ORACLE', 'H-SOLVED'], rows)
-    doc.p('The H-ORACLE bar is oracle median $\\le \\tfrac12$ POD-$K$ median (ratio $\\ge 2$). "formula vs field" is the worst relative difference between the whitened-metric formula and the direct field-space evaluation of the oracle error (— for runs before DESIGN §A4, whose reported oracle numbers were computed through $R_b^{-1}$; the audit measured the contamination).')
+    doc.table(['$N$', 'states', 'oracle median', 'oracle worst', 'single-start median', 'POD-$K$ median', 'bank floor median', 'POD-$K$ / oracle', 'formula vs field', 'LM budget exits', 'H-ORACLE', 'H-SOLVED'], rows)
+    doc.p('The H-ORACLE bar is oracle median $\\le \\tfrac12$ POD-$K$ median (ratio $\\ge 2$). "formula vs field" is the worst relative difference between the whitened-metric formula and the direct field-space evaluation of the oracle error (— for runs before DESIGN §A4, whose reported oracle numbers were computed through $R_b^{-1}$; the audit measured the contamination). "LM budget exits" counts held-out states whose best start stopped at the 300-iteration LM cap (reason code 0) rather than at the gradient tolerance; the oracle is an upper bound on the true best fit for those states.')
     # Per-output-time breakdown from the stored per-state arrays (state order is case-major:
     # cases x times, as the driver writes them; the audit checks json == npz element-wise).
     rows = []

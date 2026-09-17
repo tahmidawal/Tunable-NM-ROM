@@ -19,3 +19,9 @@ experiments/mr-heat2d/runs/iterative_cg09/archive/outputs/fields/*.npz
 
 # Heat accuracy fields are preserved exactly in checksum-verified archive parts.
 experiments/mr-heat2d/runs/accuracy10/archive/outputs/fields/*.npz
+
+# ns2d: the compressed job archive is preserved as checksum-verified 48 MB chunks under
+# experiments/ns2d/artifacts/<attempt>/; the staged copy of the 31 MB reference npz is
+# byte-identical to experiments/ns2d/configs/dev8_eval_ref.npz (MANIFEST-verified in-job).
+experiments/ns2d/runs/*/archive/collection.tar.gz
+experiments/ns2d/runs/*/archive/experiments/ns2d/configs/dev8_eval_ref.npz

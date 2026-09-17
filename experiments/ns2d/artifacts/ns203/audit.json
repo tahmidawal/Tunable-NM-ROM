@@ -1,0 +1,552 @@
+{
+  "source": "experiments/ns2d/runs/ns203/archive/experiments/ns2d/output/result.json",
+  "checks": [
+    {
+      "name": "dev8.physical_max_abs_diff",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-ORTH_N64.rank",
+      "recomputed": 256.0,
+      "reported": 256.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "B-ORTH_N64.rank_le_structural_bound",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.per_state_oracle.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.per_state_single.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.per_state_podK.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.per_state_bank.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.n0.worst_rel_diff",
+      "recomputed": 4.298303277871392e-16,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.e_oracle.worst_rel_diff_over_48_states",
+      "recomputed": 3.00572199139143e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.e_single.worst_rel_diff_over_48_states",
+      "recomputed": 2.5254062401116163e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N64.e_bank.worst_rel_diff_numerical_range_vs_driver_QR",
+      "recomputed": 3.853647931152078e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (driver QR spans R columns; rank-deficient banks add roundoff directions)"
+    },
+    {
+      "name": "B-FLOOR_N64.bank.per_case_worst_fixed[:8].worst_rel_diff",
+      "recomputed": 2.143384926318036e-15,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (same caveat)"
+    },
+    {
+      "name": "H-ORACLE_N64.oracle_median",
+      "recomputed": 0.20344199853974676,
+      "reported": 0.20344199853974676,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N64.podK_median",
+      "recomputed": 0.24174654529220468,
+      "reported": 0.24174654529220468,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N64.bank_floor_median",
+      "recomputed": 0.011796654698100189,
+      "reported": 0.011796654698100189,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N64.oracle_worst",
+      "recomputed": 0.5507498823502979,
+      "reported": 0.5507498823502979,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N64.passed",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-SOLVED_N64.single_start_median",
+      "recomputed": 0.22257094933173727,
+      "reported": 0.22257094933173727,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-SOLVED_N64.passed",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N64.bank_worst_evolved",
+      "recomputed": 0.1404871444048467,
+      "reported": 0.1404871444048467,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N64.ratio",
+      "recomputed": 1.0751373334061496,
+      "reported": 1.0751373334061496,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N64.passed",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N64.bank_median",
+      "recomputed": 0.03606898873863772,
+      "reported": 0.03606898873863772,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-ORTH_N128.rank",
+      "recomputed": 256.0,
+      "reported": 256.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "B-ORTH_N128.rank_le_structural_bound",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.per_state_oracle.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.per_state_single.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.per_state_podK.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.per_state_bank.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.n0.worst_rel_diff",
+      "recomputed": 2.1984601857658263e-16,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.e_oracle.worst_rel_diff_over_48_states",
+      "recomputed": 2.6346615923032668e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.e_single.worst_rel_diff_over_48_states",
+      "recomputed": 2.1056052761726802e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N128.e_bank.worst_rel_diff_numerical_range_vs_driver_QR",
+      "recomputed": 1.4506164907467937e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (driver QR spans R columns; rank-deficient banks add roundoff directions)"
+    },
+    {
+      "name": "B-FLOOR_N128.bank.per_case_worst_fixed[:8].worst_rel_diff",
+      "recomputed": 6.924747580509517e-15,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (same caveat)"
+    },
+    {
+      "name": "H-ORACLE_N128.oracle_median",
+      "recomputed": 0.2025740393561763,
+      "reported": 0.2025740393561763,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N128.podK_median",
+      "recomputed": 0.24039989397922532,
+      "reported": 0.24039989397922532,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N128.bank_floor_median",
+      "recomputed": 0.01219480997536098,
+      "reported": 0.01219480997536098,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N128.oracle_worst",
+      "recomputed": 0.5508676720910176,
+      "reported": 0.5508676720910176,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N128.passed",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-SOLVED_N128.single_start_median",
+      "recomputed": 0.22298334842305484,
+      "reported": 0.22298334842305484,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-SOLVED_N128.passed",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N128.bank_worst_evolved",
+      "recomputed": 0.14093162982632884,
+      "reported": 0.14093162982632884,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N128.ratio",
+      "recomputed": 1.082786591186384,
+      "reported": 1.082786591186384,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N128.passed",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N128.bank_median",
+      "recomputed": 0.03663761576566077,
+      "reported": 0.03663761576566077,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-ORTH_N256.rank",
+      "recomputed": 256.0,
+      "reported": 256.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "B-ORTH_N256.rank_le_structural_bound",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.per_state_oracle.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.per_state_single.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.per_state_podK.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.per_state_bank.max_abs_diff_json_vs_npz",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.n0.worst_rel_diff",
+      "recomputed": 4.3322690674261485e-16,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.e_oracle.worst_rel_diff_over_48_states",
+      "recomputed": 2.3053474856035418e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.e_single.worst_rel_diff_over_48_states",
+      "recomputed": 1.4977655017465364e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "oracle_N256.e_bank.worst_rel_diff_numerical_range_vs_driver_QR",
+      "recomputed": 1.61347141709828e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (driver QR spans R columns; rank-deficient banks add roundoff directions)"
+    },
+    {
+      "name": "B-FLOOR_N256.bank.per_case_worst_fixed[:8].worst_rel_diff",
+      "recomputed": 3.0676556638998047e-15,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (same caveat)"
+    },
+    {
+      "name": "H-ORACLE_N256.oracle_median",
+      "recomputed": 0.20241722862915149,
+      "reported": 0.20241722862915149,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N256.podK_median",
+      "recomputed": 0.24021887896862884,
+      "reported": 0.24021887896862884,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N256.bank_floor_median",
+      "recomputed": 0.012241689818465126,
+      "reported": 0.012241689818465126,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N256.oracle_worst",
+      "recomputed": 0.5509034648631861,
+      "reported": 0.5509034648631861,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-ORACLE_N256.passed",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-SOLVED_N256.single_start_median",
+      "recomputed": 0.223139315539083,
+      "reported": 0.223139315539083,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "H-SOLVED_N256.passed",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N256.bank_worst_evolved",
+      "recomputed": 0.14083775971481918,
+      "reported": 0.14083775971481918,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N256.ratio",
+      "recomputed": 1.0806880977493745,
+      "reported": 1.0806880977493745,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N256.passed",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-FLOOR_N256.bank_median",
+      "recomputed": 0.03666361073713349,
+      "reported": 0.03666361073713349,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    }
+  ],
+  "all_match": true,
+  "notes": [
+    "structural rank bound of the bank: min(R, g_hidden) = 256 (R=256, g_hidden=512)"
+  ],
+  "all_passed_reported": false,
+  "failed_gates_reported": [
+    "H-ORACLE_N64",
+    "H-ORACLE_N128",
+    "H-ORACLE_N256"
+  ],
+  "n_checks": 67
+}

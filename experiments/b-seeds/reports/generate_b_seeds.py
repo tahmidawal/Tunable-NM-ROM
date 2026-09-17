@@ -109,6 +109,10 @@ def main():
                         quadrature='dense', arm=u['arm'], metric=metric, value=u[metric],
                         checkpoint_sha256=x['checkpoint_sha256'], source=x['_file'],
                         source_sha256=x['_sha256'])
+        row(checkpoint=x['checkpoint_label'], cohort=cohort, attempt=x['_attempt'],
+            job_id=x['job_id'], gpu=x['gpu'], ladder='dense_m4', q=None, quadrature='dense',
+            metric='knob_bar_passes', value=x['verdict']['passes'],
+            checkpoint_sha256=x['checkpoint_sha256'], source=x['_file'], source_sha256=x['_sha256'])
         for lad, v in x['ladders'].items():
             for metric in ('monotone_evolved', 'monotone_all_times', 'all_converged',
                            'error_span_evolved', 'cost_span'):

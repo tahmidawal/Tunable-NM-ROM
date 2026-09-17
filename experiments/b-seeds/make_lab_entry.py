@@ -59,7 +59,7 @@ def main():
     w('')
     w(f'Branch `exp/2026-09-17-b-seeds` at `{commit}`, forked from `exp/2026-09-16-q-ridge` at `7dc970fc`; '
       f'namespace `/cluster/tufts/paralab/tawal01/b_seeds_20260917/`, one attempt directory per job. Jobs: '
-      + ', '.join(f'`{att}` {jid} ({gpu})' for att, jid, gpu in jobs)
+      + (', '.join(f'`{att}` {jid} ({gpu})' for att, jid, gpu in jobs) if jobs else 'none recorded')
       + '. Every job printed `jax_backend=gpu`, ran float64 at highest matmul precision, was checksum-collected, '
         'independently NumPy-audited and Git-archived before its exact remote attempt directory was removed. '
         'Predeclared protocol and amendments: `experiments/b-seeds/DESIGN.md`.')
@@ -97,10 +97,16 @@ def main():
                 cells.append(f'{fmt(se)} / {fmt(de)}')
             w(f'| {q} | ' + ' | '.join(cells) + ' |')
         w('')
-    w(f'Monotone-on-evolved counts: {json.dumps(verdict.get("monotone_evolved_counts"))}; monotone-on-all-times: '
-      f'{json.dumps(verdict.get("monotone_all_times_counts"))}; converged on the development cohort: '
-      f'{verdict.get("converged_dev_count")} of {len(seeds)}; knob bar on {sum(1 for s in seeds if val(checkpoint=s, cohort="dev", metric="gate_complete") is not None)} seeds evaluated. '
-      f'TR (recipe reproduced): F3 = {fmt(verdict.get("F3_recipe_not_reproduced"))}.')
+    def count(metric, ladder='dense_m4', cohort='dev'):
+        vals = [val(checkpoint=s, cohort=cohort, ladder=ladder, metric=metric) for s in seeds]
+        return f'{sum(1 for v in vals if v)} of {len(seeds)}'
+
+    w(f'Counts over the three seeds on the development cohort — `dense_m4` monotone on evolved: '
+      f'{count("monotone_evolved")}, on all times: {count("monotone_all_times")}, every rung converged: '
+      f'{count("all_converged")}, knob bar: {count("knob_bar_passes")}; `dense_fixedM` monotone on evolved: '
+      f'{count("monotone_evolved", "dense_fixedM")}. C1 = {fmt(verdict.get("C1_monotone_converged_on_at_least_2_of_3"))} '
+      f'({verdict.get("C1_count")} of {len(seeds)}); '
+      f'F3 (the recipe is NOT reproduced on >= 2 seeds) = {fmt(verdict.get("F3_recipe_not_reproduced"))}.')
     w('')
     if a.retractions and Path(a.retractions).exists():
         w(Path(a.retractions).read_text().strip())

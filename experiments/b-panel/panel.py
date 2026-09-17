@@ -306,6 +306,16 @@ def main():
         return colds[q][0], colds[q][1], heads[q]
 
     lin = lambda dim: 'gj' if dim <= cfg['gauss_jordan_max'] else 'lu'
+    dense_queries = {}
+
+    def dense_query(q):
+        # one compiled dense query per q, shared by the transfer population and the timed arm
+        if q not in dense_queries:
+            dense_queries[q] = TF.make_query(params, Cfull[:, :q], K, q, L, dt, trust, 'dense', 'base', Rb=Rb,
+                                             ic_budget=strict['ic_budget'], step_budget=strict['step_budget'],
+                                             gtol=strict['gtol'], ic_gtol=cfg['ic_gtol'], linear=lin(K + q),
+                                             inner_damping=cfg['inner_damping'], tau_y=cfg['tau_y'])
+        return dense_queries[q]
 
     # ---------------------------------------------------------- the rules ----
     rules = {}          # q -> (ops dict with G5/Pq, info)
@@ -358,21 +368,22 @@ def main():
             dd = dense_data(M)
             ph, _ = modes(M)
             t0 = time.perf_counter()
-            collect = EC.make_collect_query(params, C, K, q, L, dt, trust, iters=xfer['collect_iters'],
-                                            ic_budget=strict['ic_budget'], gtol=strict['gtol'],
-                                            linear=lin(K + q), inner_damping=cfg['inner_damping'])
+            # The reachable population is the PRODUCTION dense query's own converged per-step
+            # states (its internal latents), DESIGN.md A3: qrg304's fixed-iterate collector never
+            # accepts a step when the first time step needs more iterations than it unrolls
+            # (29 at 64 intervals from the same start), and then returns one frozen state.
+            qfn = dense_query(q)
             cf = jax.jit(jax.vmap(head))
             pools = {}
             for tag, idx in (('fit', fit_idx), ('cert', cert_idx)):
                 rows = []
                 for i in idx:
                     phys = train_physical[i]
-                    seen, _ = collect(jnp.asarray(e.initial(L, phys)), float(phys[4]), dd, cold)
-                    wv = np.asarray(seen).reshape(-1, K + q)
+                    v = qfn(jnp.asarray(e.initial(L, phys)), float(phys[4]), dd, cold)
+                    wv = np.asarray(v[7]).reshape(-1, K + q)
+                    assert np.isfinite(wv).all() and np.linalg.norm(wv[-1] - wv[0]) > 0, ('frozen rollout', q, int(i))
                     rows.append(np.asarray(cf(jnp.asarray(wv))))
                 pools[tag] = np.concatenate(rows)
-            del collect
-            jax.clear_caches()
             nfit = int(np.clip(xfer['max_fit_rows'] // M, 8, xfer['fit_states']))
             sel = np.sort(rng.choice(len(pools['fit']), min(nfit, len(pools['fit'])), replace=False))
             csel = pools['cert'][np.sort(rng.choice(len(pools['cert']), min(xfer['cert_states'], len(pools['cert'])),
@@ -385,7 +396,7 @@ def main():
             bar = float(info['rho_bar'])
             tinfo = dict(q=q, M=M, m_support=int(len(pos)), m=int(keep.sum()), refit=finfo, certification=cert,
                          fit_states_available=int(len(pools['fit'])), fit_states_used=int(len(sel)),
-                         certification_states=int(len(csel)), collect_iters=xfer['collect_iters'],
+                         certification_states=int(len(csel)), population='production dense query, converged per-step states (A3)',
                          fit_pool_sha256=sha_array(pools['fit']), certification_pool_sha256=sha_array(pools['cert']),
                          certified_primary=bool(cert['rho_max'] <= bar), certified_secondary=bool(cert['rho_p95'] <= bar),
                          rho_bar=bar, source_rho_max=info['source_rho_max'], seconds=time.perf_counter() - t0)
@@ -463,10 +474,13 @@ def main():
                 P = jnp.asarray(ph)
                 data = dict(A=P.T @ G, lam=lm, G=G, G5=ops['G5'], Pq=ops['Pq'])
             if fam == 'rom':
-                query = TF.make_query(params, C, K, q, L, dt, trust, s['quadrature'], 'base', Rb=Rb,
-                                      ic_budget=strict['ic_budget'], step_budget=strict['step_budget'],
-                                      gtol=s['gtol'], ic_gtol=cfg['ic_gtol'], linear=lin(K + q),
-                                      inner_damping=cfg['inner_damping'], tau_y=cfg['tau_y'])
+                if s['quadrature'] == 'dense' and s['gtol'] == strict['gtol'] and M == 4 * (K + q):
+                    query = dense_query(q)
+                else:
+                    query = TF.make_query(params, C, K, q, L, dt, trust, s['quadrature'], 'base', Rb=Rb,
+                                          ic_budget=strict['ic_budget'], step_budget=strict['step_budget'],
+                                          gtol=s['gtol'], ic_gtol=cfg['ic_gtol'], linear=lin(K + q),
+                                          inner_damping=cfg['inner_damping'], tau_y=cfg['tau_y'])
                 extra = {}
             else:
                 o = FL.ARMS[cfg['fast_arm']]

@@ -280,3 +280,19 @@ Burgers case (`consolidated/fixtures/burgers/expected.npz`, the panel's own case
 $\le10^{-12}$ through the panel's rule-rebuild path from the archived nodes and weights. Two
 driver runs with ~14 and ~8 compiled subjects exceed the sub-minute rule; the excess is a
 recorded deviation, as in the parent lanes.
+
+## A3 — 2026-09-17 06:50, before job 2, after the smoke: the reachable population for transferred rules
+
+The smoke's transfer run certified both rules with sixteen *identical* held-out $\rho$ values
+and a refit residual of $10^{-15}$: qrg304's fixed-iterate collector (`eqcert.make_collect_query`,
+12 unrolled LM iterates per step, retained for fidelity to that lane) returned one frozen state.
+A GPU diagnostic at 64 intervals showed why: from the same initial fit the production solver's
+first time step needs 29 iterations with several damping rejections, so a 4- or 12-iterate unroll
+accepts nothing, and the carried state never moves. It worked in qrg304 only because at $256^2$
+the first steps converged inside the unroll; at $1024^2$ that cannot be assumed. **The transferred
+rules' fit and certification populations are therefore the production dense query's own converged
+per-step states** (51 per trajectory, the same executable the timed dense arm uses), on the same
+8 fit / 4 certification trajectories, disjoint from the cases. This is a smaller population than
+qrg304's (converged states only, no intermediate iterates) and is labelled so; the $\rho$ bar,
+the tiers and the admissibility rule are unchanged. The driver asserts every rollout it collects
+actually moves. Job 1 ($256^2$) does not use the transfer path and is unaffected.

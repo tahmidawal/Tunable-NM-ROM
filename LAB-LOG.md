@@ -12488,3 +12488,185 @@ better on both axes. With the full-order controls and the FNO included, nothing 
 non-dominated on either metric, which is the entry's headline and is unaffected.
 `checks/recheck_headline.py`, the independent second code path, still reproduces every reported
 number to 0.0 relative.
+
+## 2026-09-17
+### no-second — a second and third operator family beat the FNO on matched data; the ROM's edge over neural operators does not survive them
+
+Worktree `worktrees/2026-09-17-no-second`, branch `exp/2026-09-17-no-second`, namespace
+`/cluster/tufts/paralab/tawal01/no_second_20260917/`. Four GPU jobs, each in its own attempt
+directory, all A100-80G, all `jax_backend=gpu` + `torch_backend=cuda` + `ALL-DONE`:
+`3780138` (`unet01`, U-Net Burgers screen, COMPLETED 03:23:03, pax105),
+`3780139` (`tsol01`, Transolver Burgers screen, COMPLETED 03:23:44, pax050),
+`3780625` (`pois02`, U-Net Poisson screen, COMPLETED 00:48:48, pax049), plus two still
+running or queued at the time of writing: `3783831` (`ctrl01`, precision/seed controls) and
+`3783920` (`res01`, the resolution-knob ladder). All three finished jobs were
+checksum-collected, independently NumPy-audited, archived as Git-tracked 64 MiB parts, and
+their exact remote directories deleted. Five jobs counted of a cap of 8.
+
+**What was built.** A PDEBench-topology **U-Net** (4 levels, GroupNorm/GELU, base 24/32/48 =
+4.4/7.8/17.5 M real parameters) and a **Transolver** (physics attention, 8 layers, 8 heads,
+64 slices, 4×4 patch tokens, dim 128/192/256 = 3.1/7.0/12.3 M) in PyTorch, both on the FNO
+lane's exact `features → network → boundary mask → bitwise-returned initial state` contract,
+sharing that lane's `train.py`, `dataset.py`, `evaluate_cohort.py`, `timing.py` and
+`prepare_diagnosis_cohort.py` with guarded changes only. Same Burgers dataset, same split
+(train/validation index SHA256 `5333584b…` / `468b9e70…`, asserted by the audit), same
+metric, same optimiser/scheduler/patience/selection rule, same **3000 s wall budget per
+capacity**, same lower-LR refinement of the validation-selected capacity, same seed. The
+networks train in IEEE float32 with TF32 disabled; features, mask, trajectory assembly, loss
+and every reported error stay float64. A parity check reproduced the FNO lane's audited
+`fno-large` per-case errors through this lane's files to **1.6e-16**.
+
+**Burgers, 32 held-out validation cases** (independently recomputed from saved fields; the
+selection rule is the FNO lane's own — argmin validation mean case-max over all arms
+including refine):
+
+| Run | params | epochs | ended by | mean % | median % | worst % | >5% |
+| --- | ---: | ---: | --- | ---: | ---: | ---: | ---: |
+| `unet-refine` (selected) | 7 763 461 | 1962 | wall budget | 1.3523 | 1.0806 | 7.5176 | 1 |
+| `unet-medium` | 7 763 461 | 1963 | wall budget | 1.4341 | 1.3169 | 3.9622 | 0 |
+| `unet-small` | 4 368 389 | 2327 | wall budget | 1.6047 | 1.3963 | 5.5937 | 1 |
+| `unet-large` | 17 462 021 | 908 | wall budget | 1.7029 | 1.3642 | 4.2340 | 0 |
+| `tsol-refine` (selected) | 3 108 240 | 1628 | wall budget | 1.9493 | 1.3591 | 9.3183 | 1 |
+| `tsol-small` | 3 108 240 | 1628 | wall budget | 2.0064 | 1.4522 | 6.8213 | 2 |
+| `tsol-medium` | 6 952 208 | 586 | wall budget | 3.2950 | 2.3846 | 9.5338 | 7 |
+| `tsol-large` | 12 322 960 | 882 | wall budget | 3.3412 | 3.0690 | 6.3953 | 5 |
+| `fno-large` (FNO lane, job `3710846`) | 17 877 317 | 692 | wall budget | 2.2811 | 1.8054 | 6.3825 | 2 |
+
+Both new families land **below** the FNO on validation mean and median; pre-registered V1
+(within 1.5× of the FNO on worst and median) passes for both. `unet-medium` has the best
+tail in the whole comparison — worst 3.9622 %, **zero** cases above 5 %, against 2–3 such
+cases for every FNO capacity.
+
+**Matched eight-case ROM/FOM cohort** (the Burgers lane's own cases and references from job
+`3702709`, rebuilt in-job from the same 4096-interval anchors, disjoint from training by seed
+and by input content, cohort index hash identical to the FNO job's). Worst fixed-initial
+error: `unet-small` 1.4712, `unet-medium` 1.5189, `tsol-refine` 1.5224, `unet-refine` 1.7110,
+**ROM 1.8671**, `unet-large` 2.3176, `fno-large` 2.4829, `tsol-small` 2.5273, `fno-medium`
+2.8882, `fno-small` 2.9350, `tsol-large` 3.0988, `fno-refine` 3.2660; efficient FOM
+`same_nt1e-2_dt005` 0.9978. **Four arms of this lane beat the ROM's worst case; every FNO
+capacity is worse than the ROM.** The finding the FNO lane reported — that the ROM is more
+accurate than the neural operator on these cases — is an artefact of the operator family
+chosen, not of neural operators. The efficient FOM still beats everything. Accuracy on these
+cases is comparable across jobs; **no timing from another job is divided by anything here,
+and this lane makes no speed claim of any kind.**
+
+**Poisson** (job `3780625`, the Poisson FNO job `3702464`'s dataset, split hashes
+`d20a5994…` / `65cc277b…` asserted equal): U-Net physical-candidate worst 6.0196 %
+(`medium`) / 8.3121 % (`large`) / 12.8000 % (`small`) against the FNO's 28.2777–32.4681 %, and
+mean 2.2183 / 2.2386 / 2.9503 against 3.4504–4.0518. A 4–5× reduction in worst case. **All
+three U-Net arms hit the 500-epoch cap while still improving** (best epoch 487–499 of 500),
+using only 538–1609 s of a 7200 s budget, so these are a lower bound, not a converged
+result; the Poisson FNO early-stopped inside the same cap.
+
+**What was wrong and got fixed or retracted.**
+- **A pre-registration audit caught a gate that would have failed every float32 arm.** The
+  design was audited before the first job (Codex was unavailable — its sandbox failed, then
+  the account hit its usage limit until 2026-09-19 — so an independent Claude subagent ran
+  the same adversarial brief; `reports/design-audit-2026-09-17.md`, actions in `DESIGN.md`
+  §A1). Its finding 1: the reported validation errors came from a batch-8 pass while the
+  saved prediction fields came from a batch-1 pass, and the audit gate required they agree to
+  1e-11 — which float32 cuDNN/cuBLAS kernels cannot satisfy, because they are not
+  batch-invariant. Fixed before submission by deriving both from **one batch-1 pass**, with
+  the batch-8 selection score retained and a pre-registered 1e-5 (float32) / 1e-11 (float64)
+  tolerance on the cross-check. **The prediction was correct:** the observed gap reaches
+  **2.5e-6** (Poisson `unet-large`; 1.5e-6 on Burgers `unet-large`), five orders of magnitude
+  above the original 1e-11 gate. Had this not been caught, every arm
+  would have failed its audit, or the tolerance would have been loosened after seeing data.
+- Same audit, also fixed before submission: `--signal=B:USR1@180` never reached the worker
+  because the sbatch no longer `exec`ed it (now trapped and forwarded); `audit.py` could pass
+  with an arm dropped or the cohort missing (now asserts the full arm set, cohort and timing
+  for every arm, and the protocol constants); the selection rule was ambiguous about `refine`
+  and the FNO reference was hard-coded (now stated and derived in code); the Transolver
+  deviated from upstream in its temperature clamp (0.01 → 0.1) and decoder (2-layer MLP →
+  LayerNorm + one Linear), which changed its parameter counts to those above; `a100-80G`
+  constraint restored; the ROM/FOM JSON hash-pinned into this lane instead of read across
+  worktrees. No finding was rejected.
+- **`pois01` (job `3780224`) died 51 s in and was resubmitted as `pois02`.** The stager's
+  explicit file list omitted `configs/unet-poisson/*.json`, so the first training arm hit
+  `FileNotFoundError` after both smokes passed. No training ran and no number exists to
+  retract; the stager now stages every file under `configs/`. Logs preserved in
+  `runs/pois01/logs-failed/`, recorded in `DESIGN.md` §A3. Per the lane protocol a preamble
+  death with zero training GPU time does not count against the job cap; four jobs counted.
+- **The finished report was audited too, and six MAJOR findings were honesty failures, not
+  arithmetic ones** (`reports/report-audit-2026-09-17.md`, actions in `DESIGN.md` §A6). The
+  auditor recomputed every rendered cell and re-derived three arms end-to-end from the raw
+  `.npz` fields: **no wrong number, no BLOCKER.** What it did find matters anyway. (a) The
+  report claimed the "Ended by" column said which arms were still improving; it said
+  `wall budget` for all eight and distinguished nothing — and in fact **7 of 8 arms in this
+  lane and 4 of 4 FNO arms were still improving when the budget cut them off**, so every
+  Burgers number here is a lower bound, a caveat that had been applied only to Poisson. There
+  is now a generated "Still improving?" column covering this lane and the FNO alike. (b) The
+  pre-registered Poisson criterion **V1-P was never evaluated** — a favourable verdict simply
+  missing; it is now computed and passes (worst ratio 0.20×, median 0.83× against a 1.50×
+  bar). (c) The report gave **no FNO epoch or parameter counts at all**, while §A1 had
+  pre-registered that the float32 epoch advantage be disclosed; FNO rows and the like-for-like
+  ratios (`unet-refine` 2.84×, `tsol-refine` 2.35× `fno-large`'s epochs) are now in. (d) The
+  timing table **pooled two jobs under a "same-job" heading**, inviting the exact cross-job
+  read its own caption forbade; it is now one table per job. (e) "The Poisson FNO early-stopped
+  inside the same cap" was a **hard-coded string with no source** — on the very claim that
+  makes the U-Net's Poisson result a lower bound against a converged FNO. It is now generated
+  from `checks/fno-poisson-run-metadata.json`, extracted and hash-pinned from that job's own
+  archive. (f) The report referred to a **controls section that did not exist**, `ctrl01`
+  having been submitted one minute earlier. All fixes went into the generator, not the prose.
+  The auditor also noted `audit.py` was asserting the split hashes against **literals typed
+  into the file**; it now derives them from the archived `DATA.sha256` manifest, and all three
+  audits were re-run with identical numbers. No finding was rejected.
+- **The selection rule optimises the mean, not the tail, and it shows.** For both families
+  the mean-selected `refine` arm has a *worse* worst case than an unselected sibling
+  (`unet-refine` 7.5176 % vs `unet-medium` 3.9622 %; `tsol-refine` 9.3183 % vs `tsol-large`
+  6.3953 %). This is the FNO lane's own rule, applied unchanged, and the report says so
+  beside the verdict rather than quietly reporting the better arm.
+
+**Caveats that must travel with these numbers.** Single seed (the controls in `3783831` test
+seed and precision), one mesh (256 intervals), one Gaussian continuum family, one 3000 s
+budget per capacity, and every Burgers arm ended **on the wall budget** rather than by early
+stopping — the budget binds, so none of these is a capacity ceiling. The eight-case cohort's
+worst column is one case. The Transolver's capacities span 3.1–12.3 M, narrower than the
+FNO's 1.2–17.9 M. Hyperparameters were inherited from the FNO lane and not re-tuned per
+family; `refine` is the only family-level tuning, and the Transolver's own published recipe
+(OneCycle, wd 1e-5) was not used. Equal wall in float32 buys the new families more epochs
+than the float64 FNO got — favourable to them, and stated in the report. The Poisson data was
+re-uploaded from this repository's Git archive of job `3702464` rather than regenerated on the
+cluster (no cluster copy survived); it is byte-identical by checksum and its index hashes are
+asserted equal to the FNO job's, but it is the one deviation from "data is regenerated on the
+cluster".
+
+**The resolution knob — pre-registered, submitted, not yet returned** (`DESIGN.md` §A5, job
+`3783920`). The coordinator asked for the experiment that closes the paper's biggest framing
+hole: our contrast is "a trained operator gives one accuracy-cost point, our decoder gives a
+family", and the obvious objection is that an operator has an inference-time knob too — the
+grid it is evaluated on. So the three frozen validation-selected checkpoints (`fno-large`,
+`unet-refine`, `tsol-refine`, hash-verified against the audits that published them; **no
+training in that job**) are evaluated at 256/128/64/32 intervals and graded **exactly as the
+Burgers lane grades its own coarse-mesh FOM arms** (`coarse_half_dt005`,
+`coarse_quarter_dt01`): restrict the supplied field by stride, run at that grid, prolong every
+output time back to 256 by the same aligned bilinear map `engines.output_field` uses, score
+against the same reference. Worst-over-evolved, worst-over-all and the $t=0$ term are kept
+separate, because at a coarse rung the supplied state is no longer returned exactly and that
+loss is a real cost of the knob. An **interpolation floor** control — the reference itself
+restricted and prolonged back, i.e. the error of a *perfect* operator at that rung —
+distinguishes "the grid is the limit" from "the model breaks off-resolution". Criterion,
+pre-registered: **R-USABLE** iff some rung is ≥1.5× faster than that model's own 256
+evaluation (same job, same GPU, ratio only within one model's own curve) while staying ≤2× its
+own 256 error; **R-DEGENERATE** iff the first rung below already fails either half. The
+falsification clause is explicit and binding: **if any operator is R-USABLE, "one accuracy-cost
+point per trained operator" is false as stated and must be withdrawn**, narrowing the
+contribution to the mechanism and the structural condition; if all are R-DEGENERATE that
+supports the framing, as evidence from three families on one ladder, one PDE and one seed, not
+a theorem. A top-rung gate voids the job unless rung 256 reproduces the already-published
+numbers for each checkpoint to 1e-9.
+
+**Open.** (1) `3783920` (`res01`) — the resolution ladder above; its audit
+(`audit_resolution.py`), report section and `summary.json` rows are written and committed, so
+it turns around as soon as it lands. (2) `3783831` (`ctrl01`) — float64 twin of `unet-medium`, seed-20260915 twin of
+`unet-medium`, float64 twin of `tsol-small`; each differs from its twin in exactly one
+variable. (3) No speed statement exists for any of these checkpoints; `best.pt` and the
+`model.predict` entry point are archived for the b-panel lane's same-job panel, which is the
+only admissible route. (4) Codex never audited this lane; both the design audit and the report audit were
+written ones by an independent Claude subagent, and Codex should re-audit after 2026-09-19 if
+these numbers go into the paper. (5) `poisson-data01` (183 MB) and `ckpt01` (534 MB) is still parked in the namespace for a
+possible Poisson control and for the resolution job; delete both when the lane closes. (6) The branch is committed
+locally and **not pushed**, per the coordinator's standing instruction.
+
+Report: `experiments/no-second/reports/2026-09-17-no-second.md`, machine-readable
+`reports/summary.json` (186 rows, every one carrying its source file and SHA256).

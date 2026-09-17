@@ -94,8 +94,10 @@ class Grid:
         self.primary = {}
         for key, lst in self.appear.items():
             q = key[0]
+            # Round-1 cells keep their round-1 primary so no published number shifts; the
+            # round-2 jobs are fallbacks, which is where the new cells land.
             pref = ['G1'] if q <= 32 else ['G2']
-            pref += ['G2', 'G1', 'S1']
+            pref += ['G2', 'G1', 'S1', 'E1', 'E2']
             for want in pref:
                 hit = [x for x in lst if x[0]['question'] == want]
                 if hit:
@@ -199,6 +201,18 @@ def spans(grid, metric):
         if len(ok) >= 2:
             sched[lab] = dict(cells=[k[0] for k, _ in ok], values=[v for _, v in ok],
                               monotone=mono([v for _, v in ok]), span=ok[0][1] / ok[-1][1])
+    # The pre-registered scheduled ladder stops at (256, 1088); if the round-2 job converged
+    # the q = 512 rung of the SAME 4(K+q) rule, report the extension as its own row and never
+    # fold it into the decomposition, whose corner path has no (0, 2112) cell to stand on.
+    ext = grid.row(512, 2112)
+    if ext is not None and ext['converged'] and '4x' in sched:
+        v4 = sched['4x']
+        vals = list(v4['values']) + [ext[metric]]
+        sched['4x_extended_to_q512'] = dict(
+            cells=list(v4['cells']) + [(512, 2112)], values=vals, monotone=mono(vals),
+            span=vals[0] / vals[-1],
+            note='the same M = 4(K+q) rule carried to q = R = 512; reported beside the '
+                 'pre-registered ladder, never inside the decomposition')
     out['scheduled'] = sched
     return out
 
@@ -250,15 +264,29 @@ def decompose(grid, metric):
 
 
 def saturation(audits, metric='worst_evolved_percent'):
-    s1 = [a for a in audits if a['question'] == 'S1']
-    if not s1:
+    """Every sweep in M, from whichever job ran it. A curve is built only from cells the
+    config LABELLED as a sweep ('sat', 'sat256'), so a job's two-point anchors never
+    masquerade as a saturation curve."""
+    jobs = []
+    for au in audits:
+        rows = {}
+        for r in au['arms']:
+            if r['family'] == 'rom' and any(l.startswith('sat') for l in (r.get('labels') or [])):
+                rows.setdefault(r['q'], {})[r['M']] = r
+        rows = {q: byM for q, byM in rows.items() if len(byM) >= 3}
+        if rows:
+            jobs.append((au, rows))
+    if not jobs:
         return None
-    au = s1[0]
+    au = jobs[0][0]
+    out = dict(job_id=au['job_id'], attempt=au['attempt'], gpu=au['gpu'], per_q={},
+               sources={})
     rows = {}
-    for r in au['arms']:
-        if r['family'] == 'rom':
-            rows.setdefault(r['q'], {})[r['M']] = r
-    out = dict(job_id=au['job_id'], attempt=au['attempt'], gpu=au['gpu'], per_q={})
+    for au_, rws in jobs:
+        for q, byM in rws.items():
+            rows[q] = byM
+            out['sources'][str(q)] = dict(job=au_['question'], job_id=au_['job_id'],
+                                          attempt=au_['attempt'], gpu=au_['gpu'])
     for q, byM in sorted(rows.items()):
         Ms = sorted(byM)
         ref = byM.get(4 * (K + q))
@@ -274,7 +302,13 @@ def saturation(audits, metric='worst_evolved_percent'):
                               next_M=(Ms[i + 1] if nxt else None)))
         mstar = next((c['M'] for c in curve if c['improvement_to_next'] is not None and c['improvement_to_next'] < .05), None)
         star = next((c for c in curve if c['M'] == mstar), None)
+        last = curve[-1]
         out['per_q'][q] = dict(curve=curve, M_star=mstar,
+                               still_falling_at_largest_M=bool(
+                                   len(curve) >= 2
+                                   and (curve[-2]['value'] - last['value']) / curve[-2]['value'] >= .05),
+                               largest_M=last['M'], value_at_largest_M=last['value'],
+                               tests_per_unknown_at_M_star=(None if mstar is None else mstar / (K + q)),
                                error_at_M_star=(star['value'] if star else None),
                                cost_ratio_at_M_star=(star['cost_ratio_to_4x'] if star else None),
                                cost_neutral_claim=(bool(star and star['cost_ratio_to_4x'] is not None
@@ -405,7 +439,7 @@ def main():
         au['_path'] = str(path)
         au['_sha256'] = sha(path)
         audits.append(au)
-    order = {'G1': 0, 'G2': 1, 'S1': 2}
+    order = {'G1': 0, 'G2': 1, 'S1': 2, 'E1': 3, 'E2': 4}
     audits.sort(key=lambda x: order.get(x['question'], 9))
     grid = Grid(audits)
     sp = {m: spans(grid, m) for m in ('worst_evolved_percent', 'worst_all_times_percent')}
@@ -606,8 +640,17 @@ def main():
             'improves the worst evolved error by less than 5 %. Cost ratios are within this job, against the '
             "row's own $M = 4(K+q)$ cell; the cost-neutral sentence is written only if that ratio is $\\le 1.1$.")
         for q, x in sorted(sat['per_q'].items()):
-            d.h(3, f"$q = {q}$ — $M^\\star = {x['M_star']}$, error there {f(x['error_at_M_star'])} %, cost {f(x['cost_ratio_at_M_star'], 3)}x "
-                   f"the $M={x['reference_M']}$ cell; cost-neutral claim: {yn(x['cost_neutral_claim'])}; monotone in $M$: {yn(x['monotone'])}")
+            src = (sat.get('sources') or {}).get(str(q), {})
+            if x['still_falling_at_largest_M']:
+                d.h(3, f"$q = {q}$ — **no $M^\\star$**: the curve is still falling at the largest $M$ run "
+                       f"({x['largest_M']}, {f(x['value_at_largest_M'])} %), i.e. "
+                       f"{f(x['largest_M'] / (K + int(q)), 1)} tests per unknown does not saturate this rung "
+                       f"[{src.get('job', '')} {src.get('job_id', '')}]")
+            else:
+                d.h(3, f"$q = {q}$ — $M^\\star = {x['M_star']}$ ({f(x['tests_per_unknown_at_M_star'], 1)} tests per "
+                       f"unknown), error there {f(x['error_at_M_star'])} %, cost {f(x['cost_ratio_at_M_star'], 3)}x "
+                       f"the $M={x['reference_M']}$ cell; cost-neutral claim: {yn(x['cost_neutral_claim'])}; "
+                       f"monotone in $M$: {yn(x['monotone'])} [{src.get('job', '')} {src.get('job_id', '')}]")
             d.table(['$M$', 'worst evolved %', 'worst all-times %', 'median GPU ms', 'cost vs $4(K+q)$', 'median iters', 'converged', 'improvement to next $M$'],
                     [[c['M'], f(c['value']), f(c['all_times']), f(c['median_gpu_ms'], 1), (f(c['cost_ratio_to_4x'], 3) + 'x') if c['cost_ratio_to_4x'] else '—',
                       f(c['median_iterations'], 1), yn(c['converged']), (f"{100 * c['improvement_to_next']:.1f} % (to {c['next_M']})" if c['improvement_to_next'] is not None else '—')]
@@ -671,12 +714,14 @@ def main():
     d.md.append('')
     md = out.with_suffix('.md')
     md.write_text('\n'.join(d.md) + '\n')
-    (HERE / 'summary.json').write_text(json.dumps(dict(
+    # beside --out, so a dry or regression run never clobbers the published summary
+    side = out.parent
+    (side / 'summary.json').write_text(json.dumps(dict(
         generated_from=[dict(path=x['_path'], sha256=x['_sha256'], job_id=x['job_id'], attempt=x['attempt']) for x in audits],
         verdict=ver, rows=summary), indent=2) + '\n')
-    (HERE / 'analysis.json').write_text(json.dumps(dict(spans=sp, decomposition=dec, saturation=sat, anchors=anc, verdict=ver), indent=2) + '\n')
+    (side / 'analysis.json').write_text(json.dumps(dict(spans=sp, decomposition=dec, saturation=sat, anchors=anc, verdict=ver), indent=2) + '\n')
     print(md, sha(md))
-    print(HERE / 'summary.json', len(summary), 'rows')
+    print(side / 'summary.json', len(summary), 'rows')
 
 
 GLOSSARY = [

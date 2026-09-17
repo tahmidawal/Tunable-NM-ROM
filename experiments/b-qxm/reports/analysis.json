@@ -1481,6 +1481,10 @@
           }
         ],
         "M_star": 256,
+        "still_falling_at_largest_M": false,
+        "largest_M": 4096,
+        "value_at_largest_M": 1.2648919396467901,
+        "tests_per_unknown_at_M_star": 16.0,
         "error_at_M_star": 1.271031181710876,
         "cost_ratio_at_M_star": 1.2101110662903052,
         "cost_neutral_claim": false,
@@ -1568,11 +1572,29 @@
           }
         ],
         "M_star": 256,
+        "still_falling_at_largest_M": false,
+        "largest_M": 4096,
+        "value_at_largest_M": 1.0620048679822551,
+        "tests_per_unknown_at_M_star": 3.2,
         "error_at_M_star": 1.1254852482489104,
         "cost_ratio_at_M_star": 0.9224680283078982,
         "cost_neutral_claim": true,
         "reference_M": 320,
         "monotone": false
+      }
+    },
+    "sources": {
+      "0": {
+        "job": "S1",
+        "job_id": "3780178",
+        "attempt": "bqx301",
+        "gpu": "NVIDIA A100-PCIE-40GB"
+      },
+      "64": {
+        "job": "S1",
+        "job_id": "3780178",
+        "attempt": "bqx301",
+        "gpu": "NVIDIA A100-PCIE-40GB"
       }
     }
   },

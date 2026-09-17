@@ -296,3 +296,15 @@ per-step states** (51 per trajectory, the same executable the timed dense arm us
 qrg304's (converged states only, no intermediate iterates) and is labelled so; the $\rho$ bar,
 the tiers and the admissibility rule are unchanged. The driver asserts every rollout it collects
 actually moves. Job 1 ($256^2$) does not use the transfer path and is unaffected.
+
+## A4 — 2026-09-17 09:40, AFTER job 1 landed: a third, post-hoc non-dominated set
+
+Job 1's pre-registered sets (all subjects; admissible subjects) both contain only full-order
+controls and the FNO, so they answer "is anything reduced worth running here" (no) but not "does
+the nonlinear manifold beat the classical linear one", which is the question the paper's head
+ablation asks and which this panel can now answer at ranks the ablation never reached
+($k'=256,512$). A third set, **`reduced_only`** — the frontier among admissible `rom`, `fast`,
+`pod` and `free` subjects — is therefore reported beside the other two. It is computed by the
+same function with the same domination rule; it changes no pre-registered criterion, no
+admissibility flag and no reported number. It was added after seeing the data and is labelled
+post-hoc everywhere it appears, here and in the report.

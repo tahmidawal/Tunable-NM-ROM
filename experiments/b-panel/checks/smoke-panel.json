@@ -20,38 +20,38 @@
     {
       "q": 0,
       "M": 64,
-      "m": 145,
+      "m": 230,
       "certification": {
         "states": 16,
-        "rho_max": 0.20420371313788385,
-        "rho_p95": 0.20420371313788385,
-        "rho_median": 0.20420371313788385,
-        "rho_mean": 0.20420371313788385,
-        "rho_min": 0.20420371313788385
+        "rho_max": 0.09743067260032083,
+        "rho_p95": 0.09555250027584912,
+        "rho_median": 0.06427498935333141,
+        "rho_mean": 0.05664443833835247,
+        "rho_min": 0.012498690396721537
       },
-      "seconds": 40.066586099914275,
-      "basis": "none"
+      "seconds": 46.504856179933995,
+      "basis": "primary"
     },
     {
       "q": 4,
       "M": 80,
-      "m": 185,
+      "m": 280,
       "certification": {
         "states": 16,
-        "rho_max": 0.18677481483565045,
-        "rho_p95": 0.18677481483565045,
-        "rho_median": 0.18677481483565045,
-        "rho_mean": 0.18677481483565045,
-        "rho_min": 0.18677481483565045
+        "rho_max": 0.060111053996123175,
+        "rho_p95": 0.059928073720704855,
+        "rho_median": 0.03060428778948278,
+        "rho_mean": 0.031496692710119935,
+        "rho_min": 0.010888056607850563
       },
-      "seconds": 48.32317039894406,
-      "basis": "none"
+      "seconds": 51.14447348099202,
+      "basis": "primary"
     }
   ],
   "runs": {
     "smoke64": {
-      "seconds": 416.1924276560312,
-      "reused_existing_output": false,
+      "seconds": 0.0012231019791215658,
+      "reused_existing_output": true,
       "subjects": [
         "fft_tight",
         "dense_tight",
@@ -200,7 +200,7 @@
       ]
     },
     "smoke128": {
-      "seconds": 400.60444199608173,
+      "seconds": 302.28288521501236,
       "reused_existing_output": false,
       "subjects": [
         "fft_tight",
@@ -222,49 +222,49 @@
       "audit_failed": [],
       "arms": {
         "q0_M64_dense_g1em06": {
-          "evolved": 0.785034302527831,
-          "all": 2.3348989252244228,
-          "gpu_ms": 588.385678420309,
+          "evolved": 0.7850343025282652,
+          "all": 2.3348989252243957,
+          "gpu_ms": 548.0002669501118,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q0_M64_eqxfer_g1em06": {
-          "evolved": 4.442713449750656,
-          "all": 4.442713449750656,
-          "gpu_ms": 109.21471402980387,
+          "evolved": 2.7333025025154076,
+          "all": 2.7333025025154076,
+          "gpu_ms": 97.5955210160464,
           "converged": true,
           "strict": true,
-          "admissible": false
+          "admissible": true
         },
         "q4_M80_dense_g1em06": {
-          "evolved": 0.7403775247780305,
-          "all": 2.3247147686853586,
-          "gpu_ms": 1259.2476875288412,
+          "evolved": 0.740377524777905,
+          "all": 2.3247147686854976,
+          "gpu_ms": 751.311270520091,
           "converged": true,
           "strict": true,
           "admissible": true
         },
         "q4_M80_eqxfer_g1em06": {
-          "evolved": 3.566382029995162,
-          "all": 3.566382029995162,
-          "gpu_ms": 136.9888360495679,
+          "evolved": 2.3399715405282357,
+          "all": 2.3399715405282357,
+          "gpu_ms": 146.12245501484722,
           "converged": true,
           "strict": true,
-          "admissible": false
+          "admissible": true
         },
         "pod8_M32_dense": {
           "evolved": 59.02179954499219,
           "all": 92.13353888324262,
-          "gpu_ms": 30.37554951151833,
+          "gpu_ms": 24.666882527526468,
           "converged": true,
-          "strict": true,
+          "strict": false,
           "admissible": true
         },
         "fft_tight": {
           "evolved": 0.0,
           "all": 0.0,
-          "gpu_ms": 108.12399053247645,
+          "gpu_ms": 107.52336750738323,
           "converged": null,
           "strict": null,
           "admissible": true
@@ -272,7 +272,7 @@
         "nt1e-2_dt01": {
           "evolved": 1.3542460923422377,
           "all": 1.3542460923422377,
-          "gpu_ms": 10.711096983868629,
+          "gpu_ms": 10.867743520066142,
           "converged": null,
           "strict": null,
           "admissible": true
@@ -285,9 +285,9 @@
     }
   },
   "report": {
-    "md_bytes": 18083,
+    "md_bytes": 18092,
     "summary_rows": 346
   },
-  "total_seconds": 899.4885393789737,
+  "total_seconds": 363.22205956606194,
   "deviation": "two driver runs; exceeds the sub-minute rule, recorded in DESIGN.md A2"
 }

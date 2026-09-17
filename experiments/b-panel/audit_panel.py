@@ -311,9 +311,15 @@ def main():
 
     # ------------------------------------------------ non-dominated sets ------
     nd = {}
+    reduced_fams = {'rom', 'fast', 'pod', 'free'}
     for tag, (ck_, ek) in PAIRS.items():
+        adm = [x for x in rows if x['admissible']]
         nd[tag] = dict(cost=ck_, error=ek, all=nondominated(rows, ck_, ek),
-                       admissible=nondominated([x for x in rows if x['admissible']], ck_, ek))
+                       admissible=nondominated(adm, ck_, ek),
+                       # DESIGN.md A4, added after seeing job 1: the frontier among REDUCED
+                       # subjects only, which is what "does the nonlinear manifold beat POD"
+                       # asks. It changes no pre-registered criterion and is labelled post-hoc.
+                       reduced_only=nondominated([x for x in adm if x['family'] in reduced_fams], ck_, ek))
     # the FOM controls' own reference error (the mesh's discretisation error) for context
     disc = {x['arm']: x['worst_reference_percent'] for x in rows if x['family'] == 'fom'}
 

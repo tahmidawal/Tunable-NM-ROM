@@ -220,8 +220,9 @@ def make_linear_query(B, n):
         field = jnp.pad((bank @ y).reshape(n - 1, n - 1), 1)
         return field, y, jnp.linalg.norm(B @ y - fm), jnp.linalg.norm(fm)
     values = np.asarray(jnp.linalg.svd(Rr, compute_uv=False))
-    info = dict(condition_number=float(values[0] / values[-1]), M=int(B.shape[0]), R=int(B.shape[1]),
-                Q_sha256=sha_array(Qt), R_sha256=sha_array(Rr))
+    info = dict(qr_condition_number=float(values[0] / values[-1]), M=int(B.shape[0]),
+                linear_solve='thin QR offline, triangular solve online',
+                qr_Q_sha256=sha_array(Qt), qr_R_sha256=sha_array(Rr))
     return kernel, Qt, Rr, info
 
 

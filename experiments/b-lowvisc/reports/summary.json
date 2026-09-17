@@ -1,0 +1,1456 @@
+{
+ "lane": "b-lowvisc",
+ "generated_from": "runs/lvg01/archive/output/gate/result.json",
+ "gate_job": "3789639",
+ "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+ "gpu": "NVIDIA A100-PCIE-40GB",
+ "jax": "0.10.2",
+ "backend": "gpu",
+ "rows": [
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 61.650254570522,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 67.34292132698666,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 28.217196971450953,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 57.83379126519299,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_all_times",
+   "value": 1.0923380900228528,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_evolved",
+   "value": 2.0495937751615423,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 47.068125328905275,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 54.45393323527372,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 18.21625886078104,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 45.03326270738673,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_all_times",
+   "value": 1.156917401208514,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_evolved",
+   "value": 2.472146616468091,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 19.814736427359396,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 35.133887685493086,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 6.770206489107303,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 25.78850883189196,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_all_times",
+   "value": 1.7731191032640545,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_evolved",
+   "value": 3.8091170296479904,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 10.118904555227736,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 23.201850042325034,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 1.7205837654442762,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 16.055869587544272,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_all_times",
+   "value": 2.2929211275481642,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_evolved",
+   "value": 9.33164075472864,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 3.7685744608766933,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 15.266966584039501,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 0.40798055435982616,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 9.532948232514057,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_all_times",
+   "value": 4.051125098504198,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_evolved",
+   "value": 23.366182850240193,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 0.6090067628392004,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_all_times_percent",
+   "value": 7.3642892511283895,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "incumbent",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 0.06696180969640633,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "lowvisc",
+   "metric": "pod_floor_worst_evolved_percent",
+   "value": 5.61090694290651,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_all_times",
+   "value": 12.09229470095856,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "ratio",
+   "metric": "pod_floor_degradation_ratio_evolved",
+   "value": 83.79264193045896,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "incumbent",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.06320793434239944,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "incumbent",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.012969087862382812,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "incumbent",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.020982938864766622,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "incumbent",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.0025369896405311367,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "incumbent",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.006238326999322695,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "incumbent",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.0003039155607806125,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "incumbent",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.001120663546319936,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "incumbent",
+   "metric": "pod_tail_energy_fraction",
+   "value": 1.2707064729181903e-05,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "incumbent",
+   "metric": "singular_value_ratio_to_first",
+   "value": 9.048571233480013e-05,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "incumbent",
+   "metric": "pod_tail_energy_fraction",
+   "value": 1.0744378880465748e-07,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "incumbent",
+   "metric": "singular_value_ratio_to_first",
+   "value": 1.8454271070034437e-06,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "incumbent",
+   "metric": "pod_tail_energy_fraction",
+   "value": 5.978828407277615e-11,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "incumbent",
+   "metric": "singular_value_ratio_512_over_1",
+   "value": 1.8454271070034437e-06,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "incumbent",
+   "metric": "pod_orthonormality_deviation_in_job",
+   "value": 7.143631581598212e-05,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "lowvisc",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.08992061441453651,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "lowvisc",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.03381464453412846,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "lowvisc",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.03883334079172912,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "lowvisc",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.01138224873541196,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "lowvisc",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.01612624003703719,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "lowvisc",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.0034378560695230514,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "lowvisc",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.006057342826268496,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "lowvisc",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.0007973375399649974,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "lowvisc",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.00196411132078563,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "lowvisc",
+   "metric": "pod_tail_energy_fraction",
+   "value": 0.000114729779348475,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "lowvisc",
+   "metric": "singular_value_ratio_to_first",
+   "value": 0.000399639074013359,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "lowvisc",
+   "metric": "pod_tail_energy_fraction",
+   "value": 6.451656805081745e-06,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "lowvisc",
+   "metric": "singular_value_ratio_512_over_1",
+   "value": 0.000399639074013359,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "lowvisc",
+   "metric": "pod_orthonormality_deviation_in_job",
+   "value": 1.0499475620526222e-09,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 90.69612808525562
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 0.0
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 101
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 169.91793492343277
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 0.0
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 135
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 1.8734860959412463
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.3366336633663367
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 62.47499550227076
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 9.026413685074572e-14
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 101
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 116.3361930521205
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 3.085895531510012e-14
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 135
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 1.8621240724681936
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "dense_tight",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.3366336633663367
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 9.069426916539669
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 3.199937091473226
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 33
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 14.272651402279735
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 3.8950412565513215
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 63
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 1.573710393569751
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt01",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.9090909090909092
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 15.732805128209293
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 3.7126546739634705
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 51
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 17.934566014446318
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 5.2542363265934835
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 94
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 1.139947127565269
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-2_dt005",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.8431372549019607
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 19.902694039046764
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 1.5178517607599036
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 27
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 63.51345148868859
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 3.279819523669372
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 50
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 3.1911987072746335
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt01",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.8518518518518519
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 31.872765044681728
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 0.04889766354764317
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 52
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 55.734973517246544
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 0.19706457026927965
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 84
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 1.7486707990070178
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-3_dt005",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.6153846153846154
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 27.872083941474557
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 1.5108805044811795
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 49
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 88.88245653361082
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 3.2798191357250603
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 3.1889419076178536
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt01",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.3061224489795917
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 37.12569538038224
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "incumbent",
+   "metric": "fom_worst_evolved_percent",
+   "value": 0.03384942323362892
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "incumbent",
+   "metric": "fom_newton_iterations_total",
+   "value": 56
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 122.21116165164858
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "lowvisc",
+   "metric": "fom_worst_evolved_percent",
+   "value": 0.0570788162512012
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "lowvisc",
+   "metric": "fom_newton_iterations_total",
+   "value": 100
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "ratio",
+   "metric": "fom_cost_ratio",
+   "value": 3.291821483732443
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "nt1e-4_dt005",
+   "family": "ratio",
+   "metric": "fom_newton_iteration_ratio",
+   "value": 1.7857142857142858
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L1024",
+   "family": "incumbent",
+   "metric": "discretisation_error_vs_4096_worst_percent",
+   "value": 2.1416109569480324,
+   "intervals": 1024
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L1024",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 523.9207280101255,
+   "intervals": 1024
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L512",
+   "family": "incumbent",
+   "metric": "discretisation_error_vs_4096_worst_percent",
+   "value": 2.7024510248071247,
+   "intervals": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L512",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 165.27255054097623,
+   "intervals": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L1024",
+   "family": "lowvisc",
+   "metric": "discretisation_error_vs_4096_worst_percent",
+   "value": 8.787745847284127,
+   "intervals": 1024
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L1024",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 1221.1057514650747,
+   "intervals": 1024
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L256",
+   "family": "lowvisc",
+   "metric": "discretisation_error_vs_4096_worst_percent",
+   "value": 20.820618261589292,
+   "intervals": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L256",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 169.91793492343277,
+   "intervals": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L256",
+   "family": "incumbent",
+   "metric": "discretisation_error_vs_4096_worst_percent",
+   "value": 4.026514657115228,
+   "intervals": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L256",
+   "family": "incumbent",
+   "metric": "fom_median_gpu_ms",
+   "value": 90.69612808525562,
+   "intervals": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L512",
+   "family": "lowvisc",
+   "metric": "discretisation_error_vs_4096_worst_percent",
+   "value": 13.949791929786851,
+   "intervals": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "fft_tight_L512",
+   "family": "lowvisc",
+   "metric": "fom_median_gpu_ms",
+   "value": 348.74484851025045,
+   "intervals": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "F4",
+   "family": "ratio",
+   "metric": "discretisation_error_ratio_at_training_mesh",
+   "value": 5.170878547479596,
+   "intervals": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "cohorts_differ_only_in_viscosity",
+   "family": "gate",
+   "metric": "passed",
+   "value": true
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "incumbent_cohort_matches_abl01_to_one_ulp",
+   "family": "gate",
+   "metric": "passed",
+   "value": true
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "timed_tight_matches_untimed_truth",
+   "family": "gate",
+   "metric": "passed",
+   "value": true
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "incumbent_pod_floors_reproduce_bpn301",
+   "family": "gate",
+   "metric": "passed",
+   "value": true
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "leg_a_pod_degrades",
+   "family": "gate",
+   "metric": "passed",
+   "value": true
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "leg_b_fom_cost_rises",
+   "family": "gate",
+   "metric": "passed",
+   "value": true
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "leg_a_pod_degrades",
+   "family": "gate",
+   "metric": "ratio_at_rank_512",
+   "value": 12.09229470095856
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "leg_b_fom_cost_rises",
+   "family": "gate",
+   "metric": "max_cost_ratio",
+   "value": 3.291821483732443
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "incumbent_pod_floors_reproduce_bpn301",
+   "family": "gate",
+   "metric": "max_relative_deviation",
+   "value": 1.183417334166698e-06
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "incumbent",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 2.3050764046636826e-16,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "incumbent",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 1.8870061501146604e-14,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "incumbent",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 5.558192734309545e-14,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "incumbent",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 1.369277007377323e-13,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "incumbent",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 5.2007669743079384e-11,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "incumbent",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 7.869911308814624e-07,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "incumbent",
+   "metric": "orthonormality_deviation_over_leading_256",
+   "value": 4.05538149589324e-09,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "incumbent",
+   "metric": "orthonormality_deviation_over_leading_500",
+   "value": 1.2776651348666559e-05,
+   "rank": 500
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k16",
+   "family": "lowvisc",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 4.2204449807576707e-16,
+   "rank": 16
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k32",
+   "family": "lowvisc",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 7.959591586175728e-15,
+   "rank": 32
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k64",
+   "family": "lowvisc",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 1.8808187416439396e-14,
+   "rank": 64
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k128",
+   "family": "lowvisc",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 1.2173198988417e-13,
+   "rank": 128
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k256",
+   "family": "lowvisc",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 3.446374844236521e-13,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_k512",
+   "family": "lowvisc",
+   "metric": "oblique_projector_relative_floor_shift",
+   "value": 4.6453018478925783e-11,
+   "rank": 512
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "lowvisc",
+   "metric": "orthonormality_deviation_over_leading_256",
+   "value": 1.5736505848407134e-11,
+   "rank": 256
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "pod_basis",
+   "family": "lowvisc",
+   "metric": "orthonormality_deviation_over_leading_500",
+   "value": 1.0546867823535422e-09,
+   "rank": 500
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "audit",
+   "family": "audit",
+   "metric": "checks_total",
+   "value": 83
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "audit",
+   "family": "audit",
+   "metric": "checks_failed",
+   "value": 1
+  },
+  {
+   "job_id": "3789639",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "audit",
+   "family": "audit",
+   "metric": "failed_pod_orthonormal_incumbent",
+   "value": 7.206802549011501e-05
+  }
+ ]
+}

@@ -156,11 +156,12 @@ def figure(meshes, path):
 def main():
     attempts = sys.argv[1:] or sorted(p.parent.name for p in (LANE / 'artifacts').glob('*/result.json'))
     summary, meshes, sections, glossary_terms = [], [], [], []
+    results_by_mesh = {}
     for attempt in attempts:
         result, audit, sha = load(attempt)
         n, job = result['mesh'], result['provenance']['job_id']
         rows = summarise(result); vd = verdict(rows); dec = decomposition_table(result)
-        meshes.append((n, rows, vd))
+        meshes.append((n, rows, vd)); results_by_mesh[n] = result
         for name, r in rows.items():
             for metric in ('worst_energy_state', 'median_energy_state', 'worst_displacement', 'worst_velocity', 'worst_current_displacement', 'worst_current_velocity',
                            'worst_t0_energy_state', 'worst_evolved_energy_state', 'worst_at_t0', 'median_gpu_ms', 'median_complete_ms', 'median_evolution_ms', 'physical_energy_drift', 'reduced_energy_drift', 'all_state_pass'):
@@ -224,6 +225,15 @@ def main():
                   + (f"{pct(pod['worst_energy_state'])} % at {ms(pod['median_gpu_ms'])} ms | " if pod else 'n/a | ')
                   + f"{pct(dst['worst_energy_state'])} % at {ms(dst['median_gpu_ms'])} ms | **{vd['all']}** |")
     ratios = [rows['head_q0']['median_gpu_ms'] / rows['linear_bank64']['median_gpu_ms'] for _, rows, _ in meshes]
+    devices = {n: (results_by_mesh[n]['provenance']['device_kind'][0], results_by_mesh[n]['provenance']['source_commit'][:8],
+                   results_by_mesh[n]['provenance']['job_id']) for n, _, _ in meshes}
+    if len({d for d, _, _ in devices.values()}) > 1 or len({c for _, c, _ in devices.values()}) > 1:
+        up += ['> **Each row is a separate job; the meshes are not mutually comparable on cost.** '
+               + '; '.join(f'{n}² ran on {d} at commit `{c}` (job {j})' for n, (d, c, j) in devices.items())
+               + '. Every ratio quoted in this report is formed **within** one job on one GPU, never across them. '
+                 'The 256² commit differs only by the retained-value gate tolerance of DESIGN §10 A4; the bank, head, '
+                 'arms, integrator, cohort and metrics are byte-identical across the three jobs (see each job\'s '
+                 '`PROVENANCE.json` and the frozen-math SHA256 assertions).', '']
     up += ['', 'The top rung of the correction ladder — the full learned bank evolved linearly, with no head — is at every '
            f'mesh both the most accurate rung (within the integrator tie band of DESIGN §10 A2) and {min(ratios):.0f}–{max(ratios):.0f}× '
            'cheaper than the cheapest head rung, so the accuracy-cost curve over correction rank $q$ is degenerate, as it is on '

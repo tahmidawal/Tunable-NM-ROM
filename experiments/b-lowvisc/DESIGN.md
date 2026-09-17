@@ -335,3 +335,40 @@ $\nu_{\rm hi}/\nu_{\rm lo}=10$ to $1.07\times10^{-15}$. Recorded in
 `checks/generator-parity.json`; the training job reruns the check on the cluster before its first
 training step and fails if it does not pass. b-seeds' copy is left untouched, so its own
 provenance hashes still hold.
+
+**A5 (2026-09-17, after the gate job `lvg01` returned and before stage 2 started) — the gate
+verdict, F4, and one audit check that fails without moving a number.** Recorded here so the
+pre-registration and the outcome sit in one file.
+
+* **G-a PASSES** at $12.092\times$ against a $2\times$ bar (POD-512 worst-all-times floor
+  $0.6090\,\% \to 7.3643\,\%$; worst-evolved $83.79\times$). The degradation is monotone in rank:
+  $1.09/1.16/1.77/2.29/4.05/12.09$ at $k=16/32/64/128/256/512$.
+* **G-b PASSES** at $3.292\times$ against a $1.5\times$ bar, and *every* one of the eight tuned
+  full-order settings costs more on the low-viscosity family ($1.140$–$3.292\times$), with Newton
+  totals rising on every setting. §2 recorded leg (b) as the weaker leg before the measurement;
+  it passed anyway, so the honest prior is recorded as having been too pessimistic.
+* **Therefore stage 2 is submitted** (`lvt01`, slurm 3804337). The recipe is unchanged from §5:
+  $K=16$, $R=512$, seed 0. The floors do **not** argue for raising $R$ — they argue that a linear
+  basis of any affordable rank is bad here, which is the hypothesis, not a reason to change a
+  second variable at once.
+* **F4 IS TRIGGERED.** The low-viscosity $L=256$ discretisation error against the 4096-interval
+  reference is $20.8206\,\%$ against the incumbent's $4.0265\,\%$, a ratio of $5.171\times$, above
+  F4's $3\times$ bar; it remains $13.95\,\%$ at $L=512$ and $8.79\,\%$ at $L=1024$. Per §6 this
+  does not stop the lane (the go/no-go is G-a) but the caveat is attached inline to every
+  low-viscosity number and the cell is not offered as a paper headline without a finer-mesh
+  confirmation. §3 predicted this consequence of first-order upwinding before the job ran.
+* **One audit check fails and is not retracted.** `pod_orthonormal_incumbent` is $7.21\times10^{-5}$
+  against a $10^{-8}$ bar. It is a consequence of leg (a) rather than a defect: the *incumbent*
+  snapshot Gram is numerically rank-deficient at 512 (eigenvalue ratio $3.41\times10^{-12}$), so the
+  Gram-eigenvector route loses orthogonality in the tail. Bounded in
+  `reports/self-audit-gate.md` row 15 and generated into the report: the deviation is
+  $4.06\times10^{-9}$ over the leading 256 modes, and recomputing the $k=512$ floor with the full
+  oblique projector moves it $7.87\times10^{-7}$ relative ($\le5.20\times10^{-11}$ at every other
+  rank). The low-viscosity basis, which carries the result, is at $1.05\times10^{-9}$.
+* **The written self-audit substituting for Codex** (A1) is at `reports/self-audit-gate.md`.
+
+**A6 (2026-09-17) — stage 3 is not yet pre-registerable beyond A3.** A3 fixed the panel's
+columns. Nothing in `lvg01` changes them. Stage 3 remains conditional on `lvt01` producing a
+checkpoint whose three-layer decomposition is worth panelling; if the low-viscosity bank floor,
+best-found and solved all degrade by at least the POD-512 factor, **F2 fires and the lane stops
+before the panel** with the negative as the deliverable.

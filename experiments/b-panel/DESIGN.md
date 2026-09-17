@@ -683,3 +683,48 @@ thing it should change relative to §3.3: run it on the **same GPU class as one 
 jobs** (A100-80G, matching `bpn301`) so that at least two meshes share hardware. Job count after
 this amendment: `bpn101`, `bpn201` (retracted), `bpn202` (failed), `bpn301`, `bpn203` — **five of the
 cap of eight**, three free.
+
+## A11 — 2026-09-17 ~18:30, before `bpn401`: the 512² panel, pre-registered
+
+**Approved by the coordinator after §A10.** `bpn401` runs the 512² panel on an **A100-80G** so that it
+shares hardware with `bpn301` (256²). Nothing about the science changes from `bpn301`/`bpn203`: the
+same subject set, both rule sets where rules exist, the same-job full-order Newton grid plus
+`dense_tight` and `fft_tight`, three timed repetitions, the §5 convergence rule, the §7 domination rule,
+uncapped fit states per §A7.
+
+**The question, pre-registered.** (i) Is the count of non-dominated *admissible* reduced subjects on
+(median GPU ms, worst evolved %) at 512² **0 or > 0**? 256² gave 0 (`bpn301`), 1024² gave 5 (`bpn203`);
+512² brackets the crossover. (ii) The same-job cheapest-admissible-reduced / cheapest-FOM cost ratio
+(and the same against the same-job `fft_tight`), to sit between 4.480× (256²) and 1.818× (1024²) or not.
+**The 512² and 256² ratios will be compared as ratios on shared hardware (A100-80G, both); 1024² stays on
+the H200 and enters only as a ratio.** No raw millisecond is compared across jobs. Anything else the
+job shows (which rungs certify on transfer, the eqtop-versus-eqcert ordering at the middle mesh) is
+reported as observed, not as a pre-registered claim.
+
+**What `config-512.json` declares** (`checks/config512-declare-a11.json`, produced by the driver's own
+`declare_subjects` on the CPU, no GPU work): **47 subjects** — 8 FOM, 31 `rom` (6 dense, 6 + 6
+transferred-EQ at 1e-6, 6 + 6 at 1e-3, the M = 256 fidelity arm), 6 POD ranks, the free bank, the fast
+kernel. The two rule sets resolve to `eqxfer` (qrg304's rules, the primary set) and `eqtopxfer`
+(b-eqtop's export as an extra set, added to the config for this attempt); both are 256²-grid rules and
+both are transferred by the §3.2/§A3 path with `fit_states = 64` uncapped. All 12 rule files are present
+under `inputs/rules/` and `inputs/rules-eqtop/` with SHA256 matching `PROVENANCE.json`. The
+`priority_override` is the coordinator's reduced set (as `bpn203`); the default order then puts the
+loose-tolerance EQ arms of both sets ahead of the fidelity arm, the free bank and the fast kernel under
+the OOM-drop rule. Unlike §3.3's original plan the free bank is kept (it was in `config-512.json` already
+and `bpn301` carried it at 47 subjects on the same GPU class); it is last but one in the build order and
+is dropped first if memory binds.
+
+**Memory arithmetic, recorded before the job.** 47 subjects on an 80 GB A100 held at 256² (`bpn301`, no
+drop). At 512² the bank is 1.07 GB and the resident test matrices (shared between each EQ arm and its
+dense twin per §A7) total ≈ 16 GB; the untimed reconstruction diagnostic runs before any subject is
+built (§A7). If the OOM rule fires, the drops are recorded and reported, per §3.1; a drop of the free
+bank or the fast kernel does not affect the pre-registered question. Every `eqtopxfer` row carries its
+source rule's construction status from `PROVENANCE.json`, and its *transferred* certification (held-out
+ρ at 512²) is what decides admissibility, exactly as at 1024².
+
+**Mechanics.** A100-80G (`--constraint=a100-80G`), `--mem 180G`, `gpu` partition, `--exclude=pax007`, one
+job in `b_panel_20260917/bpn401`, `squeue` before and after, not waited on. Expected wall time: between
+`bpn301`'s 30 min (47 subjects at 256²) and `bpn203`'s 94 min (29 subjects at 1024² with six transfers);
+twelve transfers and 47 subjects at 512² put the estimate at **1.5–2.5 h**; the allocation asks for 20 h.
+Job count after submission: **six of the cap of eight** (`bpn101`, `bpn201` retracted, `bpn202` failed,
+`bpn301`, `bpn203`, `bpn401`).

@@ -157,7 +157,7 @@
     "qrg304": "3768168",
     "spd01": "3745655"
   },
-  "purpose": "DESIGN.md A5: the middle mesh. b-speed measured the reduced query reaching parity with the cheapest equally-accurate Newton control only at 1024 intervals (3.45x slower at 256, 2.27x at 512, 0.98-1.01x at 1024); this job puts a full same-allocation panel at the middle mesh so the trend across 256/512/1024 is measured rather than interpolated from two endpoints.",
+  "purpose": "DESIGN.md A5: the middle mesh. b-speed measured the reduced query reaching parity with the cheapest equally-accurate Newton control only at 1024 intervals (3.45x slower at 256, 2.27x at 512, 0.98-1.01x at 1024); this job puts a full same-allocation panel at the middle mesh so the trend across 256/512/1024 is measured rather than interpolated from two endpoints. DESIGN A11 (after bpn301/bpn203): both rule sets transferred to 512 (eqxfer = qrg304's rules, eqtopxfer = b-eqtop's final export), uncapped fit states per A7, A100-80G so the 512 and 256 within-job ratios share hardware; 1024 stays H200 and ratio-only.",
   "eq_transfer": {
     "seed": 20260917,
     "fit_trajectories": [
@@ -191,5 +191,34 @@
     "q256_M1088_eqxfer_g1em06",
     "pod16_M64_dense",
     "pod128_M512_dense"
-  ]
+  ],
+  "extra_rule_sets": [
+    {
+      "name": "eqtop",
+      "mesh": 256,
+      "subdir": "rules-eqtop",
+      "rules": {
+        "0": {
+          "file": "rule_q0_m1024_qrg304_reachable.npz"
+        },
+        "16": {
+          "file": "rule_q16_m1024_qrg304_reachable.npz"
+        },
+        "32": {
+          "file": "rule_q32_m1024_qrg304_reachable.npz"
+        },
+        "64": {
+          "file": "rule_q64_m2048_bet201_std.npz"
+        },
+        "128": {
+          "file": "rule_q128_m2319_bet101_rhow64.npz"
+        },
+        "256": {
+          "file": "rule_q256_m2560_bet101_fs64.npz"
+        }
+      },
+      "note": "b-eqtop's FINAL exported rule set (certified-rules/, worktree 2026-09-17-b-eqtop), one rule per rung: q = 0, 16, 32 are qrg304's own m = 1024 files (confirmed constructions, 3/3, 3/3, 2/2 draws certify); q = 64 is bet201's m = 2048 std rule (confirmed 2/2); q = 128 and 256 are SINGLE-DRAW rules (m = 2319 rhow64, m = 2560 fs64) of constructions whose m = 2048 re-draws were marginal -- 'certified in one draw', not 'certified construction'. The construction status travels with every row."
+    }
+  ],
+  "priority_override_note": "DESIGN A11: the coordinator's reduced set first (as bpn203), then the driver's default order (dense, primary-set EQ at 1e-6, eqtop EQ at 1e-6, POD, both sets' loose 1e-3 EQ arms, fidelity arm, free bank, fast kernel); under the OOM rule the loose-tolerance EQ arms drop before anything not already duplicated in the table"
 }

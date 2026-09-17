@@ -1,0 +1,41 @@
+{
+  "namespace": "/cluster/tufts/paralab/tawal01/b_seeds_20260917",
+  "commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+  "submitted_utc": "2026-09-17T13:30Z (09:30 EDT)",
+  "gpu_requested": "a100",
+  "mem": "180G",
+  "time_limit": "16:00:00",
+  "squeue_before_in_namespace": 0,
+  "squeue_after_in_namespace": 3,
+  "jobs": [
+    {
+      "attempt": "s1",
+      "job_id": 3783776,
+      "seed": 1,
+      "work_dir": "/cluster/tufts/paralab/tawal01/b_seeds_20260917/s1",
+      "stages": "A bank (300000 steps) -> B extract (131072 states) -> C head refit (200000 steps) -> D seed ladder -> E incumbent ladder -> F eqcert (timeout 4h, non-fatal)",
+      "manifest_sha256": "763256a3a14ea2c62ae7418f9ef2f5dd8f861ce8d03fa1d436ce00a4a24f814a",
+      "sbatch_sha256": "2a3d2e8f8a9ea2943e898c222f90589936391c5e9c9df0b451bb20db576187b8"
+    },
+    {
+      "attempt": "s2",
+      "job_id": 3783777,
+      "seed": 2,
+      "work_dir": "/cluster/tufts/paralab/tawal01/b_seeds_20260917/s2",
+      "stages": "A bank (300000 steps) -> B extract (131072 states) -> C head refit (200000 steps) -> D seed ladder -> E incumbent ladder -> F eqcert (timeout 4h, non-fatal)",
+      "manifest_sha256": "6eb25c485ff17840568865524fae15d4b2516e63e5071f484e6c2291142dfc87",
+      "sbatch_sha256": "12ba31087c84188cb973a1108fcebe5a920b2e6901c83f54e5f22cffd3aa5f95"
+    },
+    {
+      "attempt": "s3",
+      "job_id": 3783778,
+      "seed": 3,
+      "work_dir": "/cluster/tufts/paralab/tawal01/b_seeds_20260917/s3",
+      "stages": "A bank (300000 steps) -> B extract (131072 states) -> C head refit (200000 steps) -> D seed ladder -> E incumbent ladder -> F eqcert (timeout 4h, non-fatal)",
+      "manifest_sha256": "baf0f6c30f0beb671382120c78f104a396d1bd9181878f5a1a85197ea5448210",
+      "sbatch_sha256": "2c994bb506c5eb747c7e3c6062e8b4435ee238815e8f7459a76ff07c39f8d8d7"
+    }
+  ],
+  "sealed_cohort_staged": false,
+  "sealed_note": "no config-sealed-*.json is in any seed attempt; each PROVENANCE.json lists every staged file"
+}

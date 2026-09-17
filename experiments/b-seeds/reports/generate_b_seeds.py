@@ -439,8 +439,54 @@ def main():
                   f'{f(ce.get("median_gpu_ms"), 1) if rr["population"] == "reachable" else f(st.get("median_gpu_ms"), 1)} |')
         w('')
 
+    # ------------------------------------------------- integrity of the bars ----
+    n_int = 8 if sealed else 7
+    w(f'## {n_int}. Integrity notes on the bars this report is graded against\n')
+    w('**The incumbent fidelity bar was weakened before the first job, and this is what it bought.** '
+      'The lane pre-registered that the incumbent, re-run in every job, must reproduce the audited '
+      'qtd02 ladder (job 3757505) to $10^{-9}$ relative. That bar was amended to $10^{-3}$ before any '
+      'job ran (`DESIGN.md` A1.1), because qtd02 **itself** met only the $10^{-3}$ second tier against '
+      'its own comparator `cclad01` on three arms — cross-job last-bit drift between GPU models is '
+      'already documented for this exact pipeline. The $10^{-9}$ tier is still measured and reported '
+      'below as a probe, so the weakening is visible rather than implicit.\n')
+    fid = {}
+    for name, x in sorted(audits.items()):
+        d = (x['checks'].get('incumbent_reproduces_qtd02') or {}).get('detail') or {}
+        if d:
+            fid[name] = d
+    if fid:
+        w('| job block | arm | worst relative difference vs qtd02 | meets $10^{-3}$ (the gate) | meets $10^{-9}$ (the probe) |')
+        w('|---|---|---|---|---|')
+        for name, d in fid.items():
+            for arm, v in sorted(d.items()):
+                wr = v.get('worst_relative_difference')
+                w(f'| `{name}` | `{arm}` | {wr:.2e} | {f(v.get("passed"))} | {f(v.get("passes_probe"))} |'
+                  if wr is not None else f'| `{name}` | `{arm}` | — | {f(v.get("passed"))} | {f(v.get("passes_probe"))} |')
+        w('')
+        n_probe = sum(1 for d in fid.values() for v in d.values() if v.get('passes_probe'))
+        n_arm = sum(len(d) for d in fid.values())
+        w(f'{n_probe} of {n_arm} incumbent arms also meet the original $10^{{-9}}$ tier; the rest sit between '
+          f'$10^{{-9}}$ and $10^{{-3}}$, which is the drift the amendment anticipated.\n')
+    else:
+        w('*No incumbent block with a qtd02 comparison is present in the audits supplied to this '
+          'generator, so the fidelity table is empty.*\n')
+    w('**The independent pre-job audit was not Codex.** The protocol asks for an audit by a different '
+      'model family before the first job. The Codex quota was exhausted until 2026-09-19 11:33, so the '
+      'substitute was an independent Claude agent with no access to this lane\'s conversation '
+      '(`reports/independent-design-audit-claude.md`) — a different context, **not** a different model '
+      'family. It found the fidelity bar above, the cohort-difficulty problem behind C2n, and eight '
+      'other issues, all recorded in `DESIGN.md` A1. Per the coordinator\'s instruction (A3), this '
+      'report is published without waiting; the Codex audit of the finished report runs when the quota '
+      'returns and is appended as a dated addendum, retracting anything it overturns.\n')
+    if sealed:
+        w('**The sealed cohort was opened once.** Every development job records '
+          '`final_cohort_unopened: true` and stages no sealed configuration; the final job records '
+          '`false`. The audit gates that the flag matches the cohort, that the six cases equal the '
+          'draw declared in `checks/sealed-cohort.json` to within 1 ulp, and that they are disjoint '
+          'from every training, direction, empirical-quadrature and development draw.\n')
+
     # ------------------------------------------------------------ gates ----
-    w(f'## {8 if sealed else 7}. Gates\n')
+    w(f'## {n_int + 1}. Gates\n')
     for name, x in sorted(audits.items()):
         failed = x['failed']
         w(f'- `{name}` (job {x["job_id"]}, {x["gpu"]}): {len(x["checks"]) - len(failed)} of {len(x["checks"])} gates passed'

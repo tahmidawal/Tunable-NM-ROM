@@ -355,3 +355,20 @@ No number moves: 1 ulp in $\nu$ perturbs a solution by $O(10^{-16})$ relative.
 Also in A2, found by dry-running the report generator on that smoke audit: the verdict table's TR
 row showed the falsification flag `not F3` in its "holds" column, so **one** seed failing TR would
 have been printed as "yes". TR now reports "*n* of *m* seeds", and F3 is its own row.
+
+**A3 (2026-09-17, while the three seed jobs were running, before any of their numbers existed).**
+Coordinator instruction on the missing Codex audit, recorded verbatim in effect: **do not hold the
+report**. The lane publishes its report when the numbers land, with the substituted written audit
+labelled as such and the reason recorded; when the Codex quota returns (2026-09-19 11:33) the Codex
+audit of the *finished report* is run and appended as a **dated addendum**, retracting anything it
+overturns. The reasoning given, and adopted here: the paper deadline is 2026-09-25 and several other
+decisions wait on this seed table, so two days of delay costs more than deferring the independent
+check by the same two days; an addendum that reports a material finding is worth more than a report
+that arrives late and clean.
+
+Also in A3, at the coordinator's instruction: the **weakened fidelity bar of A1.1 is stated in the
+report body**, not only in this amendment, with the measured $10^{-9}$ probe value beside the
+$10^{-3}$ gate result for every incumbent arm, so a reader meets the weakening where the numbers are.
+The report's §"Integrity notes on the bars this report is graded against" is generated from the audit
+JSONs and carries it, together with the Codex substitution and the sealed-cohort opening record. The
+paper's integrity section and this report must agree on that point.

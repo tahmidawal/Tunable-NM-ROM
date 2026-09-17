@@ -533,7 +533,7 @@ def main():
             del su, sv, u, v
     # --- retained-value gates (same A100 class as the archived jobs)
     if args.gates is not None:
-        gates = json.loads(args.gates.read_text()); checks = []
+        gates = json.loads(args.gates.read_text())['gates']; checks = []
         for g in gates:
             if g['intervals'] != n:
                 continue

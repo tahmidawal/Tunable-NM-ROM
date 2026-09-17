@@ -331,3 +331,55 @@ Findings rejected: finding 25 (four repetitions) — the protocol fixes three ti
 order alternation 2:1 is disclosed and all repetitions are retained. Finding 30
 (record-not-abort nondeterminism) — a nondeterministic timed output invalidates the hash
 deduplication and stays a hard stop.
+
+### A2 (2026-09-17, after the local smoke, before any job) — an integrator tie band for D1, and what the smoke showed
+
+The G1 smoke (`checks/smoke.log`, `checks/smoke-out/result.json`; 64², `opened_0`, one call
+per arm, POD from every 8th training case) reproduced all nine retained accel12 / accel07
+error values to at most 8.8e-14 relative on the GB10 (gate 1e-9). Its arm table, printed
+from the smoke JSON (GB10 single-call timings are not comparable to the A100 job timings):
+
+| arm | GPU ms (GB10, one call) | worst energy-state % | guard fallbacks | reduced-energy drift |
+|---|---:|---:|---:|---:|
+| `head_q0` | 349.536 | 4.3175 | 0 |  |
+| `trained_nested40` | 343.124 | 3.8783 | 0 |  |
+| `nested_q8` | 745.433 | 3.1594 | 0 |  |
+| `nested_q32` | 14904.444 | 2.8188 | 961 |  |
+| `linear_bank64` | 0.850 | 2.8240 |  | 1.1324274851176597e-14 |
+| `linear_bank64_cn` | 7.821 | 5.0308 |  | 2.1760371282653068e-14 |
+| `linear_bank64_rk4` | 4.483 | 2.8174 |  | 2.1608847809662102e-05 |
+| `pod_k16` | 3.759 | 32.4052 |  | 2.220446049250313e-15 |
+| `pod_k64` | 0.953 | 1.3888 |  | 6.217248937900877e-15 |
+| `dst` | 3.658 | 0.0000 |  |  |
+| `rk4_fom` | 7.699 | 0.0298 |  |  |
+| `cg_1e-06` | 122.315 | 0.3629 |  |  |
+| `cgdt_0.005_tol_0.01` | 54.498 | 1.2127 |  |  |
+
+Bank $\lambda_{\max}(K) = 1288.3$ at 64², so
+$\omega_{\max}\Delta t = 0.413$ at $c=1.15$, inside the RK4
+bound. Consistency: `nested_q32` vs `linear_bank64_rk4` 2.1e-05,
+`linear_bank64_rk4` vs `linear_bank64` 8.0e-05,
+`linear_bank64_cn` vs `linear_bank64` 3.1e-02,
+`nested_q8` vs `trained_nested40` 1.5e-02.
+
+Three things this changes, all declared before J1:
+
+1. **D1 gets an integrator tie band.** On this case `nested_q32` reads 2.8188 % against
+   `linear_bank64` 2.8240 %, and `linear_bank64_rk4` reads 2.8174 %: the
+   $q=32$ rung *is* the full bank stepped by RK4 (consistency 2e-5), and RK4's slight
+   dissipation happens to lower the metric by 0.005 pp relative to the exact propagator. A
+   strict D1 would call that a head win. D1 is therefore evaluated with the tie band
+   $\delta = |E(\texttt{linear\_bank64\_rk4}) - E(\texttt{linear\_bank64})|$ measured on the same mesh
+   and cases: a head rung beats the top rung only if its worst energy-state error is below
+   the top rung's by more than $\delta$. The strict comparison is still printed beside it.
+2. **The Crank–Nicolson variant is dispersive at $\Delta t = 0.01$** (5.0308 % with
+   reduced-energy drift 2e-14): CN's phase error per step is $(\omega\Delta t)^3/12$, RK4's
+   $(\omega\Delta t)^5/120$. D4's CN clause is kept as the energy certificate it is; CN's
+   accuracy at this step is reported as a finding, not used as a top rung.
+3. **The fallback cost is real**: `nested_q32` took the QR + SVD fallback on all 961 stage
+   evaluations (14.9 s); `nested_q8` none. Expected per A1 item 2; reported as measured.
+
+Also observed on this one case and left for the jobs: `pod_k64` (1.3888 %) is more
+accurate than the learned bank at the same rank, and the $q=32$ best-found error equals the
+bank floor exactly, as the full-rank tangent predicts. H-POD's "comparable" expectation may
+be wrong; it is not verdict-bearing.

@@ -1,0 +1,46 @@
+{
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "neuraloperator": "2.0.0",
+    "cuda": "13.0",
+    "gpu": "NVIDIA GB10",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "checkpoint_sha256": "208d9002cd8e856760407bd21b1355d017bf52c744fcfa7ea4c249f933852a88",
+  "parent_job_id": "3710846",
+  "parent_audit_sha256": "61a97201ab0a8dff1ed4a1582edb4eb9dccf98a06cbd66e800c9d24c85734292",
+  "archive_sha256_expected": "4c4e375230952dd50a02efafbd0cb29be1f6805308dfc3df2a216a65376bc3bf",
+  "cases": 32,
+  "numpy_recomputation_max_abs_gap": 0.0,
+  "driver_max_abs_gap": 1.5785983631388945e-16,
+  "driver_max_relative_gap": 1.345797615136443e-14,
+  "worst_case_max": {
+    "this_lane": 0.06382470543829454,
+    "audited": 0.06382470543829466,
+    "gap": 1.249000902703301e-16
+  },
+  "median_case_max": {
+    "this_lane": 0.018054236126991093,
+    "audited": 0.01805423612699117,
+    "gap": 7.632783294297951e-17
+  },
+  "tolerance": 1e-09,
+  "passed": true,
+  "sources": {
+    "dataset.py": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+    "model.py": "08a5b5ed65ce4ca5e6db8a15d26cfecb803f2470742baa9416f3d73dee25c397",
+    "worker_second.py": "fbb1361830eaf88396696ac614773fb0ac5d56d5188aa7d31eb969d570d72a0f",
+    "check_burgers_error_definition.py": "0c92e60b92785945d64631f8a9247ee80ba599f9e35c604ea697415dc17289c5",
+    "smoke_second.py": "9814463e328791195d0dbf817f4b71ace7a194d89076707eb348759742d4995b",
+    "families.py": "c1cdb7531e9be45f718804a20a525c53b8b14f6411519fd34594ed48fee01216",
+    "check_fno_parity.py": "0d6d8b70f64eddf1c2910de9fffd3ae2fe45c9d799a0e11507af5e2d2427dcd6",
+    "train.py": "acaad1e727cdb966213c3e8284e4cd314b77dadfc457b53b79b9defd8a7e6e5c",
+    "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+    "evaluate_cohort.py": "a088ba646caee32a45cd5df49b1f421ee47f5bf222a8a01be2837612803b38a9",
+    "training_smoke_second.py": "0857a7447312cb9d7aa010d53fd77777fbb259986c341b93556971e48108a080",
+    "prepare_diagnosis_cohort.py": "3c6529e355c27ebcd8c8c5affc339c8286b0393703e0d75fc01f6df4c60f0504",
+    "timing.py": "f736bc8dc73a7a28e7a02938f088f5f24851b60e50b2a0cd9f496a278f7a7ecc"
+  },
+  "note": "Different GPU and CUDA build from the parent job; agreement is limited by f64 FFT/matmul rounding, which is far below the 1e-9 gate."
+}

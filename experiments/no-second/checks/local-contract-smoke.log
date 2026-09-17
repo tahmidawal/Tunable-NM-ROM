@@ -1,0 +1,164 @@
+[jaxrun-slot] slot 3 acquired at 00:56:01
+jax_backend=gpu
+torch_backend=cuda NVIDIA GB10
+{
+  "passed": true,
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "neuraloperator": "2.0.0",
+    "cuda": "13.0",
+    "gpu": "NVIDIA GB10",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128",
+    "jax": "0.10.1"
+  },
+  "cases": [
+    {
+      "family": "unet",
+      "dtype": "float32",
+      "pde": "burgers",
+      "shape": [
+        2,
+        6,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": true,
+      "intermediates_f64_audited": false,
+      "real_parameters": 486661,
+      "loss": 0.33475524568815584
+    },
+    {
+      "family": "unet",
+      "dtype": "float32",
+      "pde": "poisson",
+      "shape": [
+        2,
+        1,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": false,
+      "intermediates_f64_audited": false,
+      "real_parameters": 486553,
+      "loss": 0.13537597476408472
+    },
+    {
+      "family": "unet",
+      "dtype": "float64",
+      "pde": "burgers",
+      "shape": [
+        2,
+        6,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": true,
+      "intermediates_f64_audited": true,
+      "real_parameters": 486661,
+      "loss": 0.3347552400656748
+    },
+    {
+      "family": "unet",
+      "dtype": "float64",
+      "pde": "poisson",
+      "shape": [
+        2,
+        1,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": false,
+      "intermediates_f64_audited": true,
+      "real_parameters": 486553,
+      "loss": 0.13537597126935783
+    },
+    {
+      "family": "transolver",
+      "dtype": "float32",
+      "pde": "burgers",
+      "shape": [
+        2,
+        6,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": true,
+      "intermediates_f64_audited": false,
+      "real_parameters": 63976,
+      "loss": 0.07632819646628637
+    },
+    {
+      "family": "transolver",
+      "dtype": "float32",
+      "pde": "poisson",
+      "shape": [
+        2,
+        1,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": false,
+      "intermediates_f64_audited": false,
+      "real_parameters": 58792,
+      "loss": 0.08033889209669211
+    },
+    {
+      "family": "transolver",
+      "dtype": "float64",
+      "pde": "burgers",
+      "shape": [
+        2,
+        6,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": true,
+      "intermediates_f64_audited": true,
+      "real_parameters": 63976,
+      "loss": 0.0763282009936817
+    },
+    {
+      "family": "transolver",
+      "dtype": "float64",
+      "pde": "poisson",
+      "shape": [
+        2,
+        1,
+        1,
+        65,
+        65
+      ],
+      "checkpoint_bitwise_parity": true,
+      "boundary_exact": true,
+      "supplied_state_returned_exactly": false,
+      "intermediates_f64_audited": true,
+      "real_parameters": 58792,
+      "loss": 0.08033889175443741
+    }
+  ],
+  "role": "implementation smoke, not scientific accuracy or timing evidence"
+}
+
+[jaxrun-slot] slot 3 released rc=0

@@ -610,3 +610,76 @@ verified remotely. `squeue -u tawal01` immediately before this submission showed
 after, exactly two (`bpn_bpn301` 3789570, `bpn_bpn203` 3789572), each the only job in its own
 attempt directory. Not waited on. This is the resubmission's only attempt, per the
 coordinator's "do not resubmit more than once."
+
+## A10 — 2026-09-17 ~18:20, after `bpn301` and `bpn203` both landed: what the two jobs say,
+the §A5.2 prediction scored, and why `bpn401` (512²) is now worth its job
+
+Both jobs completed with exit 0 (`sacct`: 3789570 `COMPLETED 0:0` 29m58s on `pax049`; 3789572
+`COMPLETED 0:0` 1h33m43s on `pax010`), both printed `jax_backend=gpu x64=True precision=highest`,
+both ended `ALL-DONE`, neither dropped a subject. Each was checksum-collected (`OUTPUTS.sha256`
+and `MANIFEST.sha256` verified remotely before the archive was made and again locally after it),
+independently NumPy-audited (`audit_panel.py`, which imports neither the driver nor JAX), re-derived
+a second time by `checks/recheck_headline.py` (a different code path to the same headline
+quantities: worst relative difference against the audit **0.0** for both jobs), archived as bounded
+Git chunks whose concatenation reproduces the recorded whole-archive SHA256, and only then was its
+exact remote attempt directory deleted. `ls` of the namespace is now empty.
+
+**`bpn301` (256²).** 47 timed subjects, 43 gates, none failed. Its table replaces `bpn101`'s
+wholesale per §A5.1; `bpn101` is not withdrawn and stays in `artifacts/bpn101/`. The pre-registered
+verdict is unchanged: **0 of the 39 admissible reduced subjects are non-dominated** on (median GPU
+ms, worst evolved %) — the admissible frontier is the FNO plus full-order Newton. What the second
+rule set changes is inside the reduced set: the `eqtop` ladder is **monotone on evolved times at
+both tolerances** where the `eqcert` ladder is not, and the break is exactly at the rungs b-eqtop
+replaced. At q = 256 the `eqtop` rule halves the evolved error (1.0361 → 0.5129 % at gtol 1e-6) for
+7 % more time, and reaches its dense twin's all-times error (0.9053 %) at 5.3× less time; at q = 64
+it is 1.2275 → 1.0840 % for 24 % more time. At q = 0, 16, 32 the two sets are the same files and the
+in-job `matched_rule_files_bitwise` gate confirms they produced bitwise identical fields and
+iteration counts.
+
+**Every `eqtop` row and caption carries its construction status**, which is the point of §A8: at
+q ≤ 64 the constructions are confirmed (3/3, 3/3, 2/2, 2/2); at q = 128 and 256 the exported rules
+are **single-draw** (`certified in one draw`) above an m where the same construction was measured
+marginal. The q = 256 improvement above therefore rests on one draw, and the report says
+"single-draw at q ≥ 64" rather than "certified" wherever those rungs appear.
+
+**`bpn203` (1024²).** 29 timed subjects, none dropped, 29 gates passed and 2 not applicable
+(`matched_rule_files_bitwise`: one rule set at this mesh; `cross_job_fidelity`: no comparator at
+this mesh). Here the answer flips: **5 of the 20 admissible reduced subjects are non-dominated** on
+(median GPU ms, worst evolved %) — `q0`, `q16`, `q32` transferred-EQ arms sit on the frontier
+beside `nt1e-2_dt01`, `nt1e-4_dt005` and `fft_tight`. On the all-times metric no reduced arm is
+non-dominated (the t = 0 compression term dominates it). The within-job reduced/full-order cost
+ratios move the way a crossover should: the cheapest admissible reduced query is 4.480× the cheapest
+same-job full-order setting at 256² and 1.818× at 1024², and 0.446× → 0.153× the same-job converged
+`fft_tight`. Those are ratios formed inside one allocation each; the raw milliseconds of the two
+jobs are never compared (A100 against H200).
+
+**§A5.2's prediction, scored.** The prediction named the top two transferred rungs (q = 128, 256) and
+said they would come back uncertified because the then-current `clip(8192/M, 8, 64)` convention would
+fit them on 14 and 8 states. Its **outcome held**: under `bpn203` neither rung is primary-certified
+(q = 128 ρ_max 0.1702, secondary; q = 256 ρ_max 0.3239, uncertified; q = 64 also missed at 0.1275).
+Its **mechanism did not survive**, and this is the finding to carry: §A7 removed the cap, so every
+rung in `bpn203` was fitted on **64 states, uncapped**, and the same rungs still miss the 0.116 bar.
+Fit-state starvation is therefore not a sufficient explanation for the transferred top rungs at
+1024². The capped values (q = 128 ρ_max 1.0295, q = 256 0.4144, from the retracted `bpn201`/`bpn202`)
+are context only — the capped and uncapped refits are not a controlled A/B, so the comparison is
+reported with that caveat rather than as a clean before/after. What is left as the likely cause is
+the transfer itself: the mapped support keeps only 918–1713 of the 1024/2048 offered nodes at
+positive weight, and the 1024² reachable population differs from the one the rule was built on.
+The uncertified arms are timed and reported and excluded from the admissible frontier, as
+pre-registered.
+
+**Codex.** Still unavailable (quota until 2026-09-19 11:33; coordinator notice). The substitute
+required by that notice is `reports/self-audit-2026-09-17-bpn301-bpn203.md`, generated by
+`checks/self_audit.py` from the audit JSONs — one row per claim with the JSON field it rests on and
+the check run against it, no number typed by hand.
+
+**Is `bpn401` (512²) still worth its job? Yes, and more than before.** Before these two jobs the 512²
+run was "a third point on a trend"; now it is the only measurement that can locate the crossover.
+256² puts zero reduced subjects on the frontier and 1024² puts five, so the mesh at which the
+reduced set becomes non-dominated lies between them and is currently unbounded. 512² would also
+separate two explanations of the 1024² frontier that this panel cannot presently tell apart: a
+genuine cost crossover, versus the H200's different balance of full-order and reduced work. The one
+thing it should change relative to §3.3: run it on the **same GPU class as one of the two existing
+jobs** (A100-80G, matching `bpn301`) so that at least two meshes share hardware. Job count after
+this amendment: `bpn101`, `bpn201` (retracted), `bpn202` (failed), `bpn301`, `bpn203` — **five of the
+cap of eight**, three free.

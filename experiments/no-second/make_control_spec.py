@@ -36,16 +36,24 @@ def main(attempts):
     audit, prefix, name, config, best, score = selected(attempts[0])
     assert audit['spec']['family'] == 'unet'
     notes['unet'] = dict(selected_arm=best, selected_capacity=name, validation_mean_case_max=score, source_job=audit['job_id'])
+    # Each control differs from its twin in EXACTLY one variable. The twin is the screen arm
+    # built from the same config (lr 1e-3, float32, seed 20260914), not the lower-lr `refine`
+    # run, so `dtype` / `seed` is the only thing that moves.
     arms.append(dict(name=f'{name}-f64', config=config, override=dict(dtype='float64'), seconds=PER_ARM,
-                     role='precision control: selected U-Net capacity, network in float64, seed 20260914'))
+                     twin=f'{prefix}-{name}',
+                     role=f'precision control: the twin of `{prefix}-{name}` with the network in float64; '
+                          'dtype is the only difference'))
     arms.append(dict(name=f'{name}-seed2', config=config, override=dict(seed=20260915), seconds=PER_ARM,
-                     role='seed control: selected U-Net capacity, float32, seed 20260915'))
+                     twin=f'{prefix}-{name}',
+                     role=f'seed control: the twin of `{prefix}-{name}` at seed 20260915; seed is the only difference'))
     if len(attempts) > 1:
         t_audit, t_prefix, t_name, t_config, t_best, t_score = selected(attempts[1])
         assert t_audit['spec']['family'] == 'transolver'
         notes['transolver'] = dict(selected_arm=t_best, selected_capacity=t_name, validation_mean_case_max=t_score, source_job=t_audit['job_id'])
         arms.append(dict(name=f'tsol-{t_name}-f64', config=t_config, override=dict(dtype='float64'), seconds=PER_ARM,
-                         role='precision control: selected Transolver capacity, network in float64, seed 20260914'))
+                         twin=f'{t_prefix}-{t_name}',
+                         role=f'precision control: the twin of `{t_prefix}-{t_name}` with the network in float64; '
+                              'dtype is the only difference'))
     n = len(arms)
     # `family` only selects the in-job training smoke; each arm's config carries its own family.
     spec = dict(family='unet', prefix='ctrl', pde='burgers', job_name='ctol_nos_ctrl01',

@@ -353,6 +353,101 @@ def controls_section(control_attempts, screen_attempts):
             + '\n'.join(rows) + spread)
 
 
+def resolution_section():
+    """DESIGN §A5: the operator's own inference-time knob. Reads runs/*/audit.json written by
+    audit_resolution.py (it carries `labels`), never a driver output."""
+    audits = []
+    for path in sorted(LANE.glob('runs/*/audit.json')):
+        a = json.loads(path.read_text())
+        if a.get('labels') and a.get('top_rung_gate'):
+            audits.append((a, path))
+    if not audits:
+        return ''
+    out = []
+    for a, path in audits:
+        jobs = f"`{a['job_id']}` ({a['attempt']}, {a['gpu']}, commit `{a['source_commit'][:8]}`)"
+        gate = '; '.join(f"`{k}` {v['gap_evolved']:.2e}" for k, v in a['top_rung_gate'].items())
+        rows = ['| Operator | Rung (intervals) | Worst evolved (%) | Worst all times (%) | $t=0$ term (%) | '
+                'Interp. floor, worst evolved (%) | Error / floor | Median device query (ms) | Same-job speedup vs its own 256 |',
+                '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+        for entry in a['checkpoints']:
+            name = entry['name']
+            lab = a['labels'][name]
+            for rung in a['rungs']:
+                m = a['models'][f'{name}@{rung}|validation']
+                t = a['models'][f'{name}@{rung}|timing']
+                fl = a['interpolation_floor'][f'validation@{rung}']['worst_over_evolved_times']['maximum']
+                ratio = m['worst_over_evolved_times']['maximum'] / fl if fl > 0 else float('inf')
+                sp = (lab['base_median_ms'] / t['device_query_pooled_median_ms']) if t['device_query_pooled_median_ms'] else float('inf')
+                rows.append(f"| `{name}` | {rung} | {pct(m['worst_over_evolved_times']['maximum'])} | "
+                            f"{pct(m['worst_over_all_times']['maximum'])} | {pct(m['initial_time_term']['maximum'])} | "
+                            f"{pct(fl)} | {ratio:.2f} | {ms(t['device_query_pooled_median_ms'])} | "
+                            f"{'1.00 (reference)' if rung == 256 else f'{sp:.2f}'} |")
+        verdicts = []
+        for entry in a['checkpoints']:
+            name = entry['name']
+            lab = a['labels'][name]
+            if lab['label'] == 'R-USABLE':
+                best = max(lab['usable_rungs'])
+                r = lab['rungs'][str(best)] if str(best) in lab['rungs'] else lab['rungs'][best]
+                verdicts.append(f"- `{name}`: **R-USABLE** \u2014 rung {best} reaches {r['same_job_speedup']:.2f}\u00d7 its own "
+                                f"256 speed at {r['error_ratio']:.2f}\u00d7 its own 256 error, meeting the pre-registered "
+                                f"\u22651.5\u00d7 / \u22642\u00d7 bars.")
+            else:
+                first = lab['first_rung_below']
+                r = lab['rungs'][str(first)] if str(first) in lab['rungs'] else lab['rungs'][first]
+                why = []
+                if not r['meets_error_gate']:
+                    why.append(f"error rises to {r['error_ratio']:.2f}\u00d7 its own 256 value (bar: \u22642\u00d7)")
+                if not r['meets_speed_gate']:
+                    why.append(f"speedup is only {r['same_job_speedup']:.2f}\u00d7 (bar: \u22651.5\u00d7)")
+                verdicts.append(f"- `{name}`: **R-DEGENERATE** \u2014 already at rung {first}, " + ' and '.join(why) + '.')
+        usable_any = any(v['label'] == 'R-USABLE' for v in a['labels'].values())
+        consequence = (
+            "**At least one operator exposes a usable inference-time accuracy\u2013cost family, so the claim that "
+            "\u201ca trained operator gives one accuracy\u2013cost point\u201d is false as stated and must be withdrawn.** "
+            "What survives is narrower and should be claimed as such: the mechanism by which the family is produced, "
+            "and the structural condition under which it holds."
+            if usable_any else
+            "**No operator reaches the pre-registered bar**: on this ladder the resolution knob does not buy a usable "
+            "accuracy\u2013cost family for these checkpoints. That supports the \u201cone point per model\u201d framing, "
+            "and it is evidence from three families on one mesh ladder, one PDE and one seed \u2014 not a theorem about "
+            "neural operators.")
+        out.append(f"""
+
+## The operator's own knob: evaluation resolution
+
+Pre-registered as DESIGN \u00a7A5 before the job ran. Each **frozen, validation-selected**
+checkpoint is evaluated at 256, 128, 64 and 32 intervals on the same 32 validation cases, graded
+exactly as the Burgers lane grades its own coarse-mesh FOM arms: restrict the supplied field by
+stride, run the operator on that grid, prolong every output time back to the 256-interval
+evaluation grid with the same aligned bilinear map (`engines.output_field`, matched to
+{a['prolongation_check']['max_abs_difference']:.1e}), and score against the same reference with the
+same fixed-initial metric. No training happens in this job. Job {jobs}.
+
+**Top-rung gate.** At rung 256 each checkpoint reproduces its already-published validation number
+to {gate} \u2014 the ladder's top rung recovers this lane's and the FNO lane's own results, or the
+job would be void.
+
+Three error columns are kept separate, per LANE-PROTOCOL rule 9. At a coarse rung the supplied
+state is no longer returned exactly: prolonging the restricted initial field is lossy, and that
+loss is a real cost of this knob, so the $t=0$ term is shown on its own rather than folded in.
+The **interpolation floor** is the error a *perfect* operator would incur at that rung \u2014 the
+reference itself restricted and prolonged back \u2014 so "error / floor" separates the grid's limit
+from the model breaking off-resolution.
+
+{chr(10).join(rows)}
+
+Speedups in the last column are **same-job, same-GPU, and only ever within one model's own curve**;
+no ratio is formed against another job, another allocation, the ROM or the FOM.
+
+{chr(10).join(verdicts)}
+
+{consequence}
+""")
+    return ''.join(out)
+
+
 def build(attempts, fno, launch, diagnosis, control_attempts=()):
     jobs = ', '.join(f"`{a['audit']['job_id']}` ({a['audit']['attempt']}, {a['audit']['gpu']}, commit `{a['audit']['source_commit'][:8]}`)" for a in attempts)
     # Same selection rule as this lane's arms: argmin of validation mean case-max over every
@@ -539,6 +634,11 @@ job**, including the FNO's; the `b-panel` lane owns the same-job panel.
 - **ROM / FOM:** the project's reduced-order model and the conventional full-grid solver; `same_nt1e-2_dt005` is the efficient FOM arm (Newton tolerance $10^{{-2}}$, step 0.005).
 - **V1:** the pre-registered competitiveness criterion — within 1.5× of the FNO's validation worst and median.
 - **Burn-in / pooled median / host transfer:** timing-protocol terms from the parent lane, reproduced unchanged.
+- **Rung:** one grid resolution on the evaluation ladder, in intervals per axis (257² nodes at 256 intervals).
+- **Worst evolved / worst all times / $t=0$ term:** the error maximised over the five evolved output times only; over all six; and at the supplied time alone. They differ at coarse rungs because prolonging a restricted initial field is lossy.
+- **Interpolation floor:** the error a perfect operator would still incur at that rung, obtained by restricting the reference itself to the rung and prolonging it back. **Error / floor** is how much worse than that floor a model actually is.
+- **Same-job speedup:** a model's median device query at 256 divided by its median at that rung, both measured in the same job on the same GPU. Never a cross-job ratio.
+- **R-USABLE / R-DEGENERATE:** the pre-registered labels — usable if some rung is ≥1.5× faster than the model's own 256 evaluation while staying within 2× its own 256 error; degenerate if the first rung below 256 already fails either half.
 - **Discrete / physical candidate (Poisson):** error against the declared finite-difference training target, and against the finer evaluation-only reference solution; both are whole-field discrepancy over the field's norm.
 """
     return text
@@ -560,7 +660,8 @@ def main():
     rows += rows_for(control_attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS), references=False)
     text = build(attempts, fno, launch, diagnosis, control_attempts)
     glossary = text.index('## Glossary')
-    text = text[:glossary] + poisson_section(poisson, fno_p).lstrip('\n') + ('\n' if poisson else '') + text[glossary:]
+    extra = poisson_section(poisson, fno_p).lstrip('\n') + ('\n' if poisson else '') + resolution_section().lstrip('\n')
+    text = text[:glossary] + extra + ('\n' if extra and not extra.endswith('\n') else '') + text[glossary:]
     attempts = attempts + poisson + control_attempts
     date = max(dt.date.fromtimestamp(a['path'].stat().st_mtime) for a in attempts).isoformat()
     report = HERE / f'{date}-no-second.md'

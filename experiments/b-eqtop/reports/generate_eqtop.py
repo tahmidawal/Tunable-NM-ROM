@@ -233,11 +233,17 @@ def main():
 
         # ---- ladders
         md.append('## The rebuilt ladders (one allocation, three timed repetitions)\n')
-    if pending:
-        md.append(f'The `primary` / `tight` columns below are {tag}: each rung\'s rule is a single draw of its '
-                  'construction. The errors and timings are measured with the rules as built and are not '
-                  'affected by the pending job; what is provisional is the label "certified" and therefore '
-                  'the rule-selection step (which rule would be the cheapest certified one under a different draw).\n')
+        if pending:
+            md.append(f'The `primary` / `tight` columns below are {tag}: each rung\'s rule is a single draw of its '
+                      'construction. The errors and timings are measured with the rules as built and are not '
+                      'affected by the pending job; what is provisional is the label "certified" and therefore '
+                      'the rule-selection step (which rule would be the cheapest certified one under a different draw).\n')
+        elif REPL:
+            md.append('The errors and timings below are final as measured with the rules as built (job '
+                      f"{A['job_id']}). The `construction status` column is what each rung's certified flag is worth "
+                      'over every independent draw of its construction (§"How much of $\\rho_{\\max}$ is the draw"): '
+                      'confirmed at $q \\le 32$, marginal above, with the draw counts. A marginal rung was measured '
+                      'with a draw that happened to pass; the construction does not certify reliably at that $m$.\n')
         for key in ('primary', 'tight', 'hybrid', 'dense'):
             d = lad.get(key)
             if not d:
@@ -254,7 +260,10 @@ def main():
                              f(d['worst_evolved_percent'][i]), f(d['worst_all_times_percent'][i]),
                              f(d['worst_t0_compression_percent'][i]), f(d['median_gpu_ms'][i], 1),
                              f(d['cost_vs_dense_twin'][i], 3) if d['cost_vs_dense_twin'][i] is not None else '—',
-                             yn(d['converged'][i]), d['arms'][i]])
+                             yn(d['converged'][i]), d['arms'][i]]
+                            + ([next((cstatus(x['rule']) for x in DRAWS if x['q'] == q and d['m'][i] is not None
+                                      and x['m'] == d['m'][i] and d['rho_max'][i] is not None
+                                      and abs(x['rho_max'] - d['rho_max'][i]) <= 1e-9), '—')] if REPL else []))
                 for metric, val in (('worst_evolved_percent', d['worst_evolved_percent'][i]),
                                     ('worst_all_times_percent', d['worst_all_times_percent'][i]),
                                     ('t0_compression_percent', d['worst_t0_compression_percent'][i]),
@@ -269,7 +278,8 @@ def main():
                         construction_status=(cstatus(lr['rule']) if (lr and REPL) else None))
             md.append(table(['$q$', '$M$', 'quadrature', '$m$', '$\\rho_{\\max}$', 'primary', 'tight',
                              'worst evolved %', 'worst all-times %', '$t=0$ compression %',
-                             'median GPU ms', 'cost / dense twin', 'converged', 'arm'], rows))
+                             'median GPU ms', 'cost / dense twin', 'converged', 'arm']
+                            + (['construction status'] if REPL else []), rows))
 
         md.append('### Every timed arm and the same-job full-order controls\n')
         rows = []

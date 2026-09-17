@@ -1,0 +1,16 @@
+{
+  "attempt": "res02",
+  "job_id": "3787189",
+  "job_name": "ctol_nos_res02",
+  "source_commit": "40d7fef8d95f57a70424db226bbf066d91e2138d",
+  "remote": "/cluster/tufts/paralab/tawal01/no_second_20260917/res02",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 02:00:00",
+  "submitted_utc": "2026-09-17T15:16Z",
+  "design": "DESIGN §A5 resolution knob, unchanged; §A7 records why res01 (3783920) died and what the stager now checks",
+  "replaces": "res01 (3783920), preamble death at 59 s: code/checkpoints.json not staged; zero science GPU time; remote directory deleted after its logs were archived in runs/res01/logs-failed/",
+  "science_change_from_res01": "none — specs/res02.json differs from res01.json only in job_name; run.sbatch identical modulo attempt name; staged tree = res01's 30 files + checkpoints.json",
+  "local_preamble_dryrun": "checks/local-res02-preamble-dryrun.json (every code/<path> the worker invokes is staged; checkpoint manifest hashes equal ckpt01/CHECKPOINTS.sha256; 11 staged JSON files parse)",
+  "queue_before": "owned ctol_nos jobs: 3783831 ctrl01 RUNNING 1:34:00; no job in res02",
+  "queue_after": "owned ctol_nos jobs: 3787189 res02 PENDING (Priority); 3783831 ctrl01 RUNNING — one job per attempt directory",
+  "pending_rule": "PENDING reason Priority at submit (account GPU cap QOSMaxGRESPerUser is the other reason seen on this account today); neither is GPU-type scarcity, so the 3-hour GPU-type escalation is not triggered by them; do not resubmit to escape the cap"
+}

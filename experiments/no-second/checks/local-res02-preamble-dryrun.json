@@ -1,0 +1,19 @@
+{
+  "attempt": "res02",
+  "worker_code_references": [
+    "checkpoints.json",
+    "prepare_diagnosis_cohort.py",
+    "resolution.py",
+    "smoke_resolution.py"
+  ],
+  "all_references_staged": true,
+  "checkpoint_manifest_entries": [
+    "fno-large",
+    "unet-refine",
+    "tsol-refine"
+  ],
+  "checkpoint_hashes_match_cluster_CHECKPOINTS_sha256": true,
+  "staged_json_files_parsed": 11,
+  "sbatch_invokes": "code/worker_resolution.py code/specs/res02.json",
+  "note": "no GPU work; this is the manifest/config-load dry-run of the preamble that res01 failed"
+}

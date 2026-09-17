@@ -12670,3 +12670,50 @@ locally and **not pushed**, per the coordinator's standing instruction.
 
 Report: `experiments/no-second/reports/2026-09-17-no-second.md`, machine-readable
 `reports/summary.json` (186 rows, every one carrying its source file and SHA256).
+
+## 2026-09-17
+
+### w-ladder — the reflective 2D wave is the second linear PDE whose correction ladder is degenerate: the top rung (linear evolution of the full learned bank) is the most accurate rung and 42–158× cheaper than the cheapest head rung
+
+Branch `exp/2026-09-17-w-ladder`, worktree `worktrees/2026-09-17-w-ladder`, forked from the consolidated baseline `exp/2026-09-13-nmrom-consolidated` at `02ff0f1f`. Cluster namespace `/cluster/tufts/paralab/tawal01/w_ladder_20260917/` (empty at close). Nothing merged, nothing pushed. Pre-registration and every amendment: `experiments/w-ladder/DESIGN.md`; generated report and rows: `experiments/w-ladder/reports/2026-09-17-w-ladder.md`, `summary.json`. All meshes on NVIDIA A100 80GB PCIe, `jax_backend=gpu`, f64, highest precision.
+
+**What ran.** One job per mesh on the development cohort (8 cases: `opened` 0-3 seed 690602, `fresh_development` 0-3 seed 691115; the final cohort stays sealed), 3 timed repetitions per arm and case, all retained, same-job controls only. Jobs: 64² `wl64b` job 3780447, 256² `wl256c` job 3783805, 1024² `wl1024b` job 3780450.
+
+**The ladder, worst over the 8 cases of the time-maximum initial-normalised energy-state error, and the median device-resident query over all repetitions:**
+
+| mesh | `head_q0` | `trained_nested40` | `nested_q8` | `nested_q16` | `nested_q32` | `linear_bank64` (q=R) | `pod_k64` | direct DST |
+|---|---|---|---|---|---|---|---|---|
+| 64² | 11.205 % / 184.5 ms | 6.813 % / 200.2 ms | 5.938 % / 199.3 ms | 5.005 % / 1977.4 ms | 4.916 % / 2500.1 ms | **4.932 % / 1.17 ms** | 1.489 % / 1.20 ms | 0.000 % / 3.39 ms |
+| 256² | 11.331 % / 183.5 ms | 6.876 % / 197.6 ms | 6.063 % / 197.4 ms | 5.166 % / 1989.5 ms | 5.104 % / 2520.2 ms | **5.121 % / 1.43 ms** | 1.502 % / 1.40 ms | 0.000 % / 4.36 ms |
+| 1024² | 11.339 % / 192.5 ms | 6.879 % / 207.8 ms | 6.069 % / 206.6 ms | 5.176 % / 2003.4 ms | 5.116 % / 2529.4 ms | **5.133 % / 4.56 ms** | 1.501 % / 4.23 ms | 0.000 % / 17.10 ms |
+
+**What was found.**
+
+- **64²:** error falls monotonically across the head rungs and then flattens at the top rung (11.205 → 6.813 → 5.938 → 5.005 → 4.916 → 4.932 %; the final step is within the integrator tie band) while cost is not monotone at all (185 → 200 → 199 → 1977 → 2500 → 1.17 ms). The top rung is 158× cheaper than the cheapest head rung `head_q0` and 2.27× more accurate. Verdict D1-D4 = True (strict D1 False, integrator tie band 0.0195 pp); ladder monotone = True.
+- **256²:** error falls monotonically across the head rungs and then flattens at the top rung (11.331 → 6.876 → 6.063 → 5.166 → 5.104 → 5.121 %; the final step is within the integrator tie band) while cost is not monotone at all (184 → 198 → 197 → 1989 → 2520 → 1.43 ms). The top rung is 129× cheaper than the cheapest head rung `head_q0` and 2.21× more accurate. Verdict D1-D4 = True (strict D1 False, integrator tie band 0.0203 pp); ladder monotone = True.
+- **1024²:** error falls monotonically across the head rungs and then flattens at the top rung (11.339 → 6.879 → 6.069 → 5.176 → 5.116 → 5.133 %; the final step is within the integrator tie band) while cost is not monotone at all (192 → 208 → 207 → 2003 → 2529 → 4.56 ms). The top rung is 42× cheaper than the cheapest head rung `head_q0` and 2.21× more accurate. Verdict D1-D4 = True (strict D1 False, integrator tie band 0.0203 pp); ladder monotone = True.
+
+- **POD-Galerkin from the same snapshots beats the learned bank at matched rank** at every mesh: 64² 1.489 % vs 4.932 % at 1.20 vs 1.17 ms; 256² 1.502 % vs 5.121 % at 1.40 vs 1.43 ms; 1024² 1.501 % vs 5.133 % at 4.23 vs 4.56 ms. H-POD's pre-registered "comparable" expectation is wrong; the learned bank is the worse linear subspace, and this is not verdict-bearing.
+
+- **No ROM arm beats the direct full-order solver.** The same-job DST is exact and costs 3.39 ms at 64², 4.36 ms at 256², 17.10 ms at 1024², so the linear bank's speed advantage over the head rungs is not a speed advantage over the FOM.
+
+- **The middle rungs are expensive for a solver reason, not a physics one.** $q=16$ and $q=32$ drive the guarded Cholesky into its QR + exact-SVD fallback on essentially every RK4 stage (recorded per invocation as `total_guard_fallbacks`), costing roughly an order of magnitude over $q=0$; predicted in DESIGN A1 item 2 and reported as measured.
+
+- **The energy certificate holds.** Exact modal propagation of the reduced system conserves the reduced energy to 1.2e-14 (64²), 7.7e-15 (256²), 1.3e-14 (1024²) relative, Crank-Nicolson likewise; the head's RK4 does not conserve it exactly and CN is markedly dispersive at the head's step (reported, not used as a top rung).
+
+**What was wrong and retracted.**
+
+- The DESIGN §1 motivating table originally carried **hand-typed millisecond values taken from a different job's tables** (178.7 / 199.5 ms). Withdrawn in amendment A1 and replaced by `design_table.py` output from the archived JSONs (178.9815 / 199.4380 ms); the two source jobs are different allocations, so no ratio is formed across them.
+
+- The pre-registered **orthonormal** correction directions were replaced by the retained **scaled** PCA directions (A1 item 2) after the audit showed the rescaling would push the Cholesky guard into fallback for a coordinate reason. The §3.1 sentence "costs the same launch-bound stage as the q=0 solve" is withdrawn.
+
+- **G5b's "expected ≲1e-6"** for the $q=32$ vs bank agreement is withdrawn (A1 item 6): the two arms start from different initial states and RK4 is not invariant under the nonlinear change of variables.
+
+- **The retained-value gate was wrong twice.** At 1e-9 for every arm it failed `trained_nested40` (A3), then failed `head_q0` on the fresh cases and killed `wl256b` (job 3780448) after it had completed all 432 timed invocations (A4). Diagnosis from the recorded counters: the eight cold-fit starts reach the same minimum and `argmin` breaks the tie by index, so a last-bit difference flips the selected start and moves the trajectory at ~1e-8; cases where the same start won reproduced to 1e-14. The gate now checks the tie-invariant selected objective at 1e-9 and the trajectory error at 1e-7 for fit-carrying arms, both fatal. `wl256b` is archived as a gate-failed attempt.
+
+- **Strict D1 fails at every mesh by less than the integrator tie band**: the $q=32$ rung is the full bank stepped by RK4, whose slight dissipation lowers the metric marginally below the exact propagator. Both the strict and banded readings are reported; the banded one is the pre-registered verdict (A2).
+
+**Integrity.** Every job asserts `jax_backend=gpu`, f64 and highest precision, the frozen-math SHA256s, bank rebuild parity, POD transfer and orthogonality, positive definiteness of every reduced stiffness, CG true-residual convergence, byte-identical repetitions, and the retained-value gates against the archived accel12 / accel07 values. An independent NumPy/SciPy audit (`audit_ladder.py`, no JAX, no driver import) recomputed every reported error from the saved coefficients and bank tables against a SciPy-DST reference regenerated from the saved initial fields: maximum difference 64² see `runs/wl64b/audit.json`, 256² see `runs/wl256c/audit.json`, 1024² see `runs/wl1024b/audit.json`. Archives are checksum-collected, chunked into Git under `experiments/w-ladder/artifacts/`, and the exact remote directories deleted.
+
+**Open.** (1) The sealed final cohort is untouched; every number here is development-cohort. (2) Absorbing boundaries were out of scope. (3) The learned bank losing to POD at matched rank deserves its own look — it bears on every cell that uses this bank, not just waves. (4) The $q=16/32$ fallback cost is a solver artefact that a better-conditioned parameterisation would remove; nobody should quote those milliseconds as the cost of enrichment in principle.
+

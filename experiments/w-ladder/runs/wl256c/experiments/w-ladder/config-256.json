@@ -1,0 +1,72 @@
+{
+  "boundaries": [
+    "dirichlet"
+  ],
+  "final_test_opened": false,
+  "primary_method": "frozen_mlp32_seed691200",
+  "end_time": 2.4,
+  "observation_dt": 0.05,
+  "repetitions": 3,
+  "fit_iterations": 800,
+  "head_dt": 0.01,
+  "primary_dt": 0.0025,
+  "cg_tolerances": [
+    1e-06
+  ],
+  "cg_max_iterations": 1000,
+  "cg_timestep_arms": [
+    {
+      "dt": 0.005,
+      "tolerance": 1e-06
+    },
+    {
+      "dt": 0.005,
+      "tolerance": 0.01
+    }
+  ],
+  "fom_cfl": 0.45,
+  "vanishing_fraction": 0.001,
+  "pod_ranks": [
+    16,
+    40,
+    64,
+    128
+  ],
+  "nested_q": [
+    8,
+    16,
+    32
+  ],
+  "coarse_fom_intervals": 64,
+  "saved_intervals": 64,
+  "full_field_cases": [
+    "opened_0"
+  ],
+  "cohorts": [
+    {
+      "name": "opened",
+      "seed": 690602,
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "fresh_development",
+      "seed": 691115,
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "accuracy_target": 0.05,
+  "contract": "Device-resident supplied displacement, velocity and scalar speed to both device-resident fields at all 49 observations; projection, every cold-fit start, speed-dependent preparation, evolution and dense output charged; host transfer recorded after the timer.",
+  "mesh": 256,
+  "walltime": "03:00:00",
+  "pod_training_case_stride": 1
+}

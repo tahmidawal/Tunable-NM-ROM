@@ -1,0 +1,164 @@
+[
+  {
+    "task": "precision",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/smoke_second.py",
+      "--output",
+      "out/precision.json"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789652156.9135573,
+    "ended_unix": 1789652173.4847882,
+    "job_id": "3783831",
+    "remaining_global_seconds": 11383.426347027067
+  },
+  {
+    "task": "training-smoke",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/training_smoke_second.py",
+      "--family",
+      "unet",
+      "--pde",
+      "burgers",
+      "--out",
+      "out/training-smoke"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789652173.4885936,
+    "ended_unix": 1789652181.2723937,
+    "job_id": "3783831",
+    "remaining_global_seconds": 11375.638745571021
+  },
+  {
+    "task": "cohort",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/prepare_diagnosis_cohort.py",
+      "--reference-index",
+      "data/refinement/index.json",
+      "--train-index",
+      "data/train/index.json",
+      "--out",
+      "data/diagnosis-cohort"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789652181.2757132,
+    "ended_unix": 1789652182.6024067,
+    "job_id": "3783831",
+    "remaining_global_seconds": 11374.308731331024
+  },
+  {
+    "task": "medium-f64",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/train.py",
+      "--train-index",
+      "data/train/index.json",
+      "--validation-index",
+      "data/validation/index.json",
+      "--config",
+      "/cluster/tufts/paralab/tawal01/no_second_20260917/ctrl01/out/medium-f64-config.json",
+      "--out",
+      "out/ctrl-medium-f64",
+      "--wall-seconds",
+      "3000"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789652182.611213,
+    "ended_unix": 1789655198.7828603,
+    "job_id": "3783831",
+    "remaining_global_seconds": 8358.128276271047
+  },
+  {
+    "task": "medium-seed2",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/train.py",
+      "--train-index",
+      "data/train/index.json",
+      "--validation-index",
+      "data/validation/index.json",
+      "--config",
+      "/cluster/tufts/paralab/tawal01/no_second_20260917/ctrl01/out/medium-seed2-config.json",
+      "--out",
+      "out/ctrl-medium-seed2",
+      "--wall-seconds",
+      "3000"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789655198.791592,
+    "ended_unix": 1789658211.6761208,
+    "job_id": "3783831",
+    "remaining_global_seconds": 5345.23501408007
+  },
+  {
+    "task": "tsol-small-f64",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/train.py",
+      "--train-index",
+      "data/train/index.json",
+      "--validation-index",
+      "data/validation/index.json",
+      "--config",
+      "/cluster/tufts/paralab/tawal01/no_second_20260917/ctrl01/out/tsol-small-f64-config.json",
+      "--out",
+      "out/ctrl-tsol-small-f64",
+      "--wall-seconds",
+      "3000"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789658211.691324,
+    "ended_unix": 1789661227.6584456,
+    "job_id": "3783831",
+    "remaining_global_seconds": 2329.2526910989545
+  },
+  {
+    "task": "cohort-eval",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/evaluate_cohort.py",
+      "--index",
+      "data/diagnosis-cohort/index.json",
+      "--runs",
+      "out",
+      "--out",
+      "out/diagnosis-cohort",
+      "--pattern",
+      "ctrl-*"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789661227.6702063,
+    "ended_unix": 1789661235.1237416,
+    "job_id": "3783831",
+    "remaining_global_seconds": 2321.787393824896
+  },
+  {
+    "task": "timing",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/timing.py",
+      "--train-index",
+      "data/train/index.json",
+      "--validation-index",
+      "data/validation/index.json",
+      "--runs",
+      "out",
+      "--out",
+      "out/timing",
+      "--pattern",
+      "ctrl-*",
+      "--repetitions",
+      "30",
+      "--burn-in",
+      "20"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789661235.127329,
+    "ended_unix": 1789661281.269276,
+    "job_id": "3783831",
+    "remaining_global_seconds": 2275.6418610159308
+  }
+]

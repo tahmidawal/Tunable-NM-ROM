@@ -1,0 +1,58 @@
+{
+  "family": "unet",
+  "prefix": "ctrl",
+  "pde": "burgers",
+  "job_name": "ctol_nos_ctrl01",
+  "time": "04:20:00",
+  "arms": [
+    {
+      "name": "medium-f64",
+      "config": "code/configs/unet/medium.json",
+      "override": {
+        "dtype": "float64"
+      },
+      "seconds": 3000.0,
+      "twin": "unet-medium",
+      "role": "precision control: the twin of `unet-medium` with the network in float64; dtype is the only difference"
+    },
+    {
+      "name": "medium-seed2",
+      "config": "code/configs/unet/medium.json",
+      "override": {
+        "seed": 20260915
+      },
+      "seconds": 3000.0,
+      "twin": "unet-medium",
+      "role": "seed control: the twin of `unet-medium` at seed 20260915; seed is the only difference"
+    },
+    {
+      "name": "tsol-small-f64",
+      "config": "code/configs/transolver/small.json",
+      "override": {
+        "dtype": "float64"
+      },
+      "seconds": 3000.0,
+      "twin": "tsol-small",
+      "role": "precision control: the twin of `tsol-small` with the network in float64; dtype is the only difference"
+    }
+  ],
+  "refine_learning_rate": null,
+  "per_arm_seconds": 3000.0,
+  "global_seconds": 11400.0,
+  "reserve_seconds": 900.0,
+  "selection": {
+    "unet": {
+      "selected_arm": "unet-refine",
+      "selected_capacity": "medium",
+      "validation_mean_case_max": 0.013523397493823076,
+      "source_job": "3780138"
+    },
+    "transolver": {
+      "selected_arm": "tsol-refine",
+      "selected_capacity": "small",
+      "validation_mean_case_max": 0.01949326940277781,
+      "source_job": "3780139"
+    }
+  },
+  "design": "pre-registered controls (DESIGN \u00a73.4/\u00a7A1): same protocol and budget as the screen; no refinement; matched-cohort scoring and same-job timing as in the screen"
+}
